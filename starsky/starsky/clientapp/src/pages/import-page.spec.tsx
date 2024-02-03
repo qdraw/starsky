@@ -8,39 +8,31 @@ import ImportPage from "./import-page";
 
 describe("ImportPage", () => {
   it("default check if MenuDefault is called", () => {
-    const menuDefaultSpy = jest
-      .spyOn(MenuDefault, "default")
-      .mockImplementationOnce(() => {
-        return <></>;
-      });
-    const dropAreaSpy = jest
-      .spyOn(DropArea, "default")
-      .mockImplementationOnce(() => {
-        return <></>;
-      });
+    const menuDefaultSpy = jest.spyOn(MenuDefault, "default").mockImplementationOnce(() => {
+      return <></>;
+    });
+    const dropAreaSpy = jest.spyOn(DropArea, "default").mockImplementationOnce(() => {
+      return <></>;
+    });
     const component = render(<ImportPage />);
-    expect(menuDefaultSpy).toBeCalled();
-    expect(dropAreaSpy).toBeCalled();
+    expect(menuDefaultSpy).toHaveBeenCalled();
+    expect(dropAreaSpy).toHaveBeenCalled();
     component.unmount();
   });
 
   it("drop area callback", () => {
-    const menuDefaultSpy = jest
-      .spyOn(MenuDefault, "default")
-      .mockImplementationOnce(() => {
-        return <></>;
-      });
+    const menuDefaultSpy = jest.spyOn(MenuDefault, "default").mockImplementationOnce(() => {
+      return <></>;
+    });
     const dropAreaSpy = jest
       .spyOn(DropArea, "default")
 
       .mockImplementationOnce(() => {
         return <></>;
       });
-    const modal = jest
-      .spyOn(ModalDropAreaFilesAdded, "default")
-      .mockImplementationOnce(() => {
-        return <></>;
-      });
+    const modal = jest.spyOn(ModalDropAreaFilesAdded, "default").mockImplementationOnce(() => {
+      return <></>;
+    });
 
     jest
       .spyOn(React, "useState")
@@ -48,9 +40,9 @@ describe("ImportPage", () => {
       .mockImplementationOnce(() => [[newIFileIndexItem()], jest.fn()]);
 
     const component = render(<ImportPage />);
-    expect(menuDefaultSpy).toBeCalled();
-    expect(dropAreaSpy).toBeCalled();
-    expect(modal).toBeCalled();
+    expect(menuDefaultSpy).toHaveBeenCalled();
+    expect(dropAreaSpy).toHaveBeenCalled();
+    expect(modal).toHaveBeenCalled();
 
     component.unmount();
   });

@@ -17,7 +17,7 @@ namespace starskytest.Controllers
 		public async Task NotificationController_Get_Test_Null()
 		{
 			var notificationController = new NotificationController(new FakeINotificationQuery());
-			var result = await notificationController.GetNotifications(null) as BadRequestObjectResult;
+			var result = await notificationController.GetNotifications(null!) as BadRequestObjectResult;
 			Assert.IsNotNull(result);
 			Assert.AreEqual(400, result.StatusCode);
 		}

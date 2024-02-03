@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -281,7 +280,8 @@ namespace starsky.foundation.platform.Helpers
 		/// <param name="filename">the name of the file with extenstion</param>
 		/// <param name="checkThisList">the list of strings to match</param>
 		/// <returns>true, </returns>
-		private static bool IsExtensionForce(string? filename, ICollection<string> checkThisList)
+		// ReSharper disable once SuggestBaseTypeForParameter
+		private static bool IsExtensionForce(string? filename, List<string> checkThisList)
 		{
 			if ( string.IsNullOrEmpty(filename) ) return false;
 

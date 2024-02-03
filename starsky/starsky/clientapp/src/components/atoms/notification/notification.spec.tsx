@@ -9,9 +9,7 @@ describe("ItemListView", () => {
 
   describe("with Context", () => {
     it("Render component", () => {
-      const component = render(
-        <Notification type={NotificationType.default} />
-      );
+      const component = render(<Notification type={NotificationType.default} />);
 
       const content = component.queryByTestId("notification-content");
 
@@ -20,9 +18,7 @@ describe("ItemListView", () => {
     });
 
     it("Ok close and remove element from DOM", () => {
-      const component = render(
-        <Notification type={NotificationType.default} />
-      );
+      const component = render(<Notification type={NotificationType.default} />);
 
       component.queryByTestId("notification-close")?.click();
 
@@ -30,9 +26,7 @@ describe("ItemListView", () => {
     });
 
     it("Portal is already gone", () => {
-      const component = render(
-        <Notification type={NotificationType.default}>test</Notification>
-      );
+      const component = render(<Notification type={NotificationType.default}>test</Notification>);
 
       const portalElement = document.getElementById(PortalId);
       if (!portalElement) throw new Error("portal should not be undefined");
@@ -55,7 +49,7 @@ describe("ItemListView", () => {
 
       // entire portal is removed from DOM
 
-      expect(callback).toBeCalled();
+      expect(callback).toHaveBeenCalled();
     });
 
     it("Multiple notification it should remove them all", () => {
@@ -70,9 +64,7 @@ describe("ItemListView", () => {
       if (!portalElement) throw new Error("portal should not be undefined");
 
       // first close default
-      const closeElement = portalElement.querySelector(
-        ".icon--close"
-      ) as HTMLDivElement;
+      const closeElement = portalElement.querySelector(".icon--close") as HTMLDivElement;
 
       closeElement.click();
 

@@ -7,13 +7,7 @@ export default {
 };
 
 export const Default = () => {
-  return (
-    <ModalDropAreaFilesAdded
-      isOpen={true}
-      uploadFilesList={[]}
-      handleExit={() => {}}
-    />
-  );
+  return <ModalDropAreaFilesAdded isOpen={true} uploadFilesList={[]} handleExit={() => {}} />;
 };
 
 Default.story = {

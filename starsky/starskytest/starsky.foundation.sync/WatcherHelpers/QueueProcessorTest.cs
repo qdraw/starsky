@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.sync.WatcherHelpers;
@@ -19,12 +17,11 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		{
 			var diskWatcherBackgroundTaskQueue = new FakeDiskWatcherUpdateBackgroundTaskQueue();
 
-			Task<List<FileIndexItem>> Local(Tuple<string, string, WatcherChangeTypes> value)
+			Task<List<FileIndexItem>> Local(Tuple<string, string?, WatcherChangeTypes> value)
 			{
 				return Task.FromResult(new List<FileIndexItem>());
 			}
 
-			var memoryCache = new FakeMemoryCache();
 			var queueProcessor = new QueueProcessor(diskWatcherBackgroundTaskQueue, Local);
 
 			await queueProcessor.QueueInput("t","T", WatcherChangeTypes.All);
@@ -34,14 +31,9 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		[TestMethod]
 		public async Task QueueProcessorTest_QueueInput_Counter()
 		{
-			var provider = new ServiceCollection()
-				.AddMemoryCache()
-				.BuildServiceProvider();
-			var memoryCache = provider.GetService<IMemoryCache>();
-
 			var diskWatcherBackgroundTaskQueue = new FakeDiskWatcherUpdateBackgroundTaskQueue();
 
-			Task<List<FileIndexItem>> Local(Tuple<string, string, WatcherChangeTypes> value)
+			Task<List<FileIndexItem>> Local(Tuple<string, string?, WatcherChangeTypes> value)
 			{
 				return Task.FromResult(new List<FileIndexItem>());
 			}
@@ -60,14 +52,9 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		[TestMethod]
 		public async Task QueueProcessorTest_QueueInput_Counter_NoCache()
 		{
-			var provider = new ServiceCollection()
-				.AddMemoryCache()
-				.BuildServiceProvider();
-			var memoryCache = provider.GetService<IMemoryCache>();
-
 			var diskWatcherBackgroundTaskQueue = new FakeDiskWatcherUpdateBackgroundTaskQueue();
 
-			Task<List<FileIndexItem>> Local(Tuple<string, string, WatcherChangeTypes> value)
+			Task<List<FileIndexItem>> Local(Tuple<string, string?, WatcherChangeTypes> value)
 			{
 				return Task.FromResult(new List<FileIndexItem>());
 			}

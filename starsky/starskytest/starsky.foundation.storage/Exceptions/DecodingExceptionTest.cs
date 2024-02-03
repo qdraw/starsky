@@ -14,6 +14,7 @@ namespace starskytest.starsky.foundation.storage.Exceptions
 		[ExpectedException(typeof(DecodingException))]
 		public void DecodingException()
 		{
+#pragma warning disable SYSLIB0050
 			var info = new SerializationInfo(typeof(Exception),
 				new FormatterConverter());
 			info.AddValue("Message", "");
@@ -28,13 +29,14 @@ namespace starskytest.starsky.foundation.storage.Exceptions
 				typeof(DecodingException).GetConstructors(BindingFlags.Instance |
 					BindingFlags.NonPublic | BindingFlags.InvokeMethod).FirstOrDefault();
 			var instance =
-				( DecodingException ) ctor?.Invoke(new object[]
+				( DecodingException? ) ctor?.Invoke(new object[]
 				{
 					info,
 					new StreamingContext(StreamingContextStates.All)
 				});
 
-			throw instance;
+			throw instance!;
+#pragma warning restore SYSLIB0050
 		}
 	}
 }

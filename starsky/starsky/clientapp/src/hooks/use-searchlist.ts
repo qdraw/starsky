@@ -116,9 +116,7 @@ const useSearchList = (
   const [archive, setArchive] = useState(newIArchive());
   const [pageType, setPageType] = useState(PageType.Loading);
 
-  const location = query
-    ? new UrlQuery().UrlQuerySearchApi(query, pageNumber)
-    : undefined;
+  const location = query ? new UrlQuery().UrlQuerySearchApi(query, pageNumber) : undefined;
 
   useEffect(() => {
     const abortController = new AbortController();

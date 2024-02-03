@@ -29,9 +29,7 @@ describe("ArchiveSidebar", () => {
 
     it("restore scroll after unmount", () => {
       jest.spyOn(window, "scrollTo").mockReset();
-      const scrollTo = jest
-        .spyOn(window, "scrollTo")
-        .mockImplementationOnce(() => {});
+      const scrollTo = jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
 
       const component = render(
         <ArchiveSidebar
@@ -48,8 +46,8 @@ describe("ArchiveSidebar", () => {
       });
 
       expect(document.body.classList.contains("lock-screen")).toBeFalsy();
-      expect(scrollTo).toBeCalled();
-      expect(scrollTo).toBeCalledWith(0, -0);
+      expect(scrollTo).toHaveBeenCalled();
+      expect(scrollTo).toHaveBeenCalledWith(0, -0);
     });
 
     it("no warning if is not read only", () => {
@@ -63,9 +61,7 @@ describe("ArchiveSidebar", () => {
         />
       );
 
-      const element = screen.queryByTestId(
-        "sidebar-selection-none"
-      ) as HTMLDivElement;
+      const element = screen.queryByTestId("sidebar-selection-none") as HTMLDivElement;
 
       expect(element).toBeTruthy();
 
@@ -83,9 +79,7 @@ describe("ArchiveSidebar", () => {
         />
       );
 
-      const element = screen.queryByTestId(
-        "sidebar-read-only"
-      ) as HTMLDivElement;
+      const element = screen.queryByTestId("sidebar-read-only") as HTMLDivElement;
 
       expect(element).toBeTruthy();
 

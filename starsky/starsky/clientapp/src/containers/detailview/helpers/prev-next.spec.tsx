@@ -28,7 +28,7 @@ describe("statusRemoved", () => {
       jest.fn
     ).next();
 
-    expect(history.navigate).toBeCalledTimes(0);
+    expect(history.navigate).toHaveBeenCalledTimes(0);
   });
 
   it("not called 2", () => {
@@ -38,14 +38,12 @@ describe("statusRemoved", () => {
 
     const setIsLoading = jest.fn();
 
-    jest
-      .spyOn(UpdateRelativeObject.prototype, "Update")
-      .mockImplementationOnce(() => {
-        return Promise.resolve({
-          nextFilePath: "test",
-          nextHash: "test"
-        } as IRelativeObjects);
-      });
+    jest.spyOn(UpdateRelativeObject.prototype, "Update").mockImplementationOnce(() => {
+      return Promise.resolve({
+        nextFilePath: "test",
+        nextHash: "test"
+      } as IRelativeObjects);
+    });
 
     new PrevNext(
       {
@@ -63,7 +61,7 @@ describe("statusRemoved", () => {
       jest.fn
     ).next();
 
-    expect(setIsLoading).toBeCalledTimes(0);
+    expect(setIsLoading).toHaveBeenCalledTimes(0);
   });
 
   it("called 3", () => {
@@ -99,8 +97,8 @@ describe("statusRemoved", () => {
       jest.fn
     ).next();
 
-    expect(setIsLoading).toBeCalledTimes(0);
-    expect(updateSpy).toBeCalledTimes(1);
+    expect(setIsLoading).toHaveBeenCalledTimes(0);
+    expect(updateSpy).toHaveBeenCalledTimes(1);
   });
 
   it("called 4", () => {
@@ -138,8 +136,8 @@ describe("statusRemoved", () => {
       jest.fn
     ).prev();
 
-    expect(setIsLoading).toBeCalledTimes(0);
-    expect(updateSpy).toBeCalledTimes(1);
+    expect(setIsLoading).toHaveBeenCalledTimes(0);
+    expect(updateSpy).toHaveBeenCalledTimes(1);
   });
 
   it("called 5", () => {
@@ -174,8 +172,8 @@ describe("statusRemoved", () => {
       jest.fn
     ).prev();
 
-    expect(setIsLoading).toBeCalledTimes(0);
-    expect(updateSpy).toBeCalledTimes(0);
+    expect(setIsLoading).toHaveBeenCalledTimes(0);
+    expect(updateSpy).toHaveBeenCalledTimes(0);
   });
 
   it("called 6", () => {
@@ -208,8 +206,8 @@ describe("statusRemoved", () => {
       jest.fn
     ).next();
 
-    expect(setIsLoading).toBeCalledTimes(0);
-    expect(updateSpy).toBeCalledTimes(0);
+    expect(setIsLoading).toHaveBeenCalledTimes(0);
+    expect(updateSpy).toHaveBeenCalledTimes(0);
   });
 
   it("navigatePrev same so ignore", () => {
@@ -239,9 +237,9 @@ describe("statusRemoved", () => {
       setIsLoading
     ).navigatePrev(relative);
 
-    expect(navigate).toBeCalledTimes(0);
-    expect(setIsLoading).toBeCalledTimes(1);
-    expect(setIsLoading).toBeCalledWith(false);
+    expect(navigate).toHaveBeenCalledTimes(0);
+    expect(setIsLoading).toHaveBeenCalledTimes(1);
+    expect(setIsLoading).toHaveBeenCalledWith(false);
   });
 
   it("nextPrev same so ignore", () => {
@@ -269,8 +267,8 @@ describe("statusRemoved", () => {
       setIsLoading
     ).navigateNext(relative);
 
-    expect(navigate).toBeCalledTimes(0);
-    expect(setIsLoading).toBeCalledTimes(1);
-    expect(setIsLoading).toBeCalledWith(false);
+    expect(navigate).toHaveBeenCalledTimes(0);
+    expect(setIsLoading).toHaveBeenCalledTimes(1);
+    expect(setIsLoading).toHaveBeenCalledWith(false);
   });
 });

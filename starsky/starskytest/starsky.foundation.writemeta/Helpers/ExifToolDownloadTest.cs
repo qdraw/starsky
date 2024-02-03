@@ -23,7 +23,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 	{
 		private readonly IServiceScopeFactory _serviceScopeFactory;
 		private readonly AppSettings _appSettings;
-		private readonly IStorage _hostFileSystem;
+		private readonly StorageHostFullPathFilesystem _hostFileSystem;
 
 		/// <summary>
 		/// shasum -a 1 file.zip
@@ -89,8 +89,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			// Happy flow
 			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() )
 				.DownloadCheckSums();
-			Assert.AreEqual(ExampleCheckSum, result.Value.Value);
-			Assert.AreEqual(true, result.Value.Key);
+			Assert.AreEqual(ExampleCheckSum, result?.Value);
+			Assert.AreEqual(true, result?.Key);
 		}
 		
 		[TestMethod]
@@ -107,8 +107,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() )
 				.DownloadCheckSums();
 			
-			Assert.AreEqual(ExampleCheckSum, result.Value.Value);
-			Assert.AreEqual(false, result.Value.Key);
+			Assert.AreEqual(ExampleCheckSum, result?.Value);
+			Assert.AreEqual(false, result?.Key);
 		}
 		
 		[TestMethod]
@@ -156,7 +156,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var appSettings = new AppSettings{DependenciesFolder = Path.Combine(_createAnImage.BasePath,name)};
 			Directory.CreateDirectory(appSettings.DependenciesFolder);
 			Directory.CreateDirectory(Path.Combine(appSettings.DependenciesFolder,"exiftool-unix"));
-			var stream = PlainTextFileHelper.StringToStream("#!/bin/bash");
+			var stream = StringToStreamHelper.StringToStream("#!/bin/bash");
 			try
 			{
 				await new StorageHostFullPathFilesystem().WriteStreamAsync(stream,
@@ -272,7 +272,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var logger = new FakeIWebLogger();
 			var result = await new ExifToolDownload(httpClientHelper,appSettings,  logger).DownloadExifTool(true);
 			Assert.IsFalse(result);
-			Assert.IsTrue(logger.TrackedInformation[0].Item2.Contains("Skipped due true of AddSwaggerExport " +
+			Assert.IsTrue(logger.TrackedInformation[0].Item2?.Contains("Skipped due true of AddSwaggerExport " +
 				"and AddSwaggerExportExitAfter setting"));
 		}
 		
@@ -288,7 +288,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var logger = new FakeIWebLogger();
 			var result = await new ExifToolDownload(httpClientHelper,appSettings,  logger).DownloadExifTool(true);
 			Assert.IsFalse(result);
-			Assert.IsTrue(logger.TrackedInformation[0].Item2.Contains("Skipped due true of ExiftoolSkipDownloadOnStartup setting"));
+			Assert.IsTrue(logger.TrackedInformation[0].Item2?.Contains("Skipped due true of ExiftoolSkipDownloadOnStartup setting"));
 		}
 
 		[TestMethod]
@@ -312,7 +312,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			Directory.CreateDirectory(Path.Combine(appSettings.DependenciesFolder,"exiftool-windows"));
 
 			var debugString = "\n\necho \"Fake ExifTool\"\n\n\n\necho 'test'";
-			var stream = PlainTextFileHelper.StringToStream("#!/bin/bash\n"+ debugString+ debugString
+			var stream = StringToStreamHelper.StringToStream("#!/bin/bash\n"+ debugString+ debugString
 			                            +debugString+debugString+debugString);
 			await new StorageHostFullPathFilesystem().WriteStreamAsync(stream,
 				Path.Combine(appSettings.DependenciesFolder, "exiftool-windows", "exiftool.exe"));
@@ -323,7 +323,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var result = await new ExifToolDownload(httpClientHelper,appSettings,logger).DownloadExifTool(true);
 			
 			Assert.IsTrue(result);
-			Assert.IsTrue(logger.TrackedInformation.FirstOrDefault().Item2
+			Assert.IsTrue(logger.TrackedInformation.FirstOrDefault().Item2?
 				.Contains("[DownloadExifTool] " + appSettings.DependenciesFolder));
 			
 			Directory.Delete(Path.Combine(appSettings.DependenciesFolder,"exiftool-windows"),true);
@@ -347,7 +347,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var result = await new ExifToolDownload(httpClientHelper,appSettings,logger).DownloadExifTool(false,3);
 			
 			Assert.IsTrue(result);
-			Assert.IsTrue(logger.TrackedInformation.FirstOrDefault().Item2
+			Assert.IsTrue(logger.TrackedInformation.FirstOrDefault().Item2?
 				.Contains("[DownloadExifTool] " + appSettings.DependenciesFolder));
 			
 			Directory.Delete(appSettings.DependenciesFolder,true);
@@ -446,7 +446,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				new List<string> {"/exiftool.exe"},
 				new List<byte[]> {CreateAnExifToolTarGz.Bytes.ToArray()});
 			
-			var result2 = new ExifToolDownload(null,_appSettings, new FakeIWebLogger(), fakeIStorage)
+			var result2 = new ExifToolDownload(null!,_appSettings, new FakeIWebLogger(), fakeIStorage)
 				.CheckSha1("/exiftool.exe", new List<string>{CreateAnExifToolTarGz.Sha1});
 			Assert.IsTrue(result2);
 		}
@@ -458,7 +458,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				new List<string> {"/exiftool.exe"},
 				new List<byte[]> {CreateAnExifToolTarGz.Bytes.ToArray()});
 			
-			var result2 = new ExifToolDownload(null,_appSettings, new FakeIWebLogger(), fakeIStorage)
+			var result2 = new ExifToolDownload(null!,_appSettings, new FakeIWebLogger(), fakeIStorage)
 				.CheckSha1("/exiftool.exe", new List<string>{"random_value"});
 			Assert.IsFalse(result2);
 		}

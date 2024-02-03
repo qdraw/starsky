@@ -43,6 +43,8 @@ namespace starsky.feature.search.Services
 		/// </summary>
 		/// <returns></returns>
 		[SuppressMessage("Performance", "CA1827:Do not use Count() or LongCount() when Any() can be used")]
+		[SuppressMessage("Performance", "S1155:Do not use Count() or LongCount() when Any() can be used",
+			Justification = "ANY is not supported by EF Core")]
 		public async Task<List<KeyValuePair<string,int>>> Inflate()
 		{
 			if ( _cache == null) return new List<KeyValuePair<string, int>>();
@@ -59,7 +61,8 @@ namespace starsky.feature.search.Services
 					// ReSharper disable once UseMethodAny.1
 					.Where(x => x.Count() >= 1) // .ANY is not supported by EF Core
 					.TagWith("Inflate SearchSuggestionsService")
-					.Select(val => new KeyValuePair<string, int>(val.Key!, val.Count())).ToListAsync();
+					.Select(val => 
+						new KeyValuePair<string, int>(val.Key!, val.Count())).ToListAsync();
 			}
 			catch ( Exception exception )
 			{
@@ -96,7 +99,7 @@ namespace starsky.feature.search.Services
 				.OrderByDescending(p => p.Value)
 				.ToList();
 
-			var cacheExpire = suggestionsFiltered.Any() ? 
+			var cacheExpire = suggestionsFiltered.Count != 0 ? 
 				new TimeSpan(120,0,0) : new TimeSpan(0, 1, 0);
 			
 			_cache.Set(nameof(SearchSuggestionsService), suggestionsFiltered, 
@@ -111,7 +114,7 @@ namespace starsky.feature.search.Services
 		/// <returns>Key/Value pared list</returns>
 		public async Task<IEnumerable<KeyValuePair<string, int>>> GetAllSuggestions()
 		{
-			if( _cache == null || _appSettings?.AddMemoryCache == false) 
+			if( _cache == null || _appSettings.AddMemoryCache == false) 
 				return new Dictionary<string,int>();
 
 			if ( _cache.TryGetValue(nameof(SearchSuggestionsService),
@@ -131,17 +134,18 @@ namespace starsky.feature.search.Services
 		public async Task<IEnumerable<string>> SearchSuggest(string query)
 		{
 			if ( string.IsNullOrEmpty(query) ) return new List<string>();
-			if( _cache == null || _appSettings?.AddMemoryCache == false) return new List<string>();
+			if( _cache == null || _appSettings.AddMemoryCache == false) return new List<string>();
 			
 			var allSuggestions = await GetAllSuggestions();
 			
-			var results = allSuggestions.Where(p => p.Key.ToLowerInvariant().StartsWith( query.ToLowerInvariant() ))
+			var results = allSuggestions.Where(p => 
+					p.Key.StartsWith(query, StringComparison.InvariantCultureIgnoreCase))
 				.Take(MaxResult)
 				.OrderByDescending(p => p.Value).Select(p => p.Key)
 				.ToList();
 			
 			results.AddRange(SystemResults()
-				.Where(p => p.ToLowerInvariant().StartsWith(query.ToLowerInvariant()))
+				.Where(p => p.StartsWith(query, StringComparison.InvariantCultureIgnoreCase))
 				.Take(MaxResult) );
 			
 			return results;
@@ -149,8 +153,8 @@ namespace starsky.feature.search.Services
 
 		private static IEnumerable<string> SystemResults()
 		{
-			return new HashSet<string>
-			{
+			return
+			[
 				"-Datetime>7 -ImageFormat-\"tiff\"",
 				"-ImageFormat:jpg",
 				"-inUrl:",
@@ -166,7 +170,7 @@ namespace starsky.feature.search.Services
 				"-addToDatabase: -Datetime>2",
 				"-title:",
 				"-isDirectory:false"
-			};
+			];
 		}
 
 	}

@@ -25,9 +25,12 @@ namespace starsky.foundation.webtelemetry.Helpers
 				.ServiceProvider.GetService<TelemetryClient>();
 		}
 
-		public static IOperationHolder<DependencyTelemetry> GetOperationHolder(IServiceScopeFactory scopeFactory, string jobName, string operationId)
+		public static IOperationHolder<DependencyTelemetry> GetOperationHolder(IServiceScopeFactory scopeFactory, string jobName, string? operationId)
 		{
-			if ( string.IsNullOrEmpty(operationId) ) return new EmptyOperationHolder<DependencyTelemetry>();
+			if ( string.IsNullOrEmpty(operationId) )
+			{
+				return new EmptyOperationHolder<DependencyTelemetry>();
+			}
 			var telemetryClient = GetTelemetryClient(scopeFactory);
 
 			if ( telemetryClient == null ) return new EmptyOperationHolder<DependencyTelemetry>();

@@ -9,10 +9,7 @@ public class DoubleBinderProvider : IModelBinderProvider
 {
 	public IModelBinder? GetBinder(ModelBinderProviderContext context)
 	{
-		if (context == null)
-		{
-			throw new ArgumentNullException(nameof(context));
-		}
+		ArgumentNullException.ThrowIfNull(context);
 
 		return context.Metadata?.ModelType == typeof(double) ? new DoubleModelBinder() : null;
 	}

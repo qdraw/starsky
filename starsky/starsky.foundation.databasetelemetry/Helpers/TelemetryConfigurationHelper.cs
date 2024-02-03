@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DependencyCollector;
@@ -10,14 +9,6 @@ namespace starsky.foundation.databasetelemetry.Helpers
 {
 	public static class TelemetryConfigurationHelper
 	{
-		internal static TelemetryClient? Clean(Exception exception,IWebLogger? logger)
-		{
-			logger?.LogInformation("run GC.Collect next -->");
-			GC.Collect();
-			logger?.LogInformation($"catch-ed exception; {exception.Message} ", exception);
-			return null;
-		}
-		
 		public static TelemetryClient? InitTelemetryClient(string appInsightsConnectionString, string roleName, IWebLogger? logger, TelemetryClient? telemetryClient)
 		{
 			try
@@ -40,13 +31,13 @@ namespace starsky.foundation.databasetelemetry.Helpers
 				module.Initialize(telemetryClient.TelemetryConfiguration);
 				return telemetryClient;
 			}
-			catch ( OutOfMemoryException exception )
+			catch ( OutOfMemoryException )
 			{
-				return Clean(exception, logger);
+				return null;
 			}
-			catch (System.Threading.Tasks.TaskSchedulerException exception)
+			catch (System.Threading.Tasks.TaskSchedulerException )
 			{
-				return Clean(exception, logger);
+				return null;
 			}
 		}
 

@@ -22,12 +22,12 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 6.0.417
+          dotnet-version: 8.0.101
 
-      - name: Build  --no-unit-test  linux-arm,linux-arm64,win-x64,osx-x64,linux-x64
+      - name: Build --no-unit-test linux-arm,linux-arm64,win-x64,osx-x64,linux-x64,osx-arm64 --ready-to-run
         shell: bash
         working-directory: ./starsky
-        run: bash build.sh --runtime "linux-arm,linux-arm64,win-x64,osx-x64,linux-x64,osx-arm64" --no-unit-test
+        run: bash build.sh --runtime "linux-arm,linux-arm64,win-x64,osx-x64,linux-x64,osx-arm64" --no-unit-test --ready-to-run
 
       - name: Upload linux-arm as build artifact
         uses: actions/upload-artifact@v4
@@ -90,12 +90,12 @@ jobs:
         working-directory: ./starsky
         run: unzip starsky-osx-x64.zip -d osx-x64
 
-      - name: Restore rights pm2-restore-x-rights.sh 
+      - name: Restore rights pm2-restore-x-rights.sh (osx-x64)
         shell: bash
         working-directory: ./starsky/osx-x64
         run: chmod 777 pm2-restore-x-rights.sh 
 
-      - name: run pm2-restore-x-rights.sh 
+      - name: run pm2-restore-x-rights.sh (osx-x64)
         shell: bash
         working-directory: ./starsky/osx-x64
         run: bash pm2-restore-x-rights.sh 

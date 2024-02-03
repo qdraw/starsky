@@ -15,17 +15,13 @@ describe("MenuOptionMoveFolderToTrash", () => {
       />
     );
 
-    expect(
-      screen.getByText(localization.MessageMoveCurrentFolderToTrash.en)
-    ).toBeTruthy();
+    expect(screen.getByText(localization.MessageMoveCurrentFolderToTrash.en)).toBeTruthy();
   });
 
   it("opens the modal when the menu option is clicked", () => {
     jest
       .spyOn(ModalMoveFolderToTrash, "default")
-      .mockImplementationOnce(() => (
-        <div data-test="modal-move-folder-to-trash"></div>
-      ));
+      .mockImplementationOnce(() => <div data-test="modal-move-folder-to-trash"></div>);
 
     render(
       <MenuOptionMoveFolderToTrash
@@ -44,9 +40,7 @@ describe("MenuOptionMoveFolderToTrash", () => {
   it("opens the modal when the menu option is keyDowned", () => {
     jest
       .spyOn(ModalMoveFolderToTrash, "default")
-      .mockImplementationOnce(() => (
-        <div data-test="modal-move-folder-to-trash"></div>
-      ));
+      .mockImplementationOnce(() => <div data-test="modal-move-folder-to-trash"></div>);
 
     render(
       <MenuOptionMoveFolderToTrash
@@ -65,9 +59,7 @@ describe("MenuOptionMoveFolderToTrash", () => {
   it("not opens the modal when the menu option is keyDowned but wrong key so ignored", () => {
     jest
       .spyOn(ModalMoveFolderToTrash, "default")
-      .mockImplementationOnce(() => (
-        <div data-test="modal-move-folder-to-trash"></div>
-      ));
+      .mockImplementationOnce(() => <div data-test="modal-move-folder-to-trash"></div>);
 
     render(
       <MenuOptionMoveFolderToTrash
@@ -86,23 +78,19 @@ describe("MenuOptionMoveFolderToTrash", () => {
   it("opens the modal when the menu option is clicked 1", () => {
     console.log("----------");
 
-    const modalSpy = jest
-      .spyOn(Modal, "default")
-      .mockImplementationOnce((props) => {
-        act(() => {
-          props.handleExit();
-        });
-        return <>{props.children}</>;
+    const modalSpy = jest.spyOn(Modal, "default").mockImplementationOnce((props) => {
+      act(() => {
+        props.handleExit();
       });
+      return <>{props.children}</>;
+    });
 
-    jest
-      .spyOn(ModalMoveFolderToTrash, "default")
-      .mockImplementationOnce((props) => {
-        act(() => {
-          props.handleExit();
-        });
-        return <></>;
+    jest.spyOn(ModalMoveFolderToTrash, "default").mockImplementationOnce((props) => {
+      act(() => {
+        props.handleExit();
       });
+      return <></>;
+    });
 
     const setEnableMoreMenuSpy = jest.fn();
     render(
@@ -119,32 +107,28 @@ describe("MenuOptionMoveFolderToTrash", () => {
 
     expect(screen.getByTestId("move-folder-to-trash")).toBeTruthy();
 
-    expect(setEnableMoreMenuSpy).toBeCalledTimes(1);
-    expect(setEnableMoreMenuSpy).toBeCalledWith(false);
+    expect(setEnableMoreMenuSpy).toHaveBeenCalledTimes(1);
+    expect(setEnableMoreMenuSpy).toHaveBeenCalledWith(false);
 
-    expect(modalSpy).toBeCalledTimes(0);
+    expect(modalSpy).toHaveBeenCalledTimes(0);
   });
 
   it("opens the modal when the menu option is keyDown tab so skip", () => {
     console.log("----------");
 
-    const modalSpy = jest
-      .spyOn(Modal, "default")
-      .mockImplementationOnce((props) => {
-        act(() => {
-          props.handleExit();
-        });
-        return <>{props.children}</>;
+    const modalSpy = jest.spyOn(Modal, "default").mockImplementationOnce((props) => {
+      act(() => {
+        props.handleExit();
       });
+      return <>{props.children}</>;
+    });
 
-    jest
-      .spyOn(ModalMoveFolderToTrash, "default")
-      .mockImplementationOnce((props) => {
-        act(() => {
-          props.handleExit();
-        });
-        return <></>;
+    jest.spyOn(ModalMoveFolderToTrash, "default").mockImplementationOnce((props) => {
+      act(() => {
+        props.handleExit();
       });
+      return <></>;
+    });
 
     const setEnableMoreMenuSpy = jest.fn();
     render(
@@ -161,31 +145,27 @@ describe("MenuOptionMoveFolderToTrash", () => {
 
     expect(screen.getByTestId("move-folder-to-trash")).toBeTruthy();
 
-    expect(setEnableMoreMenuSpy).toBeCalledTimes(0);
+    expect(setEnableMoreMenuSpy).toHaveBeenCalledTimes(0);
 
-    expect(modalSpy).toBeCalledTimes(0);
+    expect(modalSpy).toHaveBeenCalledTimes(0);
   });
 
   it("opens the modal when the menu option is keyDown enter 1", () => {
     console.log("----------");
 
-    const modalSpy = jest
-      .spyOn(Modal, "default")
-      .mockImplementationOnce((props) => {
-        act(() => {
-          props.handleExit();
-        });
-        return <>{props.children}</>;
+    const modalSpy = jest.spyOn(Modal, "default").mockImplementationOnce((props) => {
+      act(() => {
+        props.handleExit();
       });
+      return <>{props.children}</>;
+    });
 
-    jest
-      .spyOn(ModalMoveFolderToTrash, "default")
-      .mockImplementationOnce((props) => {
-        act(() => {
-          props.handleExit();
-        });
-        return <></>;
+    jest.spyOn(ModalMoveFolderToTrash, "default").mockImplementationOnce((props) => {
+      act(() => {
+        props.handleExit();
       });
+      return <></>;
+    });
 
     const setEnableMoreMenuSpy = jest.fn();
     render(
@@ -202,9 +182,9 @@ describe("MenuOptionMoveFolderToTrash", () => {
 
     expect(screen.getByTestId("move-folder-to-trash")).toBeTruthy();
 
-    expect(setEnableMoreMenuSpy).toBeCalledTimes(1);
-    expect(setEnableMoreMenuSpy).toBeCalledWith(false);
+    expect(setEnableMoreMenuSpy).toHaveBeenCalledTimes(1);
+    expect(setEnableMoreMenuSpy).toHaveBeenCalledWith(false);
 
-    expect(modalSpy).toBeCalledTimes(0);
+    expect(modalSpy).toHaveBeenCalledTimes(0);
   });
 });

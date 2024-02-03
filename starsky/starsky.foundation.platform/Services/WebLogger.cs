@@ -12,8 +12,8 @@ namespace starsky.foundation.platform.Services
 	[Service(typeof(IWebLogger), InjectionLifetime = InjectionLifetime.Singleton)]
 	public sealed class WebLogger : IWebLogger
 	{
-		private readonly ILogger _logger;
-		private readonly IConsole _console;
+		private readonly ILogger? _logger;
+		private readonly IConsole? _console;
 
 		/// <summary>
 		/// Trace = 0, Debug = 1, Information = 2, Warning = 3, Error = 4, Critical = 5, and None = 6.
@@ -21,28 +21,38 @@ namespace starsky.foundation.platform.Services
 		/// </summary>
 		/// <param name="loggerFactory">ILoggerFactory</param>
 		/// <param name="scopeFactory">optional scopeFactory</param>
-		public WebLogger(ILoggerFactory loggerFactory = null, IServiceScopeFactory scopeFactory = null)
+		public WebLogger(ILoggerFactory? loggerFactory = null, IServiceScopeFactory? scopeFactory = null)
 		{
 			_logger = loggerFactory?.CreateLogger("app");
 			var scopeProvider = scopeFactory?.CreateScope().ServiceProvider;
 			if ( scopeProvider != null ) _console = scopeProvider.GetService<IConsole>();
 		}
 
-		public void LogDebug(string message, params object[] args)
+		public void LogDebug(string? message, params object[] args)
 		{
-			if ( _logger == null )
+			if ( string.IsNullOrWhiteSpace(message) )
 			{
-				_console.WriteLine(message);
+				return;
+			}
+			
+			if ( _logger == null)
+			{
+				_console?.WriteLine(message);
 				return;
 			}
 			_logger.LogDebug(message, args);
 		}
 
-		public void LogInformation(string message, params object[] args)
+		public void LogInformation(string? message, params object[] args)
 		{
+			if ( string.IsNullOrWhiteSpace(message) )
+			{
+				return;
+			}
+			
 			if ( _logger == null )
 			{
-				_console.WriteLine(message);
+				_console?.WriteLine(message);
 				return;
 			}
 			_logger.LogInformation(message, args);
@@ -53,17 +63,22 @@ namespace starsky.foundation.platform.Services
 		{
 			if ( _logger == null )
 			{
-				_console.WriteLine($"{exception.Message} {message}");
+				_console?.WriteLine($"{exception.Message} {message}");
 				return;
 			}
 			_logger.LogInformation(exception, message, args);
 		}
 
-		public void LogError(string message, params object[] args)
+		public void LogError(string? message, params object[] args)
 		{
+			if ( string.IsNullOrWhiteSpace(message) )
+			{
+				return;
+			}
+			
 			if ( _logger == null )
 			{
-				_console.WriteLine(message);
+				_console?.WriteLine(message);
 				return;
 			}
 			_logger.LogError(message,args);
@@ -72,7 +87,7 @@ namespace starsky.foundation.platform.Services
 		{
 			if ( _logger == null )
 			{
-				_console.WriteLine($"{exception.Message} {message}");
+				_console?.WriteLine($"{exception.Message} {message}");
 				return;
 			}
 			_logger.LogError(exception, message,args);

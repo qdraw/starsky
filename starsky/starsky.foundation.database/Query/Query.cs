@@ -25,14 +25,14 @@ namespace starsky.foundation.database.Query
 	public partial class Query : IQuery
     {
         private ApplicationDbContext _context;
-        private readonly IServiceScopeFactory _scopeFactory;
+        private readonly IServiceScopeFactory? _scopeFactory;
         private readonly IMemoryCache? _cache;
         private readonly AppSettings _appSettings;
         private readonly IWebLogger _logger;
 
         public Query(ApplicationDbContext context, 
             AppSettings appSettings,
-            IServiceScopeFactory scopeFactory, 
+            IServiceScopeFactory? scopeFactory, 
             IWebLogger logger, IMemoryCache? memoryCache = null)
         {
 	        _context = context;
@@ -143,7 +143,7 @@ namespace starsky.foundation.database.Query
 
 			// if result is not null return cached value
 			if ( _cache.TryGetValue(queryHashListCacheName, out var cachedSubPath) 
-			     && !string.IsNullOrEmpty((string)cachedSubPath)) return ( string ) cachedSubPath;
+			     && !string.IsNullOrEmpty((string?)cachedSubPath)) return ( string ) cachedSubPath;
 
 			cachedSubPath = await QueryGetItemByHashAsync(fileHash);
 		    
@@ -278,7 +278,10 @@ namespace starsky.foundation.database.Query
         /// <returns>same item</returns>
         public async Task<List<FileIndexItem>> UpdateItemAsync(List<FileIndexItem> updateStatusContentList)
         {
-	        if ( !updateStatusContentList.Any() ) return new List<FileIndexItem>();
+	        if ( updateStatusContentList.Count == 0 )
+	        {
+		        return new List<FileIndexItem>();
+	        }
 	        
 	        async Task<List<FileIndexItem>> LocalQuery(DbContext context, List<FileIndexItem> fileIndexItems)
 	        {
@@ -430,6 +433,7 @@ namespace starsky.foundation.database.Query
 
             if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
             
+            objectFileFolders ??= new List<FileIndexItem>();
             var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
 
             if ( updateStatusContent.FilePath == "/" )
@@ -471,7 +475,8 @@ namespace starsky.foundation.database.Query
 				    skippedCacheItems.Add(item.ParentDirectory!);
 				    continue;
 			    }
-				
+
+			    objectFileFolders ??= new List<FileIndexItem>();
 			    var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
 
 			    // make it a list to avoid enum errors
@@ -499,7 +504,7 @@ namespace starsky.foundation.database.Query
 			    _cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
 		    }
 
-		    if ( skippedCacheItems.Any() && _appSettings.Verbose == true )
+		    if ( skippedCacheItems.Count >= 1 && _appSettings.Verbose == true )
 		    {
 			    _logger.LogInformation($"[CacheUpdateItem] skipped: {string.Join(", ", skippedCacheItems)}");
 		    }
@@ -536,7 +541,9 @@ namespace starsky.foundation.database.Query
 
             if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
             
+            objectFileFolders ??= new List<FileIndexItem>();
             var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
+            
                         // Order by filename
             displayFileFolders = displayFileFolders
 	            .Where(p => p.FilePath != updateStatusContent.FilePath)
@@ -557,7 +564,7 @@ namespace starsky.foundation.database.Query
             if( _cache == null || _appSettings.AddMemoryCache == false) return false;
             
             var queryCacheName = CachingDbName(nameof(FileIndexItem), 
-                PathHelper.RemoveLatestSlash(directoryName.Clone().ToString()));
+                PathHelper.RemoveLatestSlash(directoryName.Clone().ToString()!));
             if (!_cache.TryGetValue(queryCacheName, out _)) return false;
             
             _cache.Remove(queryCacheName);
@@ -575,7 +582,7 @@ namespace starsky.foundation.database.Query
 	        if( _cache == null || _appSettings.AddMemoryCache == false) return false;
             
 	        var queryCacheName = CachingDbName(nameof(FileIndexItem), 
-		        PathHelper.RemoveLatestSlash(directoryName.Clone().ToString()));
+		        PathHelper.RemoveLatestSlash(directoryName.Clone().ToString()!));
             
 	        _cache.Set(queryCacheName, items,  
 		        new TimeSpan(1,0,0));

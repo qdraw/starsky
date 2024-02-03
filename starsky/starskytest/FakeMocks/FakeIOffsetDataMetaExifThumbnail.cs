@@ -8,7 +8,7 @@ namespace starskytest.FakeMocks
 {
 	public class FakeIOffsetDataMetaExifThumbnail : IOffsetDataMetaExifThumbnail
 	{
-		public OffsetModel ParseOffsetData(ExifThumbnailDirectory exifThumbnailDir,
+		public OffsetModel ParseOffsetData(ExifThumbnailDirectory? exifThumbnailDir,
 			string subPath)
 		{
 			return new OffsetModel
@@ -17,7 +17,7 @@ namespace starskytest.FakeMocks
 			};
 		}
 
-		public (ExifThumbnailDirectory, int, int, FileIndexItem.Rotation) GetExifMetaDirectories(
+		public (ExifThumbnailDirectory?, int, int, FileIndexItem.Rotation) GetExifMetaDirectories(
 			string subPath)
 		{
 			return ( null, 0, 0, FileIndexItem.Rotation.Horizontal );

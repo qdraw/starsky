@@ -9,13 +9,13 @@ namespace starskytest.starskyImporterCli
 	[TestClass]
 	public sealed class starskyImporterCliProgramTest
 	{
-		private static string _prePort;
-		private static string _preAspNetUrls;
-		private static string _diskWatcherSetting;
-		private static string _syncOnStartup;
-		private static string _thumbnailGenerationIntervalInMinutes;
-		private static string _geoFilesSkipDownloadOnStartup;
-		private static string _exiftoolSkipDownloadOnStartup;
+		private static string? _prePort;
+		private static string? _preAspNetUrls;
+		private static string? _diskWatcherSetting;
+		private static string? _syncOnStartup;
+		private static string? _thumbnailGenerationIntervalInMinutes;
+		private static string? _geoFilesSkipDownloadOnStartup;
+		private static string? _exiftoolSkipDownloadOnStartup;
 		// also see:
 		// starsky/starskytest/root/ProgramTest.cs
 		// starskytest/starskythumbnailcli/ProgramTest.cs

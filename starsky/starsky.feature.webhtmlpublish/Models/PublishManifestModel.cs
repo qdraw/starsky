@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 
 namespace starsky.feature.webhtmlpublish.Models
@@ -14,7 +15,7 @@ namespace starsky.feature.webhtmlpublish.Models
 		/// Display name
 		/// </summary>
 		public string Name { get; set; }
-		
+
 		/// <summary>
 		/// Which files or folders need to be copied
 		/// </summary>
@@ -25,7 +26,7 @@ namespace starsky.feature.webhtmlpublish.Models
 		/// </summary>
 		public string Slug
 		{
-			get { return new AppSettings().GenerateSlug(Name, true); }
+			get { return GenerateSlugHelper.GenerateSlug(Name, true); }
 		}
 
 		/// <summary>
@@ -37,6 +38,6 @@ namespace starsky.feature.webhtmlpublish.Models
 		/// <summary>
 		/// Starsky Version
 		/// </summary>
-		public string Version => Assembly.GetExecutingAssembly().GetName().Version.ToString();
+		public string Version => Assembly.GetExecutingAssembly().GetName().Version?.ToString();
 	}
 }

@@ -26,7 +26,7 @@
           "parameters": [],
           "responses": {
             "200": {
-              "description": "logged in",
+              "description": "Logged in",
               "headers": {},
               "content": {
                 "application/json": {
@@ -63,7 +63,7 @@
               "unresolvedReference": false
             },
             "401": {
-              "description": "when not logged in",
+              "description": "When not logged in",
               "headers": {},
               "content": {
                 "application/json": {
@@ -123,7 +123,7 @@
               "unresolvedReference": false
             },
             "503": {
-              "description": "database connection error",
+              "description": "Database Connection Error",
               "headers": {},
               "content": {
                 "application/json": {
@@ -153,7 +153,7 @@
               "unresolvedReference": false
             },
             "409": {
-              "description": "Current User does not exist in database",
+              "description": "The Current User does not exist in database",
               "headers": {},
               "content": {},
               "links": {},
@@ -453,7 +453,7 @@
           ],
           "responses": {
             "200": {
-              "description": "successful login",
+              "description": "Successful login",
               "headers": {},
               "content": {
                 "application/json": {
@@ -483,7 +483,7 @@
               "unresolvedReference": false
             },
             "401": {
-              "description": "login failed",
+              "description": "Login failed",
               "headers": {},
               "content": {
                 "application/json": {
@@ -513,7 +513,7 @@
               "unresolvedReference": false
             },
             "405": {
-              "description": "ValidateAntiForgeryToken",
+              "description": "ValidateAntiForgeryToken error",
               "headers": {},
               "content": {
                 "application/json": {
@@ -543,7 +543,7 @@
               "unresolvedReference": false
             },
             "423": {
-              "description": "login failed due lock",
+              "description": "Login failed due lock",
               "headers": {},
               "content": {},
               "links": {},
@@ -551,7 +551,7 @@
               "unresolvedReference": false
             },
             "500": {
-              "description": "login failed due signIn errors",
+              "description": "Login failed due signIn errors",
               "headers": {},
               "content": {},
               "links": {},
@@ -584,7 +584,7 @@
           "parameters": [],
           "responses": {
             "200": {
-              "description": "successful logout",
+              "description": "Successful logout",
               "headers": {},
               "content": {},
               "links": {},
@@ -11829,7 +11829,7 @@
               "properties": {},
               "additionalPropertiesAllowed": true,
               "enum": [],
-              "nullable": true,
+              "nullable": false,
               "deprecated": false,
               "extensions": {},
               "unresolvedReference": false
@@ -12299,6 +12299,29 @@
             "deprecated": false,
             "extensions": {},
             "unresolvedReference": false
+          },
+          "openTelemetry": {
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false,
+            "reference": {
+              "type": 0,
+              "id": "OpenTelemetrySettings",
+              "isExternal": false,
+              "isLocal": true,
+              "referenceV3": "#/components/schemas/OpenTelemetrySettings",
+              "referenceV2": "#/definitions/OpenTelemetrySettings"
+            }
           }
         },
         "additionalPropertiesAllowed": false,
@@ -14397,6 +14420,151 @@
         "extensions": {},
         "unresolvedReference": false
       },
+      "OpenTelemetrySettings": {
+        "type": "object",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {
+          "header": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "serviceName": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "tracesEndpoint": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "tracesHeader": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "metricsEndpoint": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "metricsHeader": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "logsEndpoint": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "logsHeader": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          }
+        },
+        "additionalPropertiesAllowed": false,
+        "enum": [],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
       "RelativeObjects": {
         "type": "object",
         "readOnly": false,
@@ -15234,6 +15402,40 @@
             "extensions": {},
             "unresolvedReference": false
           },
+          "microseconds": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "nanoseconds": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
           "minutes": {
             "type": "integer",
             "format": "int32",
@@ -15303,6 +15505,40 @@
             "unresolvedReference": false
           },
           "totalMilliseconds": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "totalMicroseconds": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "totalNanoseconds": {
             "type": "number",
             "format": "double",
             "readOnly": true,

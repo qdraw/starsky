@@ -24,16 +24,11 @@ interface IModalDatetimeProps {
   dateTime?: string;
 }
 
-const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (
-  props
-) => {
+const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (props) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageModalDatetime = language.text(
-    "Datum en tijd bewerken",
-    "Edit date and time"
-  );
+  const MessageModalDatetime = language.text("Datum en tijd bewerken", "Edit date and time");
   const MessageYear = language.text("Jaar", "Year");
   const MessageMonth = language.text("Maand", "Month");
   const MessageDate = language.text("Dag", "Day");
@@ -49,9 +44,7 @@ const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (
   const [month, setMonth] = useState(parseDateMonth(props.dateTime));
   const [date, setDate] = useState(parseDateDate(props.dateTime));
   const [hour, setHour] = useState(parseTimeHour(props.dateTime));
-  const [minute, setMinute] = useState(
-    props.dateTime ? new Date(props.dateTime).getMinutes() : 1
-  );
+  const [minute, setMinute] = useState(props.dateTime ? new Date(props.dateTime).getMinutes() : 1);
   const [seconds, setSeconds] = useState(
     props.dateTime ? new Date(props.dateTime).getSeconds() : 1
   );
@@ -190,10 +183,7 @@ const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (
           </div>
 
           {!isValidDate(getDates()) ? (
-            <div
-              data-test="modal-edit-datetime-non-valid"
-              className="warning-box"
-            >
+            <div data-test="modal-edit-datetime-non-valid" className="warning-box">
               {MessageErrorDatetime}
             </div>
           ) : null}

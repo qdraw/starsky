@@ -17,7 +17,7 @@ namespace starsky.foundation.platform.Extensions
 		/// <typeparam name="TSource">output type</typeparam>
 		/// <typeparam name="TResult">and output it self</typeparam>
 		/// <returns>Task with output</returns>
-		public static async Task<IEnumerable<TResult>> ForEachAsync<TSource, TResult>(
+		public static async Task<IEnumerable<TResult>?> ForEachAsync<TSource, TResult>(
 			this IEnumerable<TSource> items,
 			Func<TSource, Task<TResult>> action,
 			int maxDegreesOfParallelism = 6)

@@ -8,10 +8,10 @@ namespace starsky.foundation.platform.JsonConverter
 	{
 		public override bool Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
-			var isString = reader.TokenType == JsonTokenType.String;
+			var isString = reader.TokenType is JsonTokenType.String or JsonTokenType.Null;
 			if ( !isString ) return reader.GetBoolean();
 			var stringValue = reader.GetString();
-			return stringValue!.ToLowerInvariant() == "true";
+			return stringValue?.Equals("true", StringComparison.InvariantCultureIgnoreCase) == true;
 		}
 
 		public override void Write(Utf8JsonWriter writer, bool value, JsonSerializerOptions options)

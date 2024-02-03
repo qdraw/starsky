@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
@@ -18,10 +19,11 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 		
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
+		[SuppressMessage("ReSharper", "ObjectCreationAsStatement")]
 		public void NullOptions()
 		{
-			var _ = new WebSocketConnectionsMiddleware(null,
-				null, new WebSocketConnectionsService(new FakeIWebLogger()));
+			new WebSocketConnectionsMiddleware(null!,
+				null!, new WebSocketConnectionsService(new FakeIWebLogger()));
 			// expect exception
 		}
 		
@@ -29,8 +31,8 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void NullService()
 		{
-			var _ = new WebSocketConnectionsMiddleware(null,
-				new WebSocketConnectionsOptions(), null);
+			_ = new WebSocketConnectionsMiddleware(null!,
+				new WebSocketConnectionsOptions(), null!);
 			// expect exception
 		}
 		
@@ -38,7 +40,7 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 		public async Task Invoke_BadRequest_NotAWebSocket()
 		{
 			var httpContext = new DefaultHttpContext();
-			var disabledWebSocketsMiddleware = new WebSocketConnectionsMiddleware(null,
+			var disabledWebSocketsMiddleware = new WebSocketConnectionsMiddleware(null!,
 				new WebSocketConnectionsOptions(), new WebSocketConnectionsService(new FakeIWebLogger()));
 			await disabledWebSocketsMiddleware.Invoke(httpContext);
 			Assert.AreEqual(400,httpContext.Response.StatusCode);
@@ -49,7 +51,7 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 		{
 			var httpContext = new FakeWebSocketHttpContext();
 
-			var disabledWebSocketsMiddleware = new WebSocketConnectionsMiddleware(null,
+			var disabledWebSocketsMiddleware = new WebSocketConnectionsMiddleware(null!,
 				new WebSocketConnectionsOptions(), new WebSocketConnectionsService(new FakeIWebLogger()));
 			await disabledWebSocketsMiddleware.Invoke(httpContext);
 
@@ -58,7 +60,7 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 			if ( !( socketManager?.FakeWebSocket is FakeWebSocket ) ) throw new  NullReferenceException(nameof(socketManager));
 			
 			Assert.AreEqual(WebSocketCloseStatus.NormalClosure,
-				( socketManager.FakeWebSocket as FakeWebSocket ).FakeCloseOutputAsync
+				( socketManager.FakeWebSocket as FakeWebSocket )!.FakeCloseOutputAsync
 				.LastOrDefault());
 		}
 		
@@ -67,22 +69,22 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 		{
 			var httpContext = new FakeWebSocketHttpContext(false);
 
-			var disabledWebSocketsMiddleware = new WebSocketConnectionsMiddleware(null,
+			var disabledWebSocketsMiddleware = new WebSocketConnectionsMiddleware(null!,
 				new WebSocketConnectionsOptions(), new WebSocketConnectionsService(new FakeIWebLogger()));
 			await disabledWebSocketsMiddleware.Invoke(httpContext);
 			
 			var socketManager = httpContext.WebSockets as FakeWebSocketManager;
 			Assert.AreEqual(WebSocketCloseStatus.PolicyViolation, 
-				(socketManager.FakeWebSocket as FakeWebSocket).FakeCloseOutputAsync.LastOrDefault());
+				(socketManager?.FakeWebSocket as FakeWebSocket)?.FakeCloseOutputAsync.LastOrDefault());
 		}
 
 		[TestMethod]
 		public async Task WebSocketConnectionValidateOrigin()
 		{
 			var httpContext = new DefaultHttpContext();
-			httpContext.Request.Headers["Origin"] = "fake";
+			httpContext.Request.Headers.Origin = "fake";
 			
-			var disabledWebSocketsMiddleware = new WebSocketConnectionsMiddleware(null,
+			var disabledWebSocketsMiddleware = new WebSocketConnectionsMiddleware(null!,
 				new WebSocketConnectionsOptions
 				{
 					AllowedOrigins = new HashSet<string>{"google"}

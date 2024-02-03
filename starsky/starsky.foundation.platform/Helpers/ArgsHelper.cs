@@ -58,22 +58,24 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="appSettings">appSettings</param>
 		/// <param name="console">Console log</param>
-		public ArgsHelper(AppSettings appSettings, IConsole console = null)
+		public ArgsHelper(AppSettings appSettings, IConsole? console = null)
 		{
 			_appSettings = appSettings;
-			_console = console;
-			if ( console == null ) _console = new ConsoleWrapper();
+			if ( console != null )
+			{
+				_console = console;
+			}
 		}
 		
 		/// <summary>
 		/// Console abstraction, use this instead of Console
 		/// </summary>
-		private readonly IConsole _console;
+		private readonly IConsole _console = new ConsoleWrapper();
 
 		/// <summary>
 		/// AppSettings
 		/// </summary>
-		private readonly AppSettings _appSettings;
+		private readonly AppSettings _appSettings = new AppSettings();
 		
 		/// <summary>
 		/// Show debug information
@@ -85,12 +87,15 @@ namespace starsky.foundation.platform.Helpers
 			var needDebug = false;
 			for (var arg = 0; arg < args.Count; arg++)
 			{
-				if ((args[arg].ToLower() == "--verbose" || args[arg].ToLower() == "-v") && (arg + 1) != args.Count 
+				if ((args[arg].Equals("--verbose", StringComparison.CurrentCultureIgnoreCase) 
+				     || args[arg].Equals("-v", StringComparison.CurrentCultureIgnoreCase) ) 
+				    && (arg + 1) != args.Count 
 					&& bool.TryParse(args[arg + 1], out var needDebugParsed))
 				{
 					needDebug = needDebugParsed;
 				}
-				if ((args[arg].ToLower() == "--verbose" || args[arg].ToLower() == "-v"))
+				if ((args[arg].Equals("--verbose", StringComparison.CurrentCultureIgnoreCase) || 
+				     args[arg].Equals("-v", StringComparison.CurrentCultureIgnoreCase) ) )
 				{
 					needDebug = true;
 				}
@@ -136,12 +141,12 @@ namespace starsky.foundation.platform.Helpers
 			var shortNameList = ShortNameList.ToArray();
 			var longNameList = LongNameList.ToArray();
 			var envNameList = EnvNameList.ToArray();
-			for (int i = 0; i < ShortNameList.Count(); i++)
+			for (var i = 0; i < ShortNameList.Count(); i++)
 			{
-				for (int arg = 0; arg < args.Count; arg++)
+				for (var arg = 0; arg < args.Count; arg++)
 				{
-					if ((args[arg].ToLower() == longNameList[i] || 
-						args[arg].ToLower() == shortNameList[i]) && (arg + 1) != args.Count)
+					if ((args[arg].Equals(longNameList[i], StringComparison.CurrentCultureIgnoreCase) || 
+						args[arg].Equals(shortNameList[i], StringComparison.CurrentCultureIgnoreCase) ) && (arg + 1) != args.Count)
 					{
 						Environment.SetEnvironmentVariable(envNameList[i],args[arg+1]);
 					}
@@ -164,7 +169,7 @@ namespace starsky.foundation.platform.Helpers
 				var envName = envUnderscoreName.Replace("app__", string.Empty);
 				if ( !string.IsNullOrEmpty(envValue) )
 				{
-					PropertyInfo propertyObject = _appSettings.GetType().GetProperty(envName);
+					var propertyObject = _appSettings.GetType().GetProperty(envName);
 					if(propertyObject == null) continue;
 					var type = propertyObject.PropertyType;
 					
@@ -191,14 +196,16 @@ namespace starsky.foundation.platform.Helpers
 		public static bool NeedHelp(IReadOnlyList<string> args)
 		{
 			var needHelp = false;
-			for (int arg = 0; arg < args.Count; arg++)
+			for (var arg = 0; arg < args.Count; arg++)
 			{
-				if ((args[arg].ToLower() == "--help" || args[arg].ToLower() == "-h") && (arg + 1) != args.Count 
+				if ((args[arg].Equals("--help", StringComparison.CurrentCultureIgnoreCase) || 
+				     args[arg].Equals("-h", StringComparison.CurrentCultureIgnoreCase) ) && (arg + 1) != args.Count 
 				    && bool.TryParse(args[arg + 1], out var needHelp2) && needHelp2)
 				{
 					needHelp = true;
 				}
-				if ((args[arg].ToLower() == "--help" || args[arg].ToLower() == "-h"))
+				if (args[arg].Equals("--help", StringComparison.CurrentCultureIgnoreCase) ||
+				    args[arg].Equals("-h", StringComparison.CurrentCultureIgnoreCase) )
 				{
 					needHelp = true;
 				}
@@ -215,7 +222,7 @@ namespace starsky.foundation.platform.Helpers
 		{
 			if ( _appSettings == null )
 			{
-				throw new FieldAccessException("use with _appsettings");
+				throw new FieldAccessException("use with _appSettings");
 			}
 			
 			_console.WriteLine("Starsky " + _appSettings.ApplicationType + " Cli ~ Help:");
@@ -368,11 +375,23 @@ namespace starsky.foundation.platform.Helpers
 			_console.WriteLine( $"5. {Path.Combine(_appSettings.BaseDirectoryProject,  "appsettings." + machineName + ".patch.json")}");
 			_console.WriteLine( $"6. Environment variable: app__appsettingspath: {Environment.GetEnvironmentVariable("app__appsettingspath")}");
 			_console.WriteLine("7. Specific environment variables for example app__storageFolder");
-			
+
+			AppSpecificHelp();
+
+			ShowVersions();
+		}
+
+		private void AppSpecificHelp()
+		{
 			switch ( _appSettings.ApplicationType )
 			{
 				case AppSettings.StarskyAppType.WebHtml: 
 					_console.WriteLine($"Config for {_appSettings.ApplicationType}");
+					if ( _appSettings.PublishProfiles == null )
+					{
+						break;
+					}
+					
 					foreach ( var publishProfiles in _appSettings.PublishProfiles )
 					{
 						_console.WriteLine($"ID: {publishProfiles.Key}" );
@@ -393,8 +412,6 @@ namespace starsky.foundation.platform.Helpers
 					}
 					break;
 			}
-
-			ShowVersions();
 		}
 
 		/// <summary>
@@ -423,7 +440,8 @@ namespace starsky.foundation.platform.Helpers
 			
 			for (var arg = 0; arg < args.Count; arg++)
 			{
-				if ((args[arg].ToLower() == "--index" || args[arg].ToLower() == "-i") 
+				if ((args[arg].Equals("--index", StringComparison.CurrentCultureIgnoreCase) || 
+				     args[arg].Equals("-i", StringComparison.CurrentCultureIgnoreCase) ) 
 				    && (arg + 1) != args.Count 
 				    && bool.TryParse(args[arg + 1], out var isIndexMode2))
 				{
@@ -472,9 +490,10 @@ namespace starsky.foundation.platform.Helpers
 		private static string GetUserInputPathFromArg(IReadOnlyList<string> args)
 		{
 			var path = string.Empty;
-			for (int arg = 0; arg < args.Count; arg++)
+			for (var arg = 0; arg < args.Count; arg++)
 			{
-				if ((args[arg].ToLower() == "--path" || args[arg].ToLower() == "-p") && (arg + 1) != args.Count )
+				if ((args[arg].Equals("--path", StringComparison.CurrentCultureIgnoreCase) || 
+				     args[arg].Equals("-p", StringComparison.CurrentCultureIgnoreCase) ) && (arg + 1) != args.Count )
 				{
 					path = args[arg + 1];
 				}
@@ -492,7 +511,8 @@ namespace starsky.foundation.platform.Helpers
 			var path = string.Empty;
 			for (var arg = 0; arg < args.Count; arg++)
 			{
-				if ((args[arg].ToLower() == "--password" || args[arg].ToLower() == "-p") && (arg + 1) != args.Count )
+				if ((args[arg].Equals("--password", StringComparison.CurrentCultureIgnoreCase) || 
+				     args[arg].Equals("-p", StringComparison.CurrentCultureIgnoreCase) ) && (arg + 1) != args.Count )
 				{
 					path = args[arg + 1];
 				}
@@ -510,7 +530,7 @@ namespace starsky.foundation.platform.Helpers
 			var outputMode = ConsoleOutputMode.Default;
 			for (var arg = 0; arg < args.Count; arg++)
 			{
-				if ( ( args[arg].ToLower() != "--output" ) ||
+				if ( ( !args[arg].Equals("--output", StringComparison.CurrentCultureIgnoreCase) ) ||
 				     ( arg + 1 ) == args.Count ) continue;
 				var outputModeItem = args[arg + 1];
 				Enum.TryParse(outputModeItem, true, out outputMode);
@@ -528,7 +548,8 @@ namespace starsky.foundation.platform.Helpers
 			var name = string.Empty;
 			for (var arg = 0; arg < args.Count; arg++)
 			{
-				if ((args[arg].ToLower() == "--name" || args[arg].ToLower() == "-n") && (arg + 1) != args.Count )
+				if ((args[arg].Equals("--name", StringComparison.CurrentCultureIgnoreCase) || 
+				     args[arg].Equals("-n", StringComparison.CurrentCultureIgnoreCase) ) && (arg + 1) != args.Count )
 				{
 					name = args[arg + 1];
 				}
@@ -579,7 +600,8 @@ namespace starsky.foundation.platform.Helpers
 			
 			for (var arg = 0; arg < args.Count; arg++)
 			{
-				if ((args[arg].ToLower() == "--subpath" || args[arg].ToLower() == "-s") && (arg + 1) != args.Count)
+				if ((args[arg].Equals("--subpath", StringComparison.CurrentCultureIgnoreCase) || 
+				     args[arg].Equals("-s", StringComparison.CurrentCultureIgnoreCase) ) && (arg + 1) != args.Count)
 				{
 					subPath = args[arg + 1];
 				}
@@ -600,8 +622,8 @@ namespace starsky.foundation.platform.Helpers
 			
 			for (int arg = 0; arg < args.Count; arg++)
 			{
-				if ((args[arg].ToLowerInvariant() == "--subpathrelative" || 
-					args[arg].ToLowerInvariant() == "-g") && (arg + 1) != args.Count)
+				if ((args[arg].Equals("--subpathrelative", StringComparison.InvariantCultureIgnoreCase) || 
+					args[arg].Equals("-g", StringComparison.InvariantCultureIgnoreCase) ) && (arg + 1) != args.Count)
 				{
 					subPathRelative = args[arg + 1];
 				}
@@ -627,7 +649,8 @@ namespace starsky.foundation.platform.Helpers
 		public static bool IsSubPathOrPath(IReadOnlyList<string> args)
 		{
 			// To use only with -p or --path > current directory
-			if ( args.Any(arg => (arg.ToLower() == "--path" || arg.ToLower() == "-p")) )
+			if ( args.Any(arg => (arg.Equals("--path", StringComparison.CurrentCultureIgnoreCase) || 
+			                      arg.Equals("-p", StringComparison.CurrentCultureIgnoreCase) )) )
 			{
 				return false;
 			}
@@ -635,7 +658,8 @@ namespace starsky.foundation.platform.Helpers
 			// Detect if a input is a fullPath or a subPath.
 			for (int arg = 0; arg < args.Count; arg++)
 			{
-				if ((args[arg].ToLower() == "--subpath" || args[arg].ToLower() == "-s") && (arg + 1) != args.Count)
+				if ((args[arg].Equals("--subpath", StringComparison.CurrentCultureIgnoreCase) || 
+				     args[arg].Equals("-s", StringComparison.CurrentCultureIgnoreCase) ) && (arg + 1) != args.Count)
 				{
 					return true;
 				}
@@ -665,7 +689,8 @@ namespace starsky.foundation.platform.Helpers
 			
 			for (var arg = 0; arg < args.Count; arg++)
 			{
-				if ((args[arg].ToLower() == "--thumbnail" || args[arg].ToLower() == "-t") 
+				if ((args[arg].Equals("--thumbnail", StringComparison.CurrentCultureIgnoreCase) ||
+				     args[arg].Equals("-t", StringComparison.CurrentCultureIgnoreCase) ) 
 				    && (arg + 1) != args.Count && bool.TryParse(args[arg + 1], out var isThumbnail2))
 				{
 					isThumbnail = isThumbnail2;
@@ -684,9 +709,10 @@ namespace starsky.foundation.platform.Helpers
 		{
 			var isOrphanFolderCheck = false;
 			
-			for (int arg = 0; arg < args.Count; arg++)
+			for (var arg = 0; arg < args.Count; arg++)
 			{
-				if ((args[arg].ToLower() == "--orphanfolder" || args[arg].ToLower() == "-o") 
+				if ((args[arg].Equals("--orphanfolder", StringComparison.CurrentCultureIgnoreCase) ||
+				     args[arg].Equals("-o", StringComparison.CurrentCultureIgnoreCase) ) 
 				    && (arg + 1) != args.Count && bool.TryParse(args[arg + 1], out var isOrphanFolderCheck2))
 				{
 					isOrphanFolderCheck = isOrphanFolderCheck2;
@@ -706,17 +732,18 @@ namespace starsky.foundation.platform.Helpers
 		{
 			var getMove = false;
 			
-			for (int arg = 0; arg < args.Count; arg++)
+			for (var arg = 0; arg < args.Count; arg++)
 			{
-				if ((args[arg].ToLower() == "--move" 
-					|| args[arg].ToLower() == "-m") 
+				if ((args[arg].Equals("--move", StringComparison.CurrentCultureIgnoreCase)
+					|| args[arg].Equals("-m", StringComparison.CurrentCultureIgnoreCase) ) 
 					&& (arg + 1) != args.Count && bool.TryParse(args[arg + 1], out var getMove2))
 				{
 					getMove = getMove2;
 					continue;
 				}
 				
-				if ((args[arg].ToLower() == "--move" || args[arg].ToLower() == "-m"))
+				if ((args[arg].Equals("--move", StringComparison.CurrentCultureIgnoreCase) ||
+				     args[arg].Equals("-m", StringComparison.CurrentCultureIgnoreCase) ) )
 				{
 					getMove = true;
 				}
@@ -736,15 +763,26 @@ namespace starsky.foundation.platform.Helpers
 			
 			for (int arg = 0; arg < args.Count; arg++)
 			{
-				if ((args[arg].ToLower() == "--all" || args[arg].ToLower() == "-a"))
+				if ((args[arg].Equals("--all", StringComparison.CurrentCultureIgnoreCase) || 
+				     args[arg].Equals("-a", StringComparison.CurrentCultureIgnoreCase) ) )
 				{
 					getAll = true;
 				}
-				
-				if ( ( args[arg].ToLower() != "--all" && args[arg].ToLower() != "-a" ) ||
-					( arg + 1 ) == args.Count ) continue;
-				
-				if (args[arg + 1].ToLower() == "false") getAll = false;
+
+				if ( ( !args[arg].Equals("--all",
+					       StringComparison.CurrentCultureIgnoreCase) &&
+				       !args[arg].Equals("-a",
+					       StringComparison.CurrentCultureIgnoreCase) ) ||
+				     ( arg + 1 ) == args.Count )
+				{
+					continue;
+				}
+
+				if ( args[arg + 1].Equals("false",
+					    StringComparison.CurrentCultureIgnoreCase) )
+				{
+					getAll = false;
+				}
 			}
 			return getAll;
 		}
@@ -760,7 +798,8 @@ namespace starsky.foundation.platform.Helpers
 			
 			foreach ( var arg in args )
 			{
-				if ((arg.ToLower() == "--recursive" || arg.ToLower() == "-r"))
+				if ((arg.Equals("--recursive", StringComparison.CurrentCultureIgnoreCase) || 
+				     arg.Equals("-r", StringComparison.CurrentCultureIgnoreCase) ) )
 				{
 					needRecursive = true;
 				}
@@ -780,7 +819,8 @@ namespace starsky.foundation.platform.Helpers
 			
 			foreach ( var arg in args )
 			{
-				if ((arg.ToLower() == "--clean" || arg.ToLower() == "-x"))
+				if ((arg.Equals("--clean", StringComparison.CurrentCultureIgnoreCase) || 
+				     arg.Equals("-x", StringComparison.CurrentCultureIgnoreCase) ) )
 				{
 					needCacheCleanup = true;
 				}
@@ -800,7 +840,13 @@ namespace starsky.foundation.platform.Helpers
 			
 			for (var arg = 0; arg < args.Count; arg++)
 			{
-				if ( args[arg].ToLower() != "--colorclass" || ( arg + 1 ) == args.Count ) continue;
+				if ( !args[arg].Equals("--colorclass",
+					     StringComparison.CurrentCultureIgnoreCase) ||
+				     ( arg + 1 ) == args.Count )
+				{
+					continue;
+				}
+				
 				var colorClassString = args[arg + 1];
 				var color =  ColorClassParser.GetColorClass(colorClassString);
 				colorClass = (int) color;

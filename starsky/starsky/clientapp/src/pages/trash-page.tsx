@@ -19,13 +19,7 @@ export const TrashPage: FunctionComponent = () => {
   }
   if (!searchList.archive) return <>Something went wrong</>;
   if (searchList.pageType === PageType.Loading)
-    return (
-      <Preloader
-        isTransition={false}
-        isOverlay={true}
-        isWhite={false}
-      ></Preloader>
-    );
+    return <Preloader isTransition={false} isOverlay={true} isWhite={false}></Preloader>;
 
   return <ArchiveContextWrapper {...searchList.archive} />;
 };

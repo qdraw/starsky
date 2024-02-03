@@ -46,16 +46,16 @@ describe("UseFetch", () => {
     await fetchContent("test", "get", true, controller, setDataSpy);
 
     // fetchSpy
-    expect(fetchSpy).toBeCalled();
-    expect(fetchSpy).toBeCalledWith("test", {
+    expect(fetchSpy).toHaveBeenCalled();
+    expect(fetchSpy).toHaveBeenCalledWith("test", {
       credentials: "include",
       method: "get",
       signal: controller.signal
     });
 
     // setData
-    expect(setDataSpy).toBeCalled();
-    expect(setDataSpy).toBeCalledWith({
+    expect(setDataSpy).toHaveBeenCalled();
+    expect(setDataSpy).toHaveBeenCalledWith({
       data: { fileIndexItems: [], pageType: "Archive" },
       statusCode: 200
     });
@@ -73,14 +73,14 @@ describe("UseFetch error", () => {
     await fetchContent("test", "get", true, controller, setDataSpy);
 
     // fetchSpy
-    expect(fetchSpy).toBeCalled();
-    expect(fetchSpy).toBeCalledWith("test", {
+    expect(fetchSpy).toHaveBeenCalled();
+    expect(fetchSpy).toHaveBeenCalledWith("test", {
       credentials: "include",
       method: "get",
       signal: controller.signal
     });
 
-    expect(setDataSpy).toBeCalledTimes(0);
+    expect(setDataSpy).toHaveBeenCalledTimes(0);
   });
 
   it("non aborted", async () => {
@@ -93,16 +93,16 @@ describe("UseFetch error", () => {
     await fetchContent("test", "get", true, controller, setDataSpy);
 
     // fetchSpy
-    expect(fetchSpy).toBeCalled();
-    expect(fetchSpy).toBeCalledWith("test", {
+    expect(fetchSpy).toHaveBeenCalled();
+    expect(fetchSpy).toHaveBeenCalledWith("test", {
       credentials: "include",
       method: "get",
       signal: controller.signal
     });
 
     // setData
-    expect(setDataSpy).toBeCalled();
-    expect(setDataSpy).toBeCalledWith({
+    expect(setDataSpy).toHaveBeenCalled();
+    expect(setDataSpy).toHaveBeenCalledWith({
       data: null,
       statusCode: 999
     });

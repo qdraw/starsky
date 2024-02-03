@@ -36,8 +36,12 @@ namespace starsky.feature.import.Models
 	        
 	        // For the index Mode, false is always copy, true is check if exist in db, default true
 	        IndexMode = true;
-	        if(request.Headers["IndexMode"].ToString().ToLower() == "false")
+	        
+	        if ( request.Headers["IndexMode"].ToString().Equals("false",
+		            System.StringComparison.CurrentCultureIgnoreCase) )
+	        {
 		        IndexMode = false;
+	        }
 	        
         }
 

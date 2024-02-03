@@ -3,13 +3,7 @@ import { MenuOptionSelectionAll } from "./menu-option-selection-all";
 
 describe("MenuOptionSelectionAll", () => {
   it("renders", () => {
-    render(
-      <MenuOptionSelectionAll
-        select={["test"]}
-        state={{} as any}
-        allSelection={() => {}}
-      />
-    );
+    render(<MenuOptionSelectionAll select={["test"]} state={{} as any} allSelection={() => {}} />);
   });
 
   it("renders 2", () => {
@@ -47,7 +41,7 @@ describe("MenuOptionSelectionAll", () => {
       key: "Tab"
     });
 
-    expect(allSelection).toBeCalledTimes(0);
+    expect(allSelection).toHaveBeenCalledTimes(0);
   });
 
   it("keyDown enter continue", () => {
@@ -68,7 +62,7 @@ describe("MenuOptionSelectionAll", () => {
       key: "Enter"
     });
 
-    expect(allSelection).toBeCalledTimes(1);
+    expect(allSelection).toHaveBeenCalledTimes(1);
   });
 
   it("click continue", () => {
@@ -88,6 +82,6 @@ describe("MenuOptionSelectionAll", () => {
     const item = component.queryByTestId("select-all") as HTMLElement;
     item.click();
 
-    expect(allSelection).toBeCalledTimes(1);
+    expect(allSelection).toHaveBeenCalledTimes(1);
   });
 });

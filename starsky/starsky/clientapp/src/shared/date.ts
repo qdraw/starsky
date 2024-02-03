@@ -25,10 +25,7 @@ const leftPad = (n: number) => {
  * @param date a Javascript Datetime stamp (unix*1000)
  * @param now Javascript now
  */
-const DifferenceInDate = (
-  date: number,
-  now: number = new Date().valueOf()
-): number => {
+const DifferenceInDate = (date: number, now: number = new Date().valueOf()): number => {
   return (now - date) / 60000;
 };
 
@@ -78,18 +75,12 @@ const parseRelativeDate = (
  * @param dateTime 2018-09-11T11:23:19 or 2018-09-11T11:23:19Z
  * @param locate Language
  */
-const parseDate = (
-  dateTime: string | undefined,
-  locate: SupportedLanguages
-): string => {
+const parseDate = (dateTime: string | undefined, locate: SupportedLanguages): string => {
   if (!dateTime) return "";
   // UTC DateTime already ends with Z
-  const dateTimeObject = new Date(
-    !dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime
-  );
+  const dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
   // We prefer British English, uses day-month-year order
-  const locateString =
-    locate === SupportedLanguages.en ? "en-GB" : locate.toString();
+  const locateString = locate === SupportedLanguages.en ? "en-GB" : locate.toString();
   if (dateTime.endsWith("Z")) {
     return dateTimeObject.toLocaleDateString(locateString, {
       weekday: "long",
@@ -116,9 +107,7 @@ const parseDateDate = (dateTime: string | undefined): number => {
   if (!isValidDate(dateTime) || !dateTime) {
     return 1;
   }
-  const dateTimeObject = new Date(
-    !dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime
-  );
+  const dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
   // toLocaleDateString assumes that the input is UTC, which is usually not the case
   const numberValue = dateTimeObject.toLocaleDateString([], {
     timeZone: !dateTime.endsWith("Z") ? "UTC" : undefined,
@@ -135,9 +124,7 @@ const parseDateYear = (dateTime: string | undefined): number => {
   if (!isValidDate(dateTime) || !dateTime) {
     return 1;
   }
-  const dateTimeObject = new Date(
-    !dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime
-  );
+  const dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
   // toLocaleDateString assumes that the input is UTC, which is usually not the case
   const numberValue = dateTimeObject.toLocaleDateString([], {
     timeZone: !dateTime.endsWith("Z") ? "UTC" : undefined,
@@ -154,9 +141,7 @@ const parseDateMonth = (dateTime: string | undefined): number => {
   if (!isValidDate(dateTime) || !dateTime) {
     return 1;
   }
-  const dateTimeObject = new Date(
-    !dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime
-  );
+  const dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
   // toLocaleDateString assumes that the input is UTC, which is usually not the case
   const numberValue = dateTimeObject.toLocaleDateString([], {
     timeZone: !dateTime.endsWith("Z") ? "UTC" : undefined,
@@ -173,9 +158,7 @@ const parseTime = (dateTime: string | undefined): string => {
   if (!isValidDate(dateTime) || !dateTime) {
     return "";
   }
-  const dateTimeObject = new Date(
-    !dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime
-  );
+  const dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
 
   // toLocaleDateString assumes that the input is UTC, which is usually not the case
   return dateTimeObject.toLocaleTimeString([], {
@@ -195,9 +178,7 @@ const parseTimeHour = (dateTime: string | undefined): number => {
   if (!isValidDate(dateTime) || !dateTime) {
     return 1;
   }
-  const dateTimeObject = new Date(
-    !dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime
-  );
+  const dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
   // toLocaleDateString assumes that the input is UTC, which is usually not the case
   const numberValue = dateTimeObject.toLocaleTimeString([], {
     timeZone: !dateTime.endsWith("Z") ? "UTC" : undefined,
@@ -211,20 +192,18 @@ const parseTimeHour = (dateTime: string | undefined): number => {
  * Convert seconds to hours
  * @param seconds number of seconds
  */
-const secondsToHours = (seconds: number): string => {
+const SecondsToHours = (seconds: number): string => {
   if (isNaN(seconds)) return "0:00";
   const time = new Date(0);
   time.setUTCSeconds(seconds);
-  if (time.getUTCHours() === 0)
-    return `${time.getUTCMinutes()}:${leftPad(time.getUTCSeconds())}`;
-  return `${time.getUTCHours()}:${leftPad(time.getUTCMinutes())}:${leftPad(
-    time.getUTCSeconds()
-  )}`;
+  if (time.getUTCHours() === 0) return `${time.getUTCMinutes()}:${leftPad(time.getUTCSeconds())}`;
+  return `${time.getUTCHours()}:${leftPad(time.getUTCMinutes())}:${leftPad(time.getUTCSeconds())}`;
 };
 
 export {
   DifferenceInDate,
   IsEditedNow,
+  SecondsToHours,
   isValidDate,
   leftPad,
   parseDate,
@@ -233,6 +212,5 @@ export {
   parseDateYear,
   parseRelativeDate,
   parseTime,
-  parseTimeHour,
-  secondsToHours
+  parseTimeHour
 };

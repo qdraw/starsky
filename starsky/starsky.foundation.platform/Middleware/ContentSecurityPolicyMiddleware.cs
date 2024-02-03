@@ -20,7 +20,7 @@ namespace starsky.foundation.platform.Middleware
 		{
 			// For Error pages (for example 404) this middleware will be executed double,
 			// so Adding a Header that already exist give an Error 500			
-			if (string.IsNullOrEmpty(httpContext.Response.Headers["Content-Security-Policy"]) )
+			if (string.IsNullOrEmpty(httpContext.Response.Headers.ContentSecurityPolicy) )
 			{
 				// CSP 2.0 nonce // used in ApplicationInsightsJsHelper
 				var nonce = Guid.NewGuid().ToString("N");
@@ -62,7 +62,7 @@ namespace starsky.foundation.platform.Middleware
 								                
 				// When change also update in Electron
 				httpContext.Response.Headers
-					.Add("Content-Security-Policy",cspHeader);
+					.Append("Content-Security-Policy",cspHeader);
 			}
 
 			// @see: https://www.permissionspolicy.com/
@@ -70,7 +70,7 @@ namespace starsky.foundation.platform.Middleware
 				    httpContext.Response.Headers["Permissions-Policy"]) )
 			{
 				httpContext.Response.Headers
-					.Add("Permissions-Policy", "autoplay=(self), " +
+					.Append("Permissions-Policy", "autoplay=(self), " +
 					                           "fullscreen=(self), " +
 					                           "geolocation=(self), " +
 					                           "picture-in-picture=(self), " +
@@ -82,25 +82,25 @@ namespace starsky.foundation.platform.Middleware
 			if (string.IsNullOrEmpty(httpContext.Response.Headers["Referrer-Policy"]) )
 			{
 				httpContext.Response.Headers
-					.Add("Referrer-Policy", "no-referrer");
+					.Append("Referrer-Policy", "no-referrer");
 			}
 			
-			if (string.IsNullOrEmpty(httpContext.Response.Headers["X-Frame-Options"]) )
+			if (string.IsNullOrEmpty(httpContext.Response.Headers.XFrameOptions) )
 			{
 				httpContext.Response.Headers
-					.Add("X-Frame-Options", "DENY");
+					.Append("X-Frame-Options", "DENY");
 			}
 			
-			if (string.IsNullOrEmpty(httpContext.Response.Headers["X-Xss-Protection"]) )
+			if (string.IsNullOrEmpty(httpContext.Response.Headers.XXSSProtection) )
 			{
 				httpContext.Response.Headers
-					.Add("X-Xss-Protection", "1; mode=block");
+					.Append("X-Xss-Protection", "1; mode=block");
 			}
 			
-			if (string.IsNullOrEmpty(httpContext.Response.Headers["X-Content-Type-Options"]) )
+			if (string.IsNullOrEmpty(httpContext.Response.Headers.XContentTypeOptions) )
 			{
 				httpContext.Response.Headers
-					.Add("X-Content-Type-Options", "nosniff");
+					.Append("X-Content-Type-Options", "nosniff");
 			}
 				
 			await _next(httpContext);

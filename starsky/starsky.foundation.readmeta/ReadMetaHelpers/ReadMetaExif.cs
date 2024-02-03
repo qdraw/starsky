@@ -30,7 +30,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	public sealed class ReadMetaExif
 	{
 		private readonly IStorage _iStorage;
-		private readonly AppSettings _appSettings;
+		private readonly AppSettings? _appSettings;
 		private readonly IWebLogger _logger;
 
 		public ReadMetaExif(IStorage iStorage, AppSettings appSettings, IWebLogger logger)
@@ -40,7 +40,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			_logger = logger;
 		}
 		public FileIndexItem ReadExifFromFile(string subPath, 
-			FileIndexItem existingFileIndexItem = null) // use null to create an object
+			FileIndexItem? existingFileIndexItem = null) // use null to create an object
         {
             List<Directory> allExifItems;
 
@@ -61,7 +61,10 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        
 	        using ( var stream = _iStorage.ReadStream(subPath) )
 	        {
-		        if ( stream == Stream.Null ) return defaultErrorResult;
+		        if ( stream == Stream.Null )
+		        {
+			        return defaultErrorResult;
+		        }
 				try
 				{
 					allExifItems = ImageMetadataReader.ReadMetadata(stream).ToList();
@@ -70,7 +73,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 				catch (Exception)
 				{
 					// ImageProcessing or System.Exception: Handler moved stream beyond end of atom
-					stream.Dispose();
+					stream.Close();
 					return defaultErrorResult;
 				}
 	        }
@@ -78,7 +81,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             return ParseExifDirectory(allExifItems, existingFileIndexItem);
         }
 
-        private FileIndexItem ParseExifDirectory(List<Directory> allExifItems, FileIndexItem item)
+        internal FileIndexItem ParseExifDirectory(List<Directory> allExifItems, FileIndexItem? item)
         {
             // Used to overwrite feature
             if (item == null)
@@ -395,6 +398,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			// [Exif IFD0] Software = 10.3.2
 			var exifIfd0Directory = allExifItems.OfType<ExifIfd0Directory>().FirstOrDefault();
 			var tagSoftware = exifIfd0Directory?.GetDescription(ExifDirectoryBase.TagSoftware);
+			tagSoftware ??= string.Empty;
 			return tagSoftware;
 		}
 
@@ -429,7 +433,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	    {
 		    var exifIfd0Directory = allExifItems.OfType<ExifSubIfdDirectory>().FirstOrDefault();
 		    var lensModel = exifIfd0Directory?.GetDescription(ExifDirectoryBase.TagLensModel);
-
+		    
+		    lensModel ??= string.Empty;
 		    return lensModel == "----" ? string.Empty : lensModel;
 	    }
 
@@ -464,7 +469,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	    /// </summary>
 	    /// <param name="exifItem">item</param>
 	    /// <returns></returns>
-	    private static string GetXmpDataSubject(Directory exifItem)
+	    private static string GetXmpDataSubject(Directory? exifItem)
 	    {
 		    if ( !( exifItem is XmpDirectory xmpDirectory ) || xmpDirectory.XmpMeta == null )
 			    return string.Empty;
@@ -478,15 +483,17 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		    return HashSetHelper.HashSetToString(tagsList);
 	    }
 
-	    private static string GetXmpData(Directory exifItem, string propertyPath)
+	    private static string GetXmpData(Directory? exifItem, string propertyPath)
 	    {
 		    // for xmp notes
 		    if ( exifItem is not XmpDirectory xmpDirectory || xmpDirectory.XmpMeta == null )
 			    return string.Empty;
 		    
-		    return ( from property in xmpDirectory.XmpMeta.
+		    var result = ( from property in xmpDirectory.XmpMeta.
 				    Properties.Where(p => !string.IsNullOrEmpty(p.Value)) 
 			    where property.Path == propertyPath select property.Value ).FirstOrDefault();
+		    result ??= string.Empty;
+		    return result;
 	    }
 
         public static string GetObjectName (List<Directory> allExifItems)
@@ -543,7 +550,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             var ratingCounts = exifItem?.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name.Contains("0x02dd"));
             if (ratingCounts >= 1)
             {
-                var prefsTag = exifItem.Tags.FirstOrDefault(p => 
+                var prefsTag = exifItem!.Tags.FirstOrDefault(p => 
 	                p.DirectoryName == "IPTC" && p.Name.Contains("0x02dd"))?.Description;
     
                 // Results for example
@@ -571,7 +578,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         /// <param name="allExifItems">Directory</param>
         /// <param name="cameraMakeModel">cameraMakeModel</param>
         /// <returns>Datetime</returns>
-        internal DateTime? GetExifDateTime(List<Directory> allExifItems, CameraMakeModel cameraMakeModel = null)
+        internal DateTime? GetExifDateTime(List<Directory> allExifItems, CameraMakeModel? cameraMakeModel = null)
         {
 	        var provider = CultureInfo.InvariantCulture;
 
@@ -581,7 +588,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		        return itemDateTimeSubIfd;
 	        }
 			
-	        var itemDateTimeQuickTime = ParseQuickTimeDateTime(cameraMakeModel, allExifItems, provider);
+	        var itemDateTimeQuickTime = ParseQuickTimeDateTime(cameraMakeModel, allExifItems);
 
 	        // to avoid errors scanning gpx files (with this it would be Local)
 
@@ -635,12 +642,18 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        return new DateTime(0, DateTimeKind.Utc);
         }
 
-        internal DateTime ParseQuickTimeDateTime(CameraMakeModel cameraMakeModel,
-	        IEnumerable<Directory> allExifItems, IFormatProvider provider)
+        internal DateTime ParseQuickTimeDateTime(CameraMakeModel? cameraMakeModel,
+	        IEnumerable<Directory> allExifItems)
         {
 	        if ( _appSettings == null ) Console.WriteLine("[ParseQuickTimeDateTime] app settings is null");
-	        if ( cameraMakeModel == null ) cameraMakeModel = new CameraMakeModel();
-	        var useUseLocalTime = _appSettings?.VideoUseLocalTime?.Exists(p =>
+	        cameraMakeModel ??= new CameraMakeModel();
+
+	        if ( _appSettings is { VideoUseLocalTime: null } )
+	        {
+		        _appSettings.VideoUseLocalTime = new List<CameraMakeModel>();
+	        }
+	        
+	        var useUseLocalTime = _appSettings?.VideoUseLocalTime.Exists(p =>
 		        string.Equals(p.Make, cameraMakeModel.Make, StringComparison.InvariantCultureIgnoreCase) && (
 			        string.Equals(p.Model, cameraMakeModel.Model, StringComparison.InvariantCultureIgnoreCase) ||
 			        string.IsNullOrEmpty(p.Model) ));
@@ -963,6 +976,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             
             var locationCity = iptcDirectoryDirectory?.Tags
 	            .FirstOrDefault(p => p.Name == iptcName)?.Description;
+            locationCity ??= string.Empty;
             return locationCity;
         }
 
@@ -1086,7 +1100,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			    {
 				    // src: https://github.com/exiftool/exiftool/blob/
 				    // 6b994069d52302062b9d7a462dc27082c4196d95/lib/Image/ExifTool/Canon.pm#L8882
-				    var autoIso = canonMakerNoteDirectory.Tags.FirstOrDefault(p => 
+				    var autoIso = canonMakerNoteDirectory!.Tags.FirstOrDefault(p => 
 					    p.Name == "Auto ISO")?.Description;
 				    var baseIso = canonMakerNoteDirectory.Tags.FirstOrDefault(p => 
 					    p.Name == "Base ISO")?.Description;

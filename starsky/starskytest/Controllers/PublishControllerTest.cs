@@ -39,7 +39,7 @@ namespace starskytest.Controllers
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 			// random config
 			var createAnImage = new CreateAnImage();
-			var dict = new Dictionary<string, string>
+			var dict = new Dictionary<string, string?>
 			{
 				{"App:StorageFolder", createAnImage.BasePath},
 				{"App:ThumbnailTempFolder", createAnImage.BasePath},
@@ -71,7 +71,7 @@ namespace starskytest.Controllers
 		public void PublishGet_List()
 		{
 			var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
-				new FakeIWebHtmlPublishService(), new FakeIMetaInfo(null), new FakeSelectorStorage(),
+				new FakeIWebHtmlPublishService(), new FakeIMetaInfo(null!), new FakeSelectorStorage(),
 				_bgTaskQueue, new FakeIWebLogger());
 			
 			var actionResult = controller.PublishGet() as JsonResult;

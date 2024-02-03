@@ -14,7 +14,6 @@ using starsky.Controllers;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.feature.metaupdate.Services;
 using starsky.foundation.database.Data;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Extensions;
@@ -38,12 +37,12 @@ namespace starskytest.Controllers
 	[TestClass]
 	public sealed class MetaReplaceControllerTest
 	{
-		private readonly IQuery _query;
+		private readonly Query _query;
 		private readonly AppSettings _appSettings;
 		private readonly CreateAnImage _createAnImage;
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 		private readonly IStorage _iStorage;
-		private static ServiceProvider _serviceProvider;
+		private static ServiceProvider? _serviceProvider;
 
 		public MetaReplaceControllerTest()
 		{
@@ -68,7 +67,7 @@ namespace starskytest.Controllers
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 			// random config
 			_createAnImage = new CreateAnImage();
-			var dict = new Dictionary<string, string>
+			var dict = new Dictionary<string, string?>
 			{
 				{ "App:StorageFolder", _createAnImage.BasePath },
 				{ "App:ThumbnailTempFolder",_createAnImage.BasePath },
@@ -254,7 +253,7 @@ namespace starskytest.Controllers
 			await InsertSearchData();
 			var serviceScopeFactory = NewScopeFactory();
 			
-			var fakeIMetaUpdateService =  _serviceProvider.GetService<IMetaUpdateService>() as
+			var fakeIMetaUpdateService =  _serviceProvider?.GetService<IMetaUpdateService>() as
 				FakeIMetaUpdateService;
 			Assert.IsNotNull(fakeIMetaUpdateService);
 			fakeIMetaUpdateService.ChangedFileIndexItemNameContent =

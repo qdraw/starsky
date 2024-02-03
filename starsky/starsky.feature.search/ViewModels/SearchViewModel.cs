@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
@@ -394,7 +393,7 @@ namespace starsky.feature.search.ViewModels
 
 			// fallback situation
 			// search on for example: '%'
-			if ( !SearchFor.Any() ) 
+			if ( SearchFor.Count == 0 ) 
 			{
 				SetAddSearchFor(defaultQuery);
 				SetAddSearchInStringType("tags");
@@ -548,14 +547,16 @@ namespace starsky.feature.search.ViewModels
 						p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 						     && ! // not
 							     p.GetType().GetProperty(property.Name)!.GetValue(p, null)?
-								     .ToString()?.ToLowerInvariant().Contains(searchForQuery)  == true
+								     .ToString()?.ToLowerInvariant().Contains(searchForQuery, 
+									     StringComparison.InvariantCultureIgnoreCase) == true
 					).ToList();
 					break;
 				default:
 					model.FileIndexItems = model.FileIndexItems?
 						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 						            && p.GetType().GetProperty(property.Name)!.GetValue(p, null)?
-							            .ToString()?.ToLowerInvariant().Contains(searchForQuery) == true  
+							            .ToString()?.ToLowerInvariant().Contains(searchForQuery, 
+								            StringComparison.InvariantCultureIgnoreCase) == true  
 						).ToList();
 					break;
 			}

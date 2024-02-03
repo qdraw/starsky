@@ -21,11 +21,10 @@ namespace starsky.foundation.webtelemetry.Helpers
 				logging.ClearProviders();
 				logging.AddConsole();
 
-				if ( !string.IsNullOrEmpty(appSettings.OpenTelemetry.LogsEndpoint) )
+				if ( !string.IsNullOrEmpty(appSettings.OpenTelemetry?.LogsEndpoint) )
 				{
 					logging.AddOpenTelemetry(builder => 
 						builder.AddOtlpExporter(
-						"logging",
 						options =>
 						{
 							options.Protocol = OtlpExportProtocol.HttpProtobuf;

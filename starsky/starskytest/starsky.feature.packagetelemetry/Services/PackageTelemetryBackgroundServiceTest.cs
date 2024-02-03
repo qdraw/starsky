@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,8 +22,8 @@ namespace starskytest.starsky.feature.packagetelemetry.Services {
 	{
 		public static async Task InvokeAsync(this MethodInfo @this, object obj, params object[] parameters)
 		{
-			dynamic awaitable = @this.Invoke(obj, parameters);
-			await awaitable!;
+			dynamic awaitable = @this.Invoke(obj, parameters)!;
+			await awaitable;
 			awaitable.GetAwaiter();
 		}
 	}
@@ -54,6 +54,8 @@ namespace starskytest.starsky.feature.packagetelemetry.Services {
 	
 		[TestMethod]
 		[Timeout(7000)]
+		[SuppressMessage("Usage", "S3878:Dispose")]
+		[SuppressMessage("ReSharper", "DisposeOnUsingVariable")]
 		public async Task ExecuteAsyncTest_WebController()
 		{
 			var appSettings = _serviceScopeFactory.CreateScope().ServiceProvider
@@ -63,29 +65,31 @@ namespace starskytest.starsky.feature.packagetelemetry.Services {
 			appSettings.EnablePackageTelemetryDebug = false;
 
 			var service = new PackageTelemetryBackgroundService(_serviceScopeFactory);
-			
-			var source = new CancellationTokenSource();
-			source.Cancel(); // <- cancel before start
+
+			using var source = new CancellationTokenSource();
+			await source.CancelAsync(); // <- cancel before start
 			var token = source.Token;
 
 			var dynMethod = service.GetType().GetMethod("ExecuteAsync", 
 				BindingFlags.NonPublic | BindingFlags.Instance);
 			if ( dynMethod == null )
 				throw new Exception("missing ExecuteAsync");
+			// 3878
 			await dynMethod.InvokeAsync(service, new object[]
 			{
 				token
 			}).WaitAsync(TimeSpan.FromSeconds(1), new CancellationToken());
-
+			
 			var httpProvider = _serviceScopeFactory.CreateScope().ServiceProvider
 				.GetService<IHttpProvider>();
 
 			var fakeHttpProvider = httpProvider as FakeIHttpProvider;
-			Assert.IsTrue(fakeHttpProvider?.UrlCalled.Any(p => p.Contains(PackageTelemetry.PackageTelemetryUrl)));
+			Assert.IsTrue(fakeHttpProvider?.UrlCalled.Exists(p => p.Contains(PackageTelemetry.PackageTelemetryUrl)));
 		}
 	
 		[TestMethod]
 		[Timeout(2000)]
+		[SuppressMessage("Usage", "S2930:Dispose")]
 		public void ExecuteAsyncTest_NotWhenDisabled()
 		{
 			var appSettings = _serviceScopeFactory.CreateScope().ServiceProvider
@@ -103,7 +107,7 @@ namespace starskytest.starsky.feature.packagetelemetry.Services {
 			CancellationToken token = source.Token;
 			source.Cancel(); // <- cancel before start
 
-			MethodInfo dynMethod = service.GetType().GetMethod("ExecuteAsync", 
+			MethodInfo? dynMethod = service.GetType().GetMethod("ExecuteAsync", 
 				BindingFlags.NonPublic | BindingFlags.Instance);
 			if ( dynMethod == null )
 				throw new Exception("missing ExecuteAsync");

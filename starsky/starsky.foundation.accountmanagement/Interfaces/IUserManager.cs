@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using starsky.foundation.accountmanagement.Models;
 using starsky.foundation.database.Models.Account;
@@ -14,11 +13,11 @@ namespace starsky.foundation.accountmanagement.Interfaces
     
     public class SignUpResult
     {
-        public User User { get; }
+        public User? User { get; }
         public bool Success { get; private set; }
         public SignUpResultError? Error { get; }
         
-        public SignUpResult(User user = null, bool success = false, SignUpResultError? error = null)
+        public SignUpResult(User? user = null, bool success = false, SignUpResultError? error = null)
         {
             User = user;
             Success = success;
@@ -67,29 +66,29 @@ namespace starsky.foundation.accountmanagement.Interfaces
 	    /// <param name="secret">Password</param>
 	    /// <returns>result object</returns>
         Task<SignUpResult> SignUpAsync(string name, string credentialTypeCode,
-	        string identifier, string secret);
+	        string? identifier, string? secret);
         
         void AddToRole(User user, string roleCode);
         void AddToRole(User user, Role role);
         void RemoveFromRole(User user, string roleCode);
         void RemoveFromRole(User user, Role role);
-        ChangeSecretResult ChangeSecret(string credentialTypeCode, string identifier, string secret);
+        ChangeSecretResult ChangeSecret(string credentialTypeCode, string? identifier, string secret);
         Task<ValidateResult> ValidateAsync(string credentialTypeCode,
-	        string identifier, string secret);
+	        string? identifier, string secret);
 
-        Task<bool> SignIn(HttpContext httpContext, User user,
+        Task<bool> SignIn(HttpContext httpContext, User? user,
 	        bool isPersistent = false);
         void SignOut(HttpContext httpContext);
         int GetCurrentUserId(HttpContext httpContext);
-        User GetCurrentUser(HttpContext httpContext);
-        User GetUser(string credentialTypeCode, string identifier);
-        Credential GetCredentialsByUserId(int userId);
+        User? GetCurrentUser(HttpContext httpContext);
+        User? GetUser(string credentialTypeCode, string identifier);
+        Credential? GetCredentialsByUserId(int userId);
         Task<ValidateResult> RemoveUser(string credentialTypeCode,
 	        string identifier);
-        User Exist(string identifier);
+        User? Exist(string identifier);
 
-        Task<User> Exist(int userTableId);
-        Role GetRole(string credentialTypeCode, string identifier);
+        Task<User?> ExistAsync(int userTableId);
+        Role? GetRole(string credentialTypeCode, string identifier);
         bool PreflightValidate(string userName, string password, string confirmPassword);
     }
 }

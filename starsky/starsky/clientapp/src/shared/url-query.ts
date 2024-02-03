@@ -5,9 +5,7 @@ export class UrlQuery {
   public prefix: string = "/starsky";
 
   public UrlHomePage(): string {
-    return document.location.pathname.indexOf(this.prefix) === -1
-      ? "/"
-      : `${this.prefix}/`;
+    return document.location.pathname.indexOf(this.prefix) === -1 ? "/" : `${this.prefix}/`;
   }
 
   public UrlHomeIndexPage(locationHash: string): string {
@@ -103,11 +101,7 @@ export class UrlQuery {
     return `${this.prefix}/account/register`;
   }
 
-  public UrlSearchRelativeApi = (
-    f: string,
-    t: string | undefined,
-    pageNumber = 0
-  ): string => {
+  public UrlSearchRelativeApi = (f: string, t: string | undefined, pageNumber = 0): string => {
     return (
       `${this.prefix}/api/search/relative-objects?f=` +
       new URLPath().encodeURI(f) +
@@ -295,14 +289,9 @@ export class UrlQuery {
     );
   };
 
-  public UrlThumbnailImage = (
-    fileHash: string,
-    alwaysLoadImage: boolean
-  ): string => {
+  public UrlThumbnailImage = (fileHash: string, alwaysLoadImage: boolean): string => {
     if (alwaysLoadImage) {
-      return (
-        this.prefix + "/api/thumbnail/" + fileHash + ".jpg?issingleitem=true"
-      );
+      return this.prefix + "/api/thumbnail/" + fileHash + ".jpg?issingleitem=true";
     }
     return this.prefix + "/api/thumbnail/small/" + fileHash + ".jpg";
   };
@@ -313,11 +302,7 @@ export class UrlQuery {
    * @param z zoomfactor
    * @param id filePath
    */
-  public UrlThumbnailZoom = (
-    f: string,
-    id: string | undefined,
-    z: number
-  ): string => {
+  public UrlThumbnailZoom = (f: string, id: string | undefined, z: number): string => {
     return `${this.prefix}/api/thumbnail/zoom/${f}@${z}?filePath=${id}`;
   };
 
@@ -331,13 +316,7 @@ export class UrlQuery {
     cache: boolean = true
   ): string => {
     return (
-      this.prefix +
-      "/api/download-photo?f=" +
-      f +
-      "&isThumbnail=" +
-      isThumbnail +
-      "&cache=" +
-      cache
+      this.prefix + "/api/download-photo?f=" + f + "&isThumbnail=" + isThumbnail + "&cache=" + cache
     );
   };
 
@@ -359,10 +338,7 @@ export class UrlQuery {
   /**
    * export/zip/SR497519527.zip?json=true
    */
-  public UrlExportZipApi = (
-    createZipId: string,
-    json: boolean = true
-  ): string => {
+  public UrlExportZipApi = (createZipId: string, json: boolean = true): string => {
     return this.prefix + "/api/export/zip/" + createZipId + ".zip?json=" + json;
   };
 
@@ -371,11 +347,7 @@ export class UrlQuery {
    * @param parentFolder no need to encode this (done in this method)
    */
   public UrlSync(parentFolder: string): string {
-    return (
-      this.prefix +
-      "/api/synchronize?f=" +
-      new URLPath().encodeURI(parentFolder)
-    );
+    return this.prefix + "/api/synchronize?f=" + new URLPath().encodeURI(parentFolder);
   }
 
   /**

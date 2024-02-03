@@ -1,8 +1,4 @@
-import {
-  RouteObject,
-  RouterProvider,
-  createBrowserRouter
-} from "react-router-dom";
+import { RouteObject, RouterProvider, createBrowserRouter } from "react-router-dom";
 import { AccountRegisterPage } from "../pages/account-register-page";
 import { ContentPage } from "../pages/content-page";
 import ImportPage from "../pages/import-page";

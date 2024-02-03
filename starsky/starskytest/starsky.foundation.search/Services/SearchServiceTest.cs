@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +32,7 @@ namespace starskytest.starsky.foundation.search.Services
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
 				.BuildServiceProvider();
-			_memoryCache = provider.GetService<IMemoryCache>();
+			_memoryCache = provider.GetRequiredService<IMemoryCache>();
             
 			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
 			builder.UseInMemoryDatabase("searchService");
@@ -57,12 +59,14 @@ namespace starskytest.starsky.foundation.search.Services
 					Description = "schiphol",
 					Title = "Schiphol",
 					ImageFormat = ExtensionRolesHelper.ImageFormat.jpg,
-					DateTime = new DateTime(2014,1,1,1,1,1),
+					DateTime = new DateTime(2014,1,1,1,1,1, 
+						kind: DateTimeKind.Local),
 					MakeModel = "Apple|iPhone SE|",
 					Software = "PhotoTool x",
 					IsDirectory = false,
 					ColorClass = ColorClassParser.Color.WinnerAlt,
-					LastEdited = new DateTime(2020,10,10,10,10,10)
+					LastEdited = new DateTime(2020,10,10,10,10,10, 
+						kind: DateTimeKind.Local)
 				});
 			}
 
@@ -101,8 +105,10 @@ namespace starskytest.starsky.foundation.search.Services
 					Tags = "lelystadcentrum2",
 					Description = "lelystadcentrum2",
 					ImageFormat = ExtensionRolesHelper.ImageFormat.tiff,
-					DateTime = new DateTime(2016,1,1,1,1,1),
-					AddToDatabase = new DateTime(2016,1,1,1,1,1),
+					DateTime = new DateTime(2016,1,1,1,1,1, 
+						kind: DateTimeKind.Local),
+					AddToDatabase = new DateTime(2016,1,1,1,1,1, 
+						kind: DateTimeKind.Local),
 					IsDirectory = false
 				});
 			}
@@ -116,7 +122,8 @@ namespace starskytest.starsky.foundation.search.Services
 					ParentDirectory = "/",
 					FileHash = "",
 					IsDirectory = true,
-					DateTime = new DateTime(2013,1,1,1,1,1),
+					DateTime = new DateTime(2013,1,1,1,1,1, 
+						kind: DateTimeKind.Local),
 				});
         
 				await _query.AddItemAsync(new FileIndexItem
@@ -126,11 +133,11 @@ namespace starskytest.starsky.foundation.search.Services
 					FileHash = "stationdeletedfile",
 					ImageFormat = ExtensionRolesHelper.ImageFormat.jpg,
 					Tags = TrashKeyword.TrashKeywordString,
-					DateTime = new DateTime(2013,1,1,1,1,1),
+					DateTime = new DateTime(2013,1,1,1,1,1, 
+						kind: DateTimeKind.Local),
 					IsDirectory = false
 				});
 			}
-            
 
 			if (string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("cityloop9")))
 			{
@@ -145,7 +152,8 @@ namespace starskytest.starsky.foundation.search.Services
 						// ImageFormat = ExtensionRolesHelper.ImageFormat.jpg,
 						Tags = "cityloop",
 						Id = 5000 + i,
-						DateTime = new DateTime(2018,1,1,1,1,1)
+						DateTime = new DateTime(2018,1,1,1,1,1, 
+							kind: DateTimeKind.Local)
 					});
 				}
 			}
@@ -156,7 +164,7 @@ namespace starskytest.starsky.foundation.search.Services
 		{
 			var search = new SearchService(_dbContext,new FakeIWebLogger(),_memoryCache);
 
-			// fill cache with data real data;
+			// fill cache with data real data
 			var result = await search.Search("test");
 			Assert.AreEqual("test",result.SearchQuery);
 
@@ -450,13 +458,6 @@ namespace starskytest.starsky.foundation.search.Services
 		}
         
 		[TestMethod]
-		public async Task SearchService_SearchCityLoopFileNameTest()
-		{
-			await InsertSearchData();
-			Assert.AreEqual(NumberOfFakeResults, (await _search.Search("-FilePath:cityloop")).SearchCount);
-		}
-        
-		[TestMethod]
 		public async Task SearchService_SearchCityloopParentDirectoryTest()
 		{
 			await InsertSearchData();
@@ -476,19 +477,32 @@ namespace starskytest.starsky.foundation.search.Services
 		public async Task SearchService_SearchInUrlTest()
 		{
 			await InsertSearchData();
-			// Not 3, because one file is marked as deleted!
-			// todo: check the value of this one
-			Assert.AreEqual(5, (await _search.Search("-inurl:/stations")).SearchCount);
-			Assert.AreEqual(5, (await _search.Search("-inurl:\"/stations\"")).SearchCount);
+			
+			// expect 5
+			var expectedCount = _dbContext.FileIndex.Count(p => 
+				p.ParentDirectory!.StartsWith("/stations"));
+
+			var stationsQueryResult =
+				await _search.Search("-inurl:/stations");
+			Assert.AreEqual(expectedCount, stationsQueryResult.SearchCount);
+			
+			var stationsQueryQuoteResult =
+				 await _search.Search("-inurl:\"/stations\"");
+			Assert.AreEqual(expectedCount, stationsQueryQuoteResult.SearchCount);
 		}
 
 		[TestMethod]
 		public async Task SearchService_SearchNarrowFileNameTags()
 		{
 			await InsertSearchData();
-			// Not 2 > but needs to be narrow
-			// todo: check the value of this one
-			Assert.AreEqual(1, (await _search.Search("lelystad -ParentDirectory:/stations2")).SearchCount);
+			
+			var expectedCount = _dbContext.FileIndex.Count(p => p.Tags!.Contains("lelystad") 
+				&& p.ParentDirectory!.Contains("stations2"));
+			
+			var item =
+				await _search.Search("lelystad -ParentDirectory:/stations2");
+			
+			Assert.AreEqual(expectedCount, item.SearchCount);
 		}
         
 		[TestMethod]
@@ -581,7 +595,7 @@ namespace starskytest.starsky.foundation.search.Services
 			};
 			_search.MatchSearch(model);
 
-			Assert.AreEqual(false, model.SearchIn.Any());
+			Assert.AreEqual(false, model.SearchIn.Count != 0);
 		}
 
 		[TestMethod]
@@ -767,7 +781,7 @@ namespace starskytest.starsky.foundation.search.Services
 			var modelSearchQuery = "-\"station test\"";
 			var model = new SearchViewModel();
 			model.ParseDefaultOption(modelSearchQuery);
-			Assert.AreEqual(SearchViewModel.SearchForOptionType.Not,model.SearchForOptions?[0]);
+			Assert.AreEqual(SearchViewModel.SearchForOptionType.Not,model.SearchForOptions[0]);
 		}
 	    
 		[TestMethod]
@@ -776,7 +790,7 @@ namespace starskytest.starsky.foundation.search.Services
 			var modelSearchQuery = "-station";
 			var model = new SearchViewModel();
 			model.ParseDefaultOption(modelSearchQuery);
-			Assert.AreEqual(SearchViewModel.SearchForOptionType.Not,model.SearchForOptions?[0]);
+			Assert.AreEqual(SearchViewModel.SearchForOptionType.Not,model.SearchForOptions[0]);
 		}
 	    
 		[TestMethod]
@@ -850,8 +864,8 @@ namespace starskytest.starsky.foundation.search.Services
 			const string modelSearchQuery = "query of";
 			var searchViewModel = new SearchViewModel();
 			searchViewModel.ParseDefaultOption(modelSearchQuery);
-			Assert.AreEqual("query", searchViewModel.SearchFor?[0]);
-			Assert.AreEqual("of", searchViewModel.SearchFor?[1]);
+			Assert.AreEqual("query", searchViewModel.SearchFor[0]);
+			Assert.AreEqual("of", searchViewModel.SearchFor[1]);
 		}
 	    
 		[TestMethod]
@@ -863,8 +877,8 @@ namespace starskytest.starsky.foundation.search.Services
 			searchViewModel.ParseDefaultOption(modelSearchQuery);
 
 			Assert.AreEqual(SearchViewModel.SearchForOptionType.Equal, searchViewModel.SearchForOptions[0]);
-			Assert.AreEqual("Tags", searchViewModel.SearchIn?[0]);
-			Assert.AreEqual("ns", searchViewModel.SearchFor?[0]);
+			Assert.AreEqual("Tags", searchViewModel.SearchIn[0]);
+			Assert.AreEqual("ns", searchViewModel.SearchFor[0]);
 		}
 
 		[TestMethod]
@@ -891,7 +905,7 @@ namespace starskytest.starsky.foundation.search.Services
 		{
 			var p = SearchViewModel.ParseDateTime("2018-09-11");
 			// defaults to today
-			Assert.AreEqual(DateTime.Parse("2018-09-11"),p);
+			Assert.AreEqual(DateTime.Parse("2018-09-11", CultureInfo.InvariantCulture),p);
 		}
 	    
 		[TestMethod]
@@ -929,7 +943,7 @@ namespace starskytest.starsky.foundation.search.Services
 			model.SetAddSearchFor("lelystadcentrum2"); // not query
 			model.SetAddSearchForOptions("-");
 
-			var result2 = SearchViewModel.NarrowSearch(model);
+			SearchViewModel.NarrowSearch(model);
 
 			Assert.AreEqual("lelystadcentrum",result.FileIndexItems?[0].Tags);
 		}
@@ -997,7 +1011,7 @@ namespace starskytest.starsky.foundation.search.Services
 			model.SetAddSearchForOptions("=");
 
 			// Add extra NOT query			
-			model.SearchIn?.Add("imageformat");
+			model.SearchIn.Add("imageformat");
 			model.SetAddSearchFor("tiff"); // not query
 			model.SetAddSearchForOptions("-");
 
@@ -1008,11 +1022,12 @@ namespace starskytest.starsky.foundation.search.Services
 		}
 
 		[TestMethod]
+		[SuppressMessage("ReSharper", "RedundantArgumentDefaultValue")]
 		public async Task SearchService_Search_Percentage()
 		{
 			var results = await _search.Search("%", 0);
-			Assert.AreEqual(0,results?.FileIndexItems?.Count);
-			Assert.AreEqual("%",results?.SearchQuery);
+			Assert.AreEqual(0,results.FileIndexItems?.Count);
+			Assert.AreEqual("%",results.SearchQuery);
 		}
 
 

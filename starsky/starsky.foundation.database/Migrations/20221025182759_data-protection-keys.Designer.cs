@@ -13,7 +13,9 @@ namespace starsky.foundation.database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20221025182759_data-protection-keys")]
+#pragma warning disable CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
     partial class dataprotectionkeys
+#pragma warning restore CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

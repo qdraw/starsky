@@ -3,11 +3,7 @@
 const shallowEqual = (
   objA: any,
   objB: any,
-  compare?: (
-    objA: any,
-    objB: any,
-    indexOrKey?: number | string
-  ) => boolean | undefined,
+  compare?: (objA: any, objB: any, indexOrKey?: number | string) => boolean | undefined,
   compareContext?: any
 ): boolean => {
   let ret = compare ? compare.call(compareContext, objA, objB) : void 0;

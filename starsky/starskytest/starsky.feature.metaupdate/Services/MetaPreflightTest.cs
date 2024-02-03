@@ -14,7 +14,11 @@ namespace starskytest.starsky.feature.metaupdate.Services
 	[TestClass]
 	public sealed class MetaPreflightTest
 	{
-		
+		private static readonly string[] TestJpgArray = new[] {"/test.jpg"};
+		private static readonly string[] OnlyTestWordArray = new[] {"test"};
+		private static readonly string[] ReadonlyFolderTestJpgArray = new[] {"/readonly/test.jpg"};
+		private static readonly string[] DeletedJpgArray = new[] {"/deleted.jpg"};
+
 		[TestMethod]
 		public async Task Preflight_Collections_Enabled()
 		{
@@ -30,8 +34,8 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				,new FakeIWebLogger());
 			
 			var result = await metaPreflight.PreflightAsync(
-				new FileIndexItem("/test.jpg"), 
-				new[] {"/test.jpg"}.ToList(), true, true, 0);
+				new FileIndexItem("/test.jpg"),
+				TestJpgArray.ToList(), true, true, 0);
 
 			Assert.AreEqual(2, result.fileIndexResultsList.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 
@@ -56,7 +60,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			
 			var result = await metaPreflight.PreflightAsync(
 				new FileIndexItem("/test.jpg"), 
-				new[] {"/test.jpg"}.ToList(), true, false, 0);
+				TestJpgArray.ToList(), true, false, 0);
 
 			Assert.AreEqual(1, result.fileIndexResultsList.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 
@@ -78,7 +82,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			
 			var result = await metaPreflight.PreflightAsync(
 				new FileIndexItem("/test.jpg"), 
-				new[] {"/test.jpg"}.ToList(), true, true, 0);
+				TestJpgArray.ToList(), true, true, 0);
 
 			Assert.AreEqual(1, result.fileIndexResultsList.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, 
@@ -102,7 +106,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			
 			var result = await metaPreflight.PreflightAsync(
 				new FileIndexItem("/test.jpg"), 
-				new[] {"/test.jpg"}.ToList(), true, true, 0);
+				TestJpgArray.ToList(),  true, true, 0);
 
 			Assert.AreEqual(1, result.fileIndexResultsList.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 
@@ -265,8 +269,8 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var metaPreflight = new MetaPreflight(new FakeIQuery(), new AppSettings(), 
 				new FakeSelectorStorage(),new FakeIWebLogger());
 			var result = await metaPreflight.PreflightAsync(
-				new FileIndexItem("test"), 
-				new[] {"test"}.ToList(), true, true, 0);
+				new FileIndexItem("test"),
+OnlyTestWordArray.ToList(), true, true, 0);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, 
 				result.fileIndexResultsList.FirstOrDefault()?.Status);
@@ -286,7 +290,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			
 			var result = await metaPreflight.PreflightAsync(
 				new FileIndexItem("/readonly/test.jpg"), 
-				new[] {"/readonly/test.jpg"}.ToList(), true, true, 0);
+				ReadonlyFolderTestJpgArray.ToList(), true, true, 0);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.ReadOnly, 
 				result.fileIndexResultsList.FirstOrDefault()?.Status);
@@ -306,8 +310,8 @@ namespace starskytest.starsky.feature.metaupdate.Services
 						new []{CreateAnImage.Bytes.ToArray(), })),new FakeIWebLogger());
 			
 			var result = await metaPreflight.PreflightAsync(
-				new FileIndexItem("/deleted.jpg"), 
-				new[] {"/deleted.jpg"}.ToList(), 
+				new FileIndexItem("/deleted.jpg"),
+				DeletedJpgArray.ToList(), 
 				true, true, 0);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted, 
@@ -324,7 +328,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				new FileIndexItem("/test.jpg"){Orientation = FileIndexItem.Rotation.Horizontal},
 				compareList);
 			Assert.AreEqual(FileIndexItem.Rotation.Horizontal, rotationCompare.Orientation);
-			Assert.IsTrue(!compareList.Any());
+			Assert.IsTrue(compareList.Count == 0);
 		}
 		
 		[TestMethod]
@@ -360,8 +364,8 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				new FakeSelectorStorage(),new FakeIWebLogger());
 			
 			var result = await metaPreflight.PreflightAsync(
-				new FileIndexItem("/test.jpg"), 
-				new[] {"/test.jpg"}.ToList(), true, true, 0);
+				new FileIndexItem("/test.jpg"),
+				TestJpgArray.ToList(), true, true, 0);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, 
 				result.fileIndexResultsList.FirstOrDefault()?.Status);

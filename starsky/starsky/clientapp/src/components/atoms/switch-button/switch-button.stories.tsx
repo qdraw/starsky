@@ -5,9 +5,7 @@ export default {
 };
 
 export const Default = () => {
-  return (
-    <SwitchButton onToggle={() => {}} leftLabel={"on"} rightLabel={"off"} />
-  );
+  return <SwitchButton onToggle={() => {}} leftLabel={"on"} rightLabel={"off"} />;
 };
 
 Default.story = {

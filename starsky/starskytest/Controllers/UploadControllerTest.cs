@@ -1,8 +1,7 @@
-using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,17 +16,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.feature.import.Services;
 using starsky.foundation.database.Data;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
 using starsky.foundation.readmeta.Interfaces;
-using starsky.foundation.readmeta.Services;
-using starsky.foundation.storage.Interfaces;
-using starsky.foundation.sync.SyncInterfaces;
-using starsky.foundation.sync.SyncServices;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Services;
 using starskytest.FakeCreateAn;
@@ -39,18 +33,17 @@ namespace starskytest.Controllers
 	[TestClass]
 	public sealed class UploadControllerTest
 	{
-		private readonly IQuery _query;
-		private readonly IStorage _iStorage;
+		private readonly Query _query;
+		private readonly FakeIStorage _iStorage;
 		private readonly AppSettings _appSettings;
 		private readonly Import _import;
-		private readonly IMemoryCache _memoryCache;
 
 		public UploadControllerTest()
 		{
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
 				.BuildServiceProvider();
-			_memoryCache = provider.GetService<IMemoryCache>();
+			var memoryCache = provider.GetRequiredService<IMemoryCache>();
 
 			var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
 			builderDb.UseInMemoryDatabase(nameof(ExportControllerTest));
@@ -69,7 +62,7 @@ namespace starskytest.Controllers
 			_appSettings = new AppSettings { 
 				TempFolder = createAnImage.BasePath
 			};
-			_query = new Query(context, _appSettings, scopeFactory, new FakeIWebLogger(), _memoryCache);
+			_query = new Query(context, _appSettings, scopeFactory, new FakeIWebLogger(), memoryCache);
 
 			_iStorage = new FakeIStorage(new List<string>{"/","/test"}, 
 				new List<string>{createAnImage.DbPath}, 
@@ -79,10 +72,9 @@ namespace starskytest.Controllers
 
 			_import = new Import(selectorStorage, _appSettings, new FakeIImportQuery(),
 				new FakeExifTool(_iStorage,_appSettings), _query, new ConsoleWrapper(), 
-				new FakeIMetaExifThumbnailService(), new FakeIWebLogger(), new FakeIThumbnailQuery(),  _memoryCache);
+				new FakeIMetaExifThumbnailService(), new FakeIWebLogger(), new FakeIThumbnailQuery(),  memoryCache);
 
 			// Start using dependency injection
-			var builder = new ConfigurationBuilder();
 			// Add random config to dependency injection
 			// build config
 			// inject config as object to a service
@@ -102,12 +94,12 @@ namespace starskytest.Controllers
 		///  Add the file in the underlying request object.
 		/// </summary>
 		/// <returns>Controller Context with file</returns>
-		private static ControllerContext RequestWithFile(byte[] bytes = null)
+		private static ControllerContext RequestWithFile(byte[]? bytes = null)
 		{
 			// ReSharper disable once ConvertIfStatementToNullCoalescingAssignment
 			if ( bytes == null ) bytes = CreateAnImage.Bytes.ToArray();
 			var httpContext = new DefaultHttpContext();
-			httpContext.Request.Headers.Add("Content-Type", "application/octet-stream");
+			httpContext.Request.Headers.Append("Content-Type", "application/octet-stream");
 			httpContext.Request.Body = new MemoryStream(bytes);
 	        
 			var actionContext = new ActionContext(httpContext, new RouteData(), new ControllerActionDescriptor());
@@ -128,7 +120,7 @@ namespace starskytest.Controllers
 			
 			var actionResult = await controller.UploadToFolder()as BadRequestObjectResult;
 			
-			Assert.AreEqual(400,actionResult.StatusCode);
+			Assert.AreEqual(400,actionResult?.StatusCode);
 		}
 	
 		[TestMethod]
@@ -142,22 +134,22 @@ namespace starskytest.Controllers
 				ControllerContext = RequestWithFile(),
 			};
 
-			var toPlaceSubPath = "/yes01.jpg";
+			const string toPlaceSubPath = "/yes01.jpg";
 			
 			controller.ControllerContext.HttpContext.Request.Headers["to"] = toPlaceSubPath; //Set header
 
 			var actionResult = await controller.UploadToFolder()  as JsonResult;
-			var list = actionResult.Value as List<ImportIndexItem>;
+			var list = actionResult?.Value as List<ImportIndexItem>;
 
-			Assert.AreEqual( ImportStatus.Ok, list.FirstOrDefault().Status);
+			Assert.AreEqual( ImportStatus.Ok, list?.FirstOrDefault()?.Status);
 
 			var fileSystemResult = _iStorage.ExistFile(toPlaceSubPath);
 			Assert.IsTrue(fileSystemResult);
 
 			var queryResult = _query.SingleItem(toPlaceSubPath);
-			Assert.AreEqual("Sony",queryResult.FileIndexItem.Make);
+			Assert.AreEqual("Sony",queryResult?.FileIndexItem?.Make);
 
-			await _query.RemoveItemAsync(queryResult.FileIndexItem);
+			await _query.RemoveItemAsync(queryResult?.FileIndexItem!);
 		}
 		
 		[TestMethod]
@@ -171,24 +163,24 @@ namespace starskytest.Controllers
 				ControllerContext = RequestWithFile(CreateAnImageColorClass.Bytes.ToArray()),
 			};
 
-			var toPlaceSubPath = "/color-class01.jpg";
+			const string toPlaceSubPath = "/color-class01.jpg";
 			
 			controller.ControllerContext.HttpContext.Request.Headers["to"] = toPlaceSubPath; //Set header
 
 			var actionResult = await controller.UploadToFolder()  as JsonResult;
-			var list = actionResult.Value as List<ImportIndexItem>;
+			var list = actionResult?.Value as List<ImportIndexItem>;
 
-			Assert.AreEqual( ImportStatus.Ok, list.FirstOrDefault().Status);
+			Assert.AreEqual( ImportStatus.Ok, list?.FirstOrDefault()?.Status);
 
 			var fileSystemResult = _iStorage.ExistFile(toPlaceSubPath);
 			Assert.IsTrue(fileSystemResult);
 
 			var queryResult = _query.SingleItem(toPlaceSubPath);
 			
-			Assert.AreEqual("Sony",queryResult.FileIndexItem.Make);
-			Assert.AreEqual(ColorClassParser.Color.Winner,queryResult.FileIndexItem.ColorClass);
+			Assert.AreEqual("Sony",queryResult?.FileIndexItem?.Make);
+			Assert.AreEqual(ColorClassParser.Color.Winner,queryResult?.FileIndexItem?.ColorClass);
 
-			await _query.RemoveItemAsync(queryResult.FileIndexItem);
+			await _query.RemoveItemAsync(queryResult?.FileIndexItem!);
 		}
 		
 		[TestMethod]
@@ -202,8 +194,8 @@ namespace starskytest.Controllers
 				ControllerContext = RequestWithFile(),
 			};
 
-			var toPlaceSubPath = "/duplicate_upload/yes01.jpg";
-			var toPlaceFolder = "/duplicate_upload";
+			const string toPlaceSubPath = "/duplicate_upload/yes01.jpg";
+			const string toPlaceFolder = "/duplicate_upload";
 
 			// add to db 
 			await _query.AddItemAsync(new FileIndexItem(toPlaceSubPath));
@@ -213,11 +205,15 @@ namespace starskytest.Controllers
 			controller.ControllerContext.HttpContext.Request.Headers["to"] = toPlaceSubPath; //Set header
 
 			var actionResult = await controller.UploadToFolder() as JsonResult;
-			if ( actionResult == null ) throw new ArgumentNullException(nameof(actionResult),
-				"actionResult should not be null");
+			if ( actionResult == null ) {
+				throw new WebException("actionResult should not be null");
+			}
+			
 			var list = actionResult.Value as List<ImportIndexItem>;
-			if ( list == null ) throw new ArgumentNullException(nameof(list),
-				"result should not be null");
+			if ( list == null )
+			{
+				throw new WebException("list should not be null");
+			}
 
 			Assert.AreEqual( ImportStatus.Ok, list[0].Status);
 
@@ -230,9 +226,9 @@ namespace starskytest.Controllers
 			Assert.AreEqual(1,getAllFiles.Count);
 			
 			var queryResult = _query.SingleItem(toPlaceSubPath);
-			Assert.AreEqual("Sony",queryResult.FileIndexItem.Make);
+			Assert.AreEqual("Sony",queryResult?.FileIndexItem?.Make);
 
-			await _query.RemoveItemAsync(queryResult.FileIndexItem);
+			await _query.RemoveItemAsync(queryResult?.FileIndexItem!);
 		}
 		
 		[TestMethod]
@@ -257,11 +253,11 @@ namespace starskytest.Controllers
 
 			var queryResult = _query.SingleItem(toPlaceSubPath);
 
-			var sidecarExtList = queryResult.FileIndexItem.SidecarExtensionsList.ToList();
-			Assert.AreEqual(1,sidecarExtList.Count);
-			Assert.AreEqual("xmp",sidecarExtList[0]);
+			var sidecarExtList = queryResult?.FileIndexItem?.SidecarExtensionsList.ToList();
+			Assert.AreEqual(1,sidecarExtList?.Count);
+			Assert.AreEqual("xmp",sidecarExtList?[0]);
 
-			await _query.RemoveItemAsync(queryResult.FileIndexItem);
+			await _query.RemoveItemAsync(queryResult?.FileIndexItem!);
 		}
 		
 		[TestMethod]
@@ -279,7 +275,7 @@ namespace starskytest.Controllers
 
 			var actionResult = await controller.UploadToFolder()as NotFoundObjectResult;
 			
-			Assert.AreEqual(404,actionResult.StatusCode);
+			Assert.AreEqual(404,actionResult?.StatusCode);
 		}
 		
 		[TestMethod]
@@ -296,16 +292,16 @@ namespace starskytest.Controllers
 			controller.ControllerContext.HttpContext.Request.Headers["to"] = "/"; //Set header
 
 			var actionResult = await controller.UploadToFolder()  as JsonResult;
-			var list = actionResult.Value as List<ImportIndexItem>;
+			var list = actionResult?.Value as List<ImportIndexItem>;
 
-			Assert.AreEqual( ImportStatus.FileError, list.FirstOrDefault().Status);
+			Assert.AreEqual( ImportStatus.FileError, list?.FirstOrDefault()?.Status);
 		}
 
 		[TestMethod]
 		public void GetParentDirectoryFromRequestHeader_InputToAsSubPath()
 		{
 			var controllerContext = RequestWithFile();
-			controllerContext.HttpContext.Request.Headers.Add("to", "/test.jpg");
+			controllerContext.HttpContext.Request.Headers.Append("to", "/test.jpg");
 			
 			var controller = new UploadController(_import, _appSettings, 
 				new FakeSelectorStorage(_iStorage), _query, 
@@ -323,7 +319,7 @@ namespace starskytest.Controllers
 		public void GetParentDirectoryFromRequestHeader_InputToAsSubPath_TestFolder()
 		{
 			var controllerContext = RequestWithFile();
-			controllerContext.HttpContext.Request.Headers.Add("to", "/test/test.jpg");
+			controllerContext.HttpContext.Request.Headers.Append("to", "/test/test.jpg");
 			
 			var controller = new UploadController(_import, _appSettings, 
 				new FakeSelectorStorage(_iStorage), _query, 
@@ -341,7 +337,7 @@ namespace starskytest.Controllers
 		public void GetParentDirectoryFromRequestHeader_InputToAsSubPath_TestDirectFolder()
 		{
 			var controllerContext = RequestWithFile();
-			controllerContext.HttpContext.Request.Headers.Add("to", "/test/");
+			controllerContext.HttpContext.Request.Headers.Append("to", "/test/");
 			
 			var controller = new UploadController(_import, _appSettings, 
 				new FakeSelectorStorage(_iStorage), _query, 
@@ -359,7 +355,7 @@ namespace starskytest.Controllers
 		public void GetParentDirectoryFromRequestHeader_InputToAsSubPath_NonExistFolder()
 		{
 			var controllerContext = RequestWithFile();
-			controllerContext.HttpContext.Request.Headers.Add("to", "/non-exist/test.jpg");
+			controllerContext.HttpContext.Request.Headers.Append("to", "/non-exist/test.jpg");
 
 			var controller =
 				new UploadController(_import, _appSettings, 
@@ -381,7 +377,7 @@ namespace starskytest.Controllers
 		private static ControllerContext RequestWithSidecar()
 		{
 			var httpContext = new DefaultHttpContext();
-			httpContext.Request.Headers.Add("Content-Type", "application/octet-stream");
+			httpContext.Request.Headers.Append("Content-Type", "application/octet-stream");
 			httpContext.Request.Body = new MemoryStream(CreateAnXmp.Bytes.ToArray());
 	        
 			var actionContext = new ActionContext(httpContext, new RouteData(), new ControllerActionDescriptor());
@@ -403,9 +399,9 @@ namespace starskytest.Controllers
 			controller.ControllerContext.HttpContext.Request.Headers["to"] = toPlaceSubPath; //Set header
 
 			var actionResult = await controller.UploadToFolderSidecarFile()  as JsonResult;
-			var list = actionResult.Value as List<string>;
+			var list = actionResult?.Value as List<string>;
 
-			Assert.AreEqual(toPlaceSubPath, list.FirstOrDefault());
+			Assert.AreEqual(toPlaceSubPath, list?.FirstOrDefault());
 		}
 		
 		[TestMethod]
@@ -430,9 +426,9 @@ namespace starskytest.Controllers
 			await controller.UploadToFolderSidecarFile();
 
 			var queryResult = await _query.GetObjectByFilePathAsync(dngSubPath);
-			var sidecarExtList = queryResult.SidecarExtensionsList.ToList();
-			Assert.AreEqual(1,sidecarExtList.Count);
-			Assert.AreEqual("xmp",sidecarExtList[0]);
+			var sidecarExtList = queryResult?.SidecarExtensionsList.ToList();
+			Assert.AreEqual(1,sidecarExtList?.Count);
+			Assert.AreEqual("xmp",sidecarExtList?[0]);
 		}
 				
 		[TestMethod]
@@ -450,9 +446,9 @@ namespace starskytest.Controllers
 			controller.ControllerContext.HttpContext.Request.Headers["to"] = toPlaceSubPath; //Set header
 
 			var actionResult = await controller.UploadToFolderSidecarFile()  as JsonResult;
-			var list = actionResult.Value as List<string>;
+			var list = actionResult?.Value as List<string>;
 
-			Assert.AreEqual(0, list.Count);
+			Assert.AreEqual(0, list?.Count);
 		}
 		
 		[TestMethod]
@@ -470,7 +466,7 @@ namespace starskytest.Controllers
 
 			var actionResult = await controller.UploadToFolderSidecarFile()as NotFoundObjectResult;
 			
-			Assert.AreEqual(404,actionResult.StatusCode);
+			Assert.AreEqual(404,actionResult?.StatusCode);
 		}
 		
 		[TestMethod]
@@ -487,7 +483,7 @@ namespace starskytest.Controllers
 			
 			var actionResult = await controller.UploadToFolderSidecarFile()as BadRequestObjectResult;
 			
-			Assert.AreEqual(400,actionResult.StatusCode);
+			Assert.AreEqual(400,actionResult?.StatusCode);
 		}
 	}
 }

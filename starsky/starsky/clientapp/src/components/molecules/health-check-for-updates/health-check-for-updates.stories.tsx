@@ -1,6 +1,4 @@
-import HealthCheckForUpdates, {
-  CheckForUpdatesLocalStorageName
-} from "./health-check-for-updates";
+import HealthCheckForUpdates, { CheckForUpdatesLocalStorageName } from "./health-check-for-updates";
 
 export default {
   title: "components/molecules/health-check-for-updates"

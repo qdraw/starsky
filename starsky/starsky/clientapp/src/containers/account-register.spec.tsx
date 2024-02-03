@@ -1,11 +1,4 @@
-import {
-  act,
-  fireEvent,
-  render,
-  RenderResult,
-  screen,
-  waitFor
-} from "@testing-library/react";
+import { act, fireEvent, render, RenderResult, screen, waitFor } from "@testing-library/react";
 import { IConnectionDefault } from "../interfaces/IConnectionDefault";
 import * as FetchGet from "../shared/fetch-get";
 import * as FetchPost from "../shared/fetch-post";
@@ -16,18 +9,14 @@ describe("AccountRegister", () => {
   it("renders", () => {
     jest
       .spyOn(FetchGet, "default")
-      .mockImplementationOnce(
-        () => Promise.resolve({ statusCode: 4638 }) as any
-      );
+      .mockImplementationOnce(() => Promise.resolve({ statusCode: 4638 }) as any);
     render(<AccountRegister />);
   });
 
   it("link to TOC exist", () => {
     jest
       .spyOn(FetchGet, "default")
-      .mockImplementationOnce(
-        () => Promise.resolve({ statusCode: 876 }) as any
-      );
+      .mockImplementationOnce(() => Promise.resolve({ statusCode: 876 }) as any);
     const component = render(<AccountRegister />);
     expect(screen.getByTestId("toc")).toBeTruthy();
 
@@ -37,9 +26,7 @@ describe("AccountRegister", () => {
   it("link to privacy exist", () => {
     jest
       .spyOn(FetchGet, "default")
-      .mockImplementationOnce(
-        () => Promise.resolve({ statusCode: 123 }) as any
-      );
+      .mockImplementationOnce(() => Promise.resolve({ statusCode: 123 }) as any);
     const component = render(<AccountRegister />);
     expect(component.getByTestId("privacy")).toBeTruthy();
 
@@ -48,11 +35,10 @@ describe("AccountRegister", () => {
 
   it("not allowed get 403 from api", async () => {
     // use ==> import * as FetchGet from '../shared/fetch-get';
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve({
-        statusCode: 403,
-        data: null
-      } as IConnectionDefault);
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 403,
+      data: null
+    } as IConnectionDefault);
     jest.spyOn(FetchGet, "default").mockReset();
     const fetchGetSpy = jest
       .spyOn(FetchGet, "default")
@@ -70,23 +56,20 @@ describe("AccountRegister", () => {
     const password = screen.getByTestId("password") as HTMLInputElement;
     expect(password.disabled).toBeTruthy();
 
-    const confirmPassword = screen.getByTestId(
-      "confirm-password"
-    ) as HTMLInputElement;
+    const confirmPassword = screen.getByTestId("confirm-password") as HTMLInputElement;
     expect(confirmPassword.disabled).toBeTruthy();
 
-    expect(fetchGetSpy).toBeCalled();
+    expect(fetchGetSpy).toHaveBeenCalled();
 
     container.unmount();
   });
 
   it("allowed get 200 from api", async () => {
     // use ==> import * as FetchGet from '../shared/fetch-get';
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve({
-        statusCode: 200,
-        data: null
-      } as IConnectionDefault);
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: null
+    } as IConnectionDefault);
 
     const fetchGetSpy = jest
       .spyOn(FetchGet, "default")
@@ -104,23 +87,20 @@ describe("AccountRegister", () => {
     const password = screen.getByTestId("password") as HTMLInputElement;
     expect(password.disabled).toBeFalsy();
 
-    const confirmPassword = screen.getByTestId(
-      "confirm-password"
-    ) as HTMLInputElement;
+    const confirmPassword = screen.getByTestId("confirm-password") as HTMLInputElement;
     expect(confirmPassword.disabled).toBeFalsy();
 
-    expect(fetchGetSpy).toBeCalled();
+    expect(fetchGetSpy).toHaveBeenCalled();
 
     container.unmount();
   });
 
   it("allowed get 202 from api, it should hide sign in instead button", async () => {
     // use ==> import * as FetchGet from '../shared/fetch-get';
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve({
-        statusCode: 202,
-        data: null
-      } as IConnectionDefault);
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 202,
+      data: null
+    } as IConnectionDefault);
 
     const fetchGetSpy = jest
       .spyOn(FetchGet, "default")
@@ -138,9 +118,7 @@ describe("AccountRegister", () => {
     const password = screen.getByTestId("password") as HTMLInputElement;
     expect(password.disabled).toBeFalsy();
 
-    const confirmPassword = screen.getByTestId(
-      "confirm-password"
-    ) as HTMLInputElement;
+    const confirmPassword = screen.getByTestId("confirm-password") as HTMLInputElement;
     expect(confirmPassword.disabled).toBeFalsy();
 
     const signInInstead = screen.getByTestId("sign-in-instead");
@@ -149,18 +127,17 @@ describe("AccountRegister", () => {
 
     expect(signInInstead.classList).toContain("disabled");
 
-    expect(fetchGetSpy).toBeCalled();
+    expect(fetchGetSpy).toHaveBeenCalled();
 
     container.unmount();
   });
 
   it("submit no content", async () => {
     // use ==> import * as FetchGet from '../shared/fetch-get';
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve({
-        statusCode: 200,
-        data: null
-      } as IConnectionDefault);
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: null
+    } as IConnectionDefault);
 
     jest
       .spyOn(FetchGet, "default")
@@ -173,9 +150,7 @@ describe("AccountRegister", () => {
       container = await render(<AccountRegister />);
     });
 
-    const button = screen.queryByTestId(
-      "account-register-submit"
-    ) as HTMLButtonElement;
+    const button = screen.queryByTestId("account-register-submit") as HTMLButtonElement;
 
     act(() => {
       button.click();
@@ -198,15 +173,11 @@ describe("AccountRegister", () => {
     fireEvent.change(emailElement, { target: { value: email } });
 
     // password
-    const passwordElement = screen.queryByTestId(
-      "password"
-    ) as HTMLInputElement;
+    const passwordElement = screen.queryByTestId("password") as HTMLInputElement;
     fireEvent.change(passwordElement, { target: { value: password } });
 
     // confirm-password
-    const confirmPasswordElement = screen.queryByTestId(
-      "confirm-password"
-    ) as HTMLInputElement;
+    const confirmPasswordElement = screen.queryByTestId("confirm-password") as HTMLInputElement;
     fireEvent.change(confirmPasswordElement, {
       target: { value: confirmPassword }
     });
@@ -216,9 +187,7 @@ describe("AccountRegister", () => {
     }
 
     // submit
-    const loginContent = screen.queryByTestId(
-      "account-register-form"
-    ) as HTMLFormElement;
+    const loginContent = screen.queryByTestId("account-register-form") as HTMLFormElement;
     act(() => {
       loginContent.submit();
     });
@@ -226,15 +195,12 @@ describe("AccountRegister", () => {
 
   it("submit short password", async () => {
     // use ==> import * as FetchGet from '../shared/fetch-get';
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve({
-        statusCode: 200,
-        data: null
-      } as IConnectionDefault);
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: null
+    } as IConnectionDefault);
 
-    jest
-      .spyOn(FetchGet, "default")
-      .mockImplementationOnce(() => mockGetIConnectionDefault);
+    jest.spyOn(FetchGet, "default").mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
     let container = render(<></>);
@@ -250,15 +216,12 @@ describe("AccountRegister", () => {
 
   it("submit password No Match", async () => {
     // use ==> import * as FetchGet from '../shared/fetch-get';
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve({
-        statusCode: 200,
-        data: null
-      } as IConnectionDefault);
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: null
+    } as IConnectionDefault);
 
-    jest
-      .spyOn(FetchGet, "default")
-      .mockImplementationOnce(() => mockGetIConnectionDefault);
+    jest.spyOn(FetchGet, "default").mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
     let container = render(<></>);
@@ -274,22 +237,18 @@ describe("AccountRegister", () => {
 
   it("submit password Happy flow", async () => {
     // use ==> import * as FetchGet from '../shared/fetch-get';
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve({
-        statusCode: 200,
-        data: null
-      } as IConnectionDefault);
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: null
+    } as IConnectionDefault);
 
-    jest
-      .spyOn(FetchGet, "default")
-      .mockImplementationOnce(() => mockGetIConnectionDefault);
+    jest.spyOn(FetchGet, "default").mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // use ==> import * as FetchPost from '../shared/fetch-post';
-    const mockPostIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve({
-        statusCode: 200,
-        data: "Ok"
-      } as IConnectionDefault);
+    const mockPostIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: "Ok"
+    } as IConnectionDefault);
 
     const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
@@ -303,9 +262,9 @@ describe("AccountRegister", () => {
 
     submitEmailPassword(container, "dont@mail.me", "987654321", "987654321");
 
-    expect(fetchPostSpy).toBeCalled();
+    expect(fetchPostSpy).toHaveBeenCalled();
 
-    expect(fetchPostSpy).toBeCalledWith(
+    expect(fetchPostSpy).toHaveBeenCalledWith(
       new UrlQuery().UrlAccountRegisterApi(),
       `Email=dont@mail.me&Password=987654321&ConfirmPassword=987654321`
     );
@@ -313,11 +272,10 @@ describe("AccountRegister", () => {
 
   it("submit password antiforgery token missing (return error 400 from api)", async () => {
     // use ==> import * as FetchGet from '../shared/fetch-get';
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve({
-        statusCode: 200,
-        data: null
-      } as IConnectionDefault);
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: null
+    } as IConnectionDefault);
 
     jest
       .spyOn(FetchGet, "default")
@@ -327,11 +285,10 @@ describe("AccountRegister", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // use ==> import * as FetchPost from '../shared/fetch-post';
-    const mockPostIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve({
-        statusCode: 400,
-        data: null
-      } as IConnectionDefault);
+    const mockPostIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 400,
+      data: null
+    } as IConnectionDefault);
 
     const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
@@ -342,26 +299,18 @@ describe("AccountRegister", () => {
     // need to await here
     const container = render(<AccountRegister />);
 
-    submitEmailPassword(
-      container,
-      "dont@mail.me",
-      "987654321",
-      "987654321",
-      false
-    );
+    submitEmailPassword(container, "dont@mail.me", "987654321", "987654321", false);
 
     // submit & await
-    const loginContent = screen.queryByTestId(
-      "account-register-form"
-    ) as HTMLFormElement;
+    const loginContent = screen.queryByTestId("account-register-form") as HTMLFormElement;
 
     // need to await
     await act(async () => {
       await loginContent.submit();
     });
 
-    expect(fetchPostSpy).toBeCalled();
-    expect(fetchPostSpy).toBeCalledTimes(1);
+    expect(fetchPostSpy).toHaveBeenCalled();
+    expect(fetchPostSpy).toHaveBeenCalledTimes(1);
 
     const error = screen.queryByTestId("account-register-error") as HTMLElement;
 
@@ -372,20 +321,17 @@ describe("AccountRegister", () => {
 
   it("displays an error message when the response data is falsy", async () => {
     // use ==> import * as FetchPost from '../shared/fetch-post';
-    const mockPostIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve({
-        statusCode: 200,
-        data: null
-      } as IConnectionDefault);
+    const mockPostIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: null
+    } as IConnectionDefault);
 
     const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
       .mockClear()
       .mockImplementationOnce(() => mockPostIConnectionDefault)
       .mockImplementationOnce(() => mockPostIConnectionDefault);
-    jest
-      .spyOn(FetchGet, "default")
-      .mockImplementationOnce(() => mockPostIConnectionDefault);
+    jest.spyOn(FetchGet, "default").mockImplementationOnce(() => mockPostIConnectionDefault);
 
     const component = render(<AccountRegister />);
 

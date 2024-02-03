@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -114,13 +113,18 @@ namespace starsky.foundation.sync.WatcherHelpers
 		}
 
 		public Task<List<FileIndexItem>> Sync(
-			Tuple<string, string, WatcherChangeTypes> watcherOutput)
+			Tuple<string, string?, WatcherChangeTypes> watcherOutput)
 		{
 			// Avoid Disposed Query objects
-			if ( _serviceScope != null ) InjectScopes();
+			if ( _serviceScope != null )
+			{
+				InjectScopes();
+			}
+			
 			if ( _synchronize == null || _logger == null || _appSettings == null || _connectionsService == null || _query == null)
 			{
-				throw new ArgumentException("sync, logger, appSettings, _appSettings, _websockets or _query should not be null");
+				throw new ArgumentException("any of:  _synchronize, _logger, _appSettings, _connectionsService or" +
+				                            " _query should not be null");
 			}
 			
 			return SyncTaskInternal(watcherOutput);
@@ -131,7 +135,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 		/// </summary>
 		/// <param name="watcherOutput">data</param>
 		/// <returns>Task with data</returns>
-		private async Task<List<FileIndexItem>> SyncTaskInternal(Tuple<string, string, WatcherChangeTypes> watcherOutput)
+		private async Task<List<FileIndexItem>> SyncTaskInternal(Tuple<string, string?, WatcherChangeTypes> watcherOutput)
 		{
 			var (fullFilePath, toPath, type ) = watcherOutput;
 			var operation = CreateNewRequestTelemetry(fullFilePath);
@@ -162,9 +166,10 @@ namespace starsky.foundation.sync.WatcherHelpers
 			}
 
 			var filtered = FilterBefore(syncData);
-			if ( !filtered.Any() )
+			if ( filtered.Count == 0 )
 			{
-				_logger.LogInformation($"[SyncWatcherConnector/EndOperation] f:{filtered.Count}/s:{syncData.Count} ~ skip: "+ 
+				_logger.LogInformation($"[SyncWatcherConnector/EndOperation] " +
+				                       $"f:{filtered.Count}/s:{syncData.Count} ~ skip: "+ 
 	                       string.Join(", ", syncData.Select(p => p.FileName).ToArray()) + " ~ " +
 	                                         string.Join(", ", syncData.Select(p => p.Status).ToArray()));
 				EndRequestOperation(operation, string.Join(", ", syncData.Select(p => p.Status).ToArray()));
@@ -178,8 +183,9 @@ namespace starsky.foundation.sync.WatcherHelpers
 				p.Status == FileIndexItem.ExifStatus.Deleted).ToList());
 			
 			// remove files that are not in the index from cache
-			_query.RemoveCacheItem(filtered.Where(p => p.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex || 
-				p.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList());
+			_query.RemoveCacheItem(filtered.
+				Where(p => p.Status is 
+					FileIndexItem.ExifStatus.NotFoundNotInIndex or FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList());
 
 			if ( _serviceScope != null ) await _query.DisposeAsync();
 			EndRequestOperation(operation, "OK");
@@ -194,7 +200,9 @@ namespace starsky.foundation.sync.WatcherHelpers
 		/// <param name="filtered">list of messages to push</param>
 		private async Task PushToSockets(List<FileIndexItem> filtered)
 		{
-			_logger!.LogInformation("[SyncWatcherConnector/Socket] "+ string.Join(", ", filtered.Select(p => p.FilePath).ToArray()));
+			_logger!.LogInformation("[SyncWatcherConnector/Socket] "+ 
+			                        string.Join(", ", filtered.Select(p => p.FilePath).ToArray()));
+			
 			var webSocketResponse =
 				new ApiNotificationResponseModel<List<FileIndexItem>>(filtered, ApiNotificationType.SyncWatcherConnector);
 			await _connectionsService!.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse,

@@ -10,12 +10,12 @@ namespace starskytest.FakeMocks
 	{
 
 		public Task<(List<FileIndexItem> fileIndexResultsList, Dictionary<string, 
-			List<string>> changedFileIndexItemName)> PreflightAsync(FileIndexItem inputModel, 
+			List<string>> changedFileIndexItemName)> PreflightAsync(FileIndexItem? inputModel, 
 			List<string> inputFilePaths, bool append,
 			bool collections, int rotateClock)
 		{
 						
-			if ( inputModel != null && (string.IsNullOrEmpty(inputModel.FilePath) || inputModel.FilePath == "/") && inputFilePaths.Any() )
+			if ( inputModel != null && (string.IsNullOrEmpty(inputModel.FilePath) || inputModel.FilePath == "/") && inputFilePaths.Count != 0 )
 			{
 				inputModel.FilePath = inputFilePaths.FirstOrDefault();
 			}
@@ -29,8 +29,7 @@ namespace starskytest.FakeMocks
 			}
 			
 			CompareAllLabelsAndRotation(changedFileIndexItemName,
-				detailView,
-				inputModel, append, rotateClock);
+				detailView);
 
 			if ( inputModel.Status == FileIndexItem.ExifStatus.Default )
 			{
@@ -46,9 +45,8 @@ namespace starskytest.FakeMocks
 			return Task.FromResult( (new List<FileIndexItem>{inputModel}, changedFileIndexItemName));
 		}
 
-		private static void CompareAllLabelsAndRotation(Dictionary<string, List<string>> changedFileIndexItemName, DetailView detailView,
-			FileIndexItem _, bool _1, int _2)
-		{
+		private static void CompareAllLabelsAndRotation(Dictionary<string, List<string>> changedFileIndexItemName, DetailView detailView)
+        {
 			if (detailView.FileIndexItem?.FilePath != null && !changedFileIndexItemName.ContainsKey(detailView.FileIndexItem.FilePath) )
 			{
 				changedFileIndexItemName.Add(detailView.FileIndexItem!.FilePath, new List<string>{"Tags"});

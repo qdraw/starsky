@@ -6,12 +6,7 @@ export default {
 
 export const Default = () => {
   return (
-    <ColorClassSelect
-      collections={true}
-      isEnabled={true}
-      filePath={"/test"}
-      onToggle={() => {}}
-    />
+    <ColorClassSelect collections={true} isEnabled={true} filePath={"/test"} onToggle={() => {}} />
   );
 };
 

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
@@ -322,6 +323,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		}
 		
 		[TestMethod]
+		[SuppressMessage("ReSharper", "EventUnsubscriptionViaAnonymousDelegate")]
 		public void NotifyExistingFiles_All_Remove()
 		{
 			var watcher = new FileSystemWatcher(_tempFolder);
@@ -329,7 +331,6 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			wrapper.OrderByOldestFirst = true;
 			
 			var message = "";
-			// ReSharper disable once EventUnsubscriptionViaAnonymousDelegate
 			wrapper.All -= (_, s) =>
 			{
 				message = s.FullPath;
@@ -352,12 +353,13 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			wrapper.OrderByOldestFirst = true;
 			
 			var message = "";
-			FileSystemEventHandler welcome = (_, s) =>
+
+			void Welcome(object _, FileSystemEventArgs s)
 			{
 				message = s.FullPath;
-			};
+			}
 
-			wrapper.Created += welcome;
+			wrapper.Created += Welcome;
 
 			
 			Assert.IsFalse(message.StartsWith(_tempFolder));
@@ -473,13 +475,21 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 
 			wrapper.StopRaisingBufferedEvents();
 
-			wrapper.BufferEvent(null, null);
-			wrapper.BufferEvent(null, null);
+			wrapper.BufferEvent(null!, null!);
+			wrapper.BufferEvent(null!, null!);
 
 			Assert.IsNull(watcher.SynchronizingObject);
 			
 			wrapper.EnableRaisingEvents = false;
-			wrapper.Dispose();
+
+			try
+			{
+				wrapper.Dispose();
+			}
+			catch ( Exception )
+			{
+				// do nothing
+			}
 			watcher.Dispose();
 		}
 		
@@ -497,7 +507,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			};
 
 			wrapper.Error += welcome;
-			wrapper.BufferingFileSystemWatcher_Error(null,
+			wrapper.BufferingFileSystemWatcher_Error(null!,
 				new ErrorEventArgs(new Exception("1")));
 			wrapper.Error -= welcome;
 		
@@ -566,8 +576,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 
-			FileSystemEventHandler t = null;
-			var result = wrapper.InvokeHandler(t, null);
+			FileSystemEventHandler t = null!;
+			var result = wrapper.InvokeHandler(t, null!);
 			Assert.IsNull(result);
 			
 			wrapper.EnableRaisingEvents = false;
@@ -588,7 +598,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 				message = s.FullPath;
 			};
 			
-			wrapper.InvokeHandler(welcome, null);
+			wrapper.InvokeHandler(welcome, null!);
+			Assert.IsNotNull(message);
 			
 			wrapper.EnableRaisingEvents = false;
 			wrapper.Dispose();
@@ -601,7 +612,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 
-			RenamedEventHandler t = null;
+			RenamedEventHandler t = null!;
 			var result = wrapper.InvokeHandler(t, null);
 			Assert.IsNull(result);
 			
@@ -611,8 +622,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		}
 		
 		[TestMethod]
-		[ExpectedException(typeof(NullReferenceException))]
-		public void InvokeHandler_RenamedEventHandler()
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void InvokeHandler_RenamedEventHandler_ExpectException()
 		{
 			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
@@ -628,6 +639,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			wrapper.EnableRaisingEvents = false;
 			wrapper.Dispose();
 			watcher.Dispose();
+			Assert.IsNotNull(message);
 		}
 		
 				
@@ -637,8 +649,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 
-			ErrorEventHandler t = null;
-			var result = wrapper.InvokeHandler(t, null);
+			ErrorEventHandler? t = null;
+			var result = wrapper.InvokeHandler(t, null!);
 			Assert.IsNull(result);
 		}
 		
@@ -655,11 +667,27 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 				message = s.ToString();
 			};
 			
-			wrapper.InvokeHandler(welcome, null);
+			wrapper.InvokeHandler(welcome, null!);
+			Assert.IsNotNull(message);
 			
 			wrapper.EnableRaisingEvents = false;
 			wrapper.Dispose();
 			watcher.Dispose();
+		}
+
+		[TestMethod]
+		[SuppressMessage("Usage", "S3966:Objects should not be disposed more than once")]
+		public void DisposeDouble()
+		{
+			var watcher = new FileSystemWatcher(_tempFolder);
+			var wrapper = new BufferingFileSystemWatcher(watcher);
+			
+			wrapper.Dispose();
+			Assert.IsTrue(wrapper.IsDisposed);
+
+			wrapper.Dispose();
+			
+			Assert.IsTrue(wrapper.IsDisposed);
 		}
 	}
 }

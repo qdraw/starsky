@@ -49,13 +49,7 @@ export default function modalFreezeHelper(
   if (isOpen) {
     modalFreezeOpen(freeze, exitButton, modalContainer, rootContainer);
   } else {
-    modalUnFreezeNotOpen(
-      unfreeze,
-      modalContainer,
-      rootContainer,
-      focusAfterExit,
-      initialRender
-    );
+    modalUnFreezeNotOpen(unfreeze, modalContainer, rootContainer, focusAfterExit, initialRender);
   }
 
   return () => {

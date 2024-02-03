@@ -67,7 +67,7 @@ namespace starsky.feature.health.HealthCheck
                     _services.AddHealthChecks().AddMySql(_appSettings.DatabaseConnection);
                     break;
                 case AppSettings.DatabaseTypeList.Sqlite:
-	                _services.AddHealthChecks().AddSqlite(_appSettings.DatabaseConnection, healthSqlQuery, "sqlite");
+	                _services.AddHealthChecks().AddSqlite(_appSettings.DatabaseConnection, healthSqlQuery);
                     break;
                 case AppSettings.DatabaseTypeList.InMemoryDatabase:
 	                break;

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.accountmanagement.Interfaces;
 using starsky.foundation.accountmanagement.Middleware;
 using starsky.foundation.accountmanagement.Services;
 using starsky.foundation.database.Data;
@@ -19,7 +18,7 @@ namespace starskytest.Middleware
 	[TestClass]
 	public sealed class BasicAuthenticationSignInManagerTest
 	{
-		private readonly IUserManager _userManager;
+		private readonly UserManager _userManager;
 		public IServiceProvider Services { get; set; }
         
 		public BasicAuthenticationSignInManagerTest()

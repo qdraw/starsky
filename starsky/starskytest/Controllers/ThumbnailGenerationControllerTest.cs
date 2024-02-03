@@ -30,8 +30,11 @@ namespace starskytest.Controllers
 		public async Task ThumbnailGeneration_Endpoint()
 		{
 			var selectorStorage = new FakeSelectorStorage(new FakeIStorage(new List<string>{"/"}));
-			var controller = new ThumbnailGenerationController(selectorStorage, new ManualThumbnailGenerationService( new FakeIQuery(), 
-				new FakeIWebLogger(), new FakeIWebSocketConnectionsService(), new FakeIThumbnailService(), new FakeThumbnailBackgroundTaskQueue()));
+			var controller = new ThumbnailGenerationController(selectorStorage, 
+				new ManualThumbnailGenerationService( new FakeIQuery(), 
+				new FakeIWebLogger(), new FakeIWebSocketConnectionsService(), 
+				new FakeIThumbnailService(selectorStorage), 
+				new FakeThumbnailBackgroundTaskQueue()));
 			
 			var json = await controller.ThumbnailGeneration("/") as JsonResult;
 			Assert.IsNotNull(json);

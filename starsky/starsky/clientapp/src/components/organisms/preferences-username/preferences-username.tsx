@@ -7,10 +7,7 @@ import { UrlQuery } from "../../../shared/url-query";
 const PreferencesUsername: React.FunctionComponent<any> = () => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageUnknownUsername = language.text(
-    "Onbekende gebruikersnaam",
-    "Unknown username"
-  );
+  const MessageUnknownUsername = language.text("Onbekende gebruikersnaam", "Unknown username");
   const MessageUsername = language.text("Gebruikersnaam", "Username");
 
   const accountStatus = useFetch(new UrlQuery().UrlAccountStatus(), "get");
@@ -19,8 +16,7 @@ const PreferencesUsername: React.FunctionComponent<any> = () => {
   useEffect(() => {
     if (
       accountStatus.statusCode !== 200 ||
-      !accountStatus.data ||
-      !accountStatus.data.credentialsIdentifiers ||
+      !accountStatus.data?.credentialsIdentifiers ||
       accountStatus.data.credentialsIdentifiers.length !== 1
     )
       return;

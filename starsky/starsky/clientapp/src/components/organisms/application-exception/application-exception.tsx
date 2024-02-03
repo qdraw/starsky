@@ -18,10 +18,7 @@ const ApplicationException: FunctionComponent<any> = () => {
   return (
     <>
       <MenuDefault isEnabled={false} />
-      <div
-        className="content--header fade-in"
-        data-test="application-exception-header"
-      >
+      <div className="content--header fade-in" data-test="application-exception-header">
         {MessageApplicationException}
       </div>
       <div className="content--subheader fade-in">

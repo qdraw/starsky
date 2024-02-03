@@ -1,8 +1,9 @@
-using System;
 using System.IO;
 using build;
 using Nuke.Common.IO;
+using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
+using Serilog;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
@@ -12,7 +13,7 @@ namespace helpers
 	{
 		static void Information(string input)
 		{
-			Console.WriteLine(input);
+			Log.Information(input);
 		}
 
 		static bool DirectoryExists(string path)
@@ -55,21 +56,34 @@ namespace helpers
 				
 				var runSettingsFile = Path.Combine(
 					WorkingDirectory.GetSolutionParentFolder(), "build.vstest.runsettings");
-				Console.WriteLine("runSettingsFile " + runSettingsFile);
 				
-				// search for: dotnet test
-				DotNetTest(_ => _
-					.SetConfiguration(configuration)
-					// .SetProcessArgumentConfigurator()
-					.EnableNoRestore()
-					.EnableNoBuild()
-					.SetVerbosity(DotNetVerbosity.Normal)
-					.SetLoggers("trx;LogFileName=test_results.trx")
-					.SetDataCollector("XPlat Code Coverage")
-					.SetSettingsFile(runSettingsFile)
-					.SetProjectFile(projectFullPath));
+				Log.Information("runSettingsFile " + runSettingsFile);
 
-				Information("on Error: search for: Error Message");
+				try
+				{
+					// search for: dotnet test
+					DotNetTest(p => p
+						.SetConfiguration(configuration)
+						.EnableNoRestore()
+						.EnableNoBuild()
+						.SetVerbosity(DotNetVerbosity.Normal)
+						.SetLoggers("trx;LogFileName=test_results.trx")
+						.SetDataCollector("XPlat Code Coverage")
+						.SetSettingsFile(runSettingsFile)
+						.SetProjectFile(projectFullPath));
+				}
+				catch ( ProcessException )
+				{
+					var trxFullFilePath = Path.Combine(
+						testParentPath,
+						"TestResults",
+						"test_results.trx");
+
+					TrxParserHelper.DisplayFileTests(trxFullFilePath);
+					throw;
+				}
+
+
 				var coverageEnum = GetFilesHelper.GetFiles("**/coverage.opencover.xml");
 
 				foreach ( var coverageItem in coverageEnum )

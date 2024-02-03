@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -49,8 +48,7 @@ namespace starsky.foundation.accountmanagement.Services
 		private bool IsCacheEnabled()
 		{
 			// || _appSettings?.AddMemoryCache == false > disabled
-			if( _cache == null ) return false;
-			return true;
+			return _cache != null;
 		}
 
 		/// <summary>
@@ -107,7 +105,7 @@ namespace starsky.foundation.accountmanagement.Services
 					.Equals(credentialTypeCode.ToLower()));
 
 			// When not exist add it
-			if (credentialType == null && credentialTypeCode.ToLower() == "email" )
+			if (credentialType == null && credentialTypeCode.Equals("email", StringComparison.CurrentCultureIgnoreCase) )
 			{
 				credentialType = new CredentialType
 				{
@@ -134,7 +132,7 @@ namespace starsky.foundation.accountmanagement.Services
 		{
 			if (IsCacheEnabled() && _cache?.TryGetValue(AllUsersCacheKey, out var objectAllUsersResult) == true)
 			{
-				return new UserOverviewModel(( List<User> ) objectAllUsersResult);
+				return new UserOverviewModel(( List<User>? ) objectAllUsersResult);
 			}
 
 			try
@@ -142,7 +140,7 @@ namespace starsky.foundation.accountmanagement.Services
 				var allUsers = await _dbContext.Users.TagWith("AllUsersAsync").ToListAsync();
 				if ( IsCacheEnabled() )
 				{
-					_cache.Set(AllUsersCacheKey, allUsers, 
+					_cache!.Set(AllUsersCacheKey, allUsers, 
 						new TimeSpan(99,0,0));
 				}
 				return new UserOverviewModel(allUsers);
@@ -173,7 +171,7 @@ namespace starsky.foundation.accountmanagement.Services
 			{
 				allUsers.Add(user);
 			}
-			_cache.Set(AllUsersCacheKey, allUsers, 
+			_cache!.Set(AllUsersCacheKey, allUsers, 
 				new TimeSpan(99,0,0));
 		}
 	    
@@ -185,7 +183,7 @@ namespace starsky.foundation.accountmanagement.Services
 			if ( !IsCacheEnabled() ) return;
 			var allUsers = (await AllUsersAsync()).Users;
 			allUsers.Remove(user);
-			_cache.Set(AllUsersCacheKey, allUsers, 
+			_cache!.Set(AllUsersCacheKey, allUsers, 
 				new TimeSpan(99,0,0));
 		}
 
@@ -203,7 +201,7 @@ namespace starsky.foundation.accountmanagement.Services
 			return user;
 		}
 
-		public async Task<User?> Exist(int userTableId)
+		public async Task<User?> ExistAsync(int userTableId)
 		{
 			if ( !IsCacheEnabled() )
 			{
@@ -230,7 +228,8 @@ namespace starsky.foundation.accountmanagement.Services
 				return AccountRoles.AppAccountRoles.Administrator.ToString();
 			}
 
-			if ( _appSettings.AccountRolesByEmailRegisterOverwrite
+			if (_appSettings.AccountRolesByEmailRegisterOverwrite != null 
+			    && _appSettings.AccountRolesByEmailRegisterOverwrite
 			    .TryGetValue(identifier, out var emailsForConfig) && 
 			     AccountRoles.GetAllRoles().Contains(emailsForConfig) )
 			{
@@ -243,13 +242,13 @@ namespace starsky.foundation.accountmanagement.Services
 		/// <summary>
 		/// Add a new user, including Roles and UserRoles
 		/// </summary>
-		/// <param name="name">Nice Name, default string.Emthy</param>
+		/// <param name="name">Nice Name, default string.Empty</param>
 		/// <param name="credentialTypeCode">default is: Email</param>
 		/// <param name="identifier">an email address, e.g. dont@mail.us</param>
 		/// <param name="secret">Password</param>
 		/// <returns>result object</returns>
 		public async Task<SignUpResult> SignUpAsync(string name,
-			string credentialTypeCode, string identifier, string secret)
+			string credentialTypeCode, string? identifier, string? secret)
 		{
 			var credentialType = await AddDefaultCredentialType(credentialTypeCode);
 			var roles = AddDefaultRoles();
@@ -379,7 +378,7 @@ namespace starsky.foundation.accountmanagement.Services
 			_dbContext.SaveChanges();
 		}
         
-		public ChangeSecretResult ChangeSecret(string credentialTypeCode, string identifier, string secret)
+		public ChangeSecretResult ChangeSecret(string credentialTypeCode, string? identifier, string secret)
 		{
 			var credentialType = _dbContext.CredentialTypes.FirstOrDefault(
 				ct => ct.Code != null && ct.Code.ToLower().Equals(credentialTypeCode.ToLower()));
@@ -392,7 +391,7 @@ namespace starsky.foundation.accountmanagement.Services
 			var credential = _dbContext.Credentials.TagWith("ChangeSecret").FirstOrDefault(
 				c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
             
-			if (credential == null)
+			if (credential == null || identifier == null)
 			{
 				return new ChangeSecretResult(success: false, error: ChangeSecretResultError.CredentialNotFound);
 			}
@@ -407,14 +406,14 @@ namespace starsky.foundation.accountmanagement.Services
             
 			if ( IsCacheEnabled() )
 			{
-				_cache.Set(CredentialCacheKey(credentialType, identifier), 
+				_cache!.Set(CredentialCacheKey(credentialType, identifier), 
 					credential,new TimeSpan(99,0,0));
 			}
             
 			return new ChangeSecretResult(success: true);
 		}
 
-		internal static string CredentialCacheKey(CredentialType credentialType, string identifier)
+		internal static string CredentialCacheKey(CredentialType credentialType, string? identifier)
 		{
 			return "credential_" + credentialType.Id + "_" + identifier;
 		}
@@ -425,17 +424,21 @@ namespace starsky.foundation.accountmanagement.Services
 		/// <param name="credentialType">email</param>
 		/// <param name="identifier">the id</param>
 		/// <returns>Credential data object</returns>
-		internal Credential? CachedCredential(CredentialType credentialType, string identifier)
+		internal Credential? CachedCredential(CredentialType credentialType, string? identifier)
 		{
+			if ( string.IsNullOrEmpty(identifier) )
+			{
+				return null;
+			}
+			
 			var key = CredentialCacheKey(credentialType, identifier);
 	        
 			// Add caching for credentialType
 			if (IsCacheEnabled() && _cache?.TryGetValue(key, 
 				    out var objectCredentialTypeCode) == true)
 			{
-				return ( Credential ) objectCredentialTypeCode;
+				return ( Credential? ) objectCredentialTypeCode;
 			}
-
 			
 			var credentialSelect = _dbContext.Credentials.AsNoTracking().TagWith("Credential").Where(
 				c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier).Select(x => new
@@ -447,7 +450,10 @@ namespace starsky.foundation.accountmanagement.Services
 				x.Extra
 			}).FirstOrDefault();
 
-			if ( credentialSelect == null ) return null;
+			if ( credentialSelect == null )
+			{
+				return null;
+			}
 
 			var credential = new Credential
 			{
@@ -460,7 +466,7 @@ namespace starsky.foundation.accountmanagement.Services
 
 			if ( IsCacheEnabled())
 			{
-				_cache.Set(key, credential,new TimeSpan(99,0,0));
+				_cache!.Set(key, credential,new TimeSpan(99,0,0));
 			}
 
 			return credential;
@@ -479,7 +485,7 @@ namespace starsky.foundation.accountmanagement.Services
 			if (IsCacheEnabled() && _cache?.TryGetValue(cacheKey, 
 				    out var objectCredentialTypeCode) == true)
 			{
-				return ( CredentialType ) objectCredentialTypeCode;
+				return ( CredentialType? ) objectCredentialTypeCode;
 			}
 			
 			var credentialTypeSelect = _dbContext.CredentialTypes.AsNoTracking().TagWith("CredentialType").Where(
@@ -502,7 +508,7 @@ namespace starsky.foundation.accountmanagement.Services
 
 			if ( IsCacheEnabled() )
 			{
-				_cache.Set(cacheKey, credentialType, 
+				_cache!.Set(cacheKey, credentialType, 
 					new TimeSpan(99,0,0));
 			}
 			return credentialType;
@@ -533,7 +539,7 @@ namespace starsky.foundation.accountmanagement.Services
 		/// <param name="secret">password</param>
 		/// <returns>status</returns>
 		public async Task<ValidateResult> ValidateAsync(string credentialTypeCode,
-			string identifier, string secret)
+			string? identifier, string secret)
 		{
 			var credentialType = CachedCredentialType(credentialTypeCode);
 
@@ -581,7 +587,9 @@ namespace starsky.foundation.accountmanagement.Services
 		internal async Task<ValidateResult> ResetAndSuccess(int accessFailedCount, int userId, User? userData )
 		{
 			if ( accessFailedCount <= 0 )
+			{
 				return new ValidateResult(userData, true);
+			}
 			
 			userData = await _dbContext.Users.FindAsync(userId);
 			if ( userData == null )
@@ -623,9 +631,15 @@ namespace starsky.foundation.accountmanagement.Services
         
 		public async Task<bool> SignIn(HttpContext httpContext, User? user, bool isPersistent = false)
 		{
-			if ( user == null ) return false;
+			if ( user == null )
+			{
+				return false;
+			}
 			var claims = GetUserClaims(user).ToList();
-			if ( !claims.Any() ) return false;
+			if ( claims.Count == 0 )
+			{
+				return false;
+			}
 			
 			ClaimsIdentity identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 			ClaimsPrincipal principal = new ClaimsPrincipal(identity);
@@ -775,7 +789,7 @@ namespace starsky.foundation.accountmanagement.Services
 			return claims;
 		}
         
-		private IEnumerable<Claim> GetUserRoleClaims(User user)
+		private List<Claim> GetUserRoleClaims(User user)
 		{
 			var claims = new List<Claim>();
 			IEnumerable<int> roleIds = _dbContext.UserRoles.TagWith("GetUserRoleClaims").Where(

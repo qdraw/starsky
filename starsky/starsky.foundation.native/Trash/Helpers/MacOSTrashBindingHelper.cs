@@ -13,7 +13,9 @@ namespace starsky.foundation.native.Trash.Helpers
 	/// 
 	/// @see: https://stackoverflow.com/a/44669560
 	/// </summary>
-    public static class MacOsTrashBindingHelper
+    [SuppressMessage("Interoperability", "SYSLIB1054:Use \'LibraryImportAttribute\' instead of \'DllImportAttribute\' " +
+                                         "to generate P/Invoke marshalling code at compile time")]
+	public static class MacOsTrashBindingHelper
     {
 	    /// <summary>
 	    /// Trash endpoint
@@ -88,6 +90,7 @@ namespace starsky.foundation.native.Trash.Helpers
         private const string FoundationFramework = "/System/Library/Frameworks/Foundation.framework/Foundation";
         private const string AppKitFramework = "/System/Library/Frameworks/AppKit.framework/AppKit";
 
+        [SuppressMessage("Usage", "S6640: Make sure that using \"unsafe\" is safe here")]
         internal static unsafe IntPtr CreateCfString(string aString)
         {
             var bytes = Encoding.Unicode.GetBytes(aString);
@@ -98,9 +101,11 @@ namespace starsky.foundation.native.Trash.Helpers
             }
         }
 
-        // warning: this doesn't call retain/release on the elements in the array
+        [SuppressMessage("Usage", "S6640: Make sure that using \"unsafe\" is safe here")]
+        
         internal static unsafe IntPtr CreateCfArray(IntPtr[] objects)
         {
+	        // warning: this doesn't call retain/release on the elements in the array
             fixed(IntPtr* values = objects) {
                  return CFArrayCreate(IntPtr.Zero, (IntPtr)values, objects.Length, IntPtr.Zero);
             }

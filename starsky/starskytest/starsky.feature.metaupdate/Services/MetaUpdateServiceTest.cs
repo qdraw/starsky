@@ -9,13 +9,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.metaupdate.Services;
 using starsky.foundation.database.Data;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
-using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
@@ -27,17 +25,17 @@ namespace starskytest.starsky.feature.metaupdate.Services
 	public sealed class MetaUpdateServiceTest
 	{
 		private readonly IMemoryCache _memoryCache;
-		private readonly IQuery _query;
+		private readonly Query _query;
 		private readonly AppSettings _appSettings;
 		private readonly FakeExifTool _exifTool;
-		private readonly IStorage _iStorageFake;
+		private readonly FakeIStorage _iStorageFake;
 
 		public MetaUpdateServiceTest()
 		{
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
 				.BuildServiceProvider();
-			_memoryCache = provider.GetService<IMemoryCache>();
+			_memoryCache = provider.GetRequiredService<IMemoryCache>();
             
 			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
 			builder.UseInMemoryDatabase(nameof(MetaUpdateService));

@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
@@ -14,25 +13,6 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	[TestClass]
 	public sealed class QueryCountTest
 	{
-		private IMemoryCache _memoryCache;
-		private readonly Query _query;
-
-		public QueryCountTest()
-		{
-			_query = new Query(CreateNewScope().CreateScope().ServiceProvider
-				.GetService<ApplicationDbContext>(), new AppSettings(), CreateNewScope(), new FakeIWebLogger(),_memoryCache);
-		}
-
-		private IServiceScopeFactory CreateNewScope()
-		{
-			var services = new ServiceCollection();
-			services.AddMemoryCache();
-			services.AddDbContext<ApplicationDbContext>(options => 
-				options.UseInMemoryDatabase(nameof(QueryGetObjectsByFilePathAsyncTest)));
-			var serviceProvider = services.BuildServiceProvider();
-			_memoryCache = serviceProvider.GetService<IMemoryCache>();
-			return serviceProvider.GetRequiredService<IServiceScopeFactory>();
-		}
 		
 		[TestMethod]
 		public async Task ShouldGive1Result_BasicQuery()
@@ -44,7 +24,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var query =
 				new Query(
 					services.BuildServiceProvider()
-						.GetService<ApplicationDbContext>(), new AppSettings(),
+						.GetRequiredService<ApplicationDbContext>(), new AppSettings(),
 					null!, new FakeIWebLogger());
 			
 			
@@ -63,8 +43,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				options.UseInMemoryDatabase(nameof(QueryGetObjectsByFilePathAsyncTest) + "ShouldGive1Result_Predicate"));
 			var serviceProvider = services.BuildServiceProvider();
 			
-			var query = new Query(serviceProvider.GetService<ApplicationDbContext>(), new AppSettings(), 
-				null!, new FakeIWebLogger(),_memoryCache);
+			var query = new Query(serviceProvider.GetRequiredService<ApplicationDbContext>(), new AppSettings(), 
+				null!, new FakeIWebLogger());
 			
 			var itemAsync = await query.AddItemAsync(new FileIndexItem("/test.jpg"));
 			var result = await query.CountAsync(p => p.IsDirectory == false);

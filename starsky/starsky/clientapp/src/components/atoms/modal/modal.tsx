@@ -5,6 +5,7 @@ import useGlobalSettings from "../../../hooks/use-global-settings";
 import { Language } from "../../../shared/language";
 import modalFreezeHelper from "./modal-freeze-helper";
 import modalInsertPortalDiv from "./modal-insert-portal-div";
+import localization from "../../../localization/localization.json";
 
 type ModalPropTypes = {
   children: ReactNode;
@@ -18,6 +19,17 @@ type ModalPropTypes = {
 };
 
 export const ModalOpenClassName = "modal-bg--open";
+
+function ModalClassName(isOpen: boolean, className?: string) {
+  let baseClassName = "modal-bg";
+  if (isOpen) {
+    baseClassName += ` ${ModalOpenClassName}`;
+    if (className) {
+      baseClassName += ` ${className}`;
+    }
+  }
+  return baseClassName;
+}
 
 function ifModalOpenHandleExit(
   event: React.MouseEvent<HTMLDivElement, MouseEvent>,
@@ -40,7 +52,7 @@ export default function Modal({
 }: ModalPropTypes): any {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageCloseDialog = language.text("Sluiten", "Close");
+  const MessageCloseDialog = language.key(localization.MessageCloseDialog);
 
   const [forceUpdate, setForceUpdate] = useState(false);
 
@@ -54,14 +66,7 @@ export default function Modal({
 
   const initialRender = useRef(false);
   useEffect(() => {
-    return modalFreezeHelper(
-      initialRender,
-      root,
-      id,
-      isOpen,
-      exitButton,
-      focusAfterExit
-    );
+    return modalFreezeHelper(initialRender, root, id, isOpen, exitButton, focusAfterExit);
   }, [isOpen, focusAfterExit, id, root]);
 
   if (modal.current) {
@@ -72,18 +77,12 @@ export default function Modal({
           event.key === "Enter" && handleExit();
         }}
         data-test={dataTest}
-        className={`modal-bg ${
-          isOpen ? ` ${ModalOpenClassName} ` + className : ""
-        }`}
+        className={ModalClassName(isOpen, className)}
       >
-        <div
-          className={`modal-content ${isOpen ? " modal-content--show" : ""}`}
-        >
+        <div className={`modal-content ${isOpen ? " modal-content--show" : ""}`}>
           <div className="modal-close-bar">
             <button
-              className={`modal-exit-button ${
-                isOpen ? " modal-exit-button--showing" : ""
-              }`}
+              className={`modal-exit-button ${isOpen ? " modal-exit-button--showing" : ""}`}
               ref={exitButton}
               data-test="modal-exit-button"
               onClick={handleExit}

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <RootNamespace>starsky.feature.trash</RootNamespace>
         <ProjectGuid>{21affb47-1f8c-458a-84bb-24959e0fda31}</ProjectGuid>
         <Version>0.5.14</Version>

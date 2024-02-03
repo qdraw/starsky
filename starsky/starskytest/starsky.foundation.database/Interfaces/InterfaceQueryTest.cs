@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -9,6 +10,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.database.Interfaces;
 
 [TestClass]
+[SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance")]
 public class InterfaceQueryTest
 {
 	[TestMethod]

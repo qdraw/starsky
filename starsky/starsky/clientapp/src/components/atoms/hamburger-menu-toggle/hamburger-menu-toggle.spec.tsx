@@ -4,11 +4,7 @@ import HamburgerMenuToggle from "./hamburger-menu-toggle";
 describe("HamburgerMenuToggle", () => {
   it("renders", () => {
     render(
-      <HamburgerMenuToggle
-        select={false}
-        hamburgerMenu={true}
-        setHamburgerMenu={jest.fn()}
-      />
+      <HamburgerMenuToggle select={false} hamburgerMenu={true} setHamburgerMenu={jest.fn()} />
     );
   });
 });

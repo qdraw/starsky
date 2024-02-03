@@ -6,9 +6,7 @@ export default {
 };
 
 export const Default = () => {
-  return (
-    <ListImage alt={"alt"} fileHash={"src"} imageFormat={ImageFormat.jpg} />
-  );
+  return <ListImage alt={"alt"} fileHash={"src"} imageFormat={ImageFormat.jpg} />;
 };
 
 Default.story = {

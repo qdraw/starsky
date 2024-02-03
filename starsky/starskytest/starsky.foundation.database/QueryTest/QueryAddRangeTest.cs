@@ -117,6 +117,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				get => throw new DbUpdateConcurrencyException();
 				set
 				{
+					// do nothing
 				}
 			}
 			public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) {

@@ -21,14 +21,14 @@ namespace starskytest.FakeMocks
 		}
 		public string FilePathOverlayImage(string sourceFilePath, AppSettingsPublishProfiles profile)
 		{
-			return new OverlayImage(null,new AppSettings()).FilePathOverlayImage(
+			return new OverlayImage(null).FilePathOverlayImage(
 				sourceFilePath, profile);
 		}
 
 		public string FilePathOverlayImage(string outputParentFullFilePathFolder, string sourceFilePath,
 			AppSettingsPublishProfiles profile)
 		{
-			return new OverlayImage(null,new AppSettings()).FilePathOverlayImage(outputParentFullFilePathFolder,
+			return new OverlayImage(null).FilePathOverlayImage(outputParentFullFilePathFolder,
 				sourceFilePath, profile);
 		}
 
@@ -43,7 +43,7 @@ namespace starskytest.FakeMocks
 		{
 			if ( itemFilePath == "/corrupt.jpg" || itemFilePath == "corrupt")
 			{
-				await _storage.WriteStreamAsync(new MemoryStream(new CreateAnImageCorrupt().Bytes),
+				await _storage.WriteStreamAsync(new MemoryStream(new CreateAnImageCorrupt().Bytes.ToArray()),
 					outputFullFilePath);
 				return true;
 			}

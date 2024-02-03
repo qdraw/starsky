@@ -1,11 +1,8 @@
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
-using starsky.foundation.realtime.Services;
-using starsky.foundation.sync.WatcherBackgroundService;
 using starsky.foundation.worker.Helpers;
 using starskytest.FakeMocks;
 
@@ -39,7 +36,7 @@ public class ProcessTaskQueueTest
 	[Timeout(10000)]
 	public async Task ProcessBatchedLoopAsyncTest_NothingIn()
 	{
-		CancellationTokenSource source = new CancellationTokenSource();
+		using CancellationTokenSource source = new CancellationTokenSource();
 		CancellationToken token = source.Token;
 
 		var fakeService = new FakeDiskWatcherUpdateBackgroundTaskQueue();
@@ -61,7 +58,7 @@ public class ProcessTaskQueueTest
 	[Timeout(10000)]
 	public async Task ProcessBatchedLoopAsyncTest_NothingIn_CanceledDuringWait()
 	{
-		CancellationTokenSource source = new CancellationTokenSource();
+		using var source = new CancellationTokenSource();
 		CancellationToken token = source.Token;
 
 		var fakeService = new FakeDiskWatcherUpdateBackgroundTaskQueue();
@@ -84,7 +81,7 @@ public class ProcessTaskQueueTest
 	[Timeout(10000)]
 	public async Task ProcessBatchedLoopAsyncTest_ItemsIn()
 	{
-		CancellationTokenSource source = new CancellationTokenSource();
+		using var source = new CancellationTokenSource();
 		CancellationToken token = source.Token;
 
 		var fakeService = new FakeDiskWatcherUpdateBackgroundTaskQueue(2);

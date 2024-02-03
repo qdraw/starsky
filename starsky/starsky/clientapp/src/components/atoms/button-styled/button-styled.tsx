@@ -6,9 +6,7 @@ export interface IButtonProps {
   disabled?: boolean;
   className?: string;
   "data-test"?: string;
-  onClick?: <T>(
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => void | Promise<T>;
+  onClick?: <T>(event: React.MouseEvent<HTMLButtonElement>) => void | Promise<T>;
 }
 
 const ButtonStyled: React.FunctionComponent<IButtonProps> = memo((props) => {

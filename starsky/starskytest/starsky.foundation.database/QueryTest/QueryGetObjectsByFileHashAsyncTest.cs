@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
@@ -31,7 +29,7 @@ public class GetObjectsByFileHashAsyncTest
 	public GetObjectsByFileHashAsyncTest()
 	{
 		_query = new Query(CreateNewScope().CreateScope().ServiceProvider
-			.GetService<ApplicationDbContext>(), new AppSettings(), null!, new FakeIWebLogger(), new FakeMemoryCache()) ;
+			.GetRequiredService<ApplicationDbContext>(), new AppSettings(), null!, new FakeIWebLogger(), new FakeMemoryCache()) ;
 	}
 	
 	[TestMethod]
@@ -51,6 +49,6 @@ public class GetObjectsByFileHashAsyncTest
 		});
 		
 		Assert.AreEqual(1, items.Count);
-		Assert.AreEqual( "123456", items.FirstOrDefault(p => p.FileHash == "123456")?.FileHash);
+		Assert.AreEqual( "123456", items.Find(p => p.FileHash == "123456")?.FileHash);
 	}	
 }

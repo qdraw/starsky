@@ -12,7 +12,7 @@ const { getFiles } = require("./lib/get-files-directory");
 const { prefixPath } = require("./lib/prefix-path.const.js");
 const { httpsGet } = require("./lib/https-get.js");
 
-let newRunTimeVersion = "6.0.x";
+let newRunTimeVersion = "8.0.x";
 
 // https://docs.microsoft.com/en-us/dotnet/standard/frameworks
 
@@ -77,14 +77,13 @@ getLatestDotnetRelease().then((newTargetVersion) => {
 
 				const frameworkMonikerByPath = await updateNugetPackageVersions(
 					sortedFilterPathList,
-					newRunTimeVersion
 				);
 
 				const refFrameworkMonikerByPath =
 					await addReferencedProjectMonikers(frameworkMonikerByPath);
 
 				const sortedFrameworkMonikerByPath =
-					await sortNetFrameworkMoniker(refFrameworkMonikerByPath);
+					await sortNetFrameworkMoniker(refFrameworkMonikerByPath, newTargetVersion);
 
 				await updateNetFrameworkMoniker(sortedFrameworkMonikerByPath);
 
@@ -285,7 +284,7 @@ function replaceMcrFileContent(fileContent, what, sdkResult) {
 }
 
 async function getByBlobMicrosoft(targetVersion, isRuntime) {
-	var what = "latest-sdk";
+	let what = "latest-sdk";
 	if (isRuntime) what = "latest-runtime";
 
 	const resultsDotnetCli = await httpsGet(
@@ -385,7 +384,7 @@ async function updateAzureYmlFile(filePathList, sdkVersion) {
 			let buffer = await readFile(filePath);
 			let fileContent = buffer.toString("utf8");
 
-			var taskUseDotNetRegex = new RegExp("task: UseDotNet@2", "g");
+			let taskUseDotNetRegex = new RegExp("task: UseDotNet@2", "g");
 
 			const taskUseDotNetMatch = taskUseDotNetRegex.exec(fileContent);
 
@@ -561,7 +560,7 @@ async function addReferencedProjectMonikers(frameworkMonikerByPath) {
 	return frameworkMonikerByPath;
 }
 
-async function sortNetFrameworkMoniker(frameworkMonikerByPath) {
+async function sortNetFrameworkMoniker(frameworkMonikerByPath, newTargetVersionAsFallback) {
 	// references
 	for (let [filePath, netMonikers] of Object.entries(
 		frameworkMonikerByPath
@@ -571,6 +570,14 @@ async function sortNetFrameworkMoniker(frameworkMonikerByPath) {
 		);
 		// console.log(filePath + ' referencedProjectPaths')
 		// console.log(referencedProjectPaths)
+
+		if (referencedProjectPaths.length === 0) {
+			const netMonikerFallback = "net" + newTargetVersionAsFallback.match(/^\d\.\d/ig,"")[0];
+			frameworkMonikerByPath[filePath].push(netMonikerFallback);
+			console.log(
+				`🎁 ${filePath} - is using default ${netMonikerFallback}`
+			);
+		}
 
 		for (const refPath of referencedProjectPaths) {
 			for (const netMoniker of netMonikers) {
@@ -702,6 +709,11 @@ async function updateNetFrameworkMoniker(sortedFrameworkMonikerByPath) {
 			}
 			usedTargetFrameworkMonikers[filePath].push(lastNet);
 		}
+		else {
+			console.log(
+				`❌ ✖ ${filePath} - is skipped to ${usedTargetFrameworkMonikers}`
+			);
+		}
 	}
 }
 
@@ -781,7 +793,7 @@ async function updateNugetPackageVersions(filePathList) {
 
 async function updateSingleNugetPackageVersion(filePath) {
 	let usedTargetFrameworkMonikers = [];
-	// '///starsky/starsky.foundation.consoletelemetry/starsky.foundation.consoletelemetry.csproj': [ 'net6.0', 'netstandard2.0', 'netstandard2.1' ],
+	// '///starsky/starsky.foundation.consoletelemetry/starsky.foundation.consoletelemetry.csproj': [ 'net8.0', 'netstandard2.0', 'netstandard2.1' ],
 
 	if (filePath.endsWith(".csproj")) {
 		let buffer = await readFile(filePath);

@@ -100,7 +100,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 
 			new SetupDatabaseTypes(appSettings, services, console).BuilderDb();
 
-			Assert.IsTrue(console.TrackedInformation[0].Item2.Contains("Database connection:"));
+			Assert.IsTrue(console.TrackedInformation[0].Item2?.Contains("Database connection:"));
 		}
 
 		[TestMethod]
@@ -133,7 +133,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 				ApplicationInsightsDatabaseTracking = true
 			};
 			var services = new ServiceCollection();
-			var result = new SetupDatabaseTypes(appSettings, services, console).EnableDatabaseTracking(null);
+			var result = new SetupDatabaseTypes(appSettings, services, console).EnableDatabaseTracking(null!);
 			Assert.IsFalse(result);
 		}
 	}

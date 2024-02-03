@@ -33,9 +33,9 @@ namespace starskytest.Middleware
 		[TestMethod]
 		public void MiddlewareBasicAuthenticationHeaderValueCtor_FormatException_Test()
 		{
-			// Not a valid imput :(
+			// Not a valid input :(
 			var bto = new BasicAuthenticationHeaderValue("00000000000");
-			Assert.AreEqual(null,bto.UserIdentifier);
+			Assert.AreEqual(string.Empty,bto.UserIdentifier);
 		}  
         
 	}

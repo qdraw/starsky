@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
@@ -20,14 +19,14 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	public sealed class QueryGetAllFilesTest
 	{
 		private readonly IMemoryCache _memoryCache;
-		private readonly IQuery _query;
+		private readonly Query _query;
 
 		public QueryGetAllFilesTest()
 		{
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
 				.BuildServiceProvider();
-			_memoryCache = provider.GetService<IMemoryCache>();
+			_memoryCache = provider.GetRequiredService<IMemoryCache>();
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -44,16 +43,16 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			return serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}
 		
-		private static FileIndexItem _insertSearchDatahiJpgInput;
-		private static FileIndexItem _insertSearchDatahi2JpgInput;
-		private static FileIndexItem _insertSearchDatahi2SubfolderJpgInput;
+		private static FileIndexItem _insertSearchDataHiJpgInput = new FileIndexItem();
+		private static FileIndexItem _insertSearchDataHi2JpgInput= new FileIndexItem();
+		private static FileIndexItem _insertSearchDataHi2SubfolderJpgInput= new FileIndexItem();
 
 		private async Task InsertSearchData()
 		{
 			if ( !string.IsNullOrEmpty(
 				await _query.GetSubPathByHashAsync("09876543456789")) ) return;
 			
-			_insertSearchDatahiJpgInput = await _query.AddItemAsync(new FileIndexItem
+			_insertSearchDataHiJpgInput = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "hi.jpg",
 				ParentDirectory = "/basic",
@@ -64,7 +63,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				IsDirectory = false
 			});
 
-			_insertSearchDatahi2JpgInput = await _query.AddItemAsync(new FileIndexItem
+			_insertSearchDataHi2JpgInput = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "hi2.jpg",
 				Tags = TrashKeyword.TrashKeywordString,
@@ -72,7 +71,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				IsDirectory = false
 			});
 			
-			_insertSearchDatahi2SubfolderJpgInput =  await _query.AddItemAsync(new FileIndexItem
+			_insertSearchDataHi2SubfolderJpgInput =  await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "hi2.jpg",
 				ParentDirectory = "/basic/subfolder",
@@ -88,8 +87,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			// Test root folder ("/)
 			var getAllFilesExpectedResult = new List<FileIndexItem>
 			{
-				_insertSearchDatahiJpgInput,
-				_insertSearchDatahi2JpgInput,
+				_insertSearchDataHiJpgInput,
+				_insertSearchDataHi2JpgInput,
 			};
 
 			var getAllResult = await _query.GetAllFilesAsync("/basic");
@@ -119,9 +118,11 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 			var getItem = await query.GetAllFilesAsync("/test_821827");
 			Assert.IsNotNull(getItem);
-			Assert.AreEqual("test", getItem.FirstOrDefault().Tags);
+			Assert.AreEqual("test", getItem.FirstOrDefault()?.Tags);
 
-			await query.RemoveItemAsync(getItem.FirstOrDefault());
+			var cleanItem = getItem.FirstOrDefault();
+			Assert.IsNotNull(cleanItem);
+			await query.RemoveItemAsync(cleanItem);
 		}
 		
 		
@@ -131,7 +132,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			await InsertSearchData();
 
 			// Test subfolder
-			var getAllFilesSubFolderExpectedResult = new List<FileIndexItem> {_insertSearchDatahi2SubfolderJpgInput};
+			var getAllFilesSubFolderExpectedResult = new List<FileIndexItem> {_insertSearchDataHi2SubfolderJpgInput};
 
 			var getAllResultSubfolder = _query.GetAllFiles("/basic/subfolder");
             
@@ -146,7 +147,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
 			};
-			var dbContext = new SetupDatabaseTypes(appSettings, null).BuilderDbFactory();
+			var dbContext = new SetupDatabaseTypes(appSettings).BuilderDbFactory();
 			var query = new Query(dbContext, new AppSettings(), null, new FakeIWebLogger(), new FakeMemoryCache());
 
 			await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllFilesAsync") {IsDirectory = true});
@@ -166,14 +167,14 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		[TestMethod]
 		public void FormatOkTest_Null()
 		{
-			var result = Query.FormatOk((( List<FileIndexItem> )null)!);
+			var result = Query.FormatOk(null!);
 			Assert.AreEqual(0, result.Count);
 		}
 		
 		[TestMethod]
 		public void FormatOkTest_NullValue()
 		{
-			var result = Query.FormatOk(new List<FileIndexItem>{null});
+			var result = Query.FormatOk(new List<FileIndexItem>{null!});
 			Assert.AreEqual(0, result.Count);
 		}
 		

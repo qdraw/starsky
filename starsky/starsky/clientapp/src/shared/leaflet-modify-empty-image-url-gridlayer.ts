@@ -86,10 +86,7 @@ export class LeafletEmptyImageUrlGridLayer extends GridLayer {
     if ((this._map as any)._fadeAnimated) {
       L.DomUtil.setOpacity(tile.el, 0);
       L.Util.cancelAnimFrame((this as any)._fadeFrame);
-      (this as any)._fadeFrame = L.Util.requestAnimFrame(
-        (this as any)._updateOpacity,
-        this
-      );
+      (this as any)._fadeFrame = L.Util.requestAnimFrame((this as any)._updateOpacity, this);
     } else {
       tile.active = true;
       (this as any)._pruneTiles();

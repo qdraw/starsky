@@ -34,11 +34,7 @@ const Notification: React.FunctionComponent<NotificationPropTypes> = ({
         <div data-test="notification-content" className="content">
           {children}
         </div>
-        <button
-          data-test="notification-close"
-          className="icon icon--close"
-          onClick={close}
-        />
+        <button data-test="notification-close" className="icon icon--close" onClick={close} />
       </div>
     </Portal>
   );

@@ -11,6 +11,7 @@ using starsky.feature.health.UpdateCheck.Interfaces;
 using starsky.feature.health.UpdateCheck.Models;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
+using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.VersionHelpers;
 
@@ -20,7 +21,7 @@ namespace starsky.feature.health.UpdateCheck.Services
 	[Service(typeof(ICheckForUpdates), InjectionLifetime = InjectionLifetime.Singleton)]
 	public class CheckForUpdates : ICheckForUpdates
 	{
-		internal const string GithubApi = "https://api.github.com/repos/qdraw/starsky/releases";
+		internal const string GithubStarskyReleaseApi = "https://api.github.com/repos/qdraw/starsky/releases";
 		
 		private readonly AppSettings? _appSettings;
 		private readonly IMemoryCache? _cache;
@@ -56,7 +57,7 @@ namespace starsky.feature.health.UpdateCheck.Services
 			}
 
 			if (  _cache.TryGetValue(QueryCheckForUpdatesCacheName,
-				    out var cacheResult) )
+				    out var cacheResult) && cacheResult != null )
 			{
 				return Parse(( List<ReleaseModel> ) cacheResult, currentVersion);
 			}
@@ -72,14 +73,20 @@ namespace starsky.feature.health.UpdateCheck.Services
 		internal async Task<List<ReleaseModel>?> QueryIsUpdateNeededAsync()
 		{
 			// argument check is done in QueryIsUpdateNeeded
-			var (key, value) = await _httpClientHelper.ReadString(GithubApi);
-			return !key ? new List<ReleaseModel>() : JsonSerializer.Deserialize<List<ReleaseModel>>(value, new JsonSerializerOptions());
+			var (key, value) = await _httpClientHelper.ReadString(GithubStarskyReleaseApi);
+			return !key ? new List<ReleaseModel>() : 
+				JsonSerializer.Deserialize<List<ReleaseModel>>(value, DefaultJsonSerializer.CamelCase);
 		}
 		
-		internal static KeyValuePair<UpdateStatus, string> Parse(IEnumerable<ReleaseModel>? releaseModelList, string currentVersion )
+		internal static KeyValuePair<UpdateStatus, string> Parse(IEnumerable<ReleaseModel>? releaseModelList, 
+			string currentVersion )
 		{
-			var orderedReleaseModelList = releaseModelList?.OrderByDescending(p => p.TagName);
-			var tagName = orderedReleaseModelList?.FirstOrDefault(p => p is { Draft: false, PreRelease: false })?.TagName;
+			var orderedReleaseModelList = 
+				releaseModelList?.OrderByDescending(p => p.TagName);
+			
+			var tagName = orderedReleaseModelList?
+				.FirstOrDefault(p => p is { Draft: false, PreRelease: false })?.TagName;
+			
 			if ( string.IsNullOrWhiteSpace(tagName) ||
 			     !tagName.StartsWith('v') )
 			{

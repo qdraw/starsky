@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Serilog;
 
 namespace helpers
 {
@@ -7,7 +8,7 @@ namespace helpers
 	{
 		static void Information(string value)
 		{
-			Console.WriteLine(value);
+			Log.Information(value);
 		}
 	
 		static bool FileExists(string value)
@@ -73,7 +74,7 @@ namespace helpers
 			{
 				$"-reports:{rootDirectory}/starskytest/*coverage.*.xml",
 				$"-targetdir:{rootDirectory}/starskytest/",
-				$"-reporttypes:Cobertura;SonarQube"
+				"-reporttypes:Cobertura;SonarQube"
 			};
 		
 			Palmmedia.ReportGenerator.Core.Program.Main(args);
@@ -90,8 +91,8 @@ namespace helpers
 			if (!FileExists(outputCoverageFile)) {
 				throw new FileNotFoundException($"Missing Cobertura coverage file {outputCoverageFile}");
 			}
+			
 			Information($"Cobertura Coverage file is ready: {outputCoverageFile}");
-
 		}
 	}
 	

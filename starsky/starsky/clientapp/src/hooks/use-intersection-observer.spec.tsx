@@ -1,8 +1,6 @@
 import { render } from "@testing-library/react";
 import React, { useRef } from "react";
-import useIntersection, {
-  newIntersectionObserver
-} from "./use-intersection-observer";
+import useIntersection, { newIntersectionObserver } from "./use-intersection-observer";
 
 describe("useIntersection", () => {
   const IntersectionComponentTest = () => {
@@ -23,7 +21,7 @@ describe("useIntersection", () => {
       .mockReturnValueOnce({ current: { focus } });
 
     render(<IntersectionComponentTest></IntersectionComponentTest>);
-    expect(useRefSpy).toBeCalled();
+    expect(useRefSpy).toHaveBeenCalled();
   });
 
   const NewIntersectionComponentTest = () => {

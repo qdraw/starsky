@@ -224,7 +224,7 @@ public class MoveToTrashServiceTest
 		var metaUpdate = new MetaUpdateService(query, new FakeExifTool(storage, appSettings), 
 			new FakeSelectorStorage(storage), new MetaPreflight(query, appSettings, new FakeSelectorStorage(storage), 
 				new FakeIWebLogger()), new FakeIWebLogger(), new ReadMetaSubPathStorage(new FakeSelectorStorage(storage), 
-				appSettings, null, new FakeIWebLogger()), new FakeIThumbnailService(), 
+				appSettings, null!, new FakeIWebLogger()), new FakeIThumbnailService(), 
 			new ThumbnailQuery(dbContext,null, new FakeIWebLogger()));
 
 		var metaPreflight = new MetaPreflight(query, appSettings,
@@ -282,7 +282,7 @@ public class MoveToTrashServiceTest
 		var metaUpdate = new MetaUpdateService(query, new FakeExifTool(storage, appSettings), 
 			new FakeSelectorStorage(storage), new MetaPreflight(query, appSettings, new FakeSelectorStorage(storage), 
 				new FakeIWebLogger()), new FakeIWebLogger(), new ReadMetaSubPathStorage(new FakeSelectorStorage(storage), 
-				appSettings, null, new FakeIWebLogger()), new FakeIThumbnailService(), 
+				appSettings, null!, new FakeIWebLogger()), new FakeIThumbnailService(), 
 			new ThumbnailQuery(dbContext,null, new FakeIWebLogger()));
 
 		var metaPreflight = new MetaPreflight(query, appSettings,

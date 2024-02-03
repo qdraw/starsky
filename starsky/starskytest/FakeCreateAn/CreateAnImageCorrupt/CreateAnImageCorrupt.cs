@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Immutable;
 using System.IO;
 using System.Reflection;
 using starsky.foundation.storage.Storage;
@@ -14,7 +16,7 @@ namespace starskytest.FakeCreateAn.CreateAnImageCorrupt
 			var path = Path.Combine(dirName, "FakeCreateAn",
 				"CreateAnImageCorrupt", "corrupt.jpg");
 
-			Bytes = StreamToBytes(path);
+			Bytes = StreamToBytes(path).ToImmutableArray();
 		}
 
 		private static byte[] StreamToBytes(string path)
@@ -26,7 +28,7 @@ namespace starskytest.FakeCreateAn.CreateAnImageCorrupt
 			return ms.ToArray();
 		}
 
-		public readonly byte[] Bytes;
+		public readonly ImmutableArray<byte> Bytes = Array.Empty<byte>().ToImmutableArray();
 
 	}
 }

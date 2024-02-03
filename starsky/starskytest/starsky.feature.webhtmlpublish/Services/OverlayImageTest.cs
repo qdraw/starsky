@@ -16,7 +16,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 	[TestClass]
 	public sealed class OverlayImageTest
 	{
-		private readonly IStorage _storage;
+		private readonly FakeIStorage _storage;
 		private readonly ISelectorStorage _selectorStorage;
 
 		public OverlayImageTest()
@@ -30,7 +30,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		public void FilePathOverlayImage_Case()
 		{
 			var image =
-				new OverlayImage(_selectorStorage, new AppSettings()).FilePathOverlayImage("TesT.Jpg",
+				new OverlayImage(_selectorStorage).FilePathOverlayImage("TesT.Jpg",
 					new AppSettingsPublishProfiles());
 			Assert.AreEqual("test.jpg",image);
 		}
@@ -39,7 +39,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		public void FilePathOverlayImage_Append()
 		{
 			var image =
-				new OverlayImage(_selectorStorage, new AppSettings()).FilePathOverlayImage("Img.Jpg",
+				new OverlayImage(_selectorStorage).FilePathOverlayImage("Img.Jpg",
 					new AppSettingsPublishProfiles{Append = "_test"});
 			Assert.AreEqual("img_test.jpg",image);
 		}
@@ -48,7 +48,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		public void FilePathOverlayImage_outputParentFullFilePathFolder()
 		{
 			var image =
-				new OverlayImage(_selectorStorage, new AppSettings()).FilePathOverlayImage(
+				new OverlayImage(_selectorStorage).FilePathOverlayImage(
 					string.Empty,"TesT.Jpg",
 					new AppSettingsPublishProfiles());
 			Assert.AreEqual(PathHelper.AddBackslash(string.Empty) + "test.jpg",image);
@@ -59,7 +59,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		public async Task ResizeOverlayImageThumbnails_null()
 		{
 			var overlayImage =
-				new OverlayImage(_selectorStorage, new AppSettings());
+				new OverlayImage(_selectorStorage);
 			
 			await overlayImage.ResizeOverlayImageThumbnails(null,null, new AppSettingsPublishProfiles());
 			// > ArgumentNullException
@@ -70,7 +70,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		public async Task ResizeOverlayImageLarge_null_exception()
 		{
 			var overlayImage =
-				new OverlayImage(_selectorStorage, new AppSettings());
+				new OverlayImage(_selectorStorage);
 			
 			await overlayImage.ResizeOverlayImageLarge(null,null, new AppSettingsPublishProfiles());
 			// > ArgumentNullException
@@ -81,7 +81,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		public async Task ResizeOverlayImageThumbnails_itemFileHash_Not_Found()
 		{
 			var overlayImage =
-				new OverlayImage(_selectorStorage, new AppSettings{ ThumbnailTempFolder = "/"});
+				new OverlayImage(_selectorStorage);
 			
 			await overlayImage.ResizeOverlayImageThumbnails("non-exist.jpg", "/out.jpg", new AppSettingsPublishProfiles
 			{
@@ -96,7 +96,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		public async Task ResizeOverlayImageThumbnails_overlay_image_missing()
 		{
 			var overlayImage =
-				new OverlayImage(_selectorStorage, new AppSettings{ ThumbnailTempFolder = "/"});
+				new OverlayImage(_selectorStorage);
 			
 			await overlayImage.ResizeOverlayImageThumbnails("test.jpg", "/out.jpg", new AppSettingsPublishProfiles
 			{
@@ -111,7 +111,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		public async Task ResizeOverlayImageLarge_File_Not_Found()
 		{
 			var overlayImage =
-				new OverlayImage(_selectorStorage, new AppSettings{ ThumbnailTempFolder = "/"});
+				new OverlayImage(_selectorStorage);
 			
 			await overlayImage.ResizeOverlayImageLarge("non-exist.jpg", 
 				"/out.jpg", new AppSettingsPublishProfiles
@@ -127,7 +127,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		public async Task ResizeOverlayImageLarge_overlay_image_missing()
 		{
 			var overlayImage =
-				new OverlayImage(_selectorStorage, new AppSettings{ ThumbnailTempFolder = "/"});
+				new OverlayImage(_selectorStorage);
 			
 			await overlayImage.ResizeOverlayImageLarge("/test.jpg", "/out.jpg", new AppSettingsPublishProfiles
 			{
@@ -141,7 +141,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		public async Task ResizeOverlayImageLarge_Ignore_If_Exist()
 		{
 			var overlayImage =
-				new OverlayImage(_selectorStorage, new AppSettings{ ThumbnailTempFolder = "/"});
+				new OverlayImage(_selectorStorage);
 			
 			await overlayImage.ResizeOverlayImageLarge("/test.jpg", "/test.jpg", new AppSettingsPublishProfiles
 			{
@@ -158,7 +158,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		public void ResizeOverlayImageThumbnails_Ignore_If_Exist()
 		{
 			var overlayImage =
-				new OverlayImage(_selectorStorage, new AppSettings{ ThumbnailTempFolder = "/"});
+				new OverlayImage(_selectorStorage);
 			
 			overlayImage.ResizeOverlayImageThumbnails("/test.jpg", "/test.jpg", new AppSettingsPublishProfiles
 			{
@@ -175,7 +175,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		public async Task ResizeOverlayImageLarge_Done()
 		{
 			var overlayImage =
-				new OverlayImage(_selectorStorage, new AppSettings{ ThumbnailTempFolder = "/"});
+				new OverlayImage(_selectorStorage);
 			
 			await overlayImage.ResizeOverlayImageLarge("/test.jpg", "/out_large.jpg", new AppSettingsPublishProfiles
 			{
@@ -191,7 +191,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		public async Task ResizeOverlayImageThumbnails_Done()
 		{
 			var overlayImage =
-				new OverlayImage(_selectorStorage, new AppSettings{ ThumbnailTempFolder = "/"});
+				new OverlayImage(_selectorStorage);
 			
 			await overlayImage.ResizeOverlayImageThumbnails("/test.jpg", "/out_thumb.jpg", new AppSettingsPublishProfiles
 			{

@@ -1,10 +1,8 @@
-#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -57,12 +55,12 @@ public class ThumbnailQueryErrorTest
 			throw new System.NotImplementedException();
 		}
 		
-		public object GetOriginalValue(IPropertyBase propertyBase)
+		public TProperty GetCurrentValue<TProperty>(IPropertyBase propertyBase)
 		{
 			throw new System.NotImplementedException();
 		}
 		
-		public TProperty GetCurrentValue<TProperty>(IPropertyBase propertyBase)
+		public object GetOriginalValue(IPropertyBase propertyBase)
 		{
 			throw new System.NotImplementedException();
 		}
@@ -71,8 +69,9 @@ public class ThumbnailQueryErrorTest
 		{
 			throw new System.NotImplementedException();
 		}
-		
-		public void SetStoreGeneratedValue(IProperty property, object? value)
+
+		public void SetStoreGeneratedValue(IProperty property, object? value,
+			bool setModified = true)
 		{
 			throw new NotImplementedException();
 		}
@@ -98,15 +97,15 @@ public class ThumbnailQueryErrorTest
 		{
 			throw new NotImplementedException();
 		}
-
 #pragma warning disable 8618
+		public DbContext Context { get; }
+
 		// ReSharper disable once UnassignedGetOnlyAutoProperty
 		public IEntityType EntityType { get; }
-#pragma warning restore 8618
 		public EntityState EntityState { get; set; }
-#pragma warning disable 8618
 		// ReSharper disable once UnassignedGetOnlyAutoProperty
 		public IUpdateEntry SharedIdentityEntry { get; }
+
 #pragma warning restore 8618
 	}
 	
@@ -197,35 +196,8 @@ public class ThumbnailQueryErrorTest
 		Assert.IsTrue(IsCalledDbUpdateConcurrency);
 	}
 	
-		
-	private static MySqlException CreateMySqlException(string message)
-	{
-		var info = new SerializationInfo(typeof(Exception),
-			new FormatterConverter());
-		info.AddValue("Number", 1);
-		info.AddValue("SqlState", "SqlState");
-		info.AddValue("Message", message);
-		info.AddValue("InnerException", new Exception());
-		info.AddValue("HelpURL", "");
-		info.AddValue("StackTraceString", "");
-		info.AddValue("RemoteStackTraceString", "");
-		info.AddValue("RemoteStackIndex", 1);
-		info.AddValue("HResult", 1);
-		info.AddValue("Source", "");
-		info.AddValue("WatsonBuckets",  Array.Empty<byte>() );
-					
-		// private MySqlException(SerializationInfo info, StreamingContext context)
-		var ctor =
-			typeof(MySqlException).GetConstructors(BindingFlags.Instance |
-			                                       BindingFlags.NonPublic | BindingFlags.InvokeMethod).FirstOrDefault();
-		var instance =
-			( MySqlException? ) ctor?.Invoke(new object[]
-			{
-				info,
-				new StreamingContext(StreamingContextStates.All)
-			});
-		return instance!;
-	}
+
+
 	private static bool IsCalledMySqlSaveDbExceptionContext { get; set; }
 
 	private class MySqlSaveDbExceptionContext : ApplicationDbContext
@@ -241,6 +213,29 @@ public class ThumbnailQueryErrorTest
 		{
 			IsCalledMySqlSaveDbExceptionContext = true;
 			throw CreateMySqlException(_error);
+		}
+		
+		[SuppressMessage("Usage", "S6602:\"Find\" method should be used instead of the \"FirstOrDefault\" extension")]
+		private static MySqlException CreateMySqlException(string message)
+		{
+			// MySqlErrorCode errorCode, string? sqlState, string message, Exception? innerException
+
+			var ctorLIst =
+				typeof(MySqlException).GetConstructors(
+					BindingFlags.Instance |
+					BindingFlags.NonPublic | BindingFlags.InvokeMethod);
+			var ctor = ctorLIst.FirstOrDefault(p => 
+				p.ToString() == "Void .ctor(MySqlConnector.MySqlErrorCode, System.String, System.String, System.Exception)" );
+				
+			var instance =
+				( MySqlException ) ctor?.Invoke(new object[]
+				{
+					MySqlErrorCode.AccessDenied,
+					"test",
+					message,
+					new Exception()
+				})!;
+			return instance;
 		}
 	}
 	

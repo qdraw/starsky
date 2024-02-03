@@ -45,10 +45,7 @@ export class LimitLength {
    * @param element KeydownEvent
    */
   public LimitLengthKey(element: React.KeyboardEvent<HTMLDivElement>) {
-    if (
-      (element.metaKey || element.ctrlKey) &&
-      (element.key === "a" || element.key === "e")
-    ) {
+    if ((element.metaKey || element.ctrlKey) && (element.key === "a" || element.key === "e")) {
       return;
     }
 

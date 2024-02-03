@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -85,7 +84,11 @@ namespace starsky.foundation.platform.Helpers
 				appSettingsList.Add(appSettings!.App);
 			}
 
-			if ( !appSettingsList.Any() ) return new AppSettings();
+			if ( appSettingsList.Count == 0 )
+			{
+				return new AppSettings();
+			}
+			
 			var appSetting = appSettingsList.FirstOrDefault()!;
 			
 			for ( var i = 1; i < appSettingsList.Count; i++ )

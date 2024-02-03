@@ -17,8 +17,8 @@ namespace starsky.foundation.realtime.Services
 
 		private readonly IWebSocketConnectionsService _connectionsService;
 
-		private Task _heartbeatTask;
-		private CancellationTokenSource _cancellationTokenSource;
+		private Task? _heartbeatTask;
+		private CancellationTokenSource? _cancellationTokenSource;
 
 		public HeartbeatService(IWebSocketConnectionsService connectionsService)
 		{
@@ -43,7 +43,10 @@ namespace starsky.foundation.realtime.Services
 		{
 			if (_heartbeatTask != null)
 			{
-				_cancellationTokenSource.Cancel();
+				if ( _cancellationTokenSource != null )
+				{
+					await _cancellationTokenSource.CancelAsync();
+				}
 
 				await Task.WhenAny(_heartbeatTask, Task.Delay(-1, cancellationToken));
 

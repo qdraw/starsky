@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -17,8 +18,7 @@ using starsky.foundation.webtelemetry.Interfaces;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Services;
 using starskytest.FakeMocks;
-
-#pragma warning disable 1998
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
 namespace starskytest.starsky.foundation.worker.Services
 {
@@ -32,7 +32,7 @@ namespace starskytest.starsky.foundation.worker.Services
 		{
 			// Start using dependency injection
 			var builder = new ConfigurationBuilder();  
-			var dict = new Dictionary<string, string>
+			var dict = new Dictionary<string, string?>
 			{
 				{ "App:Verbose", "true" }
 			};
@@ -77,7 +77,8 @@ namespace starskytest.starsky.foundation.worker.Services
 		public async Task Count_AddOneForCount()
 		{
 			var backgroundQueue = new UpdateBackgroundTaskQueue(_scopeFactory);
-			await backgroundQueue!.QueueBackgroundWorkItemAsync(_ => ValueTask.CompletedTask, string.Empty);
+			await backgroundQueue.QueueBackgroundWorkItemAsync(_ => 
+				ValueTask.CompletedTask, string.Empty);
 			var count = backgroundQueue.Count();
 			Assert.AreEqual(1,count);
 		}
@@ -85,6 +86,7 @@ namespace starskytest.starsky.foundation.worker.Services
 		// https://stackoverflow.com/a/51224556
 		[TestMethod]
 		[Timeout(5000)]
+		[SuppressMessage("Usage", "S2589:Dup isExecuted")]
 		public async Task BackgroundTaskQueueTest_Verify_Hosted_Service_Executes_Task() {
 			IServiceCollection services = new ServiceCollection();
 			services.AddSingleton<ILoggerFactory, NullLoggerFactory>();
@@ -109,10 +111,13 @@ namespace starskytest.starsky.foundation.worker.Services
 			}, string.Empty);
 
 			await Task.Delay(100);
-			if ( !isExecuted )
+			await backgroundQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
-				await Task.Delay(400);
-			}
+				isExecuted = true;
+				throw new Exception();
+				// EXCEPTION IS IGNORED
+			}, string.Empty);
+			
 			if ( !isExecuted )
 			{
 				await Task.Delay(500);
@@ -126,7 +131,7 @@ namespace starskytest.starsky.foundation.worker.Services
 		[TestMethod]
 		public async Task BackgroundTaskQueueTest_ArgumentNullExceptionFail()
 		{
-			Func<CancellationToken, ValueTask> func = null;
+			Func<CancellationToken, ValueTask>? func = null;
 			// ReSharper disable once ExpressionIsAlwaysNull
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(func!, string.Empty);
 			Assert.IsNull(func);
@@ -134,6 +139,8 @@ namespace starskytest.starsky.foundation.worker.Services
 
 		[TestMethod]
 		[Timeout(5000)]
+		[SuppressMessage("Usage", "S2589:Dup isExecuted")]
+
 		public async Task BackgroundQueuedHostedServiceTestHandleException()
 		{
 			IServiceCollection services = new ServiceCollection();
@@ -159,13 +166,16 @@ namespace starskytest.starsky.foundation.worker.Services
 			}, string.Empty);
 
 			await Task.Delay(100);
+			await backgroundQueue.QueueBackgroundWorkItemAsync(async _ =>
+			{
+				isExecuted = true;
+				throw new Exception();
+				// EXCEPTION IS IGNORED
+			}, string.Empty);
+			
 			if ( !isExecuted )
 			{
-				await Task.Delay(400);
-			}
-			if ( !isExecuted )
-			{
-				await Task.Delay(500);
+				await Task.Delay(1000);
 			}
 			
 			Assert.IsTrue(isExecuted);
@@ -178,8 +188,8 @@ namespace starskytest.starsky.foundation.worker.Services
 			var fakeLogger = new FakeIWebLogger();
 			var service = new UpdateBackgroundQueuedHostedService(new FakeIUpdateBackgroundTaskQueue(), fakeLogger);
 
-			var cancelTokenSource = new CancellationTokenSource();
-			cancelTokenSource.Cancel();
+			using var cancelTokenSource = new CancellationTokenSource();
+			await cancelTokenSource.CancelAsync();
 			
 			// use reflection to hit protected method
 			var method = service.GetType().GetTypeInfo().GetDeclaredMethod("ExecuteAsync");
@@ -194,14 +204,14 @@ namespace starskytest.starsky.foundation.worker.Services
 		{
 			var logger = new FakeIWebLogger();
 			var service = new UpdateBackgroundQueuedHostedService(new FakeIUpdateBackgroundTaskQueue(), logger);
-			
-			CancellationTokenSource source = new CancellationTokenSource();
-			CancellationToken token = source.Token;
-			source.Cancel(); // <- cancel before start
+
+			using var source = new CancellationTokenSource();
+			var token = source.Token;
+			await source.CancelAsync(); // <- cancel before start
 
 			await service.StopAsync(token);
 			
-			Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("is stopping"));
+			Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2?.Contains("is stopping"));
 		}
 
 	}

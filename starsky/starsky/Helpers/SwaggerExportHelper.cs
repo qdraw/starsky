@@ -20,9 +20,9 @@ namespace starsky.Helpers
 	public sealed class SwaggerExportHelper : BackgroundService
 	{
 		private readonly IServiceScopeFactory _serviceScopeFactory;
-		private readonly IWebLogger _logger;
+		private readonly IWebLogger? _logger;
 
-		public SwaggerExportHelper(IServiceScopeFactory serviceScopeFactory, IWebLogger logger = null)
+		public SwaggerExportHelper(IServiceScopeFactory serviceScopeFactory, IWebLogger? logger = null)
 		{
 			_serviceScopeFactory = serviceScopeFactory;
 			_logger = logger;
@@ -77,7 +77,7 @@ namespace starsky.Helpers
 
 			var storage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 			storage.FileDelete(swaggerJsonFullPath);
-			storage.WriteStream(PlainTextFileHelper.StringToStream(swaggerJsonText),
+			storage.WriteStream(StringToStreamHelper.StringToStream(swaggerJsonText),
 				swaggerJsonFullPath);
 
 			_logger?.LogInformation($"app__addSwaggerExport {swaggerJsonFullPath}");
@@ -103,7 +103,7 @@ namespace starsky.Helpers
 		/// <param name="swaggerProvider">Swagger provider</param>
 		/// <param name="docName">document name</param>
 		/// <returns></returns>
-		internal static string GenerateSwagger(ISwaggerProvider swaggerProvider, string docName)
+		internal static string GenerateSwagger(ISwaggerProvider? swaggerProvider, string docName)
 		{
 			if ( swaggerProvider == null ) return string.Empty;
 			var swaggerDocument = swaggerProvider.GetSwagger(docName, null, "/");

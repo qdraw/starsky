@@ -6,19 +6,19 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.feature.search.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
-using starsky.feature.search.Services;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.feature.search.Services
+namespace starskytest.starsky.foundation.search.Services
 {
 	[TestClass]
 	public sealed class SearchSuggestionsInflateHostedServiceTest
 	{
 		private readonly IMemoryCache _memoryCache;
-		private IServiceScopeFactory _scopeFactory;
+		private readonly IServiceScopeFactory _scopeFactory;
 		private readonly ApplicationDbContext _dbContext;
 
 		public SearchSuggestionsInflateHostedServiceTest()
@@ -26,7 +26,7 @@ namespace starskytest.starsky.feature.search.Services
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
 				.BuildServiceProvider();
-			_memoryCache = provider.GetService<IMemoryCache>();
+			_memoryCache = provider.GetRequiredService<IMemoryCache>();
 			
 			var efServiceProvider = new ServiceCollection().AddEntityFrameworkInMemoryDatabase().BuildServiceProvider();
 			

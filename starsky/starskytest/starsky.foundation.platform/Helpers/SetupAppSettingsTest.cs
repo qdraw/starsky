@@ -32,7 +32,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			var path = Path.Combine(appDataFolderFullPath, "appsettings.json");
 			
 			var example =
-				PlainTextFileHelper.StringToStream(
+				StringToStreamHelper.StringToStream(
 					"{\n \"app\" :{\n   \"isAccountRegisterOpen\": \"true\"\n }\n}\n");
 
 			await _hostStorage.WriteStreamAsync(example, path);
@@ -73,7 +73,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			}
 			_hostStorage.CreateDirectory(testDir);
 
-			await _hostStorage.WriteStreamAsync(PlainTextFileHelper.StringToStream(
+			await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
 				"{\n  \"app\": {\n   " +
 				" \"StorageFolder\": \"/data/test\"\n " +
 				" }\n}\n"), Path.Combine(testDir, "appsettings.json"));
@@ -100,12 +100,12 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			}
 			_hostStorage.CreateDirectory(testDir);
 
-			await _hostStorage.WriteStreamAsync(PlainTextFileHelper.StringToStream(
+			await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
 				"{\n  \"app\": {\n   " +
 				" \"StorageFolder\": \"/data/test\",\n \"addSwagger\": \"true\" " +
 				" }\n}\n"), Path.Combine(testDir, "appsettings.json"));
 			
-			await _hostStorage.WriteStreamAsync(PlainTextFileHelper.StringToStream(
+			await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
 				"{\n  \"app\": {\n  \"addSwagger\": \"false\" " +
 				" }\n}\n"), Path.Combine(testDir, "appsettings.patch.json"));
 			
@@ -124,12 +124,12 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			}
 			_hostStorage.CreateDirectory(testDir);
 
-			await _hostStorage.WriteStreamAsync(PlainTextFileHelper.StringToStream(
+			await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
 				"{\n  \"app\": {\n   " +
 				" \"StorageFolder\": \"/data/test\",\n \"addSwagger\": \"true\" " +
 				" }\n}\n"), Path.Combine(testDir, "appsettings.json"));
 			
-			await _hostStorage.WriteStreamAsync(PlainTextFileHelper.StringToStream(
+			await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
 				"{\n  \"app\": {\n  \"addSwagger\": \"false\" " +
 				" }\n}\n"), Path.Combine(testDir, $"{SetupAppSettings.AppSettingsMachineNameWithDot()}json"));
 			
@@ -145,12 +145,12 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			_hostStorage.FolderDelete(testDir);
 			_hostStorage.CreateDirectory(testDir);
 
-			await _hostStorage.WriteStreamAsync(PlainTextFileHelper.StringToStream(
+			await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
 				"{\n  \"app\": {\n   " +
 				" \"StorageFolder\": \"/data/test\",\n \"addSwagger\": \"true\" " +
 				" }\n}\n"), Path.Combine(testDir, "appsettings.json"));
 			
-			await _hostStorage.WriteStreamAsync(PlainTextFileHelper.StringToStream(
+			await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
 				"{\n  \"app\": {\n  \"addSwagger\": \"false\" " +
 				" }\n}\n"), Path.Combine(testDir, "appsettings_ref_patch.json"));
 			

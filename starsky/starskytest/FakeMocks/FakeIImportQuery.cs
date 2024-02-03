@@ -35,7 +35,7 @@ namespace starskytest.FakeMocks
 		/// <param name="console"></param>
 		/// <param name="logger"></param>
 		/// <param name="dbContext"></param>
-		public FakeIImportQuery(IServiceScopeFactory scopeFactory, IConsole console, IWebLogger logger, ApplicationDbContext dbContext = null)
+		public FakeIImportQuery(IServiceScopeFactory scopeFactory, IConsole console, IWebLogger logger, ApplicationDbContext? dbContext = null)
 		{
 			_exist = new List<string>();
 			_isConnection = true;
@@ -53,7 +53,7 @@ namespace starskytest.FakeMocks
 
 		public async Task<bool> AddAsync(ImportIndexItem updateStatusContent, bool writeConsole = true)
 		{
-			_exist.Add(updateStatusContent.FileHash);
+			_exist.Add(updateStatusContent.FileHash!);
 			return true;
 		}
 

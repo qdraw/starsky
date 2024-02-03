@@ -10,11 +10,12 @@ namespace starsky.foundation.platform.JsonConverter
 		/// <param name="source">The object</param>
 		/// <typeparam name="T">type to clone from and to</typeparam>
 		/// <returns>typed object</returns>
-		public static T CloneViaJson<T>(this T source)
+		public static T? CloneViaJson<T>(this T source)
 		{
 			var serialized = JsonSerializer.Serialize(
 				source, DefaultJsonSerializer.CamelCase);
-			return JsonSerializer.Deserialize<T>(serialized, DefaultJsonSerializer.CamelCase);
+			var result = JsonSerializer.Deserialize<T>(serialized, DefaultJsonSerializer.CamelCase);
+			return result ?? default;
 		}
 	}	
 }

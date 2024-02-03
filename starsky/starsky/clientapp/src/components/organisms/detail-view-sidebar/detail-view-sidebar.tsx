@@ -36,21 +36,15 @@ interface IDetailViewSidebarProps {
   dispatch: React.Dispatch<DetailViewAction>;
 }
 
-const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
-  memo(({ state, dispatch, ...props }) => {
+const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo(
+  ({ state, dispatch, ...props }) => {
     // content
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
     const MessageTitleName = language.text("Titel", "Title");
     const MessageInfoName = "Info";
-    const MessageColorClassification = language.text(
-      "Kleur-Classificatie",
-      "Color Classification"
-    );
-    const MessageDateTimeAgoEdited = language.text(
-      "geleden bewerkt",
-      "ago edited"
-    );
+    const MessageColorClassification = language.text("Kleur-Classificatie", "Color Classification");
+    const MessageDateTimeAgoEdited = language.text("geleden bewerkt", "ago edited");
     const MessageDateLessThan1Minute = language.text(
       "minder dan één minuut",
       "less than one minute"
@@ -92,9 +86,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
 
     useEffect(() => {
       if (!infoResponseObject.data) return;
-      const infoFileIndexItem = new CastToInterface().InfoFileIndexArray(
-        infoResponseObject.data
-      );
+      const infoFileIndexItem = new CastToInterface().InfoFileIndexArray(infoResponseObject.data);
       if (!infoFileIndexItem) return;
       updateCollections(infoFileIndexItem);
 
@@ -136,13 +128,9 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
 
       if (!name) return;
       if (!value) value = AsciiNull();
-      new UpdateChange(
-        fileIndexItem,
-        setFileIndexItem,
-        dispatch,
-        history,
-        state
-      ).Update([[name, value]]);
+      new UpdateChange(fileIndexItem, setFileIndexItem, dispatch, history, state).Update([
+        [name, value]
+      ]);
     }
 
     const descriptionReference = useRef<HTMLDivElement>(null);
@@ -213,9 +201,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
     return (
       <div className="detailview-sidebar" data-test="detailview-sidebar">
         {copyPasteAction ? (
-          <Notification callback={() => setCopyPasteAction("")}>
-            {copyPasteAction}
-          </Notification>
+          <Notification callback={() => setCopyPasteAction("")}>{copyPasteAction}</Notification>
         ) : null}
         <DetailViewExifStatus status={fileIndexItem.status} />
         <div className="content--header">Tags</div>
@@ -260,10 +246,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
         <div className="content--header">{MessageColorClassification}</div>
         <div className="content--text">
           <ColorClassSelect
-            collections={
-              new URLPath().StringToIUrl(history.location.search)
-                .collections !== false
-            }
+            collections={new URLPath().StringToIUrl(history.location.search).collections !== false}
             onToggle={(result) => {
               setFileIndexItem({
                 ...fileIndexItem,
@@ -308,16 +291,9 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
               <div className="icon icon--last-edited"></div>
               <b>
                 {language.token(
-                  parseRelativeDate(
-                    fileIndexItem.lastEdited,
-                    settings.language
-                  ),
+                  parseRelativeDate(fileIndexItem.lastEdited, settings.language),
                   ["{lessThan1Minute}", "{minutes}", "{hour}"],
-                  [
-                    MessageDateLessThan1Minute,
-                    MessageDateMinutes,
-                    MessageDateHour
-                  ]
+                  [MessageDateLessThan1Minute, MessageDateMinutes, MessageDateHour]
                 )}
               </b>
               <p>{MessageDateTimeAgoEdited}</p>
@@ -362,8 +338,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
               {index !== 1 ? <div className="icon icon--photo" /> : null}
               <b>{new URLPath().getChild(item)}</b>
               <p>
-                {index === 1 ? <>In een collectie:</> : null} {index + 1} van{" "}
-                {collections.length}.
+                {index === 1 ? <>In een collectie:</> : null} {index + 1} van {collections.length}.
                 {item === fileIndexItem.filePath &&
                 fileIndexItem.imageWidth !== 0 &&
                 fileIndexItem.imageHeight !== 0 ? (
@@ -393,5 +368,6 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
         </div>
       </div>
     );
-  });
+  }
+);
 export default DetailViewSidebar;

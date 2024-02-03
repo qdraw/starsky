@@ -1,6 +1,6 @@
-#nullable enable
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -24,54 +24,55 @@ namespace starskytest.starsky.foundation.database.NotificationsTest
 		{
 			public void SetOriginalValue(IProperty property, object? value)
 			{
-				throw new System.NotImplementedException();
+				throw new NotImplementedException();
 			}
 		
 			public void SetPropertyModified(IProperty property)
 			{
-				throw new System.NotImplementedException();
+				throw new NotImplementedException();
 			}
 		
 			public bool IsModified(IProperty property)
 			{
-				throw new System.NotImplementedException();
+				throw new NotImplementedException();
 			}
 		
 			public bool HasTemporaryValue(IProperty property)
 			{
-				throw new System.NotImplementedException();
+				throw new NotImplementedException();
 			}
 		
 			public bool IsStoreGenerated(IProperty property)
 			{
-				throw new System.NotImplementedException();
+				throw new NotImplementedException();
 			}
-		
-			public object GetCurrentValue(IPropertyBase propertyBase)
-			{
-				throw new System.NotImplementedException();
-			}
-		
-			public object GetOriginalValue(IPropertyBase propertyBase)
-			{
-				throw new System.NotImplementedException();
-			}
-		
+
 			public TProperty GetCurrentValue<TProperty>(IPropertyBase propertyBase)
 			{
-				throw new System.NotImplementedException();
+				throw new NotImplementedException();
+			}
+			
+			public object GetCurrentValue(IPropertyBase propertyBase)
+			{
+				throw new NotImplementedException();
 			}
 		
 			public TProperty GetOriginalValue<TProperty>(IProperty property)
 			{
-				throw new System.NotImplementedException();
+				throw new NotImplementedException();
 			}
-		
-			public void SetStoreGeneratedValue(IProperty property, object? value)
+
+			public object GetOriginalValue(IPropertyBase propertyBase)
 			{
-				throw new System.NotImplementedException();
+				throw new NotImplementedException();
 			}
-		
+			
+			public void SetStoreGeneratedValue(IProperty property, object? value,
+				bool setModified = true)
+			{
+				throw new NotImplementedException();
+			}
+			
 			public EntityEntry ToEntityEntry()
 			{
 				IsCalledDbUpdateConcurrency = true;
@@ -79,12 +80,12 @@ namespace starskytest.starsky.foundation.database.NotificationsTest
 				// System.NullReferenceException: Object reference not set to an instance of an object.
 			}
 
-			public object? GetRelationshipSnapshotValue(IPropertyBase propertyBase)
+			public object GetRelationshipSnapshotValue(IPropertyBase propertyBase)
 			{
 				throw new NotImplementedException();
 			}
 
-			public object? GetPreStoreGeneratedCurrentValue(IPropertyBase propertyBase)
+			public object GetPreStoreGeneratedCurrentValue(IPropertyBase propertyBase)
 			{
 				throw new NotImplementedException();
 			}
@@ -94,12 +95,15 @@ namespace starskytest.starsky.foundation.database.NotificationsTest
 				throw new NotImplementedException();
 			}
 
-#pragma warning disable 8618
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+			[SuppressMessage("ReSharper", "UnassignedGetOnlyAutoProperty")] 
+			public DbContext Context { get; }
+
 			// ReSharper disable once UnassignedGetOnlyAutoProperty
 			public IEntityType EntityType { get; }
-#pragma warning restore 8618
+
 			public EntityState EntityState { get; set; }
-#pragma warning disable 8618
+
 			// ReSharper disable once UnassignedGetOnlyAutoProperty
 			public IUpdateEntry SharedIdentityEntry { get; }
 #pragma warning restore 8618
@@ -112,7 +116,8 @@ namespace starskytest.starsky.foundation.database.NotificationsTest
 			}
 
 			public int MinCount { get; set; }
-			public int Count { get; set; }
+			
+			private int Count { get; set; }
 
 			public override int SaveChanges()
 			{

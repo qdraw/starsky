@@ -29,7 +29,7 @@ namespace starskytest.Controllers
 	[TestClass]
 	public sealed class CacheIndexControllerTest
 	{
-		private readonly IQuery _query;
+		private readonly Query _query;
 		private readonly AppSettings _appSettings;
 		private readonly ApplicationDbContext _context;
 
@@ -56,7 +56,7 @@ namespace starskytest.Controllers
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 			// random config
 			var createAnImage = new CreateAnImage();
-			var dict = new Dictionary<string, string>
+			var dict = new Dictionary<string, string?>
 			{
 				{ "App:StorageFolder", createAnImage.BasePath },
 				{ "App:ThumbnailTempFolder",createAnImage.BasePath },

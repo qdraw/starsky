@@ -103,7 +103,7 @@ namespace starsky.feature.demo.Services
 		internal async Task<bool> PushToSockets(List<FileIndexItem> updatedList)
 		{
 			var filtered = updatedList.Where(p => p.FilePath != "/").ToList();
-			if ( !filtered.Any() )
+			if ( filtered.Count == 0 )
 			{
 				return false;
 			}
@@ -143,7 +143,7 @@ namespace starsky.feature.demo.Services
 			IHttpClientHelper httpClientHelper, IStorage hostStorage,
 			IStorage subStorage, IWebLogger webLogger)
 		{
-			if ( !appSettings.DemoData.Any() )
+			if ( appSettings.DemoData.Count == 0 )
 			{
 				webLogger.LogError("DemoData is empty");
 				return false;
@@ -166,7 +166,7 @@ namespace starsky.feature.demo.Services
 					continue;
 				}
 				
-				var result = await PlainTextFileHelper.StreamToStringAsync(
+				var result = await StreamToStringHelper.StreamToStringAsync(
 					hostStorage.ReadStream(settingsJsonFullPath));
 
 				var data = Deserialize(result, webLogger, hostStorage, settingsJsonFullPath); 

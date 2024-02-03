@@ -27,9 +27,7 @@ describe("IsSearchQueryMenuSearchItem", () => {
   it("should contain test id", () => {
     jest
       .spyOn(Link, "default")
-      .mockImplementationOnce((props) => (
-        <a data-test={props["data-test"]}></a>
-      ));
+      .mockImplementationOnce((props) => <a data-test={props["data-test"]}></a>);
 
     const history = {
       location: {
@@ -72,11 +70,9 @@ describe("IsSearchQueryMenuSearchItem", () => {
     const id = screen.queryByTestId("menu-detail-view-close");
     expect(id).not.toBeNull();
 
-    (id as HTMLElement).dispatchEvent(
-      new MouseEvent("click", { bubbles: true, ctrlKey: true })
-    );
+    (id as HTMLElement).dispatchEvent(new MouseEvent("click", { bubbles: true, ctrlKey: true }));
 
-    expect(loadingSpy).not.toBeCalled();
+    expect(loadingSpy).not.toHaveBeenCalled();
   });
 
   it("click trigger loading", () => {
@@ -100,11 +96,9 @@ describe("IsSearchQueryMenuSearchItem", () => {
     const id = screen.queryByTestId("menu-detail-view-close");
     expect(id).not.toBeNull();
 
-    (id as HTMLElement).dispatchEvent(
-      new MouseEvent("click", { bubbles: true })
-    );
+    (id as HTMLElement).dispatchEvent(new MouseEvent("click", { bubbles: true }));
 
-    expect(loadingSpy).toBeCalled();
+    expect(loadingSpy).toHaveBeenCalled();
   });
 
   it("should contain test id delete", () => {

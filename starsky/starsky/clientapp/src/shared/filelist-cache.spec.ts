@@ -69,9 +69,7 @@ describe("FileListCache", () => {
 
       // only for debugging
       for (let index = 0; index < Object.keys(sessionStorage).length; index++) {
-        new FileListCache().ParseJson(
-          sessionStorage.getItem(Object.keys(sessionStorage)[index])
-        );
+        new FileListCache().ParseJson(sessionStorage.getItem(Object.keys(sessionStorage)[index]));
       }
 
       // and now update
@@ -103,10 +101,7 @@ describe("FileListCache", () => {
       detailView.fileIndexItem.fileCollectionName = "image";
       detailView.fileIndexItem.fileName = "image.jpg";
 
-      fileListCache.CacheSet(
-        "?f=/test_off/image.jpg&collections=false",
-        detailView
-      );
+      fileListCache.CacheSet("?f=/test_off/image.jpg&collections=false", detailView);
 
       // set also a parent item
       fileListCache.CacheSet("?f=/test_off&collections=false", {
@@ -117,11 +112,7 @@ describe("FileListCache", () => {
 
       if ((window as any).debug) {
         // only for debugging
-        for (
-          let index = 0;
-          index < Object.keys(sessionStorage).length;
-          index++
-        ) {
+        for (let index = 0; index < Object.keys(sessionStorage).length; index++) {
           const item = new FileListCache().ParseJson(
             sessionStorage.getItem(Object.keys(sessionStorage)[index])
           );
@@ -145,9 +136,7 @@ describe("FileListCache", () => {
         }
       );
 
-      const cacheGetter = fileListCache.CacheGet(
-        "?f=/test_off&collections=false"
-      ) as IArchive;
+      const cacheGetter = fileListCache.CacheGet("?f=/test_off&collections=false") as IArchive;
 
       expect(cacheGetter).toBeTruthy();
 
@@ -164,10 +153,7 @@ describe("FileListCache", () => {
       fileListCache.CacheSet("?f=/test_non_valid", detailView);
 
       // the detailview value needs to have a fileIndexItem value
-      fileListCache.CacheSet(
-        "?f=/test_non_valid/image.jpg&collections=false",
-        newDetailView()
-      );
+      fileListCache.CacheSet("?f=/test_non_valid/image.jpg&collections=false", newDetailView());
 
       // expect nothing happend
     });

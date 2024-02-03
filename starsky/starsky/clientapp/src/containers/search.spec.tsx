@@ -1,10 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { newIArchive } from "../interfaces/IArchive";
-import {
-  newIFileIndexItem,
-  newIFileIndexItemArray
-} from "../interfaces/IFileIndexItem";
+import { newIFileIndexItem, newIFileIndexItemArray } from "../interfaces/IFileIndexItem";
 import Search from "./search";
 
 describe("Search", () => {
@@ -19,12 +16,7 @@ describe("Search", () => {
   describe("Results count", () => {
     it("No results", () => {
       const component = render(
-        <Search
-          {...newIArchive()}
-          fileIndexItems={[]}
-          pageNumber={0}
-          colorClassUsage={[]}
-        />
+        <Search {...newIArchive()} fileIndexItems={[]} pageNumber={0} colorClassUsage={[]} />
       );
       const text = screen.queryByTestId("search-content-header")?.textContent;
       expect(text).toBe("No result");

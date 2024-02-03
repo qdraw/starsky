@@ -17,8 +17,8 @@ describe("select", () => {
       select.removeSidebarSelection();
 
       expect(Router.state.location.search).toBe("");
-      expect(setSelectSpy).toBeCalled();
-      expect(setSelectSpy).toBeCalledWith([]);
+      expect(setSelectSpy).toHaveBeenCalled();
+      expect(setSelectSpy).toHaveBeenCalledWith([]);
     });
 
     it("multiple disable", () => {
@@ -34,8 +34,8 @@ describe("select", () => {
       select.removeSidebarSelection();
 
       expect(Router.state.location.search).toBe("");
-      expect(setSelectSpy).toBeCalled();
-      expect(setSelectSpy).toBeCalledWith(["1", "2"]);
+      expect(setSelectSpy).toHaveBeenCalled();
+      expect(setSelectSpy).toHaveBeenCalledWith(["1", "2"]);
     });
   });
 });

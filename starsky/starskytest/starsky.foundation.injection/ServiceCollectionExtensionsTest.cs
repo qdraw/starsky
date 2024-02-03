@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -23,6 +24,7 @@ public class ServiceCollectionExtensionsTest
 	
 	private class OverwriteInjectionLifetime
 	{
+		[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")] 
 		public InjectionLifetime Type { get; set; }
 	}
 	
@@ -207,8 +209,9 @@ public class ServiceCollectionExtensionsTest
 	[TestMethod]
 	public void GetExportedTypes_ReflectionTypeLoadException()
 	{
-		var exception = new ReflectionTypeLoadException(new Type[]{typeof(bool), typeof(byte), null}, 
-			new Exception[]{null, new Exception()});
+		var exception = new ReflectionTypeLoadException([typeof(bool), typeof(byte), null!
+			],
+			[null!, new Exception()]);
 		var result = ServiceCollectionExtensions.GetExportedTypes(new AssemblyTestClass(exception));
 		var count = result.Count();
 

@@ -10,10 +10,7 @@ import { newIArchive } from "../interfaces/IArchive";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
 import { PageType } from "../interfaces/IDetailView";
 import { IExifStatus } from "../interfaces/IExifStatus";
-import {
-  IFileIndexItem,
-  newIFileIndexItem
-} from "../interfaces/IFileIndexItem";
+import { IFileIndexItem, newIFileIndexItem } from "../interfaces/IFileIndexItem";
 import ArchiveContextWrapper, {
   ArchiveEventListenerUseEffect,
   dispatchEmptyFolder,
@@ -32,17 +29,13 @@ describe("ArchiveContextWrapper", () => {
         fileIndexItems: [],
         pageType: PageType.Archive
       } as IArchiveProps;
-      const archive = jest
-        .spyOn(Archive, "default")
-        .mockImplementationOnce(() => {
-          return <></>;
-        });
+      const archive = jest.spyOn(Archive, "default").mockImplementationOnce(() => {
+        return <></>;
+      });
 
       args.fileIndexItems.push({} as IFileIndexItem);
-      const component = render(
-        <ArchiveContextWrapper {...args}></ArchiveContextWrapper>
-      );
-      expect(archive).toBeCalled();
+      const component = render(<ArchiveContextWrapper {...args}></ArchiveContextWrapper>);
+      expect(archive).toHaveBeenCalled();
       component.unmount();
     });
 
@@ -53,11 +46,9 @@ describe("ArchiveContextWrapper", () => {
         pageType: PageType.Search,
         searchQuery: ""
       } as IArchiveProps;
-      const search = jest
-        .spyOn(Search, "default")
-        .mockImplementationOnce(() => {
-          return <></>;
-        });
+      const search = jest.spyOn(Search, "default").mockImplementationOnce(() => {
+        return <></>;
+      });
 
       // for loading
       jest.spyOn(Archive, "default").mockImplementationOnce(() => {
@@ -66,10 +57,8 @@ describe("ArchiveContextWrapper", () => {
 
       args.fileIndexItems.push({} as IFileIndexItem);
 
-      const component = render(
-        <ArchiveContextWrapper {...args}></ArchiveContextWrapper>
-      );
-      expect(search).toBeCalled();
+      const component = render(<ArchiveContextWrapper {...args}></ArchiveContextWrapper>);
+      expect(search).toHaveBeenCalled();
       component.unmount();
     });
 
@@ -85,7 +74,7 @@ describe("ArchiveContextWrapper", () => {
 
       args.fileIndexItems.push({} as IFileIndexItem);
       const component = render(<ArchiveContextWrapper {...args} />);
-      expect(login).toBeCalled();
+      expect(login).toHaveBeenCalled();
       component.unmount();
     });
 
@@ -101,7 +90,7 @@ describe("ArchiveContextWrapper", () => {
 
       args.fileIndexItems.push({} as IFileIndexItem);
       const component = render(<ArchiveContextWrapper {...args} />);
-      expect(login).toBeCalled();
+      expect(login).toHaveBeenCalled();
       component.unmount();
     });
   });
@@ -116,9 +105,7 @@ describe("ArchiveContextWrapper", () => {
         fileIndexItems: [],
         pageType: PageType.Search
       } as IArchiveProps;
-      const component = render(
-        <ArchiveContextWrapper {...args}></ArchiveContextWrapper>
-      );
+      const component = render(<ArchiveContextWrapper {...args}></ArchiveContextWrapper>);
 
       expect(component.container.innerHTML).toBe("(ArchiveWrapper) = no state");
       component.unmount();
@@ -133,9 +120,7 @@ describe("ArchiveContextWrapper", () => {
         fileIndexItems: [],
         pageType: PageType.Search
       } as IArchiveProps;
-      const component = render(
-        <ArchiveContextWrapper {...args}></ArchiveContextWrapper>
-      );
+      const component = render(<ArchiveContextWrapper {...args}></ArchiveContextWrapper>);
 
       expect(component.container.innerHTML).toBe("");
       component.unmount();
@@ -153,9 +138,7 @@ describe("ArchiveContextWrapper", () => {
         fileIndexItems: [],
         pageType: PageType.Search
       } as IArchiveProps;
-      const component = render(
-        <ArchiveContextWrapper {...args}></ArchiveContextWrapper>
-      );
+      const component = render(<ArchiveContextWrapper {...args}></ArchiveContextWrapper>);
 
       expect(component.container.innerHTML).toBe("");
       component.unmount();
@@ -268,7 +251,7 @@ describe("ArchiveContextWrapper", () => {
 
       const dispatch = jest.fn();
       dispatchEmptyFolder(list, "/test", dispatch);
-      expect(dispatch).toBeCalled();
+      expect(dispatch).toHaveBeenCalled();
     });
 
     it("should not dispatch when source folder is oke", () => {
@@ -282,7 +265,7 @@ describe("ArchiveContextWrapper", () => {
 
       const dispatch = jest.fn();
       dispatchEmptyFolder(list, "/test", dispatch);
-      expect(dispatch).toBeCalledTimes(0);
+      expect(dispatch).toHaveBeenCalledTimes(0);
     });
 
     it("should not dispatch when location is diff", () => {
@@ -296,7 +279,7 @@ describe("ArchiveContextWrapper", () => {
 
       const dispatch = jest.fn();
       dispatchEmptyFolder(list, "/test", dispatch);
-      expect(dispatch).toBeCalledTimes(0);
+      expect(dispatch).toHaveBeenCalledTimes(0);
     });
   });
 

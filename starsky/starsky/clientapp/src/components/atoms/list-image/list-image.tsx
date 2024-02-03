@@ -58,13 +58,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
       return;
     }
     setSrc(new UrlQuery().UrlThumbnailImage(props.fileHash, alwaysLoadImage));
-  }, [
-    props.fileHash,
-    history.location.search,
-    historyLocation,
-    isLoading,
-    alwaysLoadImage
-  ]);
+  }, [props.fileHash, history.location.search, historyLocation, isLoading, alwaysLoadImage]);
 
   if (
     props.fileHash === "null" ||
@@ -72,13 +66,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
     !props.fileHash ||
     !props.imageFormat
   ) {
-    return (
-      <div
-        ref={target}
-        data-test="list-image-img-error"
-        className="img-box--error"
-      />
-    );
+    return <div ref={target} data-test="list-image-img-error" className="img-box--error" />;
   }
 
   // for example show gpx, raw and mp4 as icon
@@ -105,11 +93,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
   }
 
   return (
-    <div
-      ref={target}
-      className={className}
-      data-test="list-image-img-parent-div"
-    >
+    <div ref={target} className={className} data-test="list-image-img-parent-div">
       {intersected ? (
         <img /* NOSONAR(S6847) */
           src={src}

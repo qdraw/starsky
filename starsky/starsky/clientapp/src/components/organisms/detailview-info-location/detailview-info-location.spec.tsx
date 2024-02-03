@@ -25,9 +25,7 @@ describe("DetailViewInfoLocation", () => {
 
     const modalSpy = jest
       .spyOn(ModalGeo, "default")
-      .mockImplementationOnce(() => (
-        <div data-test="modal-geo-tmp">data_11</div>
-      ));
+      .mockImplementationOnce(() => <div data-test="modal-geo-tmp">data_11</div>);
     const modal = render(
       <DetailViewInfoLocation
         fileIndexItem={{} as IFileIndexItem}
@@ -41,15 +39,13 @@ describe("DetailViewInfoLocation", () => {
     expect(modalObject1).toBe(null);
 
     await act(async () => {
-      (
-        await screen.findByTestId("detailview-info-location-open-modal")
-      ).click();
+      (await screen.findByTestId("detailview-info-location-open-modal")).click();
     });
 
     const modalObject = await screen.findByTestId("modal-geo-tmp");
     expect(modalObject.innerHTML).toStrictEqual("data_11");
 
-    expect(modalSpy).toBeCalledTimes(1);
+    expect(modalSpy).toHaveBeenCalledTimes(1);
     modalSpy.mockReset();
 
     modal.unmount();
@@ -58,9 +54,7 @@ describe("DetailViewInfoLocation", () => {
   it("should display city", () => {
     render(
       <DetailViewInfoLocation
-        fileIndexItem={
-          { locationCity: "hi", locationCountry: "s" } as IFileIndexItem
-        }
+        fileIndexItem={{ locationCity: "hi", locationCountry: "s" } as IFileIndexItem}
         isFormEnabled={false}
         locationCity="hi"
         locationCountry="hi"
@@ -84,18 +78,14 @@ describe("DetailViewInfoLocation", () => {
       },
       navigate: jest.fn()
     } as any;
-    jest
-      .spyOn(useLocation, "default")
-      .mockImplementationOnce(() => locationMock);
+    jest.spyOn(useLocation, "default").mockImplementationOnce(() => locationMock);
 
-    const modalSpy = jest
-      .spyOn(ModalGeo, "default")
-      .mockImplementationOnce((props) => {
-        act(() => {
-          props.handleExit(null);
-        });
-        return <div data-test="modal-geo-tmp-2">data_11</div>;
+    const modalSpy = jest.spyOn(ModalGeo, "default").mockImplementationOnce((props) => {
+      act(() => {
+        props.handleExit(null);
       });
+      return <div data-test="modal-geo-tmp-2">data_11</div>;
+    });
 
     const setFileIndexItemSpy = jest.fn();
     const modal = render(
@@ -107,7 +97,7 @@ describe("DetailViewInfoLocation", () => {
       ></DetailViewInfoLocation>
     );
 
-    expect(setFileIndexItemSpy).toBeCalledTimes(0);
+    expect(setFileIndexItemSpy).toHaveBeenCalledTimes(0);
 
     modalSpy.mockReset();
 
@@ -126,18 +116,14 @@ describe("DetailViewInfoLocation", () => {
       },
       navigate: jest.fn()
     } as any;
-    jest
-      .spyOn(useLocation, "default")
-      .mockImplementationOnce(() => locationMock);
+    jest.spyOn(useLocation, "default").mockImplementationOnce(() => locationMock);
 
-    const modalSpy = jest
-      .spyOn(ModalGeo, "default")
-      .mockImplementationOnce((props) => {
-        act(() => {
-          props.handleExit({ locationCity: "1a" } as IGeoLocationModel);
-        });
-        return <div data-test="modal-geo-tmp-2">data_11</div>;
+    const modalSpy = jest.spyOn(ModalGeo, "default").mockImplementationOnce((props) => {
+      act(() => {
+        props.handleExit({ locationCity: "1a" } as IGeoLocationModel);
       });
+      return <div data-test="modal-geo-tmp-2">data_11</div>;
+    });
 
     const setFileIndexItemSpy = jest.fn();
     const modal = render(
@@ -149,8 +135,8 @@ describe("DetailViewInfoLocation", () => {
       ></DetailViewInfoLocation>
     );
 
-    expect(setFileIndexItemSpy).toBeCalledTimes(1);
-    expect(setFileIndexItemSpy).toBeCalledWith({ locationCity: "1a" });
+    expect(setFileIndexItemSpy).toHaveBeenCalledTimes(1);
+    expect(setFileIndexItemSpy).toHaveBeenCalledWith({ locationCity: "1a" });
 
     modalSpy.mockReset();
 

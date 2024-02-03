@@ -4,7 +4,7 @@ namespace starsky.foundation.realtime.Model
 {
 	public sealed class WebSocketConnectionsOptions
 	{
-		public HashSet<string> AllowedOrigins { get; set; }
+		public HashSet<string>? AllowedOrigins { get; set; }
 
 		public int ReceivePayloadBufferSize { get; set; }
 

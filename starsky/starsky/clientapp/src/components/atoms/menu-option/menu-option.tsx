@@ -11,13 +11,7 @@ interface IMenuOptionProps {
 }
 
 const MenuOption: React.FunctionComponent<IMenuOptionProps> = memo(
-  ({
-    localization,
-    onClickKeydown,
-    testName,
-    isReadOnly = true,
-    children = undefined
-  }) => {
+  ({ localization, onClickKeydown, testName, isReadOnly = true, children = undefined }) => {
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
     const Message = !localization ? "" : language.key(localization);

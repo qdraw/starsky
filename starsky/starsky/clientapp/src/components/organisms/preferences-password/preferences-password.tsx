@@ -8,10 +8,7 @@ import ButtonStyled from "../../atoms/button-styled/button-styled";
 const PreferencesPassword: React.FunctionComponent<any> = () => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageChangePassword = language.text(
-    "Verander je wachtwoord",
-    "Change your password"
-  );
+  const MessageChangePassword = language.text("Verander je wachtwoord", "Change your password");
 
   const MessageExamplePassword = language.text("superveilig", "supersafe");
   const MessageCurrentPassword = language.text(
@@ -52,15 +49,10 @@ const PreferencesPassword: React.FunctionComponent<any> = () => {
 
   const [userCurrentPassword, setUserCurrentPassword] = useState("");
   const [userChangedPassword, setUserChangedPassword] = useState("");
-  const [userChangedConfirmPassword, setUserChangedConfirmPassword] =
-    useState("");
+  const [userChangedConfirmPassword, setUserChangedConfirmPassword] = useState("");
 
   function validateChangePassword(): boolean {
-    if (
-      !userCurrentPassword ||
-      !userChangedPassword ||
-      !userChangedConfirmPassword
-    ) {
+    if (!userCurrentPassword || !userChangedPassword || !userChangedConfirmPassword) {
       setError(MessageNoPassword);
       return false;
     }
@@ -83,7 +75,7 @@ const PreferencesPassword: React.FunctionComponent<any> = () => {
       bodyParams.toString()
     );
     setLoading(false);
-    if (response.statusCode === 200 && response.data && response.data.success) {
+    if (response.statusCode === 200 && response.data?.success) {
       setError(MessagePasswordChanged);
       return;
     }

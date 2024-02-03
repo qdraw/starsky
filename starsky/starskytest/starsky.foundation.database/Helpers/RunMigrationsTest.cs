@@ -1,12 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Data.Common;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -47,33 +42,28 @@ namespace starskytest.starsky.foundation.database.Helpers
 			// expect exception: Relational-specific methods can only be used when the context is using a relational database provider.
 		}
 
+		[SuppressMessage("Usage", "S6602: First or Default")]
+		[SuppressMessage("Usage", "S3398: move function")]
 		private static MySqlException CreateMySqlException(string message)
 		{
-			var info = new SerializationInfo(typeof(Exception),
-				new FormatterConverter());
-			info.AddValue("Number", 1);
-			info.AddValue("SqlState", "SqlState");
-			info.AddValue("Message", message);
-			info.AddValue("InnerException", new Exception());
-			info.AddValue("HelpURL", "");
-			info.AddValue("StackTraceString", "");
-			info.AddValue("RemoteStackTraceString", "");
-			info.AddValue("RemoteStackIndex", 1);
-			info.AddValue("HResult", 1);
-			info.AddValue("Source", "");
-			info.AddValue("WatsonBuckets",  Array.Empty<byte>() );
-					
-			// private MySqlException(SerializationInfo info, StreamingContext context)
-			var ctor =
-				typeof(MySqlException).GetConstructors(BindingFlags.Instance |
-					BindingFlags.NonPublic | BindingFlags.InvokeMethod).FirstOrDefault();
+			// MySqlErrorCode errorCode, string? sqlState, string message, Exception? innerException
+
+			var ctorLIst =
+				typeof(MySqlException).GetConstructors(
+					BindingFlags.Instance |
+					BindingFlags.NonPublic | BindingFlags.InvokeMethod);
+			var ctor = ctorLIst.FirstOrDefault(p => 
+				p.ToString() == "Void .ctor(MySqlConnector.MySqlErrorCode, System.String, System.String, System.Exception)" );
+				
 			var instance =
-				( MySqlException ) ctor.Invoke(new object[]
+				( MySqlException? ) ctor?.Invoke(new object[]
 				{
-					info,
-					new StreamingContext(StreamingContextStates.All)
+					MySqlErrorCode.AccessDenied,
+					"test",
+					message,
+					new Exception()
 				});
-			return instance;
+			return instance!;
 		}
 		
 		private class AppDbMySqlException : ApplicationDbContext

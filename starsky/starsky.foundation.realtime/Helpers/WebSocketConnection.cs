@@ -9,35 +9,26 @@ namespace starsky.foundation.realtime.Helpers
 {
 	public sealed class WebSocketConnection
 	{
-		#region Fields
 		private readonly WebSocket _webSocket;
+		
 		private readonly int _receivePayloadBufferSize;
-		#endregion
 
-		#region Properties
 		public Guid Id { get; } = Guid.NewGuid();
 
 		public WebSocketCloseStatus? CloseStatus { get; private set; }
 
-		public string CloseStatusDescription { get; private set; }
-		#endregion
+		public string? CloseStatusDescription { get; private set; }
 
-		#region Events
-		public event EventHandler<string> ReceiveText;
+		public event EventHandler<string>? ReceiveText;
 
-		public event EventHandler NewConnection;
+		public event EventHandler? NewConnection;
 
-		#endregion
-
-		#region Constructor
 		public WebSocketConnection(WebSocket webSocket, int receivePayloadBufferSize = 4096)
 		{
 			_webSocket = webSocket ?? throw new ArgumentNullException(nameof(webSocket));
 			_receivePayloadBufferSize = receivePayloadBufferSize;
 		}
-		#endregion
-
-		#region Methods
+		
 		/// <summary>
 		/// Need to check for WebSocketException
 		/// </summary>
@@ -100,8 +91,8 @@ namespace starsky.foundation.realtime.Helpers
 			try
 			{
 				NewConnection?.Invoke(this, EventArgs.Empty);
-				byte[] receivePayloadBuffer = new byte[_receivePayloadBufferSize];
-				WebSocketReceiveResult webSocketReceiveResult =
+				var receivePayloadBuffer = new byte[_receivePayloadBufferSize];
+				var webSocketReceiveResult =
 					await _webSocket.ReceiveAsync(new ArraySegment<byte>(receivePayloadBuffer),
 						CancellationToken.None);
 
@@ -126,6 +117,5 @@ namespace starsky.foundation.realtime.Helpers
 		{
 			ReceiveText?.Invoke(this, webSocketMessage);
 		}
-		#endregion
 	}
 }

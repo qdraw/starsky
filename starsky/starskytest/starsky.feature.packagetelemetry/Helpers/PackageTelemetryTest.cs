@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -42,21 +43,21 @@ namespace starskytest.starsky.feature.packagetelemetry.Helpers
 			var packageTelemetry = new PackageTelemetry(httpClientHelper, new AppSettings(), new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
 
 			var systemData = packageTelemetry.GetSystemData();
-			Assert.IsTrue(systemData.Any(p => p.Key == "AppVersion"));
-			Assert.AreEqual(systemData.FirstOrDefault(p => p.Key == "AppVersion").Value, 
+			Assert.IsTrue(systemData.Exists(p => p.Key == "AppVersion"));
+			Assert.AreEqual(systemData.Find(p => p.Key == "AppVersion").Value, 
 				appSettings.AppVersion);
-			Assert.IsTrue(systemData.Any(p => p.Key == "NetVersion"));
-			Assert.AreEqual(systemData.FirstOrDefault(p => p.Key == "NetVersion").Value, 
+			Assert.IsTrue(systemData.Exists(p => p.Key == "NetVersion"));
+			Assert.AreEqual(systemData.Find(p => p.Key == "NetVersion").Value, 
 				RuntimeInformation.FrameworkDescription);
-			Assert.IsTrue(systemData.Any(p => p.Key == "OSArchitecture"));
-			Assert.AreEqual(systemData.FirstOrDefault(p => p.Key == "OSArchitecture").Value, 
+			Assert.IsTrue(systemData.Exists(p => p.Key == "OSArchitecture"));
+			Assert.AreEqual(systemData.Find(p => p.Key == "OSArchitecture").Value, 
 				RuntimeInformation.OSArchitecture.ToString());
-			Assert.IsTrue(systemData.Any(p => p.Key == "OSVersion"));
-			Assert.IsTrue(systemData.Any(p => p.Key == "OSDescriptionLong"));
-			Assert.IsTrue(systemData.Any(p => p.Key == "OSPlatform"));
-			Assert.IsTrue(systemData.Any(p => p.Key == "DockerContainer"));
-			Assert.IsTrue(systemData.Any(p => p.Key == "CurrentCulture"));
-			Assert.IsTrue(systemData.Any(p => p.Key == "AspNetCoreEnvironment"));
+			Assert.IsTrue(systemData.Exists(p => p.Key == "OSVersion"));
+			Assert.IsTrue(systemData.Exists(p => p.Key == "OSDescriptionLong"));
+			Assert.IsTrue(systemData.Exists(p => p.Key == "OSPlatform"));
+			Assert.IsTrue(systemData.Exists(p => p.Key == "DockerContainer"));
+			Assert.IsTrue(systemData.Exists(p => p.Key == "CurrentCulture"));
+			Assert.IsTrue(systemData.Exists(p => p.Key == "AspNetCoreEnvironment"));
 		}
 
 		[TestMethod]
@@ -71,14 +72,14 @@ namespace starskytest.starsky.feature.packagetelemetry.Helpers
 			
 			var systemData = packageTelemetry.GetSystemData(OSPlatform.Linux);
 			
-			Assert.AreEqual("True", systemData.FirstOrDefault(p => p.Key == "DockerContainer").Value);
+			Assert.AreEqual("True", systemData.Find(p => p.Key == "DockerContainer").Value);
 			
 			// undo
 			Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER","false");
 			
 			var systemDataFalse = packageTelemetry.GetSystemData(OSPlatform.Linux);
 
-			Assert.AreEqual("False", systemDataFalse.FirstOrDefault(p => p.Key == "DockerContainer").Value);
+			Assert.AreEqual("False", systemDataFalse.Find(p => p.Key == "DockerContainer").Value);
 			
 			Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER",sourceValue);
 		}
@@ -96,14 +97,14 @@ namespace starskytest.starsky.feature.packagetelemetry.Helpers
 			var systemData = packageTelemetry.GetSystemData(OSPlatform.Windows);
 			
 			// so False
-			Assert.AreEqual("False", systemData.FirstOrDefault(p => p.Key == "DockerContainer").Value);
+			Assert.AreEqual("False", systemData.Find(p => p.Key == "DockerContainer").Value);
 			
 			// undo
 			Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER","false");
 			
 			var systemDataFalse = packageTelemetry.GetSystemData(OSPlatform.Linux);
 
-			Assert.AreEqual("False", systemDataFalse.FirstOrDefault(p => p.Key == "DockerContainer").Value);
+			Assert.AreEqual("False", systemDataFalse.Find(p => p.Key == "DockerContainer").Value);
 			
 			Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER",sourceValue);
 		}
@@ -122,14 +123,14 @@ namespace starskytest.starsky.feature.packagetelemetry.Helpers
 			
 			// so False
 			Assert.AreEqual("9F86D081884C7D659A2FEAA0C55AD015A3BF4F1B2B0B822CD15D6C15B0F00A08", 
-				systemData.FirstOrDefault(p => p.Key == "WebsiteName").Value);
+				systemData.Find(p => p.Key == "WebsiteName").Value);
 			
 			// undo
 			Environment.SetEnvironmentVariable("WEBSITE_SITE_NAME","");
 			
 			var systemDataFalse = packageTelemetry.GetSystemData(OSPlatform.Linux);
 
-			Assert.AreEqual("not set", systemDataFalse.FirstOrDefault(p => p.Key == "WebsiteName").Value.ToLowerInvariant());
+			Assert.AreEqual("not set", systemDataFalse.Find(p => p.Key == "WebsiteName").Value.ToLowerInvariant());
 			
 			Environment.SetEnvironmentVariable("WEBSITE_SITE_NAME",sourceValue);
 		}
@@ -170,7 +171,8 @@ namespace starskytest.starsky.feature.packagetelemetry.Helpers
 
 		private class PropValueTestClass
 		{
-			public string Test { get; set; }
+			[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")] 
+			public string Test { get; set; } = string.Empty;
 		}
 	
 		[TestMethod]
@@ -190,7 +192,7 @@ namespace starskytest.starsky.feature.packagetelemetry.Helpers
 			var packageTelemetry = new PackageTelemetry(httpClientHelper, appSettings, new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
 			var result = packageTelemetry.AddAppSettingsData(new List<KeyValuePair<string, string>>());
 
-			Assert.IsTrue(result.Any(p => p.Key == "AppSettingsName"));
+			Assert.IsTrue(result.Exists(p => p.Key == "AppSettingsName"));
 		}
 
 		[TestMethod]
@@ -247,18 +249,17 @@ namespace starskytest.starsky.feature.packagetelemetry.Helpers
 			var result = await packageTelemetry.AddDatabaseData(new List<KeyValuePair<string, string>>());
 
 			var res1 =
-				result.FirstOrDefault(p => p.Key == "FileIndexItemTotalCount");
+				result.Find(p => p.Key == "FileIndexItemTotalCount");
 			Assert.AreEqual("2", res1.Value);
 			
 			var res2 =
-				result.FirstOrDefault(p => p.Key == "FileIndexItemDirectoryCount");
+				result.Find(p => p.Key == "FileIndexItemDirectoryCount");
 			Assert.AreEqual("1", res2.Value);
 			
 			var res3 =
-				result.FirstOrDefault(p => p.Key == "FileIndexItemCount");
+				result.Find(p => p.Key == "FileIndexItemCount");
 			Assert.AreEqual("1", res3.Value);
 		}
-
 
 		[TestMethod]
 		public async Task AddDatabaseData_Exception()
@@ -266,21 +267,20 @@ namespace starskytest.starsky.feature.packagetelemetry.Helpers
 			var appSettings = new AppSettings {EnablePackageTelemetry = true};
 			var packageTelemetry = new PackageTelemetry(null!, appSettings,
 				new FakeIWebLogger(),
-				new FakeIQueryException(new ArgumentNullException()), new FakeIDeviceIdService());
+				new FakeIQueryException(new WebException("test")), new FakeIDeviceIdService());
 			var result = await packageTelemetry.AddDatabaseData(new List<KeyValuePair<string, string>>());
 			
 			var res1 =
-				result.FirstOrDefault(p => p.Key == "FileIndexItemTotalCount");
+				result.Find(p => p.Key == "FileIndexItemTotalCount");
 			Assert.AreEqual("-1", res1.Value);
 			
 			var res2 =
-				result.FirstOrDefault(p => p.Key == "FileIndexItemDirectoryCount");
+				result.Find(p => p.Key == "FileIndexItemDirectoryCount");
 			Assert.AreEqual("-1", res2.Value);
 			
 			var res3 =
-				result.FirstOrDefault(p => p.Key == "FileIndexItemCount");
+				result.Find(p => p.Key == "FileIndexItemCount");
 			Assert.AreEqual("-1", res3.Value);
-
 		}
 
 	}

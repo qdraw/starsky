@@ -15,20 +15,16 @@ describe("SearchPage", () => {
       .mockImplementationOnce(() => {})
       .mockImplementationOnce(() => {});
 
-    const contextSpy = jest
-      .spyOn(ArchiveContextWrapper, "default")
-      .mockImplementationOnce(() => {
-        return <></>;
-      });
+    const contextSpy = jest.spyOn(ArchiveContextWrapper, "default").mockImplementationOnce(() => {
+      return <></>;
+    });
     const component = render(<SearchPage />);
-    expect(contextSpy).toBeCalled();
+    expect(contextSpy).toHaveBeenCalled();
     component.unmount();
   });
 
   it("Internal Error null", () => {
-    jest
-      .spyOn(useSearchList, "default")
-      .mockImplementationOnce(() => null as any);
+    jest.spyOn(useSearchList, "default").mockImplementationOnce(() => null as any);
 
     const component = render(<SearchPage />);
     expect(component.container.innerHTML).toBe("Something went wrong");
@@ -37,9 +33,7 @@ describe("SearchPage", () => {
   });
 
   it("Internal Error plain object", () => {
-    jest
-      .spyOn(useSearchList, "default")
-      .mockImplementationOnce(() => ({}) as any);
+    jest.spyOn(useSearchList, "default").mockImplementationOnce(() => ({}) as any);
 
     const component = render(<SearchPage />);
     expect(component.container.innerHTML).toBe("Something went wrong");
@@ -60,7 +54,7 @@ describe("SearchPage", () => {
 
     const component = render(<SearchPage />);
 
-    expect(applicationExceptionSpy).toBeCalled();
+    expect(applicationExceptionSpy).toHaveBeenCalled();
 
     component.unmount();
   });
@@ -81,7 +75,7 @@ describe("SearchPage", () => {
 
     const component = render(<SearchPage />);
 
-    expect(preloaderSpy).toBeCalled();
+    expect(preloaderSpy).toHaveBeenCalled();
 
     component.unmount();
   });

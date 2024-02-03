@@ -3,6 +3,7 @@
     "orta.vscode-jest",
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
-    "hediet.vscode-drawio"
+    "hediet.vscode-drawio",
+    "sonarsource.sonarlint-vscode"
   ]
 }

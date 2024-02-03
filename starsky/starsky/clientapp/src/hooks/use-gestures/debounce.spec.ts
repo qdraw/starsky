@@ -11,7 +11,7 @@ describe("debounce", () => {
       dBounce();
       jest.advanceTimersByTime(20);
 
-      expect(funcSpy).toBeCalled();
+      expect(funcSpy).toHaveBeenCalled();
 
       jest.useFakeTimers();
     });
@@ -22,7 +22,7 @@ describe("debounce", () => {
 
       dBounce();
 
-      expect(funcSpy).toBeCalledTimes(0);
+      expect(funcSpy).toHaveBeenCalledTimes(0);
     });
   });
 });

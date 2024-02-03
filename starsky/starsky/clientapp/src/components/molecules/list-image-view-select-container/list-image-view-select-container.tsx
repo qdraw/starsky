@@ -17,8 +17,8 @@ interface IListImageBox {
   children?: React.ReactNode;
 }
 
-const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> =
-  memo(({ item, className: propsClassName, onSelectionCallback, children }) => {
+const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> = memo(
+  ({ item, className: propsClassName, onSelectionCallback, children }) => {
     if (item.isDirectory === undefined) item.isDirectory = false;
 
     const className = !propsClassName ? "list-image-box" : propsClassName;
@@ -38,10 +38,7 @@ const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> =
     }, [item.filePath]);
 
     function toggleSelection(fileName: string): void {
-      const urlObject = new URLPath().toggleSelection(
-        fileName,
-        history.location.search
-      );
+      const urlObject = new URLPath().toggleSelection(fileName, history.location.search);
       history.navigate(new URLPath().IUrlToString(urlObject), {
         replace: true
       });
@@ -77,10 +74,7 @@ const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> =
             }}
             className={
               select.indexOf(item.fileName) === -1
-                ? "box-content colorclass--" +
-                  item.colorClass +
-                  " isDirectory-" +
-                  item.isDirectory
+                ? "box-content colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory
                 : "box-content box-content--selected colorclass--" +
                   item.colorClass +
                   " isDirectory-" +
@@ -107,21 +101,16 @@ const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> =
         <Link
           onClick={preloaderStateOnClick}
           title={item.fileName}
-          to={new UrlQuery().updateFilePathHash(
-            history.location.search,
-            item.filePath
-          )}
+          to={new UrlQuery().updateFilePathHash(history.location.search, item.filePath)}
           className={
-            "box-content colorclass--" +
-            item.colorClass +
-            " isDirectory-" +
-            item.isDirectory
+            "box-content colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory
           }
         >
           {children}
         </Link>
       </div>
     );
-  });
+  }
+);
 
 export default ListImageViewSelectContainer;

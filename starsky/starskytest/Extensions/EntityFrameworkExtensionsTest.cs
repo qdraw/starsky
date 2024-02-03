@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Caching.Memory;
@@ -11,7 +10,6 @@ using MySqlConnector;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Extensions;
-using starsky.foundation.database.Models;
 using starskytest.FakeMocks;
 
 namespace starskytest.Extensions
@@ -53,7 +51,7 @@ namespace starskytest.Extensions
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
 				.BuildServiceProvider();
-			var memoryCache = provider.GetService<IMemoryCache>();
+			var memoryCache = provider.GetRequiredService<IMemoryCache>();
 			
 			var result = context.TestConnection(new FakeIWebLogger(), memoryCache);
 			Assert.AreEqual(true,result);
@@ -73,7 +71,7 @@ namespace starskytest.Extensions
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
 				.BuildServiceProvider();
-			var memoryCache = provider.GetService<IMemoryCache>();
+			var memoryCache = provider.GetRequiredService<IMemoryCache>();
 			memoryCache.Set("TestConnection", false);
 			
 			var result = context.TestConnection(new FakeIWebLogger(), memoryCache);
@@ -92,31 +90,24 @@ namespace starskytest.Extensions
 			
 			private static MySqlException CreateMySqlException(string message)
 			{
-				var info = new SerializationInfo(typeof(Exception),
-					new FormatterConverter());
-				info.AddValue("Number", 1);
-				info.AddValue("SqlState", "SqlState");
-				info.AddValue("Message", message);
-				info.AddValue("InnerException", new Exception());
-				info.AddValue("HelpURL", "");
-				info.AddValue("StackTraceString", "");
-				info.AddValue("RemoteStackTraceString", "");
-				info.AddValue("RemoteStackIndex", 1);
-				info.AddValue("HResult", 1);
-				info.AddValue("Source", "");
-				info.AddValue("WatsonBuckets",  Array.Empty<byte>() );
-					
-				// private MySqlException(SerializationInfo info, StreamingContext context)
-				var ctor =
-					typeof(MySqlException).GetConstructors(BindingFlags.Instance |
-						BindingFlags.NonPublic | BindingFlags.InvokeMethod).FirstOrDefault();
+				// MySqlErrorCode errorCode, string? sqlState, string message, Exception? innerException
+
+				var ctorLIst =
+					typeof(MySqlException).GetConstructors(
+						BindingFlags.Instance |
+						BindingFlags.NonPublic | BindingFlags.InvokeMethod);
+				var ctor = ctorLIst.FirstOrDefault(p => 
+					p.ToString() == "Void .ctor(MySqlConnector.MySqlErrorCode, System.String, System.String, System.Exception)" );
+				
 				var instance =
-					( MySqlException ) ctor?.Invoke(new object[]
+					( MySqlException? ) ctor?.Invoke(new object[]
 					{
-						info,
-						new StreamingContext(StreamingContextStates.All)
+						MySqlErrorCode.AccessDenied,
+						"test",
+						message,
+						new Exception()
 					});
-				return instance;
+				return instance!;
 			}
 			
 			public override DatabaseFacade Database => throw CreateMySqlException("Database is not available");
@@ -136,7 +127,7 @@ namespace starskytest.Extensions
 			var result = context.TestConnection(logger);
 			
 			Assert.AreEqual(false,result);
-			Assert.IsTrue(logger.TrackedInformation.FirstOrDefault().Item2.Contains("Database is not available"));
+			Assert.IsTrue(logger.TrackedInformation.FirstOrDefault().Item2?.Contains("Database is not available"));
 		}
 	} 
 }

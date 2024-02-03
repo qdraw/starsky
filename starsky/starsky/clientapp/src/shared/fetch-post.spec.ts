@@ -4,12 +4,10 @@ describe("fetch-post", () => {
   it("default string response", async () => {
     const response = new Response(JSON.stringify("response"));
     const mockFetchAsXml: Promise<Response> = Promise.resolve(response);
-    const spy = jest
-      .spyOn(window, "fetch")
-      .mockImplementationOnce(() => mockFetchAsXml);
+    const spy = jest.spyOn(window, "fetch").mockImplementationOnce(() => mockFetchAsXml);
     const result = await FetchPost("/test", "");
 
-    expect(spy).toBeCalledWith("/test", {
+    expect(spy).toHaveBeenCalledWith("/test", {
       body: "",
       credentials: "include",
       headers: {
@@ -25,12 +23,10 @@ describe("fetch-post", () => {
   it("default object response", async () => {
     const response = new Response(JSON.stringify({ test: true }));
     const mockFetchAsXml: Promise<Response> = Promise.resolve(response);
-    const spy = jest
-      .spyOn(window, "fetch")
-      .mockImplementationOnce(() => mockFetchAsXml);
+    const spy = jest.spyOn(window, "fetch").mockImplementationOnce(() => mockFetchAsXml);
     const result = await FetchPost("/test", "");
 
-    expect(spy).toBeCalledWith("/test", {
+    expect(spy).toHaveBeenCalledWith("/test", {
       body: "",
       credentials: "include",
       headers: {
@@ -51,12 +47,10 @@ describe("fetch-post", () => {
       status: 500
     });
     const mockFetchAsXml: Promise<Response> = Promise.resolve(response);
-    const spy = jest
-      .spyOn(window, "fetch")
-      .mockImplementationOnce(() => mockFetchAsXml);
+    const spy = jest.spyOn(window, "fetch").mockImplementationOnce(() => mockFetchAsXml);
     const result = await FetchPost("/test", "");
 
-    expect(spy).toBeCalledWith("/test", {
+    expect(spy).toHaveBeenCalledWith("/test", {
       body: "",
       credentials: "include",
       headers: {
@@ -75,7 +69,7 @@ describe("fetch-post", () => {
     });
     const result = await FetchPost("/test", "");
 
-    expect(spy).toBeCalledWith("/test", {
+    expect(spy).toHaveBeenCalledWith("/test", {
       body: "",
       credentials: "include",
       headers: {

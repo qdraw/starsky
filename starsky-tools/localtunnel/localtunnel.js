@@ -4,6 +4,8 @@ var httpProxy = require("http-proxy");
 var WebSocket = require("ws");
 var cookieParser = require("cookie-parser");
 var dotenv = require("dotenv");
+const localtunnel = require("@security-patched/localtunnel");
+
 dotenv.config();
 
 const helpModal =
@@ -84,7 +86,7 @@ if (!noWebSocket) {
 		let backendClosed = false;
 		let frontendClosed = false;
 
-		var socketUrl =
+		const socketUrl =
 			netCoreAppRouteUrl.replace("https://", "wss://") +
 			"starsky/realtime";
 		console.log(socketUrl);
@@ -152,7 +154,7 @@ httpServer.all("/**", (req, res) => {
 		res.end('"use websockets"');
 		return;
 	}
-	var toProxyUrl = createReactAppRouteUrl;
+	const toProxyUrl = createReactAppRouteUrl;
 	if (
 		req.originalUrl.startsWith("/api") ||
 		// before login visit http://localhost:4000/account/login
@@ -202,7 +204,7 @@ httpServer.all("/**", (req, res) => {
 });
 
 // setup express
-var port = process.env.PORT || process.env.port || 6501;
+const port = process.env.PORT || process.env.port || 6501;
 httpServer.listen(port);
 console.log("http://localhost:" + port);
 
@@ -226,7 +228,6 @@ const https = require("https");
 
 function localTunnelR() {
 	// LocalTunnel Setup
-	const localtunnel = require("localtunnel");
 
 	(async () => {
 		// lt -p 8080 -h http://localtunnel.me --local-https false
@@ -239,6 +240,8 @@ function localTunnelR() {
 			throw err;
 		});
 
+		console.log(tunnel);
+		
 		// the assigned public url for your tunnel
 		// i.e. https://abcdefgjhij.localtunnel.me
 		console.log("Your localtunnel is ready on:");

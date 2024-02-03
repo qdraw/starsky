@@ -23,6 +23,11 @@ public static class OpenTelemetryExtension
 	public static void AddOpenTelemetryMonitoring(
 		this IServiceCollection services, AppSettings appSettings)
 	{
+		if ( appSettings.OpenTelemetry == null )
+		{
+			return;
+		}
+		
 		var telemetryBuilder = services.AddOpenTelemetry()
 			.ConfigureResource(resource => resource.AddService(
 				serviceNamespace: appSettings.OpenTelemetry.GetServiceName(),
@@ -63,10 +68,10 @@ public static class OpenTelemetryExtension
 			return;
 		}
 
+		// AddHttpClientInstrumentation from OpenTelemetry.Instrumentation.Http
 		telemetryBuilder.WithMetrics(metrics =>
 			metrics.AddAspNetCoreInstrumentation()
 				.AddRuntimeInstrumentation()
-				.AddHttpClientInstrumentation()
 				.AddOtlpExporter(
 					o =>
 					{

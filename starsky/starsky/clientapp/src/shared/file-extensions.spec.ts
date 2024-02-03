@@ -120,9 +120,7 @@ describe("keyboard", () => {
     });
 
     it("get file name without extension on root", () => {
-      const result = fileExt.GetFileExtensionWithoutDot(
-        "/0000000000aaaaa__exifreadingtest00.jpg"
-      );
+      const result = fileExt.GetFileExtensionWithoutDot("/0000000000aaaaa__exifreadingtest00.jpg");
       expect(result).toBe("jpg");
     });
   });
@@ -149,16 +147,12 @@ describe("keyboard", () => {
     });
 
     it("get file name space and http file", () => {
-      const result = fileExt.GetFileName(
-        "http://path/Lists/Test/Attachments/1/Document Test.docx"
-      );
+      const result = fileExt.GetFileName("http://path/Lists/Test/Attachments/1/Document Test.docx");
       expect(result).toBe("Document Test.docx");
     });
 
     it("get file name on root", () => {
-      const result = fileExt.GetFileName(
-        "/0000000000aaaaa__exifreadingtest00.jpg"
-      );
+      const result = fileExt.GetFileName("/0000000000aaaaa__exifreadingtest00.jpg");
       expect(result).toBe("0000000000aaaaa__exifreadingtest00.jpg");
     });
   });
@@ -182,9 +176,7 @@ describe("keyboard", () => {
     });
 
     it("get file name without extension on root", () => {
-      const result = fileExt.GetFileNameWithoutExtension(
-        "/0000000000aaaaa__exifreadingtest00.jpg"
-      );
+      const result = fileExt.GetFileNameWithoutExtension("/0000000000aaaaa__exifreadingtest00.jpg");
       expect(result).toBe("0000000000aaaaa__exifreadingtest00");
     });
   });

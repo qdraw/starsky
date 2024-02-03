@@ -1,10 +1,8 @@
 #nullable enable
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
-using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -70,16 +68,22 @@ namespace starsky.feature.import.Helpers
 				comparedNamesList = ColorClassComparedNamesList(comparedNamesList);
 			}
 
-			if ( !comparedNamesList.Any() ) return fileIndexItem;
+			if ( comparedNamesList.Count == 0 )
+			{
+				return fileIndexItem;
+			}
 
 			var exifToolCmdHelper = new ExifToolCmdHelper(_exifTool,
 				_subPathStorage, _thumbnailStorage,
-				new ReadMeta(_subPathStorage, _appSettings, null, _logger),
+				new ReadMeta(_subPathStorage, _appSettings, null!, _logger),
 				_thumbnailQuery);
 			await exifToolCmdHelper.UpdateAsync(fileIndexItem, comparedNamesList);
 
 			// Only update database when indexMode is true
-			if ( !indexMode || queryUpdateDelegate == null) return fileIndexItem;
+			if ( !indexMode || queryUpdateDelegate == null )
+			{
+				return fileIndexItem;
+			}
 			
 			// Hash is changed after transformation
 			fileIndexItem.FileHash = (await new FileHash(_subPathStorage).GetHashCodeAsync(fileIndexItem.FilePath!)).Key;

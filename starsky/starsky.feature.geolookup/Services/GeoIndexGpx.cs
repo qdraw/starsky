@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.feature.geolookup.Interfaces;
 using starsky.feature.geolookup.Models;
@@ -11,7 +12,6 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Models;
 using starsky.foundation.readmeta.ReadMetaHelpers;
-using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
@@ -42,7 +42,7 @@ namespace starsky.feature.geolookup.Services
                 .ToList();
         }
 
-        private List<GeoListItem> GetGpxFile(List<FileIndexItem> metaFilesInDirectory)
+        private async Task<List<GeoListItem>> GetGpxFileAsync(List<FileIndexItem> metaFilesInDirectory)
         {
             var geoList = new List<GeoListItem>(); 
             foreach (var metaFileItem in metaFilesInDirectory)
@@ -54,7 +54,7 @@ namespace starsky.feature.geolookup.Services
 	            
 	            using ( var stream = _iStorage.ReadStream(metaFileItem.FilePath!) )
 	            {
-		            geoList.AddRange(new ReadMetaGpx(_logger).ReadGpxFile(stream, geoList));
+		            geoList.AddRange(await new ReadMetaGpx(_logger).ReadGpxFileAsync(stream, geoList));
 	            }
             }
             return geoList;
@@ -69,10 +69,13 @@ namespace starsky.feature.geolookup.Services
         /// <exception cref="ArgumentException">DateTime Kind should not be Local</exception>
         internal DateTime ConvertTimeZone(DateTime valueDateTime, string subPath = "")
         {
-	        if ( valueDateTime.Kind == DateTimeKind.Utc ) return valueDateTime;
+	        if ( valueDateTime.Kind == DateTimeKind.Utc )
+	        {
+		        return valueDateTime;
+	        }
 
 	        // Not supported by TimeZoneInfo convert
-	        if ( valueDateTime.Kind != DateTimeKind.Unspecified ) 
+	        if ( valueDateTime.Kind != DateTimeKind.Unspecified || _appSettings.CameraTimeZoneInfo == null ) 
 	        {
 		        throw new ArgumentException($"valueDateTime DateTime-Kind '{valueDateTime.Kind}' " +
 		                                    $"'{subPath}' should be Unspecified", nameof(valueDateTime));
@@ -82,12 +85,15 @@ namespace starsky.feature.geolookup.Services
 		        _appSettings.CameraTimeZoneInfo, TimeZoneInfo.Utc); 
         }
 
-        public List<FileIndexItem> LoopFolder(List<FileIndexItem> metaFilesInDirectory)
+        public async Task<List<FileIndexItem>> LoopFolderAsync(List<FileIndexItem> metaFilesInDirectory)
         {
             var toUpdateMetaFiles = new List<FileIndexItem>();
 
-            var gpxList = GetGpxFile(metaFilesInDirectory);
-            if(!gpxList.Any()) return toUpdateMetaFiles;
+            var gpxList = await GetGpxFileAsync(metaFilesInDirectory);
+            if ( gpxList.Count == 0 )
+            {
+	            return toUpdateMetaFiles;
+            }
 
             metaFilesInDirectory = GetNoLocationItems(metaFilesInDirectory);
 

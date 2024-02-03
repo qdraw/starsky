@@ -12,10 +12,7 @@ namespace starsky.foundation.realtime.Extentions
 			PathString pathMatch, WebSocketConnectionsOptions options, 
 			bool? featureToggleEnabled = true)
 		{
-			if (app == null)
-			{
-				throw new ArgumentNullException(nameof(app));
-			}
+			ArgumentNullException.ThrowIfNull(app);
 
 			return app.Map(pathMatch, branchedApp =>
 			{

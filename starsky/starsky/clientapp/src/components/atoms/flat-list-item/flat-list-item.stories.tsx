@@ -1,7 +1,4 @@
-import {
-  IFileIndexItem,
-  ImageFormat
-} from "../../../interfaces/IFileIndexItem";
+import { IFileIndexItem, ImageFormat } from "../../../interfaces/IFileIndexItem";
 import FlatListItemBox from "./flat-list-item";
 
 export default {
@@ -103,10 +100,7 @@ export const Default = () => {
   return (
     <>
       {exampleItems.map((item) => (
-        <FlatListItemBox
-          item={item}
-          key={item.fileName + item.lastEdited + item.colorClass}
-        />
+        <FlatListItemBox item={item} key={item.fileName + item.lastEdited + item.colorClass} />
       ))}
     </>
   );

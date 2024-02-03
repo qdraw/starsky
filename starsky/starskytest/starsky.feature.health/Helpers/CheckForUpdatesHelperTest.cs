@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -60,19 +59,19 @@ namespace starskytest.starsky.feature.health.Helpers
 			var replace = ExamplePublicReleases.Replace("vtest__remove_this_version", "v0.9");
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
-				{CheckForUpdates.GithubApi, new StringContent(replace)},
+				{CheckForUpdates.GithubStarskyReleaseApi, new StringContent(replace)},
 			});
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
 			
 			var results = await new CheckForUpdates(httpClientHelper, 
 				new AppSettings(),null).QueryIsUpdateNeededAsync();
 			
-			Assert.AreEqual("v0.9",results.FirstOrDefault().TagName);
-			Assert.AreEqual("v0.4.0-beta.1",results[1].TagName);
-			Assert.AreEqual(false,results[0].PreRelease);
-			Assert.AreEqual(true,results[1].PreRelease);
+			Assert.AreEqual("v0.9",results?.FirstOrDefault()?.TagName);
+			Assert.AreEqual("v0.4.0-beta.1",results?[1].TagName);
+			Assert.AreEqual(false,results?[0].PreRelease);
+			Assert.AreEqual(true,results?[1].PreRelease);
 
-			Assert.AreEqual(2,results.Count);
+			Assert.AreEqual(2,results?.Count);
 		}
 		
 		[TestMethod]
@@ -84,7 +83,7 @@ namespace starskytest.starsky.feature.health.Helpers
 			var results = await new CheckForUpdates(httpClientHelper, 
 				new AppSettings(),null).QueryIsUpdateNeededAsync();
 			
-			Assert.AreEqual(0,results.Count);
+			Assert.AreEqual(0,results?.Count);
 		}
 
 		[TestMethod]
@@ -186,7 +185,7 @@ namespace starskytest.starsky.feature.health.Helpers
 		public async Task IsUpdateNeeded_CheckForUpdates_disabled()
 		{
 			var appSettings = new AppSettings {CheckForUpdates = false};
-			var results = await new CheckForUpdates(null, 
+			var results = await new CheckForUpdates(null!, 
 				appSettings,null).IsUpdateNeeded();
 			
 			Assert.AreEqual(UpdateStatus.Disabled,results.Key);
@@ -202,18 +201,20 @@ namespace starskytest.starsky.feature.health.Helpers
 			var replace = ExamplePublicReleases.Replace("vtest__remove_this_version", "v0.9");
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
-				{CheckForUpdates.GithubApi, new StringContent(replace)},
+				{CheckForUpdates.GithubStarskyReleaseApi, new StringContent(replace)},
 			});
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
 
 			await new CheckForUpdates(httpClientHelper, 
 				new AppSettings(),memoryCache).IsUpdateNeeded();
 
+			Assert.IsNotNull(memoryCache);
+			
 			memoryCache.TryGetValue(CheckForUpdates.QueryCheckForUpdatesCacheName, out var cacheResult);
-			var results = (( List<ReleaseModel> ) cacheResult);
+			var results = (( List<ReleaseModel>? ) cacheResult);
 
 			Assert.IsNotNull(results);
-			Assert.AreEqual("v0.9",results.FirstOrDefault().TagName);
+			Assert.AreEqual("v0.9",results.FirstOrDefault()?.TagName);
 			Assert.AreEqual("v0.4.0-beta.1",results[1].TagName);
 			Assert.AreEqual(false,results[0].PreRelease);
 			Assert.AreEqual(true,results[1].PreRelease);
@@ -226,6 +227,7 @@ namespace starskytest.starsky.feature.health.Helpers
 				.AddMemoryCache()
 				.BuildServiceProvider();
 			var memoryCache = provider.GetService<IMemoryCache>();
+			Assert.IsNotNull(memoryCache);
 
 			memoryCache.Set(CheckForUpdates.QueryCheckForUpdatesCacheName, new List<ReleaseModel>
 			{
@@ -237,7 +239,7 @@ namespace starskytest.starsky.feature.health.Helpers
 				}
 			});
 			
-			var results = await new CheckForUpdates(null, 
+			var results = await new CheckForUpdates(null!, 
 				new AppSettings(),memoryCache).IsUpdateNeeded("0.4.0");
 
 			Assert.IsNotNull(results);
@@ -247,7 +249,7 @@ namespace starskytest.starsky.feature.health.Helpers
 		[TestMethod]
 		public async Task IsUpdateNeeded_Disabled2_CacheIsNull()
 		{
-			var results = await new CheckForUpdates(null, 
+			var results = await new CheckForUpdates(null!, 
 				null,null).IsUpdateNeeded();
 	  
 			Assert.IsNotNull(results);
@@ -265,7 +267,7 @@ namespace starskytest.starsky.feature.health.Helpers
 			var replace = ExamplePublicReleases.Replace("vtest__remove_this_version", "test");
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
-				{CheckForUpdates.GithubApi, new StringContent(replace)},
+				{CheckForUpdates.GithubStarskyReleaseApi, new StringContent(replace)},
 			});
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
 	        
@@ -282,7 +284,7 @@ namespace starskytest.starsky.feature.health.Helpers
 			var replace = ExamplePublicReleases.Replace("vtest__remove_this_version", "test");
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
-				{CheckForUpdates.GithubApi, new StringContent(replace)},
+				{CheckForUpdates.GithubStarskyReleaseApi, new StringContent(replace)},
 			});
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
 	        

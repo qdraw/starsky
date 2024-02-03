@@ -47,10 +47,11 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 		
 		Period = TimeSpan.FromMinutes(60);
 	}
-
-
+	
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
+		// why Task.Yield -> https://medium.com/@thepen0411/how-to-resolve-the-net-background-service-blocking-issue-c96086de8acd
+		await Task.Yield();
 		await StartBackgroundAsync(IsEnabled, stoppingToken);
 	}
 

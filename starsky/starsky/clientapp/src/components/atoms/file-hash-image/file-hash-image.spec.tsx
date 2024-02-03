@@ -24,21 +24,20 @@ describe("FileHashImage", () => {
   it("Rotation API is called return 202", async () => {
     console.log("-- Rotation API is called return 202 --");
 
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve({
-        statusCode: 202,
-        data: {
-          subPath: "/test/image.jpg",
-          pageType: PageType.DetailView,
-          fileIndexItem: {
-            orientation: Orientation.Rotate270Cw,
-            fileHash: "needed",
-            status: IExifStatus.Ok,
-            filePath: "/test/image.jpg",
-            fileName: "image.jpg"
-          }
-        } as IDetailView
-      } as IConnectionDefault);
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 202,
+      data: {
+        subPath: "/test/image.jpg",
+        pageType: PageType.DetailView,
+        fileIndexItem: {
+          orientation: Orientation.Rotate270Cw,
+          fileHash: "needed",
+          status: IExifStatus.Ok,
+          filePath: "/test/image.jpg",
+          fileName: "image.jpg"
+        }
+      } as IDetailView
+    } as IConnectionDefault);
 
     const detectRotationSpy = jest
       .spyOn(DetectAutomaticRotation, "default")
@@ -54,9 +53,9 @@ describe("FileHashImage", () => {
     const component = await render(
       <FileHashImage fileHash="hash" orientation={Orientation.Horizontal} />
     );
-    expect(detectRotationSpy).toBeCalled();
+    expect(detectRotationSpy).toHaveBeenCalled();
 
-    expect(spyGet).toBeCalledWith(new UrlQuery().UrlThumbnailJsonApi("hash"));
+    expect(spyGet).toHaveBeenCalledWith(new UrlQuery().UrlThumbnailJsonApi("hash"));
 
     // and clean up
     component.unmount();
@@ -65,21 +64,20 @@ describe("FileHashImage", () => {
   it("Rotation API is called return 200", async () => {
     console.log("-- Rotation API is called return 200 --");
 
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve({
-        statusCode: 200,
-        data: {
-          subPath: "/test/image.jpg",
-          pageType: PageType.DetailView,
-          fileIndexItem: {
-            orientation: Orientation.Rotate270Cw,
-            fileHash: "needed",
-            status: IExifStatus.Ok,
-            filePath: "/test/image.jpg",
-            fileName: "image.jpg"
-          }
-        } as IDetailView
-      } as IConnectionDefault);
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: {
+        subPath: "/test/image.jpg",
+        pageType: PageType.DetailView,
+        fileIndexItem: {
+          orientation: Orientation.Rotate270Cw,
+          fileHash: "needed",
+          status: IExifStatus.Ok,
+          filePath: "/test/image.jpg",
+          fileName: "image.jpg"
+        }
+      } as IDetailView
+    } as IConnectionDefault);
 
     const detectRotationSpy = jest
       .spyOn(DetectAutomaticRotation, "default")
@@ -95,18 +93,17 @@ describe("FileHashImage", () => {
     );
 
     // need to await here
-    await expect(detectRotationSpy).toBeCalled();
+    await expect(detectRotationSpy).toHaveBeenCalled();
 
-    expect(spyGet).toBeCalledWith(new UrlQuery().UrlThumbnailJsonApi("hash"));
+    expect(spyGet).toHaveBeenCalledWith(new UrlQuery().UrlThumbnailJsonApi("hash"));
 
     component.unmount();
   });
 
   it("should ignore when DetectAutomaticRotation is true", async () => {
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve({
-        statusCode: 200
-      } as IConnectionDefault);
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200
+    } as IConnectionDefault);
 
     const detectRotationSpy = jest
       .spyOn(DetectAutomaticRotation, "default")
@@ -123,23 +120,20 @@ describe("FileHashImage", () => {
     );
 
     // need to await here
-    await expect(detectRotationSpy).toBeCalled();
+    await expect(detectRotationSpy).toHaveBeenCalled();
 
-    expect(spyGet).toBeCalledTimes(0);
+    expect(spyGet).toHaveBeenCalledTimes(0);
 
     spyGet.mockReset();
     component.unmount();
   });
 
   it("onWheelCallback should replace source image when event is returned", () => {
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve({
-        statusCode: 500
-      } as IConnectionDefault);
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 500
+    } as IConnectionDefault);
 
-    jest
-      .spyOn(FetchGet, "default")
-      .mockImplementationOnce(() => mockGetIConnectionDefault);
+    jest.spyOn(FetchGet, "default").mockImplementationOnce(() => mockGetIConnectionDefault);
 
     const panZoomObject = (props: any) => {
       return (
@@ -155,11 +149,7 @@ describe("FileHashImage", () => {
       .mockImplementationOnce(panZoomObject);
 
     const component = render(
-      <FileHashImage
-        fileHash="hash"
-        orientation={Orientation.Horizontal}
-        id={"fallbackPath"}
-      />
+      <FileHashImage fileHash="hash" orientation={Orientation.Horizontal} id={"fallbackPath"} />
     );
 
     const button = screen.getAllByRole("button")[0] as HTMLButtonElement;
@@ -170,22 +160,18 @@ describe("FileHashImage", () => {
     });
 
     expect(image.src).toBe(
-      "http://localhost" +
-        new UrlQuery().UrlThumbnailZoom("hash", "fallbackPath", 1)
+      "http://localhost" + new UrlQuery().UrlThumbnailZoom("hash", "fallbackPath", 1)
     );
 
     component.unmount();
   });
 
   it("onWheelCallback should return callback", () => {
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve({
-        statusCode: 500
-      } as IConnectionDefault);
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 500
+    } as IConnectionDefault);
 
-    jest
-      .spyOn(FetchGet, "default")
-      .mockImplementationOnce(() => mockGetIConnectionDefault);
+    jest.spyOn(FetchGet, "default").mockImplementationOnce(() => mockGetIConnectionDefault);
 
     const panZoomObject = (props: any) => {
       return (
@@ -216,20 +202,17 @@ describe("FileHashImage", () => {
       button.click();
     });
 
-    expect(onWheelCallbackSpy).toBeCalled();
+    expect(onWheelCallbackSpy).toHaveBeenCalled();
 
     component.unmount();
   });
 
   it("with onResetCallback it should set UrlThumbnailImage", () => {
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve({
-        statusCode: 500
-      } as IConnectionDefault);
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 500
+    } as IConnectionDefault);
 
-    jest
-      .spyOn(FetchGet, "default")
-      .mockImplementationOnce(() => mockGetIConnectionDefault);
+    jest.spyOn(FetchGet, "default").mockImplementationOnce(() => mockGetIConnectionDefault);
 
     const panZoomObject = (props: any) => {
       return (
@@ -245,11 +228,7 @@ describe("FileHashImage", () => {
       .mockImplementationOnce(panZoomObject);
 
     const component = render(
-      <FileHashImage
-        fileHash="hash"
-        id="/test.jpg"
-        orientation={Orientation.Horizontal}
-      />
+      <FileHashImage fileHash="hash" id="/test.jpg" orientation={Orientation.Horizontal} />
     );
 
     // there is one problem with this test, is assumes the default value
@@ -258,25 +237,18 @@ describe("FileHashImage", () => {
     const img = screen.queryByRole("img") as HTMLImageElement;
     expect(img.src).toBe(
       "http://localhost" +
-        new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
-          "hash",
-          "/test.jpg",
-          true
-        )
+        new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", "/test.jpg", true)
     );
 
     component.unmount();
   });
 
   it("with onResetCallback it should set UrlThumbnailImage and pass callback", () => {
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve({
-        statusCode: 500
-      } as IConnectionDefault);
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 500
+    } as IConnectionDefault);
 
-    jest
-      .spyOn(FetchGet, "default")
-      .mockImplementationOnce(() => mockGetIConnectionDefault);
+    jest.spyOn(FetchGet, "default").mockImplementationOnce(() => mockGetIConnectionDefault);
 
     const panZoomObject = (props: any) => {
       return (
@@ -308,14 +280,10 @@ describe("FileHashImage", () => {
     const img = screen.queryByRole("img") as HTMLImageElement;
     expect(img.src).toBe(
       "http://localhost" +
-        new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
-          "hash",
-          "/test.jpg",
-          true
-        )
+        new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", "/test.jpg", true)
     );
 
-    expect(onResetCallbackSpy).toBeCalled();
+    expect(onResetCallbackSpy).toHaveBeenCalled();
 
     component.unmount();
   });

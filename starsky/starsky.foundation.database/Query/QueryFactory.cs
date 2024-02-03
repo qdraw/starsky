@@ -42,19 +42,21 @@ namespace starsky.foundation.database.Query
 			}
 
 			// FakeIQuery should skip creation
-			var isAnyContentIncluded = _query.GetReflectionFieldValue<List<FileIndexItem>?>("_content")?.Any();
-			if ( isAnyContentIncluded == true )
+			var isAnyContentIncluded = _query.GetReflectionFieldValue<List<FileIndexItem>?>("_content")?.Count >= 1;
+			if ( !isAnyContentIncluded )
 			{
-				_logger?.LogInformation("FakeIQuery _content detected");
-				return _query;
+				// ApplicationDbContext context, 
+				// 	AppSettings appSettings,
+				// IServiceScopeFactory scopeFactory, 
+				// 	IWebLogger logger, IMemoryCache memoryCache = null
+				
+				return Activator.CreateInstance(_query.GetType(), context,
+					_appSettings, _serviceScopeFactory, _logger,
+					_cache) as IQuery;
 			}
-		
-			// ApplicationDbContext context, 
-			// 	AppSettings appSettings,
-			// IServiceScopeFactory scopeFactory, 
-			// 	IWebLogger logger, IMemoryCache memoryCache = null
-			return Activator.CreateInstance(_query.GetType(), context,
-				_appSettings, _serviceScopeFactory, _logger, _cache) as IQuery;
+
+			_logger?.LogInformation("FakeIQuery _content detected");
+			return _query;
 		}
 	}
 }

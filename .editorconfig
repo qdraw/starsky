@@ -5,15 +5,15 @@ root = true
 
 [*]
 # Most of the standard properties are supported
-indent_size=4
-max_line_length=80
+indent_size = 4
+max_line_length = 100
 end_of_line = lf
 
 # Most frequently used .NET-coding-convention properties are supported
-csharp_space_between_parentheses=expressions, type_casts, control_flow_statements
-csharp_style_var_for_built_in_types=true
+csharp_space_between_parentheses = expressions, type_casts, control_flow_statements
+csharp_style_var_for_built_in_types = true
 
-[*.{ts,tsx}]
+[*.{ts,tsx,json}]
 charset = utf-8
 indent_style = space
 indent_size = 2
@@ -34,6 +34,7 @@ trim_trailing_whitespace = true
 
 # C# files
 [*.cs]
+tab_width = 4
 # New line preferences
 csharp_new_line_before_open_brace = all
 csharp_new_line_before_else = true
@@ -42,6 +43,9 @@ csharp_new_line_before_finally = true
 csharp_new_line_before_members_in_object_initializers = true
 csharp_new_line_before_members_in_anonymous_types = true
 csharp_new_line_within_query_expression_clauses = true
+csharp_wrap_before_eq = false
+place_attribute_on_same_line = "never"
+csharp_style_namespace_declarations = file_scoped:warning
 
 # Indentation preferences
 csharp_indent_block_contents = true
@@ -49,3 +53,15 @@ csharp_indent_braces = false
 csharp_indent_case_contents = true
 csharp_indent_switch_labels = true
 csharp_indent_labels = one_less_than_current
+
+# Prefer "var" everywhere
+csharp_style_var_for_built_in_types = true:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_var_elsewhere = true:suggestion
+
+# Unnecessary Code Rules
+# https://docs.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/unnecessary-code-rules
+dotnet_code_quality_unused_parameters = all:warning
+dotnet_remove_unnecessary_suppression_exclusions = none:warning
+
+dotnet_style_namespace_match_folder = true:suggestion

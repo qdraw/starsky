@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.metaupdate.Services;
 using starsky.foundation.database.Models;
@@ -14,35 +15,35 @@ namespace starskytest.starsky.feature.metaupdate.Services
 	public sealed class MetaInfoTest
 	{
 		[TestMethod]
-		public void FileNotInIndex()
+		public async Task FileNotInIndex()
 		{
 			var metaInfo = new MetaInfo(new FakeIQuery(), new AppSettings(),
 				new FakeSelectorStorage(),null, new FakeIWebLogger());
-			var test = metaInfo.GetInfo(new List<string>{"/test"}, false);
+			var test = await metaInfo.GetInfoAsync(new List<string>{"/test"}, false);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, test.FirstOrDefault()?.Status);
 		}
 		
 		[TestMethod]
-		public void NotFoundSourceMissing()
+		public async Task NotFoundSourceMissing()
 		{
 			var metaInfo = new MetaInfo(new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/test")}), new AppSettings(),
 				new FakeSelectorStorage(),null, new FakeIWebLogger());
-			var test = metaInfo.GetInfo(new List<string>{"/test"}, false);
+			var test = await metaInfo.GetInfoAsync(new List<string>{"/test"}, false);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, test.FirstOrDefault()?.Status);
 		}
 		
 		[TestMethod]
-		public void ExtensionNotSupported_ExifWriteNotSupported()
+		public async Task ExtensionNotSupported_ExifWriteNotSupported()
 		{
 			var metaInfo = new MetaInfo(new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/test")}), new AppSettings(),
 				new FakeSelectorStorage(new FakeIStorage(new List<string>(), 
 					new List<string> {"/test"})),null, new FakeIWebLogger());
-			var test = metaInfo.GetInfo(new List<string>{"/test"}, false);
+			var test = await metaInfo.GetInfoAsync(new List<string>{"/test"}, false);
 			Assert.AreEqual(FileIndexItem.ExifStatus.ExifWriteNotSupported,test.FirstOrDefault()?.Status);
 		}
 				
 		[TestMethod]
-		public void GetInfo_XmpFile()
+		public async Task GetInfo_XmpFile()
 		{
 			var metaInfo = new MetaInfo(new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/test.xmp")}), new AppSettings(),
 				new FakeSelectorStorage(new FakeIStorage(new List<string>(), 
@@ -50,12 +51,12 @@ namespace starskytest.starsky.feature.metaupdate.Services
 					{
 						FakeCreateAn.CreateAnXmp.Bytes.ToArray()
 					})),null, new FakeIWebLogger());
-			var test = metaInfo.GetInfo(new List<string>{"/test.xmp"}, false);
+			var test = await metaInfo.GetInfoAsync(new List<string>{"/test.xmp"}, false);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,test.FirstOrDefault()?.Status);
 		}
 		
 		[TestMethod]
-		public void GetInfo_JpegFile_OkStatus()
+		public async Task GetInfo_JpegFile_OkStatus()
 		{
 			var metaInfo = new MetaInfo(new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/test.jpg")}), new AppSettings(),
 				new FakeSelectorStorage(new FakeIStorage(new List<string>(), 
@@ -63,24 +64,26 @@ namespace starskytest.starsky.feature.metaupdate.Services
 					{
 						FakeCreateAn.CreateAnImage.Bytes.ToArray()
 					})),null, new FakeIWebLogger());
-			var test = metaInfo.GetInfo(new List<string>{"/test.jpg"}, false);
+			var test = await metaInfo.GetInfoAsync(new List<string>{"/test.jpg"}, false);
 			
 			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg,test.FirstOrDefault()?.ImageFormat);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,test.FirstOrDefault()?.Status);
 		}
 		
 		[TestMethod]
-		public void GetInfo_JpegFile_LastWriteDate()
+		public async Task GetInfo_JpegFile_LastWriteDate()
 		{
 			var metaInfo = new MetaInfo(new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/test.jpg")}), new AppSettings(),
 				new FakeSelectorStorage(new FakeIStorage(new List<string>(), 
 					new List<string> {"/test.jpg"}, new List<byte[]>
 					{
 						FakeCreateAn.CreateAnImage.Bytes.ToArray()
-					}, new List<DateTime>{new DateTime(2000,01,01)})),null, new FakeIWebLogger());
-			var test = metaInfo.GetInfo(new List<string>{"/test.jpg"}, false);
+					}, new List<DateTime>{new DateTime(2000,01,01, 
+						01,01,01, kind: DateTimeKind.Local)})),null, new FakeIWebLogger());
+			var test = await metaInfo.GetInfoAsync(new List<string>{"/test.jpg"}, false);
 
-			Assert.AreEqual(new DateTime(2000,01,01),test.FirstOrDefault()?.LastEdited);
+			Assert.AreEqual(new DateTime(2000,01,01, 
+				01,01,01, kind: DateTimeKind.Local),test.FirstOrDefault()?.LastEdited);
 		}
 	}
 }

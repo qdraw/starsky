@@ -67,7 +67,7 @@ public class EnumHelperTest
         TestValue? enumValue = null;
 
         // Act
-        var result = EnumHelper.GetDisplayName(enumValue);
+        var result = EnumHelper.GetDisplayName(enumValue!);
 
         // Assert
         Assert.AreEqual(null, result);

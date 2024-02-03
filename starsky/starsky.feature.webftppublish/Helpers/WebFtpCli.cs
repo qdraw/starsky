@@ -1,4 +1,5 @@
 using System.IO;
+using System.Threading.Tasks;
 using starsky.feature.webftppublish.FtpAbstractions.Interfaces;
 using starsky.feature.webftppublish.Models;
 using starsky.feature.webftppublish.Services;
@@ -30,7 +31,7 @@ namespace starsky.feature.webftppublish.Helpers
 			_webRequestFactory = webRequestFactory;
 		}
 
-		public void Run(string[] args)
+		public async Task RunAsync(string[] args)
 		{
 			_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
 			
@@ -75,8 +76,8 @@ namespace starsky.feature.webftppublish.Helpers
 				return;
 			}
 
-			var settings =
-				new DeserializeJson(_hostStorageProvider).Read<FtpPublishManifestModel>(
+			var settings = await 
+				new DeserializeJson(_hostStorageProvider).ReadAsync<FtpPublishManifestModel>(
 					settingsFullFilePath);
 
 			var ftpService = new FtpService(_appSettings,_hostStorageProvider, 

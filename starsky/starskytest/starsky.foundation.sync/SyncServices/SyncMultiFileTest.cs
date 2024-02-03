@@ -6,24 +6,23 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
-using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.sync.SyncServices;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
-#nullable enable
 
 namespace starskytest.starsky.foundation.sync.SyncServices
 {
 	[TestClass]
 	public sealed class SyncMultiFileTest
 	{
-		private readonly IStorage _iStorageFake;
+		private readonly FakeIStorage _iStorageFake;
 		private readonly DateTime _lastEditedDateTime;
 
 		public SyncMultiFileTest()
 		{
-			_lastEditedDateTime = new DateTime(2020, 02, 02);
+			_lastEditedDateTime = new DateTime(2020, 02, 02,
+				01,01,01, kind: DateTimeKind.Local);
 			_iStorageFake = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.jpg","/color_class_test.jpg", "/status_deleted.jpg"},
 				new List<byte[]>{
@@ -272,7 +271,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			const string currentFilePath = "/test_date.jpg";
 			_iStorageFake.FileCopy("/test.jpg", currentFilePath);
-			(_iStorageFake as FakeIStorage)!.SetLastWriteTime(currentFilePath,DateTime.UtcNow);
+			_iStorageFake.SetLastWriteTime(currentFilePath,DateTime.UtcNow);
 			
 			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync(currentFilePath);
 				

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -63,6 +64,7 @@ namespace starsky.foundation.writemeta.Helpers
 		/// </summary>
 		/// <param name="inputSubPaths">list of files to update</param>
 		/// <returns>list of files, where needed for raw-files there are .xmp used</returns>
+		[SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance")]
 		private static IEnumerable<string> PathsListTagsFromFile(List<string> inputSubPaths)
 		{
 			var pathsList = new List<string>();
@@ -183,7 +185,7 @@ namespace starsky.foundation.writemeta.Helpers
 		{
 			var exifUpdateFilePaths = new List<string>
 			{
-				updateModel.FilePath           
+				updateModel.FilePath!           
 			};
 			return UpdateAsync(updateModel, exifUpdateFilePaths, comparedNames, includeSoftware, renameThumbnail);
 		}
@@ -240,7 +242,7 @@ namespace starsky.foundation.writemeta.Helpers
 		{
 			if ( updateModel.FilePath == path )
 			{
-				return updateModel.FileHash;
+				return updateModel.FileHash!;
 			}
 			return ( await new FileHash(_iStorage).GetHashCodeAsync(path) )
 				.Key;
@@ -436,7 +438,8 @@ namespace starsky.foundation.writemeta.Helpers
 		/// <param name="comparedNames">list of all fields that are edited</param>
 		/// <param name="updateModel">the model that has the data</param>
 		/// <returns></returns>
-		private static string UpdateImageWidthCommand(string command, ICollection<string> comparedNames, FileIndexItem updateModel)
+		[SuppressMessage("ReSharper", "SuggestBaseTypeForParameter")]
+		private static string UpdateImageWidthCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
 		{
 			if ( !comparedNames.Contains(nameof(FileIndexItem.ImageWidth).ToLowerInvariant()) )
 				return command;

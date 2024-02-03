@@ -94,8 +94,8 @@ namespace starsky.feature.webhtmlpublish.Helpers
 			var listOfFiles = _subPathStorage.GetAllFilesInDirectory("/")
 				.Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
 			      
-			var fileIndexList = new ReadMeta(_subPathStorage, _appSettings, null, _logger)
-				.ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
+			var fileIndexList = await new ReadMeta(_subPathStorage, _appSettings, null!, _logger)
+				.ReadExifAndXmpFromFileAddFilePathHashAsync(listOfFiles);
 			         
 			// todo introduce selector
 			var profileName = new PublishPreflight(_appSettings,_console, _storageSelector, _logger)

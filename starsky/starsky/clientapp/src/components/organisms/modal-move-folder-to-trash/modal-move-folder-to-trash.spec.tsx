@@ -1,10 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import * as IUseLocation from "../../../hooks/use-location/use-location";
-import {
-  IConnectionDefault,
-  newIConnectionDefault
-} from "../../../interfaces/IConnectionDefault";
+import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import * as FetchPost from "../../../shared/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
@@ -20,12 +17,10 @@ describe("ModalMoveFolderToTrash component", () => {
     const handleExitMock = jest.fn();
     const setIsLoadingMock = jest.fn();
 
-    const modalSpy = jest
-      .spyOn(Modal, "default")
-      .mockImplementationOnce((props) => {
-        props.handleExit();
-        return <>{props.children}</>;
-      });
+    const modalSpy = jest.spyOn(Modal, "default").mockImplementationOnce((props) => {
+      props.handleExit();
+      return <>{props.children}</>;
+    });
 
     render(
       <ModalMoveFolderToTrash
@@ -35,7 +30,7 @@ describe("ModalMoveFolderToTrash component", () => {
         setIsLoading={setIsLoadingMock}
       />
     );
-    expect(modalSpy).toBeCalledTimes(1);
+    expect(modalSpy).toHaveBeenCalledTimes(1);
   });
 
   it("should call `handleExit` when cancel button is clicked", async () => {
@@ -92,28 +87,26 @@ describe("ModalMoveFolderToTrash component", () => {
   it("calls FetchPost function with the expected parameters when moveFolderIntoTrash function is called", () => {
     // spy on fetch
     // use this import => import * as FetchPost from '../shared/fetch-post';
-    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
-        ...newIConnectionDefault(),
-        data: [
-          {
-            status: IExifStatus.Ok,
-            fileName: "rootfilename.jpg",
-            fileIndexItem: {
-              description: "",
-              fileHash: undefined,
-              fileName: "test.jpg",
-              filePath: "/test.jpg",
-              isDirectory: false,
-              status: "Ok",
-              tags: "",
-              title: ""
-            }
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      ...newIConnectionDefault(),
+      data: [
+        {
+          status: IExifStatus.Ok,
+          fileName: "rootfilename.jpg",
+          fileIndexItem: {
+            description: "",
+            fileHash: undefined,
+            fileName: "test.jpg",
+            filePath: "/test.jpg",
+            isDirectory: false,
+            status: "Ok",
+            tags: "",
+            title: ""
           }
-        ],
-        statusCode: 200
-      }
-    );
+        }
+      ],
+      statusCode: 200
+    });
     const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
@@ -144,38 +137,32 @@ describe("ModalMoveFolderToTrash component", () => {
     const expectedUrl = new UrlQuery().UrlMoveToTrashApi();
     const expectedBodyParams = new URLSearchParams();
     expectedBodyParams.append("f", subPath);
-    expect(fetchPostSpy).toHaveBeenCalledWith(
-      expectedUrl,
-      expectedBodyParams.toString(),
-      "post"
-    );
+    expect(fetchPostSpy).toHaveBeenCalledWith(expectedUrl, expectedBodyParams.toString(), "post");
   });
 
   it("calls FetchPost with 400 result with the expected parameters when moveFolderIntoTrash function is called", () => {
     // spy on fetch
     // use this import => import * as FetchPost from '../shared/fetch-post';
-    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
-        ...newIConnectionDefault(),
-        data: [
-          {
-            status: IExifStatus.Ok,
-            fileName: "rootfilename.jpg",
-            fileIndexItem: {
-              description: "",
-              fileHash: undefined,
-              fileName: "test.jpg",
-              filePath: "/test.jpg",
-              isDirectory: false,
-              status: "Ok",
-              tags: "",
-              title: ""
-            }
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      ...newIConnectionDefault(),
+      data: [
+        {
+          status: IExifStatus.Ok,
+          fileName: "rootfilename.jpg",
+          fileIndexItem: {
+            description: "",
+            fileHash: undefined,
+            fileName: "test.jpg",
+            filePath: "/test.jpg",
+            isDirectory: false,
+            status: "Ok",
+            tags: "",
+            title: ""
           }
-        ],
-        statusCode: 400
-      }
-    );
+        }
+      ],
+      statusCode: 400
+    });
     const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
@@ -206,11 +193,7 @@ describe("ModalMoveFolderToTrash component", () => {
     const expectedUrl = new UrlQuery().UrlMoveToTrashApi();
     const expectedBodyParams = new URLSearchParams();
     expectedBodyParams.append("f", subPath);
-    expect(fetchPostSpy).toHaveBeenCalledWith(
-      expectedUrl,
-      expectedBodyParams.toString(),
-      "post"
-    );
+    expect(fetchPostSpy).toHaveBeenCalledWith(expectedUrl, expectedBodyParams.toString(), "post");
   });
 
   it("should navigate to parent folder after moving folder to trash", async () => {
@@ -220,31 +203,27 @@ describe("ModalMoveFolderToTrash component", () => {
 
     // spy on fetch
     // use this import => import * as FetchPost from '../shared/fetch-post';
-    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
-        ...newIConnectionDefault(),
-        data: [
-          {
-            status: IExifStatus.Ok,
-            fileName: "rootfilename.jpg",
-            fileIndexItem: {
-              description: "",
-              fileHash: undefined,
-              fileName: "test.jpg",
-              filePath: "/test.jpg",
-              isDirectory: false,
-              status: "Ok",
-              tags: "",
-              title: ""
-            }
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      ...newIConnectionDefault(),
+      data: [
+        {
+          status: IExifStatus.Ok,
+          fileName: "rootfilename.jpg",
+          fileIndexItem: {
+            description: "",
+            fileHash: undefined,
+            fileName: "test.jpg",
+            filePath: "/test.jpg",
+            isDirectory: false,
+            status: "Ok",
+            tags: "",
+            title: ""
           }
-        ],
-        statusCode: 200
-      }
-    );
-    jest
-      .spyOn(FetchPost, "default")
-      .mockImplementationOnce(() => mockIConnectionDefault);
+        }
+      ],
+      statusCode: 200
+    });
+    jest.spyOn(FetchPost, "default").mockImplementationOnce(() => mockIConnectionDefault);
 
     await act(async () => {
       jest.spyOn(Modal, "default").mockImplementationOnce((props) => {
@@ -254,17 +233,15 @@ describe("ModalMoveFolderToTrash component", () => {
     });
 
     // create a mock history object with a location object
-    const historySpy = jest
-      .spyOn(IUseLocation, "default")
-      .mockImplementationOnce(() => {
-        return {
-          location: {
-            pathname: "/",
-            search: "?path=/path/to/folder"
-          },
-          navigate: jest.fn()
-        } as any;
-      });
+    const historySpy = jest.spyOn(IUseLocation, "default").mockImplementationOnce(() => {
+      return {
+        location: {
+          pathname: "/",
+          search: "?path=/path/to/folder"
+        },
+        navigate: jest.fn()
+      } as any;
+    });
 
     // render the component and pass in the mock history object
     render(
@@ -287,7 +264,7 @@ describe("ModalMoveFolderToTrash component", () => {
 
     // wait for the history.navigate to be called with the updated location
     await waitFor(() => {
-      expect(historySpy).toBeCalled();
+      expect(historySpy).toHaveBeenCalled();
     });
   });
 
@@ -310,7 +287,7 @@ describe("ModalMoveFolderToTrash component", () => {
       />
     );
 
-    expect(handleExitSpy).toBeCalled();
+    expect(handleExitSpy).toHaveBeenCalled();
 
     component.unmount();
   });
@@ -333,28 +310,26 @@ describe("ModalMoveFolderToTrash component", () => {
 
     // spy on fetch
     // use this import => import * as FetchPost from '../shared/fetch-post';
-    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
-        ...newIConnectionDefault(),
-        data: [
-          {
-            status: IExifStatus.Ok,
-            fileName: "rootfilename.jpg",
-            fileIndexItem: {
-              description: "",
-              fileHash: undefined,
-              fileName: "test.jpg",
-              filePath: "/test.jpg",
-              isDirectory: false,
-              status: "Ok",
-              tags: "",
-              title: ""
-            }
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      ...newIConnectionDefault(),
+      data: [
+        {
+          status: IExifStatus.Ok,
+          fileName: "rootfilename.jpg",
+          fileIndexItem: {
+            description: "",
+            fileHash: undefined,
+            fileName: "test.jpg",
+            filePath: "/test.jpg",
+            isDirectory: false,
+            status: "Ok",
+            tags: "",
+            title: ""
           }
-        ],
-        statusCode: 200
-      }
-    );
+        }
+      ],
+      statusCode: 200
+    });
     const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
       .mockReset()

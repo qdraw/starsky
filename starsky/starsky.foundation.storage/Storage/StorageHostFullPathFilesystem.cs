@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -206,22 +205,31 @@ namespace starsky.foundation.storage.Storage
 			return folderList.OrderBy(p => p.Value);
 		}
 
+		/// <summary>
+		/// Read Stream (and keep open)
+		/// </summary>
+		/// <param name="path">location</param>
+		/// <param name="maxRead">how many bytes are read (default all or -1)</param>
+		/// <returns>Stream with data (non-disposed)</returns>
 		public Stream ReadStream(string path, int maxRead = -1)
 		{
 			if ( ! ExistFile(path) ) throw new FileNotFoundException(path);
 
-			FileStream fileStream;
 			try
 			{
-				fileStream = new FileStream(path, FileMode.Open, 
+				var fileStream = new FileStream(path, FileMode.Open, 
 					FileAccess.Read, FileShare.Read, 4096,true );
 
-				if ( maxRead < 1 ) return fileStream;
+				if ( maxRead < 1 )
+				{
+					return fileStream;
+				}
 				
-				byte[] buffer = new byte[maxRead];
+				// Only for when selecting the first part of the file
+				var buffer = new byte[maxRead];
 				// ReSharper disable once MustUseReturnValue
 				fileStream.Read(buffer, 0, maxRead);
-				fileStream.Close();
+				fileStream.Close(); // see before max read for default setting
 				return new MemoryStream(buffer);
 			}
 			catch ( FileNotFoundException e)
@@ -304,7 +312,11 @@ namespace starsky.foundation.storage.Storage
 
 		public bool FileDelete(string path)
 		{
-			if ( !File.Exists(path) ) return false;
+			if ( !File.Exists(path) )
+			{
+				return false;
+			}
+			
 			bool LocalRun()
 			{
 				File.Delete(path);
@@ -312,10 +324,7 @@ namespace starsky.foundation.storage.Storage
 			}
 			return RetryHelper.Do(LocalRun, TimeSpan.FromSeconds(2),5);
 		}
-
-		[SuppressMessage("Usage", "S3966: Resource '_iStorage.ReadStream' has " +
-		                          "already been disposed explicitly or through a using statement implicitly. " +
-		                          "Remove the redundant disposal.")]
+		
 		public bool WriteStream(Stream stream, string path)
 		{
 			if ( !stream.CanRead ) return false;
@@ -331,7 +340,7 @@ namespace starsky.foundation.storage.Storage
 					FileOptions.Asynchronous))
 				{
 					stream.CopyTo(fileStream);
-					fileStream.Dispose();
+					// fileStream is disposed due using
 				}
 
 				stream.Dispose();
@@ -384,9 +393,10 @@ namespace starsky.foundation.storage.Storage
 					FileOptions.Asynchronous | FileOptions.SequentialScan))
 				{
 					await stream.CopyToAsync(fileStream);
-					await fileStream.DisposeAsync();
 				}
+				
 				await stream.DisposeAsync();
+				
 				return true;
 			}
 

@@ -1,8 +1,10 @@
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starskytest.FakeCreateAn;
 
@@ -27,16 +29,23 @@ public class PathHelperTests
     
 	[TestMethod]
 	[ExpectedException(typeof(RegexMatchTimeoutException))]
-	public void GetFileName_ReturnsFileName_WithMaliciousInput()
+	public async Task GetFileName_ReturnsFileName_WithMaliciousInput_UnixOnly()
 	{
 		// Act and Assert
-		var test =
-			PlainTextFileHelper.StreamToString(
+		var test = await 
+			StreamToStringHelper.StreamToStringAsync(
 				new MemoryStream(CreateAnImage.Bytes.ToArray()));
-		var test2 =
-			PlainTextFileHelper.StreamToString(
+		var test2 = await
+			StreamToStringHelper.StreamToStringAsync(
 				new MemoryStream(CreateAnImageA6600.Bytes.ToArray()));
-		PathHelper.GetFileName(test + test2,100);
+
+		var result = string.Empty;
+		for ( var i = 0; i < 100; i++ )
+		{
+			result += test + test2 + test + test;
+		}
+		
+		PathHelper.GetFileName(result);
 	}
 	
 	[TestMethod]
@@ -70,7 +79,7 @@ public class PathHelperTests
 	public void RemoveLatestBackslash_ReturnsNull_WhenBasePathIsNull()
 	{
 		// Act
-		string actualPath = PathHelper.RemoveLatestBackslash(null);
+		var actualPath = PathHelper.RemoveLatestBackslash(null!);
         
 		// Assert
 		Assert.IsNull(actualPath);
@@ -120,7 +129,7 @@ public class PathHelperTests
 	public void RemoveLatestSlash_ReturnsEmptyString_WhenBasePathIsNull()
 	{
 		// Act
-		string actualPath = PathHelper.RemoveLatestSlash(null);
+		string actualPath = PathHelper.RemoveLatestSlash(null!);
         
 		// Assert
 		Assert.AreEqual(string.Empty, actualPath);
@@ -186,7 +195,7 @@ public class PathHelperTests
 	public void AddBackslash_ReturnsOriginalString_WhenInputIsNull()
 	{
 		// Act
-		var actualPath = PathHelper.AddBackslash(null);
+		var actualPath = PathHelper.AddBackslash(null!);
         
 		// Assert
 		Assert.AreEqual(null, actualPath);
@@ -209,7 +218,7 @@ public class PathHelperTests
 	public void PrefixDbSlash_WhenCalledWithNull_ReturnsSlash()
 	{
 		// Act
-		string result = PathHelper.PrefixDbSlash(null);
+		var result = PathHelper.PrefixDbSlash(null!);
 
 		// Assert
 		Assert.AreEqual("/", result);
@@ -312,7 +321,7 @@ public class PathHelperTests
 	public void TestSplitInputFilePaths_WithNull_ReturnsEmptyArray()
 	{
 		// Act
-		string[] result = PathHelper.SplitInputFilePaths(null);
+		var result = PathHelper.SplitInputFilePaths(null!);
         
 		// Assert
 		Assert.IsNotNull(result);

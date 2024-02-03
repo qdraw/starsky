@@ -1,9 +1,4 @@
-import {
-  fireEvent,
-  render,
-  RenderResult,
-  screen
-} from "@testing-library/react";
+import { fireEvent, render, RenderResult, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import * as FetchPost from "../../../shared/fetch-post";
@@ -23,9 +18,7 @@ describe("PreferencesPassword", () => {
         screen.getByTestId("preferences-password-submit")?.click();
       });
 
-      const warning = screen.queryByTestId(
-        "preferences-password-warning"
-      ) as HTMLDivElement;
+      const warning = screen.queryByTestId("preferences-password-warning") as HTMLDivElement;
       expect(warning).not.toBeNull();
 
       expect(warning.textContent).toBe("Enter the current and new password");
@@ -64,9 +57,7 @@ describe("PreferencesPassword", () => {
       }
 
       // submit
-      const loginContent = screen.queryByTestId(
-        "preferences-password-submit"
-      ) as HTMLButtonElement;
+      const loginContent = screen.queryByTestId("preferences-password-submit") as HTMLButtonElement;
       act(() => {
         loginContent.click();
       });
@@ -77,9 +68,7 @@ describe("PreferencesPassword", () => {
 
       submitPassword(component, "12345", "password1", "something-else");
 
-      const warning = screen.queryByTestId(
-        "preferences-password-warning"
-      ) as HTMLDivElement;
+      const warning = screen.queryByTestId("preferences-password-warning") as HTMLDivElement;
       expect(warning).not.toBeNull();
 
       expect(warning.textContent).toBe("The passwords do not match");
@@ -91,42 +80,36 @@ describe("PreferencesPassword", () => {
       const component = render(<PreferencesPassword />);
       // spy on fetch
       // use this using => import * as FetchPost from '../../../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({ statusCode: 200, data: { success: true } });
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200,
+        data: { success: true }
+      });
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       submitPassword(component, "12345", "password1", "password1", false);
 
-      const warning = screen.queryByTestId(
-        "preferences-password-warning"
-      ) as HTMLDivElement;
+      const warning = screen.queryByTestId("preferences-password-warning") as HTMLDivElement;
       expect(warning).toBeNull();
 
-      const loginContent = screen.queryByTestId(
-        "preferences-password-submit"
-      ) as HTMLButtonElement;
+      const loginContent = screen.queryByTestId("preferences-password-submit") as HTMLButtonElement;
 
       // need await here
       await act(async () => {
         await loginContent.click();
       });
 
-      expect(fetchPostSpy).toBeCalled();
-      expect(fetchPostSpy).toBeCalledWith(
+      expect(fetchPostSpy).toHaveBeenCalled();
+      expect(fetchPostSpy).toHaveBeenCalledWith(
         new UrlQuery().UrlAccountChangeSecret(),
         "Password=12345&ChangedPassword=password1&ChangedConfirmPassword=password1"
       );
 
-      const warning1 = screen.queryByTestId(
-        "preferences-password-warning"
-      ) as HTMLDivElement;
+      const warning1 = screen.queryByTestId("preferences-password-warning") as HTMLDivElement;
       expect(warning1).not.toBeNull();
 
-      expect(warning1.textContent).toBe(
-        "Your password has been successfully changed"
-      );
+      expect(warning1.textContent).toBe("Your password has been successfully changed");
 
       component.unmount();
     });
@@ -135,32 +118,30 @@ describe("PreferencesPassword", () => {
       const component = render(<PreferencesPassword />);
       // spy on fetch
       // use this using => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({ statusCode: 401, data: null });
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 401,
+        data: null
+      });
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       submitPassword(component, "12345", "password1", "password1", false);
 
-      const loginContent = screen.queryByTestId(
-        "preferences-password-submit"
-      ) as HTMLButtonElement;
+      const loginContent = screen.queryByTestId("preferences-password-submit") as HTMLButtonElement;
 
       // need await here
       await act(async () => {
         await loginContent.click();
       });
 
-      expect(fetchPostSpy).toBeCalled();
-      expect(fetchPostSpy).toBeCalledWith(
+      expect(fetchPostSpy).toHaveBeenCalled();
+      expect(fetchPostSpy).toHaveBeenCalledWith(
         new UrlQuery().UrlAccountChangeSecret(),
         "Password=12345&ChangedPassword=password1&ChangedConfirmPassword=password1"
       );
 
-      const warning = screen.queryByTestId(
-        "preferences-password-warning"
-      ) as HTMLDivElement;
+      const warning = screen.queryByTestId("preferences-password-warning") as HTMLDivElement;
       expect(warning).not.toBeNull();
 
       expect(warning.textContent).toBe("Enter your current password");
@@ -172,37 +153,33 @@ describe("PreferencesPassword", () => {
       const component = render(<PreferencesPassword />);
       // spy on fetch
       // use this using => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({ statusCode: 400, data: null });
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 400,
+        data: null
+      });
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       submitPassword(component, "12345", "password1", "password1", false);
 
-      const loginContent = screen.queryByTestId(
-        "preferences-password-submit"
-      ) as HTMLButtonElement;
+      const loginContent = screen.queryByTestId("preferences-password-submit") as HTMLButtonElement;
 
       // need await here
       await act(async () => {
         await loginContent.click();
       });
 
-      expect(fetchPostSpy).toBeCalled();
-      expect(fetchPostSpy).toBeCalledWith(
+      expect(fetchPostSpy).toHaveBeenCalled();
+      expect(fetchPostSpy).toHaveBeenCalledWith(
         new UrlQuery().UrlAccountChangeSecret(),
         "Password=12345&ChangedPassword=password1&ChangedConfirmPassword=password1"
       );
 
-      const warning = screen.queryByTestId(
-        "preferences-password-warning"
-      ) as HTMLDivElement;
+      const warning = screen.queryByTestId("preferences-password-warning") as HTMLDivElement;
       expect(warning).not.toBeNull();
 
-      expect(warning.textContent).toBe(
-        "The new password does not meet the criteria"
-      );
+      expect(warning.textContent).toBe("The new password does not meet the criteria");
 
       component.unmount();
     });

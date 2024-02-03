@@ -1,8 +1,4 @@
-import {
-  IDetailView,
-  IRelativeObjects,
-  PageType
-} from "../interfaces/IDetailView";
+import { IDetailView, IRelativeObjects, PageType } from "../interfaces/IDetailView";
 import { IExifStatus } from "../interfaces/IExifStatus";
 import { newIFileIndexItem } from "../interfaces/IFileIndexItem";
 import { detailviewReducer } from "./detailview-context";

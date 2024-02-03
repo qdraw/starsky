@@ -37,7 +37,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 			_storage.CreateDirectory("/test");
 			var filesInFolder = _storage.GetDirectoryRecursive("/").Select(p => p.Key).ToList();
 			
-			Assert.AreEqual(true,filesInFolder.Any());
+			Assert.AreEqual(true,filesInFolder.Count != 0);
 
 			_storage.FolderDelete("/test");
 		}
@@ -70,13 +70,13 @@ namespace starskytest.starsky.foundation.storage.Storage
 			_storage.CreateDirectory("/test_GetAllFilesInDirectoryRecursive");
 			_storage.CreateDirectory("/test_GetAllFilesInDirectoryRecursive/test");
 			var fileAlreadyExistSubPath = "/test_GetAllFilesInDirectoryRecursive/test/already_09010.tmp";
-			_storage.WriteStream(PlainTextFileHelper.StringToStream("test"),
+			_storage.WriteStream(StringToStreamHelper.StringToStream("test"),
 				fileAlreadyExistSubPath);
 			
 			var filesInFolder = _storage.GetAllFilesInDirectoryRecursive(
 				"/test_GetAllFilesInDirectoryRecursive").ToList();
 
-			Assert.AreEqual(true,filesInFolder.Any());
+			Assert.AreEqual(true,filesInFolder.Count != 0);
 			Assert.AreEqual("/test_GetAllFilesInDirectoryRecursive/test", filesInFolder[0]);
 			Assert.AreEqual("/test_GetAllFilesInDirectoryRecursive/test/already_09010.tmp", filesInFolder[1]);
 
@@ -98,7 +98,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 			const string from = "/test_file_copy.tmp";
 			const string to = "/test_file_copy_2.tmp";
 
-			_storage.WriteStream(PlainTextFileHelper.StringToStream("test"),
+			_storage.WriteStream(StringToStreamHelper.StringToStream("test"),
 				from);
 			_storage.FileCopy(from,to);
 
@@ -115,7 +115,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 			const string from = "/test_file_move.tmp";
 			const string to = "/test_file_move_2.tmp";
 
-			_storage.WriteStream(PlainTextFileHelper.StringToStream("test"),
+			_storage.WriteStream(StringToStreamHelper.StringToStream("test"),
 				from);
 			_storage.FileMove(from,to);
 

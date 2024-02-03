@@ -28,7 +28,7 @@ RUN echo "react done"
 
 # no alpine build since there is no support for multi-arch
 # docker buildx imagetools inspect mcr.microsoft.com/dotnet/sdk:6.0
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 ARG BUILDPLATFORM
 ARG TARGETPLATFORM
 # insert demo user and content
@@ -112,7 +112,7 @@ RUN if [ "$TEST" = "true" ]; then \
     
 # build runtime image (multiarch)
 # docker buildx imagetools inspect mcr.microsoft.com/dotnet/aspnet:6.0
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS release
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS release
 WORKDIR /app
 ARG TOOLS=false
 
@@ -126,31 +126,31 @@ else \
 fi
 
 # Create a group and user
-RUN groupadd --gid 1000 app \
-    && useradd --uid 1000 --gid app --shell /bin/bash --create-home app
+RUN groupadd --gid 1000 starsky \
+    && useradd --uid 1000 --gid starsky --shell /bin/bash --create-home starsky
     
 # copy dlls
-COPY --chown=app:app --from=build-env /app/starsky/out /app
+COPY --chown=starsky:starsky --from=build-env /app/starsky/out /app
 
 # copy dependencies & demo content
-COPY --chown=app:app --from=build-env /app/dependencies /app/dependencies
-COPY --chown=app:app --from=build-env /app/temp /app/temp
-COPY --chown=app:app --from=build-env /app/data.db /app/app__data.db
+COPY --chown=starsky:starsky --from=build-env /app/dependencies /app/dependencies
+COPY --chown=starsky:starsky --from=build-env /app/temp /app/temp
+COPY --chown=starsky:starsky --from=build-env /app/data.db /app/app__data.db
 
 # copy react build
-COPY --chown=app:app --from=react-build /app/starsky/clientapp ./clientapp
+COPY --chown=starsky:starsky --from=react-build /app/starsky/clientapp ./clientapp
 
 # Makes sure the test stage is run when using docker buildkit
-COPY --chown=app:app --from=test /testresults /tmp
+COPY --chown=starsky:starsky --from=test /testresults /tmp
 
 # you could mount this location
-RUN mkdir -p /app/photos && chown app:app /app/photos
-RUN mkdir -p /app/thumbnailTempFolder && chown app:app /app/thumbnailTempFolder
+RUN mkdir -p /app/photos && chown starsky:starsky /app/photos
+RUN mkdir -p /app/thumbnailTempFolder && chown starsky:starsky /app/thumbnailTempFolder
 
 # and change owner of folder
-RUN chown app:app /app
+RUN chown starsky:starsky /app
 
-USER app
+USER starsky
 
 ENV ASPNETCORE_Environment=Production
 ENTRYPOINT ["dotnet", "starsky.dll"]

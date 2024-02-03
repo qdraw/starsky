@@ -1,9 +1,6 @@
 import { render } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
-import {
-  IConnectionDefault,
-  newIConnectionDefault
-} from "../../../interfaces/IConnectionDefault";
+import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import * as FetchPost from "../../../shared/fetch-post";
 import DropArea from "./drop-area";
@@ -46,38 +43,31 @@ describe("DropArea", () => {
     it("Test Drop a file", async () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({
-          ...newIConnectionDefault(),
-          data: [
-            {
-              status: IExifStatus.Ok,
-              fileName: "rootfilename.jpg",
-              fileIndexItem: {
-                description: "",
-                fileHash: undefined,
-                fileName: "test.jpg",
-                filePath: "/test.jpg",
-                isDirectory: false,
-                status: "Ok",
-                tags: "",
-                title: ""
-              }
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        ...newIConnectionDefault(),
+        data: [
+          {
+            status: IExifStatus.Ok,
+            fileName: "rootfilename.jpg",
+            fileIndexItem: {
+              description: "",
+              fileHash: undefined,
+              fileName: "test.jpg",
+              filePath: "/test.jpg",
+              isDirectory: false,
+              status: "Ok",
+              tags: "",
+              title: ""
             }
-          ]
-        });
+          }
+        ]
+      });
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       const callbackSpy = jest.fn();
-      render(
-        <DropArea
-          callback={callbackSpy}
-          endpoint="/import"
-          enableDragAndDrop={true}
-        />
-      );
+      render(<DropArea callback={callbackSpy} endpoint="/import" enableDragAndDrop={true} />);
 
       // need to await here
       await act(async () => {
@@ -87,16 +77,16 @@ describe("DropArea", () => {
       const compareFormData = new FormData();
       compareFormData.append("file", exampleFile);
 
-      expect(fetchPostSpy).toBeCalled();
-      expect(fetchPostSpy).toBeCalledTimes(1);
-      expect(fetchPostSpy).toBeCalledWith("/import", compareFormData, "post", {
+      expect(fetchPostSpy).toHaveBeenCalled();
+      expect(fetchPostSpy).toHaveBeenCalledTimes(1);
+      expect(fetchPostSpy).toHaveBeenCalledWith("/import", compareFormData, "post", {
         to: undefined
       });
 
       // callback
-      expect(callbackSpy).toBeCalled();
+      expect(callbackSpy).toHaveBeenCalled();
 
-      expect(callbackSpy).toBeCalledWith([
+      expect(callbackSpy).toHaveBeenCalledWith([
         {
           description: "",
           fileHash: undefined,
@@ -154,17 +144,9 @@ describe("DropArea", () => {
     it("no input", () => {
       const callBackWhenReady = jest.fn();
 
-      PostSingleFormData(
-        "/",
-        undefined,
-        [],
-        0,
-        [],
-        callBackWhenReady,
-        jest.fn()
-      );
-      expect(callBackWhenReady).toBeCalled();
-      expect(callBackWhenReady).toBeCalledWith([]);
+      PostSingleFormData("/", undefined, [], 0, [], callBackWhenReady, jest.fn());
+      expect(callBackWhenReady).toHaveBeenCalled();
+      expect(callBackWhenReady).toHaveBeenCalledWith([]);
     });
 
     it("to big", () => {
@@ -176,18 +158,10 @@ describe("DropArea", () => {
         size: 3000000000000
       } as File;
 
-      PostSingleFormData(
-        "/",
-        undefined,
-        [file],
-        0,
-        [],
-        callBackWhenReady,
-        jest.fn()
-      );
-      expect(callBackWhenReady).toBeCalled();
+      PostSingleFormData("/", undefined, [file], 0, [], callBackWhenReady, jest.fn());
+      expect(callBackWhenReady).toHaveBeenCalled();
 
-      expect(callBackWhenReady).toBeCalledWith([
+      expect(callBackWhenReady).toHaveBeenCalledWith([
         {
           fileName: "test.jpg",
           filePath: "test.jpg",
@@ -197,26 +171,25 @@ describe("DropArea", () => {
     });
 
     it("status Ok", (done) => {
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({
-          ...newIConnectionDefault(),
-          data: [
-            {
-              status: IExifStatus.Ok,
-              fileName: "rootfilename.jpg",
-              fileIndexItem: {
-                description: "",
-                fileHash: undefined,
-                fileName: "",
-                filePath: "/test.jpg",
-                isDirectory: false,
-                status: "Ok",
-                tags: "",
-                title: ""
-              }
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        ...newIConnectionDefault(),
+        data: [
+          {
+            status: IExifStatus.Ok,
+            fileName: "rootfilename.jpg",
+            fileIndexItem: {
+              description: "",
+              fileHash: undefined,
+              fileName: "",
+              filePath: "/test.jpg",
+              isDirectory: false,
+              status: "Ok",
+              tags: "",
+              title: ""
             }
-          ]
-        });
+          }
+        ]
+      });
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -247,7 +220,7 @@ describe("DropArea", () => {
               title: ""
             }
           ]);
-          expect(fetchPostSpy).toBeCalled();
+          expect(fetchPostSpy).toHaveBeenCalled();
 
           done();
         },
@@ -256,11 +229,10 @@ describe("DropArea", () => {
     });
 
     it("no data", (done) => {
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({
-          ...newIConnectionDefault(),
-          data: null
-        });
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        ...newIConnectionDefault(),
+        data: null
+      });
 
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
@@ -286,7 +258,7 @@ describe("DropArea", () => {
               status: "ServerError"
             }
           ]);
-          expect(fetchPostSpy).toBeCalled();
+          expect(fetchPostSpy).toHaveBeenCalled();
 
           done();
         },
@@ -295,11 +267,10 @@ describe("DropArea", () => {
     });
 
     it("malformed array", (done) => {
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({
-          ...newIConnectionDefault(),
-          data: [null]
-        });
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        ...newIConnectionDefault(),
+        data: [null]
+      });
 
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
@@ -325,7 +296,7 @@ describe("DropArea", () => {
               status: "ServerError"
             }
           ]);
-          expect(fetchPostSpy).toBeCalled();
+          expect(fetchPostSpy).toHaveBeenCalled();
 
           done();
         },
@@ -334,26 +305,25 @@ describe("DropArea", () => {
     });
 
     it("status Error in response", (done) => {
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({
-          ...newIConnectionDefault(),
-          data: [
-            {
-              status: IExifStatus.ServerError,
-              fileName: "rootfilename.jpg",
-              fileIndexItem: {
-                description: "",
-                fileHash: undefined,
-                fileName: "test.jpg",
-                filePath: "/test.jpg",
-                isDirectory: false,
-                status: "ServerError",
-                tags: "",
-                title: ""
-              }
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        ...newIConnectionDefault(),
+        data: [
+          {
+            status: IExifStatus.ServerError,
+            fileName: "rootfilename.jpg",
+            fileIndexItem: {
+              description: "",
+              fileHash: undefined,
+              fileName: "test.jpg",
+              filePath: "/test.jpg",
+              isDirectory: false,
+              status: "ServerError",
+              tags: "",
+              title: ""
             }
-          ]
-        });
+          }
+        ]
+      });
 
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
@@ -385,7 +355,7 @@ describe("DropArea", () => {
               title: ""
             }
           ]);
-          expect(fetchPostSpy).toBeCalled();
+          expect(fetchPostSpy).toHaveBeenCalled();
 
           done();
         },
@@ -394,15 +364,14 @@ describe("DropArea", () => {
     });
 
     it("status Error in response with no FileIndexItem", (done) => {
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({
-          ...newIConnectionDefault(),
-          data: [
-            {
-              status: IExifStatus.ServerError
-            }
-          ]
-        });
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        ...newIConnectionDefault(),
+        data: [
+          {
+            status: IExifStatus.ServerError
+          }
+        ]
+      });
 
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
@@ -430,7 +399,7 @@ describe("DropArea", () => {
               status: "ServerError"
             }
           ]);
-          expect(fetchPostSpy).toBeCalled();
+          expect(fetchPostSpy).toHaveBeenCalled();
 
           done();
         },

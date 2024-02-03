@@ -8,12 +8,7 @@ export default {
 export const Default = () => {
   Router.navigate("/?select=test.jpg");
   return (
-    <ButtonStyled
-      className="btn btn--default"
-      type="submit"
-      disabled={false}
-      onClick={() => {}}
-    >
+    <ButtonStyled className="btn btn--default" type="submit" disabled={false} onClick={() => {}}>
       Loading...
     </ButtonStyled>
   );

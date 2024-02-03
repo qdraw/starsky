@@ -22,14 +22,14 @@ namespace starskytest.starsky.foundation.consoletelemetry.Initializers
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void CloudRoleNameInitializerArgumentNullException()
 		{
-			new CloudRoleNameInitializer(null).Initialize(new EventTelemetry());
+			new CloudRoleNameInitializer(null!).Initialize(new EventTelemetry());
 		}
 				
 		[TestMethod]
 		[ExpectedException(typeof(NullReferenceException))]
 		public void CloudRoleNameInitializerArgumentNullException2()
 		{
-			new CloudRoleNameInitializer("test").Initialize(null);
+			new CloudRoleNameInitializer("test").Initialize(null!);
 		}
 	}
 }

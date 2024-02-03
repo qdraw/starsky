@@ -114,10 +114,7 @@ namespace starsky.foundation.worker.Helpers
 		public static ValueTask QueueBackgroundWorkItemAsync(Channel<Tuple<Func<CancellationToken, ValueTask>, string>> channel,
 			Func<CancellationToken, ValueTask> workItem, string metaData)
 		{
-			if (workItem is null)
-			{
-				throw new ArgumentNullException(nameof(workItem));
-			}
+			ArgumentNullException.ThrowIfNull(workItem);
 			return QueueBackgroundWorkItemInternalAsync(channel, workItem, metaData);
 		}
 		

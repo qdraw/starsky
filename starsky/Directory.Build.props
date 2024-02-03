@@ -1,5 +1,9 @@
 <Project>
   <PropertyGroup>
-    <RuntimeIdentifier>$(OverwriteRuntimeIdentifier)</RuntimeIdentifier>
+    <RuntimeIdentifier Condition="'$(OverwriteRuntimeIdentifier)' != ''">$(OverwriteRuntimeIdentifier)</RuntimeIdentifier>
+    <SelfContained Condition="'$(OverwriteRuntimeIdentifier)' != ''">true</SelfContained>
+    <Copyright>"Copyright (c) 2018 - $([System.DateTime]::Now.ToString(`yyyy`)) Qdraw and other authors"</Copyright>
+    <Authors>Qdraw and contributors</Authors>
+    <Company>Qdraw</Company>
   </PropertyGroup>
 </Project>

@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
+using System.Threading.Tasks;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -23,7 +24,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			_logger = logger;
 		}
 		
-        public FileIndexItem XmpGetSidecarFile(FileIndexItem databaseItem)
+        public async Task<FileIndexItem> XmpGetSidecarFileAsync(FileIndexItem? databaseItem)
         {
 	        databaseItem ??= new FileIndexItem();
 
@@ -38,18 +39,18 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	             !_iStorage.ExistFile(xmpSubPath) ) return databaseItem;
 	        
 	        // Read the text-content of the xmp file.
-            var xmp = PlainTextFileHelper.StreamToString(_iStorage.ReadStream(xmpSubPath));
+            var xmp = await StreamToStringHelper.StreamToStringAsync(_iStorage.ReadStream(xmpSubPath));
             // Get the data from the xmp
             databaseItem = GetDataFromString(xmp,databaseItem);
             return databaseItem;
         }
         
-        public FileIndexItem GetDataFromString(string xmpDataAsString, FileIndexItem databaseItem = null)
+        public FileIndexItem GetDataFromString(string xmpDataAsString, FileIndexItem? databaseItem = null)
         {
             // Does not require appSettings
             
-            if(databaseItem == null) databaseItem = new FileIndexItem();
-	        
+            databaseItem ??= new FileIndexItem();
+		        
 	        try
 	        {
 		        var xmp = XmpMetaFactory.ParseFromString(xmpDataAsString);
@@ -77,7 +78,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         /// <param name="property">IXmpPropertyInfo read from string</param>
         /// <param name="xmpName">xmpName, for example dc:subject[1]</param>
         /// <returns>value or null</returns>
-        private static string GetNullNameSpace(IXmpPropertyInfo property, string xmpName)
+        private static string? GetNullNameSpace(IXmpPropertyInfo property, string xmpName)
         {
             if (property.Path == xmpName && !string.IsNullOrEmpty(property.Value) 
                                                      && string.IsNullOrEmpty(property.Namespace) )
@@ -93,7 +94,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         /// <param name="property">IXmpPropertyInfo read from string</param>
         /// <param name="xmpName">xmpName, for example dc:subject[1]</param>
         /// <returns>value or null</returns>
-        private static string GetContentNameSpace(IXmpPropertyInfo property, string xmpName)
+        private static string? GetContentNameSpace(IXmpPropertyInfo property, string xmpName)
         {
             if (property.Path == xmpName && !string.IsNullOrEmpty(property.Value) 
                                          && !string.IsNullOrEmpty(property.Namespace) )
@@ -182,8 +183,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
         private static void GpsAltitudeRef(IXmpMeta xmp, FileIndexItem item)
         {
-            string gpsAltitude = null;
-            string gpsAltitudeRef = null;
+            string? gpsAltitude = null;
+            string? gpsAltitudeRef = null;
             foreach (var property in xmp.Properties)
             {
                 // Path=exif:GPSAltitude Namespace=http://ns.adobe.com/exif/1.0/ Value=627/10

@@ -48,7 +48,7 @@ describe("ModalDownload", () => {
       ></ModalDownload>
     );
 
-    expect(useFetchSpy).toBeCalled();
+    expect(useFetchSpy).toHaveBeenCalled();
     expect(screen.getByTestId("thumbnail")).toBeTruthy();
     expect(screen.getByTestId("original")).toBeTruthy();
 
@@ -77,11 +77,10 @@ describe("ModalDownload", () => {
       .mockImplementationOnce(() => {});
 
     // use ==> import * as FetchGet from '../shared/fetch-get';
-    const mockFetchGetIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve({
-        statusCode: 200,
-        data: null
-      } as IConnectionDefault);
+    const mockFetchGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: null
+    } as IConnectionDefault);
 
     const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
@@ -100,7 +99,7 @@ describe("ModalDownload", () => {
     expect(thumbnail).toBeTruthy();
     thumbnail?.click();
 
-    expect(fetchPostSpy).toBeCalled();
+    expect(fetchPostSpy).toHaveBeenCalled();
 
     // and clean afterwards
     jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
@@ -128,7 +127,7 @@ describe("ModalDownload", () => {
       ></ModalDownload>
     );
 
-    expect(useFetchSpy).toBeCalled();
+    expect(useFetchSpy).toHaveBeenCalled();
 
     const btnTest = screen.queryByTestId("btn-test");
     const original = screen.queryByTestId("original");
@@ -158,22 +157,15 @@ describe("ModalDownload", () => {
       statusCode: 415,
       data: null
     } as IConnectionDefault;
-    jest
-      .spyOn(useFetch, "default")
-      .mockImplementationOnce(() => mockGetIConnectionDefault);
+    jest.spyOn(useFetch, "default").mockImplementationOnce(() => mockGetIConnectionDefault);
 
     const handleExitSpy = jest.fn();
 
     const modal = render(
-      <ModalDownload
-        collections={false}
-        select={["/"]}
-        isOpen={true}
-        handleExit={handleExitSpy}
-      />
+      <ModalDownload collections={false} select={["/"]} isOpen={true} handleExit={handleExitSpy} />
     );
 
-    expect(handleExitSpy).toBeCalled();
+    expect(handleExitSpy).toHaveBeenCalled();
 
     // and clean afterwards
     jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});

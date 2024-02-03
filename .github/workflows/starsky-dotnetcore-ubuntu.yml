@@ -1,4 +1,4 @@
-name: Starsky .NET Core (Ubuntu)
+name: Ubuntu .NET build
 
 concurrency: 
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -20,8 +20,8 @@ on:
     - '**.cshtml'
     - '**.cs'
     - '**.sln'
-    - '**.cake'
     - '**.json'
+    - '**.csproj'
 
 jobs:
   build:
@@ -35,13 +35,13 @@ jobs:
     
     - uses: actions/checkout@v4
     
-    - name: Setup .NET Core
+    - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 6.0.417
+        dotnet-version: 8.0.101
 
     - name: Cache nuget packages (*nix)
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         # nuget cache files are stored in `~/.nuget/packages` on Linux/macOS
         path: ~/.nuget/packages

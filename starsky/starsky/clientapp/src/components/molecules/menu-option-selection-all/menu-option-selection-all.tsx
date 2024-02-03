@@ -8,9 +8,11 @@ export interface IMenuOptionUndoSelectionProps {
   allSelection: () => void;
 }
 
-export const MenuOptionSelectionAll: React.FunctionComponent<
-  IMenuOptionUndoSelectionProps
-> = ({ select, state, allSelection }) => {
+export const MenuOptionSelectionAll: React.FunctionComponent<IMenuOptionUndoSelectionProps> = ({
+  select,
+  state,
+  allSelection
+}) => {
   return (
     <>
       {select.length !== state?.fileIndexItems?.length ? (

@@ -66,7 +66,7 @@ namespace starsky.Controllers
 					or FileIndexItem.ExifStatus.DeletedAndSame).ToList();
 			
 			var changedFileIndexItemName = resultsOkOrDeleteList.
-				ToDictionary(item => item.FilePath, item => new List<string> {fieldName});
+				ToDictionary(item => item.FilePath!, _ => new List<string> {fieldName});
 
 			// Update >
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
@@ -80,10 +80,10 @@ namespace starsky.Controllers
 			
 			// before sending not founds
 			new StopWatchLogger(_logger).StopUpdateReplaceStopWatch("update", 
-				fileIndexResultsList.FirstOrDefault()?.FilePath, collections, stopwatch);
+				fileIndexResultsList.FirstOrDefault()?.FilePath!, collections, stopwatch);
 			
 			// When all items are not found
-			if (!resultsOkOrDeleteList.Any())
+			if (resultsOkOrDeleteList.Count == 0 )
 			{
 				return NotFound(fileIndexResultsList);
 			}

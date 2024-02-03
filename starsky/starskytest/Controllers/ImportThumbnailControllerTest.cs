@@ -33,7 +33,7 @@ namespace starskytest.Controllers
 		private static ControllerContext RequestWithFile()
 		{
 			var httpContext = new DefaultHttpContext();
-			httpContext.Request.Headers.Add("Content-Type", "application/octet-stream");
+			httpContext.Request.Headers.Append("Content-Type", "application/octet-stream");
 			httpContext.Request.Body = new MemoryStream(CreateAnImage.Bytes.ToArray());
 
 			var actionContext = new ActionContext(httpContext, new RouteData(),
@@ -155,7 +155,8 @@ namespace starskytest.Controllers
 		{
 			var service = new ImportThumbnailController(_appSettings,
 				new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailQuery());
-			var result = await service.WriteThumbnails(new List<string>(), new List<string>{ "123" });
+			var result = await service.WriteThumbnails(new List<string>(), 
+				new List<string>{ "123" });
 			Assert.IsFalse(result);
 		}
 		
@@ -165,42 +166,46 @@ namespace starskytest.Controllers
 			var logger = new FakeIWebLogger();
 			var service = new ImportThumbnailController(_appSettings,
 				new FakeSelectorStorage(), logger, new FakeIThumbnailQuery());
-			var result = await service.WriteThumbnails(new List<string>{ "123" }, new List<string>{ "123" });
+			var result = await service.WriteThumbnails(new List<string>{ "123" }, 
+				new List<string>{ "123" });
 			
 			Assert.IsTrue(result);
-			Assert.IsTrue(logger.TrackedInformation.FirstOrDefault().Item2.Contains("not exist"));
+			Assert.IsTrue(logger.TrackedInformation.FirstOrDefault().Item2?.Contains("not exist"));
 		}
 		
 		[TestMethod]
 		public async Task WriteThumbnailsTest_ShouldMoveFile()
 		{
 			var logger = new FakeIWebLogger();
-			var storage = new FakeIStorage(new List<string>(), new List<string>{ "/upload/123.jpg" });
+			var storage = new FakeIStorage(new List<string>(), 
+				new List<string>{ "/upload/123.jpg" });
 			var service = new ImportThumbnailController(_appSettings,
 				new FakeSelectorStorage(storage), logger, new FakeIThumbnailQuery());
-			await service.WriteThumbnails(new List<string>{  "/upload/123.jpg" }, new List<string>{ "123" });
+			await service.WriteThumbnails(new List<string>{  "/upload/123.jpg" }, 
+				new List<string>{ "123" });
 			
 			Assert.IsFalse(storage.ExistFile("/upload/123.jpg"));
 			Assert.IsTrue(storage.ExistFile("123"));
 		}
 		
-		
 		[TestMethod]
 		public void MapToTransferObject1()
 		{
 			var inputList = new List<string> { "12345678901234567890123456" };
-			var result = ImportThumbnailController.MapToTransferObject(inputList);
-			Assert.AreEqual("12345678901234567890123456", result.FirstOrDefault().FileHash);
-			Assert.AreEqual(true, result.FirstOrDefault().Large);
+			var result = 
+				ImportThumbnailController.MapToTransferObject(inputList).ToList();
+			Assert.AreEqual("12345678901234567890123456", result.FirstOrDefault()?.FileHash);
+			Assert.AreEqual(true, result.FirstOrDefault()?.Large);
 		}
 		
 		[TestMethod]
 		public void MapToTransferObject1_2000()
 		{
 			var inputList = new List<string> { "12345678901234567890123456@2000" };
-			var result = ImportThumbnailController.MapToTransferObject(inputList);
-			Assert.AreEqual("12345678901234567890123456", result.FirstOrDefault().FileHash);
-			Assert.AreEqual(true, result.FirstOrDefault().ExtraLarge);
+			var result = 
+				ImportThumbnailController.MapToTransferObject(inputList).ToList();
+			Assert.AreEqual("12345678901234567890123456", result.FirstOrDefault()?.FileHash);
+			Assert.AreEqual(true, result.FirstOrDefault()?.ExtraLarge);
 		}
 		
 		[TestMethod]

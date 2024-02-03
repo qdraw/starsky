@@ -11,7 +11,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		[TestMethod]
 		public void NoScope()
 		{
-			IServiceScopeFactory scope = null;
+			IServiceScopeFactory? scope = null;
 			new InjectServiceScope(scope).Context();
 			Assert.IsNull(scope);
 		}

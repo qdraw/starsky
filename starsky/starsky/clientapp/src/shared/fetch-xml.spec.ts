@@ -3,17 +3,13 @@ import FetchGet from "./fetch-xml";
 describe("fetch-xml", () => {
   it("default string response", async () => {
     const responseString = "<div>response</div>";
-    const mockFetchAsXml: Promise<Response> = Promise.resolve(
-      new Response(responseString)
-    );
-    const spy = jest
-      .spyOn(window, "fetch")
-      .mockImplementationOnce(() => mockFetchAsXml);
+    const mockFetchAsXml: Promise<Response> = Promise.resolve(new Response(responseString));
+    const spy = jest.spyOn(window, "fetch").mockImplementationOnce(() => mockFetchAsXml);
     const result = await FetchGet("/test");
 
     const xmlParser = new DOMParser();
 
-    expect(spy).toBeCalledWith("/test", {
+    expect(spy).toHaveBeenCalledWith("/test", {
       credentials: "include",
       headers: { Accept: "text/xml" },
       method: "GET"
@@ -26,15 +22,11 @@ describe("fetch-xml", () => {
 
   it("corrupt xml object response", async () => {
     const responseString = "<div>response"; // this should not have a close div
-    const mockFetchAsXml: Promise<Response> = Promise.resolve(
-      new Response(responseString)
-    );
-    const spy = jest
-      .spyOn(window, "fetch")
-      .mockImplementationOnce(() => mockFetchAsXml);
+    const mockFetchAsXml: Promise<Response> = Promise.resolve(new Response(responseString));
+    const spy = jest.spyOn(window, "fetch").mockImplementationOnce(() => mockFetchAsXml);
     const result = await FetchGet("/test");
 
-    expect(spy).toBeCalledWith("/test", {
+    expect(spy).toHaveBeenCalledWith("/test", {
       credentials: "include",
       headers: { Accept: "text/xml" },
       method: "GET"
@@ -52,13 +44,11 @@ describe("fetch-xml", () => {
       status: 500
     });
     const mockFetchAsXml: Promise<Response> = Promise.resolve(response);
-    const spy = jest
-      .spyOn(window, "fetch")
-      .mockImplementationOnce(() => mockFetchAsXml);
+    const spy = jest.spyOn(window, "fetch").mockImplementationOnce(() => mockFetchAsXml);
     const result = await FetchGet("/test");
     const xmlParser = new DOMParser();
 
-    expect(spy).toBeCalledWith("/test", {
+    expect(spy).toHaveBeenCalledWith("/test", {
       credentials: "include",
       headers: { Accept: "text/xml" },
       method: "GET"

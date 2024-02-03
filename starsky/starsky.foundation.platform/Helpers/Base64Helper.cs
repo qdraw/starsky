@@ -4,23 +4,28 @@ using System.Text.RegularExpressions;
 
 namespace starsky.foundation.platform.Helpers
 {
-	public static class Base64Helper
+	public static partial class Base64Helper
 	{
 		/// <summary>
-		/// input a base64-formated-string return base64-formated-byte array
+		/// input a base64-formatted-string return base64-formatted-byte array
 		/// @see: https://stackoverflow.com/questions/7686585/something-like-tryparse-from-convert-frombase64string
 		/// </summary>
 		/// <param name="inputString">base64 string</param>
 		/// <returns>byte array</returns>
-		public static byte[] TryParse(string inputString)
+		public static byte[] TryParse(string? inputString)
 		{
-			if ( inputString?.Length % 4 != 0 || !Base64Regex.IsMatch(inputString) )
+			inputString ??= string.Empty;
+			if ( inputString.Length % 4 != 0 ||
+			     !Base64Regex().IsMatch(inputString) )
+			{
 				return Array.Empty<byte>();
+			}
+
 			return Convert.FromBase64String(inputString);
 		}
 
 		/// <summary>
-		/// Normal string to base64-formated-string
+		/// Normal string to base64-formatted-string
 		/// </summary>
 		/// <param name="plainText">Normal string</param>
 		/// <returns>base64-string</returns>
@@ -31,23 +36,27 @@ namespace starsky.foundation.platform.Helpers
 		}
 
 		/// <summary>
-		/// Normal string > base64-formated-string > base64-formated-bytes
+		/// Normal string > base64-formatted-string > base64-formatted-bytes
 		/// </summary>
 		/// <param name="plainText">Normal string</param>
 		/// <returns>base64 bytes</returns>
 		public static byte[] EncodeToBytes(string plainText)
 		{
 			var fromBase64String = EncodeToString(plainText);
-			byte[] bytes = TryParse(fromBase64String);
+			var bytes = TryParse(fromBase64String);
 			return bytes;
 		}
 
 		/// <summary>
 		/// Regex to match a base64 string
+		/// Regex.IsMatch (pre compiled regex)
 		/// </summary>
-		private static readonly Regex Base64Regex = new Regex(
-			@"^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}[AEIMQUYcgkosw048]=|[A-Za-z0-9+/][AQgw]==)?$",
-			RegexOptions.Compiled,  TimeSpan.FromMilliseconds(100));
+		/// <returns>Regex object</returns>
+		[GeneratedRegex(
+			"^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}[AEIMQUYcgkosw048]=|[A-Za-z0-9+/][AQgw]==)?$",
+			RegexOptions.CultureInvariant,
+			matchTimeoutMilliseconds: 200)]
+		private static partial Regex Base64Regex();
 
 		/// <summary>
 		/// MemoryString to base64 string
@@ -69,6 +78,5 @@ namespace starsky.foundation.platform.Helpers
 		{
 			return Convert.ToBase64String(bytes);
 		}
-
 	}
 }

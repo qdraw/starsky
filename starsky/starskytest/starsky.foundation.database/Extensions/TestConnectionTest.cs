@@ -23,9 +23,11 @@ namespace starskytest.starsky.foundation.database.Extensions
 
 			public int Count { get; set; }
 
-			public override DatabaseFacade Database
+#pragma warning disable CS8764 // Nullability of return type doesn't match overridden member (possibly because of nullability attributes).
+			public override DatabaseFacade? Database
 			{
 				get
+#pragma warning restore CS8764 // Nullability of return type doesn't match overridden member (possibly because of nullability attributes).
 				{
 					Count++;
 					if ( Count <= 1 )
@@ -33,6 +35,7 @@ namespace starskytest.starsky.foundation.database.Extensions
 						return null;
 					}
 					
+#pragma warning disable SYSLIB0050
 					var info = new SerializationInfo(typeof(Exception),
 						new FormatterConverter());
 					info.AddValue("Number", 1);
@@ -52,11 +55,12 @@ namespace starskytest.starsky.foundation.database.Extensions
 						typeof(MySqlException).GetConstructors(BindingFlags.Instance |
 							BindingFlags.NonPublic | BindingFlags.InvokeMethod).FirstOrDefault();
 					var instance =
-						( MySqlException ) ctor.Invoke(new object[]
+						( MySqlException ) ctor!.Invoke(new object[]
 						{
 							info,
 							new StreamingContext(StreamingContextStates.All)
 						});
+#pragma warning restore SYSLIB0050
 
 					throw instance;
 				}

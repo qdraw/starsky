@@ -1,29 +1,17 @@
 import { render, screen } from "@testing-library/react";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
-import {
-  IFileIndexItem,
-  newIFileIndexItemArray
-} from "../../../interfaces/IFileIndexItem";
+import { IFileIndexItem, newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
 import ItemTextListView from "./item-text-list-view";
 
 describe("ItemTextListView", () => {
   it("renders (without state component)", () => {
-    render(
-      <ItemTextListView
-        fileIndexItems={newIFileIndexItemArray()}
-        callback={() => {}}
-      />
-    );
+    render(<ItemTextListView fileIndexItems={newIFileIndexItemArray()} callback={() => {}} />);
   });
 
   it("renders undefined", () => {
-    render(
-      <ItemTextListView fileIndexItems={undefined as any} callback={() => {}} />
-    );
+    render(<ItemTextListView fileIndexItems={undefined as any} callback={() => {}} />);
 
-    expect(
-      screen.getByTestId("list-text-view-no-photos-in-folder")
-    ).toBeTruthy();
+    expect(screen.getByTestId("list-text-view-no-photos-in-folder")).toBeTruthy();
   });
 
   it("list of 1 file item", () => {
@@ -35,13 +23,9 @@ describe("ItemTextListView", () => {
         isDirectory: false
       }
     ] as IFileIndexItem[];
-    const list = render(
-      <ItemTextListView fileIndexItems={fileIndexItems} callback={() => {}} />
-    );
+    const list = render(<ItemTextListView fileIndexItems={fileIndexItems} callback={() => {}} />);
 
-    expect(list.container.querySelector("ul li")?.textContent).toBe(
-      fileIndexItems[0].fileName
-    );
+    expect(list.container.querySelector("ul li")?.textContent).toBe(fileIndexItems[0].fileName);
   });
 
   it("list of 1 error item", () => {
@@ -53,13 +37,9 @@ describe("ItemTextListView", () => {
         isDirectory: false
       }
     ] as IFileIndexItem[];
-    const list = render(
-      <ItemTextListView fileIndexItems={fileIndexItems} callback={() => {}} />
-    );
+    const list = render(<ItemTextListView fileIndexItems={fileIndexItems} callback={() => {}} />);
 
-    expect(list.container.querySelector("ul li em")?.textContent).toBe(
-      "ServerError"
-    );
+    expect(list.container.querySelector("ul li em")?.textContent).toBe("ServerError");
     expect(list.container.querySelector("ul li")?.textContent).toContain(
       fileIndexItems[0].fileName
     );
@@ -76,9 +56,7 @@ describe("ItemTextListView", () => {
     ] as IFileIndexItem[];
 
     const callback = jest.fn();
-    const list = render(
-      <ItemTextListView fileIndexItems={fileIndexItems} callback={callback} />
-    );
+    const list = render(<ItemTextListView fileIndexItems={fileIndexItems} callback={callback} />);
 
     expect(list.container.querySelector("ul li button")?.textContent).toBe(
       fileIndexItems[0].fileName
@@ -96,19 +74,15 @@ describe("ItemTextListView", () => {
     ] as IFileIndexItem[];
 
     const callback = jest.fn();
-    const list = render(
-      <ItemTextListView fileIndexItems={fileIndexItems} callback={callback} />
-    );
+    const list = render(<ItemTextListView fileIndexItems={fileIndexItems} callback={callback} />);
 
-    const button = list.container.querySelector(
-      "ul li button"
-    ) as HTMLButtonElement;
+    const button = list.container.querySelector("ul li button") as HTMLButtonElement;
 
     expect(button).not.toBeNull();
 
     button.click();
 
-    expect(callback).toBeCalled();
-    expect(callback).toBeCalledWith(fileIndexItems[0].filePath);
+    expect(callback).toHaveBeenCalled();
+    expect(callback).toHaveBeenCalledWith(fileIndexItems[0].filePath);
   });
 });

@@ -4,9 +4,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using build;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
+using Serilog;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static SimpleExec.Command;
 
@@ -19,7 +21,10 @@ namespace helpers
 		/// <summary>
 		/// @see: https://www.nuget.org/packages/dotnet-sonarscanner
 		/// </summary>
-		public const string SonarQubePackageVersion = "6.0.0";
+		public const string SonarQubePackageVersion = "6.1.0";
+		
+		public const string SonarQubeDotnetSonarScannerApi = "https://api.nuget.org/v3-flatcontainer/dotnet-sonarscanner/index.json";
+
 		public const string GitCommand = "git";
 		public const string DefaultBranchName = "master";
 
@@ -34,11 +39,13 @@ namespace helpers
 				Information($">> SonarBegin is disable due the --no-sonar flag");
 				return;
 			}
-		
+
+			CheckLatestVersionDotNetSonarScanner().Wait();
+			
 			var rootDirectory = Directory.GetParent(AppDomain.CurrentDomain
 				.BaseDirectory!)!.Parent!.Parent!.Parent!.FullName;
 			
-			Console.WriteLine(rootDirectory);
+			Log.Information(rootDirectory);
 
 			var envs =
 				Environment.GetEnvironmentVariables() as
@@ -48,23 +55,21 @@ namespace helpers
 			if ( toolList.Any(p => p.Text.Contains(SonarQubePackageName) 
 			                       && toolList.Any(p => p.Text.Contains(SonarQubePackageVersion)) ))
 			{
-				Console.WriteLine("Next: tool restore");
+				Log.Information("Next: tool restore");
 				DotNet($"tool restore", rootDirectory, envs, null, true);
 
-				Console.WriteLine("Skip creation of manifest files and install");
+				Log.Information("Skip creation of manifest files and install");
 				return;
 			}
 
-			Console.WriteLine("Next: Create new manifest file");
+			Log.Information("Next: Create new manifest file");
 			DotNet($"new tool-manifest --force", rootDirectory, envs, null, true);
 
-			Console.WriteLine("Next: Install Sonar tool");
-			DotNetToolInstall(_ => _
+			Log.Information("Next: Install Sonar tool");
+			DotNetToolInstall(p => p
 				.SetPackageName(SonarQubePackageName)
-				//.SetProcessArgumentConfigurator(_ => _.Add("-d"))
 				.SetProcessWorkingDirectory(rootDirectory)
 				.SetVersion(SonarQubePackageVersion));
-		
 		}
 
 		private static string EnvironmentVariable(string input)
@@ -74,16 +79,39 @@ namespace helpers
 
 		private static void Information(string input)
 		{
-			Console.WriteLine(input);
+			Log.Information(input);
 		}
+
+		static async Task CheckLatestVersionDotNetSonarScanner()
+		{
+			var result = await HttpQuery.GetJsonFromApi(SonarQubeDotnetSonarScannerApi);
+			if ( result == null )
+			{
+				Log.Information($"Nuget API is not available, " +
+				                $"so skip checking the latest version of {SonarQubePackageName}");
+				return;
+			}
+			
+			var latestVersionByApi = HttpQuery.ParseJsonVersionNumbers(result);
+			if ( latestVersionByApi > new Version(SonarQubePackageVersion) )
+			{
+				Log.Warning($"Please upgrade to the latest version " +
+				            $"of dotnet-sonarscanner {latestVersionByApi} \n\n" +
+				            "Update the following values: \n" +
+				            $"- build/helpers/SonarQube.cs -> SonarQubePackageVersion to {latestVersionByApi} \n" + 
+							"The _build project will auto update: \n" +
+				            "-  .config/dotnet-tools.json");
+			}
+		}
+		
 
 		private static void IsJavaInstalled()
 		{
-			Console.WriteLine("Checking if Java is installed, will fail if not on this step");
+			Log.Information("Checking if Java is installed, will fail if not on this step");
 			Run(Build.JavaBaseCommand, "-version");
 		}
 
-		private static string GetSonarToken()
+		public static string GetSonarToken()
 		{
 			var sonarToken = EnvironmentVariable("STARSKY_SONAR_TOKEN");
 			if( string.IsNullOrEmpty(sonarToken) ) {
@@ -91,12 +119,16 @@ namespace helpers
 			}
 			return sonarToken;
 		}
+
+		public static string GetSonarKey()
+		{
+			return EnvironmentVariable("STARSKY_SONAR_KEY");
+		}
 	
 		public static bool SonarBegin(bool noUnitTest, bool noSonar, string branchName, string clientAppProject, string coverageFile)
 		{
-			var key = EnvironmentVariable("STARSKY_SONAR_KEY");
 			
-			Information($">> SonarQube key={key}");
+			Information($">> SonarQube key={GetSonarKey()}");
 			
 			var sonarToken = GetSonarToken();
 
@@ -107,8 +139,8 @@ namespace helpers
 				url = "https://sonarcloud.io";
 			}
 
-			if( string.IsNullOrEmpty(key) || string.IsNullOrEmpty(sonarToken) || string.IsNullOrEmpty(organisation) ) {
-				Information($">> SonarQube is disabled $ key={key}|token={sonarToken}|organisation={organisation}");
+			if( string.IsNullOrEmpty(GetSonarKey()) || string.IsNullOrEmpty(sonarToken) || string.IsNullOrEmpty(organisation) ) {
+				Information($">> SonarQube is disabled $ key={GetSonarKey()}|token={sonarToken}|organisation={organisation}");
 				return false;
 			}
 
@@ -164,7 +196,7 @@ namespace helpers
 				.Append($"begin ")
 				// .Append($"/d:sonar.verbose=true ") 
 				.Append($"/d:sonar.host.url={url} ")
-				.Append($"/k:{key} ")
+				.Append($"/k:{GetSonarKey()} ")
 				.Append($"/n:Starsky ")
 				.Append($"/d:sonar.token={sonarToken} ")
 				.Append($"/o:" + organisation +" ")
@@ -237,7 +269,7 @@ namespace helpers
 
 			DotNet(sonarArguments.ToString());
 			
-			Console.Write("- - - - - - - - - -  Sonar done - - - - - - - - - - \n");
+			Log.Information("- - - - - - - - - -  Sonar done - - - - - - - - - - \n");
 		}
 	}	
 }

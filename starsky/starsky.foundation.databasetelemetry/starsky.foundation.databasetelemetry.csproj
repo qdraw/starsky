@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{0697d621-f50c-430b-9a41-9a9992d63a2b}</ProjectGuid>
         <DebugType>Full</DebugType>
@@ -12,7 +12,7 @@
     <ItemGroup>
       <PackageReference Include="Microsoft.ApplicationInsights" Version="2.22.0" />
       <PackageReference Include="Microsoft.ApplicationInsights.DependencyCollector" Version="2.22.0" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.25" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.1" />
     </ItemGroup>
 
     <ItemGroup>

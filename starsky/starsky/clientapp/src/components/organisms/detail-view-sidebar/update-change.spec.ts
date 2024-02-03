@@ -7,57 +7,37 @@ import { UpdateChange } from "./update-change";
 describe("Update Change", () => {
   describe("Update", () => {
     it("no content", () => {
-      const fetchPostSpy = jest
-        .spyOn(FetchPost, "default")
-        .mockImplementationOnce(() => {
-          return Promise.resolve({} as IConnectionDefault);
-        });
+      const fetchPostSpy = jest.spyOn(FetchPost, "default").mockImplementationOnce(() => {
+        return Promise.resolve({} as IConnectionDefault);
+      });
 
-      new UpdateChange(
-        {} as any,
-        jest.fn(),
-        jest.fn(),
-        {} as any,
-        {} as any
-      ).Update([]);
+      new UpdateChange({} as any, jest.fn(), jest.fn(), {} as any, {} as any).Update([]);
 
-      expect(fetchPostSpy).toBeCalledTimes(0);
+      expect(fetchPostSpy).toHaveBeenCalledTimes(0);
     });
 
     it("missing name", () => {
-      const fetchPostSpy = jest
-        .spyOn(FetchPost, "default")
-        .mockImplementationOnce(() => {
-          return Promise.resolve({} as IConnectionDefault);
-        });
+      const fetchPostSpy = jest.spyOn(FetchPost, "default").mockImplementationOnce(() => {
+        return Promise.resolve({} as IConnectionDefault);
+      });
 
-      new UpdateChange(
-        {} as any,
-        jest.fn(),
-        jest.fn(),
-        {} as any,
-        {} as any
-      ).Update([["", "test"]]);
+      new UpdateChange({} as any, jest.fn(), jest.fn(), {} as any, {} as any).Update([
+        ["", "test"]
+      ]);
 
-      expect(fetchPostSpy).toBeCalledTimes(0);
+      expect(fetchPostSpy).toHaveBeenCalledTimes(0);
     });
 
     it("no input content", () => {
-      const fetchPostSpy = jest
-        .spyOn(FetchPost, "default")
-        .mockImplementationOnce(() => {
-          return Promise.resolve({} as IConnectionDefault);
-        });
+      const fetchPostSpy = jest.spyOn(FetchPost, "default").mockImplementationOnce(() => {
+        return Promise.resolve({} as IConnectionDefault);
+      });
 
-      new UpdateChange(
-        { tag: "" } as any,
-        jest.fn(),
-        jest.fn(),
-        {} as any,
-        {} as any
-      ).Update([["tag", "test"]]);
+      new UpdateChange({ tag: "" } as any, jest.fn(), jest.fn(), {} as any, {} as any).Update([
+        ["tag", "test"]
+      ]);
 
-      expect(fetchPostSpy).toBeCalledTimes(1);
+      expect(fetchPostSpy).toHaveBeenCalledTimes(1);
     });
 
     it("should ignore same content", () => {
@@ -68,15 +48,11 @@ describe("Update Change", () => {
           return Promise.resolve({} as IConnectionDefault);
         });
 
-      new UpdateChange(
-        { tag: "test" } as any,
-        jest.fn(),
-        jest.fn(),
-        {} as any,
-        {} as any
-      ).Update([["tag", "test"]]);
+      new UpdateChange({ tag: "test" } as any, jest.fn(), jest.fn(), {} as any, {} as any).Update([
+        ["tag", "test"]
+      ]);
 
-      expect(fetchPostSpy).toBeCalledTimes(0);
+      expect(fetchPostSpy).toHaveBeenCalledTimes(0);
     });
 
     it("wrong status code or missing data", async () => {
@@ -84,16 +60,14 @@ describe("Update Change", () => {
         .spyOn(FileListCache.prototype, "CacheSet")
         .mockImplementationOnce(() => {});
 
-      const fetchPostSpy = jest
-        .spyOn(FetchPost, "default")
-        .mockImplementationOnce(() => {
-          return Promise.resolve({
-            data: {
-              fileIndexItem: [] as IFileIndexItem[]
-            },
-            statusCode: 500
-          } as IConnectionDefault);
-        });
+      const fetchPostSpy = jest.spyOn(FetchPost, "default").mockImplementationOnce(() => {
+        return Promise.resolve({
+          data: {
+            fileIndexItem: [] as IFileIndexItem[]
+          },
+          statusCode: 500
+        } as IConnectionDefault);
+      });
 
       const result = await new UpdateChange(
         { tag: "test1" } as any,
@@ -104,9 +78,9 @@ describe("Update Change", () => {
       ).Update([["tag", "test"]]);
 
       expect(result).toBe("wrong status code or missing data");
-      expect(cacheSetSpy).toBeCalledTimes(0);
+      expect(cacheSetSpy).toHaveBeenCalledTimes(0);
 
-      expect(fetchPostSpy).toBeCalledTimes(1);
+      expect(fetchPostSpy).toHaveBeenCalledTimes(1);
     });
 
     it("item not in result", async () => {
@@ -133,9 +107,9 @@ describe("Update Change", () => {
       ).Update([["tag", "test"]]);
 
       expect(result).toBe("item not in result");
-      expect(cacheSetSpy).toBeCalledTimes(0);
+      expect(cacheSetSpy).toHaveBeenCalledTimes(0);
 
-      expect(fetchPostSpy).toBeCalledTimes(1);
+      expect(fetchPostSpy).toHaveBeenCalledTimes(1);
     });
 
     it("contain result", async () => {
@@ -162,9 +136,9 @@ describe("Update Change", () => {
       ).Update([["tag", "test"]]);
 
       expect(result).toBe(true);
-      expect(cacheSetSpy).toBeCalledTimes(1);
+      expect(cacheSetSpy).toHaveBeenCalledTimes(1);
 
-      expect(fetchPostSpy).toBeCalledTimes(1);
+      expect(fetchPostSpy).toHaveBeenCalledTimes(1);
     });
 
     it("no content 2", async () => {
@@ -175,15 +149,11 @@ describe("Update Change", () => {
           return Promise.resolve({} as IConnectionDefault);
         });
 
-      await new UpdateChange(
-        {} as any,
-        jest.fn(),
-        jest.fn(),
-        {} as any,
-        {} as any
-      ).Update([["tags", "test"]]);
+      await new UpdateChange({} as any, jest.fn(), jest.fn(), {} as any, {} as any).Update([
+        ["tags", "test"]
+      ]);
 
-      expect(fetchPostSpy).toBeCalledTimes(0);
+      expect(fetchPostSpy).toHaveBeenCalledTimes(0);
     });
   });
 });

@@ -17,10 +17,7 @@ export interface IFormControlProps {
   "data-test"?: string;
 }
 
-const FormControl: React.FunctionComponent<IFormControlProps> = ({
-  onBlur,
-  ...props
-}) => {
+const FormControl: React.FunctionComponent<IFormControlProps> = ({ onBlur, ...props }) => {
   const maxlength = props.maxlength ? props.maxlength : 255;
 
   const [childLength, setChildLength] = useState(
@@ -43,11 +40,8 @@ const FormControl: React.FunctionComponent<IFormControlProps> = ({
    * Limit length on paste event
    * @param element ClipboardEvent
    */
-  const limitLengthPaste = function (
-    element: React.ClipboardEvent<HTMLDivElement>
-  ) {
-    if (childLength + element.clipboardData.getData("Text").length <= maxlength)
-      return;
+  const limitLengthPaste = function (element: React.ClipboardEvent<HTMLDivElement>) {
+    if (childLength + element.clipboardData.getData("Text").length <= maxlength) return;
     element.preventDefault();
     setChildLength(childLength + element.clipboardData.getData("Text").length);
   };
@@ -63,13 +57,9 @@ const FormControl: React.FunctionComponent<IFormControlProps> = ({
       {/* NOSONAR(S6847) */}
       <div
         data-test={props["data-test"] ? props["data-test"] : "form-control"}
-        onBlur={
-          new LimitLength(setChildLength, onBlur, maxlength).LimitLengthBlur
-        }
+        onBlur={new LimitLength(setChildLength, onBlur, maxlength).LimitLengthBlur}
         data-name={props.name}
-        onKeyDown={
-          new LimitLength(setChildLength, onBlur, maxlength).LimitLengthKey
-        }
+        onKeyDown={new LimitLength(setChildLength, onBlur, maxlength).LimitLengthKey}
         onInput={props.onInput}
         onPaste={limitLengthPaste}
         spellCheck={props.spellcheck}

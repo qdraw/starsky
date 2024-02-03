@@ -4,7 +4,7 @@ parameters:
 steps:
 
   - task: PowerShell@2
-    displayName: 'Cake CoverageReport'
+    displayName: 'Nuke CoverageReport'
     condition: and(succeeded(), eq('${{ parameters.unitTest }}', true) )
     inputs:
       filePath: 'starsky/build.ps1'

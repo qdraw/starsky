@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -26,13 +27,15 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 {
 
 	
+	[SuppressMessage("ReSharper", "ClassWithVirtualMembersNeverInherited.Global")]
+	[SuppressMessage("ReSharper", "S3881:\"IDisposable\" should be implemented correctly")]
 	public class MockTelemetryChannel : ITelemetryChannel
 	{
 		public IList<ITelemetry> Items
 		{
 			get;
 			private set;
-		}
+		} = new List<ITelemetry>();
 
 		public void Send(ITelemetry item)
 		{
@@ -41,11 +44,11 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 
 		public void Flush()
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public bool? DeveloperMode { get; set; }
-		public string EndpointAddress { get; set; }
+		public string EndpointAddress { get; set; } = string.Empty;
 
 		public void Dispose()
 		{
@@ -129,7 +132,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 		{
 			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>();
 
-			var script = new ApplicationInsightsJsHelper(httpContext, null).ScriptTag;
+			var script = new ApplicationInsightsJsHelper(httpContext).ScriptTag;
 			Assert.AreEqual(true, script.Contains("disabled"));
 		}
 		
@@ -138,7 +141,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 		{
 			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>();
 
-			var script = new ApplicationInsightsJsHelper(httpContext, null).ScriptPlain;
+			var script = new ApplicationInsightsJsHelper(httpContext).ScriptPlain;
 			Assert.AreEqual(true, script.Contains("disabled"));
 		}
 
@@ -147,14 +150,14 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 		{
 			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>();
 
-			if ( httpContext?.HttpContext?.Items == null )
+			if ( httpContext.HttpContext?.Items == null )
 			{
 				throw new NotSupportedException("[ApplicationInsightsJsHelper" +
 				                                "_CheckIfContainsNonce_ScriptTag] HttpContext is null");
 			}
 			
 			var toCheckNonce = Guid.NewGuid() + "__";
-			httpContext!.HttpContext!.Items["csp-nonce"] = toCheckNonce;
+			httpContext.HttpContext!.Items["csp-nonce"] = toCheckNonce;
 			
 			var someOptions = Options.Create(new ApplicationInsightsServiceOptions());
 			
@@ -191,6 +194,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 
 			var result = await userManager.SignUpAsync("test", "email", "test", "test");
 			
+			Assert.IsNotNull(httpContextAccessor.HttpContext);
 			await userManager.SignIn(httpContextAccessor.HttpContext, result.User);
 
 			IOptions<ApplicationInsightsServiceOptions> someOptions = Options.Create(new ApplicationInsightsServiceOptions());
@@ -200,7 +204,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 			
 			
 			var script = new ApplicationInsightsJsHelper(httpContextAccessor, fakeJs).GetCurrentUserId();
-			Assert.AreEqual(userManager.GetUser("email","test").Id.ToString(), script);
+			Assert.AreEqual(userManager.GetUser("email","test")?.Id.ToString(), script);
 		}
 		
 		[TestMethod]
@@ -225,7 +229,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 			var httpContextAccessor = _serviceProvider.GetRequiredService<IHttpContextAccessor>();
 			
 			
-			var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+			var user = new ClaimsPrincipal(new ClaimsIdentity(new[]
 			{
 				// NameIdentifier is missing, so it will return null string
 				new Claim(ClaimTypes.Name, "example name"),

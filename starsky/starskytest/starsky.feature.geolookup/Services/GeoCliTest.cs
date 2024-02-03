@@ -1,18 +1,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.geolookup.Services;
 using starsky.foundation.database.Models;
-using starsky.foundation.http.Services;
 using starsky.foundation.platform.Models;
-using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
-using starsky.foundation.storage.Storage;
-using starsky.foundation.writemeta.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -21,23 +15,13 @@ namespace starskytest.starsky.feature.geolookup.Services
 	[TestClass]
 	public sealed class GeoCliTest
 	{
-		private readonly IServiceScopeFactory _serviceScopeFactory;
-
-		public GeoCliTest()
-		{
-			var services = new ServiceCollection();
-			services.AddSingleton<IStorage, StorageHostFullPathFilesystem>();
-			services.AddSingleton<ISelectorStorage, SelectorStorage>();
-			var serviceProvider = services.BuildServiceProvider();
-			_serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-		}
 		
 		[TestMethod]
 		public async Task GeoCliInput_Notfound()
 		{
 			var console = new FakeConsoleWrapper();
 			var geoCli = new GeoCli(new FakeIGeoReverseLookup(), new FakeIGeoLocationWrite(),
-				new FakeSelectorStorage(new FakeIStorage(new List<string>{})), new AppSettings(),
+				new FakeSelectorStorage(new FakeIStorage(new List<string>())), new AppSettings(),
 				console, new FakeIGeoFileDownload(), new FakeExifToolDownload(), new FakeIWebLogger());
 			await geoCli.CommandLineAsync(new List<string> {"-p",}.ToArray());
 
@@ -49,7 +33,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 		{
 			var relativeParentFolder = new AppSettings().DatabasePathToFilePath(
 				new StructureService(new FakeIStorage(), new AppSettings().Structure)
-					.ParseSubfolders(0),false);
+					.ParseSubfolders(0)!);
 			
 			var storage = new FakeIStorage(new List<string> {"/"},
 				new List<string> {"/test.jpg"},

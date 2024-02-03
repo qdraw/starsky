@@ -45,10 +45,10 @@ namespace starsky.foundation.thumbnailmeta.Services
 		/// <returns>fail/pass, string=subPath, string?2= error reason</returns>
 		public async Task<IEnumerable<(bool, bool, string, string?)>> AddMetaThumbnail(IEnumerable<(string, string)> subPathsAndHash)
 		{
-			return await subPathsAndHash
+			return (await subPathsAndHash
 				.ForEachAsync(async item => 
 						await AddMetaThumbnail(item.Item1, item.Item2),
-					_appSettings.MaxDegreesOfParallelism);
+					_appSettings.MaxDegreesOfParallelism))!;
 		}
 
 		/// <summary>
@@ -80,7 +80,7 @@ namespace starsky.foundation.thumbnailmeta.Services
 							await AddMetaThumbnail(singleSubPath, null!),
 							_appSettings.MaxDegreesOfParallelism);
 
-					return results.ToList();
+					return results!.ToList();
 				}
 				default:
 				{

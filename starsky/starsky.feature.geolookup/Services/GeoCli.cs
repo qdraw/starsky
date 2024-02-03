@@ -8,7 +8,6 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
@@ -31,7 +30,7 @@ namespace starsky.feature.geolookup.Services
 		private readonly IGeoLocationWrite _geoLocationWrite;
 		private readonly IStorage _iStorage;
 		private readonly IStorage _thumbnailStorage;
-		private readonly IReadMeta _readMeta;
+		private readonly ReadMeta _readMeta;
 		private readonly IGeoFileDownload _geoFileDownload;
 		private readonly IExifToolDownload _exifToolDownload;
 		private readonly IWebLogger _logger;
@@ -45,7 +44,7 @@ namespace starsky.feature.geolookup.Services
 			_geoLocationWrite = geoLocationWrite;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
-			_readMeta = new ReadMeta(_iStorage, appSettings, null, logger);
+			_readMeta = new ReadMeta(_iStorage, appSettings, null!, logger);
 			_appSettings = appSettings;
 			_console = console;
 			_exifToolDownload = exifToolDownload;
@@ -87,9 +86,10 @@ namespace starsky.feature.geolookup.Services
 			// -s = if subPath || -p is path
 			if ( ArgsHelper.IsSubPathOrPath(args) )
 			{
-				inputPath = _appSettings.DatabasePathToFilePath(
+				var path = _appSettings.DatabasePathToFilePath(
 					ArgsHelper.GetSubPathFormArgs(args)
 				);
+				inputPath = !string.IsNullOrEmpty(path) ? path : string.Empty;
 			}
 			else
 			{
@@ -103,9 +103,10 @@ namespace starsky.feature.geolookup.Services
 			if (getSubPathRelative != null)
 			{
 				var dateTime = DateTime.Now.AddDays(( double ) getSubPathRelative);
-				inputPath = _appSettings.DatabasePathToFilePath(
+				var path = _appSettings.DatabasePathToFilePath(
 					new StructureService(_iStorage, _appSettings.Structure)
-						.ParseSubfolders(dateTime),false);
+						.ParseSubfolders(dateTime));
+				inputPath = !string.IsNullOrEmpty(path) ? path : string.Empty;
 			}
     
 			// used in this session to find the files back
@@ -122,7 +123,7 @@ namespace starsky.feature.geolookup.Services
 			var listOfFiles = _iStorage.GetAllFilesInDirectory("/")
 				.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
     
-			var fileIndexList = _readMeta.ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
+			var fileIndexList = await _readMeta.ReadExifAndXmpFromFileAddFilePathHashAsync(listOfFiles);
     
 			var toMetaFilesUpdate = new List<FileIndexItem>();
 			if ( ArgsHelper.GetIndexMode(args) )
@@ -131,7 +132,7 @@ namespace starsky.feature.geolookup.Services
 				_console.WriteLine($"Folder: {inputPath}");
 
 				var geoIndexGpx = new GeoIndexGpx(_appSettings, _iStorage, _logger);
-				toMetaFilesUpdate = geoIndexGpx.LoopFolder(fileIndexList);
+				toMetaFilesUpdate = await geoIndexGpx.LoopFolderAsync(fileIndexList);
       
 				_console.Write("¬");
 				await _geoLocationWrite.LoopFolderAsync(toMetaFilesUpdate, false);

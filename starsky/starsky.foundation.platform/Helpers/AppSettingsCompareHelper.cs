@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text.Json;
 using starsky.foundation.platform.JsonConverter;
@@ -49,6 +50,7 @@ namespace starsky.foundation.platform.Helpers
 			}
 		}
 		
+		[SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance")]
 		private static void CompareOpenTelemetrySettingsObject(string propertyName, AppSettings? sourceIndexItem, 
 			OpenTelemetrySettings? oldKeyValuePairStringStringValue, 
 			OpenTelemetrySettings? newKeyValuePairStringStringValue, ICollection<string> differenceList)

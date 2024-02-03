@@ -1,12 +1,13 @@
 parameters:
   sonarqube: true
   vstest: true
+  readyToRunEnabled: true
   runtimeArg: '--runtime "linux-arm,linux-arm64"'
   nugetPackages: $(Pipeline.Workspace)/.nuget/packages
 
 steps:
   - task: DotNetCoreCLI@2
-    displayName: "[Cake/server] dotnet tool restore"
+    displayName: "[Nuke/server] dotnet tool restore"
     continueOnError: true
     inputs:
       command: custom
@@ -17,33 +18,43 @@ steps:
   - template: /pipelines/azure/steps/cache_dependencies.yml
 
   - task: PowerShell@2
-    displayName: "Cake SonarBuildTest (with tests) "
+    displayName: "Nuke SonarBuildTest (with tests) "
     condition: and(succeeded(), eq('${{ parameters.vstest }}', true) )
     env:
       BUILD_SOURCEBRANCH: $(Build.SourceBranch)
       SONAR_TOKEN: $(STARSKY_SONAR_TOKEN)
     inputs:
       filePath: "starsky/build.ps1"
-      arguments: '${{ parameters.runtimeArg }} --target SonarBuildTest  --branch "$(Build.SourceBranch)"  --skip --no-logo'
+      arguments: '${{ parameters.runtimeArg }} --target SonarBuildTest --branch "$(Build.SourceBranch)" --skip --no-logo'
       pwsh: true
       workingDirectory: "$(Build.SourcesDirectory)/starsky/"
 
   - task: PowerShell@2
-    displayName: "Cake SonarBuildTest --no-unit-tests"
+    displayName: "Nuke SonarBuildTest --no-unit-tests"
     condition: and(succeeded(), ne('${{ parameters.vstest }}', true) )
     env:
       BUILD_SOURCEBRANCH: $(Build.SourceBranch)
     inputs:
       filePath: "starsky/build.ps1"
-      arguments: '${{ parameters.runtimeArg }} --no-unit-tests --target SonarBuildTest --branch "$(Build.SourceBranch)" --skip  --no-logo'
+      arguments: '${{ parameters.runtimeArg }} --no-unit-tests --target SonarBuildTest --branch "$(Build.SourceBranch)" --skip --no-logo'
       pwsh: true
       workingDirectory: "$(Build.SourcesDirectory)/starsky/"
 
   - task: PowerShell@2
-    displayName: "Cake BuildNetCoreRuntimeSpecific"
+    displayName: "Nuke BuildNetCoreRuntimeSpecific --ready-to-run"
+    condition: and(succeeded(), eq('${{ parameters.readyToRunEnabled }}', true) )
     inputs:
       filePath: "starsky/build.ps1"
-      arguments: '${{ parameters.runtimeArg }} --target BuildNetCoreRuntimeSpecific  --skip --no-logo'
+      arguments: '${{ parameters.runtimeArg }} --target BuildNetCoreRuntimeSpecific --skip --no-logo --ready-to-run'
+      pwsh: true
+      workingDirectory: "$(Build.SourcesDirectory)/starsky/"
+
+  - task: PowerShell@2
+    displayName: "Nuke BuildNetCoreRuntimeSpecific"
+    condition: and(succeeded(), ne('${{ parameters.readyToRunEnabled }}', true) )
+    inputs:
+      filePath: "starsky/build.ps1"
+      arguments: '${{ parameters.runtimeArg }} --target BuildNetCoreRuntimeSpecific --skip --no-logo'
       pwsh: true
       workingDirectory: "$(Build.SourcesDirectory)/starsky/"
 

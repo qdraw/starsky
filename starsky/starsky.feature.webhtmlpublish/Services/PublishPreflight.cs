@@ -32,7 +32,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		public List<Tuple<int,string>> GetPublishProfileNames()
 		{
 			var returnList = new List<Tuple<int,string>>();
-			if ( !_appSettings.PublishProfiles.Any() )
+			if ( _appSettings.PublishProfiles == null || _appSettings.PublishProfiles.Count == 0 )
 			{
 				return returnList;
 			}
@@ -54,7 +54,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		public Tuple<bool, List<string>> IsProfileValid(
 			string publishProfileName)
 		{
-			var profiles = _appSettings.PublishProfiles
+			var profiles = _appSettings.PublishProfiles!
 				.FirstOrDefault(p => p.Key == publishProfileName);
 			return IsProfileValid(profiles);
 		}
@@ -94,7 +94,7 @@ namespace starsky.feature.webhtmlpublish.Services
 				}
 			}
 			
-			return new Tuple<bool, List<string>>(!errors.Any(), errors);
+			return new Tuple<bool, List<string>>(errors.Count == 0, errors);
 		}
 
 		/// <summary>
@@ -103,20 +103,20 @@ namespace starsky.feature.webhtmlpublish.Services
 		/// <returns>(string: name, bool: isValid)</returns>
 		public IEnumerable<KeyValuePair<string,bool>> GetAllPublishProfileNames()
 		{
-			return _appSettings.PublishProfiles.Select(p =>
+			return _appSettings.PublishProfiles!.Select(p =>
 				new KeyValuePair<string, bool>(
 					p.Key, IsProfileValid(p).Item1));
 		}
 		
 		public List<AppSettingsPublishProfiles> GetPublishProfileName(string publishProfileName)
 		{
-			return _appSettings.PublishProfiles
+			return _appSettings.PublishProfiles!
 				.FirstOrDefault(p => p.Key == publishProfileName).Value;
 		}
 
 		public string GetPublishProfileNameByIndex(int index)
 		{
-			return _appSettings.PublishProfiles.ElementAtOrDefault(index).Key;
+			return _appSettings.PublishProfiles!.ElementAtOrDefault(index).Key;
 		}
 
 		/// <summary>

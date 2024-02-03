@@ -10,9 +10,9 @@ namespace starskytest.starsky.foundation.database.Helpers
 	[TestClass]
 	public sealed class PredicateBuilderTest
 	{
-		public class TestClass
+		private class TestClass
 		{
-			public string Key { get; set; }
+			public string Key { get; set; } = string.Empty;
 		}
 		
 		[TestMethod]

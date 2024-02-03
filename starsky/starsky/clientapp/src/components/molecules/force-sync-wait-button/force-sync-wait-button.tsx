@@ -30,9 +30,7 @@ export async function ForceSyncRequestNewContent({
   dispatch,
   callback
 }: ForceSyncWaitButtonPropTypes): Promise<void> {
-  const url = new UrlQuery().UrlIndexServerApi(
-    new URLPath().StringToIUrl(historyLocationSearch)
-  );
+  const url = new UrlQuery().UrlIndexServerApi(new URLPath().StringToIUrl(historyLocationSearch));
   FetchGet(url).then((connectionResult) => {
     if (connectionResult.statusCode !== 200) {
       console.log("request failed");
@@ -40,9 +38,7 @@ export async function ForceSyncRequestNewContent({
       callback();
       return;
     }
-    const forceSyncResult = new CastToInterface().MediaArchive(
-      connectionResult.data
-    );
+    const forceSyncResult = new CastToInterface().MediaArchive(connectionResult.data);
     const payload = forceSyncResult.data as IArchiveProps;
     if (payload.fileIndexItems) {
       dispatch({ type: "force-reset", payload });
@@ -51,9 +47,12 @@ export async function ForceSyncRequestNewContent({
   });
 }
 
-const ForceSyncWaitButton: React.FunctionComponent<
-  ForceSyncWaitButtonPropTypes
-> = ({ propsParentFolder, historyLocationSearch, callback, dispatch }) => {
+const ForceSyncWaitButton: React.FunctionComponent<ForceSyncWaitButtonPropTypes> = ({
+  propsParentFolder,
+  historyLocationSearch,
+  callback,
+  dispatch
+}) => {
   function forceSync(): Promise<IConnectionDefault> {
     const parentFolder = propsParentFolder ?? "/";
     setIsLoading(true);
@@ -101,11 +100,7 @@ const ForceSyncWaitButton: React.FunctionComponent<
   return (
     <>
       {isLoading ? <Preloader isWhite={false} isOverlay={true} /> : ""}
-      <button
-        className="btn btn--default"
-        data-test="force-sync"
-        onClick={() => startForceSync()}
-      >
+      <button className="btn btn--default" data-test="force-sync" onClick={() => startForceSync()}>
         {MessageForceSync}
       </button>
     </>

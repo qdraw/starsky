@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,16 +19,16 @@ namespace starskytest.Controllers
 	[TestClass]
 	public sealed class SearchSuggestControllerTest
 	{
-		private SearchSuggestionsService _searchSuggest;
-		private Query _query;
-		private IMemoryCache _memoryCache;
+		private readonly SearchSuggestionsService _searchSuggest;
+		private readonly Query _query;
+		private readonly IMemoryCache _memoryCache;
 
 		public SearchSuggestControllerTest()
 		{
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
 				.BuildServiceProvider();
-			_memoryCache = provider.GetService<IMemoryCache>();
+			_memoryCache = provider.GetRequiredService<IMemoryCache>();
 
 			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
 			builder.UseInMemoryDatabase(nameof(SearchSuggestController));
@@ -76,7 +75,7 @@ namespace starskytest.Controllers
 			var result = await controller.Suggest(string.Empty) as JsonResult;
 			var list = result!.Value as List<string>;
 	        
-			Assert.IsFalse(list!.Any());
+			Assert.IsFalse(list!.Count != 0);
 		}
 
 		[TestMethod]

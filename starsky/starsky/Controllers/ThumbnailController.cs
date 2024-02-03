@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using starsky.foundation.database.Interfaces;
@@ -144,7 +145,7 @@ namespace starsky.Controllers
 
 		private IActionResult ReturnThumbnailResult(string f, bool json, ThumbnailSize size)
 		{
-			Response.Headers.Add("x-image-size", new StringValues(size.ToString()));
+			Response.Headers.Append("x-image-size", new StringValues(size.ToString()));
 			var stream = _thumbnailStorage.ReadStream(ThumbnailNameHelper.Combine(f, size),50);
 			var imageFormat = ExtensionRolesHelper.GetImageFormat(stream);
 			if ( imageFormat == ExtensionRolesHelper.ImageFormat.unknown )
@@ -161,7 +162,7 @@ namespace starsky.Controllers
 					ThumbnailNameHelper.Combine(f, size));
 			
 			// thumbs are always in jpeg
-			Response.Headers.Add("x-filename", new StringValues(FilenamesHelper.GetFileName(f + ".jpg")));
+			Response.Headers.Append("x-filename", new StringValues(FilenamesHelper.GetFileName(f + ".jpg")));
 			return File(stream, "image/jpeg");
 		}
 
@@ -194,7 +195,7 @@ namespace starsky.Controllers
         [ResponseCache(Duration = 29030400)] // 4 weeks
         public async Task<IActionResult> Thumbnail(
             string f, 
-            string filePath = null,
+            string? filePath = null,
             bool isSingleItem = false, 
             bool json = false,
             bool extraLarge = true)
@@ -301,7 +302,7 @@ namespace starsky.Controllers
         [ProducesResponseType(400)] // string (f) input not allowed to avoid path injection attacks
         [ProducesResponseType(404)] // not found
         [ProducesResponseType(210)] // raw
-        public async Task<IActionResult> ByZoomFactor(
+        public async Task<IActionResult> ByZoomFactorAsync(
 	        string f,
 	        int z = 0, 
 	        string filePath = "")
@@ -333,7 +334,7 @@ namespace starsky.Controllers
 		        var fs1 = _iStorage.ReadStream(sourcePath);
 
 		        var fileExt = FilenamesHelper.GetFileExtensionWithoutDot(sourcePath);
-		        Response.Headers.Add("x-filename", FilenamesHelper.GetFileName(sourcePath));
+		        Response.Headers.Append("x-filename", FilenamesHelper.GetFileName(sourcePath));
 		        return File(fs1, MimeHelper.GetMimeType(fileExt));
 	        }
 	        
@@ -347,13 +348,13 @@ namespace starsky.Controllers
         public void SetExpiresResponseHeadersToZero()
         {
 	        Request.HttpContext.Response.Headers.Remove("Cache-Control");
-	        Request.HttpContext.Response.Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate");
+	        Request.HttpContext.Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
 
 	        Request.HttpContext.Response.Headers.Remove("Pragma");
-	        Request.HttpContext.Response.Headers.Add("Pragma", "no-cache");
+	        Request.HttpContext.Response.Headers.Append("Pragma", "no-cache");
 
 	        Request.HttpContext.Response.Headers.Remove("Expires");
-	        Request.HttpContext.Response.Headers.Add("Expires", "0");
+	        Request.HttpContext.Response.Headers.Append("Expires", "0");
         }
 	}
 }

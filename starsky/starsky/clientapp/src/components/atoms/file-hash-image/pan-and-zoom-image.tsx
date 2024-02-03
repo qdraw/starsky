@@ -48,8 +48,7 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
     if (!props.setIsLoading) return;
 
     const imageReference = containerRef.current?.querySelector("img");
-    const isLoaded =
-      imageReference?.complete && imageReference?.naturalHeight !== 0;
+    const isLoaded = imageReference?.complete && imageReference?.naturalHeight !== 0;
     props.setIsLoading(isLoaded === false);
 
     // use Memo gives issues elsewhere
@@ -66,14 +65,10 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
     };
     // for performance reasons the classes is kept in a function
     const mouseMove = (event: MouseEvent) => {
-      new OnMoveMouseTouchAction(panning, setPosition, position).mousemove(
-        event
-      );
+      new OnMoveMouseTouchAction(panning, setPosition, position).mousemove(event);
     };
     const touchMove = (event: TouchEvent) => {
-      new OnMoveMouseTouchAction(panning, setPosition, position).touchMove(
-        event
-      );
+      new OnMoveMouseTouchAction(panning, setPosition, position).touchMove(event);
     };
 
     window.addEventListener("mouseup", mouseup);
@@ -88,23 +83,15 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
   });
 
   function zoomIn() {
-    new OnWheelMouseAction(
-      image,
-      setPosition,
-      position,
-      containerRef,
-      props.onWheelCallback
-    ).zoom(-1);
+    new OnWheelMouseAction(image, setPosition, position, containerRef, props.onWheelCallback).zoom(
+      -1
+    );
   }
 
   function zoomOut() {
-    new OnWheelMouseAction(
-      image,
-      setPosition,
-      position,
-      containerRef,
-      props.onWheelCallback
-    ).zoom(1);
+    new OnWheelMouseAction(image, setPosition, position, containerRef, props.onWheelCallback).zoom(
+      1
+    );
   }
 
   function reset() {
@@ -121,9 +108,7 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
 
   let className = "pan-zoom-image-container";
   if (position.z !== 1) {
-    className = !panning
-      ? "pan-zoom-image-container grab"
-      : "pan-zoom-image-container is-panning";
+    className = !panning ? "pan-zoom-image-container grab" : "pan-zoom-image-container is-panning";
   }
 
   return (
@@ -132,25 +117,13 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
         className={className}
         data-test="pan-zoom-image"
         ref={containerRef}
-        onMouseDown={
-          new OnMouseDownMouseAction(setPanning, position, setPosition)
-            .onMouseDown
-        }
+        onMouseDown={new OnMouseDownMouseAction(setPanning, position, setPosition).onMouseDown}
         onTouchStart={(e) =>
-          new OnMouseDownMouseAction(
-            setPanning,
-            position,
-            setPosition
-          ).onTouchStart(e as any)
+          new OnMouseDownMouseAction(setPanning, position, setPosition).onTouchStart(e as any)
         }
         onWheel={
-          new OnWheelMouseAction(
-            image,
-            setPosition,
-            position,
-            containerRef,
-            props.onWheelCallback
-          ).onWheel
+          new OnWheelMouseAction(image, setPosition, position, containerRef, props.onWheelCallback)
+            .onWheel
         }
       >
         <div
@@ -163,13 +136,7 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
             className={`pan-zoom-image--image image--default ${props.translateRotation}`}
             alt="image"
             src={src}
-            onLoad={
-              new OnLoadMouseAction(
-                setImage,
-                props.setError,
-                props.setIsLoading
-              ).onLoad
-            }
+            onLoad={new OnLoadMouseAction(setImage, props.setError, props.setIsLoading).onLoad}
             onError={() => {
               if (!props.setError || !props.setIsLoading) {
                 return;

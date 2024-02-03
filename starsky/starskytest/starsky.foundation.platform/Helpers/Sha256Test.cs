@@ -24,7 +24,7 @@ public class Sha256Test
 	[TestMethod]
 	public void Sha256_Null_String()
 	{
-		var result = Sha256.ComputeSha256(null as string);
+		var result = Sha256.ComputeSha256((null as string)!);
 		Assert.AreEqual(string.Empty,result);
 	}
 	

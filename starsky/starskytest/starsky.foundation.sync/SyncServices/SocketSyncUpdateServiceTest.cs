@@ -33,7 +33,7 @@ public class SocketSyncUpdateServiceTest
 
 		await service.PushToSockets(new List<FileIndexItem>{new FileIndexItem("/test.jpg")});
     
-		Assert.IsFalse(socket.FakeSendToAllAsync.Any());
+		Assert.IsFalse(socket.FakeSendToAllAsync.Count != 0);
 	}
 
 	[TestMethod]

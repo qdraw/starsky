@@ -4,7 +4,7 @@
 # docker system prune -a -f
 
 SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
-NET_MONIKER="net6.0"
+NET_MONIKER="net8.0"
 
 if [ -d $HOME"/.sonar" ] 
 then
@@ -15,6 +15,26 @@ else
 fi
 
 PARENT_DIR="$(dirname "$SCRIPT_DIR")"
+# eg starsky/starsky
+
+## docs
+GIT_ROOT_DIR="$(dirname "$PARENT_DIR")"
+
+if [ -d "$GIT_ROOT_DIR""/documentation/bin" ] 
+then
+    rm -rf "$GIT_ROOT_DIR""/documentation/bin"
+else
+    echo "Skip: remove documentation bin. -> ""$GIT_ROOT_DIR""/documentation/bin"
+fi
+
+if [ -d "$GIT_ROOT_DIR""/documentation/obj" ] 
+then
+    rm -rf "$GIT_ROOT_DIR""/documentation/obj"
+else
+    echo "Skip: remove documentation obj. -> ""$GIT_ROOT_DIR""/documentation/obj"
+fi
+## end docs
+
 
 if [ -d "$PARENT_DIR""/TestResults" ] 
 then

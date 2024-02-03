@@ -7,9 +7,10 @@ export interface IMenuSelectFurtherProps {
   toggleLabels: (state: boolean) => void;
 }
 
-export const MenuSelectFurther: React.FunctionComponent<
-  IMenuSelectFurtherProps
-> = ({ select, toggleLabels }) => {
+export const MenuSelectFurther: React.FunctionComponent<IMenuSelectFurtherProps> = ({
+  select,
+  toggleLabels
+}) => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const MessageSelectFurther = language.key(localization.MessageSelectFurther);

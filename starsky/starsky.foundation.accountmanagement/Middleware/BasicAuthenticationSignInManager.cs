@@ -35,7 +35,7 @@ namespace starsky.foundation.accountmanagement.Middleware
                     _context.Response.StatusCode = 401;
 					if(!_context.Response.Headers.ContainsKey("WWW-Authenticate") )
 					{
-						_context.Response.Headers.Add("WWW-Authenticate", "Basic realm=\"Starsky " + validateResult.Error + " \"");
+						_context.Response.Headers.Append("WWW-Authenticate", "Basic realm=\"Starsky " + validateResult.Error + " \"");
 					}
 					return;
                 }

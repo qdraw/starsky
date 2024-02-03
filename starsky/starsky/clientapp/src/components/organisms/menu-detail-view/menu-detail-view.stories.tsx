@@ -8,10 +8,7 @@ export default {
 export const Default = () => {
   return (
     <MemoryRouter>
-      <MenuDetailView
-        state={{ fileIndexItem: {} } as any}
-        dispatch={() => {}}
-      />
+      <MenuDetailView state={{ fileIndexItem: {} } as any} dispatch={() => {}} />
     </MemoryRouter>
   );
 };
@@ -23,10 +20,7 @@ Default.story = {
 export const Deleted = () => {
   return (
     <MemoryRouter>
-      <MenuDetailView
-        state={{ fileIndexItem: { status: "Deleted" } } as any}
-        dispatch={() => {}}
-      />
+      <MenuDetailView state={{ fileIndexItem: { status: "Deleted" } } as any} dispatch={() => {}} />
     </MemoryRouter>
   );
 };
@@ -38,10 +32,7 @@ Deleted.story = {
 export const ReadOnly = () => {
   return (
     <MemoryRouter>
-      <MenuDetailView
-        state={{ isReadOnly: true, fileIndexItem: {} } as any}
-        dispatch={() => {}}
-      />
+      <MenuDetailView state={{ isReadOnly: true, fileIndexItem: {} } as any} dispatch={() => {}} />
     </MemoryRouter>
   );
 };

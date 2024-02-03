@@ -3,6 +3,7 @@ using System.IO;
 using build;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tools.DotNet;
+using Serilog;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static build.Build;
 
@@ -10,87 +11,92 @@ namespace helpers
 {
 	public static class DotnetGenericHelper
 	{
+		/// <summary>
+		/// dotnet restore for generic
+		/// </summary>
+		/// <param name="solution">solution file .sln</param>
 		public static void RestoreNetCoreCommand(Solution solution)
 		{
-			ProjectAssetsCopier.CopyAssetFileToCurrentRuntime(GenericRuntimeName, solution);
-			DotNetRestore(_ => _
-				.SetProjectFile(solution));
-			ProjectAssetsCopier.CopyNewAssetFileByRuntimeId(GenericRuntimeName, solution);
+			Log.Information("dotnet restore: solution: " + solution);
+
+			DotNetRestore(p => p
+				.SetProjectFile(solution.Path)
+			);
 		}
-	
+
+		/// <summary>
+		/// dotnet build for generic helper
+		/// </summary>
+		/// <param name="solution">the solution</param>
+		/// <param name="configuration">Debug or Release</param>
 		public static void BuildNetCoreGenericCommand(Solution solution,
 			Configuration configuration)
 		{
-			ProjectAssetsCopier.CopyAssetFileToCurrentRuntime(GenericRuntimeName, solution);
-		    
-			DotNetBuild(_ => _
+			DotNetBuild(p => p
 				.SetConfiguration(configuration)
 				.EnableNoRestore()
 				.EnableNoLogo()
 				.SetProjectFile(solution));
-
-			ProjectAssetsCopier.CopyNewAssetFileByRuntimeId(GenericRuntimeName, solution);
 		}
 
 		/// <summary>
 		/// Download Exiftool and geo deps
 		/// </summary>
-		/// <param name="solution">where</param>
 		/// <param name="configuration">is Release</param>
 		/// <param name="geoCliCsproj">geo.csproj file</param>
-		/// <param name="noDependencies">skip this step if true</param>
+		/// <param name="noDependencies">skip this step if true (external deps)</param>
 		/// <param name="genericNetcoreFolder">genericNetcoreFolder</param>
-		public static void DownloadDependencies(Solution solution,
-			Configuration configuration, string geoCliCsproj, bool noDependencies,
+		public static void DownloadDependencies(Configuration configuration,
+			string geoCliCsproj, bool noDependencies,
 			string genericNetcoreFolder)
 		{
 			if ( noDependencies )
 			{
-				Console.WriteLine("skip --no-dependencies");
+				Log.Information("skip the flag: --no-dependencies is used");
 				return;
 			}
-		
-			ProjectAssetsCopier.CopyAssetFileToCurrentRuntime(GenericRuntimeName, solution);
 
-			var genericDepsFullPath = Path.Combine(BasePath(), genericNetcoreFolder, "dependencies");
-			Console.WriteLine($"genericDepsFullPath: {genericDepsFullPath}");
-		
+			var genericDepsFullPath =
+				Path.Combine(BasePath(), genericNetcoreFolder, "dependencies");
+			Log.Information($"genericDepsFullPath: {genericDepsFullPath}");
+
 			try
 			{
-				Environment.SetEnvironmentVariable("app__DependenciesFolder",genericDepsFullPath);
-				Console.WriteLine("Next: DownloadDependencies");
-				Console.WriteLine("Run: " + Path.Combine(WorkingDirectory.GetSolutionParentFolder(),geoCliCsproj));
+				Environment.SetEnvironmentVariable("app__DependenciesFolder", genericDepsFullPath);
+				Log.Information("Next: DownloadDependencies");
+				Log.Information("Run: " + Path.Combine(
+					WorkingDirectory.GetSolutionParentFolder(), geoCliCsproj)
+				);
 
-				DotNetRun(_ =>  _
+				DotNetRun(p => p
 					.SetConfiguration(configuration)
 					.EnableNoRestore()
 					.EnableNoBuild()
-					.SetProjectFile(Path.Combine(WorkingDirectory.GetSolutionParentFolder(),geoCliCsproj)));
+					.SetApplicationArguments("--runtime linux-x64,win-x64")
+					.SetProjectFile(Path.Combine(WorkingDirectory.GetSolutionParentFolder(),
+						geoCliCsproj)));
 			}
-			catch ( Exception exception)
+			catch ( Exception exception )
 			{
-				Console.WriteLine("--");
-				Console.WriteLine(exception.Message);
-				Console.WriteLine("-- continue");
+				Log.Information("--");
+				Log.Information(exception.Message);
+				Log.Information("-- continue");
 			}
 
 			Environment.SetEnvironmentVariable("app__DependenciesFolder", string.Empty);
-			ProjectAssetsCopier.CopyNewAssetFileByRuntimeId(GenericRuntimeName, solution);
 
-			Console.WriteLine($"   genericDepsFullPath: {genericDepsFullPath}");
-			Console.WriteLine("DownloadDependencies done");
+			Log.Information($"   genericDepsFullPath: {genericDepsFullPath}");
+			Log.Information("DownloadDependencies done");
 		}
 
-		public static void PublishNetCoreGenericCommand(Solution solution,
-			Configuration configuration, bool isPublishDisabled)
+		public static void PublishNetCoreGenericCommand(Configuration configuration,
+			bool isPublishDisabled)
 		{
 			if ( isPublishDisabled )
 			{
-				Console.WriteLine("Skip: PublishNetCoreGenericCommand isPublishDisabled");
+				Log.Information("Skip: PublishNetCoreGenericCommand isPublishDisabled");
 				return;
 			}
-			
-			ProjectAssetsCopier.CopyAssetFileToCurrentRuntime(GenericRuntimeName, solution);
 
 			foreach ( var publishProject in PublishProjectsList )
 			{
@@ -102,24 +108,21 @@ namespace helpers
 					WorkingDirectory.GetSolutionParentFolder(),
 					GenericRuntimeName);
 
-				DotNetPublish(_ => _
+				DotNetPublish(p => p
 					.SetConfiguration(configuration)
 					.EnableNoRestore()
 					.EnableNoBuild()
 					.EnableNoDependencies()
-					.EnableSelfContained()
 					.SetOutput(outputFullPath)
 					.SetProject(publishProjectFullPath)
 					.EnableNoLogo());
 			}
-			ProjectAssetsCopier.CopyNewAssetFileByRuntimeId(GenericRuntimeName, solution);
 		}
-	
+
 		static string BasePath()
 		{
 			return Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)
 				?.Parent?.Parent?.Parent?.FullName;
 		}
 	}
-	
 }

@@ -13,7 +13,6 @@ using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.Helpers;
-using starskycore.Helpers;
 using starskytest.Controllers;
 using starskytest.FakeMocks;
 using Swashbuckle.AspNetCore.Swagger;
@@ -49,7 +48,7 @@ namespace starskytest.Helpers
 				Name = "starskySwaggerOutput",
 				AddSwagger = true,
 				AddSwaggerExport = true,
-				TempFolder = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)
+				TempFolder = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location)!
 			};
 		}
 		
@@ -85,8 +84,8 @@ namespace starskytest.Helpers
 						.GetRequiredService<IServiceScopeFactory>()
 						.CreateScope() )
 					{
-						var swaggerProvider = ( ISwaggerProvider )serviceScope.ServiceProvider.GetService(typeof(ISwaggerProvider));
-						new SwaggerExportHelper(null).Add03AppExport(_appSettings,fakeSelectorStorage, swaggerProvider);
+						var swaggerProvider = ( ISwaggerProvider )serviceScope.ServiceProvider.GetRequiredService(typeof(ISwaggerProvider));
+						new SwaggerExportHelper(null!).Add03AppExport(_appSettings,fakeSelectorStorage, swaggerProvider);
 					}
 
 				}).Build();
@@ -97,7 +96,7 @@ namespace starskytest.Helpers
 			Assert.AreEqual(true,storage.ExistFile(swaggerFilePath));
 
 			var swaggerFileContent =
-				await PlainTextFileHelper.StreamToStringAsync(
+				await StreamToStringHelper.StreamToStringAsync(
 					storage.ReadStream(swaggerFilePath));
 
 			System.Console.WriteLine("swaggerFileContent " + swaggerFileContent);

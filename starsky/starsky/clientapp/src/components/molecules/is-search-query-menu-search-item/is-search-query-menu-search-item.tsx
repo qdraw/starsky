@@ -15,9 +15,12 @@ type IsSearchQueryMenuSearchItemProps = {
   history: IUseLocation;
 };
 
-const IsSearchQueryMenuSearchItem: React.FunctionComponent<
-  IsSearchQueryMenuSearchItemProps
-> = ({ isSearchQuery, state, history, setIsLoading }) => {
+const IsSearchQueryMenuSearchItem: React.FunctionComponent<IsSearchQueryMenuSearchItemProps> = ({
+  isSearchQuery,
+  state,
+  history,
+  setIsLoading
+}) => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   if (isSearchQuery) {

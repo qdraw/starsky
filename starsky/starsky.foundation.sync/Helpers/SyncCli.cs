@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Helpers;
@@ -45,8 +44,14 @@ namespace starsky.foundation.sync.Helpers
 			var getSubPathRelative = new ArgsHelper(_appSettings).GetRelativeValue(args);
 			if (getSubPathRelative != null)
 			{
-				subPath = new StructureService(_selectorStorage.Get(SelectorStorage.StorageServices.SubPath), _appSettings.Structure)
+				var parseSubPath = new StructureService(
+						_selectorStorage.Get(SelectorStorage.StorageServices
+							.SubPath), _appSettings.Structure)
 					.ParseSubfolders(getSubPathRelative);
+				if ( !string.IsNullOrEmpty(parseSubPath)  )
+				{
+					subPath = parseSubPath;
+				}
 			}
 
 			if (ArgsHelper.GetIndexMode(args))

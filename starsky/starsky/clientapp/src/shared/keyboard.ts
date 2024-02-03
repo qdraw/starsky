@@ -9,8 +9,7 @@ export class Keyboard {
     const target = event.target as HTMLElement;
     if (!target?.className) return null;
     return (
-      target.className.indexOf("form-control") !== -1 ||
-      target.className.indexOf("modal") !== -1
+      target.className.indexOf("form-control") !== -1 || target.className.indexOf("modal") !== -1
     );
   }
 
@@ -24,10 +23,7 @@ export class Keyboard {
     // Set selection to the end of the element
     const range = document.createRange();
     const sel = window.getSelection();
-    range.setStart(
-      current.childNodes[0],
-      current.childNodes[0].textContent.length
-    );
+    range.setStart(current.childNodes[0], current.childNodes[0].textContent.length);
     range.collapse(true);
     if (!sel) return;
     sel.removeAllRanges();

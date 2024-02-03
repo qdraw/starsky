@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  IConnectionDefault,
-  newIConnectionDefault
-} from "../interfaces/IConnectionDefault";
+import { IConnectionDefault, newIConnectionDefault } from "../interfaces/IConnectionDefault";
 
 /**
  * With abort signal

@@ -15,13 +15,13 @@ namespace starskytest.starsky.foundation.platform.Services
 	{
 		private readonly IServiceScopeFactory _scopeFactory;
 
-		public class FakeILogger : ILogger
+		private class FakeILogger : ILogger
 		{
 			public List<string> ErrorLog { get; set; } = new List<string>();
 			public List<LogLevel> LogLevelLog { get; set; } = new List<LogLevel>();
 
 			public void Log<TState>(LogLevel logLevel, EventId eventId, TState state,
-				Exception exception, Func<TState, Exception, string> formatter)
+				Exception? exception, Func<TState, Exception, string> formatter)
 			{
 				LogLevelLog.Add(logLevel);
 				if ( exception != null )
@@ -29,7 +29,7 @@ namespace starskytest.starsky.foundation.platform.Services
 					ErrorLog.Add(exception.Message);
 					return;
 				}
-				ErrorLog.Add(state.ToString());
+				ErrorLog.Add(state!.ToString()!);
 			}
 
 			public bool IsEnabled(LogLevel logLevel)
@@ -37,20 +37,30 @@ namespace starskytest.starsky.foundation.platform.Services
 				throw new NotImplementedException();
 			}
 
+#pragma warning disable CS8633 // Nullability in constraints for type parameter doesn't match the constraints for type parameter in implicitly implemented interface method'.
 			public IDisposable BeginScope<TState>(TState state)
+#pragma warning restore CS8633 // Nullability in constraints for type parameter doesn't match the constraints for type parameter in implicitly implemented interface method'.
 			{
 				throw new NotImplementedException();
 			}
 		}
 
 		
-		public class FakeILoggerFactory : ILoggerFactory
+		// ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
+		// ReSharper disable once ClassWithVirtualMembersNeverInherited.Local
+		private class FakeILoggerFactory : ILoggerFactory
 		{
 			public FakeILogger Storage { get; set; } = new FakeILogger();
 
 			public void Dispose()
 			{
+				Dispose(true);
 				GC.SuppressFinalize(this);
+			}
+			
+			protected virtual void Dispose(bool disposing)
+			{
+				// Cleanup
 			}
 
 			public ILogger CreateLogger(string categoryName)
@@ -82,15 +92,27 @@ namespace starskytest.starsky.foundation.platform.Services
 			Assert.AreEqual("error1",error);
 			Assert.AreEqual(LogLevel.Error,	logLevel);
 		}
+		
+		[TestMethod]
+		public void Error_Null_string_ShouldSkipFakeLogger()
+		{
+			var factory = new FakeILoggerFactory();
+			new WebLogger(factory).LogError(null);
+			var error = factory.Storage.ErrorLog.Count;
+			var logLevel = factory.Storage.LogLevelLog.Count;
+
+			Assert.AreEqual(0,error);
+			Assert.AreEqual(0,logLevel);
+		}
 				
 		[TestMethod]
 		public void Error_string_ConsoleFallback()
 		{
 			new WebLogger(null, _scopeFactory).LogError("error_message");
 			
-			var fakeConsole = _scopeFactory?.CreateScope().ServiceProvider.GetService<IConsole>() as FakeConsoleWrapper;
+			var fakeConsole = _scopeFactory.CreateScope().ServiceProvider.GetService<IConsole>() as FakeConsoleWrapper;
 			
-			Assert.AreEqual("error_message",fakeConsole.WrittenLines.LastOrDefault());
+			Assert.AreEqual("error_message",fakeConsole?.WrittenLines.LastOrDefault());
 		}
 		
 		[TestMethod]
@@ -109,11 +131,11 @@ namespace starskytest.starsky.foundation.platform.Services
 		[TestMethod]
 		public void Error_Exception_ConsoleFallback()
 		{
-			var fakeConsole = _scopeFactory?.CreateScope().ServiceProvider.GetService<IConsole>() as FakeConsoleWrapper;
+			var fakeConsole = _scopeFactory.CreateScope().ServiceProvider.GetService<IConsole>() as FakeConsoleWrapper;
 			var expectedException = new Exception("some thing bad happens console");
 			new WebLogger(null, _scopeFactory).LogError(expectedException, "message");
 			
-			Assert.AreEqual("some thing bad happens console message",fakeConsole.WrittenLines.LastOrDefault());
+			Assert.AreEqual("some thing bad happens console message",fakeConsole?.WrittenLines.LastOrDefault());
 		}
 		
 		[TestMethod]
@@ -127,13 +149,25 @@ namespace starskytest.starsky.foundation.platform.Services
 			Assert.AreEqual("error1",error);
 			Assert.AreEqual(LogLevel.Information,	logLevel);
 		}
+				
+		[TestMethod]
+		public void Information_Null_string_ShouldSkipFakeLogger()
+		{
+			var factory = new FakeILoggerFactory();
+			new WebLogger(factory).LogInformation(null);
+			var error = factory.Storage.ErrorLog.Count;
+			var logLevel = factory.Storage.LogLevelLog.Count;
+
+			Assert.AreEqual(0,error);
+			Assert.AreEqual(0,logLevel);
+		}
 		
 		[TestMethod]
 		public void Information_string_ConsoleFallback()
 		{
 			new WebLogger(null, _scopeFactory).LogInformation("message_info");
-			var fakeConsole = _scopeFactory?.CreateScope().ServiceProvider.GetService<IConsole>() as FakeConsoleWrapper;
-			Assert.AreEqual("message_info",fakeConsole.WrittenLines[0]);
+			var fakeConsole = _scopeFactory.CreateScope().ServiceProvider.GetService<IConsole>() as FakeConsoleWrapper;
+			Assert.AreEqual("message_info",fakeConsole?.WrittenLines[0]);
 		}
 		
 		[TestMethod]
@@ -149,11 +183,23 @@ namespace starskytest.starsky.foundation.platform.Services
 		}
 		
 		[TestMethod]
+		public void Debug_Null_string_ShouldSkipFakeLogger()
+		{
+			var factory = new FakeILoggerFactory();
+			new WebLogger(factory).LogDebug(null);
+			var error = factory.Storage.ErrorLog.Count;
+			var logLevel = factory.Storage.LogLevelLog.Count;
+
+			Assert.AreEqual(0,error);
+			Assert.AreEqual(0,logLevel);
+		}
+		
+		[TestMethod]
 		public void Debug_string_ConsoleFallback()
 		{
 			new WebLogger(null, _scopeFactory).LogDebug("message_info");
-			var fakeConsole = _scopeFactory?.CreateScope().ServiceProvider.GetService<IConsole>() as FakeConsoleWrapper;
-			Assert.AreEqual("message_info",fakeConsole.WrittenLines[0]);
+			var fakeConsole = _scopeFactory.CreateScope().ServiceProvider.GetService<IConsole>() as FakeConsoleWrapper;
+			Assert.AreEqual("message_info",fakeConsole?.WrittenLines[0]);
 		}
 		
 		[TestMethod]
@@ -174,8 +220,8 @@ namespace starskytest.starsky.foundation.platform.Services
 		{
 			var expectedException = new Exception("some thing bad happens");
 			new WebLogger(null, _scopeFactory).LogInformation(expectedException, "message info");
-			var fakeConsole = _scopeFactory?.CreateScope().ServiceProvider.GetService<IConsole>() as FakeConsoleWrapper;
-			Assert.AreEqual("some thing bad happens message info",fakeConsole.WrittenLines[0]);
+			var fakeConsole = _scopeFactory.CreateScope().ServiceProvider.GetService<IConsole>() as FakeConsoleWrapper;
+			Assert.AreEqual("some thing bad happens message info",fakeConsole?.WrittenLines[0]);
 		}
 	}
 }

@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using build;
+using Serilog;
 
 namespace helpers
 {
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S1118:Add a 'protected' constructor or the 'static' keyword to the class declaration", Justification = "Not production code.")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S1118:Add a 'protected' constructor " +
+		"or the 'static' keyword to the class declaration", Justification = "Not production code.")]
 	public sealed class ZipperHelper
 	{
 
@@ -16,7 +17,7 @@ namespace helpers
 		static string BasePath()
 		{
 			return Directory.GetParent(AppDomain.CurrentDomain
-				.BaseDirectory).Parent.Parent.Parent.FullName;
+				.BaseDirectory)!.Parent!.Parent!.Parent!.FullName;
 		}
 	
 		public static void ZipGeneric()
@@ -36,16 +37,17 @@ namespace helpers
 				File.Delete(zipPath);
 			}
 		
-			Console.WriteLine($"next: {Build.GenericRuntimeName} zip  ~ {fromFolder} -> {zipPath}");
+			Log.Information($"next: {Build.GenericRuntimeName} zip  ~ {fromFolder} -> {zipPath}");
 			ZipFile.CreateFromDirectory(fromFolder, 
 				zipPath);
 		}
 	
 		public static void ZipRuntimes(List<string> getRuntimesWithoutGeneric)
 		{
-			if ( !getRuntimesWithoutGeneric.Any() )
+			if ( getRuntimesWithoutGeneric.Count == 0 )
 			{
-				Console.WriteLine("There are no runtime specific items selected");
+				Log.Information("There are no runtime specific items selected\n" +
+				                "So skip ZipRuntimes");
 				return;
 			}
 
@@ -66,7 +68,8 @@ namespace helpers
 					File.Delete(zipPath);
 				}
 
-				Console.WriteLine($"next: {runtime} zip ~ {runtimeFullPath} -> {zipPath}");
+				Log.Information($"next: {runtime} zip ~ {runtimeFullPath} -> {zipPath}");
+				
 				ZipFile.CreateFromDirectory(runtimeFullPath, zipPath);
 			}
 		}
@@ -78,8 +81,9 @@ namespace helpers
 		{
 			if ( noUnitTest )
 			{
-				Console.WriteLine(">> ZipHtmlCoverageReport " +
-				                  "is disable due the --no-unit-test flag");
+				Log.Information(">> ZipHtmlCoverageReport " +
+				                  "is disable due the --no-unit-test flag\n" +
+				                  "So skip ZipHtmlCoverageReport");
 				return;
 			}
 		
@@ -95,10 +99,9 @@ namespace helpers
 				File.Delete(zipPath);
 			}
 		
-			Console.WriteLine($"next: zip {fromFolder} -> {zipPath}");
+			Log.Information($"next: zip {fromFolder} -> {zipPath}");
 			ZipFile.CreateFromDirectory(fromFolder, 
 				zipPath);
 		}
 	}
-	
 }

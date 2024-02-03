@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -57,7 +56,7 @@ public class ThumbnailQuery : IThumbnailQuery
 		ApplicationDbContext dbContext, 
 		IReadOnlyCollection<ThumbnailResultDataTransferModel> thumbnailItems)
 	{
-		if ( !thumbnailItems.Any() )
+		if ( thumbnailItems.Count == 0 )
 		{
 			return new List<ThumbnailItem>();
 		}
@@ -74,13 +73,13 @@ public class ThumbnailQuery : IThumbnailQuery
 				equalThumbnailItems) = 
 			await CheckForDuplicates(dbContext, updateThumbnailNewItemsList);
 		
-		if ( newThumbnailItems.Any() )
+		if ( newThumbnailItems.Count != 0 )
 		{
 			await dbContext.Thumbnails.AddRangeAsync(newThumbnailItems);
 			await SaveChangesDuplicate(dbContext);
 		}
 		
-		if ( alreadyExistingThumbnailItems.Any() )
+		if ( alreadyExistingThumbnailItems.Count != 0 )
 		{
 			dbContext.Thumbnails.UpdateRange(alreadyExistingThumbnailItems);
 			// not optimized for bulk operations yet
@@ -145,7 +144,7 @@ public class ThumbnailQuery : IThumbnailQuery
 
 	public async Task RemoveThumbnailsAsync(List<string> deletedFileHashes)
 	{
-		if ( !deletedFileHashes.Any() )
+		if ( deletedFileHashes.Count == 0 )
 		{
 			return;
 		}
@@ -162,17 +161,22 @@ public class ThumbnailQuery : IThumbnailQuery
 		}
 	}
 
-	private static async Task RemoveThumbnailsInternalAsync(
+	internal static async Task<bool> RemoveThumbnailsInternalAsync(
 		ApplicationDbContext context,
 		IReadOnlyCollection<string> deletedFileHashes)
 	{
-		if ( !deletedFileHashes.Any() ) return;
+		if ( deletedFileHashes.Count == 0 )
+		{
+			return false;
+		}
+		
 		foreach ( var fileNamesInChunk in deletedFileHashes.ChunkyEnumerable(100) )
 		{
 			var thumbnailItems = await context.Thumbnails.Where(p => fileNamesInChunk.Contains(p.FileHash)).ToListAsync();
 			context.Thumbnails.RemoveRange(thumbnailItems);
 			await context.SaveChangesAsync();
 		}
+		return true;
 	}
 	
 	public async Task<bool> RenameAsync(string beforeFileHash, string newFileHash)

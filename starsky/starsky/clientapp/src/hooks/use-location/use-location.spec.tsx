@@ -10,14 +10,12 @@ describe("useLocation", () => {
 
   it("check if is called once", () => {
     const setState = jest.fn();
-    const useStateSpy = jest
-      .spyOn(React, "useState")
-      .mockImplementationOnce(() => {
-        return [setState, setState];
-      });
+    const useStateSpy = jest.spyOn(React, "useState").mockImplementationOnce(() => {
+      return [setState, setState];
+    });
 
     render(<UseLocationComponentTest></UseLocationComponentTest>);
 
-    expect(useStateSpy).toBeCalled();
+    expect(useStateSpy).toHaveBeenCalled();
   });
 });

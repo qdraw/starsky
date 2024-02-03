@@ -87,6 +87,10 @@
     "en": "Saved",
     "nl": "Opgeslagen"
   },
+  "MessageImportHeader": {
+    "en": "Import",
+    "nl": "Importeren"
+  },
   "MessageCloseDetailScreenDialog": {
     "en": "Close detail screen",
     "nl": "Sluit detailscherm"
@@ -182,6 +186,58 @@
   "MessageDeleteImmediately": {
     "en": "Delete immediately",
     "nl": "Verwijder onmiddellijk"
+  },
+  "MessageVideoPlayBackError": {
+    "en": "There is something wrong with the playback of this video.  Try 'More' and 'Download'. ",
+    "nl": "Er is iets mis met het afspelen van deze video. Probeer eens via het menu 'Meer' en 'Download'."
+  },
+  "MessageVideoNotFound": {
+    "en": "This video is not found",
+    "nl": "Deze video is niet gevonden"
+  },
+  "ColorClassColour0": {
+    "en": "Colorless",
+    "nl": "Kleurloos"
+  },
+  "ColorClassColour1": {
+    "en": "Pink",
+    "nl": "Roze"
+  },
+  "ColorClassColour2": {
+    "en": "Red",
+    "nl": "Rood"
+  },
+  "ColorClassColour3": {
+    "en": "Orange",
+    "nl": "Oranje"
+  },
+  "ColorClassColour4": {
+    "en": "Yellow",
+    "nl": "Geel"
+  },
+  "ColorClassColour5": {
+    "en": "Green",
+    "nl": "Groen"
+  },
+  "ColorClassColour6": {
+    "en": "Azure",
+    "nl": "Azuur"
+  },
+  "ColorClassColour7": {
+    "en": "Blue",
+    "nl": "Blauw"
+  },
+  "ColorClassColour8": {
+    "en": "Grey",
+    "nl": "Grijs"
+  },
+  "ColorClassColourResetFilter": {
+    "en": "Reset filter",
+    "nl": "Herstel filter"
+  },
+  "MessageCloseDialog": {
+    "en": "Close",
+    "nl": "Sluiten"
   },
   "temp1": {
     "en": "",

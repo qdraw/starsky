@@ -6,11 +6,10 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.native.Helpers;
-using starsky.foundation.native.Trash;
 using starsky.foundation.native.Trash.Helpers;
 using starskytest.FakeCreateAn;
 
-namespace starskytest.starsky.foundation.native.Trash;
+namespace starskytest.starsky.foundation.native.Trash.Helpers;
 
 [TestClass]
 public class MacOsTrashBindingHelperTest
@@ -98,7 +97,7 @@ public class MacOsTrashBindingHelperTest
 			return;
 		}
 
-		string exception = null;
+		string? exception = null;
 		try
 		{
 			MacOsTrashBindingHelper.CreateCfArray(new List<IntPtr>().ToArray());
@@ -119,7 +118,7 @@ public class MacOsTrashBindingHelperTest
 			return;
 		}
 
-		string exception = null;
+		string? exception = null;
 		try
 		{
 			MacOsTrashBindingHelper.CreateCfString("test");

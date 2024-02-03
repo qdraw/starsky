@@ -19,9 +19,7 @@ describe("statusRemoved", () => {
   });
 
   it("should call next", () => {
-    const prevNextSpy = jest
-      .spyOn(PrevNext.prototype, "next")
-      .mockImplementationOnce(() => {});
+    const prevNextSpy = jest.spyOn(PrevNext.prototype, "next").mockImplementationOnce(() => {});
     const moveFolderUpSpy = jest
       .spyOn(moveFolderUp, "moveFolderUp")
       .mockImplementationOnce(() => {});

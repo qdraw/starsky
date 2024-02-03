@@ -8,6 +8,6 @@ describe("OnLoadMouseAction", () => {
     new OnLoadMouseAction(setImage, null as any, null as any).onLoad({
       target: {}
     } as any);
-    expect(setImage).toBeCalled();
+    expect(setImage).toHaveBeenCalled();
   });
 });

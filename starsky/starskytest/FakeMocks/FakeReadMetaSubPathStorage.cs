@@ -1,4 +1,6 @@
+#nullable enable
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using starsky.foundation.database.Models;
 using starsky.foundation.readmeta.Interfaces;
 
@@ -6,22 +8,22 @@ namespace starskytest.FakeMocks
 {
 	public class FakeReadMetaSubPathStorage : IReadMetaSubPathStorage
 	{
-		private readonly IReadMeta _readMeta;
+		private readonly FakeReadMeta _readMeta;
 
 		public FakeReadMetaSubPathStorage()
 		{
 			_readMeta = new FakeReadMeta();
 		}
 		
-		public FileIndexItem ReadExifAndXmpFromFile(string subPath)
+		public async Task<FileIndexItem?> ReadExifAndXmpFromFileAsync(string subPath)
 		{
-			return _readMeta.ReadExifAndXmpFromFile(subPath);
+			return await _readMeta.ReadExifAndXmpFromFileAsync(subPath);
 		}
 
-		public List<FileIndexItem> ReadExifAndXmpFromFileAddFilePathHash(List<string> subPathList,
-			List<string> fileHashes = null)
+		public  async Task<List<FileIndexItem>> ReadExifAndXmpFromFileAddFilePathHashAsync(List<string> subPathList,
+			List<string>? fileHashes = null)
 		{
-			return _readMeta.ReadExifAndXmpFromFileAddFilePathHash(subPathList,fileHashes);
+			return await _readMeta.ReadExifAndXmpFromFileAddFilePathHashAsync(subPathList, fileHashes!);
 		}
 
 		public bool? RemoveReadMetaCache(string fullFilePath)

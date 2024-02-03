@@ -14,17 +14,11 @@ const AccountRegister: FunctionComponent = () => {
   const language = new Language(settings.language);
 
   const MessageApplicationName = "Starsky";
-  const MessageCreateNewAccount = language.text(
-    "Maak nieuw account",
-    "Create new account"
-  );
+  const MessageCreateNewAccount = language.text("Maak nieuw account", "Create new account");
   const MessageUsername = language.text("E-mailadres", "E-mail address");
   const MessageExamplePassword = language.text("superveilig", "supersafe");
   const MessageExampleUsername = "dont@mail.me";
-  const MessagePassword = language.text(
-    "Geef je wachtwoord op",
-    "Enter your password"
-  );
+  const MessagePassword = language.text("Geef je wachtwoord op", "Enter your password");
   const MessageConfirmPassword = language.text(
     "Vul je wachtwoord nog een keer in",
     "Enter your password again"
@@ -57,10 +51,7 @@ const AccountRegister: FunctionComponent = () => {
     "Registratie is uitgezet",
     "Registration is turned off"
   );
-  const MessageSignInInstead = language.text(
-    "In plaats daarvan inloggen",
-    "Sign in instead"
-  );
+  const MessageSignInInstead = language.text("In plaats daarvan inloggen", "Sign in instead");
 
   const MessageLegalCreateAccountHtml = language.text(
     `Door het creëren van een account gaat u akkoord met de
@@ -91,9 +82,7 @@ const AccountRegister: FunctionComponent = () => {
 
     if (!loginValidation) {
       setError(
-        loginValidation === null
-          ? MessageWrongFormatEmailAddress
-          : MessageNoUsernamePassword
+        loginValidation === null ? MessageWrongFormatEmailAddress : MessageNoUsernamePassword
       );
       return;
     }
@@ -148,9 +137,7 @@ const AccountRegister: FunctionComponent = () => {
     <>
       <header className="header header--main header--bluegray700">
         <div className="wrapper">
-          <div className="item item--first item--detective">
-            {MessageApplicationName}
-          </div>
+          <div className="item item--first item--detective">{MessageApplicationName}</div>
         </div>
       </header>
 
@@ -213,10 +200,7 @@ const AccountRegister: FunctionComponent = () => {
           ></div>
 
           {error && (
-            <div
-              data-test="account-register-error"
-              className="content--error-true"
-            >
+            <div data-test="account-register-error" className="content--error-true">
               {error}
             </div>
           )}
@@ -238,10 +222,7 @@ const AccountRegister: FunctionComponent = () => {
               {MessageSignInInstead}
             </a>
           ) : (
-            <div
-              data-test="sign-in-instead"
-              className="alternative btn disabled"
-            >
+            <div data-test="sign-in-instead" className="alternative btn disabled">
               {MessageSignInInstead}
             </div>
           )}

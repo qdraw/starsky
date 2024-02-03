@@ -9,10 +9,7 @@ describe("keyboard", () => {
       expect(result).toBe("dutch");
     });
     it("get different content (english)", () => {
-      const result = new Language(SupportedLanguages.en).text(
-        "dutch",
-        "english"
-      );
+      const result = new Language(SupportedLanguages.en).text("dutch", "english");
       expect(result).toBe("english");
     });
   });

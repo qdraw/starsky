@@ -4,12 +4,10 @@ import AccountRegisterPage from "./account-register-page";
 
 describe("ContentPage", () => {
   it("default", () => {
-    const accountRegisterSpy = jest
-      .spyOn(AccountRegister, "default")
-      .mockImplementationOnce(() => {
-        return <></>;
-      });
+    const accountRegisterSpy = jest.spyOn(AccountRegister, "default").mockImplementationOnce(() => {
+      return <></>;
+    });
     render(<AccountRegisterPage />);
-    expect(accountRegisterSpy).toBeCalledTimes(1);
+    expect(accountRegisterSpy).toHaveBeenCalledTimes(1);
   });
 });

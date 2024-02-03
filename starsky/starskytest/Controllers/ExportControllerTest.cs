@@ -15,7 +15,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.feature.export.Services;
 using starsky.foundation.database.Data;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Extensions;
@@ -39,7 +38,7 @@ namespace starskytest.Controllers
 	[TestClass]
 	public sealed class ExportControllerTest
 	{
-		private readonly IQuery _query;
+		private readonly Query _query;
 		private readonly AppSettings _appSettings;
 		private readonly CreateAnImage _createAnImage;
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
@@ -66,13 +65,12 @@ namespace starskytest.Controllers
 
 			// Fake the readMeta output
 			services.AddSingleton<IReadMeta, FakeReadMeta>();
-
 			
 			// Inject Config helper
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 			// random config
 			_createAnImage = new CreateAnImage();
-			var dict = new Dictionary<string, string>
+			var dict = new Dictionary<string, string?>
 			{
 				{"App:StorageFolder", _createAnImage.BasePath},
 				{"App:ThumbnailTempFolder", _createAnImage.BasePath},
@@ -141,7 +139,7 @@ namespace starskytest.Controllers
 
 			var service = serviceProvider.GetService<IHostedService>() as UpdateBackgroundQueuedHostedService;
 
-			var backgroundQueue = serviceProvider.GetService<IUpdateBackgroundTaskQueue>();
+			var backgroundQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
 
 			if ( service == null ) throw new Exception("service should not be null");
 			await service.StartAsync(CancellationToken.None);
@@ -189,7 +187,7 @@ namespace starskytest.Controllers
 			var actionResult2Zip = controller.Status(zipHash,true) as JsonResult;
 			Assert.AreNotEqual(null,actionResult2Zip);
 
-			var resultValue = ( string ) actionResult2Zip?.Value;
+			var resultValue = ( string? ) actionResult2Zip?.Value;
 			
 			if ( resultValue != "OK" && resultValue != "Not Ready" )
 			{
@@ -280,8 +278,8 @@ namespace starskytest.Controllers
 		{
 			var storage = new FakeIStorage(new List<string>{"/"}, new List<string>
 			{
-				_appSettings.DatabasePathToFilePath("/test.dng", false), 
-				_appSettings.DatabasePathToFilePath("/test.xmp", false),
+				_appSettings.DatabasePathToFilePath("/test.dng"), 
+				_appSettings.DatabasePathToFilePath("/test.xmp"),
 				"/test.dng",
 				"/test.xmp"
 			});

@@ -9,9 +9,7 @@ describe("MenuSelectFurther", () => {
   });
 
   it('should not render div with class "header" when select prop is not provided', () => {
-    const { queryByTestId } = render(
-      <MenuSelectFurther toggleLabels={toggleLabelsMock} />
-    );
+    const { queryByTestId } = render(<MenuSelectFurther toggleLabels={toggleLabelsMock} />);
     expect(queryByTestId("select-further")).toBeNull();
   });
 

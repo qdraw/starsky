@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using SixLabors.ImageSharp;
@@ -15,14 +16,12 @@ namespace starsky.feature.webhtmlpublish.Services
 	[Service(typeof(IOverlayImage), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class OverlayImage : IOverlayImage
 	{
-		private readonly AppSettings _appSettings;
 		private readonly IStorage _thumbnailStorage;
 		private readonly IStorage _iStorage;
 		private readonly IStorage _hostFileSystem;
 
-		public OverlayImage(ISelectorStorage selectorStorage, AppSettings appSettings)
+		public OverlayImage(ISelectorStorage selectorStorage)
 		{
-			_appSettings = appSettings;
 			if ( selectorStorage == null ) return;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
@@ -31,7 +30,7 @@ namespace starsky.feature.webhtmlpublish.Services
 
 		public string FilePathOverlayImage(string sourceFilePath, AppSettingsPublishProfiles profile)
 		{
-			var result = profile.Folder + _appSettings.GenerateSlug(
+			var result = profile.Folder + GenerateSlugHelper.GenerateSlug(
 				                            Path.GetFileNameWithoutExtension(sourceFilePath), true)
 			                            + profile.Append + profile.GetExtensionWithDot(sourceFilePath);
 			return result;
@@ -126,6 +125,7 @@ namespace starsky.feature.webhtmlpublish.Services
 			}
 		}
 
+		[SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance")]
 		private async Task<bool> ResizeOverlayImageShared(Image sourceImage, Image overlayImage,
 			Stream outputStream, AppSettingsPublishProfiles profile, string outputSubPath)
 		{

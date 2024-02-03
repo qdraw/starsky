@@ -1,7 +1,4 @@
-import {
-  IFileIndexItem,
-  newIFileIndexItemArray
-} from "../interfaces/IFileIndexItem";
+import { IFileIndexItem, newIFileIndexItemArray } from "../interfaces/IFileIndexItem";
 import { URLPath } from "./url-path";
 
 describe("url-path", () => {
@@ -133,10 +130,7 @@ describe("url-path", () => {
     it("add + remove (aka toggle)", () => {
       // two times
       const first = urlPath.toggleSelection("test.jpg", "");
-      const test = urlPath.toggleSelection(
-        "test.jpg",
-        urlPath.IUrlToString(first)
-      );
+      const test = urlPath.toggleSelection("test.jpg", urlPath.IUrlToString(first));
       if (test.select === undefined) throw Error("select is null");
       expect(test.select.length).toStrictEqual(0);
     });
@@ -173,10 +167,7 @@ describe("url-path", () => {
   });
   describe("MergeSelectFileIndexItem", () => {
     it("default", () => {
-      const test = urlPath.MergeSelectFileIndexItem(
-        [],
-        newIFileIndexItemArray()
-      );
+      const test = urlPath.MergeSelectFileIndexItem([], newIFileIndexItemArray());
       expect(test).toStrictEqual([]);
     });
 
@@ -214,10 +205,7 @@ describe("url-path", () => {
       expect(test).toStrictEqual("/test.jpg");
     });
     it("list 2 items", () => {
-      const test = urlPath.ArrayToCommaSeparatedString([
-        "/parent/test.jpg",
-        "/parent/test2.jpg"
-      ]);
+      const test = urlPath.ArrayToCommaSeparatedString(["/parent/test.jpg", "/parent/test2.jpg"]);
       expect(test).toStrictEqual("/parent/test.jpg;/parent/test2.jpg");
     });
   });
@@ -229,10 +217,7 @@ describe("url-path", () => {
     });
 
     it("list 1 item", () => {
-      const test = urlPath.ArrayToCommaSeparatedStringOneParent(
-        ["test.jpg"],
-        "/parent"
-      );
+      const test = urlPath.ArrayToCommaSeparatedStringOneParent(["test.jpg"], "/parent");
       expect(test).toStrictEqual("/parent/test.jpg");
     });
     it("list 2 items", () => {

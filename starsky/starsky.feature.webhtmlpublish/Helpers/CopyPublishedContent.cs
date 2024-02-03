@@ -13,43 +13,42 @@ namespace starsky.feature.webhtmlpublish.Helpers
 	{
 		private readonly IStorage _hostStorage;
 		private readonly ToCreateSubfolder _toCreateSubfolder;
-		private  readonly AppSettings _appSettings;
 
-		public CopyPublishedContent(AppSettings appSettings, ToCreateSubfolder toCreateSubfolder,
+		public CopyPublishedContent(ToCreateSubfolder toCreateSubfolder,
 			ISelectorStorage selectorStorage)
 		{
-			_appSettings = appSettings;
 			_toCreateSubfolder = toCreateSubfolder;
 			if ( selectorStorage == null ) return;
 			_hostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		}
-		
+
 		public Dictionary<string, bool> CopyContent(
 			AppSettingsPublishProfiles profile,
 			string outputParentFullFilePathFolder)
 		{
 			_toCreateSubfolder.Create(profile, outputParentFullFilePathFolder);
 			var parentFolder = PathHelper.AddBackslash(
-				_appSettings.GenerateSlug(profile.Folder, true));
+				GenerateSlugHelper.GenerateSlug(profile.Folder, true));
 
 			var copyResult = new Dictionary<string, bool>();
 			var files = _hostStorage.GetAllFilesInDirectory(GetContentFolder()).ToList();
-			foreach ( var file in files)
+			foreach ( var file in files )
 			{
 				var subPath = parentFolder + Path.GetFileName(file);
 				copyResult.Add(subPath, true);
 				var fillFileOutputPath = Path.Combine(outputParentFullFilePathFolder, subPath);
 				if ( !_hostStorage.ExistFile(fillFileOutputPath) )
 				{
-					_hostStorage.FileCopy(file,fillFileOutputPath);
+					_hostStorage.FileCopy(file, fillFileOutputPath);
 				}
 			}
+
 			return copyResult;
 		}
 
 		internal static string GetContentFolder()
 		{
-			return PathHelper.RemoveLatestBackslash(AppDomain.CurrentDomain.BaseDirectory)  +
+			return PathHelper.RemoveLatestBackslash(AppDomain.CurrentDomain.BaseDirectory) +
 			       Path.DirectorySeparatorChar +
 			       "WebHtmlPublish" +
 			       Path.DirectorySeparatorChar +

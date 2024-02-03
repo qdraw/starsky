@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.demo.Helpers;
-using starsky.feature.demo.Services;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.http.Services;
@@ -13,7 +12,6 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Storage;
 using starsky.foundation.sync.SyncInterfaces;
 using starskytest.FakeMocks;
 
@@ -24,7 +22,7 @@ public class CleanDemoDataServiceCliTest
 {
 	private readonly IServiceScopeFactory _serviceScopeFactory;
 	private readonly AppSettings _appSettings;
-	private readonly FakeIWebLogger _logger;
+	private readonly FakeIWebLogger? _logger;
 	private readonly ISelectorStorage _selectorStorage;
 	private readonly IConsole _console;
 
@@ -69,10 +67,10 @@ public class CleanDemoDataServiceCliTest
 			{"https://qdraw.nl/1000/20211117_091926_dsc00514_e_kl1k.jpg",new StringContent("test")}
 		});
 
-		var httpClientHelper = new HttpClientHelper(fakeIHttpClientHelper, _serviceScopeFactory, _logger);
+		var httpClientHelper = new HttpClientHelper(fakeIHttpClientHelper, _serviceScopeFactory, _logger!);
 
 		var service = new CleanDemoDataServiceCli(appSettings, httpClientHelper,
-			_selectorStorage, _logger, _console, new FakeISynchronize());
+			_selectorStorage, _logger!, _console, new FakeISynchronize());
 		
 		await service.SeedCli(System.Array.Empty<string>());
 		
@@ -88,12 +86,12 @@ public class CleanDemoDataServiceCliTest
 	{
 		var fakeIHttpClientHelper = new FakeIHttpProvider();
 		
-		var httpClientHelper = new HttpClientHelper(fakeIHttpClientHelper, _serviceScopeFactory, _logger);
+		var httpClientHelper = new HttpClientHelper(fakeIHttpClientHelper, _serviceScopeFactory, _logger!);
 
 		var service = new CleanDemoDataServiceCli(_appSettings, httpClientHelper,
-			_selectorStorage, _logger, _console, new FakeISynchronize());
+			_selectorStorage, _logger!, _console, new FakeISynchronize());
 		
-		await service.SeedCli(new string[]{"-h"});
+		await service.SeedCli(["-h"]);
 
 		var fakeConsoleWrapper = _console as FakeConsoleWrapper;
 		var isTrue = fakeConsoleWrapper?.WrittenLines.Find(p => p.Contains("--help")) != null;
@@ -105,13 +103,13 @@ public class CleanDemoDataServiceCliTest
 	{
 		var fakeIHttpClientHelper = new FakeIHttpProvider();
 		
-		var httpClientHelper = new HttpClientHelper(fakeIHttpClientHelper, _serviceScopeFactory, _logger);
+		var httpClientHelper = new HttpClientHelper(fakeIHttpClientHelper, _serviceScopeFactory, _logger!);
 
 		var appSettings = new AppSettings{Verbose = false};
 		var service = new CleanDemoDataServiceCli(appSettings, httpClientHelper,
-			_selectorStorage, _logger, _console, new FakeISynchronize());
+			_selectorStorage, _logger!, _console, new FakeISynchronize());
 
-		await service.SeedCli(new string[]{"-h", "-v"});
+		await service.SeedCli(["-h", "-v"]);
 
 		Assert.IsTrue(appSettings.Verbose);
 	}

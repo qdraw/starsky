@@ -17,8 +17,8 @@ describe("sidebar", () => {
   describe("toggleSidebar", () => {
     it("default", () => {
       sidebar.toggleSidebar();
-      expect(setSidebarSpy).toBeCalled();
-      expect(navigateSpy).toBeCalledWith("?sidebar=true", { replace: true });
+      expect(setSidebarSpy).toHaveBeenCalled();
+      expect(navigateSpy).toHaveBeenCalledWith("?sidebar=true", { replace: true });
     });
 
     it("toggle two times", () => {
@@ -35,8 +35,8 @@ describe("sidebar", () => {
 
       sidebar.toggleSidebar();
 
-      expect(setSidebarSpy).toBeCalledTimes(1);
-      expect(navigateSpy).toBeCalledWith("?sidebar=false", { replace: true });
+      expect(setSidebarSpy).toHaveBeenCalledTimes(1);
+      expect(navigateSpy).toHaveBeenCalledWith("?sidebar=false", { replace: true });
     });
   });
 });

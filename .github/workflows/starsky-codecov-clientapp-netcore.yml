@@ -18,6 +18,8 @@ on:
     - '.github/workflows/**'
     - '!starsky/Dockerfile'
     - '!starsky/docker_demo_setup.sh'
+    
+  workflow_dispatch:
 
 jobs:
   build:
@@ -33,10 +35,10 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 6.0.417
+          dotnet-version: 8.0.101
  
       - name: Cache node modules clientapp (*nix)
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
@@ -45,7 +47,7 @@ jobs:
             ${{ runner.os }}-build-clientapp-
 
       - name: Cache nuget packages (*nix)
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           # nuget cache files are stored in `~/.nuget/packages` on Linux/macOS
           path: ~/.nuget/packages
@@ -56,9 +58,9 @@ jobs:
       - name: Build
         shell: bash
         working-directory: ./starsky
-        run: bash build.sh
+        run: bash build.sh --no-publish --no-dependencies --no-sonar
         
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}  
           file: ./starsky/starskytest/coverage-merge-cobertura.xml

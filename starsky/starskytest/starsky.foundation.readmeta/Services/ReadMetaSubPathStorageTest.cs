@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -15,21 +16,22 @@ namespace starskytest.starsky.foundation.readmeta.Services;
 public class ReadMetaSubPathStorageTest
 {
 	[TestMethod]
-	public void ReadExifAndXmpFromFile()
+	public async Task ReadExifAndXmpFromFile()
 	{
 		var fakeStorage = new FakeIStorage();
 		var readMetaSubPathStorage = new ReadMetaSubPathStorage(new FakeSelectorStorage(fakeStorage), new AppSettings(), new FakeMemoryCache(), new FakeIWebLogger());
-		var result = readMetaSubPathStorage.ReadExifAndXmpFromFile("test.jpg");
+		var result = await readMetaSubPathStorage.ReadExifAndXmpFromFileAsync("test.jpg");
+		Assert.IsNotNull(result);
 		Assert.AreEqual("test.jpg", result.FileName);	
 		Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result.Status);
 	}
 	
 	[TestMethod]
-	public void ReadExifAndXmpFromFileAddFilePathHash()
+	public async Task ReadExifAndXmpFromFileAddFilePathHash()
 	{
 		var fakeStorage = new FakeIStorage();
 		var readMetaSubPathStorage = new ReadMetaSubPathStorage(new FakeSelectorStorage(fakeStorage), new AppSettings(), new FakeMemoryCache(), new FakeIWebLogger());
-		var result = readMetaSubPathStorage.ReadExifAndXmpFromFileAddFilePathHash(new List<string>(), new List<string>());
+		var result = await readMetaSubPathStorage.ReadExifAndXmpFromFileAddFilePathHashAsync(new List<string>(), new List<string>());
 		Assert.AreEqual(0, result.Count);
 	}
 	
@@ -41,11 +43,15 @@ public class ReadMetaSubPathStorageTest
 			.AddMemoryCache()
 			.BuildServiceProvider();
 		var memoryCache = provider.GetService<IMemoryCache>();
+		Assert.IsNotNull(memoryCache);
 		
-		var readMetaSubPathStorage = new ReadMetaSubPathStorage(new FakeSelectorStorage(fakeStorage), new AppSettings(), memoryCache, new FakeIWebLogger());
+		var readMetaSubPathStorage = new ReadMetaSubPathStorage(new FakeSelectorStorage(fakeStorage), 
+			new AppSettings(), memoryCache, new FakeIWebLogger());
 		var addItem = new FileIndexItem("/test.jpg");
 		readMetaSubPathStorage.UpdateReadMetaCache(new List<FileIndexItem>{addItem});
-		var actualJson = JsonSerializer.Serialize(memoryCache.Get("info_/test.jpg"),DefaultJsonSerializer.CamelCaseNoEnters);
+		var actualJson = JsonSerializer.Serialize(memoryCache.Get("info_/test.jpg"),
+			DefaultJsonSerializer.CamelCaseNoEnters);
+		
 		var expectedJson = JsonSerializer.Serialize(addItem,DefaultJsonSerializer.CamelCaseNoEnters);
 
 		Assert.AreEqual(expectedJson, actualJson);

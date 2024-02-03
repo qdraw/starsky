@@ -18,8 +18,8 @@ namespace starskytest.starsky.foundation.platform.Extensions
 
 			var buildServiceProvider =  provider.BuildServiceProvider();
 			var memoryCache = buildServiceProvider.GetService<IMemoryCache>();
-			var keys= memoryCache.GetKeys<string>();
-			Assert.AreEqual(0, keys.Count());
+			var keys= memoryCache?.GetKeys<string>();
+			Assert.AreEqual(0, keys?.Count());
 		}
 		
 		[TestMethod]
@@ -30,10 +30,10 @@ namespace starskytest.starsky.foundation.platform.Extensions
 
 			var buildServiceProvider =  provider.BuildServiceProvider();
 			var memoryCache = buildServiceProvider.GetService<IMemoryCache>();
-			memoryCache.Set("test", "");
-			var keys= memoryCache.GetKeys<string>().ToList();
-			Assert.AreEqual(1, keys.Count);
-			Assert.AreEqual("test", keys[0]);
+			memoryCache?.Set("test", "");
+			var keys= memoryCache?.GetKeys<string>().ToList();
+			Assert.AreEqual(1, keys?.Count);
+			Assert.AreEqual("test", keys?[0]);
 		}
 
 		[TestMethod]

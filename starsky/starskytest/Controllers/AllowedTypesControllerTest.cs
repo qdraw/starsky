@@ -15,23 +15,23 @@ namespace starskytest.Controllers
 		public void AllowedTypesController_MimetypeSync()
 		{
 			var jsonResult = new AllowedTypesController().AllowedTypesMimetypeSync() as JsonResult;
-			var allowedApiResult = jsonResult.Value as HashSet<string>;
-			Assert.IsTrue(allowedApiResult.Contains("image/jpeg"));
+			var allowedApiResult = jsonResult?.Value as HashSet<string>;
+			Assert.IsTrue(allowedApiResult?.Contains("image/jpeg"));
 		}
 		
 		[TestMethod]
 		public void AllowedTypesController_MimetypeSyncThumb()
 		{
 			var jsonResult = new AllowedTypesController().AllowedTypesMimetypeSyncThumb() as JsonResult;
-			var allowedApiResult = jsonResult.Value as HashSet<string>;
-			Assert.IsTrue(allowedApiResult.Contains("image/jpeg"));
+			var allowedApiResult = jsonResult?.Value as HashSet<string>;
+			Assert.IsTrue(allowedApiResult?.Contains("image/jpeg"));
 		}
 		
 		[TestMethod]
 		public void AllowedTypesController_AllowedTypesThumb_NoInput()
 		{
 			var jsonResult = new AllowedTypesController{ ControllerContext = {HttpContext = _httpContext}}.AllowedTypesThumb("") as JsonResult;
-			var allowedApiResult = bool.Parse(jsonResult.Value.ToString());
+			var allowedApiResult = bool.Parse(jsonResult?.Value?.ToString()!);
 			Assert.IsFalse(allowedApiResult);
 		}
 		
@@ -39,7 +39,7 @@ namespace starskytest.Controllers
 		public void AllowedTypesController_AllowedTypesThumb_Example()
 		{
 			var jsonResult = new AllowedTypesController{ ControllerContext = {HttpContext = _httpContext}}.AllowedTypesThumb("test.jpg") as JsonResult;
-			var allowedApiResult = bool.Parse(jsonResult.Value.ToString());
+			var allowedApiResult = bool.Parse(jsonResult?.Value?.ToString()!);
 			Assert.IsTrue(allowedApiResult);
 		}
 	}

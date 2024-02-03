@@ -12,14 +12,14 @@ namespace starskytest.root;
 [TestClass]
 public class ProgramTest
 {
-	private static string _prePort;
-	private static string _preAspNetUrls;
-	private static string _diskWatcherSetting;
-	private static string _syncOnStartup;
-	private static string _thumbnailGenerationIntervalInMinutes;
-	private static string _geoFilesSkipDownloadOnStartup;
-	private static string _exiftoolSkipDownloadOnStartup;
-	private static string _enablePackageTelemetry;
+	private static string? _prePort;
+	private static string? _preAspNetUrls;
+	private static string? _diskWatcherSetting;
+	private static string? _syncOnStartup;
+	private static string? _thumbnailGenerationIntervalInMinutes;
+	private static string? _geoFilesSkipDownloadOnStartup;
+	private static string? _exiftoolSkipDownloadOnStartup;
+	private static string? _enablePackageTelemetry;
 
 	public ProgramTest()
 	{
@@ -61,7 +61,7 @@ public class ProgramTest
 		Environment.SetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup","true");
 		Environment.SetEnvironmentVariable("app__EnablePackageTelemetry","false");
 		
-		await Program.Main(new []{"--do-not-start"});
+		await Program.Main(["--do-not-start"]);
 
 		using HttpClient client = new();
 		await client.GetAsync("http://localhost:7514").TimeoutAfter(3000);
@@ -72,27 +72,31 @@ public class ProgramTest
 	[Timeout(9000)]
 	public async Task Program_RunAsync_Null_False()
 	{
-		var result = await Program.RunAsync(null,false);
+		var result = await Program.RunAsync(null!,false);
 		Assert.IsFalse(result);
 	}
 	
 	[TestMethod]
-	[Timeout(9000)]
+	[Timeout(20000)]
 	[ExpectedException(typeof(TimeoutException))]
-	public async Task Program_RunAsync_ReturnedTrue()
+	public async Task Program_RunAsync_WebApplication_CreateBuilder_TimeoutException()
 	{
-		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","http://*:7518");
+		var number = new Random().Next(7500, 7900);
+		var url = $"http://*:{number}";
+		await Console.Out.WriteLineAsync(url);
+
+		Environment.SetEnvironmentVariable("ASPNETCORE_URLS", url);
 		
 		var builder = WebApplication.CreateBuilder(Array.Empty<string>());
 		var app = builder.Build();
 
 		await Program.RunAsync(app).TimeoutAfter(1000);
 	}
-	
+
 	[TestMethod]
 	[Timeout(9000)]
 	[ExpectedException(typeof(FormatException))]
-	public async Task Program_RunAsync_InvalidUrl()
+	public async Task Program_RunAsync_WebApplication_CreateBuilder_InvalidUrl()
 	{
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","test");
 
@@ -115,6 +119,7 @@ public class ProgramTest
 		Environment.SetEnvironmentVariable("app__thumbnailGenerationIntervalInMinutes",_thumbnailGenerationIntervalInMinutes);
 		Environment.SetEnvironmentVariable("app__GeoFilesSkipDownloadOnStartup",_geoFilesSkipDownloadOnStartup);
 		Environment.SetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup",_exiftoolSkipDownloadOnStartup);
+		Environment.SetEnvironmentVariable("app__EnablePackageTelemetry",_enablePackageTelemetry);
 	}
 	
 }

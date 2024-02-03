@@ -13,10 +13,7 @@ interface ItemListProps {
 function GetBoxClass(item: IFileIndexItem): string {
   if (item.isDirectory) {
     return "box isDirectory-true";
-  } else if (
-    item.status === IExifStatus.Ok ||
-    item.status === IExifStatus.Default
-  ) {
+  } else if (item.status === IExifStatus.Ok || item.status === IExifStatus.Default) {
     return "box isDirectory-false";
   } else {
     return "box isDirectory-false error";
@@ -30,17 +27,11 @@ const ItemTextListView: React.FunctionComponent<ItemListProps> = (props) => {
   // Content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageNoPhotos = language.text(
-    "Er zijn geen foto's",
-    "There are no pictures"
-  );
+  const MessageNoPhotos = language.text("Er zijn geen foto's", "There are no pictures");
 
   if (!props.fileIndexItems)
     return (
-      <div
-        className="warning-box"
-        data-test="list-text-view-no-photos-in-folder"
-      >
+      <div className="warning-box" data-test="list-text-view-no-photos-in-folder">
         {MessageNoPhotos}
       </div>
     );
@@ -48,10 +39,7 @@ const ItemTextListView: React.FunctionComponent<ItemListProps> = (props) => {
   return (
     <>
       {props.fileIndexItems.length === 0 ? (
-        <div
-          className="warning-box"
-          data-test="list-text-view-no-photos-in-folder"
-        >
+        <div className="warning-box" data-test="list-text-view-no-photos-in-folder">
           {MessageNoPhotos}
         </div>
       ) : (
@@ -59,10 +47,7 @@ const ItemTextListView: React.FunctionComponent<ItemListProps> = (props) => {
       )}
       <ul>
         {props.fileIndexItems.map((item) => (
-          <li
-            className={GetBoxClass(item)}
-            key={item.filePath + item.lastEdited}
-          >
+          <li className={GetBoxClass(item)} key={item.filePath + item.lastEdited}>
             {item.isDirectory ? (
               <button
                 data-test={"btn-" + item.fileName}
@@ -75,8 +60,7 @@ const ItemTextListView: React.FunctionComponent<ItemListProps> = (props) => {
               </button>
             ) : null}
             {!item.isDirectory ? item.fileName : null}
-            {item.status !== IExifStatus.Ok &&
-            item.status !== IExifStatus.Default ? (
+            {item.status !== IExifStatus.Ok && item.status !== IExifStatus.Default ? (
               <em className="error-status">{item.status}</em>
             ) : null}
           </li>

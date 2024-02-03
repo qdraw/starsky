@@ -4,12 +4,10 @@ import LoginPage from "./login-page";
 
 describe("LoginPage", () => {
   it("has Login child Component", () => {
-    const spyLoginComponent = jest
-      .spyOn(Login, "Login")
-      .mockImplementationOnce(() => {
-        return <></>;
-      });
+    const spyLoginComponent = jest.spyOn(Login, "Login").mockImplementationOnce(() => {
+      return <></>;
+    });
     render(<LoginPage />);
-    expect(spyLoginComponent).toBeCalled();
+    expect(spyLoginComponent).toHaveBeenCalled();
   });
 });

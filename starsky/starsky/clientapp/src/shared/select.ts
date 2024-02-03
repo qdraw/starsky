@@ -4,9 +4,7 @@ import { URLPath } from "./url-path";
 
 export class Select {
   private select: string[] | undefined = [];
-  private setSelect: React.Dispatch<
-    React.SetStateAction<string[] | undefined>
-  > = () => {
+  private setSelect: React.Dispatch<React.SetStateAction<string[] | undefined>> = () => {
     /* should do nothing */
   };
   private history: IUseLocation = {} as IUseLocation;
@@ -27,10 +25,7 @@ export class Select {
 
   public undoSelection() {
     if (!this.select) return;
-    const urlObject = new URLPath().updateSelection(
-      this.history.location.search,
-      []
-    );
+    const urlObject = new URLPath().updateSelection(this.history.location.search, []);
     this.setSelect(urlObject.select);
     this.history.navigate(new URLPath().IUrlToString(urlObject), {
       replace: true
@@ -42,15 +37,9 @@ export class Select {
    */
   public allSelection() {
     if (!this.select) return;
-    const updatedSelect = new URLPath().GetAllSelection(
-      this.select,
-      this.state.fileIndexItems
-    );
+    const updatedSelect = new URLPath().GetAllSelection(this.select, this.state.fileIndexItems);
 
-    const urlObject = new URLPath().updateSelection(
-      this.history.location.search,
-      updatedSelect
-    );
+    const urlObject = new URLPath().updateSelection(this.history.location.search, updatedSelect);
     this.setSelect(urlObject.select);
     this.history.navigate(new URLPath().IUrlToString(urlObject), {
       replace: true
@@ -58,10 +47,7 @@ export class Select {
   }
 
   public toggleSelection(fileName: string): void {
-    const urlObject = new URLPath().toggleSelection(
-      fileName,
-      this.history.location.search
-    );
+    const urlObject = new URLPath().toggleSelection(fileName, this.history.location.search);
     this.history.navigate(new URLPath().IUrlToString(urlObject), {
       replace: true
     });

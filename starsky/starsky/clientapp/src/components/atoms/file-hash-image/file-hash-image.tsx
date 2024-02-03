@@ -18,9 +18,7 @@ export interface IFileHashImageProps {
 
 const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
   // To Get the rotation update
-  const [translateRotation, setTranslateRotation] = useState(
-    Orientation.Horizontal
-  );
+  const [translateRotation, setTranslateRotation] = useState(Orientation.Horizontal);
   useEffect(() => {
     (async () => {
       if (!props.orientation) return;
@@ -29,9 +27,7 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
       if (isAutomaticRotated) {
         return;
       }
-      const result = await FetchGet(
-        new UrlQuery().UrlThumbnailJsonApi(props.fileHash)
-      );
+      const result = await FetchGet(new UrlQuery().UrlThumbnailJsonApi(props.fileHash));
 
       if (result.statusCode === 202) {
         // result from API is: "Thumbnail is not ready yet"

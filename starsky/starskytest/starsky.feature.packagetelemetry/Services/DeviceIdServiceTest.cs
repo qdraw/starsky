@@ -105,7 +105,7 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 			var storage = new FakeIStorage(new List<string>{"/"});
 			var storageSelector = new FakeSelectorStorage(storage);
 			var deviceService = new DeviceIdService(storageSelector,new FakeISettingsService());
-			await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("test-id"), deviceService.BsdHostIdPath);
+			await storage.WriteStreamAsync(StringToStreamHelper.StringToStream("test-id"), deviceService.BsdHostIdPath);
 			var id = await deviceService.DeviceId(OSPlatform.Linux);
 			Assert.IsNotNull( id );
 			Assert.AreEqual("6CC41D5EC590AB78CCCECF81EF167D418C309A4598E8E45FEF78039F7D9AA9FE", id );
@@ -118,8 +118,8 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 			var storageSelector = new FakeSelectorStorage(storage);
 			var deviceService = new DeviceIdService(storageSelector,
 				new FakeISettingsService());
-			await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("should-not-use"), deviceService.BsdHostIdPath);
-			await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("test-id"), deviceService.MachineIdPath2);
+			await storage.WriteStreamAsync(StringToStreamHelper.StringToStream("should-not-use"), deviceService.BsdHostIdPath);
+			await storage.WriteStreamAsync(StringToStreamHelper.StringToStream("test-id"), deviceService.MachineIdPath2);
 			var id = await deviceService.DeviceId(OSPlatform.Linux);
 			Assert.IsNotNull( id );
 			Assert.AreEqual("6CC41D5EC590AB78CCCECF81EF167D418C309A4598E8E45FEF78039F7D9AA9FE", id );
@@ -131,9 +131,9 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 			var storage = new FakeIStorage(new List<string>{"/"});
 			var storageSelector = new FakeSelectorStorage(storage);
 			var deviceService = new DeviceIdService(storageSelector,new FakeISettingsService());
-			await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("should-not-use"), deviceService.BsdHostIdPath);
-			await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("should-not-use"), deviceService.MachineIdPath2);
-			await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("test-id"), deviceService.DbusMachineIdPath);
+			await storage.WriteStreamAsync(StringToStreamHelper.StringToStream("should-not-use"), deviceService.BsdHostIdPath);
+			await storage.WriteStreamAsync(StringToStreamHelper.StringToStream("should-not-use"), deviceService.MachineIdPath2);
+			await storage.WriteStreamAsync(StringToStreamHelper.StringToStream("test-id"), deviceService.DbusMachineIdPath);
 
 			var id = await deviceService.DeviceId(OSPlatform.Linux);
 			Assert.IsNotNull( id );
@@ -147,9 +147,9 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 			var storageSelector = new FakeSelectorStorage(storage);
 			var deviceService = new DeviceIdService(storageSelector,
 				new FakeISettingsService());
-			await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("should-not-use"), deviceService.BsdHostIdPath);
-			await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("should-not-use"), deviceService.MachineIdPath2);
-			await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("test-id"), deviceService.DbusMachineIdPath);
+			await storage.WriteStreamAsync(StringToStreamHelper.StringToStream("should-not-use"), deviceService.BsdHostIdPath);
+			await storage.WriteStreamAsync(StringToStreamHelper.StringToStream("should-not-use"), deviceService.MachineIdPath2);
+			await storage.WriteStreamAsync(StringToStreamHelper.StringToStream("test-id"), deviceService.DbusMachineIdPath);
 
 			var id = await deviceService.DeviceId(OSPlatform.FreeBSD);
 			Assert.IsNotNull( id );
@@ -228,7 +228,7 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 			text += "  	} ";
 			text += " ' ";
 			
-			await hostFullPathFilesystem.WriteStreamAsync(PlainTextFileHelper.StringToStream(text),osxHostIdMockPath);
+			await hostFullPathFilesystem.WriteStreamAsync(StringToStreamHelper.StringToStream(text),osxHostIdMockPath);
 			
 			await Command.Run("chmod", "+x",
 				osxHostIdMockPath).Task;
@@ -273,7 +273,7 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 			text += "  	} ";
 			text += " ' ";
 			
-			await hostFullPathFilesystem.WriteStreamAsync(PlainTextFileHelper.StringToStream(text),osxHostIdMockPath);
+			await hostFullPathFilesystem.WriteStreamAsync(StringToStreamHelper.StringToStream(text),osxHostIdMockPath);
 			
 			await Command.Run("chmod", "+x",
 				osxHostIdMockPath).Task;

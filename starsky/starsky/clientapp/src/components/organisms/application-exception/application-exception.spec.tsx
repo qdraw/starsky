@@ -8,14 +8,12 @@ describe("ApplicationException", () => {
   });
 
   it("should have menu", () => {
-    const menuDefaultSpy = jest
-      .spyOn(MenuDefault, "default")
-      .mockImplementationOnce(() => {
-        return <></>;
-      });
+    const menuDefaultSpy = jest.spyOn(MenuDefault, "default").mockImplementationOnce(() => {
+      return <></>;
+    });
     const component = render(<ApplicationException>t</ApplicationException>);
 
-    expect(menuDefaultSpy).toBeCalled();
+    expect(menuDefaultSpy).toHaveBeenCalled();
 
     component.unmount();
   });
@@ -55,7 +53,7 @@ describe("ApplicationException", () => {
 
     reload.click();
 
-    expect(reloadSpy).toBeCalledTimes(1);
+    expect(reloadSpy).toHaveBeenCalledTimes(1);
 
     // restore window object
     window.location = location;

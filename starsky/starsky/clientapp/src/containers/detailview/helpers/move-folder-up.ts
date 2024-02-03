@@ -14,9 +14,7 @@ export function moveFolderUp(
   if (!history.location) return;
   if (new Keyboard().isInForm(event)) return;
 
-  const isPortalActive = !!(document.querySelector(
-    `.${ModalOpenClassName}`
-  ) as HTMLElement);
+  const isPortalActive = !!(document.querySelector(`.${ModalOpenClassName}`) as HTMLElement);
   if (isPortalActive) {
     return;
   }
