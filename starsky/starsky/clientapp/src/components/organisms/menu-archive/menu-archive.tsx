@@ -1,8 +1,5 @@
 import React, { memo, useEffect, useState } from "react";
-import {
-  ArchiveContext,
-  defaultStateFallback
-} from "../../../contexts/archive-context";
+import { ArchiveContext, defaultStateFallback } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import useLocation from "../../../hooks/use-location/use-location";
@@ -31,7 +28,7 @@ import ModalDisplayOptions from "../modal-display-options/modal-display-options"
 import ModalDownload from "../modal-download/modal-download";
 import ModalPublishToggleWrapper from "../modal-publish/modal-publish-toggle-wrapper";
 import NavContainer from "../nav-container/nav-container";
-import { UploadMenuItem } from "./shared/upload-menu-item";
+import { UploadMenuItem } from "./internal/upload-menu-item";
 
 interface IMenuArchiveProps {}
 
@@ -51,10 +48,8 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
   const history = useLocation();
 
-  const allSelection = () =>
-    new Select(select, setSelect, state, history).allSelection();
-  const undoSelection = () =>
-    new Select(select, setSelect, state, history).undoSelection();
+  const allSelection = () => new Select(select, setSelect, state, history).allSelection();
+  const undoSelection = () => new Select(select, setSelect, state, history).undoSelection();
   const removeSidebarSelection = () =>
     new Select(select, setSelect, state, history).removeSidebarSelection();
 
@@ -75,8 +70,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
     setSidebar(new URLPath().StringToIUrl(history.location.search).sidebar);
   }, [history.location.search]);
 
-  const toggleLabels = (state?: boolean) =>
-    new Sidebar(setSidebar, history).toggleSidebar(state);
+  const toggleLabels = (state?: boolean) => new Sidebar(setSidebar, history).toggleSidebar(state);
 
   const [isModalExportOpen, setIsModalExportOpen] = useState(false);
   const [isModalPublishOpen, setIsModalPublishOpen] = useState(false);
@@ -90,13 +84,11 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   }, [history.location.search]);
 
   const [isDisplayOptionsOpen, setIsDisplayOptionsOpen] = React.useState(false);
-  const [isSynchronizeManuallyOpen, setIsSynchronizeManuallyOpen] =
-    React.useState(false);
+  const [isSynchronizeManuallyOpen, setIsSynchronizeManuallyOpen] = React.useState(false);
   const [isModalMkdirOpen, setIsModalMkdirOpen] = React.useState(false);
   const [isModalRenameFolder, setIsModalRenameFolder] = React.useState(false);
-  const [dropAreaUploadFilesList, setDropAreaUploadFilesList] = React.useState(
-    newIFileIndexItemArray()
-  );
+  const [dropAreaUploadFilesList, setDropAreaUploadFilesList] =
+    React.useState(newIFileIndexItemArray());
 
   return (
     <>
@@ -108,10 +100,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
             select,
             new URLPath().StringToIUrl(history.location.search).f
           )}
-          collections={
-            new URLPath().StringToIUrl(history.location.search).collections !==
-            false
-          }
+          collections={new URLPath().StringToIUrl(history.location.search).collections !== false}
           isOpen={isModalExportOpen}
         />
       ) : null}
@@ -128,9 +117,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
       {isSynchronizeManuallyOpen ? (
         <ModalArchiveSynchronizeManually
           parentFolder={new URLPath().StringToIUrl(history.location.search).f}
-          handleExit={() =>
-            setIsSynchronizeManuallyOpen(!isSynchronizeManuallyOpen)
-          }
+          handleExit={() => setIsSynchronizeManuallyOpen(!isSynchronizeManuallyOpen)}
           isOpen={isSynchronizeManuallyOpen}
         />
       ) : null}
@@ -159,9 +146,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
       {/* Upload drop Area */}
       {dropAreaUploadFilesList.length !== 0 ? (
         <ModalDropAreaFilesAdded
-          handleExit={() =>
-            setDropAreaUploadFilesList(newIFileIndexItemArray())
-          }
+          handleExit={() => setDropAreaUploadFilesList(newIFileIndexItemArray())}
           uploadFilesList={dropAreaUploadFilesList}
           isOpen={dropAreaUploadFilesList.length !== 0}
         />
@@ -183,10 +168,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
             setHamburgerMenu={setHamburgerMenu}
           />
 
-          <MenuSelectCount
-            select={select}
-            removeSidebarSelection={removeSidebarSelection}
-          />
+          <MenuSelectCount select={select} removeSidebarSelection={removeSidebarSelection} />
 
           {!select ? (
             <button
@@ -218,10 +200,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
           {/* default more menu */}
           {!select ? (
-            <MoreMenu
-              setEnableMoreMenu={setEnableMoreMenu}
-              enableMoreMenu={enableMoreMenu}
-            >
+            <MoreMenu setEnableMoreMenu={setEnableMoreMenu} enableMoreMenu={enableMoreMenu}>
               <MenuOptionModal
                 isReadOnly={readOnly}
                 isSet={isModalMkdirOpen}
@@ -273,10 +252,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
           {/* In the select context there are more options */}
           {select ? (
-            <MoreMenu
-              setEnableMoreMenu={setEnableMoreMenu}
-              enableMoreMenu={enableMoreMenu}
-            >
+            <MoreMenu setEnableMoreMenu={setEnableMoreMenu} enableMoreMenu={enableMoreMenu}>
               <MenuOptionSelectionUndo
                 select={select}
                 state={state}
@@ -284,11 +260,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
               />
 
               {/* onClick={() => allSelection()} */}
-              <MenuOptionSelectionAll
-                select={select}
-                state={state}
-                allSelection={allSelection}
-              />
+              <MenuOptionSelectionAll select={select} state={state} allSelection={allSelection} />
               {select.length >= 1 ? (
                 <>
                   <MenuOptionModal

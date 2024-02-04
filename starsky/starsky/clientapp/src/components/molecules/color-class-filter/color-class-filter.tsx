@@ -10,6 +10,7 @@ import { GetFilterUrlColorClass } from "./shared/get-filter-url-color-class.ts";
 import { CleanColorClass } from "./shared/clean-color-class.ts";
 import { ClassNameContainer } from "./shared/class-name-container.ts";
 import localization from "../../../localization/localization.json";
+import { IArchiveProps } from "../../../interfaces/IArchiveProps.ts";
 
 //  <ColorClassFilter itemsCount={this.props.collectionsCount} subPath={this.props.subPath}
 // colorClassActiveList={this.props.colorClassActiveList} colorClassUsage={this.props.colorClassUsage}></ColorClassFilter>
@@ -19,6 +20,19 @@ export interface IColorClassProp {
   colorClassUsage: Array<number>;
   itemsCount?: number;
   sticky?: boolean;
+}
+
+function stateFallback(state: IArchiveProps, props: IColorClassProp) {
+  // props is used as default, state only for update
+  if (!state) {
+    state = {
+      ...newIArchive(),
+      colorClassUsage: props.colorClassUsage,
+      colorClassActiveList: props.colorClassActiveList,
+      collectionsCount: props.itemsCount ? props.itemsCount : 0
+    };
+  }
+  return state;
 }
 
 const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo((props) => {
@@ -43,15 +57,8 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo((props) 
   const history = useLocation();
 
   let { state } = React.useContext(ArchiveContext);
-  // props is used as default, state only for update
-  if (!state) {
-    state = {
-      ...newIArchive(),
-      colorClassUsage: props.colorClassUsage,
-      colorClassActiveList: props.colorClassActiveList,
-      collectionsCount: props.itemsCount ? props.itemsCount : 0
-    };
-  }
+  state = stateFallback(state, props);
+
   const [colorClassUsage, setColorClassUsage] = useState(props.colorClassUsage);
 
   useEffect(() => {

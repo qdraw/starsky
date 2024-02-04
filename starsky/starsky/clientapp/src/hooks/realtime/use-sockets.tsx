@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { DifferenceInDate } from "../../shared/date";
 import useInterval from "../use-interval";
-import { IsClientSideFeatureDisabled } from "./shared/Is-client-side-feature-disabled";
+import { IsClientSideFeatureDisabled } from "./internal/is-client-side-feature-disabled.ts1";
 import WebSocketService from "./websocket-service";
 import WsCurrentStart, { NewWebSocketService } from "./ws-current-start";
 
@@ -79,9 +79,7 @@ const useSockets = (): IUseSockets => {
   }
 
   useEffect(() => {
-    console.log(
-      `[use-sockets] is disabled => ${IsClientSideFeatureDisabled()}`
-    );
+    console.log(`[use-sockets] is disabled => ${IsClientSideFeatureDisabled()}`);
     // option to disable in client side
     if (IsClientSideFeatureDisabled()) return;
 

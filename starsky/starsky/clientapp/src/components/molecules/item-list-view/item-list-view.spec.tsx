@@ -3,15 +3,12 @@ import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
 import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
 import * as useLocation from "../../../hooks/use-location/use-location";
-import {
-  IFileIndexItem,
-  newIFileIndexItemArray
-} from "../../../interfaces/IFileIndexItem";
+import { IFileIndexItem, newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
 import { Router } from "../../../router-app/router-app";
 import * as FlatListItem from "../../atoms/flat-list-item/flat-list-item";
 import * as ListImageChildItem from "../../atoms/list-image-child-item/list-image-child-item";
 import ItemListView from "./item-list-view";
-import * as ShiftSelectionHelper from "./shared/shift-selection-helper";
+import * as ShiftSelectionHelper from "./internal/shift-selection-helper";
 
 describe("ItemListView", () => {
   it("renders (without state component)", () => {
@@ -32,17 +29,11 @@ describe("ItemListView", () => {
     it("search with data-filepath in child element", () => {
       const component = render(
         <MemoryRouter>
-          <ItemListView
-            iconList={true}
-            fileIndexItems={exampleData}
-            colorClassUsage={[]}
-          />
+          <ItemListView iconList={true} fileIndexItems={exampleData} colorClassUsage={[]} />
         </MemoryRouter>
       );
 
-      const element = screen.queryAllByTestId(
-        "list-image-view-select-container"
-      )[0];
+      const element = screen.queryAllByTestId("list-image-view-select-container")[0];
 
       expect(element).toBeTruthy();
 
@@ -58,11 +49,7 @@ describe("ItemListView", () => {
         .mockImplementationOnce(() => <></>);
       const component = render(
         <MemoryRouter>
-          <ItemListView
-            iconList={false}
-            fileIndexItems={exampleData}
-            colorClassUsage={[]}
-          />
+          <ItemListView iconList={false} fileIndexItems={exampleData} colorClassUsage={[]} />
         </MemoryRouter>
       );
       expect(flatListItemSpy).toBeCalled();
@@ -72,11 +59,7 @@ describe("ItemListView", () => {
     it("no content", () => {
       const component = render(
         <MemoryRouter>
-          <ItemListView
-            iconList={true}
-            fileIndexItems={undefined as any}
-            colorClassUsage={[]}
-          />
+          <ItemListView iconList={true} fileIndexItems={undefined as any} colorClassUsage={[]} />
         </MemoryRouter>
       );
       expect(component.container.textContent).toBe("no content");
@@ -84,12 +67,7 @@ describe("ItemListView", () => {
 
     it("text should be: New? Set your drive location in the settings. There are no photos in this folder", () => {
       const component = render(
-        <ItemListView
-          iconList={true}
-          fileIndexItems={[]}
-          subPath="/"
-          colorClassUsage={[]}
-        />
+        <ItemListView iconList={true} fileIndexItems={[]} subPath="/" colorClassUsage={[]} />
       );
       expect(component.container.textContent).toBe(
         "New? Set your drive location in the settings. There are no photos in this folder"
@@ -98,25 +76,14 @@ describe("ItemListView", () => {
 
     it("text should be: There are no photos in this folder", () => {
       const component = render(
-        <ItemListView
-          iconList={true}
-          fileIndexItems={[]}
-          subPath="/test"
-          colorClassUsage={[]}
-        />
+        <ItemListView iconList={true} fileIndexItems={[]} subPath="/test" colorClassUsage={[]} />
       );
-      expect(component.container.textContent).toBe(
-        "There are no photos in this folder"
-      );
+      expect(component.container.textContent).toBe("There are no photos in this folder");
     });
 
     it("you did select a different colorclass but there a no items with this colorclass", () => {
       const component = render(
-        <ItemListView
-          iconList={true}
-          fileIndexItems={[]}
-          colorClassUsage={[2]}
-        />
+        <ItemListView iconList={true} fileIndexItems={[]} colorClassUsage={[2]} />
       );
       expect(component.container.textContent).toBe(
         "There are more items, but these are outside of your filters. To see everything click on 'Reset Filter'"
@@ -143,9 +110,7 @@ describe("ItemListView", () => {
         navigate: jest.fn()
       } as unknown as IUseLocation;
 
-      jest
-        .spyOn(useLocation, "default")
-        .mockImplementationOnce(() => useLocationMock);
+      jest.spyOn(useLocation, "default").mockImplementationOnce(() => useLocationMock);
 
       jest.useFakeTimers();
 
@@ -179,17 +144,11 @@ describe("ItemListView", () => {
 
       const component = render(
         <MemoryRouter>
-          <ItemListView
-            iconList={true}
-            fileIndexItems={exampleData}
-            colorClassUsage={[]}
-          />
+          <ItemListView iconList={true} fileIndexItems={exampleData} colorClassUsage={[]} />
         </MemoryRouter>
       );
 
-      const item = screen.queryByTestId(
-        "list-image-view-select-container"
-      ) as HTMLButtonElement;
+      const item = screen.queryByTestId("list-image-view-select-container") as HTMLButtonElement;
 
       console.log(component.container.innerHTML);
       expect(item).toBeTruthy();
@@ -223,11 +182,7 @@ describe("ItemListView", () => {
         .mockImplementationOnce(() => <>t</>);
       const component = render(
         <MemoryRouter>
-          <ItemListView
-            iconList={true}
-            fileIndexItems={exampleData}
-            colorClassUsage={[]}
-          />
+          <ItemListView iconList={true} fileIndexItems={exampleData} colorClassUsage={[]} />
         </MemoryRouter>
       );
       expect(listImageChildItemSpy).toBeCalled();
