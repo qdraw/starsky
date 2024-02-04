@@ -231,6 +231,10 @@
     "en": "Reset filter",
     "nl": "Herstel filter"
   },
+  "MessageCloseDialog": {
+    "en": "Close",
+    "nl": "Sluiten"
+  },
   "temp1": {
     "en": "",
     "nl": ""

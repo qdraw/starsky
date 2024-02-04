@@ -13,7 +13,7 @@ end_of_line = lf
 csharp_space_between_parentheses = expressions, type_casts, control_flow_statements
 csharp_style_var_for_built_in_types = true
 
-[*.{ts,tsx}]
+[*.{ts,tsx,json}]
 charset = utf-8
 indent_style = space
 indent_size = 2
