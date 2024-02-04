@@ -17,16 +17,11 @@ interface IModalRenameFolderProps {
   dispatch?: React.Dispatch<ArchiveAction>;
 }
 
-const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
-  props
-) => {
+const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (props) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageRenameFolder = language.text(
-    "Huidige mapnaam wijzigen",
-    "Rename current folder"
-  );
+  const MessageRenameFolder = language.text("Huidige mapnaam wijzigen", "Rename current folder");
   const MessageNonValidDirectoryName: string = language.text(
     "Deze mapnaam is niet valide",
     "Directory name is not valid"
@@ -46,9 +41,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
   const [isLoading, setIsLoading] = useState(false);
 
   // The Updated that is send to the api
-  const [folderName, setFolderName] = useState(
-    new FileExtensions().GetFileName(props.subPath)
-  );
+  const [folderName, setFolderName] = useState(new FileExtensions().GetFileName(props.subPath));
 
   const [isFormEnabled, setIsFormEnabled] = useState(true);
 
@@ -60,9 +53,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
    * @param event [Change Event]
    */
   function handleUpdateChange(
-    event:
-      | React.ChangeEvent<HTMLDivElement>
-      | React.KeyboardEvent<HTMLDivElement>
+    event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>
   ) {
     if (!isFormEnabled) return;
     if (!event.currentTarget.textContent) return null;
@@ -70,9 +61,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
 
     setFolderName(fieldValue);
 
-    const isValidDirectoryName = new FileExtensions().IsValidDirectoryName(
-      fieldValue
-    );
+    const isValidDirectoryName = new FileExtensions().IsValidDirectoryName(fieldValue);
     if (!isValidDirectoryName) {
       setError(MessageNonValidDirectoryName);
     } else {
@@ -112,10 +101,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
     bodyParams.append("f", props.subPath);
     bodyParams.append("to", filePathAfterChange);
 
-    const result = await FetchPost(
-      new UrlQuery().UrlDiskRename(),
-      bodyParams.toString()
-    );
+    const result = await FetchPost(new UrlQuery().UrlDiskRename(), bodyParams.toString());
 
     if (result.statusCode !== 200) {
       // undo dispatch
@@ -173,9 +159,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
 
           <button
             disabled={
-              new FileExtensions().GetFileName(props.subPath) === folderName ||
-              !!error ||
-              isLoading
+              new FileExtensions().GetFileName(props.subPath) === folderName || !!error || isLoading
             }
             data-test="modal-archive-rename-btn-default"
             className="btn btn--default"

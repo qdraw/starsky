@@ -12,7 +12,7 @@ describe("OnMoveMouseTouchAction", () => {
       ],
       preventDefault: jest.fn()
     } as any);
-    expect(setPosition).toBeCalledTimes(1);
-    expect(setPosition).toBeCalledWith({ oldX: 1, oldY: 1 });
+    expect(setPosition).toHaveBeenCalledTimes(1);
+    expect(setPosition).toHaveBeenCalledWith({ oldX: 1, oldY: 1 });
   });
 });

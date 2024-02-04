@@ -6,9 +6,9 @@ import { newIArchive } from "../../../interfaces/IArchive";
 import { Language } from "../../../shared/language";
 import Link from "../../atoms/link/link";
 import Preloader from "../../atoms/preloader/preloader";
-import { GetFilterUrlColorClass } from "./shared/get-filter-url-color-class.ts";
-import { CleanColorClass } from "./shared/clean-color-class.ts";
-import { ClassNameContainer } from "./shared/class-name-container.ts";
+import { GetFilterUrlColorClass } from "./internal/get-filter-url-color-class.ts";
+import { CleanColorClass } from "./internal/clean-color-class.ts";
+import { ClassNameContainer } from "./internal/class-name-container.ts";
 import localization from "../../../localization/localization.json";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps.ts";
 

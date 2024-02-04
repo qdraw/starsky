@@ -19,10 +19,7 @@ function closest(_array: number[], _number: number): number {
  * @param filePath subPath
  * @param items all items in the folder
  */
-function getIndexOfCurrentAppendFilePath(
-  filePath: string,
-  items: IFileIndexItem[]
-): number {
+function getIndexOfCurrentAppendFilePath(filePath: string, items: IFileIndexItem[]): number {
   let filePathAppendIndex: number = -1;
   for (let index = 0; index < items.length; index++) {
     const element = items[index];
@@ -53,9 +50,7 @@ function getNearbyStartIndex(
       alreadySelectIndexes.push(index);
     }
   }
-  return alreadySelectIndexes[
-    closest(alreadySelectIndexes, filePathAppendIndex)
-  ];
+  return alreadySelectIndexes[closest(alreadySelectIndexes, filePathAppendIndex)];
 }
 
 /**
@@ -102,35 +97,18 @@ export function ShiftSelectionHelper(
 
   const filePathAppendIndex = getIndexOfCurrentAppendFilePath(filePath, items);
   if (filePathAppendIndex === -1) return false;
-  const nearbyStartIndex = getNearbyStartIndex(
-    filePathAppendIndex,
-    select,
-    items
-  );
-  const toBeAddedToSelect = toAddedLoopMinToMax(
-    filePathAppendIndex,
-    nearbyStartIndex,
-    items
-  );
+  const nearbyStartIndex = getNearbyStartIndex(filePathAppendIndex, select, items);
+  const toBeAddedToSelect = toAddedLoopMinToMax(filePathAppendIndex, nearbyStartIndex, items);
 
   // remove duplicates
-  const newSelect = [
-    ...select,
-    items[filePathAppendIndex].fileName,
-    ...toBeAddedToSelect
-  ].filter(function (item, pos) {
-    return (
-      [
-        ...select,
-        items[filePathAppendIndex].fileName,
-        ...toBeAddedToSelect
-      ].indexOf(item) === pos
-    );
-  });
-  const urlObject = new URLPath().updateSelection(
-    history.location.search,
-    newSelect
+  const newSelect = [...select, items[filePathAppendIndex].fileName, ...toBeAddedToSelect].filter(
+    function (item, pos) {
+      return (
+        [...select, items[filePathAppendIndex].fileName, ...toBeAddedToSelect].indexOf(item) === pos
+      );
+    }
   );
+  const urlObject = new URLPath().updateSelection(history.location.search, newSelect);
   history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   return true;
 }

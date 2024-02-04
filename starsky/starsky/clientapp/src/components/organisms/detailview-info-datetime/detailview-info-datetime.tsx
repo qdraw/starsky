@@ -13,8 +13,8 @@ interface IDetailViewInfoDateTimeProps {
   dispatch: React.Dispatch<DetailViewAction>;
 }
 
-const DetailViewInfoDateTime: React.FunctionComponent<IDetailViewInfoDateTimeProps> =
-  memo(({ fileIndexItem, isFormEnabled, setFileIndexItem, dispatch }) => {
+const DetailViewInfoDateTime: React.FunctionComponent<IDetailViewInfoDateTimeProps> = memo(
+  ({ fileIndexItem, isFormEnabled, setFileIndexItem, dispatch }) => {
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
     const MessageCreationDate = language.text("Aanmaakdatum", "Creation date");
@@ -59,9 +59,7 @@ const DetailViewInfoDateTime: React.FunctionComponent<IDetailViewInfoDateTimePro
           data-test="dateTime"
           onClick={() => setModalDatetimeOpen(true)}
         >
-          {isFormEnabled ? (
-            <div className="icon icon--right icon--edit" />
-          ) : null}
+          {isFormEnabled ? <div className="icon icon--right icon--edit" /> : null}
           <div className="icon icon--date" />
           {isValidDate(fileIndexItem.dateTime) ? (
             <>
@@ -78,6 +76,7 @@ const DetailViewInfoDateTime: React.FunctionComponent<IDetailViewInfoDateTimePro
         </button>
       </>
     );
-  });
+  }
+);
 
 export default DetailViewInfoDateTime;

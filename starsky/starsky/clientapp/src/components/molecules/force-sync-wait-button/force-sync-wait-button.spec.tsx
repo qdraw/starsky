@@ -1,16 +1,11 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import {
-  IConnectionDefault,
-  newIConnectionDefault
-} from "../../../interfaces/IConnectionDefault";
+import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { PageType } from "../../../interfaces/IDetailView";
 import * as FetchGet from "../../../shared/fetch-get";
 import * as FetchPost from "../../../shared/fetch-post";
 import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
-import ForceSyncWaitButton, {
-  ForceSyncRequestNewContent
-} from "./force-sync-wait-button";
+import ForceSyncWaitButton, { ForceSyncRequestNewContent } from "./force-sync-wait-button";
 
 describe("ForceSyncWaitButton", () => {
   it("renders", () => {
@@ -34,21 +29,17 @@ describe("ForceSyncWaitButton", () => {
       .mockImplementationOnce(() => mockIConnectionDefault);
 
     const component = render(
-      <ForceSyncWaitButton
-        historyLocationSearch={""}
-        dispatch={jest.fn()}
-        callback={jest.fn()}
-      />
+      <ForceSyncWaitButton historyLocationSearch={""} dispatch={jest.fn()} callback={jest.fn()} />
     );
 
     const forceSync = screen.queryByTestId("force-sync") as HTMLButtonElement;
     expect(forceSync).toBeTruthy();
     forceSync.click();
 
-    await waitFor(() => expect(fetchPostSpy).toBeCalled());
+    await waitFor(() => expect(fetchPostSpy).toHaveBeenCalled());
 
     const urlSync = new UrlQuery().UrlSync("/");
-    expect(fetchPostSpy).toBeCalledWith(urlSync, "");
+    expect(fetchPostSpy).toHaveBeenCalledWith(urlSync, "");
 
     component.unmount();
   });
@@ -84,19 +75,15 @@ describe("ForceSyncWaitButton", () => {
       historyLocationSearch: "?f=/"
     });
 
-    expect(fetchGetSpy).toBeCalled();
+    expect(fetchGetSpy).toHaveBeenCalled();
 
-    const url = new UrlQuery().UrlIndexServerApi(
-      new URLPath().StringToIUrl("?f=/")
-    );
+    const url = new UrlQuery().UrlIndexServerApi(new URLPath().StringToIUrl("?f=/"));
 
-    expect(fetchGetSpy).toBeCalledWith(url);
+    expect(fetchGetSpy).toHaveBeenCalledWith(url);
   });
 
   it("ForceSyncRequestNewContent should callback & dispatch", async () => {
-    jest
-      .spyOn(FetchGet, "default")
-      .mockImplementationOnce(() => mockIConnectionData);
+    jest.spyOn(FetchGet, "default").mockImplementationOnce(() => mockIConnectionData);
 
     const callback = jest.fn();
     const dispatch = jest.fn();
@@ -107,19 +94,16 @@ describe("ForceSyncWaitButton", () => {
       historyLocationSearch: "?f=/"
     });
 
-    expect(dispatch).toBeCalled();
+    expect(dispatch).toHaveBeenCalled();
   });
 
   it("ForceSyncRequestNewContent should when failed callback & dispatch", async () => {
-    const mockIConnectionDataFailed: Promise<IConnectionDefault> =
-      Promise.resolve({
-        ...newIConnectionDefault(),
-        statusCode: 500 // < - - - - - -
-      });
+    const mockIConnectionDataFailed: Promise<IConnectionDefault> = Promise.resolve({
+      ...newIConnectionDefault(),
+      statusCode: 500 // < - - - - - -
+    });
 
-    jest
-      .spyOn(FetchGet, "default")
-      .mockImplementationOnce(() => mockIConnectionDataFailed);
+    jest.spyOn(FetchGet, "default").mockImplementationOnce(() => mockIConnectionDataFailed);
 
     const callback = jest.fn();
     const dispatch = jest.fn();
@@ -130,7 +114,7 @@ describe("ForceSyncWaitButton", () => {
       historyLocationSearch: "?f=/"
     });
 
-    expect(callback).toBeCalled();
-    expect(dispatch).not.toBeCalled();
+    expect(callback).toHaveBeenCalled();
+    expect(dispatch).not.toHaveBeenCalled();
   });
 });

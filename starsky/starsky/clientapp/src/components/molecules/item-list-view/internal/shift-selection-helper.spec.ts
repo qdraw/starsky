@@ -1,7 +1,4 @@
-import {
-  newIFileIndexItem,
-  newIFileIndexItemArray
-} from "../../../../interfaces/IFileIndexItem";
+import { newIFileIndexItem, newIFileIndexItemArray } from "../../../../interfaces/IFileIndexItem";
 import { ShiftSelectionHelper } from "./shift-selection-helper";
 describe("ShiftSelectionHelper", () => {
   it("items undefined", () => {
@@ -62,7 +59,7 @@ describe("ShiftSelectionHelper", () => {
       "/test3",
       exampleItems
     );
-    expect(navigateFn).toBeCalledWith("?select=test0,test3,test1,test2", {
+    expect(navigateFn).toHaveBeenCalledWith("?select=test0,test3,test1,test2", {
       replace: true
     });
     expect(result).toBeTruthy();
@@ -80,7 +77,7 @@ describe("ShiftSelectionHelper", () => {
       "/test2",
       exampleItems
     );
-    expect(navigateFn).toBeCalledWith("?select=test4,test2,test3", {
+    expect(navigateFn).toHaveBeenCalledWith("?select=test4,test2,test3", {
       replace: true
     });
     expect(result).toBeTruthy();
@@ -98,7 +95,7 @@ describe("ShiftSelectionHelper", () => {
       "/test4",
       exampleItems
     );
-    expect(navigateFn).toBeCalledWith("?select=test4", { replace: true });
+    expect(navigateFn).toHaveBeenCalledWith("?select=test4", { replace: true });
     expect(result).toBeTruthy();
   });
 });

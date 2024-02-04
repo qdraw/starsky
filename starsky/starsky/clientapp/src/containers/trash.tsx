@@ -3,10 +3,7 @@ import ItemListView from "../components/molecules/item-list-view/item-list-view"
 import SearchPagination from "../components/molecules/search-pagination/search-pagination";
 import ArchiveSidebar from "../components/organisms/archive-sidebar/archive-sidebar";
 import MenuTrash from "../components/organisms/menu-trash/menu-trash";
-import {
-  ArchiveContext,
-  defaultStateFallback
-} from "../contexts/archive-context";
+import { ArchiveContext, defaultStateFallback } from "../contexts/archive-context";
 import useGlobalSettings from "../hooks/use-global-settings";
 import useLocation from "../hooks/use-location/use-location";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
@@ -40,9 +37,7 @@ function Trash(archive: Readonly<IArchiveProps>) {
   let { state, dispatch } = React.useContext(ArchiveContext);
   state = defaultStateFallback(state);
 
-  const [collectionsCount, setCollectionsCount] = React.useState(
-    state.collectionsCount
-  );
+  const [collectionsCount, setCollectionsCount] = React.useState(state.collectionsCount);
   useEffect(() => {
     setCollectionsCount(state.collectionsCount);
   }, [state.collectionsCount]);
@@ -68,20 +63,14 @@ function Trash(archive: Readonly<IArchiveProps>) {
           </div>
           <SearchPagination {...archive} />
           {collectionsCount >= 1 ? (
-            <ItemListView
-              iconList={true}
-              {...archive}
-              colorClassUsage={archive.colorClassUsage}
-            />
+            <ItemListView iconList={true} {...archive} colorClassUsage={archive.colorClassUsage} />
           ) : null}
           {collectionsCount === 0 ? (
             <div className="folder">
               <div className="warning-box"> {MessageEmptyTrash}</div>
             </div>
           ) : null}
-          {archive.fileIndexItems.length >= 20 ? (
-            <SearchPagination {...archive} />
-          ) : null}
+          {archive.fileIndexItems.length >= 20 ? <SearchPagination {...archive} /> : null}
         </div>
       </div>
     </>

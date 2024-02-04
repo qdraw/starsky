@@ -4,22 +4,18 @@ import { ContentPage } from "./content-page";
 
 describe("ContentPage", () => {
   it("default", () => {
-    const mediaContentSpy = jest
-      .spyOn(MediaContent, "default")
-      .mockImplementationOnce(() => {
-        return <></>;
-      });
+    const mediaContentSpy = jest.spyOn(MediaContent, "default").mockImplementationOnce(() => {
+      return <></>;
+    });
     render(<ContentPage />);
-    expect(mediaContentSpy).toBeCalledTimes(1);
+    expect(mediaContentSpy).toHaveBeenCalledTimes(1);
   });
 
   it("with navigate and location", () => {
-    const mediaContentSpy = jest
-      .spyOn(MediaContent, "default")
-      .mockImplementationOnce(() => {
-        return <></>;
-      });
+    const mediaContentSpy = jest.spyOn(MediaContent, "default").mockImplementationOnce(() => {
+      return <></>;
+    });
     render(<ContentPage />);
-    expect(mediaContentSpy).toBeCalled();
+    expect(mediaContentSpy).toHaveBeenCalled();
   });
 });

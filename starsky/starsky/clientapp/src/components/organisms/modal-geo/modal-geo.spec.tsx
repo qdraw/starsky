@@ -3,13 +3,13 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import L, { LatLng } from "leaflet";
 import * as Modal from "../../atoms/modal/modal";
 import ModalGeo, { ILatLong } from "./modal-geo";
-import { AddDefaultClickSetMarker } from "./shared/add-default-click-set-marker";
-import * as AddDefaultMarker from "./shared/add-default-marker";
-import { GetZoom } from "./shared/get-zoom";
-import { OnDrag } from "./shared/on-drag";
-import { RealtimeMapUpdate } from "./shared/realtime-map-update";
-import { UpdateButton } from "./shared/update-button";
-import * as updateGeoLocation from "./shared/update-geo-location";
+import { AddDefaultClickSetMarker } from "./internal/add-default-click-set-marker";
+import * as AddDefaultMarker from "./internal/add-default-marker";
+import { GetZoom } from "./internal/get-zoom";
+import { OnDrag } from "./internal/on-drag";
+import { RealtimeMapUpdate } from "./internal/realtime-map-update";
+import { UpdateButton } from "./internal/update-button";
+import * as updateGeoLocation from "./internal/update-geo-location";
 
 describe("ModalGeo", () => {
   beforeEach(() => {
@@ -54,15 +54,9 @@ describe("ModalGeo", () => {
       const map = {
         addLayer: jest.fn()
       } as unknown as L.Map;
-      AddDefaultMarker.AddDefaultMarker(
-        {} as ILatLong,
-        map,
-        true,
-        jest.fn(),
-        jest.fn()
-      );
+      AddDefaultMarker.AddDefaultMarker({} as ILatLong, map, true, jest.fn(), jest.fn());
 
-      expect(map.addLayer).toBeCalledTimes(0);
+      expect(map.addLayer).toHaveBeenCalledTimes(0);
     });
 
     it("location so called", () => {
@@ -77,7 +71,7 @@ describe("ModalGeo", () => {
         jest.fn()
       );
 
-      expect(map.addLayer).toBeCalledTimes(1);
+      expect(map.addLayer).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -99,8 +93,8 @@ describe("ModalGeo", () => {
         jest.fn()
       );
 
-      expect(setLocationSpy).toBeCalledTimes(1);
-      expect(setLocationSpy).toBeCalledWith({
+      expect(setLocationSpy).toHaveBeenCalledTimes(1);
+      expect(setLocationSpy).toHaveBeenCalledWith({
         latitude: 2,
         longitude: 3
       });
@@ -122,8 +116,8 @@ describe("ModalGeo", () => {
       } as unknown as L.Map;
       AddDefaultClickSetMarker(map, true, jest.fn(), jest.fn());
 
-      expect(map.addLayer).toBeCalledTimes(1);
-      expect(map.removeLayer).toBeCalledTimes(1);
+      expect(map.addLayer).toHaveBeenCalledTimes(1);
+      expect(map.removeLayer).toHaveBeenCalledTimes(1);
     });
 
     it("should not add layers due readonly", () => {
@@ -140,8 +134,8 @@ describe("ModalGeo", () => {
       } as unknown as L.Map;
       AddDefaultClickSetMarker(map, false, jest.fn(), jest.fn());
 
-      expect(map.addLayer).toBeCalledTimes(0);
-      expect(map.removeLayer).toBeCalledTimes(0);
+      expect(map.addLayer).toHaveBeenCalledTimes(0);
+      expect(map.removeLayer).toHaveBeenCalledTimes(0);
     });
   });
 
@@ -163,10 +157,10 @@ describe("ModalGeo", () => {
 
       RealtimeMapUpdate(map, false, jest.fn(), jest.fn(), 1, 1);
 
-      expect(map.addLayer).toBeCalledTimes(0);
-      expect(map.removeLayer).toBeCalledTimes(0);
-      expect(panToSpy).toBeCalledTimes(1);
-      expect(panToSpy).toBeCalledWith({ lat: 1, lng: 1 });
+      expect(map.addLayer).toHaveBeenCalledTimes(0);
+      expect(map.removeLayer).toHaveBeenCalledTimes(0);
+      expect(panToSpy).toHaveBeenCalledTimes(1);
+      expect(panToSpy).toHaveBeenCalledWith({ lat: 1, lng: 1 });
     });
   });
 
@@ -192,9 +186,9 @@ describe("ModalGeo", () => {
 
       expect(screen.queryByTestId("update-geo-location")).toBeNull();
 
-      expect(updateSpy).toBeCalledTimes(0);
+      expect(updateSpy).toHaveBeenCalledTimes(0);
 
-      expect(handleExitSpy).toBeCalledTimes(0);
+      expect(handleExitSpy).toHaveBeenCalledTimes(0);
       modal.unmount();
     });
 
@@ -218,7 +212,7 @@ describe("ModalGeo", () => {
         ></ModalGeo>
       );
 
-      expect(updateButtonSpy).toBeCalledTimes(0);
+      expect(updateButtonSpy).toHaveBeenCalledTimes(0);
 
       modal.unmount();
     });
@@ -243,15 +237,11 @@ describe("ModalGeo", () => {
         ></ModalGeo>
       );
 
-      expect(updateButtonSpy).toBeCalledTimes(2);
+      expect(updateButtonSpy).toHaveBeenCalledTimes(2);
 
-      expect(updateButtonSpy).toHaveBeenLastCalledWith(
-        false,
-        expect.any(Function),
-        51,
-        3,
-        { selectedLanguage: "en" }
-      );
+      expect(updateButtonSpy).toHaveBeenLastCalledWith(false, expect.any(Function), 51, 3, {
+        selectedLanguage: "en"
+      });
 
       modal.unmount();
     });
@@ -272,7 +262,7 @@ describe("ModalGeo", () => {
 
       (await screen.findByTestId("force-cancel")).click();
 
-      expect(handleExitSpy).toBeCalledTimes(1);
+      expect(handleExitSpy).toHaveBeenCalledTimes(1);
       modal.unmount();
     });
 
@@ -292,7 +282,7 @@ describe("ModalGeo", () => {
 
       (await screen.findByTestId("force-cancel")).click();
 
-      expect(handleExitSpy).toBeCalledTimes(1);
+      expect(handleExitSpy).toHaveBeenCalledTimes(1);
       modal.unmount();
     });
 
@@ -322,7 +312,7 @@ describe("ModalGeo", () => {
         ></ModalGeo>
       );
 
-      expect(handleExitSpy).toBeCalled();
+      expect(handleExitSpy).toHaveBeenCalled();
 
       // and clean afterwards
       jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});

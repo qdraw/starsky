@@ -1,9 +1,4 @@
-import {
-  fireEvent,
-  render,
-  RenderResult,
-  screen
-} from "@testing-library/react";
+import { fireEvent, render, RenderResult, screen } from "@testing-library/react";
 import Modal from "./modal";
 
 describe("Modal", () => {
@@ -35,7 +30,7 @@ describe("Modal", () => {
       const { handleExit, element } = renderModal();
 
       screen.queryAllByTestId("modal-exit-button")[0].click();
-      expect(handleExit).toBeCalled();
+      expect(handleExit).toHaveBeenCalled();
       element.unmount();
     });
 
@@ -46,7 +41,7 @@ describe("Modal", () => {
 
       fireEvent.keyDown(menuOption, { key: "Tab" });
 
-      expect(handleExit).toBeCalledTimes(0);
+      expect(handleExit).toHaveBeenCalledTimes(0);
       element.unmount();
     });
 
@@ -57,7 +52,7 @@ describe("Modal", () => {
 
       fireEvent.keyDown(menuOption, { key: "Enter" });
 
-      expect(handleExit).toBeCalledTimes(1);
+      expect(handleExit).toHaveBeenCalledTimes(1);
       element.unmount();
     });
 
@@ -65,7 +60,7 @@ describe("Modal", () => {
       const { handleExit, element } = renderModal();
 
       screen.queryAllByTestId("modal-bg")[0].click();
-      expect(handleExit).toBeCalled();
+      expect(handleExit).toHaveBeenCalled();
       element.unmount();
     });
   });
@@ -73,10 +68,7 @@ describe("Modal", () => {
   describe("Open Modal", () => {
     function renderModal2(): [
       jest.Mock<any, any>,
-      RenderResult<
-        typeof import("@testing-library/dom/types/queries"),
-        HTMLElement
-      >
+      RenderResult<typeof import("@testing-library/dom/types/queries"), HTMLElement>
     ] {
       const spyScrollTo = jest.fn();
       window.scrollTo = spyScrollTo;

@@ -21,9 +21,7 @@ export function AddDefaultMarker(
         icon: blueIcon
       }
     );
-    markerLocal.on("dragend", (event) =>
-      OnDrag(event, setLocation, setIsLocationUpdated)
-    );
+    markerLocal.on("dragend", (event) => OnDrag(event, setLocation, setIsLocationUpdated));
     map.addLayer(markerLocal);
   }
   return isFormEnabled;

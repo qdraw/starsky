@@ -27,10 +27,7 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageFeatureName = language.text(
-    "Nieuwe map aanmaken",
-    "Create new folder"
-  );
+  const MessageFeatureName = language.text("Nieuwe map aanmaken", "Create new folder");
   const MessageNonValidDirectoryName = language.text(
     "Controleer de naam, deze map kan niet zo worden aangemaakt",
     "Check the name, this folder cannot be created in this way"
@@ -62,9 +59,7 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
   const [isFormEnabled, setIsFormEnabled] = useState(true);
 
   function handleUpdateChange(
-    event:
-      | React.ChangeEvent<HTMLDivElement>
-      | React.KeyboardEvent<HTMLDivElement>
+    event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>
   ) {
     let fieldValue = "";
     if (event.currentTarget.textContent) {
@@ -74,9 +69,7 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
     setDirectoryName(fieldValue);
     setButtonState(true);
 
-    const isValidFileName = new FileExtensions().IsValidDirectoryName(
-      fieldValue
-    );
+    const isValidFileName = new FileExtensions().IsValidDirectoryName(fieldValue);
 
     if (!isValidFileName) {
       setError(MessageNonValidDirectoryName);
@@ -97,16 +90,11 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
     const bodyParams = new URLSearchParams();
     bodyParams.append("f", newDirectorySubPath);
 
-    const result = await FetchPost(
-      new UrlQuery().UrlDiskMkdir(),
-      bodyParams.toString()
-    );
+    const result = await FetchPost(new UrlQuery().UrlDiskMkdir(), bodyParams.toString());
 
     if (result.statusCode !== 200) {
       setError(
-        result.statusCode !== 409
-          ? MessageGeneralMkdirCreateError
-          : MessageDirectoryExistError
+        result.statusCode !== 409 ? MessageGeneralMkdirCreateError : MessageDirectoryExistError
       );
       // and renewable
       setIsLoading(false);
@@ -115,12 +103,8 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
     }
 
     // Force update
-    const connectionResult = await FetchGet(
-      new UrlQuery().UrlIndexServerApi({ f: state.subPath })
-    );
-    const forceSyncResult = new CastToInterface().MediaArchive(
-      connectionResult.data
-    );
+    const connectionResult = await FetchGet(new UrlQuery().UrlIndexServerApi({ f: state.subPath }));
+    const forceSyncResult = new CastToInterface().MediaArchive(connectionResult.data);
     const payload = forceSyncResult.data as IArchiveProps;
     if (payload.fileIndexItems) {
       dispatch({ type: "force-reset", payload });

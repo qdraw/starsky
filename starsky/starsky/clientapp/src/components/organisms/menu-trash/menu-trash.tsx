@@ -29,10 +29,7 @@ export interface IMenuTrashProps {
   dispatch: React.Dispatch<ArchiveAction>;
 }
 
-const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
-  state,
-  dispatch
-}) => {
+const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({ state, dispatch }) => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
 
@@ -53,10 +50,8 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
     setSelect(new URLPath().StringToIUrl(history.location.search).select);
   }, [history.location.search]);
 
-  const allSelection = () =>
-    new Select(select, setSelect, state, history).allSelection();
-  const undoSelection = () =>
-    new Select(select, setSelect, state, history).undoSelection();
+  const allSelection = () => new Select(select, setSelect, state, history).allSelection();
+  const undoSelection = () => new Select(select, setSelect, state, history).undoSelection();
   const removeSidebarSelection = () =>
     new Select(select, setSelect, state, history).removeSidebarSelection();
 
@@ -67,15 +62,9 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
     if (!select) return;
     setIsLoading(true);
 
-    const toUndoTrashList = new URLPath().MergeSelectFileIndexItem(
-      select,
-      state.fileIndexItems
-    );
+    const toUndoTrashList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
     if (!toUndoTrashList) return;
-    const selectPaths = new URLPath().ArrayToCommaSeparatedStringOneParent(
-      toUndoTrashList,
-      ""
-    );
+    const selectPaths = new URLPath().ArrayToCommaSeparatedStringOneParent(toUndoTrashList, "");
     if (selectPaths.length === 0) return;
 
     const bodyParams = new URLSearchParams();
@@ -89,14 +78,12 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
     new FileListCache().CacheCleanEverything();
 
     // to replace
-    FetchPost(new UrlQuery().UrlReplaceApi(), bodyParams.toString()).then(
-      () => {
-        dispatch({ type: "remove", toRemoveFileList: toUndoTrashList });
-        ClearSearchCache(history.location.search);
-        setIsLoading(false);
-        new FileListCache().CacheCleanEverything();
-      }
-    );
+    FetchPost(new UrlQuery().UrlReplaceApi(), bodyParams.toString()).then(() => {
+      dispatch({ type: "remove", toRemoveFileList: toUndoTrashList });
+      ClearSearchCache(history.location.search);
+      setIsLoading(false);
+      new FileListCache().CacheCleanEverything();
+    });
   }
 
   const [isModalDeleteOpen, setIsModalDeleteOpen] = React.useState(false);
@@ -116,11 +103,7 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
         />
       ) : null}
 
-      <header
-        className={
-          select ? "header header--main header--select" : "header header--main "
-        }
-      >
+      <header className={select ? "header header--main header--select" : "header header--main "}>
         <div className="wrapper">
           <HamburgerMenuToggle
             select={select}
@@ -128,10 +111,7 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
             setHamburgerMenu={setHamburgerMenu}
           />
 
-          <MenuSelectCount
-            select={select}
-            removeSidebarSelection={removeSidebarSelection}
-          />
+          <MenuSelectCount select={select} removeSidebarSelection={removeSidebarSelection} />
 
           {!select && state.fileIndexItems.length >= 1 ? (
             <button
@@ -150,50 +130,31 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
 
           {/* there are no items in the trash */}
           {!select && state.fileIndexItems.length === 0 ? (
-            <div className="item item--select disabled">
-              {MessageSelectAction}
-            </div>
+            <div className="item item--select disabled">{MessageSelectAction}</div>
           ) : null}
 
           {/* More menu - When in normal state */}
           {!select ? (
-            <MoreMenu
-              setEnableMoreMenu={setEnableMoreMenu}
-              enableMoreMenu={enableMoreMenu}
-            />
+            <MoreMenu setEnableMoreMenu={setEnableMoreMenu} enableMoreMenu={enableMoreMenu} />
           ) : null}
 
           {/* More menu - In the select context there are more options */}
           {select && select.length === 0 ? (
-            <MoreMenu
-              setEnableMoreMenu={setEnableMoreMenu}
-              enableMoreMenu={enableMoreMenu}
-            >
-              <MenuOptionSelectionAll
-                select={select}
-                state={state}
-                allSelection={allSelection}
-              />
+            <MoreMenu setEnableMoreMenu={setEnableMoreMenu} enableMoreMenu={enableMoreMenu}>
+              <MenuOptionSelectionAll select={select} state={state} allSelection={allSelection} />
             </MoreMenu>
           ) : null}
 
           {/* More menu - When more then 1 item is selected */}
           {select && select.length >= 1 ? (
-            <MoreMenu
-              setEnableMoreMenu={setEnableMoreMenu}
-              enableMoreMenu={enableMoreMenu}
-            >
+            <MoreMenu setEnableMoreMenu={setEnableMoreMenu} enableMoreMenu={enableMoreMenu}>
               <MenuOptionSelectionUndo
                 select={select}
                 state={state}
                 undoSelection={undoSelection}
               />
 
-              <MenuOptionSelectionAll
-                select={select}
-                state={state}
-                allSelection={allSelection}
-              />
+              <MenuOptionSelectionAll select={select} state={state} allSelection={allSelection} />
 
               <MenuOption
                 isReadOnly={false}

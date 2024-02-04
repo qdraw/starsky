@@ -1,11 +1,4 @@
-import {
-  act,
-  createEvent,
-  fireEvent,
-  render,
-  RenderResult,
-  screen
-} from "@testing-library/react";
+import { act, createEvent, fireEvent, render, RenderResult, screen } from "@testing-library/react";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import * as FetchPost from "../../../shared/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
@@ -18,13 +11,7 @@ describe("ModalArchiveMkdir", () => {
   });
 
   it("renders", () => {
-    render(
-      <ModalDatetime
-        isOpen={true}
-        subPath="/"
-        handleExit={() => {}}
-      ></ModalDatetime>
-    );
+    render(<ModalDatetime isOpen={true} subPath="/" handleExit={() => {}}></ModalDatetime>);
   });
   describe("with Context", () => {
     beforeEach(() => {
@@ -32,9 +19,7 @@ describe("ModalArchiveMkdir", () => {
     });
 
     it("no date input", () => {
-      const modal = render(
-        <ModalDatetime subPath={"/test"} isOpen={true} handleExit={() => {}} />
-      );
+      const modal = render(<ModalDatetime subPath={"/test"} isOpen={true} handleExit={() => {}} />);
 
       expect(screen.getByTestId("modal-edit-datetime-non-valid")).toBeTruthy();
 
@@ -72,11 +57,7 @@ describe("ModalArchiveMkdir", () => {
       modal.unmount();
     });
 
-    async function fireEventOnFormControl(
-      _modal: RenderResult,
-      dataName: string,
-      input: string
-    ) {
+    async function fireEventOnFormControl(_modal: RenderResult, dataName: string, input: string) {
       const formControls = screen.queryAllByTestId("form-control");
 
       const year = formControls.find(
@@ -94,8 +75,10 @@ describe("ModalArchiveMkdir", () => {
     it("change all options", async () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({ data: null, statusCode: 200 });
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        data: null,
+        statusCode: 200
+      });
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -122,8 +105,8 @@ describe("ModalArchiveMkdir", () => {
         await screen.queryByTestId("modal-edit-datetime-btn-default")?.click();
       });
 
-      expect(fetchPostSpy).toBeCalled();
-      expect(fetchPostSpy).toBeCalledWith(
+      expect(fetchPostSpy).toHaveBeenCalled();
+      expect(fetchPostSpy).toHaveBeenCalledWith(
         new UrlQuery().prefix + "/api/update",
         "f=%2Ftest&datetime=1998-12-01T13%3A05%3A05"
       );
@@ -140,14 +123,10 @@ describe("ModalArchiveMkdir", () => {
       const handleExitSpy = jest.fn();
 
       const component = render(
-        <ModalDatetime
-          subPath="/test.jpg"
-          isOpen={true}
-          handleExit={handleExitSpy}
-        />
+        <ModalDatetime subPath="/test.jpg" isOpen={true} handleExit={handleExitSpy} />
       );
 
-      expect(handleExitSpy).toBeCalled();
+      expect(handleExitSpy).toHaveBeenCalled();
 
       // and clean afterwards
       component.unmount();

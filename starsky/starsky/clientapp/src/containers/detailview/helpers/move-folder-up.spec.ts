@@ -6,12 +6,7 @@ import { moveFolderUp } from "./move-folder-up";
 
 describe("statusRemoved", () => {
   it("renders", () => {
-    moveFolderUp(
-      {} as KeyboardEvent,
-      {} as IUseLocation,
-      true,
-      {} as IDetailView
-    );
+    moveFolderUp({} as KeyboardEvent, {} as IUseLocation, true, {} as IDetailView);
   });
 
   it("should navigate [search query on]", () => {
@@ -41,9 +36,7 @@ describe("statusRemoved", () => {
   it("should not navigate due isInForm", () => {
     const history = { location: {} } as IUseLocation;
     history.navigate = jest.fn();
-    jest
-      .spyOn(Keyboard.prototype, "isInForm")
-      .mockImplementationOnce(() => true);
+    jest.spyOn(Keyboard.prototype, "isInForm").mockImplementationOnce(() => true);
 
     moveFolderUp(new KeyboardEvent("delete"), history, true, {
       fileIndexItem: {
@@ -57,9 +50,7 @@ describe("statusRemoved", () => {
   it("should not navigate due portal", () => {
     const history = { location: {} } as IUseLocation;
     history.navigate = jest.fn();
-    jest
-      .spyOn(Keyboard.prototype, "isInForm")
-      .mockImplementationOnce(() => false);
+    jest.spyOn(Keyboard.prototype, "isInForm").mockImplementationOnce(() => false);
 
     const portalDivName = document.createElement("div");
     portalDivName.className = ModalOpenClassName;

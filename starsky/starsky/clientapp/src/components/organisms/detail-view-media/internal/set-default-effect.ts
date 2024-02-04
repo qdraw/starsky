@@ -16,12 +16,7 @@ export function SetDefaultEffect(
   );
   setDownloadPhotoApi(downloadApiLocal);
 
-  if (
-    !videoRef.current ||
-    !scrubberRef.current ||
-    !progressRef.current ||
-    !timeRef.current
-  ) {
+  if (!videoRef.current || !scrubberRef.current || !progressRef.current || !timeRef.current) {
     return;
   }
 

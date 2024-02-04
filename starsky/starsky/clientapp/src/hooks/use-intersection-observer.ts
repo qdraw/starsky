@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import shallowEqual from "../shared/shallow-equal";
-export type IntersectionChangeHandler = (
-  entry: IntersectionObserverEntry
-) => void;
+export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void;
 
 // Polyfill needed for Safari 12.0 and older (12.1+ has native support) - npm package: intersection-observer
 
@@ -50,9 +48,7 @@ export const useIntersection = (
 ) => {
   const { defaultIntersecting, once, ...opts } = options;
   const optsRef = useRef(opts);
-  const [intersecting, setIntersecting] = useState(
-    defaultIntersecting === true
-  );
+  const [intersecting, setIntersecting] = useState(defaultIntersecting === true);
 
   useEffect(() => {
     if (!shallowEqual(optsRef.current, opts)) {
@@ -64,13 +60,7 @@ export const useIntersection = (
     if (ref.current == null) {
       return;
     }
-    const observer = newIntersectionObserver(
-      ref,
-      setIntersecting,
-      once,
-      optsRef,
-      callback
-    );
+    const observer = newIntersectionObserver(ref, setIntersecting, once, optsRef, callback);
 
     observer.observe(ref.current);
 

@@ -11,10 +11,7 @@ describe("UpdateProgressByClick function", () => {
     videoRef = { current: videoElement } as React.RefObject<HTMLVideoElement>;
 
     // Spy on the GetMousePosition function
-    getMousePositionSpy = jest.spyOn(
-      GetMousePositionModule,
-      "GetMousePosition"
-    );
+    getMousePositionSpy = jest.spyOn(GetMousePositionModule, "GetMousePosition");
   });
 
   afterEach(() => {

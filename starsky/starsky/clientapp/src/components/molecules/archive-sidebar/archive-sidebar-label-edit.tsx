@@ -10,14 +10,8 @@ import ArchiveSidebarLabelEditSearchReplace from "./archive-sidebar-label-edit-s
 const ArchiveSidebarLabelEdit: React.FunctionComponent = () => {
   // Content
   const settings = useGlobalSettings();
-  const MessageModifyName = new Language(settings.language).text(
-    "Wijzigen",
-    "Modify"
-  );
-  const MessageSearchAndReplaceName = new Language(settings.language).text(
-    "Vervangen",
-    "Replace"
-  );
+  const MessageModifyName = new Language(settings.language).text("Wijzigen", "Modify");
+  const MessageSearchAndReplaceName = new Language(settings.language).text("Vervangen", "Replace");
 
   // Toggle
   const [replaceMode, setReplaceMode] = useState(false);

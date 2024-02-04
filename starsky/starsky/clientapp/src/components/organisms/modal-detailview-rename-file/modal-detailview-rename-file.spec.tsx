@@ -1,10 +1,4 @@
-import {
-  act,
-  createEvent,
-  fireEvent,
-  render,
-  screen
-} from "@testing-library/react";
+import { act, createEvent, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IDetailView } from "../../../interfaces/IDetailView";
@@ -20,21 +14,16 @@ describe("ModalDetailviewRenameFile", () => {
   });
 
   it("renders", () => {
-    render(
-      <ModalDetailviewRenameFile
-        state={{} as any}
-        isOpen={true}
-        handleExit={() => {}}
-      />
-    );
+    render(<ModalDetailviewRenameFile state={{} as any} isOpen={true} handleExit={() => {}} />);
   });
 
   describe("rename", () => {
     it("to wrong extension", async () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({ statusCode: 200 } as IConnectionDefault);
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200
+      } as IConnectionDefault);
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -72,9 +61,7 @@ describe("ModalDetailviewRenameFile", () => {
       const submitButtonBefore = button.disabled;
       expect(submitButtonBefore).toBeTruthy();
 
-      const directoryName = screen.queryByTestId(
-        "form-control"
-      ) as HTMLInputElement;
+      const directoryName = screen.queryByTestId("form-control") as HTMLInputElement;
 
       // update component + now press a key
       directoryName.textContent = "file-with-different-extension.tiff";
@@ -86,15 +73,13 @@ describe("ModalDetailviewRenameFile", () => {
         await button.click();
       });
 
-      expect(
-        screen.getByTestId("modal-detailview-rename-file-warning-box")
-      ).toBeTruthy();
+      expect(screen.getByTestId("modal-detailview-rename-file-warning-box")).toBeTruthy();
 
       const submitButtonAfter = button.disabled;
       expect(submitButtonAfter).toBeTruthy();
 
-      expect(fetchPostSpy).toBeCalled();
-      expect(fetchPostSpy).toBeCalledWith(
+      expect(fetchPostSpy).toHaveBeenCalled();
+      expect(fetchPostSpy).toHaveBeenCalledWith(
         new UrlQuery().UrlDiskRename(),
         "f=%2Ftest%2Fimage.jpg&to=%2Ftest%2Ffile-with-different-extension.tiff&collections=true"
       );
@@ -141,9 +126,7 @@ describe("ModalDetailviewRenameFile", () => {
       const submitButtonBefore = button.disabled;
       expect(submitButtonBefore).toBeTruthy();
 
-      const directoryName = screen.queryByTestId(
-        "form-control"
-      ) as HTMLInputElement;
+      const directoryName = screen.queryByTestId("form-control") as HTMLInputElement;
 
       // update component + now press a key
       directoryName.textContent = "file-without-extension";
@@ -155,9 +138,7 @@ describe("ModalDetailviewRenameFile", () => {
         await button.click();
       });
 
-      expect(
-        screen.getByTestId("modal-detailview-rename-file-warning-box")
-      ).toBeTruthy();
+      expect(screen.getByTestId("modal-detailview-rename-file-warning-box")).toBeTruthy();
 
       const submitButtonAfter = button.disabled;
       expect(submitButtonAfter).toBeTruthy();
@@ -170,8 +151,9 @@ describe("ModalDetailviewRenameFile", () => {
     it("submit filename change", async () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({ statusCode: 200 } as IConnectionDefault);
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200
+      } as IConnectionDefault);
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -206,9 +188,7 @@ describe("ModalDetailviewRenameFile", () => {
         "modal-detailview-rename-file-btn-default"
       ) as HTMLButtonElement;
 
-      const directoryName = screen.queryByTestId(
-        "form-control"
-      ) as HTMLInputElement;
+      const directoryName = screen.queryByTestId("form-control") as HTMLInputElement;
 
       // update component + now press a key
       directoryName.textContent = "name.jpg";
@@ -220,8 +200,8 @@ describe("ModalDetailviewRenameFile", () => {
         await button.click();
       });
 
-      expect(fetchPostSpy).toBeCalled();
-      expect(fetchPostSpy).toBeCalledWith(
+      expect(fetchPostSpy).toHaveBeenCalled();
+      expect(fetchPostSpy).toHaveBeenCalledWith(
         new UrlQuery().UrlDiskRename(),
         "f=%2Ftest%2Fimage.jpg&to=%2Ftest%2Fname.jpg&collections=true"
       );
@@ -242,14 +222,10 @@ describe("ModalDetailviewRenameFile", () => {
       const handleExitSpy = jest.fn();
 
       const component = render(
-        <ModalDetailviewRenameFile
-          state={{} as any}
-          isOpen={true}
-          handleExit={handleExitSpy}
-        />
+        <ModalDetailviewRenameFile state={{} as any} isOpen={true} handleExit={handleExitSpy} />
       );
 
-      expect(handleExitSpy).toBeCalled();
+      expect(handleExitSpy).toHaveBeenCalled();
 
       // and clean afterwards
       component.unmount();

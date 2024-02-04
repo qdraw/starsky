@@ -54,14 +54,7 @@ export default function Modal({
 
   const initialRender = useRef(false);
   useEffect(() => {
-    return modalFreezeHelper(
-      initialRender,
-      root,
-      id,
-      isOpen,
-      exitButton,
-      focusAfterExit
-    );
+    return modalFreezeHelper(initialRender, root, id, isOpen, exitButton, focusAfterExit);
   }, [isOpen, focusAfterExit, id, root]);
 
   if (modal.current) {
@@ -72,18 +65,12 @@ export default function Modal({
           event.key === "Enter" && handleExit();
         }}
         data-test={dataTest}
-        className={`modal-bg ${
-          isOpen ? ` ${ModalOpenClassName} ` + className : ""
-        }`}
+        className={`modal-bg ${isOpen ? ` ${ModalOpenClassName} ` + className : ""}`}
       >
-        <div
-          className={`modal-content ${isOpen ? " modal-content--show" : ""}`}
-        >
+        <div className={`modal-content ${isOpen ? " modal-content--show" : ""}`}>
           <div className="modal-close-bar">
             <button
-              className={`modal-exit-button ${
-                isOpen ? " modal-exit-button--showing" : ""
-              }`}
+              className={`modal-exit-button ${isOpen ? " modal-exit-button--showing" : ""}`}
               ref={exitButton}
               data-test="modal-exit-button"
               onClick={handleExit}

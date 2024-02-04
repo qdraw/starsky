@@ -44,9 +44,7 @@ describe("WarningBoxNoPhotosFilter", () => {
     );
 
     // Assert that the warning box is rendered with the correct message
-    expect(
-      component.getByTestId("list-view-message-items-outside-filter")
-    ).toBeTruthy();
+    expect(component.getByTestId("list-view-message-items-outside-filter")).toBeTruthy();
 
     component.unmount();
   });

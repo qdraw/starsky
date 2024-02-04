@@ -35,9 +35,7 @@ const containsFiles = (event: DragEvent) => {
  */
 const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
   const [dragActive, setDragActive] = useState(false);
-  const [dragTarget, setDragTarget] = useState(
-    document.createElement("span") as Element
-  );
+  const [dragTarget, setDragTarget] = useState(document.createElement("span") as Element);
   const [isLoading, setIsLoading] = useState(false);
   const [notificationStatus, setNotificationStatus] = useState("");
 
@@ -101,8 +99,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
    */
   const onDragLeave = (event: DragEvent) => {
     event.preventDefault();
-    if (!containsFiles(event) || (event.target as Element) !== dragTarget)
-      return;
+    if (!containsFiles(event) || (event.target as Element) !== dragTarget) return;
     setDragActive(false);
   };
 

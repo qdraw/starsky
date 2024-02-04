@@ -51,15 +51,10 @@ export class OnWheelMouseAction {
     const z = this.position.z * scale;
     this.setPosition({
       ...this.position,
-      x:
-        this.position.x * scale -
-        (rect.width / 2 - eventclientX + rect.x) * sign,
+      x: this.position.x * scale - (rect.width / 2 - eventclientX + rect.x) * sign,
       y:
         this.position.y * scale -
-        ((this.image.height * rect.width) / this.image.width / 2 -
-          eventclientX +
-          rect.y) *
-          sign,
+        ((this.image.height * rect.width) / this.image.width / 2 - eventclientX + rect.y) * sign,
       z
     });
 

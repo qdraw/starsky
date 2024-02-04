@@ -3,13 +3,7 @@ import { MenuOptionSelectionUndo } from "./menu-option-selection-undo";
 
 describe("MenuOptionSelectionUndo", () => {
   it("renders", () => {
-    render(
-      <MenuOptionSelectionUndo
-        select={[]}
-        state={{} as any}
-        undoSelection={() => {}}
-      />
-    );
+    render(<MenuOptionSelectionUndo select={[]} state={{} as any} undoSelection={() => {}} />);
   });
 
   it("renders 2", () => {
@@ -40,12 +34,9 @@ describe("MenuOptionSelectionUndo", () => {
       />
     );
 
-    fireEvent.keyDown(
-      component.queryByTestId("undo-selection") as HTMLElement,
-      { key: "Tab" }
-    );
+    fireEvent.keyDown(component.queryByTestId("undo-selection") as HTMLElement, { key: "Tab" });
 
-    expect(undoSelection).toBeCalledTimes(0);
+    expect(undoSelection).toHaveBeenCalledTimes(0);
   });
 
   it("keyDown enter continue", () => {
@@ -62,11 +53,8 @@ describe("MenuOptionSelectionUndo", () => {
       />
     );
 
-    fireEvent.keyDown(
-      component.queryByTestId("undo-selection") as HTMLElement,
-      { key: "Enter" }
-    );
+    fireEvent.keyDown(component.queryByTestId("undo-selection") as HTMLElement, { key: "Enter" });
 
-    expect(undoSelection).toBeCalledTimes(1);
+    expect(undoSelection).toHaveBeenCalledTimes(1);
   });
 });

@@ -16,14 +16,12 @@ interface IArchiveSidebarColorClassProps {
 /**
  * Use for updating/writing multiple files with one colorClass label
  */
-const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClassProps> =
-  memo((props) => {
+const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClassProps> = memo(
+  (props) => {
     const history = useLocation();
 
     // show select info
-    const [select, setSelect] = useState(
-      new URLPath().getSelect(history.location.search)
-    );
+    const [select, setSelect] = useState(new URLPath().getSelect(history.location.search));
     useEffect(() => {
       setSelect(new URLPath().getSelect(history.location.search));
     }, [history.location.search]);
@@ -31,12 +29,8 @@ const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClas
     // updated parameters based on select
     const [selectParams, setSelectParams] = useState("");
     useEffect(() => {
-      const subPaths = new URLPath().MergeSelectFileIndexItem(
-        select,
-        props.fileIndexItems
-      );
-      const selectParamsLocal =
-        new URLPath().ArrayToCommaSeparatedStringOneParent(subPaths, "");
+      const subPaths = new URLPath().MergeSelectFileIndexItem(select, props.fileIndexItems);
+      const selectParamsLocal = new URLPath().ArrayToCommaSeparatedStringOneParent(subPaths, "");
       setSelectParams(selectParamsLocal);
     }, [select, props.fileIndexItems]);
 
@@ -46,8 +40,7 @@ const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClas
       <ColorClassSelect
         collections={
           props.pageType !== PageType.Search
-            ? new URLPath().StringToIUrl(history.location.search)
-                .collections !== false
+            ? new URLPath().StringToIUrl(history.location.search).collections !== false
             : false
         }
         onToggle={(colorclass) => {
@@ -60,5 +53,6 @@ const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClas
         clearAfter={true}
       />
     );
-  });
+  }
+);
 export default ArchiveSidebarColorClass;

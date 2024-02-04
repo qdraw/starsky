@@ -1,10 +1,4 @@
-import {
-  act,
-  createEvent,
-  fireEvent,
-  render,
-  screen
-} from "@testing-library/react";
+import { act, createEvent, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { Root, createRoot } from "react-dom/client";
 import { IDetailView } from "../../../interfaces/IDetailView";
@@ -20,11 +14,9 @@ describe("DetailViewMp4", () => {
 
   describe("with Context", () => {
     beforeEach(() => {
-      jest
-        .spyOn(HTMLMediaElement.prototype, "load")
-        .mockImplementationOnce(() => {
-          return Promise.resolve();
-        });
+      jest.spyOn(HTMLMediaElement.prototype, "load").mockImplementationOnce(() => {
+        return Promise.resolve();
+      });
     });
 
     it("click to play video resolve", () => {
@@ -37,7 +29,7 @@ describe("DetailViewMp4", () => {
       const figure = screen.queryByTestId("video") as HTMLElement;
       figure.click();
 
-      expect(playSpy).toBeCalled();
+      expect(playSpy).toHaveBeenCalled();
 
       component.unmount();
     });
@@ -54,7 +46,7 @@ describe("DetailViewMp4", () => {
       const inputEvent = createEvent.keyDown(figure, { key: "Tab" });
       fireEvent(figure, inputEvent);
 
-      expect(playSpy).toBeCalledTimes(0);
+      expect(playSpy).toHaveBeenCalledTimes(0);
 
       component.unmount();
     });
@@ -71,7 +63,7 @@ describe("DetailViewMp4", () => {
       const inputEvent = createEvent.keyDown(figure, { key: "Enter" });
       fireEvent(figure, inputEvent);
 
-      expect(playSpy).toBeCalledTimes(1);
+      expect(playSpy).toHaveBeenCalledTimes(1);
 
       component.unmount();
     });
@@ -81,17 +73,15 @@ describe("DetailViewMp4", () => {
 
       jest.spyOn(HTMLMediaElement.prototype, "play").mockReset();
 
-      const playSpy = jest
-        .spyOn(HTMLMediaElement.prototype, "play")
-        .mockImplementationOnce(() => {
-          return Promise.reject();
-        });
+      const playSpy = jest.spyOn(HTMLMediaElement.prototype, "play").mockImplementationOnce(() => {
+        return Promise.reject();
+      });
 
       const figure = screen.queryByTestId("video") as HTMLElement;
       await figure.click();
 
-      expect(playSpy).toBeCalled();
-      expect(playSpy).toBeCalledTimes(1);
+      expect(playSpy).toHaveBeenCalled();
+      expect(playSpy).toHaveBeenCalledTimes(1);
       await act(async () => {
         await component.unmount();
       });
@@ -100,22 +90,18 @@ describe("DetailViewMp4", () => {
     it("click to play video and timeupdate", () => {
       const component = render(<DetailViewMp4></DetailViewMp4>);
 
-      const playSpy = jest
-        .spyOn(HTMLMediaElement.prototype, "play")
-        .mockImplementationOnce(() => {
-          return Promise.resolve();
-        });
+      const playSpy = jest.spyOn(HTMLMediaElement.prototype, "play").mockImplementationOnce(() => {
+        return Promise.resolve();
+      });
 
       expect(screen.queryByTestId("video-time")?.textContent).toBe("");
 
       const figure = screen.queryByTestId("video") as HTMLElement;
       figure.click();
 
-      expect(screen.queryByTestId("video-time")?.textContent).toBe(
-        "0:00 / 0:00"
-      );
+      expect(screen.queryByTestId("video-time")?.textContent).toBe("0:00 / 0:00");
 
-      expect(playSpy).toBeCalled();
+      expect(playSpy).toHaveBeenCalled();
 
       component.unmount();
     });
@@ -136,11 +122,9 @@ describe("DetailViewMp4", () => {
       const inputEvent = createEvent.keyDown(figure, { key: "Enter" });
       fireEvent(figure, inputEvent);
 
-      expect(screen.queryByTestId("video-time")?.textContent).toBe(
-        "0:00 / 0:00"
-      );
+      expect(screen.queryByTestId("video-time")?.textContent).toBe("0:00 / 0:00");
 
-      expect(playSpy).toBeCalled();
+      expect(playSpy).toHaveBeenCalled();
 
       component.unmount();
     });
@@ -163,7 +147,7 @@ describe("DetailViewMp4", () => {
 
       expect(screen.queryByTestId("video-time")?.textContent).toBe("");
 
-      expect(playSpy).toBeCalledTimes(0);
+      expect(playSpy).toHaveBeenCalledTimes(0);
 
       component.unmount();
     });
@@ -193,26 +177,20 @@ describe("DetailViewMp4", () => {
     it("progress", () => {
       const component = render(<DetailViewMp4></DetailViewMp4>);
 
-      const playSpy = jest
-        .spyOn(HTMLMediaElement.prototype, "play")
-        .mockImplementationOnce(() => {
-          return Promise.resolve();
-        });
+      const playSpy = jest.spyOn(HTMLMediaElement.prototype, "play").mockImplementationOnce(() => {
+        return Promise.resolve();
+      });
 
       Object.defineProperty(HTMLElement.prototype, "offsetParent", {
         get() {
           return this.parentNode;
         }
       });
-      jest
-        .spyOn(HTMLMediaElement.prototype, "load")
-        .mockImplementationOnce(() => {
-          return Promise.resolve();
-        });
+      jest.spyOn(HTMLMediaElement.prototype, "load").mockImplementationOnce(() => {
+        return Promise.resolve();
+      });
 
-      const progress = component.container.querySelector(
-        "progress"
-      ) as HTMLElement;
+      const progress = component.container.querySelector("progress") as HTMLElement;
 
       // ClickEvent
       fireEvent(
@@ -224,11 +202,9 @@ describe("DetailViewMp4", () => {
         } as any)
       );
 
-      expect(screen.queryByTestId("video-time")?.textContent).toBe(
-        "0:00 / 0:00"
-      );
+      expect(screen.queryByTestId("video-time")?.textContent).toBe("0:00 / 0:00");
 
-      expect(playSpy).toBeCalled();
+      expect(playSpy).toHaveBeenCalled();
 
       component.unmount();
     });
@@ -242,19 +218,15 @@ describe("DetailViewMp4", () => {
 
       const contextValues = { state, dispatch: jest.fn() };
 
-      const useContextSpy = jest
-        .spyOn(React, "useContext")
-        .mockImplementation(() => contextValues);
+      const useContextSpy = jest.spyOn(React, "useContext").mockImplementation(() => contextValues);
 
-      const notificationSpy = jest
-        .spyOn(Notification, "default")
-        .mockImplementationOnce(() => {
-          return <></>;
-        });
+      const notificationSpy = jest.spyOn(Notification, "default").mockImplementationOnce(() => {
+        return <></>;
+      });
       const component = render(<DetailViewMp4 />);
 
-      expect(useContextSpy).toBeCalled();
-      expect(notificationSpy).toBeCalled();
+      expect(useContextSpy).toHaveBeenCalled();
+      expect(notificationSpy).toHaveBeenCalled();
 
       component.unmount();
     });

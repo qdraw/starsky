@@ -31,9 +31,7 @@ export const Controls: React.FunctionComponent<IControlsProps> = ({
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
 
-  const MessageVideoPlayBackError = language.key(
-    localization.MessageVideoPlayBackError
-  );
+  const MessageVideoPlayBackError = language.key(localization.MessageVideoPlayBackError);
 
   return (
     <div className="controls">
@@ -68,11 +66,7 @@ export const Controls: React.FunctionComponent<IControlsProps> = ({
         {paused ? "Play" : "Pause"}
       </button>
       <span ref={timeRef} data-test="video-time" className="time"></span>
-      <ProgressBar
-        scrubberRef={scrubberRef}
-        progressRef={progressRef}
-        videoRef={videoRef}
-      />
+      <ProgressBar scrubberRef={scrubberRef} progressRef={progressRef} videoRef={videoRef} />
     </div>
   );
 };

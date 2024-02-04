@@ -17,16 +17,14 @@ describe("HealthStatusError", () => {
         return newIConnectionDefault();
       });
 
-      const notificationSpy = jest
-        .spyOn(Notification, "default")
-        .mockImplementationOnce(() => {
-          return null;
-        });
+      const notificationSpy = jest.spyOn(Notification, "default").mockImplementationOnce(() => {
+        return null;
+      });
 
       const component = render(<HealthStatusError />);
 
-      expect(notificationSpy).not.toBeCalled();
-      expect(notificationSpy).toBeCalledTimes(0);
+      expect(notificationSpy).not.toHaveBeenCalled();
+      expect(notificationSpy).toHaveBeenCalledTimes(0);
 
       component.unmount();
     });
@@ -38,15 +36,13 @@ describe("HealthStatusError", () => {
       });
 
       // usage => import * as Notification from './notification';
-      const notificationSpy = jest
-        .spyOn(Notification, "default")
-        .mockImplementationOnce(() => {
-          return null;
-        });
+      const notificationSpy = jest.spyOn(Notification, "default").mockImplementationOnce(() => {
+        return null;
+      });
 
       const component = render(<HealthStatusError></HealthStatusError>);
 
-      expect(notificationSpy).toBeCalled();
+      expect(notificationSpy).toHaveBeenCalled();
 
       // cleanup afterwards
       notificationSpy.mockClear();
@@ -75,15 +71,13 @@ describe("HealthStatusError", () => {
       });
 
       // usage => import * as Notification from './notification';
-      const notificationSpy = jest
-        .spyOn(Notification, "default")
-        .mockImplementationOnce(() => {
-          return null;
-        });
+      const notificationSpy = jest.spyOn(Notification, "default").mockImplementationOnce(() => {
+        return null;
+      });
 
       const component = render(<HealthStatusError />);
 
-      expect(notificationSpy).toBeCalled();
+      expect(notificationSpy).toHaveBeenCalled();
 
       // cleanup afterwards
       notificationSpy.mockClear();

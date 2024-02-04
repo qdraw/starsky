@@ -22,17 +22,10 @@ describe("ProgressBar component", () => {
 
   it("should call UpdateProgressByClick on click event", () => {
     // Spy on the UpdateProgressByClick function
-    const updateProgressSpy = jest.spyOn(
-      UpdateProgressByClick,
-      "UpdateProgressByClick"
-    );
+    const updateProgressSpy = jest.spyOn(UpdateProgressByClick, "UpdateProgressByClick");
 
     const { getByTestId } = render(
-      <ProgressBar
-        scrubberRef={scrubberRef}
-        progressRef={progressRef}
-        videoRef={videoRef}
-      />
+      <ProgressBar scrubberRef={scrubberRef} progressRef={progressRef} videoRef={videoRef} />
     );
 
     // Click on the progress bar

@@ -52,7 +52,7 @@ describe("ItemListView", () => {
           <ItemListView iconList={false} fileIndexItems={exampleData} colorClassUsage={[]} />
         </MemoryRouter>
       );
-      expect(flatListItemSpy).toBeCalled();
+      expect(flatListItemSpy).toHaveBeenCalled();
       component.unmount();
     });
 
@@ -128,8 +128,8 @@ describe("ItemListView", () => {
         jest.advanceTimersByTime(100);
       });
 
-      expect(scrollTo).toBeCalled();
-      expect(scrollTo).toBeCalledWith({ top: 0 });
+      expect(scrollTo).toHaveBeenCalled();
+      expect(scrollTo).toHaveBeenCalledWith({ top: 0 });
 
       jest.clearAllTimers();
       component.unmount();
@@ -165,14 +165,14 @@ describe("ItemListView", () => {
         })
       );
 
-      expect(shiftSelectionHelperSpy).toBeCalled();
-      expect(shiftSelectionHelperSpy).toBeCalledWith(
+      expect(shiftSelectionHelperSpy).toHaveBeenCalled();
+      expect(shiftSelectionHelperSpy).toHaveBeenCalledWith(
         expect.any(Object),
         [],
         "/test.jpg",
         exampleData
       );
-      expect(listImageChildItemSpy).toBeCalled();
+      expect(listImageChildItemSpy).toHaveBeenCalled();
     });
 
     it("should return ListImageChildItem when iconList is true", () => {
@@ -185,7 +185,7 @@ describe("ItemListView", () => {
           <ItemListView iconList={true} fileIndexItems={exampleData} colorClassUsage={[]} />
         </MemoryRouter>
       );
-      expect(listImageChildItemSpy).toBeCalled();
+      expect(listImageChildItemSpy).toHaveBeenCalled();
       component.unmount();
       jest.spyOn(ListImageChildItem, "default").mockReset();
     });

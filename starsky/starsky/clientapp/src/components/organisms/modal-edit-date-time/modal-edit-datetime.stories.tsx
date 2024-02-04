@@ -5,13 +5,7 @@ export default {
 };
 
 export const Default = () => {
-  return (
-    <ModalDatetime
-      isOpen={true}
-      subPath="/"
-      handleExit={() => {}}
-    ></ModalDatetime>
-  );
+  return <ModalDatetime isOpen={true} subPath="/" handleExit={() => {}}></ModalDatetime>;
 };
 
 Default.story = {

@@ -17,9 +17,7 @@ import { URLPath } from "../shared/url-path";
  * Used for search and list of files
  * @param detailview Detailview content
  */
-export default function DetailViewContextWrapper(
-  detailview: Readonly<IDetailView>
-) {
+export default function DetailViewContextWrapper(detailview: Readonly<IDetailView>) {
   return (
     <DetailViewContextProvider>
       <DetailViewWrapper {...detailview} />
@@ -54,9 +52,7 @@ function DetailViewWrapper(detailViewProp: Readonly<IDetailView>) {
  * Effect that run on startup of the component and updates the changes from other clients
  * @param dispatch - function to update the state
  */
-export function DetailViewEventListenerUseEffect(
-  dispatch: React.Dispatch<DetailViewAction>
-) {
+export function DetailViewEventListenerUseEffect(dispatch: React.Dispatch<DetailViewAction>) {
   // Catch events from updates [Detail]
   const update = (event: Event) => updateDetailViewFromEvent(event, dispatch);
   useEffect(() => {
@@ -74,13 +70,9 @@ export function DetailViewEventListenerUseEffect(
  * @param event - CustomEvent with IFileIndexItem array
  * @param dispatch - function to update the state
  */
-function updateDetailViewFromEvent(
-  event: Event,
-  dispatch: React.Dispatch<DetailViewAction>
-) {
-  const pushMessages = (
-    event as CustomEvent<IApiNotificationResponseModel<IFileIndexItem[]>>
-  ).detail;
+function updateDetailViewFromEvent(event: Event, dispatch: React.Dispatch<DetailViewAction>) {
+  const pushMessages = (event as CustomEvent<IApiNotificationResponseModel<IFileIndexItem[]>>)
+    .detail;
   // useLocation, state or detailView is here always the default value
   const locationPath = new URLPath().StringToIUrl(window.location.search).f;
 

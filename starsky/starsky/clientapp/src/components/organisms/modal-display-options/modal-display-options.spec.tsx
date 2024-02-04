@@ -10,21 +10,14 @@ describe("ModalDisplayOptions", () => {
   });
 
   it("renders", () => {
-    render(
-      <ModalDisplayOptions
-        isOpen={true}
-        handleExit={() => {}}
-      ></ModalDisplayOptions>
-    );
+    render(<ModalDisplayOptions isOpen={true} handleExit={() => {}}></ModalDisplayOptions>);
   });
 
   describe("with Context", () => {
     describe("buttons exist", () => {
       let modal: RenderResult;
       beforeEach(() => {
-        modal = render(
-          <ModalDisplayOptions isOpen={true} handleExit={() => {}} />
-        );
+        modal = render(<ModalDisplayOptions isOpen={true} handleExit={() => {}} />);
       });
 
       afterAll(() => {
@@ -37,9 +30,7 @@ describe("ModalDisplayOptions", () => {
 
       it("toggle-collections", () => {
         const toggleCollections = modal.queryByTestId("toggle-collections");
-        const modalDisplayOptions = modal.queryByTestId(
-          "modal-display-options"
-        );
+        const modalDisplayOptions = modal.queryByTestId("modal-display-options");
 
         expect(modalDisplayOptions).toBeTruthy();
         expect(toggleCollections).toBeTruthy();
@@ -53,9 +44,7 @@ describe("ModalDisplayOptions", () => {
       let modal: RenderResult;
       beforeEach(() => {
         jest.useFakeTimers();
-        modal = render(
-          <ModalDisplayOptions isOpen={true} handleExit={() => {}} />
-        );
+        modal = render(<ModalDisplayOptions isOpen={true} handleExit={() => {}} />);
       });
 
       afterEach(() => {
@@ -158,11 +147,9 @@ describe("ModalDisplayOptions", () => {
 
       const handleExitSpy = jest.fn();
 
-      const component = render(
-        <ModalDisplayOptions isOpen={true} handleExit={handleExitSpy} />
-      );
+      const component = render(<ModalDisplayOptions isOpen={true} handleExit={handleExitSpy} />);
 
-      expect(handleExitSpy).toBeCalled();
+      expect(handleExitSpy).toHaveBeenCalled();
 
       // and clean afterwards
       component.unmount();

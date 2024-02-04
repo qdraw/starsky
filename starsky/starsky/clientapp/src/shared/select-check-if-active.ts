@@ -10,11 +10,7 @@ export class SelectCheckIfActive {
 
     // it should contain on the colorclasses
     const fileNameList = fileIndexItems
-      .filter(
-        (el) =>
-          el.colorClass !== undefined &&
-          colorclasses.indexOf(el.colorClass) !== -1
-      )
+      .filter((el) => el.colorClass !== undefined && colorclasses.indexOf(el.colorClass) !== -1)
       .map((ele) => ele.fileName);
 
     // you can't select an item thats not shown

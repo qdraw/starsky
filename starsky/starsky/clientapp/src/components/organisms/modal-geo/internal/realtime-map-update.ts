@@ -10,14 +10,7 @@ export function RealtimeMapUpdate(
   latitude: number,
   longitude: number
 ) {
-  SetMarker(
-    mapState,
-    isFormEnabled,
-    setLocation,
-    setIsLocationUpdated,
-    latitude,
-    longitude
-  );
+  SetMarker(mapState, isFormEnabled, setLocation, setIsLocationUpdated, latitude, longitude);
 
   setIsLocationUpdated(false);
   mapState.panTo(new L.LatLng(latitude, longitude));

@@ -27,18 +27,12 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessagePublishSelection = language.text(
-    "Publiceer selectie",
-    "Publish selection"
-  );
+  const MessagePublishSelection = language.text("Publiceer selectie", "Publish selection");
   const MessageGenericExportFail = language.text(
     "Er is iets misgegaan met exporteren",
     "Something went wrong with exporting"
   );
-  const MessageRetryExportFail = language.text(
-    "Probeer het opnieuw",
-    "Retry this"
-  );
+  const MessageRetryExportFail = language.text("Probeer het opnieuw", "Retry this");
 
   const MessageExportReady = language.text(
     "Het bestand {createZipKey} is klaar met exporteren.",
@@ -52,27 +46,19 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
     "Een moment geduld alstublieft",
     "One moment please"
   );
-  const MessageItemName = language.text(
-    "Waar gaat het item over?",
-    "What is the item about?"
-  );
+  const MessageItemName = language.text("Waar gaat het item over?", "What is the item about?");
   const MessageItemNameInUse = language.text(
     "Deze naam is al in gebruik, kies een andere naam",
     "This name is already in use, please choose another name"
   );
-  const MessagePublishProfileName = language.text(
-    "Profiel instelling",
-    "Profile setting"
-  );
+  const MessagePublishProfileName = language.text("Profiel instelling", "Profile setting");
 
   const MessagePublishProfileNamesErrored = language.text(
     "Profiel instelling: {publishProfileNames} bevat bestand locatie fouten",
     "Profile setting: {publishProfileNames} contains filepath errors"
   );
 
-  const [isProcessing, setIsProcessing] = React.useState(
-    ProcessingState.default
-  );
+  const [isProcessing, setIsProcessing] = React.useState(ProcessingState.default);
   const [createZipKey, setCreateZipKey] = React.useState("");
   const [itemName, setItemName] = React.useState("");
   const [existItemName, setExistItemName] = React.useState(false);
@@ -87,20 +73,14 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
     }
 
     const bodyParams = new URLSearchParams();
-    bodyParams.set(
-      "f",
-      new URLPath().ArrayToCommaSeparatedString(props.select)
-    );
+    bodyParams.set("f", new URLPath().ArrayToCommaSeparatedString(props.select));
     bodyParams.set("itemName", itemName);
     bodyParams.set("publishProfileName", publishProfileName);
     bodyParams.set("force", "true");
 
     setIsProcessing(ProcessingState.server);
 
-    const zipKeyResult = await FetchPost(
-      new UrlQuery().UrlPublishCreate(),
-      bodyParams.toString()
-    );
+    const zipKeyResult = await FetchPost(new UrlQuery().UrlPublishCreate(), bodyParams.toString());
 
     if (zipKeyResult.statusCode !== 200 || !zipKeyResult.data) {
       setIsProcessing(ProcessingState.fail);
@@ -110,8 +90,9 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
     await ExportIntervalUpdate(zipKeyResult.data, setIsProcessing);
   }
 
-  const allPublishProfiles = useFetch(new UrlQuery().UrlPublish(), "get")
-    .data as { key: string; value: string }[] | null;
+  const allPublishProfiles = useFetch(new UrlQuery().UrlPublish(), "get").data as
+    | { key: string; value: string }[]
+    | null;
 
   useEffect(() => {
     // set the default option
@@ -125,9 +106,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
   }, 9000);
 
   function updateItemName(event: React.ChangeEvent<HTMLDivElement>) {
-    const toUpdateItemName = event.target.textContent
-      ? event.target.textContent.trim()
-      : "";
+    const toUpdateItemName = event.target.textContent ? event.target.textContent.trim() : "";
     setItemName(toUpdateItemName);
 
     if (!toUpdateItemName) {
@@ -135,12 +114,10 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
       return;
     }
 
-    FetchGet(new UrlQuery().UrlPublishExist(toUpdateItemName)).then(
-      (result) => {
-        if (result.statusCode !== 200) return;
-        setExistItemName(result.data);
-      }
-    );
+    FetchGet(new UrlQuery().UrlPublishExist(toUpdateItemName)).then((result) => {
+      if (result.statusCode !== 200) return;
+      setExistItemName(result.data);
+    });
   }
 
   const existItemNameComponent = existItemName ? (
@@ -158,18 +135,10 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
         props.handleExit();
       }}
     >
-      <div
-        data-test="modal-publish-subheader"
-        className="modal content--subheader"
-      >
-        {isProcessing !== ProcessingState.server
-          ? MessagePublishSelection
-          : MessageOneMomentPlease}
+      <div data-test="modal-publish-subheader" className="modal content--subheader">
+        {isProcessing !== ProcessingState.server ? MessagePublishSelection : MessageOneMomentPlease}
       </div>
-      <div
-        data-test="modal-publish-content-text"
-        className="modal content--text publish"
-      >
+      <div data-test="modal-publish-content-text" className="modal content--text publish">
         {/* when selecting one file */}
         {isProcessing === ProcessingState.default && props.select ? (
           <>
@@ -183,9 +152,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
             {existItemNameComponent}
             <h4>{MessagePublishProfileName}</h4>
             <Select
-              selectOptions={allPublishProfiles
-                ?.filter((x) => x.value)
-                .map((x) => x.key)}
+              selectOptions={allPublishProfiles?.filter((x) => x.value).map((x) => x.key)}
               callback={setPublishProfileName}
             ></Select>
 
@@ -238,12 +205,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
 
         {isProcessing === ProcessingState.ready ? (
           <>
-            {language.token(
-              MessageExportReady,
-              ["{createZipKey}"],
-              [createZipKey]
-            )}{" "}
-            <br />
+            {language.token(MessageExportReady, ["{createZipKey}"], [createZipKey])} <br />
             <a
               className="btn btn--default"
               href={new UrlQuery().UrlExportZipApi(createZipKey, false)}

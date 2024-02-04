@@ -7,9 +7,7 @@ import DropArea from "../../../atoms/drop-area/drop-area";
 
 export interface IUploadMenuItemProps {
   readOnly: boolean;
-  setDropAreaUploadFilesList: React.Dispatch<
-    React.SetStateAction<IFileIndexItem[]>
-  >;
+  setDropAreaUploadFilesList: React.Dispatch<React.SetStateAction<IFileIndexItem[]>>;
   dispatch: React.Dispatch<ArchiveAction>;
   state: IArchiveProps;
 }

@@ -35,7 +35,7 @@ describe("useSockets", () => {
     mountComponent();
     expect(hook.showSocketError).toBeFalsy();
 
-    expect(wsCurrent).toBeCalledTimes(0);
+    expect(wsCurrent).toHaveBeenCalledTimes(0);
 
     localStorage.setItem("use-sockets", "true");
     component.unmount();
@@ -48,9 +48,9 @@ describe("useSockets", () => {
       .mockImplementationOnce(() => socketService);
     mountComponent();
 
-    expect(wsCurrent).toBeCalled();
-    expect(wsCurrent).toBeCalledTimes(1);
-    expect(wsCurrent).toBeCalledWith(
+    expect(wsCurrent).toHaveBeenCalled();
+    expect(wsCurrent).toHaveBeenCalledTimes(1);
+    expect(wsCurrent).toHaveBeenCalledWith(
       false,
       expect.any(Function),
       { current: true },
@@ -72,9 +72,7 @@ describe("useSockets", () => {
     const socketService = new FakeWebSocketService();
 
     // set the difference in time longer than 0.5 minutes
-    jest
-      .spyOn(DifferenceInDate, "DifferenceInDate")
-      .mockImplementationOnce(() => 1);
+    jest.spyOn(DifferenceInDate, "DifferenceInDate").mockImplementationOnce(() => 1);
 
     jest.spyOn(WsCurrentStart, "default").mockClear();
 
@@ -89,9 +87,9 @@ describe("useSockets", () => {
       jest.advanceTimersByTime(40000);
     });
 
-    expect(wsCurrent).toBeCalled();
-    expect(wsCurrent).toBeCalledTimes(2);
-    expect(wsCurrent).toBeCalledWith(
+    expect(wsCurrent).toHaveBeenCalled();
+    expect(wsCurrent).toHaveBeenCalledTimes(2);
+    expect(wsCurrent).toHaveBeenCalledWith(
       false,
       expect.any(Function),
       { current: true },
@@ -131,8 +129,8 @@ describe("useSockets", () => {
       hook.setShowSocketError(null);
     });
 
-    expect(wsCurrent).toBeCalled();
-    expect(wsCurrent).toBeCalledTimes(2);
+    expect(wsCurrent).toHaveBeenCalled();
+    expect(wsCurrent).toHaveBeenCalledTimes(2);
 
     expect(hook.showSocketError).toBeNull();
 
@@ -152,7 +150,7 @@ describe("useSockets", () => {
 
     mountComponent();
 
-    expect(wsCurrent).toBeCalledTimes(0);
+    expect(wsCurrent).toHaveBeenCalledTimes(0);
 
     localStorage.removeItem("use-sockets");
     jest.spyOn(WsCurrentStart, "default").mockReset();

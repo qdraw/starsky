@@ -11,10 +11,7 @@ export const NotFoundPage: FunctionComponent = () => {
   const language = new Language(settings.language);
 
   const MessageNotFound = language.text("Oeps niet gevonden", "Not Found");
-  const MessageGoToHome = language.text(
-    "Ga naar de homepagina",
-    "Go to the homepage"
-  );
+  const MessageGoToHome = language.text("Ga naar de homepagina", "Go to the homepage");
 
   return (
     <div>

@@ -6,29 +6,17 @@ describe("url-path", () => {
 
   describe("CastToISideBarUpdate", () => {
     it("no fieldname", () => {
-      const result = sidebarUpdate.CastToISideBarUpdate(
-        "",
-        "value",
-        {} as ISidebarUpdate
-      );
+      const result = sidebarUpdate.CastToISideBarUpdate("", "value", {} as ISidebarUpdate);
       expect(result).toStrictEqual({});
     });
 
     it("no value", () => {
-      const result = sidebarUpdate.CastToISideBarUpdate(
-        "field",
-        "",
-        {} as ISidebarUpdate
-      );
+      const result = sidebarUpdate.CastToISideBarUpdate("field", "", {} as ISidebarUpdate);
       expect(result).toStrictEqual({});
     });
 
     it("tags", () => {
-      const result = sidebarUpdate.CastToISideBarUpdate(
-        "tags",
-        "test",
-        {} as ISidebarUpdate
-      );
+      const result = sidebarUpdate.CastToISideBarUpdate("tags", "test", {} as ISidebarUpdate);
       expect(result).toStrictEqual({ tags: "test" });
     });
 
@@ -42,11 +30,7 @@ describe("url-path", () => {
     });
 
     it("title", () => {
-      const result = sidebarUpdate.CastToISideBarUpdate(
-        "title",
-        "test",
-        {} as ISidebarUpdate
-      );
+      const result = sidebarUpdate.CastToISideBarUpdate("title", "test", {} as ISidebarUpdate);
       expect(result).toStrictEqual({ title: "test" });
     });
 
@@ -78,29 +62,17 @@ describe("url-path", () => {
     });
 
     it("send empty string replace-title", () => {
-      const result = sidebarUpdate.CastToISideBarUpdate(
-        "replace-title",
-        "",
-        {} as ISidebarUpdate
-      );
+      const result = sidebarUpdate.CastToISideBarUpdate("replace-title", "", {} as ISidebarUpdate);
       expect(result).toStrictEqual({});
     });
 
     it("send empty string tags", () => {
-      const result = sidebarUpdate.CastToISideBarUpdate(
-        "tags",
-        "",
-        {} as ISidebarUpdate
-      );
+      const result = sidebarUpdate.CastToISideBarUpdate("tags", "", {} as ISidebarUpdate);
       expect(result).toStrictEqual({});
     });
 
     it("send empty string non existing tag", () => {
-      const result = sidebarUpdate.CastToISideBarUpdate(
-        "test",
-        "",
-        {} as ISidebarUpdate
-      );
+      const result = sidebarUpdate.CastToISideBarUpdate("test", "", {} as ISidebarUpdate);
       expect(result).toStrictEqual({});
     });
   });

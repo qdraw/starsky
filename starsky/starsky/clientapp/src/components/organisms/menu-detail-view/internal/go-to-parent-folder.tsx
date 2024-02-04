@@ -11,9 +11,11 @@ export interface IGoToParentFolderProps {
   state: IDetailView;
 }
 
-export const GoToParentFolder: React.FunctionComponent<
-  IGoToParentFolderProps
-> = ({ isSearchQuery, history, state }) => {
+export const GoToParentFolder: React.FunctionComponent<IGoToParentFolderProps> = ({
+  isSearchQuery,
+  history,
+  state
+}) => {
   function navigateToParentFolder() {
     history.navigate(
       new UrlQuery().updateFilePathHash(

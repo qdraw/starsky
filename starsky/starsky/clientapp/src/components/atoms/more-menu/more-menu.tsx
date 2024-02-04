@@ -51,9 +51,7 @@ const MoreMenu: React.FunctionComponent<MoreMenuPropTypes> = ({
           event.key === "Enter" && setEnableMoreMenu(false);
         }}
         data-test="menu-context"
-        className={
-          enableMoreMenu ? "menu-context" : "menu-context menu-context--hide"
-        }
+        className={enableMoreMenu ? "menu-context" : "menu-context menu-context--hide"}
       >
         <ul data-test="menu-options" className="menu-options">
           {children}

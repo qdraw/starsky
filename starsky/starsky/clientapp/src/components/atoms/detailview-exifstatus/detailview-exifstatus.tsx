@@ -8,19 +8,15 @@ interface IDetailViewExifStatusProps {
   status: IExifStatus;
 }
 
-const DetailViewExifStatus: React.FunctionComponent<IDetailViewExifStatusProps> =
-  memo(({ status }) => {
+const DetailViewExifStatus: React.FunctionComponent<IDetailViewExifStatusProps> = memo(
+  ({ status }) => {
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
 
     const MessageReadOnlyFile = language.key(localization.MessageReadOnlyFile);
 
-    const MessageNotFoundSourceMissing = language.key(
-      localization.MessageNotFoundSourceMissing
-    );
-    const MessageServerError = language.key(
-      localization.MessageServerInputError
-    );
+    const MessageNotFoundSourceMissing = language.key(localization.MessageNotFoundSourceMissing);
+    const MessageServerError = language.key(localization.MessageServerInputError);
     const MessageIsInTheTrash = language.key(localization.MessageIsInTheTrash);
 
     const MessageDeletedRestoreInstruction = language.key(
@@ -31,10 +27,7 @@ const DetailViewExifStatus: React.FunctionComponent<IDetailViewExifStatusProps> 
       <>
         {status === IExifStatus.Deleted ? (
           <>
-            <div
-              data-test="detailview-exifstatus-status-deleted"
-              className="warning-box"
-            >
+            <div data-test="detailview-exifstatus-status-deleted" className="warning-box">
               {MessageIsInTheTrash}
             </div>
             {MessageDeletedRestoreInstruction}
@@ -46,10 +39,7 @@ const DetailViewExifStatus: React.FunctionComponent<IDetailViewExifStatusProps> 
       <>
         {status === IExifStatus.NotFoundSourceMissing ? (
           <>
-            <div
-              data-test="detailview-exifstatus-status-source-missing"
-              className="warning-box"
-            >
+            <div data-test="detailview-exifstatus-status-source-missing" className="warning-box">
               {MessageNotFoundSourceMissing}
             </div>{" "}
           </>
@@ -60,10 +50,7 @@ const DetailViewExifStatus: React.FunctionComponent<IDetailViewExifStatusProps> 
       <>
         {status === IExifStatus.ReadOnly ? (
           <>
-            <div
-              data-test="detailview-exifstatus-status-read-only"
-              className="warning-box"
-            >
+            <div data-test="detailview-exifstatus-status-read-only" className="warning-box">
               {MessageReadOnlyFile}
             </div>{" "}
           </>
@@ -75,10 +62,7 @@ const DetailViewExifStatus: React.FunctionComponent<IDetailViewExifStatusProps> 
       <>
         {status === IExifStatus.ServerError ? (
           <>
-            <div
-              data-test="detailview-exifstatus-status-server-error"
-              className="warning-box"
-            >
+            <div data-test="detailview-exifstatus-status-server-error" className="warning-box">
               {MessageServerError}
             </div>{" "}
           </>
@@ -104,6 +88,7 @@ const DetailViewExifStatus: React.FunctionComponent<IDetailViewExifStatusProps> 
         ) : null}
       </>
     );
-  });
+  }
+);
 
 export default DetailViewExifStatus;

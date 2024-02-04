@@ -5,16 +5,8 @@ interface IDetailViewInfoMakeModelApertureProps {
   fileIndexItem: Readonly<IFileIndexItem>;
 }
 
-function ShowISOIfExistComponent(
-  fileIndexItemInside: Readonly<IFileIndexItem>
-) {
-  return (
-    <>
-      {fileIndexItemInside.isoSpeed !== 0 ? (
-        <>ISO {fileIndexItemInside.isoSpeed}</>
-      ) : null}
-    </>
-  );
+function ShowISOIfExistComponent(fileIndexItemInside: Readonly<IFileIndexItem>) {
+  return <>{fileIndexItemInside.isoSpeed !== 0 ? <>ISO {fileIndexItemInside.isoSpeed}</> : null}</>;
 }
 
 const DetailViewInfoMakeModelAperture: React.FunctionComponent<IDetailViewInfoMakeModelApertureProps> =
@@ -35,9 +27,7 @@ const DetailViewInfoMakeModelAperture: React.FunctionComponent<IDetailViewInfoMa
               f/<span data-test="aperture">{fileIndexItem.aperture}</span>
               &nbsp;&nbsp;&nbsp;
               {fileIndexItem.shutterSpeed} sec&nbsp;&nbsp;&nbsp;
-              <span data-test="focalLength">
-                {fileIndexItem.focalLength.toFixed(1)}
-              </span>{" "}
+              <span data-test="focalLength">{fileIndexItem.focalLength.toFixed(1)}</span>{" "}
               mm&nbsp;&nbsp;&nbsp;
               <ShowISOIfExistComponent {...fileIndexItem} />
             </p>

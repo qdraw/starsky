@@ -2,11 +2,7 @@ import * as React from "react";
 import { createContext } from "react";
 import { newIArchive, SortType } from "../interfaces/IArchive";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
-import {
-  IRelativeObjects,
-  newIRelativeObjects,
-  PageType
-} from "../interfaces/IDetailView";
+import { IRelativeObjects, newIRelativeObjects, PageType } from "../interfaces/IDetailView";
 import { IExifStatus } from "../interfaces/IExifStatus";
 import { IFileIndexItem, ImageFormat } from "../interfaces/IFileIndexItem";
 import { IUrl } from "../interfaces/IUrl";
@@ -91,8 +87,7 @@ function updateArchiveReducerTagsDescriptionTitleAppend(
 ) {
   // bug: duplicate tags are added, in the api those are filtered
   if (update.tags) state.fileIndexItems[index].tags += ", " + update.tags;
-  if (update.description)
-    state.fileIndexItems[index].description += update.description;
+  if (update.description) state.fileIndexItems[index].description += update.description;
   if (update.title) state.fileIndexItems[index].title += update.title;
 }
 
@@ -102,8 +97,7 @@ function updateArchiveReducerTagsDescriptionTitleSet(
   update: IUpdateArchiveReducer
 ) {
   if (update.tags !== undefined) state.fileIndexItems[index].tags = update.tags;
-  if (update.description)
-    state.fileIndexItems[index].description = update.description;
+  if (update.description) state.fileIndexItems[index].description = update.description;
   if (update.title) state.fileIndexItems[index].title = update.title;
 }
 
@@ -120,8 +114,7 @@ function updateArchiveReducerHelper(
   },
   state: IArchiveProps
 ) {
-  const { select, tags, description, title, append, colorclass, fileHash } =
-    action;
+  const { select, tags, description, title, append, colorclass, fileHash } = action;
   const update = {
     select,
     tags,
@@ -135,10 +128,7 @@ function updateArchiveReducerHelper(
   return updateArchiveReducer(state, update);
 }
 
-function updateArchiveReducer(
-  state: IArchiveProps,
-  update: IUpdateArchiveReducer
-) {
+function updateArchiveReducer(state: IArchiveProps, update: IUpdateArchiveReducer) {
   state.fileIndexItems.forEach((item, index) => {
     if (update.select.indexOf(item.fileName) !== -1) {
       if (update.append) {
@@ -146,8 +136,7 @@ function updateArchiveReducer(
       } else {
         updateArchiveReducerTagsDescriptionTitleSet(index, state, update);
       }
-      if (update.fileHash)
-        state.fileIndexItems[index].fileHash = update.fileHash;
+      if (update.fileHash) state.fileIndexItems[index].fileHash = update.fileHash;
       // colorclass = 0 ==> colorless/no-color
       if (update.colorclass !== undefined && update.colorclass !== -1) {
         state.fileIndexItems[index].colorClass = update.colorclass;
@@ -164,10 +153,7 @@ function updateArchiveReducer(
 function setArchiveReducer(actionPayload: IArchiveProps) {
   // ignore the cache
   if (!actionPayload.fileIndexItems) return actionPayload;
-  let items = new ArrayHelper().UniqueResults(
-    actionPayload.fileIndexItems,
-    "filePath"
-  );
+  let items = new ArrayHelper().UniqueResults(actionPayload.fileIndexItems, "filePath");
 
   if (
     actionPayload.pageType === PageType.Archive &&
@@ -182,10 +168,7 @@ function setArchiveReducer(actionPayload: IArchiveProps) {
   };
 }
 
-export function addArchiveReducer(
-  state: IArchiveProps,
-  initActionAdd: IFileIndexItem[]
-) {
+export function addArchiveReducer(state: IArchiveProps, initActionAdd: IFileIndexItem[]) {
   if (!initActionAdd) return state;
   const filterOkCondition = (value: IFileIndexItem) => {
     return (
@@ -245,12 +228,9 @@ export function filterSidecarItems(
   if (state.collections !== false) {
     for (const sidecarItem of Array.from(actionAdd).filter(
       (value) =>
-        value.imageFormat === ImageFormat.meta_json ||
-        value.imageFormat === ImageFormat.xmp
+        value.imageFormat === ImageFormat.meta_json || value.imageFormat === ImageFormat.xmp
     )) {
-      const index = fileIndexItems.findIndex(
-        (x) => x.filePath === sidecarItem.filePath
-      );
+      const index = fileIndexItems.findIndex((x) => x.filePath === sidecarItem.filePath);
       if (index !== -1) {
         fileIndexItems.splice(index, 1);
       }
@@ -259,10 +239,7 @@ export function filterSidecarItems(
   return fileIndexItems;
 }
 
-function filterDeletedItems(
-  actionAdd: IFileIndexItem[],
-  fileIndexItems: IFileIndexItem[]
-) {
+function filterDeletedItems(actionAdd: IFileIndexItem[], fileIndexItems: IFileIndexItem[]) {
   // remove deleted items
   for (const deleteItem of Array.from(actionAdd).filter(
     (value) =>
@@ -270,9 +247,7 @@ function filterDeletedItems(
       value.status === IExifStatus.NotFoundNotInIndex ||
       value.status === IExifStatus.NotFoundSourceMissing
   )) {
-    const index = fileIndexItems.findIndex(
-      (x) => x.filePath === deleteItem.filePath
-    );
+    const index = fileIndexItems.findIndex((x) => x.filePath === deleteItem.filePath);
     if (index !== -1) {
       fileIndexItems.splice(index, 1);
     }
@@ -318,10 +293,7 @@ function removeReducer(
   return updateCache(newState);
 }
 
-function forceResetReducer(action: {
-  type: "force-reset";
-  payload: IArchiveProps;
-}) {
+function forceResetReducer(action: { type: "force-reset"; payload: IArchiveProps }) {
   // also update the cache
   const forceResetUpdated = {
     ...action.payload,
@@ -361,19 +333,13 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
  * @param state contains current filter active
  * @param actionAdd item to add
  */
-function filterColorClassBeforeAdding(
-  state: IArchiveProps,
-  actionAdd: IFileIndexItem[]
-) {
+function filterColorClassBeforeAdding(state: IArchiveProps, actionAdd: IFileIndexItem[]) {
   if (!state.colorClassActiveList || state.colorClassActiveList.length === 0) {
     return actionAdd;
   }
 
   actionAdd = actionAdd.filter((value: IFileIndexItem) => {
-    return (
-      value.colorClass &&
-      state.colorClassActiveList.indexOf(value.colorClass) >= 1
-    );
+    return value.colorClass && state.colorClassActiveList.indexOf(value.colorClass) >= 1;
   });
   return actionAdd;
 }
@@ -410,10 +376,7 @@ function CollectionsSortOnImageFormat(
         x.fileCollectionName === item.fileCollectionName &&
         x.parentDirectory === item.parentDirectory
     );
-    const sortedCollectionsItems = sorter(
-      collectionsItems,
-      SortType.imageFormat
-    );
+    const sortedCollectionsItems = sorter(collectionsItems, SortType.imageFormat);
     concatenatedFileIndexItems = concatenatedFileIndexItems.filter(
       (p) => !sortedCollectionsItems.includes(p)
     );
@@ -430,10 +393,7 @@ function CollectionsSortOnImageFormat(
  * @param state - current state
  * @param colorclass - colorclass that has be added
  */
-function UpdateColorClassUsageActiveList(
-  state: IArchiveProps,
-  colorclass: number
-): void {
+function UpdateColorClassUsageActiveList(state: IArchiveProps, colorclass: number): void {
   if (state.colorClassUsage === undefined) state.colorClassUsage = [];
 
   // add to list of multiple colorclass items that can be selected
@@ -449,8 +409,7 @@ function UpdateColorClassUsageActiveList(
   // only useful when there are no colorclass items selected
 
   state.colorClassUsage.forEach((usage) => {
-    const existLambda = (element: IFileIndexItem) =>
-      element.colorClass === usage;
+    const existLambda = (element: IFileIndexItem) => element.colorClass === usage;
     // some is not working in context of jest
     if (!state.fileIndexItems.some(existLambda).valueOf()) {
       const indexer = state.colorClassUsage.indexOf(usage);
@@ -483,9 +442,7 @@ function ArchiveContextProvider({ children }: Readonly<ReactNodeProps>) {
   const value1 = React.useMemo(() => ({ state, dispatch }), [state, dispatch]);
 
   // [B]
-  return (
-    <ArchiveContext.Provider value={value1}>{children}</ArchiveContext.Provider>
-  );
+  return <ArchiveContext.Provider value={value1}>{children}</ArchiveContext.Provider>;
 }
 
 const ArchiveContextConsumer = ArchiveContext.Consumer;

@@ -16,10 +16,7 @@ const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSel
     // content
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
-    const MessageNoneSelected = language.text(
-      "Niets geselecteerd",
-      "Nothing selected"
-    );
+    const MessageNoneSelected = language.text("Niets geselecteerd", "Nothing selected");
     const MessageAllName = language.text("Alles", "All");
 
     const history = useLocation();
@@ -31,26 +28,11 @@ const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSel
     }, [history.location.search]);
 
     const allSelection = () =>
-      new Select(
-        select,
-        setSelect,
-        props as IArchiveProps,
-        history
-      ).allSelection();
+      new Select(select, setSelect, props as IArchiveProps, history).allSelection();
     const undoSelection = () =>
-      new Select(
-        select,
-        setSelect,
-        props as IArchiveProps,
-        history
-      ).undoSelection();
+      new Select(select, setSelect, props as IArchiveProps, history).undoSelection();
     const toggleSelection = (item: string) =>
-      new Select(
-        select,
-        setSelect,
-        props as IArchiveProps,
-        history
-      ).toggleSelection(item);
+      new Select(select, setSelect, props as IArchiveProps, history).toggleSelection(item);
 
     // noinspection HtmlUnknownAttribute
     return (
@@ -68,10 +50,7 @@ const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSel
             ""
           )}
           {!select || select.length !== 0 ? (
-            <button
-              className="btn btn--default"
-              onClick={() => undoSelection()}
-            >
+            <button className="btn btn--default" onClick={() => undoSelection()}>
               Undo
             </button>
           ) : (

@@ -17,9 +17,7 @@ export interface IInlineSearchSuggestProps {
   callback?: (query: string) => void;
 }
 
-const InlineSearchSuggest: React.FunctionComponent<
-  IInlineSearchSuggestProps
-> = (props) => {
+const InlineSearchSuggest: React.FunctionComponent<IInlineSearchSuggestProps> = (props) => {
   const history = useLocation();
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
@@ -48,9 +46,7 @@ const InlineSearchSuggest: React.FunctionComponent<
     {
       name: language.key(localization.MessagePhotosOfThisWeek),
       // search?t=-Datetime>7 -ImageFormat-"xmp,tiff"
-      url: new UrlQuery().UrlSearchPage(
-        "-Datetime%3E7%20-ImageFormat-%22xmp,tiff%22"
-      ),
+      url: new UrlQuery().UrlSearchPage("-Datetime%3E7%20-ImageFormat-%22xmp,tiff%22"),
       key: "photos-of-this-week"
     },
     {

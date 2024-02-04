@@ -10,7 +10,6 @@ export function GetMousePosition(event: React.MouseEvent | MouseEvent) {
   console.log(targetElement?.offsetWidth);
 
   return (
-    (event.pageX - (targetElement?.offsetLeft + offsetParentLeft)) /
-    targetElement?.offsetWidth
+    (event.pageX - (targetElement?.offsetLeft + offsetParentLeft)) / targetElement?.offsetWidth
   );
 }

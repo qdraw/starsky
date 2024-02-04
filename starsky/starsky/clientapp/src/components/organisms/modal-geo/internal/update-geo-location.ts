@@ -29,10 +29,7 @@ export async function UpdateGeoLocation(
   let model = {} as IGeoLocationModel;
   try {
     const reverseGeoCodeResult = await FetchGet(
-      new UrlQuery().UrlReverseLookup(
-        location.latitude.toString(),
-        location.longitude.toString()
-      )
+      new UrlQuery().UrlReverseLookup(location.latitude.toString(), location.longitude.toString())
     );
     if (reverseGeoCodeResult.statusCode === 200) {
       model = reverseGeoCodeResult.data;
@@ -49,10 +46,7 @@ export async function UpdateGeoLocation(
   console.log(bodyParams.toString());
 
   try {
-    const updateResult = await FetchPost(
-      new UrlQuery().UrlUpdateApi(),
-      bodyParams.toString()
-    );
+    const updateResult = await FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams.toString());
     if (updateResult.statusCode !== 200) {
       setError(true);
       setIsLoading(false);

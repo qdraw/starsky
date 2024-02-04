@@ -3,9 +3,7 @@ import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IHealthEntry } from "../../../interfaces/IHealthEntry";
 import { Language } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url-query";
-import Notification, {
-  NotificationType
-} from "../../atoms/notification/notification";
+import Notification, { NotificationType } from "../../atoms/notification/notification";
 
 const HealthStatusError: React.FunctionComponent = () => {
   const healthCheck = useFetch(new UrlQuery().UrlHealthDetails(), "get");
@@ -23,15 +21,11 @@ const HealthStatusError: React.FunctionComponent = () => {
   )
     return null;
 
-  const content: React.JSX.Element[] = [
-    <span key="warning">{MessageCriticalErrors}</span>
-  ];
+  const content: React.JSX.Element[] = [<span key="warning">{MessageCriticalErrors}</span>];
 
   if (!healthCheck.data?.entries) {
     content.push(
-      <li key="backend-services">
-        BackendServices HTTP StatusCode: {healthCheck.statusCode}
-      </li>
+      <li key="backend-services">BackendServices HTTP StatusCode: {healthCheck.statusCode}</li>
     );
   } else {
     healthCheck.data.entries.forEach((entry: IHealthEntry) => {

@@ -1,21 +1,18 @@
 import * as capturePosition from "../../../hooks/use-capture-position";
-import modalFreezeHelper, {
-  modalFreezeOpen,
-  modalUnFreezeNotOpen
-} from "./modal-freeze-helper";
+import modalFreezeHelper, { modalFreezeOpen, modalUnFreezeNotOpen } from "./modal-freeze-helper";
 import * as toggleTabIndex from "./toggle-tab-index";
 
 describe("modalFreezeOpen", () => {
   it("modalFreezeOpen", () => {
     const freeze = jest.fn();
     modalFreezeOpen(freeze, { current: null } as any, null, null);
-    expect(freeze).toBeCalled();
+    expect(freeze).toHaveBeenCalled();
   });
 
   it("modalFreezeOpen focus", () => {
     const focus = jest.fn();
     modalFreezeOpen(jest.fn(), { current: { focus } } as any, null, null);
-    expect(focus).toBeCalled();
+    expect(focus).toHaveBeenCalled();
   });
 
   it("modalFreezeOpen rootContainer", () => {
@@ -26,50 +23,44 @@ describe("modalFreezeOpen", () => {
       null,
       document.createElement("div") as HTMLElement
     );
-    expect(freeze).toBeCalled();
+    expect(freeze).toHaveBeenCalled();
   });
 });
 
 describe("modalUnFreezeNotOpen", () => {
   it("modalUnFreezeNotOpen null so not called", () => {
     const unFreeze = jest.fn();
-    const toggleTabSpy = jest
-      .spyOn(toggleTabIndex, "toggleTabIndex")
-      .mockImplementation(() => {});
+    const toggleTabSpy = jest.spyOn(toggleTabIndex, "toggleTabIndex").mockImplementation(() => {});
 
     modalUnFreezeNotOpen(unFreeze, null, null, undefined, {
       current: false
     });
-    expect(unFreeze).toBeCalled();
-    expect(toggleTabSpy).not.toBeCalled();
+    expect(unFreeze).toHaveBeenCalled();
+    expect(toggleTabSpy).not.toHaveBeenCalled();
   });
 
   it("modalUnFreezeNotOpen modalContainer off", () => {
     const unFreeze = jest.fn();
-    const toggleTabSpy = jest
-      .spyOn(toggleTabIndex, "toggleTabIndex")
-      .mockImplementation(() => {});
+    const toggleTabSpy = jest.spyOn(toggleTabIndex, "toggleTabIndex").mockImplementation(() => {});
 
     modalUnFreezeNotOpen(unFreeze, { current: true } as any, null, undefined, {
       current: false
     });
-    expect(unFreeze).toBeCalled();
-    expect(toggleTabSpy).toBeCalled();
-    expect(toggleTabSpy).toBeCalledWith("off", { current: true });
+    expect(unFreeze).toHaveBeenCalled();
+    expect(toggleTabSpy).toHaveBeenCalled();
+    expect(toggleTabSpy).toHaveBeenCalledWith("off", { current: true });
   });
 
   it("modalUnFreezeNotOpen modalContainer", () => {
     const unFreeze = jest.fn();
-    const toggleTabSpy = jest
-      .spyOn(toggleTabIndex, "toggleTabIndex")
-      .mockImplementation(() => {});
+    const toggleTabSpy = jest.spyOn(toggleTabIndex, "toggleTabIndex").mockImplementation(() => {});
 
     modalUnFreezeNotOpen(unFreeze, null, { current: true } as any, undefined, {
       current: false
     });
-    expect(unFreeze).toBeCalled();
-    expect(toggleTabSpy).toBeCalled();
-    expect(toggleTabSpy).toBeCalledWith("on", { current: true });
+    expect(unFreeze).toHaveBeenCalled();
+    expect(toggleTabSpy).toHaveBeenCalled();
+    expect(toggleTabSpy).toHaveBeenCalledWith("on", { current: true });
   });
 });
 
@@ -85,16 +76,9 @@ describe("modalFreezeHelper", () => {
       unfreeze: unfreezeSpy
     }));
 
-    modalFreezeHelper(
-      jest.fn() as any,
-      "root",
-      "id",
-      true,
-      { current: null },
-      div
-    );
-    expect(freezeSpy).toBeCalled();
-    expect(unfreezeSpy).not.toBeCalled();
+    modalFreezeHelper(jest.fn() as any, "root", "id", true, { current: null }, div);
+    expect(freezeSpy).toHaveBeenCalled();
+    expect(unfreezeSpy).not.toHaveBeenCalled();
   });
 
   it("should set unfreeze", () => {
@@ -108,15 +92,8 @@ describe("modalFreezeHelper", () => {
       unfreeze: unfreezeSpy
     }));
 
-    modalFreezeHelper(
-      jest.fn() as any,
-      "root",
-      "id",
-      false,
-      { current: null },
-      div
-    );
-    expect(freezeSpy).not.toBeCalled();
-    expect(unfreezeSpy).toBeCalled();
+    modalFreezeHelper(jest.fn() as any, "root", "id", false, { current: null }, div);
+    expect(freezeSpy).not.toHaveBeenCalled();
+    expect(unfreezeSpy).toHaveBeenCalled();
   });
 });

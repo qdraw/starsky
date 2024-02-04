@@ -13,11 +13,7 @@ describe("ModalArchiveSynchronizeManually", () => {
 
   it("renders", () => {
     render(
-      <ModalArchiveSynchronizeManually
-        isOpen={true}
-        parentFolder="/"
-        handleExit={() => {}}
-      />
+      <ModalArchiveSynchronizeManually isOpen={true} parentFolder="/" handleExit={() => {}} />
     );
   });
 
@@ -26,11 +22,7 @@ describe("ModalArchiveSynchronizeManually", () => {
       let modal: RenderResult;
       beforeEach(() => {
         modal = render(
-          <ModalArchiveSynchronizeManually
-            parentFolder={"/"}
-            isOpen={true}
-            handleExit={() => {}}
-          />
+          <ModalArchiveSynchronizeManually parentFolder={"/"} isOpen={true} handleExit={() => {}} />
         );
       });
 
@@ -61,11 +53,7 @@ describe("ModalArchiveSynchronizeManually", () => {
       beforeEach(() => {
         jest.useFakeTimers();
         modal = render(
-          <ModalArchiveSynchronizeManually
-            parentFolder={"/"}
-            isOpen={true}
-            handleExit={() => {}}
-          />
+          <ModalArchiveSynchronizeManually parentFolder={"/"} isOpen={true} handleExit={() => {}} />
         );
       });
 
@@ -79,11 +67,10 @@ describe("ModalArchiveSynchronizeManually", () => {
       });
 
       it("force-sync (only first get)", async () => {
-        const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-          Promise.resolve({
-            statusCode: 200,
-            data: null
-          } as IConnectionDefault);
+        const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+          statusCode: 200,
+          data: null
+        } as IConnectionDefault);
 
         const fetchPostSpy = jest
           .spyOn(FetchPost, "default")
@@ -96,16 +83,15 @@ describe("ModalArchiveSynchronizeManually", () => {
           await forceSync?.click();
         });
 
-        await waitFor(() => expect(fetchPostSpy).toBeCalled());
-        expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlSync("/"), "");
+        await waitFor(() => expect(fetchPostSpy).toHaveBeenCalled());
+        expect(fetchPostSpy).toHaveBeenCalledWith(new UrlQuery().UrlSync("/"), "");
       });
 
       it("remove-cache (only first get)", () => {
-        const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-          Promise.resolve({
-            statusCode: 200,
-            data: null
-          } as IConnectionDefault);
+        const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+          statusCode: 200,
+          data: null
+        } as IConnectionDefault);
 
         const fetchGetSpy = jest
           .spyOn(FetchGet, "default")
@@ -118,18 +104,17 @@ describe("ModalArchiveSynchronizeManually", () => {
           removeCache?.click();
         });
 
-        expect(fetchGetSpy).toBeCalled();
-        expect(fetchGetSpy).toBeCalledWith(new UrlQuery().UrlRemoveCache("/"));
+        expect(fetchGetSpy).toHaveBeenCalled();
+        expect(fetchGetSpy).toHaveBeenCalledWith(new UrlQuery().UrlRemoveCache("/"));
 
         fetchGetSpy.mockReset();
       });
 
       it("geo-sync (only first post)", async () => {
-        const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-          Promise.resolve({
-            statusCode: 200,
-            data: null
-          } as IConnectionDefault);
+        const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+          statusCode: 200,
+          data: null
+        } as IConnectionDefault);
 
         const fetchPostSpy = jest
           .spyOn(FetchPost, "default")
@@ -146,16 +131,15 @@ describe("ModalArchiveSynchronizeManually", () => {
           await geoSyncButton?.click();
         });
 
-        expect(urlGeoSyncUrlQuerySpy).toBeCalled();
-        expect(fetchPostSpy).toBeCalled();
+        expect(urlGeoSyncUrlQuerySpy).toHaveBeenCalled();
+        expect(fetchPostSpy).toHaveBeenCalled();
       });
 
       it("remove-cache (only first POST)", () => {
-        const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-          Promise.resolve({
-            statusCode: 200,
-            data: null
-          } as IConnectionDefault);
+        const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+          statusCode: 200,
+          data: null
+        } as IConnectionDefault);
 
         const fetchGetSpy = jest
           .spyOn(FetchPost, "default")
@@ -168,11 +152,8 @@ describe("ModalArchiveSynchronizeManually", () => {
           thumbnailGeneration?.click();
         });
 
-        expect(fetchGetSpy).toBeCalled();
-        expect(fetchGetSpy).toBeCalledWith(
-          new UrlQuery().UrlThumbnailGeneration(),
-          "f=%2F"
-        );
+        expect(fetchGetSpy).toHaveBeenCalled();
+        expect(fetchGetSpy).toHaveBeenCalledWith(new UrlQuery().UrlThumbnailGeneration(), "f=%2F");
 
         fetchGetSpy.mockReset();
       });
@@ -196,7 +177,7 @@ describe("ModalArchiveSynchronizeManually", () => {
         />
       );
 
-      expect(handleExitSpy).toBeCalled();
+      expect(handleExitSpy).toHaveBeenCalled();
 
       // and clean afterwards
       component.unmount();

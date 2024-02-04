@@ -9,9 +9,7 @@ export default {
 
 export const Disabled = () => {
   Router.navigate("/");
-  return (
-    <ArchiveSidebarSelectionList fileIndexItems={newIFileIndexItemArray()} />
-  );
+  return <ArchiveSidebarSelectionList fileIndexItems={newIFileIndexItemArray()} />;
 };
 
 Disabled.story = {

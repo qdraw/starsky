@@ -29,9 +29,7 @@ describe("ArchiveSidebarColorClass", () => {
       );
     }
     it("colorclass--select class exist", () => {
-      expect(wrapperHelper().container.innerHTML).toContain(
-        "colorclass--select"
-      );
+      expect(wrapperHelper().container.innerHTML).toContain("colorclass--select");
     });
 
     it("not disabled", () => {
@@ -43,9 +41,7 @@ describe("ArchiveSidebarColorClass", () => {
 
       // is used in multiple ways
       // use this: ==> import * as AppContext from '../contexts/archive-context';
-      const useContextSpy = jest
-        .spyOn(React, "useContext")
-        .mockImplementation(() => contextValues);
+      const useContextSpy = jest.spyOn(React, "useContext").mockImplementation(() => contextValues);
 
       const dispatch = jest.fn();
       const contextValues = {
@@ -88,8 +84,8 @@ describe("ArchiveSidebarColorClass", () => {
       });
 
       expect(isCalled).toBeTruthy();
-      expect(dispatch).toBeCalled();
-      expect(dispatch).toBeCalledWith({
+      expect(dispatch).toHaveBeenCalled();
+      expect(dispatch).toHaveBeenCalledWith({
         colorclass: 1,
         select: ["test.jpg"],
         type: "update"

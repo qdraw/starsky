@@ -14,9 +14,7 @@ describe("ModalPublish", () => {
     );
   });
   it("should Not pass undefined", () => {
-    const modalPublishSpy = jest
-      .spyOn(ModalPublish, "default")
-      .mockImplementationOnce(() => <></>);
+    const modalPublishSpy = jest.spyOn(ModalPublish, "default").mockImplementationOnce(() => <></>);
     const component = render(
       <ModalPublishToggleWrapper
         select={undefined}
@@ -25,13 +23,11 @@ describe("ModalPublish", () => {
         setModalPublishOpen={() => {}}
       ></ModalPublishToggleWrapper>
     );
-    expect(modalPublishSpy).toBeCalledTimes(0);
+    expect(modalPublishSpy).toHaveBeenCalledTimes(0);
     component.unmount();
   });
   it("pass value", () => {
-    const modalPublishSpy = jest
-      .spyOn(ModalPublish, "default")
-      .mockImplementationOnce(() => <></>);
+    const modalPublishSpy = jest.spyOn(ModalPublish, "default").mockImplementationOnce(() => <></>);
     const component = render(
       <ModalPublishToggleWrapper
         select={["/"]}
@@ -40,7 +36,7 @@ describe("ModalPublish", () => {
         setModalPublishOpen={() => {}}
       ></ModalPublishToggleWrapper>
     );
-    expect(modalPublishSpy).toBeCalledTimes(1);
+    expect(modalPublishSpy).toHaveBeenCalledTimes(1);
     component.unmount();
   });
 });

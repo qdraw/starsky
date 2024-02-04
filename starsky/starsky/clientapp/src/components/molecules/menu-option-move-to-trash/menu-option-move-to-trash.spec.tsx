@@ -3,10 +3,7 @@ import { act } from "react-dom/test-utils";
 import * as useLocation from "../../../hooks/use-location/use-location";
 import { newIArchive } from "../../../interfaces/IArchive";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
-import {
-  IConnectionDefault,
-  newIConnectionDefault
-} from "../../../interfaces/IConnectionDefault";
+import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import {
   IFileIndexItem,
   newIFileIndexItem,
@@ -45,12 +42,11 @@ describe("MenuOptionMoveToTrash", () => {
         ]
       } as IArchiveProps;
 
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({
-          ...newIConnectionDefault(),
-          data: null,
-          statusCode: 200
-        });
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        ...newIConnectionDefault(),
+        data: null,
+        statusCode: 200
+      });
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -73,9 +69,9 @@ describe("MenuOptionMoveToTrash", () => {
         await trashButton.click();
       });
 
-      expect(fetchPostSpy).toBeCalled();
-      expect(dispatch).toBeCalled();
-      expect(dispatch).toBeCalledWith({
+      expect(fetchPostSpy).toHaveBeenCalled();
+      expect(dispatch).toHaveBeenCalled();
+      expect(dispatch).toHaveBeenCalledWith({
         toRemoveFileList: ["/test.jpg"],
         type: "remove"
       });
@@ -95,12 +91,11 @@ describe("MenuOptionMoveToTrash", () => {
         ]
       } as IArchiveProps;
 
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({
-          ...newIConnectionDefault(),
-          data: null,
-          statusCode: 200
-        });
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        ...newIConnectionDefault(),
+        data: null,
+        statusCode: 200
+      });
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -125,9 +120,9 @@ describe("MenuOptionMoveToTrash", () => {
         });
       });
 
-      expect(fetchPostSpy).toBeCalled();
-      expect(dispatch).toBeCalled();
-      expect(dispatch).toBeCalledWith({
+      expect(fetchPostSpy).toHaveBeenCalled();
+      expect(dispatch).toHaveBeenCalled();
+      expect(dispatch).toHaveBeenCalledWith({
         toRemoveFileList: ["/test.jpg"],
         type: "remove"
       });
@@ -147,12 +142,11 @@ describe("MenuOptionMoveToTrash", () => {
         ]
       } as IArchiveProps;
 
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({
-          ...newIConnectionDefault(),
-          data: null,
-          statusCode: 200
-        });
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        ...newIConnectionDefault(),
+        data: null,
+        statusCode: 200
+      });
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -177,8 +171,8 @@ describe("MenuOptionMoveToTrash", () => {
         });
       });
 
-      expect(fetchPostSpy).toBeCalledTimes(0);
-      expect(dispatch).toBeCalledTimes(0);
+      expect(fetchPostSpy).toHaveBeenCalledTimes(0);
+      expect(dispatch).toHaveBeenCalledTimes(0);
 
       component.unmount();
     });
@@ -198,12 +192,11 @@ describe("MenuOptionMoveToTrash", () => {
         ]
       } as IArchiveProps;
 
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({
-          ...newIConnectionDefault(),
-          data: null,
-          statusCode: 400 // -- error
-        });
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        ...newIConnectionDefault(),
+        data: null,
+        statusCode: 400 // -- error
+      });
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -226,8 +219,8 @@ describe("MenuOptionMoveToTrash", () => {
         trashButton.click();
       });
 
-      expect(fetchPostSpy).toBeCalled();
-      expect(dispatch).toBeCalledTimes(0);
+      expect(fetchPostSpy).toHaveBeenCalled();
+      expect(dispatch).toHaveBeenCalledTimes(0);
       component.unmount();
     });
 
@@ -246,12 +239,11 @@ describe("MenuOptionMoveToTrash", () => {
         ]
       } as IArchiveProps;
 
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({
-          ...newIConnectionDefault(),
-          data: null,
-          statusCode: 400 // -- error
-        });
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        ...newIConnectionDefault(),
+        data: null,
+        statusCode: 400 // -- error
+      });
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -274,8 +266,8 @@ describe("MenuOptionMoveToTrash", () => {
         trashButton.click();
       });
 
-      expect(fetchPostSpy).toBeCalledTimes(0);
-      expect(dispatch).toBeCalledTimes(0);
+      expect(fetchPostSpy).toHaveBeenCalledTimes(0);
+      expect(dispatch).toHaveBeenCalledTimes(0);
       component.unmount();
     });
   });
@@ -296,20 +288,17 @@ describe("MenuOptionMoveToTrash", () => {
         ]
       } as IArchiveProps;
 
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({
-          ...newIConnectionDefault(),
-          data: null,
-          statusCode: 200
-        });
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        ...newIConnectionDefault(),
+        data: null,
+        statusCode: 200
+      });
       const locationObject = {
         location: window.location,
         navigate: jest.fn()
       };
 
-      jest
-        .spyOn(useLocation, "default")
-        .mockImplementationOnce(() => locationObject);
+      jest.spyOn(useLocation, "default").mockImplementationOnce(() => locationObject);
 
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
@@ -335,7 +324,7 @@ describe("MenuOptionMoveToTrash", () => {
         window.dispatchEvent(event);
       });
 
-      expect(fetchPostSpy).toBeCalled();
+      expect(fetchPostSpy).toHaveBeenCalled();
       // don't know why dispatch is not called
 
       component.unmount();

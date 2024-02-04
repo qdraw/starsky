@@ -60,17 +60,13 @@ describe("ClipboardHelper", () => {
     it("Copy and Paste", () => {
       const callback = jest.fn();
 
-      clipboardHelper.Copy(
-        refGenerator("A"),
-        refGenerator("B"),
-        refGenerator("C")
-      );
+      clipboardHelper.Copy(refGenerator("A"), refGenerator("B"), refGenerator("C"));
 
       const result = clipboardHelper.Paste(callback);
 
       expect(result).toBeTruthy();
 
-      expect(callback).toBeCalled();
+      expect(callback).toHaveBeenCalled();
 
       expect(callback).toHaveBeenNthCalledWith(1, [
         ["tags", "A"],
@@ -110,17 +106,13 @@ describe("ClipboardHelper", () => {
     it("Copy and Paste", () => {
       const callback = jest.fn();
 
-      clipboardHelper.Copy(
-        refGenerator("A"),
-        refGenerator("B"),
-        refGenerator("C")
-      );
+      clipboardHelper.Copy(refGenerator("A"), refGenerator("B"), refGenerator("C"));
 
       const result = clipboardHelper.PasteAsync(callback);
 
       expect(result).toBeTruthy();
 
-      expect(callback).toBeCalled();
+      expect(callback).toHaveBeenCalled();
 
       expect(callback).toHaveBeenNthCalledWith(1, [
         ["tags", "A"],

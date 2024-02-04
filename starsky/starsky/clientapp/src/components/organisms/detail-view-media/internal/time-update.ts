@@ -7,30 +7,17 @@ export function TimeUpdate(
   scrubberRef: React.RefObject<HTMLSpanElement>,
   timeRef: React.RefObject<HTMLSpanElement>
 ) {
-  if (
-    !videoRef.current ||
-    !progressRef.current ||
-    !scrubberRef.current ||
-    !timeRef.current
-  )
-    return;
+  if (!videoRef.current || !progressRef.current || !scrubberRef.current || !timeRef.current) return;
 
   // For mobile browsers, ensure that the progress element's max attribute is set
-  if (
-    !progressRef.current.getAttribute("max") &&
-    !isNaN(videoRef.current.duration)
-  ) {
-    progressRef.current.setAttribute(
-      "max",
-      videoRef.current.duration.toString()
-    );
+  if (!progressRef.current.getAttribute("max") && !isNaN(videoRef.current.duration)) {
+    progressRef.current.setAttribute("max", videoRef.current.duration.toString());
   }
 
   progressRef.current.value = videoRef.current.currentTime;
 
   // scrubber bol
-  const srubberPercentage =
-    (progressRef.current.value / videoRef.current.duration) * 100;
+  const srubberPercentage = (progressRef.current.value / videoRef.current.duration) * 100;
   scrubberRef.current.style.left = srubberPercentage + "%";
 
   // time

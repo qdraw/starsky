@@ -7,16 +7,15 @@ export interface IMenuSelectCountProps {
   removeSidebarSelection: () => void;
 }
 
-export const MenuSelectCount: React.FunctionComponent<
-  IMenuSelectCountProps
-> = ({ select, removeSidebarSelection }) => {
+export const MenuSelectCount: React.FunctionComponent<IMenuSelectCountProps> = ({
+  select,
+  removeSidebarSelection
+}) => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const MessageNoneSelected = language.key(localization.MessageNoneSelected);
 
-  const MessageSelectPresentPerfect = language.key(
-    localization.MessageSelectPresentPerfect
-  );
+  const MessageSelectPresentPerfect = language.key(localization.MessageSelectPresentPerfect);
 
   return (
     <>

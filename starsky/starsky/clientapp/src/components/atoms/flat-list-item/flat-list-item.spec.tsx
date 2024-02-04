@@ -1,26 +1,15 @@
 import { render } from "@testing-library/react";
-import {
-  IFileIndexItem,
-  ImageFormat,
-  newIFileIndexItem
-} from "../../../interfaces/IFileIndexItem";
+import { IFileIndexItem, ImageFormat, newIFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import FlatListItem from "./flat-list-item";
 
 describe("FlatListItem", () => {
   it("renders", () => {
-    render(
-      <FlatListItem
-        item={newIFileIndexItem()}
-        onSelectionCallback={jest.fn()}
-      />
-    );
+    render(<FlatListItem item={newIFileIndexItem()} onSelectionCallback={jest.fn()} />);
   });
 
   it("check if name exist", () => {
     const data = { fileName: "test" } as IFileIndexItem;
-    const component = render(
-      <FlatListItem item={data} onSelectionCallback={jest.fn()} />
-    );
+    const component = render(<FlatListItem item={data} onSelectionCallback={jest.fn()} />);
 
     const nameComponents = component.container.getElementsByClassName("name");
 
@@ -30,12 +19,9 @@ describe("FlatListItem", () => {
 
   it("check if lastedited exist", () => {
     const data = { lastEdited: "2021-01-30T16:26:43.776883" } as IFileIndexItem;
-    const component = render(
-      <FlatListItem item={data} onSelectionCallback={jest.fn()} />
-    );
+    const component = render(<FlatListItem item={data} onSelectionCallback={jest.fn()} />);
 
-    const nameComponents =
-      component.container.getElementsByClassName("lastedited");
+    const nameComponents = component.container.getElementsByClassName("lastedited");
 
     expect(nameComponents.length).toBe(1);
     expect(nameComponents[0].innerHTML).toBe("30-1-2021 16:26:43");
@@ -43,9 +29,7 @@ describe("FlatListItem", () => {
 
   it("check if size exist and returns dash dash", () => {
     const data = { size: 0 } as IFileIndexItem;
-    const component = render(
-      <FlatListItem item={data} onSelectionCallback={jest.fn()} />
-    );
+    const component = render(<FlatListItem item={data} onSelectionCallback={jest.fn()} />);
 
     const nameComponents = component.container.getElementsByClassName("size");
 
@@ -55,9 +39,7 @@ describe("FlatListItem", () => {
 
   it("check if size returns value", () => {
     const data = { size: 10 } as IFileIndexItem;
-    const component = render(
-      <FlatListItem item={data} onSelectionCallback={jest.fn()} />
-    );
+    const component = render(<FlatListItem item={data} onSelectionCallback={jest.fn()} />);
 
     const nameComponents = component.container.getElementsByClassName("size");
 
@@ -67,12 +49,9 @@ describe("FlatListItem", () => {
 
   it("check if imageformat exist and returns dash dash", () => {
     const data = { imageFormat: ImageFormat.unknown } as IFileIndexItem;
-    const component = render(
-      <FlatListItem item={data} onSelectionCallback={jest.fn()} />
-    );
+    const component = render(<FlatListItem item={data} onSelectionCallback={jest.fn()} />);
 
-    const nameComponents =
-      component.container.getElementsByClassName("imageformat");
+    const nameComponents = component.container.getElementsByClassName("imageformat");
 
     expect(nameComponents.length).toBe(1);
     expect(nameComponents[0].innerHTML).toBe("--");
@@ -80,12 +59,9 @@ describe("FlatListItem", () => {
 
   it("check if imageFormat returns value", () => {
     const data = { imageFormat: ImageFormat.jpg } as IFileIndexItem;
-    const component = render(
-      <FlatListItem item={data} onSelectionCallback={jest.fn()} />
-    );
+    const component = render(<FlatListItem item={data} onSelectionCallback={jest.fn()} />);
 
-    const nameComponents =
-      component.container.getElementsByClassName("imageformat");
+    const nameComponents = component.container.getElementsByClassName("imageformat");
 
     expect(nameComponents.length).toBe(1);
     expect(nameComponents[0].innerHTML).toBe("jpg");

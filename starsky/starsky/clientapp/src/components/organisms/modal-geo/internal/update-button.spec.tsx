@@ -52,9 +52,7 @@ describe("UpdateButton", () => {
         propsCollections
       ).updateButton(false, handleExit, latitude, longitude, language)
     );
-    const button = getByText(
-      language.key(localization.MessageAddLocation)
-    ) as HTMLButtonElement;
+    const button = getByText(language.key(localization.MessageAddLocation)) as HTMLButtonElement;
     expect(button.disabled).toBe(true);
   });
 
@@ -69,9 +67,7 @@ describe("UpdateButton", () => {
         propsCollections
       ).updateButton(true, handleExit, latitude, longitude, language)
     );
-    const button = getByText(
-      language.key(localization.MessageAddLocation)
-    ) as HTMLButtonElement;
+    const button = getByText(language.key(localization.MessageAddLocation)) as HTMLButtonElement;
 
     expect(button.disabled).toBe(false);
   });

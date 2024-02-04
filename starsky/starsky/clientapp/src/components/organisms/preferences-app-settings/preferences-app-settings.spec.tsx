@@ -1,21 +1,9 @@
-import {
-  act,
-  createEvent,
-  fireEvent,
-  render,
-  screen,
-  waitFor
-} from "@testing-library/react";
+import { act, createEvent, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import * as useFetch from "../../../hooks/use-fetch";
-import {
-  IConnectionDefault,
-  newIConnectionDefault
-} from "../../../interfaces/IConnectionDefault";
+import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import * as FetchPost from "../../../shared/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
-import PreferencesAppSettings, {
-  ChangeSetting
-} from "./preferences-app-settings";
+import PreferencesAppSettings, { ChangeSetting } from "./preferences-app-settings";
 
 describe("PreferencesAppSettings", () => {
   it("renders", () => {
@@ -150,8 +138,8 @@ describe("PreferencesAppSettings", () => {
 
       await fireEvent(storageFolder, blurEventYear);
 
-      expect(fetchPostSpy).toBeCalled();
-      expect(fetchPostSpy).toBeCalledWith(
+      expect(fetchPostSpy).toHaveBeenCalled();
+      expect(fetchPostSpy).toHaveBeenCalledWith(
         new UrlQuery().UrlApiAppSettings(),
         "storageFolder=12345"
       );
@@ -185,8 +173,10 @@ describe("PreferencesAppSettings", () => {
         .mockImplementationOnce(() => appSettings);
 
       // This fails -->
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({ ...newIConnectionDefault(), statusCode: 404 });
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        ...newIConnectionDefault(),
+        statusCode: 404
+      });
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -207,8 +197,8 @@ describe("PreferencesAppSettings", () => {
         await fireEvent(storageFolder, blurEventYear);
       });
 
-      expect(fetchPostSpy).toBeCalled();
-      expect(fetchPostSpy).toBeCalledWith(
+      expect(fetchPostSpy).toHaveBeenCalled();
+      expect(fetchPostSpy).toHaveBeenCalledWith(
         new UrlQuery().UrlApiAppSettings(),
         "storageFolder=12345"
       );
@@ -269,7 +259,7 @@ describe("PreferencesAppSettings", () => {
 
       verbose.click();
 
-      await waitFor(() => expect(fetchPostSpy).toBeCalled());
+      await waitFor(() => expect(fetchPostSpy).toHaveBeenCalled());
 
       component.unmount();
     });
@@ -278,34 +268,30 @@ describe("PreferencesAppSettings", () => {
   describe("ChangeSetting", () => {
     it("should set value with empty string as name when name is not provided", async () => {
       const value = "test value";
-      const fetchPostSpy = jest
-        .spyOn(FetchPost, "default")
-        .mockImplementationOnce(() => {
-          return Promise.resolve({
-            statusCode: 200,
-            data: null
-          });
+      const fetchPostSpy = jest.spyOn(FetchPost, "default").mockImplementationOnce(() => {
+        return Promise.resolve({
+          statusCode: 200,
+          data: null
         });
+      });
 
       const statusCode = await ChangeSetting(value);
       expect(statusCode).toBe(200);
-      expect(fetchPostSpy).toBeCalled();
+      expect(fetchPostSpy).toHaveBeenCalled();
     });
 
     it("should set value with provided name when name is provided", async () => {
       const value = "test value";
       const name = "test name";
-      const fetchPostSpy = jest
-        .spyOn(FetchPost, "default")
-        .mockImplementationOnce(() => {
-          return Promise.resolve({
-            statusCode: 200,
-            data: null
-          });
+      const fetchPostSpy = jest.spyOn(FetchPost, "default").mockImplementationOnce(() => {
+        return Promise.resolve({
+          statusCode: 200,
+          data: null
         });
+      });
       const statusCode = await ChangeSetting(value, name);
       expect(statusCode).toBe(200);
-      expect(fetchPostSpy).toBeCalled();
+      expect(fetchPostSpy).toHaveBeenCalled();
     });
   });
 });

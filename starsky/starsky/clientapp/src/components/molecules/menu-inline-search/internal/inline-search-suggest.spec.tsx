@@ -1,8 +1,6 @@
 import { fireEvent, render } from "@testing-library/react";
 import { IConnectionDefault } from "../../../../interfaces/IConnectionDefault";
-import InlineSearchSuggest, {
-  IInlineSearchSuggestProps
-} from "./inline-search-suggest";
+import InlineSearchSuggest, { IInlineSearchSuggestProps } from "./inline-search-suggest";
 
 describe("inline-search-suggest", () => {
   it("renders", () => {
@@ -30,9 +28,7 @@ describe("inline-search-suggest", () => {
     };
 
     it("renders default menu items when suggest is empty", () => {
-      const { getByText } = render(
-        <InlineSearchSuggest {...props} suggest={[]} />
-      );
+      const { getByText } = render(<InlineSearchSuggest {...props} suggest={[]} />);
       expect(getByText("Home")).toBeTruthy();
       expect(getByText("Photos of this week")).toBeTruthy();
       expect(getByText("Import")).toBeTruthy();

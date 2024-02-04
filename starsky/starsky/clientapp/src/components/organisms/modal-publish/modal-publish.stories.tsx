@@ -5,13 +5,7 @@ export default {
 };
 
 export const Default = () => {
-  return (
-    <ModalPublish
-      isOpen={true}
-      select={["/"]}
-      handleExit={() => {}}
-    ></ModalPublish>
-  );
+  return <ModalPublish isOpen={true} select={["/"]} handleExit={() => {}}></ModalPublish>;
 };
 
 Default.story = {

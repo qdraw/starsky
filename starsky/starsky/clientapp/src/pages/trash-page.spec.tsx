@@ -20,11 +20,9 @@ describe("TrashPage", () => {
   });
 
   it("check if context is called", () => {
-    const contextSpy = jest
-      .spyOn(ArchiveContextWrapper, "default")
-      .mockImplementationOnce(() => {
-        return <></>;
-      });
+    const contextSpy = jest.spyOn(ArchiveContextWrapper, "default").mockImplementationOnce(() => {
+      return <></>;
+    });
 
     jest.spyOn(useSearchList, "default").mockImplementationOnce(() => {
       return {
@@ -35,15 +33,13 @@ describe("TrashPage", () => {
 
     const trashPage = render(<TrashPage />);
 
-    expect(contextSpy).toBeCalled();
+    expect(contextSpy).toHaveBeenCalled();
 
     trashPage.unmount();
   });
 
   it("Internal Error null", () => {
-    jest
-      .spyOn(useSearchList, "default")
-      .mockImplementationOnce(() => null as any);
+    jest.spyOn(useSearchList, "default").mockImplementationOnce(() => null as any);
 
     const component = render(<TrashPage />);
     expect(component.container.innerHTML).toBe("Something went wrong");
@@ -52,9 +48,7 @@ describe("TrashPage", () => {
   });
 
   it("Internal Error plain object", () => {
-    jest
-      .spyOn(useSearchList, "default")
-      .mockImplementationOnce(() => ({}) as any);
+    jest.spyOn(useSearchList, "default").mockImplementationOnce(() => ({}) as any);
 
     const component = render(<TrashPage />);
     expect(component.container.innerHTML).toBe("Something went wrong");
@@ -75,7 +69,7 @@ describe("TrashPage", () => {
 
     const component = render(<TrashPage />);
 
-    expect(applicationExceptionSpy).toBeCalled();
+    expect(applicationExceptionSpy).toHaveBeenCalled();
 
     component.unmount();
   });
@@ -96,7 +90,7 @@ describe("TrashPage", () => {
 
     const component = render(<TrashPage />);
 
-    expect(preloaderSpy).toBeCalled();
+    expect(preloaderSpy).toHaveBeenCalled();
 
     component.unmount();
   });

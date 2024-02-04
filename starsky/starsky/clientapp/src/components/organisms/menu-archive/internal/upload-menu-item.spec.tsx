@@ -16,14 +16,12 @@ describe("MenuArchive", () => {
 
   describe("with Context", () => {
     it("test callback", () => {
-      const dropAreaSpy = jest
-        .spyOn(DropArea, "default")
-        .mockImplementation((props) => {
-          if (props.callback) {
-            props.callback([]);
-          }
-          return <div></div>;
-        });
+      const dropAreaSpy = jest.spyOn(DropArea, "default").mockImplementation((props) => {
+        if (props.callback) {
+          props.callback([]);
+        }
+        return <div></div>;
+      });
 
       const dispatch = jest.fn();
       const component = render(
@@ -35,8 +33,8 @@ describe("MenuArchive", () => {
         />
       );
 
-      expect(dropAreaSpy).toBeCalled();
-      expect(dispatch).toBeCalled();
+      expect(dropAreaSpy).toHaveBeenCalled();
+      expect(dispatch).toHaveBeenCalled();
 
       component.unmount();
     });

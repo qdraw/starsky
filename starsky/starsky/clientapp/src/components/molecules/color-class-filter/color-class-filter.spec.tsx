@@ -29,9 +29,7 @@ describe("ColorClassFilter", () => {
       </MemoryRouter>
     );
 
-    const colorClass = screen.queryByTestId(
-      "color-class-filter-2"
-    ) as HTMLAnchorElement;
+    const colorClass = screen.queryByTestId("color-class-filter-2") as HTMLAnchorElement;
     expect(colorClass).toBeTruthy();
     colorClass.click();
 
@@ -83,9 +81,7 @@ describe("ColorClassFilter", () => {
       </MemoryRouter>
     );
 
-    const colorClass = screen.queryByTestId(
-      "color-class-filter-2"
-    ) as HTMLAnchorElement;
+    const colorClass = screen.queryByTestId("color-class-filter-2") as HTMLAnchorElement;
     expect(colorClass).toBeTruthy();
 
     act(() => {
@@ -112,9 +108,7 @@ describe("ColorClassFilter", () => {
       </MemoryRouter>
     );
 
-    const colorClass = screen.queryByTestId(
-      "color-class-filter-1"
-    ) as HTMLAnchorElement;
+    const colorClass = screen.queryByTestId("color-class-filter-1") as HTMLAnchorElement;
     expect(colorClass).toBeTruthy();
 
     expect(colorClass.classList).toContain("active");
@@ -129,8 +123,8 @@ describe("ColorClassFilter", () => {
       colorClass.click();
     });
 
-    expect(urlToStringSpy).toBeCalled();
-    expect(urlToStringSpy).toBeCalledWith({ colorClass: [] });
+    expect(urlToStringSpy).toHaveBeenCalled();
+    expect(urlToStringSpy).toHaveBeenCalledWith({ colorClass: [] });
 
     component.unmount();
     Router.navigate("/");

@@ -11,8 +11,7 @@ export class DocumentTitle {
     // The breadcrumb implementation of Archive/DetailView does not include the current item
     if (
       archive.subPath &&
-      (archive.pageType === PageType.Archive ||
-        archive.pageType === PageType.DetailView)
+      (archive.pageType === PageType.Archive || archive.pageType === PageType.DetailView)
     ) {
       name = archive.subPath.split("/")[archive.subPath.split("/").length - 1];
       if (name.length === 0) {
@@ -25,10 +24,7 @@ export class DocumentTitle {
     }
 
     // For search
-    if (
-      archive.pageType === PageType.Search &&
-      (archive as IArchiveProps).searchQuery
-    ) {
+    if (archive.pageType === PageType.Search && (archive as IArchiveProps).searchQuery) {
       name = (archive as IArchiveProps).searchQuery as string;
     }
 
@@ -42,10 +38,7 @@ export class DocumentTitle {
   public GetDocumentTitle = (prefix: string): string => {
     if (!prefix) return "Starsky App";
     prefix += " - Starsky App";
-    if (
-      new BrowserDetect().IsElectronApp() &&
-      window.location.hostname !== "localhost"
-    ) {
+    if (new BrowserDetect().IsElectronApp() && window.location.hostname !== "localhost") {
       prefix += ` - ${window.location.hostname}`;
     }
     return prefix;

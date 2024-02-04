@@ -1,10 +1,6 @@
 import { SetStateAction, useEffect, useState } from "react";
 import { IArchive, newIArchive } from "../interfaces/IArchive";
-import {
-  IDetailView,
-  PageType,
-  newDetailView
-} from "../interfaces/IDetailView";
+import { IDetailView, PageType, newDetailView } from "../interfaces/IDetailView";
 import { CastToInterface } from "../shared/cast-to-interface";
 import { FileListCache } from "../shared/filelist-cache";
 import { URLPath } from "../shared/url-path";
@@ -78,9 +74,7 @@ export const fetchUseFileListContentCache = async (
   const content = new FileListCache().CacheGet(locationSearch);
   if (content) {
     console.log(
-      ` -- Fetch Content ${new Date(
-        content.dateCache
-      ).toLocaleTimeString()} ${locationSearch} -- `
+      ` -- Fetch Content ${new Date(content.dateCache).toLocaleTimeString()} ${locationSearch} -- `
     );
     setPageTypeHelper(content);
   } else {
@@ -129,9 +123,7 @@ const useFileList = (
         setArchive(new CastToInterface().MediaArchive(responseObject).data);
         return true;
       case PageType.DetailView:
-        setDetailView(
-          new CastToInterface().MediaDetailView(responseObject).data
-        );
+        setDetailView(new CastToInterface().MediaDetailView(responseObject).data);
         return true;
       default:
         break;

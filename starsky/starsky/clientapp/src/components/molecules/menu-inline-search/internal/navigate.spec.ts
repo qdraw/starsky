@@ -14,9 +14,7 @@ describe("Navigate", () => {
 
   it("navigates to search page with query", () => {
     Navigate(history, setFormFocus, inputFormControlReference, query);
-    expect(history.navigate).toHaveBeenCalledWith(
-      new UrlQuery().UrlSearchPage(query)
-    );
+    expect(history.navigate).toHaveBeenCalledWith(new UrlQuery().UrlSearchPage(query));
   });
 
   it("updates input field value with query", () => {

@@ -19,11 +19,7 @@ describe("GoToParentFolder", () => {
     } as any; // Define your state object as per your interface
 
     const { getByTestId } = render(
-      <GoToParentFolder
-        isSearchQuery={true}
-        history={history as any}
-        state={state as any}
-      />
+      <GoToParentFolder isSearchQuery={true} history={history as any} state={state as any} />
     );
 
     const parentFolderLink = getByTestId("go-to-parent-folder");
@@ -52,11 +48,7 @@ describe("GoToParentFolder", () => {
     } as any; // Define your state object as per your interface
 
     const { getByTestId } = render(
-      <GoToParentFolder
-        isSearchQuery={true}
-        history={history as any}
-        state={state as any}
-      />
+      <GoToParentFolder isSearchQuery={true} history={history as any} state={state as any} />
     );
 
     const parentFolderLink = getByTestId("go-to-parent-folder");
@@ -85,11 +77,7 @@ describe("GoToParentFolder", () => {
     } as any; // Define your state object as per your interface
 
     const { getByTestId } = render(
-      <GoToParentFolder
-        isSearchQuery={true}
-        history={history as any}
-        state={state as any}
-      />
+      <GoToParentFolder isSearchQuery={true} history={history as any} state={state as any} />
     );
 
     const parentFolderLink = getByTestId("go-to-parent-folder");
@@ -101,11 +89,7 @@ describe("GoToParentFolder", () => {
 
   it("should not render when isSearchQuery is false", () => {
     const { container } = render(
-      <GoToParentFolder
-        isSearchQuery={false}
-        history={null as any}
-        state={null as any}
-      />
+      <GoToParentFolder isSearchQuery={false} history={null as any} state={null as any} />
     );
 
     expect(container.firstChild).toBeNull();

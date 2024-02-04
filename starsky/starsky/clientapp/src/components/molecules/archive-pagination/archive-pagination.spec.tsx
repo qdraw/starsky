@@ -1,9 +1,6 @@
 import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import {
-  IRelativeObjects,
-  newIRelativeObjects
-} from "../../../interfaces/IDetailView";
+import { IRelativeObjects, newIRelativeObjects } from "../../../interfaces/IDetailView";
 import ArchivePagination from "./archive-pagination";
 
 describe("ArchivePagination", () => {
@@ -26,9 +23,7 @@ describe("ArchivePagination", () => {
         <ArchivePagination relativeObjects={relativeObjects} />
       </MemoryRouter>
     );
-    const next = Component.queryByTestId(
-      "archive-pagination-next"
-    ) as HTMLAnchorElement;
+    const next = Component.queryByTestId("archive-pagination-next") as HTMLAnchorElement;
     expect(next.href).toBe("http://localhost/?f=next");
   });
 
@@ -38,9 +33,7 @@ describe("ArchivePagination", () => {
         <ArchivePagination relativeObjects={relativeObjects} />
       </MemoryRouter>
     );
-    const next = Component.queryByTestId(
-      "archive-pagination-prev"
-    ) as HTMLAnchorElement;
+    const next = Component.queryByTestId("archive-pagination-prev") as HTMLAnchorElement;
     expect(next.href).toBe("http://localhost/?f=prev");
   });
 });

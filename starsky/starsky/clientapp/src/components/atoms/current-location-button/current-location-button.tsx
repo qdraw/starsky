@@ -1,16 +1,13 @@
 import React, { useState } from "react";
-import {
-  Coordinates,
-  Position
-} from "../../../shared/coordinates-position.types";
+import { Coordinates, Position } from "../../../shared/coordinates-position.types";
 
 export type CurrentLocationButtonPropTypes = {
   callback?(coords: Coordinates): void;
 };
 
-const CurrentLocationButton: React.FunctionComponent<
-  CurrentLocationButtonPropTypes
-> = ({ callback }) => {
+const CurrentLocationButton: React.FunctionComponent<CurrentLocationButtonPropTypes> = ({
+  callback
+}) => {
   function currentPositionSuccess(position: Position) {
     setError(false);
     if (!callback) return;
@@ -28,10 +25,7 @@ const CurrentLocationButton: React.FunctionComponent<
       setError(true);
       return;
     }
-    navigator.geolocation.getCurrentPosition(
-      currentPositionSuccess,
-      currentPositionError
-    );
+    navigator.geolocation.getCurrentPosition(currentPositionSuccess, currentPositionError);
   }
 
   return (

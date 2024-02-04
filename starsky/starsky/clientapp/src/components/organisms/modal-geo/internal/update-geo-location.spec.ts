@@ -7,25 +7,17 @@ import { UpdateGeoLocation } from "./update-geo-location";
 describe("updateGeoLocation", () => {
   it("no location null result", async () => {
     const setErrorSpy = jest.fn();
-    const result = await UpdateGeoLocation(
-      "",
-      "/",
-      null,
-      setErrorSpy,
-      jest.fn(),
-      true
-    );
+    const result = await UpdateGeoLocation("", "/", null, setErrorSpy, jest.fn(), true);
     expect(result).toBe(null);
   });
 
   it("update failed", async () => {
     const setErrorSpy = jest.fn();
 
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve({
-        statusCode: 403,
-        data: null
-      } as IConnectionDefault);
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 403,
+      data: null
+    } as IConnectionDefault);
     jest.spyOn(FetchGet, "default").mockReset();
     const fetchGetSpy = jest
       .spyOn(FetchGet, "default")
@@ -44,21 +36,20 @@ describe("updateGeoLocation", () => {
       true
     );
 
-    expect(fetchGetSpy).toBeCalled();
-    expect(fetchGetSpy).toBeCalledTimes(1);
+    expect(fetchGetSpy).toHaveBeenCalled();
+    expect(fetchGetSpy).toHaveBeenCalledTimes(1);
 
-    expect(setErrorSpy).toBeCalled();
-    expect(setErrorSpy).toBeCalledTimes(1);
+    expect(setErrorSpy).toHaveBeenCalled();
+    expect(setErrorSpy).toHaveBeenCalledTimes(1);
   });
 
   it("update failed 1", async () => {
     const setErrorSpy = jest.fn();
 
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve({
-        statusCode: 403,
-        data: null
-      } as IConnectionDefault);
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 403,
+      data: null
+    } as IConnectionDefault);
     jest.spyOn(FetchGet, "default").mockReset();
     const fetchGetSpy = jest
       .spyOn(FetchGet, "default")
@@ -77,29 +68,28 @@ describe("updateGeoLocation", () => {
       true
     );
 
-    expect(fetchGetSpy).toBeCalled();
-    expect(fetchGetSpy).toBeCalledTimes(1);
+    expect(fetchGetSpy).toHaveBeenCalled();
+    expect(fetchGetSpy).toHaveBeenCalledTimes(1);
 
-    expect(fetchPostSpy).toBeCalled();
-    expect(fetchPostSpy).toBeCalledTimes(1);
+    expect(fetchPostSpy).toHaveBeenCalled();
+    expect(fetchPostSpy).toHaveBeenCalledTimes(1);
 
-    expect(setErrorSpy).toBeCalled();
-    expect(setErrorSpy).toBeCalledTimes(1);
+    expect(setErrorSpy).toHaveBeenCalled();
+    expect(setErrorSpy).toHaveBeenCalledTimes(1);
   });
 
   it("update succeed", async () => {
     const setErrorSpy = jest.fn();
 
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve({
-        statusCode: 200,
-        data: {
-          locationCity: "a",
-          locationCountry: "b",
-          locationCountryCode: "c",
-          locationState: "d"
-        }
-      } as IConnectionDefault);
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: {
+        locationCity: "a",
+        locationCountry: "b",
+        locationCountryCode: "c",
+        locationState: "d"
+      }
+    } as IConnectionDefault);
     jest.spyOn(FetchGet, "default").mockReset();
     const fetchGetSpy = jest
       .spyOn(FetchGet, "default")
@@ -118,13 +108,13 @@ describe("updateGeoLocation", () => {
       true
     );
 
-    expect(fetchGetSpy).toBeCalled();
-    expect(fetchGetSpy).toBeCalledTimes(1);
+    expect(fetchGetSpy).toHaveBeenCalled();
+    expect(fetchGetSpy).toHaveBeenCalledTimes(1);
 
-    expect(fetchPostSpy).toBeCalled();
-    expect(fetchPostSpy).toBeCalledTimes(1);
+    expect(fetchPostSpy).toHaveBeenCalled();
+    expect(fetchPostSpy).toHaveBeenCalledTimes(1);
 
-    expect(setErrorSpy).toBeCalledTimes(0);
+    expect(setErrorSpy).toHaveBeenCalledTimes(0);
     expect(result).toStrictEqual({
       locationCity: "a",
       locationCountry: "b",

@@ -4,9 +4,7 @@ import BrowserDetect from "../../../shared/browser-detect";
 import { DifferenceInDate } from "../../../shared/date";
 import { Language } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url-query";
-import Notification, {
-  NotificationType
-} from "../../atoms/notification/notification";
+import Notification, { NotificationType } from "../../atoms/notification/notification";
 
 /**
  * Name of Storage Name
@@ -17,9 +15,7 @@ export const CheckForUpdatesLocalStorageName = "HealthCheckForUpdates";
  * Skip display of message
  */
 export function SkipDisplayOfUpdate(): boolean {
-  const localStorageItem = localStorage.getItem(
-    CheckForUpdatesLocalStorageName
-  );
+  const localStorageItem = localStorage.getItem(CheckForUpdatesLocalStorageName);
   if (!localStorageItem) return false;
 
   const getItem = parseInt(localStorageItem);
@@ -31,10 +27,7 @@ export function SkipDisplayOfUpdate(): boolean {
  * Component with health check for updates
  */
 const HealthCheckForUpdates: React.FunctionComponent = () => {
-  const checkForUpdates = useFetch(
-    new UrlQuery().UrlHealthCheckForUpdates(),
-    "get"
-  );
+  const checkForUpdates = useFetch(new UrlQuery().UrlHealthCheckForUpdates(), "get");
 
   const settings = useGlobalSettings();
 
@@ -48,12 +41,7 @@ const HealthCheckForUpdates: React.FunctionComponent = () => {
   let WhereToFindRelease = language.token(
     ReleasesUrlToken,
     ["{releasesToken}"],
-    [
-      language.text(
-        "Ga naar het release overzicht",
-        "Go to the release overview"
-      )
-    ]
+    [language.text("Ga naar het release overzicht", "Go to the release overview")]
   );
   if (new BrowserDetect().IsElectronApp())
     WhereToFindRelease = language.text(
@@ -75,16 +63,11 @@ const HealthCheckForUpdates: React.FunctionComponent = () => {
   return (
     <Notification
       callback={() => {
-        localStorage.setItem(
-          CheckForUpdatesLocalStorageName,
-          Date.now().toString()
-        );
+        localStorage.setItem(CheckForUpdatesLocalStorageName, Date.now().toString());
       }}
       type={NotificationType.default}
     >
-      <div
-        dangerouslySetInnerHTML={{ __html: MessageNewVersionUpdateHtml }}
-      ></div>
+      <div dangerouslySetInnerHTML={{ __html: MessageNewVersionUpdateHtml }}></div>
     </Notification>
   );
 };

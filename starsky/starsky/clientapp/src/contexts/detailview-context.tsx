@@ -1,17 +1,11 @@
 import React, { createContext, useMemo } from "react";
-import {
-  IDetailView,
-  IRelativeObjects,
-  PageType
-} from "../interfaces/IDetailView";
+import { IDetailView, IRelativeObjects, PageType } from "../interfaces/IDetailView";
 import { IExifStatus } from "../interfaces/IExifStatus";
 import { Orientation, newIFileIndexItem } from "../interfaces/IFileIndexItem";
 import { IUrl } from "../interfaces/IUrl";
 import { FileListCache } from "../shared/filelist-cache";
 
-const DetailViewContext = createContext<IDetailViewContext>(
-  {} as IDetailViewContext
-);
+const DetailViewContext = createContext<IDetailViewContext>({} as IDetailViewContext);
 
 type ReactNodeProps = { children: React.ReactNode };
 
@@ -106,17 +100,14 @@ function updateReducer(
   } = action;
 
   if (filePath !== state.fileIndexItem.filePath) {
-    console.log(
-      `Error: filePath is not the same ${filePath} != ${state.fileIndexItem.filePath}`
-    );
+    console.log(`Error: filePath is not the same ${filePath} != ${state.fileIndexItem.filePath}`);
     return state;
   }
 
   if (tags !== undefined) state.fileIndexItem.tags = tags;
   if (description !== undefined) state.fileIndexItem.description = description;
   if (title !== undefined) state.fileIndexItem.title = title;
-  if (colorclass !== undefined && colorclass !== -1)
-    state.fileIndexItem.colorClass = colorclass;
+  if (colorclass !== undefined && colorclass !== -1) state.fileIndexItem.colorClass = colorclass;
   if (status) state.fileIndexItem.status = status;
   if (fileHash) state.fileIndexItem.fileHash = fileHash;
   if (orientation) state.fileIndexItem.orientation = orientation;
@@ -157,17 +148,11 @@ function updateReducerSetLocationTypes(
   if (locationState) state.fileIndexItem.locationState = locationState;
 }
 
-export function detailviewReducer(
-  state: IDetailView,
-  action: DetailViewAction
-): IDetailView {
+export function detailviewReducer(state: IDetailView, action: DetailViewAction): IDetailView {
   switch (action.type) {
     case "remove":
       if (action.tags && state.fileIndexItem.tags !== undefined)
-        state.fileIndexItem.tags = state.fileIndexItem.tags.replace(
-          action.tags,
-          ""
-        );
+        state.fileIndexItem.tags = state.fileIndexItem.tags.replace(action.tags, "");
       // Need to update otherwise other events are not triggered
       return updateCache({ ...state, lastUpdated: new Date() });
     case "append":
@@ -205,19 +190,11 @@ function DetailViewContextProvider({ children }: Readonly<ReactNodeProps>) {
   const value1 = useMemo(() => ({ state, dispatch }), [state, dispatch]);
 
   // [B]
-  return (
-    <DetailViewContext.Provider value={value1}>
-      {children}
-    </DetailViewContext.Provider>
-  );
+  return <DetailViewContext.Provider value={value1}>{children}</DetailViewContext.Provider>;
 }
 
 const DetailViewContextConsumer = DetailViewContext.Consumer;
 
-export {
-  DetailViewContext,
-  DetailViewContextConsumer,
-  DetailViewContextProvider
-};
+export { DetailViewContext, DetailViewContextConsumer, DetailViewContextProvider };
 
 export const useDetailViewContext = () => React.useContext(DetailViewContext);

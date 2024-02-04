@@ -19,20 +19,9 @@ export function UpdateMap(
 
   const map = AddMap(mapLocationCenter, node, zoom);
 
-  isFormEnabled = AddDefaultMarker(
-    location,
-    map,
-    isFormEnabled,
-    setLocation,
-    setIsLocationUpdated
-  );
+  isFormEnabled = AddDefaultMarker(location, map, isFormEnabled, setLocation, setIsLocationUpdated);
 
-  AddDefaultClickSetMarker(
-    map,
-    isFormEnabled,
-    setLocation,
-    setIsLocationUpdated
-  );
+  AddDefaultClickSetMarker(map, isFormEnabled, setLocation, setIsLocationUpdated);
 
   setMapState(map);
 }

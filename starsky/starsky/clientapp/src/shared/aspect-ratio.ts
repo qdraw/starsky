@@ -29,11 +29,7 @@ class AspectRatio {
    * @param height and the height
    * @param filter - ignore non values in output
    */
-  public ratio(
-    width: number,
-    height: number,
-    filter: boolean = true
-  ): string | null {
+  public ratio(width: number, height: number, filter: boolean = true): string | null {
     const r = this.gcd(width, height);
     const widthRatio = width / r;
     const heightRatio = height / r;

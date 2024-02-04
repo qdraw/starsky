@@ -1,19 +1,8 @@
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor
-} from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { IDetailView } from "../../../interfaces/IDetailView.ts";
-import {
-  IFileIndexItem,
-  Orientation
-} from "../../../interfaces/IFileIndexItem.ts";
+import { IFileIndexItem, Orientation } from "../../../interfaces/IFileIndexItem.ts";
 import * as FetchGet from "../../../shared/fetch-get.ts"; // for expect assertions
-import MenuOptionRotateImage90, {
-  requestNewFileHash
-} from "./menu-option-rotate-image-90.tsx";
+import MenuOptionRotateImage90, { requestNewFileHash } from "./menu-option-rotate-image-90.tsx";
 
 describe("MenuOptionRotateImage90", () => {
   const mockState = {
@@ -129,11 +118,7 @@ describe("MenuOptionRotateImage90", () => {
     it("returns null if FetchGet fails", async () => {
       fetchGetSpy.mockResolvedValueOnce(null);
 
-      const result = await requestNewFileHash(
-        mockState,
-        mockSetIsLoading,
-        mockDispatch
-      );
+      const result = await requestNewFileHash(mockState, mockSetIsLoading, mockDispatch);
 
       expect(result).toBeNull();
       expect(mockSetIsLoading).toHaveBeenCalledTimes(0);
@@ -145,11 +130,7 @@ describe("MenuOptionRotateImage90", () => {
       };
       fetchGetSpy.mockResolvedValueOnce(mockResult);
 
-      const result = await requestNewFileHash(
-        mockState,
-        mockSetIsLoading,
-        mockDispatch
-      );
+      const result = await requestNewFileHash(mockState, mockSetIsLoading, mockDispatch);
 
       expect(result).toBeNull();
       expect(mockSetIsLoading).toHaveBeenCalledWith(false);
@@ -167,11 +148,7 @@ describe("MenuOptionRotateImage90", () => {
       };
       fetchGetSpy.mockResolvedValueOnce(mockResult);
 
-      const result = await requestNewFileHash(
-        mockState,
-        mockSetIsLoading,
-        mockDispatch
-      );
+      const result = await requestNewFileHash(mockState, mockSetIsLoading, mockDispatch);
 
       expect(result).toBe(true);
       expect(mockDispatch).toHaveBeenCalledWith({
@@ -195,11 +172,7 @@ describe("MenuOptionRotateImage90", () => {
       };
       fetchGetSpy.mockResolvedValueOnce(mockResult);
 
-      const result = await requestNewFileHash(
-        mockState,
-        mockSetIsLoading,
-        mockDispatch
-      );
+      const result = await requestNewFileHash(mockState, mockSetIsLoading, mockDispatch);
 
       expect(result).toBe(false);
       expect(mockDispatch).toHaveBeenCalledTimes(0);

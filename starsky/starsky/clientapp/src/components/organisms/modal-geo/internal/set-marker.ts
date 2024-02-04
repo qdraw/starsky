@@ -30,9 +30,7 @@ export function SetMarker(
     }
   );
 
-  markerLocal.on("dragend", (event) =>
-    OnDrag(event, setLocation, setIsLocationUpdated)
-  );
+  markerLocal.on("dragend", (event) => OnDrag(event, setLocation, setIsLocationUpdated));
 
   setLocation({
     latitude: LatLongRound(lat),

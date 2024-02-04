@@ -7,19 +7,19 @@ describe("WebSocketService", () => {
     it("onOpen", () => {
       const callback = jest.fn();
       webSocketService.onOpen(callback);
-      expect(callback).toBeCalledTimes(0);
+      expect(callback).toHaveBeenCalledTimes(0);
     });
 
     it("onClose", () => {
       const callback = jest.fn();
       webSocketService.onClose(callback);
-      expect(callback).toBeCalledTimes(0);
+      expect(callback).toHaveBeenCalledTimes(0);
     });
 
     it("onError", () => {
       const callback = jest.fn();
       webSocketService.onError(callback);
-      expect(callback).toBeCalled();
+      expect(callback).toHaveBeenCalled();
     });
 
     it("send", () => {
@@ -30,7 +30,7 @@ describe("WebSocketService", () => {
     it("onMessage", () => {
       const callback = jest.fn();
       webSocketService.onMessage(callback);
-      expect(callback).toBeCalledTimes(0);
+      expect(callback).toHaveBeenCalledTimes(0);
     });
   });
 });

@@ -10,10 +10,9 @@ interface IMenuOptionMoveToTrashProps {
   setEnableMoreMenu?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const MenuOptionMoveFolderToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps> =
-  memo(({ isReadOnly, subPath, setEnableMoreMenu }) => {
-    const [modalMoveFolderToTrashOpen, setModalMoveFolderToTrashOpen] =
-      useState(false);
+const MenuOptionMoveFolderToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps> = memo(
+  ({ isReadOnly, subPath, setEnableMoreMenu }) => {
+    const [modalMoveFolderToTrashOpen, setModalMoveFolderToTrashOpen] = useState(false);
 
     return (
       <>
@@ -39,6 +38,7 @@ const MenuOptionMoveFolderToTrash: React.FunctionComponent<IMenuOptionMoveToTras
         />
       </>
     );
-  });
+  }
+);
 
 export default MenuOptionMoveFolderToTrash;

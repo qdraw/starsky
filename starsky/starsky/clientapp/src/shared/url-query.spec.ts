@@ -141,19 +141,12 @@ describe("url-query", () => {
     });
 
     it("remove search query", () => {
-      const test = urlQuery.updateFilePathHash(
-        "?f=test&colorclass=1&t=1",
-        "test1",
-        true
-      );
+      const test = urlQuery.updateFilePathHash("?f=test&colorclass=1&t=1", "test1", true);
       expect(test).toStrictEqual("/?f=test1&colorClass=1");
     });
 
     it("keep search query", () => {
-      const test = urlQuery.updateFilePathHash(
-        "?f=test&colorclass=1&t=1",
-        "test1"
-      );
+      const test = urlQuery.updateFilePathHash("?f=test&colorclass=1&t=1", "test1");
       expect(test).toStrictEqual("/?f=test1&colorClass=1&t=1");
     });
 
@@ -208,20 +201,12 @@ describe("url-query", () => {
 
   describe("UrlThumbnailImageLargeOrExtraLarge", () => {
     it("should contain hash_test (large false)", () => {
-      const test = urlQuery.UrlThumbnailImageLargeOrExtraLarge(
-        "hash_test",
-        "filePath",
-        false
-      );
+      const test = urlQuery.UrlThumbnailImageLargeOrExtraLarge("hash_test", "filePath", false);
       expect(test).toContain("hash_test");
     });
 
     it("should contain hash_test (large true)", () => {
-      const test = urlQuery.UrlThumbnailImageLargeOrExtraLarge(
-        "hash_test",
-        "filePath",
-        true
-      );
+      const test = urlQuery.UrlThumbnailImageLargeOrExtraLarge("hash_test", "filePath", true);
       expect(test).toContain("hash_test");
     });
   });

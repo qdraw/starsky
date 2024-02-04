@@ -1,20 +1,10 @@
 import { act } from "react-dom/test-utils";
 import { IArchive, newIArchive } from "../interfaces/IArchive";
-import {
-  IDetailView,
-  IRelativeObjects,
-  PageType
-} from "../interfaces/IDetailView";
-import {
-  newIFileIndexItem,
-  newIFileIndexItemArray
-} from "../interfaces/IFileIndexItem";
+import { IDetailView, IRelativeObjects, PageType } from "../interfaces/IDetailView";
+import { newIFileIndexItem, newIFileIndexItemArray } from "../interfaces/IFileIndexItem";
 import { FileListCache } from "../shared/filelist-cache";
 import { mountReactHook } from "./___tests___/test-hook";
-import useFileList, {
-  IFileList,
-  fetchContentUseFileList
-} from "./use-filelist";
+import useFileList, { IFileList, fetchContentUseFileList } from "./use-filelist";
 import React from "react";
 
 describe("UseFileList", () => {
@@ -61,14 +51,7 @@ describe("UseFileList", () => {
 
       await act(async () => {
         // perform changes within our component
-        await fetchContentUseFileList(
-          "test",
-          "test",
-          controller,
-          hook2,
-          false,
-          hook
-        );
+        await fetchContentUseFileList("test", "test", controller, hook2, false, hook);
       });
 
       expect(fetchSpy).toHaveBeenCalled();
@@ -92,14 +75,7 @@ describe("UseFileList", () => {
 
       await act(async () => {
         // perform changes within our component
-        await fetchContentUseFileList(
-          "test",
-          "test",
-          controller,
-          hook2,
-          false,
-          hook
-        );
+        await fetchContentUseFileList("test", "test", controller, hook2, false, hook);
       });
 
       expect(fetchSpy).toHaveBeenCalled();
@@ -122,14 +98,7 @@ describe("UseFileList", () => {
 
       await act(async () => {
         // perform changes within our component
-        await fetchContentUseFileList(
-          "test",
-          "test",
-          controller,
-          jest.fn(),
-          false,
-          hook
-        );
+        await fetchContentUseFileList("test", "test", controller, jest.fn(), false, hook);
       });
 
       expect(hook).toHaveBeenCalledWith(PageType.NotFound);
@@ -144,14 +113,7 @@ describe("UseFileList", () => {
 
       await act(async () => {
         // perform changes within our component
-        await fetchContentUseFileList(
-          "test",
-          "test",
-          controller,
-          jest.fn(),
-          false,
-          hook
-        );
+        await fetchContentUseFileList("test", "test", controller, jest.fn(), false, hook);
       });
 
       expect(hook).toHaveBeenCalledWith(PageType.Unauthorized);
@@ -167,14 +129,7 @@ describe("UseFileList", () => {
 
       await act(async () => {
         // perform changes within our component
-        await fetchContentUseFileList(
-          "test",
-          "test",
-          controller,
-          hook2,
-          false,
-          hook
-        );
+        await fetchContentUseFileList("test", "test", controller, hook2, false, hook);
       });
 
       expect(hook).toHaveBeenCalledTimes(1);
@@ -243,14 +198,7 @@ describe("UseFileList", () => {
       // console.error == undefined
       await act(async () => {
         // perform changes within our component
-        await fetchContentUseFileList(
-          "test",
-          "test",
-          controller,
-          jest.fn(),
-          false,
-          setPageTypeFn
-        );
+        await fetchContentUseFileList("test", "test", controller, jest.fn(), false, setPageTypeFn);
       });
 
       expect(setPageTypeFn).toHaveBeenCalledWith(PageType.ApplicationException);
@@ -386,14 +334,7 @@ describe("UseFileList error", () => {
 
     const controller = new AbortController();
     const setDataSpy = jest.fn();
-    await fetchContentUseFileList(
-      "test",
-      "test",
-      controller,
-      jest.fn(),
-      false,
-      setDataSpy
-    );
+    await fetchContentUseFileList("test", "test", controller, jest.fn(), false, setDataSpy);
 
     // fetchSpy
     expect(fetchSpy).toHaveBeenCalled();
@@ -416,14 +357,7 @@ describe("UseFileList error", () => {
 
     const controller = new AbortController();
     const setDataSpy = jest.fn();
-    await fetchContentUseFileList(
-      "test",
-      "test",
-      controller,
-      jest.fn(),
-      false,
-      setDataSpy
-    );
+    await fetchContentUseFileList("test", "test", controller, jest.fn(), false, setDataSpy);
     expect(fetchSpy).toHaveBeenCalled();
     expect(fetchSpy).toHaveBeenCalledWith("test", {
       credentials: "include",

@@ -1,5 +1,4 @@
-const setRouter =
-  require("../../../../starsky-tools/mock/set-router").setRouter;
+const setRouter = require("../../../../starsky-tools/mock/set-router").setRouter;
 var bodyParser = require("body-parser");
 
 const expressMiddleWare = (router) => {

@@ -1,18 +1,9 @@
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor
-} from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import React from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import * as useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import { IArchive } from "../../../interfaces/IArchive";
-import {
-  IConnectionDefault,
-  newIConnectionDefault
-} from "../../../interfaces/IConnectionDefault";
+import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { Router } from "../../../router-app/router-app";
@@ -219,9 +210,7 @@ describe("MenuArchive", () => {
 
       const component = render(<MenuArchive />);
 
-      const menuArchiveLabels = screen.getByTestId(
-        "menu-archive-labels"
-      ) as HTMLElement;
+      const menuArchiveLabels = screen.getByTestId("menu-archive-labels") as HTMLElement;
 
       expect(menuArchiveLabels).toBeTruthy();
 
@@ -229,9 +218,7 @@ describe("MenuArchive", () => {
         menuArchiveLabels.click();
       });
 
-      expect(Router.state.location.search).toBe(
-        "?select=test1,test2&sidebar=true"
-      );
+      expect(Router.state.location.search).toBe("?select=test1,test2&sidebar=true");
 
       component.unmount();
     });
@@ -258,9 +245,7 @@ describe("MenuArchive", () => {
 
       const component = render(<MenuArchive />);
 
-      const menuArchiveLabels = screen.getByTestId(
-        "menu-archive-labels"
-      ) as HTMLElement;
+      const menuArchiveLabels = screen.getByTestId("menu-archive-labels") as HTMLElement;
 
       expect(menuArchiveLabels).toBeTruthy();
 
@@ -270,9 +255,7 @@ describe("MenuArchive", () => {
         });
       });
 
-      expect(Router.state.location.search).toBe(
-        "?select=test1,test2&sidebar=true"
-      );
+      expect(Router.state.location.search).toBe("?select=test1,test2&sidebar=true");
 
       component.unmount();
     });
@@ -299,9 +282,7 @@ describe("MenuArchive", () => {
 
       const component = render(<MenuArchive />);
 
-      const menuArchiveLabels = screen.getByTestId(
-        "menu-archive-labels"
-      ) as HTMLElement;
+      const menuArchiveLabels = screen.getByTestId("menu-archive-labels") as HTMLElement;
 
       expect(menuArchiveLabels).toBeTruthy();
 
@@ -333,11 +314,9 @@ describe("MenuArchive", () => {
       } as IArchive;
       const contextValues = { state, dispatch: jest.fn() };
 
-      const mkdirModalSpy = jest
-        .spyOn(ModalArchiveMkdir, "default")
-        .mockImplementationOnce(() => {
-          return <></>;
-        });
+      const mkdirModalSpy = jest.spyOn(ModalArchiveMkdir, "default").mockImplementationOnce(() => {
+        return <></>;
+      });
 
       jest
         .spyOn(React, "useContext")
@@ -400,7 +379,7 @@ describe("MenuArchive", () => {
         key: "Tab"
       });
 
-      expect(mkdirModalSpy).toBeCalledTimes(0);
+      expect(mkdirModalSpy).toHaveBeenCalledTimes(0);
 
       component.unmount();
     });
@@ -580,7 +559,7 @@ describe("MenuArchive", () => {
         key: "Tab"
       });
 
-      expect(renameModalSpy).toBeCalledTimes(0);
+      expect(renameModalSpy).toHaveBeenCalledTimes(0);
 
       component.unmount();
 
@@ -649,8 +628,8 @@ describe("MenuArchive", () => {
       const fakeButton = screen.getByTestId("test-btn-fake");
       fakeButton?.click();
 
-      expect(dispatch).toBeCalled();
-      expect(dispatch).toBeCalledWith({
+      expect(dispatch).toHaveBeenCalled();
+      expect(dispatch).toHaveBeenCalledWith({
         type: "rename-folder",
         path: "t"
       });
@@ -704,7 +683,7 @@ describe("MenuArchive", () => {
         displayOptions?.click();
       });
 
-      expect(renameModalSpy).toBeCalled();
+      expect(renameModalSpy).toHaveBeenCalled();
 
       component.unmount();
 
@@ -755,7 +734,7 @@ describe("MenuArchive", () => {
         fireEvent.keyDown(displayOptions, { key: "Enter" });
       });
 
-      expect(renameModalSpy).toBeCalled();
+      expect(renameModalSpy).toHaveBeenCalled();
 
       component.unmount();
 
@@ -808,7 +787,7 @@ describe("MenuArchive", () => {
         fireEvent.keyDown(displayOptions, { key: "Tab" });
       });
 
-      expect(renameModalSpy).toBeCalledTimes(0);
+      expect(renameModalSpy).toHaveBeenCalledTimes(0);
 
       component.unmount();
 
@@ -864,7 +843,7 @@ describe("MenuArchive", () => {
         displayOptions?.click();
       });
 
-      expect(renameModalSpy).toBeCalled();
+      expect(renameModalSpy).toHaveBeenCalled();
 
       component.unmount();
 
@@ -914,16 +893,14 @@ describe("MenuArchive", () => {
 
       const component = render(<MenuArchive />);
 
-      const displayOptions = screen.queryByTestId(
-        "display-options"
-      ) as HTMLElement;
+      const displayOptions = screen.queryByTestId("display-options") as HTMLElement;
       expect(displayOptions).not.toBeNull();
 
       act(() => {
         fireEvent.keyDown(displayOptions, { key: "Tab" });
       });
 
-      expect(renameModalSpy).toBeCalledTimes(0);
+      expect(renameModalSpy).toHaveBeenCalledTimes(0);
 
       component.unmount();
 
@@ -973,16 +950,14 @@ describe("MenuArchive", () => {
 
       const component = render(<MenuArchive />);
 
-      const displayOptions = screen.queryByTestId(
-        "display-options"
-      ) as HTMLElement;
+      const displayOptions = screen.queryByTestId("display-options") as HTMLElement;
       expect(displayOptions).not.toBeNull();
 
       act(() => {
         fireEvent.keyDown(displayOptions, { key: "Enter" });
       });
 
-      expect(renameModalSpy).toBeCalledTimes(1);
+      expect(renameModalSpy).toHaveBeenCalledTimes(1);
 
       component.unmount();
 
@@ -1029,7 +1004,7 @@ describe("MenuArchive", () => {
       // need async
       await syncManual?.click();
 
-      expect(renameModalSpy).toBeCalled();
+      expect(renameModalSpy).toHaveBeenCalled();
 
       component.unmount();
       Router.navigate("/");
@@ -1089,7 +1064,7 @@ describe("MenuArchive", () => {
         syncManual?.click();
       });
 
-      expect(renameModalSpy).toBeCalled();
+      expect(renameModalSpy).toHaveBeenCalled();
 
       component.unmount();
 
@@ -1247,8 +1222,8 @@ describe("MenuArchive", () => {
 
       const component = render(<MenuArchive />);
 
-      expect(useHotkeysSpy).toBeCalled();
-      expect(useHotkeysSpy).toBeCalledTimes(1);
+      expect(useHotkeysSpy).toHaveBeenCalled();
+      expect(useHotkeysSpy).toHaveBeenCalledTimes(1);
 
       component.unmount();
     });
@@ -1297,9 +1272,7 @@ describe("MenuArchive", () => {
 
       const connectionDefault: IConnectionDefault = {
         statusCode: 200,
-        data: [
-          { fileName: "test.jpg", parentDirectory: "/" }
-        ] as IFileIndexItem[]
+        data: [{ fileName: "test.jpg", parentDirectory: "/" }] as IFileIndexItem[]
       };
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve(connectionDefault);
@@ -1358,11 +1331,9 @@ describe("MenuArchive", () => {
         .mockImplementationOnce(() => contextValues)
         .mockImplementationOnce(() => contextValues);
 
-      const exportModalSpy = jest
-        .spyOn(ModalDownload, "default")
-        .mockImplementationOnce(() => {
-          return <></>;
-        });
+      const exportModalSpy = jest.spyOn(ModalDownload, "default").mockImplementationOnce(() => {
+        return <></>;
+      });
 
       const component = render(<MenuArchive />);
 
@@ -1373,7 +1344,7 @@ describe("MenuArchive", () => {
         exportButton?.click();
       });
 
-      expect(exportModalSpy).toBeCalled();
+      expect(exportModalSpy).toHaveBeenCalled();
 
       component.unmount();
     });
@@ -1405,11 +1376,9 @@ describe("MenuArchive", () => {
         .mockImplementationOnce(() => contextValues)
         .mockImplementationOnce(() => contextValues);
 
-      const exportModalSpy = jest
-        .spyOn(ModalPublish, "default")
-        .mockImplementationOnce(() => {
-          return <></>;
-        });
+      const exportModalSpy = jest.spyOn(ModalPublish, "default").mockImplementationOnce(() => {
+        return <></>;
+      });
 
       const component = render(<MenuArchive />);
 
@@ -1420,7 +1389,7 @@ describe("MenuArchive", () => {
         publish?.click();
       });
 
-      expect(exportModalSpy).toBeCalled();
+      expect(exportModalSpy).toHaveBeenCalled();
 
       component.unmount();
     });
@@ -1464,9 +1433,7 @@ describe("MenuArchive", () => {
         selectFurther?.click();
       });
 
-      expect(Router.state.location.search).toBe(
-        "?select=test1.jpg&sidebar=false"
-      );
+      expect(Router.state.location.search).toBe("?select=test1.jpg&sidebar=false");
 
       component.unmount();
     });
@@ -1491,11 +1458,9 @@ describe("MenuArchive", () => {
 
       jest.spyOn(ModalArchiveMkdir, "default").mockClear();
 
-      const mkdirModalSpy = jest
-        .spyOn(ModalArchiveMkdir, "default")
-        .mockImplementationOnce(() => {
-          return <></>;
-        });
+      const mkdirModalSpy = jest.spyOn(ModalArchiveMkdir, "default").mockImplementationOnce(() => {
+        return <></>;
+      });
 
       jest
         .spyOn(React, "useContext")
@@ -1509,7 +1474,7 @@ describe("MenuArchive", () => {
 
       mkdir?.click();
 
-      expect(mkdirModalSpy).toBeCalledTimes(0);
+      expect(mkdirModalSpy).toHaveBeenCalledTimes(0);
 
       component.unmount();
     });
@@ -1530,19 +1495,15 @@ describe("MenuArchive", () => {
       } as IArchive;
       const contextValues = { state, dispatch: jest.fn() };
 
-      const dropAreaSpy = jest
-        .spyOn(DropArea, "default")
-        .mockImplementationOnce(() => {
-          return <></>;
-        });
+      const dropAreaSpy = jest.spyOn(DropArea, "default").mockImplementationOnce(() => {
+        return <></>;
+      });
 
-      jest
-        .spyOn(React, "useContext")
-        .mockImplementationOnce(() => contextValues);
+      jest.spyOn(React, "useContext").mockImplementationOnce(() => contextValues);
 
       const component = render(<MenuArchive />);
 
-      expect(dropAreaSpy).toBeCalledTimes(0);
+      expect(dropAreaSpy).toHaveBeenCalledTimes(0);
 
       component.unmount();
     });

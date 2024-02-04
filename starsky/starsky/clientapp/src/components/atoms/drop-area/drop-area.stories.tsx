@@ -8,9 +8,7 @@ export default {
 };
 
 export const Default = () => {
-  const [dropAreaUploadFilesList, setDropAreaUploadFilesList] = useState(
-    newIFileIndexItemArray()
-  );
+  const [dropAreaUploadFilesList, setDropAreaUploadFilesList] = useState(newIFileIndexItemArray());
 
   return (
     <>
@@ -31,9 +29,7 @@ export const Default = () => {
       {/* Upload drop Area */}
       {dropAreaUploadFilesList.length !== 0 ? (
         <ModalDropAreaFilesAdded
-          handleExit={() =>
-            setDropAreaUploadFilesList(newIFileIndexItemArray())
-          }
+          handleExit={() => setDropAreaUploadFilesList(newIFileIndexItemArray())}
           uploadFilesList={dropAreaUploadFilesList}
           isOpen={dropAreaUploadFilesList.length !== 0}
         />

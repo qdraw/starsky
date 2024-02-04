@@ -1,8 +1,4 @@
-import {
-  AsciiNull,
-  AsciiNullRegexEscaped,
-  AsciiNullUrlEncoded
-} from "./ascii-null";
+import { AsciiNull, AsciiNullRegexEscaped, AsciiNullUrlEncoded } from "./ascii-null";
 
 describe("AsciiNull", () => {
   it("AsciiNull", () => {

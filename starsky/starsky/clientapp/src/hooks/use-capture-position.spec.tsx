@@ -10,9 +10,7 @@ describe("capturePosition", () => {
     setupComponent = mountReactHook(capturePosition, []); // Mount a Component with our hook
     hook = setupComponent.componentHook as ICaptionPosition;
 
-    scrollToSpy = jest
-      .spyOn(window, "scrollTo")
-      .mockImplementationOnce(() => {});
+    scrollToSpy = jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
   });
 
   it("freeze", () => {
@@ -20,7 +18,7 @@ describe("capturePosition", () => {
 
     expect(document.body.style.top).toBe("0px");
     expect(document.body.style.position).toBe("fixed");
-    expect(scrollToSpy).toBeCalledTimes(0);
+    expect(scrollToSpy).toHaveBeenCalledTimes(0);
 
     scrollToSpy.mockReset();
   });
@@ -28,6 +26,6 @@ describe("capturePosition", () => {
   it("unfreeze", () => {
     hook.unfreeze();
 
-    expect(scrollToSpy).toBeCalledTimes(1);
+    expect(scrollToSpy).toHaveBeenCalledTimes(1);
   });
 });

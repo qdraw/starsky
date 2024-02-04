@@ -18,12 +18,8 @@ export const WarningBoxNoPhotosFilter: React.FunctionComponent<IWarningBoxNoPhot
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
 
-    const MessageNoPhotosInFolder = language.key(
-      localization.MessageNoPhotosInFolder
-    );
-    const MessageItemsOutsideFilter = language.key(
-      localization.MessageItemsOutsideFilter
-    );
+    const MessageNoPhotosInFolder = language.key(localization.MessageNoPhotosInFolder);
+    const MessageItemsOutsideFilter = language.key(localization.MessageItemsOutsideFilter);
 
     const MessageNewUserNoPhotosInFolder = language.key(
       localization.MessageNewUserNoPhotosInFolder
@@ -31,11 +27,7 @@ export const WarningBoxNoPhotosFilter: React.FunctionComponent<IWarningBoxNoPhot
 
     let warningBox = null;
 
-    if (
-      pageType !== PageType.Loading &&
-      subPath !== "/" &&
-      items.length === 0
-    ) {
+    if (pageType !== PageType.Loading && subPath !== "/" && items.length === 0) {
       if (colorClassUsage.length >= 1) {
         warningBox = (
           <div
@@ -47,10 +39,7 @@ export const WarningBoxNoPhotosFilter: React.FunctionComponent<IWarningBoxNoPhot
         );
       } else {
         warningBox = (
-          <div
-            className="warning-box"
-            data-test="list-view-no-photos-in-folder"
-          >
+          <div className="warning-box" data-test="list-view-no-photos-in-folder">
             {MessageNoPhotosInFolder}
           </div>
         );
@@ -58,11 +47,7 @@ export const WarningBoxNoPhotosFilter: React.FunctionComponent<IWarningBoxNoPhot
     }
 
     // only on the home page there is a link to the preferences page
-    if (
-      pageType !== PageType.Loading &&
-      subPath === "/" &&
-      items.length === 0
-    ) {
+    if (pageType !== PageType.Loading && subPath === "/" && items.length === 0) {
       warningBox = (
         <a
           className="warning-box"

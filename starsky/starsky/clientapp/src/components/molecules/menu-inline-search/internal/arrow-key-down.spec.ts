@@ -13,8 +13,8 @@ describe("ArrowKeyDown", () => {
       []
     );
 
-    expect(callback).toBeCalled();
-    expect(callback).toBeCalledWith(-1);
+    expect(callback).toHaveBeenCalled();
+    expect(callback).toHaveBeenCalledWith(-1);
   });
 
   it("inputFormControlReferenceCurrent is null", () => {
@@ -29,7 +29,7 @@ describe("ArrowKeyDown", () => {
       []
     );
 
-    expect(callback).toBeCalledTimes(0);
+    expect(callback).toHaveBeenCalledTimes(0);
   });
 
   it("suggest has nothing", () => {
@@ -44,7 +44,7 @@ describe("ArrowKeyDown", () => {
       []
     );
 
-    expect(callback).toBeCalledTimes(0);
+    expect(callback).toHaveBeenCalledTimes(0);
   });
 
   it("1 arrow down", () => {
@@ -60,8 +60,8 @@ describe("ArrowKeyDown", () => {
       ["test", "test1"]
     );
 
-    expect(callback).toBeCalled();
-    expect(callback).toBeCalledWith(0);
+    expect(callback).toHaveBeenCalled();
+    expect(callback).toHaveBeenCalledWith(0);
     expect(inputElement.value).toBe("test");
   });
 
@@ -78,8 +78,8 @@ describe("ArrowKeyDown", () => {
       ["test", "test1"]
     );
 
-    expect(callback).toBeCalled();
-    expect(callback).toBeCalledWith(0);
+    expect(callback).toHaveBeenCalled();
+    expect(callback).toHaveBeenCalledWith(0);
     expect(inputElement.value).toBe("test");
   });
 
@@ -96,7 +96,7 @@ describe("ArrowKeyDown", () => {
       ["test", "test1"]
     );
 
-    expect(callback).toBeCalledTimes(0);
+    expect(callback).toHaveBeenCalledTimes(0);
   });
 
   it("before of arrow up list", () => {
@@ -112,6 +112,6 @@ describe("ArrowKeyDown", () => {
       ["test", "test1"]
     );
 
-    expect(callback).toBeCalledTimes(0);
+    expect(callback).toHaveBeenCalledTimes(0);
   });
 });

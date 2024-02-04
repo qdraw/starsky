@@ -14,7 +14,7 @@ describe("OnWheelMouseAction", () => {
     ).onWheel({
       deltaY: 1
     } as any);
-    expect(setPosition).toBeCalledTimes(0);
+    expect(setPosition).toHaveBeenCalledTimes(0);
   });
 
   it("should not set when current is null and delta not exist", () => {
@@ -28,7 +28,7 @@ describe("OnWheelMouseAction", () => {
     ).onWheel({
       deltaY: 0 // <= not exist
     } as any);
-    expect(setPosition).toBeCalledTimes(0);
+    expect(setPosition).toHaveBeenCalledTimes(0);
   });
 
   it("zoom - assume middle of image when not passing in any values", () => {
@@ -49,9 +49,9 @@ describe("OnWheelMouseAction", () => {
       } as any,
       jest.fn()
     ).zoom(-3);
-    expect(setPosition).toBeCalledTimes(1);
+    expect(setPosition).toHaveBeenCalledTimes(1);
     // if not enabled is x": 4.5,
-    expect(setPosition).toBeCalledWith({ x: 3, y: 0, z: 0 });
+    expect(setPosition).toHaveBeenCalledWith({ x: 3, y: 0, z: 0 });
   });
 
   it("zoom - ignore horizontal middle of image when not passing in any values", () => {
@@ -72,8 +72,8 @@ describe("OnWheelMouseAction", () => {
       } as any,
       jest.fn()
     ).zoom(-3, 99);
-    expect(setPosition).toBeCalledTimes(1);
-    expect(setPosition).toBeCalledWith({
+    expect(setPosition).toHaveBeenCalledTimes(1);
+    expect(setPosition).toHaveBeenCalledWith({
       x: -5.4,
       y: -8.4,
       z: 0
@@ -98,8 +98,8 @@ describe("OnWheelMouseAction", () => {
       } as any,
       jest.fn()
     ).zoom(-3, 99);
-    expect(setPosition).toBeCalledTimes(1);
-    expect(setPosition).toBeCalledWith({
+    expect(setPosition).toHaveBeenCalledTimes(1);
+    expect(setPosition).toHaveBeenCalledWith({
       x: -8.4,
       y: -5.4,
       z: 0

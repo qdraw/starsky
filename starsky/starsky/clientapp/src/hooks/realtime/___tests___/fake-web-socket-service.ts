@@ -9,10 +9,7 @@ export class FakeWebSocketService implements WebSocketService {
   public OnCloseCalled: boolean = false;
   public OnErrorCalled: boolean = false;
 
-  constructor(
-    onOpenEvent: Event = new Event("t"),
-    onCloseEvent: CloseEvent = new CloseEvent("t")
-  ) {
+  constructor(onOpenEvent: Event = new Event("t"), onCloseEvent: CloseEvent = new CloseEvent("t")) {
     this.onOpenEvent = onOpenEvent;
     this.onCloseEvent = onCloseEvent;
   }

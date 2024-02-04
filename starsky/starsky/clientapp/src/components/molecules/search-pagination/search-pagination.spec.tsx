@@ -20,15 +20,11 @@ describe("SearchPagination", () => {
       </MemoryRouter>
     );
 
-    const nextButton = component.queryByTestId(
-      "search-pagination-next"
-    ) as HTMLAnchorElement;
+    const nextButton = component.queryByTestId("search-pagination-next") as HTMLAnchorElement;
     expect(nextButton).toBeTruthy();
     expect(nextButton.href).toBe("http://localhost/?p=1");
 
-    const prevButton = component.queryByTestId(
-      "search-pagination-prev"
-    ) as HTMLAnchorElement;
+    const prevButton = component.queryByTestId("search-pagination-prev") as HTMLAnchorElement;
     expect(prevButton).toBeFalsy();
   });
 
@@ -44,9 +40,7 @@ describe("SearchPagination", () => {
       </MemoryRouter>
     );
 
-    const prevButton = component.queryByTestId(
-      "search-pagination-prev"
-    ) as HTMLAnchorElement;
+    const prevButton = component.queryByTestId("search-pagination-prev") as HTMLAnchorElement;
     expect(prevButton).toBeTruthy();
 
     expect(prevButton.href).toBe("http://localhost/?p=0");
@@ -66,9 +60,7 @@ describe("SearchPagination", () => {
       </MemoryRouter>
     );
 
-    const prevButton = component.queryByTestId(
-      "search-pagination-prev"
-    ) as HTMLAnchorElement;
+    const prevButton = component.queryByTestId("search-pagination-prev") as HTMLAnchorElement;
     expect(prevButton).toBeTruthy();
 
     expect(prevButton.href).toBe("http://localhost/?p=0&select=");
@@ -87,9 +79,7 @@ describe("SearchPagination", () => {
       </MemoryRouter>
     );
 
-    const nextButton = component.queryByTestId(
-      "search-pagination-next"
-    ) as HTMLAnchorElement;
+    const nextButton = component.queryByTestId("search-pagination-next") as HTMLAnchorElement;
     expect(nextButton).toBeTruthy();
     expect(nextButton.href).toBe("http://localhost/?p=1&select=");
   });

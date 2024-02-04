@@ -25,9 +25,7 @@ export async function requestNewFileHash(
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
   dispatch: Dispatch<DetailViewAction>
 ): Promise<boolean | null> {
-  const resultGet = await FetchGet(
-    new UrlQuery().UrlIndexServerApi({ f: state.subPath })
-  );
+  const resultGet = await FetchGet(new UrlQuery().UrlIndexServerApi({ f: state.subPath }));
   if (!resultGet) return null;
   if (resultGet.statusCode !== 200) {
     console.error(resultGet);
@@ -40,8 +38,7 @@ export async function requestNewFileHash(
     : Orientation.Horizontal;
 
   // the hash changes if you rotate an image
-  if (media.fileIndexItem.fileHash === state.fileIndexItem.fileHash)
-    return false;
+  if (media.fileIndexItem.fileHash === state.fileIndexItem.fileHash) return false;
 
   dispatch({
     type: "update",
@@ -76,10 +73,7 @@ const MenuOptionRotateImage90: React.FunctionComponent<IMenuOptionMenuOptionRota
 
       const bodyParams = newBodyParams();
       bodyParams.set("rotateClock", "1");
-      const resultPost = await FetchPost(
-        new UrlQuery().UrlUpdateApi(),
-        bodyParams.toString()
-      );
+      const resultPost = await FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams.toString());
       if (resultPost.statusCode !== 200) {
         console.error(resultPost);
         return;

@@ -16,10 +16,7 @@ describe("MenuSearch", () => {
   describe("with Context", () => {
     it("open hamburger menu", () => {
       const component = render(
-        <MenuSearch
-          state={{ fileIndexItems: [] } as any}
-          dispatch={jest.fn()}
-        />
+        <MenuSearch state={{ fileIndexItems: [] } as any} dispatch={jest.fn()} />
       );
 
       let hamburger = screen.queryByTestId("hamburger") as HTMLDivElement;
@@ -40,10 +37,7 @@ describe("MenuSearch", () => {
     it("un select items", () => {
       Router.navigate("/?select=1");
       const component = render(
-        <MenuSearch
-          state={{ fileIndexItems: [] } as any}
-          dispatch={jest.fn()}
-        />
+        <MenuSearch state={{ fileIndexItems: [] } as any} dispatch={jest.fn()} />
       );
 
       expect(Router.state.location.search).toBe("?select=1");
@@ -63,11 +57,9 @@ describe("MenuSearch", () => {
     it("keyboard ctrl a and command a", () => {
       jest.spyOn(React, "useContext").mockRestore();
 
-      const useHotkeysSpy = jest
-        .spyOn(useHotKeys, "default")
-        .mockImplementationOnce(() => {
-          return { key: "a", ctrlKey: true };
-        });
+      const useHotkeysSpy = jest.spyOn(useHotKeys, "default").mockImplementationOnce(() => {
+        return { key: "a", ctrlKey: true };
+      });
 
       const state = {
         subPath: "/",
@@ -88,12 +80,10 @@ describe("MenuSearch", () => {
         .mockImplementationOnce(() => contextValues)
         .mockImplementationOnce(() => contextValues);
 
-      const component = render(
-        <MenuSearch state={undefined as any} dispatch={jest.fn()} />
-      );
+      const component = render(<MenuSearch state={undefined as any} dispatch={jest.fn()} />);
 
-      expect(useHotkeysSpy).toBeCalled();
-      expect(useHotkeysSpy).toBeCalledTimes(1);
+      expect(useHotkeysSpy).toHaveBeenCalled();
+      expect(useHotkeysSpy).toHaveBeenCalledTimes(1);
 
       jest.spyOn(React, "useContext").mockRestore();
       component.unmount();
@@ -108,10 +98,7 @@ describe("MenuSearch", () => {
       });
 
       const component = render(
-        <MenuSearch
-          state={{ fileIndexItems: [] } as any}
-          dispatch={jest.fn()}
-        />
+        <MenuSearch state={{ fileIndexItems: [] } as any} dispatch={jest.fn()} />
       );
 
       const navOpen = screen.queryByTestId("nav-open") as HTMLDivElement;

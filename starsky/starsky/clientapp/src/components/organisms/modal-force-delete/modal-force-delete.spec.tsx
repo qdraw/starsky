@@ -27,11 +27,9 @@ describe("ModalForceDelete", () => {
   });
 
   it("should fetchPost and dispatch", async () => {
-    const fetchSpy = jest
-      .spyOn(FetchPost, "default")
-      .mockImplementationOnce(async () => {
-        return { statusCode: 200 } as IConnectionDefault;
-      });
+    const fetchSpy = jest.spyOn(FetchPost, "default").mockImplementationOnce(async () => {
+      return { statusCode: 200 } as IConnectionDefault;
+    });
 
     const dispatch = jest.fn();
     const modal = render(
@@ -61,22 +59,20 @@ describe("ModalForceDelete", () => {
     // need to await here
     await forceDelete?.click();
 
-    expect(fetchSpy).toBeCalled();
-    expect(fetchSpy).toBeCalledWith(
+    expect(fetchSpy).toHaveBeenCalled();
+    expect(fetchSpy).toHaveBeenCalledWith(
       new UrlQuery().UrlDeleteApi(),
       "f=%2Ftest.jpg&collections=false",
       "delete"
     );
-    expect(dispatch).toBeCalled();
+    expect(dispatch).toHaveBeenCalled();
     modal.unmount();
   });
 
   it("should fetchPost and not dispatch due status error", async () => {
-    const fetchSpy = jest
-      .spyOn(FetchPost, "default")
-      .mockImplementationOnce(async () => {
-        return { statusCode: 500 } as IConnectionDefault;
-      });
+    const fetchSpy = jest.spyOn(FetchPost, "default").mockImplementationOnce(async () => {
+      return { statusCode: 500 } as IConnectionDefault;
+    });
 
     const dispatch = jest.fn();
     const modal = render(
@@ -106,13 +102,13 @@ describe("ModalForceDelete", () => {
     // need to await here
     await forceDelete?.click();
 
-    expect(fetchSpy).toBeCalled();
-    expect(fetchSpy).toBeCalledWith(
+    expect(fetchSpy).toHaveBeenCalled();
+    expect(fetchSpy).toHaveBeenCalledWith(
       new UrlQuery().UrlDeleteApi(),
       "f=%2Ftest.jpg&collections=false",
       "delete"
     );
-    expect(dispatch).toBeCalledTimes(0);
+    expect(dispatch).toHaveBeenCalledTimes(0);
     modal.unmount();
   });
 
@@ -138,7 +134,7 @@ describe("ModalForceDelete", () => {
       />
     );
 
-    expect(handleExitSpy).toBeCalled();
+    expect(handleExitSpy).toHaveBeenCalled();
 
     component.unmount();
   });

@@ -1,17 +1,7 @@
-import {
-  act,
-  fireEvent,
-  render,
-  RenderResult,
-  screen,
-  waitFor
-} from "@testing-library/react";
+import { act, fireEvent, render, RenderResult, screen, waitFor } from "@testing-library/react";
 import { DetailViewContext } from "../../../contexts/detailview-context";
 import * as useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
-import {
-  IConnectionDefault,
-  newIConnectionDefault
-} from "../../../interfaces/IConnectionDefault";
+import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IRelativeObjects, PageType } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
@@ -51,9 +41,7 @@ describe("DetailViewSidebar", () => {
         dispatch={jest.fn()}
       ></DetailViewSidebar>
     );
-    const serverError = screen.queryByTestId(
-      "detailview-exifstatus-status-server-error"
-    );
+    const serverError = screen.queryByTestId("detailview-exifstatus-status-server-error");
     expect(serverError).not.toBeNull();
 
     wrapper.unmount();
@@ -143,8 +131,7 @@ describe("DetailViewSidebar", () => {
       const dateTime = Component.queryByTestId("dateTime");
 
       expect(dateTime?.textContent).toBe(
-        parseDate("2019-09-15T17:29:59", SupportedLanguages.en) +
-          parseTime("2019-09-15T17:29:59")
+        parseDate("2019-09-15T17:29:59", SupportedLanguages.en) + parseTime("2019-09-15T17:29:59")
       );
     });
 
@@ -153,17 +140,15 @@ describe("DetailViewSidebar", () => {
       expect(dateTime).not.toBeNull();
 
       // import * as ModalDatetime from './modal-datetime';
-      const modalDatetimeSpy = jest
-        .spyOn(ModalDatetime, "default")
-        .mockImplementationOnce(() => {
-          return <></>;
-        });
+      const modalDatetimeSpy = jest.spyOn(ModalDatetime, "default").mockImplementationOnce(() => {
+        return <></>;
+      });
 
       act(() => {
         dateTime.click();
       });
 
-      expect(modalDatetimeSpy).toBeCalled();
+      expect(modalDatetimeSpy).toHaveBeenCalled();
     });
 
     it("click on datetime modal and return value", () => {
@@ -174,9 +159,7 @@ describe("DetailViewSidebar", () => {
       const modalDatetimeSpy = jest
         .spyOn(ModalDatetime, "default")
         .mockImplementationOnce((props) => {
-          props.handleExit([
-            { dateTime: "2020-02-01T13:15:20" }
-          ] as IFileIndexItem[]);
+          props.handleExit([{ dateTime: "2020-02-01T13:15:20" }] as IFileIndexItem[]);
           return <></>;
         });
 
@@ -184,23 +167,18 @@ describe("DetailViewSidebar", () => {
         dateTime.click();
       });
 
-      expect(modalDatetimeSpy).toBeCalled();
+      expect(modalDatetimeSpy).toHaveBeenCalled();
 
-      const updatedDatetime = Component.queryByTestId(
-        "dateTime"
-      ) as HTMLElement;
+      const updatedDatetime = Component.queryByTestId("dateTime") as HTMLElement;
       expect(updatedDatetime).not.toBeNull();
 
       expect(updatedDatetime.textContent).toBe(
-        parseDate("2020-02-01T13:15:20", SupportedLanguages.en) +
-          parseTime("2020-02-01T13:15:20")
+        parseDate("2020-02-01T13:15:20", SupportedLanguages.en) + parseTime("2020-02-01T13:15:20")
       );
     });
 
     it("click on ColorClassSelect and return value", () => {
-      const colorClassSelectItem = Component.queryByTestId(
-        "color-class-select-5"
-      ) as HTMLElement;
+      const colorClassSelectItem = Component.queryByTestId("color-class-select-5") as HTMLElement;
 
       act(() => {
         colorClassSelectItem.click();
@@ -248,9 +226,7 @@ describe("DetailViewSidebar", () => {
     });
 
     it("test if lat/long icon from the context is displayed", () => {
-      const locationDiv = Component.queryByTestId(
-        "detailview-location-div"
-      ) as HTMLElement;
+      const locationDiv = Component.queryByTestId("detailview-location-div") as HTMLElement;
 
       expect(locationDiv).not.toBeNull();
     });
@@ -258,8 +234,10 @@ describe("DetailViewSidebar", () => {
     it("On change a tag there is an API called", async () => {
       // spy on fetch
       // use this => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({ ...newIConnectionDefault(), statusCode: 200 });
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        ...newIConnectionDefault(),
+        statusCode: 200
+      });
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -274,13 +252,13 @@ describe("DetailViewSidebar", () => {
 
       fireEvent.blur(tagsField!, { currentTarget: tagsField });
 
-      await waitFor(() => expect(fetchPostSpy).toBeCalled());
+      await waitFor(() => expect(fetchPostSpy).toHaveBeenCalled());
 
       const expectedBodyParams = new URLSearchParams();
       expectedBodyParams.append("f", "/test.jpg");
       expectedBodyParams.append("tags", "a");
 
-      expect(fetchPostSpy).toBeCalledWith(
+      expect(fetchPostSpy).toHaveBeenCalledWith(
         new UrlQuery().UrlUpdateApi(),
         expectedBodyParams.toString()
       );
@@ -293,15 +271,15 @@ describe("DetailViewSidebar", () => {
 
       // spy on fetch
       // use this => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({ ...newIConnectionDefault(), statusCode: 200 });
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        ...newIConnectionDefault(),
+        statusCode: 200
+      });
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      const tagsField = screen.queryByTestId(
-        "detailview-sidebar-tags"
-      ) as HTMLInputElement;
+      const tagsField = screen.queryByTestId("detailview-sidebar-tags") as HTMLInputElement;
 
       act(() => {
         tagsField.innerHTML = "";
@@ -309,20 +287,15 @@ describe("DetailViewSidebar", () => {
 
       fireEvent.blur(tagsField, { currentTarget: tagsField });
 
-      expect(fetchPostSpy).toBeCalled();
+      expect(fetchPostSpy).toHaveBeenCalled();
 
       const expectedBodyParams = new URLSearchParams();
       expectedBodyParams.append("f", "/test.jpg");
       expectedBodyParams.append("tags", "\0");
 
-      const expectedBodyString = expectedBodyParams
-        .toString()
-        .replace(/%00/gi, nullChar);
+      const expectedBodyString = expectedBodyParams.toString().replace(/%00/gi, nullChar);
 
-      expect(fetchPostSpy).toBeCalledWith(
-        new UrlQuery().UrlUpdateApi(),
-        expectedBodyString
-      );
+      expect(fetchPostSpy).toHaveBeenCalledWith(new UrlQuery().UrlUpdateApi(), expectedBodyString);
 
       fetchPostSpy.mockClear();
     });
@@ -332,17 +305,13 @@ describe("DetailViewSidebar", () => {
 
       // spy on fetch
       // use this => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({
-          ...newIConnectionDefault(),
-          statusCode: 200,
-          data: [{ filePath: "/test.jpg" } as IFileIndexItem]
-        });
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        ...newIConnectionDefault(),
+        statusCode: 200,
+        data: [{ filePath: "/test.jpg" } as IFileIndexItem]
+      });
 
-      const clearSearchCacheSpy = jest.spyOn(
-        ClearSearchCache,
-        "ClearSearchCache"
-      );
+      const clearSearchCacheSpy = jest.spyOn(ClearSearchCache, "ClearSearchCache");
 
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
@@ -350,9 +319,7 @@ describe("DetailViewSidebar", () => {
         .mockImplementationOnce(() => mockIConnectionDefault)
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      const tagsField = screen.queryByTestId(
-        "detailview-sidebar-tags"
-      ) as HTMLInputElement;
+      const tagsField = screen.queryByTestId("detailview-sidebar-tags") as HTMLInputElement;
 
       // need to await here
       act(() => {
@@ -361,9 +328,9 @@ describe("DetailViewSidebar", () => {
 
       fireEvent.blur(tagsField, { currentTarget: tagsField });
 
-      await waitFor(() => expect(clearSearchCacheSpy).toBeCalled());
+      await waitFor(() => expect(clearSearchCacheSpy).toHaveBeenCalled());
 
-      expect(fetchPostSpy).toBeCalledTimes(1);
+      expect(fetchPostSpy).toHaveBeenCalledTimes(1);
 
       jest.spyOn(LimitLength.prototype, "LimitLengthBlur").mockClear();
 
@@ -425,16 +392,12 @@ describe("DetailViewSidebar", () => {
       );
       const component = render(<DeletedTestComponent />);
 
-      const statusDeleted = component.queryByTestId(
-        "detailview-exifstatus-status-deleted"
-      );
+      const statusDeleted = component.queryByTestId("detailview-exifstatus-status-deleted");
       expect(statusDeleted).not.toBeNull();
 
       contextProvider.state.fileIndexItem.status = IExifStatus.Deleted;
 
-      const tagsField = screen.queryByTestId(
-        "detailview-sidebar-tags"
-      ) as HTMLInputElement;
+      const tagsField = screen.queryByTestId("detailview-sidebar-tags") as HTMLInputElement;
 
       const description = findDataNameCurrent(component as any, "description");
       const title = findDataNameCurrent(component as any, "title");
@@ -462,15 +425,11 @@ describe("DetailViewSidebar", () => {
       );
       const component = render(<DeletedTestComponent />);
 
-      const statusReadOnly = component.queryByTestId(
-        "detailview-exifstatus-status-read-only"
-      );
+      const statusReadOnly = component.queryByTestId("detailview-exifstatus-status-read-only");
       expect(statusReadOnly).not.toBeNull();
 
       // Tags and other input fields are disabled
-      const tags = screen.queryByTestId(
-        "detailview-sidebar-tags"
-      ) as HTMLInputElement;
+      const tags = screen.queryByTestId("detailview-sidebar-tags") as HTMLInputElement;
       const description = findDataNameCurrent(component as any, "description");
       const title = findDataNameCurrent(component as any, "title");
 
@@ -518,19 +477,13 @@ describe("DetailViewSidebar", () => {
         .mockImplementationOnce(keyboardCallback)
         .mockImplementationOnce(keyboardCallback);
 
-      jest
-        .spyOn(Keyboard.prototype, "SetFocusOnEndField")
-        .mockImplementationOnce(() => {});
+      jest.spyOn(Keyboard.prototype, "SetFocusOnEndField").mockImplementationOnce(() => {});
 
-      jest
-        .spyOn(Keyboard.prototype, "isInForm")
-        .mockImplementationOnce(() => false);
+      jest.spyOn(Keyboard.prototype, "isInForm").mockImplementationOnce(() => false);
 
-      jest
-        .spyOn(ClipboardHelper.prototype, "PasteAsync")
-        .mockImplementationOnce(() => {
-          return Promise.resolve(false);
-        });
+      jest.spyOn(ClipboardHelper.prototype, "PasteAsync").mockImplementationOnce(() => {
+        return Promise.resolve(false);
+      });
 
       const component = render(
         <DetailViewSidebar
@@ -566,19 +519,13 @@ describe("DetailViewSidebar", () => {
         .mockImplementationOnce(keyboardCallback)
         .mockImplementationOnce(keyboardCallback);
 
-      jest
-        .spyOn(Keyboard.prototype, "SetFocusOnEndField")
-        .mockImplementationOnce(() => {});
+      jest.spyOn(Keyboard.prototype, "SetFocusOnEndField").mockImplementationOnce(() => {});
 
-      jest
-        .spyOn(Keyboard.prototype, "isInForm")
-        .mockImplementationOnce(() => false);
+      jest.spyOn(Keyboard.prototype, "isInForm").mockImplementationOnce(() => false);
 
-      jest
-        .spyOn(ClipboardHelper.prototype, "PasteAsync")
-        .mockImplementationOnce(() => {
-          return Promise.resolve(true);
-        });
+      jest.spyOn(ClipboardHelper.prototype, "PasteAsync").mockImplementationOnce(() => {
+        return Promise.resolve(true);
+      });
 
       const component = render(
         <DetailViewSidebar
@@ -614,19 +561,13 @@ describe("DetailViewSidebar", () => {
         .mockImplementationOnce(keyboardCallback)
         .mockImplementationOnce(keyboardCallback);
 
-      jest
-        .spyOn(Keyboard.prototype, "SetFocusOnEndField")
-        .mockImplementationOnce(() => {});
+      jest.spyOn(Keyboard.prototype, "SetFocusOnEndField").mockImplementationOnce(() => {});
 
-      jest
-        .spyOn(Keyboard.prototype, "isInForm")
-        .mockImplementationOnce(() => false);
+      jest.spyOn(Keyboard.prototype, "isInForm").mockImplementationOnce(() => false);
 
-      jest
-        .spyOn(ClipboardHelper.prototype, "Copy")
-        .mockImplementationOnce(() => {
-          return false;
-        });
+      jest.spyOn(ClipboardHelper.prototype, "Copy").mockImplementationOnce(() => {
+        return false;
+      });
 
       const component = render(
         <DetailViewSidebar
@@ -695,9 +636,9 @@ describe("DetailViewSidebar", () => {
         baseElement: document.body
       });
 
-      expect(useKeyboardEventSpy).toBeCalled();
-      expect(isInFormSpy).toBeCalled();
-      expect(isInFormSpy).toBeCalledTimes(1);
+      expect(useKeyboardEventSpy).toHaveBeenCalled();
+      expect(isInFormSpy).toHaveBeenCalled();
+      expect(isInFormSpy).toHaveBeenCalledTimes(1);
 
       // const event = new KeyboardEvent("keydown", {
       //   bubbles: true,
@@ -710,7 +651,7 @@ describe("DetailViewSidebar", () => {
       //   await window.dispatchEvent(event);
       // });
 
-      // await waitFor(() => expect(keyboardSpy).toBeCalled());
+      // await waitFor(() => expect(keyboardSpy).toHaveBeenCalled());
 
       component.unmount();
     });

@@ -24,12 +24,10 @@ describe("ColorClassSelectKeyboard", () => {
   it("press keyboard and should fire http request", async () => {
     // spy on fetch
     // use this import => import * as FetchPost from '../shared/fetch-post';
-    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
-        statusCode: 200,
-        data: [{ status: IExifStatus.Ok }] as IFileIndexItem[]
-      }
-    );
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: [{ status: IExifStatus.Ok }] as IFileIndexItem[]
+    });
     const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
@@ -93,24 +91,20 @@ describe("ColorClassSelectKeyboard", () => {
       .spyOn(ColorClassUpdateSingle.ColorClassUpdateSingle.prototype, "Update")
       .mockImplementationOnce(() => {});
 
-    jest
-      .spyOn(Keyboard.prototype, "isInForm")
-      .mockImplementationOnce(() => true);
+    jest.spyOn(Keyboard.prototype, "isInForm").mockImplementationOnce(() => true);
 
     // need to await this
     await act(async () => {
       await window.dispatchEvent(event);
     });
 
-    expect(colorClassUpdateSingleSpy).toBeCalledTimes(0);
+    expect(colorClassUpdateSingleSpy).toHaveBeenCalledTimes(0);
 
     await act(async () => {
       await component.unmount();
     });
 
-    jest
-      .spyOn(ColorClassUpdateSingle.ColorClassUpdateSingle.prototype, "Update")
-      .mockClear();
+    jest.spyOn(ColorClassUpdateSingle.ColorClassUpdateSingle.prototype, "Update").mockClear();
   });
 
   it("when error is it should able to close the warning box", async () => {
@@ -143,7 +137,7 @@ describe("ColorClassSelectKeyboard", () => {
       await window.dispatchEvent(event);
     });
 
-    expect(colorClassUpdateSingleSpy).toBeCalled();
+    expect(colorClassUpdateSingleSpy).toHaveBeenCalled();
 
     const close = screen.queryByTestId("notification-close");
     close?.click();
@@ -156,12 +150,10 @@ describe("ColorClassSelectKeyboard", () => {
   it("when done is it should able to close the info box", async () => {
     const colorClassUpdateSingleSpy = jest
       .spyOn(ColorClassUpdateSingle, "ColorClassUpdateSingle")
-      .mockImplementationOnce(
-        (_p1, _p2, _p3, _p4, _p5, _p6, setCurrentColorClass) => {
-          setCurrentColorClass(1);
-          return { Update: jest.fn() } as any;
-        }
-      );
+      .mockImplementationOnce((_p1, _p2, _p3, _p4, _p5, _p6, setCurrentColorClass) => {
+        setCurrentColorClass(1);
+        return { Update: jest.fn() } as any;
+      });
 
     const component = render(
       <ColorClassSelectKeyboard
@@ -185,7 +177,7 @@ describe("ColorClassSelectKeyboard", () => {
       await window.dispatchEvent(event);
     });
 
-    expect(colorClassUpdateSingleSpy).toBeCalled();
+    expect(colorClassUpdateSingleSpy).toHaveBeenCalled();
 
     const close = screen.queryByTestId("notification-close");
     close?.click();

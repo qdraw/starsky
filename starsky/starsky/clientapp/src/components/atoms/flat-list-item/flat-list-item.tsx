@@ -1,14 +1,6 @@
-import {
-  IFileIndexItem,
-  ImageFormat
-} from "../../../interfaces/IFileIndexItem";
+import { IFileIndexItem, ImageFormat } from "../../../interfaces/IFileIndexItem";
 import BytesFormat from "../../../shared/bytes-format";
-import {
-  parseDateDate,
-  parseDateMonth,
-  parseDateYear,
-  parseTime
-} from "../../../shared/date";
+import { parseDateDate, parseDateMonth, parseDateYear, parseTime } from "../../../shared/date";
 
 interface IFlatListItem {
   item: IFileIndexItem;
@@ -34,9 +26,7 @@ const FlatListItem: React.FunctionComponent<IFlatListItem> = ({ item }) => {
           "--"
         )}
       </div>
-      <div className="size">
-        {!item.isDirectory && item.size ? BytesFormat(item.size) : "--"}
-      </div>
+      <div className="size">{!item.isDirectory && item.size ? BytesFormat(item.size) : "--"}</div>
       <div className="imageformat">
         {item.imageFormat !== ImageFormat.unknown ? item.imageFormat : "--"}
       </div>

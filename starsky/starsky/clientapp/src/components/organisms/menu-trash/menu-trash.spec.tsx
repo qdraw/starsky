@@ -4,10 +4,7 @@ import { act } from "react-dom/test-utils";
 import * as useFetch from "../../../hooks/use-fetch";
 import * as useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import { IArchive } from "../../../interfaces/IArchive";
-import {
-  IConnectionDefault,
-  newIConnectionDefault
-} from "../../../interfaces/IConnectionDefault";
+import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { Router } from "../../../router-app/router-app";
 import * as FetchPost from "../../../shared/fetch-post";
@@ -19,9 +16,7 @@ import MenuTrash from "./menu-trash";
 
 describe("MenuTrash", () => {
   it("renders", () => {
-    render(
-      <MenuTrash state={{ fileIndexItems: [] } as any} dispatch={jest.fn()} />
-    );
+    render(<MenuTrash state={{ fileIndexItems: [] } as any} dispatch={jest.fn()} />);
   });
 
   describe("with Context", () => {
@@ -76,13 +71,9 @@ describe("MenuTrash", () => {
     });
 
     it("select is not disabled", () => {
-      const component = render(
-        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
-      );
+      const component = render(<MenuTrash state={contextValues.state} dispatch={jest.fn()} />);
 
-      const menuTrashItemSelect = screen.queryByTestId(
-        "menu-trash-item-select"
-      ) as HTMLDivElement;
+      const menuTrashItemSelect = screen.queryByTestId("menu-trash-item-select") as HTMLDivElement;
       expect(menuTrashItemSelect).toBeTruthy();
 
       component.unmount();
@@ -102,13 +93,9 @@ describe("MenuTrash", () => {
         Router.navigate("/");
       });
 
-      const component = render(
-        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
-      );
+      const component = render(<MenuTrash state={contextValues.state} dispatch={jest.fn()} />);
 
-      const menuTrashItemSelect = screen.queryByTestId(
-        "menu-trash-item-select"
-      ) as HTMLDivElement;
+      const menuTrashItemSelect = screen.queryByTestId("menu-trash-item-select") as HTMLDivElement;
       expect(menuTrashItemSelect).toBeTruthy();
 
       menuTrashItemSelect.click();
@@ -131,13 +118,9 @@ describe("MenuTrash", () => {
         Router.navigate("/");
       });
 
-      const component = render(
-        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
-      );
+      const component = render(<MenuTrash state={contextValues.state} dispatch={jest.fn()} />);
 
-      const menuTrashItemSelect = screen.queryByTestId(
-        "menu-trash-item-select"
-      ) as HTMLDivElement;
+      const menuTrashItemSelect = screen.queryByTestId("menu-trash-item-select") as HTMLDivElement;
       expect(menuTrashItemSelect).toBeTruthy();
 
       fireEvent.keyDown(menuTrashItemSelect, {
@@ -162,13 +145,9 @@ describe("MenuTrash", () => {
         Router.navigate("/");
       });
 
-      const component = render(
-        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
-      );
+      const component = render(<MenuTrash state={contextValues.state} dispatch={jest.fn()} />);
 
-      const menuTrashItemSelect = screen.queryByTestId(
-        "menu-trash-item-select"
-      ) as HTMLDivElement;
+      const menuTrashItemSelect = screen.queryByTestId("menu-trash-item-select") as HTMLDivElement;
       expect(menuTrashItemSelect).toBeTruthy();
 
       fireEvent.keyDown(menuTrashItemSelect, {
@@ -191,13 +170,9 @@ describe("MenuTrash", () => {
         Router.navigate("/?select=");
       });
 
-      const component = render(
-        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
-      );
+      const component = render(<MenuTrash state={contextValues.state} dispatch={jest.fn()} />);
 
-      const menuContext = screen.queryByTestId(
-        "menu-context"
-      ) as HTMLInputElement;
+      const menuContext = screen.queryByTestId("menu-context") as HTMLInputElement;
       const menuContextParent = menuContext.parentElement as HTMLInputElement;
       expect(menuContextParent.classList).not.toContain("disabled");
 
@@ -238,13 +213,9 @@ describe("MenuTrash", () => {
         Router.navigate("/?select=test1.jpg");
       });
 
-      const component = render(
-        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
-      );
+      const component = render(<MenuTrash state={contextValues.state} dispatch={jest.fn()} />);
 
-      const menuContext = screen.queryByTestId(
-        "menu-context"
-      ) as HTMLInputElement;
+      const menuContext = screen.queryByTestId("menu-context") as HTMLInputElement;
       const menuContextParent = menuContext.parentElement as HTMLInputElement;
       expect(menuContextParent.classList).not.toContain("disabled");
 
@@ -280,9 +251,7 @@ describe("MenuTrash", () => {
         Router.navigate("/?select=test1.jpg");
       });
 
-      const component = render(
-        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
-      );
+      const component = render(<MenuTrash state={contextValues.state} dispatch={jest.fn()} />);
 
       const item = screen.queryByTestId("delete");
 
@@ -290,7 +259,7 @@ describe("MenuTrash", () => {
         item?.click();
       });
 
-      expect(modalSpy).toBeCalled();
+      expect(modalSpy).toHaveBeenCalled();
 
       expect(window.location.search).toBe("?select=test1.jpg");
 
@@ -322,9 +291,7 @@ describe("MenuTrash", () => {
         Router.navigate("/?select=test1.jpg");
       });
 
-      const component = render(
-        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
-      );
+      const component = render(<MenuTrash state={contextValues.state} dispatch={jest.fn()} />);
 
       const item = screen.queryByTestId("delete") as HTMLElement;
 
@@ -332,7 +299,7 @@ describe("MenuTrash", () => {
         fireEvent.keyDown(item, { key: "Tab" });
       });
 
-      expect(modalSpy).toBeCalledTimes(0);
+      expect(modalSpy).toHaveBeenCalledTimes(0);
 
       expect(window.location.search).toBe("?select=test1.jpg");
 
@@ -364,9 +331,7 @@ describe("MenuTrash", () => {
         Router.navigate("/?select=test1.jpg");
       });
 
-      const component = render(
-        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
-      );
+      const component = render(<MenuTrash state={contextValues.state} dispatch={jest.fn()} />);
 
       const item = screen.queryByTestId("delete") as HTMLElement;
 
@@ -374,7 +339,7 @@ describe("MenuTrash", () => {
         fireEvent.keyDown(item, { key: "Enter" });
       });
 
-      expect(modalSpy).toBeCalledTimes(1);
+      expect(modalSpy).toHaveBeenCalledTimes(1);
 
       expect(window.location.search).toBe("?select=test1.jpg");
 
@@ -402,9 +367,7 @@ describe("MenuTrash", () => {
         });
       Router.navigate("/?select=test1.jpg");
 
-      const component = render(
-        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
-      );
+      const component = render(<MenuTrash state={contextValues.state} dispatch={jest.fn()} />);
 
       const item = screen.queryByTestId("delete");
 
@@ -412,7 +375,7 @@ describe("MenuTrash", () => {
         item?.click();
       });
 
-      expect(modalSpy).toBeCalled();
+      expect(modalSpy).toHaveBeenCalled();
 
       expect(Router.state.location.search).toBe("?select=test1.jpg");
 
@@ -446,9 +409,7 @@ describe("MenuTrash", () => {
         Router.navigate("/?select=test1.jpg");
       });
 
-      const component = render(
-        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
-      );
+      const component = render(<MenuTrash state={contextValues.state} dispatch={jest.fn()} />);
 
       const item = screen.queryByTestId("restore-from-trash");
 
@@ -459,8 +420,8 @@ describe("MenuTrash", () => {
 
       expect(Router.state.location.search).toBe("?select=");
 
-      expect(fetchPostSpy).toBeCalled();
-      expect(fetchPostSpy).toBeCalledWith(
+      expect(fetchPostSpy).toHaveBeenCalled();
+      expect(fetchPostSpy).toHaveBeenCalledWith(
         new UrlQuery().UrlReplaceApi(),
         "fieldName=tags&search=%21delete%21&f=%2Fundefined%2Ftest1.jpg"
       );
@@ -495,9 +456,7 @@ describe("MenuTrash", () => {
         Router.navigate("/?select=test1.jpg");
       });
 
-      const component = render(
-        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
-      );
+      const component = render(<MenuTrash state={contextValues.state} dispatch={jest.fn()} />);
 
       const item = screen.queryByTestId("restore-from-trash") as HTMLElement;
 
@@ -510,8 +469,8 @@ describe("MenuTrash", () => {
 
       expect(Router.state.location.search).toBe("?select=");
 
-      expect(fetchPostSpy).toBeCalled();
-      expect(fetchPostSpy).toBeCalledWith(
+      expect(fetchPostSpy).toHaveBeenCalled();
+      expect(fetchPostSpy).toHaveBeenCalledWith(
         new UrlQuery().UrlReplaceApi(),
         "fieldName=tags&search=%21delete%21&f=%2Fundefined%2Ftest1.jpg"
       );
@@ -561,11 +520,9 @@ describe("MenuTrash", () => {
         .mockImplementationOnce(() => contextValues)
         .mockImplementationOnce(() => contextValues);
 
-      const component = render(
-        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
-      );
+      const component = render(<MenuTrash state={contextValues.state} dispatch={jest.fn()} />);
 
-      expect(useHotkeysSpy).toBeCalled();
+      expect(useHotkeysSpy).toHaveBeenCalled();
       expect(useHotkeysSpy).toHaveBeenNthCalledWith(
         1,
         {

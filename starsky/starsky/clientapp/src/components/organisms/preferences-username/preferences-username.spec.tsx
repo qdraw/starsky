@@ -15,9 +15,7 @@ describe("PreferencesUsername", () => {
       });
 
       const component = render(<PreferencesUsername />);
-      expect(screen.getByTestId("preferences-username-text")?.textContent).toBe(
-        "Unknown username"
-      );
+      expect(screen.getByTestId("preferences-username-text")?.textContent).toBe("Unknown username");
       component.unmount();
     });
 
@@ -33,9 +31,9 @@ describe("PreferencesUsername", () => {
       });
 
       const component = render(<PreferencesUsername />);
-      expect(
-        screen.queryByTestId("preferences-username-text")?.textContent
-      ).toBe("Unknown username");
+      expect(screen.queryByTestId("preferences-username-text")?.textContent).toBe(
+        "Unknown username"
+      );
       component.unmount();
     });
 
@@ -53,9 +51,7 @@ describe("PreferencesUsername", () => {
         .mockImplementationOnce(() => testReply);
 
       const component = render(<PreferencesUsername />);
-      expect(
-        screen.queryByTestId("preferences-username-text")?.textContent
-      ).toBe("test");
+      expect(screen.queryByTestId("preferences-username-text")?.textContent).toBe("test");
 
       component.unmount();
     });

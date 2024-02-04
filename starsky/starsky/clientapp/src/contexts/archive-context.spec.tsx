@@ -3,18 +3,10 @@ import { IArchive, newIArchive, SortType } from "../interfaces/IArchive";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
 import { PageType } from "../interfaces/IDetailView";
 import { IExifStatus } from "../interfaces/IExifStatus";
-import {
-  IFileIndexItem,
-  ImageFormat,
-  newIFileIndexItemArray
-} from "../interfaces/IFileIndexItem";
+import { IFileIndexItem, ImageFormat, newIFileIndexItemArray } from "../interfaces/IFileIndexItem";
 import ArrayHelper from "../shared/array-helper";
 import { FileListCache } from "../shared/filelist-cache";
-import {
-  ArchiveAction,
-  archiveReducer,
-  filterSidecarItems
-} from "./archive-context";
+import { ArchiveAction, archiveReducer, filterSidecarItems } from "./archive-context";
 
 describe("ArchiveContext", () => {
   it("filterSidecarItems removes sidecar files when collections are enabled", () => {
@@ -132,8 +124,8 @@ describe("ArchiveContext", () => {
 
     archiveReducer(state, action);
 
-    expect(cacheSetObjectSpy).toBeCalled();
-    expect(cacheSetObjectSpy).toBeCalledWith(
+    expect(cacheSetObjectSpy).toHaveBeenCalled();
+    expect(cacheSetObjectSpy).toHaveBeenCalledWith(
       {
         collections: undefined,
         colorClass: undefined,
@@ -169,7 +161,7 @@ describe("ArchiveContext", () => {
 
     archiveReducer(state, action);
 
-    expect(cacheSetObjectSpy).toBeCalledTimes(0);
+    expect(cacheSetObjectSpy).toHaveBeenCalledTimes(0);
     cacheSetObjectSpy.mockReset();
   });
 
@@ -549,9 +541,7 @@ describe("ArchiveContext", () => {
 
     expect(result.fileIndexItems.length).toBe(1);
     expect(result.fileIndexItems[0].tags).toBe("tags1, tags");
-    expect(result.fileIndexItems[0].description).toBe(
-      "description1description"
-    );
+    expect(result.fileIndexItems[0].description).toBe("description1description");
     expect(result.fileIndexItems[0].title).toBe("title1title");
   });
 
@@ -997,7 +987,7 @@ describe("ArchiveContext", () => {
     const action = { type: "add", add } as any;
     const result = archiveReducer(state, action);
 
-    expect(uniqueResultsSpy).toBeCalledWith(
+    expect(uniqueResultsSpy).toHaveBeenCalledWith(
       [
         {
           fileCollectionName: "test0",
@@ -1042,7 +1032,7 @@ describe("ArchiveContext", () => {
     const action = { type: "add", add } as any;
     const result = archiveReducer(state, action);
 
-    expect(uniqueResultsSpy).toBeCalledWith(
+    expect(uniqueResultsSpy).toHaveBeenCalledWith(
       [
         {
           fileName: "test0.jpg",

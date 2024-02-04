@@ -1,10 +1,4 @@
-import {
-  createEvent,
-  fireEvent,
-  render,
-  screen,
-  waitFor
-} from "@testing-library/react";
+import { createEvent, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import * as useIntersection from "../../../hooks/use-intersection-observer";
 import { ImageFormat } from "../../../interfaces/IFileIndexItem";
 import { UrlQuery } from "../../../shared/url-query";
@@ -14,9 +8,7 @@ jest.mock("../../../hooks/use-intersection-observer");
 
 describe("ListImageTest", () => {
   it("renders", () => {
-    render(
-      <ListImage alt={"alt"} fileHash={"src"} imageFormat={ImageFormat.jpg} />
-    );
+    render(<ListImage alt={"alt"} fileHash={"src"} imageFormat={ImageFormat.jpg} />);
   });
 
   it("useIntersection = true", () => {
@@ -27,9 +19,7 @@ describe("ListImageTest", () => {
       </ListImage>
     );
 
-    const img = screen.queryAllByTestId(
-      "list-image-img"
-    )[0] as HTMLImageElement;
+    const img = screen.queryAllByTestId("list-image-img")[0] as HTMLImageElement;
 
     const keyDownEvent = createEvent.load(img, {
       key: "x",
@@ -39,21 +29,15 @@ describe("ListImageTest", () => {
     fireEvent(img, keyDownEvent);
 
     expect(img).not.toBeNull();
-    expect(img.src).toContain(
-      new UrlQuery().UrlThumbnailImage("test.jpg", false)
-    );
+    expect(img.src).toContain(new UrlQuery().UrlThumbnailImage("test.jpg", false));
 
     element.unmount();
   });
 
   it("img-box--error null", () => {
-    const element = render(
-      <ListImage imageFormat={ImageFormat.jpg} fileHash={"null"} />
-    );
+    const element = render(<ListImage imageFormat={ImageFormat.jpg} fileHash={"null"} />);
 
-    const img = screen.queryAllByTestId(
-      "list-image-img-error"
-    )[0] as HTMLImageElement;
+    const img = screen.queryAllByTestId("list-image-img-error")[0] as HTMLImageElement;
 
     expect(img).not.toBeNull();
     expect(img.className).toContain("img-box--error");
@@ -96,13 +80,9 @@ describe("ListImageTest", () => {
   });
 
   it("img-box--error null 2", () => {
-    const element = render(
-      <ListImage imageFormat={ImageFormat.jpg} fileHash={"null"} />
-    );
+    const element = render(<ListImage imageFormat={ImageFormat.jpg} fileHash={"null"} />);
 
-    const img = screen.queryAllByTestId(
-      "list-image-img-error"
-    )[0] as HTMLImageElement;
+    const img = screen.queryAllByTestId("list-image-img-error")[0] as HTMLImageElement;
 
     expect(img).not.toBeNull();
     expect(img.className).toContain("img-box--error");

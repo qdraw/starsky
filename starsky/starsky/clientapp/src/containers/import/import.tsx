@@ -11,9 +11,8 @@ import { UrlQuery } from "../../shared/url-query";
 export const Import: FunctionComponent = () => {
   document.title = new DocumentTitle().GetDocumentTitle("Import");
 
-  const [dropAreaUploadFilesList, setDropAreaUploadFilesList] = React.useState(
-    newIFileIndexItemArray()
-  );
+  const [dropAreaUploadFilesList, setDropAreaUploadFilesList] =
+    React.useState(newIFileIndexItemArray());
 
   // Content
   const settings = useGlobalSettings();
@@ -25,9 +24,7 @@ export const Import: FunctionComponent = () => {
       {/* DropArea output modal */}
       {dropAreaUploadFilesList.length !== 0 ? (
         <ModalDropAreaFilesAdded
-          handleExit={() =>
-            setDropAreaUploadFilesList(newIFileIndexItemArray())
-          }
+          handleExit={() => setDropAreaUploadFilesList(newIFileIndexItemArray())}
           uploadFilesList={dropAreaUploadFilesList}
           isOpen={dropAreaUploadFilesList.length !== 0}
         />

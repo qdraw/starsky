@@ -51,11 +51,9 @@ describe("MenuDetailView", () => {
     } as IDetailView;
 
     it("readonly - move click", () => {
-      const moveModal = jest
-        .spyOn(ModalMoveFile, "default")
-        .mockImplementationOnce(() => {
-          return <></>;
-        });
+      const moveModal = jest.spyOn(ModalMoveFile, "default").mockImplementationOnce(() => {
+        return <></>;
+      });
 
       const component = render(
         <MemoryRouter>
@@ -67,7 +65,7 @@ describe("MenuDetailView", () => {
       expect(move).toBeTruthy();
       move?.click();
 
-      expect(moveModal).toBeCalledTimes(0);
+      expect(moveModal).toHaveBeenCalledTimes(0);
 
       // reset afterwards
       act(() => {
@@ -93,7 +91,7 @@ describe("MenuDetailView", () => {
       expect(rename).toBeTruthy();
       rename?.click();
 
-      expect(renameModal).toBeCalledTimes(0);
+      expect(renameModal).toHaveBeenCalledTimes(0);
 
       act(() => {
         component.unmount();
@@ -103,8 +101,9 @@ describe("MenuDetailView", () => {
     it("readonly - trash click to trash", () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({ statusCode: 200 } as IConnectionDefault);
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200
+      } as IConnectionDefault);
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -119,7 +118,7 @@ describe("MenuDetailView", () => {
       expect(trash).toBeTruthy();
       trash?.click();
 
-      expect(fetchPostSpy).toBeCalledTimes(0);
+      expect(fetchPostSpy).toHaveBeenCalledTimes(0);
 
       act(() => {
         component.unmount();
@@ -146,9 +145,7 @@ describe("MenuDetailView", () => {
         </MemoryRouter>
       );
 
-      const anchor = component.queryByTestId(
-        "menu-detail-view-close"
-      ) as HTMLAnchorElement;
+      const anchor = component.queryByTestId("menu-detail-view-close") as HTMLAnchorElement;
 
       fireEvent.click(anchor, {
         metaKey: true
@@ -177,9 +174,7 @@ describe("MenuDetailView", () => {
         </MemoryRouter>
       );
 
-      const anchor = component.queryByTestId(
-        "menu-detail-view-close"
-      ) as HTMLAnchorElement;
+      const anchor = component.queryByTestId("menu-detail-view-close") as HTMLAnchorElement;
 
       fireEvent.click(anchor, {
         metaKey: false
@@ -215,9 +210,7 @@ describe("MenuDetailView", () => {
         </MemoryRouter>
       );
 
-      const anchor = component.queryByTestId(
-        "menu-detail-view-close"
-      ) as HTMLAnchorElement;
+      const anchor = component.queryByTestId("menu-detail-view-close") as HTMLAnchorElement;
 
       expect(anchor).toBeTruthy();
       expect(anchor.className).toContain("search");
@@ -239,9 +232,7 @@ describe("MenuDetailView", () => {
         </MemoryRouter>
       );
 
-      const anchor = component.queryByTestId(
-        "menu-detail-view-close"
-      ) as HTMLAnchorElement;
+      const anchor = component.queryByTestId("menu-detail-view-close") as HTMLAnchorElement;
 
       expect(anchor).toBeTruthy();
       expect(anchor.className).toContain("item--close");
@@ -302,11 +293,9 @@ describe("MenuDetailView", () => {
     });
 
     it("export click [menu]", () => {
-      const exportModal = jest
-        .spyOn(ModalExport, "default")
-        .mockImplementationOnce(() => {
-          return <></>;
-        });
+      const exportModal = jest.spyOn(ModalExport, "default").mockImplementationOnce(() => {
+        return <></>;
+      });
 
       const component = render(
         <MemoryRouter>
@@ -321,7 +310,7 @@ describe("MenuDetailView", () => {
         exportButton?.click();
       });
 
-      expect(exportModal).toBeCalled();
+      expect(exportModal).toHaveBeenCalled();
 
       // to avoid polling afterwards
       act(() => {
@@ -350,7 +339,7 @@ describe("MenuDetailView", () => {
         fireEvent.keyDown(exportButton, { key: "Tab" });
       });
 
-      expect(exportModal).toBeCalledTimes(0);
+      expect(exportModal).toHaveBeenCalledTimes(0);
 
       // to avoid polling afterwards
       act(() => {
@@ -379,7 +368,7 @@ describe("MenuDetailView", () => {
         fireEvent.keyDown(exportButton, { key: "Enter" });
       });
 
-      expect(exportModal).toBeCalledTimes(1);
+      expect(exportModal).toHaveBeenCalledTimes(1);
 
       // to avoid polling afterwards
       act(() => {
@@ -419,9 +408,7 @@ describe("MenuDetailView", () => {
         </MemoryRouter>
       );
 
-      const labels = component.queryByTestId(
-        "menu-detail-view-labels"
-      ) as HTMLElement;
+      const labels = component.queryByTestId("menu-detail-view-labels") as HTMLElement;
       expect(labels).toBeTruthy();
 
       act(() => {
@@ -447,9 +434,7 @@ describe("MenuDetailView", () => {
         </MemoryRouter>
       );
 
-      const labels = component.queryByTestId(
-        "menu-detail-view-labels"
-      ) as HTMLElement;
+      const labels = component.queryByTestId("menu-detail-view-labels") as HTMLElement;
       expect(labels).toBeTruthy();
 
       act(() => {
@@ -482,9 +467,7 @@ describe("MenuDetailView", () => {
         labels?.click();
       });
 
-      const urlObject = new URLPath().StringToIUrl(
-        Router.state.location.search
-      );
+      const urlObject = new URLPath().StringToIUrl(Router.state.location.search);
       expect(urlObject.details).toBeTruthy();
 
       // reset afterwards
@@ -508,9 +491,7 @@ describe("MenuDetailView", () => {
         fireEvent.keyDown(labels, { key: "Enter" });
       });
 
-      const urlObject = new URLPath().StringToIUrl(
-        Router.state.location.search
-      );
+      const urlObject = new URLPath().StringToIUrl(Router.state.location.search);
       expect(urlObject.details).toBeTruthy();
 
       // reset afterwards
@@ -534,9 +515,7 @@ describe("MenuDetailView", () => {
         fireEvent.keyDown(labels, { key: "Tab" });
       });
 
-      const urlObject = new URLPath().StringToIUrl(
-        Router.state.location.search
-      );
+      const urlObject = new URLPath().StringToIUrl(Router.state.location.search);
       expect(urlObject.details).toBeFalsy();
 
       // reset afterwards
@@ -569,11 +548,9 @@ describe("MenuDetailView", () => {
     });
 
     it("[menu detail] move click", async () => {
-      const moveModal = jest
-        .spyOn(ModalMoveFile, "default")
-        .mockImplementationOnce(() => {
-          return <></>;
-        });
+      const moveModal = jest.spyOn(ModalMoveFile, "default").mockImplementationOnce(() => {
+        return <></>;
+      });
 
       const component = render(
         <MemoryRouter>
@@ -623,7 +600,7 @@ describe("MenuDetailView", () => {
         fireEvent.keyDown(move, { key: "Tab" });
       });
 
-      expect(moveModal).toBeCalledTimes(0);
+      expect(moveModal).toHaveBeenCalledTimes(0);
 
       // reset afterwards
       act(() => {
@@ -684,7 +661,7 @@ describe("MenuDetailView", () => {
         rename?.click();
       });
 
-      expect(renameModal).toBeCalled();
+      expect(renameModal).toHaveBeenCalled();
 
       act(() => {
         component.unmount();
@@ -712,7 +689,7 @@ describe("MenuDetailView", () => {
         fireEvent.keyDown(rename, { key: "Tab" });
       });
 
-      expect(renameModal).toBeCalledTimes(0);
+      expect(renameModal).toHaveBeenCalledTimes(0);
 
       act(() => {
         component.unmount();
@@ -740,7 +717,7 @@ describe("MenuDetailView", () => {
         fireEvent.keyDown(rename, { key: "Enter" });
       });
 
-      expect(renameModal).toBeCalled();
+      expect(renameModal).toHaveBeenCalled();
 
       act(() => {
         component.unmount();
@@ -750,8 +727,9 @@ describe("MenuDetailView", () => {
     it("trash keyDown to trash so tab so skip", () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({ statusCode: 200 } as IConnectionDefault);
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200
+      } as IConnectionDefault);
       const spy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -769,7 +747,7 @@ describe("MenuDetailView", () => {
         fireEvent.keyDown(trash, { key: "Tab" });
       });
 
-      expect(spy).toBeCalledTimes(0);
+      expect(spy).toHaveBeenCalledTimes(0);
 
       act(() => {
         component.unmount();
@@ -779,8 +757,9 @@ describe("MenuDetailView", () => {
     it("trash keyDown to trash enter continue", () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({ statusCode: 200 } as IConnectionDefault);
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200
+      } as IConnectionDefault);
       const spy = jest
         .spyOn(FetchPost, "default")
         .mockReset()
@@ -800,10 +779,7 @@ describe("MenuDetailView", () => {
       });
 
       expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith(
-        new UrlQuery().UrlMoveToTrashApi(),
-        "f=%2Ftest%2Fimage.jpg"
-      );
+      expect(spy).toHaveBeenCalledWith(new UrlQuery().UrlMoveToTrashApi(), "f=%2Ftest%2Fimage.jpg");
 
       act(() => {
         component.unmount();
@@ -814,8 +790,9 @@ describe("MenuDetailView", () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
 
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({ statusCode: 200 } as IConnectionDefault);
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200
+      } as IConnectionDefault);
       const spy = jest
         .spyOn(FetchPost, "default")
         .mockReset()
@@ -833,10 +810,7 @@ describe("MenuDetailView", () => {
 
       expect(spy).toHaveBeenCalled();
       expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith(
-        new UrlQuery().UrlMoveToTrashApi(),
-        "f=%2Ftest%2Fimage.jpg"
-      );
+      expect(spy).toHaveBeenCalledWith(new UrlQuery().UrlMoveToTrashApi(), "f=%2Ftest%2Fimage.jpg");
 
       act(() => {
         component.unmount();
@@ -875,8 +849,9 @@ describe("MenuDetailView", () => {
       jest.useFakeTimers();
       jest.spyOn(global, "setTimeout");
 
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({ statusCode: 200 } as IConnectionDefault);
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200
+      } as IConnectionDefault);
       const spyPost = jest
         .spyOn(FetchPost, "default")
         .mockReset()
@@ -906,7 +881,7 @@ describe("MenuDetailView", () => {
 
       expect(rotate).toBeTruthy();
 
-      expect(spyPost).toBeCalledTimes(0);
+      expect(spyPost).toHaveBeenCalledTimes(0);
 
       act(() => {
         component.unmount();
@@ -917,8 +892,9 @@ describe("MenuDetailView", () => {
       jest.useFakeTimers();
       jest.spyOn(global, "setTimeout");
 
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({ statusCode: 200 } as IConnectionDefault);
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200
+      } as IConnectionDefault);
       const spyPost = jest
         .spyOn(FetchPost, "default")
         .mockReset()
@@ -948,7 +924,7 @@ describe("MenuDetailView", () => {
 
       expect(rotate).toBeTruthy();
 
-      expect(spyPost).toBeCalledTimes(1);
+      expect(spyPost).toHaveBeenCalledTimes(1);
 
       act(() => {
         component.unmount();
@@ -973,9 +949,7 @@ describe("MenuDetailView", () => {
 
       expect(Router.state.location.search).toBe("?details=true");
 
-      const closeButton = component.queryByTestId(
-        "menu-detail-view-close-details"
-      ) as HTMLElement;
+      const closeButton = component.queryByTestId("menu-detail-view-close-details") as HTMLElement;
       expect(closeButton).toBeTruthy();
 
       closeButton?.click();
@@ -1007,9 +981,7 @@ describe("MenuDetailView", () => {
 
       expect(Router.state.location.search).toBe("?details=true");
 
-      const closeButton = component.queryByTestId(
-        "menu-detail-view-close-details"
-      ) as HTMLElement;
+      const closeButton = component.queryByTestId("menu-detail-view-close-details") as HTMLElement;
       expect(closeButton).toBeTruthy();
 
       act(() => {
@@ -1043,9 +1015,7 @@ describe("MenuDetailView", () => {
 
       expect(Router.state.location.search).toBe("?details=true");
 
-      const closeButton = component.queryByTestId(
-        "menu-detail-view-close-details"
-      ) as HTMLElement;
+      const closeButton = component.queryByTestId("menu-detail-view-close-details") as HTMLElement;
       expect(closeButton).toBeTruthy();
 
       act(() => {
@@ -1087,8 +1057,9 @@ describe("MenuDetailView", () => {
 
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({ statusCode: 200 } as IConnectionDefault);
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200
+      } as IConnectionDefault);
 
       const spy = jest
         .spyOn(FetchPost, "default")
@@ -1135,8 +1106,9 @@ describe("MenuDetailView", () => {
 
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({ statusCode: 200 } as IConnectionDefault);
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200
+      } as IConnectionDefault);
       const spyFetchPost = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -1153,9 +1125,9 @@ describe("MenuDetailView", () => {
         window.dispatchEvent(event);
       });
 
-      expect(spyFetchPost).toBeCalled();
-      expect(spyFetchPost).toBeCalledTimes(1);
-      expect(spyFetchPost).toBeCalledWith(
+      expect(spyFetchPost).toHaveBeenCalled();
+      expect(spyFetchPost).toHaveBeenCalledTimes(1);
+      expect(spyFetchPost).toHaveBeenCalledWith(
         new UrlQuery().UrlReplaceApi(),
         "f=%2Ftrashed%2Ftest1.jpg&fieldName=tags&search=%21delete%21"
       );
@@ -1181,9 +1153,7 @@ describe("MenuDetailView", () => {
           <MenuDetailView state={state1} dispatch={jest.fn()} />
         </MemoryRouter>
       );
-      let header = component.container.querySelector(
-        "header"
-      ) as HTMLHeadingElement;
+      let header = component.container.querySelector("header") as HTMLHeadingElement;
       expect(header.className).toBe("header header--main header--deleted");
 
       act(() => {
@@ -1194,9 +1164,7 @@ describe("MenuDetailView", () => {
         Router.navigate("/?f=/test2.jpg");
       });
 
-      header = component.container.querySelector(
-        "header"
-      ) as HTMLHeadingElement;
+      header = component.container.querySelector("header") as HTMLHeadingElement;
 
       expect(header.className).toBe("header header--main");
 
@@ -1364,37 +1332,33 @@ describe("MenuDetailView", () => {
         .mockImplementationOnce(() => <></>)
         .mockImplementationOnce(() => <></>);
 
-      jest
-        .spyOn(React, "useContext")
-        .mockImplementationOnce(() => contextValues);
+      jest.spyOn(React, "useContext").mockImplementationOnce(() => contextValues);
 
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({ statusCode: 200 } as IConnectionDefault);
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200
+      } as IConnectionDefault);
       const spyPost = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({
-          statusCode: 200,
-          data: {
-            subPath: "/test/image.jpg",
-            pageType: PageType.DetailView,
-            fileIndexItem: {
-              fileHash: "needed",
-              status: IExifStatus.Ok,
-              filePath: "/test/image.jpg",
-              fileName: "image.jpg"
-            }
-          } as IDetailView
-        } as IConnectionDefault);
+      const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200,
+        data: {
+          subPath: "/test/image.jpg",
+          pageType: PageType.DetailView,
+          fileIndexItem: {
+            fileHash: "needed",
+            status: IExifStatus.Ok,
+            filePath: "/test/image.jpg",
+            fileName: "image.jpg"
+          }
+        } as IDetailView
+      } as IConnectionDefault);
       const spyGet = jest
         .spyOn(FetchGet, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-      const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
-      );
+      const component = render(<MenuDetailView state={state} dispatch={jest.fn()} />);
 
       const item = component.queryByTestId("rotate");
 
