@@ -12,11 +12,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@security-patched/localtunnel": "^2.0.2-secpatched.3",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.4.1",
     "express": "^4.18.2",
     "express-ws": "^5.0.2",
-    "http-proxy": "^1.18.1",
-    "localtunnel": "^2.0.2"
+    "http-proxy": "^1.18.1"
   }
 }
