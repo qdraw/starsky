@@ -7,10 +7,7 @@ import FetchXml from "../../../shared/fetch-xml";
 import { Geo } from "../../../shared/geo";
 import { LeafletEmptyImageUrlGridLayer } from "../../../shared/leaflet-modify-empty-image-url-gridlayer";
 import { LeafletEmptyImageUrlTileLayer } from "../../../shared/leaflet-modify-empty-image-url-tilelayer";
-import {
-  TileLayerAttribution,
-  TileLayerLocation
-} from "../../../shared/tile-layer-location.const";
+import { TileLayerAttribution, TileLayerLocation } from "../../../shared/tile-layer-location.const";
 import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
 import MarkerBlueSvg from "../../../style/images/fa-map-marker-blue.svg";
@@ -39,9 +36,9 @@ const DetailViewGpx: React.FC = () => {
     }
 
     const tracks: any[] = [];
-    const tracksNodeList: NodeListOf<Element> = (
-      response.data as XMLDocument
-    ).querySelectorAll("trkpt");
+    const tracksNodeList: NodeListOf<Element> = (response.data as XMLDocument).querySelectorAll(
+      "trkpt"
+    );
 
     Array.from(tracksNodeList).forEach((element) => {
       tracks.push([element.getAttribute("lat"), element.getAttribute("lon")]);
@@ -105,19 +102,13 @@ const DetailViewGpx: React.FC = () => {
     new URLPath().encodeURI(new URLPath().getFilePath(history.location.search))
   );
   useEffect(() => {
-    setFilePathEncoded(
-      new URLPath().encodeURI(
-        new URLPath().getFilePath(history.location.search)
-      )
-    );
+    setFilePathEncoded(new URLPath().encodeURI(new URLPath().getFilePath(history.location.search)));
   }, [history.location.search]);
 
   /** update only on initial load */
   useEffect(() => {
     setIsLoading(true);
-    FetchXml(
-      new UrlQuery().UrlDownloadPhotoApi(filePathEncoded, false, true)
-    ).then((response) => {
+    FetchXml(new UrlQuery().UrlDownloadPhotoApi(filePathEncoded, false, true)).then((response) => {
       updateMap(response);
       setIsLoading(false);
     });
@@ -172,27 +163,17 @@ const DetailViewGpx: React.FC = () => {
           </button>
         </div>
         <div className="gpx-controls--button">
-          <button
-            data-test="zoom_in"
-            className="icon icon--zoom_in"
-            onClick={zoomIn}
-          >
+          <button data-test="zoom_in" className="icon icon--zoom_in" onClick={zoomIn}>
             Zoom in
           </button>
         </div>
         <div className="gpx-controls--button">
-          <button
-            data-test="zoom_out"
-            className="icon icon--zoom_out"
-            onClick={zoomOut}
-          >
+          <button data-test="zoom_out" className="icon icon--zoom_out" onClick={zoomOut}>
             Zoom out
           </button>
         </div>
         <div className="gpx-controls--button">
-          <CurrentLocationButton
-            callback={changeLocation}
-          ></CurrentLocationButton>
+          <CurrentLocationButton callback={changeLocation}></CurrentLocationButton>
         </div>
       </div>
     </>

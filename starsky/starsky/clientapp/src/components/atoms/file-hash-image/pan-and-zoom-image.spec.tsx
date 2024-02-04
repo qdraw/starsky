@@ -92,8 +92,8 @@ describe("PanAndZoomImage", () => {
         document.dispatchEvent(ev);
       });
 
-      expect(moveSpy).toBeCalled();
-      expect(moveSpy).toBeCalledWith(9, 9);
+      expect(moveSpy).toHaveBeenCalled();
+      expect(moveSpy).toHaveBeenCalledWith(9, 9);
 
       component.unmount();
     });
@@ -136,9 +136,7 @@ describe("PanAndZoomImage", () => {
       });
       const panZoomImage = screen.queryAllByTestId("pan-zoom-image")[0];
 
-      expect(panZoomImage.innerHTML).toContain(
-        "transform: translate(0px, 0px) scale(1)"
-      );
+      expect(panZoomImage.innerHTML).toContain("transform: translate(0px, 0px) scale(1)");
 
       component.unmount();
     });
@@ -214,8 +212,8 @@ describe("PanAndZoomImage", () => {
       const zoom_in = screen.queryAllByTestId("zoom_in")[0];
       zoom_in.click();
 
-      expect(zoomSpy).toBeCalled();
-      expect(zoomSpy).toBeCalledWith(-1);
+      expect(zoomSpy).toHaveBeenCalled();
+      expect(zoomSpy).toHaveBeenCalledWith(-1);
 
       component.unmount();
     });
@@ -240,8 +238,8 @@ describe("PanAndZoomImage", () => {
       const zoom_out = screen.queryAllByTestId("zoom_out")[0];
       zoom_out.click();
 
-      expect(zoomSpy).toBeCalled();
-      expect(zoomSpy).toBeCalledWith(1);
+      expect(zoomSpy).toHaveBeenCalled();
+      expect(zoomSpy).toHaveBeenCalledWith(1);
 
       component.unmount();
     });
@@ -266,7 +264,7 @@ describe("PanAndZoomImage", () => {
       });
       window.dispatchEvent(event);
 
-      expect(onResetCallbackSpy).toBeCalled();
+      expect(onResetCallbackSpy).toHaveBeenCalled();
       component.unmount();
     });
 
@@ -296,7 +294,7 @@ describe("PanAndZoomImage", () => {
         zoom_reset.click();
       });
 
-      expect(onResetCallbackSpy).toBeCalled();
+      expect(onResetCallbackSpy).toHaveBeenCalled();
 
       component.unmount();
     });

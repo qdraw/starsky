@@ -1,7 +1,4 @@
-import {
-  IFileIndexItem,
-  newIFileIndexItemArray
-} from "../../../interfaces/IFileIndexItem";
+import { IFileIndexItem, newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
 import ItemTextListView from "./item-text-list-view";
 
 export default {
@@ -9,12 +6,7 @@ export default {
 };
 
 export const Default = () => {
-  return (
-    <ItemTextListView
-      fileIndexItems={newIFileIndexItemArray()}
-      callback={() => {}}
-    />
-  );
+  return <ItemTextListView fileIndexItems={newIFileIndexItemArray()} callback={() => {}} />;
 };
 
 Default.story = {

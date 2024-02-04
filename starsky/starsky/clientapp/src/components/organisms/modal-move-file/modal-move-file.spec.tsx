@@ -101,9 +101,7 @@ describe("ModalMoveFile", () => {
     const btnTest = screen.queryByTestId("btn-test");
     expect(btnTest).toBeTruthy();
 
-    const btnDefault = screen.queryByTestId(
-      "modal-move-file-btn-default"
-    ) as HTMLButtonElement;
+    const btnDefault = screen.queryByTestId("modal-move-file-btn-default") as HTMLButtonElement;
 
     expect(btnDefault).toBeTruthy();
 
@@ -130,17 +128,15 @@ describe("ModalMoveFile", () => {
 
     // spy on fetch
     // use this import => import * as FetchPost from '../shared/fetch-post';
-    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
-        statusCode: 200,
-        data: [
-          {
-            filePath: "/",
-            status: IExifStatus.Ok
-          }
-        ]
-      } as IConnectionDefault
-    );
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: [
+        {
+          filePath: "/",
+          status: IExifStatus.Ok
+        }
+      ]
+    } as IConnectionDefault);
     const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
@@ -160,16 +156,14 @@ describe("ModalMoveFile", () => {
       parent?.click();
     });
 
-    const btnDefault = screen.queryByTestId(
-      "modal-move-file-btn-default"
-    ) as HTMLButtonElement;
+    const btnDefault = screen.queryByTestId("modal-move-file-btn-default") as HTMLButtonElement;
 
     act(() => {
       // now move
       btnDefault?.click();
     });
 
-    expect(fetchPostSpy).toBeCalledTimes(1);
+    expect(fetchPostSpy).toHaveBeenCalledTimes(1);
 
     // generate url
     const bodyParams = new URLSearchParams();
@@ -177,7 +171,7 @@ describe("ModalMoveFile", () => {
     bodyParams.append("to", "/");
     bodyParams.append("collections", true.toString());
 
-    expect(fetchPostSpy).toBeCalledWith(
+    expect(fetchPostSpy).toHaveBeenCalledWith(
       new UrlQuery().UrlDiskRename(),
       bodyParams.toString()
     );
@@ -197,18 +191,16 @@ describe("ModalMoveFile", () => {
     // use this import => import * as FetchPost from '../shared/fetch-post';
     jest.spyOn(FetchPost, "default").mockReset();
 
-    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
-        statusCode: 200,
-        data: [
-          {
-            filePath: "test",
-            status: IExifStatus.Ok,
-            pageType: PageType.Archive
-          }
-        ]
-      } as IConnectionDefault
-    );
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: [
+        {
+          filePath: "test",
+          status: IExifStatus.Ok,
+          pageType: PageType.Archive
+        }
+      ]
+    } as IConnectionDefault);
     const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
@@ -241,9 +233,7 @@ describe("ModalMoveFile", () => {
       btnTest?.click();
     });
 
-    const btnDefault = screen.queryByTestId(
-      "modal-move-file-btn-default"
-    ) as HTMLButtonElement;
+    const btnDefault = screen.queryByTestId("modal-move-file-btn-default") as HTMLButtonElement;
     // button isn't disabled anymore
     expect(btnDefault.disabled).toBeFalsy();
 
@@ -252,7 +242,7 @@ describe("ModalMoveFile", () => {
       btnDefault?.click();
     });
 
-    expect(fetchPostSpy).toBeCalledTimes(1);
+    expect(fetchPostSpy).toHaveBeenCalledTimes(1);
 
     // generate url
     const bodyParams = new URLSearchParams();
@@ -260,7 +250,7 @@ describe("ModalMoveFile", () => {
     bodyParams.append("to", "/test/");
     bodyParams.append("collections", true.toString());
 
-    expect(fetchPostSpy).toBeCalledWith(
+    expect(fetchPostSpy).toHaveBeenCalledWith(
       new UrlQuery().UrlDiskRename(),
       bodyParams.toString()
     );
@@ -289,7 +279,7 @@ describe("ModalMoveFile", () => {
       />
     );
 
-    expect(handleExitSpy).toBeCalled();
+    expect(handleExitSpy).toHaveBeenCalled();
 
     // and clean afterwards
     component.unmount();
@@ -351,9 +341,7 @@ describe("ModalMoveFile", () => {
         await btnTest?.click();
       });
 
-      const btnDefault = screen.queryByTestId(
-        "modal-move-file-btn-default"
-      ) as HTMLButtonElement;
+      const btnDefault = screen.queryByTestId("modal-move-file-btn-default") as HTMLButtonElement;
       // button isn't disabled anymore
       expect(btnDefault.disabled).toBeFalsy();
 
@@ -362,7 +350,7 @@ describe("ModalMoveFile", () => {
         await btnDefault?.click();
       });
 
-      await waitFor(() => expect(fetchPostSpy).toBeCalled());
+      await waitFor(() => expect(fetchPostSpy).toHaveBeenCalled());
 
       // Test is warning exist
       expect(screen.getByTestId("modal-move-file-warning-box")).toBeTruthy();

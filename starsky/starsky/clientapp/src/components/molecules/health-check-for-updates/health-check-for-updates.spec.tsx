@@ -28,9 +28,9 @@ describe("HealthCheckForUpdates", () => {
         .mockImplementationOnce(() => mockGetIConnectionDefault);
       const component = render(<HealthCheckForUpdates />);
 
-      expect(notificationSpy).toBeCalledTimes(0);
+      expect(notificationSpy).toHaveBeenCalledTimes(0);
 
-      expect(useFetchSpy).toBeCalled();
+      expect(useFetchSpy).toHaveBeenCalled();
       component.unmount();
     });
 
@@ -50,16 +50,14 @@ describe("HealthCheckForUpdates", () => {
 
       const component = render(<HealthCheckForUpdates></HealthCheckForUpdates>);
 
-      expect(notificationSpy).toBeCalledTimes(1);
+      expect(notificationSpy).toHaveBeenCalledTimes(1);
 
-      expect(useFetchSpy).toBeCalled();
+      expect(useFetchSpy).toHaveBeenCalled();
       component.unmount();
     });
 
     it("Click on close and expect that date is set in local storage", () => {
-      console.log(
-        "Click on close and expect that date is set in local storage"
-      );
+      console.log("Click on close and expect that date is set in local storage");
 
       const mockGetIConnectionDefault = {
         statusCode: 202,
@@ -96,17 +94,12 @@ describe("HealthCheckForUpdates", () => {
     });
 
     it("Component should not shown when date is set in localstorage", () => {
-      localStorage.setItem(
-        CheckForUpdatesLocalStorageName,
-        Date.now().toString()
-      );
+      localStorage.setItem(CheckForUpdatesLocalStorageName, Date.now().toString());
       const mockGetIConnectionDefault = {
         statusCode: 202,
         data: null
       } as IConnectionDefault;
-      jest
-        .spyOn(useFetch, "default")
-        .mockImplementationOnce(() => mockGetIConnectionDefault);
+      jest.spyOn(useFetch, "default").mockImplementationOnce(() => mockGetIConnectionDefault);
 
       const notificationSpy = jest
         .spyOn(Notification, "default")
@@ -115,7 +108,7 @@ describe("HealthCheckForUpdates", () => {
 
       const component = render(<HealthCheckForUpdates />);
 
-      expect(notificationSpy).toBeCalledTimes(0);
+      expect(notificationSpy).toHaveBeenCalledTimes(0);
 
       component.unmount();
       localStorage.removeItem(CheckForUpdatesLocalStorageName);
@@ -142,9 +135,9 @@ describe("HealthCheckForUpdates", () => {
 
       const component = render(<HealthCheckForUpdates></HealthCheckForUpdates>);
 
-      expect(notificationSpy).toBeCalledTimes(1);
+      expect(notificationSpy).toHaveBeenCalledTimes(1);
 
-      expect(useFetchSpy).toBeCalled();
+      expect(useFetchSpy).toHaveBeenCalled();
       component.unmount();
       localStorage.removeItem(CheckForUpdatesLocalStorageName);
     });
@@ -168,9 +161,9 @@ describe("HealthCheckForUpdates", () => {
         .mockImplementationOnce(() => mockGetIConnectionDefault);
       const component = render(<HealthCheckForUpdates></HealthCheckForUpdates>);
 
-      expect(notificationSpy).toBeCalledTimes(1);
+      expect(notificationSpy).toHaveBeenCalledTimes(1);
 
-      expect(useFetchSpy).toBeCalled();
+      expect(useFetchSpy).toHaveBeenCalled();
 
       component.unmount();
       (window as any).isElectron = null;

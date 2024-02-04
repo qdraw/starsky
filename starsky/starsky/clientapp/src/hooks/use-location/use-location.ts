@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Router } from "../../router-app/router-app";
 import { IUseLocation } from "./interfaces/IUseLocation";
-import { NavigateFn } from "./shared/navigate-fn";
+import { NavigateFn } from "./internal/navigate-fn";
 
 const useLocation = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps

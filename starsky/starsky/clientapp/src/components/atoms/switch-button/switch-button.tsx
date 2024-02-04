@@ -32,9 +32,7 @@ function SwitchButton(props: Readonly<ISwitchButtonProps>) {
   return (
     <form
       data-test={props["data-test"]}
-      className={
-        props.isEnabled !== false ? "switch-field" : "switch-field disabled"
-      }
+      className={props.isEnabled !== false ? "switch-field" : "switch-field disabled"}
     >
       <input
         type="radio"

@@ -7,10 +7,10 @@ import { Language } from "../../../shared/language";
 import FormControl from "../../atoms/form-control/form-control";
 import Modal from "../../atoms/modal/modal";
 import Preloader from "../../atoms/preloader/preloader";
-import { LatLongRound } from "./shared/lat-long-round";
-import { RealtimeMapUpdate } from "./shared/realtime-map-update";
-import { UpdateButton } from "./shared/update-button";
-import { UpdateMap } from "./shared/update-map";
+import { LatLongRound } from "./internal/lat-long-round";
+import { RealtimeMapUpdate } from "./internal/realtime-map-update";
+import { UpdateButton } from "./internal/update-button";
+import { UpdateMap } from "./internal/update-map";
 
 export interface IModalMoveFileProps {
   isOpen: boolean;
@@ -75,14 +75,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
 
   const mapReference = useCallback((node: HTMLDivElement | null) => {
     if (node !== null && mapState === null) {
-      UpdateMap(
-        node,
-        location,
-        isFormEnabled,
-        setLocation,
-        setIsLocationUpdated,
-        setMapState
-      );
+      UpdateMap(node, location, isFormEnabled, setLocation, setIsLocationUpdated, setMapState);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -119,11 +112,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
             </div>
           </div>
         ) : null}
-        <div
-          className="content-geo"
-          data-test="content-geo"
-          ref={mapReference}
-        ></div>
+        <div className="content-geo" data-test="content-geo" ref={mapReference}></div>
         <div className="modal modal-button-bar">
           <button
             data-test="force-cancel"
@@ -140,13 +129,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
                 setError,
                 setIsLoading,
                 props.collections
-              ).updateButton(
-                isLocationUpdated,
-                props.handleExit,
-                latitude,
-                longitude,
-                language
-              )
+              ).updateButton(isLocationUpdated, props.handleExit, latitude, longitude, language)
             : null}
           <div className="lat-long">
             <b>Latitude:</b>{" "}

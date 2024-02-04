@@ -5,13 +5,7 @@ export default {
 };
 
 export const Default = () => {
-  return (
-    <ModalArchiveRename
-      subPath="/test/child_folder"
-      isOpen={true}
-      handleExit={() => {}}
-    />
-  );
+  return <ModalArchiveRename subPath="/test/child_folder" isOpen={true} handleExit={() => {}} />;
 };
 
 Default.story = {

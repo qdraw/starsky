@@ -32,9 +32,7 @@ const DetailView: React.FC<IDetailView> = () => {
   }
 
   // next + prev state
-  const [relativeObjects, setRelativeObjects] = React.useState(
-    state.relativeObjects
-  );
+  const [relativeObjects, setRelativeObjects] = React.useState(state.relativeObjects);
 
   // in normal detailview the state isn't updated (so without search query)
   useEffect(() => {
@@ -145,14 +143,7 @@ const DetailView: React.FC<IDetailView> = () => {
 
   // // When item is removed
   useEffect(() => {
-    statusRemoved(
-      state,
-      relativeObjects,
-      isSearchQuery,
-      history,
-      setRelativeObjects,
-      setIsLoading
-    );
+    statusRemoved(state, relativeObjects, isSearchQuery, history, setRelativeObjects, setIsLoading);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.fileIndexItem?.status]);
 
@@ -226,12 +217,8 @@ const DetailView: React.FC<IDetailView> = () => {
           />
         ) : null}
 
-        {state.fileIndexItem.imageFormat === ImageFormat.gpx ? (
-          <DetailViewGpx />
-        ) : null}
-        {state.fileIndexItem.imageFormat === ImageFormat.mp4 ? (
-          <DetailViewMp4 />
-        ) : null}
+        {state.fileIndexItem.imageFormat === ImageFormat.gpx ? <DetailViewGpx /> : null}
+        {state.fileIndexItem.imageFormat === ImageFormat.mp4 ? <DetailViewMp4 /> : null}
 
         <div
           ref={mainRef}

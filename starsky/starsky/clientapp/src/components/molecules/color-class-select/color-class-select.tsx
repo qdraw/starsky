@@ -2,9 +2,7 @@ import "core-js/modules/es.array.find";
 import React, { useEffect, useState } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { Language } from "../../../shared/language";
-import Notification, {
-  NotificationType
-} from "../../atoms/notification/notification";
+import Notification, { NotificationType } from "../../atoms/notification/notification";
 import Portal from "../../atoms/portal/portal";
 import Preloader from "../../atoms/preloader/preloader";
 import { ColorClassUpdateSingle } from "./color-class-update-single";
@@ -21,9 +19,7 @@ export interface IColorClassSelectProps {
 /**
  * Used to update colorclasses
  */
-const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = (
-  props
-) => {
+const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = (props) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
@@ -40,9 +36,7 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = (
     language.text("Grijs", "Grey")
   ];
 
-  const [currentColorClass, setCurrentColorClass] = React.useState(
-    props.currentColorClass
-  );
+  const [currentColorClass, setCurrentColorClass] = React.useState(props.currentColorClass);
 
   /** re-render when switching page */
   useEffect(() => {
@@ -56,10 +50,7 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = (
   return (
     <>
       {isError ? (
-        <Notification
-          callback={() => setIsError("")}
-          type={NotificationType.danger}
-        >
+        <Notification callback={() => setIsError("")} type={NotificationType.danger}>
           {isError}
         </Notification>
       ) : null}

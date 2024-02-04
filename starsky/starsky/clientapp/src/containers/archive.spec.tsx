@@ -9,9 +9,7 @@ describe("Archive", () => {
 
   it("no colorclass usage", () => {
     const container = render(<Archive {...newIArchive()} />);
-    expect(container.container.textContent).toBe(
-      "(Archive) = no colorClassLists"
-    );
+    expect(container.container.textContent).toBe("(Archive) = no colorClassLists");
   });
 
   it("check if warning exist with no items in the list", () => {
@@ -29,9 +27,7 @@ describe("Archive", () => {
       />
     );
 
-    const warningBox = screen.queryByTestId(
-      "list-view-no-photos-in-folder"
-    ) as HTMLDivElement;
+    const warningBox = screen.queryByTestId("list-view-no-photos-in-folder") as HTMLDivElement;
     expect(warningBox).toBeTruthy();
 
     container.unmount();

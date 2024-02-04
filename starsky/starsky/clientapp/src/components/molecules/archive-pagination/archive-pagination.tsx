@@ -13,57 +13,55 @@ export interface IRelativeLink {
 /**
  * Only for Archive pages (used to be RelativeLink)
  */
-const ArchivePagination: React.FunctionComponent<IRelativeLink> = memo(
-  (props) => {
-    // content
-    const settings = useGlobalSettings();
-    const language = new Language(settings.language);
-    const MessagePrevious = language.text("Vorige", "Previous");
-    const MessageNext = language.text("Volgende", "Next");
+const ArchivePagination: React.FunctionComponent<IRelativeLink> = memo((props) => {
+  // content
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+  const MessagePrevious = language.text("Vorige", "Previous");
+  const MessageNext = language.text("Volgende", "Next");
 
-    // used for reading current location
-    const history = useLocation();
+  // used for reading current location
+  const history = useLocation();
 
-    const { relativeObjects } = props;
+  const { relativeObjects } = props;
 
-    if (!relativeObjects) return <div className="relativelink" />;
+  if (!relativeObjects) return <div className="relativelink" />;
 
-    // to the next/prev relative object
-    // when in select mode and navigate next to the select mode is still on but there are no items selected
-    const prevUrl = new UrlQuery().updateFilePathHash(
-      history.location.search,
-      relativeObjects.prevFilePath,
-      false,
-      true
-    );
-    const nextUrl = new UrlQuery().updateFilePathHash(
-      history.location.search,
-      relativeObjects.nextFilePath,
-      false,
-      true
-    );
+  // to the next/prev relative object
+  // when in select mode and navigate next to the select mode is still on but there are no items selected
+  const prevUrl = new UrlQuery().updateFilePathHash(
+    history.location.search,
+    relativeObjects.prevFilePath,
+    false,
+    true
+  );
+  const nextUrl = new UrlQuery().updateFilePathHash(
+    history.location.search,
+    relativeObjects.nextFilePath,
+    false,
+    true
+  );
 
-    const prev =
-      relativeObjects.prevFilePath !== null ? (
-        <Link className="prev" data-test="archive-pagination-prev" to={prevUrl}>
-          {MessagePrevious}
-        </Link>
-      ) : null;
-    const next =
-      relativeObjects.nextFilePath !== null ? (
-        <Link className="next" data-test="archive-pagination-next" to={nextUrl}>
-          {MessageNext}
-        </Link>
-      ) : null;
+  const prev =
+    relativeObjects.prevFilePath !== null ? (
+      <Link className="prev" data-test="archive-pagination-prev" to={prevUrl}>
+        {MessagePrevious}
+      </Link>
+    ) : null;
+  const next =
+    relativeObjects.nextFilePath !== null ? (
+      <Link className="next" data-test="archive-pagination-next" to={nextUrl}>
+        {MessageNext}
+      </Link>
+    ) : null;
 
-    return (
-      <div className="relativelink">
-        <h4 className="nextprev">
-          {prev}
-          {next}
-        </h4>
-      </div>
-    );
-  }
-);
+  return (
+    <div className="relativelink">
+      <h4 className="nextprev">
+        {prev}
+        {next}
+      </h4>
+    </div>
+  );
+});
 export default ArchivePagination;

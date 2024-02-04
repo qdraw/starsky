@@ -16,11 +16,7 @@ import { useEffect } from "react";
  * @param callback - function that is called
  * @param dependencies - deps array 
  */
-function useKeyboardEvent(
-  regex: RegExp,
-  callback: Function,
-  dependencies: any = []
-) {
+function useKeyboardEvent(regex: RegExp, callback: Function, dependencies: any = []) {
   useEffect(() => {
     const handler = function (event: KeyboardEvent) {
       if (regex?.exec(event.key)) {

@@ -17,16 +17,9 @@ const Breadcrumbs: React.FunctionComponent<IBreadcrumbProps> = memo((props) => {
   // used for reading current location
   const history = useLocation();
 
-  if (!props.subPath || !props.breadcrumb)
-    return <div className="breadcrumb" />;
+  if (!props.subPath || !props.breadcrumb) return <div className="breadcrumb" />;
   return (
-    <div
-      className={
-        props.subPath.length >= 28
-          ? "breadcrumb breadcrumb--long"
-          : "breadcrumb"
-      }
-    >
+    <div className={props.subPath.length >= 28 ? "breadcrumb breadcrumb--long" : "breadcrumb"}>
       {props.breadcrumb.map((item, index) => {
         let name = item.split("/")[item.split("/").length - 1];
 
@@ -39,12 +32,7 @@ const Breadcrumbs: React.FunctionComponent<IBreadcrumbProps> = memo((props) => {
         if (item === props.subPath) {
           return (
             <span key={item} data-test={"breadcrumb-span"}>
-              <Link
-                to={new UrlQuery().updateFilePathHash(
-                  history.location.search,
-                  item
-                )}
-              >
+              <Link to={new UrlQuery().updateFilePathHash(history.location.search, item)}>
                 {name}
               </Link>
             </span>
@@ -53,12 +41,7 @@ const Breadcrumbs: React.FunctionComponent<IBreadcrumbProps> = memo((props) => {
 
         return (
           <span key={item} data-test={"breadcrumb-span"}>
-            <Link
-              to={new UrlQuery().updateFilePathHash(
-                history.location.search,
-                item
-              )}
-            >
+            <Link to={new UrlQuery().updateFilePathHash(history.location.search, item)}>
               {name}
             </Link>{" "}
             <span> »</span>{" "}

@@ -182,9 +182,7 @@ describe("useGestures", () => {
       jest.useFakeTimers();
       const component = render(<Rotate />);
 
-      const image = component.container.querySelector(
-        "img"
-      ) as HTMLImageElement;
+      const image = component.container.querySelector("img") as HTMLImageElement;
       const touchmoveEvent = createEvent.wheel(image, exampleSingleTouches);
 
       fireEvent(image, touchmoveEvent);
@@ -212,12 +210,8 @@ describe("useGestures", () => {
         demoElement.dispatchEvent(event);
       });
 
-      expect(callHandlerSpy).toBeCalled();
-      expect(callHandlerSpy).toBeCalledWith(
-        "onPanStart",
-        expect.anything(),
-        undefined
-      );
+      expect(callHandlerSpy).toHaveBeenCalled();
+      expect(callHandlerSpy).toHaveBeenCalledWith("onPanStart", expect.anything(), undefined);
       const component = hook.componentMount as any;
       component.unmount();
     });
@@ -238,12 +232,8 @@ describe("useGestures", () => {
         demoElement.dispatchEvent(event);
       });
 
-      expect(callHandlerSpy).toBeCalled();
-      expect(callHandlerSpy).toBeCalledWith(
-        "onPinchStart",
-        expect.anything(),
-        undefined
-      );
+      expect(callHandlerSpy).toHaveBeenCalled();
+      expect(callHandlerSpy).toHaveBeenCalledWith("onPinchStart", expect.anything(), undefined);
       const component = hook.componentMount as any;
       component.unmount();
     });
@@ -264,12 +254,8 @@ describe("useGestures", () => {
         demoElement.dispatchEvent(event);
       });
 
-      expect(callHandlerSpy).toBeCalled();
-      expect(callHandlerSpy).toBeCalledWith(
-        "onPanMove",
-        expect.anything(),
-        undefined
-      );
+      expect(callHandlerSpy).toHaveBeenCalled();
+      expect(callHandlerSpy).toHaveBeenCalledWith("onPanMove", expect.anything(), undefined);
       const component = hook.componentMount as any;
       component.unmount();
     });
@@ -303,7 +289,7 @@ describe("useGestures", () => {
         demoElement.dispatchEvent(event);
       });
 
-      expect(debounceSpy).toBeCalledTimes(0);
+      expect(debounceSpy).toHaveBeenCalledTimes(0);
 
       const component = hook.componentMount as any;
       component.unmount();
@@ -311,14 +297,12 @@ describe("useGestures", () => {
     });
 
     it("touchmove large delta swipe right should call deBounce", () => {
-      jest
-        .spyOn(getCurrentTouchesAll, "getCurrentTouches")
-        .mockImplementationOnce(() => {
-          return {
-            deltaX: 30,
-            deltaY: 0
-          } as any;
-        });
+      jest.spyOn(getCurrentTouchesAll, "getCurrentTouches").mockImplementationOnce(() => {
+        return {
+          deltaX: 30,
+          deltaY: 0
+        } as any;
+      });
 
       const debounceAnonymousFnSpy = jest.fn();
       const debounceSpy = jest
@@ -338,12 +322,8 @@ describe("useGestures", () => {
         demoElement.dispatchEvent(event);
       });
 
-      expect(debounceSpy).toBeCalled();
-      expect(debounceAnonymousFnSpy).toBeCalledWith(
-        "onSwipeRight",
-        {},
-        "swipeRight"
-      );
+      expect(debounceSpy).toHaveBeenCalled();
+      expect(debounceAnonymousFnSpy).toHaveBeenCalledWith("onSwipeRight", {}, "swipeRight");
 
       const component = hook.componentMount as any;
       component.unmount();
@@ -376,12 +356,8 @@ describe("useGestures", () => {
         demoElement.dispatchEvent(event);
       });
 
-      expect(debounceSpy).toBeCalled();
-      expect(debounceAnonymousFnSpy).toBeCalledWith(
-        "onSwipeLeft",
-        {},
-        "swipeLeft"
-      );
+      expect(debounceSpy).toHaveBeenCalled();
+      expect(debounceAnonymousFnSpy).toHaveBeenCalledWith("onSwipeLeft", {}, "swipeLeft");
 
       const component = hook.componentMount as any;
       component.unmount();
@@ -414,12 +390,8 @@ describe("useGestures", () => {
         demoElement.dispatchEvent(event);
       });
 
-      expect(debounceSpy).toBeCalled();
-      expect(debounceAnonymousFnSpy).toBeCalledWith(
-        "onSwipeDown",
-        {},
-        "swipeDown"
-      );
+      expect(debounceSpy).toHaveBeenCalled();
+      expect(debounceAnonymousFnSpy).toHaveBeenCalledWith("onSwipeDown", {}, "swipeDown");
 
       const component = hook.componentMount as any;
       component.unmount();
@@ -453,8 +425,8 @@ describe("useGestures", () => {
         demoElement.dispatchEvent(event);
       });
 
-      expect(debounceSpy).toBeCalled();
-      expect(debounceAnonymousFnSpy).toBeCalledWith("onSwipeUp", {}, "swipeUp");
+      expect(debounceSpy).toHaveBeenCalled();
+      expect(debounceAnonymousFnSpy).toHaveBeenCalledWith("onSwipeUp", {}, "swipeUp");
 
       const component = hook.componentMount as any;
       component.unmount();
@@ -478,12 +450,8 @@ describe("useGestures", () => {
         demoElement.dispatchEvent(event);
       });
 
-      expect(callHandlerSpy).toBeCalled();
-      expect(callHandlerSpy).toBeCalledWith(
-        "onPinchChanged",
-        undefined,
-        undefined
-      );
+      expect(callHandlerSpy).toHaveBeenCalled();
+      expect(callHandlerSpy).toHaveBeenCalledWith("onPinchChanged", undefined, undefined);
 
       const component = hook.componentMount as any;
       component.unmount();
@@ -534,8 +502,8 @@ describe("useGestures", () => {
         demoElement.dispatchEvent(touchEndEvent);
       });
 
-      expect(callHandlerSpy).toBeCalled();
-      expect(callHandlerSpy).toBeCalledWith("onPinchEnd", undefined, undefined);
+      expect(callHandlerSpy).toHaveBeenCalled();
+      expect(callHandlerSpy).toHaveBeenCalledWith("onPinchEnd", undefined, undefined);
 
       const component = hook.componentMount as any;
       component.unmount();
@@ -564,19 +532,9 @@ describe("useGestures", () => {
         demoElement.dispatchEvent(touchEndEvent);
       });
 
-      expect(callHandlerSpy).toBeCalled();
-      expect(callHandlerSpy).toHaveBeenNthCalledWith(
-        1,
-        "onPanEnd",
-        undefined,
-        undefined
-      );
-      expect(callHandlerSpy).toHaveBeenNthCalledWith(
-        2,
-        "onGesture1End",
-        undefined,
-        undefined
-      );
+      expect(callHandlerSpy).toHaveBeenCalled();
+      expect(callHandlerSpy).toHaveBeenNthCalledWith(1, "onPanEnd", undefined, undefined);
+      expect(callHandlerSpy).toHaveBeenNthCalledWith(2, "onGesture1End", undefined, undefined);
       const component = hook.componentMount as any;
       component.unmount();
     });

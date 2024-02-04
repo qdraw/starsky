@@ -59,7 +59,7 @@ describe("MediaContent", () => {
 
     const component = render(<MediaContent />);
 
-    expect(setShowSocketErrorSpy).toBeCalled();
+    expect(setShowSocketErrorSpy).toHaveBeenCalled();
     component.unmount();
   });
 });

@@ -33,9 +33,7 @@ describe("ListImageTest", () => {
         </MemoryRouter>
       );
 
-      const anchor = component.container.querySelector(
-        "a"
-      ) as HTMLAnchorElement;
+      const anchor = component.container.querySelector("a") as HTMLAnchorElement;
       expect(anchor).not.toBeNull();
 
       fireEvent(
@@ -61,9 +59,7 @@ describe("ListImageTest", () => {
         </MemoryRouter>
       );
 
-      const anchor = component.container.querySelector(
-        "a"
-      ) as HTMLAnchorElement;
+      const anchor = component.container.querySelector("a") as HTMLAnchorElement;
       expect(anchor).not.toBeNull();
 
       fireEvent(
@@ -102,9 +98,7 @@ describe("ListImageTest", () => {
         </MemoryRouter>
       );
 
-      const button = component.container.querySelector(
-        "button"
-      ) as HTMLButtonElement;
+      const button = component.container.querySelector("button") as HTMLButtonElement;
       expect(button).not.toBeNull();
 
       // ClickEvent
@@ -118,7 +112,7 @@ describe("ListImageTest", () => {
       );
 
       expect(window.location.search).toBe("?select=test");
-      expect(onSelectionCallback).toBeCalledTimes(0);
+      expect(onSelectionCallback).toHaveBeenCalledTimes(0);
       component.unmount();
     });
 
@@ -139,9 +133,7 @@ describe("ListImageTest", () => {
         </MemoryRouter>
       );
 
-      const button = component.container.querySelector(
-        "button"
-      ) as HTMLButtonElement;
+      const button = component.container.querySelector("button") as HTMLButtonElement;
       expect(button).not.toBeNull();
 
       fireEvent(
@@ -153,8 +145,8 @@ describe("ListImageTest", () => {
         })
       );
 
-      expect(onSelectionCallback).toBeCalled();
-      expect(onSelectionCallback).toBeCalledWith("/test.jpg");
+      expect(onSelectionCallback).toHaveBeenCalled();
+      expect(onSelectionCallback).toHaveBeenCalledWith("/test.jpg");
       // the update is done in the callback, not here
       expect(window.location.search).toBe("?select=");
     });
@@ -175,9 +167,7 @@ describe("ListImageTest", () => {
         </MemoryRouter>
       );
 
-      const button = component.container.querySelector(
-        "button"
-      ) as HTMLButtonElement;
+      const button = component.container.querySelector("button") as HTMLButtonElement;
       expect(button).not.toBeNull();
 
       fireEvent(

@@ -47,20 +47,14 @@ export class FileListCache {
     return urlObject;
   }
 
-  private CacheSetObjectWithoutParent(
-    urlObject: IUrl,
-    value: IArchive | IDetailView
-  ): any {
+  private CacheSetObjectWithoutParent(urlObject: IUrl, value: IArchive | IDetailView): any {
     if (localStorage.getItem("clientCache") === "false") return;
     urlObject = this.SetDefaultUrlObjectValues(urlObject);
     value.dateCache = Date.now();
 
     try {
       // old versions of safari don't allow sessionStorage in private navigation
-      sessionStorage.setItem(
-        this.CacheKeyGenerator(urlObject),
-        JSON.stringify(value)
-      );
+      sessionStorage.setItem(this.CacheKeyGenerator(urlObject), JSON.stringify(value));
       return value;
     } catch (error) {
       console.error(error);
@@ -96,9 +90,7 @@ export class FileListCache {
         }
       }
       if (urlObject.collections) {
-        if (
-          item?.fileName.startsWith(detailview.fileIndexItem.fileCollectionName)
-        ) {
+        if (item?.fileName.startsWith(detailview.fileIndexItem.fileCollectionName)) {
           parentItem.fileIndexItems[index] = detailview.fileIndexItem;
         }
       }
@@ -141,9 +133,7 @@ export class FileListCache {
     if (localStorage.getItem("clientCache") === "false") return null;
     urlObject = this.SetDefaultUrlObjectValues(urlObject);
 
-    const cache = this.ParseJson(
-      sessionStorage.getItem(this.CacheKeyGenerator(urlObject))
-    );
+    const cache = this.ParseJson(sessionStorage.getItem(this.CacheKeyGenerator(urlObject)));
     if (!cache) return null;
 
     if (DifferenceInDate(cache.dateCache) > this.timeoutInMinutes) {

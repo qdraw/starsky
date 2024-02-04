@@ -5,9 +5,7 @@ export default {
 };
 
 export const Default = () => {
-  return (
-    <MenuTrash state={{ fileIndexItems: [] } as any} dispatch={() => {}} />
-  );
+  return <MenuTrash state={{ fileIndexItems: [] } as any} dispatch={() => {}} />;
 };
 
 Default.story = {

@@ -37,28 +37,18 @@ const ModalForceDelete: React.FunctionComponent<IModalForceDeleteProps> = ({
     "Are you sure you want to delete this file from all devices?"
   );
   const MessageCancel = language.text("Annuleren", "Cancel");
-  const MessageDeleteImmediately = language.text(
-    "Verwijder onmiddellijk",
-    "Delete immediately"
-  );
+  const MessageDeleteImmediately = language.text("Verwijder onmiddellijk", "Delete immediately");
   const history = useLocation();
 
-  const undoSelection = () =>
-    new Select(select, setSelect, state, history).undoSelection();
+  const undoSelection = () => new Select(select, setSelect, state, history).undoSelection();
 
   function forceDelete() {
     if (!select) return;
     setIsLoading(true);
 
-    const toUndoTrashList = new URLPath().MergeSelectFileIndexItem(
-      select,
-      state.fileIndexItems
-    );
+    const toUndoTrashList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
     if (!toUndoTrashList) return;
-    const selectParams = new URLPath().ArrayToCommaSeparatedStringOneParent(
-      toUndoTrashList,
-      ""
-    );
+    const selectParams = new URLPath().ArrayToCommaSeparatedStringOneParent(toUndoTrashList, "");
 
     if (selectParams.length === 0) return;
 
@@ -68,11 +58,7 @@ const ModalForceDelete: React.FunctionComponent<IModalForceDeleteProps> = ({
 
     undoSelection();
 
-    FetchPost(
-      new UrlQuery().UrlDeleteApi(),
-      bodyParams.toString(),
-      "delete"
-    ).then((result) => {
+    FetchPost(new UrlQuery().UrlDeleteApi(), bodyParams.toString(), "delete").then((result) => {
       if (result.statusCode === 200 || result.statusCode === 404) {
         dispatch({ type: "remove", toRemoveFileList: toUndoTrashList });
       }
@@ -91,17 +77,11 @@ const ModalForceDelete: React.FunctionComponent<IModalForceDeleteProps> = ({
       }}
     >
       <>
-        <div className="modal content--subheader">
-          {MessageDeleteImmediately}
-        </div>
+        <div className="modal content--subheader">{MessageDeleteImmediately}</div>
         <div className="modal content--text">
           {MessageDeleteIntroText}
           <br />
-          <button
-            data-test="force-cancel"
-            onClick={() => handleExit()}
-            className="btn btn--info"
-          >
+          <button data-test="force-cancel" onClick={() => handleExit()} className="btn btn--info">
             {MessageCancel}
           </button>
           <button

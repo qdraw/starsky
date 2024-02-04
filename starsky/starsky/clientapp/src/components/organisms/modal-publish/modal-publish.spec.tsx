@@ -1,10 +1,4 @@
-import {
-  act,
-  createEvent,
-  fireEvent,
-  render,
-  screen
-} from "@testing-library/react";
+import { act, createEvent, fireEvent, render, screen } from "@testing-library/react";
 import * as useFetch from "../../../hooks/use-fetch";
 import * as useInterval from "../../../hooks/use-interval";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
@@ -19,13 +13,7 @@ describe("ModalPublish", () => {
   });
 
   it("renders", () => {
-    render(
-      <ModalPublish
-        select={["/"]}
-        isOpen={true}
-        handleExit={() => {}}
-      ></ModalPublish>
-    );
+    render(<ModalPublish select={["/"]} isOpen={true} handleExit={() => {}}></ModalPublish>);
   });
 
   it("Publish button exist test", () => {
@@ -39,14 +27,10 @@ describe("ModalPublish", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     const modal = render(
-      <ModalPublish
-        select={["/"]}
-        isOpen={true}
-        handleExit={() => {}}
-      ></ModalPublish>
+      <ModalPublish select={["/"]} isOpen={true} handleExit={() => {}}></ModalPublish>
     );
 
-    expect(useFetchSpy).toBeCalled();
+    expect(useFetchSpy).toHaveBeenCalled();
     expect(screen.getByTestId("publish")).toBeTruthy();
 
     // and clean afterwards
@@ -86,18 +70,11 @@ describe("ModalPublish", () => {
       statusCode: 200,
       data: [{ key: "key", value: true }]
     };
-    const mockIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve(connectionDefault);
-    jest
-      .spyOn(FetchGet, "default")
-      .mockImplementationOnce(() => mockIConnectionDefault);
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(connectionDefault);
+    jest.spyOn(FetchGet, "default").mockImplementationOnce(() => mockIConnectionDefault);
 
     const modal = render(
-      <ModalPublish
-        select={["/"]}
-        isOpen={true}
-        handleExit={() => {}}
-      ></ModalPublish>
+      <ModalPublish select={["/"]} isOpen={true} handleExit={() => {}}></ModalPublish>
     );
 
     const formControls = screen
@@ -111,12 +88,10 @@ describe("ModalPublish", () => {
     const inputEvent = createEvent.input(tags, { key: "a" });
     fireEvent(tags, inputEvent);
 
-    expect(useFetchSpy).toBeCalled();
+    expect(useFetchSpy).toHaveBeenCalled();
     expect(screen.getByTestId("publish")).toBeTruthy();
 
-    jest
-      .spyOn(FetchPost, "default")
-      .mockImplementationOnce(() => mockIConnectionDefault);
+    jest.spyOn(FetchPost, "default").mockImplementationOnce(() => mockIConnectionDefault);
 
     const connectionDefault2: IConnectionDefault = {
       statusCode: 206,
@@ -125,17 +100,13 @@ describe("ModalPublish", () => {
     const mockIConnectionDefault2: Promise<IConnectionDefault> =
       Promise.resolve(connectionDefault2);
 
-    jest
-      .spyOn(FetchGet, "default")
-      .mockImplementationOnce(() => mockIConnectionDefault2);
+    jest.spyOn(FetchGet, "default").mockImplementationOnce(() => mockIConnectionDefault2);
 
     await act(async () => {
       await screen.queryByTestId("publish")?.click();
     });
 
-    expect(screen.queryByTestId("modal-publish-subheader")?.textContent).toBe(
-      "One moment please"
-    );
+    expect(screen.queryByTestId("modal-publish-subheader")?.textContent).toBe("One moment please");
 
     // and clean afterwards
     act(() => {
@@ -155,19 +126,13 @@ describe("ModalPublish", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     const modal = render(
-      <ModalPublish
-        select={["/"]}
-        isOpen={true}
-        handleExit={() => {}}
-      ></ModalPublish>
+      <ModalPublish select={["/"]} isOpen={true} handleExit={() => {}}></ModalPublish>
     );
 
     expect(screen.getByTestId("publish-profile-preflight-error")).toBeTruthy();
-    expect(
-      screen.getByTestId("publish-profile-preflight-error").innerHTML
-    ).toContain("failed-key");
+    expect(screen.getByTestId("publish-profile-preflight-error").innerHTML).toContain("failed-key");
 
-    expect(useFetchSpy).toBeCalled();
+    expect(useFetchSpy).toHaveBeenCalled();
 
     // and clean afterwards
     act(() => {
@@ -187,16 +152,12 @@ describe("ModalPublish", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     const modal = render(
-      <ModalPublish
-        select={["/"]}
-        isOpen={true}
-        handleExit={() => {}}
-      ></ModalPublish>
+      <ModalPublish select={["/"]} isOpen={true} handleExit={() => {}}></ModalPublish>
     );
 
     expect(screen.queryByTestId("publish-profile-preflight-error")).toBeFalsy();
 
-    expect(useFetchSpy).toBeCalled();
+    expect(useFetchSpy).toHaveBeenCalled();
 
     // and clean afterwards
     act(() => {
@@ -210,8 +171,7 @@ describe("ModalPublish", () => {
       statusCode: 500,
       data: null
     };
-    const mockIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve(connectionDefault);
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(connectionDefault);
 
     jest
       .spyOn(useInterval, "default")
@@ -239,11 +199,7 @@ describe("ModalPublish", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     const modal = render(
-      <ModalPublish
-        select={["/"]}
-        isOpen={true}
-        handleExit={() => {}}
-      ></ModalPublish>
+      <ModalPublish select={["/"]} isOpen={true} handleExit={() => {}}></ModalPublish>
     );
     jest
       .spyOn(FetchGet, "default")
@@ -262,12 +218,10 @@ describe("ModalPublish", () => {
     const inputEvent = createEvent.input(tags, { key: "a" });
     fireEvent(tags, inputEvent);
 
-    expect(useFetchSpy).toBeCalled();
+    expect(useFetchSpy).toHaveBeenCalled();
     expect(screen.getByTestId("publish")).toBeTruthy();
 
-    jest
-      .spyOn(FetchPost, "default")
-      .mockImplementationOnce(() => mockIConnectionDefault);
+    jest.spyOn(FetchPost, "default").mockImplementationOnce(() => mockIConnectionDefault);
 
     await act(async () => {
       await screen.getByTestId("publish")?.click();
@@ -289,8 +243,7 @@ describe("ModalPublish", () => {
       statusCode: 500,
       data: null
     };
-    const mockIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve(connectionDefault);
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(connectionDefault);
 
     jest
       .spyOn(useInterval, "default")
@@ -318,11 +271,7 @@ describe("ModalPublish", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     const modal = render(
-      <ModalPublish
-        select={["/"]}
-        isOpen={true}
-        handleExit={() => {}}
-      ></ModalPublish>
+      <ModalPublish select={["/"]} isOpen={true} handleExit={() => {}}></ModalPublish>
     );
     jest
       .spyOn(FetchGet, "default")
@@ -341,12 +290,10 @@ describe("ModalPublish", () => {
     const inputEvent = createEvent.input(tags, { key: "a" });
     fireEvent(tags, inputEvent);
 
-    expect(useFetchSpy).toBeCalled();
+    expect(useFetchSpy).toHaveBeenCalled();
     expect(screen.getByTestId("publish")).toBeTruthy();
 
-    jest
-      .spyOn(FetchPost, "default")
-      .mockImplementationOnce(() => mockIConnectionDefault);
+    jest.spyOn(FetchPost, "default").mockImplementationOnce(() => mockIConnectionDefault);
 
     await act(async () => {
       await screen.getByTestId("publish")?.click();
@@ -391,11 +338,9 @@ describe("ModalPublish", () => {
 
     const handleExitSpy = jest.fn();
 
-    const modal = render(
-      <ModalPublish select={["/"]} isOpen={true} handleExit={handleExitSpy} />
-    );
+    const modal = render(<ModalPublish select={["/"]} isOpen={true} handleExit={handleExitSpy} />);
 
-    expect(handleExitSpy).toBeCalled();
+    expect(handleExitSpy).toHaveBeenCalled();
 
     // and clean afterwards
     jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
@@ -435,11 +380,7 @@ describe("ModalPublish", () => {
       });
 
     const modal = render(
-      <ModalPublish
-        select={["/"]}
-        isOpen={true}
-        handleExit={() => {}}
-      ></ModalPublish>
+      <ModalPublish select={["/"]} isOpen={true} handleExit={() => {}}></ModalPublish>
     );
 
     const formControls = screen
@@ -466,8 +407,8 @@ describe("ModalPublish", () => {
 
     // should only send get once. the second time should be avoid due sending empty string
 
-    expect(fetchGetSpy).toBeCalled();
-    expect(fetchGetSpy).toBeCalledTimes(1);
+    expect(fetchGetSpy).toHaveBeenCalled();
+    expect(fetchGetSpy).toHaveBeenCalledTimes(1);
 
     modal.unmount();
   });

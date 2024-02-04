@@ -48,9 +48,7 @@ export class URLPath {
           this.parsePagination(key, urlObject);
           break;
         case "select".toLowerCase():
-          urlObject.select = this.getStringArrayFromCommaSeparatedString(
-            key[1]
-          );
+          urlObject.select = this.getStringArrayFromCommaSeparatedString(key[1]);
           break;
         case "sort".toLowerCase():
           urlObject.sort = SortType[key[1] as keyof typeof SortType];
@@ -69,9 +67,7 @@ export class URLPath {
    * Convert a comma separated string to a Array of strings
    * @param colorClassText
    */
-  private getStringArrayFromCommaSeparatedString(
-    colorClassText: string
-  ): string[] {
+  private getStringArrayFromCommaSeparatedString(colorClassText: string): string[] {
     let colorClassArray: Array<string> = [];
     if (colorClassText && colorClassText.indexOf(",") === -1) {
       colorClassArray = [colorClassText];
@@ -209,10 +205,7 @@ export class URLPath {
   /**
    * updateSelection
    */
-  public updateSelection(
-    historyLocationHash: string,
-    toUpdateSelect: string[]
-  ): IUrl {
+  public updateSelection(historyLocationHash: string, toUpdateSelect: string[]): IUrl {
     const urlObject = new URLPath().StringToIUrl(historyLocationHash);
     urlObject.select = toUpdateSelect;
     return urlObject;
@@ -239,19 +232,14 @@ export class URLPath {
    */
   public getSelect(historyLocationSearch: string) {
     let selectList = new Array<string>();
-    const selectResult = new URLPath().StringToIUrl(
-      historyLocationSearch
-    ).select;
+    const selectResult = new URLPath().StringToIUrl(historyLocationSearch).select;
     if (selectResult !== undefined) {
       selectList = selectResult;
     }
     return selectList;
   }
 
-  public MergeSelectParent(
-    select: string[] | undefined,
-    parent: string | undefined
-  ): string[] {
+  public MergeSelectParent(select: string[] | undefined, parent: string | undefined): string[] {
     const subPaths: string[] = [];
     if (select === undefined || parent === undefined) return subPaths;
 
@@ -271,10 +259,7 @@ export class URLPath {
    * @param select the current selection
    * @param fileIndexItems the current folder
    */
-  public GetAllSelection(
-    select: string[],
-    fileIndexItems: IFileIndexItem[]
-  ): string[] {
+  public GetAllSelection(select: string[], fileIndexItems: IFileIndexItem[]): string[] {
     fileIndexItems.forEach((fileIndexItem) => {
       const include = select.includes(fileIndexItem.fileName);
       if (!include) {
@@ -289,18 +274,13 @@ export class URLPath {
    * @param select List of items that are already selected
    * @param fileIndexItems
    */
-  public MergeSelectFileIndexItem(
-    select: string[],
-    fileIndexItems: IFileIndexItem[]
-  ): string[] {
+  public MergeSelectFileIndexItem(select: string[], fileIndexItems: IFileIndexItem[]): string[] {
     const subPaths: string[] = [];
 
     fileIndexItems.forEach((item) => {
       if (item.fileName && select.indexOf(item.fileName) >= 0) {
         if (item.parentDirectory === "/") item.parentDirectory = ""; // no double slash in front of path
-        subPaths.push(
-          item.parentDirectory + new URLPath().StartOnSlash(item.fileName)
-        );
+        subPaths.push(item.parentDirectory + new URLPath().StartOnSlash(item.fileName));
       }
     });
     return subPaths;
@@ -323,10 +303,7 @@ export class URLPath {
     return selectString;
   }
 
-  public ArrayToCommaSeparatedStringOneParent(
-    select: string[],
-    parent: string
-  ): string {
+  public ArrayToCommaSeparatedStringOneParent(select: string[], parent: string): string {
     let selectParams = "";
     for (let index = 0; index < select.length; index++) {
       const element = select[index];

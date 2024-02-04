@@ -18,9 +18,12 @@ interface IModalMoveFolderToTrashProps {
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ModalMoveFolderToTrash: React.FunctionComponent<
-  IModalMoveFolderToTrashProps
-> = ({ subPath, handleExit, isOpen, setIsLoading }) => {
+const ModalMoveFolderToTrash: React.FunctionComponent<IModalMoveFolderToTrashProps> = ({
+  subPath,
+  handleExit,
+  isOpen,
+  setIsLoading
+}) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
@@ -38,23 +41,16 @@ const ModalMoveFolderToTrash: React.FunctionComponent<
     const bodyParams = new URLSearchParams();
     bodyParams.append("f", subPath);
 
-    FetchPost(
-      new UrlQuery().UrlMoveToTrashApi(),
-      bodyParams.toString(),
-      "post"
-    ).then((result) => {
+    FetchPost(new UrlQuery().UrlMoveToTrashApi(), bodyParams.toString(), "post").then((result) => {
       if (result.statusCode === 200 || result.statusCode === 404) {
         document.body.dispatchEvent(
-          new CustomEvent<IApiNotificationResponseModel<IFileIndexItem[]>>(
-            useSocketsEventName,
-            {
-              bubbles: false,
-              detail: {
-                data: result.data,
-                type: "move-folder-to-trash-internal"
-              }
+          new CustomEvent<IApiNotificationResponseModel<IFileIndexItem[]>>(useSocketsEventName, {
+            bubbles: false,
+            detail: {
+              data: result.data,
+              type: "move-folder-to-trash-internal"
             }
-          )
+          })
         );
 
         history.navigate(
@@ -86,11 +82,7 @@ const ModalMoveFolderToTrash: React.FunctionComponent<
         <div className="modal content--text">
           {MessageMoveFolderIntoTrashIntroText}
           <br />
-          <button
-            data-test="force-cancel"
-            onClick={() => handleExit()}
-            className="btn btn--info"
-          >
+          <button data-test="force-cancel" onClick={() => handleExit()} className="btn btn--info">
             {MessageCancel}
           </button>
           <button

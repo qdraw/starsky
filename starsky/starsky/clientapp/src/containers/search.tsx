@@ -20,10 +20,7 @@ function Search(archive: Readonly<IArchiveProps>) {
     "Probeer een andere zoekopdracht",
     "Try another search query"
   );
-  const MessagePageNumberToken = language.text(
-    "Pagina {pageNumber} van ",
-    "Page {pageNumber} of "
-  ); // space at end
+  const MessagePageNumberToken = language.text("Pagina {pageNumber} van ", "Page {pageNumber} of "); // space at end
 
   const history = useLocation();
 
@@ -36,9 +33,7 @@ function Search(archive: Readonly<IArchiveProps>) {
     setSidebar(new URLPath().StringToIUrl(history.location.search).sidebar);
   }, [history.location.search]);
 
-  const [query, setQuery] = React.useState(
-    new URLPath().StringToIUrl(history.location.search).t
-  );
+  const [query, setQuery] = React.useState(new URLPath().StringToIUrl(history.location.search).t);
   useEffect(() => {
     setQuery(new URLPath().StringToIUrl(history.location.search).t);
   }, [history.location.search]);
@@ -62,9 +57,7 @@ function Search(archive: Readonly<IArchiveProps>) {
                 {archive.collectionsCount} {MessageNumberOfResults}
               </>
             ) : null}
-            {archive.collectionsCount &&
-            archive.pageNumber &&
-            archive.pageNumber >= 1 ? (
+            {archive.collectionsCount && archive.pageNumber && archive.pageNumber >= 1 ? (
               <>
                 {language.token(
                   MessagePageNumberToken,
@@ -77,20 +70,14 @@ function Search(archive: Readonly<IArchiveProps>) {
           </div>
           <SearchPagination {...archive} />
           {archive.collectionsCount >= 1 ? (
-            <ItemListView
-              iconList={true}
-              {...archive}
-              colorClassUsage={archive.colorClassUsage}
-            />
+            <ItemListView iconList={true} {...archive} colorClassUsage={archive.colorClassUsage} />
           ) : null}
           {archive.collectionsCount === 0 ? (
             <div className="folder">
               <div className="warning-box">{MessageTryOtherQuery}</div>
             </div>
           ) : null}
-          {archive.lastPageNumber !== 0 ? (
-            <SearchPagination {...archive} />
-          ) : null}
+          {archive.lastPageNumber !== 0 ? <SearchPagination {...archive} /> : null}
         </div>
       </div>
     </>

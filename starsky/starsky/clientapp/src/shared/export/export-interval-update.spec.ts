@@ -8,11 +8,10 @@ describe("ExportIntervalUpdate", () => {
   it("ready", async () => {
     const setProcessingSpy = jest.fn();
 
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve({
-        statusCode: 200,
-        data: true
-      } as IConnectionDefault);
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: true
+    } as IConnectionDefault);
 
     const fetchGetSpy = jest
       .spyOn(FetchGet, "default")
@@ -20,22 +19,19 @@ describe("ExportIntervalUpdate", () => {
 
     await ExportIntervalUpdate("test", setProcessingSpy);
 
-    expect(fetchGetSpy).toBeCalled();
-    expect(fetchGetSpy).toBeCalledWith(
-      new UrlQuery().UrlExportZipApi("test", true)
-    );
-    expect(setProcessingSpy).toBeCalled();
-    expect(setProcessingSpy).toBeCalledWith(ProcessingState.ready);
+    expect(fetchGetSpy).toHaveBeenCalled();
+    expect(fetchGetSpy).toHaveBeenCalledWith(new UrlQuery().UrlExportZipApi("test", true));
+    expect(setProcessingSpy).toHaveBeenCalled();
+    expect(setProcessingSpy).toHaveBeenCalledWith(ProcessingState.ready);
   });
 
   it("fail", async () => {
     const setProcessingSpy = jest.fn();
 
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve({
-        statusCode: 500,
-        data: true
-      } as IConnectionDefault);
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 500,
+      data: true
+    } as IConnectionDefault);
 
     const fetchGetSpy = jest
       .spyOn(FetchGet, "default")
@@ -43,22 +39,19 @@ describe("ExportIntervalUpdate", () => {
 
     await ExportIntervalUpdate("test", setProcessingSpy);
 
-    expect(fetchGetSpy).toBeCalled();
-    expect(fetchGetSpy).toBeCalledWith(
-      new UrlQuery().UrlExportZipApi("test", true)
-    );
-    expect(setProcessingSpy).toBeCalled();
-    expect(setProcessingSpy).toBeCalledWith(ProcessingState.fail);
+    expect(fetchGetSpy).toHaveBeenCalled();
+    expect(fetchGetSpy).toHaveBeenCalledWith(new UrlQuery().UrlExportZipApi("test", true));
+    expect(setProcessingSpy).toHaveBeenCalled();
+    expect(setProcessingSpy).toHaveBeenCalledWith(ProcessingState.fail);
   });
 
   it("wait 206", async () => {
     const setProcessingSpy = jest.fn();
 
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve({
-        statusCode: 206,
-        data: true
-      } as IConnectionDefault);
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 206,
+      data: true
+    } as IConnectionDefault);
 
     const fetchGetSpy = jest
       .spyOn(FetchGet, "default")
@@ -66,21 +59,18 @@ describe("ExportIntervalUpdate", () => {
 
     await ExportIntervalUpdate("test", setProcessingSpy);
 
-    expect(fetchGetSpy).toBeCalled();
-    expect(fetchGetSpy).toBeCalledWith(
-      new UrlQuery().UrlExportZipApi("test", true)
-    );
-    expect(setProcessingSpy).toBeCalledTimes(0);
+    expect(fetchGetSpy).toHaveBeenCalled();
+    expect(fetchGetSpy).toHaveBeenCalledWith(new UrlQuery().UrlExportZipApi("test", true));
+    expect(setProcessingSpy).toHaveBeenCalledTimes(0);
   });
 
   it("wait 404", async () => {
     const setProcessingSpy = jest.fn();
 
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-      Promise.resolve({
-        statusCode: 404,
-        data: true
-      } as IConnectionDefault);
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 404,
+      data: true
+    } as IConnectionDefault);
 
     const fetchGetSpy = jest
       .spyOn(FetchGet, "default")
@@ -88,10 +78,8 @@ describe("ExportIntervalUpdate", () => {
 
     await ExportIntervalUpdate("test", setProcessingSpy);
 
-    expect(fetchGetSpy).toBeCalled();
-    expect(fetchGetSpy).toBeCalledWith(
-      new UrlQuery().UrlExportZipApi("test", true)
-    );
-    expect(setProcessingSpy).toBeCalledTimes(0);
+    expect(fetchGetSpy).toHaveBeenCalled();
+    expect(fetchGetSpy).toHaveBeenCalledWith(new UrlQuery().UrlExportZipApi("test", true));
+    expect(setProcessingSpy).toHaveBeenCalledTimes(0);
   });
 });

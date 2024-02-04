@@ -1,14 +1,8 @@
 import { act } from "react-dom/test-utils";
 import { newIArchive } from "../interfaces/IArchive";
 import { PageType } from "../interfaces/IDetailView";
-import {
-  newIFileIndexItem,
-  newIFileIndexItemArray
-} from "../interfaces/IFileIndexItem";
-import useSearchList, {
-  fetchContentUseSearchList,
-  ISearchList
-} from "./use-searchlist";
+import { newIFileIndexItem, newIFileIndexItemArray } from "../interfaces/IFileIndexItem";
+import useSearchList, { fetchContentUseSearchList, ISearchList } from "./use-searchlist";
 import { mountReactHook } from "./___tests___/test-hook";
 
 describe("UseSearchList", () => {
@@ -53,25 +47,19 @@ describe("UseSearchList", () => {
 
       await act(async () => {
         // perform changes within our component
-        await hook.fetchContentUseSearchList(
-          "test",
-          controller,
-          setArchiveSpy,
-          jest.fn(),
-          false
-        );
+        await hook.fetchContentUseSearchList("test", controller, setArchiveSpy, jest.fn(), false);
       });
 
       if (!hook.archive) throw Error("missing archive");
 
-      expect(fetchSpy).toBeCalled();
-      expect(fetchSpy).toBeCalledWith("test", {
+      expect(fetchSpy).toHaveBeenCalled();
+      expect(fetchSpy).toHaveBeenCalledWith("test", {
         credentials: "include",
         method: "GET",
         signal: controller.signal
       });
 
-      expect(setArchiveSpy).toBeCalledWith({
+      expect(setArchiveSpy).toHaveBeenCalledWith({
         colorClassActiveList: [],
         colorClassUsage: [],
         fileIndexItem: { description: "", tags: "", title: "" },
@@ -90,16 +78,10 @@ describe("UseSearchList", () => {
 
       await act(async () => {
         // perform changes within our component
-        await hook.fetchContentUseSearchList(
-          "test",
-          controller,
-          jest.fn(),
-          setPageTypeSpy,
-          false
-        );
+        await hook.fetchContentUseSearchList("test", controller, jest.fn(), setPageTypeSpy, false);
       });
 
-      expect(setPageTypeSpy).toBeCalledWith(PageType.NotFound);
+      expect(setPageTypeSpy).toHaveBeenCalledWith(PageType.NotFound);
     });
 
     it("with search content 401", async () => {
@@ -112,16 +94,10 @@ describe("UseSearchList", () => {
 
       await act(async () => {
         // perform changes within our component
-        await hook.fetchContentUseSearchList(
-          "test",
-          controller,
-          jest.fn(),
-          setPageTypeSpy,
-          false
-        );
+        await hook.fetchContentUseSearchList("test", controller, jest.fn(), setPageTypeSpy, false);
       });
 
-      expect(setPageTypeSpy).toBeCalledWith(PageType.Unauthorized);
+      expect(setPageTypeSpy).toHaveBeenCalledWith(PageType.Unauthorized);
     });
 
     it("with search content 500", async () => {
@@ -134,15 +110,9 @@ describe("UseSearchList", () => {
 
       await act(async () => {
         // perform changes within our component
-        await hook.fetchContentUseSearchList(
-          "test",
-          controller,
-          jest.fn(),
-          setPageTypeSpy,
-          false
-        );
+        await hook.fetchContentUseSearchList("test", controller, jest.fn(), setPageTypeSpy, false);
       });
-      expect(setPageTypeSpy).toBeCalledWith(PageType.ApplicationException);
+      expect(setPageTypeSpy).toHaveBeenCalledWith(PageType.ApplicationException);
     });
   });
 });
@@ -155,23 +125,17 @@ describe("UseSearchList error", () => {
 
     const controller = new AbortController();
     const setDataSpy = jest.fn();
-    await fetchContentUseSearchList(
-      "test",
-      controller,
-      jest.fn(),
-      setDataSpy,
-      false
-    );
+    await fetchContentUseSearchList("test", controller, jest.fn(), setDataSpy, false);
 
     // fetchSpy
-    expect(fetchSpy).toBeCalled();
-    expect(fetchSpy).toBeCalledWith("test", {
+    expect(fetchSpy).toHaveBeenCalled();
+    expect(fetchSpy).toHaveBeenCalledWith("test", {
       credentials: "include",
       method: "GET",
       signal: controller.signal
     });
 
-    expect(setDataSpy).toBeCalledTimes(0);
+    expect(setDataSpy).toHaveBeenCalledTimes(0);
   });
 
   it("generic error", async () => {
@@ -183,20 +147,14 @@ describe("UseSearchList error", () => {
 
     const controller = new AbortController();
     const setDataSpy = jest.fn();
-    await fetchContentUseSearchList(
-      "test",
-      controller,
-      jest.fn(),
-      setDataSpy,
-      false
-    );
-    expect(fetchSpy).toBeCalled();
-    expect(fetchSpy).toBeCalledWith("test", {
+    await fetchContentUseSearchList("test", controller, jest.fn(), setDataSpy, false);
+    expect(fetchSpy).toHaveBeenCalled();
+    expect(fetchSpy).toHaveBeenCalledWith("test", {
       credentials: "include",
       method: "GET",
       signal: controller.signal
     });
 
-    expect(setDataSpy).toBeCalledTimes(0);
+    expect(setDataSpy).toHaveBeenCalledTimes(0);
   });
 });

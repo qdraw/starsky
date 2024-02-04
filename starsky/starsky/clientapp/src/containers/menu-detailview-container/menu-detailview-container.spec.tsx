@@ -22,14 +22,12 @@ describe("MenuDetailViewContainer", () => {
         <MenuDetailViewContainer />
       </MemoryRouter>
     );
-    expect(menuDetailViewSpy).toBeCalled();
+    expect(menuDetailViewSpy).toHaveBeenCalled();
     component.unmount();
   });
 
   it("use context is null", () => {
-    jest
-      .spyOn(React, "useContext")
-      .mockImplementationOnce(() => [null, jest.fn()]);
+    jest.spyOn(React, "useContext").mockImplementationOnce(() => [null, jest.fn()]);
     const menuDetailViewSpy = jest
       .spyOn(MenuDetailView, "default")
       .mockImplementationOnce(() => null);
@@ -39,7 +37,7 @@ describe("MenuDetailViewContainer", () => {
         <MenuDetailViewContainer />
       </MemoryRouter>
     );
-    expect(menuDetailViewSpy).toBeCalled();
+    expect(menuDetailViewSpy).toHaveBeenCalled();
 
     component.unmount();
   });

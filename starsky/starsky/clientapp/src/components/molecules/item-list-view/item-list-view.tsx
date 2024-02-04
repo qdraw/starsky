@@ -7,8 +7,8 @@ import { URLPath } from "../../../shared/url-path";
 import FlatListItem from "../../atoms/flat-list-item/flat-list-item";
 import ListImageChildItem from "../../atoms/list-image-child-item/list-image-child-item";
 import ListImageViewSelectContainer from "../list-image-view-select-container/list-image-view-select-container";
-import { ShiftSelectionHelper } from "./shared/shift-selection-helper";
-import { WarningBoxNoPhotosFilter } from "./shared/warning-box-no-photos-filter";
+import { ShiftSelectionHelper } from "./internal/shift-selection-helper";
+import { WarningBoxNoPhotosFilter } from "./internal/warning-box-no-photos-filter";
 
 interface ItemListProps {
   fileIndexItems: Array<IFileIndexItem>;
@@ -17,6 +17,7 @@ interface ItemListProps {
   iconList?: boolean;
   subPath?: string;
 }
+
 /**
  * A list with links to the items
  */
@@ -75,11 +76,7 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
           key={item.fileName + item.lastEdited + item.colorClass}
           onSelectionCallback={onSelectionCallback}
         >
-          {props.iconList ? (
-            <ListImageChildItem {...item} />
-          ) : (
-            <FlatListItem item={item} />
-          )}
+          {props.iconList ? <ListImageChildItem {...item} /> : <FlatListItem item={item} />}
         </ListImageViewSelectContainer>
       ))}
     </div>

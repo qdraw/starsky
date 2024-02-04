@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  ArchiveAction,
-  defaultStateFallback
-} from "../../../contexts/archive-context";
+import { ArchiveAction, defaultStateFallback } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import useLocation from "../../../hooks/use-location/use-location";
@@ -31,10 +28,7 @@ export interface IMenuSearchProps {
   dispatch: React.Dispatch<ArchiveAction>;
 }
 
-export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
-  state,
-  dispatch
-}) => {
+export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({ state, dispatch }) => {
   state = defaultStateFallback(state);
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
@@ -54,12 +48,10 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
     setSelect(new URLPath().StringToIUrl(history.location.search).select);
   }, [history.location.search]);
 
-  const allSelection = () =>
-    new Select(select, setSelect, state, history).allSelection();
+  const allSelection = () => new Select(select, setSelect, state, history).allSelection();
   const removeSidebarSelection = () =>
     new Select(select, setSelect, state, history).removeSidebarSelection();
-  const undoSelection = () =>
-    new Select(select, setSelect, state, history).undoSelection();
+  const undoSelection = () => new Select(select, setSelect, state, history).undoSelection();
 
   // Command + A for mac os || Ctrl + A for windows
   useHotKeys({ key: "a", ctrlKeyOrMetaKey: true }, allSelection, []);
@@ -87,12 +79,7 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
         <ModalDownload
           handleExit={() => setIsModalExportOpen(!isModalExportOpen)}
           select={
-            select
-              ? new URLPath().MergeSelectFileIndexItem(
-                  select,
-                  state.fileIndexItems
-                )
-              : []
+            select ? new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems) : []
           }
           collections={false}
           isOpen={isModalExportOpen}
@@ -114,10 +101,7 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
             setHamburgerMenu={setHamburgerMenu}
           />
 
-          <MenuSelectCount
-            select={select}
-            removeSidebarSelection={removeSidebarSelection}
-          />
+          <MenuSelectCount select={select} removeSidebarSelection={removeSidebarSelection} />
 
           {/* the select button with checkbox*/}
           {!select ? (
@@ -153,43 +137,26 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
 
           {/* More menu - When in normal state */}
           {!select ? (
-            <MoreMenu
-              setEnableMoreMenu={setEnableMoreMenu}
-              enableMoreMenu={enableMoreMenu}
-            />
+            <MoreMenu setEnableMoreMenu={setEnableMoreMenu} enableMoreMenu={enableMoreMenu} />
           ) : null}
 
           {/* More menu - In the select context there are more options */}
           {select && select.length === 0 ? (
-            <MoreMenu
-              setEnableMoreMenu={setEnableMoreMenu}
-              enableMoreMenu={enableMoreMenu}
-            >
-              <MenuOptionSelectionAll
-                select={select}
-                state={state}
-                allSelection={allSelection}
-              />
+            <MoreMenu setEnableMoreMenu={setEnableMoreMenu} enableMoreMenu={enableMoreMenu}>
+              <MenuOptionSelectionAll select={select} state={state} allSelection={allSelection} />
             </MoreMenu>
           ) : null}
 
           {/* More menu - When more then 1 item is selected */}
           {select && select.length >= 1 ? (
-            <MoreMenu
-              setEnableMoreMenu={setEnableMoreMenu}
-              enableMoreMenu={enableMoreMenu}
-            >
+            <MoreMenu setEnableMoreMenu={setEnableMoreMenu} enableMoreMenu={enableMoreMenu}>
               <MenuOptionSelectionUndo
                 select={select}
                 state={state}
                 undoSelection={undoSelection}
               />
 
-              <MenuOptionSelectionAll
-                select={select}
-                state={state}
-                allSelection={allSelection}
-              />
+              <MenuOptionSelectionAll select={select} state={state} allSelection={allSelection} />
 
               <MenuOptionModal
                 isReadOnly={false}

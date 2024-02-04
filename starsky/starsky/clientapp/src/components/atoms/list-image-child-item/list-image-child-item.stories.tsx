@@ -1,7 +1,4 @@
-import {
-  IFileIndexItem,
-  ImageFormat
-} from "../../../interfaces/IFileIndexItem";
+import { IFileIndexItem, ImageFormat } from "../../../interfaces/IFileIndexItem";
 import ListImageChildItem from "./list-image-child-item";
 
 export default {
@@ -109,10 +106,7 @@ export const Default = () => {
             className={"box-content colorclass--0 isDirectory-true"}
             key={item.fileName + item.lastEdited + item.colorClass}
           >
-            <ListImageChildItem
-              {...item}
-              key={item.fileName + item.lastEdited + item.colorClass}
-            />
+            <ListImageChildItem {...item} key={item.fileName + item.lastEdited + item.colorClass} />
           </div>
         ))}
       </div>

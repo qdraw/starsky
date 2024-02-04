@@ -5,9 +5,7 @@ export default {
 };
 
 export const Default = () => {
-  return (
-    <ModalArchiveSynchronizeManually isOpen={true} handleExit={() => {}} />
-  );
+  return <ModalArchiveSynchronizeManually isOpen={true} handleExit={() => {}} />;
 };
 
 Default.story = {

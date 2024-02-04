@@ -44,9 +44,7 @@ export class SidebarUpdate {
   };
 
   public Change = (
-    event:
-      | React.ChangeEvent<HTMLDivElement>
-      | React.KeyboardEvent<HTMLDivElement>,
+    event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>,
     update: ISidebarUpdate
   ): ISidebarUpdate | null => {
     const fieldValue = event.currentTarget.textContent
@@ -56,11 +54,7 @@ export class SidebarUpdate {
 
     if (!fieldName) return null;
 
-    return new SidebarUpdate().CastToISideBarUpdate(
-      fieldName,
-      fieldValue,
-      update
-    );
+    return new SidebarUpdate().CastToISideBarUpdate(fieldName, fieldValue, update);
   };
 
   public IsFormUsed = (updateSidebar: ISidebarUpdate): boolean => {

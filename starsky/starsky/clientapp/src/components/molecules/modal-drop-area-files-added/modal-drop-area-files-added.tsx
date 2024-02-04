@@ -10,9 +10,7 @@ interface IModalDropAreaFilesAddedProps {
   uploadFilesList: IFileIndexItem[];
 }
 
-const ModalDropAreaFilesAdded: React.FunctionComponent<
-  IModalDropAreaFilesAddedProps
-> = (props) => {
+const ModalDropAreaFilesAdded: React.FunctionComponent<IModalDropAreaFilesAddedProps> = (props) => {
   const settings = useGlobalSettings();
   const MessageFilesAdded = new Language(settings.language).text(
     "Deze bestanden zijn toegevoegd",
@@ -29,10 +27,7 @@ const ModalDropAreaFilesAdded: React.FunctionComponent<
       }}
     >
       <div className="modal content--subheader">{MessageFilesAdded}</div>
-      <div
-        className="modal modal-move content content--text"
-        data-test="upload-files"
-      >
+      <div className="modal modal-move content content--text" data-test="upload-files">
         <ItemTextListView fileIndexItems={props.uploadFilesList} />
       </div>
     </Modal>

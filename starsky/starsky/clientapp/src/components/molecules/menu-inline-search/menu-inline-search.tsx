@@ -1,28 +1,25 @@
-import { useEffect, useRef, useState } from "react";
+import { FormEvent, FunctionComponent, useEffect, useRef, useState } from "react";
 import useFetch from "../../../hooks/use-fetch";
 import useLocation from "../../../hooks/use-location/use-location";
 import { UrlQuery } from "../../../shared/url-query";
-import ArrowKeyDown from "./shared/arrow-key-down";
-import InlineSearchSuggest from "./shared/inline-search-suggest";
-import Navigate from "./shared/navigate";
+import ArrowKeyDown from "./internal/arrow-key-down";
+import InlineSearchSuggest from "./internal/inline-search-suggest";
+import Navigate from "./internal/navigate";
 
 interface IMenuSearchBarProps {
   defaultText?: string;
+
   callback?(query: string): void;
 }
 
-const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = (
-  props
-) => {
+const MenuInlineSearch: FunctionComponent<IMenuSearchBarProps> = (props) => {
   const history = useLocation();
 
   // the results
   const [suggest, setSuggest] = useState(new Array<string>());
 
   // to store the search query
-  const [query, setQuery] = useState(
-    props.defaultText ? props.defaultText : ""
-  );
+  const [query, setQuery] = useState(props.defaultText ? props.defaultText : "");
 
   // When pressing enter within the same page
   const inputFormControlReference = useRef<HTMLInputElement>(null);
@@ -31,10 +28,7 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = (
   const [inputFocus, setInputFocus] = useState(true);
 
   // can't set this inside effect or if ==> performance issue, runs to often
-  const responseObject = useFetch(
-    new UrlQuery().UrlSearchSuggestApi(query),
-    "get"
-  );
+  const responseObject = useFetch(new UrlQuery().UrlSearchSuggestApi(query), "get");
   useEffect(() => {
     if (!responseObject?.data?.length || responseObject.statusCode !== 200) {
       if (suggest && suggest.length >= 1) setSuggest([]);
@@ -48,21 +42,12 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = (
   }, [responseObject]);
 
   /** Submit the form */
-  function onFormSubmit(e: React.FormEvent) {
+  function onFormSubmit(e: FormEvent) {
     e.preventDefault();
-    Navigate(
-      history,
-      setFormFocus,
-      inputFormControlReference,
-      query,
-      props.callback
-    );
+    Navigate(history, setFormFocus, inputFormControlReference, query, props.callback);
   }
 
-  const featuresResult = useFetch(
-    new UrlQuery().UrlApiFeaturesAppSettings(),
-    "get"
-  );
+  const featuresResult = useFetch(new UrlQuery().UrlApiFeaturesAppSettings(), "get");
 
   /**
    * is form active
@@ -95,25 +80,18 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = (
       setFormFocus(false);
     }
   }
+
   const [keyDownIndex, setKeyDownIndex] = useState(-1);
 
   return (
     <div className="menu-inline-search">
-      <button
-        className={!formFocus ? "blur" : ""}
-        onFocus={() => setFormFocus(true)}
-      >
+      <button className={!formFocus ? "blur" : ""} onFocus={() => setFormFocus(true)}>
         <ul>
           <li className="menu-item menu-item--half-extra">
-            <form
-              className="form-inline form-nav icon-addon"
-              onSubmit={onFormSubmit}
-            >
+            <form className="form-inline form-nav icon-addon" onSubmit={onFormSubmit}>
               <label
                 htmlFor="menu-inline-search"
-                className={
-                  inputFocus ? "icon-addon--search" : "icon-addon--search-focus"
-                }
+                className={inputFocus ? "icon-addon--search" : "icon-addon--search-focus"}
               >
                 Search
               </label>

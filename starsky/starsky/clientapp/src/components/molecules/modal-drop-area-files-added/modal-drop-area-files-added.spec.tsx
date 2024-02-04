@@ -9,11 +9,7 @@ describe("ModalDropAreaFilesAdded", () => {
     jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
 
     const component = render(
-      <ModalDropAreaFilesAdded
-        isOpen={true}
-        uploadFilesList={[]}
-        handleExit={() => {}}
-      />
+      <ModalDropAreaFilesAdded isOpen={true} uploadFilesList={[]} handleExit={() => {}} />
     );
     component.unmount();
   });
@@ -24,15 +20,13 @@ describe("ModalDropAreaFilesAdded", () => {
     });
 
     it("list is rendered", () => {
-      jest
-        .spyOn(ItemTextListView, "default")
-        .mockImplementationOnce((props) => {
-          return (
-            <span data-test="data-test-0" id="data-test-0">
-              {props.fileIndexItems[0].fileName}
-            </span>
-          );
-        });
+      jest.spyOn(ItemTextListView, "default").mockImplementationOnce((props) => {
+        return (
+          <span data-test="data-test-0" id="data-test-0">
+            {props.fileIndexItems[0].fileName}
+          </span>
+        );
+      });
 
       const exampleList = [
         {
@@ -72,14 +66,10 @@ describe("ModalDropAreaFilesAdded", () => {
       const handleExitSpy = jest.fn();
 
       const component = render(
-        <ModalDropAreaFilesAdded
-          isOpen={true}
-          uploadFilesList={[]}
-          handleExit={handleExitSpy}
-        />
+        <ModalDropAreaFilesAdded isOpen={true} uploadFilesList={[]} handleExit={handleExitSpy} />
       );
 
-      expect(handleExitSpy).toBeCalled();
+      expect(handleExitSpy).toHaveBeenCalled();
 
       component.unmount();
     });

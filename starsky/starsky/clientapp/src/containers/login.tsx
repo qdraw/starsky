@@ -56,15 +56,9 @@ export const Login: React.FC<ILoginProps> = () => {
     "Er zijn problemen met de verbinding met de database. Controleer en pas de appsettings aan",
     "There are database connection issues. Check and edit the appsettings"
   );
-  const LogoutWarning = language.text(
-    "Wil je uitloggen?",
-    "Do you want to log out?"
-  );
+  const LogoutWarning = language.text("Wil je uitloggen?", "Do you want to log out?");
   const MessageStayLoggedIn = language.text("Blijf ingelogd", "Stay logged in");
-  const MessagePassword = language.text(
-    "Geef je wachtwoord op",
-    "Enter your password"
-  );
+  const MessagePassword = language.text("Geef je wachtwoord op", "Enter your password");
   const MessageExamplePassword = language.text("superveilig", "supersafe");
   const MessageExampleUsername = "dont@mail.me";
   const MessageLogin = language.text("Inloggen", "Login");
@@ -85,9 +79,7 @@ export const Login: React.FC<ILoginProps> = () => {
     // to help new users find the register screen
     if (
       accountStatus.statusCode === 406 &&
-      history.location.search.indexOf(
-        new UrlQuery().UrlAccountRegisterPage()
-      ) === -1
+      history.location.search.indexOf(new UrlQuery().UrlAccountRegisterPage()) === -1
     ) {
       history.navigate(new UrlQuery().UrlAccountRegisterPage(), {
         replace: true
@@ -131,17 +123,14 @@ export const Login: React.FC<ILoginProps> = () => {
     <>
       <header className="header header--main header--bluegray700">
         <div className="wrapper">
-          <div className="item item--first item--detective">
-            {MessageApplicationName}
-          </div>
+          <div className="item item--first item--detective">{MessageApplicationName}</div>
         </div>
       </header>
 
       {!accountStatus.data && new BrowserDetect().IsLegacy() ? (
         <div className="content">
           <div className="warning-box">
-            Your browser is not supported, please try the latest version of
-            Firefox or Chrome
+            Your browser is not supported, please try the latest version of Firefox or Chrome
           </div>
         </div>
       ) : null}
@@ -162,10 +151,7 @@ export const Login: React.FC<ILoginProps> = () => {
             onSubmit={(e) => {
               e.preventDefault();
               setError(null);
-              const loginValidation = validateLoginForm(
-                userEmail,
-                userPassword
-              );
+              const loginValidation = validateLoginForm(userEmail, userPassword);
               if (!loginValidation) {
                 setError(
                   loginValidation === null
@@ -214,10 +200,7 @@ export const Login: React.FC<ILoginProps> = () => {
             >
               {loading ? "Loading..." : MessageLogin}
             </ButtonStyled>
-            <a
-              className="alternative"
-              href={new UrlQuery().UrlAccountRegisterPage()}
-            >
+            <a className="alternative" href={new UrlQuery().UrlAccountRegisterPage()}>
               {MessageCreateAccount}
             </a>
           </form>

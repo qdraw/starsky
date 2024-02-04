@@ -29,7 +29,7 @@ describe("LeafletEmptyImageUrlGridLayer [leaflet-extension]", () => {
     gridlayer._removeTile("test");
 
     expect((gridlayer as any)._tiles).toStrictEqual({});
-    expect(fire).toBeCalled();
+    expect(fire).toHaveBeenCalled();
   });
 
   it("tile ready form leaflet (_fadeAnimated disabled) [extension]", () => {
@@ -67,8 +67,8 @@ describe("LeafletEmptyImageUrlGridLayer [leaflet-extension]", () => {
 
     gridlayer._tileReady(exampleCoords, null, el);
 
-    expect(_pruneTiles).toBeCalled();
-    expect(requestAnimFrameSpy).toBeCalled();
+    expect(_pruneTiles).toHaveBeenCalled();
+    expect(requestAnimFrameSpy).toHaveBeenCalled();
   });
 
   it("tile ready form leaflet (_fadeAnimated enabled) [extension]", () => {
@@ -111,7 +111,7 @@ describe("LeafletEmptyImageUrlGridLayer [leaflet-extension]", () => {
     // with error enabled
     gridlayer._tileReady(exampleCoords, true, el);
 
-    expect(requestAnimFrameSpy).toBeCalled();
-    expect(timeoutSpy).toBeCalled();
+    expect(requestAnimFrameSpy).toHaveBeenCalled();
+    expect(timeoutSpy).toHaveBeenCalled();
   });
 });

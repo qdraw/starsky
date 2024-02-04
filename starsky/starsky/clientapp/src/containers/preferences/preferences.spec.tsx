@@ -23,9 +23,9 @@ describe("Preferences", () => {
 
       const component = render(<Preferences />);
 
-      expect(preferencesUsernameSpy).toBeCalled();
-      expect(preferencesPasswordSpy).toBeCalled();
-      expect(preferencesAppSettingsSpy).toBeCalled();
+      expect(preferencesUsernameSpy).toHaveBeenCalled();
+      expect(preferencesPasswordSpy).toHaveBeenCalled();
+      expect(preferencesAppSettingsSpy).toHaveBeenCalled();
 
       component.unmount();
     });

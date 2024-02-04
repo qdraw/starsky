@@ -6,10 +6,7 @@
  * @param email - user's auth email
  * @param password - user's auth password
  */
-export const validateLoginForm = (
-  email: string,
-  password: string
-): boolean | null => {
+export const validateLoginForm = (email: string, password: string): boolean | null => {
   // Check for undefined or empty input fields
   if (!email || !password) {
     return false;

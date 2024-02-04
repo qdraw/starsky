@@ -3,17 +3,13 @@ import useGlobalSettings from "../../../hooks/use-global-settings";
 import useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
 import { Keyboard } from "../../../shared/keyboard";
 import { Language } from "../../../shared/language";
-import Notification, {
-  NotificationType
-} from "../../atoms/notification/notification";
+import Notification, { NotificationType } from "../../atoms/notification/notification";
 import Portal from "../../atoms/portal/portal";
 import Preloader from "../../atoms/preloader/preloader";
 import { IColorClassSelectProps } from "../color-class-select/color-class-select";
 import { ColorClassUpdateSingle } from "./color-class-update-single";
 
-const ColorClassSelectKeyboard: React.FunctionComponent<
-  IColorClassSelectProps
-> = (props) => {
+const ColorClassSelectKeyboard: React.FunctionComponent<IColorClassSelectProps> = (props) => {
   // for showing a notification
   const [isError, setIsError] = useState("");
   const [isDone, setIsDone] = useState("");
@@ -32,8 +28,7 @@ const ColorClassSelectKeyboard: React.FunctionComponent<
 
   useKeyboardEvent(/[0-8]/, (event: KeyboardEvent) => {
     // cmd + 0 or ctrl are zoom functions
-    if (new Keyboard().isInForm(event) || event.ctrlKey || event.metaKey)
-      return;
+    if (new Keyboard().isInForm(event) || event.ctrlKey || event.metaKey) return;
 
     new ColorClassUpdateSingle(
       props.isEnabled,
@@ -53,19 +48,13 @@ const ColorClassSelectKeyboard: React.FunctionComponent<
   return (
     <>
       {isError ? (
-        <Notification
-          callback={() => setIsError("")}
-          type={NotificationType.danger}
-        >
+        <Notification callback={() => setIsError("")} type={NotificationType.danger}>
           {isError}
         </Notification>
       ) : null}
 
       {isDone ? (
-        <Notification
-          callback={() => setIsDone("")}
-          type={NotificationType.default}
-        >
+        <Notification callback={() => setIsDone("")} type={NotificationType.default}>
           {isDone}
         </Notification>
       ) : null}

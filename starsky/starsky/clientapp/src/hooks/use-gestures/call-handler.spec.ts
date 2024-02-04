@@ -7,14 +7,14 @@ describe("callHandler", () => {
       const handlers = { test: jest.fn() } as any;
       callHandler("test", true as any, handlers);
 
-      expect(handlers.test).toBeCalled();
+      expect(handlers.test).toHaveBeenCalled();
     });
 
     it("should not call test function", () => {
       const handlers = { test: jest.fn() } as any;
       callHandler(undefined as any, true as any, handlers);
 
-      expect(handlers.test).toBeCalledTimes(0);
+      expect(handlers.test).toHaveBeenCalledTimes(0);
     });
   });
 

@@ -2,12 +2,7 @@ import modalInsertPortalDiv from "./modal-insert-portal-div";
 
 describe("modalInsertPortalDiv", () => {
   it("should add div element", () => {
-    modalInsertPortalDiv(
-      { current: null } as any,
-      false,
-      jest.fn() as any,
-      "test-id"
-    );
+    modalInsertPortalDiv({ current: null } as any, false, jest.fn() as any, "test-id");
 
     const element = document.querySelector("#test-id");
     expect(element).not.toBeNull();
@@ -19,12 +14,7 @@ describe("modalInsertPortalDiv", () => {
     exampleDiv.innerHTML = "test";
 
     document.body.appendChild(exampleDiv);
-    modalInsertPortalDiv(
-      { current: null } as any,
-      false,
-      jest.fn() as any,
-      "test-id-2"
-    );
+    modalInsertPortalDiv({ current: null } as any, false, jest.fn() as any, "test-id-2");
 
     const element = document.querySelector("#test-id-2");
     expect(element).not.toBeNull();
@@ -34,25 +24,15 @@ describe("modalInsertPortalDiv", () => {
 
   it("should setForceUpdate", () => {
     const forceUpdateSpy = jest.fn();
-    modalInsertPortalDiv(
-      { current: null } as any,
-      false,
-      forceUpdateSpy,
-      "test-id"
-    );
+    modalInsertPortalDiv({ current: null } as any, false, forceUpdateSpy, "test-id");
 
-    expect(forceUpdateSpy).toBeCalled();
+    expect(forceUpdateSpy).toHaveBeenCalled();
   });
 
   it("should not setForceUpdate", () => {
     const forceUpdateSpy = jest.fn();
-    modalInsertPortalDiv(
-      { current: null } as any,
-      true,
-      forceUpdateSpy,
-      "test-id"
-    );
+    modalInsertPortalDiv({ current: null } as any, true, forceUpdateSpy, "test-id");
 
-    expect(forceUpdateSpy).not.toBeCalled();
+    expect(forceUpdateSpy).not.toHaveBeenCalled();
   });
 });

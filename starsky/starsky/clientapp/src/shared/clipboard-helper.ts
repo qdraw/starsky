@@ -15,11 +15,7 @@ export class ClipboardHelper {
     descriptionReference: React.RefObject<HTMLDivElement>,
     titleReference: React.RefObject<HTMLDivElement>
   ): boolean {
-    if (
-      !tagsReference.current ||
-      !descriptionReference.current ||
-      !titleReference.current
-    ) {
+    if (!tagsReference.current || !descriptionReference.current || !titleReference.current) {
       return false;
     }
 

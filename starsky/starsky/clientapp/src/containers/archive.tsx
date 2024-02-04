@@ -32,10 +32,7 @@ function Archive(archive: Readonly<IArchiveProps>) {
         <ArchiveSidebar {...archive} />
 
         <div className="content">
-          <Breadcrumb
-            breadcrumb={archive.breadcrumb}
-            subPath={archive.subPath}
-          />
+          <Breadcrumb breadcrumb={archive.breadcrumb} subPath={archive.subPath} />
           <ArchivePagination relativeObjects={archive.relativeObjects} />
 
           <ColorClassFilter

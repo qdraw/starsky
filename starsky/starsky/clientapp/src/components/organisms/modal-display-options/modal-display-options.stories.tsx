@@ -5,12 +5,7 @@ export default {
 };
 
 export const Default = () => {
-  return (
-    <ModalDisplayOptions
-      isOpen={true}
-      handleExit={() => {}}
-    ></ModalDisplayOptions>
-  );
+  return <ModalDisplayOptions isOpen={true} handleExit={() => {}}></ModalDisplayOptions>;
 };
 
 Default.story = {

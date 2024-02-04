@@ -33,8 +33,8 @@ describe("useKeyboardEvent", () => {
     });
     window.dispatchEvent(event);
 
-    expect(callback).toBeCalled();
-    expect(callback).toBeCalledTimes(1);
+    expect(callback).toHaveBeenCalled();
+    expect(callback).toHaveBeenCalledTimes(1);
   });
 
   it("to be not called input z => check for q", () => {
@@ -54,6 +54,6 @@ describe("useKeyboardEvent", () => {
       shiftKey: true
     });
     window.dispatchEvent(event);
-    expect(callback).toBeCalledTimes(0);
+    expect(callback).toHaveBeenCalledTimes(0);
   });
 });

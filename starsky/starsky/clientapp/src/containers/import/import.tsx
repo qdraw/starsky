@@ -7,27 +7,24 @@ import { newIFileIndexItemArray } from "../../interfaces/IFileIndexItem";
 import DocumentTitle from "../../shared/document-title";
 import { Language } from "../../shared/language";
 import { UrlQuery } from "../../shared/url-query";
+import localization from "../../localization/localization.json";
 
 export const Import: FunctionComponent = () => {
-  document.title = new DocumentTitle().GetDocumentTitle("Import");
-
-  const [dropAreaUploadFilesList, setDropAreaUploadFilesList] = React.useState(
-    newIFileIndexItemArray()
-  );
+  const [dropAreaUploadFilesList, setDropAreaUploadFilesList] =
+    React.useState(newIFileIndexItemArray());
 
   // Content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageImportName = language.text("Importeren", "Import");
+  const MessageImportHeader = language.key(localization.MessageImportHeader);
+  document.title = new DocumentTitle().GetDocumentTitle(MessageImportHeader);
 
   return (
     <div>
       {/* DropArea output modal */}
       {dropAreaUploadFilesList.length !== 0 ? (
         <ModalDropAreaFilesAdded
-          handleExit={() =>
-            setDropAreaUploadFilesList(newIFileIndexItemArray())
-          }
+          handleExit={() => setDropAreaUploadFilesList(newIFileIndexItemArray())}
           uploadFilesList={dropAreaUploadFilesList}
           isOpen={dropAreaUploadFilesList.length !== 0}
         />
@@ -35,7 +32,7 @@ export const Import: FunctionComponent = () => {
 
       <MenuDefault isEnabled={true}></MenuDefault>
       <div className="content">
-        <div className="content--header">{MessageImportName}</div>
+        <div className="content--header">{MessageImportHeader}</div>
         <div className="content--subheader">
           <DropArea
             callback={(add) => {

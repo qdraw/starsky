@@ -13,40 +13,17 @@ interface IModalDisplayOptionsProps {
   handleExit: Function;
 }
 
-const ModalDisplayOptions: React.FunctionComponent<
-  IModalDisplayOptionsProps
-> = (props) => {
+const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = (props) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageDisplayOptions = language.text(
-    "Weergave opties",
-    "Display options"
-  );
-  const MessageSwitchButtonCollectionsOff = language.text(
-    "Toon raw bestanden",
-    "Show raw files"
-  );
-  const MessageSwitchButtonCollectionsOn = language.text(
-    "Verberg raw bestanden",
-    "Hide Raw files"
-  );
-  const MessageSwitchButtonIsSingleItemOff = language.text(
-    "Alles inladen",
-    "Load everything"
-  );
-  const MessageSwitchButtonIsSingleItemOn = language.text(
-    "Klein inladen",
-    "Small loading"
-  );
-  const MessageSwitchButtonIsSocketOn = language.text(
-    "Realtime updates",
-    "Realtime updates"
-  );
-  const MessageSwitchButtonIsSocketOff = language.text(
-    "Ververs zelf",
-    "Refresh yourself"
-  );
+  const MessageDisplayOptions = language.text("Weergave opties", "Display options");
+  const MessageSwitchButtonCollectionsOff = language.text("Toon raw bestanden", "Show raw files");
+  const MessageSwitchButtonCollectionsOn = language.text("Verberg raw bestanden", "Hide Raw files");
+  const MessageSwitchButtonIsSingleItemOff = language.text("Alles inladen", "Load everything");
+  const MessageSwitchButtonIsSingleItemOn = language.text("Klein inladen", "Small loading");
+  const MessageSwitchButtonIsSocketOn = language.text("Realtime updates", "Realtime updates");
+  const MessageSwitchButtonIsSocketOff = language.text("Ververs zelf", "Refresh yourself");
 
   const history = useLocation();
 
@@ -57,9 +34,7 @@ const ModalDisplayOptions: React.FunctionComponent<
 
   /** update when changing values and search */
   useEffect(() => {
-    setCollections(
-      new URLPath().StringToIUrl(history.location.search).collections !== false
-    );
+    setCollections(new URLPath().StringToIUrl(history.location.search).collections !== false);
   }, [collections, history.location.search]);
 
   function toggleCollections() {

@@ -29,18 +29,11 @@ describe("DetailView", () => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const [isError, setIsError] = useState(false);
     return (
-      <div
-        data-test="pan-zoom-image"
-        className={isError ? "main--error" : undefined}
-      >
+      <div data-test="pan-zoom-image" className={isError ? "main--error" : undefined}>
         <img
           src={
             "http://localhost" +
-            new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
-              props.fileHash,
-              props.id,
-              true
-            )
+            new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(props.fileHash, props.id, true)
           }
           onError={() => setIsError(true)}
         />
@@ -131,9 +124,7 @@ describe("DetailView", () => {
     });
 
     it("test if image is loaded", () => {
-      const imgContainer = Component.queryByTestId(
-        "pan-zoom-image"
-      ) as HTMLDivElement;
+      const imgContainer = Component.queryByTestId("pan-zoom-image") as HTMLDivElement;
       expect(imgContainer).toBeTruthy();
 
       const image = imgContainer?.querySelector("img") as HTMLImageElement;
@@ -153,9 +144,7 @@ describe("DetailView", () => {
     });
 
     it("test if image is failed", () => {
-      const imgContainer = Component.queryByTestId(
-        "pan-zoom-image"
-      ) as HTMLDivElement;
+      const imgContainer = Component.queryByTestId("pan-zoom-image") as HTMLDivElement;
       expect(imgContainer).toBeTruthy();
 
       const image = imgContainer?.querySelector("img") as HTMLImageElement;
@@ -168,9 +157,7 @@ describe("DetailView", () => {
     });
 
     it("check if Details exist", () => {
-      expect(
-        Component.queryByTestId("detailview-sidebar") as HTMLDivElement
-      ).toBeTruthy();
+      expect(Component.queryByTestId("detailview-sidebar") as HTMLDivElement).toBeTruthy();
     });
   });
 
@@ -200,9 +187,7 @@ describe("DetailView", () => {
       );
 
       // usage ==> import * as useFetch from '../hooks/use-fetch';
-      jest
-        .spyOn(useFetch, "default")
-        .mockImplementationOnce(() => newIConnectionDefault());
+      jest.spyOn(useFetch, "default").mockImplementationOnce(() => newIConnectionDefault());
     });
 
     it("Next Click (click)", () => {
@@ -239,9 +224,7 @@ describe("DetailView", () => {
 
       const detailview = render(<TestComponent />);
 
-      const next = detailview.queryByTestId(
-        "detailview-next"
-      ) as HTMLDivElement;
+      const next = detailview.queryByTestId("detailview-next") as HTMLDivElement;
 
       expect(next).toBeTruthy();
 
@@ -249,10 +232,10 @@ describe("DetailView", () => {
         next.click();
       });
 
-      expect(locationSpy).toBeCalled();
+      expect(locationSpy).toHaveBeenCalled();
 
-      expect(navigateSpy).toBeCalled();
-      expect(navigateSpy).toBeCalledWith("/?f=next", {
+      expect(navigateSpy).toHaveBeenCalled();
+      expect(navigateSpy).toHaveBeenCalledWith("/?f=next", {
         replace: true
       });
 
@@ -285,9 +268,7 @@ describe("DetailView", () => {
 
       const detailview = render(<TestComponent />);
 
-      const prev = detailview.queryByTestId(
-        "detailview-prev"
-      ) as HTMLDivElement;
+      const prev = detailview.queryByTestId("detailview-prev") as HTMLDivElement;
 
       expect(prev).toBeTruthy();
 
@@ -295,10 +276,10 @@ describe("DetailView", () => {
         prev.click();
       });
 
-      expect(locationSpy).toBeCalled();
+      expect(locationSpy).toHaveBeenCalled();
 
-      expect(navigateSpy).toBeCalled();
-      expect(navigateSpy).toBeCalledWith("/?f=prev", {
+      expect(navigateSpy).toHaveBeenCalled();
+      expect(navigateSpy).toHaveBeenCalledWith("/?f=prev", {
         replace: true
       });
 
@@ -329,11 +310,9 @@ describe("DetailView", () => {
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject);
 
-      jest
-        .spyOn(UpdateRelativeObject.prototype, "Update")
-        .mockImplementationOnce(() => {
-          return Promise.resolve() as any;
-        });
+      jest.spyOn(UpdateRelativeObject.prototype, "Update").mockImplementationOnce(() => {
+        return Promise.resolve() as any;
+      });
 
       const detailview = render(<TestComponent />);
 
@@ -348,10 +327,10 @@ describe("DetailView", () => {
         window.dispatchEvent(event);
       });
 
-      expect(locationSpy).toBeCalled();
+      expect(locationSpy).toHaveBeenCalled();
 
-      expect(navigateSpy).toBeCalled();
-      expect(navigateSpy).toBeCalledWith("/?f=prev", {
+      expect(navigateSpy).toHaveBeenCalled();
+      expect(navigateSpy).toHaveBeenCalledWith("/?f=prev", {
         replace: true
       });
 
@@ -397,10 +376,10 @@ describe("DetailView", () => {
         window.dispatchEvent(event);
       });
 
-      expect(locationSpy).toBeCalled();
+      expect(locationSpy).toHaveBeenCalled();
 
-      expect(navigateSpy).toBeCalled();
-      expect(navigateSpy).toBeCalledWith("/?f=next", {
+      expect(navigateSpy).toHaveBeenCalled();
+      expect(navigateSpy).toHaveBeenCalledWith("/?f=next", {
         replace: true
       });
       component.unmount();
@@ -452,19 +431,17 @@ describe("DetailView", () => {
 
       const detailview = render(<TestComponent />);
 
-      const prev = detailview.queryByTestId(
-        "detailview-prev"
-      ) as HTMLDivElement;
+      const prev = detailview.queryByTestId("detailview-prev") as HTMLDivElement;
       expect(prev).toBeTruthy();
       act(() => {
         prev.click();
       });
 
-      expect(locationSpy).toBeCalled();
-      expect(navigateSpy).toBeCalled();
+      expect(locationSpy).toHaveBeenCalled();
+      expect(navigateSpy).toHaveBeenCalled();
 
       // could not check values :(
-      expect(updateRelativeObjectSpy).toBeCalled();
+      expect(updateRelativeObjectSpy).toHaveBeenCalled();
 
       // reset afterwards
       act(() => {
@@ -485,11 +462,9 @@ describe("DetailView", () => {
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject);
-      jest
-        .spyOn(UpdateRelativeObject.prototype, "Update")
-        .mockImplementationOnce(() => {
-          return Promise.resolve() as any;
-        });
+      jest.spyOn(UpdateRelativeObject.prototype, "Update").mockImplementationOnce(() => {
+        return Promise.resolve() as any;
+      });
 
       const component = render(<TestComponent />);
 
@@ -501,9 +476,9 @@ describe("DetailView", () => {
       });
       window.dispatchEvent(event);
 
-      expect(locationSpy).toBeCalled();
+      expect(locationSpy).toHaveBeenCalled();
 
-      expect(navigateSpy).toBeCalled();
+      expect(navigateSpy).toHaveBeenCalled();
       expect(navigateSpy).toHaveBeenNthCalledWith(1, "/?f=/parentDirectory", {
         state: { filePath: "/parentDirectory/test.jpg" }
       });
@@ -557,16 +532,13 @@ describe("DetailView", () => {
         </>
       );
 
-      jest
-        .spyOn(FileHashImage, "default")
-        .mockReset()
-        .mockImplementationOnce(fakeElement);
+      jest.spyOn(FileHashImage, "default").mockReset().mockImplementationOnce(fakeElement);
 
       const component = render(<TestComponent />);
 
       (component.queryByTestId("fake-button") as HTMLButtonElement).click();
 
-      expect(updateRelativeObjectSpy).toBeCalled();
+      expect(updateRelativeObjectSpy).toHaveBeenCalled();
 
       component.unmount();
     });
@@ -616,16 +588,13 @@ describe("DetailView", () => {
         </>
       );
 
-      jest
-        .spyOn(FileHashImage, "default")
-        .mockReset()
-        .mockImplementationOnce(fakeElement);
+      jest.spyOn(FileHashImage, "default").mockReset().mockImplementationOnce(fakeElement);
 
       const component = render(<TestComponent />);
 
       (component.queryByTestId("fake-button") as HTMLButtonElement).click();
 
-      expect(updateRelativeObjectSpy).toBeCalled();
+      expect(updateRelativeObjectSpy).toHaveBeenCalled();
 
       component.unmount();
     });

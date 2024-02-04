@@ -1,5 +1,6 @@
 export default class WebSocketService {
-  private websocket?: WebSocket;
+  private readonly websocket?: WebSocket;
+
   constructor(url: string, protocols?: string | string[]) {
     try {
       this.websocket = new WebSocket(url, protocols);
@@ -32,9 +33,7 @@ export default class WebSocketService {
     this.websocket.close();
   }
 
-  public send(
-    data: string | ArrayBuffer | SharedArrayBuffer | Blob | ArrayBufferView
-  ): void {
+  public send(data: string | ArrayBuffer | SharedArrayBuffer | Blob | ArrayBufferView): void {
     if (!this.websocket) {
       return;
     }

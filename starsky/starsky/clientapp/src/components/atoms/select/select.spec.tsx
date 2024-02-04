@@ -1,10 +1,4 @@
-import {
-  createEvent,
-  fireEvent,
-  render,
-  screen,
-  waitFor
-} from "@testing-library/react";
+import { createEvent, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import Select from "./select";
 
 describe("SwitchButton", () => {
@@ -14,9 +8,7 @@ describe("SwitchButton", () => {
 
   it("trigger change", async () => {
     const outputSpy = jest.fn();
-    const component = render(
-      <Select selectOptions={["Test"]} callback={outputSpy} />
-    );
+    const component = render(<Select selectOptions={["Test"]} callback={outputSpy} />);
 
     const selectElement = component.queryByTestId("select") as HTMLElement;
 
@@ -27,10 +19,10 @@ describe("SwitchButton", () => {
     fireEvent(selectElement, changeEvent);
 
     await waitFor(() => {
-      expect(outputSpy).toBeCalled();
+      expect(outputSpy).toHaveBeenCalled();
     });
     await waitFor(() => {
-      expect(outputSpy).toBeCalledWith("Test");
+      expect(outputSpy).toHaveBeenCalledWith("Test");
     });
   });
 
@@ -45,7 +37,7 @@ describe("SwitchButton", () => {
 
     fireEvent(selectElement, changeEvent);
 
-    expect(outputSpy).toBeCalledTimes(0);
+    expect(outputSpy).toHaveBeenCalledTimes(0);
   });
 
   it("find option", () => {

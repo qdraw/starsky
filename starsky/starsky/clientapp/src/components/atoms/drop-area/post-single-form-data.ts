@@ -1,9 +1,6 @@
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
-import {
-  IFileIndexItem,
-  newIFileIndexItem
-} from "../../../interfaces/IFileIndexItem";
+import { IFileIndexItem, newIFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import FetchPost from "../../../shared/fetch-post";
 
 const CastFileIndexItem = (element: any): IFileIndexItem => {
@@ -35,9 +32,7 @@ export function PostSingleFormData(
   }
 
   setNotificationStatus(
-    `Uploading ${index + 1}/${inputFilesList.length} ${
-      inputFilesList[index].name
-    }`
+    `Uploading ${index + 1}/${inputFilesList.length} ${inputFilesList[index].name}`
   );
 
   if (inputFilesList[index].size / 1024 / 1024 > 250) {
@@ -115,15 +110,9 @@ class ProcessResponse {
           fileName: inputFilesList[index].name,
           status: IExifStatus.ServerError
         } as IFileIndexItem);
-      } else if (
-        dataItem.fileIndexItem &&
-        (dataItem.status as IExifStatus) !== IExifStatus.Ok
-      ) {
+      } else if (dataItem.fileIndexItem && (dataItem.status as IExifStatus) !== IExifStatus.Ok) {
         outputUploadFilesList.push(CastFileIndexItem(dataItem.fileIndexItem));
-      } else if (
-        !dataItem.fileIndexItem &&
-        (dataItem.status as IExifStatus) !== IExifStatus.Ok
-      ) {
+      } else if (!dataItem.fileIndexItem && (dataItem.status as IExifStatus) !== IExifStatus.Ok) {
         // when `/import` already existing item
         outputUploadFilesList.push({
           filePath: dataItem.filePath,

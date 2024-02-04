@@ -35,7 +35,7 @@ describe("WsCurrentStart", () => {
         jest.fn() as any
       ) as FakeWebSocketService;
 
-      expect(setSocketConnectedSpy).toBeCalled();
+      expect(setSocketConnectedSpy).toHaveBeenCalled();
 
       expect(wsCurrentStart.OnCloseCalled).toBeTruthy();
       expect(wsCurrentStart.OnErrorCalled).toBeTruthy();
@@ -46,43 +46,25 @@ describe("WsCurrentStart", () => {
   describe("FireOnClose", () => {
     it("feature toggle disabled when statusCode is 1008", () => {
       const isEnabled = { current: true };
-      FireOnClose(
-        new CloseEvent("t", { code: 1008 }),
-        true,
-        jest.fn(),
-        isEnabled
-      );
+      FireOnClose(new CloseEvent("t", { code: 1008 }), true, jest.fn(), isEnabled);
       expect(isEnabled.current).toBeFalsy();
     });
     it("feature toggle disabled when statusCode is 1009", () => {
       const isEnabled = { current: true };
-      FireOnClose(
-        new CloseEvent("t", { code: 1009 }),
-        true,
-        jest.fn(),
-        isEnabled
-      );
+      FireOnClose(new CloseEvent("t", { code: 1009 }), true, jest.fn(), isEnabled);
       expect(isEnabled.current).toBeFalsy();
     });
     it("feature toggle enabled when statusCode is 1000", () => {
       const isEnabled = { current: true };
-      FireOnClose(
-        new CloseEvent("t", { code: 1000 }),
-        true,
-        jest.fn(),
-        isEnabled
-      );
+      FireOnClose(new CloseEvent("t", { code: 1000 }), true, jest.fn(), isEnabled);
       expect(isEnabled.current).toBeTruthy();
     });
     it("check if setSocketConnected is called", () => {
       const setSocketConnectedSpy = jest.fn();
-      FireOnClose(
-        new CloseEvent("t", { code: 1000 }),
-        true,
-        setSocketConnectedSpy,
-        { current: true }
-      );
-      expect(setSocketConnectedSpy).toBeCalled();
+      FireOnClose(new CloseEvent("t", { code: 1000 }), true, setSocketConnectedSpy, {
+        current: true
+      });
+      expect(setSocketConnectedSpy).toHaveBeenCalled();
     });
   });
 
@@ -90,7 +72,7 @@ describe("WsCurrentStart", () => {
     it("check if setSocketConnected is called", () => {
       const setSocketConnectedSpy = jest.fn();
       FireOnError(true, setSocketConnectedSpy);
-      expect(setSocketConnectedSpy).toBeCalled();
+      expect(setSocketConnectedSpy).toHaveBeenCalled();
     });
   });
 
@@ -98,12 +80,12 @@ describe("WsCurrentStart", () => {
     it("check if setSocketConnected is called", () => {
       const setSocketConnectedSpy = jest.fn();
       FireOnOpen(false, setSocketConnectedSpy);
-      expect(setSocketConnectedSpy).toBeCalled();
+      expect(setSocketConnectedSpy).toHaveBeenCalled();
     });
     it("check if setSocketConnected is called 0 times when true", () => {
       const setSocketConnectedSpy = jest.fn();
       FireOnOpen(true, setSocketConnectedSpy);
-      expect(setSocketConnectedSpy).toBeCalledTimes(0);
+      expect(setSocketConnectedSpy).toHaveBeenCalledTimes(0);
     });
   });
 
@@ -131,7 +113,7 @@ describe("WsCurrentStart", () => {
         setKeepAliveTimeSpy,
         jest.fn() as any
       );
-      expect(setKeepAliveTimeSpy).toBeCalled();
+      expect(setKeepAliveTimeSpy).toHaveBeenCalled();
     });
 
     it("check if setKeepAliveTimeSpy is on Time", () => {
@@ -141,7 +123,7 @@ describe("WsCurrentStart", () => {
         setKeepAliveTimeSpy,
         jest.fn() as any
       );
-      expect(setKeepAliveTimeSpy).toBeCalled();
+      expect(setKeepAliveTimeSpy).toHaveBeenCalled();
     });
 
     it("should ignore undefined data", () => {
@@ -151,7 +133,7 @@ describe("WsCurrentStart", () => {
         setKeepAliveTimeSpy,
         jest.fn() as any
       );
-      expect(setKeepAliveTimeSpy).toBeCalledTimes(0);
+      expect(setKeepAliveTimeSpy).toHaveBeenCalledTimes(0);
     });
 
     it("should ignore invalid json data", () => {
@@ -161,7 +143,7 @@ describe("WsCurrentStart", () => {
         setKeepAliveTimeSpy,
         jest.fn() as any
       );
-      expect(setKeepAliveTimeSpy).toBeCalledTimes(0);
+      expect(setKeepAliveTimeSpy).toHaveBeenCalledTimes(0);
     });
 
     it("should ignore keep alive when sending real message", () => {
@@ -171,7 +153,7 @@ describe("WsCurrentStart", () => {
         setKeepAliveTimeSpy,
         jest.fn() as any
       );
-      expect(setKeepAliveTimeSpy).toBeCalledTimes(0);
+      expect(setKeepAliveTimeSpy).toHaveBeenCalledTimes(0);
     });
 
     it("should fire an event", (done) => {
@@ -181,11 +163,7 @@ describe("WsCurrentStart", () => {
         done();
       });
 
-      FireOnMessage(
-        new MessageEvent("t", { data: '{"data": 1}' }),
-        jest.fn(),
-        jest.fn() as any
-      );
+      FireOnMessage(new MessageEvent("t", { data: '{"data": 1}' }), jest.fn(), jest.fn() as any);
     });
   });
 
@@ -193,7 +171,7 @@ describe("WsCurrentStart", () => {
     it("should ignore keep alive when sending real message", () => {
       const setKeepAliveTimeSpy = jest.fn();
       HandleKeepAliveMessage(setKeepAliveTimeSpy, { data: '{"data": 1}' });
-      expect(setKeepAliveTimeSpy).toBeCalledTimes(0);
+      expect(setKeepAliveTimeSpy).toHaveBeenCalledTimes(0);
     });
   });
 
@@ -203,7 +181,7 @@ describe("WsCurrentStart", () => {
       HandleKeepAliveServerMessage(setKeepAliveServerTimeSpy, {
         data: '{"data": 1}'
       });
-      expect(setKeepAliveServerTimeSpy).toBeCalledTimes(0);
+      expect(setKeepAliveServerTimeSpy).toHaveBeenCalledTimes(0);
     });
     it("should trigger when message is valid", () => {
       const setKeepAliveServerTimeSpy = jest.fn();
@@ -211,14 +189,14 @@ describe("WsCurrentStart", () => {
         type: "Welcome",
         data: { dateTime: 1 }
       });
-      expect(setKeepAliveServerTimeSpy).toBeCalledTimes(1);
+      expect(setKeepAliveServerTimeSpy).toHaveBeenCalledTimes(1);
     });
     it("should trigger when message has no welcome", () => {
       const setKeepAliveServerTimeSpy = jest.fn();
       HandleKeepAliveServerMessage(setKeepAliveServerTimeSpy, {
         data: { dateTime: 1 }
       }); // should have type
-      expect(setKeepAliveServerTimeSpy).toBeCalledTimes(0);
+      expect(setKeepAliveServerTimeSpy).toHaveBeenCalledTimes(0);
     });
   });
 
@@ -255,11 +233,10 @@ describe("WsCurrentStart", () => {
     });
 
     it("fetch bad request", async () => {
-      const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({
-          statusCode: 400,
-          data: { type: "Welcome" }
-        } as IConnectionDefault);
+      const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 400,
+        data: { type: "Welcome" }
+      } as IConnectionDefault);
       const spyGet = jest
         .spyOn(FetchGet, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
@@ -267,15 +244,14 @@ describe("WsCurrentStart", () => {
       const result = await RestoreDataOnOpen(true, "any");
 
       expect(result).toBeFalsy();
-      expect(spyGet).toBeCalled();
+      expect(spyGet).toHaveBeenCalled();
     });
 
     it("data not array", async () => {
-      const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({
-          statusCode: 200,
-          data: { type: "Welcome" }
-        } as IConnectionDefault);
+      const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200,
+        data: { type: "Welcome" }
+      } as IConnectionDefault);
       const spyGet = jest
         .spyOn(FetchGet, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
@@ -283,15 +259,14 @@ describe("WsCurrentStart", () => {
       const result = await RestoreDataOnOpen(true, "any");
 
       expect(result).toBeFalsy();
-      expect(spyGet).toBeCalled();
+      expect(spyGet).toHaveBeenCalled();
     });
 
     it("data does not contain content", async () => {
-      const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({
-          statusCode: 200,
-          data: [{ test: "test" }]
-        } as IConnectionDefault);
+      const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200,
+        data: [{ test: "test" }]
+      } as IConnectionDefault);
       const spyGet = jest
         .spyOn(FetchGet, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
@@ -299,18 +274,17 @@ describe("WsCurrentStart", () => {
       const result = await RestoreDataOnOpen(true, "any");
 
       expect(result).toBeFalsy();
-      expect(spyGet).toBeCalled();
+      expect(spyGet).toHaveBeenCalled();
     });
 
     it("should return ok", async () => {
       const bodyDispatchSpy = jest
         .spyOn(document.body, "dispatchEvent")
         .mockImplementationOnce(() => true);
-      const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({
-          statusCode: 200,
-          data: [{ content: '{"test": true}' }]
-        } as IConnectionDefault);
+      const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200,
+        data: [{ content: '{"test": true}' }]
+      } as IConnectionDefault);
 
       const spyGet = jest
         .spyOn(FetchGet, "default")
@@ -319,8 +293,8 @@ describe("WsCurrentStart", () => {
       const result = await RestoreDataOnOpen(true, "any");
 
       expect(result).toBeTruthy();
-      expect(spyGet).toBeCalled();
-      expect(bodyDispatchSpy).toBeCalled();
+      expect(spyGet).toHaveBeenCalled();
+      expect(bodyDispatchSpy).toHaveBeenCalled();
     });
   });
 });

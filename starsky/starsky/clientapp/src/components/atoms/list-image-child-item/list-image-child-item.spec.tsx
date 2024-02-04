@@ -1,8 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import {
-  IFileIndexItem,
-  newIFileIndexItem
-} from "../../../interfaces/IFileIndexItem";
+import { IFileIndexItem, newIFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import ListImageChildItem from "./list-image-child-item";
 
 describe("FlatListItem", () => {
@@ -27,9 +24,7 @@ describe("FlatListItem", () => {
     const component = render(<ListImageChildItem {...data} />);
 
     expect(screen.queryAllByTestId("list-image-tags")).toBeTruthy();
-    expect(screen.queryAllByTestId("list-image-tags")[0].innerHTML).toBe(
-      "test"
-    );
+    expect(screen.queryAllByTestId("list-image-tags")[0].innerHTML).toBe("test");
 
     component.unmount();
   });

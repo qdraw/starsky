@@ -12,9 +12,7 @@ export class ColorClassUpdateSingle {
   private collections: boolean;
   private setIsError: (value: React.SetStateAction<string>) => void;
   private language: SupportedLanguages;
-  private setCurrentColorClass: (
-    value: React.SetStateAction<number | undefined>
-  ) => void;
+  private setCurrentColorClass: (value: React.SetStateAction<number | undefined>) => void;
   private onToggle: (value: number) => void;
   private clearAfter: boolean | undefined;
 
@@ -25,9 +23,7 @@ export class ColorClassUpdateSingle {
     collections: boolean,
     setIsError: (value: React.SetStateAction<string>) => void,
     settings: IGlobalSettings,
-    setCurrentColorClass: (
-      value: React.SetStateAction<number | undefined>
-    ) => void,
+    setCurrentColorClass: (value: React.SetStateAction<number | undefined>) => void,
     onToggle: (value: number) => void,
     clearAfter: boolean | undefined
   ) {

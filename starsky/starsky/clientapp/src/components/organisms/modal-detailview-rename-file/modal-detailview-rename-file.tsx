@@ -18,9 +18,10 @@ interface IModalRenameFileProps {
   state: IDetailView;
 }
 
-const ModalDetailviewRenameFile: React.FunctionComponent<
-  IModalRenameFileProps
-> = ({ state, ...props }) => {
+const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> = ({
+  state,
+  ...props
+}) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
@@ -29,18 +30,14 @@ const ModalDetailviewRenameFile: React.FunctionComponent<
     "This file cannot be saved"
   );
   const MessageChangeToDifferentExtension = language.text(
-    "Let op! Je veranderd de extensie van het bestand, " +
-      "deze kan hierdoor onleesbaar worden",
+    "Let op! Je veranderd de extensie van het bestand, " + "deze kan hierdoor onleesbaar worden",
     "Pay attention! You change the file extension, which can make it unreadable"
   );
   const MessageGeneralError: string = language.text(
     "Er is iets misgegaan met de aanvraag, probeer het later opnieuw",
     "Something went wrong with the request, please try again later"
   );
-  const MessageRenameFileName = language.text(
-    "Bestandsnaam wijzigen",
-    "Rename file name"
-  );
+  const MessageRenameFileName = language.text("Bestandsnaam wijzigen", "Rename file name");
 
   // Fallback for no context
   if (!state) {
@@ -86,9 +83,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<
   const [buttonState, setButtonState] = React.useState(false);
 
   function handleUpdateChange(
-    event:
-      | React.ChangeEvent<HTMLDivElement>
-      | React.KeyboardEvent<HTMLDivElement>
+    event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>
   ) {
     if (!isFormEnabled) return;
     if (!event.currentTarget.textContent) return null;
@@ -132,10 +127,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<
       state.collections !== undefined ? state.collections.toString() : "true"
     );
 
-    const result = await FetchPost(
-      new UrlQuery().UrlDiskRename(),
-      bodyParams.toString()
-    );
+    const result = await FetchPost(new UrlQuery().UrlDiskRename(), bodyParams.toString());
 
     if (result.statusCode !== 200) {
       setError(MessageGeneralError);
@@ -169,11 +161,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<
       <div className="content">
         <div className="modal content--subheader">{MessageRenameFileName}</div>
         <div className="modal content--text">
-          <FormControl
-            onInput={handleUpdateChange}
-            name="filename"
-            contentEditable={isFormEnabled}
-          >
+          <FormControl onInput={handleUpdateChange} name="filename" contentEditable={isFormEnabled}>
             {state.fileIndexItem.fileName}
           </FormControl>
 

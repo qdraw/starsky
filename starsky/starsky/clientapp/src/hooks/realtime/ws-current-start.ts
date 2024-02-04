@@ -95,15 +95,9 @@ export async function RestoreDataOnOpen(
   if (!socketConnected || !keepAliveServerTime) {
     return false;
   }
-  const result = await FetchGet(
-    new UrlQuery().UrlNotificationsGetApi(keepAliveServerTime)
-  );
+  const result = await FetchGet(new UrlQuery().UrlNotificationsGetApi(keepAliveServerTime));
 
-  if (
-    result.statusCode !== 200 ||
-    !result.data ||
-    !Array.isArray(result.data)
-  ) {
+  if (result.statusCode !== 200 || !result.data || !Array.isArray(result.data)) {
     return false;
   }
 
@@ -154,13 +148,9 @@ export default function WsCurrentStart(
     FireOnOpen(socketConnected, setSocketConnected);
     await RestoreDataOnOpen(socketConnected, keepAliveServerTime);
   });
-  socket.onClose((e) =>
-    FireOnClose(e, socketConnected, setSocketConnected, isEnabled)
-  );
+  socket.onClose((e) => FireOnClose(e, socketConnected, setSocketConnected, isEnabled));
   socket.onError(() => FireOnError(socketConnected, setSocketConnected));
-  socket.onMessage((e) =>
-    FireOnMessage(e, setKeepAliveTime, setKeepAliveServerTime)
-  );
+  socket.onMessage((e) => FireOnMessage(e, setKeepAliveTime, setKeepAliveServerTime));
 
   return socket;
 }

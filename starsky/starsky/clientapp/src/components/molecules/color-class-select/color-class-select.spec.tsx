@@ -1,9 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
-import {
-  IConnectionDefault,
-  newIConnectionDefault
-} from "../../../interfaces/IConnectionDefault";
+import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import * as FetchPost from "../../../shared/fetch-post";
@@ -27,12 +24,10 @@ describe("ColorClassSelect", () => {
   it("onClick value", () => {
     // spy on fetch
     // use this import => import * as FetchPost from '../shared/fetch-post';
-    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
-        statusCode: 200,
-        data: [{ status: IExifStatus.Ok }] as IFileIndexItem[]
-      }
-    );
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: [{ status: IExifStatus.Ok }] as IFileIndexItem[]
+    });
     const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
@@ -47,9 +42,7 @@ describe("ColorClassSelect", () => {
       />
     );
 
-    const colorClass = screen.queryByTestId(
-      "color-class-select-2"
-    ) as HTMLAnchorElement;
+    const colorClass = screen.queryByTestId("color-class-select-2") as HTMLAnchorElement;
     expect(colorClass).toBeTruthy();
 
     colorClass.click();
@@ -67,9 +60,8 @@ describe("ColorClassSelect", () => {
   });
 
   it("onClick disabled", () => {
-    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      newIConnectionDefault()
-    );
+    const mockIConnectionDefault: Promise<IConnectionDefault> =
+      Promise.resolve(newIConnectionDefault());
     const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
@@ -84,9 +76,7 @@ describe("ColorClassSelect", () => {
       />
     );
 
-    const colorClass = screen.queryByTestId(
-      "color-class-select-2"
-    ) as HTMLAnchorElement;
+    const colorClass = screen.queryByTestId("color-class-select-2") as HTMLAnchorElement;
     expect(colorClass).toBeTruthy();
 
     colorClass.click();
@@ -105,12 +95,10 @@ describe("ColorClassSelect", () => {
     jest.useFakeTimers();
     // spy on fetch
     // use this import => import * as FetchPost from '../shared/fetch-post';
-    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
-        statusCode: 200,
-        data: [{ status: IExifStatus.Ok }] as IFileIndexItem[]
-      }
-    );
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: [{ status: IExifStatus.Ok }] as IFileIndexItem[]
+    });
     const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
@@ -127,9 +115,7 @@ describe("ColorClassSelect", () => {
 
     // need to await this click
 
-    let colorClass = screen.queryByTestId(
-      "color-class-select-2"
-    ) as HTMLAnchorElement;
+    let colorClass = screen.queryByTestId("color-class-select-2") as HTMLAnchorElement;
     expect(colorClass).toBeTruthy();
 
     // need to await here
@@ -137,9 +123,7 @@ describe("ColorClassSelect", () => {
       await colorClass.click();
     });
 
-    colorClass = screen.queryByTestId(
-      "color-class-select-2"
-    ) as HTMLAnchorElement;
+    colorClass = screen.queryByTestId("color-class-select-2") as HTMLAnchorElement;
 
     expect(colorClass.classList).toContain("active");
 
@@ -148,9 +132,7 @@ describe("ColorClassSelect", () => {
       await jest.advanceTimersByTime(1200);
     });
 
-    colorClass = screen.queryByTestId(
-      "color-class-select-2"
-    ) as HTMLAnchorElement;
+    colorClass = screen.queryByTestId("color-class-select-2") as HTMLAnchorElement;
 
     expect(colorClass.classList).not.toContain("active");
 
@@ -162,12 +144,10 @@ describe("ColorClassSelect", () => {
   it("onClick readonly file", async () => {
     // spy on fetch
     // use this import => import * as FetchPost from '../shared/fetch-post';
-    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
-        statusCode: 404,
-        data: [{ status: IExifStatus.ReadOnly }] as IFileIndexItem[]
-      }
-    );
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 404,
+      data: [{ status: IExifStatus.ReadOnly }] as IFileIndexItem[]
+    });
     const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
@@ -182,13 +162,9 @@ describe("ColorClassSelect", () => {
       />
     );
 
-    const notificationSpy = jest
-      .spyOn(Notification, "default")
-      .mockImplementationOnce(() => <></>);
+    const notificationSpy = jest.spyOn(Notification, "default").mockImplementationOnce(() => <></>);
 
-    const colorClass = screen.queryByTestId(
-      "color-class-select-2"
-    ) as HTMLAnchorElement;
+    const colorClass = screen.queryByTestId("color-class-select-2") as HTMLAnchorElement;
     expect(colorClass).toBeTruthy();
 
     // need to await here
@@ -196,8 +172,8 @@ describe("ColorClassSelect", () => {
       await colorClass.click();
     });
 
-    expect(fetchPostSpy).toBeCalled();
-    expect(notificationSpy).toBeCalled();
+    expect(fetchPostSpy).toHaveBeenCalled();
+    expect(notificationSpy).toHaveBeenCalled();
     wrapper.unmount();
   });
 
@@ -219,23 +195,19 @@ describe("ColorClassSelect", () => {
       />
     );
 
-    const notificationSpy = jest
-      .spyOn(Notification, "default")
-      .mockImplementationOnce(() => <></>);
+    const notificationSpy = jest.spyOn(Notification, "default").mockImplementationOnce(() => <></>);
 
     // need to await this click
-    const colorClass = screen.queryByTestId(
-      "color-class-select-2"
-    ) as HTMLAnchorElement;
+    const colorClass = screen.queryByTestId("color-class-select-2") as HTMLAnchorElement;
     expect(colorClass).toBeTruthy();
 
     await colorClass.click();
 
-    await waitFor(() => expect(colorClassUpdateSingleSpy).toBeCalled());
+    await waitFor(() => expect(colorClassUpdateSingleSpy).toHaveBeenCalled());
 
     console.log(component.container.innerHTML);
 
-    expect(notificationSpy).toBeCalled();
+    expect(notificationSpy).toHaveBeenCalled();
 
     await component.unmount();
   });

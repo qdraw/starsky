@@ -11,11 +11,9 @@ describe("Trash", () => {
 
   it("check if warning exist with no items in the list", () => {
     // usage ==> import * as useFetch from '../hooks/use-fetch';
-    const spyGet = jest
-      .spyOn(useFetch, "default")
-      .mockImplementationOnce(() => {
-        return newIConnectionDefault();
-      });
+    const spyGet = jest.spyOn(useFetch, "default").mockImplementationOnce(() => {
+      return newIConnectionDefault();
+    });
 
     jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
 
@@ -29,6 +27,6 @@ describe("Trash", () => {
     );
     expect(container.container.innerHTML).toContain("warning-box");
 
-    expect(spyGet).toBeCalled();
+    expect(spyGet).toHaveBeenCalled();
   });
 });

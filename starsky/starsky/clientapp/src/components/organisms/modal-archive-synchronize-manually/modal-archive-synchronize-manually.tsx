@@ -21,9 +21,9 @@ interface IModalDisplayOptionsProps {
   parentFolder?: string;
 }
 
-const ModalArchiveSynchronizeManually: React.FunctionComponent<
-  IModalDisplayOptionsProps
-> = (props) => {
+const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOptionsProps> = (
+  props
+) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
@@ -68,9 +68,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<
 
   /** update when changing values and search */
   useEffect(() => {
-    setCollections(
-      new URLPath().StringToIUrl(history.location.search).collections !== false
-    );
+    setCollections(new URLPath().StringToIUrl(history.location.search).collections !== false);
   }, [collections, history.location.search]);
 
   /**
@@ -80,25 +78,19 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<
     setIsLoading(true);
     new FileListCache().CacheCleanEverything();
     const parentFolder = props.parentFolder ?? "/";
-    FetchGet(
-      new UrlQuery().UrlRemoveCache(new URLPath().encodeURI(parentFolder))
-    ).then(() => {
+    FetchGet(new UrlQuery().UrlRemoveCache(new URLPath().encodeURI(parentFolder))).then(() => {
       setTimeout(() => {
         const url = new UrlQuery().UrlIndexServerApi(
           new URLPath().StringToIUrl(history.location.search)
         );
-        FetchGet(url, { "Cache-Control": "no-store, max-age=0" }).then(
-          (connectionResult) => {
-            const removeCacheResult = new CastToInterface().MediaArchive(
-              connectionResult.data
-            );
-            const payload = removeCacheResult.data as IArchiveProps;
-            if (payload.fileIndexItems) {
-              dispatch({ type: "force-reset", payload });
-            }
-            props.handleExit();
+        FetchGet(url, { "Cache-Control": "no-store, max-age=0" }).then((connectionResult) => {
+          const removeCacheResult = new CastToInterface().MediaArchive(connectionResult.data);
+          const payload = removeCacheResult.data as IArchiveProps;
+          if (payload.fileIndexItems) {
+            dispatch({ type: "force-reset", payload });
           }
-        );
+          props.handleExit();
+        });
       }, 600);
     });
   }
@@ -117,9 +109,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<
 
   function fetchGeoSyncStatus() {
     const parentFolder = props.parentFolder ?? "/";
-    FetchGet(
-      new UrlQuery().UrlGeoStatus(new URLPath().encodeURI(parentFolder))
-    ).then((anyData) => {
+    FetchGet(new UrlQuery().UrlGeoStatus(new URLPath().encodeURI(parentFolder))).then((anyData) => {
       if (anyData.statusCode !== 200 || !anyData.data) {
         setGeoSyncPercentage(-1);
         return;
@@ -141,10 +131,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<
     bodyParams.set("f", parentFolder);
     setIsLoading(true);
 
-    FetchPost(
-      new UrlQuery().UrlThumbnailGeneration(),
-      bodyParams.toString()
-    ).then(() => {
+    FetchPost(new UrlQuery().UrlThumbnailGeneration(), bodyParams.toString()).then(() => {
       setTimeout(() => {
         setIsLoading(false);
         props.handleExit();
@@ -162,9 +149,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<
     >
       {isLoading ? <Preloader isWhite={false} isOverlay={true} /> : ""}
 
-      <div className="modal content--subheader">
-        {MessageSynchronizeManually}
-      </div>
+      <div className="modal content--subheader">{MessageSynchronizeManually}</div>
       <div className="modal content--text">
         <ForceSyncWaitButton
           propsParentFolder={props.parentFolder}
@@ -172,11 +157,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<
           callback={() => props.handleExit()}
           dispatch={dispatch}
         ></ForceSyncWaitButton>
-        <button
-          className="btn btn--default"
-          data-test="remove-cache"
-          onClick={() => removeCache()}
-        >
+        <button className="btn btn--default" data-test="remove-cache" onClick={() => removeCache()}>
           {MessageRemoveCache}
         </button>
         <button

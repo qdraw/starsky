@@ -31,14 +31,8 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageDownloadSelection = language.text(
-    "Download selectie",
-    "Download selection"
-  );
-  const MessageOriginalFile = language.text(
-    "Origineel bestand",
-    "Original file"
-  );
+  const MessageDownloadSelection = language.text("Download selectie", "Download selection");
+  const MessageOriginalFile = language.text("Origineel bestand", "Original file");
   const MessageThumbnailFile = "Thumbnail";
   const MessageGenericExportFail = language.text(
     "Er is iets misgegaan met exporteren",
@@ -57,9 +51,7 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
     "One moment please"
   );
 
-  const [isProcessing, setIsProcessing] = React.useState(
-    ProcessingState.default
-  );
+  const [isProcessing, setIsProcessing] = React.useState(ProcessingState.default);
   const [createZipKey, setCreateZipKey] = React.useState("");
 
   async function postZip(isThumbnail: boolean) {
@@ -75,10 +67,7 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
     */
     const bodyParams = new URLSearchParams();
 
-    bodyParams.set(
-      "f",
-      new URLPath().ArrayToCommaSeparatedString(props.select)
-    );
+    bodyParams.set("f", new URLPath().ArrayToCommaSeparatedString(props.select));
     bodyParams.set("json", "true");
     bodyParams.set("thumbnail", isThumbnail.toString());
     bodyParams.set("collections", props.collections.toString());
@@ -102,8 +91,7 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
     await ExportIntervalUpdate(createZipKey, setIsProcessing);
   }, 3000);
 
-  const [singleFileThumbnailStatus, setSingleFileThumbnailStatus] =
-    React.useState(true);
+  const [singleFileThumbnailStatus, setSingleFileThumbnailStatus] = React.useState(true);
 
   function getFirstSelectResult(): string {
     if (!props.select || props.select.length !== 1) return "";
@@ -133,9 +121,7 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
       </div>
       <div className="modal content--text">
         {/* when selecting one file */}
-        {isProcessing === ProcessingState.default &&
-        props.select &&
-        props.select.length === 1 ? (
+        {isProcessing === ProcessingState.default && props.select && props.select.length === 1 ? (
           <>
             <a
               href={new UrlQuery().UrlDownloadPhotoApi(
@@ -159,9 +145,7 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
                   false
                 )}
                 download={
-                  new FileExtensions().GetFileNameWithoutExtension(
-                    props.select[0]
-                  ) + ".jpg"
+                  new FileExtensions().GetFileNameWithoutExtension(props.select[0]) + ".jpg"
                 }
                 data-test="thumbnail"
                 target="_blank"
@@ -174,9 +158,7 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
           </>
         ) : null}
 
-        {isProcessing === ProcessingState.default &&
-        props.select &&
-        props.select.length >= 2 ? (
+        {isProcessing === ProcessingState.default && props.select && props.select.length >= 2 ? (
           <>
             <button
               onClick={() => {
@@ -204,18 +186,11 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
           <div className="preloader preloader--inside"></div>
         ) : null}
 
-        {isProcessing === ProcessingState.fail
-          ? MessageGenericExportFail
-          : null}
+        {isProcessing === ProcessingState.fail ? MessageGenericExportFail : null}
 
         {isProcessing === ProcessingState.ready ? (
           <>
-            {language.token(
-              MessageExportReady,
-              ["{createZipKey}"],
-              [createZipKey]
-            )}{" "}
-            <br />
+            {language.token(MessageExportReady, ["{createZipKey}"], [createZipKey])} <br />
             <a
               className="btn btn--default"
               href={new UrlQuery().UrlExportZipApi(createZipKey, false)}

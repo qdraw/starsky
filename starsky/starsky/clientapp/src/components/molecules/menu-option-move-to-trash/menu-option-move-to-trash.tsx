@@ -23,33 +23,24 @@ interface IMenuOptionMoveToTrashProps {
 /**
  * Used from Archive and Search
  */
-const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps> =
-  memo(({ state, dispatch, select, setSelect, isReadOnly }) => {
-    const undoSelection = () =>
-      new Select(select, setSelect, state, history).undoSelection();
+const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps> = memo(
+  ({ state, dispatch, select, setSelect, isReadOnly }) => {
+    const undoSelection = () => new Select(select, setSelect, state, history).undoSelection();
 
     const history = useLocation();
 
     async function moveToTrashSelection() {
       if (!select || isReadOnly) return;
 
-      const toUndoTrashList = new URLPath().MergeSelectFileIndexItem(
-        select,
-        state.fileIndexItems
-      );
+      const toUndoTrashList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
 
       if (!toUndoTrashList) return;
-      const selectParams = new URLPath().ArrayToCommaSeparatedStringOneParent(
-        toUndoTrashList,
-        ""
-      );
+      const selectParams = new URLPath().ArrayToCommaSeparatedStringOneParent(toUndoTrashList, "");
       if (selectParams.length === 0) return;
 
       const bodyParams = new URLSearchParams();
       // noinspection PointlessBooleanExpressionJS
-      const collections =
-        new URLPath().StringToIUrl(history.location.search).collections !==
-        false;
+      const collections = new URLPath().StringToIUrl(history.location.search).collections !== false;
 
       bodyParams.append("f", selectParams);
       bodyParams.set("Tags", "!delete!");
@@ -57,10 +48,7 @@ const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps
       bodyParams.set("Colorclass", "8");
       bodyParams.set("collections", collections.toString());
 
-      const resultDo = await FetchPost(
-        new UrlQuery().UrlMoveToTrashApi(),
-        bodyParams.toString()
-      );
+      const resultDo = await FetchPost(new UrlQuery().UrlMoveToTrashApi(), bodyParams.toString());
 
       if (
         resultDo.statusCode === 404 ||
@@ -99,6 +87,7 @@ const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps
         ) : null}
       </>
     );
-  });
+  }
+);
 
 export default MenuOptionMoveToTrash;

@@ -27,7 +27,7 @@ import ModalDetailviewRenameFile from "../modal-detailview-rename-file/modal-det
 import ModalDownload from "../modal-download/modal-download";
 import ModalMoveFile from "../modal-move-file/modal-move-file";
 import ModalPublishToggleWrapper from "../modal-publish/modal-publish-toggle-wrapper";
-import { GoToParentFolder } from "./shared/go-to-parent-folder";
+import { GoToParentFolder } from "./internal/go-to-parent-folder";
 import MenuOptionRotateImage90 from "../../molecules/menu-option-rotate-image-90/menu-option-rotate-image-90.tsx";
 
 export interface MenuDetailViewProps {
@@ -35,10 +35,7 @@ export interface MenuDetailViewProps {
   dispatch: React.Dispatch<DetailViewAction>;
 }
 
-function GetHeaderClass(
-  isDetails: boolean | undefined,
-  isMarkedAsDeleted: boolean
-): string {
+function GetHeaderClass(isDetails: boolean | undefined, isMarkedAsDeleted: boolean): string {
   if (isDetails) {
     if (isMarkedAsDeleted) {
       return "header header--main header--edit header--deleted";
@@ -46,34 +43,21 @@ function GetHeaderClass(
       return "header header--main header--edit";
     }
   } else {
-    return isMarkedAsDeleted
-      ? "header header--main header--deleted"
-      : "header header--main";
+    return isMarkedAsDeleted ? "header header--main header--deleted" : "header header--main";
   }
 }
 
-const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
-  state,
-  dispatch
-}) => {
+const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({ state, dispatch }) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   // Not close anymore because its looks like closing a window
-  const MessageCloseDialogBackToFolder = language.key(
-    localization.MessageCloseDialogBackToFolder
-  );
-  const MessageCloseDetailScreenDialog = language.key(
-    localization.MessageCloseDetailScreenDialog
-  );
+  const MessageCloseDialogBackToFolder = language.key(localization.MessageCloseDialogBackToFolder);
+  const MessageCloseDetailScreenDialog = language.key(localization.MessageCloseDetailScreenDialog);
   const MessageSaved = language.key(localization.MessageSaved);
   const MessageMoveToTrash = language.key(localization.MessageMoveToTrash);
-  const MessageIncludingColonWord = language.key(
-    localization.MessageIncludingColonWord
-  );
-  const MessageRestoreFromTrash = language.key(
-    localization.MessageRestoreFromTrash
-  );
+  const MessageIncludingColonWord = language.key(localization.MessageIncludingColonWord);
+  const MessageRestoreFromTrash = language.key(localization.MessageRestoreFromTrash);
 
   const history = useLocation();
 
@@ -130,19 +114,14 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
   );
 
   useEffect(() => {
-    setIsSourceMissing(
-      state.fileIndexItem.status === IExifStatus.NotFoundSourceMissing
-    );
-    setIsReadOnly(
-      state.fileIndexItem.status === IExifStatus.NotFoundSourceMissing
-    );
+    setIsSourceMissing(state.fileIndexItem.status === IExifStatus.NotFoundSourceMissing);
+    setIsReadOnly(state.fileIndexItem.status === IExifStatus.NotFoundSourceMissing);
   }, [state.fileIndexItem.status, history.location.search]);
 
   /* only update when the state is changed */
   const [isReadOnly, setIsReadOnly] = React.useState(state.isReadOnly);
   useEffect(() => {
-    if (state.fileIndexItem.status === IExifStatus.NotFoundSourceMissing)
-      return;
+    if (state.fileIndexItem.status === IExifStatus.NotFoundSourceMissing) return;
     setIsReadOnly(state.isReadOnly);
   }, [state.isReadOnly, state.fileIndexItem.status]);
 
@@ -171,10 +150,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
 
     // Add remove tag
     if (!isMarkedAsDeleted) {
-      const resultDo = await FetchPost(
-        new UrlQuery().UrlMoveToTrashApi(),
-        bodyParams.toString()
-      );
+      const resultDo = await FetchPost(new UrlQuery().UrlMoveToTrashApi(), bodyParams.toString());
       if (
         resultDo.statusCode &&
         resultDo.statusCode !== 200 &&
@@ -205,10 +181,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
     else {
       bodyParams.set("fieldName", "tags");
       bodyParams.set("search", "!delete!");
-      const resultUndo = await FetchPost(
-        new UrlQuery().UrlReplaceApi(),
-        bodyParams.toString()
-      );
+      const resultUndo = await FetchPost(new UrlQuery().UrlReplaceApi(), bodyParams.toString());
       if (resultUndo.statusCode !== 200) {
         console.error(resultUndo);
         setIsLoading(false);
@@ -238,8 +211,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
   });
 
   const [isModalDownloadOpen, setIsModalDownloadOpen] = React.useState(false);
-  const [isModalRenameFileOpen, setIsModalRenameFileOpen] =
-    React.useState(false);
+  const [isModalRenameFileOpen, setIsModalRenameFileOpen] = React.useState(false);
   const [isModalMoveFile, setIsModalMoveFile] = React.useState(false);
   const [isModalPublishOpen, setIsModalPublishOpen] = useState(false);
 
@@ -286,14 +258,11 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
             <Link
               className="item item--first item--close"
               data-test="menu-detail-view-close"
-              state={
-                { filePath: state.fileIndexItem.filePath } as INavigateState
-              }
+              state={{ filePath: state.fileIndexItem.filePath } as INavigateState}
               onClick={(event) => {
                 // Command (mac) or ctrl click means open new window
                 // event.button = is only trigged in safari
-                if (event.metaKey || event.ctrlKey || event.button === 1)
-                  return;
+                if (event.metaKey || event.ctrlKey || event.button === 1) return;
                 setIsLoading(true);
               }}
               to={new UrlQuery().updateFilePathHash(
@@ -327,15 +296,8 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
             Labels
           </button>
 
-          <MoreMenu
-            setEnableMoreMenu={setEnableMoreMenu}
-            enableMoreMenu={enableMoreMenu}
-          >
-            <GoToParentFolder
-              isSearchQuery={isSearchQuery}
-              history={history}
-              state={state}
-            />
+          <MoreMenu setEnableMoreMenu={setEnableMoreMenu} enableMoreMenu={enableMoreMenu}>
+            <GoToParentFolder isSearchQuery={isSearchQuery} history={history} state={state} />
             <MenuOptionModal
               // Export or Download
               isReadOnly={isSourceMissing}
@@ -368,14 +330,8 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               testName="rename"
             />
 
-            <MenuOption
-              isReadOnly={isReadOnly}
-              onClickKeydown={TrashFile}
-              testName="trash"
-            >
-              {!isMarkedAsDeleted
-                ? MessageMoveToTrash
-                : MessageRestoreFromTrash}
+            <MenuOption isReadOnly={isReadOnly} onClickKeydown={TrashFile} testName="trash">
+              {!isMarkedAsDeleted ? MessageMoveToTrash : MessageRestoreFromTrash}
 
               {state.collections &&
               state.fileIndexItem.collectionPaths &&
@@ -383,9 +339,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
                 <em data-test="trash-including">
                   <br />
                   {MessageIncludingColonWord}
-                  {new Comma().CommaSpaceLastDot(
-                    state.fileIndexItem.collectionPaths
-                  )}
+                  {new Comma().CommaSpaceLastDot(state.fileIndexItem.collectionPaths)}
                 </em>
               ) : null}
             </MenuOption>

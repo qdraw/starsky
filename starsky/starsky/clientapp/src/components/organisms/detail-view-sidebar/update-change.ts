@@ -12,9 +12,7 @@ import { UrlQuery } from "../../../shared/url-query";
 
 export class UpdateChange {
   private fileIndexItem: IFileIndexItem;
-  private setFileIndexItem: (
-    value: React.SetStateAction<IFileIndexItem>
-  ) => void;
+  private setFileIndexItem: (value: React.SetStateAction<IFileIndexItem>) => void;
   private dispatch: React.Dispatch<DetailViewAction>;
   private history: IUseLocation;
   private state: IDetailView;

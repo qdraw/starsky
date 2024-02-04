@@ -18,110 +18,99 @@ interface IDetailViewInfoLocationProps {
   setFileIndexItem: React.Dispatch<React.SetStateAction<IFileIndexItem>> | null;
 }
 
-const DetailViewInfoLocation: React.FunctionComponent<IDetailViewInfoLocationProps> =
-  memo(
-    ({
-      latitude,
-      longitude,
-      locationCountry,
-      locationCity,
-      isFormEnabled,
-      dispatch,
-      fileIndexItem,
-      setFileIndexItem
-    }) => {
-      const history = useLocation();
+const DetailViewInfoLocation: React.FunctionComponent<IDetailViewInfoLocationProps> = memo(
+  ({
+    latitude,
+    longitude,
+    locationCountry,
+    locationCity,
+    isFormEnabled,
+    dispatch,
+    fileIndexItem,
+    setFileIndexItem
+  }) => {
+    const history = useLocation();
 
-      const settings = useGlobalSettings();
-      const language = new Language(settings.language);
-      const MessageNounNameless = language.text("Naamloze", "Unnamed");
-      const MessageNounNone = language.text("Geen enkele", "Not any");
+    const settings = useGlobalSettings();
+    const language = new Language(settings.language);
+    const MessageNounNameless = language.text("Naamloze", "Unnamed");
+    const MessageNounNone = language.text("Geen enkele", "Not any");
 
-      const MessageLocation = language.text("locatie", "location");
+    const MessageLocation = language.text("locatie", "location");
 
-      const [locationOpen, setLocationOpen] = React.useState(
-        history.location.search?.includes("&modal=geo")
-      );
+    const [locationOpen, setLocationOpen] = React.useState(
+      history.location.search?.includes("&modal=geo")
+    );
 
-      function handleExit(model: IGeoLocationModel | null) {
-        setLocationOpen(false);
-        history.navigate(history.location.search.replace(/&modal=geo/gi, ""), {
-          replace: true
-        });
+    function handleExit(model: IGeoLocationModel | null) {
+      setLocationOpen(false);
+      history.navigate(history.location.search.replace(/&modal=geo/gi, ""), {
+        replace: true
+      });
 
-        // when no data is passed, but window should be closed
-        if (!model || !setFileIndexItem || !dispatch) {
-          return;
-        }
-        setFileIndexItem({
-          ...fileIndexItem,
-          ...model
-        });
-        dispatch({
-          type: "update",
-          ...model,
-          filePath: fileIndexItem.filePath
-        });
-        locationCity = model.locationCity;
-        locationCountry = model.locationCountry;
+      // when no data is passed, but window should be closed
+      if (!model || !setFileIndexItem || !dispatch) {
+        return;
       }
-
-      function onClick(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
-        event.preventDefault();
-        history.navigate(
-          history.location.search.replace(/&modal=geo/gi, "") + "&modal=geo",
-          {
-            replace: true
-          }
-        );
-        setLocationOpen(true);
-      }
-
-      return (
-        <>
-          {/* loation when the image is created */}
-          {locationOpen ? (
-            <ModalGeo
-              latitude={latitude}
-              longitude={longitude}
-              parentDirectory={fileIndexItem.parentDirectory}
-              selectedSubPath={fileIndexItem.fileName}
-              isFormEnabled={isFormEnabled}
-              handleExit={handleExit}
-              isOpen={true}
-            />
-          ) : null}
-
-          <a
-            className="box"
-            onClick={onClick}
-            data-test="detailview-info-location-open-modal"
-            href={history.location.href + "&modal=geo"}
-          >
-            <div
-              className="icon icon--location"
-              data-test="detailview-location-div"
-            />
-            <div className="icon icon--right icon--edit" />
-            {locationCity && locationCountry ? (
-              <>
-                <b data-test="detailview-info-location-city">{locationCity}</b>
-                <p>{locationCountry}</p>
-              </>
-            ) : (
-              <>
-                <b>
-                  {longitude && latitude
-                    ? MessageNounNameless
-                    : MessageNounNone}
-                </b>
-                <p>{MessageLocation}</p>
-              </>
-            )}
-          </a>
-        </>
-      );
+      setFileIndexItem({
+        ...fileIndexItem,
+        ...model
+      });
+      dispatch({
+        type: "update",
+        ...model,
+        filePath: fileIndexItem.filePath
+      });
+      locationCity = model.locationCity;
+      locationCountry = model.locationCountry;
     }
-  );
+
+    function onClick(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
+      event.preventDefault();
+      history.navigate(history.location.search.replace(/&modal=geo/gi, "") + "&modal=geo", {
+        replace: true
+      });
+      setLocationOpen(true);
+    }
+
+    return (
+      <>
+        {/* loation when the image is created */}
+        {locationOpen ? (
+          <ModalGeo
+            latitude={latitude}
+            longitude={longitude}
+            parentDirectory={fileIndexItem.parentDirectory}
+            selectedSubPath={fileIndexItem.fileName}
+            isFormEnabled={isFormEnabled}
+            handleExit={handleExit}
+            isOpen={true}
+          />
+        ) : null}
+
+        <a
+          className="box"
+          onClick={onClick}
+          data-test="detailview-info-location-open-modal"
+          href={history.location.href + "&modal=geo"}
+        >
+          <div className="icon icon--location" data-test="detailview-location-div" />
+          <div className="icon icon--right icon--edit" />
+          {locationCity && locationCountry ? (
+            <>
+              <b data-test="detailview-info-location-city">{locationCity}</b>
+              <p>{locationCountry}</p>
+            </>
+          ) : (
+            <>
+              <b>{longitude && latitude ? MessageNounNameless : MessageNounNone}</b>
+              <p>{MessageLocation}</p>
+            </>
+          )}
+        </a>
+      </>
+    );
+  }
+);
 
 export default DetailViewInfoLocation;

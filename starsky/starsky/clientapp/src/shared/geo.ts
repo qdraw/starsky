@@ -27,15 +27,11 @@ export class Geo {
 
   public Validate(lat: number, long: number): boolean {
     const latitudeRegex = /^[+-]?(([1-8]?\d)(\.\d{1,6})?|90(\.0{1,6})?)$/;
-    const longitudeRegex =
-      /^[+-]?((([1-9]?\d|1[0-7]\d)(\.\d{1,6})?)|180(\.0{1,6})?)$/;
+    const longitudeRegex = /^[+-]?((([1-9]?\d|1[0-7]\d)(\.\d{1,6})?)|180(\.0{1,6})?)$/;
 
     const latRound = Math.round(lat * 1000000) / 1000000;
     const longRound = Math.round(long * 1000000) / 1000000;
 
-    return (
-      latitudeRegex.test(latRound.toString()) &&
-      longitudeRegex.test(longRound.toString())
-    );
+    return latitudeRegex.test(latRound.toString()) && longitudeRegex.test(longRound.toString());
   }
 }

@@ -13,28 +13,20 @@ import { SidebarUpdate } from "../../../shared/sidebar-update";
 import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
 import FormControl from "../../atoms/form-control/form-control";
-import Notification, {
-  NotificationType
-} from "../../atoms/notification/notification";
+import Notification, { NotificationType } from "../../atoms/notification/notification";
 import Preloader from "../../atoms/preloader/preloader";
 
 const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageSearchAndReplaceName = language.text(
-    "Zoeken en vervangen",
-    "Search and replace"
-  );
+  const MessageSearchAndReplaceName = language.text("Zoeken en vervangen", "Search and replace");
   const MessageTitleName = language.text("Titel", "Title");
   const MessageErrorReadOnly = new Language(settings.language).text(
     "Eén of meerdere bestanden zijn alleen lezen. " +
       "Alleen de bestanden met schrijfrechten zijn geupdate.",
-    "One or more files are read only. " +
-      "Only the files with write permissions have been updated."
+    "One or more files are read only. " + "Only the files with write permissions have been updated."
   );
-  const MessageErrorNotFoundSourceMissing = new Language(
-    settings.language
-  ).text(
+  const MessageErrorNotFoundSourceMissing = new Language(settings.language).text(
     "Eén of meerdere bestanden zijn al verdwenen. " +
       "Alleen de bestanden die wel aanwezig zijn geupdate. Draai een handmatige sync",
     "One or more files are already gone. " +
@@ -53,9 +45,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
   state = new CastToInterface().UndefinedIArchiveReadonly(state);
 
   // show select info
-  const [select, setSelect] = React.useState(
-    new URLPath().getSelect(history.location.search)
-  );
+  const [select, setSelect] = React.useState(new URLPath().getSelect(history.location.search));
   useEffect(() => {
     setSelect(new URLPath().getSelect(history.location.search));
   }, [history.location.search]);
@@ -74,9 +64,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
 
   // Update the disabled state + Local variable with input data
   function handleUpdateChange(
-    event:
-      | React.ChangeEvent<HTMLDivElement>
-      | React.KeyboardEvent<HTMLDivElement>
+    event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>
   ) {
     const sideBarUpdate = new SidebarUpdate().Change(event, update);
     if (!sideBarUpdate) return;
@@ -97,10 +85,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
     bodyParams.append(
       "collections",
       state.pageType !== PageType.Search
-        ? (
-            new URLPath().StringToIUrl(history.location.search).collections !==
-            false
-          ).toString()
+        ? (new URLPath().StringToIUrl(history.location.search).collections !== false).toString()
         : "false"
     );
     return bodyParams;
@@ -109,14 +94,10 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
   function handleFetchPostResponse(anyData: any) {
     const result = new CastToInterface().InfoFileIndexArray(anyData.data);
     result.forEach((element) => {
-      if (element.status === IExifStatus.ReadOnly)
-        setIsError(MessageErrorReadOnly);
+      if (element.status === IExifStatus.ReadOnly) setIsError(MessageErrorReadOnly);
       if (element.status === IExifStatus.NotFoundSourceMissing)
         setIsError(MessageErrorNotFoundSourceMissing);
-      if (
-        element.status === IExifStatus.Ok ||
-        element.status === IExifStatus.Deleted
-      ) {
+      if (element.status === IExifStatus.Ok || element.status === IExifStatus.Deleted) {
         dispatch({
           type: "update",
           ...element,
@@ -149,15 +130,9 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
     setInputEnabled(false);
 
     update.append = false;
-    const subPaths = new URLPath().MergeSelectFileIndexItem(
-      select,
-      state.fileIndexItems
-    );
+    const subPaths = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
     if (!subPaths) return;
-    const selectPaths = new URLPath().ArrayToCommaSeparatedStringOneParent(
-      subPaths,
-      ""
-    );
+    const selectPaths = new URLPath().ArrayToCommaSeparatedStringOneParent(subPaths, "");
 
     if (selectPaths.length === 0) return;
 
@@ -167,11 +142,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
       const fieldName = key[0];
       const fieldValue = key[1];
 
-      if (
-        fieldName &&
-        !fieldName.startsWith("replace") &&
-        fieldValue.length >= 1
-      ) {
+      if (fieldName && !fieldName.startsWith("replace") && fieldValue.length >= 1) {
         bodyParams.set("fieldName", fieldName);
         bodyParams.set("search", fieldValue);
 
@@ -191,10 +162,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
   return (
     <>
       {isError !== "" ? (
-        <Notification
-          callback={() => setIsError("")}
-          type={NotificationType.danger}
-        >
+        <Notification callback={() => setIsError("")} type={NotificationType.danger}>
           {isError}
         </Notification>
       ) : null}

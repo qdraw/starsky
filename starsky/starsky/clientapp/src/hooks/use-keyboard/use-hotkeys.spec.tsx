@@ -16,7 +16,7 @@ describe("useHotKeys", () => {
       });
       window.dispatchEvent(event);
 
-      expect(callback).toBeCalledTimes(0);
+      expect(callback).toHaveBeenCalledTimes(0);
       test.componentMount.unmount();
     });
 
@@ -32,16 +32,14 @@ describe("useHotKeys", () => {
       });
       window.dispatchEvent(event);
 
-      expect(callback).toBeCalledTimes(0);
+      expect(callback).toHaveBeenCalledTimes(0);
       test.componentMount.unmount();
     });
 
     it("should ignore when keyboard is in form", () => {
       const callback = jest.fn();
 
-      jest
-        .spyOn(Keyboard.prototype, "isInForm")
-        .mockImplementationOnce(() => true);
+      jest.spyOn(Keyboard.prototype, "isInForm").mockImplementationOnce(() => true);
 
       const test = mountReactHook(useHotKeys, [
         {
@@ -59,7 +57,7 @@ describe("useHotKeys", () => {
       });
       window.dispatchEvent(event);
 
-      expect(callback).toBeCalledTimes(0);
+      expect(callback).toHaveBeenCalledTimes(0);
       test.componentMount.unmount();
     });
   });
@@ -83,7 +81,7 @@ describe("useHotKeys", () => {
       });
       window.dispatchEvent(event);
 
-      expect(callback).toBeCalled();
+      expect(callback).toHaveBeenCalled();
       test.componentMount.unmount();
     });
 
@@ -105,7 +103,7 @@ describe("useHotKeys", () => {
       });
       window.dispatchEvent(event);
 
-      expect(callback).toBeCalled();
+      expect(callback).toHaveBeenCalled();
       test.componentMount.unmount();
     });
 
@@ -127,7 +125,7 @@ describe("useHotKeys", () => {
       });
       window.dispatchEvent(event);
 
-      expect(callback).toBeCalled();
+      expect(callback).toHaveBeenCalled();
       test.componentMount.unmount();
     });
 
@@ -149,7 +147,7 @@ describe("useHotKeys", () => {
       });
       window.dispatchEvent(event);
 
-      expect(callback).toBeCalled();
+      expect(callback).toHaveBeenCalled();
       test.componentMount.unmount();
     });
 
@@ -170,7 +168,7 @@ describe("useHotKeys", () => {
       });
       window.dispatchEvent(event);
 
-      expect(callback).toBeCalledTimes(0);
+      expect(callback).toHaveBeenCalledTimes(0);
       test.componentMount.unmount();
     });
 
@@ -191,7 +189,7 @@ describe("useHotKeys", () => {
       });
       window.dispatchEvent(event);
 
-      expect(callback).toBeCalledTimes(0);
+      expect(callback).toHaveBeenCalledTimes(0);
       test.componentMount.unmount();
     });
 
@@ -213,7 +211,7 @@ describe("useHotKeys", () => {
       });
       window.dispatchEvent(event);
 
-      expect(callback).toBeCalled();
+      expect(callback).toHaveBeenCalled();
       test.componentMount.unmount();
     });
 
@@ -235,7 +233,7 @@ describe("useHotKeys", () => {
       });
       window.dispatchEvent(event);
 
-      expect(callback).toBeCalled();
+      expect(callback).toHaveBeenCalled();
       test.componentMount.unmount();
     });
 
@@ -259,7 +257,7 @@ describe("useHotKeys", () => {
       });
       window.dispatchEvent(event);
 
-      expect(callback).toBeCalled();
+      expect(callback).toHaveBeenCalled();
       test.componentMount.unmount();
     });
 
@@ -281,7 +279,7 @@ describe("useHotKeys", () => {
       });
       window.dispatchEvent(event);
 
-      expect(callback).toBeCalledTimes(0);
+      expect(callback).toHaveBeenCalledTimes(0);
       test.componentMount.unmount();
     });
 
@@ -304,7 +302,7 @@ describe("useHotKeys", () => {
       });
       window.dispatchEvent(event);
 
-      expect(callback).toBeCalledTimes(0);
+      expect(callback).toHaveBeenCalledTimes(0);
       test.componentMount.unmount();
     });
 
@@ -327,7 +325,7 @@ describe("useHotKeys", () => {
       });
       window.dispatchEvent(event);
 
-      expect(callback).toBeCalledTimes(0);
+      expect(callback).toHaveBeenCalledTimes(0);
       test.componentMount.unmount();
     });
   });

@@ -24,9 +24,7 @@ describe("Breadcrumb", () => {
       .mockImplementationOnce(() => <></>);
 
     const breadcrumbs = ["/", "/test"];
-    const wrapper = render(
-      <Breadcrumb subPath="/test/01" breadcrumb={breadcrumbs} />
-    );
+    const wrapper = render(<Breadcrumb subPath="/test/01" breadcrumb={breadcrumbs} />);
     const spans = screen.queryAllByTestId("breadcrumb-span");
     expect(spans).toHaveLength(2);
 
@@ -41,9 +39,7 @@ describe("Breadcrumb", () => {
       .mockImplementationOnce(() => <></>);
 
     const breadcrumbs = ["/", "/test", "/01"];
-    const wrapper = render(
-      <Breadcrumb subPath="/test/01/01" breadcrumb={breadcrumbs} />
-    );
+    const wrapper = render(<Breadcrumb subPath="/test/01/01" breadcrumb={breadcrumbs} />);
     const spans = screen.queryAllByTestId("breadcrumb-span");
     expect(spans).toHaveLength(3);
 

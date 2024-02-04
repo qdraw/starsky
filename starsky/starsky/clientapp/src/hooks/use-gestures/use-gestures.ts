@@ -1,11 +1,4 @@
-import {
-  Dispatch,
-  RefObject,
-  SetStateAction,
-  useEffect,
-  useRef,
-  useState
-} from "react";
+import { Dispatch, RefObject, SetStateAction, useEffect, useRef, useState } from "react";
 import { ICurrentTouches } from "./ICurrentTouches.types";
 import { IHandlers } from "./IHandlers.types";
 import { callHandler } from "./call-handler";
@@ -71,10 +64,7 @@ const executeTouchMove = (
 
   let eventName, theGesture;
 
-  if (
-    currentTouches.deltaX === undefined ||
-    currentTouches.deltaY === undefined
-  ) {
+  if (currentTouches.deltaX === undefined || currentTouches.deltaY === undefined) {
     return;
   }
 
@@ -106,11 +96,7 @@ const executeTouchMove = (
 
   if (eventName) {
     debounce(
-      (
-        eventNameScoped: string,
-        touchesScoped: ICurrentTouches,
-        theGestureScoped: string
-      ) => {
+      (eventNameScoped: string, touchesScoped: ICurrentTouches, theGestureScoped: string) => {
         callHandler(eventNameScoped, touchesScoped, handlers);
         setGesture(theGestureScoped);
       },
@@ -183,42 +169,20 @@ export function useGestures(
     const element = ref.current;
 
     const handleTouchStart = (event: globalThis.TouchEvent) => {
-      const currentTouches = getCurrentTouches(
-        event,
-        event.touches,
-        null,
-        initialTouches
-      );
+      const currentTouches = getCurrentTouches(event, event.touches, null, initialTouches);
       setTouches(currentTouches);
       initialTouches.current = currentTouches;
       executeTouchStart(event, currentTouches, handlers);
     };
 
     const handleTouchMove = (event: globalThis.TouchEvent) => {
-      const currentTouches = getCurrentTouches(
-        event,
-        event.touches,
-        touches,
-        initialTouches
-      );
+      const currentTouches = getCurrentTouches(event, event.touches, touches, initialTouches);
       setTouches(currentTouches);
-      executeTouchMove(
-        event,
-        currentTouches,
-        handlers,
-        options,
-        touches,
-        setGesture
-      );
+      executeTouchMove(event, currentTouches, handlers, options, touches, setGesture);
     };
 
     const handleTouchEnd = (event: globalThis.TouchEvent) => {
-      const currentTouches = getCurrentTouches(
-        event,
-        event.changedTouches,
-        null,
-        initialTouches
-      );
+      const currentTouches = getCurrentTouches(event, event.changedTouches, null, initialTouches);
       executeTouchEnd(currentTouches, handlers, touches, gesture);
     };
 

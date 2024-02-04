@@ -78,7 +78,7 @@ describe("keyboard", () => {
 
       keyboard.SetFocusOnEndField(target);
 
-      expect(addRange).toBeCalled();
+      expect(addRange).toHaveBeenCalled();
     });
   });
 });

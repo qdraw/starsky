@@ -8,16 +8,10 @@ import { UrlQuery } from "../../../shared/url-query";
 import FormControl from "../../atoms/form-control/form-control";
 import SwitchButton from "../../atoms/switch-button/switch-button";
 
-export async function ChangeSetting(
-  value: string,
-  name?: string
-): Promise<number> {
+export async function ChangeSetting(value: string, name?: string): Promise<number> {
   const bodyParams = new URLSearchParams();
   bodyParams.set(name ?? "", value);
-  const result = await FetchPost(
-    new UrlQuery().UrlApiAppSettings(),
-    bodyParams.toString()
-  );
+  const result = await FetchPost(new UrlQuery().UrlApiAppSettings(), bodyParams.toString());
   return result?.statusCode;
 }
 
@@ -34,19 +28,13 @@ export const PreferencesAppSettings: React.FunctionComponent<any> = () => {
     "You have changed this setting, now you need to perform a full sync. Go to the root folder, the more menu and click on manual sync."
   );
 
-  const permissionsData = useFetch(
-    new UrlQuery().UrlAccountPermissions(),
-    "get"
-  );
+  const permissionsData = useFetch(new UrlQuery().UrlAccountPermissions(), "get");
 
   const [isEnabled, setIsEnabled] = useState(false);
 
   useEffect(() => {
     function permissions(): boolean {
-      if (
-        !permissionsData?.data?.includes ||
-        permissionsData?.statusCode !== 200
-      ) {
+      if (!permissionsData?.data?.includes || permissionsData?.statusCode !== 200) {
         return false;
       }
       return permissionsData.data.includes("AppSettingsWrite");
@@ -60,9 +48,7 @@ export const PreferencesAppSettings: React.FunctionComponent<any> = () => {
     ?.data as IAppSettings | null;
 
   const [isVerbose, setIsVerbose] = useState(appSettings?.verbose);
-  const [storageFolder, setStorageFolder] = useState(
-    appSettings?.storageFolder
-  );
+  const [storageFolder, setStorageFolder] = useState(appSettings?.storageFolder);
 
   useEffect(() => {
     setIsVerbose(appSettings?.verbose);
@@ -73,9 +59,7 @@ export const PreferencesAppSettings: React.FunctionComponent<any> = () => {
     <div className="preferences--app-settings">
       <div className="content--subheader">AppSettings</div>
       <div className="content--text">
-        <div className="warning-box warning-box--optional">
-          {MessageAppSettingsEntireAppScope}
-        </div>
+        <div className="warning-box warning-box--optional">{MessageAppSettingsEntireAppScope}</div>
 
         <h4>Verbose logging</h4>
 
@@ -95,16 +79,11 @@ export const PreferencesAppSettings: React.FunctionComponent<any> = () => {
         <FormControl
           name="storageFolder"
           onBlur={async (e) => {
-            const resultStatusCode = await ChangeSetting(
-              e.target.innerText,
-              "storageFolder"
-            );
+            const resultStatusCode = await ChangeSetting(e.target.innerText, "storageFolder");
             setStorageFolder(e.target.innerText);
             setStorageFolderNotFound(resultStatusCode === 404);
           }}
-          contentEditable={
-            isEnabled && appSettings?.storageFolderAllowEdit === true
-          }
+          contentEditable={isEnabled && appSettings?.storageFolderAllowEdit === true}
         >
           {storageFolder}
         </FormControl>
@@ -115,8 +94,7 @@ export const PreferencesAppSettings: React.FunctionComponent<any> = () => {
           </div>
         ) : null}
 
-        {storageFolder !== appSettings?.storageFolder &&
-        !storageFolderNotFound ? (
+        {storageFolder !== appSettings?.storageFolder && !storageFolderNotFound ? (
           <div className="warning-box" data-test="storage-changed">
             {MessageChangeNeedReSync}
           </div>

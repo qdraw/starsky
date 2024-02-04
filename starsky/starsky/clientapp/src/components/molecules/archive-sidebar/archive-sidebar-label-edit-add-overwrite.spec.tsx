@@ -1,10 +1,4 @@
-import {
-  act,
-  createEvent,
-  fireEvent,
-  render,
-  screen
-} from "@testing-library/react";
+import { act, createEvent, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import * as AppContext from "../../../contexts/archive-context";
 import { IArchive } from "../../../interfaces/IArchive";
@@ -43,9 +37,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
     beforeEach(() => {
       // is used in multiple ways
       // use this: ==> import * as AppContext from '../contexts/archive-context';
-      useContextSpy = jest
-        .spyOn(React, "useContext")
-        .mockImplementation(() => contextValues);
+      useContextSpy = jest.spyOn(React, "useContext").mockImplementation(() => contextValues);
 
       // clean array
       dispatchedValues = [];
@@ -101,16 +93,13 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
 
     it("click overwrite and generic fail", async () => {
       // reject! ?>
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.reject();
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.reject();
 
       const notificationSpy = jest
         .spyOn(Notification, "default")
         .mockImplementationOnce(() => <></>);
 
-      jest
-        .spyOn(FetchPost, "default")
-        .mockImplementationOnce(() => mockIConnectionDefault);
+      jest.spyOn(FetchPost, "default").mockImplementationOnce(() => mockIConnectionDefault);
 
       const component = render(<ArchiveSidebarLabelEditAddOverwrite />);
 
@@ -131,7 +120,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         await add.click();
       });
 
-      expect(notificationSpy).toBeCalled();
+      expect(notificationSpy).toHaveBeenCalled();
 
       act(() => {
         component.unmount();
@@ -145,15 +134,12 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         data: [] as any[]
       };
 
-      const mockIConnectionDefaultReject: Promise<IConnectionDefault> =
-        Promise.reject();
+      const mockIConnectionDefaultReject: Promise<IConnectionDefault> = Promise.reject();
 
       const mockIConnectionDefaultResolve: Promise<IConnectionDefault> =
         Promise.resolve(connectionDefault);
 
-      jest
-        .spyOn(FetchPost, "default")
-        .mockImplementationOnce(() => mockIConnectionDefaultReject);
+      jest.spyOn(FetchPost, "default").mockImplementationOnce(() => mockIConnectionDefaultReject);
 
       const component = render(<ArchiveSidebarLabelEditAddOverwrite />);
 
@@ -175,14 +161,10 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
       });
 
       jest.spyOn(FetchPost, "default").mockRestore();
-      jest
-        .spyOn(FetchPost, "default")
-        .mockImplementationOnce(() => mockIConnectionDefaultResolve);
+      jest.spyOn(FetchPost, "default").mockImplementationOnce(() => mockIConnectionDefaultResolve);
 
       // force update to show message
-      let notification = screen.queryByTestId(
-        "notification-content"
-      ) as HTMLElement;
+      let notification = screen.queryByTestId("notification-content") as HTMLElement;
 
       expect(notification).toBeTruthy();
 
@@ -193,9 +175,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
       });
 
       // force update to show message
-      notification = screen.queryByTestId(
-        "notification-content"
-      ) as HTMLElement;
+      notification = screen.queryByTestId("notification-content") as HTMLElement;
       expect(notification).toBeFalsy();
 
       act(() => {
@@ -268,8 +248,8 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         await add.click();
       });
 
-      expect(spy).toBeCalled();
-      expect(spy).toBeCalledWith(
+      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledWith(
         new UrlQuery().prefix + "/api/update",
         "append=true&collections=true&tags=a&f=%2Ftest.jpg"
       );
@@ -306,9 +286,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
       };
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve(connectionDefault);
-      jest
-        .spyOn(FetchPost, "default")
-        .mockImplementationOnce(() => mockIConnectionDefault);
+      jest.spyOn(FetchPost, "default").mockImplementationOnce(() => mockIConnectionDefault);
 
       const component = render(<ArchiveSidebarLabelEditAddOverwrite />);
 
@@ -331,9 +309,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         await add.click();
       });
 
-      const notification = screen.queryByTestId(
-        "notification-content"
-      ) as HTMLElement;
+      const notification = screen.queryByTestId("notification-content") as HTMLElement;
       expect(notification).toBeTruthy();
 
       act(() => {
@@ -393,8 +369,8 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         await add.click();
       });
 
-      expect(spy).toBeCalled();
-      expect(spy).toBeCalledWith(
+      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledWith(
         new UrlQuery().prefix + "/api/update",
         "append=true&collections=true&tags=a&f=%2Ftest.jpg%3B%2Ftest1.jpg"
       );
@@ -436,7 +412,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
       });
       window.dispatchEvent(event);
 
-      expect(keyboardSpy).toBeCalled();
+      expect(keyboardSpy).toHaveBeenCalled();
 
       act(() => {
         component.unmount();

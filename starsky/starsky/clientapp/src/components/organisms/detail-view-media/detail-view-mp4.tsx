@@ -7,16 +7,14 @@ import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
-import Notification, {
-  NotificationType
-} from "../../atoms/notification/notification";
+import Notification, { NotificationType } from "../../atoms/notification/notification";
 import Preloader from "../../atoms/preloader/preloader";
-import { Controls } from "./shared/controls";
-import { GetVideoClassName } from "./shared/get-video-class-name";
-import { PlayPause } from "./shared/play-pause";
-import { SetDefaultEffect } from "./shared/set-default-effect";
-import { TimeUpdate } from "./shared/time-update";
-import { Waiting } from "./shared/waiting";
+import { Controls } from "./internal/controls";
+import { GetVideoClassName } from "./internal/get-video-class-name";
+import { PlayPause } from "./internal/play-pause";
+import { SetDefaultEffect } from "./internal/set-default-effect";
+import { TimeUpdate } from "./internal/time-update";
+import { Waiting } from "./internal/waiting";
 
 const DetailViewMp4: React.FunctionComponent = memo(() => {
   // content
@@ -24,9 +22,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
   const language = new Language(settings.language);
 
   const MessageVideoNotFound = language.key(localization.MessageVideoNotFound);
-  const MessageVideoPlayBackError = language.key(
-    localization.MessageVideoPlayBackError
-  );
+  const MessageVideoPlayBackError = language.key(localization.MessageVideoPlayBackError);
 
   const history = useLocation();
 
@@ -38,9 +34,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
   /** update to make useEffect simpler te read */
   const [downloadPhotoApi, setDownloadPhotoApi] = useState(
     new UrlQuery().UrlDownloadPhotoApi(
-      new URLPath().encodeURI(
-        new URLPath().getFilePath(history.location.search)
-      ),
+      new URLPath().encodeURI(new URLPath().getFilePath(history.location.search)),
       false
     )
   );
@@ -84,9 +78,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
     videoRefCurrent.addEventListener("timeupdate", () =>
       TimeUpdate(videoRef, setIsLoading, progressRef, scrubberRef, timeRef)
     );
-    videoRefCurrent.addEventListener("waiting", () =>
-      Waiting(videoRef, setIsLoading)
-    );
+    videoRefCurrent.addEventListener("waiting", () => Waiting(videoRef, setIsLoading));
 
     return () => {
       // Unbind the event listener on clean up
@@ -95,9 +87,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
       videoRefCurrent.removeEventListener("timeupdate", () =>
         TimeUpdate(videoRef, setIsLoading, progressRef, scrubberRef, timeRef)
       );
-      videoRefCurrent.removeEventListener("waiting", () =>
-        Waiting(videoRef, setIsLoading)
-      );
+      videoRefCurrent.removeEventListener("waiting", () => Waiting(videoRef, setIsLoading));
     };
   }, [videoRefCurrent]);
 
@@ -109,10 +99,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
     <>
       {isLoading ? <Preloader isWhite={false} isOverlay={false} /> : ""}
       {isError ? (
-        <Notification
-          callback={() => setIsError("")}
-          type={NotificationType.danger}
-        >
+        <Notification callback={() => setIsError("")} type={NotificationType.danger}>
           {isError}
         </Notification>
       ) : null}
@@ -133,13 +120,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
                 setIsLoading
               );
             event.key === "Enter" &&
-              TimeUpdate(
-                videoRef,
-                setIsLoading,
-                progressRef,
-                scrubberRef,
-                timeRef
-              );
+              TimeUpdate(videoRef, setIsLoading, progressRef, scrubberRef, timeRef);
           }}
           onClick={() => {
             PlayPause(
@@ -151,25 +132,11 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
               setPaused,
               setIsLoading
             );
-            TimeUpdate(
-              videoRef,
-              setIsLoading,
-              progressRef,
-              scrubberRef,
-              timeRef
-            );
+            TimeUpdate(videoRef, setIsLoading, progressRef, scrubberRef, timeRef);
           }}
         >
-          <video
-            playsInline={true}
-            ref={videoRef}
-            controls={false}
-            preload="metadata"
-          >
-            <track
-              kind="captions"
-              src={downloadPhotoApi.replace("mp4", "srt")}
-            />
+          <video playsInline={true} ref={videoRef} controls={false} preload="metadata">
+            <track kind="captions" src={downloadPhotoApi.replace("mp4", "srt")} />
             <source src={downloadPhotoApi} type="video/mp4" />
           </video>
           <Controls

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
 
 type PortalPropTypes = {
@@ -8,7 +8,7 @@ type PortalPropTypes = {
 export const PortalId = "portal-root";
 
 const Portal: React.FunctionComponent<PortalPropTypes> = ({ children }) => {
-  const [modalContainer] = useState(document.createElement("div"));
+  const modalContainer = document.createElement("div");
   useEffect(() => {
     // Find the root element in your DOM
     let modalRoot = document.getElementById(PortalId) as HTMLElement;

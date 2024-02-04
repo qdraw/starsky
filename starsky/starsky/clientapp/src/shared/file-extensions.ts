@@ -21,8 +21,7 @@ export class FileExtensions {
    * @param filename
    */
   public IsValidFileName(filename: string): boolean {
-    const extensionRegex =
-      /^\w(?:[a-zA-Z0-9 ._-]*[a-zA-Z0-9])?\.[a-zA-Z0-9_-]+$/;
+    const extensionRegex = /^\w(?:[a-zA-Z0-9 ._-]*[a-zA-Z0-9])?\.[a-zA-Z0-9_-]+$/;
     const fromExtMatchArray = extensionRegex.exec(filename);
     return !!fromExtMatchArray;
   }

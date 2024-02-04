@@ -12,9 +12,7 @@ describe("NotFoundPage", () => {
       </MemoryRouter>
     );
     const headerText = (
-      notFoundComponent.container.querySelector(
-        ".content--header"
-      ) as HTMLElement
+      notFoundComponent.container.querySelector(".content--header") as HTMLElement
     )?.innerHTML;
     expect(headerText).toContain("Not Found");
   });

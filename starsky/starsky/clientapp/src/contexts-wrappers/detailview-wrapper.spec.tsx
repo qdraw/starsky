@@ -6,9 +6,7 @@ import { mountReactHook } from "../hooks/___tests___/test-hook";
 import { useSocketsEventName } from "../hooks/realtime/use-sockets.const";
 import { IDetailView, newDetailView } from "../interfaces/IDetailView";
 import { newIFileIndexItem } from "../interfaces/IFileIndexItem";
-import DetailViewWrapper, {
-  DetailViewEventListenerUseEffect
-} from "./detailview-wrapper";
+import DetailViewWrapper, { DetailViewEventListenerUseEffect } from "./detailview-wrapper";
 
 describe("DetailViewWrapper", () => {
   it("renders", () => {
@@ -22,14 +20,12 @@ describe("DetailViewWrapper", () => {
   describe("with mount", () => {
     it("check if DetailView is mounted", () => {
       const args = { ...newDetailView() } as IDetailView;
-      const detailView = jest
-        .spyOn(DetailView, "default")
-        .mockImplementationOnce(() => {
-          return <></>;
-        });
+      const detailView = jest.spyOn(DetailView, "default").mockImplementationOnce(() => {
+        return <></>;
+      });
 
       const component = render(<DetailViewWrapper {...args} />);
-      expect(detailView).toBeCalled();
+      expect(detailView).toHaveBeenCalled();
       component.unmount();
     });
 
@@ -50,16 +46,14 @@ describe("DetailViewWrapper", () => {
         fileIndexItem: newIFileIndexItem()
       } as IDetailView;
 
-      const detailView = jest
-        .spyOn(DetailView, "default")
-        .mockImplementationOnce(() => {
-          return <></>;
-        });
+      const detailView = jest.spyOn(DetailView, "default").mockImplementationOnce(() => {
+        return <></>;
+      });
 
       const component = render(<DetailViewWrapper {...args} />);
 
-      expect(contextValues.dispatch).toBeCalled();
-      expect(detailView).toBeCalled();
+      expect(contextValues.dispatch).toHaveBeenCalled();
+      expect(detailView).toHaveBeenCalled();
 
       component.unmount();
     });
@@ -109,9 +103,7 @@ describe("DetailViewWrapper", () => {
     it("Check if event is received", () => {
       const dispatch = jest.fn();
       document.body.innerHTML = "";
-      const result = mountReactHook(DetailViewEventListenerUseEffect, [
-        dispatch
-      ]);
+      const result = mountReactHook(DetailViewEventListenerUseEffect, [dispatch]);
 
       const detail = {
         data: [
@@ -133,8 +125,8 @@ describe("DetailViewWrapper", () => {
 
       document.body.dispatchEvent(event);
 
-      expect(dispatch).toBeCalled();
-      expect(dispatch).toBeCalledWith(detail.data[1]);
+      expect(dispatch).toHaveBeenCalled();
+      expect(dispatch).toHaveBeenCalledWith(detail.data[1]);
 
       const element = result.componentMount as any;
       element.unmount();

@@ -4,10 +4,7 @@ import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location/use-location";
 import { newIArchive } from "../../../interfaces/IArchive";
 import { PageType } from "../../../interfaces/IDetailView";
-import {
-  IFileIndexItem,
-  newIFileIndexItemArray
-} from "../../../interfaces/IFileIndexItem";
+import { IFileIndexItem, newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
 import localization from "../../../localization/localization.json";
 import FetchPost from "../../../shared/fetch-post";
 import { FileExtensions } from "../../../shared/file-extensions";
@@ -26,9 +23,7 @@ interface IModalMoveFileProps {
 }
 
 const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
-  const [currentFolderPath, setCurrentFolderPath] = useState(
-    props.parentDirectory
-  );
+  const [currentFolderPath, setCurrentFolderPath] = useState(props.parentDirectory);
 
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
@@ -53,16 +48,9 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
     bodyParams.append("to", currentFolderPath);
     bodyParams.append("collections", true.toString());
 
-    const resultDo = await FetchPost(
-      new UrlQuery().UrlDiskRename(),
-      bodyParams.toString()
-    );
+    const resultDo = await FetchPost(new UrlQuery().UrlDiskRename(), bodyParams.toString());
 
-    if (
-      !resultDo.data ||
-      resultDo.data.length === 0 ||
-      !resultDo.data[0].status
-    ) {
+    if (!resultDo.data || resultDo.data.length === 0 || !resultDo.data[0].status) {
       console.error("server error");
       setError("Server error");
       return null;
@@ -133,9 +121,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
                 <button
                   data-test="parent"
                   onClick={() => {
-                    setCurrentFolderPath(
-                      new FileExtensions().GetParentPath(currentFolderPath)
-                    );
+                    setCurrentFolderPath(new FileExtensions().GetParentPath(currentFolderPath));
                   }}
                 >
                   {new FileExtensions().GetParentPath(currentFolderPath)}
@@ -145,10 +131,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
           ) : null}
 
           {usesFileList.pageType === PageType.Loading ? (
-            <div
-              data-test="preloader-inside"
-              className="preloader preloader--inside"
-            ></div>
+            <div data-test="preloader-inside" className="preloader preloader--inside"></div>
           ) : null}
           {usesFileList.pageType !== PageType.Loading ? (
             <ItemTextListView
@@ -163,10 +146,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
         </div>
         <div className="modal modal-move-button">
           {error && (
-            <div
-              data-test="modal-move-file-warning-box"
-              className="warning-box"
-            >
+            <div data-test="modal-move-file-warning-box" className="warning-box">
               {error}
             </div>
           )}

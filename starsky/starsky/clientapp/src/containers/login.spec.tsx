@@ -28,11 +28,8 @@ describe("Login", () => {
 
     const login = render(<Login />);
 
-    expect(useFetchSpy).toBeCalled();
-    expect(useFetchSpy).toBeCalledWith(
-      new UrlQuery().UrlAccountStatus(),
-      "get"
-    );
+    expect(useFetchSpy).toHaveBeenCalled();
+    expect(useFetchSpy).toHaveBeenCalledWith(new UrlQuery().UrlAccountStatus(), "get");
 
     const err = screen.queryByTestId("logout-content");
     expect(err).toBeTruthy();
@@ -59,11 +56,8 @@ describe("Login", () => {
 
     const view = render(<Login />);
 
-    expect(useFetchSpy).toBeCalled();
-    expect(useFetchSpy).toBeCalledWith(
-      new UrlQuery().UrlAccountStatus(),
-      "get"
-    );
+    expect(useFetchSpy).toHaveBeenCalled();
+    expect(useFetchSpy).toHaveBeenCalledWith(new UrlQuery().UrlAccountStatus(), "get");
 
     const err = screen.queryByTestId("message-database-connection");
     expect(err).toBeTruthy();
@@ -90,7 +84,7 @@ describe("Login", () => {
 
     const login = render(<Login />);
 
-    expect(useFetchSpy).toBeCalled();
+    expect(useFetchSpy).toHaveBeenCalled();
     expect(screen.getByTestId("logout")).toBeTruthy();
     expect(screen.queryAllByTestId("stayLoggedin")).toBeTruthy();
 
@@ -99,9 +93,9 @@ describe("Login", () => {
       "http://localhost/account/logout?ReturnUrl=/test"
     );
 
-    expect(
-      (login.queryAllByTestId("stayLoggedin")[0] as HTMLAnchorElement).href
-    ).toBe("http://localhost/test");
+    expect((login.queryAllByTestId("stayLoggedin")[0] as HTMLAnchorElement).href).toBe(
+      "http://localhost/test"
+    );
 
     act(() => {
       Router.navigate("/");
@@ -125,7 +119,7 @@ describe("Login", () => {
 
     const login = render(<Login />);
 
-    expect(useFetchSpy).toBeCalled();
+    expect(useFetchSpy).toHaveBeenCalled();
     expect(screen.getByTestId("logout")).toBeTruthy();
     expect(login.queryAllByTestId("stayLoggedin")).toBeTruthy();
 
@@ -134,9 +128,9 @@ describe("Login", () => {
       "http://localhost/starsky/account/logout?ReturnUrl=/starsky/test"
     );
 
-    expect(
-      (login.queryAllByTestId("stayLoggedin")[0] as HTMLAnchorElement).href
-    ).toBe("http://localhost/starsky/test");
+    expect((login.queryAllByTestId("stayLoggedin")[0] as HTMLAnchorElement).href).toBe(
+      "http://localhost/starsky/test"
+    );
 
     act(() => {
       Router.navigate("/");
@@ -160,11 +154,8 @@ describe("Login", () => {
     expect(screen.getByTestId("email")).toBeTruthy();
     expect(screen.getByTestId("password")).toBeTruthy();
 
-    expect(useFetchSpy).toBeCalled();
-    expect(useFetchSpy).toBeCalledWith(
-      new UrlQuery().UrlAccountStatus(),
-      "get"
-    );
+    expect(useFetchSpy).toHaveBeenCalled();
+    expect(useFetchSpy).toHaveBeenCalledWith(new UrlQuery().UrlAccountStatus(), "get");
 
     act(() => {
       Router.navigate("/");
@@ -186,10 +177,8 @@ describe("Login", () => {
 
     const login = render(<Login />);
 
-    expect(
-      window.location.pathname.indexOf(new UrlQuery().UrlAccountRegisterApi())
-    ).toBeTruthy();
-    expect(useFetchSpy).toBeCalled();
+    expect(window.location.pathname.indexOf(new UrlQuery().UrlAccountRegisterApi())).toBeTruthy();
+    expect(useFetchSpy).toHaveBeenCalled();
 
     act(() => {
       login.unmount();
@@ -216,9 +205,7 @@ describe("Login", () => {
       statusCode: 200,
       data: "ok"
     });
-    const postSpy = jest
-      .spyOn(FetchPost, "default")
-      .mockImplementationOnce(() => mockPost);
+    const postSpy = jest.spyOn(FetchPost, "default").mockImplementationOnce(() => mockPost);
 
     const login = render(<Login />);
 
@@ -230,9 +217,7 @@ describe("Login", () => {
 
     // password
     act(() => {
-      const passwordElement = screen.queryByTestId(
-        "password"
-      ) as HTMLInputElement;
+      const passwordElement = screen.queryByTestId("password") as HTMLInputElement;
       fireEvent.change(passwordElement, { target: { value: "password" } });
     });
 
@@ -242,14 +227,11 @@ describe("Login", () => {
       loginContent?.querySelector("form")?.submit();
     });
 
-    expect(useFetchSpy).toBeCalled();
-    expect(useFetchSpy).toBeCalledWith(
-      new UrlQuery().UrlAccountStatus(),
-      "get"
-    );
+    expect(useFetchSpy).toHaveBeenCalled();
+    expect(useFetchSpy).toHaveBeenCalledWith(new UrlQuery().UrlAccountStatus(), "get");
 
-    expect(postSpy).toBeCalled();
-    expect(postSpy).toBeCalledWith(
+    expect(postSpy).toHaveBeenCalled();
+    expect(postSpy).toHaveBeenCalledWith(
       new UrlQuery().UrlLoginApi(),
       "Email=dont@mail.me&Password=password"
     );
@@ -292,9 +274,7 @@ describe("Login", () => {
 
     // password
     act(() => {
-      const passwordElement = screen.queryByTestId(
-        "password"
-      ) as HTMLInputElement;
+      const passwordElement = screen.queryByTestId("password") as HTMLInputElement;
       fireEvent.change(passwordElement, { target: { value: "password" } });
     });
 
@@ -305,8 +285,8 @@ describe("Login", () => {
     });
 
     await screen.findByTestId("login-error");
-    expect(useFetchSpy).toBeCalled();
-    expect(postSpy).toBeCalled();
+    expect(useFetchSpy).toHaveBeenCalled();
+    expect(postSpy).toHaveBeenCalled();
 
     act(() => {
       Router.navigate("/");
@@ -331,9 +311,7 @@ describe("Login", () => {
       statusCode: 423,
       data: "fail"
     });
-    const postSpy = jest
-      .spyOn(FetchPost, "default")
-      .mockImplementationOnce(() => mockPost);
+    const postSpy = jest.spyOn(FetchPost, "default").mockImplementationOnce(() => mockPost);
 
     const login = render(<Login />);
 
@@ -345,9 +323,7 @@ describe("Login", () => {
 
     // password
     act(() => {
-      const passwordElement = screen.queryByTestId(
-        "password"
-      ) as HTMLInputElement;
+      const passwordElement = screen.queryByTestId("password") as HTMLInputElement;
       fireEvent.change(passwordElement, { target: { value: "password" } });
     });
 
@@ -360,8 +336,8 @@ describe("Login", () => {
     // expect(login.html().search('class="content--error-true"')).toBeTruthy();
     // expect(login.queryByTestId("login-error")).toBeTruthy();
     await screen.findByTestId("login-error");
-    expect(useFetchSpy).toBeCalled();
-    expect(postSpy).toBeCalled();
+    expect(useFetchSpy).toHaveBeenCalled();
+    expect(postSpy).toHaveBeenCalled();
 
     act(() => {
       Router.navigate("/");
