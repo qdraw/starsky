@@ -25,6 +25,7 @@ const CurrentLocationButton: React.FunctionComponent<CurrentLocationButtonPropTy
       setError(true);
       return;
     }
+    // typescript:S5604 - is used to get the current position of the device
     navigator.geolocation.getCurrentPosition(currentPositionSuccess, currentPositionError);
   }
 
