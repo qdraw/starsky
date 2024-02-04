@@ -87,6 +87,10 @@
     "en": "Saved",
     "nl": "Opgeslagen"
   },
+  "MessageImportHeader": {
+    "en": "Import",
+    "nl": "Importeren"
+  },
   "MessageCloseDetailScreenDialog": {
     "en": "Close detail screen",
     "nl": "Sluit detailscherm"
