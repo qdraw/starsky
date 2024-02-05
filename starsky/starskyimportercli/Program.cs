@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.import.Interfaces;
 using starsky.feature.import.Services;
-using starsky.foundation.consoletelemetry.Extensions;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
@@ -31,7 +30,6 @@ namespace starskyimportercli
 			var serviceProvider = services.BuildServiceProvider();
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
 
-			services.AddMonitoringWorkerService(appSettings, AppSettings.StarskyAppType.Importer);
 			services.AddTelemetryLogging(appSettings);
 
 			new SetupDatabaseTypes(appSettings, services).BuilderDb();

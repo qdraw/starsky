@@ -69,7 +69,6 @@ namespace starsky.foundation.database.Helpers
 									mySqlOptions.MigrationsAssembly(foundationDatabaseName);
 								}
 							});
-					EnableDatabaseTracking(mysql);
 					return mysql.Options;
 				case AppSettings.DatabaseTypeList.InMemoryDatabase:
 					var memoryDatabase = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -87,7 +86,6 @@ namespace starsky.foundation.database.Helpers
 									b.MigrationsAssembly(foundationDatabaseName);
 								}
 							});
-					EnableDatabaseTracking(sqlite);
 					return sqlite.Options;
 				default:
 					throw new AggregateException(nameof(_appSettings.DatabaseType));
@@ -101,23 +99,23 @@ namespace starsky.foundation.database.Helpers
 			       _appSettings.ApplicationInsightsDatabaseTracking == true;
 		}
 
-		internal bool EnableDatabaseTracking(
-			DbContextOptionsBuilder<ApplicationDbContext> databaseOptionsBuilder)
-		{
-			if ( !IsDatabaseTrackingEnabled() )
-			{
-				return false;
-			}
-
-			databaseOptionsBuilder.AddInterceptors(
-				new DatabaseTelemetryInterceptor(
-					TelemetryConfigurationHelper.InitTelemetryClient(
-						_appSettings.ApplicationInsightsConnectionString,
-						_appSettings.ApplicationType.ToString(), _logger, _telemetryClient)
-				)
-			);
-			return true;
-		}
+		// internal bool EnableDatabaseTracking(
+		// 	DbContextOptionsBuilder<ApplicationDbContext> databaseOptionsBuilder)
+		// {
+		// 	if ( !IsDatabaseTrackingEnabled() )
+		// 	{
+		// 		return false;
+		// 	}
+		//
+		// 	databaseOptionsBuilder.AddInterceptors(
+		// 		new DatabaseTelemetryInterceptor(
+		// 			TelemetryConfigurationHelper.InitTelemetryClient(
+		// 				_appSettings.ApplicationInsightsConnectionString,
+		// 				_appSettings.ApplicationType.ToString(), _logger, _telemetryClient)
+		// 		)
+		// 	);
+		// 	return true;
+		// }
 
 		/// <summary>
 		/// Setup database connection

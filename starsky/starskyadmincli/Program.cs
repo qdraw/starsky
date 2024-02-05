@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.accountmanagement.Interfaces;
-using starsky.foundation.consoletelemetry.Extensions;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;

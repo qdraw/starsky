@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using starsky.foundation.consoletelemetry.Extensions;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
@@ -30,7 +29,6 @@ namespace starskythumbnailcli
 			var serviceProvider = services.BuildServiceProvider();
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
 
-			services.AddMonitoringWorkerService(appSettings, AppSettings.StarskyAppType.Thumbnail);
 			services.AddTelemetryLogging(appSettings);
 
 			new SetupDatabaseTypes(appSettings, services).BuilderDb();

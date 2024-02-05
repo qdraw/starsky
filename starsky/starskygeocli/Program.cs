@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.geolookup.Interfaces;
 using starsky.feature.geolookup.Services;
-using starsky.foundation.consoletelemetry.Extensions;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
@@ -32,7 +31,6 @@ namespace starskyGeoCli
 			var serviceProvider = services.BuildServiceProvider();
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
 
-			services.AddMonitoringWorkerService(appSettings, AppSettings.StarskyAppType.Geo);
 			services.AddTelemetryLogging(appSettings);
 
 			new SetupDatabaseTypes(appSettings, services).BuilderDb();

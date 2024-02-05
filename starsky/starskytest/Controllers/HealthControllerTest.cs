@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
-using starsky.foundation.webtelemetry.Services;
 using starskycore.ViewModels;
 using starskytest.FakeMocks;
 

@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
-using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.injection;
 using starsky.foundation.webtelemetry.Helpers;

@@ -13,7 +13,6 @@ using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.webtelemetry.Helpers;
 using starsky.foundation.worker.Interfaces;
 
 namespace starsky.Controllers
@@ -77,22 +76,16 @@ namespace starsky.Controllers
 			var (fileIndexResultsList, changedFileIndexItemName) = 
 				await _metaPreflight.PreflightAsync(inputModel, 
 				inputFilePaths.ToList(), append, collections, rotateClock);
-
-			var operationId = HttpContext.GetOperationId();
 			
 			// Update >
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
-				var operationHolder = RequestTelemetryHelper.GetOperationHolder(_scopeFactory,
-					nameof(UpdateAsync), operationId);
-				
 				var metaUpdateService = _scopeFactory.CreateScope()
 					.ServiceProvider.GetRequiredService<IMetaUpdateService>();
 				
-				var data = await metaUpdateService.UpdateAsync(
+				await metaUpdateService.UpdateAsync(
 					changedFileIndexItemName, fileIndexResultsList, null,
 					collections, append, rotateClock);
-				operationHolder.SetData(_scopeFactory, data);
 			}, string.Empty);
 
 			// before sending not founds

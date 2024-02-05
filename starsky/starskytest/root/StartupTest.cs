@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.StaticFiles;
@@ -46,7 +45,6 @@ namespace starskytest.root
 			serviceCollection.AddRouting();
 			serviceCollection.AddSingleton<AppSettings, AppSettings>();
 			serviceCollection.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
-			serviceCollection.AddSingleton<TelemetryConfiguration, TelemetryConfiguration>();
 			IConfiguration configuration = new ConfigurationRoot(new List<IConfigurationProvider>());
 			serviceCollection.AddSingleton(configuration); 
 			serviceCollection.AddAuthorization();

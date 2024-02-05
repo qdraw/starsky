@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.demo.Helpers;
-using starsky.foundation.consoletelemetry.Extensions;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.http.Interfaces;
@@ -32,7 +31,6 @@ namespace starskydemoseedcli
 			var serviceProvider = services.BuildServiceProvider();
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
 
-			services.AddMonitoringWorkerService(appSettings, AppSettings.StarskyAppType.DemoSeed);
 			services.AddTelemetryLogging(appSettings);
 
 			new SetupDatabaseTypes(appSettings, services).BuilderDb();

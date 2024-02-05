@@ -13,24 +13,22 @@ using starsky.foundation.platform.Exceptions;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.VersionHelpers;
 using starsky.foundation.webtelemetry.Interfaces;
-using starsky.foundation.webtelemetry.Services;
 using starskycore.ViewModels;
 
 [assembly: InternalsVisibleTo("starskytest")]
+
 namespace starsky.Controllers
 {
-	public sealed class HealthController: Controller
+	public sealed class HealthController : Controller
 	{
 		private readonly HealthCheckService _service;
-		private readonly ApplicationInsightsJsHelper? _applicationInsightsJsHelper;
 		private readonly ITelemetryService _telemetryService;
 		private readonly IMemoryCache? _cache;
 
-		public HealthController(HealthCheckService service, ITelemetryService telemetryService, 
-			ApplicationInsightsJsHelper? applicationInsightsJsHelper = null, IMemoryCache? memoryCache = null)
+		public HealthController(HealthCheckService service, ITelemetryService telemetryService,
+			IMemoryCache? memoryCache = null)
 		{
 			_service = service;
-			_applicationInsightsJsHelper = applicationInsightsJsHelper;
 			_telemetryService = telemetryService;
 			_cache = memoryCache;
 		}
@@ -67,18 +65,20 @@ namespace starsky.Controllers
 			const string healthControllerCacheKey = "health";
 			try
 			{
-				if ( _cache != null && _cache.TryGetValue(healthControllerCacheKey, out var objectHealthStatus) && 
-				     objectHealthStatus is HealthReport healthStatus && 
+				if ( _cache != null &&
+				     _cache.TryGetValue(healthControllerCacheKey, out var objectHealthStatus) &&
+				     objectHealthStatus is HealthReport healthStatus &&
 				     healthStatus.Status == HealthStatus.Healthy )
 				{
 					return healthStatus;
 				}
-				
+
 				var result = await _service.CheckHealthAsync().TimeoutAfter(timeoutTime);
-				if (_cache != null && result.Status == HealthStatus.Healthy )
+				if ( _cache != null && result.Status == HealthStatus.Healthy )
 				{
-					_cache.Set(healthControllerCacheKey, result, new TimeSpan(0,1,30));
+					_cache.Set(healthControllerCacheKey, result, new TimeSpan(0, 1, 30));
 				}
+
 				return result;
 			}
 			catch ( TimeoutException exception )
@@ -89,9 +89,9 @@ namespace starsky.Controllers
 					TimeSpan.FromMilliseconds(timeoutTime),
 					exception,
 					null);
-				
+
 				return new HealthReport(
-					new Dictionary<string, HealthReportEntry>{{"timeout",entry}}, 
+					new Dictionary<string, HealthReportEntry> { { "timeout", entry } },
 					TimeSpan.FromMilliseconds(timeoutTime));
 			}
 		}
@@ -103,7 +103,9 @@ namespace starsky.Controllers
 		private void PushNonHealthResultsToTelemetry(HealthReport result)
 		{
 			if ( result.Status == HealthStatus.Healthy ) return;
-			var message = JsonSerializer.Serialize(CreateHealthEntryLog(result).Entries.Where(p => !p.IsHealthy));
+			var message =
+				JsonSerializer.Serialize(CreateHealthEntryLog(result).Entries
+					.Where(p => !p.IsHealthy));
 			_telemetryService.TrackException(
 				new TelemetryServiceException(message)
 			);
@@ -120,8 +122,8 @@ namespace starsky.Controllers
 		[HttpGet("/api/health/details")]
 		[Authorize] // <--------------
 		[Produces("application/json")]
-		[ProducesResponseType(typeof(HealthView),200)]
-		[ProducesResponseType(typeof(HealthView),503)]
+		[ProducesResponseType(typeof(HealthView), 200)]
+		[ProducesResponseType(typeof(HealthView), 503)]
 		[ProducesResponseType(401)]
 		public async Task<IActionResult> Details()
 		{
@@ -130,7 +132,7 @@ namespace starsky.Controllers
 
 			var health = CreateHealthEntryLog(result);
 			if ( !health.IsHealthy ) Response.StatusCode = 503;
-			
+
 			return Json(health);
 		}
 
@@ -141,34 +143,22 @@ namespace starsky.Controllers
 				IsHealthy = result.Status == HealthStatus.Healthy,
 				TotalDuration = result.TotalDuration
 			};
-			
+
 			foreach ( var (key, value) in result.Entries )
 			{
 				health.Entries.Add(
-					new HealthEntry{
-							Duration = value.Duration, 
-							Name = key, 
-							IsHealthy = value.Status == HealthStatus.Healthy,
-							Description = value.Description + value.Exception?.Message + value.Exception?.StackTrace
-						}
-					);
+					new HealthEntry
+					{
+						Duration = value.Duration,
+						Name = key,
+						IsHealthy = value.Status == HealthStatus.Healthy,
+						Description = value.Description + value.Exception?.Message +
+						              value.Exception?.StackTrace
+					}
+				);
 			}
+
 			return health;
-		}
-				
-		/// <summary>
-		/// Add Application Insights script to user context
-		/// </summary>
-		/// <returns>AI script</returns>
-		/// <response code="200">Ok</response>
-		[HttpGet("/api/health/application-insights")]
-		[ResponseCache(Duration = 29030400)] // 4 weeks
-		[Produces("application/javascript")]
-		[AllowAnonymous]
-		public IActionResult ApplicationInsights()
-		{
-			// Remove when ApplicationInsights is phased out
-			return Content(_applicationInsightsJsHelper?.ScriptPlain!, "application/javascript");
 		}
 
 		/// <summary>
@@ -176,7 +166,7 @@ namespace starsky.Controllers
 		/// keywords: MinVersion or Version( or SemVersion(
 		/// </summary>
 		internal const string MinimumVersion = "0.5"; // only insert 0.5 or 0.6
-		
+
 		/// <summary>
 		/// Name of the header for api version
 		/// </summary>
@@ -199,15 +189,16 @@ namespace starsky.Controllers
 				var headerVersion =
 					Request.Headers.FirstOrDefault(p =>
 						p.Key == ApiVersionHeaderName).Value;
-				if (!string.IsNullOrEmpty(headerVersion))
+				if ( !string.IsNullOrEmpty(headerVersion) )
 				{
 					version = headerVersion;
 				}
 			}
 
-			if ( string.IsNullOrEmpty(version))
+			if ( string.IsNullOrEmpty(version) )
 			{
-				return BadRequest($"Missing version data, Add {ApiVersionHeaderName} header with value");
+				return BadRequest(
+					$"Missing version data, Add {ApiVersionHeaderName} header with value");
 			}
 
 			try
@@ -216,6 +207,7 @@ namespace starsky.Controllers
 				{
 					return Ok(version);
 				}
+
 				return StatusCode(StatusCodes.Status202Accepted,
 					$"Please Upgrade ClientApp to {MinimumVersion} or newer");
 			}
