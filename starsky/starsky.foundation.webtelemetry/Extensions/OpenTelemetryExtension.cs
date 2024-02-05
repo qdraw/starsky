@@ -11,6 +11,7 @@ using OpenTelemetry.Trace;
 using starsky.foundation.platform.Models;
 
 [assembly: InternalsVisibleTo("starskytest")]
+
 namespace starsky.foundation.webtelemetry.Extensions;
 
 public static class OpenTelemetryExtension
@@ -27,7 +28,7 @@ public static class OpenTelemetryExtension
 		{
 			return;
 		}
-		
+
 		var telemetryBuilder = services.AddOpenTelemetry()
 			.ConfigureResource(resource => resource.AddService(
 				serviceNamespace: appSettings.OpenTelemetry.GetServiceName(),
@@ -39,10 +40,10 @@ public static class OpenTelemetryExtension
 			{
 				{
 					"deployment.environment",
-						Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? string.Empty
+					Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? string.Empty
 				}
 			}));
-		
+
 		if ( !string.IsNullOrWhiteSpace(appSettings.OpenTelemetry.TracesEndpoint) )
 		{
 			telemetryBuilder.WithTracing(tracing => tracing
@@ -72,6 +73,7 @@ public static class OpenTelemetryExtension
 		telemetryBuilder.WithMetrics(metrics =>
 			metrics.AddAspNetCoreInstrumentation()
 				.AddRuntimeInstrumentation()
+				// .AddMeter() # todo fix
 				.AddOtlpExporter(
 					o =>
 					{
@@ -81,28 +83,28 @@ public static class OpenTelemetryExtension
 					})
 				.SetResourceBuilder(
 					ResourceBuilder.CreateDefault()
-						.AddService(appSettings.OpenTelemetry.GetServiceName())	
+						.AddService(appSettings.OpenTelemetry.GetServiceName())
 				)
 		);
 	}
-	
+
 	internal static bool FilterPath(HttpContext context)
 	{
-		if ( (context.Request.Path.Value?.EndsWith("/realtime") == true || 
-		     context.Request.Path.Value?.EndsWith("/api/health") == true || 
-		     context.Request.Path.Value?.EndsWith("/api/health/details") == true || 
-		     context.Request.Path.Value?.EndsWith("/api/open-telemetry/trace") == true) 
-		     && context.Response.StatusCode == 200)
+		if ( ( context.Request.Path.Value?.EndsWith("/realtime") == true ||
+		       context.Request.Path.Value?.EndsWith("/api/health") == true ||
+		       context.Request.Path.Value?.EndsWith("/api/health/details") == true ||
+		       context.Request.Path.Value?.EndsWith("/api/open-telemetry/trace") == true )
+		     && context.Response.StatusCode == 200 )
 		{
 			return false;
 		}
 
 		if ( context.Request.Path.Value?.EndsWith("/api/index") == true
-		     && context.Response.StatusCode == 401)
+		     && context.Response.StatusCode == 401 )
 		{
 			return false;
 		}
-		
+
 		return true;
 	}
 }
