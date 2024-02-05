@@ -6,14 +6,14 @@ import * as GetPortProxy from "../get-free-port/get-free-port";
 import logger from "../logger/logger";
 import { setupChildProcess } from "./setup-child-process";
 
-jest.mock('child_process', () => {
+jest.mock("child_process", () => {
   return {
     spawn: () => {},
     __esModule: true,
   };
 });
 
-jest.mock('fs', () => {
+jest.mock("fs", () => {
   return {
     existsSync: () => {},
     mkdirSync: () => {},
@@ -22,7 +22,7 @@ jest.mock('fs', () => {
   };
 });
 
-jest.mock('readline', () => {
+jest.mock("readline", () => {
   return {
     emitKeypressEvents: () => {},
     __esModule: true,
@@ -56,8 +56,12 @@ describe("setupChildProcess", () => {
   beforeEach(() => {});
 
   describe("setupChildProcess", () => {
-    it("getting with null input", async () => {
-      const spawnSpy = { stdout: { on: jest.fn() }, stderr: { on: jest.fn() } };
+    it("getting with null input (setupChildProcess)", async () => {
+      const spawnSpy = {
+        stdout: { on: jest.fn() },
+        stderr: { on: jest.fn() },
+        addListener: jest.fn(),
+      };
       jest.spyOn(spawn, "spawn").mockImplementationOnce(() => spawnSpy as any);
       jest
         .spyOn(fs, "existsSync")
@@ -73,14 +77,13 @@ describe("setupChildProcess", () => {
         .mockImplementationOnce(() => null)
         .mockImplementationOnce(() => null);
 
-      jest
-        .spyOn(readline, "emitKeypressEvents")
-        .mockImplementationOnce(() => null);
+      jest.spyOn(readline, "emitKeypressEvents").mockImplementationOnce(() => null);
 
       jest.spyOn(app, "on").mockImplementationOnce((event) => {
         logger.info(event);
         return null;
       });
+
       await setupChildProcess();
 
       expect(mkdirSpy).toHaveBeenCalled();
