@@ -286,6 +286,17 @@ npmInstall('@testing-library/jest-dom', false, true);
 npmInstall('@testing-library/react', false, true);
 npmInstall('@testing-library/user-event', false, true);
 
+
+// npm install --save @opentelemetry/api
+// npm install --save @opentelemetry/sdk-trace-web
+// npm install --save @opentelemetry/exporter-trace-otlp-http
+// npm install --save @opentelemetry/auto-instrumentations-web
+// npm install --save @opentelemetry/context-zone
+// npm install --save @opentelemetry/resources
+// npm install --save @opentelemetry/semantic-conventions
+// npm install --save @opentelemetry/instrumentation
+// npm install --save @opentelemetry/instrumentation-fetch
+
 console.log("npm install result:");
 const npmInstallSpawnResult = spawnSync(
 	"npm",
