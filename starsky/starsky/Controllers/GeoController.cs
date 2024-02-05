@@ -11,7 +11,6 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.webtelemetry.Helpers;
 using starsky.foundation.worker.Interfaces;
 
 namespace starsky.Controllers
@@ -26,7 +25,7 @@ namespace starsky.Controllers
 		private readonly IWebLogger _logger;
 
 		public GeoController(IUpdateBackgroundTaskQueue queue,
-			ISelectorStorage selectorStorage, 
+			ISelectorStorage selectorStorage,
 			IMemoryCache? memoryCache, IWebLogger logger, IServiceScopeFactory serviceScopeFactory)
 		{
 			_bgTaskQueue = queue;
@@ -44,8 +43,8 @@ namespace starsky.Controllers
 		/// <response code="200">the current status</response>
 		/// <response code="404">cache service is missing</response>
 		[HttpGet("/api/geo/status")]
-		[ProducesResponseType(typeof(GeoCacheStatus),200)] // "cache service is missing"
-		[ProducesResponseType(typeof(string),404)] // "Not found"
+		[ProducesResponseType(typeof(GeoCacheStatus), 200)] // "cache service is missing"
+		[ProducesResponseType(typeof(string), 404)] // "Not found"
 		[Produces("application/json")]
 		public IActionResult Status(
 			string f = "/")
@@ -53,8 +52,8 @@ namespace starsky.Controllers
 			if ( _cache == null ) return NotFound("cache service is missing");
 			return Json(new GeoCacheStatusService(_cache).Status(f));
 		}
-		
-		
+
+
 		/// <summary>
 		/// Reverse lookup for Geo Information and/or add Geo location based on a GPX file within the same directory
 		/// </summary>
@@ -67,8 +66,8 @@ namespace starsky.Controllers
 		/// <response code="401">User unauthorized</response>
 		[HttpPost("/api/geo/sync")]
 		[Produces("application/json")]
-		[ProducesResponseType(typeof(string),404)] // event is fired
-		[ProducesResponseType(typeof(string),200)] // "Not found"
+		[ProducesResponseType(typeof(string), 404)] // event is fired
+		[ProducesResponseType(typeof(string), 200)] // "Not found"
 		public async Task<IActionResult> GeoSyncFolder(
 			string f = "/",
 			bool index = true,
@@ -79,28 +78,22 @@ namespace starsky.Controllers
 			{
 				return NotFound("Folder location is not found");
 			}
-			
-			var operationId = HttpContext.GetOperationId();
+
 
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
-				_logger.LogInformation($"{nameof(GeoSyncFolder)} started {f} {DateTime.UtcNow.ToShortTimeString()}");
-				var operationHolder = RequestTelemetryHelper.GetOperationHolder(_serviceScopeFactory,
-					nameof(GeoSyncFolder), operationId);
-				
+				_logger.LogInformation(
+					$"{nameof(GeoSyncFolder)} started {f} {DateTime.UtcNow.ToShortTimeString()}");
+
 				var geoBackgroundTask = _serviceScopeFactory.CreateScope().ServiceProvider
 					.GetRequiredService<IGeoBackgroundTask>();
 				var result = await geoBackgroundTask.GeoBackgroundTaskAsync(f, index,
 					overwriteLocationNames);
-				
-				operationHolder.SetData(_serviceScopeFactory, result);
-				
-				_logger.LogInformation($"{nameof(GeoSyncFolder)} end {f} {operationHolder.Telemetry?.Duration}");
+
+				_logger.LogInformation($"{nameof(GeoSyncFolder)} end {f} {result.Count}");
 			}, f);
-			
+
 			return Json("job started");
 		}
-
-		
 	}
 }

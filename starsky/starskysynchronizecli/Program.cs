@@ -24,27 +24,25 @@ namespace starskysynchronizecli
 
 			// Setup AppSettings
 			services = await SetupAppSettings.FirstStepToAddSingleton(services);
-			
+
 			// Inject services
 			RegisterDependencies.Configure(services);
-			
+
 			var serviceProvider = services.BuildServiceProvider();
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
-			
+
 			services.AddMonitoringWorkerService(appSettings, AppSettings.StarskyAppType.Sync);
 			services.AddTelemetryLogging(appSettings);
 
-			new SetupDatabaseTypes(appSettings,services).BuilderDb();
+			new SetupDatabaseTypes(appSettings, services).BuilderDb();
 			serviceProvider = services.BuildServiceProvider();
-		
+
 			var synchronize = serviceProvider.GetService<ISynchronize>();
 			var console = serviceProvider.GetRequiredService<IConsole>();
 			var selectorStorage = serviceProvider.GetRequiredService<ISelectorStorage>();
 
 			// Help and other Command Line Tools args are included in the SyncCLI 
 			await new SyncCli(synchronize, appSettings, console, selectorStorage).Sync(args);
-			
-			await new FlushApplicationInsights(serviceProvider).FlushAsync();
 		}
 	}
 }

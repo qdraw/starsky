@@ -9,12 +9,11 @@
         <RootNamespace>starskysynchronizecli</RootNamespace>
         <Version>0.5.14</Version>
     </PropertyGroup>
-    
+
     <ItemGroup>
-      <ProjectReference Include="..\starsky.foundation.consoletelemetry\starsky.foundation.consoletelemetry.csproj" />
-      <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
-      <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
-      <ProjectReference Include="..\starsky.foundation.sync\starsky.foundation.sync.csproj" />
+        <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.sync\starsky.foundation.sync.csproj"/>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

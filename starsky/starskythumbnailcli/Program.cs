@@ -29,11 +29,11 @@ namespace starskythumbnailcli
 			RegisterDependencies.Configure(services);
 			var serviceProvider = services.BuildServiceProvider();
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
-            			
+
 			services.AddMonitoringWorkerService(appSettings, AppSettings.StarskyAppType.Thumbnail);
 			services.AddTelemetryLogging(appSettings);
-			
-			new SetupDatabaseTypes(appSettings,services).BuilderDb();
+
+			new SetupDatabaseTypes(appSettings, services).BuilderDb();
 			serviceProvider = services.BuildServiceProvider();
 
 			var thumbnailService = serviceProvider.GetService<IThumbnailService>();
@@ -45,9 +45,7 @@ namespace starskythumbnailcli
 			// Help and other Command Line Tools args are included in the ThumbnailCLI
 			var thumbnailCli = new ThumbnailCli(appSettings, console,
 				thumbnailService, thumbnailCleaner, selectorStorage);
-			await thumbnailCli.Thumbnail(args); 
-			
-			await new FlushApplicationInsights(serviceProvider).FlushAsync();
+			await thumbnailCli.Thumbnail(args);
 		}
 	}
 }

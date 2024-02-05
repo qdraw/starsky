@@ -3,8 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
-using Microsoft.ApplicationInsights;
-using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -19,25 +17,23 @@ namespace starsky.foundation.worker.ThumbnailServices
 	/// <summary>
 	/// @see: https://learn.microsoft.com/en-us/dotnet/core/extensions/queue-service
 	/// </summary>
-	[Service(typeof(IThumbnailQueuedHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
+	[Service(typeof(IThumbnailQueuedHostedService),
+		InjectionLifetime = InjectionLifetime.Singleton)]
 	public sealed class ThumbnailBackgroundTaskQueue : IThumbnailQueuedHostedService
 	{
 		private readonly ICpuUsageListener _cpuUsageListenerService;
 		private readonly IWebLogger _logger;
 		private readonly AppSettings _appSettings;
 		private readonly Channel<Tuple<Func<CancellationToken, ValueTask>, string>> _queue;
-		private readonly TelemetryClient? _telemetryClient;
 
-		public ThumbnailBackgroundTaskQueue(ICpuUsageListener cpuUsageListenerService, 
-			IWebLogger logger, AppSettings appSettings, IServiceScopeFactory scopeFactory)
+		public ThumbnailBackgroundTaskQueue(ICpuUsageListener cpuUsageListenerService,
+			IWebLogger logger, AppSettings appSettings)
 		{
 			_cpuUsageListenerService = cpuUsageListenerService;
 			_logger = logger;
 			_appSettings = appSettings;
 			_queue = Channel.CreateBounded<Tuple<Func<CancellationToken, ValueTask>, string>>(
 				ProcessTaskQueue.DefaultBoundedChannelOptions);
-			_telemetryClient = scopeFactory.CreateScope().ServiceProvider
-				.GetService<TelemetryClient>();
 		}
 
 		public int Count()
@@ -55,7 +51,7 @@ namespace starsky.foundation.worker.ThumbnailServices
 				throw new ToManyUsageException($"QueueBackgroundWorkItemAsync: " +
 				                               $"Skip {metaData} because of high CPU usage");
 			}
-			
+
 			return ProcessTaskQueue.QueueBackgroundWorkItemAsync(_queue,
 				workItem, metaData);
 		}
@@ -63,7 +59,7 @@ namespace starsky.foundation.worker.ThumbnailServices
 		public async ValueTask<Tuple<Func<CancellationToken, ValueTask>, string>> DequeueAsync(
 			CancellationToken cancellationToken)
 		{
-			MetricsHelper.Add(_telemetryClient, nameof(ThumbnailBackgroundTaskQueue), Count());
+			MetricsHelper.Add(nameof(ThumbnailBackgroundTaskQueue), "Items in queue", Count());
 			var workItem =
 				await _queue.Reader.ReadAsync(cancellationToken);
 			return workItem;

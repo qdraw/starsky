@@ -1,24 +1,14 @@
-using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.DataContracts;
+using System.Diagnostics.Metrics;
 
 namespace starsky.foundation.webtelemetry.Helpers;
 
 public static class MetricsHelper
 {
-	public static bool Add(TelemetryClient? telemetryClient, string name, int value)
+	public static bool Add(string name, string description, int value)
 	{
-		if ( telemetryClient == null )
-		{
-			return false;
-		}
-		
-		var sample = new MetricTelemetry
-		{
-			Name = name, 
-			Sum = value
-		};
-		
-		telemetryClient.TrackMetric(sample);
+		using var meter = new Meter(name, "1.0");
+		var successCounter = meter.CreateCounter<long>(name, description: description);
+
 		return true;
 	}
 }

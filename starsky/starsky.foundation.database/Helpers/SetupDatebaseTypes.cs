@@ -1,12 +1,9 @@
 using System;
-using Microsoft.ApplicationInsights;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.platform.Models;
-using starsky.foundation.databasetelemetry.Helpers;
-using starsky.foundation.databasetelemetry.Services;
 using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.database.Helpers
@@ -16,16 +13,15 @@ namespace starsky.foundation.database.Helpers
 		private readonly AppSettings _appSettings;
 		private readonly IServiceCollection? _services;
 		private readonly IWebLogger? _logger;
-		private readonly TelemetryClient? _telemetryClient;
 
-		public SetupDatabaseTypes(AppSettings appSettings, IServiceCollection? services = null, IWebLogger? logger = null)
+		public SetupDatabaseTypes(AppSettings appSettings, IServiceCollection? services = null,
+			IWebLogger? logger = null)
 		{
 			_appSettings = appSettings;
 			_services = services;
 
 			// if null get from service collection
 			logger ??= _services?.BuildServiceProvider().GetService<IWebLogger>();
-			_telemetryClient = _services?.BuildServiceProvider().GetService<TelemetryClient>();
 
 			_logger = logger;
 		}
@@ -40,48 +36,53 @@ namespace starsky.foundation.database.Helpers
 			try
 			{
 				return ServerVersion.AutoDetect(
-						_appSettings.DatabaseConnection);
+					_appSettings.DatabaseConnection);
 			}
-			catch ( MySqlException)
+			catch ( MySqlException )
 			{
 				// nothing here
 			}
+
 			return new MariaDbServerVersion("10.2");
 		}
-		
+
 		/// <summary>
 		/// Setup database connection
 		/// </summary>
 		/// <param name="foundationDatabaseName">Assembly name, used for running migrations</param>
 		/// <returns></returns>
 		/// <exception cref="AggregateException">Missing arguments</exception>
-		internal DbContextOptions<ApplicationDbContext> BuilderDbFactorySwitch(string? foundationDatabaseName = "")
+		internal DbContextOptions<ApplicationDbContext> BuilderDbFactorySwitch(
+			string? foundationDatabaseName = "")
 		{
 			switch ( _appSettings.DatabaseType )
 			{
 				case ( AppSettings.DatabaseTypeList.Mysql ):
-					
+
 					var mysql = new DbContextOptionsBuilder<ApplicationDbContext>()
-						.UseMySql(_appSettings.DatabaseConnection, GetServerVersionMySql(), mySqlOptions =>
-						{
-							mySqlOptions.EnableRetryOnFailure(2);
-							if ( !string.IsNullOrWhiteSpace(foundationDatabaseName) )
+						.UseMySql(_appSettings.DatabaseConnection, GetServerVersionMySql(),
+							mySqlOptions =>
 							{
-								mySqlOptions.MigrationsAssembly(foundationDatabaseName);
-							}
-						});
+								mySqlOptions.EnableRetryOnFailure(2);
+								if ( !string.IsNullOrWhiteSpace(foundationDatabaseName) )
+								{
+									mySqlOptions.MigrationsAssembly(foundationDatabaseName);
+								}
+							});
 					EnableDatabaseTracking(mysql);
 					return mysql.Options;
 				case AppSettings.DatabaseTypeList.InMemoryDatabase:
 					var memoryDatabase = new DbContextOptionsBuilder<ApplicationDbContext>()
-						.UseInMemoryDatabase(string.IsNullOrEmpty(_appSettings.DatabaseConnection) ? "starsky" : _appSettings.DatabaseConnection );
+						.UseInMemoryDatabase(string.IsNullOrEmpty(_appSettings.DatabaseConnection)
+							? "starsky"
+							: _appSettings.DatabaseConnection);
 					return memoryDatabase.Options;
 				case AppSettings.DatabaseTypeList.Sqlite:
 					var sqlite = new DbContextOptionsBuilder<ApplicationDbContext>()
-						.UseSqlite(_appSettings.DatabaseConnection, 
+						.UseSqlite(_appSettings.DatabaseConnection,
 							b =>
 							{
-								if (! string.IsNullOrWhiteSpace(foundationDatabaseName) )
+								if ( !string.IsNullOrWhiteSpace(foundationDatabaseName) )
 								{
 									b.MigrationsAssembly(foundationDatabaseName);
 								}
@@ -96,22 +97,25 @@ namespace starsky.foundation.database.Helpers
 		private bool IsDatabaseTrackingEnabled()
 		{
 			return !string.IsNullOrEmpty(_appSettings
-				       .ApplicationInsightsConnectionString) && _appSettings.ApplicationInsightsDatabaseTracking == true;
+				       .ApplicationInsightsConnectionString) &&
+			       _appSettings.ApplicationInsightsDatabaseTracking == true;
 		}
 
-		internal bool EnableDatabaseTracking( DbContextOptionsBuilder<ApplicationDbContext> databaseOptionsBuilder)
+		internal bool EnableDatabaseTracking(
+			DbContextOptionsBuilder<ApplicationDbContext> databaseOptionsBuilder)
 		{
-			if (!IsDatabaseTrackingEnabled())
+			if ( !IsDatabaseTrackingEnabled() )
 			{
 				return false;
 			}
+
 			databaseOptionsBuilder.AddInterceptors(
 				new DatabaseTelemetryInterceptor(
 					TelemetryConfigurationHelper.InitTelemetryClient(
-						_appSettings.ApplicationInsightsConnectionString, 
-						_appSettings.ApplicationType.ToString(),_logger,_telemetryClient)
-					)
-				);
+						_appSettings.ApplicationInsightsConnectionString,
+						_appSettings.ApplicationType.ToString(), _logger, _telemetryClient)
+				)
+			);
 			return true;
 		}
 
@@ -130,7 +134,8 @@ namespace starsky.foundation.database.Helpers
 			if ( _logger != null && _appSettings.IsVerbose() )
 			{
 				_logger.LogInformation($"Database connection: {_appSettings.DatabaseConnection}");
-				_logger.LogInformation($"Application Insights Database tracking is {IsDatabaseTrackingEnabled()}" );
+				_logger.LogInformation(
+					$"Application Insights Database tracking is {IsDatabaseTrackingEnabled()}");
 			}
 
 #if ENABLE_DEFAULT_DATABASE
@@ -143,7 +148,7 @@ namespace starsky.foundation.database.Helpers
 					{
 						b.MigrationsAssembly(foundationDatabaseName);
 					}
-				}));		
+				}));
 #endif
 #if ENABLE_MYSQL_DATABASE
 			// dirty hack
@@ -159,8 +164,8 @@ namespace starsky.foundation.database.Helpers
 					}));
 #endif
 
-			_services.AddScoped(_ => new ApplicationDbContext(BuilderDbFactorySwitch(foundationDatabaseName)));
+			_services.AddScoped(_ =>
+				new ApplicationDbContext(BuilderDbFactorySwitch(foundationDatabaseName)));
 		}
-
 	}
 }

@@ -14,6 +14,7 @@ using starsky.foundation.webtelemetry.Helpers;
 using starskyAdminCli.Services;
 
 [assembly: InternalsVisibleTo("starskytest")]
+
 namespace starskyAdminCli
 {
 	internal static class Program
@@ -36,33 +37,30 @@ namespace starskyAdminCli
 			RegisterDependencies.Configure(services);
 			var serviceProvider = services.BuildServiceProvider();
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
-						
-			services.AddMonitoringWorkerService(appSettings, AppSettings.StarskyAppType.Geo);
+
 			services.AddTelemetryLogging(appSettings);
-			
+
 			var webLogger = serviceProvider.GetRequiredService<IWebLogger>();
 
-			new SetupDatabaseTypes(appSettings,services).BuilderDb();
+			new SetupDatabaseTypes(appSettings, services).BuilderDb();
 			serviceProvider = services.BuildServiceProvider();
 
 			// Use args in application
 			appSettings.Verbose = ArgsHelper.NeedVerbose(args);
-			
+
 			var userManager = serviceProvider.GetService<IUserManager>();
 			appSettings.ApplicationType = AppSettings.StarskyAppType.Admin;
 
-			if (ArgsHelper.NeedHelp(args))
+			if ( ArgsHelper.NeedHelp(args) )
 			{
 				new ArgsHelper(appSettings).NeedHelpShowDialog();
 				return;
 			}
-			
-			await RunMigrations.Run(serviceProvider.GetService<ApplicationDbContext>(), 
+
+			await RunMigrations.Run(serviceProvider.GetService<ApplicationDbContext>(),
 				webLogger, appSettings);
 			await new ConsoleAdmin(userManager, new ConsoleWrapper()).Tool(
 				ArgsHelper.GetName(args), ArgsHelper.GetUserInputPassword(args));
-			
-			await new FlushApplicationInsights(serviceProvider).FlushAsync();
 		}
 	}
 }

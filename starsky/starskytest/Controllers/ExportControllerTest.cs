@@ -99,8 +99,7 @@ namespace starskytest.Controllers
 			// get the service
 			_appSettings = _serviceProvider.GetRequiredService<AppSettings>();
 			
-			var scopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
-			_bgTaskQueue = new UpdateBackgroundTaskQueue(scopeFactory);
+			_bgTaskQueue = new UpdateBackgroundTaskQueue();
 		}
 
 		[TestMethod]

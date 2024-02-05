@@ -7,7 +7,6 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -35,12 +34,10 @@ using starsky.foundation.realtime.Extentions;
 using starsky.foundation.realtime.Model;
 using starsky.foundation.webtelemetry.Extensions;
 using starsky.foundation.webtelemetry.Helpers;
-using starsky.foundation.webtelemetry.Processor;
 using starsky.Helpers;
 
 namespace starsky
 {
-	// ReSharper disable once ClassNeverInstantiated.Global
 	public sealed class Startup
 	{
 		private readonly IConfigurationRoot _configuration;
@@ -87,8 +84,6 @@ namespace starsky
 			services.AddMemoryCache();
 			// this is ignored here: appSettings.AddMemoryCache; but implemented in cache
 
-			// Detect Application Insights (used in next SetupDatabaseTypes)
-			services.AddMonitoring(_appSettings);
 			services.AddOpenTelemetryMonitoring(_appSettings);
 
 			// LoggerFactory
@@ -316,19 +311,6 @@ namespace starsky
 			app.UseWebSockets();
 			app.MapWebSocketConnections("/realtime", new WebSocketConnectionsOptions(),
 				_appSettings?.UseRealtime);
-
-			if ( _appSettings != null && !string.IsNullOrWhiteSpace(_appSettings
-				    .ApplicationInsightsConnectionString) )
-			{
-				var configuration =
-					app.ApplicationServices.GetRequiredService<TelemetryConfiguration>();
-				configuration.TelemetryProcessorChainBuilder.Use(next =>
-					new FilterWebsocketsTelemetryProcessor(next));
-				configuration.TelemetryProcessorChainBuilder.Build();
-
-				var onStoppedSync = new FlushApplicationInsights(app);
-				applicationLifetime.ApplicationStopping.Register(onStoppedSync.Flush);
-			}
 		}
 
 		/// <summary>
