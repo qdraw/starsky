@@ -31,7 +31,8 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		{
 			// ReSharper disable once AssignNullToNotNullAttribute
 			var syncWatcherPreflight =
-				new SyncWatcherConnector(null!, null!, null!, null!, null!, null!, null);
+				new SyncWatcherConnector(null!, null!,
+					null!, null!, null!, null!);
 			await syncWatcherPreflight.Sync(
 				new Tuple<string, string?, WatcherChangeTypes>("test", null!,
 					WatcherChangeTypes.Changed));
@@ -44,8 +45,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var appSettings = new AppSettings();
 			var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(), sync,
 				new FakeIWebSocketConnectionsService(),
-				new FakeIQuery(), new FakeIWebLogger(), new FakeINotificationQuery(),
-				new TelemetryClient(new TelemetryConfiguration()));
+				new FakeIQuery(), new FakeIWebLogger(), new FakeINotificationQuery());
 			await syncWatcherPreflight.Sync(
 				new Tuple<string, string?, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test"), null,
@@ -77,8 +77,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var appSettings = new AppSettings();
 			var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(), sync,
 				new FakeIWebSocketConnectionsService(),
-				new FakeIQuery(), new FakeIWebLogger(), new FakeINotificationQuery(),
-				new TelemetryClient(new TelemetryConfiguration()));
+				new FakeIQuery(), new FakeIWebLogger(), new FakeINotificationQuery());
 			var result = await syncWatcherPreflight.Sync(
 				new Tuple<string, string?, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test"),
@@ -99,8 +98,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var appSettings = new AppSettings();
 			var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(), sync,
 				new FakeIWebSocketConnectionsService(), new FakeIQuery(),
-				new FakeIWebLogger(), new FakeINotificationQuery(),
-				new TelemetryClient(new TelemetryConfiguration()));
+				new FakeIWebLogger(), new FakeINotificationQuery());
 			await syncWatcherPreflight.Sync(
 				new Tuple<string, string?, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test"), null,
@@ -120,13 +118,15 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var appSettings = new AppSettings();
 			var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(),
 				sync, websockets, new FakeIQuery(), new FakeIWebLogger(),
-				new FakeINotificationQuery(), new TelemetryClient(new TelemetryConfiguration()));
+				new FakeINotificationQuery());
 			syncWatcherPreflight.Sync(
 				new Tuple<string, string?, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test"), null,
 					WatcherChangeTypes.Changed));
 
-			Assert.AreEqual(1, websockets.FakeSendToAllAsync.Count(p => !p.StartsWith("[system]")));
+			Assert.AreEqual(1, websockets
+				.FakeSendToAllAsync.Count(p => !p.StartsWith("[system]")));
+
 			var value = websockets.FakeSendToAllAsync.Find(p =>
 				!p.StartsWith("[system]"));
 			Assert.IsTrue(value?.Contains("filePath\":\"/test\""));
@@ -147,7 +147,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var appSettings = new AppSettings();
 			var syncWatcherConnector = new SyncWatcherConnector(appSettings,
 				sync, websockets, new FakeIQuery(), new FakeIWebLogger(),
-				new FakeINotificationQuery(), new TelemetryClient(new TelemetryConfiguration()));
+				new FakeINotificationQuery());
 			syncWatcherConnector.Sync(
 				new Tuple<string, string?, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test"), null,
@@ -192,8 +192,8 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 				});
 
 			var syncWatcherConnector = new SyncWatcherConnector(appSettings,
-				sync, websockets, query, new FakeIWebLogger(), new FakeINotificationQuery(),
-				new TelemetryClient(new TelemetryConfiguration()));
+				sync, websockets, query, new FakeIWebLogger(), new FakeINotificationQuery());
+
 			syncWatcherConnector.Sync(
 				new Tuple<string, string?, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test.jpg"), null,
@@ -241,8 +241,8 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 				});
 
 			var syncWatcherConnector = new SyncWatcherConnector(appSettings,
-				sync, websockets, query, new FakeIWebLogger(), new FakeINotificationQuery(),
-				new TelemetryClient(new TelemetryConfiguration()));
+				sync, websockets, query, new FakeIWebLogger(), new FakeINotificationQuery());
+
 			syncWatcherConnector.Sync(
 				new Tuple<string, string?, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test.jpg"), null,
@@ -321,129 +321,9 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		public void Sync_InjectScopes_False()
 		{
 			var syncWatcherPreflight = new SyncWatcherConnector(null!,
-				null!, null!, null!, null!, null!, null!);
+				null!, null!, null!, null!, null!);
+
 			var result = syncWatcherPreflight.InjectScopes();
-			Assert.IsFalse(result);
-		}
-
-		[TestMethod]
-		public void CreateNewRequestTelemetry_NoKey()
-		{
-			var connector = new SyncWatcherConnector(new AppSettings(), new FakeISynchronize(),
-				new FakeIWebSocketConnectionsService(), new FakeIQuery(),
-				new FakeIWebLogger(), new FakeINotificationQuery(),
-				new TelemetryClient(new TelemetryConfiguration()));
-
-			var operationHolder = connector.CreateNewRequestTelemetry();
-			var operationHolder2 = operationHolder as EmptyOperationHolder<RequestTelemetry>;
-			Assert.IsTrue(operationHolder2?.Empty);
-		}
-
-		[TestMethod]
-		public void CreateNewRequestTelemetry_Key()
-		{
-			var connector = new SyncWatcherConnector(
-				new AppSettings { ApplicationInsightsConnectionString = "1" },
-				new FakeISynchronize(),
-				new FakeIWebSocketConnectionsService(), new FakeIQuery(),
-				new FakeIWebLogger(), new FakeINotificationQuery(),
-				new TelemetryClient(new TelemetryConfiguration()));
-
-			var operationHolder = connector.CreateNewRequestTelemetry();
-			Assert.AreEqual("FSW SyncWatcherConnector", operationHolder.Telemetry.Name);
-			var expected = new RequestTelemetry();
-			new CloudRoleNameInitializer($"{new AppSettings().ApplicationType}").Initialize(
-				expected);
-			Assert.AreEqual(expected.Context.Cloud.RoleName,
-				operationHolder.Telemetry.Context.Cloud.RoleName);
-			Assert.AreEqual(expected.Context.Cloud.RoleInstance,
-				operationHolder.Telemetry.Context.Cloud.RoleInstance);
-			connector.EndRequestOperation(operationHolder, "OK");
-		}
-
-		[TestMethod]
-		public void CreateNewRequestTelemetry_Key_WithUrl()
-		{
-			var connector = new SyncWatcherConnector(
-				new AppSettings { ApplicationInsightsConnectionString = "1" },
-				new FakeISynchronize(),
-				new FakeIWebSocketConnectionsService(), new FakeIQuery(),
-				new FakeIWebLogger(), new FakeINotificationQuery(),
-				new TelemetryClient(new TelemetryConfiguration()));
-
-			var operationHolder = connector.CreateNewRequestTelemetry("/test");
-			Assert.AreEqual("FSW SyncWatcherConnector", operationHolder.Telemetry.Name);
-			var expected = new RequestTelemetry { Url = new Uri("?f=/test", UriKind.Relative) };
-			new CloudRoleNameInitializer($"{new AppSettings().ApplicationType}").Initialize(
-				expected);
-			Assert.AreEqual(expected.Context.Cloud.RoleName,
-				operationHolder.Telemetry.Context.Cloud.RoleName);
-			Assert.AreEqual(expected.Context.Cloud.RoleInstance,
-				operationHolder.Telemetry.Context.Cloud.RoleInstance);
-			// check url
-			Assert.AreEqual(expected.Url, operationHolder.Telemetry.Url);
-			connector.EndRequestOperation(operationHolder, "OK");
-		}
-
-		[TestMethod]
-		public void CreateNewRequestTelemetry_Key_NoTelemetryClient()
-		{
-			var connector = new SyncWatcherConnector(
-				new AppSettings { ApplicationInsightsConnectionString = "1" },
-				new FakeISynchronize(),
-				new FakeIWebSocketConnectionsService(), new FakeIQuery(),
-				new FakeIWebLogger(), new FakeINotificationQuery(), null); // <-- no tel client
-
-			var operationHolder = connector.CreateNewRequestTelemetry();
-
-			var operationHolder2 = operationHolder as EmptyOperationHolder<RequestTelemetry>;
-			Assert.IsTrue(operationHolder2?.Empty);
-		}
-
-		[TestMethod]
-		public void EndRequestOperation_NoKey()
-		{
-			var connector = new SyncWatcherConnector(new AppSettings(), new FakeISynchronize(),
-				new FakeIWebSocketConnectionsService(), new FakeIQuery(),
-				new FakeIWebLogger(), new FakeINotificationQuery(),
-				new TelemetryClient(new TelemetryConfiguration()));
-
-			var result =
-				connector.EndRequestOperation(new EmptyOperationHolder<RequestTelemetry>(), "OK");
-			Assert.IsFalse(result);
-		}
-
-		[TestMethod]
-		public void EndRequestOperation_Key()
-		{
-			var connector = new SyncWatcherConnector(
-				new AppSettings { ApplicationInsightsConnectionString = "1" },
-				new FakeISynchronize(),
-				new FakeIWebSocketConnectionsService(), new FakeIQuery(),
-				new FakeIWebLogger(), new FakeINotificationQuery(),
-				new TelemetryClient(new TelemetryConfiguration()));
-
-			var operationHolder = connector.CreateNewRequestTelemetry();
-
-			var result = connector.EndRequestOperation(operationHolder, "OK");
-
-			Assert.IsTrue(result);
-		}
-
-
-		[TestMethod]
-		public void EndRequestOperation_Key_NoTelemetryClient()
-		{
-			var connector = new SyncWatcherConnector(
-				new AppSettings { ApplicationInsightsConnectionString = "1" },
-				new FakeISynchronize(),
-				new FakeIWebSocketConnectionsService(), new FakeIQuery(),
-				new FakeIWebLogger(), new FakeINotificationQuery(), null); // <-- no tel client
-
-			var operationHolder = connector.CreateNewRequestTelemetry();
-
-			var result = connector.EndRequestOperation(operationHolder, "OK");
-
 			Assert.IsFalse(result);
 		}
 	}

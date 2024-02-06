@@ -38,7 +38,8 @@ namespace starsky.foundation.sync.WatcherBackgroundService
 		public async ValueTask<Tuple<Func<CancellationToken, ValueTask>, string>> DequeueAsync(
 			CancellationToken cancellationToken)
 		{
-			MetricsHelper.Add(nameof(DiskWatcherBackgroundTaskQueue), "Items in queue", Count());
+			// todo fix
+	//		MetricsHelper.Add(nameof(DiskWatcherBackgroundTaskQueue), "Items in queue", Count());
 			var workItem =
 				await _queue.Reader.ReadAsync(cancellationToken);
 			return workItem;

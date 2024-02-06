@@ -12,6 +12,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using starsky.foundation.platform.Exceptions;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.VersionHelpers;
+using starsky.foundation.webtelemetry.Helpers;
 using starsky.foundation.webtelemetry.Interfaces;
 using starskycore.ViewModels;
 
@@ -22,14 +23,12 @@ namespace starsky.Controllers
 	public sealed class HealthController : Controller
 	{
 		private readonly HealthCheckService _service;
-		private readonly ITelemetryService _telemetryService;
 		private readonly IMemoryCache? _cache;
 
-		public HealthController(HealthCheckService service, ITelemetryService telemetryService,
+		public HealthController(HealthCheckService service,
 			IMemoryCache? memoryCache = null)
 		{
 			_service = service;
-			_telemetryService = telemetryService;
 			_cache = memoryCache;
 		}
 
@@ -51,7 +50,6 @@ namespace starsky.Controllers
 			var result = await CheckHealthAsyncWithTimeout(10000);
 			if ( result.Status == HealthStatus.Healthy ) return Content(result.Status.ToString());
 			Response.StatusCode = 503;
-			PushNonHealthResultsToTelemetry(result);
 			return Content(result.Status.ToString());
 		}
 
@@ -96,20 +94,6 @@ namespace starsky.Controllers
 			}
 		}
 
-		/// <summary>
-		/// Push Non Healthy results to Telemetry Service
-		/// </summary>
-		/// <param name="result">report</param>
-		private void PushNonHealthResultsToTelemetry(HealthReport result)
-		{
-			if ( result.Status == HealthStatus.Healthy ) return;
-			var message =
-				JsonSerializer.Serialize(CreateHealthEntryLog(result).Entries
-					.Where(p => !p.IsHealthy));
-			_telemetryService.TrackException(
-				new TelemetryServiceException(message)
-			);
-		}
 
 		/// <summary>
 		/// Check if the service has any known errors
@@ -128,7 +112,6 @@ namespace starsky.Controllers
 		public async Task<IActionResult> Details()
 		{
 			var result = await CheckHealthAsyncWithTimeout();
-			PushNonHealthResultsToTelemetry(result);
 
 			var health = CreateHealthEntryLog(result);
 			if ( !health.IsHealthy ) Response.StatusCode = 503;

@@ -12,6 +12,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\starsky.foundation.diagnosticsource\starsky.foundation.diagnosticsource.csproj"/>
         <ProjectReference Include="..\starsky.foundation.http\starsky.foundation.http.csproj"/>
         <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj"/>
         <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>
@@ -19,6 +20,7 @@
 
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.1"/>
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0"/>
         <!--      instead of : Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0-->
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0"/>
@@ -27,9 +29,14 @@
         <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.7.0"/>
         <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.7.0"/>
         <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.7.0"/>
+        <PackageReference Include="OpenTelemetry.Instrumentation.EventCounters" Version="1.5.1-alpha.1"/>
         <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.7.0"/>
         <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="8.0.0"/>
         <PackageReference Include="System.Text.Json" Version="8.0.1"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Meters\"/>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

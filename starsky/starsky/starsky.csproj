@@ -147,6 +147,7 @@
         <ProjectReference Include="..\starsky.feature.webhtmlpublish\starsky.feature.webhtmlpublish.csproj"/>
         <ProjectReference Include="..\starsky.foundation.accountmanagement\starsky.foundation.accountmanagement.csproj"/>
         <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.diagnosticsource\starsky.foundation.diagnosticsource.csproj"/>
         <ProjectReference Include="..\starsky.foundation.http\starsky.foundation.http.csproj"/>
         <ProjectReference Include="..\starsky.foundation.native\starsky.foundation.native.csproj"/>
         <ProjectReference Include="..\starsky.foundation.realtime\starsky.foundation.realtime.csproj"/>

@@ -37,7 +37,8 @@ public sealed class UpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
 	public async ValueTask<Tuple<Func<CancellationToken, ValueTask>, string>> DequeueAsync(
 		CancellationToken cancellationToken)
 	{
-		MetricsHelper.Add(nameof(UpdateBackgroundTaskQueue), "Items in queue", Count());
+		// todo fix
+	//	MetricsHelper.Add(nameof(UpdateBackgroundTaskQueue), "Items in queue", Count());
 		return await _queue.Reader.ReadAsync(cancellationToken);
 	}
 }

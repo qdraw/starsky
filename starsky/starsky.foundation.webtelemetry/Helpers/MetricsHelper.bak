@@ -1,0 +1,17 @@
+using System.Collections.Generic;
+using System.Diagnostics.Metrics;
+using starsky.foundation.diagnosticsource.ActivitySource;
+
+namespace starsky.foundation.webtelemetry.Helpers;
+
+public static class MetricsHelper
+{
+	public static bool Add(string name, string description, int value)
+	{
+		using var meter = new Meter(ActivitySourceMeter.NameSpace, "1.0");
+		var successCounter = meter.CreateObservableCounter<long>("srv.successes.count",
+			description: "Number of successful responses", observeValue: );
+		successCounter.Add(1, new KeyValuePair<string, object?>("tagName", "tagValue"));
+		return true;
+	}
+}

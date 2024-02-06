@@ -4,10 +4,12 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using OpenTelemetry;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using starsky.foundation.diagnosticsource.ActivitySource;
 using starsky.foundation.platform.Models;
 
 [assembly: InternalsVisibleTo("starskytest")]
@@ -73,10 +75,11 @@ public static class OpenTelemetryExtension
 		telemetryBuilder.WithMetrics(metrics =>
 			metrics.AddAspNetCoreInstrumentation()
 				.AddRuntimeInstrumentation()
-				// .AddMeter() # todo fix
+				.AddMeter(ActivitySourceMeter.NameSpace)
 				.AddOtlpExporter(
 					o =>
 					{
+						o.ExportProcessorType = ExportProcessorType.Batch;
 						o.Endpoint = new Uri(appSettings.OpenTelemetry.MetricsEndpoint);
 						o.Protocol = OtlpExportProtocol.HttpProtobuf;
 						o.Headers = appSettings.OpenTelemetry.GetMetricsHeader();

@@ -59,7 +59,8 @@ namespace starsky.foundation.worker.ThumbnailServices
 		public async ValueTask<Tuple<Func<CancellationToken, ValueTask>, string>> DequeueAsync(
 			CancellationToken cancellationToken)
 		{
-			MetricsHelper.Add(nameof(ThumbnailBackgroundTaskQueue), "Items in queue", Count());
+			// todo fix
+			// MetricsHelper.Add(nameof(ThumbnailBackgroundTaskQueue), "Items in queue", Count());
 			var workItem =
 				await _queue.Reader.ReadAsync(cancellationToken);
 			return workItem;
