@@ -5,7 +5,7 @@ import Portal from "../portal/portal";
 import Preloader from "../preloader/preloader";
 import { UploadFiles } from "./upload-files";
 
-export interface IDropAreaProps {
+interface IDropAreaProps {
   endpoint: string;
   folderPath?: string;
   enableInputButton?: boolean;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export interface ISwitchButtonProps {
+interface ISwitchButtonProps {
   onToggle(value: boolean, name?: string): void;
   leftLabel: string;
   rightLabel: string;

@@ -12,7 +12,7 @@ import { RealtimeMapUpdate } from "./internal/realtime-map-update";
 import { UpdateButton } from "./internal/update-button";
 import { UpdateMap } from "./internal/update-map";
 
-export interface IModalMoveFileProps {
+interface IModalMoveFileProps {
   isOpen: boolean;
   isFormEnabled: boolean;
   handleExit: (result: IGeoLocationModel | null) => void;

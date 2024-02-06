@@ -1,5 +1,5 @@
 const setRouter = require("../../../../starsky-tools/mock/set-router").setRouter;
-var bodyParser = require("body-parser");
+const bodyParser = require("body-parser");
 
 const expressMiddleWare = (router) => {
   router.use(bodyParser.urlencoded({ extended: true }));

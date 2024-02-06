@@ -1,6 +1,6 @@
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import BrowserDetect from "../../../shared/browser-detect";
+import { BrowserDetect } from "../../../shared/browser-detect";
 import { DifferenceInDate } from "../../../shared/date";
 import { Language } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url-query";

@@ -1,6 +1,6 @@
 import { IArchiveProps } from "../interfaces/IArchiveProps";
 import { PageType } from "../interfaces/IDetailView";
-import DocumentTitle from "./document-title";
+import { DocumentTitle } from "./document-title";
 
 describe("document-title", () => {
   describe("SetDocumentTitle", () => {

@@ -1,4 +1,4 @@
-import {IFileIndexItem} from "../interfaces/IFileIndexItem";
+import { IFileIndexItem } from "../interfaces/IFileIndexItem";
 
 export class SelectCheckIfActive {
   public IsActive(

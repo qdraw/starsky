@@ -509,7 +509,7 @@ describe("DetailView", () => {
 
       let handlerOnSwipeLeft: Function | undefined;
       jest
-        .spyOn(useGestures, "default")
+        .spyOn(useGestures, "useGestures")
         .mockImplementationOnce((_, handler) => {
           handlerOnSwipeLeft = handler.onSwipeLeft;
         })
@@ -565,7 +565,7 @@ describe("DetailView", () => {
 
       let handlerOnSwipeLeft: Function | undefined;
       jest
-        .spyOn(useGestures, "default")
+        .spyOn(useGestures, "useGestures")
         .mockImplementationOnce((_, handler) => {
           handlerOnSwipeLeft = handler.onSwipeRight;
         })
@@ -575,17 +575,15 @@ describe("DetailView", () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         _props: React.PropsWithChildren<FileHashImage.IFileHashImageProps>
       ) => (
-        <>
-          <button
-            onClick={() => {
-              if (handlerOnSwipeLeft) {
-                handlerOnSwipeLeft();
-              }
-            }}
-            id="fake-button"
-            data-test="fake-button"
-          ></button>
-        </>
+        <button
+          onClick={() => {
+            if (handlerOnSwipeLeft) {
+              handlerOnSwipeLeft();
+            }
+          }}
+          id="fake-button"
+          data-test="fake-button"
+        ></button>
       );
 
       jest.spyOn(FileHashImage, "default").mockReset().mockImplementationOnce(fakeElement);

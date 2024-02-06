@@ -28,5 +28,3 @@ export const SearchPage: FunctionComponent = () => {
     </>
   );
 };
-
-export default SearchPage;

@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect } from "react";
 import ButtonStyled from "../components/atoms/button-styled/button-styled";
 import useGlobalSettings from "../hooks/use-global-settings";
 import useLocation from "../hooks/use-location/use-location";
-import DocumentTitle from "../shared/document-title";
+import { DocumentTitle } from "../shared/document-title";
 import FetchGet from "../shared/fetch-get";
 import FetchPost from "../shared/fetch-post";
 import { Language } from "../shared/language";

@@ -19,7 +19,7 @@ type ForceSyncWaitButtonPropTypes = {
   dispatch: React.Dispatch<ArchiveAction>;
 };
 
-export const ForceSyncWaitTime = 10000;
+const ForceSyncWaitTime = 10000;
 
 /**
  * Helper to get new content in the current view

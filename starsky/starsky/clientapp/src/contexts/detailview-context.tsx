@@ -1,4 +1,4 @@
-import React, { createContext, useMemo } from "react";
+import { createContext, useContext, useMemo, useReducer } from "react";
 import { IDetailView, IRelativeObjects, PageType } from "../interfaces/IDetailView";
 import { IExifStatus } from "../interfaces/IExifStatus";
 import { Orientation, newIFileIndexItem } from "../interfaces/IFileIndexItem";
@@ -53,7 +53,7 @@ export type DetailViewAction =
       payload: IDetailView;
     };
 
-export type IDetailViewContext = {
+type IDetailViewContext = {
   state: IDetailView;
   dispatch: React.Dispatch<DetailViewAction>;
 };
@@ -185,7 +185,7 @@ function updateCache(stateLocal: IDetailView): IDetailView {
 
 function DetailViewContextProvider({ children }: Readonly<ReactNodeProps>) {
   // [A]
-  const [state, dispatch] = React.useReducer(detailviewReducer, initialState);
+  const [state, dispatch] = useReducer(detailviewReducer, initialState);
   // Use useMemo to memoize the value object
   const value1 = useMemo(() => ({ state, dispatch }), [state, dispatch]);
 
@@ -193,8 +193,6 @@ function DetailViewContextProvider({ children }: Readonly<ReactNodeProps>) {
   return <DetailViewContext.Provider value={value1}>{children}</DetailViewContext.Provider>;
 }
 
-const DetailViewContextConsumer = DetailViewContext.Consumer;
+export { DetailViewContext, DetailViewContextProvider };
 
-export { DetailViewContext, DetailViewContextConsumer, DetailViewContextProvider };
-
-export const useDetailViewContext = () => React.useContext(DetailViewContext);
+export const useDetailViewContext = () => useContext(DetailViewContext);

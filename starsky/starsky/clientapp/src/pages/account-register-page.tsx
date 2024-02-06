@@ -4,5 +4,3 @@ import AccountRegister from "../containers/account-register";
 export const AccountRegisterPage: FunctionComponent = () => {
   return <AccountRegister />;
 };
-
-export default AccountRegisterPage;

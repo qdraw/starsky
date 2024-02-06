@@ -3,7 +3,7 @@ import useGlobalSettings from "../../../hooks/use-global-settings";
 import { Language } from "../../../shared/language";
 import { LimitLength } from "./limit-length";
 
-export interface IFormControlProps {
+interface IFormControlProps {
   contentEditable: boolean;
   onBlur?(event: React.ChangeEvent<HTMLDivElement>): void;
   onInput?(event: React.ChangeEvent<HTMLDivElement>): void;

@@ -37,4 +37,3 @@ export class LeafletEmptyImageUrlTileLayer extends TileLayer {
     }
   }
 }
-export default LeafletEmptyImageUrlTileLayer;
