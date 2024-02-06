@@ -9,7 +9,7 @@ import { useSocketsEventName } from "../hooks/realtime/use-sockets.const";
 import { IApiNotificationResponseModel } from "../interfaces/IApiNotificationResponseModel";
 import { IDetailView } from "../interfaces/IDetailView";
 import { IFileIndexItem } from "../interfaces/IFileIndexItem";
-import DocumentTitle from "../shared/document-title";
+import { DocumentTitle } from "../shared/document-title";
 import { FileListCache } from "../shared/filelist-cache";
 import { URLPath } from "../shared/url-path";
 

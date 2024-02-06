@@ -24,4 +24,3 @@ export class BrowserDetect {
     );
   };
 }
-export default BrowserDetect;

@@ -5,7 +5,7 @@ import { FileListCache } from "../../../../shared/filelist-cache";
 import { UrlQuery } from "../../../../shared/url-query";
 import DropArea from "../../../atoms/drop-area/drop-area";
 
-export interface IUploadMenuItemProps {
+interface IUploadMenuItemProps {
   readOnly: boolean;
   setDropAreaUploadFilesList: React.Dispatch<React.SetStateAction<IFileIndexItem[]>>;
   dispatch: React.Dispatch<ArchiveAction>;

@@ -6,7 +6,7 @@ import { Language } from "../../../shared/language";
 import { URLPath } from "../../../shared/url-path";
 import Link from "../../atoms/link/link";
 
-export interface IRelativeLink {
+interface IRelativeLink {
   lastPageNumber?: number;
 }
 

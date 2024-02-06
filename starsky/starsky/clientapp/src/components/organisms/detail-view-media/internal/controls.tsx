@@ -4,7 +4,7 @@ import { Language } from "../../../../shared/language";
 import { PlayPause } from "./play-pause";
 import { ProgressBar } from "./progress-bar";
 
-export interface IControlsProps {
+interface IControlsProps {
   scrubberRef: React.RefObject<HTMLSpanElement>;
   progressRef: React.RefObject<HTMLProgressElement>;
   videoRef: React.RefObject<HTMLVideoElement>;

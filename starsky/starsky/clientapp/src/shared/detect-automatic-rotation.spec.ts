@@ -1,4 +1,4 @@
-import BrowserDetect from "./browser-detect";
+import { BrowserDetect } from "./browser-detect";
 import DetectAutomaticRotation, { testAutoOrientationImageURL } from "./detect-automatic-rotation";
 
 describe("select", () => {

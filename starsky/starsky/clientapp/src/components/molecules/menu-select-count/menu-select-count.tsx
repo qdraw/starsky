@@ -2,7 +2,7 @@ import useGlobalSettings from "../../../hooks/use-global-settings";
 import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 
-export interface IMenuSelectCountProps {
+interface IMenuSelectCountProps {
   select?: string[];
   removeSidebarSelection: () => void;
 }

@@ -1,4 +1,4 @@
-export interface IPreloaderProps {
+interface IPreloaderProps {
   isOverlay: boolean;
   isWhite?: boolean;
   isTransition?: boolean;

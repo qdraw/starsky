@@ -12,11 +12,26 @@ import { electronCacheLocation } from "./electron-cache-location";
 // eslint-disable-next-line import/no-mutable-exports
 export let appPort = 9609;
 
+function spawnChildProcess(appStarskyPath: string) {
+  const starskyChild = spawn(appStarskyPath, {
+    cwd: path.dirname(appStarskyPath),
+    detached: true,
+    env: process.env,
+  });
+
+  starskyChild.stdout.on("data", (data: string) => {
+    logger.info(data.toString());
+  });
+
+  starskyChild.stderr.on("data", (data: string) => {
+    logger.warn(data.toString());
+  });
+
+  return starskyChild;
+}
+
 export async function setupChildProcess() {
-  const thumbnailTempFolder = path.join(
-    electronCacheLocation(),
-    "thumbnailTempFolder",
-  );
+  const thumbnailTempFolder = path.join(electronCacheLocation(), "thumbnailTempFolder");
   if (!fs.existsSync(thumbnailTempFolder)) {
     fs.mkdirSync(thumbnailTempFolder);
   }
@@ -32,9 +47,7 @@ export async function setupChildProcess() {
   appPort = await GetFreePort();
 
   logger.info(`next: port: ${appPort}`);
-
-  logger.info('-appSettingsPath >');
-  logger.info(appSettingsPath);
+  logger.info(`-appSettingsPath > ${appSettingsPath}`);
 
   const env = {
     ASPNETCORE_URLS: `http://localhost:${appPort}`,
@@ -51,29 +64,27 @@ export async function setupChildProcess() {
 
   logger.info("env settings ->");
   logger.info(env);
-  logger.info(
-    `app data folder -> ${path.join(app.getPath("appData"), "starsky")}`,
-  );
+  logger.info(`app data folder -> ${path.join(app.getPath("appData"), "starsky")}`);
 
   const appStarskyPath = childProcessPath();
+
   try {
     fs.chmodSync(appStarskyPath, 0o755);
   } catch (error) {
-    // nothing
+    // do nothing
   }
 
-  const starskyChild = spawn(appStarskyPath, {
-    cwd: path.dirname(appStarskyPath),
-    detached: true,
-    env: process.env,
-  });
+  let starskyChild = spawnChildProcess(appStarskyPath);
 
-  starskyChild.stdout.on("data", (data: string) => {
-    logger.info(data.toString());
-  });
-
-  starskyChild.stderr.on("data", (data : string) => {
-    logger.warn(data.toString());
+  starskyChild.addListener("close", () => {
+    logger.info("restart process");
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    GetFreePort().then((p) => {
+      appPort = p;
+      env.ASPNETCORE_URLS = `http://localhost:${appPort}`;
+      logger.info(`next: port: ${appPort}`);
+      starskyChild = spawnChildProcess(appStarskyPath);
+    });
   });
 
   readline.emitKeypressEvents(process.stdin);
@@ -96,7 +107,7 @@ export async function setupChildProcess() {
 
   setRawMode(true);
 
-  process.stdin.on("keypress", (str, key :{ name : string, ctrl: string }) => {
+  process.stdin.on("keypress", (_, key: { name: string; ctrl: string }) => {
     if (key.ctrl && key.name === "c") {
       kill();
       logger.info("=> (pressed ctrl & c) to the end of starsky");

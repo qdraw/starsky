@@ -168,7 +168,7 @@ function setArchiveReducer(actionPayload: IArchiveProps) {
   };
 }
 
-export function addArchiveReducer(state: IArchiveProps, initActionAdd: IFileIndexItem[]) {
+function addArchiveReducer(state: IArchiveProps, initActionAdd: IFileIndexItem[]) {
   if (!initActionAdd) return state;
   const filterOkCondition = (value: IFileIndexItem) => {
     return (
@@ -445,13 +445,8 @@ function ArchiveContextProvider({ children }: Readonly<ReactNodeProps>) {
   return <ArchiveContext.Provider value={value1}>{children}</ArchiveContext.Provider>;
 }
 
-const ArchiveContextConsumer = ArchiveContext.Consumer;
-
 // [C]
-export { ArchiveContext, ArchiveContextConsumer, ArchiveContextProvider };
-
-// exporter
-export const useArchiveContext = () => React.useContext(ArchiveContext);
+export { ArchiveContext, ArchiveContextProvider };
 
 /**
  * default values

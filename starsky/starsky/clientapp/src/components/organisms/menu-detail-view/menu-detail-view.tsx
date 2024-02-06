@@ -30,7 +30,7 @@ import ModalPublishToggleWrapper from "../modal-publish/modal-publish-toggle-wra
 import { GoToParentFolder } from "./internal/go-to-parent-folder";
 import MenuOptionRotateImage90 from "../../molecules/menu-option-rotate-image-90/menu-option-rotate-image-90.tsx";
 
-export interface MenuDetailViewProps {
+interface MenuDetailViewProps {
   state: IDetailView;
   dispatch: React.Dispatch<DetailViewAction>;
 }

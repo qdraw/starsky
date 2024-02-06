@@ -11,7 +11,7 @@ import { IArchiveProps } from "../interfaces/IArchiveProps";
 import { PageType } from "../interfaces/IDetailView";
 import { IExifStatus } from "../interfaces/IExifStatus";
 import { IFileIndexItem } from "../interfaces/IFileIndexItem";
-import DocumentTitle from "../shared/document-title";
+import { DocumentTitle } from "../shared/document-title";
 import { FileListCache } from "../shared/filelist-cache";
 import { URLPath } from "../shared/url-path";
 

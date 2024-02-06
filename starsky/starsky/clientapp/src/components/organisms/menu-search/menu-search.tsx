@@ -23,12 +23,12 @@ import ModalDownload from "../modal-download/modal-download";
 import ModalPublishToggleWrapper from "../modal-publish/modal-publish-toggle-wrapper";
 import NavContainer from "../nav-container/nav-container";
 
-export interface IMenuSearchProps {
+interface IMenuSearchProps {
   state: IArchiveProps;
   dispatch: React.Dispatch<ArchiveAction>;
 }
 
-export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({ state, dispatch }) => {
+const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({ state, dispatch }) => {
   state = defaultStateFallback(state);
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);

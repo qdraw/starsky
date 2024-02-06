@@ -5,7 +5,7 @@ import localization from "../../../../localization/localization.json";
 import { UrlQuery } from "../../../../shared/url-query";
 import MenuOption from "../../../atoms/menu-option/menu-option";
 
-export interface IGoToParentFolderProps {
+interface IGoToParentFolderProps {
   isSearchQuery: boolean;
   history: IUseLocation;
   state: IDetailView;

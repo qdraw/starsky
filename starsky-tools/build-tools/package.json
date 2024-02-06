@@ -1,6 +1,6 @@
 {
   "name": "build-tools",
-  "version": "0.5.14",
+  "version": "0.6.0-beta.0",
   "description": "",
   "main": "",
   "scripts": {
@@ -9,6 +9,7 @@
     "clientapp-vite-update": "node clientapp-vite-update",
     "documentation-create-docusaurus-update": "node documentation-create-docusaurus-update",
     "app-version-update": "node app-version-update.js",
+    "app-version-test": "node app-version-test.js",
     "project-guid": "node project-guid.js",
     "nuget-package-list": "node nuget-package-list.js",
     "release-version-check": "node release-version-check.js",

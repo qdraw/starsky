@@ -197,5 +197,3 @@ export function useGestures(
     // run any time
   });
 }
-
-export default useGestures;

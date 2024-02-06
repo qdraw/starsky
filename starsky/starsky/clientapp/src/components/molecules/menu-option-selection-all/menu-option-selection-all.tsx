@@ -2,7 +2,7 @@ import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import localization from "../../../localization/localization.json";
 import MenuOption from "../../atoms/menu-option/menu-option";
 
-export interface IMenuOptionUndoSelectionProps {
+interface IMenuOptionUndoSelectionProps {
   select: string[];
   state?: IArchiveProps;
   allSelection: () => void;

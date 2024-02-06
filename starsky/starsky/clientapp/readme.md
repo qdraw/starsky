@@ -194,7 +194,6 @@ npm install --save-dev @storybook/testing-library
 
 npm install --save-dev @testing-library/jest-dom
 npm install --save-dev @testing-library/react
-npm install --save-dev @testing-library/user-event
 
 #### Update the name of the project
 
@@ -219,7 +218,6 @@ This is added to the `package.json`
 "dev": "vite",
 "start": "vite --port 3000",
 "build": "tsc -p tsconfig.prod.json && vite build",
-"spell": "cspell --config cspell.json \"src/**/*.{ts,tsx,js,md}\" --exclude build",
 "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 800",
 "lint:fix": "eslint --fix . --ext ts,tsx --report-unused-disable-directives --max-warnings 800",
 "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}'",
