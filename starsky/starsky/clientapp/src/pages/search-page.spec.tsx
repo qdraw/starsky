@@ -4,7 +4,7 @@ import * as ApplicationException from "../components/organisms/application-excep
 import * as ArchiveContextWrapper from "../contexts-wrappers/archive-wrapper";
 import * as useSearchList from "../hooks/use-searchlist";
 import { PageType } from "../interfaces/IDetailView";
-import SearchPage from "./search-page";
+import { SearchPage } from "./search-page";
 
 describe("SearchPage", () => {
   it("default check if MenuSearch + context is called", () => {

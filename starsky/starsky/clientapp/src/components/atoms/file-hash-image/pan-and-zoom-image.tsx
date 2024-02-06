@@ -6,7 +6,7 @@ import { OnMouseDownMouseAction } from "./on-mouse-down-mouse-action";
 import { OnMoveMouseTouchAction } from "./on-move-mouse-touch-action";
 import { OnWheelMouseAction } from "./on-wheel-mouse-action";
 
-export interface IPanAndZoomImage {
+interface IPanAndZoomImage {
   src: string;
   setError?: React.Dispatch<React.SetStateAction<boolean>>;
   onErrorCallback?(): void;

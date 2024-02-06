@@ -1,18 +1,5 @@
 import { IExifStatus } from "./IExifStatus";
 
-export enum Color {
-  Winner = 1, // Paars/Roze - purple
-  WinnerAlt = 2, // rood - Red -
-  Superior = 3, // Oranje - orange
-  SuperiorAlt = 4, // Geel - yellow
-  Typical = 5, // Groen - groen
-  TypicalAlt = 6, // Turquoise
-  Extras = 7, // Blauw - blue
-  Trash = 8, // grijs - Grey
-  None = 0, // donkergrijs Dark Grey
-  DoNotChange = -1
-}
-
 export interface IFileIndexItem {
   lastEdited?: string;
   filePath: string;

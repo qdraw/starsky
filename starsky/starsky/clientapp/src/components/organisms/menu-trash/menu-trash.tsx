@@ -24,7 +24,7 @@ import MenuOption from "../../atoms/menu-option/menu-option.tsx";
 import localization from "../../../localization/localization.json";
 import MenuOptionModal from "../../atoms/menu-option-modal/menu-option-modal.tsx";
 
-export interface IMenuTrashProps {
+interface IMenuTrashProps {
   state: IArchiveProps;
   dispatch: React.Dispatch<ArchiveAction>;
 }

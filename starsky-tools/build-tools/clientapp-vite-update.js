@@ -1,9 +1,9 @@
 #!/usr/bin/node
 
-const { spawnSync } = require("child_process");
+const {spawnSync} = require("child_process");
 const fs = require("fs");
 const path = require("path");
-const { exit } = require("process");
+const {exit} = require("process");
 
 const clientAppFolderPath = path.join(
 	__dirname,
@@ -74,7 +74,7 @@ function getNpxCreateCreateApp() {
 
 	const updateSpawn = spawnSync(
 		"npm",
-		["create", "-y", "vite@latest" , myAppName, ,"--", "--template", "react-ts"],
+		["create", "-y", "vite@latest", myAppName, , "--", "--template", "react-ts"],
 		{
 			cwd: createReactTempFolder,
 			env: process.env,
@@ -154,7 +154,7 @@ fs.writeFileSync(
 function npmCi() {
 	console.log(
 		"run > npm ci --no-audit --legacy-peer-deps | in: " +
-			clientAppFolderPath
+		clientAppFolderPath
 	);
 	const npmCiOne = spawnSync(
 		"npm",
@@ -222,14 +222,14 @@ function npmInstall(packageName, force, dev) {
 	}
 	console.log(
 		"npm" +
-			" " +
-			"install --no-audit" +
-			" " +
-			packageName +
-			" " +
-			saveText +
-			" " +
-			forceText
+		" " +
+		"install --no-audit" +
+		" " +
+		packageName +
+		" " +
+		saveText +
+		" " +
+		forceText
 	);
 	const npmInstallSpawn = spawnSync(
 		"npm",
@@ -277,14 +277,14 @@ npmInstall('storybook', false, true);
 npmInstall('@storybook/addon-essentials', false, true);
 npmInstall('@storybook/addon-interactions', false, true);
 npmInstall('@storybook/addon-links', false, true);
-npmInstall('@storybook/blocks', false, true);
+// @storybook/blocks is skipped
 npmInstall('@storybook/builder-vite', false, true);
 npmInstall('@storybook/react', false, true);
 npmInstall('@storybook/react-vite', false, true);
-npmInstall('@storybook/testing-library', false, true);
+// @storybook/testing-library is skipped
 npmInstall('@testing-library/jest-dom', false, true);
 npmInstall('@testing-library/react', false, true);
-npmInstall('@testing-library/user-event', false, true);
+// @testing-library/user-event is skipped
 
 console.log("npm install result:");
 const npmInstallSpawnResult = spawnSync(

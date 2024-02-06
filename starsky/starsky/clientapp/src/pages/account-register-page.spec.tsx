@@ -1,6 +1,6 @@
 import { render } from "@testing-library/react";
 import * as AccountRegister from "../containers/account-register";
-import AccountRegisterPage from "./account-register-page";
+import { AccountRegisterPage } from "./account-register-page";
 
 describe("ContentPage", () => {
   it("default", () => {

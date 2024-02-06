@@ -1,6 +1,6 @@
 import { IArchiveProps } from "../interfaces/IArchiveProps";
 import { IDetailView, PageType } from "../interfaces/IDetailView";
-import BrowserDetect from "./browser-detect";
+import { BrowserDetect } from "./browser-detect";
 
 export class DocumentTitle {
   public SetDocumentTitle = (archive: IArchiveProps | IDetailView): void => {
@@ -44,4 +44,3 @@ export class DocumentTitle {
     return prefix;
   };
 }
-export default DocumentTitle;

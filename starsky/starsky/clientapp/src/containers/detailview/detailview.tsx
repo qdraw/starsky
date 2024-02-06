@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import { FC, useContext, useEffect, useRef, useState } from "react";
 import FileHashImage from "../../components/atoms/file-hash-image/file-hash-image";
 import Preloader from "../../components/atoms/preloader/preloader";
 import ColorClassSelectKeyboard from "../../components/molecules/color-class-select/color-class-select-keyboard";
@@ -6,12 +6,12 @@ import DetailViewGpx from "../../components/organisms/detail-view-media/detail-v
 import DetailViewMp4 from "../../components/organisms/detail-view-media/detail-view-mp4";
 import DetailViewSidebar from "../../components/organisms/detail-view-sidebar/detail-view-sidebar";
 import { DetailViewContext } from "../../contexts/detailview-context";
-import useGestures from "../../hooks/use-gestures/use-gestures";
+import { useGestures } from "../../hooks/use-gestures/use-gestures";
 import useKeyboardEvent from "../../hooks/use-keyboard/use-keyboard-event";
 import useLocation from "../../hooks/use-location/use-location";
 import { IDetailView, newDetailView } from "../../interfaces/IDetailView";
 import { ImageFormat } from "../../interfaces/IFileIndexItem";
-import DocumentTitle from "../../shared/document-title";
+import { DocumentTitle } from "../../shared/document-title";
 import { Keyboard } from "../../shared/keyboard";
 import { UpdateRelativeObject } from "../../shared/update-relative-object";
 import { URLPath } from "../../shared/url-path";
@@ -20,11 +20,11 @@ import { moveFolderUp } from "./helpers/move-folder-up";
 import { PrevNext } from "./helpers/prev-next";
 import { statusRemoved } from "./helpers/status-removed";
 
-const DetailView: React.FC<IDetailView> = () => {
+const DetailView: FC<IDetailView> = () => {
   const history = useLocation();
 
   // eslint-disable-next-line prefer-const
-  let { state, dispatch } = React.useContext(DetailViewContext);
+  let { state, dispatch } = useContext(DetailViewContext);
 
   // if there is no state
   if (!state) {
@@ -32,7 +32,7 @@ const DetailView: React.FC<IDetailView> = () => {
   }
 
   // next + prev state
-  const [relativeObjects, setRelativeObjects] = React.useState(state.relativeObjects);
+  const [relativeObjects, setRelativeObjects] = useState(state.relativeObjects);
 
   // in normal detailview the state isn't updated (so without search query)
   useEffect(() => {
@@ -40,7 +40,7 @@ const DetailView: React.FC<IDetailView> = () => {
   }, [state.relativeObjects]);
 
   // boolean to get the details-side menu on or off
-  const [details, setDetails] = React.useState(
+  const [details, setDetails] = useState(
     new URLPath().StringToIUrl(history?.location?.search)?.details
   );
   useEffect(() => {
@@ -55,7 +55,7 @@ const DetailView: React.FC<IDetailView> = () => {
   }, [state]);
 
   // know if you searching ?t= in url
-  const [isSearchQuery, setIsSearchQuery] = React.useState(
+  const [isSearchQuery, setIsSearchQuery] = useState(
     !!new URLPath().StringToIUrl(history.location.search).t
   );
   useEffect(() => {
@@ -135,7 +135,7 @@ const DetailView: React.FC<IDetailView> = () => {
   );
 
   // Reset Error after changing page
-  const [isError, setIsError] = React.useState(false);
+  const [isError, setIsError] = useState(false);
   useEffect(() => {
     setIsError(false);
     setIsUseGestures(true);
@@ -148,10 +148,10 @@ const DetailView: React.FC<IDetailView> = () => {
   }, [state.fileIndexItem?.status]);
 
   // Reset Loading after changing page
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   const mainRef = useRef<HTMLDivElement>(null);
-  const [isUseGestures, setIsUseGestures] = React.useState(true);
+  const [isUseGestures, setIsUseGestures] = useState(true);
 
   useGestures(mainRef, {
     onSwipeLeft: () => {

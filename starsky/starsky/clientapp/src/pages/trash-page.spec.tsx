@@ -6,7 +6,7 @@ import * as useSearchList from "../hooks/use-searchlist";
 import { ISearchList } from "../hooks/use-searchlist";
 import { newIArchive } from "../interfaces/IArchive";
 import { PageType } from "../interfaces/IDetailView";
-import TrashPage from "./trash-page";
+import { TrashPage } from "./trash-page";
 
 describe("TrashPage", () => {
   it("default error case", () => {

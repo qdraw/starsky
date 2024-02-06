@@ -15,7 +15,7 @@ export async function ChangeSetting(value: string, name?: string): Promise<numbe
   return result?.statusCode;
 }
 
-export const PreferencesAppSettings: React.FunctionComponent<any> = () => {
+const PreferencesAppSettings: React.FunctionComponent<any> = () => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const MessageAppSettingsEntireAppScope = language.text(

@@ -14,7 +14,7 @@ import { IArchiveProps } from "../../../interfaces/IArchiveProps.ts";
 
 //  <ColorClassFilter itemsCount={this.props.collectionsCount} subPath={this.props.subPath}
 // colorClassActiveList={this.props.colorClassActiveList} colorClassUsage={this.props.colorClassUsage}></ColorClassFilter>
-export interface IColorClassProp {
+interface IColorClassProp {
   subPath: string;
   colorClassActiveList: Array<number>;
   colorClassUsage: Array<number>;

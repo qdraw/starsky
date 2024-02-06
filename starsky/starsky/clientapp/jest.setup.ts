@@ -1,6 +1,8 @@
 import "@testing-library/jest-dom";
 import { configure } from "@testing-library/react";
 import "isomorphic-fetch";
+import "jest-environment-jsdom";
+import "ts-node";
 
 // Mock IntersectionObserver
 class IntersectionObserver {

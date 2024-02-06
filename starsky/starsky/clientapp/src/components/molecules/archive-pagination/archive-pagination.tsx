@@ -6,7 +6,7 @@ import { Language } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url-query";
 import Link from "../../atoms/link/link";
 
-export interface IRelativeLink {
+interface IRelativeLink {
   relativeObjects: IRelativeObjects;
 }
 

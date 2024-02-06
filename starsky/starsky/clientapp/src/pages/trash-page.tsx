@@ -23,5 +23,3 @@ export const TrashPage: FunctionComponent = () => {
 
   return <ArchiveContextWrapper {...searchList.archive} />;
 };
-
-export default TrashPage;

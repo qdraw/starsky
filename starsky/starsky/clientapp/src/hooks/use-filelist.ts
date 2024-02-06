@@ -63,7 +63,7 @@ export const fetchContentUseFileList = async (
   }
 };
 
-export const fetchUseFileListContentCache = async (
+const fetchUseFileListContentCache = async (
   locationLocal: string,
   locationSearch: string,
   abortController: AbortController,

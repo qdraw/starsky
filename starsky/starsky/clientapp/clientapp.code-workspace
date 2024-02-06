@@ -27,12 +27,6 @@
 		],
 		"typescript.preferences.quoteStyle": "double",
 		"typescript.updateImportsOnFileMove.enabled": "always",
-		"cSpell.words": [
-			"Exif",
-			"Starsky",
-			"colorclass",
-			"unmount"
-		],
 		"typescript.tsdk": "clientapp/node_modules/typescript/lib",
 		"editor.formatOnSave": true,
 	}

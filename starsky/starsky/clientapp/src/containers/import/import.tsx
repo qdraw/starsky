@@ -4,10 +4,10 @@ import ModalDropAreaFilesAdded from "../../components/molecules/modal-drop-area-
 import MenuDefault from "../../components/organisms/menu-default/menu-default";
 import useGlobalSettings from "../../hooks/use-global-settings";
 import { newIFileIndexItemArray } from "../../interfaces/IFileIndexItem";
-import DocumentTitle from "../../shared/document-title";
+import localization from "../../localization/localization.json";
+import { DocumentTitle } from "../../shared/document-title";
 import { Language } from "../../shared/language";
 import { UrlQuery } from "../../shared/url-query";
-import localization from "../../localization/localization.json";
 
 export const Import: FunctionComponent = () => {
   const [dropAreaUploadFilesList, setDropAreaUploadFilesList] =

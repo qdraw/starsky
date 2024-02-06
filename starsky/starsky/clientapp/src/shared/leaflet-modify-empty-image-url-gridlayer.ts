@@ -119,5 +119,3 @@ export class LeafletEmptyImageUrlGridLayer extends GridLayer {
     }
   }
 }
-
-export default LeafletEmptyImageUrlGridLayer;

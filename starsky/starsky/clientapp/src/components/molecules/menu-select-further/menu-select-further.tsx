@@ -2,7 +2,7 @@ import useGlobalSettings from "../../../hooks/use-global-settings";
 import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 
-export interface IMenuSelectFurtherProps {
+interface IMenuSelectFurtherProps {
   select?: string[];
   toggleLabels: (state: boolean) => void;
 }
