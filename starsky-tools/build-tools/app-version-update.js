@@ -6,12 +6,12 @@
 
 // other script: use release-version-check.js to check if the version is correct based on the branch name in the CI
 
-const { join } = require("path");
-const { readFile, writeFile } = require("fs").promises;
-const { getFiles } = require("./lib/get-files-directory");
-const { prefixPath } = require("./lib/prefix-path.const.js");
+const {join} = require("path");
+const {readFile, writeFile} = require("fs").promises;
+const {getFiles} = require("./lib/get-files-directory");
+const {prefixPath} = require("./lib/prefix-path.const.js");
 
-let newVersion = "0.5.14";
+let newVersion = "0.6.0-beta.0";
 
 // allow version as single argument
 const argv = process.argv.slice(2);
