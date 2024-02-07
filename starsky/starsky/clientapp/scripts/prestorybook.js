@@ -1,7 +1,12 @@
-const { spawnSync } = require("child_process");
-const path = require("path");
+import { spawnSync } from "child_process";
+import { join } from "path";
+import { fileURLToPath } from "url";
+import path from "path";
 
-const mockToolsFolder = path.join(__dirname, "..", "..", "..", "..", "starsky-tools", "mock");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const mockToolsFolder = join(__dirname, "..", "..", "..", "..", "starsky-tools", "mock");
 
 console.log(`running npm ci in ${mockToolsFolder}`);
 
