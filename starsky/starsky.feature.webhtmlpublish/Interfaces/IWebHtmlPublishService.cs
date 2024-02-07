@@ -6,7 +6,7 @@ namespace starsky.feature.webhtmlpublish.Interfaces
 {
 	public interface IWebHtmlPublishService
 	{
-		Task<Dictionary<string, bool>> RenderCopy(List<FileIndexItem> fileIndexItemsList,
+		Task<Dictionary<string, bool>?> RenderCopy(List<FileIndexItem> fileIndexItemsList,
 			string publishProfileName, string itemName, string outputParentFullFilePathFolder,
 			bool moveSourceFiles = false);
 

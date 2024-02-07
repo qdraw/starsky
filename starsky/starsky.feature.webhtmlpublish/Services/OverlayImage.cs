@@ -52,15 +52,17 @@ namespace starsky.feature.webhtmlpublish.Services
 			if ( string.IsNullOrWhiteSpace(itemFileHash) )
 				throw new ArgumentNullException(nameof(itemFileHash));
 
-			if ( _thumbnailStorage.ExistFile(itemFileHash) )
+			if ( !_thumbnailStorage.ExistFile(itemFileHash) )
+			{
 				throw new FileNotFoundException("fileHash " + itemFileHash);
+			}
 
 			if ( _hostFileSystem.ExistFile(outputFullFilePath) )
 			{
 				return Task.FromResult(false);
 			}
 
-			if ( _hostFileSystem.ExistFile(profile.Path) )
+			if ( !_hostFileSystem.ExistFile(profile.Path) )
 			{
 				throw new FileNotFoundException(
 					$"overlayImage is missing in profile.Path: {profile.Path}");
@@ -158,8 +160,8 @@ namespace starsky.feature.webhtmlpublish.Services
 				.Resize(profile.OverlayMaxWidth, 0, KnownResamplers.Lanczos3)
 			);
 
-			int xPoint = sourceImage.Width - overlayImage.Width;
-			int yPoint = sourceImage.Height - overlayImage.Height;
+			var xPoint = sourceImage.Width - overlayImage.Width;
+			var yPoint = sourceImage.Height - overlayImage.Height;
 
 			sourceImage.Mutate(x => x.DrawImage(overlayImage,
 				new Point(xPoint, yPoint), 1F));

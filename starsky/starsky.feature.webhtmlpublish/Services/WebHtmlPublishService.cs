@@ -71,7 +71,7 @@ namespace starsky.feature.webhtmlpublish.Services
 			_thumbnailService = thumbnailService;
 		}
 
-		public async Task<Dictionary<string, bool>> RenderCopy(
+		public async Task<Dictionary<string, bool>?> RenderCopy(
 			List<FileIndexItem> fileIndexItemsList,
 			string publishProfileName, string itemName, string outputParentFullFilePathFolder,
 			bool moveSourceFiles = false)
@@ -83,7 +83,6 @@ namespace starsky.feature.webhtmlpublish.Services
 
 			var copyContent = await Render(fileIndexItemsList, base64ImageArray,
 				publishProfileName, itemName, outputParentFullFilePathFolder, moveSourceFiles);
-			copyContent ??= [];
 
 			_publishManifest.ExportManifest(outputParentFullFilePathFolder, itemName, copyContent);
 

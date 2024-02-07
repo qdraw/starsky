@@ -114,7 +114,7 @@ namespace starskytest.FakeMocks
 			throw new NotImplementedException();
 		}
 
-		public DetailView SingleItem(string singleItemDbPath,
+		public DetailView? SingleItem(string singleItemDbPath,
 			List<ColorClassParser.Color>? colorClassActiveList = null,
 			bool enableCollections = true, bool hideDeleted = true,
 			SortType? sort = SortType.FileName)
