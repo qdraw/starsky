@@ -1,0 +1,4 @@
+Contact: https://qdraw.nl/contact.html
+Expires: 2025-01-01T00:01:00.000Z
+Preferred-Languages: en,nl
+Policy: https://github.com/qdraw/starsky/blob/master/SECURITY.md
