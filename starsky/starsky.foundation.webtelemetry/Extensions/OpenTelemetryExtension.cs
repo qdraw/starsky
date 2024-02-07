@@ -9,7 +9,7 @@ using OpenTelemetry.Exporter;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using starsky.foundation.diagnosticsource.ActivitySource;
+using starsky.foundation.platform.MetricsNamespaces;
 using starsky.foundation.platform.Models;
 
 [assembly: InternalsVisibleTo("starskytest")]
@@ -75,7 +75,7 @@ public static class OpenTelemetryExtension
 		telemetryBuilder.WithMetrics(metrics =>
 			metrics.AddAspNetCoreInstrumentation()
 				.AddRuntimeInstrumentation()
-				.AddMeter(ActivitySourceMeter.NameSpace)
+				.AddMeter(ActivitySourceMeter.SyncNameSpace)
 				.AddOtlpExporter(
 					o =>
 					{

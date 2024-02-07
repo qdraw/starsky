@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
-using starsky.foundation.diagnosticsource.ActivitySource;
 
 namespace starsky.foundation.webtelemetry.Helpers;
 

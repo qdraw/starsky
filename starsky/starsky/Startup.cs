@@ -26,7 +26,6 @@ using starsky.foundation.accountmanagement.Extensions;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.DataProtection;
 using starsky.foundation.database.Helpers;
-using starsky.foundation.diagnosticsource.Metrics;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
@@ -189,9 +188,6 @@ namespace starsky
 			services.AddSingleton<PackageTelemetryBackgroundService>();
 			services.AddSingleton<OnStartupSyncBackgroundService>();
 			services.AddSingleton<CleanDemoDataService>();
-
-			// todo remove
-			services.AddSingleton<HatCoMetrics>();
 		}
 
 		/// <summary>

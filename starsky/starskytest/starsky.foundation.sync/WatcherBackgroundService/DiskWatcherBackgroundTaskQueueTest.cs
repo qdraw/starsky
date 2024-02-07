@@ -1,7 +1,9 @@
+using System.Diagnostics.Metrics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.sync.Metrics;
 using starsky.foundation.sync.WatcherBackgroundService;
 
 namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
@@ -14,6 +16,7 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 		public DiskWatcherBackgroundTaskQueueTest()
 		{
 			var services = new ServiceCollection();
+			services.AddSingleton<DiskWatcherBackgroundTaskQueueMetrics>();
 			var serviceProvider = services.BuildServiceProvider();
 			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}

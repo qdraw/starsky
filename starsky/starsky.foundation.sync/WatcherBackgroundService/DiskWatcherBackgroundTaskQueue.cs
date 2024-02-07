@@ -4,7 +4,7 @@ using System.Threading.Channels;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.injection;
-using starsky.foundation.webtelemetry.Helpers;
+using starsky.foundation.sync.Metrics;
 using starsky.foundation.worker.Helpers;
 
 namespace starsky.foundation.sync.WatcherBackgroundService
@@ -17,11 +17,14 @@ namespace starsky.foundation.sync.WatcherBackgroundService
 	public sealed class DiskWatcherBackgroundTaskQueue : IDiskWatcherBackgroundTaskQueue
 	{
 		private readonly Channel<Tuple<Func<CancellationToken, ValueTask>, string>> _queue;
+		private readonly DiskWatcherBackgroundTaskQueueMetrics _metrics;
 
 		public DiskWatcherBackgroundTaskQueue(IServiceScopeFactory scopeFactory)
 		{
 			_queue = Channel.CreateBounded<Tuple<Func<CancellationToken, ValueTask>, string>>(
 				ProcessTaskQueue.DefaultBoundedChannelOptions);
+			_metrics = scopeFactory.CreateScope().ServiceProvider
+				.GetRequiredService<DiskWatcherBackgroundTaskQueueMetrics>();
 		}
 
 		public int Count()
@@ -32,16 +35,16 @@ namespace starsky.foundation.sync.WatcherBackgroundService
 		public ValueTask QueueBackgroundWorkItemAsync(
 			Func<CancellationToken, ValueTask> workItem, string metaData)
 		{
+			_metrics.Value = Count();
 			return ProcessTaskQueue.QueueBackgroundWorkItemAsync(_queue, workItem, metaData);
 		}
 
 		public async ValueTask<Tuple<Func<CancellationToken, ValueTask>, string>> DequeueAsync(
 			CancellationToken cancellationToken)
 		{
-			// todo fix
-	//		MetricsHelper.Add(nameof(DiskWatcherBackgroundTaskQueue), "Items in queue", Count());
 			var workItem =
 				await _queue.Reader.ReadAsync(cancellationToken);
+			_metrics.Value = Count();
 			return workItem;
 		}
 	}

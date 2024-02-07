@@ -91,13 +91,7 @@ namespace starsky.foundation.database.Helpers
 					throw new AggregateException(nameof(_appSettings.DatabaseType));
 			}
 		}
-
-		private bool IsDatabaseTrackingEnabled()
-		{
-			return !string.IsNullOrEmpty(_appSettings
-				       .ApplicationInsightsConnectionString) &&
-			       _appSettings.ApplicationInsightsDatabaseTracking == true;
-		}
+		
 
 		// internal bool EnableDatabaseTracking(
 		// 	DbContextOptionsBuilder<ApplicationDbContext> databaseOptionsBuilder)
@@ -132,8 +126,6 @@ namespace starsky.foundation.database.Helpers
 			if ( _logger != null && _appSettings.IsVerbose() )
 			{
 				_logger.LogInformation($"Database connection: {_appSettings.DatabaseConnection}");
-				_logger.LogInformation(
-					$"Application Insights Database tracking is {IsDatabaseTrackingEnabled()}");
 			}
 
 #if ENABLE_DEFAULT_DATABASE
