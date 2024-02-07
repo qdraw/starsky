@@ -5,7 +5,7 @@ namespace starskycore.ViewModels
 {
 	public sealed class SyncViewModel
 	{
-		public string FilePath { get; set; }
+		public string FilePath { get; set; } = string.Empty;
 
 		[JsonConverter(typeof(JsonStringEnumConverter))]
 		public FileIndexItem.ExifStatus Status { get; set; }

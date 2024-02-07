@@ -169,8 +169,8 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
 			var selectorStorage = new FakeSelectorStorage(storage);
 			
-			var service = new WebHtmlPublishService(null,selectorStorage,null,
-				null,null,null, new FakeIWebLogger(), new FakeIThumbnailService(selectorStorage));
+			var service = new WebHtmlPublishService(null!,selectorStorage,null!,
+				null!,null,null, new FakeIWebLogger(), new FakeIThumbnailService(selectorStorage));
 			var list = service.AddFileHashIfNotExist(new List<FileIndexItem> {new FileIndexItem("/test.jpg")});
 			Assert.IsTrue(list.FirstOrDefault()?.FileHash != string.Empty);
 		}

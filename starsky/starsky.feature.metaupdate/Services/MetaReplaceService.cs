@@ -24,7 +24,7 @@ namespace starsky.feature.metaupdate.Services
 	{
 		private readonly IQuery _query;
 		private readonly AppSettings _appSettings;
-		private readonly IStorage _iStorage;
+		private readonly IStorage _iStorage = new StorageHostFullPathFilesystem();
 		private readonly IWebLogger _logger;
 
 		/// <summary>Replace meta content</summary>
@@ -32,11 +32,16 @@ namespace starsky.feature.metaupdate.Services
 		/// <param name="appSettings">Settings of the application</param>
 		/// <param name="selectorStorage">storage abstraction</param>
 		/// <param name="logger">web logger</param>
-		public MetaReplaceService(IQuery query, AppSettings appSettings, ISelectorStorage selectorStorage, IWebLogger logger)
+		public MetaReplaceService(IQuery query, AppSettings appSettings,
+			ISelectorStorage? selectorStorage, IWebLogger logger)
 		{
 			_query = query;
 			_appSettings = appSettings;
-			if ( selectorStorage != null ) _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+			if ( selectorStorage != null )
+			{
+				_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+			}
+
 			_logger = logger;
 		}
 
@@ -48,60 +53,74 @@ namespace starsky.feature.metaupdate.Services
 		/// <param name="search">from</param>
 		/// <param name="replace">to</param>
 		/// <param name="collections">stack collections</param>
-		public async Task<List<FileIndexItem>> Replace(string f, string fieldName, string search, string replace, bool collections)
+		public async Task<List<FileIndexItem>> Replace(string f, string fieldName, string search,
+			string replace, bool collections)
 		{
 			// when you search for nothing, your fast done
-			if ( string.IsNullOrEmpty(search) ) return new List<FileIndexItem>
+			if ( string.IsNullOrEmpty(search) )
 			{
-				new FileIndexItem{Status = FileIndexItem.ExifStatus.OperationNotSupported}
-			};
+				return
+				[
+					new FileIndexItem { Status = FileIndexItem.ExifStatus.OperationNotSupported }
+				];
+			}
 
 			// escaping null values
 			if ( string.IsNullOrEmpty(replace) ) replace = string.Empty;
 
-			if ( ! FileIndexCompareHelper.CheckIfPropertyExist(fieldName) ) return new List<FileIndexItem>
-			{
-				new FileIndexItem{Status = FileIndexItem.ExifStatus.OperationNotSupported}
-			};
+			if ( !FileIndexCompareHelper.CheckIfPropertyExist(fieldName) )
+				return new List<FileIndexItem>
+				{
+					new FileIndexItem
+					{
+						Status = FileIndexItem.ExifStatus.OperationNotSupported
+					}
+				};
 
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
-			inputFilePaths = AppendXmpPathsWhenCollectionsFalseHelper.AppendXmpPathsWhenCollectionsFalse(collections, inputFilePaths);
+			inputFilePaths =
+				AppendXmpPathsWhenCollectionsFalseHelper.AppendXmpPathsWhenCollectionsFalse(
+					collections, inputFilePaths);
 
 			// the result list
 			var fileIndexUpdatedList = new List<FileIndexItem>();
 
 			// Prefill cache to avoid fast updating issues
-			await new AddParentCacheIfNotExist(_query,_logger).AddParentCacheIfNotExistAsync(inputFilePaths);
-			
+			await new AddParentCacheIfNotExist(_query, _logger).AddParentCacheIfNotExistAsync(
+				inputFilePaths);
+
 			// Assumes that this give status Ok back by default
 			var queryFileIndexItemsList = await _query.GetObjectsByFilePathAsync(
 				inputFilePaths, collections);
-			
+
 			// to collect
 			foreach ( var fileIndexItem in queryFileIndexItemsList )
 			{
 				// if folder is deleted
-				if ( _iStorage.IsFolderOrFile(fileIndexItem.FilePath!) == FolderOrFileModel.FolderOrFileTypeList.Deleted ) 
+				if ( _iStorage.IsFolderOrFile(fileIndexItem.FilePath!) ==
+				     FolderOrFileModel.FolderOrFileTypeList.Deleted )
 				{
-					StatusCodesHelper.ReturnExifStatusError(fileIndexItem, 
+					StatusCodesHelper.ReturnExifStatusError(fileIndexItem,
 						FileIndexItem.ExifStatus.NotFoundSourceMissing,
 						fileIndexUpdatedList);
-					continue; 
+					continue;
 				}
-				
+
 				// Dir is readonly / don't edit
-				if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(fileIndexItem) 
-				     == FileIndexItem.ExifStatus.ReadOnly)
+				if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(fileIndexItem)
+				     == FileIndexItem.ExifStatus.ReadOnly )
 				{
-					StatusCodesHelper.ReturnExifStatusError(fileIndexItem, 
+					StatusCodesHelper.ReturnExifStatusError(fileIndexItem,
 						FileIndexItem.ExifStatus.ReadOnly,
 						fileIndexUpdatedList);
-					continue; 
+					continue;
 				}
+
 				fileIndexUpdatedList.Add(fileIndexItem);
 			}
 
-			fileIndexUpdatedList = SearchAndReplace(fileIndexUpdatedList, fieldName, search, replace);
+			fileIndexUpdatedList =
+				SearchAndReplace(fileIndexUpdatedList, fieldName, search, replace);
 
 			AddNotFoundInIndexStatus.Update(inputFilePaths, fileIndexUpdatedList);
 
@@ -109,34 +128,34 @@ namespace starsky.feature.metaupdate.Services
 			foreach ( var fileIndexItem in fileIndexUpdatedList )
 			{
 				// Status Ok is already set
-				
+
 				// Deleted is allowed but the status need be updated
-				if ((fileIndexItem.Status == FileIndexItem.ExifStatus.Ok) && 
-				    StatusCodesHelper.IsDeletedStatus(fileIndexItem) == 
-				    FileIndexItem.ExifStatus.Deleted)
+				if ( ( fileIndexItem.Status == FileIndexItem.ExifStatus.Ok ) &&
+				     StatusCodesHelper.IsDeletedStatus(fileIndexItem) ==
+				     FileIndexItem.ExifStatus.Deleted )
 				{
 					fileIndexItem.Status = FileIndexItem.ExifStatus.Deleted;
 				}
-				
+
 				fileIndexResultList.Add(fileIndexItem);
 			}
-			
+
 			return await new Duplicate(_query).RemoveDuplicateAsync(fileIndexResultList);
 		}
 
-		public static List<FileIndexItem> SearchAndReplace(List<FileIndexItem> fileIndexResultsList, 
+		public static List<FileIndexItem> SearchAndReplace(List<FileIndexItem> fileIndexResultsList,
 			string fieldName, string search, string replace)
 		{
-			foreach ( var fileIndexItem in fileIndexResultsList.Where( 
-				         p => p.Status 
-					         is FileIndexItem.ExifStatus.Ok 
-					         or FileIndexItem.ExifStatus.OkAndSame 
-					         or FileIndexItem.ExifStatus.Deleted 
+			foreach ( var fileIndexItem in fileIndexResultsList.Where(
+				         p => p.Status
+					         is FileIndexItem.ExifStatus.Ok
+					         or FileIndexItem.ExifStatus.OkAndSame
+					         or FileIndexItem.ExifStatus.Deleted
 					         or FileIndexItem.ExifStatus.DeletedAndSame) )
 			{
 				var searchInObject = FileIndexCompareHelper.Get(fileIndexItem, fieldName);
 				var replacedToObject = new object();
-				
+
 				var propertiesA = new FileIndexItem().GetType().GetProperties(
 					BindingFlags.Public | BindingFlags.Instance);
 
@@ -144,15 +163,15 @@ namespace starsky.feature.metaupdate.Services
 					p.Name, fieldName,
 					StringComparison.InvariantCultureIgnoreCase));
 
-				if ( property?.PropertyType == typeof(string))
+				if ( property?.PropertyType == typeof(string) )
 				{
-					var searchIn = searchInObject != null ? ( string ) searchInObject : string.Empty;
-					
+					var searchIn = searchInObject != null ? ( string )searchInObject : string.Empty;
+
 					// Replace Ignore Case
 					replacedToObject = Regex.Replace(
 						searchIn,
-						Regex.Escape(search), 
-						replace.Replace("$","$$"), 
+						Regex.Escape(search),
+						replace.Replace("$", "$$"),
 						RegexOptions.IgnoreCase,
 						TimeSpan.FromMilliseconds(100)
 					);
@@ -164,7 +183,5 @@ namespace starsky.feature.metaupdate.Services
 
 			return fileIndexResultsList;
 		}
-
-
 	}
 }

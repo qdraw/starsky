@@ -94,7 +94,7 @@ public sealed class Build : NukeBuild
 	/// </summary>
 	/// <returns>only if overwritten</returns>
 	[Parameter("Overwrite branch name")]
-	readonly string Branch;
+	readonly string Branch = string.Empty;
 
 	/// <summary>
 	/// Overwrite Branch name
@@ -147,7 +147,7 @@ public sealed class Build : NukeBuild
 	/// Solution .sln file
 	/// </summary>
 	[Solution(SuppressBuildProjectCheck = true)]
-	readonly Solution Solution;
+	readonly Solution Solution = new();
 
 	/// <summary>
 	/// List of output projects
@@ -311,7 +311,7 @@ public sealed class Build : NukeBuild
 				Configuration);
 			DotnetTestHelper.TestNetCoreGenericCommand(Configuration,
 				IsUnitTestDisabled());
-			DotnetGenericHelper.DownloadDependencies(Configuration, GeoCliCsproj, 
+			DotnetGenericHelper.DownloadDependencies(Configuration, GeoCliCsproj,
 				NoDependencies, GenericRuntimeName);
 			MergeCoverageFiles.Merge(IsUnitTestDisabled());
 			SonarQube.SonarEnd(IsUnitTestDisabled(), NoSonar);

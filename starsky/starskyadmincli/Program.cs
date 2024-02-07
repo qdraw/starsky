@@ -47,7 +47,7 @@ namespace starskyAdminCli
 			// Use args in application
 			appSettings.Verbose = ArgsHelper.NeedVerbose(args);
 
-			var userManager = serviceProvider.GetService<IUserManager>();
+			var userManager = serviceProvider.GetRequiredService<IUserManager>();
 			appSettings.ApplicationType = AppSettings.StarskyAppType.Admin;
 
 			if ( ArgsHelper.NeedHelp(args) )
@@ -56,7 +56,7 @@ namespace starskyAdminCli
 				return;
 			}
 
-			await RunMigrations.Run(serviceProvider.GetService<ApplicationDbContext>(),
+			await RunMigrations.Run(serviceProvider.GetRequiredService<ApplicationDbContext>(),
 				webLogger, appSettings);
 			await new ConsoleAdmin(userManager, new ConsoleWrapper()).Tool(
 				ArgsHelper.GetName(args), ArgsHelper.GetUserInputPassword(args));

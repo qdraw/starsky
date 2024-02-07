@@ -1,6 +1,5 @@
 using System.Diagnostics.Metrics;
 using starsky.foundation.injection;
-using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.MetricsNamespaces;
 
 namespace starsky.foundation.sync.Metrics;
@@ -14,7 +13,7 @@ public class DiskWatcherBackgroundTaskQueueMetrics
 	public DiskWatcherBackgroundTaskQueueMetrics(IMeterFactory meterFactory)
 	{
 		var meter = meterFactory.Create(ActivitySourceMeter.SyncNameSpace);
-		var name = GenerateSlugHelper.GenerateSlug(nameof(DiskWatcherBackgroundTaskQueueMetrics));
+		const string name = nameof(DiskWatcherBackgroundTaskQueueMetrics);
 		meter.CreateObservableGauge(name, ObserveValue);
 	}
 

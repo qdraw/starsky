@@ -34,8 +34,8 @@ namespace starskythumbnailcli
 			new SetupDatabaseTypes(appSettings, services).BuilderDb();
 			serviceProvider = services.BuildServiceProvider();
 
-			var thumbnailService = serviceProvider.GetService<IThumbnailService>();
-			var thumbnailCleaner = serviceProvider.GetService<IThumbnailCleaner>();
+			var thumbnailService = serviceProvider.GetRequiredService<IThumbnailService>();
+			var thumbnailCleaner = serviceProvider.GetRequiredService<IThumbnailCleaner>();
 
 			var console = serviceProvider.GetRequiredService<IConsole>();
 			var selectorStorage = serviceProvider.GetRequiredService<ISelectorStorage>();

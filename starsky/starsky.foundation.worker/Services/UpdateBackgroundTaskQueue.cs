@@ -2,10 +2,11 @@
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.injection;
-using starsky.foundation.webtelemetry.Helpers;
 using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
+using starsky.foundation.worker.Metrics;
 
 namespace starsky.foundation.worker.Services;
 
@@ -16,11 +17,14 @@ namespace starsky.foundation.worker.Services;
 public sealed class UpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
 {
 	private readonly Channel<Tuple<Func<CancellationToken, ValueTask>, string>> _queue;
+	private readonly UpdateBackgroundQueuedMetrics _metrics;
 
-	public UpdateBackgroundTaskQueue()
+	public UpdateBackgroundTaskQueue(IServiceScopeFactory scopeFactory)
 	{
 		_queue = Channel.CreateBounded<Tuple<Func<CancellationToken, ValueTask>,
 			string>>(ProcessTaskQueue.DefaultBoundedChannelOptions);
+		_metrics = scopeFactory.CreateScope().ServiceProvider
+			.GetRequiredService<UpdateBackgroundQueuedMetrics>();
 	}
 
 	public int Count()
@@ -37,8 +41,8 @@ public sealed class UpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
 	public async ValueTask<Tuple<Func<CancellationToken, ValueTask>, string>> DequeueAsync(
 		CancellationToken cancellationToken)
 	{
-		// todo fix
-	//	MetricsHelper.Add(nameof(UpdateBackgroundTaskQueue), "Items in queue", Count());
-		return await _queue.Reader.ReadAsync(cancellationToken);
+		var queueItem = await _queue.Reader.ReadAsync(cancellationToken);
+		_metrics.Value = Count();
+		return queueItem;
 	}
 }

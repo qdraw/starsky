@@ -24,39 +24,39 @@ namespace helpers
 		public static void TestNetCoreGenericCommand(Configuration configuration, bool noUnitTest)
 		{
 			Information(">> next: TestNetCoreGenericCommand");
-	    
-			if(noUnitTest)
+
+			if ( noUnitTest )
 			{
 				Information($">> TestNetCore is disable due the --no-unit-test flag");
 				return;
 			}
-			
+
 			var projects = GetFilesHelper.GetFiles("*test/*.csproj");
 			if ( projects.Count == 0 )
 			{
-				throw new FileNotFoundException("missing tests in *test/*.csproj" );
+				throw new FileNotFoundException("missing tests in *test/*.csproj");
 			}
-			
-			foreach(var project in projects)
+
+			foreach ( var project in projects )
 			{
 				var projectFullPath = Path.Combine(WorkingDirectory.GetSolutionParentFolder(),
 					project);
 				Information("Testing project " + project);
 
-				var testParentPath = Directory.GetParent(projectFullPath)?.FullName;
+				var testParentPath = Directory.GetParent(projectFullPath)?.FullName!;
 				Information("testParentPath " + testParentPath);
 
 				/* clean test results */
 				var testResultsFolder = Path.Combine(testParentPath!, "TestResults");
-				if (DirectoryExists(testResultsFolder))
+				if ( DirectoryExists(testResultsFolder) )
 				{
 					Information(">> Removing folder => " + testResultsFolder);
-					Directory.Delete(testResultsFolder,true);
+					Directory.Delete(testResultsFolder, true);
 				}
-				
+
 				var runSettingsFile = Path.Combine(
 					WorkingDirectory.GetSolutionParentFolder(), "build.vstest.runsettings");
-				
+
 				Log.Information("runSettingsFile " + runSettingsFile);
 
 				try
@@ -92,16 +92,18 @@ namespace helpers
 				}
 
 				// Get the FirstOrDefault() but there is no LINQ here
-				var coverageFilePath =  Path.Combine(testParentPath, "netcore-coverage.opencover.xml");
+				var coverageFilePath =
+					Path.Combine(testParentPath, "netcore-coverage.opencover.xml");
 				Information("next copy: coverageFilePath " + coverageFilePath);
 
-				foreach(var item in coverageEnum)
+				foreach ( var item in coverageEnum )
 				{
-					CopyFile(Path.Combine(WorkingDirectory.GetSolutionParentFolder(), item), 
+					CopyFile(Path.Combine(WorkingDirectory.GetSolutionParentFolder(), item),
 						coverageFilePath, FileExistsPolicy.Overwrite);
 				}
 
-				if (!FileExists(coverageFilePath)) {
+				if ( !FileExists(coverageFilePath) )
+				{
 					throw new FileNotFoundException("CoverageFile missing " + coverageFilePath);
 				}
 			}
@@ -111,5 +113,5 @@ namespace helpers
 		{
 			return File.Exists(path);
 		}
-	}	
+	}
 }

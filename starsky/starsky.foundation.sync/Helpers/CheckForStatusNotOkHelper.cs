@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
@@ -14,7 +13,7 @@ public class CheckForStatusNotOkHelper
 	{
 		_subPathStorage = subPathStorage;
 	}
-	
+
 	internal IEnumerable<FileIndexItem> CheckForStatusNotOk(IEnumerable<string> subPaths)
 	{
 		var result = new List<FileIndexItem>();
@@ -22,6 +21,7 @@ public class CheckForStatusNotOkHelper
 		{
 			result.AddRange(CheckForStatusNotOk(subPath));
 		}
+
 		return result;
 	}
 
@@ -32,40 +32,41 @@ public class CheckForStatusNotOkHelper
 	/// <returns>item with status</returns>
 	internal List<FileIndexItem> CheckForStatusNotOk(string subPath)
 	{
-		var statusItem = new FileIndexItem(subPath){Status = FileIndexItem.ExifStatus.Ok};
+		var statusItem = new FileIndexItem(subPath) { Status = FileIndexItem.ExifStatus.Ok };
 
 		// File extension is not supported
 		if ( !ExtensionRolesHelper.IsExtensionSyncSupported(subPath) )
 		{
 			statusItem.Status = FileIndexItem.ExifStatus.OperationNotSupported;
-			return new List<FileIndexItem>{statusItem};
+			return new List<FileIndexItem> { statusItem };
 		}
 
 		if ( !_subPathStorage.ExistFile(subPath) )
 		{
 			statusItem.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;
-			return new List<FileIndexItem>{statusItem};
+			return new List<FileIndexItem> { statusItem };
 		}
-			
+
 		// File check if jpg #not corrupt
-		var imageFormat = ExtensionRolesHelper.GetImageFormat(_subPathStorage.ReadStream(subPath,160));
-			
+		var imageFormat =
+			ExtensionRolesHelper.GetImageFormat(_subPathStorage.ReadStream(subPath, 160));
+
 		// ReSharper disable once InvertIf
 		if ( !ExtensionRolesHelper.ExtensionSyncSupportedList.Contains(imageFormat.ToString()) )
 		{
 			statusItem.Status = FileIndexItem.ExifStatus.OperationNotSupported;
-			return new List<FileIndexItem>{statusItem};
+			return new List<FileIndexItem> { statusItem };
 		}
 
 		var xmpFilePath = ExtensionRolesHelper.ReplaceExtensionWithXmp(subPath);
 		if ( string.IsNullOrEmpty(xmpFilePath) ||
-		     !_subPathStorage.ExistFile(xmpFilePath) || 
+		     !_subPathStorage.ExistFile(xmpFilePath) ||
 		     statusItem.FilePath == xmpFilePath )
 		{
 			return new List<FileIndexItem> { statusItem };
 		}
-		
-		var xmpStatusItem = new FileIndexItem(xmpFilePath){Status = FileIndexItem.ExifStatus.Ok};
-		return new List<FileIndexItem>{statusItem,xmpStatusItem};
+
+		var xmpStatusItem = new FileIndexItem(xmpFilePath) { Status = FileIndexItem.ExifStatus.Ok };
+		return new List<FileIndexItem> { statusItem, xmpStatusItem };
 	}
 }

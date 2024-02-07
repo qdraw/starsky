@@ -351,7 +351,7 @@ namespace starskytest.starsky.feature.health.Helpers
 			{
 				new ReleaseModel
 				{
-					TagName = null
+					TagName = null!
 				}
 			};
 			const string currentVersion = "1.0.0"; // Provide a valid version

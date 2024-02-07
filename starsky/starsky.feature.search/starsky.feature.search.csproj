@@ -7,10 +7,14 @@
         <Nullable>enable</Nullable>
         <RootNamespace>starsky.feature.search</RootNamespace>
     </PropertyGroup>
+
     <ItemGroup>
-      <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
-      <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj" />
-      <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
+        <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>
     </ItemGroup>
     
+    <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
+        <SonarQubeExclude>true</SonarQubeExclude>
+    </PropertyGroup>
 </Project>

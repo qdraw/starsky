@@ -35,7 +35,7 @@ namespace starskysynchronizecli
 			new SetupDatabaseTypes(appSettings, services).BuilderDb();
 			serviceProvider = services.BuildServiceProvider();
 
-			var synchronize = serviceProvider.GetService<ISynchronize>();
+			var synchronize = serviceProvider.GetRequiredService<ISynchronize>();
 			var console = serviceProvider.GetRequiredService<IConsole>();
 			var selectorStorage = serviceProvider.GetRequiredService<ISelectorStorage>();
 

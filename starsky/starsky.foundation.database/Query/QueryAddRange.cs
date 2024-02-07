@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using starsky.foundation.database.Data;
-using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 
@@ -36,10 +34,11 @@ namespace starsky.foundation.database.Query
 					context.Attach(item).State = EntityState.Detached;
 				}
 			}
-			
+
 			async Task<bool> LocalRemoveDefaultQuery()
 			{
-				await LocalQuery(new InjectServiceScope(_scopeFactory).Context(), fileIndexItemList);
+				await LocalQuery(new InjectServiceScope(_scopeFactory).Context(),
+					fileIndexItemList);
 				return true;
 			}
 
@@ -92,6 +91,5 @@ namespace starsky.foundation.database.Query
 
 			return fileIndexItemList;
 		}
-
 	}
 }

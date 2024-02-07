@@ -20,7 +20,7 @@ namespace helpers
 		static string BasePath()
 		{
 			return Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)
-				?.Parent?.Parent?.Parent?.FullName;
+				?.Parent?.Parent?.Parent?.FullName!;
 		}
 
 		public static void Clean(List<string> runtimesWithoutGeneric)

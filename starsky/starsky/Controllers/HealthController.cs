@@ -2,18 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using starsky.foundation.platform.Exceptions;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.VersionHelpers;
-using starsky.foundation.webtelemetry.Helpers;
-using starsky.foundation.webtelemetry.Interfaces;
 using starskycore.ViewModels;
 
 [assembly: InternalsVisibleTo("starskytest")]

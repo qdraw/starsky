@@ -1,4 +1,3 @@
-#nullable enable
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
@@ -24,8 +23,9 @@ namespace starsky.feature.import.Helpers
 		private readonly AppSettings _appSettings;
 		private readonly IThumbnailQuery _thumbnailQuery;
 
-		public UpdateImportTransformations(IWebLogger logger, 
-			IExifTool exifTool, ISelectorStorage selectorStorage, AppSettings appSettings, IThumbnailQuery thumbnailQuery)
+		public UpdateImportTransformations(IWebLogger logger,
+			IExifTool exifTool, ISelectorStorage selectorStorage, AppSettings appSettings,
+			IThumbnailQuery thumbnailQuery)
 		{
 			_logger = logger;
 			_exifTool = exifTool;
@@ -35,12 +35,14 @@ namespace starsky.feature.import.Helpers
 			_thumbnailQuery = thumbnailQuery;
 		}
 
-		
+
 		public delegate Task<FileIndexItem> QueryUpdateDelegate(FileIndexItem fileIndexItem);
-		public delegate Task<List<ThumbnailItem>?> QueryThumbnailUpdateDelegate(List<ThumbnailResultDataTransferModel> thumbnailItems);
+
+		public delegate Task<List<ThumbnailItem>?> QueryThumbnailUpdateDelegate(
+			List<ThumbnailResultDataTransferModel> thumbnailItems);
 
 		/// <summary>
-		/// Run Transformation on Import to the files in the database && Update fileHash in database
+		/// Run Transformation on Import to the files in the database and Update fileHash in database
 		/// </summary>
 		/// <param name="queryUpdateDelegate"></param>
 		/// <param name="fileIndexItem">information</param>
@@ -53,18 +55,21 @@ namespace starsky.feature.import.Helpers
 			int colorClassTransformation, bool dateTimeParsedFromFileName,
 			bool indexMode)
 		{
-			if ( !ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName) ) return fileIndexItem;
+			if ( !ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName) )
+				return fileIndexItem;
 
 			var comparedNamesList = new List<string>();
 			if ( dateTimeParsedFromFileName )
 			{
-				_logger.LogInformation($"[Import] DateTimeParsedFromFileName ExifTool Sync {fileIndexItem.FilePath}");
+				_logger.LogInformation(
+					$"[Import] DateTimeParsedFromFileName ExifTool Sync {fileIndexItem.FilePath}");
 				comparedNamesList = DateTimeParsedComparedNamesList();
 			}
 
 			if ( colorClassTransformation >= 0 )
 			{
-				_logger.LogInformation($"[Import] ColorClassComparedNamesList ExifTool Sync {fileIndexItem.FilePath}");
+				_logger.LogInformation(
+					$"[Import] ColorClassComparedNamesList ExifTool Sync {fileIndexItem.FilePath}");
 				comparedNamesList = ColorClassComparedNamesList(comparedNamesList);
 			}
 
@@ -84,15 +89,17 @@ namespace starsky.feature.import.Helpers
 			{
 				return fileIndexItem;
 			}
-			
+
 			// Hash is changed after transformation
-			fileIndexItem.FileHash = (await new FileHash(_subPathStorage).GetHashCodeAsync(fileIndexItem.FilePath!)).Key;
+			fileIndexItem.FileHash =
+				( await new FileHash(_subPathStorage).GetHashCodeAsync(fileIndexItem.FilePath!) )
+				.Key;
 
 			await queryUpdateDelegate(fileIndexItem);
 
 			return fileIndexItem.Clone();
 		}
-		
+
 		internal static List<string> DateTimeParsedComparedNamesList()
 		{
 			return new List<string>
@@ -101,13 +108,11 @@ namespace starsky.feature.import.Helpers
 				nameof(FileIndexItem.DateTime).ToLowerInvariant(),
 			};
 		}
-		
+
 		internal static List<string> ColorClassComparedNamesList(List<string> list)
 		{
 			list.Add(nameof(FileIndexItem.ColorClass).ToLowerInvariant());
 			return list;
 		}
-
 	}
 }
-

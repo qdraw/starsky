@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.thumbnailmeta.Interfaces;
 using starsky.foundation.platform.Helpers;
@@ -19,8 +18,10 @@ namespace starsky.foundation.thumbnailmeta.Helpers
 		private readonly ISelectorStorage _selectorStorage;
 		private readonly IMetaUpdateStatusThumbnailService _statusThumbnailService;
 
-		public MetaThumbnailCommandLineHelper(ISelectorStorage selectorStorage, AppSettings appSettings, 
-			IConsole console, IMetaExifThumbnailService metaExifThumbnailService, IMetaUpdateStatusThumbnailService statusThumbnailService)
+		public MetaThumbnailCommandLineHelper(ISelectorStorage selectorStorage,
+			AppSettings appSettings,
+			IConsole console, IMetaExifThumbnailService metaExifThumbnailService,
+			IMetaUpdateStatusThumbnailService statusThumbnailService)
 		{
 			_selectorStorage = selectorStorage;
 			_appSettings = appSettings;
@@ -28,33 +29,35 @@ namespace starsky.foundation.thumbnailmeta.Helpers
 			_console = console;
 			_statusThumbnailService = statusThumbnailService;
 		}
-		
+
 		public async Task CommandLineAsync(string[] args)
 		{
 			_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
 			_appSettings.ApplicationType = AppSettings.StarskyAppType.MetaThumbnail;
 
-			if (ArgsHelper.NeedHelp(args))
+			if ( ArgsHelper.NeedHelp(args) )
 			{
 				new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
 				return;
 			}
-			
+
 			new ArgsHelper().SetEnvironmentByArgs(args);
 
 			var subPath = new ArgsHelper(_appSettings).SubPathOrPathValue(args);
 			var getSubPathRelative = new ArgsHelper(_appSettings).GetRelativeValue(args);
-			if (getSubPathRelative != null)
+			if ( getSubPathRelative != null )
 			{
-				subPath = new StructureService(_selectorStorage.Get(SelectorStorage.StorageServices.SubPath), _appSettings.Structure)
+				subPath = new StructureService(
+						_selectorStorage.Get(SelectorStorage.StorageServices.SubPath),
+						_appSettings.Structure)
 					.ParseSubfolders(getSubPathRelative);
 			}
 
-			var statusResultsWithSubPaths = await _metaExifThumbnailService.AddMetaThumbnail(subPath!);
+			var statusResultsWithSubPaths =
+				await _metaExifThumbnailService.AddMetaThumbnail(subPath!);
 			_console.WriteLine($"next: run update status ({DateTime.UtcNow:HH:mm:ss})");
 			await _statusThumbnailService.UpdateStatusThumbnail(statusResultsWithSubPaths);
 			_console.WriteLine($"Done! ({DateTime.UtcNow:HH:mm:ss})");
 		}
 	}
 }
-

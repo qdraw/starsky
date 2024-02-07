@@ -1,9 +1,15 @@
 <Project>
-  <PropertyGroup>
-    <RuntimeIdentifier Condition="'$(OverwriteRuntimeIdentifier)' != ''">$(OverwriteRuntimeIdentifier)</RuntimeIdentifier>
-    <SelfContained Condition="'$(OverwriteRuntimeIdentifier)' != ''">true</SelfContained>
-    <Copyright>"Copyright (c) 2018 - $([System.DateTime]::Now.ToString(`yyyy`)) Qdraw and other authors"</Copyright>
-    <Authors>Qdraw and contributors</Authors>
-    <Company>Qdraw</Company>
-  </PropertyGroup>
+    <PropertyGroup>
+        <RuntimeIdentifier Condition="'$(OverwriteRuntimeIdentifier)' != ''">$(OverwriteRuntimeIdentifier)</RuntimeIdentifier>
+        <SelfContained Condition="'$(OverwriteRuntimeIdentifier)' != ''">true</SelfContained>
+        <Copyright>"Copyright (c) 2018 - $([System.DateTime]::Now.ToString(`yyyy`)) Qdraw and other authors"</Copyright>
+        <Authors>Qdraw and contributors</Authors>
+        <Company>Qdraw</Company>
+    </PropertyGroup>
+    <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);CS1591;CS1573</NoWarn>
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    </PropertyGroup>
+
 </Project>

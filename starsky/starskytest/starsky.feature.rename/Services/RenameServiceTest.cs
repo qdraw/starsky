@@ -169,7 +169,7 @@ namespace starskytest.starsky.feature.rename.Services
 				new List<string>{_fileInExist.FilePath!});
 			
 			var renameFs1 = await new RenameService(_query, iStorage)
-				.Rename( _fileInExist.FilePath, _folderExist.FilePath+ "/test2.jpg");
+				.Rename( _fileInExist.FilePath!, _folderExist.FilePath+ "/test2.jpg");
 			var renameFs = renameFs1.Where(p => p.Status != FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList();
 			
 			// query database

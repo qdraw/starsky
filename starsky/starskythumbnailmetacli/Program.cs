@@ -44,7 +44,8 @@ namespace starskythumbnailmetacli
 			var webLogger = serviceProvider.GetRequiredService<IWebLogger>();
 
 			// Migrations before update db afterwards
-			await RunMigrations.Run(serviceProvider.GetService<ApplicationDbContext>(), webLogger,
+			await RunMigrations.Run(serviceProvider.GetRequiredService<ApplicationDbContext>(),
+				webLogger,
 				appSettings);
 
 			// Help and other Command Line Tools args are included in the MetaThumbnail tools 

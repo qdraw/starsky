@@ -44,6 +44,7 @@ namespace starsky.foundation.sync.WatcherBackgroundService
 		{
 			var workItem =
 				await _queue.Reader.ReadAsync(cancellationToken);
+
 			_metrics.Value = Count();
 			return workItem;
 		}

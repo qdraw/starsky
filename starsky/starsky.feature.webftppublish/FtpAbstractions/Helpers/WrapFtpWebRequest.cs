@@ -12,7 +12,7 @@ namespace starsky.feature.webftppublish.FtpAbstractions.Helpers
 		{
 			_request = request;
 		}
-		
+
 		/// <summary>
 		/// <para>
 		/// Selects FTP command to use. WebRequestMethods.Ftp.DownloadFile is default.
@@ -30,24 +30,25 @@ namespace starsky.feature.webftppublish.FtpAbstractions.Helpers
 		/// </summary>
 		public NetworkCredential Credentials
 		{
-			get => null;
+			get => null!;
 			set => _request.Credentials = value;
 		}
 
-		public bool UsePassive 
+		public bool UsePassive
 		{
 			get => _request.UsePassive;
 			set => _request.UsePassive = value;
 		}
-		
+
 		/// <summary>
 		/// <para>True by default, false allows transmission using text mode</para>
 		/// </summary>
-		public bool UseBinary 
+		public bool UseBinary
 		{
 			get => _request.UseBinary;
 			set => _request.UseBinary = value;
 		}
+
 		public bool KeepAlive
 		{
 			get => _request.KeepAlive;
@@ -60,7 +61,7 @@ namespace starsky.feature.webftppublish.FtpAbstractions.Helpers
 		/// <returns>Wrapper response</returns>
 		public IFtpWebResponse GetResponse()
 		{
-			return new WrapFtpWebResponse((FtpWebResponse)_request.GetResponse());
+			return new WrapFtpWebResponse(( FtpWebResponse )_request.GetResponse());
 		}
 
 		/// <summary>
@@ -71,5 +72,4 @@ namespace starsky.feature.webftppublish.FtpAbstractions.Helpers
 			return _request.GetRequestStream();
 		}
 	}
-
 }

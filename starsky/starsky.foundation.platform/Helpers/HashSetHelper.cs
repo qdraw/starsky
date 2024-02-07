@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -46,7 +45,7 @@ namespace starsky.foundation.platform.Helpers
 			return keywordsHashSet;
 		}
 
-		
+
 		/// <summary>
 		/// To replace: 'test,fake' with 'test, fake' - Regex
 		/// unescaped regex: (,(?=\S)|:)
@@ -58,7 +57,7 @@ namespace starsky.foundation.platform.Helpers
 			RegexOptions.CultureInvariant | RegexOptions.IgnoreCase,
 			matchTimeoutMilliseconds: 200)]
 		private static partial Regex SingleCommaWithCommaWithSpaceRegex();
-		
+
 		/// <summary>
 		/// To replace: 'test,fake' with 'test, fake'
 		/// </summary>

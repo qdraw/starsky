@@ -1,7 +1,5 @@
-#nullable enable
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Helpers;
@@ -21,35 +19,38 @@ namespace starsky.foundation.database.Query
 		private readonly IServiceScopeFactory? _serviceScopeFactory;
 		private readonly IWebLogger? _logger;
 
-		public QueryFactory(SetupDatabaseTypes? setupDatabaseTypes, IQuery? query, 
-			IMemoryCache? cache, AppSettings? appSettings, IServiceScopeFactory? serviceScopeFactory, IWebLogger? logger)
+		public QueryFactory(SetupDatabaseTypes? setupDatabaseTypes, IQuery? query,
+			IMemoryCache? cache, AppSettings? appSettings,
+			IServiceScopeFactory? serviceScopeFactory, IWebLogger? logger)
 		{
 			_setupDatabaseTypes = setupDatabaseTypes;
 			_query = query;
-			_cache  = cache;
+			_cache = cache;
 			_appSettings = appSettings;
 			_serviceScopeFactory = serviceScopeFactory;
 			_logger = logger;
 		}
-		
+
 		public IQuery? Query()
 		{
 			if ( _query == null ) return null!;
 			var context = _setupDatabaseTypes?.BuilderDbFactory();
-			if ( _query.GetType() == typeof(Query) && context != null && _appSettings != null && _logger != null)
+			if ( _query.GetType() == typeof(Query) && context != null && _appSettings != null &&
+			     _logger != null )
 			{
 				return new Query(context, _appSettings, _serviceScopeFactory!, _logger, _cache);
 			}
 
 			// FakeIQuery should skip creation
-			var isAnyContentIncluded = _query.GetReflectionFieldValue<List<FileIndexItem>?>("_content")?.Count >= 1;
+			var isAnyContentIncluded =
+				_query.GetReflectionFieldValue<List<FileIndexItem>?>("_content")?.Count >= 1;
 			if ( !isAnyContentIncluded )
 			{
 				// ApplicationDbContext context, 
 				// 	AppSettings appSettings,
 				// IServiceScopeFactory scopeFactory, 
 				// 	IWebLogger logger, IMemoryCache memoryCache = null
-				
+
 				return Activator.CreateInstance(_query.GetType(), context,
 					_appSettings, _serviceScopeFactory, _logger,
 					_cache) as IQuery;

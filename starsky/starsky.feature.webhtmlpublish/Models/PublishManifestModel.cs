@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using starsky.foundation.platform.Helpers;
-using starsky.foundation.platform.Models;
 
 namespace starsky.feature.webhtmlpublish.Models
 {
@@ -14,20 +13,17 @@ namespace starsky.feature.webhtmlpublish.Models
 		/// <summary>
 		/// Display name
 		/// </summary>
-		public string Name { get; set; }
+		public string Name { get; set; } = string.Empty;
 
 		/// <summary>
 		/// Which files or folders need to be copied
 		/// </summary>
-		public Dictionary<string, bool> Copy { get; set; } = new Dictionary<string, bool>();
+		public Dictionary<string, bool> Copy { get; set; } = new();
 
 		/// <summary>
 		/// Slug, Name without spaces, but underscores are allowed
 		/// </summary>
-		public string Slug
-		{
-			get { return GenerateSlugHelper.GenerateSlug(Name, true); }
-		}
+		public string Slug => GenerateSlugHelper.GenerateSlug(Name, true);
 
 		/// <summary>
 		/// When did the export happen
@@ -38,6 +34,6 @@ namespace starsky.feature.webhtmlpublish.Models
 		/// <summary>
 		/// Starsky Version
 		/// </summary>
-		public string Version => Assembly.GetExecutingAssembly().GetName().Version?.ToString();
+		public string? Version => Assembly.GetExecutingAssembly().GetName().Version?.ToString();
 	}
 }

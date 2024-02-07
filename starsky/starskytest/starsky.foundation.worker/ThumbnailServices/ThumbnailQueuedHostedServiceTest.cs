@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -14,14 +15,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.webtelemetry.Interfaces;
 using starsky.foundation.worker.CpuEventListener.Interfaces;
+using starsky.foundation.worker.Metrics;
 using starsky.foundation.worker.ThumbnailServices;
 using starsky.foundation.worker.ThumbnailServices.Exceptions;
 using starsky.foundation.worker.ThumbnailServices.Interfaces;
 using starskytest.FakeMocks;
-
-#pragma warning disable 1998
 
 namespace starskytest.starsky.foundation.worker.ThumbnailServices
 {
@@ -53,7 +52,9 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 			services.AddSingleton<IThumbnailQueuedHostedService, ThumbnailBackgroundTaskQueue>();
 			services.AddSingleton<IWebLogger, FakeIWebLogger>();
 			services.AddSingleton<ICpuUsageListener, FakeICpuUsageListener>();
-			services.AddSingleton<ITelemetryService, FakeTelemetryService>();
+			// metrics
+			services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
+			services.AddSingleton<ThumbnailBackgroundQueuedMetrics>();
 
 			// build the service
 			var serviceProvider = services.BuildServiceProvider();
@@ -66,7 +67,7 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 		{
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async token =>
 			{
-				for ( int delayLoop = 0; delayLoop < 3; delayLoop++ )
+				for ( var delayLoop = 0; delayLoop < 3; delayLoop++ )
 				{
 					await Task.Delay(TimeSpan.FromSeconds(1), token);
 					Console.WriteLine(delayLoop);
@@ -74,6 +75,7 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 					await _bgTaskQueue.DequeueAsync(token);
 				}
 			}, string.Empty);
+
 			Assert.IsNotNull(_bgTaskQueue);
 		}
 
@@ -81,10 +83,12 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 		public async Task Count_AddOneForCount()
 		{
 			var backgroundQueue = new ThumbnailBackgroundTaskQueue(new FakeICpuUsageListener(),
-				new FakeIWebLogger(), new AppSettings());
+				new FakeIWebLogger(), new AppSettings(), _scopeFactory);
 			await backgroundQueue.QueueBackgroundWorkItemAsync(_ => ValueTask.CompletedTask,
 				string.Empty);
+
 			var count = backgroundQueue.Count();
+
 			Assert.AreEqual(1, count);
 		}
 
@@ -94,14 +98,18 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 		{
 			var e = new FakeICpuUsageListener(100d);
 			Console.WriteLine(e.CpuUsageMean);
+
 			var backgroundQueue =
-				new ThumbnailBackgroundTaskQueue(e, new FakeIWebLogger(), new AppSettings());
+				new ThumbnailBackgroundTaskQueue(e, new FakeIWebLogger(), new AppSettings(),
+					_scopeFactory);
+
 			await backgroundQueue.QueueBackgroundWorkItemAsync(_ => ValueTask.CompletedTask,
 				string.Empty);
+
 			var count = backgroundQueue.Count();
+
 			Assert.AreEqual(0, count);
 		}
-
 
 		/// <summary>
 		/// @see: https://stackoverflow.com/a/51224556
@@ -119,9 +127,11 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 			services.AddSingleton<IThumbnailQueuedHostedService, ThumbnailBackgroundTaskQueue>();
 			services.AddSingleton<IWebLogger, FakeIWebLogger>();
 			services.AddSingleton<ICpuUsageListener, FakeICpuUsageListener>();
-			services.AddSingleton<ITelemetryService, FakeTelemetryService>();
 			services.AddSingleton<IWebLogger, FakeIWebLogger>();
 			services.AddSingleton<AppSettings, AppSettings>();
+			// metrics
+			services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
+			services.AddSingleton<ThumbnailBackgroundQueuedMetrics>();
 
 			var serviceProvider = services.BuildServiceProvider();
 
@@ -133,7 +143,6 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 
 			var service = hostedServices[0] as ThumbnailQueuedHostedService;
 
-
 			var backgroundQueue = serviceProvider.GetService<IThumbnailQueuedHostedService>();
 
 			if ( service == null )
@@ -142,7 +151,11 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 			await service.StartAsync(CancellationToken.None);
 
 			var isExecuted = false;
-			await backgroundQueue!.QueueBackgroundWorkItemAsync(async _ => { isExecuted = true; },
+			await backgroundQueue!.QueueBackgroundWorkItemAsync(async _ =>
+				{
+					await Task.Yield();
+					isExecuted = true;
+				},
 				string.Empty);
 
 			await Task.Delay(100);
@@ -183,6 +196,10 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 			services.AddSingleton<IWebLogger, FakeIWebLogger>();
 			services.AddSingleton<AppSettings, AppSettings>();
 			services.AddSingleton<ICpuUsageListener, FakeICpuUsageListener>();
+			// metrics
+			services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
+			services.AddSingleton<ThumbnailBackgroundQueuedMetrics>();
+
 			var serviceProvider = services.BuildServiceProvider();
 
 			var hostedServices = serviceProvider.GetServices<IHostedService>().ToList();
@@ -200,6 +217,7 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 			var isExecuted = false;
 			await backgroundQueue!.QueueBackgroundWorkItemAsync(async _ =>
 			{
+				await Task.Yield();
 				isExecuted = true;
 				throw new Exception();
 				// EXCEPTION IS IGNORED

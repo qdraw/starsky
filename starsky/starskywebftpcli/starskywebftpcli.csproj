@@ -7,11 +7,12 @@
         <RuntimeFrameworkVersion>8.0.1</RuntimeFrameworkVersion>
         <DebugType>Full</DebugType>
         <Version>0.6.0-beta.0</Version>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\starsky.feature.webftppublish\starsky.feature.webftppublish.csproj" />
-      <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
+        <ProjectReference Include="..\starsky.feature.webftppublish\starsky.feature.webftppublish.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

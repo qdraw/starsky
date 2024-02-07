@@ -15,6 +15,6 @@ namespace starsky.feature.export.Interfaces
 			bool collections = true,
 			bool thumbnail = false);
 
-		Tuple<bool?, string> StatusIsReady(string zipOutputFileName);
+		Tuple<bool?, string?> StatusIsReady(string zipOutputFileName);
 	}
 }

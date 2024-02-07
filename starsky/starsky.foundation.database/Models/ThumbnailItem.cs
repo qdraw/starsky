@@ -1,8 +1,6 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
-using starsky.foundation.platform.Enums;
 
 namespace starsky.foundation.database.Models;
 
@@ -15,7 +13,7 @@ public class ThumbnailItem
 		// used be EF Core
 		FileHash = string.Empty;
 	}
-	
+
 	public ThumbnailItem(string fileHash, bool? tinyMeta, bool? small,
 		bool? large, bool? extraLarge, string? reasons = null)
 	{
@@ -26,7 +24,7 @@ public class ThumbnailItem
 		if ( extraLarge != null ) ExtraLarge = extraLarge;
 		if ( reasons != null ) Reasons = reasons;
 	}
-	
+
 	[Key]
 	[Column(TypeName = "varchar(190)")]
 	[MaxLength(190)]
@@ -57,11 +55,12 @@ public class ThumbnailItem
 	/// Private field to avoid null issues
 	/// </summary>
 	private string ReasonsPrivate { get; set; } = string.Empty;
-	
+
 	/// <summary>
 	/// When something went wrong add message here
 	/// </summary>
-	public string? Reasons {
+	public string? Reasons
+	{
 		get => ReasonsPrivate;
 		set
 		{
@@ -69,7 +68,8 @@ public class ThumbnailItem
 			{
 				return;
 			}
+
 			ReasonsPrivate = value;
-		} 
+		}
 	}
 }

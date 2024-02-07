@@ -28,9 +28,9 @@ public class FakeIExport : IExport
 		throw new NotImplementedException();
 	}
 
-	public Tuple<bool?, string> StatusIsReady(string zipOutputFileName)
+	public Tuple<bool?, string?> StatusIsReady(string zipOutputFileName)
 	{
 		var result = _status.FirstOrDefault(p => p.Key == zipOutputFileName);
-		return new Tuple<bool?, string>(result.Value, result.Key);
+		return new Tuple<bool?, string?>(result.Value, result.Key);
 	}
 }

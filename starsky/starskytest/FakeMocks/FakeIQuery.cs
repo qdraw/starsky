@@ -18,7 +18,8 @@ namespace starskytest.FakeMocks
 {
 	public class FakeIQuery : IQuery
 	{
-		public FakeIQuery(List<FileIndexItem>? content = null, List<FileIndexItem>? fakeCachedContent = null)
+		public FakeIQuery(List<FileIndexItem>? content = null,
+			List<FileIndexItem>? fakeCachedContent = null)
 		{
 			if ( content == null ) return;
 			_content = content;
@@ -26,14 +27,14 @@ namespace starskytest.FakeMocks
 		}
 
 		[SuppressMessage("ReSharper", "UnusedParameter.Local")]
-		public FakeIQuery(ApplicationDbContext context, 
+		public FakeIQuery(ApplicationDbContext context,
 			AppSettings appSettings,
-			IServiceScopeFactory scopeFactory, 
+			IServiceScopeFactory scopeFactory,
 			IWebLogger logger, IMemoryCache? memoryCache = null)
 		{
 			// used to autoMap In QueryFactory
 		}
-		
+
 		private readonly List<FileIndexItem> _content = new List<FileIndexItem>();
 		private List<FileIndexItem> _fakeCachedContent = new List<FileIndexItem>();
 
@@ -42,7 +43,8 @@ namespace starskytest.FakeMocks
 		{
 			try
 			{
-				return _content.Where(p => p.ParentDirectory == subPath && p.IsDirectory == false).ToList();
+				return _content.Where(p => p.ParentDirectory == subPath && p.IsDirectory == false)
+					.ToList();
 			}
 			catch ( Exception )
 			{
@@ -51,13 +53,15 @@ namespace starskytest.FakeMocks
 		}
 
 		[SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract")]
-		public Task<List<FileIndexItem>> GetAllFilesAsync(List<string> filePaths, int timeout = 1000)
+		public Task<List<FileIndexItem>> GetAllFilesAsync(List<string> filePaths,
+			int timeout = 1000)
 		{
 			var result = new List<FileIndexItem>();
 			foreach ( var files in filePaths.Select(GetAllFiles).Where(files => files != null) )
 			{
 				result.AddRange(files);
 			}
+
 			return Task.FromResult(result);
 		}
 
@@ -83,7 +87,7 @@ namespace starskytest.FakeMocks
 		{
 			return Task.FromResult(GetAllRecursive(subPath));
 		}
-		
+
 		public Task<List<FileIndexItem>> GetAllRecursiveAsync(List<string> filePathList)
 		{
 			var result = new List<FileIndexItem>();
@@ -91,25 +95,28 @@ namespace starskytest.FakeMocks
 			{
 				result.AddRange(GetAllRecursive(subPath));
 			}
+
 			return Task.FromResult(result);
 		}
 
-		public IEnumerable<FileIndexItem> DisplayFileFolders(string subPath = "/", 
+		public IEnumerable<FileIndexItem> DisplayFileFolders(string subPath = "/",
 			List<ColorClassParser.Color>? colorClassActiveList = null,
 			bool enableCollections = true, bool hideDeleted = true)
 		{
 			return GetAllFiles(subPath);
 		}
 
-		public IEnumerable<FileIndexItem> DisplayFileFolders(List<FileIndexItem> fileIndexItems, List<ColorClassParser.Color>? 
+		public IEnumerable<FileIndexItem> DisplayFileFolders(List<FileIndexItem> fileIndexItems,
+			List<ColorClassParser.Color>?
 				colorClassActiveList = null,
 			bool enableCollections = true, bool hideDeleted = true)
 		{
 			throw new NotImplementedException();
 		}
 
-		public DetailView? SingleItem(string singleItemDbPath, List<ColorClassParser.Color>? colorClassActiveList = null,
-			bool enableCollections = true, bool hideDeleted = true, 
+		public DetailView SingleItem(string singleItemDbPath,
+			List<ColorClassParser.Color>? colorClassActiveList = null,
+			bool enableCollections = true, bool hideDeleted = true,
 			SortType? sort = SortType.FileName)
 		{
 			if ( _content.TrueForAll(p => p.FilePath != singleItemDbPath) )
@@ -120,7 +127,7 @@ namespace starskytest.FakeMocks
 			var fileIndexItem = _content.Find(p => p.FilePath == singleItemDbPath);
 			if ( fileIndexItem == null ) return null;
 			fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
-			fileIndexItem.CollectionPaths = new List<string>{singleItemDbPath};
+			fileIndexItem.CollectionPaths = new List<string> { singleItemDbPath };
 			if ( enableCollections )
 			{
 				fileIndexItem.CollectionPaths = new List<string>();
@@ -130,11 +137,17 @@ namespace starskytest.FakeMocks
 						.Select(p => p.FilePath!)
 				);
 			}
-			return new DetailView {FileIndexItem = fileIndexItem, IsDirectory = fileIndexItem.IsDirectory == true};
+
+			return new DetailView
+			{
+				FileIndexItem = fileIndexItem, IsDirectory = fileIndexItem.IsDirectory == true
+			};
 		}
 
-		public DetailView SingleItem(List<FileIndexItem> fileIndexItemsList, string singleItemDbPath,
-			List<ColorClassParser.Color>? colorClassActiveList = null, bool enableCollections = true, bool hideDeleted = true, 
+		public DetailView SingleItem(List<FileIndexItem> fileIndexItemsList,
+			string singleItemDbPath,
+			List<ColorClassParser.Color>? colorClassActiveList = null,
+			bool enableCollections = true, bool hideDeleted = true,
 			SortType? sort = SortType.FileName)
 		{
 			throw new NotImplementedException();
@@ -145,22 +158,24 @@ namespace starskytest.FakeMocks
 			return _content.Find(p => p.FilePath == filePath);
 		}
 
-		public async Task<FileIndexItem?> GetObjectByFilePathAsync(string filePath, TimeSpan? cacheTime = null)
+		public async Task<FileIndexItem?> GetObjectByFilePathAsync(string filePath,
+			TimeSpan? cacheTime = null)
 		{
 			try
 			{
 				return _content.Find(p => p.FilePath == filePath);
 			}
-			catch (InvalidOperationException)
+			catch ( InvalidOperationException )
 			{
 				await Task.Delay(new Random().Next(1, 5));
 				return _content.Find(p => p.FilePath == filePath);
 			}
 		}
 
-		public async Task<List<FileIndexItem>> GetObjectsByFilePathAsync(string inputFilePath, bool collections)
+		public async Task<List<FileIndexItem>> GetObjectsByFilePathAsync(string inputFilePath,
+			bool collections)
 		{
-			return await GetObjectsByFilePathAsync(new List<string>{inputFilePath}, collections);
+			return await GetObjectsByFilePathAsync(new List<string> { inputFilePath }, collections);
 		}
 
 		public Task<List<FileIndexItem>> GetObjectsByFilePathAsync(List<string> filePathList)
@@ -168,18 +183,21 @@ namespace starskytest.FakeMocks
 			var result = new List<FileIndexItem>();
 			foreach ( var filePath in filePathList )
 			{
-				result.AddRange(_content.Where(p=> p.FilePath == filePath));
+				result.AddRange(_content.Where(p => p.FilePath == filePath));
 			}
+
 			return Task.FromResult(result);
 		}
 
-		public Task<List<FileIndexItem>> GetObjectsByFilePathAsync(List<string> inputFilePaths, bool collections)
+		public Task<List<FileIndexItem>> GetObjectsByFilePathAsync(List<string> inputFilePaths,
+			bool collections)
 		{
 			if ( collections )
 			{
 				return GetObjectsByFilePathCollectionAsync(
 					inputFilePaths.ToList());
 			}
+
 			return GetObjectsByFilePathAsync(inputFilePaths.ToList());
 		}
 
@@ -188,15 +206,18 @@ namespace starskytest.FakeMocks
 			return GetObjectsByFilePathAsync(filePathList);
 		}
 
-		public Task<List<FileIndexItem>> GetObjectsByFilePathCollectionAsync(List<string> filePathList)
+		public Task<List<FileIndexItem>> GetObjectsByFilePathCollectionAsync(
+			List<string> filePathList)
 		{
 			var result = new List<FileIndexItem>();
 			foreach ( var path in filePathList )
 			{
 				var fileNameWithoutExtension = FilenamesHelper.GetFileNameWithoutExtension(path);
-				result.AddRange(_content.Where(p => p.ParentDirectory == FilenamesHelper.GetParentPath(path) 
+				result.AddRange(_content.Where(p =>
+					p.ParentDirectory == FilenamesHelper.GetParentPath(path)
 					&& p.FileName!.StartsWith(fileNameWithoutExtension)));
 			}
+
 			return Task.FromResult(result);
 		}
 
@@ -217,15 +238,18 @@ namespace starskytest.FakeMocks
 				await Task.Delay(new Random().Next(1, 5));
 				_content.Remove(updateStatusContent);
 			}
+
 			return updateStatusContent;
 		}
 
-		public async Task<List<FileIndexItem>> RemoveItemAsync(List<FileIndexItem> updateStatusContentList)
+		public async Task<List<FileIndexItem>> RemoveItemAsync(
+			List<FileIndexItem> updateStatusContentList)
 		{
 			foreach ( var item in updateStatusContentList )
 			{
 				await RemoveItemAsync(item);
 			}
+
 			return updateStatusContentList;
 		}
 
@@ -250,20 +274,24 @@ namespace starskytest.FakeMocks
 			return Task.FromResult(GetSubPathByHash(fileHash));
 		}
 
-		public Task<List<FileIndexItem>> GetObjectsByFileHashAsync(List<string> fileHashesList, int retryCount = 2)
+		public Task<List<FileIndexItem>> GetObjectsByFileHashAsync(List<string> fileHashesList,
+			int retryCount = 2)
 		{
 			var result = _content.Where(p =>
-					fileHashesList.Contains(p.FileHash!)).ToList();
-			
+				fileHashesList.Contains(p.FileHash!)).ToList();
+
 			foreach ( var fileHash in fileHashesList )
 			{
 				if ( result.Find(p => p.FileHash == fileHash) == null )
 				{
-					result.Add(new FileIndexItem(){FileHash = fileHash, 
-						Status = FileIndexItem.ExifStatus.NotFoundNotInIndex});
+					result.Add(new FileIndexItem()
+					{
+						FileHash = fileHash,
+						Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
+					});
 				}
 			}
-			
+
 			return Task.FromResult(result);
 		}
 
@@ -279,7 +307,8 @@ namespace starskytest.FakeMocks
 
 		public Task<List<FileIndexItem>> GetFoldersAsync(string subPath)
 		{
-			return Task.FromResult(_content.Where(p => p.ParentDirectory == subPath && p.IsDirectory == true).ToList());
+			return Task.FromResult(_content
+				.Where(p => p.ParentDirectory == subPath && p.IsDirectory == true).ToList());
 		}
 
 		public Task<List<FileIndexItem>> GetAllObjectsAsync(string subPath)
@@ -295,6 +324,7 @@ namespace starskytest.FakeMocks
 			{
 				result.AddRange(await GetAllObjectsAsync(subPath));
 			}
+
 			return result;
 		}
 
@@ -308,9 +338,9 @@ namespace starskytest.FakeMocks
 		{
 			_content.Add(fileIndexItem);
 			await Task.Delay(new Random().Next(1, 5));
-			if ( _content.Find(p => 
-				p.FilePath == fileIndexItem.FilePath) != null ) return fileIndexItem;
-			
+			if ( _content.Find(p =>
+				    p.FilePath == fileIndexItem.FilePath) != null ) return fileIndexItem;
+
 			_content.Add(fileIndexItem);
 			return fileIndexItem;
 		}
@@ -321,6 +351,7 @@ namespace starskytest.FakeMocks
 			{
 				await AddItemAsync(fileIndexItem);
 			}
+
 			return fileIndexItemList;
 		}
 
@@ -333,27 +364,30 @@ namespace starskytest.FakeMocks
 			_content[index] = updateStatusContent;
 			return updateStatusContent;
 		}
-		
+
 		public Task<FileIndexItem> UpdateItemAsync(FileIndexItem updateStatusContent)
 		{
 			return Task.FromResult(UpdateItem(updateStatusContent));
 		}
 
-		public Task<List<FileIndexItem>> UpdateItemAsync(List<FileIndexItem> updateStatusContentList)
+		public Task<List<FileIndexItem>> UpdateItemAsync(
+			List<FileIndexItem> updateStatusContentList)
 		{
 			foreach ( var item in updateStatusContentList )
 			{
 				UpdateItem(item);
 			}
+
 			return Task.FromResult(updateStatusContentList);
 		}
-		
+
 		public RelativeObjects GetNextPrevInFolder(string currentFolder)
 		{
 			return new RelativeObjects();
 		}
 
-		[SuppressMessage("ReSharper", "NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract")]
+		[SuppressMessage("ReSharper",
+			"NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract")]
 		public bool AddCacheParentItem(string directoryName, List<FileIndexItem> items)
 		{
 			_fakeCachedContent ??= new List<FileIndexItem>();
@@ -381,7 +415,7 @@ namespace starskytest.FakeMocks
 			{
 				return new Tuple<bool, List<FileIndexItem>>(false, new List<FileIndexItem>());
 			}
-			
+
 			var res =
 				_fakeCachedContent.Where(p => p.ParentDirectory == subPath).ToList();
 			return new Tuple<bool, List<FileIndexItem>>(res.Count != 0, res);
@@ -389,11 +423,13 @@ namespace starskytest.FakeMocks
 
 		public async Task<List<FileIndexItem>> AddParentItemsAsync(string subPath)
 		{
-			var path = subPath == "/" || string.IsNullOrEmpty(subPath) ? "/" : PathHelper.RemoveLatestSlash(subPath);
+			var path = subPath == "/" || string.IsNullOrEmpty(subPath)
+				? "/"
+				: PathHelper.RemoveLatestSlash(subPath);
 			var pathListShouldExist = Breadcrumbs.BreadcrumbHelper(path).ToList();
 
 			var toAddList = new List<FileIndexItem>();
-			
+
 			var indexItems = _content
 				.Where(p => pathListShouldExist.Exists(f => f == p.FilePath)).ToList();
 
@@ -418,7 +454,7 @@ namespace starskytest.FakeMocks
 
 		public IQuery Clone(ApplicationDbContext applicationDbContext)
 		{
-			var query = (IQuery) MemberwiseClone();
+			var query = ( IQuery )MemberwiseClone();
 			query.Invoke(applicationDbContext);
 			return query;
 		}
@@ -442,6 +478,5 @@ namespace starskytest.FakeMocks
 			var func = expression?.Compile();
 			return Task.FromResult(expression == null ? _content.Count : _content.Count(func!));
 		}
-
 	}
 }

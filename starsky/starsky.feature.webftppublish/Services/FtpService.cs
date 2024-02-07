@@ -253,7 +253,7 @@ namespace starsky.feature.webftppublish.Services
 			}
 			catch ( WebException ex )
 			{
-				var ftpWebResponse = ( FtpWebResponse )ex.Response;
+				var ftpWebResponse = ( FtpWebResponse? )ex.Response;
 				ftpWebResponse?.Close();
 				return ftpWebResponse?.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable;
 			}

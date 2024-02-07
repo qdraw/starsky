@@ -4,17 +4,13 @@ using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using Serilog;
-
 
 namespace helpers;
 
 public static class HttpQuery
 {
-
-	[ItemCanBeNull]
-	public static async Task<string> GetJsonFromApi(string apiUrl)
+	public static async Task<string?> GetJsonFromApi(string apiUrl)
 	{
 		try
 		{
@@ -28,27 +24,26 @@ public static class HttpQuery
 			// Read the content as a string
 			return await response.Content.ReadAsStringAsync();
 		}
-		catch ( HttpRequestException exception)
+		catch ( HttpRequestException exception )
 		{
 			Log.Information($"GetJsonFromApi {exception.StatusCode} {exception.Message}");
 			return null;
 		}
 	}
-	
+
 	public static Version ParseJsonVersionNumbers(string json)
 	{
 		var jsonDocument = JsonDocument.Parse(json);
 		var rootElement = jsonDocument.RootElement;
 
 		var versionsResult = new List<string>();
-		if (rootElement.TryGetProperty("versions", out var versionsElement))
+		if ( rootElement.TryGetProperty("versions", out var versionsElement) )
 		{
-			versionsResult = versionsElement.EnumerateArray().Select(v => v.GetString()).ToList();
+			versionsResult = versionsElement.EnumerateArray().Select(v => v.GetString())
+				.Cast<string>().ToList();
 		}
 
-		var hightestVersion = versionsResult.MaxBy(v => new Version(v));
+		var hightestVersion = versionsResult.MaxBy(v => new Version(v))!;
 		return new Version(hightestVersion);
 	}
 }
-
-

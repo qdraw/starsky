@@ -8,6 +8,7 @@
         <RuntimeFrameworkVersion>8.0.1</RuntimeFrameworkVersion>
         <DebugType>Full</DebugType>
         <Version>0.6.0-beta.0</Version>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
@@ -15,7 +16,8 @@
     </ItemGroup>
 
     <ItemGroup Condition="!Exists('Properties/launchSettings.json')">
-        <ContentWithTargetPath Include="Properties/default-init-launchSettings.json" TargetPath="../../../Properties/launchSettings%(Extension)" CopyToOutputDirectory="PreserveNewest"/>
+        <ContentWithTargetPath Include="Properties/default-init-launchSettings.json"
+                               TargetPath="../../../Properties/launchSettings%(Extension)" CopyToOutputDirectory="PreserveNewest"/>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

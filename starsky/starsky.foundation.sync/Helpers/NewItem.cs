@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
@@ -23,7 +22,7 @@ namespace starsky.foundation.sync.Helpers
 			_subPathStorage = subPathStorage;
 			_readMeta = readMeta;
 		}
-		
+
 		public async Task<List<FileIndexItem>> NewFileItemAsync(List<FileIndexItem> inputItems)
 		{
 			var result = new List<FileIndexItem>();
@@ -31,9 +30,10 @@ namespace starsky.foundation.sync.Helpers
 			{
 				result.Add(await NewFileItemAsync(inputItem));
 			}
+
 			return result;
 		}
-		
+
 		/// <summary>
 		/// Returns only an object (no db update)
 		/// </summary>
@@ -53,23 +53,24 @@ namespace starsky.foundation.sync.Helpers
 		/// <param name="parentDirectory">parent directory name</param>
 		/// <param name="fileName">name without path</param>
 		/// <returns></returns>
-		private async Task<FileIndexItem> NewFileItemAsync(string filePath, string fileHash, string parentDirectory, string fileName)
+		private async Task<FileIndexItem> NewFileItemAsync(string filePath, string fileHash,
+			string parentDirectory, string fileName)
 		{
-			var updatedDatabaseItem =  await _readMeta.ReadExifAndXmpFromFileAsync(filePath);
+			var updatedDatabaseItem = await _readMeta.ReadExifAndXmpFromFileAsync(filePath);
 			updatedDatabaseItem!.ImageFormat = ExtensionRolesHelper
-				.GetImageFormat(_subPathStorage.ReadStream(filePath,50));
+				.GetImageFormat(_subPathStorage.ReadStream(filePath, 50));
 
 			// future: read json sidecar
 			await SetFileHashStatus(filePath, fileHash, updatedDatabaseItem);
 			updatedDatabaseItem.SetAddToDatabase();
 			var info = _subPathStorage.Info(filePath);
-			
+
 			updatedDatabaseItem.LastEdited = info.LastWriteTime;
 			updatedDatabaseItem.IsDirectory = false;
 			updatedDatabaseItem.Size = info.Size;
 			updatedDatabaseItem.ParentDirectory = parentDirectory;
 			updatedDatabaseItem.FileName = fileName;
-			
+
 			return updatedDatabaseItem;
 		}
 
@@ -90,7 +91,7 @@ namespace starsky.foundation.sync.Helpers
 			{
 				dbItem.Status = FileIndexItem.ExifStatus.OkAndSame;
 			}
-		
+
 			return dbItem;
 		}
 
@@ -101,12 +102,14 @@ namespace starsky.foundation.sync.Helpers
 		/// <param name="fileHash"></param>
 		/// <param name="updatedDatabaseItem">new created object</param>
 		/// <returns></returns>
-		private async Task SetFileHashStatus(string filePath, string fileHash,  FileIndexItem updatedDatabaseItem)
+		private async Task SetFileHashStatus(string filePath, string fileHash,
+			FileIndexItem updatedDatabaseItem)
 		{
 			updatedDatabaseItem.Status = FileIndexItem.ExifStatus.Ok;
 			if ( string.IsNullOrEmpty(fileHash) )
 			{
-				var (localHash, success) = await new FileHash(_subPathStorage).GetHashCodeAsync(filePath);
+				var (localHash, success) =
+					await new FileHash(_subPathStorage).GetHashCodeAsync(filePath);
 				updatedDatabaseItem.FileHash = localHash;
 				updatedDatabaseItem.Status = success
 					? FileIndexItem.ExifStatus.Ok

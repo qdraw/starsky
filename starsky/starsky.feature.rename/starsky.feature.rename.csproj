@@ -4,11 +4,12 @@
         <TargetFramework>net8.0</TargetFramework>
         <ProjectGuid>{a864f834-133f-4ea8-9a4d-53e5cad837ab}</ProjectGuid>
         <Version>0.6.0-beta.0</Version>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
-    
+
     <ItemGroup>
-      <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
-      <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
+        <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj"/>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

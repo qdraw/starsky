@@ -1,8 +1,6 @@
 using System;
-using System.Globalization;
 using System.Net.WebSockets;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -18,49 +16,56 @@ namespace starsky.foundation.realtime.Middleware
 	public sealed class WebSocketConnectionsMiddleware
 	{
 		#region Fields
+
 		private readonly WebSocketConnectionsOptions _options;
 		private readonly IWebSocketConnectionsService _connectionsService;
+
 		#endregion
 
 		#region Constructor
-		public WebSocketConnectionsMiddleware(RequestDelegate _, WebSocketConnectionsOptions options, 
+
+		public WebSocketConnectionsMiddleware(RequestDelegate _,
+			WebSocketConnectionsOptions options,
 			IWebSocketConnectionsService connectionsService)
 		{
 			_options = options ?? throw new ArgumentNullException(nameof(options));
-			_connectionsService = connectionsService ?? throw new ArgumentNullException(nameof(connectionsService));
+			_connectionsService = connectionsService ??
+			                      throw new ArgumentNullException(nameof(connectionsService));
 		}
+
 		#endregion
-		
+
 		#region Methods
+
 		public async Task Invoke(HttpContext context)
 		{
-			if (ValidateOrigin(context))
+			if ( ValidateOrigin(context) )
 			{
-				if (context.WebSockets.IsWebSocketRequest)
+				if ( context.WebSockets.IsWebSocketRequest )
 				{
 					WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
-                    
-					if ( context.User.Identity?.IsAuthenticated == false)
+
+					if ( context.User.Identity?.IsAuthenticated == false )
 					{
 						// Status Code 1008 PolicyViolation
-						await webSocket.CloseOutputAsync(WebSocketCloseStatus.PolicyViolation, 
+						await webSocket.CloseOutputAsync(WebSocketCloseStatus.PolicyViolation,
 							"Please login first", CancellationToken.None);
 						return;
 					}
-                    
-					WebSocketConnection webSocketConnection = new WebSocketConnection(webSocket, _options.ReceivePayloadBufferSize);
 
-					async void OnWebSocketConnectionOnNewConnection(object? sender, EventArgs message)
+					WebSocketConnection webSocketConnection =
+						new WebSocketConnection(webSocket, _options.ReceivePayloadBufferSize);
+
+					async void OnWebSocketConnectionOnNewConnection(object? sender,
+						EventArgs message)
 					{
 						await Task.Delay(150);
 						try
 						{
 							var welcomeMessage = new ApiNotificationResponseModel<HeartbeatModel>(
-								new HeartbeatModel(null))
-							{
-								Type =  ApiNotificationType.Welcome,
-							};
-							await webSocketConnection.SendAsync(JsonSerializer.Serialize(welcomeMessage,
+								new HeartbeatModel(null)) { Type = ApiNotificationType.Welcome, };
+							await webSocketConnection.SendAsync(JsonSerializer.Serialize(
+								welcomeMessage,
 								DefaultJsonSerializer.CamelCaseNoEnters), CancellationToken.None);
 						}
 						catch ( WebSocketException )
@@ -75,9 +80,9 @@ namespace starsky.foundation.realtime.Middleware
 
 					await webSocketConnection.ReceiveMessagesUntilCloseAsync();
 
-					if (webSocketConnection.CloseStatus.HasValue)
+					if ( webSocketConnection.CloseStatus.HasValue )
 					{
-						await webSocket.CloseOutputAsync(webSocketConnection.CloseStatus.Value, 
+						await webSocket.CloseOutputAsync(webSocketConnection.CloseStatus.Value,
 							webSocketConnection.CloseStatusDescription, CancellationToken.None);
 					}
 
@@ -96,8 +101,10 @@ namespace starsky.foundation.realtime.Middleware
 
 		private bool ValidateOrigin(HttpContext context)
 		{
-			return (_options.AllowedOrigins == null) || (_options.AllowedOrigins.Count == 0) || (
-				_options.AllowedOrigins.Contains(context.Request.Headers.Origin.ToString()));
+			return ( _options.AllowedOrigins == null ) || ( _options.AllowedOrigins.Count == 0 ) ||
+			       (
+				       _options.AllowedOrigins.Contains(context.Request.Headers.Origin
+					       .ToString()) );
 		}
 
 		#endregion

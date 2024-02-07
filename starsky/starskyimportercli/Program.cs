@@ -35,13 +35,14 @@ namespace starskyimportercli
 			new SetupDatabaseTypes(appSettings, services).BuilderDb();
 			serviceProvider = services.BuildServiceProvider();
 
-			var import = serviceProvider.GetService<IImport>();
+			var import = serviceProvider.GetRequiredService<IImport>();
 			var console = serviceProvider.GetRequiredService<IConsole>();
 			var exifToolDownload = serviceProvider.GetRequiredService<IExifToolDownload>();
 			var webLogger = serviceProvider.GetRequiredService<IWebLogger>();
 
 			// Migrations before importing
-			await RunMigrations.Run(serviceProvider.GetService<ApplicationDbContext>(), webLogger,
+			await RunMigrations.Run(serviceProvider.GetRequiredService<ApplicationDbContext>(),
+				webLogger,
 				appSettings);
 
 			// Help and other Command Line Tools args are included in the ImporterCli 

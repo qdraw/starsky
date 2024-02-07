@@ -11,14 +11,18 @@ namespace starsky.feature.webhtmlpublish.Helpers
 {
 	public sealed class CopyPublishedContent
 	{
-		private readonly IStorage _hostStorage;
+		private readonly IStorage _hostStorage = new StorageHostFullPathFilesystem();
 		private readonly ToCreateSubfolder _toCreateSubfolder;
 
 		public CopyPublishedContent(ToCreateSubfolder toCreateSubfolder,
 			ISelectorStorage selectorStorage)
 		{
 			_toCreateSubfolder = toCreateSubfolder;
-			if ( selectorStorage == null ) return;
+			if ( selectorStorage == null! )
+			{
+				return;
+			}
+
 			_hostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		}
 

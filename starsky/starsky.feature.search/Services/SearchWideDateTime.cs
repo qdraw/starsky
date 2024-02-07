@@ -8,17 +8,16 @@ namespace starsky.feature.search.Services
 {
 	public class SearchWideDateTime
 	{
-
 		/// <summary>
-	    /// Query for DateTime: in between values, entire days, from, type of queries
-	    /// </summary>
-	    /// <param name="sourceList">Query Source</param>
-	    /// <param name="model">output</param>
-	    /// <param name="indexer">number of search query (i)</param>
-	    /// <param name="type"></param>
-	    public static Expression<Func<FileIndexItem,bool>> WideSearchDateTimeGet(SearchViewModel model, int indexer,  WideSearchDateTimeGetType type)
-	    {
-			SearchForEntireDay(model,indexer);
+		/// Query for DateTime: in between values, entire days, from, type of queries
+		/// </summary>
+		/// <param name="model">output</param>
+		/// <param name="indexer">number of search query (i)</param>
+		/// <param name="type"></param>
+		public static Expression<Func<FileIndexItem, bool>> WideSearchDateTimeGet(
+			SearchViewModel model, int indexer, WideSearchDateTimeGetType type)
+		{
+			SearchForEntireDay(model, indexer);
 
 			// faster search for searching within
 			// how ever this is still triggered multiple times
@@ -27,30 +26,32 @@ namespace starsky.feature.search.Services
 			var afterIndexSearchForOptions =
 				model.SearchForOptions.IndexOf(SearchViewModel.SearchForOptionType.LessThen);
 			if ( beforeIndexSearchForOptions >= 0 &&
-				 afterIndexSearchForOptions >= 0 )
+			     afterIndexSearchForOptions >= 0 )
 			{
 				var beforeDateTime =
 					SearchViewModel.ParseDateTime(model.SearchFor[beforeIndexSearchForOptions]);
-				
+
 				var afterDateTime =
 					SearchViewModel.ParseDateTime(model.SearchFor[afterIndexSearchForOptions]);
 
 				// We have now an extra query, and this is always AND  
 				model.SetAndOrOperator('&', -2);
-				
+
 				switch ( type )
 				{
 					case WideSearchDateTimeGetType.DateTime:
-						return (p => p.DateTime >= beforeDateTime && p.DateTime <= afterDateTime);
+						return ( p => p.DateTime >= beforeDateTime && p.DateTime <= afterDateTime );
 					case WideSearchDateTimeGetType.LastEdited:
-						return (p => p.LastEdited >= beforeDateTime && p.LastEdited <= afterDateTime);
+						return ( p =>
+							p.LastEdited >= beforeDateTime && p.LastEdited <= afterDateTime );
 					case WideSearchDateTimeGetType.AddToDatabase:
-						return (p => p.AddToDatabase >= beforeDateTime && p.AddToDatabase <= afterDateTime);
+						return ( p =>
+							p.AddToDatabase >= beforeDateTime && p.AddToDatabase <= afterDateTime );
 					default:
 						throw new ArgumentException("enum incomplete", nameof(type));
 				}
 			}
-			
+
 			var dateTime = SearchViewModel.ParseDateTime(model.SearchFor[indexer]);
 
 			// Normal search
@@ -61,11 +62,11 @@ namespace starsky.feature.search.Services
 					switch ( type )
 					{
 						case WideSearchDateTimeGetType.DateTime:
-							return (p => p.DateTime <= dateTime);
+							return ( p => p.DateTime <= dateTime );
 						case WideSearchDateTimeGetType.LastEdited:
-							return (p => p.LastEdited <= dateTime);
+							return ( p => p.LastEdited <= dateTime );
 						case WideSearchDateTimeGetType.AddToDatabase:
-							return (p => p.AddToDatabase <= dateTime);
+							return ( p => p.AddToDatabase <= dateTime );
 						default:
 							throw new ArgumentNullException(nameof(type));
 					}
@@ -73,11 +74,11 @@ namespace starsky.feature.search.Services
 					switch ( type )
 					{
 						case WideSearchDateTimeGetType.DateTime:
-							return (p => p.DateTime >= dateTime);
+							return ( p => p.DateTime >= dateTime );
 						case WideSearchDateTimeGetType.LastEdited:
-							return (p => p.LastEdited >= dateTime);
+							return ( p => p.LastEdited >= dateTime );
 						case WideSearchDateTimeGetType.AddToDatabase:
-							return (p => p.AddToDatabase >= dateTime);
+							return ( p => p.AddToDatabase >= dateTime );
 						default:
 							throw new ArgumentNullException(nameof(type));
 					}
@@ -85,17 +86,17 @@ namespace starsky.feature.search.Services
 					switch ( type )
 					{
 						case WideSearchDateTimeGetType.DateTime:
-							return (p => p.DateTime == dateTime);
+							return ( p => p.DateTime == dateTime );
 						case WideSearchDateTimeGetType.LastEdited:
-							return (p => p.LastEdited == dateTime);
+							return ( p => p.LastEdited == dateTime );
 						case WideSearchDateTimeGetType.AddToDatabase:
-							return (p => p.AddToDatabase == dateTime);
+							return ( p => p.AddToDatabase == dateTime );
 						default:
 							throw new ArgumentNullException(nameof(type));
 					}
 			}
-	    }
-		
+		}
+
 		/// <summary>
 		/// Convert 1 to today
 		/// </summary>
@@ -104,15 +105,15 @@ namespace starsky.feature.search.Services
 		private static void SearchForEntireDay(SearchViewModel model, int indexer)
 		{
 			var dateTime = SearchViewModel.ParseDateTime(model.SearchFor[indexer]);
-			
+
 			model.SearchFor[indexer] = dateTime.ToString("dd-MM-yyyy HH:mm:ss",
 				CultureInfo.InvariantCulture);
-			
+
 			// Searching for entire day
 			if ( model.SearchForOptions[indexer] != SearchViewModel.SearchForOptionType.Equal ||
 			     dateTime.Hour != 0 || dateTime.Minute != 0 || dateTime.Second != 0 ||
 			     dateTime.Millisecond != 0 ) return;
-			
+
 			model.SearchForOptions[indexer] = SearchViewModel.SearchForOptionType.GreaterThen;
 			model.SearchForOptions.Add(SearchViewModel.SearchForOptionType.LessThen);
 
@@ -122,7 +123,7 @@ namespace starsky.feature.search.Services
 			model.SearchFor.Add(add24Hours);
 			model.SearchIn.Add("DateTime");
 		}
-		
+
 		/// <summary>
 		/// Static binded types that are supported
 		/// </summary>

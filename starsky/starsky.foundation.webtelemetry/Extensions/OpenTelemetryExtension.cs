@@ -19,7 +19,7 @@ namespace starsky.foundation.webtelemetry.Extensions;
 public static class OpenTelemetryExtension
 {
 	/// <summary>
-	/// Add Metrics & Monitoring for OpenTelemetry
+	/// Add Metrics and Monitoring for OpenTelemetry
 	/// </summary>
 	/// <param name="services">collection service</param>
 	/// <param name="appSettings">to use for OpenTelemetry keys and info</param>

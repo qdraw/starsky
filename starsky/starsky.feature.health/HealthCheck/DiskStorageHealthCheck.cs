@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -19,7 +18,7 @@ namespace starsky.feature.health.HealthCheck
 		public DiskStorageHealthCheck(DiskStorageOptions options)
 		{
 			var diskStorageOptions = options;
-			_options = diskStorageOptions ?? throw new ArgumentNullException(nameof (options));
+			_options = diskStorageOptions ?? throw new ArgumentNullException(nameof(options));
 		}
 
 		public Task<HealthCheckResult> CheckHealthAsync(
@@ -28,22 +27,26 @@ namespace starsky.feature.health.HealthCheck
 		{
 			try
 			{
-				foreach (var (driveName, num) in _options.ConfiguredDrives.Values)
+				foreach ( var (driveName, num) in _options.ConfiguredDrives.Values )
 				{
 					var (exists4, actualFreeMegabytes4) = GetSystemDriveInfo(driveName);
-					if (!exists4)
-						return Task.FromResult(new HealthCheckResult(context.Registration.FailureStatus, 
+					if ( !exists4 )
+						return Task.FromResult(new HealthCheckResult(
+							context.Registration.FailureStatus,
 							"Configured drive " + driveName + " is not present on system"));
-					if (actualFreeMegabytes4 < num)
-						return Task.FromResult(new HealthCheckResult(context.Registration.FailureStatus,
+					if ( actualFreeMegabytes4 < num )
+						return Task.FromResult(new HealthCheckResult(
+							context.Registration.FailureStatus,
 							$"Minimum configured megabytes for disk {driveName} is {num} " +
 							$"but actual free space are {actualFreeMegabytes4} megabytes"));
 				}
+
 				return Task.FromResult(HealthCheckResult.Healthy());
 			}
-			catch (Exception ex)
+			catch ( Exception ex )
 			{
-				return Task.FromResult(new HealthCheckResult(context.Registration.FailureStatus, null, ex));
+				return Task.FromResult(new HealthCheckResult(context.Registration.FailureStatus,
+					null, ex));
 			}
 		}
 
@@ -54,7 +57,7 @@ namespace starsky.feature.health.HealthCheck
 			{
 				drivesList = DriveInfo.GetDrives();
 			}
-			catch (Exception)
+			catch ( Exception )
 			{
 				return ( false, 0L );
 			}
@@ -62,7 +65,9 @@ namespace starsky.feature.health.HealthCheck
 			var driveInfo = Array.Find(drivesList,
 				drive => string.Equals(drive.Name, driveName,
 					StringComparison.InvariantCultureIgnoreCase));
-			return driveInfo?.AvailableFreeSpace != null ? (true, driveInfo.AvailableFreeSpace / 1024L / 1024L) : (false, 0L);
+			return driveInfo?.AvailableFreeSpace != null
+				? ( true, driveInfo.AvailableFreeSpace / 1024L / 1024L )
+				: ( false, 0L );
 		}
 	}
 }

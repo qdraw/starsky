@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 

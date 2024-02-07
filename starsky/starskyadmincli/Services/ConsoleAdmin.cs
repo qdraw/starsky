@@ -17,44 +17,51 @@ namespace starskyAdminCli.Services
 			_userManager = userManager;
 			_console = console;
 		}
+
 		public async Task Tool(string userName, string password)
 		{
-			if (string.IsNullOrEmpty(userName))
+			if ( string.IsNullOrEmpty(userName) )
 			{
 				_console.WriteLine("\nWhat is the username/email?\n ");
-				userName = _console.ReadLine();
-				if (string.IsNullOrEmpty(userName))
+				var consoleUserName = _console.ReadLine();
+				if ( string.IsNullOrEmpty(consoleUserName) )
 				{
 					_console.WriteLine("No input selected");
 					return;
 				}
+
+				userName = consoleUserName;
 			}
 
-			if ( _userManager.Exist(userName) == null)
+			if ( _userManager.Exist(userName) == null )
 			{
 				if ( string.IsNullOrEmpty(password) )
 				{
-					_console.WriteLine("\nWe are going to create an account. \nWhat is the password?\n ");
-					password = _console.ReadLine();
-					if (string.IsNullOrEmpty(password))
+					_console.WriteLine(
+						"\nWe are going to create an account. \nWhat is the password?\n ");
+					var consolePassword = _console.ReadLine();
+					if ( string.IsNullOrEmpty(consolePassword) )
 					{
 						_console.WriteLine("No input selected");
 						return;
 					}
+
+					password = consolePassword;
 				}
 
-				if ( !_userManager.PreflightValidate(userName, password,password) )
+				if ( !_userManager.PreflightValidate(userName, password, password) )
 				{
 					_console.WriteLine("username / password is not valid");
 					return;
 				}
-				
+
 				await _userManager.SignUpAsync(string.Empty, "email", userName, password);
 				_console.WriteLine($"User {userName} is created");
 				return;
 			}
-			
-			_console.WriteLine("\nDo you want to \n2. remove account \n3. Toggle User Role \n \n(Enter only the number)");
+
+			_console.WriteLine(
+				"\nDo you want to \n2. remove account \n3. Toggle User Role \n \n(Enter only the number)");
 			var option = _console.ReadLine();
 
 			if ( !Enum.TryParse<ManageAdminOptions>(option,
@@ -66,7 +73,7 @@ namespace starskyAdminCli.Services
 
 			switch ( selectedOption )
 			{
-				case ManageAdminOptions.RemoveAccount :
+				case ManageAdminOptions.RemoveAccount:
 					await _userManager.RemoveUser("Email", userName);
 					_console.WriteLine($"User {userName} is removed");
 					return;
@@ -81,14 +88,21 @@ namespace starskyAdminCli.Services
 			var user = _userManager.GetUser("Email", userName);
 			var currentRole = _userManager.GetRole("Email", userName);
 
-			_userManager.RemoveFromRole(user,currentRole);
+			if ( user == null || currentRole == null )
+			{
+				return;
+			}
+
+			_userManager.RemoveFromRole(user, currentRole);
+
 			if ( currentRole.Code == AccountRoles.AppAccountRoles.User.ToString() )
 			{
-				_userManager.AddToRole(user,AccountRoles.AppAccountRoles.Administrator.ToString());
+				_userManager.AddToRole(user, AccountRoles.AppAccountRoles.Administrator.ToString());
 				_console.WriteLine($"User {userName} has now the role Administrator");
 				return;
 			}
-			_userManager.AddToRole(user,AccountRoles.AppAccountRoles.User.ToString());
+
+			_userManager.AddToRole(user, AccountRoles.AppAccountRoles.User.ToString());
 			_console.WriteLine($"User {userName} has now the role User");
 		}
 	}

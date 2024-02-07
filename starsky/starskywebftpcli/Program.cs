@@ -16,7 +16,7 @@ namespace starskywebftpcli
 		{
 			// Use args in application
 			new ArgsHelper().SetEnvironmentByArgs(args);
-			
+
 			// Setup AppSettings
 			var services = await SetupAppSettings.FirstStepToAddSingleton(new ServiceCollection());
 
@@ -24,14 +24,15 @@ namespace starskywebftpcli
 			RegisterDependencies.Configure(services);
 			var serviceProvider = services.BuildServiceProvider();
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
-            
+
 			serviceProvider = services.BuildServiceProvider();
-			
-			var storageSelector = serviceProvider.GetService<ISelectorStorage>();
+
+			var storageSelector = serviceProvider.GetRequiredService<ISelectorStorage>();
 			var console = serviceProvider.GetRequiredService<IConsole>();
 			var webRequestFactory = serviceProvider.GetRequiredService<IFtpWebRequestFactory>();
-			
-			await new WebFtpCli(appSettings, storageSelector, console, webRequestFactory).RunAsync(args);
+
+			await new WebFtpCli(appSettings, storageSelector, console, webRequestFactory)
+				.RunAsync(args);
 		}
 	}
 }
