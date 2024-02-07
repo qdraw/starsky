@@ -1,5 +1,5 @@
 import L, { TileLayer } from "leaflet";
-import EmptyImage from "../style/images/empty-image.gif";
+import EmptyImage from "../../public/empty-image.gif";
 
 export class LeafletEmptyImageUrlTileLayer extends TileLayer {
   /**

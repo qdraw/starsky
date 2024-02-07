@@ -1,5 +1,6 @@
 import L, { Coords, GridLayer } from "leaflet";
-import EmptyImage from "../style/images/empty-image.gif";
+import EmptyImage from "../../public/empty-image.gif";
+
 // use the: IMAGE_INLINE_SIZE_LIMIT=1 due the fact that data: are not supported by the CSP
 
 export class LeafletEmptyImageUrlGridLayer extends GridLayer {

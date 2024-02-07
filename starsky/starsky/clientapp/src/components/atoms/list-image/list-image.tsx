@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useRef, useState } from "react";
-import EmptyImage from "../../../../src/style/images/empty-image.gif";
+import EmptyImage from "../../public/empty-image.gif";
 import useIntersection from "../../../hooks/use-intersection-observer";
 import useLocation from "../../../hooks/use-location/use-location";
 import { ImageFormat } from "../../../interfaces/IFileIndexItem";
