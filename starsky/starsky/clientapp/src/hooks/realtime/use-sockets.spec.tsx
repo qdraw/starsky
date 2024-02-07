@@ -65,9 +65,6 @@ describe("useSockets", () => {
   });
 
   it("test retry when no response", () => {
-    (window as any).appInsights = jest.fn();
-    (window as any).appInsights.trackTrace = jest.fn();
-
     jest.useFakeTimers();
     const socketService = new FakeWebSocketService();
 

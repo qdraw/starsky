@@ -91,25 +91,6 @@ namespace starsky.foundation.database.Helpers
 					throw new AggregateException(nameof(_appSettings.DatabaseType));
 			}
 		}
-		
-
-		// internal bool EnableDatabaseTracking(
-		// 	DbContextOptionsBuilder<ApplicationDbContext> databaseOptionsBuilder)
-		// {
-		// 	if ( !IsDatabaseTrackingEnabled() )
-		// 	{
-		// 		return false;
-		// 	}
-		//
-		// 	databaseOptionsBuilder.AddInterceptors(
-		// 		new DatabaseTelemetryInterceptor(
-		// 			TelemetryConfigurationHelper.InitTelemetryClient(
-		// 				_appSettings.ApplicationInsightsConnectionString,
-		// 				_appSettings.ApplicationType.ToString(), _logger, _telemetryClient)
-		// 		)
-		// 	);
-		// 	return true;
-		// }
 
 		/// <summary>
 		/// Setup database connection

@@ -60,8 +60,6 @@ Specifically, we track the following anonymously on startup:
 [EnablePackageTelemetryDebug] AppSettingsNoAccountLocalhost - True
 [EnablePackageTelemetryDebug] AppSettingsAccountRegisterDefaultRole - User
 [EnablePackageTelemetryDebug] AppSettingsAccountRegisterFirstRoleAdmin - True
-[EnablePackageTelemetryDebug] AppSettingsApplicationInsightsLog - True
-[EnablePackageTelemetryDebug] AppSettingsApplicationInsightsDatabaseTracking - True
 [EnablePackageTelemetryDebug] AppSettingsMaxDegreesOfParallelism - 6
 [EnablePackageTelemetryDebug] AppSettingsMaxDegreesOfParallelismThumbnail - 3
 [EnablePackageTelemetryDebug] AppSettingsUseHttpsRedirection - False

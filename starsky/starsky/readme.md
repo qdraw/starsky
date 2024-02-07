@@ -67,32 +67,29 @@ You could use machine specific configuration files: appsettings.machinename.json
 12. `ExifToolPath` - A path to Exiftool.exe _to ignore the included ExifTool_
 13. `isAccountRegisterOpen` - Allow everyone to register an account _(default false)_
 14. `AccountRegisterDefaultRole` When a user is new and register an account, give it the role User or Administrator _(default User)_
-15. `ApplicationInsightsConnectionString` - Track Telemetry with Microsoft Application Insights (use connection string instead of Instrumentation key) _(default disabled)_
-16. `ApplicationInsightsDatabaseTracking` - Track database dependencies (need to have InstrumentationKey) _(default disabled)_
-17. `ApplicationInsightsLog` - Add WebLogger output to Application Insights (need to have InstrumentationKey) _(default enabled, when key is provided)_
-18. `useHttpsRedirection` - Redirect users to https page. You should enable before going to production.
+15. `useHttpsRedirection` - Redirect users to https page. You should enable before going to production.
      This toggle is always disabled in debug/develop mode _(default false)_
-19. `httpsOn` Set all cookies in https Mode. You should enable before going to production. _(default false)_
-20. `Name` Name of the application, does not have much effect _(default Starsky)_
-21. `AppSettingsPath` To store the settings by user in the AppData folder _(default empty string)_
-22. `UseRealtime` Update the user interface realtime _default true_
-23. `UseDiskWatcher` Watch the disk for changes and update the database _default true_
-24. `CheckForUpdates` Check if there are updates on github and notify the user _default true_
-25. `SyncIgnore` Ignore pattern to not include disk items while running sync, uses always unix style and startsWith _default list with: /lost+found_
-26. `ImportIgnore` ImportIgnore filter  _default list with: "lost+found" ".Trashes"_
-27. `MaxDegreesOfParallelism` Number of jobs running in background _default 6_
-28. `MetaThumbnailOnImport` Create small thumbnails after import, is very fast _default true_
-29. `EnablePackageTelemetry` Telemetry is send for service improvement _default true_
-30. `EnablePackageTelemetryDebug` Debug Telemetry _default false_
-31. `AddSwaggerExportExitAfter` Quit application after exporting swagger files, should have `AddSwagger` and `AddSwaggerExport` enabled _default false_
-32. `NoAccountLocalhost` No login needed when on localhost, used in Desktop App
-33. `VideoUseLocalTime` Use localtime by Camera make and model instead of UTC
-34. `SyncOnStartup` Sync Database on changes since latest start _default true_
-35. `ThumbnailGenerationIntervalInMinutes` Interval to generate thumbnails, to disable use value lower than 3 _default 15_ 
-36. `GeoFilesSkipDownloadOnStartup` Skip download of GeoFiles on startup, _recommend to keep this false or null_ - _default false_
-37. `ExiftoolSkipDownloadOnStartup` Skip download of Exiftool on startup, _recommend to keep this false or null_ - _default false_
-38. `AccountRolesByEmailRegisterOverwrite` Overwrite the default role for a user by email address, _default empty list_
-39. `OpenTelemetry` See logging in an external service, _default no enabled_ see [OpenTelemetry](https://docs.qdraw.nl/docs/developer-guide/logging/opentelemetry.md)
+16. `httpsOn` Set all cookies in https Mode. You should enable before going to production. _(default false)_
+17. `Name` Name of the application, does not have much effect _(default Starsky)_
+18. `AppSettingsPath` To store the settings by user in the AppData folder _(default empty string)_
+19. `UseRealtime` Update the user interface realtime _default true_
+20. `UseDiskWatcher` Watch the disk for changes and update the database _default true_
+21. `CheckForUpdates` Check if there are updates on github and notify the user _default true_
+22. `SyncIgnore` Ignore pattern to not include disk items while running sync, uses always unix style and startsWith _default list with: /lost+found_
+23. `ImportIgnore` ImportIgnore filter  _default list with: "lost+found" ".Trashes"_
+24. `MaxDegreesOfParallelism` Number of jobs running in background _default 6_
+25. `MetaThumbnailOnImport` Create small thumbnails after import, is very fast _default true_
+26. `EnablePackageTelemetry` Telemetry is send for service improvement _default true_
+27. `EnablePackageTelemetryDebug` Debug Telemetry _default false_
+28. `AddSwaggerExportExitAfter` Quit application after exporting swagger files, should have `AddSwagger` and `AddSwaggerExport` enabled _default false_
+29. `NoAccountLocalhost` No login needed when on localhost, used in Desktop App
+30. `VideoUseLocalTime` Use localtime by Camera make and model instead of UTC
+31. `SyncOnStartup` Sync Database on changes since latest start _default true_
+32. `ThumbnailGenerationIntervalInMinutes` Interval to generate thumbnails, to disable use value lower than 3 _default 15_ 
+33. `GeoFilesSkipDownloadOnStartup` Skip download of GeoFiles on startup, _recommend to keep this false or null_ - _default false_
+34. `ExiftoolSkipDownloadOnStartup` Skip download of Exiftool on startup, _recommend to keep this false or null_ - _default false_
+35. `AccountRolesByEmailRegisterOverwrite` Overwrite the default role for a user by email address, _default empty list_
+36. `OpenTelemetry` See logging in an external service, _default no enabled_ see [OpenTelemetry](https://docs.qdraw.nl/docs/developer-guide/logging/opentelemetry.md)
 
 
 ### Appsettings.json example

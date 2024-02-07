@@ -336,12 +336,6 @@ namespace starsky.foundation.platform.Helpers
 			_console.WriteLine("ExiftoolSkipDownloadOnStartup "+ _appSettings.ExiftoolSkipDownloadOnStartup);
 			_console.WriteLine("GeoFilesSkipDownloadOnStartup "+ _appSettings.GeoFilesSkipDownloadOnStartup);			
 			
-			if ( !string.IsNullOrEmpty(_appSettings.ApplicationInsightsConnectionString) )
-			{
-				_console.WriteLine($"ApplicationInsightsConnectionString {_appSettings.ApplicationInsightsConnectionString} ");
-				_console.WriteLine($"ApplicationInsightsDatabaseTracking {_appSettings.ApplicationInsightsDatabaseTracking} \n" +
-				                   $"ApplicationInsightsLog {_appSettings.ApplicationInsightsLog} ");
-			}
 			_console.WriteLine($"MaxDegreesOfParallelism {_appSettings.MaxDegreesOfParallelism} ");
 
 			_console.Write("SyncIgnore ");

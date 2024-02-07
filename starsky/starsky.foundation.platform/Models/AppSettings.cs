@@ -681,38 +681,7 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		[PackageTelemetry]
 		public bool? AccountRegisterFirstRoleAdmin { get; set; } = true;
-
-		/// <summary>
-		/// Private storage for Application Insights InstrumentationKey
-		/// </summary>
-		private string ApplicationInsightsConnectionStringPrivate { get; set; } = "";
-
-		/// <summary>
-		/// Insert the Application Insights Connection String here or use environment variable: APPLICATIONINSIGHTS_CONNECTION_STRING
-		/// </summary>
-		public string ApplicationInsightsConnectionString
-		{
-			get
-			{
-				if ( string.IsNullOrWhiteSpace(ApplicationInsightsConnectionStringPrivate) )
-				{
-					var connectionString =
-						Environment.GetEnvironmentVariable(
-							"APPLICATIONINSIGHTS_CONNECTION_STRING");
-					return !string.IsNullOrEmpty(connectionString)
-						? connectionString
-						: string.Empty;
-				}
-
-				return ApplicationInsightsConnectionStringPrivate;
-			}
-			set => ApplicationInsightsConnectionStringPrivate = value;
-		}
-
-		[PackageTelemetry] public bool? ApplicationInsightsLog { get; set; } = true;
-
-		[PackageTelemetry] public bool? ApplicationInsightsDatabaseTracking { get; set; } = false;
-
+		
 		[PackageTelemetry] public int MaxDegreesOfParallelism { get; set; } = 6;
 
 		[PackageTelemetry] public int MaxDegreesOfParallelismThumbnail { get; set; } = 3;
@@ -918,11 +887,6 @@ namespace starsky.foundation.platform.Models
 			{
 				appSettings.DatabaseConnection =
 					appSettings.DatabaseConnection.Replace(userProfileFolder, "~");
-			}
-
-			if ( !string.IsNullOrEmpty(appSettings.ApplicationInsightsConnectionString) )
-			{
-				appSettings.ApplicationInsightsConnectionString = CloneToDisplaySecurityWarning;
 			}
 
 			if ( !string.IsNullOrEmpty(appSettings.WebFtp) )

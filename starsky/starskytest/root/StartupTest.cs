@@ -63,7 +63,6 @@ namespace starskytest.root
 			
 			startup.ConfigureServices(serviceCollection);
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
-			appSettings.ApplicationInsightsConnectionString = "!";
 			appSettings.UseRealtime = true;
 
 			startup.Configure(applicationBuilder, env, new FakeIApplicationLifetime());
