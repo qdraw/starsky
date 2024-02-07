@@ -1,6 +1,5 @@
 import "@testing-library/jest-dom";
 import { configure } from "@testing-library/react";
-import "@types/jest";
 import "isomorphic-fetch";
 import "jest-environment-jsdom";
 import "ts-node";
