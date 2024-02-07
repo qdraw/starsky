@@ -4501,39 +4501,6 @@
       "parameters": [],
       "extensions": {}
     },
-    "/api/health/application-insights": {
-      "operations": {
-        "Get": {
-          "tags": [
-            {
-              "name": "Health",
-              "extensions": {},
-              "unresolvedReference": false
-            }
-          ],
-          "summary": "Add Application Insights script to user context",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": "Ok",
-              "headers": {},
-              "content": {},
-              "links": {},
-              "extensions": {},
-              "unresolvedReference": false
-            }
-          },
-          "callbacks": {},
-          "deprecated": false,
-          "security": [],
-          "servers": [],
-          "extensions": {}
-        }
-      },
-      "servers": [],
-      "parameters": [],
-      "extensions": {}
-    },
     "/api/health/version": {
       "operations": {
         "Post": {
@@ -11841,54 +11808,6 @@
             "unresolvedReference": false
           },
           "accountRegisterFirstRoleAdmin": {
-            "type": "boolean",
-            "readOnly": false,
-            "writeOnly": false,
-            "allOf": [],
-            "oneOf": [],
-            "anyOf": [],
-            "required": [],
-            "properties": {},
-            "additionalPropertiesAllowed": true,
-            "enum": [],
-            "nullable": true,
-            "deprecated": false,
-            "extensions": {},
-            "unresolvedReference": false
-          },
-          "applicationInsightsConnectionString": {
-            "type": "string",
-            "readOnly": false,
-            "writeOnly": false,
-            "allOf": [],
-            "oneOf": [],
-            "anyOf": [],
-            "required": [],
-            "properties": {},
-            "additionalPropertiesAllowed": true,
-            "enum": [],
-            "nullable": true,
-            "deprecated": false,
-            "extensions": {},
-            "unresolvedReference": false
-          },
-          "applicationInsightsLog": {
-            "type": "boolean",
-            "readOnly": false,
-            "writeOnly": false,
-            "allOf": [],
-            "oneOf": [],
-            "anyOf": [],
-            "required": [],
-            "properties": {},
-            "additionalPropertiesAllowed": true,
-            "enum": [],
-            "nullable": true,
-            "deprecated": false,
-            "extensions": {},
-            "unresolvedReference": false
-          },
-          "applicationInsightsDatabaseTracking": {
             "type": "boolean",
             "readOnly": false,
             "writeOnly": false,
