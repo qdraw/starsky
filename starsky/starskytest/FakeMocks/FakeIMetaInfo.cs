@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Models;
@@ -9,6 +8,7 @@ namespace starskytest.FakeMocks
 	public class FakeIMetaInfo : IMetaInfo
 	{
 		private List<FileIndexItem> Exist { get; set; }
+
 		public FakeIMetaInfo(List<FileIndexItem> existItems)
 		{
 			Exist = existItems;
@@ -17,7 +17,7 @@ namespace starskytest.FakeMocks
 				Exist = new List<FileIndexItem>();
 			}
 		}
-		
+
 		public Task<List<FileIndexItem>> GetInfoAsync(List<string> inputFilePaths, bool collections)
 		{
 			var result = new List<FileIndexItem>();
@@ -27,6 +27,7 @@ namespace starskytest.FakeMocks
 				if ( data == null ) continue;
 				result.Add(data);
 			}
+
 			return Task.FromResult(result);
 		}
 	}

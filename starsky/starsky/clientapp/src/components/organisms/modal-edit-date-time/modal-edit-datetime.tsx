@@ -11,7 +11,7 @@ import {
   parseTime,
   parseTimeHour
 } from "../../../shared/date";
-import FetchPost from "../../../shared/fetch-post";
+import FetchPost from "../../../shared/fetch/fetch-post";
 import { Language } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url-query";
 import FormControl from "../../atoms/form-control/form-control";

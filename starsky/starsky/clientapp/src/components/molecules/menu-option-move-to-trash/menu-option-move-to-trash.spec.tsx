@@ -9,8 +9,9 @@ import {
   newIFileIndexItem,
   newIFileIndexItemArray
 } from "../../../interfaces/IFileIndexItem";
-import * as FetchPost from "../../../shared/fetch-post";
+import * as FetchPost from "../../../shared/fetch/fetch-post";
 import MenuOptionMoveToTrash from "./menu-option-move-to-trash";
+
 describe("MenuOptionMoveToTrash", () => {
   it("renders", () => {
     const test = {

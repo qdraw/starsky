@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using starsky.feature.webhtmlpublish.Interfaces;
 using starsky.feature.webhtmlpublish.Services;
 using starsky.foundation.platform.Models;
-using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn.CreateAnImageCorrupt;

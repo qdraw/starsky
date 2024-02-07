@@ -1,6 +1,6 @@
 import { IConnectionDefault } from "../interfaces/IConnectionDefault";
 import { newDetailView } from "../interfaces/IDetailView";
-import * as FetchGet from "./fetch-get";
+import * as FetchGet from "./fetch/fetch-get";
 import { UpdateRelativeObject } from "./update-relative-object";
 
 describe("UpdateRelativeObject", () => {

@@ -2,7 +2,7 @@ import { act, render, screen } from "@testing-library/react";
 import * as useFetch from "../../../hooks/use-fetch";
 import * as useInterval from "../../../hooks/use-interval";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
-import * as FetchPost from "../../../shared/fetch-post";
+import * as FetchPost from "../../../shared/fetch/fetch-post";
 import * as Modal from "../../atoms/modal/modal";
 import ModalDownload from "./modal-download";
 

@@ -3,7 +3,7 @@ import { act } from "react-dom/test-utils";
 import * as useFetch from "../hooks/use-fetch";
 import { IConnectionDefault } from "../interfaces/IConnectionDefault";
 import { Router } from "../router-app/router-app";
-import * as FetchPost from "../shared/fetch-post";
+import * as FetchPost from "../shared/fetch/fetch-post";
 import { UrlQuery } from "../shared/url-query";
 import { Login } from "./login";
 

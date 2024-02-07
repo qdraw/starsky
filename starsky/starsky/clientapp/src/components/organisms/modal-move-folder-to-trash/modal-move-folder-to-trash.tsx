@@ -4,7 +4,7 @@ import useLocation from "../../../hooks/use-location/use-location";
 import { IApiNotificationResponseModel } from "../../../interfaces/IApiNotificationResponseModel";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import localization from "../../../localization/localization.json";
-import FetchPost from "../../../shared/fetch-post";
+import FetchPost from "../../../shared/fetch/fetch-post";
 import { FileExtensions } from "../../../shared/file-extensions";
 import { Language } from "../../../shared/language";
 import { ClearSearchCache } from "../../../shared/search/clear-search-cache";

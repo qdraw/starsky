@@ -1,7 +1,6 @@
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using starsky.foundation.platform.Helpers;
-using starskycore.Helpers;
 
 namespace starskytest.FakeCreateAn
 {
@@ -10,7 +9,7 @@ namespace starskytest.FakeCreateAn
 		/// <summary>
 		/// @see: https://superuser.com/a/1467266 and 80 chars
 		/// </summary>
-		[SuppressMessage("ReSharper", "StringLiteralTypo")] 
+		[SuppressMessage("ReSharper", "StringLiteralTypo")]
 		private static readonly string Base64JpgString =
 			"/9j/4AAQSkZJRgABAQAAAQABAAD/7QAwUGhvdG9zaG9wIDMuMAA4QklNBAQAAAAAABQcAhkACCFkZWxl" +
 			"dGUhHAIAAAIABP/hCztodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvADw/eHBhY2tldCBiZWdpbj0n" +
@@ -66,8 +65,8 @@ namespace starskytest.FakeCreateAn
 			"AQEBAQEBAQEBAQEBAQEBAQEBAQEBAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEB" +
 			"AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wQARCAACAAMDABEAAREAAhEA/8QAJwABAQAAAAAAAAAA" +
 			"AAAAAAAAAAoQAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwAAAQACAAA/AL+Af//Z";
-		
-		public static readonly ImmutableArray<byte> Bytes = Base64Helper.TryParse(Base64JpgString).ToImmutableArray();
 
+		public static readonly ImmutableArray<byte> Bytes =
+			Base64Helper.TryParse(Base64JpgString).ToImmutableArray();
 	}
 }

@@ -1,7 +1,7 @@
 import { act, createEvent, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import * as useFetch from "../../../hooks/use-fetch";
 import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
-import * as FetchPost from "../../../shared/fetch-post";
+import * as FetchPost from "../../../shared/fetch/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
 import PreferencesAppSettings, { ChangeSetting } from "./preferences-app-settings";
 

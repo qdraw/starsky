@@ -4,26 +4,27 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using starsky.foundation.platform.Helpers;
-using starskycore.Helpers;
 
 namespace starskytest.FakeCreateAn
 {
 	public class CreateAnGpx
 	{
+		public readonly string FullFileGpxPath =
+			Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) +
+			Path.DirectorySeparatorChar + FileNameGpx;
 
-		public readonly string FullFileGpxPath = 
-			Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + Path.DirectorySeparatorChar + FileNameGpx;
-		
 		[SuppressMessage("Performance", "CA1822:Mark members as static")]
 		[SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
 		public string FileName => FileNameGpx;
-		
+
 		private const string FileNameGpx = "zz__test.gpx";
 
 		public readonly string BasePath =
-			Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + Path.DirectorySeparatorChar;
-        
-		private static readonly string Base64GpxString = "CjxncHggeG1sbnM9Imh0dHA6Ly93d3cudG9wb2dyYWZpeC5jb20vR1BYLzEvMSIg" +
+			Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) +
+			Path.DirectorySeparatorChar;
+
+		private static readonly string Base64GpxString =
+			"CjxncHggeG1sbnM9Imh0dHA6Ly93d3cudG9wb2dyYWZpeC5jb20vR1BYLzEvMSIg" +
 			"eG1sbnM6Z3B4eD0iaHR0cDovL3d3dy5nYXJtaW4uY29tL3htbHNjaGVtYXMvR3B4" +
 			"RXh0ZW5zaW9ucy92MyIgeG1sbnM6Z3B4dHB4PSJodHRwOi8vd3d3OC5nYXJtaW4u" +
 			"Y29tL3htbHNjaGVtYXMvVHJhY2tQb2ludEV4dGVuc2lvbnYyLnhzZCIgeG1sbnM6" +
@@ -153,12 +154,13 @@ namespace starskytest.FakeCreateAn
 			"RXh0ZW5zaW9uPgogICAgICAgICAgICAgICAgPC9leHRlbnNpb25zPgogICAgICAg" +
 			"ICAgICA8L3Rya3B0PgogICAgICAgIDwvdHJrc2VnPgogICAgPC90cms+CjwvZ3B4" +
 			"Pg==";
-	    
-		public static readonly ImmutableArray<byte> Bytes = Base64Helper.TryParse(Base64GpxString).ToImmutableArray();
-	    
+
+		public static readonly ImmutableArray<byte> Bytes =
+			Base64Helper.TryParse(Base64GpxString).ToImmutableArray();
+
 		public CreateAnGpx()
 		{
-			if (!File.Exists(FullFileGpxPath))
+			if ( !File.Exists(FullFileGpxPath) )
 			{
 				File.WriteAllBytes(FullFileGpxPath, Convert.FromBase64String(Base64GpxString));
 			}

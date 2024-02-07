@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,27 +26,31 @@ namespace starskytest.starsky.feature.syncbackground.Services
 			services.AddSingleton<ISynchronize, FakeISynchronize>();
 			services.AddSingleton<IWebLogger, FakeIWebLogger>();
 			services.AddSingleton<ISettingsService, FakeISettingsService>();
-			services.AddSingleton<IDiskWatcherBackgroundTaskQueue, FakeDiskWatcherUpdateBackgroundTaskQueue>();
+			services
+				.AddSingleton<IDiskWatcherBackgroundTaskQueue,
+					FakeDiskWatcherUpdateBackgroundTaskQueue>();
 			var serviceProvider = services.BuildServiceProvider();
 			return serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}
-		
+
 		[TestMethod]
 		public async Task OnStartupSyncBackgroundService_DoesStoreAfterWards()
 		{
 			var scope = GetNewScope();
-			var synchronize = scope.CreateScope().ServiceProvider.GetRequiredService<ISynchronize>();
-			var settingsService = scope.CreateScope().ServiceProvider.GetRequiredService<ISettingsService>();
+			var synchronize =
+				scope.CreateScope().ServiceProvider.GetRequiredService<ISynchronize>();
+			var settingsService = scope.CreateScope().ServiceProvider
+				.GetRequiredService<ISettingsService>();
 			var startupSync = new OnStartupSyncBackgroundService(scope);
 			await startupSync.StartAsync(CancellationToken.None);
 
 			var setting = await settingsService.GetSetting<DateTime>(SettingsType
 				.LastSyncBackgroundDateTime);
-			
+
 			Assert.IsNotNull(setting);
 			Assert.AreEqual(DateTime.UtcNow.Day, setting.ToUniversalTime().Day);
 			Assert.AreEqual(DateTime.UtcNow.Hour, setting.ToUniversalTime().Hour);
-			Assert.IsTrue((synchronize as FakeISynchronize)!.Inputs.Exists(p => p.Item1 == "/"));
+			Assert.IsTrue(( synchronize as FakeISynchronize )!.Inputs.Exists(p => p.Item1 == "/"));
 		}
 	}
 }

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IAppSettings } from "../../../interfaces/IAppSettings";
-import FetchPost from "../../../shared/fetch-post";
+import FetchPost from "../../../shared/fetch/fetch-post";
 import { Language } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url-query";
 import FormControl from "../../atoms/form-control/form-control";
@@ -39,6 +39,7 @@ const PreferencesAppSettings: React.FunctionComponent<any> = () => {
       }
       return permissionsData.data.includes("AppSettingsWrite");
     }
+
     setIsEnabled(permissions());
   }, [permissionsData]);
 

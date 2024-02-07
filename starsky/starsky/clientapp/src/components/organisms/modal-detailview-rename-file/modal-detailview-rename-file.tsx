@@ -4,7 +4,7 @@ import useLocation from "../../../hooks/use-location/use-location";
 import { IDetailView, newDetailView } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { newIFileIndexItem } from "../../../interfaces/IFileIndexItem";
-import FetchPost from "../../../shared/fetch-post";
+import FetchPost from "../../../shared/fetch/fetch-post";
 import { FileExtensions } from "../../../shared/file-extensions";
 import { FileListCache } from "../../../shared/filelist-cache";
 import { Language } from "../../../shared/language";

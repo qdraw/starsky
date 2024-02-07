@@ -1,4 +1,3 @@
-using System;
 using System.Threading;
 using Microsoft.Extensions.Hosting;
 
@@ -16,4 +15,3 @@ namespace starskytest.FakeMocks
 		public CancellationToken ApplicationStopping { get; }
 	}
 }
-

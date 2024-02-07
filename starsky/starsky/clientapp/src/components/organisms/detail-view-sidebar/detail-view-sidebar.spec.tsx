@@ -7,7 +7,7 @@ import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { ClipboardHelper } from "../../../shared/clipboard-helper";
 import { parseDate, parseTime } from "../../../shared/date";
-import * as FetchPost from "../../../shared/fetch-post";
+import * as FetchPost from "../../../shared/fetch/fetch-post";
 import { Keyboard } from "../../../shared/keyboard";
 import { SupportedLanguages } from "../../../shared/language";
 import * as ClearSearchCache from "../../../shared/search/clear-search-cache";
@@ -459,6 +459,7 @@ describe("DetailViewSidebar", () => {
 
     it("Press v to paste return false", () => {
       let vPasteIsCalled = false;
+
       function keyboardCallback(regex: RegExp, callback: Function) {
         if (regex.source === "^v$") {
           const event = new KeyboardEvent("keydown", {
@@ -501,6 +502,7 @@ describe("DetailViewSidebar", () => {
 
     it("Press v to paste return true", () => {
       let vPasteIsCalled = false;
+
       function keyboardCallback(regex: RegExp, callback: Function) {
         if (regex.source === "^v$") {
           const event = new KeyboardEvent("keydown", {
@@ -543,6 +545,7 @@ describe("DetailViewSidebar", () => {
 
     it("Press c to copy", () => {
       let cCopyIsCalled = false;
+
       function keyboardCallback(regex: RegExp, callback: Function) {
         if (regex.source === "^c$") {
           const event = new KeyboardEvent("keydown", {
@@ -617,7 +620,9 @@ describe("DetailViewSidebar", () => {
         .mockImplementationOnce(() => {})
         .mockImplementationOnce(() => {})
         .mockImplementationOnce((_, callback) => {
-          callback({ preventDefault: () => {} });
+          callback({
+            preventDefault: () => {}
+          });
         })
         .mockImplementationOnce(() => {});
 

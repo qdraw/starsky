@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { PageType } from "../../../interfaces/IDetailView";
-import * as FetchGet from "../../../shared/fetch-get";
-import * as FetchPost from "../../../shared/fetch-post";
+import * as FetchGet from "../../../shared/fetch/fetch-get";
+import * as FetchPost from "../../../shared/fetch/fetch-post";
 import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
 import ForceSyncWaitButton, { ForceSyncRequestNewContent } from "./force-sync-wait-button";

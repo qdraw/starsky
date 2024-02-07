@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { newIArchive } from "../../../interfaces/IArchive";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
-import * as FetchPost from "../../../shared/fetch-post";
+import * as FetchPost from "../../../shared/fetch/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
 import * as Modal from "../../atoms/modal/modal";
 import ModalForceDelete from "./modal-force-delete";

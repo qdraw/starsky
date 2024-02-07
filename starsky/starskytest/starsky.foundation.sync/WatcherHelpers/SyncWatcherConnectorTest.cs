@@ -16,7 +16,6 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
 using starsky.foundation.sync.WatcherHelpers;
-using starsky.foundation.webtelemetry.Models;
 using starskytest.Controllers;
 using starskytest.FakeMocks;
 

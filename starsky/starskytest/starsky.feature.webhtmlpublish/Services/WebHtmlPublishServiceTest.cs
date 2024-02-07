@@ -228,8 +228,9 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 				{
 					{ new AppSettingsPublishProfiles { SourceMaxWidth = 2000 } }
 				}),
-				selectorStorage, null,
-				null, null, null, new FakeIWebLogger(), new FakeIThumbnailService(selectorStorage));
+				selectorStorage, null!,
+				null!, null!, null!, new FakeIWebLogger(),
+				new FakeIThumbnailService(selectorStorage));
 
 			var result = service.ShouldSkipExtraLarge("");
 			Assert.IsFalse(result);
@@ -248,8 +249,9 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 				{
 					{ new AppSettingsPublishProfiles { SourceMaxWidth = 1000 } }
 				}),
-				selectorStorage, null,
-				null, null, null, new FakeIWebLogger(), new FakeIThumbnailService(selectorStorage));
+				selectorStorage, null!,
+				null!, null!, null!, new FakeIWebLogger(),
+				new FakeIThumbnailService(selectorStorage));
 
 			var result = service.ShouldSkipExtraLarge("");
 			Assert.IsTrue(result);
@@ -295,7 +297,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 				.GetPublishProfileName("default");
 
 			var output = await service.GenerateWebHtml(profiles,
-				profiles.FirstOrDefault(), "testItem", new string[1],
+				profiles.FirstOrDefault()!, "testItem", new string[1],
 				new List<FileIndexItem> { new FileIndexItem("test") },
 				AppDomain.CurrentDomain.BaseDirectory
 			);
@@ -348,7 +350,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 					new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger())
 				.GetPublishProfileName("default");
 
-			var generateJpeg = await service.GenerateJpeg(profiles.FirstOrDefault(),
+			var generateJpeg = await service.GenerateJpeg(profiles.FirstOrDefault()!,
 				new List<FileIndexItem>
 				{
 					new FileIndexItem("/test.jpg") { FileHash = "fileHash" }
@@ -399,7 +401,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 					new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger())
 				.GetPublishProfileName("default");
 
-			var generateJpeg = await service.GenerateJpeg(profiles.FirstOrDefault(),
+			var generateJpeg = await service.GenerateJpeg(profiles.FirstOrDefault()!,
 				new List<FileIndexItem>
 				{
 					new FileIndexItem("/test.jpg") { FileHash = "fileHash" }
@@ -450,7 +452,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 					new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger())
 				.GetPublishProfileName("default");
 
-			var generateJpeg = await service.GenerateJpeg(profiles.FirstOrDefault(),
+			var generateJpeg = await service.GenerateJpeg(profiles.FirstOrDefault()!,
 				new List<FileIndexItem> { new FileIndexItem("/test.jpg") },
 				Path.DirectorySeparatorChar.ToString(), 1);
 
@@ -498,7 +500,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 					new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger())
 				.GetPublishProfileName("default");
 
-			var generateJpeg = await service.GenerateJpeg(profiles.FirstOrDefault(),
+			var generateJpeg = await service.GenerateJpeg(profiles.FirstOrDefault()!,
 				new List<FileIndexItem> { new FileIndexItem("/test.jpg") },
 				Path.DirectorySeparatorChar.ToString(), 1);
 
@@ -538,7 +540,8 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 				true);
 
 			// True param situation
-			Assert.IsTrue(storage.GetAllFilesInDirectoryRecursive("/").Where(p => p != null)
+			Assert.IsTrue(storage.GetAllFilesInDirectoryRecursive("/")
+				.Cast<string?>().Where(p => p != null).Cast<string>()
 				.FirstOrDefault(p => p.Contains("src/test.jpg")) != null);
 
 			// is False instead of True
@@ -578,7 +581,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 				false);
 
 			// False situation
-			Assert.IsTrue(storage.GetAllFilesInDirectoryRecursive("/")
+			Assert.IsTrue(storage.GetAllFilesInDirectoryRecursive("/").Cast<string?>()
 				.FirstOrDefault(p => p != null && p.Contains("src/test.jpg")) != null);
 
 			// is True instead of False

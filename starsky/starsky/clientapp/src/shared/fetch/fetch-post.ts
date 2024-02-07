@@ -1,5 +1,6 @@
-import { IConnectionDefault } from "../interfaces/IConnectionDefault";
-import { GetCookie } from "./cookie/get-cookie.ts";
+import { IConnectionDefault } from "../../interfaces/IConnectionDefault";
+import { GetCookie } from "../cookie/get-cookie.ts";
+
 const FetchPost = async (
   url: string,
   body: string | FormData,

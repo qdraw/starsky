@@ -1,4 +1,4 @@
-import { IConnectionDefault } from "../interfaces/IConnectionDefault";
+import { IConnectionDefault } from "../../interfaces/IConnectionDefault";
 
 function isParseError(parsedDocument: any) {
   // parser and parsererrorNS could be cached on startup for efficiency

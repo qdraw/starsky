@@ -10,7 +10,7 @@ import { INavigateState } from "../../../interfaces/INavigateState";
 import localization from "../../../localization/localization.json";
 import { Comma } from "../../../shared/comma";
 import { IsEditedNow } from "../../../shared/date";
-import FetchPost from "../../../shared/fetch-post";
+import FetchPost from "../../../shared/fetch/fetch-post";
 import { FileListCache } from "../../../shared/filelist-cache";
 import { Keyboard } from "../../../shared/keyboard";
 import { Language } from "../../../shared/language";

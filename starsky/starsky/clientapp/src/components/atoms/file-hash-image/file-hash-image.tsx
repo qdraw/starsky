@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Orientation } from "../../../interfaces/IFileIndexItem";
 import DetectAutomaticRotation from "../../../shared/detect-automatic-rotation";
-import FetchGet from "../../../shared/fetch-get";
+import FetchGet from "../../../shared/fetch/fetch-get";
 import { UrlQuery } from "../../../shared/url-query";
 import PanAndZoomImage from "./pan-and-zoom-image";
 
@@ -12,7 +12,9 @@ export interface IFileHashImageProps {
   orientation?: Orientation;
   id?: string; // filepath to know when image is changed
   onWheelCallback?(z: number): void;
+
   onResetCallback?(): void;
+
   onErrorCallback?(): void;
 }
 

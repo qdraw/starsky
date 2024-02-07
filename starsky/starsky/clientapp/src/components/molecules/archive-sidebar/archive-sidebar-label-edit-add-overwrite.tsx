@@ -7,7 +7,7 @@ import { PageType } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { ISidebarUpdate } from "../../../interfaces/ISidebarUpdate";
 import { CastToInterface } from "../../../shared/cast-to-interface";
-import FetchPost from "../../../shared/fetch-post";
+import FetchPost from "../../../shared/fetch/fetch-post";
 import { Keyboard } from "../../../shared/keyboard";
 import { Language } from "../../../shared/language";
 import { ClearSearchCache } from "../../../shared/search/clear-search-cache";

@@ -1,6 +1,6 @@
 import { act, createEvent, fireEvent, render, RenderResult, screen } from "@testing-library/react";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
-import * as FetchPost from "../../../shared/fetch-post";
+import * as FetchPost from "../../../shared/fetch/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
 import * as Modal from "../../atoms/modal/modal";
 import ModalDatetime from "./modal-edit-datetime";

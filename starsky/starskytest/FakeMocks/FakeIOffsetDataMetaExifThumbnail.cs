@@ -2,7 +2,6 @@ using MetadataExtractor.Formats.Exif;
 using starsky.foundation.database.Models;
 using starsky.foundation.thumbnailmeta.Interfaces;
 using starsky.foundation.thumbnailmeta.Models;
-using starsky.foundation.readmeta.Models;
 
 namespace starskytest.FakeMocks
 {
@@ -11,10 +10,7 @@ namespace starskytest.FakeMocks
 		public OffsetModel ParseOffsetData(ExifThumbnailDirectory? exifThumbnailDir,
 			string subPath)
 		{
-			return new OffsetModel
-			{
-				Success = true
-			};
+			return new OffsetModel { Success = true };
 		}
 
 		public (ExifThumbnailDirectory?, int, int, FileIndexItem.Rotation) GetExifMetaDirectories(

@@ -1,5 +1,5 @@
 import { IConnectionDefault, newIConnectionDefault } from "../../interfaces/IConnectionDefault";
-import * as FetchPost from "../fetch-post";
+import * as FetchPost from "../fetch/fetch-post";
 import { ClearSearchCache } from "./clear-search-cache";
 
 describe("ClearSearchCache", () => {

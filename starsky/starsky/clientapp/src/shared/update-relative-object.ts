@@ -1,5 +1,5 @@
 import { IDetailView, IRelativeObjects } from "../interfaces/IDetailView";
-import FetchGet from "./fetch-get";
+import FetchGet from "./fetch/fetch-get";
 import { URLPath } from "./url-path";
 import { UrlQuery } from "./url-query";
 

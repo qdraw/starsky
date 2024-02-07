@@ -1,7 +1,7 @@
 import { Dispatch, MutableRefObject, SetStateAction } from "react";
 import { IApiNotificationResponseModel } from "../../interfaces/IApiNotificationResponseModel";
 import { IFileIndexItem } from "../../interfaces/IFileIndexItem";
-import FetchGet from "../../shared/fetch-get";
+import FetchGet from "../../shared/fetch/fetch-get";
 import { UrlQuery } from "../../shared/url-query";
 import { useSocketsEventName } from "./use-sockets.const";
 import WebSocketService from "./websocket-service";

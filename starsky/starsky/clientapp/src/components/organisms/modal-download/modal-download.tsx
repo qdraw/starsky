@@ -3,7 +3,7 @@ import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useInterval from "../../../hooks/use-interval";
 import { ExportIntervalUpdate } from "../../../shared/export/export-interval-update";
-import FetchPost from "../../../shared/fetch-post";
+import FetchPost from "../../../shared/fetch/fetch-post";
 import { FileExtensions } from "../../../shared/file-extensions";
 import { Language } from "../../../shared/language";
 import { URLPath } from "../../../shared/url-path";
@@ -23,6 +23,7 @@ enum ProcessingState {
   ready,
   fail
 }
+
 /**
  * ModalExport
  * @param props input stats

@@ -1,5 +1,5 @@
 import { Dispatch } from "react";
-import FetchGet from "../fetch-get";
+import FetchGet from "../fetch/fetch-get";
 import { UrlQuery } from "../url-query";
 import { ProcessingState } from "./processing-state";
 

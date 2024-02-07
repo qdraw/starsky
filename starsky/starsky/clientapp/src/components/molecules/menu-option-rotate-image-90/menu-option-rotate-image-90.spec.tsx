@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { IDetailView } from "../../../interfaces/IDetailView.ts";
 import { IFileIndexItem, Orientation } from "../../../interfaces/IFileIndexItem.ts";
-import * as FetchGet from "../../../shared/fetch-get.ts"; // for expect assertions
+import * as FetchGet from "../../../shared/fetch/fetch-get.ts"; // for expect assertions
 import MenuOptionRotateImage90, { requestNewFileHash } from "./menu-option-rotate-image-90.tsx";
 
 describe("MenuOptionRotateImage90", () => {

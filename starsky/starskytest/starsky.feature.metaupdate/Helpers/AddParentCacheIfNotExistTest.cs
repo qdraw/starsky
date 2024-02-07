@@ -4,9 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.metaupdate.Helpers;
-using starsky.feature.metaupdate.Services;
 using starsky.foundation.database.Models;
-using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.feature.metaupdate.Helpers
@@ -57,7 +55,7 @@ namespace starskytest.starsky.feature.metaupdate.Helpers
 			var metaPreflight = new AddParentCacheIfNotExist(fakeQuery, new FakeIWebLogger());
 
 			await metaPreflight.AddParentCacheIfNotExistAsync(
-				fakeContent.Select(p => p.FilePath));
+				fakeContent.Select(p => p.FilePath!));
 
 			var (_, cacheGetParentFolder) = fakeQuery.CacheGetParentFolder("/");
 

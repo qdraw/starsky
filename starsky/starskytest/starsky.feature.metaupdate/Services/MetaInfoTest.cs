@@ -57,7 +57,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				new AppSettings(),
 				new FakeSelectorStorage(new FakeIStorage(new List<string>(),
 					new List<string> { "/test.xmp" },
-					new List<byte[]> { FakeCreateAn.CreateAnXmp.Bytes.ToArray() })), null,
+					new List<byte[]> { FakeCreateAn.CreateAnXmp.Bytes.ToArray() })), null!,
 				new FakeIWebLogger());
 			var test = await metaInfo.GetInfoAsync(new List<string> { "/test.xmp" }, false);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, test.FirstOrDefault()?.Status);
@@ -71,7 +71,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				new AppSettings(),
 				new FakeSelectorStorage(new FakeIStorage(new List<string>(),
 					new List<string> { "/test.jpg" },
-					new List<byte[]> { FakeCreateAn.CreateAnImage.Bytes.ToArray() })), null,
+					new List<byte[]> { FakeCreateAn.CreateAnImage.Bytes.ToArray() })), null!,
 				new FakeIWebLogger());
 			var test = await metaInfo.GetInfoAsync(new List<string> { "/test.jpg" }, false);
 
@@ -93,7 +93,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 					{
 						new DateTime(2000, 01, 01,
 							01, 01, 01, kind: DateTimeKind.Local)
-					})), null, new FakeIWebLogger());
+					})), null!, new FakeIWebLogger());
 			var test = await metaInfo.GetInfoAsync(new List<string> { "/test.jpg" }, false);
 
 			Assert.AreEqual(new DateTime(2000, 01, 01,

@@ -1,5 +1,4 @@
 import React, { memo, useEffect, useRef, useState } from "react";
-import EmptyImage from "../../public/empty-image.gif";
 import useIntersection from "../../../hooks/use-intersection-observer";
 import useLocation from "../../../hooks/use-location/use-location";
 import { ImageFormat } from "../../../interfaces/IFileIndexItem";
@@ -54,7 +53,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
       isLoading
     ) {
       // data:images are blocked by a strict CSP
-      setSrc(EmptyImage); // 26 bytes
+      setSrc("empty-image.gif"); // 26 bytes
       return;
     }
     setSrc(new UrlQuery().UrlThumbnailImage(props.fileHash, alwaysLoadImage));

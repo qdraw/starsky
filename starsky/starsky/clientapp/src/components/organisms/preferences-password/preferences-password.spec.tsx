@@ -1,7 +1,7 @@
 import { fireEvent, render, RenderResult, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
-import * as FetchPost from "../../../shared/fetch-post";
+import * as FetchPost from "../../../shared/fetch/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
 import PreferencesPassword from "./preferences-password";
 
@@ -79,7 +79,7 @@ describe("PreferencesPassword", () => {
     it("Test if your password has been successfully changed", async () => {
       const component = render(<PreferencesPassword />);
       // spy on fetch
-      // use this using => import * as FetchPost from '../../../shared/fetch-post';
+      // use this using => import * as FetchPost from '../../../shared/fetch/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
         statusCode: 200,
         data: { success: true }

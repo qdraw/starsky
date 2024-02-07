@@ -6,7 +6,7 @@ import { newIArchive } from "../../../interfaces/IArchive";
 import { PageType } from "../../../interfaces/IDetailView";
 import { IFileIndexItem, newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
 import localization from "../../../localization/localization.json";
-import FetchPost from "../../../shared/fetch-post";
+import FetchPost from "../../../shared/fetch/fetch-post";
 import { FileExtensions } from "../../../shared/file-extensions";
 import { FileListCache } from "../../../shared/filelist-cache";
 import { Language } from "../../../shared/language";

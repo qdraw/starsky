@@ -1,4 +1,4 @@
-import { IConnectionDefault } from "../interfaces/IConnectionDefault";
+import { IConnectionDefault } from "../../interfaces/IConnectionDefault";
 
 const FetchGet = async (url: string, headers: any = {}): Promise<IConnectionDefault> => {
   const settings = {
