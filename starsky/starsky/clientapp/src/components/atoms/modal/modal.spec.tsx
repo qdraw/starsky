@@ -66,10 +66,7 @@ describe("Modal", () => {
   });
 
   describe("Open Modal", () => {
-    function renderModal2(): [
-      jest.Mock<any, any>,
-      RenderResult<typeof import("@testing-library/dom/types/queries"), HTMLElement>
-    ] {
+    function renderModal2(): [jest.Mock<any, any>, RenderResult<any, HTMLElement>] {
       const spyScrollTo = jest.fn();
       window.scrollTo = spyScrollTo;
 
@@ -82,7 +79,7 @@ describe("Modal", () => {
           <div className="root" />
         </div>
       );
-      return [spyScrollTo, component];
+      return [spyScrollTo, component as unknown as any];
     }
 
     it("should open modal", () => {
