@@ -21,7 +21,6 @@ using starsky.foundation.worker.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
-#nullable enable
 
 namespace starskytest.Controllers
 {

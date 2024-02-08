@@ -45,7 +45,7 @@
   "OpenTelemetry.Exporter.OpenTelemetryProtocol 1.7.0",
   "OpenTelemetry.Extensions.Hosting 1.7.0",
   "OpenTelemetry.Instrumentation.AspNetCore 1.7.0",
-  "OpenTelemetry.Instrumentation.EventCounters 1.5.1-alpha.1",
+  "OpenTelemetry.Instrumentation.EntityFrameworkCore 1.0.0-beta.10",
   "OpenTelemetry.Instrumentation.Runtime 1.7.0",
   "System.Diagnostics.DiagnosticSource 8.0.0",
   "System.Text.Json 8.0.1",

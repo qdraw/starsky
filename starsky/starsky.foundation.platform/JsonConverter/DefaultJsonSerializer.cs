@@ -16,7 +16,7 @@ namespace starsky.foundation.platform.JsonConverter
 				AllowTrailingCommas = true,
 				WriteIndented = false
 			};
-		
+
 		/// <summary>
 		/// Write with enters in output
 		/// </summary>
@@ -28,10 +28,25 @@ namespace starsky.foundation.platform.JsonConverter
 				AllowTrailingCommas = true,
 				WriteIndented = true
 			};
-		
+
 		/// <summary>
-		/// Please use CamelCase if possible
-		/// Bool is written as quoted string
+		/// PascalCase (No Naming policy)
+		/// Bool is written as quoted string "true" or "false"
+		/// </summary>
+		public static JsonSerializerOptions NoNamingPolicyBoolAsString =>
+			new JsonSerializerOptions
+			{
+				PropertyNamingPolicy = null,
+				DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+				PropertyNameCaseInsensitive = true,
+				AllowTrailingCommas = true,
+				WriteIndented = true,
+				Converters = { new JsonBoolQuotedConverter(), },
+			};
+
+		/// <summary>
+		/// PascalCase (No Naming policy)
+		/// Bool as normal bool
 		/// </summary>
 		public static JsonSerializerOptions NoNamingPolicy =>
 			new JsonSerializerOptions
@@ -40,11 +55,7 @@ namespace starsky.foundation.platform.JsonConverter
 				DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
 				PropertyNameCaseInsensitive = true,
 				AllowTrailingCommas = true,
-				WriteIndented = true,
-				Converters =
-				{
-					new JsonBoolQuotedConverter(),
-				},
+				WriteIndented = true
 			};
 	}
 }

@@ -1,4 +1,3 @@
-#nullable enable
 using System.Collections.Generic;
 using starsky.foundation.database.Models.Account;
 

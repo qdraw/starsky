@@ -15,14 +15,9 @@ namespace starsky.foundation.realtime.Middleware
 {
 	public sealed class WebSocketConnectionsMiddleware
 	{
-		#region Fields
-
 		private readonly WebSocketConnectionsOptions _options;
 		private readonly IWebSocketConnectionsService _connectionsService;
 
-		#endregion
-
-		#region Constructor
 
 		public WebSocketConnectionsMiddleware(RequestDelegate _,
 			WebSocketConnectionsOptions options,
@@ -33,9 +28,6 @@ namespace starsky.foundation.realtime.Middleware
 			                      throw new ArgumentNullException(nameof(connectionsService));
 		}
 
-		#endregion
-
-		#region Methods
 
 		public async Task Invoke(HttpContext context)
 		{
@@ -106,7 +98,5 @@ namespace starsky.foundation.realtime.Middleware
 				       _options.AllowedOrigins.Contains(context.Request.Headers.Origin
 					       .ToString()) );
 		}
-
-		#endregion
 	}
 }

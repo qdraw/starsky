@@ -79,7 +79,6 @@ describe("PreferencesPassword", () => {
     it("Test if your password has been successfully changed", async () => {
       const component = render(<PreferencesPassword />);
       // spy on fetch
-      // use this using => import * as FetchPost from '../../../shared/fetch/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
         statusCode: 200,
         data: { success: true }
@@ -117,7 +116,6 @@ describe("PreferencesPassword", () => {
     it("Test if enter your current password", async () => {
       const component = render(<PreferencesPassword />);
       // spy on fetch
-      // use this using => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
         statusCode: 401,
         data: null
@@ -152,7 +150,6 @@ describe("PreferencesPassword", () => {
     it("Modal Error - The new password does not meet the criteria", async () => {
       const component = render(<PreferencesPassword />);
       // spy on fetch
-      // use this using => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
         statusCode: 400,
         data: null

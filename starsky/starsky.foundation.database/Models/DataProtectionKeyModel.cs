@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+// Warning for cref=EntityFrameworkCoreXmlRepository
 #pragma warning disable CS1574, CS1584, CS1581, CS1580
 
 // Licensed to the .NET Foundation under one or more agreements.

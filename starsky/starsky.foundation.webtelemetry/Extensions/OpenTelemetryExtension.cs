@@ -48,8 +48,10 @@ public static class OpenTelemetryExtension
 
 		if ( !string.IsNullOrWhiteSpace(appSettings.OpenTelemetry.TracesEndpoint) )
 		{
+			// AddEntityFrameworkCoreInstrumentation from OpenTelemetry.Instrumentation.EntityFrameworkCore
 			telemetryBuilder.WithTracing(tracing => tracing
 				.AddAspNetCoreInstrumentation(o => o.Filter = FilterPath)
+				.AddEntityFrameworkCoreInstrumentation()
 				.AddOtlpExporter(
 					o =>
 					{
@@ -73,9 +75,11 @@ public static class OpenTelemetryExtension
 
 		// AddHttpClientInstrumentation from OpenTelemetry.Instrumentation.Http
 		telemetryBuilder.WithMetrics(metrics =>
-			metrics.AddAspNetCoreInstrumentation()
+			metrics
+				.AddAspNetCoreInstrumentation()
 				.AddRuntimeInstrumentation()
 				.AddMeter(ActivitySourceMeter.SyncNameSpace)
+				.AddMeter(ActivitySourceMeter.WorkerNameSpace)
 				.AddOtlpExporter(
 					o =>
 					{

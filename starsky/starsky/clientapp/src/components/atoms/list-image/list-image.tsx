@@ -13,6 +13,11 @@ interface IListImageProps {
 }
 
 /**
+ * Since vite does inline images for small images this is hard coded
+ */
+const emptyImageUrl = "empty-image.gif";
+
+/**
  * Used inside archive/search
  */
 const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
@@ -53,7 +58,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
       isLoading
     ) {
       // data:images are blocked by a strict CSP
-      setSrc("empty-image.gif"); // 26 bytes
+      setSrc(emptyImageUrl); // 26 bytes
       return;
     }
     setSrc(new UrlQuery().UrlThumbnailImage(props.fileHash, alwaysLoadImage));

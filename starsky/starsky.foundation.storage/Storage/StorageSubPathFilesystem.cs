@@ -256,7 +256,10 @@ namespace starsky.foundation.storage.Storage
 		/// <returns>FileStream or Stream.Null when file dont exist</returns>
 		public Stream ReadStream(string path, int maxRead = -1)
 		{
-			if ( !ExistFile(path) ) return Stream.Null;
+			if ( !ExistFile(path) )
+			{
+				return Stream.Null;
+			}
 
 			if ( _appSettings.IsVerbose() ) Console.WriteLine(path);
 

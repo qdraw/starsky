@@ -17,7 +17,6 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.feature.search.Interfaces;
 using starsky.feature.search.ViewModels;
-#nullable enable
 
 namespace starsky.feature.search.Services
 {

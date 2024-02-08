@@ -56,7 +56,6 @@ describe("ModalArchiveRename", () => {
 
     it("change directory name", async () => {
       // spy on fetch
-      // use this import => import * as FetchPost from '../../../shared/fetch/fetch-post';;
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
         statusCode: 200
       } as IConnectionDefault);
@@ -108,7 +107,6 @@ describe("ModalArchiveRename", () => {
 
     it("change directory name and expect dispatch", async () => {
       // spy on fetch
-      // use this import => import * as FetchPost from '../../../shared/fetch/fetch-post';;
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
         statusCode: 200
       } as IConnectionDefault);
@@ -157,7 +155,6 @@ describe("ModalArchiveRename", () => {
 
     it("change directory name should give callback", async () => {
       // spy on fetch
-      // use this import => import * as FetchPost from '../../../shared/fetch/fetch-post';;
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
         statusCode: 200
       } as IConnectionDefault);

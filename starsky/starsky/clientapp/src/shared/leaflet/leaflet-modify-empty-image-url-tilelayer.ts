@@ -1,4 +1,5 @@
 import L, { TileLayer } from "leaflet";
+import { EmptyImageUrl } from "./empty-image.const";
 
 export class LeafletEmptyImageUrlTileLayer extends TileLayer {
   /**
@@ -28,7 +29,7 @@ export class LeafletEmptyImageUrlTileLayer extends TileLayer {
         tile.onload = L.Util.falseFn;
         tile.onerror = L.Util.falseFn;
         if (!tile.complete) {
-          tile.src = "empty-image.gif"; // Replace emptyImageUrl
+          tile.src = EmptyImageUrl; // Replace emptyImageUrl
           L.DomUtil.remove(tile);
           delete this._tiles[i];
         }

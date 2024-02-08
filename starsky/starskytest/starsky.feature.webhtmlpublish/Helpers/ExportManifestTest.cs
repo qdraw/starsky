@@ -27,10 +27,21 @@ namespace starskytest.starsky.feature.webhtmlpublish.Helpers
 		}
 
 		[TestMethod]
+		public void ExportManifestTest_Result()
+		{
+			var appSettings = new AppSettings();
+			var storage = new FakeIStorage();
+			var result = new PublishManifest(storage)
+				.ExportManifest(appSettings.StorageFolder, "Test",
+					new Dictionary<string, bool>());
+
+			Assert.AreEqual("Test", result.Name);
+		}
+
+		[TestMethod]
 		public async Task ExportManifestTest_Export_JsonCompare()
 		{
 			var appSettings = new AppSettings();
-
 			var storage = new FakeIStorage();
 			new PublishManifest(storage)
 				.ExportManifest(appSettings.StorageFolder, "Test",
@@ -44,8 +55,31 @@ namespace starskytest.starsky.feature.webhtmlpublish.Helpers
 			const string expectedOutput = $"{{\n  \"Name\": \"Test\",\n  " +
 			                              $"\"Copy\": {{}},\n  \"Slug\": \"test\",\n" +
 			                              $"  \"Export\": \"";
+
+			// expectedOutput without date and version to avoid flaky tests
+			Assert.IsTrue(output.Contains(expectedOutput));
+		}
+
+		[TestMethod]
+		public async Task ExportManifestTest_Export_JsonCompare_BoolValue()
+		{
+			var appSettings = new AppSettings();
+			var storage = new FakeIStorage();
+			new PublishManifest(storage)
+				.ExportManifest(appSettings.StorageFolder, "Test2",
+					new Dictionary<string, bool> { { "test.html", true } });
+
+			var expectedPath = Path.Combine(appSettings.StorageFolder, "_settings.json");
+			var output = ( await
+				StreamToStringHelper.StreamToStringAsync(
+					storage.ReadStream(expectedPath)) ).Replace("\r\n", "\n");
+
+			const string expectedOutput = "  \"Name\": \"Test2\",\n";
+			const string expectedOutput2 = "\"Copy\": {\n    \"test.html\": true\n  }";
+
 			// expectedOutput without date and version to avoid flaky tests
 
+			Assert.IsTrue(output.Contains(expectedOutput2));
 			Assert.IsTrue(output.Contains(expectedOutput));
 		}
 	}

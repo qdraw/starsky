@@ -1,4 +1,5 @@
 import L, { Coords, GridLayer } from "leaflet";
+import { EmptyImageUrl } from "./empty-image.const";
 
 // use the: IMAGE_INLINE_SIZE_LIMIT=1 due the fact that data: are not supported by the CSP
 
@@ -27,7 +28,7 @@ export class LeafletEmptyImageUrlGridLayer extends GridLayer {
     // unless we're on Android's stock browser,
     // see https://github.com/Leaflet/Leaflet/issues/137
     if (!L.Browser.androidStock) {
-      tile.el.setAttribute("src", "empty-image.gif"); // Replace emptyImageUrl
+      tile.el.setAttribute("src", EmptyImageUrl); // Replace emptyImageUrl
     }
     L.DomUtil.remove(tile.el);
 
