@@ -424,7 +424,8 @@ namespace starsky.feature.webhtmlpublish.Services
 		/// <param name="renderCopyResult"></param>
 		/// <param name="deleteFolderAfterwards"></param>
 		public async Task GenerateZip(string fullFileParentFolderPath, string itemName,
-			Dictionary<string, bool>? renderCopyResult, bool deleteFolderAfterwards = false)
+			Dictionary<string, bool>? renderCopyResult,
+			bool deleteFolderAfterwards = false)
 		{
 			ArgumentNullException.ThrowIfNull(renderCopyResult);
 
