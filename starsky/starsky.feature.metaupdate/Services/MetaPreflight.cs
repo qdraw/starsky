@@ -38,7 +38,7 @@ namespace starsky.feature.metaupdate.Services
 
 		public async Task<(List<FileIndexItem> fileIndexResultsList,
 				Dictionary<string, List<string>> changedFileIndexItemName)>
-			PreflightAsync(FileIndexItem inputModel, List<string> inputFilePaths,
+			PreflightAsync(FileIndexItem? inputModel, List<string> inputFilePaths,
 				bool append, bool collections, int rotateClock)
 		{
 			// the result list
@@ -139,7 +139,7 @@ namespace starsky.feature.metaupdate.Services
 		/// <param name="append">true= for tags to add</param>
 		/// <param name="rotateClock">rotation value 1 left, -1 right, 0 nothing</param>
 		public static void CompareAllLabelsAndRotation(Dictionary<string, List<string>> changedFileIndexItemName,
-			FileIndexItem collectionsFileIndexItem, FileIndexItem statusModel, bool append, int rotateClock)
+			FileIndexItem collectionsFileIndexItem, FileIndexItem? statusModel, bool append, int rotateClock)
 		{
 			if ( changedFileIndexItemName == null || string.IsNullOrEmpty(collectionsFileIndexItem.FilePath) )
 				throw new MissingFieldException(nameof(changedFileIndexItemName));

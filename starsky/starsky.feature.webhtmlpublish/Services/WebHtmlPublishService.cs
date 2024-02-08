@@ -92,7 +92,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		internal List<FileIndexItem> AddFileHashIfNotExist(List<FileIndexItem> fileIndexItemsList)
 		{
 			foreach ( var item in fileIndexItemsList.Where(item =>
-						 string.IsNullOrEmpty(item.FileHash)) )
+				         string.IsNullOrEmpty(item.FileHash)) )
 			{
 				item.FileHash = new FileHash(_subPathStorage).GetHashCode(item.FilePath!).Key;
 			}
@@ -102,9 +102,9 @@ namespace starsky.feature.webhtmlpublish.Services
 
 		internal bool ShouldSkipExtraLarge(string publishProfileName)
 		{
-			var skipExtraLarge = _publishPreflight?.GetPublishProfileName(publishProfileName)?
+			var skipExtraLarge = _publishPreflight.GetPublishProfileName(publishProfileName)
 				.TrueForAll(p => p.SourceMaxWidth <= 1999);
-			return skipExtraLarge == true;
+			return skipExtraLarge;
 		}
 
 		internal async Task PreGenerateThumbnail(IEnumerable<FileIndexItem> fileIndexItemsList,
@@ -139,7 +139,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		/// <param name="moveSourceFiles">include source files (false by default)</param>
 		/// <returns></returns>
 		private async Task<Dictionary<string, bool>?> Render(List<FileIndexItem> fileIndexItemsList,
-			string[] base64ImageArray, string publishProfileName, string itemName,
+			string[]? base64ImageArray, string publishProfileName, string itemName,
 			string outputParentFullFilePathFolder, bool moveSourceFiles = false)
 		{
 			if ( _appSettings.PublishProfiles?.Count == 0 )
@@ -245,7 +245,7 @@ namespace starsky.feature.webhtmlpublish.Services
 			foreach ( var item in viewModel.FileIndexItems )
 			{
 				item.FileName = GenerateSlugHelper.GenerateSlug(item.FileCollectionName!, true) +
-								Path.GetExtension(item.FileName);
+				                Path.GetExtension(item.FileName);
 			}
 
 			// has a direct dependency on the filesystem
@@ -310,7 +310,7 @@ namespace starsky.feature.webhtmlpublish.Services
 
 			return fileIndexItemsList.ToDictionary(item =>
 					_overlayImage.FilePathOverlayImage(item.FilePath!, profile),
-				item => profile.Copy);
+				_ => profile.Copy);
 		}
 
 		/// <summary>
@@ -326,15 +326,15 @@ namespace starsky.feature.webhtmlpublish.Services
 		{
 			// for less than 1000px
 			if ( profile.SourceMaxWidth <= 1000 &&
-				 _thumbnailStorage.ExistFile(
-					 ThumbnailNameHelper.Combine(item.FileHash!, ThumbnailSize.Large)) )
+			     _thumbnailStorage.ExistFile(
+				     ThumbnailNameHelper.Combine(item.FileHash!, ThumbnailSize.Large)) )
 			{
 				await _overlayImage.ResizeOverlayImageThumbnails(item.FileHash!, outputPath,
 					profile);
 			}
 			else if ( profile.SourceMaxWidth <= 2000 &&
-					  _thumbnailStorage.ExistFile(
-						  ThumbnailNameHelper.Combine(item.FileHash!, ThumbnailSize.ExtraLarge)) )
+			          _thumbnailStorage.ExistFile(
+				          ThumbnailNameHelper.Combine(item.FileHash!, ThumbnailSize.ExtraLarge)) )
 			{
 				await _overlayImage.ResizeOverlayImageThumbnails(
 					ThumbnailNameHelper.Combine(item.FileHash!, ThumbnailSize.ExtraLarge),
@@ -413,7 +413,7 @@ namespace starsky.feature.webhtmlpublish.Services
 
 			return fileIndexItemsList.ToDictionary(item =>
 					_overlayImage.FilePathOverlayImage(item.FilePath!, profile),
-				item => profile.Copy);
+				_ => profile.Copy);
 		}
 
 		/// <summary>
@@ -424,8 +424,10 @@ namespace starsky.feature.webhtmlpublish.Services
 		/// <param name="renderCopyResult"></param>
 		/// <param name="deleteFolderAfterwards"></param>
 		public async Task GenerateZip(string fullFileParentFolderPath, string itemName,
-			Dictionary<string, bool> renderCopyResult, bool deleteFolderAfterwards = false)
+			Dictionary<string, bool>? renderCopyResult, bool deleteFolderAfterwards = false)
 		{
+			ArgumentNullException.ThrowIfNull(renderCopyResult);
+
 			var fileNames = renderCopyResult.Where(p => p.Value).Select(p => p.Key).ToList();
 
 			var slugItemName = GenerateSlugHelper.GenerateSlug(itemName, true);

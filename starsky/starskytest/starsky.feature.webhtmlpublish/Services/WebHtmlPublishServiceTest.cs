@@ -202,7 +202,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 				new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() });
 			var selectorStorage = new FakeSelectorStorage(storage);
 
-			var service = new WebHtmlPublishService(null!, selectorStorage, null!,
+			var service = new WebHtmlPublishService(new FakeIPublishPreflight(), selectorStorage, null!,
 				null!, null!, null!, new FakeIWebLogger(),
 				new FakeIThumbnailService(selectorStorage));
 			var input = new List<FileIndexItem>

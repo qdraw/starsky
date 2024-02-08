@@ -74,7 +74,7 @@ public class MetaUpdateService : IMetaUpdateService
 	public async Task<List<FileIndexItem>> UpdateAsync(
 		Dictionary<string, List<string>>? changedFileIndexItemName,
 		List<FileIndexItem> fileIndexResultsList,
-		FileIndexItem inputModel, // only when changedFileIndexItemName = null
+		FileIndexItem? inputModel, // only when changedFileIndexItemName = null
 		bool collections, bool append, // only when changedFileIndexItemName = null
 		int rotateClock) // <- this one is needed
 	{
