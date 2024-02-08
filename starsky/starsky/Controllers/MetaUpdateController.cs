@@ -27,10 +27,10 @@ namespace starsky.Controllers
 		private readonly IServiceScopeFactory _scopeFactory;
 		private readonly IMetaUpdateService _metaUpdateService;
 
-		public MetaUpdateController(IMetaPreflight metaPreflight, 
+		public MetaUpdateController(IMetaPreflight metaPreflight,
 			IMetaUpdateService metaUpdateService,
-			IUpdateBackgroundTaskQueue queue, 
-			IWebLogger logger, 
+			IUpdateBackgroundTaskQueue queue,
+			IWebLogger logger,
 			IServiceScopeFactory scopeFactory)
 		{
 			_metaPreflight = metaPreflight;
@@ -39,7 +39,7 @@ namespace starsky.Controllers
 			_bgTaskQueue = queue;
 			_logger = logger;
 		}
-	    
+
 		/// <summary>
 		/// Update Exif and Rotation API
 		/// </summary>
@@ -57,12 +57,12 @@ namespace starsky.Controllers
 		/// <response code="404">item not found in the database or on disk</response>
 		/// <response code="401">User unauthorized</response>
 		[IgnoreAntiforgeryToken]
-		[ProducesResponseType(typeof(List<FileIndexItem>),200)]
-		[ProducesResponseType(typeof(List<FileIndexItem>),404)]
+		[ProducesResponseType(typeof(List<FileIndexItem>), 200)]
+		[ProducesResponseType(typeof(List<FileIndexItem>), 404)]
 		[ProducesResponseType(typeof(string), 400)]
 		[HttpPost("/api/update")]
 		[Produces("application/json")]
-		public async Task<IActionResult> UpdateAsync(FileIndexItem inputModel, string f, bool append, 
+		public async Task<IActionResult> UpdateAsync(FileIndexItem inputModel, string f, bool append,
 			bool collections = true, int rotateClock = 0)
 		{
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
@@ -70,41 +70,41 @@ namespace starsky.Controllers
 			{
 				return BadRequest("No input files");
 			}
-			
+
 			var stopwatch = StopWatchLogger.StartUpdateReplaceStopWatch();
 
-			var (fileIndexResultsList, changedFileIndexItemName) = 
-				await _metaPreflight.PreflightAsync(inputModel, 
+			var (fileIndexResultsList, changedFileIndexItemName) =
+				await _metaPreflight.PreflightAsync(inputModel,
 				inputFilePaths.ToList(), append, collections, rotateClock);
-			
+
 			// Update >
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
 				var metaUpdateService = _scopeFactory.CreateScope()
 					.ServiceProvider.GetRequiredService<IMetaUpdateService>();
-				
+
 				await metaUpdateService.UpdateAsync(
 					changedFileIndexItemName, fileIndexResultsList, null,
 					collections, append, rotateClock);
 			}, string.Empty);
 
 			// before sending not founds
-			new StopWatchLogger(_logger).StopUpdateReplaceStopWatch("update", f,collections, stopwatch);
+			new StopWatchLogger(_logger).StopUpdateReplaceStopWatch("update", f, collections, stopwatch);
 
 			// When all items are not found
 			if ( fileIndexResultsList.TrueForAll(p =>
-				    p.Status != FileIndexItem.ExifStatus.Ok
-				    && p.Status != FileIndexItem.ExifStatus.Deleted) )
+					p.Status != FileIndexItem.ExifStatus.Ok
+					&& p.Status != FileIndexItem.ExifStatus.Deleted) )
 			{
 				return NotFound(fileIndexResultsList);
 			}
 
 			// Clone an new item in the list to display
 			var returnNewResultList = fileIndexResultsList.Select(item => item.Clone()).ToList();
-            
+
 			// when switching very fast between images the background task has not run yet
 			_metaUpdateService.UpdateReadMetaCache(returnNewResultList);
-			
+
 			// Push direct to socket when update or replace to avoid undo after a second
 			_logger.LogInformation($"[UpdateController] send to socket {inputFilePaths.FirstOrDefault()}");
 

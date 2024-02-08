@@ -25,7 +25,7 @@ namespace starsky.Controllers
 		private readonly IWebLogger _logger;
 		private readonly IServiceScopeFactory _scopeFactory;
 
-		public MetaReplaceController(IMetaReplaceService metaReplaceService,  IUpdateBackgroundTaskQueue queue, 
+		public MetaReplaceController(IMetaReplaceService metaReplaceService, IUpdateBackgroundTaskQueue queue,
 			IRealtimeConnectionsService connectionsService, IWebLogger logger, IServiceScopeFactory scopeFactory)
 		{
 			_scopeFactory = scopeFactory;
@@ -48,8 +48,8 @@ namespace starsky.Controllers
 		/// <response code="404">item(s) not found</response>
 		/// <response code="401">User unauthorized</response>
 		[HttpPost("/api/replace")]
-		[ProducesResponseType(typeof(List<FileIndexItem>),200)]
-		[ProducesResponseType(typeof(List<FileIndexItem>),404)]
+		[ProducesResponseType(typeof(List<FileIndexItem>), 200)]
+		[ProducesResponseType(typeof(List<FileIndexItem>), 404)]
 		[Produces("application/json")]
 		public async Task<IActionResult> Replace(string f, string fieldName, string search,
 			string replace, bool collections = true)
@@ -58,15 +58,15 @@ namespace starsky.Controllers
 
 			var fileIndexResultsList = await _metaReplaceService
 				.Replace(f, fieldName, search, replace, collections);
-		    
+
 			var resultsOkOrDeleteList = fileIndexResultsList.Where(
-				p => p.Status is FileIndexItem.ExifStatus.Ok 
-					or FileIndexItem.ExifStatus.OkAndSame 
-					or FileIndexItem.ExifStatus.Deleted 
+				p => p.Status is FileIndexItem.ExifStatus.Ok
+					or FileIndexItem.ExifStatus.OkAndSame
+					or FileIndexItem.ExifStatus.Deleted
 					or FileIndexItem.ExifStatus.DeletedAndSame).ToList();
-			
+
 			var changedFileIndexItemName = resultsOkOrDeleteList.
-				ToDictionary(item => item.FilePath!, _ => new List<string> {fieldName});
+				ToDictionary(item => item.FilePath!, _ => new List<string> { fieldName });
 
 			// Update >
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
@@ -77,17 +77,17 @@ namespace starsky.Controllers
 					.UpdateAsync(changedFileIndexItemName, resultsOkOrDeleteList,
 						null, collections, false, 0);
 			}, string.Empty);
-			
+
 			// before sending not founds
-			new StopWatchLogger(_logger).StopUpdateReplaceStopWatch("update", 
+			new StopWatchLogger(_logger).StopUpdateReplaceStopWatch("update",
 				fileIndexResultsList.FirstOrDefault()?.FilePath!, collections, stopwatch);
-			
+
 			// When all items are not found
-			if (resultsOkOrDeleteList.Count == 0 )
+			if ( resultsOkOrDeleteList.Count == 0 )
 			{
 				return NotFound(fileIndexResultsList);
 			}
-			
+
 			// Push direct to socket when update or replace to avoid undo after a second
 			var webSocketResponse =
 				new ApiNotificationResponseModel<List<FileIndexItem>>(resultsOkOrDeleteList, ApiNotificationType.Replace);

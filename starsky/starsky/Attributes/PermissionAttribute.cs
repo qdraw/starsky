@@ -21,7 +21,7 @@ namespace starsky.Attributes
 		{
 			var user = context.HttpContext.User;
 
-			if (user.Identity?.IsAuthenticated == false)
+			if ( user.Identity?.IsAuthenticated == false )
 			{
 				context.Result = new UnauthorizedResult();
 			}
@@ -41,10 +41,10 @@ namespace starsky.Attributes
 
 			if ( collectedPermissions.Count == 0 )
 			{
-				context.Result =  new UnauthorizedResult();
+				context.Result = new UnauthorizedResult();
 				return;
 			}
-			
+
 			// add header for testing
 			context.HttpContext.Response.Headers.TryAdd("x-permission", "true");
 		}

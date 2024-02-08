@@ -32,7 +32,7 @@ public class TrashController : Controller
 	{
 		return Json(_moveToTrashService.DetectToUseSystemTrash());
 	}
-	
+
 	/// <summary>
 	/// (beta) Move a file to the trash
 	/// </summary>
@@ -57,7 +57,7 @@ public class TrashController : Controller
 		}
 
 		var fileIndexResultsList = await _moveToTrashService.MoveToTrashAsync(inputFilePaths.ToList(), collections);
-		
+
 		return Json(fileIndexResultsList);
 	}
 }

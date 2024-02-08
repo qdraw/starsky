@@ -60,9 +60,9 @@ namespace starsky.Controllers
 			try
 			{
 				if ( _cache != null &&
-				     _cache.TryGetValue(healthControllerCacheKey, out var objectHealthStatus) &&
-				     objectHealthStatus is HealthReport healthStatus &&
-				     healthStatus.Status == HealthStatus.Healthy )
+					 _cache.TryGetValue(healthControllerCacheKey, out var objectHealthStatus) &&
+					 objectHealthStatus is HealthReport healthStatus &&
+					 healthStatus.Status == HealthStatus.Healthy )
 				{
 					return healthStatus;
 				}
@@ -132,7 +132,7 @@ namespace starsky.Controllers
 						Name = key,
 						IsHealthy = value.Status == HealthStatus.Healthy,
 						Description = value.Description + value.Exception?.Message +
-						              value.Exception?.StackTrace
+									  value.Exception?.StackTrace
 					}
 				);
 			}

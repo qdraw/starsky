@@ -20,7 +20,7 @@ namespace starsky.Controllers
 			_selectorStorage = selectorStorage;
 			_thumbnailGenerationService = thumbnailGenerationService;
 		}
-		
+
 		/// <summary>
 		/// Create thumbnails for a folder in the background
 		/// </summary>
@@ -34,14 +34,14 @@ namespace starsky.Controllers
 			var subPath = f != "/" ? PathHelper.RemoveLatestSlash(f) : "/";
 			var subPathStorage = _selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 
-			if ( !subPathStorage.ExistFolder(subPath))
+			if ( !subPathStorage.ExistFolder(subPath) )
 			{
 				return NotFound("folder not found");
 			}
 
 			// When the CPU is to high its gives a Error 500
 			await _thumbnailGenerationService.ManualBackgroundQueue(subPath);
-			
+
 			return Json("Job started");
 		}
 	}

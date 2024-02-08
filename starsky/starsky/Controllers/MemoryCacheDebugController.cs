@@ -9,7 +9,7 @@ using starsky.foundation.platform.Interfaces;
 namespace starsky.Controllers
 {
 	[Authorize]
-	public sealed class MemoryCacheDebugController: Controller
+	public sealed class MemoryCacheDebugController : Controller
 	{
 		private readonly IMemoryCache _memoryCache;
 		private readonly IWebLogger _logger;
@@ -19,7 +19,7 @@ namespace starsky.Controllers
 			_memoryCache = memoryCache;
 			_logger = logger;
 		}
-		
+
 		/// <summary>
 		/// View data from the memory cache - use to debug
 		/// </summary>

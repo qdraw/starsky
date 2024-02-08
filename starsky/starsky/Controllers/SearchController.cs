@@ -26,14 +26,14 @@ namespace starsky.Controllers
 		/// <returns>the search results</returns>
 		/// <response code="200">the search results (ActionResult Search)</response>
 		[HttpGet("/api/search")]
-		[ProducesResponseType(typeof(SearchViewModel),200)] // ok
+		[ProducesResponseType(typeof(SearchViewModel), 200)] // ok
 		[Produces("application/json")]
 		public async Task<IActionResult> Index(string t, int p = 0)
 		{
 			var model = await _search.Search(t, p);
 			return Json(model);
 		}
-        
+
 		/// <summary>
 		/// Get relative paths in a search query
 		/// Does not cover multiple pages (so it ends within the page)
@@ -44,36 +44,36 @@ namespace starsky.Controllers
 		/// <returns>Relative object (only this)</returns>
 		/// <response code="200">the search results</response>
 		[HttpGet("/api/search/relative-objects")]
-		[ProducesResponseType(typeof(SearchViewModel),200)] // ok
+		[ProducesResponseType(typeof(SearchViewModel), 200)] // ok
 		[Produces("application/json")]
 		public async Task<IActionResult> SearchRelative(string f, string t, int p = 0)
 		{
 			// Json api && View()            
-			var searchViewModel =  await _search.Search(t, p);
+			var searchViewModel = await _search.Search(t, p);
 
-			var photoIndexOfQuery = GetIndexFilePathFromSearch(searchViewModel,f);
+			var photoIndexOfQuery = GetIndexFilePathFromSearch(searchViewModel, f);
 			if ( photoIndexOfQuery == -1 ) return NotFound("image not found in search result");
-	        
+
 			var args = new Dictionary<string, string>
 			{
 				{ "p", p.ToString() },
 				{ "t", t }
 			};
-	        
-			var relativeObject = new RelativeObjects{Args = args};
 
-			if (photoIndexOfQuery != searchViewModel.FileIndexItems?.Count - 1 )
+			var relativeObject = new RelativeObjects { Args = args };
+
+			if ( photoIndexOfQuery != searchViewModel.FileIndexItems?.Count - 1 )
 			{
 				relativeObject.NextFilePath = searchViewModel.FileIndexItems?[photoIndexOfQuery + 1].FilePath!;
 				relativeObject.NextHash = searchViewModel.FileIndexItems?[photoIndexOfQuery + 1].FileHash!;
 			}
 
-			if (photoIndexOfQuery >= 1)
+			if ( photoIndexOfQuery >= 1 )
 			{
 				relativeObject.PrevFilePath = searchViewModel.FileIndexItems?[photoIndexOfQuery - 1].FilePath!;
 				relativeObject.PrevHash = searchViewModel.FileIndexItems?[photoIndexOfQuery - 1].FileHash!;
 			}
-	        
+
 			return Json(relativeObject);
 		}
 
@@ -87,10 +87,10 @@ namespace starsky.Controllers
 		{
 			var result = searchViewModel.FileIndexItems?.Find(p => p.FilePath == f);
 			var photoIndexOfQuery = searchViewModel.FileIndexItems?.IndexOf(result!);
-			if ( result == null || photoIndexOfQuery == null) return -1;
+			if ( result == null || photoIndexOfQuery == null ) return -1;
 			return photoIndexOfQuery.Value;
 		}
-        
+
 		/// <summary>
 		/// List of files with the tag: !delete! (TrashKeyword.TrashKeywordString)
 		/// Caching is disabled on this api call
@@ -99,7 +99,7 @@ namespace starsky.Controllers
 		/// <returns>the delete files results</returns>
 		/// <response code="200">the search results</response>
 		[HttpGet("/api/search/trash")]
-		[ProducesResponseType(typeof(SearchViewModel),200)] // ok
+		[ProducesResponseType(typeof(SearchViewModel), 200)] // ok
 		[Produces("application/json")]
 		public async Task<IActionResult> Trash(int p = 0)
 		{
@@ -116,9 +116,9 @@ namespace starsky.Controllers
 		/// <response code="412">Cache is disabled in config</response>
 		/// <response code="401">User unauthorized</response>
 		[HttpPost("/api/search/remove-cache")]
-		[Produces("application/json")]	    
-		[ProducesResponseType(typeof(string),200)]
-		[ProducesResponseType(typeof(string),412)]
+		[Produces("application/json")]
+		[ProducesResponseType(typeof(string), 200)]
+		[ProducesResponseType(typeof(string), 412)]
 		[ProducesResponseType(401)]
 		public IActionResult RemoveCache(string t = "")
 		{
@@ -126,7 +126,7 @@ namespace starsky.Controllers
 
 			if ( cache != null )
 				return Json(cache == false ? "there is no cached item" : "cache cleared");
-		    
+
 			Response.StatusCode = 412;
 			return Json("cache disabled in config");
 		}

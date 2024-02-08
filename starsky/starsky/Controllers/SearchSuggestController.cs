@@ -11,7 +11,7 @@ namespace starsky.Controllers
 	{
 		private readonly ISearchSuggest _suggest;
 
-		public SearchSuggestController(ISearchSuggest suggest) 
+		public SearchSuggestController(ISearchSuggest suggest)
 		{
 			_suggest = suggest;
 		}
@@ -23,9 +23,9 @@ namespace starsky.Controllers
 		/// <returns>the search results</returns>
 		/// <response code="200">the search results</response>
 		[HttpGet("/api/suggest")]
-		[ProducesResponseType(typeof(SearchViewModel),200)] // ok
-		[Produces("application/json")]	    
-		[Authorize] 
+		[ProducesResponseType(typeof(SearchViewModel), 200)] // ok
+		[Produces("application/json")]
+		[Authorize]
 		// ^ ^ ^ ^ = = = = = = = = = = = = = = = = = =
 		public async Task<IActionResult> Suggest(string t)
 		{
@@ -43,9 +43,9 @@ namespace starsky.Controllers
 		/// <returns>a keyList with search suggestions</returns>
 		/// <response code="200">the search results</response>
 		[HttpGet("/api/suggest/all")]
-		[ProducesResponseType(typeof(SearchViewModel),200)] // ok
-		[Produces("application/json")]	    
-		[Authorize] 
+		[ProducesResponseType(typeof(SearchViewModel), 200)] // ok
+		[Produces("application/json")]
+		[Authorize]
 		// ^ ^ ^ ^ = = = = = = = = = = = = = = = = = =
 		public async Task<IActionResult> All()
 		{

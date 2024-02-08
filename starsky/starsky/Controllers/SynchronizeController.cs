@@ -25,9 +25,9 @@ namespace starsky.Controllers
 		/// <response code="401">User unauthorized</response>
 		[HttpPost("/api/synchronize")]
 		[HttpGet("/api/synchronize")] // < = = = = = = = = subject to change!
-		[ProducesResponseType(typeof(string),200)]
-		[ProducesResponseType(typeof(string),401)]
-		[Produces("application/json")]	   
+		[ProducesResponseType(typeof(string), 200)]
+		[ProducesResponseType(typeof(string), 401)]
+		[Produces("application/json")]
 		public async Task<IActionResult> Index(string f)
 		{
 			var status = await _manualBackgroundSyncService.ManualSync(f);
