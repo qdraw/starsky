@@ -23,7 +23,8 @@ namespace starsky.Controllers
 		private readonly IWebLogger _logger;
 		private readonly IThumbnailService _thumbnailService;
 
-		public DownloadPhotoController(IQuery query, ISelectorStorage selectorStorage, IWebLogger logger, IThumbnailService thumbnailService)
+		public DownloadPhotoController(IQuery query, ISelectorStorage selectorStorage,
+			IWebLogger logger, IThumbnailService thumbnailService)
 		{
 			_query = query;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
@@ -72,7 +73,8 @@ namespace starsky.Controllers
 		[ProducesResponseType(200)] // file
 		[ProducesResponseType(404)] // not found
 		[ProducesResponseType(500)] // "Thumbnail generation failed"
-		public async Task<IActionResult> DownloadPhoto(string f, bool isThumbnail = true, bool cache = true)
+		public async Task<IActionResult> DownloadPhoto(string f, bool isThumbnail = true,
+			bool cache = true)
 		{
 			// f = subpath/filepath
 			if ( f.Contains("?isthumbnail") )
@@ -95,7 +97,8 @@ namespace starsky.Controllers
 				if ( cache ) CacheControlOverwrite.SetExpiresResponseHeaders(Request);
 				var fileStream = _iStorage.ReadStream(fileIndexItem.FilePath!);
 				// Return the right mime type (enableRangeProcessing = needed for safari and mp4)
-				return File(fileStream, MimeHelper.GetMimeTypeByFileName(fileIndexItem.FilePath), true);
+				return File(fileStream, MimeHelper.GetMimeTypeByFileName(fileIndexItem.FilePath!),
+					true);
 			}
 
 			if ( !_thumbnailStorage.ExistFolder("/") )
@@ -120,8 +123,8 @@ namespace starsky.Controllers
 					fileIndexItem.FileHash!);
 
 				if ( !_thumbnailStorage.ExistFile(
-					ThumbnailNameHelper.Combine(fileIndexItem.FileHash!,
-						ThumbnailSize.Large)) )
+					    ThumbnailNameHelper.Combine(fileIndexItem.FileHash!,
+						    ThumbnailSize.Large)) )
 				{
 					Response.StatusCode = 500;
 					return Json("Thumbnail generation failed");

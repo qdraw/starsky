@@ -26,6 +26,7 @@ namespace starskytest.FakeMocks
 			_fakeCachedContent = fakeCachedContent ?? new List<FileIndexItem>();
 		}
 
+		[SuppressMessage("Style", "IDE0060:Remove unused parameter")]
 		[SuppressMessage("ReSharper", "UnusedParameter.Local")]
 		public FakeIQuery(ApplicationDbContext context,
 			AppSettings appSettings,
@@ -401,10 +402,6 @@ namespace starskytest.FakeMocks
 		}
 
 		public void RemoveCacheItem(List<FileIndexItem> updateStatusContent)
-		{
-		}
-
-		public void RemoveCacheItem(FileIndexItem updateStatusContent)
 		{
 		}
 

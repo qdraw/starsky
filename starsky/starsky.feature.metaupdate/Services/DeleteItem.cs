@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.feature.metaupdate.Interfaces;
@@ -48,7 +49,7 @@ namespace starsky.feature.metaupdate.Services
 
 				// Status should be deleted before you can delete the item
 				if ( _iStorage.IsFolderOrFile(detailView.FileIndexItem.FilePath) ==
-					 FolderOrFileModel.FolderOrFileTypeList.Deleted )
+				     FolderOrFileModel.FolderOrFileTypeList.Deleted )
 				{
 					HandleNotFoundSourceMissingStatus(detailView.FileIndexItem,
 						fileIndexResultsList);
@@ -57,14 +58,14 @@ namespace starsky.feature.metaupdate.Services
 
 				// Dir is readonly / don't delete
 				if ( _statusCodeHelper.IsReadOnlyStatus(detailView) ==
-					 FileIndexItem.ExifStatus.ReadOnly )
+				     FileIndexItem.ExifStatus.ReadOnly )
 				{
 					HandleReadOnlyStatus(detailView.FileIndexItem, fileIndexResultsList);
 					continue;
 				}
 
 				if ( StatusCodesHelper.IsDeletedStatus(detailView) !=
-					 FileIndexItem.ExifStatus.Deleted )
+				     FileIndexItem.ExifStatus.Deleted )
 				{
 					HandleOperationNotSupportedStatus(detailView.FileIndexItem,
 						fileIndexResultsList);
@@ -90,12 +91,13 @@ namespace starsky.feature.metaupdate.Services
 			return fileIndexResultsList;
 		}
 
+		[SuppressMessage("ReSharper", "SuggestBaseTypeForParameter")]
 		private async Task HandleCollectionDeletion(List<string> collectionAndInsideDirectoryList,
-			ICollection<FileIndexItem> fileIndexResultsList)
+			List<FileIndexItem> fileIndexResultsList)
 		{
 			// collectionAndInsideDirectoryList should not have duplicate items
 			foreach ( var collectionSubPath in
-					 new HashSet<string>(collectionAndInsideDirectoryList) )
+			         new HashSet<string>(collectionAndInsideDirectoryList) )
 			{
 				var detailViewItem = _query.SingleItem(collectionSubPath, null, false, false);
 
@@ -119,8 +121,8 @@ namespace starsky.feature.metaupdate.Services
 				if ( detailViewItem.FileIndexItem.IsDirectory != true ) continue;
 
 				foreach ( var item in
-						 ( await _query.GetAllRecursiveAsync(collectionSubPath) ).Where(p =>
-							 p.IsDirectory == true) )
+				         ( await _query.GetAllRecursiveAsync(collectionSubPath) ).Where(p =>
+					         p.IsDirectory == true) )
 				{
 					item.Status = FileIndexItem.ExifStatus.Deleted;
 					fileIndexResultsList.Add(item.Clone());
@@ -161,7 +163,7 @@ namespace starsky.feature.metaupdate.Services
 		{
 			// remove the sidecar file (if exist)
 			if ( ExtensionRolesHelper.IsExtensionForceXmp(detailViewItem.FileIndexItem!
-					.FileName) )
+				    .FileName) )
 			{
 				_iStorage.FileDelete(
 					ExtensionRolesHelper.ReplaceExtensionWithXmp(detailViewItem

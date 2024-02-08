@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -37,7 +36,7 @@ namespace starsky.Controllers
 			// When all items are not found
 			// ok = file is deleted
 			if ( fileIndexResultsList.TrueForAll(p =>
-					p.Status != FileIndexItem.ExifStatus.Ok) )
+				    p.Status != FileIndexItem.ExifStatus.Ok) )
 			{
 				return NotFound(fileIndexResultsList);
 			}

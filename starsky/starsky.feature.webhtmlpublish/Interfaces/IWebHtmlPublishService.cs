@@ -11,7 +11,7 @@ namespace starsky.feature.webhtmlpublish.Interfaces
 			bool moveSourceFiles = false);
 
 		Task GenerateZip(string fullFileParentFolderPath, string itemName,
-			Dictionary<string, bool> renderCopyResult,
+			Dictionary<string, bool>? renderCopyResult,
 			bool deleteFolderAfterwards = false);
 	}
 }

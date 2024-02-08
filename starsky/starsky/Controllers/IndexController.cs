@@ -60,7 +60,8 @@ namespace starsky.Controllers
 
 			if ( singleItem is { IsDirectory: false } )
 			{
-				singleItem.IsReadOnly = _appSettings.IsReadOnly(singleItem.FileIndexItem?.ParentDirectory!);
+				singleItem.IsReadOnly =
+					_appSettings.IsReadOnly(singleItem.FileIndexItem?.ParentDirectory!);
 				return Json(singleItem);
 			}
 
@@ -75,12 +76,13 @@ namespace starsky.Controllers
 			{
 				FileIndexItems = fileIndexItems,
 				ColorClassActiveList = colorClassActiveList,
-				RelativeObjects = _query.GetNextPrevInFolder(subPath), // Args are not shown in this view
+				RelativeObjects =
+					_query.GetNextPrevInFolder(subPath), // Args are not shown in this view
 				Breadcrumb = Breadcrumbs.BreadcrumbHelper(subPath),
-				SearchQuery = subPath.Split("/").LastOrDefault(),
+				SearchQuery = subPath.Split("/").LastOrDefault()!,
 				SubPath = subPath,
-				CollectionsCount = fileIndexItemsWithoutCollections.
-					Count(p => p.IsDirectory == false),
+				CollectionsCount =
+					fileIndexItemsWithoutCollections.Count(p => p.IsDirectory == false),
 				// when change colorClass selection you should see all options
 				ColorClassUsage = fileIndexItemsWithoutCollections
 					.Select(p => p.ColorClass).Distinct()
