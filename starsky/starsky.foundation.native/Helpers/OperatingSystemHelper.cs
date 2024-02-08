@@ -11,7 +11,8 @@ public static class OperatingSystemHelper
 
 	internal delegate bool IsOsPlatformDelegate(OSPlatform osPlatform);
 
-	internal static OSPlatform GetPlatformInternal(IsOsPlatformDelegate isOsPlatformDelegate) {
+	internal static OSPlatform GetPlatformInternal(IsOsPlatformDelegate isOsPlatformDelegate)
+	{
 		if ( isOsPlatformDelegate(OSPlatform.Windows) )
 		{
 			return OSPlatform.Windows;

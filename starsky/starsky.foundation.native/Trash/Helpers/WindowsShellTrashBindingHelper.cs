@@ -20,10 +20,10 @@ public static class WindowsShellTrashBindingHelper
 	/// <param name="path">Location of directory or file to recycle</param>
 	/// <param name="platform">should be windows</param>
 	/// <param name="flags">FileOperationFlags to add in addition to FOF_ALLOWUNDO</param>
-	internal static (bool?, string) Trash(string path, 
-		OSPlatform platform, 
+	internal static (bool?, string) Trash(string path,
+		OSPlatform platform,
 		ShFileOperations flags = ShFileOperations.FOF_NOCONFIRMATION |
-		                         ShFileOperations.FOF_WANTNUKEWARNING)
+								 ShFileOperations.FOF_WANTNUKEWARNING)
 	{
 		if ( platform != OSPlatform.Windows )
 		{
@@ -42,7 +42,7 @@ public static class WindowsShellTrashBindingHelper
 	internal static (bool?, string) Trash(IEnumerable<string> filesFullPath,
 		OSPlatform platform,
 		ShFileOperations flags = ShFileOperations.FOF_NOCONFIRMATION |
-		                         ShFileOperations.FOF_WANTNUKEWARNING)
+								 ShFileOperations.FOF_WANTNUKEWARNING)
 	{
 		var results = filesFullPath.Select(path => Trash(path, platform, flags)).ToList();
 		return results.FirstOrDefault();
@@ -127,7 +127,7 @@ public static class WindowsShellTrashBindingHelper
 
 	[DllImport("shell32.dll", CharSet = CharSet.Unicode)]
 	[SuppressMessage("Interoperability", "SYSLIB1054:Use \'LibraryImportAttribute\' instead of \'DllImportAttribute\' " +
-	                                     "to generate P/Invoke marshalling code at compile time")]
+										 "to generate P/Invoke marshalling code at compile time")]
 	private static extern int SHFileOperation(ref SHFILEOPSTRUCT FileOp);
 
 
@@ -147,7 +147,7 @@ public static class WindowsShellTrashBindingHelper
 			var result = SHFileOperation(ref fs).ToString();
 			return (true, result);
 		}
-		catch ( Exception ex)
+		catch ( Exception ex )
 		{
 			return (false, ex.Message);
 		}
@@ -185,7 +185,7 @@ public static class WindowsShellTrashBindingHelper
 	/// <returns></returns>
 	[DllImport("shell32.dll", CharSet = CharSet.Unicode)]
 	[SuppressMessage("Interoperability", "SYSLIB1054:Use \'LibraryImportAttribute\' " +
-	                                     "instead of \'DllImportAttribute\' to generate P/Invoke marshalling code at compile time")]
+										 "instead of \'DllImportAttribute\' to generate P/Invoke marshalling code at compile time")]
 	private static extern int SHQueryRecycleBin(string pszRootPath, ref SHQUERYRBINFO
 		pSHQueryRBInfo);
 
@@ -215,15 +215,15 @@ public static class WindowsShellTrashBindingHelper
 		var successStatus = hResult == 0 ? "Success!" : "Fail!";
 
 		return $"{successStatus} Drive {drivePath} contains {pSHQueryRBInfo.i64NumItems} " +
-		       $"item(s) in {pSHQueryRBInfo.i64Size:#,##0} bytes";
+			   $"item(s) in {pSHQueryRBInfo.i64Size:#,##0} bytes";
 	}
 
 	public static (bool, long, string) DriveHasRecycleBin(string drivePath = @"C:\")
 	{
 		var (hResult, info, pSHQueryRBInfo) = SHQueryRecycleBinWrapper(drivePath);
 		info ??= SHQueryRecycleBinInfo(hResult, drivePath, pSHQueryRBInfo);
-		
+
 		return (hResult == 0, pSHQueryRBInfo.i64NumItems, info);
 	}
-	
+
 }
