@@ -19,7 +19,7 @@ namespace starskytest.FakeMocks
 		}
 
 		public async Task GenerateZip(string fullFileParentFolderPath, string itemName,
-			Dictionary<string, bool> renderCopyResult,
+			Dictionary<string, bool>? renderCopyResult,
 			bool deleteFolderAfterwards = false)
 		{
 			ItemNamesGenerateZip.Add(itemName);
