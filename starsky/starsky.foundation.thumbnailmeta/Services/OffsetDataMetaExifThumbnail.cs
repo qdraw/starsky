@@ -49,7 +49,7 @@ namespace starsky.foundation.thumbnailmeta.Services
 					allExifItems.Find(p =>
 						p.Name == "Exif Thumbnail") as ExifThumbnailDirectory;
 
-				return ( allExifItems, exifThumbnailDir );
+				return (allExifItems, exifThumbnailDir);
 			}
 		}
 
@@ -59,7 +59,7 @@ namespace starsky.foundation.thumbnailmeta.Services
 		{
 			if ( exifThumbnailDir == null || allExifItems == null )
 			{
-				return ( null, 0, 0, FileIndexItem.Rotation.DoNotChange );
+				return (null, 0, 0, FileIndexItem.Rotation.DoNotChange);
 			}
 
 			var jpegTags = allExifItems.OfType<JpegDirectory>().FirstOrDefault()?.Tags;
@@ -100,7 +100,7 @@ namespace starsky.foundation.thumbnailmeta.Services
 					$"[ParseMetaThumbnail] ${reference} has no height or width {width}x{height} ");
 			}
 
-			return ( exifThumbnailDir, width, height, rotation );
+			return (exifThumbnailDir, width, height, rotation);
 		}
 
 		public OffsetModel ParseOffsetData(ExifThumbnailDirectory? exifThumbnailDir, string subPath)

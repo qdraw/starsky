@@ -42,7 +42,7 @@ namespace starsky.foundation.thumbnailgeneration.Services
 
 			var allThumbnailFiles = _thumbnailStorage
 				.GetAllFilesInDirectory(null!).ToList();
-			
+
 			_logger.LogDebug($"Total files in thumb dir: {allThumbnailFiles.Count}");
 
 			var deletedFileHashes = new List<string>();
@@ -53,10 +53,10 @@ namespace starsky.foundation.thumbnailgeneration.Services
 				{
 					await LoopThoughChunk(itemsInChunk, deletedFileHashes);
 				}
-				catch (Microsoft.EntityFrameworkCore.Storage.RetryLimitExceededException exception)
+				catch ( Microsoft.EntityFrameworkCore.Storage.RetryLimitExceededException exception )
 				{
 					_logger.LogInformation($"[CleanAllUnusedFiles] catch-ed and " +
-					                       $"skip {string.Join(",", itemsInChunk.ToList())} ~ {exception.Message}", exception);
+										   $"skip {string.Join(",", itemsInChunk.ToList())} ~ {exception.Message}", exception);
 				}
 			}
 
@@ -64,12 +64,12 @@ namespace starsky.foundation.thumbnailgeneration.Services
 			return deletedFileHashes;
 		}
 
-		private async Task LoopThoughChunk(IEnumerable<string> itemsInChunk , List<string> deletedFileHashes)
+		private async Task LoopThoughChunk(IEnumerable<string> itemsInChunk, List<string> deletedFileHashes)
 		{
 			var fileIndexItems = await _query.GetObjectsByFileHashAsync(itemsInChunk.ToList());
-			foreach ( var resultFileHash in fileIndexItems.Where(result => 
+			foreach ( var resultFileHash in fileIndexItems.Where(result =>
 				result is { Status: FileIndexItem.ExifStatus.NotFoundNotInIndex, FileHash: { } }
-				).Select(p => p.FileHash).Cast<string>())
+				).Select(p => p.FileHash).Cast<string>() )
 			{
 				var fileHashesToDelete = new List<string>
 				{
@@ -82,12 +82,12 @@ namespace starsky.foundation.thumbnailgeneration.Services
 					ThumbnailNameHelper.Combine(resultFileHash,
 						ThumbnailSize.Large)
 				};
-				
+
 				foreach ( var fileHash in fileHashesToDelete )
 				{
 					_thumbnailStorage.FileDelete(fileHash);
 				}
-				
+
 				_logger.LogInformation("$");
 				deletedFileHashes.Add(resultFileHash);
 			}
@@ -101,9 +101,9 @@ namespace starsky.foundation.thumbnailgeneration.Services
 			foreach ( var thumbnailFile in allThumbnailFiles )
 			{
 				var fileHash = Path.GetFileNameWithoutExtension(thumbnailFile);
-				var fileHashWithoutSize = Regex.Match(fileHash, "^.*(?=(@))", 
+				var fileHashWithoutSize = Regex.Match(fileHash, "^.*(?=(@))",
 					RegexOptions.None, TimeSpan.FromMilliseconds(100)).Value;
-				if ( string.IsNullOrEmpty(fileHashWithoutSize)  )
+				if ( string.IsNullOrEmpty(fileHashWithoutSize) )
 				{
 					fileHashWithoutSize = fileHash;
 				}

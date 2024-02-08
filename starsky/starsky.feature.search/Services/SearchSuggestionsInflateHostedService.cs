@@ -29,7 +29,7 @@ namespace starsky.feature.search.Services
 
 		public async Task StartAsync(CancellationToken cancellationToken)
 		{
-			using (var scope = _scopeFactory.CreateScope())
+			using ( var scope = _scopeFactory.CreateScope() )
 			{
 				var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 				await new SearchSuggestionsService(dbContext, _memoryCache, _logger, _appSettings).Inflate();

@@ -13,8 +13,8 @@ namespace starsky.foundation.storage.Helpers
 		public DeserializeJson(IStorage iStorage)
 		{
 			_iStorage = iStorage;
-		}	
-		
+		}
+
 		/// <summary>
 		/// Read Json
 		/// </summary>

@@ -26,10 +26,10 @@ namespace starsky.feature.realtime.Services
 		/// <returns>CompletedTask</returns>
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 		{
-			using (var scope = _serviceScopeFactory.CreateScope())
+			using ( var scope = _serviceScopeFactory.CreateScope() )
 			{
 				var connectionsService = scope.ServiceProvider.GetRequiredService<IRealtimeConnectionsService>();
-				
+
 				//exception is already catch-ed in the service
 				await connectionsService.CleanOldMessagesAsync();
 			}

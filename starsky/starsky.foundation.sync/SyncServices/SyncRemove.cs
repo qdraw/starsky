@@ -24,7 +24,7 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly IWebLogger _logger;
 		private readonly IServiceScopeFactory? _serviceScopeFactory;
 
-		public SyncRemove(AppSettings appSettings, IQuery query, 
+		public SyncRemove(AppSettings appSettings, IQuery query,
 			IMemoryCache? memoryCache, IWebLogger logger, IServiceScopeFactory? serviceScopeFactory)
 		{
 			_appSettings = appSettings;
@@ -54,7 +54,7 @@ namespace starsky.foundation.sync.SyncServices
 		public async Task<List<FileIndexItem>> RemoveAsync(string subPath,
 			ISynchronize.SocketUpdateDelegate? updateDelegate = null)
 		{
-			return await RemoveAsync(new List<string> {subPath}, updateDelegate);
+			return await RemoveAsync(new List<string> { subPath }, updateDelegate);
 		}
 
 		/// <summary>
@@ -70,7 +70,7 @@ namespace starsky.foundation.sync.SyncServices
 			var toDeleteList = await _query.GetAllRecursiveAsync(subPaths);
 			// and single objects 
 			toDeleteList.AddRange(await _query.GetObjectsByFilePathQueryAsync(subPaths));
-			
+
 			await toDeleteList
 				.ForEachAsync(async item =>
 				{
@@ -88,7 +88,7 @@ namespace starsky.foundation.sync.SyncServices
 			await LoopOverSidecarFiles(subPaths);
 
 			// Add items that are not in the database
-			foreach ( var subPath in subPaths.Where(subPath => 
+			foreach ( var subPath in subPaths.Where(subPath =>
 				!toDeleteList.Exists(p => p.FilePath == subPath)) )
 			{
 				toDeleteList.Add(new FileIndexItem(subPath)
@@ -101,7 +101,7 @@ namespace starsky.foundation.sync.SyncServices
 			{
 				await updateDelegate(toDeleteList);
 			}
-			
+
 			return toDeleteList.OrderBy(p => p.FilePath).ToList();
 		}
 
@@ -120,10 +120,10 @@ namespace starsky.foundation.sync.SyncServices
 					p.Status is FileIndexItem.ExifStatus
 						.NotFoundSourceMissing).Select(p => p.FilePath)
 				.Cast<string>().ToList();
-			
+
 			return await RemoveAsync(deleted, updateDelegate);
 		}
-		
+
 		private async Task LoopOverSidecarFiles(List<string> subPaths)
 		{
 			var parentDirectories = new HashSet<string>();
@@ -146,8 +146,8 @@ namespace starsky.foundation.sync.SyncServices
 			{
 				foreach ( var singleCollectionPath in collectionPath )
 				{
-					if ( item.FilePath!.StartsWith(singleCollectionPath) 
-					     && !ExtensionRolesHelper.IsExtensionSidecar(item.FilePath) )
+					if ( item.FilePath!.StartsWith(singleCollectionPath)
+						 && !ExtensionRolesHelper.IsExtensionSidecar(item.FilePath) )
 					{
 						item.RemoveSidecarExtension("xmp");
 						await _query.UpdateItemAsync(item);

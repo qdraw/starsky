@@ -8,9 +8,9 @@ namespace starsky.foundation.worker.Interfaces
 	{
 		public int Count();
 		ValueTask QueueBackgroundWorkItemAsync(
-			Func<CancellationToken, ValueTask> workItem, 
+			Func<CancellationToken, ValueTask> workItem,
 			string metaData);
-		
+
 		ValueTask<Tuple<Func<CancellationToken, ValueTask>, string>> DequeueAsync(
 			CancellationToken cancellationToken);
 	}

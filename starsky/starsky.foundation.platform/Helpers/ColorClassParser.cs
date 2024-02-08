@@ -67,12 +67,12 @@ namespace starsky.foundation.platform.Helpers
 		public static Color GetColorClass(string colorclassString = "0")
 		{
 
-			switch (colorclassString)
+			switch ( colorclassString )
 			{
 				case "0":
 					return Color.None;
 				case "8":
-					return  Color.Trash;
+					return Color.Trash;
 				case "7":
 					return Color.Extras;
 				case "6":

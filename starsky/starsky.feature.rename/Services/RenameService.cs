@@ -254,7 +254,7 @@ public class RenameService
 		// Check if two list are the same Length - Change this in the future BadRequest("f != to")
 		// when moving a file that does not exist (/non-exist.jpg to /non-exist2.jpg)
 		if ( toFileSubPaths.Count != inputFileSubPaths.Count ||
-		     toFileSubPaths.Count == 0 || inputFileSubPaths.Count == 0 )
+			 toFileSubPaths.Count == 0 || inputFileSubPaths.Count == 0 )
 		{
 			// files that not exist
 			fileIndexResultsList.Add(new FileIndexItem

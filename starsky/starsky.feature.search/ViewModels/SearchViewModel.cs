@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
@@ -34,12 +34,12 @@ namespace starsky.feature.search.ViewModels
 		/// Private field: Used to know how old the search query is
 		/// </summary>
 		private readonly DateTime _dateTime;
-	    
+
 		/// <summary>
 		/// Items on the page
 		/// </summary>
 		public List<FileIndexItem>? FileIndexItems { get; set; }
-        
+
 		/// <summary>
 		/// Full location specification
 		/// </summary>
@@ -47,18 +47,18 @@ namespace starsky.feature.search.ViewModels
 		// ReSharper disable once CollectionNeverQueried.Global
 		// ReSharper disable once PropertyCanBeMadeInitOnly.Global
 		public List<string> Breadcrumb { get; set; }
-        
+
 		/// <summary>
 		/// Where to search for
 		/// </summary>
 		public string? SearchQuery { get; set; } = string.Empty;
-	    
+
 		/// <summary>
 		/// Current page number (index=0)
 		/// </summary>
 		// ReSharper disable once UnusedAutoPropertyAccessor.Global
 		public int PageNumber { get; set; }
-	    
+
 		/// <summary>
 		/// The last page (index=0)
 		/// </summary>
@@ -120,28 +120,28 @@ namespace starsky.feature.search.ViewModels
 		{
 			// ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
 			SearchIn ??= new List<string>();
-		    
+
 			// use ctor to have an empty list
 			var fileIndexPropList = FileIndexItem.FileIndexPropList();
 			var fileIndexPropListIndex = fileIndexPropList.FindIndex
 				(x => x.Equals(value, StringComparison.OrdinalIgnoreCase));
-			if (fileIndexPropListIndex != -1 )
+			if ( fileIndexPropListIndex != -1 )
 			{
 				SearchIn.Add(fileIndexPropList[fileIndexPropListIndex]);
-			} 
+			}
 		}
-        
-        
+
+
 		/// <summary>
 		/// Private field: Search for the following value in using SearchFor inside: _searchIn
 		/// </summary>
 		internal List<string>? SearchForInternal = new();
-	    
+
 		/// <summary>
 		/// The values to search for, to know which field use the same indexer in _searchIn
 		/// </summary>
 		public List<string> SearchFor
-		{  
+		{
 			// don't change it to 'SearchFor => _searchFor'
 			get
 			{
@@ -158,7 +158,7 @@ namespace starsky.feature.search.ViewModels
 			SearchForInternal ??= new List<string>();
 			SearchForInternal.Add(value.Trim().ToLowerInvariant());
 		}
-        
+
 		/// <summary>
 		/// The search for types
 		/// </summary>
@@ -171,26 +171,26 @@ namespace starsky.feature.search.ViewModels
 			/// </summary>
 			[Display(Name = ">")] // in json it is GreaterThen
 			GreaterThen,
-		    
+
 			/// <summary>
 			/// &lt;
 			/// </summary>
 			[Display(Name = "<")]
 			LessThen,
-		    
+
 			/// <summary>
 			/// =
 			/// </summary>
 			[Display(Name = "=")]
 			Equal,
-		    
+
 			/// <summary>
 			/// -
 			/// </summary>
 			[Display(Name = "!-")]
 			Not
 		}
-        
+
 		/// <summary>
 		/// Private field: Search Options &gt;, &lt;,=. (greater than sign, less than sign, equal sign)
 		/// to know which field use the same indexer in _searchIn or _searchFor
@@ -202,7 +202,7 @@ namespace starsky.feature.search.ViewModels
 		/// to know which field use the same indexer in _searchIn or _searchFor
 		/// </summary>
 		public List<SearchForOptionType> SearchForOptions
-		{  
+		{
 			get
 			{
 				return SearchForOptionsInternal ?? new List<SearchForOptionType>();
@@ -244,13 +244,14 @@ namespace starsky.feature.search.ViewModels
 		/// <summary>
 		/// The type of page returns, (Search or Trash)
 		/// </summary>
-		public string PageType {
+		public string PageType
+		{
 			get
 			{
-				if (string.IsNullOrEmpty(SearchQuery) ) return PageViewType.PageType.Search.ToString();
-				return SearchQuery == TrashKeyword.TrashKeywordString ? PageViewType.PageType.Trash.ToString() 
+				if ( string.IsNullOrEmpty(SearchQuery) ) return PageViewType.PageType.Search.ToString();
+				return SearchQuery == TrashKeyword.TrashKeywordString ? PageViewType.PageType.Trash.ToString()
 					: PageViewType.PageType.Search.ToString();
-			} 
+			}
 		}
 
 		/// <summary>
@@ -269,14 +270,14 @@ namespace starsky.feature.search.ViewModels
 				_elapsedSeconds = value - value % 0.001;
 			}
 		}
-	    
+
 		/// <summary>
 		/// Used to know how old the search query is
 		/// Used to know if a page is cached
 		/// </summary>
 		[SuppressMessage("Usage", "S6561: Avoid using DateTime.Now " +
-		                          "for benchmarking or timespan calculation operations.")]
-		public double Offset => Math.Round(Math.Abs((DateTime.UtcNow - _dateTime).TotalSeconds), 2);
+								  "for benchmarking or timespan calculation operations.")]
+		public double Offset => Math.Round(Math.Abs(( DateTime.UtcNow - _dateTime ).TotalSeconds), 2);
 
 
 		/// <summary>
@@ -300,32 +301,32 @@ namespace starsky.feature.search.ViewModels
 				andOrBool = false;
 			}
 
-			if (SearchOperatorOptionsInternal.Count == 0 && andOrChar == '|')
+			if ( SearchOperatorOptionsInternal.Count == 0 && andOrChar == '|' )
 			{
 				SearchOperatorOptionsInternal.Add(false);
 			}
-			
+
 			// Store item on a different location in the List<T>
 			if ( relativeLocation == 0 )
 			{
 				SearchOperatorOptionsInternal.Add(andOrBool);
 			}
-			else if ( SearchOperatorOptionsInternal.Count+relativeLocation <= -1 )
+			else if ( SearchOperatorOptionsInternal.Count + relativeLocation <= -1 )
 			{
 				SearchOperatorOptionsInternal.Insert(0, andOrBool);
 			}
 			else
 			{
-				SearchOperatorOptionsInternal.Insert(SearchOperatorOptionsInternal.Count+relativeLocation,andOrBool);
+				SearchOperatorOptionsInternal.Insert(SearchOperatorOptionsInternal.Count + relativeLocation, andOrBool);
 			}
-			
+
 		}
-		
+
 		/// <summary>
 		/// Search Operator, eg. || &amp;&amp;
 		/// </summary>
 		public List<bool> SearchOperatorOptions
-		{  
+		{
 			get
 			{
 				return SearchOperatorOptionsInternal ?? new List<bool>();
@@ -342,13 +343,13 @@ namespace starsky.feature.search.ViewModels
 		public bool SearchOperatorContinue(int indexer, int max)
 		{
 			if ( SearchOperatorOptionsInternal == null ) return true;
-			if ( indexer <= -1 || indexer > max) return true;
+			if ( indexer <= -1 || indexer > max ) return true;
 			// for -Datetime=1 (03-03-2019 00:00:00-03-03-2019 23:59:59), this are two queries >= fail!!
-			if (indexer >= SearchOperatorOptionsInternal.Count  ) return true; // used when general words without update 
+			if ( indexer >= SearchOperatorOptionsInternal.Count ) return true; // used when general words without update 
 			var returnResult = SearchOperatorOptionsInternal[indexer];
 			return returnResult;
 		}
-	    
+
 		/// <summary>
 		/// ||[OR] = |, else = &amp;, default = string.Emphy 
 		/// </summary>
@@ -362,23 +363,23 @@ namespace starsky.feature.search.ViewModels
 
 			// To Search Type
 			var lastStringValue = rgx.Match(item).Value;
-		    
+
 			// set default
 			if ( string.IsNullOrEmpty(lastStringValue) ) lastStringValue = string.Empty;
-		    
+
 			if ( lastStringValue == "||" ) return '|';
 			return '&';
 		}
-	    
+
 		/// <summary>
 		/// Copy the current object in memory
 		/// </summary>
 		/// <returns></returns>
 		public SearchViewModel Clone()
 		{
-			return (SearchViewModel) MemberwiseClone();
+			return ( SearchViewModel )MemberwiseClone();
 		}
-	    
+
 		/// <summary>
 		/// For reparsing keywords to -Tags:"keyword"
 		/// handle keywords without for example -Tags, or -DateTime prefix
@@ -393,7 +394,7 @@ namespace starsky.feature.search.ViewModels
 
 			// fallback situation
 			// search on for example: '%'
-			if ( SearchFor.Count == 0 ) 
+			if ( SearchFor.Count == 0 )
 			{
 				SetAddSearchFor(defaultQuery);
 				SetAddSearchInStringType("tags");
@@ -405,7 +406,7 @@ namespace starsky.feature.search.ViewModels
 			//	// &&|\|\|
 			Regex andOrRegex = new Regex("&&|\\|\\|",
 				RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
-		    
+
 			var andOrRegexMatches = andOrRegex.Matches(defaultQuery);
 
 			foreach ( Match andOrValue in andOrRegexMatches )
@@ -421,26 +422,26 @@ namespace starsky.feature.search.ViewModels
 					SetAndOrOperator(AndOrRegex("&&"));
 				}
 			}
-		    
+
 			return returnQueryBuilder.ToString();
 		}
 
-		private (string defaultQuery, StringBuilder returnQueryBuilder) 
+		private (string defaultQuery, StringBuilder returnQueryBuilder)
 			ParseQuotedValues(string defaultQuery, StringBuilder returnQueryBuilder)
 		{
 			// Get Quoted values
 			// (["'])(\\?.)*?\1
-		    
+
 			// Quoted or words
 			// [\w!]+|(["'])(\\?.)*?\1
-		    
+
 			Regex inUrlRegex = new Regex("[\\w!]+|([\"\'])(\\\\?.)*?\\1",
 				RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
 
 			// Escape special quotes
-			defaultQuery = Regex.Replace(defaultQuery, "[“”‘’]", "\"", 
+			defaultQuery = Regex.Replace(defaultQuery, "[“”‘’]", "\"",
 				RegexOptions.None, TimeSpan.FromMilliseconds(100));
-		    
+
 			var regexInUrlMatches = inUrlRegex.Matches(defaultQuery);
 
 			foreach ( Match regexInUrl in regexInUrlMatches )
@@ -459,28 +460,28 @@ namespace starsky.feature.search.ViewModels
 
 				var startIndexer = regexInUrl.Index;
 				var startLength = regexInUrl.Length;
-				var lastChar = defaultQuery[startIndexer + regexInUrl.Length -1 ];
-			    
+				var lastChar = defaultQuery[startIndexer + regexInUrl.Length - 1];
+
 				if ( defaultQuery[regexInUrl.Index] == '"' &&
-				     lastChar == '"' ||
-				     defaultQuery[regexInUrl.Index] == '\'' &&
-				     lastChar == '\'' )
+					 lastChar == '"' ||
+					 defaultQuery[regexInUrl.Index] == '\'' &&
+					 lastChar == '\'' )
 				{
 					startIndexer = regexInUrl.Index + 1;
 					startLength = regexInUrl.Length - 2;
 				}
-			    
+
 				// Get Value 
 				var searchForQuery = defaultQuery.Substring(startIndexer, startLength);
-				
+
 				returnQueryBuilder.Append($"-Tags:\"{searchForQuery}\" ");
-			    
+
 				SetAddSearchFor(searchForQuery);
 				SetAddSearchInStringType("tags");
 
 				// Detecting Not Queries (string must be at least 3 chars)
-				if ( ( regexInUrl.Index - 1 >= 0 && defaultQuery[regexInUrl.Index - 1] == '-' ) 
-				     || ( regexInUrl.Index + 2 <= regexInUrl.Length  && defaultQuery[regexInUrl.Index + 2] == '-' ) )
+				if ( ( regexInUrl.Index - 1 >= 0 && defaultQuery[regexInUrl.Index - 1] == '-' )
+					 || ( regexInUrl.Index + 2 <= regexInUrl.Length && defaultQuery[regexInUrl.Index + 2] == '-' ) )
 				{
 					SetAddSearchForOptions("-");
 					continue;
@@ -488,9 +489,9 @@ namespace starsky.feature.search.ViewModels
 				SetAddSearchForOptions("=");
 			}
 
-			return ( defaultQuery, returnQueryBuilder );
+			return (defaultQuery, returnQueryBuilder);
 		}
-	    
+
 		/// <summary>
 		/// Filter for WideSearch
 		/// Always after wideSearch
@@ -505,7 +506,7 @@ namespace starsky.feature.search.ViewModels
 
 			for ( var i = 0; i < model.SearchIn.Count; i++ )
 			{
-				var propertyStringName =  FileIndexItem.FileIndexPropList().Find( p =>
+				var propertyStringName = FileIndexItem.FileIndexPropList().Find(p =>
 						string.Equals(p, model.SearchIn[i],
 							StringComparison.InvariantCultureIgnoreCase));
 
@@ -515,18 +516,18 @@ namespace starsky.feature.search.ViewModels
 				}
 
 				var property = new FileIndexItem().GetType().GetProperty(propertyStringName)!;
-					    
+
 				// skip OR searches
 				if ( !model.SearchOperatorContinue(i, model.SearchIn.Count) )
 				{
 					continue;
 				}
-				PropertySearch(model, property, model.SearchFor[i],model.SearchForOptions[i]);
+				PropertySearch(model, property, model.SearchFor[i], model.SearchForOptions[i]);
 			}
-		    
+
 			// hide xmp files in default view
-			if ( model.SearchIn.TrueForAll(p => !string.Equals(p, nameof(SearchInTypes.imageformat), 
-				    StringComparison.InvariantCultureIgnoreCase)))
+			if ( model.SearchIn.TrueForAll(p => !string.Equals(p, nameof(SearchInTypes.imageformat),
+					StringComparison.InvariantCultureIgnoreCase)) )
 			{
 				model.FileIndexItems = model.FileIndexItems!
 					.Where(p => p.ImageFormat != ExtensionRolesHelper.ImageFormat.xmp).ToList();
@@ -540,23 +541,23 @@ namespace starsky.feature.search.ViewModels
 			PropertyInfo property, string searchForQuery,
 			SearchForOptionType searchType)
 		{
-			switch (searchType)
+			switch ( searchType )
 			{
 				case SearchForOptionType.Not:
 					model.FileIndexItems = model.FileIndexItems!.Where(
-						p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
-						     && ! // not
-							     p.GetType().GetProperty(property.Name)!.GetValue(p, null)?
-								     .ToString()?.ToLowerInvariant().Contains(searchForQuery, 
-									     StringComparison.InvariantCultureIgnoreCase) == true
+						p => p.GetType().GetProperty(property.Name)?.Name == property.Name
+							 && ! // not
+								 p.GetType().GetProperty(property.Name)!.GetValue(p, null)?
+									 .ToString()?.ToLowerInvariant().Contains(searchForQuery,
+										 StringComparison.InvariantCultureIgnoreCase) == true
 					).ToList();
 					break;
 				default:
 					model.FileIndexItems = model.FileIndexItems?
-						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
-						            && p.GetType().GetProperty(property.Name)!.GetValue(p, null)?
-							            .ToString()?.ToLowerInvariant().Contains(searchForQuery, 
-								            StringComparison.InvariantCultureIgnoreCase) == true  
+						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name
+									&& p.GetType().GetProperty(property.Name)!.GetValue(p, null)?
+										.ToString()?.ToLowerInvariant().Contains(searchForQuery,
+											StringComparison.InvariantCultureIgnoreCase) == true
 						).ToList();
 					break;
 			}
@@ -572,40 +573,40 @@ namespace starsky.feature.search.ViewModels
 			{
 				return new SearchViewModel();
 			}
-			
-			if ( property == null)
+
+			if ( property == null )
 			{
 				return model;
 			}
-			
+
 			model.FileIndexItems = model.FileIndexItems?
-				.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
-				            && (bool?) p.GetType().GetProperty(property.Name)?.GetValue(p, null)  == boolIsValue
+				.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name
+							&& ( bool? )p.GetType().GetProperty(property.Name)?.GetValue(p, null) == boolIsValue
 				).ToList();
 			return model;
 		}
-		
+
 		private static SearchViewModel PropertySearchImageFormatType(
 			SearchViewModel model,
 			PropertyInfo property, ExtensionRolesHelper.ImageFormat castImageFormat,
 			SearchForOptionType searchType)
 		{
-			switch (searchType)
+			switch ( searchType )
 			{
 				case SearchForOptionType.Not:
 					model.FileIndexItems = model.FileIndexItems!
-						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
-						            && (ExtensionRolesHelper.ImageFormat) p.GetType().GetProperty(property.Name)?
-							            .GetValue(p, null)!  
-						            != // not
-						            castImageFormat
+						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name
+									&& ( ExtensionRolesHelper.ImageFormat )p.GetType().GetProperty(property.Name)?
+										.GetValue(p, null)!
+									!= // not
+									castImageFormat
 						).ToList();
 					break;
 				default:
 					model.FileIndexItems = model.FileIndexItems!
-						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
-						            && (ExtensionRolesHelper.ImageFormat) p.GetType().GetProperty(property.Name)?
-							            .GetValue(p, null)!  == castImageFormat
+						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name
+									&& ( ExtensionRolesHelper.ImageFormat )p.GetType().GetProperty(property.Name)?
+										.GetValue(p, null)! == castImageFormat
 						).ToList();
 					break;
 			}
@@ -619,32 +620,32 @@ namespace starsky.feature.search.ViewModels
 			SearchForOptionType searchType)
 		{
 			var parsedDateTime = ParseDateTime(searchForQuery);
-						
-			switch (searchType)
+
+			switch ( searchType )
 			{
 				case SearchForOptionType.LessThen:
 					model.FileIndexItems = model.FileIndexItems!
-						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
-						            && (DateTime) p.GetType().GetProperty(property.Name)?.GetValue(p, null)! 
-						            <= parsedDateTime
+						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name
+									&& ( DateTime )p.GetType().GetProperty(property.Name)?.GetValue(p, null)!
+									<= parsedDateTime
 						).ToList();
 					break;
 				case SearchForOptionType.GreaterThen:
 					model.FileIndexItems = model.FileIndexItems!
-						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
-						            && (DateTime) p.GetType().GetProperty(property.Name)?.GetValue(p, null)!
-						            >= parsedDateTime
+						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name
+									&& ( DateTime )p.GetType().GetProperty(property.Name)?.GetValue(p, null)!
+									>= parsedDateTime
 						).ToList();
 					break;
 				default:
 					model.FileIndexItems = model.FileIndexItems!
-						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
-						            && (DateTime) p.GetType().GetProperty(property.Name)?.GetValue(p, null)!
-						            == parsedDateTime
+						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name
+									&& ( DateTime )p.GetType().GetProperty(property.Name)?.GetValue(p, null)!
+									== parsedDateTime
 						).ToList();
 					break;
 			}
-			    
+
 			return model;
 		}
 
@@ -656,7 +657,7 @@ namespace starsky.feature.search.ViewModels
 		/// <param name="searchForQuery">the query to search for (always string) </param>
 		/// <param name="searchType">greater then, equal</param>
 		/// <returns>search values</returns>
-		internal static SearchViewModel PropertySearch(SearchViewModel model, 
+		internal static SearchViewModel PropertySearch(SearchViewModel model,
 			PropertyInfo property, string searchForQuery, SearchForOptionType searchType)
 		{
 
@@ -665,27 +666,27 @@ namespace starsky.feature.search.ViewModels
 				return PropertySearchStringType(model, property, searchForQuery, searchType);
 			}
 
-			if ( (property.PropertyType == typeof(bool) || property.PropertyType == typeof(bool?)) && 
-			     bool.TryParse(searchForQuery, out var boolIsValue))
+			if ( ( property.PropertyType == typeof(bool) || property.PropertyType == typeof(bool?) ) &&
+				 bool.TryParse(searchForQuery, out var boolIsValue) )
 			{
 				return PropertySearchBoolType(model, property, boolIsValue);
 			}
-		    
-			if ( property.PropertyType == typeof(ExtensionRolesHelper.ImageFormat) && 
-			     Enum.TryParse<ExtensionRolesHelper.ImageFormat>(
-				    searchForQuery.ToLowerInvariant(), out var castImageFormat) )
+
+			if ( property.PropertyType == typeof(ExtensionRolesHelper.ImageFormat) &&
+				 Enum.TryParse<ExtensionRolesHelper.ImageFormat>(
+					searchForQuery.ToLowerInvariant(), out var castImageFormat) )
 			{
-				return PropertySearchImageFormatType(model, property, castImageFormat, searchType);				
+				return PropertySearchImageFormatType(model, property, castImageFormat, searchType);
 			}
-		    
+
 			if ( property.PropertyType == typeof(DateTime) )
 			{
-			    return PropertySearchDateTimeType(model, property, searchForQuery, searchType);
+				return PropertySearchDateTimeType(model, property, searchForQuery, searchType);
 			}
 
 			return model;
 		}
-	    
+
 		/// <summary>
 		/// Internal API: to parse datetime objects
 		/// </summary>
@@ -695,38 +696,38 @@ namespace starsky.feature.search.ViewModels
 		{
 
 			// For relative values
-			if ( Regex.IsMatch(input, @"^\d+$", 
-				     RegexOptions.None, TimeSpan.FromMilliseconds(100)) &&
-			     int.TryParse(input, out var relativeValue) )
+			if ( Regex.IsMatch(input, @"^\d+$",
+					 RegexOptions.None, TimeSpan.FromMilliseconds(100)) &&
+				 int.TryParse(input, out var relativeValue) )
 			{
-				if(relativeValue >= 1) relativeValue *= -1; // always in the past
+				if ( relativeValue >= 1 ) relativeValue *= -1; // always in the past
 				if ( relativeValue > -60000 ) // 24-11-1854
 				{
 					return DateTime.Today.AddDays(relativeValue);
 				}
 			}
-	        
+
 			var patternLab = new List<string>
 			{
 				"yyyy-MM-dd\\tHH:mm:ss", // < lowercase :)
 				"yyyy-MM-dd HH:mm:ss",
 				"yyyy-MM-dd-HH:mm:ss",
-				"yyyy-MM-dd", 
-				"dd-MM-yyyy", 
+				"yyyy-MM-dd",
+				"dd-MM-yyyy",
 				"dd-MM-yyyy HH:mm:ss",
 				"dd-MM-yyyy\\tHH:mm:ss",
 				"MM/dd/yyyy HH:mm:ss", // < used by the next string rule 01/30/2018 00:00:00
 			};
-	        
+
 			DateTime dateTime = DateTime.MinValue;
-            
-			foreach (var pattern in patternLab)
+
+			foreach ( var pattern in patternLab )
 			{
-				DateTime.TryParseExact(input, 
-					pattern, 
-					CultureInfo.InvariantCulture, 
+				DateTime.TryParseExact(input,
+					pattern,
+					CultureInfo.InvariantCulture,
 					DateTimeStyles.None, out dateTime);
-				if(dateTime.Year > 2) return dateTime;
+				if ( dateTime.Year > 2 ) return dateTime;
 			}
 			return dateTime.Year > 2 ? dateTime : DateTime.Now;
 		}

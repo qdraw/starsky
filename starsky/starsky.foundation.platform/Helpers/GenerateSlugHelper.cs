@@ -16,7 +16,7 @@ public static class GenerateSlugHelper
 		var text = toLowerCase ? phrase.ToLowerInvariant() : phrase;
 		text = GenerateSlugHelperStaticRegex.CleanReplaceInvalidCharacters(text, allowAtSign, allowUnderScore);
 		text = GenerateSlugHelperStaticRegex.CleanSpace(text);
-		
+
 		text = text.Substring(0, text.Length <= 65 ? text.Length : 65).Trim(); // cut and trim
 		text = GenerateSlugHelperStaticRegex.ReplaceSpaceWithHyphen(text);
 		text = text.Trim('-'); // remove trailing hyphens

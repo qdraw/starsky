@@ -26,7 +26,7 @@ namespace starsky.foundation.worker.ThumbnailServices
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 		{
 			_logger.LogInformation("Queued Hosted Service for Thumbnails");
-			await ProcessTaskQueue.ProcessTaskQueueAsync(_taskQueue, _logger, 
+			await ProcessTaskQueue.ProcessTaskQueueAsync(_taskQueue, _logger,
 				stoppingToken);
 		}
 

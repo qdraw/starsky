@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -92,7 +92,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		internal List<FileIndexItem> AddFileHashIfNotExist(List<FileIndexItem> fileIndexItemsList)
 		{
 			foreach ( var item in fileIndexItemsList.Where(item =>
-				         string.IsNullOrEmpty(item.FileHash)) )
+						 string.IsNullOrEmpty(item.FileHash)) )
 			{
 				item.FileHash = new FileHash(_subPathStorage).GetHashCode(item.FilePath!).Key;
 			}
@@ -245,7 +245,7 @@ namespace starsky.feature.webhtmlpublish.Services
 			foreach ( var item in viewModel.FileIndexItems )
 			{
 				item.FileName = GenerateSlugHelper.GenerateSlug(item.FileCollectionName!, true) +
-				                Path.GetExtension(item.FileName);
+								Path.GetExtension(item.FileName);
 			}
 
 			// has a direct dependency on the filesystem
@@ -326,15 +326,15 @@ namespace starsky.feature.webhtmlpublish.Services
 		{
 			// for less than 1000px
 			if ( profile.SourceMaxWidth <= 1000 &&
-			     _thumbnailStorage.ExistFile(
-				     ThumbnailNameHelper.Combine(item.FileHash!, ThumbnailSize.Large)) )
+				 _thumbnailStorage.ExistFile(
+					 ThumbnailNameHelper.Combine(item.FileHash!, ThumbnailSize.Large)) )
 			{
 				await _overlayImage.ResizeOverlayImageThumbnails(item.FileHash!, outputPath,
 					profile);
 			}
 			else if ( profile.SourceMaxWidth <= 2000 &&
-			          _thumbnailStorage.ExistFile(
-				          ThumbnailNameHelper.Combine(item.FileHash!, ThumbnailSize.ExtraLarge)) )
+					  _thumbnailStorage.ExistFile(
+						  ThumbnailNameHelper.Combine(item.FileHash!, ThumbnailSize.ExtraLarge)) )
 			{
 				await _overlayImage.ResizeOverlayImageThumbnails(
 					ThumbnailNameHelper.Combine(item.FileHash!, ThumbnailSize.ExtraLarge),

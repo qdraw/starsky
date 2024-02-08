@@ -21,7 +21,7 @@ namespace starsky.feature.health.UpdateCheck.Services
 	public class CheckForUpdates : ICheckForUpdates
 	{
 		internal const string GithubStarskyReleaseApi = "https://api.github.com/repos/qdraw/starsky/releases";
-		
+
 		private readonly AppSettings? _appSettings;
 		private readonly IMemoryCache? _cache;
 		private readonly IHttpClientHelper _httpClientHelper;
@@ -32,7 +32,7 @@ namespace starsky.feature.health.UpdateCheck.Services
 			_appSettings = appSettings;
 			_cache = cache;
 		}
-		
+
 		internal const string QueryCheckForUpdatesCacheName = "CheckForUpdates";
 
 		/// <summary>
@@ -43,53 +43,53 @@ namespace starsky.feature.health.UpdateCheck.Services
 		[SuppressMessage("Usage", "S2589:cache & appSettings null")]
 		public async Task<KeyValuePair<UpdateStatus, string>> IsUpdateNeeded(string currentVersion = "")
 		{
-			if (_appSettings == null || _appSettings.CheckForUpdates == false ) 
-				return new KeyValuePair<UpdateStatus, string>(UpdateStatus.Disabled,"");
+			if ( _appSettings == null || _appSettings.CheckForUpdates == false )
+				return new KeyValuePair<UpdateStatus, string>(UpdateStatus.Disabled, "");
 
 			currentVersion = string.IsNullOrWhiteSpace(currentVersion)
-				?  _appSettings.AppVersion : currentVersion;
-			
+				? _appSettings.AppVersion : currentVersion;
+
 			// The CLI programs uses no cache
 			if ( _cache == null || _appSettings?.AddMemoryCache != true )
 			{
-				return Parse(await QueryIsUpdateNeededAsync(),currentVersion);
+				return Parse(await QueryIsUpdateNeededAsync(), currentVersion);
 			}
 
-			if (  _cache.TryGetValue(QueryCheckForUpdatesCacheName,
-				    out var cacheResult) && cacheResult != null )
+			if ( _cache.TryGetValue(QueryCheckForUpdatesCacheName,
+					out var cacheResult) && cacheResult != null )
 			{
-				return Parse(( List<ReleaseModel> ) cacheResult, currentVersion);
+				return Parse(( List<ReleaseModel> )cacheResult, currentVersion);
 			}
 
 			cacheResult = await QueryIsUpdateNeededAsync();
 
-			_cache.Set(QueryCheckForUpdatesCacheName, cacheResult, 
-				new TimeSpan(48,0,0));
+			_cache.Set(QueryCheckForUpdatesCacheName, cacheResult,
+				new TimeSpan(48, 0, 0));
 
-			return Parse(( List<ReleaseModel>? ) cacheResult,currentVersion);
+			return Parse(( List<ReleaseModel>? )cacheResult, currentVersion);
 		}
 
 		internal async Task<List<ReleaseModel>?> QueryIsUpdateNeededAsync()
 		{
 			// argument check is done in QueryIsUpdateNeeded
 			var (key, value) = await _httpClientHelper.ReadString(GithubStarskyReleaseApi);
-			return !key ? new List<ReleaseModel>() : 
+			return !key ? new List<ReleaseModel>() :
 				JsonSerializer.Deserialize<List<ReleaseModel>>(value, DefaultJsonSerializer.CamelCase);
 		}
-		
-		internal static KeyValuePair<UpdateStatus, string> Parse(IEnumerable<ReleaseModel>? releaseModelList, 
-			string currentVersion )
+
+		internal static KeyValuePair<UpdateStatus, string> Parse(IEnumerable<ReleaseModel>? releaseModelList,
+			string currentVersion)
 		{
-			var orderedReleaseModelList = 
+			var orderedReleaseModelList =
 				releaseModelList?.OrderByDescending(p => p.TagName);
-			
+
 			var tagName = orderedReleaseModelList?
 				.FirstOrDefault(p => p is { Draft: false, PreRelease: false })?.TagName;
-			
+
 			if ( string.IsNullOrWhiteSpace(tagName) ||
-			     !tagName.StartsWith('v') )
+				 !tagName.StartsWith('v') )
 			{
-				return new KeyValuePair<UpdateStatus, string>(UpdateStatus.NoReleasesFound,string.Empty);
+				return new KeyValuePair<UpdateStatus, string>(UpdateStatus.NoReleasesFound, string.Empty);
 			}
 
 			try
@@ -100,7 +100,7 @@ namespace starsky.feature.health.UpdateCheck.Services
 				var status = isNewer ? UpdateStatus.NeedToUpdate : UpdateStatus.CurrentVersionIsLatest;
 				return new KeyValuePair<UpdateStatus, string>(status, latestVersion.ToString());
 			}
-			catch ( ArgumentException)
+			catch ( ArgumentException )
 			{
 				return new KeyValuePair<UpdateStatus, string>(UpdateStatus.InputNotValid, string.Empty);
 			}

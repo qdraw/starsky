@@ -23,7 +23,7 @@ namespace starsky.foundation.database.Query
 		/// <returns></returns>
 		public async Task<List<FileIndexItem>> GetAllObjectsAsync(string subPath)
 		{
-			return await GetAllObjectsAsync(new List<string> {subPath});
+			return await GetAllObjectsAsync(new List<string> { subPath });
 		}
 
 		/// <summary>
@@ -44,15 +44,15 @@ namespace starsky.foundation.database.Query
 				var dbContext = new InjectServiceScope(_scopeFactory).Context();
 				var result =
 					FormatOk(
-						(await GetAllObjectsQuery(dbContext, filePaths)?.ToListAsync()!)!);
+						( await GetAllObjectsQuery(dbContext, filePaths)?.ToListAsync()! )!);
 				await dbContext.DisposeAsync();
 				return result;
 			}
 
 			try
 			{
-				return FormatOk((await GetAllObjectsQuery(_context, filePaths)!
-					.ToListAsync())!);
+				return FormatOk(( await GetAllObjectsQuery(_context, filePaths)!
+					.ToListAsync() )!);
 			}
 			catch ( ObjectDisposedException )
 			{
@@ -63,14 +63,14 @@ namespace starsky.foundation.database.Query
 				// System.InvalidOperationException: ExecuteReader can only be called when the connection is open.
 				return await LocalGetAllObjectsAsync();
 			}
-			catch ( MySqlConnector.MySqlException exception)
+			catch ( MySqlConnector.MySqlException exception )
 			{
 				_logger.LogError(exception, $"catch-ed mysql error [next delay {fallbackDelay}]");
 				await Task.Delay(fallbackDelay);
 				return await LocalGetAllObjectsAsync();
 			}
 		}
-		
+
 		/// <summary>
 		/// QueryFolder Async without cache
 		/// </summary>
@@ -79,7 +79,7 @@ namespace starsky.foundation.database.Query
 		/// <returns></returns>
 		private static IOrderedQueryable<FileIndexItem>? GetAllObjectsQuery(ApplicationDbContext context, List<string> filePathList)
 		{
-			var predicates = new List<Expression<Func<FileIndexItem,bool>>>();  
+			var predicates = new List<Expression<Func<FileIndexItem, bool>>>();
 
 			// ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
 			foreach ( var filePath in filePathList )
@@ -88,9 +88,9 @@ namespace starsky.foundation.database.Query
 				if ( filePath == "/" ) subPath = "/";
 				predicates.Add(p => p.ParentDirectory == subPath);
 			}
-				
+
 			var predicate = PredicateBuilder.OrLoop(predicates);
-			
+
 			return context.FileIndex
 				.TagWith("GetAllObjectsQuery")
 				.Where(predicate).OrderBy(r => r.FileName);

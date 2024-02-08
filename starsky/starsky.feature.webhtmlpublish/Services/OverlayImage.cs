@@ -31,9 +31,9 @@ namespace starsky.feature.webhtmlpublish.Services
 			AppSettingsPublishProfiles profile)
 		{
 			var result = profile.Folder + GenerateSlugHelper.GenerateSlug(
-				                            Path.GetFileNameWithoutExtension(sourceFilePath), true)
-			                            + profile.Append +
-			                            profile.GetExtensionWithDot(sourceFilePath);
+											Path.GetFileNameWithoutExtension(sourceFilePath), true)
+										+ profile.Append +
+										profile.GetExtensionWithDot(sourceFilePath);
 			return result;
 		}
 
@@ -42,7 +42,7 @@ namespace starsky.feature.webhtmlpublish.Services
 			AppSettingsPublishProfiles profile)
 		{
 			var result = PathHelper.AddBackslash(outputParentFullFilePathFolder) +
-			             FilePathOverlayImage(sourceFilePath, profile);
+						 FilePathOverlayImage(sourceFilePath, profile);
 			return result;
 		}
 
@@ -86,7 +86,7 @@ namespace starsky.feature.webhtmlpublish.Services
 			using ( var sourceImageStream = _thumbnailStorage.ReadStream(itemFilePath) )
 			using ( var sourceImage = await Image.LoadAsync(sourceImageStream) )
 			using ( var overlayImageStream =
-			       _hostFileSystem.ReadStream(profile.Path) ) // for example a logo
+				   _hostFileSystem.ReadStream(profile.Path) ) // for example a logo
 			using ( var overlayImage = await Image.LoadAsync(overlayImageStream) )
 			using ( var outputStream = new MemoryStream() )
 			{

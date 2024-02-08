@@ -30,13 +30,13 @@ public sealed class CpuUsageListener : EventListener, ICpuUsageListener
 		ReadOnlyCollection<object?>? eventDataPayload)
 	{
 		if ( eventDataEventName != "EventCounters" || eventDataPayload == null ||
-		     eventDataPayload.Count == 0 )
+			 eventDataPayload.Count == 0 )
 			return;
 
 		if ( eventDataPayload[0] is not IDictionary<string, object>
-			     eventPayload ||
-		     !eventPayload.TryGetValue("Name", out var nameData) ||
-		     nameData is not ( "cpu-usage" ) ) return;
+				 eventPayload ||
+			 !eventPayload.TryGetValue("Name", out var nameData) ||
+			 nameData is not ( "cpu-usage" ) ) return;
 
 		if ( !eventPayload.TryGetValue("Mean", out var value) ) return;
 

@@ -78,7 +78,7 @@ public class ExportService : IExport
 			}
 
 			if ( _iStorage.IsFolderOrFile(detailView.FileIndexItem.FilePath) ==
-			     FolderOrFileModel.FolderOrFileTypeList.Deleted )
+				 FolderOrFileModel.FolderOrFileTypeList.Deleted )
 			{
 				StatusCodesHelper.ReturnExifStatusError(detailView.FileIndexItem,
 					FileIndexItem.ExifStatus.NotFoundSourceMissing,
@@ -109,8 +109,8 @@ public class ExportService : IExport
 			await _query.GetAllRecursiveAsync(detailView
 				.FileIndexItem?.FilePath!);
 		foreach ( var item in
-		         allFilesInFolder.Where(item =>
-			         item.FilePath != null && _iStorage.ExistFile(item.FilePath)) )
+				 allFilesInFolder.Where(item =>
+					 item.FilePath != null && _iStorage.ExistFile(item.FilePath)) )
 		{
 			item.Status = FileIndexItem.ExifStatus.Ok;
 			fileIndexResultsList.Add(item);
@@ -167,7 +167,7 @@ public class ExportService : IExport
 		var filePaths = new List<string>();
 
 		foreach ( var item in fileIndexResultsList.Where(p =>
-			         p.Status == FileIndexItem.ExifStatus.Ok && p.FileHash != null).ToList() )
+					 p.Status == FileIndexItem.ExifStatus.Ok && p.FileHash != null).ToList() )
 		{
 			if ( thumbnail )
 			{
@@ -193,9 +193,9 @@ public class ExportService : IExport
 
 			// when there is .xmp sidecar file (but only when file is a RAW file, ignored when for example jpeg)
 			if ( !ExtensionRolesHelper.IsExtensionForceXmp(item.FilePath) ||
-			     !_iStorage.ExistFile(
-				     ExtensionRolesHelper.ReplaceExtensionWithXmp(
-					     item.FilePath)) ) continue;
+				 !_iStorage.ExistFile(
+					 ExtensionRolesHelper.ReplaceExtensionWithXmp(
+						 item.FilePath)) ) continue;
 
 			var xmpFileFullPath = _appSettings.DatabasePathToFilePath(
 				ExtensionRolesHelper.ReplaceExtensionWithXmp(

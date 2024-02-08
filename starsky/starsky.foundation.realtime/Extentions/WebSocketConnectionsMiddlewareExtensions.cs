@@ -8,8 +8,8 @@ namespace starsky.foundation.realtime.Extentions
 {
 	public static class WebSocketConnectionsMiddlewareExtensions
 	{
-		public static IApplicationBuilder MapWebSocketConnections(this IApplicationBuilder app, 
-			PathString pathMatch, WebSocketConnectionsOptions options, 
+		public static IApplicationBuilder MapWebSocketConnections(this IApplicationBuilder app,
+			PathString pathMatch, WebSocketConnectionsOptions options,
 			bool? featureToggleEnabled = true)
 		{
 			ArgumentNullException.ThrowIfNull(app);

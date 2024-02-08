@@ -12,26 +12,26 @@ namespace starsky.foundation.worker.Helpers
 {
 	public static class ProcessTaskQueue
 	{
-		public static Tuple<TimeSpan,double> RoundUp(AppSettings appSettings)
+		public static Tuple<TimeSpan, double> RoundUp(AppSettings appSettings)
 		{
 			if ( appSettings.UseDiskWatcherIntervalInMilliseconds <= 0 )
 			{
 				return new Tuple<TimeSpan, double>(TimeSpan.Zero, 0);
 			}
-			
+
 			var current = DateTime.UtcNow.TimeOfDay.TotalMilliseconds;
 			var atMinuteInBlock = current % appSettings.UseDiskWatcherIntervalInMilliseconds;
 			var msToAdd = appSettings.UseDiskWatcherIntervalInMilliseconds - atMinuteInBlock;
 			return new Tuple<TimeSpan, double>(TimeSpan.FromMilliseconds(msToAdd), current);
 		}
-		
+
 		public static async Task ProcessBatchedLoopAsync(
 			IBaseBackgroundTaskQueue taskQueue, IWebLogger logger, AppSettings appSettings,
 			CancellationToken cancellationToken)
 		{
 			await Task.Yield();
-			
-			while (!cancellationToken.IsCancellationRequested)
+
+			while ( !cancellationToken.IsCancellationRequested )
 			{
 				try
 				{
@@ -46,14 +46,14 @@ namespace starsky.foundation.worker.Helpers
 					{
 						continue;
 					}
-				
+
 					var toDoItems = new List<Tuple<Func<CancellationToken, ValueTask>,
 						string>>();
 
 					for ( var i = 0; i < taskQueueCount; i++ )
 					{
-						var (workItem,metaData) = await taskQueue.DequeueAsync(cancellationToken);
-						toDoItems.Add(new Tuple<Func<CancellationToken, ValueTask>, string>(workItem,metaData));
+						var (workItem, metaData) = await taskQueue.DequeueAsync(cancellationToken);
+						toDoItems.Add(new Tuple<Func<CancellationToken, ValueTask>, string>(workItem, metaData));
 					}
 
 					var afterDistinct = toDoItems.DistinctBy(p => p.Item2).ToList();
@@ -65,7 +65,7 @@ namespace starsky.foundation.worker.Helpers
 					}
 					logger.LogInformation($"[{taskQueue.GetType().ToString().Split(".").LastOrDefault()}] next done & wait ");
 				}
-				catch ( TaskCanceledException)
+				catch ( TaskCanceledException )
 				{
 					// do nothing
 				}
@@ -81,28 +81,28 @@ namespace starsky.foundation.worker.Helpers
 			{
 				if ( taskQueue != null )
 				{
-					(workItem, _ ) = await taskQueue.DequeueAsync(cancellationToken);
+					(workItem, _) = await taskQueue.DequeueAsync(cancellationToken);
 					// _ is metaData from the queue
 				}
 				await workItem(cancellationToken);
 			}
-			catch (OperationCanceledException)
+			catch ( OperationCanceledException )
 			{
 				// do nothing! Prevent throwing if stoppingToken was signaled
 			}
-			catch (Exception ex)
+			catch ( Exception ex )
 			{
 				logger.LogError(ex, "Error occurred executing task work item.");
 			}
 		}
 
-		public static async Task ProcessTaskQueueAsync(IBaseBackgroundTaskQueue taskQueue, 
+		public static async Task ProcessTaskQueueAsync(IBaseBackgroundTaskQueue taskQueue,
 			IWebLogger logger, CancellationToken cancellationToken)
 		{
 			logger.LogInformation($"Queued Hosted Service {taskQueue.GetType().Name} is " +
-			                      $"starting on {Environment.MachineName}");
-		
-			while (!cancellationToken.IsCancellationRequested)
+								  $"starting on {Environment.MachineName}");
+
+			while ( !cancellationToken.IsCancellationRequested )
 			{
 				await ExecuteTask(null!, logger, taskQueue, cancellationToken);
 			}
@@ -117,13 +117,13 @@ namespace starsky.foundation.worker.Helpers
 			ArgumentNullException.ThrowIfNull(workItem);
 			return QueueBackgroundWorkItemInternalAsync(channel, workItem, metaData);
 		}
-		
+
 		private static async ValueTask QueueBackgroundWorkItemInternalAsync(
 			Channel<Tuple<Func<CancellationToken, ValueTask>, string>> channel,
 			Func<CancellationToken, ValueTask> workItem, string metaData)
 		{
-			await channel.Writer.WriteAsync(new Tuple<Func<CancellationToken, ValueTask>, string>(workItem,metaData));
+			await channel.Writer.WriteAsync(new Tuple<Func<CancellationToken, ValueTask>, string>(workItem, metaData));
 		}
-		
+
 	}
 }

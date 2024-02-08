@@ -10,7 +10,7 @@ namespace starsky.foundation.platform.Models
 			User,
 			Administrator
 		}
-		
+
 		public static IEnumerable<string> GetAllRoles()
 		{
 			return Enum.GetNames(typeof(AppAccountRoles));

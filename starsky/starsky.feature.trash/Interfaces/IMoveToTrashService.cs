@@ -13,7 +13,7 @@ public interface IMoveToTrashService
 	/// <returns>list of files</returns>
 	Task<List<FileIndexItem>> MoveToTrashAsync(List<string> inputFilePaths,
 		bool collections);
-	
+
 	/// <summary>
 	/// Is it supported to use the system trash
 	/// But it does NOT check if the feature toggle is enabled

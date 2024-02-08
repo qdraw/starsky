@@ -65,7 +65,7 @@ namespace starskyAdminCli.Services
 			var option = _console.ReadLine();
 
 			if ( !Enum.TryParse<ManageAdminOptions>(option,
-				    out var selectedOption) )
+					out var selectedOption) )
 			{
 				_console.WriteLine("No input selected ends now");
 				return;

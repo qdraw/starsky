@@ -24,7 +24,7 @@ namespace starsky.foundation.platform.Helpers
 			{
 				return new DateTime(0, DateTimeKind.Utc);
 			}
-			
+
 			var value = attribute.InformationalVersion;
 			return ParseBuildTime(value);
 		}
@@ -38,9 +38,9 @@ namespace starsky.foundation.platform.Helpers
 				return new DateTime(0, DateTimeKind.Utc);
 			}
 			value = value.Substring(index + buildVersionMetadataPrefix.Length);
-			return DateTime.TryParseExact(value, "yyyyMMddHHmmss", CultureInfo.InvariantCulture, 
-				DateTimeStyles.AssumeUniversal, out var result) ? 
-					result : 
+			return DateTime.TryParseExact(value, "yyyyMMddHHmmss", CultureInfo.InvariantCulture,
+				DateTimeStyles.AssumeUniversal, out var result) ?
+					result :
 					new DateTime(0, DateTimeKind.Utc);
 		}
 	}

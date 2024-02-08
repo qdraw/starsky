@@ -22,25 +22,25 @@ namespace starsky.foundation.database.Thumbnails
 			_thumbnailQuery = thumbnailQuery;
 			_logger = logger;
 		}
-		
+
 		public IThumbnailQuery? ThumbnailQuery()
 		{
 			if ( _thumbnailQuery == null ) return null;
 			var context = _setupDatabaseTypes?.BuilderDbFactory();
-			if ( _thumbnailQuery.GetType() == typeof(ThumbnailQuery) && context != null)
+			if ( _thumbnailQuery.GetType() == typeof(ThumbnailQuery) && context != null )
 			{
 				return new ThumbnailQuery(context, _serviceScopeFactory, _logger);
 			}
 
 			// FakeIQuery should skip creation
 			var isAnyContentIncluded = _thumbnailQuery.GetReflectionFieldValue<List<ThumbnailItem>?>("_content")?.Count != 0;
-			
+
 			if ( !isAnyContentIncluded )
 			{
 				return Activator.CreateInstance(_thumbnailQuery.GetType(),
-					context, _serviceScopeFactory,_logger) as IThumbnailQuery;
+					context, _serviceScopeFactory, _logger) as IThumbnailQuery;
 			}
-			
+
 			_logger.LogInformation("FakeIThumbnailQuery _content detected");
 			return _thumbnailQuery;
 		}

@@ -13,6 +13,6 @@ public class UserOverviewModel
 	}
 
 	public List<User> Users { get; set; } = new List<User>();
-	
+
 	public bool IsSuccess { get; set; }
 }

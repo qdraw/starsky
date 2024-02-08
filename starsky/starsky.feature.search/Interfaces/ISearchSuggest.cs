@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace starsky.feature.search.Interfaces
 {
-	
+
 	public interface ISearchSuggest
 	{
 		Task<IEnumerable<string>> SearchSuggest(string query);

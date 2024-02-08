@@ -50,10 +50,10 @@ namespace starsky.feature.webhtmlpublish.Helpers
 		internal static string GetContentFolder()
 		{
 			return PathHelper.RemoveLatestBackslash(AppDomain.CurrentDomain.BaseDirectory) +
-			       Path.DirectorySeparatorChar +
-			       "WebHtmlPublish" +
-			       Path.DirectorySeparatorChar +
-			       "PublishedContent";
+				   Path.DirectorySeparatorChar +
+				   "WebHtmlPublish" +
+				   Path.DirectorySeparatorChar +
+				   "PublishedContent";
 		}
 	}
 }

@@ -150,7 +150,7 @@ namespace starsky.feature.import.Services
 
 			var parentFolders = new List<Tuple<string?, List<string>>>();
 			foreach ( var itemSourceFullFilePath in importIndexItemsList.Select(item =>
-				         item.SourceFullFilePath) )
+						 item.SourceFullFilePath) )
 			{
 				var parentFolder = Directory.GetParent(itemSourceFullFilePath)
 					?.FullName;
@@ -170,8 +170,8 @@ namespace starsky.feature.import.Services
 			{
 				var fileStorageInfo = _filesystemStorage.Info(parentFolder.Item1!);
 				if ( fileStorageInfo.IsFolderOrFile !=
-				     FolderOrFileModel.FolderOrFileTypeList.Folder ||
-				     fileStorageInfo.IsFileSystemReadOnly != true )
+					 FolderOrFileModel.FolderOrFileTypeList.Folder ||
+					 fileStorageInfo.IsFileSystemReadOnly != true )
 				{
 					continue;
 				}
@@ -207,12 +207,12 @@ namespace starsky.feature.import.Services
 		{
 			var directoriesContent = new Dictionary<string, List<string>>();
 			foreach ( var importIndexItemFileIndexItemParentDirectory in importIndexItemsList.Where(
-					         p =>
-						         p.Status == ImportStatus.Ok)
-				         .Select(p => p.FileIndexItem?.ParentDirectory) )
+							 p =>
+								 p.Status == ImportStatus.Ok)
+						 .Select(p => p.FileIndexItem?.ParentDirectory) )
 			{
 				if ( importIndexItemFileIndexItemParentDirectory == null ||
-				     directoriesContent.ContainsKey(importIndexItemFileIndexItemParentDirectory) )
+					 directoriesContent.ContainsKey(importIndexItemFileIndexItemParentDirectory) )
 					continue;
 
 				var parentDirectoryList =
@@ -238,7 +238,7 @@ namespace starsky.feature.import.Services
 			Dictionary<string, List<string>> directoriesContent)
 		{
 			foreach ( var importIndexItem in importIndexItemsList.Where(p =>
-				         p.Status == ImportStatus.Ok) )
+						 p.Status == ImportStatus.Ok) )
 			{
 				if ( importIndexItem.FileIndexItem == null )
 				{
@@ -295,7 +295,7 @@ namespace starsky.feature.import.Services
 			foreach ( var fullFilePath in fullFilePathsList )
 			{
 				if ( _filesystemStorage.ExistFolder(fullFilePath) &&
-				     importSettings.RecursiveDirectory )
+					 importSettings.RecursiveDirectory )
 				{
 					// recursive
 					includedDirectoryFilePaths.AddRange(_filesystemStorage
@@ -306,7 +306,7 @@ namespace starsky.feature.import.Services
 				}
 
 				if ( _filesystemStorage.ExistFolder(fullFilePath) &&
-				     !importSettings.RecursiveDirectory )
+					 !importSettings.RecursiveDirectory )
 				{
 					// non-recursive
 					includedDirectoryFilePaths.AddRange(_filesystemStorage
@@ -359,7 +359,7 @@ namespace starsky.feature.import.Services
 
 			// Check if extension is correct && Check if the file is correct
 			if ( !ExtensionRolesHelper.IsExtensionSyncSupported(inputFileFullPath.Key) ||
-			     !ExtensionRolesHelper.IsExtensionSyncSupported($".{imageFormat}") )
+				 !ExtensionRolesHelper.IsExtensionSyncSupported($".{imageFormat}") )
 			{
 				ConsoleIfVerbose($"❌ extension not supported: {inputFileFullPath.Key}");
 				return new ImportIndexItem
@@ -384,7 +384,7 @@ namespace starsky.feature.import.Services
 			}
 
 			if ( importSettings.IndexMode &&
-			     await _importQuery!.IsHashInImportDbAsync(hashList.Key) )
+				 await _importQuery!.IsHashInImportDbAsync(hashList.Key) )
 			{
 				ConsoleIfVerbose($"🤷 Ignored, exist already {inputFileFullPath.Key}");
 				return new ImportIndexItem
@@ -561,14 +561,14 @@ namespace starsky.feature.import.Services
 				importIndexItemsList, ImportSettingsModel importSettings)
 		{
 			if ( _appSettings.MetaThumbnailOnImport == false ||
-			     !importSettings.IndexMode )
+				 !importSettings.IndexMode )
 			{
 				return new List<(bool, bool, string, string?)>();
 			}
 
 			var items = importIndexItemsList
 				.Where(p => p.Status == ImportStatus.Ok)
-				.Select(p => ( p.FilePath, p.FileIndexItem!.FileHash )).Cast<(string, string)>()
+				.Select(p => (p.FilePath, p.FileIndexItem!.FileHash)).Cast<(string, string)>()
 				.ToList();
 
 			if ( items.Count == 0 )
@@ -595,8 +595,8 @@ namespace starsky.feature.import.Services
 			var xmpExistForThisFileType = ExistXmpSidecarForThisFileType(importIndexItem);
 
 			if ( xmpExistForThisFileType || ( _appSettings.ExifToolImportXmpCreate
-			                                  && ExtensionRolesHelper.IsExtensionForceXmp(
-				                                  importIndexItem.FilePath) ) )
+											  && ExtensionRolesHelper.IsExtensionForceXmp(
+												  importIndexItem.FilePath) ) )
 			{
 				// When a xmp file already exist (only for raws)
 				// AND when this created afterwards with the ExifToolImportXmpCreate setting  (only for raws)
@@ -609,9 +609,9 @@ namespace starsky.feature.import.Services
 			// Copy
 			if ( _appSettings.IsVerbose() )
 				_logger.LogInformation("[Import] Next Action = Copy" +
-				                       $" {importIndexItem.SourceFullFilePath} {importIndexItem.FilePath}");
+									   $" {importIndexItem.SourceFullFilePath} {importIndexItem.FilePath}");
 			using ( var sourceStream =
-			       _filesystemStorage.ReadStream(importIndexItem.SourceFullFilePath) )
+				   _filesystemStorage.ReadStream(importIndexItem.SourceFullFilePath) )
 				await _subPathStorage.WriteStreamAsync(sourceStream, importIndexItem.FilePath!);
 
 			// Copy the sidecar file
@@ -667,7 +667,7 @@ namespace starsky.feature.import.Services
 			string? fileHash, bool indexMode)
 		{
 			if ( fileHash == null || _appSettings.MetaThumbnailOnImport == false || !indexMode ||
-			     queryThumbnailUpdateDelegate == null ) return;
+				 queryThumbnailUpdateDelegate == null ) return;
 			// Check if fastest version is available to show 
 			var setStatus = _thumbnailStorage.ExistFile(
 				ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.TinyMeta));
@@ -730,8 +730,8 @@ namespace starsky.feature.import.Services
 				ExtensionRolesHelper.ReplaceExtensionWithXmp(importIndexItem
 					.SourceFullFilePath);
 			return ExtensionRolesHelper.IsExtensionForceXmp(importIndexItem
-				       .SourceFullFilePath) &&
-			       _filesystemStorage.ExistFile(xmpSourceFullFilePath);
+					   .SourceFullFilePath) &&
+				   _filesystemStorage.ExistFile(xmpSourceFullFilePath);
 		}
 
 		/// <summary>
@@ -745,8 +745,8 @@ namespace starsky.feature.import.Services
 			{
 				if ( _appSettings.IsVerbose() )
 					_logger.LogInformation(" AddToQueryAndImportDatabaseAsync Ignored - " +
-					                       $"IndexMode {importSettings.IndexMode} " +
-					                       $"TestConnection {_importQuery?.TestConnection()}");
+										   $"IndexMode {importSettings.IndexMode} " +
+										   $"TestConnection {_importQuery?.TestConnection()}");
 				return;
 			}
 
@@ -837,7 +837,7 @@ namespace starsky.feature.import.Services
 		private async Task CreateNewDatabaseDirectory(string parentPath)
 		{
 			if ( AddedParentDirectories.Contains(parentPath) ||
-			     _query.SingleItem(parentPath) != null ) return;
+				 _query.SingleItem(parentPath) != null ) return;
 
 			var item = new FileIndexItem(PathHelper.RemoveLatestSlash(parentPath))
 			{

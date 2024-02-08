@@ -1,4 +1,4 @@
-﻿using starsky.foundation.database.Models;
+using starsky.foundation.database.Models;
 using System.Text.Json.Serialization;
 
 namespace starskycore.ViewModels

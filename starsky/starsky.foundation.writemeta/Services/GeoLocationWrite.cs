@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
@@ -22,17 +22,17 @@ namespace starsky.foundation.writemeta.Services
 		private readonly IConsole _console;
 		private readonly ExifToolCmdHelper _exifToolCmdHelper;
 
-		public GeoLocationWrite(AppSettings appSettings, IExifTool exifTool, 
+		public GeoLocationWrite(AppSettings appSettings, IExifTool exifTool,
 			ISelectorStorage selectorStorage, IConsole console, IWebLogger logger, IThumbnailQuery thumbnailQuery)
 		{
 			_appSettings = appSettings;
 			var thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			var iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_console = console;
-			_exifToolCmdHelper = new ExifToolCmdHelper(exifTool, 
-				iStorage, 
-				thumbnailStorage, 
-				new ReadMeta(iStorage, _appSettings, null, logger),thumbnailQuery);
+			_exifToolCmdHelper = new ExifToolCmdHelper(exifTool,
+				iStorage,
+				thumbnailStorage,
+				new ReadMeta(iStorage, _appSettings, null, logger), thumbnailQuery);
 		}
 
 		/// <summary>
@@ -43,8 +43,8 @@ namespace starsky.foundation.writemeta.Services
 		public async Task LoopFolderAsync(List<FileIndexItem> metaFilesInDirectory,
 			bool syncLocationNames)
 		{
-			foreach ( var metaFileItem in metaFilesInDirectory.Where(metaFileItem => 
-				         ExtensionRolesHelper.IsExtensionExifToolSupported(metaFileItem.FileName)) )
+			foreach ( var metaFileItem in metaFilesInDirectory.Where(metaFileItem =>
+						 ExtensionRolesHelper.IsExtensionExifToolSupported(metaFileItem.FileName)) )
 			{
 				if ( _appSettings.IsVerbose() ) _console.Write(" 👟 ");
 
@@ -54,15 +54,15 @@ namespace starsky.foundation.writemeta.Services
 					nameof(FileIndexItem.Longitude).ToLowerInvariant(),
 					nameof(FileIndexItem.LocationAltitude).ToLowerInvariant()
 				};
-                
-				if(syncLocationNames) comparedNamesList.AddRange( new List<string>
+
+				if ( syncLocationNames ) comparedNamesList.AddRange(new List<string>
 				{
 					nameof(FileIndexItem.LocationCity).ToLowerInvariant(),
 					nameof(FileIndexItem.LocationState).ToLowerInvariant(),
 					nameof(FileIndexItem.LocationCountry).ToLowerInvariant(),
 					nameof(FileIndexItem.LocationCountryCode).ToLowerInvariant()
 				});
-				
+
 				await _exifToolCmdHelper.UpdateAsync(metaFileItem, comparedNamesList);
 
 				// Rocket man!

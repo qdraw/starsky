@@ -68,7 +68,7 @@ public static class OpenTelemetryExtension
 		}
 
 		if ( string.IsNullOrWhiteSpace(
-			    appSettings.OpenTelemetry.MetricsEndpoint) )
+				appSettings.OpenTelemetry.MetricsEndpoint) )
 		{
 			return;
 		}
@@ -98,16 +98,16 @@ public static class OpenTelemetryExtension
 	internal static bool FilterPath(HttpContext context)
 	{
 		if ( ( context.Request.Path.Value?.EndsWith("/realtime") == true ||
-		       context.Request.Path.Value?.EndsWith("/api/health") == true ||
-		       context.Request.Path.Value?.EndsWith("/api/health/details") == true ||
-		       context.Request.Path.Value?.EndsWith("/api/open-telemetry/trace") == true )
-		     && context.Response.StatusCode == 200 )
+			   context.Request.Path.Value?.EndsWith("/api/health") == true ||
+			   context.Request.Path.Value?.EndsWith("/api/health/details") == true ||
+			   context.Request.Path.Value?.EndsWith("/api/open-telemetry/trace") == true )
+			 && context.Response.StatusCode == 200 )
 		{
 			return false;
 		}
 
 		if ( context.Request.Path.Value?.EndsWith("/api/index") == true
-		     && context.Response.StatusCode == 401 )
+			 && context.Response.StatusCode == 401 )
 		{
 			return false;
 		}

@@ -26,35 +26,35 @@ namespace starsky.foundation.sync.Helpers
 			_synchronize = synchronize;
 			_selectorStorage = selectorStorage;
 		}
-		
+
 		public async Task Sync(string[] args)
 		{
 			_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
 			_appSettings.ApplicationType = AppSettings.StarskyAppType.Sync;
 
-			if (ArgsHelper.NeedHelp(args))
+			if ( ArgsHelper.NeedHelp(args) )
 			{
 				new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
 				return;
 			}
-			
+
 			new ArgsHelper().SetEnvironmentByArgs(args);
 
 			var subPath = new ArgsHelper(_appSettings).SubPathOrPathValue(args);
 			var getSubPathRelative = new ArgsHelper(_appSettings).GetRelativeValue(args);
-			if (getSubPathRelative != null)
+			if ( getSubPathRelative != null )
 			{
 				var parseSubPath = new StructureService(
 						_selectorStorage.Get(SelectorStorage.StorageServices
 							.SubPath), _appSettings.Structure)
 					.ParseSubfolders(getSubPathRelative);
-				if ( !string.IsNullOrEmpty(parseSubPath)  )
+				if ( !string.IsNullOrEmpty(parseSubPath) )
 				{
 					subPath = parseSubPath;
 				}
 			}
 
-			if (ArgsHelper.GetIndexMode(args))
+			if ( ArgsHelper.GetIndexMode(args) )
 			{
 				var stopWatch = Stopwatch.StartNew();
 				_console.WriteLine($"Start indexing {subPath}");
@@ -63,7 +63,7 @@ namespace starsky.foundation.sync.Helpers
 				{
 					_console.WriteLine($"Not Found: {subPath}");
 				}
-				
+
 				stopWatch.Stop();
 				_console.WriteLine($"\nDone SyncFiles! {GetStopWatchText(stopWatch)}");
 			}

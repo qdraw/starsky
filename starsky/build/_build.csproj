@@ -8,8 +8,6 @@
         <NukeRootDirectory>..</NukeRootDirectory>
         <NukeScriptDirectory>..</NukeScriptDirectory>
         <NukeTelemetryVersion>1</NukeTelemetryVersion>
-        <!-- https://github.com/nuke-build/nuke/issues/818 -->
-        <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
         <Nullable>enable</Nullable>
         <ProjectGuid>{b0a4bfd3-6321-4962-a15c-142aace9a4c9}</ProjectGuid>
     </PropertyGroup>

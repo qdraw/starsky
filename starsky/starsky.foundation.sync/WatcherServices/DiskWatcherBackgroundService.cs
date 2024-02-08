@@ -25,7 +25,7 @@ namespace starsky.foundation.sync.WatcherServices
 			_appSettings = appSettings;
 			_logger = logger;
 		}
-		
+
 		/// <summary>
 		/// This method is triggered by BackgroundService
 		/// </summary>
@@ -33,10 +33,10 @@ namespace starsky.foundation.sync.WatcherServices
 		/// <returns>Task/nothing</returns>
 		protected override Task ExecuteAsync(CancellationToken stoppingToken)
 		{
-			_logger.LogInformation((_appSettings.UseDiskWatcher != false ? $"UseDiskWatcher is enabled" 
+			_logger.LogInformation(( _appSettings.UseDiskWatcher != false ? $"UseDiskWatcher is enabled"
 				: "UseDiskWatcher is disabled" ) + $" on {Environment.MachineName}");
 			if ( _appSettings.UseDiskWatcher == false
-			     && _appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
+				 && _appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
 			{
 				return Task.CompletedTask;
 			}

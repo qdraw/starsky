@@ -8,7 +8,7 @@ namespace starsky.foundation.accountmanagement.Models
 		public User? User { get; set; }
 		public bool Success { get; set; }
 		public ValidateResultError? Error { get; set; }
-        
+
 		public ValidateResult(User? user = null, bool success = false, ValidateResultError? error = null)
 		{
 			User = user;

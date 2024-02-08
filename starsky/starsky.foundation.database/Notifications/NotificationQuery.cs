@@ -38,7 +38,7 @@ namespace starsky.foundation.database.Notifications
 				DateTimeEpoch = DateTimeOffset.Now.ToUnixTimeSeconds(),
 				Content = content
 			};
-			
+
 			async Task<NotificationItem> LocalAdd(ApplicationDbContext context)
 			{
 				await context.Notifications.AddAsync(item);
@@ -58,7 +58,7 @@ namespace starsky.foundation.database.Notifications
 				{
 					await _context.SaveChangesAsync();
 				}
-				catch ( DbUpdateConcurrencyException e)
+				catch ( DbUpdateConcurrencyException e )
 				{
 					_logger.LogInformation(e, "[AddNotification] save failed after DbUpdateConcurrencyException");
 				}
@@ -68,26 +68,26 @@ namespace starsky.foundation.database.Notifications
 				var context = new InjectServiceScope(_scopeFactory).Context();
 				return await LocalAdd(context);
 			}
-			
+
 			return item;
 		}
 
 		public Task<NotificationItem> AddNotification<T>(ApiNotificationResponseModel<T> content)
 		{
 			var stringMessage = JsonSerializer.Serialize(content,
-				DefaultJsonSerializer.CamelCaseNoEnters);		
+				DefaultJsonSerializer.CamelCaseNoEnters);
 			return AddNotification(stringMessage);
 		}
 
 		public Task<List<NotificationItem>> GetNewerThan(DateTime parsedDateTime)
 		{
-			var unixTime = ((DateTimeOffset)parsedDateTime).ToUnixTimeSeconds() -1;
+			var unixTime = ( ( DateTimeOffset )parsedDateTime ).ToUnixTimeSeconds() - 1;
 			return _context.Notifications.Where(x => x.DateTimeEpoch > unixTime).ToListAsync();
 		}
 
 		public Task<List<NotificationItem>> GetOlderThan(DateTime parsedDateTime)
 		{
-			var unixTime = ((DateTimeOffset)parsedDateTime).ToUnixTimeSeconds();
+			var unixTime = ( ( DateTimeOffset )parsedDateTime ).ToUnixTimeSeconds();
 			return _context.Notifications.Where(x => x.DateTimeEpoch < unixTime).ToListAsync();
 		}
 

@@ -10,7 +10,7 @@ public class MetadataContainer
 	/// </summary>
 	[JsonPropertyName("$id")]
 	public string Id { get; set; } = "https://docs.qdraw.nl/schema/meta-data-container.json";
-	
+
 	[JsonPropertyName("$schema")]
 	public string Schema { get; set; } = "https://json-schema.org/draft/2020-12/schema";
 

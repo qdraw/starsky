@@ -64,7 +64,7 @@ public sealed class Build : NukeBuild
 	/// Nuget & NPM dependencies are always installed
 	/// </summary>
 	[Parameter("Skip Dependencies download e.g. exiftool / " +
-	           "geo data, nuget/npm deps are always installed")]
+			   "geo data, nuget/npm deps are always installed")]
 	readonly bool NoDependencies;
 
 	/// <summary>
@@ -104,7 +104,7 @@ public sealed class Build : NukeBuild
 	{
 		var branchName = Branch;
 		if ( !string.IsNullOrEmpty(branchName) &&
-		     branchName.StartsWith("refs/heads/") )
+			 branchName.StartsWith("refs/heads/") )
 		{
 			branchName = branchName.Replace("refs/heads/", "");
 		}
@@ -236,7 +236,7 @@ public sealed class Build : NukeBuild
 			$"Current RID: {RuntimeIdentifier.GetCurrentRuntimeIdentifier()}");
 
 		Log.Information("SolutionParentFolder: " +
-		                WorkingDirectory.GetSolutionParentFolder());
+						WorkingDirectory.GetSolutionParentFolder());
 
 		Log.Information(NoClient
 			? "Client is: disabled"
@@ -251,8 +251,8 @@ public sealed class Build : NukeBuild
 			: "Publish: enabled");
 
 		Log.Information(NoSonar ||
-		                string.IsNullOrEmpty(SonarQube.GetSonarKey()) ||
-		                string.IsNullOrEmpty(SonarQube.GetSonarToken())
+						string.IsNullOrEmpty(SonarQube.GetSonarKey()) ||
+						string.IsNullOrEmpty(SonarQube.GetSonarToken())
 			? "Sonarcloud scan: disabled"
 			: "Sonarcloud scan: enabled");
 

@@ -37,7 +37,7 @@ namespace helpers
 				var runtimeZip = $"{ZipperHelper.ZipPrefix}{runtime}.zip";
 
 				Log.Information("\tRuntimeZip: " + runtimeZip + " exists: " +
-				                File.Exists(runtimeZip));
+								File.Exists(runtimeZip));
 				if ( File.Exists(runtimeZip) )
 				{
 					File.Delete(runtimeZip);
@@ -95,7 +95,7 @@ namespace helpers
 
 				// For Windows its not needed to copy unix dependencies 
 				if ( runtime.StartsWith("win") &&
-				     Directory.Exists(Path.Combine(runtimeTempFolder, "exiftool-unix")) )
+					 Directory.Exists(Path.Combine(runtimeTempFolder, "exiftool-unix")) )
 				{
 					Directory.Delete(Path.Combine(runtimeTempFolder, "exiftool-unix"), true);
 					Log.Information("removed exiftool-unix for windows");
@@ -103,7 +103,7 @@ namespace helpers
 
 				// ReSharper disable once InvertIf
 				if ( runtime.StartsWith("win") &&
-				     File.Exists(Path.Combine(runtimeTempFolder, "exiftool.tar.gz")) )
+					 File.Exists(Path.Combine(runtimeTempFolder, "exiftool.tar.gz")) )
 				{
 					File.Delete(Path.Combine(runtimeTempFolder, "exiftool.tar.gz"));
 					Log.Information("removed exiftool.tar.gz for windows");
@@ -123,7 +123,7 @@ namespace helpers
 			configuration, string runtime, bool isReadyToRunEnabled)
 		{
 			Log.Information("> dotnet build next for: solution: " + solution + " runtime: " +
-			                runtime);
+							runtime);
 
 			var readyToRunArgument =
 				RuntimeIdentifier.IsReadyToRunSupported(runtime) && isReadyToRunEnabled
@@ -166,7 +166,7 @@ namespace helpers
 			foreach ( var publishProject in Build.PublishProjectsList )
 			{
 				Log.Information(">> next publishProject: " +
-				                publishProject + " runtime: " + runtime);
+								publishProject + " runtime: " + runtime);
 
 				var publishProjectFullPath = Path.Combine(
 					WorkingDirectory.GetSolutionParentFolder(),

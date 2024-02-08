@@ -40,7 +40,7 @@ namespace starsky.feature.realtime.Services
 			}
 			catch ( Exception exception )
 			{
-				if (! exception.Message.Contains("Notifications' doesn't exist") )
+				if ( !exception.Message.Contains("Notifications' doesn't exist") )
 				{
 					_logger.LogError(exception, "[CleanOldMessagesAsync] catch-ed exception");
 				}

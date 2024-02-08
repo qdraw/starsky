@@ -27,8 +27,8 @@ namespace starsky.feature.webhtmlpublish.Helpers
 		}
 
 		[SuppressMessage("Usage", "S3966: Resource 'memoryStream' has " +
-		                          "already been disposed explicitly or through a using statement implicitly. " +
-		                          "Remove the redundant disposal.")]
+								  "already been disposed explicitly or through a using statement implicitly. " +
+								  "Remove the redundant disposal.")]
 		public async Task<string[]> Create(List<FileIndexItem> fileIndexList)
 		{
 			var base64ImageArray = new string[fileIndexList.Count];

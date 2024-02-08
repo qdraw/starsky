@@ -17,5 +17,5 @@ namespace starsky.foundation.platform.JsonConverter
 			var result = JsonSerializer.Deserialize<T>(serialized, DefaultJsonSerializer.CamelCase);
 			return result ?? default;
 		}
-	}	
+	}
 }

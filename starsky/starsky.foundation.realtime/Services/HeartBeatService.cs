@@ -30,18 +30,18 @@ namespace starsky.foundation.realtime.Services
 			_cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
 			_heartbeatTask = HeartbeatAsync(_cancellationTokenSource.Token);
-			
+
 			if ( _heartbeatTask.IsCompleted )
 			{
 				_cancellationTokenSource.Dispose();
 			}
-			
+
 			return _heartbeatTask.IsCompleted ? _heartbeatTask : Task.CompletedTask;
 		}
 
 		public async Task StopAsync(CancellationToken cancellationToken)
 		{
-			if (_heartbeatTask != null)
+			if ( _heartbeatTask != null )
 			{
 				if ( _cancellationTokenSource != null )
 				{
@@ -54,7 +54,7 @@ namespace starsky.foundation.realtime.Services
 				{
 					cancellationToken.ThrowIfCancellationRequested();
 				}
-				catch (OperationCanceledException)
+				catch ( OperationCanceledException )
 				{
 					// do nothing
 				}
@@ -63,10 +63,10 @@ namespace starsky.foundation.realtime.Services
 
 		private async Task HeartbeatAsync(CancellationToken cancellationToken)
 		{
-			while (!cancellationToken.IsCancellationRequested)
+			while ( !cancellationToken.IsCancellationRequested )
 			{
 				var webSocketResponse =
-					new ApiNotificationResponseModel<HeartbeatModel>(new HeartbeatModel(SpeedInSeconds), 
+					new ApiNotificationResponseModel<HeartbeatModel>(new HeartbeatModel(SpeedInSeconds),
 						ApiNotificationType.Heartbeat);
 				await _connectionsService.SendToAllAsync(webSocketResponse, cancellationToken);
 				await Task.Delay(TimeSpan.FromSeconds(SpeedInSeconds), cancellationToken);

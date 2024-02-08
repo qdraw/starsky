@@ -34,8 +34,8 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly IServiceScopeFactory? _serviceScopeFactory;
 		private readonly SyncIgnoreCheck _syncIgnoreCheck;
 
-		public SyncFolder(AppSettings appSettings, IQuery query, 
-			ISelectorStorage selectorStorage, IConsole console, 
+		public SyncFolder(AppSettings appSettings, IQuery query,
+			ISelectorStorage selectorStorage, IConsole console,
 			IWebLogger logger, IMemoryCache? memoryCache, IServiceScopeFactory? serviceScopeFactory)
 		{
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
@@ -53,8 +53,8 @@ namespace starsky.foundation.sync.SyncServices
 		public async Task<List<FileIndexItem>> Folder(string inputSubPath,
 			ISynchronize.SocketUpdateDelegate? updateDelegate = null, DateTime? childDirectoriesAfter = null)
 		{
-			var subPaths = new List<string> {inputSubPath};	
-			
+			var subPaths = new List<string> { inputSubPath };
+
 			subPaths.AddRange(_subPathStorage.GetDirectoryRecursive(inputSubPath)
 				.Where(p =>
 				{
@@ -62,7 +62,7 @@ namespace starsky.foundation.sync.SyncServices
 					return p.Value >= childDirectoriesAfter;
 				})
 				.Select(p => p.Key));
-			
+
 			// Loop trough all folders recursive
 			var resultChunkList = await subPaths.ForEachAsync(
 				async subPath =>
@@ -71,11 +71,11 @@ namespace starsky.foundation.sync.SyncServices
 					var queryFactory = new QueryFactory(_setupDatabaseTypes,
 						_query, _memoryCache, _appSettings, _serviceScopeFactory, _logger);
 					var query = queryFactory.Query();
-					
+
 					// get only direct child files and folders and NOT recursive
 					var fileIndexItems = await query!.GetAllObjectsAsync(subPath);
 					fileIndexItems = await new Duplicate(query).RemoveDuplicateAsync(fileIndexItems);
-				
+
 					// And check files within this folder
 					var pathsOnDisk = _subPathStorage.GetAllFilesInDirectory(subPath)
 						.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
@@ -84,11 +84,11 @@ namespace starsky.foundation.sync.SyncServices
 					{
 						_console.Write("⁘");
 					}
-				
+
 					var indexItems = await LoopOverFolder(fileIndexItems, pathsOnDisk, updateDelegate, false);
 					allResults.AddRange(indexItems);
 
-					var dirItems = (await CheckIfFolderExistOnDisk(fileIndexItems)).Where(p => p != null).ToList();
+					var dirItems = ( await CheckIfFolderExistOnDisk(fileIndexItems) ).Where(p => p != null).ToList();
 					if ( dirItems.Count != 0 )
 					{
 						allResults.AddRange(dirItems!);
@@ -97,27 +97,27 @@ namespace starsky.foundation.sync.SyncServices
 					await query.DisposeAsync();
 					return allResults;
 				}, _appSettings.MaxDegreesOfParallelism);
-			
+
 			// Convert chunks into one list
 			var allResults = new List<FileIndexItem>();
 			foreach ( var resultChunk in resultChunkList! )
 			{
 				allResults.AddRange(resultChunk);
 			}
-			
+
 			// query.DisposeAsync is called to avoid memory usage
 			var queryFactory = new QueryFactory(_setupDatabaseTypes,
 				_query, _memoryCache, _appSettings, _serviceScopeFactory, _logger);
 			_query = queryFactory.Query()!;
-			
+
 			// // remove the duplicates from a large list of folders
 			var folderList = await _query.GetObjectsByFilePathQueryAsync(subPaths);
 			folderList = await _duplicate.RemoveDuplicateAsync(folderList);
 
 			await CompareFolderListAndFixMissingFolders(subPaths, folderList);
 
-			var parentItems = (await AddParentFolder(inputSubPath, allResults))
-				.Where( p => p.Status != FileIndexItem.ExifStatus.OkAndSame).ToList();
+			var parentItems = ( await AddParentFolder(inputSubPath, allResults) )
+				.Where(p => p.Status != FileIndexItem.ExifStatus.OkAndSame).ToList();
 			if ( parentItems.Count != 0 )
 			{
 				allResults.AddRange(parentItems);
@@ -126,21 +126,21 @@ namespace starsky.foundation.sync.SyncServices
 			var socketUpdates = allResults.Where(p =>
 				p.Status is FileIndexItem.ExifStatus.Ok
 					or FileIndexItem.ExifStatus.Deleted).ToList();
-			
+
 			if ( updateDelegate != null && socketUpdates.Count != 0 )
 			{
 				await updateDelegate(socketUpdates);
 			}
-			
+
 			return allResults;
 		}
-	
+
 		internal async Task CompareFolderListAndFixMissingFolders(List<string> subPaths, List<FileIndexItem> folderList)
 		{
 			if ( subPaths.Count == folderList.Count ) return;
-			
+
 			foreach ( var path in subPaths.Where(path => folderList.TrueForAll(p => p.FilePath != path) &&
-				_subPathStorage.ExistFolder(path) && !_syncIgnoreCheck.Filter(path) ) )
+				_subPathStorage.ExistFolder(path) && !_syncIgnoreCheck.Filter(path)) )
 			{
 				await _query.AddItemAsync(new FileIndexItem(path)
 				{
@@ -150,14 +150,14 @@ namespace starsky.foundation.sync.SyncServices
 				});
 			}
 		}
-	
+
 		internal async Task<List<FileIndexItem>> AddParentFolder(string subPath, List<FileIndexItem>? allResults)
 		{
 			allResults ??= new List<FileIndexItem>();
 			// used to check later if the item already exists, to avoid duplicates
 			var filePathsAllResults = allResults.Select(p => p.FilePath).ToList();
 
-			if ( allResults.TrueForAll(p => p.FilePath != subPath))
+			if ( allResults.TrueForAll(p => p.FilePath != subPath) )
 			{
 				var subPathStatus = _subPathStorage.IsFolderOrFile(subPath);
 				var exifStatus = subPathStatus ==
@@ -166,10 +166,12 @@ namespace starsky.foundation.sync.SyncServices
 				// if the status is not found, we assume its a folder, but that can't be checked
 				var isDirectory = subPathStatus ==
 					FolderOrFileModel.FolderOrFileTypeList.Folder || exifStatus == FileIndexItem.ExifStatus.NotFoundSourceMissing;
-				
-				allResults.Add(new FileIndexItem(subPath){
-					IsDirectory = isDirectory, 
-					Status = exifStatus});
+
+				allResults.Add(new FileIndexItem(subPath)
+				{
+					IsDirectory = isDirectory,
+					Status = exifStatus
+				});
 			}
 
 			List<string> Merge(IReadOnlyCollection<FileIndexItem> allResults1)
@@ -180,7 +182,7 @@ namespace starsky.foundation.sync.SyncServices
 				parentDirectoriesStart.AddRange(allResults1
 					.Where(p => p.IsDirectory == true)
 					.Select(p => p.FilePath));
-				return  parentDirectoriesStart.Where(p => !string.IsNullOrEmpty(p)).Distinct().ToList()!;
+				return parentDirectoriesStart.Where(p => !string.IsNullOrEmpty(p)).Distinct().ToList()!;
 			}
 
 			var parentDirectories = Merge(allResults);
@@ -211,10 +213,10 @@ namespace starsky.foundation.sync.SyncServices
 				{
 					item.Status = FileIndexItem.ExifStatus.OkAndSame;
 				}
-				
+
 				newItems.Add(item);
 			}
-			
+
 			await _query.AddRangeAsync(newItems.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList());
 
 			return newItems;
@@ -227,7 +229,7 @@ namespace starsky.foundation.sync.SyncServices
 		{
 			var fileIndexItemsOnlyFiles = fileIndexItems
 				.Where(p => p.IsDirectory == false).ToList();
-			
+
 			var pathsToUpdateInDatabase = PathsToUpdateInDatabase(fileIndexItemsOnlyFiles, pathsOnDisk);
 			if ( pathsToUpdateInDatabase.Count == 0 )
 			{
@@ -243,20 +245,20 @@ namespace starsky.foundation.sync.SyncServices
 						_query, _memoryCache, _appSettings,
 						_serviceScopeFactory, _logger);
 					var query = queryFactory.Query()!;
-					
+
 					var syncMultiFile = new SyncMultiFile(_appSettings, query,
 						_subPathStorage,
 						null!,
 						_logger);
 					var databaseItems = await syncMultiFile.MultiFile(
 						subPathInFiles, updateDelegate, addParentFolder);
-				
+
 					await new SyncRemove(_appSettings, _setupDatabaseTypes,
 							query, _memoryCache, _logger)
 						.RemoveAsync(databaseItems, updateDelegate);
 
 					DisplayInlineConsole(_console, databaseItems);
-				
+
 					return databaseItems;
 				}, _appSettings.MaxDegreesOfParallelism);
 
@@ -266,7 +268,7 @@ namespace starsky.foundation.sync.SyncServices
 			{
 				results.AddRange(resultChunk);
 			}
-		
+
 			return results;
 		}
 
@@ -277,18 +279,18 @@ namespace starsky.foundation.sync.SyncServices
 				switch ( item.Status )
 				{
 					case FileIndexItem.ExifStatus
-						.NotFoundSourceMissing:	
-						console.Write("≠"); 
+						.NotFoundSourceMissing:
+						console.Write("≠");
 						break;
 
 					case FileIndexItem.ExifStatus.Ok:
-						console.Write("•"); 
+						console.Write("•");
 						break;
 					case FileIndexItem.ExifStatus.OkAndSame:
-						console.Write("⩮"); 
+						console.Write("⩮");
 						break;
 					case FileIndexItem.ExifStatus.DeletedAndSame:
-						console.Write("✘"); 
+						console.Write("✘");
 						break;
 					case FileIndexItem.ExifStatus.Deleted:
 						console.Write("\u058d"); // ֍ 
@@ -301,24 +303,24 @@ namespace starsky.foundation.sync.SyncServices
 		}
 
 		internal static List<FileIndexItem> PathsToUpdateInDatabase(
-			List<FileIndexItem> databaseItems, 
+			List<FileIndexItem> databaseItems,
 			IReadOnlyCollection<string> pathsOnDisk)
 		{
 			var resultDatabaseItems = new List<FileIndexItem>(databaseItems);
 			foreach ( var path in pathsOnDisk )
 			{
 				var item = databaseItems.Find(p => string.Equals(p.FilePath, path, StringComparison.InvariantCultureIgnoreCase));
-				if (item == null ) // when the file should be added to the index
+				if ( item == null ) // when the file should be added to the index
 				{
 					// Status is used by MultiFile
-					resultDatabaseItems.Add(new FileIndexItem(path){Status = FileIndexItem.ExifStatus.NotFoundNotInIndex});
+					resultDatabaseItems.Add(new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.NotFoundNotInIndex });
 					continue;
 				}
 				resultDatabaseItems.Add(item);
 			}
 			return resultDatabaseItems.DistinctBy(p => p.FilePath).ToList();
 		}
-	
+
 		private async Task<List<FileIndexItem?>> CheckIfFolderExistOnDisk(List<FileIndexItem> fileIndexItems)
 		{
 			var fileIndexItemsOnlyFolders = fileIndexItems
@@ -328,9 +330,9 @@ namespace starsky.foundation.sync.SyncServices
 			{
 				return new List<FileIndexItem?>();
 			}
-		
+
 			// can this be done in a batch?
-			return (await fileIndexItemsOnlyFolders
+			return ( await fileIndexItemsOnlyFolders
 				.ForEachAsync(async item =>
 				{
 					// assume only the input of directories
@@ -338,16 +340,16 @@ namespace starsky.foundation.sync.SyncServices
 					{
 						return null;
 					}
-					
+
 					var queryFactory = new QueryFactory(_setupDatabaseTypes,
 						_query, _memoryCache, _appSettings,
 						_serviceScopeFactory, _logger);
 					var query = queryFactory.Query();
-					
+
 					return await RemoveChildItems(query!, item);
-				}, _appSettings.MaxDegreesOfParallelism))!.ToList();
+				}, _appSettings.MaxDegreesOfParallelism) )!.ToList();
 		}
-	
+
 		/// <summary>
 		/// Remove all items that are included
 		/// </summary>
@@ -363,7 +365,7 @@ namespace starsky.foundation.sync.SyncServices
 				_console.Write("✕");
 				await query.RemoveItemAsync(remove);
 			}
-			
+
 			// Item it self
 			await query.RemoveItemAsync(item);
 			_console.Write("✕");
@@ -375,5 +377,5 @@ namespace starsky.foundation.sync.SyncServices
 			return item;
 		}
 	}
-	
+
 }

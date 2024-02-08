@@ -18,7 +18,7 @@ public sealed class AddParentList
 		_subPathStorage = subPathStorage;
 		_query = query;
 	}
-	
+
 	public async Task<List<FileIndexItem>> AddParentItems(List<FileIndexItem> updatedDbItems)
 	{
 		// give parent folders back
@@ -28,9 +28,9 @@ public sealed class AddParentList
 				or FileIndexItem.ExifStatus.OkAndSame
 				or FileIndexItem.ExifStatus.Default).Select(p => p.ParentDirectory)
 			.Distinct().Where(p => p != null).Cast<string>();
-		
+
 		foreach ( var subPath in okUpdatedDbItems
-			         .Where(p => _subPathStorage.ExistFolder(p)))
+					 .Where(p => _subPathStorage.ExistFolder(p)) )
 		{
 			var path = PathHelper.RemoveLatestSlash(subPath) + "/test.jpg";
 			if ( subPath == "/" ) path = "/";

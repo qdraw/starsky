@@ -66,7 +66,7 @@ public class UpdateStatusGeneratedThumbnailService : IUpdateStatusGeneratedThumb
 			.DistinctBy(p => p.FileHash)
 			.Select(p => p.FileHash)
 			.ToList();
-		
+
 		await _thumbnailQuery.RemoveThumbnailsAsync(dtoObjects);
 		return dtoObjects;
 	}

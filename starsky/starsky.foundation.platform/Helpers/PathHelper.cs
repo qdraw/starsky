@@ -52,7 +52,7 @@ namespace starsky.foundation.platform.Helpers
 
 			// remove latest backslash
 			if ( basePath.Substring(basePath.Length - 1, 1) ==
-			     Path.DirectorySeparatorChar.ToString() )
+				 Path.DirectorySeparatorChar.ToString() )
 			{
 				basePath = basePath.Substring(0, basePath.Length - 1);
 			}
@@ -94,7 +94,7 @@ namespace starsky.foundation.platform.Helpers
 			if ( string.IsNullOrWhiteSpace(thumbnailTempFolder) ) return thumbnailTempFolder;
 
 			if ( thumbnailTempFolder.Substring(thumbnailTempFolder.Length - 1,
-				    1) != Path.DirectorySeparatorChar.ToString() )
+					1) != Path.DirectorySeparatorChar.ToString() )
 			{
 				thumbnailTempFolder += Path.DirectorySeparatorChar.ToString();
 			}

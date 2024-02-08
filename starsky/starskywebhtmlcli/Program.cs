@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.webhtmlpublish.Helpers;
 using starsky.feature.webhtmlpublish.Interfaces;

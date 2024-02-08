@@ -59,15 +59,15 @@ namespace starsky.feature.health.HealthCheck
 			}
 			catch ( Exception )
 			{
-				return ( false, 0L );
+				return (false, 0L);
 			}
 
 			var driveInfo = Array.Find(drivesList,
 				drive => string.Equals(drive.Name, driveName,
 					StringComparison.InvariantCultureIgnoreCase));
 			return driveInfo?.AvailableFreeSpace != null
-				? ( true, driveInfo.AvailableFreeSpace / 1024L / 1024L )
-				: ( false, 0L );
+				? (true, driveInfo.AvailableFreeSpace / 1024L / 1024L)
+				: (false, 0L);
 		}
 	}
 }

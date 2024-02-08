@@ -23,58 +23,58 @@ namespace starsky.feature.health.HealthCheck
 		public void BuilderHealth()
 		{
 			_services.AddHealthChecks()
-	            .AddDbContextCheck<ApplicationDbContext>()
-	            .AddDiskStorageHealthCheck(
-		            setup: diskOptions =>
-		            {
-			            DiskOptionsPercentageSetup.Setup(_appSettings.StorageFolder,
-				            diskOptions);
-		            },
-		            name: "Storage_StorageFolder")
-	            .AddDiskStorageHealthCheck(
-		            setup: diskOptions =>
-		            {
-			            DiskOptionsPercentageSetup.Setup(_appSettings.ThumbnailTempFolder,
-				            diskOptions);
-		            },
-		            name: "Storage_ThumbnailTempFolder")
-	            .AddDiskStorageHealthCheck(
-		            setup: diskOptions =>
-		            {
-			            DiskOptionsPercentageSetup.Setup(_appSettings.TempFolder,
-				            diskOptions);
-		            },
-		            name: "Storage_TempFolder")
-	            .AddPathExistHealthCheck(
-		            setup: pathOptions => pathOptions.AddPath(_appSettings.StorageFolder),
-		            name: "Exist_StorageFolder")
-	            .AddPathExistHealthCheck(
-		            setup: pathOptions => pathOptions.AddPath(_appSettings.TempFolder),
-		            name: "Exist_TempFolder")
-	            .AddPathExistHealthCheck(
-		            setup: pathOptions => pathOptions.AddPath(_appSettings.ExifToolPath),
-		            name: "Exist_ExifToolPath")
-	            .AddPathExistHealthCheck(
-		            setup: pathOptions => pathOptions.AddPath(_appSettings.ThumbnailTempFolder),
-		            name: "Exist_ThumbnailTempFolder")
-	            .AddCheck<DateAssemblyHealthCheck>("DateAssemblyHealthCheck");
-            
-            var healthSqlQuery = "SELECT * FROM `__EFMigrationsHistory` WHERE ProductVersion > 9";
+				.AddDbContextCheck<ApplicationDbContext>()
+				.AddDiskStorageHealthCheck(
+					setup: diskOptions =>
+					{
+						DiskOptionsPercentageSetup.Setup(_appSettings.StorageFolder,
+							diskOptions);
+					},
+					name: "Storage_StorageFolder")
+				.AddDiskStorageHealthCheck(
+					setup: diskOptions =>
+					{
+						DiskOptionsPercentageSetup.Setup(_appSettings.ThumbnailTempFolder,
+							diskOptions);
+					},
+					name: "Storage_ThumbnailTempFolder")
+				.AddDiskStorageHealthCheck(
+					setup: diskOptions =>
+					{
+						DiskOptionsPercentageSetup.Setup(_appSettings.TempFolder,
+							diskOptions);
+					},
+					name: "Storage_TempFolder")
+				.AddPathExistHealthCheck(
+					setup: pathOptions => pathOptions.AddPath(_appSettings.StorageFolder),
+					name: "Exist_StorageFolder")
+				.AddPathExistHealthCheck(
+					setup: pathOptions => pathOptions.AddPath(_appSettings.TempFolder),
+					name: "Exist_TempFolder")
+				.AddPathExistHealthCheck(
+					setup: pathOptions => pathOptions.AddPath(_appSettings.ExifToolPath),
+					name: "Exist_ExifToolPath")
+				.AddPathExistHealthCheck(
+					setup: pathOptions => pathOptions.AddPath(_appSettings.ThumbnailTempFolder),
+					name: "Exist_ThumbnailTempFolder")
+				.AddCheck<DateAssemblyHealthCheck>("DateAssemblyHealthCheck");
 
-            switch (_appSettings.DatabaseType)
-            {
-                case (AppSettings.DatabaseTypeList.Mysql):
-                    _services.AddHealthChecks().AddMySql(_appSettings.DatabaseConnection);
-                    break;
-                case AppSettings.DatabaseTypeList.Sqlite:
-	                _services.AddHealthChecks().AddSqlite(_appSettings.DatabaseConnection, healthSqlQuery);
-                    break;
-                case AppSettings.DatabaseTypeList.InMemoryDatabase:
-	                break;
-                default:
-	                throw new AggregateException("database type does not exist");
-            }
-            
+			var healthSqlQuery = "SELECT * FROM `__EFMigrationsHistory` WHERE ProductVersion > 9";
+
+			switch ( _appSettings.DatabaseType )
+			{
+				case ( AppSettings.DatabaseTypeList.Mysql ):
+					_services.AddHealthChecks().AddMySql(_appSettings.DatabaseConnection);
+					break;
+				case AppSettings.DatabaseTypeList.Sqlite:
+					_services.AddHealthChecks().AddSqlite(_appSettings.DatabaseConnection, healthSqlQuery);
+					break;
+				case AppSettings.DatabaseTypeList.InMemoryDatabase:
+					break;
+				default:
+					throw new AggregateException("database type does not exist");
+			}
+
 		}
 	}
 }

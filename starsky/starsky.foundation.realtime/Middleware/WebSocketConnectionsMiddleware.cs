@@ -25,7 +25,7 @@ namespace starsky.foundation.realtime.Middleware
 		{
 			_options = options ?? throw new ArgumentNullException(nameof(options));
 			_connectionsService = connectionsService ??
-			                      throw new ArgumentNullException(nameof(connectionsService));
+								  throw new ArgumentNullException(nameof(connectionsService));
 		}
 
 
@@ -55,7 +55,8 @@ namespace starsky.foundation.realtime.Middleware
 						try
 						{
 							var welcomeMessage = new ApiNotificationResponseModel<HeartbeatModel>(
-								new HeartbeatModel(null)) { Type = ApiNotificationType.Welcome, };
+								new HeartbeatModel(null))
+							{ Type = ApiNotificationType.Welcome, };
 							await webSocketConnection.SendAsync(JsonSerializer.Serialize(
 								welcomeMessage,
 								DefaultJsonSerializer.CamelCaseNoEnters), CancellationToken.None);
@@ -94,9 +95,9 @@ namespace starsky.foundation.realtime.Middleware
 		private bool ValidateOrigin(HttpContext context)
 		{
 			return ( _options.AllowedOrigins == null ) || ( _options.AllowedOrigins.Count == 0 ) ||
-			       (
-				       _options.AllowedOrigins.Contains(context.Request.Headers.Origin
-					       .ToString()) );
+				   (
+					   _options.AllowedOrigins.Contains(context.Request.Headers.Origin
+						   .ToString()) );
 		}
 	}
 }

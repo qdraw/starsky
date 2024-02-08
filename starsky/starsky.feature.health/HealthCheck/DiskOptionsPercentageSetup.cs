@@ -15,9 +15,9 @@ namespace starsky.feature.health.HealthCheck
 		{
 			var directoryInfo = new FileInfo(fullFilePath).Directory;
 			if ( directoryInfo == null ) return;
-			            
+
 			var tenPercentInBytes = Convert.ToInt64(( ( new DriveInfo(directoryInfo.Root.FullName).TotalFreeSpace /
-			                                     1024f ) / 1024f ) * percentage );
+												 1024f ) / 1024f ) * percentage);
 			if ( tenPercentInBytes < 100 ) return;
 
 			diskOptions.AddDrive(

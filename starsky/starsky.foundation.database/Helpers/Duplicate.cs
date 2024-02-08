@@ -25,13 +25,13 @@ namespace starsky.foundation.database.Helpers
 			// Get a list of duplicate items
 			var duplicateItemsByFilePath = databaseSubFolderList.GroupBy(item => item.FilePath)
 				.SelectMany(grp => grp.Skip(1).Take(1)).ToList();
-            
+
 			// ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
-			foreach (var duplicateItemByName in duplicateItemsByFilePath)
+			foreach ( var duplicateItemByName in duplicateItemsByFilePath )
 			{
-				var duplicateItems = databaseSubFolderList.Where(p => 
+				var duplicateItems = databaseSubFolderList.Where(p =>
 					p.FilePath == duplicateItemByName.FilePath).ToList();
-				for (var i = 1; i < duplicateItems.Count; i++)
+				for ( var i = 1; i < duplicateItems.Count; i++ )
 				{
 					databaseSubFolderList.Remove(duplicateItems[i]);
 					await _query.RemoveItemAsync(duplicateItems[i]);

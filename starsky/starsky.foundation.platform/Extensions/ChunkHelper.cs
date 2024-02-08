@@ -12,7 +12,7 @@ namespace starsky.foundation.platform.Extensions
 		{
 			if ( source == null ) yield break;
 			// ReSharper disable once PossibleMultipleEnumeration
-			while ( source.Any())
+			while ( source.Any() )
 			{
 				// ReSharper disable once PossibleMultipleEnumeration
 				yield return source.Take(chunkSize);

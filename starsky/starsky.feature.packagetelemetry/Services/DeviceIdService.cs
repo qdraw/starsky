@@ -28,34 +28,34 @@ public class DeviceIdService : IDeviceIdService
 		_settingsService = settingsService;
 		_hostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 	}
-	
+
 	public string IoReg { get; set; } = "ioreg";
 	public string DbusMachineIdPath { get; set; } = "/var/lib/dbus/machine-id";
 	public string MachineIdPath2 { get; set; } = "/etc/machine-id";
 
 	public string BsdHostIdPath { get; set; } = "/etc/hostid";
 
-	public async Task<string> DeviceId(OSPlatform? currentPlatform )
+	public async Task<string> DeviceId(OSPlatform? currentPlatform)
 	{
 		var id = string.Empty;
 		if ( currentPlatform == OSPlatform.OSX )
 		{
 			id = await DeviceIdOsX();
 		}
-		
+
 		if ( currentPlatform == OSPlatform.Windows )
 		{
 			id = DeviceIdWindows(currentPlatform);
 		}
-		
-		if ( currentPlatform == OSPlatform.Linux || currentPlatform == OSPlatform.FreeBSD)
+
+		if ( currentPlatform == OSPlatform.Linux || currentPlatform == OSPlatform.FreeBSD )
 		{
 			id = await DeviceIdLinuxBsdAsync();
 		}
 
 		// For privacy reason this content of this id will be anonymous 
 		id = Sha256.ComputeSha256(id);
-		
+
 		if ( string.IsNullOrEmpty(id) )
 		{
 			id = await DeviceIdDatabaseId();
@@ -80,13 +80,13 @@ public class DeviceIdService : IDeviceIdService
 			var stream = _hostStorage.ReadStream(DbusMachineIdPath);
 			return await StreamToStringHelper.StreamToStringAsync(stream);
 		}
-		
+
 		if ( _hostStorage.ExistFile(MachineIdPath2) )
 		{
 			var stream = _hostStorage.ReadStream(MachineIdPath2);
 			return await StreamToStringHelper.StreamToStringAsync(stream);
 		}
-		
+
 		if ( !_hostStorage.ExistFile(BsdHostIdPath) ) return string.Empty;
 		var streamBsd = _hostStorage.ReadStream(BsdHostIdPath);
 		return await StreamToStringHelper.StreamToStringAsync(streamBsd);
@@ -101,8 +101,8 @@ public class DeviceIdService : IDeviceIdService
 		// ioreg -rd1 -c IOPlatformExpertDevice
 		var result = await Command.Run(IoReg, "-rd1", "-c", "IOPlatformExpertDevice").Task;
 		if ( !result.Success ) return string.Empty;
-		
-		var match = Regex.Match(result.StandardOutput,"\"IOPlatformUUID\" = \"[\\d+\\w+-]+\"",
+
+		var match = Regex.Match(result.StandardOutput, "\"IOPlatformUUID\" = \"[\\d+\\w+-]+\"",
 			RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
 		var id = match.Value.Replace("\"IOPlatformUUID\" = \"", "").Replace('\"', ' ').Trim();
 		return id;
@@ -111,7 +111,7 @@ public class DeviceIdService : IDeviceIdService
 	[SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
 	internal static string DeviceIdWindows(OSPlatform? currentPlatform)
 	{
-		if (currentPlatform != OSPlatform.Windows)
+		if ( currentPlatform != OSPlatform.Windows )
 		{
 			return string.Empty;
 		}

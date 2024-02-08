@@ -15,13 +15,13 @@ namespace starsky.foundation.accountmanagement.Helpers
 			IPAddress? connectionRemoteIpAddress)
 		{
 			if ( connectionLocalIpAddress == null ||
-			     connectionRemoteIpAddress == null )
+				 connectionRemoteIpAddress == null )
 			{
 				return false;
 			}
 
 			return connectionRemoteIpAddress.Equals(connectionLocalIpAddress) ||
-			       IPAddress.IsLoopback(connectionRemoteIpAddress);
+				   IPAddress.IsLoopback(connectionRemoteIpAddress);
 		}
 	}
 }

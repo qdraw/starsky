@@ -19,15 +19,15 @@ namespace starsky.foundation.database.Import
 			_console = console;
 			_logger = logger;
 		}
-		
+
 		public IImportQuery? ImportQuery()
 		{
 			var context = _setupDatabaseTypes.BuilderDbFactory();
 			if ( _importQuery is ImportQuery )
 			{
-				return new ImportQuery(null,_console,_logger,context);
+				return new ImportQuery(null, _console, _logger, context);
 			}
-			return Activator.CreateInstance(_importQuery.GetType(), null,_console,_logger, context) as IImportQuery;
+			return Activator.CreateInstance(_importQuery.GetType(), null, _console, _logger, context) as IImportQuery;
 		}
 	}
 }

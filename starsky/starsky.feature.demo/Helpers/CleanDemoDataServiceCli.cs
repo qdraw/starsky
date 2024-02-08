@@ -20,8 +20,8 @@ public class CleanDemoDataServiceCli
 	private readonly ISynchronize _sync;
 	private readonly IConsole _console;
 
-	public CleanDemoDataServiceCli(AppSettings appSettings, 
-		IHttpClientHelper httpClientHelper, ISelectorStorage selectorStorage, 
+	public CleanDemoDataServiceCli(AppSettings appSettings,
+		IHttpClientHelper httpClientHelper, ISelectorStorage selectorStorage,
 		IWebLogger webLogger, IConsole console,
 		ISynchronize sync)
 	{
@@ -38,14 +38,14 @@ public class CleanDemoDataServiceCli
 	public async Task SeedCli(string[] args)
 	{
 		_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
-			
-		if ( ArgsHelper.NeedHelp(args))
+
+		if ( ArgsHelper.NeedHelp(args) )
 		{
 			_appSettings.ApplicationType = AppSettings.StarskyAppType.DemoSeed;
 			new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
 			return;
 		}
-			
+
 		await CleanDemoDataService.DownloadAsync(_appSettings, _httpClientHelper, _hostStorage, _subPathStorage, _webLogger);
 		await _sync.Sync("/");
 	}

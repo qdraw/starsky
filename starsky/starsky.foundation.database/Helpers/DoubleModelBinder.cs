@@ -23,7 +23,7 @@ public class DoubleModelBinder : IModelBinder
 
 		var value = valueProviderResult.FirstValue;
 
-		if (string.IsNullOrEmpty(value))
+		if ( string.IsNullOrEmpty(value) )
 		{
 			return Task.CompletedTask;
 		}
@@ -37,10 +37,10 @@ public class DoubleModelBinder : IModelBinder
 			bindingContext.Result = ModelBindingResult.Success(myValue);
 			return Task.CompletedTask;
 		}
-		catch (Exception)
+		catch ( Exception )
 		{
-			return Task.CompletedTask;                
+			return Task.CompletedTask;
 		}
-           
+
 	}
 }

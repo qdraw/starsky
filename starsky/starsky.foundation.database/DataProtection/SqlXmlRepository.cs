@@ -28,7 +28,7 @@ namespace starsky.foundation.database.DataProtection
 			_scopeFactory = scopeFactory;
 			_logger = logger;
 		}
-    
+
 		public IReadOnlyCollection<XElement> GetAllElements()
 		{
 			try
@@ -36,28 +36,28 @@ namespace starsky.foundation.database.DataProtection
 				var result = _dbContext.DataProtectionKeys
 					.Where(p => p.Xml != null).AsEnumerable()
 					.Select(x => XElement.Parse(x.Xml!)).ToList();
-    
+
 				return result;
 			}
 			catch ( Exception exception )
 			{
-				if ( exception is not RetryLimitExceededException && 
-				     exception is not MySqlConnector.MySqlException &&
-				     exception is not Microsoft.Data.Sqlite.SqliteException ) throw;
-    			
+				if ( exception is not RetryLimitExceededException &&
+					 exception is not MySqlConnector.MySqlException &&
+					 exception is not Microsoft.Data.Sqlite.SqliteException ) throw;
+
 				// MySqlConnector.MySqlException (0x80004005): Table 'starsky.DataProtectionKeys' doesn't exist
 				// or Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such table: DataProtectionKeys
 				if ( !exception.Message.Contains("0x80004005") &&
-				     !exception.Message.Contains(
-					     "no such table: DataProtectionKeys") )
+					 !exception.Message.Contains(
+						 "no such table: DataProtectionKeys") )
 					return new List<XElement>();
-				
+
 				_logger.LogInformation("run migration: dotnet ef database update");
 				_dbContext.Database.Migrate();
 				return new List<XElement>();
 			}
 		}
-    
+
 		/// <summary>
 		/// This function crashes usually on the first run
 		/// </summary>
@@ -75,27 +75,27 @@ namespace starsky.foundation.database.DataProtection
 				ctx.SaveChanges();
 				return true;
 			}
-    		
+
 			bool LocalDefaultQuery()
 			{
 				var context = new InjectServiceScope(_scopeFactory).Context();
 				return LocalDefault(context);
 			}
-    		
+
 			try
 			{
 				LocalDefault(_dbContext);
 			}
 			catch ( Exception exception )
 			{
-				if ( exception is not DbUpdateException && 
-				     exception is not RetryLimitExceededException && 
-				     exception is not MySqlConnector.MySqlException &&
-				     exception is not Microsoft.Data.Sqlite.SqliteException ) throw;
-				
-				var retryInterval = _dbContext.GetType().FullName?.Contains("test") == true ? 
+				if ( exception is not DbUpdateException &&
+					 exception is not RetryLimitExceededException &&
+					 exception is not MySqlConnector.MySqlException &&
+					 exception is not Microsoft.Data.Sqlite.SqliteException ) throw;
+
+				var retryInterval = _dbContext.GetType().FullName?.Contains("test") == true ?
 					TimeSpan.FromSeconds(0) : TimeSpan.FromSeconds(5);
-				
+
 				try
 				{
 					RetryHelper.Do(

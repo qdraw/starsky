@@ -32,7 +32,7 @@ namespace starsky.foundation.database.Import
 		/// <param name="console">console output</param>
 		/// <param name="logger"></param>
 		/// <param name="dbContext"></param>
-		public ImportQuery(IServiceScopeFactory? scopeFactory, IConsole console, IWebLogger logger,  ApplicationDbContext? dbContext = null)
+		public ImportQuery(IServiceScopeFactory? scopeFactory, IConsole console, IWebLogger logger, ApplicationDbContext? dbContext = null)
 		{
 			_scopeFactory = scopeFactory;
 
@@ -48,7 +48,7 @@ namespace starsky.foundation.database.Import
 		/// <returns>database context</returns>
 		private ApplicationDbContext GetDbContext()
 		{
-			return (_scopeFactory != null ? new InjectServiceScope(_scopeFactory).Context() : _dbContext)!;
+			return ( _scopeFactory != null ? new InjectServiceScope(_scopeFactory).Context() : _dbContext )!;
 		}
 
 		/// <summary>
@@ -64,8 +64,8 @@ namespace starsky.foundation.database.Import
 		{
 			if ( _isConnection )
 			{
-				var value = await GetDbContext().ImportIndex.CountAsync(p => 
-					p.FileHash == fileHashCode) != 0; 			// there is no any in ef core
+				var value = await GetDbContext().ImportIndex.CountAsync(p =>
+					p.FileHash == fileHashCode) != 0;           // there is no any in ef core
 				return value;
 			}
 
@@ -90,7 +90,7 @@ namespace starsky.foundation.database.Import
 			// removed MySqlException catch
 			return true;
 		}
-		
+
 		/// <summary>
 		/// Get imported items for today
 		/// </summary>

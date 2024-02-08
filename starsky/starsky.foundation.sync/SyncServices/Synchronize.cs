@@ -31,16 +31,16 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly SyncIgnoreCheck _syncIgnoreCheck;
 		private readonly SyncMultiFile _syncMultiFile;
 
-		public Synchronize(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage, IWebLogger logger, 
-			ISyncAddThumbnailTable syncAddThumbnail, IServiceScopeFactory? serviceScopeFactory = null,  
+		public Synchronize(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage, IWebLogger logger,
+			ISyncAddThumbnailTable syncAddThumbnail, IServiceScopeFactory? serviceScopeFactory = null,
 			IMemoryCache? memoryCache = null)
 		{
 			_syncAddThumbnail = syncAddThumbnail;
 			_console = new ConsoleWrapper();
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_syncSingleFile = new SyncSingleFile(appSettings, query, _subPathStorage, memoryCache, logger);
-			_syncRemove = new SyncRemove(appSettings,  query, memoryCache, logger, serviceScopeFactory);
-			_syncFolder = new SyncFolder(appSettings, query, selectorStorage, _console,logger,memoryCache, serviceScopeFactory);
+			_syncRemove = new SyncRemove(appSettings, query, memoryCache, logger, serviceScopeFactory);
+			_syncFolder = new SyncFolder(appSettings, query, selectorStorage, _console, logger, memoryCache, serviceScopeFactory);
 			_syncIgnoreCheck = new SyncIgnoreCheck(appSettings, _console);
 			_syncMultiFile = new SyncMultiFile(appSettings, query, _subPathStorage, memoryCache, logger);
 		}
@@ -60,26 +60,26 @@ namespace starsky.foundation.sync.SyncServices
 		/// <param name="subPaths"></param>
 		/// <param name="updateDelegate"></param>
 		/// <returns></returns>
-		public async Task<List<FileIndexItem>> Sync(List<string> subPaths, 
+		public async Task<List<FileIndexItem>> Sync(List<string> subPaths,
 			ISynchronize.SocketUpdateDelegate? updateDelegate = null)
 		{
-			var results = await _syncMultiFile.MultiFile(subPaths,updateDelegate);
+			var results = await _syncMultiFile.MultiFile(subPaths, updateDelegate);
 			return await _syncAddThumbnail.SyncThumbnailTableAsync(results);
 		}
 
-		private async Task<List<FileIndexItem>> SyncWithoutThumbnail(string subPath, 
+		private async Task<List<FileIndexItem>> SyncWithoutThumbnail(string subPath,
 			ISynchronize.SocketUpdateDelegate? updateDelegate = null,
 			DateTime? childDirectoriesAfter = null)
 		{
 			// Prefix / for database
 			subPath = PathHelper.PrefixDbSlash(subPath);
 			if ( subPath != "/" ) subPath = PathHelper.RemoveLatestSlash(subPath);
-			
-			if ( FilterCommonTempFiles.Filter(subPath)  || _syncIgnoreCheck.Filter(subPath)  ) 
+
+			if ( FilterCommonTempFiles.Filter(subPath) || _syncIgnoreCheck.Filter(subPath) )
 				return FilterCommonTempFiles.DefaultOperationNotSupported(subPath);
 
 			_console.WriteLine($"[Synchronize] Sync {subPath} {DateTimeDebug()}");
-			
+
 			// ReSharper disable once ConvertSwitchStatementToSwitchExpression
 			switch ( _subPathStorage.IsFolderOrFile(subPath) )
 			{
@@ -98,7 +98,7 @@ namespace starsky.foundation.sync.SyncServices
 
 		internal static string DateTimeDebug()
 		{
-			return ": " + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss", 
+			return ": " + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss",
 				CultureInfo.InvariantCulture);
 		}
 	}

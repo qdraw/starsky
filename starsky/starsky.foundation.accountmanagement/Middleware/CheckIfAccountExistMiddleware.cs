@@ -13,7 +13,7 @@ namespace starsky.foundation.accountmanagement.Middleware
 	/// </summary>
 	public sealed class CheckIfAccountExistMiddleware
 	{
-       
+
 		public CheckIfAccountExistMiddleware(RequestDelegate next)
 		{
 			_next = next;
@@ -32,19 +32,19 @@ namespace starsky.foundation.accountmanagement.Middleware
 		public async Task Invoke(HttpContext context)
 		{
 			var isApiCall = context.Request.Path.HasValue && (
-				context.Request.Path.Value.EndsWith("api/health/details") || 
+				context.Request.Path.Value.EndsWith("api/health/details") ||
 				context.Request.Path.Value.EndsWith("api/index") ||
 				context.Request.Path.Value.EndsWith("api/search") ||
 				context.Request.Path.Value.EndsWith("api/account/status") ||
-				context.Request.Path.Value.EndsWith("api/env/"));
+				context.Request.Path.Value.EndsWith("api/env/") );
 
-			if (context.User.Identity?.IsAuthenticated == true && isApiCall)
+			if ( context.User.Identity?.IsAuthenticated == true && isApiCall )
 			{
-				var userManager = (IUserManager) context.RequestServices.GetRequiredService(typeof(IUserManager));
+				var userManager = ( IUserManager )context.RequestServices.GetRequiredService(typeof(IUserManager));
 
 				var id = GetUserTableIdFromClaims(context);
 				var result = await userManager.ExistAsync(id);
-				if ( result == null)
+				if ( result == null )
 				{
 					userManager.SignOut(context);
 					context.Response.StatusCode = 401;

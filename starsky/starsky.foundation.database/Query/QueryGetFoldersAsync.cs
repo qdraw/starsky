@@ -19,7 +19,7 @@ namespace starsky.foundation.database.Query
 	{
 		public async Task<List<FileIndexItem>> GetFoldersAsync(string subPath)
 		{
-			return await GetFoldersAsync(new List<string> {subPath});
+			return await GetFoldersAsync(new List<string> { subPath });
 		}
 
 		public async Task<List<FileIndexItem>> GetFoldersAsync(List<string> filePaths)
@@ -30,13 +30,13 @@ namespace starsky.foundation.database.Query
 			}
 			catch ( ObjectDisposedException )
 			{
-				return FormatOk(await GetAllFoldersQuery(new InjectServiceScope(_scopeFactory).Context(),filePaths).ToListAsync());
+				return FormatOk(await GetAllFoldersQuery(new InjectServiceScope(_scopeFactory).Context(), filePaths).ToListAsync());
 			}
 		}
-		
+
 		private static IOrderedQueryable<FileIndexItem> GetAllFoldersQuery(ApplicationDbContext context, List<string> filePathList)
 		{
-			var predicates = new List<Expression<Func<FileIndexItem,bool>>>();  
+			var predicates = new List<Expression<Func<FileIndexItem, bool>>>();
 
 			// ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
 			foreach ( var filePath in filePathList )
@@ -45,9 +45,9 @@ namespace starsky.foundation.database.Query
 				if ( filePath == "/" ) subPath = "/";
 				predicates.Add(p => p.ParentDirectory == subPath && p.IsDirectory == true);
 			}
-				
+
 			var predicate = PredicateBuilder.OrLoop(predicates);
-					
+
 			return context.FileIndex.Where(predicate).OrderBy(r => r.FileName);
 		}
 	}

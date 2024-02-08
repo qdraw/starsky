@@ -36,7 +36,7 @@ public class OnStartupSync
 	/// <param name="synchronize"></param>
 	/// <param name="settingsService"></param>
 	/// <param name="logger"></param>
-	public OnStartupSync(IServiceScopeFactory serviceScopeFactory, IDiskWatcherBackgroundTaskQueue backgroundTaskQueue,  AppSettings appSettings,
+	public OnStartupSync(IServiceScopeFactory serviceScopeFactory, IDiskWatcherBackgroundTaskQueue backgroundTaskQueue, AppSettings appSettings,
 		ISynchronize synchronize, ISettingsService settingsService, IWebLogger logger)
 	{
 		_serviceScopeFactory = serviceScopeFactory;
@@ -57,22 +57,22 @@ public class OnStartupSync
 
 	public async Task StartUpSyncTask()
 	{
-		if ( _appSettings.SyncOnStartup != true  )
+		if ( _appSettings.SyncOnStartup != true )
 		{
 			return;
 		}
 		var lastUpdatedValue = await _settingsService.GetSetting<DateTime>(
 			SettingsType.LastSyncBackgroundDateTime);
-				
+
 		await _synchronize.Sync("/", PushToSockets, lastUpdatedValue.ToLocalTime());
 
 		await _settingsService.AddOrUpdateSetting(
 			SettingsType.LastSyncBackgroundDateTime,
 			DateTime.UtcNow.ToString(SettingsFormats.LastSyncBackgroundDateTime, CultureInfo.InvariantCulture));
-		
+
 		_logger.LogInformation("Sync on startup done");
 	}
-	
+
 	internal async Task PushToSockets(List<FileIndexItem> updatedList)
 	{
 		using var scope = _serviceScopeFactory.CreateScope();
@@ -83,6 +83,6 @@ public class OnStartupSync
 
 		await webSocketConnectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
 		await notificationQuery.AddNotification(webSocketResponse);
-	}	
+	}
 
 }

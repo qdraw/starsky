@@ -20,13 +20,13 @@ namespace starsky.foundation.storage.Storage
 			ThumbnailSize.Small,
 			ThumbnailSize.Large
 		};
-		
+
 		public static readonly ThumbnailSize[] SecondGeneratedThumbnailSizes = new ThumbnailSize[]
 		{
 			ThumbnailSize.Small,
 			ThumbnailSize.Large //  <- will be false when skipExtraLarge = true, its already created 
 		};
-		
+
 		public static readonly ThumbnailSize[] AllThumbnailSizes = new ThumbnailSize[]
 		{
 			ThumbnailSize.TinyMeta,
@@ -34,10 +34,10 @@ namespace starsky.foundation.storage.Storage
 			ThumbnailSize.Small,
 			ThumbnailSize.Large
 		};
-		
+
 		public static int GetSize(ThumbnailSize size)
 		{
-			switch (size)
+			switch ( size )
 			{
 				case ThumbnailSize.TinyMeta:
 					return 150;
@@ -51,42 +51,42 @@ namespace starsky.foundation.storage.Storage
 					throw new ArgumentOutOfRangeException(nameof(size), size, null);
 			}
 		}
-		
+
 		public static ThumbnailSize GetSize(int size)
 		{
-			switch (size)
+			switch ( size )
 			{
 				case 150:
 					return ThumbnailSize.TinyMeta;
 				case 300:
 					return ThumbnailSize.Small;
 				case 1000:
-					return ThumbnailSize.Large ;
+					return ThumbnailSize.Large;
 				case 2000:
 					return ThumbnailSize.ExtraLarge;
 				default:
 					return ThumbnailSize.Unknown;
 			}
 		}
-		
+
 		public static ThumbnailSize GetSize(string fileName)
 		{
 			var fileNameWithoutExtension =
 				fileName.Replace(".jpg", string.Empty);
 
-			var afterAtString = Regex.Match(fileNameWithoutExtension, "@\\d+", 
+			var afterAtString = Regex.Match(fileNameWithoutExtension, "@\\d+",
 					RegexOptions.None, TimeSpan.FromMilliseconds(100))
 				.Value.Replace("@", string.Empty);
-			
+
 			if ( fileNameWithoutExtension.Replace($"@{afterAtString}", string.Empty).Length != 26 )
 			{
 				return ThumbnailSize.Unknown;
 			}
-			
-			if ( string.IsNullOrEmpty(afterAtString))
+
+			if ( string.IsNullOrEmpty(afterAtString) )
 				return ThumbnailSize.Large;
-			
-			int.TryParse(afterAtString, NumberStyles.Number, 
+
+			int.TryParse(afterAtString, NumberStyles.Number,
 				CultureInfo.InvariantCulture, out var afterAt);
 			return GetSize(afterAt);
 		}
@@ -104,7 +104,7 @@ namespace starsky.foundation.storage.Storage
 
 		private static string GetAppend(ThumbnailSize size)
 		{
-			switch (size)
+			switch ( size )
 			{
 				case ThumbnailSize.TinyMeta:
 					return "@meta";
@@ -121,8 +121,8 @@ namespace starsky.foundation.storage.Storage
 
 		public static string RemoveSuffix(string? thumbnailOutputHash)
 		{
-			return thumbnailOutputHash == null ? string.Empty : 
-				Regex.Replace(thumbnailOutputHash, "@\\d+", 
+			return thumbnailOutputHash == null ? string.Empty :
+				Regex.Replace(thumbnailOutputHash, "@\\d+",
 					string.Empty, RegexOptions.None, TimeSpan.FromMilliseconds(100));
 		}
 	}

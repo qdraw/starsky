@@ -55,7 +55,7 @@ namespace starsky.foundation.sync.WatcherServices
 			}
 
 			_webLogger.LogInformation($"[DiskWatcher] started {fullFilePath}" +
-			                          $"{DateTimeDebug()}");
+									  $"{DateTimeDebug()}");
 
 			// Create a new FileSystemWatcher and set its properties.
 
@@ -63,12 +63,12 @@ namespace starsky.foundation.sync.WatcherServices
 			_fileSystemWatcherWrapper.Filter = "*";
 			_fileSystemWatcherWrapper.IncludeSubdirectories = true;
 			_fileSystemWatcherWrapper.NotifyFilter = NotifyFilters.FileName
-			                                         | NotifyFilters.DirectoryName
-			                                         | NotifyFilters.Attributes
-			                                         | NotifyFilters.Size
-			                                         | NotifyFilters.LastWrite
-			                                         | NotifyFilters.CreationTime
-			                                         | NotifyFilters.Security;
+													 | NotifyFilters.DirectoryName
+													 | NotifyFilters.Attributes
+													 | NotifyFilters.Size
+													 | NotifyFilters.LastWrite
+													 | NotifyFilters.CreationTime
+													 | NotifyFilters.Security;
 
 			// Watch for changes in LastAccess and LastWrite times, and
 			// the renaming of files or directories.
@@ -118,7 +118,7 @@ namespace starsky.foundation.sync.WatcherServices
 			int numberOfTries = 20, int milliSecondsTimeout = 5000)
 		{
 			_webLogger.LogInformation("[DiskWatcher] next retry " +
-			                          $"{DateTimeDebug()}");
+									  $"{DateTimeDebug()}");
 			var path = _fileSystemWatcherWrapper.Path;
 
 			_fileSystemWatcherWrapper.Dispose();
@@ -170,14 +170,14 @@ namespace starsky.foundation.sync.WatcherServices
 		internal void OnChanged(object source, FileSystemEventArgs e)
 		{
 			if ( e.FullPath.EndsWith(".tmp") ||
-			     !ExtensionRolesHelper.IsExtensionSyncSupported(e.FullPath) )
+				 !ExtensionRolesHelper.IsExtensionSyncSupported(e.FullPath) )
 			{
 				return;
 			}
 
 			_webLogger.LogDebug($"[DiskWatcher] " +
-			                    $"{e.FullPath} OnChanged ChangeType is: {e.ChangeType} " +
-			                    DateTimeDebug());
+								$"{e.FullPath} OnChanged ChangeType is: {e.ChangeType} " +
+								DateTimeDebug());
 
 			_queueProcessor.QueueInput(e.FullPath, null, e.ChangeType).ConfigureAwait(false);
 			// Specify what is done when a file is changed, created, or deleted.
@@ -203,7 +203,7 @@ namespace starsky.foundation.sync.WatcherServices
 		internal void OnRenamed(object source, RenamedEventArgs e)
 		{
 			_webLogger.LogInformation($"[DiskWatcher] {e.OldFullPath} OnRenamed to: {e.FullPath}" +
-			                          DateTimeDebug());
+									  DateTimeDebug());
 
 			var fileAttributes = GetFileAttributes(e.FullPath);
 			var isDirectory = fileAttributes == FileAttributes.Directory;
@@ -212,7 +212,7 @@ namespace starsky.foundation.sync.WatcherServices
 				e.OldFullPath.Contains(Path.DirectorySeparatorChar + "tmp.{")
 				|| e.OldFullPath.EndsWith(".tmp");
 			var isNewFullPathTempFile = e.FullPath.Contains(Path.DirectorySeparatorChar + "tmp.{")
-			                            || e.FullPath.EndsWith(".tmp");
+										|| e.FullPath.EndsWith(".tmp");
 			if ( !isDirectory && isOldFullPathTempFile )
 			{
 				_queueProcessor.QueueInput(e.FullPath, null, WatcherChangeTypes.Created)

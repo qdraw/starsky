@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -34,7 +34,7 @@ namespace starsky.foundation.writemeta.Helpers
 		/// <param name="thumbnailStorage">Thumbnail Storage Abstraction provider</param>
 		/// <param name="readMeta">ReadMeta abstraction</param>
 		/// <param name="thumbnailQuery">thumbnailQuery</param>
-		public ExifToolCmdHelper(IExifTool exifTool, IStorage iStorage, 
+		public ExifToolCmdHelper(IExifTool exifTool, IStorage iStorage,
 			IStorage thumbnailStorage, IReadMeta readMeta, IThumbnailQuery thumbnailQuery)
 		{
 			_exifTool = exifTool;
@@ -43,7 +43,7 @@ namespace starsky.foundation.writemeta.Helpers
 			_thumbnailQuery = thumbnailQuery;
 			_thumbnailStorage = thumbnailStorage;
 		}
-		
+
 
 		/// <summary>
 		/// To update ExifTool (both Thumbnail as Storage item)
@@ -68,9 +68,9 @@ namespace starsky.foundation.writemeta.Helpers
 		private static IEnumerable<string> PathsListTagsFromFile(List<string> inputSubPaths)
 		{
 			var pathsList = new List<string>();
-			foreach (var subPath in inputSubPaths)
+			foreach ( var subPath in inputSubPaths )
 			{
-				if(ExtensionRolesHelper.IsExtensionForceXmp(subPath))
+				if ( ExtensionRolesHelper.IsExtensionForceXmp(subPath) )
 				{
 					var xmpPath = ExtensionRolesHelper.ReplaceExtensionWithXmp(subPath);
 					pathsList.Add(xmpPath);
@@ -92,11 +92,11 @@ namespace starsky.foundation.writemeta.Helpers
 		private Task<string> UpdateAsyncWrapperBoth(FileIndexItem updateModel, List<string> inputSubPaths,
 			List<string> comparedNames, bool includeSoftware = true)
 		{
-			var task = Task.Run(() => UpdateAsync(updateModel,inputSubPaths,
-				comparedNames,includeSoftware, true));
+			var task = Task.Run(() => UpdateAsync(updateModel, inputSubPaths,
+				comparedNames, includeSoftware, true));
 			return Task.FromResult(task.Wait(TimeSpan.FromSeconds(20)) ? task.Result.Item1 : string.Empty);
 		}
-	    
+
 		/// <summary>
 		/// Get command line args for exifTool by updateModel as data, comparedNames
 		/// </summary>
@@ -104,8 +104,8 @@ namespace starsky.foundation.writemeta.Helpers
 		/// <param name="comparedNames">list of fields that are changed, other fields are ignored</param>
 		/// <param name="includeSoftware">to include the original software name</param>
 		/// <returns>command line args</returns>
-		internal static string ExifToolCommandLineArgs( FileIndexItem updateModel, 
-			List<string> comparedNames, bool includeSoftware )
+		internal static string ExifToolCommandLineArgs(FileIndexItem updateModel,
+			List<string> comparedNames, bool includeSoftware)
 		{
 			var command = "-json -overwrite_original";
 			var initCommand = command; // to check if nothing
@@ -114,7 +114,7 @@ namespace starsky.foundation.writemeta.Helpers
 			// Check first if it is needed
 
 			// When change update metadata.md
-			
+
 			command = UpdateKeywordsCommand(command, comparedNames, updateModel);
 			command = UpdateDescriptionCommand(command, comparedNames, updateModel);
 			command = UpdateTitleCommand(command, comparedNames, updateModel);
@@ -128,12 +128,12 @@ namespace starsky.foundation.writemeta.Helpers
 			command = UpdateLocationCountryCodeCommand(command, comparedNames, updateModel);
 			command = UpdateLocationStateCommand(command, comparedNames, updateModel);
 			command = UpdateLocationCityCommand(command, comparedNames, updateModel);
-		    
+
 			command = UpdateSoftwareCommand(command, comparedNames, updateModel, includeSoftware);
 
 			command = UpdateImageHeightCommand(command, comparedNames, updateModel);
 			command = UpdateImageWidthCommand(command, comparedNames, updateModel);
-		        
+
 			command = UpdateOrientationCommand(command, comparedNames, updateModel);
 			command = UpdateDateTimeCommand(command, comparedNames, updateModel);
 
@@ -145,9 +145,9 @@ namespace starsky.foundation.writemeta.Helpers
 
 			command = UpdateMakeModelCommand(command, comparedNames, updateModel);
 			command = UpdateImageStabilization(command, comparedNames, updateModel);
-				
+
 			if ( command == initCommand ) return string.Empty;
-		    
+
 			return command;
 		}
 
@@ -167,25 +167,25 @@ namespace starsky.foundation.writemeta.Helpers
 				var withXmp = ExtensionRolesHelper.ReplaceExtensionWithXmp(subPath);
 
 				if ( _iStorage.IsFolderOrFile(withXmp) !=
-				     FolderOrFileModel.FolderOrFileTypeList.Deleted ) continue;
-			    
-				var exifCopy =  new ExifCopy(_iStorage, _thumbnailStorage, _exifTool,
+					 FolderOrFileModel.FolderOrFileTypeList.Deleted ) continue;
+
+				var exifCopy = new ExifCopy(_iStorage, _thumbnailStorage, _exifTool,
 					_readMeta, _thumbnailQuery);
 				exifCopy.XmpCreate(withXmp);
-				    
+
 				var comparedNames = FileIndexCompareHelper.Compare(new FileIndexItem(), updateModel);
 				var command = ExifToolCommandLineArgs(updateModel, comparedNames, true);
-				    
+
 				await _exifTool.WriteTagsAsync(withXmp, command);
 			}
 		}
 
-		public Task<ValueTuple<string,List<string>>> UpdateAsync(FileIndexItem updateModel,
+		public Task<ValueTuple<string, List<string>>> UpdateAsync(FileIndexItem updateModel,
 			List<string> comparedNames, bool includeSoftware = true, bool renameThumbnail = true)
 		{
 			var exifUpdateFilePaths = new List<string>
 			{
-				updateModel.FilePath!           
+				updateModel.FilePath!
 			};
 			return UpdateAsync(updateModel, exifUpdateFilePaths, comparedNames, includeSoftware, renameThumbnail);
 		}
@@ -200,8 +200,8 @@ namespace starsky.foundation.writemeta.Helpers
 		/// <param name="renameThumbnail">update name</param>
 		/// <param name="cancellationToken">to cancel</param>
 		/// <returns>Tuple (command, hash)</returns>
-		public async Task<ValueTuple<string,List<string>>> UpdateAsync(FileIndexItem updateModel, 
-			List<string> inputSubPaths, List<string> comparedNames, bool includeSoftware, 
+		public async Task<ValueTuple<string, List<string>>> UpdateAsync(FileIndexItem updateModel,
+			List<string> inputSubPaths, List<string> comparedNames, bool includeSoftware,
 			bool renameThumbnail, CancellationToken cancellationToken = default)
 		{
 			// Creation and update .xmp file with all available content
@@ -209,14 +209,14 @@ namespace starsky.foundation.writemeta.Helpers
 
 			// Rename .dng files .xmp to update in exifTool
 			var subPathsList = PathsListTagsFromFile(inputSubPaths);
- 
+
 			var command = ExifToolCommandLineArgs(updateModel, comparedNames, includeSoftware);
 
 			var fileHashes = new List<string>();
 			foreach ( var path in subPathsList.Where(path => _iStorage.ExistFile(path)) )
 			{
 				// to rename to filename of the thumbnail to the new hash
-				if (!renameThumbnail )
+				if ( !renameThumbnail )
 				{
 					await _exifTool.WriteTagsAsync(path, command);
 					continue;
@@ -235,7 +235,7 @@ namespace starsky.foundation.writemeta.Helpers
 				await _exifTool.WriteTagsThumbnailAsync(updateModel.FileHash, command);
 			}
 
-			return new ValueTuple<string,List<string>>(command, fileHashes);
+			return new ValueTuple<string, List<string>>(command, fileHashes);
 		}
 
 		private async Task<string> BeforeFileHash(FileIndexItem updateModel, string path)
@@ -259,19 +259,19 @@ namespace starsky.foundation.writemeta.Helpers
 			string command, List<string> comparedNames, FileIndexItem updateModel)
 		{
 			// -GPSAltitude="+160" -GPSAltitudeRef=above
-			if (comparedNames.Contains(nameof(FileIndexItem.LocationAltitude).ToLowerInvariant() ))
+			if ( comparedNames.Contains(nameof(FileIndexItem.LocationAltitude).ToLowerInvariant()) )
 			{
 				// 0 = "Above Sea Level"
 				// 1 = Below Sea Level
 				var gpsAltitudeRef = "0";
 				var gpsAltitude = "+" + updateModel.LocationAltitude.ToString(CultureInfo.InvariantCulture);
-				if (updateModel.LocationAltitude < 0)
+				if ( updateModel.LocationAltitude < 0 )
 				{
 					gpsAltitudeRef = "1";
-					gpsAltitude = "-" + (updateModel.LocationAltitude * -1).ToString(CultureInfo.InvariantCulture);
-				} 
+					gpsAltitude = "-" + ( updateModel.LocationAltitude * -1 ).ToString(CultureInfo.InvariantCulture);
+				}
 				command += $" -GPSAltitude=\"{gpsAltitude}\" -gpsaltituderef#=\"{gpsAltitudeRef}\" " +
-				           $"-xmp-exif:GPSAltitude=\"{gpsAltitude}\" -xmp-exif:gpsaltituderef#=\"{gpsAltitudeRef}\" ";
+						   $"-xmp-exif:GPSAltitude=\"{gpsAltitude}\" -xmp-exif:gpsaltituderef#=\"{gpsAltitudeRef}\" ";
 			}
 			return command;
 		}
@@ -283,7 +283,7 @@ namespace starsky.foundation.writemeta.Helpers
 			// exiftool reset.jpg -gps:all= -xmp:geotag= -City= -xmp:City= -State= -xmp:State= -overwrite_original
 
 			// CultureInfo.InvariantCulture is used for systems where comma is the default seperator
-			if (comparedNames.Contains( nameof(FileIndexItem.Latitude).ToLowerInvariant() ))
+			if ( comparedNames.Contains(nameof(FileIndexItem.Latitude).ToLowerInvariant()) )
 			{
 				var latitudeString = updateModel.Latitude.ToString(CultureInfo.InvariantCulture);
 				command +=
@@ -293,10 +293,10 @@ namespace starsky.foundation.writemeta.Helpers
 			}
 			return command;
 		}
-        
+
 		private static string UpdateGpsLongitudeCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
 		{
-			if (comparedNames.Contains( nameof(FileIndexItem.Longitude).ToLowerInvariant()))
+			if ( comparedNames.Contains(nameof(FileIndexItem.Longitude).ToLowerInvariant()) )
 			{
 				var longitudeString = updateModel.Longitude.ToString(CultureInfo.InvariantCulture);
 				command +=
@@ -309,24 +309,24 @@ namespace starsky.foundation.writemeta.Helpers
 
 		private static string UpdateKeywordsCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
 		{
-			if (comparedNames.Contains( nameof(FileIndexItem.Tags).ToLowerInvariant() ))
+			if ( comparedNames.Contains(nameof(FileIndexItem.Tags).ToLowerInvariant()) )
 			{
 				command += " -sep \", \" \"-xmp:subject\"=\"" + updateModel.Tags
 					+ $" \" -Keywords=\"{updateModel.Tags}\""; // space before
 			}
 			return command;
 		}
-        
+
 		private static string UpdateLocationCityCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
 		{
-			if (comparedNames.Contains( nameof(FileIndexItem.LocationCity).ToLowerInvariant() ) )
+			if ( comparedNames.Contains(nameof(FileIndexItem.LocationCity).ToLowerInvariant()) )
 			{
-				command += " -City=\"" + updateModel.LocationCity 
-				                       + "\" -xmp:City=\"" + updateModel.LocationCity + "\"";
+				command += " -City=\"" + updateModel.LocationCity
+									   + "\" -xmp:City=\"" + updateModel.LocationCity + "\"";
 			}
 			return command;
 		}
-        
+
 		/// <summary>
 		/// Add state to ExifTool command
 		/// to remove:
@@ -339,47 +339,47 @@ namespace starsky.foundation.writemeta.Helpers
 		/// <returns></returns>
 		private static string UpdateLocationStateCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
 		{
-			if (comparedNames.Contains( nameof(FileIndexItem.LocationState).ToLowerInvariant() ))
+			if ( comparedNames.Contains(nameof(FileIndexItem.LocationState).ToLowerInvariant()) )
 			{
-				command += " -State=\"" + updateModel.LocationState 
-				                        + "\" -Province-State=\"" + updateModel.LocationState + "\"";
+				command += " -State=\"" + updateModel.LocationState
+										+ "\" -Province-State=\"" + updateModel.LocationState + "\"";
 			}
 			return command;
 		}
-        
+
 		private static string UpdateLocationCountryCommand(
 			string command, List<string> comparedNames, FileIndexItem updateModel)
 		{
-			if (comparedNames.Contains( nameof(FileIndexItem.LocationCountry).ToLowerInvariant() ))
+			if ( comparedNames.Contains(nameof(FileIndexItem.LocationCountry).ToLowerInvariant()) )
 			{
-				command += " -Country=\"" + updateModel.LocationCountry 
-				                          + "\" -Country-PrimaryLocationName=\"" + updateModel.LocationCountry + "\"";
+				command += " -Country=\"" + updateModel.LocationCountry
+										  + "\" -Country-PrimaryLocationName=\"" + updateModel.LocationCountry + "\"";
 			}
 			return command;
 		}
-		
+
 		private static string UpdateLocationCountryCodeCommand(
 			string command, List<string> comparedNames, FileIndexItem updateModel)
 		{
-			if (comparedNames.Contains( nameof(FileIndexItem.LocationCountryCode).ToLowerInvariant() ))
+			if ( comparedNames.Contains(nameof(FileIndexItem.LocationCountryCode).ToLowerInvariant()) )
 			{
-				command += " -Country-PrimaryLocationCode=\"" + updateModel.LocationCountryCode 
-				                          + "\" -XMP:CountryCode=\"" + updateModel.LocationCountryCode + "\"";
+				command += " -Country-PrimaryLocationCode=\"" + updateModel.LocationCountryCode
+										  + "\" -XMP:CountryCode=\"" + updateModel.LocationCountryCode + "\"";
 			}
 			return command;
 		}
-        
+
 		private static string UpdateDescriptionCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
 		{
-			if (comparedNames.Contains( nameof(FileIndexItem.Description).ToLowerInvariant()    ))
+			if ( comparedNames.Contains(nameof(FileIndexItem.Description).ToLowerInvariant()) )
 			{
-				command += " -Caption-Abstract=\"" + updateModel.Description 
-				                                   + "\" -Description=\"" + updateModel.Description + "\""
-				                                   + $" \"-xmp-dc:description={updateModel.Description}\"";
+				command += " -Caption-Abstract=\"" + updateModel.Description
+												   + "\" -Description=\"" + updateModel.Description + "\""
+												   + $" \"-xmp-dc:description={updateModel.Description}\"";
 			}
 			return command;
 		}
-        
+
 		/// <summary>
 		/// Update Software field
 		/// </summary>
@@ -388,7 +388,7 @@ namespace starsky.foundation.writemeta.Helpers
 		/// <param name="updateModel">the model that has the data</param>
 		/// <param name="includeSoftware">to include the original software name</param>
 		/// <returns></returns>
-		internal static string UpdateSoftwareCommand(string command, List<string> comparedNames, 
+		internal static string UpdateSoftwareCommand(string command, List<string> comparedNames,
 			FileIndexItem updateModel, bool includeSoftware)
 		{
 			if ( !comparedNames.Contains(nameof(FileIndexItem.Software).ToLowerInvariant()) )
@@ -408,10 +408,10 @@ namespace starsky.foundation.writemeta.Helpers
 					" -Software=\"Starsky\" -CreatorTool=\"Starsky\" -HistorySoftwareAgent=\"Starsky\" " +
 					"-HistoryParameters=\"\" -PMVersion=\"\" ";
 			}
-		    
+
 			return command;
 		}
-	    
+
 		/// <summary>
 		/// Update Meta Field that contains Image Height (DOES NOT change the actual size)
 		/// </summary>
@@ -427,10 +427,10 @@ namespace starsky.foundation.writemeta.Helpers
 			// add space before
 			command +=
 				$" -exifimageheight={updateModel.ImageHeight} ";
-		    
+
 			return command;
 		}
-	    
+
 		/// <summary>
 		/// Update Meta Field that contains Image Width (DOES NOT change the actual size)
 		/// </summary>
@@ -447,17 +447,17 @@ namespace starsky.foundation.writemeta.Helpers
 			// add space before
 			command +=
 				$" -exifimagewidth={updateModel.ImageWidth} ";
-		    
+
 			return command;
 		}
-	    
+
 		private static string UpdateTitleCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
 		{
-			if (comparedNames.Contains(nameof(FileIndexItem.Title).ToLowerInvariant()))
+			if ( comparedNames.Contains(nameof(FileIndexItem.Title).ToLowerInvariant()) )
 			{
-				command += " -ObjectName=\"" + updateModel.Title + "\"" 
-				           + " \"-title\"=" + "\"" + updateModel.Title  + "\""
-				           + $" \"-xmp-dc:title={updateModel.Title}\"";
+				command += " -ObjectName=\"" + updateModel.Title + "\""
+						   + " \"-title\"=" + "\"" + updateModel.Title + "\""
+						   + $" \"-xmp-dc:title={updateModel.Title}\"";
 
 			}
 			return command;
@@ -465,14 +465,14 @@ namespace starsky.foundation.writemeta.Helpers
 
 		private static string UpdateColorClassCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
 		{
-			if (comparedNames.Contains(nameof(FileIndexItem.ColorClass).ToLowerInvariant()) && 
-			    updateModel.ColorClass != ColorClassParser.Color.DoNotChange)
+			if ( comparedNames.Contains(nameof(FileIndexItem.ColorClass).ToLowerInvariant()) &&
+				updateModel.ColorClass != ColorClassParser.Color.DoNotChange )
 			{
-				var intColorClass = (int) updateModel.ColorClass;
-	
+				var intColorClass = ( int )updateModel.ColorClass;
+
 				var colorDisplayName = EnumHelper.GetDisplayName(updateModel.ColorClass);
-				command += " \"-xmp:Label\"=" + "\"" + colorDisplayName + "\"" + " -ColorClass=\""+ intColorClass + 
-				           "\" -Prefs=\"Tagged:0 ColorClass:" + intColorClass + " Rating:0 FrameNum:0\" ";
+				command += " \"-xmp:Label\"=" + "\"" + colorDisplayName + "\"" + " -ColorClass=\"" + intColorClass +
+						   "\" -Prefs=\"Tagged:0 ColorClass:" + intColorClass + " Rating:0 FrameNum:0\" ";
 			}
 			return command;
 		}
@@ -481,11 +481,11 @@ namespace starsky.foundation.writemeta.Helpers
 			FileIndexItem updateModel)
 		{
 			// // exiftool -Orientation#=5
-			if (comparedNames.Contains( nameof(FileIndexItem.Orientation).ToLowerInvariant() ) && 
-			    updateModel.Orientation != FileIndexItem.Rotation.DoNotChange)
+			if ( comparedNames.Contains(nameof(FileIndexItem.Orientation).ToLowerInvariant()) &&
+				updateModel.Orientation != FileIndexItem.Rotation.DoNotChange )
 			{
-				var intOrientation = (int) updateModel.Orientation;
-				command += " \"-Orientation#="+ intOrientation +"\" ";
+				var intOrientation = ( int )updateModel.Orientation;
+				command += " \"-Orientation#=" + intOrientation + "\" ";
 			}
 			return command;
 		}
@@ -495,14 +495,14 @@ namespace starsky.foundation.writemeta.Helpers
 		{
 
 			if ( comparedNames.Contains(nameof(FileIndexItem.DateTime).ToLowerInvariant()) &&
-			     updateModel.DateTime.Year > 2 )
+				 updateModel.DateTime.Year > 2 )
 			{
 				var exifToolDatetimeString = updateModel.DateTime.ToString(
 					"yyyy:MM:dd HH:mm:ss",
 					CultureInfo.InvariantCulture);
 				command += $" -AllDates=\"{exifToolDatetimeString}\" \"-xmp:datecreated={exifToolDatetimeString}\"";
 			}
-		    
+
 			return command;
 		}
 
@@ -523,19 +523,19 @@ namespace starsky.foundation.writemeta.Helpers
 			// Warning: Sorry, Aperture is not writable => FNumber is writable
 			// XMP,http://ns.adobe.com/exif/1.0/,exif:FNumber,9/1
 			if ( !comparedNames.Contains(nameof(FileIndexItem.Aperture).ToLowerInvariant()) ) return command;
-		    
+
 			var aperture = updateModel.Aperture.ToString(CultureInfo.InvariantCulture);
 			command += $" -FNumber=\"{aperture}\" \"-xmp:FNumber={aperture}\" ";
 			return command;
 		}
-	    
+
 		private static string UpdateShutterSpeedCommand(string command, List<string> comparedNames,
 			FileIndexItem updateModel)
 		{
 			// // -ExposureTime=1/31
 			// Warning: Sorry, ShutterSpeed is not writable => ExposureTime is writable
 			if ( !comparedNames.Contains(nameof(FileIndexItem.ShutterSpeed).ToLowerInvariant()) ) return command;
-		    
+
 			command += $" -ExposureTime=\"{updateModel.ShutterSpeed}\" \"-xmp:ExposureTime={updateModel.ShutterSpeed}\" ";
 
 			return command;
@@ -546,17 +546,17 @@ namespace starsky.foundation.writemeta.Helpers
 		{
 			// Make and Model are not writable so those never exist in this list
 			if ( !comparedNames.Contains(nameof(FileIndexItem.MakeModel).ToLowerInvariant()) ) return command;
-		    
+
 			var make = updateModel.Make;
 			var model = updateModel.Model;
 			command += " -make=\"" + make + "\"" + " -model=\"" + model + "\"";
-		    
+
 			if ( !string.IsNullOrWhiteSpace(updateModel.LensModel) )
 			{
 				// add space before
 				command += $" -lensmodel=\"{updateModel.LensModel}\" -xmp:lensmodel=\"{updateModel.LensModel}\"";
 			}
-		    
+
 			return command;
 		}
 
@@ -572,8 +572,8 @@ namespace starsky.foundation.writemeta.Helpers
 
 		private static string UpdateImageStabilization(string command, List<string> comparedNames, FileIndexItem updateModel)
 		{
-			if (comparedNames.Contains(nameof(FileIndexItem.ImageStabilisation).ToLowerInvariant()) && 
-			    updateModel.ImageStabilisation != ImageStabilisationType.Unknown)
+			if ( comparedNames.Contains(nameof(FileIndexItem.ImageStabilisation).ToLowerInvariant()) &&
+				updateModel.ImageStabilisation != ImageStabilisationType.Unknown )
 			{
 				// there is no XMP version of the name
 				command += " -ImageStabilization=\"" + updateModel.ImageStabilisation + "\"";

@@ -26,16 +26,16 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 	internal TimeSpan Period { get; set; }
 
 	internal int MinimumIntervalInMinutes { get; set; } = 3;
-	
+
 	internal bool IsEnabled { get; set; }
-	
+
 	public PeriodicThumbnailScanHostedService(AppSettings appSettings,
-		IWebLogger logger, 
+		IWebLogger logger,
 		IServiceScopeFactory factory)
 	{
 		_logger = logger;
 		_factory = factory;
-		
+
 		if ( appSettings.ThumbnailGenerationIntervalInMinutes >= MinimumIntervalInMinutes )
 		{
 			Period = TimeSpan.FromMinutes(appSettings
@@ -43,10 +43,10 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 			IsEnabled = true;
 			return;
 		}
-		
+
 		Period = TimeSpan.FromMinutes(60);
 	}
-	
+
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
 		// why Task.Yield -> https://medium.com/@thepen0411/how-to-resolve-the-net-background-service-blocking-issue-c96086de8acd
@@ -60,8 +60,8 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 		{
 			await RunJob(cancellationToken);
 		}
-		
-		if ( !IsEnabled)
+
+		if ( !IsEnabled )
 		{
 			return false;
 		}
@@ -80,19 +80,19 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 		{
 			_logger.LogError("[StartBackgroundAsync] catch-ed OperationCanceledException", exception);
 		}
-		
+
 		return null;
 	}
 
 	internal async Task<bool?> RunJob(CancellationToken cancellationToken = default)
 	{
-		if (! IsEnabled )
+		if ( !IsEnabled )
 		{
 			_logger.LogInformation(
 				$"Skipped {nameof(PeriodicThumbnailScanHostedService)}");
 			return false;
 		}
-		
+
 		cancellationToken.ThrowIfCancellationRequested();
 
 		try
@@ -107,7 +107,7 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 				$" Count: {_executionCount} ({DateTime.UtcNow:HH:mm:ss})");
 			return true;
 		}
-		catch (Exception ex)
+		catch ( Exception ex )
 		{
 			_logger.LogInformation(
 				$"Failed to execute {nameof(PeriodicThumbnailScanHostedService)} " +

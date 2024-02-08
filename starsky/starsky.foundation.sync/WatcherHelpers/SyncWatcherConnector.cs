@@ -80,7 +80,7 @@ public sealed class SyncWatcherConnector
 		}
 
 		if ( _synchronize == null || _logger == null || _appSettings == null ||
-		     _connectionsService == null || _query == null )
+			 _connectionsService == null || _query == null )
 		{
 			throw new ArgumentException(
 				"any of:  _synchronize, _logger, _appSettings, _connectionsService or" +
@@ -113,7 +113,8 @@ public sealed class SyncWatcherConnector
 
 			syncData.Add(new FileIndexItem(_appSettings.FullPathToDatabaseStyle(fullFilePath))
 			{
-				IsDirectory = true, Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
+				IsDirectory = true,
+				Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
 			});
 
 			// and now to-path sync
@@ -130,10 +131,10 @@ public sealed class SyncWatcherConnector
 		if ( filtered.Count == 0 )
 		{
 			_logger.LogInformation($"[SyncWatcherConnector/EndOperation] " +
-			                       $"f:{filtered.Count}/s:{syncData.Count} ~ skip: " +
-			                       string.Join(", ",
-				                       syncData.Select(p => p.FileName).ToArray()) + " ~ " +
-			                       string.Join(", ", syncData.Select(p => p.Status).ToArray()));
+								   $"f:{filtered.Count}/s:{syncData.Count} ~ skip: " +
+								   string.Join(", ",
+									   syncData.Select(p => p.FileName).ToArray()) + " ~ " +
+								   string.Join(", ", syncData.Select(p => p.Status).ToArray()));
 			return syncData;
 		}
 
@@ -141,8 +142,8 @@ public sealed class SyncWatcherConnector
 
 		// And update the query Cache
 		_query!.CacheUpdateItem(filtered.Where(p => p.Status == FileIndexItem.ExifStatus.Ok ||
-		                                            p.Status == FileIndexItem.ExifStatus
-			                                            .Deleted).ToList());
+													p.Status == FileIndexItem.ExifStatus
+														.Deleted).ToList());
 
 		// remove files that are not in the index from cache
 		_query.RemoveCacheItem(filtered.Where(p => p.Status is
@@ -165,7 +166,7 @@ public sealed class SyncWatcherConnector
 	private async Task PushToSockets(List<FileIndexItem> filtered)
 	{
 		_logger!.LogInformation("[SyncWatcherConnector/Socket] " +
-		                        string.Join(", ", filtered.Select(p => p.FilePath).ToArray()));
+								string.Join(", ", filtered.Select(p => p.FilePath).ToArray()));
 
 		var webSocketResponse =
 			new ApiNotificationResponseModel<List<FileIndexItem>>(filtered,

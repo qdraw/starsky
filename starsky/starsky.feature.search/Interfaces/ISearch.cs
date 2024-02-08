@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using starsky.feature.search.ViewModels;
 
 namespace starsky.feature.search.Interfaces

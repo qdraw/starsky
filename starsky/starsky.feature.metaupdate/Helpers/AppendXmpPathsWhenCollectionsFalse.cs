@@ -12,7 +12,7 @@ public static class AppendXmpPathsWhenCollectionsFalseHelper
 		{
 			return inputFilePaths;
 		}
-			
+
 		var inputFilePathsWithXmpFiles = new List<string>();
 
 		// append xmp files to list (does not need to exist on disk)
@@ -23,7 +23,7 @@ public static class AppendXmpPathsWhenCollectionsFalseHelper
 				ExtensionRolesHelper.ReplaceExtensionWithXmp(
 					inputFilePath));
 		}
-			
+
 		inputFilePaths.AddRange(inputFilePathsWithXmpFiles);
 		return inputFilePaths;
 	}

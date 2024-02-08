@@ -28,16 +28,16 @@ public class ManualThumbnailGenerationService : IManualThumbnailGenerationServic
 	private readonly IWebSocketConnectionsService _connectionsService;
 	private readonly IThumbnailService _thumbnailService;
 	private readonly IThumbnailQueuedHostedService _bgTaskQueue;
-	
-	public ManualThumbnailGenerationService(IQuery query, IWebLogger logger, IWebSocketConnectionsService connectionsService, 
-		IThumbnailService thumbnailService, 
+
+	public ManualThumbnailGenerationService(IQuery query, IWebLogger logger, IWebSocketConnectionsService connectionsService,
+		IThumbnailService thumbnailService,
 		IThumbnailQueuedHostedService bgTaskQueue)
 	{
 		_query = query;
 		_logger = logger;
 		_connectionsService = connectionsService;
 		_thumbnailService = thumbnailService;
-		_bgTaskQueue = bgTaskQueue;	
+		_bgTaskQueue = bgTaskQueue;
 	}
 
 	public async Task ManualBackgroundQueue(string subPath)
@@ -48,7 +48,7 @@ public class ManualThumbnailGenerationService : IManualThumbnailGenerationServic
 			await WorkThumbnailGeneration(subPath);
 		}, subPath);
 	}
-	
+
 	internal async Task WorkThumbnailGeneration(string subPath)
 	{
 		try
@@ -69,7 +69,7 @@ public class ManualThumbnailGenerationService : IManualThumbnailGenerationServic
 			var webSocketResponse =
 				new ApiNotificationResponseModel<List<FileIndexItem>>(result, ApiNotificationType.ThumbnailGeneration);
 			await _connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
-				
+
 			_logger.LogInformation($"[ThumbnailGenerationController] done {subPath}");
 		}
 		catch ( UnauthorizedAccessException e )
@@ -88,7 +88,7 @@ public class ManualThumbnailGenerationService : IManualThumbnailGenerationServic
 		{
 			if ( item.Tags!.Contains(TrashKeyword.TrashKeywordString) ) continue;
 
-			item.LastChanged = new List<string> {"LastEdited", "FileHash"};
+			item.LastChanged = new List<string> { "LastEdited", "FileHash" };
 			result.Add(item);
 		}
 

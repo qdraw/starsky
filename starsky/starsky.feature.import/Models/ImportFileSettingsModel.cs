@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using starsky.foundation.platform.Models;
 
 namespace starsky.feature.import.Models
@@ -23,7 +23,7 @@ namespace starsky.feature.import.Models
 		{
 			// the header defaults to zero, and that's not the correct default value
 			if ( !string.IsNullOrWhiteSpace(request.Headers["ColorClass"]) &&
-			     int.TryParse(request.Headers["ColorClass"], out var colorClassNumber) )
+				 int.TryParse(request.Headers["ColorClass"], out var colorClassNumber) )
 			{
 				ColorClass = colorClassNumber;
 			}
@@ -38,7 +38,7 @@ namespace starsky.feature.import.Models
 			IndexMode = true;
 
 			if ( request.Headers["IndexMode"].ToString().Equals("false",
-				    System.StringComparison.CurrentCultureIgnoreCase) )
+					System.StringComparison.CurrentCultureIgnoreCase) )
 			{
 				IndexMode = false;
 			}

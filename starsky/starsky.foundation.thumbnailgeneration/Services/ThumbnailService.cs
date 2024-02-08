@@ -18,13 +18,13 @@ namespace starsky.foundation.thumbnailgeneration.Services
 
 		private readonly Thumbnail _thumbnail;
 
-		public ThumbnailService(ISelectorStorage selectorStorage, IWebLogger logger, AppSettings appSettings, 
+		public ThumbnailService(ISelectorStorage selectorStorage, IWebLogger logger, AppSettings appSettings,
 			IUpdateStatusGeneratedThumbnailService updateStatusGeneratedThumbnailService)
 		{
 			_updateStatusGeneratedThumbnailService = updateStatusGeneratedThumbnailService;
 			var iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			var thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
-			_thumbnail = new Thumbnail(iStorage, thumbnailStorage,logger,appSettings);
+			_thumbnail = new Thumbnail(iStorage, thumbnailStorage, logger, appSettings);
 		}
 
 		/// <summary>

@@ -19,13 +19,13 @@ namespace starsky.foundation.readmeta.Services
 		public ReadMetaSubPathStorage(ISelectorStorage selectorStorage, AppSettings appSettings, IMemoryCache memoryCache, IWebLogger logger)
 		{
 			var storage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-			_readMeta = new ReadMeta(storage, appSettings, memoryCache,logger);
+			_readMeta = new ReadMeta(storage, appSettings, memoryCache, logger);
 		}
-		
+
 		public async Task<List<FileIndexItem>> ReadExifAndXmpFromFileAddFilePathHashAsync(List<string> subPathList,
 			List<string>? fileHashes = null)
 		{
-			return await _readMeta.ReadExifAndXmpFromFileAddFilePathHashAsync(subPathList,fileHashes);
+			return await _readMeta.ReadExifAndXmpFromFileAddFilePathHashAsync(subPathList, fileHashes);
 		}
 
 		public async Task<FileIndexItem?> ReadExifAndXmpFromFileAsync(string subPath)

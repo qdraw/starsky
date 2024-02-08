@@ -24,7 +24,7 @@ namespace starsky.foundation.database.Query
 		/// <returns></returns>
 		internal async Task<List<FileIndexItem>> GetObjectsByFilePathCollectionAsync(string subPath)
 		{
-			return await GetObjectsByFilePathCollectionQueryAsync(new List<string> {subPath});
+			return await GetObjectsByFilePathCollectionQueryAsync(new List<string> { subPath });
 		}
 
 		internal async Task<List<FileIndexItem>> GetObjectsByFilePathCollectionQueryAsync(List<string> filePathList)
@@ -36,14 +36,14 @@ namespace starsky.foundation.database.Query
 			catch ( ObjectDisposedException )
 			{
 				return FormatOk(await GetObjectsByFilePathCollectionQuery(
-					new InjectServiceScope(_scopeFactory).Context(),filePathList).ToListAsync());
+					new InjectServiceScope(_scopeFactory).Context(), filePathList).ToListAsync());
 			}
 		}
-		
-		private static IOrderedQueryable<FileIndexItem> GetObjectsByFilePathCollectionQuery(ApplicationDbContext context, 
+
+		private static IOrderedQueryable<FileIndexItem> GetObjectsByFilePathCollectionQuery(ApplicationDbContext context,
 			IEnumerable<string> filePathList)
 		{
-			var predicates = new List<Expression<Func<FileIndexItem,bool>>>();  
+			var predicates = new List<Expression<Func<FileIndexItem, bool>>>();
 
 			// ReSharper disable once LoopCanBeConvertedToQuery
 			foreach ( var path in filePathList )
@@ -51,15 +51,15 @@ namespace starsky.foundation.database.Query
 				var fileNameWithoutExtension = FilenamesHelper.GetFileNameWithoutExtension(path);
 				if ( string.IsNullOrEmpty(FilenamesHelper.GetFileExtensionWithoutDot(path)) )
 				{
-					predicates.Add(p => p.ParentDirectory == FilenamesHelper.GetParentPath(path) 
-					                    && p.FileName == fileNameWithoutExtension);
+					predicates.Add(p => p.ParentDirectory == FilenamesHelper.GetParentPath(path)
+										&& p.FileName == fileNameWithoutExtension);
 					continue;
 				}
-				predicates.Add(p => p.ParentDirectory == FilenamesHelper.GetParentPath(path) 
-				                    && p.FileName != null 
-				                    && p.FileName.StartsWith(fileNameWithoutExtension + ".")  );
+				predicates.Add(p => p.ParentDirectory == FilenamesHelper.GetParentPath(path)
+									&& p.FileName != null
+									&& p.FileName.StartsWith(fileNameWithoutExtension + "."));
 			}
-			
+
 			var predicate = PredicateBuilder.OrLoop(predicates);
 
 			return context.FileIndex.Where(predicate).OrderBy(r => r.FileName);

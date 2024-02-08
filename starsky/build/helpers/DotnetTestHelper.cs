@@ -47,7 +47,7 @@ namespace helpers
 				Information("testParentPath " + testParentPath);
 
 				/* clean test results */
-				var testResultsFolder = Path.Combine(testParentPath!, "TestResults");
+				var testResultsFolder = Path.Combine(testParentPath, "TestResults");
 				if ( DirectoryExists(testResultsFolder) )
 				{
 					Information(">> Removing folder => " + testResultsFolder);
@@ -66,7 +66,7 @@ namespace helpers
 						.SetConfiguration(configuration)
 						.EnableNoRestore()
 						.EnableNoBuild()
-						.SetVerbosity(DotNetVerbosity.Normal)
+						.SetVerbosity(DotNetVerbosity.normal)
 						.SetLoggers("trx;LogFileName=test_results.trx")
 						.SetDataCollector("XPlat Code Coverage")
 						.SetSettingsFile(runSettingsFile)
@@ -82,7 +82,6 @@ namespace helpers
 					TrxParserHelper.DisplayFileTests(trxFullFilePath);
 					throw;
 				}
-
 
 				var coverageEnum = GetFilesHelper.GetFiles("**/coverage.opencover.xml");
 

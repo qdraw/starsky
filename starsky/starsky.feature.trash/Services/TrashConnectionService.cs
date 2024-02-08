@@ -8,14 +8,14 @@ using starsky.foundation.realtime.Interfaces;
 
 namespace starsky.feature.trash.Services;
 
-[Service(typeof(ITrashConnectionService), 
+[Service(typeof(ITrashConnectionService),
 	InjectionLifetime = InjectionLifetime.Scoped)]
 public class TrashConnectionService : ITrashConnectionService
 {
 	private readonly IWebSocketConnectionsService _webSocketConnectionsService;
 	private readonly INotificationQuery _notificationQuery;
-	
-	public TrashConnectionService(IWebSocketConnectionsService webSocketConnectionsService, 
+
+	public TrashConnectionService(IWebSocketConnectionsService webSocketConnectionsService,
 		INotificationQuery notificationQuery)
 	{
 		_webSocketConnectionsService = webSocketConnectionsService;
@@ -29,7 +29,7 @@ public class TrashConnectionService : ITrashConnectionService
 		var status = isSystemTrash
 			? FileIndexItem.ExifStatus.NotFoundSourceMissing
 			: FileIndexItem.ExifStatus.Deleted;
-		
+
 		foreach ( var item in moveToTrash )
 		{
 			item.Status = status;
@@ -37,13 +37,13 @@ public class TrashConnectionService : ITrashConnectionService
 		return moveToTrash;
 	}
 
-	public async Task<List<FileIndexItem>> ConnectionServiceAsync( List<FileIndexItem> moveToTrash, 
+	public async Task<List<FileIndexItem>> ConnectionServiceAsync(List<FileIndexItem> moveToTrash,
 		bool isSystemTrash)
 	{
 		moveToTrash = StatusUpdate(moveToTrash, isSystemTrash);
-		
+
 		var webSocketResponse = new ApiNotificationResponseModel<List<FileIndexItem>>(
-			moveToTrash,ApiNotificationType.MoveToTrash);
+			moveToTrash, ApiNotificationType.MoveToTrash);
 		await _webSocketConnectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
 		await _notificationQuery.AddNotification(webSocketResponse);
 		return moveToTrash;

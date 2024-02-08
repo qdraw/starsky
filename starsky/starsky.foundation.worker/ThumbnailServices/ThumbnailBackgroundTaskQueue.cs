@@ -53,7 +53,7 @@ namespace starsky.foundation.worker.ThumbnailServices
 			{
 				_logger.LogInformation("CPU is to high, skip thumbnail generation");
 				throw new ToManyUsageException($"QueueBackgroundWorkItemAsync: " +
-				                               $"Skip {metaData} because of high CPU usage");
+											   $"Skip {metaData} because of high CPU usage");
 			}
 
 			return ProcessTaskQueue.QueueBackgroundWorkItemAsync(_queue,

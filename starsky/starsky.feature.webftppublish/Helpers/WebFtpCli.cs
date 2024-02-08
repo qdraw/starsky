@@ -56,10 +56,10 @@ namespace starsky.feature.webftppublish.Helpers
 			// used in this session to find the files back
 
 			if ( _hostStorageProvider.IsFolderOrFile(inputFullFileDirectory)
-			     == FolderOrFileModel.FolderOrFileTypeList.Deleted )
+				 == FolderOrFileModel.FolderOrFileTypeList.Deleted )
 			{
 				_console.WriteLine($"Folder location {inputFullFileDirectory} " +
-				                   $"is not found \nPlease try the `-h` command to get help ");
+								   $"is not found \nPlease try the `-h` command to get help ");
 				return;
 			}
 
@@ -74,7 +74,7 @@ namespace starsky.feature.webftppublish.Helpers
 			if ( !_hostStorageProvider.ExistFile(settingsFullFilePath) )
 			{
 				_console.WriteLine($"Please run 'starskywebhtmlcli' " +
-				                   $"first to generate a settings file");
+								   $"first to generate a settings file");
 				return;
 			}
 

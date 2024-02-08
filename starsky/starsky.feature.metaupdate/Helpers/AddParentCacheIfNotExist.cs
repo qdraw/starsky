@@ -17,7 +17,7 @@ namespace starsky.feature.metaupdate.Helpers
 			_query = query;
 			_logger = logger;
 		}
-		
+
 		internal async Task<List<string>> AddParentCacheIfNotExistAsync(IEnumerable<string> updatedPaths)
 		{
 			var parentDirectoryList = new HashSet<string>();
@@ -27,25 +27,25 @@ namespace starsky.feature.metaupdate.Helpers
 				parentDirectoryList.Add(FilenamesHelper.GetParentPath(path));
 			}
 
-			var shouldAddParentDirectoriesToCache = parentDirectoryList.Where(parentDirectory => 
+			var shouldAddParentDirectoriesToCache = parentDirectoryList.Where(parentDirectory =>
 				!_query.CacheGetParentFolder(parentDirectory).Item1).ToList();
-			
+
 			if ( shouldAddParentDirectoriesToCache.Count == 0 )
 			{
 				return new List<string>();
 			}
 
 			var databaseQueryResult = await _query.GetAllObjectsAsync(shouldAddParentDirectoriesToCache);
-			
-			_logger.LogInformation("[AddParentCacheIfNotExist] files added to cache " + 
-			                       string.Join(",", shouldAddParentDirectoriesToCache));
-			
+
+			_logger.LogInformation("[AddParentCacheIfNotExist] files added to cache " +
+								   string.Join(",", shouldAddParentDirectoriesToCache));
+
 			foreach ( var directory in shouldAddParentDirectoriesToCache )
 			{
 				var byDirectory = databaseQueryResult.Where(p => p.ParentDirectory == directory).ToList();
 				_query.AddCacheParentItem(directory, byDirectory);
 			}
-			return shouldAddParentDirectoriesToCache; 
+			return shouldAddParentDirectoriesToCache;
 		}
 	}
 }

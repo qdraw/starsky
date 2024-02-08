@@ -25,166 +25,166 @@ using starsky.foundation.storage.Exceptions;
 
 namespace starsky.foundation.storage.Services
 {
-    /// <summary>
-    /// Create a Base32 string based on byte max arrond 30
-    /// </summary>
-    [SuppressMessage("Usage", "S3963:Initialize all 'static fields' inline and remove the 'static",
-	    Justification = "as designed")]
-    public static class Base32
-    {
+	/// <summary>
+	/// Create a Base32 string based on byte max arrond 30
+	/// </summary>
+	[SuppressMessage("Usage", "S3963:Initialize all 'static fields' inline and remove the 'static",
+		Justification = "as designed")]
+	public static class Base32
+	{
 
-        private static readonly char[] Digits;
-        private static readonly int Mask;
-        private static readonly int Shift;
-        private static readonly Dictionary<char, int> CharMap = new Dictionary<char, int>();
-        private const string Separator = "-";
+		private static readonly char[] Digits;
+		private static readonly int Mask;
+		private static readonly int Shift;
+		private static readonly Dictionary<char, int> CharMap = new Dictionary<char, int>();
+		private const string Separator = "-";
 
-        static Base32()
-        {
-            Digits = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567".ToCharArray();
-            Mask = Digits.Length - 1;
-            Shift = NumberOfTrailingZeros(Digits.Length);
-            for (int i = 0; i < Digits.Length; i++) CharMap[Digits[i]] = i;
-        }
+		static Base32()
+		{
+			Digits = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567".ToCharArray();
+			Mask = Digits.Length - 1;
+			Shift = NumberOfTrailingZeros(Digits.Length);
+			for ( int i = 0; i < Digits.Length; i++ ) CharMap[Digits[i]] = i;
+		}
 
-        private static int NumberOfTrailingZeros(int i)
-        {
-            // HD, Figure 5-14
-            int y;
-            if (i == 0) return 32;
-            int n = 31;
-            y = i << 16;
-            if (y != 0)
-            {
-                n = n - 16;
-                i = y;
-            }
+		private static int NumberOfTrailingZeros(int i)
+		{
+			// HD, Figure 5-14
+			int y;
+			if ( i == 0 ) return 32;
+			int n = 31;
+			y = i << 16;
+			if ( y != 0 )
+			{
+				n = n - 16;
+				i = y;
+			}
 
-            y = i << 8;
-            if (y != 0)
-            {
-                n = n - 8;
-                i = y;
-            }
+			y = i << 8;
+			if ( y != 0 )
+			{
+				n = n - 8;
+				i = y;
+			}
 
-            y = i << 4;
-            if (y != 0)
-            {
-                n = n - 4;
-                i = y;
-            }
+			y = i << 4;
+			if ( y != 0 )
+			{
+				n = n - 4;
+				i = y;
+			}
 
-            y = i << 2;
-            if (y != 0)
-            {
-                n = n - 2;
-                i = y;
-            }
+			y = i << 2;
+			if ( y != 0 )
+			{
+				n = n - 2;
+				i = y;
+			}
 
-            return n - (int) ((uint) (i << 1) >> 31);
-        }
+			return n - ( int )( ( uint )( i << 1 ) >> 31 );
+		}
 
-        public static byte[] Decode(string encoded)
-        {
-            // Remove whitespace and separators
-            encoded = encoded.Trim().Replace(Separator, "");
+		public static byte[] Decode(string encoded)
+		{
+			// Remove whitespace and separators
+			encoded = encoded.Trim().Replace(Separator, "");
 
-            // Remove padding. Note: the padding is used as hint to determine how many
-            // bits to decode from the last incomplete chunk (which is commented out
-            // below, so this may have been wrong to start with).
-            encoded = Regex.Replace(encoded, "[=]*$", "", 
-	            RegexOptions.None, TimeSpan.FromMilliseconds(100));
+			// Remove padding. Note: the padding is used as hint to determine how many
+			// bits to decode from the last incomplete chunk (which is commented out
+			// below, so this may have been wrong to start with).
+			encoded = Regex.Replace(encoded, "[=]*$", "",
+				RegexOptions.None, TimeSpan.FromMilliseconds(100));
 
-            // Canonicalize to all upper case
-            encoded = encoded.ToUpper();
-            if (encoded.Length == 0)
-            {
-                return Array.Empty<byte>();
-            }
+			// Canonicalize to all upper case
+			encoded = encoded.ToUpper();
+			if ( encoded.Length == 0 )
+			{
+				return Array.Empty<byte>();
+			}
 
-            var encodedLength = encoded.Length;
-            var outLength = encodedLength * Shift / 8;
-            var result = new byte[outLength];
-            var buffer = 0;
-            var next = 0;
-            var bitsLeft = 0;
-            
-            foreach (var c in encoded)
-            {
-                if (!CharMap.TryGetValue(c, out var value) )
-                {
-                    throw new DecodingException("Illegal character: " + c);
-                }
+			var encodedLength = encoded.Length;
+			var outLength = encodedLength * Shift / 8;
+			var result = new byte[outLength];
+			var buffer = 0;
+			var next = 0;
+			var bitsLeft = 0;
 
-                buffer <<= Shift;
-                buffer |= value & Mask;
-                bitsLeft += Shift;
-                if ( bitsLeft < 8 )
-                {
-	                continue;
-                }
-                result[next++] = (byte) (buffer >> (bitsLeft - 8));
-                bitsLeft -= 8;
-            }
+			foreach ( var c in encoded )
+			{
+				if ( !CharMap.TryGetValue(c, out var value) )
+				{
+					throw new DecodingException("Illegal character: " + c);
+				}
 
-            return result;
-        }
+				buffer <<= Shift;
+				buffer |= value & Mask;
+				bitsLeft += Shift;
+				if ( bitsLeft < 8 )
+				{
+					continue;
+				}
+				result[next++] = ( byte )( buffer >> ( bitsLeft - 8 ) );
+				bitsLeft -= 8;
+			}
 
-        public static string Encode(byte[] data, bool padOutput = false)
-        {
-            if (data.Length == 0)
-            {
-                return "";
-            }
+			return result;
+		}
 
-            // SHIFT is the number of bits per output character, so the length of the
-            // output is the length of the input multiplied by 8/SHIFT, rounded up.
-	        // so: 268435456
-            if (data.Length >= (1 << 28))
-            {
-                // The computation below will fail, so don't do it.
-                throw new ArgumentOutOfRangeException(nameof(data));
-            }
+		public static string Encode(byte[] data, bool padOutput = false)
+		{
+			if ( data.Length == 0 )
+			{
+				return "";
+			}
 
-            int outputLength = (data.Length * 8 + Shift - 1) / Shift;
-            StringBuilder result = new StringBuilder(outputLength);
+			// SHIFT is the number of bits per output character, so the length of the
+			// output is the length of the input multiplied by 8/SHIFT, rounded up.
+			// so: 268435456
+			if ( data.Length >= ( 1 << 28 ) )
+			{
+				// The computation below will fail, so don't do it.
+				throw new ArgumentOutOfRangeException(nameof(data));
+			}
 
-            int buffer = data[0];
-            int next = 1;
-            int bitsLeft = 8;
-            while (bitsLeft > 0 || next < data.Length)
-            {
-                if (bitsLeft < Shift)
-                {
-                    if (next < data.Length)
-                    {
-                        buffer <<= 8;
-                        buffer |= (data[next++] & 0xff);
-                        bitsLeft += 8;
-                    }
-                    else
-                    {
-                        int pad = Shift - bitsLeft;
-                        buffer <<= pad;
-                        bitsLeft += pad;
-                    }
-                }
+			int outputLength = ( data.Length * 8 + Shift - 1 ) / Shift;
+			StringBuilder result = new StringBuilder(outputLength);
 
-                int index = Mask & (buffer >> (bitsLeft - Shift));
-                bitsLeft -= Shift;
-                result.Append(Digits[index]);
-            }
+			int buffer = data[0];
+			int next = 1;
+			int bitsLeft = 8;
+			while ( bitsLeft > 0 || next < data.Length )
+			{
+				if ( bitsLeft < Shift )
+				{
+					if ( next < data.Length )
+					{
+						buffer <<= 8;
+						buffer |= ( data[next++] & 0xff );
+						bitsLeft += 8;
+					}
+					else
+					{
+						int pad = Shift - bitsLeft;
+						buffer <<= pad;
+						bitsLeft += pad;
+					}
+				}
 
-            return Base32ReturnPadOutput(padOutput, result);
-        }
+				int index = Mask & ( buffer >> ( bitsLeft - Shift ) );
+				bitsLeft -= Shift;
+				result.Append(Digits[index]);
+			}
 
-        private static string Base32ReturnPadOutput(bool padOutput, StringBuilder result)
-        {
-            if (!padOutput) return result.ToString();
-            var padding = 8 - (result.Length % 8);
-            if (padding > 0) result.Append(new string('=', padding == 8 ? 0 : padding));
-            return result.ToString();
-        }
-       
-    }
+			return Base32ReturnPadOutput(padOutput, result);
+		}
+
+		private static string Base32ReturnPadOutput(bool padOutput, StringBuilder result)
+		{
+			if ( !padOutput ) return result.ToString();
+			var padding = 8 - ( result.Length % 8 );
+			if ( padding > 0 ) result.Append(new string('=', padding == 8 ? 0 : padding));
+			return result.ToString();
+		}
+
+	}
 }

@@ -12,7 +12,7 @@ namespace starsky.foundation.platform.Helpers
 		{
 			_logger = logger;
 		}
-		
+
 		public static Stopwatch StartUpdateReplaceStopWatch()
 		{
 			var stopWatch = new Stopwatch();
@@ -28,10 +28,10 @@ namespace starsky.foundation.platform.Helpers
 				stopwatch.Stop();
 			}
 			_logger.LogInformation($"[{name}] f: {f} Stopwatch response collections: " +
-			                       $"{collections} {DateTime.UtcNow} duration: {stopwatch.Elapsed.TotalMilliseconds} ms or:" +
-			                       $" {stopwatch.Elapsed.TotalSeconds} sec");
+								   $"{collections} {DateTime.UtcNow} duration: {stopwatch.Elapsed.TotalMilliseconds} ms or:" +
+								   $" {stopwatch.Elapsed.TotalSeconds} sec");
 		}
 	}
-	
+
 }
 

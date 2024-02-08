@@ -29,7 +29,7 @@ namespace starsky.Controllers
 {
 	[Authorize] // <- should be logged in!
 	[SuppressMessage("Usage", "S5693:Make sure the content " +
-	                          "length limit is safe here", Justification = "Is checked")]
+							  "length limit is safe here", Justification = "Is checked")]
 	public sealed class UploadController : Controller
 	{
 		private readonly AppSettings _appSettings;
@@ -171,7 +171,7 @@ namespace starsky.Controllers
 			if ( fileIndexResultsList.TrueForAll(p => p.Status == ImportStatus.FileError) )
 			{
 				_logger.LogInformation($"Wrong input extension is not allowed" +
-				                       $" {string.Join(",", fileIndexResultsList.Select(p => p.FilePath))}");
+									   $" {string.Join(",", fileIndexResultsList.Select(p => p.FilePath))}");
 				Response.StatusCode = 415;
 			}
 
@@ -203,7 +203,7 @@ namespace starsky.Controllers
 		private void AddOrRemoveXmpSidecarFileToDatabase(FileIndexItem metaDataItem)
 		{
 			if ( _iStorage.ExistFile(ExtensionRolesHelper.ReplaceExtensionWithXmp(metaDataItem
-				    .FilePath)) )
+					.FilePath)) )
 			{
 				metaDataItem.AddSidecarExtension("xmp");
 				return;
@@ -310,7 +310,7 @@ namespace starsky.Controllers
 
 			// only used for direct import
 			if ( _iStorage.ExistFolder(FilenamesHelper.GetParentPath(to)) &&
-			     FilenamesHelper.IsValidFileName(FilenamesHelper.GetFileName(to)) )
+				 FilenamesHelper.IsValidFileName(FilenamesHelper.GetFileName(to)) )
 			{
 				Request.Headers["filename"] = FilenamesHelper.GetFileName(to);
 				return FilenamesHelper.GetParentPath(PathHelper.RemoveLatestSlash(to));

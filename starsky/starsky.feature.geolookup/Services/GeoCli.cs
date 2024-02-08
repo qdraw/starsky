@@ -36,8 +36,8 @@ namespace starsky.feature.geolookup.Services
 		private readonly IWebLogger _logger;
 
 		[SuppressMessage("Usage", "S107: Constructor has 8 parameters, which is greater than the 7 authorized")]
-		public GeoCli(IGeoReverseLookup geoReverseLookup, 
-			IGeoLocationWrite geoLocationWrite, ISelectorStorage selectorStorage, AppSettings appSettings, IConsole console, 
+		public GeoCli(IGeoReverseLookup geoReverseLookup,
+			IGeoLocationWrite geoLocationWrite, ISelectorStorage selectorStorage, AppSettings appSettings, IConsole console,
 			IGeoFileDownload geoFileDownload, IExifToolDownload exifToolDownload, IWebLogger logger)
 		{
 			_geoReverseLookup = geoReverseLookup;
@@ -51,7 +51,7 @@ namespace starsky.feature.geolookup.Services
 			_geoFileDownload = geoFileDownload;
 			_logger = logger;
 		}
-		
+
 		/// <summary>
 		/// Command line importer to Database and update disk
 		/// </summary>
@@ -62,25 +62,25 @@ namespace starsky.feature.geolookup.Services
 			_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
 			// Set type of GeoReverseLookup
 			_appSettings.ApplicationType = AppSettings.StarskyAppType.Geo;
-			
+
 			// Download ExifTool 
 			await _exifToolDownload.DownloadExifTool(_appSettings.IsWindows);
-			
+
 			// Geo cities1000 download
 			if ( _appSettings.GeoFilesSkipDownloadOnStartup != true )
 			{
 				await _geoFileDownload.DownloadAsync();
 			}
-			
+
 			if ( ArgsHelper.NeedHelp(args) ||
-			     ( new ArgsHelper(_appSettings).GetPathFormArgs(args, false).Length <= 1
-			       && ArgsHelper.GetSubPathFormArgs(args).Length <= 1
-			       && new ArgsHelper(_appSettings).GetRelativeValue(args) == null ) )
+				 ( new ArgsHelper(_appSettings).GetPathFormArgs(args, false).Length <= 1
+				   && ArgsHelper.GetSubPathFormArgs(args).Length <= 1
+				   && new ArgsHelper(_appSettings).GetRelativeValue(args) == null ) )
 			{
 				new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
 				return;
 			}
-            
+
 			// Using both options
 			string inputPath;
 			// -s = if subPath || -p is path
@@ -95,36 +95,36 @@ namespace starsky.feature.geolookup.Services
 			{
 				inputPath = new ArgsHelper(_appSettings).GetPathFormArgs(args, false);
 			}
-			
+
 			// overwrite subPath with relative days
 			// use -g or --SubPathRelative to use it.
 			// envs are not supported
 			var getSubPathRelative = new ArgsHelper(_appSettings).GetRelativeValue(args);
-			if (getSubPathRelative != null)
+			if ( getSubPathRelative != null )
 			{
-				var dateTime = DateTime.Now.AddDays(( double ) getSubPathRelative);
+				var dateTime = DateTime.Now.AddDays(( double )getSubPathRelative);
 				var path = _appSettings.DatabasePathToFilePath(
 					new StructureService(_iStorage, _appSettings.Structure)
 						.ParseSubfolders(dateTime));
 				inputPath = !string.IsNullOrEmpty(path) ? path : string.Empty;
 			}
-    
+
 			// used in this session to find the files back
 			_appSettings.StorageFolder = inputPath;
-    
+
 			if ( inputPath == null || _iStorage.IsFolderOrFile("/") == FolderOrFileModel.FolderOrFileTypeList.Deleted )
 			{
 				_console.WriteLine("Folder location is not found \n" +
-				                   $"Please try the `-h` command to get help \nDid search for: {inputPath}");
+								   $"Please try the `-h` command to get help \nDid search for: {inputPath}");
 				return;
 			}
-    
+
 			// use relative to StorageFolder
 			var listOfFiles = _iStorage.GetAllFilesInDirectory("/")
 				.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
-    
+
 			var fileIndexList = await _readMeta.ReadExifAndXmpFromFileAddFilePathHashAsync(listOfFiles);
-    
+
 			var toMetaFilesUpdate = new List<FileIndexItem>();
 			if ( ArgsHelper.GetIndexMode(args) )
 			{
@@ -133,25 +133,25 @@ namespace starsky.feature.geolookup.Services
 
 				var geoIndexGpx = new GeoIndexGpx(_appSettings, _iStorage, _logger);
 				toMetaFilesUpdate = await geoIndexGpx.LoopFolderAsync(fileIndexList);
-      
+
 				_console.Write("¬");
 				await _geoLocationWrite.LoopFolderAsync(toMetaFilesUpdate, false);
 				_console.Write("(gps added)");
 			}
-    
+
 			fileIndexList = await _geoReverseLookup.LoopFolderLookup(fileIndexList,
 					ArgsHelper.GetAll(args));
-			
+
 			if ( fileIndexList.Count >= 1 )
 			{
 				_console.Write("~ Add city, state and country info ~");
-				
+
 				await _geoLocationWrite.LoopFolderAsync(fileIndexList, true);
 			}
-    
+
 			_console.Write("^\n");
 			_console.Write("~ Rename thumbnails ~");
-    
+
 			// Loop though all options
 			fileIndexList.AddRange(toMetaFilesUpdate);
 
@@ -164,10 +164,10 @@ namespace starsky.feature.geolookup.Services
 		{
 			// update thumbs to avoid unnecessary re-generation
 			foreach ( var item in fileIndexList.GroupBy(i => i.FilePath).
-				         Select(g => g.First())
-				         .ToList() )
+						 Select(g => g.First())
+						 .ToList() )
 			{
-				var newThumb = (await new FileHash(_iStorage).GetHashCodeAsync(item.FilePath!)).Key;
+				var newThumb = ( await new FileHash(_iStorage).GetHashCodeAsync(item.FilePath!) ).Key;
 				if ( item.FileHash == newThumb ) continue;
 				new ThumbnailFileMoveAllSizes(_thumbnailStorage).FileMove(
 					item.FileHash!, newThumb);

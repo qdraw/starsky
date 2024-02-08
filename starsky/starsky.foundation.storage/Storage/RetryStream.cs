@@ -12,7 +12,7 @@ namespace starsky.foundation.storage.Storage
 		{
 			_waitTime = waitTime;
 		}
-		
+
 		public delegate Stream RetryStreamDelegate();
 
 		/// <summary>
@@ -34,7 +34,7 @@ namespace starsky.foundation.storage.Storage
 				{
 					if ( retry < maxRetry - 1 )
 					{
-						Console.WriteLine($"catch-ed > {retry}/{maxRetry-1} {error}");
+						Console.WriteLine($"catch-ed > {retry}/{maxRetry - 1} {error}");
 						Thread.Sleep(_waitTime);
 						continue;
 					}

@@ -13,8 +13,8 @@ public static class RuntimeIdentifier
 		{
 			os = "win";
 		}
-		if ( RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || 
-		     RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD) )
+		if ( RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ||
+			 RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD) )
 		{
 			os = "linux";
 		}
@@ -22,9 +22,9 @@ public static class RuntimeIdentifier
 		{
 			os = "osx";
 		}
-		
+
 		var architecture = RuntimeInformation.OSArchitecture.ToString().ToLower();
-        
+
 		return $"{os}-{architecture}";
 	}
 
@@ -70,7 +70,7 @@ public static class RuntimeIdentifier
 			["linux-x64", "linux-arm", "linux-arm64", "osx-x64", "osx-arm64"]
 		}
 	};
-	
+
 	public static bool IsReadyToRunSupported(string toRuntimeIdentifier)
 	{
 		var currentIdentifier = GetCurrentRuntimeIdentifier();
@@ -79,7 +79,7 @@ public static class RuntimeIdentifier
 
 	static bool IsReadyToRunSupported(string currentIdentifier, string toRuntimeIdentifier)
 	{
-		if (SupportedPlatforms.TryGetValue(currentIdentifier, out var supportedTargets))
+		if ( SupportedPlatforms.TryGetValue(currentIdentifier, out var supportedTargets) )
 		{
 			return supportedTargets.Contains(toRuntimeIdentifier);
 		}

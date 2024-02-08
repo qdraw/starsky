@@ -34,7 +34,7 @@ namespace starsky.foundation.http.Services
 		/// <returns>Task with Response</returns>
 		public Task<HttpResponseMessage> GetAsync(string requestUri)
 		{
-			_httpClient.DefaultRequestHeaders.Add("User-Agent",UserAgent);
+			_httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
 			return _httpClient.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead);
 		}
 
@@ -54,21 +54,21 @@ namespace starsky.foundation.http.Services
 					Content = new StringContent("http content is null")
 				});
 			}
-			
-			_httpClient.DefaultRequestHeaders.Add("User-Agent",UserAgent);
+
+			_httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
 			var request = new HttpRequestMessage
 			{
 				Method = HttpMethod.Post,
 				Content = content,
-				RequestUri =  new Uri(requestUri)
+				RequestUri = new Uri(requestUri)
 			};
-			
+
 			if ( typeof(FormUrlEncodedContent) == content.GetType() )
 			{
 				request.Headers.TryAddWithoutValidation("Content-Type",
 					"application/x-www-form-urlencoded");
 			}
-			
+
 			return _httpClient.SendAsync(request);
 		}
 	}

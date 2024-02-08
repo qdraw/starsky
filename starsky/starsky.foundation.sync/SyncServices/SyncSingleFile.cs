@@ -21,7 +21,7 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly SyncMultiFile _syncMultiFile;
 		private readonly CheckForStatusNotOkHelper _checkForStatusNotOkHelper;
 
-		public SyncSingleFile(AppSettings appSettings, IQuery query, IStorage subPathStorage, 
+		public SyncSingleFile(AppSettings appSettings, IQuery query, IStorage subPathStorage,
 			IMemoryCache? memoryCache, IWebLogger logger)
 		{
 			_appSettings = appSettings;
@@ -65,23 +65,23 @@ namespace starsky.foundation.sync.SyncServices
 			{
 				_logger.LogInformation($"[SingleFile/db] info {subPath} " + Synchronize.DateTimeDebug());
 			}
-			
+
 			// ignore all the 'wrong' files
 			var statusItems = _checkForStatusNotOkHelper.CheckForStatusNotOk(subPath);
 
 			if ( statusItems.FirstOrDefault()!.Status != FileIndexItem.ExifStatus.Ok )
 			{
 				_logger.LogDebug($"[SingleFile/db] status " +
-				                 $"{statusItems.FirstOrDefault()!.Status} for {subPath} {Synchronize.DateTimeDebug()}");
+								 $"{statusItems.FirstOrDefault()!.Status} for {subPath} {Synchronize.DateTimeDebug()}");
 				return statusItems;
 			}
 
 			var scanItems = new List<FileIndexItem>();
-			var dbItems =  await _query.GetObjectsByFilePathAsync(subPath,true);
+			var dbItems = await _query.GetObjectsByFilePathAsync(subPath, true);
 			foreach ( var item in statusItems )
 			{
 				var dbItem = dbItems.Find(p => item.FilePath == p.FilePath);
-				if ( dbItem != null  )
+				if ( dbItem != null )
 				{
 					scanItems.Add(dbItem);
 					continue;
@@ -114,10 +114,10 @@ namespace starsky.foundation.sync.SyncServices
 			var parentPath = FilenamesHelper.GetParentPath(xmpSubPath);
 			var fileNameWithoutExtension = FilenamesHelper.GetFileNameWithoutExtension(xmpSubPath);
 
-			var directoryWithFileIndexItems = (await 
-				_query.GetAllFilesAsync(parentPath)).Where(
+			var directoryWithFileIndexItems = ( await
+				_query.GetAllFilesAsync(parentPath) ).Where(
 				p => p.ParentDirectory == parentPath &&
-				     p.FileCollectionName == fileNameWithoutExtension).ToList();
+					 p.FileCollectionName == fileNameWithoutExtension).ToList();
 
 			await UpdateSidecarFile(xmpSubPath, directoryWithFileIndexItems);
 		}
@@ -136,8 +136,8 @@ namespace starsky.foundation.sync.SyncServices
 			}
 			var sidecarExt =
 				FilenamesHelper.GetFileExtensionWithoutDot(xmpSubPath);
-			
-			foreach ( var item in 
+
+			foreach ( var item in
 				directoryWithFileIndexItems.Where(item => !item.SidecarExtensionsList.Contains(sidecarExt)) )
 			{
 				item.AddSidecarExtension(sidecarExt);
@@ -145,6 +145,6 @@ namespace starsky.foundation.sync.SyncServices
 			}
 			return true;
 		}
-		
+
 	}
 }

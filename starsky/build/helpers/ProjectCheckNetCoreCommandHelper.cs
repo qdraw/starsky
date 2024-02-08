@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
-using Nuke.Common.Tooling;
 using Serilog;
 using static SimpleExec.Command;
 using static build.Build;
@@ -44,8 +42,8 @@ namespace helpers
 			if ( missingProjects.Count > 0 )
 			{
 				throw new ArgumentException("Missing <Nullable>enable</Nullable> in: " +
-				                            string.Join(" , ", missingProjects) + " projects  " +
-				                            "Please add <Nullable>enable</Nullable> to the .csproj files");
+											string.Join(" , ", missingProjects) + " projects  " +
+											"Please add <Nullable>enable</Nullable> to the .csproj files");
 			}
 		}
 

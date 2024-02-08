@@ -29,9 +29,9 @@ namespace starsky.foundation.platform.Extensions
 
 			var bufferBlock = new BufferBlock<TResult>();
 
-			using (transformBlock.LinkTo(bufferBlock, new DataflowLinkOptions {PropagateCompletion = true}))
+			using ( transformBlock.LinkTo(bufferBlock, new DataflowLinkOptions { PropagateCompletion = true }) )
 			{
-				foreach (var item in items)
+				foreach ( var item in items )
 				{
 					transformBlock.Post(item);
 				}

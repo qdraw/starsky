@@ -36,7 +36,7 @@ namespace starsky.foundation.database.Query
 			if ( _query == null ) return null!;
 			var context = _setupDatabaseTypes?.BuilderDbFactory();
 			if ( _query.GetType() == typeof(Query) && context != null && _appSettings != null &&
-			     _logger != null )
+				 _logger != null )
 			{
 				return new Query(context, _appSettings, _serviceScopeFactory!, _logger, _cache);
 			}

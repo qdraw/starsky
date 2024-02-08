@@ -24,7 +24,7 @@ namespace starsky.foundation.database.Helpers
 			await dbContext.Database.MigrateAsync();
 
 			if ( appSettings.DatabaseType !=
-			     AppSettings.DatabaseTypeList.Mysql ) return true;
+				 AppSettings.DatabaseTypeList.Mysql ) return true;
 
 			var connection = new MySqlConnection(appSettings.DatabaseConnection);
 			await MysqlFixes(connection, appSettings, dbContext, logger);

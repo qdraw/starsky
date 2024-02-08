@@ -18,7 +18,7 @@ public class OpenTelemetrySettings
 	{
 		return string.IsNullOrWhiteSpace(ServiceName)
 			? "Starsky"
-			: ServiceName ;
+			: ServiceName;
 	}
 
 	public string? GetLogsHeader()
@@ -27,7 +27,7 @@ public class OpenTelemetrySettings
 			? Header
 			: LogsHeader;
 	}
-	
+
 	public string? GetMetricsHeader()
 	{
 		return string.IsNullOrWhiteSpace(MetricsHeader)

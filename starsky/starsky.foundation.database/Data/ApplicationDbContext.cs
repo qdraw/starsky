@@ -32,21 +32,21 @@ namespace starsky.foundation.database.Data
 		public DbSet<NotificationItem> Notifications { get; set; }
 
 		public DbSet<SettingsItem> Settings { get; set; }
-		
+
 		public DbSet<ThumbnailItem> Thumbnails { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			// Do nothing because of that in debug mode this only triggered
-#if (DEBUG) 
+#if ( DEBUG )
 			optionsBuilder.EnableSensitiveDataLogging();
 #endif
 		}
-			
+
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
-			
+
 			// does not have direct effect
 			modelBuilder.HasCharSet("utf8mb4",
 				DelegationModes.ApplyToAll);
@@ -56,11 +56,11 @@ namespace starsky.foundation.database.Data
 			modelBuilder.Entity<FileIndexItem>(etb =>
 			{
 				etb.HasAnnotation("MySql:CharSet", "utf8mb4");
-				etb.HasIndex(x => new {x.FileName, x.ParentDirectory});
-				
+				etb.HasIndex(x => new { x.FileName, x.ParentDirectory });
+
 				etb.Property(p => p.Size).HasColumnType("bigint");
 			});
-			
+
 			modelBuilder.Entity<User>(etb =>
 				{
 					etb.HasAnnotation("MySql:CharSet", "utf8mb4");
@@ -70,17 +70,17 @@ namespace starsky.foundation.database.Data
 						.HasAnnotation("MySql:ValueGeneratedOnAdd", true);
 					etb.Property(e => e.Name).IsRequired().HasMaxLength(64);
 					etb.ToTable("Users");
-					
+
 					DateTime parsedDateTime;
 					var converter = new ValueConverter<DateTime, string>(
 						v =>
 							v.ToString(@"yyyy\-MM\-dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
-						v => DateTime.TryParseExact(v, @"yyyy\-MM\-dd HH:mm:ss.fff", 
+						v => DateTime.TryParseExact(v, @"yyyy\-MM\-dd HH:mm:ss.fff",
 							CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out parsedDateTime)
 							? parsedDateTime
 							: DateTime.MinValue
 					);
-					
+
 					etb.Property(e => e.LockoutEnd)
 						.HasColumnType("TEXT")
 						.HasConversion(converter);
@@ -158,7 +158,7 @@ namespace starsky.foundation.database.Data
 			);
 
 			modelBuilder.Entity<ImportIndexItem>()
-				.HasIndex(x => new {x.FileHash})
+				.HasIndex(x => new { x.FileHash })
 				.HasAnnotation("MySql:CharSet", "utf8mb4");
 
 			modelBuilder.Entity<NotificationItem>(etb =>
@@ -173,28 +173,28 @@ namespace starsky.foundation.database.Data
 
 					etb.Property(p => p.Content)
 						.HasColumnType("mediumtext");
-					
+
 					etb.Property(p => p.DateTime)
 						.IsConcurrencyToken();
-					
+
 					etb.Property(p => p.DateTimeEpoch).HasColumnType("bigint");
 
-						
+
 					etb.ToTable("Notifications");
 					etb.HasAnnotation("MySql:CharSet", "utf8mb4");
 				}
 			);
-			
+
 			modelBuilder.Entity<SettingsItem>(etb =>
 				{
 					etb.Property(e => e.Key).IsRequired().HasMaxLength(150);
 					etb.HasKey(e => e.Key);
-					
+
 					etb.ToTable("Settings");
 					etb.HasAnnotation("MySql:CharSet", "utf8mb4");
 				}
 			);
-			
+
 			modelBuilder.Entity<DataProtectionKey>(etb =>
 			{
 				etb.HasAnnotation("MySql:CharSet", "utf8mb4");
@@ -202,25 +202,25 @@ namespace starsky.foundation.database.Data
 				etb.Property(e => e.Id)
 					.ValueGeneratedOnAdd()
 					.HasAnnotation("MySql:ValueGeneratedOnAdd", true);
-				}
+			}
 			);
-			
+
 			modelBuilder.Entity<ThumbnailItem>(etb =>
 				{
 					etb.Property(e => e.FileHash).IsRequired().HasMaxLength(190);
 					etb.HasKey(e => e.FileHash);
-					
+
 					etb.ToTable("Thumbnails");
 					etb.HasAnnotation("MySql:CharSet", "utf8mb4");
 				}
 			);
-			
+
 		}
 
 		/// <summary>
 		/// Store secure keys to generate cookies
 		/// </summary>
 		public virtual DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
-		
+
 	}
 }
