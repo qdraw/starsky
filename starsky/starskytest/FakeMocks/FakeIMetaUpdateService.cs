@@ -13,7 +13,7 @@ namespace starskytest.FakeMocks
 		
 		public Task<List<FileIndexItem>> UpdateAsync(
 			Dictionary<string, List<string>> changedFileIndexItemName,
-			List<FileIndexItem> fileIndexResultsList, FileIndexItem inputModel,
+			List<FileIndexItem> fileIndexResultsList, FileIndexItem? inputModel,
 			bool collections, bool append, int rotateClock)
 		{
 			ChangedFileIndexItemNameContent.Add(changedFileIndexItemName);
