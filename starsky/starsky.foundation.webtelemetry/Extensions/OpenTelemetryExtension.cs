@@ -43,7 +43,10 @@ public static class OpenTelemetryExtension
 				{
 					"deployment.environment",
 					Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? string.Empty
-				}
+				},
+				{ "service.name", appSettings.OpenTelemetry.GetServiceName() },
+				{ "service.namespace", appSettings.OpenTelemetry.GetServiceName() },
+				{ "service.instance.id", appSettings.OpenTelemetry.GetServiceName() }
 			}));
 
 		if ( !string.IsNullOrWhiteSpace(appSettings.OpenTelemetry.TracesEndpoint) )
@@ -53,6 +56,7 @@ public static class OpenTelemetryExtension
 				.AddAspNetCoreInstrumentation(o => o.Filter = FilterPath)
 				.AddEntityFrameworkCoreInstrumentation(p =>
 				{
+					// DbStatementForText can contain sensitive data
 #if DEBUG
 					p.SetDbStatementForText = true;
 #else
@@ -75,7 +79,7 @@ public static class OpenTelemetryExtension
 		}
 
 		if ( string.IsNullOrWhiteSpace(
-				appSettings.OpenTelemetry.MetricsEndpoint) )
+			    appSettings.OpenTelemetry.MetricsEndpoint) )
 		{
 			return;
 		}
@@ -105,16 +109,16 @@ public static class OpenTelemetryExtension
 	internal static bool FilterPath(HttpContext context)
 	{
 		if ( ( context.Request.Path.Value?.EndsWith("/realtime") == true ||
-			   context.Request.Path.Value?.EndsWith("/api/health") == true ||
-			   context.Request.Path.Value?.EndsWith("/api/health/details") == true ||
-			   context.Request.Path.Value?.EndsWith("/api/open-telemetry/trace") == true )
-			 && context.Response.StatusCode == 200 )
+		       context.Request.Path.Value?.EndsWith("/api/health") == true ||
+		       context.Request.Path.Value?.EndsWith("/api/health/details") == true ||
+		       context.Request.Path.Value?.EndsWith("/api/open-telemetry/trace") == true )
+		     && context.Response.StatusCode == 200 )
 		{
 			return false;
 		}
 
 		if ( context.Request.Path.Value?.EndsWith("/api/index") == true
-			 && context.Response.StatusCode == 401 )
+		     && context.Response.StatusCode == 401 )
 		{
 			return false;
 		}
