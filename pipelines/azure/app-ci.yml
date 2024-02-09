@@ -62,6 +62,7 @@ stages:
     - template: /pipelines/azure/steps/build_server.yml
       parameters:
         vstest: false
+        readyToRunEnabled: true
         runtimeArg: '--runtime "win-x64,linux-x64,osx-x64,osx-arm64"'
         nugetPackages: $(NUGET_PACKAGES)
 
