@@ -1,6 +1,6 @@
 steps:
   - task: UseDotNet@2
-    displayName: 'Use .NET Core sdk 8.0.101'
+    displayName: 'Use .NET SDK 8.0.101'
     enabled: true
     inputs:
       packageType: sdk
