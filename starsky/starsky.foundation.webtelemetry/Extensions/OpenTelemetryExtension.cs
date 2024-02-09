@@ -51,7 +51,14 @@ public static class OpenTelemetryExtension
 			// AddEntityFrameworkCoreInstrumentation from OpenTelemetry.Instrumentation.EntityFrameworkCore
 			telemetryBuilder.WithTracing(tracing => tracing
 				.AddAspNetCoreInstrumentation(o => o.Filter = FilterPath)
-				.AddEntityFrameworkCoreInstrumentation()
+				.AddEntityFrameworkCoreInstrumentation(p =>
+				{
+#if DEBUG
+					p.SetDbStatementForText = true;
+#else
+					p.SetDbStatementForText = false;
+#endif
+				})
 				.AddOtlpExporter(
 					o =>
 					{

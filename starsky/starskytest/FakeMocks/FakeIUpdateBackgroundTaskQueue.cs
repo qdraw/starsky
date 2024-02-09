@@ -13,7 +13,8 @@ namespace starskytest.FakeMocks
 			return 0;
 		}
 
-		public async ValueTask QueueBackgroundWorkItemAsync(Func<CancellationToken, ValueTask> workItem, string metaData)
+		public async ValueTask QueueBackgroundWorkItemAsync(Func<CancellationToken, ValueTask> workItem, string? metaData = null,
+			string? traceParentId = null)
 		{
 			await workItem.Invoke(CancellationToken.None);
 			QueueBackgroundWorkItemCalled = true;
@@ -24,12 +25,12 @@ namespace starskytest.FakeMocks
 
 		public bool QueueBackgroundWorkItemCalled { get; set; }
 
-		public ValueTask<Tuple<Func<CancellationToken, ValueTask>, string>> DequeueAsync(CancellationToken cancellationToken)
+		public ValueTask<Tuple<Func<CancellationToken, ValueTask>, string?, string?>> DequeueAsync(CancellationToken cancellationToken)
 		{
 			Func<CancellationToken, ValueTask> sayHello = GetMessage;
 			var res =
-				new Tuple<Func<CancellationToken, ValueTask>, string>(
-					sayHello, "");
+				new Tuple<Func<CancellationToken, ValueTask>, string?, string?>(
+					sayHello, "", "");
 			return ValueTask.FromResult(res);
 		}
 

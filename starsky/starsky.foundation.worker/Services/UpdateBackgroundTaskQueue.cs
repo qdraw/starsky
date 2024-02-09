@@ -16,13 +16,14 @@ namespace starsky.foundation.worker.Services;
 [Service(typeof(IUpdateBackgroundTaskQueue), InjectionLifetime = InjectionLifetime.Singleton)]
 public sealed class UpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
 {
-	private readonly Channel<Tuple<Func<CancellationToken, ValueTask>, string>> _queue;
+	private readonly Channel<Tuple<Func<CancellationToken, ValueTask>, string?, string?>> _queue;
 	private readonly UpdateBackgroundQueuedMetrics _metrics;
 
 	public UpdateBackgroundTaskQueue(IServiceScopeFactory scopeFactory)
 	{
 		_queue = Channel.CreateBounded<Tuple<Func<CancellationToken, ValueTask>,
-			string>>(ProcessTaskQueue.DefaultBoundedChannelOptions);
+			string?, string?>>(ProcessTaskQueue.DefaultBoundedChannelOptions);
+		
 		_metrics = scopeFactory.CreateScope().ServiceProvider
 			.GetRequiredService<UpdateBackgroundQueuedMetrics>();
 	}
@@ -33,12 +34,14 @@ public sealed class UpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
 	}
 
 	public ValueTask QueueBackgroundWorkItemAsync(
-		Func<CancellationToken, ValueTask> workItem, string metaData)
+		Func<CancellationToken, ValueTask> workItem,
+		string? metaData = null, string? traceParentId = null)
 	{
-		return ProcessTaskQueue.QueueBackgroundWorkItemAsync(_queue, workItem, metaData);
+		return ProcessTaskQueue.QueueBackgroundWorkItemAsync(_queue, workItem, metaData,
+			traceParentId);
 	}
 
-	public async ValueTask<Tuple<Func<CancellationToken, ValueTask>, string>> DequeueAsync(
+	public async ValueTask<Tuple<Func<CancellationToken, ValueTask>, string?, string?>> DequeueAsync(
 		CancellationToken cancellationToken)
 	{
 		var queueItem = await _queue.Reader.ReadAsync(cancellationToken);

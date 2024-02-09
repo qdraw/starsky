@@ -34,10 +34,6 @@
         <PackageReference Include="System.Text.Json" Version="8.0.1"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="Meters\"/>
-    </ItemGroup>
-
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
         <SonarQubeExclude>true</SonarQubeExclude>
     </PropertyGroup>

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
@@ -62,7 +63,8 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(string), 400)]
 		[HttpPost("/api/update")]
 		[Produces("application/json")]
-		public async Task<IActionResult> UpdateAsync(FileIndexItem inputModel, string f, bool append,
+		public async Task<IActionResult> UpdateAsync(FileIndexItem inputModel, string f,
+			bool append,
 			bool collections = true, int rotateClock = 0)
 		{
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
@@ -75,7 +77,7 @@ namespace starsky.Controllers
 
 			var (fileIndexResultsList, changedFileIndexItemName) =
 				await _metaPreflight.PreflightAsync(inputModel,
-				inputFilePaths.ToList(), append, collections, rotateClock);
+					inputFilePaths.ToList(), append, collections, rotateClock);
 
 			// Update >
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
@@ -86,15 +88,16 @@ namespace starsky.Controllers
 				await metaUpdateService.UpdateAsync(
 					changedFileIndexItemName, fileIndexResultsList, null,
 					collections, append, rotateClock);
-			}, string.Empty);
+			}, "MetaUpdate", Activity.Current?.Id);
 
 			// before sending not founds
-			new StopWatchLogger(_logger).StopUpdateReplaceStopWatch("update", f, collections, stopwatch);
+			new StopWatchLogger(_logger).StopUpdateReplaceStopWatch("update", f, collections,
+				stopwatch);
 
 			// When all items are not found
 			if ( fileIndexResultsList.TrueForAll(p =>
-					p.Status != FileIndexItem.ExifStatus.Ok
-					&& p.Status != FileIndexItem.ExifStatus.Deleted) )
+				    p.Status != FileIndexItem.ExifStatus.Ok
+				    && p.Status != FileIndexItem.ExifStatus.Deleted) )
 			{
 				return NotFound(fileIndexResultsList);
 			}
@@ -106,7 +109,8 @@ namespace starsky.Controllers
 			_metaUpdateService.UpdateReadMetaCache(returnNewResultList);
 
 			// Push direct to socket when update or replace to avoid undo after a second
-			_logger.LogInformation($"[UpdateController] send to socket {inputFilePaths.FirstOrDefault()}");
+			_logger.LogInformation(
+				$"[UpdateController] send to socket {inputFilePaths.FirstOrDefault()}");
 
 			await Task.Run(async () => await UpdateWebSocketTaskRun(fileIndexResultsList));
 
@@ -116,10 +120,12 @@ namespace starsky.Controllers
 		private async Task UpdateWebSocketTaskRun(List<FileIndexItem> fileIndexResultsList)
 		{
 			var webSocketResponse =
-				new ApiNotificationResponseModel<List<FileIndexItem>>(fileIndexResultsList, ApiNotificationType.MetaUpdate);
+				new ApiNotificationResponseModel<List<FileIndexItem>>(fileIndexResultsList,
+					ApiNotificationType.MetaUpdate);
 			var realtimeConnectionsService = _scopeFactory.CreateScope()
 				.ServiceProvider.GetRequiredService<IRealtimeConnectionsService>();
-			await realtimeConnectionsService.NotificationToAllAsync(webSocketResponse, CancellationToken.None);
+			await realtimeConnectionsService.NotificationToAllAsync(webSocketResponse,
+				CancellationToken.None);
 		}
 	}
 }

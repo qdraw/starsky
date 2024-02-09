@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Channels;
@@ -48,22 +49,28 @@ namespace starsky.foundation.worker.Helpers
 					}
 
 					var toDoItems = new List<Tuple<Func<CancellationToken, ValueTask>,
-						string>>();
+						string?, string?>>();
 
 					for ( var i = 0; i < taskQueueCount; i++ )
 					{
-						var (workItem, metaData) = await taskQueue.DequeueAsync(cancellationToken);
-						toDoItems.Add(new Tuple<Func<CancellationToken, ValueTask>, string>(workItem, metaData));
+						var (workItem, metaData, parentTraceId) = await taskQueue.DequeueAsync(cancellationToken);
+						toDoItems.Add(
+							new Tuple<Func<CancellationToken, ValueTask>, string?, string?>(workItem,
+								metaData, parentTraceId));
 					}
 
 					var afterDistinct = toDoItems.DistinctBy(p => p.Item2).ToList();
 
-					foreach ( var (task, meta) in afterDistinct )
+					foreach ( var (task, meta, _) in afterDistinct )
 					{
-						logger.LogInformation($"[{taskQueue.GetType().ToString().Split(".").LastOrDefault()}] next task: " + meta);
+						logger.LogInformation(
+							$"[{taskQueue.GetType().ToString().Split(".").LastOrDefault()}] next task: " +
+							meta);
 						await ExecuteTask(task, logger, null, cancellationToken);
 					}
-					logger.LogInformation($"[{taskQueue.GetType().ToString().Split(".").LastOrDefault()}] next done & wait ");
+
+					logger.LogInformation(
+						$"[{taskQueue.GetType().ToString().Split(".").LastOrDefault()}] next done & wait ");
 				}
 				catch ( TaskCanceledException )
 				{
@@ -77,14 +84,27 @@ namespace starsky.foundation.worker.Helpers
 			IWebLogger logger,
 			IBaseBackgroundTaskQueue? taskQueue, CancellationToken cancellationToken)
 		{
+			string? metaData = null;
+			var activity = CreateActivity(null, metaData);
+
 			try
 			{
 				if ( taskQueue != null )
 				{
-					(workItem, _) = await taskQueue.DequeueAsync(cancellationToken);
-					// _ is metaData from the queue
+					string? parentTraceId;
+					// Dequeue here
+					( workItem, metaData, parentTraceId ) =
+						await taskQueue.DequeueAsync(cancellationToken);
+					
+					// set as parent for activity
+					activity = CreateActivity(parentTraceId, metaData);
 				}
+
+				activity.Start();
+
 				await workItem(cancellationToken);
+
+				StopActivity(activity);
 			}
 			catch ( OperationCanceledException )
 			{
@@ -96,11 +116,33 @@ namespace starsky.foundation.worker.Helpers
 			}
 		}
 
+		private static Activity CreateActivity(string? parentTraceId, string? metaData)
+		{
+			metaData ??= nameof(ProcessTaskQueue);
+			var activity = new Activity(metaData);
+			if ( parentTraceId == null )
+			{
+				return activity;
+			}
+			activity.SetParentId(parentTraceId);
+			return activity;
+		}
+
+		private static void StopActivity(Activity activity)
+		{
+			if ( activity.Duration == TimeSpan.Zero )
+			{
+				activity.SetEndTime(DateTime.UtcNow);
+			}
+
+			activity.Stop();
+		}
+
 		public static async Task ProcessTaskQueueAsync(IBaseBackgroundTaskQueue taskQueue,
 			IWebLogger logger, CancellationToken cancellationToken)
 		{
 			logger.LogInformation($"Queued Hosted Service {taskQueue.GetType().Name} is " +
-								  $"starting on {Environment.MachineName}");
+			                      $"starting on {Environment.MachineName}");
 
 			while ( !cancellationToken.IsCancellationRequested )
 			{
@@ -111,19 +153,23 @@ namespace starsky.foundation.worker.Helpers
 		public static readonly BoundedChannelOptions DefaultBoundedChannelOptions =
 			new(int.MaxValue) { FullMode = BoundedChannelFullMode.Wait };
 
-		public static ValueTask QueueBackgroundWorkItemAsync(Channel<Tuple<Func<CancellationToken, ValueTask>, string>> channel,
-			Func<CancellationToken, ValueTask> workItem, string metaData)
+		public static ValueTask QueueBackgroundWorkItemAsync(
+			Channel<Tuple<Func<CancellationToken, ValueTask>, string?, string?>> channel,
+			Func<CancellationToken, ValueTask> workItem,
+			string? metaData = null, string? traceParentId = null)
 		{
 			ArgumentNullException.ThrowIfNull(workItem);
-			return QueueBackgroundWorkItemInternalAsync(channel, workItem, metaData);
+			return QueueBackgroundWorkItemInternalAsync(channel, workItem, metaData, traceParentId);
 		}
 
 		private static async ValueTask QueueBackgroundWorkItemInternalAsync(
-			Channel<Tuple<Func<CancellationToken, ValueTask>, string>> channel,
-			Func<CancellationToken, ValueTask> workItem, string metaData)
+			Channel<Tuple<Func<CancellationToken, ValueTask>, string?, string?>> channel,
+			Func<CancellationToken, ValueTask> workItem,
+			string? metaData = null, string? traceParentId = null)
 		{
-			await channel.Writer.WriteAsync(new Tuple<Func<CancellationToken, ValueTask>, string>(workItem, metaData));
+			await channel.Writer.WriteAsync(
+				new Tuple<Func<CancellationToken, ValueTask>, string?, string?>(workItem, metaData,
+					traceParentId));
 		}
-
 	}
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -61,7 +62,7 @@ namespace starsky.Controllers
 				async _ =>
 				{
 					await _export.CreateZip(fileIndexResultsList, thumbnail, zipOutputName);
-				}, zipOutputName);
+				}, zipOutputName, Activity.Current?.Id);
 
 			// for the rest api
 			return Json(zipOutputName);

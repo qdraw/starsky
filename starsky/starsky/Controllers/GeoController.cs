@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -91,7 +92,7 @@ namespace starsky.Controllers
 					overwriteLocationNames);
 
 				_logger.LogInformation($"{nameof(GeoSyncFolder)} end {f} {result.Count}");
-			}, f);
+			}, f, Activity.Current?.Id);
 
 			return Json("job started");
 		}

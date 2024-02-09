@@ -25,7 +25,10 @@ namespace starsky.foundation.worker.ThumbnailServices
 		private readonly ICpuUsageListener _cpuUsageListenerService;
 		private readonly IWebLogger _logger;
 		private readonly AppSettings _appSettings;
-		private readonly Channel<Tuple<Func<CancellationToken, ValueTask>, string>> _queue;
+
+		private readonly Channel<Tuple<Func<CancellationToken, ValueTask>, string?, string?>>
+			_queue;
+
 		private readonly ThumbnailBackgroundQueuedMetrics _metrics;
 
 		public ThumbnailBackgroundTaskQueue(ICpuUsageListener cpuUsageListenerService,
@@ -34,8 +37,9 @@ namespace starsky.foundation.worker.ThumbnailServices
 			_cpuUsageListenerService = cpuUsageListenerService;
 			_logger = logger;
 			_appSettings = appSettings;
-			_queue = Channel.CreateBounded<Tuple<Func<CancellationToken, ValueTask>, string>>(
-				ProcessTaskQueue.DefaultBoundedChannelOptions);
+			_queue = Channel
+				.CreateBounded<Tuple<Func<CancellationToken, ValueTask>, string?, string?>>(
+					ProcessTaskQueue.DefaultBoundedChannelOptions);
 			_metrics = scopeFactory.CreateScope().ServiceProvider
 				.GetRequiredService<ThumbnailBackgroundQueuedMetrics>();
 		}
@@ -47,21 +51,23 @@ namespace starsky.foundation.worker.ThumbnailServices
 
 		[SuppressMessage("ReSharper", "InvertIf")]
 		public ValueTask QueueBackgroundWorkItemAsync(
-			Func<CancellationToken, ValueTask> workItem, string metaData)
+			Func<CancellationToken, ValueTask> workItem, string? metaData = null,
+			string? traceParentId = null)
 		{
 			if ( _cpuUsageListenerService.CpuUsageMean > _appSettings.CpuUsageMaxPercentage )
 			{
 				_logger.LogInformation("CPU is to high, skip thumbnail generation");
 				throw new ToManyUsageException($"QueueBackgroundWorkItemAsync: " +
-											   $"Skip {metaData} because of high CPU usage");
+				                               $"Skip {metaData} because of high CPU usage");
 			}
 
 			return ProcessTaskQueue.QueueBackgroundWorkItemAsync(_queue,
-				workItem, metaData);
+				workItem, metaData, traceParentId);
 		}
 
-		public async ValueTask<Tuple<Func<CancellationToken, ValueTask>, string>> DequeueAsync(
-			CancellationToken cancellationToken)
+		public async ValueTask<Tuple<Func<CancellationToken, ValueTask>, string?, string?>>
+			DequeueAsync(
+				CancellationToken cancellationToken)
 		{
 			var workItem =
 				await _queue.Reader.ReadAsync(cancellationToken);
