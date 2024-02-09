@@ -13,7 +13,7 @@ public class DiskWatcherBackgroundTaskQueueMetrics
 	public DiskWatcherBackgroundTaskQueueMetrics(IMeterFactory meterFactory)
 	{
 		var meter = meterFactory.Create(ActivitySourceMeter.SyncNameSpace);
-		const string name = nameof(DiskWatcherBackgroundTaskQueueMetrics);
+		const string name = "_s." + nameof(DiskWatcherBackgroundTaskQueueMetrics);
 		meter.CreateObservableGauge(name, ObserveValue);
 	}
 

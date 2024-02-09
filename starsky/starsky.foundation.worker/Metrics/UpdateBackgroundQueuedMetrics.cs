@@ -13,7 +13,7 @@ public class UpdateBackgroundQueuedMetrics
 	public UpdateBackgroundQueuedMetrics(IMeterFactory meterFactory)
 	{
 		var meter = meterFactory.Create(ActivitySourceMeter.WorkerNameSpace);
-		const string name = nameof(UpdateBackgroundQueuedMetrics);
+		const string name = "_s." + nameof(UpdateBackgroundQueuedMetrics);
 		meter.CreateObservableGauge(name, ObserveValue);
 	}
 

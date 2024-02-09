@@ -13,7 +13,7 @@ public class ThumbnailBackgroundQueuedMetrics
 	public ThumbnailBackgroundQueuedMetrics(IMeterFactory meterFactory)
 	{
 		var meter = meterFactory.Create(ActivitySourceMeter.WorkerNameSpace);
-		const string name = nameof(ThumbnailBackgroundQueuedMetrics);
+		const string name = "_s." + nameof(ThumbnailBackgroundQueuedMetrics);
 		meter.CreateObservableGauge(name, ObserveValue);
 	}
 
