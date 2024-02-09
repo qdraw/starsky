@@ -7,14 +7,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Models.Account;
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
 namespace starsky.foundation.database.Data
 {
 	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 	public class ApplicationDbContext : DbContext
 	{
-#pragma warning disable CS8618
 		public ApplicationDbContext(DbContextOptions options) : base(options)
-#pragma warning restore CS8618
 		{
 		}
 
@@ -76,7 +76,8 @@ namespace starsky.foundation.database.Data
 						v =>
 							v.ToString(@"yyyy\-MM\-dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
 						v => DateTime.TryParseExact(v, @"yyyy\-MM\-dd HH:mm:ss.fff",
-							CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out parsedDateTime)
+							CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal,
+							out parsedDateTime)
 							? parsedDateTime
 							: DateTime.MinValue
 					);
@@ -196,13 +197,13 @@ namespace starsky.foundation.database.Data
 			);
 
 			modelBuilder.Entity<DataProtectionKey>(etb =>
-			{
-				etb.HasAnnotation("MySql:CharSet", "utf8mb4");
-				etb.HasKey(e => e.Id);
-				etb.Property(e => e.Id)
-					.ValueGeneratedOnAdd()
-					.HasAnnotation("MySql:ValueGeneratedOnAdd", true);
-			}
+				{
+					etb.HasAnnotation("MySql:CharSet", "utf8mb4");
+					etb.HasKey(e => e.Id);
+					etb.Property(e => e.Id)
+						.ValueGeneratedOnAdd()
+						.HasAnnotation("MySql:ValueGeneratedOnAdd", true);
+				}
 			);
 
 			modelBuilder.Entity<ThumbnailItem>(etb =>
@@ -214,13 +215,11 @@ namespace starsky.foundation.database.Data
 					etb.HasAnnotation("MySql:CharSet", "utf8mb4");
 				}
 			);
-
 		}
 
 		/// <summary>
 		/// Store secure keys to generate cookies
 		/// </summary>
 		public virtual DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
-
 	}
 }

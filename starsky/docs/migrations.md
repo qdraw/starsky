@@ -1,66 +1,58 @@
-
 # Add Migrations
+
 This document describes how to add a migration to the application.
 
 ## Install Dotnet EF as global installer
+
 ```bash
 dotnet tool install -g dotnet-ef
 ```
 
 ## Or update to latest version
+
 ```bash
 dotnet tool update --global dotnet-ef
 ```
 
 ```bash
 # https://www.nuget.org/packages/dotnet-ef#versions-body-tab
-dotnet tool update --global dotnet-ef --version 6.0.12
+dotnet tool update --global dotnet-ef --version 8.0.1
 ```
 
 ## Set constance for EF Core
-Define constance in `starsky.foundation.database.csproj`
+
+Define constance in `starsky.foundation.database.csproj` (to remove it after the migration)
+
+only when used mysql:
+
 ```xml
-        <DefineConstants>ENABLE_DEFAULT_DATABASE</DefineConstants>
-        <!-- split by dot comma ; -->
-```
-or mysql:
-```xml
-        <DefineConstants>ENABLE_MYSQL_DATABASE</DefineConstants>
+
+<DefineConstants>ENABLE_MYSQL_DATABASE</DefineConstants>
 ```
 
 ## Run Migration
+
 ```bash
 cd starsky/starsky.foundation.database
-dotnet ef --startup-project ../starsky/starsky.csproj --project starsky.foundation.database.csproj migrations add test
+dotnet ef --project starsky.foundation.database.csproj migrations add test
 ```
 
 The migration should be ready :)
-You should test **both** with MySQL and SQLite. 
+You should test **both** with MySQL and SQLite.
 For MySql its the easiest to run the database and/or the application with docker-compose.
 
+## Remove
+
+remove the following value if added:
+
+```
+        <DefineConstants>ENABLE_MYSQL_DATABASE</DefineConstants>
+```
 
 ## undo latest migration
 
 ```bash
 cd starsky/starsky.foundation.database
-dotnet ef --startup-project ../starsky/starsky.csproj --project starsky.foundation.database.csproj migrations remove --force
+dotnet ef --project starsky.foundation.database.csproj migrations remove --force
 ```
 
-## Instead of setting constance (is replaced by defined constance)
-
-This is not needed anymore but kept here for explaining what is done in the code
-
-(Optional) : See code : SetupDatabaseTypes.cs
-
-```c#
-			// dirty hack
-			_services.AddDbContext<ApplicationDbContext>(options =>
-				options.UseSqlite(_appSettings.DatabaseConnection, 
-					b =>
-					{
-						if (! string.IsNullOrWhiteSpace(foundationDatabaseName) )
-						{
-							b.MigrationsAssembly(foundationDatabaseName);
-						}
-					}));
-```

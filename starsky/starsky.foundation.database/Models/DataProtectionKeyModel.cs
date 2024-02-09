@@ -23,12 +23,12 @@ public class DataProtectionKey
 	/// <summary>
 	/// The friendly name of the <see cref="DataProtectionKey"/>.
 	/// </summary>
-	[MaxLength(100)]
+	[MaxLength(45)]
 	public string? FriendlyName { get; set; }
 
 	/// <summary>
 	/// The XML representation of the <see cref="DataProtectionKey"/>.
 	/// </summary>
-	[MaxLength(400)]
+	[MaxLength(1200)]
 	public string? Xml { get; set; }
 }

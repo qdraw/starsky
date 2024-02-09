@@ -109,32 +109,6 @@ namespace starsky.foundation.database.Helpers
 				_logger.LogInformation($"Database connection: {_appSettings.DatabaseConnection}");
 			}
 
-#if ENABLE_DEFAULT_DATABASE
-				// dirty hack
-			_services.AddDbContext<ApplicationDbContext>(options =>
-				options.UseSqlite(_appSettings.DatabaseConnection, 
-				b =>
-				{
-					if (! string.IsNullOrWhiteSpace(foundationDatabaseName) )
-					{
-						b.MigrationsAssembly(foundationDatabaseName);
-					}
-				}));
-#endif
-#if ENABLE_MYSQL_DATABASE
-			// dirty hack
-
-			_services.AddDbContext<ApplicationDbContext>(options =>
-				options.UseMySql(_appSettings.DatabaseConnection, GetServerVersionMySql(), 
-					b =>
-					{
-						if (! string.IsNullOrWhiteSpace(foundationDatabaseName) )
-						{
-							b.MigrationsAssembly(foundationDatabaseName);
-						}
-					}));
-#endif
-
 			_services.AddScoped(_ =>
 				new ApplicationDbContext(BuilderDbFactorySwitch(foundationDatabaseName)));
 		}
