@@ -32,6 +32,12 @@ only when used mysql:
 
 ## Run Migration
 
+> Please think about this issue:
+> `warning CS8981: The type name 'limitdataprotectionkeyslength' only contains lower-cased ascii characters.` 
+> `Such names may become reserved for the language`
+
+Run the following command:
+
 ```bash
 cd starsky/starsky.foundation.database
 dotnet ef --project starsky.foundation.database.csproj migrations add test
