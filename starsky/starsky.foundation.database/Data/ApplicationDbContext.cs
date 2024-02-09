@@ -180,7 +180,6 @@ namespace starsky.foundation.database.Data
 
 					etb.Property(p => p.DateTimeEpoch).HasColumnType("bigint");
 
-
 					etb.ToTable("Notifications");
 					etb.HasAnnotation("MySql:CharSet", "utf8mb4");
 				}
@@ -203,6 +202,9 @@ namespace starsky.foundation.database.Data
 					etb.Property(e => e.Id)
 						.ValueGeneratedOnAdd()
 						.HasAnnotation("MySql:ValueGeneratedOnAdd", true);
+
+					etb.Property(e => e.Xml).HasMaxLength(1200);
+					etb.Property(e => e.FriendlyName).HasMaxLength(45);
 				}
 			);
 
