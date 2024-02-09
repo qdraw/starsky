@@ -14,7 +14,7 @@ public static partial class GenerateSlugHelperStaticRegex
 		RegexOptions.CultureInvariant,
 		matchTimeoutMilliseconds: 200)]
 	private static partial Regex CleanIncludingLowercaseAndAtSignRegex();
-	
+
 	/// <summary>
 	/// Clean including _ regex (no @)
 	/// Regex.Replace (pre compiled regex)
@@ -25,7 +25,7 @@ public static partial class GenerateSlugHelperStaticRegex
 		RegexOptions.CultureInvariant,
 		matchTimeoutMilliseconds: 200)]
 	private static partial Regex CleanIncludingLowercaseRegex();
-	
+
 	/// <summary>
 	/// Clean including _ regex (no @)
 	/// Regex.Replace (pre compiled regex)
@@ -36,14 +36,14 @@ public static partial class GenerateSlugHelperStaticRegex
 		RegexOptions.CultureInvariant,
 		matchTimeoutMilliseconds: 200)]
 	private static partial Regex CleanIncludingAtRegex();
-	
+
 	/// <summary>
 	/// Clean default regex (without _ and @)
 	/// Regex.Replace (pre compiled regex)
 	/// </summary>
 	/// <returns>Regex object</returns>
 	[GeneratedRegex(
-		@"[^a-zA-Z0-9\s-]", 
+		@"[^a-zA-Z0-9\s-]",
 		RegexOptions.CultureInvariant,
 		matchTimeoutMilliseconds: 200)]
 	private static partial Regex CleanDefaultRegex();
@@ -65,18 +65,18 @@ public static partial class GenerateSlugHelperStaticRegex
 
 		return CleanDefaultRegex().Replace(text, string.Empty);
 	}
-	
+
 	/// <summary>
 	/// Space + regex
 	/// Regex.Replace (pre compiled regex)
 	/// </summary>
 	/// <returns>Regex object</returns>
 	[GeneratedRegex(
-		@"\s+", 
+		@"\s+",
 		RegexOptions.CultureInvariant,
 		matchTimeoutMilliseconds: 200)]
 	private static partial Regex SpacePlusRegex();
-	
+
 	/// <summary>
 	/// Remove multiple spaces and trim spaces at begin and end
 	/// </summary>
@@ -84,20 +84,20 @@ public static partial class GenerateSlugHelperStaticRegex
 	/// <returns>cleaned text</returns>
 	public static string CleanSpace(string text)
 	{
-		return SpacePlusRegex().Replace(text, " ").Trim(); 
+		return SpacePlusRegex().Replace(text, " ").Trim();
 	}
-	
+
 	/// <summary>
 	/// Space regex
 	/// Regex.Replace (pre compiled regex)
 	/// </summary>
 	/// <returns>Regex object</returns>
 	[GeneratedRegex(
-		@"\s", 
+		@"\s",
 		RegexOptions.CultureInvariant,
 		matchTimeoutMilliseconds: 200)]
 	private static partial Regex SpaceRegex();
-	
+
 	/// <summary>
 	/// Replace space with hyphen
 	/// --- replace is for example: "test[space]-[space]test";
@@ -108,6 +108,6 @@ public static partial class GenerateSlugHelperStaticRegex
 	{
 		return SpaceRegex()
 			.Replace(text, "-")
-			.Replace("---", "-"); 
+			.Replace("---", "-");
 	}
 }

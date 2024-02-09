@@ -9,7 +9,7 @@ using starsky.foundation.platform.Helpers;
 
 namespace starsky.foundation.database.Query
 {
-	
+
 	/// <summary>
 	/// QueryRemoveItemAsync
 	/// </summary>
@@ -27,23 +27,23 @@ namespace starsky.foundation.database.Query
 				await LocalRemoveQuery(new InjectServiceScope(_scopeFactory).Context());
 				return true;
 			}
-        
+
 			async Task LocalRemoveQuery(ApplicationDbContext context)
 			{
 				// Detach first https://stackoverflow.com/a/42475617
 				var local = context.Set<FileIndexItem>()
 					.Local
 					.FirstOrDefault(entry => entry.Id.Equals(updateStatusContent.Id));
-				if (local != null)
+				if ( local != null )
 				{
 					context.Entry(local).State = EntityState.Detached;
 				}
-				
+
 				// keep conditional marker for test
 				context.FileIndex?.Remove(updateStatusContent);
 				await context.SaveChangesAsync();
 			}
-        
+
 			try
 			{
 				await LocalRemoveQuery(_context);
@@ -62,20 +62,20 @@ namespace starsky.foundation.database.Query
 			{
 				await LocalRemoveDefaultQuery();
 			}
-			catch ( DbUpdateConcurrencyException e)
+			catch ( DbUpdateConcurrencyException e )
 			{
-				_logger.LogInformation(e,"[RemoveItemAsync] catch-ed " +
-				                         "DbUpdateConcurrencyException (do nothing)");
+				_logger.LogInformation(e, "[RemoveItemAsync] catch-ed " +
+										 "DbUpdateConcurrencyException (do nothing)");
 			}
-        
+
 			// remove parent directory cache
 			RemoveCacheItem(updateStatusContent);
-        
+
 			// remove getFileHash Cache
 			ResetItemByHash(updateStatusContent.FileHash);
 			return updateStatusContent;
 		}
-			    
+
 		/// <summary>
 		/// Remove a new item from the database (NOT from the file system)
 		/// </summary>
@@ -88,7 +88,7 @@ namespace starsky.foundation.database.Query
 				await LocalRemoveQuery(new InjectServiceScope(_scopeFactory).Context());
 				return true;
 			}
-    
+
 			async Task LocalRemoveQuery(ApplicationDbContext context)
 			{
 				// Detach first https://stackoverflow.com/a/42475617
@@ -97,7 +97,7 @@ namespace starsky.foundation.database.Query
 					var local = context.Set<FileIndexItem>()
 						.Local
 						.FirstOrDefault(entry => entry.Id.Equals(updateStatusContent.Id));
-					if (local != null)
+					if ( local != null )
 					{
 						context.Entry(local).State = EntityState.Detached;
 					}
@@ -106,7 +106,7 @@ namespace starsky.foundation.database.Query
 				context.FileIndex?.RemoveRange(updateStatusContentList);
 				await context.SaveChangesAsync();
 			}
-    
+
 			try
 			{
 				await LocalRemoveQuery(_context);
@@ -125,15 +125,15 @@ namespace starsky.foundation.database.Query
 			{
 				await LocalRemoveDefaultQuery();
 			}
-			catch ( DbUpdateConcurrencyException e)
+			catch ( DbUpdateConcurrencyException e )
 			{
-				_logger.LogInformation(e,"[RemoveItemAsync:List] catch-ed " +
-				                         "DbUpdateConcurrencyException (do nothing)");
+				_logger.LogInformation(e, "[RemoveItemAsync:List] catch-ed " +
+										 "DbUpdateConcurrencyException (do nothing)");
 			}
-    
+
 			// remove parent directory cache
 			RemoveCacheItem(updateStatusContentList);
-    
+
 			// remove getFileHash Cache
 			foreach ( var updateStatusContent in updateStatusContentList )
 			{

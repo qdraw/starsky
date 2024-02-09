@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
@@ -15,249 +14,255 @@ namespace starskytest.Helpers
 		[TestMethod]
 		public void FileIndexCompareHelperTest_UpdateNull()
 		{
-			var source = new FileIndexItem {Tags = "hi"};
+			var source = new FileIndexItem { Tags = "hi" };
 			var changes = FileIndexCompareHelper.Compare(source);
-			Assert.AreEqual(0,changes.Count);
+			Assert.AreEqual(0, changes.Count);
 		}
-		
+
 		[TestMethod]
 		public void FileIndexCompareHelperTest_String_Compare()
 		{
-			var source = new FileIndexItem {Tags = "hi"};
-			var update = new FileIndexItem {Tags = "update"};
+			var source = new FileIndexItem { Tags = "hi" };
+			var update = new FileIndexItem { Tags = "update" };
 			FileIndexCompareHelper.Compare(source, update);
-			Assert.AreEqual("update",source.Tags);
+			Assert.AreEqual("update", source.Tags);
 		}
-		
+
 		[TestMethod]
 		public void FileIndexCompareHelperTest_StringList_Compare()
 		{
-			var source = new FileIndexItem {CollectionPaths = new List<string>{"source"}};
-			var update = new FileIndexItem {CollectionPaths = new List<string>{"update"}};
+			var source = new FileIndexItem { CollectionPaths = new List<string> { "source" } };
+			var update = new FileIndexItem { CollectionPaths = new List<string> { "update" } };
 			FileIndexCompareHelper.Compare(source, update);
-			Assert.AreEqual("update",source.CollectionPaths[0]);
+			Assert.AreEqual("update", source.CollectionPaths[0]);
 		}
-	    
+
 		[TestMethod]
 		public void FileIndexCompareHelperTest_String_Tags_AppendCompare()
 		{
-			var source = new FileIndexItem {Tags = "hi"};
-			var update = new FileIndexItem {Tags = "update"};
-			FileIndexCompareHelper.Compare(source, update,true);
-			Assert.AreEqual("hi, update",source.Tags);
+			var source = new FileIndexItem { Tags = "hi" };
+			var update = new FileIndexItem { Tags = "update" };
+			FileIndexCompareHelper.Compare(source, update, true);
+			Assert.AreEqual("hi, update", source.Tags);
 		}
+
 		[TestMethod]
 		public void FileIndexCompareHelperTest_String_Description_AppendCompare()
 		{
-			var source = new FileIndexItem {Description = "hi"};
-			var update = new FileIndexItem {Description = "update"};
-			FileIndexCompareHelper.Compare(source, update,true);
-			Assert.AreEqual("hi update",source.Description);
+			var source = new FileIndexItem { Description = "hi" };
+			var update = new FileIndexItem { Description = "update" };
+			FileIndexCompareHelper.Compare(source, update, true);
+			Assert.AreEqual("hi update", source.Description);
 		}
 
 		[TestMethod]
 		public void FileIndexCompareHelperTest_colorClass_Compare()
 		{
-			var source = new FileIndexItem {ColorClass = ColorClassParser.Color.None};
-			var update = new FileIndexItem {ColorClass = ColorClassParser.Color.Winner};
+			var source = new FileIndexItem { ColorClass = ColorClassParser.Color.None };
+			var update = new FileIndexItem { ColorClass = ColorClassParser.Color.Winner };
 			FileIndexCompareHelper.Compare(source, update);
-			Assert.AreEqual(ColorClassParser.Color.Winner,source.ColorClass);
+			Assert.AreEqual(ColorClassParser.Color.Winner, source.ColorClass);
 		}
-        
+
 		[TestMethod]
 		public void FileIndexCompareHelperTest_bool_Compare()
 		{
-			var source = new FileIndexItem {IsDirectory = false};
-			var update = new FileIndexItem {IsDirectory = true};
+			var source = new FileIndexItem { IsDirectory = false };
+			var update = new FileIndexItem { IsDirectory = true };
 			FileIndexCompareHelper.Compare(source, update);
-			Assert.AreEqual(true,source.IsDirectory);
+			Assert.AreEqual(true, source.IsDirectory);
 		}
 
 		[TestMethod]
 		public void FileIndexCompareHelperTest_DateTimeNoOverwrite_Compare()
 		{
 			// so no overwrite
-			var source = new FileIndexItem {DateTime = DateTime.Now};
-			var update = new FileIndexItem {DateTime = new DateTime()};
+			var source = new FileIndexItem { DateTime = DateTime.Now };
+			var update = new FileIndexItem { DateTime = new DateTime() };
 			FileIndexCompareHelper.Compare(source, update);
-			Assert.AreNotEqual(update.DateTime,source.DateTime); 
+			Assert.AreNotEqual(update.DateTime, source.DateTime);
 		}
-		
+
 		[TestMethod]
 		public void FileIndexCompareHelperTest_DateTime_Compare()
 		{
 			// source= null> update is new overwrite
-			var source = new FileIndexItem {DateTime = new DateTime()};
-			var update = new FileIndexItem {DateTime =  DateTime.Now};
+			var source = new FileIndexItem { DateTime = new DateTime() };
+			var update = new FileIndexItem { DateTime = DateTime.Now };
 			FileIndexCompareHelper.Compare(source, update);
-			Assert.AreEqual(update.DateTime,source.DateTime); 
+			Assert.AreEqual(update.DateTime, source.DateTime);
 		}
-	    
+
 		[TestMethod]
 		public void FileIndexCompareHelperTest_ushort_Compare()
 		{
-			var source = new FileIndexItem {IsoSpeed = 0};
-			var update = new FileIndexItem {IsoSpeed = 1};
+			var source = new FileIndexItem { IsoSpeed = 0 };
+			var update = new FileIndexItem { IsoSpeed = 1 };
 			FileIndexCompareHelper.Compare(source, update);
-			Assert.AreEqual(1,source.IsoSpeed);
+			Assert.AreEqual(1, source.IsoSpeed);
 		}
-	    
+
 		[TestMethod]
 		public void FileIndexCompareHelperTest_double_Compare()
 		{
-			var source = new FileIndexItem {Aperture = 0};
-			var update = new FileIndexItem {Aperture = 1};
+			var source = new FileIndexItem { Aperture = 0 };
+			var update = new FileIndexItem { Aperture = 1 };
 			FileIndexCompareHelper.Compare(source, update);
-			Assert.AreEqual(1,source.Aperture);
+			Assert.AreEqual(1, source.Aperture);
 		}
-        
+
 		[TestMethod]
 		public void FileIndexCompareHelperTest_Rotation_Compare()
 		{
-			var source = new FileIndexItem {Orientation = FileIndexItem.Rotation.Horizontal};
-			var update = new FileIndexItem {Orientation = FileIndexItem.Rotation.Rotate90Cw};
+			var source = new FileIndexItem { Orientation = FileIndexItem.Rotation.Horizontal };
+			var update = new FileIndexItem { Orientation = FileIndexItem.Rotation.Rotate90Cw };
 			FileIndexCompareHelper.Compare(source, update);
-			Assert.AreEqual(FileIndexItem.Rotation.Rotate90Cw, source.Orientation); 
+			Assert.AreEqual(FileIndexItem.Rotation.Rotate90Cw, source.Orientation);
 		}
 
 		[TestMethod]
 		public void FileIndexCompareHelperTest_SetCompare()
 		{
-			var source = new FileIndexItem {DateTime = new DateTime()};
-			var update = new FileIndexItem {DateTime =  DateTime.Now};
-			var result =  FileIndexCompareHelper.SetCompare(source, update, new List<string>
-			{
-				"DateTime"
-			});
+			var source = new FileIndexItem { DateTime = new DateTime() };
+			var update = new FileIndexItem { DateTime = DateTime.Now };
+			var result =
+				FileIndexCompareHelper.SetCompare(source, update, new List<string> { "DateTime" });
 			Assert.AreEqual(update.DateTime, result.DateTime);
-	    
 		}
-	
+
 		[TestMethod]
 		public void FileIndexCompareHelperTest_FilePath_Compare()
 		{
 			// this one is ignored
-			var source = new FileIndexItem {FilePath = "/test"};
-			var update = new FileIndexItem {FilePath = "/ignore"};
+			var source = new FileIndexItem { FilePath = "/test" };
+			var update = new FileIndexItem { FilePath = "/ignore" };
 			FileIndexCompareHelper.Compare(source, update);
-			Assert.AreEqual("/test",source.FilePath);
+			Assert.AreEqual("/test", source.FilePath);
 		}
-	    
-				
+
+
 		[TestMethod]
 		public void FileIndexCompareHelperTest_ImageStabilisationType_Compare_NotUpdate()
 		{
-			var source = new FileIndexItem {ImageStabilisation = ImageStabilisationType.Off};
-			var update = new FileIndexItem {ImageStabilisation = ImageStabilisationType.Unknown};
+			var source = new FileIndexItem { ImageStabilisation = ImageStabilisationType.Off };
+			var update = new FileIndexItem { ImageStabilisation = ImageStabilisationType.Unknown };
 			FileIndexCompareHelper.Compare(source, update);
-			Assert.AreEqual( ImageStabilisationType.Off,source.ImageStabilisation);
+			Assert.AreEqual(ImageStabilisationType.Off, source.ImageStabilisation);
 		}
-		
+
 		[TestMethod]
 		public void FileIndexCompareHelperTest_LastChanged_Compare_Update()
 		{
-			var source = new FileIndexItem {LastChanged = new List<string>()};
-			var update = new FileIndexItem {LastChanged = new List<string>{"test"}};
-			FileIndexCompareHelper.Compare(source, update); // it element is updated, but the list not
-			Assert.AreEqual( 1,source.LastChanged.Count);
+			var source = new FileIndexItem { LastChanged = new List<string>() };
+			var update = new FileIndexItem { LastChanged = new List<string> { "test" } };
+			FileIndexCompareHelper.Compare(source,
+				update); // it element is updated, but the list not
+			Assert.AreEqual(1, source.LastChanged.Count);
 		}
-		
+
 		[TestMethod]
 		public void FileIndexCompareHelperTest_LastChanged_Compare_RemoveFromList()
 		{
-			var source = new FileIndexItem {LastChanged = new List<string>()};
-			var update = new FileIndexItem {LastChanged = new List<string>{"test"}};
+			var source = new FileIndexItem { LastChanged = new List<string>() };
+			var update = new FileIndexItem { LastChanged = new List<string> { "test" } };
 			var result = FileIndexCompareHelper.Compare(source, update);
-			Assert.AreEqual( 0,result.Count);
+			Assert.AreEqual(0, result.Count);
 		}
-		
+
 		[TestMethod]
 		public void FileIndexCompareHelperTest_ImageStabilisationType_Compare_Equal_NotUpdate()
 		{
-			var source = new FileIndexItem {ImageStabilisation = ImageStabilisationType.Off};
-			var update = new FileIndexItem {ImageStabilisation = ImageStabilisationType.Off};
+			var source = new FileIndexItem { ImageStabilisation = ImageStabilisationType.Off };
+			var update = new FileIndexItem { ImageStabilisation = ImageStabilisationType.Off };
 			FileIndexCompareHelper.Compare(source, update);
-			Assert.AreEqual( ImageStabilisationType.Off,source.ImageStabilisation);
+			Assert.AreEqual(ImageStabilisationType.Off, source.ImageStabilisation);
 		}
-		
+
 		[TestMethod]
 		public void FileIndexCompareHelperTest_ImageStabilisationType_Compare_ShouldUpdate()
 		{
-			var source = new FileIndexItem {ImageStabilisation = ImageStabilisationType.Unknown};
-			var update = new FileIndexItem {ImageStabilisation = ImageStabilisationType.Off};
+			var source = new FileIndexItem { ImageStabilisation = ImageStabilisationType.Unknown };
+			var update = new FileIndexItem { ImageStabilisation = ImageStabilisationType.Off };
 			FileIndexCompareHelper.Compare(source, update);
-			Assert.AreEqual( ImageStabilisationType.Off,source.ImageStabilisation);
+			Assert.AreEqual(ImageStabilisationType.Off, source.ImageStabilisation);
 		}
-	    
+
 		[TestMethod]
 		public void FileIndexCompareHelperTest__CheckIfPropertyExist_Tags_True()
 		{
-			Assert.AreEqual(true,FileIndexCompareHelper.CheckIfPropertyExist(nameof(FileIndexItem.Tags)));
+			Assert.AreEqual(true,
+				FileIndexCompareHelper.CheckIfPropertyExist(nameof(FileIndexItem.Tags)));
 		}
 
 		[TestMethod]
 		public void FileIndexCompareHelperTest__CheckIfPropertyExist_False()
 		{
-			Assert.AreEqual(false,FileIndexCompareHelper.CheckIfPropertyExist("45678987654"));
+			Assert.AreEqual(false, FileIndexCompareHelper.CheckIfPropertyExist("45678987654"));
 		}
 
 		[TestMethod]
 		public void FileIndexCompareHelperTest__SetValue_Tags()
 		{
-			Assert.AreEqual("value", FileIndexCompareHelper.Set(null,nameof(FileIndexItem.Tags),"value").Tags);
+			Assert.AreEqual("value",
+				FileIndexCompareHelper.Set(null, nameof(FileIndexItem.Tags), "value").Tags);
 		}
-	    
+
 		[TestMethod]
 		public void FileIndexCompareHelperTest__SetValue_Tags_LowerCase()
 		{
-			Assert.AreEqual("value", FileIndexCompareHelper.Set(null,nameof(FileIndexItem.Tags).ToLowerInvariant(),"value").Tags);
+			Assert.AreEqual("value",
+				FileIndexCompareHelper
+					.Set(null, nameof(FileIndexItem.Tags).ToLowerInvariant(), "value").Tags);
 		}
-	    
+
 		[TestMethod]
 		public void FileIndexCompareHelperTest__SetValue_UnknownValue()
 		{
 			// try database type that does not exist
-			Assert.AreEqual(string.Empty, FileIndexCompareHelper.Set(null,"ThisTagDoesNotExist","value").Tags);
+			Assert.AreEqual(string.Empty,
+				FileIndexCompareHelper.Set(null, "ThisTagDoesNotExist", "value").Tags);
 		}
-	    
+
 		[TestMethod]
 		public void FileIndexCompareHelperTest__SetValue_WrongTypeCast()
 		{
 			// wrong types are ignored by default
-			Assert.AreEqual(string.Empty, FileIndexCompareHelper.Set(null,nameof(FileIndexItem.Tags),1).Tags);
+			Assert.AreEqual(string.Empty,
+				FileIndexCompareHelper.Set(null, nameof(FileIndexItem.Tags), 1).Tags);
 		}
 
 		[TestMethod]
 		public void FileIndexCompareHelperTest_GetValue()
 		{
-			var t = new FileIndexItem{Tags = "test"};
+			var t = new FileIndexItem { Tags = "test" };
 			var result = FileIndexCompareHelper.Get(t, nameof(FileIndexItem.Tags));
-			Assert.AreEqual(t.Tags,result);
+			Assert.AreEqual(t.Tags, result);
 		}
-	    
+
 		[TestMethod]
 		public void FileIndexCompareHelperTest_GetValue_LowerCase()
 		{
-			var t = new FileIndexItem{Tags = "test"};
-			var result = FileIndexCompareHelper.Get(t, nameof(FileIndexItem.Tags).ToLowerInvariant());
-			Assert.AreEqual(t.Tags,result);
+			var t = new FileIndexItem { Tags = "test" };
+			var result =
+				FileIndexCompareHelper.Get(t, nameof(FileIndexItem.Tags).ToLowerInvariant());
+			Assert.AreEqual(t.Tags, result);
 		}
 
 		[TestMethod]
 		public void FileIndexCompareHelperTest_GetValue_NullFieldName()
 		{
-			var t = new FileIndexItem{Tags = "test"};
+			var t = new FileIndexItem { Tags = "test" };
 			var result = FileIndexCompareHelper.Get(t, "ThisTagDoesNotExist");
-			Assert.AreEqual(null,result);
+			Assert.AreEqual(null, result);
 		}
-	    
+
 		[TestMethod]
 		public void FileIndexCompareHelperTest_GetValue_NullFileIndexItem()
 		{
 			var result = FileIndexCompareHelper.Get(null, nameof(FileIndexItem.Tags));
-			Assert.AreEqual(null,result);
+			Assert.AreEqual(null, result);
 		}
-		
+
 		[TestMethod]
 		public void CompareRotation_NotFound()
 		{
@@ -268,7 +273,7 @@ namespace starskytest.Helpers
 				FileIndexItem.Rotation.Horizontal, list);
 			Assert.IsNotNull(list);
 		}
-		
+
 		[TestMethod]
 		public void CompareDouble_NotFound()
 		{
@@ -279,8 +284,8 @@ namespace starskytest.Helpers
 				0d, list);
 			Assert.IsNotNull(list);
 		}
-		
-				
+
+
 		[TestMethod]
 		public void CompareUShort_NotFound()
 		{
@@ -291,7 +296,7 @@ namespace starskytest.Helpers
 				0, list);
 			Assert.IsNotNull(list);
 		}
-		
+
 		[TestMethod]
 		public void CompareImageFormat_NotFound()
 		{
@@ -302,7 +307,7 @@ namespace starskytest.Helpers
 				ExtensionRolesHelper.ImageFormat.bmp, list);
 			Assert.IsNotNull(list);
 		}
-		
+
 		[TestMethod]
 		public void CompareDateTime_NotFound()
 		{
@@ -313,7 +318,7 @@ namespace starskytest.Helpers
 				DateTime.Now, list);
 			Assert.IsNotNull(list);
 		}
-		
+
 		[TestMethod]
 		public void CompareColor_NotFound()
 		{
@@ -324,19 +329,19 @@ namespace starskytest.Helpers
 				ColorClassParser.Color.Winner, list);
 			Assert.IsNotNull(list);
 		}
-		
-				
+
+
 		[TestMethod]
 		public void CompareListString_NotFound()
 		{
 			var list = new List<string>();
 			FileIndexCompareHelper.CompareListString("t",
 				new FileIndexItem(),
-				new List<string>{"1"},
-				new List<string>{"1"}, list);
+				new List<string> { "1" },
+				new List<string> { "1" }, list);
 			Assert.IsNotNull(list);
 		}
-		
+
 		[TestMethod]
 		[SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalse")]
 		public void CompareNullableBool_NotFound()
@@ -349,13 +354,13 @@ namespace starskytest.Helpers
 				boolValue, list);
 			Assert.IsNotNull(list);
 		}
-		
+
 		private static void SetNull(object obj, string propertyName)
 		{
 			var propertyInfo = obj.GetType().GetProperty(propertyName);
 			propertyInfo?.SetValue(obj, null);
 		}
-		
+
 		[TestMethod]
 		public void CompareString_NotFound()
 		{
@@ -366,7 +371,7 @@ namespace starskytest.Helpers
 				"test", list, true);
 			Assert.IsNotNull(list);
 		}
-		
+
 		[TestMethod]
 		public void TestCompare_NullColor()
 		{

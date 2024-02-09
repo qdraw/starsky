@@ -40,7 +40,7 @@ public sealed class WriteMetaThumbnailService : IWriteMetaThumbnailService
 		try
 		{
 			using ( var thumbnailStream =
-			       new MemoryStream(offsetData.Data, offsetData.Index, offsetData.Count) )
+				   new MemoryStream(offsetData.Data, offsetData.Index, offsetData.Count) )
 			using ( var smallImage = await Image.LoadAsync(thumbnailStream) )
 			using ( var outputStream = new MemoryStream() )
 			{

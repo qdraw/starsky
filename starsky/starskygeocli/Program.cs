@@ -1,8 +1,7 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.geolookup.Interfaces;
 using starsky.feature.geolookup.Services;
-using starsky.foundation.consoletelemetry.Extensions;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
@@ -31,11 +30,10 @@ namespace starskyGeoCli
 			RegisterDependencies.Configure(services);
 			var serviceProvider = services.BuildServiceProvider();
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
-			
-			services.AddMonitoringWorkerService(appSettings, AppSettings.StarskyAppType.Geo);
+
 			services.AddTelemetryLogging(appSettings);
-			
-			new SetupDatabaseTypes(appSettings,services).BuilderDb();
+
+			new SetupDatabaseTypes(appSettings, services).BuilderDb();
 			serviceProvider = services.BuildServiceProvider();
 
 			var geoReverseLookup = serviceProvider.GetRequiredService<IGeoReverseLookup>();
@@ -49,13 +47,13 @@ namespace starskyGeoCli
 			var logger = serviceProvider.GetRequiredService<IWebLogger>();
 
 			// Migrations before geo-tools (not needed for this specific app, but helps the process)
-			await RunMigrations.Run(serviceProvider.GetRequiredService<ApplicationDbContext>(), logger,appSettings);
-			
+			await RunMigrations.Run(serviceProvider.GetRequiredService<ApplicationDbContext>(),
+				logger, appSettings);
+
 			// Help and other Command Line Tools args are included in the Geo tools 
 			await new GeoCli(geoReverseLookup, geoLocationWrite, selectorStorage,
-				appSettings, console, geoFileDownload, exifToolDownload,logger).CommandLineAsync(args);
-
-			await new FlushApplicationInsights(serviceProvider).FlushAsync();
+					appSettings, console, geoFileDownload, exifToolDownload, logger)
+				.CommandLineAsync(args);
 		}
 	}
 }

@@ -11,28 +11,28 @@ namespace starskytest.starsky.feature.webftppublish.FtpAbstractionsTest
 	[TestClass]
 	public sealed class WrapFtpWebResponseTest
 	{
-
 		[TestMethod]
 		public void WrapFtpWebResponse1_Dispose()
 		{
 			FtpWebResponse? response = null;
 			// ReSharper disable once ExpressionIsAlwaysNull
-			new WrapFtpWebResponse(response).Dispose();
+			new WrapFtpWebResponse(response!).Dispose();
 			Assert.IsNull(response);
 			// nothing
 		}
-		
+
 		[TestMethod]
 		public void WrapFtpWebResponse_DisposeWithObject()
 		{
 			// https://stackoverflow.com/a/41961247
 			var ctor =
 				typeof(FtpWebResponse).GetConstructors(BindingFlags.Instance |
-					BindingFlags.NonPublic | BindingFlags.InvokeMethod).FirstOrDefault();
-			
+				                                       BindingFlags.NonPublic |
+				                                       BindingFlags.InvokeMethod).FirstOrDefault();
+
 			// using reflection
 			// ReSharper disable once PossibleNullReferenceException
-			var instance = (FtpWebResponse?)ctor!.Invoke(new object[]
+			var instance = ( FtpWebResponse? )ctor!.Invoke(new object[]
 			{
 				new MemoryStream(), // Stream responseStream,
 				1L, // long contentLength,
@@ -44,8 +44,8 @@ namespace starskytest.starsky.feature.webftppublish.FtpAbstractionsTest
 				string.Empty, // string welcomeMessage
 				string.Empty // string exitMessage
 			});
-			
-			var response = new WrapFtpWebResponse(instance);
+
+			var response = new WrapFtpWebResponse(instance!);
 			response.Dispose();
 
 			var responseStreamResult = response.GetResponseStream();
@@ -55,7 +55,7 @@ namespace starskytest.starsky.feature.webftppublish.FtpAbstractionsTest
 		[TestMethod]
 		public void GetResponseStream()
 		{
-			var responseStreamResult =new WrapFtpWebResponse(null).GetResponseStream();
+			var responseStreamResult = new WrapFtpWebResponse(null!).GetResponseStream();
 			Assert.AreEqual(Stream.Null, responseStreamResult);
 		}
 	}

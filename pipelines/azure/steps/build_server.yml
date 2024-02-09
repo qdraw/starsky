@@ -6,6 +6,9 @@ parameters:
   nugetPackages: $(Pipeline.Workspace)/.nuget/packages
 
 steps:
+  - template: /pipelines/azure/steps/cache_nuget_packages.yml
+  - template: /pipelines/azure/steps/cache_dependencies.yml
+
   - task: DotNetCoreCLI@2
     displayName: "[Nuke/server] dotnet tool restore"
     continueOnError: true
@@ -14,11 +17,8 @@ steps:
       custom: tool
       arguments: "restore --tool-manifest starsky/.config/dotnet-tools.json"
 
-  - template: /pipelines/azure/steps/cache_nuget_packages.yml
-  - template: /pipelines/azure/steps/cache_dependencies.yml
-
   - task: PowerShell@2
-    displayName: "Nuke SonarBuildTest (with tests) "
+    displayName: "Nuke SonarBuildTest (with tests)"
     condition: and(succeeded(), eq('${{ parameters.vstest }}', true) )
     env:
       BUILD_SOURCEBRANCH: $(Build.SourceBranch)

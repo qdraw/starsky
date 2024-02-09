@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -41,12 +40,12 @@ namespace starsky.foundation.platform.Helpers
 			keywordList = keywordList.Select(t => t.Trim()).ToArray();
 
 			var keywordsHashSet = new HashSet<string>(from x in keywordList
-				select x);
+													  select x);
 
 			return keywordsHashSet;
 		}
 
-		
+
 		/// <summary>
 		/// To replace: 'test,fake' with 'test, fake' - Regex
 		/// unescaped regex: (,(?=\S)|:)
@@ -58,7 +57,7 @@ namespace starsky.foundation.platform.Helpers
 			RegexOptions.CultureInvariant | RegexOptions.IgnoreCase,
 			matchTimeoutMilliseconds: 200)]
 		private static partial Regex SingleCommaWithCommaWithSpaceRegex();
-		
+
 		/// <summary>
 		/// To replace: 'test,fake' with 'test, fake'
 		/// </summary>
@@ -116,7 +115,7 @@ namespace starsky.foundation.platform.Helpers
 
 			var toBeAddedKeywordsStringBuilder = new StringBuilder();
 			foreach ( var keyword in listKeywords.Where(keyword =>
-				         !string.IsNullOrWhiteSpace(keyword)) )
+						 !string.IsNullOrWhiteSpace(keyword)) )
 			{
 				if ( keyword != listKeywords.LastOrDefault() )
 				{

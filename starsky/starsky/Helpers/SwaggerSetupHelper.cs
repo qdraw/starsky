@@ -15,11 +15,11 @@ namespace starsky.Helpers
 		{
 			_appSettings = appSettings;
 		}
-		
+
 		public void Add01SwaggerGenHelper(IServiceCollection services)
 		{
 			var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
-			
+
 			services.AddSwaggerGen(c =>
 			{
 				c.SwaggerDoc(_appSettings.Name, new OpenApiInfo { Title = _appSettings.Name, Version = version });
@@ -38,7 +38,7 @@ namespace starsky.Helpers
 				c.IncludeXmlComments(GetXmlCommentsPath());
 			});
 		}
-		
+
 		/// <summary>
 		/// Expose Swagger to the `/swagger/` endpoint
 		/// </summary>
@@ -57,7 +57,7 @@ namespace starsky.Helpers
 				options.OAuthAppName(_appSettings.Name + " - Swagger");
 			}); // makes the ui visible    
 		}
-		
+
 		private string GetXmlCommentsPath()
 		{
 			return Path.Combine(_appSettings.BaseDirectoryProject, "starsky.xml");

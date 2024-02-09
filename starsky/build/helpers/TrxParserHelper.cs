@@ -40,7 +40,7 @@ public static class TrxParserHelper
 			return;
 		}
 
-		var results = new List<Tuple<string, string, string>>();
+		var results = new List<Tuple<string?, string?, string?>>();
 		foreach ( var unitTestResult in unitTestResultsList )
 		{
 			if ( unitTestResult.Attribute("outcome")?.Value != "Failed" )
@@ -59,7 +59,7 @@ public static class TrxParserHelper
 				?.Element(TeamTestNamespace + "StackTrace")?.Value;
 
 			results.Add(
-				new Tuple<string, string, string>(testName, message,
+				new Tuple<string?, string?, string?>(testName, message,
 					stackTrace));
 		}
 

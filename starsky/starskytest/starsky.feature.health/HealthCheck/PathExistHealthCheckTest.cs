@@ -16,37 +16,56 @@ namespace starskytest.starsky.feature.health.HealthCheck
 			var pathExistOptions = new PathExistOptions();
 			pathExistOptions.AddPath(new CreateAnImage().BasePath);
 
-			var healthCheck = new HealthCheckContext {Registration = new HealthCheckRegistration("te",new PathExistHealthCheck(pathExistOptions), null,null )};
-			var result = await new PathExistHealthCheck(pathExistOptions).CheckHealthAsync(healthCheck);
-			Assert.AreEqual(HealthStatus.Healthy,result.Status);
+			var healthCheck = new HealthCheckContext
+			{
+				Registration = new HealthCheckRegistration("te",
+					new PathExistHealthCheck(pathExistOptions), null, null)
+			};
+			var result =
+				await new PathExistHealthCheck(pathExistOptions).CheckHealthAsync(healthCheck);
+			Assert.AreEqual(HealthStatus.Healthy, result.Status);
 		}
-		
+
 		[TestMethod]
 		public async Task RunFailNonExistPath()
 		{
 			var pathExistOptions = new PathExistOptions();
 			pathExistOptions.AddPath("000000000000----non-exist");
 
-			var healthCheck = new HealthCheckContext {Registration = new HealthCheckRegistration("te",new PathExistHealthCheck(pathExistOptions), null,null )};
-			var result = await new PathExistHealthCheck(pathExistOptions).CheckHealthAsync(healthCheck);
-			Assert.AreEqual(HealthStatus.Unhealthy,result.Status);
+			var healthCheck = new HealthCheckContext
+			{
+				Registration = new HealthCheckRegistration("te",
+					new PathExistHealthCheck(pathExistOptions), null, null)
+			};
+			var result =
+				await new PathExistHealthCheck(pathExistOptions).CheckHealthAsync(healthCheck);
+			Assert.AreEqual(HealthStatus.Unhealthy, result.Status);
 		}
-		
+
 		[TestMethod]
 		public async Task RunFail_No_Input()
 		{
 			var pathExistOptions = new PathExistOptions();
-			var healthCheck = new HealthCheckContext {Registration = new HealthCheckRegistration("te",new PathExistHealthCheck(pathExistOptions), null,null )};
-			var result = await new PathExistHealthCheck(pathExistOptions).CheckHealthAsync(healthCheck);
-			Assert.AreEqual(HealthStatus.Unhealthy,result.Status);
+			var healthCheck = new HealthCheckContext
+			{
+				Registration = new HealthCheckRegistration("te",
+					new PathExistHealthCheck(pathExistOptions), null, null)
+			};
+			var result =
+				await new PathExistHealthCheck(pathExistOptions).CheckHealthAsync(healthCheck);
+			Assert.AreEqual(HealthStatus.Unhealthy, result.Status);
 		}
-				
+
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public async Task RunFail_Null_Input()
 		{
-			var healthCheck = new HealthCheckContext {Registration = new HealthCheckRegistration("te",new PathExistHealthCheck(null), null,null )};
-			await new PathExistHealthCheck(null).CheckHealthAsync(healthCheck);
+			var healthCheck = new HealthCheckContext
+			{
+				Registration = new HealthCheckRegistration("te", new PathExistHealthCheck(null!),
+					null, null)
+			};
+			await new PathExistHealthCheck(null!).CheckHealthAsync(healthCheck);
 			// expect ArgumentNullException:
 		}
 	}

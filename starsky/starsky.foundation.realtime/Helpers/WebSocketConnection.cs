@@ -10,7 +10,7 @@ namespace starsky.foundation.realtime.Helpers
 	public sealed class WebSocketConnection
 	{
 		private readonly WebSocket _webSocket;
-		
+
 		private readonly int _receivePayloadBufferSize;
 
 		public Guid Id { get; } = Guid.NewGuid();
@@ -28,7 +28,7 @@ namespace starsky.foundation.realtime.Helpers
 			_webSocket = webSocket ?? throw new ArgumentNullException(nameof(webSocket));
 			_receivePayloadBufferSize = receivePayloadBufferSize;
 		}
-		
+
 		/// <summary>
 		/// Need to check for WebSocketException
 		/// </summary>
@@ -65,7 +65,7 @@ namespace starsky.foundation.realtime.Helpers
 						// skip the offset of the message and check the length
 						var messageBytes = message.Skip(message.Offset).Take(result.Count).ToArray();
 						receivedMessageStringBuilder.Append(Encoding.UTF8.GetString(messageBytes));
-					} 
+					}
 					while ( !result.EndOfMessage );
 
 					var receivedMessage = receivedMessageStringBuilder.ToString();
@@ -78,7 +78,7 @@ namespace starsky.foundation.realtime.Helpers
 
 			}
 			catch ( WebSocketException wsex ) when ( wsex.WebSocketErrorCode ==
-			                                         WebSocketError.InvalidState )
+													 WebSocketError.InvalidState )
 			{
 				return WebSocketCloseStatus.NormalClosure;
 			}

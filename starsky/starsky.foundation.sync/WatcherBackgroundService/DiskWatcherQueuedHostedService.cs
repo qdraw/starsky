@@ -17,7 +17,7 @@ namespace starsky.foundation.sync.WatcherBackgroundService
 		private readonly IDiskWatcherBackgroundTaskQueue _taskQueue;
 		private readonly IWebLogger _logger;
 		private readonly AppSettings _appSettings;
-		
+
 		public DiskWatcherQueuedHostedService(
 			IDiskWatcherBackgroundTaskQueue taskQueue,
 			IWebLogger logger, AppSettings appSettings) =>

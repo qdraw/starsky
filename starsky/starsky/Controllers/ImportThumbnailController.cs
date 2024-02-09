@@ -31,11 +31,11 @@ public class ImportThumbnailController : Controller
 	private readonly RemoveTempAndParentStreamFolderHelper _removeTempAndParentStreamFolderHelper;
 
 	public ImportThumbnailController(AppSettings appSettings,
-		ISelectorStorage selectorStorage, 
+		ISelectorStorage selectorStorage,
 		IWebLogger logger, IThumbnailQuery thumbnailQuery)
 	{
 		_appSettings = appSettings;
-		_selectorStorage = selectorStorage; 
+		_selectorStorage = selectorStorage;
 		_hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 		_logger = logger;
@@ -44,7 +44,7 @@ public class ImportThumbnailController : Controller
 			new RemoveTempAndParentStreamFolderHelper(_hostFileSystemStorage,
 				_appSettings);
 	}
-	
+
 	/// <summary>
 	/// Upload thumbnail to ThumbnailTempFolder
 	/// Make sure that the filename is correct, a base32 hash of length 26;
@@ -59,8 +59,8 @@ public class ImportThumbnailController : Controller
 	[Produces("application/json")]
 	[RequestFormLimits(MultipartBodyLengthLimit = 100_000_000)]
 	[RequestSizeLimit(100_000_000)] // in bytes, 100MB
-	[ProducesResponseType(typeof(List<ImportIndexItem>),200)] // yes
-	[ProducesResponseType(typeof(List<ImportIndexItem>),415)]  // wrong input
+	[ProducesResponseType(typeof(List<ImportIndexItem>), 200)] // yes
+	[ProducesResponseType(typeof(List<ImportIndexItem>), 415)]  // wrong input
 	public async Task<IActionResult> Thumbnail()
 	{
 		var tempImportPaths = await Request.StreamFile(_appSettings, _selectorStorage);
@@ -69,9 +69,9 @@ public class ImportThumbnailController : Controller
 
 		// Move the files to the correct location
 		await WriteThumbnails(tempImportPaths, thumbnailNamesWithSuffix);
-		
+
 		// Status if there is nothing uploaded
-		if (tempImportPaths.Count != thumbnailNamesWithSuffix.Count)
+		if ( tempImportPaths.Count != thumbnailNamesWithSuffix.Count )
 		{
 			Response.StatusCode = 415;
 			return Json(thumbnailNamesWithSuffix);
@@ -79,7 +79,7 @@ public class ImportThumbnailController : Controller
 
 		var thumbnailItems = MapToTransferObject(thumbnailNamesWithSuffix).ToList();
 		await _thumbnailQuery.AddThumbnailRangeAsync(thumbnailItems);
-		
+
 		return Json(thumbnailNamesWithSuffix);
 	}
 
@@ -91,7 +91,7 @@ public class ImportThumbnailController : Controller
 			var thumb = ThumbnailNameHelper.GetSize(thumbnailNameWithSuffix);
 			var name = ThumbnailNameHelper.RemoveSuffix(thumbnailNameWithSuffix);
 			var item = new ThumbnailResultDataTransferModel(name);
-			item.Change(thumb,true);
+			item.Change(thumb, true);
 			items.Add(item);
 		}
 		return items;
@@ -104,23 +104,23 @@ public class ImportThumbnailController : Controller
 		foreach ( var tempImportSinglePath in tempImportPaths )
 		{
 			var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(tempImportSinglePath);
-			    
+
 			var thumbToUpperCase = fileNameWithoutExtension.ToUpperInvariant();
-				
-			_logger.LogInformation($"[Import/Thumbnail] - {thumbToUpperCase}" );
+
+			_logger.LogInformation($"[Import/Thumbnail] - {thumbToUpperCase}");
 
 			if ( ThumbnailNameHelper.GetSize(thumbToUpperCase) == ThumbnailSize.Unknown )
 			{
 				continue;
 			}
-			    
+
 			// remove existing thumbnail if exist
-			if (_thumbnailStorage.ExistFile(thumbToUpperCase))
+			if ( _thumbnailStorage.ExistFile(thumbToUpperCase) )
 			{
-				_logger.LogInformation($"[Import/Thumbnail] remove already exists - {thumbToUpperCase}" );
+				_logger.LogInformation($"[Import/Thumbnail] remove already exists - {thumbToUpperCase}");
 				_thumbnailStorage.FileDelete(thumbToUpperCase);
 			}
-			    
+
 			thumbnailNamesWithSuffix.Add(thumbToUpperCase);
 		}
 		return thumbnailNamesWithSuffix;
@@ -128,23 +128,23 @@ public class ImportThumbnailController : Controller
 
 	internal async Task<bool> WriteThumbnails(List<string> tempImportPaths, List<string> thumbnailNames)
 	{
-		if (tempImportPaths.Count != thumbnailNames.Count)
+		if ( tempImportPaths.Count != thumbnailNames.Count )
 		{
 			_removeTempAndParentStreamFolderHelper.RemoveTempAndParentStreamFolder(tempImportPaths);
 			return false;
 		}
-		
+
 		for ( var i = 0; i < tempImportPaths.Count; i++ )
 		{
-			if ( ! _hostFileSystemStorage.ExistFile(tempImportPaths[i]) )
+			if ( !_hostFileSystemStorage.ExistFile(tempImportPaths[i]) )
 			{
 				_logger.LogInformation($"[Import/Thumbnail] ERROR {tempImportPaths[i]} does not exist");
 				continue;
 			}
-				
+
 			await _thumbnailStorage.WriteStreamAsync(
 				_hostFileSystemStorage.ReadStream(tempImportPaths[i]), thumbnailNames[i]);
-				
+
 			// Remove from temp folder to avoid long list of files
 			_removeTempAndParentStreamFolderHelper.RemoveTempAndParentStreamFolder(tempImportPaths[i]);
 		}

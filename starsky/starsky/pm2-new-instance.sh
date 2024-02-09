@@ -52,7 +52,6 @@ for ((i = 1; i <= $#; i++ )); do
         echo "     (or:) --runtime win-x64"
         echo "(optional) --port 4823"
         echo "(optional) --anywhere (to allow access from anywhere, defaults to false)"
-        echo "(optional) --appinsights - to ask for app insights keys"
         exit 0
     fi
 
@@ -62,11 +61,6 @@ for ((i = 1; i <= $#; i++ )); do
     if [[ ${ARGUMENTS[CURRENT]} == "--anywhere" ]];
     then
         ANYWHERE=true
-    fi
-
-    if [[ ${ARGUMENTS[CURRENT]} == "--appinsights" ]];
-    then
-        USEAPPINSIGHTS=true
     fi
 
     if [ $i -gt 1 ]; then
@@ -119,11 +113,8 @@ if [ "$ANYWHERE" = true ] ; then
     ANYWHERESTATUSTEXT="--anywhere $ANYWHERE"
 fi
 
-if [ "$USEAPPINSIGHTS" = true ] ; then
-    USEAPPINSIGHTSSTATUSTEXT="--appinsights $USEAPPINSIGHTS"
-fi
 
-echo "--name" $PM2NAME " --runtime" $RUNTIME "--port" $PORT $USEAPPINSIGHTSSTATUSTEXT $ANYWHERESTATUSTEXT
+echo "--name" $PM2NAME " --runtime" $RUNTIME "--port" $PORT $ANYWHERESTATUSTEXT
 
 cd $OUTPUT_DIR
 
@@ -185,18 +176,6 @@ if [ "$ANYWHERE" = true ] ; then
 fi
 export ASPNETCORE_URLS="http://"$HOSTNAME":"$PORT"/"
 export ASPNETCORE_ENVIRONMENT="Production"
-
-# only asked with --appinsights true parameter
-if [ ! -z "$USEAPPINSIGHTS" ];
-then
-    echo "Copy the App Insights connection string and press [ENTER]:"
-    echo "for example: "
-    echo "InstrumentationKey=11111111-2222-3333-4444-555555555555;IngestionEndpoint=https://westeurope-1.in.applicationinsights.azure.com/;LiveEndpoint=https://westeurope.livediagnostics.monitor.azure.com/ "
-    echo " >> THIS VALUE IS IGNORED BY CLI APPLICATIONS <<"
-    echo ">>>"
-    read -p "Enter: " CONNECTION_STRING
-    export APPLICATIONINSIGHTS_CONNECTION_STRING=$CONNECTION_STRING
-fi
 
 if [ -f starsky-$RUNTIME.zip ]; then
    echo "upgrade existing zip file"

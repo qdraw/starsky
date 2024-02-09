@@ -15,12 +15,11 @@ namespace starskytest.starsky.feature.webhtmlpublish.Helpers
 		public void CopyContent_Test()
 		{
 			var contentPath = CopyPublishedContent.GetContentFolder();
-			
-			var fakeStorage = new FakeIStorage(new List<string>{contentPath}, new List<string>
-			{
-				Path.Combine(contentPath, "copy.jsx")
-			}, new List<byte[]> { Array.Empty<byte>() });
-			
+
+			var fakeStorage = new FakeIStorage(new List<string> { contentPath },
+				new List<string> { Path.Combine(contentPath, "copy.jsx") },
+				new List<byte[]> { Array.Empty<byte>() });
+
 			var service = new CopyPublishedContent(new ToCreateSubfolder(fakeStorage),
 				new FakeSelectorStorage(fakeStorage));
 
@@ -28,6 +27,13 @@ namespace starskytest.starsky.feature.webhtmlpublish.Helpers
 				new AppSettingsPublishProfiles(), "/");
 
 			Assert.IsTrue(content["copy.jsx"]);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void CopyContent_Null()
+		{
+			_ = new CopyPublishedContent(null!, null!);
 		}
 	}
 }

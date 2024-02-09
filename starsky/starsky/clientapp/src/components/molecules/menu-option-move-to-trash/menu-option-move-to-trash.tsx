@@ -4,7 +4,7 @@ import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import useLocation from "../../../hooks/use-location/use-location";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import localization from "../../../localization/localization.json";
-import FetchPost from "../../../shared/fetch-post";
+import FetchPost from "../../../shared/fetch/fetch-post";
 import { FileListCache } from "../../../shared/filelist-cache";
 import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
 import { Select } from "../../../shared/select";

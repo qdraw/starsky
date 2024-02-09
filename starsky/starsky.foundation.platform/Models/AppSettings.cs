@@ -381,7 +381,7 @@ namespace starsky.foundation.platform.Models
 			}
 
 			throw new ArgumentException("(StructureCheck) Structure is not confirm regex - " +
-			                            structure);
+										structure);
 		}
 
 		/// <summary>
@@ -587,8 +587,8 @@ namespace starsky.foundation.platform.Models
 				if ( string.IsNullOrEmpty(value) ) return;
 				Uri uriAddress = new Uri(value);
 				if ( uriAddress.UserInfo.Split(":".ToCharArray()).Length == 2
-				     && uriAddress.Scheme == "ftp"
-				     && uriAddress.LocalPath.Length >= 1 )
+					 && uriAddress.Scheme == "ftp"
+					 && uriAddress.LocalPath.Length >= 1 )
 				{
 					_webFtp = value;
 				}
@@ -650,7 +650,8 @@ namespace starsky.foundation.platform.Models
 		/// Value for AccountRolesDefaultByEmailRegisterOverwrite
 		/// </summary>
 		private Dictionary<string, string>
-			AccountRolesByEmailRegisterOverwritePrivate { get; set; } =
+			AccountRolesByEmailRegisterOverwritePrivate
+		{ get; set; } =
 			new Dictionary<string, string>();
 
 		/// <summary>
@@ -668,7 +669,7 @@ namespace starsky.foundation.platform.Models
 			{
 				if ( value == null ) return;
 				foreach ( var singleValue in value.Where(singleValue =>
-					         AccountRoles.GetAllRoles().Contains(singleValue.Value)) )
+							 AccountRoles.GetAllRoles().Contains(singleValue.Value)) )
 				{
 					AccountRolesByEmailRegisterOverwritePrivate.TryAdd(
 						singleValue.Key, singleValue.Value);
@@ -681,37 +682,6 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		[PackageTelemetry]
 		public bool? AccountRegisterFirstRoleAdmin { get; set; } = true;
-
-		/// <summary>
-		/// Private storage for Application Insights InstrumentationKey
-		/// </summary>
-		private string ApplicationInsightsConnectionStringPrivate { get; set; } = "";
-
-		/// <summary>
-		/// Insert the Application Insights Connection String here or use environment variable: APPLICATIONINSIGHTS_CONNECTION_STRING
-		/// </summary>
-		public string ApplicationInsightsConnectionString
-		{
-			get
-			{
-				if ( string.IsNullOrWhiteSpace(ApplicationInsightsConnectionStringPrivate) )
-				{
-					var connectionString =
-						Environment.GetEnvironmentVariable(
-							"APPLICATIONINSIGHTS_CONNECTION_STRING");
-					return !string.IsNullOrEmpty(connectionString)
-						? connectionString
-						: string.Empty;
-				}
-
-				return ApplicationInsightsConnectionStringPrivate;
-			}
-			set => ApplicationInsightsConnectionStringPrivate = value;
-		}
-
-		[PackageTelemetry] public bool? ApplicationInsightsLog { get; set; } = true;
-
-		[PackageTelemetry] public bool? ApplicationInsightsDatabaseTracking { get; set; } = false;
 
 		[PackageTelemetry] public int MaxDegreesOfParallelism { get; set; } = 6;
 
@@ -808,7 +778,7 @@ namespace starsky.foundation.platform.Models
 				if ( EnablePackageTelemetryPrivate == null )
 				{
 #pragma warning disable CS0162
-#if(DEBUG)
+#if ( DEBUG )
 					return false;
 #endif
 					// ReSharper disable once HeuristicUnreachableCode
@@ -914,15 +884,10 @@ namespace starsky.foundation.platform.Models
 			}
 
 			if ( appSettings.DatabaseType == DatabaseTypeList.Sqlite &&
-			     !string.IsNullOrEmpty(userProfileFolder) )
+				 !string.IsNullOrEmpty(userProfileFolder) )
 			{
 				appSettings.DatabaseConnection =
 					appSettings.DatabaseConnection.Replace(userProfileFolder, "~");
-			}
-
-			if ( !string.IsNullOrEmpty(appSettings.ApplicationInsightsConnectionString) )
-			{
-				appSettings.ApplicationInsightsConnectionString = CloneToDisplaySecurityWarning;
 			}
 
 			if ( !string.IsNullOrEmpty(appSettings.WebFtp) )
@@ -931,7 +896,7 @@ namespace starsky.foundation.platform.Models
 			}
 
 			if ( !string.IsNullOrEmpty(appSettings.AppSettingsPath) &&
-			     !string.IsNullOrEmpty(userProfileFolder) )
+				 !string.IsNullOrEmpty(userProfileFolder) )
 			{
 				appSettings.AppSettingsPath =
 					appSettings.AppSettingsPath.Replace(userProfileFolder, "~");
@@ -940,7 +905,7 @@ namespace starsky.foundation.platform.Models
 			if ( appSettings.PublishProfiles != null )
 			{
 				foreach ( var value in appSettings.PublishProfiles.SelectMany(profile =>
-					         profile.Value) )
+							 profile.Value) )
 				{
 					ReplaceAppSettingsPublishProfilesCloneToDisplay(value);
 				}
@@ -987,7 +952,7 @@ namespace starsky.foundation.platform.Models
 			AppSettingsPublishProfiles value)
 		{
 			if ( !string.IsNullOrEmpty(value.Path) &&
-			     value.Path != AppSettingsPublishProfiles.GetDefaultPath() )
+				 value.Path != AppSettingsPublishProfiles.GetDefaultPath() )
 			{
 				value.Path = CloneToDisplaySecurityWarning;
 			}
@@ -1106,7 +1071,7 @@ namespace starsky.foundation.platform.Models
 		public string SqLiteFullPath(string connectionString, string baseDirectoryProject)
 		{
 			if ( DatabaseType == DatabaseTypeList.Mysql &&
-			     string.IsNullOrWhiteSpace(connectionString) )
+				 string.IsNullOrWhiteSpace(connectionString) )
 				throw new ArgumentException("The 'DatabaseConnection' field is null or empty");
 
 			if ( DatabaseType != DatabaseTypeList.Sqlite )
@@ -1127,7 +1092,7 @@ namespace starsky.foundation.platform.Models
 			if ( baseDirectoryProject.Contains("entityframeworkcore") ) return connectionString;
 
 			var dataSource = "Data Source=" + baseDirectoryProject +
-			                 Path.DirectorySeparatorChar + databaseFileName;
+							 Path.DirectorySeparatorChar + databaseFileName;
 			return dataSource;
 		}
 
@@ -1156,7 +1121,7 @@ namespace starsky.foundation.platform.Models
 				var destinationProperty = destinationType.GetProperty(sourceProperty.Name);
 
 				if ( destinationProperty == null ||
-				     !destinationProperty.CanWrite )
+					 !destinationProperty.CanWrite )
 				{
 					continue;
 				}

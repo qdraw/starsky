@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -25,8 +26,8 @@ using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.webtelemetry.Interfaces;
 using starsky.foundation.worker.Interfaces;
+using starsky.foundation.worker.Metrics;
 using starsky.foundation.worker.Services;
 using starsky.foundation.writemeta.Interfaces;
 using starskytest.FakeCreateAn;
@@ -55,7 +56,7 @@ namespace starskytest.Controllers
 			builderDb.UseInMemoryDatabase(nameof(ExportControllerTest));
 			var options = builderDb.Options;
 			var context = new ApplicationDbContext(options);
-			_query = new Query(context, new AppSettings(), null!, 
+			_query = new Query(context, new AppSettings(), null!,
 				new FakeIWebLogger(), memoryCache);
 
 			// Inject Fake Exiftool; dependency injection
@@ -65,16 +66,16 @@ namespace starskytest.Controllers
 
 			// Fake the readMeta output
 			services.AddSingleton<IReadMeta, FakeReadMeta>();
-			
+
 			// Inject Config helper
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 			// random config
 			_createAnImage = new CreateAnImage();
 			var dict = new Dictionary<string, string?>
 			{
-				{"App:StorageFolder", _createAnImage.BasePath},
-				{"App:ThumbnailTempFolder", _createAnImage.BasePath},
-				{"App:Verbose", "true"}
+				{ "App:StorageFolder", _createAnImage.BasePath },
+				{ "App:ThumbnailTempFolder", _createAnImage.BasePath },
+				{ "App:Verbose", "true" }
 			};
 			// Start using dependency injection
 			var builder = new ConfigurationBuilder();
@@ -88,6 +89,8 @@ namespace starskytest.Controllers
 			// Add Background services
 			services.AddSingleton<IHostedService, UpdateBackgroundQueuedHostedService>();
 			services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
+			services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
+			services.AddSingleton<UpdateBackgroundQueuedMetrics>();
 
 			services.AddSingleton<ISelectorStorage, SelectorStorage>();
 			services.AddSingleton<IStorage, StorageSubPathFilesystem>();
@@ -98,8 +101,8 @@ namespace starskytest.Controllers
 			_serviceProvider = services.BuildServiceProvider();
 			// get the service
 			_appSettings = _serviceProvider.GetRequiredService<AppSettings>();
-			
 			var scopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
 			_bgTaskQueue = new UpdateBackgroundTaskQueue(scopeFactory);
 		}
 
@@ -108,36 +111,39 @@ namespace starskytest.Controllers
 		{
 			var iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 			var storageSelector = new FakeSelectorStorage(iStorage);
-			var export = new ExportService(_query,_appSettings,storageSelector, 
+			var export = new ExportService(_query, _appSettings, storageSelector,
 				new FakeIWebLogger(), new FakeIThumbnailService(storageSelector));
-			var controller = new ExportController( _bgTaskQueue, storageSelector, export);
+			var controller = new ExportController(_bgTaskQueue, storageSelector, export);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			var actionResult = await controller.CreateZip("/fail") as NotFoundObjectResult;
-			Assert.AreEqual(404,actionResult?.StatusCode);
+			Assert.AreEqual(404, actionResult?.StatusCode);
 		}
 
 		[TestMethod]
-		public async Task ExportController_TestZipping() {
-			
+		public async Task ExportController_TestZipping()
+		{
 			// to avoid skip of adding zip
-			var zipFilesList = Directory.GetFiles(_createAnImage.BasePath, 
+			var zipFilesList = Directory.GetFiles(_createAnImage.BasePath,
 					"*.*", SearchOption.AllDirectories)
-				.Where(p => ".zip" == Path.GetExtension(p) );
-			
+				.Where(p => ".zip" == Path.GetExtension(p));
+
 			foreach ( var toDelPath in zipFilesList )
 			{
 				new StorageHostFullPathFilesystem().FileDelete(toDelPath);
 			}
-			
+
 			IServiceCollection services = new ServiceCollection();
 			services.AddHostedService<UpdateBackgroundQueuedHostedService>();
 			services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
 			services.AddSingleton<IWebLogger, FakeIWebLogger>();
-			services.AddSingleton<ITelemetryService, FakeTelemetryService>();
+			services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
+			services.AddSingleton<UpdateBackgroundQueuedMetrics>();
+
 			var serviceProvider = services.BuildServiceProvider();
 
-			var service = serviceProvider.GetService<IHostedService>() as UpdateBackgroundQueuedHostedService;
+			var service =
+				serviceProvider.GetService<IHostedService>() as UpdateBackgroundQueuedHostedService;
 
 			var backgroundQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
 
@@ -147,48 +153,54 @@ namespace starskytest.Controllers
 			// the test
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
 
-			var fakeStorage = new FakeIStorage(new List<string>{"/"},
-				new List<string>{_createAnImage.DbPath},new List<byte[]>{CreateAnImage.Bytes.ToArray()});
-			
-			var storageSelector = new FakeSelectorStorage(fakeStorage);
-			
-			var fakeQuery = new FakeIQuery(new List<FileIndexItem>{new FileIndexItem
-			{
-				FileName = _createAnImage.DbPath,
-				ParentDirectory = "/",
-				FileHash = "file-hash",
-				ColorClass = ColorClassParser.Color.Winner, // 1
-			}});
+			var fakeStorage = new FakeIStorage(new List<string> { "/" },
+				new List<string> { _createAnImage.DbPath },
+				new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
-			var appSettings = new AppSettings {TempFolder = _createAnImage.BasePath, Verbose = true};
-			
-			var export = new ExportService(fakeQuery,appSettings,storageSelector, 
+			var storageSelector = new FakeSelectorStorage(fakeStorage);
+
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem>
+			{
+				new FileIndexItem
+				{
+					FileName = _createAnImage.DbPath,
+					ParentDirectory = "/",
+					FileHash = "file-hash",
+					ColorClass = ColorClassParser.Color.Winner, // 1
+				}
+			});
+
+			var appSettings =
+				new AppSettings { TempFolder = _createAnImage.BasePath, Verbose = true };
+
+			var export = new ExportService(fakeQuery, appSettings, storageSelector,
 				new FakeIWebLogger(), new FakeIThumbnailService(storageSelector));
 			var controller = new ExportController(
 				backgroundQueue, storageSelector, export)
 			{
-				ControllerContext = {HttpContext = new DefaultHttpContext()}
+				ControllerContext = { HttpContext = new DefaultHttpContext() }
 			};
 
 
 			var actionResult = await controller.CreateZip(_createAnImage.DbPath) as JsonResult;
-			
-			Assert.AreNotEqual(null,actionResult);
+
+			Assert.AreNotEqual(null, actionResult);
 			var zipHash = actionResult!.Value as string;
 
-			Assert.AreEqual(true,zipHash!.Contains("SR"));
+			Assert.AreEqual(true, zipHash!.Contains("SR"));
 
 			await Task.Delay(150);
 
 			// Get from real fs in to fake memory
-			var sourceFullPath = Path.Join(appSettings.TempFolder,zipHash) + ".zip";
-			await fakeStorage.WriteStreamAsync(new StorageHostFullPathFilesystem().ReadStream(sourceFullPath), sourceFullPath);
+			var sourceFullPath = Path.Join(appSettings.TempFolder, zipHash) + ".zip";
+			await fakeStorage.WriteStreamAsync(
+				new StorageHostFullPathFilesystem().ReadStream(sourceFullPath), sourceFullPath);
 
-			var actionResult2Zip = controller.Status(zipHash,true) as JsonResult;
-			Assert.AreNotEqual(null,actionResult2Zip);
+			var actionResult2Zip = controller.Status(zipHash, true) as JsonResult;
+			Assert.AreNotEqual(null, actionResult2Zip);
 
-			var resultValue = ( string? ) actionResult2Zip?.Value;
-			
+			var resultValue = ( string? )actionResult2Zip?.Value;
+
 			if ( resultValue != "OK" && resultValue != "Not Ready" )
 			{
 				throw new Exception(actionResult2Zip?.StatusCode.ToString());
@@ -203,8 +215,9 @@ namespace starskytest.Controllers
 		public async Task ExportControllerTest__ThumbTrue_CreateListToExport()
 		{
 			var selectorStorage = _serviceProvider.GetRequiredService<ISelectorStorage>();
-			
-			var export = new ExportService(_query,_appSettings,selectorStorage, new FakeIWebLogger(), 
+
+			var export = new ExportService(_query, _appSettings, selectorStorage,
+				new FakeIWebLogger(),
 				new FakeIThumbnailService(selectorStorage as FakeSelectorStorage));
 
 			var item = new FileIndexItem
@@ -221,15 +234,16 @@ namespace starskytest.Controllers
 
 			var filePaths = await export.CreateListToExport(fileIndexResultsList, true);
 
-			Assert.AreEqual(true,filePaths.FirstOrDefault()?.Contains(item.FileHash));
+			Assert.AreEqual(true, filePaths.FirstOrDefault()?.Contains(item.FileHash));
 		}
-		
+
 		[TestMethod]
 		public async Task ExportControllerTest_IncompleteInput()
 		{
 			var selectorStorage = _serviceProvider.GetRequiredService<ISelectorStorage>();
-			
-			var export = new ExportService(_query,_appSettings,selectorStorage, new FakeIWebLogger(), 
+
+			var export = new ExportService(_query, _appSettings, selectorStorage,
+				new FakeIWebLogger(),
 				new FakeIThumbnailService(selectorStorage as FakeSelectorStorage));
 
 			var item = new FileIndexItem
@@ -245,23 +259,22 @@ namespace starskytest.Controllers
 
 			var filePaths = await export.CreateListToExport(fileIndexResultsList, true);
 
-			Assert.AreEqual(0,filePaths.Count);
+			Assert.AreEqual(0, filePaths.Count);
 		}
-		
-				
+
+
 		[TestMethod]
 		public async Task ExportControllerTest_IncompleteInput2()
 		{
 			var selectorStorage = _serviceProvider.GetRequiredService<ISelectorStorage>();
-			
-			var export = new ExportService(_query,_appSettings,selectorStorage, new FakeIWebLogger(), 
+
+			var export = new ExportService(_query, _appSettings, selectorStorage,
+				new FakeIWebLogger(),
 				new FakeIThumbnailService(selectorStorage as FakeSelectorStorage));
 
 			var item = new FileIndexItem
 			{
-				ParentDirectory = "/",
-				FileHash = null,
-				Status = FileIndexItem.ExifStatus.Ok
+				ParentDirectory = "/", FileHash = null, Status = FileIndexItem.ExifStatus.Ok
 			};
 
 			await _query.AddItemAsync(item);
@@ -270,20 +283,21 @@ namespace starskytest.Controllers
 
 			var filePaths = await export.CreateListToExport(fileIndexResultsList, true);
 
-			Assert.AreEqual(0,filePaths.Count);
+			Assert.AreEqual(0, filePaths.Count);
 		}
-		
+
 		[TestMethod]
 		public async Task ExportControllerTest__ThumbFalse_AddXmpFile_CreateListToExport()
 		{
-			var storage = new FakeIStorage(new List<string>{"/"}, new List<string>
-			{
-				_appSettings.DatabasePathToFilePath("/test.dng"), 
-				_appSettings.DatabasePathToFilePath("/test.xmp"),
-				"/test.dng",
-				"/test.xmp"
-			});
-			
+			var storage = new FakeIStorage(new List<string> { "/" },
+				new List<string>
+				{
+					_appSettings.DatabasePathToFilePath("/test.dng"),
+					_appSettings.DatabasePathToFilePath("/test.xmp"),
+					"/test.dng",
+					"/test.xmp"
+				});
+
 			var selectorStorage = new FakeSelectorStorage(storage);
 
 			var fileIndexResultsList = new List<FileIndexItem>
@@ -297,16 +311,17 @@ namespace starskytest.Controllers
 				}
 			};
 			var fakeQuery = new FakeIQuery(fileIndexResultsList);
-			
-			var export = new ExportService(fakeQuery,_appSettings,selectorStorage, new FakeIWebLogger(), 
+
+			var export = new ExportService(fakeQuery, _appSettings, selectorStorage,
+				new FakeIWebLogger(),
 				new FakeIThumbnailService(selectorStorage));
 
 			var filePaths = await export.CreateListToExport(fileIndexResultsList, false);
 
-			Assert.AreEqual(true,filePaths[0].Contains("test.dng"));
-			Assert.AreEqual(true,filePaths[1].Contains("test.xmp"));
+			Assert.AreEqual(true, filePaths[0].Contains("test.dng"));
+			Assert.AreEqual(true, filePaths[1].Contains("test.xmp"));
 		}
-		
+
 		[TestMethod]
 		public async Task ExportControllerTest__ThumbFalse_CreateListToExport()
 		{
@@ -314,8 +329,9 @@ namespace starskytest.Controllers
 			var hostFileSystemStorage =
 				selectorStorage.Get(SelectorStorage.StorageServices
 					.HostFilesystem);
-			
-			var export = new ExportService(_query,_appSettings,selectorStorage, new FakeIWebLogger(), 
+
+			var export = new ExportService(_query, _appSettings, selectorStorage,
+				new FakeIWebLogger(),
 				new FakeIThumbnailService(selectorStorage as FakeSelectorStorage));
 
 			var createAnImageNoExif = new CreateAnImageNoExif();
@@ -331,8 +347,8 @@ namespace starskytest.Controllers
 			await _query.AddItemAsync(item);
 
 			var fileIndexResultsList = new List<FileIndexItem> { item };
-			
-			var filePaths = await export.CreateListToExport(fileIndexResultsList,false);
+
+			var filePaths = await export.CreateListToExport(fileIndexResultsList, false);
 
 			Assert.AreEqual(true, filePaths.FirstOrDefault()?.Contains(item.FileName));
 
@@ -347,15 +363,13 @@ namespace starskytest.Controllers
 		{
 			var storage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 			var selectorStorage = new FakeSelectorStorage(storage);
-			var export = new ExportService(_query,_appSettings,selectorStorage, new FakeIWebLogger(), 
+			var export = new ExportService(_query, _appSettings, selectorStorage,
+				new FakeIWebLogger(),
 				new FakeIThumbnailService(selectorStorage));
 
-			var filePaths = new List<string>
-			{
-				Path.Combine("test","file.jpg")
-			};
+			var filePaths = new List<string> { Path.Combine("test", "file.jpg") };
 			var fileNames = await export.FilePathToFileNameAsync(filePaths, false);
-			Assert.AreEqual("file.jpg",fileNames.FirstOrDefault());
+			Assert.AreEqual("file.jpg", fileNames.FirstOrDefault());
 		}
 
 		[TestMethod]
@@ -363,23 +377,19 @@ namespace starskytest.Controllers
 		{
 			var storage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 			var selectorStorage = new FakeSelectorStorage(storage);
-			var export = new ExportService(_query,_appSettings,selectorStorage, new FakeIWebLogger(), 
+			var export = new ExportService(_query, _appSettings, selectorStorage,
+				new FakeIWebLogger(),
 				new FakeIThumbnailService(selectorStorage));
-			var filePaths = new List<string>
-			{
-				Path.Combine("test","thumb.jpg")
-			};
+			var filePaths = new List<string> { Path.Combine("test", "thumb.jpg") };
 
 			await _query.AddItemAsync(new FileIndexItem
 			{
-				FileName = "file.jpg",
-				ParentDirectory = "/test",
-				FileHash = "thumb"
+				FileName = "file.jpg", ParentDirectory = "/test", FileHash = "thumb"
 			});
-			
+
 			var fileNames = await export.FilePathToFileNameAsync(filePaths, true);
-			Assert.AreEqual("file.jpg",fileNames.FirstOrDefault());
-			
+			Assert.AreEqual("file.jpg", fileNames.FirstOrDefault());
+
 			// This is a strange one: 
 			// We use thumb as base32 fileHashes but export 
 			// as file.jpg or the nice original name
@@ -390,15 +400,16 @@ namespace starskytest.Controllers
 		{
 			var storage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 			var selectorStorage = new FakeSelectorStorage(storage);
-			var export = new ExportService(_query,_appSettings,selectorStorage, new FakeIWebLogger(), 
+			var export = new ExportService(_query, _appSettings, selectorStorage,
+				new FakeIWebLogger(),
 				new FakeIThumbnailService(selectorStorage));
-			var controller = new ExportController( _bgTaskQueue, selectorStorage, export);
+			var controller = new ExportController(_bgTaskQueue, selectorStorage, export);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			var actionResult = controller.Status("____fail", true) as NotFoundObjectResult;
 			Assert.AreEqual(404, actionResult?.StatusCode);
 		}
-		
+
 		[TestMethod]
 		public void Status_Returns_NotReady_When_StatusIsFalse()
 		{
@@ -408,17 +419,16 @@ namespace starskytest.Controllers
 			var fakeExportService =
 				new FakeIExport(new Dictionary<string, bool> { { f, false } });
 			var httpContext = new DefaultHttpContext();
-			var exportController = new ExportController(_bgTaskQueue, new FakeSelectorStorage(fakeStorage), fakeExportService)
-			{
-				ControllerContext = {HttpContext = httpContext}
-			};
+			var exportController =
+				new ExportController(_bgTaskQueue, new FakeSelectorStorage(fakeStorage),
+					fakeExportService) { ControllerContext = { HttpContext = httpContext } };
 
 			// Act
 			var result = exportController.Status(f);
 
 			// Assert
 			Assert.IsInstanceOfType(result, typeof(JsonResult));
-			var jsonResult = (JsonResult)result;
+			var jsonResult = ( JsonResult )result;
 			Assert.AreEqual("Not Ready", jsonResult.Value);
 			Assert.AreEqual(206, httpContext.Response.StatusCode);
 		}
@@ -432,14 +442,15 @@ namespace starskytest.Controllers
 			var fakeStorage = new FakeIStorage();
 			var fakeExportService =
 				new FakeIExport(new Dictionary<string, bool> { { f, true } });
-			var exportController = new ExportController(_bgTaskQueue, new FakeSelectorStorage(fakeStorage), fakeExportService);
+			var exportController = new ExportController(_bgTaskQueue,
+				new FakeSelectorStorage(fakeStorage), fakeExportService);
 
 			// Act
 			var result = exportController.Status(f, json);
 
 			// Assert
 			Assert.IsInstanceOfType(result, typeof(JsonResult));
-			var jsonResult = (JsonResult)result;
+			var jsonResult = ( JsonResult )result;
 			Assert.AreEqual("OK", jsonResult.Value);
 		}
 
@@ -448,22 +459,20 @@ namespace starskytest.Controllers
 		{
 			// Arrange
 			const string f = "TNA995920129";
-			var fakeStorage = new FakeIStorage(new List<string>(), 
-				new List<string> { f }, new List<byte[]>
-				{
-					CreateAnImageNoExif.Bytes.ToArray()
-				});
-			
+			var fakeStorage = new FakeIStorage(new List<string>(),
+				new List<string> { f }, new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() });
+
 			var fakeExportService =
 				new FakeIExport(new Dictionary<string, bool> { { f, true } });
-			var exportController = new ExportController(_bgTaskQueue, new FakeSelectorStorage(fakeStorage), fakeExportService);
+			var exportController = new ExportController(_bgTaskQueue,
+				new FakeSelectorStorage(fakeStorage), fakeExportService);
 
 			// Act
 			var result = exportController.Status(f);
 
 			// Assert
 			Assert.IsInstanceOfType(result, typeof(FileResult));
-			var fileResult = (FileResult)result;
+			var fileResult = ( FileResult )result;
 			Assert.AreEqual("application/octet-stream", fileResult.ContentType);
 		}
 	}

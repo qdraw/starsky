@@ -8,7 +8,7 @@ using starsky.foundation.platform.Interfaces;
 namespace starsky.foundation.platform.Services
 {
 	[SuppressMessage("Usage", "CA2254:The logging message template should not vary between calls to " +
-	                          "'LoggerExtensions.LogInformation(ILogger, string?, params object?[])'")]
+							  "'LoggerExtensions.LogInformation(ILogger, string?, params object?[])'")]
 	[Service(typeof(IWebLogger), InjectionLifetime = InjectionLifetime.Singleton)]
 	public sealed class WebLogger : IWebLogger
 	{
@@ -34,8 +34,8 @@ namespace starsky.foundation.platform.Services
 			{
 				return;
 			}
-			
-			if ( _logger == null)
+
+			if ( _logger == null )
 			{
 				_console?.WriteLine(message);
 				return;
@@ -49,7 +49,7 @@ namespace starsky.foundation.platform.Services
 			{
 				return;
 			}
-			
+
 			if ( _logger == null )
 			{
 				_console?.WriteLine(message);
@@ -75,13 +75,13 @@ namespace starsky.foundation.platform.Services
 			{
 				return;
 			}
-			
+
 			if ( _logger == null )
 			{
 				_console?.WriteLine(message);
 				return;
 			}
-			_logger.LogError(message,args);
+			_logger.LogError(message, args);
 		}
 		public void LogError(Exception exception, string message, params object[] args)
 		{
@@ -90,7 +90,7 @@ namespace starsky.foundation.platform.Services
 				_console?.WriteLine($"{exception.Message} {message}");
 				return;
 			}
-			_logger.LogError(exception, message,args);
+			_logger.LogError(exception, message, args);
 		}
 	}
 }

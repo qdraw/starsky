@@ -1,7 +1,7 @@
 import { act, fireEvent, render, RenderResult, screen, waitFor } from "@testing-library/react";
 import { IConnectionDefault } from "../interfaces/IConnectionDefault";
-import * as FetchGet from "../shared/fetch-get";
-import * as FetchPost from "../shared/fetch-post";
+import * as FetchGet from "../shared/fetch/fetch-get";
+import * as FetchPost from "../shared/fetch/fetch-post";
 import { UrlQuery } from "../shared/url-query";
 import AccountRegister from "./account-register";
 

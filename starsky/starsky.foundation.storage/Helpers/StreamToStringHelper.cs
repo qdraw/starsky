@@ -24,7 +24,7 @@ public static class StreamToStringHelper
 		{
 			await stream.DisposeAsync();
 		}
-		return result;  
+		return result;
 	}
 
 }

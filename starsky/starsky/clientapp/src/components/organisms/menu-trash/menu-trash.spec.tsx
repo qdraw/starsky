@@ -7,7 +7,7 @@ import { IArchive } from "../../../interfaces/IArchive";
 import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { Router } from "../../../router-app/router-app";
-import * as FetchPost from "../../../shared/fetch-post";
+import * as FetchPost from "../../../shared/fetch/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
 import * as Modal from "../../atoms/modal/modal";
 import * as MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";

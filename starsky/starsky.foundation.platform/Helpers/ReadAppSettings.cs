@@ -14,12 +14,12 @@ public static class ReadAppSettings
 		{
 			return new AppContainerAppSettings();
 		}
-			
+
 		using ( var openStream = File.OpenRead(path) )
 		{
 			var result = await JsonSerializer.DeserializeAsync<AppContainerAppSettings>(
-				openStream, DefaultJsonSerializer.NoNamingPolicy);
-			
+				openStream, DefaultJsonSerializer.NoNamingPolicyBoolAsString);
+
 			return result;
 		}
 	}

@@ -15,14 +15,14 @@ namespace starsky.foundation.database.Query
 	/// </summary>
 	public partial class Query : IQuery
 	{
-		
+
 		public async Task<List<FileIndexItem>> GetObjectsByFileHashAsync(List<string> fileHashesList, int retryCount = 2)
 		{
 			if ( fileHashesList.Count == 0 )
 			{
 				return new List<FileIndexItem>();
 			}
-			
+
 			async Task<List<FileIndexItem>> LocalQuery(ApplicationDbContext context)
 			{
 				var result = await context.
@@ -32,8 +32,11 @@ namespace starsky.foundation.database.Query
 				{
 					if ( result.Find(p => p.FileHash == fileHash) == null )
 					{
-						result.Add(new FileIndexItem(){FileHash = fileHash, 
-							Status = FileIndexItem.ExifStatus.NotFoundNotInIndex});
+						result.Add(new FileIndexItem()
+						{
+							FileHash = fileHash,
+							Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
+						});
 					}
 				}
 				return FormatOk(result);
@@ -43,7 +46,7 @@ namespace starsky.foundation.database.Query
 			{
 				return await LocalQuery(_context);
 			}
-			
+
 			return await RetryHelper.DoAsync(LocalDefaultQuery, TimeSpan.FromSeconds(3), retryCount);
 		}
 	}

@@ -32,7 +32,7 @@ public sealed class SettingsService : ISettingsService
 			return await context.Settings.AsNoTracking()
 				.FirstOrDefaultAsync(p => p.Key == Enum.GetName(key));
 		}
-		
+
 		try
 		{
 			return await GetSettingLocal(_context);
@@ -52,15 +52,15 @@ public sealed class SettingsService : ISettingsService
 
 	public static T? CastSetting<T>(SettingsItem? data)
 	{
-		if ( data?.Value == null) return default;
-		
-		if (typeof(T) == typeof(DateTime) && DateTime.TryParseExact(data.Value, 
-			    SettingsFormats.LastSyncBackgroundDateTime, 
-			    CultureInfo.InvariantCulture, 
-			    DateTimeStyles.AssumeUniversal, 
-			    out var expectDateTime) )
+		if ( data?.Value == null ) return default;
+
+		if ( typeof(T) == typeof(DateTime) && DateTime.TryParseExact(data.Value,
+				SettingsFormats.LastSyncBackgroundDateTime,
+				CultureInfo.InvariantCulture,
+				DateTimeStyles.AssumeUniversal,
+				out var expectDateTime) )
 		{
-			return (T)(object) expectDateTime;
+			return ( T )( object )expectDateTime;
 		}
 
 		try
@@ -77,7 +77,7 @@ public sealed class SettingsService : ISettingsService
 	{
 		return await AddOrUpdateSetting(new SettingsItem
 		{
-			Key = Enum.GetName(key) ?? string.Empty, 
+			Key = Enum.GetName(key) ?? string.Empty,
 			Value = value
 		});
 	}
@@ -90,31 +90,31 @@ public sealed class SettingsService : ISettingsService
 		}
 
 		var existingItem = ( await GetSetting(settingsType) )?.Value;
-		if (string.IsNullOrEmpty(existingItem))
+		if ( string.IsNullOrEmpty(existingItem) )
 		{
 
 			try
 			{
-				return await AddItem(_context,item);
+				return await AddItem(_context, item);
 			}
 			catch ( ObjectDisposedException )
 			{
 				var context = new InjectServiceScope(_scopeFactory).Context();
-				return await AddItem(context,item);
+				return await AddItem(context, item);
 			}
 		}
-		
+
 		try
 		{
-			return await UpdateItem(_context,item);
+			return await UpdateItem(_context, item);
 		}
 		catch ( ObjectDisposedException )
 		{
 			var context = new InjectServiceScope(_scopeFactory).Context();
-			return await UpdateItem(context,item);
+			return await UpdateItem(context, item);
 		}
 	}
-		
+
 	private static async Task<SettingsItem> AddItem(ApplicationDbContext context, SettingsItem item)
 	{
 		context.Settings.Add(item);
@@ -122,7 +122,7 @@ public sealed class SettingsService : ISettingsService
 		context.Attach(item).State = EntityState.Detached;
 		return item;
 	}
-	
+
 	private static async Task<SettingsItem> UpdateItem(ApplicationDbContext context, SettingsItem item)
 	{
 		context.Attach(item).State = EntityState.Modified;

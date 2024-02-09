@@ -419,7 +419,7 @@ async function updateAzureYmlFile(filePathList, sdkVersion) {
 					fileContent = fileContent.replace(
 						displayNameTagRegex,
 						displayNameTag +
-							"'Use .NET Core sdk " +
+							"'Use .NET SDK " +
 							sdkVersion +
 							"'"
 					);

@@ -18,20 +18,20 @@ public class SyncAddAddThumbnailTable : ISyncAddThumbnailTable
 	{
 		_thumbnailQuery = thumbnailQuery;
 	}
-	
+
 	public async Task<List<FileIndexItem>> SyncThumbnailTableAsync(List<FileIndexItem> fileIndexItems)
 	{
 		var addObjects = fileIndexItems
-			.Where(p => p.Status == FileIndexItem.ExifStatus.Ok && 
-			            p.ImageFormat != ExtensionRolesHelper.ImageFormat.xmp &&
-			            p.ImageFormat != ExtensionRolesHelper.ImageFormat.meta_json &&
-			            !string.IsNullOrEmpty(p.FileHash) && p.IsDirectory == false)
+			.Where(p => p.Status == FileIndexItem.ExifStatus.Ok &&
+						p.ImageFormat != ExtensionRolesHelper.ImageFormat.xmp &&
+						p.ImageFormat != ExtensionRolesHelper.ImageFormat.meta_json &&
+						!string.IsNullOrEmpty(p.FileHash) && p.IsDirectory == false)
 			.DistinctBy(p => p.FileHash)
 			.Select(p => p.FileHash)
 			.Select(fileHash => new ThumbnailResultDataTransferModel(fileHash!)).ToList();
-		
+
 		await _thumbnailQuery.AddThumbnailRangeAsync(addObjects);
-		
+
 		return fileIndexItems;
 	}
 }

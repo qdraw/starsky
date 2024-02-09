@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -37,14 +37,14 @@ namespace starsky.foundation.accountmanagement.Services
 		private readonly IWebLogger _logger;
 
 		public UserManager(ApplicationDbContext dbContext, AppSettings appSettings, IWebLogger logger,
-			IMemoryCache? memoryCache = null )
+			IMemoryCache? memoryCache = null)
 		{
 			_dbContext = dbContext;
 			_cache = memoryCache;
 			_appSettings = appSettings;
 			_logger = logger;
 		}
-	    
+
 		private bool IsCacheEnabled()
 		{
 			// || _appSettings?.AddMemoryCache == false > disabled
@@ -64,7 +64,7 @@ namespace starsky.foundation.accountmanagement.Services
 				AccountRoles.AppAccountRoles.User.ToString(),
 				AccountRoles.AppAccountRoles.Administrator.ToString(),
 			};
-			
+
 			var roles = new List<Role>();
 			foreach ( var roleName in existingRoleNames )
 			{
@@ -85,10 +85,10 @@ namespace starsky.foundation.accountmanagement.Services
 
 				// Get the Int Ids from the database
 				role = _dbContext.Roles.FirstOrDefault(p => p.Code != null && p.Code.ToLower().Equals(roleName.ToLower()));
-			    
+
 				roles.Add(role!);
 			}
-			
+
 			return roles;
 		}
 
@@ -105,7 +105,7 @@ namespace starsky.foundation.accountmanagement.Services
 					.Equals(credentialTypeCode.ToLower()));
 
 			// When not exist add it
-			if (credentialType == null && credentialTypeCode.Equals("email", StringComparison.CurrentCultureIgnoreCase) )
+			if ( credentialType == null && credentialTypeCode.Equals("email", StringComparison.CurrentCultureIgnoreCase) )
 			{
 				credentialType = new CredentialType
 				{
@@ -123,16 +123,16 @@ namespace starsky.foundation.accountmanagement.Services
 
 
 		private const string AllUsersCacheKey = "UserManager_AllUsers";
-		
+
 		/// <summary>
 		/// Return the number of users in the database
 		/// </summary>
 		/// <returns></returns>
 		public async Task<UserOverviewModel> AllUsersAsync()
 		{
-			if (IsCacheEnabled() && _cache?.TryGetValue(AllUsersCacheKey, out var objectAllUsersResult) == true)
+			if ( IsCacheEnabled() && _cache?.TryGetValue(AllUsersCacheKey, out var objectAllUsersResult) == true )
 			{
-				return new UserOverviewModel(( List<User>? ) objectAllUsersResult);
+				return new UserOverviewModel(( List<User>? )objectAllUsersResult);
 			}
 
 			try
@@ -140,12 +140,12 @@ namespace starsky.foundation.accountmanagement.Services
 				var allUsers = await _dbContext.Users.TagWith("AllUsersAsync").ToListAsync();
 				if ( IsCacheEnabled() )
 				{
-					_cache!.Set(AllUsersCacheKey, allUsers, 
-						new TimeSpan(99,0,0));
+					_cache!.Set(AllUsersCacheKey, allUsers,
+						new TimeSpan(99, 0, 0));
 				}
 				return new UserOverviewModel(allUsers);
 			}
-			catch ( RetryLimitExceededException exception)
+			catch ( RetryLimitExceededException exception )
 			{
 				_logger.LogError(exception,
 					"[User Manager] RetryLimitExceededException [catch-ed]");
@@ -160,7 +160,7 @@ namespace starsky.foundation.accountmanagement.Services
 		internal async Task AddUserToCache(User user)
 		{
 			if ( !IsCacheEnabled() ) return;
-			var allUsers = (await AllUsersAsync()).Users;
+			var allUsers = ( await AllUsersAsync() ).Users;
 			var index = allUsers.Find(p => p.Id == user.Id);
 			if ( allUsers.Exists(p => p.Id == user.Id) && index != null )
 			{
@@ -171,20 +171,20 @@ namespace starsky.foundation.accountmanagement.Services
 			{
 				allUsers.Add(user);
 			}
-			_cache!.Set(AllUsersCacheKey, allUsers, 
-				new TimeSpan(99,0,0));
+			_cache!.Set(AllUsersCacheKey, allUsers,
+				new TimeSpan(99, 0, 0));
 		}
-	    
+
 		/// <summary>
 		/// Remove one user from cache
 		/// </summary>
 		private async Task RemoveUserFromCacheAsync(User user)
 		{
 			if ( !IsCacheEnabled() ) return;
-			var allUsers = (await AllUsersAsync()).Users;
+			var allUsers = ( await AllUsersAsync() ).Users;
 			allUsers.Remove(user);
-			_cache!.Set(AllUsersCacheKey, allUsers, 
-				new TimeSpan(99,0,0));
+			_cache!.Set(AllUsersCacheKey, allUsers,
+				new TimeSpan(99, 0, 0));
 		}
 
 		/// <summary>
@@ -207,8 +207,8 @@ namespace starsky.foundation.accountmanagement.Services
 			{
 				return await _dbContext.Users.FirstOrDefaultAsync(p => p.Id == userTableId);
 			}
-			
-			var users = (await AllUsersAsync()).Users;
+
+			var users = ( await AllUsersAsync() ).Users;
 			return users.Find(p => p.Id == userTableId);
 		}
 
@@ -222,16 +222,16 @@ namespace starsky.foundation.accountmanagement.Services
 		internal string GetRoleAddToUser(string identifier, User user)
 		{
 			var roleToAddToUser = _appSettings.AccountRegisterDefaultRole.ToString();
-			
-			if (_appSettings.AccountRegisterFirstRoleAdmin == true && !_dbContext.Users.Any(p => p != user) )
+
+			if ( _appSettings.AccountRegisterFirstRoleAdmin == true && !_dbContext.Users.Any(p => p != user) )
 			{
 				return AccountRoles.AppAccountRoles.Administrator.ToString();
 			}
 
-			if (_appSettings.AccountRolesByEmailRegisterOverwrite != null 
-			    && _appSettings.AccountRolesByEmailRegisterOverwrite
-			    .TryGetValue(identifier, out var emailsForConfig) && 
-			     AccountRoles.GetAllRoles().Contains(emailsForConfig) )
+			if ( _appSettings.AccountRolesByEmailRegisterOverwrite != null
+				&& _appSettings.AccountRolesByEmailRegisterOverwrite
+				.TryGetValue(identifier, out var emailsForConfig) &&
+				 AccountRoles.GetAllRoles().Contains(emailsForConfig) )
 			{
 				return emailsForConfig;
 			}
@@ -254,12 +254,12 @@ namespace starsky.foundation.accountmanagement.Services
 			var roles = AddDefaultRoles();
 			AddDefaultPermissions();
 			AddDefaultRolePermissions();
-	        
-			if ( string.IsNullOrEmpty(identifier) || string.IsNullOrEmpty(secret))
+
+			if ( string.IsNullOrEmpty(identifier) || string.IsNullOrEmpty(secret) )
 			{
 				return new SignUpResult(success: false, error: SignUpResultError.NullString);
 			}
-			
+
 			// The email is stored in the Credentials database
 			var user = Exist(identifier);
 			if ( user == null )
@@ -271,22 +271,22 @@ namespace starsky.foundation.accountmanagement.Services
 					Name = name,
 					Created = createdDate
 				};
-		        
+
 				await _dbContext.Users.AddAsync(user);
 				await _dbContext.SaveChangesAsync();
 				await AddUserToCache(user);
 
 				// to get the Id
 				user = await _dbContext.Users.FirstOrDefaultAsync(p => p.Created == createdDate);
-		        
+
 				if ( user == null ) throw new AggregateException("user should not be null");
 			}
 
 			// Add a user role based on a user id
-			var roleToAdd = roles.Find(p => p.Code == GetRoleAddToUser(identifier,user));
+			var roleToAdd = roles.Find(p => p.Code == GetRoleAddToUser(identifier, user));
 			AddToRole(user, roleToAdd);
 
-			if (credentialType == null)
+			if ( credentialType == null )
 			{
 				return new SignUpResult(success: false, error: SignUpResultError.CredentialTypeNotFound);
 			}
@@ -303,7 +303,7 @@ namespace starsky.foundation.accountmanagement.Services
 			};
 			byte[] salt = Pbkdf2Hasher.GenerateRandomSalt();
 			string hash = Pbkdf2Hasher.ComputeHash(secret, salt);
-                
+
 			credential.Secret = hash;
 			credential.Extra = Convert.ToBase64String(salt);
 			await _dbContext.Credentials.AddAsync(credential);
@@ -311,7 +311,7 @@ namespace starsky.foundation.accountmanagement.Services
 
 			return new SignUpResult(user: user, success: true);
 		}
-       
+
 		/// <summary>
 		///  Add a link between the user and the role (for example Admin)
 		/// </summary>
@@ -321,14 +321,14 @@ namespace starsky.foundation.accountmanagement.Services
 		{
 			var role = _dbContext.Roles.TagWith("AddToRole").FirstOrDefault(r => r.Code == roleCode);
 
-			if (role == null)
+			if ( role == null )
 			{
-				return;                
+				return;
 			}
-            
+
 			AddToRole(user, role);
 		}
-   
+
 		/// <summary>
 		///  Add a link between the user and the role (for example Admin)
 		/// </summary>
@@ -337,10 +337,10 @@ namespace starsky.foundation.accountmanagement.Services
 		public void AddToRole(User user, Role? role)
 		{
 			var userRole = _dbContext.UserRoles.FirstOrDefault(p => p.User != null && p.User.Id == user.Id);
-			
-			if (userRole != null || role == null)
+
+			if ( userRole != null || role == null )
 			{
-				return;                
+				return;
 			}
 
 			// Add a user role based on a user id
@@ -356,60 +356,60 @@ namespace starsky.foundation.accountmanagement.Services
 		{
 			var role = _dbContext.Roles.TagWith("RemoveFromRole").FirstOrDefault(
 				r => string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
-            
-			if (role == null)
-			{
-				return;                
-			}
-            
-			RemoveFromRole(user, role);
-		}
-        
-		public void RemoveFromRole(User user, Role role)
-		{
-			var userRole = _dbContext.UserRoles.Find(user.Id, role.Id);
-            
-			if (userRole == null)
+
+			if ( role == null )
 			{
 				return;
 			}
-            
+
+			RemoveFromRole(user, role);
+		}
+
+		public void RemoveFromRole(User user, Role role)
+		{
+			var userRole = _dbContext.UserRoles.Find(user.Id, role.Id);
+
+			if ( userRole == null )
+			{
+				return;
+			}
+
 			_dbContext.UserRoles.Remove(userRole);
 			_dbContext.SaveChanges();
 		}
-        
+
 		public ChangeSecretResult ChangeSecret(string credentialTypeCode, string? identifier, string secret)
 		{
 			var credentialType = _dbContext.CredentialTypes.FirstOrDefault(
 				ct => ct.Code != null && ct.Code.ToLower().Equals(credentialTypeCode.ToLower()));
-	        
-			if (credentialType == null)
+
+			if ( credentialType == null )
 			{
 				return new ChangeSecretResult(success: false, error: ChangeSecretResultError.CredentialTypeNotFound);
 			}
-            
+
 			var credential = _dbContext.Credentials.TagWith("ChangeSecret").FirstOrDefault(
 				c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
-            
-			if (credential == null || identifier == null)
+
+			if ( credential == null || identifier == null )
 			{
 				return new ChangeSecretResult(success: false, error: ChangeSecretResultError.CredentialNotFound);
 			}
-            
+
 			var salt = Pbkdf2Hasher.GenerateRandomSalt();
 			var hash = Pbkdf2Hasher.ComputeHash(secret, salt);
-            
+
 			credential.Secret = hash;
 			credential.Extra = Convert.ToBase64String(salt);
 			_dbContext.Credentials.Update(credential);
 			_dbContext.SaveChanges();
-            
+
 			if ( IsCacheEnabled() )
 			{
-				_cache!.Set(CredentialCacheKey(credentialType, identifier), 
-					credential,new TimeSpan(99,0,0));
+				_cache!.Set(CredentialCacheKey(credentialType, identifier),
+					credential, new TimeSpan(99, 0, 0));
 			}
-            
+
 			return new ChangeSecretResult(success: true);
 		}
 
@@ -430,25 +430,25 @@ namespace starsky.foundation.accountmanagement.Services
 			{
 				return null;
 			}
-			
+
 			var key = CredentialCacheKey(credentialType, identifier);
-	        
+
 			// Add caching for credentialType
-			if (IsCacheEnabled() && _cache?.TryGetValue(key, 
-				    out var objectCredentialTypeCode) == true)
+			if ( IsCacheEnabled() && _cache?.TryGetValue(key,
+					out var objectCredentialTypeCode) == true )
 			{
-				return ( Credential? ) objectCredentialTypeCode;
+				return ( Credential? )objectCredentialTypeCode;
 			}
-			
+
 			var credentialSelect = _dbContext.Credentials.AsNoTracking().TagWith("Credential").Where(
 				c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier).Select(x => new
-			{
-				x.Id,
-				x.UserId,
-				x.CredentialTypeId,
-				x.Secret,
-				x.Extra
-			}).FirstOrDefault();
+				{
+					x.Id,
+					x.UserId,
+					x.CredentialTypeId,
+					x.Secret,
+					x.Extra
+				}).FirstOrDefault();
 
 			if ( credentialSelect == null )
 			{
@@ -464,14 +464,14 @@ namespace starsky.foundation.accountmanagement.Services
 				Extra = credentialSelect.Extra,
 			};
 
-			if ( IsCacheEnabled())
+			if ( IsCacheEnabled() )
 			{
-				_cache!.Set(key, credential,new TimeSpan(99,0,0));
+				_cache!.Set(key, credential, new TimeSpan(99, 0, 0));
 			}
 
 			return credential;
 		}
-        
+
 
 		/// <summary>
 		/// Get the CredentialType by the credentialTypeCode
@@ -482,20 +482,21 @@ namespace starsky.foundation.accountmanagement.Services
 		{
 			var cacheKey = "credentialTypeCode_" + credentialTypeCode;
 			// Add caching for credentialType
-			if (IsCacheEnabled() && _cache?.TryGetValue(cacheKey, 
-				    out var objectCredentialTypeCode) == true)
+			if ( IsCacheEnabled() && _cache?.TryGetValue(cacheKey,
+					out var objectCredentialTypeCode) == true )
 			{
-				return ( CredentialType? ) objectCredentialTypeCode;
+				return ( CredentialType? )objectCredentialTypeCode;
 			}
-			
+
 			var credentialTypeSelect = _dbContext.CredentialTypes.AsNoTracking().TagWith("CredentialType").Where(
-				ct => ct.Code != null && ct.Code.ToLower().Equals(credentialTypeCode.ToLower())).Select(x => new {
-				x.Id,
-				x.Code,
-				x.Name,
-				x.Position
-			}).FirstOrDefault();
-			
+				ct => ct.Code != null && ct.Code.ToLower().Equals(credentialTypeCode.ToLower())).Select(x => new
+				{
+					x.Id,
+					x.Code,
+					x.Name,
+					x.Position
+				}).FirstOrDefault();
+
 			if ( credentialTypeSelect == null ) return null;
 
 			var credentialType = new CredentialType
@@ -508,8 +509,8 @@ namespace starsky.foundation.accountmanagement.Services
 
 			if ( IsCacheEnabled() )
 			{
-				_cache!.Set(cacheKey, credentialType, 
-					new TimeSpan(99,0,0));
+				_cache!.Set(cacheKey, credentialType,
+					new TimeSpan(99, 0, 0));
 			}
 			return credentialType;
 		}
@@ -518,15 +519,15 @@ namespace starsky.foundation.accountmanagement.Services
 		{
 			var model = new RegisterViewModel
 			{
-				Email = userName, 
-				Password = password, 
+				Email = userName,
+				Password = password,
 				ConfirmPassword = confirmPassword
 			};
-	        
+
 			var context = new ValidationContext(model, null, null);
 			var results = new List<ValidationResult>();
 			return Validator.TryValidateObject(
-				model, context, results, 
+				model, context, results,
 				true
 			);
 		}
@@ -543,25 +544,25 @@ namespace starsky.foundation.accountmanagement.Services
 		{
 			var credentialType = CachedCredentialType(credentialTypeCode);
 
-			if (credentialType == null)
+			if ( credentialType == null )
 			{
 				return new ValidateResult(success: false, error: ValidateResultError.CredentialTypeNotFound);
 			}
 
 			var credential = CachedCredential(credentialType, identifier);
-            
-			if (credential?.Extra == null)
+
+			if ( credential?.Extra == null )
 			{
 				return new ValidateResult(success: false, error: ValidateResultError.CredentialNotFound);
 			}
-            
+
 			// No Password
 			if ( string.IsNullOrWhiteSpace(secret) )
 			{
 				return new ValidateResult(success: false, error: ValidateResultError.SecretNotValid);
 			}
-			
-			var userData = (await AllUsersAsync()).Users.Find(p => p.Id == credential.UserId);
+
+			var userData = ( await AllUsersAsync() ).Users.Find(p => p.Id == credential.UserId);
 			if ( userData == null )
 			{
 				return new ValidateResult(success: false, error: ValidateResultError.UserNotFound);
@@ -571,7 +572,7 @@ namespace starsky.foundation.accountmanagement.Services
 			{
 				return new ValidateResult(success: false, error: ValidateResultError.Lockout);
 			}
-            
+
 			// To compare the secret
 			byte[] salt = Convert.FromBase64String(credential.Extra);
 			string hashedPassword = Pbkdf2Hasher.ComputeHash(secret, salt);
@@ -584,26 +585,26 @@ namespace starsky.foundation.accountmanagement.Services
 			return await SetLockIfFailedCountIsToHigh(credential.UserId);
 		}
 
-		internal async Task<ValidateResult> ResetAndSuccess(int accessFailedCount, int userId, User? userData )
+		internal async Task<ValidateResult> ResetAndSuccess(int accessFailedCount, int userId, User? userData)
 		{
 			if ( accessFailedCount <= 0 )
 			{
 				return new ValidateResult(userData, true);
 			}
-			
+
 			userData = await _dbContext.Users.FindAsync(userId);
 			if ( userData == null )
 			{
 				return new ValidateResult(success: false,
 					error: ValidateResultError.UserNotFound);
 			}
-			
+
 			userData.LockoutEnabled = false;
 			userData.AccessFailedCount = 0;
 			userData.LockoutEnd = DateTime.MinValue;
 			await _dbContext.SaveChangesAsync();
 			await AddUserToCache(userData);
-			
+
 			return new ValidateResult(userData, true);
 		}
 
@@ -628,7 +629,7 @@ namespace starsky.foundation.accountmanagement.Services
 			await AddUserToCache(userData);
 			return new ValidateResult(success: false, error: errorReason);
 		}
-        
+
 		public async Task<bool> SignIn(HttpContext httpContext, User? user, bool isPersistent = false)
 		{
 			if ( user == null )
@@ -640,16 +641,16 @@ namespace starsky.foundation.accountmanagement.Services
 			{
 				return false;
 			}
-			
+
 			ClaimsIdentity identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 			ClaimsPrincipal principal = new ClaimsPrincipal(identity);
-			
+
 			await httpContext.SignInAsync(
-				CookieAuthenticationDefaults.AuthenticationScheme, 
-				principal, 
-				new AuthenticationProperties() { IsPersistent = isPersistent}
+				CookieAuthenticationDefaults.AuthenticationScheme,
+				principal,
+				new AuthenticationProperties() { IsPersistent = isPersistent }
 			);
-			
+
 			// Required in the direct context;  when using a REST like call
 			httpContext.User = principal;
 			return true;
@@ -669,7 +670,7 @@ namespace starsky.foundation.accountmanagement.Services
 			{
 				return new ValidateResult { Success = false, Error = ValidateResultError.CredentialTypeNotFound };
 			}
-			
+
 			var credential = _dbContext.Credentials.FirstOrDefault(
 				c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
 
@@ -677,7 +678,7 @@ namespace starsky.foundation.accountmanagement.Services
 			{
 				return new ValidateResult
 				{
-					Success = false, 
+					Success = false,
 					Error = ValidateResultError.CredentialNotFound
 				};
 			}
@@ -685,55 +686,57 @@ namespace starsky.foundation.accountmanagement.Services
 			var user = await _dbContext.Users.FirstOrDefaultAsync(p => p.Id == credential.UserId);
 
 			var userRole = await _dbContext.UserRoles.FirstOrDefaultAsync(p => p.UserId == credential.UserId);
-	        
-			if(userRole == null || user == null) {
-				return new ValidateResult{
-						Success = false, 
-						Error = ValidateResultError.CredentialNotFound
-					};
+
+			if ( userRole == null || user == null )
+			{
+				return new ValidateResult
+				{
+					Success = false,
+					Error = ValidateResultError.CredentialNotFound
+				};
 			}
 
 			_dbContext.Credentials.Remove(credential);
 			_dbContext.Users.Remove(user);
 			_dbContext.UserRoles.Remove(userRole);
 			await _dbContext.SaveChangesAsync();
-	        
+
 			await RemoveUserFromCacheAsync(user);
-	        
-			return new ValidateResult{Success = true};
+
+			return new ValidateResult { Success = true };
 		}
-        
+
 		public async void SignOut(HttpContext httpContext)
 		{
 			await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 		}
-        
+
 		public int GetCurrentUserId(HttpContext httpContext)
 		{
-			if (httpContext.User.Identity?.IsAuthenticated == false)
-			{
-				return -1;
-			}
-            
-			var claim = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-            
-			if (claim == null)
+			if ( httpContext.User.Identity?.IsAuthenticated == false )
 			{
 				return -1;
 			}
 
-			if (!int.TryParse(claim.Value, out var currentUserId))
+			var claim = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+
+			if ( claim == null )
 			{
 				return -1;
 			}
-            
+
+			if ( !int.TryParse(claim.Value, out var currentUserId) )
+			{
+				return -1;
+			}
+
 			return currentUserId;
 		}
-        
+
 		public User? GetCurrentUser(HttpContext httpContext)
 		{
 			var currentUserId = GetCurrentUserId(httpContext);
-            
+
 			return currentUserId == -1 ? null : _dbContext.Users.Find(currentUserId);
 		}
 
@@ -757,7 +760,7 @@ namespace starsky.foundation.accountmanagement.Services
 			var role = _dbContext.UserRoles.FirstOrDefault(p => p.User != null && p.User.Id == user.Id);
 			if ( role == null ) return new Role();
 			var roleId = role.RoleId;
-			return _dbContext.Roles.TagWith("GetRole").FirstOrDefault(p=> p.Id == roleId);
+			return _dbContext.Roles.TagWith("GetRole").FirstOrDefault(p => p.Id == roleId);
 		}
 
 		public Credential? GetCredentialsByUserId(int userId)
@@ -777,7 +780,7 @@ namespace starsky.foundation.accountmanagement.Services
 			var email =
 				user.Credentials?.FirstOrDefault(p =>
 					!string.IsNullOrEmpty(p.Identifier))?.Identifier;
-			
+
 			var claims = new List<Claim>
 			{
 				new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
@@ -788,14 +791,14 @@ namespace starsky.foundation.accountmanagement.Services
 			claims.AddRange(GetUserRoleClaims(user));
 			return claims;
 		}
-        
+
 		private List<Claim> GetUserRoleClaims(User user)
 		{
 			var claims = new List<Claim>();
 			IEnumerable<int> roleIds = _dbContext.UserRoles.TagWith("GetUserRoleClaims").Where(
 				ur => ur.UserId == user.Id).Select(ur => ur.RoleId).ToList();
 
-			foreach (var roleId in roleIds)
+			foreach ( var roleId in roleIds )
 			{
 				var role = _dbContext.Roles.Find(roleId);
 				if ( role?.Code == null )
@@ -807,7 +810,7 @@ namespace starsky.foundation.accountmanagement.Services
 			}
 			return claims;
 		}
-        
+
 		internal IEnumerable<Claim> GetUserPermissionClaims(Role role)
 		{
 			List<Claim> claims = new List<Claim>();
@@ -815,7 +818,7 @@ namespace starsky.foundation.accountmanagement.Services
 				rp => rp.RoleId == role.Id);
 			IEnumerable<int> permissionIds = rolePermissions.Select(rp => rp.PermissionId).ToList();
 
-			foreach (var permissionId in permissionIds)
+			foreach ( var permissionId in permissionIds )
 			{
 				var permission = _dbContext.Permissions.Find(permissionId);
 				if ( permission?.Code == null )
@@ -832,12 +835,12 @@ namespace starsky.foundation.accountmanagement.Services
 		{
 			AppSettingsWrite = 10,
 		}
-        
+
 		private static readonly List<AppPermissions> AllPermissions = new List<AppPermissions>
 		{
 			AppPermissions.AppSettingsWrite,
 		};
-        
+
 		private void AddDefaultPermissions()
 		{
 			foreach ( var permissionEnum in AllPermissions )
@@ -845,12 +848,12 @@ namespace starsky.foundation.accountmanagement.Services
 				var permission = _dbContext.Permissions.FirstOrDefault(p => p.Code == permissionEnum.ToString());
 
 				if ( permission != null ) continue;
-		        
+
 				permission = new Permission()
 				{
 					Name = permissionEnum.ToString(),
 					Code = permissionEnum.ToString(),
-					Position = (int) permissionEnum,
+					Position = ( int )permissionEnum,
 				};
 				_dbContext.Permissions.Add(permission);
 				_dbContext.SaveChanges();
@@ -859,16 +862,16 @@ namespace starsky.foundation.accountmanagement.Services
 
 		private void AddDefaultRolePermissions()
 		{
-			var existingRolePermissions = new List<KeyValuePair<string,AppPermissions>>
+			var existingRolePermissions = new List<KeyValuePair<string, AppPermissions>>
 			{
 				new KeyValuePair<string, AppPermissions>(
 					AccountRoles.AppAccountRoles.Administrator.ToString(), AppPermissions.AppSettingsWrite),
 			};
-	        
+
 			foreach ( var rolePermissionsDictionary in existingRolePermissions )
 			{
-				var role = _dbContext.Roles.TagWith("AddDefaultRolePermissions").FirstOrDefault(p => p.Code == rolePermissionsDictionary.Key );
-				var permission = _dbContext.Permissions.FirstOrDefault(p => 
+				var role = _dbContext.Roles.TagWith("AddDefaultRolePermissions").FirstOrDefault(p => p.Code == rolePermissionsDictionary.Key);
+				var permission = _dbContext.Permissions.FirstOrDefault(p =>
 					p.Code == rolePermissionsDictionary.Value.ToString());
 
 				if ( permission == null || role == null ) continue;
@@ -885,7 +888,7 @@ namespace starsky.foundation.accountmanagement.Services
 					RoleId = role.Id,
 					PermissionId = permission.Id
 				};
-		        
+
 				_dbContext.RolePermissions.Add(rolePermission);
 				_dbContext.SaveChanges();
 			}

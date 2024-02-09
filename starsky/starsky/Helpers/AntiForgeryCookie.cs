@@ -15,7 +15,7 @@ namespace starsky.Helpers
 		{
 			_antiForgery = antiForgery;
 		}
-		
+
 		/// <summary>
 		/// The request token can be sent as a JavaScript-readable cookie, 
 		/// </summary>
@@ -25,9 +25,9 @@ namespace starsky.Helpers
 			if ( httpContext == null ) return;
 			var tokens = _antiForgery.GetAndStoreTokens(httpContext).RequestToken;
 			if ( tokens == null ) return;
-			
+
 			httpContext.Response.Cookies.Append(
-				"X-XSRF-TOKEN", tokens, 
+				"X-XSRF-TOKEN", tokens,
 				new CookieOptions()
 				{
 					HttpOnly = false, // need to be false, is needed by the javascript front-end

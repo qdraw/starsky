@@ -1,20 +1,19 @@
 ﻿using System.Diagnostics;
 
-static string  GetSolutionParentFolder()
+static string GetSolutionParentFolder()
 {
 	var strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-	return Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(strExeFilePath))))!;
+	return Path.GetDirectoryName(
+		Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(strExeFilePath))))!;
 }
 
 static Process NpmCommand(string command)
 {
-	var startInfo = new ProcessStartInfo()
+	var startInfo = new ProcessStartInfo
 	{
-		FileName = "npm", 
-		Arguments = command,
-		WorkingDirectory = GetSolutionParentFolder()
-	}; 
-	var proc = new Process() { StartInfo = startInfo };
+		FileName = "npm", Arguments = command, WorkingDirectory = GetSolutionParentFolder()
+	};
+	var proc = new Process { StartInfo = startInfo };
 	return proc;
 }
 

@@ -13,7 +13,7 @@ namespace starsky.foundation.readmeta.Helpers
 		public static double Fraction(string value)
 		{
 			var gpsAltitudeValues = value.Split("/".ToCharArray());
-			if(gpsAltitudeValues.Length != 2) return 0f;
+			if ( gpsAltitudeValues.Length != 2 ) return 0f;
 			var numerator = double.Parse(gpsAltitudeValues[0], CultureInfo.InvariantCulture);
 			var denominator = double.Parse(gpsAltitudeValues[1], CultureInfo.InvariantCulture);
 			return numerator / denominator;

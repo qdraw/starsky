@@ -21,7 +21,7 @@ namespace starsky.foundation.realtime.Services
 		{
 			_logger = logger;
 		}
-		
+
 		private readonly ConcurrentDictionary<Guid, WebSocketConnection> _connections = new ConcurrentDictionary<Guid, WebSocketConnection>();
 		private readonly IWebLogger _logger;
 
@@ -38,13 +38,13 @@ namespace starsky.foundation.realtime.Services
 		public Task SendToAllAsync(string message, CancellationToken cancellationToken)
 		{
 			List<Task> connectionsTasks = new List<Task>();
-			foreach (WebSocketConnection connection in _connections.Values)
+			foreach ( WebSocketConnection connection in _connections.Values )
 			{
 				try
 				{
 					connectionsTasks.Add(connection.SendAsync(message, cancellationToken));
 				}
-				catch ( WebSocketException exception)
+				catch ( WebSocketException exception )
 				{
 					// if the client is closing the socket the wrong way
 					_logger.LogInformation(exception, "catch-ed exception socket");

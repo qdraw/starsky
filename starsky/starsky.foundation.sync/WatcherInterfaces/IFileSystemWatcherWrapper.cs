@@ -8,7 +8,7 @@ namespace starsky.foundation.sync.WatcherInterfaces
 	/// @see: https://docs.microsoft.com/en-us/dotnet/api/system.io.filesystemwatcher.notifyfilter?view=netcore-3.1
 	/// @see: https://stackoverflow.com/a/50948255/8613589
 	/// </summary>
-	public interface IFileSystemWatcherWrapper:  IDisposable
+	public interface IFileSystemWatcherWrapper : IDisposable
 	{
 		event FileSystemEventHandler Created;
 		event FileSystemEventHandler Deleted;

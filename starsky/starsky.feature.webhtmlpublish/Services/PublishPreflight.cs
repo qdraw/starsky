@@ -28,10 +28,10 @@ namespace starsky.feature.webhtmlpublish.Services
 			_logger = logger;
 			_hostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		}
-		
-		public List<Tuple<int,string>> GetPublishProfileNames()
+
+		public List<Tuple<int, string>> GetPublishProfileNames()
 		{
-			var returnList = new List<Tuple<int,string>>();
+			var returnList = new List<Tuple<int, string>>();
 			if ( _appSettings.PublishProfiles == null || _appSettings.PublishProfiles.Count == 0 )
 			{
 				return returnList;
@@ -64,11 +64,11 @@ namespace starsky.feature.webhtmlpublish.Services
 		/// </summary>
 		/// <param name="profiles">profile object</param>
 		/// <returns>(bool and list of errors)</returns>
-		internal Tuple<bool,List<string>> IsProfileValid( KeyValuePair<string,List<AppSettingsPublishProfiles>> profiles)
+		internal Tuple<bool, List<string>> IsProfileValid(KeyValuePair<string, List<AppSettingsPublishProfiles>> profiles)
 		{
 			if ( profiles.Key == null || profiles.Value == null )
 			{
-				return new Tuple<bool, List<string>>(false, new List<string> {"Profile not found"});
+				return new Tuple<bool, List<string>>(false, new List<string> { "Profile not found" });
 			}
 
 			var errors = new List<string>();
@@ -79,21 +79,21 @@ namespace starsky.feature.webhtmlpublish.Services
 					continue;
 				}
 
-				if ( profile.ContentType == TemplateContentType.Html 
-				     && !new ParseRazor(_hostStorage, _logger).Exist(profile.Template))
+				if ( profile.ContentType == TemplateContentType.Html
+					 && !new ParseRazor(_hostStorage, _logger).Exist(profile.Template) )
 				{
 					errors.Add($"View Path {profile.Template} should exists");
 					continue;
 				}
-				
+
 				if ( !_hostStorage.ExistFile(profile.Path) && (
-					    profile.ContentType == TemplateContentType.Jpeg 
-					    || profile.ContentType == TemplateContentType.OnlyFirstJpeg ) )
+						profile.ContentType == TemplateContentType.Jpeg
+						|| profile.ContentType == TemplateContentType.OnlyFirstJpeg ) )
 				{
 					errors.Add($"Image Path {profile.Path} should exists");
 				}
 			}
-			
+
 			return new Tuple<bool, List<string>>(errors.Count == 0, errors);
 		}
 
@@ -101,13 +101,13 @@ namespace starsky.feature.webhtmlpublish.Services
 		/// Get all publish profile names
 		/// </summary>
 		/// <returns>(string: name, bool: isValid)</returns>
-		public IEnumerable<KeyValuePair<string,bool>> GetAllPublishProfileNames()
+		public IEnumerable<KeyValuePair<string, bool>> GetAllPublishProfileNames()
 		{
 			return _appSettings.PublishProfiles!.Select(p =>
 				new KeyValuePair<string, bool>(
 					p.Key, IsProfileValid(p).Item1));
 		}
-		
+
 		public List<AppSettingsPublishProfiles> GetPublishProfileName(string publishProfileName)
 		{
 			return _appSettings.PublishProfiles!
@@ -131,13 +131,13 @@ namespace starsky.feature.webhtmlpublish.Services
 		{
 			var name = ArgsHelper.GetName(args);
 			if ( !string.IsNullOrWhiteSpace(name) ) return name;
-			
+
 			var suggestedInput = Path.GetFileName(inputPath);
-                
-			_console.WriteLine("\nWhat is the name of the item? (for: "+ suggestedInput +" press Enter)\n ");
+
+			_console.WriteLine("\nWhat is the name of the item? (for: " + suggestedInput + " press Enter)\n ");
 			name = _console.ReadLine();
-			
-			if (string.IsNullOrEmpty(name))
+
+			if ( string.IsNullOrEmpty(name) )
 			{
 				name = suggestedInput;
 			}

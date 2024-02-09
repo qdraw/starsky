@@ -18,7 +18,7 @@ namespace starsky.foundation.database.Query
 	{
 		public async Task<List<FileIndexItem>> GetObjectsByFilePathAsync(string inputFilePath, bool collections)
 		{
-			return await GetObjectsByFilePathAsync(new List<string>{inputFilePath}, collections);
+			return await GetObjectsByFilePathAsync(new List<string> { inputFilePath }, collections);
 		}
 
 		/// <summary>
@@ -31,10 +31,10 @@ namespace starsky.foundation.database.Query
 		{
 			var resultFileIndexItemsList = new List<FileIndexItem>();
 			var toQueryPaths = new List<string>();
-			foreach ( var path in  inputFilePaths)
+			foreach ( var path in inputFilePaths )
 			{
 				var parentPath = FilenamesHelper.GetParentPath(path);
-				
+
 				var (success, cachedResult) = CacheGetParentFolder(parentPath);
 
 				List<FileIndexItem>? item = null;
@@ -43,13 +43,13 @@ namespace starsky.foundation.database.Query
 					case false:
 						if ( !success ) break;
 						item = cachedResult.Where(p =>
-							p.ParentDirectory == parentPath && 
+							p.ParentDirectory == parentPath &&
 							p.FileName == FilenamesHelper.GetFileName(path)).ToList();
 						break;
 					case true:
 						if ( !success ) break;
 						item = cachedResult.Where(p =>
-							p.ParentDirectory == parentPath && 
+							p.ParentDirectory == parentPath &&
 							p.FileCollectionName == FilenamesHelper.GetFileNameWithoutExtension(path)).ToList();
 						break;
 				}
@@ -66,7 +66,7 @@ namespace starsky.foundation.database.Query
 			resultFileIndexItemsList.AddRange(fileIndexItemsList);
 			return resultFileIndexItemsList;
 		}
-		
+
 		/// <summary>
 		/// Switch between collections and non-collections
 		/// </summary>
@@ -79,15 +79,15 @@ namespace starsky.foundation.database.Query
 			{
 				return new List<FileIndexItem>();
 			}
-			
+
 			if ( collections )
 			{
 				return await GetObjectsByFilePathCollectionQueryAsync(inputFilePaths.ToList());
 			}
 			return await GetObjectsByFilePathQueryAsync(inputFilePaths.ToList());
 		}
-		
-		
+
+
 		/// <summary>
 		/// Skip cache
 		/// </summary>
@@ -106,9 +106,9 @@ namespace starsky.foundation.database.Query
 			{
 				return await LocalQuery(_context);
 			}
-			catch ( NullReferenceException ex1)
+			catch ( NullReferenceException ex1 )
 			{
-				_logger.LogInformation($"catch-ed null ref exception: {string.Join( ",", filePathList.ToArray() )} {ex1.StackTrace}", ex1);
+				_logger.LogInformation($"catch-ed null ref exception: {string.Join(",", filePathList.ToArray())} {ex1.StackTrace}", ex1);
 				await Task.Delay(10);
 				// System.NullReferenceException: Object reference not set to an instance of an object.
 				// at MySql.Data.MySqlClient.MySqlDataReader.ActivateResultSet()
@@ -123,9 +123,9 @@ namespace starsky.foundation.database.Query
 					return await LocalQuery(
 						new InjectServiceScope(_scopeFactory).Context());
 				}
-				catch ( NullReferenceException ex2)
+				catch ( NullReferenceException ex2 )
 				{
-					_logger.LogInformation($"catch-ed null ref exception 2: {string.Join( ",", filePathList.ToArray() )} {ex2.StackTrace}", ex2);
+					_logger.LogInformation($"catch-ed null ref exception 2: {string.Join(",", filePathList.ToArray())} {ex2.StackTrace}", ex2);
 					throw;
 				}
 			}

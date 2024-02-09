@@ -6,11 +6,9 @@ using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.writemeta.Helpers;
 
 namespace starsky.foundation.writemeta.Services
 {
-
 	[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
 	public sealed class ExifToolDownloadBackgroundService : BackgroundService
 	{
@@ -29,12 +27,14 @@ namespace starsky.foundation.writemeta.Services
 		/// <returns>CompletedTask</returns>
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 		{
-			using (var scope = _serviceScopeFactory.CreateScope())
+			using ( var scope = _serviceScopeFactory.CreateScope() )
 			{
 				var appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
-				var httpClientHelper = scope.ServiceProvider.GetRequiredService<IHttpClientHelper>();
+				var httpClientHelper =
+					scope.ServiceProvider.GetRequiredService<IHttpClientHelper>();
 				var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>();
-				await new ExifToolDownload(httpClientHelper, appSettings, logger).DownloadExifTool(appSettings.IsWindows);
+				await new ExifToolDownload(httpClientHelper, appSettings, logger).DownloadExifTool(
+					appSettings.IsWindows);
 			}
 		}
 	}

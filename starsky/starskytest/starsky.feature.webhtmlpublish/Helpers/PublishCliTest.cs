@@ -17,67 +17,79 @@ namespace starskytest.starsky.feature.webhtmlpublish.Helpers
 		{
 			var console = new FakeConsoleWrapper();
 
-			await new PublishCli(new FakeSelectorStorage(), new FakeIPublishPreflight(), new FakeIWebHtmlPublishService(), 
+			await new PublishCli(new FakeSelectorStorage(), new FakeIPublishPreflight(),
+				new FakeIWebHtmlPublishService(),
 				new AppSettings(), console, new FakeIWebLogger()).Publisher([
 				"-h"
 			]);
-			
-			Assert.IsTrue(console.WrittenLines.FirstOrDefault()?.Contains("Starsky WebHtml Cli ~ Help:"));
-			Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("  use -v -help to show settings: "));
+
+			Assert.IsTrue(console.WrittenLines.FirstOrDefault()
+				?.Contains("Starsky WebHtml Cli ~ Help:"));
+			Assert.IsTrue(console.WrittenLines.LastOrDefault()
+				?.Contains("  use -v -help to show settings: "));
 		}
 
 		[TestMethod]
 		public async Task Publisher_Default()
 		{
 			var console = new FakeConsoleWrapper();
-			await new PublishCli(new FakeSelectorStorage(), new FakeIPublishPreflight(), new FakeIWebHtmlPublishService(), 
-				new AppSettings(), console, new FakeIWebLogger()).Publisher([""
+			await new PublishCli(new FakeSelectorStorage(), new FakeIPublishPreflight(),
+				new FakeIWebHtmlPublishService(),
+				new AppSettings(), console, new FakeIWebLogger()).Publisher([
+				""
 			]);
-			
-			Assert.IsTrue(console.WrittenLines.FirstOrDefault()?.Contains("Please use the -p to add a path first"));
+
+			Assert.IsTrue(console.WrittenLines.FirstOrDefault()
+				?.Contains("Please use the -p to add a path first"));
 		}
-		
+
 		[TestMethod]
 		public async Task Publisher_PathArg()
 		{
 			var console = new FakeConsoleWrapper();
-			await new PublishCli(new FakeSelectorStorage(), new FakeIPublishPreflight(), new FakeIWebHtmlPublishService(), 
+			await new PublishCli(new FakeSelectorStorage(), new FakeIPublishPreflight(),
+				new FakeIWebHtmlPublishService(),
 				new AppSettings(), console, new FakeIWebLogger()).Publisher([
 				"-p"
 			]);
-			
+
 			Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("is not found"));
 		}
-		
+
 		[TestMethod]
 		public async Task Publisher_NoSettingsFileInFolder()
-		{			
+		{
 			var console = new FakeConsoleWrapper();
-			var fakeSelectorStorage = new FakeSelectorStorage(new FakeIStorage(new List<string>{"/test"}));
+			var fakeSelectorStorage =
+				new FakeSelectorStorage(new FakeIStorage(new List<string> { "/test" }));
 
-			await new PublishCli(fakeSelectorStorage, new FakeIPublishPreflight(), new FakeIWebHtmlPublishService(), 
+			await new PublishCli(fakeSelectorStorage, new FakeIPublishPreflight(),
+				new FakeIWebHtmlPublishService(),
 				new AppSettings(), console, new FakeIWebLogger()).Publisher([
 				"-p", "/test"
 			]);
 
 			Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("done"));
 		}
-		
+
 		[TestMethod]
 		public async Task Publisher_WarnWhenAlreadyRun()
-		{			
+		{
 			var console = new FakeConsoleWrapper();
-			var fakeSelectorStorage = new FakeSelectorStorage(new FakeIStorage(new List<string>{ Path.DirectorySeparatorChar + "test" }, 
-				new List<string>{$"{Path.DirectorySeparatorChar}test{Path.DirectorySeparatorChar}_settings.json"}));
+			var fakeSelectorStorage = new FakeSelectorStorage(new FakeIStorage(
+				new List<string> { Path.DirectorySeparatorChar + "test" },
+				new List<string>
+				{
+					$"{Path.DirectorySeparatorChar}test{Path.DirectorySeparatorChar}_settings.json"
+				}));
 
-			await new PublishCli(fakeSelectorStorage, new FakeIPublishPreflight(), new FakeIWebHtmlPublishService(), 
+			await new PublishCli(fakeSelectorStorage, new FakeIPublishPreflight(),
+				new FakeIWebHtmlPublishService(),
 				new AppSettings(), console, new FakeIWebLogger()).Publisher([
 				"-p", Path.DirectorySeparatorChar + "test"
 			]);
 
 			Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("_settings.json"));
 		}
-
-
 	}
 }

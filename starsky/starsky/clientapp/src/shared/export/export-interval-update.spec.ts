@@ -1,5 +1,5 @@
 import { IConnectionDefault } from "../../interfaces/IConnectionDefault";
-import * as FetchGet from "../fetch-get";
+import * as FetchGet from "../fetch/fetch-get";
 import { UrlQuery } from "../url-query";
 import { ExportIntervalUpdate } from "./export-interval-update";
 import { ProcessingState } from "./processing-state";

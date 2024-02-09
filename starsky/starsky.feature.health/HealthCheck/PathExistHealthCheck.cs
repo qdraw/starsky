@@ -17,26 +17,26 @@ namespace starsky.feature.health.HealthCheck
 
 		public PathExistHealthCheck(PathExistOptions options)
 		{
-			var diskStorageOptions = options;
-			_options = diskStorageOptions ?? throw new ArgumentNullException(nameof(options));
+			_options = options ?? throw new ArgumentNullException(nameof(options));
 		}
 
 		public Task<HealthCheckResult> CheckHealthAsync(
 			HealthCheckContext context,
 			CancellationToken cancellationToken = default)
 		{
-			var resultsList = _options.ConfiguredPaths.Select(path => new StorageHostFullPathFilesystem()
-				.IsFolderOrFile(path)).ToList();
+			var resultsList = _options.ConfiguredPaths.Select(path =>
+				new StorageHostFullPathFilesystem()
+					.IsFolderOrFile(path)).ToList();
 
 			if ( resultsList.Count == 0 )
 				return Task.FromResult(new HealthCheckResult(context.Registration.FailureStatus,
 					$"Not configured"));
 
 			return Task.FromResult(
-				resultsList.Exists(p => p == FolderOrFileModel.FolderOrFileTypeList.Deleted) ? 
-				new HealthCheckResult(context.Registration.FailureStatus, $"Configured path is not present on system") : 
-				HealthCheckResult.Healthy("Configured path is present"));
+				resultsList.Exists(p => p == FolderOrFileModel.FolderOrFileTypeList.Deleted)
+					? new HealthCheckResult(context.Registration.FailureStatus,
+						$"Configured path is not present on system")
+					: HealthCheckResult.Healthy("Configured path is present"));
 		}
-
 	}
 }

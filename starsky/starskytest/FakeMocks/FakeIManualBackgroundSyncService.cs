@@ -14,10 +14,11 @@ namespace starskytest.FakeMocks
 		{
 			_items = items;
 		}
-		public Task<FileIndexItem.ExifStatus> ManualSync(string subPath,
-			string? operationId = null)
+
+		public Task<FileIndexItem.ExifStatus> ManualSync(string subPath)
 		{
-			var value = _items.FirstOrDefault(p => Equals(p.Key, subPath)).Value;
+			var value = _items.FirstOrDefault(p =>
+				Equals(p.Key, subPath)).Value;
 			return Task.FromResult(value);
 		}
 	}

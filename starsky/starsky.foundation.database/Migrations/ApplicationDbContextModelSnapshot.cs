@@ -19,7 +19,7 @@ namespace starsky.foundation.database.Migrations
             modelBuilder
                 .HasAnnotation("MySql:CharSet", "utf8mb4")
                 .HasAnnotation("MySql:CharSetDelegation", DelegationModes.ApplyToAll)
-                .HasAnnotation("ProductVersion", "6.0.12");
+                .HasAnnotation("ProductVersion", "8.0.1");
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.Credential", b =>
                 {
@@ -214,9 +214,11 @@ namespace starsky.foundation.database.Migrations
                         .HasAnnotation("MySql:ValueGeneratedOnAdd", true);
 
                     b.Property<string>("FriendlyName")
+                        .HasMaxLength(45)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Xml")
+                        .HasMaxLength(1200)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

@@ -7,7 +7,7 @@ namespace starsky.feature.webftppublish.FtpAbstractions.Helpers
 {
 	public class WrapFtpWebResponse : IFtpWebResponse
 	{
-		private FtpWebResponse _response;
+		private FtpWebResponse? _response;
 
 		public WrapFtpWebResponse(FtpWebResponse response)
 		{
@@ -24,7 +24,7 @@ namespace starsky.feature.webftppublish.FtpAbstractions.Helpers
 		{
 			if ( !disposing ) return;
 			if ( _response == null ) return;
-			((IDisposable)_response).Dispose();
+			( ( IDisposable )_response ).Dispose();
 			_response = null;
 		}
 

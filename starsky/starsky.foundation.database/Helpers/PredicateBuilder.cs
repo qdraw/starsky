@@ -16,15 +16,15 @@ namespace starsky.foundation.database.Helpers
 		/// </summary>
 		/// <typeparam name="T">type</typeparam>
 		/// <returns>Expression</returns>
-		public static Expression<Func<T, bool>> True<T> ()  { return f => true;  }
-		
+		public static Expression<Func<T, bool>> True<T>() { return f => true; }
+
 		/// <summary>
 		/// Query setup negative 
 		/// </summary>
 		/// <typeparam name="T">type</typeparam>
 		/// <returns>Expression</returns>
-		public static Expression<Func<T, bool>> False<T> () { return f => false; }
- 
+		public static Expression<Func<T, bool>> False<T>() { return f => false; }
+
 		/// <summary>
 		/// Or Expression
 		/// </summary>
@@ -32,14 +32,14 @@ namespace starsky.foundation.database.Helpers
 		/// <param name="expr2">second</param>
 		/// <typeparam name="T">object type</typeparam>
 		/// <returns>Expression</returns>
-		public static Expression<Func<T, bool>> Or<T> (this Expression<Func<T, bool>> expr1,
+		public static Expression<Func<T, bool>> Or<T>(this Expression<Func<T, bool>> expr1,
 			Expression<Func<T, bool>> expr2)
 		{
-			var invokedExpr = Expression.Invoke (expr2, expr1.Parameters);
+			var invokedExpr = Expression.Invoke(expr2, expr1.Parameters);
 			return Expression.Lambda<Func<T, bool>>
-				(Expression.OrElse (expr1.Body, invokedExpr), expr1.Parameters);
+				(Expression.OrElse(expr1.Body, invokedExpr), expr1.Parameters);
 		}
-		
+
 		/// <summary>
 		/// And Expression
 		/// </summary>
@@ -47,12 +47,12 @@ namespace starsky.foundation.database.Helpers
 		/// <param name="expr2">second</param>
 		/// <typeparam name="T">object type</typeparam>
 		/// <returns>Expression</returns>
-		public static Expression<Func<T, bool>> And<T> (this Expression<Func<T, bool>> expr1,
+		public static Expression<Func<T, bool>> And<T>(this Expression<Func<T, bool>> expr1,
 			Expression<Func<T, bool>> expr2)
 		{
-			var invokedExpr = Expression.Invoke (expr2, expr1.Parameters.Cast<Expression> ());
+			var invokedExpr = Expression.Invoke(expr2, expr1.Parameters.Cast<Expression>());
 			return Expression.Lambda<Func<T, bool>>
-				(Expression.AndAlso (expr1.Body, invokedExpr), expr1.Parameters);
+				(Expression.AndAlso(expr1.Body, invokedExpr), expr1.Parameters);
 		}
 
 		/// <summary>
@@ -61,10 +61,10 @@ namespace starsky.foundation.database.Helpers
 		/// <param name="predicates"></param>
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
-		public static Expression<Func<T,bool>> OrLoop<T>(List<Expression<Func<T,bool>>> predicates)
+		public static Expression<Func<T, bool>> OrLoop<T>(List<Expression<Func<T, bool>>> predicates)
 		{
 			var predicate = False<T>();
-				
+
 			for ( var i = 0; i < predicates.Count; i++ )
 			{
 				if ( i == 0 )
@@ -75,13 +75,13 @@ namespace starsky.foundation.database.Helpers
 				else
 				{
 					var item2 = predicates[i];
-					predicate =  predicate.Or(item2);
+					predicate = predicate.Or(item2);
 				}
 			}
 
 			return predicate;
 		}
-		
+
 		/// <summary>
 		/// Combine two queries
 		/// @see https://stackoverflow.com/a/457328
@@ -94,7 +94,7 @@ namespace starsky.foundation.database.Helpers
 			this Expression<Func<T, bool>> expr1,
 			Expression<Func<T, bool>> expr2)
 		{
-			var parameter = Expression.Parameter(typeof (T));
+			var parameter = Expression.Parameter(typeof(T));
 
 			var leftVisitor = new ReplaceExpressionVisitor(expr1.Parameters[0], parameter);
 			var left = leftVisitor.Visit(expr1.Body);
@@ -120,7 +120,7 @@ namespace starsky.foundation.database.Helpers
 
 			public override Expression Visit(Expression? node)
 			{
-				if (node == _oldValue)
+				if ( node == _oldValue )
 					return _newValue;
 				return base.Visit(node)!;
 			}

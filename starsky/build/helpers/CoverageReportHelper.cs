@@ -4,7 +4,6 @@ using Serilog;
 
 namespace helpers
 {
-
 	public static class CoverageReportHelper
 	{
 		static void Information(string value)
@@ -12,14 +11,14 @@ namespace helpers
 			Log.Information(value);
 		}
 
-		public static string GenerateHtml(bool noUnitTest)
+		public static string? GenerateHtml(bool noUnitTest)
 		{
 			if ( noUnitTest )
 			{
 				Information(">> MergeCoverageFiles is disable due the --no-unit-test flag");
 				return null;
 			}
-		
+
 			Information(">> Next: MergeCoverageFiles ");
 
 			var rootDirectory = Directory.GetParent(AppDomain.CurrentDomain
@@ -38,17 +37,15 @@ namespace helpers
 
 			var args = new[]
 			{
-				$"-reports:{outputCoverageFile}", 
-				$"-targetdir:{reportFolder}",
+				$"-reports:{outputCoverageFile}", $"-targetdir:{reportFolder}",
 				"-reporttypes:HtmlInline"
 			};
 
 			Palmmedia.ReportGenerator.Core.Program.Main(args);
-			
+
 			Information(">> ReportGenerator done");
 
 			return reportFolder;
 		}
-
 	}
 }

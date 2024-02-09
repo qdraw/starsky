@@ -72,7 +72,7 @@ namespace starsky.feature.webftppublish.Services
 		public bool Run(string parentDirectory, string slug, Dictionary<string, bool> copyContent)
 		{
 			foreach ( var thisDirectory in
-			         CreateListOfRemoteDirectories(parentDirectory, slug, copyContent) )
+					 CreateListOfRemoteDirectories(parentDirectory, slug, copyContent) )
 			{
 				_console.Write(",");
 				if ( DoesFtpDirectoryExist(thisDirectory) ) continue;
@@ -117,7 +117,7 @@ namespace starsky.feature.webftppublish.Services
 			{
 				var parentItems = Breadcrumbs.BreadcrumbHelper(copyItem.Key);
 				foreach ( var item in parentItems.Where(p =>
-					         p != Path.DirectorySeparatorChar.ToString()) )
+							 p != Path.DirectorySeparatorChar.ToString()) )
 				{
 					if ( _storage.ExistFolder(parentDirectory + item) )
 					{
@@ -157,8 +157,8 @@ namespace starsky.feature.webftppublish.Services
 			{
 				const string pathDelimiter = "/";
 				var toFtpPath = PathHelper.RemoveLatestSlash(_webFtpNoLogin) + pathDelimiter +
-				                GenerateSlugHelper.GenerateSlug(slug, true) + pathDelimiter +
-				                item;
+								GenerateSlugHelper.GenerateSlug(slug, true) + pathDelimiter +
+								item;
 
 				_console.Write(".");
 
@@ -253,7 +253,7 @@ namespace starsky.feature.webftppublish.Services
 			}
 			catch ( WebException ex )
 			{
-				var ftpWebResponse = ( FtpWebResponse )ex.Response;
+				var ftpWebResponse = ( FtpWebResponse? )ex.Response;
 				ftpWebResponse?.Close();
 				return ftpWebResponse?.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable;
 			}

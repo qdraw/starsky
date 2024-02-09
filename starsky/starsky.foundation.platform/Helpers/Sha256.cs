@@ -10,7 +10,7 @@ public static class Sha256
 	{
 		return string.IsNullOrEmpty(input) ? string.Empty : ComputeSha256(Encoding.UTF8.GetBytes(input));
 	}
-	
+
 	public static string ComputeSha256(byte[]? input)
 	{
 		if ( input == null || input.Length == 0 ) return string.Empty;

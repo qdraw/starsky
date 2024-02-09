@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -31,7 +30,8 @@ namespace starsky.Controllers
 {
 	[Authorize] // <- should be logged in!
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S5693:Make sure the content " +
-		"length limit is safe here", Justification = "Is checked")]
+	                                                          "length limit is safe here",
+		Justification = "Is checked")]
 	public sealed class ImportController : Controller
 	{
 		private readonly IImport _import;
@@ -44,20 +44,21 @@ namespace starsky.Controllers
 		private readonly IWebLogger _logger;
 
 		public ImportController(IImport import, AppSettings appSettings,
-			IUpdateBackgroundTaskQueue queue, 
-			IHttpClientHelper httpClientHelper, ISelectorStorage selectorStorage, 
+			IUpdateBackgroundTaskQueue queue,
+			IHttpClientHelper httpClientHelper, ISelectorStorage selectorStorage,
 			IServiceScopeFactory scopeFactory, IWebLogger logger)
 		{
 			_appSettings = appSettings;
 			_import = import;
 			_bgTaskQueue = queue;
 			_httpClientHelper = httpClientHelper;
-			_selectorStorage = selectorStorage; 
-			_hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+			_selectorStorage = selectorStorage;
+			_hostFileSystemStorage =
+				selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 			_scopeFactory = scopeFactory;
 			_logger = logger;
 		}
-        
+
 		/// <summary>
 		/// Import a file using the structure format
 		/// </summary>
@@ -70,29 +71,33 @@ namespace starsky.Controllers
 		[Produces("application/json")]
 		[RequestFormLimits(MultipartBodyLengthLimit = 320_000_000)]
 		[RequestSizeLimit(320_000_000)] // in bytes, 305MB
-		[ProducesResponseType(typeof(List<ImportIndexItem>),200)] // yes
-		[ProducesResponseType(typeof(List<ImportIndexItem>),206)]  // When all items are already imported
-		[ProducesResponseType(typeof(List<ImportIndexItem>),415)]  // Wrong input (e.g. wrong extenstion type)
+		[ProducesResponseType(typeof(List<ImportIndexItem>), 200)] // yes
+		[ProducesResponseType(typeof(List<ImportIndexItem>),
+			206)] // When all items are already imported
+		[ProducesResponseType(typeof(List<ImportIndexItem>),
+			415)] // Wrong input (e.g. wrong extenstion type)
 		public async Task<IActionResult> IndexPost() // aka ActionResult Import
 		{
-			var tempImportPaths = await Request.StreamFile(_appSettings,_selectorStorage);
+			var tempImportPaths = await Request.StreamFile(_appSettings, _selectorStorage);
 			var importSettings = new ImportSettingsModel(Request);
 
 			var fileIndexResultsList = await _import.Preflight(tempImportPaths, importSettings);
 
 			// Import files >
-			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
-			{
-				await ImportPostBackgroundTask(tempImportPaths, importSettings, _appSettings.IsVerbose());
-			}, string.Join(",", tempImportPaths));
-            
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(
+				async _ =>
+				{
+					await ImportPostBackgroundTask(tempImportPaths, importSettings,
+						_appSettings.IsVerbose());
+				}, string.Join(",", tempImportPaths));
+
 			// When all items are already imported
 			if ( importSettings.IndexMode &&
 			     fileIndexResultsList.TrueForAll(p => p.Status != ImportStatus.Ok) )
 			{
 				Response.StatusCode = 206;
 			}
-            
+
 			// Wrong input (extension is not allowed)
 			if ( fileIndexResultsList.TrueForAll(p => p.Status == ImportStatus.FileError) )
 			{
@@ -102,11 +107,12 @@ namespace starsky.Controllers
 			return Json(fileIndexResultsList);
 		}
 
-		internal async Task<List<ImportIndexItem>> ImportPostBackgroundTask(List<string> tempImportPaths,
+		internal async Task<List<ImportIndexItem>> ImportPostBackgroundTask(
+			List<string> tempImportPaths,
 			ImportSettingsModel importSettings, bool isVerbose = false)
 		{
 			List<ImportIndexItem> importedFiles;
-	            
+
 			using ( var scope = _scopeFactory.CreateScope() )
 			{
 				var selectorStorage = scope.ServiceProvider.GetRequiredService<ISelectorStorage>();
@@ -114,30 +120,32 @@ namespace starsky.Controllers
 				var exifTool = scope.ServiceProvider.GetRequiredService<IExifTool>();
 				var query = scope.ServiceProvider.GetRequiredService<IQuery>();
 				var console = scope.ServiceProvider.GetRequiredService<IConsole>();
-				var metaExifThumbnailService = scope.ServiceProvider.GetRequiredService<IMetaExifThumbnailService>();
+				var metaExifThumbnailService =
+					scope.ServiceProvider.GetRequiredService<IMetaExifThumbnailService>();
 				var memoryCache = scope.ServiceProvider.GetRequiredService<IMemoryCache>();
 				var thumbnailQuery = scope.ServiceProvider.GetRequiredService<IThumbnailQuery>();
 
 				// use of IImport direct does not work
-				importedFiles = await new Import(selectorStorage,_appSettings,
-					importQuery, exifTool, query,console, 
-					metaExifThumbnailService, _logger, thumbnailQuery, memoryCache).Importer(tempImportPaths, importSettings);
+				importedFiles = await new Import(selectorStorage, _appSettings,
+						importQuery, exifTool, query, console,
+						metaExifThumbnailService, _logger, thumbnailQuery, memoryCache)
+					.Importer(tempImportPaths, importSettings);
 			}
-	            
-			if (isVerbose)
+
+			if ( isVerbose )
 			{
-				foreach (var file in importedFiles)
+				foreach ( var file in importedFiles )
 				{
 					_logger.LogInformation(
-							$"[ImportPostBackgroundTask] import {file.Status} " +
-							$"=> {file.FilePath} ~ {file.FileIndexItem?.FilePath}");
+						$"[ImportPostBackgroundTask] import {file.Status} " +
+						$"=> {file.FilePath} ~ {file.FileIndexItem?.FilePath}");
 				}
 			}
-                
+
 			// Remove source files
 			foreach ( var toDelPath in tempImportPaths )
 			{
-				new RemoveTempAndParentStreamFolderHelper(_hostFileSystemStorage,_appSettings)
+				new RemoveTempAndParentStreamFolderHelper(_hostFileSystemStorage, _appSettings)
 					.RemoveTempAndParentStreamFolder(toDelPath);
 			}
 
@@ -156,34 +164,36 @@ namespace starsky.Controllers
 		/// <response code="206">file already imported</response>
 		/// <response code="404">the file url is not found or the domain is not whitelisted</response>
 		[HttpPost("/api/import/fromUrl")]
-		[ProducesResponseType(typeof(List<ImportIndexItem>),200)] // yes
-		[ProducesResponseType(typeof(List<ImportIndexItem>),206)] // file already imported
+		[ProducesResponseType(typeof(List<ImportIndexItem>), 200)] // yes
+		[ProducesResponseType(typeof(List<ImportIndexItem>), 206)] // file already imported
 		[ProducesResponseType(404)] // url 404
 		[Produces("application/json")]
 		public async Task<IActionResult> FromUrl(string fileUrl, string filename, string structure)
 		{
-			if (filename == null) filename = Base32.Encode(FileHash.GenerateRandomBytes(8)) + ".unknown";
-	        
+			if ( filename == null )
+				filename = Base32.Encode(FileHash.GenerateRandomBytes(8)) + ".unknown";
+
 			// I/O function calls should not be vulnerable to path injection attacks
-			if (!Regex.IsMatch(filename, "^[a-zA-Z0-9_\\s\\.]+$", 
-				RegexOptions.None, TimeSpan.FromMilliseconds(100)) || !FilenamesHelper.IsValidFileName(filename))
+			if ( !Regex.IsMatch(filename, "^[a-zA-Z0-9_\\s\\.]+$",
+				     RegexOptions.None, TimeSpan.FromMilliseconds(100)) ||
+			     !FilenamesHelper.IsValidFileName(filename) )
 			{
 				return BadRequest();
 			}
-	        
-			var tempImportFullPath = Path.Combine(_appSettings.TempFolder, filename);
-			var importSettings = new ImportSettingsModel(Request) {Structure = structure};
-			var isDownloaded = await _httpClientHelper.Download(fileUrl,tempImportFullPath);
-			if (!isDownloaded) return NotFound("'file url' not found or domain not allowed " + fileUrl);
 
-			var importedFiles = await _import.Importer(new List<string>{tempImportFullPath}, importSettings);
-			new RemoveTempAndParentStreamFolderHelper(_hostFileSystemStorage,_appSettings)
+			var tempImportFullPath = Path.Combine(_appSettings.TempFolder, filename);
+			var importSettings = new ImportSettingsModel(Request) { Structure = structure };
+			var isDownloaded = await _httpClientHelper.Download(fileUrl, tempImportFullPath);
+			if ( !isDownloaded )
+				return NotFound("'file url' not found or domain not allowed " + fileUrl);
+
+			var importedFiles =
+				await _import.Importer(new List<string> { tempImportFullPath }, importSettings);
+			new RemoveTempAndParentStreamFolderHelper(_hostFileSystemStorage, _appSettings)
 				.RemoveTempAndParentStreamFolder(tempImportFullPath);
-			
-			if(importedFiles.Count == 0) Response.StatusCode = 206;
+
+			if ( importedFiles.Count == 0 ) Response.StatusCode = 206;
 			return Json(importedFiles);
 		}
-
-
 	}
 }

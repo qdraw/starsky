@@ -15,7 +15,7 @@ namespace starsky.Controllers
 	[Authorize]
 	public sealed class HomeController : Controller
 	{
-		private readonly string  _clientApp;
+		private readonly string _clientApp;
 		private readonly IAntiforgery _antiForgery;
 
 		public HomeController(AppSettings appSettings, IAntiforgery antiForgery)
@@ -55,19 +55,19 @@ namespace starsky.Controllers
 		[HttpPost("/search")]
 		public IActionResult SearchPost(string t = "", int p = 0)
 		{
-			if (string.IsNullOrEmpty(t))
+			if ( string.IsNullOrEmpty(t) )
 			{
 				return Redirect($"/search");
 			}
-			
+
 			// Added filter to prevent redirects based on tainted, user-controlled data
 			// unescaped: ^[a-zA-Z0-9_\-+"'/=:,\.>< ]+$
-			if ( !Regex.IsMatch(t, "^[a-zA-Z0-9_\\-+\"'/=:,\\.>< ]+$", 
+			if ( !Regex.IsMatch(t, "^[a-zA-Z0-9_\\-+\"'/=:,\\.>< ]+$",
 				RegexOptions.None, TimeSpan.FromMilliseconds(100)) )
 			{
 				return BadRequest("`t` is not allowed");
 			}
-			return Redirect(AppendPathBasePrefix(Request.PathBase.Value,$"/search?t={t}&p={p}"));
+			return Redirect(AppendPathBasePrefix(Request.PathBase.Value, $"/search?t={t}&p={p}"));
 		}
 
 		/// <summary>
@@ -86,29 +86,29 @@ namespace starsky.Controllers
 		[ProducesResponseType(400)]
 		[ProducesResponseType(401)]
 		[HttpGet("/search")]
-		public IActionResult Search(string t= "", int p = 0)
+		public IActionResult Search(string t = "", int p = 0)
 		{
 			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
 
 			if ( !IsCaseSensitiveRedirect("/search", Request.Path.Value) )
 				return PhysicalFile(_clientApp, "text/html");
-			
+
 			// if not case sensitive is already served
-			if (string.IsNullOrEmpty(t))
+			if ( string.IsNullOrEmpty(t) )
 			{
-				return Redirect(AppendPathBasePrefix(Request.PathBase.Value,$"/search"));
+				return Redirect(AppendPathBasePrefix(Request.PathBase.Value, $"/search"));
 			}
 
 			// Added filter to prevent redirects based on tainted, user-controlled data
 			// unescaped: ^[a-zA-Z0-9_\-+"'/=:>< ]+$
-			if (!Regex.IsMatch(t, "^[a-zA-Z0-9_\\-+\"'/=:>< ]+$", 
+			if ( !Regex.IsMatch(t, "^[a-zA-Z0-9_\\-+\"'/=:>< ]+$",
 				RegexOptions.None, TimeSpan.FromMilliseconds(100)) )
 			{
 				return BadRequest("`t` is not allowed");
 			}
-			return Redirect(AppendPathBasePrefix(Request.PathBase.Value,$"/search?t={t}&p={p}"));
+			return Redirect(AppendPathBasePrefix(Request.PathBase.Value, $"/search?t={t}&p={p}"));
 		}
-		
+
 		/// <summary>
 		/// Trash page (HTML)
 		/// </summary>
@@ -122,11 +122,11 @@ namespace starsky.Controllers
 		[ProducesResponseType(301)]
 		[ProducesResponseType(401)]
 		[HttpGet("/trash")]
-		public IActionResult Trash( int p = 0)
+		public IActionResult Trash(int p = 0)
 		{
 			if ( IsCaseSensitiveRedirect("/trash", Request.Path.Value) )
 			{
-				return Redirect(AppendPathBasePrefix(Request.PathBase.Value,$"/trash?p={p}"));
+				return Redirect(AppendPathBasePrefix(Request.PathBase.Value, $"/trash?p={p}"));
 			}
 			return PhysicalFile(_clientApp, "text/html");
 		}
@@ -145,11 +145,11 @@ namespace starsky.Controllers
 		{
 			if ( IsCaseSensitiveRedirect("/import", Request.Path.Value) )
 			{
-				return Redirect(AppendPathBasePrefix(Request.PathBase.Value,$"/import"));
+				return Redirect(AppendPathBasePrefix(Request.PathBase.Value, $"/import"));
 			}
 			return PhysicalFile(_clientApp, "text/html");
 		}
-		
+
 		/// <summary>
 		/// Preferences page (HTML)
 		/// </summary>
@@ -164,11 +164,11 @@ namespace starsky.Controllers
 		{
 			if ( IsCaseSensitiveRedirect("/preferences", Request.Path.Value) )
 			{
-				return Redirect(AppendPathBasePrefix(Request.PathBase.Value,$"/preferences"));
+				return Redirect(AppendPathBasePrefix(Request.PathBase.Value, $"/preferences"));
 			}
 			return PhysicalFile(_clientApp, "text/html");
 		}
-		
+
 		/// <summary>
 		/// View the Register form (HTML)
 		/// </summary>
@@ -189,7 +189,7 @@ namespace starsky.Controllers
 
 		internal static string AppendPathBasePrefix(string? requestPathBase, string url)
 		{
-			return requestPathBase?.Equals("/starsky", 
+			return requestPathBase?.Equals("/starsky",
 				StringComparison.InvariantCultureIgnoreCase) == true ? $"/starsky{url}" : url;
 		}
 

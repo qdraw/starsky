@@ -1,31 +1,33 @@
-#nullable enable
 using System;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
-using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.injection;
-using starsky.foundation.webtelemetry.Helpers;
+using starsky.foundation.sync.Metrics;
 using starsky.foundation.worker.Helpers;
-using starsky.foundation.worker.Services;
 
 namespace starsky.foundation.sync.WatcherBackgroundService
 {
 	/// <summary>
 	/// @see: https://learn.microsoft.com/en-us/dotnet/core/extensions/queue-service
 	/// </summary>
-	[Service(typeof(IDiskWatcherBackgroundTaskQueue), InjectionLifetime = InjectionLifetime.Singleton)]
+	[Service(typeof(IDiskWatcherBackgroundTaskQueue),
+		InjectionLifetime = InjectionLifetime.Singleton)]
 	public sealed class DiskWatcherBackgroundTaskQueue : IDiskWatcherBackgroundTaskQueue
 	{
-		private readonly Channel<Tuple<Func<CancellationToken, ValueTask>, string>> _queue;
-		private readonly TelemetryClient? _telemetryClient;
+		private readonly Channel<Tuple<Func<CancellationToken, ValueTask>, string?, string?>>
+			_queue;
+
+		private readonly DiskWatcherBackgroundTaskQueueMetrics _metrics;
 
 		public DiskWatcherBackgroundTaskQueue(IServiceScopeFactory scopeFactory)
 		{
-			_telemetryClient = scopeFactory.CreateScope().ServiceProvider
-				.GetService<TelemetryClient>();
-			_queue = Channel.CreateBounded<Tuple<Func<CancellationToken, ValueTask>, string>>(ProcessTaskQueue.DefaultBoundedChannelOptions);
+			_queue = Channel
+				.CreateBounded<Tuple<Func<CancellationToken, ValueTask>, string?, string?>>(
+					ProcessTaskQueue.DefaultBoundedChannelOptions);
+			_metrics = scopeFactory.CreateScope().ServiceProvider
+				.GetRequiredService<DiskWatcherBackgroundTaskQueueMetrics>();
 		}
 
 		public int Count()
@@ -34,17 +36,21 @@ namespace starsky.foundation.sync.WatcherBackgroundService
 		}
 
 		public ValueTask QueueBackgroundWorkItemAsync(
-			Func<CancellationToken, ValueTask> workItem, string metaData)
+			Func<CancellationToken, ValueTask> workItem, string? metaData = null,
+			string? traceParentId = null)
 		{
+			_metrics.Value = Count();
 			return ProcessTaskQueue.QueueBackgroundWorkItemAsync(_queue, workItem, metaData);
 		}
 
-		public async ValueTask<Tuple<Func<CancellationToken, ValueTask>, string>> DequeueAsync(
-			CancellationToken cancellationToken)
+		public async ValueTask<Tuple<Func<CancellationToken, ValueTask>, string?, string?>>
+			DequeueAsync(
+				CancellationToken cancellationToken)
 		{
-			MetricsHelper.Add(_telemetryClient, nameof(DiskWatcherBackgroundTaskQueue), Count());
 			var workItem =
 				await _queue.Reader.ReadAsync(cancellationToken);
+
+			_metrics.Value = Count();
 			return workItem;
 		}
 	}

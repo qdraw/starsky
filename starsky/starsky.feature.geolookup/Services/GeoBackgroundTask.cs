@@ -29,8 +29,8 @@ namespace starsky.feature.geolookup.Services
 		private readonly GeoIndexGpx _geoIndexGpx;
 		private readonly IGeoReverseLookup _geoReverseLookup;
 
-		public GeoBackgroundTask(AppSettings appSettings, ISelectorStorage selectorStorage, 
-			IGeoLocationWrite geoLocationWrite, IMemoryCache memoryCache, 
+		public GeoBackgroundTask(AppSettings appSettings, ISelectorStorage selectorStorage,
+			IGeoLocationWrite geoLocationWrite, IMemoryCache memoryCache,
 			IWebLogger logger, IGeoReverseLookup geoReverseLookup)
 		{
 			_appSettings = appSettings;
@@ -42,7 +42,7 @@ namespace starsky.feature.geolookup.Services
 			_geoIndexGpx = new GeoIndexGpx(_appSettings, _iStorage, logger, memoryCache);
 			_geoReverseLookup = geoReverseLookup;
 		}
-		
+
 		public async Task<List<FileIndexItem>> GeoBackgroundTaskAsync(
 			string f = "/",
 			bool index = true,
@@ -53,18 +53,18 @@ namespace starsky.feature.geolookup.Services
 			var listOfFiles = _iStorage.GetAllFilesInDirectory(f)
 				.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 
-			var fileIndexList = await _readMeta  
+			var fileIndexList = await _readMeta
 				.ReadExifAndXmpFromFileAddFilePathHashAsync(listOfFiles);
-			
+
 			var toMetaFilesUpdate = new List<FileIndexItem>();
 			if ( index )
 			{
 				toMetaFilesUpdate =
 					await _geoIndexGpx
 						.LoopFolderAsync(fileIndexList);
-					
+
 				if ( _appSettings.IsVerbose() ) Console.Write("¬");
-					
+
 				await _geoLocationWrite
 					.LoopFolderAsync(toMetaFilesUpdate, false);
 			}
@@ -72,7 +72,7 @@ namespace starsky.feature.geolookup.Services
 			fileIndexList =
 				await _geoReverseLookup
 					.LoopFolderLookup(fileIndexList, overwriteLocationNames);
-				
+
 			if ( fileIndexList.Count >= 1 )
 			{
 				await _geoLocationWrite.LoopFolderAsync(
@@ -86,8 +86,8 @@ namespace starsky.feature.geolookup.Services
 			foreach ( var item in fileIndexList.GroupBy(i => i.FilePath).Select(g => g.First())
 				.ToList() )
 			{
-				var newThumb = (await new FileHash(_iStorage).GetHashCodeAsync(item.FilePath!)).Key;
-				if ( item.FileHash == newThumb) continue;
+				var newThumb = ( await new FileHash(_iStorage).GetHashCodeAsync(item.FilePath!) ).Key;
+				if ( item.FileHash == newThumb ) continue;
 				new ThumbnailFileMoveAllSizes(_thumbnailStorage).FileMove(item.FileHash!, newThumb);
 				if ( _appSettings.IsVerbose() )
 					_logger.LogInformation("[/api/geo/sync] thumb rename + `" + item.FileHash + "`" + newThumb);

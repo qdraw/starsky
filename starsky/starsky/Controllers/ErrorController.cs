@@ -6,16 +6,16 @@ using starsky.foundation.platform.Models;
 namespace starsky.Controllers
 {
 	[AllowAnonymous]
-	public sealed class ErrorController : Controller  
+	public sealed class ErrorController : Controller
 	{
-		private readonly string  _clientApp;
+		private readonly string _clientApp;
 
 		public ErrorController(AppSettings appSettings)
 		{
 			_clientApp = Path.Combine(appSettings.BaseDirectoryProject,
 				"clientapp", "build", "index.html");
 		}
-		
+
 		/// <summary>
 		/// Return Error page (HTML)
 		/// </summary>
@@ -25,7 +25,7 @@ namespace starsky.Controllers
 		[Produces("text/html")]
 		public IActionResult Error(int? statusCode = null)
 		{
-			if (statusCode.HasValue)
+			if ( statusCode.HasValue )
 			{
 				// here is the trick
 				HttpContext.Response.StatusCode = statusCode.Value;

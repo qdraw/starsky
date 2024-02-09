@@ -24,7 +24,7 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly NewUpdateItemWrapper _newUpdateItemWrapper;
 		private readonly CheckForStatusNotOkHelper _checkForStatusNotOkHelper;
 
-		public SyncMultiFile(AppSettings appSettings, IQuery query, 
+		public SyncMultiFile(AppSettings appSettings, IQuery query,
 			IStorage subPathStorage, IMemoryCache? cache, IWebLogger logger)
 		{
 			_query = query;
@@ -50,12 +50,12 @@ namespace starsky.foundation.sync.SyncServices
 			var resultDatabaseItems = new List<FileIndexItem>();
 			foreach ( var path in subPathInFiles )
 			{
-				var item = databaseItems.Find(p => 
+				var item = databaseItems.Find(p =>
 					string.Equals(p.FilePath, path, StringComparison.InvariantCultureIgnoreCase));
-				if (item == null ) // when the file should be added to the index
+				if ( item == null ) // when the file should be added to the index
 				{
 					// Status is used by MultiFile
-					resultDatabaseItems.Add(new FileIndexItem(path){Status = FileIndexItem.ExifStatus.NotFoundNotInIndex});
+					resultDatabaseItems.Add(new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.NotFoundNotInIndex });
 					continue;
 				}
 				resultDatabaseItems.Add(item);
@@ -77,10 +77,10 @@ namespace starsky.foundation.sync.SyncServices
 			bool addParentFolder = true)
 		{
 			if ( dbItems == null ) return new List<FileIndexItem>();
-						
+
 			dbItems = DeleteStatusHelper.AddDeleteStatus(dbItems, FileIndexItem.ExifStatus.DeletedAndSame);
 
-			var statusItems =  _checkForStatusNotOkHelper
+			var statusItems = _checkForStatusNotOkHelper
 				.CheckForStatusNotOk(dbItems.Select(p => p.FilePath).Cast<string>()).ToList();
 			UpdateCheckStatus(dbItems, statusItems);
 
@@ -116,12 +116,12 @@ namespace starsky.foundation.sync.SyncServices
 
 			if ( addParentFolder )
 			{
-				_logger.LogInformation("Add Parent Folder For: " + 
-				                       string.Join(",", dbItems.Select(p => p.FilePath)));
-				
+				_logger.LogInformation("Add Parent Folder For: " +
+									   string.Join(",", dbItems.Select(p => p.FilePath)));
+
 				dbItems = await new AddParentList(_subPathStorage, _query).AddParentItems(dbItems);
 			}
-		
+
 			if ( updateDelegate == null ) return dbItems;
 			return await PushToSocket(dbItems, updateDelegate);
 		}
@@ -137,17 +137,17 @@ namespace starsky.foundation.sync.SyncServices
 					continue;
 				}
 				var dbItemSearched = dbItems[dbItemSearchedIndex];
-				
-				if ( dbItemSearched == null! || (dbItemSearched.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex 
-				                                // why statusItem.Status?
-				                                && statusItem.Status == FileIndexItem.ExifStatus.Ok))
+
+				if ( dbItemSearched == null! || ( dbItemSearched.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex
+												// why statusItem.Status?
+												&& statusItem.Status == FileIndexItem.ExifStatus.Ok ) )
 				{
 					continue;
 				}
 
 				dbItems[dbItemSearchedIndex].Status = statusItem.Status;
-				
-				if ( dbItemSearched is { Status: FileIndexItem.ExifStatus.Ok })
+
+				if ( dbItemSearched is { Status: FileIndexItem.ExifStatus.Ok } )
 				{
 					// there is still a check if the file is not changed see: SizeFileHashIsTheSame
 					dbItems[dbItemSearchedIndex].Status = FileIndexItem.ExifStatus.OkAndSame;
@@ -166,19 +166,19 @@ namespace starsky.foundation.sync.SyncServices
 			{
 				return dbItems;
 			}
-			
-			foreach ( var (isLastEditedSame,isFileHashSame,isSameUpdatedItem) in 
-			         isSameUpdatedItemList.Where(p=> p.Item1 != true) )
+
+			foreach ( var (isLastEditedSame, isFileHashSame, isSameUpdatedItem) in
+					 isSameUpdatedItemList.Where(p => p.Item1 != true) )
 			{
 				var updateItemIndex = dbItems.FindIndex(
 					p => p.FilePath == isSameUpdatedItem.FilePath);
-					
+
 				if ( isLastEditedSame == false && isFileHashSame == true )
 				{
 					dbItems[updateItemIndex] = await _newUpdateItemWrapper.HandleLastEditedIsSame(isSameUpdatedItem, true);
 					continue;
 				}
-					
+
 				dbItems[updateItemIndex] = await _newUpdateItemWrapper.UpdateItem(isSameUpdatedItem,
 					isSameUpdatedItem.Size,
 					isSameUpdatedItem.FilePath!, false);
@@ -192,21 +192,21 @@ namespace starsky.foundation.sync.SyncServices
 			foreach ( var statusItem in statusItems )
 			{
 				foreach ( var item in dbItems.Where(p =>
-					         p.FileCollectionName == statusItem.FileCollectionName
-					         && p.ParentDirectory == statusItem.ParentDirectory
-					         && ExtensionRolesHelper.IsExtensionSidecar(p.FileName) && 
-					         p.Status is FileIndexItem.ExifStatus.Ok or FileIndexItem.ExifStatus.OkAndSame 
-						         or FileIndexItem.ExifStatus.NotFoundNotInIndex))
+							 p.FileCollectionName == statusItem.FileCollectionName
+							 && p.ParentDirectory == statusItem.ParentDirectory
+							 && ExtensionRolesHelper.IsExtensionSidecar(p.FileName) &&
+							 p.Status is FileIndexItem.ExifStatus.Ok or FileIndexItem.ExifStatus.OkAndSame
+								 or FileIndexItem.ExifStatus.NotFoundNotInIndex) )
 				{
 					var dbMatchItemSearchedIndex = dbItems.FindIndex(p =>
 						p.ParentDirectory == item.ParentDirectory && p.FileCollectionName == item.FileCollectionName);
-						
+
 					dbItems[dbMatchItemSearchedIndex].AddSidecarExtension("xmp");
 					dbItems[dbMatchItemSearchedIndex].LastChanged.Add(nameof(FileIndexItem.SidecarExtensions));
 				}
 			}
 		}
-	
+
 		private static async Task<List<FileIndexItem>> PushToSocket(List<FileIndexItem> updatedDbItems,
 			ISynchronize.SocketUpdateDelegate updateDelegate)
 		{

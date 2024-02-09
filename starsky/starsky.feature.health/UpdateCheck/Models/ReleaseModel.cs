@@ -19,19 +19,20 @@ namespace starsky.feature.health.UpdateCheck.Models
 		public bool Draft { get; set; }
 
 		private string _tagName = string.Empty;
-		
+
 		/// <summary>
 		/// Should start with v
 		/// </summary>
 		[JsonPropertyName("tag_name")]
-		public string TagName {
+		public string TagName
+		{
 			get => _tagName;
 			set
 			{
-				if ( string.IsNullOrWhiteSpace(value)) return;
+				if ( string.IsNullOrWhiteSpace(value) ) return;
 				if ( !value.StartsWith('v') ) Console.WriteLine($"{_tagName} Should start with v");
 				_tagName = value;
-			} 
+			}
 		}
 	}
 }

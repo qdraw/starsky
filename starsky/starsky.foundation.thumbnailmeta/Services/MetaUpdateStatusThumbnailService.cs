@@ -22,7 +22,7 @@ public class MetaUpdateStatusThumbnailService : IMetaUpdateStatusThumbnailServic
 		var storage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 		_fileHashStorage = new FileHash(storage);
 	}
-	
+
 	/// <summary>
 	/// 
 	/// </summary>
@@ -33,13 +33,13 @@ public class MetaUpdateStatusThumbnailService : IMetaUpdateStatusThumbnailServic
 		foreach ( var (status, rightType, subPath, reason) in statusResultsWithSubPaths )
 		{
 			if ( !rightType ) continue;
-			var fileHash = ( await _fileHashStorage.GetHashCodeAsync(subPath)).Key;
+			var fileHash = ( await _fileHashStorage.GetHashCodeAsync(subPath) ).Key;
 			statusResultsWithFileHashes.Add(new ThumbnailResultDataTransferModel(fileHash, status)
 			{
 				Reasons = reason
 			});
 		}
-		
+
 		await _thumbnailQuery.AddThumbnailRangeAsync(statusResultsWithFileHashes);
 	}
 }

@@ -19,7 +19,7 @@ namespace starsky.foundation.storage.ArchiveFormats
 		/// <param name="storeZipFolderFullPath">output e.g. /folder/</param>
 		/// <returns></returns>
 		[SuppressMessage("Usage", "S5042:Make sure that decompressing this archive file is safe")]
-		public bool ExtractZip( string zipInputFullPath, string storeZipFolderFullPath)
+		public bool ExtractZip(string zipInputFullPath, string storeZipFolderFullPath)
 		{
 			if ( !File.Exists(zipInputFullPath) ) return false;
 			// Ensures that the last character on the extraction path
@@ -36,25 +36,25 @@ namespace starsky.foundation.storage.ArchiveFormats
 
 					// Ordinal match is safest, case-sensitive volumes can be mounted within volumes that
 					// are case-insensitive.
-					if (destinationPath.StartsWith(storeZipFolderFullPath, StringComparison.Ordinal))
-						entry.ExtractToFile(destinationPath,true);
+					if ( destinationPath.StartsWith(storeZipFolderFullPath, StringComparison.Ordinal) )
+						entry.ExtractToFile(destinationPath, true);
 				}
 			}
 
 			return true;
 		}
-		
-		public static Dictionary<string,byte[]> ExtractZip(byte[] zipped)
+
+		public static Dictionary<string, byte[]> ExtractZip(byte[] zipped)
 		{
 			using var memoryStream = new MemoryStream(zipped);
 			using var archive = new ZipArchive(memoryStream);
 			var result = new Dictionary<string, byte[]>();
-			foreach (var entry in archive.Entries)
+			foreach ( var entry in archive.Entries )
 			{
 				// only the first item
 				using var entryStream = entry.Open();
 				using var reader = new BinaryReader(entryStream);
-				result.Add(entry.FullName, reader.ReadBytes((int)entry.Length));
+				result.Add(entry.FullName, reader.ReadBytes(( int )entry.Length));
 			}
 			return result;
 		}
@@ -69,18 +69,18 @@ namespace starsky.foundation.storage.ArchiveFormats
 		/// <param name="fileNames">list of filenames</param>
 		/// <param name="zipOutputFilename">to name of the zip file (zipHash)</param>
 		/// <returns>a zip in the temp folder</returns>
-		public string CreateZip(string storeZipFolderFullPath, List<string> filePaths, 
+		public string CreateZip(string storeZipFolderFullPath, List<string> filePaths,
 			List<string> fileNames, string zipOutputFilename)
 		{
 
-			var tempFileFullPath = Path.Combine(storeZipFolderFullPath,zipOutputFilename) + ".zip";
+			var tempFileFullPath = Path.Combine(storeZipFolderFullPath, zipOutputFilename) + ".zip";
 
 			// Has a direct dependency on the filesystem to avoid large content in memory
-			if(File.Exists(tempFileFullPath))
+			if ( File.Exists(tempFileFullPath) )
 			{
 				return tempFileFullPath;
 			}
-			
+
 			ZipArchive zip = ZipFile.Open(tempFileFullPath, ZipArchiveMode.Create);
 
 			for ( int i = 0; i < filePaths.Count; i++ )

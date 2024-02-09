@@ -27,7 +27,7 @@ public class NewUpdateItemWrapper
 		_logger = logger;
 		_subPathStorage = subPathStorage;
 	}
-	
+
 	/// <summary>
 	/// Create an new item in the database
 	/// </summary>
@@ -41,14 +41,14 @@ public class NewUpdateItemWrapper
 
 		// When not OK do not Add (fileHash issues)
 		if ( dbItem.Status != FileIndexItem.ExifStatus.Ok ) return dbItem;
-				
+
 		await _query.AddItemAsync(dbItem);
 		await _query.AddParentItemsAsync(subPath);
 		DeleteStatusHelper.AddDeleteStatus(dbItem);
 		return dbItem;
 	}
-	
-	
+
+
 	/// <summary>
 	/// Create an new item in the database
 	/// </summary>
@@ -76,7 +76,7 @@ public class NewUpdateItemWrapper
 	internal async Task<FileIndexItem> HandleLastEditedIsSame(FileIndexItem updatedDbItem, bool? fileHashSame)
 	{
 		// ReSharper disable once InvertIf
-		if ( _appSettings.SyncAlwaysUpdateLastEditedTime != true && fileHashSame == true)
+		if ( _appSettings.SyncAlwaysUpdateLastEditedTime != true && fileHashSame == true )
 		{
 			updatedDbItem.Status = FileIndexItem.ExifStatus.Ok;
 			return updatedDbItem;
@@ -84,7 +84,7 @@ public class NewUpdateItemWrapper
 
 		return await UpdateItemLastEdited(updatedDbItem);
 	}
-	
+
 	/// <summary>
 	/// Only update the last edited time
 	/// </summary>
@@ -96,10 +96,10 @@ public class NewUpdateItemWrapper
 		updatedDbItem.Status = FileIndexItem.ExifStatus.Ok;
 		DeleteStatusHelper.AddDeleteStatus(updatedDbItem);
 		updatedDbItem.LastChanged =
-			new List<string> {nameof(FileIndexItem.LastEdited)};
+			new List<string> { nameof(FileIndexItem.LastEdited) };
 		return updatedDbItem;
 	}
-	
+
 	/// <summary>
 	/// Update item to database
 	/// </summary>
@@ -114,13 +114,13 @@ public class NewUpdateItemWrapper
 		{
 			_logger.LogDebug($"[SyncSingleFile] Trigger Update Item {subPath}");
 		}
-			
+
 		var updateItem = await _newItem.PrepareUpdateFileItemAsync(dbItem, size);
-		if ( updateItem.Status == FileIndexItem.ExifStatus.OkAndSame)
+		if ( updateItem.Status == FileIndexItem.ExifStatus.OkAndSame )
 		{
 			return updateItem;
 		}
-		
+
 		await _query.UpdateItemAsync(updateItem);
 		if ( addParentItems )
 		{

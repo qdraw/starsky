@@ -1,7 +1,7 @@
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem, newIFileIndexItem } from "../../../interfaces/IFileIndexItem";
-import FetchPost from "../../../shared/fetch-post";
+import FetchPost from "../../../shared/fetch/fetch-post";
 
 const CastFileIndexItem = (element: any): IFileIndexItem => {
   const uploadFileObject = newIFileIndexItem();
@@ -70,9 +70,11 @@ export function PostSingleFormData(
 
 class ProcessResponse {
   private endpoint: string;
+
   constructor(endpoint: string) {
     this.endpoint = endpoint;
   }
+
   public Run(
     response: IConnectionDefault,
     folderPath: string | undefined,

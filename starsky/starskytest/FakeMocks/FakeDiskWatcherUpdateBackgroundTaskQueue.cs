@@ -1,9 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using starsky.foundation.platform.Interfaces;
 using starsky.foundation.sync.WatcherBackgroundService;
-using starsky.foundation.worker.Interfaces;
 
 namespace starskytest.FakeMocks
 {
@@ -18,6 +16,7 @@ namespace starskytest.FakeMocks
 		{
 			_count = count;
 		}
+
 		public bool QueueBackgroundWorkItemCalled { get; set; }
 		public int QueueBackgroundWorkItemCalledCounter { get; set; } = 0;
 		public int DequeueAsyncCounter { get; set; } = 0;
@@ -27,28 +26,31 @@ namespace starskytest.FakeMocks
 			return _count;
 		}
 
-		public async ValueTask QueueBackgroundWorkItemAsync(Func<CancellationToken, ValueTask> workItem, string metaData)
+		public async ValueTask QueueBackgroundWorkItemAsync(
+			Func<CancellationToken, ValueTask> workItem, string? metaData = null,
+			string? traceParentId = null)
 		{
 			QueueBackgroundWorkItemCalled = true;
 			QueueBackgroundWorkItemCalledCounter++;
 			await workItem.Invoke(CancellationToken.None);
 		}
 
-		public ValueTask<Tuple<Func<CancellationToken, ValueTask>, string>> DequeueAsync(CancellationToken cancellationToken)
+		public ValueTask<Tuple<Func<CancellationToken, ValueTask>, string?, string?>> DequeueAsync(
+			CancellationToken cancellationToken)
 		{
 			_count--;
 			DequeueAsyncCounter++;
-			Func<CancellationToken, ValueTask> sayHello = GetMessage;
+
+			var sayHello = GetMessage;
 			var res =
-				new Tuple<Func<CancellationToken, ValueTask>, string>(
-					sayHello, "");
+				new Tuple<Func<CancellationToken, ValueTask>, string?, string?>(
+					sayHello, "", "");
 			return ValueTask.FromResult(res);
 		}
-		
+
 		private ValueTask GetMessage(CancellationToken arg)
 		{
 			return ValueTask.CompletedTask;
 		}
 	}
-
 }

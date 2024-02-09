@@ -2,8 +2,8 @@ import { act, createEvent, fireEvent, render, screen } from "@testing-library/re
 import * as useFetch from "../../../hooks/use-fetch";
 import * as useInterval from "../../../hooks/use-interval";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
-import * as FetchGet from "../../../shared/fetch-get";
-import * as FetchPost from "../../../shared/fetch-post";
+import * as FetchGet from "../../../shared/fetch/fetch-get";
+import * as FetchPost from "../../../shared/fetch/fetch-post";
 import * as Modal from "../../atoms/modal/modal";
 import ModalPublish from "./modal-publish";
 

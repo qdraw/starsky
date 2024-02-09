@@ -10,10 +10,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\starsky.feature.metaupdate\starsky.feature.metaupdate.csproj" />
-      <ProjectReference Include="..\starsky.foundation.native\starsky.foundation.native.csproj" />
-      <ProjectReference Include="..\starsky.foundation.realtime\starsky.foundation.realtime.csproj" />
-      <ProjectReference Include="..\starsky.foundation.worker\starsky.foundation.worker.csproj" />
+        <ProjectReference Include="..\starsky.feature.metaupdate\starsky.feature.metaupdate.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.native\starsky.foundation.native.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.realtime\starsky.foundation.realtime.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.worker\starsky.foundation.worker.csproj"/>
     </ItemGroup>
-
+    
+    <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
+        <SonarQubeExclude>true</SonarQubeExclude>
+    </PropertyGroup>
 </Project>

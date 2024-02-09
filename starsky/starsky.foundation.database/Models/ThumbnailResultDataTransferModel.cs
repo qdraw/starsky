@@ -5,7 +5,7 @@ namespace starsky.foundation.database.Models;
 
 public class ThumbnailResultDataTransferModel
 {
-	public ThumbnailResultDataTransferModel(string fileHash, bool? tinyMeta = null, bool? small= null, bool? large= null, bool? extraLarge = null)
+	public ThumbnailResultDataTransferModel(string fileHash, bool? tinyMeta = null, bool? small = null, bool? large = null, bool? extraLarge = null)
 	{
 		FileHash = fileHash;
 		if ( tinyMeta != null ) TinyMeta = tinyMeta;
@@ -13,7 +13,7 @@ public class ThumbnailResultDataTransferModel
 		if ( large != null ) Large = large;
 		if ( extraLarge != null ) ExtraLarge = extraLarge;
 	}
-	
+
 	/// <summary>
 	/// Null is to-do
 	/// True is done
@@ -44,7 +44,7 @@ public class ThumbnailResultDataTransferModel
 				throw new ArgumentOutOfRangeException(nameof(thumbnailSize), thumbnailSize, null);
 		}
 	}
-	
+
 	public string? FileHash { get; set; }
 
 	/// <summary>
@@ -66,7 +66,7 @@ public class ThumbnailResultDataTransferModel
 	/// 2000px, null is to-do, false is error, true, is done
 	/// </summary>
 	public bool? ExtraLarge { get; set; }
-	
+
 	/// <summary>
 	/// When something went wrong add message here
 	/// </summary>

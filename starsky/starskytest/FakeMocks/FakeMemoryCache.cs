@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using starsky.foundation.database.Models;
-using starskycore.ViewModels;
-using starskytest.FakeCreateAn;
 
 namespace starskytest.FakeMocks
 {

@@ -16,7 +16,7 @@ namespace starsky.Controllers
 		{
 			_notificationQuery = notificationQuery;
 		}
-		
+
 		/// <summary>
 		/// Get recent notifications
 		/// Use dateTime 2022-04-16T17:33:10.323974Z to get the latest notifications
@@ -31,8 +31,8 @@ namespace starsky.Controllers
 		public async Task<IActionResult> GetNotifications(string dateTime)
 		{
 			var (parsed, parsedDateTime) = ParseDate(dateTime);
-			
-			if ( !parsed || (DateTime.UtcNow - parsedDateTime ).TotalDays >= 1 )
+
+			if ( !parsed || ( DateTime.UtcNow - parsedDateTime ).TotalDays >= 1 )
 			{
 				return BadRequest("Please enter a valid dateTime");
 			}
@@ -44,7 +44,7 @@ namespace starsky.Controllers
 			var isParsed = DateTime.TryParse(dateTime, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var parsedDateTime);
 			if ( isParsed )
 				return new Tuple<bool, DateTime>(true, parsedDateTime.ToUniversalTime());
-			
+
 			if ( !int.TryParse(dateTime, out var parsedInt) )
 				return new Tuple<bool, DateTime>(false, DateTime.UtcNow);
 

@@ -30,10 +30,10 @@ namespace starsky.foundation.platform.VersionHelpers
 		}
 
 		private static readonly Regex ParseEx = new Regex(@"^(?<major>\d+)" +
-		                                                  @"(?>\.(?<minor>\d+))?" +
-		                                                  @"(?>\.(?<patch>\d+))?" +
-		                                                  @"(?>\-(?<pre>[0-9A-Za-z\-\.]+))?" +
-		                                                  @"(?>\+(?<build>[0-9A-Za-z\-\.]+))?$",
+														  @"(?>\.(?<minor>\d+))?" +
+														  @"(?>\.(?<patch>\d+))?" +
+														  @"(?>\-(?<pre>[0-9A-Za-z\-\.]+))?" +
+														  @"(?>\+(?<build>[0-9A-Za-z\-\.]+))?$",
 			RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture,
 			TimeSpan.FromSeconds(0.5));
 
@@ -84,7 +84,7 @@ namespace starsky.foundation.platform.VersionHelpers
 		/// <value>
 		/// The minor version.
 		/// </value>
-		public int Minor { get; set;}
+		public int Minor { get; set; }
 
 		/// <summary>
 		/// Gets the patch version.
@@ -92,7 +92,7 @@ namespace starsky.foundation.platform.VersionHelpers
 		/// <value>
 		/// The patch version.
 		/// </value>
-		public int Patch { get; set;}
+		public int Patch { get; set; }
 
 		/// <summary>
 		/// Gets the prerelease version.
@@ -100,7 +100,7 @@ namespace starsky.foundation.platform.VersionHelpers
 		/// <value>
 		/// The prerelease version. Empty string if this is a release version.
 		/// </value>
-		public string Prerelease { get; set;}
+		public string Prerelease { get; set; }
 
 		/// <summary>
 		/// Gets the build metadata.
@@ -108,7 +108,7 @@ namespace starsky.foundation.platform.VersionHelpers
 		/// <value>
 		/// The build metadata. Empty string if there is no build metadata.
 		/// </value>
-		public string Build { get; set;}
+		public string Build { get; set; }
 
 		/// <summary>
 		/// Compares the current instance with another object of the same type and returns an integer that indicates
@@ -201,12 +201,12 @@ namespace starsky.foundation.platform.VersionHelpers
 					if ( value != int.MaxValue )
 					{
 						return value;
-					}	
+					}
 				}
 			}
-			return  aComps.Length.CompareTo(bComps.Length);
+			return aComps.Length.CompareTo(bComps.Length);
 		}
-		
+
 		/// <summary>
 		/// Returns a hash code for this instance.
 		/// </summary>
@@ -226,7 +226,7 @@ namespace starsky.foundation.platform.VersionHelpers
 				return result;
 			}
 		}
-		
+
 		/// <summary>
 		/// Determines whether the specified <see cref="object" /> is equal to this instance.
 		/// </summary>
@@ -238,21 +238,21 @@ namespace starsky.foundation.platform.VersionHelpers
 		/// <exception cref="InvalidCastException">The <paramref name="obj"/> is not a <see cref="SemVersion"/>.</exception>
 		public override bool Equals(object? obj)
 		{
-			if (obj is null)
+			if ( obj is null )
 				return false;
 
-			if (ReferenceEquals(this, obj))
+			if ( ReferenceEquals(this, obj) )
 				return true;
 
-			var other = (SemVersion)obj;
+			var other = ( SemVersion )obj;
 
 			return Major == other.Major
-			       && Minor == other.Minor
-			       && Patch == other.Patch
-			       && string.Equals(Prerelease, other.Prerelease, StringComparison.Ordinal)
-			       && string.Equals(Build, other.Build, StringComparison.Ordinal);
+				   && Minor == other.Minor
+				   && Patch == other.Patch
+				   && string.Equals(Prerelease, other.Prerelease, StringComparison.Ordinal)
+				   && string.Equals(Build, other.Build, StringComparison.Ordinal);
 		}
-		
+
 		/// <summary>
 		/// Checks whether two semantic versions are equal.
 		/// </summary>
@@ -261,8 +261,8 @@ namespace starsky.foundation.platform.VersionHelpers
 		/// <returns><see langword="true"/> if the two values are equal, otherwise <see langword="false"/>.</returns>
 		public static bool Equals(SemVersion? versionA, SemVersion? versionB)
 		{
-			if (ReferenceEquals(versionA, versionB)) return true;
-			if (versionA is null || versionB is null) return false;
+			if ( ReferenceEquals(versionA, versionB) ) return true;
+			if ( versionA is null || versionB is null ) return false;
 			return versionA.Equals(versionB);
 		}
 
@@ -346,7 +346,7 @@ namespace starsky.foundation.platform.VersionHelpers
 		{
 			return Equals(left, right) || Compare(left, right) > 0;
 		}
-		
+
 		/// <summary>
 		/// Compares two semantic versions.
 		/// </summary>

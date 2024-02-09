@@ -1,6 +1,6 @@
 import { useState } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import FetchPost from "../../../shared/fetch-post";
+import FetchPost from "../../../shared/fetch/fetch-post";
 import { Language } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url-query";
 import ButtonStyled from "../../atoms/button-styled/button-styled";

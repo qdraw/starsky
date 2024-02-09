@@ -25,7 +25,7 @@ namespace starsky.Controllers
 		private readonly IWebSocketConnectionsService _connectionsService;
 		private readonly INotificationQuery _notificationQuery;
 
-		public DiskController(IQuery query, ISelectorStorage selectorStorage, 
+		public DiskController(IQuery query, ISelectorStorage selectorStorage,
 			IWebSocketConnectionsService connectionsService, INotificationQuery notificationQuery)
 		{
 			_query = query;
@@ -44,11 +44,11 @@ namespace starsky.Controllers
 		/// <response code="400">missing path</response>
 		/// <response code="401">User unauthorized</response>
 		[HttpPost("/api/disk/mkdir")]
-		[ProducesResponseType(typeof(List<SyncViewModel>),200)]
-		[ProducesResponseType(typeof(List<SyncViewModel>),409)]
-		[ProducesResponseType(typeof(List<SyncViewModel>),400)]
-		[ProducesResponseType(typeof(string),401)]
-		[Produces("application/json")]	    
+		[ProducesResponseType(typeof(List<SyncViewModel>), 200)]
+		[ProducesResponseType(typeof(List<SyncViewModel>), 409)]
+		[ProducesResponseType(typeof(List<SyncViewModel>), 400)]
+		[ProducesResponseType(typeof(string), 401)]
+		[Produces("application/json")]
 		public async Task<IActionResult> Mkdir(string f)
 		{
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
@@ -65,10 +65,10 @@ namespace starsky.Controllers
 
 				var toAddStatus = new SyncViewModel
 				{
-					FilePath = subPath, 
+					FilePath = subPath,
 					Status = FileIndexItem.ExifStatus.Ok
 				};
-			        
+
 				if ( _iStorage.ExistFolder(subPath) )
 				{
 					toAddStatus.Status = FileIndexItem.ExifStatus.OperationNotSupported;
@@ -80,17 +80,17 @@ namespace starsky.Controllers
 				{
 					IsDirectory = true
 				});
-			        
+
 				// add to fs
 				_iStorage.CreateDirectory(subPath);
-		        
+
 				syncResultsList.Add(toAddStatus);
 			}
-	        
+
 			// When all items are not found
-			if (syncResultsList.TrueForAll(p => p.Status != FileIndexItem.ExifStatus.Ok))
+			if ( syncResultsList.TrueForAll(p => p.Status != FileIndexItem.ExifStatus.Ok) )
 				Response.StatusCode = 409; // A conflict, Directory already exist
-	        
+
 			await SyncMessageToSocket(syncResultsList, ApiNotificationType.Mkdir);
 
 			return Json(syncResultsList);
@@ -106,7 +106,8 @@ namespace starsky.Controllers
 		{
 			var list = syncResultsList.Select(t => new FileIndexItem(t.FilePath)
 			{
-				Status = t.Status, IsDirectory = true
+				Status = t.Status,
+				IsDirectory = true
 			}).ToList();
 
 			var webSocketResponse = new ApiNotificationResponseModel<
@@ -127,30 +128,30 @@ namespace starsky.Controllers
 		/// <response code="200">the item including the updated content</response>
 		/// <response code="404">item not found in the database or on disk</response>
 		/// <response code="401">User unauthorized</response>
-		[ProducesResponseType(typeof(List<FileIndexItem>),200)]
-		[ProducesResponseType(typeof(List<FileIndexItem>),404)]
+		[ProducesResponseType(typeof(List<FileIndexItem>), 200)]
+		[ProducesResponseType(typeof(List<FileIndexItem>), 404)]
 		[HttpPost("/api/disk/rename")]
-		[Produces("application/json")]	    
+		[Produces("application/json")]
 		public async Task<IActionResult> Rename(string f, string to, bool collections = true, bool currentStatus = true)
 		{
 			if ( string.IsNullOrEmpty(f) )
 			{
 				return BadRequest("No input files");
 			}
-			
+
 			var rename = await new RenameService(_query, _iStorage).Rename(f, to, collections);
-		    
+
 			// When all items are not found
-			if (rename.TrueForAll(p => p.Status != FileIndexItem.ExifStatus.Ok))
+			if ( rename.TrueForAll(p => p.Status != FileIndexItem.ExifStatus.Ok) )
 				return NotFound(rename);
-		    
+
 			var webSocketResponse =
-				new ApiNotificationResponseModel<List<FileIndexItem>>(rename,ApiNotificationType.Rename);
+				new ApiNotificationResponseModel<List<FileIndexItem>>(rename, ApiNotificationType.Rename);
 
 			await _notificationQuery.AddNotification(webSocketResponse);
 			await _connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
 
-			return Json(currentStatus ? rename.Where(p => p.Status 
+			return Json(currentStatus ? rename.Where(p => p.Status
 				!= FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList() : rename);
 		}
 

@@ -26,8 +26,8 @@ namespace starsky.foundation.thumbnailmeta.Services
 		private readonly IWriteMetaThumbnailService _writeMetaThumbnailService;
 		private readonly AppSettings _appSettings;
 
-		public MetaExifThumbnailService(AppSettings appSettings, ISelectorStorage selectorStorage, 
-			IOffsetDataMetaExifThumbnail offsetDataMetaExifThumbnail, 
+		public MetaExifThumbnailService(AppSettings appSettings, ISelectorStorage selectorStorage,
+			IOffsetDataMetaExifThumbnail offsetDataMetaExifThumbnail,
 			IWriteMetaThumbnailService writeMetaThumbnailService, IWebLogger logger)
 		{
 			_appSettings = appSettings;
@@ -45,10 +45,10 @@ namespace starsky.foundation.thumbnailmeta.Services
 		/// <returns>fail/pass, string=subPath, string?2= error reason</returns>
 		public async Task<IEnumerable<(bool, bool, string, string?)>> AddMetaThumbnail(IEnumerable<(string, string)> subPathsAndHash)
 		{
-			return (await subPathsAndHash
-				.ForEachAsync(async item => 
+			return ( await subPathsAndHash
+				.ForEachAsync(async item =>
 						await AddMetaThumbnail(item.Item1, item.Item2),
-					_appSettings.MaxDegreesOfParallelism))!;
+					_appSettings.MaxDegreesOfParallelism) )!;
 		}
 
 		/// <summary>
@@ -71,23 +71,23 @@ namespace starsky.foundation.thumbnailmeta.Services
 						(false, false, subPath, "folder or file not found")
 					};
 				case FolderOrFileModel.FolderOrFileTypeList.Folder:
-				{
-					var contentOfDir = _iStorage.GetAllFilesInDirectoryRecursive(subPath)
-						.Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
-					
-					var results = await contentOfDir
-						.ForEachAsync(async singleSubPath => 
-							await AddMetaThumbnail(singleSubPath, null!),
-							_appSettings.MaxDegreesOfParallelism);
+					{
+						var contentOfDir = _iStorage.GetAllFilesInDirectoryRecursive(subPath)
+							.Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
 
-					return results!.ToList();
-				}
+						var results = await contentOfDir
+							.ForEachAsync(async singleSubPath =>
+								await AddMetaThumbnail(singleSubPath, null!),
+								_appSettings.MaxDegreesOfParallelism);
+
+						return results!.ToList();
+					}
 				default:
-				{
-					var result = (await  new FileHash(_iStorage).GetHashCodeAsync(subPath));
-					return !result.Value ? new List<(bool, bool, string, string?)>{(false,false, subPath,"hash not found")} : 
-						new List<(bool, bool, string, string?)>{await AddMetaThumbnail(subPath, result.Key)};
-				}
+					{
+						var result = ( await new FileHash(_iStorage).GetHashCodeAsync(subPath) );
+						return !result.Value ? new List<(bool, bool, string, string?)> { (false, false, subPath, "hash not found") } :
+							new List<(bool, bool, string, string?)> { await AddMetaThumbnail(subPath, result.Key) };
+					}
 			}
 		}
 
@@ -99,15 +99,15 @@ namespace starsky.foundation.thumbnailmeta.Services
 		/// <returns>fail/pass, right type, subPath</returns>
 		public async Task<(bool, bool, string, string?)> AddMetaThumbnail(string subPath, string fileHash)
 		{
-			if ( !_iStorage.ExistFile(subPath))
+			if ( !_iStorage.ExistFile(subPath) )
 			{
-				return (false,false, subPath, "not found");
+				return (false, false, subPath, "not found");
 			}
-			
-			var first50BytesStream = _iStorage.ReadStream(subPath,50);
+
+			var first50BytesStream = _iStorage.ReadStream(subPath, 50);
 			var imageFormat = ExtensionRolesHelper.GetImageFormat(first50BytesStream);
-			
-			if ( imageFormat != ExtensionRolesHelper.ImageFormat.jpg && imageFormat != ExtensionRolesHelper.ImageFormat.tiff)
+
+			if ( imageFormat != ExtensionRolesHelper.ImageFormat.jpg && imageFormat != ExtensionRolesHelper.ImageFormat.tiff )
 			{
 				_logger.LogDebug($"[AddMetaThumbnail] {subPath} is not a jpg or tiff file");
 				return (false, false, subPath, $"{subPath} is not a jpg or tiff file");
@@ -115,24 +115,24 @@ namespace starsky.foundation.thumbnailmeta.Services
 
 			if ( string.IsNullOrEmpty(fileHash) )
 			{
-				var result = (await  new FileHash(_iStorage).GetHashCodeAsync(subPath));
+				var result = ( await new FileHash(_iStorage).GetHashCodeAsync(subPath) );
 				if ( !result.Value )
 				{
 					_logger.LogError("[MetaExifThumbnail] hash failed");
-					return (false, true, subPath,"hash failed");
+					return (false, true, subPath, "hash failed");
 				}
 				fileHash = result.Key;
 			}
 
-			if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.TinyMeta)) )
+			if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.TinyMeta)) )
 			{
 				return (true, true, subPath, "already exist");
 			}
-				
-			var (exifThumbnailDir, sourceWidth, sourceHeight, rotation) = 
+
+			var (exifThumbnailDir, sourceWidth, sourceHeight, rotation) =
 				_offsetDataMetaExifThumbnail.GetExifMetaDirectories(subPath);
 			var offsetData = _offsetDataMetaExifThumbnail.
-				ParseOffsetData(exifThumbnailDir,subPath);
+				ParseOffsetData(exifThumbnailDir, subPath);
 			if ( !offsetData.Success ) return (false, true, subPath, offsetData.Reason);
 
 			return (await _writeMetaThumbnailService.WriteAndCropFile(fileHash, offsetData, sourceWidth,

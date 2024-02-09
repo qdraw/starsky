@@ -21,37 +21,38 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 
 		public OverlayImageTest()
 		{
-			_storage = new FakeIStorage(new List<string>{"/"},
-				new List<string>{"/test.jpg"},new List<byte[]>{CreateAnImage.Bytes.ToArray()});
+			_storage = new FakeIStorage(new List<string> { "/" },
+				new List<string> { "/test.jpg" },
+				new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 			_selectorStorage = new FakeSelectorStorage(_storage);
 		}
-		
+
 		[TestMethod]
 		public void FilePathOverlayImage_Case()
 		{
 			var image =
 				new OverlayImage(_selectorStorage).FilePathOverlayImage("TesT.Jpg",
 					new AppSettingsPublishProfiles());
-			Assert.AreEqual("test.jpg",image);
+			Assert.AreEqual("test.jpg", image);
 		}
-		
+
 		[TestMethod]
 		public void FilePathOverlayImage_Append()
 		{
 			var image =
 				new OverlayImage(_selectorStorage).FilePathOverlayImage("Img.Jpg",
-					new AppSettingsPublishProfiles{Append = "_test"});
-			Assert.AreEqual("img_test.jpg",image);
+					new AppSettingsPublishProfiles { Append = "_test" });
+			Assert.AreEqual("img_test.jpg", image);
 		}
-		
+
 		[TestMethod]
 		public void FilePathOverlayImage_outputParentFullFilePathFolder()
 		{
 			var image =
 				new OverlayImage(_selectorStorage).FilePathOverlayImage(
-					string.Empty,"TesT.Jpg",
+					string.Empty, "TesT.Jpg",
 					new AppSettingsPublishProfiles());
-			Assert.AreEqual(PathHelper.AddBackslash(string.Empty) + "test.jpg",image);
+			Assert.AreEqual(PathHelper.AddBackslash(string.Empty) + "test.jpg", image);
 		}
 
 		[TestMethod]
@@ -60,34 +61,33 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		{
 			var overlayImage =
 				new OverlayImage(_selectorStorage);
-			
-			await overlayImage.ResizeOverlayImageThumbnails(null,null, new AppSettingsPublishProfiles());
+
+			await overlayImage.ResizeOverlayImageThumbnails(null!, null!,
+				new AppSettingsPublishProfiles());
 			// > ArgumentNullException
 		}
-		
+
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public async Task ResizeOverlayImageLarge_null_exception()
 		{
 			var overlayImage =
 				new OverlayImage(_selectorStorage);
-			
-			await overlayImage.ResizeOverlayImageLarge(null,null, new AppSettingsPublishProfiles());
+
+			await overlayImage.ResizeOverlayImageLarge(null!, null!,
+				new AppSettingsPublishProfiles());
 			// > ArgumentNullException
 		}
-		
+
 		[TestMethod]
 		[ExpectedException(typeof(FileNotFoundException))]
 		public async Task ResizeOverlayImageThumbnails_itemFileHash_Not_Found()
 		{
 			var overlayImage =
 				new OverlayImage(_selectorStorage);
-			
-			await overlayImage.ResizeOverlayImageThumbnails("non-exist.jpg", "/out.jpg", new AppSettingsPublishProfiles
-			{
-				SourceMaxWidth = 100,
-				OverlayMaxWidth = 1
-			});
+
+			await overlayImage.ResizeOverlayImageThumbnails("non-exist.jpg", "/out.jpg",
+				new AppSettingsPublishProfiles { SourceMaxWidth = 100, OverlayMaxWidth = 1 });
 			// itemFileHash not found
 		}
 
@@ -97,109 +97,96 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		{
 			var overlayImage =
 				new OverlayImage(_selectorStorage);
-			
-			await overlayImage.ResizeOverlayImageThumbnails("test.jpg", "/out.jpg", new AppSettingsPublishProfiles
-			{
-				SourceMaxWidth = 100,
-				OverlayMaxWidth = 1
-			});
+
+			await overlayImage.ResizeOverlayImageThumbnails("test.jpg", "/out.jpg",
+				new AppSettingsPublishProfiles { SourceMaxWidth = 100, OverlayMaxWidth = 1 });
 			// > overlay image missing
 		}
-		
+
 		[TestMethod]
 		[ExpectedException(typeof(FileNotFoundException))]
 		public async Task ResizeOverlayImageLarge_File_Not_Found()
 		{
 			var overlayImage =
 				new OverlayImage(_selectorStorage);
-			
-			await overlayImage.ResizeOverlayImageLarge("non-exist.jpg", 
-				"/out.jpg", new AppSettingsPublishProfiles
-				{
-					SourceMaxWidth = 100,
-					OverlayMaxWidth = 1
-				});
+
+			await overlayImage.ResizeOverlayImageLarge("non-exist.jpg",
+				"/out.jpg",
+				new AppSettingsPublishProfiles { SourceMaxWidth = 100, OverlayMaxWidth = 1 });
 			// itemFileHash not found
 		}
-		
+
 		[TestMethod]
 		[ExpectedException(typeof(FileNotFoundException))]
 		public async Task ResizeOverlayImageLarge_overlay_image_missing()
 		{
 			var overlayImage =
 				new OverlayImage(_selectorStorage);
-			
-			await overlayImage.ResizeOverlayImageLarge("/test.jpg", "/out.jpg", new AppSettingsPublishProfiles
-			{
-				SourceMaxWidth = 100,
-				OverlayMaxWidth = 1
-			});
+
+			await overlayImage.ResizeOverlayImageLarge("/test.jpg", "/out.jpg",
+				new AppSettingsPublishProfiles { SourceMaxWidth = 100, OverlayMaxWidth = 1 });
 			// > overlay image missing
 		}
-		
+
 		[TestMethod]
 		public async Task ResizeOverlayImageLarge_Ignore_If_Exist()
 		{
 			var overlayImage =
 				new OverlayImage(_selectorStorage);
-			
-			await overlayImage.ResizeOverlayImageLarge("/test.jpg", "/test.jpg", new AppSettingsPublishProfiles
-			{
-				SourceMaxWidth = 100,
-				OverlayMaxWidth = 1,
-				Path = "/test.jpg"
-			});
-			
+
+			await overlayImage.ResizeOverlayImageLarge("/test.jpg", "/test.jpg",
+				new AppSettingsPublishProfiles
+				{
+					SourceMaxWidth = 100, OverlayMaxWidth = 1, Path = "/test.jpg"
+				});
+
 			// Should return nothing
 			Assert.IsTrue(_storage.ExistFile("/test.jpg"));
 		}
-		
+
 		[TestMethod]
 		public void ResizeOverlayImageThumbnails_Ignore_If_Exist()
 		{
 			var overlayImage =
 				new OverlayImage(_selectorStorage);
-			
-			overlayImage.ResizeOverlayImageThumbnails("/test.jpg", "/test.jpg", new AppSettingsPublishProfiles
-			{
-				SourceMaxWidth = 100,
-				OverlayMaxWidth = 1,
-				Path = "/test.jpg"
-			});
-			
+
+			overlayImage.ResizeOverlayImageThumbnails("/test.jpg", "/test.jpg",
+				new AppSettingsPublishProfiles
+				{
+					SourceMaxWidth = 100, OverlayMaxWidth = 1, Path = "/test.jpg"
+				});
+
 			// Should return nothing
 			Assert.IsTrue(_storage.ExistFile("/test.jpg"));
 		}
-		
+
 		[TestMethod]
 		public async Task ResizeOverlayImageLarge_Done()
 		{
 			var overlayImage =
 				new OverlayImage(_selectorStorage);
-			
-			await overlayImage.ResizeOverlayImageLarge("/test.jpg", "/out_large.jpg", new AppSettingsPublishProfiles
-			{
-				SourceMaxWidth = 100,
-				OverlayMaxWidth = 1,
-				Path = "/test.jpg"
-			});
-			
+
+			await overlayImage.ResizeOverlayImageLarge("/test.jpg", "/out_large.jpg",
+				new AppSettingsPublishProfiles
+				{
+					SourceMaxWidth = 100, OverlayMaxWidth = 1, Path = "/test.jpg"
+				});
+
 			Assert.IsTrue(_storage.ExistFile("/out_large.jpg"));
 		}
-		
+
 		[TestMethod]
 		public async Task ResizeOverlayImageThumbnails_Done()
 		{
 			var overlayImage =
 				new OverlayImage(_selectorStorage);
-			
-			await overlayImage.ResizeOverlayImageThumbnails("/test.jpg", "/out_thumb.jpg", new AppSettingsPublishProfiles
-			{
-				SourceMaxWidth = 100,
-				OverlayMaxWidth = 1,
-				Path = "/test.jpg"
-			});
-			
+
+			await overlayImage.ResizeOverlayImageThumbnails("/test.jpg", "/out_thumb.jpg",
+				new AppSettingsPublishProfiles
+				{
+					SourceMaxWidth = 100, OverlayMaxWidth = 1, Path = "/test.jpg"
+				});
+
 			Assert.IsTrue(_storage.ExistFile("/out_thumb.jpg"));
 		}
 	}

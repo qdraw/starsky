@@ -6,7 +6,7 @@ namespace starsky.feature.metaupdate.Interfaces
 {
 	public interface IMetaReplaceService
 	{
-		Task<List<FileIndexItem>> Replace(string f, string fieldName, 
+		Task<List<FileIndexItem>> Replace(string f, string fieldName,
 			string search, string replace, bool collections);
 	}
 }

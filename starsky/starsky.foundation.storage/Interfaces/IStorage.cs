@@ -18,7 +18,7 @@ public interface IStorage
 
 	void CreateDirectory(string path);
 	bool FolderDelete(string path);
-		
+
 	/// <summary>
 	/// Returns a list of Files in a directory (non-Recursive)
 	/// to filter use:
@@ -28,7 +28,7 @@ public interface IStorage
 	/// <param name="path">filePath</param>
 	/// <returns></returns>
 	IEnumerable<string> GetAllFilesInDirectory(string path);
-		
+
 	/// <summary>
 	/// Returns a list of Files in a directory (Recursive)
 	/// to filter use:
@@ -38,7 +38,7 @@ public interface IStorage
 	/// <param name="path">subPath, path relative to the database</param>
 	/// <returns>list of files</returns>
 	IEnumerable<string> GetAllFilesInDirectoryRecursive(string path);
-		
+
 	/// <summary>
 	/// Returns a NON-Recursive list of child directories
 	/// </summary>
@@ -52,7 +52,7 @@ public interface IStorage
 	/// </summary>
 	/// <param name="path">directory</param>
 	/// <returns>list</returns>
-	IEnumerable<KeyValuePair<string,DateTime>> GetDirectoryRecursive(string path);
+	IEnumerable<KeyValuePair<string, DateTime>> GetDirectoryRecursive(string path);
 
 	/// <summary>
 	/// Read Stream (and keep open)
@@ -61,7 +61,7 @@ public interface IStorage
 	/// <param name="maxRead">how many bytes are read (default all or -1)</param>
 	/// <returns>Stream with data (non-disposed)</returns>
 	Stream ReadStream(string path, int maxRead = -1);
-		
+
 	bool WriteStream(Stream stream, string path);
 	bool WriteStreamOpenOrCreate(Stream stream, string path);
 
@@ -72,7 +72,7 @@ public interface IStorage
 	/// <param name="path">where to write to</param>
 	/// <returns>is Success</returns>
 	Task<bool> WriteStreamAsync(Stream stream, string path);
-		
+
 	StorageInfo Info(string path);
 
 	DateTime SetLastWriteTime(string path, DateTime? dateTime = null);

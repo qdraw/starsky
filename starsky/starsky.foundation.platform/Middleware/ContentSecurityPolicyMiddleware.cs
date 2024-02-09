@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -7,7 +6,6 @@ namespace starsky.foundation.platform.Middleware
 {
 	public sealed class ContentSecurityPolicyMiddleware
 	{
-		
 		private readonly RequestDelegate _next;
 
 		public ContentSecurityPolicyMiddleware(RequestDelegate next)
@@ -20,15 +18,12 @@ namespace starsky.foundation.platform.Middleware
 		{
 			// For Error pages (for example 404) this middleware will be executed double,
 			// so Adding a Header that already exist give an Error 500			
-			if (string.IsNullOrEmpty(httpContext.Response.Headers.ContentSecurityPolicy) )
+			if ( string.IsNullOrEmpty(httpContext.Response.Headers.ContentSecurityPolicy) )
 			{
-				// CSP 2.0 nonce // used in ApplicationInsightsJsHelper
-				var nonce = Guid.NewGuid().ToString("N");
-				httpContext.Items["csp-nonce"] = nonce;
-
 				// only needed for safari and old firefox
-				var socketUrl = httpContext.Request.Scheme == "http" 
-					? $"ws://{httpContext.Request.Host.Host}" : $"wss://{httpContext.Request.Host.Host}";
+				var socketUrl = httpContext.Request.Scheme == "http"
+					? $"ws://{httpContext.Request.Host.Host}"
+					: $"wss://{httpContext.Request.Host.Host}";
 
 				// For Safari localhost
 				var socketUrlWithPort = string.Empty;
@@ -38,11 +33,12 @@ namespace starsky.foundation.platform.Middleware
 						$"{socketUrl}:{httpContext.Request.Host.Port}";
 				}
 
+				// When change also update in Electron
 				var cspHeader =
-					"default-src 'none'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self' " +
-					$"https://js.monitor.azure.com/scripts/b/ai.2.min.js https://az416426.vo.msecnd.net \'nonce-{nonce}\'; " +
-					$"connect-src 'self' {socketUrl} {socketUrlWithPort} " +
-					"https://*.in.applicationinsights.azure.com https://dc.services.visualstudio.com/v2/track; " +
+					"default-src 'none'; img-src 'self' https://a.tile.openstreetmap.org/ " +
+					"https://b.tile.openstreetmap.org/ " +
+					"https://c.tile.openstreetmap.org/; script-src 'self'; " +
+					$"connect-src 'self' {socketUrl} {socketUrlWithPort};" +
 					"style-src 'self'; " +
 					"font-src 'self'; " +
 					"frame-ancestors 'none'; " +
@@ -55,54 +51,55 @@ namespace starsky.foundation.platform.Middleware
 					"block-all-mixed-content; ";
 
 				// Currently not supported in Firefox and Safari (Edge user agent also includes the word Chrome)
-				if (httpContext.Request.Headers.UserAgent.Contains("Chrome") || httpContext.Request.Headers.UserAgent.Contains("csp-evaluator"))
+				if ( httpContext.Request.Headers.UserAgent.Contains("Chrome") ||
+					 httpContext.Request.Headers.UserAgent.Contains("csp-evaluator") )
 				{
 					cspHeader += "require-trusted-types-for 'script'; ";
 				}
-								                
+
 				// When change also update in Electron
 				httpContext.Response.Headers
-					.Append("Content-Security-Policy",cspHeader);
+					.Append("Content-Security-Policy", cspHeader);
 			}
 
 			// @see: https://www.permissionspolicy.com/
 			if ( string.IsNullOrEmpty(
-				    httpContext.Response.Headers["Permissions-Policy"]) )
+					httpContext.Response.Headers["Permissions-Policy"]) )
 			{
 				httpContext.Response.Headers
 					.Append("Permissions-Policy", "autoplay=(self), " +
-					                           "fullscreen=(self), " +
-					                           "geolocation=(self), " +
-					                           "picture-in-picture=(self), " +
-					                           "clipboard-read=(self), " +
-					                           "clipboard-write=(self), " +
-					                           "window-placement=(self)");
+												  "fullscreen=(self), " +
+												  "geolocation=(self), " +
+												  "picture-in-picture=(self), " +
+												  "clipboard-read=(self), " +
+												  "clipboard-write=(self), " +
+												  "window-placement=(self)");
 			}
 
-			if (string.IsNullOrEmpty(httpContext.Response.Headers["Referrer-Policy"]) )
+			if ( string.IsNullOrEmpty(httpContext.Response.Headers["Referrer-Policy"]) )
 			{
 				httpContext.Response.Headers
 					.Append("Referrer-Policy", "no-referrer");
 			}
-			
-			if (string.IsNullOrEmpty(httpContext.Response.Headers.XFrameOptions) )
+
+			if ( string.IsNullOrEmpty(httpContext.Response.Headers.XFrameOptions) )
 			{
 				httpContext.Response.Headers
 					.Append("X-Frame-Options", "DENY");
 			}
-			
-			if (string.IsNullOrEmpty(httpContext.Response.Headers.XXSSProtection) )
+
+			if ( string.IsNullOrEmpty(httpContext.Response.Headers.XXSSProtection) )
 			{
 				httpContext.Response.Headers
 					.Append("X-Xss-Protection", "1; mode=block");
 			}
-			
-			if (string.IsNullOrEmpty(httpContext.Response.Headers.XContentTypeOptions) )
+
+			if ( string.IsNullOrEmpty(httpContext.Response.Headers.XContentTypeOptions) )
 			{
 				httpContext.Response.Headers
 					.Append("X-Content-Type-Options", "nosniff");
 			}
-				
+
 			await _next(httpContext);
 		}
 	}

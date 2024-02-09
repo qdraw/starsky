@@ -23,19 +23,19 @@ namespace starsky.foundation.database.Extensions
 			{
 				return cacheValue;
 			}
-			
+
 			try
 			{
 				if ( context?.Database == null ) return false;
 				context.Database.CanConnect();
 			}
-			catch ( MySqlException e)
+			catch ( MySqlException e )
 			{
 				logger.LogInformation($"[TestConnection] WARNING >>> \n{e}\n <<<");
 				return false;
 			}
 			cache?.Set(CacheKey, true, TimeSpan.FromMinutes(1));
-			
+
 			return true;
 		}
 	}

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.database.Models;
 using starsky.foundation.sync.SyncInterfaces;
-using starsky.foundation.webtelemetry.Helpers;
 
 namespace starsky.Controllers
 {
@@ -26,13 +25,12 @@ namespace starsky.Controllers
 		/// <response code="401">User unauthorized</response>
 		[HttpPost("/api/synchronize")]
 		[HttpGet("/api/synchronize")] // < = = = = = = = = subject to change!
-		[ProducesResponseType(typeof(string),200)]
-		[ProducesResponseType(typeof(string),401)]
-		[Produces("application/json")]	   
+		[ProducesResponseType(typeof(string), 200)]
+		[ProducesResponseType(typeof(string), 401)]
+		[Produces("application/json")]
 		public async Task<IActionResult> Index(string f)
 		{
-			var operationId = HttpContext.GetOperationId();
-			var status = await _manualBackgroundSyncService.ManualSync(f,operationId);
+			var status = await _manualBackgroundSyncService.ManualSync(f);
 			switch ( status )
 			{
 				case FileIndexItem.ExifStatus.NotFoundNotInIndex:

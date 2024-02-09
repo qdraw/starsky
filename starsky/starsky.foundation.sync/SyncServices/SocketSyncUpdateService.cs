@@ -27,7 +27,7 @@ public class SocketSyncUpdateService : ISocketSyncUpdateService
 		_notificationQuery = notificationQuery;
 		_logger = logger;
 	}
-	
+
 	/// <summary>
 	/// Used by manual sync
 	/// </summary>
@@ -37,7 +37,7 @@ public class SocketSyncUpdateService : ISocketSyncUpdateService
 		var webSocketResponse =
 			new ApiNotificationResponseModel<List<FileIndexItem>>(FilterBefore(changedFiles), ApiNotificationType.ManualBackgroundSync);
 		await _notificationQuery.AddNotification(webSocketResponse);
-			
+
 		try
 		{
 			await _connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
@@ -48,9 +48,9 @@ public class SocketSyncUpdateService : ISocketSyncUpdateService
 			_logger.LogError("[ManualBackgroundSyncService] catch-ed WebSocketException: " + exception.Message, exception);
 		}
 	}
-	
+
 	internal static List<FileIndexItem> FilterBefore(IEnumerable<FileIndexItem> syncData)
 	{
-		return syncData.Where(p => p.FilePath != "/" ).ToList();
+		return syncData.Where(p => p.FilePath != "/").ToList();
 	}
 }

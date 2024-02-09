@@ -7,7 +7,7 @@ import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/I
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { Router } from "../../../router-app/router-app";
-import * as FetchPost from "../../../shared/fetch-post";
+import * as FetchPost from "../../../shared/fetch/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
 import * as DropArea from "../../atoms/drop-area/drop-area";
 import * as Link from "../../atoms/link/link";

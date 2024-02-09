@@ -28,10 +28,10 @@ public class ThumbnailQuery : IThumbnailQuery
 		_scopeFactory = scopeFactory;
 		_logger = logger;
 	}
-	
+
 	public Task<List<ThumbnailItem>?> AddThumbnailRangeAsync(List<ThumbnailResultDataTransferModel> thumbnailItems)
 	{
-		if ( thumbnailItems.Exists(p => string.IsNullOrEmpty(p.FileHash) ) )
+		if ( thumbnailItems.Exists(p => string.IsNullOrEmpty(p.FileHash)) )
 		{
 			throw new ArgumentNullException(nameof(thumbnailItems), "[AddThumbnailRangeAsync] FileHash is null or empty");
 		}
@@ -45,7 +45,7 @@ public class ThumbnailQuery : IThumbnailQuery
 			return await AddThumbnailRangeInternalAsync(_context, thumbnailItems);
 		}
 		// InvalidOperationException can also be disposed
-		catch (InvalidOperationException)
+		catch ( InvalidOperationException )
 		{
 			if ( _scopeFactory == null ) throw;
 			return await AddThumbnailRangeInternalAsync(new InjectServiceScope(_scopeFactory).Context(), thumbnailItems);
@@ -53,32 +53,32 @@ public class ThumbnailQuery : IThumbnailQuery
 	}
 
 	private static async Task<List<ThumbnailItem>?> AddThumbnailRangeInternalAsync(
-		ApplicationDbContext dbContext, 
+		ApplicationDbContext dbContext,
 		IReadOnlyCollection<ThumbnailResultDataTransferModel> thumbnailItems)
 	{
 		if ( thumbnailItems.Count == 0 )
 		{
 			return new List<ThumbnailItem>();
 		}
-		
+
 		var updateThumbnailNewItemsList = new List<ThumbnailItem>();
 		foreach ( var item in thumbnailItems
-			         .Where(p => p.FileHash != null).DistinctBy(p => p.FileHash) )
+					 .Where(p => p.FileHash != null).DistinctBy(p => p.FileHash) )
 		{
-			updateThumbnailNewItemsList.Add(new ThumbnailItem(item.FileHash!,item.TinyMeta, item.Small, item.Large, item.ExtraLarge, item.Reasons));
+			updateThumbnailNewItemsList.Add(new ThumbnailItem(item.FileHash!, item.TinyMeta, item.Small, item.Large, item.ExtraLarge, item.Reasons));
 		}
-		
-		var (newThumbnailItems, 
-				alreadyExistingThumbnailItems, 
-				equalThumbnailItems) = 
+
+		var (newThumbnailItems,
+				alreadyExistingThumbnailItems,
+				equalThumbnailItems) =
 			await CheckForDuplicates(dbContext, updateThumbnailNewItemsList);
-		
+
 		if ( newThumbnailItems.Count != 0 )
 		{
 			await dbContext.Thumbnails.AddRangeAsync(newThumbnailItems);
 			await SaveChangesDuplicate(dbContext);
 		}
-		
+
 		if ( alreadyExistingThumbnailItems.Count != 0 )
 		{
 			dbContext.Thumbnails.UpdateRange(alreadyExistingThumbnailItems);
@@ -86,17 +86,17 @@ public class ThumbnailQuery : IThumbnailQuery
 			await dbContext.SaveChangesAsync();
 			await SaveChangesDuplicate(dbContext);
 		}
-		
+
 		var allResults = alreadyExistingThumbnailItems
 			.Concat(newThumbnailItems)
 			.Concat(equalThumbnailItems)
 			.ToList();
-		
+
 		foreach ( var item in allResults )
 		{
 			dbContext.Attach(item).State = EntityState.Detached;
 		}
-		
+
 		return allResults;
 	}
 
@@ -125,7 +125,7 @@ public class ThumbnailQuery : IThumbnailQuery
 			return await GetInternalAsync(_context, fileHash);
 		}
 		// InvalidOperationException can also be disposed
-		catch (InvalidOperationException)
+		catch ( InvalidOperationException )
 		{
 			if ( _scopeFactory == null ) throw;
 			return await GetInternalAsync(new InjectServiceScope(_scopeFactory).Context(), fileHash);
@@ -137,7 +137,7 @@ public class ThumbnailQuery : IThumbnailQuery
 		string? fileHash = null)
 	{
 		return fileHash == null ? await context
-			.Thumbnails.ToListAsync() :  await context
+			.Thumbnails.ToListAsync() : await context
 			.Thumbnails.Where(p => p.FileHash == fileHash)
 			.ToListAsync();
 	}
@@ -148,13 +148,13 @@ public class ThumbnailQuery : IThumbnailQuery
 		{
 			return;
 		}
-		
+
 		try
 		{
 			await RemoveThumbnailsInternalAsync(_context, deletedFileHashes);
 		}
 		// InvalidOperationException can also be disposed
-		catch (InvalidOperationException)
+		catch ( InvalidOperationException )
 		{
 			if ( _scopeFactory == null ) throw;
 			await RemoveThumbnailsInternalAsync(new InjectServiceScope(_scopeFactory).Context(), deletedFileHashes);
@@ -169,7 +169,7 @@ public class ThumbnailQuery : IThumbnailQuery
 		{
 			return false;
 		}
-		
+
 		foreach ( var fileNamesInChunk in deletedFileHashes.ChunkyEnumerable(100) )
 		{
 			var thumbnailItems = await context.Thumbnails.Where(p => fileNamesInChunk.Contains(p.FileHash)).ToListAsync();
@@ -178,7 +178,7 @@ public class ThumbnailQuery : IThumbnailQuery
 		}
 		return true;
 	}
-	
+
 	public async Task<bool> RenameAsync(string beforeFileHash, string newFileHash)
 	{
 		try
@@ -186,12 +186,12 @@ public class ThumbnailQuery : IThumbnailQuery
 			return await RenameInternalAsync(_context, beforeFileHash, newFileHash);
 		}
 		// InvalidOperationException can also be disposed
-		catch (InvalidOperationException)
+		catch ( InvalidOperationException )
 		{
 			if ( _scopeFactory == null ) throw;
 			return await RenameInternalAsync(new InjectServiceScope(_scopeFactory).Context(), beforeFileHash, newFileHash);
 		}
-		catch (DbUpdateConcurrencyException concurrencyException)
+		catch ( DbUpdateConcurrencyException concurrencyException )
 		{
 			_logger.LogInformation("[ThumbnailQuery] try to fix DbUpdateConcurrencyException", concurrencyException);
 			SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
@@ -199,7 +199,7 @@ public class ThumbnailQuery : IThumbnailQuery
 			{
 				await _context.SaveChangesAsync();
 			}
-			catch ( DbUpdateConcurrencyException e)
+			catch ( DbUpdateConcurrencyException e )
 			{
 				_logger.LogInformation(e, "[ThumbnailQuery] save failed after DbUpdateConcurrencyException");
 				return false;
@@ -207,16 +207,16 @@ public class ThumbnailQuery : IThumbnailQuery
 			return true;
 		}
 	}
-	
+
 	private static async Task<bool> RenameInternalAsync(ApplicationDbContext dbContext, string beforeFileHash, string newFileHash)
 	{
 		var beforeOrNewItems = await dbContext.Thumbnails.Where(p =>
 			p.FileHash == beforeFileHash || p.FileHash == newFileHash).ToListAsync();
-		
+
 		var beforeItem = beforeOrNewItems.Find(p => p.FileHash == beforeFileHash);
 		var newItem = beforeOrNewItems.Find(p => p.FileHash == newFileHash);
 
-		if ( beforeItem == null) return false;
+		if ( beforeItem == null ) return false;
 
 		dbContext.Thumbnails.Remove(beforeItem);
 
@@ -224,20 +224,20 @@ public class ThumbnailQuery : IThumbnailQuery
 		{
 			dbContext.Thumbnails.Remove(newItem);
 		}
-		
-		await dbContext.Thumbnails.AddRangeAsync(new ThumbnailItem(newFileHash, 
+
+		await dbContext.Thumbnails.AddRangeAsync(new ThumbnailItem(newFileHash,
 			beforeItem.TinyMeta, beforeItem.Small, beforeItem.Large, beforeItem.ExtraLarge, beforeItem.Reasons));
-		
+
 		await dbContext.SaveChangesAsync();
-		
+
 		return true;
 	}
 
 	public async Task<List<ThumbnailItem>> UnprocessedGeneratedThumbnails()
 	{
-		return await _context.Thumbnails.Where(p => ( p.ExtraLarge == null 
-			                                            || p.Large == null || p.Small == null) 
-		                                            && !string.IsNullOrEmpty(p.FileHash)).ToListAsync();
+		return await _context.Thumbnails.Where(p => ( p.ExtraLarge == null
+														|| p.Large == null || p.Small == null )
+													&& !string.IsNullOrEmpty(p.FileHash)).ToListAsync();
 	}
 
 	public async Task<bool> UpdateAsync(ThumbnailItem item)
@@ -247,7 +247,7 @@ public class ThumbnailQuery : IThumbnailQuery
 			return await UpdateInternalAsync(_context, item);
 		}
 		// InvalidOperationException can also be disposed
-		catch (InvalidOperationException)
+		catch ( InvalidOperationException )
 		{
 			if ( _scopeFactory == null ) throw;
 			return await UpdateInternalAsync(new InjectServiceScope(_scopeFactory).Context(), item);
@@ -268,28 +268,28 @@ public class ThumbnailQuery : IThumbnailQuery
 	/// <param name="updateThumbnailNewItemsList"></param>
 	/// <returns></returns>
 	internal static async Task<(List<ThumbnailItem> newThumbnailItems,
-			List<ThumbnailItem> updateThumbnailItems, List<ThumbnailItem> equalThumbnailItems)> 
-		CheckForDuplicates(ApplicationDbContext context, 
+			List<ThumbnailItem> updateThumbnailItems, List<ThumbnailItem> equalThumbnailItems)>
+		CheckForDuplicates(ApplicationDbContext context,
 			IEnumerable<ThumbnailItem?> updateThumbnailNewItemsList)
 	{
-		var nonNullItems = updateThumbnailNewItemsList.Where(item => item != null && 
+		var nonNullItems = updateThumbnailNewItemsList.Where(item => item != null &&
 			item.FileHash != null!).Distinct().ToList();
-		
+
 		var dbThumbnailItems = await context.Thumbnails
 			.Where(p => nonNullItems.Select(x => x!.FileHash)
 				.Contains(p.FileHash)).ToListAsync();
 		var alreadyExistingThumbnails = dbThumbnailItems.Select(p => p.FileHash).Distinct();
-				
+
 		var newThumbnailItems = nonNullItems.Where(p => !alreadyExistingThumbnails.
 			Contains(p!.FileHash)).Cast<ThumbnailItem>().DistinctBy(p => p.FileHash).ToList();
-		
+
 		var alreadyExistingThumbnailItems = nonNullItems
 			.Where(p => alreadyExistingThumbnails.Contains(p!.FileHash))
 			.Cast<ThumbnailItem>().DistinctBy(p => p.FileHash).ToList();
 
 		var updateThumbnailItems = new List<ThumbnailItem>();
 		var equalThumbnailItems = new List<ThumbnailItem>();
-		
+
 		// merge two items together
 		foreach ( var item in dbThumbnailItems )
 		{
@@ -310,19 +310,19 @@ public class ThumbnailQuery : IThumbnailQuery
 				reasons.Append($",{item.Reasons}");
 				alreadyExistingThumbnailItems[indexOfAlreadyExists].Reasons = reasons.ToString();
 			}
-			
-			if ( item.TinyMeta == alreadyExists.TinyMeta  && 
-			     item.Large == alreadyExists.Large  &&
-			     item.Small == alreadyExists.Small &&
-			     item.ExtraLarge == alreadyExists.ExtraLarge)
+
+			if ( item.TinyMeta == alreadyExists.TinyMeta &&
+				 item.Large == alreadyExists.Large &&
+				 item.Small == alreadyExists.Small &&
+				 item.ExtraLarge == alreadyExists.ExtraLarge )
 			{
 				equalThumbnailItems.Add(alreadyExists);
 				continue;
 			}
 			updateThumbnailItems.Add(alreadyExists);
 		}
-		
-		return ( newThumbnailItems, updateThumbnailItems, equalThumbnailItems );
+
+		return (newThumbnailItems, updateThumbnailItems, equalThumbnailItems);
 	}
 
 }

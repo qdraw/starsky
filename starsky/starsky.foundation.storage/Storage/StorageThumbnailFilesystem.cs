@@ -34,7 +34,7 @@ namespace starsky.foundation.storage.Storage
 			}
 			return Path.Combine(_appSettings.ThumbnailTempFolder, fileHash + ".jpg");
 		}
-		
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -71,11 +71,11 @@ namespace starsky.foundation.storage.Storage
 			var existOldFile = hostFilesystem.ExistFile(oldThumbPath);
 			var existNewFile = hostFilesystem.ExistFile(newThumbPath);
 
-			if (!existOldFile || existNewFile)
+			if ( !existOldFile || existNewFile )
 			{
 				return;
 			}
-			hostFilesystem.FileMove(oldThumbPath,newThumbPath);
+			hostFilesystem.FileMove(oldThumbPath, newThumbPath);
 		}
 
 		public void FileCopy(string fromPath, string toPath)
@@ -88,11 +88,11 @@ namespace starsky.foundation.storage.Storage
 			var existOldFile = hostFilesystem.ExistFile(oldThumbPath);
 			var existNewFile = hostFilesystem.ExistFile(newThumbPath);
 
-			if (!existOldFile || existNewFile)
+			if ( !existOldFile || existNewFile )
 			{
 				return;
 			}
-			hostFilesystem.FileCopy(oldThumbPath,newThumbPath);
+			hostFilesystem.FileCopy(oldThumbPath, newThumbPath);
 		}
 
 		/// <summary>
@@ -102,7 +102,7 @@ namespace starsky.foundation.storage.Storage
 		/// <returns>true when success</returns>
 		public bool FileDelete(string path)
 		{
-			if (string.IsNullOrEmpty(path) || !ExistFile(path) ) return false;
+			if ( string.IsNullOrEmpty(path) || !ExistFile(path) ) return false;
 
 			var thumbPath = CombinePath(path);
 			var hostFilesystem = new StorageHostFullPathFilesystem(_logger);
@@ -113,7 +113,7 @@ namespace starsky.foundation.storage.Storage
 		{
 			throw new System.NotImplementedException();
 		}
-		
+
 		public bool FolderDelete(string path)
 		{
 			throw new System.NotImplementedException();
@@ -136,7 +136,7 @@ namespace starsky.foundation.storage.Storage
 			throw new System.NotImplementedException();
 		}
 
-		public IEnumerable<KeyValuePair<string,DateTime>> GetDirectoryRecursive(string path)
+		public IEnumerable<KeyValuePair<string, DateTime>> GetDirectoryRecursive(string path)
 		{
 			throw new NotImplementedException();
 		}
@@ -149,7 +149,7 @@ namespace starsky.foundation.storage.Storage
 		/// <returns>Stream with data (non-disposed)</returns>
 		public Stream ReadStream(string path, int maxRead = -1)
 		{
-			if ( !ExistFile(path) ) throw new FileNotFoundException(path); 
+			if ( !ExistFile(path) ) throw new FileNotFoundException(path);
 			return new StorageHostFullPathFilesystem(_logger).ReadStream(CombinePath(path), maxRead);
 		}
 

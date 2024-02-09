@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,11 +21,12 @@ namespace starsky.Controllers
 		private readonly IStorage _hostFileSystemStorage;
 		private readonly IExport _export;
 
-		public ExportController( IUpdateBackgroundTaskQueue queue,
+		public ExportController(IUpdateBackgroundTaskQueue queue,
 			ISelectorStorage selectorStorage, IExport export)
 		{
 			_bgTaskQueue = queue;
-			_hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+			_hostFileSystemStorage =
+				selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 			_export = export;
 		}
 
@@ -39,27 +40,30 @@ namespace starsky.Controllers
 		/// <response code="200">the name of the to generated zip file</response>
 		/// <response code="404">files not found</response>
 		[HttpPost("/api/export/create-zip")]
-		[ProducesResponseType(typeof(string),200)] // "zipHash"
-		[ProducesResponseType(typeof(List<FileIndexItem>),404)] // "Not found"
+		[ProducesResponseType(typeof(string), 200)] // "zipHash"
+		[ProducesResponseType(typeof(List<FileIndexItem>), 404)] // "Not found"
 		[Produces("application/json")]
-		public async Task<IActionResult> CreateZip(string f, bool collections = true, bool thumbnail = false)
+		public async Task<IActionResult> CreateZip(string f, bool collections = true,
+			bool thumbnail = false)
 		{
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
-			var (zipOutputName, fileIndexResultsList) = await _export.PreflightAsync(inputFilePaths, collections, thumbnail);
-			
+			var (zipOutputName, fileIndexResultsList) =
+				await _export.PreflightAsync(inputFilePaths, collections, thumbnail);
+
 			// When all items are not found
 			// allow read only
-			if (fileIndexResultsList.TrueForAll(p => p.Status != FileIndexItem.ExifStatus.Ok) )
+			if ( fileIndexResultsList.TrueForAll(p => p.Status != FileIndexItem.ExifStatus.Ok) )
 				return NotFound(fileIndexResultsList);
-			
+
 			// NOT covered: when try to export for example image thumbnails of xml file
-				
+
 			// Creating a zip is a background task
-			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
-			{
-				await _export.CreateZip(fileIndexResultsList, thumbnail, zipOutputName);
-			}, zipOutputName);
-			
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(
+				async _ =>
+				{
+					await _export.CreateZip(fileIndexResultsList, thumbnail, zipOutputName);
+				}, zipOutputName, Activity.Current?.Id);
+
 			// for the rest api
 			return Json(zipOutputName);
 		}
@@ -90,8 +94,8 @@ namespace starsky.Controllers
 			}
 
 			if ( json ) return Json("OK");
-			
-			var fs = _hostFileSystemStorage.ReadStream(sourceFullPath);
+
+			var fs = _hostFileSystemStorage.ReadStream(sourceFullPath!);
 			// Return the right mime type
 			return File(fs, MimeHelper.GetMimeTypeByFileName(sourceFullPath));
 		}

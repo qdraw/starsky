@@ -9,7 +9,7 @@ public enum ThumbnailSize
 	/// Should not use this one
 	/// </summary>
 	Unknown = 0,
-		
+
 	/// <summary>
 	/// 150px
 	/// </summary>
@@ -18,13 +18,13 @@ public enum ThumbnailSize
 	/// <summary>
 	/// 300px
 	/// </summary>
-	Small = 20, 
-		
+	Small = 20,
+
 	/// <summary>
 	/// 1000px
 	/// </summary>
 	Large = 30,
-		
+
 	/// <summary>
 	/// 2000px
 	/// </summary>

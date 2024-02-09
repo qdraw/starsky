@@ -11,10 +11,10 @@ namespace starsky.foundation.realtime.Model
 		{
 			SpeedInSeconds = speedInSeconds;
 		}
-		
+
 		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
 		public int? SpeedInSeconds { get; set; }
-		
+
 		public DateTime DateTime { get; set; } = DateTime.UtcNow;
 	}
 }

@@ -36,12 +36,12 @@ namespace starsky.foundation.storage.ArchiveFormats
 			using var memStr = new MemoryStream();
 			int read;
 			var buffer = new byte[chunk];
-                    
-			while ((read = await gzip.ReadAsync(buffer, 0, buffer.Length,cancellationToken)) > 0)
+
+			while ( ( read = await gzip.ReadAsync(buffer, 0, buffer.Length, cancellationToken) ) > 0 )
 			{
 				await memStr.WriteAsync(buffer, 0, read, cancellationToken);
 			}
-			
+
 			gzip.Close();
 			memStr.Seek(0, SeekOrigin.Begin);
 			await ExtractTar(memStr, outputDir, cancellationToken);
@@ -57,11 +57,11 @@ namespace starsky.foundation.storage.ArchiveFormats
 		{
 			var buffer = new byte[100];
 			var longFileName = string.Empty;
-			while (true)
+			while ( true )
 			{
 				await stream.ReadAsync(buffer, 0, 100, cancellationToken);
 				var name = string.IsNullOrEmpty(longFileName) ? Encoding.ASCII.GetString(buffer).Trim('\0') : longFileName; //Use longFileName if we have one read
-				if (string.IsNullOrWhiteSpace(name))
+				if ( string.IsNullOrWhiteSpace(name) )
 					break;
 				stream.Seek(24, SeekOrigin.Current);
 				await stream.ReadAsync(buffer, 0, 12, cancellationToken);
@@ -70,7 +70,7 @@ namespace starsky.foundation.storage.ArchiveFormats
 				var typeTag = stream.ReadByte();
 				stream.Seek(355L, SeekOrigin.Current); //Move head to beginning of data (byte 512)
 
-				if (typeTag == 'L')
+				if ( typeTag == 'L' )
 				{
 					//We have a long file name
 					longFileName = await CreateLongFileName(size, stream, cancellationToken);
@@ -84,8 +84,8 @@ namespace starsky.foundation.storage.ArchiveFormats
 
 				//Move head to next 512 byte block 
 				var pos = stream.Position;
-				var offset = 512 - (pos % 512);
-				if (offset == 512)
+				var offset = 512 - ( pos % 512 );
+				if ( offset == 512 )
 					offset = 0;
 
 				stream.Seek(offset, SeekOrigin.Current);
@@ -104,13 +104,13 @@ namespace starsky.foundation.storage.ArchiveFormats
 		private async Task CreateFileOrDirectory(string outputDir, string name, long size, Stream stream, CancellationToken cancellationToken)
 		{
 			var output = $"{outputDir}{_pathSeparator}{name}";
-			
+
 			if ( !_storage.ExistFolder(FilenamesHelper.GetParentPath(output)) )
 			{
 				_storage.CreateDirectory(FilenamesHelper.GetParentPath(output));
 			}
 
-			if (!name.EndsWith('/')) // Directories are zero size and don't need anything written
+			if ( !name.EndsWith('/') ) // Directories are zero size and don't need anything written
 			{
 				var str = new MemoryStream();
 				var buf = new byte[size];
@@ -119,6 +119,6 @@ namespace starsky.foundation.storage.ArchiveFormats
 				_storage.WriteStreamOpenOrCreate(str, output);
 			}
 		}
-		
+
 	}
 }

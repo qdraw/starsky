@@ -3,7 +3,6 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MySqlConnector;
 using starsky.foundation.platform.Exceptions;
 
 namespace starskytest.starsky.foundation.platform.Exceptions
@@ -11,7 +10,6 @@ namespace starskytest.starsky.foundation.platform.Exceptions
 	[TestClass]
 	public class TelemetryServiceExceptionTest
 	{
-		
 		[TestMethod]
 		[ExpectedException(typeof(TelemetryServiceException))]
 		public void TelemetryServiceException()
@@ -33,7 +31,7 @@ namespace starskytest.starsky.foundation.platform.Exceptions
 				typeof(TelemetryServiceException).GetConstructors(BindingFlags.Instance |
 					BindingFlags.NonPublic | BindingFlags.InvokeMethod).FirstOrDefault();
 			var instance =
-				( TelemetryServiceException ) ctor!.Invoke(new object[]
+				( TelemetryServiceException )ctor!.Invoke(new object[]
 				{
 					info,
 #pragma warning disable SYSLIB0050

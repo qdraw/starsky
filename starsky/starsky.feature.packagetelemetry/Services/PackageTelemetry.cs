@@ -19,7 +19,7 @@ using starsky.foundation.platform.Models;
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.feature.packagetelemetry.Services
 {
-	
+
 	[Service(typeof(IPackageTelemetry), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class PackageTelemetry : IPackageTelemetry
 	{
@@ -48,9 +48,9 @@ namespace starsky.feature.packagetelemetry.Services
 		internal static OSPlatform? GetCurrentOsPlatform()
 		{
 			OSPlatform? currentPlatform = null;
-			foreach ( var platform in new List<OSPlatform>{OSPlatform.Linux, 
-				         OSPlatform.Windows, OSPlatform.OSX, 
-				         OSPlatform.FreeBSD}.Where(RuntimeInformation.IsOSPlatform) )
+			foreach ( var platform in new List<OSPlatform>{OSPlatform.Linux,
+						 OSPlatform.Windows, OSPlatform.OSX,
+						 OSPlatform.FreeBSD}.Where(RuntimeInformation.IsOSPlatform) )
 			{
 				currentPlatform = platform;
 			}
@@ -63,9 +63,9 @@ namespace starsky.feature.packagetelemetry.Services
 			currentPlatform ??= GetCurrentOsPlatform();
 
 			var dockerContainer = currentPlatform == OSPlatform.Linux &&
-			                      Environment.GetEnvironmentVariable(
-				                      "DOTNET_RUNNING_IN_CONTAINER") == "true";
-			
+								  Environment.GetEnvironmentVariable(
+									  "DOTNET_RUNNING_IN_CONTAINER") == "true";
+
 			var data = new List<KeyValuePair<string, string>>
 			{
 				new KeyValuePair<string, string>("UTCTime", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)),
@@ -79,7 +79,7 @@ namespace starsky.feature.packagetelemetry.Services
 				new KeyValuePair<string, string>("DockerContainer", dockerContainer.ToString()),
 				new KeyValuePair<string, string>("CurrentCulture", CultureInfo.CurrentCulture.ThreeLetterISOLanguageName),
 				new KeyValuePair<string, string>("AspNetCoreEnvironment", Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Not set"),
-				new KeyValuePair<string, string>("WebsiteName", GetEncryptedSiteName()), 
+				new KeyValuePair<string, string>("WebsiteName", GetEncryptedSiteName()),
 				new KeyValuePair<string, string>("DeviceId", deviceId ?? "Not set"),
 			};
 			return data;
@@ -98,7 +98,7 @@ namespace starsky.feature.packagetelemetry.Services
 			var fileIndexItemTotalCount = -1;
 			var fileIndexItemDirectoryCount = -1;
 			var fileIndexItemCount = -1;
-			
+
 			try
 			{
 				fileIndexItemTotalCount = await _query.CountAsync();
@@ -116,16 +116,16 @@ namespace starsky.feature.packagetelemetry.Services
 				new KeyValuePair<string, string>("FileIndexItemDirectoryCount",fileIndexItemDirectoryCount.ToString()),
 				new KeyValuePair<string, string>("FileIndexItemCount",fileIndexItemCount.ToString())
 			});
-			
+
 			return data;
 		}
 
-		internal List<KeyValuePair<string, string>> AddAppSettingsData( List<KeyValuePair<string, string>> data)
+		internal List<KeyValuePair<string, string>> AddAppSettingsData(List<KeyValuePair<string, string>> data)
 		{
 			var type = typeof(AppSettings);
 			var properties = type.GetProperties();
 			// ReSharper disable once LoopCanBeConvertedToQuery
-			foreach (var property in properties)
+			foreach ( var property in properties )
 			{
 				var someAttribute = Array.Find(Attribute.GetCustomAttributes(property), x => x is PackageTelemetryAttribute);
 				if ( someAttribute == null )
@@ -137,13 +137,13 @@ namespace starsky.feature.packagetelemetry.Services
 					property.Name);
 				var value = propValue?.ToString();
 
-				if ( propValue?.GetType() == typeof(DateTime))
+				if ( propValue?.GetType() == typeof(DateTime) )
 				{
-					value = ((DateTime)propValue).ToString(CultureInfo.InvariantCulture);
+					value = ( ( DateTime )propValue ).ToString(CultureInfo.InvariantCulture);
 				}
-				
-				if (propValue?.GetType() == typeof(List<string>) || 
-				    propValue?.GetType() == typeof(Dictionary<string, List<AppSettingsPublishProfiles>>) )
+
+				if ( propValue?.GetType() == typeof(List<string>) ||
+					propValue?.GetType() == typeof(Dictionary<string, List<AppSettingsPublishProfiles>>) )
 				{
 					value = ParseContent(propValue);
 				}
@@ -160,17 +160,17 @@ namespace starsky.feature.packagetelemetry.Services
 
 		private async Task<bool> PostData(HttpContent formUrlEncodedContent)
 		{
-			return (await _httpClientHelper.PostString("https://" + PackageTelemetryUrl,formUrlEncodedContent, 
-				_appSettings.EnablePackageTelemetryDebug == true)).Key;
+			return ( await _httpClientHelper.PostString("https://" + PackageTelemetryUrl, formUrlEncodedContent,
+				_appSettings.EnablePackageTelemetryDebug == true) ).Key;
 		}
-		
+
 		public async Task<bool?> PackageTelemetrySend()
 		{
 			if ( _appSettings.EnablePackageTelemetry == false )
 			{
 				return null;
 			}
-			
+
 			var currentOsPlatform = GetCurrentOsPlatform();
 			var deviceId = await _deviceIdService.DeviceId(currentOsPlatform);
 
@@ -184,12 +184,12 @@ namespace starsky.feature.packagetelemetry.Services
 			{
 				return await PostData(formEncodedData);
 			}
-			
+
 			foreach ( var (key, value) in telemetryDataItems )
 			{
 				_logger.LogInformation($"[EnablePackageTelemetryDebug] {key} - {value}");
 			}
-			
+
 			return null;
 		}
 	}

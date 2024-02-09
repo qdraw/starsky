@@ -1,4 +1,3 @@
-#nullable enable
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -30,12 +29,12 @@ namespace starsky.Controllers
 {
 	[Authorize] // <- should be logged in!
 	[SuppressMessage("Usage", "S5693:Make sure the content " +
-		"length limit is safe here", Justification = "Is checked")]
+							  "length limit is safe here", Justification = "Is checked")]
 	public sealed class UploadController : Controller
 	{
 		private readonly AppSettings _appSettings;
 		private readonly IImport _import;
-		private readonly IStorage _iStorage; 
+		private readonly IStorage _iStorage;
 		private readonly IStorage _iHostStorage;
 		private readonly IQuery _query;
 		private readonly ISelectorStorage _selectorStorage;
@@ -44,10 +43,11 @@ namespace starsky.Controllers
 		private readonly IMetaExifThumbnailService _metaExifThumbnailService;
 		private readonly IMetaUpdateStatusThumbnailService _metaUpdateStatusThumbnailService;
 
-		[SuppressMessage("Usage", "S107: Constructor has 8 parameters, which is greater than the 7 authorized")]
-		public UploadController(IImport import, AppSettings appSettings, 
-			ISelectorStorage selectorStorage, IQuery query, 
-			IRealtimeConnectionsService realtimeService, IWebLogger logger, 
+		[SuppressMessage("Usage",
+			"S107: Constructor has 8 parameters, which is greater than the 7 authorized")]
+		public UploadController(IImport import, AppSettings appSettings,
+			ISelectorStorage selectorStorage, IQuery query,
+			IRealtimeConnectionsService realtimeService, IWebLogger logger,
 			IMetaExifThumbnailService metaExifThumbnailService,
 			IMetaUpdateStatusThumbnailService metaUpdateStatusThumbnailService)
 		{
@@ -76,15 +76,16 @@ namespace starsky.Controllers
 		/// <response code="400">missing 'to' header</response>
 		/// <returns>the ImportIndexItem of the imported files </returns>
 		[HttpPost("/api/upload")]
-        [DisableFormValueModelBinding]
+		[DisableFormValueModelBinding]
 		[RequestFormLimits(MultipartBodyLengthLimit = 320_000_000)]
 		[RequestSizeLimit(320_000_000)] // in bytes, 305MB
-		[ProducesResponseType(typeof(List<ImportIndexItem>),200)] // yes
-		[ProducesResponseType(typeof(string),400)]
-		[ProducesResponseType(typeof(List<ImportIndexItem>),404)]
-		[ProducesResponseType(typeof(List<ImportIndexItem>),415)]  // Wrong input (e.g. wrong extenstion type)
-		[Produces("application/json")]	    
-        public async Task<IActionResult> UploadToFolder()
+		[ProducesResponseType(typeof(List<ImportIndexItem>), 200)] // yes
+		[ProducesResponseType(typeof(string), 400)]
+		[ProducesResponseType(typeof(List<ImportIndexItem>), 404)]
+		[ProducesResponseType(typeof(List<ImportIndexItem>),
+			415)] // Wrong input (e.g. wrong extenstion type)
+		[Produces("application/json")]
+		public async Task<IActionResult> UploadToFolder()
 		{
 			var to = Request.Headers["to"].ToString();
 			if ( string.IsNullOrWhiteSpace(to) ) return BadRequest("missing 'to' header");
@@ -92,13 +93,16 @@ namespace starsky.Controllers
 			var parentDirectory = GetParentDirectoryFromRequestHeader();
 			if ( parentDirectory == null )
 			{
-				return NotFound(new ImportIndexItem{Status = ImportStatus.ParentDirectoryNotFound});
+				return NotFound(new ImportIndexItem
+				{
+					Status = ImportStatus.ParentDirectoryNotFound
+				});
 			}
-			
-			var tempImportPaths = await Request.StreamFile(_appSettings,_selectorStorage);
-			
-			var fileIndexResultsList = await _import.Preflight(tempImportPaths, 
-				new ImportSettingsModel{IndexMode = false});
+
+			var tempImportPaths = await Request.StreamFile(_appSettings, _selectorStorage);
+
+			var fileIndexResultsList = await _import.Preflight(tempImportPaths,
+				new ImportSettingsModel { IndexMode = false });
 			// fail/pass, right type, string=subPath, string?2= error reason
 			var metaResultsList = new List<(bool, bool, string, string?)>();
 
@@ -108,9 +112,9 @@ namespace starsky.Controllers
 				{
 					continue;
 				}
-			
+
 				var tempFileStream = _iHostStorage.ReadStream(tempImportPaths[i]);
-				
+
 				var fileName = Path.GetFileName(tempImportPaths[i]);
 
 				// subPath is always unix style
@@ -119,57 +123,60 @@ namespace starsky.Controllers
 
 				// to get the output in the result right
 				fileIndexResultsList[i].FileIndexItem!.FileName = fileName;
-				fileIndexResultsList[i].FileIndexItem!.ParentDirectory =  parentDirectory;
+				fileIndexResultsList[i].FileIndexItem!.ParentDirectory = parentDirectory;
 				fileIndexResultsList[i].FilePath = subPath;
 				// Do sync action before writing it down
-				fileIndexResultsList[i].FileIndexItem = await SyncItem(fileIndexResultsList[i].FileIndexItem!);
-				
+				fileIndexResultsList[i].FileIndexItem =
+					await SyncItem(fileIndexResultsList[i].FileIndexItem!);
+
 				var writeStatus =
 					await _iStorage.WriteStreamAsync(tempFileStream, subPath + ".tmp");
 				await tempFileStream.DisposeAsync();
-				
+
 				// to avoid partly written stream to be read by an other application
 				_iStorage.FileDelete(subPath);
 				_iStorage.FileMove(subPath + ".tmp", subPath);
 				_logger.LogInformation($"[UploadController] write {subPath} is {writeStatus}");
-				
+
 				// clear directory cache
 				_query.RemoveCacheParentItem(subPath);
 
 				var deleteStatus = _iHostStorage.FileDelete(tempImportPaths[i]);
-				_logger.LogInformation($"[UploadController] delete {tempImportPaths[i]} is {deleteStatus}");
-				
+				_logger.LogInformation(
+					$"[UploadController] delete {tempImportPaths[i]} is {deleteStatus}");
+
 				var parentPath = Directory.GetParent(tempImportPaths[i])?.FullName;
 				if ( !string.IsNullOrEmpty(parentPath) && parentPath != _appSettings.TempFolder )
 				{
 					_iHostStorage.FolderDelete(parentPath);
 				}
 
-				metaResultsList.Add((await _metaExifThumbnailService.AddMetaThumbnail(subPath,
-					fileIndexResultsList[i].FileIndexItem!.FileHash!)));
+				metaResultsList.Add(( await _metaExifThumbnailService.AddMetaThumbnail(subPath,
+					fileIndexResultsList[i].FileIndexItem!.FileHash!) ));
 			}
 
 			// send all uploads as list
 			var socketResult = fileIndexResultsList
 				.Where(p => p.Status == ImportStatus.Ok)
 				.Select(item => item.FileIndexItem).Cast<FileIndexItem>().ToList();
-			
+
 			var webSocketResponse = new ApiNotificationResponseModel<List<FileIndexItem>>(
-				socketResult,ApiNotificationType.UploadFile);
-			await _realtimeService.NotificationToAllAsync(webSocketResponse, CancellationToken.None);
-			
+				socketResult, ApiNotificationType.UploadFile);
+			await _realtimeService.NotificationToAllAsync(webSocketResponse,
+				CancellationToken.None);
+
 			await _metaUpdateStatusThumbnailService.UpdateStatusThumbnail(metaResultsList);
-			
+
 			// Wrong input (extension is not allowed)
-            if ( fileIndexResultsList.TrueForAll(p => p.Status == ImportStatus.FileError) )
-            {
-	            _logger.LogInformation($"Wrong input extension is not allowed" +
-					$" {string.Join(",",fileIndexResultsList.Select(p => p.FilePath))}");
-	            Response.StatusCode = 415;
-            }
-            
-	        return Json(fileIndexResultsList);
-        }
+			if ( fileIndexResultsList.TrueForAll(p => p.Status == ImportStatus.FileError) )
+			{
+				_logger.LogInformation($"Wrong input extension is not allowed" +
+									   $" {string.Join(",", fileIndexResultsList.Select(p => p.FilePath))}");
+				Response.StatusCode = 415;
+			}
+
+			return Json(fileIndexResultsList);
+		}
 
 		/// <summary>
 		/// Perform database updates
@@ -185,7 +192,7 @@ namespace starsky.Controllers
 				await _query.AddItemAsync(metaDataItem);
 				return metaDataItem;
 			}
-			
+
 			FileIndexCompareHelper.Compare(itemFromDatabase, metaDataItem);
 			AddOrRemoveXmpSidecarFileToDatabase(metaDataItem);
 
@@ -196,14 +203,15 @@ namespace starsky.Controllers
 		private void AddOrRemoveXmpSidecarFileToDatabase(FileIndexItem metaDataItem)
 		{
 			if ( _iStorage.ExistFile(ExtensionRolesHelper.ReplaceExtensionWithXmp(metaDataItem
-				.FilePath))	 )
+					.FilePath)) )
 			{
 				metaDataItem.AddSidecarExtension("xmp");
 				return;
 			}
+
 			metaDataItem.RemoveSidecarExtension("xmp");
 		}
-		
+
 		/// <summary>
 		/// Check if xml can be parsed
 		/// Used by sidecar upload
@@ -224,7 +232,7 @@ namespace starsky.Controllers
 				return false;
 			}
 		}
-		
+
 		/// <summary>
 		/// Upload sidecar file to specific folder (does not check if already has been imported)
 		/// Use the header 'to' to determine the location to where to upload
@@ -251,7 +259,7 @@ namespace starsky.Controllers
 			var to = Request.Headers["to"].ToString();
 			if ( string.IsNullOrWhiteSpace(to) ) return BadRequest("missing 'to' header");
 			_logger.LogInformation($"[UploadToFolderSidecarFile] to:{to}");
-			
+
 			var parentDirectory = GetParentDirectoryFromRequestHeader();
 			if ( parentDirectory == null )
 			{
@@ -266,7 +274,7 @@ namespace starsky.Controllers
 				var data = await StreamToStringHelper.StreamToStringAsync(
 					_iHostStorage.ReadStream(tempImportSinglePath));
 				if ( !IsValidXml(data) ) continue;
-				
+
 				var tempFileStream = _iHostStorage.ReadStream(tempImportSinglePath);
 				var fileName = Path.GetFileName(tempImportSinglePath);
 
@@ -275,22 +283,23 @@ namespace starsky.Controllers
 
 				if ( _appSettings.UseDiskWatcher == false )
 				{
-					await new SyncSingleFile(_appSettings, _query, 
+					await new SyncSingleFile(_appSettings, _query,
 						_iStorage, null!, _logger).UpdateSidecarFile(subPath);
 				}
-				
+
 				await _iStorage.WriteStreamAsync(tempFileStream, subPath);
 				await tempFileStream.DisposeAsync();
 				importedList.Add(subPath);
-				
+
 				var deleteStatus = _iHostStorage.FileDelete(tempImportSinglePath);
 				_logger.LogInformation($"delete {tempImportSinglePath} is {deleteStatus}");
 			}
-			
+
 			if ( importedList.Count == 0 )
 			{
 				Response.StatusCode = 415;
 			}
+
 			return Json(importedList);
 		}
 
@@ -300,16 +309,16 @@ namespace starsky.Controllers
 			if ( to == "/" ) return "/";
 
 			// only used for direct import
-			if ( _iStorage.ExistFolder(FilenamesHelper.GetParentPath(to)) && 
-			     FilenamesHelper.IsValidFileName(FilenamesHelper.GetFileName(to)) )
+			if ( _iStorage.ExistFolder(FilenamesHelper.GetParentPath(to)) &&
+				 FilenamesHelper.IsValidFileName(FilenamesHelper.GetFileName(to)) )
 			{
 				Request.Headers["filename"] = FilenamesHelper.GetFileName(to);
 				return FilenamesHelper.GetParentPath(PathHelper.RemoveLatestSlash(to));
 			}
+
 			// ReSharper disable once ConvertIfStatementToReturnStatement
-			if (!_iStorage.ExistFolder(PathHelper.RemoveLatestSlash(to))) return null;
+			if ( !_iStorage.ExistFolder(PathHelper.RemoveLatestSlash(to)) ) return null;
 			return PathHelper.RemoveLatestSlash(to);
 		}
-		
 	}
 }

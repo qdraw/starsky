@@ -9,15 +9,15 @@ namespace starsky.feature.health.HealthCheck
 	{
 		public static IHealthChecksBuilder AddDiskStorageHealthCheck(
 			this IHealthChecksBuilder builder,
-			Action<DiskStorageOptions> setup,
-			string name = null,
+			Action<DiskStorageOptions>? setup,
+			string? name = null,
 			HealthStatus? failureStatus = null,
-			IEnumerable<string> tags = null,
+			IEnumerable<string>? tags = null,
 			TimeSpan? timeout = null)
 		{
 			var options = new DiskStorageOptions();
 			setup?.Invoke(options);
-			return builder.Add(new HealthCheckRegistration(name ?? "diskstorage", sp => 
+			return builder.Add(new HealthCheckRegistration(name ?? "diskstorage", sp =>
 				new DiskStorageHealthCheck(options), failureStatus, tags, timeout));
 		}
 	}

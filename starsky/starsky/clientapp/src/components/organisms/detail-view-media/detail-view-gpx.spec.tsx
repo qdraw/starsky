@@ -3,7 +3,7 @@ import { act, render, screen, waitFor } from "@testing-library/react";
 import L from "leaflet";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { Coordinates } from "../../../shared/coordinates-position.types";
-import * as FetchXml from "../../../shared/fetch-xml";
+import * as FetchXml from "../../../shared/fetch/fetch-xml";
 import * as CurrentLocationButton from "../../atoms/current-location-button/current-location-button";
 import { CurrentLocationButtonPropTypes } from "../../atoms/current-location-button/current-location-button";
 import DetailViewGpx from "./detail-view-gpx";

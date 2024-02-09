@@ -29,24 +29,24 @@ namespace starsky.foundation.platform.Helpers
 
 			var exceptions = new List<Exception>();
 
-			for (int attempted = 0; attempted < maxAttemptCount; attempted++)
+			for ( int attempted = 0; attempted < maxAttemptCount; attempted++ )
 			{
 				try
 				{
-					if (attempted > 0)
+					if ( attempted > 0 )
 					{
 						Thread.Sleep(retryInterval);
 					}
 					return action();
 				}
-				catch (Exception ex)
+				catch ( Exception ex )
 				{
 					exceptions.Add(ex);
 				}
 			}
 			throw new AggregateException(exceptions);
 		}
-		
+
 		/// <summary>
 		/// Retry when Exception happens with the async await pattern
 		/// </summary>
@@ -57,7 +57,7 @@ namespace starsky.foundation.platform.Helpers
 		/// <returns>value of function</returns>
 		/// <exception cref="ArgumentOutOfRangeException">when lower or eq than 0</exception>
 		public static Task<T> DoAsync<T>(
-			  Func<Task<T>> operation, TimeSpan delay, int maxAttemptCount = 3 )
+			  Func<Task<T>> operation, TimeSpan delay, int maxAttemptCount = 3)
 		{
 			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maxAttemptCount);
 
@@ -72,14 +72,14 @@ namespace starsky.foundation.platform.Helpers
 			{
 				try
 				{
-					if (attempted > 0)
+					if ( attempted > 0 )
 					{
 						// Thread.Sleep
 						await Task.Delay(delay);
 					}
 					return await operation();
 				}
-				catch (Exception ex)
+				catch ( Exception ex )
 				{
 					exceptions.Add(ex);
 				}

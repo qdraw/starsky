@@ -1,6 +1,5 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using starsky.foundation.consoletelemetry.Extensions;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
@@ -30,22 +29,25 @@ namespace starskythumbnailmetacli
 			RegisterDependencies.Configure(services);
 			var serviceProvider = services.BuildServiceProvider();
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
-			
-			services.AddMonitoringWorkerService(appSettings, AppSettings.StarskyAppType.MetaThumbnail);
+
 			services.AddTelemetryLogging(appSettings);
-			
-			new SetupDatabaseTypes(appSettings,services).BuilderDb();
+
+			new SetupDatabaseTypes(appSettings, services).BuilderDb();
 			serviceProvider = services.BuildServiceProvider();
 
 			var selectorStorage = serviceProvider.GetRequiredService<ISelectorStorage>();
 			var console = serviceProvider.GetRequiredService<IConsole>();
-			var metaExifThumbnailService = serviceProvider.GetRequiredService<IMetaExifThumbnailService>();
-			var statusThumbnailService = serviceProvider.GetRequiredService<IMetaUpdateStatusThumbnailService>();
+			var metaExifThumbnailService =
+				serviceProvider.GetRequiredService<IMetaExifThumbnailService>();
+			var statusThumbnailService =
+				serviceProvider.GetRequiredService<IMetaUpdateStatusThumbnailService>();
 			var webLogger = serviceProvider.GetRequiredService<IWebLogger>();
 
 			// Migrations before update db afterwards
-			await RunMigrations.Run(serviceProvider.GetService<ApplicationDbContext>(), webLogger, appSettings);
-			
+			await RunMigrations.Run(serviceProvider.GetRequiredService<ApplicationDbContext>(),
+				webLogger,
+				appSettings);
+
 			// Help and other Command Line Tools args are included in the MetaThumbnail tools 
 			var cmdLineTool = new MetaThumbnailCommandLineHelper(
 				selectorStorage, appSettings, console, metaExifThumbnailService,

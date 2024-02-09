@@ -2,7 +2,7 @@ import { createEvent, fireEvent, render, screen, waitFor } from "@testing-librar
 import { act } from "react-dom/test-utils";
 import * as useLocation from "../../../hooks/use-location/use-location";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
-import * as FetchPost from "../../../shared/fetch-post";
+import * as FetchPost from "../../../shared/fetch/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
 import * as Modal from "../../atoms/modal/modal";
 import ModalArchiveRename from "./modal-archive-rename";
@@ -56,7 +56,6 @@ describe("ModalArchiveRename", () => {
 
     it("change directory name", async () => {
       // spy on fetch
-      // use this import => import * as FetchPost from '../../../shared/fetch-post';;
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
         statusCode: 200
       } as IConnectionDefault);
@@ -108,7 +107,6 @@ describe("ModalArchiveRename", () => {
 
     it("change directory name and expect dispatch", async () => {
       // spy on fetch
-      // use this import => import * as FetchPost from '../../../shared/fetch-post';;
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
         statusCode: 200
       } as IConnectionDefault);
@@ -157,7 +155,6 @@ describe("ModalArchiveRename", () => {
 
     it("change directory name should give callback", async () => {
       // spy on fetch
-      // use this import => import * as FetchPost from '../../../shared/fetch-post';;
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
         statusCode: 200
       } as IConnectionDefault);
@@ -211,7 +208,7 @@ describe("ModalArchiveRename", () => {
 
     it("change directory name and FAIL", async () => {
       // spy on fetch
-      // use this import => import * as FetchPost from '../../../shared/fetch-post';
+      // use this import => import * as FetchPost from '../../../shared/fetch/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
         statusCode: 500
       } as IConnectionDefault);
@@ -262,7 +259,7 @@ describe("ModalArchiveRename", () => {
 
     it("change directory name and FAIL with UNDO dispatch", async () => {
       // spy on fetch
-      // use this import => import * as FetchPost from '../../../shared/fetch-post';
+      // use this import => import * as FetchPost from '../../../shared/fetch/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
         statusCode: 500
       } as IConnectionDefault);

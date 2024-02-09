@@ -192,8 +192,8 @@ public sealed class FileHash
 			{
 				int length;
 				while ( ( length = await stream
-					       .ReadAsync(block, cancellationToken)
-					       .ConfigureAwait(false) ) > 0 )
+						   .ReadAsync(block, cancellationToken)
+						   .ConfigureAwait(false) ) > 0 )
 				{
 					md5.TransformBlock(block, 0, length, null, 0);
 				}

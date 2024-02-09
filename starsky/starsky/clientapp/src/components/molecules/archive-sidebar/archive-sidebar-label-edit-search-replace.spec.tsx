@@ -6,10 +6,11 @@ import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { Router } from "../../../router-app/router-app";
-import * as FetchPost from "../../../shared/fetch-post";
+import * as FetchPost from "../../../shared/fetch/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
 import * as Notification from "../../atoms/notification/notification";
 import ArchiveSidebarLabelEditSearchReplace from "./archive-sidebar-label-edit-search-replace";
+
 describe("ArchiveSidebarLabelEditAddOverwrite", () => {
   it("renders", () => {
     render(<ArchiveSidebarLabelEditSearchReplace />);

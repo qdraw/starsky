@@ -18,7 +18,7 @@ namespace starsky.foundation.writemeta.Services
 		private readonly IReadMeta _readMeta;
 		private readonly ExifToolCmdHelper _exifToolCmdHelper;
 
-		public ExifCopy(IStorage iStorage, IStorage thumbnailStorage,  IExifTool exifTool, 
+		public ExifCopy(IStorage iStorage, IStorage thumbnailStorage, IExifTool exifTool,
 			IReadMeta readMeta, IThumbnailQuery thumbnailQuery)
 		{
 			_iStorage = iStorage;
@@ -39,11 +39,11 @@ namespace starsky.foundation.writemeta.Services
 		public void XmpCreate(string xmpPath)
 		{
 			if ( _iStorage.ExistFile(xmpPath) ) return;
-			
+
 			var plainTextStream = StringToStreamHelper.StringToStream(XmpStartContent);
 			_iStorage.WriteStream(plainTextStream, xmpPath);
 		}
-		
+
 		/// <summary>
 		/// Add a .xmp sidecar file
 		/// </summary>
@@ -57,17 +57,17 @@ namespace starsky.foundation.writemeta.Services
 			var withXmp = ExtensionRolesHelper.ReplaceExtensionWithXmp(subPath);
 
 			// only for files that not exist yet
-			if ( _iStorage.IsFolderOrFile(withXmp) != 
-			     FolderOrFileModel.FolderOrFileTypeList.Deleted) return withXmp;
-			
+			if ( _iStorage.IsFolderOrFile(withXmp) !=
+				 FolderOrFileModel.FolderOrFileTypeList.Deleted ) return withXmp;
+
 			XmpCreate(withXmp);
-				
+
 			// Now copy content using exifTool
 			await CopyExifPublish(subPath, withXmp);
 
 			return withXmp;
 		}
-	    
+
 		/// <summary>
 		/// Keep within the same storage provider
 		/// Used for example by Import
@@ -81,8 +81,8 @@ namespace starsky.foundation.writemeta.Services
 			var comparedNames = FileIndexCompareHelper.Compare(new FileIndexItem(), updateModel);
 			comparedNames.Add(nameof(FileIndexItem.Software));
 			updateModel!.SetFilePath(toSubPath);
-			return (await _exifToolCmdHelper.UpdateAsync(updateModel, 
-				comparedNames, true, false)).Item1;
+			return ( await _exifToolCmdHelper.UpdateAsync(updateModel,
+				comparedNames, true, false) ).Item1;
 		}
 
 

@@ -3,8 +3,8 @@ import ButtonStyled from "../components/atoms/button-styled/button-styled";
 import useGlobalSettings from "../hooks/use-global-settings";
 import useLocation from "../hooks/use-location/use-location";
 import { DocumentTitle } from "../shared/document-title";
-import FetchGet from "../shared/fetch-get";
-import FetchPost from "../shared/fetch-post";
+import FetchGet from "../shared/fetch/fetch-get";
+import FetchPost from "../shared/fetch/fetch-post";
 import { Language } from "../shared/language";
 import { UrlQuery } from "../shared/url-query";
 import { validateLoginForm } from "../shared/validate-login-form";
@@ -55,11 +55,11 @@ const AccountRegister: FunctionComponent = () => {
 
   const MessageLegalCreateAccountHtml = language.text(
     `Door het creëren van een account gaat u akkoord met de
-   <a href="/legal/toc.nl.html" data-test="toc">Algemene Voorwaarden</a> van Starsky. Raadpleeg en bekijk hier onze 
-   <a href="/legal/privacy-policy.nl.html" data-test="privacy">Privacykennisgeving</a> en onze 
+   <a href="/legal/toc.nl.html" data-test="toc">Algemene Voorwaarden</a> van Starsky. Raadpleeg en bekijk hier onze
+   <a href="/legal/privacy-policy.nl.html" data-test="privacy">Privacykennisgeving</a> en onze
    <a href="/legal/privacy-policy.nl.html#cookie">Cookieverklaring</a>.`,
-    `By creating an account you agree to <a href="/legal/toc.en.html" data-test="toc">Starsky's Conditions of Use</a>. 
-   Please see our  <a href="/legal/privacy-policy.en.html" data-test="privacy">Privacy</a> Notice and our 
+    `By creating an account you agree to <a href="/legal/toc.en.html" data-test="toc">Starsky's Conditions of Use</a>.
+   Please see our  <a href="/legal/privacy-policy.en.html" data-test="privacy">Privacy</a> Notice and our
    <a href="/legal/privacy-policy.en.html#cookie">Cookies Notice </a>   `
   );
 

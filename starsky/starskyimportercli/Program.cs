@@ -1,8 +1,7 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.import.Interfaces;
 using starsky.feature.import.Services;
-using starsky.foundation.consoletelemetry.Extensions;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
@@ -14,41 +13,40 @@ using starsky.foundation.writemeta.Interfaces;
 
 namespace starskyimportercli
 {
-    public static class Program
-    {
-	    public static async Task Main(string[] args)
-        {
-            // Use args in application
-            new ArgsHelper().SetEnvironmentByArgs(args);
+	public static class Program
+	{
+		public static async Task Main(string[] args)
+		{
+			// Use args in application
+			new ArgsHelper().SetEnvironmentByArgs(args);
 
-            var services = new ServiceCollection();
+			var services = new ServiceCollection();
 
-            // Setup AppSettings
-            services = await SetupAppSettings.FirstStepToAddSingleton(services);
+			// Setup AppSettings
+			services = await SetupAppSettings.FirstStepToAddSingleton(services);
 
-            // Inject services
-            RegisterDependencies.Configure(services);
-            var serviceProvider = services.BuildServiceProvider();
-            var appSettings = serviceProvider.GetRequiredService<AppSettings>();
-            
-            services.AddMonitoringWorkerService(appSettings, AppSettings.StarskyAppType.Importer);
-            services.AddTelemetryLogging(appSettings);
-            
-            new SetupDatabaseTypes(appSettings,services).BuilderDb();
-            serviceProvider = services.BuildServiceProvider();
+			// Inject services
+			RegisterDependencies.Configure(services);
+			var serviceProvider = services.BuildServiceProvider();
+			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
 
-            var import = serviceProvider.GetService<IImport>();
-            var console = serviceProvider.GetRequiredService<IConsole>();
-            var exifToolDownload = serviceProvider.GetRequiredService<IExifToolDownload>();
-            var webLogger = serviceProvider.GetRequiredService<IWebLogger>();
+			services.AddTelemetryLogging(appSettings);
 
-            // Migrations before importing
-            await RunMigrations.Run(serviceProvider.GetService<ApplicationDbContext>(), webLogger,appSettings);
-            
-            // Help and other Command Line Tools args are included in the ImporterCli 
-            await new ImportCli(import, appSettings, console, exifToolDownload).Importer(args);
+			new SetupDatabaseTypes(appSettings, services).BuilderDb();
+			serviceProvider = services.BuildServiceProvider();
 
-            await new FlushApplicationInsights(serviceProvider, appSettings, webLogger).FlushAsync();
-        }
-    }
+			var import = serviceProvider.GetRequiredService<IImport>();
+			var console = serviceProvider.GetRequiredService<IConsole>();
+			var exifToolDownload = serviceProvider.GetRequiredService<IExifToolDownload>();
+			var webLogger = serviceProvider.GetRequiredService<IWebLogger>();
+
+			// Migrations before importing
+			await RunMigrations.Run(serviceProvider.GetRequiredService<ApplicationDbContext>(),
+				webLogger,
+				appSettings);
+
+			// Help and other Command Line Tools args are included in the ImporterCli 
+			await new ImportCli(import, appSettings, console, exifToolDownload).Importer(args);
+		}
+	}
 }

@@ -11,7 +11,7 @@ public static class GetFilesHelper
 	public static List<string> GetFiles(string globSearch)
 	{
 		Matcher matcher = new();
-		matcher.AddIncludePatterns( new List<string>{globSearch});
+		matcher.AddIncludePatterns(new List<string> { globSearch });
 		var result = matcher.Execute(
 			new DirectoryInfoWrapper(
 				new DirectoryInfo(WorkingDirectory.GetSolutionParentFolder())));

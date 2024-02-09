@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,6 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.feature.thumbnail.Services;
 using starsky.foundation.worker.Interfaces;
+using starsky.foundation.worker.Metrics;
 using starsky.foundation.worker.Services;
 using starskytest.FakeMocks;
 
@@ -20,29 +22,31 @@ namespace starskytest.Controllers
 			var services = new ServiceCollection();
 			services.AddSingleton<IHostedService, UpdateBackgroundQueuedHostedService>();
 			services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
+			// metrics
+			services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
+			services.AddSingleton<UpdateBackgroundQueuedMetrics>();
 
 			var serviceProvider = services.BuildServiceProvider();
 			serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
-
 		}
 
 		[TestMethod]
 		public async Task ThumbnailGeneration_Endpoint()
 		{
-			var selectorStorage = new FakeSelectorStorage(new FakeIStorage(new List<string>{"/"}));
-			var controller = new ThumbnailGenerationController(selectorStorage, 
-				new ManualThumbnailGenerationService( new FakeIQuery(), 
-				new FakeIWebLogger(), new FakeIWebSocketConnectionsService(), 
-				new FakeIThumbnailService(selectorStorage), 
-				new FakeThumbnailBackgroundTaskQueue()));
-			
+			var selectorStorage =
+				new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" }));
+			var controller = new ThumbnailGenerationController(selectorStorage,
+				new ManualThumbnailGenerationService(new FakeIQuery(),
+					new FakeIWebLogger(), new FakeIWebSocketConnectionsService(),
+					new FakeIThumbnailService(selectorStorage),
+					new FakeThumbnailBackgroundTaskQueue()));
+
 			var json = await controller.ThumbnailGeneration("/") as JsonResult;
 			Assert.IsNotNull(json);
-			var result = json!.Value as string;
-			
+			var result = json.Value as string;
+
 			Assert.IsNotNull(result);
 			Assert.AreEqual("Job started", result);
 		}
-
 	}
 }

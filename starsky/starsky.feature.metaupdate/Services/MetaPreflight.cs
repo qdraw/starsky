@@ -13,7 +13,6 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
-#nullable enable
 
 namespace starsky.feature.metaupdate.Services
 {
@@ -30,7 +29,8 @@ namespace starsky.feature.metaupdate.Services
 			_query = query;
 			_appSettings = appSettings;
 			_logger = logger;
-			if ( selectorStorage != null ){
+			if ( selectorStorage != null )
+			{
 				_iStorage = selectorStorage.Get(
 					SelectorStorage.StorageServices.SubPath);
 			}
@@ -38,44 +38,44 @@ namespace starsky.feature.metaupdate.Services
 
 		public async Task<(List<FileIndexItem> fileIndexResultsList,
 				Dictionary<string, List<string>> changedFileIndexItemName)>
-			PreflightAsync(FileIndexItem inputModel, List<string> inputFilePaths,
+			PreflightAsync(FileIndexItem? inputModel, List<string> inputFilePaths,
 				bool append, bool collections, int rotateClock)
 		{
 			// the result list
 			var fileIndexUpdateList = new List<FileIndexItem>();
-			
+
 			// Per file stored key = string[fileHash] item => List <string>
 			// FileIndexItem.name (e.g. Tags) that are changed
 			var changedFileIndexItemName = new Dictionary<string, List<string>>();
-			
+
 			// Prefill cache to avoid fast updating issues
-			await new AddParentCacheIfNotExist(_query,_logger).AddParentCacheIfNotExistAsync(inputFilePaths);
+			await new AddParentCacheIfNotExist(_query, _logger).AddParentCacheIfNotExistAsync(inputFilePaths);
 			// add xmp files to the list
 			inputFilePaths = AppendXmpPathsWhenCollectionsFalseHelper.AppendXmpPathsWhenCollectionsFalse(collections, inputFilePaths);
-			
+
 			var resultFileIndexItemsList = await _query.GetObjectsByFilePathAsync(
 				inputFilePaths, collections);
 
 			foreach ( var fileIndexItem in resultFileIndexItemsList )
 			{
 				// Files that are not on disk
-				if ( _iStorage!.IsFolderOrFile(fileIndexItem.FilePath!) == 
-				     FolderOrFileModel.FolderOrFileTypeList.Deleted )
+				if ( _iStorage!.IsFolderOrFile(fileIndexItem.FilePath!) ==
+					 FolderOrFileModel.FolderOrFileTypeList.Deleted )
 				{
-					StatusCodesHelper.ReturnExifStatusError(fileIndexItem, 
+					StatusCodesHelper.ReturnExifStatusError(fileIndexItem,
 						FileIndexItem.ExifStatus.NotFoundSourceMissing,
 						fileIndexUpdateList);
-					continue; 
+					continue;
 				}
-				
+
 				// Dir is readonly / don't edit
-				if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(fileIndexItem) 
-				     == FileIndexItem.ExifStatus.ReadOnly)
+				if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(fileIndexItem)
+					 == FileIndexItem.ExifStatus.ReadOnly )
 				{
-					StatusCodesHelper.ReturnExifStatusError(fileIndexItem, 
+					StatusCodesHelper.ReturnExifStatusError(fileIndexItem,
 						FileIndexItem.ExifStatus.ReadOnly,
 						fileIndexUpdateList);
-					continue; 
+					continue;
 				}
 
 				CompareAllLabelsAndRotation(changedFileIndexItemName,
@@ -85,18 +85,18 @@ namespace starsky.feature.metaupdate.Services
 				CheckGeoLocationStatus(fileIndexItem);
 
 				// this one is good :)
-				if ( fileIndexItem.Status is FileIndexItem.ExifStatus.Default or FileIndexItem.ExifStatus.OkAndSame)
+				if ( fileIndexItem.Status is FileIndexItem.ExifStatus.Default or FileIndexItem.ExifStatus.OkAndSame )
 				{
 					fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 				}
-				
+
 				// Deleted is allowed but the status need be updated
-				if (( StatusCodesHelper.IsDeletedStatus(fileIndexItem) 
-				      == FileIndexItem.ExifStatus.Deleted) )
+				if ( ( StatusCodesHelper.IsDeletedStatus(fileIndexItem)
+					  == FileIndexItem.ExifStatus.Deleted ) )
 				{
 					fileIndexItem.Status = FileIndexItem.ExifStatus.Deleted;
 				}
-				
+
 				// The hash in FileIndexItem is not correct
 				// Clone to not change after update
 				fileIndexUpdateList.Add(fileIndexItem);
@@ -119,7 +119,7 @@ namespace starsky.feature.metaupdate.Services
 		{
 			if ( fileIndexItem.Latitude == 0 || fileIndexItem.Longitude == 0 )
 				return;
-			
+
 			var result = ValidateLocation.ValidateLatitudeLongitude(
 				fileIndexItem.Latitude, fileIndexItem.Longitude);
 			if ( !result )
@@ -138,18 +138,18 @@ namespace starsky.feature.metaupdate.Services
 		/// <param name="statusModel">object that include the changes</param>
 		/// <param name="append">true= for tags to add</param>
 		/// <param name="rotateClock">rotation value 1 left, -1 right, 0 nothing</param>
-		public static void CompareAllLabelsAndRotation( Dictionary<string, List<string>> changedFileIndexItemName, 
-			FileIndexItem collectionsFileIndexItem, FileIndexItem statusModel, bool append, int rotateClock)
+		public static void CompareAllLabelsAndRotation(Dictionary<string, List<string>> changedFileIndexItemName,
+			FileIndexItem collectionsFileIndexItem, FileIndexItem? statusModel, bool append, int rotateClock)
 		{
 			if ( changedFileIndexItemName == null || string.IsNullOrEmpty(collectionsFileIndexItem.FilePath) )
 				throw new MissingFieldException(nameof(changedFileIndexItemName));
-			
+
 			// compare and add changes to collectionsDetailView
-			var comparedNamesList = FileIndexCompareHelper.Compare(collectionsFileIndexItem, 
+			var comparedNamesList = FileIndexCompareHelper.Compare(collectionsFileIndexItem,
 				statusModel, append);
 
 			// if requested, add changes to rotation
-			collectionsFileIndexItem = 
+			collectionsFileIndexItem =
 				RotationCompare(rotateClock, collectionsFileIndexItem, comparedNamesList);
 
 			collectionsFileIndexItem.LastChanged = comparedNamesList;
@@ -162,7 +162,7 @@ namespace starsky.feature.metaupdate.Services
 			// overwrite list if already exist
 			changedFileIndexItemName[collectionsFileIndexItem.FilePath!] = comparedNamesList;
 		}
-		
+
 		/// <summary>
 		/// Add to comparedNames list and add to detail view
 		/// </summary>
@@ -170,14 +170,14 @@ namespace starsky.feature.metaupdate.Services
 		/// <param name="fileIndexItem">main db object</param>
 		/// <param name="comparedNamesList">list of types that are changes</param>
 		/// <returns>updated image</returns>
-		public static FileIndexItem RotationCompare(int rotateClock, FileIndexItem fileIndexItem, 
+		public static FileIndexItem RotationCompare(int rotateClock, FileIndexItem fileIndexItem,
 			ICollection<string> comparedNamesList)
 		{
 			// Do orientation / Rotate if needed (after compare)
-			if (!FileIndexItem.IsRelativeOrientation(rotateClock)) return fileIndexItem;
+			if ( !FileIndexItem.IsRelativeOrientation(rotateClock) ) return fileIndexItem;
 			// run this on detail view => statusModel is always default
 			fileIndexItem.SetRelativeOrientation(rotateClock);
-			
+
 			// list of exifTool to update this field
 			if ( !comparedNamesList.Contains(nameof(fileIndexItem.Orientation).ToLowerInvariant()) )
 			{

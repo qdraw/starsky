@@ -38,7 +38,7 @@ namespace starsky.feature.webhtmlpublish.Helpers
 			_storageSelector = storageSelector;
 			_logger = logger;
 		}
-		
+
 		/// <summary>
 		/// Command Line Helper to server WebHtml Content
 		/// </summary>
@@ -47,38 +47,38 @@ namespace starsky.feature.webhtmlpublish.Helpers
 		public async Task Publisher(string[] args)
 		{
 			_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
-			
-			if ( ArgsHelper.NeedHelp(args))
+
+			if ( ArgsHelper.NeedHelp(args) )
 			{
 				_appSettings.ApplicationType = AppSettings.StarskyAppType.WebHtml;
 				_argsHelper.NeedHelpShowDialog();
 				return;
 			}
-			
-			var inputFullPath = _argsHelper.GetPathFormArgs(args,false);
-			if (string.IsNullOrWhiteSpace(inputFullPath))
+
+			var inputFullPath = _argsHelper.GetPathFormArgs(args, false);
+			if ( string.IsNullOrWhiteSpace(inputFullPath) )
 			{
 				_console.WriteLine("Please use the -p to add a path first");
 				return;
 			}
-			
+
 			if ( _hostFileSystemStorage.IsFolderOrFile(inputFullPath) !=
-			     FolderOrFileModel.FolderOrFileTypeList.Folder )
+				 FolderOrFileModel.FolderOrFileTypeList.Folder )
 			{
 				_console.WriteLine("Please add a valid folder: " + inputFullPath + ". " +
-				                   "This folder is not found");
+								   "This folder is not found");
 				return;
 			}
-			
+
 			var settingsFullFilePath = Path.Combine(inputFullPath, "_settings.json");
 			if ( _hostFileSystemStorage.ExistFile(settingsFullFilePath) )
 			{
 				_console.WriteLine($"You have already run this program for this folder remove the " +
-				                   $"_settings.json first and try it again"  );
+								   $"_settings.json first and try it again");
 				return;
 			}
 
-			var itemName = _publishPreflight.GetNameConsole(inputFullPath,args);
+			var itemName = _publishPreflight.GetNameConsole(inputFullPath, args);
 
 			if ( _appSettings.IsVerbose() )
 			{
@@ -89,21 +89,21 @@ namespace starsky.feature.webhtmlpublish.Helpers
 			// used in this session to find the photos back
 			// outside the webRoot of iStorage
 			_appSettings.StorageFolder = inputFullPath;
-			
+
 			// use relative to StorageFolder
 			var listOfFiles = _subPathStorage.GetAllFilesInDirectory("/")
 				.Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
-			      
+
 			var fileIndexList = await new ReadMeta(_subPathStorage, _appSettings, null!, _logger)
 				.ReadExifAndXmpFromFileAddFilePathHashAsync(listOfFiles);
-			         
+
 			// todo introduce selector
-			var profileName = new PublishPreflight(_appSettings,_console, _storageSelector, _logger)
+			var profileName = new PublishPreflight(_appSettings, _console, _storageSelector, _logger)
 				.GetPublishProfileNameByIndex(0);
-			
-			await _publishService.RenderCopy(fileIndexList,  profileName, 
+
+			await _publishService.RenderCopy(fileIndexList, profileName,
 				itemName, inputFullPath, true);
-			
+
 			_console.WriteLine("publish done");
 		}
 	}

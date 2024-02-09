@@ -32,7 +32,7 @@ namespace starsky.feature.packagetelemetry.Services
 		/// <returns>CompletedTask</returns>
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 		{
-			using (var scope = _serviceScopeFactory.CreateScope())
+			using ( var scope = _serviceScopeFactory.CreateScope() )
 			{
 				var appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
 				var httpClientHelper = scope.ServiceProvider.GetRequiredService<IHttpClientHelper>();
@@ -42,7 +42,7 @@ namespace starsky.feature.packagetelemetry.Services
 
 				if ( appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
 				{
-					await new PackageTelemetry(httpClientHelper, appSettings,logger,query,deviceIdService).PackageTelemetrySend();
+					await new PackageTelemetry(httpClientHelper, appSettings, logger, query, deviceIdService).PackageTelemetrySend();
 				}
 			}
 		}

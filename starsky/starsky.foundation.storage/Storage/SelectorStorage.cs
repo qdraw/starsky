@@ -15,7 +15,7 @@ namespace starsky.foundation.storage.Storage
 		{
 			_serviceProvider = serviceProvider;
 		}
-		
+
 		public enum StorageServices
 		{
 			SubPath,
@@ -23,9 +23,9 @@ namespace starsky.foundation.storage.Storage
 			/// <summary>
 			/// Use only to import from
 			/// </summary>
-			HostFilesystem 
+			HostFilesystem
 		}
-		
+
 		public IStorage Get(StorageServices storageServices)
 		{
 			var services = _serviceProvider.GetServices<IStorage>();

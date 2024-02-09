@@ -11,31 +11,32 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 	[TestClass]
 	public sealed class PublishPreflightTest
 	{
-		private readonly AppSettings _testAppSettings = new AppSettings{
+		private readonly AppSettings _testAppSettings = new AppSettings
+		{
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
-				{
-					"test", new List<AppSettingsPublishProfiles>()
-				}
+				{ "test", new List<AppSettingsPublishProfiles>() }
 			}
 		};
-		
+
 		[TestMethod]
 		public void GetPublishProfileNames_listNoContent()
 		{
 			var appSettings = new AppSettings();
-			var list = new PublishPreflight(appSettings, 
-				new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger()).GetPublishProfileNames();
-			
+			var list = new PublishPreflight(appSettings,
+					new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger())
+				.GetPublishProfileNames();
+
 			Assert.AreEqual(0, list.Count);
 		}
-		
+
 		[TestMethod]
 		public void GetPublishProfileNames_list()
 		{
-			var list = new PublishPreflight(_testAppSettings, 
-				new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger()).GetPublishProfileNames();
-			
+			var list = new PublishPreflight(_testAppSettings,
+					new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger())
+				.GetPublishProfileNames();
+
 			Assert.AreEqual(1, list.Count);
 			Assert.AreEqual("test", list[0].Item2);
 			Assert.AreEqual(0, list[0].Item1);
@@ -44,77 +45,80 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		[TestMethod]
 		public void GetAllPublishProfileNames_item()
 		{
-			var list = new PublishPreflight(_testAppSettings, 
-				new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger()).GetAllPublishProfileNames();
-			
+			var list = new PublishPreflight(_testAppSettings,
+					new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger())
+				.GetAllPublishProfileNames();
+
 			Assert.AreEqual("test", list.FirstOrDefault().Key);
 		}
 
 		[TestMethod]
 		public void GetPublishProfileNameByIndex_0()
 		{
-			var data = new PublishPreflight(_testAppSettings, 
-				new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger()).GetPublishProfileNameByIndex(0);
+			var data = new PublishPreflight(_testAppSettings,
+					new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger())
+				.GetPublishProfileNameByIndex(0);
 			Assert.AreEqual("test", data);
 		}
-		
+
 		[TestMethod]
 		public void GetPublishProfileNameByIndex_LargerThanIndex()
 		{
-			var data = new PublishPreflight(_testAppSettings, 
-				new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger()).GetPublishProfileNameByIndex(1);
+			var data = new PublishPreflight(_testAppSettings,
+					new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger())
+				.GetPublishProfileNameByIndex(1);
 			Assert.AreEqual(null, data);
 		}
 
 		[TestMethod]
 		public void GetNameConsole_WithArg()
 		{
-			var result= new PublishPreflight(_testAppSettings,
-				new FakeConsoleWrapper(), new FakeSelectorStorage(), 
-				new FakeIWebLogger()).GetNameConsole("/", new List<string> {"-n", "t"});
+			var result = new PublishPreflight(_testAppSettings,
+				new FakeConsoleWrapper(), new FakeSelectorStorage(),
+				new FakeIWebLogger()).GetNameConsole("/", new List<string> { "-n", "t" });
 
-			Assert.AreEqual("t", result );
+			Assert.AreEqual("t", result);
 		}
-		
+
 		[TestMethod]
 		public void GetNameConsole_EnterDefaultOption()
 		{
 			var consoleWrapper = new FakeConsoleWrapper
 			{
-				LinesToRead = new List<string>{string.Empty}
+				LinesToRead = new List<string> { string.Empty }
 			};
 
-			var result= new PublishPreflight(_testAppSettings, 
-				consoleWrapper, new FakeSelectorStorage(), new FakeIWebLogger())
-				.GetNameConsole("/test", new List<string> ());
-			
-			Assert.AreEqual("test",result);
+			var result = new PublishPreflight(_testAppSettings,
+					consoleWrapper, new FakeSelectorStorage(), new FakeIWebLogger())
+				.GetNameConsole("/test", new List<string>());
+
+			Assert.AreEqual("test", result);
 		}
-		
+
 		[TestMethod]
 		public void GetNameConsole_UpdateConsoleInput()
 		{
 			var consoleWrapper = new FakeConsoleWrapper
 			{
-				LinesToRead = new List<string>{"updated"}
+				LinesToRead = new List<string> { "updated" }
 			};
 
-			var result= new PublishPreflight(_testAppSettings, 
-				consoleWrapper, new FakeSelectorStorage(), new FakeIWebLogger())
-				.GetNameConsole("/test", new List<string> ());
-			
-			Assert.AreEqual("updated",result);
+			var result = new PublishPreflight(_testAppSettings,
+					consoleWrapper, new FakeSelectorStorage(), new FakeIWebLogger())
+				.GetNameConsole("/test", new List<string>());
+
+			Assert.AreEqual("updated", result);
 		}
 
 		[TestMethod]
 		public void IsProfileValid_ReturnsFalseWithErrorMessage_WhenProfileKeyIsNull()
 		{
 			// Arrange
-			var publishPreflight = new PublishPreflight(_testAppSettings, 
+			var publishPreflight = new PublishPreflight(_testAppSettings,
 				new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger());
 
 			// Act
-			var result = publishPreflight.IsProfileValid(null);
+			var result = publishPreflight.IsProfileValid(null!);
 
 			// Assert
 			Assert.IsFalse(result.Item1);
@@ -127,8 +131,8 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		{
 			// Arrange
 			const string publishProfileName = "invalid-profile";
-			
-			var publishPreflight = new PublishPreflight(_testAppSettings, 
+
+			var publishPreflight = new PublishPreflight(_testAppSettings,
 				new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger());
 
 			// Act
@@ -147,13 +151,12 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			var publishProfileName = "invalid-profile-2";
 			var publishProfile = new AppSettingsPublishProfiles
 			{
-				Path = string.Empty,
-				ContentType = TemplateContentType.Jpeg
+				Path = string.Empty, ContentType = TemplateContentType.Jpeg
 			};
 			_testAppSettings.PublishProfiles![publishProfileName] =
 				new List<AppSettingsPublishProfiles> { publishProfile };
 
-			var publishPreflight = new PublishPreflight(_testAppSettings, 
+			var publishPreflight = new PublishPreflight(_testAppSettings,
 				new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger());
 
 			// Act
@@ -177,8 +180,8 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			};
 			_testAppSettings.PublishProfiles![publishProfileName] =
 				new List<AppSettingsPublishProfiles> { publishProfile };
-			
-			var publishPreflight = new PublishPreflight(_testAppSettings, 
+
+			var publishPreflight = new PublishPreflight(_testAppSettings,
 				new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger());
 
 			// Act
@@ -197,13 +200,12 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			const string publishProfileName = "non-exist-jpeg";
 			var publishProfile = new AppSettingsPublishProfiles
 			{
-				Path = "test.jpg",
-				ContentType = TemplateContentType.Jpeg,
+				Path = "test.jpg", ContentType = TemplateContentType.Jpeg,
 			};
 			_testAppSettings.PublishProfiles![publishProfileName] =
 				new List<AppSettingsPublishProfiles> { publishProfile };
-			
-			var publishPreflight = new PublishPreflight(_testAppSettings, 
+
+			var publishPreflight = new PublishPreflight(_testAppSettings,
 				new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger());
 
 			// Act
@@ -214,7 +216,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			Assert.AreEqual(1, result.Item2.Count);
 			Assert.AreEqual($"Image Path {publishProfile.Path} should exists", result.Item2[0]);
 		}
-		
+
 		[TestMethod]
 		public void IsProfileValid_ReturnsFalseWithErrorMessage_WhenOnlyFirstJpegDoesNotExist()
 		{
@@ -227,8 +229,8 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			};
 			_testAppSettings.PublishProfiles![publishProfileName] =
 				new List<AppSettingsPublishProfiles> { publishProfile };
-			
-			var publishPreflight = new PublishPreflight(_testAppSettings, 
+
+			var publishPreflight = new PublishPreflight(_testAppSettings,
 				new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger());
 
 			// Act

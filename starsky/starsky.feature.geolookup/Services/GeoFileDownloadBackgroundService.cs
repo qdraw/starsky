@@ -31,17 +31,17 @@ namespace starsky.feature.geolookup.Services
 		{
 			await DownloadAsync(stoppingToken);
 		}
-		
+
 		internal async Task DownloadAsync(CancellationToken _ = default)
 		{
-			using (var scope = _serviceScopeFactory.CreateScope())
+			using ( var scope = _serviceScopeFactory.CreateScope() )
 			{
 				var appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
 				var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>();
 
 				// Geo Helper has a direct need of this, other are downloaded when needed
 				// This Background service is for running offline 
-				if ( appSettings.ApplicationType == AppSettings.StarskyAppType.Geo) return;
+				if ( appSettings.ApplicationType == AppSettings.StarskyAppType.Geo ) return;
 				if ( appSettings.GeoFilesSkipDownloadOnStartup == true )
 				{
 					logger.LogInformation("GeoFilesSkipDownloadOnStartup is true, skip download");

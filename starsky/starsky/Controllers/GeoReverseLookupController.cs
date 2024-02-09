@@ -14,7 +14,7 @@ public sealed class GeoReverseLookupController : Controller
 	{
 		_geoReverseLookup = geoReverseLookup;
 	}
-	
+
 	/// <summary>
 	/// Reverse geo lookup
 	/// </summary>

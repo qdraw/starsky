@@ -31,7 +31,7 @@ namespace starsky.foundation.database.Models
 			SetFilePath(subPath);
 			IsDirectory = false;
 		}
-	    
+
 		/// <summary>
 		/// Unique database Id, not used and Json Ignored due the fact that files that are moved could have a new Id 
 		/// </summary>
@@ -61,7 +61,7 @@ namespace starsky.foundation.database.Models
 		{
 			get
 			{
-				if ( string.IsNullOrEmpty(FilePathPrivate)  )
+				if ( string.IsNullOrEmpty(FilePathPrivate) )
 				{
 					return "/";
 				}
@@ -77,14 +77,14 @@ namespace starsky.foundation.database.Models
 		public void SetFilePath(string? value)
 		{
 			var parentPath = FilenamesHelper.GetParentPath(value);
-			if ( string.IsNullOrEmpty(parentPath)) parentPath = "/";
+			if ( string.IsNullOrEmpty(parentPath) ) parentPath = "/";
 			// Home has no parentDirectory and filename slash
 			if ( value != "/" ) _parentDirectory = parentPath;
-			
+
 			_fileName = PathHelper.GetFileName(value);
 			// filenames are without starting slash
 			_fileName = PathHelper.RemovePrefixDbSlash(_fileName);
-			
+
 			FilePathPrivate = PathHelper.RemoveLatestSlash(ParentDirectory!) + PathHelper.PrefixDbSlash(FileName!);
 		}
 
@@ -109,14 +109,14 @@ namespace starsky.foundation.database.Models
 			get => _fileName ?? string.Empty;
 			set
 			{
-				if (string.IsNullOrWhiteSpace(value))
+				if ( string.IsNullOrWhiteSpace(value) )
 				{
 					_fileName = string.Empty;
 					return;
 				}
 				_fileName = value;
 				FilePathPrivate = PathHelper.RemoveLatestSlash(ParentDirectory!) +
-				                  PathHelper.PrefixDbSlash(value);
+								  PathHelper.PrefixDbSlash(value);
 			}
 		}
 
@@ -129,8 +129,8 @@ namespace starsky.foundation.database.Models
 		/// <example>OZHCK4I47QPHOT53QBRE7Z4RLI</example>
 		[MaxLength(190)] // Index column size too large. The maximum column size is 767 bytes (767/4)
 		public string? FileHash { get; set; } = string.Empty;
-		
-		
+
+
 		/// <summary>
 		/// GetFileNameWithoutExtension (only a getter)
 		/// </summary>
@@ -160,14 +160,14 @@ namespace starsky.foundation.database.Models
 			get => _parentDirectory ?? string.Empty;
 			set
 			{
-				if (string.IsNullOrWhiteSpace(value))
+				if ( string.IsNullOrWhiteSpace(value) )
 				{
 					_parentDirectory = string.Empty;
 					return;
 				}
 				_parentDirectory = value;
 				FilePathPrivate = PathHelper.RemoveLatestSlash(value) +
-				                  PathHelper.PrefixDbSlash(FileName!);
+								  PathHelper.PrefixDbSlash(FileName!);
 			}
 		}
 
@@ -188,15 +188,16 @@ namespace starsky.foundation.database.Models
 		/// </value>
 		[NotMapped]
 		[JsonIgnore] // <== gives conversion errors with jsonParser
-		internal HashSet<string>? Keywords {
+		internal HashSet<string>? Keywords
+		{
 			get => HashSetHelper.StringToHashSet(Tags?.Trim()!);
 			set
 			{
-				if (value == null) return;
+				if ( value == null ) return;
 				_tags = HashSetHelper.HashSetToString(value);
-			} 
+			}
 		}
-        
+
 		/// <summary>
 		/// Private API: Do not save null in database for tags
 		/// </summary>
@@ -217,7 +218,7 @@ namespace starsky.foundation.database.Models
 			get => _tags ?? string.Empty;
 			set
 			{
-				if (string.IsNullOrWhiteSpace(value))
+				if ( string.IsNullOrWhiteSpace(value) )
 				{
 					_tags = string.Empty;
 					return;
@@ -273,12 +274,12 @@ namespace starsky.foundation.database.Models
 			/// File is in trash
 			/// </summary>
 			Deleted,
-			
+
 			/// <summary>
 			/// Everything is good but not changed
 			/// </summary>
 			OkAndSame,
-			
+
 			/// <summary>
 			/// File is in trash but not changed
 			/// </summary>
@@ -296,7 +297,7 @@ namespace starsky.foundation.database.Models
 		[JsonConverter(typeof(JsonStringEnumConverter))]
 		[NotMapped]
 		public ExifStatus Status { get; set; } = ExifStatus.Default;
-        
+
 		/// <summary>
 		/// Internal API: to store description
 		/// </summary>
@@ -314,7 +315,7 @@ namespace starsky.foundation.database.Models
 			get => _description ?? string.Empty;
 			set
 			{
-				if (string.IsNullOrWhiteSpace(value))
+				if ( string.IsNullOrWhiteSpace(value) )
 				{
 					_description = string.Empty;
 					return;
@@ -322,7 +323,7 @@ namespace starsky.foundation.database.Models
 				_description = value.Trim();
 			}
 		}
-        
+
 		/// <summary>
 		/// Private API: to store Title
 		/// </summary>
@@ -340,7 +341,7 @@ namespace starsky.foundation.database.Models
 			get => _title ?? string.Empty;
 			set
 			{
-				if (string.IsNullOrWhiteSpace(value))
+				if ( string.IsNullOrWhiteSpace(value) )
 				{
 					_title = string.Empty;
 					return;
@@ -357,7 +358,7 @@ namespace starsky.foundation.database.Models
 		/// The DateTime object
 		/// </value>
 		public DateTime DateTime { get; set; }
-		
+
 		/// <summary>
 		/// Datetime of when this item is added to the database
 		/// </summary>
@@ -365,7 +366,7 @@ namespace starsky.foundation.database.Models
 		/// The add to database DateTime value
 		/// </value>
 		public DateTime AddToDatabase { get; set; }
-	    
+
 		/// <summary>
 		/// Datetime of the last change to this object
 		/// </summary>
@@ -373,7 +374,7 @@ namespace starsky.foundation.database.Models
 		/// The last edited DateTime value
 		/// </value>
 		public DateTime LastEdited { get; set; }
-	    
+
 		/// <summary>
 		/// Update the add to Database Date
 		/// </summary>
@@ -431,10 +432,10 @@ namespace starsky.foundation.database.Models
 		/// <value>
 		/// The location country.
 		/// </value>
-		[MaxLength(40)] 
+		[MaxLength(40)]
 		public string? LocationCountry { get; set; } = string.Empty;
-		
-		
+
+
 		/// <summary>
 		/// ISO-3166-1 alpha-3 (for example NLD for The Netherlands)
 		/// @see: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3
@@ -451,20 +452,21 @@ namespace starsky.foundation.database.Models
 		/// <returns></returns>
 		public static List<ColorClassParser.Color> GetColorClassList(string? colorClassString = null)
 		{
-			if (string.IsNullOrWhiteSpace(colorClassString)) return new List<ColorClassParser.Color>();
+			if ( string.IsNullOrWhiteSpace(colorClassString) ) return new List<ColorClassParser.Color>();
 
 			var colorClassStringList = new List<string>();
 
-			if (!colorClassString.Contains(',') )
+			if ( !colorClassString.Contains(',') )
 			{
-				if (!int.TryParse(colorClassString, out var parsedInt)) return new List<ColorClassParser.Color>();
+				if ( !int.TryParse(colorClassString, out var parsedInt) ) return new List<ColorClassParser.Color>();
 				colorClassStringList.Add(parsedInt.ToString());
 			}
-			if (colorClassString.Contains(',')) {
+			if ( colorClassString.Contains(',') )
+			{
 				colorClassStringList = colorClassString.Split(",".ToCharArray()).ToList();
 			}
 			var colorClassList = new HashSet<ColorClassParser.Color>();
-			foreach (var colorClassStringItem in colorClassStringList)
+			foreach ( var colorClassStringItem in colorClassStringList )
 			{
 				colorClassList.Add(ColorClassParser.GetColorClass(colorClassStringItem));
 			}
@@ -482,16 +484,16 @@ namespace starsky.foundation.database.Models
 			// only for types String in FileIndexItem()
 
 			var allProperties = new FileIndexItem().GetType().GetProperties();
-			foreach (var propertyInfo in allProperties)
+			foreach ( var propertyInfo in allProperties )
 			{
-				if ((
-					propertyInfo.PropertyType == typeof(bool) || 
-					propertyInfo.PropertyType == typeof(bool?) || 
-					propertyInfo.PropertyType == typeof(string) || 
+				if ( (
+					propertyInfo.PropertyType == typeof(bool) ||
+					propertyInfo.PropertyType == typeof(bool?) ||
+					propertyInfo.PropertyType == typeof(string) ||
 					propertyInfo.PropertyType == typeof(DateTime) ||
-					propertyInfo.PropertyType == typeof(ExtensionRolesHelper.ImageFormat) || 
+					propertyInfo.PropertyType == typeof(ExtensionRolesHelper.ImageFormat) ||
 					propertyInfo.PropertyType == typeof(ColorClassParser.Color)
-				) && propertyInfo.CanRead)
+				) && propertyInfo.CanRead )
 				{
 					fileIndexPropList.Add(propertyInfo.Name);
 				}
@@ -517,25 +519,25 @@ namespace starsky.foundation.database.Models
 		[JsonConverter(typeof(JsonStringEnumConverter))]
 		// newtonsoft uses: StringEnumConverter
 		public Rotation Orientation { get; set; } = Rotation.DoNotChange;
-		
+
 		/// <summary>
 		/// Exit Rotation values
 		/// </summary>
 		public enum Rotation
 		{
 			DoNotChange = -1,
-            
+
 			// There are more types:
 			// https://www.daveperrett.com/articles/2012/07/28/exif-orientation-handling-is-a-ghetto/
-            
-			[Display(Name = "Horizontal (normal)")] 
+
+			[Display(Name = "Horizontal (normal)")]
 			Horizontal = 1,
 
 			[Display(Name = "Rotate 90 CW")]
 			Rotate90Cw = 6,
 
 			[Display(Name = "Rotate 180")]
-			Rotate180 = 3,  
+			Rotate180 = 3,
 
 			[Display(Name = "Rotate 270 CW")]
 			Rotate270Cw = 8
@@ -580,18 +582,19 @@ namespace starsky.foundation.database.Models
 		/// <returns>enum value of the output rotation</returns>
 		public Rotation RelativeOrientation(int relativeRotation = 0)
 		{
-			if (Orientation == Rotation.DoNotChange) Orientation = Rotation.Horizontal;
-            
+			if ( Orientation == Rotation.DoNotChange ) Orientation = Rotation.Horizontal;
+
 			var currentOrientation = _orderRotation.FindIndex(i => i == Orientation);
-            
-			if (currentOrientation >= 0 && currentOrientation+relativeRotation < 
-				_orderRotation.Count && currentOrientation+relativeRotation >= 0)
+
+			if ( currentOrientation >= 0 && currentOrientation + relativeRotation <
+				_orderRotation.Count && currentOrientation + relativeRotation >= 0 )
 			{
 				return _orderRotation[currentOrientation + relativeRotation];
 			}
-			if (currentOrientation + relativeRotation == -1) {
+			if ( currentOrientation + relativeRotation == -1 )
+			{
 				// ReSharper disable once UseIndexFromEndExpression
-				return _orderRotation[_orderRotation.Count-1]; //changed
+				return _orderRotation[_orderRotation.Count - 1]; //changed
 			}
 			return _orderRotation[0];
 		}
@@ -604,7 +607,7 @@ namespace starsky.foundation.database.Models
 		public Rotation SetAbsoluteOrientation(string orientationString = "0")
 		{
 
-			switch (orientationString)
+			switch ( orientationString )
 			{
 				case "1":
 					Orientation = Rotation.Horizontal;
@@ -660,8 +663,8 @@ namespace starsky.foundation.database.Models
 		/// <param name="imageWidth">Width of the image.</param>
 		public void SetImageWidth(int imageWidth)
 		{
-			if(imageWidth is >= 1 and <= ushort.MaxValue ) 
-				ImageWidth = (ushort) imageWidth;
+			if ( imageWidth is >= 1 and <= ushort.MaxValue )
+				ImageWidth = ( ushort )imageWidth;
 		}
 
 		/// <summary>
@@ -682,10 +685,10 @@ namespace starsky.foundation.database.Models
 		/// <param name="imageHeight">Height of the image.</param>
 		public void SetImageHeight(int imageHeight)
 		{
-			if(imageHeight is >= 1 and <= ushort.MaxValue ) 
-				ImageHeight = (ushort) imageHeight;
+			if ( imageHeight is >= 1 and <= ushort.MaxValue )
+				ImageHeight = ( ushort )imageHeight;
 		}
-		
+
 
 		/// <summary>
 		/// Gets or sets the image format. (eg: jpg, tiff)
@@ -722,13 +725,13 @@ namespace starsky.foundation.database.Models
 			get
 			{
 				if ( string.IsNullOrWhiteSpace(SidecarExtensions) ) return new HashSet<string>();
-				return 
+				return
 					new HashSet<string>(
 						SidecarExtensions.Split('|')
 							.Where(p => !string.IsNullOrWhiteSpace(p)));
 			}
 		}
-		
+
 		/// <summary>
 		/// Add extensions without dot
 		/// </summary>
@@ -739,7 +742,7 @@ namespace starsky.foundation.database.Models
 			current.Add(ext);
 			SidecarExtensions = string.Join("|", current);
 		}
-		
+
 		/// <summary>
 		/// Remove extensions without dot
 		/// </summary>
@@ -751,14 +754,14 @@ namespace starsky.foundation.database.Models
 			SidecarExtensions = string.Join("|", current);
 		}
 
-		
+
 		/// <summary>
 		/// Duplicate this item in memory.
 		/// </summary>
 		/// <returns>FileIndexItem duplicated</returns>
 		public FileIndexItem Clone()
 		{
-			return (FileIndexItem) MemberwiseClone();
+			return ( FileIndexItem )MemberwiseClone();
 		}
 
 		/// <summary>
@@ -772,8 +775,9 @@ namespace starsky.foundation.database.Models
 		/// <value>
 		/// The aperture.
 		/// </value>
-		public double Aperture {
-			get => Math.Round(_aperture,5);
+		public double Aperture
+		{
+			get => Math.Round(_aperture, 5);
 			set => _aperture = Math.Round(value, 5);
 		}
 
@@ -781,7 +785,7 @@ namespace starsky.foundation.database.Models
 		/// Private field to store ShutterSpeed Data
 		/// </summary>
 		private string _shutterSpeed = string.Empty;
-	    
+
 		/// <summary>
 		/// Shutter speed as string so '1/2' or '1' 
 		/// </summary>
@@ -789,7 +793,8 @@ namespace starsky.foundation.database.Models
 		/// The shutter speed as string
 		/// </value>
 		[MaxLength(20)]
-		public string? ShutterSpeed {
+		public string? ShutterSpeed
+		{
 			get => string.IsNullOrEmpty(_shutterSpeed) ? string.Empty : _shutterSpeed;
 			set
 			{
@@ -797,7 +802,7 @@ namespace starsky.foundation.database.Models
 				if ( value?.Length <= 20 ) _shutterSpeed = value;
 			}
 		}
-	    
+
 		/// <summary>
 		/// Gets or sets the iso speed used by cameras  (saved as ushort 0-65535)
 		/// </summary>
@@ -824,10 +829,10 @@ namespace starsky.foundation.database.Models
 		/// <param name="isoSpeed">The iso speed.</param>
 		public void SetIsoSpeed(int isoSpeed)
 		{
-			if(isoSpeed is >= 1 and <= ushort.MaxValue ) 
-				IsoSpeed = (ushort) isoSpeed;
+			if ( isoSpeed is >= 1 and <= ushort.MaxValue )
+				IsoSpeed = ( ushort )isoSpeed;
 		}
-		
+
 		/// <summary>
 		/// Private field to store Software Data
 		/// </summary>
@@ -837,7 +842,8 @@ namespace starsky.foundation.database.Models
 		/// Edited with this program
 		/// </summary>
 		[MaxLength(40)]
-		public string? Software {
+		public string? Software
+		{
 			get => string.IsNullOrEmpty(_softwareData) ? string.Empty : _softwareData;
 			set => _softwareData = string.IsNullOrEmpty(value) ? string.Empty : value;
 		}
@@ -853,7 +859,8 @@ namespace starsky.foundation.database.Models
 		/// <value>
 		/// Camera brand and type (incl. lens)
 		/// </value>
-		public string? MakeModel {
+		public string? MakeModel
+		{
 			get => string.IsNullOrEmpty(_makeModel) ? string.Empty : _makeModel;
 			// ReSharper disable once PropertyCanBeMadeInitOnly.Global
 			set => _makeModel = string.IsNullOrEmpty(value) ? string.Empty : value;
@@ -893,7 +900,7 @@ namespace starsky.foundation.database.Models
 				return makeModelList?.Length != MakeModelFixedLength ? string.Empty : makeModelList[1];
 			}
 		}
-	    
+
 		/// <summary>
 		/// Get the Lens info (from MakeModel)
 		/// </summary>
@@ -904,16 +911,16 @@ namespace starsky.foundation.database.Models
 			{
 				if ( string.IsNullOrEmpty(_makeModel) ) return string.Empty;
 				var makeModelList = MakeModel?.Split("|".ToCharArray());
-				if( makeModelList?.Length != MakeModelFixedLength ) return string.Empty;
+				if ( makeModelList?.Length != MakeModelFixedLength ) return string.Empty;
 				// ReSharper disable once ConvertIfStatementToReturnStatement
 				if ( string.IsNullOrEmpty(Model) ) return makeModelList[2];
 				// It replaces the Camera Model in the lens
-				var lensModel = makeModelList[2].Replace(Model,string.Empty).Trim();
+				var lensModel = makeModelList[2].Replace(Model, string.Empty).Trim();
 				return lensModel;
 			}
 		}
-	    
-	    
+
+
 		/// <summary>
 		/// The Zoom of the camera (that is currently used)
 		/// </summary>
@@ -923,21 +930,22 @@ namespace starsky.foundation.database.Models
 		/// Private field to store the ByteSize Data
 		/// </summary>
 		private long _size;
-		
+
 		/// <summary>
 		/// Size of the file in bytes (BigInt)
 		/// </summary>
 		public long Size
 		{
 			get => _size;
-			set {
+			set
+			{
 				if ( value < 0 )
 				{
 					_size = 0;
 					return;
 				}
 				_size = value;
-			} 
+			}
 		}
 
 		/// <summary>
@@ -975,7 +983,7 @@ namespace starsky.foundation.database.Models
 			makeModelList[fieldIndex] = titleValue;
 
 			// Store Make: APPLE as Apple in the database
-			if ( fieldIndex == 0 ) makeModelList[fieldIndex] = 
+			if ( fieldIndex == 0 ) makeModelList[fieldIndex] =
 				CultureInfo.InvariantCulture.TextInfo.ToTitleCase(titleValue.ToLowerInvariant());
 
 			_makeModel = FixedListToString(makeModelList);
@@ -1013,7 +1021,7 @@ namespace starsky.foundation.database.Models
 
 			return toBeAddedKeywords;
 		}
-		
+
 		/// <summary>
 		/// Is ImageStabilisation unknown, on or off
 		/// Currently Sony only
@@ -1031,14 +1039,14 @@ namespace starsky.foundation.database.Models
 	}
 
 	// end class
-	
-	
-    
-//	Make,
-//	CameraModelName,
-//	LensInfo,
-//	LensModel,
-//	Aperture,
-//	ShutterSpeed,
-//	ExposureMode
+
+
+
+	//	Make,
+	//	CameraModelName,
+	//	LensInfo,
+	//	LensModel,
+	//	Aperture,
+	//	ShutterSpeed,
+	//	ExposureMode
 }

@@ -10,15 +10,15 @@ namespace starsky.foundation.database.Query
 		internal static void SolveConcurrencyExceptionLoop(
 			IReadOnlyList<EntityEntry> concurrencyExceptionEntries)
 		{
-			foreach (var entry in concurrencyExceptionEntries)
+			foreach ( var entry in concurrencyExceptionEntries )
 			{
 				SolveConcurrencyException(entry.Entity, entry.CurrentValues,
-					entry.GetDatabaseValues(), entry.Metadata.Name, 
+					entry.GetDatabaseValues(), entry.Metadata.Name,
 					// former values from database
 					entry.CurrentValues.SetValues);
 			}
 		}
-		
+
 		/// <summary>
 		/// Delegate to abstract OriginalValues Setter
 		/// </summary>
@@ -35,16 +35,16 @@ namespace starsky.foundation.database.Query
 		/// <param name="entryMetadataName">meta name</param>
 		/// <param name="entryOriginalValuesSetValues">entry item</param>
 		/// <exception cref="NotSupportedException">unknown how to fix</exception>
-		internal static void SolveConcurrencyException(object entryEntity, 
-			PropertyValues proposedValues, PropertyValues? databaseValues, string entryMetadataName, 
+		internal static void SolveConcurrencyException(object entryEntity,
+			PropertyValues proposedValues, PropertyValues? databaseValues, string entryMetadataName,
 			OriginalValuesSetValuesDelegate entryOriginalValuesSetValues)
 		{
 			if ( !( entryEntity is FileIndexItem ) )
 				throw new NotSupportedException(
 					"Don't know how to handle concurrency conflicts for "
 					+ entryMetadataName);
-	        
-			foreach (var property in proposedValues.Properties)
+
+			foreach ( var property in proposedValues.Properties )
 			{
 				var proposedValue = proposedValues[property];
 				proposedValues[property] = proposedValue;
@@ -57,6 +57,6 @@ namespace starsky.foundation.database.Query
 			}
 		}
 	}
-	
+
 }
 

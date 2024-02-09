@@ -1,5 +1,5 @@
 import { IConnectionDefault } from "../../interfaces/IConnectionDefault";
-import * as FetchGet from "../../shared/fetch-get";
+import * as FetchGet from "../../shared/fetch/fetch-get";
 import { useSocketsEventName } from "./use-sockets.const";
 import WebSocketService from "./websocket-service";
 import WsCurrentStart, {

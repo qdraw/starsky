@@ -7,7 +7,7 @@ namespace starsky.foundation.database.Models;
 [SuppressMessage("ReSharper", "PropertyCanBeMadeInitOnly.Global")]
 public sealed class SettingsItem
 {
-	[Key] 
+	[Key]
 	[Column(TypeName = "varchar(150)")]
 	[MaxLength(150)]
 	[Required]

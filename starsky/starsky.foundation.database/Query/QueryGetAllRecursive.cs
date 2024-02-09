@@ -24,9 +24,9 @@ namespace starsky.foundation.database.Query
 		/// <returns>results</returns>
 		public async Task<List<FileIndexItem>> GetAllRecursiveAsync(string subPath = "/")
 		{
-			return await GetAllRecursiveAsync(new List<string> {subPath});
+			return await GetAllRecursiveAsync(new List<string> { subPath });
 		}
-		
+
 		/// <summary>
 		/// Includes sub Items
 		/// </summary>
@@ -36,7 +36,7 @@ namespace starsky.foundation.database.Query
 		{
 			async Task<List<FileIndexItem>> LocalQuery(ApplicationDbContext context)
 			{
-				var predicates = new List<Expression<Func<FileIndexItem,bool>>>();  
+				var predicates = new List<Expression<Func<FileIndexItem, bool>>>();
 
 				// ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
 				foreach ( var filePath in filePathList )
@@ -44,9 +44,9 @@ namespace starsky.foundation.database.Query
 					var subPath = PathHelper.RemoveLatestSlash(filePath);
 					predicates.Add(p => p.ParentDirectory!.StartsWith(subPath));
 				}
-				
+
 				var predicate = PredicateBuilder.OrLoop(predicates);
-					
+
 				return await context.FileIndex.Where(predicate).OrderBy(r => r.FilePath).ToListAsync();
 			}
 
@@ -64,7 +64,7 @@ namespace starsky.foundation.database.Query
 				return await LocalQuery(new InjectServiceScope(_scopeFactory)
 					.Context());
 			}
-			catch ( MySqlException exception)
+			catch ( MySqlException exception )
 			{
 				// https://github.com/qdraw/starsky/issues/1243
 				if ( exception.Message.Contains("Timeout") )

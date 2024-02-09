@@ -5,7 +5,7 @@ namespace starsky.foundation.storage.Models
 	public sealed class StorageInfo
 	{
 		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile { get; set; }
-		
+
 		/// <summary>
 		/// Size in bytes
 		/// </summary>
@@ -20,7 +20,7 @@ namespace starsky.foundation.storage.Models
 		/// Is the object a directory
 		/// </summary>
 		public bool? IsDirectory { get; set; }
-		
+
 		/// <summary>
 		/// Is the filesystem readonly (**NOT** the setting in appSettings)
 		/// </summary>

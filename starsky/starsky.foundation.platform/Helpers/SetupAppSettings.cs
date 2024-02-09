@@ -22,7 +22,7 @@ namespace starsky.foundation.platform.Helpers
 			services.ConfigurePoCo<AppSettings>(configurationRoot.GetSection("App"));
 			return services;
 		}
-		
+
 		/// <summary>
 		/// Default appSettings.json to builder
 		/// </summary>
@@ -33,21 +33,21 @@ namespace starsky.foundation.platform.Helpers
 			var builder = new ConfigurationBuilder();
 
 			var settings = await MergeJsonFiles(appSettings.BaseDirectoryProject);
-			
+
 			// Make sure is wrapped in a AppContainer app
-			var utf8Bytes = JsonSerializer.SerializeToUtf8Bytes(new AppContainerAppSettings{ App = settings});
+			var utf8Bytes = JsonSerializer.SerializeToUtf8Bytes(new AppContainerAppSettings { App = settings });
 
 			builder
 				.AddJsonStream(new MemoryStream(utf8Bytes))
 				// overwrite envs
 				// current dir gives problems on linux arm
 				.AddEnvironmentVariables();
-			
+
 			if ( args != null )
 			{
 				builder.AddCommandLine(args);
-			}	
-				
+			}
+
 			return builder.Build();
 		}
 
@@ -88,9 +88,9 @@ namespace starsky.foundation.platform.Helpers
 			{
 				return new AppSettings();
 			}
-			
+
 			var appSetting = appSettingsList.FirstOrDefault()!;
-			
+
 			for ( var i = 1; i < appSettingsList.Count; i++ )
 			{
 				var currentAppSetting = appSettingsList[i];
@@ -111,10 +111,10 @@ namespace starsky.foundation.platform.Helpers
 		{
 			// configs
 			services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
-            
+
 			// Need to rebuild for AppSettings
 			var serviceProvider = services.BuildServiceProvider();
-            
+
 			return serviceProvider.GetRequiredService<AppSettings>();
 		}
 

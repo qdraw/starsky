@@ -2,7 +2,7 @@ import { render } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
-import * as FetchPost from "../../../shared/fetch-post";
+import * as FetchPost from "../../../shared/fetch/fetch-post";
 import DropArea from "./drop-area";
 import { PostSingleFormData } from "./post-single-form-data";
 

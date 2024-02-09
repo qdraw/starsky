@@ -6,7 +6,7 @@ import useGlobalSettings from "../hooks/use-global-settings";
 import useLocation from "../hooks/use-location/use-location";
 import { BrowserDetect } from "../shared/browser-detect";
 import { DocumentTitle } from "../shared/document-title";
-import FetchPost from "../shared/fetch-post";
+import FetchPost from "../shared/fetch/fetch-post";
 import { Language } from "../shared/language";
 import { UrlQuery } from "../shared/url-query";
 import { validateLoginForm } from "../shared/validate-login-form";

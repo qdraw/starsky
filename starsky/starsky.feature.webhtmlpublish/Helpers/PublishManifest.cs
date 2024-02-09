@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using starsky.feature.webhtmlpublish.Models;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.storage.Helpers;
@@ -26,20 +25,17 @@ namespace starsky.feature.webhtmlpublish.Helpers
 		/// <param name="parentFullFilePath">without ManifestName</param>
 		/// <param name="itemName"></param>
 		/// <param name="copyContent"></param>
-		public PublishManifestModel ExportManifest( string parentFullFilePath, string itemName, 
-			Dictionary<string, bool> copyContent)
+		public PublishManifestModel ExportManifest(string parentFullFilePath, string itemName,
+			Dictionary<string, bool>? copyContent)
 		{
-			var manifest = new PublishManifestModel
-			{
-				Name = itemName,
-				Copy = copyContent
-			};
+			copyContent ??= new Dictionary<string, bool>();
+			var manifest = new PublishManifestModel { Name = itemName, Copy = copyContent };
 			var output = JsonSerializer.Serialize(manifest, DefaultJsonSerializer.NoNamingPolicy);
 			var outputLocation = Path.Combine(parentFullFilePath, ManifestName);
-			
+
 			_storage.FileDelete(outputLocation);
 			_storage.WriteStream(StringToStreamHelper.StringToStream(output), outputLocation);
-			
+
 			return manifest;
 		}
 	}

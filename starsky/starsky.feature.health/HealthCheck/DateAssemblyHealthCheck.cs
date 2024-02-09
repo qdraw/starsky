@@ -26,9 +26,9 @@ namespace starsky.feature.health.HealthCheck
 			CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var assemblyDate = DateAssembly.GetBuildDate(Assembly.GetExecutingAssembly());
-			return Task.FromResult(assemblyDate.AddDays(-2) > DateTime.UtcNow ? 
+			return Task.FromResult(assemblyDate.AddDays(-2) > DateTime.UtcNow ?
 				HealthCheckResult.Unhealthy($"Current Date {assemblyDate.AddDays(-2)}>" +
-				                            $"{DateTime.UtcNow} is earlier then the Assembly is build") : 
+											$"{DateTime.UtcNow} is earlier then the Assembly is build") :
 				HealthCheckResult.Healthy("Current Date is after the Assembly is build :)"));
 		}
 

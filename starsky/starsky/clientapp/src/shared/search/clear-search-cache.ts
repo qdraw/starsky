@@ -1,4 +1,4 @@
-import FetchPost from "../fetch-post";
+import FetchPost from "../fetch/fetch-post";
 import { URLPath } from "../url-path";
 import { UrlQuery } from "../url-query";
 

@@ -1,4 +1,3 @@
-#nullable enable
 using System.Threading.Tasks;
 using starsky.feature.settings.Interfaces;
 using starsky.feature.settings.Models;

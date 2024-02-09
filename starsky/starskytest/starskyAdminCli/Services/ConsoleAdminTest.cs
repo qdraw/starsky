@@ -9,139 +9,122 @@ using starskytest.FakeMocks;
 
 namespace starskytest.starskyAdminCli.Services
 {
-	
 	[TestClass]
 	public sealed class ConsoleAdminTest
 	{
 		[TestMethod]
-		public void StarskyAdminCliProgramTest_UserDoesNotExist_AndCreateAccount()
+		public async Task StarskyAdminCliProgramTest_UserDoesNotExist_AndCreateAccount()
 		{
 			var console = new FakeConsoleWrapper(new List<string>
 			{
-				"dont@mail.me",
-				"1234567890123456"
+				"dont@mail.me", "1234567890123456"
 			});
-			new ConsoleAdmin(new FakeUserManagerActiveUsers(),console ).Tool(string.Empty, string.Empty);
 
-			Assert.AreEqual("User dont@mail.me is created", 
+			var service = new ConsoleAdmin(new FakeUserManagerActiveUsers(), console);
+			await service.Tool(string.Empty,
+				string.Empty);
+
+			Assert.AreEqual("User dont@mail.me is created",
 				console.WrittenLines.LastOrDefault());
 		}
-		
+
 		[TestMethod]
-		public void CreateAccount_AsInput()
+		public async Task CreateAccount_AsInput()
 		{
 			var console = new FakeConsoleWrapper();
-			new ConsoleAdmin(new FakeUserManagerActiveUsers(),console ).Tool("dont@mail.me", "1234567890123456");
+			var service = new ConsoleAdmin(new FakeUserManagerActiveUsers(), console);
+			await service.Tool("dont@mail.me", "1234567890123456");
 
-			Assert.AreEqual("User dont@mail.me is created", 
+			Assert.AreEqual("User dont@mail.me is created",
 				console.WrittenLines.LastOrDefault());
 		}
-		
-		[TestMethod]
-		public void UserCreate_ValidationShouldFail()
-		{
-			var console = new FakeConsoleWrapper(new List<string>
-			{
-				"no_email",
-				"false"
-			});
-			new ConsoleAdmin(new FakeUserManagerActiveUsers(),console ).Tool(string.Empty, string.Empty);
 
-			Assert.AreEqual("username / password is not valid", 
-				console.WrittenLines.LastOrDefault());
-		}
-		
 		[TestMethod]
-		public void UserCreate_NoInput()
+		public async Task UserCreate_ValidationShouldFail()
 		{
-			var console = new FakeConsoleWrapper(new List<string>
-			{
-				"dont@mail.me",
-				string.Empty
-			});
-			new ConsoleAdmin(new FakeUserManagerActiveUsers(), console ).Tool(string.Empty,string.Empty);
-			
-			Assert.AreEqual("No input selected", 
+			var console = new FakeConsoleWrapper(new List<string> { "no_email", "false" });
+
+			var service = new ConsoleAdmin(new FakeUserManagerActiveUsers(), console);
+			await service.Tool(string.Empty, string.Empty);
+
+			Assert.AreEqual("username / password is not valid",
 				console.WrittenLines.LastOrDefault());
 		}
-		
+
+		[TestMethod]
+		public async Task UserCreate_NoInput()
+		{
+			var console = new FakeConsoleWrapper(new List<string> { "dont@mail.me", string.Empty });
+
+			var service = new ConsoleAdmin(new FakeUserManagerActiveUsers(), console);
+			await service.Tool(string.Empty, string.Empty);
+
+			Assert.AreEqual("No input selected",
+				console.WrittenLines.LastOrDefault());
+		}
+
 		[TestMethod]
 		public async Task StarskyAdminCliProgramTest_NoInput()
 		{
-			var console = new FakeConsoleWrapper(new List<string>
-			{
-				string.Empty
-			});
-			await new ConsoleAdmin(new FakeUserManagerActiveUsers(), console ).Tool(string.Empty,string.Empty);
-			
-			Assert.AreEqual("No input selected", 
+			var console = new FakeConsoleWrapper(new List<string> { string.Empty });
+			await new ConsoleAdmin(new FakeUserManagerActiveUsers(), console).Tool(string.Empty,
+				string.Empty);
+
+			Assert.AreEqual("No input selected",
 				console.WrittenLines.LastOrDefault());
 		}
-		
+
 		[TestMethod]
 		public async Task StarskyAdminCliProgramTest_Removed()
 		{
-			var console = new FakeConsoleWrapper(new List<string>
-			{
-				"test",
-				"2"
-			});
-			await new ConsoleAdmin(new FakeUserManagerActiveUsers("test", new User {Name = "t1", Id = 99}), console )
-				.Tool(string.Empty,string.Empty);
-			
-			Assert.AreEqual("User test is removed", 
+			var console = new FakeConsoleWrapper(new List<string> { "test", "2" });
+			await new ConsoleAdmin(
+					new FakeUserManagerActiveUsers("test", new User { Name = "t1", Id = 99 }),
+					console)
+				.Tool(string.Empty, string.Empty);
+
+			Assert.AreEqual("User test is removed",
 				console.WrittenLines.LastOrDefault());
 		}
 
 		[TestMethod]
 		public async Task ToggleUserAdminRole_toAdmin()
 		{
-			var console = new FakeConsoleWrapper(new List<string>
-			{
-				"test",
-				"3"
-			});
-			await new ConsoleAdmin( new FakeUserManagerActiveUsers("test", new User {Name = "t1", Id = 99}),console 
-			).Tool(string.Empty,string.Empty);
-			
-			Assert.AreEqual("User test has now the role Administrator", 
+			var console = new FakeConsoleWrapper(new List<string> { "test", "3" });
+			await new ConsoleAdmin(
+				new FakeUserManagerActiveUsers("test", new User { Name = "t1", Id = 99 }), console
+			).Tool(string.Empty, string.Empty);
+
+			Assert.AreEqual("User test has now the role Administrator",
 				console.WrittenLines.LastOrDefault());
 		}
-		
+
 		[TestMethod]
 		public async Task ToggleUserAdminRole_toUser()
 		{
-			var console = new FakeConsoleWrapper(new List<string>
+			var console = new FakeConsoleWrapper(new List<string> { "test", "3" });
+
+			var userMan = new FakeUserManagerActiveUsers("test", new User { Name = "t1", Id = 99 })
 			{
-				"test",
-				"3"
-			});
-			
-			var userMan = new FakeUserManagerActiveUsers("test", new User {Name = "t1", Id = 99})
-			{
-				Role = new Role {Code = AccountRoles.AppAccountRoles.Administrator.ToString()}
+				Role = new Role { Code = AccountRoles.AppAccountRoles.Administrator.ToString() }
 			};
-			
-			await new ConsoleAdmin( userMan,console ).Tool(string.Empty,string.Empty);
-			Assert.AreEqual("User test has now the role User", console.WrittenLines.LastOrDefault());
+
+			await new ConsoleAdmin(userMan, console).Tool(string.Empty, string.Empty);
+			Assert.AreEqual("User test has now the role User",
+				console.WrittenLines.LastOrDefault());
 		}
-		
-				
+
 		[TestMethod]
 		public async Task ToggleUserAdminRole_toUser_invalidEnum_selected()
 		{
-			var console = new FakeConsoleWrapper(new List<string>
+			var console = new FakeConsoleWrapper(new List<string> { "test", "q" });
+
+			var userMan = new FakeUserManagerActiveUsers("test", new User { Name = "t1", Id = 99 })
 			{
-				"test",
-				"q"
-			});
-			
-			var userMan = new FakeUserManagerActiveUsers("test", new User {Name = "t1", Id = 99})
-			{
-				Role = new Role {Code = AccountRoles.AppAccountRoles.Administrator.ToString()}
+				Role = new Role { Code = AccountRoles.AppAccountRoles.Administrator.ToString() }
 			};
-			
-			await new ConsoleAdmin( userMan,console ).Tool(string.Empty,string.Empty);
+
+			await new ConsoleAdmin(userMan, console).Tool(string.Empty, string.Empty);
 			Assert.AreEqual("No input selected ends now", console.WrittenLines.LastOrDefault());
 		}
 	}

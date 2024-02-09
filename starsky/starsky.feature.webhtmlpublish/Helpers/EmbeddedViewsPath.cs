@@ -8,11 +8,11 @@ namespace starsky.feature.webhtmlpublish.Helpers
 		public static string GetViewFullPath(string viewName)
 		{
 			return AppDomain.CurrentDomain.BaseDirectory +
-			       Path.DirectorySeparatorChar +
-			       "WebHtmlPublish" +
-			       Path.DirectorySeparatorChar +
-			       "EmbeddedViews" +
-			       Path.DirectorySeparatorChar + viewName;
+				   Path.DirectorySeparatorChar +
+				   "WebHtmlPublish" +
+				   Path.DirectorySeparatorChar +
+				   "EmbeddedViews" +
+				   Path.DirectorySeparatorChar + viewName;
 		}
 	}
 }

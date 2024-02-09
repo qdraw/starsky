@@ -7,7 +7,6 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -35,12 +34,10 @@ using starsky.foundation.realtime.Extentions;
 using starsky.foundation.realtime.Model;
 using starsky.foundation.webtelemetry.Extensions;
 using starsky.foundation.webtelemetry.Helpers;
-using starsky.foundation.webtelemetry.Processor;
 using starsky.Helpers;
 
 namespace starsky
 {
-	// ReSharper disable once ClassNeverInstantiated.Global
 	public sealed class Startup
 	{
 		private readonly IConfigurationRoot _configuration;
@@ -60,7 +57,7 @@ namespace starsky
 			if ( !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("app__appsettingspath")) )
 			{
 				Console.WriteLine("app__appSettingsPath: " +
-				                  Environment.GetEnvironmentVariable("app__appsettingspath"));
+								  Environment.GetEnvironmentVariable("app__appsettingspath"));
 			}
 
 			_configuration = SetupAppSettings.AppSettingsToBuilder(args).ConfigureAwait(false)
@@ -87,8 +84,6 @@ namespace starsky
 			services.AddMemoryCache();
 			// this is ignored here: appSettings.AddMemoryCache; but implemented in cache
 
-			// Detect Application Insights (used in next SetupDatabaseTypes)
-			services.AddMonitoring(_appSettings);
 			services.AddOpenTelemetryMonitoring(_appSettings);
 
 			// LoggerFactory
@@ -294,7 +289,7 @@ namespace starsky
 			app.UseAuthentication();
 			app.UseBasicAuthentication();
 			app.UseNoAccount(_appSettings?.NoAccountLocalhost == true ||
-			                 _appSettings?.DemoUnsafeDeleteStorageFolder == true);
+							 _appSettings?.DemoUnsafeDeleteStorageFolder == true);
 			app.UseCheckIfAccountExist();
 
 			app.UseAuthorization();
@@ -316,19 +311,6 @@ namespace starsky
 			app.UseWebSockets();
 			app.MapWebSocketConnections("/realtime", new WebSocketConnectionsOptions(),
 				_appSettings?.UseRealtime);
-
-			if ( _appSettings != null && !string.IsNullOrWhiteSpace(_appSettings
-				    .ApplicationInsightsConnectionString) )
-			{
-				var configuration =
-					app.ApplicationServices.GetRequiredService<TelemetryConfiguration>();
-				configuration.TelemetryProcessorChainBuilder.Use(next =>
-					new FilterWebsocketsTelemetryProcessor(next));
-				configuration.TelemetryProcessorChainBuilder.Build();
-
-				var onStoppedSync = new FlushApplicationInsights(app);
-				applicationLifetime.ApplicationStopping.Register(onStoppedSync.Flush);
-			}
 		}
 
 		/// <summary>
@@ -340,7 +322,7 @@ namespace starsky
 		internal (bool, bool, bool) SetupStaticFiles(IApplicationBuilder app,
 			string assetsName = "assets")
 		{
-			var result = ( false, false, false );
+			var result = (false, false, false);
 
 			// Allow Current Directory and wwwroot in Base Directory
 			// AppSettings can be null when running tests
@@ -369,19 +351,19 @@ namespace starsky
 
 			// Check if clientapp is build and use the assets folder
 			if ( !Directory.Exists(Path.Combine(
-				    _appSettings.BaseDirectoryProject, "clientapp", "build", assetsName)) )
+					_appSettings.BaseDirectoryProject, "clientapp", "build", assetsName)) )
 			{
 				return result;
 			}
 
 			app.UseStaticFiles(new StaticFileOptions
-				{
-					OnPrepareResponse = PrepareResponse,
-					FileProvider = new PhysicalFileProvider(
+			{
+				OnPrepareResponse = PrepareResponse,
+				FileProvider = new PhysicalFileProvider(
 						Path.Combine(_appSettings.BaseDirectoryProject, "clientapp", "build",
 							assetsName)),
-					RequestPath = $"/assets",
-				}
+				RequestPath = $"/assets",
+			}
 			);
 			result.Item3 = true;
 			return result;

@@ -16,7 +16,7 @@ namespace starsky.foundation.platform.Helpers
 		{
 			inputString ??= string.Empty;
 			if ( inputString.Length % 4 != 0 ||
-			     !Base64Regex().IsMatch(inputString) )
+				 !Base64Regex().IsMatch(inputString) )
 			{
 				return Array.Empty<byte>();
 			}

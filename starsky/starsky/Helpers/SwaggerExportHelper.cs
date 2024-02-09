@@ -27,7 +27,7 @@ namespace starsky.Helpers
 			_serviceScopeFactory = serviceScopeFactory;
 			_logger = logger;
 		}
-		
+
 		/// <summary>
 		/// Running scoped services
 		/// @see: https://thinkrethink.net/2018/07/12/injecting-a-scoped-service-into-ihostedservice/
@@ -36,13 +36,13 @@ namespace starsky.Helpers
 		/// <returns>CompletedTask</returns>
 		protected override Task ExecuteAsync(CancellationToken stoppingToken)
 		{
-			using (var scope = _serviceScopeFactory.CreateScope())
+			using ( var scope = _serviceScopeFactory.CreateScope() )
 			{
 				var appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
 				var selectorStorage = scope.ServiceProvider.GetRequiredService<ISelectorStorage>();
 				var swaggerProvider = scope.ServiceProvider.GetRequiredService<ISwaggerProvider>();
 				var applicationLifetime = scope.ServiceProvider.GetRequiredService<IHostApplicationLifetime>();
-				
+
 				Add03AppExport(appSettings, selectorStorage, swaggerProvider);
 				Add04SwaggerExportExitAfter(appSettings, applicationLifetime);
 			}
@@ -57,7 +57,7 @@ namespace starsky.Helpers
 		{
 			ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 		}
-		
+
 		/// <summary>
 		/// Export Values to Storage
 		/// </summary>
@@ -68,7 +68,7 @@ namespace starsky.Helpers
 		public bool Add03AppExport(AppSettings appSettings, ISelectorStorage selectorStorage, ISwaggerProvider swaggerProvider)
 		{
 			if ( appSettings.AddSwagger != true || appSettings.AddSwaggerExport != true ) return false;
-			
+
 			var swaggerJsonText = GenerateSwagger(swaggerProvider, appSettings.Name);
 			if ( string.IsNullOrEmpty(swaggerJsonText) ) throw new ArgumentException("swaggerJsonText = null", nameof(swaggerProvider));
 
@@ -87,9 +87,9 @@ namespace starsky.Helpers
 		public bool Add04SwaggerExportExitAfter(AppSettings appSettings, IHostApplicationLifetime applicationLifetime)
 		{
 			if ( appSettings.AddSwagger != true ||
-			     appSettings.AddSwaggerExport != true ||
-			     appSettings.AddSwaggerExportExitAfter != true ) return false;
-			
+				 appSettings.AddSwaggerExport != true ||
+				 appSettings.AddSwaggerExportExitAfter != true ) return false;
+
 			applicationLifetime.StopApplication();
 			return true;
 		}

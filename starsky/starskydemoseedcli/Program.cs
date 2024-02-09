@@ -1,7 +1,6 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.demo.Helpers;
-using starsky.foundation.consoletelemetry.Extensions;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.http.Interfaces;
@@ -21,7 +20,7 @@ namespace starskydemoseedcli
 		{
 			// Use args in application
 			new ArgsHelper().SetEnvironmentByArgs(args);
-			
+
 			var services = new ServiceCollection();
 
 			// Setup AppSettings
@@ -31,11 +30,10 @@ namespace starskydemoseedcli
 			RegisterDependencies.Configure(services);
 			var serviceProvider = services.BuildServiceProvider();
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
-			
-			services.AddMonitoringWorkerService(appSettings, AppSettings.StarskyAppType.DemoSeed);
+
 			services.AddTelemetryLogging(appSettings);
-			
-			new SetupDatabaseTypes(appSettings,services).BuilderDb();
+
+			new SetupDatabaseTypes(appSettings, services).BuilderDb();
 			serviceProvider = services.BuildServiceProvider();
 
 			var selectorStorage = serviceProvider.GetRequiredService<ISelectorStorage>();
@@ -46,7 +44,8 @@ namespace starskydemoseedcli
 			var console = serviceProvider.GetRequiredService<IConsole>();
 
 			// Migrations before seeding data
-			await RunMigrations.Run(serviceProvider.GetRequiredService<ApplicationDbContext>(), webLogger,appSettings);
+			await RunMigrations.Run(serviceProvider.GetRequiredService<ApplicationDbContext>(),
+				webLogger, appSettings);
 
 			// Help and Command Line Tools args are included in the tools 
 			var cleanDemoDataServiceCli = new CleanDemoDataServiceCli(
@@ -56,10 +55,8 @@ namespace starskydemoseedcli
 				webLogger,
 				console,
 				sync);
-			
-			await cleanDemoDataServiceCli.SeedCli(args);
 
-			await new FlushApplicationInsights(serviceProvider).FlushAsync();
+			await cleanDemoDataServiceCli.SeedCli(args);
 		}
 	}
 }

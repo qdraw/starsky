@@ -3,7 +3,7 @@ import { act } from "react-dom/test-utils";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
-import * as FetchPost from "../../../shared/fetch-post";
+import * as FetchPost from "../../../shared/fetch/fetch-post";
 import { Keyboard } from "../../../shared/keyboard";
 import { UrlQuery } from "../../../shared/url-query";
 import ColorClassSelectKeyboard from "./color-class-select-keyboard";

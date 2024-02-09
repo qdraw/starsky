@@ -1,4 +1,3 @@
-#nullable enable
 using System.Collections.Generic;
 using starsky.foundation.database.Models.Account;
 
@@ -14,6 +13,6 @@ public class UserOverviewModel
 	}
 
 	public List<User> Users { get; set; } = new List<User>();
-	
+
 	public bool IsSuccess { get; set; }
 }

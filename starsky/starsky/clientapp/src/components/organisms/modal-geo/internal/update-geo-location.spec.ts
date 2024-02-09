@@ -1,6 +1,6 @@
 import { IConnectionDefault } from "../../../../interfaces/IConnectionDefault";
-import * as FetchGet from "../../../../shared/fetch-get";
-import * as FetchPost from "../../../../shared/fetch-post";
+import * as FetchGet from "../../../../shared/fetch/fetch-get";
+import * as FetchPost from "../../../../shared/fetch/fetch-post";
 import { ILatLong } from "../modal-geo";
 import { UpdateGeoLocation } from "./update-geo-location";
 

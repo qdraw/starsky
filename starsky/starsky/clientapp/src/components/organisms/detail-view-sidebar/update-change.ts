@@ -4,7 +4,7 @@ import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IDetailView } from "../../../interfaces/IDetailView";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { AsciiNull } from "../../../shared/ascii-null";
-import FetchPost from "../../../shared/fetch-post";
+import FetchPost from "../../../shared/fetch/fetch-post";
 import { FileListCache } from "../../../shared/filelist-cache";
 import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
 import { URLPath } from "../../../shared/url-path";

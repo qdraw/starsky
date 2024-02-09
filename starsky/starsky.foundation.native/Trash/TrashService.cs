@@ -16,11 +16,11 @@ public class TrashService : ITrashService
 	/// <returns>true if supported, false if not supported</returns>
 	public bool DetectToUseSystemTrash()
 	{
-		return DetectToUseSystemTrashInternal(RuntimeInformation.IsOSPlatform, 
-			Environment.UserInteractive, 
+		return DetectToUseSystemTrashInternal(RuntimeInformation.IsOSPlatform,
+			Environment.UserInteractive,
 			Environment.UserName);
 	}
-	
+
 	/// <summary>
 	/// Use to overwrite the RuntimeInformation.IsOSPlatform
 	/// </summary>
@@ -33,14 +33,14 @@ public class TrashService : ITrashService
 	/// <param name="environmentUserInteractive">Environment.UserInteractive</param>
 	/// <param name="environmentUserName">Environment.UserName</param>
 	/// <returns>true if supported, false if not supported</returns>
-	internal static bool DetectToUseSystemTrashInternal(IsOsPlatformDelegate runtimeInformationIsOsPlatform, 
-		bool environmentUserInteractive, 
+	internal static bool DetectToUseSystemTrashInternal(IsOsPlatformDelegate runtimeInformationIsOsPlatform,
+		bool environmentUserInteractive,
 		string environmentUserName)
 	{
 		// ReSharper disable once ConvertIfStatementToReturnStatement
-		if (runtimeInformationIsOsPlatform(OSPlatform.Linux) || 
-		    runtimeInformationIsOsPlatform(OSPlatform.FreeBSD) || 
-		    environmentUserName == "root" || !environmentUserInteractive )
+		if ( runtimeInformationIsOsPlatform(OSPlatform.Linux) ||
+			runtimeInformationIsOsPlatform(OSPlatform.FreeBSD) ||
+			environmentUserName == "root" || !environmentUserInteractive )
 		{
 			return false;
 		}
@@ -48,10 +48,10 @@ public class TrashService : ITrashService
 		// ReSharper disable once InvertIf
 		if ( runtimeInformationIsOsPlatform(OSPlatform.Windows) )
 		{
-			var (driveHasBin,_,_) = WindowsShellTrashBindingHelper.DriveHasRecycleBin();
+			var (driveHasBin, _, _) = WindowsShellTrashBindingHelper.DriveHasRecycleBin();
 			return driveHasBin;
 		}
-		
+
 		return true;
 	}
 
@@ -65,7 +65,7 @@ public class TrashService : ITrashService
 	{
 		var currentPlatform = OperatingSystemHelper.GetPlatform();
 		var macOsTrash = MacOsTrashBindingHelper.Trash(fullPath, currentPlatform);
-		var (windowsTrash,_) = WindowsShellTrashBindingHelper.Trash(fullPath, currentPlatform);
+		var (windowsTrash, _) = WindowsShellTrashBindingHelper.Trash(fullPath, currentPlatform);
 		return macOsTrash ?? windowsTrash;
 	}
 
@@ -73,7 +73,7 @@ public class TrashService : ITrashService
 	{
 		var currentPlatform = OperatingSystemHelper.GetPlatform();
 		var macOsTrash = MacOsTrashBindingHelper.Trash(fullPaths, currentPlatform);
-		var (windowsTrash,_) = WindowsShellTrashBindingHelper.Trash(fullPaths, currentPlatform);
+		var (windowsTrash, _) = WindowsShellTrashBindingHelper.Trash(fullPaths, currentPlatform);
 		return macOsTrash ?? windowsTrash;
 	}
 }

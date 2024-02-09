@@ -34,14 +34,14 @@ namespace starsky.foundation.platform.Extensions
 			ilGen.Emit(OpCodes.Ldarg_0);
 			ilGen.Emit(OpCodes.Ldfld, field);
 			ilGen.Emit(OpCodes.Ret);
-			return (Func<TParam, TReturn>)method.CreateDelegate(typeof(Func<TParam, TReturn>));
+			return ( Func<TParam, TReturn> )method.CreateDelegate(typeof(Func<TParam, TReturn>));
 		}
-		
-		private static readonly Func<MemoryCache, IDictionary> GetEntries = 
+
+		private static readonly Func<MemoryCache, IDictionary> GetEntries =
 			cache => GetEntries7.Value(GetCoherentState.Value(cache));
 
 		private static ICollection GetKeys(this IMemoryCache memoryCache) =>
-			GetEntries((MemoryCache)memoryCache).Keys;
+			GetEntries(( MemoryCache )memoryCache).Keys;
 
 		/// <summary>
 		/// Get Keys
@@ -49,7 +49,8 @@ namespace starsky.foundation.platform.Extensions
 		/// <param name="memoryCache">memory cache</param>
 		/// <typeparam name="T">bind as</typeparam>
 		/// <returns>list of items</returns>
-		public static IEnumerable<T> GetKeys<T>(this IMemoryCache memoryCache) {
+		public static IEnumerable<T> GetKeys<T>(this IMemoryCache memoryCache)
+		{
 			try
 			{
 				return GetKeys(memoryCache).OfType<T>();
@@ -59,7 +60,7 @@ namespace starsky.foundation.platform.Extensions
 				return new List<T>();
 			}
 		}
-			
-			
+
+
 	}
 }

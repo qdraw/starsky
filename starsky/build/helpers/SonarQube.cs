@@ -18,33 +18,37 @@ namespace helpers
 	public static class SonarQube
 	{
 		public const string SonarQubePackageName = "dotnet-sonarscanner";
+
 		/// <summary>
 		/// @see: https://www.nuget.org/packages/dotnet-sonarscanner
 		/// </summary>
 		public const string SonarQubePackageVersion = "6.1.0";
-		
-		public const string SonarQubeDotnetSonarScannerApi = "https://api.nuget.org/v3-flatcontainer/dotnet-sonarscanner/index.json";
+
+		public const string SonarQubeDotnetSonarScannerApi =
+			"https://api.nuget.org/v3-flatcontainer/dotnet-sonarscanner/index.json";
 
 		public const string GitCommand = "git";
 		public const string DefaultBranchName = "master";
 
 		public static void InstallSonarTool(bool noUnitTest, bool noSonar)
 		{
-			if(noUnitTest)
+			if ( noUnitTest )
 			{
 				Information($">> SonarBegin is disable due the --no-unit-test flag");
 				return;
 			}
-			if( noSonar ) {
+
+			if ( noSonar )
+			{
 				Information($">> SonarBegin is disable due the --no-sonar flag");
 				return;
 			}
 
 			CheckLatestVersionDotNetSonarScanner().Wait();
-			
+
 			var rootDirectory = Directory.GetParent(AppDomain.CurrentDomain
 				.BaseDirectory!)!.Parent!.Parent!.Parent!.FullName;
-			
+
 			Log.Information(rootDirectory);
 
 			var envs =
@@ -52,8 +56,8 @@ namespace helpers
 					IReadOnlyDictionary<string, string>;
 
 			var toolList = DotNet($"tool list", rootDirectory, envs, null, true);
-			if ( toolList.Any(p => p.Text.Contains(SonarQubePackageName) 
-			                       && toolList.Any(p => p.Text.Contains(SonarQubePackageVersion)) ))
+			if ( toolList.Any(p => p.Text.Contains(SonarQubePackageName)
+								   && toolList.Any(p => p.Text.Contains(SonarQubePackageVersion))) )
 			{
 				Log.Information("Next: tool restore");
 				DotNet($"tool restore", rootDirectory, envs, null, true);
@@ -72,7 +76,7 @@ namespace helpers
 				.SetVersion(SonarQubePackageVersion));
 		}
 
-		private static string EnvironmentVariable(string input)
+		private static string? EnvironmentVariable(string input)
 		{
 			return Environment.GetEnvironmentVariable(input);
 		}
@@ -88,22 +92,22 @@ namespace helpers
 			if ( result == null )
 			{
 				Log.Information($"Nuget API is not available, " +
-				                $"so skip checking the latest version of {SonarQubePackageName}");
+								$"so skip checking the latest version of {SonarQubePackageName}");
 				return;
 			}
-			
+
 			var latestVersionByApi = HttpQuery.ParseJsonVersionNumbers(result);
 			if ( latestVersionByApi > new Version(SonarQubePackageVersion) )
 			{
 				Log.Warning($"Please upgrade to the latest version " +
-				            $"of dotnet-sonarscanner {latestVersionByApi} \n\n" +
-				            "Update the following values: \n" +
-				            $"- build/helpers/SonarQube.cs -> SonarQubePackageVersion to {latestVersionByApi} \n" + 
+							$"of dotnet-sonarscanner {latestVersionByApi} \n\n" +
+							"Update the following values: \n" +
+							$"- build/helpers/SonarQube.cs -> SonarQubePackageVersion to {latestVersionByApi} \n" +
 							"The _build project will auto update: \n" +
-				            "-  .config/dotnet-tools.json");
+							"-  .config/dotnet-tools.json");
 			}
 		}
-		
+
 
 		private static void IsJavaInstalled()
 		{
@@ -111,46 +115,53 @@ namespace helpers
 			Run(Build.JavaBaseCommand, "-version");
 		}
 
-		public static string GetSonarToken()
+		public static string? GetSonarToken()
 		{
 			var sonarToken = EnvironmentVariable("STARSKY_SONAR_TOKEN");
-			if( string.IsNullOrEmpty(sonarToken) ) {
+			if ( string.IsNullOrEmpty(sonarToken) )
+			{
 				sonarToken = EnvironmentVariable("SONAR_TOKEN");
 			}
+
 			return sonarToken;
 		}
 
-		public static string GetSonarKey()
+		public static string? GetSonarKey()
 		{
 			return EnvironmentVariable("STARSKY_SONAR_KEY");
 		}
-	
-		public static bool SonarBegin(bool noUnitTest, bool noSonar, string branchName, string clientAppProject, string coverageFile)
+
+		public static bool SonarBegin(bool noUnitTest, bool noSonar, string branchName,
+			string clientAppProject, string coverageFile)
 		{
-			
 			Information($">> SonarQube key={GetSonarKey()}");
-			
+
 			var sonarToken = GetSonarToken();
 
 			var organisation = EnvironmentVariable("STARSKY_SONAR_ORGANISATION");
 
 			var url = EnvironmentVariable("STARSKY_SONAR_URL");
-			if(string.IsNullOrEmpty(url)) {
+			if ( string.IsNullOrEmpty(url) )
+			{
 				url = "https://sonarcloud.io";
 			}
 
-			if( string.IsNullOrEmpty(GetSonarKey()) || string.IsNullOrEmpty(sonarToken) || string.IsNullOrEmpty(organisation) ) {
-				Information($">> SonarQube is disabled $ key={GetSonarKey()}|token={sonarToken}|organisation={organisation}");
+			if ( string.IsNullOrEmpty(GetSonarKey()) || string.IsNullOrEmpty(sonarToken) ||
+				 string.IsNullOrEmpty(organisation) )
+			{
+				Information(
+					$">> SonarQube is disabled $ key={GetSonarKey()}|token={sonarToken}|organisation={organisation}");
 				return false;
 			}
 
-			if(noUnitTest)
+			if ( noUnitTest )
 			{
 				Information($">> SonarBegin is disable due the --no-unit-test flag");
 				return false;
 			}
 
-			if( noSonar ) {
+			if ( noSonar )
+			{
 				Information($">> SonarBegin is disable due the --no-sonar flag");
 				return false;
 			}
@@ -159,36 +170,40 @@ namespace helpers
 
 			// Current branch name
 			var mainRepoPath = Directory.GetParent(".")?.FullName;
-        
-			var (gitBranchName,_) = ReadAsync(GitCommand, " branch --show-current", mainRepoPath!).Result;
+
+			var (gitBranchName, _) =
+				ReadAsync(GitCommand, " branch --show-current", mainRepoPath!).Result;
 
 			// allow to overwrite the branch name
-			if (string.IsNullOrEmpty(branchName) && !string.IsNullOrEmpty(gitBranchName)) {
+			if ( string.IsNullOrEmpty(branchName) && !string.IsNullOrEmpty(gitBranchName) )
+			{
 				branchName = gitBranchName.Trim(); // fallback as (no branch)
 			}
-			
+
 			// replace default value to master
-			if (branchName == "(no branch)" || string.IsNullOrEmpty(branchName)) {
+			if ( branchName == "(no branch)" || string.IsNullOrEmpty(branchName) )
+			{
 				branchName = DefaultBranchName;
 			}
-        
+
 			/* this should fix No inputs were found in config file 'tsconfig.json'.  */
-			var tsconfig = Path.Combine(clientAppProject,"tsconfig.json");
+			var tsconfig = Path.Combine(clientAppProject, "tsconfig.json");
 			Information(">> tsconfig: " + tsconfig);
 
 			// For Pull Requests  
-			var isPrBuild = EnvironmentVariable("GITHUB_ACTIONS") != null && 
-			                EnvironmentVariable("GITHUB_JOB") != null && 
-			                EnvironmentVariable("GITHUB_BASE_REF") != null &&
+			var isPrBuild = EnvironmentVariable("GITHUB_ACTIONS") != null &&
+							EnvironmentVariable("GITHUB_JOB") != null &&
+							EnvironmentVariable("GITHUB_BASE_REF") != null &&
 							!string.IsNullOrEmpty(EnvironmentVariable("PR_NUMBER_GITHUB"));
-        
+
 			var githubPrNumber = EnvironmentVariable("PR_NUMBER_GITHUB");
-			var githubBaseBranch = EnvironmentVariable("GITHUB_BASE_REF"); 
-			var githubRepoSlug = EnvironmentVariable("GITHUB_REPOSITORY"); 
-        
+			var githubBaseBranch = EnvironmentVariable("GITHUB_BASE_REF");
+			var githubRepoSlug = EnvironmentVariable("GITHUB_REPOSITORY");
+
 			Information($">> Selecting Branch: {branchName}");
-			
-			var sonarQubeCoverageFile = Path.Combine(WorkingDirectory.GetSolutionParentFolder(), coverageFile);
+
+			var sonarQubeCoverageFile =
+				Path.Combine(WorkingDirectory.GetSolutionParentFolder(), coverageFile);
 			Information(">> SonarQubeCoverageFile: " + sonarQubeCoverageFile);
 
 			var sonarArguments = new StringBuilder()
@@ -199,37 +214,39 @@ namespace helpers
 				.Append($"/k:{GetSonarKey()} ")
 				.Append($"/n:Starsky ")
 				.Append($"/d:sonar.token={sonarToken} ")
-				.Append($"/o:" + organisation +" ")
+				.Append($"/o:" + organisation + " ")
 				.Append($"/d:sonar.typescript.tsconfigPath={tsconfig} ")
 				.Append($"/d:sonar.coverageReportPaths={sonarQubeCoverageFile} ")
 				.Append($"/d:sonar.exclusions=**/build/*,**/build/helpers/*," +
-				        "**/documentation/*,"+
-				        "**/Interfaces/IQuery.cs," +
-				        $"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +
-				        $"*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx," +
-				        $"**/*stories.tsx,**/*spec.ts,**/src/main.tsx,**/src/index.tsx,**/src/style/css/vendor/*,**/node_modules/*," +
-				        $"**/prestorybook.js,**/vite.config.ts,**/.storybook/**,**/jest.setup.ts," +
-				        $"**/_bigimages-helper.js ")
+						"**/documentation/*," +
+						"**/Interfaces/IQuery.cs," +
+						$"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +
+						$"*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx," +
+						$"**/*stories.tsx,**/*spec.ts,**/src/main.tsx,**/src/index.tsx,**/src/style/css/vendor/*,**/node_modules/*," +
+						$"**/prestorybook.js,**/vite.config.ts,**/.storybook/**,**/jest.setup.ts," +
+						$"**/_bigimages-helper.js ")
 				.Append($"/d:sonar.coverage.exclusions=**/build/*,**/build/helpers/*," +
-				        "**/documentation/*,"+
-				        "**/Interfaces/IQuery.cs," +
-				        $"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +
-				        $"*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*," +
-				        $"**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/main.tsx,**/src/index.tsx,**/node_modules/*," +
-				        $"**/prestorybook.js,**/vite.config.ts,**/.storybook/**,**/jest.setup.ts," +
-				        $"**/_bigimages-helper.js ");
-        
+						"**/documentation/*," +
+						"**/Interfaces/IQuery.cs," +
+						$"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +
+						$"*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*," +
+						$"**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/main.tsx,**/src/index.tsx,**/node_modules/*," +
+						$"**/prestorybook.js,**/vite.config.ts,**/.storybook/**,**/jest.setup.ts," +
+						$"**/_bigimages-helper.js ");
+
 			// Normal build
-			if (!isPrBuild) {
+			if ( !isPrBuild )
+			{
 				Information($">> Normal Build (non-pr)");
 				sonarArguments
 					.Append($"/d:sonar.branch.name={branchName} ");
 			}
-        
+
 			// Pull Request Build
-			if (isPrBuild) {
+			if ( isPrBuild )
+			{
 				Information($">> PR Build isPRBuild={true}  githubPrNumber " +
-				            $"{githubPrNumber} githubBaseBranch {githubBaseBranch} githubRepoSlug {githubRepoSlug}");
+							$"{githubPrNumber} githubBaseBranch {githubBaseBranch} githubRepoSlug {githubRepoSlug}");
 
 				sonarArguments
 					.Append($"/d:sonar.pullrequest.key={githubPrNumber} ")
@@ -247,17 +264,20 @@ namespace helpers
 		public static void SonarEnd(bool noUnitTest, bool noSonar)
 		{
 			var sonarToken = GetSonarToken();
-			if( string.IsNullOrEmpty(sonarToken) ) {
+			if ( string.IsNullOrEmpty(sonarToken) )
+			{
 				Information($">> SonarQube is disabled $ login={sonarToken}");
 				return;
 			}
 
-			if(noUnitTest)
+			if ( noUnitTest )
 			{
 				Information($">> SonarEnd is disable due the --no-unit-test flag");
 				return;
 			}
-			if( noSonar ) {
+
+			if ( noSonar )
+			{
 				Information($">> SonarEnd is disable due the --no-sonar flag");
 				return;
 			}
@@ -268,8 +288,8 @@ namespace helpers
 				.Append($"/d:sonar.token={sonarToken} ");
 
 			DotNet(sonarArguments.ToString());
-			
+
 			Log.Information("- - - - - - - - - -  Sonar done - - - - - - - - - - \n");
 		}
-	}	
+	}
 }

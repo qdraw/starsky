@@ -1,5 +1,4 @@
 using System;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
@@ -16,53 +15,51 @@ namespace starskytest.starsky.foundation.database.Helpers
 		public void CheckIfMysqlScopeIsThere()
 		{
 			var services = new ServiceCollection();
-			new SetupDatabaseTypes(new AppSettings
-			{
-				DatabaseType = AppSettings.DatabaseTypeList.Mysql
-			}, services).BuilderDb();
-			
+			new SetupDatabaseTypes(
+					new AppSettings { DatabaseType = AppSettings.DatabaseTypeList.Mysql }, services)
+				.BuilderDb();
+
 			var serviceProvider = services.BuildServiceProvider();
 			var dbContext = serviceProvider.GetRequiredService<ApplicationDbContext>();
 			Assert.IsNotNull(dbContext);
 		}
-		
+
 		[TestMethod]
 		public void CheckIfMysqlScopeIsThere_withParam()
 		{
 			var services = new ServiceCollection();
-			new SetupDatabaseTypes(new AppSettings
-			{
-				DatabaseType = AppSettings.DatabaseTypeList.Mysql
-			}, services).BuilderDb("database");
-			
+			new SetupDatabaseTypes(
+					new AppSettings { DatabaseType = AppSettings.DatabaseTypeList.Mysql }, services)
+				.BuilderDb("database");
+
 			var serviceProvider = services.BuildServiceProvider();
 			var dbContext = serviceProvider.GetRequiredService<ApplicationDbContext>();
 			Assert.IsNotNull(dbContext);
 		}
-		
+
 		[TestMethod]
 		public void CheckIfSqliteScopeIsThere()
 		{
 			var services = new ServiceCollection();
-			new SetupDatabaseTypes(new AppSettings
-			{
-				DatabaseType = AppSettings.DatabaseTypeList.Sqlite
-			}, services).BuilderDb();
-			
+			new SetupDatabaseTypes(
+					new AppSettings { DatabaseType = AppSettings.DatabaseTypeList.Sqlite },
+					services)
+				.BuilderDb();
+
 			var serviceProvider = services.BuildServiceProvider();
 			var dbContext = serviceProvider.GetRequiredService<ApplicationDbContext>();
 			Assert.IsNotNull(dbContext);
 		}
-		
+
 		[TestMethod]
 		public void CheckIfSqliteScopeIsThere_WithParam()
 		{
 			var services = new ServiceCollection();
-			new SetupDatabaseTypes(new AppSettings
-			{
-				DatabaseType = AppSettings.DatabaseTypeList.Sqlite
-			}, services).BuilderDb("database");
-			
+			new SetupDatabaseTypes(
+					new AppSettings { DatabaseType = AppSettings.DatabaseTypeList.Sqlite },
+					services)
+				.BuilderDb("database");
+
 			var serviceProvider = services.BuildServiceProvider();
 			var dbContext = serviceProvider.GetRequiredService<ApplicationDbContext>();
 			Assert.IsNotNull(dbContext);
@@ -72,69 +69,38 @@ namespace starskytest.starsky.foundation.database.Helpers
 		[ExpectedException(typeof(AggregateException))]
 		public void BuilderDbFactorySwitch_fail()
 		{
-			var appSettings = new AppSettings {Verbose = true};
+			var appSettings = new AppSettings { Verbose = true };
 			// do something that should not be allowed
 			AppSettingsReflection.Modify(appSettings, "get_DatabaseType", 8);
-			
+
 			var services = new ServiceCollection();
 
 			new SetupDatabaseTypes(appSettings, services).BuilderDbFactorySwitch();
 			// expect exception
 		}
-		
+
 		[TestMethod]
 		[ExpectedException(typeof(AggregateException))]
 		public void BuilderDb_fail()
 		{
-			var appSettings = new AppSettings {Verbose = true};
+			var appSettings = new AppSettings { Verbose = true };
 			new SetupDatabaseTypes(appSettings).BuilderDb();
 			// expect exception
 		}
-		
+
 		[TestMethod]
 		public void BuilderDb_console()
 		{
 			var console = new FakeIWebLogger();
-			var appSettings = new AppSettings {Verbose = true, DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase};
+			var appSettings = new AppSettings
+			{
+				Verbose = true, DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
+			};
 			var services = new ServiceCollection();
 
 			new SetupDatabaseTypes(appSettings, services, console).BuilderDb();
 
 			Assert.IsTrue(console.TrackedInformation[0].Item2?.Contains("Database connection:"));
-		}
-
-		[TestMethod]
-		public void EnableDatabaseTracking_shouldEnable()
-		{
-			var testGuid = Guid.NewGuid().ToString();
-			var console = new FakeIWebLogger();
-			var appSettings = new AppSettings {
-				Verbose = true,
-				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase,
-				ApplicationInsightsConnectionString = $"InstrumentationKey={testGuid}",
-				ApplicationInsightsDatabaseTracking = true
-			};
-			var services = new ServiceCollection();
-			
-			var memoryDatabase = new DbContextOptionsBuilder<ApplicationDbContext>()
-				.UseInMemoryDatabase("test123");
-			var result = new SetupDatabaseTypes(appSettings, services, console).EnableDatabaseTracking(memoryDatabase);
-			Assert.IsTrue(result);
-		}
-		
-		[TestMethod]
-		public void EnableDatabaseTracking_shouldDisable()
-		{
-			var console = new FakeIWebLogger();
-			var appSettings = new AppSettings {
-				Verbose = true,
-				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase,
-				ApplicationInsightsConnectionString = string.Empty, // <-- No Key
-				ApplicationInsightsDatabaseTracking = true
-			};
-			var services = new ServiceCollection();
-			var result = new SetupDatabaseTypes(appSettings, services, console).EnableDatabaseTracking(null!);
-			Assert.IsFalse(result);
 		}
 	}
 }

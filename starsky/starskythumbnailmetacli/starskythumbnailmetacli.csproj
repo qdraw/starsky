@@ -8,13 +8,13 @@
         <RuntimeFrameworkVersion>8.0.1</RuntimeFrameworkVersion>
         <RootNamespace>starskythumbnailmetacli</RootNamespace>
         <Version>0.6.0-beta.0</Version>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\starsky.foundation.consoletelemetry\starsky.foundation.consoletelemetry.csproj" />
-      <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
-      <ProjectReference Include="..\starsky.foundation.thumbnailmeta\starsky.foundation.thumbnailmeta.csproj" />
-      <ProjectReference Include="..\starsky.foundation.webtelemetry\starsky.foundation.webtelemetry.csproj" />
+        <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.thumbnailmeta\starsky.foundation.thumbnailmeta.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.webtelemetry\starsky.foundation.webtelemetry.csproj"/>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

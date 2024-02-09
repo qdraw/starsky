@@ -16,7 +16,7 @@ public class AppSettingsFeaturesController : Controller
 		_moveToTrashService = moveToTrashService;
 		_appSettings = appSettings;
 	}
-	
+
 	/// <summary>
 	/// Show features that used in the frontend app / menu
 	/// </summary>
@@ -38,7 +38,7 @@ public class AppSettingsFeaturesController : Controller
 			SystemTrashEnabled = _moveToTrashService.IsEnabled(),
 			UseLocalDesktopUi = _appSettings.UseLocalDesktopUi == true
 		};
-		
+
 		return Json(shortAppSettings);
 	}
 }

@@ -1,4 +1,3 @@
-﻿#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -16,197 +15,197 @@ using starsky.foundation.storage.Helpers;
 
 namespace starsky.foundation.readmeta.ReadMetaHelpers
 {
-    public sealed class ReadMetaGpx
-    {
-	    private readonly IWebLogger _logger;
+	public sealed class ReadMetaGpx
+	{
+		private readonly IWebLogger _logger;
 
-	    public ReadMetaGpx(IWebLogger logger)
-	    {
-		    _logger = logger;
-	    }
-	    
-	    private const string GpxXmlNameSpaceName = "http://www.topografix.com/GPX/1/1"; 
-	    
-        public async Task<FileIndexItem> ReadGpxFromFileReturnAfterFirstFieldAsync(Stream? stream, 
-	        string subPath, bool useLocal = true)
-        {
-	        if ( stream == null )
-	        {
-		        var returnItem = new FileIndexItem(subPath)
-		        {
-			        Status = FileIndexItem.ExifStatus.OperationNotSupported
-		        };
-		        return returnItem;
-	        }
+		public ReadMetaGpx(IWebLogger logger)
+		{
+			_logger = logger;
+		}
 
-	        var readGpxFile = await ReadGpxFileAsync(stream, null, 1);
+		private const string GpxXmlNameSpaceName = "http://www.topografix.com/GPX/1/1";
 
-	        if ( readGpxFile.Count == 0 )
-	        {
-		        _logger.LogInformation($"[ReadMetaGpx] SystemXmlXmlException for {subPath}");
-		        return new FileIndexItem(subPath)
-		        {
-			        Tags = "SystemXmlXmlException",
-			        ColorClass = ColorClassParser.Color.None
-		        };
-	        }
+		public async Task<FileIndexItem> ReadGpxFromFileReturnAfterFirstFieldAsync(Stream? stream,
+			string subPath, bool useLocal = true)
+		{
+			if ( stream == null )
+			{
+				var returnItem = new FileIndexItem(subPath)
+				{
+					Status = FileIndexItem.ExifStatus.OperationNotSupported
+				};
+				return returnItem;
+			}
 
-	        var title = readGpxFile.FirstOrDefault()?.Title ?? string.Empty;
-	        var dateTime = readGpxFile.FirstOrDefault()?.DateTime ?? new DateTime(0, DateTimeKind.Utc);
-	        var latitude = readGpxFile.FirstOrDefault()?.Latitude ?? 0d;
-	        var longitude = readGpxFile.FirstOrDefault()?.Longitude ?? 0d;
-	        var altitude = readGpxFile.FirstOrDefault()?.Altitude ?? 0d;
+			var readGpxFile = await ReadGpxFileAsync(stream, null, 1);
 
-	        return new FileIndexItem(subPath)
-	        {
-		        Title = title,
-		        DateTime = ConvertDateTime(dateTime, useLocal, latitude, longitude),
-		        Latitude = latitude,
-		        Longitude = longitude,
-		        LocationAltitude = altitude,
-		        ColorClass = ColorClassParser.Color.None,
-		        ImageFormat = ExtensionRolesHelper.ImageFormat.gpx
-	        };
-        }
+			if ( readGpxFile.Count == 0 )
+			{
+				_logger.LogInformation($"[ReadMetaGpx] SystemXmlXmlException for {subPath}");
+				return new FileIndexItem(subPath)
+				{
+					Tags = "SystemXmlXmlException",
+					ColorClass = ColorClassParser.Color.None
+				};
+			}
 
-        internal static DateTime ConvertDateTime(DateTime dateTime, bool useLocal, 
-	        double latitude, double longitude)
-        {
-	        if ( !useLocal ) return dateTime;
-	        var localTimeZoneNameResult = TimeZoneLookup
-		        .GetTimeZone(latitude, longitude).Result;
-	        var localTimeZone =
-		        TimeZoneInfo.FindSystemTimeZoneById(localTimeZoneNameResult);
-	        return TimeZoneInfo.ConvertTimeFromUtc(dateTime, localTimeZone);
-        }
+			var title = readGpxFile.FirstOrDefault()?.Title ?? string.Empty;
+			var dateTime = readGpxFile.FirstOrDefault()?.DateTime ?? new DateTime(0, DateTimeKind.Utc);
+			var latitude = readGpxFile.FirstOrDefault()?.Latitude ?? 0d;
+			var longitude = readGpxFile.FirstOrDefault()?.Longitude ?? 0d;
+			var altitude = readGpxFile.FirstOrDefault()?.Altitude ?? 0d;
 
-        private static string GetTrkName(XmlNode? gpxDoc, XmlNamespaceManager namespaceManager)
-        {
-	        var trkNodeList = gpxDoc?.SelectNodes("//x:trk",  namespaceManager);
-            if ( trkNodeList == null ) return string.Empty;
-            var trkName = new StringBuilder();
-            foreach (XmlElement node in trkNodeList)
-            {
-                foreach (XmlElement childNode in node.ChildNodes)
-                {
-	                if ( childNode.Name != "name" ) continue;
-	                trkName.Append(childNode.InnerText);
-	                return trkName.ToString();
-                }
-            }
-            return string.Empty;
-        }
+			return new FileIndexItem(subPath)
+			{
+				Title = title,
+				DateTime = ConvertDateTime(dateTime, useLocal, latitude, longitude),
+				Latitude = latitude,
+				Longitude = longitude,
+				LocationAltitude = altitude,
+				ColorClass = ColorClassParser.Color.None,
+				ImageFormat = ExtensionRolesHelper.ImageFormat.gpx
+			};
+		}
 
-	    /// <summary>
-	    /// Read full gpx file, or return after trackPoint
-	    /// </summary>
-	    /// <param name="stream"></param>
-	    /// <param name="geoList"></param>
-	    /// <param name="returnAfter">default complete file, but can be used to read only the first point</param>
-	    /// <returns></returns>
-	    public async Task<List<GeoListItem>> ReadGpxFileAsync(Stream stream, 
-		    List<GeoListItem>? geoList = null, int returnAfter = int.MaxValue)
-        {
-            geoList ??= new List<GeoListItem>();
+		internal static DateTime ConvertDateTime(DateTime dateTime, bool useLocal,
+			double latitude, double longitude)
+		{
+			if ( !useLocal ) return dateTime;
+			var localTimeZoneNameResult = TimeZoneLookup
+				.GetTimeZone(latitude, longitude).Result;
+			var localTimeZone =
+				TimeZoneInfo.FindSystemTimeZoneById(localTimeZoneNameResult);
+			return TimeZoneInfo.ConvertTimeFromUtc(dateTime, localTimeZone);
+		}
 
-	        // Some files are having problems with gpxDoc.Load()
-	        var fileString = await StreamToStringHelper.StreamToStringAsync(stream);
-	        
-	        try
-	        {
-		        return ParseGpxString(fileString, geoList, returnAfter);
-	        }
-	        catch ( XmlException e )
-	        {
-		        _logger.LogInformation($"XmlException for {e}");
-		        return geoList;
-	        }
+		private static string GetTrkName(XmlNode? gpxDoc, XmlNamespaceManager namespaceManager)
+		{
+			var trkNodeList = gpxDoc?.SelectNodes("//x:trk", namespaceManager);
+			if ( trkNodeList == null ) return string.Empty;
+			var trkName = new StringBuilder();
+			foreach ( XmlElement node in trkNodeList )
+			{
+				foreach ( XmlElement childNode in node.ChildNodes )
+				{
+					if ( childNode.Name != "name" ) continue;
+					trkName.Append(childNode.InnerText);
+					return trkName.ToString();
+				}
+			}
+			return string.Empty;
+		}
 
-        }
+		/// <summary>
+		/// Read full gpx file, or return after trackPoint
+		/// </summary>
+		/// <param name="stream"></param>
+		/// <param name="geoList"></param>
+		/// <param name="returnAfter">default complete file, but can be used to read only the first point</param>
+		/// <returns></returns>
+		public async Task<List<GeoListItem>> ReadGpxFileAsync(Stream stream,
+			List<GeoListItem>? geoList = null, int returnAfter = int.MaxValue)
+		{
+			geoList ??= new List<GeoListItem>();
 
-	    /// <summary>
-	    /// Parse XML as XmlDocument
-	    /// </summary>
-	    /// <param name="fileString">input as string</param>
-	    /// <returns>parsed xml document</returns>
-	    internal static XmlDocument ParseXml(string fileString)
-	    {
-		    XmlDocument gpxDoc = new XmlDocument();
-		    gpxDoc.LoadXml(fileString);
-		    return gpxDoc;
-	    }
+			// Some files are having problems with gpxDoc.Load()
+			var fileString = await StreamToStringHelper.StreamToStringAsync(stream);
 
-	    /// <summary>
-	    /// Parse the gpx string
-	    /// </summary>
-	    /// <param name="fileString">string with xml</param>
-	    /// <param name="geoList">object to add</param>
-	    /// <param name="returnAfter">return after number of values; default return all</param>
-	    /// <returns></returns>
-	    private static List<GeoListItem> ParseGpxString(string fileString, List<GeoListItem>? geoList = null, 
-		    int returnAfter = int.MaxValue)
-	    {
-		    var gpxDoc = ParseXml(fileString);
-            
-            XmlNamespaceManager namespaceManager = new XmlNamespaceManager(gpxDoc.NameTable);
+			try
+			{
+				return ParseGpxString(fileString, geoList, returnAfter);
+			}
+			catch ( XmlException e )
+			{
+				_logger.LogInformation($"XmlException for {e}");
+				return geoList;
+			}
+
+		}
+
+		/// <summary>
+		/// Parse XML as XmlDocument
+		/// </summary>
+		/// <param name="fileString">input as string</param>
+		/// <returns>parsed xml document</returns>
+		internal static XmlDocument ParseXml(string fileString)
+		{
+			XmlDocument gpxDoc = new XmlDocument();
+			gpxDoc.LoadXml(fileString);
+			return gpxDoc;
+		}
+
+		/// <summary>
+		/// Parse the gpx string
+		/// </summary>
+		/// <param name="fileString">string with xml</param>
+		/// <param name="geoList">object to add</param>
+		/// <param name="returnAfter">return after number of values; default return all</param>
+		/// <returns></returns>
+		private static List<GeoListItem> ParseGpxString(string fileString, List<GeoListItem>? geoList = null,
+			int returnAfter = int.MaxValue)
+		{
+			var gpxDoc = ParseXml(fileString);
+
+			XmlNamespaceManager namespaceManager = new XmlNamespaceManager(gpxDoc.NameTable);
 			namespaceManager.AddNamespace("x", GpxXmlNameSpaceName);
-            
-            XmlNodeList? nodeList = gpxDoc.SelectNodes("//x:trkpt", namespaceManager);
-            if ( nodeList == null ) return new List<GeoListItem>();
-            geoList ??= new List<GeoListItem>();
 
-            var title = GetTrkName(gpxDoc, namespaceManager);
+			XmlNodeList? nodeList = gpxDoc.SelectNodes("//x:trkpt", namespaceManager);
+			if ( nodeList == null ) return new List<GeoListItem>();
+			geoList ??= new List<GeoListItem>();
 
-            var count = 0;
-            foreach (XmlElement node in nodeList)
-            {
-                var longitudeString = node.GetAttribute("lon");
-                var latitudeString = node.GetAttribute("lat");
+			var title = GetTrkName(gpxDoc, namespaceManager);
 
-                var longitude = double.Parse(longitudeString, 
-                    NumberStyles.Currency, CultureInfo.InvariantCulture);
-                var latitude = double.Parse(latitudeString, 
-                    NumberStyles.Currency, CultureInfo.InvariantCulture);
+			var count = 0;
+			foreach ( XmlElement node in nodeList )
+			{
+				var longitudeString = node.GetAttribute("lon");
+				var latitudeString = node.GetAttribute("lat");
 
-                DateTime dateTime = DateTime.MinValue;
+				var longitude = double.Parse(longitudeString,
+					NumberStyles.Currency, CultureInfo.InvariantCulture);
+				var latitude = double.Parse(latitudeString,
+					NumberStyles.Currency, CultureInfo.InvariantCulture);
 
-                var elevation = 0d;
+				DateTime dateTime = DateTime.MinValue;
 
-                foreach (XmlElement childNode in node.ChildNodes)
-                {
-                    if (childNode.Name == "ele")
-                    {
-                        elevation = double.Parse(childNode.InnerText, CultureInfo.InvariantCulture);
-                    }
-                    
-                    if (childNode.Name != "time") continue;
-                    var datetimeString = childNode.InnerText;
-                    
-                    // 2018-08-21T19:15:41Z
-                    DateTime.TryParseExact(datetimeString, 
-                        "yyyy-MM-ddTHH:mm:ssZ", 
-                        CultureInfo.InvariantCulture, 
-                        DateTimeStyles.AdjustToUniversal, 
-                        out dateTime);
+				var elevation = 0d;
 
-                    dateTime = DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
-                }
-                
+				foreach ( XmlElement childNode in node.ChildNodes )
+				{
+					if ( childNode.Name == "ele" )
+					{
+						elevation = double.Parse(childNode.InnerText, CultureInfo.InvariantCulture);
+					}
 
-                geoList.Add(new GeoListItem
-                {
-                    Title = title,
-                    DateTime = dateTime,
-                    Latitude = latitude,
-                    Longitude = longitude,
-                    Altitude = elevation
-                });
-                
-                if(returnAfter == count) return geoList;
-                count++;
-                
-            }
-            return geoList;
-	    }
-    }
+					if ( childNode.Name != "time" ) continue;
+					var datetimeString = childNode.InnerText;
+
+					// 2018-08-21T19:15:41Z
+					DateTime.TryParseExact(datetimeString,
+						"yyyy-MM-ddTHH:mm:ssZ",
+						CultureInfo.InvariantCulture,
+						DateTimeStyles.AdjustToUniversal,
+						out dateTime);
+
+					dateTime = DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
+				}
+
+
+				geoList.Add(new GeoListItem
+				{
+					Title = title,
+					DateTime = dateTime,
+					Latitude = latitude,
+					Longitude = longitude,
+					Altitude = elevation
+				});
+
+				if ( returnAfter == count ) return geoList;
+				count++;
+
+			}
+			return geoList;
+		}
+	}
 }
