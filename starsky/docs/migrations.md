@@ -19,7 +19,7 @@ dotnet tool update --global dotnet-ef
 dotnet tool update --global dotnet-ef --version 8.0.1
 ```
 
-## Set constance for EF Core
+## Set constance for EF Core (optional)
 
 Define constance in `starsky.foundation.database.csproj` (to remove it after the migration)
 
@@ -40,6 +40,9 @@ dotnet ef --project starsky.foundation.database.csproj migrations add test
 The migration should be ready :)
 You should test **both** with MySQL and SQLite.
 For MySql its the easiest to run the database and/or the application with docker-compose.
+
+We use this for the migration:
+https://learn.microsoft.com/en-us/ef/core/cli/dbcontext-creation?tabs=dotnet-core-cli#from-a-design-time-factory
 
 ## Remove
 
