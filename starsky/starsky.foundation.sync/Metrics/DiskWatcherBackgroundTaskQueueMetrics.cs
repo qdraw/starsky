@@ -17,7 +17,7 @@ public class DiskWatcherBackgroundTaskQueueMetrics
 		meter.CreateObservableGauge(name, ObserveValue);
 	}
 
-	private int ObserveValue()
+	internal int ObserveValue()
 	{
 		return Value;
 	}

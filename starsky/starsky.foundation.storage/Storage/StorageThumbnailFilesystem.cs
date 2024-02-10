@@ -11,6 +11,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 
 [assembly: InternalsVisibleTo("starskytest")]
+
 namespace starsky.foundation.storage.Storage
 {
 	[Service(typeof(IStorage), InjectionLifetime = InjectionLifetime.Scoped)]
@@ -32,6 +33,7 @@ namespace starsky.foundation.storage.Storage
 			{
 				return Path.Combine(_appSettings.ThumbnailTempFolder, fileHash);
 			}
+
 			return Path.Combine(_appSettings.ThumbnailTempFolder, fileHash + ".jpg");
 		}
 
@@ -48,7 +50,8 @@ namespace starsky.foundation.storage.Storage
 		public bool ExistFolder(string path)
 		{
 			// only for the root folder
-			return new StorageHostFullPathFilesystem(_logger).ExistFolder(_appSettings.ThumbnailTempFolder);
+			return new StorageHostFullPathFilesystem(_logger).ExistFolder(_appSettings
+				.ThumbnailTempFolder);
 		}
 
 		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string path)
@@ -61,7 +64,7 @@ namespace starsky.foundation.storage.Storage
 			throw new System.NotImplementedException();
 		}
 
-		public void FileMove(string fromPath, string toPath)
+		public bool FileMove(string fromPath, string toPath)
 		{
 			var oldThumbPath = CombinePath(fromPath);
 			var newThumbPath = CombinePath(toPath);
@@ -73,9 +76,11 @@ namespace starsky.foundation.storage.Storage
 
 			if ( !existOldFile || existNewFile )
 			{
-				return;
+				return false;
 			}
+
 			hostFilesystem.FileMove(oldThumbPath, newThumbPath);
+			return true;
 		}
 
 		public void FileCopy(string fromPath, string toPath)
@@ -92,6 +97,7 @@ namespace starsky.foundation.storage.Storage
 			{
 				return;
 			}
+
 			hostFilesystem.FileCopy(oldThumbPath, newThumbPath);
 		}
 
@@ -150,7 +156,8 @@ namespace starsky.foundation.storage.Storage
 		public Stream ReadStream(string path, int maxRead = -1)
 		{
 			if ( !ExistFile(path) ) throw new FileNotFoundException(path);
-			return new StorageHostFullPathFilesystem(_logger).ReadStream(CombinePath(path), maxRead);
+			return new StorageHostFullPathFilesystem(_logger).ReadStream(CombinePath(path),
+				maxRead);
 		}
 
 		/// <summary>
@@ -172,7 +179,8 @@ namespace starsky.foundation.storage.Storage
 
 		public Task<bool> WriteStreamAsync(Stream stream, string path)
 		{
-			return new StorageHostFullPathFilesystem(_logger).WriteStreamAsync(stream, CombinePath(path));
+			return new StorageHostFullPathFilesystem(_logger).WriteStreamAsync(stream,
+				CombinePath(path));
 		}
 
 		public StorageInfo Info(string path)

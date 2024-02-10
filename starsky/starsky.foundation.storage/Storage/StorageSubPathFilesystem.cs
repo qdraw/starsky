@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -94,11 +95,12 @@ namespace starsky.foundation.storage.Storage
 		/// </summary>
 		/// <param name="fromPath">inputSubPath</param>
 		/// <param name="toPath">toSubPath</param>
-		public void FileMove(string fromPath, string toPath)
+		public bool FileMove(string fromPath, string toPath)
 		{
 			var inputFileFullPath = _appSettings.DatabasePathToFilePath(fromPath);
 			var toFileFullPath = _appSettings.DatabasePathToFilePath(toPath);
-			new StorageHostFullPathFilesystem(_logger).FileMove(inputFileFullPath, toFileFullPath);
+			return new StorageHostFullPathFilesystem(_logger).FileMove(inputFileFullPath,
+				toFileFullPath);
 		}
 
 		/// <summary>
@@ -254,6 +256,7 @@ namespace starsky.foundation.storage.Storage
 		/// <param name="path">subPath</param>
 		/// <param name="maxRead">number of bytes to read (default -1 = all)</param>
 		/// <returns>FileStream or Stream.Null when file dont exist</returns>
+		[SuppressMessage("ReSharper", "MustUseReturnValue")]
 		public Stream ReadStream(string path, int maxRead = -1)
 		{
 			if ( !ExistFile(path) )
@@ -274,7 +277,7 @@ namespace starsky.foundation.storage.Storage
 				}
 
 				// read only the first number of bytes
-				byte[] buffer = new byte[maxRead];
+				var buffer = new byte[maxRead];
 				fileStream.Read(buffer, 0, maxRead);
 				fileStream.Close();
 				fileStream.Dispose();

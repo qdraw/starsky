@@ -131,18 +131,19 @@ public class FakeIStorage : IStorage
 		_outputSubPathFolders[indexOfFolders] = toPath;
 	}
 
-	public void FileMove(string fromPath, string toPath)
+	public bool FileMove(string fromPath, string toPath)
 	{
 		var existOldFile = ExistFile(fromPath);
 		var existNewFile = ExistFile(toPath);
 
 		if ( !existOldFile || existNewFile )
 		{
-			return;
+			return false;
 		}
 
 		var indexOfFiles = _outputSubPathFiles.IndexOf(fromPath);
 		_outputSubPathFiles[indexOfFiles] = toPath;
+		return true;
 	}
 
 	public void FileCopy(string fromPath, string toPath)

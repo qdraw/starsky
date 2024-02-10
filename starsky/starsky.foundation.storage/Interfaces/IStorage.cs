@@ -12,7 +12,7 @@ public interface IStorage
 	bool ExistFolder(string path);
 	FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string path);
 	void FolderMove(string fromPath, string toPath);
-	void FileMove(string fromPath, string toPath);
+	bool FileMove(string fromPath, string toPath);
 	void FileCopy(string fromPath, string toPath);
 	bool FileDelete(string path);
 

@@ -17,7 +17,7 @@ public class ThumbnailBackgroundQueuedMetrics
 		meter.CreateObservableGauge(name, ObserveValue);
 	}
 
-	private int ObserveValue()
+	internal int ObserveValue()
 	{
 		return Value;
 	}
