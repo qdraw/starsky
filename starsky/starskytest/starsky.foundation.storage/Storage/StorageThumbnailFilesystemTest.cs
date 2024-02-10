@@ -20,10 +20,10 @@ namespace starskytest.starsky.foundation.storage.Storage
 		public StorageThumbnailFilesystemTest()
 		{
 			var createNewImage = new CreateAnImage();
-			var appSettings = new AppSettings {ThumbnailTempFolder = createNewImage.BasePath};
+			var appSettings = new AppSettings { ThumbnailTempFolder = createNewImage.BasePath };
 			_thumbnailStorage = new StorageThumbnailFilesystem(appSettings, new FakeIWebLogger());
-			_fileNameWithoutExtension = FilenamesHelper.GetFileNameWithoutExtension(createNewImage.FileName);
-
+			_fileNameWithoutExtension =
+				FilenamesHelper.GetFileNameWithoutExtension(createNewImage.FileName);
 		}
 
 		[TestMethod]
@@ -32,63 +32,70 @@ namespace starskytest.starsky.foundation.storage.Storage
 			var result = _thumbnailStorage.CombinePath("test.jpg");
 			Assert.IsTrue(result.EndsWith("test.jpg"));
 		}
-		
+
 		[TestMethod]
 		public void CombinePathShouldEndWithTestJpg2()
 		{
 			var result = _thumbnailStorage.CombinePath("test");
 			Assert.IsTrue(result.EndsWith("test.jpg"));
 		}
-		
+
 		[TestMethod]
 		public void FileMove_Test()
 		{
 			var createNewImage = new CreateAnImage();
-			
+
 			// first copy for parallel test
 			_thumbnailStorage.FileCopy(_fileNameWithoutExtension, "start_move_file");
-			
-			_thumbnailStorage.FileMove("start_move_file", "StorageThumbnailFilesystemTest_FileMove");
+
+			_thumbnailStorage.FileMove("start_move_file",
+				"StorageThumbnailFilesystemTest_FileMove");
 
 			var path = Path.Combine(createNewImage.BasePath, "start_move_file" + ".jpg");
 			Assert.IsFalse(File.Exists(path));
-			var path2 = Path.Combine(createNewImage.BasePath, "StorageThumbnailFilesystemTest_FileMove.jpg");
+			var path2 = Path.Combine(createNewImage.BasePath,
+				"StorageThumbnailFilesystemTest_FileMove.jpg");
 			Assert.IsTrue(File.Exists(path2));
 
 			File.Delete(Path.Combine(createNewImage.BasePath, "start_move_file.jpg"));
-			File.Delete(Path.Combine(createNewImage.BasePath, "StorageThumbnailFilesystemTest_FileMove.jpg"));
+			File.Delete(Path.Combine(createNewImage.BasePath,
+				"StorageThumbnailFilesystemTest_FileMove.jpg"));
 
 			var createAnImage = new CreateAnImage();
 			Assert.IsNotNull(createAnImage);
 		}
-		
+
 		[TestMethod]
 		public void FileCopy_success()
 		{
 			var createNewImage = new CreateAnImage();
-			
-			_thumbnailStorage.FileCopy(_fileNameWithoutExtension, "StorageThumbnailFilesystemTest_FileCopy");
+
+			_thumbnailStorage.FileCopy(_fileNameWithoutExtension,
+				"StorageThumbnailFilesystemTest_FileCopy");
 
 			var path = Path.Combine(createNewImage.BasePath, _fileNameWithoutExtension + ".jpg");
 			Assert.IsTrue(File.Exists(path));
-			var path2 = Path.Combine(createNewImage.BasePath, "StorageThumbnailFilesystemTest_FileCopy.jpg");
+			var path2 = Path.Combine(createNewImage.BasePath,
+				"StorageThumbnailFilesystemTest_FileCopy.jpg");
 			Assert.IsTrue(File.Exists(path2));
-			
+
 			File.Delete(_fileNameWithoutExtension);
-			File.Delete(Path.Combine(createNewImage.BasePath, "StorageThumbnailFilesystemTest_FileCopy.jpg"));
+			File.Delete(Path.Combine(createNewImage.BasePath,
+				"StorageThumbnailFilesystemTest_FileCopy.jpg"));
 
 			var createAnImage = new CreateAnImage();
 			Assert.IsNotNull(createAnImage);
 		}
-		
+
 		[TestMethod]
 		public void FileCopy_source_notFound()
 		{
 			var createNewImage = new CreateAnImage();
-			
+
 			_thumbnailStorage.FileCopy("not_found", "StorageThumbnailFilesystemTest_FileCopy2");
 
-			var path2 = Path.Combine(createNewImage.BasePath, "StorageThumbnailFilesystemTest_FileCopy2.jpg");
+			var path2 = Path.Combine(createNewImage.BasePath,
+				"StorageThumbnailFilesystemTest_FileCopy2.jpg");
 			Assert.IsFalse(File.Exists(path2));
 		}
 
@@ -97,31 +104,31 @@ namespace starskytest.starsky.foundation.storage.Storage
 		{
 			Assert.IsFalse(_thumbnailStorage.FileDelete("NotFound"));
 		}
-		
+
 		[TestMethod]
 		public void ReadStream()
 		{
 			var createAnImage = new CreateAnImage();
 			Assert.IsNotNull(createAnImage);
 
-			var stream =_thumbnailStorage.ReadStream(_fileNameWithoutExtension);
-			Assert.AreEqual(CreateAnImage.Bytes.Length,stream.Length);
-			
+			var stream = _thumbnailStorage.ReadStream(_fileNameWithoutExtension);
+			Assert.AreEqual(CreateAnImage.Bytes.Length, stream.Length);
+
 			stream.Dispose();
 		}
-		
+
 		[TestMethod]
 		public void ReadStream_MaxLength()
 		{
 			var createAnImage = new CreateAnImage();
 			Assert.IsNotNull(createAnImage);
 
-			var stream =_thumbnailStorage.ReadStream(_fileNameWithoutExtension, 100);
-			Assert.AreEqual(100,stream.Length);
-			
+			var stream = _thumbnailStorage.ReadStream(_fileNameWithoutExtension, 100);
+			Assert.AreEqual(100, stream.Length);
+
 			stream.Dispose();
 		}
-		
+
 		[TestMethod]
 		public void WriteStream()
 		{
@@ -130,28 +137,33 @@ namespace starskytest.starsky.foundation.storage.Storage
 			_thumbnailStorage.WriteStream(new MemoryStream(CreateAnImage.Bytes.ToArray()),
 				"StorageThumbnailFilesystemTest_WriteStream");
 
-			var readStream =_thumbnailStorage.ReadStream("StorageThumbnailFilesystemTest_WriteStream");
-			Assert.AreEqual(CreateAnImage.Bytes.Length,readStream.Length);
+			var readStream =
+				_thumbnailStorage.ReadStream("StorageThumbnailFilesystemTest_WriteStream");
+			Assert.AreEqual(CreateAnImage.Bytes.Length, readStream.Length);
 			readStream.Dispose();
 
-			File.Delete(Path.Combine(createNewImage.BasePath, "StorageThumbnailFilesystemTest_FileMove.jpg"));
+			File.Delete(Path.Combine(createNewImage.BasePath,
+				"StorageThumbnailFilesystemTest_FileMove.jpg"));
 		}
-		
+
 		[TestMethod]
 		public async Task WriteStreamAsync()
 		{
 			var createNewImage = new CreateAnImage();
 
-			await _thumbnailStorage.WriteStreamAsync(new MemoryStream(CreateAnImage.Bytes.ToArray()),
+			await _thumbnailStorage.WriteStreamAsync(
+				new MemoryStream(CreateAnImage.Bytes.ToArray()),
 				"StorageThumbnailFilesystemTest_WriteStreamAsync");
 
-			var readStream =_thumbnailStorage.ReadStream("StorageThumbnailFilesystemTest_WriteStreamAsync");
-			Assert.AreEqual(CreateAnImage.Bytes.Length,readStream.Length);
+			var readStream =
+				_thumbnailStorage.ReadStream("StorageThumbnailFilesystemTest_WriteStreamAsync");
+			Assert.AreEqual(CreateAnImage.Bytes.Length, readStream.Length);
 			await readStream.DisposeAsync();
 
-			File.Delete(Path.Combine(createNewImage.BasePath, "StorageThumbnailFilesystemTest_WriteStreamAsync.jpg"));
+			File.Delete(Path.Combine(createNewImage.BasePath,
+				"StorageThumbnailFilesystemTest_WriteStreamAsync.jpg"));
 		}
-		
+
 		[TestMethod]
 		public void SetLastWriteTime_File()
 		{
@@ -161,7 +173,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 
 			Assert.AreEqual(shouldBe, result);
 		}
-		
+
 		[TestMethod]
 		public void SetLastWriteTime_File_Null()
 		{

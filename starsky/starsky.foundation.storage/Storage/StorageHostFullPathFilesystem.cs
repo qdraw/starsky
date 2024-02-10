@@ -40,11 +40,13 @@ namespace starsky.foundation.storage.Storage
 				};
 			}
 
-			var lastWrite = type == FolderOrFileModel.FolderOrFileTypeList.File ?
-				File.GetLastWriteTime(path) : Directory.GetLastWriteTime(path);
+			var lastWrite = type == FolderOrFileModel.FolderOrFileTypeList.File
+				? File.GetLastWriteTime(path)
+				: Directory.GetLastWriteTime(path);
 
-			var size = type == FolderOrFileModel.FolderOrFileTypeList.File ?
-				new FileInfo(path).Length : -1;
+			var size = type == FolderOrFileModel.FolderOrFileTypeList.File
+				? new FileInfo(path).Length
+				: -1;
 
 			return new StorageInfo
 			{
@@ -56,7 +58,8 @@ namespace starsky.foundation.storage.Storage
 			};
 		}
 
-		internal static bool? TestIfFileSystemIsReadOnly(string folderPath, FolderOrFileModel.FolderOrFileTypeList type)
+		internal static bool? TestIfFileSystemIsReadOnly(string folderPath,
+			FolderOrFileModel.FolderOrFileTypeList type)
 		{
 			if ( type != FolderOrFileModel.FolderOrFileTypeList.Folder )
 			{
@@ -66,7 +69,8 @@ namespace starsky.foundation.storage.Storage
 			try
 			{
 				var testFilePath = Path.Combine(folderPath, ".test");
-				var myFileStream = File.Open(testFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+				var myFileStream = File.Open(testFilePath, FileMode.OpenOrCreate,
+					FileAccess.ReadWrite, FileShare.ReadWrite);
 				myFileStream.Close();
 				myFileStream.Dispose();
 				File.Delete(testFilePath);
@@ -109,6 +113,7 @@ namespace starsky.foundation.storage.Storage
 					"[FolderDelete] catch-ed UnauthorizedAccessException");
 				Directory.Delete(path, true);
 			}
+
 			return true;
 		}
 
@@ -126,11 +131,11 @@ namespace starsky.foundation.storage.Storage
 			}
 			catch ( Exception exception )
 			{
-				if ( exception is not ( UnauthorizedAccessException
-					or DirectoryNotFoundException ) ) throw;
+				if ( exception is not (UnauthorizedAccessException
+				    or DirectoryNotFoundException) ) throw;
 
 				_logger?.LogError(exception, "[GetAllFilesInDirectory] " +
-											 "catch-ed UnauthorizedAccessException/DirectoryNotFoundException");
+				                             "catch-ed UnauthorizedAccessException/DirectoryNotFoundException");
 				return Array.Empty<string>();
 			}
 
@@ -175,7 +180,8 @@ namespace starsky.foundation.storage.Storage
 		{
 			// Tuple > FilePath,Directory.GetLastWriteTime
 			var folders = new Queue<KeyValuePair<string, DateTime>>();
-			folders.Enqueue(new KeyValuePair<string, DateTime>(path, Directory.GetLastWriteTime(path)));
+			folders.Enqueue(
+				new KeyValuePair<string, DateTime>(path, Directory.GetLastWriteTime(path)));
 			var folderList = new List<KeyValuePair<string, DateTime>>();
 			while ( folders.Count != 0 )
 			{
@@ -190,16 +196,18 @@ namespace starsky.foundation.storage.Storage
 						folders.Enqueue(new KeyValuePair<string, DateTime>(current, lastEditDate));
 						if ( lastEditDate.Year != 1 )
 						{
-							folderList.Add(new KeyValuePair<string, DateTime>(current, lastEditDate));
+							folderList.Add(
+								new KeyValuePair<string, DateTime>(current, lastEditDate));
 						}
 					}
 				}
 				catch ( Exception exception )
 				{
-					if ( exception is not ( UnauthorizedAccessException
-						or DirectoryNotFoundException ) ) throw;
+					if ( exception is not (UnauthorizedAccessException
+					    or DirectoryNotFoundException) ) throw;
 					_logger?.LogError("[StorageHostFullPathFilesystem] Catch-ed " +
-									  "DirectoryNotFoundException/UnauthorizedAccessException => " + exception.Message);
+					                  "DirectoryNotFoundException/UnauthorizedAccessException => " +
+					                  exception.Message);
 				}
 			}
 
@@ -238,7 +246,6 @@ namespace starsky.foundation.storage.Storage
 				_logger?.LogError(e, "[ReadStream] catch-ed FileNotFoundException");
 				return Stream.Null;
 			}
-
 		}
 
 		/// <summary>
@@ -295,10 +302,15 @@ namespace starsky.foundation.storage.Storage
 		/// </summary>
 		/// <param name="fromPath">inputFileFullPath</param>
 		/// <param name="toPath">toFileFullPath</param>
-		public void FileMove(string fromPath, string toPath)
+		public bool FileMove(string fromPath, string toPath)
 		{
-			if ( fromPath == toPath ) return;
+			if ( fromPath == toPath )
+			{
+				return false;
+			}
+
 			File.Move(fromPath, toPath);
+			return true;
 		}
 
 		/// <summary>
@@ -323,6 +335,7 @@ namespace starsky.foundation.storage.Storage
 				File.Delete(path);
 				return true;
 			}
+
 			return RetryHelper.Do(LocalRun, TimeSpan.FromSeconds(2), 5);
 		}
 
@@ -335,10 +348,10 @@ namespace starsky.foundation.storage.Storage
 				stream.Seek(0, SeekOrigin.Begin);
 
 				using ( var fileStream = new FileStream(path,
-					FileMode.Create,
-					FileAccess.Write, FileShare.ReadWrite,
-					4096,
-					FileOptions.Asynchronous) )
+					       FileMode.Create,
+					       FileAccess.Write, FileShare.ReadWrite,
+					       4096,
+					       FileOptions.Asynchronous) )
 				{
 					stream.CopyTo(fileStream);
 					// fileStream is disposed due using
@@ -358,13 +371,14 @@ namespace starsky.foundation.storage.Storage
 			stream.Seek(0, SeekOrigin.Begin);
 
 			using ( var fileStream = new FileStream(path,
-				FileMode.OpenOrCreate, // <= that's the difference
-				FileAccess.Write, FileShare.ReadWrite,
-				4096,
-				FileOptions.Asynchronous) )
+				       FileMode.OpenOrCreate, // <= that's the difference
+				       FileAccess.Write, FileShare.ReadWrite,
+				       4096,
+				       FileOptions.Asynchronous) )
 			{
 				stream.CopyTo(fileStream);
 			}
+
 			return true;
 		}
 
@@ -390,8 +404,8 @@ namespace starsky.foundation.storage.Storage
 				}
 
 				using ( var fileStream = new FileStream(path, FileMode.Create,
-					FileAccess.Write, FileShare.Read, 4096,
-					FileOptions.Asynchronous | FileOptions.SequentialScan) )
+					       FileAccess.Write, FileShare.Read, 4096,
+					       FileOptions.Asynchronous | FileOptions.SequentialScan) )
 				{
 					await stream.CopyToAsync(fileStream);
 				}
@@ -414,9 +428,9 @@ namespace starsky.foundation.storage.Storage
 			var findList = new List<string>();
 
 			/* I begin a recursion, following the order:
-             * - Insert all the files in the current directory with the recursion
-             * - Insert all subdirectories in the list and re-begin the recursion from there until the end
-             */
+			 * - Insert all the files in the current directory with the recursion
+			 * - Insert all subdirectories in the list and re-begin the recursion from there until the end
+			 */
 			RecurseFind(path, findList);
 
 			return findList.OrderBy(x => x).ToList();
@@ -433,11 +447,12 @@ namespace starsky.foundation.storage.Storage
 			}
 			catch ( Exception exception )
 			{
-				_logger?.LogInformation($"[StorageHostFullPathFilesystem] catch-ed ex: {exception.Message} -  {path}");
+				_logger?.LogInformation(
+					$"[StorageHostFullPathFilesystem] catch-ed ex: {exception.Message} -  {path}");
 				return new Tuple<string[], string[]>(
 					new List<string>().ToArray(),
 					new List<string>().ToArray()
-					);
+				);
 			}
 		}
 
@@ -453,6 +468,7 @@ namespace starsky.foundation.storage.Storage
 			{
 				return;
 			}
+
 			//I begin with the files, and store all of them in the list
 			list.AddRange(filesArray);
 			// I then add the directory and recurse that directory,
@@ -470,6 +486,7 @@ namespace starsky.foundation.storage.Storage
 			{
 				dateTime = DateTime.Now;
 			}
+
 			var type = IsFolderOrFile(path);
 
 			if ( type == FolderOrFileModel.FolderOrFileTypeList.File )
@@ -480,8 +497,8 @@ namespace starsky.foundation.storage.Storage
 			{
 				Directory.SetLastWriteTime(path, dateTime.Value);
 			}
+
 			return dateTime.Value;
 		}
 	}
-
 }
