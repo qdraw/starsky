@@ -1,0 +1,10 @@
+  newWindow.webContents.on("did-finish-load", () => {
+    newWindow.webContents
+      .executeJavaScript(
+        "window.api.send('APP_VERSION',null); window.api.receive('APP_VERSION')",
+        true
+      )
+      .then((result) => {
+        console.log(result); // Will be the JSON object from the fetch call
+      });
+  });
