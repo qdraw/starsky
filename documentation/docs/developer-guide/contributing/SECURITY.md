@@ -7,8 +7,7 @@ Breaking changes are reported in the [changelog/history](https://docs.qdraw.nl/d
 
 | Version | Supported          |
 |---------|--------------------|
-| 0.6.x   | :white_check_mark: |
-| 0.5.x   | :x:                |
+| 0.5.x   | :white_check_mark: |
 | 0.4.x   | :x:                |
 | < 0.3   | :x:                |
 
