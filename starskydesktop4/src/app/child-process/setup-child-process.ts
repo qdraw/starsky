@@ -13,6 +13,9 @@ import { electronCacheLocation } from "./electron-cache-location";
 export let appPort = 9609;
 
 function spawnChildProcess(appStarskyPath: string) {
+  
+  logger.info(`next: appStarskyPath: ${appStarskyPath}`)
+
   const starskyChild = spawn(appStarskyPath, {
     cwd: path.dirname(appStarskyPath),
     detached: true,

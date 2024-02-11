@@ -50,10 +50,11 @@ export function childProcessPath(): string {
     }
   }
 
-  // runtime-starsky-mac-x64
+  // osx-x64 or osx-arm64
   const targetFilePath = path.join(
     process.resourcesPath,
-    `runtime-starsky-${OsBuildKey()}-${os.arch()}`
+    "app",
+    `${OsBuildKey()}-${os.arch()}`
   );
 
   let exeFilePath = path.join(targetFilePath, "starsky");

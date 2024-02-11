@@ -48,25 +48,37 @@ export function copyFolderRecursiveSync(
 export function copyWithId(identifier: string, to: string) {
   const from = path.join(__dirname, "..", "..", "..", "starsky", identifier);
 
-  console.log(`copy from ${from} to ${to}`);
+  console.log(`copy from ${from} to -> ${to}`);
+
+  fs.mkdirSync(to, {recursive:true});
 
   copyFolderRecursiveSync(from, to);
 
-  const afterCopyPath = path.join(__dirname, "..", "..", identifier);
-
-  if (fs.existsSync(to)) {
-    try {
-      fs.rmSync(to, { recursive: true });
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
+  // make write if exists
+  const appStarskyPath = path.join(to, "starsky");
   try {
-    fs.renameSync(afterCopyPath, to);
+    fs.chmodSync(appStarskyPath, 0o755);
   } catch (error) {
-    console.log(error);
+    // do nothing
   }
+
+  
+
+  // if (fs.existsSync(to)) {
+  //   try {
+  //     fs.rmSync(to, { recursive: true });
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // }
+
+  // const afterCopyPath = path.join(__dirname, "..", "..", identifier);
+
+  // try {
+  //   fs.renameSync(afterCopyPath, to);
+  // } catch (error) {
+  //   console.log(error);
+  // }
 
   console.log("-- copy folder done --");
 }

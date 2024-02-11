@@ -60,10 +60,10 @@ export const BeforeBuild = (platform: string, arch: string, to: string) => {
       // for: osx-arm64, osx-x64
       if (arch === "x64" || arch === "arm64") {
         runBuildIfNotExist(`osx-${arch}`);
-        removeOldRunTime(`runtime-starsky-mac-${arch}`);
-        const toPath = path.join(to, `runtime-starsky-mac-${arch}`);
-        console.log(`to Path: ${toPath}`);
-        // copyWithId(`osx-${arch}`, toPath);
+        // removeOldRunTime(`runtime-starsky-mac-${arch}`);
+        // const toPath = path.join(to, `runtime-starsky-mac-${arch}`);
+        console.log(`to Path: ${to}`);
+        copyWithId(`osx-${arch}`, to);
       }
       break;
     case "win": // need check
@@ -86,4 +86,11 @@ export const BeforeBuild = (platform: string, arch: string, to: string) => {
   removePackageJsons("runtime-starsky-win-x64");
   removePackageJsons("runtime-starsky-linux-x64");
 
+  const packageJson = path.join(to, "package.json");
+  console.log(packageJson);
+
+  const fd = fs.openSync(packageJson, 'a');
+
+  fs.closeSync(fd);
+  
 };
