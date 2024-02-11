@@ -21,7 +21,8 @@ namespace starsky.feature.webhtmlpublish.Services
 		private readonly IWebLogger _logger;
 		private readonly IStorage _hostStorage;
 
-		public PublishPreflight(AppSettings appSettings, IConsole console, ISelectorStorage selectorStorage, IWebLogger logger)
+		public PublishPreflight(AppSettings appSettings, IConsole console,
+			ISelectorStorage selectorStorage, IWebLogger logger)
 		{
 			_appSettings = appSettings;
 			_console = console;
@@ -43,6 +44,7 @@ namespace starsky.feature.webhtmlpublish.Services
 				returnList.Add(new Tuple<int, string>(i, profile.Key));
 				i++;
 			}
+
 			return returnList;
 		}
 
@@ -64,11 +66,13 @@ namespace starsky.feature.webhtmlpublish.Services
 		/// </summary>
 		/// <param name="profiles">profile object</param>
 		/// <returns>(bool and list of errors)</returns>
-		internal Tuple<bool, List<string>> IsProfileValid(KeyValuePair<string, List<AppSettingsPublishProfiles>> profiles)
+		internal Tuple<bool, List<string>> IsProfileValid(
+			KeyValuePair<string, List<AppSettingsPublishProfiles>> profiles)
 		{
 			if ( profiles.Key == null || profiles.Value == null )
 			{
-				return new Tuple<bool, List<string>>(false, new List<string> { "Profile not found" });
+				return new Tuple<bool, List<string>>(false,
+					new List<string> { "Profile not found" });
 			}
 
 			var errors = new List<string>();
@@ -80,15 +84,15 @@ namespace starsky.feature.webhtmlpublish.Services
 				}
 
 				if ( profile.ContentType == TemplateContentType.Html
-					 && !new ParseRazor(_hostStorage, _logger).Exist(profile.Template) )
+				     && !new ParseRazor(_hostStorage, _logger).Exist(profile.Template) )
 				{
 					errors.Add($"View Path {profile.Template} should exists");
 					continue;
 				}
 
 				if ( !_hostStorage.ExistFile(profile.Path) && (
-						profile.ContentType == TemplateContentType.Jpeg
-						|| profile.ContentType == TemplateContentType.OnlyFirstJpeg ) )
+					    profile.ContentType == TemplateContentType.Jpeg
+					    || profile.ContentType == TemplateContentType.OnlyFirstJpeg ) )
 				{
 					errors.Add($"Image Path {profile.Path} should exists");
 				}
@@ -126,7 +130,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		/// </summary>
 		/// <param name="inputPath">full filepath to give default user input option</param>
 		/// <param name="args">argument list</param>
-		/// <returns>name, nothing is string.emthy</returns>
+		/// <returns>name, nothing is string.empty</returns>
 		public string GetNameConsole(string inputPath, IReadOnlyList<string> args)
 		{
 			var name = ArgsHelper.GetName(args);
@@ -134,15 +138,16 @@ namespace starsky.feature.webhtmlpublish.Services
 
 			var suggestedInput = Path.GetFileName(inputPath);
 
-			_console.WriteLine("\nWhat is the name of the item? (for: " + suggestedInput + " press Enter)\n ");
+			_console.WriteLine("\nWhat is the name of the item? (for: " + suggestedInput +
+			                   " press Enter)\n ");
 			name = _console.ReadLine();
 
 			if ( string.IsNullOrEmpty(name) )
 			{
 				name = suggestedInput;
 			}
+
 			return name.Trim();
 		}
 	}
-
 }
