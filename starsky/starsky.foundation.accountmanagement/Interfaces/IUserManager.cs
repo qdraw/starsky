@@ -17,7 +17,8 @@ namespace starsky.foundation.accountmanagement.Interfaces
 		public bool Success { get; private set; }
 		public SignUpResultError? Error { get; }
 
-		public SignUpResult(User? user = null, bool success = false, SignUpResultError? error = null)
+		public SignUpResult(User? user = null, bool success = false,
+			SignUpResultError? error = null)
 		{
 			User = user;
 			Success = success;
@@ -60,7 +61,7 @@ namespace starsky.foundation.accountmanagement.Interfaces
 		/// <summary>
 		/// Add a new user, including Roles and UserRoles
 		/// </summary>
-		/// <param name="name">Nice Name, default string.Emthy</param>
+		/// <param name="name">Nice Name, default string.Empty</param>
 		/// <param name="credentialTypeCode">default is: Email</param>
 		/// <param name="identifier">an email address, e.g. dont@mail.us</param>
 		/// <param name="secret">Password</param>
@@ -72,19 +73,25 @@ namespace starsky.foundation.accountmanagement.Interfaces
 		void AddToRole(User user, Role role);
 		void RemoveFromRole(User user, string roleCode);
 		void RemoveFromRole(User user, Role role);
-		ChangeSecretResult ChangeSecret(string credentialTypeCode, string? identifier, string secret);
+
+		ChangeSecretResult ChangeSecret(string credentialTypeCode, string? identifier,
+			string secret);
+
 		Task<ValidateResult> ValidateAsync(string credentialTypeCode,
 			string? identifier, string secret);
 
 		Task<bool> SignIn(HttpContext httpContext, User? user,
 			bool isPersistent = false);
+
 		void SignOut(HttpContext httpContext);
 		int GetCurrentUserId(HttpContext httpContext);
 		User? GetCurrentUser(HttpContext httpContext);
 		User? GetUser(string credentialTypeCode, string identifier);
 		Credential? GetCredentialsByUserId(int userId);
+
 		Task<ValidateResult> RemoveUser(string credentialTypeCode,
 			string identifier);
+
 		User? Exist(string identifier);
 
 		Task<User?> ExistAsync(int userTableId);
