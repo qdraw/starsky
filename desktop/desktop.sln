@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskydesktop", "starskydesktop\starskydesktop.csproj", "{A31F2516-6AB9-4EB0-BB76-B8A703CC3152}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.platform", "..\starsky\starsky.foundation.platform\starsky.foundation.platform.csproj", "{10A49647-83AB-43C4-A3FF-8B0767518023}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A31F2516-6AB9-4EB0-BB76-B8A703CC3152}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A31F2516-6AB9-4EB0-BB76-B8A703CC3152}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A31F2516-6AB9-4EB0-BB76-B8A703CC3152}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A31F2516-6AB9-4EB0-BB76-B8A703CC3152}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10A49647-83AB-43C4-A3FF-8B0767518023}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10A49647-83AB-43C4-A3FF-8B0767518023}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10A49647-83AB-43C4-A3FF-8B0767518023}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10A49647-83AB-43C4-A3FF-8B0767518023}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
