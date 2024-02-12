@@ -1,0 +1,578 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		BCF3FD0A2B7A780B00EC31E2 /* starskydesktopApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF3FD092B7A780B00EC31E2 /* starskydesktopApp.swift */; };
+		BCF3FD0C2B7A780B00EC31E2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF3FD0B2B7A780B00EC31E2 /* ContentView.swift */; };
+		BCF3FD0E2B7A780C00EC31E2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BCF3FD0D2B7A780C00EC31E2 /* Assets.xcassets */; };
+		BCF3FD112B7A780C00EC31E2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BCF3FD102B7A780C00EC31E2 /* Preview Assets.xcassets */; };
+		BCF3FD1C2B7A780C00EC31E2 /* starskydesktopTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF3FD1B2B7A780C00EC31E2 /* starskydesktopTests.swift */; };
+		BCF3FD262B7A780C00EC31E2 /* starskydesktopUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF3FD252B7A780C00EC31E2 /* starskydesktopUITests.swift */; };
+		BCF3FD282B7A780C00EC31E2 /* starskydesktopUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF3FD272B7A780C00EC31E2 /* starskydesktopUITestsLaunchTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		BCF3FD182B7A780C00EC31E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BCF3FCFE2B7A780B00EC31E2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BCF3FD052B7A780B00EC31E2;
+			remoteInfo = starskydesktop;
+		};
+		BCF3FD222B7A780C00EC31E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BCF3FCFE2B7A780B00EC31E2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BCF3FD052B7A780B00EC31E2;
+			remoteInfo = starskydesktop;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		BCF3FD062B7A780B00EC31E2 /* starskydesktop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = starskydesktop.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BCF3FD092B7A780B00EC31E2 /* starskydesktopApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = starskydesktopApp.swift; sourceTree = "<group>"; };
+		BCF3FD0B2B7A780B00EC31E2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		BCF3FD0D2B7A780C00EC31E2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BCF3FD102B7A780C00EC31E2 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		BCF3FD122B7A780C00EC31E2 /* starskydesktop.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = starskydesktop.entitlements; sourceTree = "<group>"; };
+		BCF3FD172B7A780C00EC31E2 /* starskydesktopTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = starskydesktopTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BCF3FD1B2B7A780C00EC31E2 /* starskydesktopTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = starskydesktopTests.swift; sourceTree = "<group>"; };
+		BCF3FD212B7A780C00EC31E2 /* starskydesktopUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = starskydesktopUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BCF3FD252B7A780C00EC31E2 /* starskydesktopUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = starskydesktopUITests.swift; sourceTree = "<group>"; };
+		BCF3FD272B7A780C00EC31E2 /* starskydesktopUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = starskydesktopUITestsLaunchTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		BCF3FD032B7A780B00EC31E2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BCF3FD142B7A780C00EC31E2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BCF3FD1E2B7A780C00EC31E2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		BCF3FCFD2B7A780B00EC31E2 = {
+			isa = PBXGroup;
+			children = (
+				BCF3FD082B7A780B00EC31E2 /* starskydesktop */,
+				BCF3FD1A2B7A780C00EC31E2 /* starskydesktopTests */,
+				BCF3FD242B7A780C00EC31E2 /* starskydesktopUITests */,
+				BCF3FD072B7A780B00EC31E2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		BCF3FD072B7A780B00EC31E2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BCF3FD062B7A780B00EC31E2 /* starskydesktop.app */,
+				BCF3FD172B7A780C00EC31E2 /* starskydesktopTests.xctest */,
+				BCF3FD212B7A780C00EC31E2 /* starskydesktopUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BCF3FD082B7A780B00EC31E2 /* starskydesktop */ = {
+			isa = PBXGroup;
+			children = (
+				BCF3FD092B7A780B00EC31E2 /* starskydesktopApp.swift */,
+				BCF3FD0B2B7A780B00EC31E2 /* ContentView.swift */,
+				BCF3FD0D2B7A780C00EC31E2 /* Assets.xcassets */,
+				BCF3FD122B7A780C00EC31E2 /* starskydesktop.entitlements */,
+				BCF3FD0F2B7A780C00EC31E2 /* Preview Content */,
+			);
+			path = starskydesktop;
+			sourceTree = "<group>";
+		};
+		BCF3FD0F2B7A780C00EC31E2 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				BCF3FD102B7A780C00EC31E2 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		BCF3FD1A2B7A780C00EC31E2 /* starskydesktopTests */ = {
+			isa = PBXGroup;
+			children = (
+				BCF3FD1B2B7A780C00EC31E2 /* starskydesktopTests.swift */,
+			);
+			path = starskydesktopTests;
+			sourceTree = "<group>";
+		};
+		BCF3FD242B7A780C00EC31E2 /* starskydesktopUITests */ = {
+			isa = PBXGroup;
+			children = (
+				BCF3FD252B7A780C00EC31E2 /* starskydesktopUITests.swift */,
+				BCF3FD272B7A780C00EC31E2 /* starskydesktopUITestsLaunchTests.swift */,
+			);
+			path = starskydesktopUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		BCF3FD052B7A780B00EC31E2 /* starskydesktop */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BCF3FD2B2B7A780C00EC31E2 /* Build configuration list for PBXNativeTarget "starskydesktop" */;
+			buildPhases = (
+				BCF3FD022B7A780B00EC31E2 /* Sources */,
+				BCF3FD032B7A780B00EC31E2 /* Frameworks */,
+				BCF3FD042B7A780B00EC31E2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = starskydesktop;
+			productName = starskydesktop;
+			productReference = BCF3FD062B7A780B00EC31E2 /* starskydesktop.app */;
+			productType = "com.apple.product-type.application";
+		};
+		BCF3FD162B7A780C00EC31E2 /* starskydesktopTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BCF3FD2E2B7A780C00EC31E2 /* Build configuration list for PBXNativeTarget "starskydesktopTests" */;
+			buildPhases = (
+				BCF3FD132B7A780C00EC31E2 /* Sources */,
+				BCF3FD142B7A780C00EC31E2 /* Frameworks */,
+				BCF3FD152B7A780C00EC31E2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BCF3FD192B7A780C00EC31E2 /* PBXTargetDependency */,
+			);
+			name = starskydesktopTests;
+			productName = starskydesktopTests;
+			productReference = BCF3FD172B7A780C00EC31E2 /* starskydesktopTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		BCF3FD202B7A780C00EC31E2 /* starskydesktopUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BCF3FD312B7A780C00EC31E2 /* Build configuration list for PBXNativeTarget "starskydesktopUITests" */;
+			buildPhases = (
+				BCF3FD1D2B7A780C00EC31E2 /* Sources */,
+				BCF3FD1E2B7A780C00EC31E2 /* Frameworks */,
+				BCF3FD1F2B7A780C00EC31E2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BCF3FD232B7A780C00EC31E2 /* PBXTargetDependency */,
+			);
+			name = starskydesktopUITests;
+			productName = starskydesktopUITests;
+			productReference = BCF3FD212B7A780C00EC31E2 /* starskydesktopUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BCF3FCFE2B7A780B00EC31E2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1520;
+				LastUpgradeCheck = 1520;
+				TargetAttributes = {
+					BCF3FD052B7A780B00EC31E2 = {
+						CreatedOnToolsVersion = 15.2;
+					};
+					BCF3FD162B7A780C00EC31E2 = {
+						CreatedOnToolsVersion = 15.2;
+						TestTargetID = BCF3FD052B7A780B00EC31E2;
+					};
+					BCF3FD202B7A780C00EC31E2 = {
+						CreatedOnToolsVersion = 15.2;
+						TestTargetID = BCF3FD052B7A780B00EC31E2;
+					};
+				};
+			};
+			buildConfigurationList = BCF3FD012B7A780B00EC31E2 /* Build configuration list for PBXProject "starskydesktop" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = BCF3FCFD2B7A780B00EC31E2;
+			productRefGroup = BCF3FD072B7A780B00EC31E2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				BCF3FD052B7A780B00EC31E2 /* starskydesktop */,
+				BCF3FD162B7A780C00EC31E2 /* starskydesktopTests */,
+				BCF3FD202B7A780C00EC31E2 /* starskydesktopUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		BCF3FD042B7A780B00EC31E2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BCF3FD112B7A780C00EC31E2 /* Preview Assets.xcassets in Resources */,
+				BCF3FD0E2B7A780C00EC31E2 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BCF3FD152B7A780C00EC31E2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BCF3FD1F2B7A780C00EC31E2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		BCF3FD022B7A780B00EC31E2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BCF3FD0C2B7A780B00EC31E2 /* ContentView.swift in Sources */,
+				BCF3FD0A2B7A780B00EC31E2 /* starskydesktopApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BCF3FD132B7A780C00EC31E2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BCF3FD1C2B7A780C00EC31E2 /* starskydesktopTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BCF3FD1D2B7A780C00EC31E2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BCF3FD262B7A780C00EC31E2 /* starskydesktopUITests.swift in Sources */,
+				BCF3FD282B7A780C00EC31E2 /* starskydesktopUITestsLaunchTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		BCF3FD192B7A780C00EC31E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BCF3FD052B7A780B00EC31E2 /* starskydesktop */;
+			targetProxy = BCF3FD182B7A780C00EC31E2 /* PBXContainerItemProxy */;
+		};
+		BCF3FD232B7A780C00EC31E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BCF3FD052B7A780B00EC31E2 /* starskydesktop */;
+			targetProxy = BCF3FD222B7A780C00EC31E2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		BCF3FD292B7A780C00EC31E2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		BCF3FD2A2B7A780C00EC31E2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		BCF3FD2C2B7A780C00EC31E2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = starskydesktop/starskydesktop.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"starskydesktop/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskydesktop;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		BCF3FD2D2B7A780C00EC31E2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = starskydesktop/starskydesktop.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"starskydesktop/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskydesktop;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		BCF3FD2F2B7A780C00EC31E2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskydesktopTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/starskydesktop.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/starskydesktop";
+			};
+			name = Debug;
+		};
+		BCF3FD302B7A780C00EC31E2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskydesktopTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/starskydesktop.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/starskydesktop";
+			};
+			name = Release;
+		};
+		BCF3FD322B7A780C00EC31E2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskydesktopUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = starskydesktop;
+			};
+			name = Debug;
+		};
+		BCF3FD332B7A780C00EC31E2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskydesktopUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = starskydesktop;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		BCF3FD012B7A780B00EC31E2 /* Build configuration list for PBXProject "starskydesktop" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BCF3FD292B7A780C00EC31E2 /* Debug */,
+				BCF3FD2A2B7A780C00EC31E2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BCF3FD2B2B7A780C00EC31E2 /* Build configuration list for PBXNativeTarget "starskydesktop" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BCF3FD2C2B7A780C00EC31E2 /* Debug */,
+				BCF3FD2D2B7A780C00EC31E2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BCF3FD2E2B7A780C00EC31E2 /* Build configuration list for PBXNativeTarget "starskydesktopTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BCF3FD2F2B7A780C00EC31E2 /* Debug */,
+				BCF3FD302B7A780C00EC31E2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BCF3FD312B7A780C00EC31E2 /* Build configuration list for PBXNativeTarget "starskydesktopUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BCF3FD322B7A780C00EC31E2 /* Debug */,
+				BCF3FD332B7A780C00EC31E2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = BCF3FCFE2B7A780B00EC31E2 /* Project object */;
+}
