@@ -37,12 +37,12 @@ jobs:
       with:
         dotnet-version: 8.0.101
         
-    - name: "BuildNetCore (Ubuntu)"
+    - name: "BuildNetCore (MacOS)"
       shell: bash
       working-directory: ./starsky
       run: bash build.sh --Target BuildNetCore --no-sonar --no-publish --no-dependencies --skip --no-logo
 
-    - name: "TestNetCore (Ubuntu)"
+    - name: "TestNetCore (MacOS)"
       shell: bash
       working-directory: ./starsky
       run: bash build.sh --Target TestNetCore --skip --no-logo --no-publish
