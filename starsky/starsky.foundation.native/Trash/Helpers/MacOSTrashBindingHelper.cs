@@ -79,6 +79,11 @@ namespace starsky.foundation.native.Trash.Helpers
 			// CFRelease the fileUrl, sharedWorkspace, nsWorkspace gives a crash (error 139)
 		}
 
+		/// <summary>
+		/// Get Selector in the Objective-C runtime
+		/// </summary>
+		/// <param name="name">Name</param>
+		/// <returns>Object</returns>
 		internal static IntPtr GetSelector(string name)
 		{
 			var cfStrSelector = CreateCfString(name);

@@ -1,7 +1,10 @@
 using System;
+using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
+using Medallion.Shell;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.native.Trash.Helpers;
+using starsky.foundation.native.OpenApplicationNative.Helpers;
 using starskytest.FakeCreateAn;
 
 namespace starskytest.starsky.foundation.native.Trash.Helpers;
@@ -10,24 +13,33 @@ namespace starskytest.starsky.foundation.native.Trash.Helpers;
 public class MacOsOpenUrlTests
 {
 	[TestMethod]
-	public void TestMethodWithSpecificApp()
+	public async Task TestMethodWithSpecificApp()
 	{
 		var filePath = new CreateAnImage().FullFilePath;
-		
+
 		MacOsOpenUrl.OpenApplicationAtUrl(filePath,
-			"/System/Applications/Preview.app");
+			"/System/Applications/Utilities/Console.app");
+
+		var isProcess = Process.GetProcessesByName("Console").Length > 0;
+		for ( var i = 0; i < 10; i++ )
+		{
+			isProcess = Process.GetProcessesByName("Console").Length > 0;
+			if ( isProcess )
+			{
+				await Command.Run("osascript", "-e", "tell application \"Console\" to if it is running then quit").Task;
+				break;
+			}
+
+			await Task.Delay(10);
+		}
 		
-		Thread.Sleep(1000);
-		Console.WriteLine();
+		Assert.IsTrue(isProcess);
 	}
-	
+
 	[TestMethod]
 	public void TestMethodWithDefaultApp()
 	{
-		var filePath = new CreateAnImage().FullFilePath;
-		
-		MacOsOpenUrl.OpenDefault(filePath);
-		
-		Thread.Sleep(1000);
+		var result = MacOsOpenUrl.OpenDefault("urlNotFound");
+		Assert.IsFalse(result);
 	}
 }
