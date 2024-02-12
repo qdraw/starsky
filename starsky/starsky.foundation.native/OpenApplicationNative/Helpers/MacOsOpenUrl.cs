@@ -75,7 +75,7 @@ public static class MacOsOpenUrl
 	private static extern bool objc_msgSend_retBool_IntPtr_IntPtr(IntPtr target, IntPtr selector,
 		IntPtr param);
 	
-	private static IntPtr NsWorkspaceSharedWorksPace()
+	internal static IntPtr NsWorkspaceSharedWorksPace()
 	{
 		// Namespace
 		var nsWorkspace = objc_getClass("NSWorkspace");
