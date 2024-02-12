@@ -1,8 +1,10 @@
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Medallion.Shell;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.native.Helpers;
 using starsky.foundation.native.OpenApplicationNative.Helpers;
 using starskytest.FakeCreateAn;
 
@@ -15,8 +17,14 @@ public class MacOsOpenUrlTests
     private const string ConsoleName = "Console";
 
     [TestMethod]
-    public async Task TestMethodWithSpecificApp()
+    public async Task TestMethodWithSpecificApp__MacOnly()
     {
+	    if ( OperatingSystemHelper.GetPlatform() != OSPlatform.OSX )
+	    {
+		    Assert.Inconclusive("This test if for Mac OS Only");
+		    return;
+	    }
+	    
         var filePath = new CreateAnImage().FullFilePath;
 
         MacOsOpenUrl.OpenApplicationAtUrl(filePath, ConsoleApp);
@@ -38,8 +46,14 @@ public class MacOsOpenUrlTests
     }
 
     [TestMethod]
-    public void TestMethodWithDefaultApp()
+    public void TestMethodWithDefaultApp__MacOnly()
     {
+	    if ( OperatingSystemHelper.GetPlatform() != OSPlatform.OSX )
+	    {
+		    Assert.Inconclusive("This test if for Mac OS Only");
+		    return;
+	    }
+	    
         var result = MacOsOpenUrl.OpenDefault("urlNotFound");
         Assert.IsFalse(result);
     }
