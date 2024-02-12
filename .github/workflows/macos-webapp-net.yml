@@ -37,12 +37,12 @@ jobs:
       with:
         dotnet-version: 8.0.101
         
-    - name: Build (Windows)
-      shell: pwsh
+    - name: "BuildNetCore (Ubuntu)"
+      shell: bash
       working-directory: ./starsky
-      run: pwsh build.ps1 --Target BuildNetCore --no-sonar --no-dependencies --no-publish --skip --no-logo 
-      
-    - name: Test (Windows)
-      shell: pwsh
+      run: bash build.sh --Target BuildNetCore --no-sonar --no-publish --no-dependencies --skip --no-logo
+
+    - name: "TestNetCore (Ubuntu)"
+      shell: bash
       working-directory: ./starsky
-      run: pwsh build.ps1 --Target TestNetCore --no-sonar --no-dependencies --no-publish --skip --no-logo
+      run: bash build.sh --Target TestNetCore --skip --no-logo --no-publish
