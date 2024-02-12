@@ -1,4 +1,4 @@
-name: Mac OS Webapp .NET build
+name: MacOS Webapp Back-end .NET build
 
 concurrency: 
   group: ${{ github.workflow }}-${{ github.ref }}
