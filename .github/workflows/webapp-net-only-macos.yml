@@ -1,0 +1,48 @@
+name: MacOS Webapp .NET only build
+
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+  
+on:
+  push:
+    branches: [ master ]
+    paths:
+    - 'starsky/**'
+    - '!starsky/starsky/clientapp/**'
+  workflow_dispatch:    
+  pull_request:
+    branches: [ master ]
+    paths:
+    - 'starsky/**'
+    - '!starsky/starsky/clientapp/**'
+    - '.github/workflows/**'
+    - '!starsky/Dockerfile'
+    - '!starsky/docker_demo_setup.sh'
+
+jobs:
+  build:
+
+    runs-on: macos-latest
+
+    env:
+      WEBSITE_SITE_NAME: "ci"
+
+    steps:
+    
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.101
+        
+    - name: "BuildNetCore (MacOS)"
+      shell: bash
+      working-directory: ./starsky
+      run: bash build.sh --Target BuildNetCore --no-sonar --no-publish --no-dependencies --skip --no-logo
+
+    - name: "TestNetCore (MacOS)"
+      shell: bash
+      working-directory: ./starsky
+      run: bash build.sh --Target TestNetCore --skip --no-logo --no-publish
