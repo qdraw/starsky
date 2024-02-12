@@ -5,6 +5,17 @@ namespace starsky.foundation.native.OpenApplicationNative.Helpers;
 
 public static class MacOsOpenUrl
 {
+	/// <summary>
+	/// Add check if not Mac OS X
+	/// </summary>
+	/// <param name="fileUrl"></param>
+	/// <param name="platform"></param>
+	/// <returns></returns>
+	internal static bool? OpenDefault(
+		string fileUrl, OSPlatform platform)
+	{
+		return platform != OSPlatform.OSX ? null : OpenDefault(fileUrl);
+	}
 	
 	/// <summary>
 	/// Does NOT check if file exists
@@ -14,8 +25,7 @@ public static class MacOsOpenUrl
 	public static bool OpenDefault(
 		string fileUrl)
 	{
-		var fileUrlIntPtr =
-			MacOsTrashBindingHelper.GetUrls([fileUrl]).FirstOrDefault();
+		var fileUrlIntPtr = MacOsTrashBindingHelper.GetUrls([fileUrl]).FirstOrDefault();
 
 		return objc_msgSend_retBool_IntPtr_IntPtr(
 			NsWorkspaceSharedWorksPace(),
@@ -23,12 +33,21 @@ public static class MacOsOpenUrl
 			fileUrlIntPtr);
 	}
 
+	internal static bool? OpenApplicationAtUrl(
+		string fileUrl,
+		string applicationUrl, OSPlatform platform)
+	{
+		return platform != OSPlatform.OSX ? null : OpenApplicationAtUrl(fileUrl, applicationUrl);
+	}
+
 	/// <summary>
 	/// Does NOT check if a file exists
+	/// No Fallback if NOT Mac OS X
 	/// </summary>
 	/// <param name="fileUrl">Absolute Path</param>
 	/// <param name="applicationUrl">Open with .app folder</param>
-	public static void OpenApplicationAtUrl(
+	/// <exception cref="NullReferenceException">When not Mac OS</exception>
+	internal static bool? OpenApplicationAtUrl(
 		string fileUrl,
 		string applicationUrl)
 	{
@@ -51,6 +70,7 @@ public static class MacOsOpenUrl
 			applicationUrlIntPtr,
 			nsWorkspaceOpenConfigurationDefault,
 			IntPtr.Zero);
+		return true;
 	}
 
 	private const string FoundationFramework =
@@ -74,7 +94,7 @@ public static class MacOsOpenUrl
 	[DllImport(FoundationFramework, EntryPoint = "objc_msgSend")]
 	private static extern bool objc_msgSend_retBool_IntPtr_IntPtr(IntPtr target, IntPtr selector,
 		IntPtr param);
-	
+
 	internal static IntPtr NsWorkspaceSharedWorksPace()
 	{
 		// Namespace

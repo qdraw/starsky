@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Medallion.Shell;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -13,48 +14,60 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative.Helpers;
 [TestClass]
 public class MacOsOpenUrlTests
 {
-    private const string ConsoleApp = "/System/Applications/Utilities/Console.app";
-    private const string ConsoleName = "Console";
+	// [TestMethod]
+	// public void TEst()
+	// {
+	// 	MacOsOpenUrl.OpenApplicationAtUrl(
+	// 		"/Users/dion/data/testcontent/20221029_101722_DSC05623.arw",
+	// 		"/Applications/Adobe Photoshop 2024/Adobe Photoshop 2024.app");
+	// 	Thread.Sleep(50);
+	// }
 
-    [TestMethod]
-    public async Task TestMethodWithSpecificApp__MacOnly()
-    {
-	    if ( OperatingSystemHelper.GetPlatform() != OSPlatform.OSX )
-	    {
-		    Assert.Inconclusive("This test if for Mac OS Only");
-		    return;
-	    }
-	    
-        var filePath = new CreateAnImage().FullFilePath;
+	private const string ConsoleApp = "/System/Applications/Utilities/Console.app";
+	private const string ConsoleName = "Console";
 
-        MacOsOpenUrl.OpenApplicationAtUrl(filePath, ConsoleApp);
+	[TestMethod]
+	public async Task TestMethodWithSpecificApp__MacOnly()
+	{
+		if ( OperatingSystemHelper.GetPlatform() != OSPlatform.OSX )
+		{
+			Assert.Inconclusive("This test if for Mac OS Only");
+			return;
+		}
 
-        var isProcess = Process.GetProcessesByName(ConsoleName).Any(p => p.MainModule?.FileName.Contains(ConsoleApp) == true);
-        for (var i = 0; i < 15; i++)
-        {
-            isProcess = Process.GetProcessesByName(ConsoleName).Any(p => p.MainModule?.FileName.Contains(ConsoleApp) == true);
-            if (isProcess)
-            {
-                await Command.Run("osascript", "-e", "tell application \"Console\" to if it is running then quit").Task;
-                break;
-            }
+		var filePath = new CreateAnImage().FullFilePath;
 
-            await Task.Delay(5);
-        }
+		MacOsOpenUrl.OpenApplicationAtUrl(filePath, ConsoleApp);
 
-        Assert.IsTrue(isProcess);
-    }
+		var isProcess = Process.GetProcessesByName(ConsoleName)
+			.Any(p => p.MainModule?.FileName.Contains(ConsoleApp) == true);
+		for ( var i = 0; i < 15; i++ )
+		{
+			isProcess = Process.GetProcessesByName(ConsoleName)
+				.Any(p => p.MainModule?.FileName.Contains(ConsoleApp) == true);
+			if ( isProcess )
+			{
+				await Command.Run("osascript", "-e",
+					"tell application \"Console\" to if it is running then quit").Task;
+				break;
+			}
 
-    [TestMethod]
-    public void TestMethodWithDefaultApp__MacOnly()
-    {
-	    if ( OperatingSystemHelper.GetPlatform() != OSPlatform.OSX )
-	    {
-		    Assert.Inconclusive("This test if for Mac OS Only");
-		    return;
-	    }
-	    
-        var result = MacOsOpenUrl.OpenDefault("urlNotFound");
-        Assert.IsFalse(result);
-    }
+			await Task.Delay(5);
+		}
+
+		Assert.IsTrue(isProcess);
+	}
+
+	[TestMethod]
+	public void TestMethodWithDefaultApp__MacOnly()
+	{
+		if ( OperatingSystemHelper.GetPlatform() != OSPlatform.OSX )
+		{
+			Assert.Inconclusive("This test if for Mac OS Only");
+			return;
+		}
+
+		var result = MacOsOpenUrl.OpenDefault("urlNotFound");
+		Assert.IsFalse(result);
+	}
 }

@@ -12,7 +12,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj" />
+        <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj"/>
     </ItemGroup>
-
+    
+    <ItemGroup>
+        <PackageReference Include="MedallionShell" Version="1.6.2"/>
+    </ItemGroup>
 </Project>
