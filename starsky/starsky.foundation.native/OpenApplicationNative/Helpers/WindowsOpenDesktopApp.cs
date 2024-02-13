@@ -1,7 +1,7 @@
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
-using static Medallion.Shell.Shell;
 
 namespace starsky.foundation.native.OpenApplicationNative.Helpers;
 
@@ -9,7 +9,7 @@ public static class WindowsOpenDesktopApp
 {
 	
 	/// <summary>
-	/// Add check if not Mac OS X
+	/// Add check if is Windows
 	/// </summary>
 	/// <param name="fileUrl"></param>
 	/// <param name="platform"></param>
@@ -28,15 +28,19 @@ public static class WindowsOpenDesktopApp
 	public static bool? OpenDefault(
 		string fileUrl)
 	{
-	//	var command = Default.Run(applicationUrl,
-	//options:
-	//opts =>
-	//{
-	//	opts.StartInfo(si =>
-	//		si.Arguments = GetArguments(fileUrls));
-	//});
-
-		return null;
+		try
+		{
+			var projectStartInfo = new ProcessStartInfo();
+			projectStartInfo.FileName = fileUrl;
+			projectStartInfo.UseShellExecute = true;
+			projectStartInfo.WindowStyle = ProcessWindowStyle.Normal;
+			var projectProcess = Process.Start(projectStartInfo);
+			return projectProcess != null;
+		}
+		catch ( Win32Exception )
+		{
+			return false;
+		}
 	}
 
 	/// <summary>
@@ -46,13 +50,13 @@ public static class WindowsOpenDesktopApp
 	/// <param name="applicationUrl"></param>
 	/// <param name="platform"></param>
 	/// <returns></returns>
-	internal static async Task<bool?> OpenApplicationAtUrl(
+	internal static bool? OpenApplicationAtUrl(
 		List<string> fileUrls,
 		string applicationUrl, OSPlatform platform)
 	{
 		return platform == OSPlatform.OSX
 			? null
-			: await OpenApplicationAtUrl(fileUrls, applicationUrl);
+			: OpenApplicationAtUrl(fileUrls, applicationUrl);
 	}
 
 	/// <summary>
@@ -61,21 +65,26 @@ public static class WindowsOpenDesktopApp
 	/// <param name="fileUrls"></param>
 	/// <param name="applicationUrl"></param>
 	/// <returns></returns>
-	internal static async Task<bool?> OpenApplicationAtUrl(
+	internal static bool OpenApplicationAtUrl(
 		List<string> fileUrls,
 		string applicationUrl)
 	{
-		var command = Default.Run(applicationUrl,
-			options:
-			opts =>
-			{
-				opts.StartInfo(si =>
-					si.Arguments = GetArguments(fileUrls));
-			});
+		var projectStartInfo = new ProcessStartInfo();
+		projectStartInfo.FileName = applicationUrl;
+		projectStartInfo.WindowStyle = ProcessWindowStyle.Normal;
 
-		var commandResult = await command.Task;
+		projectStartInfo.Arguments = GetArguments(fileUrls);
+		// not sure if needed
+		projectStartInfo.LoadUserProfile = true;
 
-		return commandResult.Success;
+		var process = new Process
+		{
+			StartInfo = projectStartInfo
+		};
+		process.Start();
+
+		process.Dispose();
+		return true;
 	}
 	
 	

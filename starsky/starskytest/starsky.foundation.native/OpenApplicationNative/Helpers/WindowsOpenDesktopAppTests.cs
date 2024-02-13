@@ -1,11 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.native.OpenApplicationNative.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using starsky.foundation.platform.Models;
+using starskytest.FakeCreateAn.CreateFakeStarskyExe;
 
 namespace starskytest.starsky.foundation.native.OpenApplicationNative.Helpers;
 
@@ -13,15 +9,40 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative.Helpers;
 public class WindowsOpenDesktopAppTests
 {
 	[TestMethod]
-	public async Task OpenDefault()
+	public void OpenDefault_HappyFlow()
 	{
-		WindowsOpenDesktopApp.OpenDefault("test");
+		if ( !new AppSettings().IsWindows )
+		{
+			Assert.Inconclusive("This test if for Windows Only");
+			return;
+		}
 
-		ProcessStartInfo psi = new ProcessStartInfo();
-		psi.FileName = "C:\\testcontent\\20221029_101722_DSC05623.arw";
-		psi.UseShellExecute = true;
-		psi.WindowStyle = ProcessWindowStyle.Normal;
-		Process.Start(psi);
+		var mock = new CreateFakeStarskyExe();
+		var filePath = mock.FullFilePath;
+		WindowsSetFileAssociations.EnsureAssociationsSet(
+			new FileAssociation
+			{
+				Extension = ".starsky",
+				ProgId = "starskytest",
+				FileTypeDescription = "Starsky Test File",
+				ExecutableFilePath = filePath
+			});
+
+		var result = WindowsOpenDesktopApp.OpenDefault(mock.StarskyDotStarskyPath);
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public void OpenDefault_FileNotFound()
+	{
+		if ( !new AppSettings().IsWindows )
+		{
+			Assert.Inconclusive("This test if for Windows Only");
+			return;
+		}
+
+		var result = WindowsOpenDesktopApp.OpenDefault("not-found");
+		Assert.IsFalse(result);
 	}
 }
 

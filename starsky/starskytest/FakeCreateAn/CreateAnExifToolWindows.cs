@@ -287,9 +287,16 @@ namespace starskytest.FakeCreateAn
 			"ABAAJAAAAAAAAAAggKSBAAAAAGV4aWZ0b29sKC1rKS5leGUKACAAAAAAAAEAGAAAzW9bwS3WAQA0dNHB" +
 			"LdYBAHu8iMEt1gFQSwUGAAAAAAEAAQBiAAAADUEAAAAA";
 
+		/// <summary>
+		/// This is a zip file
+		/// </summary>
 		public static readonly ImmutableArray<byte> Bytes =
-			Base64Helper.TryParse(ImageExifToolZipWindows).ToImmutableArray();
+			[.. Base64Helper.TryParse(ImageExifToolZipWindows)];
 
+
+		/// <summary>
+		/// File hash to check the content of the zip file
+		/// </summary>
 		public static readonly string Sha1 = "0da554d4cf5f4c15591da109ae070742ecfceb65";
 	}
 }
