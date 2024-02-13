@@ -11,16 +11,6 @@ public class WindowsOpenDefaultApp
 		Console.WriteLine(AssocQueryString(AssocStr.Executable, ".png"));
 	}
 	
-	[DllImport("Shlwapi.dll", CharSet = CharSet.Unicode)]
-	private static extern uint AssocQueryString(
-		AssocF flags,
-		AssocStr str,
-		string pszAssoc,
-		string pszExtra,
-		[Out] StringBuilder pszOut,
-		ref uint pcchOut
-	);
-
 	[Flags]
 	public enum AssocF
 	{
@@ -70,13 +60,23 @@ public class WindowsOpenDefaultApp
 		Ma
 	}
 	
+	[DllImport("Shlwapi.dll", CharSet = CharSet.Unicode)]
+	private static extern uint AssocQueryString(
+		AssocF flags,
+		AssocStr str,
+		string pszAssoc,
+		string? pszExtra,
+		[Out] StringBuilder? pszOut,
+		ref uint pcchOut
+	);
+	
 	private static string AssocQueryString(AssocStr association, string extension)
 	{
 		const int S_OK = 0;
 		const int S_FALSE = 1;
 
 		uint length = 0;
-		uint ret = AssocQueryString(AssocF.None, association, extension, null, null, ref length);
+		var ret = AssocQueryString(AssocF.None, association, extension, null, null, ref length);
 		if (ret != S_FALSE)
 		{
 			throw new InvalidOperationException("Could not determine associated string");
