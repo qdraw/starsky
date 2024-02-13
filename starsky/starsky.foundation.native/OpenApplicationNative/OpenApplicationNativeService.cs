@@ -11,14 +11,18 @@ public class OpenApplicationNativeService : IOpenApplicationNativeService
 	/// <summary>
 	/// 
 	/// </summary>
-	/// <param name="fullPath">system path</param>
+	/// <param name="fullPaths">full path style</param>
+	/// <param name="applicationUrl"> applicationUrl</param>
 	/// <returns>operation succeed (NOT if file is gone)</returns>
-	public bool? OpenApplicationAtUrl(string fullPath, string applicationUrl)
+	public async Task<bool?> OpenApplicationAtUrl(List<string> fullPaths, string applicationUrl)
 	{
 		var currentPlatform = OperatingSystemHelper.GetPlatform();
-		var macOsOpenResult =
-			MacOsOpenUrl.OpenApplicationAtUrl(fullPath, applicationUrl, currentPlatform);
-		var windowsOpenResult = false;
+		var macOsOpenResult = MacOsOpenUrl.OpenApplicationAtUrl(fullPaths,
+			applicationUrl, currentPlatform);
+
+		var windowsOpenResult = await WindowsOpenDesktopApp.OpenApplicationAtUrl(fullPaths,
+			applicationUrl, currentPlatform);
+
 		return macOsOpenResult ?? windowsOpenResult;
 	}
 }

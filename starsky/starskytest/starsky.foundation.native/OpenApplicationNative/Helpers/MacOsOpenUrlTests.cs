@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -37,14 +38,14 @@ public class MacOsOpenUrlTests
 
 		var filePath = new CreateAnImage().FullFilePath;
 
-		MacOsOpenUrl.OpenApplicationAtUrl(filePath, ConsoleApp);
+		MacOsOpenUrl.OpenApplicationAtUrl([filePath], ConsoleApp);
 
-		var isProcess = Process.GetProcessesByName(ConsoleName)
-			.Any(p => p.MainModule?.FileName.Contains(ConsoleApp) == true);
+		var isProcess = Process.GetProcessesByName(ConsoleName).ToList()
+			.Exists(p => p.MainModule?.FileName.Contains(ConsoleApp) == true);
 		for ( var i = 0; i < 15; i++ )
 		{
-			isProcess = Process.GetProcessesByName(ConsoleName)
-				.Any(p => p.MainModule?.FileName.Contains(ConsoleApp) == true);
+			isProcess = Process.GetProcessesByName(ConsoleName).ToList()
+				.Exists(p => p.MainModule?.FileName.Contains(ConsoleApp) == true);
 			if ( isProcess )
 			{
 				await Command.Run("osascript", "-e",

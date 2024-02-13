@@ -16,7 +16,7 @@ public static class MacOsOpenUrl
 	{
 		return platform != OSPlatform.OSX ? null : OpenDefault(fileUrl);
 	}
-	
+
 	/// <summary>
 	/// Does NOT check if file exists
 	/// </summary>
@@ -25,34 +25,40 @@ public static class MacOsOpenUrl
 	public static bool OpenDefault(
 		string fileUrl)
 	{
-		var fileUrlIntPtr = MacOsTrashBindingHelper.GetUrls([fileUrl]).FirstOrDefault();
+		var fileUrlsIntPtr = MacOsTrashBindingHelper.GetUrls([fileUrl]);
 
-		return objc_msgSend_retBool_IntPtr_IntPtr(
-			NsWorkspaceSharedWorksPace(),
-			MacOsTrashBindingHelper.GetSelector("openURL:"),
-			fileUrlIntPtr);
+		var result = new List<bool>();
+		foreach ( var fileUrlIntPtr in fileUrlsIntPtr )
+		{
+			result.Add(objc_msgSend_retBool_IntPtr_IntPtr(
+				NsWorkspaceSharedWorksPace(),
+				MacOsTrashBindingHelper.GetSelector("openURL:"),
+				fileUrlIntPtr));
+		}
+
+		return result.TrueForAll(p => p);
 	}
 
 	internal static bool? OpenApplicationAtUrl(
-		string fileUrl,
+		List<string> fileUrls,
 		string applicationUrl, OSPlatform platform)
 	{
-		return platform != OSPlatform.OSX ? null : OpenApplicationAtUrl(fileUrl, applicationUrl);
+		return platform != OSPlatform.OSX ? null : OpenApplicationAtUrl(fileUrls, applicationUrl);
 	}
 
 	/// <summary>
 	/// Does NOT check if a file exists
 	/// No Fallback if NOT Mac OS X
 	/// </summary>
-	/// <param name="fileUrl">Absolute Path</param>
+	/// <param name="fileUrls">Absolute Paths</param>
 	/// <param name="applicationUrl">Open with .app folder</param>
 	/// <exception cref="NullReferenceException">When not Mac OS</exception>
 	internal static bool? OpenApplicationAtUrl(
-		string fileUrl,
+		List<string> fileUrls,
 		string applicationUrl)
 	{
-		var fileUrlIntPtr = MacOsTrashBindingHelper.GetUrls([fileUrl]);
-		var fileUrlIntPtrUrlArray = MacOsTrashBindingHelper.CreateCfArray(fileUrlIntPtr);
+		var filesUrlIntPtr = MacOsTrashBindingHelper.GetUrls(fileUrls);
+		var fileUrlIntPtrUrlArray = MacOsTrashBindingHelper.CreateCfArray(filesUrlIntPtr);
 
 		var applicationUrlIntPtr =
 			MacOsTrashBindingHelper.GetUrls([applicationUrl]).FirstOrDefault();
