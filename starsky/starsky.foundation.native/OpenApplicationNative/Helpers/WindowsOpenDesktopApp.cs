@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using static Medallion.Shell.Shell;
@@ -24,10 +25,18 @@ public static class WindowsOpenDesktopApp
 	/// </summary>
 	/// <param name="fileUrl">Absolute Path of file</param>
 	/// <returns></returns>
-	public static bool OpenDefault(
+	public static bool? OpenDefault(
 		string fileUrl)
 	{
-		return false;
+	//	var command = Default.Run(applicationUrl,
+	//options:
+	//opts =>
+	//{
+	//	opts.StartInfo(si =>
+	//		si.Arguments = GetArguments(fileUrls));
+	//});
+
+		return null;
 	}
 
 	/// <summary>
