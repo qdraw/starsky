@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Microsoft.Win32;
 
 namespace starsky.foundation.native.OpenApplicationNative.Helpers;
@@ -29,19 +28,6 @@ public static class WindowsSetFileAssociations
 	private const int SHCNE_ASSOCCHANGED = 0x8000000;
 	private const int SHCNF_FLUSH = 0x1000;
 
-	public static void EnsureAssociationsSet()
-	{
-		var filePath = Process.GetCurrentProcess().MainModule.FileName;
-		EnsureAssociationsSet(
-			new FileAssociation
-			{
-				Extension = ".ucs",
-				ProgId = "UCS_Editor_File",
-				FileTypeDescription = "UCS File",
-				ExecutableFilePath = filePath
-			});
-	}
-
 	public static void EnsureAssociationsSet(params FileAssociation[] associations)
 	{
 		bool madeChanges = false;
@@ -63,7 +49,7 @@ public static class WindowsSetFileAssociations
 	public static bool SetAssociation(string extension, string progId, string fileTypeDescription,
 		string applicationFilePath)
 	{
-		bool madeChanges = false;
+		var madeChanges = false;
 		madeChanges |= SetKeyDefaultValue(@"Software\Classes\" + extension, progId);
 		madeChanges |= SetKeyDefaultValue(@"Software\Classes\" + progId, fileTypeDescription);
 		madeChanges |= SetKeyDefaultValue($@"Software\Classes\{progId}\shell\open\command",
@@ -71,7 +57,7 @@ public static class WindowsSetFileAssociations
 		return madeChanges;
 	}
 
-	private static bool SetKeyDefaultValue(string keyPath, string value)
+	internal static bool SetKeyDefaultValue(string keyPath, string value)
 	{
 		using ( var key = Registry.CurrentUser.CreateSubKey(keyPath) )
 		{
@@ -81,7 +67,6 @@ public static class WindowsSetFileAssociations
 				return true;
 			}
 		}
-
 		return false;
 	}
 }

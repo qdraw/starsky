@@ -25,4 +25,20 @@ public class OpenApplicationNativeService : IOpenApplicationNativeService
 
 		return macOsOpenResult ?? windowsOpenResult;
 	}
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="fullPaths">full path style</param>
+	/// <returns>operation succeed (NOT if file is gone)</returns>
+	public bool? OpenDefault(List<string> fullPaths)
+	{
+		var currentPlatform = OperatingSystemHelper.GetPlatform();
+		var macOsOpenResult = MacOsOpenUrl.OpenDefault(fullPaths		, currentPlatform);
+
+		var windowsOpenResult = WindowsOpenDesktopApp.OpenDefault(fullPaths,
+			 currentPlatform);
+
+		return macOsOpenResult ?? windowsOpenResult;
+	}
 }

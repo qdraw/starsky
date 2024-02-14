@@ -1,12 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.native.OpenApplicationNative.Helpers;
-using starsky.foundation.storage.Services;
 using starskytest.FakeCreateAn.CreateFakeStarskyExe;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace starskytest.starsky.foundation.native.OpenApplicationNative.Helpers
 {

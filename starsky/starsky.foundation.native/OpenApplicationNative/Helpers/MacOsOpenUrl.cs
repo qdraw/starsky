@@ -8,35 +8,40 @@ public static class MacOsOpenUrl
 	/// <summary>
 	/// Add check if not Mac OS X
 	/// </summary>
-	/// <param name="fileUrl"></param>
+	/// <param name="fileUrls"></param>
 	/// <param name="platform"></param>
 	/// <returns></returns>
 	internal static bool? OpenDefault(
-		string fileUrl, OSPlatform platform)
+		List<string> fileUrls, OSPlatform platform)
 	{
-		return platform != OSPlatform.OSX ? null : OpenDefault(fileUrl);
+		return platform != OSPlatform.OSX ? null : OpenDefault(fileUrls);
 	}
 
 	/// <summary>
 	/// Does NOT check if file exists
 	/// </summary>
-	/// <param name="fileUrl">Absolute Path of file</param>
+	/// <param name="fileUrls">Absolute Path of file</param>
 	/// <returns></returns>
 	public static bool OpenDefault(
-		string fileUrl)
+		List<string> fileUrls)
 	{
-		var fileUrlsIntPtr = MacOsTrashBindingHelper.GetUrls([fileUrl]);
+		var fileUrlsIntPtr = MacOsTrashBindingHelper.GetUrls(fileUrls);
 
 		var result = new List<bool>();
 		foreach ( var fileUrlIntPtr in fileUrlsIntPtr )
 		{
-			result.Add(objc_msgSend_retBool_IntPtr_IntPtr(
-				NsWorkspaceSharedWorksPace(),
-				MacOsTrashBindingHelper.GetSelector("openURL:"),
-				fileUrlIntPtr));
+			result.Add(InvokeOpenUrl(fileUrlIntPtr));
 		}
 
 		return result.TrueForAll(p => p);
+	}
+
+	internal static bool InvokeOpenUrl(IntPtr fileUrlIntPtr)
+	{
+		return objc_msgSend_retBool_IntPtr_IntPtr(
+				NsWorkspaceSharedWorkSpace(),
+				MacOsTrashBindingHelper.GetSelector("openURL:"),
+				fileUrlIntPtr);
 	}
 
 	internal static bool? OpenApplicationAtUrl(
@@ -68,19 +73,32 @@ public static class MacOsOpenUrl
 			nsWorkspaceOpenConfiguration, MacOsTrashBindingHelper.GetSelector("configuration"));
 
 		// https://developer.apple.com/documentation/appkit/nsworkspace/3172702-openurls?language=objc
-		objc_msgSend_retVoid_IntPtr_IntPtr_IntPtr_IntPtr(
-			NsWorkspaceSharedWorksPace(),
-			MacOsTrashBindingHelper.GetSelector(
-				"openURLs:withApplicationAtURL:configuration:completionHandler:"),
-			fileUrlIntPtrUrlArray,
-			applicationUrlIntPtr,
-			nsWorkspaceOpenConfigurationDefault,
-			IntPtr.Zero);
+		OpenURLsWithApplicationAtURL(fileUrlIntPtrUrlArray, applicationUrlIntPtr, nsWorkspaceOpenConfigurationDefault);
 		return true;
+	}
+
+
+
+/// <summary>
+/// @see: https://developer.apple.com/documentation/appkit/nsworkspace/3172702-openurls?language=objc
+/// </summary>
+internal static void OpenURLsWithApplicationAtURL(nint fileUrlIntPtrUrlArray, nint applicationUrlIntPtr, nint nsWorkspaceOpenConfigurationDefault)
+{
+		objc_msgSend_retVoid_IntPtr_IntPtr_IntPtr_IntPtr(
+	NsWorkspaceSharedWorkSpace(),
+	MacOsTrashBindingHelper.GetSelector(
+		"openURLs:withApplicationAtURL:configuration:completionHandler:"),
+	fileUrlIntPtrUrlArray,
+	applicationUrlIntPtr,
+	nsWorkspaceOpenConfigurationDefault,
+	IntPtr.Zero);
 	}
 
 	private const string FoundationFramework =
 		"/System/Library/Frameworks/Foundation.framework/Foundation";
+
+	private const string AppKitFramework =
+	"/System/Library/Frameworks/AppKit.framework/AppKit";
 
 	[DllImport(FoundationFramework, EntryPoint = "objc_msgSend")]
 	private static extern IntPtr objc_msgSend_retIntPtr(IntPtr target, IntPtr selector);
@@ -94,14 +112,14 @@ public static class MacOsOpenUrl
 		IntPtr param3,
 		IntPtr param4);
 
-	[DllImport("/System/Library/Frameworks/AppKit.framework/AppKit")]
+	[DllImport(AppKitFramework)]
 	static extern IntPtr objc_getClass(string className);
 
 	[DllImport(FoundationFramework, EntryPoint = "objc_msgSend")]
 	private static extern bool objc_msgSend_retBool_IntPtr_IntPtr(IntPtr target, IntPtr selector,
 		IntPtr param);
 
-	internal static IntPtr NsWorkspaceSharedWorksPace()
+	internal static IntPtr NsWorkspaceSharedWorkSpace()
 	{
 		// Namespace
 		var nsWorkspace = objc_getClass("NSWorkspace");

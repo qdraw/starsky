@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -6,6 +8,7 @@ using Medallion.Shell;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.native.Helpers;
 using starsky.foundation.native.OpenApplicationNative.Helpers;
+using starsky.foundation.storage.Services;
 using starskytest.FakeCreateAn;
 
 namespace starskytest.starsky.foundation.native.OpenApplicationNative.Helpers;
@@ -13,14 +16,27 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative.Helpers;
 [TestClass]
 public class MacOsOpenUrlTests
 {
-	// [TestMethod]
-	// public void TEst()
-	// {
-	// 	MacOsOpenUrl.OpenApplicationAtUrl(
-	// 		"/Users/dion/data/testcontent/20221029_101722_DSC05623.arw",
-	// 		"/Applications/Adobe Photoshop 2024/Adobe Photoshop 2024.app");
-	// 	Thread.Sleep(50);
-	// }
+
+	[TestMethod]
+	public void OpenDefault_NonMacOS()
+	{
+		var result = MacOsOpenUrl.OpenDefault(["any value"], OSPlatform.Linux);
+		Assert.IsNull(result);
+	}
+
+	[TestMethod]
+	[ExpectedException(typeof(DllNotFoundException))]
+	public void OpenDefault__NonMacOS()
+	{
+		if ( OperatingSystemHelper.GetPlatform() == OSPlatform.OSX )
+		{
+			Assert.Inconclusive("This test if for Windows / Linux only");
+			return;
+		}
+
+		MacOsOpenUrl.OpenDefault(["not important"], OSPlatform.OSX);
+	}
+
 
 	private const string ConsoleApp = "/System/Applications/Utilities/Console.app";
 	private const string ConsoleName = "Console";
@@ -58,6 +74,7 @@ public class MacOsOpenUrlTests
 	}
 
 	[TestMethod]
+	[ExpectedException(typeof(DllNotFoundException))]
 	public void TestMethodWithDefaultApp__MacOnly()
 	{
 		if ( OperatingSystemHelper.GetPlatform() != OSPlatform.OSX )
@@ -66,7 +83,67 @@ public class MacOsOpenUrlTests
 			return;
 		}
 
-		var result = MacOsOpenUrl.OpenDefault("urlNotFound");
+		var result = MacOsOpenUrl.OpenDefault(["urlNotFound"]);
 		Assert.IsFalse(result);
 	}
+
+	[TestMethod]
+	public void OpenApplicationAtUrl_NonMacOs()
+	{
+		var result = MacOsOpenUrl.OpenApplicationAtUrl(new List<string> { "any value" }, "app", OSPlatform.Linux);
+		Assert.IsNull(result);
+	}
+
+	[TestMethod]
+	[ExpectedException(typeof(DllNotFoundException))]
+	public void OpenApplicationAtUrl__NonMacOS()
+	{
+		if ( OperatingSystemHelper.GetPlatform() == OSPlatform.OSX )
+		{
+			Assert.Inconclusive("This test if for Windows / Linux only");
+			return;
+		}
+
+		MacOsOpenUrl.OpenApplicationAtUrl(["not important"], "not important", OSPlatform.OSX);
+	}
+
+	[TestMethod]
+	[ExpectedException(typeof(DllNotFoundException))]
+	public void OpenURLsWithApplicationAtURL__NonMacOS()
+	{
+		if ( OperatingSystemHelper.GetPlatform() == OSPlatform.OSX )
+		{
+			Assert.Inconclusive("This test if for Windows / Linux only");
+			return;
+		}
+
+		MacOsOpenUrl.OpenURLsWithApplicationAtURL(IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
+	}
+
+	[TestMethod]
+	[ExpectedException(typeof(DllNotFoundException))]
+	public void NsWorkspaceSharedWorkSpace__NonMacOS()
+	{
+		if ( OperatingSystemHelper.GetPlatform() == OSPlatform.OSX )
+		{
+			Assert.Inconclusive("This test if for Windows / Linux only");
+			return;
+		}
+
+		MacOsOpenUrl.NsWorkspaceSharedWorkSpace();
+	}
+
+	[TestMethod]
+	[ExpectedException(typeof(DllNotFoundException))]
+	public void InvokeOpenUrl__NonMacOS()
+	{
+		if ( OperatingSystemHelper.GetPlatform() == OSPlatform.OSX )
+		{
+			Assert.Inconclusive("This test if for Windows / Linux only");
+			return;
+		}
+
+		MacOsOpenUrl.InvokeOpenUrl(IntPtr.Zero);
+	}
+
 }

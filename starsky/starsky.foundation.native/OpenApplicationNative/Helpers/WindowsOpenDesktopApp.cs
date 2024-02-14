@@ -11,20 +11,37 @@ public static class WindowsOpenDesktopApp
 	/// <summary>
 	/// Add check if is Windows
 	/// </summary>
-	/// <param name="fileUrl"></param>
+	/// <param name="fileUrls"></param>
 	/// <param name="platform"></param>
 	/// <returns></returns>
 	internal static bool? OpenDefault(
-		string fileUrl, OSPlatform platform)
+		List<string> fileUrls, OSPlatform platform)
 	{
-		return platform != OSPlatform.OSX ? null : OpenDefault(fileUrl);
+		return platform != OSPlatform.Windows ? null : OpenDefault(fileUrls);
 	}
 
-	/// <summary>
-	/// Does NOT check if file exists
-	/// </summary>
-	/// <param name="fileUrl">Absolute Path of file</param>
-	/// <returns></returns>
+	public static bool? OpenDefault(
+	List<string> fileUrls)
+	{
+		if ( fileUrls.Count == 0 )
+		{
+			return false;
+		}
+
+		var result = new List<bool?>();
+		foreach ( var fileUrl in fileUrls )
+		{
+			result.Add(OpenDefault(fileUrl));
+		}
+
+		return result.TrueForAll(p => p == true);
+	}
+
+		/// <summary>
+		/// Does NOT check if file exists
+		/// </summary>
+		/// <param name="fileUrl">Absolute Path of file</param>
+		/// <returns></returns>
 	public static bool? OpenDefault(
 		string fileUrl)
 	{
@@ -54,7 +71,7 @@ public static class WindowsOpenDesktopApp
 		List<string> fileUrls,
 		string applicationUrl, OSPlatform platform)
 	{
-		return platform == OSPlatform.OSX
+		return platform != OSPlatform.Windows
 			? null
 			: OpenApplicationAtUrl(fileUrls, applicationUrl);
 	}
@@ -69,35 +86,30 @@ public static class WindowsOpenDesktopApp
 		List<string> fileUrls,
 		string applicationUrl)
 	{
-		var projectStartInfo = new ProcessStartInfo();
-		projectStartInfo.FileName = applicationUrl;
-		projectStartInfo.WindowStyle = ProcessWindowStyle.Normal;
-
-		projectStartInfo.Arguments = GetArguments(fileUrls);
-		// not sure if needed
-		projectStartInfo.LoadUserProfile = true;
-
-		var process = new Process
+		if ( fileUrls.Count == 0 )
 		{
-			StartInfo = projectStartInfo
-		};
-		process.Start();
-
-		process.Dispose();
-		return true;
-	}
-	
-	
-	internal static string GetArguments(List<string> fileUrls)
-	{
-		// %windir%\system32\mspaint.exe C:\Users\mini\Desktop\travel.png
-		var arguments = new StringBuilder();
-		foreach ( var url in fileUrls )
-		{
-			arguments.Append($"\"{url}\" ");
+			return false;
 		}
 
-		return arguments.ToString();
-	}
+		var results = new List<bool>();
+		foreach ( var url in fileUrls )
+		{
+			var projectStartInfo = new ProcessStartInfo();
+			projectStartInfo.FileName = applicationUrl;
+			projectStartInfo.WindowStyle = ProcessWindowStyle.Normal;
+			projectStartInfo.Arguments = url;
 
+			var process = new Process
+			{
+				StartInfo = projectStartInfo
+			};
+			var projectProcess = process.Start();
+			results.Add(projectProcess);
+
+			process.Dispose();
+		}
+
+		return results.TrueForAll(p => p);
+	}
+	
 }
