@@ -41,9 +41,10 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.6.0-beta.1 -  _(Unreleased)_ - 2024-01-? {#v0.6.0-beta.0}
+## version 0.6.0-beta.1 -  _(Unreleased)_ - 2024-02-? {#v0.6.0-beta.1}
 
-- WIP Electron forge
+- [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.200 (Runtime: 8.0.2) (PR #1382)
+
 
 ## version 0.6.0-beta.0 - 2024-02-11 {#v0.6.0-beta.0}
 
