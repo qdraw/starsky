@@ -19,7 +19,7 @@
 
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.2" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
         <!--      instead of : Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0-->
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
