@@ -34,10 +34,9 @@ public class OpenApplicationNativeService : IOpenApplicationNativeService
 	public bool? OpenDefault(List<string> fullPaths)
 	{
 		var currentPlatform = OperatingSystemHelper.GetPlatform();
-		var macOsOpenResult = MacOsOpenUrl.OpenDefault(fullPaths		, currentPlatform);
-
+		var macOsOpenResult = MacOsOpenUrl.OpenDefault(fullPaths, currentPlatform);
 		var windowsOpenResult = WindowsOpenDesktopApp.OpenDefault(fullPaths,
-			 currentPlatform);
+			currentPlatform);
 
 		return macOsOpenResult ?? windowsOpenResult;
 	}

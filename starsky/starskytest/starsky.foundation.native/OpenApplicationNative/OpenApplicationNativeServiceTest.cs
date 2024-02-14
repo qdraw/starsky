@@ -7,7 +7,6 @@ using starskytest.FakeCreateAn.CreateFakeStarskyExe;
 
 namespace starskytest.starsky.foundation.native.OpenApplicationNative
 {
-
 	[TestClass]
 	public class OpenApplicationNativeServiceTest
 	{
@@ -17,7 +16,7 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative
 
 		[TestInitialize]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability",
-	"CA1416:Validate platform compatibility", Justification = "Check does exists")]
+			"CA1416:Validate platform compatibility", Justification = "Check does exists")]
 		public void TestInitialize()
 		{
 			if ( !new AppSettings().IsWindows )
@@ -54,7 +53,7 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative
 				return;
 			}
 
-			var mock = new CreateFakeStarskyExe();
+			var mock = new CreateFakeStarskyWindowsExe();
 			var filePath = mock.FullFilePath;
 			WindowsSetFileAssociations.EnsureAssociationsSet(
 				new FileAssociation
@@ -65,7 +64,8 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative
 					ExecutableFilePath = filePath
 				});
 
-			var result = new OpenApplicationNativeService().OpenDefault([mock.StarskyDotStarskyPath]);
+			var result =
+				new OpenApplicationNativeService().OpenDefault([mock.StarskyDotStarskyPath]);
 			Assert.IsTrue(result);
 		}
 
@@ -76,7 +76,6 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative
 			var result = new OpenApplicationNativeService().OpenApplicationAtUrl([], "app");
 			Assert.IsFalse(result);
 		}
-
 
 		[TestMethod]
 		public void OpenDefault_ZeroItemsSo_False()

@@ -8,7 +8,6 @@ using Medallion.Shell;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.native.Helpers;
 using starsky.foundation.native.OpenApplicationNative.Helpers;
-using starsky.foundation.storage.Services;
 using starskytest.FakeCreateAn;
 
 namespace starskytest.starsky.foundation.native.OpenApplicationNative.Helpers;
@@ -16,7 +15,6 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative.Helpers;
 [TestClass]
 public class MacOsOpenUrlTests
 {
-
 	[TestMethod]
 	public void OpenDefault_NonMacOS()
 	{
@@ -74,7 +72,20 @@ public class MacOsOpenUrlTests
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(DllNotFoundException))]
+	public void OpenApplicationAtUrl_NoItems()
+	{
+		var result = MacOsOpenUrl.OpenApplicationAtUrl([], ConsoleApp);
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public void OpenDefault_NoItems()
+	{
+		var result = MacOsOpenUrl.OpenDefault([]);
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
 	public void TestMethodWithDefaultApp__MacOnly()
 	{
 		if ( OperatingSystemHelper.GetPlatform() != OSPlatform.OSX )
@@ -90,7 +101,8 @@ public class MacOsOpenUrlTests
 	[TestMethod]
 	public void OpenApplicationAtUrl_NonMacOs()
 	{
-		var result = MacOsOpenUrl.OpenApplicationAtUrl(new List<string> { "any value" }, "app", OSPlatform.Linux);
+		var result = MacOsOpenUrl.OpenApplicationAtUrl(new List<string> { "any value" }, "app",
+			OSPlatform.Linux);
 		Assert.IsNull(result);
 	}
 
@@ -117,7 +129,7 @@ public class MacOsOpenUrlTests
 			return;
 		}
 
-		MacOsOpenUrl.OpenURLsWithApplicationAtURL(IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
+		MacOsOpenUrl.OpenUrLsWithApplicationAtUrl(IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
 	}
 
 	[TestMethod]
@@ -145,5 +157,4 @@ public class MacOsOpenUrlTests
 
 		MacOsOpenUrl.InvokeOpenUrl(IntPtr.Zero);
 	}
-
 }

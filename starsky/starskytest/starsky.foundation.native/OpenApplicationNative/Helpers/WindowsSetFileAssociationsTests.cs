@@ -1,5 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Win32;
 using starsky.foundation.native.OpenApplicationNative.Helpers;
+using starsky.foundation.platform.Models;
 using starskytest.FakeCreateAn.CreateFakeStarskyExe;
 
 namespace starskytest.starsky.foundation.native.OpenApplicationNative.Helpers
@@ -10,7 +12,13 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative.Helpers
 		[TestMethod]
 		public void EnsureAssociationsSet()
 		{
-			var filePath = new CreateFakeStarskyExe().FullFilePath;
+			if ( !new AppSettings().IsWindows )
+			{
+				Assert.Inconclusive("This test if for Windows Only");
+				return;
+			}
+			
+			var filePath = new CreateFakeStarskyWindowsExe().FullFilePath;
 			WindowsSetFileAssociations.EnsureAssociationsSet(
 				new FileAssociation
 				{
@@ -19,6 +27,13 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative.Helpers
 					FileTypeDescription = "Starsky Test File",
 					ExecutableFilePath = filePath
 				});
+
+			var registryKeyPath = @"Software\Classes\starskytest\shell\open\command";
+
+			using ( RegistryKey key = Registry.LocalMachine.OpenSubKey(registryKeyPath) )
+			{
+				var value = key.GetValue(string.Empty).ToString();
+			}
 		}
 	}
 }

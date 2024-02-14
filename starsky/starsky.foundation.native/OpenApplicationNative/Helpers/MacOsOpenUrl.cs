@@ -1,8 +1,12 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using starsky.foundation.native.Trash.Helpers;
 
 namespace starsky.foundation.native.OpenApplicationNative.Helpers;
 
+[SuppressMessage("Interoperability",
+	"SYSLIB1054:Use \'LibraryImportAttribute\' instead of \'DllImportAttribute\' to " +
+	"generate P/Invoke marshalling code at compile time")]
 public static class MacOsOpenUrl
 {
 	/// <summary>
@@ -25,6 +29,11 @@ public static class MacOsOpenUrl
 	public static bool OpenDefault(
 		List<string> fileUrls)
 	{
+		if ( fileUrls.Count == 0 )
+		{
+			return false;
+		}
+
 		var fileUrlsIntPtr = MacOsTrashBindingHelper.GetUrls(fileUrls);
 
 		var result = new List<bool>();
@@ -34,14 +43,6 @@ public static class MacOsOpenUrl
 		}
 
 		return result.TrueForAll(p => p);
-	}
-
-	internal static bool InvokeOpenUrl(IntPtr fileUrlIntPtr)
-	{
-		return objc_msgSend_retBool_IntPtr_IntPtr(
-				NsWorkspaceSharedWorkSpace(),
-				MacOsTrashBindingHelper.GetSelector("openURL:"),
-				fileUrlIntPtr);
 	}
 
 	internal static bool? OpenApplicationAtUrl(
@@ -57,11 +58,16 @@ public static class MacOsOpenUrl
 	/// </summary>
 	/// <param name="fileUrls">Absolute Paths</param>
 	/// <param name="applicationUrl">Open with .app folder</param>
-	/// <exception cref="NullReferenceException">When not Mac OS</exception>
+	/// <exception cref="DllNotFoundException">When not Mac OS</exception>
 	internal static bool? OpenApplicationAtUrl(
 		List<string> fileUrls,
 		string applicationUrl)
 	{
+		if ( fileUrls.Count == 0 )
+		{
+			return false;
+		}
+
 		var filesUrlIntPtr = MacOsTrashBindingHelper.GetUrls(fileUrls);
 		var fileUrlIntPtrUrlArray = MacOsTrashBindingHelper.CreateCfArray(filesUrlIntPtr);
 
@@ -73,32 +79,46 @@ public static class MacOsOpenUrl
 			nsWorkspaceOpenConfiguration, MacOsTrashBindingHelper.GetSelector("configuration"));
 
 		// https://developer.apple.com/documentation/appkit/nsworkspace/3172702-openurls?language=objc
-		OpenURLsWithApplicationAtURL(fileUrlIntPtrUrlArray, applicationUrlIntPtr, nsWorkspaceOpenConfigurationDefault);
+		OpenUrLsWithApplicationAtUrl(fileUrlIntPtrUrlArray, applicationUrlIntPtr,
+			nsWorkspaceOpenConfigurationDefault);
 		return true;
 	}
 
+	/// <summary>
+	/// Open Default Url
+	/// </summary>
+	/// <param name="fileUrlIntPtr">Pointer for urls</param>
+	/// <returns>Is Success</returns>
+	internal static bool InvokeOpenUrl(IntPtr fileUrlIntPtr)
+	{
+		return objc_msgSend_retBool_IntPtr_IntPtr(
+			NsWorkspaceSharedWorkSpace(),
+			MacOsTrashBindingHelper.GetSelector("openURL:"),
+			fileUrlIntPtr);
+	}
 
 
-/// <summary>
-/// @see: https://developer.apple.com/documentation/appkit/nsworkspace/3172702-openurls?language=objc
-/// </summary>
-internal static void OpenURLsWithApplicationAtURL(nint fileUrlIntPtrUrlArray, nint applicationUrlIntPtr, nint nsWorkspaceOpenConfigurationDefault)
-{
+	/// <summary>
+	/// @see: https://developer.apple.com/documentation/appkit/nsworkspace/3172702-openurls?language=objc
+	/// </summary>
+	internal static void OpenUrLsWithApplicationAtUrl(nint fileUrlIntPtrUrlArray,
+		nint applicationUrlIntPtr, nint nsWorkspaceOpenConfigurationDefault)
+	{
 		objc_msgSend_retVoid_IntPtr_IntPtr_IntPtr_IntPtr(
-	NsWorkspaceSharedWorkSpace(),
-	MacOsTrashBindingHelper.GetSelector(
-		"openURLs:withApplicationAtURL:configuration:completionHandler:"),
-	fileUrlIntPtrUrlArray,
-	applicationUrlIntPtr,
-	nsWorkspaceOpenConfigurationDefault,
-	IntPtr.Zero);
+			NsWorkspaceSharedWorkSpace(),
+			MacOsTrashBindingHelper.GetSelector(
+				"openURLs:withApplicationAtURL:configuration:completionHandler:"),
+			fileUrlIntPtrUrlArray,
+			applicationUrlIntPtr,
+			nsWorkspaceOpenConfigurationDefault,
+			IntPtr.Zero);
 	}
 
 	private const string FoundationFramework =
 		"/System/Library/Frameworks/Foundation.framework/Foundation";
 
 	private const string AppKitFramework =
-	"/System/Library/Frameworks/AppKit.framework/AppKit";
+		"/System/Library/Frameworks/AppKit.framework/AppKit";
 
 	[DllImport(FoundationFramework, EntryPoint = "objc_msgSend")]
 	private static extern IntPtr objc_msgSend_retIntPtr(IntPtr target, IntPtr selector);
@@ -113,6 +133,7 @@ internal static void OpenURLsWithApplicationAtURL(nint fileUrlIntPtrUrlArray, ni
 		IntPtr param4);
 
 	[DllImport(AppKitFramework)]
+	[SuppressMessage("Globalization", "CA2101:Specify marshaling for P/Invoke string arguments")]
 	static extern IntPtr objc_getClass(string className);
 
 	[DllImport(FoundationFramework, EntryPoint = "objc_msgSend")]

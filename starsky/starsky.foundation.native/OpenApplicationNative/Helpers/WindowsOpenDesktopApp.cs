@@ -1,18 +1,16 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace starsky.foundation.native.OpenApplicationNative.Helpers;
 
 public static class WindowsOpenDesktopApp
 {
-	
 	/// <summary>
 	/// Add check if is Windows
 	/// </summary>
-	/// <param name="fileUrls"></param>
-	/// <param name="platform"></param>
+	/// <param name="fileUrls">full file paths</param>
+	/// <param name="platform">running platform</param>
 	/// <returns></returns>
 	internal static bool? OpenDefault(
 		List<string> fileUrls, OSPlatform platform)
@@ -20,8 +18,7 @@ public static class WindowsOpenDesktopApp
 		return platform != OSPlatform.Windows ? null : OpenDefault(fileUrls);
 	}
 
-	public static bool? OpenDefault(
-	List<string> fileUrls)
+	public static bool? OpenDefault(List<string> fileUrls)
 	{
 		if ( fileUrls.Count == 0 )
 		{
@@ -37,20 +34,22 @@ public static class WindowsOpenDesktopApp
 		return result.TrueForAll(p => p == true);
 	}
 
-		/// <summary>
-		/// Does NOT check if file exists
-		/// </summary>
-		/// <param name="fileUrl">Absolute Path of file</param>
-		/// <returns></returns>
+	/// <summary>
+	/// Does NOT check if file exists
+	/// </summary>
+	/// <param name="fileUrl">Absolute Path of file</param>
+	/// <returns></returns>
 	public static bool? OpenDefault(
 		string fileUrl)
 	{
 		try
 		{
-			var projectStartInfo = new ProcessStartInfo();
-			projectStartInfo.FileName = fileUrl;
-			projectStartInfo.UseShellExecute = true;
-			projectStartInfo.WindowStyle = ProcessWindowStyle.Normal;
+			var projectStartInfo = new ProcessStartInfo
+			{
+				FileName = fileUrl,
+				UseShellExecute = true,
+				WindowStyle = ProcessWindowStyle.Normal
+			};
 			var projectProcess = Process.Start(projectStartInfo);
 			return projectProcess != null;
 		}
@@ -94,15 +93,14 @@ public static class WindowsOpenDesktopApp
 		var results = new List<bool>();
 		foreach ( var url in fileUrls )
 		{
-			var projectStartInfo = new ProcessStartInfo();
-			projectStartInfo.FileName = applicationUrl;
-			projectStartInfo.WindowStyle = ProcessWindowStyle.Normal;
-			projectStartInfo.Arguments = url;
-
-			var process = new Process
+			var projectStartInfo = new ProcessStartInfo
 			{
-				StartInfo = projectStartInfo
+				FileName = applicationUrl,
+				WindowStyle = ProcessWindowStyle.Normal,
+				Arguments = url
 			};
+
+			var process = new Process { StartInfo = projectStartInfo };
 			var projectProcess = process.Start();
 			results.Add(projectProcess);
 
@@ -111,5 +109,4 @@ public static class WindowsOpenDesktopApp
 
 		return results.TrueForAll(p => p);
 	}
-	
 }
