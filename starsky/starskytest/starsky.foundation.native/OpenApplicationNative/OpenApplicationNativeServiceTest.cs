@@ -1,7 +1,9 @@
 using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Win32;
+using starsky.foundation.native.Helpers;
 using starsky.foundation.native.OpenApplicationNative;
 using starsky.foundation.native.OpenApplicationNative.Helpers;
 using starsky.foundation.platform.Models;
@@ -94,7 +96,15 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative
 		public void OpenApplicationAtUrl_ZeroItems_SoFalse()
 		{
 			var result = new OpenApplicationNativeService().OpenApplicationAtUrl([], "app");
-			Console.WriteLine($"result: {result}");
+
+			// Linux and FreeBSD are not supported
+			if ( OperatingSystemHelper.GetPlatform() == OSPlatform.Linux || 
+			     OperatingSystemHelper.GetPlatform() == OSPlatform.FreeBSD )
+			{
+				Assert.IsNull(result);
+				return;
+			}
+			
 			Assert.IsFalse(result);
 		}
 
@@ -102,7 +112,15 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative
 		public void OpenDefault_ZeroItemsSo_False()
 		{
 			var result = new OpenApplicationNativeService().OpenDefault([]);
-			Console.WriteLine($"result: {result}");
+
+			// Linux and FreeBSD are not supported
+			if ( OperatingSystemHelper.GetPlatform() == OSPlatform.Linux || 
+			     OperatingSystemHelper.GetPlatform() == OSPlatform.FreeBSD )
+			{
+				Assert.IsNull(result);
+				return;
+			}
+			
 			Assert.IsFalse(result);
 		}
 	}
