@@ -36,8 +36,10 @@ namespace starsky.foundation.storage.Services
 			CheckStructureFormat();
 			var fileName = FilenamesHelper.GetFileName(_structure);
 			var fileNameStructure = PathHelper.PrefixDbSlash(fileName);
-			var parsedStructuredList = ParseStructure(fileNameStructure, dateTime, fileNameBase, extensionWithoutDot);
-			return PathHelper.RemovePrefixDbSlash(ApplyStructureRangeToStorage(parsedStructuredList));
+			var parsedStructuredList = ParseStructure(fileNameStructure, dateTime, fileNameBase,
+				extensionWithoutDot);
+			return PathHelper.RemovePrefixDbSlash(
+				ApplyStructureRangeToStorage(parsedStructuredList));
 		}
 
 		/// <summary>
@@ -66,7 +68,8 @@ namespace starsky.foundation.storage.Services
 			string extensionWithoutDot = "")
 		{
 			CheckStructureFormat();
-			var parsedStructuredList = ParseStructure(_structure, dateTime, fileNameBase, extensionWithoutDot);
+			var parsedStructuredList =
+				ParseStructure(_structure, dateTime, fileNameBase, extensionWithoutDot);
 
 			return ApplyStructureRangeToStorage(
 				parsedStructuredList.GetRange(0, parsedStructuredList.Count - 1));
@@ -83,7 +86,6 @@ namespace starsky.foundation.storage.Services
 			var parentFolderBuilder = new StringBuilder();
 			foreach ( var subStructureItem in parsedStructuredList )
 			{
-
 				var currentChildFolderBuilder = new StringBuilder();
 				currentChildFolderBuilder.Append('/');
 
@@ -92,21 +94,23 @@ namespace starsky.foundation.storage.Services
 					currentChildFolderBuilder.Append(structureItem.Output);
 				}
 
-				var parentFolderSubPath = FilenamesHelper.GetParentPath(parentFolderBuilder.ToString());
+				var parentFolderSubPath =
+					FilenamesHelper.GetParentPath(parentFolderBuilder.ToString());
 				var existParentFolder = _storage.ExistFolder(parentFolderSubPath);
 
 				// default situation without asterisk or child directory is NOT found
 				if ( !currentChildFolderBuilder.ToString().Contains('*') || !existParentFolder )
 				{
-					var currentChildFolderRemovedAsterisk = RemoveAsteriskFromString(currentChildFolderBuilder);
+					var currentChildFolderRemovedAsterisk =
+						RemoveAsteriskFromString(currentChildFolderBuilder);
 					parentFolderBuilder.Append(currentChildFolderRemovedAsterisk);
 					continue;
 				}
 
 				parentFolderBuilder =
 					MatchChildDirectories(parentFolderBuilder, currentChildFolderBuilder);
-
 			}
+
 			return parentFolderBuilder.ToString();
 		}
 
@@ -118,10 +122,12 @@ namespace starsky.foundation.storage.Services
 		/// <param name="currentChildFolderBuilder">the current folder name with asterisk </param>
 		/// <param name="p">other child folder items (item in loop of childDirectories)</param>
 		/// <returns>is match</returns>
-		private static bool MatchChildFolderSearch(StringBuilder parentFolderBuilder, StringBuilder currentChildFolderBuilder, string p)
+		private static bool MatchChildFolderSearch(StringBuilder parentFolderBuilder,
+			StringBuilder currentChildFolderBuilder, string p)
 		{
 			var matchDirectFolderName = RemoveAsteriskFromString(currentChildFolderBuilder);
-			if ( matchDirectFolderName != "/" && p == parentFolderBuilder + matchDirectFolderName ) return true;
+			if ( matchDirectFolderName != "/" && p == parentFolderBuilder + matchDirectFolderName )
+				return true;
 
 			var matchRegex = new Regex(
 				parentFolderBuilder + currentChildFolderBuilder.ToString().Replace("*", ".+"),
@@ -136,14 +142,15 @@ namespace starsky.foundation.storage.Services
 		/// <param name="parentFolderBuilder">parent folder (subPath style)</param>
 		/// <param name="currentChildFolderBuilder">child folder with asterisk</param>
 		/// <returns>SubPath without asterisk</returns>
-		private StringBuilder MatchChildDirectories(StringBuilder parentFolderBuilder, StringBuilder currentChildFolderBuilder)
+		private StringBuilder MatchChildDirectories(StringBuilder parentFolderBuilder,
+			StringBuilder currentChildFolderBuilder)
 		{
 			// should return a list of: </2019/10/2019_10_08>
 			var childDirectories = _storage.GetDirectories(parentFolderBuilder.ToString()).ToList();
 
 			var matchingFoldersPath = childDirectories.Find(p =>
 				MatchChildFolderSearch(parentFolderBuilder, currentChildFolderBuilder, p)
-				);
+			);
 
 			// When a new folder with asterisk is created
 			if ( matchingFoldersPath == null )
@@ -154,6 +161,7 @@ namespace starsky.foundation.storage.Services
 				{
 					defaultValue = "/default";
 				}
+
 				parentFolderBuilder.Append(defaultValue);
 				return parentFolderBuilder;
 			}
@@ -183,13 +191,14 @@ namespace starsky.foundation.storage.Services
 		private void CheckStructureFormat()
 		{
 			if ( !string.IsNullOrEmpty(_structure) &&
-				 _structure.StartsWith('/') && _structure.EndsWith(".ext") &&
-				 _structure != "/.ext" )
+			     _structure.StartsWith('/') && _structure.EndsWith(".ext") &&
+			     _structure != "/.ext" )
 			{
 				return;
 			}
 
-			throw new FieldAccessException("Structure is not right formatted, please read the documentation");
+			throw new FieldAccessException(
+				"Structure is not right formatted, please read the documentation");
 		}
 
 		/// <summary>
@@ -197,7 +206,8 @@ namespace starsky.foundation.storage.Services
 		/// @see: https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings
 		/// Not escaped regex: \\?(d{1,4}|f{1,6}|F{1,6}|g{1,2}|h{1,2}|H{1,2}|K|m{1,2}|M{1,4}|s{1,2}|t{1,2}|y{1,5}|z{1,3})
 		/// </summary>
-		const string DateRegexPattern = "\\\\?(d{1,4}|f{1,6}|F{1,6}|g{1,2}|h{1,2}|H{1,2}|K|m{1,2}|M{1,4}|s{1,2}|t{1,2}|y{1,5}|z{1,3})";
+		const string DateRegexPattern =
+			"\\\\?(d{1,4}|f{1,6}|F{1,6}|g{1,2}|h{1,2}|H{1,2}|K|m{1,2}|M{1,4}|s{1,2}|t{1,2}|y{1,5}|z{1,3})";
 
 		/// <summary>
 		/// Parse the dateTime structure input to the dateTime provided
@@ -207,7 +217,8 @@ namespace starsky.foundation.storage.Services
 		/// <param name="fileNameBase">source name, can be used in the options</param>
 		/// <param name="extensionWithoutDot">fileExtension without dot</param>
 		/// <returns>Object with Structure Range output</returns>
-		private static List<List<StructureRange>> ParseStructure(string structure, DateTime dateTime,
+		private static List<List<StructureRange>> ParseStructure(string structure,
+			DateTime dateTime,
 			string fileNameBase = "", string extensionWithoutDot = "")
 		{
 			var structureList = structure.Split('/');
@@ -219,8 +230,8 @@ namespace starsky.foundation.storage.Services
 
 				var matchCollection = new
 						Regex(DateRegexPattern + "|{filenamebase}|\\*|.ext|.",
-							RegexOptions.None, TimeSpan.FromMilliseconds(100))
-							.Matches(structureItem);
+							RegexOptions.None, TimeSpan.FromMilliseconds(200))
+					.Matches(structureItem);
 
 				var matchList = new List<StructureRange>();
 				foreach ( Match match in matchCollection )
@@ -230,7 +241,8 @@ namespace starsky.foundation.storage.Services
 						Pattern = match.Value,
 						Start = match.Index,
 						End = match.Index + match.Length,
-						Output = OutputStructureRangeItemParser(match.Value, dateTime, fileNameBase, extensionWithoutDot)
+						Output = OutputStructureRangeItemParser(match.Value, dateTime,
+							fileNameBase, extensionWithoutDot)
 					});
 				}
 
@@ -252,13 +264,14 @@ namespace starsky.foundation.storage.Services
 			string fileNameBase, string extensionWithoutDot = "")
 		{
 			// allow only full word matches (so .ext is no match)
-			MatchCollection matchCollection = new Regex(DateRegexPattern,
+			var matchCollection = new Regex(DateRegexPattern,
 				RegexOptions.None, TimeSpan.FromMilliseconds(100)).Matches(pattern);
 
 			foreach ( Match match in matchCollection )
 			{
 				// Ignore escaped items
-				if ( !match.Value.StartsWith('\\') && match.Index == 0 && match.Length == pattern.Length )
+				if ( !match.Value.StartsWith('\\') && match.Index == 0 &&
+				     match.Length == pattern.Length )
 				{
 					return dateTime.ToString(pattern, CultureInfo.InvariantCulture);
 				}
@@ -270,7 +283,9 @@ namespace starsky.foundation.storage.Services
 				case "{filenamebase}":
 					return fileNameBase;
 				case ".ext":
-					return string.IsNullOrEmpty(extensionWithoutDot) ? ".unknown" : $".{extensionWithoutDot}";
+					return string.IsNullOrEmpty(extensionWithoutDot)
+						? ".unknown"
+						: $".{extensionWithoutDot}";
 				default:
 					return pattern.Replace("\\", string.Empty);
 			}
