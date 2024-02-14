@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Reflection;
 
@@ -14,6 +15,10 @@ public class CreateFakeStarskyWindowsExe
 		var path = Path.Combine(parentFolder, "starsky.exe");
 		FullFilePath = path;
 		StarskyDotStarskyPath = Path.Combine(parentFolder, "starsky.starsky");
+		if ( !File.Exists(FullFilePath) || !File.Exists(StarskyDotStarskyPath) )
+		{
+			throw new Exception("missing starsky.exe or starsky.starsky file in " + parentFolder);
+		}
 	}
 
 	public string FullFilePath { get; set; } = string.Empty;

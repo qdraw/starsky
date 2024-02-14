@@ -121,6 +121,10 @@
         <Content Include="FakeCreateAn\CreateFakeStarskyExe\starsky.exe">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <None Remove="FakeCreateAn\CreateFakeStarskyExe\starsky.starsky"/>
+        <Content Include="FakeCreateAn\CreateFakeStarskyExe\starsky.starsky">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Reflection;
 
@@ -14,6 +15,10 @@ public class CreateFakeStarskyUnixBash
 		var path = Path.Combine(parentFolder, "starsky");
 		FullFilePath = path;
 		StarskyDotStarskyPath = Path.Combine(parentFolder, "starsky.starsky");
+		if ( !File.Exists(FullFilePath) || !File.Exists(StarskyDotStarskyPath) )
+		{
+			throw new Exception("missing starsky or starsky.starsky file in " + parentFolder);
+		}
 	}
 
 	public string StarskyDotStarskyPath { get; set; } = string.Empty;
