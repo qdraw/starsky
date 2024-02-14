@@ -15,42 +15,16 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative
 		private const string FileTypeDescription = "Starsky Test File";
 
 		[TestInitialize]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability",
-			"CA1416:Validate platform compatibility", Justification = "Check does exists")]
 		public void TestInitialize()
 		{
-			if ( !new AppSettings().IsWindows )
-			{
-				return;
-			}
-
-			// Ensure no keys exist before the test starts
-			Registry.CurrentUser.DeleteSubKeyTree($"Software\\Classes\\{Extension}", false);
-			Registry.CurrentUser.DeleteSubKeyTree($"Software\\Classes\\{ProgId}", false);
+			SetupEnsureAssociationsSet();
 		}
 
-		[TestCleanup]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability",
-			"CA1416:Validate platform compatibility", Justification = "Check does exists")]
-		public void TestCleanup()
+		private static CreateFakeStarskyWindowsExe SetupEnsureAssociationsSet()
 		{
 			if ( !new AppSettings().IsWindows )
 			{
-				return;
-			}
-
-			// Cleanup created keys
-			Registry.CurrentUser.DeleteSubKeyTree($"Software\\Classes\\{Extension}", false);
-			Registry.CurrentUser.DeleteSubKeyTree($"Software\\Classes\\{ProgId}", false);
-		}
-
-		[TestMethod]
-		public void OpenDefault_HappyFlow__WindowsOnly()
-		{
-			if ( !new AppSettings().IsWindows )
-			{
-				Assert.Inconclusive("This test if for Windows Only");
-				return;
+				return new CreateFakeStarskyWindowsExe();
 			}
 
 			var mock = new CreateFakeStarskyWindowsExe();
@@ -63,6 +37,39 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative
 					FileTypeDescription = FileTypeDescription,
 					ExecutableFilePath = filePath
 				});
+			return mock;
+		}
+
+		[TestCleanup]
+		public void TestCleanup()
+		{
+			CleanSetup();
+		}
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability",
+			"CA1416:Validate platform compatibility", Justification = "Check does exists")]
+		private static void CleanSetup()
+		{
+			if ( !new AppSettings().IsWindows )
+			{
+				return;
+			}
+
+			// Ensure no keys exist before the test starts
+			Registry.CurrentUser.DeleteSubKeyTree($"Software\\Classes\\{Extension}", false);
+			Registry.CurrentUser.DeleteSubKeyTree($"Software\\Classes\\{ProgId}", false);
+		}
+
+		[TestMethod]
+		public void Service_OpenDefault_HappyFlow__WindowsOnly()
+		{
+			if ( !new AppSettings().IsWindows )
+			{
+				Assert.Inconclusive("This test if for Windows Only");
+				return;
+			}
+
+			var mock = SetupEnsureAssociationsSet();
 
 			var result =
 				new OpenApplicationNativeService().OpenDefault([mock.StarskyDotStarskyPath]);

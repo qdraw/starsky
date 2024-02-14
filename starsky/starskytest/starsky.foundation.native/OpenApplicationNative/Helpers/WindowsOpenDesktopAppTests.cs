@@ -20,7 +20,7 @@ public class WindowsOpenDesktopAppTests
 	[TestInitialize]
 	public void TestInitialize()
 	{
-		CleanSetup();
+		SetupEnsureAssociationsSet();
 	}
 
 	[TestCleanup]
@@ -43,21 +43,11 @@ public class WindowsOpenDesktopAppTests
 		Registry.CurrentUser.DeleteSubKeyTree($"Software\\Classes\\{ProgId}", false);
 	}
 
-
-	[TestMethod]
-	public void W_OpenDefault_NonWindows()
-	{
-		var result = WindowsOpenDesktopApp.OpenDefault(["any value"], OSPlatform.Linux);
-		Assert.IsNull(result);
-	}
-
-	[TestMethod]
-	public void W_OpenDefault_HappyFlow__WindowsOnly()
+	private static CreateFakeStarskyWindowsExe SetupEnsureAssociationsSet()
 	{
 		if ( !new AppSettings().IsWindows )
 		{
-			Assert.Inconclusive("This test if for Windows Only");
-			return;
+			return new CreateFakeStarskyWindowsExe();
 		}
 
 		var mock = new CreateFakeStarskyWindowsExe();
@@ -70,6 +60,29 @@ public class WindowsOpenDesktopAppTests
 				FileTypeDescription = FileTypeDescription,
 				ExecutableFilePath = filePath
 			});
+		return mock;
+	}
+
+
+	[TestMethod]
+	public void W_OpenDefault_NonWindows()
+	{
+		var result = WindowsOpenDesktopApp.OpenDefault(["any value"], OSPlatform.Linux);
+		Assert.IsNull(result);
+	}
+
+	[TestMethod]
+	public async Task W_OpenDefault_HappyFlow__WindowsOnly()
+	{
+		if ( !new AppSettings().IsWindows )
+		{
+			Assert.Inconclusive("This test if for Windows Only");
+			return;
+		}
+
+		var mock = new CreateFakeStarskyWindowsExe();
+
+		await Task.Delay(50);
 
 		var result =
 			WindowsOpenDesktopApp.OpenDefault([mock.StarskyDotStarskyPath], OSPlatform.Windows);
