@@ -15,7 +15,7 @@ export function onHeaderReceived(newWindow: BrowserWindow) {
       // }
 
       /// default-src 'none'; img-src 'self' https://a.tile.openstreetmap.org/ https://b.tile.openstreetmap.org/ https://c.tile.openstreetmap.org/; script-src 'self'; connect-src 'self' wss://starsky.server ;style-src 'self'; font-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none'; media-src 'self'; frame-src 'none'; manifest-src 'self'; block-all-mixed-content;
-      
+
       // // When change also check if CSPMiddleware needs to be updated
       // var csp = "default-src 'none'; img-src 'self' file://* https://www.openstreetmap.org https://tile.openstreetmap.org https://*.tile.openstreetmap.org "
       //  + whitelistDomain + "; " +      "style-src file://* unsafe-inline https://www.openstreetmap.org " + whitelistDomain
