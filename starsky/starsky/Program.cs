@@ -29,8 +29,7 @@ namespace starsky
 			builder.Host.UseWindowsService();
 
 			var app = builder.Build();
-			var hostLifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
-			startup.Configure(app, builder.Environment, hostLifetime);
+			startup.Configure(app, builder.Environment);
 
 			await RunAsync(app, args.All(p => p != "--do-not-start"));
 		}
