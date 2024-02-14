@@ -1,8 +1,12 @@
+For reference only
+**Not working correctly yet**
+
 Visual studio installer -> Modify
 -> Desktop Enviorment with C++
 
-
-To compile the C++ code using the command line on Windows, you can use the Visual Studio Command Prompt, which sets up the necessary environment variables and paths for using the Visual C++ compiler (cl.exe) and other tools. Here's how you can compile the code:
+To compile the C++ code using the command line on Windows, you can use the Visual Studio Command
+Prompt, which sets up the necessary environment variables and paths for using the Visual C++
+compiler (cl.exe) and other tools. Here's how you can compile the code:
 
     Open the Visual Studio Command Prompt:
         Press the Windows key and type "Visual Studio Command Prompt".
