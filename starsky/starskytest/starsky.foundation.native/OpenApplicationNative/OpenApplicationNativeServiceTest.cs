@@ -71,7 +71,7 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative
 
 
 		[TestMethod]
-		public void OpenApplicationAtUrl_ZeroItemsSoFalse()
+		public void OpenApplicationAtUrl_ZeroItems_SoFalse()
 		{
 			var result = new OpenApplicationNativeService().OpenApplicationAtUrl([], "app");
 			Assert.IsFalse(result);
@@ -79,7 +79,7 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative
 
 
 		[TestMethod]
-		public void OpenDefault_ZeroItemsSoFalse()
+		public void OpenDefault_ZeroItemsSo_False()
 		{
 			var result = new OpenApplicationNativeService().OpenDefault([]);
 			Assert.IsFalse(result);

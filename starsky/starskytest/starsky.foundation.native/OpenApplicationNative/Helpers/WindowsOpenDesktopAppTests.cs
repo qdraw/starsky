@@ -55,7 +55,7 @@ public class WindowsOpenDesktopAppTests
 	}
 
 	[TestMethod]
-	public void w_OpenDefault_HappyFlow__WindowsOnly()
+	public void W_OpenDefault_HappyFlow__WindowsOnly()
 	{
 		if ( !new AppSettings().IsWindows )
 		{
@@ -104,7 +104,6 @@ public class WindowsOpenDesktopAppTests
 		// Assert
 		Assert.IsTrue(result);
 	}
-
 
 	[TestMethod]
 	public void W_OpenDefault_FileNotFound__WindowsOnly()
