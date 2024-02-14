@@ -1,3 +1,4 @@
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Win32;
 using starsky.foundation.native.OpenApplicationNative;
@@ -81,6 +82,7 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative
 		public void OpenApplicationAtUrl_ZeroItems_SoFalse()
 		{
 			var result = new OpenApplicationNativeService().OpenApplicationAtUrl([], "app");
+			Console.WriteLine($"result: {result}");
 			Assert.IsFalse(result);
 		}
 
@@ -88,6 +90,7 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative
 		public void OpenDefault_ZeroItemsSo_False()
 		{
 			var result = new OpenApplicationNativeService().OpenDefault([]);
+			Console.WriteLine($"result: {result}");
 			Assert.IsFalse(result);
 		}
 	}
