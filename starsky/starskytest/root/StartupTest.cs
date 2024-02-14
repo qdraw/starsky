@@ -30,23 +30,26 @@ namespace starskytest.root
 		{
 			IServiceCollection serviceCollection = new ServiceCollection();
 			// needed for: AddMetrics
-			IConfiguration configuration = new ConfigurationRoot(new List<IConfigurationProvider>());
-			serviceCollection.AddSingleton(configuration); 
-			
+			IConfiguration configuration =
+				new ConfigurationRoot(new List<IConfigurationProvider>());
+			serviceCollection.AddSingleton(configuration);
+
 			// should not crash
 			new Startup().ConfigureServices(serviceCollection);
 			Assert.IsNotNull(serviceCollection);
 		}
-	
+
 		[TestMethod]
 		public void Startup_ConfigureServicesConfigure1()
 		{
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddRouting();
 			serviceCollection.AddSingleton<AppSettings, AppSettings>();
-			serviceCollection.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
-			IConfiguration configuration = new ConfigurationRoot(new List<IConfigurationProvider>());
-			serviceCollection.AddSingleton(configuration); 
+			serviceCollection
+				.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
+			IConfiguration configuration =
+				new ConfigurationRoot(new List<IConfigurationProvider>());
+			serviceCollection.AddSingleton(configuration);
 			serviceCollection.AddAuthorization();
 			serviceCollection.AddControllers();
 			serviceCollection.AddLogging();
@@ -54,19 +57,20 @@ namespace starskytest.root
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			var serviceProviderInterface = serviceProvider.GetRequiredService<IServiceProvider>();
-			
+
 			var applicationBuilder = new ApplicationBuilder(serviceProviderInterface);
-			IHostEnvironment env = new HostingEnvironment { EnvironmentName = Environments.Development };
+			IHostEnvironment env =
+				new HostingEnvironment { EnvironmentName = Environments.Development };
 
 			// should not crash
 			var startup = new Startup();
-			
+
 			startup.ConfigureServices(serviceCollection);
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
 			appSettings.UseRealtime = true;
 
-			startup.Configure(applicationBuilder, env, new FakeIApplicationLifetime());
-			
+			startup.Configure(applicationBuilder, env);
+
 			Assert.IsNotNull(applicationBuilder);
 			Assert.IsNotNull(env);
 		}
@@ -74,14 +78,15 @@ namespace starskytest.root
 		[SuppressMessage("ReSharper", "ReturnTypeCanBeEnumerable.Local")]
 		private static List<object?>? GetMiddlewareInstance(IApplicationBuilder app)
 		{
-			const string middlewareTypeName = "Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware";
+			const string middlewareTypeName =
+				"Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware";
 			var appBuilderType = typeof(ApplicationBuilder);
 			const BindingFlags bindingTypes1 = BindingFlags.Instance |
-			                                  BindingFlags.NonPublic;
+			                                   BindingFlags.NonPublic;
 			var middlewareField = appBuilderType.GetField("_components", bindingTypes1);
 			var components = middlewareField?.GetValue(app);
 
-			if (components != null)
+			if ( components != null )
 			{
 				var element = components as List<Func<RequestDelegate, RequestDelegate>>;
 
@@ -97,20 +102,21 @@ namespace starskytest.root
 				{
 					var type = middleware.Target?.GetType();
 					const BindingFlags bindingTypes = BindingFlags.Instance |
-						BindingFlags.NonPublic |
-						BindingFlags.Public;
+					                                  BindingFlags.NonPublic |
+					                                  BindingFlags.Public;
 					var privatePropertyInfo = type?.GetField("_args", bindingTypes);
 					var privateFieldValue =
 						privatePropertyInfo?.GetValue(middleware.Target) as object[];
-					
+
 					status.Add(privateFieldValue);
 				}
+
 				return status;
 			}
 
 			return null;
 		}
-		
+
 		[TestMethod]
 		public void BasicFlow_Default()
 		{
@@ -118,29 +124,32 @@ namespace starskytest.root
 			var serviceCollection = new ServiceCollection();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			var serviceProviderInterface = serviceProvider.GetRequiredService<IServiceProvider>();
-			
+
 			var applicationBuilder = new ApplicationBuilder(serviceProviderInterface);
 			var result = startup.SetupStaticFiles(applicationBuilder);
-			
+
 			Assert.IsNotNull(result);
 			Assert.IsTrue(result.Item1);
 			Assert.IsFalse(result.Item2);
 			Assert.IsFalse(result.Item3);
-			
-			var middlewareInstance = GetMiddlewareInstance(applicationBuilder)?.FirstOrDefault() as object?[];
+
+			var middlewareInstance =
+				GetMiddlewareInstance(applicationBuilder)?.FirstOrDefault() as object?[];
 			var value = middlewareInstance?.FirstOrDefault() as OptionsWrapper<StaticFileOptions>;
-			
+
 			Assert.IsFalse(value?.Value.RequestPath.HasValue);
 			Assert.AreEqual(string.Empty, value?.Value.RequestPath.Value);
 		}
-		
+
 		[TestMethod]
 		public void BasicFlow_Assets()
 		{
 			var storage = new StorageHostFullPathFilesystem();
-			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject, "wwwroot"));
-			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject, "clientapp", "build", "assets"));
-			
+			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject,
+				"wwwroot"));
+			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject,
+				"clientapp", "build", "assets"));
+
 			var startup = new Startup();
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddSingleton<AppSettings, AppSettings>();
@@ -154,19 +163,20 @@ namespace starskytest.root
 			Assert.IsNotNull(result);
 
 			Console.WriteLine("result:");
-			Console.WriteLine("1: " +result.Item1 + " 2: " + result.Item2 + " 3: " + result.Item3);
-			
+			Console.WriteLine("1: " + result.Item1 + " 2: " + result.Item2 + " 3: " + result.Item3);
+
 			Assert.IsTrue(result.Item1);
 			Assert.IsTrue(result.Item2);
 			Assert.IsTrue(result.Item3);
 
-			var middlewareInstance = GetMiddlewareInstance(applicationBuilder)?.ToList()[1] as object?[];
+			var middlewareInstance =
+				GetMiddlewareInstance(applicationBuilder)?.ToList()[1] as object?[];
 			var value = middlewareInstance?.FirstOrDefault() as OptionsWrapper<StaticFileOptions>;
-			
+
 			Assert.IsFalse(value?.Value.RequestPath.HasValue);
 			Assert.AreEqual(string.Empty, value?.Value.RequestPath.Value);
 		}
-		
+
 		[TestMethod]
 		public void BasicFlow_Assets2()
 		{
@@ -175,31 +185,34 @@ namespace starskytest.root
 			serviceCollection.AddSingleton<AppSettings, AppSettings>();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			var serviceProviderInterface = serviceProvider.GetRequiredService<IServiceProvider>();
-			
+
 			var applicationBuilder = new ApplicationBuilder(serviceProviderInterface);
 			startup.ConfigureServices(serviceCollection);
-			
+
 			var storage = new StorageHostFullPathFilesystem();
-			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject, "wwwroot"));
-			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject, "clientapp", "build", "assets"));
+			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject,
+				"wwwroot"));
+			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject,
+				"clientapp", "build", "assets"));
 
 			var result = startup.SetupStaticFiles(applicationBuilder);
 			Assert.IsNotNull(result);
-			
+
 			Console.WriteLine("result:");
-			Console.WriteLine("1: " +result.Item1 + " 2: " + result.Item2 + " 3: " + result.Item3);
-			
+			Console.WriteLine("1: " + result.Item1 + " 2: " + result.Item2 + " 3: " + result.Item3);
+
 			Assert.IsTrue(result.Item1);
 			Assert.IsTrue(result.Item2);
 			Assert.IsTrue(result.Item3);
 
-			var middlewareInstance = GetMiddlewareInstance(applicationBuilder)?.ToList()[2] as object?[];
+			var middlewareInstance =
+				GetMiddlewareInstance(applicationBuilder)?.ToList()[2] as object?[];
 			var value = middlewareInstance?.FirstOrDefault() as OptionsWrapper<StaticFileOptions>;
-			
+
 			Assert.IsTrue(value?.Value.RequestPath.HasValue);
 			Assert.AreEqual("/assets", value?.Value.RequestPath.Value);
 		}
-		
+
 		[TestMethod]
 		public void BasicFlow_Assets_NotFound()
 		{
@@ -208,19 +221,20 @@ namespace starskytest.root
 			serviceCollection.AddSingleton<AppSettings, AppSettings>();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			var serviceProviderInterface = serviceProvider.GetRequiredService<IServiceProvider>();
-			
+
 			var applicationBuilder = new ApplicationBuilder(serviceProviderInterface);
 			startup.ConfigureServices(serviceCollection);
-			
-			var storage = new StorageHostFullPathFilesystem();
-			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject, "wwwroot"));
 
-			var result = startup.SetupStaticFiles(applicationBuilder,"not-found-folder-name");
+			var storage = new StorageHostFullPathFilesystem();
+			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject,
+				"wwwroot"));
+
+			var result = startup.SetupStaticFiles(applicationBuilder, "not-found-folder-name");
 			Assert.IsNotNull(result);
-			
+
 			Console.WriteLine("result:");
-			Console.WriteLine("1: " +result.Item1 + " 2: " + result.Item2 + " 3: " + result.Item3);
-			
+			Console.WriteLine("1: " + result.Item1 + " 2: " + result.Item2 + " 3: " + result.Item3);
+
 			Assert.IsTrue(result.Item1);
 			Assert.IsTrue(result.Item2);
 			Assert.IsFalse(result.Item3);
@@ -236,7 +250,7 @@ namespace starskytest.root
 			Startup.PrepareResponse(context);
 			// Assert
 			Assert.IsNotNull(context.Context.Response.Headers.Expires);
-			Assert.AreEqual("public, max-age=31536000", 
+			Assert.AreEqual("public, max-age=31536000",
 				context.Context.Response.Headers.CacheControl.ToString());
 		}
 	}
