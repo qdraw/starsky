@@ -9,11 +9,11 @@ namespace starsky.foundation.native.OpenApplicationNative;
 public class OpenApplicationNativeService : IOpenApplicationNativeService
 {
 	/// <summary>
-	/// 
+	/// Open file with specified application
 	/// </summary>
 	/// <param name="fullPaths">full path style</param>
 	/// <param name="applicationUrl"> applicationUrl</param>
-	/// <returns>operation succeed (NOT if file is gone)</returns>
+	/// <returns>true is operation succeed, false failed | null is platform unsupported</returns>
 	public bool? OpenApplicationAtUrl(List<string> fullPaths, string applicationUrl)
 	{
 		var currentPlatform = OperatingSystemHelper.GetPlatform();
@@ -27,10 +27,10 @@ public class OpenApplicationNativeService : IOpenApplicationNativeService
 	}
 
 	/// <summary>
-	/// 
+	/// Open file with default application
 	/// </summary>
 	/// <param name="fullPaths">full path style</param>
-	/// <returns>operation succeed (NOT if file is gone)</returns>
+	/// <returns>true is operation succeed, false failed | null is platform unsupported</returns>
 	public bool? OpenDefault(List<string> fullPaths)
 	{
 		var currentPlatform = OperatingSystemHelper.GetPlatform();
