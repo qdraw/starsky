@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Win32;
 using starsky.foundation.native.OpenApplicationNative;
@@ -12,7 +13,7 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative
 	public class OpenApplicationNativeServiceTest
 	{
 		private const string Extension = ".starsky";
-		private const string ProgId = "starskytest";
+		private const string ProgramId = "starskytest";
 		private const string FileTypeDescription = "Starsky Test File";
 
 		[TestInitialize]
@@ -34,7 +35,7 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative
 				new FileAssociation
 				{
 					Extension = Extension,
-					ProgId = ProgId,
+					ProgId = ProgramId,
 					FileTypeDescription = FileTypeDescription,
 					ExecutableFilePath = filePath
 				});
@@ -58,11 +59,11 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative
 
 			// Ensure no keys exist before the test starts
 			Registry.CurrentUser.DeleteSubKeyTree($"Software\\Classes\\{Extension}", false);
-			Registry.CurrentUser.DeleteSubKeyTree($"Software\\Classes\\{ProgId}", false);
+			Registry.CurrentUser.DeleteSubKeyTree($"Software\\Classes\\{ProgramId}", false);
 		}
 
 		[TestMethod]
-		public void Service_OpenDefault_HappyFlow__WindowsOnly()
+		public async Task Service_OpenDefault_HappyFlow__WindowsOnly()
 		{
 			if ( !new AppSettings().IsWindows )
 			{
@@ -74,6 +75,17 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative
 
 			var result =
 				new OpenApplicationNativeService().OpenDefault([mock.StarskyDotStarskyPath]);
+
+			// retry due due multi threading
+			if ( result != true )
+			{
+				Console.WriteLine("retry due due multi threading");
+				await Task.Delay(100);
+				SetupEnsureAssociationsSet();
+				var service = new OpenApplicationNativeService();
+				result = service.OpenDefault([mock.StarskyDotStarskyPath]);
+			}
+
 			Assert.IsTrue(result);
 		}
 

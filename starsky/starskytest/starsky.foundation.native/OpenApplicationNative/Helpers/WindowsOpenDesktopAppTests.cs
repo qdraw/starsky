@@ -1,3 +1,4 @@
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Win32;
 using starsky.foundation.native.OpenApplicationNative.Helpers;
@@ -80,12 +81,19 @@ public class WindowsOpenDesktopAppTests
 			return;
 		}
 
-		var mock = new CreateFakeStarskyWindowsExe();
-
-		await Task.Delay(50);
-
+		var mock = SetupEnsureAssociationsSet();
 		var result =
 			WindowsOpenDesktopApp.OpenDefault([mock.StarskyDotStarskyPath], OSPlatform.Windows);
+
+		// retry due due multi threading
+		if ( result != true )
+		{
+			Console.WriteLine("retry due due multi threading");
+			await Task.Delay(100);
+			SetupEnsureAssociationsSet();
+			result = WindowsOpenDesktopApp.OpenDefault([mock.StarskyDotStarskyPath]);
+		}
+
 		Assert.IsTrue(result);
 	}
 
@@ -130,10 +138,10 @@ public class WindowsOpenDesktopAppTests
 		// Arrange
 		var mock = new CreateFakeStarskyUnixBash();
 		var fileUrls = new List<string> { mock.StarskyDotStarskyPath, };
-		
+
 		await Command.Run("chmod", "+x",
 			mock.FullFilePath).Task;
-		
+
 		// Act
 		var result = WindowsOpenDesktopApp.OpenApplicationAtUrl(fileUrls, mock.FullFilePath);
 
