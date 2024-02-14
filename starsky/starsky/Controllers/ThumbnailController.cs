@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
@@ -303,6 +304,7 @@ namespace starsky.Controllers
 		[ProducesResponseType(400)] // string (f) input not allowed to avoid path injection attacks
 		[ProducesResponseType(404)] // not found
 		[ProducesResponseType(210)] // raw
+		[SuppressMessage("Usage", "IDE0060:Remove unused parameter")]
 		public async Task<IActionResult> ByZoomFactorAsync(
 			string f,
 			int z = 0,

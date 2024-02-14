@@ -9,6 +9,8 @@ namespace starsky.foundation.realtime.Middleware
 	[SuppressMessage("Performance", "CA1822:Mark members as static")]
 	public sealed class DisabledWebSocketsMiddleware
 	{
+		[SuppressMessage("ReSharper", "UnusedParameter.Local")]
+		[SuppressMessage("Usage", "IDE0060:Remove unused parameter")]
 		public DisabledWebSocketsMiddleware(RequestDelegate next)
 		{
 		}
@@ -23,6 +25,7 @@ namespace starsky.foundation.realtime.Middleware
 					"Feature toggle disabled", CancellationToken.None);
 				return;
 			}
+
 			context.Response.StatusCode = StatusCodes.Status400BadRequest;
 		}
 	}

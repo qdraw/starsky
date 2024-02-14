@@ -35,6 +35,7 @@ namespace starsky.Controllers
 		[Produces("text/html")]
 		[ProducesResponseType(200)]
 		[ProducesResponseType(401)]
+		[SuppressMessage("Usage", "IDE0060:Remove unused parameter")]
 		public IActionResult Index(string f = "")
 		{
 			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);

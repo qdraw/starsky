@@ -57,7 +57,7 @@ namespace starsky
 			if ( !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("app__appsettingspath")) )
 			{
 				Console.WriteLine("app__appSettingsPath: " +
-								  Environment.GetEnvironmentVariable("app__appsettingspath"));
+				                  Environment.GetEnvironmentVariable("app__appsettingspath"));
 			}
 
 			_configuration = SetupAppSettings.AppSettingsToBuilder(args).ConfigureAwait(false)
@@ -257,8 +257,7 @@ namespace starsky
 		/// <param name="app">ApplicationBuilder</param>
 		/// <param name="env">Hosting Env</param>
 		/// <param name="applicationLifetime">application Lifetime</param>
-		public void Configure(IApplicationBuilder app, IHostEnvironment env,
-			IHostApplicationLifetime applicationLifetime)
+		public void Configure(IApplicationBuilder app, IHostEnvironment env)
 		{
 			app.UseResponseCompression();
 
@@ -289,7 +288,7 @@ namespace starsky
 			app.UseAuthentication();
 			app.UseBasicAuthentication();
 			app.UseNoAccount(_appSettings?.NoAccountLocalhost == true ||
-							 _appSettings?.DemoUnsafeDeleteStorageFolder == true);
+			                 _appSettings?.DemoUnsafeDeleteStorageFolder == true);
 			app.UseCheckIfAccountExist();
 
 			app.UseAuthorization();
@@ -322,7 +321,7 @@ namespace starsky
 		internal (bool, bool, bool) SetupStaticFiles(IApplicationBuilder app,
 			string assetsName = "assets")
 		{
-			var result = (false, false, false);
+			var result = ( false, false, false );
 
 			// Allow Current Directory and wwwroot in Base Directory
 			// AppSettings can be null when running tests
@@ -351,19 +350,19 @@ namespace starsky
 
 			// Check if clientapp is build and use the assets folder
 			if ( !Directory.Exists(Path.Combine(
-					_appSettings.BaseDirectoryProject, "clientapp", "build", assetsName)) )
+				    _appSettings.BaseDirectoryProject, "clientapp", "build", assetsName)) )
 			{
 				return result;
 			}
 
 			app.UseStaticFiles(new StaticFileOptions
-			{
-				OnPrepareResponse = PrepareResponse,
-				FileProvider = new PhysicalFileProvider(
+				{
+					OnPrepareResponse = PrepareResponse,
+					FileProvider = new PhysicalFileProvider(
 						Path.Combine(_appSettings.BaseDirectoryProject, "clientapp", "build",
 							assetsName)),
-				RequestPath = $"/assets",
-			}
+					RequestPath = $"/assets",
+				}
 			);
 			result.Item3 = true;
 			return result;
