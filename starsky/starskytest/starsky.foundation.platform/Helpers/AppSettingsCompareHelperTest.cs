@@ -17,7 +17,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 
 			Assert.AreEqual(input.Structure, new AppSettings().Structure);
 		}
-		
+
 		[TestMethod]
 		public void StringCompare()
 		{
@@ -26,7 +26,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 				DatabaseType = AppSettings.DatabaseTypeList.Sqlite,
 				DatabaseConnection = "Data Source=source"
 			};
-			
+
 			var to = new AppSettings
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.Sqlite,
@@ -36,15 +36,12 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			AppSettingsCompareHelper.Compare(source, to);
 			Assert.AreEqual(source.DatabaseConnection, to.DatabaseConnection);
 		}
-		
+
 		[TestMethod]
 		public void NullableBoolCompare()
 		{
-			var source = new AppSettings
-			{
-				Verbose = true
-			};
-			
+			var source = new AppSettings { Verbose = true };
+
 			var to = new AppSettingsTransferObject()
 			{
 				Verbose = false // or null
@@ -53,51 +50,38 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			AppSettingsCompareHelper.Compare(source, to);
 			Assert.AreEqual(source.Verbose, to.Verbose);
 		}
-		
+
 		[TestMethod]
 		public void ListStringCompare()
 		{
-			var source = new AppSettings
-			{
-				ReadOnlyFolders = new List<string>{"/test"}
-			};
-			
-			var to = new AppSettings
-			{
-				ReadOnlyFolders = new List<string>{"/test2"}
-			};
+			var source = new AppSettings { ReadOnlyFolders = new List<string> { "/test" } };
+
+			var to = new AppSettings { ReadOnlyFolders = new List<string> { "/test2" } };
 
 			AppSettingsCompareHelper.Compare(source, to);
-			Assert.AreEqual(source.ReadOnlyFolders.FirstOrDefault(), to.ReadOnlyFolders.FirstOrDefault());
+			Assert.AreEqual(source.ReadOnlyFolders.FirstOrDefault(),
+				to.ReadOnlyFolders.FirstOrDefault());
 		}
-		
+
 		[TestMethod]
 		public void ListStringCompare_Same()
 		{
-			var source = new AppSettings
-			{
-				ReadOnlyFolders = new List<string>{"/same"}
-			};
+			var source = new AppSettings { ReadOnlyFolders = new List<string> { "/same" } };
 
-			var to = new AppSettings
-			{
-				ReadOnlyFolders = new List<string>{"/same"}
-			};
+			var to = new AppSettings { ReadOnlyFolders = new List<string> { "/same" } };
 
 			var compare = AppSettingsCompareHelper.Compare(source, source);
-				
-			Assert.AreEqual(source.ReadOnlyFolders.FirstOrDefault(), to.ReadOnlyFolders.FirstOrDefault());
+
+			Assert.AreEqual(source.ReadOnlyFolders.FirstOrDefault(),
+				to.ReadOnlyFolders.FirstOrDefault());
 			Assert.AreEqual(0, compare.Count);
 		}
-		
+
 		[TestMethod]
 		public void DatabaseTypeListCompare()
 		{
-			var source = new AppSettings
-			{
-				DatabaseType = AppSettings.DatabaseTypeList.Sqlite
-			};
-			
+			var source = new AppSettings { DatabaseType = AppSettings.DatabaseTypeList.Sqlite };
+
 			var to = new AppSettings
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
@@ -106,7 +90,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			AppSettingsCompareHelper.Compare(source, to);
 			Assert.AreEqual(source.DatabaseType, to.DatabaseType);
 		}
-		
+
 		[TestMethod]
 		public void ListAppSettingsPublishProfilesCompare()
 		{
@@ -114,46 +98,52 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			{
 				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 				{
-					{"zz__example", new List<AppSettingsPublishProfiles>
 					{
-						new AppSettingsPublishProfiles
+						"zz__example", new List<AppSettingsPublishProfiles>
 						{
-							ContentType = TemplateContentType.Jpeg,
-							SourceMaxWidth = 1000,
-							OverlayMaxWidth = 380,
-							Path =  "{AssemblyDirectory}/EmbeddedViews/qdrawlarge.png",
-							Folder =  "1000",
-							Append = "_kl1k"
+							new AppSettingsPublishProfiles
+							{
+								ContentType = TemplateContentType.Jpeg,
+								SourceMaxWidth = 1000,
+								OverlayMaxWidth = 380,
+								Path =
+									"{AssemblyDirectory}/EmbeddedViews/qdrawlarge.png",
+								Folder = "1000",
+								Append = "_kl1k"
+							}
 						}
-					}}
+					}
 				}
 			};
-			
+
 			var to = new AppSettings
 			{
 				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 				{
-					{"zz__example2", new List<AppSettingsPublishProfiles>
 					{
-						new AppSettingsPublishProfiles
+						"zz__example2",
+						new List<AppSettingsPublishProfiles>
 						{
-							ContentType = TemplateContentType.Jpeg,
-							SourceMaxWidth = 300,
-							OverlayMaxWidth = 380,
-							Folder =  "1000",
-							Append = "_kl1k"
+							new AppSettingsPublishProfiles
+							{
+								ContentType = TemplateContentType.Jpeg,
+								SourceMaxWidth = 300,
+								OverlayMaxWidth = 380,
+								Folder = "1000",
+								Append = "_kl1k"
+							}
 						}
-					}}
+					}
 				}
 			};
 
 			var compare = AppSettingsCompareHelper.Compare(source, to);
-			
-			Assert.AreEqual(source.PublishProfiles.Keys.FirstOrDefault(), to.PublishProfiles.Keys.FirstOrDefault());
-			Assert.AreEqual("PublishProfiles".ToLowerInvariant(), compare.FirstOrDefault());
 
+			Assert.AreEqual(source.PublishProfiles.Keys.FirstOrDefault(),
+				to.PublishProfiles.Keys.FirstOrDefault());
+			Assert.AreEqual("PublishProfiles".ToLowerInvariant(), compare.FirstOrDefault());
 		}
-		
+
 		[TestMethod]
 		public void ListAppSettingsStringDictionary_Changed()
 		{
@@ -161,24 +151,26 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			{
 				AccountRolesByEmailRegisterOverwrite = new Dictionary<string, string>
 				{
-				{"zz__example2", "Administrator"
-				}}
+					{ "zz__example2", "Administrator" }
+				}
 			};
-			
+
 			var to = new AppSettings
 			{
 				AccountRolesByEmailRegisterOverwrite = new Dictionary<string, string>
 				{
-					{"zz__example2", "User"
-				}}
+					{ "zz__example2", "User" }
+				}
 			};
 
 			var compare = AppSettingsCompareHelper.Compare(source, to);
-			
-			Assert.AreEqual(source.AccountRolesByEmailRegisterOverwrite.Keys.FirstOrDefault(), to.AccountRolesByEmailRegisterOverwrite.Keys.FirstOrDefault());
-			Assert.AreEqual("AccountRolesByEmailRegisterOverwrite".ToLowerInvariant(), compare.FirstOrDefault());
+
+			Assert.AreEqual(source.AccountRolesByEmailRegisterOverwrite.Keys.FirstOrDefault(),
+				to.AccountRolesByEmailRegisterOverwrite.Keys.FirstOrDefault());
+			Assert.AreEqual("AccountRolesByEmailRegisterOverwrite".ToLowerInvariant(),
+				compare.FirstOrDefault());
 		}
-		
+
 		[TestMethod]
 		public void ListAppSettingsStringDictionary_Equal()
 		{
@@ -186,21 +178,23 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			{
 				AccountRolesByEmailRegisterOverwrite = new Dictionary<string, string>
 				{
-				{"zz__example2", "Administrator"
-				}}
+					{ "zz__example2", "Administrator" }
+				}
 			};
-			
+
 			var to = new AppSettings
 			{
-				AccountRolesByEmailRegisterOverwrite = source.AccountRolesByEmailRegisterOverwrite
+				AccountRolesByEmailRegisterOverwrite =
+					source.AccountRolesByEmailRegisterOverwrite
 			};
 
 			var compare = AppSettingsCompareHelper.Compare(source, to);
-			
-			Assert.AreEqual(source.AccountRolesByEmailRegisterOverwrite.Keys.FirstOrDefault(), to.AccountRolesByEmailRegisterOverwrite.Keys.FirstOrDefault());
+			var expected = source.AccountRolesByEmailRegisterOverwrite.Keys.FirstOrDefault();
+			var actual = to.AccountRolesByEmailRegisterOverwrite.Keys.FirstOrDefault();
+			Assert.AreEqual(expected, actual);
 			Assert.AreEqual(0, compare.Count);
 		}
-		
+
 		[TestMethod]
 		public void ListAppSettingsStringDictionary_IgnoreOverwrite()
 		{
@@ -208,20 +202,18 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			{
 				AccountRolesByEmailRegisterOverwrite = new Dictionary<string, string>
 				{
-				{"zz__example2", "Administrator"
-				}}
-			};
-			
-			var to = new AppSettings
-			{
-				AccountRolesByEmailRegisterOverwrite = null
+					{ "zz__example2", "Administrator" }
+				}
 			};
 
+			var to = new AppSettings { AccountRolesByEmailRegisterOverwrite = null };
+
 			AppSettingsCompareHelper.Compare(source, to);
-			
-			Assert.AreEqual(null, to.AccountRolesByEmailRegisterOverwrite?.Keys.FirstOrDefault());
+
+			var actual = to.AccountRolesByEmailRegisterOverwrite?.Keys.FirstOrDefault();
+			Assert.IsNull(actual);
 		}
-		
+
 		[TestMethod]
 		public void KeyValuePairStringString_Changed()
 		{
@@ -229,34 +221,28 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			{
 				DemoData = new List<AppSettingsKeyValue>
 				{
-					new AppSettingsKeyValue
-					{
-						Key = "1",
-						Value = "2"
-					}
+					new AppSettingsKeyValue { Key = "1", Value = "2" }
 				}
 			};
-			
+
 			var to = new AppSettings
 			{
 				DemoData = new List<AppSettingsKeyValue>
 				{
-					new AppSettingsKeyValue
-					{
-						Key = "3",
-						Value = "4"
-					}
+					new AppSettingsKeyValue { Key = "3", Value = "4" }
 				}
 			};
 
 			var compare = AppSettingsCompareHelper.Compare(source, to);
-			
-			Assert.AreEqual(source.DemoData.FirstOrDefault()?.Key, to.DemoData.FirstOrDefault()?.Key);
-			Assert.AreEqual(source.DemoData.FirstOrDefault()?.Value, to.DemoData.FirstOrDefault()?.Value);
+
+			Assert.AreEqual(source.DemoData.FirstOrDefault()?.Key,
+				to.DemoData.FirstOrDefault()?.Key);
+			Assert.AreEqual(source.DemoData.FirstOrDefault()?.Value,
+				to.DemoData.FirstOrDefault()?.Value);
 
 			Assert.AreEqual("DemoData".ToLowerInvariant(), compare.FirstOrDefault());
 		}
-		
+
 		[TestMethod]
 		public void KeyValuePairStringString_Equal()
 		{
@@ -264,26 +250,21 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			{
 				DemoData = new List<AppSettingsKeyValue>
 				{
-					new AppSettingsKeyValue
-					{
-						Key = "1",
-						Value = "2"
-					}
+					new AppSettingsKeyValue { Key = "1", Value = "2" }
 				}
 			};
-			
-			var to = new AppSettings
-			{
-				DemoData = source.DemoData
-			};
+
+			var to = new AppSettings { DemoData = source.DemoData };
 
 			var compare = AppSettingsCompareHelper.Compare(source, to);
 
-			Assert.AreEqual(source.DemoData.FirstOrDefault()?.Key, to.DemoData.FirstOrDefault()?.Key);
-			Assert.AreEqual(source.DemoData.FirstOrDefault()?.Value, to.DemoData.FirstOrDefault()?.Value);
+			Assert.AreEqual(source.DemoData.FirstOrDefault()?.Key,
+				to.DemoData.FirstOrDefault()?.Key);
+			Assert.AreEqual(source.DemoData.FirstOrDefault()?.Value,
+				to.DemoData.FirstOrDefault()?.Value);
 			Assert.AreEqual(0, compare.Count);
 		}
-		
+
 		[TestMethod]
 		public void KeyValuePairStringString_IgnoreOverwrite()
 		{
@@ -291,26 +272,19 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			{
 				DemoData = new List<AppSettingsKeyValue>
 				{
-					new AppSettingsKeyValue
-					{
-						Key = "1",
-						Value = "2"
-					}
+					new AppSettingsKeyValue { Key = "1", Value = "2" }
 				}
 			};
-			
-			var to = new AppSettings
-			{
-				DemoData = null!
-			};
+
+			var to = new AppSettings { DemoData = null! };
 
 			var compare = AppSettingsCompareHelper.Compare(source, to);
-			
+
 			Assert.IsNull(to.DemoData);
 			Assert.AreEqual(0, compare.Count);
 		}
 
-		
+
 		[TestMethod]
 		public void AppSettingsKeyValue_Compare()
 		{
@@ -318,32 +292,24 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			{
 				DemoData = new List<AppSettingsKeyValue>
 				{
-					new AppSettingsKeyValue
-					{
-						Key = "2",
-						Value = "1"
-					}
+					new AppSettingsKeyValue { Key = "2", Value = "1" }
 				}
 			};
-			
+
 			var to = new AppSettings
 			{
 				DemoData = new List<AppSettingsKeyValue>
 				{
-					new AppSettingsKeyValue
-					{
-						Key = "1",
-						Value = "1"
-					}
+					new AppSettingsKeyValue { Key = "1", Value = "1" }
 				}
 			};
 
 			AppSettingsCompareHelper.Compare(source, to);
-			
-			Assert.AreEqual(source.PublishProfiles?.Keys.FirstOrDefault(), 
+
+			Assert.AreEqual(source.PublishProfiles?.Keys.FirstOrDefault(),
 				to.PublishProfiles?.Keys.FirstOrDefault());
 		}
-		
+
 		[TestMethod]
 		public void AppSettingsKeyValue_Compare_Same()
 		{
@@ -351,25 +317,18 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			{
 				DemoData = new List<AppSettingsKeyValue>
 				{
-					new AppSettingsKeyValue
-					{
-						Key = "same",
-						Value = "1"
-					}
+					new AppSettingsKeyValue { Key = "same", Value = "1" }
 				}
 			};
-			
-			var to = new AppSettings
-			{
-				DemoData = source.DemoData
-			};
+
+			var to = new AppSettings { DemoData = source.DemoData };
 
 			AppSettingsCompareHelper.Compare(source, to);
-			
-			Assert.AreEqual(source.PublishProfiles?.Keys.FirstOrDefault(), 
+
+			Assert.AreEqual(source.PublishProfiles?.Keys.FirstOrDefault(),
 				to.PublishProfiles?.Keys.FirstOrDefault());
 		}
-		
+
 		[TestMethod]
 		public void ListAppSettingsPublishProfilesCompare_Same()
 		{
@@ -377,40 +336,47 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			{
 				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 				{
-					{"same", new List<AppSettingsPublishProfiles>
 					{
-						new AppSettingsPublishProfiles
+						"same",
+						new List<AppSettingsPublishProfiles>
 						{
-							ContentType = TemplateContentType.Jpeg,
-							SourceMaxWidth = 300,
-							OverlayMaxWidth = 380,
-							Folder =  "1000",
-							Append = "_kl1k"
+							new AppSettingsPublishProfiles
+							{
+								ContentType = TemplateContentType.Jpeg,
+								SourceMaxWidth = 300,
+								OverlayMaxWidth = 380,
+								Folder = "1000",
+								Append = "_kl1k"
+							}
 						}
-					}}
+					}
 				}
 			};
-			
+
 			var to = new AppSettings
 			{
 				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 				{
-					{"same", new List<AppSettingsPublishProfiles>
 					{
-						new AppSettingsPublishProfiles
+						"same",
+						new List<AppSettingsPublishProfiles>
 						{
-							ContentType = TemplateContentType.Jpeg,
-							SourceMaxWidth = 300,
-							OverlayMaxWidth = 380,
-							Folder =  "1000",
-							Append = "_kl1k"
+							new AppSettingsPublishProfiles
+							{
+								ContentType = TemplateContentType.Jpeg,
+								SourceMaxWidth = 300,
+								OverlayMaxWidth = 380,
+								Folder = "1000",
+								Append = "_kl1k"
+							}
 						}
-					}}
+					}
 				}
 			};
 
 			AppSettingsCompareHelper.Compare(source, to);
-			Assert.AreEqual(source.PublishProfiles.Keys.FirstOrDefault(), to.PublishProfiles.Keys.FirstOrDefault());
+			Assert.AreEqual(source.PublishProfiles.Keys.FirstOrDefault(),
+				to.PublishProfiles.Keys.FirstOrDefault());
 		}
 
 		[TestMethod]
@@ -423,18 +389,18 @@ namespace starskytest.starsky.foundation.platform.Helpers
 				AppSettings.DatabaseTypeList.Mysql, list);
 			Assert.IsNotNull(list);
 		}
-		
+
 		[TestMethod]
 		public void CompareListString_NotFound()
 		{
 			var list = new List<string>();
 			AppSettingsCompareHelper.CompareListString("t",
 				new AppSettings(),
-				new List<string>{"1"},
-				new List<string>{"1"}, list);
+				new List<string> { "1" },
+				new List<string> { "1" }, list);
 			Assert.IsNotNull(list);
 		}
-		
+
 		[TestMethod]
 		public void CompareListPublishProfiles_NotFound()
 		{
@@ -445,7 +411,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 				new Dictionary<string, List<AppSettingsPublishProfiles>>(), list);
 			Assert.IsNotNull(list);
 		}
-		
+
 		[TestMethod]
 		public void CompareBool_NotFound()
 		{
@@ -457,7 +423,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 				boolValue, list);
 			Assert.IsNotNull(list);
 		}
-		
+
 		[TestMethod]
 		public void CompareString_NotFound()
 		{
@@ -468,7 +434,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 				"test", list);
 			Assert.IsNotNull(list);
 		}
-		
+
 		[TestMethod]
 		public void CompareInt_NotFound()
 		{
@@ -479,7 +445,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 				2, list);
 			Assert.IsNotNull(list);
 		}
-		
+
 		[TestMethod]
 		public void OpenTelemetrySettings()
 		{
@@ -496,7 +462,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 					LogsHeader = "source/logs"
 				}
 			};
-			
+
 			var to = new AppSettings
 			{
 				OpenTelemetry = new OpenTelemetrySettings
@@ -512,7 +478,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			};
 
 			AppSettingsCompareHelper.Compare(source, to);
-			
+
 			Assert.AreEqual(source.OpenTelemetry.Header, to.OpenTelemetry.Header);
 			Assert.AreEqual(source.OpenTelemetry.TracesEndpoint, to.OpenTelemetry.TracesEndpoint);
 			Assert.AreEqual(source.OpenTelemetry.TracesHeader, to.OpenTelemetry.TracesHeader);
@@ -520,7 +486,6 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			Assert.AreEqual(source.OpenTelemetry.MetricsHeader, to.OpenTelemetry.MetricsHeader);
 			Assert.AreEqual(source.OpenTelemetry.LogsEndpoint, to.OpenTelemetry.LogsEndpoint);
 			Assert.AreEqual(source.OpenTelemetry.LogsHeader, to.OpenTelemetry.LogsHeader);
-
 		}
 
 		[TestMethod]
@@ -539,18 +504,86 @@ namespace starskytest.starsky.foundation.platform.Helpers
 					LogsHeader = "source/logs"
 				}
 			};
-			
-			var to = new AppSettings
-			{
-				OpenTelemetry = new OpenTelemetrySettings()
-			};
+
+			var to = new AppSettings { OpenTelemetry = new OpenTelemetrySettings() };
 
 			AppSettingsCompareHelper.Compare(source, to);
-			
+
 			Assert.AreEqual("source/test", source.OpenTelemetry.Header);
 			Assert.AreEqual("source/traces", source.OpenTelemetry.TracesEndpoint);
 			Assert.AreEqual("source/metrics", source.OpenTelemetry.MetricsEndpoint);
 			Assert.AreEqual("source/logs", source.OpenTelemetry.LogsEndpoint);
+		}
+
+		[TestMethod]
+		public void AppSettingsDefaultEditorApplication()
+		{
+			var source = new AppSettings
+			{
+				DefaultDesktopEditor =
+				[
+					new AppSettingsDefaultEditorApplication()
+					{
+						ImageFormats =
+						[
+							ExtensionRolesHelper.ImageFormat.bmp,
+							ExtensionRolesHelper.ImageFormat.jpg
+						],
+						ApplicationPath = "source/test"
+					}
+				]
+			};
+
+			var to = new AppSettings
+			{
+				DefaultDesktopEditor =
+				[
+					new AppSettingsDefaultEditorApplication()
+					{
+						ImageFormats = [ExtensionRolesHelper.ImageFormat.jpg],
+						ApplicationPath = "to/test"
+					}
+				]
+			};
+
+			AppSettingsCompareHelper.Compare(source, to);
+
+			Assert.AreEqual(source.DefaultDesktopEditor.Count, to.DefaultDesktopEditor.Count);
+			Assert.AreEqual(source.DefaultDesktopEditor[0].ApplicationPath,
+				to.DefaultDesktopEditor[0].ApplicationPath);
+			Assert.AreEqual(source.DefaultDesktopEditor[0].ImageFormats,
+				to.DefaultDesktopEditor[0].ImageFormats);
+		}
+
+		[TestMethod]
+		public void AppSettingsDefaultEditorApplication_Ignore_DefaultOption()
+		{
+			var source = new AppSettings
+			{
+				DefaultDesktopEditor =
+				[
+					new AppSettingsDefaultEditorApplication()
+					{
+						ImageFormats =
+						[
+							ExtensionRolesHelper.ImageFormat.bmp,
+							ExtensionRolesHelper.ImageFormat.jpg
+						],
+						ApplicationPath = "source/test"
+					}
+				]
+			};
+
+			var to = new AppSettings { DefaultDesktopEditor = [] };
+
+			AppSettingsCompareHelper.Compare(source, to);
+
+			Assert.AreEqual(source.DefaultDesktopEditor.Count, to.DefaultDesktopEditor.Count);
+			Assert.AreEqual("source/test", source.DefaultDesktopEditor[0].ApplicationPath);
+			Assert.AreEqual([
+				ExtensionRolesHelper.ImageFormat.bmp,
+				ExtensionRolesHelper.ImageFormat.jpg
+			], source.DefaultDesktopEditor[0].ImageFormats);
 		}
 	}
 }

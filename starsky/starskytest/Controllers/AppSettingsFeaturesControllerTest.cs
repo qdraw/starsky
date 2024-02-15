@@ -19,27 +19,24 @@ public class AppSettingsFeaturesControllerTest
 		var fakeIMoveToTrashService = new FakeIMoveToTrashService(new List<FileIndexItem>());
 		var appSettingsFeaturesController = new AppSettingsFeaturesController(
 			fakeIMoveToTrashService, new AppSettings());
-		
+
 		// Act
 		var result = appSettingsFeaturesController.FeaturesView() as JsonResult;
 		var json = result?.Value as EnvFeaturesViewModel;
 		Assert.IsNotNull(json);
-		
+
 		// Assert
 		Assert.IsNotNull(result);
 	}
-	
+
 	[TestMethod]
 	public void FeaturesViewTest_Disabled()
 	{
 		// Arrange
 		var fakeIMoveToTrashService = new FakeIMoveToTrashService(new List<FileIndexItem>(), false);
 		var appSettingsFeaturesController = new AppSettingsFeaturesController(
-			fakeIMoveToTrashService, new AppSettings
-			{
-				UseLocalDesktopUi = false
-			});
-		
+			fakeIMoveToTrashService, new AppSettings { UseLocalDesktop = false });
+
 		// Act
 		var result = appSettingsFeaturesController.FeaturesView() as JsonResult;
 		var json = result?.Value as EnvFeaturesViewModel;
@@ -49,18 +46,15 @@ public class AppSettingsFeaturesControllerTest
 		Assert.IsFalse(json.UseLocalDesktopUi);
 		Assert.IsFalse(json.SystemTrashEnabled);
 	}
-		
+
 	[TestMethod]
 	public void FeaturesViewTest_Enabled()
 	{
 		// Arrange
 		var fakeIMoveToTrashService = new FakeIMoveToTrashService(new List<FileIndexItem>());
 		var appSettingsFeaturesController = new AppSettingsFeaturesController(
-			fakeIMoveToTrashService, new AppSettings
-			{
-				UseLocalDesktopUi = true
-			});
-		
+			fakeIMoveToTrashService, new AppSettings { UseLocalDesktop = true });
+
 		// Act
 		var result = appSettingsFeaturesController.FeaturesView() as JsonResult;
 		var json = result?.Value as EnvFeaturesViewModel;

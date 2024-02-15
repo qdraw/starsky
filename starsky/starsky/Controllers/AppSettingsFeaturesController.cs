@@ -11,7 +11,8 @@ public class AppSettingsFeaturesController : Controller
 	private readonly IMoveToTrashService _moveToTrashService;
 	private readonly AppSettings _appSettings;
 
-	public AppSettingsFeaturesController(IMoveToTrashService moveToTrashService, AppSettings appSettings)
+	public AppSettingsFeaturesController(IMoveToTrashService moveToTrashService,
+		AppSettings appSettings)
 	{
 		_moveToTrashService = moveToTrashService;
 		_appSettings = appSettings;
@@ -36,7 +37,7 @@ public class AppSettingsFeaturesController : Controller
 		var shortAppSettings = new EnvFeaturesViewModel
 		{
 			SystemTrashEnabled = _moveToTrashService.IsEnabled(),
-			UseLocalDesktopUi = _appSettings.UseLocalDesktopUi == true
+			UseLocalDesktopUi = _appSettings.UseLocalDesktop == true
 		};
 
 		return Json(shortAppSettings);

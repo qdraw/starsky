@@ -10,7 +10,6 @@ namespace starsky.foundation.platform.Helpers
 {
 	public static class AppSettingsCompareHelper
 	{
-
 		/// <summary>
 		/// Compare a fileIndex item and update items if there are changed in the updateObject
 		/// append => (propertyName == "Tags" add it with comma space or with single space)
@@ -21,8 +20,10 @@ namespace starsky.foundation.platform.Helpers
 		public static List<string> Compare(AppSettings sourceIndexItem, object? updateObject = null)
 		{
 			updateObject ??= new AppSettings();
-			var propertiesA = sourceIndexItem.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
-			var propertiesB = updateObject.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+			var propertiesA = sourceIndexItem.GetType()
+				.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+			var propertiesB = updateObject.GetType()
+				.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
 			var differenceList = new List<string>();
 			foreach ( var propertyB in propertiesB )
@@ -31,42 +32,55 @@ namespace starsky.foundation.platform.Helpers
 				var propertyInfoFromA = Array.Find(propertiesA, p => p.Name == propertyB.Name);
 				if ( propertyInfoFromA == null ) continue;
 
-				CompareMultipleSingleItems(propertyB, propertyInfoFromA, sourceIndexItem, updateObject, differenceList);
-				CompareMultipleListDictionary(propertyB, propertyInfoFromA, sourceIndexItem, updateObject, differenceList);
-				CompareMultipleObjects(propertyB, propertyInfoFromA, sourceIndexItem, updateObject, differenceList);
-
+				CompareMultipleSingleItems(propertyB, propertyInfoFromA, sourceIndexItem,
+					updateObject, differenceList);
+				CompareMultipleListDictionary(propertyB, propertyInfoFromA, sourceIndexItem,
+					updateObject, differenceList);
+				CompareMultipleObjects(propertyB, propertyInfoFromA, sourceIndexItem, updateObject,
+					differenceList);
 			}
+
 			return differenceList;
 		}
 
-		private static void CompareMultipleObjects(PropertyInfo propertyB, PropertyInfo propertyInfoFromA, AppSettings sourceIndexItem, object updateObject, List<string> differenceList)
+		private static void CompareMultipleObjects(PropertyInfo propertyB,
+			PropertyInfo propertyInfoFromA, AppSettings sourceIndexItem, object updateObject,
+			List<string> differenceList)
 		{
-			if ( propertyInfoFromA.PropertyType == typeof(OpenTelemetrySettings) && propertyB.PropertyType == typeof(OpenTelemetrySettings) )
+			if ( propertyInfoFromA.PropertyType == typeof(OpenTelemetrySettings) &&
+			     propertyB.PropertyType == typeof(OpenTelemetrySettings) )
 			{
-				var oldObjectValue = ( OpenTelemetrySettings? )propertyInfoFromA.GetValue(sourceIndexItem, null);
-				var newObjectValue = ( OpenTelemetrySettings? )propertyB.GetValue(updateObject, null);
-				CompareOpenTelemetrySettingsObject(propertyB.Name, sourceIndexItem, oldObjectValue, newObjectValue, differenceList);
+				var oldObjectValue =
+					( OpenTelemetrySettings? )propertyInfoFromA.GetValue(sourceIndexItem, null);
+				var newObjectValue =
+					( OpenTelemetrySettings? )propertyB.GetValue(updateObject, null);
+				CompareOpenTelemetrySettingsObject(propertyB.Name, sourceIndexItem, oldObjectValue,
+					newObjectValue, differenceList);
 			}
 		}
 
-		[SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance")]
-		private static void CompareOpenTelemetrySettingsObject(string propertyName, AppSettings? sourceIndexItem,
+		[SuppressMessage("Performance",
+			"CA1859:Use concrete types when possible for improved performance")]
+		private static void CompareOpenTelemetrySettingsObject(string propertyName,
+			AppSettings? sourceIndexItem,
 			OpenTelemetrySettings? oldKeyValuePairStringStringValue,
-			OpenTelemetrySettings? newKeyValuePairStringStringValue, ICollection<string> differenceList)
+			OpenTelemetrySettings? newKeyValuePairStringStringValue,
+			ICollection<string> differenceList)
 		{
 			if ( oldKeyValuePairStringStringValue == null ||
-				 newKeyValuePairStringStringValue == null ||
-				 // compare lists
-				 JsonSerializer.Serialize(oldKeyValuePairStringStringValue) ==
-				 JsonSerializer.Serialize(newKeyValuePairStringStringValue) ||
-				 // default options
-				 JsonSerializer.Serialize(newKeyValuePairStringStringValue) ==
-				 JsonSerializer.Serialize(new OpenTelemetrySettings()) )
+			     newKeyValuePairStringStringValue == null ||
+			     // compare lists
+			     JsonSerializer.Serialize(oldKeyValuePairStringStringValue) ==
+			     JsonSerializer.Serialize(newKeyValuePairStringStringValue) ||
+			     // default options
+			     JsonSerializer.Serialize(newKeyValuePairStringStringValue) ==
+			     JsonSerializer.Serialize(new OpenTelemetrySettings()) )
 			{
 				return;
 			}
 
-			sourceIndexItem?.GetType().GetProperty(propertyName)?.SetValue(sourceIndexItem, newKeyValuePairStringStringValue, null);
+			sourceIndexItem?.GetType().GetProperty(propertyName)?.SetValue(sourceIndexItem,
+				newKeyValuePairStringStringValue, null);
 			differenceList.Add(propertyName.ToLowerInvariant());
 		}
 
@@ -75,31 +89,38 @@ namespace starsky.foundation.platform.Helpers
 			AppSettings sourceIndexItem, object updateObject,
 			List<string> differenceList)
 		{
-			if ( propertyInfoFromA.PropertyType == typeof(bool?) && propertyB.PropertyType == typeof(bool?) )
+			if ( propertyInfoFromA.PropertyType == typeof(bool?) &&
+			     propertyB.PropertyType == typeof(bool?) )
 			{
 				var oldBoolValue = ( bool? )propertyInfoFromA.GetValue(sourceIndexItem, null);
 				var newBoolValue = ( bool? )propertyB.GetValue(updateObject, null);
-				CompareBool(propertyB.Name, sourceIndexItem, oldBoolValue, newBoolValue, differenceList);
+				CompareBool(propertyB.Name, sourceIndexItem, oldBoolValue, newBoolValue,
+					differenceList);
 			}
 
 			if ( propertyB.PropertyType == typeof(string) )
 			{
 				var oldStringValue = ( string? )propertyInfoFromA.GetValue(sourceIndexItem, null);
 				var newStringValue = ( string? )propertyB.GetValue(updateObject, null);
-				CompareString(propertyB.Name, sourceIndexItem, oldStringValue!, newStringValue!, differenceList);
+				CompareString(propertyB.Name, sourceIndexItem, oldStringValue!, newStringValue!,
+					differenceList);
 			}
 
 			if ( propertyB.PropertyType == typeof(int) )
 			{
 				var oldIntValue = ( int )propertyInfoFromA.GetValue(sourceIndexItem, null)!;
 				var newIntValue = ( int )propertyB.GetValue(updateObject, null)!;
-				CompareInt(propertyB.Name, sourceIndexItem, oldIntValue, newIntValue, differenceList);
+				CompareInt(propertyB.Name, sourceIndexItem, oldIntValue, newIntValue,
+					differenceList);
 			}
 
 			if ( propertyB.PropertyType == typeof(AppSettings.DatabaseTypeList) )
 			{
-				var oldListStringValue = ( AppSettings.DatabaseTypeList? )propertyInfoFromA.GetValue(sourceIndexItem, null);
-				var newListStringValue = ( AppSettings.DatabaseTypeList? )propertyB.GetValue(updateObject, null);
+				var oldListStringValue =
+					( AppSettings.DatabaseTypeList? )propertyInfoFromA.GetValue(sourceIndexItem,
+						null);
+				var newListStringValue =
+					( AppSettings.DatabaseTypeList? )propertyB.GetValue(updateObject, null);
 				CompareDatabaseTypeList(propertyB.Name, sourceIndexItem, oldListStringValue,
 					newListStringValue, differenceList);
 			}
@@ -111,7 +132,8 @@ namespace starsky.foundation.platform.Helpers
 		{
 			if ( propertyB.PropertyType == typeof(List<string>) )
 			{
-				var oldListStringValue = ( List<string>? )propertyInfoFromA.GetValue(sourceIndexItem, null);
+				var oldListStringValue =
+					( List<string>? )propertyInfoFromA.GetValue(sourceIndexItem, null);
 				var newListStringValue = ( List<string>? )propertyB.GetValue(updateObject, null);
 				CompareListString(propertyB.Name, sourceIndexItem, oldListStringValue,
 					newListStringValue, differenceList);
@@ -119,19 +141,26 @@ namespace starsky.foundation.platform.Helpers
 
 			if ( propertyB.PropertyType == typeof(List<AppSettingsKeyValue>) )
 			{
-				var oldKeyValuePairStringStringValue = ( List<AppSettingsKeyValue>? )propertyInfoFromA.GetValue(sourceIndexItem, null);
-				var newKeyValuePairStringStringValue = ( List<AppSettingsKeyValue>? )propertyB.GetValue(updateObject, null);
-				CompareKeyValuePairStringString(propertyB.Name, sourceIndexItem, oldKeyValuePairStringStringValue!,
+				var oldKeyValuePairStringStringValue =
+					( List<AppSettingsKeyValue>? )propertyInfoFromA.GetValue(sourceIndexItem, null);
+				var newKeyValuePairStringStringValue =
+					( List<AppSettingsKeyValue>? )propertyB.GetValue(updateObject, null);
+				CompareKeyValuePairStringString(propertyB.Name, sourceIndexItem,
+					oldKeyValuePairStringStringValue!,
 					newKeyValuePairStringStringValue!, differenceList);
 			}
 
-			if ( propertyB.PropertyType == typeof(Dictionary<string, List<AppSettingsPublishProfiles>>) )
+			if ( propertyB.PropertyType ==
+			     typeof(Dictionary<string, List<AppSettingsPublishProfiles>>) )
 			{
-				var oldListPublishProfilesValue = ( Dictionary<string, List<AppSettingsPublishProfiles>>? )
+				var oldListPublishProfilesValue =
+					( Dictionary<string, List<AppSettingsPublishProfiles>>? )
 					propertyInfoFromA.GetValue(sourceIndexItem, null);
-				var newListPublishProfilesValue = ( Dictionary<string, List<AppSettingsPublishProfiles>>? )
+				var newListPublishProfilesValue =
+					( Dictionary<string, List<AppSettingsPublishProfiles>>? )
 					propertyB.GetValue(updateObject, null);
-				CompareListPublishProfiles(propertyB.Name, sourceIndexItem, oldListPublishProfilesValue,
+				CompareListPublishProfiles(propertyB.Name, sourceIndexItem,
+					oldListPublishProfilesValue,
 					newListPublishProfilesValue, differenceList);
 			}
 
@@ -146,40 +175,45 @@ namespace starsky.foundation.platform.Helpers
 			}
 		}
 
-		private static void CompareStringDictionary(string propertyName, AppSettings sourceIndexItem,
+		private static void CompareStringDictionary(string propertyName,
+			AppSettings sourceIndexItem,
 			Dictionary<string, string>? oldDictionaryValue,
 			Dictionary<string, string>? newDictionaryValue, List<string> differenceList)
 		{
 			if ( oldDictionaryValue == null || newDictionaryValue?.Count == 0 ) return;
 			if ( JsonSerializer.Serialize(oldDictionaryValue,
-					DefaultJsonSerializer.CamelCase) == JsonSerializer.Serialize(newDictionaryValue,
-					DefaultJsonSerializer.CamelCase) )
+				    DefaultJsonSerializer.CamelCase) == JsonSerializer.Serialize(newDictionaryValue,
+				    DefaultJsonSerializer.CamelCase) )
 			{
 				return;
 			}
 
-			sourceIndexItem.GetType().GetProperty(propertyName)?.SetValue(sourceIndexItem, newDictionaryValue, null);
+			sourceIndexItem.GetType().GetProperty(propertyName)
+				?.SetValue(sourceIndexItem, newDictionaryValue, null);
 			differenceList.Add(propertyName.ToLowerInvariant());
 		}
 
-		private static void CompareKeyValuePairStringString(string propertyName, AppSettings sourceIndexItem,
+		private static void CompareKeyValuePairStringString(string propertyName,
+			AppSettings sourceIndexItem,
 			List<AppSettingsKeyValue>? oldKeyValuePairStringStringValue,
-			List<AppSettingsKeyValue>? newKeyValuePairStringStringValue, List<string> differenceList)
+			List<AppSettingsKeyValue>? newKeyValuePairStringStringValue,
+			List<string> differenceList)
 		{
 			if ( oldKeyValuePairStringStringValue == null ||
-				 newKeyValuePairStringStringValue == null ||
-				 newKeyValuePairStringStringValue.Count == 0 )
+			     newKeyValuePairStringStringValue == null ||
+			     newKeyValuePairStringStringValue.Count == 0 )
 			{
 				return;
 			}
 
 			if ( oldKeyValuePairStringStringValue.Equals(
-					newKeyValuePairStringStringValue) )
+				    newKeyValuePairStringStringValue) )
 			{
 				return;
 			}
 
-			sourceIndexItem.GetType().GetProperty(propertyName)?.SetValue(sourceIndexItem, newKeyValuePairStringStringValue, null);
+			sourceIndexItem.GetType().GetProperty(propertyName)?.SetValue(sourceIndexItem,
+				newKeyValuePairStringStringValue, null);
 			differenceList.Add(propertyName.ToLowerInvariant());
 		}
 
@@ -191,12 +225,15 @@ namespace starsky.foundation.platform.Helpers
 		/// <param name="oldDatabaseTypeList">oldDatabaseTypeList to compare with newDatabaseTypeList</param>
 		/// <param name="newDatabaseTypeList">newDatabaseTypeList to compare with oldDatabaseTypeList</param>
 		/// <param name="differenceList">list of different values</param>
-		internal static void CompareDatabaseTypeList(string propertyName, AppSettings sourceIndexItem,
+		internal static void CompareDatabaseTypeList(string propertyName,
+			AppSettings sourceIndexItem,
 			AppSettings.DatabaseTypeList? oldDatabaseTypeList,
 			AppSettings.DatabaseTypeList? newDatabaseTypeList, List<string> differenceList)
 		{
-			if ( oldDatabaseTypeList == newDatabaseTypeList || newDatabaseTypeList == new AppSettings().DatabaseType ) return;
-			sourceIndexItem.GetType().GetProperty(propertyName)?.SetValue(sourceIndexItem, newDatabaseTypeList, null);
+			if ( oldDatabaseTypeList == newDatabaseTypeList ||
+			     newDatabaseTypeList == new AppSettings().DatabaseType ) return;
+			sourceIndexItem.GetType().GetProperty(propertyName)
+				?.SetValue(sourceIndexItem, newDatabaseTypeList, null);
 			differenceList.Add(propertyName.ToLowerInvariant());
 		}
 
@@ -210,17 +247,19 @@ namespace starsky.foundation.platform.Helpers
 		/// <param name="newListStringValue">newListStringValue to compare with oldListStringValue</param>
 		/// <param name="differenceList">list of different values</param>
 		internal static void CompareListString(string propertyName, AppSettings sourceIndexItem,
-			List<string>? oldListStringValue, List<string>? newListStringValue, List<string> differenceList)
+			List<string>? oldListStringValue, List<string>? newListStringValue,
+			List<string> differenceList)
 		{
 			if ( oldListStringValue == null || newListStringValue?.Count == 0 ) return;
 			if ( JsonSerializer.Serialize(oldListStringValue,
-					DefaultJsonSerializer.CamelCase) == JsonSerializer.Serialize(newListStringValue,
-					DefaultJsonSerializer.CamelCase) )
+				    DefaultJsonSerializer.CamelCase) == JsonSerializer.Serialize(newListStringValue,
+				    DefaultJsonSerializer.CamelCase) )
 			{
 				return;
 			}
 
-			sourceIndexItem.GetType().GetProperty(propertyName)?.SetValue(sourceIndexItem, newListStringValue, null);
+			sourceIndexItem.GetType().GetProperty(propertyName)
+				?.SetValue(sourceIndexItem, newListStringValue, null);
 			differenceList.Add(propertyName.ToLowerInvariant());
 		}
 
@@ -232,14 +271,17 @@ namespace starsky.foundation.platform.Helpers
 		/// <param name="oldListPublishValue">oldListPublishValue to compare with newListPublishValue</param>
 		/// <param name="newListPublishValue">newListPublishValue to compare with oldListPublishValue</param>
 		/// <param name="differenceList">list of different values</param>
-		internal static void CompareListPublishProfiles(string propertyName, AppSettings sourceIndexItem,
+		internal static void CompareListPublishProfiles(string propertyName,
+			AppSettings sourceIndexItem,
 			Dictionary<string, List<AppSettingsPublishProfiles>>? oldListPublishValue,
-			Dictionary<string, List<AppSettingsPublishProfiles>>? newListPublishValue, List<string> differenceList)
+			Dictionary<string, List<AppSettingsPublishProfiles>>? newListPublishValue,
+			List<string> differenceList)
 		{
 			if ( oldListPublishValue == null || newListPublishValue?.Count == 0 ) return;
 			if ( oldListPublishValue.Equals(newListPublishValue) ) return;
 
-			sourceIndexItem.GetType().GetProperty(propertyName)?.SetValue(sourceIndexItem, newListPublishValue, null);
+			sourceIndexItem.GetType().GetProperty(propertyName)
+				?.SetValue(sourceIndexItem, newListPublishValue, null);
 			differenceList.Add(propertyName.ToLowerInvariant());
 		}
 
@@ -252,18 +294,22 @@ namespace starsky.foundation.platform.Helpers
 		/// <param name="oldBoolValue">oldBoolValue to compare with newBoolValue</param>
 		/// <param name="newBoolValue">oldBoolValue to compare with newBoolValue</param>
 		/// <param name="differenceList">list of different values</param>
-		internal static void CompareBool(string propertyName, AppSettings sourceIndexItem, bool? oldBoolValue,
+		internal static void CompareBool(string propertyName, AppSettings sourceIndexItem,
+			bool? oldBoolValue,
 			bool? newBoolValue, List<string> differenceList)
 		{
 			if ( newBoolValue == null )
 			{
 				return;
 			}
+
 			if ( oldBoolValue == newBoolValue )
 			{
 				return;
 			}
-			sourceIndexItem.GetType().GetProperty(propertyName)?.SetValue(sourceIndexItem, newBoolValue, null);
+
+			sourceIndexItem.GetType().GetProperty(propertyName)
+				?.SetValue(sourceIndexItem, newBoolValue, null);
 			differenceList.Add(propertyName.ToLowerInvariant());
 		}
 
@@ -288,7 +334,7 @@ namespace starsky.foundation.platform.Helpers
 			}
 
 			if ( oldStringValue == newStringValue ||
-				 ( string.IsNullOrEmpty(newStringValue) ) )
+			     ( string.IsNullOrEmpty(newStringValue) ) )
 			{
 				return;
 			}
@@ -338,6 +384,5 @@ namespace starsky.foundation.platform.Helpers
 			return Array.Find(car.GetType().GetProperties(), pi => pi.Name == propertyName)?
 				.GetValue(car, null);
 		}
-
 	}
 }
