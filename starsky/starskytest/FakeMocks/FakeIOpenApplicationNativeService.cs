@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
+using starsky.foundation.native.OpenApplicationNative;
 using starsky.foundation.native.OpenApplicationNative.Interfaces;
 
 namespace starskytest.FakeMocks;
@@ -30,6 +30,21 @@ public class FakeIOpenApplicationNativeService : IOpenApplicationNativeService
 		return fullFilePath;
 	}
 
+	public bool? OpenApplicationAtUrl(List<(string, string)> fullPathAndApplicationUrl)
+	{
+		var filesByApplicationPath =
+			OpenApplicationNativeService
+				.SortToOpenFilesByApplicationPath(fullPathAndApplicationUrl);
+
+		var results = new List<bool?>();
+		foreach ( var (fullFilePaths, applicationPath) in filesByApplicationPath )
+		{
+			results.Add(OpenApplicationAtUrl(fullFilePaths, applicationPath));
+		}
+
+		return results.TrueForAll(p => p == true);
+	}
+
 	public bool? OpenApplicationAtUrl(List<string> fullPaths, string applicationUrl)
 	{
 		var findPath = FindPath(fullPaths);
@@ -38,6 +53,7 @@ public class FakeIOpenApplicationNativeService : IOpenApplicationNativeService
 
 	public bool? OpenDefault(List<string> fullPaths)
 	{
-		throw new System.NotImplementedException();
+		var findPath = FindPath(fullPaths);
+		return !string.IsNullOrEmpty(findPath);
 	}
 }

@@ -24,4 +24,9 @@ public class CreateFakeStarskyUnixBash
 	public string StarskyDotStarskyPath { get; set; } = string.Empty;
 
 	public string FullFilePath { get; set; } = string.Empty;
+
+	/// <summary>
+	/// ApplicationUrl is the same as FullFilePath
+	/// </summary>
+	public string ApplicationUrl => FullFilePath;
 }
