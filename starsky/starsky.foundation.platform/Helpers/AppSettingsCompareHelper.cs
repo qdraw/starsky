@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text.Json;
+using starsky.foundation.platform.Helpers.Compare;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 
@@ -36,14 +37,15 @@ namespace starsky.foundation.platform.Helpers
 					updateObject, differenceList);
 				CompareMultipleListDictionary(propertyB, propertyInfoFromA, sourceIndexItem,
 					updateObject, differenceList);
-				CompareMultipleObjects(propertyB, propertyInfoFromA, sourceIndexItem, updateObject,
+				CompareListMultipleObjects(propertyB, propertyInfoFromA, sourceIndexItem,
+					updateObject,
 					differenceList);
 			}
 
 			return differenceList;
 		}
 
-		private static void CompareMultipleObjects(PropertyInfo propertyB,
+		private static void CompareListMultipleObjects(PropertyInfo propertyB,
 			PropertyInfo propertyInfoFromA, AppSettings sourceIndexItem, object updateObject,
 			List<string> differenceList)
 		{
@@ -55,6 +57,21 @@ namespace starsky.foundation.platform.Helpers
 				var newObjectValue =
 					( OpenTelemetrySettings? )propertyB.GetValue(updateObject, null);
 				CompareOpenTelemetrySettingsObject(propertyB.Name, sourceIndexItem, oldObjectValue,
+					newObjectValue, differenceList);
+			}
+
+			if ( propertyInfoFromA.PropertyType ==
+			     typeof(List<AppSettingsDefaultEditorApplication>) &&
+			     propertyB.PropertyType == typeof(List<AppSettingsDefaultEditorApplication>) )
+			{
+				var oldObjectValue =
+					( List<AppSettingsDefaultEditorApplication>? )propertyInfoFromA.GetValue(
+						sourceIndexItem, null);
+				var newObjectValue =
+					( List<AppSettingsDefaultEditorApplication>? )propertyB.GetValue(updateObject,
+						null);
+				CompareAppSettingsDefaultEditorApplication(propertyB.Name, sourceIndexItem,
+					oldObjectValue,
 					newObjectValue, differenceList);
 			}
 		}
@@ -75,6 +92,26 @@ namespace starsky.foundation.platform.Helpers
 			     // default options
 			     JsonSerializer.Serialize(newKeyValuePairStringStringValue) ==
 			     JsonSerializer.Serialize(new OpenTelemetrySettings()) )
+			{
+				return;
+			}
+
+			sourceIndexItem?.GetType().GetProperty(propertyName)?.SetValue(sourceIndexItem,
+				newKeyValuePairStringStringValue, null);
+			differenceList.Add(propertyName.ToLowerInvariant());
+		}
+
+		private static void CompareAppSettingsDefaultEditorApplication(string propertyName,
+			AppSettings? sourceIndexItem,
+			List<AppSettingsDefaultEditorApplication>? oldKeyValuePairStringStringValue,
+			List<AppSettingsDefaultEditorApplication>? newKeyValuePairStringStringValue,
+			List<string> differenceList)
+		{
+			if ( oldKeyValuePairStringStringValue == null ||
+			     newKeyValuePairStringStringValue == null ||
+			     newKeyValuePairStringStringValue.Count == 0 ||
+			     AreListsEqualHelper.AreListsEqual(oldKeyValuePairStringStringValue,
+				     newKeyValuePairStringStringValue) )
 			{
 				return;
 			}

@@ -62,7 +62,7 @@ namespace starskytest.starsky.feature.settings.Services
 			var updateAppSettingsByPath = new UpdateAppSettingsByPath(appSettings, selectorStorage);
 			var appSettingTransferObject = new AppSettingsTransferObject
 			{
-				StorageFolder = testFolderPath, Verbose = true, UseLocalDesktopUi = null
+				StorageFolder = testFolderPath, Verbose = true, UseLocalDesktop = null
 			};
 
 			// Act
@@ -82,7 +82,7 @@ namespace starskytest.starsky.feature.settings.Services
 			// Assert
 			var expectedResult =
 				"{\n  \"app\": {\n    \"Verbose\": \"true\",\n    \"StorageFolder\": " + // rm quotes
-				storageFolderJson + ",\n    \"UseLocalDesktopUi\": \"false\"\n  }\n}";
+				storageFolderJson + ",\n    \"UseLocalDesktop\": \"false\"\n  }\n}";
 
 			Assert.AreEqual(expectedResult, result);
 		}

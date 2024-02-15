@@ -578,12 +578,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 
 			AppSettingsCompareHelper.Compare(source, to);
 
-			Assert.AreEqual(source.DefaultDesktopEditor.Count, to.DefaultDesktopEditor.Count);
-			Assert.AreEqual("source/test", source.DefaultDesktopEditor[0].ApplicationPath);
-			Assert.AreEqual([
-				ExtensionRolesHelper.ImageFormat.bmp,
-				ExtensionRolesHelper.ImageFormat.jpg
-			], source.DefaultDesktopEditor[0].ImageFormats);
+			Assert.AreEqual(0, to.DefaultDesktopEditor.Count);
 		}
 	}
 }

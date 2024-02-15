@@ -43,7 +43,7 @@ public class AppSettingsFeaturesControllerTest
 		Assert.IsNotNull(json);
 
 		// Assert
-		Assert.IsFalse(json.UseLocalDesktopUi);
+		Assert.IsFalse(json.UseLocalDesktop);
 		Assert.IsFalse(json.SystemTrashEnabled);
 	}
 
@@ -61,7 +61,7 @@ public class AppSettingsFeaturesControllerTest
 		Assert.IsNotNull(json);
 
 		// Assert
-		Assert.IsTrue(json.UseLocalDesktopUi);
+		Assert.IsTrue(json.UseLocalDesktop);
 		Assert.IsTrue(json.SystemTrashEnabled);
 	}
 }

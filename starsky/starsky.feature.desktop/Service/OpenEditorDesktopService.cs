@@ -18,8 +18,15 @@ public class OpenEditorDesktopService : IOpenEditorDesktopService
 		_openApplicationNativeService = openApplicationNativeService;
 	}
 
-	public void Test()
+	public void Open(string subPath)
 	{
-		_appSettings.UseLocalDesktop
+		if ( _appSettings.UseLocalDesktop == false )
+		{
+			return;
+		}
+		
+		// // 
+		// _openApplicationNativeService.Open(subPath);
 	}
+
 }

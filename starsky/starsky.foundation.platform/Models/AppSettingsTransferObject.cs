@@ -10,6 +10,6 @@ namespace starsky.foundation.platform.Models
 		public string? StorageFolder { get; set; }
 		public bool? UseSystemTrash { get; set; }
 
-		public bool? UseLocalDesktopUi { get; set; }
+		public bool? UseLocalDesktop { get; set; }
 	}
 }
