@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using Microsoft.Win32;
 
 namespace starsky.foundation.native.OpenApplicationNative.Helpers;
@@ -15,6 +16,7 @@ public class FileAssociation
 	Justification = "Check build in")]
 [SuppressMessage("ReSharper", "IdentifierTypo")]
 [SuppressMessage("ReSharper", "InconsistentNaming")]
+[SuppressMessage("Performance", "CA1806:Do not ignore method results")]
 public static class WindowsSetFileAssociations
 {
 	/// <summary>
@@ -35,8 +37,7 @@ public static class WindowsSetFileAssociations
 	private const int SHCNE_ASSOCCHANGED = 0x8000000;
 	private const int SHCNF_FLUSH = 0x1000;
 
-	[SuppressMessage("Performance", "CA1806:Do not ignore method results")]
-	public static void EnsureAssociationsSet(params FileAssociation[] associations)
+	public static bool EnsureAssociationsSet(params FileAssociation[] associations)
 	{
 		var madeChanges = false;
 		foreach ( var association in associations )
@@ -52,6 +53,8 @@ public static class WindowsSetFileAssociations
 		{
 			SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_FLUSH, IntPtr.Zero, IntPtr.Zero);
 		}
+
+		return madeChanges;
 	}
 
 	internal static bool SetAssociation(string extension, string progId, string fileTypeDescription,
@@ -67,6 +70,11 @@ public static class WindowsSetFileAssociations
 
 	internal static bool SetKeyDefaultValue(string keyPath, string value)
 	{
+		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
+		{
+			return false;
+		}
+
 		using var key = Registry.CurrentUser.CreateSubKey(keyPath);
 		if ( key.GetValue(null) as string == value ) return false;
 		key.SetValue(null, value);

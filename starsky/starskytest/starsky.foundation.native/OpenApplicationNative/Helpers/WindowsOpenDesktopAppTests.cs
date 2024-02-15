@@ -5,6 +5,7 @@ using starsky.foundation.native.OpenApplicationNative.Helpers;
 using starsky.foundation.platform.Models;
 using starskytest.FakeCreateAn.CreateFakeStarskyExe;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Medallion.Shell;
@@ -71,6 +72,22 @@ public class WindowsOpenDesktopAppTests
 		var result = WindowsOpenDesktopApp.OpenDefault(["any value"], OSPlatform.Linux);
 		Assert.IsNull(result);
 	}
+	
+	[TestMethod]
+	public void W_OpenDefault2_NonWindows()
+	{
+		if ( new AppSettings().IsWindows )
+		{
+			Assert.Inconclusive("This test if for Unix Only");
+			return;
+		}
+		
+		var result = WindowsOpenDesktopApp.OpenDefault(["any value"]);
+		
+		Console.WriteLine(result);
+		
+		Assert.IsTrue(result);
+	}
 
 	[TestMethod]
 	public async Task W_OpenDefault_HappyFlow__WindowsOnly()
@@ -103,6 +120,20 @@ public class WindowsOpenDesktopAppTests
 		var result = WindowsOpenDesktopApp.OpenApplicationAtUrl(new List<string> { "any value" },
 			"app", OSPlatform.Linux);
 		Assert.IsNull(result);
+	}
+	
+	[TestMethod]
+	[ExpectedException(typeof(Win32Exception))]
+	public void W_OpenApplicationAtUrl2_NonWindows()
+	{
+		if ( new AppSettings().IsWindows )
+		{
+			Assert.Inconclusive("This test if for Unix Only");
+			return;
+		}
+
+		WindowsOpenDesktopApp.OpenApplicationAtUrl(new List<string> { "any value" },
+			"app");
 	}
 
 	[TestMethod]

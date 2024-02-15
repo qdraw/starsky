@@ -7,6 +7,9 @@ using System.Text.RegularExpressions;
 
 namespace starskytest.starsky.foundation.native.OpenApplicationNative.Helpers
 {
+	/// <summary>
+	/// Only for Windows - test the WindowsSetFileAssociationsWindows
+	/// </summary>
 	[TestClass]
 	public class WindowsSetFileAssociationsTests
 	{
