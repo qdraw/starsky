@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -62,8 +63,17 @@ public class OpenApplicationNativeServiceTest
 		}
 
 		// Ensure no keys exist before the test starts
-		Registry.CurrentUser.DeleteSubKeyTree($"Software\\Classes\\{Extension}", false);
-		Registry.CurrentUser.DeleteSubKeyTree($"Software\\Classes\\{ProgramId}", false);
+
+		try
+		{
+			Registry.CurrentUser.DeleteSubKeyTree($"Software\\Classes\\{Extension}", false);
+			Registry.CurrentUser.DeleteSubKeyTree($"Software\\Classes\\{ProgramId}", false);
+		}
+		catch ( IOException )
+		{
+			// do nothing
+		}
+
 	}
 
 	[TestMethod]
@@ -129,7 +139,7 @@ public class OpenApplicationNativeServiceTest
 	[TestMethod]
 	public void OpenApplicationAtUrl_AllApplicationsSupported_ReturnsTrue()
 	{
-		if ( !new AppSettings().IsWindows )
+		if ( new AppSettings().IsWindows )
 		{
 			Assert.Inconclusive("This test if for Linux, Mac OS Only");
 			return;
