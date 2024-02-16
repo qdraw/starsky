@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -158,7 +157,7 @@ public class OpenApplicationNativeServiceTest
 		var result = service.OpenApplicationAtUrl(fullPathAndApplicationUrl);
 
 		// Assert
-		Assert.IsTrue(result);
+		Assert.IsNull(result);
 	}
 
 
@@ -231,8 +230,8 @@ public class OpenApplicationNativeServiceTest
 
 		// Assert
 		Assert.AreEqual(3, result.Count);
-		Assert.IsTrue(result.Any(x => x.Item2 == "app1"));
-		Assert.IsTrue(result.Any(x => x.Item2 == "app2"));
-		Assert.IsTrue(result.Any(x => x.Item2 == "app3"));
+		Assert.IsTrue(result.Exists(x => x.Item2 == "app1"));
+		Assert.IsTrue(result.Exists(x => x.Item2 == "app2"));
+		Assert.IsTrue(result.Exists(x => x.Item2 == "app3"));
 	}
 }
