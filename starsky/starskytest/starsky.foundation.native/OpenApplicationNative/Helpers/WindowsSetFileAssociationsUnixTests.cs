@@ -11,7 +11,7 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative.Helpers;
 public class WindowsSetFileAssociationsUnixTests
 {
 	[TestMethod]
-	public void EnsureAssociationsSet()
+	public void EnsureAssociationsSet__UnixOnly()
 	{
 		if ( new AppSettings().IsWindows )
 		{
@@ -31,8 +31,14 @@ public class WindowsSetFileAssociationsUnixTests
 	}
 
 	[TestMethod]
-	public void SetKeyDefaultValue()
+	public void SetKeyDefaultValue__UnixOnly()
 	{
+		if ( new AppSettings().IsWindows )
+		{
+			Assert.Inconclusive("This test if for Mac and Linux Only");
+			return;
+		}
+
 		// Is false due its unix
 		var result = WindowsSetFileAssociations.SetKeyDefaultValue("test", "Test");
 		Assert.IsFalse(result);
