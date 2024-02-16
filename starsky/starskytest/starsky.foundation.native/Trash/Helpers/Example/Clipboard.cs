@@ -1,24 +1,29 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace starskytest.starsky.foundation.native.Trash.Helpers.Example;
 
+[SuppressMessage("Interoperability", "SYSLIB1054:Use \'LibraryImportAttribute\' " +
+                                     "instead of \'DllImportAttribute\' to generate P/Invoke " +
+                                     "marshalling code at compile time")]
+[SuppressMessage("Globalization", "CA2101:Specify marshaling for P/Invoke string arguments")]
 public static class Clipboard
 {
 	[DllImport("/System/Library/Frameworks/AppKit.framework/AppKit")]
-	static extern IntPtr objc_msgSend(IntPtr receiver, IntPtr selector);
+	private static extern IntPtr objc_msgSend(IntPtr receiver, IntPtr selector);
 
 	[DllImport("/System/Library/Frameworks/AppKit.framework/AppKit")]
-	static extern IntPtr objc_msgSend(IntPtr receiver, IntPtr selector, string arg1);
+	private static extern IntPtr objc_msgSend(IntPtr receiver, IntPtr selector, string arg1);
 
 	[DllImport("/System/Library/Frameworks/AppKit.framework/AppKit")]
-	static extern IntPtr objc_msgSend(IntPtr receiver, IntPtr selector, IntPtr arg1);
+	private static extern IntPtr objc_msgSend(IntPtr receiver, IntPtr selector, IntPtr arg1);
 
 	[DllImport("/System/Library/Frameworks/AppKit.framework/AppKit")]
-	static extern IntPtr sel_registerName(string selectorName);
+	private static extern IntPtr sel_registerName(string selectorName);
 
 	[DllImport("/System/Library/Frameworks/AppKit.framework/AppKit")]
-	static extern IntPtr objc_getClass(string className);
+	private static extern IntPtr objc_getClass(string className);
 
 	public static string? GetText()
 	{

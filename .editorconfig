@@ -66,8 +66,11 @@ dotnet_remove_unnecessary_suppression_exclusions = none:warning
 
 dotnet_style_namespace_match_folder = true:suggestion
 
-# unused usings
+# unused usings (IDE0005)
 dotnet_diagnostic.IDE0005.severity = warning
+# shorter lists
+dotnet_diagnostic.IDE0028.severity = silent
+
 
 # CS4014: Because this call is not awaited, execution of the current method continues before the call is completed.
 # Consider applying the 'await' operator to the result of the call.

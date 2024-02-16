@@ -28,7 +28,7 @@ public static class WindowsSetFileAssociations
 	/// <param name="item1"></param>
 	/// <param name="item2"></param>
 	/// <returns></returns>
-	[System.Runtime.InteropServices.DllImport("Shell32.dll")]
+	[DllImport("Shell32.dll")]
 	[SuppressMessage("Interoperability", "SYSLIB1054:Use \'LibraryImportAttribute\' " +
 	                                     "instead of \'DllImportAttribute\' to generate P/Invoke " +
 	                                     "marshalling code at compile time")]
