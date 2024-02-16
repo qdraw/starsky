@@ -73,7 +73,6 @@ public class OpenApplicationNativeServiceTest
 		{
 			// do nothing
 		}
-
 	}
 
 	[TestMethod]
@@ -137,11 +136,11 @@ public class OpenApplicationNativeServiceTest
 	}
 
 	[TestMethod]
-	public void OpenApplicationAtUrl_AllApplicationsSupported_ReturnsTrue()
+	public void OpenApplicationAtUrl_AllApplicationsSupported_ReturnsTrue__LinuxOnly()
 	{
-		if ( new AppSettings().IsWindows )
+		if ( OperatingSystemHelper.GetPlatform() != OSPlatform.Linux )
 		{
-			Assert.Inconclusive("This test if for Linux, Mac OS Only");
+			Assert.Inconclusive("This test if for Linux Only");
 			return;
 		}
 
@@ -151,7 +150,8 @@ public class OpenApplicationNativeServiceTest
 
 		var fullPathAndApplicationUrl = new List<(string, string)>
 		{
-			( "file1", new CreateFakeStarskyUnixBash().ApplicationUrl )
+			( new CreateFakeStarskyUnixBash().StarskyDotStarskyPath,
+				new CreateFakeStarskyUnixBash().ApplicationUrl )
 		};
 
 		// Act
