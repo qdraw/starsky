@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.desktop.Service;
-using starsky.foundation.native.OpenApplicationNative;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
@@ -18,7 +17,7 @@ public class OpenEditorDesktopServiceTest
 			new FakeIOpenApplicationNativeService(new List<string> { "/test.jpg" }, "test");
 		var appSettings = new AppSettings
 		{
-			UseLocalDesktop = true, 
+			UseLocalDesktop = true,
 			DefaultDesktopEditor = new List<AppSettingsDefaultEditorApplication>
 			{
 				new AppSettingsDefaultEditorApplication
