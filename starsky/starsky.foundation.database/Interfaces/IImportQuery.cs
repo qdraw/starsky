@@ -11,5 +11,6 @@ namespace starsky.foundation.database.Interfaces
 		Task<bool> AddAsync(ImportIndexItem updateStatusContent, bool writeConsole = true);
 		List<ImportIndexItem> History();
 		Task<List<ImportIndexItem>> AddRangeAsync(List<ImportIndexItem> importIndexItemList);
+		Task<ImportIndexItem> RemoveItemAsync(ImportIndexItem importIndexItem);
 	}
 }
