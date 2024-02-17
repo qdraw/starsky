@@ -5,6 +5,7 @@ using starsky.feature.import.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Exceptions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -50,7 +51,10 @@ namespace starskyimportercli
 
 			// Help and other Command Line Tools args are included in the ImporterCli 
 			var service = new ImportCli(import, appSettings, console, webLogger, exifToolDownload);
-			await service.Importer(args);
+			if ( !await service.Importer(args) )
+			{
+				throw new WebApplicationException("Import failed");
+			}
 		}
 	}
 }

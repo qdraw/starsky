@@ -187,10 +187,5 @@ namespace starsky.foundation.storage.Storage
 		{
 			throw new System.NotImplementedException();
 		}
-
-		public DateTime SetLastWriteTime(string path, DateTime? dateTime = null)
-		{
-			return dateTime ?? DateTime.Now;
-		}
 	}
 }
