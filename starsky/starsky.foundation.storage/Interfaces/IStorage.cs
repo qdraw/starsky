@@ -74,6 +74,4 @@ public interface IStorage
 	Task<bool> WriteStreamAsync(Stream stream, string path);
 
 	StorageInfo Info(string path);
-
-	DateTime SetLastWriteTime(string path, DateTime? dateTime = null);
 }

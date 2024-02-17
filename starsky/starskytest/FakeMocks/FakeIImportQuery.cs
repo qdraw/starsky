@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,12 +36,13 @@ namespace starskytest.FakeMocks
 		/// <param name="console"></param>
 		/// <param name="logger"></param>
 		/// <param name="dbContext"></param>
-		public FakeIImportQuery(IServiceScopeFactory scopeFactory, IConsole console, IWebLogger logger, ApplicationDbContext? dbContext = null)
+		public FakeIImportQuery(IServiceScopeFactory scopeFactory, IConsole console,
+			IWebLogger logger, ApplicationDbContext? dbContext = null)
 		{
 			_exist = new List<string>();
 			_isConnection = true;
 		}
-		
+
 		public async Task<bool> IsHashInImportDbAsync(string fileHashCode)
 		{
 			return _exist.Contains(fileHashCode);
@@ -51,7 +53,8 @@ namespace starskytest.FakeMocks
 			return _isConnection;
 		}
 
-		public async Task<bool> AddAsync(ImportIndexItem updateStatusContent, bool writeConsole = true)
+		public async Task<bool> AddAsync(ImportIndexItem updateStatusContent,
+			bool writeConsole = true)
 		{
 			_exist.Add(updateStatusContent.FileHash!);
 			return true;
@@ -62,22 +65,36 @@ namespace starskytest.FakeMocks
 			var newFakeList = new List<ImportIndexItem>();
 			foreach ( var exist in _exist )
 			{
-				newFakeList.Add(new ImportIndexItem
-				{
-					Status = ImportStatus.Ok,
-					FilePath = exist
-				});
+				newFakeList.Add(new ImportIndexItem { Status = ImportStatus.Ok, FilePath = exist });
 			}
+
 			return newFakeList;
 		}
 
-		public async Task<List<ImportIndexItem>> AddRangeAsync(List<ImportIndexItem> importIndexItemList)
+		public async Task<List<ImportIndexItem>> AddRangeAsync(
+			List<ImportIndexItem> importIndexItemList)
 		{
 			foreach ( var importIndexItem in importIndexItemList )
 			{
 				await AddAsync(importIndexItem);
 			}
+
 			return importIndexItemList;
+		}
+
+		public async Task<ImportIndexItem> RemoveItemAsync(ImportIndexItem importIndexItem)
+		{
+			try
+			{
+				_exist.Remove(importIndexItem.FilePath!);
+			}
+			catch ( ArgumentOutOfRangeException )
+			{
+				await Task.Delay(new Random().Next(1, 5));
+				_exist.Remove(importIndexItem.FilePath!);
+			}
+
+			return importIndexItem;
 		}
 
 		public async Task<bool> RemoveAsync(string fileHash)
