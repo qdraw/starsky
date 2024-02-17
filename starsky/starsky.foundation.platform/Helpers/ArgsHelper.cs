@@ -88,18 +88,20 @@ namespace starsky.foundation.platform.Helpers
 			for ( var arg = 0; arg < args.Count; arg++ )
 			{
 				if ( ( args[arg].Equals("--verbose", StringComparison.CurrentCultureIgnoreCase)
-					 || args[arg].Equals("-v", StringComparison.CurrentCultureIgnoreCase) )
-					&& ( arg + 1 ) != args.Count
-					&& bool.TryParse(args[arg + 1], out var needDebugParsed) )
+				       || args[arg].Equals("-v", StringComparison.CurrentCultureIgnoreCase) )
+				     && ( arg + 1 ) != args.Count
+				     && bool.TryParse(args[arg + 1], out var needDebugParsed) )
 				{
 					needDebug = needDebugParsed;
 				}
+
 				if ( ( args[arg].Equals("--verbose", StringComparison.CurrentCultureIgnoreCase) ||
-					 args[arg].Equals("-v", StringComparison.CurrentCultureIgnoreCase) ) )
+				       args[arg].Equals("-v", StringComparison.CurrentCultureIgnoreCase) ) )
 				{
 					needDebug = true;
 				}
 			}
+
 			return needDebug;
 		}
 
@@ -108,28 +110,51 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		public readonly IEnumerable<string> ShortNameList = new List<string>
 		{
-			"-d","-c","-b","-f","-e","-u","-g","-x","-tf", "-dep"
+			"-d",
+			"-c",
+			"-b",
+			"-f",
+			"-e",
+			"-u",
+			"-g",
+			"-x",
+			"-tf",
+			"-dep"
 		}.AsReadOnly();
 
 		/// <summary>
 		/// Long input args, use this order as 'ShortNameList' and 'EnvNameList'
 		/// </summary>
 		public readonly IEnumerable<string> LongNameList = new List<string>
-		{
-			"--databasetype","--connection","--basepath","--thumbnailtempfolder",
-			"--exiftoolpath","--structure","--subpathrelative", "--clean", "--tempfolder",
-			"--dependencies"
-		}
-		.AsReadOnly();
+			{
+				"--databasetype",
+				"--connection",
+				"--basepath",
+				"--thumbnailtempfolder",
+				"--exiftoolpath",
+				"--structure",
+				"--subpathrelative",
+				"--clean",
+				"--tempfolder",
+				"--dependencies"
+			}
+			.AsReadOnly();
 
 		/// <summary>
 		/// name of the env__ (__=:) use this order as 'LongNameList' and 'ShortNameList'
 		/// </summary>
 		public readonly IEnumerable<string> EnvNameList = new List<string>
 		{
-			"app__DatabaseType","app__DatabaseConnection","app__StorageFolder","app__ThumbnailTempFolder",
-			"app__ExifToolPath", "app__Structure", "app__subpathrelative", "app__ExifToolImportXmpCreate",
-			"app__TempFolder", "app__DependenciesFolder"
+			"app__DatabaseType",
+			"app__DatabaseConnection",
+			"app__StorageFolder",
+			"app__ThumbnailTempFolder",
+			"app__ExifToolPath",
+			"app__Structure",
+			"app__subpathrelative",
+			"app__ExifToolImportXmpCreate",
+			"app__TempFolder",
+			"app__DependenciesFolder"
 		}.AsReadOnly();
 
 		/// <summary>
@@ -145,8 +170,11 @@ namespace starsky.foundation.platform.Helpers
 			{
 				for ( var arg = 0; arg < args.Count; arg++ )
 				{
-					if ( ( args[arg].Equals(longNameList[i], StringComparison.CurrentCultureIgnoreCase) ||
-						args[arg].Equals(shortNameList[i], StringComparison.CurrentCultureIgnoreCase) ) && ( arg + 1 ) != args.Count )
+					if ( ( args[arg].Equals(longNameList[i],
+						       StringComparison.CurrentCultureIgnoreCase) ||
+					       args[arg].Equals(shortNameList[i],
+						       StringComparison.CurrentCultureIgnoreCase) ) &&
+					     ( arg + 1 ) != args.Count )
 					{
 						Environment.SetEnvironmentVariable(envNameList[i], args[arg + 1]);
 					}
@@ -199,17 +227,20 @@ namespace starsky.foundation.platform.Helpers
 			for ( var arg = 0; arg < args.Count; arg++ )
 			{
 				if ( ( args[arg].Equals("--help", StringComparison.CurrentCultureIgnoreCase) ||
-					 args[arg].Equals("-h", StringComparison.CurrentCultureIgnoreCase) ) && ( arg + 1 ) != args.Count
-					&& bool.TryParse(args[arg + 1], out var needHelp2) && needHelp2 )
+				       args[arg].Equals("-h", StringComparison.CurrentCultureIgnoreCase) ) &&
+				     ( arg + 1 ) != args.Count
+				     && bool.TryParse(args[arg + 1], out var needHelp2) && needHelp2 )
 				{
 					needHelp = true;
 				}
+
 				if ( args[arg].Equals("--help", StringComparison.CurrentCultureIgnoreCase) ||
-					args[arg].Equals("-h", StringComparison.CurrentCultureIgnoreCase) )
+				     args[arg].Equals("-h", StringComparison.CurrentCultureIgnoreCase) )
 				{
 					needHelp = true;
 				}
 			}
+
 			return needHelp;
 		}
 
@@ -217,7 +248,8 @@ namespace starsky.foundation.platform.Helpers
 		/// Show Help dialog
 		/// </summary>
 		/// <exception cref="FieldAccessException">use appsettings</exception>
-		[SuppressMessage("Usage", "S2068:password detected here, make sure this is not a hard-coded credential")]
+		[SuppressMessage("Usage",
+			"S2068:password detected here, make sure this is not a hard-coded credential")]
 		public void NeedHelpShowDialog()
 		{
 			if ( _appSettings == null )
@@ -234,22 +266,26 @@ namespace starsky.foundation.platform.Helpers
 
 					_console.WriteLine("-t == enable thumbnail (default true)");
 					_console.WriteLine("--path or -p == parameter: (string) ; " +
-									   "'full path', only child items of the database folder are supported," +
-									   "search and replace first part of the filename, '/', use '-p' for current directory ");
-					_console.WriteLine("--subpath or -s == parameter: (string) ; relative path in the database");
-					_console.WriteLine("--subpathrelative or -g == Overwrite sub-path to use relative days to select a folder" +
-									   ", use for example '1' to select yesterday. (structure is required)");
+					                   "'full path', only child items of the database folder are supported," +
+					                   "search and replace first part of the filename, '/', use '-p' for current directory ");
+					_console.WriteLine(
+						"--subpath or -s == parameter: (string) ; relative path in the database");
+					_console.WriteLine(
+						"--subpathrelative or -g == Overwrite sub-path to use relative days to select a folder" +
+						", use for example '1' to select yesterday. (structure is required)");
 					_console.WriteLine("-p, -s, -g == you need to select one of those tags");
 
 					_console.WriteLine("recursive is enabled by default");
 					break;
 				case AppSettings.StarskyAppType.MetaThumbnail:
 					_console.WriteLine("--path or -p == parameter: (string) ; " +
-									   "'full path', only child items of the database folder are supported," +
-									   "search and replace first part of the filename, '/', use '-p' for current directory ");
-					_console.WriteLine("--subpath or -s == parameter: (string) ; relative path in the database");
-					_console.WriteLine("--subpathrelative or -g == Overwrite sub-path to use relative days to select a folder" +
-									   ", use for example '1' to select yesterday. (structure is required)");
+					                   "'full path', only child items of the database folder are supported," +
+					                   "search and replace first part of the filename, '/', use '-p' for current directory ");
+					_console.WriteLine(
+						"--subpath or -s == parameter: (string) ; relative path in the database");
+					_console.WriteLine(
+						"--subpathrelative or -g == Overwrite sub-path to use relative days to select a folder" +
+						", use for example '1' to select yesterday. (structure is required)");
 					_console.WriteLine("-p, -s, -g == you need to select one of those tags");
 
 					_console.WriteLine("recursive is enabled by default");
@@ -261,58 +297,79 @@ namespace starsky.foundation.platform.Helpers
 				case AppSettings.StarskyAppType.Geo:
 					// When this change please update ./readme.md
 					_console.WriteLine("--path or -p == parameter: (string) ; " +
-									   "without addition is current directory, full path (all locations are supported) ");
-					_console.WriteLine("--subpath or -s == parameter: (string) ; relative path in the database ");
-					_console.WriteLine("--subpathrelative or -g == Overwrite subpath to use relative days to select a folder" +
-									   ", use for example '1' to select yesterday. (structure is required)");
+					                   "without addition is current directory, full path (all locations are supported) ");
+					_console.WriteLine(
+						"--subpath or -s == parameter: (string) ; relative path in the database ");
+					_console.WriteLine(
+						"--subpathrelative or -g == Overwrite subpath to use relative days to select a folder" +
+						", use for example '1' to select yesterday. (structure is required)");
 					_console.WriteLine("-p, -s, -g == you need to select one of those tags");
 					_console.WriteLine("--all or -a == overwrite reverse geotag location tags " +
-									   "(default: false / ignore already taged files) ");
-					_console.WriteLine("--index or -i == parameter: (bool) ; gpx feature to index geo location, default true");
+					                   "(default: false / ignore already taged files) ");
+					_console.WriteLine(
+						"--index or -i == parameter: (bool) ; gpx feature to index geo location, default true");
 					break;
 				case AppSettings.StarskyAppType.WebHtml:
 					// When this change please update ./readme.md
-					_console.WriteLine("--path or -p == parameter: (string) ; full path (select a folder), " +
-									   "use '-p' for current directory");
+					_console.WriteLine(
+						"--path or -p == parameter: (string) ; full path (select a folder), " +
+						"use '-p' for current directory");
 					_console.WriteLine("--name or -n == parameter: (string) ; name of blog item ");
 					break;
 				case AppSettings.StarskyAppType.Importer:
 					// When this change please update ./readme.md
 					_console.WriteLine("--path or -p == parameter: (string) ; full path");
-					_console.WriteLine("                can be an folder or file, use '-p' for current directory");
+					_console.WriteLine(
+						"                can be an folder or file, use '-p' for current directory");
 					_console.WriteLine("                for multiple items use dot comma (;) " +
-									   "to split and quotes (\") around the input string");
-					_console.WriteLine("--move or -m == delete file after importing (default false / copy file)");
+					                   "to split and quotes (\") around the input string");
+					_console.WriteLine(
+						"--move or -m == delete file after importing (default false / copy file)");
 					_console.WriteLine("--recursive or -r == Import Directory recursive " +
-									   "(default: false / only the selected folder) ");
-					_console.WriteLine("--structure == overwrite app-settings with file-directory structure " +
-									   "based on exif and filename create datetime");
-					_console.WriteLine("--index or -i == parameter: (bool) ; indexing, false is always copy," +
-									   " true is check if exist in db, default true");
-					_console.WriteLine("--clean or -x == true is to add a xmp sidecar file for raws, default true");
-					_console.WriteLine("--colorclass == update color-class to this number value, default don't change");
+					                   "(default: false / only the selected folder) ");
+					_console.WriteLine(
+						"--structure == overwrite app-settings with file-directory structure " +
+						"based on exif and filename create datetime");
+					_console.WriteLine(
+						"--index or -i == parameter: (bool) ; indexing, false is always copy," +
+						" true is check if exist in db, default true");
+					_console.WriteLine(
+						"--clean or -x == true is to add a xmp sidecar file for raws, default true");
+					_console.WriteLine(
+						"--colorclass == update color-class to this number value, default don't change");
 					break;
 				case AppSettings.StarskyAppType.Sync:
 					// When this change please update ./readme.md
 					_console.WriteLine("--path or -p == parameter: (string) ; " +
-									   "'full path', only child items of the database folder are supported," +
-									   "search and replace first part of the filename, '/', use '-p' for current directory ");
-					_console.WriteLine("--subpath or -s == parameter: (string) ; relative path in the database");
-					_console.WriteLine("--subpathrelative or -g == Overwrite sub-path to use relative days to select a folder" +
-									   ", use for example '1' to select yesterday. (structure is required)");
+					                   "'full path', only child items of the database folder are supported," +
+					                   "search and replace first part of the filename, '/', use '-p' for current directory ");
+					_console.WriteLine(
+						"--subpath or -s == parameter: (string) ; relative path in the database");
+					_console.WriteLine(
+						"--subpathrelative or -g == Overwrite sub-path to use relative days to select a folder" +
+						", use for example '1' to select yesterday. (structure is required)");
 					_console.WriteLine("-p, -s, -g == you need to select one of those tags");
-					_console.WriteLine("--index or -i == parameter: (bool) ; enable indexing, default true");
-					_console.WriteLine("--thumbnail or -t == parameter: (bool) ; enable thumbnail, default false");
-					_console.WriteLine("--clean or -x == parameter: (bool) ; enable checks in thumbnail-temp-folder" +
-									   " if thumbnails are needed, delete unused files");
-					_console.WriteLine("--orphanfolder or -o == To delete files without a parent folder " +
-									   "(heavy cpu usage), default false");
+					_console.WriteLine(
+						"--index or -i == parameter: (bool) ; enable indexing, default true");
+					_console.WriteLine(
+						"--thumbnail or -t == parameter: (bool) ; enable thumbnail, default false");
+					_console.WriteLine(
+						"--clean or -x == parameter: (bool) ; enable checks in thumbnail-temp-folder" +
+						" if thumbnails are needed, delete unused files");
+					_console.WriteLine(
+						"--orphanfolder or -o == To delete files without a parent folder " +
+						"(heavy cpu usage), default false");
 					_console.WriteLine("--verbose or -v == verbose, more detailed info");
-					_console.WriteLine("--databasetype or -d == Overwrite EnvironmentVariable for DatabaseType");
-					_console.WriteLine("--basepath or -b == Overwrite EnvironmentVariable for StorageFolder");
-					_console.WriteLine("--connection or -c == Overwrite EnvironmentVariable for DatabaseConnection");
-					_console.WriteLine("--thumbnailtempfolder or -f == Overwrite EnvironmentVariable for ThumbnailTempFolder");
-					_console.WriteLine("--exiftoolpath or -e == Overwrite EnvironmentVariable for ExifToolPath");
+					_console.WriteLine(
+						"--databasetype or -d == Overwrite EnvironmentVariable for DatabaseType");
+					_console.WriteLine(
+						"--basepath or -b == Overwrite EnvironmentVariable for StorageFolder");
+					_console.WriteLine(
+						"--connection or -c == Overwrite EnvironmentVariable for DatabaseConnection");
+					_console.WriteLine(
+						"--thumbnailtempfolder or -f == Overwrite EnvironmentVariable for ThumbnailTempFolder");
+					_console.WriteLine(
+						"--exiftoolpath or -e == Overwrite EnvironmentVariable for ExifToolPath");
 					break;
 			}
 
@@ -324,19 +381,40 @@ namespace starsky.foundation.platform.Helpers
 			_console.WriteLine(string.Empty);
 			_console.WriteLine("AppSettings: " + _appSettings.ApplicationType);
 			_console.WriteLine("Database Type (-d --databasetype) " + _appSettings.DatabaseType);
-			_console.WriteLine("DatabaseConnection (-c --connection) " + _appSettings.DatabaseConnection);
+			_console.WriteLine("DatabaseConnection (-c --connection) " +
+			                   _appSettings.DatabaseConnection);
 			_console.WriteLine($"StorageFolder (-b --basepath) {_appSettings.StorageFolder} ");
-			_console.WriteLine($"ThumbnailTempFolder (-f --thumbnailtempfolder) {_appSettings.ThumbnailTempFolder} ");
+			_console.WriteLine(
+				$"ThumbnailTempFolder (-f --thumbnailtempfolder) {_appSettings.ThumbnailTempFolder} ");
 			_console.WriteLine($"ExifToolPath  (-e --exiftoolpath) {_appSettings.ExifToolPath} ");
 			_console.WriteLine("Structure  (-u --structure) " + _appSettings.Structure);
 			_console.WriteLine("CameraTimeZone " + _appSettings.CameraTimeZone);
 			_console.WriteLine("Name " + _appSettings.Name);
 			_console.WriteLine($"TempFolder {_appSettings.TempFolder} ");
 			_console.WriteLine($"BaseDirectoryProject {_appSettings.BaseDirectoryProject} ");
-			_console.WriteLine("ExiftoolSkipDownloadOnStartup " + _appSettings.ExiftoolSkipDownloadOnStartup);
-			_console.WriteLine("GeoFilesSkipDownloadOnStartup " + _appSettings.GeoFilesSkipDownloadOnStartup);
+			_console.WriteLine("ExiftoolSkipDownloadOnStartup " +
+			                   _appSettings.ExiftoolSkipDownloadOnStartup);
+			_console.WriteLine("GeoFilesSkipDownloadOnStartup " +
+			                   _appSettings.GeoFilesSkipDownloadOnStartup);
 
 			_console.WriteLine($"MaxDegreesOfParallelism {_appSettings.MaxDegreesOfParallelism} ");
+
+			// OpenTelemetry
+			if ( !string.IsNullOrEmpty(_appSettings.OpenTelemetry?.LogsEndpoint) )
+			{
+				_console.WriteLine($"LogsEndpoint {_appSettings.OpenTelemetry.LogsEndpoint} ");
+			}
+
+			if ( !string.IsNullOrEmpty(_appSettings.OpenTelemetry?.MetricsEndpoint) )
+			{
+				_console.WriteLine(
+					$"MetricsEndpoint {_appSettings.OpenTelemetry.MetricsEndpoint} ");
+			}
+
+			if ( !string.IsNullOrEmpty(_appSettings.OpenTelemetry?.TracesEndpoint) )
+			{
+				_console.WriteLine($"TracesEndpoint {_appSettings.OpenTelemetry.TracesEndpoint} ");
+			}
 
 			_console.Write("SyncIgnore ");
 			foreach ( var rule in _appSettings.SyncIgnore ) _console.Write($"{rule}, ");
@@ -347,7 +425,8 @@ namespace starsky.foundation.platform.Helpers
 			_console.Write("\n");
 
 			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.Importer )
-				_console.WriteLine("Create xmp on import (ExifToolImportXmpCreate): " + _appSettings.ExifToolImportXmpCreate);
+				_console.WriteLine("Create xmp on import (ExifToolImportXmpCreate): " +
+				                   _appSettings.ExifToolImportXmpCreate);
 
 			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebFtp )
 				_console.WriteLine("WebFtp " + _appSettings.WebFtp);
@@ -361,13 +440,20 @@ namespace starsky.foundation.platform.Helpers
 
 			var machineName = Environment.MachineName.ToLowerInvariant();
 
-			_console.WriteLine("Config is read in this order: (latest is applied over lower numbers)");
-			_console.WriteLine($"1. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.json")}");
-			_console.WriteLine($"2. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.default.json")}");
-			_console.WriteLine($"3. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.patch.json")}");
-			_console.WriteLine($"4. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".json")}");
-			_console.WriteLine($"5. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".patch.json")}");
-			_console.WriteLine($"6. Environment variable: app__appsettingspath: {Environment.GetEnvironmentVariable("app__appsettingspath")}");
+			_console.WriteLine(
+				"Config is read in this order: (latest is applied over lower numbers)");
+			_console.WriteLine(
+				$"1. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.json")}");
+			_console.WriteLine(
+				$"2. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.default.json")}");
+			_console.WriteLine(
+				$"3. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.patch.json")}");
+			_console.WriteLine(
+				$"4. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".json")}");
+			_console.WriteLine(
+				$"5. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".patch.json")}");
+			_console.WriteLine(
+				$"6. Environment variable: app__appsettingspath: {Environment.GetEnvironmentVariable("app__appsettingspath")}");
 			_console.WriteLine("7. Specific environment variables for example app__storageFolder");
 
 			AppSpecificHelp();
@@ -392,18 +478,19 @@ namespace starsky.foundation.platform.Helpers
 						foreach ( var publishProfile in publishProfiles.Value )
 						{
 							_console.WriteLine("--- " +
-											   $"Path: {publishProfile.Path} " +
-											   $"Append: {publishProfile.Append} " +
-											   $"Copy: {publishProfile.Copy} " +
-											   $"Folder: {publishProfile.Folder} " +
-											   $"Prepend: {publishProfile.Prepend} " +
-											   $"Template: {publishProfile.Template} " +
-											   $"ContentType: {publishProfile.ContentType} " +
-											   $"MetaData: {publishProfile.MetaData} " +
-											   $"OverlayMaxWidth: {publishProfile.OverlayMaxWidth} " +
-											   $"SourceMaxWidth: {publishProfile.SourceMaxWidth} ");
+							                   $"Path: {publishProfile.Path} " +
+							                   $"Append: {publishProfile.Append} " +
+							                   $"Copy: {publishProfile.Copy} " +
+							                   $"Folder: {publishProfile.Folder} " +
+							                   $"Prepend: {publishProfile.Prepend} " +
+							                   $"Template: {publishProfile.Template} " +
+							                   $"ContentType: {publishProfile.ContentType} " +
+							                   $"MetaData: {publishProfile.MetaData} " +
+							                   $"OverlayMaxWidth: {publishProfile.OverlayMaxWidth} " +
+							                   $"SourceMaxWidth: {publishProfile.SourceMaxWidth} ");
 						}
 					}
+
 					break;
 			}
 		}
@@ -417,9 +504,9 @@ namespace starsky.foundation.platform.Helpers
 			var version = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
 			_console.WriteLine($".NET Version - {version}");
 			_console.WriteLine($"Starsky Version - {_appSettings.AppVersion} " +
-							   "- build at: " +
-							   DateAssembly.GetBuildDate(Assembly.GetExecutingAssembly()).ToString(
-								   new CultureInfo("nl-NL")));
+			                   "- build at: " +
+			                   DateAssembly.GetBuildDate(Assembly.GetExecutingAssembly()).ToString(
+				                   new CultureInfo("nl-NL")));
 		}
 
 		/// <summary>
@@ -435,9 +522,9 @@ namespace starsky.foundation.platform.Helpers
 			for ( var arg = 0; arg < args.Count; arg++ )
 			{
 				if ( ( args[arg].Equals("--index", StringComparison.CurrentCultureIgnoreCase) ||
-					 args[arg].Equals("-i", StringComparison.CurrentCultureIgnoreCase) )
-					&& ( arg + 1 ) != args.Count
-					&& bool.TryParse(args[arg + 1], out var isIndexMode2) )
+				       args[arg].Equals("-i", StringComparison.CurrentCultureIgnoreCase) )
+				     && ( arg + 1 ) != args.Count
+				     && bool.TryParse(args[arg + 1], out var isIndexMode2) )
 				{
 					isIndexMode = isIndexMode2;
 				}
@@ -452,21 +539,23 @@ namespace starsky.foundation.platform.Helpers
 		/// <param name="args">args</param>
 		/// <returns>list of fullFilePaths</returns>
 		/// <exception cref="FieldAccessException">_appSettings is missing</exception>
-		[SuppressMessage("Usage", "S125:Remove this commented out code.", Justification = "Regex as comment")]
+		[SuppressMessage("Usage", "S125:Remove this commented out code.",
+			Justification = "Regex as comment")]
 		public List<string> GetPathListFormArgs(IReadOnlyList<string> args)
 		{
 			if ( _appSettings == null ) throw new FieldAccessException("use with _appSettings");
 			var path = GetUserInputPathFromArg(args);
 
 			// To use only with -p or --path > current directory
-			if ( ( args.Contains("-p") || args.Contains("--path") ) && ( path == string.Empty || path[0] == "-"[0] ) )
+			if ( ( args.Contains("-p") || args.Contains("--path") ) &&
+			     ( path == string.Empty || path[0] == "-"[0] ) )
 			{
 				path = Directory.GetCurrentDirectory();
 			}
 
 			// Ignore quotes at beginning: unescaped ^"|"$
 			path = new Regex("^\"|\"$",
-				RegexOptions.None, TimeSpan.FromMilliseconds(100))
+					RegexOptions.None, TimeSpan.FromMilliseconds(100))
 				.Replace(path, string.Empty);
 
 			// split every dot comma but ignore escaped
@@ -487,11 +576,13 @@ namespace starsky.foundation.platform.Helpers
 			for ( var arg = 0; arg < args.Count; arg++ )
 			{
 				if ( ( args[arg].Equals("--path", StringComparison.CurrentCultureIgnoreCase) ||
-					 args[arg].Equals("-p", StringComparison.CurrentCultureIgnoreCase) ) && ( arg + 1 ) != args.Count )
+				       args[arg].Equals("-p", StringComparison.CurrentCultureIgnoreCase) ) &&
+				     ( arg + 1 ) != args.Count )
 				{
 					path = args[arg + 1];
 				}
 			}
+
 			return path;
 		}
 
@@ -506,11 +597,13 @@ namespace starsky.foundation.platform.Helpers
 			for ( var arg = 0; arg < args.Count; arg++ )
 			{
 				if ( ( args[arg].Equals("--password", StringComparison.CurrentCultureIgnoreCase) ||
-					 args[arg].Equals("-p", StringComparison.CurrentCultureIgnoreCase) ) && ( arg + 1 ) != args.Count )
+				       args[arg].Equals("-p", StringComparison.CurrentCultureIgnoreCase) ) &&
+				     ( arg + 1 ) != args.Count )
 				{
 					path = args[arg + 1];
 				}
 			}
+
 			return path;
 		}
 
@@ -525,10 +618,11 @@ namespace starsky.foundation.platform.Helpers
 			for ( var arg = 0; arg < args.Count; arg++ )
 			{
 				if ( ( !args[arg].Equals("--output", StringComparison.CurrentCultureIgnoreCase) ) ||
-					 ( arg + 1 ) == args.Count ) continue;
+				     ( arg + 1 ) == args.Count ) continue;
 				var outputModeItem = args[arg + 1];
 				Enum.TryParse(outputModeItem, true, out outputMode);
 			}
+
 			return outputMode;
 		}
 
@@ -543,11 +637,13 @@ namespace starsky.foundation.platform.Helpers
 			for ( var arg = 0; arg < args.Count; arg++ )
 			{
 				if ( ( args[arg].Equals("--name", StringComparison.CurrentCultureIgnoreCase) ||
-					 args[arg].Equals("-n", StringComparison.CurrentCultureIgnoreCase) ) && ( arg + 1 ) != args.Count )
+				       args[arg].Equals("-n", StringComparison.CurrentCultureIgnoreCase) ) &&
+				     ( arg + 1 ) != args.Count )
 				{
 					name = args[arg + 1];
 				}
 			}
+
 			return name;
 		}
 
@@ -565,13 +661,15 @@ namespace starsky.foundation.platform.Helpers
 			var path = GetUserInputPathFromArg(args);
 
 			// To use only with -p or --path > current directory
-			if ( ( args.Contains("-p") || args.Contains("--path") ) && ( path == string.Empty || path[0] == "-"[0] ) )
+			if ( ( args.Contains("-p") || args.Contains("--path") ) &&
+			     ( path == string.Empty || path[0] == "-"[0] ) )
 			{
 				var currentDirectory = Directory.GetCurrentDirectory();
 				if ( currentDirectory != _appSettings.BaseDirectoryProject )
 				{
 					path = currentDirectory;
-					if ( _appSettings.IsVerbose() ) Console.WriteLine($">> currentDirectory: {currentDirectory}");
+					if ( _appSettings.IsVerbose() )
+						Console.WriteLine($">> currentDirectory: {currentDirectory}");
 				}
 			}
 
@@ -595,11 +693,13 @@ namespace starsky.foundation.platform.Helpers
 			for ( var arg = 0; arg < args.Count; arg++ )
 			{
 				if ( ( args[arg].Equals("--subpath", StringComparison.CurrentCultureIgnoreCase) ||
-					 args[arg].Equals("-s", StringComparison.CurrentCultureIgnoreCase) ) && ( arg + 1 ) != args.Count )
+				       args[arg].Equals("-s", StringComparison.CurrentCultureIgnoreCase) ) &&
+				     ( arg + 1 ) != args.Count )
 				{
 					subPath = args[arg + 1];
 				}
 			}
+
 			return subPath;
 		}
 
@@ -616,8 +716,10 @@ namespace starsky.foundation.platform.Helpers
 
 			for ( int arg = 0; arg < args.Count; arg++ )
 			{
-				if ( ( args[arg].Equals("--subpathrelative", StringComparison.InvariantCultureIgnoreCase) ||
-					args[arg].Equals("-g", StringComparison.InvariantCultureIgnoreCase) ) && ( arg + 1 ) != args.Count )
+				if ( ( args[arg].Equals("--subpathrelative",
+					       StringComparison.InvariantCultureIgnoreCase) ||
+				       args[arg].Equals("-g", StringComparison.InvariantCultureIgnoreCase) ) &&
+				     ( arg + 1 ) != args.Count )
 				{
 					subPathRelative = args[arg + 1];
 				}
@@ -643,8 +745,9 @@ namespace starsky.foundation.platform.Helpers
 		public static bool IsSubPathOrPath(IReadOnlyList<string> args)
 		{
 			// To use only with -p or --path > current directory
-			if ( args.Any(arg => ( arg.Equals("--path", StringComparison.CurrentCultureIgnoreCase) ||
-								  arg.Equals("-p", StringComparison.CurrentCultureIgnoreCase) )) )
+			if ( args.Any(arg =>
+				    ( arg.Equals("--path", StringComparison.CurrentCultureIgnoreCase) ||
+				      arg.Equals("-p", StringComparison.CurrentCultureIgnoreCase) )) )
 			{
 				return false;
 			}
@@ -653,11 +756,13 @@ namespace starsky.foundation.platform.Helpers
 			for ( int arg = 0; arg < args.Count; arg++ )
 			{
 				if ( ( args[arg].Equals("--subpath", StringComparison.CurrentCultureIgnoreCase) ||
-					 args[arg].Equals("-s", StringComparison.CurrentCultureIgnoreCase) ) && ( arg + 1 ) != args.Count )
+				       args[arg].Equals("-s", StringComparison.CurrentCultureIgnoreCase) ) &&
+				     ( arg + 1 ) != args.Count )
 				{
 					return true;
 				}
 			}
+
 			return true;
 		}
 
@@ -684,8 +789,9 @@ namespace starsky.foundation.platform.Helpers
 			for ( var arg = 0; arg < args.Count; arg++ )
 			{
 				if ( ( args[arg].Equals("--thumbnail", StringComparison.CurrentCultureIgnoreCase) ||
-					 args[arg].Equals("-t", StringComparison.CurrentCultureIgnoreCase) )
-					&& ( arg + 1 ) != args.Count && bool.TryParse(args[arg + 1], out var isThumbnail2) )
+				       args[arg].Equals("-t", StringComparison.CurrentCultureIgnoreCase) )
+				     && ( arg + 1 ) != args.Count &&
+				     bool.TryParse(args[arg + 1], out var isThumbnail2) )
 				{
 					isThumbnail = isThumbnail2;
 				}
@@ -705,15 +811,18 @@ namespace starsky.foundation.platform.Helpers
 
 			for ( var arg = 0; arg < args.Count; arg++ )
 			{
-				if ( ( args[arg].Equals("--orphanfolder", StringComparison.CurrentCultureIgnoreCase) ||
-					 args[arg].Equals("-o", StringComparison.CurrentCultureIgnoreCase) )
-					&& ( arg + 1 ) != args.Count && bool.TryParse(args[arg + 1], out var isOrphanFolderCheck2) )
+				if ( ( args[arg].Equals("--orphanfolder",
+					       StringComparison.CurrentCultureIgnoreCase) ||
+				       args[arg].Equals("-o", StringComparison.CurrentCultureIgnoreCase) )
+				     && ( arg + 1 ) != args.Count &&
+				     bool.TryParse(args[arg + 1], out var isOrphanFolderCheck2) )
 				{
 					isOrphanFolderCheck = isOrphanFolderCheck2;
 				}
 			}
 
-			if ( _appSettings.IsVerbose() ) Console.WriteLine(">> isOrphanFolderCheck " + isOrphanFolderCheck);
+			if ( _appSettings.IsVerbose() )
+				Console.WriteLine(">> isOrphanFolderCheck " + isOrphanFolderCheck);
 			return isOrphanFolderCheck;
 		}
 
@@ -729,19 +838,21 @@ namespace starsky.foundation.platform.Helpers
 			for ( var arg = 0; arg < args.Count; arg++ )
 			{
 				if ( ( args[arg].Equals("--move", StringComparison.CurrentCultureIgnoreCase)
-					|| args[arg].Equals("-m", StringComparison.CurrentCultureIgnoreCase) )
-					&& ( arg + 1 ) != args.Count && bool.TryParse(args[arg + 1], out var getMove2) )
+				       || args[arg].Equals("-m", StringComparison.CurrentCultureIgnoreCase) )
+				     && ( arg + 1 ) != args.Count &&
+				     bool.TryParse(args[arg + 1], out var getMove2) )
 				{
 					getMove = getMove2;
 					continue;
 				}
 
 				if ( ( args[arg].Equals("--move", StringComparison.CurrentCultureIgnoreCase) ||
-					 args[arg].Equals("-m", StringComparison.CurrentCultureIgnoreCase) ) )
+				       args[arg].Equals("-m", StringComparison.CurrentCultureIgnoreCase) ) )
 				{
 					getMove = true;
 				}
 			}
+
 			return getMove;
 		}
 
@@ -758,26 +869,27 @@ namespace starsky.foundation.platform.Helpers
 			for ( int arg = 0; arg < args.Count; arg++ )
 			{
 				if ( ( args[arg].Equals("--all", StringComparison.CurrentCultureIgnoreCase) ||
-					 args[arg].Equals("-a", StringComparison.CurrentCultureIgnoreCase) ) )
+				       args[arg].Equals("-a", StringComparison.CurrentCultureIgnoreCase) ) )
 				{
 					getAll = true;
 				}
 
 				if ( ( !args[arg].Equals("--all",
-						   StringComparison.CurrentCultureIgnoreCase) &&
-					   !args[arg].Equals("-a",
-						   StringComparison.CurrentCultureIgnoreCase) ) ||
-					 ( arg + 1 ) == args.Count )
+					       StringComparison.CurrentCultureIgnoreCase) &&
+				       !args[arg].Equals("-a",
+					       StringComparison.CurrentCultureIgnoreCase) ) ||
+				     ( arg + 1 ) == args.Count )
 				{
 					continue;
 				}
 
 				if ( args[arg + 1].Equals("false",
-						StringComparison.CurrentCultureIgnoreCase) )
+					    StringComparison.CurrentCultureIgnoreCase) )
 				{
 					getAll = false;
 				}
 			}
+
 			return getAll;
 		}
 
@@ -793,11 +905,12 @@ namespace starsky.foundation.platform.Helpers
 			foreach ( var arg in args )
 			{
 				if ( ( arg.Equals("--recursive", StringComparison.CurrentCultureIgnoreCase) ||
-					 arg.Equals("-r", StringComparison.CurrentCultureIgnoreCase) ) )
+				       arg.Equals("-r", StringComparison.CurrentCultureIgnoreCase) ) )
 				{
 					needRecursive = true;
 				}
 			}
+
 			return needRecursive;
 		}
 
@@ -814,11 +927,12 @@ namespace starsky.foundation.platform.Helpers
 			foreach ( var arg in args )
 			{
 				if ( ( arg.Equals("--clean", StringComparison.CurrentCultureIgnoreCase) ||
-					 arg.Equals("-x", StringComparison.CurrentCultureIgnoreCase) ) )
+				       arg.Equals("-x", StringComparison.CurrentCultureIgnoreCase) ) )
 				{
 					needCacheCleanup = true;
 				}
 			}
+
 			return needCacheCleanup;
 		}
 
@@ -835,8 +949,8 @@ namespace starsky.foundation.platform.Helpers
 			for ( var arg = 0; arg < args.Count; arg++ )
 			{
 				if ( !args[arg].Equals("--colorclass",
-						 StringComparison.CurrentCultureIgnoreCase) ||
-					 ( arg + 1 ) == args.Count )
+					     StringComparison.CurrentCultureIgnoreCase) ||
+				     ( arg + 1 ) == args.Count )
 				{
 					continue;
 				}
@@ -845,6 +959,7 @@ namespace starsky.foundation.platform.Helpers
 				var color = ColorClassParser.GetColorClass(colorClassString);
 				colorClass = ( int )color;
 			}
+
 			return colorClass;
 		}
 	}
