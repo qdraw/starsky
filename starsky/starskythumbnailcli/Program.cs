@@ -8,6 +8,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.thumbnailgeneration.Helpers;
 using starsky.foundation.thumbnailgeneration.Interfaces;
+using starsky.foundation.webtelemetry.Extensions;
 using starsky.foundation.webtelemetry.Helpers;
 
 namespace starskythumbnailcli
@@ -29,6 +30,7 @@ namespace starskythumbnailcli
 			var serviceProvider = services.BuildServiceProvider();
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
 
+			services.AddOpenTelemetryMonitoring(appSettings);
 			services.AddTelemetryLogging(appSettings);
 
 			new SetupDatabaseTypes(appSettings, services).BuilderDb();
