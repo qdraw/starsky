@@ -30,7 +30,9 @@ namespace starskyimportercli
 			var serviceProvider = services.BuildServiceProvider();
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
 
+			// appSettings.OpenTelemetry?.AppendCliToServiceName(nameof(starskyimportercli));
 			services.AddTelemetryLogging(appSettings);
+			// SetupCommandLineTracing.Setup(appSettings);
 
 			new SetupDatabaseTypes(appSettings, services).BuilderDb();
 			serviceProvider = services.BuildServiceProvider();
@@ -46,7 +48,8 @@ namespace starskyimportercli
 				appSettings);
 
 			// Help and other Command Line Tools args are included in the ImporterCli 
-			await new ImportCli(import, appSettings, console, exifToolDownload).Importer(args);
+			var service = new ImportCli(import, appSettings, console, webLogger, exifToolDownload);
+			await service.Importer(args);
 		}
 	}
 }
