@@ -9,7 +9,6 @@ namespace starsky.foundation.storage.Helpers;
 /// </summary>
 public static class StreamToStringHelper
 {
-
 	/// <summary>
 	/// Stream to string (UTF8) But Async - check dispose flag
 	/// </summary>
@@ -20,11 +19,13 @@ public static class StreamToStringHelper
 	{
 		var reader = new StreamReader(stream, Encoding.UTF8);
 		var result = await reader.ReadToEndAsync();
+		await stream.FlushAsync();
+
 		if ( dispose )
 		{
-			await stream.DisposeAsync();
+			await stream.DisposeAsync(); // also flush
 		}
+
 		return result;
 	}
-
 }

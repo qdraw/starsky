@@ -606,7 +606,7 @@ public class Import : IImport
 		// Add item to database
 		await AddToQueryAndImportDatabaseAsync(importIndexItem, importSettings);
 
-		if ( ! await CopyStream(importIndexItem, importSettings) )
+		if ( !await CopyStream(importIndexItem, importSettings) )
 		{
 			return importIndexItem;
 		}
@@ -679,17 +679,21 @@ public class Import : IImport
 		catch ( AggregateException exception )
 		{
 			//  System.IO.IOException: No space left on device 
-			_logger.LogError($"CopyStream  {importIndexItem.FilePath} - retry helper failed {exception.Message}", exception);
+			_logger.LogError(
+				$"CopyStream  {importIndexItem.FilePath} - retry helper failed {exception.Message}",
+				exception);
 		}
 		finally
 		{
-			await sourceStream.DisposeAsync();
+			await sourceStream.FlushAsync();
+			await sourceStream.DisposeAsync(); // also flush
 		}
 
 		var subStorageFileSize = _subPathStorage.Info(importIndexItem.FilePath!).Size;
 		if ( hostStorageFileSize == subStorageFileSize ) return true;
-		_logger.LogError($"Host size does not match   {hostStorageFileSize} - {subStorageFileSize} " +
-		                 $"{importIndexItem.SourceFullFilePath} - {importIndexItem.FilePath}");
+		_logger.LogError(
+			$"Host size does not match   {hostStorageFileSize} - {subStorageFileSize} " +
+			$"{importIndexItem.SourceFullFilePath} - {importIndexItem.FilePath}");
 
 		_subPathStorage.FileDelete(importIndexItem.FilePath!);
 		await RemoveFromQueryAndImportDatabaseAsync(importIndexItem, importSettings);

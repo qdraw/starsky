@@ -71,8 +71,9 @@ namespace starsky.foundation.storage.Storage
 				var testFilePath = Path.Combine(folderPath, ".test");
 				var myFileStream = File.Open(testFilePath, FileMode.OpenOrCreate,
 					FileAccess.ReadWrite, FileShare.ReadWrite);
+				myFileStream.Flush();
 				myFileStream.Close();
-				myFileStream.Dispose();
+				myFileStream.Dispose(); // also flush
 				File.Delete(testFilePath);
 			}
 			catch ( IOException )
@@ -357,7 +358,8 @@ namespace starsky.foundation.storage.Storage
 					// fileStream is disposed due using
 				}
 
-				stream.Dispose();
+				stream.Flush();
+				stream.Dispose(); // also flush
 				return true;
 			}
 
@@ -410,7 +412,8 @@ namespace starsky.foundation.storage.Storage
 					await stream.CopyToAsync(fileStream);
 				}
 
-				await stream.DisposeAsync();
+				await stream.FlushAsync();
+				await stream.DisposeAsync(); // also flush
 
 				return true;
 			}

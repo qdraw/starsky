@@ -56,7 +56,9 @@ namespace starsky.feature.import.Helpers
 			bool indexMode)
 		{
 			if ( !ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName) )
+			{
 				return fileIndexItem;
+			}
 
 			var comparedNamesList = new List<string>();
 			if ( dateTimeParsedFromFileName )
