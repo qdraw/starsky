@@ -51,6 +51,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Fixed) _Back-end_ Docker update base package and no recommendations install (PR #1393)
 - [x] (Fixed) _Back-end_ Corrupt images where generated due import (Issue started with .NET 8) (PR
   #1392)
+- [x] (Fixed) _Back-end_ Flush issue with Upload (PR #1394)
 
 ## version 0.6.0-beta.0 - 2024-02-11 {#v0.6.0-beta.0}
 

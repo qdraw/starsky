@@ -161,7 +161,7 @@ public sealed class ExifTool : IExifTool
 		var inputStream = _thumbnailStorage.ReadStream(fileHash);
 		var runner = new StreamToStreamRunner(_appSettings, inputStream, _logger);
 		var stream = await runner.RunProcessAsync(command);
-		// Need to Dispose for Windows
+		// Need to Close/Dispose for Windows and needs before WriteStreamAsync
 		inputStream.Close();
 		return await _thumbnailStorage.WriteStreamAsync(stream, fileHash);
 	}
