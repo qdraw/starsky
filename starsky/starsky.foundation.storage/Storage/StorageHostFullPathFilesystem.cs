@@ -412,8 +412,6 @@ namespace starsky.foundation.storage.Storage
 				{
 					await stream.CopyToAsync(fileStream);
 					await fileStream.FlushAsync();
-
-
 				}
 				
 				try
