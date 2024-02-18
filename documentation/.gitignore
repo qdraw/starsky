@@ -12,6 +12,8 @@ docs/advanced-options/starsky
 docs/advanced-options/starskydesktop
 docs/advanced-options/starsky-tools
 
+!docs/getting-started/desktop
+
 # the output of the build step
 build
 
