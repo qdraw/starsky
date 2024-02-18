@@ -32,4 +32,10 @@
         <None Remove="logs\**"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Include="..\.config\dotnet-tools.json">
+            <Link>config\dotnet-tools.json</Link>
+        </Content>
+    </ItemGroup>
+
 </Project>
