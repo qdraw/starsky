@@ -1,3 +1,4 @@
+using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 
 namespace starsky.feature.desktop.Models;
@@ -11,7 +12,7 @@ public class PathImageFormatExistsAppPathModel
 	public ExtensionRolesHelper.ImageFormat ImageFormat { get; set; } =
 		ExtensionRolesHelper.ImageFormat.notfound;
 
-	public bool Exists { get; set; } = false;
+	public FileIndexItem.ExifStatus Status { get; set; }
 
 	public string AppPath { get; set; } = string.Empty;
 }

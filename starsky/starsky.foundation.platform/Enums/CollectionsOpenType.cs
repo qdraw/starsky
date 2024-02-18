@@ -5,7 +5,7 @@ public static class CollectionsOpenType
 	public enum RawJpegMode
 	{
 		Default = 0,
-		Raw = 1,
-		Jpeg = 2,
+		Jpeg = 1,
+		Raw = 2,
 	}
 }

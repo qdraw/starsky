@@ -28,7 +28,7 @@ public class OpenEditorDesktopController : Controller
 	[ProducesResponseType(404)]
 	[ProducesResponseType(401)]
 	public async Task<IActionResult> OpenAsync(
-		string f = "/",
+		string f = "",
 		bool collections = true)
 	{
 		await _openEditorDesktopService.OpenAsync(f, collections);

@@ -37,7 +37,7 @@ public class AppSettingsFeaturesController : Controller
 		var shortAppSettings = new EnvFeaturesViewModel
 		{
 			SystemTrashEnabled = _moveToTrashService.IsEnabled(),
-			UseLocalDesktop = _appSettings.UseLocalDesktop == true
+			UseLocalDesktop = _appSettings.UseLocalDesktop == true,
 		};
 
 		return Json(shortAppSettings);
