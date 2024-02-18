@@ -115,7 +115,7 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 		{
 			_logger.LogError(
 				$"Failed to execute {nameof(PeriodicThumbnailScanHostedService)} " +
-				$"with exception message {exception.Message}. Good luck next round!", exception);
+				$"with exception message {exception.Message} {exception.StackTrace}", exception);
 		}
 
 		return null;
