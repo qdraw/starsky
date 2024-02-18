@@ -91,7 +91,7 @@ namespace starsky.foundation.storage.ArchiveFormats
 					zip.CreateEntryFromFile(filePaths[i], fileName);
 				}
 			}
-			zip.Dispose();
+			zip.Dispose(); // no flush
 			return tempFileFullPath;
 		}
 	}

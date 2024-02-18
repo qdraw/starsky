@@ -40,7 +40,7 @@ public sealed class WriteMetaThumbnailService : IWriteMetaThumbnailService
 		try
 		{
 			using ( var thumbnailStream =
-				   new MemoryStream(offsetData.Data, offsetData.Index, offsetData.Count) )
+			       new MemoryStream(offsetData.Data, offsetData.Index, offsetData.Count) )
 			using ( var smallImage = await Image.LoadAsync(thumbnailStream) )
 			using ( var outputStream = new MemoryStream() )
 			{
@@ -77,12 +77,14 @@ public sealed class WriteMetaThumbnailService : IWriteMetaThumbnailService
 
 			return true;
 		}
-		catch ( Exception ex )
+		catch ( Exception exception )
 		{
-			var message = ex.Message;
+			var message = exception.Message;
 			if ( message.StartsWith("Image cannot be loaded") )
 				message = "Image cannot be loaded";
-			_logger.LogError($"[WriteFile@meta] Exception {reference} {message}", ex);
+			_logger.LogError(
+				$"[WriteFile@meta] Meta data read - Exception {reference} {message} - can continue without",
+				exception);
 			return false;
 		}
 	}

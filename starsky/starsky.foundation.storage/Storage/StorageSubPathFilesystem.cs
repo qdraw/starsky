@@ -279,8 +279,9 @@ namespace starsky.foundation.storage.Storage
 				// read only the first number of bytes
 				var buffer = new byte[maxRead];
 				fileStream.Read(buffer, 0, maxRead);
+				fileStream.Flush();
 				fileStream.Close();
-				fileStream.Dispose();
+				fileStream.Dispose(); // also flush
 				return new MemoryStream(buffer);
 			}
 
@@ -311,8 +312,8 @@ namespace starsky.foundation.storage.Storage
 		public Task<bool> WriteStreamAsync(Stream stream, string path)
 		{
 			var fullFilePath = _appSettings.DatabasePathToFilePath(path);
-			return new StorageHostFullPathFilesystem(_logger)
-				.WriteStreamAsync(stream, fullFilePath);
+			var service = new StorageHostFullPathFilesystem(_logger);
+			return service.WriteStreamAsync(stream, fullFilePath);
 		}
 	}
 }

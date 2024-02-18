@@ -71,8 +71,9 @@ namespace starsky.foundation.storage.Storage
 				var testFilePath = Path.Combine(folderPath, ".test");
 				var myFileStream = File.Open(testFilePath, FileMode.OpenOrCreate,
 					FileAccess.ReadWrite, FileShare.ReadWrite);
+				myFileStream.Flush();
 				myFileStream.Close();
-				myFileStream.Dispose();
+				myFileStream.Dispose(); // also flush
 				File.Delete(testFilePath);
 			}
 			catch ( IOException )
@@ -234,6 +235,7 @@ namespace starsky.foundation.storage.Storage
 					return fileStream;
 				}
 
+				// to reuse stream please check StreamGetFirstBytes.GetFirstBytesAsync
 				// Only for when selecting the first part of the file
 				var buffer = new byte[maxRead];
 				// ReSharper disable once MustUseReturnValue
@@ -357,7 +359,8 @@ namespace starsky.foundation.storage.Storage
 					// fileStream is disposed due using
 				}
 
-				stream.Dispose();
+				stream.Flush();
+				stream.Dispose(); // also flush
 				return true;
 			}
 
@@ -408,9 +411,18 @@ namespace starsky.foundation.storage.Storage
 					       FileOptions.Asynchronous | FileOptions.SequentialScan) )
 				{
 					await stream.CopyToAsync(fileStream);
+					await fileStream.FlushAsync();
 				}
-
-				await stream.DisposeAsync();
+				
+				try
+				{
+					await stream.FlushAsync();
+				}
+				catch ( NotSupportedException )
+				{
+					// HttpConnection does not support this - Specified method is not supported.
+				}
+				await stream.DisposeAsync(); // also flush
 
 				return true;
 			}
@@ -447,8 +459,8 @@ namespace starsky.foundation.storage.Storage
 			}
 			catch ( Exception exception )
 			{
-				_logger?.LogInformation(
-					$"[StorageHostFullPathFilesystem] catch-ed ex: {exception.Message} -  {path}");
+				_logger?.LogInformation($"[StorageHostFullPathFilesystem] " +
+				                        $"catch-ed ex: {exception.Message} -  {path}");
 				return new Tuple<string[], string[]>(
 					new List<string>().ToArray(),
 					new List<string>().ToArray()

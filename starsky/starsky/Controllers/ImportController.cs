@@ -126,10 +126,10 @@ namespace starsky.Controllers
 				var thumbnailQuery = scope.ServiceProvider.GetRequiredService<IThumbnailQuery>();
 
 				// use of IImport direct does not work
-				importedFiles = await new Import(selectorStorage, _appSettings,
-						importQuery, exifTool, query, console,
-						metaExifThumbnailService, _logger, thumbnailQuery, memoryCache)
-					.Importer(tempImportPaths, importSettings);
+				var service = new Import(selectorStorage, _appSettings,
+					importQuery, exifTool, query, console,
+					metaExifThumbnailService, _logger, thumbnailQuery, memoryCache);
+				importedFiles = await service.Importer(tempImportPaths, importSettings);
 			}
 
 			if ( isVerbose )

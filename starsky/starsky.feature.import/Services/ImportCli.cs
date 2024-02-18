@@ -36,7 +36,7 @@ namespace starsky.feature.import.Services
 		/// </summary>
 		/// <param name="args">arguments provided by command line app</param>
 		/// <returns>Void Task</returns>
-		public async Task Importer(string[] args)
+		public async Task<bool> Importer(string[] args)
 		{
 			_logger.LogInformation("run importer");
 
@@ -49,7 +49,7 @@ namespace starsky.feature.import.Services
 				    .GetPathFormArgs(args, false).Length <= 1 )
 			{
 				new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
-				return;
+				return true;
 			}
 
 			var inputPathListFormArgs = new ArgsHelper(_appSettings).GetPathListFormArgs(args);
@@ -86,6 +86,9 @@ namespace starsky.feature.import.Services
 			WriteOutputStatus(importSettings, result, stopWatch);
 
 			_logger.LogInformation("done import");
+
+			return result.TrueForAll(p =>
+				p.Status is ImportStatus.Ok or ImportStatus.IgnoredAlreadyImported);
 		}
 
 		private void WriteOutputStatus(ImportSettingsModel importSettings,
@@ -94,14 +97,21 @@ namespace starsky.feature.import.Services
 			if ( importSettings.IsConsoleOutputModeDefault() )
 			{
 				var okCount = result.Count(p => p.Status == ImportStatus.Ok);
-				_console.WriteLine($"\nDone Importing {okCount}");
+				_logger.LogInformation($"\nDone Importing {okCount}");
+
 				if ( okCount != 0 )
 				{
-					_console.WriteLine($"Time: {Math.Round(stopWatch.Elapsed.TotalSeconds, 1)} " +
-					                   $"sec. or {Math.Round(stopWatch.Elapsed.TotalMinutes, 1)} min.");
+					_logger.LogInformation(
+						$"Time: {Math.Round(stopWatch.Elapsed.TotalSeconds, 1)} " +
+						$"sec. or {Math.Round(stopWatch.Elapsed.TotalMinutes, 1)} min.");
 				}
 
-				_console.WriteLine($"Failed: {result.Count(p => p.Status != ImportStatus.Ok)}");
+				var failedCount = result.Count(p =>
+					p.Status != ImportStatus.Ok && p.Status != ImportStatus.IgnoredAlreadyImported);
+				_logger.LogInformation($"Failed: {failedCount}");
+				var ignoredCount =
+					result.Count(p => p.Status == ImportStatus.IgnoredAlreadyImported);
+				_logger.LogInformation($"Skip due already imported: {ignoredCount}");
 			}
 
 			if ( importSettings.ConsoleOutputMode != ConsoleOutputMode.Csv )

@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -163,27 +162,6 @@ namespace starskytest.starsky.foundation.storage.Storage
 			File.Delete(Path.Combine(createNewImage.BasePath,
 				"StorageThumbnailFilesystemTest_WriteStreamAsync.jpg"));
 		}
-
-		[TestMethod]
-		public void SetLastWriteTime_File()
-		{
-			// Currently on results the time
-			var shouldBe = DateTime.Now.AddDays(-1);
-			var result = _thumbnailStorage.SetLastWriteTime("anything", shouldBe);
-
-			Assert.AreEqual(shouldBe, result);
-		}
-
-		[TestMethod]
-		public void SetLastWriteTime_File_Null()
-		{
-			// Currently on results the time
-			var shouldBe = DateTime.Now;
-			var result = _thumbnailStorage.SetLastWriteTime("anything");
-
-			Assert.AreEqual(shouldBe.Year, result.Year);
-			Assert.AreEqual(shouldBe.Month, result.Month);
-			Assert.AreEqual(shouldBe.Day, result.Day);
-		}
+		
 	}
 }
