@@ -88,13 +88,7 @@ public class FakeIStorage : IStorage
 
 	public bool ExistFolder(string path)
 	{
-		if ( _exception == null )
-		{
-			return _outputSubPathFolders.Contains(path);
-		}
-
-		ExceptionCount++;
-		throw _exception;
+		return _outputSubPathFolders.Contains(path);
 	}
 
 	public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(
@@ -359,6 +353,23 @@ public class FakeIStorage : IStorage
 		ArgumentNullException.ThrowIfNull(path);
 
 		_outputSubPathFiles.Add(path);
+
+		if ( _exception != null )
+		{
+			// When WriteStream crashed it can leave a file with 0 bytes
+			if ( _byteList.Any(p => p.Key == path) )
+			{
+				_byteList[path] = Encoding.UTF8.GetBytes(string.Empty);
+				return true;
+			}
+
+			_byteList.Add(path, Encoding.UTF8.GetBytes(string.Empty));
+			// Create 0 bytes file
+
+			ExceptionCount++;
+			throw _exception;
+		}
+
 
 		if ( stream.CanSeek )
 		{

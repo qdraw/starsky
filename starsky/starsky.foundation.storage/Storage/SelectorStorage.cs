@@ -18,8 +18,16 @@ namespace starsky.foundation.storage.Storage
 
 		public enum StorageServices
 		{
+			/// <summary>
+			/// Storage location
+			/// </summary>
 			SubPath,
+
+			/// <summary>
+			/// Location for thumbnails
+			/// </summary>
 			Thumbnail,
+
 			/// <summary>
 			/// Use only to import from
 			/// </summary>
