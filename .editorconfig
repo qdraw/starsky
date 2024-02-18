@@ -68,9 +68,6 @@ dotnet_style_namespace_match_folder = true:suggestion
 
 # unused usings (IDE0005)
 dotnet_diagnostic.IDE0005.severity = warning
-# shorter lists
-dotnet_diagnostic.IDE0028.severity = silent
-
 
 dotnet_diagnostic.IDE0028.severity = silent #  IDE0028 = Simplify collection initialization
 dotnet_diagnostic.IDE0051.severity = silent # Private member is unused
