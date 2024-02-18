@@ -411,7 +411,15 @@ namespace starsky.foundation.storage.Storage
 					       FileOptions.Asynchronous | FileOptions.SequentialScan) )
 				{
 					await stream.CopyToAsync(fileStream);
-					await fileStream.FlushAsync();
+
+					try
+					{
+						await fileStream.FlushAsync();
+					}
+					catch ( NotSupportedException )
+					{
+						// HttpConnection does not support this - Specified method is not supported.
+					}
 				}
 
 				await stream.FlushAsync();
