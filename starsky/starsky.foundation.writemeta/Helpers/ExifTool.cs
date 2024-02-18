@@ -78,14 +78,13 @@ public sealed class ExifTool : IExifTool
 			return new KeyValuePair<bool, string>(false, beforeFileHash);
 		}
 
-		stream.Seek(0, SeekOrigin.Begin);
-		var streamResult = await _iStorage.WriteStreamAsync(stream, subPath);
-		var statusResult = new KeyValuePair<bool, string>(streamResult, newHashCode);
-
 		// Need to Dispose for Windows
 		await sourceStream.DisposeAsync();
 
-		return statusResult;
+		stream.Seek(0, SeekOrigin.Begin);
+		var streamResult = await _iStorage.WriteStreamAsync(stream, subPath);
+
+		return new KeyValuePair<bool, string>(streamResult, newHashCode);
 	}
 
 
