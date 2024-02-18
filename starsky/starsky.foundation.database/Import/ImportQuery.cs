@@ -159,9 +159,9 @@ namespace starsky.foundation.database.Import
 			{
 				await LocalRemoveDefaultQuery();
 			}
-			catch ( DbUpdateConcurrencyException e )
+			catch ( DbUpdateConcurrencyException exception )
 			{
-				_logger.LogInformation(e, "[RemoveItemAsync] catch-ed " +
+				_logger.LogInformation(exception, "[RemoveItemAsync] catch-ed " +
 				                          "DbUpdateConcurrencyException (do nothing)");
 			}
 
