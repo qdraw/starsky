@@ -120,8 +120,10 @@ ARG TOOLS=false
 # # for debugging
 RUN if [ "$TOOLS" = "true" ]; then \
     apt-get update ;\
-    apt-get install --no-install-recommends -y curl ;\
+    apt-get upgrade -y ;\
+    apt-get install --no-install-recommends --no-install-suggests -y curl ;\
     apt-get clean ;\
+    rm -rf /var/lib/apt/lists/* ;\
 else \
     echo "no tools for debug" ;\
 fi

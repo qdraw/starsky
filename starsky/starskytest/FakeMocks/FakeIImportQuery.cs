@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
@@ -16,11 +16,11 @@ namespace starskytest.FakeMocks
 		private readonly List<string> _exist;
 		private readonly bool _isConnection;
 
-		public FakeIImportQuery(List<string>? exist, bool isConnection = true)
+		public FakeIImportQuery(List<string> exist, bool isConnection = true)
 		{
-			_exist = exist!;
+			_exist = exist;
 			_isConnection = isConnection;
-			if ( exist == null ) _exist = [];
+			if ( exist == null ) _exist = new List<string>();
 		}
 
 		public FakeIImportQuery()
@@ -36,9 +36,6 @@ namespace starskytest.FakeMocks
 		/// <param name="console"></param>
 		/// <param name="logger"></param>
 		/// <param name="dbContext"></param>
-		[SuppressMessage("ReSharper", "UnusedParameter.Local",
-			Justification = "Auto Inject")]
-		[SuppressMessage("Usage", "IDE0060:Remove unused parameter")]
 		public FakeIImportQuery(IServiceScopeFactory scopeFactory, IConsole console,
 			IWebLogger logger, ApplicationDbContext? dbContext = null)
 		{
@@ -83,6 +80,21 @@ namespace starskytest.FakeMocks
 			}
 
 			return importIndexItemList;
+		}
+
+		public async Task<ImportIndexItem> RemoveItemAsync(ImportIndexItem importIndexItem)
+		{
+			try
+			{
+				_exist.Remove(importIndexItem.FilePath!);
+			}
+			catch ( ArgumentOutOfRangeException )
+			{
+				await Task.Delay(new Random().Next(1, 5));
+				_exist.Remove(importIndexItem.FilePath!);
+			}
+
+			return importIndexItem;
 		}
 
 		public async Task<bool> RemoveAsync(string fileHash)

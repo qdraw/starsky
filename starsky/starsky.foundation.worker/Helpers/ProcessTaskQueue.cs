@@ -53,9 +53,11 @@ namespace starsky.foundation.worker.Helpers
 
 					for ( var i = 0; i < taskQueueCount; i++ )
 					{
-						var (workItem, metaData, parentTraceId) = await taskQueue.DequeueAsync(cancellationToken);
+						var (workItem, metaData, parentTraceId) =
+							await taskQueue.DequeueAsync(cancellationToken);
 						toDoItems.Add(
-							new Tuple<Func<CancellationToken, ValueTask>, string?, string?>(workItem,
+							new Tuple<Func<CancellationToken, ValueTask>, string?, string?>(
+								workItem,
 								metaData, parentTraceId));
 					}
 
@@ -63,9 +65,9 @@ namespace starsky.foundation.worker.Helpers
 
 					foreach ( var (task, meta, _) in afterDistinct )
 					{
-						logger.LogInformation(
-							$"[{taskQueue.GetType().ToString().Split(".").LastOrDefault()}] next task: " +
-							meta);
+						var name = taskQueue.GetType().ToString().Split(".").LastOrDefault();
+						logger.LogInformation($"[] {name} next task: {meta}");
+
 						await ExecuteTask(task, logger, null, cancellationToken);
 					}
 
@@ -95,7 +97,7 @@ namespace starsky.foundation.worker.Helpers
 					// Dequeue here
 					( workItem, metaData, parentTraceId ) =
 						await taskQueue.DequeueAsync(cancellationToken);
-					
+
 					// set as parent for activity
 					activity = CreateActivity(parentTraceId, metaData);
 				}
@@ -124,6 +126,7 @@ namespace starsky.foundation.worker.Helpers
 			{
 				return activity;
 			}
+
 			activity.SetParentId(parentTraceId);
 			return activity;
 		}

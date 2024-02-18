@@ -192,8 +192,8 @@ public sealed class FileHash
 			{
 				int length;
 				while ( ( length = await stream
-						   .ReadAsync(block, cancellationToken)
-						   .ConfigureAwait(false) ) > 0 )
+					       .ReadAsync(block, cancellationToken)
+					       .ConfigureAwait(false) ) > 0 )
 				{
 					md5.TransformBlock(block, 0, length, null, 0);
 				}
@@ -202,8 +202,9 @@ public sealed class FileHash
 
 				if ( dispose )
 				{
+					await stream.FlushAsync(cancellationToken);
 					stream.Close();
-					await stream.DisposeAsync();
+					await stream.DisposeAsync(); // also flush
 				}
 
 				var hash = md5.Hash;

@@ -10,6 +10,7 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
+using starsky.foundation.webtelemetry.Extensions;
 using starsky.foundation.webtelemetry.Helpers;
 
 namespace starskydemoseedcli
@@ -31,6 +32,7 @@ namespace starskydemoseedcli
 			var serviceProvider = services.BuildServiceProvider();
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
 
+			services.AddOpenTelemetryMonitoring(appSettings);
 			services.AddTelemetryLogging(appSettings);
 
 			new SetupDatabaseTypes(appSettings, services).BuilderDb();

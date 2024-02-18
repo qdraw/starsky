@@ -56,20 +56,22 @@ namespace starsky.feature.import.Helpers
 			bool indexMode)
 		{
 			if ( !ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName) )
+			{
 				return fileIndexItem;
+			}
 
 			var comparedNamesList = new List<string>();
 			if ( dateTimeParsedFromFileName )
 			{
-				_logger.LogInformation(
-					$"[Import] DateTimeParsedFromFileName ExifTool Sync {fileIndexItem.FilePath}");
+				_logger.LogInformation($"[Import] DateTimeParsedFromFileName " +
+				                       $"ExifTool Sync {fileIndexItem.FilePath}");
 				comparedNamesList = DateTimeParsedComparedNamesList();
 			}
 
 			if ( colorClassTransformation >= 0 )
 			{
-				_logger.LogInformation(
-					$"[Import] ColorClassComparedNamesList ExifTool Sync {fileIndexItem.FilePath}");
+				_logger.LogInformation($"[Import] ColorClassComparedNamesList " +
+				                       $"ExifTool Sync {fileIndexItem.FilePath}");
 				comparedNamesList = ColorClassComparedNamesList(comparedNamesList);
 			}
 
@@ -78,6 +80,7 @@ namespace starsky.feature.import.Helpers
 				return fileIndexItem;
 			}
 
+			// Update ColorClass and DateTime if reqeusted
 			var exifToolCmdHelper = new ExifToolCmdHelper(_exifTool,
 				_subPathStorage, _thumbnailStorage,
 				new ReadMeta(_subPathStorage, _appSettings, null!, _logger),

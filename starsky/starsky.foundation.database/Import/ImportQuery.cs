@@ -10,6 +10,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.database.Import
@@ -32,7 +33,8 @@ namespace starsky.foundation.database.Import
 		/// <param name="console">console output</param>
 		/// <param name="logger"></param>
 		/// <param name="dbContext"></param>
-		public ImportQuery(IServiceScopeFactory? scopeFactory, IConsole console, IWebLogger logger, ApplicationDbContext? dbContext = null)
+		public ImportQuery(IServiceScopeFactory? scopeFactory, IConsole console, IWebLogger logger,
+			ApplicationDbContext? dbContext = null)
 		{
 			_scopeFactory = scopeFactory;
 
@@ -48,7 +50,9 @@ namespace starsky.foundation.database.Import
 		/// <returns>database context</returns>
 		private ApplicationDbContext GetDbContext()
 		{
-			return ( _scopeFactory != null ? new InjectServiceScope(_scopeFactory).Context() : _dbContext )!;
+			return ( _scopeFactory != null
+				? new InjectServiceScope(_scopeFactory).Context()
+				: _dbContext )!;
 		}
 
 		/// <summary>
@@ -65,7 +69,7 @@ namespace starsky.foundation.database.Import
 			if ( _isConnection )
 			{
 				var value = await GetDbContext().ImportIndex.CountAsync(p =>
-					p.FileHash == fileHashCode) != 0;           // there is no any in ef core
+					p.FileHash == fileHashCode) != 0; // there is no any in ef core
 				return value;
 			}
 
@@ -80,7 +84,8 @@ namespace starsky.foundation.database.Import
 		/// <param name="updateStatusContent">import database item</param>
 		/// <param name="writeConsole">add icon to console</param>
 		/// <returns>fail or success</returns>
-		public async Task<bool> AddAsync(ImportIndexItem updateStatusContent, bool writeConsole = true)
+		public async Task<bool> AddAsync(ImportIndexItem updateStatusContent,
+			bool writeConsole = true)
 		{
 			var dbContext = GetDbContext();
 			updateStatusContent.AddToDatabase = DateTime.UtcNow;
@@ -97,11 +102,13 @@ namespace starsky.foundation.database.Import
 		/// <returns>List of items</returns>
 		public List<ImportIndexItem> History()
 		{
-			return GetDbContext().ImportIndex.Where(p => p.AddToDatabase >= DateTime.UtcNow.AddDays(-1)).ToList();
+			return GetDbContext().ImportIndex
+				.Where(p => p.AddToDatabase >= DateTime.UtcNow.AddDays(-1)).ToList();
 			// for debug: p.AddToDatabase >= DateTime.UtcNow.AddDays(-2) && p.Id % 6 == 1
 		}
 
-		public async Task<List<ImportIndexItem>> AddRangeAsync(List<ImportIndexItem> importIndexItemList)
+		public async Task<List<ImportIndexItem>> AddRangeAsync(
+			List<ImportIndexItem> importIndexItemList)
 		{
 			var dbContext = GetDbContext();
 			await dbContext.ImportIndex.AddRangeAsync(importIndexItemList);
@@ -109,6 +116,58 @@ namespace starsky.foundation.database.Import
 			_console.Write($"⬆️ {importIndexItemList.Count} "); // arrowUp
 			return importIndexItemList;
 		}
+
+		public async Task<ImportIndexItem> RemoveItemAsync(ImportIndexItem importIndexItem)
+		{
+			async Task<bool> LocalRemoveDefaultQuery()
+			{
+				await LocalRemoveQuery(new InjectServiceScope(_scopeFactory).Context());
+				return true;
+			}
+
+			async Task LocalRemoveQuery(ApplicationDbContext context)
+			{
+				// Detach first https://stackoverflow.com/a/42475617
+				var local = context.Set<FileIndexItem>()
+					.Local
+					.FirstOrDefault(entry => entry.Id.Equals(importIndexItem.Id));
+				if ( local != null )
+				{
+					context.Entry(local).State = EntityState.Detached;
+				}
+
+				// keep conditional marker for test
+				context.ImportIndex?.Remove(importIndexItem);
+				await context.SaveChangesAsync();
+			}
+
+			try
+			{
+				await LocalRemoveQuery(_dbContext!);
+			}
+			catch ( Microsoft.Data.Sqlite.SqliteException )
+			{
+				// Files that are locked
+				await RetryHelper.DoAsync(LocalRemoveDefaultQuery,
+					TimeSpan.FromSeconds(2), 4);
+			}
+			catch ( ObjectDisposedException )
+			{
+				await LocalRemoveDefaultQuery();
+			}
+			catch ( InvalidOperationException )
+			{
+				await LocalRemoveDefaultQuery();
+			}
+			catch ( DbUpdateConcurrencyException exception )
+			{
+				_logger.LogInformation(exception, "[RemoveItemAsync] catch-ed " +
+				                          "DbUpdateConcurrencyException (do nothing)");
+			}
+
+			return importIndexItem;
+		}
+
 
 		public List<ImportIndexItem> AddRange(List<ImportIndexItem> importIndexItemList)
 		{

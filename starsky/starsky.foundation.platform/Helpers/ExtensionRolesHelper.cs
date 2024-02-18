@@ -8,7 +8,6 @@ using System.Text.RegularExpressions;
 
 namespace starsky.foundation.platform.Helpers
 {
-
 	public static class ExtensionRolesHelper
 	{
 		/// <summary>
@@ -19,7 +18,8 @@ namespace starsky.foundation.platform.Helpers
 		/// <summary>
 		/// Meta.json sidecar files
 		/// </summary>
-		private static readonly List<string> ExtensionJsonSidecar = new List<string> { "meta.json" };
+		private static readonly List<string>
+			ExtensionJsonSidecar = new List<string> { "meta.json" };
 
 
 		/// <summary>
@@ -32,8 +32,18 @@ namespace starsky.foundation.platform.Helpers
 		/// tiff, arw:sony, dng:adobe, nef:nikon, raf:fuji, cr2:canon,  orf:olympus, rw2:panasonic, pef:pentax,
 		/// Not supported due Image Processing Error x3f:sigma, crw:canon
 		/// </summary>
-		private static readonly List<string> ExtensionTiff = new List<string> {"tiff", "arw", "dng", "nef",
-			"raf", "cr2", "orf", "rw2", "pef"};
+		private static readonly List<string> ExtensionTiff = new List<string>
+		{
+			"tiff",
+			"arw",
+			"dng",
+			"nef",
+			"raf",
+			"cr2",
+			"orf",
+			"rw2",
+			"pef"
+		};
 
 		/// <summary>
 		/// Bitmaps
@@ -60,34 +70,19 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		private static readonly List<string> ExtensionMp4 = new List<string> { "mp4", "mov" };
 
-		private static readonly Dictionary<ImageFormat, List<string>> MapFileTypesToExtensionDictionary =
-			new Dictionary<ImageFormat, List<string>>
-			{
+		private static readonly Dictionary<ImageFormat, List<string>>
+			MapFileTypesToExtensionDictionary =
+				new Dictionary<ImageFormat, List<string>>
 				{
-					ImageFormat.jpg, ExtensionJpg
-				},
-				{
-					ImageFormat.tiff, ExtensionTiff
-				},
-				{
-					ImageFormat.bmp, ExtensionBmp
-				},
-				{
-					ImageFormat.gif, ExtensionGif
-				},
-				{
-					ImageFormat.png, ExtensionPng
-				},
-				{
-					ImageFormat.gpx, ExtensionGpx
-				},
-				{
-					ImageFormat.mp4, ExtensionMp4
-				},
-				{
-					ImageFormat.xmp, ExtensionXmp
-				},
-			};
+					{ ImageFormat.jpg, ExtensionJpg },
+					{ ImageFormat.tiff, ExtensionTiff },
+					{ ImageFormat.bmp, ExtensionBmp },
+					{ ImageFormat.gif, ExtensionGif },
+					{ ImageFormat.png, ExtensionPng },
+					{ ImageFormat.gpx, ExtensionGpx },
+					{ ImageFormat.mp4, ExtensionMp4 },
+					{ ImageFormat.xmp, ExtensionXmp },
+				};
 
 
 		public static ImageFormat MapFileTypesToExtension(string filename)
@@ -117,6 +112,7 @@ namespace starsky.foundation.platform.Helpers
 					imageFormat = extImageFormat;
 				}
 			}
+
 			return imageFormat;
 		}
 
@@ -299,7 +295,8 @@ namespace starsky.foundation.platform.Helpers
 			}
 
 			// ReSharper disable once ConvertIfStatementToReturnStatement
-			if ( filename.ToLowerInvariant().EndsWith(".meta.json") && checkThisList.Contains("meta.json") )
+			if ( filename.ToLowerInvariant().EndsWith(".meta.json") &&
+			     checkThisList.Contains("meta.json") )
 			{
 				return true;
 			}
@@ -339,6 +336,7 @@ namespace starsky.foundation.platform.Helpers
 					return new string(matchValue);
 				}
 			}
+
 			return string.Empty;
 		}
 
@@ -386,12 +384,14 @@ namespace starsky.foundation.platform.Helpers
 			{
 				stream.Read(buffer, 0, buffer.Length);
 				stream.Close();
-				stream.Dispose();
+				stream.Flush();
+				stream.Dispose(); // also flush
 			}
 			catch ( UnauthorizedAccessException ex )
 			{
 				Console.WriteLine(ex.Message);
 			}
+
 			return buffer;
 		}
 
@@ -454,23 +454,22 @@ namespace starsky.foundation.platform.Helpers
 
 		private static ImageFormat? GetImageFormatMetaJson(byte[] bytes)
 		{
-			var metaJsonUnix = new byte[] {
-				123, 10, 32, 32, 34, 36, 105, 100, 34, 58, 32, 34, 104, 116, 116,
-				112, 115, 58, 47, 47, 100, 111, 99, 115, 46, 113, 100, 114, 97,
-				119, 46, 110, 108, 47, 115, 99, 104, 101, 109, 97, 47, 109, 101,
-				116, 97, 45, 100, 97, 116, 97, 45, 99, 111, 110, 116, 97, 105, 110,
-				101, 114, 46, 106, 115, 111, 110, 34, 44
+			var metaJsonUnix = new byte[]
+			{
+				123, 10, 32, 32, 34, 36, 105, 100, 34, 58, 32, 34, 104, 116, 116, 112, 115, 58,
+				47, 47, 100, 111, 99, 115, 46, 113, 100, 114, 97, 119, 46, 110, 108, 47, 115,
+				99, 104, 101, 109, 97, 47, 109, 101, 116, 97, 45, 100, 97, 116, 97, 45, 99, 111,
+				110, 116, 97, 105, 110, 101, 114, 46, 106, 115, 111, 110, 34, 44
 			};
 			// or : { \n "$id": "https://docs.qdraw.nl/schema/meta-data-container.json",
 
 			var metaJsonWindows = new byte[]
 			{
 				// 13 is CR
-				123, 13, 10, 32, 32, 34, 36, 105, 100, 34, 58, 32, 34, 104, 116,
-				116, 112, 115, 58, 47, 47, 100, 111, 99, 115, 46, 113, 100, 114,
-				97, 119, 46, 110, 108, 47, 115, 99, 104, 101, 109, 97, 47, 109, 101,
-				116, 97, 45, 100, 97, 116, 97, 45, 99, 111, 110, 116, 97, 105, 110,
-				101, 114, 46, 106, 115, 111, 110, 34
+				123, 13, 10, 32, 32, 34, 36, 105, 100, 34, 58, 32, 34, 104, 116, 116, 112, 115, 58,
+				47, 47, 100, 111, 99, 115, 46, 113, 100, 114, 97, 119, 46, 110, 108, 47, 115, 99,
+				104, 101, 109, 97, 47, 109, 101, 116, 97, 45, 100, 97, 116, 97, 45, 99, 111, 110,
+				116, 97, 105, 110, 101, 114, 46, 106, 115, 111, 110, 34
 			};
 
 			if ( metaJsonUnix.SequenceEqual(bytes.Take(metaJsonUnix.Length)) )
@@ -515,7 +514,7 @@ namespace starsky.foundation.platform.Helpers
 		private static ImageFormat? GetImageFormatMpeg4(byte[] bytes)
 		{
 			var fTypMp4 = new byte[] { 102, 116, 121, 112 }; //  00  00  00  [skip this byte]
-															 // 66  74  79  70 QuickTime Container 3GG, 3GP, 3G2 	FLV
+			// 66  74  79  70 QuickTime Container 3GG, 3GP, 3G2 	FLV
 
 			if ( fTypMp4.SequenceEqual(bytes.Skip(4).Take(fTypMp4.Length)) )
 				return ImageFormat.mp4;
@@ -532,16 +531,17 @@ namespace starsky.foundation.platform.Helpers
 			var gpx = new byte[] { 60, 103, 112 }; // <gpx
 
 			if ( gpx.SequenceEqual(bytes.Take(gpx.Length)) ||
-				 gpx.SequenceEqual(bytes.Skip(21).Take(gpx.Length)) ||
-				 gpx.SequenceEqual(bytes.Skip(39).Take(gpx.Length)) ||
-				 gpx.SequenceEqual(bytes.Skip(1).Take(gpx.Length)) ||
-				 gpx.SequenceEqual(bytes.Skip(56).Take(gpx.Length)) ||
-				 gpx.SequenceEqual(bytes.Skip(57).Take(gpx.Length)) ||
-				 gpx.SequenceEqual(bytes.Skip(60).Take(gpx.Length)) ||
-				 gpx.SequenceEqual(bytes.Skip(55).Take(gpx.Length)) )
+			     gpx.SequenceEqual(bytes.Skip(21).Take(gpx.Length)) ||
+			     gpx.SequenceEqual(bytes.Skip(39).Take(gpx.Length)) ||
+			     gpx.SequenceEqual(bytes.Skip(1).Take(gpx.Length)) ||
+			     gpx.SequenceEqual(bytes.Skip(56).Take(gpx.Length)) ||
+			     gpx.SequenceEqual(bytes.Skip(57).Take(gpx.Length)) ||
+			     gpx.SequenceEqual(bytes.Skip(60).Take(gpx.Length)) ||
+			     gpx.SequenceEqual(bytes.Skip(55).Take(gpx.Length)) )
 			{
 				return ImageFormat.gpx;
 			}
+
 			return null;
 		}
 

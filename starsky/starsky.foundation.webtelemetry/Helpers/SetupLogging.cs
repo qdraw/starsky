@@ -24,19 +24,20 @@ namespace starsky.foundation.webtelemetry.Helpers
 
 				if ( !string.IsNullOrEmpty(appSettings.OpenTelemetry?.LogsEndpoint) )
 				{
-					logging.AddOpenTelemetry(builder =>
-						builder.AddOtlpExporter(
-								options =>
-								{
-									options.Protocol = OtlpExportProtocol.HttpProtobuf;
-									options.Headers = appSettings.OpenTelemetry.GetLogsHeader();
-									options.Endpoint =
-										new Uri(appSettings.OpenTelemetry.LogsEndpoint);
-								})
-							.SetResourceBuilder(
-								ResourceBuilder.CreateDefault()
-									.AddService(appSettings.OpenTelemetry.GetServiceName())
-							)
+					logging.AddOpenTelemetry(
+						builder =>
+							builder.AddOtlpExporter(
+									options =>
+									{
+										options.Protocol = OtlpExportProtocol.HttpProtobuf;
+										options.Headers = appSettings.OpenTelemetry.GetLogsHeader();
+										options.Endpoint =
+											new Uri(appSettings.OpenTelemetry.LogsEndpoint);
+									})
+								.SetResourceBuilder(
+									ResourceBuilder.CreateDefault()
+										.AddService(appSettings.OpenTelemetry.GetServiceName())
+								)
 					);
 				}
 			});

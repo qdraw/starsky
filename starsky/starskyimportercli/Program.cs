@@ -5,9 +5,11 @@ using starsky.feature.import.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Exceptions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.webtelemetry.Extensions;
 using starsky.foundation.webtelemetry.Helpers;
 using starsky.foundation.writemeta.Interfaces;
 
@@ -30,6 +32,7 @@ namespace starskyimportercli
 			var serviceProvider = services.BuildServiceProvider();
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
 
+			services.AddOpenTelemetryMonitoring(appSettings);
 			services.AddTelemetryLogging(appSettings);
 
 			new SetupDatabaseTypes(appSettings, services).BuilderDb();
@@ -45,8 +48,13 @@ namespace starskyimportercli
 				webLogger,
 				appSettings);
 
+
 			// Help and other Command Line Tools args are included in the ImporterCli 
-			await new ImportCli(import, appSettings, console, exifToolDownload).Importer(args);
+			var service = new ImportCli(import, appSettings, console, webLogger, exifToolDownload);
+			if ( !await service.Importer(args) )
+			{
+				throw new WebApplicationException("Import failed");
+			}
 		}
 	}
 }
