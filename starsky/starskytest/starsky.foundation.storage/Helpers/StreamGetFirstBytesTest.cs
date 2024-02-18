@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.storage.Helpers;
@@ -67,6 +68,8 @@ public class StreamGetFirstBytesTest
 
 	[TestMethod]
 	[SuppressMessage("ReSharper", "MustUseReturnValue")]
+	[SuppressMessage("Performance",
+		"CA1835:Prefer the \'Memory\'-based overloads for \'ReadAsync\' and \'WriteAsync\'")]
 	public async Task GetFirstBytesAsync_SourceStreamContentRemainsSame()
 	{
 		// Arrange
@@ -76,7 +79,8 @@ public class StreamGetFirstBytesTest
 		// Create a copy of the original stream content
 		var originalContent = new byte[testData.Length];
 		originalStream.Position = 0;
-		await originalStream.ReadAsync(originalContent, 0, originalContent.Length);
+		await originalStream.ReadAsync(originalContent, 0, originalContent.Length,
+			CancellationToken.None);
 
 		// Act
 		var resultStream = await StreamGetFirstBytes.GetFirstBytesAsync(originalStream, 5);
@@ -84,7 +88,8 @@ public class StreamGetFirstBytesTest
 		// Create a copy of the result stream content
 		var resultContent = new byte[resultStream.Length];
 		resultStream.Position = 0;
-		await resultStream.ReadAsync(resultContent, 0, resultContent.Length);
+		await resultStream.ReadAsync(resultContent, 0, resultContent.Length,
+			CancellationToken.None);
 
 		// Assert
 		CollectionAssert.AreEqual(originalContent, resultContent);
