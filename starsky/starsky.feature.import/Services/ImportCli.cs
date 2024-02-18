@@ -97,14 +97,21 @@ namespace starsky.feature.import.Services
 			if ( importSettings.IsConsoleOutputModeDefault() )
 			{
 				var okCount = result.Count(p => p.Status == ImportStatus.Ok);
-				_console.WriteLine($"\nDone Importing {okCount}");
+				_logger.LogInformation($"\nDone Importing {okCount}");
+
 				if ( okCount != 0 )
 				{
-					_console.WriteLine($"Time: {Math.Round(stopWatch.Elapsed.TotalSeconds, 1)} " +
-					                   $"sec. or {Math.Round(stopWatch.Elapsed.TotalMinutes, 1)} min.");
+					_logger.LogInformation(
+						$"Time: {Math.Round(stopWatch.Elapsed.TotalSeconds, 1)} " +
+						$"sec. or {Math.Round(stopWatch.Elapsed.TotalMinutes, 1)} min.");
 				}
 
-				_console.WriteLine($"Failed: {result.Count(p => p.Status != ImportStatus.Ok)}");
+				var failedCount = result.Count(p =>
+					p.Status != ImportStatus.Ok && p.Status != ImportStatus.IgnoredAlreadyImported);
+				_logger.LogInformation($"Failed: {failedCount}");
+				var ignoredCount =
+					result.Count(p => p.Status == ImportStatus.IgnoredAlreadyImported);
+				_logger.LogInformation($"Skip due already imported: {ignoredCount}");
 			}
 
 			if ( importSettings.ConsoleOutputMode != ConsoleOutputMode.Csv )
