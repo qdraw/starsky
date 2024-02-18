@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.desktop.Service;
 using starsky.foundation.platform.Helpers;
@@ -11,7 +12,7 @@ namespace starskytest.starsky.feature.desktop.Service;
 public class OpenEditorDesktopServiceTest
 {
 	[TestMethod]
-	public void TEst()
+	public async Task TEst()
 	{
 		var fakeService =
 			new FakeIOpenApplicationNativeService(new List<string> { "/test.jpg" }, "test");
@@ -32,8 +33,8 @@ public class OpenEditorDesktopServiceTest
 		};
 		var service =
 			new OpenEditorDesktopService(appSettings, fakeService,
-				new FakeSelectorStorage(new FakeIStorage(new List<string> { "/test.jpg" })));
+				new FakeIOpenEditorPreflight());
 
-		service.Open(new List<string> { "/test.jpg" });
+		await service.OpenAsync(new List<string> { "/test.jpg" }, true);
 	}
 }

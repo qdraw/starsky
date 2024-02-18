@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 
@@ -89,6 +90,41 @@ namespace starskytest.starsky.foundation.platform.Helpers
 
 			AppSettingsCompareHelper.Compare(source, to);
 			Assert.AreEqual(source.DatabaseType, to.DatabaseType);
+		}
+
+		[TestMethod]
+		public void DesktopCollectionsOpenCompare()
+		{
+			var source = new AppSettings
+			{
+				DesktopCollectionsOpen = CollectionsOpenType.RawJpegMode.Raw
+			};
+
+			var to = new AppSettings
+			{
+				DesktopCollectionsOpen = CollectionsOpenType.RawJpegMode.Jpeg
+			};
+
+			AppSettingsCompareHelper.Compare(source, to);
+			Assert.AreEqual(source.DesktopCollectionsOpen, to.DesktopCollectionsOpen);
+		}
+
+		[TestMethod]
+		public void DesktopCollectionsOpenCompare_DefaultIgnore()
+		{
+			var source = new AppSettings
+			{
+				DesktopCollectionsOpen = CollectionsOpenType.RawJpegMode.Raw
+			};
+
+			var to = new AppSettings
+			{
+				DesktopCollectionsOpen = CollectionsOpenType.RawJpegMode.Default
+			};
+
+			AppSettingsCompareHelper.Compare(source, to);
+
+			Assert.AreEqual(CollectionsOpenType.RawJpegMode.Raw, source.DesktopCollectionsOpen);
 		}
 
 		[TestMethod]

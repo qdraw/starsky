@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text.Json;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers.Compare;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
@@ -161,6 +162,18 @@ namespace starsky.foundation.platform.Helpers
 				CompareDatabaseTypeList(propertyB.Name, sourceIndexItem, oldListStringValue,
 					newListStringValue, differenceList);
 			}
+
+			if ( propertyB.PropertyType == typeof(CollectionsOpenType.RawJpegMode) )
+			{
+				var oldRawJpegModeEnumItem =
+					( CollectionsOpenType.RawJpegMode? )propertyInfoFromA.GetValue(sourceIndexItem,
+						null);
+				var newRawJpegModeEnumItem =
+					( CollectionsOpenType.RawJpegMode? )propertyB.GetValue(updateObject, null);
+				CompareCollectionsOpenTypeRawJpegMode(propertyB.Name, sourceIndexItem,
+					oldRawJpegModeEnumItem,
+					newRawJpegModeEnumItem, differenceList);
+			}
 		}
 
 		private static void CompareMultipleListDictionary(PropertyInfo propertyB,
@@ -269,6 +282,26 @@ namespace starsky.foundation.platform.Helpers
 		{
 			if ( oldDatabaseTypeList == newDatabaseTypeList ||
 			     newDatabaseTypeList == new AppSettings().DatabaseType ) return;
+			sourceIndexItem.GetType().GetProperty(propertyName)
+				?.SetValue(sourceIndexItem, newDatabaseTypeList, null);
+			differenceList.Add(propertyName.ToLowerInvariant());
+		}
+
+		/// <summary>
+		/// Compare DatabaseTypeList type 
+		/// </summary>
+		/// <param name="propertyName">name of property e.g. DatabaseTypeList</param>
+		/// <param name="sourceIndexItem">source object</param>
+		/// <param name="oldDatabaseTypeList">oldDatabaseTypeList to compare with newDatabaseTypeList</param>
+		/// <param name="newDatabaseTypeList">newDatabaseTypeList to compare with oldDatabaseTypeList</param>
+		/// <param name="differenceList">list of different values</param>
+		private static void CompareCollectionsOpenTypeRawJpegMode(string propertyName,
+			AppSettings sourceIndexItem,
+			CollectionsOpenType.RawJpegMode? oldDatabaseTypeList,
+			CollectionsOpenType.RawJpegMode? newDatabaseTypeList, List<string> differenceList)
+		{
+			if ( oldDatabaseTypeList == newDatabaseTypeList ||
+			     newDatabaseTypeList == CollectionsOpenType.RawJpegMode.Default ) return;
 			sourceIndexItem.GetType().GetProperty(propertyName)
 				?.SetValue(sourceIndexItem, newDatabaseTypeList, null);
 			differenceList.Add(propertyName.ToLowerInvariant());

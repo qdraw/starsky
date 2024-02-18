@@ -8,13 +8,13 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using starsky.foundation.platform.Attributes;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.JsonConverter;
 using TimeZoneConverter;
 
 namespace starsky.foundation.platform.Models
 {
-	[SuppressMessage("ReSharper", "CA1822")]
 	public sealed class AppSettings
 	{
 		public AppSettings()
@@ -770,6 +770,13 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		[PackageTelemetry]
 		public List<AppSettingsDefaultEditorApplication> DefaultDesktopEditor { get; set; } = [];
+
+		/// <summary>
+		/// When open with desktop app, open the raw or jpeg (Default: NotSet / Jpeg)
+		/// </summary>
+		[PackageTelemetry]
+		public CollectionsOpenType.RawJpegMode DesktopCollectionsOpen { get; set; } =
+			CollectionsOpenType.RawJpegMode.Default;
 
 		/// <summary>
 		/// Helps us improve the software

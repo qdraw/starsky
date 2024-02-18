@@ -4,8 +4,6 @@ using starsky.foundation.injection;
 using starsky.foundation.native.OpenApplicationNative.Interfaces;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
-using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Storage;
 
 namespace starsky.feature.desktop.Service;
 
@@ -14,18 +12,24 @@ public class OpenEditorDesktopService : IOpenEditorDesktopService
 {
 	private readonly AppSettings _appSettings;
 	private readonly IOpenApplicationNativeService _openApplicationNativeService;
-	private readonly IStorage _iStorage;
+	private readonly IOpenEditorPreflight _openEditorPreflight;
 
 	public OpenEditorDesktopService(AppSettings appSettings,
 		IOpenApplicationNativeService openApplicationNativeService,
-		ISelectorStorage selectorStorage)
+		IOpenEditorPreflight openEditorPreflight)
 	{
 		_appSettings = appSettings;
 		_openApplicationNativeService = openApplicationNativeService;
-		_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+		_openEditorPreflight = openEditorPreflight;
 	}
 
-	public (bool?, string) Open(List<string> subPaths)
+	public async Task<(bool?, string)> OpenAsync(string f, bool collections)
+	{
+		var inputFilePaths = PathHelper.SplitInputFilePaths(f);
+		return await OpenAsync(inputFilePaths.ToList(), collections);
+	}
+
+	private async Task<(bool?, string)> OpenAsync(List<string> subPaths, bool collections)
 	{
 		if ( _appSettings.UseLocalDesktop == false )
 		{
@@ -37,7 +41,8 @@ public class OpenEditorDesktopService : IOpenEditorDesktopService
 			return ( false, "No files selected" );
 		}
 
-		var subPathAndImageFormatList = Preflight(subPaths);
+		var subPathAndImageFormatList =
+			await _openEditorPreflight.PreflightAsync(subPaths, collections);
 
 		var (openDefaultList, openWithEditorList) = FilterList(subPathAndImageFormatList);
 		_openApplicationNativeService.OpenDefault(openDefaultList);
@@ -47,40 +52,42 @@ public class OpenEditorDesktopService : IOpenEditorDesktopService
 		return ( false, "TODO: Open Editor" );
 	}
 
-	private List<PathImageFormatExistsAppPathModel> Preflight(List<string> subPaths)
-	{
-		var subPathAndImageFormatList = new List<PathImageFormatExistsAppPathModel>();
-		foreach ( var subPath in subPaths )
-		{
-			if ( _iStorage.ExistFile(subPath) )
-			{
-				subPathAndImageFormatList.Add(new PathImageFormatExistsAppPathModel
-				{
-					AppPath = string.Empty,
-					Exists = false,
-					ImageFormat = ExtensionRolesHelper.ImageFormat.notfound,
-					SubPath = subPath
-				});
-			}
-
-			var first50BytesStream = _iStorage.ReadStream(subPath, 50);
-			var imageFormat = ExtensionRolesHelper.GetImageFormat(first50BytesStream);
-			first50BytesStream.Dispose();
-
-			var appSettingsDefaultEditor =
-				_appSettings.DefaultDesktopEditor.Find(p => p.ImageFormats.Contains(imageFormat));
-
-			subPathAndImageFormatList.Add(new PathImageFormatExistsAppPathModel
-			{
-				AppPath = appSettingsDefaultEditor?.ApplicationPath ?? string.Empty,
-				Exists = true,
-				ImageFormat = imageFormat,
-				SubPath = subPath
-			});
-		}
-
-		return subPathAndImageFormatList;
-	}
+	// [Obsolete("replace with PreflightAsync")]
+	// private List<PathImageFormatExistsAppPathModel> Preflight(List<string> subPaths)
+	// {
+	// 	var subPathAndImageFormatList = new List<PathImageFormatExistsAppPathModel>();
+	// 	foreach ( var subPath in subPaths )
+	// 	{
+	// 		if ( _iStorage.ExistFile(subPath) )
+	// 		{
+	// 			subPathAndImageFormatList.Add(new PathImageFormatExistsAppPathModel
+	// 			{
+	// 				AppPath = string.Empty,
+	// 				Exists = false,
+	// 				ImageFormat = ExtensionRolesHelper.ImageFormat.notfound,
+	// 				SubPath = subPath
+	// 			});
+	// 		}
+	//
+	// 		var first50BytesStream = _iStorage.ReadStream(subPath, 50);
+	// 		var imageFormat = ExtensionRolesHelper.GetImageFormat(first50BytesStream);
+	// 		first50BytesStream.Dispose();
+	//
+	// 		var appSettingsDefaultEditor =
+	// 			_appSettings.DefaultDesktopEditor.Find(p => p.ImageFormats.Contains(imageFormat));
+	//
+	// 		subPathAndImageFormatList.Add(new PathImageFormatExistsAppPathModel
+	// 		{
+	// 			AppPath = appSettingsDefaultEditor?.ApplicationPath ?? string.Empty,
+	// 			Exists = true,
+	// 			ImageFormat = imageFormat,
+	// 			SubPath = subPath,
+	// 			FullFilePath = _appSettings.DatabasePathToFilePath(subPath)
+	// 		});
+	// 	}
+	//
+	// 	return subPathAndImageFormatList;
+	// }
 
 	/// <summary>
 	/// Filter the list

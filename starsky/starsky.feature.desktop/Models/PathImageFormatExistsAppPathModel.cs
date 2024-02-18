@@ -6,6 +6,8 @@ public class PathImageFormatExistsAppPathModel
 {
 	public string SubPath { get; set; } = string.Empty;
 
+	public string FullFilePath { get; set; } = string.Empty;
+
 	public ExtensionRolesHelper.ImageFormat ImageFormat { get; set; } =
 		ExtensionRolesHelper.ImageFormat.notfound;
 
