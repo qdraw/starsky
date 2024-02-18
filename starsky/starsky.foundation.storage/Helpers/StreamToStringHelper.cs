@@ -20,11 +20,10 @@ public static class StreamToStringHelper
 		var reader = new StreamReader(stream, Encoding.UTF8);
 		var result = await reader.ReadToEndAsync();
 
-		if ( dispose )
-		{
-			await stream.FlushAsync();
-			await stream.DisposeAsync(); // also flush
-		}
+		if ( !dispose ) return result;
+
+		await stream.FlushAsync();
+		await stream.DisposeAsync(); // also flush
 
 		return result;
 	}

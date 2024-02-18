@@ -235,6 +235,7 @@ namespace starsky.foundation.storage.Storage
 					return fileStream;
 				}
 
+				// to reuse stream please check StreamGetFirstBytes.GetFirstBytesAsync
 				// Only for when selecting the first part of the file
 				var buffer = new byte[maxRead];
 				// ReSharper disable once MustUseReturnValue

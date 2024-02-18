@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Medallion.Shell;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
@@ -13,6 +12,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Interfaces;
+using static Medallion.Shell.Shell;
 
 namespace starsky.foundation.writemeta.Helpers;
 
@@ -59,10 +59,11 @@ public sealed class ExifTool : IExifTool
 			string? beforeFileHash, string command,
 			CancellationToken cancellationToken = default)
 	{
-		var inputStream = _iStorage.ReadStream(subPath);
-		beforeFileHash ??= await FileHash.CalculateHashAsync(inputStream, false, cancellationToken);
+		var sourceStream = _iStorage.ReadStream(subPath);
+		beforeFileHash ??=
+			await FileHash.CalculateHashAsync(sourceStream, false, cancellationToken);
 
-		var runner = new StreamToStreamRunner(_appSettings, inputStream, _logger);
+		var runner = new StreamToStreamRunner(_appSettings, sourceStream, _logger);
 		var stream = await runner.RunProcessAsync(command, subPath);
 
 		var newHashCode = await RenameThumbnailByStream(beforeFileHash, stream,
@@ -82,10 +83,11 @@ public sealed class ExifTool : IExifTool
 		var statusResult = new KeyValuePair<bool, string>(streamResult, newHashCode);
 
 		// Need to Dispose for Windows
-		await inputStream.DisposeAsync();
+		await sourceStream.DisposeAsync();
 
 		return statusResult;
 	}
+
 
 	/// <summary>
 	/// Need to dispose string afterwards yourself
@@ -105,11 +107,13 @@ public sealed class ExifTool : IExifTool
 			return string.Empty;
 		}
 
-		var buffer = new byte[FileHash.MaxReadSize];
-		await stream.ReadAsync(buffer.AsMemory(0, FileHash.MaxReadSize), cancellationToken);
+		var fileHashStream = await StreamGetFirstBytes.GetFirstBytesAsync(stream,
+			FileHash.MaxReadSize,
+			cancellationToken);
 
 		var newHashCode =
-			await FileHash.CalculateHashAsync(new MemoryStream(buffer), false, cancellationToken);
+			await FileHash.CalculateHashAsync(fileHashStream, true, cancellationToken);
+
 		if ( string.IsNullOrEmpty(newHashCode) )
 		{
 			return string.Empty;
@@ -197,17 +201,21 @@ internal class StreamToStreamRunner
 		try
 		{
 			// run with pipes
+			var command = Default.Run(_appSettings.ExifToolPath,
+					options: opts =>
+					{
+						opts.StartInfo(si =>
+							si.Arguments = argumentsWithPipeEnd);
+					})
+				< _sourceStream > memoryStream;
 
-			var command = Command.Run(_appSettings.ExifToolPath, options:
-					opts => { opts.StartInfo(si => si.Arguments = argumentsWithPipeEnd); })
-				.RedirectFrom(_sourceStream)
-				.RedirectTo(memoryStream);
-
-			var result = await command.Task;
+			var result = await command.Task.ConfigureAwait(false);
 
 			_logger.LogInformation($"[RunProcessAsync] {result.Success} ~ exifTool " +
 			                       $"{referencePath} {exifToolInputArguments} " +
 			                       $"run with result: {result.Success}  ~ ");
+
+			memoryStream.Seek(0, SeekOrigin.Begin);
 
 			return memoryStream;
 		}
