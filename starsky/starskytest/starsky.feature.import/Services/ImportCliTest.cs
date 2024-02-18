@@ -43,17 +43,19 @@ namespace starskytest.starsky.feature.import.Services
 		[TestMethod]
 		public async Task ImporterCli_ArgPath()
 		{
-			var fakeConsole = new FakeConsoleWrapper(new List<string>());
+			var webLogger = new FakeIWebLogger();
 			var storage = new FakeIStorage(new List<string> { "/" },
 				new List<string> { "/test" },
 				new List<byte[]>(Array.Empty<byte[]>()));
 
 			await new ImportCli(new FakeIImport(new FakeSelectorStorage(storage)),
-					new AppSettings(), fakeConsole, new FakeIWebLogger(),
+					new AppSettings(), new FakeConsoleWrapper(), webLogger,
 					new FakeExifToolDownload())
 				.Importer(
 					new List<string> { "-p", "/test" }.ToArray());
-			Assert.IsTrue(fakeConsole.WrittenLines.FirstOrDefault()?.Contains("Done Importing"));
+			Assert.IsTrue(
+				webLogger.TrackedInformation.Exists(
+					p => p.Item2?.Contains("Done Importing") == true));
 		}
 
 
@@ -82,34 +84,40 @@ namespace starskytest.starsky.feature.import.Services
 		[TestMethod]
 		public async Task ImporterCli_ArgPath_Verbose()
 		{
+			var webLogger = new FakeIWebLogger();
+
 			var fakeConsole = new FakeConsoleWrapper(new List<string>());
 			var storage = new FakeIStorage(new List<string> { "/" },
 				new List<string> { "/test" },
 				new List<byte[]>(Array.Empty<byte[]>()));
 
 			var cli = new ImportCli(new FakeIImport(new FakeSelectorStorage(storage)),
-				new AppSettings { Verbose = true }, fakeConsole, new FakeIWebLogger(),
+				new AppSettings { Verbose = true }, fakeConsole, webLogger,
 				new FakeExifToolDownload());
 
 			// verbose is entered here 
 			await cli.Importer(new List<string> { "-p", "/test", "-v", "true" }.ToArray());
 
-			Assert.IsTrue(fakeConsole.WrittenLines.LastOrDefault()?.Contains("Failed: 2"));
+			Assert.IsTrue(
+				webLogger.TrackedInformation.Exists(p => p.Item2?.Contains("Failed: 2") == true));
 		}
 
 		[TestMethod]
 		public async Task ImporterCli_ArgPath_Fail()
 		{
 			var fakeConsole = new FakeConsoleWrapper(new List<string>());
+			var webLogger = new FakeIWebLogger();
 			var storage = new FakeIStorage(new List<string> { "/" },
 				new List<string> { "/test" },
 				new List<byte[]>(Array.Empty<byte[]>())); // instead of new byte[0][]
 
 			await new ImportCli(new FakeIImport(new FakeSelectorStorage(storage)),
-					new AppSettings { Verbose = false }, fakeConsole, new FakeIWebLogger(),
+					new AppSettings { Verbose = false }, fakeConsole, webLogger,
 					new FakeExifToolDownload())
 				.Importer(new List<string> { "-p", "/test" }.ToArray());
-			Assert.IsTrue(fakeConsole.WrittenLines.LastOrDefault()?.Contains("Failed"));
+
+			Assert.IsTrue(
+				webLogger.TrackedInformation.Exists(p => p.Item2?.Contains("Failed") == true));
 		}
 	}
 }
