@@ -398,6 +398,7 @@ namespace starsky.foundation.platform.Helpers
 
 		/// <summary>
 		/// Get the format of the image by looking the first bytes
+		/// Stream is Flushed / Disposed afterwards
 		/// </summary>
 		/// <param name="stream">stream</param>
 		/// <returns>ImageFormat enum</returns>
