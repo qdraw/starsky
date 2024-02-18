@@ -606,7 +606,7 @@ public class Import : IImport
 		// Add item to database
 		await AddToQueryAndImportDatabaseAsync(importIndexItem, importSettings);
 
-		if ( !await CopyStream(importIndexItem, importSettings) )
+		if ( !await CopyStreamFromHostToSubPathStorage(importIndexItem, importSettings) )
 		{
 			return importIndexItem;
 		}
@@ -659,7 +659,7 @@ public class Import : IImport
 		return importIndexItem;
 	}
 
-	private async Task<bool> CopyStream(ImportIndexItem importIndexItem,
+	private async Task<bool> CopyStreamFromHostToSubPathStorage(ImportIndexItem importIndexItem,
 		ImportSettingsModel importSettings)
 	{
 		if ( _appSettings.IsVerbose() )
@@ -669,31 +669,26 @@ public class Import : IImport
 		}
 
 		var hostStorageFileSize = _filesystemStorage.Info(importIndexItem.SourceFullFilePath).Size;
-		var sourceStream =
-			_filesystemStorage.ReadStream(importIndexItem.SourceFullFilePath);
+		var sourceStream = _filesystemStorage.ReadStream(importIndexItem.SourceFullFilePath);
 
 		try
 		{
 			await _subPathStorage.WriteStreamAsync(sourceStream, importIndexItem.FilePath!);
+			// SourceStream is disposed in WriteStreamAsync
 		}
 		catch ( AggregateException exception )
 		{
-			//  System.IO.IOException: No space left on device 
+			//  For example: System.IO.IOException: No space left on device 
 			_logger.LogError(
 				$"CopyStream  {importIndexItem.FilePath} - retry helper failed {exception.Message}",
 				exception);
-		}
-		finally
-		{
-			await sourceStream.FlushAsync();
-			await sourceStream.DisposeAsync(); // also flush
 		}
 
 		var subStorageFileSize = _subPathStorage.Info(importIndexItem.FilePath!).Size;
 		if ( hostStorageFileSize == subStorageFileSize ) return true;
 		_logger.LogError(
-			$"Host size does not match   {hostStorageFileSize} - {subStorageFileSize} " +
-			$"{importIndexItem.SourceFullFilePath} - {importIndexItem.FilePath}");
+			$"Filesize does not match H:{hostStorageFileSize} - S:{subStorageFileSize} " +
+			$"H: {importIndexItem.SourceFullFilePath} - S: {importIndexItem.FilePath}");
 
 		_subPathStorage.FileDelete(importIndexItem.FilePath!);
 		await RemoveFromQueryAndImportDatabaseAsync(importIndexItem, importSettings);
