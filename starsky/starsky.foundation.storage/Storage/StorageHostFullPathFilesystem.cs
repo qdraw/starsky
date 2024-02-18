@@ -410,6 +410,7 @@ namespace starsky.foundation.storage.Storage
 					       FileOptions.Asynchronous | FileOptions.SequentialScan) )
 				{
 					await stream.CopyToAsync(fileStream);
+					await fileStream.FlushAsync();
 				}
 
 				await stream.FlushAsync();
@@ -450,8 +451,8 @@ namespace starsky.foundation.storage.Storage
 			}
 			catch ( Exception exception )
 			{
-				_logger?.LogInformation(
-					$"[StorageHostFullPathFilesystem] catch-ed ex: {exception.Message} -  {path}");
+				_logger?.LogInformation($"[StorageHostFullPathFilesystem] " +
+				                        $"catch-ed ex: {exception.Message} -  {path}");
 				return new Tuple<string[], string[]>(
 					new List<string>().ToArray(),
 					new List<string>().ToArray()

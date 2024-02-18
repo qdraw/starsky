@@ -19,10 +19,10 @@ public static class StreamToStringHelper
 	{
 		var reader = new StreamReader(stream, Encoding.UTF8);
 		var result = await reader.ReadToEndAsync();
-		await stream.FlushAsync();
 
 		if ( dispose )
 		{
+			await stream.FlushAsync();
 			await stream.DisposeAsync(); // also flush
 		}
 

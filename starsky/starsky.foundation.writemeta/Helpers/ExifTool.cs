@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Medallion.Shell;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
@@ -12,7 +13,6 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Interfaces;
-using static Medallion.Shell.Shell;
 
 namespace starsky.foundation.writemeta.Helpers;
 
@@ -63,26 +63,28 @@ public sealed class ExifTool : IExifTool
 		beforeFileHash ??= await FileHash.CalculateHashAsync(inputStream, false, cancellationToken);
 
 		var runner = new StreamToStreamRunner(_appSettings, inputStream, _logger);
-		var stream = await runner.RunProcessAsync(command);
+		var stream = await runner.RunProcessAsync(command, subPath);
 
 		var newHashCode = await RenameThumbnailByStream(beforeFileHash, stream,
 			!beforeFileHash.Contains(FileHash.GeneratedPostFix), cancellationToken);
 
-		stream.Seek(0, SeekOrigin.Begin);
-
-		// Need to Dispose for Windows
-		inputStream.Close();
-
-		if ( stream.Length <= 15 && ( await StreamToStringHelper.StreamToStringAsync(stream, true) )
-			.Contains("Fake ExifTool", StringComparison.InvariantCultureIgnoreCase) )
+		if ( stream.Length <= 15 &&
+		     ( await StreamToStringHelper.StreamToStringAsync(stream, false) )
+		     .Contains("Fake ExifTool", StringComparison.InvariantCultureIgnoreCase) )
 		{
 			_logger.LogError(
 				$"[WriteTagsAndRenameThumbnailAsync] Fake Exiftool detected {subPath}");
 			return new KeyValuePair<bool, string>(false, beforeFileHash);
 		}
 
-		return new KeyValuePair<bool, string>(await _iStorage.WriteStreamAsync(stream, subPath),
-			newHashCode);
+		stream.Seek(0, SeekOrigin.Begin);
+		var streamResult = await _iStorage.WriteStreamAsync(stream, subPath);
+		var statusResult = new KeyValuePair<bool, string>(streamResult, newHashCode);
+
+		// Need to Dispose for Windows
+		await inputStream.DisposeAsync();
+
+		return statusResult;
 	}
 
 	/// <summary>
@@ -107,7 +109,7 @@ public sealed class ExifTool : IExifTool
 		await stream.ReadAsync(buffer.AsMemory(0, FileHash.MaxReadSize), cancellationToken);
 
 		var newHashCode =
-			await FileHash.CalculateHashAsync(new MemoryStream(buffer), true, cancellationToken);
+			await FileHash.CalculateHashAsync(new MemoryStream(buffer), false, cancellationToken);
 		if ( string.IsNullOrEmpty(newHashCode) )
 		{
 			return string.Empty;
@@ -137,9 +139,12 @@ public sealed class ExifTool : IExifTool
 		var runner = new StreamToStreamRunner(_appSettings, inputStream, _logger);
 		var stream = await runner.RunProcessAsync(command);
 
+		var isWritten = await _iStorage.WriteStreamAsync(stream, subPath);
+
 		// Need to Dispose for Windows
-		inputStream.Close();
-		return await _iStorage.WriteStreamAsync(stream, subPath);
+		await inputStream.DisposeAsync();
+
+		return isWritten;
 	}
 
 	/// <summary>
@@ -164,13 +169,13 @@ public sealed class ExifTool : IExifTool
 /// </summary>
 internal class StreamToStreamRunner
 {
-	private readonly Stream _src;
+	private readonly Stream _sourceStream;
 	private readonly AppSettings _appSettings;
 	private readonly IWebLogger _logger;
 
-	public StreamToStreamRunner(AppSettings appSettings, Stream src, IWebLogger logger)
+	public StreamToStreamRunner(AppSettings appSettings, Stream sourceStream, IWebLogger logger)
 	{
-		_src = src ?? throw new ArgumentNullException(nameof(src));
+		_sourceStream = sourceStream ?? throw new ArgumentNullException(nameof(sourceStream));
 		_appSettings = appSettings;
 		_logger = logger;
 	}
@@ -179,9 +184,11 @@ internal class StreamToStreamRunner
 	/// Run Command async (and keep stream open)
 	/// </summary>
 	/// <param name="exifToolInputArguments">exifTool args</param>
+	/// <param name="referencePath">reference path (only for display)</param>
 	/// <returns>bool if success</returns>
 	/// <exception cref="ArgumentException">if exifTool is missing</exception>
-	public async Task<Stream> RunProcessAsync(string exifToolInputArguments)
+	public async Task<Stream> RunProcessAsync(string exifToolInputArguments,
+		string referencePath = "")
 	{
 		var argumentsWithPipeEnd = $"{exifToolInputArguments} -o - -";
 
@@ -190,30 +197,25 @@ internal class StreamToStreamRunner
 		try
 		{
 			// run with pipes
-			var command = Default.Run(_appSettings.ExifToolPath,
-				options:
-				opts => { opts.StartInfo(si => si.Arguments = argumentsWithPipeEnd); });
 
-			command.RedirectFrom(_src);
-			command.RedirectTo(memoryStream);
+			var command = Command.Run(_appSettings.ExifToolPath, options:
+					opts => { opts.StartInfo(si => si.Arguments = argumentsWithPipeEnd); })
+				.RedirectFrom(_sourceStream)
+				.RedirectTo(memoryStream);
 
 			var result = await command.Task;
 
-			if ( _appSettings.IsVerbose() )
-			{
-				_logger.LogInformation($"[RunProcessAsync] ~ exifTool {exifToolInputArguments} " +
-									   $"run with result: {result.Success} ~ ");
-			}
-
-			memoryStream.Seek(0, SeekOrigin.Begin);
+			_logger.LogInformation($"[RunProcessAsync] {result.Success} ~ exifTool " +
+			                       $"{referencePath} {exifToolInputArguments} " +
+			                       $"run with result: {result.Success}  ~ ");
 
 			return memoryStream;
 		}
 		catch ( Win32Exception exception )
 		{
 			throw new ArgumentException("Error when trying to start the exifTool process.  " +
-										"Please make sure exifTool is installed, and its path is properly " +
-										"specified in the options.", exception);
+			                            "Please make sure exifTool is installed, and its path is properly " +
+			                            "specified in the options.", exception);
 		}
 	}
 }

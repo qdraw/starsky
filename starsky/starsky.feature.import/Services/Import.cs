@@ -622,6 +622,7 @@ public class Import : IImport
 			_filesystemStorage.FileCopy(xmpSourceFullFilePath, destinationXmpFullPath);
 		}
 
+		// ExifCopy / XMPSync
 		await CreateSideCarFile(importIndexItem, xmpExistForThisFileType);
 
 		// Run Exiftool to Update for example colorClass

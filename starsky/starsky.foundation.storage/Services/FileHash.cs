@@ -200,10 +200,9 @@ public sealed class FileHash
 
 				md5.TransformFinalBlock(block, 0, 0);
 
-				await stream.FlushAsync(cancellationToken);
-
 				if ( dispose )
 				{
+					await stream.FlushAsync(cancellationToken);
 					stream.Close();
 					await stream.DisposeAsync(); // also flush
 				}

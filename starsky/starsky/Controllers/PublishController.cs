@@ -85,15 +85,15 @@ namespace starsky.Controllers
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
 			var info = await _metaInfo.GetInfoAsync(inputFilePaths, false);
 			if ( info.TrueForAll(p =>
-					p.Status != FileIndexItem.ExifStatus.Ok &&
-					p.Status != FileIndexItem.ExifStatus.ReadOnly) )
+				    p.Status != FileIndexItem.ExifStatus.Ok &&
+				    p.Status != FileIndexItem.ExifStatus.ReadOnly) )
 			{
 				return NotFound(info);
 			}
 
 			var slugItemName = GenerateSlugHelper.GenerateSlug(itemName, true);
-			_webLogger.LogInformation(
-				$"[/api/publish/create] Press publish: {slugItemName} {f} {DateTime.UtcNow}");
+			_webLogger.LogInformation($"[/api/publish/create] Press publish: " +
+			                          $"{slugItemName} {f} {DateTime.UtcNow}");
 
 			var location = Path.Combine(_appSettings.TempFolder, slugItemName);
 
@@ -110,8 +110,8 @@ namespace starsky.Controllers
 					publishProfileName, itemName, location);
 				await _publishService.GenerateZip(_appSettings.TempFolder, itemName,
 					renderCopyResult, true);
-				_webLogger.LogInformation(
-					$"[/api/publish/create] done: {itemName} {DateTime.UtcNow}");
+				_webLogger.LogInformation($"[/api/publish/create] done: " +
+				                          $"{itemName} {DateTime.UtcNow}");
 			}, publishProfileName + "_" + itemName);
 
 			// Get the zip 	by	[HttpGet("/export/zip/{f}.zip")]
