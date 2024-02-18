@@ -131,8 +131,7 @@ namespace starsky.Controllers
 
 				var writeStatus =
 					await _iStorage.WriteStreamAsync(tempFileStream, subPath + ".tmp");
-				await tempFileStream.FlushAsync();
-				await tempFileStream.DisposeAsync(); // also flush
+				// Is already flushed / disposed when the stream is written
 
 				// to avoid partly written stream to be read by an other application
 				_iStorage.FileDelete(subPath);
