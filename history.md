@@ -41,11 +41,17 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.6.0-beta.1 -  _(Unreleased)_ - 2024-02-? {#v0.6.0-beta.1}
+## version 0.6.0-beta.2 -  _(Unreleased)_ - 2024-02-? {#v0.6.0-beta.2}
+
+- nothing yet
+
+## version 0.6.0-beta.1 - 2024-02-18 {#v0.6.0-beta.1}
 
 - [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.200 (Runtime: 8.0.2) (PR #1382)
 - [x] (Fixed) _Back-end_ Docker update base package and no recommendations install (PR #1393)
-- [x] (Fixed) _Back-end_ Corrupt images where generated due import (Issue started with .NET 8)  (PR #1392)
+- [x] (Fixed) _Back-end_ Corrupt images where generated due import (Issue started with .NET 8) (PR
+  #1392)
+- [x] (Fixed) _Back-end_ Flush issue with Upload (PR #1394)
 
 ## version 0.6.0-beta.0 - 2024-02-11 {#v0.6.0-beta.0}
 

@@ -4,7 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <RootNamespace>starsky.feature.thumbnail</RootNamespace>
         <ProjectGuid>{93a6019f-6627-483e-a18e-0d073d7b0883}</ProjectGuid>
-        <Version>0.6.0-beta.0</Version>
+        <Version>0.6.0-beta.1</Version>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 

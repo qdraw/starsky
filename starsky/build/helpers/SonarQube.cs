@@ -22,7 +22,7 @@ namespace helpers
 		/// <summary>
 		/// @see: https://www.nuget.org/packages/dotnet-sonarscanner
 		/// </summary>
-		public const string SonarQubePackageVersion = "6.1.0";
+		public const string SonarQubePackageVersion = "6.2.0";
 
 		public const string SonarQubeDotnetSonarScannerApi =
 			"https://api.nuget.org/v3-flatcontainer/dotnet-sonarscanner/index.json";
@@ -57,7 +57,7 @@ namespace helpers
 
 			var toolList = DotNet($"tool list", rootDirectory, envs, null, true);
 			if ( toolList.Any(p => p.Text.Contains(SonarQubePackageName)
-								   && toolList.Any(p => p.Text.Contains(SonarQubePackageVersion))) )
+			                       && toolList.Any(p => p.Text.Contains(SonarQubePackageVersion))) )
 			{
 				Log.Information("Next: tool restore");
 				DotNet($"tool restore", rootDirectory, envs, null, true);
@@ -92,7 +92,7 @@ namespace helpers
 			if ( result == null )
 			{
 				Log.Information($"Nuget API is not available, " +
-								$"so skip checking the latest version of {SonarQubePackageName}");
+				                $"so skip checking the latest version of {SonarQubePackageName}");
 				return;
 			}
 
@@ -100,11 +100,11 @@ namespace helpers
 			if ( latestVersionByApi > new Version(SonarQubePackageVersion) )
 			{
 				Log.Warning($"Please upgrade to the latest version " +
-							$"of dotnet-sonarscanner {latestVersionByApi} \n\n" +
-							"Update the following values: \n" +
-							$"- build/helpers/SonarQube.cs -> SonarQubePackageVersion to {latestVersionByApi} \n" +
-							"The _build project will auto update: \n" +
-							"-  .config/dotnet-tools.json");
+				            $"of dotnet-sonarscanner {latestVersionByApi} \n\n" +
+				            "Update the following values: \n" +
+				            $"- build/helpers/SonarQube.cs -> SonarQubePackageVersion to {latestVersionByApi} \n" +
+				            "The _build project will auto update: \n" +
+				            "-  .config/dotnet-tools.json");
 			}
 		}
 
@@ -147,7 +147,7 @@ namespace helpers
 			}
 
 			if ( string.IsNullOrEmpty(GetSonarKey()) || string.IsNullOrEmpty(sonarToken) ||
-				 string.IsNullOrEmpty(organisation) )
+			     string.IsNullOrEmpty(organisation) )
 			{
 				Information(
 					$">> SonarQube is disabled $ key={GetSonarKey()}|token={sonarToken}|organisation={organisation}");
@@ -192,9 +192,9 @@ namespace helpers
 
 			// For Pull Requests  
 			var isPrBuild = EnvironmentVariable("GITHUB_ACTIONS") != null &&
-							EnvironmentVariable("GITHUB_JOB") != null &&
-							EnvironmentVariable("GITHUB_BASE_REF") != null &&
-							!string.IsNullOrEmpty(EnvironmentVariable("PR_NUMBER_GITHUB"));
+			                EnvironmentVariable("GITHUB_JOB") != null &&
+			                EnvironmentVariable("GITHUB_BASE_REF") != null &&
+			                !string.IsNullOrEmpty(EnvironmentVariable("PR_NUMBER_GITHUB"));
 
 			var githubPrNumber = EnvironmentVariable("PR_NUMBER_GITHUB");
 			var githubBaseBranch = EnvironmentVariable("GITHUB_BASE_REF");
@@ -218,21 +218,21 @@ namespace helpers
 				.Append($"/d:sonar.typescript.tsconfigPath={tsconfig} ")
 				.Append($"/d:sonar.coverageReportPaths={sonarQubeCoverageFile} ")
 				.Append($"/d:sonar.exclusions=**/build/*,**/build/helpers/*," +
-						"**/documentation/*," +
-						"**/Interfaces/IQuery.cs," +
-						$"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +
-						$"*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx," +
-						$"**/*stories.tsx,**/*spec.ts,**/src/main.tsx,**/src/index.tsx,**/src/style/css/vendor/*,**/node_modules/*," +
-						$"**/prestorybook.js,**/vite.config.ts,**/.storybook/**,**/jest.setup.ts," +
-						$"**/_bigimages-helper.js ")
+				        "**/documentation/*," +
+				        "**/Interfaces/IQuery.cs," +
+				        $"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +
+				        $"*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx," +
+				        $"**/*stories.tsx,**/*spec.ts,**/src/main.tsx,**/src/index.tsx,**/src/style/css/vendor/*,**/node_modules/*," +
+				        $"**/prestorybook.js,**/vite.config.ts,**/.storybook/**,**/jest.setup.ts," +
+				        $"**/_bigimages-helper.js ")
 				.Append($"/d:sonar.coverage.exclusions=**/build/*,**/build/helpers/*," +
-						"**/documentation/*," +
-						"**/Interfaces/IQuery.cs," +
-						$"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +
-						$"*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*," +
-						$"**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/main.tsx,**/src/index.tsx,**/node_modules/*," +
-						$"**/prestorybook.js,**/vite.config.ts,**/.storybook/**,**/jest.setup.ts," +
-						$"**/_bigimages-helper.js ");
+				        "**/documentation/*," +
+				        "**/Interfaces/IQuery.cs," +
+				        $"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +
+				        $"*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*," +
+				        $"**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/main.tsx,**/src/index.tsx,**/node_modules/*," +
+				        $"**/prestorybook.js,**/vite.config.ts,**/.storybook/**,**/jest.setup.ts," +
+				        $"**/_bigimages-helper.js ");
 
 			// Normal build
 			if ( !isPrBuild )
@@ -246,7 +246,7 @@ namespace helpers
 			if ( isPrBuild )
 			{
 				Information($">> PR Build isPRBuild={true}  githubPrNumber " +
-							$"{githubPrNumber} githubBaseBranch {githubBaseBranch} githubRepoSlug {githubRepoSlug}");
+				            $"{githubPrNumber} githubBaseBranch {githubBaseBranch} githubRepoSlug {githubRepoSlug}");
 
 				sonarArguments
 					.Append($"/d:sonar.pullrequest.key={githubPrNumber} ")

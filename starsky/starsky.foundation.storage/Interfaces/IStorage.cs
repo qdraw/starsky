@@ -62,11 +62,24 @@ public interface IStorage
 	/// <returns>Stream with data (non-disposed)</returns>
 	Stream ReadStream(string path, int maxRead = -1);
 
+	/// <summary>
+	/// Write and Dispose / Flush afterwards
+	/// </summary>
+	/// <param name="stream">stream</param>
+	/// <param name="path">where to write to</param>
+	/// <returns>is Success</returns>
 	bool WriteStream(Stream stream, string path);
+	
+	/// <summary>
+	/// Append To Open Stream
+	/// </summary>
+	/// <param name="stream">what to append</param>
+	/// <param name="path">location</param>
+	/// <returns></returns>
 	bool WriteStreamOpenOrCreate(Stream stream, string path);
 
 	/// <summary>
-	/// Write and dispose afterwards
+	/// Write and Dispose / Flush afterwards
 	/// </summary>
 	/// <param name="stream">stream</param>
 	/// <param name="path">where to write to</param>

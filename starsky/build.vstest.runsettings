@@ -15,7 +15,7 @@
         <Configuration>
           <Format>opencover</Format>
           <Exclude>[MySqlConnector]*,[starsky.Views]*,[*]starsky.foundation.database.Migrations.*</Exclude> <!-- [Assembly-Filter]Type-Filter -->
-		  <ExcludeByFile>**/*.Generator.RegexGenerator/**,**/Migrations/**</ExcludeByFile>
+          <ExcludeByFile>**/*.Generator.RegexGenerator/**,**/Migrations/**</ExcludeByFile>
         </Configuration>
       </DataCollector>
     </DataCollectors>
