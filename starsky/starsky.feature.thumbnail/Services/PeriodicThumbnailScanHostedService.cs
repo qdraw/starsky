@@ -10,6 +10,7 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
 [assembly: InternalsVisibleTo("starskytest")]
+
 namespace starsky.feature.thumbnail.Services;
 
 /// <summary>
@@ -54,7 +55,8 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 		await StartBackgroundAsync(IsEnabled, stoppingToken);
 	}
 
-	internal async Task<bool?> StartBackgroundAsync(bool startDirect, CancellationToken cancellationToken)
+	internal async Task<bool?> StartBackgroundAsync(bool startDirect,
+		CancellationToken cancellationToken)
 	{
 		if ( startDirect )
 		{
@@ -78,7 +80,8 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 		}
 		catch ( OperationCanceledException exception )
 		{
-			_logger.LogError("[StartBackgroundAsync] catch-ed OperationCanceledException", exception);
+			_logger.LogError("[StartBackgroundAsync] catch-ed OperationCanceledException",
+				exception);
 		}
 
 		return null;
@@ -98,7 +101,8 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 		try
 		{
 			await using var asyncScope = _factory.CreateAsyncScope();
-			var service = asyncScope.ServiceProvider.GetRequiredService<IDatabaseThumbnailGenerationService>();
+			var service = asyncScope.ServiceProvider
+				.GetRequiredService<IDatabaseThumbnailGenerationService>();
 			await service.StartBackgroundQueue(DateTime.UtcNow.Add(Period));
 			_executionCount++;
 			// Executed PeriodicThumbnailScanHostedService
@@ -107,12 +111,13 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 				$" Count: {_executionCount} ({DateTime.UtcNow:HH:mm:ss})");
 			return true;
 		}
-		catch ( Exception ex )
+		catch ( Exception exception )
 		{
-			_logger.LogInformation(
+			_logger.LogError(
 				$"Failed to execute {nameof(PeriodicThumbnailScanHostedService)} " +
-				$"with exception message {ex.Message}. Good luck next round!");
+				$"with exception message {exception.Message}. Good luck next round!", exception);
 		}
+
 		return null;
 	}
 }
