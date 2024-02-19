@@ -11,9 +11,7 @@ export const Disabled = () => {
   return <ArchiveSidebarLabelEdit />;
 };
 
-Disabled.story = {
-  name: "disabled"
-};
+Disabled.storyName = "disabled";
 
 export const Enabled = () => {
   Router.navigate("/?select=test.jpg");
@@ -26,6 +24,4 @@ export const Enabled = () => {
   );
 };
 
-Enabled.story = {
-  name: "enabled"
-};
+Enabled.storyName = "enabled";

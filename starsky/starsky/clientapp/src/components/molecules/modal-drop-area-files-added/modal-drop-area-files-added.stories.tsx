@@ -10,9 +10,7 @@ export const Default = () => {
   return <ModalDropAreaFilesAdded isOpen={true} uploadFilesList={[]} handleExit={() => {}} />;
 };
 
-Default.story = {
-  name: "default"
-};
+Default.storyName = "default";
 
 export const _2Items = () => {
   return (
@@ -30,6 +28,4 @@ export const _2Items = () => {
   );
 };
 
-_2Items.story = {
-  name: "2 items"
-};
+_2Items.storyName = "2 items";

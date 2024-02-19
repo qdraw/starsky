@@ -8,6 +8,4 @@ export const Default = () => {
   return <ModalDisplayOptions isOpen={true} handleExit={() => {}}></ModalDisplayOptions>;
 };
 
-Default.story = {
-  name: "default"
-};
+Default.storyName = "default";

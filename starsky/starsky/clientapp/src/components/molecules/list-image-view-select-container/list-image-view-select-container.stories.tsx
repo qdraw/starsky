@@ -24,9 +24,7 @@ export const Default = () => {
   // for multiple items on page see: components/molecules/item-list-view
 };
 
-Default.story = {
-  name: "default"
-};
+Default.storyName = "default";
 
 export const Select = () => {
   Router.navigate("/?select=test.jpg");
@@ -39,6 +37,4 @@ export const Select = () => {
   );
 };
 
-Select.story = {
-  name: "select"
-};
+Select.storyName = "select";

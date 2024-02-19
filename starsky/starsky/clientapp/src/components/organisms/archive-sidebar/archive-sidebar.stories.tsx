@@ -20,9 +20,7 @@ export const Disabled = () => {
   );
 };
 
-Disabled.story = {
-  name: "disabled"
-};
+Disabled.storyName = "disabled";
 
 export const OneItemSelected = () => {
   Router.navigate("/?sidebar=true&select=test.jpg");
@@ -41,6 +39,4 @@ export const OneItemSelected = () => {
   );
 };
 
-OneItemSelected.story = {
-  name: "one item selected"
-};
+OneItemSelected.storyName = "one item selected";

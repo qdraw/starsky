@@ -24,9 +24,7 @@ export const Default = () => {
   );
 };
 
-Default.story = {
-  name: "default"
-};
+Default.storyName = "default";
 
 export const _8ItemsSelectionDisabled = () => {
   Router.navigate("/");
@@ -37,9 +35,7 @@ export const _8ItemsSelectionDisabled = () => {
   );
 };
 
-_8ItemsSelectionDisabled.story = {
-  name: "8 items (selection disabled)"
-};
+_8ItemsSelectionDisabled.storyName = "8 items (selection disabled)";
 
 export const _8ItemsSelectionEnabled = () => {
   Router.navigate("/?select=");
@@ -50,6 +46,4 @@ export const _8ItemsSelectionEnabled = () => {
   );
 };
 
-_8ItemsSelectionEnabled.story = {
-  name: "8 items (selection enabled)"
-};
+_8ItemsSelectionEnabled.storyName = "8 items (selection enabled)";

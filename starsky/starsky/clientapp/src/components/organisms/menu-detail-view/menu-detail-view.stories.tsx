@@ -13,9 +13,7 @@ export const Default = () => {
   );
 };
 
-Default.story = {
-  name: "default"
-};
+Default.storyName = "default";
 
 export const Deleted = () => {
   return (
@@ -25,9 +23,7 @@ export const Deleted = () => {
   );
 };
 
-Deleted.story = {
-  name: "deleted"
-};
+Deleted.storyName = "deleted";
 
 export const ReadOnly = () => {
   return (
@@ -37,6 +33,4 @@ export const ReadOnly = () => {
   );
 };
 
-ReadOnly.story = {
-  name: "read only"
-};
+ReadOnly.storyName = "read only";

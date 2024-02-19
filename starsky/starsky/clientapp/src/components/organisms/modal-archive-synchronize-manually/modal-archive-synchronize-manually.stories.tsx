@@ -8,6 +8,4 @@ export const Default = () => {
   return <ModalArchiveSynchronizeManually isOpen={true} handleExit={() => {}} />;
 };
 
-Default.story = {
-  name: "default"
-};
+Default.storyName = "default";
