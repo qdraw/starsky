@@ -1,5 +1,6 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.desktop.Service;
 using starsky.foundation.database.Models;
@@ -13,6 +14,223 @@ namespace starskytest.starsky.feature.desktop.Service;
 [TestClass]
 public class OpenEditorPreflightTests
 {
+	[TestMethod]
+	public async Task PreflightAsync_NoAppPath()
+	{
+		// Arrange
+		var queryStub = new FakeIQuery(new List<FileIndexItem> { new FileIndexItem("/test.jpg") });
+		var appSettingsStub = new AppSettings();
+		var storageStub = new FakeIStorage(new List<string>(),
+			new List<string> { "/test.jpg" });
+		
+		var inputFilePaths = new List<string> { "/test.jpg" };
+		const bool collections = false;
+		
+		var openEditorPreflight = new OpenEditorPreflight(queryStub, appSettingsStub,
+			new FakeSelectorStorage(storageStub));
+
+		var result = await openEditorPreflight.PreflightAsync(inputFilePaths, collections);
+
+		Assert.AreEqual(1, result.Count);
+		Assert.AreEqual("/test.jpg", result[0].SubPath);
+		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result[0].Status);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown, result[0].ImageFormat);
+		Assert.IsTrue(result[0].FullFilePath.EndsWith("test.jpg"));
+		Assert.AreEqual(string.Empty, result[0].AppPath);
+	}
+	
+	[TestMethod]
+	public async Task PreflightAsync_AppPathSet()
+	{
+		// Arrange
+		var queryStub = new FakeIQuery(new List<FileIndexItem> { new FileIndexItem("/test.jpg")
+		{
+			ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
+		} });
+		var appSettingsStub = new AppSettings
+		{
+			DefaultDesktopEditor = new List<AppSettingsDefaultEditorApplication>
+			{
+				new AppSettingsDefaultEditorApplication
+				{
+					ApplicationPath = "/app/test",
+					ImageFormats = new List<ExtensionRolesHelper.ImageFormat>
+					{
+						ExtensionRolesHelper.ImageFormat.jpg
+					}
+				}
+			}
+		};
+		var storageStub = new FakeIStorage(new List<string>(),
+			new List<string> { "/test.jpg" });
+		
+		var inputFilePaths = new List<string> { "/test.jpg" };
+		const bool collections = false;
+		
+		var openEditorPreflight = new OpenEditorPreflight(queryStub, appSettingsStub,
+			new FakeSelectorStorage(storageStub));
+
+		var result = await openEditorPreflight.PreflightAsync(inputFilePaths, collections);
+
+		Assert.AreEqual(1, result.Count);
+		Assert.AreEqual("/test.jpg", result[0].SubPath);
+		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result[0].Status);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg, result[0].ImageFormat);
+		Assert.IsTrue(result[0].FullFilePath.EndsWith("test.jpg"));
+		Assert.AreEqual("/app/test", result[0].AppPath);
+	}
+
+	[TestMethod]
+	public async Task GetObjectsToOpenFromDatabase_NotFound()
+	{
+		// Arrange
+		var queryStub = new FakeIQuery(new List<FileIndexItem> { new FileIndexItem("/test.jpg") });
+		var appSettingsStub = new AppSettings();
+		var storageStub = new FakeIStorage();
+
+		// Assuming you have appropriate setup for your test case
+		var inputFilePaths = new List<string> { "/test.jpg" };
+		const bool collections = false;
+
+		var openEditorPreflight = new OpenEditorPreflight(queryStub, appSettingsStub,
+			new FakeSelectorStorage(storageStub));
+
+		// Act
+		var result =
+			await openEditorPreflight.GetObjectsToOpenFromDatabase(inputFilePaths, collections);
+
+		Assert.AreEqual(1, result.Count);
+		Assert.AreEqual("/test.jpg", result[0].FilePath);
+		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, result[0].Status);
+	}
+
+	[TestMethod]
+	public async Task GetObjectsToOpenFromDatabase_ReadOnly()
+	{
+		// Arrange
+		var queryStub =
+			new FakeIQuery(new List<FileIndexItem> { new FileIndexItem("/readonly/test.jpg") });
+		var appSettingsStub = new AppSettings
+		{
+			ReadOnlyFolders = new List<string> { "/readonly" }
+		};
+		var storageStub =
+			new FakeIStorage(new List<string>(),
+				new List<string> { "/readonly/test.jpg" });
+
+		// Assuming you have appropriate setup for your test case
+		var inputFilePaths = new List<string> { "/readonly/test.jpg" };
+		const bool collections = false;
+
+		var openEditorPreflight = new OpenEditorPreflight(queryStub, appSettingsStub,
+			new FakeSelectorStorage(storageStub));
+
+		// Act
+		var result =
+			await openEditorPreflight.GetObjectsToOpenFromDatabase(inputFilePaths, collections);
+
+		Assert.AreEqual(1, result.Count);
+		Assert.AreEqual("/readonly/test.jpg", result[0].FilePath);
+		Assert.AreEqual(FileIndexItem.ExifStatus.ReadOnly, result[0].Status);
+	}
+
+	[TestMethod]
+	public async Task GetObjectsToOpenFromDatabase_SkipXmpSidecar()
+	{
+		// Arrange
+		var queryStub = new FakeIQuery(new List<FileIndexItem>
+		{
+			new FileIndexItem("/test.xmp")
+			{
+				ImageFormat = ExtensionRolesHelper.ImageFormat.xmp
+			}
+		});
+		var appSettingsStub = new AppSettings();
+		var storageStub = new FakeIStorage(new List<string>(),
+			new List<string> { "/test.xmp" });
+
+		// Assuming you have appropriate setup for your test case
+		var inputFilePaths = new List<string> { "/test.xmp" };
+		const bool collections = false;
+
+		var openEditorPreflight = new OpenEditorPreflight(queryStub, appSettingsStub,
+			new FakeSelectorStorage(storageStub));
+
+		// Act
+		var result =
+			await openEditorPreflight.GetObjectsToOpenFromDatabase(inputFilePaths, collections);
+
+		Assert.AreEqual(0, result.Count);
+	}
+
+	[TestMethod]
+	public async Task GetObjectsToOpenFromDatabase_OkStatus()
+	{
+		// Arrange
+		var queryStub = new FakeIQuery(new List<FileIndexItem>
+		{
+			new FileIndexItem("/test.mp4")
+			{
+				ImageFormat = ExtensionRolesHelper.ImageFormat.mp4
+			}
+		});
+		var appSettingsStub = new AppSettings();
+		var storageStub = new FakeIStorage(new List<string>(),
+			new List<string> { "/test.mp4" });
+
+		// Assuming you have appropriate setup for your test case
+		var inputFilePaths = new List<string> { "/test.mp4" };
+		const bool collections = false;
+
+		var openEditorPreflight = new OpenEditorPreflight(queryStub, appSettingsStub,
+			new FakeSelectorStorage(storageStub));
+
+		// Act
+		var result =
+			await openEditorPreflight.GetObjectsToOpenFromDatabase(inputFilePaths, collections);
+
+		// Change the status to Ok
+		Assert.AreEqual(1, result.Count);
+		Assert.AreEqual("/test.mp4", result[0].FilePath);
+		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result[0].Status);
+	}
+
+	[TestMethod]
+	public void GroupByFileCollectionName_ReturnsCorrectList_WhenAppSettingsIsDefault()
+	{
+		// Arrange
+		var query = new FakeIQuery(); // You can mock IQuery if needed
+		var appSettings =
+			new AppSettings { DesktopCollectionsOpen = CollectionsOpenType.RawJpegMode.Default };
+		var iStorage = new FakeIStorage();
+		var preflight =
+			new OpenEditorPreflight(query, appSettings, new FakeSelectorStorage(iStorage));
+
+		var fileIndexList = new List<FileIndexItem>
+		{
+			new FileIndexItem
+			{
+				FileName = "collection1.jpg",
+				ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
+			},
+			new FileIndexItem
+			{
+				FileName = "collection1.tiff",
+				ImageFormat = ExtensionRolesHelper.ImageFormat.tiff
+			}
+		};
+
+		// Act
+		var result = preflight.GroupByFileCollectionName(fileIndexList);
+
+		// Assert
+		Assert.AreEqual(1, result.Count);
+
+		var collection1 = result.Find(p => p.FileCollectionName == "collection1");
+
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg, collection1?.ImageFormat);
+	}
+
 	[TestMethod]
 	public void GroupByFileCollectionName_ReturnsCorrectList_WhenAppSettingsIsJpeg()
 	{

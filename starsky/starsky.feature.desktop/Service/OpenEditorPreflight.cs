@@ -54,7 +54,7 @@ public class OpenEditorPreflight : IOpenEditorPreflight
 		return subPathAndImageFormatList;
 	}
 
-	private async Task<List<FileIndexItem>> GetObjectsToOpenFromDatabase(
+	internal async Task<List<FileIndexItem>> GetObjectsToOpenFromDatabase(
 		List<string> inputFilePaths, bool collections)
 	{
 		var resultFileIndexItemsList = await _query.GetObjectsByFilePathAsync(
