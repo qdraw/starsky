@@ -261,6 +261,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
               {/* onClick={() => allSelection()} */}
               <MenuOptionSelectionAll select={select} state={state} allSelection={allSelection} />
+
               {select.length >= 1 ? (
                 <>
                   <MenuOptionModal

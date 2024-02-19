@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { newIArchive } from "../interfaces/IArchive";
+import { newIArchive } from "../../interfaces/IArchive";
 import Archive from "./archive";
 
 describe("Archive", () => {
