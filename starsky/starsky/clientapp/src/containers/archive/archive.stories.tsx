@@ -8,13 +8,17 @@ export default {
 };
 
 export const Default = () => {
-  const item = {} as IArchiveProps;
+  const archive = {
+    colorClassUsage: [1],
+    colorClassActiveList: [1],
+    fileIndexItems: [{ fileName: "test", filePath: "/test.jpg", colorClass: 1 }]
+  } as IArchiveProps;
 
   Router.navigate("?details=true&modal=false");
 
   return (
     <MemoryRouter>
-      <Archive {...item} />
+      <Archive {...archive} />
     </MemoryRouter>
   );
 };
