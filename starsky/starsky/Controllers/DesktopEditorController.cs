@@ -1,16 +1,18 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.feature.desktop.Interfaces;
+using starsky.feature.desktop.Models;
 
 namespace starsky.Controllers;
 
 [Authorize]
-public class OpenEditorDesktopController : Controller
+public class DesktopEditorController : Controller
 {
 	private readonly IOpenEditorDesktopService _openEditorDesktopService;
 
-	public OpenEditorDesktopController(IOpenEditorDesktopService openEditorDesktopService)
+	public DesktopEditorController(IOpenEditorDesktopService openEditorDesktopService)
 	{
 		_openEditorDesktopService = openEditorDesktopService;
 	}
@@ -24,10 +26,11 @@ public class OpenEditorDesktopController : Controller
 	/// <response code="200">returns a list of items from the database</response>
 	/// <response code="404">subPath not found in the database</response>
 	/// <response code="401">User unauthorized</response>
-	[HttpGet("/api/open-editor-desktop/open")]
+	[HttpGet("/api/desktop-editor/open")]
 	[Produces("application/json")]
-//	[ProducesResponseType(typeof(ArchiveViewModel), 200)]
-	[ProducesResponseType(404)]
+	[ProducesResponseType(typeof(List<PathImageFormatExistsAppPathModel>), 200)]
+	[ProducesResponseType(typeof(List<PathImageFormatExistsAppPathModel>), 204)]
+	[ProducesResponseType(typeof(string), 400)]
 	[ProducesResponseType(401)]
 	public async Task<IActionResult> OpenAsync(
 		string f = "",
