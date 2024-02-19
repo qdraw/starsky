@@ -12,7 +12,7 @@ public class PathImageFormatExistsAppPathModel
 	public ExtensionRolesHelper.ImageFormat ImageFormat { get; set; } =
 		ExtensionRolesHelper.ImageFormat.notfound;
 
-	public FileIndexItem.ExifStatus Status { get; set; }
+	public FileIndexItem.ExifStatus Status { get; set; } = FileIndexItem.ExifStatus.Default;
 
 	public string AppPath { get; set; } = string.Empty;
 }

@@ -6,6 +6,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
@@ -18,14 +19,18 @@ public class OpenEditorPreflight : IOpenEditorPreflight
 {
 	private readonly IQuery _query;
 	private readonly AppSettings _appSettings;
+	private readonly IWebLogger _logger;
 	private readonly IStorage _iStorage;
+	private readonly IStorage _hostFileSystem;
 
 	public OpenEditorPreflight(IQuery query, AppSettings appSettings,
-		ISelectorStorage selectorStorage)
+		ISelectorStorage selectorStorage, IWebLogger logger)
 	{
 		_query = query;
 		_appSettings = appSettings;
+		_logger = logger;
 		_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+		_hostFileSystem = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 	}
 
 	public async Task<List<PathImageFormatExistsAppPathModel>> PreflightAsync(
@@ -38,12 +43,9 @@ public class OpenEditorPreflight : IOpenEditorPreflight
 
 		foreach ( var fileIndexItem in fileIndexItemList )
 		{
-			var appSettingsDefaultEditor = _appSettings.DefaultDesktopEditor.Find(p =>
-				p.ImageFormats.Contains(fileIndexItem.ImageFormat));
-
 			subPathAndImageFormatList.Add(new PathImageFormatExistsAppPathModel
 			{
-				AppPath = appSettingsDefaultEditor?.ApplicationPath ?? string.Empty,
+				AppPath = GetDesktopEditorPath(fileIndexItem.ImageFormat),
 				Status = fileIndexItem.Status,
 				ImageFormat = fileIndexItem.ImageFormat,
 				SubPath = fileIndexItem.FilePath!,
@@ -52,6 +54,25 @@ public class OpenEditorPreflight : IOpenEditorPreflight
 		}
 
 		return subPathAndImageFormatList;
+	}
+
+	private string GetDesktopEditorPath(ExtensionRolesHelper.ImageFormat imageFormat)
+	{
+		var appSettingsDefaultEditor = _appSettings.DefaultDesktopEditor.Find(p =>
+			p.ImageFormats.Contains(imageFormat));
+
+		var appPath = appSettingsDefaultEditor?.ApplicationPath ?? string.Empty;
+
+		// Under Mac OS the ApplicationPath is a .app folder
+		// Under Windows the ApplicationPath is a .exe file
+		if ( _hostFileSystem.IsFolderOrFile(appPath) !=
+		     FolderOrFileModel.FolderOrFileTypeList.Deleted )
+		{
+			return appPath;
+		}
+
+		_logger.LogError("[OpenEditorPreflight] AppPath not found: " + appPath);
+		return string.Empty;
 	}
 
 	internal async Task<List<FileIndexItem>> GetObjectsToOpenFromDatabase(

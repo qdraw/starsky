@@ -33,7 +33,18 @@ public class OpenEditorDesktopController : Controller
 		string f = "",
 		bool collections = true)
 	{
-		await _openEditorDesktopService.OpenAsync(f, collections);
-		return Ok();
+		var (success, status, list) =
+			await _openEditorDesktopService.OpenAsync(f, collections);
+
+		switch ( success )
+		{
+			case null:
+				return BadRequest(status);
+			case false:
+				HttpContext.Response.StatusCode = 204;
+				break;
+		}
+
+		return Json(list);
 	}
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -22,12 +21,12 @@ public class OpenEditorPreflightTests
 		var appSettingsStub = new AppSettings();
 		var storageStub = new FakeIStorage(new List<string>(),
 			new List<string> { "/test.jpg" });
-		
+
 		var inputFilePaths = new List<string> { "/test.jpg" };
 		const bool collections = false;
-		
+
 		var openEditorPreflight = new OpenEditorPreflight(queryStub, appSettingsStub,
-			new FakeSelectorStorage(storageStub));
+			new FakeSelectorStorage(storageStub), new FakeIWebLogger());
 
 		var result = await openEditorPreflight.PreflightAsync(inputFilePaths, collections);
 
@@ -38,15 +37,18 @@ public class OpenEditorPreflightTests
 		Assert.IsTrue(result[0].FullFilePath.EndsWith("test.jpg"));
 		Assert.AreEqual(string.Empty, result[0].AppPath);
 	}
-	
+
 	[TestMethod]
-	public async Task PreflightAsync_AppPathSet()
+	public async Task PreflightAsync_AppPathSet_ButNotFound()
 	{
 		// Arrange
-		var queryStub = new FakeIQuery(new List<FileIndexItem> { new FileIndexItem("/test.jpg")
+		var queryStub = new FakeIQuery(new List<FileIndexItem>
 		{
-			ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
-		} });
+			new FileIndexItem("/test.jpg")
+			{
+				ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
+			}
+		});
 		var appSettingsStub = new AppSettings
 		{
 			DefaultDesktopEditor = new List<AppSettingsDefaultEditorApplication>
@@ -63,12 +65,58 @@ public class OpenEditorPreflightTests
 		};
 		var storageStub = new FakeIStorage(new List<string>(),
 			new List<string> { "/test.jpg" });
-		
+
 		var inputFilePaths = new List<string> { "/test.jpg" };
 		const bool collections = false;
-		
+
 		var openEditorPreflight = new OpenEditorPreflight(queryStub, appSettingsStub,
-			new FakeSelectorStorage(storageStub));
+			new FakeSelectorStorage(storageStub), new FakeIWebLogger());
+
+		var result = await openEditorPreflight.PreflightAsync(inputFilePaths, collections);
+
+		Assert.AreEqual(1, result.Count);
+		Assert.AreEqual("/test.jpg", result[0].SubPath);
+		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result[0].Status);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg, result[0].ImageFormat);
+		Assert.IsTrue(result[0].FullFilePath.EndsWith("test.jpg"));
+		Assert.AreEqual(string.Empty, result[0].AppPath);
+	}
+
+	[TestMethod]
+	public async Task PreflightAsync_AppPathSet()
+	{
+		// Arrange
+		var queryStub = new FakeIQuery(new List<FileIndexItem>
+		{
+			new FileIndexItem("/test.jpg")
+			{
+				ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
+			}
+		});
+		var appSettingsStub = new AppSettings
+		{
+			DefaultDesktopEditor = new List<AppSettingsDefaultEditorApplication>
+			{
+				new AppSettingsDefaultEditorApplication
+				{
+					ApplicationPath = "/app/test",
+					ImageFormats = new List<ExtensionRolesHelper.ImageFormat>
+					{
+						ExtensionRolesHelper.ImageFormat.jpg
+					}
+				}
+			}
+		};
+
+		// set a folder in the storage for app path location
+		var storageStub = new FakeIStorage(new List<string> { "/app/test" },
+			new List<string> { "/test.jpg" });
+
+		var inputFilePaths = new List<string> { "/test.jpg" };
+		const bool collections = false;
+
+		var openEditorPreflight = new OpenEditorPreflight(queryStub, appSettingsStub,
+			new FakeSelectorStorage(storageStub), new FakeIWebLogger());
 
 		var result = await openEditorPreflight.PreflightAsync(inputFilePaths, collections);
 
@@ -79,6 +127,7 @@ public class OpenEditorPreflightTests
 		Assert.IsTrue(result[0].FullFilePath.EndsWith("test.jpg"));
 		Assert.AreEqual("/app/test", result[0].AppPath);
 	}
+
 
 	[TestMethod]
 	public async Task GetObjectsToOpenFromDatabase_NotFound()
@@ -93,7 +142,7 @@ public class OpenEditorPreflightTests
 		const bool collections = false;
 
 		var openEditorPreflight = new OpenEditorPreflight(queryStub, appSettingsStub,
-			new FakeSelectorStorage(storageStub));
+			new FakeSelectorStorage(storageStub), new FakeIWebLogger());
 
 		// Act
 		var result =
@@ -123,7 +172,7 @@ public class OpenEditorPreflightTests
 		const bool collections = false;
 
 		var openEditorPreflight = new OpenEditorPreflight(queryStub, appSettingsStub,
-			new FakeSelectorStorage(storageStub));
+			new FakeSelectorStorage(storageStub), new FakeIWebLogger());
 
 		// Act
 		var result =
@@ -154,7 +203,7 @@ public class OpenEditorPreflightTests
 		const bool collections = false;
 
 		var openEditorPreflight = new OpenEditorPreflight(queryStub, appSettingsStub,
-			new FakeSelectorStorage(storageStub));
+			new FakeSelectorStorage(storageStub), new FakeIWebLogger());
 
 		// Act
 		var result =
@@ -183,7 +232,7 @@ public class OpenEditorPreflightTests
 		const bool collections = false;
 
 		var openEditorPreflight = new OpenEditorPreflight(queryStub, appSettingsStub,
-			new FakeSelectorStorage(storageStub));
+			new FakeSelectorStorage(storageStub), new FakeIWebLogger());
 
 		// Act
 		var result =
@@ -204,7 +253,8 @@ public class OpenEditorPreflightTests
 			new AppSettings { DesktopCollectionsOpen = CollectionsOpenType.RawJpegMode.Default };
 		var iStorage = new FakeIStorage();
 		var preflight =
-			new OpenEditorPreflight(query, appSettings, new FakeSelectorStorage(iStorage));
+			new OpenEditorPreflight(query, appSettings, new FakeSelectorStorage(iStorage),
+				new FakeIWebLogger());
 
 		var fileIndexList = new List<FileIndexItem>
 		{
@@ -240,7 +290,8 @@ public class OpenEditorPreflightTests
 			new AppSettings { DesktopCollectionsOpen = CollectionsOpenType.RawJpegMode.Jpeg };
 		var iStorage = new FakeIStorage();
 		var preflight =
-			new OpenEditorPreflight(query, appSettings, new FakeSelectorStorage(iStorage));
+			new OpenEditorPreflight(query, appSettings, new FakeSelectorStorage(iStorage),
+				new FakeIWebLogger());
 
 		var fileIndexList = new List<FileIndexItem>
 		{
@@ -290,7 +341,8 @@ public class OpenEditorPreflightTests
 			new AppSettings { DesktopCollectionsOpen = CollectionsOpenType.RawJpegMode.Raw };
 		var iStorage = new FakeIStorage();
 		var preflight =
-			new OpenEditorPreflight(query, appSettings, new FakeSelectorStorage(iStorage));
+			new OpenEditorPreflight(query, appSettings, new FakeSelectorStorage(iStorage),
+				new FakeIWebLogger());
 
 		var fileIndexList = new List<FileIndexItem>
 		{
@@ -326,7 +378,8 @@ public class OpenEditorPreflightTests
 			new AppSettings { DesktopCollectionsOpen = CollectionsOpenType.RawJpegMode.Raw };
 		var iStorage = new FakeIStorage();
 		var preflight =
-			new OpenEditorPreflight(query, appSettings, new FakeSelectorStorage(iStorage));
+			new OpenEditorPreflight(query, appSettings, new FakeSelectorStorage(iStorage),
+				new FakeIWebLogger());
 
 		var fileIndexList = new List<FileIndexItem>
 		{
