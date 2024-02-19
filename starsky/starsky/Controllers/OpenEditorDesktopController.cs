@@ -1,9 +1,11 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.feature.desktop.Interfaces;
 
 namespace starsky.Controllers;
 
+[Authorize]
 public class OpenEditorDesktopController : Controller
 {
 	private readonly IOpenEditorDesktopService _openEditorDesktopService;

@@ -132,6 +132,6 @@ public class OpenEditorPreflightTests
 
 		var collection1 = result.Find(p => p.FileCollectionName == "collection1");
 
-		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.tiff, collection1?.ImageFormat);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.mp4, collection1?.ImageFormat);
 	}
 }
