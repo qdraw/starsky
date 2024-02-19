@@ -8,6 +8,4 @@ export const Default = () => {
   return <ModalArchiveRename subPath="/test/child_folder" isOpen={true} handleExit={() => {}} />;
 };
 
-Default.story = {
-  name: "default"
-};
+Default.storyName = "default";

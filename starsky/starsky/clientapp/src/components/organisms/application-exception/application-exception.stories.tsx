@@ -8,6 +8,4 @@ export const Default = () => {
   return <ApplicationException></ApplicationException>;
 };
 
-Default.story = {
-  name: "default"
-};
+Default.storyName = "default";

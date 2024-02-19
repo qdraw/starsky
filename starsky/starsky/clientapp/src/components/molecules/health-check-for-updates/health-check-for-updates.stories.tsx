@@ -22,9 +22,7 @@ export const Default = () => {
   );
 };
 
-Default.story = {
-  name: "default"
-};
+Default.storyName = "default";
 
 export const Electron = () => {
   (window as any).isElectron = true;

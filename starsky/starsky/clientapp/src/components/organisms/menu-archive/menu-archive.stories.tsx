@@ -9,15 +9,11 @@ export const Default = () => {
   return <MenuArchive></MenuArchive>;
 };
 
-Default.story = {
-  name: "default"
-};
+Default.storyName = "default";
 
 export const Select = () => {
   Router.navigate("/?select=true");
   return <MenuArchive></MenuArchive>;
 };
 
-Select.story = {
-  name: "select"
-};
+Select.storyName = "select";

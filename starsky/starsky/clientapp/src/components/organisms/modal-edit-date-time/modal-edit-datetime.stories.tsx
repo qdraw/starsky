@@ -8,6 +8,4 @@ export const Default = () => {
   return <ModalDatetime isOpen={true} subPath="/" handleExit={() => {}}></ModalDatetime>;
 };
 
-Default.story = {
-  name: "default"
-};
+Default.storyName = "default";

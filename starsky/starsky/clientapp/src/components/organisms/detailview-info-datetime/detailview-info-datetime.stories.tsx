@@ -48,6 +48,4 @@ export const _Default = () => {
   );
 };
 
-_Default.story = {
-  name: "default"
-};
+_Default.storyName = "default";

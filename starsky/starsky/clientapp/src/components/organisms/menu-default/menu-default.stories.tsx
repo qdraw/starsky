@@ -8,6 +8,4 @@ export const Default = () => {
   return <MenuDefault isEnabled={true}></MenuDefault>;
 };
 
-Default.story = {
-  name: "default"
-};
+Default.storyName = "default";
