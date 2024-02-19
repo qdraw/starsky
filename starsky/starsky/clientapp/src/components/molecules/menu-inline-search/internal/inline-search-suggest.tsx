@@ -24,12 +24,12 @@ const InlineSearchSuggest: React.FunctionComponent<IInlineSearchSuggestProps> = 
 
   useEffect(() => {
     const dataFeatures = props.featuresResult?.data as IEnvFeatures | undefined;
-    if (dataFeatures?.systemTrashEnabled || dataFeatures?.useLocalDesktopUi) {
+    if (dataFeatures?.systemTrashEnabled || dataFeatures?.useLocalDesktop) {
       let newMenu = [...defaultMenu];
       if (dataFeatures?.systemTrashEnabled) {
         newMenu = newMenu.filter((item) => item.key !== "trash");
       }
-      if (dataFeatures?.useLocalDesktopUi) {
+      if (dataFeatures?.useLocalDesktop) {
         newMenu = newMenu.filter((item) => item.key !== "logout");
       }
       setDefaultMenu([...newMenu]);

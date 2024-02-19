@@ -194,7 +194,7 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Added) _Front-end_ Add MoreMenu remove current folder (PR #1085)
 - [x] (Changed) _Front-end_ MoreMenu refactor (PR #1085)
 - [x] (Changed) _Front-end_ Removal of Directories (PR #1085)
-- [x] (Changed) _Front-end_ Hide parts of menu in UseLocalDesktopUi mode (PR #1087)
+- [x] (Changed) _Front-end_ Hide parts of menu in UseLocalDesktop(Ui) mode (PR #1087)
 - [x] (Fixed) _Front-end_ Fixed 300 eslint issues (PR #1087)
 - [x] (Changed) _Back-end_ when deleting in systemTrash mode xmp files are now deleted (PR #1088)
 - [x] (Changed) _Back-end_ test when deleting in server mode: xmp files are gone fixed (PR #1088)

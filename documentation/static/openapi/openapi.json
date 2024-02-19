@@ -1967,7 +1967,7 @@
             },
             {
               "unresolvedReference": false,
-              "name": "UseLocalDesktopUi",
+              "name": "UseLocalDesktop",
               "in": 0,
               "required": false,
               "deprecated": false,
@@ -12056,7 +12056,7 @@
             "extensions": {},
             "unresolvedReference": false
           },
-          "useLocalDesktopUi": {
+          "useLocalDesktop": {
             "type": "boolean",
             "readOnly": false,
             "writeOnly": false,

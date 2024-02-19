@@ -1,4 +1,4 @@
 export interface IEnvFeatures {
   systemTrashEnabled: boolean;
-  useLocalDesktopUi: boolean;
+  useLocalDesktop: boolean;
 }

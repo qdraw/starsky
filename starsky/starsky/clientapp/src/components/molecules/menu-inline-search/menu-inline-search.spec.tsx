@@ -103,12 +103,12 @@ describe("menu-inline-search", () => {
       statusCode: 200,
       data: {
         systemTrashEnabled: true,
-        useLocalDesktopUi: false
+        useLocalDesktop: false
       } as IEnvFeatures
     } as IConnectionDefault;
 
     it("default menu should show logout and trash in default mode", () => {
-      dataFeaturesExample.data.useLocalDesktopUi = false;
+      dataFeaturesExample.data.useLocalDesktop = false;
       dataFeaturesExample.data.systemTrashEnabled = false;
 
       // usage ==> import * as useFetch from '../hooks/use-fetch';
