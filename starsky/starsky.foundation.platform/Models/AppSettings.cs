@@ -15,6 +15,7 @@ using TimeZoneConverter;
 
 namespace starsky.foundation.platform.Models
 {
+	[SuppressMessage("Performance", "CA1822:Mark members as static")]
 	public sealed class AppSettings
 	{
 		public AppSettings()

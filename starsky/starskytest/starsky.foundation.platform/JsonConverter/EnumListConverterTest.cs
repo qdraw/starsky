@@ -1,6 +1,7 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using starsky.foundation.platform.JsonConverter;
@@ -109,6 +110,39 @@ public class EnumListConverterTests
 		converter.Read(ref reader, typeof(List<ValueType>), new JsonSerializerOptions());
 	}
 
+	[TestMethod]
+	public void Read_ValidJsonArrayWithEnum()
+	{
+		// Arrange
+		var converter = new EnumListConverter<ValueType>();
+
+		const string json = "[\"Value1\", \"Value2\"]";
+		var reader = new Utf8JsonReader(Encoding.UTF8.GetBytes(json));
+		reader.Read();
+
+		// Act & Assert
+		var result =
+			converter.Read(ref reader, typeof(List<ValueType>), new JsonSerializerOptions());
+
+		CollectionAssert.AreEqual(new List<ValueType> { ValueType.Value1, ValueType.Value2 },
+			result);
+	}
+
+	[TestMethod]
+	[ExpectedException(typeof(JsonException))]
+	public void InvalidArrayWithNumber_ThrowJsonException()
+	{
+		// Arrange
+		var converter = new EnumListConverter<ValueType>();
+
+		// JSON array with a non-string token
+		const string json = "[1]";
+		var reader = new Utf8JsonReader(Encoding.UTF8.GetBytes(json));
+		reader.Read();
+
+		// Act & Assert
+		converter.Read(ref reader, typeof(List<ValueType>), new JsonSerializerOptions());
+	}
 
 	public class ValueTypeContainer
 	{
