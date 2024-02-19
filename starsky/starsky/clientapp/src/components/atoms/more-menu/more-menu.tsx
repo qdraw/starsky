@@ -44,7 +44,8 @@ const MoreMenu: React.FunctionComponent<MoreMenuPropTypes> = ({
       >
         <span>{MessageMore}</span>
       </button>
-      <button
+      {/* NoSonar(S6848) */}
+      <div
         onChange={offMoreMenu}
         onClick={() => setEnableMoreMenu(false)}
         onKeyDown={(event) => {
@@ -56,7 +57,7 @@ const MoreMenu: React.FunctionComponent<MoreMenuPropTypes> = ({
         <ul data-test="menu-options" className="menu-options">
           {children}
         </ul>
-      </button>
+      </div>
     </>
   );
 };
