@@ -12,14 +12,10 @@ export const Default = () => {
   );
 };
 
-Default.story = {
-  name: "default"
-};
+Default.storyName = "default";
 
 export const Danger = () => {
   return <Notification type={NotificationType.danger}>test</Notification>;
 };
 
-Danger.story = {
-  name: "danger"
-};
+Danger.storyName = "danger";

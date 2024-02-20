@@ -8,6 +8,4 @@ export const Default = () => {
   return <Preferences />;
 };
 
-Default.story = {
-  name: "default"
-};
+Default.storyName = "default";

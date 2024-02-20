@@ -18,9 +18,7 @@ export const Default = () => {
   );
 };
 
-Default.story = {
-  name: "default"
-};
+Default.storyName = "default";
 
 export const WithLocation = () => {
   return (
@@ -36,9 +34,7 @@ export const WithLocation = () => {
   );
 };
 
-WithLocation.story = {
-  name: "with location"
-};
+WithLocation.storyName = "with location";
 
 export const WithLocationReadonly = () => {
   return (
@@ -54,9 +50,7 @@ export const WithLocationReadonly = () => {
   );
 };
 
-WithLocationReadonly.story = {
-  name: "with location (readonly)"
-};
+WithLocationReadonly.storyName = "with location (readonly)";
 
 export const NoLocationReadonly = () => {
   return (
@@ -72,6 +66,4 @@ export const NoLocationReadonly = () => {
   );
 };
 
-NoLocationReadonly.story = {
-  name: "no location (readonly)"
-};
+NoLocationReadonly.storyName = "no location (readonly)";

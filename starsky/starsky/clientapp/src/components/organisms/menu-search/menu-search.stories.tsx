@@ -8,6 +8,4 @@ export const Default = () => {
   return <MenuSearch state={undefined as any} dispatch={() => {}} />;
 };
 
-Default.story = {
-  name: "default"
-};
+Default.storyName = "default";

@@ -9,9 +9,7 @@ export const Default = () => {
   return <ItemTextListView fileIndexItems={newIFileIndexItemArray()} callback={() => {}} />;
 };
 
-Default.story = {
-  name: "default"
-};
+Default.storyName = "default";
 
 export const _2Items = () => {
   const exampleData = [
@@ -21,6 +19,4 @@ export const _2Items = () => {
   return <ItemTextListView fileIndexItems={exampleData} />;
 };
 
-_2Items.story = {
-  name: "2 items"
-};
+_2Items.storyName = "2 items";

@@ -21,9 +21,7 @@ export const NoItemsDisabled = () => {
   );
 };
 
-NoItemsDisabled.story = {
-  name: "no items disabled"
-};
+NoItemsDisabled.storyName = "no items disabled";
 
 export const Enabled = () => {
   Router.navigate("/?select=test.jpg");
@@ -36,6 +34,4 @@ export const Enabled = () => {
   );
 };
 
-Enabled.story = {
-  name: "enabled"
-};
+Enabled.storyName = "enabled";

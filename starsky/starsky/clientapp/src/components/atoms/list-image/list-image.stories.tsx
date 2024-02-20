@@ -9,6 +9,4 @@ export const Default = () => {
   return <ListImage alt={"alt"} fileHash={"src"} imageFormat={ImageFormat.jpg} />;
 };
 
-Default.story = {
-  name: "default"
-};
+Default.storyName = "default";

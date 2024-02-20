@@ -8,6 +8,4 @@ export const Default = () => {
   return <ModalPublish isOpen={true} select={["/"]} handleExit={() => {}}></ModalPublish>;
 };
 
-Default.story = {
-  name: "default"
-};
+Default.storyName = "default";

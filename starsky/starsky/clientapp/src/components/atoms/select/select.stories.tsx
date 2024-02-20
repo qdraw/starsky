@@ -9,15 +9,11 @@ export const Default = () => {
   return <Select selectOptions={list} />;
 };
 
-Default.story = {
-  name: "default"
-};
+Default.storyName = "default";
 
 export const SelectedAudi = () => {
   const list: string[] = ["Saab", "Audi", "Mercedes"];
   return <Select selected={"Audi"} selectOptions={list} />;
 };
 
-SelectedAudi.story = {
-  name: "selected audi"
-};
+SelectedAudi.storyName = "selected audi";
