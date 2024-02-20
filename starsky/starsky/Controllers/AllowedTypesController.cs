@@ -3,14 +3,13 @@ using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.platform.Helpers;
-using starskycore.Helpers;
+using starsky.project.web.Helpers;
 
 namespace starsky.Controllers
 {
 	[Authorize]
 	public sealed class AllowedTypesController : Controller
 	{
-
 		/// <summary>
 		/// A (string) list of allowed MIME-types ExtensionSyncSupportedList
 		/// </summary>
@@ -22,7 +21,8 @@ namespace starsky.Controllers
 		[Produces("application/json")]
 		public IActionResult AllowedTypesMimetypeSync()
 		{
-			var mimeTypes = ExtensionRolesHelper.ExtensionSyncSupportedList.Select(MimeHelper.GetMimeType).ToHashSet();
+			var mimeTypes = ExtensionRolesHelper.ExtensionSyncSupportedList
+				.Select(MimeHelper.GetMimeType).ToHashSet();
 			return Json(mimeTypes);
 		}
 
@@ -38,7 +38,8 @@ namespace starsky.Controllers
 		[Produces("application/json")]
 		public IActionResult AllowedTypesMimetypeSyncThumb()
 		{
-			var mimeTypes = ExtensionRolesHelper.ExtensionThumbSupportedList.Select(MimeHelper.GetMimeType).ToHashSet();
+			var mimeTypes = ExtensionRolesHelper.ExtensionThumbSupportedList
+				.Select(MimeHelper.GetMimeType).ToHashSet();
 			return Json(mimeTypes);
 		}
 

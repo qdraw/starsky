@@ -166,7 +166,7 @@
         <ProjectReference Include="..\starsky.foundation.sync\starsky.foundation.sync.csproj"/>
         <ProjectReference Include="..\starsky.foundation.thumbnailmeta\starsky.foundation.thumbnailmeta.csproj"/>
         <ProjectReference Include="..\starsky.foundation.worker\starsky.foundation.worker.csproj"/>
-        <ProjectReference Include="..\starskycore\starskycore.csproj"/>
+        <ProjectReference Include="..\starsky.project.web\starsky.project.web.csproj"/>
     </ItemGroup>
     <ItemGroup>
         <Content Remove="clientapp\build\*.*"/>

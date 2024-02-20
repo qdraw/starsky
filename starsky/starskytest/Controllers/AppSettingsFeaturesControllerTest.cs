@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
-using starskycore.ViewModels;
+using starsky.project.web.ViewModels;
 using starskytest.FakeMocks;
 
 namespace starskytest.Controllers;

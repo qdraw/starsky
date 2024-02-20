@@ -10,7 +10,7 @@ using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Interfaces;
 using starsky.Helpers;
-using starskycore.Helpers;
+using starsky.project.web.Helpers;
 
 namespace starsky.Controllers
 {

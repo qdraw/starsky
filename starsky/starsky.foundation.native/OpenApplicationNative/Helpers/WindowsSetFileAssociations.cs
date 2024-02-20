@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
+using starsky.foundation.platform.Helpers;
 
 namespace starsky.foundation.native.OpenApplicationNative.Helpers;
 
@@ -17,6 +18,9 @@ public class FileAssociation
 [SuppressMessage("ReSharper", "IdentifierTypo")]
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 [SuppressMessage("Performance", "CA1806:Do not ignore method results")]
+[SuppressMessage("Interoperability", "SYSLIB1054:Use \'LibraryImportAttribute\' " +
+                                     "instead of \'DllImportAttribute\' to generate P/Invoke " +
+                                     "marshalling code at compile time")]
 public static class WindowsSetFileAssociations
 {
 	/// <summary>
@@ -29,9 +33,6 @@ public static class WindowsSetFileAssociations
 	/// <param name="item2"></param>
 	/// <returns></returns>
 	[DllImport("Shell32.dll")]
-	[SuppressMessage("Interoperability", "SYSLIB1054:Use \'LibraryImportAttribute\' " +
-	                                     "instead of \'DllImportAttribute\' to generate P/Invoke " +
-	                                     "marshalling code at compile time")]
 	private static extern int SHChangeNotify(int eventId, int flags, IntPtr item1, IntPtr item2);
 
 	private const int SHCNE_ASSOCCHANGED = 0x8000000;
@@ -57,27 +58,34 @@ public static class WindowsSetFileAssociations
 		return madeChanges;
 	}
 
-	internal static bool SetAssociation(string extension, string progId, string fileTypeDescription,
+	private static bool SetAssociation(string extension, string progId, string fileTypeDescription,
 		string applicationFilePath)
 	{
 		var madeChanges = false;
-		madeChanges |= SetKeyDefaultValue(@"Software\Classes\" + extension, progId);
-		madeChanges |= SetKeyDefaultValue(@"Software\Classes\" + progId, fileTypeDescription);
-		madeChanges |= SetKeyDefaultValue($@"Software\Classes\{progId}\shell\open\command",
+		madeChanges |= SetKeyValue(@"Software\Classes\" + extension, progId);
+		madeChanges |= SetKeyValue(@"Software\Classes\" + progId, fileTypeDescription);
+		madeChanges |= SetKeyValue($@"Software\Classes\{progId}\shell\open\command",
 			"\"" + applicationFilePath + "\" \"%1\"");
 		return madeChanges;
 	}
 
-	internal static bool SetKeyDefaultValue(string keyPath, string value)
+	internal static bool SetKeyValue(string keyPath, string value)
 	{
 		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
 		{
 			return false;
 		}
 
-		using var key = Registry.CurrentUser.CreateSubKey(keyPath);
-		if ( key.GetValue(null) as string == value ) return false;
-		key.SetValue(null, value);
-		return true;
+		return RetryHelper.Do(SetValue, TimeSpan.FromSeconds(1), 2);
+
+		// Can sometimes have: System.IO.IOException: Illegal operation attempted
+		// on a registry key that has been marked for deletion
+		bool SetValue()
+		{
+			using var key = Registry.CurrentUser.CreateSubKey(keyPath);
+			if ( key.GetValue(null) as string == value ) return false;
+			key.SetValue(null, value);
+			return true;
+		}
 	}
 }

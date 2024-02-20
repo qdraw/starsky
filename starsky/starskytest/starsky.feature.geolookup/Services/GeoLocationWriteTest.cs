@@ -7,7 +7,6 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.Services;
 using starskytest.FakeMocks;
-using starskytest.Models;
 
 namespace starskytest.starsky.feature.geolookup.Services
 {
@@ -21,7 +20,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 		{
 			// get the service
 			_appSettings = new AppSettings();
-			_exifTool = new FakeExifTool(new FakeIStorage(),_appSettings );
+			_exifTool = new FakeExifTool(new FakeIStorage(), _appSettings);
 		}
 
 		[TestMethod]
@@ -44,13 +43,14 @@ namespace starskytest.starsky.feature.geolookup.Services
 			var console = new FakeConsoleWrapper();
 
 			var fakeIStorage = new FakeIStorage();
-			await new GeoLocationWrite(_appSettings, _exifTool, 
-				new FakeSelectorStorage(fakeIStorage),console, 
-				new FakeIWebLogger(), new FakeIThumbnailQuery()).LoopFolderAsync(metaFilesInDirectory, true);
+			await new GeoLocationWrite(_appSettings, _exifTool,
+					new FakeSelectorStorage(fakeIStorage), console,
+					new FakeIWebLogger(), new FakeIThumbnailQuery())
+				.LoopFolderAsync(metaFilesInDirectory, true);
 			Assert.IsNotNull(metaFilesInDirectory);
-			
-			Assert.AreEqual(1,console.WrittenLines.Count);
-			Assert.AreEqual("🚀",console.WrittenLines[0]);
+
+			Assert.AreEqual(1, console.WrittenLines.Count);
+			Assert.AreEqual("🚀", console.WrittenLines[0]);
 		}
 
 		[TestMethod]
@@ -71,12 +71,13 @@ namespace starskytest.starsky.feature.geolookup.Services
 				}
 			};
 			var console = new FakeConsoleWrapper();
-			await new GeoLocationWrite(new AppSettings{Verbose = true}, 
-					_exifTool, new FakeSelectorStorage(),console, new FakeIWebLogger(), new FakeIThumbnailQuery())
-				.LoopFolderAsync(metaFilesInDirectory, 
-				true);
+			await new GeoLocationWrite(new AppSettings { Verbose = true },
+					_exifTool, new FakeSelectorStorage(), console, new FakeIWebLogger(),
+					new FakeIThumbnailQuery())
+				.LoopFolderAsync(metaFilesInDirectory,
+					true);
 
-			Assert.AreEqual(2,console.WrittenLines.Count);
+			Assert.AreEqual(2, console.WrittenLines.Count);
 			Assert.IsTrue(console.WrittenLines.LastOrDefault()!.Contains("GeoLocationWrite"));
 		}
 	}

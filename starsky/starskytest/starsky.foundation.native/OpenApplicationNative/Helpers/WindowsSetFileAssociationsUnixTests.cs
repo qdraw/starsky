@@ -40,7 +40,7 @@ public class WindowsSetFileAssociationsUnixTests
 		}
 
 		// Is false due its unix
-		var result = WindowsSetFileAssociations.SetKeyDefaultValue("test", "Test");
+		var result = WindowsSetFileAssociations.SetKeyValue("test", "Test");
 		Assert.IsFalse(result);
 	}
 }

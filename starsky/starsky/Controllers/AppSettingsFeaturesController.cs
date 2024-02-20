@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.feature.trash.Interfaces;
 using starsky.foundation.platform.Models;
-using starskycore.ViewModels;
+using starsky.project.web.ViewModels;
 
 namespace starsky.Controllers;
 

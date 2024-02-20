@@ -18,7 +18,6 @@ using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
-using starskytest.Models;
 
 namespace starskytest.starsky.feature.import.Services
 {
@@ -1155,7 +1154,7 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.AreEqual(0, logger.TrackedInformation.Count(
 				p => p.Item2?.Contains("AddToQueryAndImportDatabaseAsync") == true));
 		}
-		
+
 		[TestMethod]
 		public async Task RemoveFromQueryAndImportDatabaseAsync_NoConnection_NoVerbose()
 		{

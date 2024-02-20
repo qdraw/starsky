@@ -14,7 +14,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
-using starskycore.Helpers;
+using starsky.project.web.Helpers;
 
 namespace starsky.Controllers
 {
@@ -54,22 +54,29 @@ namespace starsky.Controllers
 			// Restrict the fileHash to letters and digits only
 			// I/O function calls should not be vulnerable to path injection attacks
 			if ( !Regex.IsMatch(f, "^[a-zA-Z0-9_-]+$",
-				RegexOptions.None, TimeSpan.FromMilliseconds(200)) )
+				    RegexOptions.None, TimeSpan.FromMilliseconds(200)) )
 			{
 				return BadRequest();
 			}
 
 			if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f, ThumbnailSize.Small)) )
 			{
-				var stream = _thumbnailStorage.ReadStream(ThumbnailNameHelper.Combine(f, ThumbnailSize.Small));
-				Response.Headers.TryAdd("x-image-size", new StringValues(ThumbnailSize.Small.ToString()));
+				var stream =
+					_thumbnailStorage.ReadStream(
+						ThumbnailNameHelper.Combine(f, ThumbnailSize.Small));
+				Response.Headers.TryAdd("x-image-size",
+					new StringValues(ThumbnailSize.Small.ToString()));
 				return File(stream, "image/jpeg");
 			}
 
-			if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f, ThumbnailSize.TinyMeta)) )
+			if ( _thumbnailStorage.ExistFile(
+				    ThumbnailNameHelper.Combine(f, ThumbnailSize.TinyMeta)) )
 			{
-				var stream = _thumbnailStorage.ReadStream(ThumbnailNameHelper.Combine(f, ThumbnailSize.TinyMeta));
-				Response.Headers.TryAdd("x-image-size", new StringValues(ThumbnailSize.TinyMeta.ToString()));
+				var stream =
+					_thumbnailStorage.ReadStream(
+						ThumbnailNameHelper.Combine(f, ThumbnailSize.TinyMeta));
+				Response.Headers.TryAdd("x-image-size",
+					new StringValues(ThumbnailSize.TinyMeta.ToString()));
 				return File(stream, "image/jpeg");
 			}
 
@@ -79,8 +86,10 @@ namespace starsky.Controllers
 				return NotFound("hash not found");
 			}
 
-			var streamDefaultThumbnail = _thumbnailStorage.ReadStream(ThumbnailNameHelper.Combine(f, ThumbnailSize.Large));
-			Response.Headers.TryAdd("x-image-size", new StringValues(ThumbnailSize.Large.ToString()));
+			var streamDefaultThumbnail =
+				_thumbnailStorage.ReadStream(ThumbnailNameHelper.Combine(f, ThumbnailSize.Large));
+			Response.Headers.TryAdd("x-image-size",
+				new StringValues(ThumbnailSize.Large.ToString()));
 			return File(streamDefaultThumbnail, "image/jpeg");
 		}
 
@@ -102,7 +111,6 @@ namespace starsky.Controllers
 		[ProducesResponseType(
 			400)] // string (f) input not allowed to avoid path injection attacks
 		[ProducesResponseType(404)] // not found
-
 		public async Task<IActionResult> ListSizesByHash(string f)
 		{
 			// For serving jpeg files
@@ -111,17 +119,25 @@ namespace starsky.Controllers
 			// Restrict the fileHash to letters and digits only
 			// I/O function calls should not be vulnerable to path injection attacks
 			if ( !Regex.IsMatch(f, "^[a-zA-Z0-9_-]+$",
-				RegexOptions.None, TimeSpan.FromMilliseconds(100)) )
+				    RegexOptions.None, TimeSpan.FromMilliseconds(100)) )
 			{
 				return BadRequest();
 			}
 
 			var data = new ThumbnailSizesExistStatusModel
 			{
-				TinyMeta = _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f, ThumbnailSize.TinyMeta)),
-				Small = _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f, ThumbnailSize.Small)),
-				Large = _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f, ThumbnailSize.Large)),
-				ExtraLarge = _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f, ThumbnailSize.ExtraLarge))
+				TinyMeta =
+					_thumbnailStorage.ExistFile(
+						ThumbnailNameHelper.Combine(f, ThumbnailSize.TinyMeta)),
+				Small =
+					_thumbnailStorage.ExistFile(
+						ThumbnailNameHelper.Combine(f, ThumbnailSize.Small)),
+				Large =
+					_thumbnailStorage.ExistFile(
+						ThumbnailNameHelper.Combine(f, ThumbnailSize.Large)),
+				ExtraLarge =
+					_thumbnailStorage.ExistFile(
+						ThumbnailNameHelper.Combine(f, ThumbnailSize.ExtraLarge))
 			};
 
 			// Success has all items (except tinyMeta)
@@ -138,11 +154,11 @@ namespace starsky.Controllers
 					return Json(data);
 				case false when !string.IsNullOrEmpty(sourcePath):
 					Response.StatusCode = 210; // A conflict, that the thumb is not generated yet
-					return Json("Thumbnail is not supported; for example you try to view a raw or video file");
+					return Json(
+						"Thumbnail is not supported; for example you try to view a raw or video file");
 				default:
 					return NotFound("not in index");
 			}
-
 		}
 
 		private IActionResult ReturnThumbnailResult(string f, bool json, ThumbnailSize size)
@@ -161,10 +177,11 @@ namespace starsky.Controllers
 			if ( json ) return Json("OK");
 
 			stream = _thumbnailStorage.ReadStream(
-					ThumbnailNameHelper.Combine(f, size));
+				ThumbnailNameHelper.Combine(f, size));
 
 			// thumbs are always in jpeg
-			Response.Headers.Append("x-filename", new StringValues(FilenamesHelper.GetFileName(f + ".jpg")));
+			Response.Headers.Append("x-filename",
+				new StringValues(FilenamesHelper.GetFileName(f + ".jpg")));
 			return File(stream, "image/jpeg");
 		}
 
@@ -218,7 +235,7 @@ namespace starsky.Controllers
 			// Restrict the fileHash to letters and digits only
 			// I/O function calls should not be vulnerable to path injection attacks
 			if ( !Regex.IsMatch(f, "^[a-zA-Z0-9_-]+$",
-				RegexOptions.None, TimeSpan.FromMilliseconds(100)) )
+				    RegexOptions.None, TimeSpan.FromMilliseconds(100)) )
 			{
 				return BadRequest();
 			}
@@ -249,7 +266,8 @@ namespace starsky.Controllers
 				// remove from cache
 				_query.ResetItemByHash(f);
 
-				if ( string.IsNullOrEmpty(filePath) || await _query.GetObjectByFilePathAsync(filePath) == null )
+				if ( string.IsNullOrEmpty(filePath) ||
+				     await _query.GetObjectByFilePathAsync(filePath) == null )
 				{
 					SetExpiresResponseHeadersToZero();
 					return NotFound("not in index");
@@ -261,7 +279,7 @@ namespace starsky.Controllers
 			if ( !_iStorage.ExistFile(sourcePath) )
 			{
 				return NotFound("There is no thumbnail image " + f + " and no source image " +
-								sourcePath);
+				                sourcePath);
 			}
 
 			if ( !isSingleItem )
@@ -316,7 +334,7 @@ namespace starsky.Controllers
 			// Restrict the fileHash to letters and digits only
 			// I/O function calls should not be vulnerable to path injection attacks
 			if ( !Regex.IsMatch(f, "^[a-zA-Z0-9_-]+$",
-				RegexOptions.None, TimeSpan.FromMilliseconds(100)) )
+				    RegexOptions.None, TimeSpan.FromMilliseconds(100)) )
 			{
 				return BadRequest();
 			}
@@ -329,6 +347,7 @@ namespace starsky.Controllers
 				{
 					return NotFound("not in index");
 				}
+
 				sourcePath = filePath;
 			}
 
@@ -351,7 +370,8 @@ namespace starsky.Controllers
 		public void SetExpiresResponseHeadersToZero()
 		{
 			Request.HttpContext.Response.Headers.Remove("Cache-Control");
-			Request.HttpContext.Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+			Request.HttpContext.Response.Headers.Append("Cache-Control",
+				"no-cache, no-store, must-revalidate");
 
 			Request.HttpContext.Response.Headers.Remove("Pragma");
 			Request.HttpContext.Response.Headers.Append("Pragma", "no-cache");
