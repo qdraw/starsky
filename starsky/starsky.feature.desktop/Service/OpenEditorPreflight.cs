@@ -37,7 +37,7 @@ public class OpenEditorPreflight : IOpenEditorPreflight
 		List<string> inputFilePaths, bool collections)
 	{
 		var fileIndexItemList = await GetObjectsToOpenFromDatabase(inputFilePaths, collections);
-		fileIndexItemList = GroupByFileCollectionName(fileIndexItemList);
+		fileIndexItemList = GroupByFileCollectionName(fileIndexItemList, collections);
 
 		var subPathAndImageFormatList = new List<PathImageFormatExistsAppPathModel>();
 
@@ -119,12 +119,18 @@ public class OpenEditorPreflight : IOpenEditorPreflight
 			fileIndexList.Add(fileIndexItem);
 		}
 
-		return fileIndexList;
+		return fileIndexList.DistinctBy(p => p.FilePath).ToList();
 	}
 
 	internal List<FileIndexItem> GroupByFileCollectionName(
-		IEnumerable<FileIndexItem> fileIndexInputList)
+		IEnumerable<FileIndexItem> fileIndexInputList, bool collections = true)
 	{
+		// Skip if no collections, no need to filter on the right file
+		if ( !collections )
+		{
+			return fileIndexInputList.ToList();
+		}
+
 		if ( _appSettings.DesktopCollectionsOpen is CollectionsOpenType.RawJpegMode.Default )
 		{
 			_appSettings.DesktopCollectionsOpen = CollectionsOpenType.RawJpegMode.Jpeg;
@@ -169,6 +175,7 @@ public class OpenEditorPreflight : IOpenEditorPreflight
 			toOpenResultList.Add(fileIndexItem);
 		}
 
-		return toOpenResultList;
+		// could be that the same file is in multiple collections
+		return toOpenResultList.DistinctBy(p => p.FilePath).ToList();
 	}
 }
