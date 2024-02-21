@@ -44,7 +44,7 @@ async function openDesktop(
   }
 }
 
-async function startMenuOptionDesktopEditorOpen(
+export async function StartMenuOptionDesktopEditorOpen(
   select: string[],
   collections: boolean,
   state: IArchiveProps,
@@ -97,7 +97,7 @@ const MenuOptionDesktopEditorOpen: React.FunctionComponent<IMenuOptionDesktopEdi
     useHotKeys({ key: "e", ctrlKeyOrMetaKey: true }, () => {
       console.log("hi");
 
-      startMenuOptionDesktopEditorOpen(
+      StartMenuOptionDesktopEditorOpen(
         select,
         isCollections,
         state,
@@ -136,7 +136,7 @@ const MenuOptionDesktopEditorOpen: React.FunctionComponent<IMenuOptionDesktopEdi
             isReadOnly={isReadOnly}
             testName={"menu-option-desktop-editor-open"}
             onClickKeydown={() =>
-              startMenuOptionDesktopEditorOpen(
+              StartMenuOptionDesktopEditorOpen(
                 select,
                 isCollections,
                 state,

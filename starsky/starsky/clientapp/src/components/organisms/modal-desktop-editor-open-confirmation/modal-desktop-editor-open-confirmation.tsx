@@ -36,6 +36,7 @@ async function OpenDesktop(
   const openDesktopResult = await FetchPost(urlOpen, bodyParams.toString());
   if (openDesktopResult.statusCode >= 300) {
     setIsError(messageDesktopEditorUnableToOpen);
+    return false;
   }
   return true;
 }
