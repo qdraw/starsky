@@ -70,6 +70,7 @@ export async function StartMenuOptionDesktopEditorOpenSelection(
 
 const MenuOptionDesktopEditorOpenSelection: React.FunctionComponent<IMenuOptionDesktopEditorOpenProps> =
   memo(({ state, select, isReadOnly }) => {
+    // Check API to know if feature is needed!
     const featuresResult = useFetch(new UrlQuery().UrlApiFeaturesAppSettings(), "get");
     const dataFeatures = featuresResult?.data as IEnvFeatures | undefined;
     const history = useLocation();
