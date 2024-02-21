@@ -16,8 +16,8 @@ public class OpenEditorDesktopServiceTest
 	[TestMethod]
 	public async Task OpenAsync_stringInput_HappyFlow()
 	{
-		var fakeService =
-			new FakeIOpenApplicationNativeService(new List<string> { "/test.jpg" }, "test");
+		var fakeService = new FakeIOpenApplicationNativeService(
+			new List<string> { "/test.jpg" }, "test");
 
 		var appSettings = new AppSettings
 		{
@@ -153,15 +153,14 @@ public class OpenEditorDesktopServiceTest
 	[TestMethod]
 	public async Task OpenAsync_ListInput_UnSupportedPlatform()
 	{
-		var fakeService =
-			new FakeIOpenApplicationNativeService(new List<string>(), string.Empty, false);
+		var fakeService = new FakeIOpenApplicationNativeService(new List<string>(),
+			string.Empty, false);
 
 		var appSettings = new AppSettings { UseLocalDesktop = true };
 
 		var preflight = new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>());
 
-		var service =
-			new OpenEditorDesktopService(appSettings, fakeService, preflight);
+		var service = new OpenEditorDesktopService(appSettings, fakeService, preflight);
 
 		var (success, status, list) =
 			( await service.OpenAsync(new List<string> { "/test.jpg" }, true) );

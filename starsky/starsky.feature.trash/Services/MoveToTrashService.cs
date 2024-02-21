@@ -10,6 +10,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.worker.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
+
 namespace starsky.feature.trash.Services;
 
 [Service(typeof(IMoveToTrashService), InjectionLifetime = InjectionLifetime.Scoped)]
@@ -46,17 +47,7 @@ public class MoveToTrashService : IMoveToTrashService
 	public bool IsEnabled()
 	{
 		return _appSettings.UseSystemTrash == true &&
-			   _systemTrashService.DetectToUseSystemTrash();
-	}
-
-	/// <summary>
-	/// Is it supported to use the system trash
-	/// But it does NOT check if the feature toggle is enabled
-	/// </summary>
-	/// <returns>true if supported</returns>
-	public bool DetectToUseSystemTrash()
-	{
-		return _systemTrashService.DetectToUseSystemTrash();
+		       _systemTrashService.DetectToUseSystemTrash();
 	}
 
 	/// <summary>
@@ -74,11 +65,13 @@ public class MoveToTrashService : IMoveToTrashService
 			await _metaPreflight.PreflightAsync(inputModel, inputFilePaths,
 				false, collections, 0);
 
-		(fileIndexResultsList, changedFileIndexItemName) = await AppendChildItemsToTrashList(fileIndexResultsList, changedFileIndexItemName);
+		( fileIndexResultsList, changedFileIndexItemName ) =
+			await AppendChildItemsToTrashList(fileIndexResultsList, changedFileIndexItemName);
 
 		var moveToTrashList =
 			fileIndexResultsList.Where(p =>
-				p.Status is FileIndexItem.ExifStatus.Ok or FileIndexItem.ExifStatus.Deleted).ToList();
+					p.Status is FileIndexItem.ExifStatus.Ok or FileIndexItem.ExifStatus.Deleted)
+				.ToList();
 
 		var isSystemTrashEnabled = IsEnabled();
 
@@ -92,9 +85,8 @@ public class MoveToTrashService : IMoveToTrashService
 				return;
 			}
 
-			await MetaTrashInQueue(changedFileIndexItemName!,
+			await MetaTrashInQueue(changedFileIndexItemName,
 				fileIndexResultsList, inputModel, collections);
-
 		}, "trash");
 
 		return TrashConnectionService.StatusUpdate(moveToTrashList, isSystemTrashEnabled);
@@ -112,8 +104,9 @@ public class MoveToTrashService : IMoveToTrashService
 	/// </summary>
 	/// <param name="moveToTrash"></param>
 	/// <param name="changedFileIndexItemName"></param>
-	internal async Task<(List<FileIndexItem>, Dictionary<string, List<string>>?)> AppendChildItemsToTrashList(List<FileIndexItem> moveToTrash,
-		Dictionary<string, List<string>> changedFileIndexItemName)
+	internal async Task<(List<FileIndexItem>, Dictionary<string, List<string>>)>
+		AppendChildItemsToTrashList(List<FileIndexItem> moveToTrash,
+			Dictionary<string, List<string>> changedFileIndexItemName)
 	{
 		var parentSubPaths = moveToTrash
 			.Where(p => !string.IsNullOrEmpty(p.FilePath) && p.IsDirectory == true)
@@ -122,7 +115,7 @@ public class MoveToTrashService : IMoveToTrashService
 
 		if ( parentSubPaths.Count == 0 )
 		{
-			return (moveToTrash, changedFileIndexItemName);
+			return ( moveToTrash, changedFileIndexItemName );
 		}
 
 		var childItems = ( await _query.GetAllObjectsAsync(parentSubPaths) )
@@ -139,7 +132,7 @@ public class MoveToTrashService : IMoveToTrashService
 			changedFileIndexItemName.TryAdd(childItem.FilePath!, new List<string> { "tags" });
 		}
 
-		return (moveToTrash, changedFileIndexItemName);
+		return ( moveToTrash, changedFileIndexItemName );
 	}
 
 	private async Task SystemTrashInQueue(List<FileIndexItem> moveToTrash)

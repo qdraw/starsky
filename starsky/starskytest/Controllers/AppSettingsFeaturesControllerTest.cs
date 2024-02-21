@@ -18,7 +18,7 @@ public class AppSettingsFeaturesControllerTest
 		// Arrange
 		var fakeIMoveToTrashService = new FakeIMoveToTrashService(new List<FileIndexItem>());
 		var appSettingsFeaturesController = new AppSettingsFeaturesController(
-			fakeIMoveToTrashService, new AppSettings());
+			fakeIMoveToTrashService, new FakeIOpenEditorDesktopService(), new AppSettings());
 
 		// Act
 		var result = appSettingsFeaturesController.FeaturesView() as JsonResult;
@@ -35,7 +35,8 @@ public class AppSettingsFeaturesControllerTest
 		// Arrange
 		var fakeIMoveToTrashService = new FakeIMoveToTrashService(new List<FileIndexItem>(), false);
 		var appSettingsFeaturesController = new AppSettingsFeaturesController(
-			fakeIMoveToTrashService, new AppSettings { UseLocalDesktop = false });
+			fakeIMoveToTrashService, new FakeIOpenEditorDesktopService(),
+			new AppSettings { UseLocalDesktop = false });
 
 		// Act
 		var result = appSettingsFeaturesController.FeaturesView() as JsonResult;
@@ -53,7 +54,8 @@ public class AppSettingsFeaturesControllerTest
 		// Arrange
 		var fakeIMoveToTrashService = new FakeIMoveToTrashService(new List<FileIndexItem>());
 		var appSettingsFeaturesController = new AppSettingsFeaturesController(
-			fakeIMoveToTrashService, new AppSettings { UseLocalDesktop = true });
+			fakeIMoveToTrashService, new FakeIOpenEditorDesktopService(),
+			new AppSettings { UseLocalDesktop = true });
 
 		// Act
 		var result = appSettingsFeaturesController.FeaturesView() as JsonResult;

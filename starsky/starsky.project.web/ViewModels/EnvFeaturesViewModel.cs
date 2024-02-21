@@ -11,4 +11,9 @@ public class EnvFeaturesViewModel
 	/// Enable or disable some features on the frontend
 	/// </summary>
 	public bool UseLocalDesktop { get; set; }
+
+	/// <summary>
+	/// Is supported and enabled in the feature toggle
+	/// </summary>
+	public bool OpenEditorEnabled { get; set; }
 }

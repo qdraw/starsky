@@ -15,13 +15,6 @@ public interface IMoveToTrashService
 		bool collections);
 
 	/// <summary>
-	/// Is it supported to use the system trash
-	/// But it does NOT check if the feature toggle is enabled
-	/// </summary>
-	/// <returns>true if supported</returns>
-	bool DetectToUseSystemTrash();
-
-	/// <summary>
 	/// Is supported and enabled in the feature toggle
 	/// </summary>
 	/// <returns>Should you use it?</returns>

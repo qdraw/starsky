@@ -314,20 +314,6 @@ public class MoveToTrashServiceTest
 	}
 
 	[TestMethod]
-	public void DetectToUseSystemTrash_False()
-	{
-		var trashService = new FakeITrashService() { IsSupported = false };
-		var moveToTrashService = new MoveToTrashService(new AppSettings(), new FakeIQuery(),
-			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(),
-			trashService, new FakeIMetaUpdateService(),
-			new FakeITrashConnectionService());
-
-		var result = moveToTrashService.DetectToUseSystemTrash();
-
-		Assert.AreEqual(false, result);
-	}
-
-	[TestMethod]
 	public async Task AppendChildItemsToTrashList_NoAny()
 	{
 		const string path = "/test/test.jpg";

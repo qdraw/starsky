@@ -27,6 +27,12 @@ public class OpenEditorDesktopService : IOpenEditorDesktopService
 		_openEditorPreflight = openEditorPreflight;
 	}
 
+	public bool IsEnabled()
+	{
+		return _appSettings.UseLocalDesktop == true &&
+		       _openApplicationNativeService.DetectToUseOpenApplication();
+	}
+
 	public async Task<(bool?, string, List<PathImageFormatExistsAppPathModel>)> OpenAsync(string f,
 		bool collections)
 	{
