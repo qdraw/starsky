@@ -85,7 +85,7 @@ const ModalDesktopEditorOpenConfirmation: React.FunctionComponent<
           ) : null}
 
           <button
-            data-test="confirmation-no"
+            data-test="editor-open-confirmation-no"
             onClick={() => handleExit()}
             className="btn btn--info"
           >
@@ -120,7 +120,7 @@ const ModalDesktopEditorOpenConfirmation: React.FunctionComponent<
                 });
             }}
             autoFocus={true}
-            data-test="confirmation-yes"
+            data-test="editor-open-confirmation-yes"
             className="btn btn--default"
           >
             {MessageDesktopEditorOpenMultipleFiles}
