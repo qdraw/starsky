@@ -1,5 +1,5 @@
 import MoreMenu from "../../atoms/more-menu/more-menu";
-import MenuOptionDesktopEditorOpen from "./menu-option-desktop-editor-open";
+import MenuOptionDesktopEditorOpenSelection from "./menu-option-desktop-editor-open-selection";
 
 export default {
   title: "components/molecules/menu-option-desktop-editor-open"
@@ -8,7 +8,7 @@ export default {
 export const Default = () => {
   return (
     <MoreMenu enableMoreMenu={true} setEnableMoreMenu={() => {}}>
-      <MenuOptionDesktopEditorOpen
+      <MenuOptionDesktopEditorOpenSelection
         state={
           {
             fileIndexItems: [
@@ -31,7 +31,7 @@ Default.storyName = "default (no dialog)";
 export const Case2 = () => {
   return (
     <MoreMenu enableMoreMenu={true} setEnableMoreMenu={() => {}}>
-      <MenuOptionDesktopEditorOpen
+      <MenuOptionDesktopEditorOpenSelection
         state={
           {
             fileIndexItems: [

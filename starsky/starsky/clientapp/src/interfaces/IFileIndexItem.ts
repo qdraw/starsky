@@ -29,8 +29,8 @@ export interface IFileIndexItem {
   locationCountryCode?: string;
   locationCity?: string;
   locationState?: string;
-  imageWidth: number;
-  imageHeight: number;
+  imageWidth?: number;
+  imageHeight?: number;
   size?: number;
   sidecarExtensionsList?: string[];
   collectionPaths?: string[];

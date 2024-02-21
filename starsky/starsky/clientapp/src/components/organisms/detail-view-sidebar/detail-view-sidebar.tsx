@@ -340,6 +340,8 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
               <p>
                 {index === 1 ? <>In een collectie:</> : null} {index + 1} van {collections.length}.
                 {item === fileIndexItem.filePath &&
+                fileIndexItem.imageWidth !== undefined &&
+                fileIndexItem.imageHeight !== undefined &&
                 fileIndexItem.imageWidth !== 0 &&
                 fileIndexItem.imageHeight !== 0 ? (
                   <span>

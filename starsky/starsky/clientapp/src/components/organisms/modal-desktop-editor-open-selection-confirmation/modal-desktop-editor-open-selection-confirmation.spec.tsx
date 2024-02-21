@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
-import ModalDesktopEditorOpenConfirmation from "./modal-desktop-editor-open-confirmation";
+import ModalDesktopEditorOpenSelectionConfirmation from "./modal-desktop-editor-open-selection-confirmation";
 
 describe("ModalDesktopEditorOpenConfirmation", () => {
   afterEach(() => {
@@ -20,7 +20,7 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
 
   it("renders correctly", () => {
     const component = render(
-      <ModalDesktopEditorOpenConfirmation
+      <ModalDesktopEditorOpenSelectionConfirmation
         isOpen={true}
         select={[]}
         handleExit={() => {}}
@@ -41,7 +41,7 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
   it("calls handleExit on cancel button click", () => {
     const handleExit = jest.fn();
     const component = render(
-      <ModalDesktopEditorOpenConfirmation
+      <ModalDesktopEditorOpenSelectionConfirmation
         isOpen={true}
         handleExit={handleExit}
         state={exampleState}
@@ -70,7 +70,7 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
       .mockImplementation(() => mockIConnectionDefaultResolve);
 
     const component = render(
-      <ModalDesktopEditorOpenConfirmation
+      <ModalDesktopEditorOpenSelectionConfirmation
         isOpen={true}
         handleExit={handleExit}
         state={exampleState}
@@ -103,7 +103,7 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
       .mockImplementation(() => mockIConnectionDefaultResolve);
 
     const component = render(
-      <ModalDesktopEditorOpenConfirmation
+      <ModalDesktopEditorOpenSelectionConfirmation
         isOpen={true}
         select={["test.jpg"]}
         handleExit={() => {}}

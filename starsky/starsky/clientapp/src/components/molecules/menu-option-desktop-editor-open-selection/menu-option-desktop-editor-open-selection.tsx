@@ -13,7 +13,7 @@ import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
 import MenuOption from "../../atoms/menu-option/menu-option";
 import Notification, { NotificationType } from "../../atoms/notification/notification";
-import ModalDesktopEditorOpenConfirmation from "../../organisms/modal-desktop-editor-open-confirmation/modal-desktop-editor-open-confirmation";
+import ModalDesktopEditorOpenSelectionConfirmation from "../../organisms/modal-desktop-editor-open-selection-confirmation/modal-desktop-editor-open-selection-confirmation";
 
 interface IMenuOptionDesktopEditorOpenProps {
   state: IArchiveProps;
@@ -44,7 +44,7 @@ async function openDesktop(
   }
 }
 
-export async function StartMenuOptionDesktopEditorOpen(
+export async function StartMenuOptionDesktopEditorOpenSelection(
   select: string[],
   collections: boolean,
   state: IArchiveProps,
@@ -68,7 +68,7 @@ export async function StartMenuOptionDesktopEditorOpen(
   await openDesktop(select, collections, state, setIsError, messageDesktopEditorUnableToOpen);
 }
 
-const MenuOptionDesktopEditorOpen: React.FunctionComponent<IMenuOptionDesktopEditorOpenProps> =
+const MenuOptionDesktopEditorOpenSelection: React.FunctionComponent<IMenuOptionDesktopEditorOpenProps> =
   memo(({ state, select, isReadOnly }) => {
     const featuresResult = useFetch(new UrlQuery().UrlApiFeaturesAppSettings(), "get");
     const dataFeatures = featuresResult?.data as IEnvFeatures | undefined;
@@ -97,7 +97,7 @@ const MenuOptionDesktopEditorOpen: React.FunctionComponent<IMenuOptionDesktopEdi
     useHotKeys({ key: "e", ctrlKeyOrMetaKey: true }, () => {
       console.log("hi");
 
-      StartMenuOptionDesktopEditorOpen(
+      StartMenuOptionDesktopEditorOpenSelection(
         select,
         isCollections,
         state,
@@ -113,7 +113,7 @@ const MenuOptionDesktopEditorOpen: React.FunctionComponent<IMenuOptionDesktopEdi
       <>
         {/* Modal move folder to trash */}
         {modalConfirmationOpenFiles ? (
-          <ModalDesktopEditorOpenConfirmation
+          <ModalDesktopEditorOpenSelectionConfirmation
             handleExit={() => {
               setModalConfirmationOpenFiles(!modalConfirmationOpenFiles);
             }}
@@ -136,7 +136,7 @@ const MenuOptionDesktopEditorOpen: React.FunctionComponent<IMenuOptionDesktopEdi
             isReadOnly={isReadOnly}
             testName={"menu-option-desktop-editor-open"}
             onClickKeydown={() =>
-              StartMenuOptionDesktopEditorOpen(
+              StartMenuOptionDesktopEditorOpenSelection(
                 select,
                 isCollections,
                 state,
@@ -156,4 +156,4 @@ const MenuOptionDesktopEditorOpen: React.FunctionComponent<IMenuOptionDesktopEdi
     );
   });
 
-export default MenuOptionDesktopEditorOpen;
+export default MenuOptionDesktopEditorOpenSelection;

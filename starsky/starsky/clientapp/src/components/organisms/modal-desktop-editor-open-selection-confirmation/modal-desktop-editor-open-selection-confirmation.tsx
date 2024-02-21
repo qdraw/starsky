@@ -41,7 +41,7 @@ async function OpenDesktop(
   return true;
 }
 
-const ModalDesktopEditorOpenConfirmation: React.FunctionComponent<
+const ModalDesktopEditorOpenSelectionConfirmation: React.FunctionComponent<
   IModalDesktopEditorOpenConfirmationProps
 > = ({ select, handleExit, isOpen, state, isCollections }) => {
   // content
@@ -134,4 +134,4 @@ const ModalDesktopEditorOpenConfirmation: React.FunctionComponent<
   );
 };
 
-export default ModalDesktopEditorOpenConfirmation;
+export default ModalDesktopEditorOpenSelectionConfirmation;

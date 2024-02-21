@@ -14,7 +14,7 @@ import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-men
 import MenuOptionModal from "../../atoms/menu-option-modal/menu-option-modal";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
-import MenuOptionDesktopEditorOpen from "../../molecules/menu-option-desktop-editor-open/menu-option-desktop-editor-open";
+import MenuOptionDesktopEditorOpenSelection from "../../molecules/menu-option-desktop-editor-open-selection/menu-option-desktop-editor-open-selection";
 import MenuOptionMoveFolderToTrash from "../../molecules/menu-option-move-folder-to-trash/menu-option-move-folder-to-trash";
 import MenuOptionMoveToTrash from "../../molecules/menu-option-move-to-trash/menu-option-move-to-trash";
 import { MenuOptionSelectionAll } from "../../molecules/menu-option-selection-all/menu-option-selection-all";
@@ -287,7 +287,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                     isReadOnly={readOnly}
                   />
 
-                  <MenuOptionDesktopEditorOpen
+                  <MenuOptionDesktopEditorOpenSelection
                     isReadOnly={readOnly}
                     select={select}
                     state={state}

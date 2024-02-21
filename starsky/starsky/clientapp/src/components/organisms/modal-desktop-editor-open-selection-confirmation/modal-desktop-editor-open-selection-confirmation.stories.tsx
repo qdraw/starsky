@@ -1,12 +1,12 @@
-import ModalDesktopEditorOpenConfirmation from "./modal-desktop-editor-open-confirmation";
+import ModalDesktopEditorOpenSelectionConfirmation from "./modal-desktop-editor-open-selection-confirmation";
 
 export default {
-  title: "components/organisms/modal-desktop-editor-open-confirmation"
+  title: "components/organisms/modal-desktop-editor-open-selection-confirmation"
 };
 
 export const Default = () => {
   return (
-    <ModalDesktopEditorOpenConfirmation
+    <ModalDesktopEditorOpenSelectionConfirmation
       state={
         {
           fileIndexItems: [
