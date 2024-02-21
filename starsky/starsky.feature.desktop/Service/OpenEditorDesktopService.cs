@@ -42,8 +42,13 @@ public class OpenEditorDesktopService : IOpenEditorDesktopService
 			return ( null, "UseLocalDesktop feature toggle is disabled", [] );
 		}
 
-		var subPathAndImageFormatList =
-			await _openEditorPreflight.PreflightAsync(subPaths, collections);
+		if ( !_openApplicationNativeService.DetectToUseOpenApplication() )
+		{
+			return ( null, "OpenEditor is not supported on this configuration", [] );
+		}
+
+		var subPathAndImageFormatList = await _openEditorPreflight
+			.PreflightAsync(subPaths, collections);
 
 		if ( subPathAndImageFormatList.Count == 0 )
 		{

@@ -59,8 +59,8 @@ public class OpenEditorDesktopServiceTest
 		Assert.AreEqual("/test.jpg", list[0].SubPath);
 		Assert.AreEqual("test", list[0].AppPath);
 	}
-	
-	
+
+
 	[TestMethod]
 	public async Task OpenAsync_ListInput_HappyFlow()
 	{
@@ -147,6 +147,27 @@ public class OpenEditorDesktopServiceTest
 
 		Assert.IsNull(success);
 		Assert.AreEqual("UseLocalDesktop feature toggle is disabled", status);
+		Assert.AreEqual(0, list.Count);
+	}
+
+	[TestMethod]
+	public async Task OpenAsync_ListInput_UnSupportedPlatform()
+	{
+		var fakeService =
+			new FakeIOpenApplicationNativeService(new List<string>(), string.Empty, false);
+
+		var appSettings = new AppSettings { UseLocalDesktop = true };
+
+		var preflight = new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>());
+
+		var service =
+			new OpenEditorDesktopService(appSettings, fakeService, preflight);
+
+		var (success, status, list) =
+			( await service.OpenAsync(new List<string> { "/test.jpg" }, true) );
+
+		Assert.IsNull(success);
+		Assert.AreEqual("OpenEditor is not supported on this configuration", status);
 		Assert.AreEqual(0, list.Count);
 	}
 }

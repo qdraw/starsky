@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using starsky.foundation.injection;
 using starsky.foundation.native.Helpers;
 using starsky.foundation.native.OpenApplicationNative.Helpers;
@@ -9,11 +10,55 @@ namespace starsky.foundation.native.OpenApplicationNative;
 public class OpenApplicationNativeService : IOpenApplicationNativeService
 {
 	/// <summary>
+	/// Is Open File supported on this configuration
+	/// </summary>
+	/// <returns>true if supported, false if not supported</returns>
+	public bool DetectToUseOpenApplication()
+	{
+		return DetectToUseOpenApplicationInternal(RuntimeInformation.IsOSPlatform,
+			Environment.UserInteractive);
+	}
+
+	/// <summary>
+	/// Use to overwrite the RuntimeInformation.IsOSPlatform
+	/// </summary>
+	internal delegate bool IsOsPlatformDelegate(OSPlatform osPlatform);
+
+	/// <summary>
+	/// Is Open File supported on this configuration
+	/// </summary>
+	/// <param name="runtimeInformationIsOsPlatform">RuntimeInformation.IsOSPlatform</param>
+	/// <param name="environmentUserInteractive">Environment.UserInteractive</param>
+	/// <returns>true if supported, false if not supported</returns>
+	internal static bool DetectToUseOpenApplicationInternal(
+		IsOsPlatformDelegate runtimeInformationIsOsPlatform,
+		bool environmentUserInteractive)
+	{
+		// Linux is not supported yet
+		if ( runtimeInformationIsOsPlatform(OSPlatform.Linux) ||
+		     runtimeInformationIsOsPlatform(OSPlatform.FreeBSD) )
+		{
+			return false;
+		}
+
+		// When running in Windows as Service it does not open the application
+		// On Mac OS it does open the application
+		if ( !environmentUserInteractive && runtimeInformationIsOsPlatform(OSPlatform.Windows) )
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+
+	/// <summary>
 	/// Open file with specified application
 	/// </summary>
 	/// <param name="fullPathAndApplicationUrl">List first item is fullFilePath, second is ApplicationUrl</param>
 	/// <returns>true is operation succeed, false failed | null is platform unsupported</returns>
-	public bool? OpenApplicationAtUrl(List<(string, string)> fullPathAndApplicationUrl)
+	public bool? OpenApplicationAtUrl(
+		List<(string fullFilePath, string applicationUrl)> fullPathAndApplicationUrl)
 	{
 		if ( fullPathAndApplicationUrl.Count == 0 )
 		{
@@ -42,7 +87,7 @@ public class OpenApplicationNativeService : IOpenApplicationNativeService
 	/// <param name="fullPaths">full path style</param>
 	/// <param name="applicationUrl"> applicationUrl</param>
 	/// <returns>true is operation succeed, false failed | null is platform unsupported</returns>
-	public bool? OpenApplicationAtUrl(List<string> fullPaths, string applicationUrl)
+	internal static bool? OpenApplicationAtUrl(List<string> fullPaths, string applicationUrl)
 	{
 		var currentPlatform = OperatingSystemHelper.GetPlatform();
 		var macOsOpenResult = MacOsOpenUrl.OpenApplicationAtUrl(fullPaths,
@@ -55,7 +100,7 @@ public class OpenApplicationNativeService : IOpenApplicationNativeService
 	}
 
 	internal static List<(List<string>, string)> SortToOpenFilesByApplicationPath(
-		List<(string, string)> fullPathAndApplicationUrl)
+		List<(string fullFilePath, string applicationUrl)> fullPathAndApplicationUrl)
 	{
 		// Group applications by their names
 		var groupedApplications = fullPathAndApplicationUrl.GroupBy(x => x.Item2).ToList();

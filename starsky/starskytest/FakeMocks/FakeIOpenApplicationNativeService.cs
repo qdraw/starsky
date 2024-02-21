@@ -8,11 +8,14 @@ public class FakeIOpenApplicationNativeService : IOpenApplicationNativeService
 {
 	private readonly List<string> _fullFilePaths;
 	private readonly string _applicationUrl;
+	private readonly bool _isSupported;
 
-	public FakeIOpenApplicationNativeService(List<string> fullPaths, string applicationUrl)
+	public FakeIOpenApplicationNativeService(List<string> fullPaths, string applicationUrl,
+		bool isSupported = true)
 	{
 		_fullFilePaths = fullPaths;
 		_applicationUrl = applicationUrl;
+		_isSupported = isSupported;
 	}
 
 	public string FindPath(List<string> fullPaths)
@@ -28,6 +31,11 @@ public class FakeIOpenApplicationNativeService : IOpenApplicationNativeService
 		}
 
 		return fullFilePath;
+	}
+
+	public bool DetectToUseOpenApplication()
+	{
+		return _isSupported;
 	}
 
 	public bool? OpenApplicationAtUrl(List<(string, string)> fullPathAndApplicationUrl)

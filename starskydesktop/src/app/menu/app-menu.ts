@@ -151,9 +151,7 @@ function AppMenu() {
           label: "Open in browser",
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           click: async () => {
-            await shell.openExternal(
-              BrowserWindow.getFocusedWindow().webContents.getURL()
-            );
+            await shell.openExternal(BrowserWindow.getFocusedWindow().webContents.getURL());
           },
         },
       ],
@@ -189,12 +187,7 @@ function AppMenu() {
         },
         { role: "zoom" },
         ...(isMac
-          ? [
-            { type: "separator" },
-            { role: "front" },
-            { type: "separator" },
-            { role: "window" },
-          ]
+          ? [{ type: "separator" }, { role: "front" }, { type: "separator" }, { role: "window" }]
           : [{ role: "close" }]),
       ],
     },
@@ -205,7 +198,7 @@ function AppMenu() {
           label: "Documentation website",
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           click: async () => {
-            await shell.openExternal("https://docs.qdraw.nl/download");
+            await shell.openExternal("https://docs.qdraw.nl/docs/getting-started/first-steps");
           },
         },
         {
@@ -213,9 +206,7 @@ function AppMenu() {
           // Referenced from HealthCheckForUpdates
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           click: async () => {
-            await shell.openExternal(
-              "https://github.com/qdraw/starsky/releases/latest"
-            );
+            await shell.openExternal("https://github.com/qdraw/starsky/releases/latest");
           },
         },
       ],

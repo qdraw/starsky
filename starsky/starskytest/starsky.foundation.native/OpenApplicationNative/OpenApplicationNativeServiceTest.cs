@@ -10,6 +10,7 @@ using starsky.foundation.native.OpenApplicationNative;
 using starsky.foundation.native.OpenApplicationNative.Helpers;
 using starsky.foundation.platform.Models;
 using starskytest.FakeCreateAn.CreateFakeStarskyExe;
+using starskytest.starsky.foundation.native.Helpers;
 
 namespace starskytest.starsky.foundation.native.OpenApplicationNative;
 
@@ -105,7 +106,7 @@ public class OpenApplicationNativeServiceTest
 	[TestMethod]
 	public void OpenApplicationAtUrl_ZeroItems_SoFalse()
 	{
-		var result = new OpenApplicationNativeService().OpenApplicationAtUrl([], "app");
+		var result = OpenApplicationNativeService.OpenApplicationAtUrl([], "app");
 
 		// Linux and FreeBSD are not supported
 		if ( OperatingSystemHelper.GetPlatform() == OSPlatform.Linux ||
@@ -233,5 +234,66 @@ public class OpenApplicationNativeServiceTest
 		Assert.IsTrue(result.Exists(x => x.Item2 == "app1"));
 		Assert.IsTrue(result.Exists(x => x.Item2 == "app2"));
 		Assert.IsTrue(result.Exists(x => x.Item2 == "app3"));
+	}
+
+	[TestMethod]
+	public void DetectToUseOpenApplication_Default()
+	{
+		var result = new OpenApplicationNativeService().DetectToUseOpenApplication();
+
+		// Depending on the environment
+		if ( !Environment.UserInteractive && new AppSettings().IsWindows )
+		{
+			Assert.IsFalse(result);
+			return;
+		}
+
+		// Linux and FreeBSD are not supported
+		if ( OperatingSystemHelper.GetPlatform() == OSPlatform.Linux ||
+		     OperatingSystemHelper.GetPlatform() == OSPlatform.FreeBSD )
+		{
+			Assert.IsFalse(result);
+			return;
+		}
+
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public void DetectToUseOpenApplicationInternal_Windows_AsWindowsService_InteractiveFalse()
+	{
+		var result =
+			OpenApplicationNativeService.DetectToUseOpenApplicationInternal(
+				FakeOsOverwrite.IsWindows,
+				false);
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public void DetectToUseOpenApplicationInternal_MacOS_AsLaunchService_InteractiveTrue()
+	{
+		var result =
+			OpenApplicationNativeService.DetectToUseOpenApplicationInternal(FakeOsOverwrite.IsMacOs,
+				false);
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public void DetectToUseOpenApplicationInternal_MacOS_Interactive_InteractiveTrue()
+	{
+		var result =
+			OpenApplicationNativeService.DetectToUseOpenApplicationInternal(FakeOsOverwrite.IsMacOs,
+				true);
+		Assert.IsTrue(result);
+	}
+
+
+	[TestMethod]
+	public void DetectToUseOpenApplicationInternal_Linux_Interactive_Interactive_False()
+	{
+		var result =
+			OpenApplicationNativeService.DetectToUseOpenApplicationInternal(FakeOsOverwrite.IsLinux,
+				true);
+		Assert.IsFalse(result);
 	}
 }
