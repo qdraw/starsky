@@ -72,8 +72,10 @@ const ModalDesktopEditorOpenConfirmation: React.FunctionComponent<
       }}
     >
       <>
-        <div className="modal content--subheader">{MessageDesktopEditorConfirmationHeading}</div>
-        <div className="modal content--text">
+        <div data-test="editor-open-heading" className="modal content--subheader">
+          {MessageDesktopEditorConfirmationHeading}
+        </div>
+        <div data-test="editor-open-text" className="modal content--text">
           <p>{MessageDesktopEditorConfirmationIntroText}</p>
           {isError ? (
             <>
