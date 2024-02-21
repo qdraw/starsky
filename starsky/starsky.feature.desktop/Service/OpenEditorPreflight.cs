@@ -63,6 +63,11 @@ public class OpenEditorPreflight : IOpenEditorPreflight
 
 		var appPath = appSettingsDefaultEditor?.ApplicationPath ?? string.Empty;
 
+		if ( string.IsNullOrEmpty(appPath) )
+		{
+			return string.Empty;
+		}
+
 		// Under Mac OS the ApplicationPath is a .app folder
 		// Under Windows the ApplicationPath is a .exe file
 		if ( _hostFileSystem.IsFolderOrFile(appPath) !=

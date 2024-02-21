@@ -907,6 +907,7 @@ public class Import : IImport
 		{
 			AddToDatabase = DateTime.UtcNow,
 			IsDirectory = true,
+			ImageFormat = ExtensionRolesHelper.ImageFormat.directory,
 			ColorClass = ColorClassParser.Color.None
 		};
 

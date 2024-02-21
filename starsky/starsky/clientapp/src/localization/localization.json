@@ -239,6 +239,26 @@
     "en": "Close",
     "nl": "Sluiten"
   },
+  "MessageDesktopEditorOpenSingleFile": {
+    "en": "Open file",
+    "nl": "Open bestand"
+  },
+  "MessageDesktopEditorOpenMultipleFiles": {
+    "en": "Open files",
+    "nl": "Open bestanden"
+  },
+  "MessageDesktopEditorUnableToOpen": {
+    "en": "Sorry, something went wrong opening the file",
+    "nl": "Sorry, er iets misgegaan met het openen van het bestand"
+  },
+  "MessageDesktopEditorConfirmationHeading": {
+    "en": "Do you really want to edit all of the selected photos?",
+    "nl": "Wil je echt alle geselecteerde foto's bewerken?"
+  },
+  "MessageDesktopEditorConfirmationIntroText": {
+    "en": "This prompt is to prevent potential issues such as your computer freezing",
+    "nl": "Deze melding is bedoeld om te voorkomen dat er eventuele problemen optreden, zoals het vastlopen van je computer."
+  },
   "temp1": {
     "en": "",
     "nl": ""

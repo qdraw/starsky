@@ -26,7 +26,7 @@ public class DesktopEditorController : Controller
 	/// <response code="200">returns a list of items from the database</response>
 	/// <response code="404">subPath not found in the database</response>
 	/// <response code="401">User unauthorized</response>
-	[HttpGet("/api/desktop-editor/open")]
+	[HttpPost("/api/desktop-editor/open")]
 	[Produces("application/json")]
 	[ProducesResponseType(typeof(List<PathImageFormatExistsAppPathModel>), 200)]
 	[ProducesResponseType(typeof(List<PathImageFormatExistsAppPathModel>), 204)]
@@ -59,7 +59,7 @@ public class DesktopEditorController : Controller
 	/// <returns></returns>
 	/// <response code="200">bool, true is no confirmation, false is ask confirmation</response>
 	/// <response code="401">User unauthorized</response>
-	[HttpGet("/api/desktop-editor/amount-confirmation")]
+	[HttpPost("/api/desktop-editor/amount-confirmation")]
 	[Produces("application/json")]
 	[ProducesResponseType(typeof(bool), 200)]
 	[ProducesResponseType(401)]

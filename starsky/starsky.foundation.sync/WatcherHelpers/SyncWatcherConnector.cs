@@ -13,6 +13,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Enums;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
@@ -114,6 +115,7 @@ public sealed class SyncWatcherConnector
 			syncData.Add(new FileIndexItem(_appSettings.FullPathToDatabaseStyle(fullFilePath))
 			{
 				IsDirectory = true,
+				ImageFormat = ExtensionRolesHelper.ImageFormat.directory,
 				Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
 			});
 

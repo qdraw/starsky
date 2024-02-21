@@ -74,7 +74,10 @@ namespace starsky.Controllers
 					continue;
 				}
 
-				await _query.AddItemAsync(new FileIndexItem(subPath) { IsDirectory = true });
+				await _query.AddItemAsync(new FileIndexItem(subPath)
+				{
+					IsDirectory = true, ImageFormat = ExtensionRolesHelper.ImageFormat.directory
+				});
 
 				// add to fs
 				_iStorage.CreateDirectory(subPath);
