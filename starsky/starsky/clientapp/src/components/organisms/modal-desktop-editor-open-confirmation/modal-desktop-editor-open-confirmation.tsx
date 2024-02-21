@@ -80,7 +80,9 @@ const ModalDesktopEditorOpenConfirmation: React.FunctionComponent<
           {isError ? (
             <>
               <br />
-              <div className="warning-box">{isError}</div>
+              <div data-test="editor-open-error" className="warning-box">
+                {isError}
+              </div>
             </>
           ) : null}
 
