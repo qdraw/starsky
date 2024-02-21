@@ -31,6 +31,13 @@ namespace starskytest.starsky.project.web.Helpers
 			Assert.AreEqual("application/octet-stream",
 				MimeHelper.GetMimeTypeByFileName(string.Empty));
 		}
+		
+		[TestMethod]
+		public void GetMimeTypeByExtensionTest_Null()
+		{
+			Assert.AreEqual("application/octet-stream",
+				MimeHelper.GetMimeTypeByFileName(null));
+		}
 
 		[TestMethod]
 		public void GetMimeType_NoExtension()

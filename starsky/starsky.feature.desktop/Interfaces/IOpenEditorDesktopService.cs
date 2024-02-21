@@ -5,6 +5,14 @@ namespace starsky.feature.desktop.Interfaces;
 public interface IOpenEditorDesktopService
 {
 	/// <summary>
+	/// Check if the file is less then the amount of files that are allowed to open
+	/// If there are more files to open it will return false and the front-end will ask for confirmation
+	/// </summary>
+	/// <param name="f">dot comma list of paths</param>
+	/// <returns>true is no confirmation and false ask are you sure</returns>
+	bool OpenAmountConfirmationChecker(string f);
+
+	/// <summary>
 	/// Is supported and enabled in the feature toggle
 	/// </summary>
 	/// <returns>Should you use it?</returns>

@@ -169,4 +169,66 @@ public class OpenEditorDesktopServiceTest
 		Assert.AreEqual("OpenEditor is not supported on this configuration", status);
 		Assert.AreEqual(0, list.Count);
 	}
+
+	[TestMethod]
+	public void OpenAmountConfirmationChecker_6Files()
+	{
+		var appSettings = new AppSettings { DesktopEditorAmountBeforeConfirmation = 5 };
+
+		var service = new OpenEditorDesktopService(appSettings,
+			new FakeIOpenApplicationNativeService(new List<string>(), "test"),
+			new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>()));
+
+		var result =
+			service.OpenAmountConfirmationChecker(
+				"/test.jpg;/test2.jpg;/test3.jpg;/test4.jpg;/test5.jpg;/test6.jpg");
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public void OpenAmountConfirmationChecker_6Files_Null()
+	{
+		var appSettings = new AppSettings { DesktopEditorAmountBeforeConfirmation = null };
+
+		var service = new OpenEditorDesktopService(appSettings,
+			new FakeIOpenApplicationNativeService(new List<string>(), "test"),
+			new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>()));
+
+		var result =
+			service.OpenAmountConfirmationChecker(
+				"/test.jpg;/test2.jpg;/test3.jpg;/test4.jpg;/test5.jpg;/test6.jpg");
+
+		// Assumes that the default value is 5
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public void OpenAmountConfirmationChecker_4Files()
+	{
+		var appSettings = new AppSettings { DesktopEditorAmountBeforeConfirmation = 4 };
+
+		var service = new OpenEditorDesktopService(appSettings,
+			new FakeIOpenApplicationNativeService(new List<string>(), "test"),
+			new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>()));
+
+		var result =
+			service.OpenAmountConfirmationChecker("/test.jpg;/test2.jpg;/test3.jpg;/test4.jpg");
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public void OpenAmountConfirmationChecker_1File()
+	{
+		var appSettings = new AppSettings
+		{
+			DesktopEditorAmountBeforeConfirmation = -90 // invalid value
+		};
+
+		var service = new OpenEditorDesktopService(appSettings,
+			new FakeIOpenApplicationNativeService(new List<string>(), "test"),
+			new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>()));
+
+		var result = service.OpenAmountConfirmationChecker("/test.jpg");
+		Assert.IsTrue(result);
+	}
 }

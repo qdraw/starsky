@@ -27,6 +27,43 @@ public class OpenEditorDesktopService : IOpenEditorDesktopService
 		_openEditorPreflight = openEditorPreflight;
 	}
 
+	/// <summary>
+	/// Get value from App Settings without getting a negative value
+	/// </summary>
+	/// <returns>setting</returns>
+	private int GetDesktopEditorAmountBeforeConfirmation()
+	{
+		var desktopEditorAmountBeforeConfirmation =
+			_appSettings.DesktopEditorAmountBeforeConfirmation ??
+			DesktopEditorAmountBeforeConfirmationDefault;
+		if ( _appSettings.DesktopEditorAmountBeforeConfirmation <= 1 )
+		{
+			desktopEditorAmountBeforeConfirmation = DesktopEditorAmountBeforeConfirmationDefault;
+		}
+
+		return desktopEditorAmountBeforeConfirmation;
+	}
+
+	/// <summary>
+	/// Default Setting for Desktop Editor Amount Before Confirmation
+	/// </summary>
+	private const int DesktopEditorAmountBeforeConfirmationDefault = 5;
+
+	/// <summary>
+	/// Check for Desktop Editor Amount Before Confirmation
+	/// </summary>
+	/// <param name="f">dot comma seperated values</param>
+	/// <returns>true</returns>
+	public bool OpenAmountConfirmationChecker(string f)
+	{
+		var inputFilePaths = PathHelper.SplitInputFilePaths(f);
+		return GetDesktopEditorAmountBeforeConfirmation() >= inputFilePaths.Length;
+	}
+
+	/// <summary>
+	/// Is feature toggle enabled and supported
+	/// </summary>
+	/// <returns>true is feature toggle enabled and supported</returns>
 	public bool IsEnabled()
 	{
 		return _appSettings.UseLocalDesktop == true &&

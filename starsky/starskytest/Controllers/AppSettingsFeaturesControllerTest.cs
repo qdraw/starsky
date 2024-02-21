@@ -35,7 +35,7 @@ public class AppSettingsFeaturesControllerTest
 		// Arrange
 		var fakeIMoveToTrashService = new FakeIMoveToTrashService(new List<FileIndexItem>(), false);
 		var appSettingsFeaturesController = new AppSettingsFeaturesController(
-			fakeIMoveToTrashService, new FakeIOpenEditorDesktopService(),
+			fakeIMoveToTrashService, new FakeIOpenEditorDesktopService(false),
 			new AppSettings { UseLocalDesktop = false });
 
 		// Act
@@ -46,6 +46,7 @@ public class AppSettingsFeaturesControllerTest
 		// Assert
 		Assert.IsFalse(json.UseLocalDesktop);
 		Assert.IsFalse(json.SystemTrashEnabled);
+		Assert.IsFalse(json.OpenEditorEnabled);
 	}
 
 	[TestMethod]
@@ -65,5 +66,6 @@ public class AppSettingsFeaturesControllerTest
 		// Assert
 		Assert.IsTrue(json.UseLocalDesktop);
 		Assert.IsTrue(json.SystemTrashEnabled);
+		Assert.IsTrue(json.OpenEditorEnabled);
 	}
 }

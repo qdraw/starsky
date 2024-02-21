@@ -17,6 +17,28 @@ namespace starskytest.Controllers;
 public class DesktopEditorControllerTest
 {
 	[TestMethod]
+	public void OpenAmountConfirmationChecker_FeatureToggleEnabled()
+	{
+		var controller = new DesktopEditorController(
+			new OpenEditorDesktopService(new AppSettings(),
+				new FakeIOpenApplicationNativeService(new List<string>(), "test"),
+				new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>())));
+
+		controller.ControllerContext = new ControllerContext
+		{
+			HttpContext = new DefaultHttpContext()
+		};
+
+		var result = controller.OpenAmountConfirmationChecker("/test.jpg;/test2.jpg");
+
+		var castedResult = ( JsonResult )result;
+		var boolValue = ( bool? )castedResult.Value;
+		// mock is always true
+
+		Assert.IsTrue(boolValue);
+	}
+
+	[TestMethod]
 	public async Task OpenAsync_FeatureToggleDisabled()
 	{
 		var controller = new DesktopEditorController(new OpenEditorDesktopService(new AppSettings(),

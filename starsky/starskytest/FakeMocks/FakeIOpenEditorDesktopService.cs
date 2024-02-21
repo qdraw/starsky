@@ -11,9 +11,19 @@ public class FakeIOpenEditorDesktopService : IOpenEditorDesktopService
 {
 	private readonly bool _isEnabled;
 
-	public FakeIOpenEditorDesktopService(bool isEnabled = true)
+	public FakeIOpenEditorDesktopService()
+	{
+		_isEnabled = true;
+	}
+
+	public FakeIOpenEditorDesktopService(bool isEnabled)
 	{
 		_isEnabled = isEnabled;
+	}
+
+	public bool OpenAmountConfirmationChecker(string f)
+	{
+		return true;
 	}
 
 	public bool IsEnabled()

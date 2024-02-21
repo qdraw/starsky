@@ -50,4 +50,22 @@ public class DesktopEditorController : Controller
 
 		return Json(list);
 	}
+
+
+	/// <summary>
+	/// Check the amount of files to open before 
+	/// </summary>
+	/// <param name="f">single or multiple subPaths</param>
+	/// <returns></returns>
+	/// <response code="200">bool, true is no confirmation, false is ask confirmation</response>
+	/// <response code="401">User unauthorized</response>
+	[HttpGet("/api/desktop-editor/amount-confirmation")]
+	[Produces("application/json")]
+	[ProducesResponseType(typeof(bool), 200)]
+	[ProducesResponseType(401)]
+	public IActionResult OpenAmountConfirmationChecker(string f)
+	{
+		var result = _openEditorDesktopService.OpenAmountConfirmationChecker(f);
+		return Json(result);
+	}
 }

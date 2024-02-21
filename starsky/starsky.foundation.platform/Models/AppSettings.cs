@@ -731,6 +731,9 @@ namespace starsky.foundation.platform.Models
 			"/lost+found", "/.stfolder", "/.git"
 		};
 
+		/// <summary>
+		/// Auto Sync on Startup
+		/// </summary>
 		public bool? SyncOnStartup { get; set; } = true;
 
 		/// <summary>
@@ -747,6 +750,7 @@ namespace starsky.foundation.platform.Models
 		/// But it seems a lot of cameras don't do this
 		/// We assume that the standard is followed, and for Camera brands that don't follow the specs use this setting.
 		/// </summary>
+		[PackageTelemetry]
 		public List<CameraMakeModel>? VideoUseLocalTime { get; set; } = new List<CameraMakeModel>
 		{
 			new CameraMakeModel("Sony", "A58")
@@ -756,7 +760,6 @@ namespace starsky.foundation.platform.Models
 		/// Private storage for EnablePackageTelemetry
 		/// </summary>
 		private bool? EnablePackageTelemetryPrivate { get; set; }
-
 
 		/// <summary>
 		/// Disable logout buttons in UI
@@ -778,6 +781,11 @@ namespace starsky.foundation.platform.Models
 		[PackageTelemetry]
 		public CollectionsOpenType.RawJpegMode DesktopCollectionsOpen { get; set; } =
 			CollectionsOpenType.RawJpegMode.Default;
+
+		/// <summary>
+		/// Number of files to open before confirmation
+		/// </summary>
+		public int? DesktopEditorAmountBeforeConfirmation { get; set; }
 
 		/// <summary>
 		/// Helps us improve the software
