@@ -24,12 +24,13 @@ public class DesktopEditorController : Controller
 	/// <param name="collections">to combine files with the same name before the extension</param>
 	/// <returns></returns>
 	/// <response code="200">returns a list of items from the database</response>
+	/// <response code="206">list with no content</response>	
 	/// <response code="404">subPath not found in the database</response>
 	/// <response code="401">User unauthorized</response>
 	[HttpPost("/api/desktop-editor/open")]
 	[Produces("application/json")]
 	[ProducesResponseType(typeof(List<PathImageFormatExistsAppPathModel>), 200)]
-	[ProducesResponseType(typeof(List<PathImageFormatExistsAppPathModel>), 204)]
+	[ProducesResponseType(typeof(List<PathImageFormatExistsAppPathModel>), 206)]
 	[ProducesResponseType(typeof(string), 400)]
 	[ProducesResponseType(401)]
 	public async Task<IActionResult> OpenAsync(
@@ -44,7 +45,7 @@ public class DesktopEditorController : Controller
 			case null:
 				return BadRequest(status);
 			case false:
-				HttpContext.Response.StatusCode = 204;
+				HttpContext.Response.StatusCode = 206;
 				break;
 		}
 

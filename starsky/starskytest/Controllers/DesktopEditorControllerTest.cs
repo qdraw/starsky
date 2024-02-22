@@ -70,7 +70,7 @@ public class DesktopEditorControllerTest
 		};
 
 		var result = await controller.OpenAsync("/test.jpg;/test2.jpg");
-		Assert.AreEqual(204, controller.HttpContext.Response.StatusCode);
+		Assert.AreEqual(206, controller.HttpContext.Response.StatusCode);
 
 		var castedResult = ( JsonResult )result;
 		var arrayValues = ( List<PathImageFormatExistsAppPathModel>? )castedResult.Value;

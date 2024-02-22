@@ -72,7 +72,7 @@ public class WindowsOpenDesktopAppTests
 		var result = WindowsOpenDesktopApp.OpenDefault(["any value"], OSPlatform.Linux);
 		Assert.IsNull(result);
 	}
-	
+
 	[TestMethod]
 	public void W_OpenDefault2_NonWindows()
 	{
@@ -81,11 +81,11 @@ public class WindowsOpenDesktopAppTests
 			Assert.Inconclusive("This test if for Unix Only");
 			return;
 		}
-		
+
 		var result = WindowsOpenDesktopApp.OpenDefault(["any value"]);
-		
+
 		Console.WriteLine(result);
-		
+
 		Assert.IsTrue(result);
 	}
 
@@ -121,7 +121,7 @@ public class WindowsOpenDesktopAppTests
 			"app", OSPlatform.Linux);
 		Assert.IsNull(result);
 	}
-	
+
 	[TestMethod]
 	[ExpectedException(typeof(Win32Exception))]
 	public void W_OpenApplicationAtUrl2_NonWindows()
@@ -192,5 +192,35 @@ public class WindowsOpenDesktopAppTests
 		var result = WindowsOpenDesktopApp.OpenDefault(["C:\\not-found-74537587345853847345"],
 			OSPlatform.Windows);
 		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public void WindowsOpenDesktopApp_OpenDefault_Count0()
+	{
+		var result = WindowsOpenDesktopApp.OpenDefault(new List<string>());
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public void WindowsOpenDesktopApp_OpenDefault_Count0_OSLinux()
+	{
+		var result = WindowsOpenDesktopApp.OpenDefault([], OSPlatform.Linux);
+		Assert.IsNull(result);
+	}
+
+
+	[TestMethod]
+	public void WindowsOpenDesktopApp_OpenApplicationAtUrl_Count0()
+	{
+		var result = WindowsOpenDesktopApp.OpenApplicationAtUrl([], string.Empty);
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public void WindowsOpenDesktopApp_OpenApplicationAtUrl_Count0_OSLinux()
+	{
+		var result = WindowsOpenDesktopApp.OpenApplicationAtUrl([],
+			string.Empty, OSPlatform.Linux);
+		Assert.IsNull(result);
 	}
 }

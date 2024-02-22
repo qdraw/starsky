@@ -17,7 +17,7 @@ interface IModalDesktopEditorOpenConfirmationProps {
   isCollections: boolean;
 }
 
-async function OpenDesktop(
+export async function OpenDesktop(
   select: string[],
   collections: boolean,
   state: IArchiveProps,
