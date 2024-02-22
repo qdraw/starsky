@@ -51,10 +51,14 @@ export async function StartMenuOptionDesktopEditorOpenSelection(
   setIsError: React.Dispatch<React.SetStateAction<string>>,
   messageDesktopEditorUnableToOpen: string,
   setModalConfirmationOpenFiles: (value: React.SetStateAction<boolean>) => void,
-  isReadOnly: boolean
+  isReadOnly: boolean,
+  editorEnabled: boolean
 ) {
+  if (editorEnabled !== true || isReadOnly) {
+    return;
+  }
   const toDesktopOpenList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
-  if (!toDesktopOpenList || toDesktopOpenList.length === 0 || isReadOnly) return;
+  if (!toDesktopOpenList || toDesktopOpenList.length === 0) return;
   const selectParams = new URLPath().ArrayToCommaSeparatedStringOneParent(toDesktopOpenList, "");
   const urlCheck = new UrlQuery().UrlApiDesktopEditorOpenAmountConfirmationChecker();
 
@@ -94,7 +98,7 @@ const MenuOptionDesktopEditorOpenSelection: React.FunctionComponent<IMenuOptionD
         : false;
 
     /**
-     * Open editor with keys
+     * Open editor with keys -  command + e
      */
     useHotKeys({ key: "e", ctrlKeyOrMetaKey: true }, () => {
       StartMenuOptionDesktopEditorOpenSelection(
@@ -104,7 +108,8 @@ const MenuOptionDesktopEditorOpenSelection: React.FunctionComponent<IMenuOptionD
         setIsError,
         MessageDesktopEditorUnableToOpen,
         setModalConfirmationOpenFiles,
-        isReadOnly
+        isReadOnly,
+        dataFeatures?.openEditorEnabled === true
       ).then(() => {
         // do nothing
       });
@@ -144,7 +149,8 @@ const MenuOptionDesktopEditorOpenSelection: React.FunctionComponent<IMenuOptionD
                 setIsError,
                 MessageDesktopEditorUnableToOpen,
                 setModalConfirmationOpenFiles,
-                isReadOnly
+                isReadOnly,
+                dataFeatures?.openEditorEnabled === true
               )
             }
             localization={
