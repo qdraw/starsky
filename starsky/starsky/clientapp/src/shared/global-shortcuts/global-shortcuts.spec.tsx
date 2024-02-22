@@ -1,24 +1,42 @@
+import React from "react";
 import * as useHotKeysParent from "../../hooks/use-keyboard/use-hotkeys";
 import * as useLocation from "../../hooks/use-location/use-location";
+import { UrlQuery } from "../url-query";
 import { GlobalShortcuts } from "./global-shortcuts";
 
 describe("GlobalShortcuts", () => {
-  it("should call useHotKeys with the correct arguments", () => {
+  it("command + shift + k", () => {
     const locationObject = {
       location: window.location,
       navigate: jest.fn()
     };
 
-    jest.spyOn(useLocation, "default").mockImplementationOnce(() => locationObject);
+    jest.spyOn(React, "useEffect").mockImplementationOnce((cb) => {
+      cb();
+    });
+
+    const event = new KeyboardEvent("keydown", {
+      bubbles: true,
+      cancelable: true,
+      key: "k",
+      metaKey: true,
+      shiftKey: true
+    });
+
+    jest.spyOn(useHotKeysParent, "default").mockImplementationOnce((_, callback) => {
+      if (callback) {
+        callback(event);
+      }
+    });
+
+    const useLocationSpy = jest
+      .spyOn(useLocation, "default")
+      .mockImplementationOnce(() => locationObject);
 
     GlobalShortcuts();
 
-    expect(useHotKeysParent).toHaveBeenCalledWith(
-      { key: "k", shiftKey: true, ctrlKeyOrMetaKey: true },
-      expect.any(Function),
-      []
-    );
-
-    expect(locationObject.navigate).toHaveBeenCalledWith(expect.any(String));
+    expect(useLocationSpy).toHaveBeenCalled();
+    expect(locationObject.navigate).toHaveBeenCalled();
+    expect(locationObject.navigate).toHaveBeenCalledWith(new UrlQuery().UrlPreferencesPage());
   });
 });
