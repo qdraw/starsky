@@ -72,7 +72,7 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
 
       const component = render(
         <MenuOptionDesktopEditorOpenSelection
-          isReadOnly={true}
+          isReadOnly={false}
           select={["file1.jpg", "file2.jpg"]}
           state={state}
           setEnableMoreMenu={() => {}}
@@ -80,16 +80,15 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
       );
       fireEvent.keyDown(document.body, { key: "e", ctrlKey: true });
 
-      expect(fetchPostSpy).toHaveBeenCalled();
-      expect(fetchPostSpy).toHaveBeenCalledTimes(1);
-      expect(fetchPostSpy).toHaveBeenNthCalledWith(
-        1,
-        new UrlQuery().UrlApiDesktopEditorOpenAmountConfirmationChecker(),
-        "f=%2Ffile1.jpg%3B%2Ffile2.jpg"
-      );
-
       await waitFor(() => {
+        expect(fetchPostSpy).toHaveBeenCalled();
         expect(fetchPostSpy).toHaveBeenCalledTimes(2);
+        expect(fetchPostSpy).toHaveBeenNthCalledWith(
+          1,
+          new UrlQuery().UrlApiDesktopEditorOpenAmountConfirmationChecker(),
+          "f=%2Ffile1.jpg%3B%2Ffile2.jpg"
+        );
+
         expect(fetchPostSpy).toHaveBeenNthCalledWith(
           2,
           new UrlQuery().UrlApiDesktopEditorOpen(),
