@@ -53,7 +53,7 @@ export async function StartMenuOptionDesktopEditorOpenSelection(
   setModalConfirmationOpenFiles: (value: React.SetStateAction<boolean>) => void
 ) {
   const toDesktopOpenList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
-  if (!toDesktopOpenList) return;
+  if (!toDesktopOpenList || toDesktopOpenList.length === 0) return;
   const selectParams = new URLPath().ArrayToCommaSeparatedStringOneParent(toDesktopOpenList, "");
   const urlCheck = new UrlQuery().UrlApiDesktopEditorOpenAmountConfirmationChecker();
 
@@ -110,7 +110,7 @@ const MenuOptionDesktopEditorOpenSelection: React.FunctionComponent<IMenuOptionD
 
     return (
       <>
-        {/* Modal move folder to trash */}
+        {/* Modal confirmation for open many files at one */}
         {modalConfirmationOpenFiles ? (
           <ModalDesktopEditorOpenSelectionConfirmation
             handleExit={() => {
