@@ -259,6 +259,10 @@
     "en": "This prompt is to prevent potential issues such as your computer freezing",
     "nl": "Deze melding is bedoeld om te voorkomen dat er eventuele problemen optreden, zoals het vastlopen van je computer."
   },
+  "MessageItemSelectionRequired": {
+    "en": "Please select at least one item before proceeding.",
+    "nl": "Selecteer alstublieft eerst minstens één item voordat u doorgaat."
+  },
   "temp1": {
     "en": "",
     "nl": ""

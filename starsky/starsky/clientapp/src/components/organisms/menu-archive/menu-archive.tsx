@@ -172,6 +172,11 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
           <MenuSelectCount select={select} removeSidebarSelection={removeSidebarSelection} />
 
+          <MenuOptionDesktopEditorOpenSelectionNoSelectWarning
+            isReadOnly={readOnly}
+            select={select}
+          />
+
           {!select ? (
             <button
               className="item item--select"
@@ -263,11 +268,6 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
               {/* onClick={() => allSelection()} */}
               <MenuOptionSelectionAll select={select} state={state} allSelection={allSelection} />
-
-              <MenuOptionDesktopEditorOpenSelectionNoSelectWarning
-                isReadOnly={readOnly}
-                select={select}
-              />
 
               {select.length >= 1 ? (
                 <>
