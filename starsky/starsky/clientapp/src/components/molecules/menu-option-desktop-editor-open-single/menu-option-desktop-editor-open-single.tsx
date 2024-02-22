@@ -23,9 +23,9 @@ export async function OpenDesktopSingle(
   setIsError: React.Dispatch<React.SetStateAction<string>>,
   messageDesktopEditorUnableToOpen: string,
   isReadOnly: boolean
-) {
+): Promise<boolean> {
   if (isReadOnly) {
-    return;
+    return false;
   }
   const urlOpen = new UrlQuery().UrlApiDesktopEditorOpen();
 
@@ -37,6 +37,7 @@ export async function OpenDesktopSingle(
   if (openDesktopResult.statusCode >= 300) {
     setIsError(messageDesktopEditorUnableToOpen);
   }
+  return true;
 }
 
 const MenuOptionDesktopEditorOpenSingle: React.FunctionComponent<IMenuOptionDesktopEditorOpenSingleProps> =

@@ -5,7 +5,9 @@ import { IEnvFeatures } from "../../../interfaces/IEnvFeatures";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
 import * as Notification from "../../atoms/notification/notification";
-import MenuOptionDesktopEditorOpenSingle from "./menu-option-desktop-editor-open-single";
+import MenuOptionDesktopEditorOpenSingle, {
+  OpenDesktopSingle
+} from "./menu-option-desktop-editor-open-single";
 
 describe("MenuOptionDesktopEditorOpenSingle", () => {
   it("should render without errors", () => {
@@ -60,6 +62,41 @@ describe("MenuOptionDesktopEditorOpenSingle", () => {
     );
 
     container.unmount();
+  });
+
+  it("calls StartMenuOptionDesktopEditorOpenSelection on hotkey trigger", async () => {
+    const mockIConnectionDefaultResolve: Promise<IConnectionDefault> = Promise.resolve({
+      data: true,
+      statusCode: 200
+    } as IConnectionDefault);
+
+    const fetchPostSpy = jest
+      .spyOn(FetchPost, "default")
+      .mockReset()
+      .mockImplementationOnce(() => mockIConnectionDefaultResolve)
+      .mockImplementationOnce(() => mockIConnectionDefaultResolve);
+
+    const container = render(
+      <MenuOptionDesktopEditorOpenSingle
+        subPath={"/test.jpg"}
+        collections={false}
+        isReadOnly={false}
+      />
+    );
+
+    fireEvent.keyDown(document.body, { key: "e", ctrlKey: true });
+
+    await waitFor(() => {
+      expect(fetchPostSpy).toHaveBeenCalled();
+      expect(fetchPostSpy).toHaveBeenCalledTimes(1);
+
+      expect(fetchPostSpy).toHaveBeenNthCalledWith(
+        1,
+        new UrlQuery().UrlApiDesktopEditorOpen(),
+        "f=%2Ftest.jpg&collections=false"
+      );
+      container.unmount();
+    });
   });
 
   it("feature toggle disabled", () => {
@@ -147,5 +184,10 @@ describe("MenuOptionDesktopEditorOpenSingle", () => {
       expect(notificationSpy).toHaveBeenCalled();
     });
     container.unmount();
+  });
+
+  it("OpenDesktopSingle readonly should skip", async () => {
+    const result = await OpenDesktopSingle("/", false, jest.fn(), "error", true);
+    expect(result).toBeFalsy();
   });
 });
