@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import {
-  app, BrowserWindow, Menu, shell
-} from "electron";
+import { app, BrowserWindow, Menu, shell } from "electron";
+import { EditFile } from "../edit-file/edit-file";
 import { IsDutch } from "../i18n/i18n";
 import createMainWindow from "../main-window/create-main-window";
 import { createSettingsWindow } from "../settings-window/create-settings-window";
+import { IsRemote } from "../warmup/is-remote";
 
-function sendKeybinding(win: BrowserWindow, keyCode: string, cmdOrCtrl: boolean) {
+function sendKeybinding(win: BrowserWindow, keyCode: string, cmdOrCtrl: boolean, shift: boolean) {
   const modifiers = [];
 
   if (cmdOrCtrl) {
@@ -16,6 +16,9 @@ function sendKeybinding(win: BrowserWindow, keyCode: string, cmdOrCtrl: boolean)
     } else {
       modifiers.push("ctrl");
     }
+  }
+  if (shift) {
+    modifiers.push("shift");
   }
 
   win.webContents.sendInputEvent({ type: "keyDown", modifiers, keyCode });
@@ -29,36 +32,36 @@ function AppMenu() {
   const menu = Menu.buildFromTemplate([
     ...(isMac
       ? [
-        {
-          label: app.name,
-          submenu: [
-            {
-              label: IsDutch() ? "Over Starsky" : "About Starsky",
-              role: "about",
-            },
-            { type: "separator" },
-            { role: "services" },
-            { type: "separator" },
-            {
-              label: IsDutch() ? "Verberg Starsky" : "Hide Starsky",
-              role: "hide",
-            },
-            {
-              label: IsDutch() ? "Verberg andere" : "Hide Others",
-              role: "hideothers",
-            },
-            {
-              label: IsDutch() ? "Toon alles" : "Show All",
-              role: "unhide",
-            },
-            { type: "separator" },
-            {
-              label: IsDutch() ? "Starsky afsluiten" : "Quit Starsky",
-              role: "quit",
-            },
-          ] as any,
-        },
-      ]
+          {
+            label: app.name,
+            submenu: [
+              {
+                label: IsDutch() ? "Over Starsky" : "About Starsky",
+                role: "about",
+              },
+              { type: "separator" },
+              { role: "services" },
+              { type: "separator" },
+              {
+                label: IsDutch() ? "Verberg Starsky" : "Hide Starsky",
+                role: "hide",
+              },
+              {
+                label: IsDutch() ? "Verberg andere" : "Hide Others",
+                role: "hideothers",
+              },
+              {
+                label: IsDutch() ? "Toon alles" : "Show All",
+                role: "unhide",
+              },
+              { type: "separator" },
+              {
+                label: IsDutch() ? "Starsky afsluiten" : "Quit Starsky",
+                role: "quit",
+              },
+            ] as any,
+          },
+        ]
       : []),
     {
       label: IsDutch() ? "Bestand" : "File",
@@ -75,28 +78,28 @@ function AppMenu() {
           label: IsDutch() ? "Bewerk bestand in editor" : "Edit file in Editor",
           click: () => {
             const focusWindow = BrowserWindow.getFocusedWindow();
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            IsRemote().then(async (isRemote) => {
+              if (!isRemote) {
+                sendKeybinding(focusWindow, "e", true, false);
+                return;
+              }
 
-            sendKeybinding(focusWindow, "e", true);
-
-            // focusWindow.webContents.sendInputEvent({
-            //   keyCode: "CommandOrControl+e",
-            //   type: "keyDown",
-            // });
-            // // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            // if (focusWindow) EditFile(focusWindow);
+              if (focusWindow) await EditFile(focusWindow).catch(() => {});
+            });
           },
           accelerator: "CmdOrCtrl+E",
         },
 
         isMac
           ? {
-            label: IsDutch() ? "Venster sluiten" : "Close Window",
-            role: "close",
-          }
+              label: IsDutch() ? "Venster sluiten" : "Close Window",
+              role: "close",
+            }
           : {
-            label: IsDutch() ? "App sluiten" : "Close App",
-            role: "quit",
-          },
+              label: IsDutch() ? "App sluiten" : "Close App",
+              role: "quit",
+            },
       ],
     },
     {
@@ -139,12 +142,20 @@ function AppMenu() {
       label: IsDutch() ? "Instellingen" : "Settings",
       submenu: [
         {
-          label: IsDutch() ? "Instellingen" : "Settings",
+          label: IsDutch() ? "Verbindings instellingen" : "Connection Settings",
           click: () => {
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             createSettingsWindow();
           },
           accelerator: "CmdOrCtrl+,",
+        },
+        {
+          label: IsDutch() ? "App instellingen" : "App Settings",
+          click: () => {
+            const focusWindow = BrowserWindow.getFocusedWindow();
+            sendKeybinding(focusWindow, "k", true, true);
+          },
+          accelerator: "CmdOrCtrl+shift+k",
         },
       ],
     },

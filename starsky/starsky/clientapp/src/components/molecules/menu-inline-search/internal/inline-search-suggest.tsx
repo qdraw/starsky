@@ -63,6 +63,7 @@ const InlineSearchSuggest: React.FunctionComponent<IInlineSearchSuggestProps> = 
       name: language.key(localization.MessagePreferences),
       url: new UrlQuery().UrlPreferencesPage(),
       key: "preferences"
+      // command + shift + k -> see GlobalShortcuts
     },
     {
       name: language.key(localization.MessageLogout),

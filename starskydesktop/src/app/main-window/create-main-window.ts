@@ -4,7 +4,6 @@ import { GetAppVersion } from "../config/get-app-version";
 import { windowStateKeeper } from "../window-state-keeper/window-state-keeper";
 import { getNewFocusedWindow } from "./get-new-focused-window";
 import { mainWindows } from "./main-windows.const";
-import { onHeaderReceived } from "./on-headers-received";
 import { removeRememberUrl, saveRememberUrl } from "./save-remember-url";
 import { spellCheck } from "./spellcheck";
 
@@ -37,15 +36,6 @@ async function createMainWindow(openSpecificUrl: string, offset = 0): Promise<Br
   // Add Starsky as user agent also in develop mode
   newWindow.webContents.userAgent = `${newWindow.webContents.userAgent} starsky/${GetAppVersion()}`;
 
-  // newWindow.webContents
-  //   .executeJavaScript("alert('hi')", false)
-  //   .then((result) => {
-  //     logger.info(result);
-  //   })
-  //   .catch((result) => {
-  //     logger.info(result);
-  //   });
-
   mainWindowStateKeeper.track(newWindow);
 
   const location = path.join(__dirname, "client/pages/redirect/reload-redirect.html");
@@ -55,7 +45,6 @@ async function createMainWindow(openSpecificUrl: string, offset = 0): Promise<Br
   });
 
   spellCheck(newWindow);
-  onHeaderReceived(newWindow);
 
   newWindow.once("ready-to-show", () => {
     newWindow.show();

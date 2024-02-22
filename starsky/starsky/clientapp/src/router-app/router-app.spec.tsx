@@ -8,7 +8,8 @@ import { ISearchList } from "../hooks/use-searchlist";
 import * as NotFoundPage from "../pages/not-found-page";
 import * as SearchPage from "../pages/search-page";
 import * as TrashPage from "../pages/trash-page";
-import RouterApp, { Router, RoutesConfig } from "./router-app";
+import RouterApp, { Router } from "./router-app";
+import { RoutesConfig } from "./routes-config";
 
 describe("Router", () => {
   it("default", () => {

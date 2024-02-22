@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
-import { app, BrowserWindow, protocol } from "electron";
+import { app, BrowserWindow } from "electron";
 import * as os from "os";
-import logger from "src/app/logger/logger";
 import { setupChildProcess } from "../app/child-process/setup-child-process";
 import { MakeLogsPath } from "../app/config/logs-path";
 import { MakeTempPath } from "../app/config/temp-path";
@@ -23,18 +22,6 @@ setupChildProcess();
 MakeTempPath();
 SetupFileWatcher();
 
-protocol.registerSchemesAsPrivileged([
-  {
-    scheme: "app",
-    privileges: {
-      supportFetchAPI: true,
-      bypassCSP: true,
-      standard: true,
-      secure: true,
-    },
-  },
-]);
-
 console.log(`running in: :${os.arch()}`);
 
 // This method will be called when Electron has finished
@@ -43,13 +30,6 @@ console.log(`running in: :${os.arch()}`);
 app.on("ready", () => {
   AppMenu();
   DockMenu();
-
-  protocol.handle("app", (req) => {
-    logger.info(req.url);
-    return new Response("<h1>hello, world</h1>", {
-      headers: { "content-type": "text/html" },
-    });
-  });
 
   IsRemote().then(async (isRemote) => {
     const splashWindows = await SetupSplash();

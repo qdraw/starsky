@@ -3,26 +3,17 @@ import { app, ipcMain } from "electron";
 import * as appConfig from "electron-settings";
 import { IlocationUrlSettings } from "../config/IlocationUrlSettings";
 import { AppVersionIpcKey } from "../config/app-version-ipc-key.const";
-import DefaultImageApplicationSetting from "../config/default-image-application-settings";
-import {
-  DefaultImageApplicationIpcKey,
-  IDefaultImageApplicationProps
-} from "../config/default-image-application-settings-ipc-key.const";
 import { GetBaseUrlFromSettings } from "../config/get-base-url-from-settings";
-import {
-  LocationIsRemoteIpcKey,
-  LocationUrlIpcKey
-} from "../config/location-ipc-keys.const";
+import { LocationIsRemoteIpcKey, LocationUrlIpcKey } from "../config/location-ipc-keys.const";
 import {
   LocationIsRemoteSettingsKey,
-  LocationUrlSettingsKey
+  LocationUrlSettingsKey,
 } from "../config/location-settings.const";
 import RememberUrl from "../config/remember-url-settings.const";
 import { UpdatePolicyIpcKey } from "../config/update-policy-ipc-key.const";
 import { UpdatePolicySettings } from "../config/update-policy-settings.const";
 import UrlQuery from "../config/url-query";
 import { ipRegex, urlRegex } from "../config/url-regex";
-import { fileSelectorWindow } from "../file-selector-window/file-selector-window";
 import { SetupFileWatcher } from "../file-watcher/setup-file-watcher";
 import logger from "../logger/logger";
 import createMainWindow from "../main-window/create-main-window";
@@ -31,15 +22,10 @@ import { GetNetRequest } from "../net-request/get-net-request";
 import { settingsWindows } from "../settings-window/settings-windows.const";
 import { IsRemote } from "../warmup/is-remote";
 
-export async function UpdatePolicyCallback(
-  event: Electron.IpcMainEvent,
-  args: boolean,
-) {
+export async function UpdatePolicyCallback(event: Electron.IpcMainEvent, args: boolean) {
   if (args === null || args === undefined) {
     if (await appConfig.has(UpdatePolicySettings)) {
-      const updatePolicy = (await appConfig.get(
-        UpdatePolicySettings,
-      )) as boolean;
+      const updatePolicy = (await appConfig.get(UpdatePolicySettings)) as boolean;
 
       if (updatePolicy !== null && updatePolicy !== undefined) {
         event.reply(UpdatePolicyIpcKey, updatePolicy);
@@ -73,10 +59,7 @@ async function closeAndCreateNewWindow() {
   });
 }
 
-export async function LocationIsRemoteCallback(
-  event: Electron.IpcMainEvent,
-  args: boolean,
-) {
+export async function LocationIsRemoteCallback(event: Electron.IpcMainEvent, args: boolean) {
   if (args !== undefined && args !== null) {
     await appConfig.set(LocationIsRemoteSettingsKey, args.toString());
     // filewatcher need to be after update/set
@@ -88,37 +71,26 @@ export async function LocationIsRemoteCallback(
 }
 
 export function AppVersionCallback(event: Electron.IpcMainEvent) {
-  const appVersion = app
-    .getVersion()
-    .match(/^[0-9]+\.[0-9]+/ig);
+  const appVersion = app.getVersion().match(/^[0-9]+\.[0-9]+/gi);
 
   event.reply(AppVersionIpcKey, appVersion);
 }
 
-export async function LocationUrlCallback(
-  event: Electron.IpcMainEvent,
-  args: string,
-) {
+export async function LocationUrlCallback(event: Electron.IpcMainEvent, args: string) {
   // getting
   if (!args) {
     event.reply(LocationUrlIpcKey, await GetBaseUrlFromSettings());
     return;
   }
 
-  if (
-    args.match(urlRegex)
-    || args.match(ipRegex)
-    || args.startsWith("http://localhost:")
-  ) {
+  if (args.match(urlRegex) || args.match(ipRegex) || args.startsWith("http://localhost:")) {
     console.log("ipc-bridge start update");
 
     // to avoid errors
     const locationUrl = args.replace(/\/$/, "");
 
     try {
-      const response = await GetNetRequest(
-        locationUrl + new UrlQuery().HealthApi(),
-      );
+      const response = await GetNetRequest(locationUrl + new UrlQuery().HealthApi());
       const responseSettings = {
         location: locationUrl,
         isLocal: false,
@@ -156,8 +128,13 @@ export async function LocationUrlCallback(
     }
     return;
   }
-  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-  console.log(`ipc-bridge ${args.match(urlRegex)}  ${args.match(ipRegex)} ${args.startsWith("http://localhost:")}`);
+
+  console.log(
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    `ipc-bridge ${args.match(urlRegex)}  ${args.match(ipRegex)} ${args.startsWith(
+      "http://localhost:"
+    )}`
+  );
 
   event.reply(LocationUrlIpcKey, {
     isValid: false,
@@ -166,43 +143,16 @@ export async function LocationUrlCallback(
   } as IlocationUrlSettings);
 }
 
-export async function DefaultImageApplicationCallback(
-  event: Electron.IpcMainEvent,
-  args: IDefaultImageApplicationProps,
-) {
-  if (!args) {
-    const currentSettings = await appConfig.get(DefaultImageApplicationSetting);
-    event.reply(DefaultImageApplicationIpcKey, currentSettings);
-    return;
-  }
-  if (args.reset) {
-    await appConfig.unset(DefaultImageApplicationSetting);
-    event.reply(DefaultImageApplicationIpcKey, false);
-    return;
-  }
-
-  if (args.showOpenDialog) {
-    try {
-      const result = await fileSelectorWindow();
-      await appConfig.set(DefaultImageApplicationSetting, result[0]);
-      event.reply(DefaultImageApplicationIpcKey, result[0]);
-    } catch (error) { // nothing here
-    }
-  }
-}
-
 function ipcBridge() {
   // When adding a new key also update preload-main.ts
 
-  ipcMain.on(LocationIsRemoteIpcKey, async (event, args : boolean) => LocationIsRemoteCallback(event, args));
+  ipcMain.on(LocationIsRemoteIpcKey, async (event, args: boolean) => LocationIsRemoteCallback(event, args));
 
   ipcMain.on(AppVersionIpcKey, (event) => AppVersionCallback(event));
 
   ipcMain.on(LocationUrlIpcKey, async (event, args: string) => LocationUrlCallback(event, args));
 
   ipcMain.on(UpdatePolicyIpcKey, async (event, args: boolean) => UpdatePolicyCallback(event, args));
-
-  ipcMain.on(DefaultImageApplicationIpcKey, async (event, args : IDefaultImageApplicationProps) => DefaultImageApplicationCallback(event, args));
 }
 
 export default ipcBridge;

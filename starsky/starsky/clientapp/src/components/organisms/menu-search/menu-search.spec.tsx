@@ -3,6 +3,7 @@ import React from "react";
 import { act } from "react-dom/test-utils";
 import * as useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import { IArchive } from "../../../interfaces/IArchive";
+import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { Router } from "../../../router-app/router-app";
 import * as MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
@@ -80,10 +81,17 @@ describe("MenuSearch", () => {
         .mockImplementationOnce(() => contextValues)
         .mockImplementationOnce(() => contextValues);
 
-      const component = render(<MenuSearch state={undefined as any} dispatch={jest.fn()} />);
+      const component = render(
+        <MenuSearch state={undefined as unknown as IArchiveProps} dispatch={jest.fn()} />
+      );
 
       expect(useHotkeysSpy).toHaveBeenCalled();
-      expect(useHotkeysSpy).toHaveBeenCalledTimes(1);
+      expect(useHotkeysSpy).toHaveBeenNthCalledWith(
+        1,
+        { ctrlKeyOrMetaKey: true, key: "a" },
+        expect.anything(),
+        []
+      );
 
       jest.spyOn(React, "useContext").mockRestore();
       component.unmount();

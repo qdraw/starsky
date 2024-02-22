@@ -1223,7 +1223,12 @@ describe("MenuArchive", () => {
       const component = render(<MenuArchive />);
 
       expect(useHotkeysSpy).toHaveBeenCalled();
-      expect(useHotkeysSpy).toHaveBeenCalledTimes(1);
+      expect(useHotkeysSpy).toHaveBeenNthCalledWith(
+        1,
+        { ctrlKeyOrMetaKey: true, key: "a" },
+        expect.anything(),
+        []
+      );
 
       component.unmount();
     });

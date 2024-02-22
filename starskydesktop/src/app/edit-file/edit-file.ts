@@ -4,15 +4,12 @@ import { GetBaseUrlFromSettings } from "../config/get-base-url-from-settings";
 import UrlQuery from "../config/url-query";
 import { createErrorWindow } from "../error-window/create-error-window";
 import logger from "../logger/logger";
-import {
-  GetNetRequest,
-  IGetNetRequestResponse,
-} from "../net-request/get-net-request";
+import { GetNetRequest, IGetNetRequestResponse } from "../net-request/get-net-request";
 import { createParentFolders } from "./create-parent-folders";
 import { downloadBinary } from "./download-binary";
 import { downloadXmpFile } from "./download-xmp-file";
 import { IsDetailViewResult } from "./is-detail-view-result";
-import { openPath } from "./open-path";
+import { OpenPath } from "./open-path";
 
 function getFilePathFromWindow(fromMainWindow: BrowserWindow): string {
   const latestPage = fromMainWindow.webContents.getURL();
@@ -23,7 +20,7 @@ function getFilePathFromWindow(fromMainWindow: BrowserWindow): string {
 
 async function openWindow(filePathOnDisk: string) {
   try {
-    await openPath(filePathOnDisk);
+    await OpenPath(filePathOnDisk);
   } catch (error: unknown) {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     createErrorWindow(error as string);
@@ -56,9 +53,6 @@ export async function EditFile(fromMainWindow: BrowserWindow) {
   await createParentFolders(fileIndexItem.parentDirectory);
 
   await downloadXmpFile(fileIndexItem, fromMainWindow.webContents.session);
-  const filePathOnDisk = await downloadBinary(
-    fileIndexItem,
-    fromMainWindow.webContents.session
-  );
+  const filePathOnDisk = await downloadBinary(fileIndexItem, fromMainWindow.webContents.session);
   await openWindow(filePathOnDisk);
 }

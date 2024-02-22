@@ -38,7 +38,7 @@ namespace starsky.foundation.platform.Middleware
 					"default-src 'none'; img-src 'self' https://a.tile.openstreetmap.org/ " +
 					"https://b.tile.openstreetmap.org/ " +
 					"https://c.tile.openstreetmap.org/; script-src 'self'; " +
-					$"connect-src 'self' {socketUrl} {socketUrlWithPort} starsky://*;" +
+					$"connect-src 'self' {socketUrl} {socketUrlWithPort};" +
 					"style-src 'self'; " +
 					"font-src 'self'; " +
 					"frame-ancestors 'none'; " +
@@ -52,7 +52,7 @@ namespace starsky.foundation.platform.Middleware
 
 				// Currently not supported in Firefox and Safari (Edge user agent also includes the word Chrome)
 				if ( httpContext.Request.Headers.UserAgent.Contains("Chrome") ||
-					 httpContext.Request.Headers.UserAgent.Contains("csp-evaluator") )
+				     httpContext.Request.Headers.UserAgent.Contains("csp-evaluator") )
 				{
 					cspHeader += "require-trusted-types-for 'script'; ";
 				}
@@ -64,16 +64,16 @@ namespace starsky.foundation.platform.Middleware
 
 			// @see: https://www.permissionspolicy.com/
 			if ( string.IsNullOrEmpty(
-					httpContext.Response.Headers["Permissions-Policy"]) )
+				    httpContext.Response.Headers["Permissions-Policy"]) )
 			{
 				httpContext.Response.Headers
 					.Append("Permissions-Policy", "autoplay=(self), " +
-												  "fullscreen=(self), " +
-												  "geolocation=(self), " +
-												  "picture-in-picture=(self), " +
-												  "clipboard-read=(self), " +
-												  "clipboard-write=(self), " +
-												  "window-placement=(self)");
+					                              "fullscreen=(self), " +
+					                              "geolocation=(self), " +
+					                              "picture-in-picture=(self), " +
+					                              "clipboard-read=(self), " +
+					                              "clipboard-write=(self), " +
+					                              "window-placement=(self)");
 			}
 
 			if ( string.IsNullOrEmpty(httpContext.Response.Headers["Referrer-Policy"]) )
