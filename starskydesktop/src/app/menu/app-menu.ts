@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { app, BrowserWindow, Menu, shell } from "electron";
+import {
+  app, BrowserWindow, Menu, shell
+} from "electron";
 import { EditFile } from "../edit-file/edit-file";
 import { IsDutch } from "../i18n/i18n";
 import createMainWindow from "../main-window/create-main-window";
@@ -32,36 +34,36 @@ function AppMenu() {
   const menu = Menu.buildFromTemplate([
     ...(isMac
       ? [
-          {
-            label: app.name,
-            submenu: [
-              {
-                label: IsDutch() ? "Over Starsky" : "About Starsky",
-                role: "about",
-              },
-              { type: "separator" },
-              { role: "services" },
-              { type: "separator" },
-              {
-                label: IsDutch() ? "Verberg Starsky" : "Hide Starsky",
-                role: "hide",
-              },
-              {
-                label: IsDutch() ? "Verberg andere" : "Hide Others",
-                role: "hideothers",
-              },
-              {
-                label: IsDutch() ? "Toon alles" : "Show All",
-                role: "unhide",
-              },
-              { type: "separator" },
-              {
-                label: IsDutch() ? "Starsky afsluiten" : "Quit Starsky",
-                role: "quit",
-              },
-            ] as any,
-          },
-        ]
+        {
+          label: app.name,
+          submenu: [
+            {
+              label: IsDutch() ? "Over Starsky" : "About Starsky",
+              role: "about",
+            },
+            { type: "separator" },
+            { role: "services" },
+            { type: "separator" },
+            {
+              label: IsDutch() ? "Verberg Starsky" : "Hide Starsky",
+              role: "hide",
+            },
+            {
+              label: IsDutch() ? "Verberg andere" : "Hide Others",
+              role: "hideothers",
+            },
+            {
+              label: IsDutch() ? "Toon alles" : "Show All",
+              role: "unhide",
+            },
+            { type: "separator" },
+            {
+              label: IsDutch() ? "Starsky afsluiten" : "Quit Starsky",
+              role: "quit",
+            },
+          ] as any,
+        },
+      ]
       : []),
     {
       label: IsDutch() ? "Bestand" : "File",
@@ -93,13 +95,13 @@ function AppMenu() {
 
         isMac
           ? {
-              label: IsDutch() ? "Venster sluiten" : "Close Window",
-              role: "close",
-            }
+            label: IsDutch() ? "Venster sluiten" : "Close Window",
+            role: "close",
+          }
           : {
-              label: IsDutch() ? "App sluiten" : "Close App",
-              role: "quit",
-            },
+            label: IsDutch() ? "App sluiten" : "Close App",
+            role: "quit",
+          },
       ],
     },
     {
