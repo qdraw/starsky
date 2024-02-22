@@ -38,7 +38,7 @@ namespace starsky.foundation.platform.Middleware
 					"default-src 'none'; img-src 'self' https://a.tile.openstreetmap.org/ " +
 					"https://b.tile.openstreetmap.org/ " +
 					"https://c.tile.openstreetmap.org/; script-src 'self'; " +
-					$"connect-src 'self' {socketUrl} {socketUrlWithPort};" +
+					$"connect-src 'self' {socketUrl} {socketUrlWithPort} starsky://*;" +
 					"style-src 'self'; " +
 					"font-src 'self'; " +
 					"frame-ancestors 'none'; " +

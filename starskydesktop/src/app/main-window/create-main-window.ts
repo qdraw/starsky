@@ -8,15 +8,12 @@ import { onHeaderReceived } from "./on-headers-received";
 import { removeRememberUrl, saveRememberUrl } from "./save-remember-url";
 import { spellCheck } from "./spellcheck";
 
-async function createMainWindow(
-  openSpecificUrl: string,
-  offset = 0,
-): Promise<BrowserWindow> {
+async function createMainWindow(openSpecificUrl: string, offset = 0): Promise<BrowserWindow> {
   const mainWindowStateKeeper = await windowStateKeeper("main");
 
   const { x, y } = getNewFocusedWindow(
     mainWindowStateKeeper.x - offset,
-    mainWindowStateKeeper.y - offset,
+    mainWindowStateKeeper.y - offset
   );
 
   let newWindow = new BrowserWindow({
@@ -40,12 +37,18 @@ async function createMainWindow(
   // Add Starsky as user agent also in develop mode
   newWindow.webContents.userAgent = `${newWindow.webContents.userAgent} starsky/${GetAppVersion()}`;
 
+  // newWindow.webContents
+  //   .executeJavaScript("alert('hi')", false)
+  //   .then((result) => {
+  //     logger.info(result);
+  //   })
+  //   .catch((result) => {
+  //     logger.info(result);
+  //   });
+
   mainWindowStateKeeper.track(newWindow);
 
-  const location = path.join(
-    __dirname,
-    "client/pages/redirect/reload-redirect.html",
-  );
+  const location = path.join(__dirname, "client/pages/redirect/reload-redirect.html");
 
   await newWindow.loadFile(location, {
     query: { "remember-url": openSpecificUrl },
@@ -62,7 +65,7 @@ async function createMainWindow(
     console.log(url);
 
     return {
-      action: 'allow',
+      action: "allow",
       overrideBrowserWindowOptions: {
         webPreferences: {
           devTools: true, // allow

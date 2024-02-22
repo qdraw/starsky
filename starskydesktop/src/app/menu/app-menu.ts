@@ -2,10 +2,26 @@
 import {
   app, BrowserWindow, Menu, shell
 } from "electron";
-import { EditFile } from "../edit-file/edit-file";
 import { IsDutch } from "../i18n/i18n";
 import createMainWindow from "../main-window/create-main-window";
 import { createSettingsWindow } from "../settings-window/create-settings-window";
+
+function sendKeybinding(win: BrowserWindow, keyCode: string, cmdOrCtrl: boolean) {
+  const modifiers = [];
+
+  if (cmdOrCtrl) {
+    const isMac = process.platform === "darwin";
+    if (isMac) {
+      modifiers.push("meta");
+    } else {
+      modifiers.push("ctrl");
+    }
+  }
+
+  win.webContents.sendInputEvent({ type: "keyDown", modifiers, keyCode });
+  win.webContents.sendInputEvent({ type: "char", modifiers, keyCode });
+  win.webContents.sendInputEvent({ type: "keyUp", modifiers, keyCode });
+}
 
 function AppMenu() {
   const isMac = process.platform === "darwin";
@@ -59,8 +75,15 @@ function AppMenu() {
           label: IsDutch() ? "Bewerk bestand in editor" : "Edit file in Editor",
           click: () => {
             const focusWindow = BrowserWindow.getFocusedWindow();
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            if (focusWindow) EditFile(focusWindow);
+
+            sendKeybinding(focusWindow, "e", true);
+
+            // focusWindow.webContents.sendInputEvent({
+            //   keyCode: "CommandOrControl+e",
+            //   type: "keyDown",
+            // });
+            // // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            // if (focusWindow) EditFile(focusWindow);
           },
           accelerator: "CmdOrCtrl+E",
         },
