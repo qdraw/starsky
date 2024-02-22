@@ -6,6 +6,7 @@ export function GlobalShortcuts() {
   const history = useLocation();
 
   // used in desktop to route from menu
+  // command + shift + k
   useHotKeys(
     { key: "k", shiftKey: true, ctrlKeyOrMetaKey: true },
     () => {
