@@ -114,7 +114,7 @@ public class OpenEditorDesktopService : IOpenEditorDesktopService
 	/// </summary>
 	/// <param name="subPathAndImageFormatList"></param>
 	/// <returns></returns>
-	private static (List<string>, List<(string FullFilePath, string AppPath)>)
+	internal static (List<string>, List<(string FullFilePath, string AppPath)>)
 		FilterListOpenDefaultEditorAndSpecificEditor(
 			IReadOnlyCollection<PathImageFormatExistsAppPathModel> subPathAndImageFormatList)
 	{
