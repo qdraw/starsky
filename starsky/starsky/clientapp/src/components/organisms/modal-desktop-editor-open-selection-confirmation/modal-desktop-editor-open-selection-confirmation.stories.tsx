@@ -1,3 +1,4 @@
+import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import ModalDesktopEditorOpenSelectionConfirmation from "./modal-desktop-editor-open-selection-confirmation";
 
 export default {
@@ -15,7 +16,7 @@ export const Default = () => {
               parentDirectory: "/"
             }
           ]
-        } as any
+        } as unknown as IArchiveProps
       }
       isCollections={true}
       select={[]}

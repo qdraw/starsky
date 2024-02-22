@@ -391,7 +391,21 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
         state,
         jest.fn(),
         "",
-        jest.fn()
+        jest.fn(),
+        false
+      );
+      expect(result).toBeFalsy();
+    });
+
+    it("readonly", async () => {
+      const result = await StartMenuOptionDesktopEditorOpenSelection(
+        ["test"],
+        false,
+        state,
+        jest.fn(),
+        "",
+        jest.fn(),
+        true
       );
       expect(result).toBeFalsy();
     });
@@ -420,7 +434,8 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
         state,
         setIsError,
         messageDesktopEditorUnableToOpen,
-        setModalConfirmationOpenFiles
+        setModalConfirmationOpenFiles,
+        false
       );
       expect(setModalConfirmationOpenFiles).toHaveBeenCalledWith(true);
       expect(setIsError).not.toHaveBeenCalled(); // Error should not be set in this case
@@ -449,7 +464,8 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
         state,
         setIsError,
         messageDesktopEditorUnableToOpen,
-        setModalConfirmationOpenFiles
+        setModalConfirmationOpenFiles,
+        false
       );
       expect(setModalConfirmationOpenFiles).not.toHaveBeenCalled(); // Modal confirmation should not be set in this case
       expect(setIsError).not.toHaveBeenCalled(); // Error should not be set in this case
@@ -488,7 +504,8 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
         state,
         setIsError,
         messageDesktopEditorUnableToOpen,
-        setModalConfirmationOpenFiles
+        setModalConfirmationOpenFiles,
+        false
       );
       expect(setModalConfirmationOpenFiles).not.toHaveBeenCalled(); // Modal confirmation should not be set in this case
       expect(setIsError).toHaveBeenCalled();

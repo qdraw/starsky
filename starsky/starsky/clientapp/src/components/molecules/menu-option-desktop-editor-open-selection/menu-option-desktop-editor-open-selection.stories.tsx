@@ -1,8 +1,9 @@
+import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import MenuOptionDesktopEditorOpenSelection from "./menu-option-desktop-editor-open-selection";
 
 export default {
-  title: "components/molecules/menu-option-desktop-editor-open"
+  title: "components/molecules/menu-option-desktop-editor-open-selection"
 };
 
 export const Default = () => {
@@ -17,7 +18,7 @@ export const Default = () => {
                 parentDirectory: "/"
               }
             ]
-          } as any
+          } as unknown as IArchiveProps
         }
         isReadOnly={false}
         select={["default.jpg"]}
@@ -28,7 +29,7 @@ export const Default = () => {
 
 Default.storyName = "default (no dialog)";
 
-export const Case2 = () => {
+export const WithDialog = () => {
   return (
     <MoreMenu enableMoreMenu={true} setEnableMoreMenu={() => {}}>
       <MenuOptionDesktopEditorOpenSelection
@@ -36,11 +37,11 @@ export const Case2 = () => {
           {
             fileIndexItems: [
               {
-                fileName: "true.jpg",
+                fileName: "true.jpg", // in mock is set that true.jpg gives a dialog
                 parentDirectory: "/"
               }
             ]
-          } as any
+          } as unknown as IArchiveProps
         }
         isReadOnly={false}
         select={["true.jpg"]}
@@ -49,4 +50,27 @@ export const Case2 = () => {
   );
 };
 
-Case2.storyName = "with dialog";
+WithDialog.storyName = "with dialog";
+
+export const ReadOnly = () => {
+  return (
+    <MoreMenu enableMoreMenu={true} setEnableMoreMenu={() => {}}>
+      <MenuOptionDesktopEditorOpenSelection
+        state={
+          {
+            fileIndexItems: [
+              {
+                fileName: "default.jpg",
+                parentDirectory: "/"
+              }
+            ]
+          } as unknown as IArchiveProps
+        }
+        isReadOnly={true}
+        select={["default.jpg"]}
+      />
+    </MoreMenu>
+  );
+};
+
+ReadOnly.storyName = "ReadOnly";
