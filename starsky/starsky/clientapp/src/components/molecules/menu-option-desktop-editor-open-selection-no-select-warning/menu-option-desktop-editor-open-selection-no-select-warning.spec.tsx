@@ -137,4 +137,69 @@ describe("MenuOptionDesktopEditorOpenSelectionNoSelectWarning", () => {
 
     expect(useFetchSpy).toHaveBeenCalled();
   });
+
+  it("give error message and click away", () => {
+    const mockGetIConnectionDefaultFeatureToggle = {
+      statusCode: 200,
+      data: {
+        openEditorEnabled: true
+      } as IEnvFeatures
+    } as IConnectionDefault;
+
+    const useFetchSpy = jest
+      .spyOn(useFetch, "default")
+      .mockReset()
+      .mockImplementationOnce(() => mockGetIConnectionDefaultFeatureToggle)
+      .mockImplementationOnce(() => mockGetIConnectionDefaultFeatureToggle);
+
+    const notificationSpy = jest
+      .spyOn(Notification, "default")
+      .mockReset()
+      .mockImplementationOnce((event) => {
+        return (
+          <>
+            <p data-test="notification-spy">{event.children}</p>
+            <button data-test="notification-spy-button" onClick={event.callback}></button>
+          </>
+        );
+      });
+
+    const useHotKeysSpy = jest
+      .spyOn(useHotKeys, "default")
+      .mockReset()
+      .mockImplementationOnce((event, callback) => {
+        if (event?.key == "e" && callback) {
+          callback({} as KeyboardEvent);
+        }
+      });
+
+    const settings = useGlobalSettings();
+    const language = new Language(settings.language);
+    const MessageItemSelectionRequired = language.key(localization.MessageItemSelectionRequired);
+
+    const component = render(
+      <MenuOptionDesktopEditorOpenSelectionNoSelectWarning select={[]} isReadOnly={false} />
+    );
+
+    fireEvent.keyDown(component.container, { key: "e", ctrlKey: true });
+
+    expect(screen.queryByTestId("notification-spy")).toBeTruthy();
+
+    const errorMessage = screen.queryByTestId("notification-spy")?.innerHTML;
+
+    expect(errorMessage).toBe(MessageItemSelectionRequired);
+
+    expect(screen.queryByTestId("notification-spy")?.innerHTML).toBeTruthy();
+
+    expect(notificationSpy).toHaveBeenCalledTimes(1);
+    expect(useHotKeysSpy).toHaveBeenCalledTimes(2);
+
+    expect(useFetchSpy).toHaveBeenCalled();
+
+    fireEvent.click(screen.getByTestId("notification-spy-button"));
+
+    const errorMessage2 = screen.queryByTestId("notification-spy")?.innerHTML;
+
+    expect(errorMessage2).toBe(undefined);
+  });
 });
