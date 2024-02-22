@@ -88,11 +88,13 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
     const setIsLoading = jest.fn();
 
     const mockIConnectionDefaultResolve: Promise<IConnectionDefault> = Promise.resolve({
-      data: false,
+      data: true,
       statusCode: 200
     });
     const mockFetchPost = jest
       .spyOn(FetchPost, "default")
+      .mockReset()
+      .mockImplementation(() => mockIConnectionDefaultResolve)
       .mockImplementation(() => mockIConnectionDefaultResolve);
 
     const component = render(
@@ -100,7 +102,7 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
         isOpen={true}
         handleExit={handleExit}
         state={exampleState}
-        select={[]}
+        select={["test.jpg"]}
         setIsLoading={setIsLoading}
         isCollections={false}
       />
@@ -126,6 +128,7 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
     });
     const mockFetchPost = jest
       .spyOn(FetchPost, "default")
+      .mockReset()
       .mockImplementation(() => mockIConnectionDefaultResolve);
 
     const component = render(
@@ -133,7 +136,7 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
         isOpen={true}
         handleExit={handleExit}
         state={exampleState}
-        select={[]}
+        select={["test.jpg"]}
         setIsLoading={setIsLoading}
         isCollections={false}
       />
