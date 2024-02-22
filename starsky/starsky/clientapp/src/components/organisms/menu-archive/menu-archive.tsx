@@ -14,6 +14,7 @@ import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-men
 import MenuOptionModal from "../../atoms/menu-option-modal/menu-option-modal";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
+import MenuOptionDesktopEditorOpenSelectionNoSelectWarning from "../../molecules/menu-option-desktop-editor-open-selection-no-select-warning/menu-option-desktop-editor-open-selection-no-select-warning";
 import MenuOptionDesktopEditorOpenSelection from "../../molecules/menu-option-desktop-editor-open-selection/menu-option-desktop-editor-open-selection";
 import MenuOptionMoveFolderToTrash from "../../molecules/menu-option-move-folder-to-trash/menu-option-move-folder-to-trash";
 import MenuOptionMoveToTrash from "../../molecules/menu-option-move-to-trash/menu-option-move-to-trash";
@@ -263,6 +264,11 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
               {/* onClick={() => allSelection()} */}
               <MenuOptionSelectionAll select={select} state={state} allSelection={allSelection} />
 
+              <MenuOptionDesktopEditorOpenSelectionNoSelectWarning
+                isReadOnly={readOnly}
+                select={select}
+              />
+
               {select.length >= 1 ? (
                 <>
                   <MenuOptionModal
@@ -295,6 +301,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                   />
                 </>
               ) : null}
+
               <MenuOptionModal
                 isReadOnly={false}
                 isSet={isDisplayOptionsOpen}
@@ -302,6 +309,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                 localization={localization.MessageDisplayOptions}
                 testName="display-options"
               />
+
               <MenuOptionModal
                 setEnableMoreMenu={setEnableMoreMenu}
                 isReadOnly={false}
@@ -310,6 +318,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                 set={setIsSynchronizeManuallyOpen}
                 localization={localization.MessageSynchronizeManually}
               />
+
               {state ? (
                 <UploadMenuItem
                   readOnly={readOnly}

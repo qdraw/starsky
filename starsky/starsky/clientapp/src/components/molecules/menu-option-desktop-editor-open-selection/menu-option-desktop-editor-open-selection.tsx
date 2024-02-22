@@ -100,6 +100,9 @@ const MenuOptionDesktopEditorOpenSelection: React.FunctionComponent<IMenuOptionD
      * Open editor with keys -  command + e
      */
     useHotKeys({ key: "e", ctrlKeyOrMetaKey: true }, () => {
+      const isReadOnlyOrDisabled = !dataFeatures?.openEditorEnabled || isReadOnly;
+      console.log(`is ReadOnly/ or disabled: ${isReadOnlyOrDisabled}`);
+
       StartMenuOptionDesktopEditorOpenSelection(
         select,
         isCollections,
@@ -107,7 +110,7 @@ const MenuOptionDesktopEditorOpenSelection: React.FunctionComponent<IMenuOptionD
         setIsError,
         MessageDesktopEditorUnableToOpen,
         setModalConfirmationOpenFiles,
-        dataFeatures?.openEditorEnabled !== true ? true : isReadOnly
+        isReadOnlyOrDisabled
       ).then(() => {
         // do nothing
       });

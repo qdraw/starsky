@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import * as useFetch from "../../../hooks/use-fetch";
+import * as useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import * as useLocation from "../../../hooks/use-location/use-location";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
@@ -58,17 +59,60 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
       );
     });
 
+    it("-- calls StartMenuOptionDesktopEditorOpenSelection on hotkey trigger", async () => {
+      const mockGetIConnectionDefaultFeatureToggle = {
+        statusCode: 200,
+        data: {
+          openEditorEnabled: false
+        } as IEnvFeatures
+      } as IConnectionDefault;
+
+      const useHotkeysSpy = jest.spyOn(useHotKeys, "default").mockImplementationOnce(() => {
+        return { key: "e", ctrlKey: true };
+      });
+
+      const useFetchSpy = jest
+        .spyOn(useFetch, "default")
+        .mockImplementationOnce(() => mockGetIConnectionDefaultFeatureToggle);
+
+      const component = render(
+        <MenuOptionDesktopEditorOpenSelection
+          isReadOnly={false}
+          select={["file1.jpg", "file2.jpg"]}
+          state={state}
+          setEnableMoreMenu={() => {}}
+        />
+      );
+
+      expect(useFetchSpy).toHaveBeenCalled();
+      expect(useHotkeysSpy).toHaveBeenCalled();
+
+      component.unmount();
+    });
+
     it("calls StartMenuOptionDesktopEditorOpenSelection on hotkey trigger", async () => {
       const mockIConnectionDefaultResolve: Promise<IConnectionDefault> = Promise.resolve({
         data: true,
         statusCode: 200
       } as IConnectionDefault);
 
+      const mockGetIConnectionDefaultFeatureToggle = {
+        statusCode: 200,
+        data: {
+          openEditorEnabled: true
+        } as IEnvFeatures
+      } as IConnectionDefault;
+
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockReset()
         .mockImplementationOnce(() => mockIConnectionDefaultResolve)
         .mockImplementationOnce(() => mockIConnectionDefaultResolve);
+
+      const useFetchSpy = jest
+        .spyOn(useFetch, "default")
+        .mockImplementationOnce(() => mockGetIConnectionDefaultFeatureToggle)
+        .mockImplementationOnce(() => mockGetIConnectionDefaultFeatureToggle);
 
       const component = render(
         <MenuOptionDesktopEditorOpenSelection
@@ -81,6 +125,7 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
       fireEvent.keyDown(document.body, { key: "e", ctrlKey: true });
 
       await waitFor(() => {
+        expect(useFetchSpy).toHaveBeenCalled();
         expect(fetchPostSpy).toHaveBeenCalled();
         expect(fetchPostSpy).toHaveBeenCalledTimes(2);
         expect(fetchPostSpy).toHaveBeenNthCalledWith(
