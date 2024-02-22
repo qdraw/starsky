@@ -67,13 +67,13 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
         } as IEnvFeatures
       } as IConnectionDefault;
 
-      const useHotkeysSpy = jest.spyOn(useHotKeys, "default").mockImplementationOnce(() => {
-        return { key: "e", ctrlKey: true };
-      });
-
       const useFetchSpy = jest
         .spyOn(useFetch, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefaultFeatureToggle);
+
+      const useHotkeysSpy = jest.spyOn(useHotKeys, "default").mockImplementationOnce(() => {
+        return { key: "e", ctrlKey: true };
+      });
 
       const component = render(
         <MenuOptionDesktopEditorOpenSelection

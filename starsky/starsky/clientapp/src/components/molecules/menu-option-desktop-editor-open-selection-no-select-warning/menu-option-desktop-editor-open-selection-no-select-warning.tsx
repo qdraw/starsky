@@ -23,7 +23,9 @@ const MenuOptionDesktopEditorOpenSelectionNoSelectWarning: React.FunctionCompone
      * Open editor with keys -  command + e
      */
     useHotKeys({ key: "e", ctrlKeyOrMetaKey: true }, () => {
-      if (dataFeatures?.openEditorEnabled !== true || isReadOnly || select.length >= 1) return;
+      if (dataFeatures?.openEditorEnabled !== true || isReadOnly || select.length >= 1) {
+        return;
+      }
       setIsError("select first");
     });
 
