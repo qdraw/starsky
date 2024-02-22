@@ -81,7 +81,7 @@ const MenuOptionDesktopEditorOpenSingle: React.FunctionComponent<IMenuOptionDesk
         {dataFeatures?.openEditorEnabled === true ? (
           <MenuOption
             isReadOnly={isReadOnly}
-            testName={"menu-option-desktop-editor-open"}
+            testName={"menu-option-desktop-editor-open-single"}
             onClickKeydown={() =>
               OpenDesktopSingle(
                 subPath,
