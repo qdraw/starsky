@@ -96,8 +96,6 @@ const MenuOptionDesktopEditorOpenSelection: React.FunctionComponent<IMenuOptionD
      * Open editor with keys
      */
     useHotKeys({ key: "e", ctrlKeyOrMetaKey: true }, () => {
-      console.log("hi");
-
       StartMenuOptionDesktopEditorOpenSelection(
         select,
         isCollections,

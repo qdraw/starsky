@@ -224,6 +224,18 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
   });
 
   describe("StartMenuOptionDesktopEditorOpenSelection", () => {
+    it("StartMenuOptionDesktopEditorOpenSelection emthy array returns false", async () => {
+      const result = await StartMenuOptionDesktopEditorOpenSelection(
+        [],
+        false,
+        state,
+        jest.fn(),
+        "",
+        jest.fn()
+      );
+      expect(result).toBeFalsy();
+    });
+
     it("sets modal confirmation open files if openWithoutConformationResult is false", async () => {
       const select = ["file1.jpg", "file2.jpg"];
       const collections = false;
