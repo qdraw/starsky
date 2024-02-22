@@ -25,7 +25,7 @@ export async function OpenDesktop(
   messageDesktopEditorUnableToOpen: string
 ): Promise<boolean> {
   const toDesktopOpenList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
-  if (!toDesktopOpenList) return false;
+  if (!toDesktopOpenList || toDesktopOpenList.length == 0) return false;
   const selectParams = new URLPath().ArrayToCommaSeparatedStringOneParent(toDesktopOpenList, "");
   const urlOpen = new UrlQuery().UrlApiDesktopEditorOpen();
 
