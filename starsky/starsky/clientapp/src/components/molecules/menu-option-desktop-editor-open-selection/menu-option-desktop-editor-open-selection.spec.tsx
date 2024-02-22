@@ -99,7 +99,7 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
       });
     });
 
-    it("renders ModalDesktopEditorOpenSelectionConfirmation and open modal due FetchPost false", async () => {
+    it("ModalDesktopEditorOpenSelectionConfirmation and open modal due FetchPost false", async () => {
       const mockGetIConnectionDefaultFeatureToggle = {
         statusCode: 200,
         data: {
@@ -170,7 +170,78 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
       });
     });
 
-    it("renders ModalDesktopEditorOpenSelectionConfirmation and close due FetchPost true", async () => {
+    it("ModalDesktopEditorOpenSelectionConfirmation and FetchPost SearchPage is collections false", async () => {
+      const mockGetIConnectionDefaultFeatureToggle = {
+        statusCode: 200,
+        data: {
+          openEditorEnabled: true
+        } as IEnvFeatures
+      } as IConnectionDefault;
+
+      const mockIConnectionDefaultResolve: Promise<IConnectionDefault> = Promise.resolve({
+        data: true,
+        statusCode: 200
+      } as IConnectionDefault);
+
+      const useLocationFunction = () => {
+        return {
+          location: {
+            search: "?f=test1.jpg&collections=true" // due search is false
+          } as unknown as Location,
+          navigate: jest.fn()
+        };
+      };
+
+      jest
+        .spyOn(useLocation, "default")
+        .mockImplementationOnce(useLocationFunction)
+        .mockImplementationOnce(useLocationFunction);
+
+      jest.spyOn(Notification, "default").mockImplementationOnce(() => <></>);
+
+      const useFetchSpy = jest
+        .spyOn(useFetch, "default")
+        .mockImplementationOnce(() => mockGetIConnectionDefaultFeatureToggle)
+        .mockImplementationOnce(() => mockGetIConnectionDefaultFeatureToggle);
+
+      const fetchPostSpy = jest
+        .spyOn(FetchPost, "default")
+        .mockReset()
+        .mockImplementationOnce(() => mockIConnectionDefaultResolve)
+        .mockImplementationOnce(() => mockIConnectionDefaultResolve);
+
+      const component = render(
+        <MenuOptionDesktopEditorOpenSelection
+          state={{ ...state, pageType: PageType.Search }}
+          select={["file1.jpg"]}
+          isReadOnly={false}
+        />
+      );
+
+      expect(useFetchSpy).toHaveBeenCalled();
+
+      fireEvent.click(screen.getByTestId("menu-option-desktop-editor-open"));
+
+      expect(fetchPostSpy).toHaveBeenCalled();
+      expect(fetchPostSpy).toHaveBeenCalledTimes(1);
+      expect(fetchPostSpy).toHaveBeenNthCalledWith(
+        1,
+        new UrlQuery().UrlApiDesktopEditorOpenAmountConfirmationChecker(),
+        "f=%2Ffile1.jpg"
+      );
+
+      await waitFor(() => {
+        expect(fetchPostSpy).toHaveBeenCalledTimes(2);
+        expect(fetchPostSpy).toHaveBeenNthCalledWith(
+          2,
+          new UrlQuery().UrlApiDesktopEditorOpen(),
+          "f=%2Ffile1.jpg&collections=false"
+        );
+        component.unmount();
+      });
+    });
+
+    it("ModalDesktopEditorOpenSelectionConfirmation and close due FetchPost true", async () => {
       const mockGetIConnectionDefaultFeatureToggle = {
         statusCode: 200,
         data: {
