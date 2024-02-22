@@ -11,6 +11,7 @@ import { UrlQuery } from "../../../shared/url-query";
 import * as Notification from "../../atoms/notification/notification";
 import * as ModalDesktopEditorOpenSelectionConfirmation from "../../organisms/modal-desktop-editor-open-selection-confirmation/modal-desktop-editor-open-selection-confirmation";
 import MenuOptionDesktopEditorOpenSelection, {
+  OpenDesktop,
   StartMenuOptionDesktopEditorOpenSelection
 } from "./menu-option-desktop-editor-open-selection";
 
@@ -224,7 +225,7 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
 
   describe("StartMenuOptionDesktopEditorOpenSelection", () => {
     it("sets modal confirmation open files if openWithoutConformationResult is false", async () => {
-      const select = ["file1", "file2"];
+      const select = ["file1.jpg", "file2.jpg"];
       const collections = false;
 
       const setIsError = jest.fn();
@@ -236,7 +237,10 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
         statusCode: 200
       } as IConnectionDefault);
 
-      jest.spyOn(FetchPost, "default").mockImplementationOnce(() => mockIConnectionDefaultResolve);
+      jest
+        .spyOn(FetchPost, "default")
+        .mockReset()
+        .mockImplementationOnce(() => mockIConnectionDefaultResolve);
 
       await StartMenuOptionDesktopEditorOpenSelection(
         select,
@@ -285,7 +289,7 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
     });
 
     it("calls openDesktop if openWithoutConformationResult is true but open failed", async () => {
-      const select = ["file1", "file2"];
+      const select = ["file1.jpg", "file2.jpg"];
       const collections = false;
       const setIsError = jest.fn();
       const messageDesktopEditorUnableToOpen = "[for example] Unable to open desktop editor";
@@ -316,6 +320,13 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
       );
       expect(setModalConfirmationOpenFiles).not.toHaveBeenCalled(); // Modal confirmation should not be set in this case
       expect(setIsError).toHaveBeenCalled();
+    });
+  });
+
+  describe("OpenDesktop", () => {
+    it("open Desktop emthy array returns false", async () => {
+      const result = await OpenDesktop([], false, state, jest.fn(), "");
+      expect(result).toBeFalsy();
     });
   });
 });

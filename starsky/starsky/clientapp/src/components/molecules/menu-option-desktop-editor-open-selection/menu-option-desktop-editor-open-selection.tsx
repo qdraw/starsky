@@ -22,7 +22,7 @@ interface IMenuOptionDesktopEditorOpenProps {
   setEnableMoreMenu?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-async function openDesktop(
+export async function OpenDesktop(
   select: string[],
   collections: boolean,
   state: IArchiveProps,
@@ -30,7 +30,7 @@ async function openDesktop(
   messageDesktopEditorUnableToOpen: string
 ) {
   const toDesktopOpenList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
-  if (!toDesktopOpenList) return;
+  if (!toDesktopOpenList || toDesktopOpenList.length === 0) return;
   const selectParams = new URLPath().ArrayToCommaSeparatedStringOneParent(toDesktopOpenList, "");
   const urlOpen = new UrlQuery().UrlApiDesktopEditorOpen();
 
@@ -65,7 +65,7 @@ export async function StartMenuOptionDesktopEditorOpenSelection(
     setModalConfirmationOpenFiles(true);
     return;
   }
-  await openDesktop(select, collections, state, setIsError, messageDesktopEditorUnableToOpen);
+  await OpenDesktop(select, collections, state, setIsError, messageDesktopEditorUnableToOpen);
 }
 
 const MenuOptionDesktopEditorOpenSelection: React.FunctionComponent<IMenuOptionDesktopEditorOpenProps> =
