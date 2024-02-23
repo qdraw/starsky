@@ -1,62 +1,18 @@
-import { act, createEvent, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, createEvent, fireEvent, render, screen } from "@testing-library/react";
 import * as useFetch from "../../../hooks/use-fetch";
 import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
-import PreferencesAppSettings, { ChangeSetting } from "./preferences-app-settings";
+import PreferencesAppSettingsStorageFolder, {
+  ChangeSetting
+} from "./preferences-app-settings-storage-folder";
 
 describe("PreferencesAppSettings", () => {
   it("renders", () => {
-    render(<PreferencesAppSettings />);
+    render(<PreferencesAppSettingsStorageFolder />);
   });
 
   describe("context", () => {
-    it("disabled by default", () => {
-      // usage ==> import * as useFetch from '../../../hooks/use-fetch';
-      jest
-        .spyOn(useFetch, "default")
-        .mockImplementationOnce(() => newIConnectionDefault())
-        .mockImplementationOnce(() => newIConnectionDefault());
-
-      const component = render(<PreferencesAppSettings />);
-
-      const switchButtons = screen.queryAllByTestId("switch-button-right");
-
-      const verbose = switchButtons.find(
-        (p) => p.getAttribute("name") === "verbose"
-      ) as HTMLInputElement;
-
-      expect(verbose.disabled).toBeTruthy();
-
-      component.unmount();
-    });
-
-    it("not disabled when admin", () => {
-      const connectionDefault = {
-        statusCode: 200,
-        data: ["AppSettingsWrite"]
-      } as IConnectionDefault;
-      // usage ==> import * as useFetch from '../../../hooks/use-fetch';
-      jest
-        .spyOn(useFetch, "default")
-        .mockImplementationOnce(() => connectionDefault)
-        .mockImplementationOnce(() => connectionDefault)
-        .mockImplementationOnce(() => connectionDefault)
-        .mockImplementationOnce(() => connectionDefault);
-
-      const component = render(<PreferencesAppSettings />);
-
-      const switchButtons = screen.queryAllByTestId("switch-button-right");
-
-      const verbose = switchButtons.find(
-        (p) => p.getAttribute("name") === "verbose"
-      ) as HTMLInputElement;
-
-      expect(verbose.disabled).toBeFalsy();
-
-      component.unmount();
-    });
-
     it("filled right data", () => {
       const permissions = {
         statusCode: 200,
@@ -78,7 +34,7 @@ describe("PreferencesAppSettings", () => {
         .mockImplementationOnce(() => permissions)
         .mockImplementationOnce(() => appSettings);
 
-      const component = render(<PreferencesAppSettings />);
+      const component = render(<PreferencesAppSettingsStorageFolder />);
 
       const formControls = screen.queryAllByTestId("form-control");
 
@@ -124,7 +80,7 @@ describe("PreferencesAppSettings", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      const component = render(<PreferencesAppSettings />);
+      const component = render(<PreferencesAppSettingsStorageFolder />);
 
       const formControls = screen
         .queryAllByTestId("form-control")
@@ -181,7 +137,7 @@ describe("PreferencesAppSettings", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      const component = render(<PreferencesAppSettings />);
+      const component = render(<PreferencesAppSettingsStorageFolder />);
 
       const formControls = screen
         .queryAllByTestId("form-control")
@@ -210,76 +166,9 @@ describe("PreferencesAppSettings", () => {
         component.unmount();
       });
     });
-
-    it("toggle verbose", async () => {
-      const permissions = {
-        statusCode: 200,
-        data: ["AppSettingsWrite"]
-      } as IConnectionDefault;
-      const appSettings = {
-        statusCode: 200,
-        data: {
-          verbose: true,
-          storageFolder: "test"
-        }
-      } as IConnectionDefault;
-
-      // usage ==> import * as useFetch from '../../../hooks/use-fetch';
-      jest
-        .spyOn(useFetch, "default")
-        .mockReset()
-        .mockImplementationOnce(() => permissions)
-        .mockImplementationOnce(() => appSettings)
-        .mockImplementationOnce(() => permissions)
-        .mockImplementationOnce(() => appSettings)
-        .mockImplementationOnce(() => permissions)
-        .mockImplementationOnce(() => appSettings)
-        .mockImplementationOnce(() => permissions)
-        .mockImplementationOnce(() => appSettings)
-        .mockImplementationOnce(() => permissions)
-        .mockImplementationOnce(() => appSettings);
-
-      const component = render(<PreferencesAppSettings />);
-
-      const fetchPostSpy = jest
-        .spyOn(FetchPost, "default")
-        .mockReset()
-        .mockImplementationOnce(() => {
-          return Promise.resolve({
-            statusCode: 400,
-            data: null
-          });
-        });
-
-      const switchButtons = screen.queryAllByTestId("switch-button-right");
-
-      const verbose = switchButtons.find(
-        (p) => p.getAttribute("name") === "verbose"
-      ) as HTMLElement;
-
-      verbose.click();
-
-      await waitFor(() => expect(fetchPostSpy).toHaveBeenCalled());
-
-      component.unmount();
-    });
   });
 
   describe("ChangeSetting", () => {
-    it("should set value with empty string as name when name is not provided", async () => {
-      const value = "test value";
-      const fetchPostSpy = jest.spyOn(FetchPost, "default").mockImplementationOnce(() => {
-        return Promise.resolve({
-          statusCode: 200,
-          data: null
-        });
-      });
-
-      const statusCode = await ChangeSetting(value);
-      expect(statusCode).toBe(200);
-      expect(fetchPostSpy).toHaveBeenCalled();
-    });
-
     it("should set value with provided name when name is provided", async () => {
       const value = "test value";
       const name = "test name";

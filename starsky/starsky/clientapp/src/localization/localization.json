@@ -263,6 +263,26 @@
     "en": "Please select at least one item before proceeding.",
     "nl": "Selecteer alstublieft eerst minstens één item voordat u doorgaat."
   },
+  "MessageAppSettingsEntireAppScope": {
+    "en": "The AppSettings may only be modified by Administrators. These settings are applied for the entire application.",
+    "nl": "De AppSettings mogen alleen worden aangepast door Administrators. Deze instellingen worden toegepast voor de gehele applicatie."
+  },
+  "MessageChangeNeedReSync": {
+    "en": "You have changed this setting, now you need to perform a full sync. Go to the root folder, the more menu and click on manual sync.",
+    "nl": "Je hebt deze instelling veranderd, nu dien je een volledige sync uit te voeren. Ga naar de hoofdmap, het meer-menu en klik op handmatig synchroniseren."
+  },
+  "MessageAppSettingsStorageFolder": {
+    "en": "Storage Folder",
+    "nl": "Opslag map"
+  },
+  "MessageAppSettingStorageFolderSaveFail": {
+    "en": "Apologies, unable to save, we couldn't find the directory",
+    "nl": "Sorry het opslaan van de map is niet gelukt, de map is niet gevonden"
+  },
+  "MessageAppSettingStorageFolderEnvUsedFail": {
+    "en": "Please update the 'app__storageFolder' environment variable to change the location",
+    "nl": "Update alsjeblieft de 'app__storageFolder' environment variable om de opslag locatie te veranderen"
+  },
   "temp1": {
     "en": "",
     "nl": ""
