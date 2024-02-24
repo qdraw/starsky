@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IAppSettings } from "../../../interfaces/IAppSettings";
@@ -9,6 +9,38 @@ import { Language } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url-query";
 import FormControl from "../../atoms/form-control/form-control";
 import SwitchButton from "../../atoms/switch-button/switch-button";
+
+async function updateDefaultEditorPhotos(
+  event: ChangeEvent<HTMLDivElement>,
+  setIsMessage: React.Dispatch<React.SetStateAction<string>>
+) {
+  const bodyParams = new URLSearchParams();
+  bodyParams.set("desktopC1111ollectionsOpen", event.target.innerText);
+
+  const result = await FetchPost(new UrlQuery().UrlApiAppSettings(), bodyParams.toString());
+  if (result.statusCode != 200) {
+    setIsMessage("FAIL");
+    return;
+  }
+  setIsMessage("OK");
+}
+
+async function toggleCollections(
+  value: boolean,
+  setIsMessage: React.Dispatch<React.SetStateAction<string>>
+) {
+  const desktopCollectionsOpen = value ? RawJpegMode.Raw : RawJpegMode.Jpeg;
+
+  const bodyParams = new URLSearchParams();
+  bodyParams.set("desktopCollectionsOpen", desktopCollectionsOpen.toString());
+
+  const result = await FetchPost(new UrlQuery().UrlApiAppSettings(), bodyParams.toString());
+  if (result.statusCode != 200) {
+    setIsMessage("FAIL");
+    return;
+  }
+  setIsMessage("OK");
+}
 
 const PreferencesAppSettingsDesktop: React.FunctionComponent = () => {
   const appSettings = useFetch(new UrlQuery().UrlApiAppSettings(), "get")
@@ -28,20 +60,6 @@ const PreferencesAppSettingsDesktop: React.FunctionComponent = () => {
   // List<AppSettingsDefaultEditorApplication> DefaultDesktopEditor
   // CollectionsOpenType.RawJpegMode DesktopCollectionsOpen
 
-  async function toggleCollections(value: boolean) {
-    const desktopCollectionsOpen = value ? RawJpegMode.Raw : RawJpegMode.Jpeg;
-
-    const bodyParams = new URLSearchParams();
-    bodyParams.set("desktopCollectionsOpen", desktopCollectionsOpen.toString());
-
-    const result = await FetchPost(new UrlQuery().UrlApiAppSettings(), bodyParams.toString());
-    if (result.statusCode != 200) {
-      setIsMessage("FAIL");
-      return;
-    }
-    setIsMessage("OK");
-  }
-
   // for showing a notification
   const [isMessage, setIsMessage] = useState("");
 
@@ -57,13 +75,13 @@ const PreferencesAppSettingsDesktop: React.FunctionComponent = () => {
         data-test="desktop-collections-open-toggle"
         isEnabled={true}
         leftLabel={MessageSwitchButtonDesktopCollectionsJpegDefaultOff}
-        onToggle={toggleCollections}
+        onToggle={(value) => toggleCollections(value, setIsMessage)}
         rightLabel={MessageSwitchButtonDesktopCollectionsRawOn}
       />
-      <h4>Tags:</h4>
+      <h4>Default application to edit photos:</h4>
       <FormControl
         spellcheck={true}
-        onInput={handleUpdateChange}
+        onInput={(value) => updateDefaultEditorPhotos(value, setIsMessage)}
         name="tags"
         contentEditable={true}
       ></FormControl>
