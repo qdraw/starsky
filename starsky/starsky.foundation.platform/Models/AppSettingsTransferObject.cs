@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using starsky.foundation.platform.Enums;
+
 namespace starsky.foundation.platform.Models
 {
 	/// <summary>
@@ -11,5 +14,11 @@ namespace starsky.foundation.platform.Models
 		public bool? UseSystemTrash { get; set; }
 
 		public bool? UseLocalDesktop { get; set; }
+
+		public List<AppSettingsDefaultEditorApplication> DefaultDesktopEditor { get; set; } = [];
+
+		public CollectionsOpenType.RawJpegMode DesktopCollectionsOpen { get; set; } =
+			CollectionsOpenType.RawJpegMode.Default;
+
 	}
 }

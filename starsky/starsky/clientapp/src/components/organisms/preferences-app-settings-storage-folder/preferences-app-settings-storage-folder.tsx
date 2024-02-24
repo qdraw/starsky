@@ -7,6 +7,13 @@ import FetchPost from "../../../shared/fetch/fetch-post";
 import { Language } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url-query";
 import FormControl from "../../atoms/form-control/form-control";
+
+/**
+ * Update Change Settings
+ * @param value - content
+ * @param name - key name
+ * @returns void
+ */
 export async function ChangeSetting(value: string, name?: string): Promise<number> {
   const bodyParams = new URLSearchParams();
   bodyParams.set(name ?? "", value);
@@ -52,10 +59,6 @@ const PreferencesAppSettingsStorageFolder: React.FunctionComponent = () => {
     ?.data as IAppSettings | null;
 
   const [storageFolder, setStorageFolder] = useState(appSettings?.storageFolder);
-
-  // const [defaultDesktopEditor, setDefaultDesktopEditor] = useState(
-  //   appSettings?.defaultDesktopEditor
-  // );
 
   useEffect(() => {
     setStorageFolder(appSettings?.storageFolder);

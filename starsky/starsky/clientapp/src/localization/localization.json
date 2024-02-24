@@ -283,6 +283,15 @@
     "en": "Please update the 'app__storageFolder' environment variable to change the location",
     "nl": "Update alsjeblieft de 'app__storageFolder' environment variable om de opslag locatie te veranderen"
   },
+  "MessageSwitchButtonDesktopCollectionsRawOn": {
+    "en": "Raw first",
+    "nl": "Raw eerst"
+  },
+  "MessageSwitchButtonDesktopCollectionsJpegDefaultOff": {
+    "en": "Jpeg first",
+    "nl": "Jpeg eerst"
+  },
+
   "temp1": {
     "en": "",
     "nl": ""
