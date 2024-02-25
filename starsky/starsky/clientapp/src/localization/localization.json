@@ -291,7 +291,22 @@
     "en": "Jpeg first",
     "nl": "Jpeg eerst"
   },
-
+  "MessageSwitchButtonDesktopApplication": {
+    "en": "AppSettings: Desktop application",
+    "nl": "AppSettings: Desktop applicatie"
+  },
+  "MessageSwitchButtonDesktopApplicationDescription": {
+    "en": "These settings are only available when using as Desktop application",
+    "nl": "Deze instellingen zijn alleen beschikbaar als desktop applicatie"
+  },
+  "MessageAppSettingDefaultEditorPhotos": {
+    "en": "Default application to edit photos:",
+    "nl": "Standaardtoepassing om foto's te bewerken:"
+  },
+  "MessageAppSettingDefaultEditorPhotosDescription": {
+    "en": "Keep emthy to use the default system application ",
+    "nl": "Hou leeg om de standaardtoepassing van het systeem te gebruiken"
+  },
   "temp1": {
     "en": "",
     "nl": ""
