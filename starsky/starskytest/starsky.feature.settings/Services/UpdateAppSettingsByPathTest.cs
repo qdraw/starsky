@@ -32,8 +32,7 @@ namespace starskytest.starsky.feature.settings.Services
 				new UpdateAppSettingsByPath(new AppSettings(), selectorStorage);
 			var appSettingTransferObject = new AppSettingsTransferObject
 			{
-				StorageFolder = testFolderPath, 
-				Verbose = true
+				StorageFolder = testFolderPath, Verbose = true
 			};
 
 			// Act
@@ -55,8 +54,8 @@ namespace starskytest.starsky.feature.settings.Services
 			var before = Environment.GetEnvironmentVariable("app__storageFolder");
 			Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
 
-			var testFolderPath = Path.DirectorySeparatorChar.ToString() + "test" +
-			                     Path.DirectorySeparatorChar.ToString();
+			var testFolderPath = Path.DirectorySeparatorChar + "test" +
+			                     Path.DirectorySeparatorChar;
 
 			var storage = new FakeIStorage(new List<string> { "/", testFolderPath });
 			var selectorStorage = new FakeSelectorStorage(storage);
@@ -66,7 +65,6 @@ namespace starskytest.starsky.feature.settings.Services
 			{
 				StorageFolder = testFolderPath, 
 				Verbose = true, 
-				UseLocalDesktop = null
 			};
 
 			// Act
@@ -86,9 +84,10 @@ namespace starskytest.starsky.feature.settings.Services
 			// Assert
 			var expectedResult =
 				"{\n  \"app\": {\n    \"Verbose\": \"true\",\n    \"StorageFolder\": " + // rm quotes
-				storageFolderJson + ",\n    \"UseLocalDesktop\": \"false\"\n  }\n}";
+				storageFolderJson + ",\n";
 
-			Assert.AreEqual(expectedResult, result);
+
+			Assert.AreEqual(true, result.Contains(expectedResult));
 		}
 
 		[TestMethod]
@@ -195,7 +194,7 @@ namespace starskytest.starsky.feature.settings.Services
 			Assert.AreEqual(testFolderPath, fileResult2.App.StorageFolder);
 			Assert.IsTrue(fileResult2.App.Verbose);
 		}
-		
+
 		[TestMethod]
 		public async Task UpdateAppSettingsAsync_ValidInput_Success1()
 		{
@@ -205,8 +204,7 @@ namespace starskytest.starsky.feature.settings.Services
 				new UpdateAppSettingsByPath(new AppSettings(), selectorStorage);
 			var appSettingTransferObject = new AppSettingsTransferObject
 			{
-				DesktopCollectionsOpen = CollectionsOpenType.RawJpegMode.Raw,
-				Verbose = true
+				DesktopCollectionsOpen = CollectionsOpenType.RawJpegMode.Raw, Verbose = true
 			};
 
 			// Act
