@@ -307,6 +307,14 @@
     "en": "Keep emthy to use the default system application ",
     "nl": "Hou leeg om de standaardtoepassing van het systeem te gebruiken"
   },
+  "MessageSwitchButtonDesktopCollectionsUpdateError": {
+    "en": "Something went wrong updating the collection preferences",
+    "nl": "Er ging iets met het updaten van de collection voorkeur "
+  },
+  "MessageSwitchButtonDesktopCollectionsUpdateSuccess": {
+    "en": "The collection preference is updated",
+    "nl": "De collection voorkeur is bijgewerkt"
+  },
   "temp1": {
     "en": "",
     "nl": ""

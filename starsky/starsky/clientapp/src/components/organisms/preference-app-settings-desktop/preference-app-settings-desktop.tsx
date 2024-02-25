@@ -19,6 +19,8 @@ const defaultEditorApplication = {
 async function updateDefaultEditorPhotos(
   event: ChangeEvent<HTMLDivElement>,
   setIsMessage: React.Dispatch<React.SetStateAction<string>>,
+  MessageSwitchButtonDesktopCollectionsUpdateError: string,
+  MessageSwitchButtonDesktopCollectionsUpdateSuccess: string,
   defaultDesktopEditor?: IAppSettingsDefaultEditorApplication[]
 ) {
   if (!defaultDesktopEditor) {
@@ -49,10 +51,10 @@ async function updateDefaultEditorPhotos(
 
   const result = await FetchPost(new UrlQuery().UrlApiAppSettings(), bodyParams.toString());
   if (result.statusCode != 200) {
-    setIsMessage("FAIL");
+    setIsMessage(MessageSwitchButtonDesktopCollectionsUpdateError);
     return;
   }
-  setIsMessage("OK");
+  setIsMessage(MessageSwitchButtonDesktopCollectionsUpdateSuccess);
 }
 
 async function toggleCollections(
@@ -102,6 +104,14 @@ const PreferencesAppSettingsDesktop: React.FunctionComponent = () => {
     localization.MessageAppSettingDefaultEditorPhotosDescription
   );
 
+  const MessageSwitchButtonDesktopCollectionsUpdateError = language.key(
+    localization.MessageSwitchButtonDesktopCollectionsUpdateError
+  );
+
+  const MessageSwitchButtonDesktopCollectionsUpdateSuccess = language.key(
+    localization.MessageSwitchButtonDesktopCollectionsUpdateSuccess
+  );
+
   // for showing a notification
   const [isMessage, setIsMessage] = useState("");
 
@@ -128,7 +138,13 @@ const PreferencesAppSettingsDesktop: React.FunctionComponent = () => {
         <FormControl
           spellcheck={true}
           onBlur={(value) =>
-            updateDefaultEditorPhotos(value, setIsMessage, appSettings?.defaultDesktopEditor)
+            updateDefaultEditorPhotos(
+              value,
+              setIsMessage,
+              MessageSwitchButtonDesktopCollectionsUpdateError,
+              MessageSwitchButtonDesktopCollectionsUpdateSuccess,
+              appSettings?.defaultDesktopEditor
+            )
           }
           name="tags"
           contentEditable={true}
