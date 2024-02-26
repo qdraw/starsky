@@ -24,7 +24,7 @@ async function updateDefaultEditorPhotos(
   defaultDesktopEditor?: IAppSettingsDefaultEditorApplication[]
 ) {
   if (!defaultDesktopEditor) {
-    setIsMessage("FAIL");
+    setIsMessage(MessageSwitchButtonDesktopCollectionsUpdateError);
     return;
   }
   const bodyParams = new URLSearchParams();
@@ -59,7 +59,9 @@ async function updateDefaultEditorPhotos(
 
 async function toggleCollections(
   value: boolean,
-  setIsMessage: React.Dispatch<React.SetStateAction<string>>
+  setIsMessage: React.Dispatch<React.SetStateAction<string>>,
+  MessageSwitchButtonDesktopCollectionsUpdateError: string,
+  MessageSwitchButtonDesktopCollectionsUpdateSuccess: string
 ) {
   const desktopCollectionsOpen = value ? RawJpegMode.Raw : RawJpegMode.Jpeg;
 
@@ -68,10 +70,10 @@ async function toggleCollections(
 
   const result = await FetchPost(new UrlQuery().UrlApiAppSettings(), bodyParams.toString());
   if (result.statusCode != 200) {
-    setIsMessage("FAIL");
+    setIsMessage(MessageSwitchButtonDesktopCollectionsUpdateError);
     return;
   }
-  setIsMessage("OK");
+  setIsMessage(MessageSwitchButtonDesktopCollectionsUpdateSuccess);
 }
 
 const PreferencesAppSettingsDesktop: React.FunctionComponent = () => {
@@ -120,7 +122,14 @@ const PreferencesAppSettingsDesktop: React.FunctionComponent = () => {
           data-test="desktop-collections-open-toggle"
           isEnabled={appSettings?.useLocalDesktop && isAppSettingsWrite}
           leftLabel={language.key(localization.MessageSwitchButtonDesktopCollectionsJpegDefaultOff)}
-          onToggle={(value) => toggleCollections(value, setIsMessage)}
+          onToggle={(value) =>
+            toggleCollections(
+              value,
+              setIsMessage,
+              language.key(localization.MessageSwitchButtonDesktopCollectionsRawJpegUpdateError),
+              language.key(localization.MessageSwitchButtonDesktopCollectionsRawJpegUpdateSuccess)
+            )
+          }
           rightLabel={language.key(localization.MessageSwitchButtonDesktopCollectionsRawOn)}
         />
 

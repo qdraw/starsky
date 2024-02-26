@@ -1,390 +1,497 @@
 {
   "MessageMoveFolderIntoTrashIntroText": {
     "en": "Are you sure you want to move this folder into the trash?",
-    "nl": "Weet u zeker dat u deze map naar de prullenbak wilt verplaatsen?"
+    "nl": "Weet u zeker dat u deze map naar de prullenbak wilt verplaatsen?",
+    "de": "Möchten Sie diesen Ordner wirklich in den Papierkorb verschieben?"
   },
   "MessageCancel": {
     "en": "Cancel",
-    "nl": "Annuleren"
+    "nl": "Annuleren",
+    "de": "Abbrechen"
   },
   "MessageTrash": {
     "en": "Trash",
-    "nl": "Prullenbak"
+    "nl": "Prullenbak",
+    "de": "Papierkorb"
   },
   "MessageMoveToTrash": {
     "en": "Move to trash",
-    "nl": "Verplaatsen naar prullenbak"
+    "nl": "Verplaatsen naar prullenbak",
+    "de": "In den Papierkorb verschieben"
   },
   "MessageMoveCurrentFolderToTrash": {
     "en": "Move current folder to trash",
-    "nl": "Huidige map naar prullenbak"
+    "nl": "Huidige map naar prullenbak",
+    "de": "Aktuellen Ordner in den Papierkorb verschieben"
   },
   "MessageMove": {
     "en": "Move",
-    "nl": "Verplaatsen"
+    "nl": "Verplaatsen",
+    "de": "Verschieben"
   },
   "MessageTo": {
     "en": "to",
-    "nl": "naar"
+    "nl": "naar",
+    "de": "in"
   },
   "MessageRestoreFromTrash": {
     "en": "Restore from trash",
-    "nl": "Herstellen uit prullenbak"
+    "nl": "Herstellen uit prullenbak",
+    "de": "Aus dem Papierkorb wiederherstellen"
   },
   "MessageSynchronizeManually": {
     "en": "Synchronize manually",
-    "nl": "Handmatig synchroniseren"
+    "nl": "Handmatig synchroniseren",
+    "de": "Manuell synchronisieren"
   },
   "MessageDownload": {
     "en": "Download",
-    "nl": "Download"
+    "nl": "Download",
+    "de": "Herunterladen"
   },
   "MessagePublish": {
     "en": "Publish",
-    "nl": "Publiceren"
+    "nl": "Publiceren",
+    "de": "Veröffentlichen"
   },
   "MessageReadOnlyFile": {
     "en": "Read only file",
-    "nl": "Alleen-lezen bestand"
+    "nl": "Alleen-lezen bestand",
+    "de": "Schreibgeschützte Datei"
   },
   "MessageNotFoundSourceMissing": {
     "en": "Not found. Source missing.",
-    "nl": "Niet gevonden. Bron ontbreekt."
+    "nl": "Niet gevonden. Bron ontbreekt.",
+    "de": "Nicht gefunden. Quelle fehlt."
   },
   "MessageServerInputError": {
     "en": "Something is wrong with the input",
-    "nl": "Er is iets mis met de input"
+    "nl": "Er is iets mis met de input",
+    "de": "Etwas stimmt nicht mit der Eingabe"
   },
   "MessageIsInTheTrash": {
     "en": "Is in the trash",
-    "nl": "Staat in de prullenbak"
+    "nl": "Staat in de prullenbak",
+    "de": "Befindet sich im Papierkorb"
   },
   "MessageDeletedRestoreInstruction": {
     "en": "'Restore from Trash' to edit the item",
-    "nl": "'Zet terug uit prullenbak' om het item te bewerken"
+    "nl": "'Zet terug uit prullenbak' om het item te bewerken",
+    "de": "'Aus dem Papierkorb wiederherstellen', um das Element zu bearbeiten"
   },
   "MessageHome": {
     "en": "Home",
-    "nl": "Home"
+    "nl": "Home",
+    "de": "Startseite"
   },
   "MessagePhotosOfThisWeek": {
     "en": "Photos of this week",
-    "nl": "Foto's van deze week"
+    "nl": "Foto's van deze week",
+    "de": "Fotos dieser Woche"
   },
   "MessageImport": {
     "en": "Import",
-    "nl": "Importeren"
+    "nl": "Importeren",
+    "de": "Import"
   },
   "MessagePreferences": {
     "en": "Preferences",
-    "nl": "Voorkeuren"
+    "nl": "Voorkeuren",
+    "de": "Einstellungen"
   },
   "MessageLogout": {
     "en": "Logout",
-    "nl": "Uitloggen"
+    "nl": "Uitloggen",
+    "de": "Ausloggen"
   },
   "MessageSaved": {
     "en": "Saved",
-    "nl": "Opgeslagen"
+    "nl": "Opgeslagen",
+    "de": "Gespeichert"
   },
   "MessageImportHeader": {
     "en": "Import",
-    "nl": "Importeren"
+    "nl": "Importeren",
+    "de": "Import"
   },
   "MessageCloseDetailScreenDialog": {
     "en": "Close detail screen",
-    "nl": "Sluit detailscherm"
+    "nl": "Sluit detailscherm",
+    "de": "Detailbildschirm schließen"
   },
   "MessageCloseDialogBackToFolder": {
     "en": "Parent folder",
-    "nl": "Terug naar map"
+    "nl": "Terug naar map",
+    "de": "Übergeordneter Ordner"
   },
   "MessageIncludingColonWord": {
     "en": "Including: ",
-    "nl": "Inclusief: "
+    "nl": "Inclusief: ",
+    "de": "Inklusive: "
   },
   "MessageAddLocation": {
     "en": "Add location",
-    "nl": "Voeg locatie toe"
+    "nl": "Voeg locatie toe",
+    "de": "Ort hinzufügen"
   },
   "MessageUpdateLocation": {
     "en": "Update location",
-    "nl": "Werk locatie bij"
+    "nl": "Werk locatie bij",
+    "de": "Ort aktualisieren"
   },
   "MessageViewLocation": {
     "en": "View location",
-    "nl": "Bekijk locatie"
+    "nl": "Bekijk locatie",
+    "de": "Ort anzeigen"
   },
   "MessageErrorGenericFail": {
     "en": "Something went wrong with the update. Please try again",
-    "nl": "Er is iets misgegaan met het updaten. Probeer het opnieuw"
+    "nl": "Er is iets misgegaan met het updaten. Probeer het opnieuw",
+    "de": "Bei der Aktualisierung ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut"
   },
   "MessageNoPhotosInFolder": {
     "en": "There are no photos in this folder",
-    "nl": "Er zijn geen foto's in deze map"
+    "nl": "Er zijn geen foto's in deze map",
+    "de": "In diesem Ordner befinden sich keine Fotos"
   },
   "MessageNewUserNoPhotosInFolder": {
     "en": "New? Set your drive location in the settings.",
-    "nl": "Nieuw? Stel je schijflocatie in de instellingen."
+    "nl": "Nieuw? Stel je schijflocatie in de instellingen.",
+    "de": "Neu? Legen Sie Ihren Laufwerksspeicherort in den Einstellungen fest."
   },
   "MessageItemsOutsideFilter": {
     "en": "There are more items, but these are outside of your filters. To see everything click on 'Reset Filter'",
-    "nl": "Er zijn meer items, maar deze vallen buiten je filters. Om alles te zien klik op 'Herstel Filter'"
+    "nl": "Er zijn meer items, maar deze vallen buiten je filters. Om alles te zien klik op 'Herstel Filter'",
+    "de": "Es gibt mehr Elemente, aber diese befinden sich außerhalb Ihrer Filter. Um alles zu sehen, klicken Sie auf 'Filter zurücksetzen'"
   },
   "MessageSelectPresentPerfect": {
     "en": "selected",
-    "nl": "geselecteerd"
+    "nl": "geselecteerd",
+    "de": "ausgewählt"
   },
   "MessageSelectAction": {
     "en": "Select",
-    "nl": "Selecteer"
+    "nl": "Selecteer",
+    "de": "Auswählen"
   },
   "MessageNoneSelected": {
     "en": "Nothing selected",
-    "nl": "Niets geselecteerd"
+    "nl": "Niets geselecteerd",
+    "de": "Nichts ausgewählt"
   },
   "MessageUndoSelection": {
     "en": "Undo selection",
-    "nl": "Undo selectie"
+    "nl": "Undo selectie",
+    "de": "Auswahl rückgängig machen"
   },
   "MessageSelectAll": {
     "en": "Select all",
-    "nl": "Alles selecteren"
+    "nl": "Alles selecteren",
+    "de": "Alles auswählen"
   },
   "MessageSelectFurther": {
     "en": "Select further",
-    "nl": "Verder selecteren"
+    "nl": "Verder selecteren",
+    "de": "Weiter auswählen"
   },
   "MessageGoToParentFolder": {
     "en": "Go to parent folder",
-    "nl": "Ga naar bovenliggende map"
+    "nl": "Ga naar bovenliggende map",
+    "de": "Zum übergeordneten Ordner gehen"
   },
   "MessageMkdir": {
     "en": "Create folder",
-    "nl": "Map maken"
+    "nl": "Map maken",
+    "de": "Ordner erstellen"
   },
   "MessageDisplayOptions": {
     "en": "Display options",
-    "nl": "Weergave opties"
+    "nl": "Weergave opties",
+    "de": "Anzeigeoptionen"
   },
   "MessageRenameDir": {
     "en": "Rename",
-    "nl": "Naam wijzigen"
+    "nl": "Naam wijzigen",
+    "de": "Umbenennen"
   },
   "MessageLabels": {
     "en": "Labels",
-    "nl": "Labels"
+    "nl": "Labels",
+    "de": "Etiketten"
   },
   "MessageRenameFileName": {
     "en": "Rename file name",
-    "nl": "Bestandsnaam wijzigen"
+    "nl": "Bestandsnaam wijzigen",
+    "de": "Dateinamen umbenennen"
   },
   "MessageRotateToRight": {
     "en": "Rotation to the right",
-    "nl": "Rotatie naar rechts"
+    "nl": "Rotatie naar rechts",
+    "de": "Drehung nach rechts"
   },
   "MessageDeleteImmediately": {
     "en": "Delete immediately",
-    "nl": "Verwijder onmiddellijk"
+    "nl": "Verwijder onmiddellijk",
+    "de": "Unmittelbar löschen"
   },
   "MessageVideoPlayBackError": {
     "en": "There is something wrong with the playback of this video.  Try 'More' and 'Download'. ",
-    "nl": "Er is iets mis met het afspelen van deze video. Probeer eens via het menu 'Meer' en 'Download'."
+    "nl": "Er is iets mis met het afspelen van deze video. Probeer eens via het menu 'Meer' en 'Download'.",
+    "de": "Beim Abspielen dieses Videos ist etwas schiefgelaufen. Versuchen Sie 'Weitere' und 'Download'."
   },
   "MessageVideoNotFound": {
     "en": "This video is not found",
-    "nl": "Deze video is niet gevonden"
+    "nl": "Deze video is niet gevonden",
+    "de": "Dieses Video wurde nicht gefunden"
   },
   "ColorClassColour0": {
     "en": "Colorless",
-    "nl": "Kleurloos"
+    "nl": "Kleurloos",
+    "de": "Farblos"
   },
   "ColorClassColour1": {
     "en": "Pink",
-    "nl": "Roze"
+    "nl": "Roze",
+    "de": "Rosa"
   },
   "ColorClassColour2": {
     "en": "Red",
-    "nl": "Rood"
+    "nl": "Rood",
+    "de": "Rot"
   },
   "ColorClassColour3": {
     "en": "Orange",
-    "nl": "Oranje"
+    "nl": "Oranje",
+    "de": "Orange"
   },
   "ColorClassColour4": {
     "en": "Yellow",
-    "nl": "Geel"
+    "nl": "Geel",
+    "de": "Gelb"
   },
   "ColorClassColour5": {
     "en": "Green",
-    "nl": "Groen"
+    "nl": "Groen",
+    "de": "Grün"
   },
   "ColorClassColour6": {
     "en": "Azure",
-    "nl": "Azuur"
+    "nl": "Azuur",
+    "de": "Azurblau"
   },
   "ColorClassColour7": {
     "en": "Blue",
-    "nl": "Blauw"
+    "nl": "Blauw",
+    "de": "Blau"
   },
   "ColorClassColour8": {
     "en": "Grey",
-    "nl": "Grijs"
+    "nl": "Grijs",
+    "de": "Grau"
   },
   "ColorClassColourResetFilter": {
     "en": "Reset filter",
-    "nl": "Herstel filter"
+    "nl": "Herstel filter",
+    "de": "Filter zurücksetzen"
   },
   "MessageCloseDialog": {
     "en": "Close",
-    "nl": "Sluiten"
+    "nl": "Sluiten",
+    "de": "Schließen"
   },
   "MessageDesktopEditorOpenSingleFile": {
     "en": "Open file",
-    "nl": "Open bestand"
+    "nl": "Open bestand",
+    "de": "Datei öffnen"
   },
   "MessageDesktopEditorOpenMultipleFiles": {
     "en": "Open files",
-    "nl": "Open bestanden"
+    "nl": "Open bestanden",
+    "de": "Dateien öffnen"
   },
   "MessageDesktopEditorUnableToOpen": {
     "en": "Sorry, something went wrong opening the file",
-    "nl": "Sorry, er iets misgegaan met het openen van het bestand"
+    "nl": "Sorry, er iets misgegaan met het openen van het bestand",
+    "de": "Entschuldigung, beim Öffnen der Datei ist ein Fehler aufgetreten"
   },
   "MessageDesktopEditorConfirmationHeading": {
     "en": "Do you really want to edit all of the selected photos?",
-    "nl": "Wil je echt alle geselecteerde foto's bewerken?"
+    "nl": "Wil je echt alle geselecteerde foto's bewerken?",
+    "de": "Möchten Sie wirklich alle ausgewählten Fotos bearbeiten?"
   },
   "MessageDesktopEditorConfirmationIntroText": {
     "en": "This prompt is to prevent potential issues such as your computer freezing",
-    "nl": "Deze melding is bedoeld om te voorkomen dat er eventuele problemen optreden, zoals het vastlopen van je computer."
+    "nl": "Deze melding is bedoeld om te voorkomen dat er eventuele problemen optreden, zoals het vastlopen van je computer.",
+    "de": "Dieser Hinweis soll potenzielle Probleme wie das Einfrieren Ihres Computers verhindern"
   },
   "MessageItemSelectionRequired": {
     "en": "Please select at least one item before proceeding.",
-    "nl": "Selecteer alstublieft eerst minstens één item voordat u doorgaat."
+    "nl": "Selecteer alstublieft eerst minstens één item voordat u doorgaat.",
+    "de": "Bitte wählen Sie mindestens einen Artikel aus, bevor Sie fortfahren."
   },
   "MessageAppSettingsEntireAppScope": {
     "en": "The AppSettings may only be modified by Administrators. These settings are applied for the entire application.",
-    "nl": "De AppSettings mogen alleen worden aangepast door Administrators. Deze instellingen worden toegepast voor de gehele applicatie."
+    "nl": "De AppSettings mogen alleen worden aangepast door Administrators. Deze instellingen worden toegepast voor de gehele applicatie.",
+    "de": "Die AppSettings dürfen nur von Administratoren geändert werden. Diese Einstellungen gelten für die gesamte Anwendung."
   },
   "MessageChangeNeedReSync": {
     "en": "You have changed this setting, now you need to perform a full sync. Go to the root folder, the more menu and click on manual sync.",
-    "nl": "Je hebt deze instelling veranderd, nu dien je een volledige sync uit te voeren. Ga naar de hoofdmap, het meer-menu en klik op handmatig synchroniseren."
+    "nl": "Je hebt deze instelling veranderd, nu dien je een volledige sync uit te voeren. Ga naar de hoofdmap, het meer-menu en klik op handmatig synchroniseren.",
+    "de": "Sie haben diese Einstellung geändert, jetzt müssen Sie eine vollständige Synchronisierung durchführen. Gehen Sie zum Stammverzeichnis, zum Menü 'Weitere Optionen' und klicken Sie auf manuelle Synchronisierung."
   },
   "MessageAppSettingsStorageFolder": {
     "en": "Storage Folder",
-    "nl": "Opslag map"
+    "nl": "Opslag map",
+    "de": "Speicherordner"
   },
   "MessageAppSettingStorageFolderSaveFail": {
     "en": "Apologies, unable to save, we couldn't find the directory",
-    "nl": "Sorry het opslaan van de map is niet gelukt, de map is niet gevonden"
+    "nl": "Sorry het opslaan van de map is niet gelukt, de map is niet gevonden",
+    "de": "Entschuldigung, Speichern nicht möglich, Verzeichnis konnte nicht gefunden werden"
   },
   "MessageAppSettingStorageFolderEnvUsedFail": {
     "en": "Please update the 'app__storageFolder' environment variable to change the location",
-    "nl": "Update alsjeblieft de 'app__storageFolder' environment variable om de opslag locatie te veranderen"
+    "nl": "Update alsjeblieft de 'app__storageFolder' environment variable om de opslag locatie te veranderen",
+    "de": "Bitte aktualisieren Sie die Umgebungsvariable 'app__storageFolder', um den Speicherort zu ändern"
   },
   "MessageSwitchButtonDesktopCollectionsRawOn": {
     "en": "Raw first",
-    "nl": "Raw eerst"
+    "nl": "Raw eerst",
+    "de": "Raw zuerst"
   },
   "MessageSwitchButtonDesktopCollectionsJpegDefaultOff": {
     "en": "Jpeg first",
-    "nl": "Jpeg eerst"
+    "nl": "Jpeg eerst",
+    "de": "Jpeg zuerst"
   },
   "MessageSwitchButtonDesktopApplication": {
     "en": "AppSettings: Desktop application",
-    "nl": "AppSettings: Desktop applicatie"
+    "nl": "AppSettings: Desktop applicatie",
+    "de": "App-Einstellungen: Desktop-Anwendung"
   },
   "MessageSwitchButtonDesktopApplicationDescription": {
     "en": "These settings are only available when using as Desktop application",
-    "nl": "Deze instellingen zijn alleen beschikbaar als desktop applicatie"
+    "nl": "Deze instellingen zijn alleen beschikbaar als desktop applicatie",
+    "de": "Diese Einstellungen sind nur verfügbar, wenn sie als Desktop-Anwendung verwendet werden"
   },
   "MessageAppSettingDefaultEditorPhotos": {
     "en": "Default application to edit photos:",
-    "nl": "Standaardtoepassing om foto's te bewerken:"
+    "nl": "Standaardtoepassing om foto's te bewerken:",
+    "de": "Standardanwendung zum Bearbeiten von Fotos:"
   },
   "MessageAppSettingDefaultEditorPhotosDescription": {
     "en": "Keep emthy to use the default system application ",
-    "nl": "Hou leeg om de standaardtoepassing van het systeem te gebruiken"
+    "nl": "Hou leeg om de standaardtoepassing van het systeem te gebruiken",
+    "de": "Leer lassen, um die Standard-Systemanwendung zu verwenden"
   },
   "MessageSwitchButtonDesktopCollectionsUpdateError": {
     "en": "Something went wrong updating the collection preferences",
-    "nl": "Er ging iets met het updaten van de collection voorkeur "
+    "nl": "Er ging iets met het updaten van de collectie voorkeur ",
+    "de": "Beim Aktualisieren der Sammlungseinstellungen ist ein Fehler aufgetreten"
   },
   "MessageSwitchButtonDesktopCollectionsUpdateSuccess": {
     "en": "The collection preference is updated",
-    "nl": "De collection voorkeur is bijgewerkt"
+    "nl": "De collection voorkeur is bijgewerkt",
+    "de": "Die Sammlungseinstellung wurde aktualisiert"
+  },
+  "MessageSwitchButtonDesktopCollectionsRawJpegUpdateError": {
+    "en": "Something went wrong updating the Raw / Jpeg preferences",
+    "nl": "Er ging iets mis bij het bijwerken van de voorkeur voor Raw / Jpeg",
+    "de": "Beim Aktualisieren der Raw / Jpeg-Einstellungen ist ein Fehler aufgetreten"
+  },
+  "MessageSwitchButtonDesktopCollectionsRawJpegUpdateSuccess": {
+    "en": "The Raw / Jpeg preference is updated",
+    "nl": "De voorkeur voor Raw / Jpeg is bijgewerkt",
+    "de": "Die Raw / Jpeg-Einstellung wurde aktualisiert"
   },
   "MessageUnknownUsername": {
     "en": "Unknown username",
-    "nl": "Onbekende gebruikersnaam"
+    "nl": "Onbekende gebruikersnaam",
+    "de": "Unbekannter Benutzername"
   },
   "MessageUsername": {
     "en": "Username",
-    "nl": "Gebruikersnaam"
+    "nl": "Gebruikersnaam",
+    "de": "Benutzername"
   },
   "MessageRole": {
     "en": "Role",
-    "nl": "Rol"
+    "nl": "Rol",
+    "de": "Rolle"
   },
   "MessageExamplePassword": {
     "en": "supersafe",
-    "nl": "superveilig"
+    "nl": "superveilig",
+    "de": "supersicher"
   },
   "MessageCurrentPassword": {
     "en": "Enter your current password",
-    "nl": "Geef je huidige wachtwoord op"
+    "nl": "Voer uw huidige wachtwoord in",
+    "de": "Geben Sie Ihr aktuelles Passwort ein"
   },
   "MessageChangedPassword": {
     "en": "Enter your new password",
-    "nl": "Geef je nieuwe wachtwoord op"
+    "nl": "Voer uw nieuwe wachtwoord in",
+    "de": "Geben Sie Ihr neues Passwort ein"
   },
   "MessageChangedConfirmPassword": {
     "en": "And your new password again",
-    "nl": "Herhaal je nieuwe wachtwoord"
+    "nl": "Herhaal je nieuwe wachtwoord",
+    "de": "Und Ihr neues Passwort erneut"
   },
   "MessageNoPassword": {
     "en": "Enter the current and new password",
-    "nl": "Voer het huidige en nieuwe wachtwoord in"
+    "nl": "Voer het huidige en nieuwe wachtwoord in",
+    "de": "Geben Sie das aktuelle und das neue Passwort ein"
   },
   "MessagePassword": {
     "en": "Enter your password",
-    "nl": "Geef je wachtwoord op"
+    "nl": "Geef je wachtwoord op",
+    "de": "Geben Sie Ihr Passwort ein"
   },
   "MessagePasswordChanged": {
     "en": "Your password has been successfully changed",
-    "nl": "Je wachtwoord is succesvol veranderd"
+    "nl": "Je wachtwoord is succesvol veranderd",
+    "de": "Ihr Passwort wurde erfolgreich geändert"
   },
   "MessagePasswordNoMatch": {
     "en": "The passwords do not match",
-    "nl": "De wachtwoorden komen niet overeen"
+    "nl": "De wachtwoorden komen niet overeen",
+    "de": "Die Passwörter stimmen nicht überein"
   },
   "MessagePasswordModalError": {
     "en": "The new password does not meet the criteria",
-    "nl": "Het nieuwe wachtwoord voldoet niet aan de criteria"
+    "nl": "Het nieuwe wachtwoord voldoet niet aan de criteria",
+    "de": "Das neue Passwort entspricht nicht den Kriterien"
   },
   "MessageCreateNewAccount": {
+    "en": "Create new account",
     "nl": "Maak nieuw account",
-    "en": "Create new account"
+    "de": "Neues Konto erstellen"
   },
   "MessageExampleUsername": {
     "en": "dont@mail.me",
-    "nl": "dont@mail.me"
+    "nl": "dont@mail.me",
+    "de": "dont@mail.me"
   },
   "MessageConfirmPassword": {
     "en": "Enter your password again",
-    "nl": "Vul je wachtwoord nog een keer in"
+    "nl": "Vul je wachtwoord nog een keer in",
+    "de": "Geben Sie Ihr Passwort erneut ein"
   },
   "MessageNoUsernamePassword": {
     "en": "Enter an email address and password",
-    "nl": "Voer een emailadres en een wachtwoord in"
+    "nl": "Voer een emailadres en een wachtwoord in",
+    "de": "Geben Sie eine E-Mail-Adresse und ein Passwort ein"
   },
   "MessageWrongFormatEmailAddress": {
     "en": "Check your email address",
-    "nl": "Controleer je email adres"
+    "nl": "Controleer je email adres",
+    "de": "Überprüfen Sie Ihre E-Mail-Adresse"
   },
   "temp1": {
     "en": "",
-    "nl": ""
+    "nl": "",
+    "de": ""
   }
 }
