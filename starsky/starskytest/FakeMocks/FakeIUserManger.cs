@@ -115,6 +115,11 @@ public class FakeIUserManger : IUserManager
 		throw new System.NotImplementedException();
 	}
 
+	public Task<Role?> GetRoleAsync(int userId)
+	{
+		throw new System.NotImplementedException();
+	}
+
 	public bool PreflightValidate(string userName, string password,
 		string confirmPassword)
 	{

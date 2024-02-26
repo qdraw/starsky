@@ -154,6 +154,11 @@ namespace starskytest.FakeMocks
 			return Role;
 		}
 
+		public Task<Role?> GetRoleAsync(int userId)
+		{
+			return Task.FromResult(Role);
+		}
+
 		public bool PreflightValidate(string userName, string password, string confirmPassword)
 		{
 			return password != "false";
