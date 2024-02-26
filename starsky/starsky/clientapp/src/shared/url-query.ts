@@ -144,6 +144,10 @@ export class UrlQuery {
     return `${this.prefix}/api/account/permissions`;
   };
 
+  public KeyAccountPermissionAppSettingsWrite = (): string => {
+    return "AppSettingsWrite";
+  };
+
   /**
    * Keep colorClass in URL
    */

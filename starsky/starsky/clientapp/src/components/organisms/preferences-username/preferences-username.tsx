@@ -1,14 +1,16 @@
 import React, { useEffect } from "react";
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url-query";
 
-const PreferencesUsername: React.FunctionComponent<any> = () => {
+const PreferencesUsername: React.FunctionComponent = () => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageUnknownUsername = language.text("Onbekende gebruikersnaam", "Unknown username");
-  const MessageUsername = language.text("Gebruikersnaam", "Username");
+  const MessageUnknownUsername = language.key(localization.MessageUnknownUsername);
+  const MessageUsername = language.key(localization.MessageUsername);
+  const MessageRole = language.key(localization.MessageRole);
 
   const accountStatus = useFetch(new UrlQuery().UrlAccountStatus(), "get");
   const [userName, setUserName] = React.useState(MessageUnknownUsername);
@@ -32,6 +34,8 @@ const PreferencesUsername: React.FunctionComponent<any> = () => {
       >
         {userName}
       </div>
+      <div className="content--subheader">{MessageRole}</div>
+      <div className="content--text">{accountStatus?.data?.roleCode}</div>
     </>
   );
 };

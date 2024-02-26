@@ -47,7 +47,8 @@ const PreferencesAppSettingsStorageFolder: React.FunctionComponent = () => {
       if (!permissionsData?.data?.includes || permissionsData?.statusCode !== 200) {
         return false;
       }
-      return permissionsData.data.includes("AppSettingsWrite");
+      // AppSettingsWrite
+      return permissionsData.data.includes(new UrlQuery().KeyAccountPermissionAppSettingsWrite());
     }
 
     setIsEnabled(permissions());
@@ -66,7 +67,9 @@ const PreferencesAppSettingsStorageFolder: React.FunctionComponent = () => {
 
   return (
     <>
-      <div className="warning-box warning-box--optional">{MessageAppSettingsEntireAppScope}</div>
+      <div className={isEnabled ? "warning-box warning-box--optional" : "warning-box"}>
+        {MessageAppSettingsEntireAppScope}
+      </div>
       <h4>{MessageAppSettingsStorageFolder} </h4>
       <FormControl
         name="storageFolder"

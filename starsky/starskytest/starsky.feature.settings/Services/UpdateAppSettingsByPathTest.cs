@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.settings.Services;
 using starsky.foundation.platform.Enums;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
@@ -63,8 +64,7 @@ namespace starskytest.starsky.feature.settings.Services
 			var updateAppSettingsByPath = new UpdateAppSettingsByPath(appSettings, selectorStorage);
 			var appSettingTransferObject = new AppSettingsTransferObject
 			{
-				StorageFolder = testFolderPath, 
-				Verbose = true, 
+				StorageFolder = testFolderPath, Verbose = true,
 			};
 
 			// Act
@@ -196,7 +196,7 @@ namespace starskytest.starsky.feature.settings.Services
 		}
 
 		[TestMethod]
-		public async Task UpdateAppSettingsAsync_ValidInput_Success1()
+		public async Task UpdateAppSettingsAsync_ValidInput_Success_Desktop()
 		{
 			var storage = new FakeIStorage();
 			var selectorStorage = new FakeSelectorStorage(storage);
@@ -204,7 +204,16 @@ namespace starskytest.starsky.feature.settings.Services
 				new UpdateAppSettingsByPath(new AppSettings(), selectorStorage);
 			var appSettingTransferObject = new AppSettingsTransferObject
 			{
-				DesktopCollectionsOpen = CollectionsOpenType.RawJpegMode.Raw, Verbose = true
+				DesktopCollectionsOpen = CollectionsOpenType.RawJpegMode.Raw,
+				DefaultDesktopEditor =
+				[
+					new AppSettingsDefaultEditorApplication
+					{
+						ApplicationPath = "/test",
+						ImageFormats =
+							[ExtensionRolesHelper.ImageFormat.jpg]
+					}
+				]
 			};
 
 			// Act
@@ -215,6 +224,19 @@ namespace starskytest.starsky.feature.settings.Services
 			// Assert
 			Assert.AreEqual(200, result.StatusCode);
 			Assert.AreEqual("Updated", result.Message);
+
+			var fileResultString2 =
+				await StreamToStringHelper.StreamToStringAsync(
+					storage.ReadStream(new AppSettings().AppSettingsPath));
+			var fileResult2 = JsonSerializer.Deserialize<AppContainerAppSettings>(fileResultString2,
+				DefaultJsonSerializer.NoNamingPolicyBoolAsString);
+
+			Assert.IsNotNull(fileResult2);
+			Assert.AreEqual(CollectionsOpenType.RawJpegMode.Raw,
+				fileResult2.App.DesktopCollectionsOpen);
+			Assert.AreEqual("/test", fileResult2.App.DefaultDesktopEditor[0].ApplicationPath);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg,
+				fileResult2.App.DefaultDesktopEditor[0].ImageFormats[0]);
 		}
 	}
 }

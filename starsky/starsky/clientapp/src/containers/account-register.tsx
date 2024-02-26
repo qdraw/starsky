@@ -2,6 +2,7 @@ import React, { FunctionComponent, useEffect } from "react";
 import ButtonStyled from "../components/atoms/button-styled/button-styled";
 import useGlobalSettings from "../hooks/use-global-settings";
 import useLocation from "../hooks/use-location/use-location";
+import localization from "../localization/localization.json";
 import { DocumentTitle } from "../shared/document-title";
 import FetchGet from "../shared/fetch/fetch-get";
 import FetchPost from "../shared/fetch/fetch-post";
@@ -14,23 +15,14 @@ const AccountRegister: FunctionComponent = () => {
   const language = new Language(settings.language);
 
   const MessageApplicationName = "Starsky";
-  const MessageCreateNewAccount = language.text("Maak nieuw account", "Create new account");
-  const MessageUsername = language.text("E-mailadres", "E-mail address");
-  const MessageExamplePassword = language.text("superveilig", "supersafe");
-  const MessageExampleUsername = "dont@mail.me";
-  const MessagePassword = language.text("Geef je wachtwoord op", "Enter your password");
-  const MessageConfirmPassword = language.text(
-    "Vul je wachtwoord nog een keer in",
-    "Enter your password again"
-  );
-  const MessageNoUsernamePassword = language.text(
-    "Voer een emailadres en een wachtwoord in",
-    "Enter an email address and password"
-  );
-  const MessageWrongFormatEmailAddress = language.text(
-    "Controleer je email adres",
-    "Check your email address"
-  );
+  const MessageCreateNewAccount = language.key(localization.MessageCreateNewAccount);
+  const MessageUsername = language.key(localization.MessageUsername);
+  const MessageExamplePassword = language.key(localization.MessageExamplePassword);
+  const MessageExampleUsername = language.key(localization.MessageExampleUsername);
+  const MessagePassword = language.key(localization.MessagePassword);
+  const MessageConfirmPassword = language.key(localization.MessageConfirmPassword);
+  const MessageNoUsernamePassword = language.key(localization.MessageNoUsernamePassword);
+  const MessageWrongFormatEmailAddress = language.key(localization.MessageWrongFormatEmailAddress);
   const MessagePasswordToShort = language.text(
     "Gebruik minimaal 8 tekens voor je wachtwoord",
     "Use at least 8 characters for your password"

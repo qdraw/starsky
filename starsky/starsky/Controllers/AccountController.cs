@@ -88,9 +88,13 @@ namespace starsky.Controllers
 				model.CredentialTypeIds = null;
 				return Json(model);
 			}
-
+			
 			model.CredentialsIdentifiers?.Add(credentials.Identifier!);
 			model.CredentialTypeIds?.Add(credentials.CredentialTypeId);
+			
+			var role = await _userManager.GetRoleAsync(currentUser.Id);
+			model.RoleCode = role?.Code;
+
 			return Json(model);
 		}
 

@@ -75,8 +75,15 @@ async function toggleCollections(
 }
 
 const PreferencesAppSettingsDesktop: React.FunctionComponent = () => {
+  // Get AppSettings from backend
   const appSettings = useFetch(new UrlQuery().UrlApiAppSettings(), "get")
     ?.data as IAppSettings | null;
+  // roles
+  const permissionsData = useFetch(new UrlQuery().UrlAccountPermissions(), "get");
+
+  const isAppSettingsWrite = permissionsData?.data?.includes(
+    new UrlQuery().KeyAccountPermissionAppSettingsWrite()
+  );
 
   const settings = useGlobalSettings();
 
@@ -85,31 +92,11 @@ const PreferencesAppSettingsDesktop: React.FunctionComponent = () => {
   );
 
   const language = new Language(settings.language);
-  const MessageSwitchButtonDesktopCollectionsRawOn = language.key(
-    localization.MessageSwitchButtonDesktopCollectionsRawOn
-  );
-  const MessageSwitchButtonDesktopCollectionsJpegDefaultOff = language.key(
-    localization.MessageSwitchButtonDesktopCollectionsJpegDefaultOff
-  );
   const MessageSwitchButtonDesktopApplication = language.key(
     localization.MessageSwitchButtonDesktopApplication
   );
   const MessageSwitchButtonDesktopApplicationDescription = language.key(
     localization.MessageSwitchButtonDesktopApplicationDescription
-  );
-  const MessageAppSettingDefaultEditorPhotos = language.key(
-    localization.MessageAppSettingDefaultEditorPhotos
-  );
-  const MessageAppSettingDefaultEditorPhotosDescription = language.key(
-    localization.MessageAppSettingDefaultEditorPhotosDescription
-  );
-
-  const MessageSwitchButtonDesktopCollectionsUpdateError = language.key(
-    localization.MessageSwitchButtonDesktopCollectionsUpdateError
-  );
-
-  const MessageSwitchButtonDesktopCollectionsUpdateSuccess = language.key(
-    localization.MessageSwitchButtonDesktopCollectionsUpdateSuccess
   );
 
   // for showing a notification
@@ -119,7 +106,11 @@ const PreferencesAppSettingsDesktop: React.FunctionComponent = () => {
     <>
       <div className="content--subheader">{MessageSwitchButtonDesktopApplication}</div>
       <div className="content--text no-left-padding">
-        <p>{MessageSwitchButtonDesktopApplicationDescription}</p>
+        {appSettings?.useLocalDesktop ? (
+          <p>{MessageSwitchButtonDesktopApplicationDescription}</p>
+        ) : (
+          <div className="warning-box">{MessageSwitchButtonDesktopApplicationDescription}</div>
+        )}
 
         {isMessage !== "" ? (
           <div className="warning-box warning-box--optional">{isMessage}</div>
@@ -127,27 +118,27 @@ const PreferencesAppSettingsDesktop: React.FunctionComponent = () => {
         <SwitchButton
           isOn={appSettings?.desktopCollectionsOpen === RawJpegMode.Raw}
           data-test="desktop-collections-open-toggle"
-          isEnabled={true}
-          leftLabel={MessageSwitchButtonDesktopCollectionsJpegDefaultOff}
+          isEnabled={appSettings?.useLocalDesktop && isAppSettingsWrite}
+          leftLabel={language.key(localization.MessageSwitchButtonDesktopCollectionsJpegDefaultOff)}
           onToggle={(value) => toggleCollections(value, setIsMessage)}
-          rightLabel={MessageSwitchButtonDesktopCollectionsRawOn}
+          rightLabel={language.key(localization.MessageSwitchButtonDesktopCollectionsRawOn)}
         />
 
-        <h3>{MessageAppSettingDefaultEditorPhotos}</h3>
-        <p>{MessageAppSettingDefaultEditorPhotosDescription} </p>
+        <h3>{language.key(localization.MessageAppSettingDefaultEditorPhotos)}</h3>
+        <p>{language.key(localization.MessageAppSettingDefaultEditorPhotosDescription)} </p>
         <FormControl
           spellcheck={true}
           onBlur={(value) =>
             updateDefaultEditorPhotos(
               value,
               setIsMessage,
-              MessageSwitchButtonDesktopCollectionsUpdateError,
-              MessageSwitchButtonDesktopCollectionsUpdateSuccess,
+              language.key(localization.MessageSwitchButtonDesktopCollectionsUpdateError),
+              language.key(localization.MessageSwitchButtonDesktopCollectionsUpdateSuccess),
               appSettings?.defaultDesktopEditor
             )
           }
           name="tags"
-          contentEditable={true}
+          contentEditable={appSettings?.useLocalDesktop === true && isAppSettingsWrite}
         >
           {imageDefaultEditor?.applicationPath}
         </FormControl>

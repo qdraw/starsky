@@ -315,6 +315,74 @@
     "en": "The collection preference is updated",
     "nl": "De collection voorkeur is bijgewerkt"
   },
+  "MessageUnknownUsername": {
+    "en": "Unknown username",
+    "nl": "Onbekende gebruikersnaam"
+  },
+  "MessageUsername": {
+    "en": "Username",
+    "nl": "Gebruikersnaam"
+  },
+  "MessageRole": {
+    "en": "Role",
+    "nl": "Rol"
+  },
+  "MessageExamplePassword": {
+    "en": "supersafe",
+    "nl": "superveilig"
+  },
+  "MessageCurrentPassword": {
+    "en": "Enter your current password",
+    "nl": "Geef je huidige wachtwoord op"
+  },
+  "MessageChangedPassword": {
+    "en": "Enter your new password",
+    "nl": "Geef je nieuwe wachtwoord op"
+  },
+  "MessageChangedConfirmPassword": {
+    "en": "And your new password again",
+    "nl": "Herhaal je nieuwe wachtwoord"
+  },
+  "MessageNoPassword": {
+    "en": "Enter the current and new password",
+    "nl": "Voer het huidige en nieuwe wachtwoord in"
+  },
+  "MessagePassword": {
+    "en": "Enter your password",
+    "nl": "Geef je wachtwoord op"
+  },
+  "MessagePasswordChanged": {
+    "en": "Your password has been successfully changed",
+    "nl": "Je wachtwoord is succesvol veranderd"
+  },
+  "MessagePasswordNoMatch": {
+    "en": "The passwords do not match",
+    "nl": "De wachtwoorden komen niet overeen"
+  },
+  "MessagePasswordModalError": {
+    "en": "The new password does not meet the criteria",
+    "nl": "Het nieuwe wachtwoord voldoet niet aan de criteria"
+  },
+  "MessageCreateNewAccount": {
+    "nl": "Maak nieuw account",
+    "en": "Create new account"
+  },
+  "MessageExampleUsername": {
+    "en": "dont@mail.me",
+    "nl": "dont@mail.me"
+  },
+  "MessageConfirmPassword": {
+    "en": "Enter your password again",
+    "nl": "Vul je wachtwoord nog een keer in"
+  },
+  "MessageNoUsernamePassword": {
+    "en": "Enter an email address and password",
+    "nl": "Voer een emailadres en een wachtwoord in"
+  },
+  "MessageWrongFormatEmailAddress": {
+    "en": "Check your email address",
+    "nl": "Controleer je email adres"
+  },
   "temp1": {
     "en": "",
     "nl": ""

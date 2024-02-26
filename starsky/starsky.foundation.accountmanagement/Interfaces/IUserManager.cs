@@ -96,6 +96,8 @@ namespace starsky.foundation.accountmanagement.Interfaces
 
 		Task<User?> ExistAsync(int userTableId);
 		Role? GetRole(string credentialTypeCode, string identifier);
+
+		Task<Role?> GetRoleAsync(int userId);
 		bool PreflightValidate(string userName, string password, string confirmPassword);
 	}
 }
