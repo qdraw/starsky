@@ -79,4 +79,18 @@ public class AreListsEqualHelperTests
 		// Assert
 		Assert.IsFalse(result);
 	}
+	
+	[TestMethod]
+	public void AreListsEqual_OneListNull()
+	{
+		// Arrange
+		var list1 = new List<int?> { 1, null, 3 };
+		var list2 = new List<int?> { 1, 2, 3 };
+
+		// Act
+		var result = AreListsEqualHelper.AreListsEqual(list1, list2);
+
+		// Assert // not sure if good
+		Assert.IsTrue(result);
+	}
 }
