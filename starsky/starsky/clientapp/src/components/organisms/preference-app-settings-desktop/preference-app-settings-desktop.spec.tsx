@@ -87,7 +87,7 @@ describe("PreferencesAppSettingsDesktop", () => {
     component.unmount();
   });
 
-  it("should render MessageSwitchButtonDesktopApplicationDescription when appSettings.useLocalDesktop is true", () => {
+  it("get application path from useFetch and display", () => {
     const mockGetIConnectionDefaultAppSettings = {
       statusCode: 200,
       data: {
