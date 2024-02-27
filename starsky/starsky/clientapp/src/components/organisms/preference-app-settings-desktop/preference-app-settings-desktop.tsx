@@ -16,7 +16,7 @@ const defaultEditorApplication = {
   imageFormats: [ImageFormat.jpg, ImageFormat.png, ImageFormat.bmp, ImageFormat.tiff]
 } as IAppSettingsDefaultEditorApplication;
 
-async function updateDefaultEditorPhotos(
+export async function UpdateDefaultEditorPhotos(
   event: ChangeEvent<HTMLDivElement>,
   setIsMessage: React.Dispatch<React.SetStateAction<string>>,
   MessageSwitchButtonDesktopCollectionsUpdateError: string,
@@ -57,11 +57,12 @@ async function updateDefaultEditorPhotos(
   setIsMessage(MessageSwitchButtonDesktopCollectionsUpdateSuccess);
 }
 
-async function toggleCollections(
+export async function ToggleCollections(
   value: boolean,
   setIsMessage: React.Dispatch<React.SetStateAction<string>>,
   MessageSwitchButtonDesktopCollectionsUpdateError: string,
-  MessageSwitchButtonDesktopCollectionsUpdateSuccess: string
+  MessageSwitchButtonDesktopCollectionsUpdateSuccess: string,
+  appSettings: IAppSettings | null
 ) {
   const desktopCollectionsOpen = value ? RawJpegMode.Raw : RawJpegMode.Jpeg;
 
@@ -69,10 +70,12 @@ async function toggleCollections(
   bodyParams.set("desktopCollectionsOpen", desktopCollectionsOpen.toString());
 
   const result = await FetchPost(new UrlQuery().UrlApiAppSettings(), bodyParams.toString());
-  if (result.statusCode != 200) {
+  if (result.statusCode != 200 || !appSettings) {
     setIsMessage(MessageSwitchButtonDesktopCollectionsUpdateError);
     return;
   }
+  // to avoid re-render issues to display message
+  appSettings.desktopCollectionsOpen = desktopCollectionsOpen;
   setIsMessage(MessageSwitchButtonDesktopCollectionsUpdateSuccess);
 }
 
@@ -123,22 +126,24 @@ const PreferencesAppSettingsDesktop: React.FunctionComponent = () => {
           isEnabled={appSettings?.useLocalDesktop && isAppSettingsWrite}
           leftLabel={language.key(localization.MessageSwitchButtonDesktopCollectionsJpegDefaultOff)}
           onToggle={(value) =>
-            toggleCollections(
+            ToggleCollections(
               value,
               setIsMessage,
               language.key(localization.MessageSwitchButtonDesktopCollectionsRawJpegUpdateError),
-              language.key(localization.MessageSwitchButtonDesktopCollectionsRawJpegUpdateSuccess)
+              language.key(localization.MessageSwitchButtonDesktopCollectionsRawJpegUpdateSuccess),
+              appSettings
             )
           }
           rightLabel={language.key(localization.MessageSwitchButtonDesktopCollectionsRawOn)}
         />
-
+      </div>
+      <div className="content--text no-left-padding">
         <h3>{language.key(localization.MessageAppSettingDefaultEditorPhotos)}</h3>
         <p>{language.key(localization.MessageAppSettingDefaultEditorPhotosDescription)} </p>
         <FormControl
           spellcheck={true}
           onBlur={(value) =>
-            updateDefaultEditorPhotos(
+            UpdateDefaultEditorPhotos(
               value,
               setIsMessage,
               language.key(localization.MessageSwitchButtonDesktopCollectionsUpdateError),
