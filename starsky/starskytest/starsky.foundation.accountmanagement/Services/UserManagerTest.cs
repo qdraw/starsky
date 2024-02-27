@@ -564,6 +564,44 @@ namespace starskytest.starsky.foundation.accountmanagement.Services
 			var result = userManager.GetRole("test12", "test");
 			Assert.IsNull(result);
 		}
+		
+		[TestMethod]
+		public async Task GetRoleAsync_NotExists()
+		{
+			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
+			var result = await userManager.GetRoleAsync(453454);
+			Assert.IsNull(result);
+		}
+		
+		[TestMethod]
+		public async Task GetRoleAsync_Exists()
+		{
+			_dbContext.Users.Add(new User{ Id = 45475, Name = "test"});
+			_dbContext.Roles.Add(new Role { Code = "test_role_892453", Name = "test", Id = 47583945});
+			_dbContext.UserRoles.Add(new UserRole{ UserId = 45475, RoleId = 47583945});
+
+			await _dbContext.SaveChangesAsync();
+			var role =
+				await _dbContext.Roles.FirstOrDefaultAsync(p => p.Code == "test_role_892453");
+			var userRole =
+				await _dbContext.UserRoles.FirstOrDefaultAsync(p => p.UserId == 45475);
+			var user=
+				await _dbContext.Users.FirstOrDefaultAsync(p => p.Id == 45475);
+			Assert.IsNotNull(role);
+			Assert.IsNotNull(userRole);
+			Assert.IsNotNull(user);
+
+			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
+			var result = await userManager.GetRoleAsync(45475);
+			
+			Assert.AreEqual("test_role_892453",result?.Code);
+			
+			_dbContext.Remove(role);
+			_dbContext.Remove(userRole);
+			_dbContext.Remove(user);
+
+			await _dbContext.SaveChangesAsync();
+		}
 
 		[TestMethod]
 		public async Task RemoveFromRole()
