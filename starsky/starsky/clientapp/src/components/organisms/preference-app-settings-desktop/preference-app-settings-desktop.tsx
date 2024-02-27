@@ -123,7 +123,12 @@ const PreferencesAppSettingsDesktop: React.FunctionComponent = () => {
         </div>
 
         {isMessage !== "" ? (
-          <div className="warning-box warning-box--optional">{isMessage}</div>
+          <div
+            data-test="preference-app-settings-desktop-warning-box"
+            className="warning-box warning-box--optional"
+          >
+            {isMessage}
+          </div>
         ) : null}
         <SwitchButton
           isOn={appSettings?.desktopCollectionsOpen === RawJpegMode.Raw}
