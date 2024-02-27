@@ -87,6 +87,54 @@ describe("PreferencesAppSettingsDesktop", () => {
     component.unmount();
   });
 
+  it("should render MessageSwitchButtonDesktopApplicationDescription when appSettings.useLocalDesktop is true", () => {
+    const mockGetIConnectionDefaultAppSettings = {
+      statusCode: 200,
+      data: {
+        useLocalDesktop: true,
+        defaultDesktopEditor: [
+          {
+            applicationPath: "/test",
+            imageFormats: [ImageFormat.tiff]
+          }
+        ]
+      } as unknown as IAppSettings
+    } as IConnectionDefault;
+
+    const formControlSpy = jest.spyOn(FormControl, "default").mockImplementationOnce(() => {
+      return <></>;
+    });
+
+    const mockGetIConnectionDefaultPermissions = {
+      statusCode: 200,
+      data: null
+    } as IConnectionDefault;
+    const useFetchSpy = jest
+      .spyOn(useFetch, "default")
+      .mockReset()
+      .mockImplementationOnce(() => mockGetIConnectionDefaultAppSettings)
+      .mockImplementationOnce(() => mockGetIConnectionDefaultPermissions);
+
+    const component = render(<PreferencesAppSettingsDesktop />);
+
+    expect(formControlSpy).toHaveBeenCalled();
+    expect(formControlSpy).toHaveBeenCalledWith(
+      {
+        children: "/test",
+        contentEditable: undefined,
+        name: "tags",
+        onBlur: expect.anything(),
+        spellcheck: true
+      },
+      {}
+    );
+
+    expect(useFetchSpy).toHaveBeenCalled();
+    expect(useFetchSpy).toHaveBeenCalledTimes(2);
+
+    component.unmount();
+  });
+
   it("give message when done with SwitchButton", async () => {
     const mockGetIConnectionDefaultAppSettings = {
       statusCode: 200,
@@ -251,10 +299,44 @@ describe("updateDefaultEditorPhotos", () => {
       expect.any(String)
     );
   });
-});
 
-describe("ToggleCollections", () => {
-  it("should call FetchPost with correct URL and bodyParams for toggleCollections function", async () => {
+  it("UpdateDefaultEditorPhotos call error if default defaultDesktopEditor is missing", async () => {
+    const value = {
+      target: { innerText: "NewApplicationPath" }
+    } as unknown as ChangeEvent<HTMLDivElement>;
+    const setIsMessage = jest.fn();
+    await UpdateDefaultEditorPhotos(value, setIsMessage, "error_here", "");
+    expect(setIsMessage).toHaveBeenCalled();
+    expect(setIsMessage).toHaveBeenCalledWith("error_here");
+  });
+
+  it("UpdateDefaultEditorPhotos call error if fetchPost is Error 500", async () => {
+    const value = {
+      target: { innerText: "NewApplicationPath" }
+    } as unknown as ChangeEvent<HTMLDivElement>;
+
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      data: null,
+      statusCode: 500
+    });
+
+    const spyFetchPost = jest
+      .spyOn(FetchPost, "default")
+      .mockImplementationOnce(() => mockIConnectionDefault);
+
+    const setIsMessage = jest.fn();
+    await UpdateDefaultEditorPhotos(value, setIsMessage, "error_here", "", []);
+    expect(setIsMessage).toHaveBeenCalled();
+    expect(setIsMessage).toHaveBeenCalledWith("error_here");
+
+    expect(spyFetchPost).toHaveBeenCalled();
+  });
+
+  it("Create new item in Array if emthy array", async () => {
+    const value = {
+      target: { innerText: "test" }
+    } as unknown as ChangeEvent<HTMLDivElement>;
+
     const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
       data: null,
       statusCode: 200
@@ -262,9 +344,72 @@ describe("ToggleCollections", () => {
 
     const spyFetchPost = jest
       .spyOn(FetchPost, "default")
+      .mockReset()
+      .mockImplementationOnce(() => mockIConnectionDefault);
+
+    const setIsMessage = jest.fn();
+    await UpdateDefaultEditorPhotos(value, setIsMessage, "error_here", "success", []);
+    expect(setIsMessage).toHaveBeenCalled();
+    expect(setIsMessage).toHaveBeenCalledWith("success");
+
+    expect(spyFetchPost).toHaveBeenCalled();
+    const query =
+      "DefaultDesktopEditor%5B0%5D.ImageFormats%5B0%5D=jpg&DefaultDesktopEditor%5B0%5D.ImageFormats%" +
+      "5B1%5D=png&DefaultDesktopEditor%5B0%5D.ImageFormats%5B2%5D=bmp&DefaultDesktopEditor%5B0%5D.ImageFormats%5B3%5D=tiff&" +
+      "DefaultDesktopEditor%5B0%5D.ApplicationPath=test";
+    expect(spyFetchPost).toHaveBeenCalledWith(new UrlQuery().UrlApiAppSettings(), query);
+  });
+
+  it("Create new item in Array if emthy array", async () => {
+    const value = {
+      target: { innerText: "test" }
+    } as unknown as ChangeEvent<HTMLDivElement>;
+
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      data: null,
+      statusCode: 200
+    });
+
+    const spyFetchPost = jest
+      .spyOn(FetchPost, "default")
+      .mockReset()
+      .mockImplementationOnce(() => mockIConnectionDefault);
+
+    const setIsMessage = jest.fn();
+    await UpdateDefaultEditorPhotos(value, setIsMessage, "error_here", "success", [
+      {
+        applicationPath: "/exist_app",
+        imageFormats: [ImageFormat.gif]
+      }
+    ]);
+    expect(setIsMessage).toHaveBeenCalled();
+    expect(setIsMessage).toHaveBeenCalledWith("success");
+
+    expect(spyFetchPost).toHaveBeenCalled();
+
+    const query2 =
+      "DefaultDesktopEditor%5B0%5D.ImageFormats%5B0%5D=jpg&DefaultDesktopEditor%5B0%5D.ImageFormats%5B1%5D=png&DefaultDesktopEditor" +
+      "%5B0%5D.ImageFormats%5B2%5D=bmp&DefaultDesktopEditor%5B0%5D.ImageFormats%5B3%5D=tiff&DefaultDesktopEditor%5B0%5D.ApplicationPath=%2Fexist_app&" +
+      "DefaultDesktopEditor%5B1%5D.ImageFormats%5B0%5D=jpg&DefaultDesktopEditor%5B1%5D.ImageFormats%5B1%5D=png&DefaultDesktopEditor%5B1%5D.ImageFormats%5B2%5D=bmp&" +
+      "DefaultDesktopEditor%5B1%5D.ImageFormats%5B3%5D=tiff&DefaultDesktopEditor%5B1%5D.ApplicationPath=test";
+
+    expect(spyFetchPost).toHaveBeenCalledWith(new UrlQuery().UrlApiAppSettings(), query2);
+  });
+});
+
+describe("ToggleCollections", () => {
+  it("should call FetchPost with correct URL and bodyParams for toggleCollections function Jpeg", async () => {
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      data: null,
+      statusCode: 200
+    });
+
+    const spyFetchPost = jest
+      .spyOn(FetchPost, "default")
+      .mockReset()
       .mockImplementationOnce(() => mockIConnectionDefault);
     const appSettings = {
-      desktopCollectionsOpen: RawJpegMode.Default,
+      desktopCollectionsOpen: RawJpegMode.Jpeg,
       useLocalDesktop: true
     } as unknown as IAppSettings;
 
@@ -272,7 +417,54 @@ describe("ToggleCollections", () => {
 
     expect(spyFetchPost).toHaveBeenCalledWith(
       expect.stringContaining(new UrlQuery().UrlApiAppSettings()),
-      expect.any(String)
+      "desktopCollectionsOpen=2"
     );
+  });
+
+  it("should call FetchPost with correct URL and bodyParams for toggleCollections function Raw", async () => {
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      data: null,
+      statusCode: 200
+    });
+
+    const spyFetchPost = jest
+      .spyOn(FetchPost, "default")
+      .mockReset()
+      .mockImplementationOnce(() => mockIConnectionDefault);
+    const appSettings = {
+      desktopCollectionsOpen: RawJpegMode.Raw,
+      useLocalDesktop: true
+    } as unknown as IAppSettings;
+
+    await ToggleCollections(false, jest.fn(), "", "", appSettings);
+
+    expect(spyFetchPost).toHaveBeenCalledWith(
+      expect.stringContaining(new UrlQuery().UrlApiAppSettings()),
+      "desktopCollectionsOpen=1"
+    );
+  });
+
+  it("ToggleCollections call error if fetchPost is Error 500", async () => {
+    const appSettings = {
+      desktopCollectionsOpen: RawJpegMode.Default,
+      useLocalDesktop: true
+    } as unknown as IAppSettings;
+
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      data: null,
+      statusCode: 500
+    });
+
+    const spyFetchPost = jest
+      .spyOn(FetchPost, "default")
+      .mockImplementationOnce(() => mockIConnectionDefault);
+
+    const setIsMessage = jest.fn();
+    await ToggleCollections(true, setIsMessage, "error_here", "", appSettings);
+
+    expect(setIsMessage).toHaveBeenCalled();
+    expect(setIsMessage).toHaveBeenCalledWith("error_here");
+
+    expect(spyFetchPost).toHaveBeenCalled();
   });
 });
