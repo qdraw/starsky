@@ -72,9 +72,23 @@ public class WindowsOpenDesktopAppTests
 		var result = WindowsOpenDesktopApp.OpenDefault(["any value"], OSPlatform.Linux);
 		Assert.IsNull(result);
 	}
-
+	
 	[TestMethod]
 	public void W_OpenDefault2_NonWindows()
+	{
+		if ( new AppSettings().IsWindows )
+		{
+			Assert.Inconclusive("This test if for Unix Only");
+			return;
+		}
+
+		var result = WindowsOpenDesktopApp.OpenDefault(["any value"], OSPlatform.Windows);
+
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public void W_OpenDefault3_NonWindows()
 	{
 		if ( new AppSettings().IsWindows )
 		{
@@ -121,10 +135,25 @@ public class WindowsOpenDesktopAppTests
 			"app", OSPlatform.Linux);
 		Assert.IsNull(result);
 	}
-
+	
 	[TestMethod]
 	[ExpectedException(typeof(Win32Exception))]
 	public void W_OpenApplicationAtUrl2_NonWindows()
+	{
+		if ( new AppSettings().IsWindows )
+		{
+			Assert.Inconclusive("This test if for Unix Only");
+			return;
+		}
+
+		// ExpectedException = Win32Exception
+		WindowsOpenDesktopApp.OpenApplicationAtUrl(["any value"], 
+			"/not_found_849539453", OSPlatform.Windows);
+	}
+
+	[TestMethod]
+	[ExpectedException(typeof(Win32Exception))]
+	public void W_OpenApplicationAtUrl3_NonWindows()
 	{
 		if ( new AppSettings().IsWindows )
 		{

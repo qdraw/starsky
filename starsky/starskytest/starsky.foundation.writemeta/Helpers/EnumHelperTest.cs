@@ -108,4 +108,61 @@ public class EnumHelperTest
 		// Assert
 		Assert.AreEqual(null, result);
 	}
+
+	public enum TestType
+	{
+		[Display(Name = "First Display Name")] FirstValue,
+
+		[Display(Name = "Second Display Name")]
+		SecondValue
+	}
+
+	[TestMethod]
+	public void GetDisplayName_WithValidEnumValue_ReturnsCorrectDisplayName()
+	{
+		// Arrange
+		var enumValue = TestType.FirstValue;
+
+		// Act
+		var displayName = EnumHelper.GetDisplayName(enumValue);
+
+		// Assert
+		Assert.AreEqual("First Display Name", displayName);
+	}
+
+	[TestMethod]
+	public void GetDisplayName_WithNullEnumValue_ReturnsNull()
+	{
+		// Arrange & Act
+		var displayName = EnumHelper.GetDisplayName(null!);
+
+		// Assert
+		Assert.IsNull(displayName);
+	}
+
+	[TestMethod]
+	public void GetDisplayName_WithInvalidEnumValue_ReturnsNull()
+	{
+		// Arrange
+		var enumValue = ( TestType )100; // An invalid value
+
+		// Act
+		var displayName = EnumHelper.GetDisplayName(enumValue);
+
+		// Assert
+		Assert.IsNull(displayName);
+	}
+
+	[TestMethod]
+	public void GetDisplayName_WithEnumValueWithoutDisplayAttribute_ReturnsNull()
+	{
+		// Arrange
+		var enumValue = TestType.SecondValue;
+
+		// Act
+		var displayName = EnumHelper.GetDisplayName(enumValue);
+
+		// Assert
+		Assert.AreEqual("Second Display Name", displayName);
+	}
 }
