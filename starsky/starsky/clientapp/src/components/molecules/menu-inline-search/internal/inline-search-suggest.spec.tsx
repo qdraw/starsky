@@ -69,7 +69,7 @@ describe("inline-search-suggest", () => {
       expect(queryByText("Trash")).toBeNull();
     });
 
-    it("hides logout menu item when useLocalDesktopUi is enabled", () => {
+    it("hides logout menu item when useLocalDesktop is enabled", () => {
       const props2 = {
         suggest: [],
         setFormFocus: jest.fn(),
@@ -79,7 +79,7 @@ describe("inline-search-suggest", () => {
           } as any
         },
         featuresResult: {
-          data: { useLocalDesktopUi: true },
+          data: { useLocalDesktop: true },
           statusCode: 200
         } as IConnectionDefault,
         defaultText: "default text",

@@ -12,7 +12,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
-using starskycore.Attributes;
+using starsky.project.web.Attributes;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.QueryTest

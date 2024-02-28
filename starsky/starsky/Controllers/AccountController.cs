@@ -23,12 +23,14 @@ namespace starsky.Controllers
 		private readonly IAntiforgery _antiForgery;
 		private readonly IStorage _storageHostFullPathFilesystem;
 
-		public AccountController(IUserManager userManager, AppSettings appSettings, IAntiforgery antiForgery, ISelectorStorage selectorStorage)
+		public AccountController(IUserManager userManager, AppSettings appSettings,
+			IAntiforgery antiForgery, ISelectorStorage selectorStorage)
 		{
 			_userManager = userManager;
 			_appSettings = appSettings;
 			_antiForgery = antiForgery;
-			_storageHostFullPathFilesystem = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+			_storageHostFullPathFilesystem =
+				selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		}
 
 		/// <summary>
@@ -76,9 +78,7 @@ namespace starsky.Controllers
 
 			var model = new UserIdentifierStatusModel
 			{
-				Name = currentUser.Name,
-				Id = currentUser.Id,
-				Created = currentUser.Created,
+				Name = currentUser.Name, Id = currentUser.Id, Created = currentUser.Created,
 			};
 
 			var credentials = _userManager.GetCredentialsByUserId(currentUser.Id);
@@ -88,9 +88,13 @@ namespace starsky.Controllers
 				model.CredentialTypeIds = null;
 				return Json(model);
 			}
-
+			
 			model.CredentialsIdentifiers?.Add(credentials.Identifier!);
 			model.CredentialTypeIds?.Add(credentials.CredentialTypeId);
+			
+			var role = await _userManager.GetRoleAsync(currentUser.Id);
+			model.RoleCode = role?.Code;
+
 			return Json(model);
 		}
 
@@ -105,6 +109,7 @@ namespace starsky.Controllers
 		[ProducesResponseType(200)]
 		[Produces("text/html")]
 		[SuppressMessage("ReSharper", "UnusedParameter.Global")]
+		[SuppressMessage("Usage", "IDE0060:Remove unused parameter")]
 		[AllowAnonymous]
 		public IActionResult LoginGet(string? returnUrl = null, bool? fromLogout = null)
 		{
@@ -112,7 +117,8 @@ namespace starsky.Controllers
 			var clientApp = Path.Combine(_appSettings.BaseDirectoryProject,
 				"clientapp", "build", "index.html");
 
-			if ( !_storageHostFullPathFilesystem.ExistFile(clientApp) ) return Content("Please check if the client code exist");
+			if ( !_storageHostFullPathFilesystem.ExistFile(clientApp) )
+				return Content("Please check if the client code exist");
 			return PhysicalFile(clientApp, "text/html");
 		}
 
@@ -137,7 +143,8 @@ namespace starsky.Controllers
 		[AllowAnonymous]
 		public async Task<IActionResult> LoginPost(LoginViewModel model)
 		{
-			ValidateResult validateResult = await _userManager.ValidateAsync("Email", model.Email, model.Password);
+			ValidateResult validateResult =
+				await _userManager.ValidateAsync("Email", model.Email, model.Password);
 
 			if ( !validateResult.Success )
 			{
@@ -146,6 +153,7 @@ namespace starsky.Controllers
 				{
 					Response.StatusCode = 423;
 				}
+
 				return Json("Login failed");
 			}
 
@@ -186,7 +194,8 @@ namespace starsky.Controllers
 		{
 			_userManager.SignOut(HttpContext);
 			// fromLogout is used in middleware
-			return RedirectToAction(nameof(LoginGet), new { ReturnUrl = returnUrl, fromLogout = true });
+			return RedirectToAction(nameof(LoginGet),
+				new { ReturnUrl = returnUrl, fromLogout = true });
 		}
 
 		/// <summary>
@@ -211,7 +220,7 @@ namespace starsky.Controllers
 			}
 
 			if ( !ModelState.IsValid ||
-				 model.ChangedPassword != model.ChangedConfirmPassword )
+			     model.ChangedPassword != model.ChangedConfirmPassword )
 			{
 				return BadRequest("Model is not correct");
 			}
@@ -282,7 +291,8 @@ namespace starsky.Controllers
 		private async Task<bool> IsAccountRegisterClosed(bool userIdentityIsAuthenticated)
 		{
 			if ( userIdentityIsAuthenticated ) return false;
-			return _appSettings.IsAccountRegisterOpen != true && ( await _userManager.AllUsersAsync() ).Users.Count != 0;
+			return _appSettings.IsAccountRegisterOpen != true &&
+			       ( await _userManager.AllUsersAsync() ).Users.Count != 0;
 		}
 
 		/// <summary>
@@ -305,7 +315,7 @@ namespace starsky.Controllers
 			}
 
 			if ( !await IsAccountRegisterClosed(
-					User.Identity?.IsAuthenticated == true) )
+				    User.Identity?.IsAuthenticated == true) )
 			{
 				return Json("RegisterStatus open");
 			}
@@ -329,6 +339,5 @@ namespace starsky.Controllers
 			var claims = User.Claims.Where(p => p.Type == "Permission").Select(p => p.Value);
 			return Json(claims);
 		}
-
 	}
 }

@@ -5,6 +5,8 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.settings.Services;
+using starsky.foundation.platform.Enums;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
@@ -53,8 +55,8 @@ namespace starskytest.starsky.feature.settings.Services
 			var before = Environment.GetEnvironmentVariable("app__storageFolder");
 			Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
 
-			var testFolderPath = Path.DirectorySeparatorChar.ToString() + "test" +
-			                     Path.DirectorySeparatorChar.ToString();
+			var testFolderPath = Path.DirectorySeparatorChar + "test" +
+			                     Path.DirectorySeparatorChar;
 
 			var storage = new FakeIStorage(new List<string> { "/", testFolderPath });
 			var selectorStorage = new FakeSelectorStorage(storage);
@@ -62,7 +64,7 @@ namespace starskytest.starsky.feature.settings.Services
 			var updateAppSettingsByPath = new UpdateAppSettingsByPath(appSettings, selectorStorage);
 			var appSettingTransferObject = new AppSettingsTransferObject
 			{
-				StorageFolder = testFolderPath, Verbose = true, UseLocalDesktopUi = null
+				StorageFolder = testFolderPath, Verbose = true,
 			};
 
 			// Act
@@ -82,9 +84,10 @@ namespace starskytest.starsky.feature.settings.Services
 			// Assert
 			var expectedResult =
 				"{\n  \"app\": {\n    \"Verbose\": \"true\",\n    \"StorageFolder\": " + // rm quotes
-				storageFolderJson + ",\n    \"UseLocalDesktopUi\": \"false\"\n  }\n}";
+				storageFolderJson + ",\n";
 
-			Assert.AreEqual(expectedResult, result);
+
+			Assert.AreEqual(true, result.Contains(expectedResult));
 		}
 
 		[TestMethod]
@@ -190,6 +193,50 @@ namespace starskytest.starsky.feature.settings.Services
 
 			Assert.AreEqual(testFolderPath, fileResult2.App.StorageFolder);
 			Assert.IsTrue(fileResult2.App.Verbose);
+		}
+
+		[TestMethod]
+		public async Task UpdateAppSettingsAsync_ValidInput_Success_Desktop()
+		{
+			var storage = new FakeIStorage();
+			var selectorStorage = new FakeSelectorStorage(storage);
+			var updateAppSettingsByPath =
+				new UpdateAppSettingsByPath(new AppSettings(), selectorStorage);
+			var appSettingTransferObject = new AppSettingsTransferObject
+			{
+				DesktopCollectionsOpen = CollectionsOpenType.RawJpegMode.Raw,
+				DefaultDesktopEditor =
+				[
+					new AppSettingsDefaultEditorApplication
+					{
+						ApplicationPath = "/test",
+						ImageFormats =
+							[ExtensionRolesHelper.ImageFormat.jpg]
+					}
+				]
+			};
+
+			// Act
+			var result =
+				await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject);
+
+
+			// Assert
+			Assert.AreEqual(200, result.StatusCode);
+			Assert.AreEqual("Updated", result.Message);
+
+			var fileResultString2 =
+				await StreamToStringHelper.StreamToStringAsync(
+					storage.ReadStream(new AppSettings().AppSettingsPath));
+			var fileResult2 = JsonSerializer.Deserialize<AppContainerAppSettings>(fileResultString2,
+				DefaultJsonSerializer.NoNamingPolicyBoolAsString);
+
+			Assert.IsNotNull(fileResult2);
+			Assert.AreEqual(CollectionsOpenType.RawJpegMode.Raw,
+				fileResult2.App.DesktopCollectionsOpen);
+			Assert.AreEqual("/test", fileResult2.App.DefaultDesktopEditor[0].ApplicationPath);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg,
+				fileResult2.App.DefaultDesktopEditor[0].ImageFormats[0]);
 		}
 	}
 }

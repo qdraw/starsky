@@ -2,6 +2,7 @@ import { ArchiveAction } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location/use-location";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
+import localization from "../../../localization/localization.json";
 import FetchPost from "../../../shared/fetch/fetch-post";
 import { Language } from "../../../shared/language";
 import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
@@ -32,12 +33,10 @@ const ModalForceDelete: React.FunctionComponent<IModalForceDeleteProps> = ({
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageDeleteIntroText = language.text(
-    "Weet je zeker dat je dit bestand wilt verwijderen van alle devices?",
-    "Are you sure you want to delete this file from all devices?"
-  );
-  const MessageCancel = language.text("Annuleren", "Cancel");
-  const MessageDeleteImmediately = language.text("Verwijder onmiddellijk", "Delete immediately");
+  const MessageDeleteIntroText = language.key(localization.MessageDeleteIntroText);
+  const MessageCancel = language.key(localization.MessageCancel);
+  const MessageDeleteImmediately = language.key(localization.MessageDeleteImmediately);
+
   const history = useLocation();
 
   const undoSelection = () => new Select(select, setSelect, state, history).undoSelection();

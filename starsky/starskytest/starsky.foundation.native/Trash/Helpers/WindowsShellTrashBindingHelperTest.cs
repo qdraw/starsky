@@ -239,6 +239,7 @@ public class WindowsShellTrashBindingHelperTest
 			Assert.AreEqual(0, items);
 			Assert.AreEqual(false, driveHasBin);
 			Assert.IsTrue(info.Contains("Unable to load shared library"));
+			Assert.Inconclusive("Shell32.dll is not available on Linux or Mac OS");
 			return;
 		}
 

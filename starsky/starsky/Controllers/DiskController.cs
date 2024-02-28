@@ -13,7 +13,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
-using starskycore.ViewModels;
+using starsky.project.web.ViewModels;
 
 namespace starsky.Controllers
 {
@@ -62,11 +62,9 @@ namespace starsky.Controllers
 
 			foreach ( var subPath in inputFilePaths.Select(PathHelper.RemoveLatestSlash) )
 			{
-
 				var toAddStatus = new SyncViewModel
 				{
-					FilePath = subPath,
-					Status = FileIndexItem.ExifStatus.Ok
+					FilePath = subPath, Status = FileIndexItem.ExifStatus.Ok
 				};
 
 				if ( _iStorage.ExistFolder(subPath) )
@@ -78,7 +76,7 @@ namespace starsky.Controllers
 
 				await _query.AddItemAsync(new FileIndexItem(subPath)
 				{
-					IsDirectory = true
+					IsDirectory = true, ImageFormat = ExtensionRolesHelper.ImageFormat.directory
 				});
 
 				// add to fs
@@ -102,12 +100,12 @@ namespace starsky.Controllers
 		/// <param name="syncResultsList">SyncViewModel</param>
 		/// <param name="type">optional debug name</param>
 		/// <returns>Completed send of Socket SendToAllAsync</returns>
-		private async Task SyncMessageToSocket(IEnumerable<SyncViewModel> syncResultsList, ApiNotificationType type = ApiNotificationType.Unknown)
+		private async Task SyncMessageToSocket(IEnumerable<SyncViewModel> syncResultsList,
+			ApiNotificationType type = ApiNotificationType.Unknown)
 		{
 			var list = syncResultsList.Select(t => new FileIndexItem(t.FilePath)
 			{
-				Status = t.Status,
-				IsDirectory = true
+				Status = t.Status, IsDirectory = true
 			}).ToList();
 
 			var webSocketResponse = new ApiNotificationResponseModel<
@@ -132,7 +130,8 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(List<FileIndexItem>), 404)]
 		[HttpPost("/api/disk/rename")]
 		[Produces("application/json")]
-		public async Task<IActionResult> Rename(string f, string to, bool collections = true, bool currentStatus = true)
+		public async Task<IActionResult> Rename(string f, string to, bool collections = true,
+			bool currentStatus = true)
 		{
 			if ( string.IsNullOrEmpty(f) )
 			{
@@ -146,14 +145,16 @@ namespace starsky.Controllers
 				return NotFound(rename);
 
 			var webSocketResponse =
-				new ApiNotificationResponseModel<List<FileIndexItem>>(rename, ApiNotificationType.Rename);
+				new ApiNotificationResponseModel<List<FileIndexItem>>(rename,
+					ApiNotificationType.Rename);
 
 			await _notificationQuery.AddNotification(webSocketResponse);
 			await _connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
 
-			return Json(currentStatus ? rename.Where(p => p.Status
-				!= FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList() : rename);
+			return Json(currentStatus
+				? rename.Where(p => p.Status
+				                    != FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList()
+				: rename);
 		}
-
 	}
 }

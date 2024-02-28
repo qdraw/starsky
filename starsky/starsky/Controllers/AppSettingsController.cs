@@ -38,6 +38,8 @@ namespace starsky.Controllers
 		public IActionResult Env()
 		{
 			var appSettings = _appSettings.CloneToDisplay();
+			
+			// For end-to-end testing
 			if ( Request != null! && Request.Headers.Any(p => p.Key == "x-force-html") )
 			{
 				Response.Headers.ContentType = "text/html; charset=utf-8";

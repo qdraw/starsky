@@ -6,6 +6,7 @@ import ArchiveSidebar from "../components/organisms/archive-sidebar/archive-side
 import useGlobalSettings from "../hooks/use-global-settings";
 import useLocation from "../hooks/use-location/use-location";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
+import localization from "../localization/localization.json";
 import { Language } from "../shared/language";
 import { URLPath } from "../shared/url-path";
 import MenuMenuSearchContainer from "./menu-search-container/menu-search-container";
@@ -14,13 +15,10 @@ function Search(archive: Readonly<IArchiveProps>) {
   // Content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageNumberOfResults = language.text("resultaten", "results");
-  const MessageNoResult = language.text("Geen resultaat", "No result");
-  const MessageTryOtherQuery = language.text(
-    "Probeer een andere zoekopdracht",
-    "Try another search query"
-  );
-  const MessagePageNumberToken = language.text("Pagina {pageNumber} van ", "Page {pageNumber} of "); // space at end
+  const MessageNumberOfResults = language.key(localization.MessageNumberOfResults);
+  const MessageNoResult = language.key(localization.MessageNoResult);
+  const MessageTryOtherQuery = language.key(localization.MessageTryOtherQuery);
+  const MessagePageNumberToken = language.key(localization.MessagePageNumberToken); // space at end
 
   const history = useLocation();
 

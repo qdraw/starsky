@@ -8,7 +8,7 @@ namespace starsky.foundation.platform.Helpers;
 
 public static class ReadAppSettings
 {
-	internal static async Task<AppContainerAppSettings?> Read(string path)
+	public static async Task<AppContainerAppSettings?> Read(string path)
 	{
 		if ( !File.Exists(path) )
 		{

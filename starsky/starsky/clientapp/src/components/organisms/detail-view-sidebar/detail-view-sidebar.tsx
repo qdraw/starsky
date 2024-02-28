@@ -7,6 +7,7 @@ import useLocation from "../../../hooks/use-location/use-location";
 import { IDetailView } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
+import localization from "../../../localization/localization.json";
 import { AsciiNull } from "../../../shared/ascii-null";
 import AspectRatio from "../../../shared/aspect-ratio";
 import BytesFormat from "../../../shared/bytes-format";
@@ -41,25 +42,15 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     // content
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
-    const MessageTitleName = language.text("Titel", "Title");
-    const MessageInfoName = "Info";
-    const MessageColorClassification = language.text("Kleur-Classificatie", "Color Classification");
-    const MessageDateTimeAgoEdited = language.text("geleden bewerkt", "ago edited");
-    const MessageDateLessThan1Minute = language.text(
-      "minder dan één minuut",
-      "less than one minute"
-    );
-    const MessageDateMinutes = language.text("minuten", "minutes");
-    const MessageDateHour = language.text("uur", "hour");
-
-    const MessageCopiedLabels = language.text(
-      "De labels zijn gekopieerd",
-      "The labels have been copied"
-    );
-    const MessagePasteLabels = language.text(
-      "De labels zijn overschreven",
-      "The labels have been overwritten"
-    );
+    const MessageTitleName = language.key(localization.MessageTitleName);
+    const MessageInfoName = language.key(localization.MessageInfoName);
+    const MessageColorClassification = language.key(localization.MessageColorClassification);
+    const MessageDateTimeAgoEdited = language.key(localization.MessageDateTimeAgoEdited);
+    const MessageDateLessThan1Minute = language.key(localization.MessageDateLessThan1Minute);
+    const MessageDateMinutes = language.key(localization.MessageDateMinutes);
+    const MessageDateHour = language.key(localization.MessageDateHour);
+    const MessageCopiedLabels = language.key(localization.MessageCopiedLabels);
+    const MessagePasteLabels = language.key(localization.MessagePasteLabels);
 
     const history = useLocation();
 
@@ -340,6 +331,8 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
               <p>
                 {index === 1 ? <>In een collectie:</> : null} {index + 1} van {collections.length}.
                 {item === fileIndexItem.filePath &&
+                fileIndexItem.imageWidth !== undefined &&
+                fileIndexItem.imageHeight !== undefined &&
                 fileIndexItem.imageWidth !== 0 &&
                 fileIndexItem.imageHeight !== 0 ? (
                   <span>

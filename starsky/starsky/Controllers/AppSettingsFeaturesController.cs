@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using starsky.feature.desktop.Interfaces;
 using starsky.feature.trash.Interfaces;
 using starsky.foundation.platform.Models;
-using starskycore.ViewModels;
+using starsky.project.web.ViewModels;
 
 namespace starsky.Controllers;
 
@@ -10,10 +11,14 @@ public class AppSettingsFeaturesController : Controller
 {
 	private readonly IMoveToTrashService _moveToTrashService;
 	private readonly AppSettings _appSettings;
+	private readonly IOpenEditorDesktopService _openEditorDesktopService;
 
-	public AppSettingsFeaturesController(IMoveToTrashService moveToTrashService, AppSettings appSettings)
+	public AppSettingsFeaturesController(IMoveToTrashService moveToTrashService,
+		IOpenEditorDesktopService openEditorDesktopService,
+		AppSettings appSettings)
 	{
 		_moveToTrashService = moveToTrashService;
+		_openEditorDesktopService = openEditorDesktopService;
 		_appSettings = appSettings;
 	}
 
@@ -36,7 +41,8 @@ public class AppSettingsFeaturesController : Controller
 		var shortAppSettings = new EnvFeaturesViewModel
 		{
 			SystemTrashEnabled = _moveToTrashService.IsEnabled(),
-			UseLocalDesktopUi = _appSettings.UseLocalDesktopUi == true
+			UseLocalDesktop = _appSettings.UseLocalDesktop == true,
+			OpenEditorEnabled = _openEditorDesktopService.IsEnabled()
 		};
 
 		return Json(shortAppSettings);

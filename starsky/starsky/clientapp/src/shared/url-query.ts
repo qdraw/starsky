@@ -144,6 +144,10 @@ export class UrlQuery {
     return `${this.prefix}/api/account/permissions`;
   };
 
+  public KeyAccountPermissionAppSettingsWrite = (): string => {
+    return "AppSettingsWrite";
+  };
+
   /**
    * Keep colorClass in URL
    */
@@ -325,7 +329,15 @@ export class UrlQuery {
   };
 
   public UrlApiFeaturesAppSettings = (): string => {
-    return this.prefix + "/api/env/features";
+    return this.prefix + "/api/env/features?v=0.6.0-beta.2";
+  };
+
+  public UrlApiDesktopEditorOpenAmountConfirmationChecker = (): string => {
+    return `${this.prefix}/api/desktop-editor/amount-confirmation`;
+  };
+
+  public UrlApiDesktopEditorOpen = (): string => {
+    return `${this.prefix}/api/desktop-editor/open`;
   };
 
   /**

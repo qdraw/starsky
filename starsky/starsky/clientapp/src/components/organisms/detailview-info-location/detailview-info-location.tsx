@@ -4,6 +4,7 @@ import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location/use-location";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { IGeoLocationModel } from "../../../interfaces/IGeoLocationModel";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 import ModalGeo from "../modal-geo/modal-geo";
 
@@ -33,10 +34,9 @@ const DetailViewInfoLocation: React.FunctionComponent<IDetailViewInfoLocationPro
 
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
-    const MessageNounNameless = language.text("Naamloze", "Unnamed");
-    const MessageNounNone = language.text("Geen enkele", "Not any");
-
-    const MessageLocation = language.text("locatie", "location");
+    const MessageNounNameless = language.key(localization.MessageNounNameless);
+    const MessageNounNone = language.key(localization.MessageNounNone);
+    const MessageLocation = language.key(localization.MessageLocation);
 
     const [locationOpen, setLocationOpen] = React.useState(
       history.location.search?.includes("&modal=geo")

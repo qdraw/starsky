@@ -13,9 +13,7 @@ public class OperatingSystemHelperTest
 		var result = OperatingSystemHelper.GetPlatform();
 		Assert.IsNotNull(result);
 	}
-
-
-	
+		
 	[TestMethod]
 	public void OperatingSystemHelper_Windows()
 	{

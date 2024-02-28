@@ -3,6 +3,7 @@ import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location/use-location";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 import { Select } from "../../../shared/select";
 import { URLPath } from "../../../shared/url-path";
@@ -16,8 +17,8 @@ const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSel
     // content
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
-    const MessageNoneSelected = language.text("Niets geselecteerd", "Nothing selected");
-    const MessageAllName = language.text("Alles", "All");
+    const MessageNoneSelected = language.key(localization.MessageNoneSelected);
+    const MessageAllName = language.key(localization.MessageAllName);
 
     const history = useLocation();
     const [select, setSelect] = React.useState(

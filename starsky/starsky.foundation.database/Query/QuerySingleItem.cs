@@ -119,6 +119,7 @@ public partial class Query
 		if ( currentFileIndexItem.IsDirectory == true )
 		{
 			currentFileIndexItem.CollectionPaths = new List<string> { singleItemDbPath };
+			
 			return new DetailView
 			{
 				IsDirectory = true,

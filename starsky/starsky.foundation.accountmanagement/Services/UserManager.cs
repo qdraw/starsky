@@ -763,6 +763,14 @@ namespace starsky.foundation.accountmanagement.Services
 			return _dbContext.Roles.TagWith("GetRole").FirstOrDefault(p => p.Id == roleId);
 		}
 
+		public async Task<Role?> GetRoleAsync(int userId)
+		{
+			var role = await _dbContext.UserRoles.FirstOrDefaultAsync(p => p.User != null && p.User.Id == userId);
+			if ( role == null ) return null;
+			var roleId = role.RoleId;
+			return _dbContext.Roles.TagWith("GetRole").FirstOrDefault(p => p.Id == roleId);
+		}
+
 		public Credential? GetCredentialsByUserId(int userId)
 		{
 			return _dbContext.Credentials

@@ -1,44 +1,23 @@
 import { useState } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
+import localization from "../../../localization/localization.json";
 import FetchPost from "../../../shared/fetch/fetch-post";
 import { Language } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url-query";
 import ButtonStyled from "../../atoms/button-styled/button-styled";
 
-const PreferencesPassword: React.FunctionComponent<any> = () => {
+const PreferencesPassword: React.FunctionComponent = () => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageChangePassword = language.text("Verander je wachtwoord", "Change your password");
-
-  const MessageExamplePassword = language.text("superveilig", "supersafe");
-  const MessageCurrentPassword = language.text(
-    "Geef je huidige wachtwoord op",
-    "Enter your current password"
-  );
-  const MessageChangedPassword = language.text(
-    "Geef je nieuwe wachtwoord op",
-    "Enter your new password"
-  );
-  const MessageChangedConfirmPassword = language.text(
-    "Herhaal je nieuwe wachtwoord",
-    "And your new password again"
-  );
-  const MessageNoPassword = language.text(
-    "Voer het huidige en nieuwe wachtwoord in",
-    "Enter the current and new password"
-  );
-  const MessagePasswordChanged = language.text(
-    "Je wachtwoord is succesvol veranderd",
-    "Your password has been successfully changed"
-  );
-  const MessagePasswordNoMatch = language.text(
-    "De wachtwoorden komen niet overeen",
-    "The passwords do not match"
-  );
-  const MessagePasswordModalError = language.text(
-    "Het nieuwe wachtwoord voldoet niet aan de criteria",
-    "The new password does not meet the criteria"
-  );
+  const MessageChangePassword = language.key(localization.MessageChangedPassword);
+  const MessageExamplePassword = language.key(localization.MessageExamplePassword);
+  const MessageCurrentPassword = language.key(localization.MessageCurrentPassword);
+  const MessageChangedPassword = language.key(localization.MessageChangedPassword);
+  const MessageChangedConfirmPassword = language.key(localization.MessageChangedConfirmPassword);
+  const MessageNoPassword = language.key(localization.MessageNoPassword);
+  const MessagePasswordChanged = language.key(localization.MessagePasswordChanged);
+  const MessagePasswordNoMatch = language.key(localization.MessagePasswordNoMatch);
+  const MessagePasswordModalError = language.key(localization.MessagePasswordModalError);
 
   const [loading, setLoading] = useState(false);
 

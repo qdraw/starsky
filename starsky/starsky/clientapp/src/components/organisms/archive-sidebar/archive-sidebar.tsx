@@ -2,6 +2,7 @@ import React, { memo, useEffect, useLayoutEffect } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location/use-location";
 import { PageType } from "../../../interfaces/IDetailView";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 import { URLPath } from "../../../shared/url-path";
 import ArchiveSidebarColorClass from "../../molecules/archive-sidebar/archive-sidebar-color-class";
@@ -13,10 +14,11 @@ const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo((arch
   // Content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageSelectionName = language.text("Selectie", "Selection");
-  const MessageReadOnlyFolder = language.text("Alleen lezen map", "Read only folder");
-  const MessageUpdateLabels = language.text("Labels wijzigingen", "Update labels");
-  const MessageColorClassification = language.text("Kleur-Classificatie", "Color Classification");
+
+  const MessageSelectionName = language.key(localization.MessageSelectionName);
+  const MessageReadOnlyFolder = language.key(localization.MessageReadOnlyFolder);
+  const MessageUpdateLabels = language.key(localization.MessageUpdateLabels);
+  const MessageColorClassification = language.key(localization.MessageColorClassification);
 
   // Update view based on url parameters
   const history = useLocation();

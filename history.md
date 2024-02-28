@@ -42,7 +42,25 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## List of versions
 
 ## version 0.6.0-beta.2 -  _(Unreleased)_ - 2024-02-? {#v0.6.0-beta.2}
+
 - [x] (Changed) Back-end Upgrade to .NET 8 - SDK 8.0.201 (Runtime: 8.0.2) (PR #1402)
+- [x] (Added) _Back-end_ Native Open File on Windows & Mac OS (PR #1381)
+- [x] (Added) _Back-end_ Native Open File with specific editor on Windows & Mac OS (PR #1381)
+- [x] (Added) _Back-end_ AppSettings for Collections / Stacks and Open File (PR #1381)
+- [x] (Breaking Change) _Back-end_ Rename UseLocalDesktopUi to UseLocalDesktop (PR #1381)
+- [x] (Added) _Back-end_ ImageFormat = ExtensionRolesHelper.ImageFormat.directory (PR #1381)
+- [x] (Added) _Back-end_ Add role to info api (PR #1381)
+- [x] (Added) _Front-end_ Add settings for Open File (PR #1381)
+- [x] (Added) _Back-end_ rename starsky core to starsky.project.web (PR #1381)
+- [x] (Removed) _Back-end_ Remove /api/trash/detect-to-use-system-trash (PR #1381)
+- [x] (Removed) _Back-end_ Remove verbose option in UI (setting is hidden now) (PR #1381)
+- [x] (Added) _Front-end_ German translations (PR #1381)
+- [x] (Added) _Front-end_ command + shift + k go to settings now (PR #1381)
+- [x] (Removed) _App_ Removed overwrite of open app in desktop (replaced with native open file)
+  (PR #1381)
+- [x] (Added) _App_ Add 'App Settings' to the menu (PR #1381)
+- [x] (Added) _Front-end_ Add warning when opening a lot pictures at one: "Do you really want to
+  edit all of the selected photos?" (PR #1381)
 
 ## version 0.6.0-beta.1 - 2024-02-18 {#v0.6.0-beta.1}
 
@@ -193,7 +211,7 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Added) _Front-end_ Add MoreMenu remove current folder (PR #1085)
 - [x] (Changed) _Front-end_ MoreMenu refactor (PR #1085)
 - [x] (Changed) _Front-end_ Removal of Directories (PR #1085)
-- [x] (Changed) _Front-end_ Hide parts of menu in UseLocalDesktopUi mode (PR #1087)
+- [x] (Changed) _Front-end_ Hide parts of menu in UseLocalDesktop(Ui) mode (PR #1087)
 - [x] (Fixed) _Front-end_ Fixed 300 eslint issues (PR #1087)
 - [x] (Changed) _Back-end_ when deleting in systemTrash mode xmp files are now deleted (PR #1088)
 - [x] (Changed) _Back-end_ test when deleting in server mode: xmp files are gone fixed (PR #1088)

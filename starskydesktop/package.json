@@ -24,7 +24,7 @@
     "dist": "npm run prod && electron-builder build --publish never",
     "build:win": "electron-builder build --win",
     "build:mac": "electron-builder build --mac",
-    "build:runtime": "cd ../starsky && pwsh build.ps1 -runtime osx-arm64,osx-x64,win-x64 -ready-to-run",
+    "build:runtime": "cd ../starsky && pwsh build.ps1 -runtime osx-arm64,osx-x64,win-x64 -ready-to-run -no-tests",
     "update": "npx --yes npm-check-updates",
     "update:install": "npx  --yes npm-check-updates -u && npm install",
     "update:yes": "npm run update:install"

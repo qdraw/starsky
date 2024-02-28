@@ -10,6 +10,7 @@ using starsky.foundation.platform.Models;
 using starsky.Helpers;
 
 [assembly: InternalsVisibleTo("starskytest")]
+
 namespace starsky.Controllers
 {
 	[Authorize]
@@ -35,6 +36,7 @@ namespace starsky.Controllers
 		[Produces("text/html")]
 		[ProducesResponseType(200)]
 		[ProducesResponseType(401)]
+		[SuppressMessage("Usage", "IDE0060:Remove unused parameter")]
 		public IActionResult Index(string f = "")
 		{
 			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
@@ -63,10 +65,11 @@ namespace starsky.Controllers
 			// Added filter to prevent redirects based on tainted, user-controlled data
 			// unescaped: ^[a-zA-Z0-9_\-+"'/=:,\.>< ]+$
 			if ( !Regex.IsMatch(t, "^[a-zA-Z0-9_\\-+\"'/=:,\\.>< ]+$",
-				RegexOptions.None, TimeSpan.FromMilliseconds(100)) )
+				    RegexOptions.None, TimeSpan.FromMilliseconds(100)) )
 			{
 				return BadRequest("`t` is not allowed");
 			}
+
 			return Redirect(AppendPathBasePrefix(Request.PathBase.Value, $"/search?t={t}&p={p}"));
 		}
 
@@ -102,10 +105,11 @@ namespace starsky.Controllers
 			// Added filter to prevent redirects based on tainted, user-controlled data
 			// unescaped: ^[a-zA-Z0-9_\-+"'/=:>< ]+$
 			if ( !Regex.IsMatch(t, "^[a-zA-Z0-9_\\-+\"'/=:>< ]+$",
-				RegexOptions.None, TimeSpan.FromMilliseconds(100)) )
+				    RegexOptions.None, TimeSpan.FromMilliseconds(100)) )
 			{
 				return BadRequest("`t` is not allowed");
 			}
+
 			return Redirect(AppendPathBasePrefix(Request.PathBase.Value, $"/search?t={t}&p={p}"));
 		}
 
@@ -128,6 +132,7 @@ namespace starsky.Controllers
 			{
 				return Redirect(AppendPathBasePrefix(Request.PathBase.Value, $"/trash?p={p}"));
 			}
+
 			return PhysicalFile(_clientApp, "text/html");
 		}
 
@@ -147,6 +152,7 @@ namespace starsky.Controllers
 			{
 				return Redirect(AppendPathBasePrefix(Request.PathBase.Value, $"/import"));
 			}
+
 			return PhysicalFile(_clientApp, "text/html");
 		}
 
@@ -166,6 +172,7 @@ namespace starsky.Controllers
 			{
 				return Redirect(AppendPathBasePrefix(Request.PathBase.Value, $"/preferences"));
 			}
+
 			return PhysicalFile(_clientApp, "text/html");
 		}
 
@@ -181,6 +188,7 @@ namespace starsky.Controllers
 		[Produces("text/html")]
 		[ProducesResponseType(200)]
 		[SuppressMessage("ReSharper", "UnusedParameter.Global")]
+		[SuppressMessage("Usage", "IDE0060:Remove unused parameter")]
 		public IActionResult Register(string? returnUrl = null)
 		{
 			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
@@ -190,10 +198,13 @@ namespace starsky.Controllers
 		internal static string AppendPathBasePrefix(string? requestPathBase, string url)
 		{
 			return requestPathBase?.Equals("/starsky",
-				StringComparison.InvariantCultureIgnoreCase) == true ? $"/starsky{url}" : url;
+				StringComparison.InvariantCultureIgnoreCase) == true
+				? $"/starsky{url}"
+				: url;
 		}
 
-		internal static bool IsCaseSensitiveRedirect(string? expectedRequestPath, string? requestPathValue)
+		internal static bool IsCaseSensitiveRedirect(string? expectedRequestPath,
+			string? requestPathValue)
 		{
 			return expectedRequestPath != requestPathValue;
 		}

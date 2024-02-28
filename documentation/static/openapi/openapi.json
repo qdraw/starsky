@@ -1967,7 +1967,7 @@
             },
             {
               "unresolvedReference": false,
-              "name": "UseLocalDesktopUi",
+              "name": "UseLocalDesktop",
               "in": 0,
               "required": false,
               "deprecated": false,
@@ -2637,6 +2637,348 @@
                         "referenceV2": "#/definitions/FileIndexItem"
                       }
                     },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "401": {
+              "description": "User unauthorized",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {}
+    },
+    "/api/desktop-editor/open": {
+      "operations": {
+        "Get": {
+          "tags": [
+            {
+              "name": "DesktopEditor",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Open a file in the default editor or a specific editor on the desktop",
+          "parameters": [
+            {
+              "unresolvedReference": false,
+              "name": "f",
+              "in": 0,
+              "description": "single or multiple subPaths",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "explode": false,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "default": {
+                  "primitiveType": 4,
+                  "anyType": 0,
+                  "value": ""
+                },
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
+              "name": "collections",
+              "in": 0,
+              "description": "to combine files with the same name before the extension",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "explode": false,
+              "allowReserved": false,
+              "schema": {
+                "type": "boolean",
+                "default": {
+                  "primitiveType": 7,
+                  "anyType": 0,
+                  "value": true
+                },
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "returns a list of items from the database",
+              "headers": {},
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "type": 0,
+                        "id": "PathImageFormatExistsAppPathModel",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/PathImageFormatExistsAppPathModel",
+                        "referenceV2": "#/definitions/PathImageFormatExistsAppPathModel"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "204": {
+              "description": "No Content",
+              "headers": {},
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "type": 0,
+                        "id": "PathImageFormatExistsAppPathModel",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/PathImageFormatExistsAppPathModel",
+                        "referenceV2": "#/definitions/PathImageFormatExistsAppPathModel"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "400": {
+              "description": "Bad Request",
+              "headers": {},
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "string",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "401": {
+              "description": "User unauthorized",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "404": {
+              "description": "subPath not found in the database",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {}
+    },
+    "/api/desktop-editor/amount-confirmation": {
+      "operations": {
+        "Get": {
+          "tags": [
+            {
+              "name": "DesktopEditor",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Check the amount of files to open before",
+          "parameters": [
+            {
+              "unresolvedReference": false,
+              "name": "f",
+              "in": 0,
+              "description": "single or multiple subPaths",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "explode": false,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "bool, true is no confirmation, false is ask confirmation",
+              "headers": {},
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "boolean",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
                     "properties": {},
                     "additionalPropertiesAllowed": true,
                     "enum": [],
@@ -10397,69 +10739,6 @@
       "parameters": [],
       "extensions": {}
     },
-    "/api/trash/detect-to-use-system-trash": {
-      "operations": {
-        "Get": {
-          "tags": [
-            {
-              "name": "Trash",
-              "extensions": {},
-              "unresolvedReference": false
-            }
-          ],
-          "summary": "Is the system trash supported",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": "the item including the updated content",
-              "headers": {},
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "boolean",
-                    "readOnly": false,
-                    "writeOnly": false,
-                    "allOf": [],
-                    "oneOf": [],
-                    "anyOf": [],
-                    "required": [],
-                    "properties": {},
-                    "additionalPropertiesAllowed": true,
-                    "enum": [],
-                    "nullable": false,
-                    "deprecated": false,
-                    "extensions": {},
-                    "unresolvedReference": false
-                  },
-                  "examples": {},
-                  "encoding": {},
-                  "extensions": {}
-                }
-              },
-              "links": {},
-              "extensions": {},
-              "unresolvedReference": false
-            },
-            "401": {
-              "description": "User unauthorized",
-              "headers": {},
-              "content": {},
-              "links": {},
-              "extensions": {},
-              "unresolvedReference": false
-            }
-          },
-          "callbacks": {},
-          "deprecated": false,
-          "security": [],
-          "servers": [],
-          "extensions": {}
-        }
-      },
-      "servers": [],
-      "parameters": [],
-      "extensions": {}
-    },
     "/api/trash/move-to-trash": {
       "operations": {
         "Post": {
@@ -10470,7 +10749,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "(beta) Move a file to the trash",
+          "summary": "Move a file to the trash",
           "parameters": [
             {
               "unresolvedReference": false,
@@ -12056,8 +12335,87 @@
             "extensions": {},
             "unresolvedReference": false
           },
-          "useLocalDesktopUi": {
+          "useLocalDesktop": {
             "type": "boolean",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "defaultDesktopEditor": {
+            "type": "array",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "items": {
+              "readOnly": false,
+              "writeOnly": false,
+              "allOf": [],
+              "oneOf": [],
+              "anyOf": [],
+              "required": [],
+              "properties": {},
+              "additionalPropertiesAllowed": true,
+              "enum": [],
+              "nullable": false,
+              "deprecated": false,
+              "extensions": {},
+              "unresolvedReference": false,
+              "reference": {
+                "type": 0,
+                "id": "AppSettingsDefaultEditorApplication",
+                "isExternal": false,
+                "isLocal": true,
+                "referenceV3": "#/components/schemas/AppSettingsDefaultEditorApplication",
+                "referenceV2": "#/definitions/AppSettingsDefaultEditorApplication"
+              }
+            },
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "desktopCollectionsOpen": {
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false,
+            "reference": {
+              "type": 0,
+              "id": "RawJpegMode",
+              "isExternal": false,
+              "isLocal": true,
+              "referenceV3": "#/components/schemas/RawJpegMode",
+              "referenceV2": "#/definitions/RawJpegMode"
+            }
+          },
+          "desktopEditorAmountBeforeConfirmation": {
+            "type": "integer",
+            "format": "int32",
             "readOnly": false,
             "writeOnly": false,
             "allOf": [],
@@ -12241,6 +12599,78 @@
               "referenceV3": "#/components/schemas/OpenTelemetrySettings",
               "referenceV2": "#/definitions/OpenTelemetrySettings"
             }
+          }
+        },
+        "additionalPropertiesAllowed": false,
+        "enum": [],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
+      "AppSettingsDefaultEditorApplication": {
+        "type": "object",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {
+          "imageFormats": {
+            "type": "array",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "items": {
+              "readOnly": false,
+              "writeOnly": false,
+              "allOf": [],
+              "oneOf": [],
+              "anyOf": [],
+              "required": [],
+              "properties": {},
+              "additionalPropertiesAllowed": true,
+              "enum": [],
+              "nullable": false,
+              "deprecated": false,
+              "extensions": {},
+              "unresolvedReference": false,
+              "reference": {
+                "type": 0,
+                "id": "ImageFormat",
+                "isExternal": false,
+                "isLocal": true,
+                "referenceV3": "#/components/schemas/ImageFormat",
+                "referenceV2": "#/definitions/ImageFormat"
+              }
+            },
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "applicationPath": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
           }
         },
         "additionalPropertiesAllowed": false,
@@ -14479,6 +14909,150 @@
         },
         "additionalPropertiesAllowed": false,
         "enum": [],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
+      "PathImageFormatExistsAppPathModel": {
+        "type": "object",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {
+          "subPath": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "fullFilePath": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "imageFormat": {
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false,
+            "reference": {
+              "type": 0,
+              "id": "ImageFormat",
+              "isExternal": false,
+              "isLocal": true,
+              "referenceV3": "#/components/schemas/ImageFormat",
+              "referenceV2": "#/definitions/ImageFormat"
+            }
+          },
+          "status": {
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false,
+            "reference": {
+              "type": 0,
+              "id": "ExifStatus",
+              "isExternal": false,
+              "isLocal": true,
+              "referenceV3": "#/components/schemas/ExifStatus",
+              "referenceV2": "#/definitions/ExifStatus"
+            }
+          },
+          "appPath": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          }
+        },
+        "additionalPropertiesAllowed": false,
+        "enum": [],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
+      "RawJpegMode": {
+        "type": "integer",
+        "format": "int32",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {},
+        "additionalPropertiesAllowed": true,
+        "enum": [
+          {
+            "primitiveType": 0,
+            "anyType": 0,
+            "value": 0
+          },
+          {
+            "primitiveType": 0,
+            "anyType": 0,
+            "value": 1
+          },
+          {
+            "primitiveType": 0,
+            "anyType": 0,
+            "value": 2
+          }
+        ],
         "nullable": false,
         "deprecated": false,
         "extensions": {},

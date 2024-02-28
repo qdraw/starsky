@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
-using starskycore.ViewModels;
+using starsky.project.web.ViewModels;
 using starskytest.FakeMocks;
 
 namespace starskytest.Controllers;
@@ -18,56 +18,54 @@ public class AppSettingsFeaturesControllerTest
 		// Arrange
 		var fakeIMoveToTrashService = new FakeIMoveToTrashService(new List<FileIndexItem>());
 		var appSettingsFeaturesController = new AppSettingsFeaturesController(
-			fakeIMoveToTrashService, new AppSettings());
-		
+			fakeIMoveToTrashService, new FakeIOpenEditorDesktopService(), new AppSettings());
+
 		// Act
 		var result = appSettingsFeaturesController.FeaturesView() as JsonResult;
 		var json = result?.Value as EnvFeaturesViewModel;
 		Assert.IsNotNull(json);
-		
+
 		// Assert
 		Assert.IsNotNull(result);
 	}
-	
+
 	[TestMethod]
 	public void FeaturesViewTest_Disabled()
 	{
 		// Arrange
 		var fakeIMoveToTrashService = new FakeIMoveToTrashService(new List<FileIndexItem>(), false);
 		var appSettingsFeaturesController = new AppSettingsFeaturesController(
-			fakeIMoveToTrashService, new AppSettings
-			{
-				UseLocalDesktopUi = false
-			});
-		
+			fakeIMoveToTrashService, new FakeIOpenEditorDesktopService(false),
+			new AppSettings { UseLocalDesktop = false });
+
 		// Act
 		var result = appSettingsFeaturesController.FeaturesView() as JsonResult;
 		var json = result?.Value as EnvFeaturesViewModel;
 		Assert.IsNotNull(json);
 
 		// Assert
-		Assert.IsFalse(json.UseLocalDesktopUi);
+		Assert.IsFalse(json.UseLocalDesktop);
 		Assert.IsFalse(json.SystemTrashEnabled);
+		Assert.IsFalse(json.OpenEditorEnabled);
 	}
-		
+
 	[TestMethod]
 	public void FeaturesViewTest_Enabled()
 	{
 		// Arrange
 		var fakeIMoveToTrashService = new FakeIMoveToTrashService(new List<FileIndexItem>());
 		var appSettingsFeaturesController = new AppSettingsFeaturesController(
-			fakeIMoveToTrashService, new AppSettings
-			{
-				UseLocalDesktopUi = true
-			});
-		
+			fakeIMoveToTrashService, new FakeIOpenEditorDesktopService(),
+			new AppSettings { UseLocalDesktop = true });
+
 		// Act
 		var result = appSettingsFeaturesController.FeaturesView() as JsonResult;
 		var json = result?.Value as EnvFeaturesViewModel;
 		Assert.IsNotNull(json);
 
 		// Assert
-		Assert.IsTrue(json.UseLocalDesktopUi);
+		Assert.IsTrue(json.UseLocalDesktop);
 		Assert.IsTrue(json.SystemTrashEnabled);
+		Assert.IsTrue(json.OpenEditorEnabled);
 	}
 }

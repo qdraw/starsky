@@ -1,43 +1,45 @@
 const express = require("express");
 const path = require("path");
 
-var apiAccountChangeSecretIndex = require("./api/account/change-secret/index.json");
-var apiAccountPermissionsIndex = require("./api/account/permissions/index.json");
+const apiAccountChangeSecretIndex = require("./api/account/change-secret/index.json");
+const apiAccountPermissionsIndex = require("./api/account/permissions/index.json");
 
-var accountStatus = require("./api/account/status/index.json");
-var apiHealthDetails = require("./api/health/details/index.json");
-var apiHealthCheckForUpdates = require("./api/health/check-for-updates/index.json");
-var apiGeoReverseLookup = require("./api/geo-reverse-lookup/index.json");
+const accountStatus = require("./api/account/status/index.json");
+const apiHealthDetails = require("./api/health/details/index.json");
+const apiHealthCheckForUpdates = require("./api/health/check-for-updates/index.json");
+const apiGeoReverseLookup = require("./api/geo-reverse-lookup/index.json");
 
-var apiIndexIndex = require("./api/index/index.json");
-var apiIndex__Starsky = require("./api/index/__starsky.json");
-var apiIndex0001 = require("./api/index/0001.json");
-var apiIndex0001_toggleDeleted = require("./api/index/0001_toggleDeleted.json");
+const apiIndexIndex = require("./api/index/index.json");
+const apiIndex__Starsky = require("./api/index/__starsky.json");
+const apiIndex0001 = require("./api/index/0001.json");
+const apiIndex0001_toggleDeleted = require("./api/index/0001_toggleDeleted.json");
 
-var apiIndex__Starsky01dif = require("./api/index/__starsky_01-dif.json");
-var apiIndex__Starsky01difColorclass0 = require("./api/index/__starsky_01-dif_colorclass0.json");
+const apiIndex__Starsky01dif = require("./api/index/__starsky_01-dif.json");
+const apiIndex__Starsky01difColorclass0 = require("./api/index/__starsky_01-dif_colorclass0.json");
 
-var apiIndex__Starsky01dif20180101170001 = require("./api/index/__starsky_01-dif-2018.01.01.17.00.01.json");
+const apiIndex__Starsky01dif20180101170001 = require("./api/index/__starsky_01-dif-2018.01.01.17.00.01.json");
 
-var apiInfo__testJpg = require("./api/info/test.jpg.json");
+const apiInfo__testJpg = require("./api/info/test.jpg.json");
 
-var apiSearchTrash = require("./api/search/trash/index.json");
-var apiSearch = require("./api/search/index.json");
-var apiSearchTest = require("./api/search/test.json");
-var apiSearchTest1 = require("./api/search/test1.json");
-var apiUpdate__Starsky01dif20180101170001_Deleted = require("./api/update/__starsky_01-dif-2018.01.01.17.00.01_Deleted.json");
-var apiUpdate__Starsky01dif20180101170001_Ok = require("./api/update/__starsky_01-dif-2018.01.01.17.00.01_Ok.json");
+const apiSearchTrash = require("./api/search/trash/index.json");
+const apiSearch = require("./api/search/index.json");
+const apiSearchTest = require("./api/search/test.json");
+const apiSearchTest1 = require("./api/search/test1.json");
+const apiUpdate__Starsky01dif20180101170001_Deleted = require("./api/update/__starsky_01-dif-2018.01.01.17.00.01_Deleted.json");
+const apiUpdate__Starsky01dif20180101170001_Ok = require("./api/update/__starsky_01-dif-2018.01.01.17.00.01_Ok.json");
 
-var apiEnvIndex = require("./api/env/index.json");
-var apiEnvFeatures = require("./api/env/features.json");
+const apiEnvIndex = require("./api/env/index.json");
+const apiEnvFeatures = require("./api/env/features.json");
 
-var apiPublishIndex = require("./api/publish/index.json");
-var apiPublishCreateIndex = require("./api/publish/create/index.json");
+const apiPublishIndex = require("./api/publish/index.json");
+const apiPublishCreateIndex = require("./api/publish/create/index.json");
 
-var githubComReposQdrawStarskyReleaseIndex = require("./github.com/repos/qdraw/starsky/releases/index.json");
+const apiDeskopEditorOpen = require("./api/desktop-editor/open.json");
+
+const githubComReposQdrawStarskyReleaseIndex = require("./github.com/repos/qdraw/starsky/releases/index.json");
 
 function setRouter(app, isStoryBook = false) {
-	var prefix = "/starsky";
+	const prefix = "/starsky";
 
 	app.use(
 		prefix + "/api/thumbnail",
@@ -59,7 +61,7 @@ function setRouter(app, isStoryBook = false) {
 		res.json(accountStatus);
 	});
 
-	var isChangePasswordSuccess = false;
+	let isChangePasswordSuccess = false;
 	app.post(prefix + "/api/account/change-secret/", (req, res) => {
 		console.log(req.body);
 
@@ -159,7 +161,7 @@ function setRouter(app, isStoryBook = false) {
 		return res.json("not found");
 	});
 
-	var isDeleted = true;
+	let isDeleted = true;
 	app.post(prefix + "/api/update", (req, res) => {
 		if (!req.body) {
 			res.statusCode = 500;
@@ -248,6 +250,30 @@ function setRouter(app, isStoryBook = false) {
 		return res.json(apiEnvIndex);
 	});
 
+	app.post(prefix + "/api/desktop-editor/amount-confirmation", (req, res) => {
+		if (!req.body) {
+			return res.json("no body ~ the normal api does ignore it");
+		}
+		console.log(`amount-confirmation ${req.body.f}`);
+
+		return res.json(req.body.f !== "/true.jpg");
+	});
+
+	app.post(prefix + "/api/desktop-editor/open", (req, res) => {
+		if (!req.body) {
+			return res.json("no body ~ the normal api does ignore it");
+		}
+		console.log(`open ${req.body.f}`);
+
+		if (req.body.f === "/true.jpg") {
+			res.statusCode = 400;
+			res.json()
+			return
+		}
+
+		return res.json(apiDeskopEditorOpen);
+	});
+
 	app.get(prefix + "/api/health/application-insights", (req, res) => {
 		res.set("Content-Type", "application/javascript");
 		return res.send("");
@@ -282,7 +308,7 @@ function setRouter(app, isStoryBook = false) {
 	});
 
 	// Simulate waiting
-	var fakeLoading = {};
+	let fakeLoading = {};
 	app.get(prefix + "/export/zip/:id", (req, res) => {
 		if (!fakeLoading[req.params.id]) {
 			fakeLoading[req.params.id] = 0;

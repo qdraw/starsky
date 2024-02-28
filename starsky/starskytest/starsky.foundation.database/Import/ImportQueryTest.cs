@@ -220,7 +220,7 @@ namespace starskytest.starsky.foundation.database.Import
 		}
 		
 		[TestMethod]
-		public async Task RemoveAsync_Disposed()
+		public async Task ImportQuery_RemoveAsync_Disposed()
 		{
 			var addedItems = new List<ImportIndexItem>
 			{

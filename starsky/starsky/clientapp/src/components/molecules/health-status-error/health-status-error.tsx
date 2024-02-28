@@ -1,6 +1,7 @@
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IHealthEntry } from "../../../interfaces/IHealthEntry";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url-query";
 import Notification, { NotificationType } from "../../atoms/notification/notification";
@@ -9,9 +10,8 @@ const HealthStatusError: React.FunctionComponent = () => {
   const healthCheck = useFetch(new UrlQuery().UrlHealthDetails(), "get");
 
   const settings = useGlobalSettings();
-  const MessageCriticalErrors = new Language(settings.language).text(
-    "Er zijn kritieke fouten in de volgende onderdelen:",
-    "There are critical errors in the following components:"
+  const MessageHealthStatusCriticalErrors = new Language(settings.language).key(
+    localization.MessageHealthStatusCriticalErrorsWithTheFollowingComponents
   );
 
   if (
@@ -21,7 +21,9 @@ const HealthStatusError: React.FunctionComponent = () => {
   )
     return null;
 
-  const content: React.JSX.Element[] = [<span key="warning">{MessageCriticalErrors}</span>];
+  const content: React.JSX.Element[] = [
+    <span key="warning">{MessageHealthStatusCriticalErrors}</span>
+  ];
 
   if (!healthCheck.data?.entries) {
     content.push(

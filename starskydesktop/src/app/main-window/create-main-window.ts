@@ -4,19 +4,15 @@ import { GetAppVersion } from "../config/get-app-version";
 import { windowStateKeeper } from "../window-state-keeper/window-state-keeper";
 import { getNewFocusedWindow } from "./get-new-focused-window";
 import { mainWindows } from "./main-windows.const";
-import { onHeaderReceived } from "./on-headers-received";
 import { removeRememberUrl, saveRememberUrl } from "./save-remember-url";
 import { spellCheck } from "./spellcheck";
 
-async function createMainWindow(
-  openSpecificUrl: string,
-  offset = 0,
-): Promise<BrowserWindow> {
+async function createMainWindow(openSpecificUrl: string, offset = 0): Promise<BrowserWindow> {
   const mainWindowStateKeeper = await windowStateKeeper("main");
 
   const { x, y } = getNewFocusedWindow(
     mainWindowStateKeeper.x - offset,
-    mainWindowStateKeeper.y - offset,
+    mainWindowStateKeeper.y - offset
   );
 
   let newWindow = new BrowserWindow({
@@ -42,17 +38,13 @@ async function createMainWindow(
 
   mainWindowStateKeeper.track(newWindow);
 
-  const location = path.join(
-    __dirname,
-    "client/pages/redirect/reload-redirect.html",
-  );
+  const location = path.join(__dirname, "client/pages/redirect/reload-redirect.html");
 
   await newWindow.loadFile(location, {
     query: { "remember-url": openSpecificUrl },
   });
 
   spellCheck(newWindow);
-  onHeaderReceived(newWindow);
 
   newWindow.once("ready-to-show", () => {
     newWindow.show();
@@ -62,7 +54,7 @@ async function createMainWindow(
     console.log(url);
 
     return {
-      action: 'allow',
+      action: "allow",
       overrideBrowserWindowOptions: {
         webPreferences: {
           devTools: true, // allow

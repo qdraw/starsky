@@ -64,7 +64,7 @@ public class QueryRemoveItemAsyncTest
 	}
 	
 	[TestMethod]
-	public async Task RemoveAsync_Disposed()
+	public async Task Query_RemoveAsync_Disposed()
 	{
 		var addedItems = new List<FileIndexItem>
 		{
@@ -81,11 +81,11 @@ public class QueryRemoveItemAsyncTest
 		
 		// Dispose here
 		await dbContextDisposed.DisposeAsync();
-			
-		await new Query(dbContextDisposed, 
-			new AppSettings {
-				AddMemoryCache = false 
-			}, serviceScopeFactory, new FakeIWebLogger(), new FakeMemoryCache()).RemoveItemAsync(addedItems);
+
+		var service = new Query(dbContextDisposed,
+			new AppSettings { AddMemoryCache = false }, serviceScopeFactory, new FakeIWebLogger(),
+			new FakeMemoryCache());
+		await service.RemoveItemAsync(addedItems);
 			
 		var context = new InjectServiceScope(serviceScopeFactory).Context();
 		var queryFromDb = context.FileIndex.Where(p => 

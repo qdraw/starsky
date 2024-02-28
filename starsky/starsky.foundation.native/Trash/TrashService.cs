@@ -9,7 +9,6 @@ namespace starsky.foundation.native.Trash;
 [Service(typeof(ITrashService), InjectionLifetime = InjectionLifetime.Scoped)]
 public class TrashService : ITrashService
 {
-
 	/// <summary>
 	/// Is the system trash supported
 	/// </summary>
@@ -33,14 +32,15 @@ public class TrashService : ITrashService
 	/// <param name="environmentUserInteractive">Environment.UserInteractive</param>
 	/// <param name="environmentUserName">Environment.UserName</param>
 	/// <returns>true if supported, false if not supported</returns>
-	internal static bool DetectToUseSystemTrashInternal(IsOsPlatformDelegate runtimeInformationIsOsPlatform,
+	internal static bool DetectToUseSystemTrashInternal(
+		IsOsPlatformDelegate runtimeInformationIsOsPlatform,
 		bool environmentUserInteractive,
 		string environmentUserName)
 	{
 		// ReSharper disable once ConvertIfStatementToReturnStatement
 		if ( runtimeInformationIsOsPlatform(OSPlatform.Linux) ||
-			runtimeInformationIsOsPlatform(OSPlatform.FreeBSD) ||
-			environmentUserName == "root" || !environmentUserInteractive )
+		     runtimeInformationIsOsPlatform(OSPlatform.FreeBSD) ||
+		     environmentUserName == "root" || !environmentUserInteractive )
 		{
 			return false;
 		}
@@ -63,10 +63,7 @@ public class TrashService : ITrashService
 	/// <returns>operation succeed (NOT if file is gone)</returns>
 	public bool? Trash(string fullPath)
 	{
-		var currentPlatform = OperatingSystemHelper.GetPlatform();
-		var macOsTrash = MacOsTrashBindingHelper.Trash(fullPath, currentPlatform);
-		var (windowsTrash, _) = WindowsShellTrashBindingHelper.Trash(fullPath, currentPlatform);
-		return macOsTrash ?? windowsTrash;
+		return Trash([fullPath]);
 	}
 
 	public bool? Trash(List<string> fullPaths)

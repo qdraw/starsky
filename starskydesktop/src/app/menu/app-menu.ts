@@ -6,6 +6,27 @@ import { EditFile } from "../edit-file/edit-file";
 import { IsDutch } from "../i18n/i18n";
 import createMainWindow from "../main-window/create-main-window";
 import { createSettingsWindow } from "../settings-window/create-settings-window";
+import { IsRemote } from "../warmup/is-remote";
+
+function sendKeybinding(win: BrowserWindow, keyCode: string, cmdOrCtrl: boolean, shift: boolean) {
+  const modifiers = [];
+
+  if (cmdOrCtrl) {
+    const isMac = process.platform === "darwin";
+    if (isMac) {
+      modifiers.push("meta");
+    } else {
+      modifiers.push("ctrl");
+    }
+  }
+  if (shift) {
+    modifiers.push("shift");
+  }
+
+  win.webContents.sendInputEvent({ type: "keyDown", modifiers, keyCode });
+  win.webContents.sendInputEvent({ type: "char", modifiers, keyCode });
+  win.webContents.sendInputEvent({ type: "keyUp", modifiers, keyCode });
+}
 
 function AppMenu() {
   const isMac = process.platform === "darwin";
@@ -60,7 +81,14 @@ function AppMenu() {
           click: () => {
             const focusWindow = BrowserWindow.getFocusedWindow();
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            if (focusWindow) EditFile(focusWindow);
+            IsRemote().then(async (isRemote) => {
+              if (!isRemote) {
+                sendKeybinding(focusWindow, "e", true, false);
+                return;
+              }
+
+              if (focusWindow) await EditFile(focusWindow).catch(() => {});
+            });
           },
           accelerator: "CmdOrCtrl+E",
         },
@@ -116,12 +144,20 @@ function AppMenu() {
       label: IsDutch() ? "Instellingen" : "Settings",
       submenu: [
         {
-          label: IsDutch() ? "Instellingen" : "Settings",
+          label: IsDutch() ? "Verbindings instellingen" : "Connection Settings",
           click: () => {
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             createSettingsWindow();
           },
           accelerator: "CmdOrCtrl+,",
+        },
+        {
+          label: IsDutch() ? "App instellingen" : "App Settings",
+          click: () => {
+            const focusWindow = BrowserWindow.getFocusedWindow();
+            sendKeybinding(focusWindow, "k", true, true);
+          },
+          accelerator: "CmdOrCtrl+shift+k",
         },
       ],
     },
@@ -151,9 +187,7 @@ function AppMenu() {
           label: "Open in browser",
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           click: async () => {
-            await shell.openExternal(
-              BrowserWindow.getFocusedWindow().webContents.getURL()
-            );
+            await shell.openExternal(BrowserWindow.getFocusedWindow().webContents.getURL());
           },
         },
       ],
@@ -189,12 +223,7 @@ function AppMenu() {
         },
         { role: "zoom" },
         ...(isMac
-          ? [
-            { type: "separator" },
-            { role: "front" },
-            { type: "separator" },
-            { role: "window" },
-          ]
+          ? [{ type: "separator" }, { role: "front" }, { type: "separator" }, { role: "window" }]
           : [{ role: "close" }]),
       ],
     },
@@ -205,7 +234,7 @@ function AppMenu() {
           label: "Documentation website",
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           click: async () => {
-            await shell.openExternal("https://docs.qdraw.nl/download");
+            await shell.openExternal("https://docs.qdraw.nl/docs/getting-started/first-steps");
           },
         },
         {
@@ -213,9 +242,7 @@ function AppMenu() {
           // Referenced from HealthCheckForUpdates
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           click: async () => {
-            await shell.openExternal(
-              "https://github.com/qdraw/starsky/releases/latest"
-            );
+            await shell.openExternal("https://github.com/qdraw/starsky/releases/latest");
           },
         },
       ],

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.database.Helpers
@@ -16,7 +17,8 @@ namespace starsky.foundation.database.Helpers
 
 		public FileIndexItem.ExifStatus IsReadOnlyStatus(FileIndexItem fileIndexItem)
 		{
-			if ( fileIndexItem.IsDirectory == true && _appSettings.IsReadOnly(fileIndexItem.FilePath!) )
+			if ( fileIndexItem.IsDirectory == true &&
+			     _appSettings.IsReadOnly(fileIndexItem.FilePath!) )
 			{
 				return FileIndexItem.ExifStatus.DirReadOnly;
 			}
@@ -53,13 +55,16 @@ namespace starsky.foundation.database.Helpers
 
 		public static FileIndexItem.ExifStatus IsDeletedStatus(FileIndexItem? fileIndexItem)
 		{
-			return fileIndexItem?.Tags != null && fileIndexItem.Tags.Contains(TrashKeyword.TrashKeywordString) ?
-				FileIndexItem.ExifStatus.Deleted : FileIndexItem.ExifStatus.Default;
+			return fileIndexItem?.Tags != null &&
+			       fileIndexItem.Tags.Contains(TrashKeyword.TrashKeywordString)
+				? FileIndexItem.ExifStatus.Deleted
+				: FileIndexItem.ExifStatus.Default;
 		}
 
 		public static FileIndexItem.ExifStatus IsDeletedStatus(DetailView? detailView)
 		{
-			if ( !string.IsNullOrEmpty(detailView?.FileIndexItem?.Tags) && detailView.FileIndexItem.Tags.Contains(TrashKeyword.TrashKeywordString) )
+			if ( !string.IsNullOrEmpty(detailView?.FileIndexItem?.Tags) &&
+			     detailView.FileIndexItem.Tags.Contains(TrashKeyword.TrashKeywordString) )
 			{
 				return FileIndexItem.ExifStatus.Deleted;
 			}
@@ -83,6 +88,7 @@ namespace starsky.foundation.database.Helpers
 			{
 				case FileIndexItem.ExifStatus.DirReadOnly:
 					statusModel.IsDirectory = true;
+					statusModel.ImageFormat = ExtensionRolesHelper.ImageFormat.directory;
 					statusModel.Status = FileIndexItem.ExifStatus.DirReadOnly;
 					fileIndexResultsList.Add(statusModel);
 					return true;
@@ -107,6 +113,7 @@ namespace starsky.foundation.database.Helpers
 					fileIndexResultsList.Add(statusModel);
 					return true;
 			}
+
 			return false;
 		}
 
@@ -120,6 +127,7 @@ namespace starsky.foundation.database.Helpers
 					fileIndexResultsList.Add(statusModel);
 					return true;
 			}
+
 			return false;
 		}
 
@@ -132,7 +140,5 @@ namespace starsky.foundation.database.Helpers
 			statusModel.Status = FileIndexItem.ExifStatus.ReadOnly;
 			fileIndexResultsList.Add(statusModel);
 		}
-
-
 	}
 }

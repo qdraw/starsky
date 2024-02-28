@@ -11,7 +11,6 @@ using starsky.foundation.platform.Services;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
-using starskytest.Models;
 
 namespace starskytest.starsky.feature.webhtmlpublish.Services
 {
@@ -202,7 +201,8 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 				new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() });
 			var selectorStorage = new FakeSelectorStorage(storage);
 
-			var service = new WebHtmlPublishService(new FakeIPublishPreflight(), selectorStorage, null!,
+			var service = new WebHtmlPublishService(new FakeIPublishPreflight(), selectorStorage,
+				null!,
 				null!, null!, null!, new FakeIWebLogger(),
 				new FakeIThumbnailService(selectorStorage));
 			var input = new List<FileIndexItem>

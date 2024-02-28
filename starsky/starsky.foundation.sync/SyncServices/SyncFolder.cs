@@ -145,6 +145,7 @@ namespace starsky.foundation.sync.SyncServices
 				await _query.AddItemAsync(new FileIndexItem(path)
 				{
 					IsDirectory = true,
+					ImageFormat = ExtensionRolesHelper.ImageFormat.directory,
 					AddToDatabase = DateTime.UtcNow,
 					ColorClass = ColorClassParser.Color.None
 				});

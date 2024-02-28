@@ -58,8 +58,8 @@
         <WarningLevel>0</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.2" />
-        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.2"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.0"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
     </ItemGroup>
     <!-- generate xml file for swagger -->
@@ -143,6 +143,7 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\starsky.feature.demo\starsky.feature.demo.csproj"/>
+        <ProjectReference Include="..\starsky.feature.desktop\starsky.feature.desktop.csproj"/>
         <ProjectReference Include="..\starsky.feature.export\starsky.feature.export.csproj"/>
         <ProjectReference Include="..\starsky.feature.geolookup\starsky.feature.geolookup.csproj"/>
         <ProjectReference Include="..\starsky.feature.health\starsky.feature.health.csproj"/>
@@ -165,7 +166,7 @@
         <ProjectReference Include="..\starsky.foundation.sync\starsky.foundation.sync.csproj"/>
         <ProjectReference Include="..\starsky.foundation.thumbnailmeta\starsky.foundation.thumbnailmeta.csproj"/>
         <ProjectReference Include="..\starsky.foundation.worker\starsky.foundation.worker.csproj"/>
-        <ProjectReference Include="..\starskycore\starskycore.csproj"/>
+        <ProjectReference Include="..\starsky.project.web\starsky.project.web.csproj"/>
     </ItemGroup>
     <ItemGroup>
         <Content Remove="clientapp\build\*.*"/>

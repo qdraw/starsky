@@ -1,6 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
-using starskycore.ViewModels;
+using starsky.project.web.ViewModels;
 
 namespace starskytest.ViewModels
 {
@@ -12,12 +12,11 @@ namespace starskytest.ViewModels
 		{
 			var syncViewModel = new SyncViewModel
 			{
-				FilePath = "/test",
-				Status = FileIndexItem.ExifStatus.Ok
-			}; 
-            
-			Assert.AreEqual("/test",syncViewModel.FilePath);  
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,syncViewModel.Status);  
+				FilePath = "/test", Status = FileIndexItem.ExifStatus.Ok
+			};
+
+			Assert.AreEqual("/test", syncViewModel.FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, syncViewModel.Status);
 		}
 	}
 }

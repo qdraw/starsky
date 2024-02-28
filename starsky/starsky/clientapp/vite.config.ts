@@ -9,7 +9,7 @@ export default defineConfig({
     outDir: "build",
     assetsDir: "assets",
     assetsInlineLimit: 0,
-    chunkSizeWarningLimit: 600
+    chunkSizeWarningLimit: 650
   },
   optimizeDeps: {
     include: ["leaflet", "core-js", "react", "react-dom", "react-router-dom"]

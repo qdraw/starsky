@@ -11,11 +11,13 @@ using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Models;
 
 [assembly: InternalsVisibleTo("starskytest")]
+
 namespace starsky.foundation.platform.Helpers
 {
 	public static class SetupAppSettings
 	{
-		public static async Task<ServiceCollection> FirstStepToAddSingleton(ServiceCollection services)
+		public static async Task<ServiceCollection> FirstStepToAddSingleton(
+			ServiceCollection services)
 		{
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 			var configurationRoot = await AppSettingsToBuilder();
@@ -35,7 +37,8 @@ namespace starsky.foundation.platform.Helpers
 			var settings = await MergeJsonFiles(appSettings.BaseDirectoryProject);
 
 			// Make sure is wrapped in a AppContainer app
-			var utf8Bytes = JsonSerializer.SerializeToUtf8Bytes(new AppContainerAppSettings { App = settings });
+			var appContainer = new AppContainerAppSettings { App = settings };
+			var utf8Bytes = JsonSerializer.SerializeToUtf8Bytes(appContainer);
 
 			builder
 				.AddJsonStream(new MemoryStream(utf8Bytes))
@@ -117,6 +120,5 @@ namespace starsky.foundation.platform.Helpers
 
 			return serviceProvider.GetRequiredService<AppSettings>();
 		}
-
 	}
 }

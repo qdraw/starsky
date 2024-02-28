@@ -24,12 +24,12 @@ const InlineSearchSuggest: React.FunctionComponent<IInlineSearchSuggestProps> = 
 
   useEffect(() => {
     const dataFeatures = props.featuresResult?.data as IEnvFeatures | undefined;
-    if (dataFeatures?.systemTrashEnabled || dataFeatures?.useLocalDesktopUi) {
+    if (dataFeatures?.systemTrashEnabled || dataFeatures?.useLocalDesktop) {
       let newMenu = [...defaultMenu];
       if (dataFeatures?.systemTrashEnabled) {
         newMenu = newMenu.filter((item) => item.key !== "trash");
       }
-      if (dataFeatures?.useLocalDesktopUi) {
+      if (dataFeatures?.useLocalDesktop) {
         newMenu = newMenu.filter((item) => item.key !== "logout");
       }
       setDefaultMenu([...newMenu]);
@@ -63,6 +63,7 @@ const InlineSearchSuggest: React.FunctionComponent<IInlineSearchSuggestProps> = 
       name: language.key(localization.MessagePreferences),
       url: new UrlQuery().UrlPreferencesPage(),
       key: "preferences"
+      // command + shift + k -> see GlobalShortcuts
     },
     {
       name: language.key(localization.MessageLogout),

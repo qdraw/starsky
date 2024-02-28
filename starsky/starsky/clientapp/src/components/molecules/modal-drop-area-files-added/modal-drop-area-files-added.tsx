@@ -1,5 +1,6 @@
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 import Modal from "../../atoms/modal/modal";
 import ItemTextListView from "../../molecules/item-text-list-view/item-text-list-view";
@@ -12,10 +13,7 @@ interface IModalDropAreaFilesAddedProps {
 
 const ModalDropAreaFilesAdded: React.FunctionComponent<IModalDropAreaFilesAddedProps> = (props) => {
   const settings = useGlobalSettings();
-  const MessageFilesAdded = new Language(settings.language).text(
-    "Deze bestanden zijn toegevoegd",
-    "These files have been added"
-  );
+  const MessageFilesAdded = new Language(settings.language).key(localization.MessageFilesAdded);
 
   return (
     <Modal

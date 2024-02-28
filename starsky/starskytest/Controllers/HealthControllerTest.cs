@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
-using starskycore.ViewModels;
+using starsky.project.web.ViewModels;
 using starskytest.FakeMocks;
 
 namespace starskytest.Controllers

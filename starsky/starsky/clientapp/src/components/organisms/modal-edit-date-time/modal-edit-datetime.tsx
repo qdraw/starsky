@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
+import localization from "../../../localization/localization.json";
 import {
   isValidDate,
   leftPad,
@@ -28,15 +29,12 @@ const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (props) 
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageModalDatetime = language.text("Datum en tijd bewerken", "Edit date and time");
-  const MessageYear = language.text("Jaar", "Year");
-  const MessageMonth = language.text("Maand", "Month");
-  const MessageDate = language.text("Dag", "Day");
-  const MessageTime = language.text("Tijd", "Time");
-  const MessageErrorDatetime = language.text(
-    "De datum en tijd zijn incorrect ingegeven",
-    "The date and time were entered incorrectly"
-  );
+  const MessageModalDatetime = language.key(localization.MessageModalDatetime);
+  const MessageYear = language.key(localization.MessageYear);
+  const MessageMonth = language.key(localization.MessageMonth);
+  const MessageDate = language.key(localization.MessageDate);
+  const MessageTime = language.key(localization.MessageTime);
+  const MessageErrorDatetime = language.key(localization.MessageErrorDatetime);
 
   const isFormEnabled = true;
 

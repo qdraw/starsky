@@ -1,5 +1,6 @@
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
+import localization from "../../../localization/localization.json";
 import { BrowserDetect } from "../../../shared/browser-detect";
 import { DifferenceInDate } from "../../../shared/date";
 import { Language } from "../../../shared/language";
@@ -35,24 +36,15 @@ const HealthCheckForUpdates: React.FunctionComponent = () => {
 
   const language = new Language(settings.language);
 
-  const ReleasesUrlToken =
-    "<a target='_blank' href='https://github.com/qdraw/starsky/releases/latest' " +
-    "rel='noopener'> {releasesToken}</a>";
-  let WhereToFindRelease = language.token(
-    ReleasesUrlToken,
+  let WhereToFindRelease = language.key(
+    localization.MessageWhereToFindReleaseReleasesUrlTokenHtml,
     ["{releasesToken}"],
-    [language.text("Ga naar het release overzicht", "Go to the release overview")]
+    [language.key(localization.MessageWhereToFindReleaseReleasesUrlTokenContent)]
   );
   if (new BrowserDetect().IsElectronApp())
-    WhereToFindRelease = language.text(
-      "Ga naar het Help menu en dan release overzicht",
-      "Go to the release overview"
-    );
+    WhereToFindRelease = language.key(localization.WhereToFindReleaseElectronApp);
 
-  const MessageNewVersionUpdateToken = language.text(
-    "Er is een nieuwe versie beschikbaar {WhereToFindRelease}",
-    "A new version is available {WhereToFindRelease}"
-  );
+  const MessageNewVersionUpdateToken = language.key(localization.MessageNewVersionUpdateToken);
 
   const MessageNewVersionUpdateHtml = language.token(
     MessageNewVersionUpdateToken,

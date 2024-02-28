@@ -12,6 +12,9 @@ docs/advanced-options/starsky
 docs/advanced-options/starskydesktop
 docs/advanced-options/starsky-tools
 
+# show desktop folder
+!docs/getting-started/desktop
+
 # the output of the build step
 build
 

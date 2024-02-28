@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import Preloader from "../components/atoms/preloader/preloader";
-import Archive from "../containers/archive";
+import Archive from "../containers/archive/archive";
 import { Login } from "../containers/login";
 import Search from "../containers/search";
 import Trash from "../containers/trash";

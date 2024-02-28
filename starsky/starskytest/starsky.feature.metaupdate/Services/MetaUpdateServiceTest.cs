@@ -17,7 +17,6 @@ using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
-using starskytest.Models;
 
 namespace starskytest.starsky.feature.metaupdate.Services
 {

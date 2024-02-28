@@ -4,6 +4,7 @@ import useGlobalSettings from "../../../hooks/use-global-settings";
 import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import useLocation from "../../../hooks/use-location/use-location";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
+import localization from "../../../localization/localization.json";
 import FetchPost from "../../../shared/fetch/fetch-post";
 import { FileListCache } from "../../../shared/filelist-cache";
 import { Language } from "../../../shared/language";
@@ -12,6 +13,8 @@ import { Select } from "../../../shared/select";
 import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
 import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-menu-toggle";
+import MenuOptionModal from "../../atoms/menu-option-modal/menu-option-modal.tsx";
+import MenuOption from "../../atoms/menu-option/menu-option.tsx";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import Preloader from "../../atoms/preloader/preloader";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
@@ -20,9 +23,6 @@ import { MenuOptionSelectionUndo } from "../../molecules/menu-option-selection-u
 import { MenuSelectCount } from "../../molecules/menu-select-count/menu-select-count";
 import ModalForceDelete from "../modal-force-delete/modal-force-delete";
 import NavContainer from "../nav-container/nav-container";
-import MenuOption from "../../atoms/menu-option/menu-option.tsx";
-import localization from "../../../localization/localization.json";
-import MenuOptionModal from "../../atoms/menu-option-modal/menu-option-modal.tsx";
 
 interface IMenuTrashProps {
   state: IArchiveProps;
@@ -34,7 +34,7 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({ state, dispatch }
   const language = new Language(settings.language);
 
   // Content
-  const MessageSelectAction = language.text("Selecteer", "Select");
+  const MessageSelectAction = language.key(localization.MessageSelectAction);
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);

@@ -20,21 +20,7 @@ public class TrashController : Controller
 	}
 
 	/// <summary>
-	/// Is the system trash supported
-	/// </summary>
-	/// <returns>bool with json (IActionResult Result)</returns>
-	/// <response code="200">the item including the updated content</response>
-	/// <response code="401">User unauthorized</response>
-	[ProducesResponseType(typeof(bool), 200)]
-	[HttpGet("/api/trash/detect-to-use-system-trash")]
-	[Produces("application/json")]
-	public IActionResult DetectToUseSystemTrash()
-	{
-		return Json(_moveToTrashService.DetectToUseSystemTrash());
-	}
-
-	/// <summary>
-	/// (beta) Move a file to the trash
+	/// Move a file to the trash
 	/// </summary>
 	/// <param name="f">subPath filepath to file, split by dot comma (;)</param>
 	/// <param name="collections">stack collections</param>
@@ -56,7 +42,8 @@ public class TrashController : Controller
 			return BadRequest("No input files");
 		}
 
-		var fileIndexResultsList = await _moveToTrashService.MoveToTrashAsync(inputFilePaths.ToList(), collections);
+		var fileIndexResultsList =
+			await _moveToTrashService.MoveToTrashAsync(inputFilePaths.ToList(), collections);
 
 		return Json(fileIndexResultsList);
 	}

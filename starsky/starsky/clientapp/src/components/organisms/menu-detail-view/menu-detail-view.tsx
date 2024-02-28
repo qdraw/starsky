@@ -23,12 +23,13 @@ import MenuOption from "../../atoms/menu-option/menu-option";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import Preloader from "../../atoms/preloader/preloader";
 import IsSearchQueryMenuSearchItem from "../../molecules/is-search-query-menu-search-item/is-search-query-menu-search-item";
+import MenuOptionDesktopEditorOpenSingle from "../../molecules/menu-option-desktop-editor-open-single/menu-option-desktop-editor-open-single.tsx";
+import MenuOptionRotateImage90 from "../../molecules/menu-option-rotate-image-90/menu-option-rotate-image-90.tsx";
 import ModalDetailviewRenameFile from "../modal-detailview-rename-file/modal-detailview-rename-file";
 import ModalDownload from "../modal-download/modal-download";
 import ModalMoveFile from "../modal-move-file/modal-move-file";
 import ModalPublishToggleWrapper from "../modal-publish/modal-publish-toggle-wrapper";
 import { GoToParentFolder } from "./internal/go-to-parent-folder";
-import MenuOptionRotateImage90 from "../../molecules/menu-option-rotate-image-90/menu-option-rotate-image-90.tsx";
 
 interface MenuDetailViewProps {
   state: IDetailView;
@@ -58,6 +59,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({ state, d
   const MessageMoveToTrash = language.key(localization.MessageMoveToTrash);
   const MessageIncludingColonWord = language.key(localization.MessageIncludingColonWord);
   const MessageRestoreFromTrash = language.key(localization.MessageRestoreFromTrash);
+  const MessageLabels = language.key(localization.MessageLabels);
 
   const history = useLocation();
 
@@ -293,7 +295,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({ state, d
               event.key === "Enter" && toggleLabels();
             }}
           >
-            Labels
+            {MessageLabels}
           </button>
 
           <MoreMenu setEnableMoreMenu={setEnableMoreMenu} enableMoreMenu={enableMoreMenu}>
@@ -358,6 +360,12 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({ state, d
               isSet={isModalPublishOpen}
               set={setIsModalPublishOpen}
               localization={localization.MessagePublish}
+            />
+
+            <MenuOptionDesktopEditorOpenSingle
+              subPath={state.subPath}
+              isReadOnly={state.isReadOnly}
+              collections={state.collections === true}
             />
           </MoreMenu>
         </div>

@@ -17,9 +17,9 @@ public class TrashControllerTest
 		var controller = new TrashController(
 			new FakeIMoveToTrashService(new List<FileIndexItem>()));
 		var result = await controller.TrashMoveAsync(null!, true) as BadRequestObjectResult;
-		Assert.AreEqual(400,result?.StatusCode);
+		Assert.AreEqual(400, result?.StatusCode);
 	}
-	
+
 	[TestMethod]
 	public async Task TrashControllerTest_NotFound()
 	{
@@ -27,35 +27,21 @@ public class TrashControllerTest
 			new FakeIMoveToTrashService(new List<FileIndexItem>()));
 		var result = await controller.TrashMoveAsync("/test.jpg", true) as JsonResult;
 		var resultValue = result?.Value as List<FileIndexItem>;
-		
+
 		Assert.AreEqual(1, resultValue?.Count);
 	}
-	
+
 	[TestMethod]
 	public async Task TrashControllerTest_Ok()
 	{
 		var controller = new TrashController(
-			new FakeIMoveToTrashService(new List<FileIndexItem>{new FileIndexItem("/test.jpg")
+			new FakeIMoveToTrashService(new List<FileIndexItem>
 			{
-				Status = FileIndexItem.ExifStatus.Ok
-			}}));
+				new FileIndexItem("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }
+			}));
 		var result = await controller.TrashMoveAsync("/test.jpg", true) as JsonResult;
 		var resultValue = result?.Value as List<FileIndexItem>;
-		
+
 		Assert.AreEqual(1, resultValue?.Count);
-	}
-	
-	[TestMethod]
-	public void DetectToUseSystemTrash_Ok()
-	{
-		var controller = new TrashController(
-			new FakeIMoveToTrashService(new List<FileIndexItem>()));
-		
-		var result = controller.DetectToUseSystemTrash() as JsonResult;
-		
-		var tryParseResult = bool.TryParse(result?.Value?.ToString(), out var resultValue);
-		
-		Assert.AreEqual(true, tryParseResult);
-		Assert.AreEqual(true, resultValue);
 	}
 }

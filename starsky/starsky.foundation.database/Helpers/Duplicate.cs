@@ -16,11 +16,12 @@ namespace starsky.foundation.database.Helpers
 		}
 
 		/// <summary>
-		/// Check and remove duplicate 
+		/// Check and remove duplicate from database
 		/// </summary>
 		/// <param name="databaseSubFolderList"></param>
 		/// <returns></returns>
-		public async Task<List<FileIndexItem>> RemoveDuplicateAsync(List<FileIndexItem> databaseSubFolderList)
+		public async Task<List<FileIndexItem>> RemoveDuplicateAsync(
+			List<FileIndexItem> databaseSubFolderList)
 		{
 			// Get a list of duplicate items
 			var duplicateItemsByFilePath = databaseSubFolderList.GroupBy(item => item.FilePath)
@@ -37,6 +38,7 @@ namespace starsky.foundation.database.Helpers
 					await _query.RemoveItemAsync(duplicateItems[i]);
 				}
 			}
+
 			return databaseSubFolderList;
 		}
 	}

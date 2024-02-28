@@ -25,6 +25,7 @@
         "app__EnablePackageTelemetryDebug": "true",
         "app__DemoUnsafeDeleteStorageFolder": "false",
         "app__useSystemTrash": "true",
+        "app__UseLocalDesktop": "true",
         "app__accountRolesByEmailRegisterOverwrite__demo@qdraw.nl": "Administrator",
         "app__ThumbnailGenerationIntervalInMinutes": "15",
         "___app__OpenTelemetry__TracesEndpoint": "http://localhost:4318/v1/traces",

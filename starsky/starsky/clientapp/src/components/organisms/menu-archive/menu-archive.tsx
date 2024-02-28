@@ -14,6 +14,8 @@ import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-men
 import MenuOptionModal from "../../atoms/menu-option-modal/menu-option-modal";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
+import MenuOptionDesktopEditorOpenSelectionNoSelectWarning from "../../molecules/menu-option-desktop-editor-open-selection-no-select-warning/menu-option-desktop-editor-open-selection-no-select-warning";
+import MenuOptionDesktopEditorOpenSelection from "../../molecules/menu-option-desktop-editor-open-selection/menu-option-desktop-editor-open-selection";
 import MenuOptionMoveFolderToTrash from "../../molecules/menu-option-move-folder-to-trash/menu-option-move-folder-to-trash";
 import MenuOptionMoveToTrash from "../../molecules/menu-option-move-to-trash/menu-option-move-to-trash";
 import { MenuOptionSelectionAll } from "../../molecules/menu-option-selection-all/menu-option-selection-all";
@@ -38,6 +40,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
   // Content
   const MessageSelectAction = language.key(localization.MessageSelectAction);
+  const MessageLabels = language.key(localization.MessageLabels);
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
   const [enableMoreMenu, setEnableMoreMenu] = React.useState(false);
@@ -170,6 +173,11 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
           <MenuSelectCount select={select} removeSidebarSelection={removeSidebarSelection} />
 
+          <MenuOptionDesktopEditorOpenSelectionNoSelectWarning
+            isReadOnly={readOnly}
+            select={select}
+          />
+
           {!select ? (
             <button
               className="item item--select"
@@ -194,7 +202,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
               }}
               onClick={() => toggleLabels()}
             >
-              Labels
+              {MessageLabels}
             </button>
           ) : null}
 
@@ -261,6 +269,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
               {/* onClick={() => allSelection()} */}
               <MenuOptionSelectionAll select={select} state={state} allSelection={allSelection} />
+
               {select.length >= 1 ? (
                 <>
                   <MenuOptionModal
@@ -284,8 +293,16 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                     setSelect={setSelect}
                     isReadOnly={readOnly}
                   />
+
+                  <MenuOptionDesktopEditorOpenSelection
+                    isReadOnly={readOnly}
+                    select={select}
+                    state={state}
+                    setEnableMoreMenu={setEnableMoreMenu}
+                  />
                 </>
               ) : null}
+
               <MenuOptionModal
                 isReadOnly={false}
                 isSet={isDisplayOptionsOpen}
@@ -293,6 +310,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                 localization={localization.MessageDisplayOptions}
                 testName="display-options"
               />
+
               <MenuOptionModal
                 setEnableMoreMenu={setEnableMoreMenu}
                 isReadOnly={false}
@@ -301,6 +319,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                 set={setIsSynchronizeManuallyOpen}
                 localization={localization.MessageSynchronizeManually}
               />
+
               {state ? (
                 <UploadMenuItem
                   readOnly={readOnly}

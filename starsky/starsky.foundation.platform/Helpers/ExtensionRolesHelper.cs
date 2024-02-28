@@ -372,7 +372,10 @@ namespace starsky.foundation.platform.Helpers
 			mp4 = 50,
 
 			// archives
-			zip = 60
+			zip = 60,
+
+			// folder
+			directory = 1000
 		}
 
 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ArchiveAction } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
+import localization from "../../../localization/localization.json";
 import { CastToInterface } from "../../../shared/cast-to-interface";
 import FetchGet from "../../../shared/fetch/fetch-get";
 import FetchPost from "../../../shared/fetch/fetch-post";
@@ -27,19 +28,10 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageFeatureName = language.text("Nieuwe map aanmaken", "Create new folder");
-  const MessageNonValidDirectoryName = language.text(
-    "Controleer de naam, deze map kan niet zo worden aangemaakt",
-    "Check the name, this folder cannot be created in this way"
-  );
-  const MessageGeneralMkdirCreateError = language.text(
-    "Er is misgegaan met het aanmaken van deze map",
-    "An error occurred while creating this folder"
-  );
-  const MessageDirectoryExistError = language.text(
-    "De map bestaat al, probeer een andere naam",
-    "The folder already exists, try a different name"
-  );
+  const MessageCreateNewFolderFeature = language.key(localization.MessageCreateNewFolderFeature);
+  const MessageNonValidDirectoryName = language.key(localization.MessageNonValidDirectoryName);
+  const MessageGeneralMkdirCreateError = language.key(localization.MessageGeneralMkdirCreateError);
+  const MessageDirectoryExistError = language.key(localization.MessageDirectoryExistError);
 
   // to show errors
   const useErrorHandler = (initialState: string | null) => {
@@ -124,7 +116,7 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
       }}
     >
       <div className="content">
-        <div className="modal content--subheader">{MessageFeatureName}</div>
+        <div className="modal content--subheader">{MessageCreateNewFolderFeature}</div>
         <div className="modal content--text">
           <FormControl
             name="directoryname"
@@ -149,7 +141,7 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
             data-test="modal-archive-mkdir-btn-default"
             onClick={pushRenameChange}
           >
-            {isLoading ? "Loading..." : MessageFeatureName}
+            {isLoading ? "Loading..." : MessageCreateNewFolderFeature}
           </button>
         </div>
       </div>

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ArchiveAction } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location/use-location";
+import localization from "../../../localization/localization.json";
 import FetchPost from "../../../shared/fetch/fetch-post";
 import { FileExtensions } from "../../../shared/file-extensions";
 import { FileListCache } from "../../../shared/filelist-cache";
@@ -21,15 +22,11 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (pr
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageRenameFolder = language.text("Huidige mapnaam wijzigen", "Rename current folder");
-  const MessageNonValidDirectoryName: string = language.text(
-    "Deze mapnaam is niet valide",
-    "Directory name is not valid"
+  const MessageRenameFolder = language.key(localization.MessageRenameCurrentFolder);
+  const MessageNonValidDirectoryName: string = language.key(
+    localization.MessageNonValidDirectoryName
   );
-  const MessageGeneralError: string = language.text(
-    "Er is iets misgegaan met de aanvraag, probeer het later opnieuw",
-    "Something went wrong with the request, please try again later"
-  );
+  const MessageGeneralError: string = language.key(localization.MessageErrorGenericFail);
 
   // to show errors
   const useErrorHandler = (initialState: string | null) => {

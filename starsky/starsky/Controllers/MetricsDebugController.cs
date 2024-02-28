@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.worker.CpuEventListener.Interfaces;
-using starskycore.ViewModels;
+using starsky.project.web.ViewModels;
 
 namespace starsky.Controllers;
 
@@ -18,9 +18,6 @@ public class MetricsDebugController : Controller
 
 	public IActionResult Index()
 	{
-		return Json(new MetricsDebugViewModel
-		{
-			CpuUsageMean = _cpuUsageListener.CpuUsageMean,
-		});
+		return Json(new MetricsDebugViewModel { CpuUsageMean = _cpuUsageListener.CpuUsageMean, });
 	}
 }

@@ -1,11 +1,12 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import { LanguageLocalizationExample } from "../../../interfaces/ILanguageLocalization";
 import MenuOption from "./menu-option";
 
 describe("MenuOption component", () => {
   it("expect content", () => {
     render(
       <MenuOption
-        localization={{ nl: "Content", en: "Content" }}
+        localization={LanguageLocalizationExample}
         onClickKeydown={() => {}}
         testName="test"
         isReadOnly={false}
@@ -13,7 +14,7 @@ describe("MenuOption component", () => {
     );
 
     expect(screen.getByTestId("test")).toBeTruthy();
-    expect(screen.getByTestId("test").innerHTML).toBe("Content");
+    expect(screen.getByTestId("test").innerHTML).toBe(LanguageLocalizationExample.en);
   });
 
   it("expect child no localisation field", () => {
@@ -30,7 +31,7 @@ describe("MenuOption component", () => {
   it("renders correctly with default props", () => {
     render(
       <MenuOption
-        localization={{ nl: "Dutch", en: "English" }}
+        localization={LanguageLocalizationExample}
         onClickKeydown={() => {}}
         testName="test-menu-option"
         isReadOnly={false}
@@ -44,7 +45,7 @@ describe("MenuOption component", () => {
   it("renders correctly with custom props", () => {
     render(
       <MenuOption
-        localization={{ nl: "Dutch", en: "English" }}
+        localization={LanguageLocalizationExample}
         onClickKeydown={() => {}}
         testName="test-menu-option1"
         isReadOnly={false}
@@ -59,7 +60,7 @@ describe("MenuOption component", () => {
     render(
       <MenuOption
         isReadOnly={false}
-        localization={{ nl: "Dutch", en: "English" }}
+        localization={LanguageLocalizationExample}
         onClickKeydown={onClickKeydownMock}
         testName="test-menu-option"
       />
@@ -74,7 +75,7 @@ describe("MenuOption component", () => {
     render(
       <MenuOption
         isReadOnly={false}
-        localization={{ nl: "Dutch", en: "English" }}
+        localization={LanguageLocalizationExample}
         onClickKeydown={onClickKeydownMock}
         testName="test-menu-option"
       />

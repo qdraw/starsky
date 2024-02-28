@@ -1,6 +1,7 @@
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 
 interface ItemListProps {
@@ -27,7 +28,7 @@ const ItemTextListView: React.FunctionComponent<ItemListProps> = (props) => {
   // Content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageNoPhotos = language.text("Er zijn geen foto's", "There are no pictures");
+  const MessageNoPhotos = language.key(localization.MessageNoPhotos);
 
   if (!props.fileIndexItems)
     return (
