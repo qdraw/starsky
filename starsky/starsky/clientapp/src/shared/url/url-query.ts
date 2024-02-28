@@ -10,6 +10,9 @@ export class UrlQuery {
   }
 
   public UrlHomeIndexPage(locationHash: string): string {
+    if (!IsRelativeUrl(locationHash)) {
+      locationHash = "/";
+    }
     return document.location.pathname.indexOf(this.prefix) === -1
       ? `${new URLPath().StartOnSlash(locationHash)}`
       : `${this.prefix}${new URLPath().StartOnSlash(locationHash)}`;
