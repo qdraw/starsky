@@ -4,6 +4,7 @@ import useLocation from "../../../hooks/use-location/use-location";
 import { IDetailView, newDetailView } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { newIFileIndexItem } from "../../../interfaces/IFileIndexItem";
+import localization from "../../../localization/localization.json";
 import FetchPost from "../../../shared/fetch/fetch-post";
 import { FileExtensions } from "../../../shared/file-extensions";
 import { FileListCache } from "../../../shared/filelist-cache";
@@ -25,19 +26,12 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageNonValidExtension: string = language.text(
-    "Dit bestand kan zo niet worden weggeschreven",
-    "This file cannot be saved"
+  const MessageNonValidExtension = language.key(localization.MessageNonValidExtension);
+  const MessageChangeToDifferentExtension = language.key(
+    localization.MessageChangeToDifferentExtension
   );
-  const MessageChangeToDifferentExtension = language.text(
-    "Let op! Je veranderd de extensie van het bestand, " + "deze kan hierdoor onleesbaar worden",
-    "Pay attention! You change the file extension, which can make it unreadable"
-  );
-  const MessageGeneralError: string = language.text(
-    "Er is iets misgegaan met de aanvraag, probeer het later opnieuw",
-    "Something went wrong with the request, please try again later"
-  );
-  const MessageRenameFileName = language.text("Bestandsnaam wijzigen", "Rename file name");
+  const MessageRenameServerError = language.key(localization.MessageRenameServerError);
+  const MessageRenameFileName = language.key(localization.MessageRenameFileName);
 
   // Fallback for no context
   if (!state) {
@@ -130,7 +124,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
     const result = await FetchPost(new UrlQuery().UrlDiskRename(), bodyParams.toString());
 
     if (result.statusCode !== 200) {
-      setError(MessageGeneralError);
+      setError(MessageRenameServerError);
       // and renewable
       setIsLoading(false);
       setIsFormEnabled(true);

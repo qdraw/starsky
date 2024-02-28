@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location/use-location";
 import { SortType } from "../../../interfaces/IArchive";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 import { URLPath } from "../../../shared/url-path";
 import Modal from "../../atoms/modal/modal";
@@ -17,13 +18,25 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageDisplayOptions = language.text("Weergave opties", "Display options");
-  const MessageSwitchButtonCollectionsOff = language.text("Toon raw bestanden", "Show raw files");
-  const MessageSwitchButtonCollectionsOn = language.text("Verberg raw bestanden", "Hide Raw files");
-  const MessageSwitchButtonIsSingleItemOff = language.text("Alles inladen", "Load everything");
-  const MessageSwitchButtonIsSingleItemOn = language.text("Klein inladen", "Small loading");
-  const MessageSwitchButtonIsSocketOn = language.text("Realtime updates", "Realtime updates");
-  const MessageSwitchButtonIsSocketOff = language.text("Ververs zelf", "Refresh yourself");
+  const MessageDisplayOptions = language.key(localization.MessageDisplayOptions);
+  const MessageDisplayOptionsSwitchButtonCollectionsOff = language.key(
+    localization.MessageDisplayOptionsSwitchButtonCollectionsOff
+  );
+  const MessageDisplayOptionsSwitchButtonCollectionsOn = language.key(
+    localization.MessageDisplayOptionsSwitchButtonCollectionsOn
+  );
+  const MessageDisplayOptionsSwitchButtonIsSingleItemOff = language.key(
+    localization.MessageDisplayOptionsSwitchButtonIsSingleItemOff
+  );
+  const MessageDisplayOptionsSwitchButtonIsSingleItemOn = language.key(
+    localization.MessageDisplayOptionsSwitchButtonIsSingleItemOn
+  );
+  const MessageDisplayOptionsSwitchButtonIsSocketOn = language.key(
+    localization.MessageDisplayOptionsSwitchButtonIsSocketOn
+  );
+  const MessageDisplayOptionsSwitchButtonIsSocketOff = language.key(
+    localization.MessageDisplayOptionsSwitchButtonIsSocketOff
+  );
 
   const history = useLocation();
 
@@ -98,9 +111,9 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
             isOn={!collections}
             data-test="toggle-collections"
             isEnabled={true}
-            leftLabel={MessageSwitchButtonCollectionsOn}
+            leftLabel={MessageDisplayOptionsSwitchButtonCollectionsOn}
             onToggle={() => toggleCollections()}
-            rightLabel={MessageSwitchButtonCollectionsOff}
+            rightLabel={MessageDisplayOptionsSwitchButtonCollectionsOff}
           />
         </div>
         <div className="modal content--subheader">
@@ -108,8 +121,8 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
             data-test="toggle-slow-files"
             isOn={isAlwaysLoadImage}
             isEnabled={true}
-            leftLabel={MessageSwitchButtonIsSingleItemOn}
-            rightLabel={MessageSwitchButtonIsSingleItemOff}
+            leftLabel={MessageDisplayOptionsSwitchButtonIsSingleItemOn}
+            rightLabel={MessageDisplayOptionsSwitchButtonIsSingleItemOff}
             onToggle={() => toggleSlowFiles()}
           />
         </div>
@@ -118,9 +131,9 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
             isOn={isUseSockets}
             data-test="toggle-sockets"
             isEnabled={true}
-            leftLabel={MessageSwitchButtonIsSocketOn}
+            leftLabel={MessageDisplayOptionsSwitchButtonIsSocketOn}
             onToggle={() => toggleSockets()}
-            rightLabel={MessageSwitchButtonIsSocketOff}
+            rightLabel={MessageDisplayOptionsSwitchButtonIsSocketOff}
           />
         </div>
         <div className="modal content--text">

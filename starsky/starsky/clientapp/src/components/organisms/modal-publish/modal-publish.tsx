@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useInterval from "../../../hooks/use-interval";
+import localization from "../../../localization/localization.json";
 import { ExportIntervalUpdate } from "../../../shared/export/export-interval-update";
 import { ProcessingState } from "../../../shared/export/processing-state";
 import FetchGet from "../../../shared/fetch/fetch-get";
@@ -27,35 +28,17 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessagePublishSelection = language.text("Publiceer selectie", "Publish selection");
-  const MessageGenericExportFail = language.text(
-    "Er is iets misgegaan met exporteren",
-    "Something went wrong with exporting"
-  );
-  const MessageRetryExportFail = language.text("Probeer het opnieuw", "Retry this");
-
-  const MessageExportReady = language.text(
-    "Het bestand {createZipKey} is klaar met exporteren.",
-    "The file {createZipKey} has finished exporting."
-  );
-  const MessageDownloadAsZipArchive = language.text(
-    "Download als zip-archief",
-    "Download as a zip archive"
-  );
-  const MessageOneMomentPlease = language.text(
-    "Een moment geduld alstublieft",
-    "One moment please"
-  );
-  const MessageItemName = language.text("Waar gaat het item over?", "What is the item about?");
-  const MessageItemNameInUse = language.text(
-    "Deze naam is al in gebruik, kies een andere naam",
-    "This name is already in use, please choose another name"
-  );
-  const MessagePublishProfileName = language.text("Profiel instelling", "Profile setting");
-
-  const MessagePublishProfileNamesErrored = language.text(
-    "Profiel instelling: {publishProfileNames} bevat bestand locatie fouten",
-    "Profile setting: {publishProfileNames} contains filepath errors"
+  const MessagePublishSelection = language.key(localization.MessagePublishSelection);
+  const MessageGenericExportFail = language.key(localization.MessageGenericExportFail);
+  const MessageRetryExportFail = language.key(localization.MessageRetryExportFail);
+  const MessageExportReady = language.key(localization.MessageExportReady);
+  const MessageDownloadAsZipArchive = language.key(localization.MessageDownloadAsZipArchive);
+  const MessageOneMomentPlease = language.key(localization.MessageOneMomentPlease);
+  const MessageItemName = language.key(localization.MessageItemName);
+  const MessageItemNameInUse = language.key(localization.MessageItemNameInUse);
+  const MessagePublishProfileName = language.key(localization.MessagePublishProfileName);
+  const MessagePublishProfileNamesErrored = language.key(
+    localization.MessagePublishProfileNamesErrored
   );
 
   const [isProcessing, setIsProcessing] = React.useState(ProcessingState.default);

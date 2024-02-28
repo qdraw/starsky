@@ -189,6 +189,11 @@
     "nl": "Alles selecteren",
     "de": "Alles auswählen"
   },
+  "MessageAllName": {
+    "en": "All",
+    "nl": "Alles",
+    "de": "Alles"
+  },
   "MessageSelectFurther": {
     "en": "Select further",
     "nl": "Verder selecteren",
@@ -203,11 +208,6 @@
     "en": "Create folder",
     "nl": "Map maken",
     "de": "Ordner erstellen"
-  },
-  "MessageDisplayOptions": {
-    "en": "Display options",
-    "nl": "Weergave opties",
-    "de": "Anzeigeoptionen"
   },
   "MessageRenameDir": {
     "en": "Rename",
@@ -243,6 +243,11 @@
     "en": "This video is not found",
     "nl": "Deze video is niet gevonden",
     "de": "Dieses Video wurde nicht gefunden"
+  },
+  "MessageColorClassIsUpdated": {
+    "en": "Colorclass is updated",
+    "nl": "Colorclass is bijgewerkt",
+    "de": "Farbklasse wurde aktualisiert"
   },
   "ColorClassColour0": {
     "en": "Colorless",
@@ -489,9 +494,509 @@
     "nl": "Controleer je email adres",
     "de": "Überprüfen Sie Ihre E-Mail-Adresse"
   },
+  "MessagePasswordToShort": {
+    "en": "Use at least 8 characters for your password",
+    "nl": "Gebruik minimaal 8 tekens voor je wachtwoord",
+    "de": "Verwenden Sie mindestens 8 Zeichen für Ihr Passwort"
+  },
+  "MessageRejectedBadRequest": {
+    "en": "This request was rejected because the security requirements were not met  (Error 400)",
+    "nl": "Dit verzoek is afgewezen aangezien er niet voldaan is aan de beveiligingseisen (Error 400)",
+    "de": "Dieses Anfrage wurde abgelehnt, weil die Sicherheitsanforderungen nicht erfüllt wurden  (Fehler 400)"
+  },
+  "MessageRegistrationTurnedOff": {
+    "en": "Registration is turned off",
+    "nl": "Registratie is uitgezet",
+    "de": "Die Registrierung ist deaktiviert"
+  },
+  "MessageSignInInstead": {
+    "en": "Sign in instead",
+    "nl": "In plaats daarvan inloggen",
+    "de": "Stattdessen anmelden"
+  },
+  "MessageLegalCreateAccountHtml": {
+    "en": "By creating an account you agree to <a href=\"/legal/toc.en.html\" data-test=\"toc\">Starsky's Conditions of Use</a>. Please see our <a href=\"/legal/privacy-policy.en.html\" data-test=\"privacy\">Privacy</a> Notice and our <a href=\"/legal/privacy-policy.en.html#cookie\">Cookies Notice</a>",
+    "nl": "Door het creëren van een account gaat u akkoord met de <a href=\"/legal/toc.nl.html\" data-test=\"toc\">Algemene Voorwaarden</a> van Starsky. Raadpleeg en bekijk hier onze <a href=\"/legal/privacy-policy.nl.html\" data-test=\"privacy\">Privacykennisgeving</a> en onze <a href=\"/legal/privacy-policy.nl.html#cookie\">Cookieverklaring</a>.",
+    "de": "Durch das Erstellen eines Kontos stimmen Sie den <a href=\"/legal/toc.en.html\" data-test=\"toc\">Allgemeinen Geschäftsbedingungen</a> von Starsky zu. Bitte beachten Sie unsere <a href=\"/legal/privacy-policy.en.html\" data-test=\"privacy\">Datenschutzerklärung</a> und unsere <a href=\"/legal/privacy-policy.en.html#cookie\">Cookie-Richtlinie</a>."
+  },
+  "MessageFieldMaxLength": {
+    "en": "The field below can have a maximum of {maxlength} characters",
+    "nl": "Het onderstaande veld mag maximaal {maxlength} tekens hebben",
+    "de": "Das Feld unten kann maximal {maxlength} Zeichen enthalten"
+  },
+  "MessageWrongUsernamePassword": {
+    "en": "Your username or password is incorrect. Try again",
+    "nl": "Je gebruikersnaam of wachtwoord is niet juist. Probeer het opnieuw",
+    "de": "Ihr Benutzername oder Ihr Passwort ist falsch. Bitte versuchen Sie es erneut."
+  },
+  "MessageLockedOut": {
+    "en": "You've tried to login too many times, please try again in an hour",
+    "nl": "Je hebt te vaak geprobeerd in te loggen, probeer het over een uur nog een keer",
+    "de": "Sie haben zu oft versucht, sich anzumelden. Bitte versuchen Sie es in einer Stunde erneut."
+  },
+  "MessageConnection": {
+    "en": "No connection is possible, please try again later",
+    "nl": "Er is geen verbinding mogelijk, probeer het later opnieuw",
+    "de": "Es ist keine Verbindung möglich, bitte versuchen Sie es später erneut."
+  },
+  "MessageDatabaseConnection": {
+    "en": "There are database connection issues. Check and edit the appsettings",
+    "nl": "Er zijn problemen met de verbinding met de database. Controleer en pas de appsettings aan",
+    "de": "Es gibt Probleme mit der Verbindung zur Datenbank. Überprüfen und bearbeiten Sie die App-Einstellungen."
+  },
+  "LogoutWarning": {
+    "en": "Do you want to log out?",
+    "nl": "Wil je uitloggen?",
+    "de": "Möchten Sie sich abmelden?"
+  },
+  "MessageStayLoggedIn": {
+    "en": "Stay logged in",
+    "nl": "Blijf ingelogd",
+    "de": "Angemeldet bleiben"
+  },
+  "MessageLogin": {
+    "en": "Login",
+    "nl": "Inloggen",
+    "de": "Anmelden"
+  },
+  "MessageCreateAccount": {
+    "en": "Create account",
+    "nl": "Account maken",
+    "de": "Konto erstellen"
+  },
+  "MessageMore": {
+    "en": "More",
+    "nl": "Meer",
+    "de": "Mehr"
+  },
+  "MessagePrevious": {
+    "en": "Previous",
+    "nl": "Vorige",
+    "de": "Vorherige"
+  },
+  "MessageNext": {
+    "en": "Next",
+    "nl": "Volgende",
+    "de": "Nächste"
+  },
+  "MessageAddName": {
+    "en": "Hinzufügen zu",
+    "nl": "Toevoegen",
+    "de": "Mehr"
+  },
+  "MessageOverwriteName": {
+    "en": "Overwrite",
+    "nl": "Overschrijven",
+    "de": "Überschreiben"
+  },
+  "MessageTitleName": {
+    "en": "Title",
+    "nl": "Titel",
+    "de": "Titel"
+  },
+  "MessageInfoName": {
+    "en": "Info",
+    "nl": "Info",
+    "de": "Info"
+  },
+  "MessageWriteErrorReadOnly": {
+    "en": "One or more files are read only. Only the files with write permissions have been updated.",
+    "nl": "Eén of meerdere bestanden zijn alleen lezen. Alleen de bestanden met schrijfrechten zijn geupdate.",
+    "de": "Eine oder mehrere Dateien sind schreibgeschützt. Es wurden nur die Dateien mit Schreibrechten aktualisiert."
+  },
+  "MessageErrorNotFoundSourceMissingRunSync": {
+    "en": "One or more files are already gone. Only the files that are present are updated. Run a manual sync",
+    "nl": "Eén of meerdere bestanden zijn al verdwenen. Alleen de bestanden die wel aanwezig zijn geupdate. Draai een handmatige sync",
+    "de": "Eine oder mehrere Dateien sind bereits verschwunden. Es werden nur die vorhandenen Dateien aktualisiert. Führen Sie eine manuelle Synchronisierung durch"
+  },
+  "MessageSearchAndReplaceNameLong": {
+    "en": "Search and replace",
+    "nl": "Zoeken en vervangen",
+    "de": "Suchen und ersetzen"
+  },
+  "MessageSearchAndReplaceNameShort": {
+    "en": "Replace",
+    "nl": "Vervangen",
+    "de": "Ersetzen"
+  },
+  "MessageModifyName": {
+    "en": "Modify",
+    "nl": "Wijzigen",
+    "de": "Ändern"
+  },
+  "MessageForceSyncCurrentFolder": {
+    "en": "Synchronize current directory manually",
+    "nl": "Handmatig synchroniseren van huidige map",
+    "de": "Aktuelles Verzeichnis manuell synchronisieren"
+  },
+  "MessageWhereToFindReleaseReleasesUrlTokenHtml": {
+    "en": "<a target='_blank' href='https://github.com/qdraw/starsky/releases/latest' rel='noopener'> {releasesToken}</a>",
+    "nl": "<a target='_blank' href='https://github.com/qdraw/starsky/releases/latest' rel='noopener'> {releasesToken}</a>",
+    "de": "<a target='_blank' href='https://github.com/qdraw/starsky/releases/latest' rel='noopener'> {releasesToken}</a>"
+  },
+  "MessageWhereToFindReleaseReleasesUrlTokenContent": {
+    "en": "Go to the release overview",
+    "nl": "Ga naar het release overzicht",
+    "de": "Gehen Sie zur Release-Übersicht"
+  },
+  "WhereToFindReleaseElectronApp": {
+    "en": "Go to the Help menu and then release overview",
+    "nl": "Ga naar het Help menu en dan release overzicht",
+    "de": "Gehen Sie zum Hilfemenü und dann zur Release-Übersicht"
+  },
+  "MessageNewVersionUpdateToken": {
+    "en": "A new version is available {WhereToFindRelease}",
+    "nl": "Er is een nieuwe versie beschikbaar {WhereToFindRelease}",
+    "de": "Eine neue Version ist verfügbar {WhereToFindRelease}"
+  },
+  "MessageHealthStatusCriticalErrorsWithTheFollowingComponents": {
+    "en": "There are critical errors in the following components:",
+    "nl": "Er zijn kritieke fouten in de volgende onderdelen:",
+    "de": "In den folgenden Komponenten liegen kritische Fehler vor:"
+  },
+  "MessageNoPhotos": {
+    "en": "There are no pictures",
+    "nl": "Er zijn geen foto's",
+    "de": "Es gibt keine Bilder"
+  },
+  "MessageFilesAdded": {
+    "en": "These files have been added",
+    "nl": "Deze bestanden zijn toegevoegd",
+    "de": "Diese Dateien wurden hinzugefügt"
+  },
+  "MessageApplicationException": {
+    "en": "We have a disruption on the application right now",
+    "nl": "We hebben een op dit moment een verstoring op de applicatie",
+    "de": "Wir haben derzeit eine Störung bei der Anwendung"
+  },
+  "MessageRefreshPageTryAgain": {
+    "en": "Please reload the application to try again",
+    "nl": "Herlaad de applicatie om het opnieuw te proberen",
+    "de": "Laden Sie die Anwendung herunter, um die Option zu testen"
+  },
+  "MessagePublishSelection": {
+    "en": "Publish selection",
+    "nl": "Publiceer selectie",
+    "de": "Auswahl veröffentlichen"
+  },
+  "MessageGenericExportFail": {
+    "en": "Something went wrong with exporting",
+    "nl": "Er is iets misgegaan met exporteren",
+    "de": "Beim Exportieren ist ein Fehler aufgetreten"
+  },
+  "MessageRetryExportFail": {
+    "en": "Retry this",
+    "nl": "Probeer het opnieuw",
+    "de": "Dies erneut versuchen"
+  },
+  "MessageExportReady": {
+    "en": "The file {createZipKey} has finished exporting.",
+    "nl": "Het bestand {createZipKey} is klaar met exporteren.",
+    "de": "Die Datei {createZipKey} wurde erfolgreich exportiert."
+  },
+  "MessageDownloadAsZipArchive": {
+    "en": "Download as a zip archive",
+    "nl": "Download als zip-archief",
+    "de": "Als ZIP-Archiv herunterladen"
+  },
+  "MessageOneMomentPlease": {
+    "en": "One moment please",
+    "nl": "Een moment geduld alstublieft",
+    "de": "Einen Moment bitte"
+  },
+  "MessageItemName": {
+    "en": "What is the item about?",
+    "nl": "Waar gaat het item over?",
+    "de": "Worum geht es bei dem Element?"
+  },
+  "MessageItemNameInUse": {
+    "en": "This name is already in use, please choose another name",
+    "nl": "Deze naam is al in gebruik, kies een andere naam",
+    "de": "Dieser Name wird bereits verwendet. Bitte wählen Sie einen anderen Namen"
+  },
+  "MessagePublishProfileName": {
+    "en": "Profile setting",
+    "nl": "Profiel instelling",
+    "de": "Profil-Einstellung"
+  },
+  "MessagePublishProfileNamesErrored": {
+    "en": "Profile setting: {publishProfileNames} contains filepath errors",
+    "nl": "Profiel instelling: {publishProfileNames} bevat bestand locatie fouten",
+    "de": "Profil-Einstellung: {publishProfileNames} enthält Dateipfadfehler"
+  },
+  "MessageSelectionName": {
+    "en": "Selection",
+    "nl": "Selectie",
+    "de": "Auswahl"
+  },
+  "MessageReadOnlyFolder": {
+    "en": "Read only folder",
+    "nl": "Alleen lezen map",
+    "de": "Nur-Lese-Ordner"
+  },
+  "MessageUpdateLabels": {
+    "en": "Update labels",
+    "nl": "Labels wijzigingen",
+    "de": "Etiketten aktualisieren"
+  },
+  "MessageColorClassification": {
+    "en": "Color Classification",
+    "nl": "Kleur-Classificatie",
+    "de": "Farbklassifizierung"
+  },
+  "MessageDateTimeAgoEdited": {
+    "en": "ago edited",
+    "nl": "geleden bewerkt",
+    "de": "vorher bearbeitet"
+  },
+  "MessageDateLessThan1Minute": {
+    "en": "less than one minute",
+    "nl": "minder dan één minuut",
+    "de": "weniger als eine Minute"
+  },
+  "MessageDateMinutes": {
+    "en": "minutes",
+    "nl": "minuten",
+    "de": "Minuten"
+  },
+  "MessageDateHour": {
+    "en": "hour",
+    "nl": "uur",
+    "de": "Stunde"
+  },
+  "MessageCopiedLabels": {
+    "en": "The labels have been copied",
+    "nl": "De labels zijn gekopieerd",
+    "de": "Die Labels wurden kopiert"
+  },
+  "MessagePasteLabels": {
+    "en": "The labels have been overwritten",
+    "nl": "De labels zijn overschreven",
+    "de": "Die Labels wurden überschrieben"
+  },
+  "MessageCreationDate": {
+    "en": "Creation date",
+    "nl": "Aanmaakdatum",
+    "de": "Erstellungsdatum"
+  },
+  "MessageCreationDateIsAtUnknownTime": {
+    "en": "is at an unknown time",
+    "nl": "is op een onbekend moment",
+    "de": "ist zu einem unbekannten Zeitpunkt"
+  },
+  "MessageNounNameless": {
+    "en": "Unnamed",
+    "nl": "Naamloze",
+    "de": "Unbenannt"
+  },
+  "MessageNounNone": {
+    "en": "Not any",
+    "nl": "Geen enkele",
+    "de": "Nicht eine"
+  },
+  "MessageLocation": {
+    "en": "location",
+    "nl": "locatie",
+    "de": "Lokalisierung"
+  },
+  "MessageCreateNewFolderFeature": {
+    "en": "Create new folder",
+    "nl": "Nieuwe map aanmaken",
+    "de": "Neuen Ordner erstellen"
+  },
+  "MessageNonValidDirectoryName": {
+    "en": "Check the name, this folder cannot be created in this way",
+    "nl": "Controleer de naam, deze map kan niet zo worden aangemaakt",
+    "de": "Überprüfen Sie den Namen, dieser Ordner kann nicht auf diese Weise erstellt werden"
+  },
+  "MessageGeneralMkdirCreateError": {
+    "en": "An error occurred while creating this folder",
+    "nl": "Er is misgegaan met het aanmaken van deze map",
+    "de": "Beim Erstellen dieses Ordners ist ein Fehler aufgetreten"
+  },
+  "MessageDirectoryExistError": {
+    "en": "The folder already exists, try a different name",
+    "nl": "De map bestaat al, probeer een andere naam",
+    "de": "Der Ordner existiert bereits. Versuchen Sie einen anderen Namen"
+  },
+  "MessageRenameCurrentFolder": {
+    "en": "Rename current folder",
+    "nl": "Huidige mapnaam wijzigen",
+    "de": "Aktuellen Ordner umbenennen"
+  },
+  "MessageRemoveCache": {
+    "en": "Refresh cache of current directory",
+    "nl": "Verwijder cache van huidige map",
+    "de": "Aktualisieren Sie den Cache des aktuellen Verzeichnisses"
+  },
+  "MessageGeoSync": {
+    "en": "Automatically add geolocation",
+    "nl": "Voeg geolocatie automatisch toe",
+    "de": "Geolocation automatisch hinzufügen"
+  },
+  "MessageGeoSyncExplainer": {
+    "en": "The location is derived from a gpx file located in the current folder and based on the location place names are appended to the images",
+    "nl": "De locatie wordt afgeleid van een gpx bestand die zich in de huidige map bevind en op basis van de locatie worden er plaatsnamen bij de afbeeldingen gevoegd",
+    "de": "Der Ort wird aus einer in dem aktuellen Ordner befindlichen gpx-Datei abgeleitet und basierend auf dem Ort werden Ortsnamen den Bildern hinzugefügt"
+  },
+  "MessageManualThumbnailSync": {
+    "en": "Generate thumbnail images",
+    "nl": "Thumbnail afbeeldingen generen",
+    "de": "Miniaturbilder generieren"
+  },
+  "MessageManualThumbnailSyncExplainer": {
+    "en": "This action generate on the background lots of thumbnail images, this does impact the performance",
+    "nl": "Deze actie genereert op de achtergrond veel miniatuurafbeeldingen, dit heeft invloed op de prestaties",
+    "de": "Diese Aktion generiert im Hintergrund viele Miniaturbilder, was sich auf die Leistung auswirkt"
+  },
+  "MessageNonValidExtension": {
+    "en": "This file cannot be saved",
+    "nl": "Dit bestand kan zo niet worden weggeschreven",
+    "de": "Diese Datei kann nicht gespeichert werden"
+  },
+  "MessageChangeToDifferentExtension": {
+    "en": "Pay attention! You change the file extension, which can make it unreadable",
+    "nl": "Let op! Je veranderd de extensie van het bestand, deze kan hierdoor onleesbaar worden",
+    "de": "Achtung! Sie ändern die Dateierweiterung, was dazu führen kann, dass sie nicht lesbar wird"
+  },
+  "MessageRenameServerError": {
+    "en": "Something went wrong with the request, please try again later",
+    "nl": "Er is iets misgegaan met de aanvraag, probeer het later opnieuw",
+    "de": "Bei der Anfrage ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut"
+  },
+  "MessageDisplayOptions": {
+    "en": "Display options",
+    "nl": "Weergave opties",
+    "de": "Anzeigeoptionen"
+  },
+  "MessageDisplayOptionsSwitchButtonCollectionsOff": {
+    "en": "Show raw files",
+    "nl": "Toon raw bestanden",
+    "de": "Rohdateien anzeigen"
+  },
+  "MessageDisplayOptionsSwitchButtonCollectionsOn": {
+    "en": "Hide Raw files",
+    "nl": "Verberg raw bestanden",
+    "de": "Rohdateien ausblenden"
+  },
+  "MessageDisplayOptionsSwitchButtonIsSingleItemOff": {
+    "en": "Load everything",
+    "nl": "Alles inladen",
+    "de": "Alles laden"
+  },
+  "MessageDisplayOptionsSwitchButtonIsSingleItemOn": {
+    "en": "Small loading",
+    "nl": "Klein inladen",
+    "de": "Kleine Ladung"
+  },
+  "MessageDisplayOptionsSwitchButtonIsSocketOn": {
+    "en": "Realtime updates",
+    "nl": "Realtime updates",
+    "de": "Echtzeitupdates"
+  },
+  "MessageDisplayOptionsSwitchButtonIsSocketOff": {
+    "en": "Refresh yourself",
+    "nl": "Ververs zelf",
+    "de": "Selbst aktualisieren"
+  },
+  "MessageDownloadSelection": {
+    "en": "Download selection",
+    "nl": "Download selectie",
+    "de": "Auswahl herunterladen"
+  },
+  "MessageOriginalFile": {
+    "en": "Original file",
+    "nl": "Origineel bestand",
+    "de": "Originaldatei"
+  },
+  "MessageThumbnailFile": {
+    "en": "Thumbnail",
+    "nl": "Thumbnail",
+    "de": "Vorschaubild"
+  },
+  "MessageModalDatetime": {
+    "en": "Edit date and time",
+    "nl": "Datum en tijd bewerken",
+    "de": "Datum und Uhrzeit bearbeiten"
+  },
+  "MessageYear": {
+    "en": "Year",
+    "nl": "Jaar",
+    "de": "Jahr"
+  },
+  "MessageMonth": {
+    "en": "Month",
+    "nl": "Maand",
+    "de": "Monat"
+  },
+  "MessageDate": {
+    "en": "Day",
+    "nl": "Dag",
+    "de": "Tag"
+  },
+  "MessageTime": {
+    "en": "Time",
+    "nl": "Tijd",
+    "de": "Zeit"
+  },
+  "MessageErrorDatetime": {
+    "en": "The date and time were entered incorrectly",
+    "nl": "De datum en tijd zijn incorrect ingegeven",
+    "de": "Das Datum und die Uhrzeit wurden falsch eingegeben"
+  },
+  "MessageDeleteIntroText": {
+    "en": "Are you sure you want to delete this file from all devices?",
+    "nl": "Weet je zeker dat je dit bestand wilt verwijderen van alle devices?",
+    "de": "Möchten Sie diese Datei wirklich von allen Geräten löschen?"
+  },
+  "MessageConnectionRealtimeError": {
+    "en": "The connection is not quite right. We are trying to fix it",
+    "nl": "De verbinding is niet helemaal oké. We proberen het te herstellen",
+    "de": "Die Verbindung stimmt nicht ganz. Wir versuchen es zu beheben"
+  },
+  "MessageApplicationFailed": {
+    "en": "The application has failed. Please reload it to try it again",
+    "nl": "De verbinding is niet helemaal oké. Probeer te herladen",
+    "de": "Die Verbindung stimmt nicht ganz. Wir versuchen es zu beheben"
+  },
+  "MessageNumberOfResults": {
+    "en": "results",
+    "nl": "resultaten",
+    "de": "Ergebnisse"
+  },
+  "MessageNoResult": {
+    "en": "No result",
+    "nl": "Geen resultaat",
+    "de": "Kein Ergebnis"
+  },
+  "MessageTryOtherQuery": {
+    "en": "Try another search query",
+    "nl": "Probeer een andere zoekopdracht",
+    "de": "Versuchen Sie eine andere Suchanfrage"
+  },
+  "MessagePageNumberToken": {
+    "en": "Page {pageNumber} of ",
+    "nl": "Pagina {pageNumber} van ",
+    "de": "Seite {pageNumber} von "
+  },
+  "MessageEmptyTrash": {
+    "en": "There is nothing in the trash",
+    "nl": "Er staat niets in de prullenmand",
+    "de": "Es befindet sich nichts im Papierkorb"
+  },
+  "MessageNotFound": {
+    "en": "Not Found",
+    "nl": "Oeps niet gevonden",
+    "de": "Nicht gefunden"
+  },
+  "MessageGoToHome": {
+    "en": "Go to the homepage",
+    "nl": "Ga naar de homepagina",
+    "de": "Gehe zur Startseite"
+  },
   "temp1": {
-    "en": "",
-    "nl": "",
-    "de": ""
+    "en": "More",
+    "nl": "Meer",
+    "de": "Mehr"
   }
 }

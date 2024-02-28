@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 
 type MoreMenuPropTypes = {
@@ -17,7 +18,7 @@ const MoreMenu: React.FunctionComponent<MoreMenuPropTypes> = ({
 }) => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageMore = language.text("Meer", "More");
+  const MessageMore = language.key(localization.MessageMore);
 
   const offMoreMenu = () => setEnableMoreMenu(false);
 

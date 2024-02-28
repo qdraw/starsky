@@ -4,6 +4,7 @@ import Preloader from "../components/atoms/preloader/preloader";
 import useFetch from "../hooks/use-fetch";
 import useGlobalSettings from "../hooks/use-global-settings";
 import useLocation from "../hooks/use-location/use-location";
+import localization from "../localization/localization.json";
 import { BrowserDetect } from "../shared/browser-detect";
 import { DocumentTitle } from "../shared/document-title";
 import FetchPost from "../shared/fetch/fetch-post";
@@ -30,40 +31,21 @@ export const Login: React.FC<ILoginProps> = () => {
   const language = new Language(settings.language);
 
   const MessageApplicationName = "Starsky";
-  const MessageWrongUsernamePassword = language.text(
-    "Je gebruikersnaam of wachtwoord is niet juist. Probeer het opnieuw",
-    "Your username or password is incorrect. Try again"
-  );
-  const MessageLockedOut = language.text(
-    "Je hebt te vaak geprobeerd in te loggen, probeer het over een uur nog een keer",
-    "You've tried to login too many times, please try again in an hour "
-  );
-
-  const MessageNoUsernamePassword = language.text(
-    "Voer een emailadres en een wachtwoord in",
-    "Enter an email address and password"
-  );
-  const MessageWrongFormatEmailAddress = language.text(
-    "Controleer je email adres",
-    "Check your email address"
-  );
-  const MessageUsername = language.text("E-mailadres", "E-mail address");
-  const MessageConnection = language.text(
-    "Er is geen verbinding mogelijk, probeer het later opnieuw",
-    "No connection is possible, please try again later"
-  );
-  const MessageDatabaseConnection = language.text(
-    "Er zijn problemen met de verbinding met de database. Controleer en pas de appsettings aan",
-    "There are database connection issues. Check and edit the appsettings"
-  );
-  const LogoutWarning = language.text("Wil je uitloggen?", "Do you want to log out?");
-  const MessageStayLoggedIn = language.text("Blijf ingelogd", "Stay logged in");
-  const MessagePassword = language.text("Geef je wachtwoord op", "Enter your password");
-  const MessageExamplePassword = language.text("superveilig", "supersafe");
-  const MessageExampleUsername = "dont@mail.me";
-  const MessageLogin = language.text("Inloggen", "Login");
-  const MessageLogout = language.text("Uitloggen", "Logout");
-  const MessageCreateAccount = language.text("Account maken", "Create account");
+  const MessageWrongUsernamePassword = language.key(localization.MessageWrongUsernamePassword);
+  const MessageLockedOut = language.key(localization.MessageLockedOut);
+  const MessageNoUsernamePassword = language.key(localization.MessageNoUsernamePassword);
+  const MessageWrongFormatEmailAddress = language.key(localization.MessageWrongFormatEmailAddress);
+  const MessageUsername = language.key(localization.MessageUsername);
+  const MessageConnection = language.key(localization.MessageConnection);
+  const MessageDatabaseConnection = language.key(localization.MessageDatabaseConnection);
+  const LogoutWarning = language.key(localization.LogoutWarning);
+  const MessageStayLoggedIn = language.key(localization.MessageStayLoggedIn);
+  const MessagePassword = language.key(localization.MessagePassword);
+  const MessageExamplePassword = language.key(localization.MessageExamplePassword);
+  const MessageExampleUsername = language.key(localization.MessageExampleUsername);
+  const MessageLogin = language.key(localization.MessageLogin);
+  const MessageLogout = language.key(localization.MessageLogout);
+  const MessageCreateAccount = language.key(localization.MessageCreateAccount);
 
   // We don't want to login twice
   const [isLogin, setIsLogin] = React.useState(true);

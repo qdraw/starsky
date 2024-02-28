@@ -2,6 +2,7 @@ import React, { memo, useEffect } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location/use-location";
 import { IUrl } from "../../../interfaces/IUrl";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 import { URLPath } from "../../../shared/url-path";
 import Link from "../../atoms/link/link";
@@ -17,8 +18,8 @@ const SearchPagination: React.FunctionComponent<IRelativeLink> = memo((props) =>
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessagePrevious = language.text("Vorige", "Previous");
-  const MessageNext = language.text("Volgende", "Next");
+  const MessagePrevious = language.key(localization.MessagePrevious);
+  const MessageNext = language.key(localization.MessageNext);
 
   // used for reading current location
   const history = useLocation();

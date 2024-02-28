@@ -1,12 +1,13 @@
 import React, { memo } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
+import { ILanguageLocalization } from "../../../interfaces/ILanguageLocalization";
 import { Language } from "../../../shared/language";
 
 interface IMenuOptionProps {
   isReadOnly: boolean;
   testName: string;
   onClickKeydown: () => void;
-  localization?: { nl: string; en: string };
+  localization?: ILanguageLocalization;
   children?: React.ReactNode;
 }
 

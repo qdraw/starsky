@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import { LanguageLocalizationExample } from "../../../interfaces/ILanguageLocalization.ts";
 import MenuOptionModal from "./menu-option-modal.tsx";
 
 describe("MenuOption component", () => {
@@ -7,7 +8,7 @@ describe("MenuOption component", () => {
     const setEnableMoreMenuMock = jest.fn();
     render(
       <MenuOptionModal
-        localization={{ nl: "Content", en: "Content" }}
+        localization={LanguageLocalizationExample}
         isSet={false}
         set={setMock}
         testName="test"
@@ -17,7 +18,7 @@ describe("MenuOption component", () => {
     );
 
     expect(screen.getByTestId("test")).toBeTruthy();
-    expect(screen.getByTestId("test").innerHTML).toBe("Content");
+    expect(screen.getByTestId("test").innerHTML).toBe(LanguageLocalizationExample.en);
   });
 
   it("expect child no localisation field", () => {
@@ -44,7 +45,7 @@ describe("MenuOption component", () => {
     const setEnableMoreMenuMock = jest.fn();
     render(
       <MenuOptionModal
-        localization={{ nl: "Nederlands", en: "English" }}
+        localization={LanguageLocalizationExample}
         isSet={false}
         set={setMock}
         testName="test"
@@ -64,7 +65,7 @@ describe("MenuOption component", () => {
     const setEnableMoreMenuMock = jest.fn();
     render(
       <MenuOptionModal
-        localization={{ nl: "Nederlands", en: "English" }}
+        localization={LanguageLocalizationExample}
         isSet={false}
         set={setMock}
         testName="test"

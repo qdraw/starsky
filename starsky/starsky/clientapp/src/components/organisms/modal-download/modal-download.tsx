@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useInterval from "../../../hooks/use-interval";
+import localization from "../../../localization/localization.json";
 import { ExportIntervalUpdate } from "../../../shared/export/export-interval-update";
 import FetchPost from "../../../shared/fetch/fetch-post";
 import { FileExtensions } from "../../../shared/file-extensions";
@@ -32,25 +33,13 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageDownloadSelection = language.text("Download selectie", "Download selection");
-  const MessageOriginalFile = language.text("Origineel bestand", "Original file");
-  const MessageThumbnailFile = "Thumbnail";
-  const MessageGenericExportFail = language.text(
-    "Er is iets misgegaan met exporteren",
-    "Something went wrong with exporting"
-  );
-  const MessageExportReady = language.text(
-    "Het bestand {createZipKey} is klaar met exporteren.",
-    "The file {createZipKey} has finished exporting."
-  );
-  const MessageDownloadAsZipArchive = language.text(
-    "Download als zip-archief",
-    "Download as a zip archive"
-  );
-  const MessageOneMomentPlease = language.text(
-    "Een moment geduld alstublieft",
-    "One moment please"
-  );
+  const MessageDownloadSelection = language.key(localization.MessageDownloadSelection);
+  const MessageOriginalFile = language.key(localization.MessageOriginalFile);
+  const MessageThumbnailFile = language.key(localization.MessageThumbnailFile);
+  const MessageGenericExportFail = language.key(localization.MessageGenericExportFail);
+  const MessageExportReady = language.key(localization.MessageExportReady);
+  const MessageDownloadAsZipArchive = language.key(localization.MessageDownloadAsZipArchive);
+  const MessageOneMomentPlease = language.key(localization.MessageOneMomentPlease);
 
   const [isProcessing, setIsProcessing] = React.useState(ProcessingState.default);
   const [createZipKey, setCreateZipKey] = React.useState("");

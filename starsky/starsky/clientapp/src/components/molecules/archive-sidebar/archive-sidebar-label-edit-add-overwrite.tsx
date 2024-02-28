@@ -6,6 +6,7 @@ import useLocation from "../../../hooks/use-location/use-location";
 import { PageType } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { ISidebarUpdate } from "../../../interfaces/ISidebarUpdate";
+import localization from "../../../localization/localization.json";
 import { CastToInterface } from "../../../shared/cast-to-interface";
 import FetchPost from "../../../shared/fetch/fetch-post";
 import { Keyboard } from "../../../shared/keyboard";
@@ -20,24 +21,14 @@ import Preloader from "../../atoms/preloader/preloader";
 
 const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
   const settings = useGlobalSettings();
-  const MessageAddName = new Language(settings.language).text("Toevoegen", "Add to");
-  const MessageOverwriteName = new Language(settings.language).text("Overschrijven", "Overwrite");
-  const MessageTitleName = new Language(settings.language).text("Titel", "Title");
-  const MessageErrorReadOnly = new Language(settings.language).text(
-    "Eén of meerdere bestanden zijn alleen lezen. " +
-      "Alleen de bestanden met schrijfrechten zijn geupdate.",
-    "One or more files are read only. " + "Only the files with write permissions have been updated."
-  );
-  const MessageErrorGenericFail = new Language(settings.language).text(
-    "Er is iets misgegaan met het updaten. Probeer het opnieuw",
-    "Something went wrong with the update. Please try again"
-  );
-
-  const MessageErrorNotFoundSourceMissing = new Language(settings.language).text(
-    "Eén of meerdere bestanden zijn al verdwenen. " +
-      "Alleen de bestanden die wel aanwezig zijn geupdate. Draai een handmatige sync",
-    "One or more files are already gone. " +
-      "Only the files that are present are updated. Run a manual sync"
+  const language = new Language(settings.language);
+  const MessageAddName = language.key(localization.MessageAddName);
+  const MessageOverwriteName = language.key(localization.MessageOverwriteName);
+  const MessageTitleName = language.key(localization.MessageTitleName);
+  const MessageWriteErrorReadOnly = language.key(localization.MessageWriteErrorReadOnly);
+  const MessageErrorGenericFail = language.key(localization.MessageErrorGenericFail);
+  const MessageErrorNotFoundSourceMissingRunSync = language.key(
+    localization.MessageErrorNotFoundSourceMissingRunSync
   );
 
   const history = useLocation();
@@ -107,9 +98,9 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
       .then((anyData) => {
         const result = new CastToInterface().InfoFileIndexArray(anyData.data);
         result.forEach((element) => {
-          if (element.status === IExifStatus.ReadOnly) setIsError(MessageErrorReadOnly);
+          if (element.status === IExifStatus.ReadOnly) setIsError(MessageWriteErrorReadOnly);
           if (element.status === IExifStatus.NotFoundSourceMissing)
-            setIsError(MessageErrorNotFoundSourceMissing);
+            setIsError(MessageErrorNotFoundSourceMissingRunSync);
           if (element.status === IExifStatus.Ok || element.status === IExifStatus.Deleted) {
             dispatch({
               type: "update",

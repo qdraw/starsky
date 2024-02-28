@@ -37,7 +37,7 @@ const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({ state, dispatch
   const language = new Language(settings.language);
 
   // Content
-  const MessageSelectAction = language.text("Selecteer", "Select");
+  const MessageSelectAction = language.key(localization.MessageSelectAction);
 
   // Selection
   const history = useLocation();

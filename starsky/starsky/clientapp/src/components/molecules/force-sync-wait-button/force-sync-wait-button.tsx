@@ -3,6 +3,7 @@ import { ArchiveAction } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
+import localization from "../../../localization/localization.json";
 import { CastToInterface } from "../../../shared/cast-to-interface";
 import FetchGet from "../../../shared/fetch/fetch-get";
 import FetchPost from "../../../shared/fetch/fetch-post";
@@ -64,10 +65,7 @@ const ForceSyncWaitButton: React.FunctionComponent<ForceSyncWaitButtonPropTypes>
 
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageForceSync = language.text(
-    "Handmatig synchroniseren van huidige map",
-    "Synchronize current directory manually"
-  );
+  const MessageForceSyncCurrentFolder = language.key(localization.MessageForceSyncCurrentFolder);
 
   const [startCounter, setStartCounter] = useState(0);
   // preloading icon
@@ -101,7 +99,7 @@ const ForceSyncWaitButton: React.FunctionComponent<ForceSyncWaitButtonPropTypes>
     <>
       {isLoading ? <Preloader isWhite={false} isOverlay={true} /> : ""}
       <button className="btn btn--default" data-test="force-sync" onClick={() => startForceSync()}>
-        {MessageForceSync}
+        {MessageForceSyncCurrentFolder}
       </button>
     </>
   );

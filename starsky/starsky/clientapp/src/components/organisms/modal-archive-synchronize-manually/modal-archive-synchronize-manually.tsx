@@ -4,6 +4,7 @@ import useGlobalSettings from "../../../hooks/use-global-settings";
 import useInterval from "../../../hooks/use-interval";
 import useLocation from "../../../hooks/use-location/use-location";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
+import localization from "../../../localization/localization.json";
 import { CastToInterface } from "../../../shared/cast-to-interface";
 import FetchGet from "../../../shared/fetch/fetch-get";
 import FetchPost from "../../../shared/fetch/fetch-post";
@@ -27,32 +28,13 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageSynchronizeManually = language.text(
-    "Handmatig synchroniseren",
-    "Synchronize manually"
-  );
-
-  const MessageRemoveCache = language.text(
-    "Verwijder cache van huidige map",
-    "Refresh cache of current directory"
-  );
-  const MessageGeoSync = language.text(
-    "Voeg geolocatie automatisch toe",
-    "Automatically add geolocation"
-  );
-  const MessageGeoSyncExplainer = language.text(
-    "De locatie wordt afgeleid van een gpx bestand die zich in de huidige map bevind " +
-      "en op basis van de locatie worden er plaatsnamen bij de afbeeldingen gevoegd",
-    "The location is derived from a gpx file located in " +
-      " the current folder and based on the location place names are appended to the images"
-  );
-  const MessageManualThumbnailSync = language.text(
-    "Thumbnail afbeeldingen generen",
-    "Generate thumbnail images"
-  );
-  const MessageManualThumbnailSyncExplainer = language.text(
-    "Deze actie genereert op de achtergrond veel miniatuurafbeeldingen, dit heeft invloed op de prestaties",
-    "This action generate on the background lots of thumbnail images, this does impact the performance"
+  const MessageSynchronizeManually = language.key(localization.MessageSynchronizeManually);
+  const MessageRemoveCache = language.key(localization.MessageRemoveCache);
+  const MessageGeoSync = language.key(localization.MessageGeoSync);
+  const MessageGeoSyncExplainer = language.key(localization.MessageGeoSyncExplainer);
+  const MessageManualThumbnailSync = language.key(localization.MessageManualThumbnailSync);
+  const MessageManualThumbnailSyncExplainer = language.key(
+    localization.MessageManualThumbnailSyncExplainer
   );
 
   // preloading icon

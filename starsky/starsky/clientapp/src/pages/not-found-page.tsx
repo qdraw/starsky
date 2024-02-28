@@ -2,6 +2,7 @@ import { FunctionComponent } from "react";
 import Link from "../components/atoms/link/link";
 import MenuDefault from "../components/organisms/menu-default/menu-default";
 import useGlobalSettings from "../hooks/use-global-settings";
+import localization from "../localization/localization.json";
 import { Language } from "../shared/language";
 import { UrlQuery } from "../shared/url-query";
 
@@ -10,8 +11,8 @@ export const NotFoundPage: FunctionComponent = () => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
 
-  const MessageNotFound = language.text("Oeps niet gevonden", "Not Found");
-  const MessageGoToHome = language.text("Ga naar de homepagina", "Go to the homepage");
+  const MessageNotFound = language.key(localization.MessageNotFound);
+  const MessageGoToHome = language.key(localization.MessageGoToHome);
 
   return (
     <div>

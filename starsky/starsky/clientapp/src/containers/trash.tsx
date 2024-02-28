@@ -7,6 +7,7 @@ import { ArchiveContext, defaultStateFallback } from "../contexts/archive-contex
 import useGlobalSettings from "../hooks/use-global-settings";
 import useLocation from "../hooks/use-location/use-location";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
+import localization from "../localization/localization.json";
 import { Language } from "../shared/language";
 import { URLPath } from "../shared/url-path";
 
@@ -14,12 +15,10 @@ function Trash(archive: Readonly<IArchiveProps>) {
   // Content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageEmptyTrash = language.text(
-    "Er staat niets in de prullenmand",
-    "There is nothing in the trash"
-  );
-  const MessageNumberOfResults = language.text("resultaten", "results");
-  const MessageNoResult = language.text("Geen resultaat", "No result");
+
+  const MessageNumberOfResults = language.key(localization.MessageNumberOfResults);
+  const MessageNoResult = language.key(localization.MessageNoResult);
+  const MessageEmptyTrash = language.key(localization.MessageEmptyTrash);
 
   const history = useLocation();
 

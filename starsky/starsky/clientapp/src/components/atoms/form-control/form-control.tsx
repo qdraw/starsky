@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 import { LimitLength } from "./limit-length";
 
@@ -27,11 +28,8 @@ const FormControl: React.FunctionComponent<IFormControlProps> = ({ onBlur, ...pr
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageFieldMaxLength = language.token(
-    language.text(
-      "Het onderstaande veld mag maximaal {maxlength} tekens hebben",
-      "The field below can have a maximum of {maxlength} characters"
-    ),
+  const MessageFieldMaxLength = language.key(
+    localization.MessageFieldMaxLength,
     ["{maxlength}"],
     [maxlength.toString()]
   );

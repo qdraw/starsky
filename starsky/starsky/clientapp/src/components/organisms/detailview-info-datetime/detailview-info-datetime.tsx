@@ -2,6 +2,7 @@ import React, { memo } from "react";
 import { DetailViewAction } from "../../../contexts/detailview-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
+import localization from "../../../localization/localization.json";
 import { isValidDate, parseDate, parseTime } from "../../../shared/date";
 import { Language } from "../../../shared/language";
 import ModalDatetime from "../modal-edit-date-time/modal-edit-datetime";
@@ -17,10 +18,9 @@ const DetailViewInfoDateTime: React.FunctionComponent<IDetailViewInfoDateTimePro
   ({ fileIndexItem, isFormEnabled, setFileIndexItem, dispatch }) => {
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
-    const MessageCreationDate = language.text("Aanmaakdatum", "Creation date");
-    const MessageCreationDateUnknownTime = language.text(
-      "is op een onbekend moment",
-      "is at an unknown time"
+    const MessageCreationDate = language.key(localization.MessageCreationDate);
+    const MessageCreationDateIsAtUnknownTime = language.key(
+      localization.MessageCreationDateIsAtUnknownTime
     );
 
     const [modalDatetimeOpen, setModalDatetimeOpen] = React.useState(false);
@@ -70,7 +70,7 @@ const DetailViewInfoDateTime: React.FunctionComponent<IDetailViewInfoDateTimePro
           {!isValidDate(fileIndexItem.dateTime) ? (
             <>
               <b>{MessageCreationDate}</b>
-              <p>{MessageCreationDateUnknownTime}</p>
+              <p>{MessageCreationDateIsAtUnknownTime}</p>
             </>
           ) : null}
         </button>

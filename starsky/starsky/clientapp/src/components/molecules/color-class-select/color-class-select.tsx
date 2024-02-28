@@ -1,6 +1,7 @@
 import "core-js/modules/es.array.find";
 import React, { useEffect, useState } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 import Notification, { NotificationType } from "../../atoms/notification/notification";
 import Portal from "../../atoms/portal/portal";
@@ -25,15 +26,15 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = (props
   const language = new Language(settings.language);
 
   const colorContent: Array<string> = [
-    language.text("Kleurloos", "Colorless"),
-    language.text("Roze", "Pink"),
-    language.text("Rood", "Red"),
-    language.text("Oranje", "Orange"),
-    language.text("Geel", "Yellow"),
-    language.text("Groen", "Green"),
-    language.text("Azuur", "Azure"),
-    language.text("Blauw", "Blue"),
-    language.text("Grijs", "Grey")
+    language.key(localization.ColorClassColour0),
+    language.key(localization.ColorClassColour1),
+    language.key(localization.ColorClassColour2),
+    language.key(localization.ColorClassColour3),
+    language.key(localization.ColorClassColour4),
+    language.key(localization.ColorClassColour5),
+    language.key(localization.ColorClassColour6),
+    language.key(localization.ColorClassColour7),
+    language.key(localization.ColorClassColour8)
   ];
 
   const [currentColorClass, setCurrentColorClass] = React.useState(props.currentColorClass);

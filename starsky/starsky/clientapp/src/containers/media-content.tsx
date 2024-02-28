@@ -10,6 +10,7 @@ import useGlobalSettings from "../hooks/use-global-settings";
 import useLocation from "../hooks/use-location/use-location";
 import { IArchive } from "../interfaces/IArchive";
 import { IDetailView, PageType } from "../interfaces/IDetailView";
+import localization from "../localization/localization.json";
 import { NotFoundPage } from "../pages/not-found-page";
 import { Language } from "../shared/language";
 import { Login } from "./login";
@@ -27,10 +28,8 @@ const MediaContent: React.FC = () => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
 
-  const MessageConnectionRealtimeError = language.text(
-    "De verbinding is niet helemaal oké. We proberen het te herstellen",
-    "The connection is not quite right. We are trying to fix it"
-  );
+  const MessageConnectionRealtimeError = language.key(localization.MessageConnectionRealtimeError);
+  const MessageApplicationFailed = language.key(localization.MessageApplicationFailed);
 
   console.log(`-----------------MediaContent ${pageType} (rendered again)-------------------`);
 
@@ -38,7 +37,7 @@ const MediaContent: React.FC = () => {
     return (
       <>
         <br />
-        The application has failed. Please reload it to try it again
+        {MessageApplicationFailed}
       </>
     );
   }

@@ -3,12 +3,13 @@ import PreferencesAppSettings from "../../components/organisms/preferences-app-s
 import PreferencesPassword from "../../components/organisms/preferences-password/preferences-password";
 import PreferencesUsername from "../../components/organisms/preferences-username/preferences-username";
 import useGlobalSettings from "../../hooks/use-global-settings";
+import localization from "../../localization/localization.json";
 import { Language } from "../../shared/language";
 
 export const Preferences: React.FunctionComponent = () => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessagePreferences = language.text("Voorkeuren", "Preferences");
+  const MessagePreferences = language.key(localization.MessagePreferences);
 
   return (
     <>

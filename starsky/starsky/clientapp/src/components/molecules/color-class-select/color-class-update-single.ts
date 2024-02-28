@@ -1,5 +1,6 @@
 import { IGlobalSettings } from "../../../hooks/use-global-settings";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
+import localization from "../../../localization/localization.json";
 import { CastToInterface } from "../../../shared/cast-to-interface";
 import FetchPost from "../../../shared/fetch/fetch-post";
 import { Language, SupportedLanguages } from "../../../shared/language";
@@ -38,13 +39,8 @@ export class ColorClassUpdateSingle {
     this.clearAfter = clearAfter;
   }
 
-  private getMessageErrorReadOnly() {
-    return new Language(this.language).text(
-      "Eén of meerdere bestanden zijn alleen lezen. " +
-        "Alleen de bestanden met schrijfrechten zijn geupdate.",
-      "One or more files are read only. " +
-        "Only the files with write permissions have been updated."
-    );
+  private getMessageWriteErrorReadOnly() {
+    return new Language(this.language).key(localization.MessageWriteErrorReadOnly);
   }
 
   public Update(colorClass: number) {
@@ -67,7 +63,7 @@ export class ColorClassUpdateSingle {
           return item.status === IExifStatus.ReadOnly;
         })
       ) {
-        this.setIsError(this.getMessageErrorReadOnly());
+        this.setIsError(this.getMessageWriteErrorReadOnly());
         return;
       }
       this.setCurrentColorClass(colorClass);

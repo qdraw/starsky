@@ -1,5 +1,6 @@
 import React, { memo } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
+import { ILanguageLocalization } from "../../../interfaces/ILanguageLocalization";
 import { Language } from "../../../shared/language";
 
 interface IMenuOptionModalProps {
@@ -7,7 +8,7 @@ interface IMenuOptionModalProps {
   testName: string;
   isSet: boolean;
   set: React.Dispatch<React.SetStateAction<boolean>>;
-  localization?: { nl: string; en: string };
+  localization?: ILanguageLocalization;
   setEnableMoreMenu?: React.Dispatch<React.SetStateAction<boolean>>;
   children?: React.ReactNode;
 }

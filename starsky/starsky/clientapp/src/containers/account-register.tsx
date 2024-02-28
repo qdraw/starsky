@@ -23,37 +23,13 @@ const AccountRegister: FunctionComponent = () => {
   const MessageConfirmPassword = language.key(localization.MessageConfirmPassword);
   const MessageNoUsernamePassword = language.key(localization.MessageNoUsernamePassword);
   const MessageWrongFormatEmailAddress = language.key(localization.MessageWrongFormatEmailAddress);
-  const MessagePasswordToShort = language.text(
-    "Gebruik minimaal 8 tekens voor je wachtwoord",
-    "Use at least 8 characters for your password"
-  );
-  const MessagePasswordNoMatch = language.text(
-    "Deze wachtwoorden komen niet overeen. Probeer het opnieuw",
-    "These passwords do not match. Please try again"
-  );
-  const MessageConnection = language.text(
-    "Er is geen verbinding mogelijk, probeer het later opnieuw",
-    "No connection is possible, please try again later"
-  );
-  const MessageRejectedBadRequest = language.text(
-    "Dit verzoek is afgewezen aangezien er niet voldaan is aan de beveiligingseisen (Error 400)",
-    "This request was rejected because the security requirements were not met  (Error 400)"
-  );
-  const MessageRegistrationTurnedOff = language.text(
-    "Registratie is uitgezet",
-    "Registration is turned off"
-  );
-  const MessageSignInInstead = language.text("In plaats daarvan inloggen", "Sign in instead");
-
-  const MessageLegalCreateAccountHtml = language.text(
-    `Door het creëren van een account gaat u akkoord met de
-   <a href="/legal/toc.nl.html" data-test="toc">Algemene Voorwaarden</a> van Starsky. Raadpleeg en bekijk hier onze
-   <a href="/legal/privacy-policy.nl.html" data-test="privacy">Privacykennisgeving</a> en onze
-   <a href="/legal/privacy-policy.nl.html#cookie">Cookieverklaring</a>.`,
-    `By creating an account you agree to <a href="/legal/toc.en.html" data-test="toc">Starsky's Conditions of Use</a>.
-   Please see our  <a href="/legal/privacy-policy.en.html" data-test="privacy">Privacy</a> Notice and our
-   <a href="/legal/privacy-policy.en.html#cookie">Cookies Notice </a>   `
-  );
+  const MessagePasswordToShort = language.key(localization.MessagePasswordToShort);
+  const MessagePasswordNoMatch = language.key(localization.MessagePasswordNoMatch);
+  const MessageConnection = language.key(localization.MessageConnection);
+  const MessageRejectedBadRequest = language.key(localization.MessageRejectedBadRequest);
+  const MessageRegistrationTurnedOff = language.key(localization.MessageRegistrationTurnedOff);
+  const MessageSignInInstead = language.key(localization.MessageSignInInstead);
+  const MessageLegalCreateAccountHtml = language.key(localization.MessageLegalCreateAccountHtml);
 
   const history = useLocation();
 
