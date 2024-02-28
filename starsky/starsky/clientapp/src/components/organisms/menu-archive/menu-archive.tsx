@@ -40,6 +40,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
   // Content
   const MessageSelectAction = language.key(localization.MessageSelectAction);
+  const MessageLabels = language.key(localization.MessageLabels);
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
   const [enableMoreMenu, setEnableMoreMenu] = React.useState(false);
@@ -201,7 +202,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
               }}
               onClick={() => toggleLabels()}
             >
-              Labels
+              {MessageLabels}
             </button>
           ) : null}
 

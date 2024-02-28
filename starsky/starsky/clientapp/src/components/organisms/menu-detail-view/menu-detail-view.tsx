@@ -59,6 +59,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({ state, d
   const MessageMoveToTrash = language.key(localization.MessageMoveToTrash);
   const MessageIncludingColonWord = language.key(localization.MessageIncludingColonWord);
   const MessageRestoreFromTrash = language.key(localization.MessageRestoreFromTrash);
+  const MessageLabels = language.key(localization.MessageLabels);
 
   const history = useLocation();
 
@@ -294,7 +295,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({ state, d
               event.key === "Enter" && toggleLabels();
             }}
           >
-            Labels
+            {MessageLabels}
           </button>
 
           <MoreMenu setEnableMoreMenu={setEnableMoreMenu} enableMoreMenu={enableMoreMenu}>

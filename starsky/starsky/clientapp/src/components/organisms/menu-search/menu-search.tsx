@@ -38,6 +38,7 @@ const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({ state, dispatch
 
   // Content
   const MessageSelectAction = language.key(localization.MessageSelectAction);
+  const MessageLabels = language.key(localization.MessageLabels);
 
   // Selection
   const history = useLocation();
@@ -131,7 +132,7 @@ const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({ state, dispatch
                 event.key === "Enter" && toggleLabels();
               }}
             >
-              Labels
+              {MessageLabels}
             </button>
           ) : null}
 
