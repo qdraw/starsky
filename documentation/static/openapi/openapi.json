@@ -1993,6 +1993,94 @@
               "examples": {},
               "content": {},
               "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
+              "name": "DefaultDesktopEditor",
+              "in": 0,
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "explode": false,
+              "allowReserved": false,
+              "schema": {
+                "type": "array",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "items": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "type": 0,
+                    "id": "AppSettingsDefaultEditorApplication",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/AppSettingsDefaultEditorApplication",
+                    "referenceV2": "#/definitions/AppSettingsDefaultEditorApplication"
+                  }
+                },
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
+              "name": "DesktopCollectionsOpen",
+              "in": 0,
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "explode": false,
+              "allowReserved": false,
+              "schema": {
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false,
+                "reference": {
+                  "type": 0,
+                  "id": "RawJpegMode",
+                  "isExternal": false,
+                  "isLocal": true,
+                  "referenceV3": "#/components/schemas/RawJpegMode",
+                  "referenceV2": "#/definitions/RawJpegMode"
+                }
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
             }
           ],
           "responses": {
@@ -2676,7 +2764,7 @@
     },
     "/api/desktop-editor/open": {
       "operations": {
-        "Get": {
+        "Post": {
           "tags": [
             {
               "name": "DesktopEditor",
@@ -2811,8 +2899,8 @@
               "extensions": {},
               "unresolvedReference": false
             },
-            "204": {
-              "description": "No Content",
+            "206": {
+              "description": "list with no content",
               "headers": {},
               "content": {
                 "application/json": {
@@ -2924,7 +3012,7 @@
     },
     "/api/desktop-editor/amount-confirmation": {
       "operations": {
-        "Get": {
+        "Post": {
           "tags": [
             {
               "name": "DesktopEditor",
@@ -14486,6 +14574,11 @@
           {
             "primitiveType": 0,
             "anyType": 0,
+            "value": 1000
+          },
+          {
+            "primitiveType": 0,
+            "anyType": 0,
             "value": -1
           }
         ],
@@ -16206,6 +16299,22 @@
               "extensions": {},
               "unresolvedReference": false
             },
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "roleCode": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
             "properties": {},
             "additionalPropertiesAllowed": true,
             "enum": [],
