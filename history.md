@@ -43,6 +43,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.6.0-beta.2 -  _(Unreleased)_ - 2024-02-? {#v0.6.0-beta.2}
 
+- [x] (Changed) Back-end Upgrade to .NET 8 - SDK 8.0.201 (Runtime: 8.0.2) (PR #1402)
 - [x] (Added) _Back-end_ Native Open File on Windows & Mac OS (PR #1381)
 - [x] (Added) _Back-end_ Native Open File with specific editor on Windows & Mac OS (PR #1381)
 - [x] (Added) _Back-end_ AppSettings for Collections / Stacks and Open File (PR #1381)
