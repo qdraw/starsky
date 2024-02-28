@@ -55,9 +55,10 @@ machinename with your computer name in lowercase)_
 
 ### Required settings to start
 
-1. To start it is __not__ mandatory to adjust any settings.
+1. To start it is __not__ mandatory to adjust any settings. However it is recommended to change the
+   `StorageFolder` to a folder on your local machine where the picture should be located.
 
-### Recommend settings
+### Recommend settings {#recommend-settings}
 
 1. `ThumbnailTempFolder` - For storing thumbnails (
    default: `./bin/Debug/net8.0/thumbnailTempFolder`)
