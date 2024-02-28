@@ -6,7 +6,7 @@ import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { Orientation } from "../../../interfaces/IFileIndexItem";
 import * as DetectAutomaticRotation from "../../../shared/detect-automatic-rotation";
 import * as FetchGet from "../../../shared/fetch/fetch-get";
-import { UrlQuery } from "../../../shared/url-query";
+import { UrlQuery } from "../../../shared/url/url-query";
 import FileHashImage from "./file-hash-image";
 import * as PanAndZoomImage from "./pan-and-zoom-image";
 

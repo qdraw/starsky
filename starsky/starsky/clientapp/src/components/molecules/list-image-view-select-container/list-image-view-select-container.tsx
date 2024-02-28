@@ -1,8 +1,8 @@
 import React, { memo, useEffect } from "react";
 import useLocation from "../../../hooks/use-location/use-location";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
-import { URLPath } from "../../../shared/url-path";
-import { UrlQuery } from "../../../shared/url-query";
+import { URLPath } from "../../../shared/url/url-path";
+import { UrlQuery } from "../../../shared/url/url-query";
 import Link from "../../atoms/link/link";
 import Preloader from "../../atoms/preloader/preloader";
 

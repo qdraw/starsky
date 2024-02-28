@@ -4,7 +4,7 @@ import { PageType } from "../../../../interfaces/IDetailView";
 import { IFileIndexItem } from "../../../../interfaces/IFileIndexItem";
 import localization from "../../../../localization/localization.json";
 import { Language } from "../../../../shared/language";
-import { UrlQuery } from "../../../../shared/url-query.ts";
+import { UrlQuery } from "../../../../shared/url/url-query.ts";
 
 interface IWarningBoxNoPhotosFilterProps {
   pageType: PageType | undefined;

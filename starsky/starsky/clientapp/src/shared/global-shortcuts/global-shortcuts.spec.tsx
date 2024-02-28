@@ -1,7 +1,7 @@
 import React from "react";
 import * as useHotKeysParent from "../../hooks/use-keyboard/use-hotkeys";
 import * as useLocation from "../../hooks/use-location/use-location";
-import { UrlQuery } from "../url-query";
+import { UrlQuery } from "../url/url-query";
 import { GlobalShortcuts } from "./global-shortcuts";
 
 describe("GlobalShortcuts", () => {

@@ -1,5 +1,6 @@
-import { IUrl, newIUrl } from "../interfaces/IUrl";
+import { IUrl, newIUrl } from "../../interfaces/IUrl.ts";
 import { URLPath } from "./url-path";
+import { IsRelativeUrl } from "./url.ts";
 
 export class UrlQuery {
   public prefix: string = "/starsky";
@@ -75,6 +76,9 @@ export class UrlQuery {
   }
 
   public UrlLogoutPage(returnUrl: string): string {
+    if (!IsRelativeUrl(returnUrl)) {
+      returnUrl = "/?f=/";
+    }
     return document.location.pathname.indexOf(this.prefix) === -1
       ? `/account/logout?ReturnUrl=${returnUrl}`
       : `${this.prefix}/account/logout?ReturnUrl=${returnUrl}`;

@@ -7,8 +7,8 @@ import { AsciiNull } from "../../../shared/ascii-null";
 import FetchPost from "../../../shared/fetch/fetch-post";
 import { FileListCache } from "../../../shared/filelist-cache";
 import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
-import { URLPath } from "../../../shared/url-path";
-import { UrlQuery } from "../../../shared/url-query";
+import { URLPath } from "../../../shared/url/url-path";
+import { UrlQuery } from "../../../shared/url/url-query";
 
 export class UpdateChange {
   private fileIndexItem: IFileIndexItem;

@@ -8,7 +8,7 @@ import { ImageFormat } from "../../../interfaces/IFileIndexItem";
 import localization from "../../../localization/localization.json";
 import FetchPost from "../../../shared/fetch/fetch-post";
 import { Language } from "../../../shared/language";
-import { UrlQuery } from "../../../shared/url-query";
+import { UrlQuery } from "../../../shared/url/url-query";
 import FormControl from "../../atoms/form-control/form-control";
 import SwitchButton from "../../atoms/switch-button/switch-button";
 

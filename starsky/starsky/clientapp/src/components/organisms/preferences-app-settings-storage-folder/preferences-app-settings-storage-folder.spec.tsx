@@ -2,7 +2,7 @@ import { act, createEvent, fireEvent, render, screen } from "@testing-library/re
 import * as useFetch from "../../../hooks/use-fetch";
 import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
-import { UrlQuery } from "../../../shared/url-query";
+import { UrlQuery } from "../../../shared/url/url-query";
 import PreferencesAppSettingsStorageFolder, {
   ChangeSetting
 } from "./preferences-app-settings-storage-folder";

@@ -8,7 +8,7 @@ import useLocation from "../hooks/use-location/use-location";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
 import localization from "../localization/localization.json";
 import { Language } from "../shared/language";
-import { URLPath } from "../shared/url-path";
+import { URLPath } from "../shared/url/url-path";
 import MenuMenuSearchContainer from "./menu-search-container/menu-search-container";
 
 function Search(archive: Readonly<IArchiveProps>) {

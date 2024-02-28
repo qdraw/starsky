@@ -7,7 +7,7 @@ import { newIFileIndexItemArray } from "../../interfaces/IFileIndexItem";
 import localization from "../../localization/localization.json";
 import { DocumentTitle } from "../../shared/document-title";
 import { Language } from "../../shared/language";
-import { UrlQuery } from "../../shared/url-query";
+import { UrlQuery } from "../../shared/url/url-query";
 
 export const Import: FunctionComponent = () => {
   const [dropAreaUploadFilesList, setDropAreaUploadFilesList] =

@@ -53,6 +53,15 @@ describe("useGlobalSettings", () => {
       expect(hook.language).toBe(SupportedLanguages.de);
     });
 
+    it("get german language de-de", () => {
+      const languageGetter = jest.spyOn(window.navigator, "language", "get");
+      languageGetter.mockReturnValue("de-DE");
+
+      runHook();
+
+      expect(hook.language).toBe(SupportedLanguages.de);
+    });
+
     it("get german language de-AT", () => {
       const languageGetter = jest.spyOn(window.navigator, "language", "get");
       languageGetter.mockReturnValue("de-AT");

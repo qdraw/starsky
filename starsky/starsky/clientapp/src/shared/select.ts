@@ -1,6 +1,6 @@
 import { IUseLocation } from "../hooks/use-location/interfaces/IUseLocation";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
-import { URLPath } from "./url-path";
+import { URLPath } from "./url/url-path";
 
 export class Select {
   private select: string[] | undefined = [];

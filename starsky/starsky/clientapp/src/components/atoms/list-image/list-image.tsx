@@ -2,8 +2,8 @@ import React, { memo, useEffect, useRef, useState } from "react";
 import useIntersection from "../../../hooks/use-intersection-observer";
 import useLocation from "../../../hooks/use-location/use-location";
 import { ImageFormat } from "../../../interfaces/IFileIndexItem";
-import { URLPath } from "../../../shared/url-path";
-import { UrlQuery } from "../../../shared/url-query";
+import { URLPath } from "../../../shared/url/url-path";
+import { UrlQuery } from "../../../shared/url/url-query";
 
 interface IListImageProps {
   children?: React.ReactNode;

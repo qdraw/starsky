@@ -2,7 +2,7 @@ import { IArchive, SortType } from "../interfaces/IArchive";
 import { IDetailView, PageType } from "../interfaces/IDetailView";
 import { IUrl } from "../interfaces/IUrl";
 import { DifferenceInDate } from "./date";
-import { URLPath } from "./url-path";
+import { URLPath } from "./url/url-path";
 
 interface IGetAllTransferObject {
   name: string;

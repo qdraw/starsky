@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Orientation } from "../../../interfaces/IFileIndexItem";
 import DetectAutomaticRotation from "../../../shared/detect-automatic-rotation";
 import FetchGet from "../../../shared/fetch/fetch-get";
-import { UrlQuery } from "../../../shared/url-query";
+import { UrlQuery } from "../../../shared/url/url-query";
 import PanAndZoomImage from "./pan-and-zoom-image";
 
 export interface IFileHashImageProps {

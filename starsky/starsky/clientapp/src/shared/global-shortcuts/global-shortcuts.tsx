@@ -1,6 +1,6 @@
 import useHotKeys from "../../hooks/use-keyboard/use-hotkeys";
 import useLocation from "../../hooks/use-location/use-location";
-import { UrlQuery } from "../url-query";
+import { UrlQuery } from "../url/url-query";
 
 export function GlobalShortcuts() {
   const history = useLocation();

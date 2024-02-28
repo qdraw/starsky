@@ -11,7 +11,7 @@ import * as FetchPost from "../../../shared/fetch/fetch-post";
 import { Keyboard } from "../../../shared/keyboard";
 import { SupportedLanguages } from "../../../shared/language";
 import * as ClearSearchCache from "../../../shared/search/clear-search-cache";
-import { UrlQuery } from "../../../shared/url-query";
+import { UrlQuery } from "../../../shared/url/url-query";
 import { LimitLength } from "../../atoms/form-control/limit-length";
 import * as ModalDatetime from "../modal-edit-date-time/modal-edit-datetime";
 import DetailViewSidebar from "./detail-view-sidebar";

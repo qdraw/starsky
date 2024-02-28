@@ -1,7 +1,7 @@
 import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
 import { IDetailView, IRelativeObjects } from "../../../interfaces/IDetailView";
 import { UpdateRelativeObject } from "../../../shared/update-relative-object";
-import { UrlQuery } from "../../../shared/url-query";
+import { UrlQuery } from "../../../shared/url/url-query";
 
 export class PrevNext {
   relativeObjects: IRelativeObjects;

@@ -8,7 +8,7 @@ import { PageType, newIRelativeObjects } from "../../../interfaces/IDetailView";
 import { IEnvFeatures } from "../../../interfaces/IEnvFeatures";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
-import { UrlQuery } from "../../../shared/url-query";
+import { UrlQuery } from "../../../shared/url/url-query";
 import * as Notification from "../../atoms/notification/notification";
 import * as ModalDesktopEditorOpenSelectionConfirmation from "../../organisms/modal-desktop-editor-open-selection-confirmation/modal-desktop-editor-open-selection-confirmation";
 import MenuOptionDesktopEditorOpenSelection, {

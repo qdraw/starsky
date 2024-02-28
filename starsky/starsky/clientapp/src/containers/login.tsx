@@ -9,7 +9,7 @@ import { BrowserDetect } from "../shared/browser-detect";
 import { DocumentTitle } from "../shared/document-title";
 import FetchPost from "../shared/fetch/fetch-post";
 import { Language } from "../shared/language";
-import { UrlQuery } from "../shared/url-query";
+import { UrlQuery } from "../shared/url/url-query";
 import { validateLoginForm } from "../shared/validate-login-form";
 
 interface ILoginProps {

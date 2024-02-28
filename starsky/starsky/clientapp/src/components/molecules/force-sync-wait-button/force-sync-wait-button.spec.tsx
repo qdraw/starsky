@@ -3,8 +3,8 @@ import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/I
 import { PageType } from "../../../interfaces/IDetailView";
 import * as FetchGet from "../../../shared/fetch/fetch-get";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
-import { URLPath } from "../../../shared/url-path";
-import { UrlQuery } from "../../../shared/url-query";
+import { URLPath } from "../../../shared/url/url-path";
+import { UrlQuery } from "../../../shared/url/url-query";
 import ForceSyncWaitButton, { ForceSyncRequestNewContent } from "./force-sync-wait-button";
 
 describe("ForceSyncWaitButton", () => {

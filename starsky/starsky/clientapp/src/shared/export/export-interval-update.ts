@@ -1,6 +1,6 @@
 import { Dispatch } from "react";
 import FetchGet from "../fetch/fetch-get";
-import { UrlQuery } from "../url-query";
+import { UrlQuery } from "../url/url-query";
 import { ProcessingState } from "./processing-state";
 
 export async function ExportIntervalUpdate(

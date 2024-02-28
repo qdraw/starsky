@@ -11,7 +11,7 @@ import { FileExtensions } from "../../../shared/file-extensions";
 import { FileListCache } from "../../../shared/filelist-cache";
 import { Language } from "../../../shared/language";
 import { StringOptions } from "../../../shared/string-options";
-import { UrlQuery } from "../../../shared/url-query";
+import { UrlQuery } from "../../../shared/url/url-query";
 import Modal from "../../atoms/modal/modal";
 import ItemTextListView from "../../molecules/item-text-list-view/item-text-list-view";
 

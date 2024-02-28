@@ -2,7 +2,7 @@ import { act, fireEvent, render, RenderResult, screen, waitFor } from "@testing-
 import { IConnectionDefault } from "../interfaces/IConnectionDefault";
 import * as FetchGet from "../shared/fetch/fetch-get";
 import * as FetchPost from "../shared/fetch/fetch-post";
-import { UrlQuery } from "../shared/url-query";
+import { UrlQuery } from "../shared/url/url-query";
 import AccountRegister from "./account-register";
 
 describe("AccountRegister", () => {

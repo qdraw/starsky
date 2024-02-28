@@ -1,7 +1,7 @@
 import { IDetailView, IRelativeObjects } from "../interfaces/IDetailView";
 import FetchGet from "./fetch/fetch-get";
-import { URLPath } from "./url-path";
-import { UrlQuery } from "./url-query";
+import { URLPath } from "./url/url-path";
+import { UrlQuery } from "./url/url-query";
 
 export class UpdateRelativeObject {
   /**

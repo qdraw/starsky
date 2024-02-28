@@ -3,7 +3,7 @@ import useGlobalSettings from "../../../hooks/use-global-settings";
 import localization from "../../../localization/localization.json";
 import FetchPost from "../../../shared/fetch/fetch-post";
 import { Language } from "../../../shared/language";
-import { UrlQuery } from "../../../shared/url-query";
+import { UrlQuery } from "../../../shared/url/url-query";
 import ButtonStyled from "../../atoms/button-styled/button-styled";
 
 const PreferencesPassword: React.FunctionComponent = () => {

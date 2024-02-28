@@ -1,4 +1,4 @@
-import { IFileIndexItem, newIFileIndexItemArray } from "../interfaces/IFileIndexItem";
+import { IFileIndexItem, newIFileIndexItemArray } from "../../interfaces/IFileIndexItem";
 import { URLPath } from "./url-path";
 
 describe("url-path", () => {

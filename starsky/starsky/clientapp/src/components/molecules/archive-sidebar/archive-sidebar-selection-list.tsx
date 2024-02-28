@@ -6,7 +6,7 @@ import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 import { Select } from "../../../shared/select";
-import { URLPath } from "../../../shared/url-path";
+import { URLPath } from "../../../shared/url/url-path";
 
 interface IDetailViewSidebarSelectionListProps {
   fileIndexItems: Array<IFileIndexItem>;

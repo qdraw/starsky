@@ -1,7 +1,7 @@
 import { act, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { Router } from "../../../router-app/router-app";
-import { URLPath } from "../../../shared/url-path";
+import { URLPath } from "../../../shared/url/url-path";
 import ColorClassFilter from "./color-class-filter";
 describe("ColorClassFilter", () => {
   it("renders", () => {

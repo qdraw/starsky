@@ -4,7 +4,7 @@ import useLocation from "../../../hooks/use-location/use-location";
 import { PageType } from "../../../interfaces/IDetailView";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { FileListCache } from "../../../shared/filelist-cache";
-import { URLPath } from "../../../shared/url-path";
+import { URLPath } from "../../../shared/url/url-path";
 import ColorClassSelect from "../color-class-select/color-class-select";
 
 interface IArchiveSidebarColorClassProps {

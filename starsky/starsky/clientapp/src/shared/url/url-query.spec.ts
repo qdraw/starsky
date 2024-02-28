@@ -118,6 +118,16 @@ describe("url-query", () => {
     expect(result).toContain("logout");
   });
 
+  it("UrlLogoutPage ", () => {
+    const result = urlQuery.UrlLogoutPage("test");
+    expect(result).toContain("/account/logout?ReturnUrl=test");
+  });
+
+  it("UrlLogoutPage 2", () => {
+    const result = urlQuery.UrlLogoutPage("https://google.com");
+    expect(result).toContain("/account/logout?ReturnUrl=/?f=/");
+  });
+
   describe("GetReturnUrl", () => {
     it("default", () => {
       const test = urlQuery.GetReturnUrl("?");

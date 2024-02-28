@@ -8,7 +8,7 @@ import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { Router } from "../../../router-app/router-app";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
-import { UrlQuery } from "../../../shared/url-query";
+import { UrlQuery } from "../../../shared/url/url-query";
 import * as DropArea from "../../atoms/drop-area/drop-area";
 import * as Link from "../../atoms/link/link";
 import * as MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
