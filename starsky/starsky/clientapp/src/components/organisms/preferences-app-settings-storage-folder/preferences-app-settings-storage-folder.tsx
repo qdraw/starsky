@@ -37,7 +37,7 @@ const PreferencesAppSettingsStorageFolder: React.FunctionComponent = () => {
   const MessageAppSettingStorageFolderEnvUsedFail = language.key(
     localization.MessageAppSettingStorageFolderEnvUsedFail
   );
-
+  const MessageReadMoreHere = language.key(localization.MessageReadMoreHere);
   const permissionsData = useFetch(new UrlQuery().UrlAccountPermissions(), "get");
 
   const [isEnabled, setIsEnabled] = useState(false);
@@ -91,7 +91,10 @@ const PreferencesAppSettingsStorageFolder: React.FunctionComponent = () => {
 
       {storageFolder !== appSettings?.storageFolder && !storageFolderNotFound ? (
         <div className="warning-box" data-test="storage-changed">
-          {MessageChangeNeedReSync}
+          {MessageChangeNeedReSync}{" "}
+          <a target="_blank" href={new UrlQuery().DocsGettingStartedFirstSteps()} rel="noreferrer">
+            {MessageReadMoreHere}
+          </a>
         </div>
       ) : null}
 

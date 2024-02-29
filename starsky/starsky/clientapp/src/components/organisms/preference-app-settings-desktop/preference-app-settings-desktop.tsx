@@ -117,7 +117,9 @@ const PreferencesAppSettingsDesktop: React.FunctionComponent = () => {
               ? "preference-app-settings-desktop-use-local-desktop-true"
               : "preference-app-settings-desktop-use-local-desktop-false"
           }
-          className={appSettings?.useLocalDesktop ? "" : "warning-box"}
+          className={
+            appSettings?.useLocalDesktop ? "warning-box warning-box--optional" : "warning-box"
+          }
         >
           {MessageSwitchButtonDesktopApplicationDescription}
         </div>

@@ -436,4 +436,8 @@ export class UrlQuery {
     url += "//" + window.location.host + this.prefix + "/realtime";
     return url;
   }
+
+  public DocsGettingStartedFirstSteps(): string {
+    return "https://docs.qdraw.nl/docs/getting-started/first-steps";
+  }
 }

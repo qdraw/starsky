@@ -170,6 +170,13 @@
   margin-bottom: 8px;
 }
 
+.content--text .warning-box a,
+.content .warning-box a,
+.content > form > .content--error-true a {
+  color: white;
+  text-decoration: underline;
+}
+
 .warning-box.warning-box--under-form {
   margin-top: 25px;
 }
@@ -258,11 +265,4 @@
 
 .publish .warning-box {
   margin-top: 4px;
-}
-
-/*for password gui*/
-@media (prefers-color-scheme: dark) {
-  .preferences-username-text {
-    color: #fff;
-  }
 }
