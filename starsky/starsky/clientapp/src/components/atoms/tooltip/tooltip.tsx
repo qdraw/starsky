@@ -10,7 +10,7 @@ const Tooltip: React.FC<TooltipProps> = ({ text, children, left }) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
   const handleMouseEnter = () => {
-    setShowTooltip(true);
+    setShowTooltip((prevState) => !prevState);
   };
 
   const handleMouseLeave = () => {
