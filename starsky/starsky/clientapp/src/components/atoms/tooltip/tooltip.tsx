@@ -25,7 +25,11 @@ const Tooltip: React.FC<TooltipProps> = ({ text, children, left }) => {
       onMouseLeave={handleMouseLeave}
     >
       {children}
-      {showTooltip && <span className="tooltip">{text}</span>}
+      {showTooltip && (
+        <span data-test="tooltip" className="tooltip">
+          {text}
+        </span>
+      )}
     </button>
   );
 };
