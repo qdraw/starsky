@@ -11072,10 +11072,11 @@
               "unresolvedReference": false
             }
           ],
+          "summary": "Is the system trash supported\r\nUsed in End2End tests to enable or disable the trash",
           "parameters": [],
           "responses": {
             "200": {
-              "description": "Success",
+              "description": "the item including the updated content",
               "headers": {},
               "content": {
                 "application/json": {
@@ -11100,6 +11101,14 @@
                   "extensions": {}
                 }
               },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "401": {
+              "description": "User unauthorized",
+              "headers": {},
+              "content": {},
               "links": {},
               "extensions": {},
               "unresolvedReference": false
