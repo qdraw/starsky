@@ -14,7 +14,7 @@ Press select and Labels and select the images you want to update.
 When you selected an image you can update the metadata.
 You can update the following metadata:
 
-- Tags
+- Tags *(Comma seperated)*
 - Info
 - Title
 - ColorClass (the color label of the image)
@@ -25,10 +25,20 @@ via the API you could also update other metadata like:
 - Software
 - etc.
 
+The following image shows the bulk editing feature in action:
+
+- So press 'Select' and select the images you want to update:
+- Press 'Labels' and update the metadata you want to update.
+
+![Bulk edit select](../assets/features-bulk-editing-select.jpg)
+
 # Replace the metadata in the fields: tags, info or title
 
 You can search and replace the metadata in the fields: tags, info or title.
 Is easy to undo typos or update the metadata.
+
+> Note: Tags are comma separated and unique.
+> So when you add a tag that already exists, it will not be added.
 
 # Open files
 
