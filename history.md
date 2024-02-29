@@ -52,7 +52,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Added) _Back-end_ Add role to info api (PR #1381)
 - [x] (Added) _Front-end_ Add settings for Open File (PR #1381)
 - [x] (Added) _Back-end_ rename starsky core to starsky.project.web (PR #1381)
-- [x] (Changed) _Back-end_ Keep /api/trash/detect-to-use-system-trash although its rm here (PR #1381)
+- [x] (Changed) _Back-end_ Keep /api/trash/detect-to-use-system-trash although its rm here and re
+  added (PR #1381)
 - [x] (Removed) _Back-end_ Remove verbose option in UI (setting is hidden now) (PR #1381)
 - [x] (Added) _Front-end_ German translations (PR #1381)
 - [x] (Added) _Front-end_ command + shift + k go to settings now (PR #1381)
@@ -62,6 +63,12 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Added) _Front-end_ Add warning when opening a lot pictures at one: "Do you really want to
   edit all of the selected photos?" (PR #1381)
 - [x] (Changed) _Front-end_ isRelativeUrl check for redirect (PR #1419)
+- [x] (Breaking changes) _App_ System requirements for Windows and Mac OS are changed see release
+  notes (PR #1422)
+- [x] (Fixed) _Front-end_ Add Tooltip to explain that tags are comma separated (PR #1422) (Issue
+  #1405)
+- [x] (Fixed) _Docs_ Make getting started more clear (PR #1422) (Issue #1403)
+- [x] (Fixed) _Front-end_ Add link to docs page for storage folder (PR #1422) (Issue #1404)
 
 ## version 0.6.0-beta.1 - 2024-02-18 {#v0.6.0-beta.1}
 
