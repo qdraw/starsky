@@ -4,7 +4,7 @@ import useLocation from "../../../hooks/use-location/use-location";
 import { SortType } from "../../../interfaces/IArchive";
 import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
-import { URLPath } from "../../../shared/url-path";
+import { URLPath } from "../../../shared/url/url-path";
 import Modal from "../../atoms/modal/modal";
 import Select from "../../atoms/select/select";
 import SwitchButton from "../../atoms/switch-button/switch-button";

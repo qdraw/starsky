@@ -1,13 +1,13 @@
 import React, { Dispatch, memo } from "react";
-import localization from "../../../localization/localization.json";
-import FetchPost from "../../../shared/fetch/fetch-post";
-import { UrlQuery } from "../../../shared/url-query";
-import MenuOption from "../../atoms/menu-option/menu-option.tsx";
-import FetchGet from "../../../shared/fetch/fetch-get.ts";
-import { CastToInterface } from "../../../shared/cast-to-interface.ts";
-import { Orientation } from "../../../interfaces/IFileIndexItem.ts";
-import { IDetailView } from "../../../interfaces/IDetailView.ts";
 import { DetailViewAction } from "../../../contexts/detailview-context.tsx";
+import { IDetailView } from "../../../interfaces/IDetailView.ts";
+import { Orientation } from "../../../interfaces/IFileIndexItem.ts";
+import localization from "../../../localization/localization.json";
+import { CastToInterface } from "../../../shared/cast-to-interface.ts";
+import FetchGet from "../../../shared/fetch/fetch-get.ts";
+import FetchPost from "../../../shared/fetch/fetch-post";
+import { UrlQuery } from "../../../shared/url/url-query.ts";
+import MenuOption from "../../atoms/menu-option/menu-option.tsx";
 
 interface IMenuOptionMenuOptionRotateImage90Props {
   state: IDetailView;

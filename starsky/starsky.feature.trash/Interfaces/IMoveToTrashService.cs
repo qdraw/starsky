@@ -19,4 +19,12 @@ public interface IMoveToTrashService
 	/// </summary>
 	/// <returns>Should you use it?</returns>
 	bool IsEnabled();
+
+	/// <summary>
+	/// Is it supported to use the system trash
+	/// But it does NOT check if the feature toggle is enabled
+	/// Used by End2End test to enable system trash if supported on the platform
+	/// </summary>
+	/// <returns>true if supported</returns>
+	public bool DetectToUseSystemTrash();
 }

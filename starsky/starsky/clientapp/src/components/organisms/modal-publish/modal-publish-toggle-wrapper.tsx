@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
-import { URLPath } from "../../../shared/url-path";
+import { URLPath } from "../../../shared/url/url-path";
 import ModalPublish from "./modal-publish";
 
 interface IModalPublishWrapperProps {

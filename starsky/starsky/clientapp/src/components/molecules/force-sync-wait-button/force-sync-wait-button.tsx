@@ -9,8 +9,8 @@ import FetchGet from "../../../shared/fetch/fetch-get";
 import FetchPost from "../../../shared/fetch/fetch-post";
 import { FileListCache } from "../../../shared/filelist-cache";
 import { Language } from "../../../shared/language";
-import { URLPath } from "../../../shared/url-path";
-import { UrlQuery } from "../../../shared/url-query";
+import { URLPath } from "../../../shared/url/url-path";
+import { UrlQuery } from "../../../shared/url/url-query";
 import Preloader from "../../atoms/preloader/preloader";
 
 type ForceSyncWaitButtonPropTypes = {

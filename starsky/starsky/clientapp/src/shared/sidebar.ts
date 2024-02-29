@@ -1,5 +1,5 @@
 import { IUseLocation } from "../hooks/use-location/interfaces/IUseLocation";
-import { URLPath } from "./url-path";
+import { URLPath } from "./url/url-path";
 
 export class Sidebar {
   private setSidebar: React.Dispatch<React.SetStateAction<boolean | undefined>> = () => {

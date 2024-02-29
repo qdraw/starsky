@@ -3,7 +3,7 @@ import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocatio
 import { IDetailView } from "../../../interfaces/IDetailView";
 import { INavigateState } from "../../../interfaces/INavigateState";
 import { Keyboard } from "../../../shared/keyboard";
-import { UrlQuery } from "../../../shared/url-query";
+import { UrlQuery } from "../../../shared/url/url-query";
 
 export function moveFolderUp(
   event: KeyboardEvent,

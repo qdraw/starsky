@@ -99,6 +99,21 @@ describe("url-query", () => {
     expect(result).toContain("itemName=name");
   });
 
+  it("UrlHomePage", () => {
+    const result = new UrlQuery().UrlHomePage();
+    expect(result).toBe("/");
+  });
+
+  it("UrlHomeIndexPage", () => {
+    const result = urlQuery.UrlHomeIndexPage("name");
+    expect(result).toBe("/name");
+  });
+
+  it("UrlHomeIndexPage http link", () => {
+    const result = urlQuery.UrlHomeIndexPage("https://google.com");
+    expect(result).toBe("/");
+  });
+
   it("UrlSearchTrashApi should contain trash", () => {
     const result = urlQuery.UrlSearchTrashApi();
     expect(result).toContain("trash");
@@ -116,6 +131,16 @@ describe("url-query", () => {
   it("UrlLogoutApi", () => {
     const result = urlQuery.UrlLogoutApi();
     expect(result).toContain("logout");
+  });
+
+  it("UrlLogoutPage ", () => {
+    const result = urlQuery.UrlLogoutPage("test");
+    expect(result).toContain("/account/logout?ReturnUrl=test");
+  });
+
+  it("UrlLogoutPage 2", () => {
+    const result = urlQuery.UrlLogoutPage("https://google.com");
+    expect(result).toContain("/account/logout?ReturnUrl=/?f=/");
   });
 
   describe("GetReturnUrl", () => {

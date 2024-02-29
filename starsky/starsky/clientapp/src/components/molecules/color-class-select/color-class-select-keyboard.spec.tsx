@@ -5,7 +5,7 @@ import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
 import { Keyboard } from "../../../shared/keyboard";
-import { UrlQuery } from "../../../shared/url-query";
+import { UrlQuery } from "../../../shared/url/url-query";
 import ColorClassSelectKeyboard from "./color-class-select-keyboard";
 import * as ColorClassUpdateSingle from "./color-class-update-single";
 

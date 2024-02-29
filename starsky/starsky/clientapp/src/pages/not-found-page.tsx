@@ -4,7 +4,7 @@ import MenuDefault from "../components/organisms/menu-default/menu-default";
 import useGlobalSettings from "../hooks/use-global-settings";
 import localization from "../localization/localization.json";
 import { Language } from "../shared/language";
-import { UrlQuery } from "../shared/url-query";
+import { UrlQuery } from "../shared/url/url-query";
 
 export const NotFoundPage: FunctionComponent = () => {
   // content

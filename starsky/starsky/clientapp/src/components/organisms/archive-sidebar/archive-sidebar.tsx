@@ -4,7 +4,7 @@ import useLocation from "../../../hooks/use-location/use-location";
 import { PageType } from "../../../interfaces/IDetailView";
 import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
-import { URLPath } from "../../../shared/url-path";
+import { URLPath } from "../../../shared/url/url-path";
 import ArchiveSidebarColorClass from "../../molecules/archive-sidebar/archive-sidebar-color-class";
 import ArchiveSidebarLabelEdit from "../../molecules/archive-sidebar/archive-sidebar-label-edit";
 import ArchiveSidebarSelectionList from "../../molecules/archive-sidebar/archive-sidebar-selection-list";

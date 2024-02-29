@@ -44,4 +44,19 @@ public class TrashControllerTest
 
 		Assert.AreEqual(1, resultValue?.Count);
 	}
+	
+	[TestMethod]
+	public void DetectToUseSystemTrash_Ok()
+	{
+		var controller = new TrashController(
+			new FakeIMoveToTrashService(new List<FileIndexItem>()));
+		
+		// Used for end2end tests to enable or disable the trash
+		var result = controller.DetectToUseSystemTrash() as JsonResult;
+		
+		var tryParseResult = bool.TryParse(result?.Value?.ToString(), out var resultValue);
+		
+		Assert.AreEqual(true, tryParseResult);
+		Assert.AreEqual(true, resultValue);
+	}
 }

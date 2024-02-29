@@ -4,7 +4,7 @@ import useLocation from "../../../hooks/use-location/use-location";
 import { IUrl } from "../../../interfaces/IUrl";
 import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
-import { URLPath } from "../../../shared/url-path";
+import { URLPath } from "../../../shared/url/url-path";
 import Link from "../../atoms/link/link";
 
 interface IRelativeLink {

@@ -4,8 +4,8 @@ import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import localization from "../../../localization/localization.json";
 import FetchPost from "../../../shared/fetch/fetch-post";
 import { Language } from "../../../shared/language";
-import { URLPath } from "../../../shared/url-path";
-import { UrlQuery } from "../../../shared/url-query";
+import { URLPath } from "../../../shared/url/url-path";
+import { UrlQuery } from "../../../shared/url/url-query";
 import Modal from "../../atoms/modal/modal";
 
 interface IModalDesktopEditorOpenConfirmationProps {

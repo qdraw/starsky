@@ -1,8 +1,8 @@
 import { IGeoLocationModel } from "../../../../interfaces/IGeoLocationModel";
 import FetchGet from "../../../../shared/fetch/fetch-get";
 import FetchPost from "../../../../shared/fetch/fetch-post";
-import { URLPath } from "../../../../shared/url-path";
-import { UrlQuery } from "../../../../shared/url-query";
+import { URLPath } from "../../../../shared/url/url-path";
+import { UrlQuery } from "../../../../shared/url/url-query";
 import { ILatLong } from "../modal-geo";
 
 export async function UpdateGeoLocation(

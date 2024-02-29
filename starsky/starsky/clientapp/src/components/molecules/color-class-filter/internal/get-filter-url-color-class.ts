@@ -1,6 +1,6 @@
-import { URLPath } from "../../../../shared/url-path.ts";
-import { SelectCheckIfActive } from "../../../../shared/select-check-if-active.ts";
 import { IArchiveProps } from "../../../../interfaces/IArchiveProps.ts";
+import { SelectCheckIfActive } from "../../../../shared/select-check-if-active.ts";
+import { URLPath } from "../../../../shared/url/url-path.ts";
 
 export function GetFilterUrlColorClass(
   item: number,

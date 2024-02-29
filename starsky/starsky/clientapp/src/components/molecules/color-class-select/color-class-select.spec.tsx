@@ -4,7 +4,7 @@ import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/I
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
-import { UrlQuery } from "../../../shared/url-query";
+import { UrlQuery } from "../../../shared/url/url-query";
 import * as Notification from "../../atoms/notification/notification";
 import ColorClassSelect from "./color-class-select";
 import * as ColorClassUpdateSingle from "./color-class-update-single";

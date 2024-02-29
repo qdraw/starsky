@@ -4,7 +4,7 @@ import localization from "../../../localization/localization.json";
 import { BrowserDetect } from "../../../shared/browser-detect";
 import { DifferenceInDate } from "../../../shared/date";
 import { Language } from "../../../shared/language";
-import { UrlQuery } from "../../../shared/url-query";
+import { UrlQuery } from "../../../shared/url/url-query";
 import Notification, { NotificationType } from "../../atoms/notification/notification";
 
 /**

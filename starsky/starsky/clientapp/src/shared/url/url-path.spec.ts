@@ -1,8 +1,26 @@
-import { IFileIndexItem, newIFileIndexItemArray } from "../interfaces/IFileIndexItem";
+import { IFileIndexItem, newIFileIndexItemArray } from "../../interfaces/IFileIndexItem";
 import { URLPath } from "./url-path";
 
 describe("url-path", () => {
   const urlPath = new URLPath();
+
+  describe("StringToIUrl", () => {
+    it("FileNameBreadcrumb", () => {
+      const result = urlPath.FileNameBreadcrumb("");
+      expect(result).toBe("/");
+    });
+
+    it("FileNameBreadcrumb file.jpg", () => {
+      const result = urlPath.FileNameBreadcrumb("/file.jpg");
+      expect(result).toBe("file.jpg");
+    });
+
+    it("FileNameBreadcrumb /test/file.jpg", () => {
+      const result = urlPath.FileNameBreadcrumb("/test/file.jpg");
+      expect(result).toBe("file.jpg");
+    });
+  });
+
   describe("StringToIUrl", () => {
     it("default no content", () => {
       const test = urlPath.StringToIUrl("");

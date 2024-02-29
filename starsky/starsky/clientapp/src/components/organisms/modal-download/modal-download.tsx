@@ -7,8 +7,8 @@ import { ExportIntervalUpdate } from "../../../shared/export/export-interval-upd
 import FetchPost from "../../../shared/fetch/fetch-post";
 import { FileExtensions } from "../../../shared/file-extensions";
 import { Language } from "../../../shared/language";
-import { URLPath } from "../../../shared/url-path";
-import { UrlQuery } from "../../../shared/url-query";
+import { URLPath } from "../../../shared/url/url-path";
+import { UrlQuery } from "../../../shared/url/url-query";
 import Modal from "../../atoms/modal/modal";
 
 interface IModalExportProps {

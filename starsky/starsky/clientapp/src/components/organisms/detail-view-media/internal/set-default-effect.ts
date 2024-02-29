@@ -1,5 +1,5 @@
-import { URLPath } from "../../../../shared/url-path";
-import { UrlQuery } from "../../../../shared/url-query";
+import { URLPath } from "../../../../shared/url/url-path";
+import { UrlQuery } from "../../../../shared/url/url-query";
 
 export function SetDefaultEffect(
   historyLocationSearch: string,

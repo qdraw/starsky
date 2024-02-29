@@ -1,4 +1,4 @@
-import { URLPath } from "../../../../shared/url-path";
+import { URLPath } from "../../../../shared/url/url-path";
 
 export function CleanColorClass(propsSubPath: string, historyLocationSearch: string): string {
   if (!propsSubPath) return "/";

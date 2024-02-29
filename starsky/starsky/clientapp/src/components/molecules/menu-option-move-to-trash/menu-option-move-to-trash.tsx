@@ -8,8 +8,8 @@ import FetchPost from "../../../shared/fetch/fetch-post";
 import { FileListCache } from "../../../shared/filelist-cache";
 import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
 import { Select } from "../../../shared/select";
-import { URLPath } from "../../../shared/url-path";
-import { UrlQuery } from "../../../shared/url-query";
+import { URLPath } from "../../../shared/url/url-path.ts";
+import { UrlQuery } from "../../../shared/url/url-query.ts";
 import MenuOption from "../../atoms/menu-option/menu-option.tsx";
 
 interface IMenuOptionMoveToTrashProps {

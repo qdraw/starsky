@@ -1,6 +1,6 @@
-import { SortType } from "../interfaces/IArchive";
-import { IFileIndexItem } from "../interfaces/IFileIndexItem";
-import { IUrl } from "../interfaces/IUrl";
+import { SortType } from "../../interfaces/IArchive";
+import { IFileIndexItem } from "../../interfaces/IFileIndexItem";
+import { IUrl } from "../../interfaces/IUrl";
 
 export class URLPath {
   public FileNameBreadcrumb(filePath: string) {

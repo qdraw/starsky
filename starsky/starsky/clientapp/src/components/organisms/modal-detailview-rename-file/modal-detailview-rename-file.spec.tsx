@@ -4,7 +4,7 @@ import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IDetailView } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
-import { UrlQuery } from "../../../shared/url-query";
+import { UrlQuery } from "../../../shared/url/url-query";
 import * as Modal from "../../atoms/modal/modal";
 import ModalDetailviewRenameFile from "./modal-detailview-rename-file";
 

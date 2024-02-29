@@ -3,8 +3,8 @@ import { IArchive, newIArchive } from "../interfaces/IArchive";
 import { IDetailView, PageType, newDetailView } from "../interfaces/IDetailView";
 import { CastToInterface } from "../shared/cast-to-interface";
 import { FileListCache } from "../shared/filelist-cache";
-import { URLPath } from "../shared/url-path";
-import { UrlQuery } from "../shared/url-query";
+import { URLPath } from "../shared/url/url-path";
+import { UrlQuery } from "../shared/url/url-query";
 
 export interface IFileList {
   archive?: IArchive;

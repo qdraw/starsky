@@ -5,7 +5,7 @@ import { IConnectionDefault } from "../../../../interfaces/IConnectionDefault";
 import { IEnvFeatures } from "../../../../interfaces/IEnvFeatures";
 import localization from "../../../../localization/localization.json";
 import { Language } from "../../../../shared/language";
-import { UrlQuery } from "../../../../shared/url-query";
+import { UrlQuery } from "../../../../shared/url/url-query";
 import Navigate from "./navigate";
 
 export interface IInlineSearchSuggestProps {

@@ -14,7 +14,7 @@ import { ImageFormat } from "../../interfaces/IFileIndexItem";
 import { DocumentTitle } from "../../shared/document-title";
 import { Keyboard } from "../../shared/keyboard";
 import { UpdateRelativeObject } from "../../shared/update-relative-object";
-import { URLPath } from "../../shared/url-path";
+import { URLPath } from "../../shared/url/url-path";
 import MenuDetailViewContainer from "../menu-detailview-container/menu-detailview-container";
 import { moveFolderUp } from "./helpers/move-folder-up";
 import { PrevNext } from "./helpers/prev-next";

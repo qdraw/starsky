@@ -13,7 +13,7 @@ import { IExifStatus } from "../interfaces/IExifStatus";
 import { IFileIndexItem } from "../interfaces/IFileIndexItem";
 import { DocumentTitle } from "../shared/document-title";
 import { FileListCache } from "../shared/filelist-cache";
-import { URLPath } from "../shared/url-path";
+import { URLPath } from "../shared/url/url-path";
 
 /**
  * Used for search and list of files

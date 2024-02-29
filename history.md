@@ -52,7 +52,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Added) _Back-end_ Add role to info api (PR #1381)
 - [x] (Added) _Front-end_ Add settings for Open File (PR #1381)
 - [x] (Added) _Back-end_ rename starsky core to starsky.project.web (PR #1381)
-- [x] (Removed) _Back-end_ Remove /api/trash/detect-to-use-system-trash (PR #1381)
+- [x] (Changed) _Back-end_ Keep /api/trash/detect-to-use-system-trash although its rm here (PR #1381)
 - [x] (Removed) _Back-end_ Remove verbose option in UI (setting is hidden now) (PR #1381)
 - [x] (Added) _Front-end_ German translations (PR #1381)
 - [x] (Added) _Front-end_ command + shift + k go to settings now (PR #1381)
@@ -61,6 +61,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Added) _App_ Add 'App Settings' to the menu (PR #1381)
 - [x] (Added) _Front-end_ Add warning when opening a lot pictures at one: "Do you really want to
   edit all of the selected photos?" (PR #1381)
+- [x] (Changed) _Front-end_ isRelativeUrl check for redirect (PR #1419)
 
 ## version 0.6.0-beta.1 - 2024-02-18 {#v0.6.0-beta.1}
 
