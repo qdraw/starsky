@@ -146,4 +146,15 @@ public class MoveToTrashService : IMoveToTrashService
 
 		await _query.RemoveItemAsync(moveToTrash);
 	}
+	
+	/// <summary>
+	/// Is it supported to use the system trash
+	/// But it does NOT check if the feature toggle is enabled
+	/// Used for end2end test to check if it an option to enable / disable the system trash
+	/// </summary>
+	/// <returns>true if supported</returns>
+	public bool DetectToUseSystemTrash()
+	{
+		return _systemTrashService.DetectToUseSystemTrash();
+	}
 }

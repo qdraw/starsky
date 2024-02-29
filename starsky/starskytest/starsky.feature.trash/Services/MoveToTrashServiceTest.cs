@@ -312,6 +312,21 @@ public class MoveToTrashServiceTest
 		Assert.AreEqual(TrashKeyword.TrashKeywordString, result[0].Tags);
 		Assert.AreEqual(TrashKeyword.TrashKeywordString, result[1].Tags);
 	}
+	
+	[TestMethod]
+	public void DetectToUseSystemTrash_False()
+	{
+		var trashService = new FakeITrashService(){IsSupported = false};
+		var moveToTrashService = new MoveToTrashService(new AppSettings(), new FakeIQuery(), 
+			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(), 
+			trashService, new FakeIMetaUpdateService(), 
+			new FakeITrashConnectionService());
+
+		// used for end2end test to enable / disable the trash
+		var result =  moveToTrashService.DetectToUseSystemTrash();
+		
+		Assert.AreEqual(false, result);
+	}
 
 	[TestMethod]
 	public async Task AppendChildItemsToTrashList_NoAny()
