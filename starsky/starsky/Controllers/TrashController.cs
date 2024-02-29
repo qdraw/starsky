@@ -55,7 +55,6 @@ public class TrashController : Controller
 	/// <returns>bool with json (IActionResult Result)</returns>
 	/// <response code="200">the item including the updated content</response>
 	/// <response code="401">User unauthorized</response>
-	/// </summary>
 	[ProducesResponseType(typeof(bool), 200)]
 	[HttpGet("/api/trash/detect-to-use-system-trash")]
 	[Produces("application/json")]
