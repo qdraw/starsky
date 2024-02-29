@@ -34,6 +34,8 @@
   "addSwaggerExport": false,
   "addLegacyOverwrite": false,
   "storageFolderAllowEdit": true,
+  "defaultDesktopEditor": [],
+  "useLocalDesktop": true,
   "webFtp": "warning: The field is not empty but for security reasons it is not shown",
   "publishProfiles": [
     {
