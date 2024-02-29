@@ -47,10 +47,14 @@ When using as server mode: [see account management for more info](../features/ac
 
 ![Import](../assets/getting-started-first-steps-import.jpg)
 
-The default structure is `YYYY/MM/YYYY_MM_DD` and the photos are placed in the correct folder.
+The default structure is `/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_{filenamebase}.ext` and the photos are
+placed in the correct folder.
 So a picture that has been taken at `Saturday, 3 February 2024 10:10:29` will be placed
-in `2024/02/2024_02_03` and will be named: `20240203_101029_DSC07624.jpg`
+in `2024/02/2024_02_03` and will be named: `20240203_101029_DSC07624.jpg` the base name of the file
+is `DSC07624` and the extension is `jpg`.
 
 Read more about [Import here](../features/import.md)
 
 ## Search
+
+Learn more about search [Search here](../features/search.md)
