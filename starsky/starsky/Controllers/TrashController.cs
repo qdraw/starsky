@@ -47,8 +47,7 @@ public class TrashController : Controller
 
 		return Json(fileIndexResultsList);
 	}
-	
-	/// <summary>
+
 	/// <summary>
 	/// Is the system trash supported
 	/// Used in End2End tests to enable or disable the trash
@@ -56,6 +55,7 @@ public class TrashController : Controller
 	/// <returns>bool with json (IActionResult Result)</returns>
 	/// <response code="200">the item including the updated content</response>
 	/// <response code="401">User unauthorized</response>
+	/// </summary>
 	[ProducesResponseType(typeof(bool), 200)]
 	[HttpGet("/api/trash/detect-to-use-system-trash")]
 	[Produces("application/json")]

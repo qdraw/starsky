@@ -99,6 +99,11 @@ describe("url-query", () => {
     expect(result).toContain("itemName=name");
   });
 
+  it("UrlHomePage", () => {
+    const result = new UrlQuery().UrlHomePage();
+    expect(result).toBe("/");
+  });
+
   it("UrlHomeIndexPage", () => {
     const result = urlQuery.UrlHomeIndexPage("name");
     expect(result).toBe("/name");
