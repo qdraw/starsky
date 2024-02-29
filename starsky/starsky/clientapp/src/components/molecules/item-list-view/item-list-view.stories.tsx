@@ -26,6 +26,13 @@ export const Default = () => {
 
 Default.storyName = "default";
 
+export const HomeNoContent = () => {
+  Router.navigate("/");
+  return <ItemListView subPath="/" iconList={true} fileIndexItems={[]} colorClassUsage={[]} />;
+};
+
+HomeNoContent.storyName = "home no content";
+
 export const _8ItemsSelectionDisabled = () => {
   Router.navigate("/");
   return (

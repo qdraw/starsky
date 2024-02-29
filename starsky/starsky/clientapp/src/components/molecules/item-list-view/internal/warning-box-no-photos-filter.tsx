@@ -20,7 +20,7 @@ export const WarningBoxNoPhotosFilter: React.FunctionComponent<IWarningBoxNoPhot
 
     const MessageNoPhotosInFolder = language.key(localization.MessageNoPhotosInFolder);
     const MessageItemsOutsideFilter = language.key(localization.MessageItemsOutsideFilter);
-
+    const MessageReadMoreHere = language.key(localization.MessageReadMoreHere);
     const MessageNewUserNoPhotosInFolder = language.key(
       localization.MessageNewUserNoPhotosInFolder
     );
@@ -54,7 +54,11 @@ export const WarningBoxNoPhotosFilter: React.FunctionComponent<IWarningBoxNoPhot
           href={new UrlQuery().UrlPreferencesPage()}
           data-test="list-view-no-photos-in-folder"
         >
-          {MessageNewUserNoPhotosInFolder} {MessageNoPhotosInFolder}
+          {MessageNewUserNoPhotosInFolder}{" "}
+          <a target="_blank" href={new UrlQuery().DocsGettingStartedFirstSteps()} rel="noreferrer">
+            {MessageReadMoreHere}.
+          </a>{" "}
+          {MessageNoPhotosInFolder}
         </a>
       );
     }

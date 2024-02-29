@@ -7,8 +7,8 @@ import { IFileIndexItem, newIFileIndexItemArray } from "../../../interfaces/IFil
 import { Router } from "../../../router-app/router-app";
 import * as FlatListItem from "../../atoms/flat-list-item/flat-list-item";
 import * as ListImageChildItem from "../../atoms/list-image-child-item/list-image-child-item";
-import ItemListView from "./item-list-view";
 import * as ShiftSelectionHelper from "./internal/shift-selection-helper";
+import ItemListView from "./item-list-view";
 
 describe("ItemListView", () => {
   it("renders (without state component)", () => {
@@ -69,9 +69,10 @@ describe("ItemListView", () => {
       const component = render(
         <ItemListView iconList={true} fileIndexItems={[]} subPath="/" colorClassUsage={[]} />
       );
-      expect(component.container.textContent).toBe(
-        "New? Set your drive location in the settings. There are no photos in this folder"
+      expect(component.container.textContent).toContain(
+        "New? Set your drive location in the settings."
       );
+      expect(component.container.textContent).toContain("There are no photos in this folder");
     });
 
     it("text should be: There are no photos in this folder", () => {
