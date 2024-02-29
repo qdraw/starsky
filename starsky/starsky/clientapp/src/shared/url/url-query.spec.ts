@@ -1,5 +1,8 @@
 import { UrlQuery } from "./url-query";
 
+/**
+ * UrlQueryTest
+ */
 describe("url-query", () => {
   const urlQuery = new UrlQuery();
 
@@ -234,6 +237,11 @@ describe("url-query", () => {
       const test = urlQuery.UrlThumbnailImageLargeOrExtraLarge("hash_test", "filePath", true);
       expect(test).toContain("hash_test");
     });
+  });
+
+  it("DocsGettingStartedFirstSteps", () => {
+    const test = urlQuery.DocsGettingStartedFirstSteps();
+    expect(test).toContain("docs/getting-started/first-steps");
   });
 
   describe("UrlRealtime", () => {

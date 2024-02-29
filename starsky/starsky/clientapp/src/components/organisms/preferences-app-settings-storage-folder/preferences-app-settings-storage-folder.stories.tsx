@@ -5,7 +5,11 @@ export default {
 };
 
 export const Default = () => {
-  return <PreferencesAppSettingsStorageFolder />;
+  return (
+    <div data-test="preferences-username-text" className="content--text preferences-username-text">
+      <PreferencesAppSettingsStorageFolder />
+    </div>
+  );
 };
 
 Default.storyName = "default";

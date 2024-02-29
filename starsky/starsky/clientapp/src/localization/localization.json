@@ -580,9 +580,29 @@
     "de": "Nächste"
   },
   "MessageAddName": {
-    "en": "Hinzufügen zu",
+    "en": "Add to",
     "nl": "Toevoegen",
-    "de": "Mehr"
+    "de": "Hinzufügen zu"
+  },
+  "MessageTagsWithColon": {
+    "en": "Tags: ",
+    "nl": "Tags: ",
+    "de": "Schlagwörter: "
+  },
+  "MessageInfoWithColon": {
+    "en": "Info: ",
+    "nl": "Info: ",
+    "de": "Info: "
+  },
+  "MessageTagsDescription": {
+    "en": "Tags are comma-separated",
+    "nl": "Tags zijn gescheiden door komma's",
+    "de": "Schlagwörter sind durch Kommas getrennt"
+  },
+  "MessageTitleWithColon": {
+    "en": "Title: ",
+    "nl": "Titel: ",
+    "de": "Titel: "
   },
   "MessageOverwriteName": {
     "en": "Overwrite",
@@ -993,6 +1013,11 @@
     "en": "Go to the homepage",
     "nl": "Ga naar de homepagina",
     "de": "Gehe zur Startseite"
+  },
+  "MessageReadMoreHere": {
+    "en": "Read more here",
+    "nl": "Lees meer hier",
+    "de": "Lesen Sie hier mehr"
   },
   "temp1": {
     "en": "More",

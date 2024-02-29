@@ -20,10 +20,12 @@ import Preloader from "../../atoms/preloader/preloader";
 const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
+  const MessageTagsWithColon = language.key(localization.MessageTagsWithColon);
+  const MessageInfoWithColon = language.key(localization.MessageInfoWithColon);
+  const MessageTitleWithColon = language.key(localization.MessageTitleWithColon);
   const MessageSearchAndReplaceNameLong = language.key(
     localization.MessageSearchAndReplaceNameLong
   );
-  const MessageTitleName = language.key(localization.MessageTitleName);
   const MessageWriteErrorReadOnly = language.key(localization.MessageWriteErrorReadOnly);
   const MessageErrorGenericFail = language.key(localization.MessageErrorGenericFail);
   const MessageErrorNotFoundSourceMissingRunSync = language.key(
@@ -162,7 +164,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
 
       {isLoading ? <Preloader isWhite={false} isOverlay={false} /> : ""}
 
-      <h4>Tags:</h4>
+      <h4>{MessageTagsWithColon}</h4>
       <FormControl
         spellcheck={true}
         onInput={handleUpdateChange}
@@ -183,7 +185,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
         &nbsp;
       </FormControl>
 
-      <h4>Info:</h4>
+      <h4>{MessageInfoWithColon}</h4>
       <FormControl
         spellcheck={true}
         onInput={handleUpdateChange}
@@ -204,7 +206,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
         &nbsp;
       </FormControl>
 
-      <h4>{MessageTitleName}:</h4>
+      <h4>{MessageTitleWithColon}</h4>
       <FormControl
         spellcheck={true}
         onInput={handleUpdateChange}

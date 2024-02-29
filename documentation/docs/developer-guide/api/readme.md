@@ -23,6 +23,7 @@ This document is auto generated
 | __/api/allowed-types/thumb__                      | GET   | Check if IsExtensionThumbnailSupported                                          |
 | __/api/env__                                      | GET   | Show the runtime settings (dont allow AllowAnonymous)                           |
 | __/api/env__                                      | POST  | Show the runtime settings (dont allow AllowAnonymous)                           |
+| _Parameters: Verbose, StorageFolder, UseSystemTrash, UseLocalDesktop, DefaultDesktopEditor, DesktopCollectionsOpen                        _ |
 | __/api/env/features__                             | GET   | Show features that used in the frontend app / menu                              |
 | __/api/cache/list__                               | GET   | Get Database Cache (only the cache)                                             |
 | __/api/remove-cache__                             | GET   | Delete Database Cache (only the cache)                                          |
@@ -30,9 +31,9 @@ This document is auto generated
 | __/api/delete__                                   | DELETE| Remove files from the disk, but the file must contain the !delete! (TrashKeyw...|
 | _Parameters: f (subPaths, separated by dot comma), collections (true is to update files with the same name before                         _ |
 | _ the extenstion)                                                                                                                         _ |
-| __/api/desktop-editor/open__                      | GET   | Open a file in the default editor or a specific editor on the desktop           |
+| __/api/desktop-editor/open__                      | POST  | Open a file in the default editor or a specific editor on the desktop           |
 | _Parameters: f (single or multiple subPaths), collections (to combine files with the same name before the extension)                      _ |
-| __/api/desktop-editor/amount-confirmation__       | GET   | Check the amount of files to open before                                        |
+| __/api/desktop-editor/amount-confirmation__       | POST  | Check the amount of files to open before                                        |
 | __/api/disk/mkdir__                               | POST  | Make a directory (-p)                                                           |
 | __/api/disk/rename__                              | POST  | Rename file/folder and update it in the database                                |
 | _Parameters: f (from subPath), to (to subPath), collections (is collections bool), currentStatus (default is to not                       _ |
@@ -107,5 +108,6 @@ This document is auto generated
 | __/api/thumbnail/zoom/\{f\}@\{z\}__               | GET   | Get zoomed in image by fileHash.At the moment this is the source image          |
 | __/api/thumbnail-generation__                     | POST  | Create thumbnails for a folder in the background                                |
 | __/api/trash/move-to-trash__                      | POST  | Move a file to the trash                                                        |
+| __/api/trash/detect-to-use-system-trash__         | GET   | Is the system trash supportedUsed in End2End tests to enable or disable the t...|
 | __/api/upload__                                   | POST  | Upload to specific folder (does not check if already has been imported)Use th...|
 | __/api/upload-sidecar__                           | POST  | Upload sidecar file to specific folder (does not check if already has been im...|

@@ -35,7 +35,7 @@ const PreferencesUsername: React.FunctionComponent = () => {
         {userName}
       </div>
       <div className="content--subheader">{MessageRole}</div>
-      <div className="content--text">{accountStatus?.data?.roleCode}</div>
+      <div className="content--text preferences-role">{accountStatus?.data?.roleCode}</div>
     </>
   );
 };

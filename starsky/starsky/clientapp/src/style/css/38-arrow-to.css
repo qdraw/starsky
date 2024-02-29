@@ -6,3 +6,13 @@
   background-size: contain;
   background-image: url("../images/s-next.svg");
 }
+
+@media (prefers-color-scheme: dark) {
+  .arrow-to {
+    background-size: contain;
+    background-image: none;
+    mask-image: url("../images/s-next.svg");
+    mask-size: contain;
+    background-color: white;
+  }
+}

@@ -18,13 +18,17 @@ import { UrlQuery } from "../../../shared/url/url-query";
 import FormControl from "../../atoms/form-control/form-control";
 import Notification, { NotificationType } from "../../atoms/notification/notification";
 import Preloader from "../../atoms/preloader/preloader";
+import Tooltip from "../../atoms/tooltip/tooltip";
 
 const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
+  const MessageTagsWithColon = language.key(localization.MessageTagsWithColon);
+  const MessageInfoWithColon = language.key(localization.MessageInfoWithColon);
+  const MessageTitleWithColon = language.key(localization.MessageTitleWithColon);
+  const MessageTagsDescription = language.key(localization.MessageTagsDescription);
   const MessageAddName = language.key(localization.MessageAddName);
   const MessageOverwriteName = language.key(localization.MessageOverwriteName);
-  const MessageTitleName = language.key(localization.MessageTitleName);
   const MessageWriteErrorReadOnly = language.key(localization.MessageWriteErrorReadOnly);
   const MessageErrorGenericFail = language.key(localization.MessageErrorGenericFail);
   const MessageErrorNotFoundSourceMissingRunSync = language.key(
@@ -151,7 +155,12 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
 
       {isLoading ? <Preloader isWhite={false} isOverlay={false} /> : ""}
 
-      <h4>Tags:</h4>
+      <h4>
+        {MessageTagsWithColon}
+        <Tooltip left={true} text={MessageTagsDescription}>
+          <span className="info--small"></span>
+        </Tooltip>
+      </h4>
       <FormControl
         spellcheck={true}
         reference={tagsReference}
@@ -160,7 +169,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
         contentEditable={!state.isReadOnly && select.length !== 0}
       ></FormControl>
 
-      <h4>Info:</h4>
+      <h4>{MessageInfoWithColon}</h4>
       <FormControl
         spellcheck={true}
         onInput={handleUpdateChange}
@@ -168,7 +177,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
         contentEditable={!state.isReadOnly && select.length !== 0}
       ></FormControl>
 
-      <h4>{MessageTitleName}:</h4>
+      <h4>{MessageTitleWithColon}</h4>
       <FormControl
         spellcheck={true}
         onInput={handleUpdateChange}
