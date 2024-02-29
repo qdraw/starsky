@@ -11062,6 +11062,60 @@
       "parameters": [],
       "extensions": {}
     },
+    "/api/trash/detect-to-use-system-trash": {
+      "operations": {
+        "Get": {
+          "tags": [
+            {
+              "name": "Trash",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "headers": {},
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "boolean",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {}
+    },
     "/api/upload": {
       "operations": {
         "Post": {
