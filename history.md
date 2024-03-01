@@ -69,6 +69,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
   #1405)
 - [x] (Fixed) _Docs_ Make getting started more clear (PR #1422) (Issue #1403)
 - [x] (Fixed) _Front-end_ Add link to docs page for storage folder (PR #1422) (Issue #1404)
+- [x] (Changed) _Docs_ Use Google Consent Mode, only for docs, other apps have no Google (PR #1424) 
 
 ## version 0.6.0-beta.1 - 2024-02-18 {#v0.6.0-beta.1}
 
