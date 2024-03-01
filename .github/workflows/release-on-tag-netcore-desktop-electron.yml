@@ -374,7 +374,8 @@ jobs:
   trigger_pipe:
     runs-on: ubuntu-latest
     if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
-    needs: [build_core, build_mac, build_win]
+    needs: [build_core, build_mac_x64, build_win] 
+    # build_mac_arm64 is not used for end2end tests
     steps:
       - name: trigger end2end-ubuntu-ci.yml
         shell: bash
