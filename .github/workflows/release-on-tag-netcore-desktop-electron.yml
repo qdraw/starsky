@@ -71,8 +71,8 @@ jobs:
           name: starsky-tools-slack-notification
           path: ./starsky-tools/slack-notification
 
-  build_mac:
-    name: Update Mac Desktop app
+  build_mac_x64:
+    name: Update Mac Desktop app (x64)
     runs-on: macos-latest
     needs: [build_core]
     steps:
@@ -85,7 +85,7 @@ jobs:
           name: osx-x64
           path: ./starsky
 
-      - name: Unzip Mac OS bundle
+      - name: Unzip Mac OS bundle (osx-x64)
         shell: bash
         working-directory: ./starsky
         run: unzip starsky-osx-x64.zip -d osx-x64
@@ -116,13 +116,61 @@ jobs:
 
       - name: NpmDist
         working-directory: ./starskydesktop
-        run: npm run mac
+        run: npm run macx64
    
       - name: Upload starsky-mac-x64-desktop as build artifact
         uses: actions/upload-artifact@v4
         with:
           name: starsky-mac-x64-desktop
           path: ./starskydesktop/dist-prod/starsky-mac-x64-desktop.dmg 
+
+  build_mac_arm64:
+    name: Update Mac Desktop app (arm64)
+    runs-on: macos-latest
+    needs: [build_core]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download osx-arm64 as build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: osx-arm64
+          path: ./starsky
+
+      - name: Unzip Mac OS bundle (osx-arm64)
+        shell: bash
+        working-directory: ./starsky
+        run: unzip starsky-osx-arm64.zip -d osx-arm64
+
+      - name: Restore rights pm2-restore-x-rights.sh (osx-arm64)
+        shell: bash
+        working-directory: ./starsky/osx-arm64
+        run: chmod 777 pm2-restore-x-rights.sh 
+
+      - name: run pm2-restore-x-rights.sh (osx-arm64)
+        shell: bash
+        working-directory: ./starsky/osx-arm64
+        run: bash pm2-restore-x-rights.sh 
+
+      - name: fix release version (release-version-check)
+        shell: bash
+        working-directory: ./starsky-tools/build-tools
+        run: npm run release-version-check
+
+      - name: NpmCi
+        working-directory: ./starskydesktop
+        run: npm ci
+
+      - name: NpmDist
+        working-directory: ./starskydesktop
+        run: npm run macarm64
+   
+      - name: Upload starsky-mac-arm64-desktop as build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: starsky-mac-arm64-desktop
+          path: ./starskydesktop/dist-prod/starsky-mac-arm64-desktop.dmg 
  
   build_win:
     name: Update Windows Desktop app
@@ -169,7 +217,7 @@ jobs:
  
   create_release:
     name: Create Release
-    needs: [build_core, build_mac, build_win]
+    needs: [build_core, build_mac_x64, build_mac_arm64, build_win]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -191,6 +239,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: starsky-mac-x64-desktop
+          path: ./starskydesktop/dist-prod
+
+      - name: Download starsky-mac-arm64-desktop as build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: starsky-mac-arm64-desktop
           path: ./starskydesktop/dist-prod
  
       - name: Download linux-arm as build artifact
@@ -246,6 +300,7 @@ jobs:
           tag_name: ${{ github.ref }}
           files: |
             ./starskydesktop/dist-prod/starsky-mac-x64-desktop.dmg
+            ./starskydesktop/dist-prod/starsky-mac-arm64-desktop.dmg
             ./starskydesktop/dist-prod/starsky-win-x64-desktop.exe
             ./starsky/starsky-linux-arm.zip
             ./starsky/starsky-linux-arm64.zip
@@ -258,7 +313,8 @@ jobs:
           body: |
             ## Desktop app versions:
             _When you are not sure pick the Desktop App_
-            - starsky-mac-x64-desktop.dmg - __Starsky Desktop App for Mac OS *12.0* or newer (Intel)__
+            - starsky-mac-x64-desktop.dmg - __Starsky Desktop App for Intel, Mac OS *12.0* or newer__
+            - starsky-mac-arm64-desktop.dmg - __Starsky Desktop App for Apple silicon, Mac OS *12.0* or newer__            
             - starsky-win-x64-desktop.exe - __Starsky Desktop App for Windows 10 1607+ or Windows 11 22000+ (Intel 64 bits)__
 
             ## Server versions:
