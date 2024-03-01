@@ -22,8 +22,8 @@
     "macwindows": "npm run prod && echo prod-done && electron-builder build --mac zip --windows --publish never",
     "linux": "npm run prod && electron-builder build --linux --publish never",
     "dist": "npm run prod && electron-builder build --publish never",
-    "build:win": "electron-builder build --win",
-    "build:mac": "electron-builder build --mac",
+    "build:win": "electron-builder build --win ",
+    "build:mac": "electron-builder build --mac --x64 true --arm64 true",
     "build:runtime": "cd ../starsky && pwsh build.ps1 -runtime osx-arm64,osx-x64,win-x64 -ready-to-run -no-tests",
     "update": "npx --yes npm-check-updates",
     "update:install": "npx  --yes npm-check-updates -u && npm install",
@@ -42,16 +42,16 @@
     ],
     "artifactName": "starsky-${os}-${arch}-desktop.${ext}",
     "mac": {
-      "minimumSystemVersion": "10.14",
+      "minimumSystemVersion": "10.15",
       "electronLanguages": [
         "en",
-        "nl"
+        "nl",
+        "de"
       ],
       "icon": "src/setup/icons/baseline-searcher-detective-263238__512px.icns",
       "target": [
         {
-          "target": "dmg",
-          "arch": "x64"
+          "target": "dmg"
         }
       ],
       "publish": []
