@@ -1,4 +1,4 @@
-import * as restoreMainWindow from "../main-window/restore-main-window";
+import * as RestoreMainWindow from "../main-window/restore-main-window";
 import * as WarmupServer from "../warmup/warmup-server";
 import * as RestoreWarmupMainWindowAndCloseSplash from "./restore-warmup-main-window-and-close-splash";
 
@@ -40,11 +40,11 @@ describe("RestoreWarmupMainWindowAndCloseSplash", () => {
     ];
 
     const restoreMainWindowSpy = jest
-      .spyOn(restoreMainWindow, "restoreMainWindow")
+      .spyOn(RestoreMainWindow, "RestoreMainWindow")
       .mockImplementationOnce(() => Promise.resolve());
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    RestoreWarmupMainWindowAndCloseSplash.default(window as any, true);
+    RestoreWarmupMainWindowAndCloseSplash.default(1, window as any, true);
 
     expect(window[0].close).toHaveBeenCalled();
     expect(restoreMainWindowSpy).toHaveBeenCalled();
@@ -64,11 +64,11 @@ describe("RestoreWarmupMainWindowAndCloseSplash", () => {
       });
 
     const restoreMainWindowSpy = jest
-      .spyOn(restoreMainWindow, "restoreMainWindow")
+      .spyOn(RestoreMainWindow, "RestoreMainWindow")
       .mockImplementationOnce(() => Promise.resolve());
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    RestoreWarmupMainWindowAndCloseSplash.default(window as any, false);
+    RestoreWarmupMainWindowAndCloseSplash.default(1, window as any, false);
 
     expect(warmupServerSpy).toHaveBeenCalled();
     expect(restoreMainWindowSpy).toHaveBeenCalled();

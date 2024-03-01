@@ -4,8 +4,14 @@ import { GetParentDiskPath } from "../edit-file/get-parent-disk-path";
 import logger from "../logger/logger";
 import { ActionWhenFileIsChanged } from "./action-when-file-is-changed";
 import { FileWatcherObjects } from "./file-watcher.const";
+import { IsRemote } from "../warmup/is-remote";
 
 export async function SetupFileWatcher() {
+  if (!await IsRemote()) {
+    logger.info(`[SetupFileWatcher] skipped, is not remote`);
+    return;
+  }
+
   FileWatcherObjects.forEach(([watch, path]) => {
     watch.removeAllListeners();
     FileWatcherObjects.delete([watch, path]);

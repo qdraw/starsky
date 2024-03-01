@@ -11,7 +11,7 @@ import * as SetupFileWatcher from "../app/file-watcher/setup-file-watcher";
 import * as ipcBridge from "../app/ipc-bridge/ipc-bridge";
 import * as logger from "../app/logger/logger";
 import * as createMainWindow from "../app/main-window/create-main-window";
-import * as restoreMainWindow from "../app/main-window/restore-main-window";
+import * as RestoreMainWindow from "../app/main-window/restore-main-window";
 import * as AppMenu from "../app/menu/app-menu";
 import * as DockMenu from "../app/menu/dock-menu";
 import * as defaultAppSettings from "../app/startup/app-settings";
@@ -87,7 +87,7 @@ describe("main", () => {
 
     setupChildProcessSpy = jest
       .spyOn(setupChildProcess, "setupChildProcess")
-      .mockImplementationOnce(() => Promise.resolve());
+      .mockImplementationOnce(() => Promise.resolve(1));
     jest
       .spyOn(MakeTempPath, "MakeTempPath")
       .mockImplementationOnce(() => "test");
@@ -149,7 +149,7 @@ describe("main", () => {
 
   it("should create main window", () => {
     jest
-      .spyOn(restoreMainWindow, "restoreMainWindow")
+      .spyOn(RestoreMainWindow, "RestoreMainWindow")
       .mockImplementationOnce(() => Promise.resolve() as any);
     jest.spyOn(DockMenu, "default").mockImplementationOnce(() => {});
     jest.spyOn(AppMenu, "default").mockImplementationOnce(() => {});
@@ -181,7 +181,7 @@ describe("main", () => {
       .mockImplementationOnce(() => Promise.resolve(true));
 
     jest
-      .spyOn(restoreMainWindow, "restoreMainWindow")
+      .spyOn(RestoreMainWindow, "RestoreMainWindow")
       .mockImplementationOnce(() => Promise.resolve() as any);
     jest.spyOn(DockMenu, "default").mockImplementationOnce(() => {});
     jest.spyOn(AppMenu, "default").mockImplementationOnce(() => {});
@@ -231,7 +231,7 @@ describe("main", () => {
     jest.spyOn(AppMenu, "default").mockImplementationOnce(() => {});
 
     jest
-      .spyOn(restoreMainWindow, "restoreMainWindow")
+      .spyOn(RestoreMainWindow, "RestoreMainWindow")
       .mockReset()
       .mockImplementationOnce(() => Promise.resolve() as any);
 

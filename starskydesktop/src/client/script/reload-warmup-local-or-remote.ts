@@ -38,36 +38,44 @@ export function warmupLocalOrRemote() {
     window.api.receive(
       LocationUrlIpcKey,
       (locationData: IlocationUrlSettings) => {
-        document.title += ` going to ${locationData?.location}`;
-        warmupScript(locationData.location, 0, 300, (isOk: boolean) => {
-          if (isOk) {
-            checkForUpdates(locationData.location, appVersion)
-              .then(() => redirecter(locationData.location))
-              .catch((e) => {
-                console.log(e);
-              });
-            return;
-          }
-          const notFoundWarning = document.querySelectorAll(".not-found-warning");
-          if (notFoundWarning && notFoundWarning[0]) {
-            const preloaderIcon = document.querySelectorAll(".preloader--icon");
-            if (preloaderIcon && preloaderIcon[0]) {
-              preloaderIcon[0].classList.add("hide");
-            }
-
-            notFoundWarning[0].classList.add("show");
-            notFoundWarning[0].innerHTML = `There was an error loading ${locationData.location}`;
-            if (!locationData.isLocal) {
-              notFoundWarning[0].innerHTML += "<br />This is a remote service";
-            } else {
-              notFoundWarning[0].innerHTML += "<br />This is a local service";
-            }
-          } else {
-            // eslint-disable-next-line no-alert
-            alert(`There was an error loading: ${locationData.location} isLocal:${locationData.isLocal.valueOf.toString()}`);
-          }
-        });
+        locationUrlKeyReceive(locationData, appVersion)
       }
     );
   });
+}
+
+function locationUrlKeyReceive(locationData: IlocationUrlSettings, appVersion: string) {
+  document.title = `Loading Starsky - going to ${locationData?.location}`;
+  warmupScript(locationData.location, 0, 300, (isOk: boolean) => {
+    if (isOk) {
+      checkForUpdates(locationData.location, appVersion)
+        .then(() => redirecter(locationData.location))
+        .catch((e) => {
+          console.log(e);
+        });
+      return;
+    }
+    setErrorMessage(locationData)
+  });
+}
+
+function setErrorMessage(locationData: IlocationUrlSettings) {
+  const notFoundWarning = document.querySelectorAll(".not-found-warning");
+  if (notFoundWarning && notFoundWarning[0]) {
+    const preloaderIcon = document.querySelectorAll(".preloader--icon");
+    if (preloaderIcon && preloaderIcon[0]) {
+      preloaderIcon[0].classList.add("hide");
+    }
+
+    notFoundWarning[0].classList.add("show");
+    notFoundWarning[0].innerHTML = `There was an error loading ${locationData.location}`;
+    if (!locationData.isLocal) {
+      notFoundWarning[0].innerHTML += "<br />This is a remote service";
+    } else {
+      notFoundWarning[0].innerHTML += "<br />This is a local service";
+    }
+  } else {
+    // eslint-disable-next-line no-alert
+    alert(`There was an error loading: ${locationData.location} isLocal:${locationData.isLocal.valueOf.toString()}`);
+  }
 }

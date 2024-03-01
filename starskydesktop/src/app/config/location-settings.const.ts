@@ -1,6 +1,7 @@
 import { isPackaged } from "../os-info/is-packaged";
 import {
   LocationIsRemoteIpcKey,
+  LocationLocalHostIpcKey,
   LocationUrlIpcKey,
 } from "./location-ipc-keys.const";
 
@@ -8,6 +9,12 @@ import {
  * string
  */
 export const LocationUrlSettingsKey = `${LocationUrlIpcKey}:${isPackaged().toString()}`;
+
+/**
+ * string
+ */
+export const LocationLocalHostSettingsKey = `${LocationLocalHostIpcKey}:${isPackaged().toString()}`;
+
 
 /**
  * bool

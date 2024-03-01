@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import * as appConfig from "electron-settings";
 import * as createMainWindow from "./create-main-window";
-import { restoreMainWindow } from "./restore-main-window";
+import { RestoreMainWindow } from "./restore-main-window";
 
 jest.mock("electron-settings", () => {
   return {
@@ -60,7 +60,7 @@ describe("restore main window", () => {
       return Promise.resolve();
     });
 
-    await restoreMainWindow();
+    await RestoreMainWindow("base");
 
     expect(createMainWindowSpy).toHaveBeenCalled();
     expect(createMainWindowSpy).toHaveBeenCalledWith("?f=/", 0);
@@ -85,7 +85,7 @@ describe("restore main window", () => {
 
     console.log("---!");
 
-    await restoreMainWindow();
+    await RestoreMainWindow("base");
 
     expect(createMainWindowSpy).toHaveBeenCalled();
     expect(createMainWindowSpy).toHaveBeenCalledWith("url_get", 0);
@@ -110,7 +110,7 @@ describe("restore main window", () => {
       .mockImplementationOnce(() => Promise.resolve() as any)
       .mockImplementationOnce(() => Promise.resolve() as any);
 
-    await restoreMainWindow();
+    await RestoreMainWindow("base");
 
     expect(createMainWindowSpy).toHaveBeenCalled();
     expect(createMainWindowSpy).toHaveBeenNthCalledWith(1, "url_get0", 0);

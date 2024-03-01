@@ -38,11 +38,11 @@ async function createMainWindow(openSpecificUrl: string, offset = 0): Promise<Br
 
   mainWindowStateKeeper.track(newWindow);
 
-  const location = path.join(__dirname, "client/pages/redirect/reload-redirect.html");
 
-  await newWindow.loadFile(location, {
-    query: { "remember-url": openSpecificUrl },
-  });
+  await newWindow.loadURL(openSpecificUrl)
+  // await newWindow.loadFile(location, {
+  //   query: { "remember-url": openSpecificUrl },
+  // });
 
   spellCheck(newWindow);
 
