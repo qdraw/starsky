@@ -414,6 +414,11 @@
     "nl": "Onbekende gebruikersnaam",
     "de": "Unbekannter Benutzername"
   },
+  "MessageDesktopMailLocalhostUsername": {
+    "en": "Desktop user",
+    "nl": "Desktop gebruiker",
+    "de": "Desktop Benutzer"
+  },
   "MessageUsername": {
     "en": "Username",
     "nl": "Gebruikersnaam",
@@ -1020,8 +1025,8 @@
     "de": "Lesen Sie hier mehr"
   },
   "temp1": {
-    "en": "More",
-    "nl": "Meer",
-    "de": "Mehr"
+    "en": ".",
+    "nl": ".",
+    "de": "."
   }
 }
