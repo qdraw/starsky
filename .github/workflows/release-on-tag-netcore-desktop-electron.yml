@@ -11,9 +11,9 @@ on:
 
 jobs:
 
-  build_core:
+  build_net:
 
-    name: Build Net Core
+    name: Build .NET
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -72,9 +72,9 @@ jobs:
           path: ./starsky-tools/slack-notification
 
   build_mac_x64:
-    name: Update Mac Desktop app (x64)
+    name: Build Mac Desktop app (x64)
     runs-on: macos-latest
-    needs: [build_core]
+    needs: [build_net]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -125,9 +125,9 @@ jobs:
           path: ./starskydesktop/dist-prod/starsky-mac-x64-desktop.dmg 
 
   build_mac_arm64:
-    name: Update Mac Desktop app (arm64)
+    name: Build Mac Desktop app (arm64)
     runs-on: macos-latest
-    needs: [build_core]
+    needs: [build_net]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -173,9 +173,9 @@ jobs:
           path: ./starskydesktop/dist-prod/starsky-mac-arm64-desktop.dmg 
  
   build_win:
-    name: Update Windows Desktop app
+    name: Build Windows Desktop app
     runs-on: windows-latest
-    needs: [build_core]
+    needs: [build_net]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -217,7 +217,7 @@ jobs:
  
   create_release:
     name: Create Release
-    needs: [build_core, build_mac_x64, build_mac_arm64, build_win]
+    needs: [build_net, build_mac_x64, build_mac_arm64, build_win]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -374,7 +374,7 @@ jobs:
   trigger_pipe:
     runs-on: ubuntu-latest
     if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
-    needs: [build_core, build_mac_x64, build_win, build_mac_arm64] 
+    needs: [build_net, build_mac_x64, build_win, build_mac_arm64] 
     # build_mac_arm64 is not used for end2end tests, but it needs to be done
     steps:
       - name: trigger end2end-ubuntu-ci.yml
