@@ -59,6 +59,8 @@ public sealed class ExifTool : IExifTool
 			string? beforeFileHash, string command,
 			CancellationToken cancellationToken = default)
 	{
+		_logger.LogInformation($"WriteTagsAndRenameThumbnailInternalAsync for: {subPath}");
+
 		var sourceStream = _iStorage.ReadStream(subPath);
 		beforeFileHash ??=
 			await FileHash.CalculateHashAsync(sourceStream, false, cancellationToken);
