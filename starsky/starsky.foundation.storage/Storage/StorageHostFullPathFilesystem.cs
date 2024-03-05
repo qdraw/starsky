@@ -215,7 +215,7 @@ namespace starsky.foundation.storage.Storage
 
 			return folderList.OrderBy(p => p.Value);
 		}
-		
+
 		/// <summary>
 		/// Checks if a file is ready
 		/// </summary>
@@ -228,14 +228,16 @@ namespace starsky.foundation.storage.Storage
 			// is no longer locked by another process.
 			try
 			{
-				using var inputStream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.None);
+				using var inputStream = File.Open(path, FileMode.Open,
+					FileAccess.Read, FileShare.None);
 				return inputStream.Length > 0;
 			}
-			catch (Exception)
+			catch ( Exception )
 			{
 				return false;
 			}
 		}
+
 		/// <summary>
 		/// Read Stream (and keep open)
 		/// </summary>
@@ -434,7 +436,7 @@ namespace starsky.foundation.storage.Storage
 					await stream.CopyToAsync(fileStream);
 					await fileStream.FlushAsync();
 				}
-				
+
 				try
 				{
 					await stream.FlushAsync();
@@ -443,12 +445,13 @@ namespace starsky.foundation.storage.Storage
 				{
 					// HttpConnection does not support this - Specified method is not supported.
 				}
+
 				await stream.DisposeAsync(); // also flush
 
 				return true;
 			}
 
-			return await RetryHelper.DoAsync(LocalRun, TimeSpan.FromSeconds(1));
+			return await RetryHelper.DoAsync(LocalRun, TimeSpan.FromSeconds(2));
 		}
 
 		/// <summary>
