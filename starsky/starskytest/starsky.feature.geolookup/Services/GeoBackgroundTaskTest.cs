@@ -43,9 +43,10 @@ namespace starskytest.starsky.feature.geolookup.Services
 			};
 
 			// create a temp folder
-			if ( !new StorageHostFullPathFilesystem().ExistFolder(_appSettings.DependenciesFolder) )
+			if ( !new StorageHostFullPathFilesystem(new FakeIWebLogger()).ExistFolder(_appSettings
+				    .DependenciesFolder) )
 			{
-				new StorageHostFullPathFilesystem().CreateDirectory(_appSettings
+				new StorageHostFullPathFilesystem(new FakeIWebLogger()).CreateDirectory(_appSettings
 					.DependenciesFolder);
 			}
 
@@ -61,7 +62,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 				"6691831\tVatican City\tVatican City\tCitta del Vaticano,Città del Vaticano,Ciudad del Vaticano,Etat de la Cite du Vatican,Staat Vatikanstadt,Staat der Vatikanstadt,Vatican,Vatican City,Vatican City State,Vaticano,Vatikan,Vatikanas,Vatikanstaden,Vatikanstadt,batikan,batikan si,État de la Cité du Vatican,Ватикан,바티칸,바티칸 시\t41.90268\t12.45414\tP\tPPLC\tVA\tIT\t\t\t\t\t829\t55\t61\tEurope/Vatican\t2018-08-17\n";
 
 
-			new StorageHostFullPathFilesystem().WriteStream(
+			new StorageHostFullPathFilesystem(new FakeIWebLogger()).WriteStream(
 				StringToStreamHelper.StringToStream(mockCities1000),
 				Path.Combine(_appSettings.DependenciesFolder, "cities1000.txt"));
 
@@ -74,7 +75,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 			                                "NL.03\tGelderland\tGelderland\t2755634\r\n" +
 			                                "AR.07\tBuenos Aires F.D.\tBuenos Aires F.D.\t3433955\r\n";
 
-			new StorageHostFullPathFilesystem().WriteStream(
+			new StorageHostFullPathFilesystem(new FakeIWebLogger()).WriteStream(
 				StringToStreamHelper.StringToStream(admin1CodesAscii),
 				Path.Combine(_appSettings.DependenciesFolder, "admin1CodesASCII.txt"));
 		}
@@ -83,9 +84,9 @@ namespace starskytest.starsky.feature.geolookup.Services
 		public static void ClassCleanUp()
 		{
 			var path = Path.Combine(new CreateAnImage().BasePath, "tmp-dependencies");
-			if ( new StorageHostFullPathFilesystem().ExistFolder(path) )
+			if ( new StorageHostFullPathFilesystem(new FakeIWebLogger()).ExistFolder(path) )
 			{
-				new StorageHostFullPathFilesystem().FolderDelete(path);
+				new StorageHostFullPathFilesystem(new FakeIWebLogger()).FolderDelete(path);
 			}
 		}
 

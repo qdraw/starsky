@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -255,18 +254,17 @@ namespace starsky.foundation.storage.Storage
 				var fileStream = new FileStream(path, FileMode.Open,
 					FileAccess.Read, FileShare.Read, 4096, true);
 
+				_logger.LogInformation($"Done Reading file: {path} - {maxRead}");
+
 				if ( maxRead < 1 )
 				{
 					return fileStream;
 				}
 
-				// to reuse stream please check StreamGetFirstBytes.GetFirstBytesAsync
 				// Only for when selecting the first part of the file
-				var buffer = new byte[maxRead];
-				// ReSharper disable once MustUseReturnValue
-				fileStream.Read(buffer, 0, maxRead);
-				fileStream.Close(); // see before max read for default setting
-				return new MemoryStream(buffer);
+				var result = StreamGetFirstBytes.GetFirstBytes(fileStream, maxRead);
+				fileStream.Dispose();
+				return result;
 			}
 			catch ( FileNotFoundException e )
 			{
@@ -386,6 +384,9 @@ namespace starsky.foundation.storage.Storage
 
 				stream.Flush();
 				stream.Dispose(); // also flush
+
+				_logger.LogInformation($"Done writing file: {path}");
+
 				return true;
 			}
 
@@ -435,12 +436,14 @@ namespace starsky.foundation.storage.Storage
 				_logger.LogInformation("IsReady: " + IsFileReady(path) + " " + path);
 				if ( !IsFileReady(path) )
 				{
+					// TODO WIN32 FEATURE ONLY
 					var locks = Win32Processes.GetProcessesLockingFile(path);
 					_logger.LogError("File is locked: " + path + " " + locks.Count);
 					foreach ( var lockItem in locks )
 					{
 						_logger.LogInformation(lockItem.ProcessName + " " + lockItem.Id + " " +
-						                       lockItem.MainWindowTitle);
+						                       lockItem.MainWindowTitle + " " +
+						                       lockItem.Responding);
 					}
 				}
 
@@ -463,7 +466,7 @@ namespace starsky.foundation.storage.Storage
 
 				await stream.DisposeAsync(); // also flush
 
-				_logger.LogInformation("Done writing file: " + path);
+				_logger.LogInformation($"Done writing file: {path}");
 
 				return true;
 			}

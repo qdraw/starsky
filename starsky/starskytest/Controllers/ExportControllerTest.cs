@@ -129,7 +129,7 @@ namespace starskytest.Controllers
 
 			foreach ( var toDelPath in zipFilesList )
 			{
-				new StorageHostFullPathFilesystem().FileDelete(toDelPath);
+				new StorageHostFullPathFilesystem(new FakeIWebLogger()).FileDelete(toDelPath);
 			}
 
 			IServiceCollection services = new ServiceCollection();
@@ -193,7 +193,8 @@ namespace starskytest.Controllers
 			// Get from real fs in to fake memory
 			var sourceFullPath = Path.Join(appSettings.TempFolder, zipHash) + ".zip";
 			await fakeStorage.WriteStreamAsync(
-				new StorageHostFullPathFilesystem().ReadStream(sourceFullPath), sourceFullPath);
+				new StorageHostFullPathFilesystem(new FakeIWebLogger()).ReadStream(sourceFullPath),
+				sourceFullPath);
 
 			var actionResult2Zip = controller.Status(zipHash, true) as JsonResult;
 			Assert.AreNotEqual(null, actionResult2Zip);

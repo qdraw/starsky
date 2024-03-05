@@ -12,6 +12,7 @@ using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.Models
 {
@@ -30,14 +31,13 @@ namespace starskytest.starsky.foundation.database.Models
 			var newImage = new CreateAnImage();
 			var dict = new Dictionary<string, string?>
 			{
-				{ "App:StorageFolder", newImage.BasePath },
-				{ "App:Verbose", "true" }
+				{ "App:StorageFolder", newImage.BasePath }, { "App:Verbose", "true" }
 			};
 			// Start using dependency injection
-			var builder = new ConfigurationBuilder();  
+			var builder = new ConfigurationBuilder();
 			// Add random config to dependency injection
 			builder.AddInMemoryCollection(dict);
-	        
+
 			// build config
 			var configuration = builder.Build();
 			// inject config as object to a service
@@ -53,17 +53,17 @@ namespace starskytest.starsky.foundation.database.Models
 		{
 			var structuredFileName = "yyyyMMdd_HHmmss_\\d.ext";
 			var result = ImportIndexItem.RemoveEscapedCharacters(structuredFileName);
-			Assert.AreEqual("yyyyMMdd_HHmmss_.ext",result);
+			Assert.AreEqual("yyyyMMdd_HHmmss_.ext", result);
 		}
 
 		[TestMethod]
 		public void ParseDateTimeFromFileName_Null()
 		{
-			var importItem = new ImportIndexItem {SourceFullFilePath = null!};
+			var importItem = new ImportIndexItem { SourceFullFilePath = null! };
 			var dateTime = importItem.ParseDateTimeFromFileName();
 			Assert.AreEqual(new DateTime(), dateTime);
 		}
-		
+
 		[TestMethod]
 		public void ParseDateTimeFromFileName_ReturnsValidDateTime()
 		{
@@ -72,19 +72,18 @@ namespace starskytest.starsky.foundation.database.Models
 			string structure = "/yyyy-MM-dd_HHmmss_{filenamebase}.ext";
 			var parser = new ImportIndexItem(_appSettings)
 			{
-				SourceFullFilePath = sourceFilePath,
-				Structure = structure
+				SourceFullFilePath = sourceFilePath, Structure = structure
 			};
 
 			// Act
 			var result = parser.ParseDateTimeFromFileName();
 
 			// Assert
-			Assert.AreEqual(new DateTime(2019, 10, 1, 
+			Assert.AreEqual(new DateTime(2019, 10, 1,
 				23, 59, 59, kind: DateTimeKind.Local), result);
 		}
-		
-				
+
+
 		[TestMethod]
 		public void ParseDateTimeFromFileName_ReturnsNonValidName()
 		{
@@ -93,8 +92,7 @@ namespace starskytest.starsky.foundation.database.Models
 			string structure = "/yyyy-MM-dd_HHmmss_{filenamebase}.ext";
 			var parser = new ImportIndexItem(_appSettings)
 			{
-				SourceFullFilePath = sourceFilePath,
-				Structure = structure
+				SourceFullFilePath = sourceFilePath, Structure = structure
 			};
 
 			// Act
@@ -107,24 +105,23 @@ namespace starskytest.starsky.foundation.database.Models
 		[TestMethod]
 		public void ParseDateTimeFromFileName_Test()
 		{
-
 			_appSettings.Structure = "/yyyyMMdd_HHmmss.ext";
-            
+
 			var input = new ImportIndexItem(_appSettings)
 			{
 				SourceFullFilePath = Path.DirectorySeparatorChar + "20180101_011223.jpg"
 			};
-            
+
 			input.ParseDateTimeFromFileName();
-            
+
 			DateTime.TryParseExact(
-				"20180101_011223", 
+				"20180101_011223",
 				"yyyyMMdd_HHmmss",
-				CultureInfo.InvariantCulture, 
-				DateTimeStyles.None, 
+				CultureInfo.InvariantCulture,
+				DateTimeStyles.None,
 				out var answerDateTime);
-            
-			Assert.AreEqual(answerDateTime,input.DateTime);
+
+			Assert.AreEqual(answerDateTime, input.DateTime);
 		}
 
 		[TestMethod]
@@ -134,96 +131,93 @@ namespace starskytest.starsky.foundation.database.Models
 			{
 				SourceFullFilePath = Path.DirectorySeparatorChar + "2018 08 20 19 03 00.jpg"
 			};
-            
+
 			input.ParseDateTimeFromFileName();
 
 			DateTime.TryParseExact(
-				"20180820_190300", 
+				"20180820_190300",
 				"yyyyMMdd_HHmmss",
-				CultureInfo.InvariantCulture, 
-				DateTimeStyles.None, 
+				CultureInfo.InvariantCulture,
+				DateTimeStyles.None,
 				out var answerDateTime);
-            
-			Assert.AreEqual(answerDateTime,input.DateTime);
+
+			Assert.AreEqual(answerDateTime, input.DateTime);
 		}
 
 		[TestMethod]
 		public void ImportIndexItemParse_ParseDateTimeFromFileNameWithExtraFileNameBase_Test()
 		{
-
 			_appSettings.Structure = "/yyyyMMdd_HHmmss_{filenamebase}.ext";
-            
+
 			var input = new ImportIndexItem(_appSettings)
 			{
 				SourceFullFilePath = Path.DirectorySeparatorChar + "2018-07-26 19.45.23.jpg"
 			};
-            
+
 			input.ParseDateTimeFromFileName();
-            
+
 			DateTime.TryParseExact(
-				"20180726_194523", 
+				"20180726_194523",
 				"yyyyMMdd_HHmmss",
-				CultureInfo.InvariantCulture, 
-				DateTimeStyles.None, 
+				CultureInfo.InvariantCulture,
+				DateTimeStyles.None,
 				out var answerDateTime);
-            
-			Assert.AreEqual(answerDateTime,input.DateTime);
+
+			Assert.AreEqual(answerDateTime, input.DateTime);
 		}
 
-        
+
 		[TestMethod]
 		public void ImportIndexItemParse_ParseDateTimeFromFileName_AppendixUsedInConfig()
 		{
-
 			_appSettings.Structure = "/yyyyMMdd_HHmmss_\\d\\e\\f\\g.ext";
-            
+
 			var input = new ImportIndexItem(_appSettings)
 			{
 				SourceFullFilePath = Path.DirectorySeparatorChar + "20180726_194523.jpg"
 			};
-            
+
 			input.ParseDateTimeFromFileName();
-            
+
 			DateTime.TryParseExact(
-				"20180726_194523", 
+				"20180726_194523",
 				"yyyyMMdd_HHmmss",
-				CultureInfo.InvariantCulture, 
-				DateTimeStyles.None, 
+				CultureInfo.InvariantCulture,
+				DateTimeStyles.None,
 				out var answerDateTime);
-            
-			Assert.AreEqual(answerDateTime,input.DateTime);
+
+			Assert.AreEqual(answerDateTime, input.DateTime);
 		}
-		
+
 		[TestMethod]
 		public void ImportIndexItemParse_Structure_Fallback()
 		{
 			_appSettings.Structure = null!;
-			var input = new ImportIndexItem(_appSettings){SourceFullFilePath = ".jpg"};
+			var input = new ImportIndexItem(_appSettings) { SourceFullFilePath = ".jpg" };
 			var result = input.ParseDateTimeFromFileName();
-			Assert.AreEqual(result,new DateTime());
+			Assert.AreEqual(result, new DateTime());
 		}
-        
+
 		[TestMethod]
 		public void ImportIndexItemParse_ParseDateTimeFromFileName_WithExtraDotsInName_Test()
 		{
-
 			_appSettings.Structure = "/yyyyMMdd_HHmmss.ext";
 
 			var input = new ImportIndexItem(_appSettings)
 			{
 				SourceFullFilePath = Path.DirectorySeparatorChar + "2018-02-03 18.47.35.jpg"
 			};
-            
+
 			input.ParseDateTimeFromFileName();
-			
+
 			DateTime.TryParseExact(
-				"20180203_184735", 
+				"20180203_184735",
 				"yyyyMMdd_HHmmss",
-				CultureInfo.InvariantCulture, 
-				DateTimeStyles.None, 
+				CultureInfo.InvariantCulture,
+				DateTimeStyles.None,
 				out var answerDateTime);
-            
-			Assert.AreEqual(answerDateTime,input.DateTime);
+
+			Assert.AreEqual(answerDateTime, input.DateTime);
 		}
 
 
@@ -234,7 +228,6 @@ namespace starskytest.starsky.foundation.database.Models
 			context.Request.Headers["ColorClass"] = "1";
 			var model = new ImportSettingsModel(context.Request);
 			Assert.AreEqual(1, model.ColorClass);
-            
 		}
 
 
@@ -247,34 +240,35 @@ namespace starskytest.starsky.foundation.database.Models
 			_appSettings.Structure = null!;
 			// Go to the default structure setting 
 			_appSettings.StorageFolder = createAnImage.BasePath;
-    
+
 			// Use a strange structure setting to overwrite
 			var input = new ImportIndexItem(_appSettings)
 			{
 				SourceFullFilePath = createAnImageNoExif.FullFilePathWithDate,
-				Structure =  "/HHmmss_yyyyMMdd.ext"
+				Structure = "/HHmmss_yyyyMMdd.ext"
 			};
 
 			input.ParseDateTimeFromFileName();
-            
+
 			DateTime.TryParseExact(
-				"20120101_123300", 
+				"20120101_123300",
 				"yyyyMMdd_HHmmss",
-				CultureInfo.InvariantCulture, 
-				DateTimeStyles.None, 
+				CultureInfo.InvariantCulture,
+				DateTimeStyles.None,
 				out var answerDateTime);
-            
+
 			// Check if those overwrite is accepted
-			Assert.AreEqual(answerDateTime,input.DateTime);
-                   
-			new StorageHostFullPathFilesystem().FileDelete(createAnImageNoExif.FullFilePathWithDate);
+			Assert.AreEqual(answerDateTime, input.DateTime);
+
+			new StorageHostFullPathFilesystem(new FakeIWebLogger()).FileDelete(createAnImageNoExif
+				.FullFilePathWithDate);
 		}
 
 		[TestMethod]
 		public void ImportFileSettingsModel_DefaultsToIgnore_Test()
 		{
-			var importSettings = new ImportSettingsModel {ColorClass = 999};
-			Assert.AreEqual(-1,importSettings.ColorClass);
+			var importSettings = new ImportSettingsModel { ColorClass = 999 };
+			Assert.AreEqual(-1, importSettings.ColorClass);
 		}
 	}
 }

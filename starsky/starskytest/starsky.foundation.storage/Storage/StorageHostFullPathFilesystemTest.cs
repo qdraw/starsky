@@ -21,7 +21,8 @@ namespace starskytest.starsky.foundation.storage.Storage
 			var path = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) +
 			           Path.DirectorySeparatorChar;
 
-			var content = new StorageHostFullPathFilesystem().GetAllFilesInDirectoryRecursive(path)
+			var content = new StorageHostFullPathFilesystem(new FakeIWebLogger())
+				.GetAllFilesInDirectoryRecursive(path)
 				.ToList();
 
 			Console.WriteLine("count => " + content.Count);
@@ -33,7 +34,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 		[TestMethod]
 		public void Files_GetFilesRecursive_NotFound()
 		{
-			var service = new StorageHostFullPathFilesystem();
+			var service = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 			var content = service.GetAllFilesInDirectory("not-found-directory-24785895348934598543")
 				.ToList();
 			Assert.AreEqual(0, content.Count);
@@ -66,7 +67,8 @@ namespace starskytest.starsky.foundation.storage.Storage
 		public void InfoNotFound()
 		{
 			var info =
-				new StorageHostFullPathFilesystem().Info("C://folder-not-found-992544124712741");
+				new StorageHostFullPathFilesystem(new FakeIWebLogger()).Info(
+					"C://folder-not-found-992544124712741");
 			Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.Deleted, info.IsFolderOrFile);
 		}
 
@@ -74,10 +76,10 @@ namespace starskytest.starsky.foundation.storage.Storage
 		public void Info_Directory()
 		{
 			var rootDir = Path.Combine(new CreateAnImage().BasePath, "4895893_here");
-			new StorageHostFullPathFilesystem().CreateDirectory(rootDir);
+			new StorageHostFullPathFilesystem(new FakeIWebLogger()).CreateDirectory(rootDir);
 
-			var info = new StorageHostFullPathFilesystem().Info(rootDir);
-			new StorageHostFullPathFilesystem().FolderDelete(rootDir);
+			var info = new StorageHostFullPathFilesystem(new FakeIWebLogger()).Info(rootDir);
+			new StorageHostFullPathFilesystem(new FakeIWebLogger()).FolderDelete(rootDir);
 
 			Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.Folder, info.IsFolderOrFile);
 			Assert.AreEqual(false, info.IsFileSystemReadOnly);
@@ -98,12 +100,12 @@ namespace starskytest.starsky.foundation.storage.Storage
 		public void TestIfFileSystemIsReadOnly_False()
 		{
 			var rootDir = Path.Combine(new CreateAnImage().BasePath, "4895893hier");
-			new StorageHostFullPathFilesystem().CreateDirectory(rootDir);
+			new StorageHostFullPathFilesystem(new FakeIWebLogger()).CreateDirectory(rootDir);
 
 			var result = StorageHostFullPathFilesystem.TestIfFileSystemIsReadOnly(rootDir,
 				FolderOrFileModel.FolderOrFileTypeList.Folder);
 
-			new StorageHostFullPathFilesystem().FolderDelete(rootDir);
+			new StorageHostFullPathFilesystem(new FakeIWebLogger()).FolderDelete(rootDir);
 
 			Assert.AreEqual(false, result);
 		}
@@ -115,7 +117,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 			var childDir =
 				Path.Combine(new CreateAnImage().BasePath, "test01010", "included-folder");
 
-			var realStorage = new StorageHostFullPathFilesystem();
+			var realStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 			realStorage.CreateDirectory(rootDir);
 			realStorage.CreateDirectory(childDir);
 
@@ -128,7 +130,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 		[TestMethod]
 		public void FolderDelete_NotFound()
 		{
-			var realStorage = new StorageHostFullPathFilesystem();
+			var realStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 			var result = realStorage.FolderDelete("not-found-directory-24785895348934598543");
 
 			Assert.AreEqual(false, result);
@@ -162,7 +164,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 		{
 			var rootDir = Path.Combine(new CreateAnImage().BasePath, "test01012");
 
-			var realStorage = new StorageHostFullPathFilesystem();
+			var realStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 			realStorage.CreateDirectory(rootDir);
 
 			var shouldBe = DateTime.Now.AddDays(-1);
@@ -179,7 +181,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 		{
 			var tmpFile = Path.Combine(new CreateAnImage().BasePath, "test01012.tmp");
 
-			var realStorage = new StorageHostFullPathFilesystem();
+			var realStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 			realStorage.WriteStream(new MemoryStream(new byte[1]), tmpFile);
 
 			var shouldBe = DateTime.Now.AddDays(-1);
@@ -196,7 +198,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 		{
 			var tmpFile = Path.Combine(new CreateAnImage().BasePath, "test01013.tmp");
 
-			var realStorage = new StorageHostFullPathFilesystem();
+			var realStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 			realStorage.WriteStream(new MemoryStream(new byte[1]), tmpFile);
 
 			var result = realStorage.SetLastWriteTime(tmpFile);
@@ -212,7 +214,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 		{
 			var tmpFile = Path.Combine(new CreateAnImage().BasePath, "test01014.tmp");
 
-			var realStorage = new StorageHostFullPathFilesystem();
+			var realStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 			realStorage.WriteStream(new MemoryStream(new byte[1]), tmpFile);
 
 			var date = new DateTime(1999, 01, 01,
@@ -230,14 +232,14 @@ namespace starskytest.starsky.foundation.storage.Storage
 		[ExpectedException(typeof(FileNotFoundException))]
 		public void ReadStream_NotFound_System_IO_FileNotFoundException()
 		{
-			var service = new StorageHostFullPathFilesystem();
+			var service = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 			service.ReadStream("not-found-directory-24785895348934598543");
 		}
 
 		[TestMethod]
 		public void FileMove_SamePaths()
 		{
-			var service = new StorageHostFullPathFilesystem();
+			var service = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 			var result = service.FileMove("test", "test");
 			Assert.AreEqual(false, result);
 		}
