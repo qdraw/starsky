@@ -42,62 +42,42 @@ namespace starsky.foundation.database.Notifications
 				Content = content
 			};
 
-			// Include create new scope factory
-			async Task<NotificationItem> LocalAddQuery()
-			{
-				try
-				{
-					var context = new InjectServiceScope(_scopeFactory).Context();
-					return await LocalAdd(context);
-				}
-				catch ( DbUpdateException e )
-				{
-					_logger.LogInformation(e,
-						$"[AddNotification] catch-ed DbUpdateException going to retry 2 times {content}");
-					return await RetryHelper.DoAsync(
-						LocalAddQuery, TimeSpan.FromSeconds(2), 2);
-				}
-				catch ( SqliteException e )
-				{
-					_logger.LogInformation(e,
-						$"[AddNotification] catch-ed SqliteException going to retry 2 times {content}");
-					return await RetryHelper.DoAsync(
-						LocalAddQuery, TimeSpan.FromSeconds(2), 2);
-				}
-			}
+			return await RetryHelper.DoAsync(LocalAddQuery, TimeSpan.FromSeconds(1));
 
 			async Task<NotificationItem> LocalAdd(ApplicationDbContext context)
 			{
-				await context.Notifications.AddAsync(item);
-				await context.SaveChangesAsync();
+				try
+				{
+					await context.Notifications.AddAsync(item);
+					await context.SaveChangesAsync();
+					return item;
+				}
+				catch ( DbUpdateConcurrencyException concurrencyException )
+				{
+					_logger.LogInformation(
+						"[AddNotification] try to fix DbUpdateConcurrencyException",
+						concurrencyException);
+					SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+					try
+					{
+						await _context.SaveChangesAsync();
+					}
+					catch ( DbUpdateConcurrencyException e )
+					{
+						_logger.LogInformation(e,
+							"[AddNotification] save failed after DbUpdateConcurrencyException");
+					}
+				}
+
 				return item;
 			}
 
-			try
+			async Task<NotificationItem> LocalAddQuery()
 			{
-				return await LocalAdd(_context);
+				// Include create new scope factory
+				var context = new InjectServiceScope(_scopeFactory).Context();
+				return await LocalAdd(context);
 			}
-			catch ( DbUpdateConcurrencyException concurrencyException )
-			{
-				_logger.LogInformation("[AddNotification] try to fix DbUpdateConcurrencyException",
-					concurrencyException);
-				SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
-				try
-				{
-					await _context.SaveChangesAsync();
-				}
-				catch ( DbUpdateConcurrencyException e )
-				{
-					_logger.LogInformation(e,
-						"[AddNotification] save failed after DbUpdateConcurrencyException");
-				}
-			}
-			catch ( Exception )
-			{
-				return await LocalAddQuery();
-			}
-
-			return item;
 		}
 
 		public Task<NotificationItem> AddNotification<T>(ApiNotificationResponseModel<T> content)
