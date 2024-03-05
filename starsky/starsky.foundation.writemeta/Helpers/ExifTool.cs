@@ -149,18 +149,20 @@ public sealed class ExifTool : IExifTool
 		_logger.LogInformation($"Next: WriteTagsAsync for {subPath} " +
 		                       $"Ready:{_iStorage.IsFileReady(subPath)}");
 
-		await using var inputStream = _iStorage.ReadStream(subPath);
-		// Need to Dispose for Windows
+		var inputStream = _iStorage.ReadStream(subPath);
 
 		var runner = new StreamToStreamRunner(_appSettings, inputStream, _logger);
 		var stream = await runner.RunProcessAsync(command, subPath);
+
+		// Need to Dispose for Windows
+		// inputStream is disposed
+		await inputStream.DisposeAsync();
 
 		_logger.LogInformation($"Next2: WriteTagsAsync2 for {subPath} " +
 		                       $"Ready2: {_iStorage.IsFileReady(subPath)}");
 
 		var isWritten = await _iStorage.WriteStreamAsync(stream, subPath);
 
-		// inputStream is disposed
 
 		_logger.LogInformation($"IsWritten: WriteTagsAsync for {subPath} " +
 		                       $"s.CanWrite:{stream.CanWrite} s.CanRead:{stream.CanRead}" +
