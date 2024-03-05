@@ -78,7 +78,8 @@ public sealed class ExifTool : IExifTool
 			return new KeyValuePair<bool, string>(false, beforeFileHash);
 		}
 
-		// Need to Dispose for Windows
+		// Need to Close / Dispose for Windows
+		sourceStream.Close();
 		await sourceStream.DisposeAsync();
 
 		stream.Seek(0, SeekOrigin.Begin);
@@ -140,7 +141,7 @@ public sealed class ExifTool : IExifTool
 		var inputStream = _iStorage.ReadStream(subPath);
 
 		var runner = new StreamToStreamRunner(_appSettings, inputStream, _logger);
-		var stream = await runner.RunProcessAsync(command);
+		var stream = await runner.RunProcessAsync(command, subPath);
 
 		var isWritten = await _iStorage.WriteStreamAsync(stream, subPath);
 
@@ -160,7 +161,7 @@ public sealed class ExifTool : IExifTool
 	{
 		var inputStream = _thumbnailStorage.ReadStream(fileHash);
 		var runner = new StreamToStreamRunner(_appSettings, inputStream, _logger);
-		var stream = await runner.RunProcessAsync(command);
+		var stream = await runner.RunProcessAsync(command, fileHash);
 		// Need to Close/Dispose for Windows and needs before WriteStreamAsync
 		inputStream.Close();
 		return await _thumbnailStorage.WriteStreamAsync(stream, fileHash);
