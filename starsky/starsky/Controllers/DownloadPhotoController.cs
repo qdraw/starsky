@@ -98,10 +98,8 @@ namespace starsky.Controllers
 				if ( cache ) CacheControlOverwrite.SetExpiresResponseHeaders(Request);
 				var fileStream = _iStorage.ReadStream(fileIndexItem.FilePath!);
 
-				var memoryStream = await ReadStreamIntoMemoryStream(fileStream);
-
 				// Return the right mime type (enableRangeProcessing = needed for safari and mp4)
-				return File(memoryStream, MimeHelper.GetMimeTypeByFileName(fileIndexItem.FilePath!),
+				return File(fileStream, MimeHelper.GetMimeTypeByFileName(fileIndexItem.FilePath!),
 					true);
 			}
 
@@ -137,22 +135,7 @@ namespace starsky.Controllers
 
 			var thumbnailFileStream = _thumbnailStorage.ReadStream(
 				ThumbnailNameHelper.Combine(fileIndexItem.FileHash!, ThumbnailSize.Large));
-			var thumbnailMemoryStream = await ReadStreamIntoMemoryStream(thumbnailFileStream);
-			return File(thumbnailMemoryStream, "image/jpeg");
-		}
-
-		private static async Task<MemoryStream> ReadStreamIntoMemoryStream(Stream fileStream)
-		{
-			// Create a new MemoryStream to store the contents of the FileStream
-			var memoryStream = new MemoryStream();
-
-			// Copy the entire contents of the FileStream to the MemoryStream
-			await fileStream.CopyToAsync(memoryStream);
-
-			// Rewind the MemoryStream to the beginning
-			memoryStream.Seek(0, SeekOrigin.Begin);
-			await fileStream.DisposeAsync();
-			return memoryStream;
+			return File(thumbnailFileStream, "image/jpeg");
 		}
 	}
 }
