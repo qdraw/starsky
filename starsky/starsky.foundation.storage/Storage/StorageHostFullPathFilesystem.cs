@@ -428,6 +428,8 @@ namespace starsky.foundation.storage.Storage
 				{
 					// HttpConnection.ContentLengthReadStream does not support this
 				}
+				
+				_logger.LogInformation("IsReady: " + IsFileReady(path) + " " + path);
 
 				using ( var fileStream = new FileStream(path, FileMode.Create,
 					       FileAccess.Write, FileShare.Read, 4096,
