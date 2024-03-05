@@ -136,6 +136,7 @@ const AccountRegister: FunctionComponent = () => {
             placeholder={MessageExampleUsername}
             onChange={(e) => setUserEmail(e.target.value)}
           />
+          {/*  why spellCheck false? https://www.bleepingcomputer.com/news/security/google-microsoft-can-get-your-passwords-via-web-browsers-spellcheck/ */}
 
           <label htmlFor="email">{MessagePassword}</label>
           <input
