@@ -10,6 +10,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
@@ -38,6 +39,13 @@ namespace starsky.foundation.database.Notifications
 				DateTimeEpoch = DateTimeOffset.Now.ToUnixTimeSeconds(),
 				Content = content
 			};
+			
+			// Include create new scope factory
+			async Task<NotificationItem> LocalAddQuery()
+			{
+				var context = new InjectServiceScope(_scopeFactory).Context();
+				return await LocalAdd(context);
+			}
 
 			async Task<NotificationItem> LocalAdd(ApplicationDbContext context)
 			{
@@ -65,8 +73,13 @@ namespace starsky.foundation.database.Notifications
 			}
 			catch ( ObjectDisposedException )
 			{
-				var context = new InjectServiceScope(_scopeFactory).Context();
-				return await LocalAdd(context);
+				return await LocalAddQuery();
+			}
+			catch (DbUpdateException e)
+			{
+				_logger.LogInformation(e, $"[AddNotification] catch-ed DbUpdateException going to retry 2 times {content}");
+				return await RetryHelper.DoAsync(
+					LocalAddQuery, TimeSpan.FromSeconds(2), 2);
 			}
 
 			return item;
