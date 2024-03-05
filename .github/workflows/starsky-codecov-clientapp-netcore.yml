@@ -9,15 +9,6 @@ on:
     branches: [ master ]
     paths:
     - 'starsky/**'
-
-  pull_request:
-    branches:
-      - master
-    paths:
-    - 'starsky/**'
-    - '.github/workflows/**'
-    - '!starsky/Dockerfile'
-    - '!starsky/docker_demo_setup.sh'
     
   workflow_dispatch:
 
