@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
@@ -78,6 +79,12 @@ namespace starsky.foundation.database.Notifications
 			catch (DbUpdateException e)
 			{
 				_logger.LogInformation(e, $"[AddNotification] catch-ed DbUpdateException going to retry 2 times {content}");
+				return await RetryHelper.DoAsync(
+					LocalAddQuery, TimeSpan.FromSeconds(2), 2);
+			}
+			catch (SqliteException e)
+			{
+				_logger.LogInformation(e, $"[AddNotification] catch-ed SqliteException going to retry 2 times {content}");
 				return await RetryHelper.DoAsync(
 					LocalAddQuery, TimeSpan.FromSeconds(2), 2);
 			}
