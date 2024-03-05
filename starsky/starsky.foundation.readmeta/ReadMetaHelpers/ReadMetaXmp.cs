@@ -39,7 +39,12 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 				 !_iStorage.ExistFile(xmpSubPath) ) return databaseItem;
 
 			// Read the text-content of the xmp file.
-			var xmp = await StreamToStringHelper.StreamToStringAsync(_iStorage.ReadStream(xmpSubPath));
+			var xmpStream = _iStorage.ReadStream(xmpSubPath);
+			var xmp = await StreamToStringHelper.StreamToStringAsync(xmpStream);
+			
+			// need to dispose afterwards to avoid file lock
+			await xmpStream.DisposeAsync();
+			
 			// Get the data from the xmp
 			databaseItem = GetDataFromString(xmp, databaseItem);
 			return databaseItem;

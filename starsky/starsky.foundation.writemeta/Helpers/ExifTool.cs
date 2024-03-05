@@ -140,6 +140,8 @@ public sealed class ExifTool : IExifTool
 	/// <returns>true=success</returns>
 	public async Task<bool> WriteTagsAsync(string subPath, string command)
 	{
+		_logger.LogInformation($"Next: WriteTagsAsync for {subPath}");
+
 		var inputStream = _iStorage.ReadStream(subPath);
 
 		var runner = new StreamToStreamRunner(_appSettings, inputStream, _logger);
@@ -150,6 +152,8 @@ public sealed class ExifTool : IExifTool
 		// Need to Dispose for Windows
 		inputStream.Close();
 		await inputStream.DisposeAsync();
+
+		_logger.LogInformation($"IsWritten: WriteTagsAsync for {subPath}");
 
 		return isWritten;
 	}
