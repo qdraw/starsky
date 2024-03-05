@@ -188,11 +188,11 @@ internal class StreamToStreamRunner
 	/// Run Command async (and keep stream open)
 	/// </summary>
 	/// <param name="exifToolInputArguments">exifTool args</param>
-	/// <param name="referencePath">reference path (only for display)</param>
+	/// <param name="referenceInfoAndPath">reference path (only for display)</param>
 	/// <returns>bool if success</returns>
 	/// <exception cref="ArgumentException">if exifTool is missing</exception>
 	public async Task<Stream> RunProcessAsync(string exifToolInputArguments,
-		string referencePath = "")
+		string referenceInfoAndPath = "")
 	{
 		var argumentsWithPipeEnd = $"{exifToolInputArguments} -o - -";
 
@@ -212,7 +212,7 @@ internal class StreamToStreamRunner
 			var result = await command.Task.ConfigureAwait(false);
 
 			_logger.LogInformation($"[RunProcessAsync] {result.Success} ~ exifTool " +
-			                       $"{referencePath} {exifToolInputArguments} " +
+			                       $"{referenceInfoAndPath} {exifToolInputArguments} " +
 			                       $"run with result: {result.Success}  ~ ");
 
 			memoryStream.Seek(0, SeekOrigin.Begin);
