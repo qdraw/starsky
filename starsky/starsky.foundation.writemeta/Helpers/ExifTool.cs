@@ -59,7 +59,7 @@ public sealed class ExifTool : IExifTool
 			string? beforeFileHash, string command,
 			CancellationToken cancellationToken = default)
 	{
-		_logger.LogInformation($"WriteTagsAndRenameThumbnailInternalAsync for: {subPath}");
+		_logger.LogInformation($"Next: WriteTagsAndRenameThumbnailInternalAsync for: {subPath}");
 
 		var sourceStream = _iStorage.ReadStream(subPath);
 		beforeFileHash ??=
@@ -75,6 +75,7 @@ public sealed class ExifTool : IExifTool
 		     ( await StreamToStringHelper.StreamToStringAsync(stream, false) )
 		     .Contains("Fake ExifTool", StringComparison.InvariantCultureIgnoreCase) )
 		{
+			await stream.DisposeAsync();
 			_logger.LogError(
 				$"[WriteTagsAndRenameThumbnailAsync] Fake Exiftool detected {subPath}");
 			return new KeyValuePair<bool, string>(false, beforeFileHash);
@@ -86,6 +87,9 @@ public sealed class ExifTool : IExifTool
 
 		stream.Seek(0, SeekOrigin.Begin);
 		var streamResult = await _iStorage.WriteStreamAsync(stream, subPath);
+
+		_logger.LogInformation($"Done: WriteTagsAndRenameThumbnailInternalAsync:" +
+		                       $" s:{subPath} r:{streamResult}");
 
 		return new KeyValuePair<bool, string>(streamResult, newHashCode);
 	}

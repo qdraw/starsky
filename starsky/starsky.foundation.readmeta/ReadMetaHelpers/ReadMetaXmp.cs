@@ -36,21 +36,20 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
 			// Read content from sidecar xmp file
 			if ( !ExtensionRolesHelper.IsExtensionForceXmp(databaseItem.FilePath) ||
-				 !_iStorage.ExistFile(xmpSubPath) ) return databaseItem;
+			     !_iStorage.ExistFile(xmpSubPath) ) return databaseItem;
 
 			// Read the text-content of the xmp file.
 			var xmpStream = _iStorage.ReadStream(xmpSubPath);
+			// xmpStream is disposed in StreamToStringAsync
 			var xmp = await StreamToStringHelper.StreamToStringAsync(xmpStream);
-			
-			// need to dispose afterwards to avoid file lock
-			await xmpStream.DisposeAsync();
-			
+
 			// Get the data from the xmp
 			databaseItem = GetDataFromString(xmp, databaseItem);
 			return databaseItem;
 		}
 
-		public FileIndexItem GetDataFromString(string xmpDataAsString, FileIndexItem? databaseItem = null)
+		public FileIndexItem GetDataFromString(string xmpDataAsString,
+			FileIndexItem? databaseItem = null)
 		{
 			// Does not require appSettings
 
@@ -66,7 +65,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			}
 			catch ( XmpException e )
 			{
-				_logger.LogInformation($"XmpException {databaseItem.FilePath} >>\n{e}\n <<XmpException");
+				_logger.LogInformation(
+					$"XmpException {databaseItem.FilePath} >>\n{e}\n <<XmpException");
 				databaseItem.Tags = string.Empty;
 				databaseItem.Status =
 					FileIndexItem.ExifStatus.OperationNotSupported;
@@ -86,10 +86,11 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		private static string? GetNullNameSpace(IXmpPropertyInfo property, string xmpName)
 		{
 			if ( property.Path == xmpName && !string.IsNullOrEmpty(property.Value)
-													 && string.IsNullOrEmpty(property.Namespace) )
+			                              && string.IsNullOrEmpty(property.Namespace) )
 			{
 				return property.Value;
 			}
+
 			return null;
 		}
 
@@ -102,11 +103,12 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		private static string? GetContentNameSpace(IXmpPropertyInfo property, string xmpName)
 		{
 			if ( property.Path == xmpName && !string.IsNullOrEmpty(property.Value)
-										 && !string.IsNullOrEmpty(property.Namespace) )
-			// the difference it this ^^!^^
+			                              && !string.IsNullOrEmpty(property.Namespace) )
+				// the difference it this ^^!^^
 			{
 				return property.Value;
 			}
+
 			return null;
 		}
 
@@ -152,13 +154,13 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
 				// dont show in production 
 				// Console.WriteLine($"Path={property.Path} Namespace={property.Namespace} Value={property.Value}");
-
 			}
 
 			return item;
 		}
 
-		private static void SetCombinedDescriptionSubject(IXmpPropertyInfo property, FileIndexItem item)
+		private static void SetCombinedDescriptionSubject(IXmpPropertyInfo property,
+			FileIndexItem item)
 		{
 			//   Path=dc:description Namespace=http://purl.org/dc/elements/1.1/ Value=
 			//   Path=dc:description[1] Namespace= Value=caption
@@ -173,10 +175,10 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
 			// Path=dc:subject[2] Namespace= Value=keyword2
 			if ( !string.IsNullOrEmpty(property.Path) &&
-				 property.Path.Contains("dc:subject[") &&
-				 property.Path != "dc:subject[1]" &&
-				 !string.IsNullOrEmpty(property.Value) &&
-				 string.IsNullOrEmpty(property.Namespace) )
+			     property.Path.Contains("dc:subject[") &&
+			     property.Path != "dc:subject[1]" &&
+			     !string.IsNullOrEmpty(property.Value) &&
+			     string.IsNullOrEmpty(property.Namespace) )
 			{
 				var tagsStringBuilder = new StringBuilder();
 				tagsStringBuilder.Append(item.Tags);
@@ -206,6 +208,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 					gpsAltitudeRef = gpsAltitudeRefLocal;
 				}
 			}
+
 			if ( gpsAltitude == null || gpsAltitudeRef == null ) return;
 			if ( !gpsAltitude.Contains('/') ) return;
 
@@ -218,8 +221,6 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		}
 
 
-
-
 		/// <summary>
 		/// ContentNameSpace is for example : Namespace=http://...
 		/// </summary>
@@ -228,7 +229,6 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		/// <returns></returns>
 		private static FileIndexItem GetDataContentNameSpaceTypes(IXmpMeta xmp, FileIndexItem item)
 		{
-
 			GpsAltitudeRef(xmp, item);
 
 			foreach ( var property in xmp.Properties )
@@ -289,7 +289,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			}
 		}
 
-		private static void SetCombinedImageHeightWidth(IXmpPropertyInfo property, FileIndexItem item)
+		private static void SetCombinedImageHeightWidth(IXmpPropertyInfo property,
+			FileIndexItem item)
 		{
 			//  Path=tiff:ImageLength Namespace=http://ns.adobe.com/tiff/1.0/ Value=13656
 			var height = GetContentNameSpace(property, "tiff:ImageLength");
@@ -355,6 +356,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 						DateTimeStyles.None,
 						out dateTime);
 				}
+
 				// and use this value
 				item.DateTime = DateTime.SpecifyKind(dateTime, DateTimeKind.Unspecified);
 			}

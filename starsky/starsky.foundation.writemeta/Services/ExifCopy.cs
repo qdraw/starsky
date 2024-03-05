@@ -42,6 +42,7 @@ namespace starsky.foundation.writemeta.Services
 			if ( _iStorage.ExistFile(xmpPath) ) return;
 
 			var plainTextStream = StringToStreamHelper.StringToStream(XmpStartContent);
+			// dispose in WriteStream
 			_iStorage.WriteStream(plainTextStream, xmpPath);
 		}
 
