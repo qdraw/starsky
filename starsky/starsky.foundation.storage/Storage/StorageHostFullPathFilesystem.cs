@@ -451,7 +451,7 @@ namespace starsky.foundation.storage.Storage
 				return true;
 			}
 
-			return await RetryHelper.DoAsync(LocalRun, TimeSpan.FromSeconds(1), 4);
+			return await RetryHelper.DoAsync(LocalRun, TimeSpan.FromSeconds(1), 6);
 		}
 
 		/// <summary>
