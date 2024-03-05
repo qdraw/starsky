@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 
@@ -137,7 +139,7 @@ namespace starsky.foundation.storage.Storage
 				    or DirectoryNotFoundException) ) throw;
 
 				_logger.LogError(exception, "[GetAllFilesInDirectory] " +
-				                             "catch-ed UnauthorizedAccessException/DirectoryNotFoundException");
+				                            "catch-ed UnauthorizedAccessException/DirectoryNotFoundException");
 				return Array.Empty<string>();
 			}
 
@@ -408,6 +410,7 @@ namespace starsky.foundation.storage.Storage
 			return true;
 		}
 
+
 		/// <summary>
 		/// Write async and disposed after
 		/// </summary>
@@ -428,8 +431,18 @@ namespace starsky.foundation.storage.Storage
 				{
 					// HttpConnection.ContentLengthReadStream does not support this
 				}
-				
+
 				_logger.LogInformation("IsReady: " + IsFileReady(path) + " " + path);
+				if ( !IsFileReady(path) )
+				{
+					var locks = Win32Processes.GetProcessesLockingFile(path);
+					_logger.LogError("File is locked: " + path + " " + locks.Count);
+					foreach ( var lockItem in locks )
+					{
+						_logger.LogInformation(lockItem.ProcessName + " " + lockItem.Id + " " +
+						                       lockItem.MainWindowTitle);
+					}
+				}
 
 				using ( var fileStream = new FileStream(path, FileMode.Create,
 					       FileAccess.Write, FileShare.Read, 4096,
@@ -449,9 +462,9 @@ namespace starsky.foundation.storage.Storage
 				}
 
 				await stream.DisposeAsync(); // also flush
-				
+
 				_logger.LogInformation("Done writing file: " + path);
-				
+
 				return true;
 			}
 
@@ -488,7 +501,7 @@ namespace starsky.foundation.storage.Storage
 			catch ( Exception exception )
 			{
 				_logger.LogInformation($"[StorageHostFullPathFilesystem] " +
-				                        $"catch-ed ex: {exception.Message} -  {path}");
+				                       $"catch-ed ex: {exception.Message} -  {path}");
 				return new Tuple<string[], string[]>(
 					new List<string>().ToArray(),
 					new List<string>().ToArray()
