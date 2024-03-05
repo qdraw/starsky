@@ -63,12 +63,16 @@ public sealed class ExifTool : IExifTool
 		                       $" Ready:{_iStorage.IsFileReady(subPath)}");
 
 		var sourceStream = _iStorage.ReadStream(subPath);
-		beforeFileHash ??=
-			await FileHash.CalculateHashAsync(sourceStream, false, cancellationToken);
+		beforeFileHash ??= await FileHash.CalculateHashAsync(sourceStream,
+			false, cancellationToken);
 
 		var runner = new StreamToStreamRunner(_appSettings, sourceStream, _logger);
 		var stream = await runner.RunProcessAsync(command, subPath);
 
+		// Need to Close / Dispose for Windows
+		sourceStream.Close();
+		await sourceStream.DisposeAsync();
+		
 		var newHashCode = await RenameThumbnailByStream(beforeFileHash, stream,
 			!beforeFileHash.Contains(FileHash.GeneratedPostFix), cancellationToken);
 
@@ -81,10 +85,6 @@ public sealed class ExifTool : IExifTool
 				$"[WriteTagsAndRenameThumbnailAsync] Fake Exiftool detected {subPath}");
 			return new KeyValuePair<bool, string>(false, beforeFileHash);
 		}
-
-		// Need to Close / Dispose for Windows
-		sourceStream.Close();
-		await sourceStream.DisposeAsync();
 
 		stream.Seek(0, SeekOrigin.Begin);
 		var streamResult = await _iStorage.WriteStreamAsync(stream, subPath);
@@ -179,7 +179,7 @@ public sealed class ExifTool : IExifTool
 		var runner = new StreamToStreamRunner(_appSettings, inputStream, _logger);
 		var stream = await runner.RunProcessAsync(command, fileHash);
 		// Need to Close/Dispose for Windows and needs before WriteStreamAsync
-		inputStream.Close();
+		await inputStream.DisposeAsync();
 		return await _thumbnailStorage.WriteStreamAsync(stream, fileHash);
 	}
 }
