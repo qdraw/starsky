@@ -48,8 +48,9 @@ public class CheckForStatusNotOkHelper
 		}
 
 		// File check if jpg #not corrupt
-		var imageFormat =
-			ExtensionRolesHelper.GetImageFormat(_subPathStorage.ReadStream(subPath, 160));
+		var stream = _subPathStorage.ReadStream(subPath, 160);
+		var imageFormat = ExtensionRolesHelper.GetImageFormat(stream);
+		stream.Dispose();
 
 		// ReSharper disable once InvertIf
 		if ( !ExtensionRolesHelper.ExtensionSyncSupportedList.Contains(imageFormat.ToString()) )
@@ -60,8 +61,8 @@ public class CheckForStatusNotOkHelper
 
 		var xmpFilePath = ExtensionRolesHelper.ReplaceExtensionWithXmp(subPath);
 		if ( string.IsNullOrEmpty(xmpFilePath) ||
-			 !_subPathStorage.ExistFile(xmpFilePath) ||
-			 statusItem.FilePath == xmpFilePath )
+		     !_subPathStorage.ExistFile(xmpFilePath) ||
+		     statusItem.FilePath == xmpFilePath )
 		{
 			return new List<FileIndexItem> { statusItem };
 		}
