@@ -157,7 +157,9 @@ public sealed class ExifTool : IExifTool
 		inputStream.Close();
 		await inputStream.DisposeAsync();
 
-		_logger.LogInformation($"IsWritten: WriteTagsAsync for {subPath}");
+		_logger.LogInformation($"IsWritten: WriteTagsAsync for {subPath} " +
+		                       $"s.CanWrite:{stream.CanWrite} s.CanRead:{stream.CanRead}" +
+		                       $"i.CanWrite:{inputStream.CanWrite} i.CanRead:{inputStream.CanRead}");
 
 		return isWritten;
 	}
