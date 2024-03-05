@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.health.HealthCheck;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
@@ -48,6 +49,7 @@ namespace starskytest.starsky.feature.health.HealthCheck
 			var appSettings = new AppSettings {Verbose = true};
 			AppSettingsReflection.Modify(appSettings, "get_DatabaseType", 8);
 			var services = new ServiceCollection();
+			services.AddSingleton<IWebLogger, FakeIWebLogger>();
 			new SetupHealthCheck(appSettings, services).BuilderHealth();
 			// expect exception database type is not found
 		}

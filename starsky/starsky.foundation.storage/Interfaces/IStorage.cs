@@ -8,7 +8,6 @@ namespace starsky.foundation.storage.Interfaces;
 
 public interface IStorage
 {
-	bool IsFileReady(string path);
 	bool ExistFile(string path);
 	bool ExistFolder(string path);
 	FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string path);
@@ -88,4 +87,6 @@ public interface IStorage
 	Task<bool> WriteStreamAsync(Stream stream, string path);
 
 	StorageInfo Info(string path);
+	
+	bool IsFileReady(string path);
 }

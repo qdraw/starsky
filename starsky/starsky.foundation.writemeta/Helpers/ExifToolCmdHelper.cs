@@ -193,7 +193,7 @@ namespace starsky.foundation.writemeta.Helpers
 
 				await _exifTool.WriteTagsAsync(withXmpPath, command);
 				
-				_webLogger.LogInformation($"Done xmp file for: {withXmpPath} Ready:{_iStorage.IsFileReady(withXmpPath)}");
+				_webLogger.LogInformation($"Done xmp file for: {withXmpPath}");
 			}
 		}
 

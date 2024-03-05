@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
@@ -223,7 +222,6 @@ namespace starsky.foundation.storage.Storage
 		/// </summary>
 		/// <param name="path"></param>
 		/// <returns></returns>
-		[SuppressMessage("Performance", "CA1822:Mark members as static")]
 		public bool IsFileReady(string path)
 		{
 			// If the file can be opened for exclusive access it means that the file
@@ -434,21 +432,6 @@ namespace starsky.foundation.storage.Storage
 					// HttpConnection.ContentLengthReadStream does not support this
 				}
 
-				_logger.LogInformation(
-					"WriteStreamAsync IsReady: " + IsFileReady(path) + " " + path);
-				if ( !IsFileReady(path) && RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
-				{
-					// TODO WIN32 FEATURE ONLY
-					var locks = Win32Processes.GetProcessesLockingFile(path);
-					_logger.LogError("File is locked: " + path + " " + locks.Count);
-					foreach ( var lockItem in locks )
-					{
-						_logger.LogInformation(lockItem.ProcessName + " " + lockItem.Id + " " +
-						                       lockItem.MainWindowTitle + " " +
-						                       lockItem.Responding);
-					}
-				}
-
 				using ( var fileStream = new FileStream(path, FileMode.Create,
 					       FileAccess.Write, FileShare.Read, 4096,
 					       FileOptions.Asynchronous | FileOptions.SequentialScan) )
@@ -468,7 +451,7 @@ namespace starsky.foundation.storage.Storage
 
 				await stream.DisposeAsync(); // also flush
 
-				_logger.LogInformation($"Done writing file: {path}");
+				_logger.LogDebug($"[WriteStreamAsync] Done writing file: {path}");
 
 				return true;
 			}

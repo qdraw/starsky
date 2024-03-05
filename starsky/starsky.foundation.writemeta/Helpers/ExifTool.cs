@@ -59,8 +59,7 @@ public sealed class ExifTool : IExifTool
 			string? beforeFileHash, string command,
 			CancellationToken cancellationToken = default)
 	{
-		_logger.LogInformation($"Next: WriteTagsAndRenameThumbnailInternalAsync for: {subPath}" +
-		                       $" Ready:{_iStorage.IsFileReady(subPath)}");
+		_logger.LogInformation($"[WriteTagsAndRenameThumbnailAsync] Update: {subPath}");
 
 		var sourceStream = _iStorage.ReadStream(subPath);
 		beforeFileHash ??= await FileHash.CalculateHashAsync(sourceStream,
@@ -88,10 +87,6 @@ public sealed class ExifTool : IExifTool
 
 		stream.Seek(0, SeekOrigin.Begin);
 		var streamResult = await _iStorage.WriteStreamAsync(stream, subPath);
-
-		_logger.LogInformation($"Done: WriteTagsAndRenameThumbnailInternalAsync:" +
-		                       $" s:{subPath} r:{streamResult}" +
-		                       $" Ready:{_iStorage.IsFileReady(subPath)}");
 
 		return new KeyValuePair<bool, string>(streamResult, newHashCode);
 	}
@@ -146,8 +141,7 @@ public sealed class ExifTool : IExifTool
 	/// <returns>true=success</returns>
 	public async Task<bool> WriteTagsAsync(string subPath, string command)
 	{
-		_logger.LogInformation($"Next: WriteTagsAsync for {subPath} " +
-		                       $"Ready:{_iStorage.IsFileReady(subPath)}");
+		_logger.LogInformation($"[WriteTagsAsync] Next update for {subPath}");
 
 		var inputStream = _iStorage.ReadStream(subPath);
 
@@ -158,17 +152,7 @@ public sealed class ExifTool : IExifTool
 		// inputStream is disposed
 		await inputStream.DisposeAsync();
 
-		_logger.LogInformation($"Next2: WriteTagsAsync2 for {subPath} " +
-		                       $"Ready2: {_iStorage.IsFileReady(subPath)}");
-
-		var isWritten = await _iStorage.WriteStreamAsync(stream, subPath);
-
-
-		_logger.LogInformation($"IsWritten: WriteTagsAsync for {subPath} " +
-		                       $"s.CanWrite:{stream.CanWrite} s.CanRead:{stream.CanRead}" +
-		                       $"i.CanWrite:{inputStream.CanWrite} i.CanRead:{inputStream.CanRead}");
-
-		return isWritten;
+		return await _iStorage.WriteStreamAsync(stream, subPath);
 	}
 
 	/// <summary>

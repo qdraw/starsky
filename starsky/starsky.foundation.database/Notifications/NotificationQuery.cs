@@ -73,9 +73,16 @@ namespace starsky.foundation.database.Notifications
 
 			async Task<NotificationItem> LocalAddQuery()
 			{
-				// Include create new scope factory
-				var context = new InjectServiceScope(_scopeFactory).Context();
-				return await LocalAdd(context);
+				try
+				{
+					return await LocalAdd(_context);
+				}
+				catch ( ObjectDisposedException )
+				{
+					// Include create new scope factory
+					var context = new InjectServiceScope(_scopeFactory).Context();
+					return await LocalAdd(context);
+				}
 			}
 		}
 
