@@ -39,7 +39,7 @@ namespace starsky.foundation.storage.Storage
 
 		public bool IsFileReady(string path)
 		{
-			return true;
+			return new StorageHostFullPathFilesystem(_logger).IsFileReady(CombinePath(path));
 		}
 
 		/// <summary>

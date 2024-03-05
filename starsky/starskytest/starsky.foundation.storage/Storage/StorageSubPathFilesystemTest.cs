@@ -225,5 +225,29 @@ namespace starskytest.starsky.foundation.storage.Storage
 
 			Assert.AreEqual(shouldBe, lastWriteTime2);
 		}
+
+		[TestMethod]
+		public void IsFileReady_SubPath()
+		{
+			var createNewImage = new CreateAnImage();
+
+			const string subPath = "/IsFileReady_SubPath.jpg";
+			// first copy for parallel test
+			_storage.FileCopy(createNewImage.DbPath, subPath);
+
+			var stream = _storage.ReadStream(subPath);
+
+			var result = _storage.IsFileReady(subPath);
+			Assert.IsFalse(result);
+
+			// is disposed to late (as designed)
+			stream.Dispose();
+
+			var result2 = _storage.IsFileReady(subPath);
+			Assert.IsTrue(result2);
+
+			_storage.FileDelete(subPath);
+			Assert.IsFalse(_storage.ExistFile(subPath));
+		}
 	}
 }

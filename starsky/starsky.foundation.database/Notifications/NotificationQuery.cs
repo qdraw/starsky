@@ -47,6 +47,7 @@ namespace starsky.foundation.database.Notifications
 			{
 				try
 				{
+					context.Entry(item).State = EntityState.Added;
 					await context.Notifications.AddAsync(item);
 					await context.SaveChangesAsync();
 					return item;

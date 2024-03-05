@@ -243,5 +243,34 @@ namespace starskytest.starsky.foundation.storage.Storage
 			var result = service.FileMove("test", "test");
 			Assert.AreEqual(false, result);
 		}
+
+		[TestMethod]
+		public void IsFileReady_HostService()
+		{
+			var createNewImage = new CreateAnImage();
+
+			var hostStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+
+			var filePathNewFile = createNewImage.FullFilePath.Replace(createNewImage.FileName,
+				"test_is_file_ready_host.jpg");
+
+			// first copy for parallel test
+			hostStorage.FileCopy(createNewImage.FullFilePath, filePathNewFile);
+
+			var stream = hostStorage.ReadStream(filePathNewFile);
+
+			var result = hostStorage.IsFileReady(filePathNewFile);
+			Assert.IsFalse(result);
+
+			// is disposed to late (as designed)
+			stream.Dispose();
+
+			var result2 = hostStorage.IsFileReady(filePathNewFile);
+			Assert.IsTrue(result2);
+
+			File.Delete(filePathNewFile);
+
+			Assert.IsFalse(hostStorage.ExistFile(filePathNewFile));
+		}
 	}
 }
