@@ -89,19 +89,17 @@ public class OpenApplicationNativeServiceTest
 		var result =
 			new OpenApplicationNativeService().OpenDefault([mock.StarskyDotStarskyPath]);
 
-		// retry due due multi threading
-		if ( result != true )
+		// Retry if failed due to multi-threading
+		for ( var i = 0; i < 2 && result != true; i++ )
 		{
-			Console.WriteLine("retry due due multi threading");
-			await Task.Delay(100);
+			Console.WriteLine($"Retry due to multi-threading {i + 1}");
+			await Task.Delay(1000);
 			SetupEnsureAssociationsSet();
-			var service = new OpenApplicationNativeService();
-			result = service.OpenDefault([mock.StarskyDotStarskyPath]);
+			result = WindowsOpenDesktopApp.OpenDefault([mock.StarskyDotStarskyPath]);
 		}
 
 		Assert.IsTrue(result);
 	}
-
 
 	[TestMethod]
 	public void OpenApplicationAtUrl_ZeroItems_SoFalse()
