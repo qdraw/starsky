@@ -14,25 +14,25 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		[TestMethod]
 		public void Files_ExtensionThumbSupportedList_TiffMp4MovXMPCheck()
 		{
-			Assert.AreEqual(false, ExtensionRolesHelper.IsExtensionThumbnailSupported("file.tiff"));
-			Assert.AreEqual(false, ExtensionRolesHelper.IsExtensionThumbnailSupported("file.mp4"));
-			Assert.AreEqual(false, ExtensionRolesHelper.IsExtensionThumbnailSupported("file.mov"));
-			Assert.AreEqual(false, ExtensionRolesHelper.IsExtensionThumbnailSupported("file.xmp"));
+			Assert.IsFalse(ExtensionRolesHelper.IsExtensionThumbnailSupported("file.tiff"));
+			Assert.IsFalse(ExtensionRolesHelper.IsExtensionThumbnailSupported("file.mp4"));
+			Assert.IsFalse(ExtensionRolesHelper.IsExtensionThumbnailSupported("file.mov"));
+			Assert.IsFalse(ExtensionRolesHelper.IsExtensionThumbnailSupported("file.xmp"));
 		}
 
 		[TestMethod]
 		public void Files_ExtensionThumbSupportedList_JpgCheck()
 		{
-			Assert.AreEqual(true, ExtensionRolesHelper.IsExtensionThumbnailSupported("file.jpg"));
-			Assert.AreEqual(true, ExtensionRolesHelper.IsExtensionThumbnailSupported("file.bmp"));
+			Assert.IsTrue(ExtensionRolesHelper.IsExtensionThumbnailSupported("file.jpg"));
+			Assert.IsTrue(ExtensionRolesHelper.IsExtensionThumbnailSupported("file.bmp"));
 		}
 
 		[TestMethod]
 		public void Files_ExtensionThumbSupportedList_null()
 		{
-			Assert.AreEqual(false, ExtensionRolesHelper.IsExtensionThumbnailSupported(null));
+			Assert.IsFalse(ExtensionRolesHelper.IsExtensionThumbnailSupported(null));
 			// equal or less then three chars
-			Assert.AreEqual(false, ExtensionRolesHelper.IsExtensionThumbnailSupported("nul"));
+			Assert.IsFalse(ExtensionRolesHelper.IsExtensionThumbnailSupported("nul"));
 		}
 
 		[TestMethod]
@@ -46,8 +46,8 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void Files_ExtensionSyncSupportedList_TiffCheck()
 		{
 			var extensionSyncSupportedList = ExtensionRolesHelper.ExtensionSyncSupportedList;
-			Assert.AreEqual(true, extensionSyncSupportedList.Contains("tiff"));
-			Assert.AreEqual(true, extensionSyncSupportedList.Contains("jpg"));
+			Assert.IsTrue(extensionSyncSupportedList.Contains("tiff"));
+			Assert.IsTrue(extensionSyncSupportedList.Contains("jpg"));
 		}
 
 		[TestMethod]
@@ -376,21 +376,21 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void ExtensionRolesHelperTest_IsExtensionForceXmp_Positive()
 		{
 			var result = ExtensionRolesHelper.IsExtensionForceXmp("/test.arw");
-			Assert.AreEqual(true, result);
+			Assert.IsTrue(result);
 		}
 
 		[TestMethod]
 		public void ExtensionRolesHelperTest_IsExtensionForceXmp_Null()
 		{
 			var result = ExtensionRolesHelper.IsExtensionForceXmp(null);
-			Assert.AreEqual(false, result);
+			Assert.IsFalse(result);
 		}
 
 		[TestMethod]
 		public void ExtensionRolesHelperTest_IsExtensionForceXmp_Negative()
 		{
 			var result = ExtensionRolesHelper.IsExtensionForceXmp("/test.jpg");
-			Assert.AreEqual(false, result);
+			Assert.IsFalse(result);
 		}
 
 		[TestMethod]
@@ -425,35 +425,35 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void ExtensionRolesHelperTest_IsExtensionSidecar_Null()
 		{
 			var result = ExtensionRolesHelper.IsExtensionSidecar(null);
-			Assert.AreEqual(false, result);
+			Assert.IsFalse(result);
 		}
 
 		[TestMethod]
 		public void ExtensionRolesHelperTest_IsExtensionSidecar_Xmp()
 		{
 			var result = ExtensionRolesHelper.IsExtensionSidecar("test.xmp");
-			Assert.AreEqual(true, result);
+			Assert.IsTrue(result);
 		}
 
 		[TestMethod]
 		public void ExtensionRolesHelperTest_IsExtensionSidecar_MetaJson()
 		{
 			var result = ExtensionRolesHelper.IsExtensionSidecar("test.meta.json");
-			Assert.AreEqual(true, result);
+			Assert.IsTrue(result);
 		}
 
 		[TestMethod]
 		public void ExtensionRolesHelperTest_IsExtensionForceGpx_Null()
 		{
 			var result = ExtensionRolesHelper.IsExtensionForceGpx(null);
-			Assert.AreEqual(false, result);
+			Assert.IsFalse(result);
 		}
 
 		[TestMethod]
 		public void ExtensionRolesHelperTest_IsExtensionExifToolSupported_Null()
 		{
 			var result = ExtensionRolesHelper.IsExtensionExifToolSupported(null);
-			Assert.AreEqual(false, result);
+			Assert.IsFalse(result);
 		}
 
 		[TestMethod]

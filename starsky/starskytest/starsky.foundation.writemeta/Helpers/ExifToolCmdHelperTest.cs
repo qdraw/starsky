@@ -67,8 +67,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 					new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
 				.Update(updateModel, inputSubPaths, comparedNames);
 
-			Assert.AreEqual(true, helperResult.Contains(updateModel.Tags));
-			Assert.AreEqual(true, helperResult.Contains(updateModel.Description));
+			Assert.IsTrue(helperResult.Contains(updateModel.Tags));
+			Assert.IsTrue(helperResult.Contains(updateModel.Description));
 			Assert.AreEqual(true,
 				helperResult.Contains(updateModel.Latitude.ToString(CultureInfo.InvariantCulture)));
 			Assert.AreEqual(true,
@@ -77,11 +77,11 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			Assert.AreEqual(true,
 				helperResult.Contains(
 					updateModel.LocationAltitude.ToString(CultureInfo.InvariantCulture)));
-			Assert.AreEqual(true, helperResult.Contains(updateModel.LocationCity));
-			Assert.AreEqual(true, helperResult.Contains(updateModel.LocationState));
-			Assert.AreEqual(true, helperResult.Contains(updateModel.LocationCountry));
-			Assert.AreEqual(true, helperResult.Contains(updateModel.LocationCountryCode));
-			Assert.AreEqual(true, helperResult.Contains(updateModel.Title));
+			Assert.IsTrue(helperResult.Contains(updateModel.LocationCity));
+			Assert.IsTrue(helperResult.Contains(updateModel.LocationState));
+			Assert.IsTrue(helperResult.Contains(updateModel.LocationCountry));
+			Assert.IsTrue(helperResult.Contains(updateModel.LocationCountryCode));
+			Assert.IsTrue(helperResult.Contains(updateModel.Title));
 		}
 
 		[TestMethod]
@@ -106,8 +106,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 					new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
 				.Update(updateModel, inputSubPaths, comparedNames);
 
-			Assert.AreEqual(true, helperResult.Contains("-GPSAltitude=\"-41"));
-			Assert.AreEqual(true, helperResult.Contains("gpsaltituderef#=\"1"));
+			Assert.IsTrue(helperResult.Contains("-GPSAltitude=\"-41"));
+			Assert.IsTrue(helperResult.Contains("gpsaltituderef#=\"1"));
 		}
 
 		[TestMethod]

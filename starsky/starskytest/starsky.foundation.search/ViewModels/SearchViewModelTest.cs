@@ -139,7 +139,7 @@ namespace starskytest.starsky.foundation.search.ViewModels
 		public void SearchViewModel_ElapsedSeconds_Test()
 		{
 			var searchViewModel = new SearchViewModel { ElapsedSeconds = 0.0006 };
-			Assert.AreEqual(true, searchViewModel.ElapsedSeconds <= 0.001);
+			Assert.IsTrue(searchViewModel.ElapsedSeconds <= 0.001);
 		}
 
 		[TestMethod]

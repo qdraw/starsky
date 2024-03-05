@@ -96,7 +96,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				await new ExifToolDownload(httpClientHelper, _appSettings, new FakeIWebLogger())
 					.DownloadCheckSums();
 			Assert.AreEqual(ExampleCheckSum, result?.Value);
-			Assert.AreEqual(true, result?.Key);
+			Assert.IsTrue(result?.Key);
 		}
 
 		[TestMethod]
@@ -119,7 +119,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 					.DownloadCheckSums();
 
 			Assert.AreEqual(ExampleCheckSum, result?.Value);
-			Assert.AreEqual(false, result?.Key);
+			Assert.IsFalse(result?.Key);
 		}
 
 		[TestMethod]

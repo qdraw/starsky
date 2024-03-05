@@ -10,21 +10,21 @@ namespace starskytest.starsky.project.web.Helpers
 		public void FilenamesHelper_ValidFileName()
 		{
 			var result = FilenamesHelper.IsValidFileName("test.jpg");
-			Assert.AreEqual(true, result);
+			Assert.IsTrue(result);
 		}
 
 		[TestMethod]
 		public void FilenamesHelper_ValidFileName_StartWithUnderscore()
 		{
 			var result = FilenamesHelper.IsValidFileName("_.com");
-			Assert.AreEqual(true, result);
+			Assert.IsTrue(result);
 		}
 
 		[TestMethod]
 		public void FilenamesHelper_NonValidFileName()
 		{
 			var result = FilenamesHelper.IsValidFileName(".jpg");
-			Assert.AreEqual(false, result);
+			Assert.IsFalse(result);
 		}
 
 		[TestMethod]

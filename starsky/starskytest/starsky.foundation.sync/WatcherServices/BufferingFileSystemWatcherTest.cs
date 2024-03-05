@@ -142,8 +142,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			wrapper.IncludeSubdirectories = true;
 
-			Assert.AreEqual(true, watcher.IncludeSubdirectories);
-			Assert.AreEqual(true, wrapper.IncludeSubdirectories);
+			Assert.IsTrue(watcher.IncludeSubdirectories);
+			Assert.IsTrue(wrapper.IncludeSubdirectories);
 
 			wrapper.EnableRaisingEvents = false;
 			wrapper.Dispose();
@@ -219,7 +219,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			wrapper.OrderByOldestFirst = true;
 
 			// wrapper only
-			Assert.AreEqual(true, wrapper.OrderByOldestFirst);
+			Assert.IsTrue(wrapper.OrderByOldestFirst);
 
 			wrapper.EnableRaisingEvents = false;
 			wrapper.Dispose();

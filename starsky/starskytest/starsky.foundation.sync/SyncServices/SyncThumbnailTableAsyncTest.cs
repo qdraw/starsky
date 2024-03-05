@@ -48,8 +48,8 @@ public class SyncThumbnailTableAsyncTest
 				p.FileHash == fileHash);
 
 		Assert.IsNotNull(item);
-		Assert.AreEqual(true, item.TinyMeta);
-		Assert.AreEqual(true, item.Small);
+		Assert.IsTrue(item.TinyMeta);
+		Assert.IsTrue(item.Small);
 		Assert.AreEqual(null, item.Large);
 		Assert.AreEqual(null, item.Large);
 	}

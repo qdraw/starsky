@@ -47,7 +47,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				await new Thumbnail(_iStorage, _iStorage, new FakeIWebLogger(), new AppSettings())
 					.CreateThumbAsync(
 						"/notfound.jpg", _fakeIStorageImageSubPath);
-			Assert.AreEqual(false, isCreated.FirstOrDefault()!.Success);
+			Assert.IsFalse(isCreated.FirstOrDefault()!.Success);
 		}
 
 		[TestMethod]
@@ -56,7 +56,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			var isCreated = await new Thumbnail(_iStorage,
 				_iStorage, new FakeIWebLogger(), new AppSettings()).CreateThumbAsync(
 				"/notfound.dng", _fakeIStorageImageSubPath);
-			Assert.AreEqual(false, isCreated.FirstOrDefault()!.Success);
+			Assert.IsFalse(isCreated.FirstOrDefault()!.Success);
 		}
 
 		[TestMethod]
@@ -74,7 +74,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			var isCreated = ( await thumbnailService.CreateThumbAsync(_fakeIStorageImageSubPath,
 				_fakeIStorageImageSubPath) ).ToList();
 
-			Assert.AreEqual(false, isCreated.FirstOrDefault()!.Success);
+			Assert.IsFalse(isCreated.FirstOrDefault()!.Success);
 			Assert.AreEqual("File already failed before", isCreated.FirstOrDefault()!.ErrorMessage);
 		}
 
@@ -91,12 +91,12 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			var isCreated = await new Thumbnail(storage,
 				storage, new FakeIWebLogger(), new AppSettings()).CreateThumbAsync(
 				_fakeIStorageImageSubPath, fileHash, true);
-			Assert.AreEqual(true, isCreated.FirstOrDefault()!.Success);
+			Assert.IsTrue(isCreated.FirstOrDefault()!.Success);
 
-			Assert.AreEqual(true, storage.ExistFile(fileHash));
-			Assert.AreEqual(true, storage.ExistFile(
+			Assert.IsTrue(storage.ExistFile(fileHash));
+			Assert.IsTrue(storage.ExistFile(
 				ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.Small)));
-			Assert.AreEqual(false, storage.ExistFile(
+			Assert.IsFalse(storage.ExistFile(
 				ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.ExtraLarge)));
 		}
 
@@ -112,12 +112,12 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			var isCreated = await new Thumbnail(storage,
 				storage, new FakeIWebLogger(), new AppSettings()).CreateThumbAsync(
 				_fakeIStorageImageSubPath, fileHash);
-			Assert.AreEqual(true, isCreated.FirstOrDefault()!.Success);
+			Assert.IsTrue(isCreated.FirstOrDefault()!.Success);
 
-			Assert.AreEqual(true, storage.ExistFile(fileHash));
-			Assert.AreEqual(true, storage.ExistFile(
+			Assert.IsTrue(storage.ExistFile(fileHash));
+			Assert.IsTrue(storage.ExistFile(
 				ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.Small)));
-			Assert.AreEqual(true, storage.ExistFile(
+			Assert.IsTrue(storage.ExistFile(
 				ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.ExtraLarge)));
 		}
 
@@ -143,7 +143,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			var isCreated = await new Thumbnail(storage,
 				storage, new FakeIWebLogger(), new AppSettings()).CreateThumbnailAsync(
 				_fakeIStorageImageSubPath);
-			Assert.AreEqual(true, isCreated[0].Success);
+			Assert.IsTrue(isCreated[0].Success);
 		}
 
 		[TestMethod]
@@ -155,7 +155,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 
 			var isCreated = await new Thumbnail(storage,
 				storage, new FakeIWebLogger(), new AppSettings()).CreateThumbnailAsync("/");
-			Assert.AreEqual(true, isCreated[0].Success);
+			Assert.IsTrue(isCreated[0].Success);
 		}
 
 		[TestMethod]
@@ -183,7 +183,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			var thumb = await new Thumbnail(iStorage,
 				iStorage, new FakeIWebLogger(), new AppSettings()).ResizeThumbnailFromSourceImage(
 				newImage.FullFilePath, 1, null, true);
-			Assert.AreEqual(true, thumb.Item1?.CanRead);
+			Assert.IsTrue(thumb.Item1?.CanRead);
 		}
 
 		[TestMethod]
@@ -193,7 +193,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				_iStorage, new FakeIWebLogger(), new AppSettings()).ResizeThumbnailFromSourceImage(
 				_fakeIStorageImageSubPath, 1, null, true,
 				ExtensionRolesHelper.ImageFormat.png);
-			Assert.AreEqual(true, thumb.Item1?.CanRead);
+			Assert.IsTrue(thumb.Item1?.CanRead);
 		}
 
 		[TestMethod]

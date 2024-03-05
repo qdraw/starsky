@@ -186,7 +186,7 @@ namespace starskytest.Controllers
 			Assert.AreNotEqual(null, actionResult);
 			var zipHash = actionResult!.Value as string;
 
-			Assert.AreEqual(true, zipHash!.Contains("SR"));
+			Assert.IsTrue(zipHash!.Contains("SR"));
 
 			await Task.Delay(150);
 
@@ -234,7 +234,7 @@ namespace starskytest.Controllers
 
 			var filePaths = await export.CreateListToExport(fileIndexResultsList, true);
 
-			Assert.AreEqual(true, filePaths.FirstOrDefault()?.Contains(item.FileHash));
+			Assert.IsTrue(filePaths.FirstOrDefault()?.Contains(item.FileHash));
 		}
 
 		[TestMethod]
@@ -318,8 +318,8 @@ namespace starskytest.Controllers
 
 			var filePaths = await export.CreateListToExport(fileIndexResultsList, false);
 
-			Assert.AreEqual(true, filePaths[0].Contains("test.dng"));
-			Assert.AreEqual(true, filePaths[1].Contains("test.xmp"));
+			Assert.IsTrue(filePaths[0].Contains("test.dng"));
+			Assert.IsTrue(filePaths[1].Contains("test.xmp"));
 		}
 
 		[TestMethod]
@@ -350,7 +350,7 @@ namespace starskytest.Controllers
 
 			var filePaths = await export.CreateListToExport(fileIndexResultsList, false);
 
-			Assert.AreEqual(true, filePaths.FirstOrDefault()?.Contains(item.FileName));
+			Assert.IsTrue(filePaths.FirstOrDefault()?.Contains(item.FileName));
 
 			Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File,
 				hostFileSystemStorage.IsFolderOrFile(filePaths.FirstOrDefault()!));

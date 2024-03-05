@@ -45,7 +45,7 @@ namespace starskytest.starsky.foundation.accountmanagement.Services
 
 			var result = await userManager.ValidateAsync("not-found", "test", "test");
 			
-			Assert.AreEqual(false, result.Success);
+			Assert.IsFalse(result.Success);
 			Assert.AreEqual(ValidateResultError.CredentialTypeNotFound,result.Error);
 		}
 
@@ -148,7 +148,7 @@ namespace starskytest.starsky.foundation.accountmanagement.Services
 			
 			var result = await userManager.ValidateAsync("email", "test", "test");
 			
-			Assert.AreEqual(false, result.Success);
+			Assert.IsFalse(result.Success);
 			Assert.AreEqual(ValidateResultError.CredentialNotFound,result.Error);
 		}
 		
@@ -177,7 +177,7 @@ namespace starskytest.starsky.foundation.accountmanagement.Services
 
 			var result = await userManager.ValidateAsync(credentialTypesCode.Code!, "test_0005", "pass123456789");
 			
-			Assert.AreEqual(false, result.Success);
+			Assert.IsFalse(result.Success);
 			Assert.AreEqual(ValidateResultError.UserNotFound,result.Error);
 		}
 		
@@ -197,7 +197,7 @@ namespace starskytest.starsky.foundation.accountmanagement.Services
 
 			var result = await userManager.ValidateAsync("email", "lockout@google.com", "--does not matter--");
 			
-			Assert.AreEqual(false, result.Success);
+			Assert.IsFalse(result.Success);
 			Assert.AreEqual(ValidateResultError.Lockout,result.Error);
 		}
 		
@@ -216,7 +216,7 @@ namespace starskytest.starsky.foundation.accountmanagement.Services
 
 			var result = await userManager.ValidateAsync("email", "try3@google.com", "--does not matter--");
 			
-			Assert.AreEqual(false, result.Success);
+			Assert.IsFalse(result.Success);
 			Assert.AreEqual(ValidateResultError.Lockout,result.Error);
 		}
 		
@@ -235,7 +235,7 @@ namespace starskytest.starsky.foundation.accountmanagement.Services
 
 			var result = await userManager.ValidateAsync("email", "reset@google.com", "pass");
 			
-			Assert.AreEqual(true, result.Success);
+			Assert.IsTrue(result.Success);
 			
 			userObject = _dbContext.Users.FirstOrDefault(p =>
 				p.Name == "reset@google.com");
@@ -263,7 +263,7 @@ namespace starskytest.starsky.foundation.accountmanagement.Services
 
 			var result = await userManager.ValidateAsync("email", "lockout2@google.com", "pass");
 			
-			Assert.AreEqual(true, result.Success);
+			Assert.IsTrue(result.Success);
 		}
 		
 		[TestMethod]
@@ -274,7 +274,7 @@ namespace starskytest.starsky.foundation.accountmanagement.Services
 			await userManager.SignUpAsync("user01", "email", "test1@google.com", "pass");
 
 			var result = await userManager.ValidateAsync("email", "test1@google.com", "----");
-			Assert.AreEqual(false, result.Success);
+			Assert.IsFalse(result.Success);
 			Assert.AreEqual(ValidateResultError.SecretNotValid, result.Error);
 			
 			await userManager.RemoveUser("email", "test1@google.com");
@@ -288,7 +288,7 @@ namespace starskytest.starsky.foundation.accountmanagement.Services
 			await userManager.SignUpAsync("user02", "email", "login2@mail.us", "pass");
 
 			var result = await userManager.ValidateAsync("email", "login2@mail.us", "pass");
-			Assert.AreEqual(true, result.Success);
+			Assert.IsTrue(result.Success);
 
 			await userManager.RemoveUser("email", "login2@mail.us");
 		}
@@ -411,7 +411,7 @@ namespace starskytest.starsky.foundation.accountmanagement.Services
 
 			var result = userManager.ChangeSecret("email", "dont@mail.us", "pass123456789");
 			
-			Assert.AreEqual(true, result.Success);
+			Assert.IsTrue(result.Success);
 		}
 		
 		[TestMethod]
@@ -452,7 +452,7 @@ namespace starskytest.starsky.foundation.accountmanagement.Services
 			await userManager.SignUpAsync("user02", "email", "dont@mail.us", "pass");
 			
 			var result = await userManager.ValidateAsync("email", "dont@mail.us", null!);
-			Assert.AreEqual(false, result.Success);
+			Assert.IsFalse(result.Success);
 		}
 		
 		[TestMethod]
@@ -497,7 +497,7 @@ namespace starskytest.starsky.foundation.accountmanagement.Services
 
 			var result = await userManager.RemoveUser("email", "to_remove@mail.us");
 			
-			Assert.AreEqual(true, result.Success);
+			Assert.IsTrue(result.Success);
 			
 			var user = (await userManager.AllUsersAsync()).Users.Find(p => p.Name == "to_remove");
 			Assert.IsNull(user);
@@ -511,7 +511,7 @@ namespace starskytest.starsky.foundation.accountmanagement.Services
 			
 			var result = await userManager.RemoveUser("___email___", "non_exists@mail.us");
 			
-			Assert.AreEqual(false, result.Success);
+			Assert.IsFalse(result.Success);
 		}
 		
 		[TestMethod]
@@ -522,7 +522,7 @@ namespace starskytest.starsky.foundation.accountmanagement.Services
 			
 			var result = await userManager.RemoveUser("email", "non_exists@mail.us");
 			
-			Assert.AreEqual(false, result.Success);
+			Assert.IsFalse(result.Success);
 		}
 
 		[TestMethod]

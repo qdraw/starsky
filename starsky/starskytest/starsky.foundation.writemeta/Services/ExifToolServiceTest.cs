@@ -52,7 +52,7 @@ public class ExifToolServiceTest
 			"/image.jpg",
 			null, "");
 
-		Assert.AreEqual(false, result.Key);
+		Assert.IsFalse(result.Key);
 	}
 
 	[TestMethod]

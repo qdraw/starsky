@@ -37,7 +37,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 			_storage.CreateDirectory("/test");
 			var filesInFolder = _storage.GetDirectoryRecursive("/").Select(p => p.Key).ToList();
 
-			Assert.AreEqual(true, filesInFolder.Count != 0);
+			Assert.IsTrue(filesInFolder.Count != 0);
 
 			_storage.FolderDelete("/test");
 		}
@@ -77,7 +77,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 			var filesInFolder = _storage.GetAllFilesInDirectoryRecursive(
 				"/test_GetAllFilesInDirectoryRecursive").ToList();
 
-			Assert.AreEqual(true, filesInFolder.Count != 0);
+			Assert.IsTrue(filesInFolder.Count != 0);
 			Assert.AreEqual("/test_GetAllFilesInDirectoryRecursive/test", filesInFolder[0]);
 			Assert.AreEqual("/test_GetAllFilesInDirectoryRecursive/test/already_09010.tmp",
 				filesInFolder[1]);

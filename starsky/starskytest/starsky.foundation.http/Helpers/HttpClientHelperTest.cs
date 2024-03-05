@@ -34,7 +34,7 @@ namespace starskytest.starsky.foundation.http.Helpers
 			// use only whitelisted domains
 			var path = Path.Combine(new AppSettings().TempFolder, "pathToNOTdownload.txt");
 			var output = await httpClientHelper.Download("http://mybadurl.cn", path);
-			Assert.AreEqual(false, output);
+			Assert.IsFalse(output);
 		}
 
 		[TestMethod]
@@ -56,7 +56,7 @@ namespace starskytest.starsky.foundation.http.Helpers
 			// there is an file written
 			var path = Path.Combine(new CreateAnImage().BasePath, "file.txt");
 			var output = await httpClientHelper.Download("https://download.geonames.org/404", path);
-			Assert.AreEqual(false, output);
+			Assert.IsFalse(output);
 		}
 
 		[TestMethod]
@@ -78,7 +78,7 @@ namespace starskytest.starsky.foundation.http.Helpers
 			// http is not used anymore
 			var path = Path.Combine(new AppSettings().TempFolder, "pathToNOTdownload.txt");
 			var output = await httpClientHelper.Download("http://qdraw.nl", path);
-			Assert.AreEqual(false, output);
+			Assert.IsFalse(output);
 		}
 
 		[TestMethod]
@@ -102,7 +102,7 @@ namespace starskytest.starsky.foundation.http.Helpers
 			var path = Path.Combine(new CreateAnImage().BasePath, "file.txt");
 			var output = await httpClientHelper.Download("https://qdraw.nl/test", path);
 
-			Assert.AreEqual(true, output);
+			Assert.IsTrue(output);
 
 			Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File,
 				storageProvider.IsFolderOrFile(path));
@@ -157,7 +157,7 @@ namespace starskytest.starsky.foundation.http.Helpers
 
 			var output = await httpClientHelper.ReadString("https://qdraw.nl/test");
 
-			Assert.AreEqual(true, output.Key);
+			Assert.IsTrue(output.Key);
 		}
 
 
@@ -200,7 +200,7 @@ namespace starskytest.starsky.foundation.http.Helpers
 
 			// http is not used anymore
 			var output = await httpClientHelper.ReadString("http://qdraw.nl");
-			Assert.AreEqual(false, output.Key);
+			Assert.IsFalse(output.Key);
 		}
 
 		[TestMethod]
@@ -220,7 +220,7 @@ namespace starskytest.starsky.foundation.http.Helpers
 				new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
 
 			var output = await httpClientHelper.ReadString("https://download.geonames.org/404");
-			Assert.AreEqual(false, output.Key);
+			Assert.IsFalse(output.Key);
 		}
 
 		[TestMethod]
@@ -242,7 +242,7 @@ namespace starskytest.starsky.foundation.http.Helpers
 			var output = await httpClientHelper
 				.PostString("https://qdraw.nl/test", new StringContent(string.Empty));
 
-			Assert.AreEqual(true, output.Key);
+			Assert.IsTrue(output.Key);
 		}
 
 		[TestMethod]
@@ -311,7 +311,7 @@ namespace starskytest.starsky.foundation.http.Helpers
 			// http is not used anymore
 			var output = await httpClientHelper
 				.PostString("http://qdraw.nl", new StringContent(string.Empty));
-			Assert.AreEqual(false, output.Key);
+			Assert.IsFalse(output.Key);
 		}
 
 		[TestMethod]
@@ -332,7 +332,7 @@ namespace starskytest.starsky.foundation.http.Helpers
 
 			var output = await httpClientHelper
 				.PostString("https://download.geonames.org/404", new StringContent(string.Empty));
-			Assert.AreEqual(false, output.Key);
+			Assert.IsFalse(output.Key);
 		}
 	}
 }

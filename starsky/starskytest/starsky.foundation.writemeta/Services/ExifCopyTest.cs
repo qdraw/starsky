@@ -35,7 +35,7 @@ namespace starskytest.starsky.foundation.writemeta.Services
 			var helperResult = await new ExifCopy(storage, storage, fakeExifTool,
 					fakeReadMeta, new FakeIThumbnailQuery(), new FakeIWebLogger())
 				.CopyExifPublish("/test.jpg", "/test2");
-			Assert.AreEqual(true, helperResult.Contains("HistorySoftwareAgent"));
+			Assert.IsTrue(helperResult.Contains("HistorySoftwareAgent"));
 		}
 
 		[TestMethod]
@@ -97,7 +97,7 @@ namespace starskytest.starsky.foundation.writemeta.Services
 					new FakeIWebLogger())
 				.XmpSync("/test.dng");
 
-			Assert.AreEqual(true, storage.ExistFile("/test.xmp"));
+			Assert.IsTrue(storage.ExistFile("/test.xmp"));
 			var xmpContentReadStream = storage.ReadStream("/test.xmp");
 			var xmpContent = await StreamToStringHelper.StreamToStringAsync(xmpContentReadStream);
 
@@ -105,7 +105,7 @@ namespace starskytest.starsky.foundation.writemeta.Services
 			Assert.AreEqual(true,
 				xmpContent.Contains(
 					"<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Image::ExifTool 11.30'>"));
-			Assert.AreEqual(true, xmpContent.Contains("<rdf:li>test</rdf:li>"));
+			Assert.IsTrue(xmpContent.Contains("<rdf:li>test</rdf:li>"));
 		}
 	}
 }

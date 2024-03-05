@@ -109,7 +109,7 @@ public class PortProgramHelperTest
 
 		var result = await PortProgramHelper.SkipForAppSettingsJsonFile(appSettingsPath);
 
-		Assert.AreEqual(true, result);
+		Assert.IsTrue(result);
 		Assert.AreEqual(null, Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
 
 		Environment.SetEnvironmentVariable("PORT", _prePort);
@@ -136,7 +136,7 @@ public class PortProgramHelperTest
 
 		var result = await PortProgramHelper.SkipForAppSettingsJsonFile(appSettingsPath);
 
-		Assert.AreEqual(true, result);
+		Assert.IsTrue(result);
 		Assert.AreEqual(null, Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
 
 		Environment.SetEnvironmentVariable("PORT", _prePort);
@@ -151,7 +151,7 @@ public class PortProgramHelperTest
 	public async Task SkipForAppSettingsJsonFile_ShouldFalse()
 	{
 		var result = await PortProgramHelper.SkipForAppSettingsJsonFile(string.Empty);
-		Assert.AreEqual(false, result);
+		Assert.IsFalse(result);
 	}
 
 	[TestMethod]

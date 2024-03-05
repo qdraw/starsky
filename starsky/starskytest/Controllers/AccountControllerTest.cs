@@ -142,7 +142,7 @@ namespace starskytest.Controllers
 			// Try login > result login false
 			await controller.LoginPost(login);
 			// Test login
-			Assert.AreEqual(false, httpContext.User.Identity?.IsAuthenticated);
+			Assert.IsFalse(httpContext.User.Identity?.IsAuthenticated);
 
 			// Reset the model state, 
 			// to avoid errors on RegisterViewModel
@@ -163,7 +163,7 @@ namespace starskytest.Controllers
 			// Try login again > now it must be succesfull
 			await controller.LoginPost(login);
 			// Test login
-			Assert.AreEqual(true, httpContext.User.Identity?.IsAuthenticated);
+			Assert.IsTrue(httpContext.User.Identity?.IsAuthenticated);
 
 			// The logout is mocked so this will not actual log it out and controller.Logout() not crashing is good enough
 			controller.Logout();
@@ -623,7 +623,7 @@ namespace starskytest.Controllers
 			await controller.LoginPost(login);
 			// Test login
 			Assert.IsNotNull(httpContext);
-			Assert.AreEqual(true, httpContext.User.Identity?.IsAuthenticated);
+			Assert.IsTrue(httpContext.User.Identity?.IsAuthenticated);
 
 			// The logout is mocked so this will not actual log it out
 			// controller.Logout() not crashing is good enough
@@ -644,7 +644,7 @@ namespace starskytest.Controllers
 			// Try login again > now it must be succesfull
 			await controller.LoginPost(login);
 			// Test login
-			Assert.AreEqual(true, httpContext.User.Identity?.IsAuthenticated);
+			Assert.IsTrue(httpContext.User.Identity?.IsAuthenticated);
 
 			// The logout is mocked so this will not actual log it out and controller.Logout() not crashing is good enough
 			controller.LogoutJson();

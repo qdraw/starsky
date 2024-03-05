@@ -301,10 +301,10 @@ public class ThumbnailQueryTest
 		var item = result3.FirstOrDefault();
 		
 		Assert.IsNotNull(item);
-		Assert.AreEqual(true, item.TinyMeta);
-		Assert.AreEqual(true, item.Small);
-		Assert.AreEqual(true, item.Large);
-		Assert.AreEqual(true, item.ExtraLarge);
+		Assert.IsTrue(item.TinyMeta);
+		Assert.IsTrue(item.Small);
+		Assert.IsTrue(item.Large);
+		Assert.IsTrue(item.ExtraLarge);
 		Assert.AreEqual("test", item.Reasons);
 	}
 	
@@ -337,10 +337,10 @@ public class ThumbnailQueryTest
 		var item = result3.FirstOrDefault();
 		
 		Assert.IsNotNull(item);
-		Assert.AreEqual(true, item.TinyMeta);
-		Assert.AreEqual(true, item.Small);
-		Assert.AreEqual(true, item.Large);
-		Assert.AreEqual(true, item.ExtraLarge);
+		Assert.IsTrue(item.TinyMeta);
+		Assert.IsTrue(item.Small);
+		Assert.IsTrue(item.Large);
+		Assert.IsTrue(item.ExtraLarge);
 		Assert.AreEqual("test2,word", item.Reasons);
 	}
 
@@ -537,8 +537,8 @@ public class ThumbnailQueryTest
 		
 		// Assert
 		var thumbnails = await _thumbnailQuery.Get();
-		Assert.AreEqual(true, thumbnails.Count >= 1);
-		Assert.AreEqual(true, thumbnails.Count(p => p.FileHash == "3456789") == 1);
+		Assert.IsTrue(thumbnails.Count >= 1);
+		Assert.IsTrue(thumbnails.Count(p => p.FileHash == "3456789") == 1);
 	
 		Assert.IsTrue(thumbnails.Where(p => p.FileHash == "3456789")
 			.All(x => x.Small == true));

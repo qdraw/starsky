@@ -582,8 +582,8 @@ namespace starskytest.starsky.foundation.search.Services
 			};
 			_search.MatchSearch(model);
 
-			Assert.AreEqual(true, model.SearchIn.Contains("Tags"));
-			Assert.AreEqual(true, model.SearchFor.Contains("dion.jpg"));
+			Assert.IsTrue(model.SearchIn.Contains("Tags"));
+			Assert.IsTrue(model.SearchFor.Contains("dion.jpg"));
 		}
 		
 		[TestMethod]
@@ -595,7 +595,7 @@ namespace starskytest.starsky.foundation.search.Services
 			};
 			_search.MatchSearch(model);
 
-			Assert.AreEqual(false, model.SearchIn.Count != 0);
+			Assert.IsFalse(model.SearchIn.Count != 0);
 		}
 
 		[TestMethod]
@@ -604,7 +604,7 @@ namespace starskytest.starsky.foundation.search.Services
 			// Single keyword
 			var model = new SearchViewModel {SearchQuery = "-Tags:dion"};
 			_search.MatchSearch(model);
-			Assert.AreEqual(true, model.SearchIn.Contains("Tags"));
+			Assert.IsTrue(model.SearchIn.Contains("Tags"));
 		}
 
 		[TestMethod]
@@ -631,8 +631,8 @@ namespace starskytest.starsky.foundation.search.Services
 			// Single keyword
 			var model = new SearchViewModel {SearchQuery = "-Filename:dion test"};
 			_search.MatchSearch(model);
-			Assert.AreEqual(true, model.SearchIn.Contains("FileName"));
-			Assert.AreEqual(true, model.SearchIn.Contains("Tags"));
+			Assert.IsTrue(model.SearchIn.Contains("FileName"));
+			Assert.IsTrue(model.SearchIn.Contains("Tags"));
 		}
 
 		[TestMethod]
@@ -655,7 +655,7 @@ namespace starskytest.starsky.foundation.search.Services
 			// Single keyword
 			var model = new SearchViewModel {SearchQuery = "test"};
 			_search.MatchSearch(model);
-			Assert.AreEqual(true, model.SearchIn.Contains("Tags"));
+			Assert.IsTrue(model.SearchIn.Contains("Tags"));
 		}
 
 		[TestMethod]

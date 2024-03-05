@@ -56,7 +56,7 @@ public class ServiceCollectionExtensionsTest
 		var serviceProvider = serviceCollection.BuildServiceProvider();
 		
 		var result = serviceProvider.GetService<TestInjectionClass>();
-		Assert.AreEqual(true, result?.Enabled);
+		Assert.IsTrue(result?.Enabled);
 	}
 	
 	
@@ -72,7 +72,7 @@ public class ServiceCollectionExtensionsTest
 		var serviceProvider = serviceCollection.BuildServiceProvider();
 		
 		var result = serviceProvider.GetService<TestInjectionClass>();
-		Assert.AreEqual(true, result?.Enabled);
+		Assert.IsTrue(result?.Enabled);
 	}
 
 	[TestMethod]
@@ -87,7 +87,7 @@ public class ServiceCollectionExtensionsTest
 		var serviceProvider = serviceCollection.BuildServiceProvider();
 		
 		var result = serviceProvider.GetService<TestInjectionClass>();
-		Assert.AreEqual(true, result?.Enabled);
+		Assert.IsTrue(result?.Enabled);
 	}
 
 	[TestMethod]
@@ -117,7 +117,7 @@ public class ServiceCollectionExtensionsTest
 		var serviceProvider = serviceCollection.BuildServiceProvider();
 		
 		var result = serviceProvider.GetService<ITestInjectionClass>();
-		Assert.AreEqual(true, result?.Enabled);
+		Assert.IsTrue(result?.Enabled);
 	}
 	
 	
@@ -134,7 +134,7 @@ public class ServiceCollectionExtensionsTest
 		var serviceProvider = serviceCollection.BuildServiceProvider();
 		
 		var result = serviceProvider.GetService<ITestInjectionClass>();
-		Assert.AreEqual(true, result?.Enabled);
+		Assert.IsTrue(result?.Enabled);
 	}
 	
 	[TestMethod]
@@ -150,7 +150,7 @@ public class ServiceCollectionExtensionsTest
 		var serviceProvider = serviceCollection.BuildServiceProvider();
 		
 		var result = serviceProvider.GetService<ITestInjectionClass>();
-		Assert.AreEqual(true, result?.Enabled);
+		Assert.IsTrue(result?.Enabled);
 	}
 	
 	[TestMethod]

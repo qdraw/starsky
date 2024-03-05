@@ -252,7 +252,7 @@ namespace starsky.foundation.storage.Storage
 				var fileStream = new FileStream(path, FileMode.Open,
 					FileAccess.Read, FileShare.Read, 4096, true);
 
-				_logger.LogInformation($"Done Reading file: {path} - {maxRead}");
+				_logger.LogDebug($"[ReadStream] Done Reading file: p:{path} - m:{maxRead}");
 
 				if ( maxRead < 1 )
 				{

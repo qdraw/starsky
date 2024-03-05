@@ -277,14 +277,14 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void ArgsHelper_GetAllTest()
 		{
 			var args = new List<string> { "-a" }.ToArray();
-			Assert.AreEqual(true, ArgsHelper.GetAll(args));
+			Assert.IsTrue(ArgsHelper.GetAll(args));
 
 			// Bool parse check
 			args = new List<string> { "-a", "false" }.ToArray();
-			Assert.AreEqual(false, ArgsHelper.GetAll(args));
+			Assert.IsFalse(ArgsHelper.GetAll(args));
 
 			args = new List<string>().ToArray();
-			Assert.AreEqual(false, ArgsHelper.GetAll(args));
+			Assert.IsFalse(ArgsHelper.GetAll(args));
 		}
 
 		[TestMethod]
@@ -588,7 +588,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 				appSettings.DatabaseType);
 			Assert.AreEqual("test", appSettings.DatabaseConnection);
 			Assert.AreEqual("app__ExifToolPath", appSettings.ExifToolPath);
-			Assert.AreEqual(true, appSettings.StorageFolder.Contains("app__StorageFolder"));
+			Assert.IsTrue(appSettings.StorageFolder.Contains("app__StorageFolder"));
 
 
 			// Reset Environment after use

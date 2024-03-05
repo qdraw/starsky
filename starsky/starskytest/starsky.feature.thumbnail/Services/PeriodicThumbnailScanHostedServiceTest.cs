@@ -63,7 +63,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 		using var cancelToken = new CancellationTokenSource();
 		cancelToken.Cancel();
 		
-		Assert.AreEqual(true, periodicThumbnailScanHostedService.IsEnabled);
+		Assert.IsTrue(periodicThumbnailScanHostedService.IsEnabled);
 	}
 	
 	[TestMethod]
@@ -113,7 +113,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 		using var cancelToken = new CancellationTokenSource();
 		cancelToken.Cancel();
 		
-		Assert.AreEqual(false, periodicThumbnailScanHostedService.IsEnabled);
+		Assert.IsFalse(periodicThumbnailScanHostedService.IsEnabled);
 		Assert.AreEqual( TimeSpan.FromMinutes(60), periodicThumbnailScanHostedService.Period);
 	}
 	

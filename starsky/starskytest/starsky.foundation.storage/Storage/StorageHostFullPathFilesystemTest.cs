@@ -28,7 +28,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 			Console.WriteLine("count => " + content.Count);
 
 			// Gives a list of the content in the temp folder.
-			Assert.AreEqual(true, content.Count != 0);
+			Assert.IsTrue(content.Count != 0);
 		}
 
 		[TestMethod]
@@ -82,8 +82,8 @@ namespace starskytest.starsky.foundation.storage.Storage
 			new StorageHostFullPathFilesystem(new FakeIWebLogger()).FolderDelete(rootDir);
 
 			Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.Folder, info.IsFolderOrFile);
-			Assert.AreEqual(false, info.IsFileSystemReadOnly);
-			Assert.AreEqual(true, info.IsDirectory);
+			Assert.IsFalse(info.IsFileSystemReadOnly);
+			Assert.IsTrue(info.IsDirectory);
 		}
 
 		[TestMethod]
@@ -93,7 +93,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 			var result = StorageHostFullPathFilesystem.TestIfFileSystemIsReadOnly("/test_test_test",
 				FolderOrFileModel.FolderOrFileTypeList.Folder);
 
-			Assert.AreEqual(true, result);
+			Assert.IsTrue(result);
 		}
 
 		[TestMethod]
@@ -107,7 +107,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 
 			new StorageHostFullPathFilesystem(new FakeIWebLogger()).FolderDelete(rootDir);
 
-			Assert.AreEqual(false, result);
+			Assert.IsFalse(result);
 		}
 
 		[TestMethod]
@@ -123,8 +123,8 @@ namespace starskytest.starsky.foundation.storage.Storage
 
 			realStorage.FolderDelete(rootDir);
 
-			Assert.AreEqual(false, realStorage.ExistFolder(rootDir));
-			Assert.AreEqual(false, realStorage.ExistFolder(childDir));
+			Assert.IsFalse(realStorage.ExistFolder(rootDir));
+			Assert.IsFalse(realStorage.ExistFolder(childDir));
 		}
 
 		[TestMethod]
@@ -133,7 +133,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 			var realStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 			var result = realStorage.FolderDelete("not-found-directory-24785895348934598543");
 
-			Assert.AreEqual(false, result);
+			Assert.IsFalse(result);
 		}
 
 		[TestMethod]
@@ -241,7 +241,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 		{
 			var service = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 			var result = service.FileMove("test", "test");
-			Assert.AreEqual(false, result);
+			Assert.IsFalse(result);
 		}
 
 		[TestMethod]
@@ -271,6 +271,14 @@ namespace starskytest.starsky.foundation.storage.Storage
 			File.Delete(filePathNewFile);
 
 			Assert.IsFalse(hostStorage.ExistFile(filePathNewFile));
+		}
+
+		[TestMethod]
+		public void GetDirectoryRecursive_NotFound()
+		{
+			var hostStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+			var result = hostStorage.GetDirectoryRecursive("not-found-directory-47539");
+			Assert.AreEqual(0, result.Count());
 		}
 	}
 }
