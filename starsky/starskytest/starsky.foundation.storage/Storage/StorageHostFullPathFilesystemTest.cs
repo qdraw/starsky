@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Models;
@@ -279,6 +280,97 @@ namespace starskytest.starsky.foundation.storage.Storage
 			var hostStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 			var result = hostStorage.GetDirectoryRecursive("not-found-directory-47539");
 			Assert.AreEqual(0, result.Count());
+		}
+
+		[TestMethod]
+		public async Task WriteStreamAsync_CanNotWriteDisposedStream()
+		{
+			var hostStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+			var stream = new MemoryStream(new byte[1]);
+
+			// Dispose the stream to set CanRead to false
+			await stream.DisposeAsync();
+
+			var result = await hostStorage.WriteStreamAsync(stream, "not-found-path");
+
+			Assert.IsFalse(result);
+		}
+
+		[TestMethod]
+		public async Task WriteStreamAsync_Host_TestOutput()
+		{
+			var hostStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+			var stream = new MemoryStream(new byte[1]);
+			var createNewImage = new CreateAnImage();
+			var expectedPath =
+				Path.Combine(createNewImage.BasePath, "WriteStreamAsync_Host_TestOutput");
+
+			var result = await hostStorage.WriteStreamAsync(stream, expectedPath);
+
+			Assert.IsTrue(result);
+			Assert.AreEqual(1, hostStorage.Info(expectedPath).Size);
+
+			await stream.DisposeAsync();
+			File.Delete(expectedPath);
+			Assert.IsFalse(hostStorage.ExistFile(expectedPath));
+		}
+
+		[TestMethod]
+		public async Task WriteStreamAsync_Host_TestOutput_NotSupportedStream()
+		{
+			var hostStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+			var stream = new NotSupportedExceptionStream();
+			var createNewImage = new CreateAnImage();
+			var expectedPath = Path.Combine(createNewImage.BasePath,
+				"WriteStreamAsync_Host_TestOutput_NotSupportedStream");
+
+			var result = await hostStorage.WriteStreamAsync(stream, expectedPath);
+
+			Assert.IsTrue(result);
+			Assert.AreEqual(0, hostStorage.Info(expectedPath).Size);
+
+			await stream.DisposeAsync();
+			File.Delete(expectedPath);
+			Assert.IsFalse(hostStorage.ExistFile(expectedPath));
+		}
+	}
+
+	internal class NotSupportedExceptionStream : Stream
+	{
+		public override bool CanRead => true;
+		public override bool CanSeek => false;
+		public override bool CanWrite => false;
+		public override long Length => throw new NotSupportedException();
+
+		public override long Position
+		{
+			get => throw new NotSupportedException();
+			set => throw new NotSupportedException();
+		}
+
+		public override void Flush()
+		{
+			throw new NotSupportedException();
+		}
+
+		public override int Read(byte[] buffer, int offset, int count)
+		{
+			return 0;
+		}
+
+		public override long Seek(long offset, SeekOrigin origin)
+		{
+			throw new NotSupportedException();
+		}
+
+		public override void SetLength(long value)
+		{
+			throw new NotSupportedException();
+		}
+
+		public override void Write(byte[] buffer, int offset, int count)
+		{
+			throw new NotSupportedException();
 		}
 	}
 }

@@ -102,9 +102,8 @@ namespace starskytest.starsky.foundation.writemeta.Services
 			var xmpContent = await StreamToStringHelper.StreamToStringAsync(xmpContentReadStream);
 
 			// Those values are injected by fakeExifTool
-			Assert.AreEqual(true,
-				xmpContent.Contains(
-					"<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Image::ExifTool 11.30'>"));
+			Assert.IsTrue(xmpContent.Contains(
+				"<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Image::ExifTool 11.30'>"));
 			Assert.IsTrue(xmpContent.Contains("<rdf:li>test</rdf:li>"));
 		}
 	}

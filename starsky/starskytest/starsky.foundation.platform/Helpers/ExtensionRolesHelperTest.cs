@@ -38,7 +38,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		[TestMethod]
 		public void Files_ExtensionThumbSupportedList_FolderName()
 		{
-			Assert.AreEqual(false,
+			Assert.IsFalse(
 				ExtensionRolesHelper.IsExtensionThumbnailSupported("Some Foldername"));
 		}
 

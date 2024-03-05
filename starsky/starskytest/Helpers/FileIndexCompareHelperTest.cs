@@ -190,8 +190,7 @@ namespace starskytest.Helpers
 		[TestMethod]
 		public void FileIndexCompareHelperTest__CheckIfPropertyExist_Tags_True()
 		{
-			Assert.AreEqual(true,
-				FileIndexCompareHelper.CheckIfPropertyExist(nameof(FileIndexItem.Tags)));
+			Assert.IsTrue(FileIndexCompareHelper.CheckIfPropertyExist(nameof(FileIndexItem.Tags)));
 		}
 
 		[TestMethod]
@@ -350,7 +349,7 @@ namespace starskytest.Helpers
 			bool? boolValue = true;
 			FileIndexCompareHelper.CompareNullableBool("t",
 				new FileIndexItem(),
-				boolValue!,
+				boolValue,
 				boolValue, list);
 			Assert.IsNotNull(list);
 		}

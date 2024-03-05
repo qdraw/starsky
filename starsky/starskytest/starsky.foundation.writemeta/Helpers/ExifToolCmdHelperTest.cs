@@ -69,12 +69,12 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 
 			Assert.IsTrue(helperResult.Contains(updateModel.Tags));
 			Assert.IsTrue(helperResult.Contains(updateModel.Description));
-			Assert.AreEqual(true,
+			Assert.IsTrue(
 				helperResult.Contains(updateModel.Latitude.ToString(CultureInfo.InvariantCulture)));
-			Assert.AreEqual(true,
+			Assert.IsTrue(
 				helperResult.Contains(
 					updateModel.Longitude.ToString(CultureInfo.InvariantCulture)));
-			Assert.AreEqual(true,
+			Assert.IsTrue(
 				helperResult.Contains(
 					updateModel.LocationAltitude.ToString(CultureInfo.InvariantCulture)));
 			Assert.IsTrue(helperResult.Contains(updateModel.LocationCity));
