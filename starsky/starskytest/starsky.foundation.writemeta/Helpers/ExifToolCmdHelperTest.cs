@@ -64,7 +64,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 
 			var fakeExifTool = new FakeExifTool(storage, _appSettings);
 			var helperResult = new ExifToolCmdHelper(fakeExifTool, storage, storage,
-					new FakeReadMeta(), new FakeIThumbnailQuery())
+					new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
 				.Update(updateModel, inputSubPaths, comparedNames);
 
 			Assert.AreEqual(true, helperResult.Contains(updateModel.Tags));
@@ -103,7 +103,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 
 			var helperResult = new ExifToolCmdHelper(fakeExifTool,
 					storage, storage,
-					new FakeReadMeta(), new FakeIThumbnailQuery())
+					new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
 				.Update(updateModel, inputSubPaths, comparedNames);
 
 			Assert.AreEqual(true, helperResult.Contains("-GPSAltitude=\"-41"));
@@ -123,7 +123,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var fakeExifTool = new FakeExifTool(storage, _appSettings);
 			await new ExifToolCmdHelper(fakeExifTool,
 					storage, storage,
-					new FakeReadMeta(), new FakeIThumbnailQuery())
+					new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
 				.CreateXmpFileIsNotExist(updateModel, inputSubPaths);
 
 			Assert.IsFalse(storage.ExistFile("/test.xmp"));
@@ -142,7 +142,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var fakeExifTool = new FakeExifTool(storage, _appSettings);
 			await new ExifToolCmdHelper(fakeExifTool,
 					storage, storage,
-					new FakeReadMeta(), new FakeIThumbnailQuery())
+					new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
 				.CreateXmpFileIsNotExist(updateModel, inputSubPaths);
 
 			Assert.IsTrue(storage.ExistFile("/test.xmp"));
@@ -163,7 +163,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 
 			var fakeExifTool = new FakeExifTool(storage, _appSettings);
 			var helperResult = ( await new ExifToolCmdHelper(fakeExifTool, storage, storage,
-					new FakeReadMeta(), new FakeIThumbnailQuery())
+					new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
 				.UpdateAsync(updateModel, comparedNames) );
 
 			Assert.IsTrue(helperResult.Item1.Contains("tags"));
@@ -190,7 +190,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 
 			var fakeExifTool = new FakeExifTool(storage, _appSettings);
 			var helperResult = ( await new ExifToolCmdHelper(fakeExifTool, storage, storage,
-					new FakeReadMeta(), new FakeIThumbnailQuery())
+					new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
 				.UpdateAsync(updateModel, comparedNames) );
 
 			Assert.IsTrue(helperResult.Item1.Contains("tags"));

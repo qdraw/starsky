@@ -33,7 +33,8 @@ namespace starskytest.starsky.foundation.writemeta.Services
 			var fakeReadMeta = new ReadMeta(storage, _appSettings, null, new FakeIWebLogger());
 			var fakeExifTool = new FakeExifTool(storage, _appSettings);
 			var helperResult = await new ExifCopy(storage, storage, fakeExifTool,
-				fakeReadMeta, new FakeIThumbnailQuery()).CopyExifPublish("/test.jpg", "/test2");
+					fakeReadMeta, new FakeIThumbnailQuery(), new FakeIWebLogger())
+				.CopyExifPublish("/test.jpg", "/test2");
 			Assert.AreEqual(true, helperResult.Contains("HistorySoftwareAgent"));
 		}
 
@@ -51,7 +52,7 @@ namespace starskytest.starsky.foundation.writemeta.Services
 			var fakeExifTool = new FakeExifTool(storage, _appSettings);
 			var helperResult = await new ExifCopy(storage,
 				storage, fakeExifTool, fakeReadMeta,
-				new FakeIThumbnailQuery()).XmpSync("/test.dng");
+				new FakeIThumbnailQuery(), new FakeIWebLogger()).XmpSync("/test.dng");
 			Assert.AreEqual("/test.xmp", helperResult);
 		}
 
@@ -68,7 +69,8 @@ namespace starskytest.starsky.foundation.writemeta.Services
 				null, new FakeIWebLogger());
 			var fakeExifTool = new FakeExifTool(storage, _appSettings);
 
-			new ExifCopy(storage, storage, fakeExifTool, fakeReadMeta, new FakeIThumbnailQuery())
+			new ExifCopy(storage, storage, fakeExifTool, fakeReadMeta, new FakeIThumbnailQuery(),
+					new FakeIWebLogger())
 				.XmpCreate("/test.xmp");
 			var result =
 				await StreamToStringHelper.StreamToStringAsync(storage.ReadStream("/test.xmp"));
@@ -91,7 +93,8 @@ namespace starskytest.starsky.foundation.writemeta.Services
 				null, new FakeIWebLogger());
 			var fakeExifTool = new FakeExifTool(storage, _appSettings);
 
-			await new ExifCopy(storage, storage, fakeExifTool, readMeta, new FakeIThumbnailQuery())
+			await new ExifCopy(storage, storage, fakeExifTool, readMeta, new FakeIThumbnailQuery(),
+					new FakeIWebLogger())
 				.XmpSync("/test.dng");
 
 			Assert.AreEqual(true, storage.ExistFile("/test.xmp"));

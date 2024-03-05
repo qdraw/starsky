@@ -3,6 +3,7 @@ using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
@@ -19,12 +20,12 @@ namespace starsky.foundation.writemeta.Services
 		private readonly ExifToolCmdHelper _exifToolCmdHelper;
 
 		public ExifCopy(IStorage iStorage, IStorage thumbnailStorage, IExifTool exifTool,
-			IReadMeta readMeta, IThumbnailQuery thumbnailQuery)
+			IReadMeta readMeta, IThumbnailQuery thumbnailQuery, IWebLogger logger)
 		{
 			_iStorage = iStorage;
 			_readMeta = readMeta;
 			_exifToolCmdHelper = new ExifToolCmdHelper(exifTool, _iStorage,
-				thumbnailStorage, _readMeta, thumbnailQuery);
+				thumbnailStorage, _readMeta, thumbnailQuery, logger);
 		}
 
 		private const string XmpStartContent =
@@ -58,7 +59,7 @@ namespace starsky.foundation.writemeta.Services
 
 			// only for files that not exist yet
 			if ( _iStorage.IsFolderOrFile(withXmp) !=
-				 FolderOrFileModel.FolderOrFileTypeList.Deleted ) return withXmp;
+			     FolderOrFileModel.FolderOrFileTypeList.Deleted ) return withXmp;
 
 			XmpCreate(withXmp);
 
@@ -84,7 +85,5 @@ namespace starsky.foundation.writemeta.Services
 			return ( await _exifToolCmdHelper.UpdateAsync(updateModel,
 				comparedNames, true, false) ).Item1;
 		}
-
-
 	}
 }
