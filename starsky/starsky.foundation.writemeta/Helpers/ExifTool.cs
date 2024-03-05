@@ -146,6 +146,7 @@ public sealed class ExifTool : IExifTool
 		var isWritten = await _iStorage.WriteStreamAsync(stream, subPath);
 
 		// Need to Dispose for Windows
+		inputStream.Close();
 		await inputStream.DisposeAsync();
 
 		return isWritten;
