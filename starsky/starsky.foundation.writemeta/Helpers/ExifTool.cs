@@ -59,7 +59,8 @@ public sealed class ExifTool : IExifTool
 			string? beforeFileHash, string command,
 			CancellationToken cancellationToken = default)
 	{
-		_logger.LogInformation($"Next: WriteTagsAndRenameThumbnailInternalAsync for: {subPath}");
+		_logger.LogInformation($"Next: WriteTagsAndRenameThumbnailInternalAsync for: {subPath}" +
+		                       $" Ready:{_iStorage.IsFileReady(subPath)}");
 
 		var sourceStream = _iStorage.ReadStream(subPath);
 		beforeFileHash ??=
@@ -89,7 +90,8 @@ public sealed class ExifTool : IExifTool
 		var streamResult = await _iStorage.WriteStreamAsync(stream, subPath);
 
 		_logger.LogInformation($"Done: WriteTagsAndRenameThumbnailInternalAsync:" +
-		                       $" s:{subPath} r:{streamResult}");
+		                       $" s:{subPath} r:{streamResult}" +
+		                       $" Ready:{_iStorage.IsFileReady(subPath)}");
 
 		return new KeyValuePair<bool, string>(streamResult, newHashCode);
 	}

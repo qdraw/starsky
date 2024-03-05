@@ -25,7 +25,8 @@ namespace starsky.foundation.database.Notifications
 		private readonly IWebLogger _logger;
 		private readonly IServiceScopeFactory _scopeFactory;
 
-		public NotificationQuery(ApplicationDbContext context, IWebLogger logger, IServiceScopeFactory scopeFactory)
+		public NotificationQuery(ApplicationDbContext context, IWebLogger logger,
+			IServiceScopeFactory scopeFactory)
 		{
 			_context = context;
 			_logger = logger;
@@ -40,12 +41,29 @@ namespace starsky.foundation.database.Notifications
 				DateTimeEpoch = DateTimeOffset.Now.ToUnixTimeSeconds(),
 				Content = content
 			};
-			
+
 			// Include create new scope factory
 			async Task<NotificationItem> LocalAddQuery()
 			{
-				var context = new InjectServiceScope(_scopeFactory).Context();
-				return await LocalAdd(context);
+				try
+				{
+					var context = new InjectServiceScope(_scopeFactory).Context();
+					return await LocalAdd(context);
+				}
+				catch ( DbUpdateException e )
+				{
+					_logger.LogInformation(e,
+						$"[AddNotification] catch-ed DbUpdateException going to retry 2 times {content}");
+					return await RetryHelper.DoAsync(
+						LocalAddQuery, TimeSpan.FromSeconds(2), 2);
+				}
+				catch ( SqliteException e )
+				{
+					_logger.LogInformation(e,
+						$"[AddNotification] catch-ed SqliteException going to retry 2 times {content}");
+					return await RetryHelper.DoAsync(
+						LocalAddQuery, TimeSpan.FromSeconds(2), 2);
+				}
 			}
 
 			async Task<NotificationItem> LocalAdd(ApplicationDbContext context)
@@ -61,7 +79,8 @@ namespace starsky.foundation.database.Notifications
 			}
 			catch ( DbUpdateConcurrencyException concurrencyException )
 			{
-				_logger.LogInformation("[AddNotification] try to fix DbUpdateConcurrencyException", concurrencyException);
+				_logger.LogInformation("[AddNotification] try to fix DbUpdateConcurrencyException",
+					concurrencyException);
 				SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
 				try
 				{
@@ -69,24 +88,13 @@ namespace starsky.foundation.database.Notifications
 				}
 				catch ( DbUpdateConcurrencyException e )
 				{
-					_logger.LogInformation(e, "[AddNotification] save failed after DbUpdateConcurrencyException");
+					_logger.LogInformation(e,
+						"[AddNotification] save failed after DbUpdateConcurrencyException");
 				}
 			}
-			catch ( ObjectDisposedException )
+			catch ( Exception )
 			{
 				return await LocalAddQuery();
-			}
-			catch (DbUpdateException e)
-			{
-				_logger.LogInformation(e, $"[AddNotification] catch-ed DbUpdateException going to retry 2 times {content}");
-				return await RetryHelper.DoAsync(
-					LocalAddQuery, TimeSpan.FromSeconds(2), 2);
-			}
-			catch (SqliteException e)
-			{
-				_logger.LogInformation(e, $"[AddNotification] catch-ed SqliteException going to retry 2 times {content}");
-				return await RetryHelper.DoAsync(
-					LocalAddQuery, TimeSpan.FromSeconds(2), 2);
 			}
 
 			return item;
@@ -118,4 +126,3 @@ namespace starsky.foundation.database.Notifications
 		}
 	}
 }
-
