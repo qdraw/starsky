@@ -51,7 +51,6 @@ public class OnStartupSync
 	{
 		await _backgroundTaskQueue.QueueBackgroundWorkItemAsync(async token =>
 		{
-			await Task.Yield();
 			await StartUpSyncTask();
 		}, nameof(StartUpSync));
 	}
