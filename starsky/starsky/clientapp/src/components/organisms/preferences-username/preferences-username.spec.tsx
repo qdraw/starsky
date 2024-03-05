@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import * as useFetch from "../../../hooks/use-fetch";
 import { newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
+import localization from "../../../localization/localization.json";
 import PreferencesUsername from "./preferences-username";
 
 describe("PreferencesUsername", () => {
@@ -45,13 +46,32 @@ describe("PreferencesUsername", () => {
         },
         statusCode: 200
       };
+      jest.spyOn(useFetch, "default").mockImplementationOnce(() => testReply);
+
+      const component = render(<PreferencesUsername />);
+      expect(screen.queryByTestId("preferences-username-text")?.textContent).toBe("test");
+
+      component.unmount();
+    });
+
+    it("should get the identifier desktop user", () => {
+      const testReply = {
+        ...newIConnectionDefault(),
+        data: {
+          credentialsIdentifiers: ["mail@localhost"]
+        },
+        statusCode: 200
+      };
       jest
         .spyOn(useFetch, "default")
+        .mockReset()
         .mockImplementationOnce(() => testReply)
         .mockImplementationOnce(() => testReply);
 
       const component = render(<PreferencesUsername />);
-      expect(screen.queryByTestId("preferences-username-text")?.textContent).toBe("test");
+      expect(screen.queryByTestId("preferences-username-text")?.textContent).toBe(
+        localization.MessageDesktopMailLocalhostUsername.en
+      );
 
       component.unmount();
     });

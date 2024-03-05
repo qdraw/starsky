@@ -153,6 +153,7 @@ export const Login: React.FC<ILoginProps> = () => {
               data-test="email"
               name="email"
               maxLength={80}
+              spellCheck={false}
               value={userEmail}
               placeholder={MessageExampleUsername}
               onChange={(e) => setUserEmail(e.target.value)}
@@ -164,6 +165,7 @@ export const Login: React.FC<ILoginProps> = () => {
               data-test="password"
               name="password"
               maxLength={80}
+              spellCheck={false}
               value={userPassword}
               placeholder={MessageExamplePassword}
               onChange={(e) => setUserPassword(e.target.value)}

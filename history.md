@@ -60,23 +60,27 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Removed) _App_ Removed overwrite of open app in desktop (replaced with native open file)
   (PR #1381)
 - [x] (Added) _App_ Add 'App Settings' to the menu (PR #1381)
-- [x] (Added) _Front-end_ Add warning when opening a lot pictures at once: "Do you really want to
+- [x] (Added) _Front-end_ Add warning when opening a lot pictures at one: "Do you really want to
   edit all of the selected photos?" (PR #1381)
-- [x] (Changed) _Front-end_ isRelativeUrl check for redirect (home/login) (PR #1419)
-- [x] (Breaking changes) _App_ System requirements for Windows and Mac OS are changed, see release
+- [x] (Changed) _Front-end_ isRelativeUrl check for redirect (PR #1419)
+- [x] (Breaking changes) _App_ System requirements for Windows and Mac OS are changed see release
   notes (PR #1422)
-- [x] (Fixed) _Front-end_ Add Tooltip to for example: explain that tags are comma separated 
-  (PR #1422) (Issue #1405)
+- [x] (Fixed) _Front-end_ Add Tooltip to explain that tags are comma separated (PR #1422) (Issue
+  #1405)
 - [x] (Fixed) _Docs_ Make getting started more clear (PR #1422) (Issue #1403)
 - [x] (Fixed) _Front-end_ Add link to docs page for storage folder (PR #1422) (Issue #1404)
-- [x] (Changed) _Docs_ Use Google Consent Mode, only for docs, other apps have no Google (PR #1424) 
+- [x] (Security) _Front-end_ spellcheck false on email and password fields (PR #1430)
+- [x] (Fixed) _Front-end_ Tooltip is partly not shown (PR #1430)
+- [x] (Changed) _Front-end_ View user friendly name for Default Desktop user (PR #1430)
+- [x] (Changed) _Docs_ Use Google Consent Mode, only for docs, other apps have no Google (PR #1424)
+
 
 ## version 0.6.0-beta.1 - 2024-02-18 {#v0.6.0-beta.1}
 
 - [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.200 (Runtime: 8.0.2) (PR #1382)
 - [x] (Fixed) _Back-end_ Docker update base package and no recommendations install (PR #1393)
-- [x] (Fixed) _Back-end_ Corrupt images where generated due import 
-  (Issue started with 0.6.0-beta.0 / .NET 8) (PR #1392)
+- [x] (Fixed) _Back-end_ Corrupt images where generated due import (Issue started with .NET 8) (PR
+  #1392)
 - [x] (Fixed) _Back-end_ Flush issue with Upload (PR #1394)
 
 ## version 0.6.0-beta.0 - 2024-02-11 {#v0.6.0-beta.0}
