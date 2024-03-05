@@ -185,13 +185,15 @@ namespace starsky.foundation.writemeta.Helpers
 					_readMeta, _thumbnailQuery, _webLogger);
 				exifCopy.XmpCreate(withXmpPath);
 
-				_webLogger.LogInformation("Create template xmp file for: " + withXmpPath);
+				_webLogger.LogInformation($"Create template xmp file for: {withXmpPath}");
 
 				var comparedNames =
 					FileIndexCompareHelper.Compare(new FileIndexItem(), updateModel);
 				var command = ExifToolCommandLineArgs(updateModel, comparedNames, true);
 
 				await _exifTool.WriteTagsAsync(withXmpPath, command);
+				
+				_webLogger.LogInformation($"Done xmp file for: {withXmpPath} Ready:{_iStorage.IsFileReady(withXmpPath)}");
 			}
 		}
 

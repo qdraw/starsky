@@ -37,6 +37,11 @@ namespace starsky.foundation.storage.Storage
 			return Path.Combine(_appSettings.ThumbnailTempFolder, fileHash + ".jpg");
 		}
 
+		public bool IsFileReady(string path)
+		{
+			return true;
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>

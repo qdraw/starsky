@@ -144,7 +144,8 @@ public sealed class ExifTool : IExifTool
 	/// <returns>true=success</returns>
 	public async Task<bool> WriteTagsAsync(string subPath, string command)
 	{
-		_logger.LogInformation($"Next: WriteTagsAsync for {subPath}");
+		_logger.LogInformation($"Next: WriteTagsAsync for {subPath} " +
+		                       $"Ready:{_iStorage.IsFileReady(subPath)}");
 
 		var inputStream = _iStorage.ReadStream(subPath);
 

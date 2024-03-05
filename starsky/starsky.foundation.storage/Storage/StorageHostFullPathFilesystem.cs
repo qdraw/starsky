@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -214,7 +215,27 @@ namespace starsky.foundation.storage.Storage
 
 			return folderList.OrderBy(p => p.Value);
 		}
-
+		
+		/// <summary>
+		/// Checks if a file is ready
+		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
+		[SuppressMessage("Performance", "CA1822:Mark members as static")]
+		public bool IsFileReady(string path)
+		{
+			// If the file can be opened for exclusive access it means that the file
+			// is no longer locked by another process.
+			try
+			{
+				using var inputStream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.None);
+				return inputStream.Length > 0;
+			}
+			catch (Exception)
+			{
+				return false;
+			}
+		}
 		/// <summary>
 		/// Read Stream (and keep open)
 		/// </summary>
