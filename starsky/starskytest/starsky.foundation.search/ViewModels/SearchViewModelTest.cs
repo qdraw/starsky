@@ -98,7 +98,8 @@ namespace starskytest.starsky.foundation.search.ViewModels
 			var model = new SearchViewModel();
 			model.SetAndOrOperator('&');
 
-			Assert.AreNotEqual(false, model.SearchOperatorOptions.LastOrDefault());
+			var result = model.SearchOperatorOptions.LastOrDefault();
+			Assert.IsNull(result);
 		}
 
 		[TestMethod]
