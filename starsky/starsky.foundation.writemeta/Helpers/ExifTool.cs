@@ -72,7 +72,7 @@ public sealed class ExifTool : IExifTool
 		// Need to Close / Dispose for Windows
 		sourceStream.Close();
 		await sourceStream.DisposeAsync();
-		
+
 		var newHashCode = await RenameThumbnailByStream(beforeFileHash, stream,
 			!beforeFileHash.Contains(FileHash.GeneratedPostFix), cancellationToken);
 
@@ -155,7 +155,12 @@ public sealed class ExifTool : IExifTool
 		var runner = new StreamToStreamRunner(_appSettings, inputStream, _logger);
 		var stream = await runner.RunProcessAsync(command, subPath);
 
+		_logger.LogInformation($"Next2: WriteTagsAsync2 for {subPath} " +
+		                       $"Ready2: {_iStorage.IsFileReady(subPath)}");
+
 		var isWritten = await _iStorage.WriteStreamAsync(stream, subPath);
+
+		// inputStream is disposed
 
 		_logger.LogInformation($"IsWritten: WriteTagsAsync for {subPath} " +
 		                       $"s.CanWrite:{stream.CanWrite} s.CanRead:{stream.CanRead}" +

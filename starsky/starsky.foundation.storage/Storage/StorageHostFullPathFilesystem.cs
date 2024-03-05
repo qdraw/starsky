@@ -434,7 +434,8 @@ namespace starsky.foundation.storage.Storage
 					// HttpConnection.ContentLengthReadStream does not support this
 				}
 
-				_logger.LogInformation("IsReady: " + IsFileReady(path) + " " + path);
+				_logger.LogInformation(
+					"WriteStreamAsync IsReady: " + IsFileReady(path) + " " + path);
 				if ( !IsFileReady(path) && RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
 				{
 					// TODO WIN32 FEATURE ONLY
