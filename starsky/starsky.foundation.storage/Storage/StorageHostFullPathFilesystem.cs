@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
@@ -434,7 +435,7 @@ namespace starsky.foundation.storage.Storage
 				}
 
 				_logger.LogInformation("IsReady: " + IsFileReady(path) + " " + path);
-				if ( !IsFileReady(path) )
+				if ( !IsFileReady(path) && RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
 				{
 					// TODO WIN32 FEATURE ONLY
 					var locks = Win32Processes.GetProcessesLockingFile(path);

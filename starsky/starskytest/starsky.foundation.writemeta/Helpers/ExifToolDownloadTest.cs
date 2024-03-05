@@ -8,6 +8,7 @@ using Medallion.Shell;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.http.Services;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
@@ -46,6 +47,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var services = new ServiceCollection();
 			services.AddSingleton<IStorage, StorageHostFullPathFilesystem>();
 			services.AddSingleton<ISelectorStorage, SelectorStorage>();
+			services.AddSingleton<IWebLogger, FakeIWebLogger>();
+
 			var serviceProvider = services.BuildServiceProvider();
 			_serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			_createAnImage = new CreateAnImage();
