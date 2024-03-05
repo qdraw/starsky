@@ -149,7 +149,8 @@ public class MetaUpdateService : IMetaUpdateService
 			_logger.LogInformation(string.IsNullOrEmpty(exifResult)
 				? $"[UpdateWriteDiskDatabase] ExifTool result is Nothing or " +
 				  $"Null for: path:{fileIndexItem.FilePath} {DateTime.UtcNow.ToShortTimeString()}"
-				: $"[UpdateWriteDiskDatabase] ExifTool result: {exifResult} path:{fileIndexItem.FilePath}");
+				: $"[UpdateWriteDiskDatabase] ExifTool result: {exifResult} path:{fileIndexItem.FilePath}" +
+				  $"isReady:{_iStorage.IsFileReady(fileIndexItem.FilePath!)}");
 		}
 		else if ( fileIndexItem.ImageFormat != ExtensionRolesHelper.ImageFormat.xmp &&
 		          fileIndexItem.ImageFormat != ExtensionRolesHelper.ImageFormat.meta_json )

@@ -15,9 +15,9 @@ namespace starsky.foundation.storage.Storage
 	[Service(typeof(IStorage), InjectionLifetime = InjectionLifetime.Scoped)]
 	public sealed class StorageHostFullPathFilesystem : IStorage
 	{
-		private readonly IWebLogger? _logger;
+		private readonly IWebLogger _logger;
 
-		public StorageHostFullPathFilesystem(IWebLogger? logger = null)
+		public StorageHostFullPathFilesystem(IWebLogger logger)
 		{
 			_logger = logger;
 		}
@@ -105,13 +105,13 @@ namespace starsky.foundation.storage.Storage
 			}
 			catch ( IOException exception )
 			{
-				_logger?.LogInformation(exception,
+				_logger.LogInformation(exception,
 					"[FolderDelete] catch-ed IOException");
 				Directory.Delete(path, true);
 			}
 			catch ( UnauthorizedAccessException exception )
 			{
-				_logger?.LogInformation(exception,
+				_logger.LogInformation(exception,
 					"[FolderDelete] catch-ed UnauthorizedAccessException");
 				Directory.Delete(path, true);
 			}
@@ -136,7 +136,7 @@ namespace starsky.foundation.storage.Storage
 				if ( exception is not (UnauthorizedAccessException
 				    or DirectoryNotFoundException) ) throw;
 
-				_logger?.LogError(exception, "[GetAllFilesInDirectory] " +
+				_logger.LogError(exception, "[GetAllFilesInDirectory] " +
 				                             "catch-ed UnauthorizedAccessException/DirectoryNotFoundException");
 				return Array.Empty<string>();
 			}
@@ -268,7 +268,7 @@ namespace starsky.foundation.storage.Storage
 			}
 			catch ( FileNotFoundException e )
 			{
-				_logger?.LogError(e, "[ReadStream] catch-ed FileNotFoundException");
+				_logger.LogError(e, "[ReadStream] catch-ed FileNotFoundException");
 				return Stream.Null;
 			}
 		}
@@ -447,7 +447,9 @@ namespace starsky.foundation.storage.Storage
 				}
 
 				await stream.DisposeAsync(); // also flush
-
+				
+				_logger.LogInformation("Done writing file: " + path);
+				
 				return true;
 			}
 
@@ -483,7 +485,7 @@ namespace starsky.foundation.storage.Storage
 			}
 			catch ( Exception exception )
 			{
-				_logger?.LogInformation($"[StorageHostFullPathFilesystem] " +
+				_logger.LogInformation($"[StorageHostFullPathFilesystem] " +
 				                        $"catch-ed ex: {exception.Message} -  {path}");
 				return new Tuple<string[], string[]>(
 					new List<string>().ToArray(),
