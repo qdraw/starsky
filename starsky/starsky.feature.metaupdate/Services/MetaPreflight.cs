@@ -24,7 +24,8 @@ namespace starsky.feature.metaupdate.Services
 		private readonly IStorage? _iStorage;
 		private readonly IWebLogger _logger;
 
-		public MetaPreflight(IQuery query, AppSettings appSettings, ISelectorStorage? selectorStorage, IWebLogger logger)
+		public MetaPreflight(IQuery query, AppSettings appSettings,
+			ISelectorStorage? selectorStorage, IWebLogger logger)
 		{
 			_query = query;
 			_appSettings = appSettings;
@@ -49,9 +50,12 @@ namespace starsky.feature.metaupdate.Services
 			var changedFileIndexItemName = new Dictionary<string, List<string>>();
 
 			// Prefill cache to avoid fast updating issues
-			await new AddParentCacheIfNotExist(_query, _logger).AddParentCacheIfNotExistAsync(inputFilePaths);
+			await new AddParentCacheIfNotExist(_query, _logger).AddParentCacheIfNotExistAsync(
+				inputFilePaths);
 			// add xmp files to the list
-			inputFilePaths = AppendXmpPathsWhenCollectionsFalseHelper.AppendXmpPathsWhenCollectionsFalse(collections, inputFilePaths);
+			inputFilePaths =
+				AppendXmpPathsWhenCollectionsFalseHelper.AppendXmpPathsWhenCollectionsFalse(
+					collections, inputFilePaths);
 
 			var resultFileIndexItemsList = await _query.GetObjectsByFilePathAsync(
 				inputFilePaths, collections);
@@ -60,7 +64,7 @@ namespace starsky.feature.metaupdate.Services
 			{
 				// Files that are not on disk
 				if ( _iStorage!.IsFolderOrFile(fileIndexItem.FilePath!) ==
-					 FolderOrFileModel.FolderOrFileTypeList.Deleted )
+				     FolderOrFileModel.FolderOrFileTypeList.Deleted )
 				{
 					StatusCodesHelper.ReturnExifStatusError(fileIndexItem,
 						FileIndexItem.ExifStatus.NotFoundSourceMissing,
@@ -70,7 +74,7 @@ namespace starsky.feature.metaupdate.Services
 
 				// Dir is readonly / don't edit
 				if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(fileIndexItem)
-					 == FileIndexItem.ExifStatus.ReadOnly )
+				     == FileIndexItem.ExifStatus.ReadOnly )
 				{
 					StatusCodesHelper.ReturnExifStatusError(fileIndexItem,
 						FileIndexItem.ExifStatus.ReadOnly,
@@ -85,14 +89,15 @@ namespace starsky.feature.metaupdate.Services
 				CheckGeoLocationStatus(fileIndexItem);
 
 				// this one is good :)
-				if ( fileIndexItem.Status is FileIndexItem.ExifStatus.Default or FileIndexItem.ExifStatus.OkAndSame )
+				if ( fileIndexItem.Status is FileIndexItem.ExifStatus.Default
+				    or FileIndexItem.ExifStatus.OkAndSame )
 				{
 					fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 				}
 
 				// Deleted is allowed but the status need be updated
 				if ( ( StatusCodesHelper.IsDeletedStatus(fileIndexItem)
-					  == FileIndexItem.ExifStatus.Deleted ) )
+				       == FileIndexItem.ExifStatus.Deleted ) )
 				{
 					fileIndexItem.Status = FileIndexItem.ExifStatus.Deleted;
 				}
@@ -107,7 +112,7 @@ namespace starsky.feature.metaupdate.Services
 
 			AddNotFoundInIndexStatus.Update(inputFilePaths, fileIndexUpdateList);
 
-			return (fileIndexUpdateList, changedFileIndexItemName);
+			return ( fileIndexUpdateList, changedFileIndexItemName );
 		}
 
 		/// <summary>
@@ -117,8 +122,12 @@ namespace starsky.feature.metaupdate.Services
 		/// <param name="fileIndexItem">item</param>
 		private static void CheckGeoLocationStatus(FileIndexItem fileIndexItem)
 		{
-			if ( fileIndexItem.Latitude == 0 || fileIndexItem.Longitude == 0 )
+			// fileIndexItem.Latitude == 0 || fileIndexItem.Longitude == 0
+			if ( Math.Abs(fileIndexItem.Latitude) < 0.000001d ||
+			     Math.Abs(fileIndexItem.Longitude) < 0.000001d )
+			{
 				return;
+			}
 
 			var result = ValidateLocation.ValidateLatitudeLongitude(
 				fileIndexItem.Latitude, fileIndexItem.Longitude);
@@ -138,10 +147,13 @@ namespace starsky.feature.metaupdate.Services
 		/// <param name="statusModel">object that include the changes</param>
 		/// <param name="append">true= for tags to add</param>
 		/// <param name="rotateClock">rotation value 1 left, -1 right, 0 nothing</param>
-		public static void CompareAllLabelsAndRotation(Dictionary<string, List<string>> changedFileIndexItemName,
-			FileIndexItem collectionsFileIndexItem, FileIndexItem? statusModel, bool append, int rotateClock)
+		public static void CompareAllLabelsAndRotation(
+			Dictionary<string, List<string>> changedFileIndexItemName,
+			FileIndexItem collectionsFileIndexItem, FileIndexItem? statusModel, bool append,
+			int rotateClock)
 		{
-			if ( changedFileIndexItemName == null || string.IsNullOrEmpty(collectionsFileIndexItem.FilePath) )
+			if ( changedFileIndexItemName == null ||
+			     string.IsNullOrEmpty(collectionsFileIndexItem.FilePath) )
 				throw new MissingFieldException(nameof(changedFileIndexItemName));
 
 			// compare and add changes to collectionsDetailView
@@ -154,7 +166,8 @@ namespace starsky.feature.metaupdate.Services
 
 			collectionsFileIndexItem.LastChanged = comparedNamesList;
 
-			if ( changedFileIndexItemName.TryAdd(collectionsFileIndexItem.FilePath!, comparedNamesList) )
+			if ( changedFileIndexItemName.TryAdd(collectionsFileIndexItem.FilePath!,
+				    comparedNamesList) )
 			{
 				return;
 			}
@@ -183,6 +196,7 @@ namespace starsky.feature.metaupdate.Services
 			{
 				comparedNamesList.Add(nameof(fileIndexItem.Orientation).ToLowerInvariant());
 			}
+
 			return fileIndexItem;
 		}
 	}

@@ -60,6 +60,7 @@ public class DeviceIdService : IDeviceIdService
 		{
 			id = await DeviceIdDatabaseId();
 		}
+
 		return id;
 	}
 
@@ -108,6 +109,17 @@ public class DeviceIdService : IDeviceIdService
 		return id;
 	}
 
+	/// <summary>
+	/// Registry.LocalMachine is nullable on Non-windows platforms
+	/// </summary>
+	/// <returns>Registry.LocalMachine is nullable on Non-windows platforms</returns>
+	[SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
+	[SuppressMessage("ReSharper", "ReturnTypeCanBeNotNullable")]
+	private static RegistryKey? GetRegistryKey()
+	{
+		return Registry.LocalMachine;
+	}
+
 	[SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
 	internal static string DeviceIdWindows(OSPlatform? currentPlatform)
 	{
@@ -119,23 +131,20 @@ public class DeviceIdService : IDeviceIdService
 		try
 		{
 			// Windows Only feature
-			var registryKey =
-				Registry.LocalMachine.OpenSubKey(
-					@"SOFTWARE\Microsoft\Cryptography");
-			var title = registryKey?.GetValue("MachineGuid")?.ToString();
-			registryKey?.Dispose();
+			var registryKey = GetRegistryKey()?.OpenSubKey(@"SOFTWARE\Microsoft\Cryptography");
+
+			if ( registryKey == null )
+			{
+				return string.Empty;
+			}
+
+			var title = registryKey.GetValue("MachineGuid")?.ToString();
+			registryKey.Dispose();
 			return title ?? string.Empty;
-		}
-		catch ( NullReferenceException )
-		{
-			return string.Empty;
 		}
 		catch ( TypeInitializationException )
 		{
 			return string.Empty;
 		}
-
 	}
 }
-
-

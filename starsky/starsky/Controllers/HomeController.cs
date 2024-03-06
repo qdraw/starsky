@@ -18,6 +18,7 @@ namespace starsky.Controllers
 	{
 		private readonly string _clientApp;
 		private readonly IAntiforgery _antiForgery;
+		private const string TextHtmlMimeType = "text/html";
 
 		public HomeController(AppSettings appSettings, IAntiforgery antiForgery)
 		{
@@ -40,7 +41,7 @@ namespace starsky.Controllers
 		public IActionResult Index(string f = "")
 		{
 			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
-			return PhysicalFile(_clientApp, "text/html");
+			return PhysicalFile(_clientApp, TextHtmlMimeType);
 		}
 
 		/// <summary>
@@ -94,7 +95,7 @@ namespace starsky.Controllers
 			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
 
 			if ( !IsCaseSensitiveRedirect("/search", Request.Path.Value) )
-				return PhysicalFile(_clientApp, "text/html");
+				return PhysicalFile(_clientApp, TextHtmlMimeType);
 
 			// if not case sensitive is already served
 			if ( string.IsNullOrEmpty(t) )
@@ -133,7 +134,7 @@ namespace starsky.Controllers
 				return Redirect(AppendPathBasePrefix(Request.PathBase.Value, $"/trash?p={p}"));
 			}
 
-			return PhysicalFile(_clientApp, "text/html");
+			return PhysicalFile(_clientApp, TextHtmlMimeType);
 		}
 
 		/// <summary>
@@ -153,7 +154,7 @@ namespace starsky.Controllers
 				return Redirect(AppendPathBasePrefix(Request.PathBase.Value, $"/import"));
 			}
 
-			return PhysicalFile(_clientApp, "text/html");
+			return PhysicalFile(_clientApp, TextHtmlMimeType);
 		}
 
 		/// <summary>
@@ -173,7 +174,7 @@ namespace starsky.Controllers
 				return Redirect(AppendPathBasePrefix(Request.PathBase.Value, $"/preferences"));
 			}
 
-			return PhysicalFile(_clientApp, "text/html");
+			return PhysicalFile(_clientApp, TextHtmlMimeType);
 		}
 
 		/// <summary>
@@ -192,7 +193,7 @@ namespace starsky.Controllers
 		public IActionResult Register(string? returnUrl = null)
 		{
 			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
-			return PhysicalFile(_clientApp, "text/html");
+			return PhysicalFile(_clientApp, TextHtmlMimeType);
 		}
 
 		internal static string AppendPathBasePrefix(string? requestPathBase, string url)

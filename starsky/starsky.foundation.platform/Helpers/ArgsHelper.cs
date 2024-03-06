@@ -185,10 +185,13 @@ namespace starsky.foundation.platform.Helpers
 		/// <summary>
 		/// Set Environment Variables to appSettings (not used in .net core), used by framework app
 		/// </summary>
-		/// <exception cref="FieldAccessException">use with _appsettings</exception>
+		/// <exception cref="FieldAccessException">use with _appSettings</exception>
 		public void SetEnvironmentToAppSettings()
 		{
-			if ( _appSettings == null ) throw new FieldAccessException("use with _appsettings");
+			if ( _appSettings == null )
+			{
+				throw new FieldAccessException("AppSettings cannot be null at start");
+			}
 
 			var envNameList = EnvNameList.ToArray();
 			foreach ( var envUnderscoreName in envNameList )
@@ -247,14 +250,14 @@ namespace starsky.foundation.platform.Helpers
 		/// <summary>
 		/// Show Help dialog
 		/// </summary>
-		/// <exception cref="FieldAccessException">use appsettings</exception>
+		/// <exception cref="FieldAccessException">use appSettings</exception>
 		[SuppressMessage("Usage",
 			"S2068:password detected here, make sure this is not a hard-coded credential")]
 		public void NeedHelpShowDialog()
 		{
 			if ( _appSettings == null )
 			{
-				throw new FieldAccessException("use with _appSettings");
+				throw new FieldAccessException("AppSettings Cannot be Null");
 			}
 
 			_console.WriteLine("Starsky " + _appSettings.ApplicationType + " Cli ~ Help:");
@@ -265,15 +268,15 @@ namespace starsky.foundation.platform.Helpers
 				case AppSettings.StarskyAppType.Thumbnail:
 
 					_console.WriteLine("-t == enable thumbnail (default true)");
-					_console.WriteLine("--path or -p == parameter: (string) ; " +
+					_console.WriteLine("--path or (short) -p == parameter: (string) ; " +
 					                   "'full path', only child items of the database folder are supported," +
 					                   "search and replace first part of the filename, '/', use '-p' for current directory ");
 					_console.WriteLine(
 						"--subpath or -s == parameter: (string) ; relative path in the database");
 					_console.WriteLine(
 						"--subpathrelative or -g == Overwrite sub-path to use relative days to select a folder" +
-						", use for example '1' to select yesterday. (structure is required)");
-					_console.WriteLine("-p, -s, -g == you need to select one of those tags");
+						", use for example '1' to select yesterday. (structure is required for this)");
+					_console.WriteLine("-p, -s, -g == on of those are required for this feature");
 
 					_console.WriteLine("recursive is enabled by default");
 					break;
@@ -286,7 +289,7 @@ namespace starsky.foundation.platform.Helpers
 					_console.WriteLine(
 						"--subpathrelative or -g == Overwrite sub-path to use relative days to select a folder" +
 						", use for example '1' to select yesterday. (structure is required)");
-					_console.WriteLine("-p, -s, -g == you need to select one of those tags");
+					_console.WriteLine("-p, -s, -g == select one of those before starting");
 
 					_console.WriteLine("recursive is enabled by default");
 					break;
@@ -543,7 +546,11 @@ namespace starsky.foundation.platform.Helpers
 			Justification = "Regex as comment")]
 		public List<string> GetPathListFormArgs(IReadOnlyList<string> args)
 		{
-			if ( _appSettings == null ) throw new FieldAccessException("use with _appSettings");
+			if ( _appSettings == null )
+			{
+				throw new FieldAccessException("AppSettings can't be Null at start");
+			}
+
 			var path = GetUserInputPathFromArg(args);
 
 			// To use only with -p or --path > current directory
@@ -656,7 +663,10 @@ namespace starsky.foundation.platform.Helpers
 		/// <exception cref="FieldAccessException">appSettings is missing</exception>
 		public string GetPathFormArgs(IReadOnlyList<string> args, bool dbStyle = true)
 		{
-			if ( _appSettings == null ) throw new FieldAccessException("use with _appSettings");
+			if ( _appSettings == null )
+			{
+				throw new FieldAccessException("use with _appSettings in ctor");
+			}
 
 			var path = GetUserInputPathFromArg(args);
 
@@ -711,7 +721,11 @@ namespace starsky.foundation.platform.Helpers
 		/// <exception cref="FieldAccessException">missing appSettings</exception>
 		public int? GetRelativeValue(IReadOnlyList<string> args)
 		{
-			if ( _appSettings == null ) throw new FieldAccessException("use with _appSettings");
+			if ( _appSettings == null )
+			{
+				throw new FieldAccessException("use with _appSettings in ctor");
+			}
+
 			var subPathRelative = string.Empty;
 
 			for ( int arg = 0; arg < args.Count; arg++ )

@@ -49,12 +49,14 @@ namespace starsky.Controllers
 		[ResponseCache(Duration = 29030400)] // 4 weeks
 		public IActionResult ThumbnailSmallOrTinyMeta(string f)
 		{
+			const string xImageSizeHeader = "x-image-size";
+			const string imageJpegMimeType = "image/jpeg";
+
 			f = FilenamesHelper.GetFileNameWithoutExtension(f);
 
 			// Restrict the fileHash to letters and digits only
 			// I/O function calls should not be vulnerable to path injection attacks
-			if ( !Regex.IsMatch(f, "^[a-zA-Z0-9_-]+$",
-				    RegexOptions.None, TimeSpan.FromMilliseconds(200)) )
+			if ( !ThumbnailNameHelper.ValidateThumbnailName(f) )
 			{
 				return BadRequest();
 			}
@@ -64,9 +66,9 @@ namespace starsky.Controllers
 				var stream =
 					_thumbnailStorage.ReadStream(
 						ThumbnailNameHelper.Combine(f, ThumbnailSize.Small));
-				Response.Headers.TryAdd("x-image-size",
+				Response.Headers.TryAdd(xImageSizeHeader,
 					new StringValues(ThumbnailSize.Small.ToString()));
-				return File(stream, "image/jpeg");
+				return File(stream, imageJpegMimeType);
 			}
 
 			if ( _thumbnailStorage.ExistFile(
@@ -75,9 +77,9 @@ namespace starsky.Controllers
 				var stream =
 					_thumbnailStorage.ReadStream(
 						ThumbnailNameHelper.Combine(f, ThumbnailSize.TinyMeta));
-				Response.Headers.TryAdd("x-image-size",
+				Response.Headers.TryAdd(xImageSizeHeader,
 					new StringValues(ThumbnailSize.TinyMeta.ToString()));
-				return File(stream, "image/jpeg");
+				return File(stream, imageJpegMimeType);
 			}
 
 			if ( !_thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f, ThumbnailSize.Large)) )
@@ -88,9 +90,9 @@ namespace starsky.Controllers
 
 			var streamDefaultThumbnail =
 				_thumbnailStorage.ReadStream(ThumbnailNameHelper.Combine(f, ThumbnailSize.Large));
-			Response.Headers.TryAdd("x-image-size",
+			Response.Headers.TryAdd(xImageSizeHeader,
 				new StringValues(ThumbnailSize.Large.ToString()));
-			return File(streamDefaultThumbnail, "image/jpeg");
+			return File(streamDefaultThumbnail, imageJpegMimeType);
 		}
 
 
@@ -118,8 +120,7 @@ namespace starsky.Controllers
 
 			// Restrict the fileHash to letters and digits only
 			// I/O function calls should not be vulnerable to path injection attacks
-			if ( !Regex.IsMatch(f, "^[a-zA-Z0-9_-]+$",
-				    RegexOptions.None, TimeSpan.FromMilliseconds(100)) )
+			if ( !ThumbnailNameHelper.ValidateThumbnailName(f) )
 			{
 				return BadRequest();
 			}
@@ -141,7 +142,7 @@ namespace starsky.Controllers
 			};
 
 			// Success has all items (except tinyMeta)
-			if ( data.Small && data.Large && data.ExtraLarge )
+			if ( data is { Small: true, Large: true, ExtraLarge: true } )
 				return Json(data);
 
 			var sourcePath = await _query.GetSubPathByHashAsync(f);
@@ -234,8 +235,7 @@ namespace starsky.Controllers
 
 			// Restrict the fileHash to letters and digits only
 			// I/O function calls should not be vulnerable to path injection attacks
-			if ( !Regex.IsMatch(f, "^[a-zA-Z0-9_-]+$",
-				    RegexOptions.None, TimeSpan.FromMilliseconds(100)) )
+			if ( !ThumbnailNameHelper.ValidateThumbnailName(f) )
 			{
 				return BadRequest();
 			}
@@ -333,8 +333,7 @@ namespace starsky.Controllers
 
 			// Restrict the fileHash to letters and digits only
 			// I/O function calls should not be vulnerable to path injection attacks
-			if ( !Regex.IsMatch(f, "^[a-zA-Z0-9_-]+$",
-				    RegexOptions.None, TimeSpan.FromMilliseconds(100)) )
+			if ( !ThumbnailNameHelper.ValidateThumbnailName(f) )
 			{
 				return BadRequest();
 			}
