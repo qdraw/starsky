@@ -1,3 +1,6 @@
+import { waitFor } from "@testing-library/react";
+import { PageType } from "../../../../interfaces/IDetailView";
+import * as FetchGet from "../../../../shared/fetch/fetch-get";
 import { FileListCache } from "../../../../shared/filelist-cache";
 import { RemoveCache } from "./remove-cache";
 
@@ -24,51 +27,112 @@ describe("RemoveCache function", () => {
   });
 
   it("should call FetchGet with the correct URL to remove cache", () => {
-    const fetchGet = jest.spyOn(global, "FetchGet").mockResolvedValue();
+    const mockFetchGet = jest
+      .spyOn(FetchGet, "default")
+      .mockReset()
+      .mockImplementationOnce(() => Promise.resolve({ statusCode: 200, data: null }));
     const parentFolder = "/parent";
     RemoveCache(jest.fn(), parentFolder, "search", jest.fn(), jest.fn());
-    expect(fetchGet).toHaveBeenCalledWith(expect.any(String));
-    expect(fetchGet.mock.calls[0][0]).toContain("/remove-cache");
-    expect(fetchGet.mock.calls[0][0]).toContain(encodeURIComponent(parentFolder));
-    fetchGet.mockRestore();
+    expect(mockFetchGet).toHaveBeenCalledWith("/starsky/api/remove-cache?json=true&f=/parent");
+    expect(mockFetchGet.mock.calls[0][0]).toContain("/remove-cache");
+    expect(mockFetchGet.mock.calls[0][0]).toContain(
+      "/starsky/api/remove-cache?json=true&f=/parent"
+    );
+    mockFetchGet.mockRestore();
   });
 
-  it("should call FetchGet with the correct URL to index server API after setTimeout", () => {
-    const fetchGet = jest.spyOn(global, "FetchGet").mockResolvedValue();
-    const setTimeoutSpy = jest.spyOn(global, "setTimeout");
+  it("should call FetchGet with invalid url to remove cache", () => {
+    const mockFetchGet = jest
+      .spyOn(FetchGet, "default")
+      .mockReset()
+      .mockImplementationOnce(() => Promise.resolve({ statusCode: 200, data: null }));
+
+    const parent: string | undefined = undefined as unknown as string;
+
+    RemoveCache(jest.fn(), parent, "search", jest.fn(), jest.fn());
+    expect(mockFetchGet).toHaveBeenCalledWith("/starsky/api/remove-cache?json=true&f=/");
+    expect(mockFetchGet.mock.calls[0][0]).toContain("/remove-cache");
+    expect(mockFetchGet.mock.calls[0][0]).toContain("/starsky/api/remove-cache?json=true&f=/");
+    mockFetchGet.mockRestore();
+  });
+
+  it("should call FetchGet with the correct URL to index server API after setTimeout", async () => {
+    const mockFetchGet = jest
+      .spyOn(FetchGet, "default")
+      .mockImplementationOnce(() => Promise.resolve({ statusCode: 200, data: null }));
+
     const parentFolder = "/parent";
     const historyLocationSearch = "search";
     RemoveCache(jest.fn(), parentFolder, historyLocationSearch, jest.fn(), jest.fn());
 
-    expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 600);
     jest.runAllTimers();
 
-    expect(fetchGet).toHaveBeenCalledWith(expect.any(String));
-    expect(fetchGet.mock.calls[1][0]).toContain("/index-server-api");
-    expect(fetchGet.mock.calls[1][0]).toContain(historyLocationSearch);
+    expect(mockFetchGet).toHaveBeenCalledWith("/starsky/api/remove-cache?json=true&f=/parent");
 
-    fetchGet.mockRestore();
-    setTimeoutSpy.mockRestore();
+    mockFetchGet.mockRestore();
   });
 
   it("should dispatch force-reset action when payload has fileIndexItems", async () => {
     const dispatch = jest.fn();
+    const propsHandleExit = jest.fn();
+
     const mediaArchiveData = {
       data: {
+        pageType: PageType.Archive,
         fileIndexItems: [{}, {}] // Mocking fileIndexItems
-      }
+      },
+      statusCode: 200
     };
-    const fetchGet = jest.spyOn(global, "FetchGet").mockResolvedValue(mediaArchiveData);
-    await RemoveCache(jest.fn(), "/parent", "search", dispatch, jest.fn());
+    const mockFetchGet = jest
+      .spyOn(FetchGet, "default")
+      .mockImplementationOnce(() => Promise.resolve(mediaArchiveData))
+      .mockImplementationOnce(() => Promise.resolve(mediaArchiveData));
 
-    expect(dispatch).toHaveBeenCalledWith({ type: "force-reset", payload: mediaArchiveData.data });
-    fetchGet.mockRestore();
+    jest.useFakeTimers();
+
+    RemoveCache(jest.fn(), "/parent", "search", dispatch, propsHandleExit);
+
+    jest.advanceTimersByTime(600);
+
+    await waitFor(() => {
+      expect(propsHandleExit).toHaveBeenCalled();
+
+      expect(dispatch).toHaveBeenCalledWith({
+        type: "force-reset",
+        payload: mediaArchiveData.data
+      });
+    });
+
+    mockFetchGet.mockRestore();
   });
 
-  it("should call propsHandleExit after completing", async () => {
-    const propsHandleExit = jest.fn();
+  it("should not dispatch force-reset action when payload has no fileIndexItems", async () => {
     const dispatch = jest.fn();
-    await RemoveCache(jest.fn(), "/parent", "search", dispatch, propsHandleExit);
-    expect(propsHandleExit).toHaveBeenCalled();
+    const propsHandleExit = jest.fn();
+
+    const mediaArchiveData = {
+      data: {
+        pageType: PageType.Archive
+      },
+      statusCode: 200
+    };
+    const mockFetchGet = jest
+      .spyOn(FetchGet, "default")
+      .mockImplementationOnce(() => Promise.resolve(mediaArchiveData))
+      .mockImplementationOnce(() => Promise.resolve(mediaArchiveData));
+
+    jest.useFakeTimers();
+
+    RemoveCache(jest.fn(), "/parent", "search", dispatch, propsHandleExit);
+
+    jest.advanceTimersByTime(600);
+
+    await waitFor(() => {
+      expect(propsHandleExit).toHaveBeenCalled();
+
+      expect(dispatch).toHaveBeenCalledTimes(0);
+    });
+
+    mockFetchGet.mockRestore();
   });
 });

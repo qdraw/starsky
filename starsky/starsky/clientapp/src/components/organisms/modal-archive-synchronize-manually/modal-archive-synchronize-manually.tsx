@@ -16,7 +16,7 @@ import { RemoveCache } from "./internal/remove-cache.ts";
 
 interface IModalDisplayOptionsProps {
   isOpen: boolean;
-  handleExit: () => {};
+  handleExit: () => void;
   parentFolder?: string;
 }
 

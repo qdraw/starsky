@@ -1,11 +1,11 @@
-import { ArchiveAction } from "../../../../contexts/archive-context.tsx";
-import { FileListCache } from "../../../../shared/filelist-cache.ts";
-import FetchGet from "../../../../shared/fetch/fetch-get.ts";
-import { UrlQuery } from "../../../../shared/url/url-query.ts";
-import { URLPath } from "../../../../shared/url/url-path.ts";
-import { CastToInterface } from "../../../../shared/cast-to-interface.ts";
-import { IArchiveProps } from "../../../../interfaces/IArchiveProps.ts";
 import { Dispatch, SetStateAction } from "react";
+import { ArchiveAction } from "../../../../contexts/archive-context.tsx";
+import { IArchiveProps } from "../../../../interfaces/IArchiveProps.ts";
+import { CastToInterface } from "../../../../shared/cast-to-interface.ts";
+import FetchGet from "../../../../shared/fetch/fetch-get.ts";
+import { FileListCache } from "../../../../shared/filelist-cache.ts";
+import { URLPath } from "../../../../shared/url/url-path.ts";
+import { UrlQuery } from "../../../../shared/url/url-query.ts";
 
 /**
  * Remove Folder cache
@@ -15,7 +15,7 @@ export function RemoveCache(
   propsParentFolder: string,
   historyLocationSearch: string,
   dispatch: Dispatch<ArchiveAction>,
-  propsHandleExit: () => {}
+  propsHandleExit: () => void
 ) {
   setIsLoading(true);
   new FileListCache().CacheCleanEverything();
