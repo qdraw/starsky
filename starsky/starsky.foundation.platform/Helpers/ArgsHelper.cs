@@ -554,7 +554,7 @@ namespace starsky.foundation.platform.Helpers
 			var path = GetUserInputPathFromArg(args);
 
 			// To use only with -p or --path > current directory
-			if ( ( args.Contains("-p") || args.Contains("--path") ) &&
+			if ( ( args.Contains("-p") || args.Contains(PathCommandLineArgLong) ) &&
 			     ( path == string.Empty || path[0] == "-"[0] ) )
 			{
 				path = Directory.GetCurrentDirectory();
@@ -572,6 +572,8 @@ namespace starsky.foundation.platform.Helpers
 			return dotCommaRegex.Split(path).Where(p => !string.IsNullOrWhiteSpace(p)).ToList();
 		}
 
+		private const string PathCommandLineArgLong = "--path";
+
 		/// <summary>
 		/// Get the user input from -p or --path
 		/// </summary>
@@ -582,7 +584,8 @@ namespace starsky.foundation.platform.Helpers
 			var path = string.Empty;
 			for ( var arg = 0; arg < args.Count; arg++ )
 			{
-				if ( ( args[arg].Equals("--path", StringComparison.CurrentCultureIgnoreCase) ||
+				if ( ( args[arg].Equals(PathCommandLineArgLong,
+					       StringComparison.CurrentCultureIgnoreCase) ||
 				       args[arg].Equals("-p", StringComparison.CurrentCultureIgnoreCase) ) &&
 				     ( arg + 1 ) != args.Count )
 				{
@@ -671,7 +674,7 @@ namespace starsky.foundation.platform.Helpers
 			var path = GetUserInputPathFromArg(args);
 
 			// To use only with -p or --path > current directory
-			if ( ( args.Contains("-p") || args.Contains("--path") ) &&
+			if ( ( args.Contains("-p") || args.Contains(PathCommandLineArgLong) ) &&
 			     ( path == string.Empty || path[0] == "-"[0] ) )
 			{
 				var currentDirectory = Directory.GetCurrentDirectory();
@@ -760,7 +763,8 @@ namespace starsky.foundation.platform.Helpers
 		{
 			// To use only with -p or --path > current directory
 			if ( args.Any(arg =>
-				    ( arg.Equals("--path", StringComparison.CurrentCultureIgnoreCase) ||
+				    ( arg.Equals(PathCommandLineArgLong,
+					      StringComparison.CurrentCultureIgnoreCase) ||
 				      arg.Equals("-p", StringComparison.CurrentCultureIgnoreCase) )) )
 			{
 				return false;
