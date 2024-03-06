@@ -7,6 +7,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Storage;
 using starsky.project.web.Helpers;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.project.web.Helpers;
 
@@ -75,7 +76,8 @@ public class PortProgramHelperTest
 			"{     \"Kestrel\": {\n        \"Endpoints\": {\n          " +
 			"  \"Https\": {\n                \"Url\": \"https://*:8001\"\n            },\n            \"Http\": {\n      " +
 			"          \"Url\": \"http://*:8000\"\n            }\n        }\n    }\n }");
-		await new StorageHostFullPathFilesystem().WriteStreamAsync(stream, appSettingsPath);
+		await new StorageHostFullPathFilesystem(new FakeIWebLogger()).WriteStreamAsync(stream,
+			appSettingsPath);
 
 		await PortProgramHelper.SetEnvPortAspNetUrlsAndSetDefault(Array.Empty<string>(),
 			appSettingsPath);
@@ -86,7 +88,7 @@ public class PortProgramHelperTest
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS", _preAspNetUrls);
 
 		// remove afterwards
-		new StorageHostFullPathFilesystem().FileDelete(appSettingsPath);
+		new StorageHostFullPathFilesystem(new FakeIWebLogger()).FileDelete(appSettingsPath);
 	}
 
 
@@ -102,18 +104,19 @@ public class PortProgramHelperTest
 			"{     \"Kestrel\": {\n        \"Endpoints\": {\n          " +
 			"  \"Https\": {\n                \"Url\": \"https://*:8001\"\n            },\n            \"Http\": {\n      " +
 			"          \"Url\": \"http://*:8000\"\n            }\n        }\n    }\n }");
-		await new StorageHostFullPathFilesystem().WriteStreamAsync(stream, appSettingsPath);
+		await new StorageHostFullPathFilesystem(new FakeIWebLogger()).WriteStreamAsync(stream,
+			appSettingsPath);
 
 		var result = await PortProgramHelper.SkipForAppSettingsJsonFile(appSettingsPath);
 
-		Assert.AreEqual(true, result);
+		Assert.IsTrue(result);
 		Assert.AreEqual(null, Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
 
 		Environment.SetEnvironmentVariable("PORT", _prePort);
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS", _preAspNetUrls);
 
 		// remove afterwards
-		new StorageHostFullPathFilesystem().FileDelete(appSettingsPath);
+		new StorageHostFullPathFilesystem(new FakeIWebLogger()).FileDelete(appSettingsPath);
 	}
 
 	[TestMethod]
@@ -128,18 +131,19 @@ public class PortProgramHelperTest
 			"{     \"Kestrel\": {\n        \"Endpoints\": {\n          " +
 			"  \"Https\": {\n                \"Url\": \"https://*:8001\"\n            }\n           " +
 			"\n        }\n    }\n }");
-		await new StorageHostFullPathFilesystem().WriteStreamAsync(stream, appSettingsPath);
+		await new StorageHostFullPathFilesystem(new FakeIWebLogger()).WriteStreamAsync(stream,
+			appSettingsPath);
 
 		var result = await PortProgramHelper.SkipForAppSettingsJsonFile(appSettingsPath);
 
-		Assert.AreEqual(true, result);
+		Assert.IsTrue(result);
 		Assert.AreEqual(null, Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
 
 		Environment.SetEnvironmentVariable("PORT", _prePort);
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS", _preAspNetUrls);
 
 		// remove afterwards
-		new StorageHostFullPathFilesystem().FileDelete(appSettingsPath);
+		new StorageHostFullPathFilesystem(new FakeIWebLogger()).FileDelete(appSettingsPath);
 	}
 
 
@@ -147,7 +151,7 @@ public class PortProgramHelperTest
 	public async Task SkipForAppSettingsJsonFile_ShouldFalse()
 	{
 		var result = await PortProgramHelper.SkipForAppSettingsJsonFile(string.Empty);
-		Assert.AreEqual(false, result);
+		Assert.IsFalse(result);
 	}
 
 	[TestMethod]

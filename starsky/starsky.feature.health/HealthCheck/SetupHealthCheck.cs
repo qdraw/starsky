@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
 namespace starsky.feature.health.HealthCheck
@@ -22,6 +23,8 @@ namespace starsky.feature.health.HealthCheck
 		/// <exception cref="AggregateException">when your type is not _appSettings.DatabaseType</exception>
 		public void BuilderHealth()
 		{
+			var logger = _services.BuildServiceProvider().GetRequiredService<IWebLogger>();
+
 			_services.AddHealthChecks()
 				.AddDbContextCheck<ApplicationDbContext>()
 				.AddDiskStorageHealthCheck(
@@ -47,16 +50,16 @@ namespace starsky.feature.health.HealthCheck
 					name: "Storage_TempFolder")
 				.AddPathExistHealthCheck(
 					setup: pathOptions => pathOptions.AddPath(_appSettings.StorageFolder),
-					name: "Exist_StorageFolder")
+					name: "Exist_StorageFolder", logger: logger)
 				.AddPathExistHealthCheck(
 					setup: pathOptions => pathOptions.AddPath(_appSettings.TempFolder),
-					name: "Exist_TempFolder")
+					name: "Exist_TempFolder", logger: logger)
 				.AddPathExistHealthCheck(
 					setup: pathOptions => pathOptions.AddPath(_appSettings.ExifToolPath),
-					name: "Exist_ExifToolPath")
+					name: "Exist_ExifToolPath", logger: logger)
 				.AddPathExistHealthCheck(
 					setup: pathOptions => pathOptions.AddPath(_appSettings.ThumbnailTempFolder),
-					name: "Exist_ThumbnailTempFolder")
+					name: "Exist_ThumbnailTempFolder", logger: logger)
 				.AddCheck<DateAssemblyHealthCheck>("DateAssemblyHealthCheck");
 
 			var healthSqlQuery = "SELECT * FROM `__EFMigrationsHistory` WHERE ProductVersion > 9";
@@ -67,14 +70,14 @@ namespace starsky.feature.health.HealthCheck
 					_services.AddHealthChecks().AddMySql(_appSettings.DatabaseConnection);
 					break;
 				case AppSettings.DatabaseTypeList.Sqlite:
-					_services.AddHealthChecks().AddSqlite(_appSettings.DatabaseConnection, healthSqlQuery);
+					_services.AddHealthChecks()
+						.AddSqlite(_appSettings.DatabaseConnection, healthSqlQuery);
 					break;
 				case AppSettings.DatabaseTypeList.InMemoryDatabase:
 					break;
 				default:
 					throw new AggregateException("database type does not exist");
 			}
-
 		}
 	}
 }

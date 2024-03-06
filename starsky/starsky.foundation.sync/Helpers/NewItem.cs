@@ -57,8 +57,9 @@ namespace starsky.foundation.sync.Helpers
 			string parentDirectory, string fileName)
 		{
 			var updatedDatabaseItem = await _readMeta.ReadExifAndXmpFromFileAsync(filePath);
-			updatedDatabaseItem!.ImageFormat = ExtensionRolesHelper
-				.GetImageFormat(_subPathStorage.ReadStream(filePath, 50));
+			var stream = _subPathStorage.ReadStream(filePath, 50);
+			updatedDatabaseItem!.ImageFormat = ExtensionRolesHelper.GetImageFormat(stream);
+			await stream.DisposeAsync();
 
 			// future: read json sidecar
 			await SetFileHashStatus(filePath, fileHash, updatedDatabaseItem);

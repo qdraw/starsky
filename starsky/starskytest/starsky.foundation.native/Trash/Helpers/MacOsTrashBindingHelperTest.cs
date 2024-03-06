@@ -33,7 +33,7 @@ public class MacOsTrashBindingHelperTest
 		
 		// the does not need to exist to be true
 		var result = MacOsTrashBindingHelper.Trash(new List<string>{"destPath"}, OSPlatform.OSX);
-		Assert.AreEqual(true, result);
+		Assert.IsTrue(result);
 	}
 	
 	[TestMethod]
@@ -61,7 +61,7 @@ public class MacOsTrashBindingHelperTest
 		{
 			File.Delete(destPath);
 		}
-		Assert.AreEqual(false, exists);
+		Assert.IsFalse(exists);
 
 		await Task.Delay(500);
 

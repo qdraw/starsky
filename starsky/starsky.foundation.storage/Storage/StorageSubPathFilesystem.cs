@@ -23,6 +23,17 @@ namespace starsky.foundation.storage.Storage
 			_appSettings = appSettings;
 			_logger = logger;
 		}
+		
+		/// <summary>
+		/// Checks if a file is ready
+		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
+		public bool IsFileReady(string path)
+		{
+			var fullPath = _appSettings.DatabasePathToFilePath(path);
+			return new StorageHostFullPathFilesystem(_logger).IsFileReady(fullPath);
+		}
 
 		/// <summary>
 		/// Get the storage info
@@ -31,16 +42,16 @@ namespace starsky.foundation.storage.Storage
 		/// <returns>StorageInfo object</returns>
 		public StorageInfo Info(string path)
 		{
-			var subPath = _appSettings.DatabasePathToFilePath(path);
+			var fullPath = _appSettings.DatabasePathToFilePath(path);
 
-			return new StorageHostFullPathFilesystem(_logger).Info(subPath);
+			return new StorageHostFullPathFilesystem(_logger).Info(fullPath);
 		}
 
 		public DateTime SetLastWriteTime(string path, DateTime? dateTime = null)
 		{
-			var subPath = _appSettings.DatabasePathToFilePath(path);
+			var fullPath = _appSettings.DatabasePathToFilePath(path);
 
-			return new StorageHostFullPathFilesystem(_logger).SetLastWriteTime(subPath, dateTime);
+			return new StorageHostFullPathFilesystem(_logger).SetLastWriteTime(fullPath, dateTime);
 		}
 
 		/// <summary>

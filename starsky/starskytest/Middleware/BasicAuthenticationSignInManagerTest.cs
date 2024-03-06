@@ -14,35 +14,36 @@ using starskytest.FakeMocks;
 
 namespace starskytest.Middleware
 {
-
 	[TestClass]
 	public sealed class BasicAuthenticationSignInManagerTest
 	{
 		private readonly UserManager _userManager;
 		public IServiceProvider Services { get; set; }
-        
+
 		public BasicAuthenticationSignInManagerTest()
 		{
-
 			var serviceCollection = new ServiceCollection();
 			serviceCollection
 				.AddAuthentication(sharedOptions =>
 				{
-					sharedOptions.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-					sharedOptions.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-					sharedOptions.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+					sharedOptions.DefaultAuthenticateScheme =
+						CookieAuthenticationDefaults.AuthenticationScheme;
+					sharedOptions.DefaultSignInScheme =
+						CookieAuthenticationDefaults.AuthenticationScheme;
+					sharedOptions.DefaultChallengeScheme =
+						CookieAuthenticationDefaults.AuthenticationScheme;
 				}).AddCookie("Cookies");
 			serviceCollection.AddLogging();
-			
+
 			Services = serviceCollection.BuildServiceProvider();
 			Services.GetRequiredService<IServiceProvider>();
 			Services.GetRequiredService<IAuthenticationService>();
-            
+
 			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
 			builder.UseInMemoryDatabase("test");
 			var options = builder.Options;
 			var context = new ApplicationDbContext(options);
-			_userManager = new UserManager(context,new AppSettings(), new FakeIWebLogger());
+			_userManager = new UserManager(context, new AppSettings(), new FakeIWebLogger());
 		}
 
 		[TestMethod]
@@ -50,46 +51,42 @@ namespace starskytest.Middleware
 		{
 			var httpContext = new DefaultHttpContext
 			{
-				HttpContext =
-				{
-					RequestServices = Services
-				}
+				HttpContext = { RequestServices = Services }
 			};
-			var authenticationHeaderValue = new BasicAuthenticationHeaderValue("Basic dGVzdDp3cm9uZw==");
+			var authenticationHeaderValue =
+				new BasicAuthenticationHeaderValue("Basic dGVzdDp3cm9uZw==");
 			// base64 > test:wrong
 
 			await new BasicAuthenticationSignInManager(
-				httpContext, 
-				authenticationHeaderValue, 
+				httpContext,
+				authenticationHeaderValue,
 				_userManager).TrySignInUser();
-			// User is not loged in
-			Assert.AreEqual(false,httpContext.User.Identity?.IsAuthenticated);
+			
+			// User is not logged in
+			Assert.IsFalse(httpContext.User.Identity?.IsAuthenticated);
 		}
-		
-        [TestMethod]
-        public async Task BasicAuthenticationSignInManager_TrySignInUser_True_Test()
-        {
 
-            await _userManager.SignUpAsync(string.Empty, "email", "log", "passs");
-            
-            var httpContext = new DefaultHttpContext
-            {
-	            HttpContext =
-	            {
-		            RequestServices = Services
-	            }
-            };
-            var authService = httpContext.RequestServices.GetService<IAuthenticationService>();
-            Assert.IsNotNull(authService);
-            
-            var authenticationHeaderValue = new BasicAuthenticationHeaderValue("Basic bG9nOnBhc3Nz");
-            // base64 > log:passs
-            await new BasicAuthenticationSignInManager(
-                httpContext, 
-                authenticationHeaderValue, 
-                _userManager).TrySignInUser();
-            // User is not loged in
-            Assert.AreEqual(true,httpContext.User.Identity?.IsAuthenticated);
-        }
+		[TestMethod]
+		public async Task BasicAuthenticationSignInManager_TrySignInUser_True_Test()
+		{
+			await _userManager.SignUpAsync(string.Empty, "email", "log", "passs");
+
+			var httpContext = new DefaultHttpContext
+			{
+				HttpContext = { RequestServices = Services }
+			};
+			var authService = httpContext.RequestServices.GetService<IAuthenticationService>();
+			Assert.IsNotNull(authService);
+
+			var authenticationHeaderValue =
+				new BasicAuthenticationHeaderValue("Basic bG9nOnBhc3Nz");
+			// base64 > log:passs
+			await new BasicAuthenticationSignInManager(
+				httpContext,
+				authenticationHeaderValue,
+				_userManager).TrySignInUser();
+			// User is not logged in
+			Assert.IsTrue(httpContext.User.Identity?.IsAuthenticated);
+		}
 	}
 }

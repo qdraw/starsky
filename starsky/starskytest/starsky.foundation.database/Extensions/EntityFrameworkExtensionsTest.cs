@@ -25,7 +25,7 @@ namespace starskytest.starsky.foundation.database.Extensions
 				.Options;
 
 			var context = new ApplicationDbContext(options);
-			Assert.AreEqual(true, context.TestConnection(new FakeIWebLogger()));
+			Assert.IsTrue(context.TestConnection(new FakeIWebLogger()));
 		}
 
 		[TestMethod]
@@ -37,7 +37,7 @@ namespace starskytest.starsky.foundation.database.Extensions
 				.Options;
 
 			var context = new ApplicationDbContext(options);
-			Assert.AreEqual(true, context.TestConnection(new FakeIWebLogger()));
+			Assert.IsTrue(context.TestConnection(new FakeIWebLogger()));
 		}
 
 		[TestMethod]
@@ -54,10 +54,10 @@ namespace starskytest.starsky.foundation.database.Extensions
 			var memoryCache = provider.GetRequiredService<IMemoryCache>();
 
 			var result = context.TestConnection(new FakeIWebLogger(), memoryCache);
-			Assert.AreEqual(true, result);
+			Assert.IsTrue(result);
 
-			memoryCache.TryGetValue("TestConnection", out var result2);
-			Assert.AreEqual(true, result2);
+			memoryCache.TryGetValue("TestConnection", out bool? result2);
+			Assert.IsTrue(result2);
 		}
 
 		[TestMethod]
@@ -75,10 +75,10 @@ namespace starskytest.starsky.foundation.database.Extensions
 			memoryCache.Set("TestConnection", false);
 
 			var result = context.TestConnection(new FakeIWebLogger(), memoryCache);
-			Assert.AreEqual(false, result);
+			Assert.IsFalse(result);
 
-			memoryCache.TryGetValue("TestConnection", out var result2);
-			Assert.AreEqual(false, result2);
+			memoryCache.TryGetValue("TestConnection", out bool? result2);
+			Assert.IsFalse(result2);
 		}
 
 
@@ -125,7 +125,7 @@ namespace starskytest.starsky.foundation.database.Extensions
 
 			var result = context.TestConnection(logger);
 
-			Assert.AreEqual(false, result);
+			Assert.IsFalse(result);
 			Assert.IsTrue(logger.TrackedInformation.FirstOrDefault().Item2
 				?.Contains("Database is not available"));
 		}

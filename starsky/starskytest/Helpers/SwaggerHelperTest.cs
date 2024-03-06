@@ -26,15 +26,14 @@ namespace starskytest.Helpers
 
 		public SwaggerHelperTest()
 		{
-
 			var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
 			builderDb.UseInMemoryDatabase(nameof(ExportControllerTest));
 
 			var services = new ServiceCollection();
-			
+
 			// Inject Config helper
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-			
+
 			// Start using dependency injection
 			var builder = new ConfigurationBuilder();
 			// build config
@@ -51,12 +50,13 @@ namespace starskytest.Helpers
 				TempFolder = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location)!
 			};
 		}
-		
+
 		[TestMethod]
 		public async Task SwaggerTest_Integration_Test()
 		{
-			var swaggerFilePath = Path.Join(_appSettings.TempFolder, _appSettings.Name.ToLowerInvariant() + ".json");
-			
+			var swaggerFilePath = Path.Join(_appSettings.TempFolder,
+				_appSettings.Name.ToLowerInvariant() + ".json");
+
 			var storage = new FakeIStorage();
 			var fakeSelectorStorage = new FakeSelectorStorage(storage);
 
@@ -68,32 +68,33 @@ namespace starskytest.Helpers
 					services.AddMvcCore().AddApiExplorer();
 					services.AddSwaggerGen();
 					new SwaggerSetupHelper(_appSettings).Add01SwaggerGenHelper(services);
-
 				})
 				.Configure(app =>
 				{
-
 					app.UseRouting();
 					app.UseEndpoints(endpoints =>
 					{
-						endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+						endpoints.MapControllerRoute("default",
+							"{controller=Home}/{action=Index}/{id?}");
 					});
 
 					new SwaggerSetupHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
 					using ( var serviceScope = app.ApplicationServices
-						.GetRequiredService<IServiceScopeFactory>()
-						.CreateScope() )
+						       .GetRequiredService<IServiceScopeFactory>()
+						       .CreateScope() )
 					{
-						var swaggerProvider = ( ISwaggerProvider )serviceScope.ServiceProvider.GetRequiredService(typeof(ISwaggerProvider));
-						new SwaggerExportHelper(null!).Add03AppExport(_appSettings,fakeSelectorStorage, swaggerProvider);
+						var swaggerProvider =
+							( ISwaggerProvider )serviceScope.ServiceProvider.GetRequiredService(
+								typeof(ISwaggerProvider));
+						new SwaggerExportHelper(null!).Add03AppExport(_appSettings,
+							fakeSelectorStorage, swaggerProvider);
 					}
-
 				}).Build();
 
 			await host.StartAsync();
 			await host.StopAsync();
 
-			Assert.AreEqual(true,storage.ExistFile(swaggerFilePath));
+			Assert.IsTrue(storage.ExistFile(swaggerFilePath));
 
 			var swaggerFileContent =
 				await StreamToStringHelper.StreamToStringAsync(
@@ -101,8 +102,7 @@ namespace starskytest.Helpers
 
 			System.Console.WriteLine("swaggerFileContent " + swaggerFileContent);
 
-			Assert.AreEqual(true, swaggerFileContent.Contains($"\"title\": \"{_appSettings.Name}\""));
+			Assert.IsTrue(swaggerFileContent.Contains($"\"title\": \"{_appSettings.Name}\""));
 		}
-	
 	}
 }

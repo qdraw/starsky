@@ -23,7 +23,8 @@ namespace starsky.foundation.writemeta.Services
 		private readonly ExifToolCmdHelper _exifToolCmdHelper;
 
 		public GeoLocationWrite(AppSettings appSettings, IExifTool exifTool,
-			ISelectorStorage selectorStorage, IConsole console, IWebLogger logger, IThumbnailQuery thumbnailQuery)
+			ISelectorStorage selectorStorage, IConsole console, IWebLogger logger,
+			IThumbnailQuery thumbnailQuery)
 		{
 			_appSettings = appSettings;
 			var thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
@@ -32,7 +33,7 @@ namespace starsky.foundation.writemeta.Services
 			_exifToolCmdHelper = new ExifToolCmdHelper(exifTool,
 				iStorage,
 				thumbnailStorage,
-				new ReadMeta(iStorage, _appSettings, null, logger), thumbnailQuery);
+				new ReadMeta(iStorage, _appSettings, null, logger), thumbnailQuery, logger);
 		}
 
 		/// <summary>
@@ -44,7 +45,7 @@ namespace starsky.foundation.writemeta.Services
 			bool syncLocationNames)
 		{
 			foreach ( var metaFileItem in metaFilesInDirectory.Where(metaFileItem =>
-						 ExtensionRolesHelper.IsExtensionExifToolSupported(metaFileItem.FileName)) )
+				         ExtensionRolesHelper.IsExtensionExifToolSupported(metaFileItem.FileName)) )
 			{
 				if ( _appSettings.IsVerbose() ) _console.Write(" 👟 ");
 
@@ -55,13 +56,14 @@ namespace starsky.foundation.writemeta.Services
 					nameof(FileIndexItem.LocationAltitude).ToLowerInvariant()
 				};
 
-				if ( syncLocationNames ) comparedNamesList.AddRange(new List<string>
-				{
-					nameof(FileIndexItem.LocationCity).ToLowerInvariant(),
-					nameof(FileIndexItem.LocationState).ToLowerInvariant(),
-					nameof(FileIndexItem.LocationCountry).ToLowerInvariant(),
-					nameof(FileIndexItem.LocationCountryCode).ToLowerInvariant()
-				});
+				if ( syncLocationNames )
+					comparedNamesList.AddRange(new List<string>
+					{
+						nameof(FileIndexItem.LocationCity).ToLowerInvariant(),
+						nameof(FileIndexItem.LocationState).ToLowerInvariant(),
+						nameof(FileIndexItem.LocationCountry).ToLowerInvariant(),
+						nameof(FileIndexItem.LocationCountryCode).ToLowerInvariant()
+					});
 
 				await _exifToolCmdHelper.UpdateAsync(metaFileItem, comparedNamesList);
 

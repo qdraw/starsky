@@ -12,7 +12,7 @@ namespace starskytest.starsky.foundation.accountmanagement.Interfaces
 		{
 			var error = new ChangeSecretResultError();
 			var secretResult = new ChangeSecretResult(false, error);
-			Assert.AreEqual(false, secretResult.Success);
+			Assert.IsFalse(secretResult.Success);
 		}
 
 		[TestMethod]

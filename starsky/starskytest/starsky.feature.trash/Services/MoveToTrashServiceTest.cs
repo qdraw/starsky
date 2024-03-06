@@ -325,7 +325,7 @@ public class MoveToTrashServiceTest
 		// used for end2end test to enable / disable the trash
 		var result =  moveToTrashService.DetectToUseSystemTrash();
 		
-		Assert.AreEqual(false, result);
+		Assert.IsFalse(result);
 	}
 
 	[TestMethod]

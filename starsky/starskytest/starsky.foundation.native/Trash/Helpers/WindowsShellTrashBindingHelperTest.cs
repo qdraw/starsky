@@ -29,7 +29,7 @@ public class WindowsShellTrashBindingHelperTest
 				File.Delete(destPath);
 			}
 
-			Assert.AreEqual(false, exists);
+			Assert.IsFalse(exists);
 		}
 
 		if ( File.Exists(destPath) )
@@ -148,7 +148,7 @@ public class WindowsShellTrashBindingHelperTest
 		Assert.AreEqual("C:\\test\\test.txt", t.pFrom);
 		Assert.AreEqual("C:\\test\\test.txt", t.pTo);
 		Assert.AreEqual(WindowsShellTrashBindingHelper.ShFileOperations.FOF_ALLOWUNDO, t.fFlags);
-		Assert.AreEqual(true, t.fAnyOperationsAborted);
+		Assert.IsTrue(t.fAnyOperationsAborted);
 		Assert.AreEqual(IntPtr.Zero, t.hNameMappings);
 		Assert.AreEqual("test", t.lpszProgressTitle);
 	}
@@ -218,12 +218,12 @@ public class WindowsShellTrashBindingHelperTest
 		// Shell32.dll is not available on Linux or Mac OS
 		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
 		{
-			Assert.AreEqual(false, driveHasBin);
+			Assert.IsFalse(driveHasBin);
 			Assert.IsTrue(info.Contains("Unable to load shared library"));
 			return;
 		}
 
-		Assert.AreEqual(false, driveHasBin);
+		Assert.IsFalse(driveHasBin);
 		Assert.IsTrue(info.Contains("Fail! Drive ZZ:\\ contains 0 item(s) in 0 bytes"));
 	}
 
@@ -237,13 +237,13 @@ public class WindowsShellTrashBindingHelperTest
 		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
 		{
 			Assert.AreEqual(0, items);
-			Assert.AreEqual(false, driveHasBin);
+			Assert.IsFalse(driveHasBin);
 			Assert.IsTrue(info.Contains("Unable to load shared library"));
 			Assert.Inconclusive("Shell32.dll is not available on Linux or Mac OS");
 			return;
 		}
 
-		Assert.AreEqual(true, items >= 0);
-		Assert.AreEqual(true, driveHasBin);
+		Assert.IsTrue(items >= 0);
+		Assert.IsTrue(driveHasBin);
 	}
 }

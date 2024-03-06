@@ -68,8 +68,8 @@ public class SizeFileHashIsTheSameTest
 			dbItems,
 			"/101NZ_50/DSC_0045.NEF");
 		
-		Assert.AreEqual(false, result.Item1);
-		Assert.AreEqual(false, result.Item2);
+		Assert.IsFalse(result.Item1);
+		Assert.IsFalse(result.Item2);
 	}
 	
 	[TestMethod]
@@ -87,8 +87,8 @@ public class SizeFileHashIsTheSameTest
 		var result = await new SizeFileHashIsTheSameHelper(storage).SizeFileHashIsTheSame(
 			dbItems,
 			"/test.jpg");
-		Assert.AreEqual(false, result.Item1);
-		Assert.AreEqual(true, result.Item2);
+		Assert.IsFalse(result.Item1);
+		Assert.IsTrue(result.Item2);
 	}
 
 	[TestMethod]

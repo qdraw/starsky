@@ -15,49 +15,15 @@ namespace starskytest.starsky.foundation.database.QueryTest;
 [TestClass]
 public class QueryAddRangeTest_Error
 {
-	private class SqliteExceptionDbContext : ApplicationDbContext
-	{
-		public SqliteExceptionDbContext(DbContextOptions options) : base(options)
-		{
-		}
-
-		public int Count { get; set; }
-
-
-#pragma warning disable 8603
-		public override DbSet<FileIndexItem> FileIndex => null;
-#pragma warning restore 8603
-
-		public override int SaveChanges()
-		{
-			Count++;
-			if ( Count == 1 )
-			{
-				throw new Microsoft.Data.Sqlite.SqliteException("t",1,2);
-			}
-			return Count;
-		}	
-			
-		public override Task<int> SaveChangesAsync(
-			CancellationToken cancellationToken = default)
-		{
-			Count++;
-			if ( Count == 1 )
-			{
-				throw new Microsoft.Data.Sqlite.SqliteException("t",1,2);
-			}
-			return Task.FromResult(Count);
-		}
-	}
-	
-	private static IServiceScopeFactory CreateNewScopeSqliteException()
+	private static IServiceScopeFactory CreateNewScope()
 	{
 		var services = new ServiceCollection();
-		services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase(nameof(QueryTest)));
+		services.AddDbContext<ApplicationDbContext>(options =>
+			options.UseInMemoryDatabase(nameof(QueryTest)));
 		var serviceProvider = services.BuildServiceProvider();
 		return serviceProvider.GetRequiredService<IServiceScopeFactory>();
 	}
-	
+
 	[TestMethod]
 	public async Task AddRangeAsync_SQLiteException()
 	{
@@ -65,15 +31,85 @@ public class QueryAddRangeTest_Error
 			.UseInMemoryDatabase("MovieListDatabase")
 			.Options;
 
-		var scope = CreateNewScopeSqliteException();
+		var scope = CreateNewScope();
 
 		var sqLiteFailContext = new SqliteExceptionDbContext(options);
-		Assert.AreEqual(0,sqLiteFailContext.Count);
+		Assert.AreEqual(0, sqLiteFailContext.Count);
 
-		var fakeQuery = new Query(sqLiteFailContext, new AppSettings(), scope, new FakeIWebLogger());
-		await fakeQuery.AddRangeAsync(new List<FileIndexItem>{new FileIndexItem("/test22.jpg")});
-			
+		var fakeQuery =
+			new Query(sqLiteFailContext, new AppSettings(), scope, new FakeIWebLogger());
+		await fakeQuery.AddRangeAsync(new List<FileIndexItem> { new FileIndexItem("/test22.jpg") });
+
 		Assert.AreEqual(1, sqLiteFailContext.Count);
 	}
 
+	[TestMethod]
+	public async Task AddRangeAsync_DbUpdateException()
+	{
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase("MovieListDatabase")
+			.Options;
+
+		var scope = CreateNewScope();
+
+		var dbUpdateExceptionDbContext = new DbUpdateExceptionDbContext(options);
+		Assert.AreEqual(0, dbUpdateExceptionDbContext.Count);
+
+		var fakeQuery = new Query(dbUpdateExceptionDbContext, new AppSettings(), scope,
+			new FakeIWebLogger());
+		await fakeQuery.AddRangeAsync(new List<FileIndexItem> { new FileIndexItem("/test22.jpg") });
+
+		Assert.AreEqual(1, dbUpdateExceptionDbContext.Count);
+	}
+}
+
+internal class SqliteExceptionDbContext(DbContextOptions options) : ApplicationDbContext(options)
+{
+	public int Count { get; set; }
+
+
+#pragma warning disable 8603
+	public override DbSet<FileIndexItem> FileIndex => null;
+#pragma warning restore 8603
+
+	public override int SaveChanges()
+	{
+		Count++;
+		if ( Count == 1 )
+		{
+			throw new Microsoft.Data.Sqlite.SqliteException("t", 1, 2);
+		}
+
+		return Count;
+	}
+
+	public override Task<int> SaveChangesAsync(
+		CancellationToken cancellationToken = default)
+	{
+		Count++;
+		if ( Count == 1 )
+		{
+			throw new Microsoft.Data.Sqlite.SqliteException("t", 1, 2);
+		}
+
+		return Task.FromResult(Count);
+	}
+}
+
+internal class DbUpdateExceptionDbContext(DbContextOptions options) : ApplicationDbContext(options)
+{
+	public int Count { get; set; }
+
+	public override Task<int> SaveChangesAsync(
+		CancellationToken cancellationToken = default)
+	{
+		Count++;
+		if ( Count == 1 )
+		{
+			throw new DbUpdateException("t",
+				new List<Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry>());
+		}
+
+		return Task.FromResult(Count);
+	}
 }

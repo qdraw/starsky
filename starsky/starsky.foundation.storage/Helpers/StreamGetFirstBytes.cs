@@ -34,4 +34,34 @@ public static class StreamGetFirstBytes
 
 		return resultStream;
 	}
+
+	public static MemoryStream GetFirstBytes(Stream originalStream, int count)
+	{
+		// Create a new MemoryStream to store the first 'count' bytes
+		var resultStream = new MemoryStream();
+
+		// Save the current position of the originalStream
+		var originalPosition = originalStream.Position;
+
+		try
+		{
+			// Set the position of the originalStream to the beginning
+			originalStream.Seek(0, SeekOrigin.Begin);
+
+			// Copy 'count' bytes from the originalStream to the resultStream synchronously
+			var buffer = new byte[count];
+			var bytesRead = originalStream.Read(buffer, 0, count);
+			resultStream.Write(buffer, 0, bytesRead);
+		}
+		finally
+		{
+			// Reset the position of the originalStream to its original position
+			originalStream.Seek(originalPosition, SeekOrigin.Begin);
+		}
+
+		// Set the position of the resultStream to the beginning
+		resultStream.Seek(0, SeekOrigin.Begin);
+
+		return resultStream;
+	}
 }

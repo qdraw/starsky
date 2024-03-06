@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 
@@ -14,9 +15,9 @@ namespace starsky.foundation.storage.Storage
 	[Service(typeof(IStorage), InjectionLifetime = InjectionLifetime.Scoped)]
 	public sealed class StorageHostFullPathFilesystem : IStorage
 	{
-		private readonly IWebLogger? _logger;
+		private readonly IWebLogger _logger;
 
-		public StorageHostFullPathFilesystem(IWebLogger? logger = null)
+		public StorageHostFullPathFilesystem(IWebLogger logger)
 		{
 			_logger = logger;
 		}
@@ -104,13 +105,13 @@ namespace starsky.foundation.storage.Storage
 			}
 			catch ( IOException exception )
 			{
-				_logger?.LogInformation(exception,
+				_logger.LogInformation(exception,
 					"[FolderDelete] catch-ed IOException");
 				Directory.Delete(path, true);
 			}
 			catch ( UnauthorizedAccessException exception )
 			{
-				_logger?.LogInformation(exception,
+				_logger.LogInformation(exception,
 					"[FolderDelete] catch-ed UnauthorizedAccessException");
 				Directory.Delete(path, true);
 			}
@@ -135,8 +136,8 @@ namespace starsky.foundation.storage.Storage
 				if ( exception is not (UnauthorizedAccessException
 				    or DirectoryNotFoundException) ) throw;
 
-				_logger?.LogError(exception, "[GetAllFilesInDirectory] " +
-				                             "catch-ed UnauthorizedAccessException/DirectoryNotFoundException");
+				_logger.LogError(exception, "[GetAllFilesInDirectory] " +
+				                            "catch-ed UnauthorizedAccessException/DirectoryNotFoundException");
 				return Array.Empty<string>();
 			}
 
@@ -216,6 +217,27 @@ namespace starsky.foundation.storage.Storage
 		}
 
 		/// <summary>
+		/// Checks if a file is ready
+		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
+		public bool IsFileReady(string path)
+		{
+			// If the file can be opened for exclusive access it means that the file
+			// is no longer locked by another process.
+			try
+			{
+				using var inputStream = File.Open(path, FileMode.Open,
+					FileAccess.Read, FileShare.None);
+				return inputStream.Length > 0;
+			}
+			catch ( Exception )
+			{
+				return false;
+			}
+		}
+
+		/// <summary>
 		/// Read Stream (and keep open)
 		/// </summary>
 		/// <param name="path">location</param>
@@ -230,22 +252,21 @@ namespace starsky.foundation.storage.Storage
 				var fileStream = new FileStream(path, FileMode.Open,
 					FileAccess.Read, FileShare.Read, 4096, true);
 
+				_logger.LogDebug($"[ReadStream] Done Reading file: p:{path} - m:{maxRead}");
+
 				if ( maxRead < 1 )
 				{
 					return fileStream;
 				}
 
-				// to reuse stream please check StreamGetFirstBytes.GetFirstBytesAsync
 				// Only for when selecting the first part of the file
-				var buffer = new byte[maxRead];
-				// ReSharper disable once MustUseReturnValue
-				fileStream.Read(buffer, 0, maxRead);
-				fileStream.Close(); // see before max read for default setting
-				return new MemoryStream(buffer);
+				var result = StreamGetFirstBytes.GetFirstBytes(fileStream, maxRead);
+				fileStream.Dispose();
+				return result;
 			}
 			catch ( FileNotFoundException e )
 			{
-				_logger?.LogError(e, "[ReadStream] catch-ed FileNotFoundException");
+				_logger.LogError(e, "[ReadStream] catch-ed FileNotFoundException");
 				return Stream.Null;
 			}
 		}
@@ -361,6 +382,9 @@ namespace starsky.foundation.storage.Storage
 
 				stream.Flush();
 				stream.Dispose(); // also flush
+
+				_logger.LogInformation($"Done writing file: {path}");
+
 				return true;
 			}
 
@@ -384,6 +408,7 @@ namespace starsky.foundation.storage.Storage
 
 			return true;
 		}
+
 
 		/// <summary>
 		/// Write async and disposed after
@@ -413,7 +438,7 @@ namespace starsky.foundation.storage.Storage
 					await stream.CopyToAsync(fileStream);
 					await fileStream.FlushAsync();
 				}
-				
+
 				try
 				{
 					await stream.FlushAsync();
@@ -422,12 +447,15 @@ namespace starsky.foundation.storage.Storage
 				{
 					// HttpConnection does not support this - Specified method is not supported.
 				}
+
 				await stream.DisposeAsync(); // also flush
+
+				_logger.LogDebug($"[WriteStreamAsync] Done writing file: {path}");
 
 				return true;
 			}
 
-			return await RetryHelper.DoAsync(LocalRun, TimeSpan.FromSeconds(1));
+			return await RetryHelper.DoAsync(LocalRun, TimeSpan.FromSeconds(1), 6);
 		}
 
 		/// <summary>
@@ -459,8 +487,8 @@ namespace starsky.foundation.storage.Storage
 			}
 			catch ( Exception exception )
 			{
-				_logger?.LogInformation($"[StorageHostFullPathFilesystem] " +
-				                        $"catch-ed ex: {exception.Message} -  {path}");
+				_logger.LogInformation($"[StorageHostFullPathFilesystem] " +
+				                       $"catch-ed ex: {exception.Message} -  {path}");
 				return new Tuple<string[], string[]>(
 					new List<string>().ToArray(),
 					new List<string>().ToArray()

@@ -41,9 +41,13 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.6.0-beta.3 -  _(Unreleased)_ - 2024-02-? {#v0.6.0-beta.2}
+## version 0.6.0-beta.3 - _(Unreleased)_ - 2024-03-? {#v0.6.0-beta.3}
 
-- nothing yet
+- [x] (Fixed) _Back-end_ Fix Dispose issue for WriteTagsAndRenameThumbnailAsync,
+  WriteTagsAsync (Windows) (PR #1437) (Issue #1427)
+- [x] (Changed) _Back-end_ Change all tests from AreEqual(true) to IsTrue, also for false (PR #1437)
+- [x] (Changed) _Back-end_ Update ImageSharp (PR #1434, #1435, #1436)
+- [x] (Changed) _Back-end_ Change unit tests retry OpenDefault windows (PR #1433)
 
 ## version 0.6.0-beta.2 - 2024-03-05 {#v0.6.0-beta.2}
 

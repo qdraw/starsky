@@ -8,7 +8,6 @@ namespace starskytest.Helpers
 	[TestClass]
 	public sealed class MultipartRequestHelperTest
 	{
-
 		[TestMethod]
 		[ExpectedException(typeof(InvalidDataException))]
 		public void MultipartRequestHelperTest_Missingcontenttypeboundary()
@@ -16,7 +15,7 @@ namespace starskytest.Helpers
 			var mediaType = new Microsoft.Net.Http.Headers.MediaTypeHeaderValue("plain/text");
 			MultipartRequestHelper.GetBoundary(mediaType, 50);
 		}
-        
+
 		[TestMethod]
 		[ExpectedException(typeof(InvalidDataException))]
 		public void MultipartRequestHelperTest_Multipartboundarylengthlimit()
@@ -41,7 +40,7 @@ namespace starskytest.Helpers
 		[TestMethod]
 		public void MultipartRequestHelperTest_IsMultipartContentType()
 		{
-			Assert.AreEqual(true,MultipartRequestHelper.IsMultipartContentType("multipart/"));
+			Assert.IsTrue(MultipartRequestHelper.IsMultipartContentType("multipart/"));
 		}
 
 		[TestMethod]
@@ -51,19 +50,19 @@ namespace starskytest.Helpers
 				new Microsoft.Net.Http.Headers.ContentDispositionHeaderValue("form-data");
 			formdata.FileName = "test";
 			formdata.FileNameStar = "1";
-			Assert.AreEqual("form-data; filename=test; filename*=UTF-8''1",formdata.ToString());
-			Assert.AreEqual(false,MultipartRequestHelper.HasFormDataContentDisposition(formdata));
+			Assert.AreEqual("form-data; filename=test; filename*=UTF-8''1", formdata.ToString());
+			Assert.IsFalse(MultipartRequestHelper.HasFormDataContentDisposition(formdata));
 		}
-        
+
 		[TestMethod]
 		public void MultipartRequestHelperTest_HasFormDataContentDispositionTrue()
 		{
 			var formdata =
 				new Microsoft.Net.Http.Headers.ContentDispositionHeaderValue("form-data");
-			Assert.AreEqual(true,MultipartRequestHelper.HasFormDataContentDisposition(formdata));
+			Assert.IsTrue(MultipartRequestHelper.HasFormDataContentDisposition(formdata));
 		}
 
-        
+
 		[TestMethod]
 		public void MultipartRequestHelperTest_HasFileContentDisposition()
 		{
@@ -71,10 +70,8 @@ namespace starskytest.Helpers
 				new Microsoft.Net.Http.Headers.ContentDispositionHeaderValue("form-data");
 			formdata.FileName = "test";
 			formdata.FileNameStar = "1";
-			Assert.AreEqual("form-data; filename=test; filename*=UTF-8''1",formdata.ToString());
-			Assert.AreEqual(true,MultipartRequestHelper.HasFileContentDisposition(formdata));
-
+			Assert.AreEqual("form-data; filename=test; filename*=UTF-8''1", formdata.ToString());
+			Assert.IsTrue(MultipartRequestHelper.HasFileContentDisposition(formdata));
 		}
-
 	}
 }

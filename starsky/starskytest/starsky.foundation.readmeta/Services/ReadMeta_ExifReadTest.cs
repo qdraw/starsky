@@ -315,7 +315,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 
 			Assert.AreEqual(ColorClassParser.Color.None, item.ColorClass);
 			Assert.AreEqual("caption", item.Description);
-			Assert.AreEqual(false, item.IsDirectory);
+			Assert.IsFalse(item.IsDirectory);
 			Assert.AreEqual("test, sion", item.Tags);
 			Assert.AreEqual("title", item.Title);
 			Assert.AreEqual(52.308205555500003, item.Latitude, 0.000001);
@@ -442,7 +442,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 
 			Assert.AreEqual(ColorClassParser.Color.SuperiorAlt, item.ColorClass);
 			Assert.AreEqual("Description", item.Description);
-			Assert.AreEqual(false, item.IsDirectory);
+			Assert.IsFalse(item.IsDirectory);
 			Assert.AreEqual("tags", item.Tags);
 			Assert.AreEqual("title", item.Title);
 			Assert.AreEqual(35.0379999999, item.Latitude, 0.000001);
@@ -489,7 +489,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			Assert.AreEqual(date, item.DateTime);
 			Assert.AreEqual(20, item.ImageWidth);
 			Assert.AreEqual(20, item.ImageHeight);
-			Assert.AreEqual(false, item.IsDirectory);
+			Assert.IsFalse(item.IsDirectory);
 		}
 
 		[TestMethod]
@@ -516,7 +516,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			Assert.AreEqual(date, item.DateTime);
 			Assert.AreEqual(20, item.ImageWidth);
 			Assert.AreEqual(20, item.ImageHeight);
-			Assert.AreEqual(false, item.IsDirectory);
+			Assert.IsFalse(item.IsDirectory);
 
 			CultureInfo.CurrentCulture = new CultureInfo(currentCultureThreeLetterIsoLanguageName);
 		}
@@ -680,7 +680,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			Assert.AreEqual(52.23829861111111, item.Latitude, 0.001);
 			Assert.AreEqual(6.025800238715278, item.Longitude, 0.001);
 
-			Assert.AreEqual(false, item.IsDirectory);
+			Assert.IsFalse(item.IsDirectory);
 			CultureInfo.CurrentCulture =
 				new CultureInfo(currentCultureThreeLetterIsoLanguageName);
 		}
@@ -704,7 +704,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			Assert.AreEqual(52.23829861111111, item.Latitude, 0.001);
 			Assert.AreEqual(6.025800238715278, item.Longitude, 0.001);
 
-			Assert.AreEqual(false, item.IsDirectory);
+			Assert.IsFalse(item.IsDirectory);
 		}
 
 		[TestMethod]

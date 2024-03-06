@@ -59,12 +59,18 @@ public sealed class ExifTool : IExifTool
 			string? beforeFileHash, string command,
 			CancellationToken cancellationToken = default)
 	{
+		_logger.LogInformation($"[WriteTagsAndRenameThumbnailAsync] Update: {subPath}");
+
 		var sourceStream = _iStorage.ReadStream(subPath);
-		beforeFileHash ??=
-			await FileHash.CalculateHashAsync(sourceStream, false, cancellationToken);
+		beforeFileHash ??= await FileHash.CalculateHashAsync(sourceStream,
+			false, cancellationToken);
 
 		var runner = new StreamToStreamRunner(_appSettings, sourceStream, _logger);
 		var stream = await runner.RunProcessAsync(command, subPath);
+
+		// Need to Close / Dispose for Windows
+		sourceStream.Close();
+		await sourceStream.DisposeAsync();
 
 		var newHashCode = await RenameThumbnailByStream(beforeFileHash, stream,
 			!beforeFileHash.Contains(FileHash.GeneratedPostFix), cancellationToken);
@@ -73,13 +79,11 @@ public sealed class ExifTool : IExifTool
 		     ( await StreamToStringHelper.StreamToStringAsync(stream, false) )
 		     .Contains("Fake ExifTool", StringComparison.InvariantCultureIgnoreCase) )
 		{
+			await stream.DisposeAsync();
 			_logger.LogError(
 				$"[WriteTagsAndRenameThumbnailAsync] Fake Exiftool detected {subPath}");
 			return new KeyValuePair<bool, string>(false, beforeFileHash);
 		}
-
-		// Need to Dispose for Windows
-		await sourceStream.DisposeAsync();
 
 		stream.Seek(0, SeekOrigin.Begin);
 		var streamResult = await _iStorage.WriteStreamAsync(stream, subPath);
@@ -137,17 +141,18 @@ public sealed class ExifTool : IExifTool
 	/// <returns>true=success</returns>
 	public async Task<bool> WriteTagsAsync(string subPath, string command)
 	{
+		_logger.LogInformation($"[WriteTagsAsync] Next update for {subPath}");
+
 		var inputStream = _iStorage.ReadStream(subPath);
 
 		var runner = new StreamToStreamRunner(_appSettings, inputStream, _logger);
-		var stream = await runner.RunProcessAsync(command);
-
-		var isWritten = await _iStorage.WriteStreamAsync(stream, subPath);
+		var stream = await runner.RunProcessAsync(command, subPath);
 
 		// Need to Dispose for Windows
+		// inputStream is disposed
 		await inputStream.DisposeAsync();
 
-		return isWritten;
+		return await _iStorage.WriteStreamAsync(stream, subPath);
 	}
 
 	/// <summary>
@@ -160,9 +165,9 @@ public sealed class ExifTool : IExifTool
 	{
 		var inputStream = _thumbnailStorage.ReadStream(fileHash);
 		var runner = new StreamToStreamRunner(_appSettings, inputStream, _logger);
-		var stream = await runner.RunProcessAsync(command);
+		var stream = await runner.RunProcessAsync(command, fileHash);
 		// Need to Close/Dispose for Windows and needs before WriteStreamAsync
-		inputStream.Close();
+		await inputStream.DisposeAsync();
 		return await _thumbnailStorage.WriteStreamAsync(stream, fileHash);
 	}
 }
@@ -187,11 +192,11 @@ internal class StreamToStreamRunner
 	/// Run Command async (and keep stream open)
 	/// </summary>
 	/// <param name="exifToolInputArguments">exifTool args</param>
-	/// <param name="referencePath">reference path (only for display)</param>
+	/// <param name="referenceInfoAndPath">reference path (only for display)</param>
 	/// <returns>bool if success</returns>
 	/// <exception cref="ArgumentException">if exifTool is missing</exception>
 	public async Task<Stream> RunProcessAsync(string exifToolInputArguments,
-		string referencePath = "")
+		string referenceInfoAndPath = "")
 	{
 		var argumentsWithPipeEnd = $"{exifToolInputArguments} -o - -";
 
@@ -211,7 +216,7 @@ internal class StreamToStreamRunner
 			var result = await command.Task.ConfigureAwait(false);
 
 			_logger.LogInformation($"[RunProcessAsync] {result.Success} ~ exifTool " +
-			                       $"{referencePath} {exifToolInputArguments} " +
+			                       $"{referenceInfoAndPath} {exifToolInputArguments} " +
 			                       $"run with result: {result.Success}  ~ ");
 
 			memoryStream.Seek(0, SeekOrigin.Begin);
