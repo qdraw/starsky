@@ -6,6 +6,7 @@
         <Version>0.6.0-beta.2</Version>
         <Nullable>enable</Nullable>
         <RootNamespace>starsky.feature.search</RootNamespace>
+        <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
 
     <ItemGroup>
@@ -13,7 +14,7 @@
         <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj"/>
         <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>
     </ItemGroup>
-    
+
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
         <SonarQubeExclude>true</SonarQubeExclude>
     </PropertyGroup>

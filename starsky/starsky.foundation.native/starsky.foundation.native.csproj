@@ -9,6 +9,7 @@
         <!-- SonarQube needs this -->
         <ProjectGuid>{e5d174bc-961a-46e9-ae91-ca10fdf5f5f3}</ProjectGuid>
         <RootNamespace>starsky.foundation.native</RootNamespace>
+        <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
 
     <ItemGroup>

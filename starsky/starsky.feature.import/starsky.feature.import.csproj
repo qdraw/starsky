@@ -6,6 +6,8 @@
         <ProjectGuid>{e9c60bf0-09b6-40c9-95b5-25c7a185365e}</ProjectGuid>
         <Version>0.6.0-beta.2</Version>
         <Nullable>enable</Nullable>
+        <RootNamespace>starsky.feature.import</RootNamespace>
+        <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
 
     <ItemGroup>

@@ -5,15 +5,17 @@
         <Version>0.6.0-beta.2</Version>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <RootNamespace>starsky.feature.settings</RootNamespace>
+        <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
-        <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
+        <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj"/>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
         <SonarQubeExclude>true</SonarQubeExclude>
     </PropertyGroup>
-    
+
 </Project>

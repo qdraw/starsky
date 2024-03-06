@@ -9,6 +9,7 @@
         <RootNamespace>starskysynchronizecli</RootNamespace>
         <Version>0.6.0-beta.2</Version>
         <Nullable>enable</Nullable>
+        <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
 
     <ItemGroup>

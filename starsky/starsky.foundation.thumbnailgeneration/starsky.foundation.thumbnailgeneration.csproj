@@ -7,6 +7,8 @@
         <DebugType>Full</DebugType>
         <Version>0.6.0-beta.2</Version>
         <Nullable>enable</Nullable>
+        <RootNamespace>starsky.foundation.thumbnailgeneration</RootNamespace>
+        <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
 
     <ItemGroup>

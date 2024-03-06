@@ -10,6 +10,7 @@
         <NukeTelemetryVersion>1</NukeTelemetryVersion>
         <Nullable>enable</Nullable>
         <ProjectGuid>{b0a4bfd3-6321-4962-a15c-142aace9a4c9}</ProjectGuid>
+        <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
 
     <ItemGroup>
