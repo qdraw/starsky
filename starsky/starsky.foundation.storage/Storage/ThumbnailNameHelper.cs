@@ -131,7 +131,7 @@ namespace starsky.foundation.storage.Storage
 		/// <returns>Regex object</returns>
 		[GeneratedRegex(
 			"^[a-zA-Z0-9_-]+$",
-			RegexOptions.CultureInvariant | RegexOptions.NonBacktracking,
+			RegexOptions.None,
 			matchTimeoutMilliseconds: 100)]
 		private static partial Regex ThumbnailNameRegex();
 

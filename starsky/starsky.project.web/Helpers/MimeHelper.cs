@@ -4,6 +4,7 @@ using System.IO;
 
 namespace starsky.project.web.Helpers
 {
+	[SuppressMessage("Sonar", "S1192:String literals should not be duplicated")]
 	public static class MimeHelper
 	{
 		private const string DefaultMimeTypeApplicationOctetStream = "application/octet-stream";
@@ -45,7 +46,6 @@ namespace starsky.project.web.Helpers
 		/// <summary>
 		/// Get mime type by extension (without dot) e.g. jpg
 		/// </summary>
-		[SuppressMessage("Sonar", "S1192:String literals should not be duplicated")]
 		private static readonly Dictionary<string, string> MimeTypesDictionary =
 			new Dictionary<string, string>
 			{
