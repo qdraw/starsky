@@ -11,6 +11,7 @@
         <DebugType>Full</DebugType>
         <Nullable>enable</Nullable>
         <RootNamespace>starsky.project.web</RootNamespace>
+        <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

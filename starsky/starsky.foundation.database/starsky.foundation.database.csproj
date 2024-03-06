@@ -8,6 +8,8 @@
         <DefineConstants>T</DefineConstants>
         <Version>0.6.0-beta.2</Version>
         <Nullable>enable</Nullable>
+        <RootNamespace>starsky.foundation.database</RootNamespace>
+        <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,7 +21,7 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.2" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="8.0.2" />
-        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.0-beta.2"/>
+        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.1"/>
         <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0"/>
     </ItemGroup>
 
