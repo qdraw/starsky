@@ -1,10 +1,13 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace starsky.project.web.Helpers
 {
 	public static class MimeHelper
 	{
+		private const string DefaultMimeTypeApplicationOctetStream = "application/octet-stream";
+
 		/// <summary>
 		/// Get the Mime type based on the filename
 		/// </summary>
@@ -16,7 +19,7 @@ namespace starsky.project.web.Helpers
 			var extension = Path.GetExtension(fileName)?.ToLowerInvariant();
 			if ( string.IsNullOrEmpty(extension) )
 			{
-				return "application/octet-stream";
+				return DefaultMimeTypeApplicationOctetStream;
 			}
 
 			var fileExtWithoutDot = extension.Remove(0, 1);
@@ -36,12 +39,13 @@ namespace starsky.project.web.Helpers
 				return MimeTypesDictionary[fileExtWithoutDot.ToLowerInvariant()];
 			}
 
-			return "application/octet-stream";
+			return DefaultMimeTypeApplicationOctetStream;
 		}
 
 		/// <summary>
 		/// Get mime type by extension (without dot) e.g. jpg
 		/// </summary>
+		[SuppressMessage("Sonar", "S1192:String literals should not be duplicated")]
 		private static readonly Dictionary<string, string> MimeTypesDictionary =
 			new Dictionary<string, string>
 			{

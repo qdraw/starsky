@@ -5,33 +5,29 @@ using starsky.foundation.platform.Enums;
 
 namespace starsky.foundation.storage.Storage
 {
-
 	/// <summary>
 	/// ThumbnailNamesHelper
 	/// </summary>
-	public static class ThumbnailNameHelper
+	public static partial class ThumbnailNameHelper
 	{
 		/// <summary>
 		/// Without TinyMeta
 		/// </summary>
 		public static readonly ThumbnailSize[] GeneratedThumbnailSizes = new ThumbnailSize[]
 		{
-			ThumbnailSize.ExtraLarge,
-			ThumbnailSize.Small,
-			ThumbnailSize.Large
+			ThumbnailSize.ExtraLarge, ThumbnailSize.Small, ThumbnailSize.Large
 		};
 
 		public static readonly ThumbnailSize[] SecondGeneratedThumbnailSizes = new ThumbnailSize[]
 		{
 			ThumbnailSize.Small,
-			ThumbnailSize.Large //  <- will be false when skipExtraLarge = true, its already created 
+			ThumbnailSize
+				.Large //  <- will be false when skipExtraLarge = true, its already created 
 		};
 
 		public static readonly ThumbnailSize[] AllThumbnailSizes = new ThumbnailSize[]
 		{
-			ThumbnailSize.TinyMeta,
-			ThumbnailSize.ExtraLarge,
-			ThumbnailSize.Small,
+			ThumbnailSize.TinyMeta, ThumbnailSize.ExtraLarge, ThumbnailSize.Small,
 			ThumbnailSize.Large
 		};
 
@@ -96,7 +92,8 @@ namespace starsky.foundation.storage.Storage
 			return Combine(fileHash, GetSize(size));
 		}
 
-		public static string Combine(string fileHash, ThumbnailSize size, bool appendExtension = false)
+		public static string Combine(string fileHash, ThumbnailSize size,
+			bool appendExtension = false)
 		{
 			if ( appendExtension ) return fileHash + GetAppend(size) + ".jpg";
 			return fileHash + GetAppend(size);
@@ -121,9 +118,26 @@ namespace starsky.foundation.storage.Storage
 
 		public static string RemoveSuffix(string? thumbnailOutputHash)
 		{
-			return thumbnailOutputHash == null ? string.Empty :
-				Regex.Replace(thumbnailOutputHash, "@\\d+",
+			return thumbnailOutputHash == null
+				? string.Empty
+				: Regex.Replace(thumbnailOutputHash, "@\\d+",
 					string.Empty, RegexOptions.None, TimeSpan.FromMilliseconds(100));
+		}
+
+		/// <summary>
+		/// ThumbnailName
+		/// Regex.IsMatch (pre compiled regex)
+		/// </summary>
+		/// <returns>Regex object</returns>
+		[GeneratedRegex(
+			"^[a-zA-Z0-9_-]+$",
+			RegexOptions.CultureInvariant | RegexOptions.NonBacktracking,
+			matchTimeoutMilliseconds: 100)]
+		private static partial Regex ThumbnailNameRegex();
+
+		public static bool ValidateThumbnailName(string thumbnailName)
+		{
+			return ThumbnailNameRegex().IsMatch(thumbnailName);
 		}
 	}
 }

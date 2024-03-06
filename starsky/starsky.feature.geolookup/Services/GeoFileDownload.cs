@@ -21,7 +21,8 @@ namespace starsky.feature.geolookup.Services
 		public const string CountryName = "cities1000";
 		internal long MinimumSizeInBytes { get; set; } = 7000000; // 7 MB
 
-		public GeoFileDownload(AppSettings appSettings, IHttpClientHelper httpClientHelper, ISelectorStorage selectorStorage)
+		public GeoFileDownload(AppSettings appSettings, IHttpClientHelper httpClientHelper,
+			ISelectorStorage selectorStorage)
 		{
 			_appSettings = appSettings;
 			_httpClientHelper = httpClientHelper;
@@ -30,39 +31,46 @@ namespace starsky.feature.geolookup.Services
 
 		internal const string BaseUrl =
 			"download.geonames.org/export/dump/";
+
 		internal const string MirrorUrl = "qdraw.nl/special/mirror/geonames/";
 
 		public async Task DownloadAsync()
 		{
 			RemoveFailedDownload();
 			CreateDependenciesFolder();
+			const string https = "https://";
+			const string admin1codesasciiTxt = "admin1CodesASCII.txt";
 
 			if ( !_hostStorage.ExistFile(
-				Path.Combine(_appSettings.DependenciesFolder, CountryName + ".txt")) )
+				    Path.Combine(_appSettings.DependenciesFolder, CountryName + ".txt")) )
 			{
 				var outputZip = Path.Combine(_appSettings.DependenciesFolder,
 					CountryName + ".zip");
-				var baseResult = await _httpClientHelper.Download("https://" + BaseUrl + CountryName + ".zip", outputZip);
+				var baseResult =
+					await _httpClientHelper.Download(https + BaseUrl + CountryName + ".zip",
+						outputZip);
 				if ( !baseResult )
 				{
-					await _httpClientHelper.Download("https://" + MirrorUrl + CountryName + ".zip", outputZip);
+					await _httpClientHelper.Download(https + MirrorUrl + CountryName + ".zip",
+						outputZip);
 				}
+
 				new Zipper().ExtractZip(outputZip, _appSettings.DependenciesFolder);
 			}
 
 			if ( !_hostStorage.ExistFile(
-				Path.Combine(_appSettings.DependenciesFolder, "admin1CodesASCII.txt")) )
+				    Path.Combine(_appSettings.DependenciesFolder, admin1codesasciiTxt)) )
 			{
 				// code for the second administrative division,
 				// a county in the US, see file admin2Codes.txt; varchar(80)
 				var outputFile = Path.Combine(_appSettings.DependenciesFolder,
-					"admin1CodesASCII.txt");
-				var baseResult = await _httpClientHelper.Download("https://" +
-					BaseUrl + "admin1CodesASCII.txt", outputFile);
+					admin1codesasciiTxt);
+				var baseResult = await _httpClientHelper.Download(https +
+					BaseUrl + admin1codesasciiTxt, outputFile);
 				if ( !baseResult )
 				{
-					await _httpClientHelper.Download("https://" +
-						MirrorUrl + "admin1CodesASCII.txt", outputFile);
+					await _httpClientHelper.Download(https +
+					                                 MirrorUrl + admin1codesasciiTxt, outputFile);
 				}
 			}
 		}
@@ -71,7 +79,8 @@ namespace starsky.feature.geolookup.Services
 		{
 			if ( !_hostStorage.ExistFolder(_appSettings.DependenciesFolder) )
 			{
-				_hostStorage.CreateDirectory(PathHelper.RemoveLatestBackslash(_appSettings.DependenciesFolder)!);
+				_hostStorage.CreateDirectory(
+					PathHelper.RemoveLatestBackslash(_appSettings.DependenciesFolder)!);
 			}
 		}
 
@@ -81,8 +90,8 @@ namespace starsky.feature.geolookup.Services
 		internal void RemoveFailedDownload()
 		{
 			if ( !_hostStorage.ExistFile(Path.Combine(
-					_appSettings.DependenciesFolder,
-					CountryName + ".zip")) )
+				    _appSettings.DependenciesFolder,
+				    CountryName + ".zip")) )
 			{
 				return;
 			}
