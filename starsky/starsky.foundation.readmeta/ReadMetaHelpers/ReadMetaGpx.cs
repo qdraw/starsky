@@ -45,13 +45,13 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 				_logger.LogInformation($"[ReadMetaGpx] SystemXmlXmlException for {subPath}");
 				return new FileIndexItem(subPath)
 				{
-					Tags = "SystemXmlXmlException",
-					ColorClass = ColorClassParser.Color.None
+					Tags = "SystemXmlXmlException", ColorClass = ColorClassParser.Color.None
 				};
 			}
 
 			var title = readGpxFile.FirstOrDefault()?.Title ?? string.Empty;
-			var dateTime = readGpxFile.FirstOrDefault()?.DateTime ?? new DateTime(0, DateTimeKind.Utc);
+			var dateTime = readGpxFile.FirstOrDefault()?.DateTime ??
+			               new DateTime(0, DateTimeKind.Utc);
 			var latitude = readGpxFile.FirstOrDefault()?.Latitude ?? 0d;
 			var longitude = readGpxFile.FirstOrDefault()?.Longitude ?? 0d;
 			var altitude = readGpxFile.FirstOrDefault()?.Altitude ?? 0d;
@@ -93,6 +93,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 					return trkName.ToString();
 				}
 			}
+
 			return string.Empty;
 		}
 
@@ -109,6 +110,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			geoList ??= new List<GeoListItem>();
 
 			// Some files are having problems with gpxDoc.Load()
+			// Stream is disposed in the StreamToStringHelper
 			var fileString = await StreamToStringHelper.StreamToStringAsync(stream);
 
 			try
@@ -120,7 +122,6 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 				_logger.LogInformation($"XmlException for {e}");
 				return geoList;
 			}
-
 		}
 
 		/// <summary>
@@ -142,7 +143,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		/// <param name="geoList">object to add</param>
 		/// <param name="returnAfter">return after number of values; default return all</param>
 		/// <returns></returns>
-		private static List<GeoListItem> ParseGpxString(string fileString, List<GeoListItem>? geoList = null,
+		private static List<GeoListItem> ParseGpxString(string fileString,
+			List<GeoListItem>? geoList = null,
 			int returnAfter = int.MaxValue)
 		{
 			var gpxDoc = ParseXml(fileString);
@@ -203,8 +205,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
 				if ( returnAfter == count ) return geoList;
 				count++;
-
 			}
+
 			return geoList;
 		}
 	}

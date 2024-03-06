@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import localization from "../../../localization/localization.json";
@@ -8,22 +8,18 @@ import { UrlQuery } from "../../../shared/url/url-query";
 const PreferencesUsername: React.FunctionComponent = () => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageUnknownUsername = language.key(localization.MessageUnknownUsername);
   const MessageUsername = language.key(localization.MessageUsername);
   const MessageRole = language.key(localization.MessageRole);
 
   const accountStatus = useFetch(new UrlQuery().UrlAccountStatus(), "get");
-  const [userName, setUserName] = React.useState(MessageUnknownUsername);
+  let userName = language.key(localization.MessageUnknownUsername);
 
-  useEffect(() => {
-    if (
-      accountStatus.statusCode !== 200 ||
-      !accountStatus.data?.credentialsIdentifiers ||
-      accountStatus.data.credentialsIdentifiers.length !== 1
-    )
-      return;
-    setUserName(accountStatus.data.credentialsIdentifiers[0]);
-  }, [accountStatus]);
+  if (accountStatus.statusCode === 200 && accountStatus?.data?.credentialsIdentifiers[0]) {
+    userName = accountStatus?.data?.credentialsIdentifiers[0];
+    if (userName === "mail@localhost") {
+      userName = language.key(localization.MessageDesktopMailLocalhostUsername);
+    }
+  }
 
   return (
     <>

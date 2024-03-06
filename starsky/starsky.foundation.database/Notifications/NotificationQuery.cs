@@ -10,6 +10,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
@@ -23,7 +24,8 @@ namespace starsky.foundation.database.Notifications
 		private readonly IWebLogger _logger;
 		private readonly IServiceScopeFactory _scopeFactory;
 
-		public NotificationQuery(ApplicationDbContext context, IWebLogger logger, IServiceScopeFactory scopeFactory)
+		public NotificationQuery(ApplicationDbContext context, IWebLogger logger,
+			IServiceScopeFactory scopeFactory)
 		{
 			_context = context;
 			_logger = logger;
@@ -39,37 +41,50 @@ namespace starsky.foundation.database.Notifications
 				Content = content
 			};
 
+			return await RetryHelper.DoAsync(LocalAddQuery, TimeSpan.FromSeconds(1));
+
 			async Task<NotificationItem> LocalAdd(ApplicationDbContext context)
 			{
-				await context.Notifications.AddAsync(item);
-				await context.SaveChangesAsync();
+				try
+				{
+					context.Entry(item).State = EntityState.Added;
+					await context.Notifications.AddAsync(item);
+					await context.SaveChangesAsync();
+					return item;
+				}
+				catch ( DbUpdateConcurrencyException concurrencyException )
+				{
+					_logger.LogInformation(
+						"[AddNotification] try to fix DbUpdateConcurrencyException",
+						concurrencyException);
+					SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+					try
+					{
+						await _context.SaveChangesAsync();
+					}
+					catch ( DbUpdateConcurrencyException e )
+					{
+						_logger.LogInformation(e,
+							"[AddNotification] save failed after DbUpdateConcurrencyException");
+					}
+				}
+
 				return item;
 			}
 
-			try
+			async Task<NotificationItem> LocalAddQuery()
 			{
-				return await LocalAdd(_context);
-			}
-			catch ( DbUpdateConcurrencyException concurrencyException )
-			{
-				_logger.LogInformation("[AddNotification] try to fix DbUpdateConcurrencyException", concurrencyException);
-				SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
 				try
 				{
-					await _context.SaveChangesAsync();
+					return await LocalAdd(_context);
 				}
-				catch ( DbUpdateConcurrencyException e )
+				catch ( ObjectDisposedException )
 				{
-					_logger.LogInformation(e, "[AddNotification] save failed after DbUpdateConcurrencyException");
+					// Include create new scope factory
+					var context = new InjectServiceScope(_scopeFactory).Context();
+					return await LocalAdd(context);
 				}
 			}
-			catch ( ObjectDisposedException )
-			{
-				var context = new InjectServiceScope(_scopeFactory).Context();
-				return await LocalAdd(context);
-			}
-
-			return item;
 		}
 
 		public Task<NotificationItem> AddNotification<T>(ApiNotificationResponseModel<T> content)
@@ -98,4 +113,3 @@ namespace starsky.foundation.database.Notifications
 		}
 	}
 }
-

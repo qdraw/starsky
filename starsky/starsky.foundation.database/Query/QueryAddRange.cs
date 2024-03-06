@@ -80,6 +80,11 @@ namespace starsky.foundation.database.Query
 				await RetryHelper.DoAsync(LocalRemoveDefaultQuery,
 					TimeSpan.FromSeconds(2), 4);
 			}
+			catch ( DbUpdateException )
+			{
+				await RetryHelper.DoAsync(LocalRemoveDefaultQuery,
+					TimeSpan.FromSeconds(2), 4);
+			}
 
 			fileIndexItemList = FormatOk(fileIndexItemList,
 				FileIndexItem.ExifStatus.NotFoundNotInIndex);

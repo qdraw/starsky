@@ -195,7 +195,7 @@ namespace starskytest.Controllers
 			var result = 
 				ImportThumbnailController.MapToTransferObject(inputList).ToList();
 			Assert.AreEqual("12345678901234567890123456", result.FirstOrDefault()?.FileHash);
-			Assert.AreEqual(true, result.FirstOrDefault()?.Large);
+			Assert.IsTrue(result.FirstOrDefault()?.Large);
 		}
 		
 		[TestMethod]
@@ -205,7 +205,7 @@ namespace starskytest.Controllers
 			var result = 
 				ImportThumbnailController.MapToTransferObject(inputList).ToList();
 			Assert.AreEqual("12345678901234567890123456", result.FirstOrDefault()?.FileHash);
-			Assert.AreEqual(true, result.FirstOrDefault()?.ExtraLarge);
+			Assert.IsTrue(result.FirstOrDefault()?.ExtraLarge);
 		}
 		
 		[TestMethod]

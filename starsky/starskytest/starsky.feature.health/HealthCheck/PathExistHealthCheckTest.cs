@@ -4,6 +4,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.health.HealthCheck;
 using starskytest.FakeCreateAn;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.feature.health.HealthCheck
 {
@@ -19,10 +20,11 @@ namespace starskytest.starsky.feature.health.HealthCheck
 			var healthCheck = new HealthCheckContext
 			{
 				Registration = new HealthCheckRegistration("te",
-					new PathExistHealthCheck(pathExistOptions), null, null)
+					new PathExistHealthCheck(pathExistOptions, new FakeIWebLogger()), null, null)
 			};
 			var result =
-				await new PathExistHealthCheck(pathExistOptions).CheckHealthAsync(healthCheck);
+				await new PathExistHealthCheck(pathExistOptions, new FakeIWebLogger())
+					.CheckHealthAsync(healthCheck);
 			Assert.AreEqual(HealthStatus.Healthy, result.Status);
 		}
 
@@ -35,10 +37,11 @@ namespace starskytest.starsky.feature.health.HealthCheck
 			var healthCheck = new HealthCheckContext
 			{
 				Registration = new HealthCheckRegistration("te",
-					new PathExistHealthCheck(pathExistOptions), null, null)
+					new PathExistHealthCheck(pathExistOptions, new FakeIWebLogger()), null, null)
 			};
 			var result =
-				await new PathExistHealthCheck(pathExistOptions).CheckHealthAsync(healthCheck);
+				await new PathExistHealthCheck(pathExistOptions, new FakeIWebLogger())
+					.CheckHealthAsync(healthCheck);
 			Assert.AreEqual(HealthStatus.Unhealthy, result.Status);
 		}
 
@@ -49,10 +52,11 @@ namespace starskytest.starsky.feature.health.HealthCheck
 			var healthCheck = new HealthCheckContext
 			{
 				Registration = new HealthCheckRegistration("te",
-					new PathExistHealthCheck(pathExistOptions), null, null)
+					new PathExistHealthCheck(pathExistOptions, new FakeIWebLogger()), null, null)
 			};
 			var result =
-				await new PathExistHealthCheck(pathExistOptions).CheckHealthAsync(healthCheck);
+				await new PathExistHealthCheck(pathExistOptions, new FakeIWebLogger())
+					.CheckHealthAsync(healthCheck);
 			Assert.AreEqual(HealthStatus.Unhealthy, result.Status);
 		}
 
@@ -62,10 +66,12 @@ namespace starskytest.starsky.feature.health.HealthCheck
 		{
 			var healthCheck = new HealthCheckContext
 			{
-				Registration = new HealthCheckRegistration("te", new PathExistHealthCheck(null!),
+				Registration = new HealthCheckRegistration("te",
+					new PathExistHealthCheck(null!, new FakeIWebLogger()),
 					null, null)
 			};
-			await new PathExistHealthCheck(null!).CheckHealthAsync(healthCheck);
+			await new PathExistHealthCheck(null!, new FakeIWebLogger()).CheckHealthAsync(
+				healthCheck);
 			// expect ArgumentNullException:
 		}
 	}

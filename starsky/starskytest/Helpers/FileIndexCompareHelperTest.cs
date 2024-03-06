@@ -70,7 +70,7 @@ namespace starskytest.Helpers
 			var source = new FileIndexItem { IsDirectory = false };
 			var update = new FileIndexItem { IsDirectory = true };
 			FileIndexCompareHelper.Compare(source, update);
-			Assert.AreEqual(true, source.IsDirectory);
+			Assert.IsTrue(source.IsDirectory);
 		}
 
 		[TestMethod]
@@ -190,14 +190,13 @@ namespace starskytest.Helpers
 		[TestMethod]
 		public void FileIndexCompareHelperTest__CheckIfPropertyExist_Tags_True()
 		{
-			Assert.AreEqual(true,
-				FileIndexCompareHelper.CheckIfPropertyExist(nameof(FileIndexItem.Tags)));
+			Assert.IsTrue(FileIndexCompareHelper.CheckIfPropertyExist(nameof(FileIndexItem.Tags)));
 		}
 
 		[TestMethod]
 		public void FileIndexCompareHelperTest__CheckIfPropertyExist_False()
 		{
-			Assert.AreEqual(false, FileIndexCompareHelper.CheckIfPropertyExist("45678987654"));
+			Assert.IsFalse(FileIndexCompareHelper.CheckIfPropertyExist("45678987654"));
 		}
 
 		[TestMethod]
@@ -350,7 +349,7 @@ namespace starskytest.Helpers
 			bool? boolValue = true;
 			FileIndexCompareHelper.CompareNullableBool("t",
 				new FileIndexItem(),
-				boolValue!,
+				boolValue,
 				boolValue, list);
 			Assert.IsNotNull(list);
 		}

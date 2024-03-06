@@ -405,13 +405,13 @@ namespace starskytest.starsky.foundation.database.Models
 		public void FileIndexItemTest_IsRelativeOrientation()
 		{
 			var item = FileIndexItem.IsRelativeOrientation(-1);
-			Assert.AreEqual(true, item);
+			Assert.IsTrue(item);
 
 			var item2 = FileIndexItem.IsRelativeOrientation(1);
-			Assert.AreEqual(true, item2);
+			Assert.IsTrue(item2);
 
 			var item999 = FileIndexItem.IsRelativeOrientation(999);
-			Assert.AreEqual(false, item999);
+			Assert.IsFalse(item999);
 		}
 
 

@@ -41,7 +41,18 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.6.0-beta.2 -  _(Unreleased)_ - 2024-02-? {#v0.6.0-beta.2}
+## version 0.6.0-beta.3 - _(Unreleased)_ - 2024-03-? {#v0.6.0-beta.3}
+
+- [x] (Fixed) _Back-end_ Fix Dispose issue for WriteTagsAndRenameThumbnailAsync,
+  WriteTagsAsync (Windows) (PR #1437) (Issue #1427)
+- [x] (Changed) _Back-end_ Change all tests from AreEqual(true) to IsTrue, also for false (PR #1437)
+- [x] (Changed) _Back-end_ Update ImageSharp (PR #1434, #1435, #1436)
+- [x] (Changed) _Back-end_ Change unit tests retry OpenDefault windows (PR #1433)
+- [x] (Changed) _Back-end_ Update Pomelo.EntityFrameworkCore.MySql, ImageSharp.Drawing,
+  ReportGenerator, OpenTelemetry.*.AspNetCore, System.Text.Json, MSTest and Coverlet (PR #1438)
+- [x] (Changed) _Back-end_ Fix for Code Smells and Sonarcloud bugs (PR #1440)
+
+## version 0.6.0-beta.2 - 2024-03-05 {#v0.6.0-beta.2}
 
 - [x] (Changed) Back-end Upgrade to .NET 8 - SDK 8.0.201 (Runtime: 8.0.2) (PR #1402)
 - [x] (Added) _Back-end_ Native Open File on Windows & Mac OS (PR #1381)
@@ -69,6 +80,10 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
   #1405)
 - [x] (Fixed) _Docs_ Make getting started more clear (PR #1422) (Issue #1403)
 - [x] (Fixed) _Front-end_ Add link to docs page for storage folder (PR #1422) (Issue #1404)
+- [x] (Security) _Front-end_ spellcheck false on email and password fields (PR #1430)
+- [x] (Fixed) _Front-end_ Tooltip is partly not shown (PR #1430)
+- [x] (Changed) _Front-end_ View user friendly name for Default Desktop user (PR #1430)
+- [x] (Changed) _Docs_ Use Google Consent Mode, only for docs, other apps have no Google (PR #1424)
 
 ## version 0.6.0-beta.1 - 2024-02-18 {#v0.6.0-beta.1}
 

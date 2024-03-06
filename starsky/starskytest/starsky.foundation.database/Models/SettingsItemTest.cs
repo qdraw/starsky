@@ -10,13 +10,13 @@ public class SettingsItemTest
 	public void SettingsItemTestExist()
 	{
 		var item = new SettingsItem { IsUserEditable = false, UserId = 1 };
-		Assert.AreEqual(false,item.IsUserEditable);
+		Assert.IsFalse(item.IsUserEditable);
 	}
-	
+
 	[TestMethod]
 	public void SettingsItemTestExist2()
 	{
 		var item = new SettingsItem { IsUserEditable = false, UserId = 1 };
-		Assert.AreEqual(1,item.UserId);
+		Assert.AreEqual(1, item.UserId);
 	}
 }

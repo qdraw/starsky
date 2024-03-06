@@ -97,7 +97,7 @@ namespace starskytest.Controllers
 				FileName = "file.jpg", ParentDirectory = "/cacheDeleteTest", IsDirectory = false
 			});
 
-			Assert.AreEqual(true, _query.DisplayFileFolders("/cacheDeleteTest").Any());
+			Assert.IsTrue(_query.DisplayFileFolders("/cacheDeleteTest").Any());
 
 			// Ask the cache
 			_query.DisplayFileFolders("/cacheDeleteTest");

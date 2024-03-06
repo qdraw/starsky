@@ -53,8 +53,8 @@ namespace starskytest.starsky.foundation.platform.Models
 		public void AppSettingsProviderTest_SqLiteFullPathTest()
 		{
 			var dataSource = _appSettings.SqLiteFullPath("Data Source=data.db", string.Empty);
-			Assert.AreEqual(true, dataSource.Contains("data.db"));
-			Assert.AreEqual(true, dataSource.Contains("Data Source="));
+			Assert.IsTrue(dataSource.Contains("data.db"));
+			Assert.IsTrue(dataSource.Contains("Data Source="));
 		}
 
 		[TestMethod]
@@ -94,8 +94,8 @@ namespace starskytest.starsky.foundation.platform.Models
 
 			var datasource = _appSettings.SqLiteFullPath(
 				"Data Source=data.db", Path.DirectorySeparatorChar + "starsky");
-			Assert.AreEqual(true, datasource.Contains("data.db"));
-			Assert.AreEqual(true, datasource.Contains("Data Source="));
+			Assert.IsTrue(datasource.Contains("data.db"));
+			Assert.IsTrue(datasource.Contains("Data Source="));
 		}
 
 		[TestMethod]
@@ -391,7 +391,7 @@ namespace starskytest.starsky.foundation.platform.Models
 		public void AppSettings_IsReadOnly_NullNoItemTest()
 		{
 			var appSettings = new AppSettings();
-			Assert.AreEqual(false, appSettings.IsReadOnly(string.Empty));
+			Assert.IsFalse(appSettings.IsReadOnly(string.Empty));
 		}
 
 		[TestMethod]

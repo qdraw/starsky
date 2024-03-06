@@ -4,8 +4,9 @@
         <RootNamespace>starsky.foundation.settings</RootNamespace>
         <!-- SonarQube needs this -->
         <ProjectGuid>{67e301f1-e700-4ca5-81ae-696abab1bb0f}</ProjectGuid>
-        <Version>0.6.0-beta.1</Version>
+        <Version>0.6.0-beta.2</Version>
         <Nullable>enable</Nullable>
+        <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
 
     <ItemGroup>

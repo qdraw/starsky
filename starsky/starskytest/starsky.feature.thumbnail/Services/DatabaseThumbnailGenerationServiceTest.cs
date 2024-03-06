@@ -111,7 +111,7 @@ public class DatabaseThumbnailGenerationServiceTest
 			})).ToList();
 		
 		Assert.AreEqual(1,result.Count);
-		Assert.AreEqual(false,result.FirstOrDefault()!.Large);
+		Assert.IsFalse(result.FirstOrDefault()!.Large);
 	}
 	
 	[TestMethod]

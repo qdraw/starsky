@@ -7,7 +7,8 @@ param(
     [Parameter(Mandatory=$false)][string]$outPut,
     [Parameter(Mandatory=$false)][string]$serviceName='starsky',
     [Parameter(Mandatory=$false)][string]$exeName='starsky.exe',
-    [Parameter(Mandatory=$false)][switch]$noTelemetry=$false
+    [Parameter(Mandatory=$false)][switch]$noTelemetry=$false,
+    [Parameter(Mandatory=$false)][switch]$remove=$false
 )
 
 # for powershell 5
@@ -27,6 +28,7 @@ if ($help -eq $True) {
     write-host "-output folder_path"
     write-host "-serviceName name_service"
     write-host "-exeName starsky.exe"
+    write-host "-remove (to remove the service, keep files on disk)"
     exit 0
 }
 
@@ -54,7 +56,7 @@ write-host "next close windows of mmc.exe"
 Invoke-Expression -Command "taskkill /F /IM mmc.exe"
 
 
-function ReinstallService ($localServiceName, $binaryPath, $cmdArgs, $description, $login, $password, $startUpType, $displayName)
+function ReinstallService ($localServiceName, $binaryPath, $cmdArgs, $description, $login, $password, $startUpType, $displayName, $localRemove)
 {
     Write-Host "Trying to create service: $localServiceName - $binaryPath"
 
@@ -89,6 +91,11 @@ function ReinstallService ($localServiceName, $binaryPath, $cmdArgs, $descriptio
         # Remove-Service -Name ServiceName
         # or sc.exe delete ServiceName
         Write-Host "Service removed: $localServiceName"
+        
+        if ($localRemove) {
+            Write-Host "remove flag used so done now"
+            return;
+        }
     }
 
     # if password is empty, create a dummy one to allow have credentias for system accounts: 
@@ -148,7 +155,7 @@ If($noTelemetry -eq $true) {
 
 write-host "args: "$cmdArgsAdd
 
-ReinstallService $serviceName $exePath $cmdArgsAdd "Windows service" "NT AUTHORITY\NETWORK SERVICE" "" "Automatic" "Starsky Web App"
+ReinstallService $serviceName $exePath $cmdArgsAdd "Windows service" "NT AUTHORITY\NETWORK SERVICE" "" "Automatic" "Starsky Web App" $remove
 
 write-host "done"
 exit 0

@@ -96,6 +96,7 @@ namespace starsky.Controllers
 			{
 				if ( cache ) CacheControlOverwrite.SetExpiresResponseHeaders(Request);
 				var fileStream = _iStorage.ReadStream(fileIndexItem.FilePath!);
+
 				// Return the right mime type (enableRangeProcessing = needed for safari and mp4)
 				return File(fileStream, MimeHelper.GetMimeTypeByFileName(fileIndexItem.FilePath!),
 					true);
@@ -131,9 +132,9 @@ namespace starsky.Controllers
 				}
 			}
 
-			var thumbnailFs = _thumbnailStorage.ReadStream(
+			var thumbnailFileStream = _thumbnailStorage.ReadStream(
 				ThumbnailNameHelper.Combine(fileIndexItem.FileHash!, ThumbnailSize.Large));
-			return File(thumbnailFs, "image/jpeg");
+			return File(thumbnailFileStream, "image/jpeg");
 		}
 	}
 }

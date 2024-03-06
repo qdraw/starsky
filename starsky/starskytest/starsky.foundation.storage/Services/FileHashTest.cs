@@ -36,7 +36,7 @@ namespace starskytest.starsky.foundation.storage.Services
 			var fileHashCode = new FileHash(iStorageFake).GetHashCode("/test.jpg",0);
 	        
 			Assert.IsFalse(fileHashCode.Value);
-			Assert.AreEqual(true, fileHashCode.Key.Contains("_T"));
+			Assert.IsTrue(fileHashCode.Key.Contains("_T"));
 		}
         
 		[TestMethod]

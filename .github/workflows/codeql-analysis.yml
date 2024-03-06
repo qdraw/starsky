@@ -6,15 +6,8 @@ concurrency:
   
 on:
   push:
-    branches: [master, ]
+    branches: [master]
     # all files because parent git hashes are used to compare in PR's
-  pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [codeql]
-    paths:
-    - 'starsky/**'
-    - 'starsky-tools/**'
-    - '.github/workflows/**'
 
 jobs:
   analyse:

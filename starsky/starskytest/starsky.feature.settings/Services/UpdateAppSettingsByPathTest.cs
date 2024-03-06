@@ -87,7 +87,7 @@ namespace starskytest.starsky.feature.settings.Services
 				storageFolderJson + ",\n";
 
 
-			Assert.AreEqual(true, result.Contains(expectedResult));
+			Assert.IsTrue(result.Contains(expectedResult));
 		}
 
 		[TestMethod]

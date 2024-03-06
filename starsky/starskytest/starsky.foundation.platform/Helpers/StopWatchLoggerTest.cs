@@ -13,16 +13,16 @@ public class StopWatchLoggerTest
 		var stopWatchLogger = new StopWatchLogger(new FakeIWebLogger());
 		var stopwatch = StopWatchLogger.StartUpdateReplaceStopWatch();
 		stopWatchLogger.StopUpdateReplaceStopWatch("name", "f", true, stopwatch, false);
-		Assert.AreEqual(true,stopwatch.IsRunning);
+		Assert.IsTrue(stopwatch.IsRunning);
 		stopwatch.Stop();
 	}
-	
+
 	[TestMethod]
 	public void StopWatchLogger_IsNotRunning()
 	{
 		var stopWatchLogger = new StopWatchLogger(new FakeIWebLogger());
 		var stopwatch = StopWatchLogger.StartUpdateReplaceStopWatch();
 		stopWatchLogger.StopUpdateReplaceStopWatch("name", "f", true, stopwatch);
-		Assert.AreEqual(false,stopwatch.IsRunning);
+		Assert.IsFalse(stopwatch.IsRunning);
 	}
 }
