@@ -340,8 +340,9 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			}
 			catch ( Exception ex )
 			{
+				const string imageCannotBeLoadedErrorMessage = "Image cannot be loaded";
 				var message = ex.Message;
-				if ( message.StartsWith("Image cannot be loaded") ) message = "Image cannot be loaded";
+				if ( message.StartsWith(imageCannotBeLoadedErrorMessage) ) message = imageCannotBeLoadedErrorMessage;
 				_logger.LogError($"[ResizeThumbnailFromThumbnailImage] Exception {fileHash} {message}", ex);
 				result.Success = false;
 				result.ErrorMessage = message;
@@ -382,8 +383,12 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			}
 			catch ( Exception ex )
 			{
+				const string imageCannotBeLoadedErrorMessage = "Image cannot be loaded";
 				var message = ex.Message;
-				if ( message.StartsWith("Image cannot be loaded") ) message = "Image cannot be loaded";
+				if ( message.StartsWith(imageCannotBeLoadedErrorMessage) )
+				{
+					message = imageCannotBeLoadedErrorMessage;
+				}
 				_logger.LogError($"[ResizeThumbnailFromSourceImage] Exception {subPath} {message}", ex);
 				return (null, false, message);
 			}
