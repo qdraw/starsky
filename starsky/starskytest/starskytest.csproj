@@ -10,6 +10,7 @@
         <PreserveCompilationContext>true</PreserveCompilationContext>
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
+        <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
 
     <PropertyGroup>

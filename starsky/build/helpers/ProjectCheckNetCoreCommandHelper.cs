@@ -23,7 +23,12 @@ namespace helpers
 			return Path.Combine(slnRootDirectory, BuildToolsPath);
 		}
 
-		static void CheckForNullable()
+		/// <summary>
+		/// Check for values in Csproj files
+		/// </summary>
+		/// <param name="valueToCheckFor">the value to check for</param>
+		/// <exception cref="ArgumentException">if is missing</exception>
+		static void CheckForInCsProj(string valueToCheckFor)
 		{
 			var projects = GetFilesHelper.GetFiles("**.csproj");
 			var missingProjects = new List<string>();
@@ -33,7 +38,7 @@ namespace helpers
 					Path.Combine(WorkingDirectory.GetSolutionParentFolder(), project);
 				var projectContent = File.ReadAllText(projectFullPath);
 
-				if ( !projectContent.Contains("<Nullable>enable</Nullable>") )
+				if ( !projectContent.Contains(valueToCheckFor) )
 				{
 					missingProjects.Add(project);
 				}
@@ -41,9 +46,9 @@ namespace helpers
 
 			if ( missingProjects.Count > 0 )
 			{
-				throw new ArgumentException("Missing <Nullable>enable</Nullable> in: " +
-											string.Join(" , ", missingProjects) + " projects  " +
-											"Please add <Nullable>enable</Nullable> to the .csproj files");
+				throw new ArgumentException($"Missing {valueToCheckFor} in: " +
+				                            string.Join(" , ", missingProjects) + " projects  " +
+				                            $"Please add {valueToCheckFor} to the .csproj files");
 			}
 		}
 
@@ -77,8 +82,12 @@ namespace helpers
 
 		public static void ProjectCheckNetCoreCommand()
 		{
-			CheckForNullable();
+			// Nullable is required for all projects to be enabled
+			CheckForInCsProj("<Nullable>enable</Nullable>");
+			// ImplicitUsings is not required to be enabled
+			CheckForInCsProj("<ImplicitUsings>");
 
+			// Make sure every project has an unique projectGuid
 			ProjectGuid();
 
 			ClientHelper.NpmPreflight();
