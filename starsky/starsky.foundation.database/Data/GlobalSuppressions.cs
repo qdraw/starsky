@@ -14,16 +14,16 @@ using System.Diagnostics.CodeAnalysis;
 
 [assembly:
 	SuppressMessage("Sonar", "S138", Justification = "Generated code",
-		Scope = "namespaceanddescendants", Target = "starsky.foundation.database.Migrations")]
+		Scope = "namespaceanddescendants", Target = "~N:starsky.foundation.database.Migrations")]
 [assembly:
 	SuppressMessage("Sonar", "S1128", Justification = "Generated code",
-		Scope = "namespaceanddescendants", Target = "starsky.foundation.database.Migrations")]
+		Scope = "namespaceanddescendants", Target = "~N:starsky.foundation.database.Migrations")]
 [assembly:
 	SuppressMessage("Sonar", "S1192", Justification = "Generated code",
-		Scope = "namespaceanddescendants", Target = "starsky.foundation.database.Migrations")]
+		Scope = "namespaceanddescendants", Target = "~N:starsky.foundation.database.Migrations")]
 [assembly:
 	SuppressMessage("Sonar", "S3254", Justification = "Generated code",
-		Scope = "namespaceanddescendants", Target = "starsky.foundation.database.Migrations")]
+		Scope = "namespaceanddescendants", Target = "~N:starsky.foundation.database.Migrations")]
 [assembly:
 	SuppressMessage("Sonar", "S1192", Justification = "Generated code",
-		Scope = "namespaceanddescendants", Target = "starsky.foundation.database.Migrations")]
+		Scope = "namespaceanddescendants", Target = "~N:starsky.foundation.database.Migrations")]
