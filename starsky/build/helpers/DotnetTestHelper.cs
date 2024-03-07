@@ -22,7 +22,7 @@ namespace helpers
 
 			if ( noUnitTest )
 			{
-				Log.Information($">> TestNetCore is disable due the --no-unit-test flag");
+				Log.Information(">> TestNetCore is disable due the --no-unit-test flag");
 				return;
 			}
 
@@ -45,7 +45,7 @@ namespace helpers
 				var testResultsFolder = Path.Combine(testParentPath, "TestResults");
 				if ( DirectoryExists(testResultsFolder) )
 				{
-					Log.Information(">> Removing folder => {testResultsFolder}", testResultsFolder);
+					Log.Information(">> Removing folder => {TestResultsFolder}", testResultsFolder);
 					Directory.Delete(testResultsFolder, true);
 				}
 

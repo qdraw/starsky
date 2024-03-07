@@ -103,11 +103,11 @@ namespace helpers
 			if ( latestVersionByApi > new Version(SonarQubePackageVersion) )
 			{
 				Log.Warning("Please upgrade to the latest version " +
-				            "of dotnet-sonarscanner {LatestVersionByApi} \n\n" +
-				            "Update the following values: \n" +
+				            "of dotnet-sonarscanner {LatestVersionByApi} \n\n", latestVersionByApi);
+				Log.Warning("Update the following values: \n" +
 				            "- build/helpers/SonarQube.cs -> SonarQubePackageVersion to {LatestVersionByApi} \n" +
 				            "The _build project will auto update: \n" +
-				            "-  .config/dotnet-tools.json", latestVersionByApi, latestVersionByApi);
+				            "-  .config/dotnet-tools.json", latestVersionByApi);
 			}
 		}
 
