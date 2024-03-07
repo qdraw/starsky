@@ -50,7 +50,7 @@ function executeCodesignCommand(appStarskyPath: string): Promise<void> {
     const codeSignSpawn = spawn("codesign", args, options);
 
     codeSignSpawn.on("exit", (code) => {
-      logger.info("code sign EXIT: CODE: " + code);
+      logger.info(`code sign EXIT: CODE: ${code}`);
       if (code === 0) {
         resolve();
       } else {
@@ -68,15 +68,15 @@ function executeCodesignCommand(appStarskyPath: string): Promise<void> {
   });
 }
 
-export function SpawnCleanMacOs(appStarskyPath: string, processPlatform: string): Promise<void> {
+export function SpawnCleanMacOs(appStarskyPath: string, processPlatform: string): Promise<boolean> {
   return new Promise((resolve, reject) => {
     if (processPlatform !== "darwin") {
-      return resolve();
+      resolve(true);
     }
 
     Promise.all([executeXattrCommand(appStarskyPath), executeCodesignCommand(appStarskyPath)])
       .then(() => {
-        resolve();
+        resolve(true);
       })
       .catch((err) => {
         reject(err);

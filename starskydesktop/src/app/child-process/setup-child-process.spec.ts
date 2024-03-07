@@ -4,7 +4,7 @@ import * as fs from "fs";
 import * as readline from "readline";
 import * as GetPortProxy from "../get-free-port/get-free-port";
 import logger from "../logger/logger";
-import { setupChildProcess } from "./setup-child-process";
+import { SetupChildProcess } from "./setup-child-process";
 
 jest.mock("child_process", () => {
   return {
@@ -84,7 +84,7 @@ describe("setupChildProcess", () => {
         return null;
       });
 
-      await setupChildProcess();
+      await SetupChildProcess();
 
       expect(mkdirSpy).toHaveBeenCalled();
       expect(mkdirSpy).toHaveBeenCalledTimes(2);

@@ -44,7 +44,7 @@ describe("RestoreWarmupMainWindowAndCloseSplash", () => {
       .mockImplementationOnce(() => Promise.resolve());
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    RestoreWarmupMainWindowAndCloseSplash.default(1, window as any, true);
+    RestoreWarmupMainWindowAndCloseSplash.default(1, window as any);
 
     expect(window[0].close).toHaveBeenCalled();
     expect(restoreMainWindowSpy).toHaveBeenCalled();
@@ -57,18 +57,16 @@ describe("RestoreWarmupMainWindowAndCloseSplash", () => {
       },
     ];
 
-    const warmupServerSpy = jest
-      .spyOn(WarmupServer, "WarmupServer")
-      .mockImplementationOnce(() => {
-        return Promise.resolve(true);
-      });
+    const warmupServerSpy = jest.spyOn(WarmupServer, "WarmupServer").mockImplementationOnce(() => {
+      return Promise.resolve(true);
+    });
 
     const restoreMainWindowSpy = jest
       .spyOn(RestoreMainWindow, "RestoreMainWindow")
       .mockImplementationOnce(() => Promise.resolve());
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    RestoreWarmupMainWindowAndCloseSplash.default(1, window as any, false);
+    RestoreWarmupMainWindowAndCloseSplash.default(1, window as any);
 
     expect(warmupServerSpy).toHaveBeenCalled();
     expect(restoreMainWindowSpy).toHaveBeenCalled();

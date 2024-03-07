@@ -1,13 +1,14 @@
 import { BrowserWindow } from "electron";
 import * as path from "path";
 import { GetAppVersion } from "../config/get-app-version";
+import logger from "../logger/logger";
 import { windowStateKeeper } from "../window-state-keeper/window-state-keeper";
 import { getNewFocusedWindow } from "./get-new-focused-window";
 import { mainWindows } from "./main-windows.const";
 import { removeRememberUrl, saveRememberUrl } from "./save-remember-url";
 import { spellCheck } from "./spellcheck";
 
-async function createMainWindow(openSpecificUrl: string, offset = 0): Promise<BrowserWindow> {
+async function CreateMainWindow(openSpecificUrl: string, offset = 0): Promise<BrowserWindow> {
   const mainWindowStateKeeper = await windowStateKeeper("main");
 
   const { x, y } = getNewFocusedWindow(
@@ -24,7 +25,7 @@ async function createMainWindow(openSpecificUrl: string, offset = 0): Promise<Br
     webPreferences: {
       allowRunningInsecureContent: false,
       nodeIntegration: false,
-      sandbox: false,
+      sandbox: true,
       webviewTag: true,
       spellcheck: true,
       partition: "persist:main",
@@ -38,11 +39,12 @@ async function createMainWindow(openSpecificUrl: string, offset = 0): Promise<Br
 
   mainWindowStateKeeper.track(newWindow);
 
+  const location = path.join(__dirname, "client/pages/start/start.html");
+  logger.info(`[CreateMainWindow] url: ${openSpecificUrl} l: ${location}`);
 
-  await newWindow.loadURL(openSpecificUrl)
-  // await newWindow.loadFile(location, {
-  //   query: { "remember-url": openSpecificUrl },
-  // });
+  await newWindow.loadFile(location, {
+    query: { "remember-url": openSpecificUrl },
+  });
 
   spellCheck(newWindow);
 
@@ -51,8 +53,7 @@ async function createMainWindow(openSpecificUrl: string, offset = 0): Promise<Br
   });
 
   newWindow.webContents.setWindowOpenHandler(({ url }) => {
-    console.log(url);
-
+    logger.info(`[setWindowOpenHandler] ${url}`);
     return {
       action: "allow",
       overrideBrowserWindowOptions: {
@@ -91,7 +92,9 @@ async function createMainWindow(openSpecificUrl: string, offset = 0): Promise<Br
   });
 
   mainWindows.add(newWindow);
+  logger.info(`[CreateMainWindow] url / newWindow: ${openSpecificUrl}`);
+
   return newWindow;
 }
 
-export default createMainWindow;
+export default CreateMainWindow;

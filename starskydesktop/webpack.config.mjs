@@ -96,18 +96,6 @@ const preloadConfig = merge(commonConfig, {
   output: { filename: 'preload-main.bundle.js' },
 });
 
-// import HtmlWebpackPlugin from 'html-webpack-plugin';
-// const rendererConfig = merge(commonConfig, {
-//   entry: './src/renderer/renderer.tsx',
-//   target: 'electron-renderer',
-//   output: { filename: 'renderer.bundle.js' },
-//   plugins: [
-//     new HtmlWebpackPlugin({
-//       template: path.resolve(__dirname, './public/index.html'),
-//     }),
-//   ],
-// });
-
 const clientConfig = merge(commonConfig, {
   entry: {
     'reload-redirect': "./src/client/script/reload-redirect.ts",
