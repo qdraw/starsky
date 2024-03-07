@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using helpers;
 using Nuke.Common;
@@ -10,13 +11,16 @@ using Serilog;
 // ReSharper disable once CheckNamespace
 namespace build;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage",
+[SuppressMessage("Usage",
 	"S3887:Use an immutable collection or reduce the " +
 	"accessibility of the non-private readonly field",
 	Justification = "Not production code.")]
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage",
+[SuppressMessage("Usage",
 	"S2386:Use an immutable collection or reduce " +
 	"the accessibility of the non-private readonly field",
+	Justification = "Not production code.")]
+[SuppressMessage("Sonar",
+	"S2629: Don't use string interpolation in logging message templates",
 	Justification = "Not production code.")]
 [ShutdownDotNetAfterServerBuild]
 public sealed class Build : NukeBuild
@@ -64,7 +68,7 @@ public sealed class Build : NukeBuild
 	/// Nuget & NPM dependencies are always installed
 	/// </summary>
 	[Parameter("Skip Dependencies download e.g. exiftool / " +
-			   "geo data, nuget/npm deps are always installed")]
+	           "geo data, nuget/npm deps are always installed")]
 	readonly bool NoDependencies;
 
 	/// <summary>
@@ -104,7 +108,7 @@ public sealed class Build : NukeBuild
 	{
 		var branchName = Branch;
 		if ( !string.IsNullOrEmpty(branchName) &&
-			 branchName.StartsWith("refs/heads/") )
+		     branchName.StartsWith("refs/heads/") )
 		{
 			branchName = branchName.Replace("refs/heads/", "");
 		}
@@ -126,7 +130,7 @@ public sealed class Build : NukeBuild
 	/// --ready-to-run
 	/// </summary>
 	/// <returns></returns>
-	public bool IsReadyToRunEnabled()
+	bool IsReadyToRunEnabled()
 	{
 		return ReadyToRun;
 	}
@@ -236,7 +240,7 @@ public sealed class Build : NukeBuild
 			$"Current RID: {RuntimeIdentifier.GetCurrentRuntimeIdentifier()}");
 
 		Log.Information("SolutionParentFolder: " +
-						WorkingDirectory.GetSolutionParentFolder());
+		                WorkingDirectory.GetSolutionParentFolder());
 
 		Log.Information(NoClient
 			? "Client is: disabled"
@@ -251,8 +255,8 @@ public sealed class Build : NukeBuild
 			: "Publish: enabled");
 
 		Log.Information(NoSonar ||
-						string.IsNullOrEmpty(SonarQube.GetSonarKey()) ||
-						string.IsNullOrEmpty(SonarQube.GetSonarToken())
+		                string.IsNullOrEmpty(SonarQube.GetSonarKey()) ||
+		                string.IsNullOrEmpty(SonarQube.GetSonarToken())
 			? "Sonarcloud scan: disabled"
 			: "Sonarcloud scan: enabled");
 
@@ -319,7 +323,7 @@ public sealed class Build : NukeBuild
 				IsPublishDisabled());
 		});
 
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage",
+	[SuppressMessage("Usage",
 		"S1144:UnusedMember.Local", Justification = "Not production code.")]
 	// ReSharper disable once UnusedMember.Local
 	Target DownloadDependencies => p => p
@@ -370,7 +374,7 @@ public sealed class Build : NukeBuild
 		});
 
 	// ReSharper disable once UnusedMember.Local
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage",
+	[SuppressMessage("Usage",
 		"S1144:UnusedMember.Local", Justification = "Not production code.")]
 	Target BuildNetCore => p => p
 		.Executes(() =>
@@ -383,7 +387,7 @@ public sealed class Build : NukeBuild
 		});
 
 	// ReSharper disable once UnusedMember.Local
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage",
+	[SuppressMessage("Usage",
 		"S1144:UnusedMember.Local", Justification = "Not production code.")]
 	Target TestNetCore => p => p
 		.Executes(() =>

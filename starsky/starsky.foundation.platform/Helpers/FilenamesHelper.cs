@@ -117,7 +117,7 @@ namespace starsky.foundation.platform.Helpers
 		[GeneratedRegex(
 			".+(?=\\/[^/]+$)",
 			RegexOptions.CultureInvariant,
-			matchTimeoutMilliseconds: 100)]
+			matchTimeoutMilliseconds: 200)]
 		private static partial Regex ParentPathRegex();
 
 		/// <summary>
