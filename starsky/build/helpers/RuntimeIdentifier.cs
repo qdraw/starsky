@@ -46,7 +46,7 @@ public static class RuntimeIdentifier
 		}
 
 		// Handle unsupported currentIdentifier
-		Log.Error("Unsupported currentIdentifier: {currentIdentifier}", currentIdentifier);
+		Log.Error("Unsupported currentIdentifier: {CurrentIdentifier}", currentIdentifier);
 		return false;
 	}
 }
