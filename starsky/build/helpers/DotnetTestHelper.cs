@@ -11,11 +11,6 @@ namespace helpers
 {
 	public static class DotnetTestHelper
 	{
-		static void Information(string input)
-		{
-			Log.Information(input);
-		}
-
 		static bool DirectoryExists(string path)
 		{
 			return Directory.Exists(path);
@@ -23,11 +18,11 @@ namespace helpers
 
 		public static void TestNetCoreGenericCommand(Configuration configuration, bool noUnitTest)
 		{
-			Information(">> next: TestNetCoreGenericCommand");
+			Log.Information(">> next: TestNetCoreGenericCommand");
 
 			if ( noUnitTest )
 			{
-				Information($">> TestNetCore is disable due the --no-unit-test flag");
+				Log.Information($">> TestNetCore is disable due the --no-unit-test flag");
 				return;
 			}
 
@@ -41,23 +36,23 @@ namespace helpers
 			{
 				var projectFullPath = Path.Combine(WorkingDirectory.GetSolutionParentFolder(),
 					project);
-				Information("Testing project " + project);
+				Log.Information("Testing project {Project}", project);
 
 				var testParentPath = Directory.GetParent(projectFullPath)?.FullName!;
-				Information("testParentPath " + testParentPath);
+				Log.Information("testParentPath {TestParentPath} ", testParentPath);
 
 				/* clean test results */
 				var testResultsFolder = Path.Combine(testParentPath, "TestResults");
 				if ( DirectoryExists(testResultsFolder) )
 				{
-					Information(">> Removing folder => " + testResultsFolder);
+					Log.Information(">> Removing folder => {testResultsFolder}", testResultsFolder);
 					Directory.Delete(testResultsFolder, true);
 				}
 
 				var runSettingsFile = Path.Combine(
 					WorkingDirectory.GetSolutionParentFolder(), "build.vstest.runsettings");
 
-				Log.Information("runSettingsFile " + runSettingsFile);
+				Log.Information("runSettingsFile {RunSettingsFile}", runSettingsFile);
 
 				try
 				{
@@ -87,13 +82,13 @@ namespace helpers
 
 				foreach ( var coverageItem in coverageEnum )
 				{
-					Information("coverageItem: " + coverageItem);
+					Log.Information("coverageItem: {CoverageItem}", coverageItem);
 				}
 
 				// Get the FirstOrDefault() but there is no LINQ here
 				var coverageFilePath =
 					Path.Combine(testParentPath, "netcore-coverage.opencover.xml");
-				Information("next copy: coverageFilePath " + coverageFilePath);
+				Log.Information("next copy: coverageFilePath {CoverageFilePath}", coverageFilePath);
 
 				foreach ( var item in coverageEnum )
 				{

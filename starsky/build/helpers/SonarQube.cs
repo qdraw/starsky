@@ -93,20 +93,21 @@ namespace helpers
 			var result = await HttpQuery.GetJsonFromApi(SonarQubeDotnetSonarScannerApi);
 			if ( result == null )
 			{
-				Log.Information($"Nuget API is not available, " +
-				                $"so skip checking the latest version of {SonarQubePackageName}");
+				Log.Information("Nuget API is not available, " +
+				                "so skip checking the latest version of {SonarQubePackageName}",
+					SonarQubePackageName);
 				return;
 			}
 
 			var latestVersionByApi = HttpQuery.ParseJsonVersionNumbers(result);
 			if ( latestVersionByApi > new Version(SonarQubePackageVersion) )
 			{
-				Log.Warning($"Please upgrade to the latest version " +
-				            $"of dotnet-sonarscanner {latestVersionByApi} \n\n" +
+				Log.Warning("Please upgrade to the latest version " +
+				            "of dotnet-sonarscanner {LatestVersionByApi} \n\n" +
 				            "Update the following values: \n" +
-				            $"- build/helpers/SonarQube.cs -> SonarQubePackageVersion to {latestVersionByApi} \n" +
+				            "- build/helpers/SonarQube.cs -> SonarQubePackageVersion to {LatestVersionByApi} \n" +
 				            "The _build project will auto update: \n" +
-				            "-  .config/dotnet-tools.json");
+				            "-  .config/dotnet-tools.json", latestVersionByApi, latestVersionByApi);
 			}
 		}
 
