@@ -26,7 +26,8 @@ public static class HttpQuery
 		}
 		catch ( HttpRequestException exception )
 		{
-			Log.Information($"GetJsonFromApi {exception.StatusCode} {exception.Message}");
+			Log.Information("GetJsonFromApi {StatusCode} {Message}", exception.StatusCode,
+				exception.Message);
 			return null;
 		}
 	}

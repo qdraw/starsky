@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text.RegularExpressions;
 using build;
@@ -15,6 +16,9 @@ namespace helpers
 	/// <summary>
 	/// use --skip to run only this test
 	/// </summary>
+	[SuppressMessage("Sonar",
+		"S2629: Don't use string interpolation in logging message templates",
+		Justification = "Not production code.")]
 	public static class DotnetRuntimeSpecificHelper
 	{
 		static string BasePath()

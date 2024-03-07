@@ -72,9 +72,9 @@ public static class TrxParserHelper
 
 		foreach ( var result in results )
 		{
-			Log.Error($"Test Name: {result.Item1}");
-			Log.Error($"Message: {result.Item2}");
-			Log.Error($"Stack Trace: {result.Item3}");
+			Log.Error("Test Name: {TestName}", result.Item1);
+			Log.Error("Message: {Message}", result.Item2);
+			Log.Error("Stack Trace: {StackTrace}", result.Item3);
 			Log.Information("------------------------");
 		}
 	}
