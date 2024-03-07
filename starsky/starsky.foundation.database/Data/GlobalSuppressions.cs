@@ -6,6 +6,9 @@ using System.Diagnostics.CodeAnalysis;
 		Justification = "Disable warning when disabling warnings for Generated code",
 		Scope = "module")]
 
+// Make sure use non legacy format: IDE0077:
+// https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/ide0077
+
 // S138: Methods should not have too many lines of code
 // S1128: Remove unused 'using' directives such as 'using System.Linq;'
 // S1192: Define a constant instead of using this literal
