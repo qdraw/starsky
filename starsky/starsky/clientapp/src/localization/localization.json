@@ -26,8 +26,8 @@
   },
   "MessageMove": {
     "en": "Move",
-    "nl": "Verplaatsen",
-    "de": "Verschieben"
+    "nl": "Verplaats",
+    "de": "Verschieb"
   },
   "MessageTo": {
     "en": "to",
