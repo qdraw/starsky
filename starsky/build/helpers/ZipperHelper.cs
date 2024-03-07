@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
 using build;
@@ -7,9 +8,13 @@ using Serilog;
 
 namespace helpers
 {
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage",
+	[SuppressMessage("Usage",
 		"S1118:Add a 'protected' constructor " +
-		"or the 'static' keyword to the class declaration", Justification = "Not production code.")]
+		"or the 'static' keyword to the class declaration",
+		Justification = "Not production code.")]
+	[SuppressMessage("Sonar",
+		"S2629: Don't use string interpolation in logging message templates",
+		Justification = "Not production code.")]
 	public sealed class ZipperHelper
 	{
 		public const string ZipPrefix = "starsky-";
@@ -19,7 +24,7 @@ namespace helpers
 			return Directory.GetParent(AppDomain.CurrentDomain
 				.BaseDirectory)!.Parent!.Parent!.Parent!.FullName;
 		}
-
+		
 		public static void ZipGeneric()
 		{
 			var fromFolder = Path.Join(BasePath(), Build.GenericRuntimeName);
@@ -48,7 +53,7 @@ namespace helpers
 			if ( getRuntimesWithoutGeneric.Count == 0 )
 			{
 				Log.Information("There are no runtime specific items selected\n" +
-								"So skip ZipRuntimes");
+				                "So skip ZipRuntimes");
 				return;
 			}
 
@@ -84,8 +89,8 @@ namespace helpers
 			if ( noUnitTest )
 			{
 				Log.Information(">> ZipHtmlCoverageReport " +
-								"is disable due the --no-unit-test flag\n" +
-								"So skip ZipHtmlCoverageReport");
+				                "is disable due the --no-unit-test flag\n" +
+				                "So skip ZipHtmlCoverageReport");
 				return;
 			}
 

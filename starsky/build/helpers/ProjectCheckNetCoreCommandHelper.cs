@@ -72,11 +72,11 @@ namespace helpers
 
 				if ( uniqueGuids.Contains(fileXmlMatch.Groups[0].Value) )
 				{
-					throw new NotSupportedException($"✖ {project} - ProjectGuid is not Unique");
+					throw new NotSupportedException("✖ {project} - ProjectGuid is not Unique");
 				}
 
 				uniqueGuids.Add(fileXmlMatch.Groups[0].Value);
-				Log.Information($"✓ {project} - Is Ok");
+				Log.Information("✓ {project} - Is Ok",project);
 			}
 		}
 
