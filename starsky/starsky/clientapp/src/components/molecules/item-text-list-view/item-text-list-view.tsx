@@ -3,14 +3,11 @@ import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
-import { ReactNode, FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 import { GetBoxClassName } from "./internal/get-box-class-name.ts";
 
 interface ItemListProps {
-  children?: ReactNode;
   fileIndexItems: IFileIndexItem[];
-  isLoading?: boolean;
-
   callback?(path: string): void;
 }
 
