@@ -51,6 +51,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Back-end_ Update Pomelo.EntityFrameworkCore.MySql, ImageSharp.Drawing,
   ReportGenerator, OpenTelemetry.*.AspNetCore, System.Text.Json, MSTest and Coverlet (PR #1438)
 - [x] (Changed) _Back-end_ Fix for Code Smells and Sonarcloud bugs (PR #1440)
+- [x] (Fixed) _Back-end_ Longer regex timeout for GetFileName (PR #1444)
 
 ## version 0.6.0-beta.2 - 2024-03-05 {#v0.6.0-beta.2}
 
