@@ -58,7 +58,7 @@ namespace helpers
 
 			var genericDepsFullPath =
 				Path.Combine(BasePath(), genericNetcoreFolder, "dependencies");
-			Log.Information("genericDepsFullPath: {genericDepsFullPath}", genericDepsFullPath);
+			Log.Information("genericDepsFullPath: {GenericDepsFullPath}", genericDepsFullPath);
 
 			try
 			{
@@ -85,7 +85,7 @@ namespace helpers
 
 			Environment.SetEnvironmentVariable("app__DependenciesFolder", string.Empty);
 
-			Log.Information("   genericDepsFullPath: {genericDepsFullPath}", genericDepsFullPath);
+			Log.Information("   genericDepsFullPath: {GenericDepsFullPath}", genericDepsFullPath);
 			Log.Information("DownloadDependencies done");
 		}
 
