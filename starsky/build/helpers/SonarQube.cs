@@ -56,6 +56,7 @@ namespace helpers
 					IReadOnlyDictionary<string, string>;
 
 			var toolList = DotNet($"tool list", rootDirectory, envs, null, true);
+
 			if ( toolList.Any(p => p.Text.Contains(SonarQubePackageName)
 			                       && toolList.Any(p => p.Text.Contains(SonarQubePackageVersion))) )
 			{
@@ -67,6 +68,7 @@ namespace helpers
 			}
 
 			Log.Information("Next: Create new manifest file");
+
 			DotNet($"new tool-manifest --force", rootDirectory, envs, null, true);
 
 			Log.Information("Next: Install Sonar tool");
@@ -226,6 +228,7 @@ namespace helpers
 				        $"**/prestorybook.js,**/vite.config.ts,**/.storybook/**,**/jest.setup.ts," +
 				        $"**/_bigimages-helper.js ")
 				.Append($"/d:sonar.coverage.exclusions=**/build/*,**/build/helpers/*," +
+				        "**/build/Constants/*," +
 				        "**/documentation/*," +
 				        "**/Interfaces/IQuery.cs," +
 				        $"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +
