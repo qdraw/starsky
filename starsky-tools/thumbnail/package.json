@@ -21,7 +21,7 @@
     "@types/jpeg-autorotate": "^5.0.3",
     "axios": "^1.6.7",
     "cwait": "^1.1.2",
-    "dotenv": "^16.4.1",
+    "dotenv": "^16.4.4",
     "jimp": "^0.22.10",
     "jpeg-autorotate": "^9.0.0",
     "p-iteration": "^1.1.8"
