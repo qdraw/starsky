@@ -10,33 +10,32 @@ namespace starskytest.Middleware
 		public void MiddlewareBasicAuthenticationHeaderValueCtorTest()
 		{
 			var bto = new BasicAuthenticationHeaderValue("Short");
-			Assert.AreEqual(false,bto.IsValidBasicAuthenticationHeaderValue);
+			Assert.IsFalse(bto.IsValidBasicAuthenticationHeaderValue);
 		}
-        
+
 		[TestMethod]
 		public void MiddlewareBasicAuthenticationHeaderValueCtor_WithUser_Test_Test()
 		{
 			// dGVzdDp0ZXN0 == user: test pass: test
 			var bto = new BasicAuthenticationHeaderValue("Basic dGVzdDp0ZXN0");
-			Assert.AreEqual(true,bto.IsValidBasicAuthenticationHeaderValue);
+			Assert.IsTrue(bto.IsValidBasicAuthenticationHeaderValue);
 		}
-        
+
 		[TestMethod]
 		public void MiddlewareBasicAuthenticationHeaderValueCtor_ReadUserPassword_Test()
 		{
 			// dGVzdDp0ZXN0 == user: test pass: test
 			var bto = new BasicAuthenticationHeaderValue("Basic dGVzdDp0ZXN0");
-			Assert.AreEqual("test",bto.UserIdentifier);
-			Assert.AreEqual("test",bto.UserPassword);
-		}  
-        
+			Assert.AreEqual("test", bto.UserIdentifier);
+			Assert.AreEqual("test", bto.UserPassword);
+		}
+
 		[TestMethod]
 		public void MiddlewareBasicAuthenticationHeaderValueCtor_FormatException_Test()
 		{
 			// Not a valid input :(
 			var bto = new BasicAuthenticationHeaderValue("00000000000");
-			Assert.AreEqual(string.Empty,bto.UserIdentifier);
-		}  
-        
+			Assert.AreEqual(string.Empty, bto.UserIdentifier);
+		}
 	}
 }

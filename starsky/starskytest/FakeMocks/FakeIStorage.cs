@@ -81,6 +81,11 @@ public class FakeIStorage : IStorage
 	private readonly Exception? _exception;
 	public int ExceptionCount { get; set; }
 
+	public bool IsFileReady(string path)
+	{
+		return true;
+	}
+
 	public bool ExistFile(string path)
 	{
 		return _outputSubPathFiles.Contains(path);

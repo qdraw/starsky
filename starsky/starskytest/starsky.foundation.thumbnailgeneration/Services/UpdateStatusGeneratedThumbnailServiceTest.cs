@@ -92,7 +92,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 
 		var getResult = await query.Get(ExampleData[0].FileHash); // see the index
 		Assert.AreEqual(1, getResult.Count);
-		Assert.AreEqual(true, getResult[0].Large);
+		Assert.IsTrue(getResult[0].Large);
 		Assert.AreEqual(null, getResult[0].ExtraLarge);
 		Assert.AreEqual(null, getResult[0].Small);
 	}
@@ -106,7 +106,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 								// see the index
 		var getResult = await query.Get(ExampleData[1].FileHash);
 		Assert.AreEqual(1, getResult.Count);
-		Assert.AreEqual(false, getResult[0].Large);
+		Assert.IsFalse(getResult[0].Large);
 		Assert.AreEqual(null, getResult[0].ExtraLarge);
 		Assert.AreEqual(null, getResult[0].Small);
 	}
@@ -123,7 +123,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		Assert.AreEqual(1, getResult.Count);
 		Assert.AreEqual(null, getResult[0].Large);
 		Assert.AreEqual(null, getResult[0].ExtraLarge);
-		Assert.AreEqual(true, getResult[0].Small);
+		Assert.IsTrue(getResult[0].Small);
 	}
 				
 	[TestMethod]
@@ -137,7 +137,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		Assert.AreEqual(1, getResult.Count);
 		Assert.AreEqual(null, getResult[0].Large);
 		Assert.AreEqual(null, getResult[0].ExtraLarge);
-		Assert.AreEqual(false, getResult[0].Small);
+		Assert.IsFalse(getResult[0].Small);
 	}
 	
 	[TestMethod]
@@ -150,7 +150,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		var getResult = await query.Get(ExampleData[4].FileHash);
 		Assert.AreEqual(1, getResult.Count);
 		Assert.AreEqual(null, getResult[0].Large);
-		Assert.AreEqual(true, getResult[0].ExtraLarge);
+		Assert.IsTrue(getResult[0].ExtraLarge);
 		Assert.AreEqual(null, getResult[0].Small);
 	}
 				
@@ -164,7 +164,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		var getResult = await query.Get(ExampleData[5].FileHash);
 		Assert.AreEqual(1, getResult.Count);
 		Assert.AreEqual(null, getResult[0].Large);
-		Assert.AreEqual(false, getResult[0].ExtraLarge);
+		Assert.IsFalse(getResult[0].ExtraLarge);
 		Assert.AreEqual(null, getResult[0].Small);
 	}
 	
@@ -210,10 +210,10 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 
 		var getResult = await query.Get(ExampleData2[0].FileHash);
 		Assert.AreEqual(1, getResult.Count);
-		Assert.AreEqual(true, getResult[0].Large);
-		Assert.AreEqual(true, getResult[0].ExtraLarge);
-		Assert.AreEqual(true, getResult[0].Small);
-		Assert.AreEqual(false, getResult[0].TinyMeta);
+		Assert.IsTrue(getResult[0].Large);
+		Assert.IsTrue(getResult[0].ExtraLarge);
+		Assert.IsTrue(getResult[0].Small);
+		Assert.IsFalse(getResult[0].TinyMeta);
 	}
 	
 	[TestMethod]
@@ -233,10 +233,10 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		
 		var getResult = await query.Get(ExampleData2[0].FileHash);
 		Assert.AreEqual(1, getResult.Count);
-		Assert.AreEqual(false, getResult[0].Large);
-		Assert.AreEqual(true, getResult[0].ExtraLarge);
-		Assert.AreEqual(true, getResult[0].Small);
-		Assert.AreEqual(false, getResult[0].TinyMeta);
+		Assert.IsFalse(getResult[0].Large);
+		Assert.IsTrue(getResult[0].ExtraLarge);
+		Assert.IsTrue(getResult[0].Small);
+		Assert.IsFalse(getResult[0].TinyMeta);
 	}
 
 

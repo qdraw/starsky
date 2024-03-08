@@ -79,9 +79,14 @@ public sealed class WriteMetaThumbnailService : IWriteMetaThumbnailService
 		}
 		catch ( Exception exception )
 		{
+			const string imageCannotBeLoadedErrorMessage = "Image cannot be loaded";
+
 			var message = exception.Message;
-			if ( message.StartsWith("Image cannot be loaded") )
-				message = "Image cannot be loaded";
+			if ( message.StartsWith(imageCannotBeLoadedErrorMessage) )
+			{
+				message = imageCannotBeLoadedErrorMessage;
+			}
+
 			_logger.LogInformation(
 				$"[WriteFile@meta] Meta data read - Exception {reference} {message} - can continue without",
 				exception);

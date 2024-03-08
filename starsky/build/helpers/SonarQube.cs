@@ -15,6 +15,9 @@ using static SimpleExec.Command;
 namespace helpers
 {
 	[SuppressMessage("ReSharper", "ArrangeTypeMemberModifiers")]
+	[SuppressMessage("Sonar",
+		"S2629: Don't use string interpolation in logging message templates",
+		Justification = "Not production code.")]
 	public static class SonarQube
 	{
 		public const string SonarQubePackageName = "dotnet-sonarscanner";
@@ -56,6 +59,7 @@ namespace helpers
 					IReadOnlyDictionary<string, string>;
 
 			var toolList = DotNet($"tool list", rootDirectory, envs, null, true);
+
 			if ( toolList.Any(p => p.Text.Contains(SonarQubePackageName)
 			                       && toolList.Any(p => p.Text.Contains(SonarQubePackageVersion))) )
 			{
@@ -67,6 +71,7 @@ namespace helpers
 			}
 
 			Log.Information("Next: Create new manifest file");
+
 			DotNet($"new tool-manifest --force", rootDirectory, envs, null, true);
 
 			Log.Information("Next: Install Sonar tool");
@@ -91,20 +96,21 @@ namespace helpers
 			var result = await HttpQuery.GetJsonFromApi(SonarQubeDotnetSonarScannerApi);
 			if ( result == null )
 			{
-				Log.Information($"Nuget API is not available, " +
-				                $"so skip checking the latest version of {SonarQubePackageName}");
+				Log.Information("Nuget API is not available, " +
+				                "so skip checking the latest version of {SonarQubePackageName}",
+					SonarQubePackageName);
 				return;
 			}
 
 			var latestVersionByApi = HttpQuery.ParseJsonVersionNumbers(result);
 			if ( latestVersionByApi > new Version(SonarQubePackageVersion) )
 			{
-				Log.Warning($"Please upgrade to the latest version " +
-				            $"of dotnet-sonarscanner {latestVersionByApi} \n\n" +
-				            "Update the following values: \n" +
-				            $"- build/helpers/SonarQube.cs -> SonarQubePackageVersion to {latestVersionByApi} \n" +
+				Log.Warning("Please upgrade to the latest version " +
+				            "of dotnet-sonarscanner {LatestVersionByApi} \n\n", latestVersionByApi);
+				Log.Warning("Update the following values: \n" +
+				            "- build/helpers/SonarQube.cs -> SonarQubePackageVersion to {LatestVersionByApi} \n" +
 				            "The _build project will auto update: \n" +
-				            "-  .config/dotnet-tools.json");
+				            "-  .config/dotnet-tools.json", latestVersionByApi);
 			}
 		}
 
@@ -226,6 +232,7 @@ namespace helpers
 				        $"**/prestorybook.js,**/vite.config.ts,**/.storybook/**,**/jest.setup.ts," +
 				        $"**/_bigimages-helper.js ")
 				.Append($"/d:sonar.coverage.exclusions=**/build/*,**/build/helpers/*," +
+				        "**/build/Constants/*," +
 				        "**/documentation/*," +
 				        "**/Interfaces/IQuery.cs," +
 				        $"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +

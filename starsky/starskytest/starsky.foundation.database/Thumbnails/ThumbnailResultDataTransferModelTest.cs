@@ -20,7 +20,7 @@ public class ThumbnailResultDataTransferModelTest
 	{
 		var model = new ThumbnailResultDataTransferModel("test",true);
 		Assert.AreEqual("test", model.FileHash);
-		Assert.AreEqual(true, model.TinyMeta);
+		Assert.IsTrue(model.TinyMeta);
 	}
 	
 	[TestMethod]
@@ -28,8 +28,8 @@ public class ThumbnailResultDataTransferModelTest
 	{
 		var model = new ThumbnailResultDataTransferModel("test",true,true);
 		Assert.AreEqual("test", model.FileHash);
-		Assert.AreEqual(true, model.TinyMeta);
-		Assert.AreEqual(true, model.Small);
+		Assert.IsTrue(model.TinyMeta);
+		Assert.IsTrue(model.Small);
 	}
 		
 	[TestMethod]
@@ -37,9 +37,9 @@ public class ThumbnailResultDataTransferModelTest
 	{
 		var model = new ThumbnailResultDataTransferModel("test",true,true, true);
 		Assert.AreEqual("test", model.FileHash);
-		Assert.AreEqual(true, model.TinyMeta);
-		Assert.AreEqual(true, model.Small);
-		Assert.AreEqual(true, model.Large);
+		Assert.IsTrue(model.TinyMeta);
+		Assert.IsTrue(model.Small);
+		Assert.IsTrue(model.Large);
 	}
 			
 	[TestMethod]
@@ -47,10 +47,10 @@ public class ThumbnailResultDataTransferModelTest
 	{
 		var model = new ThumbnailResultDataTransferModel("test",true,true, true,true);
 		Assert.AreEqual("test", model.FileHash);
-		Assert.AreEqual(true, model.TinyMeta);
-		Assert.AreEqual(true, model.Small);
-		Assert.AreEqual(true, model.Large);
-		Assert.AreEqual(true, model.ExtraLarge);
+		Assert.IsTrue(model.TinyMeta);
+		Assert.IsTrue(model.Small);
+		Assert.IsTrue(model.Large);
+		Assert.IsTrue(model.ExtraLarge);
 	}
 
 	[TestMethod]
@@ -59,10 +59,10 @@ public class ThumbnailResultDataTransferModelTest
 		var model = new ThumbnailResultDataTransferModel("test",true,true, true,true);
 		model.Change(ThumbnailSize.TinyMeta,false);
 		Assert.AreEqual("test", model.FileHash);
-		Assert.AreEqual(false, model.TinyMeta);
-		Assert.AreEqual(true, model.Small);
-		Assert.AreEqual(true, model.Large);
-		Assert.AreEqual(true, model.ExtraLarge);
+		Assert.IsFalse(model.TinyMeta);
+		Assert.IsTrue(model.Small);
+		Assert.IsTrue(model.Large);
+		Assert.IsTrue(model.ExtraLarge);
 	}
 	
 	[TestMethod]
@@ -71,10 +71,10 @@ public class ThumbnailResultDataTransferModelTest
 		var model = new ThumbnailResultDataTransferModel("test",true,true, true,true);
 		model.Change(ThumbnailSize.Small,false);
 		Assert.AreEqual("test", model.FileHash);
-		Assert.AreEqual(true, model.TinyMeta);
-		Assert.AreEqual(false, model.Small);
-		Assert.AreEqual(true, model.Large);
-		Assert.AreEqual(true, model.ExtraLarge);
+		Assert.IsTrue(model.TinyMeta);
+		Assert.IsFalse(model.Small);
+		Assert.IsTrue(model.Large);
+		Assert.IsTrue(model.ExtraLarge);
 	}
 		
 	[TestMethod]
@@ -83,10 +83,10 @@ public class ThumbnailResultDataTransferModelTest
 		var model = new ThumbnailResultDataTransferModel("test",true,true, true,true);
 		model.Change(ThumbnailSize.Large,false);
 		Assert.AreEqual("test", model.FileHash);
-		Assert.AreEqual(true, model.TinyMeta);
-		Assert.AreEqual(true, model.Small);
-		Assert.AreEqual(false, model.Large);
-		Assert.AreEqual(true, model.ExtraLarge);
+		Assert.IsTrue(model.TinyMeta);
+		Assert.IsTrue(model.Small);
+		Assert.IsFalse(model.Large);
+		Assert.IsTrue(model.ExtraLarge);
 	}
 	
 	[TestMethod]
@@ -95,10 +95,10 @@ public class ThumbnailResultDataTransferModelTest
 		var model = new ThumbnailResultDataTransferModel("test",true,true, true,true);
 		model.Change(ThumbnailSize.Large,null);
 		Assert.AreEqual("test", model.FileHash);
-		Assert.AreEqual(true, model.TinyMeta);
-		Assert.AreEqual(true, model.Small);
+		Assert.IsTrue(model.TinyMeta);
+		Assert.IsTrue(model.Small);
 		Assert.AreEqual(null, model.Large);
-		Assert.AreEqual(true, model.ExtraLarge);
+		Assert.IsTrue(model.ExtraLarge);
 	}
 	
 	[TestMethod]

@@ -29,7 +29,7 @@ public class ExifToolServiceTest
 
 		var stream = StringToStreamHelper.StringToStream("#!/bin/bash\necho Fake ExifTool");
 		_exifToolPath = Path.Join(new CreateAnImage().BasePath, "exiftool-tmp");
-		new StorageHostFullPathFilesystem().WriteStream(stream,
+		new StorageHostFullPathFilesystem(new FakeIWebLogger()).WriteStream(stream,
 			_exifToolPath);
 
 		var result = Command.Run("chmod", "+x",
@@ -52,7 +52,7 @@ public class ExifToolServiceTest
 			"/image.jpg",
 			null, "");
 
-		Assert.AreEqual(false, result.Key);
+		Assert.IsFalse(result.Key);
 	}
 
 	[TestMethod]

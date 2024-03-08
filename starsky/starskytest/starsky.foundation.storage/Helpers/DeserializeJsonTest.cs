@@ -27,7 +27,7 @@ namespace starskytest.starsky.foundation.storage.Helpers
 			Assert.IsNotNull(result);
 			Assert.AreEqual(200, result.Price);
 			Assert.AreEqual("Title", result.Title);
-			Assert.AreEqual(true, result.ShowButtons);
+			Assert.IsTrue(result.ShowButtons);
 		}
 
 		[TestMethod]

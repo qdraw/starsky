@@ -33,8 +33,9 @@ namespace starskytest.starsky.foundation.writemeta.Services
 			var fakeReadMeta = new ReadMeta(storage, _appSettings, null, new FakeIWebLogger());
 			var fakeExifTool = new FakeExifTool(storage, _appSettings);
 			var helperResult = await new ExifCopy(storage, storage, fakeExifTool,
-				fakeReadMeta, new FakeIThumbnailQuery()).CopyExifPublish("/test.jpg", "/test2");
-			Assert.AreEqual(true, helperResult.Contains("HistorySoftwareAgent"));
+					fakeReadMeta, new FakeIThumbnailQuery(), new FakeIWebLogger())
+				.CopyExifPublish("/test.jpg", "/test2");
+			Assert.IsTrue(helperResult.Contains("HistorySoftwareAgent"));
 		}
 
 		[TestMethod]
@@ -51,7 +52,7 @@ namespace starskytest.starsky.foundation.writemeta.Services
 			var fakeExifTool = new FakeExifTool(storage, _appSettings);
 			var helperResult = await new ExifCopy(storage,
 				storage, fakeExifTool, fakeReadMeta,
-				new FakeIThumbnailQuery()).XmpSync("/test.dng");
+				new FakeIThumbnailQuery(), new FakeIWebLogger()).XmpSync("/test.dng");
 			Assert.AreEqual("/test.xmp", helperResult);
 		}
 
@@ -68,7 +69,8 @@ namespace starskytest.starsky.foundation.writemeta.Services
 				null, new FakeIWebLogger());
 			var fakeExifTool = new FakeExifTool(storage, _appSettings);
 
-			new ExifCopy(storage, storage, fakeExifTool, fakeReadMeta, new FakeIThumbnailQuery())
+			new ExifCopy(storage, storage, fakeExifTool, fakeReadMeta, new FakeIThumbnailQuery(),
+					new FakeIWebLogger())
 				.XmpCreate("/test.xmp");
 			var result =
 				await StreamToStringHelper.StreamToStringAsync(storage.ReadStream("/test.xmp"));
@@ -91,18 +93,18 @@ namespace starskytest.starsky.foundation.writemeta.Services
 				null, new FakeIWebLogger());
 			var fakeExifTool = new FakeExifTool(storage, _appSettings);
 
-			await new ExifCopy(storage, storage, fakeExifTool, readMeta, new FakeIThumbnailQuery())
+			await new ExifCopy(storage, storage, fakeExifTool, readMeta, new FakeIThumbnailQuery(),
+					new FakeIWebLogger())
 				.XmpSync("/test.dng");
 
-			Assert.AreEqual(true, storage.ExistFile("/test.xmp"));
+			Assert.IsTrue(storage.ExistFile("/test.xmp"));
 			var xmpContentReadStream = storage.ReadStream("/test.xmp");
 			var xmpContent = await StreamToStringHelper.StreamToStringAsync(xmpContentReadStream);
 
 			// Those values are injected by fakeExifTool
-			Assert.AreEqual(true,
-				xmpContent.Contains(
-					"<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Image::ExifTool 11.30'>"));
-			Assert.AreEqual(true, xmpContent.Contains("<rdf:li>test</rdf:li>"));
+			Assert.IsTrue(xmpContent.Contains(
+				"<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Image::ExifTool 11.30'>"));
+			Assert.IsTrue(xmpContent.Contains("<rdf:li>test</rdf:li>"));
 		}
 	}
 }

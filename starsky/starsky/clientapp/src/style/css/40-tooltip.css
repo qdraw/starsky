@@ -19,8 +19,8 @@
 }
 
 .tooltip-container.left .tooltip {
-  left: 70%;
-  transform: translateX(-30%);
+  left: 74%;
+  transform: translateX(-24%);
 }
 
 .tooltip-container .tooltip::after {
@@ -35,7 +35,7 @@
 }
 
 .tooltip-container.left .tooltip::after {
-  left: 28%;
+  left: 22%;
 }
 
 .tooltip-container:hover .tooltip {

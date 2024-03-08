@@ -162,6 +162,31 @@ namespace starskytest.starsky.foundation.storage.Storage
 			File.Delete(Path.Combine(createNewImage.BasePath,
 				"StorageThumbnailFilesystemTest_WriteStreamAsync.jpg"));
 		}
-		
+
+		[TestMethod]
+		public void IsFileReady_thumbnailStorage()
+		{
+			var createNewImage = new CreateAnImage();
+
+			const string thumbnailId = "IsFileReady_thumbnailStorage";
+			// first copy for parallel test
+			_thumbnailStorage.FileCopy(_fileNameWithoutExtension, thumbnailId);
+
+			var stream = _thumbnailStorage.ReadStream(thumbnailId);
+
+			var result = _thumbnailStorage.IsFileReady(thumbnailId);
+			Assert.IsFalse(result);
+
+			// is disposed to late (as designed)
+			stream.Dispose();
+
+			var result2 = _thumbnailStorage.IsFileReady(thumbnailId);
+			Assert.IsTrue(result2);
+
+			File.Delete(Path.Combine(createNewImage.BasePath,
+				$"{thumbnailId}.jpg"));
+
+			Assert.IsFalse(_thumbnailStorage.ExistFile(thumbnailId));
+		}
 	}
 }

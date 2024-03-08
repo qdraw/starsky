@@ -11,13 +11,11 @@ namespace starskytest.ViewModels.AccountViewModels
 		{
 			var model = new LoginViewModel
 			{
-				Email = "dont@mail.us",
-				Password = "123456",
-				RememberMe = true
+				Email = "dont@mail.us", Password = "123456", RememberMe = true
 			};
-			Assert.AreEqual("123456",model.Password);
-			Assert.AreEqual("dont@mail.us",model.Email);
-			Assert.AreEqual(true,model.RememberMe);
+			Assert.AreEqual("123456", model.Password);
+			Assert.AreEqual("dont@mail.us", model.Email);
+			Assert.IsTrue(model.RememberMe);
 		}
 	}
 }

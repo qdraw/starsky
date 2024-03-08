@@ -15,6 +15,7 @@ using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
+
 // #pragma warning disable 618
 
 namespace starskytest.starsky.foundation.thumbnailgeneration.Services
@@ -30,79 +31,78 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 				.AddMemoryCache()
 				.BuildServiceProvider();
 			var memoryCache = provider.GetService<IMemoryCache>();
-            
+
 			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
 			builder.UseInMemoryDatabase("test");
 			var options = builder.Options;
 			var context = new ApplicationDbContext(options);
-			_query = new Query(context, new AppSettings(),null,null!,memoryCache);
+			_query = new Query(context, new AppSettings(), null, null!, memoryCache);
 		}
-		
+
 		[TestMethod]
 		[ExpectedException(typeof(DirectoryNotFoundException))]
 		public async Task ThumbnailCleanerTestAsync_DirectoryNotFoundException()
 		{
-			await new ThumbnailCleaner(new FakeIStorage(), _query, new FakeIWebLogger(), new FakeIThumbnailQuery()).CleanAllUnusedFilesAsync();
+			await new ThumbnailCleaner(new FakeIStorage(), _query, new FakeIWebLogger(),
+				new FakeIThumbnailQuery()).CleanAllUnusedFilesAsync();
 		}
-		
+
 		[TestMethod]
 		public async Task ThumbnailCleanerTestAsync_Cleaner()
 		{
 			var createAnImage = new CreateAnImage();
 
 			var existFullDir = createAnImage.BasePath + Path.DirectorySeparatorChar + "thumb";
-			if (!Directory.Exists(existFullDir))
+			if ( !Directory.Exists(existFullDir) )
 			{
 				Directory.CreateDirectory(existFullDir);
 			}
-			
-			if (!File.Exists(Path.Join(existFullDir,"EXIST.jpg"))) File.Copy(createAnImage.FullFilePath, 
-				Path.Join(existFullDir,"EXIST.jpg"));
-			if (!File.Exists(Path.Join(existFullDir,"DELETE.jpg"))) File.Copy(createAnImage.FullFilePath, 
-				Path.Join(existFullDir,"DELETE.jpg"));
 
-			await _query.AddItemAsync(new FileIndexItem
-			{
-				FileHash = "EXIST",
-				FileName = "exst2"
-			});
+			if ( !File.Exists(Path.Join(existFullDir, "EXIST.jpg")) )
+				File.Copy(createAnImage.FullFilePath,
+					Path.Join(existFullDir, "EXIST.jpg"));
+			if ( !File.Exists(Path.Join(existFullDir, "DELETE.jpg")) )
+				File.Copy(createAnImage.FullFilePath,
+					Path.Join(existFullDir, "DELETE.jpg"));
+
+			await _query.AddItemAsync(new FileIndexItem { FileHash = "EXIST", FileName = "exst2" });
 
 			var appSettings = new AppSettings
 			{
-				ThumbnailTempFolder = existFullDir,
-				Verbose = true
+				ThumbnailTempFolder = existFullDir, Verbose = true
 			};
-			var thumbnailStorage = new StorageThumbnailFilesystem(appSettings, new FakeIWebLogger());
-			
-			var thumbnailCleaner = new ThumbnailCleaner(thumbnailStorage, _query, new FakeIWebLogger(), new FakeIThumbnailQuery());
-			
+			var thumbnailStorage =
+				new StorageThumbnailFilesystem(appSettings, new FakeIWebLogger());
+
+			var thumbnailCleaner = new ThumbnailCleaner(thumbnailStorage, _query,
+				new FakeIWebLogger(), new FakeIThumbnailQuery());
+
 			// there are now two files inside this dir
 			var allThumbnailFilesBefore = thumbnailStorage.GetAllFilesInDirectory("/");
-			Assert.AreEqual(2,allThumbnailFilesBefore.Count());
-			
+			Assert.AreEqual(2, allThumbnailFilesBefore.Count());
+
 			await thumbnailCleaner.CleanAllUnusedFilesAsync();
-			
+
 			// DELETE.jpg is removed > is missing in database
 			var allThumbnailFilesAfter = thumbnailStorage.GetAllFilesInDirectory("/");
-			Assert.AreEqual(1,allThumbnailFilesAfter.Count());
+			Assert.AreEqual(1, allThumbnailFilesAfter.Count());
 
-			new StorageHostFullPathFilesystem().FolderDelete(existFullDir);
+			new StorageHostFullPathFilesystem(new FakeIWebLogger()).FolderDelete(existFullDir);
 		}
 
-			
+
 		[TestMethod]
 		public async Task ThumbnailCleanerTestAsync_CatchException()
 		{
-			var fakeStorage = new FakeIStorage(new List<string> {"/"},
-				new List<string>
-				{
-					ThumbnailNameHelper.Combine("hash1234", ThumbnailSize.Large),
-				});
+			var fakeStorage = new FakeIStorage(new List<string> { "/" },
+				new List<string> { ThumbnailNameHelper.Combine("hash1234", ThumbnailSize.Large), });
 
-			var fakeQuery = new FakeIQueryException(new Microsoft.EntityFrameworkCore.Storage.RetryLimitExceededException());
-			
-			var thumbnailCleaner = new ThumbnailCleaner(fakeStorage, fakeQuery, 
-				 new FakeIWebLogger(), new FakeIThumbnailQuery());
+			var fakeQuery =
+				new FakeIQueryException(
+					new Microsoft.EntityFrameworkCore.Storage.RetryLimitExceededException());
+
+			var thumbnailCleaner = new ThumbnailCleaner(fakeStorage, fakeQuery,
+				new FakeIWebLogger(), new FakeIThumbnailQuery());
 
 			await thumbnailCleaner.CleanAllUnusedFilesAsync();
 
@@ -110,11 +110,11 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 			Assert.IsTrue(fakeStorage.ExistFile(
 				ThumbnailNameHelper.Combine("hash1234", ThumbnailSize.Large)));
 		}
-		
+
 		[TestMethod]
 		public async Task ThumbnailCleanerTestAsync_Cleaner_WithDifferentSizes()
 		{
-			var fakeStorage = new FakeIStorage(new List<string> {"/"},
+			var fakeStorage = new FakeIStorage(new List<string> { "/" },
 				new List<string>
 				{
 					ThumbnailNameHelper.Combine("hash1234", ThumbnailSize.Large),
@@ -129,11 +129,11 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>
 			{
-				new FileIndexItem("/test.jpg"){FileHash = "exist"}
+				new FileIndexItem("/test.jpg") { FileHash = "exist" }
 			});
-			
-			var thumbnailCleaner = new ThumbnailCleaner(fakeStorage, fakeQuery, 
-				 new FakeIWebLogger(), new FakeIThumbnailQuery());
+
+			var thumbnailCleaner = new ThumbnailCleaner(fakeStorage, fakeQuery,
+				new FakeIWebLogger(), new FakeIThumbnailQuery());
 
 			await thumbnailCleaner.CleanAllUnusedFilesAsync(1);
 
@@ -145,7 +145,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 				ThumbnailNameHelper.Combine("exist", ThumbnailSize.Large)));
 			Assert.IsTrue(fakeStorage.ExistFile(
 				ThumbnailNameHelper.Combine("exist", ThumbnailSize.TinyMeta)));
-			
+
 			Assert.IsFalse(fakeStorage.ExistFile(
 				ThumbnailNameHelper.Combine("hash1234", ThumbnailSize.TinyMeta)));
 			Assert.IsFalse(fakeStorage.ExistFile(
@@ -155,11 +155,11 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 			Assert.IsFalse(fakeStorage.ExistFile(
 				ThumbnailNameHelper.Combine("12234456677", ThumbnailSize.ExtraLarge)));
 		}
-		
+
 		[TestMethod]
 		public async Task ThumbnailCleanerTestAsync_RemoveFromThumbnailTable()
 		{
-			var fakeStorage = new FakeIStorage(new List<string> {"/"},
+			var fakeStorage = new FakeIStorage(new List<string> { "/" },
 				new List<string>
 				{
 					ThumbnailNameHelper.Combine("35874453877", ThumbnailSize.Large),
@@ -170,17 +170,17 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 			{
 				new ThumbnailItem("35874453877", null, null, true, null)
 			});
-			
-			var preGetter = await thumbnailQuery.Get("35874453877");
-			Assert.AreEqual(1,preGetter.Count);
 
-			var thumbnailCleaner = new ThumbnailCleaner(fakeStorage, fakeQuery, 
+			var preGetter = await thumbnailQuery.Get("35874453877");
+			Assert.AreEqual(1, preGetter.Count);
+
+			var thumbnailCleaner = new ThumbnailCleaner(fakeStorage, fakeQuery,
 				new FakeIWebLogger(), thumbnailQuery);
 
 			await thumbnailCleaner.CleanAllUnusedFilesAsync();
-			
+
 			var getter = await thumbnailQuery.Get("35874453877");
-			Assert.AreEqual(0,getter.Count);
+			Assert.AreEqual(0, getter.Count);
 		}
 	}
 }

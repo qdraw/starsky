@@ -64,24 +64,24 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 
 			var fakeExifTool = new FakeExifTool(storage, _appSettings);
 			var helperResult = new ExifToolCmdHelper(fakeExifTool, storage, storage,
-					new FakeReadMeta(), new FakeIThumbnailQuery())
+					new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
 				.Update(updateModel, inputSubPaths, comparedNames);
 
-			Assert.AreEqual(true, helperResult.Contains(updateModel.Tags));
-			Assert.AreEqual(true, helperResult.Contains(updateModel.Description));
-			Assert.AreEqual(true,
+			Assert.IsTrue(helperResult.Contains(updateModel.Tags));
+			Assert.IsTrue(helperResult.Contains(updateModel.Description));
+			Assert.IsTrue(
 				helperResult.Contains(updateModel.Latitude.ToString(CultureInfo.InvariantCulture)));
-			Assert.AreEqual(true,
+			Assert.IsTrue(
 				helperResult.Contains(
 					updateModel.Longitude.ToString(CultureInfo.InvariantCulture)));
-			Assert.AreEqual(true,
+			Assert.IsTrue(
 				helperResult.Contains(
 					updateModel.LocationAltitude.ToString(CultureInfo.InvariantCulture)));
-			Assert.AreEqual(true, helperResult.Contains(updateModel.LocationCity));
-			Assert.AreEqual(true, helperResult.Contains(updateModel.LocationState));
-			Assert.AreEqual(true, helperResult.Contains(updateModel.LocationCountry));
-			Assert.AreEqual(true, helperResult.Contains(updateModel.LocationCountryCode));
-			Assert.AreEqual(true, helperResult.Contains(updateModel.Title));
+			Assert.IsTrue(helperResult.Contains(updateModel.LocationCity));
+			Assert.IsTrue(helperResult.Contains(updateModel.LocationState));
+			Assert.IsTrue(helperResult.Contains(updateModel.LocationCountry));
+			Assert.IsTrue(helperResult.Contains(updateModel.LocationCountryCode));
+			Assert.IsTrue(helperResult.Contains(updateModel.Title));
 		}
 
 		[TestMethod]
@@ -103,11 +103,11 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 
 			var helperResult = new ExifToolCmdHelper(fakeExifTool,
 					storage, storage,
-					new FakeReadMeta(), new FakeIThumbnailQuery())
+					new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
 				.Update(updateModel, inputSubPaths, comparedNames);
 
-			Assert.AreEqual(true, helperResult.Contains("-GPSAltitude=\"-41"));
-			Assert.AreEqual(true, helperResult.Contains("gpsaltituderef#=\"1"));
+			Assert.IsTrue(helperResult.Contains("-GPSAltitude=\"-41"));
+			Assert.IsTrue(helperResult.Contains("gpsaltituderef#=\"1"));
 		}
 
 		[TestMethod]
@@ -123,7 +123,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var fakeExifTool = new FakeExifTool(storage, _appSettings);
 			await new ExifToolCmdHelper(fakeExifTool,
 					storage, storage,
-					new FakeReadMeta(), new FakeIThumbnailQuery())
+					new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
 				.CreateXmpFileIsNotExist(updateModel, inputSubPaths);
 
 			Assert.IsFalse(storage.ExistFile("/test.xmp"));
@@ -142,7 +142,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var fakeExifTool = new FakeExifTool(storage, _appSettings);
 			await new ExifToolCmdHelper(fakeExifTool,
 					storage, storage,
-					new FakeReadMeta(), new FakeIThumbnailQuery())
+					new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
 				.CreateXmpFileIsNotExist(updateModel, inputSubPaths);
 
 			Assert.IsTrue(storage.ExistFile("/test.xmp"));
@@ -163,7 +163,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 
 			var fakeExifTool = new FakeExifTool(storage, _appSettings);
 			var helperResult = ( await new ExifToolCmdHelper(fakeExifTool, storage, storage,
-					new FakeReadMeta(), new FakeIThumbnailQuery())
+					new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
 				.UpdateAsync(updateModel, comparedNames) );
 
 			Assert.IsTrue(helperResult.Item1.Contains("tags"));
@@ -190,7 +190,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 
 			var fakeExifTool = new FakeExifTool(storage, _appSettings);
 			var helperResult = ( await new ExifToolCmdHelper(fakeExifTool, storage, storage,
-					new FakeReadMeta(), new FakeIThumbnailQuery())
+					new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
 				.UpdateAsync(updateModel, comparedNames) );
 
 			Assert.IsTrue(helperResult.Item1.Contains("tags"));

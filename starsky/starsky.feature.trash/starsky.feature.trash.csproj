@@ -4,9 +4,9 @@
         <TargetFramework>net8.0</TargetFramework>
         <RootNamespace>starsky.feature.trash</RootNamespace>
         <ProjectGuid>{21affb47-1f8c-458a-84bb-24959e0fda31}</ProjectGuid>
-        <Version>0.6.0-beta.1</Version>
-        <ImplicitUsings>enable</ImplicitUsings>
+        <Version>0.6.0-beta.2</Version>
         <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
     <ItemGroup>
@@ -15,7 +15,7 @@
         <ProjectReference Include="..\starsky.foundation.realtime\starsky.foundation.realtime.csproj"/>
         <ProjectReference Include="..\starsky.foundation.worker\starsky.foundation.worker.csproj"/>
     </ItemGroup>
-    
+
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
         <SonarQubeExclude>true</SonarQubeExclude>
     </PropertyGroup>

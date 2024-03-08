@@ -53,7 +53,7 @@ namespace starskytest.ViewModels
 			Assert.AreEqual("/", archiveViewModel.RelativeObjects.NextFilePath);
 			Assert.AreEqual("test", archiveViewModel.SearchQuery);
 			Assert.AreEqual("/", archiveViewModel.SubPath);
-			Assert.AreEqual(false, archiveViewModel.IsReadOnly);
+			Assert.IsFalse(archiveViewModel.IsReadOnly);
 			Assert.AreEqual(0, archiveViewModel.CollectionsCount);
 			Assert.IsTrue(archiveViewModel.Collections);
 		}

@@ -56,7 +56,7 @@ public class TrashControllerTest
 		
 		var tryParseResult = bool.TryParse(result?.Value?.ToString(), out var resultValue);
 		
-		Assert.AreEqual(true, tryParseResult);
-		Assert.AreEqual(true, resultValue);
+		Assert.IsTrue(tryParseResult);
+		Assert.IsTrue(resultValue);
 	}
 }

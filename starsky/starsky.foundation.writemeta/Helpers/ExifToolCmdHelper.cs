@@ -9,6 +9,7 @@ using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
@@ -25,6 +26,7 @@ namespace starsky.foundation.writemeta.Helpers
 		private readonly IStorage _thumbnailStorage;
 		private readonly IReadMeta _readMeta;
 		private readonly IThumbnailQuery _thumbnailQuery;
+		private readonly IWebLogger _webLogger;
 
 		/// <summary>
 		/// Run ExifTool 
@@ -35,12 +37,14 @@ namespace starsky.foundation.writemeta.Helpers
 		/// <param name="readMeta">ReadMeta abstraction</param>
 		/// <param name="thumbnailQuery">thumbnailQuery</param>
 		public ExifToolCmdHelper(IExifTool exifTool, IStorage iStorage,
-			IStorage thumbnailStorage, IReadMeta readMeta, IThumbnailQuery thumbnailQuery)
+			IStorage thumbnailStorage, IReadMeta readMeta, IThumbnailQuery thumbnailQuery,
+			IWebLogger webLogger)
 		{
 			_exifTool = exifTool;
 			_iStorage = iStorage;
 			_readMeta = readMeta;
 			_thumbnailQuery = thumbnailQuery;
+			_webLogger = webLogger;
 			_thumbnailStorage = thumbnailStorage;
 		}
 
@@ -172,20 +176,24 @@ namespace starsky.foundation.writemeta.Helpers
 				// only for raw files
 				if ( !ExtensionRolesHelper.IsExtensionForceXmp(subPath) ) return;
 
-				var withXmp = ExtensionRolesHelper.ReplaceExtensionWithXmp(subPath);
+				var withXmpPath = ExtensionRolesHelper.ReplaceExtensionWithXmp(subPath);
 
-				if ( _iStorage.IsFolderOrFile(withXmp) !=
+				if ( _iStorage.IsFolderOrFile(withXmpPath) !=
 				     FolderOrFileModel.FolderOrFileTypeList.Deleted ) continue;
 
 				var exifCopy = new ExifCopy(_iStorage, _thumbnailStorage, _exifTool,
-					_readMeta, _thumbnailQuery);
-				exifCopy.XmpCreate(withXmp);
+					_readMeta, _thumbnailQuery, _webLogger);
+				exifCopy.XmpCreate(withXmpPath);
+
+				_webLogger.LogInformation($"Create template xmp file for: {withXmpPath}");
 
 				var comparedNames =
 					FileIndexCompareHelper.Compare(new FileIndexItem(), updateModel);
 				var command = ExifToolCommandLineArgs(updateModel, comparedNames, true);
 
-				await _exifTool.WriteTagsAsync(withXmp, command);
+				await _exifTool.WriteTagsAsync(withXmpPath, command);
+				
+				_webLogger.LogInformation($"Done xmp file for: {withXmpPath}");
 			}
 		}
 

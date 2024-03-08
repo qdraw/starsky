@@ -115,7 +115,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 
 			var runner = new StreamToStreamRunner(appSettings,
 				new MemoryStream(Array.Empty<byte>()), new FakeIWebLogger());
-			var result = await runner.RunProcessAsync(string.Empty, "test");
+			var result = await runner.RunProcessAsync(string.Empty, "test / unit test");
 
 			await StreamToStringHelper.StreamToStringAsync(result, false);
 

@@ -24,163 +24,168 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		public ThumbnailTest()
 		{
 			_fakeIStorageImageSubPath = "/test.jpg";
-			
-			_iStorage = new FakeIStorage(new List<string>{"/"}, 
-				new List<string>{_fakeIStorageImageSubPath}, 
-				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
+
+			_iStorage = new FakeIStorage(new List<string> { "/" },
+				new List<string> { _fakeIStorageImageSubPath },
+				new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 		}
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public async Task CreateThumbTest_FileHash_FileHashNull()
 		{
-			await new Thumbnail(_iStorage, _iStorage, new FakeIWebLogger(), new AppSettings()).CreateThumbAsync(
-				"/notfound.jpg", null!);
+			await new Thumbnail(_iStorage, _iStorage, new FakeIWebLogger(), new AppSettings())
+				.CreateThumbAsync(
+					"/notfound.jpg", null!);
 			// expect ArgumentNullException
 		}
 
 		[TestMethod]
 		public async Task CreateThumbTest_FileHash_ImageSubPathNotFound()
 		{
-			var isCreated = await new Thumbnail(_iStorage, _iStorage, new FakeIWebLogger(), new AppSettings()).CreateThumbAsync(
-				"/notfound.jpg", _fakeIStorageImageSubPath);
-			Assert.AreEqual(false,isCreated.FirstOrDefault()!.Success);
+			var isCreated =
+				await new Thumbnail(_iStorage, _iStorage, new FakeIWebLogger(), new AppSettings())
+					.CreateThumbAsync(
+						"/notfound.jpg", _fakeIStorageImageSubPath);
+			Assert.IsFalse(isCreated.FirstOrDefault()!.Success);
 		}
-		
+
 		[TestMethod]
 		public async Task CreateThumbTest_FileHash_WrongImageType()
 		{
-			var isCreated =  await new Thumbnail(_iStorage, 
+			var isCreated = await new Thumbnail(_iStorage,
 				_iStorage, new FakeIWebLogger(), new AppSettings()).CreateThumbAsync(
 				"/notfound.dng", _fakeIStorageImageSubPath);
-			Assert.AreEqual(false,isCreated.FirstOrDefault()!.Success);
+			Assert.IsFalse(isCreated.FirstOrDefault()!.Success);
 		}
-		
+
 		[TestMethod]
 		public async Task CreateThumbTest_FileHash_AlreadyFailBefore()
 		{
-			var storage = new FakeIStorage(new List<string>{"/"}, 
-				new List<string>{_fakeIStorageImageSubPath}, 
-				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
-			
-			var thumbnailService =  new Thumbnail(storage, storage, 
+			var storage = new FakeIStorage(new List<string> { "/" },
+				new List<string> { _fakeIStorageImageSubPath },
+				new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+
+			var thumbnailService = new Thumbnail(storage, storage,
 				new FakeIWebLogger(), new AppSettings());
-				
+
 			await thumbnailService.WriteErrorMessageToBlockLog(_fakeIStorageImageSubPath, "fail");
-			
-			var isCreated = (await thumbnailService.CreateThumbAsync( _fakeIStorageImageSubPath, 
-				_fakeIStorageImageSubPath)).ToList();
-				
-			Assert.AreEqual(false,isCreated.FirstOrDefault()!.Success);
-			Assert.AreEqual("File already failed before",isCreated.FirstOrDefault()!.ErrorMessage);
+
+			var isCreated = ( await thumbnailService.CreateThumbAsync(_fakeIStorageImageSubPath,
+				_fakeIStorageImageSubPath) ).ToList();
+
+			Assert.IsFalse(isCreated.FirstOrDefault()!.Success);
+			Assert.AreEqual("File already failed before", isCreated.FirstOrDefault()!.ErrorMessage);
 		}
-		
+
 		[TestMethod]
 		public async Task CreateThumbTest_FileHash_SkipExtraLarge()
 		{
-			var storage = new FakeIStorage(new List<string>{"/"}, 
-				new List<string>{_fakeIStorageImageSubPath}, 
-				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
+			var storage = new FakeIStorage(new List<string> { "/" },
+				new List<string> { _fakeIStorageImageSubPath },
+				new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 			const string fileHash = "test_hash";
-			
+
 			// skip extra large
-			var isCreated = await new Thumbnail(storage, 
+			var isCreated = await new Thumbnail(storage,
 				storage, new FakeIWebLogger(), new AppSettings()).CreateThumbAsync(
 				_fakeIStorageImageSubPath, fileHash, true);
-			Assert.AreEqual(true,isCreated.FirstOrDefault()!.Success);
+			Assert.IsTrue(isCreated.FirstOrDefault()!.Success);
 
-			Assert.AreEqual(true, storage.ExistFile(fileHash));
-			Assert.AreEqual(true, storage.ExistFile(
-				ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.Small)));
-			Assert.AreEqual(false, storage.ExistFile(
-				ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.ExtraLarge)));
+			Assert.IsTrue(storage.ExistFile(fileHash));
+			Assert.IsTrue(storage.ExistFile(
+				ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.Small)));
+			Assert.IsFalse(storage.ExistFile(
+				ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.ExtraLarge)));
 		}
-		
+
 		[TestMethod]
 		public async Task CreateThumbTest_FileHash_IncludeExtraLarge()
 		{
-			var storage = new FakeIStorage(new List<string>{"/"}, 
-				new List<string>{_fakeIStorageImageSubPath}, 
-				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
+			var storage = new FakeIStorage(new List<string> { "/" },
+				new List<string> { _fakeIStorageImageSubPath },
+				new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 			const string fileHash = "test_hash";
 			// include extra large
-			var isCreated = await new Thumbnail(storage, 
+			var isCreated = await new Thumbnail(storage,
 				storage, new FakeIWebLogger(), new AppSettings()).CreateThumbAsync(
 				_fakeIStorageImageSubPath, fileHash);
-			Assert.AreEqual(true,isCreated.FirstOrDefault()!.Success);
+			Assert.IsTrue(isCreated.FirstOrDefault()!.Success);
 
-			Assert.AreEqual(true, storage.ExistFile(fileHash));
-			Assert.AreEqual(true, storage.ExistFile(
-				ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.Small)));
-			Assert.AreEqual(true, storage.ExistFile(
-				ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.ExtraLarge)));
+			Assert.IsTrue(storage.ExistFile(fileHash));
+			Assert.IsTrue(storage.ExistFile(
+				ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.Small)));
+			Assert.IsTrue(storage.ExistFile(
+				ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.ExtraLarge)));
 		}
 
 		[TestMethod]
 		public async Task CreateThumbTest_1arg_ThumbnailAlreadyExist()
 		{
-			var storage = new FakeIStorage(new List<string>{"/"}, 
-				new List<string>{_fakeIStorageImageSubPath}, 
-				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
-			
-			var hash = (await new FileHash(storage).GetHashCodeAsync(_fakeIStorageImageSubPath)).Key;
+			var storage = new FakeIStorage(new List<string> { "/" },
+				new List<string> { _fakeIStorageImageSubPath },
+				new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+
+			var hash = ( await new FileHash(storage).GetHashCodeAsync(_fakeIStorageImageSubPath) )
+				.Key;
 			await storage.WriteStreamAsync(
-				StringToStreamHelper.StringToStream("not 0 bytes"), 
+				StringToStreamHelper.StringToStream("not 0 bytes"),
 				ThumbnailNameHelper.Combine(hash, ThumbnailSize.ExtraLarge));
 			await storage.WriteStreamAsync(
-				StringToStreamHelper.StringToStream("not 0 bytes"), 
+				StringToStreamHelper.StringToStream("not 0 bytes"),
 				ThumbnailNameHelper.Combine(hash, ThumbnailSize.Large));
 			await storage.WriteStreamAsync(
-				StringToStreamHelper.StringToStream("not 0 bytes"), 
+				StringToStreamHelper.StringToStream("not 0 bytes"),
 				ThumbnailNameHelper.Combine(hash, ThumbnailSize.Small));
-			
-			var isCreated = await new Thumbnail(storage, 
+
+			var isCreated = await new Thumbnail(storage,
 				storage, new FakeIWebLogger(), new AppSettings()).CreateThumbnailAsync(
 				_fakeIStorageImageSubPath);
-			Assert.AreEqual(true,isCreated[0].Success);
+			Assert.IsTrue(isCreated[0].Success);
 		}
 
 		[TestMethod]
 		public async Task CreateThumbTest_1arg_Folder()
 		{
-			var storage = new FakeIStorage(new List<string>{"/"}, 
-				new List<string>{_fakeIStorageImageSubPath}, 
-				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
-			
-			var isCreated = await new Thumbnail(storage, 
+			var storage = new FakeIStorage(new List<string> { "/" },
+				new List<string> { _fakeIStorageImageSubPath },
+				new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+
+			var isCreated = await new Thumbnail(storage,
 				storage, new FakeIWebLogger(), new AppSettings()).CreateThumbnailAsync("/");
-			Assert.AreEqual(true,isCreated[0].Success);
+			Assert.IsTrue(isCreated[0].Success);
 		}
-		
+
 		[TestMethod]
 		public async Task CreateThumbTest_NullFail()
 		{
-			var storage = new FakeIStorage(new List<string>{"/test"}, 
-				new List<string>{"/test/test.jpg"}, 
-				new List<byte[]?>{ null });
-			
-			var isCreated = await new Thumbnail(storage, 
-				storage, new FakeIWebLogger(), new AppSettings()).CreateThumbnailAsync("/test/test.jpg");
-			
-			Assert.AreEqual(0,isCreated.Count);
+			var storage = new FakeIStorage(new List<string> { "/test" },
+				new List<string> { "/test/test.jpg" },
+				new List<byte[]?> { null });
+
+			var isCreated = await new Thumbnail(storage,
+					storage, new FakeIWebLogger(), new AppSettings())
+				.CreateThumbnailAsync("/test/test.jpg");
+
+			Assert.AreEqual(0, isCreated.Count);
 		}
 
 		[TestMethod]
 		public async Task ResizeThumbnailToStream__HostDependency__JPEG_Test()
 		{
 			var newImage = new CreateAnImage();
-			var iStorage = new StorageHostFullPathFilesystem();
+			var iStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 
 			// string subPath, int width, string outputHash = null,bool removeExif = false,ExtensionRolesHelper.ImageFormat
 			// imageFormat = ExtensionRolesHelper.ImageFormat.jpg
 			var thumb = await new Thumbnail(iStorage,
 				iStorage, new FakeIWebLogger(), new AppSettings()).ResizeThumbnailFromSourceImage(
 				newImage.FullFilePath, 1, null, true);
-			Assert.AreEqual(true,thumb.Item1?.CanRead);
+			Assert.IsTrue(thumb.Item1?.CanRead);
 		}
-        
+
 		[TestMethod]
 		public async Task ResizeThumbnailToStream__PNG_Test()
 		{
@@ -188,34 +193,38 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				_iStorage, new FakeIWebLogger(), new AppSettings()).ResizeThumbnailFromSourceImage(
 				_fakeIStorageImageSubPath, 1, null, true,
 				ExtensionRolesHelper.ImageFormat.png);
-			Assert.AreEqual(true,thumb.Item1?.CanRead);
+			Assert.IsTrue(thumb.Item1?.CanRead);
 		}
-		
+
 		[TestMethod]
 		public async Task ResizeThumbnailToStream_CorruptImage_MemoryStream()
 		{
 			var storage = new FakeIStorage(
-				new List<string> {"/"}, 
-				new List<string> {"test"}, 
+				new List<string> { "/" },
+				new List<string> { "test" },
 				new List<byte[]> { Array.Empty<byte>() });
 
-			var result = (await new Thumbnail(storage, 
-				storage,
-				new FakeIWebLogger(), new AppSettings()).ResizeThumbnailFromSourceImage("test",1)).Item1;
+			var result = ( await new Thumbnail(storage,
+					storage,
+					new FakeIWebLogger(), new AppSettings())
+				.ResizeThumbnailFromSourceImage("test", 1) )
+				.Item1;
 			Assert.IsNull(result);
 		}
-		
+
 		[TestMethod]
 		public async Task ResizeThumbnailToStream_CorruptImage_Status()
 		{
 			var storage = new FakeIStorage(
-				new List<string> {"/"}, 
-				new List<string> {"test"}, 
+				new List<string> { "/" },
+				new List<string> { "test" },
 				new List<byte[]> { Array.Empty<byte>() });
 
-			var result = (await new Thumbnail(storage, 
-				storage,
-				new FakeIWebLogger(), new AppSettings()).ResizeThumbnailFromSourceImage("test",1)).Item2;
+			var result = ( await new Thumbnail(storage,
+					storage,
+					new FakeIWebLogger(), new AppSettings())
+				.ResizeThumbnailFromSourceImage("test", 1) )
+				.Item2;
 			Assert.IsFalse(result);
 		}
 
@@ -223,57 +232,60 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		[ExpectedException(typeof(ArgumentNullException))]
 		public async Task ResizeThumbnailImageFormat_NullInput()
 		{
-			await  Thumbnail.SaveThumbnailImageFormat(null!,
+			await Thumbnail.SaveThumbnailImageFormat(null!,
 				ExtensionRolesHelper.ImageFormat.bmp, null!);
 			// ArgumentNullException
 		}
-		
+
 		[TestMethod]
 		public void RemoveCorruptImage_RemoveCorruptImage()
 		{
 			var storage = new FakeIStorage(
-				new List<string> {"/"}, 
-				new List<string> {ThumbnailNameHelper.Combine("test", ThumbnailSize.ExtraLarge) }, 
+				new List<string> { "/" },
+				new List<string> { ThumbnailNameHelper.Combine("test", ThumbnailSize.ExtraLarge) },
 				new List<byte[]> { Array.Empty<byte>() });
 
-			var result = new Thumbnail(storage, 
-				storage, new FakeIWebLogger(), new AppSettings()).RemoveCorruptImage("test", ThumbnailSize.ExtraLarge);
+			var result = new Thumbnail(storage,
+					storage, new FakeIWebLogger(), new AppSettings())
+				.RemoveCorruptImage("test", ThumbnailSize.ExtraLarge);
 			Assert.IsTrue(result);
 		}
-		
+
 		[TestMethod]
 		public void RemoveCorruptImage_ShouldIgnore()
 		{
 			var storage = new FakeIStorage(
-				new List<string> {"/"}, 
-				new List<string> {ThumbnailNameHelper.Combine("test", ThumbnailSize.ExtraLarge) }, 
-				new List<byte[]> {CreateAnImage.Bytes.ToArray()});
+				new List<string> { "/" },
+				new List<string> { ThumbnailNameHelper.Combine("test", ThumbnailSize.ExtraLarge) },
+				new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 			var result = new Thumbnail(
-				storage, storage, 
-				new FakeIWebLogger(), new AppSettings()).RemoveCorruptImage("test", ThumbnailSize.Large);
+					storage, storage,
+					new FakeIWebLogger(), new AppSettings())
+				.RemoveCorruptImage("test", ThumbnailSize.Large);
 			Assert.IsFalse(result);
 		}
-		
+
 		[TestMethod]
 		public void RemoveCorruptImage_NotExist()
 		{
 			var storage = new FakeIStorage(
-				new List<string> {"/"}, 
-				new List<string> (), 
-				new List<byte[]> {CreateAnImage.Bytes.ToArray()});
+				new List<string> { "/" },
+				new List<string>(),
+				new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
-			var result = new Thumbnail(storage, 
-				storage, new FakeIWebLogger(), new AppSettings()).RemoveCorruptImage("test", ThumbnailSize.Large);
+			var result = new Thumbnail(storage,
+					storage, new FakeIWebLogger(), new AppSettings())
+				.RemoveCorruptImage("test", ThumbnailSize.Large);
 			Assert.IsFalse(result);
 		}
 
 		[TestMethod]
 		public async Task RotateThumbnail_NotFound()
 		{
-			var result = await new Thumbnail(_iStorage, 
-				_iStorage, new FakeIWebLogger(), new AppSettings())
-				.RotateThumbnail("not-found",0, 3);
+			var result = await new Thumbnail(_iStorage,
+					_iStorage, new FakeIWebLogger(), new AppSettings())
+				.RotateThumbnail("not-found", 0, 3);
 			Assert.IsFalse(result);
 		}
 
@@ -281,28 +293,27 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		public async Task RotateThumbnail_Rotate()
 		{
 			var storage = new FakeIStorage(
-				new List<string> {"/"}, 
-				new List<string> {"/test.jpg"}, 
-				new List<byte[]> {CreateAnImage.Bytes.ToArray()});
-			
-			var result = await new Thumbnail(storage, 
-				storage, new FakeIWebLogger(), new AppSettings())
-				.RotateThumbnail("/test.jpg",-1, 3);
-			
+				new List<string> { "/" },
+				new List<string> { "/test.jpg" },
+				new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+
+			var result = await new Thumbnail(storage,
+					storage, new FakeIWebLogger(), new AppSettings())
+				.RotateThumbnail("/test.jpg", -1, 3);
+
 			Assert.IsTrue(result);
 		}
-		
+
 		[TestMethod]
 		public async Task RotateThumbnail_Corrupt()
 		{
 			var storage = new FakeIStorage(
-				new List<string> {"/"}, 
-				new List<string> {"test"}, 
+				new List<string> { "/" },
+				new List<string> { "test" },
 				new List<byte[]> { Array.Empty<byte>() });
 
-			var result = await new Thumbnail(storage, 
-					storage, new FakeIWebLogger(), new AppSettings()).
-				RotateThumbnail("test", 1);
+			var result = await new Thumbnail(storage,
+				storage, new FakeIWebLogger(), new AppSettings()).RotateThumbnail("test", 1);
 			Assert.IsFalse(result);
 		}
 
@@ -310,33 +321,31 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		public async Task ResizeThumbnailFromThumbnailImage_CorruptInput()
 		{
 			var storage = new FakeIStorage(
-				new List<string> {"/"}, 
-				new List<string> {"test"}, 
+				new List<string> { "/" },
+				new List<string> { "test" },
 				new List<byte[]> { Array.Empty<byte>() });
 
-			var result = await new Thumbnail(storage, 
-					storage, new FakeIWebLogger(), new AppSettings()).
-				ResizeThumbnailFromThumbnailImage("test", 1);
+			var result = await new Thumbnail(storage,
+					storage, new FakeIWebLogger(), new AppSettings())
+				.ResizeThumbnailFromThumbnailImage("test", 1);
 			Assert.IsNull(result.Item1);
 			Assert.IsFalse(result.Item2.Success);
-
 		}
-		
+
 		[TestMethod]
 		public async Task CreateLargestImageFromSource_CorruptInput()
 		{
 			var storage = new FakeIStorage(
-				new List<string> {"/"}, 
-				new List<string> {"test"}, 
+				new List<string> { "/" },
+				new List<string> { "test" },
 				new List<byte[]> { Array.Empty<byte>() });
 
-			var result = await new Thumbnail(storage, 
-					storage, new FakeIWebLogger(), new AppSettings()).
-				CreateLargestImageFromSource("test", "test", "test", ThumbnailSize.Small);
-			
+			var result = await new Thumbnail(storage,
+					storage, new FakeIWebLogger(), new AppSettings())
+				.CreateLargestImageFromSource("test", "test", "test", ThumbnailSize.Small);
+
 			Assert.IsFalse(result.Success);
-			Assert.AreEqual("Image cannot be loaded",result.ErrorMessage);
+			Assert.AreEqual("Image cannot be loaded", result.ErrorMessage);
 		}
-		
 	}
 }

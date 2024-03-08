@@ -3,22 +3,20 @@ import { ArchiveContext } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useInterval from "../../../hooks/use-interval";
 import useLocation from "../../../hooks/use-location/use-location";
-import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import localization from "../../../localization/localization.json";
-import { CastToInterface } from "../../../shared/cast-to-interface";
 import FetchGet from "../../../shared/fetch/fetch-get";
 import FetchPost from "../../../shared/fetch/fetch-post";
-import { FileListCache } from "../../../shared/filelist-cache";
 import { Language } from "../../../shared/language";
 import { URLPath } from "../../../shared/url/url-path";
 import { UrlQuery } from "../../../shared/url/url-query";
 import Modal from "../../atoms/modal/modal";
 import Preloader from "../../atoms/preloader/preloader";
 import ForceSyncWaitButton from "../../molecules/force-sync-wait-button/force-sync-wait-button";
+import { RemoveCache } from "./internal/remove-cache.ts";
 
 interface IModalDisplayOptionsProps {
   isOpen: boolean;
-  handleExit: Function;
+  handleExit: () => void;
   parentFolder?: string;
 }
 
@@ -52,30 +50,6 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
   useEffect(() => {
     setCollections(new URLPath().StringToIUrl(history.location.search).collections !== false);
   }, [collections, history.location.search]);
-
-  /**
-   * Remove Folder cache
-   */
-  function removeCache() {
-    setIsLoading(true);
-    new FileListCache().CacheCleanEverything();
-    const parentFolder = props.parentFolder ?? "/";
-    FetchGet(new UrlQuery().UrlRemoveCache(new URLPath().encodeURI(parentFolder))).then(() => {
-      setTimeout(() => {
-        const url = new UrlQuery().UrlIndexServerApi(
-          new URLPath().StringToIUrl(history.location.search)
-        );
-        FetchGet(url, { "Cache-Control": "no-store, max-age=0" }).then((connectionResult) => {
-          const removeCacheResult = new CastToInterface().MediaArchive(connectionResult.data);
-          const payload = removeCacheResult.data as IArchiveProps;
-          if (payload.fileIndexItems) {
-            dispatch({ type: "force-reset", payload });
-          }
-          props.handleExit();
-        });
-      }, 600);
-    });
-  }
 
   const [geoSyncPercentage, setGeoSyncPercentage] = useState(0);
 
@@ -139,7 +113,19 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
           callback={() => props.handleExit()}
           dispatch={dispatch}
         ></ForceSyncWaitButton>
-        <button className="btn btn--default" data-test="remove-cache" onClick={() => removeCache()}>
+        <button
+          className="btn btn--default"
+          data-test="remove-cache"
+          onClick={() =>
+            RemoveCache(
+              setIsLoading,
+              props.parentFolder ?? "",
+              history.location.search,
+              dispatch,
+              props.handleExit
+            )
+          }
+        >
           {MessageRemoveCache}
         </button>
         <button

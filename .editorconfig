@@ -76,3 +76,6 @@ dotnet_diagnostic.IDE0051.severity = silent # Private member is unused
 # Consider applying the 'await' operator to the result of the call.
 dotnet_diagnostic.CS4014.severity = error
 
+
+# IDE0077: https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/ide0077
+dotnet_diagnostic.IDE0077.severity = error

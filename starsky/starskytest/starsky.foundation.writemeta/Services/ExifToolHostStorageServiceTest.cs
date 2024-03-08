@@ -68,7 +68,7 @@ public sealed class ExifToolHostStorageServiceTest
 			return;
 		}
 
-		var hostFileSystemStorage = new StorageHostFullPathFilesystem();
+		var hostFileSystemStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 		var memoryStream = new MemoryStream(CreateAnExifToolTarGz.Bytes.ToArray());
 		var outputPath =
 			Path.Combine(_createAnImage.BasePath, "tmp-3426782387");
@@ -127,7 +127,7 @@ public sealed class ExifToolHostStorageServiceTest
 			return;
 		}
 
-		var hostFileSystemStorage = new StorageHostFullPathFilesystem();
+		var hostFileSystemStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 		var outputPath =
 			Path.Combine(_createAnImage.BasePath, "tmp-979056548");
 

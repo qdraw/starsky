@@ -17,7 +17,7 @@ namespace helpers
 		/// <param name="solution">solution file .sln</param>
 		public static void RestoreNetCoreCommand(Solution solution)
 		{
-			Log.Information("dotnet restore: solution: " + solution);
+			Log.Information("dotnet restore: solution: {Solution}", solution);
 
 			DotNetRestore(p => p
 				.SetProjectFile(solution.Path)
@@ -58,13 +58,13 @@ namespace helpers
 
 			var genericDepsFullPath =
 				Path.Combine(BasePath(), genericNetcoreFolder, "dependencies");
-			Log.Information($"genericDepsFullPath: {genericDepsFullPath}");
+			Log.Information("genericDepsFullPath: {GenericDepsFullPath}", genericDepsFullPath);
 
 			try
 			{
 				Environment.SetEnvironmentVariable("app__DependenciesFolder", genericDepsFullPath);
 				Log.Information("Next: DownloadDependencies");
-				Log.Information("Run: " + Path.Combine(
+				Log.Information("Run: {Path}", Path.Combine(
 					WorkingDirectory.GetSolutionParentFolder(), geoCliCsproj)
 				);
 
@@ -85,7 +85,7 @@ namespace helpers
 
 			Environment.SetEnvironmentVariable("app__DependenciesFolder", string.Empty);
 
-			Log.Information($"   genericDepsFullPath: {genericDepsFullPath}");
+			Log.Information("   genericDepsFullPath: {GenericDepsFullPath}", genericDepsFullPath);
 			Log.Information("DownloadDependencies done");
 		}
 

@@ -34,7 +34,7 @@ public class ThumbnailItemTest
 	{
 		var item = new ThumbnailItem("test",null,null,true,null);
 		Assert.AreEqual("test", item.FileHash);
-		Assert.AreEqual(true, item.Large);
+		Assert.IsTrue(item.Large);
 	}
 	
 	[TestMethod]
@@ -42,7 +42,7 @@ public class ThumbnailItemTest
 	{
 		var item = new ThumbnailItem("test",null,null,null,true);
 		Assert.AreEqual("test", item.FileHash);
-		Assert.AreEqual(true, item.ExtraLarge);
+		Assert.IsTrue(item.ExtraLarge);
 	}
 	
 	[TestMethod]
@@ -50,7 +50,7 @@ public class ThumbnailItemTest
 	{
 		var item = new ThumbnailItem("test",true,null,true,null);
 		Assert.AreEqual("test", item.FileHash);
-		Assert.AreEqual(true, item.TinyMeta);
+		Assert.IsTrue(item.TinyMeta);
 	}
 	
 	[TestMethod]
@@ -58,7 +58,7 @@ public class ThumbnailItemTest
 	{
 		var item = new ThumbnailItem("test",null,true,true,null);
 		Assert.AreEqual("test", item.FileHash);
-		Assert.AreEqual(true, item.Small);
+		Assert.IsTrue(item.Small);
 	}
 		
 	[TestMethod]

@@ -87,4 +87,6 @@ public interface IStorage
 	Task<bool> WriteStreamAsync(Stream stream, string path);
 
 	StorageInfo Info(string path);
+	
+	bool IsFileReady(string path);
 }

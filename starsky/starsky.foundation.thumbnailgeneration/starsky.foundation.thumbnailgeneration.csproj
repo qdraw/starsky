@@ -5,19 +5,21 @@
         <!-- SonarQube needs this -->
         <ProjectGuid>{4b3990c9-171b-4d53-a821-f458e8ac072f}</ProjectGuid>
         <DebugType>Full</DebugType>
-        <Version>0.6.0-beta.1</Version>
+        <Version>0.6.0-beta.2</Version>
         <Nullable>enable</Nullable>
+        <RootNamespace>starsky.foundation.thumbnailgeneration</RootNamespace>
+        <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
-    
+
     <ItemGroup>
-      <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
-      <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
-      <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
+        <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.2" />
-        <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.1" />
+        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.3"/>
+        <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.2"/>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

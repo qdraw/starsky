@@ -31,7 +31,8 @@ namespace starsky.foundation.readmeta.Services
 		/// <param name="appSettings"></param>
 		/// <param name="memoryCache"></param>
 		/// <param name="logger"></param>
-		public ReadMeta(IStorage iStorage, AppSettings appSettings, IMemoryCache? memoryCache, IWebLogger logger)
+		public ReadMeta(IStorage iStorage, AppSettings appSettings, IMemoryCache? memoryCache,
+			IWebLogger logger)
 		{
 			_appSettings = appSettings;
 			_cache = memoryCache;
@@ -44,7 +45,7 @@ namespace starsky.foundation.readmeta.Services
 		private async Task<FileIndexItem> ReadExifAndXmpFromFileDirectAsync(string subPath)
 		{
 			if ( _iStorage.ExistFile(subPath)
-				 && ExtensionRolesHelper.IsExtensionForceGpx(subPath) )
+			     && ExtensionRolesHelper.IsExtensionForceGpx(subPath) )
 			{
 				// Get the item back with DateTime as Camera local datetime
 				return await _readMetaGpx.ReadGpxFromFileReturnAfterFirstFieldAsync(
@@ -55,7 +56,8 @@ namespace starsky.foundation.readmeta.Services
 			var fileIndexItemWithPath = new FileIndexItem(subPath);
 
 			// Read first the sidecar file
-			var xmpFileIndexItem = await _readXmp.XmpGetSidecarFileAsync(fileIndexItemWithPath.Clone());
+			var xmpFileIndexItem =
+				await _readXmp.XmpGetSidecarFileAsync(fileIndexItemWithPath.Clone());
 
 			// if the sidecar file is not complete, read the original file
 			// when reading a .xmp file direct ignore the readExifFromFile
@@ -63,9 +65,9 @@ namespace starsky.foundation.readmeta.Services
 				return xmpFileIndexItem;
 
 			if ( xmpFileIndexItem.IsoSpeed != 0
-				 && !string.IsNullOrEmpty(xmpFileIndexItem.Make)
-				 && xmpFileIndexItem.DateTime.Year != 0
-				 && !string.IsNullOrEmpty(xmpFileIndexItem.ShutterSpeed) )
+			     && !string.IsNullOrEmpty(xmpFileIndexItem.Make)
+			     && xmpFileIndexItem.DateTime.Year != 0
+			     && !string.IsNullOrEmpty(xmpFileIndexItem.ShutterSpeed) )
 			{
 				return xmpFileIndexItem;
 			}
@@ -79,7 +81,8 @@ namespace starsky.foundation.readmeta.Services
 		}
 
 		// used by the html generator
-		public async Task<List<FileIndexItem>> ReadExifAndXmpFromFileAddFilePathHashAsync(List<string> subPathList, List<string>? fileHashes = null)
+		public async Task<List<FileIndexItem>> ReadExifAndXmpFromFileAddFilePathHashAsync(
+			List<string> subPathList, List<string>? fileHashes = null)
 		{
 			var fileIndexList = new List<FileIndexItem>();
 
@@ -88,7 +91,9 @@ namespace starsky.foundation.readmeta.Services
 				var subPath = subPathList[i];
 
 				var returnItem = await ReadExifAndXmpFromFileAsync(subPath);
-				var imageFormat = ExtensionRolesHelper.GetImageFormat(_iStorage.ReadStream(subPath, 50));
+				var stream = _iStorage.ReadStream(subPath, 50);
+				var imageFormat = ExtensionRolesHelper.GetImageFormat(stream);
+				await stream.DisposeAsync();
 
 				returnItem!.ImageFormat = imageFormat;
 				returnItem.FileName = Path.GetFileName(subPath);
@@ -98,7 +103,8 @@ namespace starsky.foundation.readmeta.Services
 
 				if ( fileHashes == null || fileHashes.Count <= i )
 				{
-					returnItem.FileHash = ( await new FileHash(_iStorage).GetHashCodeAsync(subPath) ).Key;
+					returnItem.FileHash =
+						( await new FileHash(_iStorage).GetHashCodeAsync(subPath) ).Key;
 				}
 				else
 				{
@@ -107,6 +113,7 @@ namespace starsky.foundation.readmeta.Services
 
 				fileIndexList.Add(returnItem);
 			}
+
 			return fileIndexList;
 		}
 

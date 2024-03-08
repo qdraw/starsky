@@ -144,7 +144,7 @@ namespace starskytest.root
 		[TestMethod]
 		public void BasicFlow_Assets()
 		{
-			var storage = new StorageHostFullPathFilesystem();
+			var storage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject,
 				"wwwroot"));
 			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject,
@@ -189,7 +189,7 @@ namespace starskytest.root
 			var applicationBuilder = new ApplicationBuilder(serviceProviderInterface);
 			startup.ConfigureServices(serviceCollection);
 
-			var storage = new StorageHostFullPathFilesystem();
+			var storage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject,
 				"wwwroot"));
 			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject,
@@ -225,7 +225,7 @@ namespace starskytest.root
 			var applicationBuilder = new ApplicationBuilder(serviceProviderInterface);
 			startup.ConfigureServices(serviceCollection);
 
-			var storage = new StorageHostFullPathFilesystem();
+			var storage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject,
 				"wwwroot"));
 

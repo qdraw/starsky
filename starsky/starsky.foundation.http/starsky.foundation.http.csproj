@@ -5,13 +5,15 @@
         <!-- SonarQube needs this -->
         <ProjectGuid>{60193d91-0d92-4fc2-b469-d7691cb0e986}</ProjectGuid>
         <DebugType>Full</DebugType>
-        <Version>0.6.0-beta.1</Version>
+        <Version>0.6.0-beta.2</Version>
         <Nullable>enable</Nullable>
+        <RootNamespace>starsky.foundation.http</RootNamespace>
+        <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
-    
+
     <ItemGroup>
-      <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj" />
-      <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
+        <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj"/>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

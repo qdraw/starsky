@@ -26,8 +26,8 @@
   },
   "MessageMove": {
     "en": "Move",
-    "nl": "Verplaatsen",
-    "de": "Verschieben"
+    "nl": "Verplaats",
+    "de": "Verschieb"
   },
   "MessageTo": {
     "en": "to",
@@ -413,6 +413,11 @@
     "en": "Unknown username",
     "nl": "Onbekende gebruikersnaam",
     "de": "Unbekannter Benutzername"
+  },
+  "MessageDesktopMailLocalhostUsername": {
+    "en": "Desktop user",
+    "nl": "Desktop gebruiker",
+    "de": "Desktop Benutzer"
   },
   "MessageUsername": {
     "en": "Username",
@@ -1020,8 +1025,8 @@
     "de": "Lesen Sie hier mehr"
   },
   "temp1": {
-    "en": "More",
-    "nl": "Meer",
-    "de": "Mehr"
+    "en": ".",
+    "nl": ".",
+    "de": "."
   }
 }

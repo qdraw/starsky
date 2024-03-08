@@ -26,10 +26,10 @@ public class AppSettingsTransferObjectTest
 			]
 		};
 
-		Assert.AreEqual(true, appSettingsTransferObject.Verbose);
+		Assert.IsTrue(appSettingsTransferObject.Verbose);
 		Assert.AreEqual("test", appSettingsTransferObject.StorageFolder);
-		Assert.AreEqual(true, appSettingsTransferObject.UseSystemTrash);
-		Assert.AreEqual(true, appSettingsTransferObject.UseLocalDesktop);
+		Assert.IsTrue(appSettingsTransferObject.UseSystemTrash);
+		Assert.IsTrue(appSettingsTransferObject.UseLocalDesktop);
 		Assert.AreEqual("app", appSettingsTransferObject.DefaultDesktopEditor[0].ApplicationPath);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.bmp,
 			appSettingsTransferObject.DefaultDesktopEditor[0].ImageFormats[0]);

@@ -75,23 +75,7 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// Root of the project with replaced value
 		/// </summary>
-		public string BaseDirectoryProject => AppDomain.CurrentDomain
-			.BaseDirectory
-			.Replace("starskyadmincli", "starsky")
-			.Replace("starskysynchronizecli", "starsky")
-			.Replace("starskythumbnailcli", "starsky")
-			.Replace("starskythumbnailmetacli", "starsky")
-			.Replace("starskysynccli", "starsky")
-			.Replace("starsky.foundation.database", "starsky")
-			.Replace("netframework-msbuild", "starsky")
-			.Replace("starskySyncNetFrameworkCli", "starsky")
-			.Replace("starskyimportercli", "starsky")
-			.Replace("starskywebftpcli", "starsky")
-			.Replace("starskywebhtmlcli", "starsky")
-			.Replace("starskygeocli", "starsky")
-			.Replace("starskytest", "starsky")
-			.Replace("starskydiskwatcherworkerservice", "starsky")
-			.Replace("starskydemoseedcli", "starsky");
+		public string BaseDirectoryProject => BaseDirectoryProjectHelper.BaseDirectoryProject;
 
 		/// <summary>
 		/// Application Type, defaults to WebController

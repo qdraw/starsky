@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,8 @@ namespace starsky.foundation.database.Query
 	/// </summary>
 	public partial class Query : IQuery
 	{
-		public async Task<List<FileIndexItem>> GetObjectsByFilePathAsync(string inputFilePath, bool collections)
+		public async Task<List<FileIndexItem>> GetObjectsByFilePathAsync(string inputFilePath,
+			bool collections)
 		{
 			return await GetObjectsByFilePathAsync(new List<string> { inputFilePath }, collections);
 		}
@@ -27,7 +29,8 @@ namespace starsky.foundation.database.Query
 		/// <param name="inputFilePaths">list of paths</param>
 		/// <param name="collections">uses collections </param>
 		/// <returns>list with items</returns>
-		public async Task<List<FileIndexItem>> GetObjectsByFilePathAsync(List<string> inputFilePaths, bool collections)
+		public async Task<List<FileIndexItem>> GetObjectsByFilePathAsync(
+			List<string> inputFilePaths, bool collections)
 		{
 			var resultFileIndexItemsList = new List<FileIndexItem>();
 			var toQueryPaths = new List<string>();
@@ -50,7 +53,8 @@ namespace starsky.foundation.database.Query
 						if ( !success ) break;
 						item = cachedResult.Where(p =>
 							p.ParentDirectory == parentPath &&
-							p.FileCollectionName == FilenamesHelper.GetFileNameWithoutExtension(path)).ToList();
+							p.FileCollectionName ==
+							FilenamesHelper.GetFileNameWithoutExtension(path)).ToList();
 						break;
 				}
 
@@ -59,10 +63,13 @@ namespace starsky.foundation.database.Query
 					toQueryPaths.Add(path);
 					continue;
 				}
+
 				resultFileIndexItemsList.AddRange(item);
 			}
+
 			// Query only if not in cache
-			var fileIndexItemsList = await GetObjectsByFilePathQuery(toQueryPaths.ToArray(), collections);
+			var fileIndexItemsList =
+				await GetObjectsByFilePathQuery(toQueryPaths.ToArray(), collections);
 			resultFileIndexItemsList.AddRange(fileIndexItemsList);
 			return resultFileIndexItemsList;
 		}
@@ -73,7 +80,8 @@ namespace starsky.foundation.database.Query
 		/// <param name="inputFilePaths">list of paths</param>
 		/// <param name="collections">[when true] hide raws or everything with the same name (without extension)</param>
 		/// <returns></returns>
-		internal async Task<List<FileIndexItem>> GetObjectsByFilePathQuery(string[] inputFilePaths, bool collections)
+		internal async Task<List<FileIndexItem>> GetObjectsByFilePathQuery(string[] inputFilePaths,
+			bool collections)
 		{
 			if ( inputFilePaths.Length == 0 )
 			{
@@ -84,6 +92,7 @@ namespace starsky.foundation.database.Query
 			{
 				return await GetObjectsByFilePathCollectionQueryAsync(inputFilePaths.ToList());
 			}
+
 			return await GetObjectsByFilePathQueryAsync(inputFilePaths.ToList());
 		}
 
@@ -93,12 +102,15 @@ namespace starsky.foundation.database.Query
 		/// </summary>
 		/// <param name="filePathList"></param>
 		/// <returns></returns>
-		public async Task<List<FileIndexItem>> GetObjectsByFilePathQueryAsync(List<string> filePathList)
+		[SuppressMessage("Sonar", "S1696:NullReferenceException should not be caught")]
+		public async Task<List<FileIndexItem>> GetObjectsByFilePathQueryAsync(
+			List<string> filePathList)
 		{
 			async Task<List<FileIndexItem>> LocalQuery(ApplicationDbContext context)
 			{
-				var result = await context.FileIndex.TagWith("GetObjectsByFilePathQueryAsync").Where(p =>
-					p.FilePath != null && filePathList.Contains(p.FilePath)).ToListAsync();
+				var result = await context.FileIndex.TagWith("GetObjectsByFilePathQueryAsync")
+					.Where(p =>
+						p.FilePath != null && filePathList.Contains(p.FilePath)).ToListAsync();
 				return FormatOk(result);
 			}
 
@@ -106,16 +118,19 @@ namespace starsky.foundation.database.Query
 			{
 				return await LocalQuery(_context);
 			}
+			// Rewrite in future to avoid using  catch NullReferenceException
 			catch ( NullReferenceException ex1 )
 			{
-				_logger.LogInformation($"catch-ed null ref exception: {string.Join(",", filePathList.ToArray())} {ex1.StackTrace}", ex1);
+				_logger.LogInformation(
+					$"catch-ed null ref exception: {string.Join(",", filePathList.ToArray())} {ex1.StackTrace}",
+					ex1);
 				await Task.Delay(10);
 				// System.NullReferenceException: Object reference not set to an instance of an object.
 				// at MySql.Data.MySqlClient.MySqlDataReader.ActivateResultSet()
 				try
 				{
 					return await LocalQuery(new InjectServiceScope(_scopeFactory)
-							.Context());
+						.Context());
 				}
 				catch ( MySqlProtocolException )
 				{
@@ -123,9 +138,12 @@ namespace starsky.foundation.database.Query
 					return await LocalQuery(
 						new InjectServiceScope(_scopeFactory).Context());
 				}
+				// Rewrite in future to avoid using  catch NullReferenceException
 				catch ( NullReferenceException ex2 )
 				{
-					_logger.LogInformation($"catch-ed null ref exception 2: {string.Join(",", filePathList.ToArray())} {ex2.StackTrace}", ex2);
+					_logger.LogInformation(
+						$"catch-ed null ref exception 2: {string.Join(",", filePathList.ToArray())} {ex2.StackTrace}",
+						ex2);
 					throw;
 				}
 			}

@@ -33,12 +33,12 @@ namespace starskytest.starsky.feature.import.Models
 			// false
 			context.Request.Headers["IndexMode"] = "false";
 			var model = new ImportSettingsModel(context.Request);
-			Assert.AreEqual(false, model.IndexMode);
+			Assert.IsFalse(model.IndexMode);
 		    
 			// now true
 			context.Request.Headers["IndexMode"] = "true";
 			model = new ImportSettingsModel(context.Request);
-			Assert.AreEqual(true, model.IndexMode);
+			Assert.IsTrue(model.IndexMode);
 		}
 	}
 }

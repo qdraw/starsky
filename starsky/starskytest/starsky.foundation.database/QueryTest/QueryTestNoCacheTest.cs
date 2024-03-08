@@ -46,7 +46,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		[TestMethod]
 		public void Query_IsCacheEnabled_False()
 		{
-			Assert.AreEqual(false, _query.IsCacheEnabled());
+			Assert.IsFalse(_query.IsCacheEnabled());
 		}
 	    
 		[TestMethod]

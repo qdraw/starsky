@@ -3,28 +3,18 @@ import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
+import { FunctionComponent } from "react";
+import { GetBoxClassName } from "./internal/get-box-class-name.ts";
 
 interface ItemListProps {
-  children?: React.ReactNode;
   fileIndexItems: IFileIndexItem[];
-  isLoading?: boolean;
   callback?(path: string): void;
-}
-
-function GetBoxClass(item: IFileIndexItem): string {
-  if (item.isDirectory) {
-    return "box isDirectory-true";
-  } else if (item.status === IExifStatus.Ok || item.status === IExifStatus.Default) {
-    return "box isDirectory-false";
-  } else {
-    return "box isDirectory-false error";
-  }
 }
 
 /**
  * A list with links to the items
  */
-const ItemTextListView: React.FunctionComponent<ItemListProps> = (props) => {
+const ItemTextListView: FunctionComponent<ItemListProps> = (props) => {
   // Content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
@@ -48,7 +38,7 @@ const ItemTextListView: React.FunctionComponent<ItemListProps> = (props) => {
       )}
       <ul>
         {props.fileIndexItems.map((item) => (
-          <li className={GetBoxClass(item)} key={item.filePath + item.lastEdited}>
+          <li className={GetBoxClassName(item)} key={item.filePath + item.lastEdited}>
             {item.isDirectory ? (
               <button
                 data-test={"btn-" + item.fileName}
