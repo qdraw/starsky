@@ -9,6 +9,7 @@ import logger from "../logger/logger";
 import { isPackaged } from "../os-info/is-packaged";
 import { childProcessPath } from "./child-process-path";
 import { electronCacheLocation } from "./electron-cache-location";
+import { SpawnCleanMacOs } from "./spawn-clean-mac-os";
 
 function spawnChildProcess(appStarskyPath: string) {
   const starskyChild = spawn(appStarskyPath, {
@@ -94,13 +95,15 @@ export async function setupChildProcess() {
 
   starskyChild.addListener("close", () => {
     logger.info("restart process");
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    GetFreePort().then((p) => {
-      (global.shared as SharedSettings).port = p;
-      env.ASPNETCORE_URLS = `http://localhost:${(global.shared as SharedSettings).port}`;
-      logger.info(`next: port: ${(global.shared as SharedSettings).port}`);
-      starskyChild = spawnChildProcess(appStarskyPath);
-    });
+
+    SpawnCleanMacOs(appStarskyPath, process.platform)
+      .then(() => {
+        starskyChild = spawnChildProcess(appStarskyPath);
+        starskyChild.addListener("close", () => {
+          starskyChild = spawnChildProcess(appStarskyPath);
+        });
+      })
+      .catch(() => {});
   });
 
   readline.emitKeypressEvents(process.stdin);
