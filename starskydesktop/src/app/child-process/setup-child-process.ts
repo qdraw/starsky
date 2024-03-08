@@ -4,19 +4,21 @@ import * as fs from "fs";
 import * as path from "path";
 import * as readline from "readline";
 import { GetFreePort } from "../get-free-port/get-free-port";
+import { SharedSettings } from "../global/global";
 import logger from "../logger/logger";
 import { isPackaged } from "../os-info/is-packaged";
 import { childProcessPath } from "./child-process-path";
 import { electronCacheLocation } from "./electron-cache-location";
-
-// eslint-disable-next-line import/no-mutable-exports
-export let appPort = 9609;
 
 function spawnChildProcess(appStarskyPath: string) {
   const starskyChild = spawn(appStarskyPath, {
     cwd: path.dirname(appStarskyPath),
     detached: true,
     env: process.env,
+  });
+
+  starskyChild.on("exit", (code) => {
+    logger.info(`EXIT: CODE: ${code}`);
   });
 
   starskyChild.stdout.on("data", (data: string) => {
@@ -30,7 +32,7 @@ function spawnChildProcess(appStarskyPath: string) {
   return starskyChild;
 }
 
-export async function setupChildProcess() {
+function CreateTempThumbnailFolders() {
   const thumbnailTempFolder = path.join(electronCacheLocation(), "thumbnailTempFolder");
   if (!fs.existsSync(thumbnailTempFolder)) {
     fs.mkdirSync(thumbnailTempFolder);
@@ -40,26 +42,40 @@ export async function setupChildProcess() {
   if (!fs.existsSync(tempFolder)) {
     fs.mkdirSync(tempFolder);
   }
+  return {
+    tempFolder,
+    thumbnailTempFolder,
+  };
+}
 
-  const appSettingsPath = path.join(electronCacheLocation(), "appsettings.json");
+function EnvHelper(appPort: number) {
   const databaseConnection = `Data Source=${path.join(electronCacheLocation(), "starsky.db")}`;
+  const appSettingsPath = path.join(electronCacheLocation(), "appsettings.json");
+  const createTempThumbnailFolderResult = CreateTempThumbnailFolders();
 
-  appPort = await GetFreePort();
-
-  logger.info(`next: port: ${appPort}`);
-  logger.info(`-appSettingsPath > ${appSettingsPath}`);
-
-  const env = {
+  return {
     ASPNETCORE_URLS: `http://localhost:${appPort}`,
-    app__thumbnailTempFolder: thumbnailTempFolder,
-    app__tempFolder: tempFolder,
+    app__thumbnailTempFolder: createTempThumbnailFolderResult.thumbnailTempFolder,
+    app__tempFolder: createTempThumbnailFolderResult.tempFolder,
     app__appsettingspath: appSettingsPath,
     app__NoAccountLocalhost: "true",
     app__UseLocalDesktop: "true",
     app__databaseConnection: databaseConnection,
+    app__ThumbnailGenerationIntervalInMinutes: !isPackaged() ? "-1" : "300",
     app__AccountRegisterDefaultRole: "Administrator",
     app__Verbose: !isPackaged() ? "true" : "false",
   };
+}
+
+export async function setupChildProcess() {
+  const appSettingsPath = path.join(electronCacheLocation(), "appsettings.json");
+
+  (global.shared as SharedSettings).port = await GetFreePort();
+
+  logger.info(`next: port: ${(global.shared as SharedSettings).port}`);
+  logger.info(`-appSettingsPath > ${appSettingsPath}`);
+
+  const env = EnvHelper((global.shared as SharedSettings).port);
   process.env = { ...process.env, ...env };
 
   logger.info("env settings ->");
@@ -80,9 +96,9 @@ export async function setupChildProcess() {
     logger.info("restart process");
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     GetFreePort().then((p) => {
-      appPort = p;
-      env.ASPNETCORE_URLS = `http://localhost:${appPort}`;
-      logger.info(`next: port: ${appPort}`);
+      (global.shared as SharedSettings).port = p;
+      env.ASPNETCORE_URLS = `http://localhost:${(global.shared as SharedSettings).port}`;
+      logger.info(`next: port: ${(global.shared as SharedSettings).port}`);
       starskyChild = spawnChildProcess(appStarskyPath);
     });
   });
