@@ -25,7 +25,7 @@ async function CreateMainWindow(openSpecificUrl: string, offset = 0): Promise<Br
     webPreferences: {
       allowRunningInsecureContent: false,
       nodeIntegration: false,
-      sandbox: true,
+      sandbox: false,
       webviewTag: true,
       spellcheck: true,
       partition: "persist:main",
@@ -39,16 +39,18 @@ async function CreateMainWindow(openSpecificUrl: string, offset = 0): Promise<Br
 
   mainWindowStateKeeper.track(newWindow);
 
-  const location = path.join(__dirname, "client/pages/start/start.html");
-  logger.info(`[CreateMainWindow] url: ${openSpecificUrl} l: ${location}`);
+  await newWindow.loadURL(openSpecificUrl, { extraHeaders: "test:true" });
+  // const location = path.join(__dirname, "client/pages/start/start.html");
+  // logger.info(`[CreateMainWindow] url: ${openSpecificUrl} l: ${location}`);
 
-  await newWindow.loadFile(location, {
-    query: { "remember-url": openSpecificUrl },
-  });
+  // await newWindow.loadFile(location, {
+  //   query: { "remember-url": openSpecificUrl },
+  // });
 
   spellCheck(newWindow);
 
   newWindow.once("ready-to-show", () => {
+    logger.info("ready to show");
     newWindow.show();
   });
 

@@ -118,7 +118,8 @@ function StartProcess(): Promise<number> {
             .catch(reject);
         });
 
-        starskyChild.stdout.on("data", () => {
+        starskyChild.once("spawn", () => {
+          logger.info("im doing something");
           resolve(appPort);
         });
 
