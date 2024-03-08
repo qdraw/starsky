@@ -217,4 +217,25 @@
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
         <SonarQubeExclude>true</SonarQubeExclude>
     </PropertyGroup>
+
+    <!-- remove cultures (https://stackoverflow.com/a/34362524)-->
+    
+    <Target Name="AfterPackage" AfterTargets="CopyAllFilesToSingleFolderForPackage"/>
+
+    <ItemGroup>
+        <ThisAppExcludedCultures Include="cs;da;de;es;fa;fi;fr;it;ko;mk;nl;pl;pt;ru;sv;tr;zh-CN;pt-BR;ja;zh-Hans;zh-Hant">
+            <InProject>false</InProject>
+        </ThisAppExcludedCultures>
+    </ItemGroup>
+
+    <Target Name="RemoveTranslationsAfterBuild" AfterTargets="AfterBuild">
+        <RemoveDir Directories="@(ThisAppExcludedCultures->'$(OutputPath)%(Filename)')"/>
+    </Target>
+
+    <Target Name="RemoveTranslationsAfterPackage" AfterTargets="AfterPackage">
+        <RemoveDir Directories="@(ThisAppExcludedCultures->'$(_PackageTempDir)\$(OutputPath)%(Filename)')"/>
+    </Target>
+
+    <!-- end remove cultures -->
+
 </Project>
