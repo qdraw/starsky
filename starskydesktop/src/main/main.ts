@@ -32,26 +32,15 @@ app.on("ready", () => {
 
   logger.info(`app ready`);
 
-  SetupChildProcess()
-    .then(async (appPort) => {
+  SetupSplash().then((splashWindows) => {
+    SetupChildProcess().then((appPort) => {
       logger.info("done child process");
-      const splashWindows = await SetupSplash();
       RestoreWarmupMainWindowAndCloseSplash(appPort, splashWindows).catch(() => {
         logger.warn("skldfnksdlnksdlfk");
         throw new Error("retry");
       });
-    })
-    .catch(() => {
-      SetupChildProcess()
-        .then(async (appPort) => {
-          logger.info("retry 2");
-          const splashWindows = await SetupSplash();
-          RestoreWarmupMainWindowAndCloseSplash(appPort, splashWindows);
-        })
-        .catch(() => {
-          logger.warn("sdfdf");
-        });
     });
+  });
 
   app.on("activate", () => {
     // On macOS it's common to re-create a window in the app when the

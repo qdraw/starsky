@@ -74,6 +74,25 @@ function Env(appPort: number) {
 }
 
 function StartProcess(): Promise<number> {
+  let retryCount = 0;
+
+  function retryProcess(): Promise<number> {
+    return new Promise((resolve, reject) => {
+      if (retryCount < 3) {
+        retryCount += 1;
+        console.log(`Retry attempt ${retryCount}`);
+        StartProcess()
+          .then((e) => resolve(e))
+          .catch(() => {
+            console.error("Retry failed");
+          });
+      } else {
+        console.error("Max retries reached");
+        reject(new Error("max retries"));
+      }
+    });
+  }
+
   return new Promise((resolve, reject) => {
     CreateFolder();
     GetFreePort()
@@ -93,8 +112,8 @@ function StartProcess(): Promise<number> {
 
         starskyChild.on("exit", () => {
           SpawnCleanMacOs(appStarskyPath, process.platform)
-            .then(() => {
-              reject(new Error("Retry please: process failed"));
+            .then(async () => {
+              await retryProcess();
             })
             .catch(reject);
         });
