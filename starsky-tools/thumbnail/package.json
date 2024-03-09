@@ -21,14 +21,14 @@
     "@types/jpeg-autorotate": "^5.0.3",
     "axios": "^1.6.7",
     "cwait": "^1.1.2",
-    "dotenv": "^16.4.4",
-    "jimp": "^0.22.10",
+    "dotenv": "^16.4.5",
+    "jimp": "^0.22.12",
     "jpeg-autorotate": "^9.0.0",
     "p-iteration": "^1.1.8"
   },
   "devDependencies": {
-    "@types/node": "^20.11.19",
+    "@types/node": "^20.11.25",
     "concurrently": "^8.2.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.4.2"
   }
 }
