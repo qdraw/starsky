@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.platform.Services
 {
@@ -14,6 +15,7 @@ namespace starsky.foundation.platform.Services
 	{
 		private readonly ILogger? _logger;
 		private readonly IConsole? _console;
+		private readonly AppSettings? _appSettings;
 
 		/// <summary>
 		/// Trace = 0, Debug = 1, Information = 2, Warning = 3, Error = 4, Critical = 5, and None = 6.
@@ -25,7 +27,9 @@ namespace starsky.foundation.platform.Services
 		{
 			_logger = loggerFactory?.CreateLogger("app");
 			var scopeProvider = scopeFactory?.CreateScope().ServiceProvider;
-			if ( scopeProvider != null ) _console = scopeProvider.GetService<IConsole>();
+			if ( scopeProvider == null ) return;
+			_console = scopeProvider.GetService<IConsole>();
+			_appSettings = scopeProvider.GetService<AppSettings>();
 		}
 
 		public void LogDebug(string? message, params object[] args)
@@ -35,12 +39,13 @@ namespace starsky.foundation.platform.Services
 				return;
 			}
 
-			if ( _logger == null )
+			if ( _logger == null && _appSettings?.Verbose == true )
 			{
 				_console?.WriteLine(message);
 				return;
 			}
-			_logger.LogDebug(message, args);
+			
+			_logger?.LogDebug(message, args);
 		}
 
 		public void LogInformation(string? message, params object[] args)
