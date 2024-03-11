@@ -80,6 +80,7 @@ export function SpawnCleanMacOs(appStarskyPath: string, processPlatform: string)
   return new Promise((resolve, reject) => {
     if (processPlatform !== "darwin") {
       resolve(true);
+      return;
     }
 
     Promise.all([ExecuteXattrCommand(appStarskyPath), ExecuteCodesignCommand(appStarskyPath)])

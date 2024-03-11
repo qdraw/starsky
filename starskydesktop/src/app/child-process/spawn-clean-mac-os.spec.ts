@@ -14,7 +14,7 @@ describe("SpawnCleanMacOs function", () => {
     expect(result).toBe(true);
   });
 
-  it.skip("should call executeXattrCommand and executeCodesignCommand when processPlatform is darwin", async () => {
+  it("should call executeXattrCommand and executeCodesignCommand when processPlatform is darwin", async () => {
     if (process.platform !== "darwin") {
       return;
     }
