@@ -3,7 +3,7 @@ export interface SharedSettings {
 }
 
 global.shared = {
-  port: -1,
+  port: 9609,
 } as SharedSettings;
 
 export default global;
