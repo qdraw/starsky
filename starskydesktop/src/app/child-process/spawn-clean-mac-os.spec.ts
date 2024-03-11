@@ -22,13 +22,14 @@ describe("SpawnCleanMacOs function", () => {
 
     console.log(exampleApp);
 
+    // real one:
     const result = await SpawnCleanMacOs(exampleApp, "darwin");
 
     expect(result).toBeTruthy();
   });
 
   it("mock out ExecuteCodesignCommand happy flow", async () => {
-    if (process.platform !== "darwin" && process.platform !== "linux") {
+    if (process.platform === "win32") {
       return;
     }
 
@@ -48,7 +49,7 @@ describe("SpawnCleanMacOs function", () => {
   });
 
   it("mock out ExecuteXattrCommand happy flow", async () => {
-    if (process.platform !== "darwin" && process.platform !== "linux") {
+    if (process.platform === "win32") {
       return;
     }
 
@@ -68,7 +69,7 @@ describe("SpawnCleanMacOs function", () => {
   });
 
   it("mock out ExecuteXattrCommand error", async () => {
-    if (process.platform !== "darwin" && process.platform !== "linux") {
+    if (process.platform === "win32") {
       return;
     }
 
