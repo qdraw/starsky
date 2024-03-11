@@ -63,6 +63,11 @@ jobs:
 
       - name: Test
         working-directory: ./starskydesktop
+        env:
+          STARSKY_SONAR_KEY: ${{ secrets.STARSKY_SONAR_KEY }}
+          STARSKY_SONAR_TOKEN: ${{ secrets.STARSKY_SONAR_TOKEN }}
+          STARSKY_SONAR_ORGANISATION: ${{ secrets.STARSKY_SONAR_ORGANISATION }}
+          STARSKY_SONAR_URL:  ${{ secrets.STARSKY_SONAR_URL }}        
         run: npm run test:ci
 
 
