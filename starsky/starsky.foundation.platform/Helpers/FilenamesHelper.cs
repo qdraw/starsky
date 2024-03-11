@@ -15,7 +15,7 @@ namespace starsky.foundation.platform.Helpers
 		/// <returns>Regex object</returns>
 		[GeneratedRegex(
 			"^[a-zA-Z0-9_](?:[a-zA-Z0-9 ._-]*[a-zA-Z0-9])?\\.[a-zA-Z0-9_-]+$",
-			RegexOptions.CultureInvariant,
+			RegexOptions.CultureInvariant | RegexOptions.Singleline,
 			matchTimeoutMilliseconds: 300)]
 		private static partial Regex ValidFileNameRegex();
 
@@ -63,7 +63,7 @@ namespace starsky.foundation.platform.Helpers
 		/// <returns>Regex object</returns>
 		[GeneratedRegex(
 			"\\.[a-zA-Z0-9]{1,4}$",
-			RegexOptions.CultureInvariant,
+			RegexOptions.NonBacktracking | RegexOptions.CultureInvariant,
 			matchTimeoutMilliseconds: 100)]
 		private static partial Regex FileNameWithoutExtensionRegex();
 
@@ -87,7 +87,7 @@ namespace starsky.foundation.platform.Helpers
 		/// <returns>Regex object</returns>
 		[GeneratedRegex(
 			"[^.][a-zA-Z0-9]{1,4}$",
-			RegexOptions.CultureInvariant,
+			RegexOptions.NonBacktracking | RegexOptions.CultureInvariant,
 			matchTimeoutMilliseconds: 100)]
 		private static partial Regex FileExtensionWithoutDotRegex();
 
@@ -116,8 +116,8 @@ namespace starsky.foundation.platform.Helpers
 		/// <returns>Regex object</returns>
 		[GeneratedRegex(
 			".+(?=\\/[^/]+$)",
-			RegexOptions.CultureInvariant,
-			matchTimeoutMilliseconds: 200)]
+			RegexOptions.IgnoreCase | RegexOptions.Singleline,
+			matchTimeoutMilliseconds: 300)]
 		private static partial Regex ParentPathRegex();
 
 		/// <summary>
