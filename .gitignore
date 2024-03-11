@@ -339,7 +339,7 @@ starskyapp/tmp/settings.json
 starskydesktop/dist-prod/*
 starskydesktop/tmp/settings.json
 
-starskydesktop/src/.scannerwork/*
+starskydesktop/.scannerwork/*
 
 starsky-tools/docs/*.yml
 starsky-tools/docs/*.sh
