@@ -46,7 +46,7 @@ export function ExecuteCodesignCommand(
       appStarskyPath,
     ];
 
-    logger.info(`appStarskyPath: ${appStarskyPath} - codesign: ${codesign}`);
+    logger.info(`appStarskyPath: ${appStarskyPath} - codesign: ${codesign} -- `);
 
     const options = {
       cwd: path.dirname(appStarskyPath),

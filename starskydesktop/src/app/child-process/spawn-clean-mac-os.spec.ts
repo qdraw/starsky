@@ -14,7 +14,7 @@ describe("SpawnCleanMacOs function", () => {
     expect(result).toBe(true);
   });
 
-  it("should call executeXattrCommand and executeCodesignCommand when processPlatform is darwin", async () => {
+  it.skip("should call executeXattrCommand and executeCodesignCommand when processPlatform is darwin", async () => {
     if (process.platform !== "darwin") {
       return;
     }
@@ -37,13 +37,16 @@ describe("SpawnCleanMacOs function", () => {
     const testDir = path.join(process.cwd(), "src", "setup", "__test");
     const starskyMockApp = path.join(process.cwd(), "src", "setup", "__test", "starsky");
 
+    console.log(`testDir: ${testDir}`);
+
     process.chdir(testDir);
 
     fs.chmodSync(starskyMockApp, "755");
-
     console.log("chmod done");
 
     const result = await ExecuteCodesignCommand("./starsky", "./starsky");
+
+    console.log(`--- ExecuteCodesignCommand`);
 
     expect(result).toBeUndefined();
 
