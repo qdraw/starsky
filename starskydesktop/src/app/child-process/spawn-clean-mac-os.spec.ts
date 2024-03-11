@@ -18,7 +18,7 @@ describe("SpawnCleanMacOs function", () => {
     if (process.platform !== "darwin") {
       return;
     }
-    const exampleApp = path.join(process.cwd(), "src", "shared", "__test", "starsky");
+    const exampleApp = path.join(process.cwd(), "src", "setup", "__test", "starsky");
 
     console.log(exampleApp);
 
@@ -33,8 +33,8 @@ describe("SpawnCleanMacOs function", () => {
     }
 
     const beforeCwd = process.cwd();
-    const testDir = path.join(process.cwd(), "src", "shared", "__test");
-    const starskyMockApp = path.join(process.cwd(), "src", "shared", "__test", "starsky");
+    const testDir = path.join(process.cwd(), "src", "setup", "__test");
+    const starskyMockApp = path.join(process.cwd(), "src", "setup", "__test", "starsky");
 
     process.chdir(testDir);
 
@@ -53,8 +53,8 @@ describe("SpawnCleanMacOs function", () => {
     }
 
     const beforeCwd = process.cwd();
-    const testDir = path.join(process.cwd(), "src", "shared", "__test");
-    const starskyMockApp = path.join(process.cwd(), "src", "shared", "__test", "starsky");
+    const testDir = path.join(process.cwd(), "src", "setup", "__test");
+    const starskyMockApp = path.join(process.cwd(), "src", "setup", "__test", "starsky");
 
     process.chdir(testDir);
 
@@ -73,8 +73,8 @@ describe("SpawnCleanMacOs function", () => {
     }
 
     const beforeCwd = process.cwd();
-    const testDir = path.join(process.cwd(), "src", "shared", "__test");
-    const starskyMockApp = path.join(process.cwd(), "src", "shared", "__test", "mock-error");
+    const testDir = path.join(process.cwd(), "src", "setup", "__test");
+    const starskyMockApp = path.join(process.cwd(), "src", "setup", "__test", "mock-error");
 
     process.chdir(testDir);
 
