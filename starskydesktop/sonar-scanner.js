@@ -41,7 +41,7 @@ const options = {
   "sonar.projectKey": projectKey,
 
   // projectName - defaults to project key
-  "sonar.projectName": "StarskyDesktop",
+  "sonar.projectName": projectKey,
 
   "sonar.organization": organization,
 
@@ -63,15 +63,22 @@ const options = {
   "sonar.sourceEncoding": "UTF-8",
 };
 
+let gitBranchName = "";
+try {
+  // Execute the git command to get the current branch name
+  gitBranchName = execSync('git rev-parse --abbrev-ref HEAD').toString().trim();
+  console.log("Current branch:", gitBranchName);
+} catch (error) {
+  console.error("Error getting branch name:", error);
+}
+
+if (!gitBranchName) {
+  console.error("Set to Default Branch name: master")
+  gitBranchName = "master";
+}
+
 if (!isPrBuild) {
-  try {
-    // Execute the git command to get the current branch name
-    const branchName = execSync('git rev-parse --abbrev-ref HEAD').toString().trim();
-    console.log("Current branch:", branchName);
-    options["sonar.branch.name"] = branchName;
-  } catch (error) {
-    console.error("Error getting branch name:", error);
-  }
+  options["sonar.branch.name"] = gitBranchName;
 }
 
 if (isPrBuild) {
