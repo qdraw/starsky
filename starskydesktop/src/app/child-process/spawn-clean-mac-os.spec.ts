@@ -41,6 +41,8 @@ describe("SpawnCleanMacOs function", () => {
 
     fs.chmodSync(starskyMockApp, "755");
 
+    console.log("chmod done");
+
     const result = await ExecuteCodesignCommand("./starsky", "./starsky");
 
     expect(result).toBeUndefined();
