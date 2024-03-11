@@ -6,6 +6,7 @@ using starsky.foundation.platform.Models;
 using starskytest.FakeCreateAn.CreateFakeStarskyExe;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Medallion.Shell;
@@ -16,7 +17,7 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative.Helpers;
 public class WindowsOpenDesktopAppTests
 {
 	private const string Extension = ".starsky";
-	private const string ProgId = "starskytest";
+	private const string ProgramId = "starskytest";
 	private const string FileTypeDescription = "Starsky Test File";
 
 	[TestInitialize]
@@ -41,8 +42,15 @@ public class WindowsOpenDesktopAppTests
 		}
 
 		// Ensure no keys exist before the test starts
-		Registry.CurrentUser.DeleteSubKeyTree($"Software\\Classes\\{Extension}", false);
-		Registry.CurrentUser.DeleteSubKeyTree($"Software\\Classes\\{ProgId}", false);
+		try
+		{
+			Registry.CurrentUser.DeleteSubKeyTree($@"Software\Classes\{Extension}", false);
+			Registry.CurrentUser.DeleteSubKeyTree($@"Software\Classes\{ProgramId}", false);
+		}
+		catch ( IOException )
+		{
+			// do nothing
+		}
 	}
 
 	private static CreateFakeStarskyWindowsExe SetupEnsureAssociationsSet()
@@ -58,7 +66,7 @@ public class WindowsOpenDesktopAppTests
 			new FileAssociation
 			{
 				Extension = Extension,
-				ProgId = ProgId,
+				ProgId = ProgramId,
 				FileTypeDescription = FileTypeDescription,
 				ExecutableFilePath = filePath
 			});
@@ -72,7 +80,7 @@ public class WindowsOpenDesktopAppTests
 		var result = WindowsOpenDesktopApp.OpenDefault(["any value"], OSPlatform.Linux);
 		Assert.IsNull(result);
 	}
-	
+
 	[TestMethod]
 	public void W_OpenDefault2_NonWindows()
 	{
@@ -117,7 +125,7 @@ public class WindowsOpenDesktopAppTests
 			WindowsOpenDesktopApp.OpenDefault([mock.StarskyDotStarskyPath], OSPlatform.Windows);
 
 		// Retry if failed due to multi-threading
-		for (var i = 0; i < 2 && result != true; i++)
+		for ( var i = 0; i < 2 && result != true; i++ )
 		{
 			Console.WriteLine($"Retry due to multi-threading {i + 1}");
 			await Task.Delay(1000);
@@ -135,7 +143,7 @@ public class WindowsOpenDesktopAppTests
 			"app", OSPlatform.Linux);
 		Assert.IsNull(result);
 	}
-	
+
 	[TestMethod]
 	[ExpectedException(typeof(Win32Exception))]
 	public void W_OpenApplicationAtUrl2_NonWindows()
@@ -147,7 +155,7 @@ public class WindowsOpenDesktopAppTests
 		}
 
 		// ExpectedException = Win32Exception
-		WindowsOpenDesktopApp.OpenApplicationAtUrl(["any value"], 
+		WindowsOpenDesktopApp.OpenApplicationAtUrl(["any value"],
 			"/not_found_849539453", OSPlatform.Windows);
 	}
 
