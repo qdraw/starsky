@@ -56,6 +56,13 @@ jobs:
           key: ${{ runner.os }}-build-desktop-sonarqube
           restore-keys: |
             ${{ runner.os }}-build-desktop-sonarqube-
+            
+      - name: NpmCi
+        working-directory: ./starskydesktop
+        run: npm ci
 
+      - name: Test
+        working-directory: ./starskydesktop
+        run: npm run test:ci
 
 
