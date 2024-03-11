@@ -1,5 +1,6 @@
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace starsky.foundation.platform.Helpers
@@ -108,20 +109,9 @@ namespace starsky.foundation.platform.Helpers
 		}
 
 		/// <summary>
+		/// Return UNIX style parent paths back
 		/// Get Parent Regex
 		/// unescaped regex: /.+(?=\/[^/]+$)/
-		/// pre compiled regex
-		/// Regex.Match
-		/// </summary>
-		/// <returns>Regex object</returns>
-		[GeneratedRegex(
-			".+(?=\\/[^/]+$)",
-			RegexOptions.IgnoreCase | RegexOptions.Singleline,
-			matchTimeoutMilliseconds: 300)]
-		private static partial Regex ParentPathRegex();
-
-		/// <summary>
-		/// Return UNIX style parent paths back
 		/// </summary>
 		/// <param name="filePath">unix style subPath</param>
 		/// <returns>parent folder path</returns>
@@ -131,8 +121,21 @@ namespace starsky.foundation.platform.Helpers
 			{
 				return "/";
 			}
+			
+			var parts = filePath.TrimEnd('/').Split('/');
+			if (parts.Length <= 2)
+			{
+				return "/";
+			}
 
-			var result = ParentPathRegex().Match(filePath).Value;
+			var stringBuilder = new StringBuilder();
+			for (var i = 0; i < parts.Length - 1; i++)
+			{
+				stringBuilder.Append(parts[i] + "/");
+			}
+			
+			var result = stringBuilder.ToString().TrimEnd('/');
+
 			return string.IsNullOrEmpty(result) ? "/" : PathHelper.RemoveLatestSlash(result);
 		}
 	}
