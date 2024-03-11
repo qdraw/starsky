@@ -1,28 +1,33 @@
 import { Slugify } from "./slugify";
 
 describe("Slugify", () => {
-  it("lowercase", () => {
-    const slugifyResult = Slugify("Test");
-    expect(slugifyResult).toBe("test");
+  it("test lowercase", () => {
+    const slugifyResult1 = Slugify("Test");
+    // it should remove the capital at start
+    expect(slugifyResult1).toBe("test");
   });
 
-  it("trim", () => {
-    const slugifyResult = Slugify("    test");
-    expect(slugifyResult).toBe("test");
+  it("test replace ----", () => {
+    const slugifyResult2 = Slugify("test-----test");
+    // it should give a slugified result
+    expect(slugifyResult2).toBe("test-test");
   });
 
-  it("space", () => {
-    const slugifyResult = Slugify("test test");
-    expect(slugifyResult).toBe("test-test");
+  it("test trim", () => {
+    const slugifyResult3 = Slugify("    test");
+    // it should trim before
+    expect(slugifyResult3).toBe("test");
   });
 
-  it("remove $$", () => {
-    const slugifyResult = Slugify("test$$$test");
-    expect(slugifyResult).toBe("testtest");
+  it("test remove $$", () => {
+    const slugifyResult4 = Slugify("test$$$test");
+    // it should remove the dollar signs
+    expect(slugifyResult4).toBe("testtest");
   });
 
-  it("replace ----", () => {
-    const slugifyResult = Slugify("test-----test");
-    expect(slugifyResult).toBe("test-test");
+  it("test space", () => {
+    const slugifyResult5 = Slugify("test test");
+    // it should replace the space with a dash
+    expect(slugifyResult5).toBe("test-test");
   });
 });

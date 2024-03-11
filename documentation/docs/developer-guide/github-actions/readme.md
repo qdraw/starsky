@@ -271,9 +271,9 @@ Smoke tests for the starsky-tools
 Build the Electron app on pull request without .NET so faster but does not run the app
 For Windows and Mac OS builds the app and runs the unit tests
 
-[![Docker buildx multi-arch CI unstable master](https://github.com/qdraw/starsky/actions/workflows/starskyapp-electron-pr-build-mac-win.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/starskyapp-electron-pr-build-mac-win.yml)
+[![Docker buildx multi-arch CI unstable master](https://github.com/qdraw/starsky/actions/workflows/desktop-electron-pr-build-mac-win.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/desktop-electron-pr-build-mac-win.yml)
 
-> [starskyapp-electron-pr-build-mac-win.yml](https://github.com/qdraw/starsky/actions/workflows/starskyapp-electron-pr-build-mac-win.yml)
+> [desktop-electron-pr-build-mac-win.yml](https://github.com/qdraw/starsky/actions/workflows/desktop-electron-pr-build-mac-win.yml)
 
 ## storybook clientapp netlify
 

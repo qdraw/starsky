@@ -29,7 +29,7 @@ const baseConfig = {
     "prefer-promise-reject-errors": ["off"],
     "linebreak-style": ["off"],
   },
-  ignorePatterns: ["dist/*", "dist-prod/*", "runtime-*/*"],
+  ignorePatterns: ["dist/*", "dist-prod/*", "runtime-*/*", "sonar-scanner.js"],
 };
 
 const tsConfig = {
