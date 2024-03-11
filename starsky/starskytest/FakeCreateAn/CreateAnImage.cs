@@ -37,6 +37,7 @@ namespace starskytest.FakeCreateAn
 			 Path.DirectorySeparatorChar).Replace("./",string.Empty);
 
 		/// <summary>
+		/// Split line
 		/// @see: https://superuser.com/a/1467266 and 80 chars
 		/// </summary>
 		[SuppressMessage("ReSharper", "StringLiteralTypo")] 
