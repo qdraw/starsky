@@ -41,7 +41,11 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.6.0-beta.3 - _(Unreleased)_ - 2024-03-? {#v0.6.0-beta.3}
+## version 0.6.0-beta.4 - _(Unreleased)_ - 2024-03-? {#v0.6.0-beta.4}
+
+- TODO: update fallback / custom update messages
+
+## version 0.6.0-beta.3 - 2024-03-11 {#v0.6.0-beta.3}
 
 - [x] (Fixed) _Back-end_ Fix Dispose issue for WriteTagsAndRenameThumbnailAsync,
   WriteTagsAsync (Windows) (PR #1437) (Issue #1427)
