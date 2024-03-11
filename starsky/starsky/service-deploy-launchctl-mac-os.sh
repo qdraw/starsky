@@ -112,6 +112,9 @@ if launchctl list com.$SERVICE_NAME | grep -q "$SERVICE_NAME";then
 fi
 
 if [ "$REMOVE_SERVICE" = true ] ; then
+    rm -f $LAUNCHD_SERVICE_PATH
+    echo "remove done"
+    echo "exit here due --remove flag"
     exit 0
 fi
 
