@@ -1,0 +1,95 @@
+name: SonarQube ClientApp .NET Analyze (Missing .NET dependency)
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: 
+      - synchronize
+      - opened
+    branches:
+      - master
+    paths:
+    - 'starsky/**'
+    - '.github/workflows/**'
+    - '!starsky/Dockerfile'
+    - '!starsky/docker_demo_setup.sh'    
+    - '!history.md'
+  push:
+    branches: [master]
+    paths:
+    - 'starsky/**'
+  schedule:
+    - cron:  '36 0 * * 0,2,4,6'
+
+env:
+  PR_NUMBER_GITHUB: ${{ github.event.pull_request.number }}
+  
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    env:
+      WEBSITE_SITE_NAME: "ci"
+      
+    steps:
+      - name: 'Checkout repository on branch: ${{ github.REF }}'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.HEAD_REF }}
+
+      - name: Retrieve entire repository history
+        run: |
+          git fetch --prune --unshallow
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.201
+        
+      - name: Use Java 17   
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          check-latest: true
+          java-package: jdk # (jre, jdk, or jdk+fx) - defaults to jdk
+          architecture: x64 # (x64 or x86) - defaults to x64
+
+      - name: Cache node modules clientapp (*nix)
+        uses: actions/cache@v4
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-clientapp-${{ hashFiles('./starsky/starsky/clientapp/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-clientapp-
+
+      - name: Cache nuget packages (*nix)
+        uses: actions/cache@v4
+        with:
+          # nuget cache files are stored in `~/.nuget/packages` on Linux/macOS
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-build-netcore-${{ hashFiles('./starsky/starsky/nuget-packages-list.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-netcore-
+
+      - name: Cache sonarqube packages (*nix)
+        uses: actions/cache@v4
+        with:
+          # nuget cache files are stored in `~/.sonar` on Linux/macOS
+          path: ~/.sonar
+          key: ${{ runner.os }}-build-sonarqube
+          restore-keys: |
+            ${{ runner.os }}-build-sonarqube-
+
+      - name: Build
+        shell: bash
+        env:
+          STARSKY_SONAR_KEY: ${{ secrets.STARSKY_SONAR_KEY }}
+          STARSKY_SONAR_TOKEN: ${{ secrets.STARSKY_SONAR_TOKEN }}
+          STARSKY_SONAR_ORGANISATION: ${{ secrets.STARSKY_SONAR_ORGANISATION }}
+          STARSKY_SONAR_URL:  ${{ secrets.STARSKY_SONAR_URL }}
+        working-directory: ./starsky
+        run: bash build.sh --no-logo --no-publish --no-dependencies
+
