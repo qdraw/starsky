@@ -2,16 +2,19 @@ import { spawn } from "child_process";
 import * as path from "path";
 import logger from "../logger/logger";
 
-function executeXattrCommand(appStarskyPath: string): Promise<void> {
+export function ExecuteXattrCommand(
+  appStarskyPath: string,
+  xattr: string = "xattr"
+): Promise<void> {
   return new Promise((resolve, reject) => {
     const xattrArgs = ["-rd", "com.apple.quarantine", appStarskyPath];
     const xattrOptions = {
       detached: true,
       env: process.env,
-      argv0: "xattr",
+      argv0: xattr,
     };
 
-    const xattrChild = spawn("xattr", xattrArgs, xattrOptions);
+    const xattrChild = spawn(xattr, xattrArgs, xattrOptions);
 
     xattrChild.on("error", (err) => {
       logger.info("Error occurred while running xattr command:", err);
@@ -30,7 +33,10 @@ function executeXattrCommand(appStarskyPath: string): Promise<void> {
   });
 }
 
-function executeCodesignCommand(appStarskyPath: string): Promise<void> {
+export function ExecuteCodesignCommand(
+  appStarskyPath: string,
+  codesign: string = "codesign"
+): Promise<void> {
   return new Promise((resolve, reject) => {
     const args = [
       "--force",
@@ -44,10 +50,10 @@ function executeCodesignCommand(appStarskyPath: string): Promise<void> {
       cwd: path.dirname(appStarskyPath),
       detached: true,
       env: process.env,
-      argv0: "codesign",
+      argv0: codesign,
     };
 
-    const codeSignSpawn = spawn("codesign", args, options);
+    const codeSignSpawn = spawn(codesign, args, options);
 
     codeSignSpawn.on("exit", (code) => {
       logger.info(`code sign EXIT: CODE: ${code}`);
@@ -74,7 +80,7 @@ export function SpawnCleanMacOs(appStarskyPath: string, processPlatform: string)
       resolve(true);
     }
 
-    Promise.all([executeXattrCommand(appStarskyPath), executeCodesignCommand(appStarskyPath)])
+    Promise.all([ExecuteXattrCommand(appStarskyPath), ExecuteCodesignCommand(appStarskyPath)])
       .then(() => {
         resolve(true);
       })
