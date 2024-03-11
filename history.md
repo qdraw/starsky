@@ -55,6 +55,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Fixed) _Back-end_ Warnings for Sonarcloud (PR #1445)
 - [x] (Fixed) _Front-end_ Fix list item status OkAndSame is not red anymore (PR #1445)
 - [x] (Removed) _Back-end_ Unused .NET cultures (PR #1453)
+- [x] (Changed) _Back-end_ Change GetParentPath() to avoid regex due timeout (PR #1461)
 
 ## version 0.6.0-beta.2 - 2024-03-05 {#v0.6.0-beta.2}
 
