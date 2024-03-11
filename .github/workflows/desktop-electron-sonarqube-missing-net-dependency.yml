@@ -1,4 +1,4 @@
-name: SonarQube ClientApp .NET Analyze (Missing .NET dependency)
+name: SonarQube Desktop .NET Analyze (Missing .NET dependency)
 
 on:
   workflow_dispatch:
