@@ -10,7 +10,7 @@ on:
       - master
     paths:
     - 'starskydesktop/**'
-    - '.github/workflows/**'
+    - '.github/workflows/desktop-electron-sonarqube-missing-net-dependency.yml'
   push:
     branches: [master]
     paths:
