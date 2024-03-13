@@ -64,7 +64,7 @@ namespace starsky.foundation.platform.Helpers
 		/// <returns>Regex object</returns>
 		[GeneratedRegex(
 			"\\.[a-zA-Z0-9]{1,4}$",
-			RegexOptions.NonBacktracking | RegexOptions.CultureInvariant,
+			RegexOptions.NonBacktracking,
 			matchTimeoutMilliseconds: 100)]
 		private static partial Regex FileNameWithoutExtensionRegex();
 
@@ -88,7 +88,7 @@ namespace starsky.foundation.platform.Helpers
 		/// <returns>Regex object</returns>
 		[GeneratedRegex(
 			"[^.][a-zA-Z0-9]{1,4}$",
-			RegexOptions.NonBacktracking | RegexOptions.CultureInvariant,
+			RegexOptions.NonBacktracking,
 			matchTimeoutMilliseconds: 100)]
 		private static partial Regex FileExtensionWithoutDotRegex();
 
