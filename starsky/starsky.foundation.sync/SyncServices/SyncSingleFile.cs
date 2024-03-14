@@ -71,8 +71,9 @@ namespace starsky.foundation.sync.SyncServices
 
 			if ( statusItems.FirstOrDefault()!.Status != FileIndexItem.ExifStatus.Ok )
 			{
-				_logger.LogDebug($"[SingleFile/db] status " +
-								 $"{statusItems.FirstOrDefault()!.Status} for {subPath} {Synchronize.DateTimeDebug()}");
+				_logger.LogDebug("[SingleFile/db] status " +
+								 "{Status} for {subPath} {Time}", 
+					statusItems.FirstOrDefault()!.Status, Synchronize.DateTimeDebug());
 				return statusItems;
 			}
 
