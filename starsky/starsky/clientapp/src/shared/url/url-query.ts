@@ -400,6 +400,7 @@ export class UrlQuery {
   }
 
   public UrlHealthReleaseInfo(v: string): string {
+    if (!v) return `${this.prefix}/api/health/release-info`;
     return `${this.prefix}/api/health/release-info?v=${v}`;
   }
 

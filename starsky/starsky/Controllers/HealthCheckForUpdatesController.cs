@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using starsky.feature.health.UpdateCheck.Interfaces;
 using starsky.feature.health.UpdateCheck.Models;
+using starsky.Helpers;
 
 namespace starsky.Controllers
 {
@@ -59,10 +60,14 @@ namespace starsky.Controllers
 		/// <response code="200">result</response>
 		[HttpGet("/api/health/release-info")]
 		[AllowAnonymous]
-		[ResponseCache(Duration = 7257600, Location = ResponseCacheLocation.Client)]
 		[Produces("application/json")]
 		public async Task<IActionResult> SpecificVersionReleaseInfo(string v = "")
 		{
+			if ( !string.IsNullOrWhiteSpace(v) )
+			{
+				CacheControlOverwrite.SetExpiresResponseHeaders(Request, 604800); // 1 week
+			}
+
 			var result =
 				await _specificVersionReleaseInfo.SpecificVersionMessage(v);
 			return Json(result);

@@ -35,6 +35,11 @@ public class SpecificVersionReleaseInfo : ISpecificVersionReleaseInfo
 
 	public async Task<string> SpecificVersionMessage(string? versionToCheckFor)
 	{
+		if ( string.IsNullOrWhiteSpace(versionToCheckFor) )
+		{
+			return string.Empty;
+		}
+
 		if ( _cache == null || _appSettings?.AddMemoryCache != true )
 		{
 			var specificVersionReleaseInfoContent =
@@ -64,7 +69,7 @@ public class SpecificVersionReleaseInfo : ISpecificVersionReleaseInfo
 
 		versionToCheckFor ??= string.Empty;
 		Dictionary<string, Dictionary<string, string>>? dict = null;
-		
+
 		try
 		{
 			dict = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string>>>(json);
@@ -74,7 +79,8 @@ public class SpecificVersionReleaseInfo : ISpecificVersionReleaseInfo
 			_webLogger.LogError("[SpecificVersionReleaseInfo] Json parse error: " + e.Message);
 		}
 
-		if ( dict?.TryGetValue(versionToCheckFor, out var valueDict) is not true ) return string.Empty;
+		if ( dict?.TryGetValue(versionToCheckFor, out var valueDict) is not true )
+			return string.Empty;
 
 		var outputValue = valueDict.TryGetValue("en", out var languageValue)
 			? ConvertMarkdownLinkToHtml(languageValue)

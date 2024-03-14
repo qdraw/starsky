@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
@@ -132,7 +133,7 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public async Task SpecificVersionReleaseInfo()
+		public async Task SpecificVersionReleaseInfo_GivesResult()
 		{
 			var fakeService = new FakeICheckForUpdates(new KeyValuePair<UpdateStatus, string?>());
 			var service2 = new FakeISpecificVersionReleaseInfo(
@@ -148,12 +149,29 @@ namespace starskytest.Controllers
 				}
 			);
 
-			var actionResult =
-				await new HealthCheckForUpdatesController(fakeService,
-						service2)
-					.SpecificVersionReleaseInfo("1.0.0") as JsonResult;
+			var controller = new HealthCheckForUpdatesController(fakeService,
+				service2) { ControllerContext = { HttpContext = new DefaultHttpContext() } };
+			var actionResult = await controller
+				.SpecificVersionReleaseInfo("1.0.0") as JsonResult;
 
 			Assert.AreEqual("	# 1.0.0\n\n- [x] test\n- [ ] test2\n\n",
+				actionResult?.Value);
+		}
+
+		[TestMethod]
+		public async Task SpecificVersionReleaseInfo_NoContent()
+		{
+			var fakeService = new FakeICheckForUpdates(new KeyValuePair<UpdateStatus, string?>());
+			var service2 = new FakeISpecificVersionReleaseInfo(
+				new Dictionary<string, Dictionary<string, string>>()
+			);
+
+			var controller = new HealthCheckForUpdatesController(fakeService,
+				service2) { ControllerContext = { HttpContext = new DefaultHttpContext() } };
+			var actionResult = await controller
+				.SpecificVersionReleaseInfo() as JsonResult;
+
+			Assert.AreEqual(string.Empty,
 				actionResult?.Value);
 		}
 	}

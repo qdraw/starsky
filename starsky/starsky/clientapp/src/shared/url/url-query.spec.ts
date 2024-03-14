@@ -155,6 +155,16 @@ describe("url-query", () => {
       const test = urlQuery.GetReturnUrl("ReturnUrl=test");
       expect(test).toStrictEqual("test");
     });
+
+    it("UrlHealthReleaseInfo default", () => {
+      const result = urlQuery.UrlHealthReleaseInfo(null!);
+      expect(result).toBe(urlQuery.prefix + "/api/health/release-info");
+    });
+
+    it("UrlHealthReleaseInfo version", () => {
+      const result = urlQuery.UrlHealthReleaseInfo("0.6.0");
+      expect(result).toBe(urlQuery.prefix + "/api/health/release-info?version=0.6.0");
+    });
   });
 
   describe("updateFilePath", () => {

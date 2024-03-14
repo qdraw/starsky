@@ -159,6 +159,36 @@ public class SpecificVersionReleaseInfoTests
 	}
 
 	[TestMethod]
+	public async Task SpecificVersionMessage_NullString()
+	{
+		var specificVersionReleaseInfo =
+			new SpecificVersionReleaseInfo(
+				new FakeIHttpClientHelper(new FakeIStorage(),
+					new Dictionary<string, KeyValuePair<bool, string>>()),
+				new AppSettings { AddMemoryCache = true }, null,
+				new FakeIWebLogger());
+
+		// Act
+		var result = await specificVersionReleaseInfo.SpecificVersionMessage("null");
+		Assert.AreEqual(string.Empty, result);
+	}
+
+	[TestMethod]
+	public async Task SpecificVersionMessage_NullValue()
+	{
+		var specificVersionReleaseInfo =
+			new SpecificVersionReleaseInfo(
+				new FakeIHttpClientHelper(new FakeIStorage(),
+					new Dictionary<string, KeyValuePair<bool, string>>()),
+				new AppSettings { AddMemoryCache = true }, null,
+				new FakeIWebLogger());
+
+		// Act
+		var result = await specificVersionReleaseInfo.SpecificVersionMessage(null);
+		Assert.AreEqual(string.Empty, result);
+	}
+
+	[TestMethod]
 	public void ParseTest_String_Empty()
 	{
 		var fakeIHttpProvider = new FakeIHttpProvider();
@@ -332,7 +362,7 @@ public class SpecificVersionReleaseInfoTests
 		var specificVersionReleaseInfo =
 			new SpecificVersionReleaseInfo(httpClientHelper, null, null,
 				new FakeIWebLogger());
-		
+
 		var result = specificVersionReleaseInfo.Parse("-", null);
 		Assert.AreEqual(string.Empty, result);
 	}

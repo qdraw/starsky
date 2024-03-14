@@ -75,6 +75,7 @@ describe("HealthCheckForUpdates", () => {
       jest
         .spyOn(useFetch, "default")
         .mockReset()
+        .mockImplementationOnce(() => mockGetIConnectionDefault)
         .mockImplementationOnce(() => mockGetIConnectionDefault);
 
       const shouldSkip = SkipDisplayOfUpdate();
@@ -99,7 +100,10 @@ describe("HealthCheckForUpdates", () => {
         statusCode: 202,
         data: null
       } as IConnectionDefault;
-      jest.spyOn(useFetch, "default").mockImplementationOnce(() => mockGetIConnectionDefault);
+      jest
+        .spyOn(useFetch, "default")
+        .mockImplementationOnce(() => mockGetIConnectionDefault)
+        .mockImplementationOnce(() => mockGetIConnectionDefault);
 
       const notificationSpy = jest
         .spyOn(Notification, "default")
@@ -126,6 +130,7 @@ describe("HealthCheckForUpdates", () => {
       const useFetchSpy = jest
         .spyOn(useFetch, "default")
         .mockReset()
+        .mockImplementationOnce(() => mockGetIConnectionDefault)
         .mockImplementationOnce(() => mockGetIConnectionDefault);
 
       const notificationSpy = jest
@@ -158,7 +163,9 @@ describe("HealthCheckForUpdates", () => {
 
       const useFetchSpy = jest
         .spyOn(useFetch, "default")
+        .mockImplementationOnce(() => mockGetIConnectionDefault)
         .mockImplementationOnce(() => mockGetIConnectionDefault);
+
       const component = render(<HealthCheckForUpdates></HealthCheckForUpdates>);
 
       expect(notificationSpy).toHaveBeenCalledTimes(1);
