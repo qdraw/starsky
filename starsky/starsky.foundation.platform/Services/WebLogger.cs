@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
-using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.platform.Services
 {
@@ -26,8 +25,10 @@ namespace starsky.foundation.platform.Services
 		{
 			_logger = loggerFactory?.CreateLogger("app");
 			var scopeProvider = scopeFactory?.CreateScope().ServiceProvider;
-			if ( scopeProvider == null ) return;
-			_console = scopeProvider.GetService<IConsole>();
+			if ( scopeProvider != null )
+			{
+				_console = scopeProvider.GetService<IConsole>();
+			}
 		}
 
 		public void LogDebug(string? message, params object[] args)
