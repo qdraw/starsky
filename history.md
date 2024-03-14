@@ -42,9 +42,10 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## List of versions
 
 ## version 0.6.0-beta.4 - _(Unreleased)_ - 2024-03-? {#v0.6.0-beta.4}
-- [x] (Changed) Back-end Upgrade to .NET 8 - SDK 8.0.202 (Runtime: 8.0.3) (PR #1464)
 
-- TODO: update fallback / custom update messages
+- [x] (Changed) Back-end Upgrade to .NET 8 - SDK 8.0.202 (Runtime: 8.0.3) (PR #1464)
+- [x] (Fixed) _Back-end_ Latest version check from 0.5.10+ is not working due order check (PR #1477)
+- [x] (Fixed) _Back-end_ Update fallback and custom update messages (PR #1477)
 
 ## version 0.6.0-beta.3 - 2024-03-11 {#v0.6.0-beta.3}
 

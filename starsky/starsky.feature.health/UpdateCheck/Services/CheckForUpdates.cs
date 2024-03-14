@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -15,48 +14,57 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.platform.VersionHelpers;
 
 [assembly: InternalsVisibleTo("starskytest")]
+
 namespace starsky.feature.health.UpdateCheck.Services
 {
 	[Service(typeof(ICheckForUpdates), InjectionLifetime = InjectionLifetime.Singleton)]
 	public class CheckForUpdates : ICheckForUpdates
 	{
-		internal const string GithubStarskyReleaseApi = "https://api.github.com/repos/qdraw/starsky/releases";
+		internal const string GithubStarskyReleaseApi =
+			"https://api.github.com/repos/qdraw/starsky/releases";
+
+		internal const string GithubStarskyReleaseMirrorApi =
+			"https://qdraw.nl/special/starsky/releases";
+
+		internal const string QueryCheckForUpdatesCacheName = "CheckForUpdates";
 
 		private readonly AppSettings? _appSettings;
 		private readonly IMemoryCache? _cache;
 		private readonly IHttpClientHelper _httpClientHelper;
 
-		public CheckForUpdates(IHttpClientHelper httpClientHelper, AppSettings? appSettings, IMemoryCache? cache)
+		public CheckForUpdates(IHttpClientHelper httpClientHelper, AppSettings? appSettings,
+			IMemoryCache? cache)
 		{
 			_httpClientHelper = httpClientHelper;
 			_appSettings = appSettings;
 			_cache = cache;
 		}
 
-		internal const string QueryCheckForUpdatesCacheName = "CheckForUpdates";
-
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="currentVersion">defaults to _appSettings</param>
 		/// <returns></returns>
-		[SuppressMessage("Usage", "S2589:cache & appSettings null")]
-		public async Task<KeyValuePair<UpdateStatus, string>> IsUpdateNeeded(string currentVersion = "")
+		public async Task<(UpdateStatus, string?)> IsUpdateNeeded(
+			string currentVersion = "")
 		{
 			if ( _appSettings == null || _appSettings.CheckForUpdates == false )
-				return new KeyValuePair<UpdateStatus, string>(UpdateStatus.Disabled, "");
+			{
+				return ( UpdateStatus.Disabled, string.Empty );
+			}
 
 			currentVersion = string.IsNullOrWhiteSpace(currentVersion)
-				? _appSettings.AppVersion : currentVersion;
+				? _appSettings.AppVersion
+				: currentVersion;
 
 			// The CLI programs uses no cache
-			if ( _cache == null || _appSettings?.AddMemoryCache != true )
+			if ( _cache == null || _appSettings.AddMemoryCache != true )
 			{
 				return Parse(await QueryIsUpdateNeededAsync(), currentVersion);
 			}
 
 			if ( _cache.TryGetValue(QueryCheckForUpdatesCacheName,
-					out var cacheResult) && cacheResult != null )
+				    out var cacheResult) && cacheResult != null )
 			{
 				return Parse(( List<ReleaseModel> )cacheResult, currentVersion);
 			}
@@ -69,42 +77,59 @@ namespace starsky.feature.health.UpdateCheck.Services
 			return Parse(( List<ReleaseModel>? )cacheResult, currentVersion);
 		}
 
+
 		internal async Task<List<ReleaseModel>?> QueryIsUpdateNeededAsync()
 		{
 			// argument check is done in QueryIsUpdateNeeded
 			var (key, value) = await _httpClientHelper.ReadString(GithubStarskyReleaseApi);
-			return !key ? new List<ReleaseModel>() :
-				JsonSerializer.Deserialize<List<ReleaseModel>>(value, DefaultJsonSerializer.CamelCase);
+			if ( !key )
+			{
+				( key, value ) = await _httpClientHelper.ReadString(GithubStarskyReleaseMirrorApi);
+			}
+
+			return !key
+				? new List<ReleaseModel>()
+				: JsonSerializer.Deserialize<List<ReleaseModel>>(value,
+					DefaultJsonSerializer.CamelCase);
 		}
 
-		internal static KeyValuePair<UpdateStatus, string> Parse(IEnumerable<ReleaseModel>? releaseModelList,
+		/// <summary>
+		/// Parse the result from the API
+		/// </summary>
+		/// <param name="releaseModelList">inputModel</param>
+		/// <param name="currentVersion">The current Version</param>
+		/// <returns>Status and LatestVersion</returns>
+		internal static (UpdateStatus, string) Parse(IEnumerable<ReleaseModel>? releaseModelList,
 			string currentVersion)
 		{
 			var orderedReleaseModelList =
-				releaseModelList?.OrderByDescending(p => p.TagName);
+				// remove v at start
+				releaseModelList?.OrderByDescending(p => SemVersion.Parse(p.TagName, false));
 
 			var tagName = orderedReleaseModelList?
 				.FirstOrDefault(p => p is { Draft: false, PreRelease: false })?.TagName;
 
 			if ( string.IsNullOrWhiteSpace(tagName) ||
-				 !tagName.StartsWith('v') )
+			     !tagName.StartsWith('v') )
 			{
-				return new KeyValuePair<UpdateStatus, string>(UpdateStatus.NoReleasesFound, string.Empty);
+				return ( UpdateStatus.NoReleasesFound, string.Empty );
 			}
 
 			try
 			{
-				var latestVersion = SemVersion.Parse(tagName.Remove(0, 1));
+				// remove v at start
+				var latestVersion = SemVersion.Parse(tagName);
 				var currentVersionObject = SemVersion.Parse(currentVersion);
 				var isNewer = latestVersion > currentVersionObject;
-				var status = isNewer ? UpdateStatus.NeedToUpdate : UpdateStatus.CurrentVersionIsLatest;
-				return new KeyValuePair<UpdateStatus, string>(status, latestVersion.ToString());
+				var status = isNewer
+					? UpdateStatus.NeedToUpdate
+					: UpdateStatus.CurrentVersionIsLatest;
+				return ( status, latestVersion.ToString() );
 			}
 			catch ( ArgumentException )
 			{
-				return new KeyValuePair<UpdateStatus, string>(UpdateStatus.InputNotValid, string.Empty);
+				return ( UpdateStatus.InputNotValid, string.Empty );
 			}
-
 		}
 	}
 }

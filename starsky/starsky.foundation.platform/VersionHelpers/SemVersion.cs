@@ -8,7 +8,7 @@ namespace starsky.foundation.platform.VersionHelpers
 	/// Sem V2
 	/// Credits for: https://github.com/maxhauser/semver/blob/master/Semver/SemVersion.cs
 	/// </summary>
-	public sealed class SemVersion
+	public sealed class SemVersion : IComparable<SemVersion>
 	{
 		/// <summary>
 		/// Constructs a new instance of the <see cref="SemVersion" /> class.
@@ -30,10 +30,10 @@ namespace starsky.foundation.platform.VersionHelpers
 		}
 
 		private static readonly Regex ParseEx = new Regex(@"^(?<major>\d+)" +
-														  @"(?>\.(?<minor>\d+))?" +
-														  @"(?>\.(?<patch>\d+))?" +
-														  @"(?>\-(?<pre>[0-9A-Za-z\-\.]+))?" +
-														  @"(?>\+(?<build>[0-9A-Za-z\-\.]+))?$",
+		                                                  @"(?>\.(?<minor>\d+))?" +
+		                                                  @"(?>\.(?<patch>\d+))?" +
+		                                                  @"(?>\-(?<pre>[0-9A-Za-z\-\.]+))?" +
+		                                                  @"(?>\+(?<build>[0-9A-Za-z\-\.]+))?$",
 			RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture,
 			TimeSpan.FromSeconds(0.5));
 
@@ -46,11 +46,22 @@ namespace starsky.foundation.platform.VersionHelpers
 		/// <exception cref="ArgumentException">The <paramref name="version"/> has an invalid format.</exception>
 		/// <exception cref="OverflowException">The Major, Minor, or Patch versions are larger than
 		/// <code>int.MaxValue</code>.</exception>
-		public static SemVersion Parse(string version)
+		public static SemVersion Parse(string? version, bool throwException = true)
 		{
+			version ??= "";
+			if ( version.StartsWith('v') )
+			{
+				version = version.Remove(0, 1);
+			}
+
 			var match = ParseEx.Match(version);
-			if ( !match.Success )
-				throw new ArgumentException($"Invalid version '{version}'.", nameof(version));
+			switch ( match.Success )
+			{
+				case false when throwException:
+					throw new ArgumentException($"Invalid version '{version}'.", nameof(version));
+				case false when !throwException:
+					return new SemVersion(0);
+			}
 
 			var major = int.Parse(match.Groups["major"].Value, CultureInfo.InvariantCulture);
 
@@ -123,15 +134,13 @@ namespace starsky.foundation.platform.VersionHelpers
 		///  Zero: This instance occurs in the same position in the sort order as <paramref name="other" />.
 		///  Greater than zero: This instance follows <paramref name="other" /> in the sort order.
 		/// </returns>
-		public int CompareTo(SemVersion other)
+		public int CompareTo(SemVersion? other)
 		{
 			var r = CompareByPrecedence(other);
 			if ( r != 0 ) return r;
 
-#pragma warning disable CA1062 // Validate arguments of public methods
 			// If other is null, CompareByPrecedence() returns 1
-			return CompareComponent(Build, other.Build);
-#pragma warning restore CA1062 // Validate arguments of public methods
+			return CompareComponent(Build, other!.Build);
 		}
 
 		/// <summary>
@@ -146,7 +155,7 @@ namespace starsky.foundation.platform.VersionHelpers
 		///  Zero: This instance occurs in the same position in the sort order as <paramref name="other" />.
 		///  Greater than zero: This instance follows <paramref name="other" /> in the sort order.
 		/// </returns>
-		private int CompareByPrecedence(SemVersion other)
+		private int CompareByPrecedence(SemVersion? other)
 		{
 			if ( other is null )
 				return 1;
@@ -163,7 +172,7 @@ namespace starsky.foundation.platform.VersionHelpers
 			return CompareComponent(Prerelease, other.Prerelease, true);
 		}
 
-		private static int CompareComponent(string a, string b, bool nonemptyIsLower = false)
+		private static int CompareComponent(string a, string? b, bool nonemptyIsLower = false)
 		{
 			var aEmpty = string.IsNullOrEmpty(a);
 			var bEmpty = string.IsNullOrEmpty(b);
@@ -176,7 +185,7 @@ namespace starsky.foundation.platform.VersionHelpers
 				return nonemptyIsLower ? -1 : 1;
 
 			var aComps = a.Split('.');
-			var bComps = b.Split('.');
+			var bComps = b!.Split('.');
 
 			return CompareComponentCompareLoop(aComps, bComps);
 		}
@@ -204,6 +213,7 @@ namespace starsky.foundation.platform.VersionHelpers
 					}
 				}
 			}
+
 			return aComps.Length.CompareTo(bComps.Length);
 		}
 
@@ -218,7 +228,7 @@ namespace starsky.foundation.platform.VersionHelpers
 			unchecked
 			{
 				// verify this. Some versions start result = 17. Some use 37 instead of 31
-				int result = Major.GetHashCode();
+				var result = Major.GetHashCode();
 				result = result * 31 + Minor.GetHashCode();
 				result = result * 31 + Patch.GetHashCode();
 				result = result * 31 + Prerelease.GetHashCode();
@@ -247,10 +257,26 @@ namespace starsky.foundation.platform.VersionHelpers
 			var other = ( SemVersion )obj;
 
 			return Major == other.Major
-				   && Minor == other.Minor
-				   && Patch == other.Patch
-				   && string.Equals(Prerelease, other.Prerelease, StringComparison.Ordinal)
-				   && string.Equals(Build, other.Build, StringComparison.Ordinal);
+			       && Minor == other.Minor
+			       && Patch == other.Patch
+			       && string.Equals(Prerelease, other.Prerelease, StringComparison.Ordinal)
+			       && string.Equals(Build, other.Build, StringComparison.Ordinal);
+		}
+
+		public static bool operator ==(SemVersion? left, SemVersion? right)
+		{
+			if ( ReferenceEquals(left, right) )
+				return true;
+
+			if ( left is null || right is null )
+				return false;
+
+			return left.Equals(right);
+		}
+
+		public static bool operator !=(SemVersion left, SemVersion right)
+		{
+			return !( left == right );
 		}
 
 		/// <summary>
@@ -267,7 +293,8 @@ namespace starsky.foundation.platform.VersionHelpers
 		}
 
 
-		private static int CompareComponentCompareOther(bool aIsNum, bool bIsNum, string ac, string bc)
+		private static int CompareComponentCompareOther(bool aIsNum, bool bIsNum, string ac,
+			string bc)
 		{
 			if ( aIsNum )
 				return -1;
@@ -288,7 +315,7 @@ namespace starsky.foundation.platform.VersionHelpers
 		/// <param name="versionB">The second version to compare.</param>
 		/// <returns>A signed number indicating the relative values of <paramref name="versionA"/>
 		/// and <paramref name="versionB"/>.</returns>
-		private static int Compare(SemVersion versionA, SemVersion versionB)
+		internal static int Compare(SemVersion? versionA, SemVersion? versionB)
 		{
 			if ( ReferenceEquals(versionA, versionB) ) return 0;
 			if ( versionA is null ) return -1;
@@ -368,6 +395,5 @@ namespace starsky.foundation.platform.VersionHelpers
 		{
 			return Compare(left, right) < 0;
 		}
-
 	}
 }

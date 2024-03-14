@@ -14,6 +14,7 @@ import localization from "../localization/localization.json";
 import { NotFoundPage } from "../pages/not-found-page";
 import { Language } from "../shared/language";
 import { Login } from "./login";
+import HealthCheckForUpdates from "../components/molecules/health-check-for-updates/health-check-for-updates.tsx";
 
 const MediaContent: React.FC = () => {
   const history = useLocation();
@@ -50,6 +51,7 @@ const MediaContent: React.FC = () => {
         </Notification>
       ) : null}
       <HealthStatusError />
+      <HealthCheckForUpdates />
       {pageType === PageType.Loading ? <Preloader isOverlay={true} isWhite={false} /> : null}
       {pageType === PageType.NotFound ? <NotFoundPage /> : null}
       {pageType === PageType.Unauthorized ? <Login /> : null}

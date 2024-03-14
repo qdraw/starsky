@@ -75,5 +75,15 @@ describe("keyboard", () => {
 
       expect(result).toBe("<1minute minutes hour");
     });
+
+    it("skip null values", () => {
+      const result = language.token(
+        "{lessThan1Minute} {minutes} {hour}",
+        ["{lessThan1Minute}", "{minutes}", "{hour}"],
+        ["<1minute", null!, undefined!]
+      );
+
+      expect(result).toBe("<1minute  ");
+    });
   });
 });
