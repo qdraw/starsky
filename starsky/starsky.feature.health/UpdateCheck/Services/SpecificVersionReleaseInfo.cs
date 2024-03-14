@@ -85,11 +85,12 @@ public class SpecificVersionReleaseInfo : ISpecificVersionReleaseInfo
 	internal static string ConvertMarkdownLinkToHtml(string markdown)
 	{
 		// Regular expression to match Markdown links
+		// [Link text Here](https://link-url-here.org)
 		const string pattern = @"\[(.*?)\]\((.*?)\)";
 
 		// Replace Markdown links with HTML anchor tags
 		return Regex.Replace(markdown, pattern,
-			"<a href=\"$2\">$1</a>", RegexOptions.None,
+			"<a target=\"_blank\" ref=\"nofollow\" href=\"$2\">$1</a>", RegexOptions.None,
 			TimeSpan.FromMilliseconds(100));
 	}
 

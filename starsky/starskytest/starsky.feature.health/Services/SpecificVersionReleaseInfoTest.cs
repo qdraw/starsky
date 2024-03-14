@@ -126,7 +126,7 @@ public class SpecificVersionReleaseInfoTests
 			.BuildServiceProvider();
 
 		const string example =
-			"{\n    \"v0.6.0\" : {\n        \"en\": \"Content\"\n    },\n    \"v0.6.0-beta.0\" : {\n        \"en\": \"Content\"\n    }\n}";
+			"{\n    \"0.6.0\" : {\n        \"en\": \"Content\"\n    },\n    \"0.6.0-beta.0\" : {\n        \"en\": \"Content\"\n    }\n}";
 
 		var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
 
@@ -156,5 +156,170 @@ public class SpecificVersionReleaseInfoTests
 
 		Assert.IsNotNull(result);
 		Assert.AreEqual(example, result);
+	}
+
+	[TestMethod]
+	public void ParseTest_String_Empty()
+	{
+		var fakeIHttpProvider = new FakeIHttpProvider();
+
+		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, null, new FakeIWebLogger());
+
+		var specificVersionReleaseInfo =
+			new SpecificVersionReleaseInfo(httpClientHelper,
+				new AppSettings { AddMemoryCache = true }, null,
+				new FakeIWebLogger());
+
+		var result = specificVersionReleaseInfo.Parse(string.Empty, "0.6.0");
+		Assert.AreEqual(string.Empty, result);
+	}
+
+	[TestMethod]
+	public void ParseTest_VersionNotFound()
+	{
+		var fakeIHttpProvider = new FakeIHttpProvider();
+
+		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, null, new FakeIWebLogger());
+		const string example =
+			"{\n    \"0.6.0\" : {\n        \"en\": \"Content\"\n    },\n    \"0.6.0-beta.0\" : {\n        \"en\": \"Content\"\n    }\n}";
+
+
+		var specificVersionReleaseInfo =
+			new SpecificVersionReleaseInfo(httpClientHelper,
+				new AppSettings { AddMemoryCache = true }, null,
+				new FakeIWebLogger());
+
+		var result = specificVersionReleaseInfo.Parse(example, "0.1.0");
+		Assert.AreEqual(string.Empty, result);
+	}
+
+	[TestMethod]
+	public void ParseTest_VersionFound()
+	{
+		var fakeIHttpProvider = new FakeIHttpProvider();
+
+		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, null, new FakeIWebLogger());
+		const string example =
+			"{\n    \"0.6.0\" : {\n        \"en\": \"Content\"\n    },\n    \"0.6.0-beta.0\" : {\n        \"en\": \"Content\"\n    }\n}";
+
+
+		var specificVersionReleaseInfo =
+			new SpecificVersionReleaseInfo(httpClientHelper,
+				new AppSettings { AddMemoryCache = true }, null,
+				new FakeIWebLogger());
+
+		var result = specificVersionReleaseInfo.Parse(example, "0.6.0-beta.0");
+		Assert.AreEqual("Content", result);
+	}
+
+	[TestMethod]
+	public void ParseTest_InvalidJson()
+	{
+		var fakeIHttpProvider = new FakeIHttpProvider();
+
+		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, null, new FakeIWebLogger());
+		const string example =
+			"{\n    \"0.6.0\" : {\n        --";
+
+
+		var specificVersionReleaseInfo =
+			new SpecificVersionReleaseInfo(httpClientHelper,
+				new AppSettings { AddMemoryCache = true }, null,
+				new FakeIWebLogger());
+
+		var result = specificVersionReleaseInfo.Parse(example, "0.6.0-beta.0");
+		Assert.AreEqual(string.Empty, result);
+	}
+
+	[TestMethod]
+	public void ParseTest_LanguageKeyNotFound()
+	{
+		var fakeIHttpProvider = new FakeIHttpProvider();
+
+		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, null, new FakeIWebLogger());
+		const string example =
+			"{\n    \"0.6.0\" : {\n  }\n}";
+
+		var specificVersionReleaseInfo =
+			new SpecificVersionReleaseInfo(httpClientHelper,
+				new AppSettings { AddMemoryCache = true }, null,
+				new FakeIWebLogger());
+
+		var result = specificVersionReleaseInfo.Parse(example, "0.6.0");
+		Assert.AreEqual(string.Empty, result);
+	}
+
+	[TestMethod]
+	public void ParseTest_VersionFound_HtmlLink()
+	{
+		var fakeIHttpProvider = new FakeIHttpProvider();
+
+		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, null, new FakeIWebLogger());
+		const string example =
+			"{\n    \"0.6.0\" : {\n        \"en\": \"[Link text Here](https://link-url-here.org)\"\n    },\n    \"0.6.0-beta.0\" : {\n        \"en\": \"Content\"\n    }\n}";
+
+
+		var specificVersionReleaseInfo =
+			new SpecificVersionReleaseInfo(httpClientHelper,
+				new AppSettings { AddMemoryCache = true }, null,
+				new FakeIWebLogger());
+
+		var result = specificVersionReleaseInfo.Parse(example, "0.6.0");
+		Assert.AreEqual(
+			"<a target=\"_blank\" ref=\"nofollow\" href=\"https://link-url-here.org\">Link text Here</a>",
+			result);
+	}
+
+	[TestMethod]
+	public void ConvertMarkdownLinkToHtml_Test()
+	{
+		var markdownLinkToHtml = SpecificVersionReleaseInfo.ConvertMarkdownLinkToHtml(
+			"Content [Link text Here](https://link-url-here.org) " +
+			"[link1](https://example.com)");
+
+		Assert.AreEqual(
+			"Content <a target=\"_blank\" ref=\"nofollow\" href=\"https://link-url-here.org\">Link text Here</a> " +
+			"<a target=\"_blank\" ref=\"nofollow\" href=\"https://example.com\">link1</a>",
+			markdownLinkToHtml);
+	}
+
+	[TestMethod]
+	public async Task QuerySpecificVersionInfo_GetResult()
+	{
+		const string example =
+			"{\n    \"0.6.0\" : {\n        \"en\": \"Content\"\n    },\n    \"0.6.0-beta.0\" : {\n        \"en\": \"Content\"\n    }\n}";
+
+		var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+		{
+			// Mocking the response from the fake HTTP provider
+			{
+				"https://" + SpecificVersionReleaseInfo.SpecificVersionReleaseInfoUrl,
+				new StringContent(example)
+			}
+		});
+
+		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, null, new FakeIWebLogger());
+		var specificVersionReleaseInfo =
+			new SpecificVersionReleaseInfo(httpClientHelper, null, null,
+				new FakeIWebLogger());
+
+		var result = await specificVersionReleaseInfo.QuerySpecificVersionInfo();
+
+		Assert.AreEqual(example, result);
+	}
+
+	[TestMethod]
+	public async Task QuerySpecificVersionInfo_NotFound()
+	{
+		var fakeIHttpProvider = new FakeIHttpProvider();
+
+		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, null, new FakeIWebLogger());
+		var specificVersionReleaseInfo =
+			new SpecificVersionReleaseInfo(httpClientHelper, null, null,
+				new FakeIWebLogger());
+
+		var result = await specificVersionReleaseInfo.QuerySpecificVersionInfo();
+
+		Assert.AreEqual(string.Empty, result);
 	}
 }
