@@ -209,6 +209,22 @@ public class FilenamesHelperTest
 		// Assert
 		Assert.AreEqual("txt", extension);
 	}
+
+	[TestMethod]
+	public void GetParentPath_AddSlash()
+	{
+		const string filePath = "/folder_no_content/";
+		var result = FilenamesHelper.GetParentPath(filePath);
+		Assert.AreEqual("/", result);
+	}
+	
+	[TestMethod]
+	public void GetParentPath_AddSlash2()
+	{
+		const string filePath = "/folder_no_content/test.jpg/";
+		var result = FilenamesHelper.GetParentPath(filePath);
+		Assert.AreEqual("/folder_no_content", result);
+	}
 	
 	[TestMethod]
 	public void GetParentPath_ReturnsCorrectPath_WhenFilePathIsValid()
@@ -240,11 +256,11 @@ public class FilenamesHelperTest
 	public void GetParentPath_ReturnsSlash_WhenFilePathIsNullOrEmpty()
 	{
 		// Arrange
-		string filePath2 = "";
+		const string filePath2 = "";
 
 		// Act
-		string result1 = FilenamesHelper.GetParentPath(null);
-		string result2 = FilenamesHelper.GetParentPath(filePath2);
+		var result1 = FilenamesHelper.GetParentPath(null);
+		var result2 = FilenamesHelper.GetParentPath(filePath2);
 
 		// Assert
 		Assert.AreEqual("/", result1);

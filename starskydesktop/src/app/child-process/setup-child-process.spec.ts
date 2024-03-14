@@ -3,6 +3,7 @@ import { app } from "electron";
 import * as fs from "fs";
 import * as readline from "readline";
 import * as GetPortProxy from "../get-free-port/get-free-port";
+import global from "../global/global";
 import logger from "../logger/logger";
 import { setupChildProcess } from "./setup-child-process";
 
@@ -61,6 +62,7 @@ describe("setupChildProcess", () => {
         stdout: { on: jest.fn() },
         stderr: { on: jest.fn() },
         addListener: jest.fn(),
+        on: jest.fn(),
       };
       jest.spyOn(spawn, "spawn").mockImplementationOnce(() => spawnSpy as any);
       jest
@@ -83,6 +85,10 @@ describe("setupChildProcess", () => {
         logger.info(event);
         return null;
       });
+
+      global.shared = {
+        port: 1,
+      };
 
       await setupChildProcess();
 

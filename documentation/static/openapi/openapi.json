@@ -5110,6 +5110,74 @@
       "parameters": [],
       "extensions": {}
     },
+    "/api/health/release-info": {
+      "operations": {
+        "Get": {
+          "tags": [
+            {
+              "name": "HealthCheckForUpdates",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Get more info to show about the release",
+          "parameters": [
+            {
+              "unresolvedReference": false,
+              "name": "v",
+              "in": 0,
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "explode": false,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "default": {
+                  "primitiveType": 4,
+                  "anyType": 0,
+                  "value": ""
+                },
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "result",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {}
+    },
     "/search": {
       "operations": {
         "Post": {

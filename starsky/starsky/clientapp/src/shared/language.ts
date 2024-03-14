@@ -52,7 +52,11 @@ export class Language {
    */
   public token(text: string, token: string[], dynamicValue: string[]): string {
     for (let index = 0; index < token.length; index++) {
-      text = text.replace(new RegExp(token[index]), dynamicValue[index]);
+      if (dynamicValue[index]) {
+        text = text.replace(new RegExp(token[index]), dynamicValue[index]);
+      } else {
+        text = text.replace(new RegExp(token[index]), "");
+      }
     }
     return text;
   }

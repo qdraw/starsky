@@ -41,7 +41,13 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.6.0-beta.3 - _(Unreleased)_ - 2024-03-? {#v0.6.0-beta.3}
+## version 0.6.0-beta.4 - _(Unreleased)_ - 2024-03-? {#v0.6.0-beta.4}
+
+- [x] (Changed) Back-end Upgrade to .NET 8 - SDK 8.0.202 (Runtime: 8.0.3) (PR #1464)
+- [x] (Fixed) _Back-end_ Latest version check from 0.5.10+ is not working due order check (PR #1477)
+- [x] (Fixed) _Back-end_ Update fallback and custom update messages (PR #1477)
+
+## version 0.6.0-beta.3 - 2024-03-11 {#v0.6.0-beta.3}
 
 - [x] (Fixed) _Back-end_ Fix Dispose issue for WriteTagsAndRenameThumbnailAsync,
   WriteTagsAsync (Windows) (PR #1437) (Issue #1427)
@@ -55,6 +61,9 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Fixed) _Back-end_ Warnings for Sonarcloud (PR #1445)
 - [x] (Fixed) _Front-end_ Fix list item status OkAndSame is not red anymore (PR #1445)
 - [x] (Removed) _Back-end_ Unused .NET cultures (PR #1453)
+- [x] (Changed) _Back-end_ Change GetParentPath() to avoid regex due timeout (PR #1461)
+- [x] (Added) _Desktop_ Add support for Apple Silicon Mac OS in Desktop App (PR #1454)
+- [x] (Added) _Desktop_ SonarScanner for Desktop App (PR #1454)
 
 ## version 0.6.0-beta.2 - 2024-03-05 {#v0.6.0-beta.2}
 

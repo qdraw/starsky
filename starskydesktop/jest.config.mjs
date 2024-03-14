@@ -65,6 +65,7 @@ export default {
     '!runtime-starsky-win-x64/**',
     '!runtime-starsky-mac-arm64/**',
     '!runtime-starsky-linux-x64/**',
+    '!src/setup/**',
     '!dist/**',
     '!dist-prod/**',
   ],

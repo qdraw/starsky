@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using starsky.feature.health.UpdateCheck.Interfaces;
 using starsky.feature.health.UpdateCheck.Models;
+using starsky.Helpers;
 
 namespace starsky.Controllers
 {
@@ -12,10 +13,13 @@ namespace starsky.Controllers
 	public sealed class HealthCheckForUpdatesController : Controller
 	{
 		private readonly ICheckForUpdates _checkForUpdates;
+		private readonly ISpecificVersionReleaseInfo _specificVersionReleaseInfo;
 
-		public HealthCheckForUpdatesController(ICheckForUpdates checkForUpdates)
+		public HealthCheckForUpdatesController(ICheckForUpdates checkForUpdates,
+			ISpecificVersionReleaseInfo specificVersionReleaseInfo)
 		{
 			_checkForUpdates = checkForUpdates;
+			_specificVersionReleaseInfo = specificVersionReleaseInfo;
 		}
 
 		/// <summary>
@@ -36,14 +40,37 @@ namespace starsky.Controllers
 			var (key, value) = await _checkForUpdates.IsUpdateNeeded(currentVersion);
 			return key switch
 			{
-				UpdateStatus.Disabled => StatusCode(StatusCodes.Status208AlreadyReported, $"feature is disabled"),
+				UpdateStatus.Disabled => StatusCode(StatusCodes.Status208AlreadyReported,
+					$"feature is disabled"),
 				UpdateStatus.HttpError => BadRequest("something went wrong (http)"),
-				UpdateStatus.NoReleasesFound => StatusCode(StatusCodes.Status206PartialContent, $"There are no releases found"),
+				UpdateStatus.NoReleasesFound => StatusCode(StatusCodes.Status206PartialContent,
+					$"There are no releases found"),
 				UpdateStatus.NeedToUpdate => StatusCode(StatusCodes.Status202Accepted, value),
 				UpdateStatus.CurrentVersionIsLatest => StatusCode(StatusCodes.Status200OK, value),
 				UpdateStatus.InputNotValid => BadRequest("something went wrong (version)"),
-				_ => throw new NotSupportedException("IsUpdateNeeded didn't pass any valid selection")
+				_ => throw new NotSupportedException(
+					"IsUpdateNeeded didn't pass any valid selection")
 			};
+		}
+
+		/// <summary>
+		/// Get more info to show about the release
+		/// </summary>
+		/// <returns>status if you need to update</returns>
+		/// <response code="200">result</response>
+		[HttpGet("/api/health/release-info")]
+		[AllowAnonymous]
+		[Produces("application/json")]
+		public async Task<IActionResult> SpecificVersionReleaseInfo(string v = "")
+		{
+			if ( !string.IsNullOrWhiteSpace(v) )
+			{
+				CacheControlOverwrite.SetExpiresResponseHeaders(Request, 604800); // 1 week
+			}
+
+			var result =
+				await _specificVersionReleaseInfo.SpecificVersionMessage(v);
+			return Json(result);
 		}
 	}
 }

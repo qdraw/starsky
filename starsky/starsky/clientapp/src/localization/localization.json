@@ -670,9 +670,9 @@
     "de": "Gehen Sie zum Hilfemenü und dann zur Release-Übersicht"
   },
   "MessageNewVersionUpdateToken": {
-    "en": "A new version is available {WhereToFindRelease}",
-    "nl": "Er is een nieuwe versie beschikbaar {WhereToFindRelease}",
-    "de": "Eine neue Version ist verfügbar {WhereToFindRelease}"
+    "en": "A new version is available {WhereToFindRelease} {otherInfo}",
+    "nl": "Er is een nieuwe versie beschikbaar {WhereToFindRelease} {otherInfo}",
+    "de": "Eine neue Version ist verfügbar {WhereToFindRelease} {otherInfo}"
   },
   "MessageHealthStatusCriticalErrorsWithTheFollowingComponents": {
     "en": "There are critical errors in the following components:",

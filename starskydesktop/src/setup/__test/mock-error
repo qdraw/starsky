@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "fake starsky"
+exit 1

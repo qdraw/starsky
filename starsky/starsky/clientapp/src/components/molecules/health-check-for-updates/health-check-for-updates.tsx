@@ -1,3 +1,4 @@
+import { FunctionComponent } from "react";
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import localization from "../../../localization/localization.json";
@@ -27,8 +28,9 @@ export function SkipDisplayOfUpdate(): boolean {
 /**
  * Component with health check for updates
  */
-const HealthCheckForUpdates: React.FunctionComponent = () => {
+const HealthCheckForUpdates: FunctionComponent = () => {
   const checkForUpdates = useFetch(new UrlQuery().UrlHealthCheckForUpdates(), "get");
+  const releaseInfo = useFetch(new UrlQuery().UrlHealthReleaseInfo(checkForUpdates.data), "get");
 
   const settings = useGlobalSettings();
 
@@ -41,15 +43,17 @@ const HealthCheckForUpdates: React.FunctionComponent = () => {
     ["{releasesToken}"],
     [language.key(localization.MessageWhereToFindReleaseReleasesUrlTokenContent)]
   );
-  if (new BrowserDetect().IsElectronApp())
+
+  if (new BrowserDetect().IsElectronApp()) {
     WhereToFindRelease = language.key(localization.WhereToFindReleaseElectronApp);
+  }
 
   const MessageNewVersionUpdateToken = language.key(localization.MessageNewVersionUpdateToken);
 
   const MessageNewVersionUpdateHtml = language.token(
     MessageNewVersionUpdateToken,
-    ["{WhereToFindRelease}"],
-    [WhereToFindRelease]
+    ["{WhereToFindRelease}", "{otherInfo}"],
+    [WhereToFindRelease, releaseInfo.data]
   );
 
   return (

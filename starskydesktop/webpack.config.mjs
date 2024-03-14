@@ -1,3 +1,4 @@
+// (randomly disabled sometimes) eslint-disable-next-line import/no-unresolved
 import CopyPlugin from 'copy-webpack-plugin';
 import path from 'path';
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
@@ -95,18 +96,6 @@ const preloadConfig = merge(commonConfig, {
   target: 'electron-preload',
   output: { filename: 'preload-main.bundle.js' },
 });
-
-// import HtmlWebpackPlugin from 'html-webpack-plugin';
-// const rendererConfig = merge(commonConfig, {
-//   entry: './src/renderer/renderer.tsx',
-//   target: 'electron-renderer',
-//   output: { filename: 'renderer.bundle.js' },
-//   plugins: [
-//     new HtmlWebpackPlugin({
-//       template: path.resolve(__dirname, './public/index.html'),
-//     }),
-//   ],
-// });
 
 const clientConfig = merge(commonConfig, {
   entry: {

@@ -38,7 +38,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.0.201
+        dotnet-version: 8.0.202
 
     - name: Cache nuget packages (*nix)
       uses: actions/cache@v4
