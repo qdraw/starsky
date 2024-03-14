@@ -53,7 +53,7 @@ namespace starsky.foundation.platform.VersionHelpers
 			{
 				version = version.Remove(0, 1);
 			}
-			
+
 			var match = ParseEx.Match(version);
 			switch ( match.Success )
 			{
@@ -140,7 +140,7 @@ namespace starsky.foundation.platform.VersionHelpers
 			if ( r != 0 ) return r;
 
 			// If other is null, CompareByPrecedence() returns 1
-			return CompareComponent(Build, other.Build);
+			return CompareComponent(Build, other?.Build);
 		}
 
 		/// <summary>
@@ -172,7 +172,7 @@ namespace starsky.foundation.platform.VersionHelpers
 			return CompareComponent(Prerelease, other.Prerelease, true);
 		}
 
-		private static int CompareComponent(string a, string b, bool nonemptyIsLower = false)
+		private static int CompareComponent(string a, string? b, bool nonemptyIsLower = false)
 		{
 			var aEmpty = string.IsNullOrEmpty(a);
 			var bEmpty = string.IsNullOrEmpty(b);
@@ -261,6 +261,22 @@ namespace starsky.foundation.platform.VersionHelpers
 			       && Patch == other.Patch
 			       && string.Equals(Prerelease, other.Prerelease, StringComparison.Ordinal)
 			       && string.Equals(Build, other.Build, StringComparison.Ordinal);
+		}
+
+		public static bool operator ==(SemVersion? left, SemVersion? right)
+		{
+			if ( ReferenceEquals(left, right) )
+				return true;
+
+			if ( left is null || right is null )
+				return false;
+
+			return left.Equals(right);
+		}
+
+		public static bool operator !=(SemVersion left, SemVersion right)
+		{
+			return !( left == right );
 		}
 
 		/// <summary>
