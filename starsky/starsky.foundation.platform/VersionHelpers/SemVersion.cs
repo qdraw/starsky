@@ -140,7 +140,7 @@ namespace starsky.foundation.platform.VersionHelpers
 			if ( r != 0 ) return r;
 
 			// If other is null, CompareByPrecedence() returns 1
-			return CompareComponent(Build, other?.Build);
+			return CompareComponent(Build, other!.Build);
 		}
 
 		/// <summary>

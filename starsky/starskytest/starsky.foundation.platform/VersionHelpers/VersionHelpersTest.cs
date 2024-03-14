@@ -139,6 +139,7 @@ namespace starskytest.starsky.foundation.platform.VersionHelpers
 		[TestMethod]
 		public void WithVPrefix()
 		{
+			// Removes the v prefix
 			var result = SemVersion.Parse("v1.1.0");
 			Assert.AreEqual(new SemVersion(1, 1), result);
 		}
@@ -426,6 +427,13 @@ namespace starskytest.starsky.foundation.platform.VersionHelpers
 			var r = v1.Equals(v2);
 
 			Assert.IsFalse(r, $"({v1}).Equals({v2})");
+		}
+
+		[TestMethod]
+		public void ParseNull()
+		{
+			var v1 = SemVersion.Parse(null,false);
+			Assert.AreEqual(new SemVersion(0), v1);
 		}
 
 		[TestMethod]
