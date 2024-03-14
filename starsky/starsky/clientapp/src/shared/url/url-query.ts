@@ -336,7 +336,7 @@ export class UrlQuery {
   };
 
   public UrlApiFeaturesAppSettings = (): string => {
-    return this.prefix + "/api/env/features?v=0.6.0-beta.2";
+    return this.prefix + "/api/env/features?v=0.6.0-rc.1";
   };
 
   public UrlApiDesktopEditorOpenAmountConfirmationChecker = (): string => {
