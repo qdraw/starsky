@@ -109,6 +109,20 @@ namespace starskytest.starsky.foundation.platform.VersionHelpers
 			SemVersion.Parse("test"); 
 			// expect wrong input
 		}
+		
+		[TestMethod]
+		public void NonThrowError()
+		{
+			var result = SemVersion.Parse("test", false); 
+			Assert.AreEqual(new SemVersion(0), result);
+		}
+		
+		[TestMethod]
+		public void WithVPrefix()
+		{
+			var result = SemVersion.Parse("v1.1.0"); 
+			Assert.AreEqual(new SemVersion(1,1,0), result);
+		}
 
 		private static readonly IReadOnlyList<SemVersion> VersionsInOrder = new List<SemVersion>()
 		{

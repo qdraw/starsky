@@ -103,7 +103,8 @@ namespace starsky.feature.health.UpdateCheck.Services
 			string currentVersion)
 		{
 			var orderedReleaseModelList =
-				releaseModelList?.OrderByDescending(p => p.TagName);
+				// remove v at start
+				releaseModelList?.OrderByDescending(p => SemVersion.Parse(p.TagName, false));
 
 			var tagName = orderedReleaseModelList?
 				.FirstOrDefault(p => p is { Draft: false, PreRelease: false })?.TagName;
@@ -116,7 +117,8 @@ namespace starsky.feature.health.UpdateCheck.Services
 
 			try
 			{
-				var latestVersion = SemVersion.Parse(tagName.Remove(0, 1));
+				// remove v at start
+				var latestVersion = SemVersion.Parse(tagName);
 				var currentVersionObject = SemVersion.Parse(currentVersion);
 				var isNewer = latestVersion > currentVersionObject;
 				var status = isNewer

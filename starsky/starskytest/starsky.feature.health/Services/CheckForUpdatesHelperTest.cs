@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,11 +11,14 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.health.UpdateCheck.Models;
 using starsky.feature.health.UpdateCheck.Services;
 using starsky.foundation.http.Services;
+using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.feature.health.Helpers
+namespace starskytest.starsky.feature.health.Services
 {
 	[TestClass]
 	public sealed class CheckForUpdatesHelperTest
@@ -139,6 +145,29 @@ namespace starskytest.starsky.feature.health.Helpers
 		}
 
 		[TestMethod]
+		public void Parse_CurrentVersionIsNewer_Multiple2()
+		{
+			var (key, value) = CheckForUpdates.Parse(
+				new List<ReleaseModel>
+				{
+					new ReleaseModel { Draft = false, PreRelease = false, TagName = "v0.6.11" },
+					new ReleaseModel { Draft = false, PreRelease = false, TagName = "v0.6.10" },
+					new ReleaseModel { Draft = false, PreRelease = false, TagName = "v0.6.9" },
+					new ReleaseModel { Draft = false, PreRelease = false, TagName = "v0.6.8" },
+					new ReleaseModel { Draft = false, PreRelease = false, TagName = "v0.6.7" },
+					new ReleaseModel { Draft = false, PreRelease = false, TagName = "v0.6.6" },
+					new ReleaseModel { Draft = false, PreRelease = false, TagName = "v0.6.5" },
+					new ReleaseModel { Draft = false, PreRelease = false, TagName = "v0.6.4" },
+					new ReleaseModel { Draft = false, PreRelease = false, TagName = "v0.6.3" },
+					new ReleaseModel { Draft = false, PreRelease = false, TagName = "v0.6.2" },
+					new ReleaseModel { Draft = false, PreRelease = false, TagName = "v0.6.1" }
+				}, "0.2");
+
+			Assert.AreEqual(UpdateStatus.NeedToUpdate, key);
+			Assert.AreEqual("0.6.11", value);
+		}
+
+		[TestMethod]
 		public void Parse_CurrentVersionIsOlder()
 		{
 			var (key, value) = CheckForUpdates.Parse(
@@ -154,7 +183,7 @@ namespace starskytest.starsky.feature.health.Helpers
 		[TestMethod]
 		public void Parse_wrongTagName()
 		{
-			var (key, value) = CheckForUpdates.Parse(
+			var (key, _) = CheckForUpdates.Parse(
 				new List<ReleaseModel>
 				{
 					new ReleaseModel { Draft = false, PreRelease = false, TagName = "v_test" }
@@ -166,7 +195,7 @@ namespace starskytest.starsky.feature.health.Helpers
 		[TestMethod]
 		public void Parse_wrongTagName_ButDidntStartWithV()
 		{
-			var (key, value) = CheckForUpdates.Parse(
+			var (key, _) = CheckForUpdates.Parse(
 				new List<ReleaseModel>
 				{
 					new ReleaseModel
@@ -182,7 +211,7 @@ namespace starskytest.starsky.feature.health.Helpers
 		public async Task IsUpdateNeeded_CheckForUpdates_disabled()
 		{
 			var appSettings = new AppSettings { CheckForUpdates = false };
-			var (key, value) = await new CheckForUpdates(null!,
+			var (key, _) = await new CheckForUpdates(null!,
 				appSettings, null).IsUpdateNeeded();
 
 			Assert.AreEqual(UpdateStatus.Disabled, key);
@@ -360,6 +389,26 @@ namespace starskytest.starsky.feature.health.Helpers
 			// Assert
 			Assert.AreEqual(UpdateStatus.NoReleasesFound, key);
 			Assert.AreEqual(string.Empty, value);
+		}
+
+		[TestMethod]
+		public async Task CheckForUpdatesHelperTestSample()
+		{
+			var dir = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
+			Assert.IsNotNull(dir);
+			var path = Path.Combine(dir, "starsky.feature.health", "ExampleData",
+				"CheckForUpdatesHelperTestSample.json");
+
+			var readStream =
+				new StorageHostFullPathFilesystem(new FakeIWebLogger()).ReadStream(path);
+			var json = await StreamToStringHelper.StreamToStringAsync(readStream);
+			var model = JsonSerializer.Deserialize<List<ReleaseModel>>(json,
+				DefaultJsonSerializer.CamelCase);
+
+			var (key, value) = CheckForUpdates.Parse(model, "0.5.13");
+
+			Assert.AreEqual(UpdateStatus.NeedToUpdate, key);
+			Assert.AreEqual("0.5.14", value);
 		}
 	}
 }
