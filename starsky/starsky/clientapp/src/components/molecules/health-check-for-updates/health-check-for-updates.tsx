@@ -30,10 +30,9 @@ export function SkipDisplayOfUpdate(): boolean {
  */
 const HealthCheckForUpdates: FunctionComponent = () => {
   const checkForUpdates = useFetch(new UrlQuery().UrlHealthCheckForUpdates(), "get");
+  const releaseInfo = useFetch(new UrlQuery().UrlHealthReleaseInfo(checkForUpdates.data), "get");
 
   const settings = useGlobalSettings();
-
-  console.log(`SkipDisplayOfUpdate: ${SkipDisplayOfUpdate()}`);
 
   if (SkipDisplayOfUpdate() || checkForUpdates.statusCode !== 202) return null;
 
@@ -53,8 +52,8 @@ const HealthCheckForUpdates: FunctionComponent = () => {
 
   const MessageNewVersionUpdateHtml = language.token(
     MessageNewVersionUpdateToken,
-    ["{WhereToFindRelease}"],
-    [WhereToFindRelease]
+    ["{WhereToFindRelease}", "{otherInfo}"],
+    [WhereToFindRelease, releaseInfo.data]
   );
 
   return (

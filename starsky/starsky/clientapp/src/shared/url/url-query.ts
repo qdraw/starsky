@@ -399,6 +399,10 @@ export class UrlQuery {
     return `${this.prefix}/api/health/details`;
   }
 
+  public UrlHealthReleaseInfo(v: string): string {
+    return `${this.prefix}/api/health/release-info?v=${v}`;
+  }
+
   public UrlHealthCheckForUpdates(): string {
     return `${this.prefix}/api/health/check-for-updates`;
   }

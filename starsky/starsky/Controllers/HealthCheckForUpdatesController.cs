@@ -61,10 +61,10 @@ namespace starsky.Controllers
 		[AllowAnonymous]
 		[ResponseCache(Duration = 7257600, Location = ResponseCacheLocation.Client)]
 		[Produces("application/json")]
-		public async Task<IActionResult> SpecificVersionReleaseInfo(string versionToCheckFor = "")
+		public async Task<IActionResult> SpecificVersionReleaseInfo(string v = "")
 		{
 			var result =
-				await _specificVersionReleaseInfo.SpecificVersionMessage(versionToCheckFor);
+				await _specificVersionReleaseInfo.SpecificVersionMessage(v);
 			return Json(result);
 		}
 	}
