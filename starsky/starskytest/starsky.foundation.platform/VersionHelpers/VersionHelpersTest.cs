@@ -500,6 +500,46 @@ namespace starskytest.starsky.foundation.platform.VersionHelpers
 			// Assert
 			Assert.IsTrue(result);
 		}
+		
+		[TestMethod]
+		public void Equality_LeftNull()
+		{
+			// Arrange
+			var version2 = new SemVersion(1, 2, 3, "alpha", "build");
+
+			// Act
+			var result = null! == version2;
+
+			// Assert
+			Assert.IsFalse(result);
+		}
+		
+		[TestMethod]
+		public void Equality_RightNull()
+		{
+			// Arrange
+			var version1 = new SemVersion(1, 2, 3, "alpha", "build");
+
+			// Act
+			var result = version1 == null!;
+
+			// Assert
+			Assert.IsFalse(result);
+		}
+		
+		[TestMethod]
+		public void Equality_BothNull()
+		{
+			// Arrange
+			SemVersion version1 = null!;
+			SemVersion version2 = null!;
+
+			// Act
+			var result = version1 == version2;
+
+			// Assert
+			Assert.IsTrue(result);
+		}
 
 		[TestMethod]
 		public void Equality_Operator_Returns_False_For_Different_Version()
