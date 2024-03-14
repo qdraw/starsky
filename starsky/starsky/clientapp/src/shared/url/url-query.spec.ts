@@ -163,7 +163,7 @@ describe("url-query", () => {
 
     it("UrlHealthReleaseInfo version", () => {
       const result = urlQuery.UrlHealthReleaseInfo("0.6.0");
-      expect(result).toBe(urlQuery.prefix + "/api/health/release-info?version=0.6.0");
+      expect(result).toBe(urlQuery.prefix + "/api/health/release-info?v=0.6.0");
     });
   });
 
