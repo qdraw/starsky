@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +30,33 @@ namespace starskytest.Controllers
 				await new HealthCheckForUpdatesController(fakeService,
 					new FakeISpecificVersionReleaseInfo()).CheckForUpdates() as ObjectResult;
 			Assert.AreEqual(208, actionResult?.StatusCode);
+		}
+
+		private class TestOverWriteEnumModel
+		{
+			public UpdateStatus Value { get; set; }
+		}
+
+
+		[TestMethod]
+		[ExpectedException(typeof(NotSupportedException))]
+		public async Task CheckForUpdates_NotSupportedException()
+		{
+			var input = new TestOverWriteEnumModel { Value = UpdateStatus.Disabled };
+
+			// Use reflection to set the updateStatus field to UpdateAvailable
+			// overwrite enum value
+			var propertyInfo = input.GetType().GetProperty("Value");
+			Assert.IsNotNull(propertyInfo);
+			propertyInfo.SetValue(input, 44, null); // <-- this could not happen
+
+			var fakeService = new FakeICheckForUpdates(
+				new KeyValuePair<UpdateStatus, string?>(input.Value, string.Empty));
+
+			Assert.IsNotNull(input.Value);
+
+			await new HealthCheckForUpdatesController(fakeService,
+				new FakeISpecificVersionReleaseInfo()).CheckForUpdates();
 		}
 
 		[TestMethod]
@@ -101,6 +129,32 @@ namespace starskytest.Controllers
 						.CheckForUpdates() as
 					ObjectResult;
 			Assert.AreEqual(200, actionResult?.StatusCode);
+		}
+
+		[TestMethod]
+		public async Task SpecificVersionReleaseInfo()
+		{
+			var fakeService = new FakeICheckForUpdates(new KeyValuePair<UpdateStatus, string?>());
+			var service2 = new FakeISpecificVersionReleaseInfo(
+				new Dictionary<string, Dictionary<string, string>>
+				{
+					{
+						"1.0.0",
+						new Dictionary<string, string>
+						{
+							{ "en", "	# 1.0.0\n\n- [x] test\n- [ ] test2\n\n" }
+						}
+					}
+				}
+			);
+
+			var actionResult =
+				await new HealthCheckForUpdatesController(fakeService,
+						service2)
+					.SpecificVersionReleaseInfo("1.0.0") as JsonResult;
+
+			Assert.AreEqual("	# 1.0.0\n\n- [x] test\n- [ ] test2\n\n",
+				actionResult?.Value);
 		}
 	}
 }

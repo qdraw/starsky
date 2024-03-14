@@ -130,6 +130,13 @@ namespace starskytest.starsky.foundation.platform.VersionHelpers
 		}
 
 		[TestMethod]
+		public void CompareTo_Null()
+		{
+			var result = new SemVersion(0).CompareTo(null);
+			Assert.AreEqual(1, result);
+		}
+
+		[TestMethod]
 		public void WithVPrefix()
 		{
 			var result = SemVersion.Parse("v1.1.0");
@@ -534,6 +541,27 @@ namespace starskytest.starsky.foundation.platform.VersionHelpers
 
 			// Assert
 			Assert.IsFalse(result);
+		}
+
+		[TestMethod]
+		public void Compare_FirstNull()
+		{
+			var result = SemVersion.Compare(null, new SemVersion(1));
+			Assert.AreEqual(-1, result);
+		}
+
+		[TestMethod]
+		public void Compare_SecondNull()
+		{
+			var result = SemVersion.Compare(new SemVersion(1), null);
+			Assert.AreEqual(1, result);
+		}
+		
+		[TestMethod]
+		public void Compare_BothNull()
+		{
+			var result = SemVersion.Compare(null, null);
+			Assert.AreEqual(0, result);
 		}
 	}
 }

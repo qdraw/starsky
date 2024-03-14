@@ -185,7 +185,7 @@ namespace starsky.foundation.platform.VersionHelpers
 				return nonemptyIsLower ? -1 : 1;
 
 			var aComps = a.Split('.');
-			var bComps = b.Split('.');
+			var bComps = b!.Split('.');
 
 			return CompareComponentCompareLoop(aComps, bComps);
 		}
@@ -228,7 +228,7 @@ namespace starsky.foundation.platform.VersionHelpers
 			unchecked
 			{
 				// verify this. Some versions start result = 17. Some use 37 instead of 31
-				int result = Major.GetHashCode();
+				var result = Major.GetHashCode();
 				result = result * 31 + Minor.GetHashCode();
 				result = result * 31 + Patch.GetHashCode();
 				result = result * 31 + Prerelease.GetHashCode();
@@ -315,7 +315,7 @@ namespace starsky.foundation.platform.VersionHelpers
 		/// <param name="versionB">The second version to compare.</param>
 		/// <returns>A signed number indicating the relative values of <paramref name="versionA"/>
 		/// and <paramref name="versionB"/>.</returns>
-		private static int Compare(SemVersion versionA, SemVersion versionB)
+		internal static int Compare(SemVersion? versionA, SemVersion? versionB)
 		{
 			if ( ReferenceEquals(versionA, versionB) ) return 0;
 			if ( versionA is null ) return -1;
