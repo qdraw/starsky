@@ -12,7 +12,7 @@ namespace starskytest.Controllers
 	public sealed class HealthCheckForUpdatesControllerTest
 	{
 		// or CheckForUpdatesTest
-		
+
 		// Disabled,
 		// HttpError,
 		// NoReleasesFound,
@@ -23,62 +23,84 @@ namespace starskytest.Controllers
 		public async Task CheckForUpdates_Disabled()
 		{
 			var fakeService = new FakeICheckForUpdates(
-				new KeyValuePair<UpdateStatus, string>(UpdateStatus.Disabled, string.Empty));
+				new KeyValuePair<UpdateStatus, string?>(UpdateStatus.Disabled, string.Empty));
 
-			var actionResult = await new HealthCheckForUpdatesController(fakeService).CheckForUpdates() as ObjectResult;
-			Assert.AreEqual(208,actionResult?.StatusCode);
+			var actionResult =
+				await new HealthCheckForUpdatesController(fakeService,
+					new FakeISpecificVersionReleaseInfo()).CheckForUpdates() as ObjectResult;
+			Assert.AreEqual(208, actionResult?.StatusCode);
 		}
-		
+
 		[TestMethod]
 		public async Task CheckForUpdates_HttpError()
 		{
 			var fakeService = new FakeICheckForUpdates(
-				new KeyValuePair<UpdateStatus, string>(UpdateStatus.HttpError, string.Empty));
+				new KeyValuePair<UpdateStatus, string?>(UpdateStatus.HttpError, string.Empty));
 
-			var actionResult = await new HealthCheckForUpdatesController(fakeService).CheckForUpdates() as ObjectResult;
-			Assert.AreEqual(400,actionResult?.StatusCode);
+			var actionResult =
+				await new HealthCheckForUpdatesController(fakeService,
+					new FakeISpecificVersionReleaseInfo()).CheckForUpdates() as ObjectResult;
+			Assert.AreEqual(400, actionResult?.StatusCode);
 		}
-		
+
 		[TestMethod]
 		public async Task CheckForUpdates_InputNotValid()
 		{
 			var fakeService = new FakeICheckForUpdates(
-				new KeyValuePair<UpdateStatus, string>(UpdateStatus.InputNotValid, string.Empty));
+				new KeyValuePair<UpdateStatus, string?>(UpdateStatus.InputNotValid, string.Empty));
 
-			var actionResult = await new HealthCheckForUpdatesController(fakeService).CheckForUpdates() as ObjectResult;
-			Assert.AreEqual(400,actionResult?.StatusCode);
+			var service2 = new FakeISpecificVersionReleaseInfo();
+			var actionResult =
+				await new HealthCheckForUpdatesController(fakeService, service2)
+						.CheckForUpdates() as
+					ObjectResult;
+			Assert.AreEqual(400, actionResult?.StatusCode);
 		}
-		
+
 		[TestMethod]
 		public async Task CheckForUpdates_NoReleasesFound()
 		{
 			var fakeService = new FakeICheckForUpdates(
-				new KeyValuePair<UpdateStatus, string>(UpdateStatus.NoReleasesFound, string.Empty));
+				new KeyValuePair<UpdateStatus, string?>(UpdateStatus.NoReleasesFound,
+					string.Empty));
 
-			var actionResult = await new HealthCheckForUpdatesController(fakeService).CheckForUpdates() as ObjectResult;
-			Assert.AreEqual(206,actionResult?.StatusCode);
+			var service2 = new FakeISpecificVersionReleaseInfo();
+
+			var actionResult =
+				await new HealthCheckForUpdatesController(fakeService, service2)
+						.CheckForUpdates() as
+					ObjectResult;
+			Assert.AreEqual(206, actionResult?.StatusCode);
 		}
-		
+
 		// NeedToUpdate
 		[TestMethod]
 		public async Task CheckForUpdates_NeedToUpdate()
 		{
+			var service2 = new FakeISpecificVersionReleaseInfo();
 			var fakeService = new FakeICheckForUpdates(
-				new KeyValuePair<UpdateStatus, string>(UpdateStatus.NeedToUpdate, string.Empty));
+				new KeyValuePair<UpdateStatus, string?>(UpdateStatus.NeedToUpdate, string.Empty));
 
-			var actionResult = await new HealthCheckForUpdatesController(fakeService).CheckForUpdates() as ObjectResult;
-			Assert.AreEqual(202,actionResult?.StatusCode);
+			var actionResult =
+				await new HealthCheckForUpdatesController(fakeService, service2)
+						.CheckForUpdates() as
+					ObjectResult;
+			Assert.AreEqual(202, actionResult?.StatusCode);
 		}
-		
+
 		[TestMethod]
 		public async Task CheckForUpdates_CurrentVersionIsLatest()
 		{
 			var fakeService = new FakeICheckForUpdates(
-				new KeyValuePair<UpdateStatus, string>(UpdateStatus.CurrentVersionIsLatest, string.Empty));
+				new KeyValuePair<UpdateStatus, string?>(UpdateStatus.CurrentVersionIsLatest,
+					string.Empty));
+			var service2 = new FakeISpecificVersionReleaseInfo();
 
-			var actionResult = await new HealthCheckForUpdatesController(fakeService).CheckForUpdates() as ObjectResult;
-			Assert.AreEqual(200,actionResult?.StatusCode);
+			var actionResult =
+				await new HealthCheckForUpdatesController(fakeService, service2)
+						.CheckForUpdates() as
+					ObjectResult;
+			Assert.AreEqual(200, actionResult?.StatusCode);
 		}
-
 	}
 }
