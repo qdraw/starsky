@@ -322,4 +322,18 @@ public class SpecificVersionReleaseInfoTests
 
 		Assert.AreEqual(string.Empty, result);
 	}
+
+	[TestMethod]
+	public void Parse_NullVersion()
+	{
+		var fakeIHttpProvider = new FakeIHttpProvider();
+
+		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, null, new FakeIWebLogger());
+		var specificVersionReleaseInfo =
+			new SpecificVersionReleaseInfo(httpClientHelper, null, null,
+				new FakeIWebLogger());
+		
+		var result = specificVersionReleaseInfo.Parse("-", null);
+		Assert.AreEqual(string.Empty, result);
+	}
 }

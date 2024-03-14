@@ -55,15 +55,16 @@ public class SpecificVersionReleaseInfo : ISpecificVersionReleaseInfo
 		return Parse(( string )cacheResult, versionToCheckFor);
 	}
 
-	internal string Parse(string json, string? latestVersion)
+	internal string Parse(string json, string? versionToCheckFor)
 	{
 		if ( string.IsNullOrWhiteSpace(json) )
 		{
 			return string.Empty;
 		}
 
-		latestVersion ??= string.Empty;
-		var dict = new Dictionary<string, Dictionary<string, string>>();
+		versionToCheckFor ??= string.Empty;
+		Dictionary<string, Dictionary<string, string>>? dict = null;
+		
 		try
 		{
 			dict = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string>>>(json);
@@ -73,7 +74,7 @@ public class SpecificVersionReleaseInfo : ISpecificVersionReleaseInfo
 			_webLogger.LogError("[SpecificVersionReleaseInfo] Json parse error: " + e.Message);
 		}
 
-		if ( dict?.TryGetValue(latestVersion, out var valueDict) is not true ) return string.Empty;
+		if ( dict?.TryGetValue(versionToCheckFor, out var valueDict) is not true ) return string.Empty;
 
 		var outputValue = valueDict.TryGetValue("en", out var languageValue)
 			? ConvertMarkdownLinkToHtml(languageValue)
