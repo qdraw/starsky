@@ -54,6 +54,7 @@ This document is auto generated
 | __/api/health/details__                           | GET   | Check if the service has any known errorsFor Authorized Users only              |
 | __/api/health/version__                           | POST  | Check if Client/App version has a match with the API-versionthe parameter 've...|
 | __/api/health/check-for-updates__                 | GET   | Check if Client/App version has a match with the API-version                    |
+| __/api/health/release-info__                      | GET   | Get more info to show about the release                                         |
 | __/search__                                       | POST  | Redirect to search GET page (HTML)                                              |
 | __/search__                                       | GET   | Search GET page (HTML)                                                          |
 | __/trash__                                        | GET   | Trash page (HTML)                                                               |

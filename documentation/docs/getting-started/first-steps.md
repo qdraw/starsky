@@ -6,13 +6,15 @@ sidebar_position: 3
 
 Welcome to the first steps of your journey with Starsky!
 
+> Note: This guide assumes that you have already download and installed the Application: How to setup the desktop application using [Windows](../getting-started/desktop/desktop-windows.md) and [Mac OS](../getting-started/desktop/desktop-macos.md) you can find in the [Windows Guide](../getting-started/desktop/desktop-windows.md) and [Mac OS Guide](../getting-started/desktop/desktop-macos.md)
+
 ## Setting Storage Folder
 
-- Once you have installed Starsky, you can start it by opening the Starsky application.
-- Go to Preferences and change the Storage Folder's path to the location where you want to store
-  your pictures.
-- Press Command + Shift + K on Mac OS and Ctrl + Shift + K on Windows to go to Preferences.
-- This looks like this:
+-   Once you have installed Starsky, you can start it by opening the Starsky application.
+-   Go to Preferences and change the Storage Folder's path to the location where you want to store
+    your pictures.
+-   Press Command + Shift + K on Mac OS and Ctrl + Shift + K on Windows to go to Preferences.
+-   This looks like this:
 
 ![Storage Folder Assets](../assets/getting-started-first-steps-storage-folder.jpg)
 
@@ -24,26 +26,26 @@ When using as server mode: [see account management for more info](../features/ac
 
 ## Run re-sync
 
-- After setting the Storage Folder, you can run a re-sync to update the view with the new location.
-- Go to the Home screen
-- Press More on the right top
-- Click Synchronize manually
-- This looks like this:
+-   After setting the Storage Folder, you can run a re-sync to update the view with the new location.
+-   Go to the Home screen
+-   Press More on the right top
+-   Click Synchronize manually
+-   This looks like this:
 
 ![Manual Sync](../assets/getting-started-first-steps-manual-sync.jpg)
 
-- Press Synchronize current directory manually
+-   Press Synchronize current directory manually
 
 ![Manual Sync](../assets/getting-started-first-steps-manual-sync-2.jpg)
 
-- Wait until the sync is finished
+-   Wait until the sync is finished
 
 ## Importing photos
 
-- After the sync is finished, you can start importing photos.
-- Go to the Home screen
-- In menu click on Import
-- This looks like this:
+-   After the sync is finished, you can start importing photos.
+-   Go to the Home screen
+-   In menu click on Import
+-   This looks like this:
 
 ![Import](../assets/getting-started-first-steps-import.jpg)
 
