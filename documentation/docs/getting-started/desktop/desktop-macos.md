@@ -53,5 +53,6 @@ Click on Applications and open the App there
 
 See the [First Steps in the Getting Started Guide](../first-steps.md) for more info on how to setup the storage folder
 
-[![Storage Folder Assets](../../assets/getting-started-first-steps-storage-folder.jpg)](../first-steps.md)
+[![Storage Folder Assets](../../assets/getting-started-first-steps-storage-folder.jpg)](https://docs.qdraw.nl/docs/getting-started/first-steps)
+
 _[Read more in the First Steps](../first-steps.md)_
