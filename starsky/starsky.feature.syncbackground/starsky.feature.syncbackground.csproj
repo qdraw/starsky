@@ -3,7 +3,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <RootNamespace>starsky.feature.syncbackground</RootNamespace>
         <ProjectGuid>{15e1493e-6e79-4314-907f-b3ef18eb9046}</ProjectGuid>
-        <Version>0.6.0-beta.3</Version>
+        <Version>0.6.0</Version>
         <Nullable>enable</Nullable>
         <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
