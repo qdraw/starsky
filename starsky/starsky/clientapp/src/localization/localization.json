@@ -655,9 +655,9 @@
     "de": "Aktuelles Verzeichnis manuell synchronisieren"
   },
   "MessageWhereToFindReleaseReleasesUrlTokenHtml": {
-    "en": "<a target='_blank' href='https://github.com/qdraw/starsky/releases/latest' rel='noopener'> {releasesToken}</a>",
-    "nl": "<a target='_blank' href='https://github.com/qdraw/starsky/releases/latest' rel='noopener'> {releasesToken}</a>",
-    "de": "<a target='_blank' href='https://github.com/qdraw/starsky/releases/latest' rel='noopener'> {releasesToken}</a>"
+    "en": "<a target='_blank' href='https://docs.qdraw.nl/download/' rel='noopener'> {releasesToken}</a>",
+    "nl": "<a target='_blank' href='https://docs.qdraw.nl/download/' rel='noopener'> {releasesToken}</a>",
+    "de": "<a target='_blank' href='https://docs.qdraw.nl/download/' rel='noopener'> {releasesToken}</a>"
   },
   "MessageWhereToFindReleaseReleasesUrlTokenContent": {
     "en": "Go to the release overview",
