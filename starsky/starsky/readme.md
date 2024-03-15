@@ -122,7 +122,7 @@ machinename with your computer name in lowercase)_
 35. `AccountRolesByEmailRegisterOverwrite` Overwrite the default role for a user by email address,
     _default empty list_
 36. `OpenTelemetry` See logging in an external service, _default no enabled_
-    see [OpenTelemetry](https://docs.qdraw.nl/docs/developer-guide/logging/opentelemetry.md)
+    see [OpenTelemetry](https://docs.qdraw.nl/docs/developer-guide/logging/opentelemetry/)
 37. `UseLocalDesktop` Enable local desktop features (hide trash in Ui / Open in Application)
     _default false_ _in app true_
 38. `DefaultDesktopEditor` List of Properties that contain the default editor by imageFormat
