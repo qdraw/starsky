@@ -14,6 +14,7 @@
     <ItemGroup>
         <ProjectReference Include="..\starsky.feature.webftppublish\starsky.feature.webftppublish.csproj"/>
         <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.webtelemetry\starsky.foundation.webtelemetry.csproj" />
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

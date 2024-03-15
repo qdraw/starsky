@@ -25,7 +25,10 @@ namespace starsky.foundation.platform.Services
 		{
 			_logger = loggerFactory?.CreateLogger("app");
 			var scopeProvider = scopeFactory?.CreateScope().ServiceProvider;
-			if ( scopeProvider != null ) _console = scopeProvider.GetService<IConsole>();
+			if ( scopeProvider != null )
+			{
+				_console = scopeProvider.GetService<IConsole>();
+			}
 		}
 
 		public void LogDebug(string? message, params object[] args)
@@ -40,6 +43,7 @@ namespace starsky.foundation.platform.Services
 				_console?.WriteLine(message);
 				return;
 			}
+			
 			_logger.LogDebug(message, args);
 		}
 
