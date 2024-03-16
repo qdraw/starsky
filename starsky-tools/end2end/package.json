@@ -22,7 +22,7 @@
     "update:install": "npx --yes npm-check-updates -u && npm install"
   },
   "devDependencies": {
-    "@types/node": "^20.11.19",
+    "@types/node": "^20.11.20",
     "@typescript-eslint/eslint-plugin": "^6.20.0",
     "@typescript-eslint/parser": "^6.21.0",
     "cypress": "^13.6.5",
