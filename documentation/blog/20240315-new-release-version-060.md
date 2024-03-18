@@ -14,24 +14,28 @@ enhancements to elevate your user experience! Let's dive into the key highlights
 
 ## Backend Enhancements:
 
-- **Upgrade to .NET 8**: Our backend system has been upgraded to .NET 8 - SDK 8.0.202 and Runtime
-  8.0.3, bringing improved performance and stability. (PR #1464)
+-   **Upgrade to .NET 8**: Our backend system has been upgraded to .NET 8 - SDK 8.0.202 and Runtime
+    8.0.3, bringing improved performance and stability. (PR #1464)
 
 ## Bug Fixes:
 
-- **Improved Version Check**: Addressed an issue where the version check wasn't functioning
-  correctly post the 0.5.10+ upgrade, ensuring smooth operation. (PR #1477)
-- **Enhanced Error Handling**: Various fixes have been implemented to enhance system stability,
-  including fixes for regex timeouts and log errors. (PR #1457, #1444, #1445)
+-   **Improved Version Check**: Addressed an issue where the version check wasn't functioning
+    correctly post the 0.5.10+ upgrade, ensuring smooth operation. (PR #1477)
+-   **Enhanced Error Handling**: Various fixes have been implemented to enhance system stability,
+    including fixes for regex timeouts and log errors. (PR #1457, #1444, #1445)
 
 ## Exciting Features:
 
-- **Apple Silicon Mac OS Support**: We're thrilled to introduce support for Apple Silicon Mac OS in
-  our desktop app, ensuring compatibility with the latest hardware. (PR #1454)
-- **SonarScanner for Desktop App**: Our desktop app now includes SonarScanner, allowing for more
-  effective monitoring of code quality. (PR #1454)
-- **Native File Opening**: Experience seamless file opening on both Windows and Mac OS with native
-  file open support. (PR #1381)
+-   **Apple Silicon Mac OS Support**: We're thrilled to introduce support for Apple Silicon Mac OS in
+    our desktop app, ensuring compatibility with the latest hardware. (PR #1454)
+-   **SonarScanner for Desktop App**: Our desktop app now includes SonarScanner, allowing for more
+    effective monitoring of code quality. (PR #1454)
+-   **Native File Opening**: Experience seamless file opening on both Windows and Mac OS with native
+    file open support. (PR #1381)
+
+## Feedback
+
+-   Based on user feedback the documentation on "Getting Started" and Tagging is improved. Thanks for the feedback. The verbose setting is removed out of the UI since users don't understand it and didn't had any value for a normal end user.
 
 This release represents a significant leap forward for our platform, made possible by the dedication
 of the development team.
