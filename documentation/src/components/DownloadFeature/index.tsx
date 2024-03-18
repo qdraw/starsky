@@ -98,10 +98,11 @@ export default function DownloadFeatures(): ReactElement {
           <Button href={downloadUrl1} color="#25c2a0">
             {downloadButton1Text}
           </Button>
-          {downloadButton2Text ? (
+          {downloadButton2Text ? (<>
+            <br />
             <Button href={downloadUrl2} color="#25c2a0">
               {downloadButton2Text}
-            </Button>
+            </Button></>
           ) : null}
           {systemDescription ? (
             <>
