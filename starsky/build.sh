@@ -23,6 +23,7 @@ export DOTNET_CLI_TELEMETRY_OPTOUT=1
 export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
 export DOTNET_MULTILEVEL_LOOKUP=0
 export DOTNET_NOLOGO=1
+export NUKE_TELEMETRY_OPTOUT=true
 
 DOTNET_MAC_OS_PKG_X64="https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-SDK_VERSION-macos-x64-installer"
 DOTNET_MAC_OS_PKG_ARM64="https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-SDK_VERSION-macos-arm64-installer"
