@@ -1,4 +1,4 @@
-name: Auto Documentation create Docusaurus upgrade
+name: Documentation update dependencies create docusaurus
 
 on:
   workflow_dispatch:
