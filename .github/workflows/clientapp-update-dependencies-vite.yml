@@ -1,4 +1,4 @@
-name: Auto Client App create Vite upgrade
+name: ClientApp upgrade dependencies create Vite 
 
 on:
   workflow_dispatch:
