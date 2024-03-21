@@ -85,7 +85,7 @@ _See `./pipelines/azure` for details_
 [![ClientApp React Linux CI](https://github.com/qdraw/starsky/actions/workflows/clientapp-react-linux-ci.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/clientapp-react-linux-ci.yml)
 
 #### Docker
-[![Docker buildx multi-arch CI unstable master](https://github.com/qdraw/starsky/actions/workflows/starsky-docker-buildx.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/starsky-docker-buildx.yml)
+[![webapp-unstable-docker-buildx](https://github.com/qdraw/starsky/actions/workflows/webapp-unstable-docker-buildx.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/webapp-unstable-docker-buildx.yml)
 
 #### App on Windows and Mac OS
 
