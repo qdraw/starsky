@@ -1,4 +1,4 @@
-name: Desktop Create Desktop Release on tag for .Net Core and Electron
+name: Desktop Create Desktop Release on tag (.NET & Electron)
 
 on:
   push:
