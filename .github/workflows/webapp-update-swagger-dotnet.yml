@@ -1,4 +1,4 @@
-name: 'Update Swagger definitions'
+name: 'WebApp Update Swagger definitions'
 
 on:
   workflow_dispatch:
