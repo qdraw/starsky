@@ -15,7 +15,7 @@
 
 param(
     [Parameter(Mandatory=$false)][switch]$help,
-    [Parameter(Mandatory=$false)][string]$workFlowId="release-on-tag-netcore-desktop-electron.yml",
+    [Parameter(Mandatory=$false)][string]$workFlowId="desktop-release-on-tag-net-electron.yml",
     [Parameter(Mandatory=$false)][string]$runTime='',
     [Parameter(Mandatory=$false)][string]$outPut='',
     [Parameter(Mandatory=$false)][string]$token=$env:STARSKY_GITHUB_PAT

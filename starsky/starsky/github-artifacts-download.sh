@@ -11,7 +11,7 @@
 
 # source: /opt/starsky/starsky/github-artifacts-download.sh
 
-WORKFLOW_ID="release-on-tag-netcore-desktop-electron.yml"
+WORKFLOW_ID="desktop-release-on-tag-net-electron.yml"
 
 # default will be overwritten
 RUNTIME="linux-arm"
