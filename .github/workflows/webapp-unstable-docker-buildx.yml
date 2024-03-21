@@ -1,4 +1,4 @@
-name: Docker buildx multi-arch CI unstable master
+name: WebApp Docker buildx multi-arch CI unstable master
 
 concurrency: 
   group: ${{ github.workflow }}-${{ github.ref }}
