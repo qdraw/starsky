@@ -81,7 +81,7 @@ jobs:
     # needs nothing - no dependencies
 
     steps:
-      - name: trigger release-on-tag-netcore-desktop-electron
+      - name: trigger desktop-release-on-tag-net-electron.yml 
         shell: bash
         env:
           NOTE_READ_THIS_NOW: "Need a github token that has more rights otherwise it will be ignored"
@@ -90,5 +90,5 @@ jobs:
           -H"authorization: Bearer ${{ secrets.WORKFLOW_GITHUB }}" \
           -X POST \
           -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/repos/${{ github.repository }}/actions/workflows/release-on-tag-netcore-desktop-electron.yml/dispatches \
+          https://api.github.com/repos/${{ github.repository }}/actions/workflows/desktop-release-on-tag-net-electron.yml/dispatches \
           -d '{"ref":"master"}' -v
