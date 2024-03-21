@@ -1,4 +1,4 @@
-name: Auto update Nuget packages list
+name: WebApp update Nuget packages list
 
 on:
   push:
