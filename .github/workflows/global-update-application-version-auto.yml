@@ -1,5 +1,4 @@
-name: Application Version Auto update
-
+name: Update Application version auto
 on:
   push:
     branches:
