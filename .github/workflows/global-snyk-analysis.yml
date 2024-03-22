@@ -31,6 +31,6 @@ jobs:
 
     - name: 'npx snyk test --all-projects'
       working-directory: ./
-      run: npx snyk test --all-projects --fail-on=upgradable
+      run: npx -y snyk test --all-projects --fail-on=upgradable
 
   
