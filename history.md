@@ -133,7 +133,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
   1339, 1338, 1378)
 - [x] (Fixed) _Back-end_ Retry in docker image for npm ci (PR #1369)
 - [x] (Fixed) _Front-end_ Clean unused exports (PR #1367)
-- [x] (Breaking change) _Back-end_ Removed Direct dependency of Application Insights (PR #1366 )
+- [x] (Breaking change) _Back-end_ Removed Direct dependency of Application Insights (PR #1366)
 - [x] (Fixed) _App_ Retry if port is used in Electron (PR #1365)
 - [x] (Fixed) _Front-end_ ColorClass filter refactor (PR #1364)
 - [x] (Fixed) _Front-end_ iOS styling issue (PR #1363)

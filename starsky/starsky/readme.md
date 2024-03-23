@@ -275,10 +275,9 @@ good
 
 There is also a check to make sure the database runs good
 
-#### Application Insights
+#### Open Telemetry
 
-Health issues are also reported to Microsoft Application Insights This only is when a valid key is
-configured.
+Health issues are also reported to Open Telemetry This only is when a valid key is configured.
 
 ### Known issues
 

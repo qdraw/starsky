@@ -106,16 +106,14 @@ and supports advanced features like model binding, template inheritance, and mor
 for high performance and scalability,
 and is widely used in various applications that require dynamic content generation in C#.
 
-## Microsoft Application Insights
+## Open Telemetry
 
-Microsoft Application Insights is a real-time analytics and monitoring service that provides insights
+Open Telemetry is a real-time analytics and monitoring standard that provides insights
 into the performance and usage of your applications.
-It is a cloud-based solution that allows you to track application performance,
+It is a solution that allows you to track application performance,
 detect and diagnose issues, and monitor user behavior.
 The service provides a wealth of data, including performance metrics, error tracking,
 and user telemetry, that can help you quickly identify and resolve issues and improve application quality.
-Additionally, Application Insights offers robust visualization and alerting capabilities,
-making it easier to quickly understand and respond to changes in your application's performance and usage.
 
 ## MedallionShell
 
