@@ -28,7 +28,7 @@ public class PathHelperTests
 
 	[TestMethod]
 	[ExpectedException(typeof(RegexMatchTimeoutException))]
-	public async Task GetFileName_ReturnsFileName_WithMaliciousInput_UnixOnly()
+	public async Task GetFileName_ReturnsFileName_WithMaliciousInput()
 	{
 		// Act and Assert
 		var test = await
@@ -39,7 +39,7 @@ public class PathHelperTests
 				new MemoryStream(CreateAnImageA6600.Bytes.ToArray()));
 
 		var result = string.Empty;
-		for ( var i = 0; i < 200; i++ )
+		for ( var i = 0; i < 2000; i++ )
 		{
 			result += test + test2 + test + test;
 		}
