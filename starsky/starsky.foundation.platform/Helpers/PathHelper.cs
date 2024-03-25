@@ -35,6 +35,78 @@ namespace starsky.foundation.platform.Helpers
 			return GetFileNameRegex().Match(filePath).Value;
 		}
 
+		private static string? GetFileNameHelper(string input)
+		{
+			      // Initialize variables to store the result
+        string result = "";
+        bool isValid = true;
+
+        // Define variables to keep track of the current position and length of the match
+        int startPos = 0;
+        int matchLength = 0;
+
+        // Iterate over the characters in the input string
+        for (int i = 0; i < input.Length; i++)
+        {
+            // If the current character is '/', it means the end of a potential match
+            if (input[i] == '/')
+            {
+                // Extract the potential match substring
+                string potentialMatch = input.Substring(startPos, matchLength);
+
+                // Check if the potential match matches the pattern [^/]+(?=(?:\.[^.]+)?$)
+                if (!potentialMatch.Contains("/") && (potentialMatch.Contains(".") || potentialMatch.EndsWith(".")))
+                {
+                    // Add the potential match to the result
+                    result += potentialMatch + "/";
+
+                    // Update the start position for the next potential match
+                    startPos = i + 1;
+                    matchLength = 0;
+                }
+                else
+                {
+                    // If the potential match does not match the pattern, set isValid to false and break the loop
+                    isValid = false;
+                    break;
+                }
+            }
+            else
+            {
+                // Increment the length of the potential match
+                matchLength++;
+            }
+        }
+
+        // Handle the last potential match after the loop
+        if (matchLength > 0)
+        {
+            string lastPotentialMatch = input.Substring(startPos, matchLength);
+            if (!lastPotentialMatch.Contains("/") && (lastPotentialMatch.Contains(".") || lastPotentialMatch.EndsWith(".")))
+            {
+                result += lastPotentialMatch;
+            }
+            else
+            {
+                isValid = false;
+            }
+        }
+
+        // If isValid is true and result is not empty, remove the trailing '/'
+        if (isValid && result.Length > 0)
+        {
+            result = result.TrimEnd('/');
+        }
+        else
+        {
+            // If the input string does not match the pattern, set result to null
+            result = null;
+        }
+
+        // Output the result
+        return result;
+		}
+
 		/// <summary>
 		/// Removes the latest backslash. Path.DirectorySeparatorChar
 		/// </summary>
