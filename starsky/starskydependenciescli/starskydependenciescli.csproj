@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <!-- SonarQube needs this -->
+        <ProjectGuid>{04d4b161-7dad-4258-8edc-f0a77e39dc3f}</ProjectGuid>
+        <RuntimeFrameworkVersion>8.0.3</RuntimeFrameworkVersion>
+        <RootNamespace>starskydependenciescli</RootNamespace>
+        <Version>0.6.0</Version>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>disable</ImplicitUsings>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
+        <SonarQubeExclude>true</SonarQubeExclude>
+    </PropertyGroup>
+</Project>
