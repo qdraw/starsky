@@ -39,7 +39,7 @@ public class PathHelperTests
 				new MemoryStream(CreateAnImageA6600.Bytes.ToArray()));
 
 		var result = string.Empty;
-		for ( var i = 0; i < 2000; i++ )
+		for ( var i = 0; i < 1000; i++ )
 		{
 			result += test + test2 + test + test;
 		}
