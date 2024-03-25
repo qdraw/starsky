@@ -17,7 +17,7 @@ namespace starsky.foundation.platform.Helpers
 		[GeneratedRegex(
 			"[^/]+(?=(?:\\.[^.]+)?$)",
 			RegexOptions.CultureInvariant,
-			matchTimeoutMilliseconds: 300)]
+			matchTimeoutMilliseconds: 1000)]
 		private static partial Regex GetFileNameRegex();
 
 		/// <summary>
