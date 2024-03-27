@@ -10,6 +10,7 @@ using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 
@@ -100,12 +101,13 @@ namespace starsky.foundation.http.Services
 			// // allow whitelist and https only
 			if ( !_allowedDomains.Contains(sourceUri.Host) || sourceUri.Scheme != "https" ) return
 				new KeyValuePair<bool, string>(false, string.Empty);
-
+			
 			try
 			{
 				using ( HttpResponseMessage response = await _httpProvider.PostAsync(sourceHttpUrl, httpContent) )
 				using ( Stream streamToReadFrom = await response.Content.ReadAsStreamAsync() )
 				{
+					
 					var reader = new StreamReader(streamToReadFrom, Encoding.UTF8);
 					var result = await reader.ReadToEndAsync();
 					return new KeyValuePair<bool, string>(response.StatusCode == HttpStatusCode.OK, result);
