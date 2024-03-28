@@ -629,5 +629,22 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			var args = new List<string> { "-n", "test" }.ToArray();
 			Assert.AreEqual("test", ArgsHelper.GetName(args));
 		}
+
+		[DataTestMethod]
+		[DataRow("osx-arm64", "OSX")]
+		[DataRow("osx-x64", "OSX")]
+		[DataRow("linux-x64", "LINUX")]
+		[DataRow("linux-arm", "LINUX")]
+		[DataRow("linux-arm64", "LINUX")]
+		[DataRow("win-x64", "WINDOWS")]
+		[DataRow("win-x86", "WINDOWS")]
+		[DataRow("win-arm64", "WINDOWS")]
+		[DataRow("test", "")]
+		[DataRow(null, "")]
+		public void GetRuntimeTest(string input, string expected)
+		{
+			var args = new List<string> { "--runtime", input }.ToArray();
+			Assert.AreEqual(expected, ArgsHelper.GetRuntime(args).ToString());
+		}
 	}
 }

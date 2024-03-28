@@ -11,10 +11,7 @@ public static class PlatformParser
 		OSPlatform? currentPlatform = null;
 		foreach ( var platform in new List<OSPlatform>
 		         {
-			         OSPlatform.Linux,
-			         OSPlatform.Windows,
-			         OSPlatform.OSX,
-			         OSPlatform.FreeBSD
+			         OSPlatform.Linux, OSPlatform.Windows, OSPlatform.OSX, OSPlatform.FreeBSD
 		         }.Where(RuntimeInformation.IsOSPlatform) )
 		{
 			currentPlatform = platform;
@@ -22,9 +19,24 @@ public static class PlatformParser
 
 		return currentPlatform;
 	}
-	
-	public static string GetCurrentArchitecture()
+
+	public static OSPlatform? RuntimeIdentifier(string? runtimeIdentifier)
 	{
-		return RuntimeInformation.RuntimeIdentifier;
+		if ( runtimeIdentifier == null )
+		{
+			return null;
+		}
+
+		if ( runtimeIdentifier.StartsWith("win-") )
+		{
+			return OSPlatform.Windows;
+		}
+
+		if ( runtimeIdentifier.StartsWith("linux-") )
+		{
+			return OSPlatform.Linux;
+		}
+
+		return runtimeIdentifier.StartsWith("osx-") ? OSPlatform.OSX : null;
 	}
 }

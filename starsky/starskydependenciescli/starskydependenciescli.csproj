@@ -17,6 +17,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\starsky.feature.externaldependencies\starsky.feature.externaldependencies.csproj"/>
         <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj"/>
         <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>
         <ProjectReference Include="..\starsky.foundation.webtelemetry\starsky.foundation.webtelemetry.csproj"/>
@@ -26,5 +27,5 @@
     <ItemGroup Condition="!Exists('Properties/launchSettings.json')">
         <ContentWithTargetPath Include="Properties/default-init-launchSettings.json" TargetPath="../../../Properties/launchSettings%(Extension)" CopyToOutputDirectory="PreserveNewest"/>
     </ItemGroup>
-    
+
 </Project>

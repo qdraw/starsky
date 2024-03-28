@@ -1,15 +1,13 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using starsky.foundation.database.Data;
+using starsky.feature.externaldependencies;
+using starsky.feature.externaldependencies.Interfaces;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
-using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.storage.Interfaces;
 using starsky.foundation.webtelemetry.Extensions;
 using starsky.foundation.webtelemetry.Helpers;
-using starsky.foundation.writemeta.Interfaces;
 
 namespace starskyDependenciesCli
 {
@@ -32,15 +30,15 @@ namespace starskyDependenciesCli
 
 			services.AddOpenTelemetryMonitoring(appSettings);
 			services.AddTelemetryLogging(appSettings);
+			services.AddScoped<IExternalDependenciesService, ExternalDependenciesService>();
 
 			new SetupDatabaseTypes(appSettings, services).BuilderDb();
 			serviceProvider = services.BuildServiceProvider();
 
-			var exifToolDownload = serviceProvider.GetRequiredService<IExifToolDownload>();
-			var logger = serviceProvider.GetRequiredService<IWebLogger>();
+			var dependenciesService =
+				serviceProvider.GetRequiredService<IExternalDependenciesService>();
 
-
-			exifToolDownload.DownloadExifTool()
+			await dependenciesService.SetupAsync();
 		}
 	}
 }

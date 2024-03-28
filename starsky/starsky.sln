@@ -168,7 +168,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.desktop", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskydependenciescli", "starskydependenciescli\starskydependenciescli.csproj", "{CDFE2199-CB93-49E4-AF8A-98A3239F1D3F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.dependenciescli", "starsky.feature.dependenciescli\starsky.feature.dependenciescli.csproj", "{C34BB48B-0C65-4897-80A9-87CB1BDD5F48}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.externaldependencies", "starsky.feature.externaldependencies\starsky.feature.externaldependencies.csproj", "{C34BB48B-0C65-4897-80A9-87CB1BDD5F48}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

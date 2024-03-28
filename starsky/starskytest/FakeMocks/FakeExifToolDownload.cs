@@ -7,9 +7,10 @@ namespace starskytest.FakeMocks
 	public class FakeExifToolDownload : IExifToolDownload
 	{
 		public List<bool> Called { get; set; } = new List<bool>();
+
 		public Task<bool> DownloadExifTool(bool isWindows, int minimumSize = 30)
 		{
-			Called.Add(true);
+			Called.Add(isWindows);
 			return Task.FromResult(true);
 		}
 	}
