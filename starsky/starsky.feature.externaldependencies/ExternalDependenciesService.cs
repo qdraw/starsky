@@ -31,8 +31,9 @@ public class ExternalDependenciesService : IExternalDependenciesService
 		_geoFileDownload = geoFileDownload;
 	}
 
-	public async Task SetupAsync(string runtimeIdentifer)
+	public async Task SetupAsync(List<string> args)
 	{
+		await SetupAsync(ArgsHelper.GetRuntime(args));
 	}
 
 	public async Task SetupAsync(OSPlatform? currentPlatform = null,
