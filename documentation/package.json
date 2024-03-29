@@ -19,7 +19,8 @@
     "write-heading-ids": "docusaurus write-heading-ids",
     "typecheck": "tsc",
     "update": "node ../starsky-tools/build-tools/documentation-create-docusaurus-update.js",
-    "update:install": "npm run update"
+    "update:install": "npm run update",
+    "update:yes": "npm run update"
   },
   "dependencies": {
     "@cmfcmf/docusaurus-search-local": "^1.1.0",
