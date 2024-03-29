@@ -38,7 +38,7 @@ namespace starskyDependenciesCli
 			var dependenciesService =
 				serviceProvider.GetRequiredService<IExternalDependenciesService>();
 
-			await dependenciesService.SetupAsync();
+			await dependenciesService.SetupAsync(args);
 		}
 	}
 }

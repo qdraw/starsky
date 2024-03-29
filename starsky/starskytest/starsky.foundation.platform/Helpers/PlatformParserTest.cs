@@ -22,18 +22,20 @@ public class PlatformParserTest
 	}
 
 	[DataTestMethod]
-	[DataRow("osx-arm64", "OSX")]
-	[DataRow("osx-x64", "OSX")]
-	[DataRow("linux-x64", "LINUX")]
-	[DataRow("linux-arm", "LINUX")]
-	[DataRow("linux-arm64", "LINUX")]
-	[DataRow("win-x64", "WINDOWS")]
-	[DataRow("win-x86", "WINDOWS")]
-	[DataRow("win-arm64", "WINDOWS")]
-	[DataRow("test", "")]
-	[DataRow(null, "")]
-	public void RuntimeIdentifierTest(string input, string expected)
+	[DataRow("osx-arm64", "OSX", "Arm64")]
+	[DataRow("osx-x64", "OSX", "X64")]
+	[DataRow("linux-x64", "LINUX", "X64")]
+	[DataRow("linux-arm", "LINUX", "Arm")]
+	[DataRow("linux-arm64", "LINUX", "Arm64")]
+	[DataRow("win-x64", "WINDOWS", "X64")]
+	[DataRow("win-x86", "WINDOWS", "X86")]
+	[DataRow("win-arm64", "WINDOWS", "Arm64")]
+	[DataRow("test", "", "")]
+	[DataRow(null, "", "")]
+	public void RuntimeIdentifierTest(string input, string expectedOs, string expectedArch)
 	{
-		Assert.AreEqual(expected, PlatformParser.RuntimeIdentifier(input).ToString());
+		var result = PlatformParser.RuntimeIdentifier(input);
+		Assert.AreEqual(expectedOs, result[0].Item1.ToString());
+		Assert.AreEqual(expectedArch, result[0].Item2.ToString());
 	}
 }

@@ -31,18 +31,29 @@ public class ExternalDependenciesService : IExternalDependenciesService
 		_geoFileDownload = geoFileDownload;
 	}
 
-	public async Task SetupAsync(List<string> args)
+	public async Task SetupAsync(string[] args)
 	{
 		await SetupAsync(ArgsHelper.GetRuntime(args));
 	}
 
-	public async Task SetupAsync(OSPlatform? currentPlatform = null,
-		Architecture? architecture = null)
+	public async Task SetupAsync(List<(OSPlatform?, Architecture?)> currentPlatforms)
 	{
-		currentPlatform ??= PlatformParser.GetCurrentOsPlatform();
-
 		await RunMigrations.Run(_dbContext, _logger, _appSettings);
-		await _exifToolDownload.DownloadExifTool(currentPlatform == OSPlatform.Windows);
+		
+
+		if ( currentPlatforms.Count == 0 )
+		{
+			currentPlatforms =
+			[
+				( PlatformParser.GetCurrentOsPlatform(),
+					PlatformParser.GetCurrentArchitecture() )
+			];
+		}
+
+		foreach ( var (osPlatform, _) in currentPlatforms )
+		{
+			await _exifToolDownload.DownloadExifTool(osPlatform == OSPlatform.Windows);
+		}
 
 		await _geoFileDownload.DownloadAsync();
 	}

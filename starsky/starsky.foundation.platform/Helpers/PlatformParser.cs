@@ -20,23 +20,57 @@ public static class PlatformParser
 		return currentPlatform;
 	}
 
-	public static OSPlatform? RuntimeIdentifier(string? runtimeIdentifier)
+	public static List<(OSPlatform?, Architecture?)> RuntimeIdentifier(string? runtimeIdentifiers)
+	{
+		var result = new List<(OSPlatform?, Architecture?)>();
+		if ( runtimeIdentifiers == null )
+		{
+			return [];
+		}
+
+		var runtimes = runtimeIdentifiers.Split(",").Where(x => !string.IsNullOrEmpty(x)).ToList();
+		foreach ( var runtime in runtimes )
+		{
+			var singleRuntimeIdentifier = SingleRuntimeIdentifier(runtime);
+			if ( singleRuntimeIdentifier is { Item1: not null, Item2: not null } )
+			{
+				result.Add(singleRuntimeIdentifier);
+			}
+		}
+
+		return result;
+	}
+
+	private static (OSPlatform?, Architecture?) SingleRuntimeIdentifier(string? runtimeIdentifier)
 	{
 		if ( runtimeIdentifier == null )
 		{
-			return null;
+			return ( null, null );
 		}
 
-		if ( runtimeIdentifier.StartsWith("win-") )
+		switch ( runtimeIdentifier )
 		{
-			return OSPlatform.Windows;
+			case "win-x64":
+				return ( OSPlatform.Windows, Architecture.X64 );
+			case "win-arm64":
+				return ( OSPlatform.Windows, Architecture.Arm64 );
+			case "linux-arm":
+				return ( OSPlatform.Linux, Architecture.Arm );
+			case "linux-arm64":
+				return ( OSPlatform.Linux, Architecture.Arm64 );
+			case "linux-x64":
+				return ( OSPlatform.Linux, Architecture.X64 );
+			case "osx-x64":
+				return ( OSPlatform.OSX, Architecture.X64 );
+			case "osx-arm64":
+				return ( OSPlatform.OSX, Architecture.Arm64 );
+			default:
+				return ( null, null );
 		}
+	}
 
-		if ( runtimeIdentifier.StartsWith("linux-") )
-		{
-			return OSPlatform.Linux;
-		}
-
-		return runtimeIdentifier.StartsWith("osx-") ? OSPlatform.OSX : null;
+	public static Architecture GetCurrentArchitecture()
+	{
+		return Architecture.Wasm;
 	}
 }

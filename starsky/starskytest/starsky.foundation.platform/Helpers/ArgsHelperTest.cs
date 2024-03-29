@@ -644,7 +644,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void GetRuntimeTest(string input, string expected)
 		{
 			var args = new List<string> { "--runtime", input }.ToArray();
-			Assert.AreEqual(expected, ArgsHelper.GetRuntime(args).ToString());
+			Assert.AreEqual(expected, ArgsHelper.GetRuntime(args)[0].Item1.ToString());
 		}
 	}
 }

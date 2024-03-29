@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,9 +35,13 @@ public class ExternalDependenciesServiceTest
 	public async Task ExternalDependenciesServiceTest_ExifTool_Default()
 	{
 		var fakeExifToolDownload = new FakeExifToolDownload();
+		var appSettings = new AppSettings
+		{
+			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
+		};
 		var externalDependenciesService = new ExternalDependenciesService(fakeExifToolDownload,
-			_dbContext, new FakeIWebLogger(), new AppSettings(), new FakeIGeoFileDownload());
-		await externalDependenciesService.SetupAsync([]);
+			_dbContext, new FakeIWebLogger(), appSettings, new FakeIGeoFileDownload());
+		await externalDependenciesService.SetupAsync(new List<string>().ToArray());
 
 		Assert.AreEqual(new AppSettings().IsWindows, fakeExifToolDownload.Called[0]);
 	}
@@ -45,14 +50,40 @@ public class ExternalDependenciesServiceTest
 	[DataRow("osx-arm64", false)]
 	[DataRow("linux-x64", false)]
 	[DataRow("win-x64", true)]
-	public async Task ExternalDependenciesServiceTest_ExifTool_DataTestMethod(string input, bool expected)
+	public async Task ExternalDependenciesServiceTest_ExifTool_Single_DataTestMethod(string input,
+		bool expected)
 	{
 		var fakeExifToolDownload = new FakeExifToolDownload();
+		var appSettings = new AppSettings
+		{
+			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
+		};
 		var externalDependenciesService = new ExternalDependenciesService(fakeExifToolDownload,
-			_dbContext, new FakeIWebLogger(), new AppSettings(), new FakeIGeoFileDownload());
-		
+			_dbContext, new FakeIWebLogger(), appSettings, new FakeIGeoFileDownload());
+
 		await externalDependenciesService.SetupAsync(["--runtime", input]);
 
 		Assert.AreEqual(expected, fakeExifToolDownload.Called[0]);
+	}
+
+	[DataTestMethod]
+	[DataRow("osx-arm64,osx-x64", false, false)]
+	[DataRow("linux-x64,osx-x64", false, false)]
+	[DataRow("win-x64,osx-x64", true, false)]
+	public async Task ExternalDependenciesServiceTest_ExifTool_Multiple_DataTestMethod(string input,
+		bool expected1, bool expected2)
+	{
+		var appSettings = new AppSettings
+		{
+			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
+		};
+		var fakeExifToolDownload = new FakeExifToolDownload();
+		var externalDependenciesService = new ExternalDependenciesService(fakeExifToolDownload,
+			_dbContext, new FakeIWebLogger(), appSettings, new FakeIGeoFileDownload());
+
+		await externalDependenciesService.SetupAsync(["--runtime", input]);
+
+		Assert.AreEqual(expected1, fakeExifToolDownload.Called[0]);
+		Assert.AreEqual(expected2, fakeExifToolDownload.Called[1]);
 	}
 }

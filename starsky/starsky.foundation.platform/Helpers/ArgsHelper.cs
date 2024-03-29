@@ -642,23 +642,25 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="args">arg list</param>
 		/// <returns>path</returns>
-		public static OSPlatform? GetRuntime(IReadOnlyList<string?> args)
+		public static List<(OSPlatform?, Architecture?)> GetRuntime(IReadOnlyList<string?> args)
 		{
-			OSPlatform? outputMode = null;
+			var outputModeList = new List<(OSPlatform?, Architecture?)>();
 			for ( var arg = 0; arg < args.Count; arg++ )
 			{
 				if ( args[arg]?
-					     .Equals("--runtime", StringComparison.CurrentCultureIgnoreCase) != true ||
-				     ( arg + 1 ) == args.Count )
+					     .Equals("--runtime",
+						     StringComparison.CurrentCultureIgnoreCase) != true ||
+				     arg + 1 == args.Count )
 				{
 					continue;
 				}
 
 				var runtimeItem = args[arg + 1];
-				outputMode = PlatformParser.RuntimeIdentifier(runtimeItem);
+				var parsedRuntimeList = PlatformParser.RuntimeIdentifier(runtimeItem);
+				outputModeList.AddRange(parsedRuntimeList);
 			}
 
-			return outputMode;
+			return outputModeList;
 		}
 
 		/// <summary>
