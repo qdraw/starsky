@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.externaldependencies;
 using starsky.feature.externaldependencies.Interfaces;
 using starsky.foundation.database.Helpers;
+using starsky.foundation.http.Interfaces;
+using starsky.foundation.http.Services;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
@@ -30,9 +32,12 @@ namespace starskyDependenciesCli
 
 			services.AddOpenTelemetryMonitoring(appSettings);
 			services.AddTelemetryLogging(appSettings);
-			services.AddScoped<IExternalDependenciesService, ExternalDependenciesService>();
 
 			new SetupDatabaseTypes(appSettings, services).BuilderDb();
+
+			services.AddScoped<IExternalDependenciesService, ExternalDependenciesService>();
+			services.AddScoped<IHttpClientHelper, HttpClientHelper>();
+
 			serviceProvider = services.BuildServiceProvider();
 
 			var dependenciesService =

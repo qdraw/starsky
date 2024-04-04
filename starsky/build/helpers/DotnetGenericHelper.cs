@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using build;
 using Nuke.Common.ProjectModel;
@@ -43,16 +44,23 @@ namespace helpers
 		/// Download Exiftool and geo deps
 		/// </summary>
 		/// <param name="configuration">is Release</param>
-		/// <param name="geoCliCsproj">geo.csproj file</param>
+		/// <param name="dependenciesCliCsproj">dependenciesCli.csproj file</param>
+		/// <param name="getRuntimesWithoutGeneric">which version are downloaded</param>
 		/// <param name="noDependencies">skip this step if true (external deps)</param>
 		/// <param name="genericNetcoreFolder">genericNetcoreFolder</param>
 		public static void DownloadDependencies(Configuration configuration,
-			string geoCliCsproj, bool noDependencies,
+			string dependenciesCliCsproj, List<string> getRuntimesWithoutGeneric, bool noDependencies, 
 			string genericNetcoreFolder)
 		{
 			if ( noDependencies )
 			{
 				Log.Information("skip the flag: --no-dependencies is used");
+				return;
+			}
+
+			if ( getRuntimesWithoutGeneric.Count == 0 )
+			{
+				Log.Information("skip deps build due generic build");
 				return;
 			}
 
@@ -65,16 +73,16 @@ namespace helpers
 				Environment.SetEnvironmentVariable("app__DependenciesFolder", genericDepsFullPath);
 				Log.Information("Next: DownloadDependencies");
 				Log.Information("Run: {Path}", Path.Combine(
-					WorkingDirectory.GetSolutionParentFolder(), geoCliCsproj)
+					WorkingDirectory.GetSolutionParentFolder(), dependenciesCliCsproj)
 				);
 
 				DotNetRun(p => p
 					.SetConfiguration(configuration)
 					.EnableNoRestore()
 					.EnableNoBuild()
-					.SetApplicationArguments("--runtime linux-x64,win-x64")
+					.SetApplicationArguments($"--runtime {string.Join(',', getRuntimesWithoutGeneric)}")
 					.SetProjectFile(Path.Combine(WorkingDirectory.GetSolutionParentFolder(),
-						geoCliCsproj)));
+						dependenciesCliCsproj)));
 			}
 			catch ( Exception exception )
 			{

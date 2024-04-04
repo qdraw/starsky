@@ -28,14 +28,21 @@ public class PlatformParserTest
 	[DataRow("linux-arm", "LINUX", "Arm")]
 	[DataRow("linux-arm64", "LINUX", "Arm64")]
 	[DataRow("win-x64", "WINDOWS", "X64")]
-	[DataRow("win-x86", "WINDOWS", "X86")]
 	[DataRow("win-arm64", "WINDOWS", "Arm64")]
-	[DataRow("test", "", "")]
-	[DataRow(null, "", "")]
 	public void RuntimeIdentifierTest(string input, string expectedOs, string expectedArch)
 	{
 		var result = PlatformParser.RuntimeIdentifier(input);
 		Assert.AreEqual(expectedOs, result[0].Item1.ToString());
 		Assert.AreEqual(expectedArch, result[0].Item2.ToString());
+	}
+
+	[DataTestMethod]
+	[DataRow("test")]
+	[DataRow(null)]
+	[DataRow("win-x86")]
+	public void RuntimeIdentifierTestNoContent(string input)
+	{
+		var result = PlatformParser.RuntimeIdentifier(input);
+		Assert.AreEqual(0, result.Count);
 	}
 }
