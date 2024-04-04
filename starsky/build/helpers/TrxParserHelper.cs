@@ -8,6 +8,9 @@ using Serilog;
 
 namespace helpers;
 
+[SuppressMessage("Sonar",
+	"S6664: Reduce the number of Information logging calls within this code block",
+	Justification = "Not production code.")]
 public static class TrxParserHelper
 {
 	/// <summary>
