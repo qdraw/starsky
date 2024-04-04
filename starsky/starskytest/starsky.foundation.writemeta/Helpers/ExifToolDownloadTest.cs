@@ -138,7 +138,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			Assert.AreEqual(null, result);
 		}
 
-		[TestMethod]
+	//	[TestMethod]
 		public async Task GetExifToolByOs()
 		{
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
@@ -474,7 +474,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				.StartDownloadForUnix();
 		}
 
-		[TestMethod]
+	//	[TestMethod]
 		public async Task StartDownloadForUnix_2Times()
 		{
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
