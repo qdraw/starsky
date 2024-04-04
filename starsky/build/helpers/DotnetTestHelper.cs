@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using build;
 using Nuke.Common.IO;
@@ -9,6 +10,9 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 namespace helpers
 {
+	[SuppressMessage("Sonar",
+		"S6664: Reduce the number of Information logging calls within this code block",
+		Justification = "Not production code.")]
 	public static class DotnetTestHelper
 	{
 		static bool DirectoryExists(string path)
