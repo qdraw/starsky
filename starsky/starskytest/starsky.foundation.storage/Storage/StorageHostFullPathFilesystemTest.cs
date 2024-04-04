@@ -273,6 +273,68 @@ namespace starskytest.starsky.foundation.storage.Storage
 
 			Assert.IsFalse(hostStorage.ExistFile(filePathNewFile));
 		}
+		
+		[TestMethod]
+		public void MoveFolder()
+		{
+			var hostStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+			var beforeDirectoryFullPath = Path.Combine(new CreateAnImage().BasePath, "28934283492349_before");
+			var afterDirectoryFullPath = Path.Combine(new CreateAnImage().BasePath, "28934283492349_after");
+			hostStorage.FolderDelete(afterDirectoryFullPath);
+
+			hostStorage.CreateDirectory(beforeDirectoryFullPath);
+			hostStorage.FolderMove(beforeDirectoryFullPath, afterDirectoryFullPath);
+			
+			Assert.IsFalse(hostStorage.ExistFolder(beforeDirectoryFullPath));
+			Assert.IsTrue(hostStorage.ExistFolder(afterDirectoryFullPath));
+			
+			hostStorage.FolderDelete(beforeDirectoryFullPath);
+			hostStorage.FolderDelete(afterDirectoryFullPath);
+		}
+		
+		[TestMethod]
+		public void CopyFolder_FlatFolder()
+		{
+			var hostStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+			var beforeDirectoryFullPath = Path.Combine(new CreateAnImage().BasePath, "453984583495_before");
+			var afterDirectoryFullPath = Path.Combine(new CreateAnImage().BasePath, "453984583495_after");
+			hostStorage.FolderDelete(afterDirectoryFullPath);
+
+			hostStorage.CreateDirectory(beforeDirectoryFullPath);
+			hostStorage.FolderCopy(beforeDirectoryFullPath, afterDirectoryFullPath);
+			
+			Assert.IsTrue(hostStorage.ExistFolder(beforeDirectoryFullPath));
+			Assert.IsTrue(hostStorage.ExistFolder(afterDirectoryFullPath));
+			
+			hostStorage.FolderDelete(beforeDirectoryFullPath);
+			hostStorage.FolderDelete(afterDirectoryFullPath);
+		}
+		
+		[TestMethod]
+		public async Task CopyFolder_ChildItems()
+		{
+			var hostStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+			var beforeDirectoryFullPath = Path.Combine(new CreateAnImage().BasePath, "9057678234_before");
+			var childFullPath = Path.Combine(beforeDirectoryFullPath, "child");
+			var childFullPathFile = Path.Combine(childFullPath, "child.test");
+
+			var afterDirectoryFullPath = Path.Combine(new CreateAnImage().BasePath, "9057678234_after");
+			hostStorage.FolderDelete(afterDirectoryFullPath);
+
+			hostStorage.CreateDirectory(beforeDirectoryFullPath);
+			hostStorage.CreateDirectory(childFullPath);
+			await hostStorage.WriteStreamAsync(new MemoryStream(new byte[1]), childFullPathFile);
+
+			hostStorage.FolderCopy(beforeDirectoryFullPath, afterDirectoryFullPath);
+			
+			Assert.IsTrue(hostStorage.ExistFolder(beforeDirectoryFullPath));
+			Assert.IsTrue(hostStorage.ExistFolder(afterDirectoryFullPath));
+			Assert.IsTrue(hostStorage.ExistFile(childFullPathFile.Replace("_before", "_after")));
+			Assert.IsTrue(hostStorage.ExistFile(childFullPathFile));
+
+			hostStorage.FolderDelete(beforeDirectoryFullPath);
+			hostStorage.FolderDelete(afterDirectoryFullPath);
+		}
 
 		[TestMethod]
 		public void GetDirectoryRecursive_NotFound()

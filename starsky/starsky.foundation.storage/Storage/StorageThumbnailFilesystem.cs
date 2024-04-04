@@ -69,6 +69,11 @@ namespace starsky.foundation.storage.Storage
 			throw new System.NotImplementedException();
 		}
 
+		public void FolderCopy(string fromPath, string toPath)
+		{
+			throw new NotImplementedException();
+		}
+
 		public bool FileMove(string fromPath, string toPath)
 		{
 			var oldThumbPath = CombinePath(fromPath);

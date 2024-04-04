@@ -17,6 +17,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.storage.ArchiveFormats;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.writemeta.Helpers;
 using starsky.foundation.writemeta.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
@@ -84,7 +85,8 @@ namespace starsky.foundation.writemeta.Services
 				return false;
 			}
 
-			CreateDirectoryDependenciesFolderIfNotExists();
+			new CreateFolderIfNotExists(_logger, _appSettings)
+				.CreateDirectoryDependenciesTempFolderIfNotExists();
 
 			if ( isWindows &&
 			     ( !_hostFileSystemStorage.ExistFile(ExeExifToolWindowsFullFilePath()) ||
@@ -116,14 +118,6 @@ namespace starsky.foundation.writemeta.Services
 			return await RunChmodOnExifToolUnixExe();
 		}
 
-		private void CreateDirectoryDependenciesFolderIfNotExists()
-		{
-			if ( _hostFileSystemStorage.ExistFolder(_appSettings
-				    .DependenciesFolder) ) return;
-			_logger.LogInformation("[DownloadExifTool] Create Directory: " +
-			                       _appSettings.DependenciesFolder);
-			_hostFileSystemStorage.CreateDirectory(_appSettings.DependenciesFolder);
-		}
 
 		internal async Task<KeyValuePair<bool, string>?> DownloadCheckSums()
 		{
@@ -175,7 +169,10 @@ namespace starsky.foundation.writemeta.Services
 		internal async Task<bool> DownloadForUnix(string matchExifToolForUnixName,
 			IEnumerable<string> getChecksumsFromTextFile, bool downloadFromMirror = false)
 		{
-			if ( _hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()) ) return true;
+			if ( _hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()) )
+			{
+				return true;
+			}
 
 			var tarGzArchiveFullFilePath =
 				Path.Combine(_appSettings.TempFolder, "exiftool.tar.gz");
@@ -199,24 +196,31 @@ namespace starsky.foundation.writemeta.Services
 
 			await new TarBal(_hostFileSystemStorage).ExtractTarGz(
 				_hostFileSystemStorage.ReadStream(tarGzArchiveFullFilePath),
-				_appSettings.DependenciesFolder, CancellationToken.None);
+				_appSettings.TempFolder, CancellationToken.None);
 
 			var imageExifToolVersionFolder = _hostFileSystemStorage
-				.GetDirectories(_appSettings.DependenciesFolder)
+				.GetDirectories(_appSettings.TempFolder)
 				.FirstOrDefault(p =>
-					p.StartsWith(Path.Combine(_appSettings.DependenciesFolder, "Image-ExifTool-")));
+					p.StartsWith(Path.Combine(_appSettings.TempFolder, "Image-ExifTool-")));
 			if ( imageExifToolVersionFolder != null )
 			{
-				var exifToolUnixFolderFullFilePath =
-					Path.Combine(_appSettings.DependenciesFolder, "exiftool-unix");
-				if ( _hostFileSystemStorage.ExistFolder(exifToolUnixFolderFullFilePath) )
+				var exifToolUnixFolderFullFilePathTempFolder =
+					Path.Combine(_appSettings.TempFolder, "exiftool-unix");
+
+				if ( _hostFileSystemStorage.ExistFolder(exifToolUnixFolderFullFilePathTempFolder) )
 				{
 					_hostFileSystemStorage.FolderDelete(
-						exifToolUnixFolderFullFilePath);
+						exifToolUnixFolderFullFilePathTempFolder);
 				}
 
 				_hostFileSystemStorage.FolderMove(imageExifToolVersionFolder,
-					exifToolUnixFolderFullFilePath);
+					exifToolUnixFolderFullFilePathTempFolder);
+				
+				var exifToolUnixFolderFullFilePath =
+					Path.Combine(_appSettings.DependenciesFolder, "exiftool-unix");
+				
+				_hostFileSystemStorage.FileCopy(imageExifToolVersionFolder,
+					exifToolUnixFolderFullFilePathTempFolder);
 			}
 			else
 			{
