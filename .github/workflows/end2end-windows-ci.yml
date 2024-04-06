@@ -6,6 +6,11 @@ on:
     branches: [ master ]
     paths:
     - '.github/workflows/end2end-windows-ci.yml'
+  pull_request:
+    branches: [ master ]
+    paths:
+    - 'starsky-tools/end2end/**'
+    - '.github/workflows/end2end-windows-ci.yml'
 
 name: end2end on windows-ci
 
