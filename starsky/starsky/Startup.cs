@@ -179,7 +179,7 @@ namespace starsky
 
 			ConfigureForwardedHeaders(services);
 
-			// Application Insights
+			// Application Insights / Open Telemetry
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 			RegisterDependencies.Configure(services);

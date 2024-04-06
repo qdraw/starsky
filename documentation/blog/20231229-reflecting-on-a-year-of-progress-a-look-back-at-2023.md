@@ -72,7 +72,7 @@ The backend underwent significant upgrades, transitioning to .NET 6 SDK 6.0.406,
 
 ## Version 0.5.4 - Metrics, Security, and Code Refinement
 
-January marked a milestone with the introduction of application insights metrics, security enhancements, 
+January marked a milestone with the introduction of application insights metrics (logs already exists), security enhancements, 
 and code refinements. The backend introduced features such as thumbnail query deletion for nonexistent items and a systematic approach to handling errors.
 
 ## Version 0.5.3 - A Holistic System Upgrade

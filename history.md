@@ -43,7 +43,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.6.1 - _(Unreleased)_ - 2024-03-? {#v0.6.1}
 
-- nothing yet
+- [x] (Changed) _Front-end_  Make prev / next more contrast (PR #1511)
+- [x] (Fixed) _Docs_ Demo site is not working (PR #1486)
 
 ## version 0.6.0 - 2024-03-15 {#v0.6.0}
 
@@ -132,7 +133,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
   1339, 1338, 1378)
 - [x] (Fixed) _Back-end_ Retry in docker image for npm ci (PR #1369)
 - [x] (Fixed) _Front-end_ Clean unused exports (PR #1367)
-- [x] (Breaking change) _Back-end_ Removed Direct dependency of Application Insights (PR #1366 )
+- [x] (Breaking change) _Back-end_ Removed Direct dependency of Application Insights (PR #1366)
 - [x] (Fixed) _App_ Retry if port is used in Electron (PR #1365)
 - [x] (Fixed) _Front-end_ ColorClass filter refactor (PR #1364)
 - [x] (Fixed) _Front-end_ iOS styling issue (PR #1363)

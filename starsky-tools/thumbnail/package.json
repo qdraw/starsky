@@ -19,7 +19,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/jpeg-autorotate": "^5.0.3",
-    "axios": "^1.6.7",
+    "axios": "^1.6.8",
     "cwait": "^1.1.2",
     "dotenv": "^16.4.5",
     "jimp": "^0.22.12",
@@ -27,8 +27,8 @@
     "p-iteration": "^1.1.8"
   },
   "devDependencies": {
-    "@types/node": "^20.11.21",
+    "@types/node": "^20.11.30",
     "concurrently": "^8.2.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.4.3"
   }
 }

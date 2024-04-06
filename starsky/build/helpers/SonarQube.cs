@@ -18,6 +18,9 @@ namespace helpers
 	[SuppressMessage("Sonar",
 		"S2629: Don't use string interpolation in logging message templates",
 		Justification = "Not production code.")]
+	[SuppressMessage("Sonar",
+		"S6664: Reduce the number of Information logging calls within this code block",
+		Justification = "Not production code.")]
 	public static class SonarQube
 	{
 		public const string SonarQubePackageName = "dotnet-sonarscanner";

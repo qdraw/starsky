@@ -1,3 +1,4 @@
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Win32;
 using starsky.foundation.native.OpenApplicationNative.Helpers;
@@ -39,13 +40,21 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative.Helpers
 			}
 
 			// Ensure no keys exist before the test starts
-			Registry.CurrentUser.DeleteSubKeyTree($"Software\\Classes\\{Extension}", false);
-			Registry.CurrentUser.DeleteSubKeyTree($"Software\\Classes\\{ProgId}", false);
+			try
+			{
+				Registry.CurrentUser.DeleteSubKeyTree($@"Software\Classes\{Extension}", false);
+				Registry.CurrentUser.DeleteSubKeyTree($@"Software\Classes\{ProgId}", false);
+			}
+			catch ( IOException )
+			{
+				// Ignore if the key does not exist
+			}
 		}
 
 		[TestMethod]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", 
-			"CA1416:Validate platform compatibility", Justification = "Check if test for windows only")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability",
+			"CA1416:Validate platform compatibility",
+			Justification = "Check if test for windows only")]
 		public void EnsureAssociationsSet()
 		{
 			if ( !new AppSettings().IsWindows )
@@ -53,7 +62,7 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative.Helpers
 				Assert.Inconclusive("This test if for Windows Only");
 				return;
 			}
-			
+
 			var filePath = new CreateFakeStarskyWindowsExe().FullFilePath;
 			WindowsSetFileAssociations.EnsureAssociationsSet(
 				new FileAssociation
@@ -67,10 +76,10 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative.Helpers
 			var registryKeyPath = $@"Software\Classes\{ProgId}\shell\open\command";
 
 			using var key = Registry.CurrentUser.OpenSubKey(registryKeyPath);
-			
+
 			var valueKey = key?.GetValue(string.Empty)?.ToString();
 			var pattern = "\"([^\"]*)\"";
-			Assert.IsNotNull( valueKey );
+			Assert.IsNotNull(valueKey);
 			var match = Regex.Match(valueKey, pattern);
 			var value = match.Groups[1].Value;
 
