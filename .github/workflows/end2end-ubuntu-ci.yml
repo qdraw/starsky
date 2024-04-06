@@ -6,8 +6,8 @@ on:
     branches: [ master ]
     paths:
     - 'starsky-tools/end2end/**'
-    - '.github/workflows/end2end-*'
-    
+    - '.github/workflows/end2end-ubuntu-ci.yml'
+
 name: end2end on ubuntu-ci
 
 jobs:
