@@ -14,7 +14,6 @@ using starsky.feature.search.Interfaces;
 
 namespace starsky.feature.search.Services
 {
-
 	[Service(typeof(ISearchSuggest), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class SearchSuggestionsService : ISearchSuggest
 	{
@@ -42,8 +41,10 @@ namespace starsky.feature.search.Services
 		/// All keywords are stored lowercase
 		/// </summary>
 		/// <returns></returns>
-		[SuppressMessage("Performance", "CA1827:Do not use Count() or LongCount() when Any() can be used")]
-		[SuppressMessage("Performance", "S1155:Do not use Count() or LongCount() when Any() can be used",
+		[SuppressMessage("Performance",
+			"CA1827:Do not use Count() or LongCount() when Any() can be used")]
+		[SuppressMessage("Performance",
+			"S1155:Do not use Count() or LongCount() when Any() can be used",
 			Justification = "ANY is not supported by EF Core")]
 		public async Task<List<KeyValuePair<string, int>>> Inflate()
 		{
@@ -68,12 +69,15 @@ namespace starsky.feature.search.Services
 			{
 				if ( !exception.Message.Contains("Unknown column") )
 				{
-					_logger.LogError(exception, "mysql search suggest exception catch-ed");
+					_logger.LogError(exception,
+						$"[SearchSuggestionsService] exception catch-ed {exception.Message} {exception.StackTrace}");
 				}
+
 				return allFilesList;
 			}
 
-			var suggestions = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
+			var suggestions =
+				new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
 
 			foreach ( var tag in allFilesList )
 			{
@@ -99,8 +103,9 @@ namespace starsky.feature.search.Services
 				.OrderByDescending(p => p.Value)
 				.ToList();
 
-			var cacheExpire = suggestionsFiltered.Count != 0 ?
-				new TimeSpan(120, 0, 0) : new TimeSpan(0, 1, 0);
+			var cacheExpire = suggestionsFiltered.Count != 0
+				? new TimeSpan(120, 0, 0)
+				: new TimeSpan(0, 1, 0);
 
 			_cache.Set(nameof(SearchSuggestionsService), suggestionsFiltered,
 				cacheExpire);
@@ -118,9 +123,10 @@ namespace starsky.feature.search.Services
 				return new Dictionary<string, int>();
 
 			if ( _cache.TryGetValue(nameof(SearchSuggestionsService),
-					out var objectFileFolders) )
+				    out var objectFileFolders) )
 			{
-				return objectFileFolders as List<KeyValuePair<string, int>> ?? new List<KeyValuePair<string, int>>();
+				return objectFileFolders as List<KeyValuePair<string, int>> ??
+				       new List<KeyValuePair<string, int>>();
 			}
 
 			return await Inflate();
@@ -172,6 +178,5 @@ namespace starsky.feature.search.Services
 				"-isDirectory:false"
 			];
 		}
-
 	}
 }
