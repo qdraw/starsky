@@ -140,7 +140,7 @@ namespace starskytest.starsky.foundation.search.Services
 
 			await suggest.Inflate();
 			
-			Assert.AreEqual("mysql search suggest exception catch-ed", fakeLogger.TrackedExceptions.LastOrDefault().Item2);
+			Assert.IsTrue(fakeLogger.TrackedExceptions.LastOrDefault().Item2?.Contains("[SearchSuggestionsService] exception catch-ed"));
 		}
 
 	}
