@@ -6,6 +6,7 @@ using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.writemeta.Services.ExifToolDownloader;
 
 namespace starsky.foundation.writemeta.Services
 {
