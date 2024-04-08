@@ -1,25 +1,13 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace starsky.foundation.platform.Helpers
 {
-	public static partial class PathHelper
+	public static class PathHelper
 	{
-		/// <summary>
-		/// Regex to match a filename in a path
-		/// unescaped:
-		/// [^/]+(?=(?:\.[^.]+)?$)
-		/// pre compiled regex Regex.Match
-		/// </summary>
-		/// <returns>Regex object</returns>
-		[GeneratedRegex(
-			"[^/]+(?=(?:\\.[^.]+)?$)",
-			RegexOptions.CultureInvariant,
-			matchTimeoutMilliseconds: 300)]
-		private static partial Regex GetFileNameRegex();
-
 		/// <summary>
 		/// Return value (works for POSIX/Windows paths)
 		/// </summary>
@@ -32,8 +20,32 @@ namespace starsky.foundation.platform.Helpers
 				return string.Empty;
 			}
 
-			return GetFileNameRegex().Match(filePath).Value;
+			if ( filePath.Length >= 4095 )
+			{
+				// why? https://serverfault.com/questions/9546/filename-length-limits-on-linux
+				throw new ArgumentException("[PathHelper] FilePath over Unix limits", nameof(filePath));
+			}
+
+			var fileName = GetFileNameUnix(filePath.AsSpan());
+			return fileName.ToString();
 		}
+
+		[SuppressMessage("Style", "IDE0057:Use range operator")]
+		[SuppressMessage("ReSharper", "ReplaceSliceWithRangeIndexer")]
+		internal static ReadOnlySpan<char> GetFileNameUnix(ReadOnlySpan<char> path)
+		{
+			var length = GetPathRootUnix(path).Length;
+			var num = path.LastIndexOf('/');
+			return path.Slice(num < length ? length : num + 1);
+		}
+
+		private static ReadOnlySpan<char> GetPathRootUnix(ReadOnlySpan<char> path)
+		{
+			return !IsPathRootedUnix(path) ? [] : "/".AsSpan();
+		}
+
+		private static bool IsPathRootedUnix(ReadOnlySpan<char> path) =>
+			path.Length > 0 && path[0] == '/';
 
 		/// <summary>
 		/// Removes the latest backslash. Path.DirectorySeparatorChar
@@ -52,7 +64,7 @@ namespace starsky.foundation.platform.Helpers
 
 			// remove latest backslash
 			if ( basePath.Substring(basePath.Length - 1, 1) ==
-				 Path.DirectorySeparatorChar.ToString() )
+			     Path.DirectorySeparatorChar.ToString() )
 			{
 				basePath = basePath.Substring(0, basePath.Length - 1);
 			}
@@ -94,7 +106,7 @@ namespace starsky.foundation.platform.Helpers
 			if ( string.IsNullOrWhiteSpace(thumbnailTempFolder) ) return thumbnailTempFolder;
 
 			if ( thumbnailTempFolder.Substring(thumbnailTempFolder.Length - 1,
-					1) != Path.DirectorySeparatorChar.ToString() )
+				    1) != Path.DirectorySeparatorChar.ToString() )
 			{
 				thumbnailTempFolder += Path.DirectorySeparatorChar.ToString();
 			}

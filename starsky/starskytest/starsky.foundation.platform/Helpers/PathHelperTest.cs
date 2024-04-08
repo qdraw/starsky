@@ -1,50 +1,49 @@
+using System;
 using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
-using starsky.foundation.storage.Helpers;
-using starskytest.FakeCreateAn;
 
 namespace starskytest.starsky.foundation.platform.Helpers;
 
 [TestClass]
 public class PathHelperTests
 {
-	[TestMethod]
-	public void GetFileName_ReturnsValidFileName()
+	[DataTestMethod] // [Theory]
+	[DataRow("path/to/file.txt", "file.txt")]
+	[DataRow("file.txt", "file.txt")]
+	[DataRow("/file.txt", "file.txt")]
+	[DataRow("/test/file.txt", "file.txt")]
+	[DataRow("/test/file/", "")]
+	[DataRow("/test/file", "file")] // no backslash
+	public void GetFileName_ReturnsValidFileName(string input, string expectedFileName)
 	{
-		// Arrange
-		const string filePath = "path/to/file.txt";
-		const string expectedFileName = "file.txt";
-
 		// Act
-		var actualFileName = PathHelper.GetFileName(filePath);
+		var actualFileName = PathHelper.GetFileName(input);
+
+		// Assert
+		Assert.AreEqual(expectedFileName, actualFileName);
+	}
+	
+	[DataTestMethod] // [Theory]
+	[DataRow("path/to/file.txt", "file.txt")]
+	[DataRow("/test/file/", "")]
+	[DataRow("/test/file", "file")] // no backslash
+	[DataRow("", "")]
+	public void GetFileNameUnix_ReturnsValidFileName(string input, string expectedFileName)
+	{
+		// Act
+		var actualFileName = PathHelper.GetFileNameUnix(input).ToString();
 
 		// Assert
 		Assert.AreEqual(expectedFileName, actualFileName);
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(RegexMatchTimeoutException))]
-	public async Task GetFileName_ReturnsFileName_WithMaliciousInput_UnixOnly()
+	[ExpectedException(typeof(ArgumentException))]
+	public void GetFileName_ReturnsFileName_WithMaliciousInput()
 	{
 		// Act and Assert
-		var test = await
-			StreamToStringHelper.StreamToStringAsync(
-				new MemoryStream(CreateAnImage.Bytes.ToArray()));
-		var test2 = await
-			StreamToStringHelper.StreamToStringAsync(
-				new MemoryStream(CreateAnImageA6600.Bytes.ToArray()));
-
-		var result = string.Empty;
-		for ( var i = 0; i < 200; i++ )
-		{
-			result += test + test2 + test + test;
-		}
-
-		PathHelper.GetFileName(result);
+		PathHelper.GetFileName(TestContentVeryLongString);
 	}
 
 	[TestMethod]
@@ -104,11 +103,11 @@ public class PathHelperTests
 	public void RemoveLatestSlash_RemovesLatestSlash_WhenSlashExists()
 	{
 		// Arrange
-		string basePath = "/path/to/directory/";
-		string expectedPath = "/path/to/directory";
+		const string basePath = "/path/to/directory/";
+		const string expectedPath = "/path/to/directory";
 
 		// Act
-		string actualPath = PathHelper.RemoveLatestSlash(basePath);
+		var actualPath = PathHelper.RemoveLatestSlash(basePath);
 
 		// Assert
 		Assert.AreEqual(expectedPath, actualPath);
@@ -118,10 +117,10 @@ public class PathHelperTests
 	public void RemoveLatestSlash_DoesNotRemoveSlash_WhenSlashDoesNotExist()
 	{
 		// Arrange
-		string basePath = "/path/to/directory";
+		const string basePath = "/path/to/directory";
 
 		// Act
-		string actualPath = PathHelper.RemoveLatestSlash(basePath);
+		var actualPath = PathHelper.RemoveLatestSlash(basePath);
 
 		// Assert
 		Assert.AreEqual(basePath, actualPath);
@@ -131,7 +130,7 @@ public class PathHelperTests
 	public void RemoveLatestSlash_ReturnsEmptyString_WhenBasePathIsNull()
 	{
 		// Act
-		string actualPath = PathHelper.RemoveLatestSlash(null!);
+		var actualPath = PathHelper.RemoveLatestSlash(null!);
 
 		// Assert
 		Assert.AreEqual(string.Empty, actualPath);
@@ -141,10 +140,10 @@ public class PathHelperTests
 	public void RemoveLatestSlash_ReturnsEmptyString_WhenBasePathIsEmpty()
 	{
 		// Arrange
-		string basePath = string.Empty;
+		var basePath = string.Empty;
 
 		// Act
-		string actualPath = PathHelper.RemoveLatestSlash(basePath);
+		var actualPath = PathHelper.RemoveLatestSlash(basePath);
 
 		// Assert
 		Assert.AreEqual(string.Empty, actualPath);
@@ -154,10 +153,10 @@ public class PathHelperTests
 	public void RemoveLatestSlash_ReturnsEmptyString_WhenBasePathIsRoot()
 	{
 		// Arrange
-		string basePath = "/";
+		const string basePath = "/";
 
 		// Act
-		string actualPath = PathHelper.RemoveLatestSlash(basePath);
+		var actualPath = PathHelper.RemoveLatestSlash(basePath);
 
 		// Assert
 		Assert.AreEqual(string.Empty, actualPath);
@@ -263,7 +262,7 @@ public class PathHelperTests
 		const string expected = "/test/subfolder/file.txt";
 
 		// Act
-		string result = PathHelper.PrefixDbSlash(subPath);
+		var result = PathHelper.PrefixDbSlash(subPath);
 
 		// Assert
 		Assert.AreEqual(expected, result);
@@ -273,10 +272,10 @@ public class PathHelperTests
 	public void TestRemovePrefixDbSlash_WithLeadingSlash()
 	{
 		// Arrange
-		string subPath = "/path/to/file";
+		const string subPath = "/path/to/file";
 
 		// Act
-		string result = PathHelper.RemovePrefixDbSlash(subPath);
+		var result = PathHelper.RemovePrefixDbSlash(subPath);
 
 		// Assert
 		Assert.AreEqual("path/to/file", result);
@@ -286,10 +285,10 @@ public class PathHelperTests
 	public void TestRemovePrefixDbSlash_WithoutLeadingSlash()
 	{
 		// Arrange
-		string subPath = "path/to/file";
+		const string subPath = "path/to/file";
 
 		// Act
-		string result = PathHelper.RemovePrefixDbSlash(subPath);
+		var result = PathHelper.RemovePrefixDbSlash(subPath);
 
 		// Assert
 		Assert.AreEqual("path/to/file", result);
@@ -302,7 +301,7 @@ public class PathHelperTests
 		const string subPath = "/";
 
 		// Act
-		string result = PathHelper.RemovePrefixDbSlash(subPath);
+		var result = PathHelper.RemovePrefixDbSlash(subPath);
 
 		// Assert
 		Assert.AreEqual(string.Empty, result);
@@ -361,4 +360,65 @@ public class PathHelperTests
 		Assert.AreEqual("/path/to/file1", result[0]);
 		Assert.AreEqual("/path/to/file2", result[1]);
 	}
+
+	private const string TestContentVeryLongString =
+		"this-is-a-really-long-slug-that-goes-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-and-on-and-on-and-on-and-on-and-on-and-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-and-on-and-and-on-and-on-and-on-and-on-and-and-on-and-on-and-on-and-" +
+		"and-on-and-on-and-on-and-on-and-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-and-on-and-on-and-on-and-on-" +
+		"and-and-on-and-on-and-on-and-on-and-on-and-on-and-and-on-and-on-and-on-and-and-on-" +
+		"and-on-and-on-and-and-on-and-on-and-on-and-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and" +
+		"-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on" +
+		"-and-on-and-on-and-on-and-on-and-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-and-on-and-and-on-and-on-and-on-and-and-on-and-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-and-on-and" +
+		"-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and" +
+		"-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and" +
+		"-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and" +
+		"-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and";
 }
