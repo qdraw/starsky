@@ -1,25 +1,13 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace starsky.foundation.platform.Helpers
 {
-	public static partial class PathHelper
+	public static class PathHelper
 	{
-		/// <summary>
-		/// Regex to match a filename in a path
-		/// unescaped:
-		/// [^/]+(?=(?:\.[^.]+)?$)
-		/// pre compiled regex Regex.Match
-		/// </summary>
-		/// <returns>Regex object</returns>
-		[GeneratedRegex(
-			"[^/]+(?=(?:\\.[^.]+)?$)",
-			RegexOptions.CultureInvariant,
-			matchTimeoutMilliseconds: 1000)]
-		private static partial Regex GetFileNameRegex();
-
 		/// <summary>
 		/// Return value (works for POSIX/Windows paths)
 		/// </summary>
@@ -32,80 +20,32 @@ namespace starsky.foundation.platform.Helpers
 				return string.Empty;
 			}
 
-			return GetFileNameRegex().Match(filePath).Value;
+			if ( filePath.Length >= 4095 )
+			{
+				// why? https://serverfault.com/questions/9546/filename-length-limits-on-linux
+				throw new ArgumentException("[PathHelper] FilePath over Unix limits", nameof(filePath));
+			}
+
+			var fileName = GetFileNameUnix(filePath.AsSpan());
+			return fileName.ToString();
 		}
 
-		private static string? GetFileNameHelper(string input)
+		[SuppressMessage("Style", "IDE0057:Use range operator")]
+		[SuppressMessage("ReSharper", "ReplaceSliceWithRangeIndexer")]
+		private static ReadOnlySpan<char> GetFileNameUnix(ReadOnlySpan<char> path)
 		{
-			      // Initialize variables to store the result
-        string result = "";
-        bool isValid = true;
-
-        // Define variables to keep track of the current position and length of the match
-        int startPos = 0;
-        int matchLength = 0;
-
-        // Iterate over the characters in the input string
-        for (int i = 0; i < input.Length; i++)
-        {
-            // If the current character is '/', it means the end of a potential match
-            if (input[i] == '/')
-            {
-                // Extract the potential match substring
-                string potentialMatch = input.Substring(startPos, matchLength);
-
-                // Check if the potential match matches the pattern [^/]+(?=(?:\.[^.]+)?$)
-                if (!potentialMatch.Contains("/") && (potentialMatch.Contains(".") || potentialMatch.EndsWith(".")))
-                {
-                    // Add the potential match to the result
-                    result += potentialMatch + "/";
-
-                    // Update the start position for the next potential match
-                    startPos = i + 1;
-                    matchLength = 0;
-                }
-                else
-                {
-                    // If the potential match does not match the pattern, set isValid to false and break the loop
-                    isValid = false;
-                    break;
-                }
-            }
-            else
-            {
-                // Increment the length of the potential match
-                matchLength++;
-            }
-        }
-
-        // Handle the last potential match after the loop
-        if (matchLength > 0)
-        {
-            string lastPotentialMatch = input.Substring(startPos, matchLength);
-            if (!lastPotentialMatch.Contains("/") && (lastPotentialMatch.Contains(".") || lastPotentialMatch.EndsWith(".")))
-            {
-                result += lastPotentialMatch;
-            }
-            else
-            {
-                isValid = false;
-            }
-        }
-
-        // If isValid is true and result is not empty, remove the trailing '/'
-        if (isValid && result.Length > 0)
-        {
-            result = result.TrimEnd('/');
-        }
-        else
-        {
-            // If the input string does not match the pattern, set result to null
-            result = null;
-        }
-
-        // Output the result
-        return result;
+			var length = GetPathRootUnix(path).Length;
+			var num = path.LastIndexOf('/');
+			return path.Slice(num < length ? length : num + 1);
 		}
+
+		private static ReadOnlySpan<char> GetPathRootUnix(ReadOnlySpan<char> path)
+		{
+			return !IsPathRootedUnix(path) ? [] : "/".AsSpan();
+		}
+
+		private static bool IsPathRootedUnix(ReadOnlySpan<char> path) =>
+			path.Length > 0 && path[0] == '/';
 
 		/// <summary>
 		/// Removes the latest backslash. Path.DirectorySeparatorChar
@@ -124,7 +64,7 @@ namespace starsky.foundation.platform.Helpers
 
 			// remove latest backslash
 			if ( basePath.Substring(basePath.Length - 1, 1) ==
-				 Path.DirectorySeparatorChar.ToString() )
+			     Path.DirectorySeparatorChar.ToString() )
 			{
 				basePath = basePath.Substring(0, basePath.Length - 1);
 			}
@@ -166,7 +106,7 @@ namespace starsky.foundation.platform.Helpers
 			if ( string.IsNullOrWhiteSpace(thumbnailTempFolder) ) return thumbnailTempFolder;
 
 			if ( thumbnailTempFolder.Substring(thumbnailTempFolder.Length - 1,
-					1) != Path.DirectorySeparatorChar.ToString() )
+				    1) != Path.DirectorySeparatorChar.ToString() )
 			{
 				thumbnailTempFolder += Path.DirectorySeparatorChar.ToString();
 			}
