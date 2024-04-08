@@ -32,7 +32,7 @@ namespace starsky.foundation.platform.Helpers
 
 		[SuppressMessage("Style", "IDE0057:Use range operator")]
 		[SuppressMessage("ReSharper", "ReplaceSliceWithRangeIndexer")]
-		private static ReadOnlySpan<char> GetFileNameUnix(ReadOnlySpan<char> path)
+		internal static ReadOnlySpan<char> GetFileNameUnix(ReadOnlySpan<char> path)
 		{
 			var length = GetPathRootUnix(path).Length;
 			var num = path.LastIndexOf('/');

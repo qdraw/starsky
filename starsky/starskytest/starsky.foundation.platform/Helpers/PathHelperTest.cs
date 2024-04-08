@@ -23,6 +23,20 @@ public class PathHelperTests
 		// Assert
 		Assert.AreEqual(expectedFileName, actualFileName);
 	}
+	
+	[DataTestMethod] // [Theory]
+	[DataRow("path/to/file.txt", "file.txt")]
+	[DataRow("/test/file/", "")]
+	[DataRow("/test/file", "file")] // no backslash
+	[DataRow("", "")]
+	public void GetFileNameUnix_ReturnsValidFileName(string input, string expectedFileName)
+	{
+		// Act
+		var actualFileName = PathHelper.GetFileNameUnix(input).ToString();
+
+		// Assert
+		Assert.AreEqual(expectedFileName, actualFileName);
+	}
 
 	[TestMethod]
 	[ExpectedException(typeof(ArgumentException))]
