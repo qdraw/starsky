@@ -1,5 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 
+// GlobalSuppressions.cs
+
 // S1309: Do not suppress issues.
 [assembly:
 	SuppressMessage("Sonar", "S1309",

@@ -2,7 +2,12 @@ on:
   workflow_dispatch:
   schedule:
     - cron:  '45 0 * * *'
-    
+  pull_request:
+    branches: [ master ]
+    paths:
+    - 'starsky-tools/end2end/**'
+    - '.github/workflows/end2end-ubuntu-ci.yml'
+
 name: end2end on ubuntu-ci
 
 jobs:

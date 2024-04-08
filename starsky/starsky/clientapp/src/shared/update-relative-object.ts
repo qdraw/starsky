@@ -34,7 +34,7 @@ export class UpdateRelativeObject {
           setRelativeObjects(result.data);
           resolve(result.data);
         })
-        .catch((err) => {
+        .catch((err: Error) => {
           console.error(err);
           rejects(err);
         });
