@@ -46,6 +46,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Front-end_  Make prev / next more contrast (PR #1511)
 - [x] (Fixed) _Docs_ Demo site is not working (PR #1486)
 - [x] (Fixed) _Back-end_  GetFileNameRegex refactor to avoid timeouts (PR #1515)
+- [x] (Changed) Back-end Upgrade to .NET 8 - SDK 8.0.204 (Runtime: 8.0.4) (PR #1541)
 
 ## version 0.6.0 - 2024-03-15 {#v0.6.0}
 
