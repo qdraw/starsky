@@ -69,10 +69,15 @@ public class OpenApplicationNativeServiceTest
 			Registry.CurrentUser.DeleteSubKeyTree($"Software\\Classes\\{Extension}", false);
 			Registry.CurrentUser.DeleteSubKeyTree($"Software\\Classes\\{ProgramId}", false);
 		}
-		catch ( IOException )
+		catch ( IOException exception)
 		{
-			// do nothing
+			Console.WriteLine($"[CleanSetup] Skip due IOException {exception.Message}");
 		}
+		catch ( UnauthorizedAccessException exception)
+		{
+			Console.WriteLine($"[CleanSetup] Skip due UnauthorizedAccessException {exception.Message}");
+		}
+			
 	}
 
 	[TestMethod]
