@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace starsky.foundation.platform.Helpers
 {
-	public static class ExtensionRolesHelper
+	public static partial class ExtensionRolesHelper
 	{
 		/// <summary>
 		/// Xmp sidecar file
@@ -88,12 +88,8 @@ namespace starsky.foundation.platform.Helpers
 		public static ImageFormat MapFileTypesToExtension(string filename)
 		{
 			if ( string.IsNullOrEmpty(filename) ) return ImageFormat.unknown;
-
-			// without escaped values:
-			//		\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$
-			var matchCollection = new Regex("\\.([0-9a-z]+)(?=[?#])|(\\.)(?:[\\w]+)$",
-				RegexOptions.None, TimeSpan.FromMilliseconds(100)
-			).Matches(filename);
+			
+			var matchCollection = FileExtensionRegex().Matches(filename);
 			if ( matchCollection.Count == 0 )
 			{
 				return ImageFormat.unknown;
@@ -280,11 +276,8 @@ namespace starsky.foundation.platform.Helpers
 		private static bool IsExtensionForce(string? filename, List<string> checkThisList)
 		{
 			if ( string.IsNullOrEmpty(filename) ) return false;
-
-			// without escaped values:
-			//		\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$
-			var matchCollection = new Regex("\\.([0-9a-z]+)(?=[?#])|(\\.)(?:[\\w]+)$",
-				RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(200)).Matches(filename);
+			
+			var matchCollection = FileExtensionRegex().Matches(filename);
 
 			if ( matchCollection.Count == 0 ) return false;
 			foreach ( var matchValue in matchCollection.Select(p => p.Value) )
@@ -316,10 +309,7 @@ namespace starsky.foundation.platform.Helpers
 				return string.Empty;
 			}
 
-			// without escaped values:
-			//		\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$
-			var matchCollection = new Regex("\\.([0-9a-z]+)(?=[?#])|(\\.)(?:[\\w]+)$",
-				RegexOptions.None, TimeSpan.FromMilliseconds(100)).Matches(filename);
+			var matchCollection = FileExtensionRegex().Matches(filename);
 
 			if ( matchCollection.Count == 0 ) return string.Empty;
 			foreach ( Match match in matchCollection )
@@ -339,6 +329,18 @@ namespace starsky.foundation.platform.Helpers
 
 			return string.Empty;
 		}
+		
+		/// <summary>
+		/// Check for file extensions
+		/// without escaped values:
+		///		\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$
+		/// </summary>
+		/// <returns>Regex object</returns>
+		[GeneratedRegex(
+			@"\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$",
+			RegexOptions.CultureInvariant | RegexOptions.IgnoreCase,
+			matchTimeoutMilliseconds: 500)]
+		private static partial Regex FileExtensionRegex();
 
 		/// <summary>
 		/// ImageFormat based on first bytes
