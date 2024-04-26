@@ -506,9 +506,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public void SolveConcurrencyException_should_callDelegate()
 		{
 			SolveConcurrency.SolveConcurrencyException(new FileIndexItem(),
-#pragma warning disable 8625
-				new FakePropertyValues(null), new FakePropertyValues(null),
-#pragma warning restore 8625
+				new FakePropertyValues(null!), new FakePropertyValues(null!),
 				"", _ => IsWrittenConcurrencyException = true);
 			
 			Assert.IsTrue(IsCalledDbUpdateConcurrency);
@@ -519,13 +517,10 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public void Query_UpdateItem_NotSupportedException()
 		{
 			SolveConcurrency.SolveConcurrencyException(null!,
-#pragma warning disable 8625
-				new FakePropertyValues(null), new FakePropertyValues(null),
-#pragma warning restore 8625
+				new FakePropertyValues(null!), new FakePropertyValues(null!),
 				"", _ => IsWrittenConcurrencyException = true);
 			// expect error
 		}
-		
 		
 		private class AppDbInvalidOperationException : ApplicationDbContext
 		{
@@ -722,7 +717,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			};
 			
 			await fakeQuery.AddRangeAsync(fileIndexItemList);
-			
+			await fakeQuery.AddRangeAsync(fileIndexItemList);
+
 			Assert.IsTrue(IsCalledDbUpdateConcurrency);
 		}
 		
