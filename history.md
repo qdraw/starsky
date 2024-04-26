@@ -49,6 +49,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) Back-end Upgrade to .NET 8 - SDK 8.0.204 (Runtime: 8.0.4) (PR #1541)
 - [x] (Fixed) _Back-end_ Unhandled exception DbUpdateException (PR #1558 Issue #1489)
 - [x] (Fixed) _Back-end_ Regex timeout IsExtensionForce (PR #1542 Issue #1537)
+- [x] (Fixed) _Back-end_ Concurrency conflicts bug (PR #1565 Issue #1564)
 
 ## version 0.6.0 - 2024-03-15 {#v0.6.0}
 
