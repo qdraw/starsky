@@ -29,6 +29,6 @@
   "devDependencies": {
     "@types/node": "^20.12.3",
     "concurrently": "^8.2.2",
-    "typescript": "^5.4.3"
+    "typescript": "^5.4.5"
   }
 }
