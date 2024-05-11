@@ -24,7 +24,7 @@
     "update:checkupdates": "npx  --yes npm-check-updates -u && npm install"
   },
   "dependencies": {
-    "core-js": "^3.36.1",
+    "core-js": "^3.37.0",
     "leaflet": "^1.9.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
