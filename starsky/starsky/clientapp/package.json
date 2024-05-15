@@ -31,7 +31,7 @@
     "react-router-dom": "^6.23.1"
   },
   "devDependencies": {
-    "@storybook/addon-essentials": "^7.6.19",
+    "@storybook/addon-essentials": "^8.0.0",
     "@storybook/addon-interactions": "^7.6.19",
     "@storybook/addon-links": "^7.6.19",
     "@storybook/builder-vite": "^7.6.19",
