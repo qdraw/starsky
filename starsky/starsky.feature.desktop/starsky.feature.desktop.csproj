@@ -4,7 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{ca693c59-e50a-4dc6-a2ba-fe7e0caf417a}</ProjectGuid>
-        <Version>0.6.0</Version>
+        <Version>0.6.1</Version>
         <Nullable>enable</Nullable>
         <RootNamespace>starsky.feature.desktop</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
