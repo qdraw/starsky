@@ -71,7 +71,7 @@ export async function LocationIsRemoteCallback(event: Electron.IpcMainEvent, arg
 }
 
 export function AppVersionCallback(event: Electron.IpcMainEvent) {
-  const appVersion = app.getVersion().match(/^[0-9]+\.[0-9]+/gi);
+  const appVersion = app.getVersion().match(/^\d+\.\d+/gi);
 
   event.reply(AppVersionIpcKey, appVersion);
 }
