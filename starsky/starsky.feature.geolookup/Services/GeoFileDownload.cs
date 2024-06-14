@@ -39,7 +39,7 @@ namespace starsky.feature.geolookup.Services
 			RemoveFailedDownload();
 			CreateDependenciesFolder();
 			const string https = "https://";
-			const string admin1codesasciiTxt = "admin1CodesASCII.txt";
+			const string admin1CodesasciiTxt = "admin1CodesASCII.txt";
 
 			if ( !_hostStorage.ExistFile(
 				    Path.Combine(_appSettings.DependenciesFolder, CountryName + ".txt")) )
@@ -59,18 +59,18 @@ namespace starsky.feature.geolookup.Services
 			}
 
 			if ( !_hostStorage.ExistFile(
-				    Path.Combine(_appSettings.DependenciesFolder, admin1codesasciiTxt)) )
+				    Path.Combine(_appSettings.DependenciesFolder, admin1CodesasciiTxt)) )
 			{
 				// code for the second administrative division,
 				// a county in the US, see file admin2Codes.txt; varchar(80)
 				var outputFile = Path.Combine(_appSettings.DependenciesFolder,
-					admin1codesasciiTxt);
+					admin1CodesasciiTxt);
 				var baseResult = await _httpClientHelper.Download(https +
-					BaseUrl + admin1codesasciiTxt, outputFile);
+					BaseUrl + admin1CodesasciiTxt, outputFile);
 				if ( !baseResult )
 				{
 					await _httpClientHelper.Download(https +
-					                                 MirrorUrl + admin1codesasciiTxt, outputFile);
+					                                 MirrorUrl + admin1CodesasciiTxt, outputFile);
 				}
 			}
 		}

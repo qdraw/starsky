@@ -130,6 +130,11 @@ public class FakeIStorage : IStorage
 		_outputSubPathFolders[indexOfFolders] = toPath;
 	}
 
+	public void FolderCopy(string fromPath, string toPath)
+	{
+		throw new NotImplementedException();
+	}
+
 	public bool FileMove(string fromPath, string toPath)
 	{
 		var existOldFile = ExistFile(fromPath);

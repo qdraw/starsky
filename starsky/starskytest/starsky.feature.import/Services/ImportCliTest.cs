@@ -22,7 +22,7 @@ namespace starskytest.starsky.feature.import.Services
 					new FakeIImport(new FakeSelectorStorage()),
 					new AppSettings { TempFolder = "/___not___found_" },
 					fakeConsole, new FakeIWebLogger(), fakeExifToolDownload)
-				.Importer(new List<string>().ToArray());
+				.Importer([]);
 
 			Assert.IsTrue(fakeExifToolDownload.Called.Count != 0);
 		}

@@ -320,6 +320,39 @@ namespace starsky.foundation.storage.Storage
 			Directory.Move(fromPath, toPath);
 		}
 
+		public void FolderCopy(string fromPath, string toPath)
+		{
+			var dirs = new Stack<string>();
+			dirs.Push(fromPath);
+
+			while (dirs.Count > 0)
+			{
+				var currentDir = dirs.Pop();
+				var destinationSubDirectory = currentDir.Replace(fromPath, toPath);
+
+				if (!Directory.Exists(destinationSubDirectory))
+				{
+					Directory.CreateDirectory(destinationSubDirectory);
+				}
+
+				var files = Directory.GetFiles(currentDir);
+
+				foreach (var file in files)
+				{
+					var fileName = Path.GetFileName(file);
+					var destinationFile = Path.Combine(destinationSubDirectory, fileName);
+					File.Copy(file, destinationFile);
+				}
+
+				var subdirectories = Directory.GetDirectories(currentDir);
+
+				foreach (var subDirectory in subdirectories)
+				{
+					dirs.Push(subDirectory);
+				}
+			}
+		}
+
 		/// <summary>
 		/// Move file on real filesystem
 		/// </summary>

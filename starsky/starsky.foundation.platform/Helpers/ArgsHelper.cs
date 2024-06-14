@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -504,7 +505,7 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		private void ShowVersions()
 		{
-			var version = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
+			var version = RuntimeInformation.FrameworkDescription;
 			_console.WriteLine($".NET Version - {version}");
 			_console.WriteLine($"Starsky Version - {_appSettings.AppVersion} " +
 			                   "- build at: " +
@@ -634,6 +635,32 @@ namespace starsky.foundation.platform.Helpers
 			}
 
 			return outputMode;
+		}
+
+		/// <summary>
+		/// Get input runtime
+		/// </summary>
+		/// <param name="args">arg list</param>
+		/// <returns>path</returns>
+		public static List<(OSPlatform?, Architecture?)> GetRuntime(IReadOnlyList<string?> args)
+		{
+			var outputModeList = new List<(OSPlatform?, Architecture?)>();
+			for ( var arg = 0; arg < args.Count; arg++ )
+			{
+				if ( args[arg]?
+					     .Equals("--runtime",
+						     StringComparison.CurrentCultureIgnoreCase) != true ||
+				     arg + 1 == args.Count )
+				{
+					continue;
+				}
+
+				var runtimeItem = args[arg + 1];
+				var parsedRuntimeList = PlatformParser.RuntimeIdentifier(runtimeItem);
+				outputModeList.AddRange(parsedRuntimeList);
+			}
+
+			return outputModeList;
 		}
 
 		/// <summary>

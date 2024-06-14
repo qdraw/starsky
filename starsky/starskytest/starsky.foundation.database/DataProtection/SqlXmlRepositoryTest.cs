@@ -22,7 +22,7 @@ public class SqlXmlRepositoryTest
 	private readonly SqlXmlRepository _repository;
 	private readonly ApplicationDbContext _dbContext;
 
-	private IServiceScopeFactory CreateNewScope()
+	private static IServiceScopeFactory CreateNewScope()
 	{
 		var services = new ServiceCollection();
 		services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase(nameof(SqlXmlRepositoryTest)));
