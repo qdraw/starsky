@@ -58,7 +58,7 @@ jobs:
 
       - name: Build and push master
         id: docker_build_push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         if: github.event_name != 'pull_request'
         with:
           context: ./starsky
@@ -70,7 +70,7 @@ jobs:
           
       - name: Build and don't push
         id: docker_build_pull_request
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         if: github.event_name == 'pull_request'
         with:
           context: ./starsky
