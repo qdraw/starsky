@@ -49,7 +49,7 @@
   "OpenTelemetry.Instrumentation.EntityFrameworkCore 1.0.0-beta.11",
   "OpenTelemetry.Instrumentation.Runtime 1.8.0",
   "System.Diagnostics.DiagnosticSource 8.0.1",
-  "System.Text.Json 8.0.3",
+  "System.Text.Json 8.0.4",
   "Microsoft.AspNetCore.Identity.EntityFrameworkCore 8.0.7",
   "Microsoft.Extensions.Hosting 8.0.0",
   "Microsoft.NET.Test.Sdk 17.9.0",
