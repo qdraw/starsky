@@ -136,10 +136,10 @@ namespace starsky.foundation.writemeta.Services
 
 		internal static string GetUnixTarGzFromChecksum(string checksumsValue)
 		{
-			// (?<=SHA1\()Image-ExifTool-[\d\.]+\.zip
-			var regexExifToolForWindowsName = new Regex(@"(?<=SHA1\()Image-ExifTool-[0-9\.]+\.tar.gz",
+			// (?<=SHA1\()Image-ExifTool-[\d\.]+\.tar.gz
+			var regexExifToolForUnixName = new Regex(@"(?<=SHA1\()Image-ExifTool-[0-9\.]+\.tar.gz",
 				RegexOptions.None, TimeSpan.FromMilliseconds(100));
-			return regexExifToolForWindowsName.Match(checksumsValue).Value;
+			return regexExifToolForUnixName.Match(checksumsValue).Value;
 		}
 
 		private string ExeExifToolUnixFullFilePath()
@@ -234,8 +234,8 @@ namespace starsky.foundation.writemeta.Services
 
 		internal static string GetWindowsZipFromChecksum(string checksumsValue)
 		{
-			// (?<=SHA1\()exiftool-[\d\.]+\.zip
-			var regexExifToolForWindowsName = new Regex(@"(?<=SHA1\()exiftool-[0-9\.]+\.zip",
+			// (?<=SHA1\()exiftool-[\d\.]+_64\.zip
+			var regexExifToolForWindowsName = new Regex(@"(?<=SHA1\()exiftool-[0-9\.]+_64\.zip",
 				RegexOptions.None, TimeSpan.FromMilliseconds(100));
 			return regexExifToolForWindowsName.Match(checksumsValue).Value;
 		}
@@ -246,7 +246,7 @@ namespace starsky.foundation.writemeta.Services
 		/// <param name="checksumsValue">input file: see test for example</param>
 		/// <param name="max">max number of SHA1 results</param>
 		/// <returns></returns>
-		internal string[] GetChecksumsFromTextFile(string checksumsValue, int max = 8)
+		internal string[] GetChecksumsFromTextFile(string checksumsValue, int max = 13)
 		{
 			var regexExifToolForWindowsName = new Regex("[a-z0-9]{40}",
 				RegexOptions.None, TimeSpan.FromMilliseconds(100));
@@ -256,7 +256,7 @@ namespace starsky.foundation.writemeta.Services
 			if ( results.Length < max ) return results;
 
 			_logger.LogError($"More than {max} checksums found, this is not expected, code stops now");
-			return Array.Empty<string>();
+			return [];
 		}
 
 		/// <summary>

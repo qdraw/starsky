@@ -15,7 +15,7 @@ namespace starskytest.FakeCreateAn
 			"w0T7vkp19bidTXzafTjL2sfn8Et+h/8m9/yXevoL3P+2s3j+ueu6jR92/v/o/V/dqV/0onrSrehON6YH6krT2d9" +
 			"Q+e7kAAAAAAAAAAAAAAAAAAAAoJAXspDxGwAoAAA=";
 
-		public static readonly ImmutableArray<byte> Bytes = Base64Helper.TryParse(ImageExifToolTarGzUnix).ToImmutableArray();
+		public static readonly ImmutableArray<byte> Bytes = [..Base64Helper.TryParse(ImageExifToolTarGzUnix)];
 
 		public const string Sha1 = "b386a6849ed5f911085cc56f37d20f127162b21c";
 	}

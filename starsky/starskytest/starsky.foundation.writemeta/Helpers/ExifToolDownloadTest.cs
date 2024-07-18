@@ -30,8 +30,13 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		/// shasum -a 1 file.zip
 		/// </summary>
 		private static readonly string ExampleCheckSum =
+			"SHA256(Image-ExifTool-12.89.tar.gz)= f7d4fa161b3e5f82d8a6bba41cf022c4b325d93b5c14c46ef9feefd3b73d1b86\n" +
+			"SHA256(exiftool-12.89_32.zip)= 424a5d1ac442c804f5cc5cf6e37c889b6097acecffc5778a42d7dbabd4df5558\n" +
+			"SHA256(exiftool-12.89_64.zip)= 344dd534c5cfcb46658151774a0762eff59501f84a26057a68dd48019bed789e\n" +
+			"SHA256(ExifTool-12.89.pkg)= 23c7559b89d287ac2192bb874f79d462649ee4e6150504b7be16760a5fac6785\n" +
 			"SHA1(Image-ExifTool-11.99.tar.gz)= " + CreateAnExifToolTarGz.Sha1 + "\n" +
-			"SHA1(exiftool-11.99.zip)= " + CreateAnExifToolWindows.Sha1 + "\n" +
+			"SHA1(exiftool-12.89_32.zip)= abe7f9189f281123fba95c22225c82b21a3fcb35\n" +
+			"SHA1(exiftool-11.99_64.zip)= " + CreateAnExifToolWindows.Sha1 + "\n" +
 			"SHA1(ExifTool-11.99.dmg)= 3d30a4846eab278387be51b91ef4121916375ded\n" +
 			"MD5 (Image-ExifTool-11.99.tar.gz) = 06b97602e0d71dc413863a905708f0c9\n" +
 			"MD5 (exiftool-11.99.zip) = 19b53eede582e809c115b69e83dbac5e\n" +
@@ -78,7 +83,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		public void GetWindowsZipFromChecksum()
 		{
 			var result = ExifToolDownload.GetWindowsZipFromChecksum(ExampleCheckSum);
-			Assert.AreEqual("exiftool-11.99.zip", result);
+			Assert.AreEqual("exiftool-11.99_64.zip", result);
 		}
 
 		[TestMethod]
@@ -145,7 +150,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			{
 				{ "https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum) },
 				{
-					"https://exiftool.org/exiftool-11.99.zip",
+					"https://exiftool.org/exiftool-11.99_64.zip",
 					new ByteArrayContent(CreateAnExifToolWindows.Bytes.ToArray())
 				},
 				{
@@ -412,8 +417,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			{
 				{ "https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum) },
 				{
-					"https://exiftool.org/exiftool-11.99.zip",
-					new ByteArrayContent(CreateAnExifToolWindows.Bytes.ToArray())
+					"https://exiftool.org/exiftool-11.99_64.zip",
+					new ByteArrayContent([.. CreateAnExifToolWindows.Bytes])
 				}
 			});
 
@@ -430,7 +435,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			{
 				{ "https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum) },
 				{
-					"https://exiftool.org/exiftool-11.99.zip",
+					"https://exiftool.org/exiftool-11.99_64.zip",
 					new ByteArrayContent(CreateAnExifToolWindows.Bytes.ToArray())
 				}
 			});
