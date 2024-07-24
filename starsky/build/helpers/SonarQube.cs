@@ -28,7 +28,7 @@ namespace helpers
 		/// <summary>
 		/// @see: https://www.nuget.org/packages/dotnet-sonarscanner
 		/// </summary>
-		public const string SonarQubePackageVersion = "6.2.0";
+		public const string SonarQubePackageVersion = "7.1.0";
 
 		public const string SonarQubeDotnetSonarScannerApi =
 			"https://api.nuget.org/v3-flatcontainer/dotnet-sonarscanner/index.json";
