@@ -39,7 +39,6 @@
   "GeoTimeZone 5.3.0",
   "XmpCore 6.1.10.1",
   "MetadataExtractor 2.8.1",
-  "SixLabors.ImageSharp 3.1.4",
   "Microsoft.Extensions.Logging 8.0.0",
   "Microsoft.Extensions.Logging.Console 8.0.0",
   "OpenTelemetry 1.8.0",
