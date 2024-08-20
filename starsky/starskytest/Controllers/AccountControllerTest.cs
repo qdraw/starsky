@@ -116,7 +116,7 @@ namespace starskytest.Controllers
 		public async Task AccountController_NoLogin_Login_And_newAccount_Test()
 		{
 			// Arrange
-			var userId = "TestUserA";
+			const string userId = "TestUserA";
 			var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) };
 
 			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>()
@@ -168,8 +168,8 @@ namespace starskytest.Controllers
 			// The logout is mocked so this will not actual log it out and controller.Logout() not crashing is good enough
 			controller.Logout();
 
-			// And clean afterwards
-			var itemWithId = _dbContext.Users.FirstOrDefault(p => p.Name == newAccount.Name);
+			// And clean afterward
+			var itemWithId = await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == newAccount.Name);
 			Assert.IsNotNull(itemWithId);
 			_dbContext.Users.Remove(itemWithId);
 			await _dbContext.SaveChangesAsync();
@@ -467,7 +467,7 @@ namespace starskytest.Controllers
 			Assert.IsNotNull(actionResult);
 			Assert.AreEqual("Account Created", actionResult.Value);
 
-			var getUser = _dbContext.Users.FirstOrDefault(p => p.Name == user.Name);
+			var getUser = await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == user.Name);
 			Assert.IsNotNull(getUser);
 			_dbContext.Users.Remove(getUser);
 			await _dbContext.SaveChangesAsync();
@@ -515,8 +515,8 @@ namespace starskytest.Controllers
 			await controller.Status();
 			Assert.AreEqual(200, controller.Response.StatusCode);
 
-			// And clean afterwards
-			var getUser = _dbContext.Users.FirstOrDefault(p => p.Name == user.Name);
+			// And clean afterward
+			var getUser = await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == user.Name);
 			Assert.IsNotNull(getUser);
 			_dbContext.Users.Remove(getUser);
 			await _dbContext.SaveChangesAsync();
@@ -629,7 +629,6 @@ namespace starskytest.Controllers
 			// controller.Logout() not crashing is good enough
 			controller.LogoutJson();
 
-
 			var newAccountDuplicate = new RegisterViewModel
 			{
 				Password = "test11234567890", // DIFFERENT
@@ -650,7 +649,7 @@ namespace starskytest.Controllers
 			controller.LogoutJson();
 
 			// Clean afterwards            
-			var user = _dbContext.Users.FirstOrDefault(p => p.Name == userId);
+			var user = await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == userId);
 			Assert.IsNotNull(user);
 			_dbContext.Users.Remove(user);
 			await _dbContext.SaveChangesAsync();
@@ -820,6 +819,72 @@ namespace starskytest.Controllers
 				claims.Claims.FirstOrDefault(p => p.Type == "Permission")?.Value;
 			Assert.IsNotNull(expectedPermission);
 			Assert.AreEqual(expectedPermission, list.FirstOrDefault());
+		}
+		
+		[TestMethod]
+		public void Logout_ModelStateIsInvalid_ReturnsBadRequest()
+		{
+			// Arrange
+			var controller =
+				new AccountController(_userManager, _appSettings, _antiForgery, _selectorStorage)
+				{
+					ControllerContext =
+					{
+						HttpContext = new DefaultHttpContext()
+					}
+				};
+			controller.ModelState.AddModelError("Key", "ErrorMessage");
+
+			// Act
+			var result = controller.Logout();
+
+			// Assert
+			Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+		}
+		
+		[TestMethod]
+		public void LoginGet_ModelStateIsInvalid_ReturnsBadRequest()
+		{
+			// Arrange
+			var controller =
+				new AccountController(_userManager, _appSettings, _antiForgery, _selectorStorage)
+				{
+					ControllerContext =
+					{
+						HttpContext = new DefaultHttpContext()
+					}
+				};
+			controller.ModelState.AddModelError("Key", "ErrorMessage");
+
+			// Act
+			var result = controller.LoginGet();
+
+			// Assert
+			Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+		}
+		
+		[TestMethod]
+		public async Task ChangeSecret_ModelStateIsInvalid_ReturnsBadRequest()
+		{
+			// Arrange
+			var controller =
+				new AccountController(_userManager, _appSettings, _antiForgery, _selectorStorage)
+				{
+					ControllerContext =
+					{
+						HttpContext = new DefaultHttpContext
+						{
+							User = SetTestClaimsSet("test", "1")
+						}
+					}
+				};
+			controller.ModelState.AddModelError("Key", "ErrorMessage");
+
+			// Act
+			var result = await controller.ChangeSecret(new ChangePasswordViewModel());
+
+			// Assert
+			Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 		}
 	}
 }
