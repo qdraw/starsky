@@ -35,16 +35,12 @@ jest.mock("electron-settings", () => {
 
 describe("downloadBinary", () => {
   it("should download and fail", async () => {
-    jest
-      .spyOn(GetParentDiskPath, "GetParentDiskPath")
-      .mockImplementationOnce(() => {
-        return Promise.resolve("test");
-      });
-    jest
-      .spyOn(downloadNetRequest, "downloadNetRequest")
-      .mockImplementationOnce(() => {
-        return Promise.resolve("test");
-      });
+    jest.spyOn(GetParentDiskPath, "GetParentDiskPath").mockImplementationOnce(() => {
+      return Promise.resolve("test");
+    });
+    jest.spyOn(downloadNetRequest, "downloadNetRequest").mockImplementationOnce(() => {
+      return Promise.resolve("test");
+    });
 
     const result = await downloadBinary(
       {
@@ -57,19 +53,17 @@ describe("downloadBinary", () => {
   });
 
   it("should download and fail 2", async () => {
-    jest
-      .spyOn(GetParentDiskPath, "GetParentDiskPath")
-      .mockImplementationOnce(() => {
-        return Promise.resolve("test");
-      });
+    jest.spyOn(GetParentDiskPath, "GetParentDiskPath").mockImplementationOnce(() => {
+      return Promise.resolve("test");
+    });
     const downloadSpy = jest
       .spyOn(downloadNetRequest, "downloadNetRequest")
       .mockClear()
       .mockImplementationOnce(() => {
-        return Promise.reject("test");
+        return Promise.reject(new Error("test"));
       })
       .mockImplementationOnce(() => {
-        return Promise.resolve("test");
+        return Promise.resolve(new Error("test"));
       });
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
