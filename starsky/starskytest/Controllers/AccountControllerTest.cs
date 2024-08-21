@@ -886,5 +886,29 @@ namespace starskytest.Controllers
 			// Assert
 			Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 		}
+		
+		[TestMethod]
+		public async Task LoginPost_ModelStateIsInvalid_ReturnsBadRequest()
+		{
+			// Arrange
+			var controller =
+				new AccountController(_userManager, _appSettings, _antiForgery, _selectorStorage)
+				{
+					ControllerContext =
+					{
+						HttpContext = new DefaultHttpContext
+						{
+							User = SetTestClaimsSet("test", "1")
+						}
+					}
+				};
+			controller.ModelState.AddModelError("Key", "ErrorMessage");
+
+			// Act
+			var result = await controller.LoginPost(new LoginViewModel());
+
+			// Assert
+			Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+		}
 	}
 }
