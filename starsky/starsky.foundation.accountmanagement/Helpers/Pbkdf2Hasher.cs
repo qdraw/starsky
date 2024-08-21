@@ -22,7 +22,7 @@ namespace starsky.foundation.accountmanagement.Helpers
 					password: password,
 					salt: salt,
 					prf: KeyDerivationPrf.HMACSHA1,
-					iterationCount: 10000,
+					iterationCount: 100_000,
 					numBytesRequested: 256 / 8
 				)
 			);
