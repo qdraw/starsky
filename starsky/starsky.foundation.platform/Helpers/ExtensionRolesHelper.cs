@@ -339,7 +339,7 @@ namespace starsky.foundation.platform.Helpers
 		[GeneratedRegex(
 			@"\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$",
 			RegexOptions.CultureInvariant | RegexOptions.IgnoreCase,
-			matchTimeoutMilliseconds: 500)]
+			matchTimeoutMilliseconds: 2000)]
 		private static partial Regex FileExtensionRegex();
 
 		/// <summary>
