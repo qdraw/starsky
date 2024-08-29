@@ -27,7 +27,7 @@
     "p-iteration": "^1.1.8"
   },
   "devDependencies": {
-    "@types/node": "^20.14.2",
+    "@types/node": "^20.14.14",
     "concurrently": "^8.2.2",
     "typescript": "^5.4.5"
   }
