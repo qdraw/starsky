@@ -595,6 +595,28 @@ public class ThumbnailQueryTest
 		var getter = await query.RenameAsync("not-found", "__new__hash__");
 		Assert.IsFalse(getter);
 	}
+	
+	[TestMethod]
+	public async Task RenameAsync_Null_BeforeFileHash()
+	{
+		// Act
+		var query = new ThumbnailQuery(_context, null!, new FakeIWebLogger());
+
+		// Assert
+		var getter = await query.RenameAsync(null!, "__new__hash__");
+		Assert.IsFalse(getter);
+	}
+		
+	[TestMethod]
+	public async Task RenameAsync_Null_NewFileHash()
+	{
+		// Act
+		var query = new ThumbnailQuery(_context, null!, new FakeIWebLogger());
+
+		// Assert
+		var getter = await query.RenameAsync("_test", null);
+		Assert.IsFalse(getter);
+	}
 
 	[TestMethod]
 	public async Task RenameAsync_ShouldOverwrite()

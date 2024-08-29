@@ -240,7 +240,7 @@ public class ThumbnailQueryErrorTest
 	}
 
 	[TestMethod]
-	public async Task AddThumbnailRangeAsync_ShouldCatchPrimaryKeyHit()
+	public async Task AddThumbnailRangeAsync_ShouldCatchPrimaryKeyHit1()
 	{
 		IsCalledMySqlSaveDbExceptionContext = false;
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -249,6 +249,27 @@ public class ThumbnailQueryErrorTest
 
 		var fakeQuery = new ThumbnailQuery(
 			new MySqlSaveDbExceptionContext(options, "Duplicate entry '1' for key 'PRIMARY'", MySqlErrorCode.DuplicateKey),
+			null!, new FakeIWebLogger());
+
+		await fakeQuery.AddThumbnailRangeAsync(new List<ThumbnailResultDataTransferModel>
+		{
+			new ThumbnailResultDataTransferModel("t")
+		});
+
+		Assert.IsTrue(IsCalledMySqlSaveDbExceptionContext);
+	}
+	
+	[TestMethod]
+	public async Task AddThumbnailRangeAsync_ShouldCatchPrimaryKeyHit2()
+	{
+		IsCalledMySqlSaveDbExceptionContext = false;
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(databaseName: "MovieListDatabase")
+			.Options;
+
+		var fakeQuery = new ThumbnailQuery(
+			new MySqlSaveDbExceptionContext(options, "Duplicate entry '1' for key 'PRIMARY'", 
+				MySqlErrorCode.DuplicateKeyEntry),
 			null!, new FakeIWebLogger());
 
 		await fakeQuery.AddThumbnailRangeAsync(new List<ThumbnailResultDataTransferModel>
