@@ -614,7 +614,7 @@ public class ThumbnailQueryTest
 		var query = new ThumbnailQuery(_context, null!, new FakeIWebLogger());
 
 		// Assert
-		var getter = await query.RenameAsync("_test", null);
+		var getter = await query.RenameAsync("_test", null!);
 		Assert.IsFalse(getter);
 	}
 
