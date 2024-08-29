@@ -74,7 +74,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		
 		[SuppressMessage("Usage", "S6602:\"Find\" method should be used instead of the \"FirstOrDefault\" extension")]
 		[SuppressMessage("Usage", "S3398:move class")]
-		private static MySqlException CreateMySqlException(string message)
+		private static MySqlException CreateMySqlException(MySqlErrorCode code, string message)
 		{
 			// MySqlErrorCode errorCode, string? sqlState, string message, Exception? innerException
 
@@ -88,7 +88,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var instance =
 				( MySqlException ) ctor?.Invoke(new object[]
 				{
-					MySqlErrorCode.AccessDenied,
+					code,
 					"test",
 					message,
 					new Exception()
@@ -100,10 +100,10 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 		private class MySqlSaveDbExceptionContext : ApplicationDbContext
 		{
-			private readonly string _error;
+			private readonly MySqlErrorCode _error;
 
 			public MySqlSaveDbExceptionContext(DbContextOptions options,
-				string error) : base(options)
+				MySqlErrorCode error) : base(options)
 			{
 				_error = error;
 			}
@@ -116,19 +116,21 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				get
 				{
 					IsCalledMySqlSaveDbExceptionContext = true;
-					throw CreateMySqlException(_error);
+					throw CreateMySqlException(_error, "test error");
 				}
 				set => IndexItems = value;
 			}
 		}
 
-		[TestMethod]
-		public async Task Retry_When_HitTimeout()
+		[DataTestMethod] // [Theory]
+		[DataRow(MySqlErrorCode.QueryTimeout)]
+		[DataRow(MySqlErrorCode.QueryInterrupted)]
+		public async Task Retry_When_HitTimeout(MySqlErrorCode code)
 		{
 			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
 				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 				.Options;
-			var fakeQuery = new Query(new MySqlSaveDbExceptionContext(options,"Timeout"),
+			var fakeQuery = new Query(new MySqlSaveDbExceptionContext(options,code),
 				null!,CreateNewScope(), new FakeIWebLogger());
 
 			await fakeQuery.GetAllRecursiveAsync("test");
@@ -143,7 +145,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
 				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 				.Options;
-			var fakeQuery = new Query(new MySqlSaveDbExceptionContext(options,"Something else"),
+			var fakeQuery = new Query(new MySqlSaveDbExceptionContext(options,MySqlErrorCode.None),
 				null!,CreateNewScope(), new FakeIWebLogger());
 
 			await fakeQuery.GetAllRecursiveAsync("test");

@@ -116,15 +116,23 @@ public class ThumbnailQuery : IThumbnailQuery
 		}
 		catch ( Exception exception )
 		{
+			// Check if the inner exception is a MySqlException
+			var mySqlException = exception as MySqlException;
 			// Skip if Duplicate entry
 			// MySqlConnector.MySqlException (0x80004005): Duplicate entry for key 'PRIMARY'
 			// https://github.com/qdraw/starsky/issues/1248 https://github.com/qdraw/starsky/issues/1489
-			if ( exception is MySqlException { ErrorCode: MySqlErrorCode.DuplicateKey } )
+			if (mySqlException is { ErrorCode: MySqlErrorCode.DuplicateKey } 
+			    or { ErrorCode: MySqlErrorCode.DuplicateKeyEntry } )
 			{
+				_logger.LogInformation("[SaveChangesDuplicate] OK Duplicate entry error occurred: " +
+				                       $"{mySqlException.Message}");
 				return;
 			}
 			
-			_logger.LogError($"[SaveChangesDuplicate] T:{exception.GetType()} M:{exception.Message} I: {exception.InnerException}");
+			_logger.LogError($"[SaveChangesDuplicate] T:{exception.GetType()} " +
+			                 $"M:{exception.Message} " +
+			                 $"I: {exception.InnerException} " +
+			                 $"ErrorCode: {mySqlException?.ErrorCode}");
 
 			throw;
 		}
@@ -230,9 +238,15 @@ public class ThumbnailQuery : IThumbnailQuery
 		}
 	}
 
-	private static async Task<bool> RenameInternalAsync(ApplicationDbContext dbContext,
-		string beforeFileHash, string newFileHash)
+	private async Task<bool> RenameInternalAsync(ApplicationDbContext dbContext,
+		string? beforeFileHash, string? newFileHash)
 	{
+		if ( beforeFileHash == null || newFileHash == null) {
+			_logger.LogError($"[ThumbnailQuery] Null " +
+			                 $"beforeFileHash={beforeFileHash}; or newFileHash={newFileHash}; is null");
+			return false;
+		}
+
 		var beforeOrNewItems = await dbContext.Thumbnails.Where(p =>
 			p.FileHash == beforeFileHash || p.FileHash == newFileHash).ToListAsync();
 

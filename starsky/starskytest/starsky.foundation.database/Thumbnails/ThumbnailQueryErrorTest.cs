@@ -239,8 +239,10 @@ public class ThumbnailQueryErrorTest
 		}
 	}
 
-	[TestMethod]
-	public async Task AddThumbnailRangeAsync_ShouldCatchPrimaryKeyHit()
+	[DataTestMethod] // [Theory]
+	[DataRow(MySqlErrorCode.DuplicateKey)]
+	[DataRow(MySqlErrorCode.DuplicateKeyEntry)]
+	public async Task AddThumbnailRangeAsync_ShouldCatchPrimaryKeyHit(MySqlErrorCode code)
 	{
 		IsCalledMySqlSaveDbExceptionContext = false;
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -248,7 +250,7 @@ public class ThumbnailQueryErrorTest
 			.Options;
 
 		var fakeQuery = new ThumbnailQuery(
-			new MySqlSaveDbExceptionContext(options, "Duplicate entry '1' for key 'PRIMARY'", MySqlErrorCode.DuplicateKey),
+			new MySqlSaveDbExceptionContext(options, "Duplicate entry '1' for key 'PRIMARY'", code),
 			null!, new FakeIWebLogger());
 
 		await fakeQuery.AddThumbnailRangeAsync(new List<ThumbnailResultDataTransferModel>
