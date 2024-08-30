@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <!-- SonarQube needs this -->
+        <ProjectGuid>{04d4b161-7dad-4258-8edc-f0a77e39dc3f}</ProjectGuid>
+        <RuntimeFrameworkVersion>8.0.3</RuntimeFrameworkVersion>
+        <RootNamespace>starskydependenciescli</RootNamespace>
+        <Version>0.6.0</Version>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>disable</ImplicitUsings>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
+        <SonarQubeExclude>true</SonarQubeExclude>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\starsky.feature.externaldependencies\starsky.feature.externaldependencies.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.webtelemetry\starsky.foundation.webtelemetry.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.writemeta\starsky.foundation.writemeta.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.http\starsky.foundation.http.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup Condition="!Exists('Properties/launchSettings.json')">
+        <ContentWithTargetPath Include="Properties/default-init-launchSettings.json" TargetPath="../../../Properties/launchSettings%(Extension)" CopyToOutputDirectory="PreserveNewest"/>
+    </ItemGroup>
+
+</Project>

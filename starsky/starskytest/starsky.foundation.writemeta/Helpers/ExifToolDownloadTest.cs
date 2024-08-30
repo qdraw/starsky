@@ -14,6 +14,7 @@ using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Services;
+using starsky.foundation.writemeta.Services.ExifToolDownloader;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 

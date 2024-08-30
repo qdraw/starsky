@@ -44,6 +44,7 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\starsky.feature.desktop\starsky.feature.desktop.csproj"/>
+        <ProjectReference Include="..\starsky.feature.externaldependencies\starsky.feature.externaldependencies.csproj"/>
         <ProjectReference Include="..\starsky.feature.health\starsky.feature.health.csproj"/>
         <ProjectReference Include="..\starsky.feature.import\starsky.feature.import.csproj"/>
         <ProjectReference Include="..\starsky.feature.settings\starsky.feature.settings.csproj"/>

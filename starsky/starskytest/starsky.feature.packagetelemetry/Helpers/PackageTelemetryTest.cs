@@ -18,19 +18,6 @@ namespace starskytest.starsky.feature.packagetelemetry.Helpers
 	public sealed class PackageTelemetryTest
 	{
 		[TestMethod]
-		public void GetCurrentOsPlatformTest()
-		{
-			var content = PackageTelemetry.GetCurrentOsPlatform();
-			Assert.IsNotNull(content);
-
-			var allOsPlatforms = new List<OSPlatform>
-			{
-				OSPlatform.Linux, OSPlatform.Windows, OSPlatform.OSX, OSPlatform.FreeBSD
-			};
-			Assert.IsTrue(allOsPlatforms.Contains(content.Value));
-		}
-
-		[TestMethod]
 		public void GetSystemDataTest()
 		{
 			var httpProvider = new FakeIHttpProvider();
@@ -55,6 +42,10 @@ namespace starskytest.starsky.feature.packagetelemetry.Helpers
 			Assert.IsTrue(systemData.Exists(p => p.Key == "DockerContainer"));
 			Assert.IsTrue(systemData.Exists(p => p.Key == "CurrentCulture"));
 			Assert.IsTrue(systemData.Exists(p => p.Key == "AspNetCoreEnvironment"));
+			Assert.IsTrue(systemData.Exists(p => p.Key == "RuntimeIdentifier"));
+			Assert.AreEqual(systemData.Find(p => p.Key == "RuntimeIdentifier").Value,
+				RuntimeInformation.RuntimeIdentifier);
+			Assert.IsTrue(systemData.Exists(p => p.Key == "DeviceId"));
 		}
 
 		[TestMethod]

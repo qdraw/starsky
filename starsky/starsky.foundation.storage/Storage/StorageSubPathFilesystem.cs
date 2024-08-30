@@ -101,6 +101,14 @@ namespace starsky.foundation.storage.Storage
 				toFileFullPath);
 		}
 
+		public void FolderCopy(string fromPath, string toPath)
+		{
+			var inputFileFullPath = _appSettings.DatabasePathToFilePath(fromPath);
+			var toFileFullPath = _appSettings.DatabasePathToFilePath(toPath);
+			new StorageHostFullPathFilesystem(_logger).FolderCopy(inputFileFullPath,
+				toFileFullPath);
+		}
+
 		/// <summary>
 		/// Move a file
 		/// </summary>

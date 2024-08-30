@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ProjectGuid>{5783f81c-618c-4971-984e-0e405ab1b609}</ProjectGuid>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>starsky.feature.externaldependencies</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\starsky.feature.geolookup\starsky.feature.geolookup.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.writemeta\starsky.foundation.writemeta.csproj"/>
+    </ItemGroup>
+
+</Project>
