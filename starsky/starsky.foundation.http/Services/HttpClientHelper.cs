@@ -49,22 +49,22 @@ namespace starsky.foundation.http.Services
 		private readonly IWebLogger _logger;
 
 		/// <summary>
-		/// This domains are only allowed domains to download from (and https only)
+		/// These domains are only allowed domains to download from (and https only)
 		/// </summary>
-		private readonly List<string> _allowedDomains = new List<string>
-		{
+		private readonly List<string> _allowedDomains =
+		[
 			"dl.dropboxusercontent.com",
 			"qdraw.nl", // < used by test
-            "media.qdraw.nl", // < used by demo
-            "locker.ifttt.com",
+			"media.qdraw.nl", // < used by demo
+			"locker.ifttt.com",
 			"download.geonames.org",
 			"exiftool.org",
 			"api.github.com"
-		};
+		];
 
 		public async Task<KeyValuePair<bool, string>> ReadString(string sourceHttpUrl)
 		{
-			Uri sourceUri = new Uri(sourceHttpUrl);
+			var sourceUri = new Uri(sourceHttpUrl);
 
 			_logger.LogInformation("[ReadString] HttpClientHelper > "
 								   + sourceUri.Host + " ~ " + sourceHttpUrl);
@@ -92,7 +92,7 @@ namespace starsky.foundation.http.Services
 		public async Task<KeyValuePair<bool, string>> PostString(string sourceHttpUrl,
 			HttpContent? httpContent, bool verbose = true)
 		{
-			Uri sourceUri = new Uri(sourceHttpUrl);
+			var sourceUri = new Uri(sourceHttpUrl);
 
 			if ( verbose ) _logger.LogInformation("[PostString] HttpClientHelper > "
 												  + sourceUri.Host + " ~ " + sourceHttpUrl);
