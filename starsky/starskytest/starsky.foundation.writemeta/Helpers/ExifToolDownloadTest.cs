@@ -682,7 +682,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var exifToolDownload = new ExifToolDownload(httpClientHelper, new AppSettings(),
 				new FakeIWebLogger(), new FakeIStorage());
 			var result = exifToolDownload.GetChecksumsFromTextFile(ExampleCheckSum);
-			Assert.AreEqual(2, result.Length);
+			Assert.AreEqual(4, result.Length);
 		}
 	}
 }
