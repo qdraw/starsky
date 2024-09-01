@@ -276,7 +276,7 @@ namespace starsky.foundation.accountmanagement.Services
 				await _dbContext.SaveChangesAsync();
 				await AddUserToCache(user);
 
-				// to get the Id
+				// to get the id
 				user = await _dbContext.Users.FirstOrDefaultAsync(p => p.Created == createdDate);
 
 				if ( user == null ) throw new AggregateException("user should not be null");
@@ -299,10 +299,11 @@ namespace starsky.foundation.accountmanagement.Services
 			{
 				UserId = user.Id,
 				CredentialTypeId = credentialType.Id,
-				Identifier = identifier
+				Identifier = identifier,
+				IterationCount = IterationCountType.Iterate100K
 			};
-			byte[] salt = Pbkdf2Hasher.GenerateRandomSalt();
-			string hash = Pbkdf2Hasher.ComputeHash(secret, salt);
+			var salt = Pbkdf2Hasher.GenerateRandomSalt();
+			var hash = Pbkdf2Hasher.ComputeHash(secret, salt, true);
 
 			credential.Secret = hash;
 			credential.Extra = Convert.ToBase64String(salt);
@@ -397,8 +398,9 @@ namespace starsky.foundation.accountmanagement.Services
 			}
 
 			var salt = Pbkdf2Hasher.GenerateRandomSalt();
-			var hash = Pbkdf2Hasher.ComputeHash(secret, salt);
+			var hash = Pbkdf2Hasher.ComputeHash(secret, salt, true);
 
+			credential.IterationCount = IterationCountType.Iterate100K;
 			credential.Secret = hash;
 			credential.Extra = Convert.ToBase64String(salt);
 			_dbContext.Credentials.Update(credential);
@@ -574,8 +576,9 @@ namespace starsky.foundation.accountmanagement.Services
 			}
 
 			// To compare the secret
-			byte[] salt = Convert.FromBase64String(credential.Extra);
-			string hashedPassword = Pbkdf2Hasher.ComputeHash(secret, salt);
+			var salt = Convert.FromBase64String(credential.Extra);
+			var iterationSecure = credential.IterationCount == IterationCountType.Iterate100K;
+			var hashedPassword = Pbkdf2Hasher.ComputeHash(secret, salt, iterationSecure);
 
 			if ( credential.Secret == hashedPassword )
 			{

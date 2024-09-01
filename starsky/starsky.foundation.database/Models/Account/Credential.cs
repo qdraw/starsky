@@ -32,5 +32,6 @@ namespace starsky.foundation.database.Models.Account
 		public string? Extra { get; set; }
 		public User? User { get; set; }
 		public CredentialType? CredentialType { get; set; }
+		public IterationCountType IterationCount { get; set; }
 	}
 }
