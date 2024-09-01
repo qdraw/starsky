@@ -449,7 +449,9 @@ namespace starsky.foundation.accountmanagement.Services
 					x.UserId,
 					x.CredentialTypeId,
 					x.Secret,
-					x.Extra
+					x.Extra,
+					x.IterationCount,
+					x.Identifier
 				}).FirstOrDefault();
 
 			if ( credentialSelect == null )
@@ -464,6 +466,8 @@ namespace starsky.foundation.accountmanagement.Services
 				CredentialTypeId = credentialSelect.CredentialTypeId,
 				Secret = credentialSelect.Secret,
 				Extra = credentialSelect.Extra,
+				IterationCount = credentialSelect.IterationCount,
+				Identifier = credentialSelect.Identifier
 			};
 
 			if ( IsCacheEnabled() )
@@ -496,7 +500,7 @@ namespace starsky.foundation.accountmanagement.Services
 					x.Id,
 					x.Code,
 					x.Name,
-					x.Position
+					x.Position,
 				}).FirstOrDefault();
 
 			if ( credentialTypeSelect == null ) return null;
@@ -578,14 +582,33 @@ namespace starsky.foundation.accountmanagement.Services
 			// To compare the secret
 			var salt = Convert.FromBase64String(credential.Extra);
 			var iterationSecure = credential.IterationCount == IterationCountType.Iterate100K;
+			
 			var hashedPassword = Pbkdf2Hasher.ComputeHash(secret, salt, iterationSecure);
 
 			if ( credential.Secret == hashedPassword )
 			{
+				// to be removed in future releases
+				await TransformToNewIterationAsync(credential, salt, secret, credentialType);
+				
 				return await ResetAndSuccess(userData.AccessFailedCount, credential.UserId, userData);
 			}
 
 			return await SetLockIfFailedCountIsToHigh(credential.UserId);
+		}
+
+		internal async Task TransformToNewIterationAsync(Credential credential, byte[] salt, string secret,
+			CredentialType credentialType)
+		{
+			if ( credential.IterationCount == IterationCountType.Iterate100K )
+			{
+				return;
+			}
+
+			credential.IterationCount = IterationCountType.Iterate100K;
+			credential.Secret = Pbkdf2Hasher.ComputeHash(secret, salt, true);
+			_dbContext.Credentials.Update(credential);
+			await _dbContext.SaveChangesAsync();
+			_cache?.Remove(CredentialCacheKey(credentialType, credential.Identifier));
 		}
 
 		internal async Task<ValidateResult> ResetAndSuccess(int accessFailedCount, int userId, User? userData)
