@@ -81,7 +81,7 @@ public sealed class NoAccountMiddleware
 			var credentialType = userManager.GetCachedCredentialType(CredentialType);
 			var credential =
 				user.Credentials!.FirstOrDefault(p => p.CredentialTypeId == credentialType?.Id);
-			if ( credential!.IterationCount != IterationCountType.IterateLegacySha1 ) return user;
+			if ( credential!.IterationCount == IterationCountType.Iterate100KSha256 ) return user;
 
 			var newPassword = Convert.ToBase64String(
 				Pbkdf2Hasher.GenerateRandomSalt());
