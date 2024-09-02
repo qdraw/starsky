@@ -548,24 +548,24 @@ namespace starsky.foundation.accountmanagement.Services
 		public async Task<ValidateResult> ValidateAsync(string credentialTypeCode,
 			string? identifier, string secret)
 		{
+			// No Password
+			if ( string.IsNullOrWhiteSpace(secret) )
+			{
+				return new ValidateResult(success: false, error: ValidateResultError.SecretNotValid);
+			}
+			
 			var credentialType = CachedCredentialType(credentialTypeCode);
 
 			if ( credentialType == null )
 			{
 				return new ValidateResult(success: false, error: ValidateResultError.CredentialTypeNotFound);
 			}
-
+			
 			var credential = CachedCredential(credentialType, identifier);
 
 			if ( credential?.Extra == null )
 			{
 				return new ValidateResult(success: false, error: ValidateResultError.CredentialNotFound);
-			}
-
-			// No Password
-			if ( string.IsNullOrWhiteSpace(secret) )
-			{
-				return new ValidateResult(success: false, error: ValidateResultError.SecretNotValid);
 			}
 
 			var userData = ( await AllUsersAsync() ).Users.Find(p => p.Id == credential.UserId);
