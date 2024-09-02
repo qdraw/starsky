@@ -113,7 +113,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "sonarqube-scanner": "^3.5.0",
     "ts-jest": "^29.2.4",
-    "typescript": "^5.4.5"
+    "typescript": "^5.5.4"
   },
   "optionalDependencies": {
     "copy-webpack-plugin": "^12.0.2",
