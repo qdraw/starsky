@@ -234,7 +234,7 @@ public sealed class UserManagerTest
 			CredentialType = credentialTypesCode,
 			Secret = "t5cJrj735BKTx6bNw2snWzkKb5lsXDSreT9Fpz5YLJw=", // "pass123456789" (IterateLegacy)
 			Extra = "0kp9rQX22yeGPl3FSyZFlg==",
-			IterationCount = IterationCountType.IterateLegacy,
+			IterationCount = IterationCountType.IterateLegacySha1,
 			User = await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == "test_0008"),
 			UserId = ( await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == "test_0008") )!.Id,
 			Id = 43579345
@@ -254,8 +254,8 @@ public sealed class UserManagerTest
 			.FirstOrDefaultAsync(p => p.Identifier == "test_0008");
 		
 		Assert.IsTrue(result.Success);
-		Assert.AreEqual("4/y6w6P079D5Be2TscLtrSdMeahOKLIwioHm9lw7Uvo=", credAfterTransform?.Secret);
-		Assert.AreEqual(IterationCountType.Iterate100K, credAfterTransform?.IterationCount);
+		Assert.AreEqual("jCCNdJCtH6h1UBhEHkHawc+zt9PqQaEEubc8yc5CGTw=", credAfterTransform?.Secret);
+		Assert.AreEqual(IterationCountType.Iterate100KSha256, credAfterTransform?.IterationCount);
 	}
 
 	[TestMethod]

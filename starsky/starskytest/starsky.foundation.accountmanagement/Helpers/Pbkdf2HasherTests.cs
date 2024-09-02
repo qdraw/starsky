@@ -83,8 +83,8 @@ public class Pbkdf2HasherTests
 		RandomNumberGenerator.Fill(salt);
 
 		// Act
-		string hash1 = Pbkdf2Hasher.ComputeHash(password, salt); // 10,000 iterations
-		string hash2 = Pbkdf2Hasher.ComputeHash(password, salt, true);  // 100,000 iterations
+		var hash1 = Pbkdf2Hasher.ComputeHash(password, salt,false); // 10,000 iterations
+		var hash2 = Pbkdf2Hasher.ComputeHash(password, salt);  // 100,000 iterations
 
 		// Assert
 		Assert.AreEqual(hash1.Length, hash2.Length, "Hashes should have the same length regardless of iterations.");

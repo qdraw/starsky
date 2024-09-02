@@ -15,16 +15,19 @@ namespace starsky.foundation.accountmanagement.Helpers
 		/// <param name="password">password</param>
 		/// <param name="salt">to decrypt</param>
 		/// <param name="iteration100K">more secure password</param>
+		/// <param name="useSha256">more secure password</param>
 		/// <returns>hased password</returns>
-		public static string ComputeHash(string password, byte[] salt, bool iteration100K = false)
+		public static string ComputeHash(string password, byte[] salt, bool iteration100K = true, bool useSha256 = true)
 		{
+			// Use 100K iterations for new passwords, and 10K iterations for older stored hashes
 			var iterationCount = iteration100K ? 100_000 : 10000;
-			
+			var hashType = useSha256 ? KeyDerivationPrf.HMACSHA256 : KeyDerivationPrf.HMACSHA1;
+
 			return Convert.ToBase64String(
 				KeyDerivation.Pbkdf2(
 					password: password,
 					salt: salt,
-					prf: KeyDerivationPrf.HMACSHA1,
+					prf: hashType,
 					iterationCount: iterationCount,
 					numBytesRequested: 256 / 8
 				)

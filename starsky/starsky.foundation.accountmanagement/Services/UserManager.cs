@@ -300,10 +300,10 @@ namespace starsky.foundation.accountmanagement.Services
 				UserId = user.Id,
 				CredentialTypeId = credentialType.Id,
 				Identifier = identifier,
-				IterationCount = IterationCountType.Iterate100K
+				IterationCount = IterationCountType.Iterate100KSha256
 			};
 			var salt = Pbkdf2Hasher.GenerateRandomSalt();
-			var hash = Pbkdf2Hasher.ComputeHash(secret, salt, true);
+			var hash = Pbkdf2Hasher.ComputeHash(secret, salt);
 
 			credential.Secret = hash;
 			credential.Extra = Convert.ToBase64String(salt);
@@ -398,9 +398,9 @@ namespace starsky.foundation.accountmanagement.Services
 			}
 
 			var salt = Pbkdf2Hasher.GenerateRandomSalt();
-			var hash = Pbkdf2Hasher.ComputeHash(secret, salt, true);
+			var hash = Pbkdf2Hasher.ComputeHash(secret, salt);
 
-			credential.IterationCount = IterationCountType.Iterate100K;
+			credential.IterationCount = IterationCountType.Iterate100KSha256;
 			credential.Secret = hash;
 			credential.Extra = Convert.ToBase64String(salt);
 			_dbContext.Credentials.Update(credential);
@@ -581,9 +581,9 @@ namespace starsky.foundation.accountmanagement.Services
 
 			// To compare the secret
 			var salt = Convert.FromBase64String(credential.Extra);
-			var iterationSecure = credential.IterationCount == IterationCountType.Iterate100K;
+			var iterationSecure = credential.IterationCount == IterationCountType.Iterate100KSha256;
 			
-			var hashedPassword = Pbkdf2Hasher.ComputeHash(secret, salt, iterationSecure);
+			var hashedPassword = Pbkdf2Hasher.ComputeHash(secret, salt, iterationSecure, iterationSecure);
 
 			if ( credential.Secret == hashedPassword )
 			{
@@ -599,13 +599,13 @@ namespace starsky.foundation.accountmanagement.Services
 		internal async Task TransformToNewIterationAsync(Credential credential, byte[] salt, string secret,
 			CredentialType credentialType)
 		{
-			if ( credential.IterationCount == IterationCountType.Iterate100K )
+			if ( credential.IterationCount == IterationCountType.Iterate100KSha256 )
 			{
 				return;
 			}
 
-			credential.IterationCount = IterationCountType.Iterate100K;
-			credential.Secret = Pbkdf2Hasher.ComputeHash(secret, salt, true);
+			credential.IterationCount = IterationCountType.Iterate100KSha256;
+			credential.Secret = Pbkdf2Hasher.ComputeHash(secret, salt);
 			_dbContext.Credentials.Update(credential);
 			await _dbContext.SaveChangesAsync();
 			_cache?.Remove(CredentialCacheKey(credentialType, credential.Identifier));
