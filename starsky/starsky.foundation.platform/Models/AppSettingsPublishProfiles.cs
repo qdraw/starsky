@@ -118,11 +118,9 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		public string Path
 		{
-			get
-			{
+			get =>
 				// return: if null > string.Empty
-				return string.IsNullOrEmpty(PathPrivate) ? string.Empty : PathPrivate;
-			}
+				string.IsNullOrEmpty(PathPrivate) ? string.Empty : PathPrivate;
 			set
 			{
 				if ( string.IsNullOrEmpty(value) )
@@ -151,7 +149,7 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		public string Folder
 		{
-			get { return _folder; }
+			get => _folder;
 			set
 			{
 				// Append slash after
