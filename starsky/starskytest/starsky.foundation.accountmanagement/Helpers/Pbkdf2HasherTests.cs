@@ -92,26 +92,24 @@ public class Pbkdf2HasherTests
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ArgumentNullException))]
-	public void ComputeHash_ThrowsArgumentNullException_ForNullPassword()
-	{
-		// Arrange
-		byte[] salt = new byte[16];
-		RandomNumberGenerator.Fill(salt);
-
-		// Act
-		Pbkdf2Hasher.ComputeHash(null, salt);
-	}
-
-	[TestMethod]
-	[ExpectedException(typeof(ArgumentNullException))]
 	public void ComputeHash_ThrowsArgumentNullException_ForNullSalt()
 	{
 		// Arrange
-		string password = "testPassword";
+		const string password = "testPassword";
 
-		// Act
-		Pbkdf2Hasher.ComputeHash(password, null);
+		// Act and Assert
+		Assert.ThrowsException<ArgumentNullException>(() => Pbkdf2Hasher.ComputeHash(password, null!));
+	}
+	
+	[TestMethod]
+	public void ComputeHash_ThrowsArgumentNullException_ForNullPassword()
+	{
+		// Arrange
+		var salt = new byte[16];
+		RandomNumberGenerator.Fill(salt);
+
+		// Act and Assert
+		Assert.ThrowsException<ArgumentNullException>(() => Pbkdf2Hasher.ComputeHash(null!, salt));
 	}
 
 	[TestMethod]
