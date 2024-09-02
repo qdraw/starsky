@@ -12,12 +12,12 @@ public class Pbkdf2HasherTests
 	public void ComputeHash_ReturnsHash_ForValidInputs()
 	{
 		// Arrange
-		string password = "testPassword";
-		byte[] salt = new byte[16];
+		const string password = "testPassword";
+		var salt = new byte[16];
 		RandomNumberGenerator.Fill(salt);
 
 		// Act
-		string hash = Pbkdf2Hasher.ComputeHash(password, salt);
+		var hash = Pbkdf2Hasher.ComputeHash(password, salt);
 
 		// Assert
 		Assert.IsNotNull(hash);
@@ -28,13 +28,13 @@ public class Pbkdf2HasherTests
 	public void ComputeHash_ConsistentResults_ForSameInputs()
 	{
 		// Arrange
-		string password = "consistentPassword";
-		byte[] salt = new byte[16];
+		const string password = "consistentPassword";
+		var salt = new byte[16];
 		RandomNumberGenerator.Fill(salt);
 
 		// Act
-		string hash1 = Pbkdf2Hasher.ComputeHash(password, salt);
-		string hash2 = Pbkdf2Hasher.ComputeHash(password, salt);
+		var hash1 = Pbkdf2Hasher.ComputeHash(password, salt);
+		var hash2 = Pbkdf2Hasher.ComputeHash(password, salt);
 
 		// Assert
 		Assert.AreEqual(hash1, hash2);
@@ -44,15 +44,15 @@ public class Pbkdf2HasherTests
 	public void ComputeHash_DifferentResults_ForDifferentSalts()
 	{
 		// Arrange
-		string password = "testPassword";
-		byte[] salt1 = new byte[16];
-		byte[] salt2 = new byte[16];
+		const string password = "testPassword";
+		var salt1 = new byte[16];
+		var salt2 = new byte[16];
 		RandomNumberGenerator.Fill(salt1);
 		RandomNumberGenerator.Fill(salt2);
 
 		// Act
-		string hash1 = Pbkdf2Hasher.ComputeHash(password, salt1);
-		string hash2 = Pbkdf2Hasher.ComputeHash(password, salt2);
+		var hash1 = Pbkdf2Hasher.ComputeHash(password, salt1);
+		var hash2 = Pbkdf2Hasher.ComputeHash(password, salt2);
 
 		// Assert
 		Assert.AreNotEqual(hash1, hash2);
@@ -62,13 +62,13 @@ public class Pbkdf2HasherTests
 	public void ComputeHash_DifferentIterationCounts_ReturnsDifferentHashes()
 	{
 		// Arrange
-		string password = "testPassword";
-		byte[] salt = new byte[16];
+		const string password = "testPassword";
+		var salt = new byte[16];
 		RandomNumberGenerator.Fill(salt);
 
 		// Act
-		string hash1 = Pbkdf2Hasher.ComputeHash(password, salt, false); // 10,000 iterations
-		string hash2 = Pbkdf2Hasher.ComputeHash(password, salt, true);  // 100,000 iterations
+		var hash1 = Pbkdf2Hasher.ComputeHash(password, salt, false); // 10,000 iterations
+		var hash2 = Pbkdf2Hasher.ComputeHash(password, salt);  // 100,000 iterations
 
 		// Assert
 		Assert.AreNotEqual(hash1, hash2);
@@ -78,8 +78,8 @@ public class Pbkdf2HasherTests
 	public void ComputeHash_DifferentIterations_HashesCompareLengths()
 	{
 		// Arrange
-		string password = "testPassword";
-		byte[] salt = new byte[16];
+		const string password = "testPassword";
+		var salt = new byte[16];
 		RandomNumberGenerator.Fill(salt);
 
 		// Act
@@ -116,14 +116,35 @@ public class Pbkdf2HasherTests
 	public void ComputeHash_ReturnsDifferentHashes_ForDifferentPasswords()
 	{
 		// Arrange
-		byte[] salt = new byte[16];
+		var salt = new byte[16];
 		RandomNumberGenerator.Fill(salt);
 
 		// Act
-		string hash1 = Pbkdf2Hasher.ComputeHash("password1", salt);
-		string hash2 = Pbkdf2Hasher.ComputeHash("password2", salt);
+		var hash1 = Pbkdf2Hasher.ComputeHash("password1", salt);
+		var hash2 = Pbkdf2Hasher.ComputeHash("password2", salt);
 
 		// Assert
 		Assert.AreNotEqual(hash1, hash2);
+	}
+	
+	[TestMethod]
+	public void GenerateRandomSalt_ShouldReturnCorrectLength()
+	{
+		// Act
+		var salt = Pbkdf2Hasher.GenerateRandomSalt();
+
+		// Assert
+		Assert.AreEqual(16, salt.Length); // 128 / 8 = 16
+	}
+
+	[TestMethod]
+	public void GenerateRandomSalt_ShouldReturnUniqueValues()
+	{
+		// Act
+		var salt1 = Pbkdf2Hasher.GenerateRandomSalt();
+		var salt2 = Pbkdf2Hasher.GenerateRandomSalt();
+
+		// Assert NOT EQ
+		Assert.AreNotEqual(salt1, salt2); // Check that the two salts are different
 	}
 }
