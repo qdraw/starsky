@@ -99,5 +99,5 @@ public interface IUserManager
 
 	Task<Role?> GetRoleAsync(int userId);
 	bool PreflightValidate(string userName, string password, string confirmPassword);
-	CredentialType? GetCachedCredentialType(string email);
+	CredentialType? GetCachedCredentialType(string credentialTypeCode);
 }
