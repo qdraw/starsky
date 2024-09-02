@@ -209,8 +209,10 @@ public sealed class UserManagerTest
 		Assert.AreEqual(ValidateResultError.UserNotFound, result.Error);
 	}
 
-	[TestMethod]
-	public async Task ValidateAsync_Transform_To_Iterate100K()
+	[DataTestMethod] // [Theory]
+	[DataRow(true)]
+	[DataRow(false)]
+	public async Task ValidateAsync_Transform_To_Iterate100K(bool cacheEnabled)
 	{
 		var test = await _dbContext.CredentialTypes.AnyAsync(p => p.Code == "email");
 		if (!test)
@@ -239,13 +241,16 @@ public sealed class UserManagerTest
 			UserId = ( await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == "test_0008") )!.Id,
 			Id = 43579345
 		};
-		_dbContext.Credentials.Add(cred);
-
-		await _dbContext.SaveChangesAsync();
-		_dbContext.Entry(cred).State = EntityState.Detached;
+		var credExists = await _dbContext.Credentials.AnyAsync(p => p.Identifier == "test_0008");
+		if ( !credExists )
+		{
+			_dbContext.Credentials.Add(cred);
+			await _dbContext.SaveChangesAsync();
+			_dbContext.Entry(cred).State = EntityState.Detached;
+		}
 
 		var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(),
-			_memoryCache);
+			cacheEnabled ? _memoryCache: null);
 		
 		var result = await userManager.ValidateAsync(credentialTypesCode.Code!, "test_0008",
 			"pass123456789");
@@ -742,6 +747,18 @@ public sealed class UserManagerTest
 			_memoryCache);
 		var count = _dbContext.Roles.Count();
 		userManager.RemoveFromRole(new User(), "test");
+
+		Assert.AreEqual(count, _dbContext.Roles.Count());
+	}
+	
+	[TestMethod]
+	public void RemoveFromRole_WrongCode_RoleObject()
+	{
+		var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(),
+			_memoryCache);
+		var count = _dbContext.Roles.Count();
+		var role = new Role();
+		userManager.RemoveFromRole(new User(), role);
 
 		Assert.AreEqual(count, _dbContext.Roles.Count());
 	}
