@@ -47,6 +47,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Front-end_ Upgrade npm packages (PR #1603)
 - [x] (Fixed) _Back-end_ Query execution was interrupted, Regex Timeout (Issue #1628, #1590) (PR #1676)
 - [x] (Fixed) _Back-end_ Download Exiftool did not work (PR #1677)
+- [x] (Changed) _Back-end_ Change password hashing security and auto-upgrade path (PR #1688)
 
 ## version 0.6.1 - _(Unreleased)_ - 2024-05-16 {#v0.6.1}
 
