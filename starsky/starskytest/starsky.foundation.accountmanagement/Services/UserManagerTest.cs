@@ -815,6 +815,28 @@ public sealed class UserManagerTest
 			.GetCurrentUserId(context);
 		Assert.AreEqual(-1, currentUserId);
 	}
+	
+	[TestMethod]
+	public void GetCurrentUserId_NotLoggedIn2()
+	{
+		var context = new DefaultHttpContext
+		{
+			User = new ClaimsPrincipal()
+		};
+		var currentUserId = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(),
+				_memoryCache)
+			.GetCurrentUserId(context);
+		Assert.AreEqual(-1, currentUserId);
+	}
+
+	[TestMethod]
+	public void CachedCredential_NoId()
+	{
+		var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(),
+			_memoryCache);
+		var cachedCredential = userManager.CachedCredential(null!, string.Empty);
+		Assert.IsNull(cachedCredential);
+	}
 
 	[TestMethod]
 	public async Task CachedCredential_CheckCache()
