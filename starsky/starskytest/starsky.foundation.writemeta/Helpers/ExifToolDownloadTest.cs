@@ -684,5 +684,31 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var result = exifToolDownload.GetChecksumsFromTextFile(ExampleCheckSum);
 			Assert.AreEqual(4, result.Length);
 		}
+
+		[DataTestMethod] // [Theory]
+		[DataRow(true)]
+		[DataRow(false)]
+		public void MoveFileIfExist_WithFolder(bool outputFolderAlreadyExists)
+		{
+			var storage = new FakeIStorage();
+			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>());
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory,
+				new FakeIWebLogger());
+			var exifToolDownload = new ExifToolDownload(httpClientHelper, new AppSettings(),
+				new FakeIWebLogger(), storage);
+
+			storage.CreateDirectory("/");
+			storage.CreateDirectory("/test");
+			storage.CreateDirectory($"/test/test");
+			storage.CreateDirectory($"/test/test/test_01");
+			if ( outputFolderAlreadyExists )
+			{
+				storage.CreateDirectory("/output");
+			}
+			
+			exifToolDownload.MoveFileIfExist("/", "test_01", "/", "output" );
+
+			Assert.IsTrue(storage.ExistFolder("/output"));
+		}
 	}
 }

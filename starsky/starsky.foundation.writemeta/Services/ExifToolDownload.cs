@@ -366,13 +366,16 @@ namespace starsky.foundation.writemeta.Services
 				"exiftool.exe"));
 		}
 
-		private void MoveFileIfExist(string searchFolder, string searchForFileOrFolder, string destFolder, string destFileNameOrFolderName)
+		internal void MoveFileIfExist(string searchFolder, string searchForFileOrFolder, string destFolder, string destFileNameOrFolderName)
 		{
-			var files = _hostFileSystemStorage.GetAllFilesInDirectoryRecursive(searchFolder);
-			var srcFullPaths = files.Where(p => p.EndsWith(searchForFileOrFolder)).ToList();
+			var files = _hostFileSystemStorage.GetAllFilesInDirectoryRecursive(searchFolder).ToList();
+			var folders = _hostFileSystemStorage.GetDirectoryRecursive(searchFolder).Select(p => p.Key);
+			List<string> folderAndFiles = [..files, ..folders];
+			
+			var srcFullPaths = folderAndFiles.Where(p => p.EndsWith(searchForFileOrFolder)).ToList();
 			if ( srcFullPaths.Count == 0 )
 			{
-				_logger.LogError("[MoveFileIfExist] Could not find exiftool.exe file");
+				_logger.LogError($"[MoveFileIfExist] Could not find {searchForFileOrFolder} file");
 				return;
 			}
 
