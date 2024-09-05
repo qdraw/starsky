@@ -15,6 +15,7 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.ArchiveFormats;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Interfaces;
 
@@ -356,27 +357,44 @@ namespace starsky.foundation.writemeta.Services
 			_hostFileSystemStorage.CreateDirectory(windowsExifToolFolder);
 
 			new Zipper(_logger).ExtractZip(zipArchiveFullFilePath, windowsExifToolFolder);
+			
 			MoveFileIfExist(windowsExifToolFolder, "exiftool(-k).exe", windowsExifToolFolder, "exiftool.exe");
+			MoveFileIfExist(windowsExifToolFolder, "exiftool_files", windowsExifToolFolder, "exiftool_files");
 
 			_logger.LogInformation($"[DownloadForWindows] ExifTool downloaded: {ExeExifToolWindowsFullFilePath()}");
 			return _hostFileSystemStorage.ExistFile(Path.Combine(windowsExifToolFolder,
 				"exiftool.exe"));
 		}
 
-		private void MoveFileIfExist(string searchFolder, string searchForFile, string destFolder, string destFileName)
+		private void MoveFileIfExist(string searchFolder, string searchForFileOrFolder, string destFolder, string destFileNameOrFolderName)
 		{
 			var files = _hostFileSystemStorage.GetAllFilesInDirectoryRecursive(searchFolder);
-			var srcFullPath = files.FirstOrDefault(p => p.EndsWith(searchForFile));
-			if ( srcFullPath == null )
+			var srcFullPaths = files.Where(p => p.EndsWith(searchForFileOrFolder)).ToList();
+			if ( srcFullPaths.Count == 0 )
 			{
 				_logger.LogError("[MoveFileIfExist] Could not find exiftool.exe file");
 				return;
 			}
 
-			if ( _hostFileSystemStorage.ExistFile(srcFullPath) )
+			foreach ( var srcFullPath in srcFullPaths )
 			{
-				var destFullPath = Path.Combine(destFolder, destFileName);
-				_hostFileSystemStorage.FileMove(srcFullPath, destFullPath);
+				var isFolderOrFile = _hostFileSystemStorage.Info(srcFullPath).IsFolderOrFile;
+				var destFullPath = Path.Combine(destFolder, destFileNameOrFolderName);
+
+				switch ( isFolderOrFile )
+				{
+					case FolderOrFileModel.FolderOrFileTypeList.Folder:
+						if ( !_hostFileSystemStorage.ExistFolder(srcFullPath) ) continue;
+						_hostFileSystemStorage.FolderMove(srcFullPath, destFullPath);
+						break;
+					case FolderOrFileModel.FolderOrFileTypeList.File:
+						if ( !_hostFileSystemStorage.ExistFile(srcFullPath) ) continue;
+						_hostFileSystemStorage.FileMove(srcFullPath, destFullPath);
+						break;
+					default:
+						break;
+				}
+
 			}
 		}
 	}

@@ -47,6 +47,10 @@ public class WindowsOpenDesktopAppTests
 			Registry.CurrentUser.DeleteSubKeyTree($@"Software\Classes\{Extension}", false);
 			Registry.CurrentUser.DeleteSubKeyTree($@"Software\Classes\{ProgramId}", false);
 		}
+		catch ( UnauthorizedAccessException )
+		{
+			// do nothing
+		}
 		catch ( IOException )
 		{
 			// do nothing
