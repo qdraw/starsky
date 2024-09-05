@@ -50,6 +50,7 @@ namespace starsky.foundation.storage.ArchiveFormats
 						continue;
 					}
 					
+					// Give sometimes issues
 					if ( entry.FullName.EndsWith('/') )
 					{
 						if ( !_hostStorage.ExistFolder(destinationPath) )
