@@ -50,6 +50,7 @@ namespace starsky.foundation.storage.ArchiveFormats
 						continue;
 					}
 					
+					// Folders inside zips give sometimes issues
 					if ( entry.FullName.EndsWith('/') )
 					{
 						if ( !_hostStorage.ExistFolder(destinationPath) )
@@ -91,6 +92,7 @@ namespace starsky.foundation.storage.ArchiveFormats
 		/// <param name="fileNames">list of filenames</param>
 		/// <param name="zipOutputFilename">to name of the zip file (zipHash)</param>
 		/// <returns>a zip in the temp folder</returns>
+		[SuppressMessage("Usage", "S2325:Make CreateZip a static method")]
 		public string CreateZip(string storeZipFolderFullPath, List<string> filePaths,
 			List<string> fileNames, string zipOutputFilename)
 		{

@@ -1,15 +1,16 @@
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using Medallion.Shell;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Win32;
 using starsky.foundation.native.OpenApplicationNative.Helpers;
 using starsky.foundation.platform.Models;
 using starskytest.FakeCreateAn.CreateFakeStarskyExe;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using Medallion.Shell;
 
 namespace starskytest.starsky.foundation.native.OpenApplicationNative.Helpers;
 
@@ -32,20 +33,21 @@ public class WindowsOpenDesktopAppTests
 		CleanSetup();
 	}
 
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability",
+	[SuppressMessage("Interoperability",
 		"CA1416:Validate platform compatibility", Justification = "Check does exists")]
 	private static void CleanSetup()
 	{
-		if ( !new AppSettings().IsWindows )
-		{
-			return;
-		}
+		if ( !new AppSettings().IsWindows ) return;
 
 		// Ensure no keys exist before the test starts
 		try
 		{
 			Registry.CurrentUser.DeleteSubKeyTree($@"Software\Classes\{Extension}", false);
 			Registry.CurrentUser.DeleteSubKeyTree($@"Software\Classes\{ProgramId}", false);
+		}
+		catch ( UnauthorizedAccessException )
+		{
+			// do nothing
 		}
 		catch ( IOException )
 		{
@@ -55,10 +57,7 @@ public class WindowsOpenDesktopAppTests
 
 	private static CreateFakeStarskyWindowsExe SetupEnsureAssociationsSet()
 	{
-		if ( !new AppSettings().IsWindows )
-		{
-			return new CreateFakeStarskyWindowsExe();
-		}
+		if ( !new AppSettings().IsWindows ) return new CreateFakeStarskyWindowsExe();
 
 		var mock = new CreateFakeStarskyWindowsExe();
 		var filePath = mock.FullFilePath;
@@ -145,7 +144,6 @@ public class WindowsOpenDesktopAppTests
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(Win32Exception))]
 	public void W_OpenApplicationAtUrl2_NonWindows()
 	{
 		if ( new AppSettings().IsWindows )
@@ -154,13 +152,15 @@ public class WindowsOpenDesktopAppTests
 			return;
 		}
 
-		// ExpectedException = Win32Exception
-		WindowsOpenDesktopApp.OpenApplicationAtUrl(["any value"],
-			"/not_found_849539453", OSPlatform.Windows);
+		Assert.ThrowsException<Win32Exception>(() =>
+		{
+			// Code that is expected to throw the exception
+			WindowsOpenDesktopApp.OpenApplicationAtUrl(["any value"],
+				"/not_found_849539453", OSPlatform.Windows);
+		});
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(Win32Exception))]
 	public void W_OpenApplicationAtUrl3_NonWindows()
 	{
 		if ( new AppSettings().IsWindows )
@@ -169,8 +169,12 @@ public class WindowsOpenDesktopAppTests
 			return;
 		}
 
-		WindowsOpenDesktopApp.OpenApplicationAtUrl(new List<string> { "any value" },
-			"app");
+		Assert.ThrowsException<Win32Exception>(() =>
+		{
+			// Code that is expected to throw the exception
+			WindowsOpenDesktopApp.OpenApplicationAtUrl(["any value"],
+				"app");
+		});
 	}
 
 	[TestMethod]
@@ -185,7 +189,7 @@ public class WindowsOpenDesktopAppTests
 		// Arrange
 		var mock = new CreateFakeStarskyWindowsExe();
 
-		var fileUrls = new List<string> { mock.StarskyDotStarskyPath, };
+		var fileUrls = new List<string> { mock.StarskyDotStarskyPath };
 
 		// Act
 		var result = WindowsOpenDesktopApp.OpenApplicationAtUrl(fileUrls, mock.FullFilePath);
@@ -205,7 +209,7 @@ public class WindowsOpenDesktopAppTests
 
 		// Arrange
 		var mock = new CreateFakeStarskyUnixBash();
-		var fileUrls = new List<string> { mock.StarskyDotStarskyPath, };
+		var fileUrls = new List<string> { mock.StarskyDotStarskyPath };
 
 		await Command.Run("chmod", "+x",
 			mock.FullFilePath).Task;
