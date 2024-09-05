@@ -436,7 +436,7 @@ namespace starsky.feature.webhtmlpublish.Services
 			var filePaths = fileNames
 				.Select(p => Path.Combine(fullFileParentFolderPath, slugItemName, p)).ToList();
 
-			new Zipper().CreateZip(fullFileParentFolderPath, filePaths, fileNames,
+			new Zipper(_logger).CreateZip(fullFileParentFolderPath, filePaths, fileNames,
 				slugItemName);
 
 			// Write a single file to be sure that writing is ready

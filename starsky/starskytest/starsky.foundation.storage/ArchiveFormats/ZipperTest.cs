@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.storage.ArchiveFormats;
 using starskytest.FakeCreateAn;
 using starskytest.FakeCreateAn.CreateAnZipFile12;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.storage.ArchiveFormats
 {
@@ -16,7 +17,7 @@ namespace starskytest.starsky.foundation.storage.ArchiveFormats
 		[TestMethod]
 		public void NotFound()
 		{
-			var result =  new Zipper().ExtractZip("not-found","t");
+			var result =  new Zipper(new FakeIWebLogger()).ExtractZip("not-found","t");
 			Assert.IsFalse(result);
 		}
 		
@@ -52,7 +53,7 @@ namespace starskytest.starsky.foundation.storage.ArchiveFormats
 			File.Create(tempFileFullPath).Close(); // Create a temporary zip file
 			
 			// Act
-			var result = new Zipper().CreateZip(new CreateAnImage().BasePath, filePaths, fileNames, zipOutputFilename);
+			var result = new Zipper(new FakeIWebLogger()).CreateZip(new CreateAnImage().BasePath, filePaths, fileNames, zipOutputFilename);
 
 			// Assert
 			File.Delete(tempFileFullPath);
@@ -77,10 +78,10 @@ namespace starskytest.starsky.foundation.storage.ArchiveFormats
 			}
 			
 			const string zipOutputFilename = "CreateZip_Creates_Valid_Zip_File";
-			string tempFileFullPath = Path.Combine(new CreateAnImage().BasePath, zipOutputFilename) + ".zip";
+			var tempFileFullPath = Path.Combine(new CreateAnImage().BasePath, zipOutputFilename) + ".zip";
 
 			// Act
-			string result = new Zipper().CreateZip(new CreateAnImage().BasePath, filePaths, fileNames, zipOutputFilename);
+			var result = new Zipper(new FakeIWebLogger()).CreateZip(new CreateAnImage().BasePath, filePaths, fileNames, zipOutputFilename);
 
 			// Assert
 			Assert.IsTrue(File.Exists(result));

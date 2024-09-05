@@ -340,12 +340,12 @@ namespace starsky.foundation.writemeta.Services
 			var windowsExifToolFolder = Path.Combine(_appSettings.DependenciesFolder, "exiftool-windows");
 
 			var url = $"{exiftoolDownloadBasePath}{matchExifToolForWindowsName}";
-			var windowsDownloaded = await _httpClientHelper.Download(url, zipArchiveFullFilePath);
-			if ( !windowsDownloaded )
-			{
-				_logger.LogError($"file is not downloaded {matchExifToolForWindowsName}");
-				return false;
-			}
+			// var windowsDownloaded = await _httpClientHelper.Download(url, zipArchiveFullFilePath);
+			// if ( !windowsDownloaded )
+			// {
+			// 	_logger.LogError($"file is not downloaded {matchExifToolForWindowsName}");
+			// 	return false;
+			// }
 
 			if ( !CheckSha256(zipArchiveFullFilePath, getChecksumsFromTextFile) )
 			{
@@ -355,19 +355,29 @@ namespace starsky.foundation.writemeta.Services
 
 			_hostFileSystemStorage.CreateDirectory(windowsExifToolFolder);
 
-			new Zipper().ExtractZip(zipArchiveFullFilePath, windowsExifToolFolder);
-			MoveFileIfExist(Path.Combine(windowsExifToolFolder, "exiftool(-k).exe"),
-				Path.Combine(windowsExifToolFolder, "exiftool.exe"));
+			new Zipper(_logger).ExtractZip(zipArchiveFullFilePath, windowsExifToolFolder);
+			MoveFileIfExist(windowsExifToolFolder, "exiftool(-k).exe", windowsExifToolFolder, "exiftool.exe");
 
 			_logger.LogInformation($"[DownloadForWindows] ExifTool downloaded: {ExeExifToolWindowsFullFilePath()}");
 			return _hostFileSystemStorage.ExistFile(Path.Combine(windowsExifToolFolder,
 				"exiftool.exe"));
 		}
 
-		private void MoveFileIfExist(string srcFullPath, string toFullPath)
+		private void MoveFileIfExist(string searchFolder, string searchForFile, string destFolder, string destFileName)
 		{
-			if ( !_hostFileSystemStorage.ExistFile(srcFullPath) ) return;
-			_hostFileSystemStorage.FileMove(srcFullPath, toFullPath);
+			var files = _hostFileSystemStorage.GetAllFilesInDirectoryRecursive(searchFolder);
+			var srcFullPath = files.FirstOrDefault(p => p.EndsWith(searchForFile));
+			if ( srcFullPath == null )
+			{
+				_logger.LogError("[MoveFileIfExist] Could not find exiftool.exe file");
+				return;
+			}
+
+			if ( _hostFileSystemStorage.ExistFile(srcFullPath) )
+			{
+				var destFullPath = Path.Combine(destFolder, destFileName);
+				_hostFileSystemStorage.FileMove(srcFullPath, destFullPath);
+			}
 		}
 	}
 }

@@ -4,6 +4,7 @@ using starsky.feature.geolookup.Interfaces;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.ArchiveFormats;
 using starsky.foundation.storage.Interfaces;
@@ -17,16 +18,18 @@ namespace starsky.feature.geolookup.Services
 		private readonly AppSettings _appSettings;
 		private readonly IHttpClientHelper _httpClientHelper;
 		private readonly IStorage _hostStorage;
+		private readonly IWebLogger _logger;
 
 		public const string CountryName = "cities1000";
 		internal long MinimumSizeInBytes { get; set; } = 7000000; // 7 MB
 
 		public GeoFileDownload(AppSettings appSettings, IHttpClientHelper httpClientHelper,
-			ISelectorStorage selectorStorage)
+			ISelectorStorage selectorStorage, IWebLogger logger)
 		{
 			_appSettings = appSettings;
 			_httpClientHelper = httpClientHelper;
 			_hostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+			_logger = logger;
 		}
 
 		internal const string BaseUrl =
@@ -55,7 +58,7 @@ namespace starsky.feature.geolookup.Services
 						outputZip);
 				}
 
-				new Zipper().ExtractZip(outputZip, _appSettings.DependenciesFolder);
+				new Zipper(_logger).ExtractZip(outputZip, _appSettings.DependenciesFolder);
 			}
 
 			if ( !_hostStorage.ExistFile(

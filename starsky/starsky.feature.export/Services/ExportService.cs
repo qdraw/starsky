@@ -145,7 +145,7 @@ public class ExportService : IExport
 		var filePaths = await CreateListToExport(fileIndexResultsList, thumbnail);
 		var fileNames = await FilePathToFileNameAsync(filePaths, thumbnail);
 
-		new Zipper().CreateZip(_appSettings.TempFolder, filePaths, fileNames, zipOutputFileName);
+		new Zipper(_logger).CreateZip(_appSettings.TempFolder, filePaths, fileNames, zipOutputFileName);
 
 		// Write a single file to be sure that writing is ready
 		var doneFileFullPath = Path.Combine(_appSettings.TempFolder, zipOutputFileName) + ".done";
