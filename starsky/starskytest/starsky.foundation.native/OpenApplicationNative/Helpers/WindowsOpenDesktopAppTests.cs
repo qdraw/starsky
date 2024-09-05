@@ -149,7 +149,6 @@ public class WindowsOpenDesktopAppTests
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(Win32Exception))]
 	public void W_OpenApplicationAtUrl2_NonWindows()
 	{
 		if ( new AppSettings().IsWindows )
@@ -158,9 +157,12 @@ public class WindowsOpenDesktopAppTests
 			return;
 		}
 
-		// ExpectedException = Win32Exception
-		WindowsOpenDesktopApp.OpenApplicationAtUrl(["any value"],
-			"/not_found_849539453", OSPlatform.Windows);
+		Assert.ThrowsException<Win32Exception>(() =>
+		{
+			// Code that is expected to throw the exception
+			WindowsOpenDesktopApp.OpenApplicationAtUrl(["any value"],
+				"/not_found_849539453", OSPlatform.Windows);
+		});
 	}
 
 	[TestMethod]
@@ -173,8 +175,12 @@ public class WindowsOpenDesktopAppTests
 			return;
 		}
 
-		WindowsOpenDesktopApp.OpenApplicationAtUrl(new List<string> { "any value" },
-			"app");
+		Assert.ThrowsException<Win32Exception>(() =>
+		{
+			// Code that is expected to throw the exception
+			WindowsOpenDesktopApp.OpenApplicationAtUrl(["any value"],
+				"app");
+		});
 	}
 
 	[TestMethod]
