@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -5,8 +6,10 @@ using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.storage.ArchiveFormats;
+using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
 using starskytest.FakeCreateAn.CreateAnZipFile12;
+using starskytest.FakeCreateAn.CreateAnZipFileChildFolders;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.storage.ArchiveFormats
@@ -28,7 +31,7 @@ namespace starskytest.starsky.foundation.storage.ArchiveFormats
 			var zipped = CreateAnZipFile12.Bytes;
 
 			// Act
-			var result = Zipper.ExtractZip(zipped.ToArray());
+			var result = Zipper.ExtractZip([.. zipped]);
 
 			// Assert
 			Assert.IsNotNull(result);
@@ -43,11 +46,45 @@ namespace starskytest.starsky.foundation.storage.ArchiveFormats
 		}
 		
 		[TestMethod]
+		public void TestExtractZipFolders()
+		{
+			// Arrange
+			var zipped = CreateAnZipFileChildFolders.Bytes;
+			var testOutputFolder = Path.Combine(new CreateAnImage().BasePath, "test-folder-zip-folders");
+			var inputZipPath = testOutputFolder + ".zip";
+			var hostService = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+			hostService.WriteStream(new MemoryStream([..zipped]), inputZipPath);
+			hostService.CreateDirectory(testOutputFolder);
+
+			// Act
+			var result = new Zipper(new FakeIWebLogger()).ExtractZip(inputZipPath, testOutputFolder);
+
+			// Assert
+			Assert.IsNotNull(result);
+
+			foreach ( var contentItem in CreateAnZipFileChildFolders.Content )
+			{
+				var path = Path.Combine(testOutputFolder, contentItem.Key.Replace("/", Path.DirectorySeparatorChar.ToString()));
+				
+				if ( contentItem.Value )
+				{
+					Assert.IsTrue(hostService.ExistFolder(path));
+					continue;
+				}
+				
+				Assert.IsTrue(hostService.ExistFile(path));
+			}
+
+			hostService.FolderDelete(testOutputFolder);
+			hostService.FileDelete(inputZipPath);
+		}
+		
+		[TestMethod]
 		public void CreateZip_Returns_Valid_Path_When_File_Exists()
 		{
 			// Arrange
-			List<string> filePaths = new List<string> { "C:\\temp\\file1.txt", "C:\\temp\\file2.txt" };
-			List<string> fileNames = new List<string> { "file1.txt", "file2.txt" };
+			var filePaths = new List<string> { "C:\\temp\\file1.txt", "C:\\temp\\file2.txt" };
+			var fileNames = new List<string> { "file1.txt", "file2.txt" };
 			const string zipOutputFilename = "CreateZip_Returns_Valid_Path_When_File_Exists";
 			var tempFileFullPath = Path.Combine(new CreateAnImage().BasePath, zipOutputFilename) + ".zip";
 			File.Create(tempFileFullPath).Close(); // Create a temporary zip file
@@ -72,7 +109,7 @@ namespace starskytest.starsky.foundation.storage.ArchiveFormats
 			var filePaths = new List<string>();
 			foreach ( var singleFile in fileNames )
 			{
-				string tempFileFullPath1 = Path.Combine(new CreateAnImage().BasePath, singleFile);
+				var tempFileFullPath1 = Path.Combine(new CreateAnImage().BasePath, singleFile);
 				File.Create(tempFileFullPath1).Close(); // Create a temporary zip file
 				filePaths.Add(tempFileFullPath1);
 			}
