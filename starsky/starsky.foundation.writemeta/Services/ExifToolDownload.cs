@@ -340,12 +340,12 @@ namespace starsky.foundation.writemeta.Services
 			var windowsExifToolFolder = Path.Combine(_appSettings.DependenciesFolder, "exiftool-windows");
 
 			var url = $"{exiftoolDownloadBasePath}{matchExifToolForWindowsName}";
-			// var windowsDownloaded = await _httpClientHelper.Download(url, zipArchiveFullFilePath);
-			// if ( !windowsDownloaded )
-			// {
-			// 	_logger.LogError($"file is not downloaded {matchExifToolForWindowsName}");
-			// 	return false;
-			// }
+			var windowsDownloaded = await _httpClientHelper.Download(url, zipArchiveFullFilePath);
+			if ( !windowsDownloaded )
+			{
+				_logger.LogError($"file is not downloaded {matchExifToolForWindowsName}");
+				return false;
+			}
 
 			if ( !CheckSha256(zipArchiveFullFilePath, getChecksumsFromTextFile) )
 			{
