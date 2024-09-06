@@ -89,7 +89,8 @@ namespace starsky.Helpers
 			if ( appSettings.AddSwagger != true ||
 				 appSettings.AddSwaggerExport != true ||
 				 appSettings.AddSwaggerExportExitAfter != true ) return false;
-
+			
+			_logger.LogInformation("App is stopped");
 			applicationLifetime.StopApplication();
 			return true;
 		}

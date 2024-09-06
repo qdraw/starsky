@@ -30,10 +30,9 @@ namespace starskytest.starsky.feature.webhtmlpublish.Helpers
 		}
 
 		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void CopyContent_Null()
 		{
-			_ = new CopyPublishedContent(null!, null!);
+			Assert.ThrowsException<ArgumentNullException>(() => new CopyPublishedContent(null!, null!));
 		}
 	}
 }

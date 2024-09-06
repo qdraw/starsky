@@ -94,6 +94,7 @@ namespace starsky.foundation.thumbnailgeneration.Services
 		}
 
 		[SuppressMessage("Performance", "CA1822:Mark members as static")]
+		[SuppressMessage("ReSharper", "S2325: Static property")]
 		// ReSharper disable once MemberCanBeMadeStatic.Global
 		private HashSet<string> GetFileNamesWithExtension(List<string> allThumbnailFiles)
 		{
