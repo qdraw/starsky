@@ -834,7 +834,6 @@ public sealed class QueryTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(AggregateException))]
 	public async Task AddItemAsync_SqliteRetry()
 	{
 		var services = new ServiceCollection();
@@ -850,7 +849,9 @@ public sealed class QueryTest
 
 		var item = new FileIndexItem("/test/010101.jpg");
 
-		await query.AddItemAsync(item);
+
+		await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+			await query.AddItemAsync(item));
 		// should fail due update
 	}
 
@@ -1424,7 +1425,6 @@ public sealed class QueryTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(AggregateException))]
 	public async Task RetrySaveChangesAsync_AggregateException()
 	{
 		var serviceScope = CreateNewScope();
@@ -1432,8 +1432,10 @@ public sealed class QueryTest
 		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
 		var query = new Query(dbContext, new AppSettings(), null!, new FakeIWebLogger());
-		await query.RetryQueryUpdateSaveChangesAsync(new FileIndexItem { Id = 1 },
-			new Exception(), "test", 0);
+
+		await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+			await query.RetryQueryUpdateSaveChangesAsync(new FileIndexItem { Id = 1 },
+				new Exception(), "test", 0));
 	}
 
 	[TestMethod]

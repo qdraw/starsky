@@ -46,10 +46,10 @@ COPY . ./
 
 WORKDIR /app/starsky
 
-# there is specific version matched in global.json, but docker uses the latest
-RUN rm /app/global.json
+# there is specific version matched in /app/global.json, but docker uses the latest
 
 RUN /bin/bash -c "\
+    rm /app/global.json ; \
     if [ \"$TARGETPLATFORM\" = \"linux/amd64\" ]; then \
         echo \"$TARGETPLATFORM\" ; \
         dotnet restore --runtime linux-x64 starsky.csproj ; \
@@ -85,8 +85,7 @@ RUN \
         --dependencies "/app/dependencies" \
         --tempfolder "/app/temp" \
         -h \
-        -v
-RUN \
+        -v \
     if [ "$ISDEMO" != "" ]; then \
         # it should cache faster \
         dotnet build starsky/starsky.csproj --configuration Release ;\
@@ -139,10 +138,8 @@ RUN if [ "$TOOLS" = "true" ]; then \
     rm -rf /var/lib/apt/lists/* ;\
 else \
     echo "no tools for debug" ;\
-fi
-
-# Create a group and user
-RUN groupadd --gid 1000 starsky \
+fi \
+  groupadd --gid 1000 starsky \
     && useradd --uid 1000 --gid starsky --shell /bin/bash --create-home starsky
     
 # copy dlls
