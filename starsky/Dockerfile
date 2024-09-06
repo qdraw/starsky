@@ -23,9 +23,11 @@ ENV IMAGE_INLINE_SIZE_LIMIT=1
 ENV DISABLE_ESLINT_PLUGIN=true
 COPY starsky/clientapp/. ./
 # random npm ERR! code ECONNRESET
-RUN for i in 1 2 3; do npm ci --legacy-peer-deps --prefer-offline --no-audit --no-fund --ignore-scripts && break || sleep 15; done 
-RUN npm run build
-RUN echo "react done"
+RUN for i in 1 2 3; do \
+      npm ci --legacy-peer-deps --prefer-offline --no-audit --no-fund --ignore-scripts && break || sleep 15; \
+    done && \
+    npm run build && \
+    echo "react done"
 
 # no alpine build since there is no support for multi-arch
 # docker buildx imagetools inspect mcr.microsoft.com/dotnet/sdk:6.0
@@ -57,9 +59,7 @@ RUN \
         dotnet restore --runtime linux-arm starsky.csproj ; \
     else \
         dotnet restore starsky.csproj ; \
-    fi
-
-RUN \
+    fi \
     if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
         echo "$TARGETPLATFORM" ; \
         dotnet publish -c release -o out --runtime linux-x64 --self-contained false --no-restore ; \
@@ -77,8 +77,15 @@ RUN \
     mkdir -p "/app/dependencies" && \
     mkdir -p "/app/temp" && \
     touch /app/temp/.gitkeep && \
-    dotnet run --project "/app/starskygeocli/starskygeocli.csproj" --configuration Release -- --connection "Data Source=/app/data.db" --dependencies "/app/dependencies" --tempfolder "/app/temp" -h -v
-
+    dotnet run \
+        --project "/app/starskygeocli/starskygeocli.csproj" \
+        --configuration Release \
+        -- \
+        --connection "Data Source=/app/data.db" \
+        --dependencies "/app/dependencies" \
+        --tempfolder "/app/temp" \
+        -h \
+        -v
 RUN \
     if [ "$ISDEMO" != "" ]; then \
         # it should cache faster \
@@ -103,7 +110,13 @@ RUN if [ "$TEST" = "true" ]; then \
         mkdir -p "/testresults" ;\
         if [ "$BUILDPLATFORM" = "$TARGETPLATFORM" ]; then \
           echo "$TEST" "$BUILDPLATFORM" "$TARGETPLATFORM" ; \
-          dotnet test -c release --results-directory /testresults --logger "trx;LogFileName=test_results.trx" --collect:"XPlat Code Coverage" --settings build.vstest.runsettings starskytest/starskytest.csproj ; \
+          dotnet test \
+              -c release \
+              --results-directory /testresults \
+              --logger "trx;LogFileName=test_results.trx" \
+              --collect:"XPlat Code Coverage" \
+              --settings build.vstest.runsettings \
+              starskytest/starskytest.csproj ;\
         fi ;\
         touch "/testresults/test.enabled" ;\
     else \
