@@ -138,7 +138,7 @@ RUN if [ "$TOOLS" = "true" ]; then \
     rm -rf /var/lib/apt/lists/* ;\
 else \
     echo "no tools for debug" ;\
-fi \
+fi && \
   groupadd --gid 1000 starsky \
     && useradd --uid 1000 --gid starsky --shell /bin/bash --create-home starsky
     

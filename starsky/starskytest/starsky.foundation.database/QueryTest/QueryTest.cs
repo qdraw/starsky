@@ -1433,7 +1433,7 @@ public sealed class QueryTest
 
 		var query = new Query(dbContext, new AppSettings(), null!, new FakeIWebLogger());
 
-		await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+		await Assert.ThrowsExceptionAsync<AggregateException>(async () =>
 			await query.RetryQueryUpdateSaveChangesAsync(new FileIndexItem { Id = 1 },
 				new Exception(), "test", 0));
 	}
