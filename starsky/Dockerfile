@@ -49,27 +49,27 @@ WORKDIR /app/starsky
 # there is specific version matched in global.json, but docker uses the latest
 RUN rm /app/global.json
 
-RUN \
-    if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-        echo "$TARGETPLATFORM" ; \
+RUN /bin/bash -c "\
+    if [ \"$TARGETPLATFORM\" = \"linux/amd64\" ]; then \
+        echo \"$TARGETPLATFORM\" ; \
         dotnet restore --runtime linux-x64 starsky.csproj ; \
-    elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
+    elif [ \"$TARGETPLATFORM\" = \"linux/arm64\" ]; then \
         dotnet restore --runtime linux-arm64 starsky.csproj ; \
-    elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then \
+    elif [ \"$TARGETPLATFORM\" = \"linux/arm/v7\" ]; then \
         dotnet restore --runtime linux-arm starsky.csproj ; \
     else \
         dotnet restore starsky.csproj ; \
-    fi \
-    if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-        echo "$TARGETPLATFORM" ; \
+    fi && \
+    if [ \"$TARGETPLATFORM\" = \"linux/amd64\" ]; then \
+        echo \"$TARGETPLATFORM\" ; \
         dotnet publish -c release -o out --runtime linux-x64 --self-contained false --no-restore ; \
-    elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
+    elif [ \"$TARGETPLATFORM\" = \"linux/arm64\" ]; then \
         dotnet publish -c release -o out --runtime linux-arm64 --self-contained false --no-restore ; \
-    elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then \
+    elif [ \"$TARGETPLATFORM\" = \"linux/arm/v7\" ]; then \
         dotnet publish -c release -o out --runtime linux-arm --self-contained false --no-restore ; \
     else \
-       dotnet publish -c release -o out\
-    fi
+       dotnet publish -c release -o out ;\
+    fi"
 
 WORKDIR /app
 
