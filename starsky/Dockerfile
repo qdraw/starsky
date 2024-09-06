@@ -85,7 +85,7 @@ RUN \
         --dependencies "/app/dependencies" \
         --tempfolder "/app/temp" \
         -h \
-        -v \
+        -v  && \
     if [ "$ISDEMO" != "" ]; then \
         # it should cache faster \
         dotnet build starsky/starsky.csproj --configuration Release ;\
