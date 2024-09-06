@@ -23,9 +23,11 @@ ENV IMAGE_INLINE_SIZE_LIMIT=1
 ENV DISABLE_ESLINT_PLUGIN=true
 COPY starsky/clientapp/. ./
 # random npm ERR! code ECONNRESET
-RUN for i in 1 2 3; do npm ci --legacy-peer-deps --prefer-offline --no-audit --no-fund --ignore-scripts && break || sleep 15; done 
-RUN npm run build
-RUN echo "react done"
+RUN for i in 1 2 3; do \
+      npm ci --legacy-peer-deps --prefer-offline --no-audit --no-fund --ignore-scripts && break || sleep 15; \
+    done && \
+    npm run build && \
+    echo "react done"
 
 # no alpine build since there is no support for multi-arch
 # docker buildx imagetools inspect mcr.microsoft.com/dotnet/sdk:6.0
@@ -44,32 +46,30 @@ COPY . ./
 
 WORKDIR /app/starsky
 
-# there is specific version matched in global.json, but docker uses the latest
-RUN rm /app/global.json
+# there is specific version matched in /app/global.json, but docker uses the latest
 
-RUN \
-    if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-        echo "$TARGETPLATFORM" ; \
+RUN /bin/bash -c "\
+    rm /app/global.json ; \
+    if [ \"$TARGETPLATFORM\" = \"linux/amd64\" ]; then \
+        echo \"$TARGETPLATFORM\" ; \
         dotnet restore --runtime linux-x64 starsky.csproj ; \
-    elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
+    elif [ \"$TARGETPLATFORM\" = \"linux/arm64\" ]; then \
         dotnet restore --runtime linux-arm64 starsky.csproj ; \
-    elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then \
+    elif [ \"$TARGETPLATFORM\" = \"linux/arm/v7\" ]; then \
         dotnet restore --runtime linux-arm starsky.csproj ; \
     else \
         dotnet restore starsky.csproj ; \
-    fi
-
-RUN \
-    if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-        echo "$TARGETPLATFORM" ; \
+    fi && \
+    if [ \"$TARGETPLATFORM\" = \"linux/amd64\" ]; then \
+        echo \"$TARGETPLATFORM\" ; \
         dotnet publish -c release -o out --runtime linux-x64 --self-contained false --no-restore ; \
-    elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
+    elif [ \"$TARGETPLATFORM\" = \"linux/arm64\" ]; then \
         dotnet publish -c release -o out --runtime linux-arm64 --self-contained false --no-restore ; \
-    elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then \
+    elif [ \"$TARGETPLATFORM\" = \"linux/arm/v7\" ]; then \
         dotnet publish -c release -o out --runtime linux-arm --self-contained false --no-restore ; \
     else \
-       dotnet publish -c release -o out  ; \
-    fi
+       dotnet publish -c release -o out ;\
+    fi"
 
 WORKDIR /app
 
@@ -77,9 +77,15 @@ RUN \
     mkdir -p "/app/dependencies" && \
     mkdir -p "/app/temp" && \
     touch /app/temp/.gitkeep && \
-    dotnet run --project "/app/starskygeocli/starskygeocli.csproj" --configuration Release -- --connection "Data Source=/app/data.db" --dependencies "/app/dependencies" --tempfolder "/app/temp" -h -v
-
-RUN \
+    dotnet run \
+        --project "/app/starskygeocli/starskygeocli.csproj" \
+        --configuration Release \
+        -- \
+        --connection "Data Source=/app/data.db" \
+        --dependencies "/app/dependencies" \
+        --tempfolder "/app/temp" \
+        -h \
+        -v  && \
     if [ "$ISDEMO" != "" ]; then \
         # it should cache faster \
         dotnet build starsky/starsky.csproj --configuration Release ;\
@@ -103,7 +109,13 @@ RUN if [ "$TEST" = "true" ]; then \
         mkdir -p "/testresults" ;\
         if [ "$BUILDPLATFORM" = "$TARGETPLATFORM" ]; then \
           echo "$TEST" "$BUILDPLATFORM" "$TARGETPLATFORM" ; \
-          dotnet test -c release --results-directory /testresults --logger "trx;LogFileName=test_results.trx" --collect:"XPlat Code Coverage" --settings build.vstest.runsettings starskytest/starskytest.csproj ; \
+          dotnet test \
+              -c release \
+              --results-directory /testresults \
+              --logger "trx;LogFileName=test_results.trx" \
+              --collect:"XPlat Code Coverage" \
+              --settings build.vstest.runsettings \
+              starskytest/starskytest.csproj ;\
         fi ;\
         touch "/testresults/test.enabled" ;\
     else \
@@ -126,10 +138,8 @@ RUN if [ "$TOOLS" = "true" ]; then \
     rm -rf /var/lib/apt/lists/* ;\
 else \
     echo "no tools for debug" ;\
-fi
-
-# Create a group and user
-RUN groupadd --gid 1000 starsky \
+fi && \
+  groupadd --gid 1000 starsky \
     && useradd --uid 1000 --gid starsky --shell /bin/bash --create-home starsky
     
 # copy dlls

@@ -40,11 +40,11 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 		}
 
 		[TestMethod]
-		[ExpectedException(typeof(DirectoryNotFoundException))]
 		public async Task ThumbnailCleanerTestAsync_DirectoryNotFoundException()
 		{
-			await new ThumbnailCleaner(new FakeIStorage(), _query, new FakeIWebLogger(),
-				new FakeIThumbnailQuery()).CleanAllUnusedFilesAsync();
+			var sut = new ThumbnailCleaner(new FakeIStorage(), _query, new FakeIWebLogger(),
+				new FakeIThumbnailQuery());
+			await Assert.ThrowsExceptionAsync<DirectoryNotFoundException>(async () => await sut.CleanAllUnusedFilesAsync());
 		}
 
 		[TestMethod]

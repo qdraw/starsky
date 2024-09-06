@@ -398,7 +398,7 @@ public sealed class UserManager : IUserManager
 				Success = false, Error = ValidateResultError.CredentialTypeNotFound
 			};
 
-		var credential = _dbContext.Credentials.FirstOrDefault(
+		var credential = await _dbContext.Credentials.FirstOrDefaultAsync(
 			c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
 
 		if ( credential == null )
@@ -481,7 +481,7 @@ public sealed class UserManager : IUserManager
 				p.User != null && p.User.Id == userId);
 		if ( role == null ) return null;
 		var roleId = role.RoleId;
-		return _dbContext.Roles.TagWith("GetRole").FirstOrDefault(p => p.Id == roleId);
+		return await _dbContext.Roles.TagWith("GetRole").FirstOrDefaultAsync(p => p.Id == roleId);
 	}
 
 	public Credential? GetCredentialsByUserId(int userId)
@@ -543,9 +543,9 @@ public sealed class UserManager : IUserManager
 	/// <returns></returns>
 	internal async Task<CredentialType?> AddDefaultCredentialType(string credentialTypeCode)
 	{
-		var credentialType = _dbContext
+		var credentialType = await _dbContext
 			.CredentialTypes.TagWith("AddDefaultCredentialType")
-			.FirstOrDefault(p => p.Code!.ToLower()
+			.FirstOrDefaultAsync(p => p.Code!.ToLower()
 				.Equals(credentialTypeCode.ToLower()));
 
 		// When not exist add it
