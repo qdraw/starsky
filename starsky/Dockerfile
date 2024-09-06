@@ -68,7 +68,7 @@ RUN \
     elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then \
         dotnet publish -c release -o out --runtime linux-arm --self-contained false --no-restore ; \
     else \
-       dotnet publish -c release -o out  ; \
+       dotnet publish -c release -o out\
     fi
 
 WORKDIR /app
