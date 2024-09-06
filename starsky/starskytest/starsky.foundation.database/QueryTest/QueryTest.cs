@@ -849,8 +849,7 @@ public sealed class QueryTest
 
 		var item = new FileIndexItem("/test/010101.jpg");
 
-
-		await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+		await Assert.ThrowsExceptionAsync<AggregateException>(async () =>
 			await query.AddItemAsync(item));
 		// should fail due update
 	}
