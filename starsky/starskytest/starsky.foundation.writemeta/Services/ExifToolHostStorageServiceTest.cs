@@ -77,7 +77,7 @@ public sealed class ExifToolHostStorageServiceTest
 			hostFileSystemStorage.FolderDelete(outputPath);
 		}
 
-		await new TarBal(hostFileSystemStorage).ExtractTarGz(memoryStream, outputPath,
+		await new TarBal(hostFileSystemStorage, new FakeIWebLogger()).ExtractTarGz(memoryStream, outputPath,
 			CancellationToken.None);
 		var imageExifToolVersionFolder = hostFileSystemStorage.GetDirectories(outputPath)
 			.FirstOrDefault(p => p.StartsWith(Path.Combine(outputPath, "Image-ExifTool-")))?

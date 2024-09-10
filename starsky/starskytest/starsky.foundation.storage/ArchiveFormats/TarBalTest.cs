@@ -10,49 +10,53 @@ using starskytest.FakeCreateAn;
 using starskytest.FakeCreateAn.CreateAnTagGzLongerThan100CharsFileName;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.storage.ArchiveFormats
+namespace starskytest.starsky.foundation.storage.ArchiveFormats;
+
+[TestClass]
+public sealed class TarBalTest
 {
-	[TestClass]
-	public sealed class TarBalTest
+	[TestMethod]
+	public async Task ExtractTar()
 	{
-		[TestMethod]
-		public async Task ExtractTar()
-		{
-			// Non Gz Tar
-			var storage = new FakeIStorage(new List<string> {"/"},
-				new List<string>());
+		// Non Gz Tar
+		var storage = new FakeIStorage(new List<string> { "/" },
+			new List<string>());
 
-			var memoryStream = new MemoryStream(CreateAnExifToolTar.Bytes.ToArray());
-			await new TarBal(storage).ExtractTar(memoryStream,"/test", CancellationToken.None);
-			Assert.IsTrue(storage.ExistFile("/test/Image-ExifTool-11.99/exiftool"));
-		}
-		
-		[TestMethod]
-		public async Task ExtractTarGz()
-		{
-			// Gz Tar!
-			var storage = new FakeIStorage(new List<string> {"/"},
-				new List<string>());
+		var memoryStream = new MemoryStream(CreateAnExifToolTar.Bytes.ToArray());
+		await new TarBal(storage, new FakeIWebLogger()).ExtractTar(memoryStream, "/test",
+			CancellationToken.None);
+		Assert.IsTrue(storage.ExistFile("/test/Image-ExifTool-11.99/exiftool"));
+	}
 
-			var memoryStream = new MemoryStream(CreateAnExifToolTarGz.Bytes.ToArray());
-			await new TarBal(storage).ExtractTarGz(memoryStream,"/test", CancellationToken.None);
-			Assert.IsTrue(storage.ExistFile("/test/Image-ExifTool-11.99/exiftool"));
-		}
+	[TestMethod]
+	public async Task ExtractTarGz()
+	{
+		// Gz Tar!
+		var storage = new FakeIStorage(new List<string> { "/" },
+			new List<string>());
+
+		var memoryStream = new MemoryStream(CreateAnExifToolTarGz.Bytes.ToArray());
+		await new TarBal(storage, new FakeIWebLogger()).ExtractTarGz(memoryStream, "/test",
+			CancellationToken.None);
+		Assert.IsTrue(storage.ExistFile("/test/Image-ExifTool-11.99/exiftool"));
+	}
 
 
-		[TestMethod]
-		public async Task ExtractTarGz_LongerThan100Chars()
-		{
-			// Gz Tar!
-			var storage = new FakeIStorage(new List<string> {"/"},
-				new List<string>());
+	[TestMethod]
+	public async Task ExtractTarGz_LongerThan100Chars()
+	{
+		// Gz Tar!
+		var storage = new FakeIStorage(new List<string> { "/" },
+			new List<string>());
 
-			var memoryStream = new MemoryStream(new CreateAnTagGzLongerThan100CharsFileName().Bytes);
-			await new TarBal(storage).ExtractTarGz(memoryStream,"/test", CancellationToken.None);
-			Assert.IsTrue(storage.ExistFile($"/test/{CreateAnTagGzLongerThan100CharsFileName.FileName}"));
-			var file = storage.ReadStream($"/test/{CreateAnTagGzLongerThan100CharsFileName.FileName}");
-			// the filename is written as content in the file
-			Assert.AreEqual(CreateAnTagGzLongerThan100CharsFileName.FileName,(await StreamToStringHelper.StreamToStringAsync(file)).Trim());
-		}
+		var memoryStream = new MemoryStream(new CreateAnTagGzLongerThan100CharsFileName().Bytes);
+		await new TarBal(storage, new FakeIWebLogger()).ExtractTarGz(memoryStream, "/test",
+			CancellationToken.None);
+		Assert.IsTrue(
+			storage.ExistFile($"/test/{CreateAnTagGzLongerThan100CharsFileName.FileName}"));
+		var file = storage.ReadStream($"/test/{CreateAnTagGzLongerThan100CharsFileName.FileName}");
+		// the filename is written as content in the file
+		Assert.AreEqual(CreateAnTagGzLongerThan100CharsFileName.FileName,
+			( await StreamToStringHelper.StreamToStringAsync(file) ).Trim());
 	}
 }

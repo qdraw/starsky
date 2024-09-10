@@ -18,13 +18,13 @@ public class DesktopEditorController : Controller
 	}
 
 	/// <summary>
-	/// Open a file in the default editor or a specific editor on the desktop
+	///     Open a file in the default editor or a specific editor on the desktop
 	/// </summary>
 	/// <param name="f">single or multiple subPaths</param>
 	/// <param name="collections">to combine files with the same name before the extension</param>
 	/// <returns></returns>
 	/// <response code="200">returns a list of items from the database</response>
-	/// <response code="206">list with no content</response>	
+	/// <response code="206">list with no content</response>
 	/// <response code="404">subPath not found in the database</response>
 	/// <response code="401">User unauthorized</response>
 	[HttpPost("/api/desktop-editor/open")]
@@ -37,6 +37,11 @@ public class DesktopEditorController : Controller
 		string f = "",
 		bool collections = true)
 	{
+		if ( !ModelState.IsValid )
+		{
+			return BadRequest("ModelState is not valid");
+		}
+
 		var (success, status, list) =
 			await _openEditorDesktopService.OpenAsync(f, collections);
 
@@ -54,7 +59,7 @@ public class DesktopEditorController : Controller
 
 
 	/// <summary>
-	/// Check the amount of files to open before 
+	///     Check the amount of files to open before
 	/// </summary>
 	/// <param name="f">single or multiple subPaths</param>
 	/// <returns></returns>
@@ -64,8 +69,14 @@ public class DesktopEditorController : Controller
 	[Produces("application/json")]
 	[ProducesResponseType(typeof(bool), 200)]
 	[ProducesResponseType(401)]
+	[ProducesResponseType(400)]
 	public IActionResult OpenAmountConfirmationChecker(string f)
 	{
+		if ( !ModelState.IsValid )
+		{
+			return BadRequest("ModelState is not valid");
+		}
+
 		var result = _openEditorDesktopService.OpenAmountConfirmationChecker(f);
 		return Json(result);
 	}
