@@ -15,17 +15,23 @@ public class EnumListConverter<T> : JsonConverter<List<T>> where T : struct, Enu
 		JsonSerializerOptions options)
 	{
 		if ( reader.TokenType != JsonTokenType.StartArray )
+		{
 			throw new JsonException();
+		}
 
 		var result = new List<T>();
 
 		while ( reader.Read() )
 		{
 			if ( reader.TokenType == JsonTokenType.EndArray )
+			{
 				return result;
+			}
 
 			if ( reader.TokenType != JsonTokenType.String )
+			{
 				throw new JsonException();
+			}
 
 			if ( Enum.TryParse<T>(reader.GetString(), out var enumValue) )
 			{

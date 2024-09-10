@@ -113,7 +113,10 @@ namespace starsky.foundation.storage.Storage
 		/// <returns>true when success</returns>
 		public bool FileDelete(string path)
 		{
-			if ( string.IsNullOrEmpty(path) || !ExistFile(path) ) return false;
+			if ( string.IsNullOrEmpty(path) || !ExistFile(path) )
+			{
+				return false;
+			}
 
 			var thumbPath = CombinePath(path);
 			var hostFilesystem = new StorageHostFullPathFilesystem(_logger);
@@ -160,7 +163,11 @@ namespace starsky.foundation.storage.Storage
 		/// <returns>Stream with data (non-disposed)</returns>
 		public Stream ReadStream(string path, int maxRead = -1)
 		{
-			if ( !ExistFile(path) ) throw new FileNotFoundException(path);
+			if ( !ExistFile(path) )
+			{
+				throw new FileNotFoundException(path);
+			}
+
 			return new StorageHostFullPathFilesystem(_logger).ReadStream(CombinePath(path),
 				maxRead);
 		}

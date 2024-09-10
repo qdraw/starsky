@@ -29,8 +29,16 @@ namespace starsky.feature.health.UpdateCheck.Models
 			get => _tagName;
 			set
 			{
-				if ( string.IsNullOrWhiteSpace(value) ) return;
-				if ( !value.StartsWith('v') ) Console.WriteLine($"{_tagName} Should start with v");
+				if ( string.IsNullOrWhiteSpace(value) )
+				{
+					return;
+				}
+
+				if ( !value.StartsWith('v') )
+				{
+					Console.WriteLine($"{_tagName} Should start with v");
+				}
+
 				_tagName = value;
 			}
 		}

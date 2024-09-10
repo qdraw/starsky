@@ -71,7 +71,7 @@ public sealed class ExifToolDownload : IExifToolDownload
 	public async Task<bool> DownloadExifTool(bool isWindows, int minimumSize = 30)
 	{
 		if ( _appSettings.ExiftoolSkipDownloadOnStartup == true || _appSettings is
-			    { AddSwaggerExport: true, AddSwaggerExportExitAfter: true } )
+			{ AddSwaggerExport: true, AddSwaggerExportExitAfter: true } )
 		{
 			var name = _appSettings.ExiftoolSkipDownloadOnStartup == true
 				? "ExiftoolSkipDownloadOnStartup"
@@ -83,15 +83,15 @@ public sealed class ExifToolDownload : IExifToolDownload
 		CreateDirectoryDependenciesFolderIfNotExists();
 
 		if ( isWindows &&
-		     ( !_hostFileSystemStorage.ExistFile(ExeExifToolWindowsFullFilePath()) ||
-		       _hostFileSystemStorage.Info(ExeExifToolWindowsFullFilePath()).Size <= minimumSize ) )
+			 ( !_hostFileSystemStorage.ExistFile(ExeExifToolWindowsFullFilePath()) ||
+			   _hostFileSystemStorage.Info(ExeExifToolWindowsFullFilePath()).Size <= minimumSize ) )
 		{
 			return await StartDownloadForWindows();
 		}
 
 		if ( !isWindows &&
-		     ( !_hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()) ||
-		       _hostFileSystemStorage.Info(ExeExifToolUnixFullFilePath()).Size <= minimumSize ) )
+			 ( !_hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()) ||
+			   _hostFileSystemStorage.Info(ExeExifToolUnixFullFilePath()).Size <= minimumSize ) )
 		{
 			return await StartDownloadForUnix();
 		}
@@ -116,13 +116,13 @@ public sealed class ExifToolDownload : IExifToolDownload
 	private void CreateDirectoryDependenciesFolderIfNotExists()
 	{
 		if ( _hostFileSystemStorage.ExistFolder(
-			    _appSettings.DependenciesFolder) )
+				_appSettings.DependenciesFolder) )
 		{
 			return;
 		}
 
 		_logger.LogInformation("[DownloadExifTool] Create Directory: " +
-		                       _appSettings.DependenciesFolder);
+							   _appSettings.DependenciesFolder);
 		_hostFileSystemStorage.CreateDirectory(_appSettings.DependenciesFolder);
 	}
 
@@ -380,7 +380,7 @@ public sealed class ExifToolDownload : IExifToolDownload
 		string[] getChecksumsFromTextFile)
 	{
 		if ( _hostFileSystemStorage.ExistFile(
-			    ExeExifToolWindowsFullFilePath()) )
+				ExeExifToolWindowsFullFilePath()) )
 		{
 			return true;
 		}
@@ -423,7 +423,7 @@ public sealed class ExifToolDownload : IExifToolDownload
 	{
 		var files = _hostFileSystemStorage.GetAllFilesInDirectoryRecursive(searchFolder).ToList();
 		var folders = _hostFileSystemStorage.GetDirectoryRecursive(searchFolder).Select(p => p.Key);
-		List<string> folderAndFiles = [..files, ..folders];
+		List<string> folderAndFiles = [.. files, .. folders];
 
 		var srcFullPaths = folderAndFiles.Where(p => p.EndsWith(searchForFileOrFolder)).ToList();
 		if ( srcFullPaths.Count == 0 )

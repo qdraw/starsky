@@ -48,9 +48,15 @@ namespace starsky.feature.geolookup.Services
 			foreach ( var metaFileItem in metaFilesInDirectory )
 			{
 
-				if ( !ExtensionRolesHelper.IsExtensionForceGpx(metaFileItem.FileName) ) continue;
+				if ( !ExtensionRolesHelper.IsExtensionForceGpx(metaFileItem.FileName) )
+				{
+					continue;
+				}
 
-				if ( !_iStorage.ExistFile(metaFileItem.FilePath!) ) continue;
+				if ( !_iStorage.ExistFile(metaFileItem.FilePath!) )
+				{
+					continue;
+				}
 
 				using ( var stream = _iStorage.ReadStream(metaFileItem.FilePath!) )
 				{
@@ -108,10 +114,16 @@ namespace starsky.feature.geolookup.Services
 					metaFileItem.value.FilePath!);
 
 				var fileGeoData = gpxList.MinBy(p => Math.Abs(( p.DateTime - dateTimeCameraUtc ).Ticks));
-				if ( fileGeoData == null ) continue;
+				if ( fileGeoData == null )
+				{
+					continue;
+				}
 
 				var minutesDifference = ( dateTimeCameraUtc - fileGeoData.DateTime ).TotalMinutes;
-				if ( minutesDifference < -5 || minutesDifference > 5 ) continue;
+				if ( minutesDifference < -5 || minutesDifference > 5 )
+				{
+					continue;
+				}
 
 				metaFileItem.value.Latitude = fileGeoData.Latitude;
 				metaFileItem.value.Longitude = fileGeoData.Longitude;

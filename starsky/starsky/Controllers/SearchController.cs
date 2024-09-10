@@ -52,7 +52,10 @@ namespace starsky.Controllers
 			var searchViewModel = await _search.Search(t, p);
 
 			var photoIndexOfQuery = GetIndexFilePathFromSearch(searchViewModel, f);
-			if ( photoIndexOfQuery == -1 ) return NotFound("image not found in search result");
+			if ( photoIndexOfQuery == -1 )
+			{
+				return NotFound("image not found in search result");
+			}
 
 			var args = new Dictionary<string, string>
 			{
@@ -87,7 +90,11 @@ namespace starsky.Controllers
 		{
 			var result = searchViewModel.FileIndexItems?.Find(p => p.FilePath == f);
 			var photoIndexOfQuery = searchViewModel.FileIndexItems?.IndexOf(result!);
-			if ( result == null || photoIndexOfQuery == null ) return -1;
+			if ( result == null || photoIndexOfQuery == null )
+			{
+				return -1;
+			}
+
 			return photoIndexOfQuery.Value;
 		}
 
@@ -125,7 +132,9 @@ namespace starsky.Controllers
 			var cache = _search.RemoveCache(t);
 
 			if ( cache != null )
+			{
 				return Json(cache == false ? "there is no cached item" : "cache cleared");
+			}
 
 			Response.StatusCode = 412;
 			return Json("cache disabled in config");

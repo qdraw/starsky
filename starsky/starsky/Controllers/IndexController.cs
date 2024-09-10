@@ -51,7 +51,10 @@ namespace starsky.Controllers
 
 			var subPath = PathHelper.PrefixDbSlash(f);
 			subPath = PathHelper.RemoveLatestSlash(subPath);
-			if ( string.IsNullOrEmpty(subPath) ) subPath = "/";
+			if ( string.IsNullOrEmpty(subPath) )
+			{
+				subPath = "/";
+			}
 
 			// First check if it is a single Item
 			var singleItem = _query.SingleItem(subPath, colorClassActiveList,
@@ -86,7 +89,7 @@ namespace starsky.Controllers
 				// when change colorClass selection you should see all options
 				ColorClassUsage = fileIndexItemsWithoutCollections
 					.Select(p => p.ColorClass).Distinct()
-					.OrderBy(p => ( int )( p )).ToList(),
+					.OrderBy(p => ( int ) ( p )).ToList(),
 				IsReadOnly = _appSettings.IsReadOnly(subPath),
 				Collections = collections,
 			};

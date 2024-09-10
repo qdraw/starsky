@@ -101,7 +101,7 @@ namespace starsky.foundation.native.Trash.Helpers
 			var bytes = Encoding.Unicode.GetBytes(aString);
 			fixed ( byte* b = bytes )
 			{
-				var cfStr = CFStringCreateWithBytes(IntPtr.Zero, ( IntPtr )b, bytes.Length,
+				var cfStr = CFStringCreateWithBytes(IntPtr.Zero, ( IntPtr ) b, bytes.Length,
 					CfStringEncoding.UTF16, false);
 				return cfStr;
 			}
@@ -114,7 +114,7 @@ namespace starsky.foundation.native.Trash.Helpers
 			// warning: this doesn't call retain/release on the elements in the array
 			fixed ( IntPtr* values = objects )
 			{
-				return CFArrayCreate(IntPtr.Zero, ( IntPtr )values, objects.Length, IntPtr.Zero);
+				return CFArrayCreate(IntPtr.Zero, ( IntPtr ) values, objects.Length, IntPtr.Zero);
 			}
 		}
 

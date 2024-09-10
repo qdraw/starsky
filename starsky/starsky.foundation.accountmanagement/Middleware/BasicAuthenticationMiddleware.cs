@@ -28,7 +28,7 @@ namespace starsky.foundation.accountmanagement.Middleware
 				var basicAuthenticationHeader = GetBasicAuthenticationHeaderValue(context);
 				if ( basicAuthenticationHeader.IsValidBasicAuthenticationHeaderValue )
 				{
-					var userManager = ( IUserManager )context.RequestServices.GetRequiredService(typeof(IUserManager));
+					var userManager = ( IUserManager ) context.RequestServices.GetRequiredService(typeof(IUserManager));
 
 					var authenticationManager = new BasicAuthenticationSignInManager(
 						context, basicAuthenticationHeader, userManager);

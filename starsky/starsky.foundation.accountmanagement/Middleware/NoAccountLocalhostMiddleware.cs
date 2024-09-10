@@ -42,21 +42,21 @@ public sealed class NoAccountMiddleware
 	public async Task Invoke(HttpContext context)
 	{
 		var isHostAllowed = IsLocalhost.IsHostLocalHost(context.Connection.LocalIpAddress,
-			                    context.Connection.RemoteIpAddress) ||
-		                    _appSettings?.DemoUnsafeDeleteStorageFolder == true;
+								context.Connection.RemoteIpAddress) ||
+							_appSettings?.DemoUnsafeDeleteStorageFolder == true;
 
 		var isApiCall = context.Request.Path.HasValue &&
-		                ( context.Request.Path.Value.StartsWith("/api") ||
-		                  context.Request.Path.Value.StartsWith("/realtime") );
+						( context.Request.Path.Value.StartsWith("/api") ||
+						  context.Request.Path.Value.StartsWith("/realtime") );
 
 		var isFromLogoutCall = context.Request.QueryString.HasValue &&
-		                       context.Request.QueryString.Value!.Contains("fromLogout");
+							   context.Request.QueryString.Value!.Contains("fromLogout");
 
 		if ( isHostAllowed && context.User.Identity?.IsAuthenticated == false && !isApiCall &&
-		     !isFromLogoutCall )
+			 !isFromLogoutCall )
 		{
 			var userManager =
-				( IUserManager )context.RequestServices.GetRequiredService(typeof(IUserManager));
+				( IUserManager ) context.RequestServices.GetRequiredService(typeof(IUserManager));
 			var user = await CreateOrUpdateNewUsers(userManager);
 			await userManager.SignIn(context, user, true);
 		}
@@ -81,7 +81,10 @@ public sealed class NoAccountMiddleware
 			var credentialType = userManager.GetCachedCredentialType(CredentialType);
 			var credential =
 				user.Credentials!.FirstOrDefault(p => p.CredentialTypeId == credentialType?.Id);
-			if ( credential!.IterationCount == IterationCountType.Iterate100KSha256 ) return user;
+			if ( credential!.IterationCount == IterationCountType.Iterate100KSha256 )
+			{
+				return user;
+			}
 
 			var newPassword = Convert.ToBase64String(
 				Pbkdf2Hasher.GenerateRandomSalt());

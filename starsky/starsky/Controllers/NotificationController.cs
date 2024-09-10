@@ -43,10 +43,14 @@ namespace starsky.Controllers
 		{
 			var isParsed = DateTime.TryParse(dateTime, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var parsedDateTime);
 			if ( isParsed )
+			{
 				return new Tuple<bool, DateTime>(true, parsedDateTime.ToUniversalTime());
+			}
 
 			if ( !int.TryParse(dateTime, out var parsedInt) )
+			{
 				return new Tuple<bool, DateTime>(false, DateTime.UtcNow);
+			}
 
 			parsedDateTime = DateTime.UtcNow.AddHours(parsedInt * -1);
 			return new Tuple<bool, DateTime>(true, parsedDateTime.ToUniversalTime());

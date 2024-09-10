@@ -23,7 +23,7 @@ namespace starsky.foundation.storage.Storage
 			_appSettings = appSettings;
 			_logger = logger;
 		}
-		
+
 		/// <summary>
 		/// Checks if a file is ready
 		/// </summary>
@@ -61,7 +61,11 @@ namespace starsky.foundation.storage.Storage
 		/// <returns>bool true = exist</returns>
 		public bool ExistFile(string path)
 		{
-			if ( string.IsNullOrEmpty(path) ) return false;
+			if ( string.IsNullOrEmpty(path) )
+			{
+				return false;
+			}
+
 			var isFolderOrFile = IsFolderOrFile(path);
 			return isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File;
 		}
@@ -275,7 +279,10 @@ namespace starsky.foundation.storage.Storage
 				return Stream.Null;
 			}
 
-			if ( _appSettings.IsVerbose() ) Console.WriteLine(path);
+			if ( _appSettings.IsVerbose() )
+			{
+				Console.WriteLine(path);
+			}
 
 			Stream LocalGet()
 			{

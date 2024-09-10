@@ -54,7 +54,7 @@ place_attribute_on_same_line = "never"
 
 # https://dotnettips.wordpress.com/2023/06/27/microsoft-net-code-analysis-always-add-braces-in-c/
 dotnet_diagnostic.IDE0011.severity = warning
-csharp_prefer_braces = true:warning
+csharp_prefer_braces = true:error
 dotnet_diagnostic.SA1500.severity = warning
 dotnet_diagnostic.SA1503.severity = warning
 dotnet_diagnostic.SA1520.severity = warning

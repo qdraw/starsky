@@ -41,7 +41,11 @@ namespace starsky.feature.geolookup.Services
 
 				// Geo Helper has a direct need of this, other are downloaded when needed
 				// This Background service is for running offline 
-				if ( appSettings.ApplicationType == AppSettings.StarskyAppType.Geo ) return;
+				if ( appSettings.ApplicationType == AppSettings.StarskyAppType.Geo )
+				{
+					return;
+				}
+
 				if ( appSettings.GeoFilesSkipDownloadOnStartup == true )
 				{
 					logger.LogInformation("GeoFilesSkipDownloadOnStartup is true, skip download");

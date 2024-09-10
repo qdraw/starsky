@@ -44,7 +44,11 @@ namespace starsky.Controllers
 		public async Task<IActionResult> Index()
 		{
 			var result = await CheckHealthAsyncWithTimeout(10000);
-			if ( result.Status == HealthStatus.Healthy ) return Content(result.Status.ToString());
+			if ( result.Status == HealthStatus.Healthy )
+			{
+				return Content(result.Status.ToString());
+			}
+
 			Response.StatusCode = 503;
 			return Content(result.Status.ToString());
 		}
@@ -60,9 +64,9 @@ namespace starsky.Controllers
 			try
 			{
 				if ( _cache != null &&
-				     _cache.TryGetValue(healthControllerCacheKey, out var objectHealthStatus) &&
-				     objectHealthStatus is HealthReport healthStatus &&
-				     healthStatus.Status == HealthStatus.Healthy )
+					 _cache.TryGetValue(healthControllerCacheKey, out var objectHealthStatus) &&
+					 objectHealthStatus is HealthReport healthStatus &&
+					 healthStatus.Status == HealthStatus.Healthy )
 				{
 					return healthStatus;
 				}
@@ -110,7 +114,10 @@ namespace starsky.Controllers
 			var result = await CheckHealthAsyncWithTimeout();
 
 			var health = CreateHealthEntryLog(result);
-			if ( !health.IsHealthy ) Response.StatusCode = 503;
+			if ( !health.IsHealthy )
+			{
+				Response.StatusCode = 503;
+			}
 
 			return Json(health);
 		}
@@ -132,7 +139,7 @@ namespace starsky.Controllers
 						Name = key,
 						IsHealthy = value.Status == HealthStatus.Healthy,
 						Description = value.Description + value.Exception?.Message +
-						              value.Exception?.StackTrace
+									  value.Exception?.StackTrace
 					}
 				);
 			}

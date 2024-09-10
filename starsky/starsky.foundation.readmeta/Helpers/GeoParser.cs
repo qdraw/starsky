@@ -11,12 +11,12 @@ namespace starsky.foundation.readmeta.Helpers
 		///  Generated regex for removing invalid characters
 		/// </summary>
 		/// <returns></returns>
-		[GeneratedRegex("[^0-9\\., ]", 
-			RegexOptions.CultureInvariant, 
+		[GeneratedRegex("[^0-9\\., ]",
+			RegexOptions.CultureInvariant,
 			matchTimeoutMilliseconds: 1000)]
 		public static partial Regex GetRegex();
 	}
-	
+
 	public static class GeoParser
 	{
 
@@ -32,7 +32,7 @@ namespace starsky.foundation.readmeta.Helpers
 			// DD°MM’SS.s” usage
 
 			var multiplier = ( refGps.Contains('S') || refGps.Contains('W') ) ? -1 : 1; // handle south and west
-			
+
 			point = GeoParserInvalidCharactersRegex.GetRegex().Replace(point, ""); // remove the characters
 
 			// When you use a localisation where commas are used instead of a dot

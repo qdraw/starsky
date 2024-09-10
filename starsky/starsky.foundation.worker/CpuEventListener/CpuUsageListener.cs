@@ -15,9 +15,11 @@ public sealed class CpuUsageListener : EventListener, ICpuUsageListener
 	protected override void OnEventSourceCreated(EventSource eventSource)
 	{
 		if ( eventSource.Name.Equals("System.Runtime") )
+		{
 			EnableEvents(eventSource, EventLevel.LogAlways,
 				EventKeywords.All,
 				new Dictionary<string, string> { { "EventCounterIntervalSec", "15" } }!);
+		}
 	}
 
 	protected override void OnEventWritten(EventWrittenEventArgs eventData)
@@ -31,16 +33,28 @@ public sealed class CpuUsageListener : EventListener, ICpuUsageListener
 	{
 		if ( eventDataEventName != "EventCounters" || eventDataPayload == null ||
 			 eventDataPayload.Count == 0 )
+		{
 			return;
+		}
 
 		if ( eventDataPayload[0] is not IDictionary<string, object>
 				 eventPayload ||
 			 !eventPayload.TryGetValue("Name", out var nameData) ||
-			 nameData is not ( "cpu-usage" ) ) return;
+			 nameData is not ( "cpu-usage" ) )
+		{
+			return;
+		}
 
-		if ( !eventPayload.TryGetValue("Mean", out var value) ) return;
+		if ( !eventPayload.TryGetValue("Mean", out var value) )
+		{
+			return;
+		}
 
-		if ( value is not double dValue ) return;
+		if ( value is not double dValue )
+		{
+			return;
+		}
+
 		CpuUsageMean = dValue;
 		IsReady = true;
 	}

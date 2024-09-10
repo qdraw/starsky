@@ -7,7 +7,7 @@ namespace starsky.foundation.database.Query
 	{
 		public IQuery Clone(ApplicationDbContext applicationDbContext)
 		{
-			var query = ( IQuery )MemberwiseClone();
+			var query = ( IQuery ) MemberwiseClone();
 			query.Invoke(applicationDbContext);
 			return query;
 		}

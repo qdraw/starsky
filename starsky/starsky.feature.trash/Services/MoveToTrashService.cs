@@ -47,7 +47,7 @@ public class MoveToTrashService : IMoveToTrashService
 	public bool IsEnabled()
 	{
 		return _appSettings.UseSystemTrash == true &&
-		       _systemTrashService.DetectToUseSystemTrash();
+			   _systemTrashService.DetectToUseSystemTrash();
 	}
 
 	/// <summary>
@@ -65,7 +65,7 @@ public class MoveToTrashService : IMoveToTrashService
 			await _metaPreflight.PreflightAsync(inputModel, inputFilePaths,
 				false, collections, 0);
 
-		( fileIndexResultsList, changedFileIndexItemName ) =
+		(fileIndexResultsList, changedFileIndexItemName) =
 			await AppendChildItemsToTrashList(fileIndexResultsList, changedFileIndexItemName);
 
 		var moveToTrashList =
@@ -115,7 +115,7 @@ public class MoveToTrashService : IMoveToTrashService
 
 		if ( parentSubPaths.Count == 0 )
 		{
-			return ( moveToTrash, changedFileIndexItemName );
+			return (moveToTrash, changedFileIndexItemName);
 		}
 
 		var childItems = ( await _query.GetAllObjectsAsync(parentSubPaths) )
@@ -132,7 +132,7 @@ public class MoveToTrashService : IMoveToTrashService
 			changedFileIndexItemName.TryAdd(childItem.FilePath!, new List<string> { "tags" });
 		}
 
-		return ( moveToTrash, changedFileIndexItemName );
+		return (moveToTrash, changedFileIndexItemName);
 	}
 
 	private async Task SystemTrashInQueue(List<FileIndexItem> moveToTrash)
@@ -146,7 +146,7 @@ public class MoveToTrashService : IMoveToTrashService
 
 		await _query.RemoveItemAsync(moveToTrash);
 	}
-	
+
 	/// <summary>
 	/// Is it supported to use the system trash
 	/// But it does NOT check if the feature toggle is enabled

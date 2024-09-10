@@ -214,20 +214,33 @@ public static partial class ExtensionRolesHelper
 
 	public static ImageFormat MapFileTypesToExtension(string filename)
 	{
-		if ( string.IsNullOrEmpty(filename) ) return ImageFormat.unknown;
+		if ( string.IsNullOrEmpty(filename) )
+		{
+			return ImageFormat.unknown;
+		}
 
 		var matchCollection = FileExtensionRegex().Matches(filename);
-		if ( matchCollection.Count == 0 ) return ImageFormat.unknown;
+		if ( matchCollection.Count == 0 )
+		{
+			return ImageFormat.unknown;
+		}
 
 		var imageFormat = ImageFormat.unknown;
 		foreach ( var matchValue in matchCollection.Select(p => p.Value) )
 		{
-			if ( matchValue.Length < 2 ) continue;
+			if ( matchValue.Length < 2 )
+			{
+				continue;
+			}
+
 			var ext = matchValue.Remove(0, 1).ToLowerInvariant();
 
 			var extImageFormat = MapFileTypesToExtensionDictionary
 				.FirstOrDefault(p => p.Value.Contains(ext)).Key;
-			if ( extImageFormat != ImageFormat.unknown ) imageFormat = extImageFormat;
+			if ( extImageFormat != ImageFormat.unknown )
+			{
+				imageFormat = extImageFormat;
+			}
 		}
 
 		return imageFormat;
@@ -240,10 +253,18 @@ public static partial class ExtensionRolesHelper
 	/// <returns>true, if ExifTool can write to this</returns>
 	public static bool IsExtensionExifToolSupported(string? filename)
 	{
-		if ( string.IsNullOrEmpty(filename) ) return false;
+		if ( string.IsNullOrEmpty(filename) )
+		{
+			return false;
+		}
+
 		var extension = Path.GetExtension(filename);
 		// dirs are = ""
-		if ( string.IsNullOrEmpty(extension) ) return false;
+		if ( string.IsNullOrEmpty(extension) )
+		{
+			return false;
+		}
+
 		var ext = extension.Remove(0, 1).ToLowerInvariant();
 		return ExtensionExifToolSupportedList.Contains(ext); // true = if supported
 	}
@@ -308,22 +329,38 @@ public static partial class ExtensionRolesHelper
 	// ReSharper disable once SuggestBaseTypeForParameter
 	private static bool IsExtensionForce(string? filename, List<string> checkThisList)
 	{
-		if ( string.IsNullOrEmpty(filename) ) return false;
+		if ( string.IsNullOrEmpty(filename) )
+		{
+			return false;
+		}
 
 		var matchCollection = FileExtensionRegex().Matches(filename);
 
-		if ( matchCollection.Count == 0 ) return false;
+		if ( matchCollection.Count == 0 )
+		{
+			return false;
+		}
+
 		foreach ( var matchValue in matchCollection.Select(p => p.Value) )
 		{
-			if ( matchValue.Length < 2 ) continue;
+			if ( matchValue.Length < 2 )
+			{
+				continue;
+			}
+
 			var ext = matchValue.Remove(0, 1).ToLowerInvariant();
-			if ( checkThisList.Contains(ext) ) return true;
+			if ( checkThisList.Contains(ext) )
+			{
+				return true;
+			}
 		}
 
 		// ReSharper disable once ConvertIfStatementToReturnStatement
 		if ( filename.ToLowerInvariant().EndsWith(".meta.json") &&
-		     checkThisList.Contains("meta.json") )
+			 checkThisList.Contains("meta.json") )
+		{
 			return true;
+		}
 
 		return false;
 	}
@@ -335,14 +372,24 @@ public static partial class ExtensionRolesHelper
 	/// <returns></returns>
 	public static string ReplaceExtensionWithXmp(string? filename)
 	{
-		if ( string.IsNullOrEmpty(filename) ) return string.Empty;
+		if ( string.IsNullOrEmpty(filename) )
+		{
+			return string.Empty;
+		}
 
 		var matchCollection = FileExtensionRegex().Matches(filename);
 
-		if ( matchCollection.Count == 0 ) return string.Empty;
+		if ( matchCollection.Count == 0 )
+		{
+			return string.Empty;
+		}
+
 		foreach ( Match match in matchCollection )
 		{
-			if ( match.Value.Length < 2 ) continue;
+			if ( match.Value.Length < 2 )
+			{
+				continue;
+			}
 			// Extension must be three letters
 			// removed: ExtensionForceXmpUseList.Contains(match.Value.Remove(0, 1).ToLowerInvariant()) && 
 			if ( filename.Length >= match.Index + 4 )
@@ -376,7 +423,11 @@ public static partial class ExtensionRolesHelper
 		try
 		{
 			var count = stream.Read(buffer, 0, buffer.Length);
-			if ( count != size ) Console.WriteLine("Size does not match");
+			if ( count != size )
+			{
+				Console.WriteLine("Size does not match");
+			}
+
 			stream.Close();
 			stream.Flush();
 			stream.Dispose(); // also flush
@@ -398,7 +449,10 @@ public static partial class ExtensionRolesHelper
 	/// <returns>ImageFormat enum</returns>
 	public static ImageFormat GetImageFormat(Stream stream)
 	{
-		if ( stream == Stream.Null ) return ImageFormat.notfound;
+		if ( stream == Stream.Null )
+		{
+			return ImageFormat.notfound;
+		}
 
 		var format = GetImageFormat(ReadBuffer(stream, 68));
 		return format;
@@ -419,30 +473,59 @@ public static partial class ExtensionRolesHelper
 		var pdf = new byte[] { 37, 80, 68, 70, 45 }; // pdf
 
 		if ( bmp.SequenceEqual(bytes.Take(bmp.Length)) )
+		{
 			return ImageFormat.bmp;
+		}
 
 		if ( gif.SequenceEqual(bytes.Take(gif.Length)) )
+		{
 			return ImageFormat.gif;
+		}
 
 		if ( png.SequenceEqual(bytes.Take(png.Length)) )
+		{
 			return ImageFormat.png;
+		}
 
-		if ( GetImageFormatTiff(bytes) != null ) return ImageFormat.tiff;
+		if ( GetImageFormatTiff(bytes) != null )
+		{
+			return ImageFormat.tiff;
+		}
 
-		if ( GetImageFormatJpeg(bytes) != null ) return ImageFormat.jpg;
+		if ( GetImageFormatJpeg(bytes) != null )
+		{
+			return ImageFormat.jpg;
+		}
 
-		if ( GetImageFormatXmp(bytes) != null ) return ImageFormat.xmp;
+		if ( GetImageFormatXmp(bytes) != null )
+		{
+			return ImageFormat.xmp;
+		}
 
-		if ( GetImageFormatGpx(bytes) != null ) return ImageFormat.gpx;
+		if ( GetImageFormatGpx(bytes) != null )
+		{
+			return ImageFormat.gpx;
+		}
 
-		if ( GetImageFormatMpeg4(bytes) != null ) return ImageFormat.mp4;
+		if ( GetImageFormatMpeg4(bytes) != null )
+		{
+			return ImageFormat.mp4;
+		}
 
 		if ( pdf.SequenceEqual(bytes.Take(pdf.Length)) )
+		{
 			return ImageFormat.pdf;
+		}
 
-		if ( GetImageFormatZip(bytes) != null ) return ImageFormat.zip;
+		if ( GetImageFormatZip(bytes) != null )
+		{
+			return ImageFormat.zip;
+		}
 
-		if ( GetImageFormatMetaJson(bytes) != null ) return ImageFormat.meta_json;
+		if ( GetImageFormatMetaJson(bytes) != null )
+		{
+			return ImageFormat.meta_json;
+		}
 
 		return ImageFormat.unknown;
 	}
@@ -468,10 +551,14 @@ public static partial class ExtensionRolesHelper
 		};
 
 		if ( metaJsonUnix.SequenceEqual(bytes.Take(metaJsonUnix.Length)) )
+		{
 			return ImageFormat.meta_json;
+		}
 
 		if ( metaJsonWindows.SequenceEqual(bytes.Take(metaJsonWindows.Length)) )
+		{
 			return ImageFormat.meta_json;
+		}
 
 		return null;
 	}
@@ -486,22 +573,34 @@ public static partial class ExtensionRolesHelper
 		var panasonicRaw = new byte[] { 73, 73, 85, 0 };
 
 		if ( tiff.SequenceEqual(bytes.Take(tiff.Length)) )
+		{
 			return ImageFormat.tiff;
+		}
 
 		if ( tiff2.SequenceEqual(bytes.Take(tiff2.Length)) )
+		{
 			return ImageFormat.tiff;
+		}
 
 		if ( dng.SequenceEqual(bytes.Take(dng.Length)) )
+		{
 			return ImageFormat.tiff;
+		}
 
 		if ( olympusRaw.SequenceEqual(bytes.Take(olympusRaw.Length)) )
+		{
 			return ImageFormat.tiff;
+		}
 
 		if ( fujiFilmRaw.SequenceEqual(bytes.Take(fujiFilmRaw.Length)) )
+		{
 			return ImageFormat.tiff;
+		}
 
 		if ( panasonicRaw.SequenceEqual(bytes.Take(panasonicRaw.Length)) )
+		{
 			return ImageFormat.tiff;
+		}
 
 		return null;
 	}
@@ -509,14 +608,18 @@ public static partial class ExtensionRolesHelper
 	private static ImageFormat? GetImageFormatMpeg4(byte[] bytes)
 	{
 		var fTypMp4 = new byte[] { 102, 116, 121, 112 }; //  00  00  00  [skip this byte]
-		// 66  74  79  70 QuickTime Container 3GG, 3GP, 3G2 	FLV
+														 // 66  74  79  70 QuickTime Container 3GG, 3GP, 3G2 	FLV
 
 		if ( fTypMp4.SequenceEqual(bytes.Skip(4).Take(fTypMp4.Length)) )
+		{
 			return ImageFormat.mp4;
+		}
 
 		var fTypIsoM = new byte[] { 102, 116, 121, 112, 105, 115, 111, 109 };
 		if ( fTypIsoM.SequenceEqual(bytes.Take(fTypIsoM.Length)) )
+		{
 			return ImageFormat.xmp;
+		}
 
 		return null;
 	}
@@ -526,14 +629,16 @@ public static partial class ExtensionRolesHelper
 		var gpx = new byte[] { 60, 103, 112 }; // <gpx
 
 		if ( gpx.SequenceEqual(bytes.Take(gpx.Length)) ||
-		     gpx.SequenceEqual(bytes.Skip(21).Take(gpx.Length)) ||
-		     gpx.SequenceEqual(bytes.Skip(39).Take(gpx.Length)) ||
-		     gpx.SequenceEqual(bytes.Skip(1).Take(gpx.Length)) ||
-		     gpx.SequenceEqual(bytes.Skip(56).Take(gpx.Length)) ||
-		     gpx.SequenceEqual(bytes.Skip(57).Take(gpx.Length)) ||
-		     gpx.SequenceEqual(bytes.Skip(60).Take(gpx.Length)) ||
-		     gpx.SequenceEqual(bytes.Skip(55).Take(gpx.Length)) )
+			 gpx.SequenceEqual(bytes.Skip(21).Take(gpx.Length)) ||
+			 gpx.SequenceEqual(bytes.Skip(39).Take(gpx.Length)) ||
+			 gpx.SequenceEqual(bytes.Skip(1).Take(gpx.Length)) ||
+			 gpx.SequenceEqual(bytes.Skip(56).Take(gpx.Length)) ||
+			 gpx.SequenceEqual(bytes.Skip(57).Take(gpx.Length)) ||
+			 gpx.SequenceEqual(bytes.Skip(60).Take(gpx.Length)) ||
+			 gpx.SequenceEqual(bytes.Skip(55).Take(gpx.Length)) )
+		{
 			return ImageFormat.gpx;
+		}
 
 		return null;
 	}
@@ -543,7 +648,9 @@ public static partial class ExtensionRolesHelper
 		var zip = new byte[] { 80, 75, 3, 4 };
 
 		if ( zip.SequenceEqual(bytes.Take(zip.Length)) )
+		{
 			return ImageFormat.zip;
+		}
 
 		return null;
 	}
@@ -554,10 +661,14 @@ public static partial class ExtensionRolesHelper
 		var xmp2 = Encoding.ASCII.GetBytes("<?xpacket"); // xmp
 
 		if ( xmp.SequenceEqual(bytes.Take(xmp.Length)) )
+		{
 			return ImageFormat.xmp;
+		}
 
 		if ( xmp2.SequenceEqual(bytes.Take(xmp2.Length)) )
+		{
 			return ImageFormat.xmp;
+		}
 
 		return null;
 	}
@@ -572,19 +683,29 @@ public static partial class ExtensionRolesHelper
 		var jpeg5 = new byte[] { 255, 216, 255, 238 }; // Hex: FF D8 FF EE 
 
 		if ( jpeg.SequenceEqual(bytes.Take(jpeg.Length)) )
+		{
 			return ImageFormat.jpg;
+		}
 
 		if ( jpeg2.SequenceEqual(bytes.Take(jpeg2.Length)) )
+		{
 			return ImageFormat.jpg;
+		}
 
 		if ( jpeg3.SequenceEqual(bytes.Take(jpeg3.Length)) )
+		{
 			return ImageFormat.jpg;
+		}
 
 		if ( jpeg4.SequenceEqual(bytes.Take(jpeg4.Length)) )
+		{
 			return ImageFormat.jpg;
+		}
 
 		if ( jpeg5.SequenceEqual(bytes.Take(jpeg5.Length)) )
+		{
 			return ImageFormat.jpg;
+		}
 
 		return null;
 	}

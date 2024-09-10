@@ -16,7 +16,7 @@ namespace starsky.foundation.database.Migrations
 				name: "IsoSpeed",
 				table: "FileIndex",
 				nullable: false,
-				defaultValue: ( ushort )0);
+				defaultValue: ( ushort ) 0);
 
 			migrationBuilder.AddColumn<string>(
 				name: "ShutterSpeed",

@@ -19,8 +19,8 @@ public class FileAssociation
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 [SuppressMessage("Performance", "CA1806:Do not ignore method results")]
 [SuppressMessage("Interoperability", "SYSLIB1054:Use \'LibraryImportAttribute\' " +
-                                     "instead of \'DllImportAttribute\' to generate P/Invoke " +
-                                     "marshalling code at compile time")]
+									 "instead of \'DllImportAttribute\' to generate P/Invoke " +
+									 "marshalling code at compile time")]
 public static class WindowsSetFileAssociations
 {
 	/// <summary>
@@ -83,7 +83,11 @@ public static class WindowsSetFileAssociations
 		bool SetValue()
 		{
 			using var key = Registry.CurrentUser.CreateSubKey(keyPath);
-			if ( key.GetValue(null) as string == value ) return false;
+			if ( key.GetValue(null) as string == value )
+			{
+				return false;
+			}
+
 			key.SetValue(null, value);
 			return true;
 		}

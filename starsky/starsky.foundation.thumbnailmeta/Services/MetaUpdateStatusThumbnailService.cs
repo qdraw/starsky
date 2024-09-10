@@ -32,7 +32,11 @@ public class MetaUpdateStatusThumbnailService : IMetaUpdateStatusThumbnailServic
 		var statusResultsWithFileHashes = new List<ThumbnailResultDataTransferModel>();
 		foreach ( var (status, rightType, subPath, reason) in statusResultsWithSubPaths )
 		{
-			if ( !rightType ) continue;
+			if ( !rightType )
+			{
+				continue;
+			}
+
 			var fileHash = ( await _fileHashStorage.GetHashCodeAsync(subPath) ).Key;
 			statusResultsWithFileHashes.Add(new ThumbnailResultDataTransferModel(fileHash, status)
 			{

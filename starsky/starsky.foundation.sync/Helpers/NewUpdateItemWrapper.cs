@@ -40,7 +40,10 @@ public class NewUpdateItemWrapper
 		var dbItem = await _newItem.NewFileItemAsync(statusItem);
 
 		// When not OK do not Add (fileHash issues)
-		if ( dbItem.Status != FileIndexItem.ExifStatus.Ok ) return dbItem;
+		if ( dbItem.Status != FileIndexItem.ExifStatus.Ok )
+		{
+			return dbItem;
+		}
 
 		await _query.AddItemAsync(dbItem);
 		await _query.AddParentItemsAsync(subPath);

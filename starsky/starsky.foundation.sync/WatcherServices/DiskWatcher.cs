@@ -105,7 +105,10 @@ namespace starsky.foundation.sync.WatcherServices
 			}
 
 			// when test dont retry
-			if ( e.GetException().Message == "test" ) return;
+			if ( e.GetException().Message == "test" )
+			{
+				return;
+			}
 
 			// When fail it should try it again
 			Retry(new BufferingFileSystemWatcher(_fileSystemWatcherWrapper.Path));

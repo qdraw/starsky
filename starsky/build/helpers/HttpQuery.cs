@@ -52,7 +52,7 @@ public static class HttpQuery
 	{
 		if ( string.IsNullOrEmpty(version) )
 		{
-			return new Version(0,0);
+			return new Version(0, 0);
 		}
 		try
 		{
@@ -60,7 +60,7 @@ public static class HttpQuery
 		}
 		catch ( FormatException )
 		{
-			return new Version(0,0);
+			return new Version(0, 0);
 		}
 	}
 }

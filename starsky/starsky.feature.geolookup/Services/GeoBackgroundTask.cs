@@ -48,7 +48,10 @@ namespace starsky.feature.geolookup.Services
 			bool index = true,
 			bool overwriteLocationNames = false)
 		{
-			if ( !_iStorage.ExistFolder(f) ) return new List<FileIndexItem>();
+			if ( !_iStorage.ExistFolder(f) )
+			{
+				return new List<FileIndexItem>();
+			}
 			// use relative to StorageFolder
 			var listOfFiles = _iStorage.GetAllFilesInDirectory(f)
 				.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
@@ -63,7 +66,10 @@ namespace starsky.feature.geolookup.Services
 					await _geoIndexGpx
 						.LoopFolderAsync(fileIndexList);
 
-				if ( _appSettings.IsVerbose() ) Console.Write("¬");
+				if ( _appSettings.IsVerbose() )
+				{
+					Console.Write("¬");
+				}
 
 				await _geoLocationWrite
 					.LoopFolderAsync(toMetaFilesUpdate, false);
@@ -87,10 +93,16 @@ namespace starsky.feature.geolookup.Services
 				.ToList() )
 			{
 				var newThumb = ( await new FileHash(_iStorage).GetHashCodeAsync(item.FilePath!) ).Key;
-				if ( item.FileHash == newThumb ) continue;
+				if ( item.FileHash == newThumb )
+				{
+					continue;
+				}
+
 				new ThumbnailFileMoveAllSizes(_thumbnailStorage).FileMove(item.FileHash!, newThumb);
 				if ( _appSettings.IsVerbose() )
+				{
 					_logger.LogInformation("[/api/geo/sync] thumb rename + `" + item.FileHash + "`" + newThumb);
+				}
 			}
 
 			return fileIndexList;

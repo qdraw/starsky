@@ -15,11 +15,17 @@ namespace helpers
 			var baseDirectory = AppDomain.CurrentDomain
 				.BaseDirectory;
 			if ( baseDirectory == null )
+			{
 				throw new DirectoryNotFoundException("base directory is null, this is wrong");
+			}
+
 			var slnRootDirectory = Directory.GetParent(baseDirectory)?.Parent?.Parent?.Parent
 				?.Parent?.FullName;
 			if ( slnRootDirectory == null )
+			{
 				throw new DirectoryNotFoundException("slnRootDirectory is null, this is wrong");
+			}
+
 			return Path.Combine(slnRootDirectory, BuildToolsPath);
 		}
 
@@ -47,8 +53,8 @@ namespace helpers
 			if ( missingProjects.Count > 0 )
 			{
 				throw new ArgumentException($"Missing {valueToCheckFor} in: " +
-				                            string.Join(" , ", missingProjects) + " projects  " +
-				                            $"Please add {valueToCheckFor} to the .csproj files");
+											string.Join(" , ", missingProjects) + " projects  " +
+											$"Please add {valueToCheckFor} to the .csproj files");
 			}
 		}
 
@@ -76,7 +82,7 @@ namespace helpers
 				}
 
 				uniqueGuids.Add(fileXmlMatch.Groups[0].Value);
-				Log.Information("✓ {Project} - Is Ok",project);
+				Log.Information("✓ {Project} - Is Ok", project);
 			}
 		}
 

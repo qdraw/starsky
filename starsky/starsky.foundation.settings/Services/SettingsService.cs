@@ -52,7 +52,10 @@ public sealed class SettingsService : ISettingsService
 
 	public static T? CastSetting<T>(SettingsItem? data)
 	{
-		if ( data?.Value == null ) return default;
+		if ( data?.Value == null )
+		{
+			return default;
+		}
 
 		if ( typeof(T) == typeof(DateTime) && DateTime.TryParseExact(data.Value,
 				SettingsFormats.LastSyncBackgroundDateTime,
@@ -60,12 +63,12 @@ public sealed class SettingsService : ISettingsService
 				DateTimeStyles.AssumeUniversal,
 				out var expectDateTime) )
 		{
-			return ( T )( object )expectDateTime;
+			return ( T ) ( object ) expectDateTime;
 		}
 
 		try
 		{
-			return ( T? )( object? )data.Value;
+			return ( T? ) ( object? ) data.Value;
 		}
 		catch ( InvalidCastException )
 		{

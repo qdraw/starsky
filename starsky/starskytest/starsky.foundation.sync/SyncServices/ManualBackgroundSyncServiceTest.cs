@@ -20,12 +20,6 @@ namespace starskytest.starsky.foundation.sync.SyncServices;
 [TestClass]
 public sealed class ManualBackgroundSyncServiceTest
 {
-	private static IServiceScopeFactory GetScope()
-	{
-		var services = new ServiceCollection();
-		var serviceProvider = services.BuildServiceProvider();
-		return serviceProvider.GetRequiredService<IServiceScopeFactory>();
-	}
 
 	[TestMethod]
 	public async Task NotFound()
@@ -111,7 +105,9 @@ public sealed class ManualBackgroundSyncServiceTest
 
 		var content = query.DisplayFileFolders().Where(p => p.FilePath != "/").ToList();
 		foreach ( var itemContent in content )
+		{
 			Console.WriteLine("Manual sync " + itemContent.FilePath);
+		}
 
 		Assert.AreEqual(1,
 			content.Count(p => p.FilePath == "/test2__1234.jpg"));

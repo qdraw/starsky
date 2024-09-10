@@ -86,10 +86,17 @@ namespace starsky.feature.search.Services
 		public bool? RemoveCache(string query)
 		{
 			// Add protection for disabled caching
-			if ( _cache == null || _appSettings?.AddMemoryCache == false ) return null;
+			if ( _cache == null || _appSettings?.AddMemoryCache == false )
+			{
+				return null;
+			}
 
 			var queryCacheName = "search-" + query;
-			if ( !_cache.TryGetValue(queryCacheName, out _) ) return false;
+			if ( !_cache.TryGetValue(queryCacheName, out _) )
+			{
+				return false;
+			}
+
 			_cache.Remove(queryCacheName);
 			return true;
 		}
@@ -373,7 +380,10 @@ namespace starsky.feature.search.Services
 		/// <param name="itemName">e.g. Tags or Description</param>
 		private void SearchItemName(SearchViewModel model, string itemName)
 		{
-			if ( model.SearchQuery == null ) return;
+			if ( model.SearchQuery == null )
+			{
+				return;
+			}
 
 			// ignore double quotes
 			model.SearchQuery = model.SearchQuery.Replace("\"\"", "\"");
@@ -393,14 +403,20 @@ namespace starsky.feature.search.Services
 			// the current query is removed from the list, so the next item will not search on it
 
 			var regexInUrlMatches = inurlRegex.Matches(model.SearchQuery);
-			if ( regexInUrlMatches.Count == 0 ) return;
+			if ( regexInUrlMatches.Count == 0 )
+			{
+				return;
+			}
 
 			foreach ( var regexInUrlValue in regexInUrlMatches.Select(p => p.Value) )
 			{
 				var itemQuery = regexInUrlValue;
 
 				// ignore fake results
-				if ( string.IsNullOrEmpty(itemQuery) ) continue;
+				if ( string.IsNullOrEmpty(itemQuery) )
+				{
+					continue;
+				}
 
 				// put ||&& in operator field => next regex > removed
 				var itemQueryWithOperator = itemQuery;
@@ -410,7 +426,10 @@ namespace starsky.feature.search.Services
 
 				// To Search Type
 				var itemNameSearch = rgx.Match(itemQuery).Value;
-				if ( itemNameSearch.Length == 0 ) continue;
+				if ( itemNameSearch.Length == 0 )
+				{
+					continue;
+				}
 
 				// replace
 				itemQuery = rgx.Replace(itemQuery, string.Empty);
@@ -503,7 +522,11 @@ namespace starsky.feature.search.Services
 		public static int RoundUp(int toRound)
 		{
 			// 10 => ResultsInView
-			if ( toRound % NumberOfResultsInView == 0 ) return toRound;
+			if ( toRound % NumberOfResultsInView == 0 )
+			{
+				return toRound;
+			}
+
 			return ( NumberOfResultsInView - toRound % NumberOfResultsInView ) + toRound;
 		}
 

@@ -67,7 +67,7 @@ public class OpenEditorDesktopService : IOpenEditorDesktopService
 	public bool IsEnabled()
 	{
 		return _appSettings.UseLocalDesktop == true &&
-		       _openApplicationNativeService.DetectToUseOpenApplication();
+			   _openApplicationNativeService.DetectToUseOpenApplication();
 	}
 
 	public async Task<(bool?, string, List<PathImageFormatExistsAppPathModel>)> OpenAsync(string f,
@@ -82,12 +82,12 @@ public class OpenEditorDesktopService : IOpenEditorDesktopService
 	{
 		if ( _appSettings.UseLocalDesktop == false )
 		{
-			return ( null, "UseLocalDesktop feature toggle is disabled", [] );
+			return (null, "UseLocalDesktop feature toggle is disabled", []);
 		}
 
 		if ( !_openApplicationNativeService.DetectToUseOpenApplication() )
 		{
-			return ( null, "OpenEditor is not supported on this configuration", [] );
+			return (null, "OpenEditor is not supported on this configuration", []);
 		}
 
 		var subPathAndImageFormatList = await _openEditorPreflight
@@ -95,7 +95,7 @@ public class OpenEditorDesktopService : IOpenEditorDesktopService
 
 		if ( subPathAndImageFormatList.Count == 0 )
 		{
-			return ( false, "No files selected", [] );
+			return (false, "No files selected", []);
 		}
 
 		var (openDefaultList, openWithEditorList) =
@@ -104,7 +104,7 @@ public class OpenEditorDesktopService : IOpenEditorDesktopService
 		_openApplicationNativeService.OpenDefault(openDefaultList);
 		_openApplicationNativeService.OpenApplicationAtUrl(openWithEditorList);
 
-		return ( true, "Opened", subPathAndImageFormatList );
+		return (true, "Opened", subPathAndImageFormatList);
 	}
 
 	/// <summary>
@@ -120,12 +120,12 @@ public class OpenEditorDesktopService : IOpenEditorDesktopService
 	{
 		var appPathList = subPathAndImageFormatList
 			.Where(p => p.Status == FileIndexItem.ExifStatus.Ok &&
-			            string.IsNullOrEmpty(p.AppPath))
+						string.IsNullOrEmpty(p.AppPath))
 			.Select(p => p.FullFilePath).ToList();
 		var noAppPathList = subPathAndImageFormatList
 			.Where(p => p.Status == FileIndexItem.ExifStatus.Ok &&
-			            !string.IsNullOrEmpty(p.AppPath))
-			.Select(p => ( p.FullFilePath, p.AppPath )).ToList();
-		return ( appPathList, noAppPathList );
+						!string.IsNullOrEmpty(p.AppPath))
+			.Select(p => (p.FullFilePath, p.AppPath)).ToList();
+		return (appPathList, noAppPathList);
 	}
 }

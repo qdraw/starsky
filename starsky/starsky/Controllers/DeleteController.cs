@@ -45,7 +45,7 @@ public sealed class DeleteController : Controller
 		// When all items are not found
 		// ok = file is deleted
 		if ( fileIndexResultsList.TrueForAll(p =>
-			    p.Status != FileIndexItem.ExifStatus.Ok) )
+				p.Status != FileIndexItem.ExifStatus.Ok) )
 		{
 			return NotFound(fileIndexResultsList);
 		}

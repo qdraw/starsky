@@ -150,7 +150,7 @@ public class Import : IImport
 
 		var parentFolders = new List<Tuple<string?, List<string>>>();
 		foreach ( var itemSourceFullFilePath in importIndexItemsList.Select(item =>
-			         item.SourceFullFilePath) )
+					 item.SourceFullFilePath) )
 		{
 			var parentFolder = Directory.GetParent(itemSourceFullFilePath)
 				?.FullName;
@@ -170,8 +170,8 @@ public class Import : IImport
 		{
 			var fileStorageInfo = _filesystemStorage.Info(parentFolder.Item1!);
 			if ( fileStorageInfo.IsFolderOrFile !=
-			     FolderOrFileModel.FolderOrFileTypeList.Folder ||
-			     fileStorageInfo.IsFileSystemReadOnly != true )
+				 FolderOrFileModel.FolderOrFileTypeList.Folder ||
+				 fileStorageInfo.IsFileSystemReadOnly != true )
 			{
 				continue;
 			}
@@ -207,13 +207,15 @@ public class Import : IImport
 	{
 		var directoriesContent = new Dictionary<string, List<string>>();
 		foreach ( var importIndexItemFileIndexItemParentDirectory in importIndexItemsList.Where(
-				         p =>
-					         p.Status == ImportStatus.Ok)
-			         .Select(p => p.FileIndexItem?.ParentDirectory) )
+						 p =>
+							 p.Status == ImportStatus.Ok)
+					 .Select(p => p.FileIndexItem?.ParentDirectory) )
 		{
 			if ( importIndexItemFileIndexItemParentDirectory == null ||
-			     directoriesContent.ContainsKey(importIndexItemFileIndexItemParentDirectory) )
+				 directoriesContent.ContainsKey(importIndexItemFileIndexItemParentDirectory) )
+			{
 				continue;
+			}
 
 			var parentDirectoryList =
 				_subPathStorage
@@ -238,7 +240,7 @@ public class Import : IImport
 		Dictionary<string, List<string>> directoriesContent)
 	{
 		foreach ( var importIndexItem in importIndexItemsList.Where(p =>
-			         p.Status == ImportStatus.Ok) )
+					 p.Status == ImportStatus.Ok) )
 		{
 			if ( importIndexItem.FileIndexItem == null )
 			{
@@ -295,7 +297,7 @@ public class Import : IImport
 		foreach ( var fullFilePath in fullFilePathsList )
 		{
 			if ( _filesystemStorage.ExistFolder(fullFilePath) &&
-			     importSettings.RecursiveDirectory )
+				 importSettings.RecursiveDirectory )
 			{
 				// recursive
 				includedDirectoryFilePaths.AddRange(_filesystemStorage
@@ -306,7 +308,7 @@ public class Import : IImport
 			}
 
 			if ( _filesystemStorage.ExistFolder(fullFilePath) &&
-			     !importSettings.RecursiveDirectory )
+				 !importSettings.RecursiveDirectory )
 			{
 				// non-recursive
 				includedDirectoryFilePaths.AddRange(_filesystemStorage
@@ -359,7 +361,7 @@ public class Import : IImport
 
 		// Check if extension is correct && Check if the file is correct
 		if ( !ExtensionRolesHelper.IsExtensionSyncSupported(inputFileFullPath.Key) ||
-		     !ExtensionRolesHelper.IsExtensionSyncSupported($".{imageFormat}") )
+			 !ExtensionRolesHelper.IsExtensionSyncSupported($".{imageFormat}") )
 		{
 			ConsoleIfVerbose($"❌ extension not supported: {inputFileFullPath.Key}");
 			return new ImportIndexItem
@@ -384,7 +386,7 @@ public class Import : IImport
 		}
 
 		if ( importSettings.IndexMode &&
-		     await _importQuery!.IsHashInImportDbAsync(hashList.Key) )
+			 await _importQuery!.IsHashInImportDbAsync(hashList.Key) )
 		{
 			ConsoleIfVerbose($"🤷 Ignored, exist already {inputFileFullPath.Key}");
 			return new ImportIndexItem
@@ -476,10 +478,13 @@ public class Import : IImport
 		importIndexItem.FileIndexItem.FileHash = fileHashCode;
 		importIndexItem.FileIndexItem.ImageFormat = imageFormat;
 		importIndexItem.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
-		if ( colorClassTransformation < 0 ) return importIndexItem;
+		if ( colorClassTransformation < 0 )
+		{
+			return importIndexItem;
+		}
 
 		// only when set in ImportSettingsModel
-		var colorClass = ( ColorClassParser.Color )colorClassTransformation;
+		var colorClass = ( ColorClassParser.Color ) colorClassTransformation;
 		importIndexItem.FileIndexItem.ColorClass = colorClass;
 		importIndexItem.ColorClass = colorClass;
 		return importIndexItem;
@@ -539,7 +544,10 @@ public class Import : IImport
 		}
 
 		var directoriesContent = ParentFoldersDictionary(preflightItemList);
-		if ( importSettings.IndexMode ) await CreateParentFolders(directoriesContent);
+		if ( importSettings.IndexMode )
+		{
+			await CreateParentFolders(directoriesContent);
+		}
 
 		var importIndexItemsList = ( await preflightItemList.AsEnumerable()
 			.ForEachAsync(
@@ -561,14 +569,14 @@ public class Import : IImport
 			importIndexItemsList, ImportSettingsModel importSettings)
 	{
 		if ( _appSettings.MetaThumbnailOnImport == false ||
-		     !importSettings.IndexMode )
+			 !importSettings.IndexMode )
 		{
 			return new List<(bool, bool, string, string?)>();
 		}
 
 		var items = importIndexItemsList
 			.Where(p => p.Status == ImportStatus.Ok)
-			.Select(p => ( p.FilePath, p.FileIndexItem!.FileHash )).Cast<(string, string)>()
+			.Select(p => (p.FilePath, p.FileIndexItem!.FileHash)).Cast<(string, string)>()
 			.ToList();
 
 		if ( items.Count == 0 )
@@ -589,14 +597,17 @@ public class Import : IImport
 	internal async Task<ImportIndexItem> Importer(ImportIndexItem? importIndexItem,
 		ImportSettingsModel importSettings)
 	{
-		if ( importIndexItem is not { Status: ImportStatus.Ok } ) return importIndexItem!;
+		if ( importIndexItem is not { Status: ImportStatus.Ok } )
+		{
+			return importIndexItem!;
+		}
 
 		// True when exist and file type is raw
 		var xmpExistForThisFileType = ExistXmpSidecarForThisFileType(importIndexItem);
 
 		if ( xmpExistForThisFileType || ( _appSettings.ExifToolImportXmpCreate
-		                                  && ExtensionRolesHelper.IsExtensionForceXmp(
-			                                  importIndexItem.FilePath) ) )
+										  && ExtensionRolesHelper.IsExtensionForceXmp(
+											  importIndexItem.FilePath) ) )
 		{
 			// When a xmp file already exist (only for raws)
 			// AND when this created afterwards with the ExifToolImportXmpCreate setting  (only for raws)
@@ -656,7 +667,11 @@ public class Import : IImport
 
 		DeleteFileAfter(importSettings, importIndexItem);
 
-		if ( _appSettings.IsVerbose() ) _console.Write("+");
+		if ( _appSettings.IsVerbose() )
+		{
+			_console.Write("+");
+		}
+
 		return importIndexItem;
 	}
 
@@ -666,7 +681,7 @@ public class Import : IImport
 		if ( _appSettings.IsVerbose() )
 		{
 			_logger.LogInformation("[Import] Next Action = Copy" +
-			                       $" {importIndexItem.SourceFullFilePath} {importIndexItem.FilePath}");
+								   $" {importIndexItem.SourceFullFilePath} {importIndexItem.FilePath}");
 		}
 
 		var hostStorageFileSize = _filesystemStorage.Info(importIndexItem.SourceFullFilePath).Size;
@@ -686,7 +701,11 @@ public class Import : IImport
 		}
 
 		var subStorageFileSize = _subPathStorage.Info(importIndexItem.FilePath!).Size;
-		if ( hostStorageFileSize == subStorageFileSize ) return true;
+		if ( hostStorageFileSize == subStorageFileSize )
+		{
+			return true;
+		}
+
 		_logger.LogError(
 			$"Filesize does not match H:{hostStorageFileSize} - S:{subStorageFileSize} " +
 			$"H: {importIndexItem.SourceFullFilePath} - S: {importIndexItem.FilePath}");
@@ -702,7 +721,10 @@ public class Import : IImport
 		string? fileHash, bool indexMode)
 	{
 		if ( fileHash == null || _appSettings.MetaThumbnailOnImport == false || !indexMode ||
-		     queryThumbnailUpdateDelegate == null ) return;
+			 queryThumbnailUpdateDelegate == null )
+		{
+			return;
+		}
 		// Check if fastest version is available to show 
 		var setStatus = _thumbnailStorage.ExistFile(
 			ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.TinyMeta));
@@ -721,7 +743,11 @@ public class Import : IImport
 		ImportIndexItem importIndexItem)
 	{
 		// to move files
-		if ( !importSettings.DeleteAfter ) return;
+		if ( !importSettings.DeleteAfter )
+		{
+			return;
+		}
+
 		if ( _appSettings.IsVerbose() )
 		{
 			_console.WriteLine($"🚮 Delete file: {importIndexItem.SourceFullFilePath}");
@@ -765,8 +791,8 @@ public class Import : IImport
 			ExtensionRolesHelper.ReplaceExtensionWithXmp(importIndexItem
 				.SourceFullFilePath);
 		return ExtensionRolesHelper.IsExtensionForceXmp(importIndexItem
-			       .SourceFullFilePath) &&
-		       _filesystemStorage.ExistFile(xmpSourceFullFilePath);
+				   .SourceFullFilePath) &&
+			   _filesystemStorage.ExistFile(xmpSourceFullFilePath);
 	}
 
 	/// <summary>
@@ -779,9 +805,12 @@ public class Import : IImport
 		if ( !importSettings.IndexMode || _importQuery?.TestConnection() != true )
 		{
 			if ( _appSettings.IsVerbose() )
+			{
 				_logger.LogInformation(" AddToQueryAndImportDatabaseAsync Ignored - " +
-				                       $"IndexMode {importSettings.IndexMode} " +
-				                       $"TestConnection {_importQuery?.TestConnection()}");
+									   $"IndexMode {importSettings.IndexMode} " +
+									   $"TestConnection {_importQuery?.TestConnection()}");
+			}
+
 			return;
 		}
 
@@ -810,9 +839,12 @@ public class Import : IImport
 		if ( !importSettings.IndexMode || _importQuery?.TestConnection() != true )
 		{
 			if ( _appSettings.IsVerbose() )
+			{
 				_logger.LogInformation(" RemoveToQueryAndImportDatabaseAsync Ignored - " +
-				                       $"IndexMode {importSettings.IndexMode} " +
-				                       $"TestConnection {_importQuery?.TestConnection()}");
+									   $"IndexMode {importSettings.IndexMode} " +
+									   $"TestConnection {_importQuery?.TestConnection()}");
+			}
+
 			return;
 		}
 
@@ -873,7 +905,11 @@ public class Import : IImport
 
 			foreach ( var folderName in parentDirectoriesList )
 			{
-				if ( string.IsNullOrEmpty(folderName) ) continue;
+				if ( string.IsNullOrEmpty(folderName) )
+				{
+					continue;
+				}
+
 				parentPath.Append($"/{folderName}");
 
 				await CreateNewDatabaseDirectory(parentPath.ToString());
@@ -901,7 +937,10 @@ public class Import : IImport
 	private async Task CreateNewDatabaseDirectory(string parentPath)
 	{
 		if ( AddedParentDirectories.Contains(parentPath) ||
-		     _query.SingleItem(parentPath) != null ) return;
+			 _query.SingleItem(parentPath) != null )
+		{
+			return;
+		}
 
 		var item = new FileIndexItem(PathHelper.RemoveLatestSlash(parentPath))
 		{

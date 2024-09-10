@@ -54,13 +54,19 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 
 			if ( ArgsHelper.GetThumbnail(args) )
 			{
-				if ( _appSettings.IsVerbose() ) _console.WriteLine($">> GetThumbnail True ({DateTime.UtcNow:HH:mm:ss})");
+				if ( _appSettings.IsVerbose() )
+				{
+					_console.WriteLine($">> GetThumbnail True ({DateTime.UtcNow:HH:mm:ss})");
+				}
 
 				var storage = _selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 
 				var isFolderOrFile = storage.IsFolderOrFile(subPath);
 
-				if ( _appSettings.IsVerbose() ) _console.WriteLine(isFolderOrFile.ToString());
+				if ( _appSettings.IsVerbose() )
+				{
+					_console.WriteLine(isFolderOrFile.ToString());
+				}
 
 				await _thumbnailService.CreateThumbnailAsync(subPath);
 

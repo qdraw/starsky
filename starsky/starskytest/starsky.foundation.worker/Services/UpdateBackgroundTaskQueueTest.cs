@@ -20,212 +20,213 @@ using starsky.foundation.worker.Metrics;
 using starsky.foundation.worker.Services;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.worker.Services
+namespace starskytest.starsky.foundation.worker.Services;
+
+[TestClass]
+public sealed class UpdateBackgroundTaskQueueTest
 {
-	[TestClass]
-	public sealed class UpdateBackgroundTaskQueueTest
+	private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
+	private readonly IServiceScopeFactory _scopeFactory;
+
+	public UpdateBackgroundTaskQueueTest()
 	{
-		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
-		private readonly IServiceScopeFactory _scopeFactory;
+		// Start using dependency injection
+		var builder = new ConfigurationBuilder();
+		var dict = new Dictionary<string, string?> { { "App:Verbose", "true" } };
+		// Add random config to dependency injection
+		builder.AddInMemoryCollection(dict);
+		// build config
+		var configuration = builder.Build();
+		var services = new ServiceCollection();
 
-		public UpdateBackgroundTaskQueueTest()
+		// inject config as object to a service
+		services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
+
+		// Add Background services
+		services.AddSingleton<IHostedService, UpdateBackgroundQueuedHostedService>();
+		services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
+		services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
+		services.AddSingleton<UpdateBackgroundQueuedMetrics>();
+
+		// build the service
+		var serviceProvider = services.BuildServiceProvider();
+		_bgTaskQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
+		_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+	}
+
+	[TestMethod]
+	public async Task BackgroundTaskQueueTest_DequeueAsync()
+	{
+		await _bgTaskQueue.QueueBackgroundWorkItemAsync(async token =>
 		{
-			// Start using dependency injection
-			var builder = new ConfigurationBuilder();
-			var dict = new Dictionary<string, string?> { { "App:Verbose", "true" } };
-			// Add random config to dependency injection
-			builder.AddInMemoryCollection(dict);
-			// build config
-			var configuration = builder.Build();
-			var services = new ServiceCollection();
-
-			// inject config as object to a service
-			services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
-
-			// Add Background services
-			services.AddSingleton<IHostedService, UpdateBackgroundQueuedHostedService>();
-			services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
-			services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
-			services.AddSingleton<UpdateBackgroundQueuedMetrics>();
-
-			// build the service
-			var serviceProvider = services.BuildServiceProvider();
-			_bgTaskQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
-			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-		}
-
-		[TestMethod]
-		public async Task BackgroundTaskQueueTest_DequeueAsync()
-		{
-			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async token =>
+			for ( var delayLoop = 0; delayLoop < 3; delayLoop++ )
 			{
-				for ( var delayLoop = 0; delayLoop < 3; delayLoop++ )
-				{
-					await Task.Delay(TimeSpan.FromSeconds(1), token);
-					Console.WriteLine(delayLoop);
-					// Cancel request > not tested very good
-					await _bgTaskQueue.DequeueAsync(token);
-				}
-			}, string.Empty);
-			Assert.IsNotNull(_bgTaskQueue);
-		}
-
-		[TestMethod]
-		public async Task Count_AddOneForCount()
-		{
-			var backgroundQueue = new UpdateBackgroundTaskQueue(_scopeFactory);
-			await backgroundQueue.QueueBackgroundWorkItemAsync(_ =>
-				ValueTask.CompletedTask, string.Empty);
-			var count = backgroundQueue.Count();
-			Assert.AreEqual(1, count);
-		}
-
-		// https://stackoverflow.com/a/51224556
-		[TestMethod]
-		[Timeout(5000)]
-		[SuppressMessage("Usage", "S2589:Dup isExecuted")]
-		public async Task BackgroundTaskQueueTest_Verify_Hosted_Service_Executes_Task()
-		{
-			IServiceCollection services = new ServiceCollection();
-			services.AddSingleton<ILoggerFactory, NullLoggerFactory>();
-			services.AddHostedService<UpdateBackgroundQueuedHostedService>();
-			services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
-			services.AddSingleton<IWebLogger, FakeIWebLogger>();
-			services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
-			services.AddSingleton<UpdateBackgroundQueuedMetrics>();
-
-			var serviceProvider = services.BuildServiceProvider();
-
-			var service =
-				serviceProvider.GetService<IHostedService>() as UpdateBackgroundQueuedHostedService;
-
-			var backgroundQueue = serviceProvider.GetService<IUpdateBackgroundTaskQueue>();
-
-			if ( service == null )
-				throw new NullReferenceException("bg is null");
-
-			await service.StartAsync(CancellationToken.None);
-
-			var isExecuted = false;
-			await backgroundQueue!.QueueBackgroundWorkItemAsync(async _ =>
-				{
-					await Task.Yield();
-					isExecuted = true;
-				},
-				string.Empty);
-
-			await Task.Delay(100);
-			await backgroundQueue.QueueBackgroundWorkItemAsync(async _ =>
-			{
-				await Task.Yield();
-				isExecuted = true;
-				throw new Exception();
-				// EXCEPTION IS IGNORED
-			}, string.Empty);
-
-			if ( !isExecuted )
-			{
-				await Task.Delay(500);
+				await Task.Delay(TimeSpan.FromSeconds(1), token);
+				Console.WriteLine(delayLoop);
+				// Cancel request > not tested very good
+				await _bgTaskQueue.DequeueAsync(token);
 			}
+		}, string.Empty);
+		Assert.IsNotNull(_bgTaskQueue);
+	}
 
-			Assert.IsTrue(isExecuted);
+	[TestMethod]
+	public async Task Count_AddOneForCount()
+	{
+		var backgroundQueue = new UpdateBackgroundTaskQueue(_scopeFactory);
+		await backgroundQueue.QueueBackgroundWorkItemAsync(_ =>
+			ValueTask.CompletedTask, string.Empty);
+		var count = backgroundQueue.Count();
+		Assert.AreEqual(1, count);
+	}
 
-			await service.StopAsync(CancellationToken.None);
+	// https://stackoverflow.com/a/51224556
+	[TestMethod]
+	[Timeout(5000)]
+	[SuppressMessage("Usage", "S2589:Dup isExecuted")]
+	public async Task BackgroundTaskQueueTest_Verify_Hosted_Service_Executes_Task()
+	{
+		IServiceCollection services = new ServiceCollection();
+		services.AddSingleton<ILoggerFactory, NullLoggerFactory>();
+		services.AddHostedService<UpdateBackgroundQueuedHostedService>();
+		services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
+		services.AddSingleton<IWebLogger, FakeIWebLogger>();
+		services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
+		services.AddSingleton<UpdateBackgroundQueuedMetrics>();
+
+		var serviceProvider = services.BuildServiceProvider();
+
+		var service =
+			serviceProvider.GetService<IHostedService>() as UpdateBackgroundQueuedHostedService;
+
+		var backgroundQueue = serviceProvider.GetService<IUpdateBackgroundTaskQueue>();
+
+		if ( service == null )
+		{
+			throw new NullReferenceException("bg is null");
 		}
 
-		[ExpectedException(typeof(ArgumentNullException))]
-		[TestMethod]
-		public async Task BackgroundTaskQueueTest_ArgumentNullExceptionFail()
-		{
-			Func<CancellationToken, ValueTask>? func = null;
-			// ReSharper disable once ExpressionIsAlwaysNull
-			await _bgTaskQueue.QueueBackgroundWorkItemAsync(func!, string.Empty);
-			Assert.IsNull(func);
-		}
+		await service.StartAsync(CancellationToken.None);
 
-		[TestMethod]
-		[Timeout(5000)]
-		[SuppressMessage("Usage", "S2589:Dup isExecuted")]
-		public async Task BackgroundQueuedHostedServiceTestHandleException()
-		{
-			IServiceCollection services = new ServiceCollection();
-			services.AddSingleton<ILoggerFactory, NullLoggerFactory>();
-			services.AddHostedService<UpdateBackgroundQueuedHostedService>();
-			services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
-			services.AddSingleton<IWebLogger, FakeIWebLogger>();
-			services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
-			services.AddSingleton<UpdateBackgroundQueuedMetrics>();
-
-			var serviceProvider = services.BuildServiceProvider();
-
-			var service =
-				serviceProvider.GetService<IHostedService>() as UpdateBackgroundQueuedHostedService;
-
-			var backgroundQueue = serviceProvider.GetService<IUpdateBackgroundTaskQueue>();
-
-			await service!.StartAsync(CancellationToken.None);
-
-			var isExecuted = false;
-			await backgroundQueue!.QueueBackgroundWorkItemAsync(async _ =>
+		var isExecuted = false;
+		await backgroundQueue!.QueueBackgroundWorkItemAsync(async _ =>
 			{
 				await Task.Yield();
 				isExecuted = true;
-				throw new Exception();
-				// EXCEPTION IS IGNORED
-			}, string.Empty);
+			},
+			string.Empty);
 
-			await Task.Delay(100);
-			await backgroundQueue.QueueBackgroundWorkItemAsync(async _ =>
-			{
-				await Task.Yield();
-				isExecuted = true;
-				throw new Exception();
-				// EXCEPTION IS IGNORED
-			}, string.Empty);
-
-			if ( !isExecuted )
-			{
-				await Task.Delay(1000);
-			}
-
-			Assert.IsTrue(isExecuted);
-		}
-
-		[TestMethod]
-		[Timeout(5000)]
-		public async Task StartAsync_CancelBeforeStart()
+		await Task.Delay(100);
+		await backgroundQueue.QueueBackgroundWorkItemAsync(async _ =>
 		{
-			var fakeLogger = new FakeIWebLogger();
-			var service =
-				new UpdateBackgroundQueuedHostedService(new FakeIUpdateBackgroundTaskQueue(),
-					fakeLogger);
+			await Task.Yield();
+			isExecuted = true;
+			throw new Exception();
+			// EXCEPTION IS IGNORED
+		}, string.Empty);
 
-			using var cancelTokenSource = new CancellationTokenSource();
-			await cancelTokenSource.CancelAsync();
-
-			// use reflection to hit protected method
-			var method = service.GetType().GetTypeInfo().GetDeclaredMethod("ExecuteAsync");
-			Assert.IsNotNull(method);
-			method.Invoke(service, new object[] { cancelTokenSource.Token });
-			// should stop and not hit timeout
-		}
-
-		[TestMethod]
-		[Timeout(1000)]
-		public async Task Update_End_StopAsync_Test()
+		if ( !isExecuted )
 		{
-			var logger = new FakeIWebLogger();
-			var service =
-				new UpdateBackgroundQueuedHostedService(new FakeIUpdateBackgroundTaskQueue(),
-					logger);
-
-			using var source = new CancellationTokenSource();
-			var token = source.Token;
-			await source.CancelAsync(); // <- cancel before start
-
-			await service.StopAsync(token);
-
-			Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2?.Contains("is stopping"));
+			await Task.Delay(500);
 		}
+
+		Assert.IsTrue(isExecuted);
+
+		await service.StopAsync(CancellationToken.None);
+	}
+
+	[ExpectedException(typeof(ArgumentNullException))]
+	[TestMethod]
+	public async Task BackgroundTaskQueueTest_ArgumentNullExceptionFail()
+	{
+		Func<CancellationToken, ValueTask>? func = null;
+		// ReSharper disable once ExpressionIsAlwaysNull
+		await _bgTaskQueue.QueueBackgroundWorkItemAsync(func!, string.Empty);
+		Assert.IsNull(func);
+	}
+
+	[TestMethod]
+	[Timeout(5000)]
+	[SuppressMessage("Usage", "S2589:Dup isExecuted")]
+	public async Task BackgroundQueuedHostedServiceTestHandleException()
+	{
+		IServiceCollection services = new ServiceCollection();
+		services.AddSingleton<ILoggerFactory, NullLoggerFactory>();
+		services.AddHostedService<UpdateBackgroundQueuedHostedService>();
+		services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
+		services.AddSingleton<IWebLogger, FakeIWebLogger>();
+		services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
+		services.AddSingleton<UpdateBackgroundQueuedMetrics>();
+
+		var serviceProvider = services.BuildServiceProvider();
+
+		var service =
+			serviceProvider.GetService<IHostedService>() as UpdateBackgroundQueuedHostedService;
+
+		var backgroundQueue = serviceProvider.GetService<IUpdateBackgroundTaskQueue>();
+
+		await service!.StartAsync(CancellationToken.None);
+
+		var isExecuted = false;
+		await backgroundQueue!.QueueBackgroundWorkItemAsync(async _ =>
+		{
+			await Task.Yield();
+			isExecuted = true;
+			throw new Exception();
+			// EXCEPTION IS IGNORED
+		}, string.Empty);
+
+		await Task.Delay(100);
+		await backgroundQueue.QueueBackgroundWorkItemAsync(async _ =>
+		{
+			await Task.Yield();
+			isExecuted = true;
+			throw new Exception();
+			// EXCEPTION IS IGNORED
+		}, string.Empty);
+
+		if ( !isExecuted )
+		{
+			await Task.Delay(1000);
+		}
+
+		Assert.IsTrue(isExecuted);
+	}
+
+	[TestMethod]
+	[Timeout(5000)]
+	public async Task StartAsync_CancelBeforeStart()
+	{
+		var fakeLogger = new FakeIWebLogger();
+		var service =
+			new UpdateBackgroundQueuedHostedService(new FakeIUpdateBackgroundTaskQueue(),
+				fakeLogger);
+
+		using var cancelTokenSource = new CancellationTokenSource();
+		await cancelTokenSource.CancelAsync();
+
+		// use reflection to hit protected method
+		var method = service.GetType().GetTypeInfo().GetDeclaredMethod("ExecuteAsync");
+		Assert.IsNotNull(method);
+		method.Invoke(service, new object[] { cancelTokenSource.Token });
+		// should stop and not hit timeout
+	}
+
+	[TestMethod]
+	[Timeout(1000)]
+	public async Task Update_End_StopAsync_Test()
+	{
+		var logger = new FakeIWebLogger();
+		var service =
+			new UpdateBackgroundQueuedHostedService(new FakeIUpdateBackgroundTaskQueue(),
+				logger);
+
+		using var source = new CancellationTokenSource();
+		var token = source.Token;
+		await source.CancelAsync(); // <- cancel before start
+
+		await service.StopAsync(token);
+
+		Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2?.Contains("is stopping"));
 	}
 }

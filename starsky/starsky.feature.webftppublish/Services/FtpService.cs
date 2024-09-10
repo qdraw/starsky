@@ -75,8 +75,16 @@ namespace starsky.feature.webftppublish.Services
 					 CreateListOfRemoteDirectories(parentDirectory, slug, copyContent) )
 			{
 				_console.Write(",");
-				if ( DoesFtpDirectoryExist(thisDirectory) ) continue;
-				if ( CreateFtpDirectory(thisDirectory) ) continue;
+				if ( DoesFtpDirectoryExist(thisDirectory) )
+				{
+					continue;
+				}
+
+				if ( CreateFtpDirectory(thisDirectory) )
+				{
+					continue;
+				}
+
 				_console.WriteLine($"Fail > create directory => {_webFtpNoLogin}");
 			}
 
@@ -169,7 +177,11 @@ namespace starsky.feature.webftppublish.Services
 
 				RetryHelper.Do(LocalUpload, TimeSpan.FromSeconds(10));
 
-				if ( _storage.ExistFile(parentDirectory + item) ) continue;
+				if ( _storage.ExistFile(parentDirectory + item) )
+				{
+					continue;
+				}
+
 				_console.WriteLine($"Fail > upload file => {item} {toFtpPath}");
 				return false;
 			}
@@ -187,7 +199,10 @@ namespace starsky.feature.webftppublish.Services
 		/// <returns></returns>
 		private bool Upload(string parentDirectory, string subPath, string toFtpPath)
 		{
-			if ( !_storage.ExistFile(parentDirectory + subPath) ) return false;
+			if ( !_storage.ExistFile(parentDirectory + subPath) )
+			{
+				return false;
+			}
 
 			var request = _webRequest.Create(toFtpPath);
 			request.Credentials =
@@ -253,7 +268,7 @@ namespace starsky.feature.webftppublish.Services
 			}
 			catch ( WebException ex )
 			{
-				var ftpWebResponse = ( FtpWebResponse? )ex.Response;
+				var ftpWebResponse = ( FtpWebResponse? ) ex.Response;
 				ftpWebResponse?.Close();
 				return ftpWebResponse?.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable;
 			}

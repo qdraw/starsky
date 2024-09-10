@@ -23,7 +23,10 @@ namespace starsky.foundation.database.Helpers
 		public static List<string> Compare(FileIndexItem sourceIndexItem,
 			FileIndexItem? updateObject = null, bool append = false)
 		{
-			if ( updateObject == null ) updateObject = new FileIndexItem();
+			if ( updateObject == null )
+			{
+				updateObject = new FileIndexItem();
+			}
 
 			var differenceList = new List<string>();
 			PropertyInfo[] propertiesA = sourceIndexItem.GetType()
@@ -37,7 +40,9 @@ namespace starsky.foundation.database.Helpers
 				var propertyB = propertiesB.FirstOrDefault(p => p.Name == propertyA.Name);
 
 				if ( PropertyCanRead(propertyA, propertyB) )
+				{
 					continue;
+				}
 
 				Type propertyType = propertyA.PropertyType;
 				var oldValue = propertyA.GetValue(sourceIndexItem, null);
@@ -45,57 +50,57 @@ namespace starsky.foundation.database.Helpers
 
 				if ( propertyType == typeof(string) )
 				{
-					CompareString(propertyB.Name, sourceIndexItem, ( string? )oldValue,
-						( string? )newValue, differenceList, append);
+					CompareString(propertyB.Name, sourceIndexItem, ( string? ) oldValue,
+						( string? ) newValue, differenceList, append);
 				}
 				else if ( propertyType == typeof(bool?) )
 				{
-					CompareNullableBool(propertyB.Name, sourceIndexItem, ( bool? )oldValue,
-						( bool? )newValue, differenceList);
+					CompareNullableBool(propertyB.Name, sourceIndexItem, ( bool? ) oldValue,
+						( bool? ) newValue, differenceList);
 				}
 				else if ( propertyType == typeof(ColorClassParser.Color) )
 				{
 					CompareColor(propertyB.Name, sourceIndexItem,
-						( ColorClassParser.Color? )oldValue,
-						( ColorClassParser.Color? )newValue, differenceList);
+						( ColorClassParser.Color? ) oldValue,
+						( ColorClassParser.Color? ) newValue, differenceList);
 				}
 				else if ( propertyType == typeof(DateTime) )
 				{
-					CompareDateTime(propertyB.Name, sourceIndexItem, ( DateTime? )oldValue,
-						( DateTime? )newValue, differenceList);
+					CompareDateTime(propertyB.Name, sourceIndexItem, ( DateTime? ) oldValue,
+						( DateTime? ) newValue, differenceList);
 				}
 				else if ( propertyType == typeof(FileIndexItem.Rotation) )
 				{
 					CompareRotation(propertyB.Name, sourceIndexItem,
-						( FileIndexItem.Rotation? )oldValue,
-						( FileIndexItem.Rotation? )newValue, differenceList);
+						( FileIndexItem.Rotation? ) oldValue,
+						( FileIndexItem.Rotation? ) newValue, differenceList);
 				}
 				else if ( propertyType == typeof(ImageStabilisationType) )
 				{
 					CompareImageStabilisationType(propertyB.Name, sourceIndexItem,
-						( ImageStabilisationType? )oldValue,
-						( ImageStabilisationType? )newValue, differenceList);
+						( ImageStabilisationType? ) oldValue,
+						( ImageStabilisationType? ) newValue, differenceList);
 				}
 				else if ( propertyType == typeof(double) )
 				{
-					CompareDouble(propertyB.Name, sourceIndexItem, ( double? )oldValue,
-						( double? )( newValue ), differenceList);
+					CompareDouble(propertyB.Name, sourceIndexItem, ( double? ) oldValue,
+						( double? ) ( newValue ), differenceList);
 				}
 				else if ( propertyType == typeof(ushort) )
 				{
-					CompareUshort(propertyB.Name, sourceIndexItem, ( ushort? )oldValue,
-						( ushort? )newValue, differenceList);
+					CompareUshort(propertyB.Name, sourceIndexItem, ( ushort? ) oldValue,
+						( ushort? ) newValue, differenceList);
 				}
 				else if ( propertyType == typeof(List<string>) )
 				{
-					CompareListString(propertyB.Name, sourceIndexItem, ( List<string>? )oldValue,
-						( List<string>? )newValue, differenceList);
+					CompareListString(propertyB.Name, sourceIndexItem, ( List<string>? ) oldValue,
+						( List<string>? ) newValue, differenceList);
 				}
 				else if ( propertyType == typeof(ExtensionRolesHelper.ImageFormat) )
 				{
 					CompareImageFormat(propertyB.Name, sourceIndexItem,
-						( ExtensionRolesHelper.ImageFormat? )oldValue,
-						( ExtensionRolesHelper.ImageFormat? )newValue, differenceList);
+						( ExtensionRolesHelper.ImageFormat? ) oldValue,
+						( ExtensionRolesHelper.ImageFormat? ) newValue, differenceList);
 				}
 			}
 
@@ -109,7 +114,7 @@ namespace starsky.foundation.database.Helpers
 		private static bool PropertyCanRead(PropertyInfo propertyA, PropertyInfo? propertyB)
 		{
 			return propertyB == null || !propertyA.CanRead ||
-			       !propertyB.CanRead;
+				   !propertyB.CanRead;
 		}
 
 		/// <summary>
@@ -174,7 +179,7 @@ namespace starsky.foundation.database.Helpers
 		/// <param name="fieldName">name e.g. Tags</param>
 		/// <returns>bool, true=exist</returns>
 		[SuppressMessage("Usage", "S6605: Collection-specific Exists " +
-		                          "method should be used instead of the Any extension.")]
+								  "method should be used instead of the Any extension.")]
 		public static bool CheckIfPropertyExist(string fieldName)
 		{
 			PropertyInfo[] propertiesA = new FileIndexItem().GetType().GetProperties(
@@ -202,8 +207,15 @@ namespace starsky.foundation.database.Helpers
 			int count = propertiesA.Length;
 			for ( int i = 0; i < count; i++ )
 			{
-				if ( ( !propertiesA[i].CanRead ) || ( !propertiesB[i].CanRead ) ) continue;
-				if ( !differenceList.Contains(propertiesA[i].Name) ) continue;
+				if ( ( !propertiesA[i].CanRead ) || ( !propertiesB[i].CanRead ) )
+				{
+					continue;
+				}
+
+				if ( !differenceList.Contains(propertiesA[i].Name) )
+				{
+					continue;
+				}
 
 				var newRotationValue = propertiesB[i].GetValue(updateObject, null);
 
@@ -227,7 +239,11 @@ namespace starsky.foundation.database.Helpers
 			List<string> differenceList)
 		{
 			if ( oldRotationValue == newRotationValue || newRotationValue == null ||
-			     newRotationValue == FileIndexItem.Rotation.DoNotChange ) return;
+				 newRotationValue == FileIndexItem.Rotation.DoNotChange )
+			{
+				return;
+			}
+
 			sourceIndexItem.GetType().GetProperty(propertyName)
 				?.SetValue(sourceIndexItem, newRotationValue, null);
 			differenceList.Add(propertyName.ToLowerInvariant());
@@ -247,9 +263,9 @@ namespace starsky.foundation.database.Helpers
 			const double tolerance = 0.000001d;
 			// Dont allow to overwrite with default 0 value
 			if ( oldDoubleValue == null ||
-			     newDoubleValue == null ||
-			     Math.Abs(oldDoubleValue.Value - newDoubleValue.Value) < tolerance ||
-			     Math.Abs(newDoubleValue.Value) < tolerance )
+				 newDoubleValue == null ||
+				 Math.Abs(oldDoubleValue.Value - newDoubleValue.Value) < tolerance ||
+				 Math.Abs(newDoubleValue.Value) < tolerance )
 			{
 				return;
 			}
@@ -272,7 +288,11 @@ namespace starsky.foundation.database.Helpers
 		{
 			// Dont allow to overwrite with default 0 value
 			if ( oldUshortValue == newUshortValue || newUshortValue == null ||
-			     newUshortValue == 0 ) return;
+				 newUshortValue == 0 )
+			{
+				return;
+			}
+
 			sourceIndexItem.GetType().GetProperty(propertyName)
 				?.SetValue(sourceIndexItem, newUshortValue, null);
 			differenceList.Add(propertyName.ToLowerInvariant());
@@ -291,7 +311,11 @@ namespace starsky.foundation.database.Helpers
 			ExtensionRolesHelper.ImageFormat? newImageFormatValue, List<string> differenceList)
 		{
 			if ( oldImageFormatValue == newImageFormatValue || newImageFormatValue == null ||
-			     newImageFormatValue == ExtensionRolesHelper.ImageFormat.unknown ) return;
+				 newImageFormatValue == ExtensionRolesHelper.ImageFormat.unknown )
+			{
+				return;
+			}
+
 			sourceIndexItem.GetType().GetProperty(propertyName)
 				?.SetValue(sourceIndexItem, newImageFormatValue, null);
 			differenceList.Add(propertyName.ToLowerInvariant());
@@ -311,7 +335,11 @@ namespace starsky.foundation.database.Helpers
 			List<string> differenceList)
 		{
 			if ( oldImageStabValue == newImageStabValue || newImageStabValue == null ||
-			     newImageStabValue == ImageStabilisationType.Unknown ) return;
+				 newImageStabValue == ImageStabilisationType.Unknown )
+			{
+				return;
+			}
+
 			sourceIndexItem.GetType().GetProperty(propertyName)
 				?.SetValue(sourceIndexItem, newImageStabValue, null);
 			differenceList.Add(propertyName.ToLowerInvariant());
@@ -330,7 +358,11 @@ namespace starsky.foundation.database.Helpers
 		{
 			// Dont allow to overwrite with default year 0001
 			if ( oldDateValue == newDateValue || newDateValue == null ||
-			     newDateValue.Value.Year < 2 ) return;
+				 newDateValue.Value.Year < 2 )
+			{
+				return;
+			}
+
 			sourceIndexItem.GetType().GetProperty(propertyName)
 				?.SetValue(sourceIndexItem, newDateValue.Value, null);
 			differenceList.Add(propertyName.ToLowerInvariant());
@@ -349,8 +381,12 @@ namespace starsky.foundation.database.Helpers
 			ColorClassParser.Color? newColorValue, List<string> differenceList)
 		{
 			if ( oldColorValue == newColorValue ||
-			     newColorValue == ColorClassParser.Color.DoNotChange ||
-			     newColorValue == null ) return;
+				 newColorValue == ColorClassParser.Color.DoNotChange ||
+				 newColorValue == null )
+			{
+				return;
+			}
+
 			sourceIndexItem.GetType().GetProperty(propertyName)
 				?.SetValue(sourceIndexItem, newColorValue, null);
 			differenceList.Add(propertyName.ToLowerInvariant());
@@ -369,8 +405,15 @@ namespace starsky.foundation.database.Helpers
 			List<string>? oldListStringValue, List<string>? newListStringValue,
 			List<string> differenceList)
 		{
-			if ( oldListStringValue == null || newListStringValue?.Count == 0 ) return;
-			if ( oldListStringValue.Equals(newListStringValue) ) return;
+			if ( oldListStringValue == null || newListStringValue?.Count == 0 )
+			{
+				return;
+			}
+
+			if ( oldListStringValue.Equals(newListStringValue) )
+			{
+				return;
+			}
 
 			sourceIndexItem.GetType().GetProperty(propertyName)
 				?.SetValue(sourceIndexItem, newListStringValue, null);
@@ -388,9 +431,17 @@ namespace starsky.foundation.database.Helpers
 		internal static void CompareNullableBool(string propertyName, FileIndexItem sourceIndexItem,
 			bool? oldBoolValue, bool? newBoolValue, List<string> differenceList)
 		{
-			if ( newBoolValue == null || oldBoolValue == newBoolValue ) return;
+			if ( newBoolValue == null || oldBoolValue == newBoolValue )
+			{
+				return;
+			}
+
 			var property = sourceIndexItem.GetType().GetProperty(propertyName);
-			if ( property == null ) return;
+			if ( property == null )
+			{
+				return;
+			}
+
 			property.SetValue(sourceIndexItem, newBoolValue, null);
 			differenceList.Add(propertyName.ToLowerInvariant());
 		}
@@ -410,8 +461,11 @@ namespace starsky.foundation.database.Helpers
 		{
 			// ignore capitals
 			if ( string.IsNullOrEmpty(newStringValue) ||
-			     string.Equals(oldStringValue, newStringValue,
-				     StringComparison.InvariantCultureIgnoreCase) ) return;
+				 string.Equals(oldStringValue, newStringValue,
+					 StringComparison.InvariantCultureIgnoreCase) )
+			{
+				return;
+			}
 
 			if ( propertyName is nameof(FileIndexItem.FileName) or nameof(FileIndexItem.FilePath) )
 			{

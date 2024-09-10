@@ -64,14 +64,14 @@ namespace starsky.feature.import.Helpers
 			if ( dateTimeParsedFromFileName )
 			{
 				_logger.LogInformation($"[Import] DateTimeParsedFromFileName " +
-				                       $"ExifTool Sync {fileIndexItem.FilePath}");
+									   $"ExifTool Sync {fileIndexItem.FilePath}");
 				comparedNamesList = DateTimeParsedComparedNamesList();
 			}
 
 			if ( colorClassTransformation >= 0 )
 			{
 				_logger.LogInformation($"[Import] ColorClassComparedNamesList " +
-				                       $"ExifTool Sync {fileIndexItem.FilePath}");
+									   $"ExifTool Sync {fileIndexItem.FilePath}");
 				comparedNamesList = ColorClassComparedNamesList(comparedNamesList);
 			}
 

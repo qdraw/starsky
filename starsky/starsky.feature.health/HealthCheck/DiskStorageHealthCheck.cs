@@ -31,14 +31,19 @@ namespace starsky.feature.health.HealthCheck
 				{
 					var (exists4, actualFreeMegabytes4) = GetSystemDriveInfo(driveName);
 					if ( !exists4 )
+					{
 						return Task.FromResult(new HealthCheckResult(
 							context.Registration.FailureStatus,
 							"Configured drive " + driveName + " is not present on system"));
+					}
+
 					if ( actualFreeMegabytes4 < num )
+					{
 						return Task.FromResult(new HealthCheckResult(
 							context.Registration.FailureStatus,
 							$"Minimum configured megabytes for disk {driveName} is {num} " +
 							$"but actual free space are {actualFreeMegabytes4} megabytes"));
+					}
 				}
 
 				return Task.FromResult(HealthCheckResult.Healthy());

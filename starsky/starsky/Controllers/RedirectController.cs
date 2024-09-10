@@ -33,13 +33,23 @@ namespace starsky.Controllers
 		[Produces("application/json")]
 		public IActionResult SubPathRelative(int value, bool json = true)
 		{
-			if ( value >= 1 ) value = value * -1; // always in the past
-												  // Fallback for dates older than 24-11-1854 to avoid a exception.
-			if ( value < -60000 ) value = 0;
+			if ( value >= 1 )
+			{
+				value = value * -1; // always in the past
+			}
+			// Fallback for dates older than 24-11-1854 to avoid a exception.
+			if ( value < -60000 )
+			{
+				value = 0;
+			}
 
 			// expect something like this: /2018/09/2018_09_02/
 			var subPath = _structureService.ParseSubfolders(DateTime.Today.AddDays(value));
-			if ( json ) return Json(subPath);
+			if ( json )
+			{
+				return Json(subPath);
+			}
+
 			return RedirectToAction("Index", "Home", new { f = subPath });
 		}
 

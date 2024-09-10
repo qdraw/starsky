@@ -68,17 +68,17 @@ namespace starsky.foundation.database.Query
 			{
 				// https://github.com/qdraw/starsky/issues/1243
 				// https://github.com/qdraw/starsky/issues/1628
-				if ( exception.ErrorCode is not (MySqlErrorCode.QueryTimeout or
-				    MySqlErrorCode.LockWaitTimeout or
-				    MySqlErrorCode.QueryInterrupted) )
+				if ( exception.ErrorCode is not ( MySqlErrorCode.QueryTimeout or
+					MySqlErrorCode.LockWaitTimeout or
+					MySqlErrorCode.QueryInterrupted ) )
 				{
 					_logger.LogError($"[GetAllRecursiveAsync] MySqlException ErrorCode: {exception.ErrorCode}");
 					throw;
 				}
-				
+
 				_logger.LogInformation($"[GetAllRecursiveAsync] Next Retry Timeout/interrupted " +
-				                       $"{exception.ErrorCode} in GetAllRecursiveAsync");
-				
+									   $"{exception.ErrorCode} in GetAllRecursiveAsync");
+
 				await Task.Delay(1000);
 				return await LocalQuery(new InjectServiceScope(_scopeFactory)
 					.Context());

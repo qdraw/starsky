@@ -19,7 +19,9 @@ public class FakeISpecificVersionReleaseInfo : ISpecificVersionReleaseInfo
 	{
 		versionToCheckFor ??= string.Empty;
 		if ( _releaseInfo?.TryGetValue(versionToCheckFor, out var valueDict) is not true )
+		{
 			return Task.FromResult(string.Empty);
+		}
 
 		var value = valueDict.TryGetValue("en", out var languageValue)
 			? SpecificVersionReleaseInfo.ConvertMarkdownLinkToHtml(languageValue)

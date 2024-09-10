@@ -34,14 +34,14 @@ namespace starsky.foundation.platform.Extensions
 			ilGen.Emit(OpCodes.Ldarg_0);
 			ilGen.Emit(OpCodes.Ldfld, field);
 			ilGen.Emit(OpCodes.Ret);
-			return ( Func<TParam, TReturn> )method.CreateDelegate(typeof(Func<TParam, TReturn>));
+			return ( Func<TParam, TReturn> ) method.CreateDelegate(typeof(Func<TParam, TReturn>));
 		}
 
 		private static readonly Func<MemoryCache, IDictionary> GetEntries =
 			cache => GetEntries7.Value(GetCoherentState.Value(cache));
 
 		private static ICollection GetKeys(this IMemoryCache memoryCache) =>
-			GetEntries(( MemoryCache )memoryCache).Keys;
+			GetEntries(( MemoryCache ) memoryCache).Keys;
 
 		/// <summary>
 		/// Get Keys

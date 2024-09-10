@@ -43,7 +43,7 @@ namespace starsky.foundation.platform.Services
 				_console?.WriteLine(message);
 				return;
 			}
-			
+
 			_logger.LogDebug(message, args);
 		}
 

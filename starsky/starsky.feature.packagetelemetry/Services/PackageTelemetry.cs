@@ -139,7 +139,7 @@ namespace starsky.feature.packagetelemetry.Services
 
 				if ( propValue?.GetType() == typeof(DateTime) )
 				{
-					value = ( ( DateTime )propValue ).ToString(CultureInfo.InvariantCulture);
+					value = ( ( DateTime ) propValue ).ToString(CultureInfo.InvariantCulture);
 				}
 
 				if ( propValue?.GetType() == typeof(List<string>) ||

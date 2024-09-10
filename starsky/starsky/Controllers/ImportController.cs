@@ -30,7 +30,7 @@ namespace starsky.Controllers
 {
 	[Authorize] // <- should be logged in!
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S5693:Make sure the content " +
-	                                                          "length limit is safe here",
+															  "length limit is safe here",
 		Justification = "Is checked")]
 	public sealed class ImportController : Controller
 	{
@@ -93,7 +93,7 @@ namespace starsky.Controllers
 
 			// When all items are already imported
 			if ( importSettings.IndexMode &&
-			     fileIndexResultsList.TrueForAll(p => p.Status != ImportStatus.Ok) )
+				 fileIndexResultsList.TrueForAll(p => p.Status != ImportStatus.Ok) )
 			{
 				Response.StatusCode = 206;
 			}
@@ -171,12 +171,14 @@ namespace starsky.Controllers
 		public async Task<IActionResult> FromUrl(string fileUrl, string filename, string structure)
 		{
 			if ( filename == null )
+			{
 				filename = Base32.Encode(FileHash.GenerateRandomBytes(8)) + ".unknown";
+			}
 
 			// I/O function calls should not be vulnerable to path injection attacks
 			if ( !Regex.IsMatch(filename, "^[a-zA-Z0-9_\\s\\.]+$",
-				     RegexOptions.None, TimeSpan.FromMilliseconds(100)) ||
-			     !FilenamesHelper.IsValidFileName(filename) )
+					 RegexOptions.None, TimeSpan.FromMilliseconds(100)) ||
+				 !FilenamesHelper.IsValidFileName(filename) )
 			{
 				return BadRequest();
 			}
@@ -185,14 +187,20 @@ namespace starsky.Controllers
 			var importSettings = new ImportSettingsModel(Request) { Structure = structure };
 			var isDownloaded = await _httpClientHelper.Download(fileUrl, tempImportFullPath);
 			if ( !isDownloaded )
+			{
 				return NotFound("'file url' not found or domain not allowed " + fileUrl);
+			}
 
 			var importedFiles =
 				await _import.Importer(new List<string> { tempImportFullPath }, importSettings);
 			new RemoveTempAndParentStreamFolderHelper(_hostFileSystemStorage, _appSettings)
 				.RemoveTempAndParentStreamFolder(tempImportFullPath);
 
-			if ( importedFiles.Count == 0 ) Response.StatusCode = 206;
+			if ( importedFiles.Count == 0 )
+			{
+				Response.StatusCode = 206;
+			}
+
 			return Json(importedFiles);
 		}
 	}

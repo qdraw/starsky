@@ -36,11 +36,15 @@ public sealed class WriteMetaThumbnailService : IWriteMetaThumbnailService
 		int sourceHeight, FileIndexItem.Rotation rotation,
 		string? reference = null)
 	{
-		if ( offsetData.Data == null ) return false;
+		if ( offsetData.Data == null )
+		{
+			return false;
+		}
+
 		try
 		{
 			using ( var thumbnailStream =
-			       new MemoryStream(offsetData.Data, offsetData.Index, offsetData.Count) )
+				   new MemoryStream(offsetData.Data, offsetData.Index, offsetData.Count) )
 			using ( var smallImage = await Image.LoadAsync(thumbnailStream) )
 			using ( var outputStream = new MemoryStream() )
 			{
@@ -55,7 +59,7 @@ public sealed class WriteMetaThumbnailService : IWriteMetaThumbnailService
 						.Crop(new Rectangle(result.DestX, result.DestY, result.DestWidth,
 							result.DestHeight)));
 
-				var larger = ( int )Math.Round(result.DestWidth * 1.2, 0);
+				var larger = ( int ) Math.Round(result.DestWidth * 1.2, 0);
 
 				smallImage.Mutate(
 					i => i.Resize(larger, 0, KnownResamplers.Lanczos3));

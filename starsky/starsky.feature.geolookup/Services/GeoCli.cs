@@ -102,7 +102,7 @@ namespace starsky.feature.geolookup.Services
 			var getSubPathRelative = new ArgsHelper(_appSettings).GetRelativeValue(args);
 			if ( getSubPathRelative != null )
 			{
-				var dateTime = DateTime.Now.AddDays(( double )getSubPathRelative);
+				var dateTime = DateTime.Now.AddDays(( double ) getSubPathRelative);
 				var path = _appSettings.DatabasePathToFilePath(
 					new StructureService(_iStorage, _appSettings.Structure)
 						.ParseSubfolders(dateTime));
@@ -168,7 +168,11 @@ namespace starsky.feature.geolookup.Services
 						 .ToList() )
 			{
 				var newThumb = ( await new FileHash(_iStorage).GetHashCodeAsync(item.FilePath!) ).Key;
-				if ( item.FileHash == newThumb ) continue;
+				if ( item.FileHash == newThumb )
+				{
+					continue;
+				}
+
 				new ThumbnailFileMoveAllSizes(_thumbnailStorage).FileMove(
 					item.FileHash!, newThumb);
 				if ( _appSettings.IsVerbose() )

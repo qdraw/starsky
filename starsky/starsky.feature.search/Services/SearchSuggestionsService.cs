@@ -48,10 +48,15 @@ namespace starsky.feature.search.Services
 			Justification = "ANY is not supported by EF Core")]
 		public async Task<List<KeyValuePair<string, int>>> Inflate()
 		{
-			if ( _cache == null ) return new List<KeyValuePair<string, int>>();
+			if ( _cache == null )
+			{
+				return new List<KeyValuePair<string, int>>();
+			}
 
 			if ( _cache.TryGetValue(nameof(SearchSuggestionsService), out _) )
+			{
 				return new Dictionary<string, int>().ToList();
+			}
 
 			var allFilesList = new List<KeyValuePair<string, int>>();
 			try
@@ -81,7 +86,10 @@ namespace starsky.feature.search.Services
 
 			foreach ( var tag in allFilesList )
 			{
-				if ( string.IsNullOrEmpty(tag.Key) ) continue;
+				if ( string.IsNullOrEmpty(tag.Key) )
+				{
+					continue;
+				}
 
 				var keywordsHashSet = HashSetHelper.StringToHashSet(tag.Key.Trim());
 
@@ -120,13 +128,15 @@ namespace starsky.feature.search.Services
 		public async Task<IEnumerable<KeyValuePair<string, int>>> GetAllSuggestions()
 		{
 			if ( _cache == null || _appSettings.AddMemoryCache == false )
+			{
 				return new Dictionary<string, int>();
+			}
 
 			if ( _cache.TryGetValue(nameof(SearchSuggestionsService),
-				    out var objectFileFolders) )
+					out var objectFileFolders) )
 			{
 				return objectFileFolders as List<KeyValuePair<string, int>> ??
-				       new List<KeyValuePair<string, int>>();
+					   new List<KeyValuePair<string, int>>();
 			}
 
 			return await Inflate();
@@ -139,8 +149,15 @@ namespace starsky.feature.search.Services
 		/// <returns>list of suggested keywords</returns>
 		public async Task<IEnumerable<string>> SearchSuggest(string query)
 		{
-			if ( string.IsNullOrEmpty(query) ) return new List<string>();
-			if ( _cache == null || _appSettings.AddMemoryCache == false ) return new List<string>();
+			if ( string.IsNullOrEmpty(query) )
+			{
+				return new List<string>();
+			}
+
+			if ( _cache == null || _appSettings.AddMemoryCache == false )
+			{
+				return new List<string>();
+			}
 
 			var allSuggestions = await GetAllSuggestions();
 

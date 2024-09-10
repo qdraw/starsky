@@ -31,7 +31,10 @@ namespace starsky.foundation.http.Services
 		{
 			_httpProvider = httpProvider;
 			_logger = logger;
-			if ( serviceScopeFactory == null ) return;
+			if ( serviceScopeFactory == null )
+			{
+				return;
+			}
 
 			using ( var scope = serviceScopeFactory.CreateScope() )
 			{
@@ -70,8 +73,11 @@ namespace starsky.foundation.http.Services
 								   + sourceUri.Host + " ~ " + sourceHttpUrl);
 
 			// allow whitelist and https only
-			if ( !_allowedDomains.Contains(sourceUri.Host) || sourceUri.Scheme != "https" ) return
+			if ( !_allowedDomains.Contains(sourceUri.Host) || sourceUri.Scheme != "https" )
+			{
+				return
 				new KeyValuePair<bool, string>(false, string.Empty);
+			}
 
 			try
 			{
@@ -94,12 +100,18 @@ namespace starsky.foundation.http.Services
 		{
 			var sourceUri = new Uri(sourceHttpUrl);
 
-			if ( verbose ) _logger.LogInformation("[PostString] HttpClientHelper > "
+			if ( verbose )
+			{
+				_logger.LogInformation("[PostString] HttpClientHelper > "
 												  + sourceUri.Host + " ~ " + sourceHttpUrl);
+			}
 
 			// // allow whitelist and https only
-			if ( !_allowedDomains.Contains(sourceUri.Host) || sourceUri.Scheme != "https" ) return
+			if ( !_allowedDomains.Contains(sourceUri.Host) || sourceUri.Scheme != "https" )
+			{
+				return
 				new KeyValuePair<bool, string>(false, string.Empty);
+			}
 
 			try
 			{

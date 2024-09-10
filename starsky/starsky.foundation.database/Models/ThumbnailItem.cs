@@ -18,11 +18,30 @@ public class ThumbnailItem
 		bool? large, bool? extraLarge, string? reasons = null)
 	{
 		FileHash = fileHash;
-		if ( tinyMeta != null ) TinyMeta = tinyMeta;
-		if ( small != null ) Small = small;
-		if ( large != null ) Large = large;
-		if ( extraLarge != null ) ExtraLarge = extraLarge;
-		if ( reasons != null ) Reasons = reasons;
+		if ( tinyMeta != null )
+		{
+			TinyMeta = tinyMeta;
+		}
+
+		if ( small != null )
+		{
+			Small = small;
+		}
+
+		if ( large != null )
+		{
+			Large = large;
+		}
+
+		if ( extraLarge != null )
+		{
+			ExtraLarge = extraLarge;
+		}
+
+		if ( reasons != null )
+		{
+			Reasons = reasons;
+		}
 	}
 
 	[Key]

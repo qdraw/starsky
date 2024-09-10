@@ -53,7 +53,10 @@ public sealed class SyncWatcherConnector
 
 	internal bool InjectScopes()
 	{
-		if ( _serviceScope == null ) return false;
+		if ( _serviceScope == null )
+		{
+			return false;
+		}
 		// ISynchronize is a scoped service
 		_synchronize = _serviceScope.ServiceProvider.GetRequiredService<ISynchronize>();
 		_appSettings = _serviceScope.ServiceProvider.GetRequiredService<AppSettings>();

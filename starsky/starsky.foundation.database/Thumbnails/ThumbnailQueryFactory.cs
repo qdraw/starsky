@@ -25,7 +25,11 @@ namespace starsky.foundation.database.Thumbnails
 
 		public IThumbnailQuery? ThumbnailQuery()
 		{
-			if ( _thumbnailQuery == null ) return null;
+			if ( _thumbnailQuery == null )
+			{
+				return null;
+			}
+
 			var context = _setupDatabaseTypes?.BuilderDbFactory();
 			if ( _thumbnailQuery.GetType() == typeof(ThumbnailQuery) && context != null )
 			{

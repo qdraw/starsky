@@ -26,8 +26,8 @@ using Directory = MetadataExtractor.Directory;
 namespace starsky.foundation.readmeta.ReadMetaHelpers
 {
 	[SuppressMessage("Usage", "S3966: Resource '_iStorage.ReadStream' has " +
-	                          "already been disposed explicitly or through a using statement implicitly. " +
-	                          "Remove the redundant disposal.")]
+							  "already been disposed explicitly or through a using statement implicitly. " +
+							  "Remove the redundant disposal.")]
 	public sealed class ReadMetaExif
 	{
 		private readonly IStorage _iStorage;
@@ -140,7 +140,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			// Colour Class => ratings
 			var colorClassString = GetColorClassString(allExifItems);
 			if ( !string.IsNullOrEmpty(
-				    colorClassString) ) // null = is not the right tag or empty tag
+					colorClassString) ) // null = is not the right tag or empty tag
 			{
 				item.ColorClass = ColorClassParser.GetColorClass(colorClassString);
 			}
@@ -234,7 +234,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			var locationCountry = GetLocationPlaces(allExifItems,
 				"Country/Primary Location Name", "photoshop:Country");
 			if ( !string.IsNullOrEmpty(
-				    locationCountry) ) // null = is not the right tag or empty tag
+					locationCountry) ) // null = is not the right tag or empty tag
 			{
 				item.LocationCountry = locationCountry;
 			}
@@ -308,7 +308,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 				GetExifDateTime(allExifItems, new CameraMakeModel(item.Make, item.Model));
 			if ( dateTime != null )
 			{
-				item.DateTime = ( DateTime )dateTime;
+				item.DateTime = ( DateTime ) dateTime;
 			}
 		}
 
@@ -358,7 +358,11 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			string lensModel)
 		{
 			// only if there is nothing yet
-			if ( !string.IsNullOrEmpty(lensModel) ) return string.Empty;
+			if ( !string.IsNullOrEmpty(lensModel) )
+			{
+				return string.Empty;
+			}
+
 			var sonyDirectory = allExifItems.OfType<SonyType1MakernoteDirectory>().FirstOrDefault();
 			var lensId = sonyDirectory?.GetDescription(SonyType1MakernoteDirectory.TagLensId);
 
@@ -371,16 +375,24 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			List<Directory> allExifItems)
 		{
 			if ( allExifItems.Exists(p => p.Name == "JPEG") )
+			{
 				return ExtensionRolesHelper.ImageFormat.jpg;
+			}
 
 			if ( allExifItems.Exists(p => p.Name == "PNG-IHDR") )
+			{
 				return ExtensionRolesHelper.ImageFormat.png;
+			}
 
 			if ( allExifItems.Exists(p => p.Name == "BMP Header") )
+			{
 				return ExtensionRolesHelper.ImageFormat.bmp;
+			}
 
 			if ( allExifItems.Exists(p => p.Name == "GIF Header") )
+			{
 				return ExtensionRolesHelper.ImageFormat.gif;
+			}
 
 			return ExtensionRolesHelper.ImageFormat.unknown;
 		}
@@ -393,7 +405,10 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			var caption = exifItem?.Tags
 				.FirstOrDefault(p => p.Type == ExifDirectoryBase.TagOrientation)
 				?.Description;
-			if ( caption == null ) return FileIndexItem.Rotation.DoNotChange;
+			if ( caption == null )
+			{
+				return FileIndexItem.Rotation.DoNotChange;
+			}
 
 			switch ( caption )
 			{
@@ -475,10 +490,13 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
 				// for xmp notes
 				if ( exifItem is not XmpDirectory xmpDirectory ||
-				     xmpDirectory.XmpMeta == null ) continue;
+					 xmpDirectory.XmpMeta == null )
+				{
+					continue;
+				}
 
 				foreach ( var property in xmpDirectory.XmpMeta.Properties.Where(
-					         p => !string.IsNullOrEmpty(p.Path)) )
+							 p => !string.IsNullOrEmpty(p.Path)) )
 				{
 					_logger.LogDebug(
 						$"{exifItem.Name},{property.Namespace},{property.Path},{property.Value}");
@@ -494,12 +512,14 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		private static string GetXmpDataSubject(Directory? exifItem)
 		{
 			if ( !( exifItem is XmpDirectory xmpDirectory ) || xmpDirectory.XmpMeta == null )
+			{
 				return string.Empty;
+			}
 
 			var tagsList = new HashSet<string>();
 			foreach ( var property in xmpDirectory.XmpMeta.Properties.Where(p =>
-				         !string.IsNullOrEmpty(p.Value)
-				         && p.Path.StartsWith("dc:subject[")) )
+						 !string.IsNullOrEmpty(p.Value)
+						 && p.Path.StartsWith("dc:subject[")) )
 			{
 				tagsList.Add(property.Value);
 			}
@@ -511,13 +531,15 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		{
 			// for xmp notes
 			if ( exifItem is not XmpDirectory xmpDirectory || xmpDirectory.XmpMeta == null )
+			{
 				return string.Empty;
+			}
 
 			var result =
 				( from property in xmpDirectory.XmpMeta.Properties.Where(p =>
 						!string.IsNullOrEmpty(p.Value))
-					where property.Path == propertyPath
-					select property.Value ).FirstOrDefault();
+				  where property.Path == propertyPath
+				  select property.Value ).FirstOrDefault();
 			result ??= string.Empty;
 			return result;
 		}
@@ -544,7 +566,10 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			var iptcDirectory = allExifItems.OfType<IptcDirectory>().FirstOrDefault();
 			var caption = iptcDirectory?.GetDescription(IptcDirectory.TagCaption);
 
-			if ( !string.IsNullOrEmpty(caption) ) return caption;
+			if ( !string.IsNullOrEmpty(caption) )
+			{
+				return caption;
+			}
 
 			var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();
 			return GetXmpData(xmpDirectory, "dc:description[1]");
@@ -680,7 +705,10 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			IEnumerable<Directory> allExifItems)
 		{
 			if ( _appSettings == null )
+			{
 				Console.WriteLine("[ParseQuickTimeDateTime] app settings is null");
+			}
+
 			cameraMakeModel ??= new CameraMakeModel();
 
 			if ( _appSettings is { VideoUseLocalTime: null } )
@@ -738,7 +766,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			{
 				var latitudeRefLocal = exifItemTag.FirstOrDefault(
 					p => p.DirectoryName == "GPS"
-					     && p.Name == "GPS Latitude Ref")?.Description;
+						 && p.Name == "GPS Latitude Ref")?.Description;
 
 				if ( latitudeRefLocal != null )
 				{
@@ -747,7 +775,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
 				var latitudeLocal = exifItemTag.FirstOrDefault(
 					p => p.DirectoryName == "GPS"
-					     && p.Name == "GPS Latitude")?.Description;
+						 && p.Name == "GPS Latitude")?.Description;
 
 				if ( latitudeLocal != null )
 				{
@@ -757,7 +785,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
 				var locationQuickTime = exifItemTag.FirstOrDefault(
 					p => p.DirectoryName == "QuickTime Metadata Header"
-					     && p.Name == "GPS Location")?.Description;
+						 && p.Name == "GPS Location")?.Description;
 				if ( locationQuickTime != null )
 				{
 					return GeoParser.ParseIsoString(locationQuickTime).Latitude;
@@ -765,7 +793,9 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			}
 
 			if ( string.IsNullOrWhiteSpace(latitudeString) )
+			{
 				return GetXmpGeoData(allExifItems, "exif:GPSLatitude");
+			}
 
 			var latitude =
 				GeoParser.ConvertDegreeMinutesSecondsToDouble(latitudeString, latitudeRef);
@@ -781,15 +811,26 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			{
 				// exif:GPSLatitude,45,33.615N
 				var latitudeLocal = GetXmpData(exifItem, propertyPath);
-				if ( string.IsNullOrEmpty(latitudeLocal) ) continue;
+				if ( string.IsNullOrEmpty(latitudeLocal) )
+				{
+					continue;
+				}
+
 				var split = Regex.Split(latitudeLocal, "[NSWE]",
 					RegexOptions.None, TimeSpan.FromMilliseconds(100));
-				if ( split.Length != 2 ) continue;
+				if ( split.Length != 2 )
+				{
+					continue;
+				}
+
 				latitudeString = split[0];
 				latitudeRef = latitudeLocal[^1].ToString();
 			}
 
-			if ( string.IsNullOrWhiteSpace(latitudeString) ) return 0;
+			if ( string.IsNullOrWhiteSpace(latitudeString) )
+			{
+				return 0;
+			}
 
 			var latitudeDegreeMinutes =
 				GeoParser.ConvertDegreeMinutesToDouble(latitudeString, latitudeRef);
@@ -808,7 +849,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			{
 				var longitudeRefLocal = exifItemTags.FirstOrDefault(
 					p => p.DirectoryName == "GPS"
-					     && p.Name == "GPS Altitude Ref")?.Description;
+						 && p.Name == "GPS Altitude Ref")?.Description;
 
 				if ( longitudeRefLocal != null )
 				{
@@ -817,7 +858,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
 				var altitudeLocal = exifItemTags.FirstOrDefault(
 					p => p.DirectoryName == "GPS"
-					     && p.Name == "GPS Altitude")?.Description;
+						 && p.Name == "GPS Altitude")?.Description;
 
 				if ( altitudeLocal != null )
 				{
@@ -830,7 +871,10 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			var parsedAltitudeString = double.TryParse(altitudeString,
 				NumberStyles.Number, CultureInfo.CurrentCulture, out var altitude);
 
-			if ( altitudeRef == "Below sea level" ) altitude *= -1;
+			if ( altitudeRef == "Below sea level" )
+			{
+				altitude *= -1;
+			}
 
 			// Read xmp if altitudeString is string.Empty
 			if ( !parsedAltitudeString )
@@ -838,7 +882,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 				return GetXmpGeoAlt(allExifItems);
 			}
 
-			return ( int )altitude;
+			return ( int ) altitude;
 		}
 
 		internal static double GetXmpGeoAlt(List<Directory> allExifItems)
@@ -858,10 +902,12 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			foreach ( var exifItem in allExifItems )
 			{
 				if ( !( exifItem is XmpDirectory xmpDirectory ) || xmpDirectory.XmpMeta == null )
+				{
 					continue;
+				}
 
 				foreach ( var property in xmpDirectory.XmpMeta.Properties.Where(p =>
-					         !string.IsNullOrEmpty(p.Value)) )
+							 !string.IsNullOrEmpty(p.Value)) )
 				{
 					switch ( property.Path )
 					{
@@ -876,9 +922,16 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			}
 
 			// no -0 as result
-			if ( Math.Abs(altitude) < 0.001 ) return 0;
+			if ( Math.Abs(altitude) < 0.001 )
+			{
+				return 0;
+			}
 
-			if ( altitudeRef ) altitude *= -1;
+			if ( altitudeRef )
+			{
+				altitude *= -1;
+			}
+
 			return altitude;
 		}
 
@@ -892,7 +945,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			{
 				var longitudeRefLocal = exifItemTags.FirstOrDefault(
 					p => p.DirectoryName == "GPS"
-					     && p.Name == "GPS Longitude Ref")?.Description;
+						 && p.Name == "GPS Longitude Ref")?.Description;
 
 				if ( longitudeRefLocal != null )
 				{
@@ -901,7 +954,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
 				var longitudeLocal = exifItemTags.FirstOrDefault(
 					p => p.DirectoryName == "GPS"
-					     && p.Name == "GPS Longitude")?.Description;
+						 && p.Name == "GPS Longitude")?.Description;
 
 				if ( longitudeLocal != null )
 				{
@@ -911,7 +964,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
 				var locationQuickTime = exifItemTags.FirstOrDefault(
 					p => p.DirectoryName == "QuickTime Metadata Header"
-					     && p.Name == "GPS Location")?.Description;
+						 && p.Name == "GPS Location")?.Description;
 				if ( locationQuickTime != null )
 				{
 					return GeoParser.ParseIsoString(locationQuickTime).Longitude;
@@ -933,8 +986,16 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			ICollection<Directory> allExifItems)
 		{
 			var maxCount = 6;
-			if ( dirName == "Exif SubIFD" ) maxCount = 30; // on header place 17&18
-			if ( allExifItems.Count <= 5 ) maxCount = allExifItems.Count;
+			if ( dirName == "Exif SubIFD" )
+			{
+				maxCount = 30; // on header place 17&18
+			}
+
+			if ( allExifItems.Count <= 5 )
+			{
+				maxCount = allExifItems.Count;
+			}
+
 			return maxCount;
 		}
 
@@ -942,10 +1003,21 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			bool isWidth)
 		{
 			var typeName = "Image Height";
-			if ( dirName == "QuickTime Track Header" ) typeName = "Height";
+			if ( dirName == "QuickTime Track Header" )
+			{
+				typeName = "Height";
+			}
 
-			if ( isWidth ) typeName = "Image Width";
-			if ( isWidth && dirName == "QuickTime Track Header" ) typeName = "Width";
+			if ( isWidth )
+			{
+				typeName = "Image Width";
+			}
+
+			if ( isWidth && dirName == "QuickTime Track Header" )
+			{
+				typeName = "Width";
+			}
+
 			return typeName;
 		}
 
@@ -973,7 +1045,10 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
 					var exifItem = allExifItems[i];
 					var value = GetImageSizeInsideLoop(exifItem, dirName, typeName);
-					if ( value != 0 ) return value;
+					if ( value != 0 )
+					{
+						return value;
+					}
 				}
 			}
 
@@ -985,12 +1060,12 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		{
 			var ratingCountsJpeg =
 				exifItem.Tags.Count(p => p.DirectoryName == dirName
-				                         && p.Name.Contains(typeName) && p.Description != "0");
+										 && p.Name.Contains(typeName) && p.Description != "0");
 			if ( ratingCountsJpeg >= 1 )
 			{
 				var widthTag = exifItem.Tags
 					.FirstOrDefault(p => p.DirectoryName == dirName
-					                     && p.Name.Contains(typeName) && p.Description != "0")
+										 && p.Name.Contains(typeName) && p.Description != "0")
 					?.Description;
 				widthTag = widthTag?.Replace(" pixels", string.Empty);
 				if ( int.TryParse(widthTag, out var widthInt) )
@@ -1052,7 +1127,10 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 				return Math.Round(MathFraction.Fraction(focalLengthXmp), 5);
 			}
 
-			if ( string.IsNullOrWhiteSpace(focalLengthString) ) return 0d;
+			if ( string.IsNullOrWhiteSpace(focalLengthString) )
+			{
+				return 0d;
+			}
 
 			focalLengthString = focalLengthString.Replace(" mm", string.Empty);
 
@@ -1087,7 +1165,10 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 				return MathFraction.Fraction(fNumberXmp);
 			}
 
-			if ( apertureString == null ) return 0d;
+			if ( apertureString == null )
+			{
+				return 0d;
+			}
 
 			apertureString = apertureString.Replace("f/", string.Empty);
 			// Note: apertureString: (Dutch) 2,2 or (English) 2.2 based CultureInfo.CurrentCulture
@@ -1122,14 +1203,20 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
 			var exposureTimeXmp = GetXmpData(xmpDirectory, "exif:ExposureTime");
 			if ( string.IsNullOrEmpty(shutterSpeedString) &&
-			     !string.IsNullOrEmpty(exposureTimeXmp) && exposureTimeXmp.Length <= 20 )
+				 !string.IsNullOrEmpty(exposureTimeXmp) && exposureTimeXmp.Length <= 20 )
 			{
 				return exposureTimeXmp;
 			}
 
-			if ( shutterSpeedString == null ) return string.Empty;
+			if ( shutterSpeedString == null )
+			{
+				return string.Empty;
+			}
 			// the database has a 20 char limit
-			if ( shutterSpeedString.Length >= 20 ) return string.Empty;
+			if ( shutterSpeedString.Length >= 20 )
+			{
+				return string.Empty;
+			}
 
 			// in xmp there is only a field with for example: 1/33
 			shutterSpeedString = shutterSpeedString.Replace(" sec", string.Empty);

@@ -121,19 +121,19 @@ namespace starsky.foundation.platform.Helpers
 			{
 				return "/";
 			}
-			
+
 			var parts = filePath.TrimEnd('/').Split('/');
-			if (parts.Length <= 2)
+			if ( parts.Length <= 2 )
 			{
 				return "/";
 			}
 
 			var stringBuilder = new StringBuilder();
-			for (var i = 0; i < parts.Length - 1; i++)
+			for ( var i = 0; i < parts.Length - 1; i++ )
 			{
 				stringBuilder.Append(parts[i] + "/");
 			}
-			
+
 			var result = stringBuilder.ToString().TrimEnd('/');
 
 			return string.IsNullOrEmpty(result) ? "/" : PathHelper.RemoveLatestSlash(result);

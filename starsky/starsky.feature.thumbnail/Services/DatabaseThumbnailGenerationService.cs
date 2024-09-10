@@ -87,7 +87,7 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 		{
 			var fileIndexItem = fileIndexItems.Find(p => p.FileHash == item.FileHash);
 			if ( fileIndexItem?.FilePath == null ||
-			     fileIndexItem.Status != FileIndexItem.ExifStatus.Ok )
+				 fileIndexItem.Status != FileIndexItem.ExifStatus.Ok )
 			{
 				// when null set to false
 				item.Small ??= false;

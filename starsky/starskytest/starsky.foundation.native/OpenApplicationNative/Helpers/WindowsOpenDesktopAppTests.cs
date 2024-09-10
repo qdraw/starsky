@@ -37,7 +37,10 @@ public class WindowsOpenDesktopAppTests
 		"CA1416:Validate platform compatibility", Justification = "Check does exists")]
 	private static void CleanSetup()
 	{
-		if ( !new AppSettings().IsWindows ) return;
+		if ( !new AppSettings().IsWindows )
+		{
+			return;
+		}
 
 		// Ensure no keys exist before the test starts
 		try
@@ -57,7 +60,10 @@ public class WindowsOpenDesktopAppTests
 
 	private static CreateFakeStarskyWindowsExe SetupEnsureAssociationsSet()
 	{
-		if ( !new AppSettings().IsWindows ) return new CreateFakeStarskyWindowsExe();
+		if ( !new AppSettings().IsWindows )
+		{
+			return new CreateFakeStarskyWindowsExe();
+		}
 
 		var mock = new CreateFakeStarskyWindowsExe();
 		var filePath = mock.FullFilePath;

@@ -23,7 +23,7 @@ public sealed class UpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
 	{
 		_queue = Channel.CreateBounded<Tuple<Func<CancellationToken, ValueTask>,
 			string?, string?>>(ProcessTaskQueue.DefaultBoundedChannelOptions);
-		
+
 		_metrics = scopeFactory.CreateScope().ServiceProvider
 			.GetRequiredService<UpdateBackgroundQueuedMetrics>();
 	}

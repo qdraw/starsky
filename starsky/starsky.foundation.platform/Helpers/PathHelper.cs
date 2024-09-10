@@ -60,11 +60,14 @@ namespace starsky.foundation.platform.Helpers
 			}
 
 			// Depends on Platform
-			if ( basePath == "/" ) return basePath;
+			if ( basePath == "/" )
+			{
+				return basePath;
+			}
 
 			// remove latest backslash
 			if ( basePath.Substring(basePath.Length - 1, 1) ==
-			     Path.DirectorySeparatorChar.ToString() )
+				 Path.DirectorySeparatorChar.ToString() )
 			{
 				basePath = basePath.Substring(0, basePath.Length - 1);
 			}
@@ -82,7 +85,10 @@ namespace starsky.foundation.platform.Helpers
 			// don't know why it returns / > string.empty
 
 			// on all platforms the same
-			if ( string.IsNullOrWhiteSpace(basePath) || basePath == "/" ) return string.Empty;
+			if ( string.IsNullOrWhiteSpace(basePath) || basePath == "/" )
+			{
+				return string.Empty;
+			}
 
 			// remove latest slash
 			if ( basePath.Substring(basePath.Length - 1, 1) == "/" )
@@ -103,10 +109,13 @@ namespace starsky.foundation.platform.Helpers
 		{
 			// Add backSlash to configuration // or \\
 			// Platform depended feature
-			if ( string.IsNullOrWhiteSpace(thumbnailTempFolder) ) return thumbnailTempFolder;
+			if ( string.IsNullOrWhiteSpace(thumbnailTempFolder) )
+			{
+				return thumbnailTempFolder;
+			}
 
 			if ( thumbnailTempFolder.Substring(thumbnailTempFolder.Length - 1,
-				    1) != Path.DirectorySeparatorChar.ToString() )
+					1) != Path.DirectorySeparatorChar.ToString() )
 			{
 				thumbnailTempFolder += Path.DirectorySeparatorChar.ToString();
 			}
@@ -121,7 +130,10 @@ namespace starsky.foundation.platform.Helpers
 		/// <returns>value +/</returns>
 		public static string AddSlash(string inputFolder)
 		{
-			if ( string.IsNullOrWhiteSpace(inputFolder) ) return inputFolder;
+			if ( string.IsNullOrWhiteSpace(inputFolder) )
+			{
+				return inputFolder;
+			}
 
 			if ( inputFolder.Substring(inputFolder.Length - 1, 1) != "/" )
 			{
@@ -139,7 +151,10 @@ namespace starsky.foundation.platform.Helpers
 		public static string PrefixDbSlash(string subPath)
 		{
 			// Add normal linux slash to beginning of the configuration
-			if ( string.IsNullOrWhiteSpace(subPath) ) return "/";
+			if ( string.IsNullOrWhiteSpace(subPath) )
+			{
+				return "/";
+			}
 
 			if ( subPath.Substring(0, 1) != "/" )
 			{
@@ -157,7 +172,10 @@ namespace starsky.foundation.platform.Helpers
 		public static string RemovePrefixDbSlash(string subPath)
 		{
 			// Remove linux slash to beginning of the configuration
-			if ( string.IsNullOrWhiteSpace(subPath) ) return "/";
+			if ( string.IsNullOrWhiteSpace(subPath) )
+			{
+				return "/";
+			}
 
 			if ( subPath.Substring(0, 1) == "/" )
 			{

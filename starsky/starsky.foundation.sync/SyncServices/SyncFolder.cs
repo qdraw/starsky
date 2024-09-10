@@ -58,7 +58,11 @@ namespace starsky.foundation.sync.SyncServices
 			subPaths.AddRange(_subPathStorage.GetDirectoryRecursive(inputSubPath)
 				.Where(p =>
 				{
-					if ( childDirectoriesAfter is not { Year: > 2000 } ) return true;
+					if ( childDirectoriesAfter is not { Year: > 2000 } )
+					{
+						return true;
+					}
+
 					return p.Value >= childDirectoriesAfter;
 				})
 				.Select(p => p.Key));
@@ -137,7 +141,10 @@ namespace starsky.foundation.sync.SyncServices
 
 		internal async Task CompareFolderListAndFixMissingFolders(List<string> subPaths, List<FileIndexItem> folderList)
 		{
-			if ( subPaths.Count == folderList.Count ) return;
+			if ( subPaths.Count == folderList.Count )
+			{
+				return;
+			}
 
 			foreach ( var path in subPaths.Where(path => folderList.TrueForAll(p => p.FilePath != path) &&
 				_subPathStorage.ExistFolder(path) && !_syncIgnoreCheck.Filter(path)) )

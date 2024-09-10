@@ -33,7 +33,11 @@ public sealed class AddParentList
 					 .Where(p => _subPathStorage.ExistFolder(p)) )
 		{
 			var path = PathHelper.RemoveLatestSlash(subPath) + "/test.jpg";
-			if ( subPath == "/" ) path = "/";
+			if ( subPath == "/" )
+			{
+				path = "/";
+			}
+
 			addedParentItems.AddRange(await _query.AddParentItemsAsync(path));
 		}
 		updatedDbItems.AddRange(addedParentItems);
