@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 
 namespace starsky.foundation.storage.ArchiveFormats;
@@ -14,13 +15,15 @@ namespace starsky.foundation.storage.ArchiveFormats;
 	"CA1835:Prefer the 'Memory'-based overloads for 'ReadAsync' and 'WriteAsync")]
 public sealed class TarBal
 {
+	private readonly IWebLogger _logger;
 	private readonly char _pathSeparator;
 	private readonly IStorage _storage;
 
-	public TarBal(IStorage storage, char pathSeparator = '/')
+	public TarBal(IStorage storage, IWebLogger logger, char pathSeparator = '/')
 	{
 		_storage = storage;
 		_pathSeparator = pathSeparator;
+		_logger = logger;
 	}
 
 	/// <summary>
@@ -54,44 +57,61 @@ public sealed class TarBal
 	/// </summary>
 	/// <param name="stream">The <i>.tar</i> to extract.</param>
 	/// <param name="outputDir">Output directory to write the files.</param>
-	/// <param name="cancellationToken">cancel token</param>
+	/// <param name="cancellationToken">Cancel token</param>
 	public async Task ExtractTar(Stream stream, string outputDir,
 		CancellationToken cancellationToken)
 	{
 		var buffer = new byte[100];
 		var longFileName = string.Empty;
+
 		while ( true )
 		{
-			await stream.ReadAsync(buffer, 0, 100, cancellationToken);
+			// Read the first 100 bytes to get the name
+			var bytesRead = await stream.ReadAsync(buffer, 0, 100, cancellationToken);
+			if ( bytesRead != 100 )
+			{
+				_logger.LogError("[ExtractTar] less than 100 bytes read {outputDir}", outputDir);
+				// If fewer bytes are read, it indicates an incomplete read or end of stream.
+				break;
+			}
+
 			var name = string.IsNullOrEmpty(longFileName)
 				? Encoding.ASCII.GetString(buffer).Trim('\0')
-				: longFileName; //Use longFileName if we have one read
+				: longFileName; // Use longFileName if we have one read
+
 			if ( string.IsNullOrWhiteSpace(name) )
 			{
 				break;
 			}
 
 			stream.Seek(24, SeekOrigin.Current);
-			await stream.ReadAsync(buffer, 0, 12, cancellationToken);
+
+			// Read the size
+			bytesRead = await stream.ReadAsync(buffer, 0, 12, cancellationToken);
+			if ( bytesRead != 12 )
+			{
+				break;
+			}
+
 			var size = Convert.ToInt64(Encoding.UTF8.GetString(buffer, 0, 12).Trim('\0').Trim(), 8);
-			stream.Seek(20, SeekOrigin.Current); //Move head to typeTag byte
+			stream.Seek(20, SeekOrigin.Current); // Move head to typeTag byte
 			var typeTag = stream.ReadByte();
-			stream.Seek(355L, SeekOrigin.Current); //Move head to beginning of data (byte 512)
+			stream.Seek(355L, SeekOrigin.Current); // Move head to beginning of data (byte 512)
 
 			if ( typeTag == 'L' )
 			{
-				//We have a long file name
+				// We have a long file name
 				longFileName = await CreateLongFileName(size, stream, cancellationToken);
 			}
 			else
 			{
-				//We have a normal file or directory
-				longFileName =
-					string.Empty; //Reset longFileName if current entry is not indicating one
+				// We have a normal file or directory
+				longFileName = string.Empty;
+				// Reset longFileName if current entry is not indicating one
 				await CreateFileOrDirectory(outputDir, name, size, stream, cancellationToken);
 			}
 
-			//Move head to next 512 byte block 
+			// Move head to next 512 byte block
 			var pos = stream.Position;
 			var offset = 512 - pos % 512;
 			if ( offset == 512 )
@@ -128,7 +148,7 @@ public sealed class TarBal
 			var str = new MemoryStream();
 			var buf = new byte[size];
 			await stream.ReadAsync(buf, 0, buf.Length, cancellationToken);
-			str.Write(buf, 0, buf.Length);
+			await str.WriteAsync(buf, 0, buf.Length, cancellationToken);
 			_storage.WriteStreamOpenOrCreate(str, output);
 		}
 	}
