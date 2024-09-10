@@ -26,7 +26,11 @@ namespace starsky.foundation.database.Extensions
 
 			try
 			{
-				if ( context?.Database == null ) return false;
+				if ( context?.Database == null )
+				{
+					return false;
+				}
+
 				context.Database.CanConnect();
 			}
 			catch ( MySqlException e )

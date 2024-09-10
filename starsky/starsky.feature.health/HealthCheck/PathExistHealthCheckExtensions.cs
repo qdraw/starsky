@@ -11,7 +11,7 @@ namespace starsky.feature.health.HealthCheck
 		public static IHealthChecksBuilder AddPathExistHealthCheck(
 			this IHealthChecksBuilder builder,
 			Action<PathExistOptions>? setup,
-			IWebLogger logger, 
+			IWebLogger logger,
 			string? name = null,
 			HealthStatus? failureStatus = null,
 			IEnumerable<string>? tags = null,

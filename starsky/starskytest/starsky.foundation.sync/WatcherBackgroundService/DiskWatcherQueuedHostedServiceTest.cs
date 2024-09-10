@@ -34,7 +34,10 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 			MethodInfo? dynMethod = service.GetType().GetMethod("ExecuteAsync", 
 				BindingFlags.NonPublic | BindingFlags.Instance);
 			if ( dynMethod == null )
+			{
 				throw new Exception("missing ExecuteAsync");
+			}
+
 			dynMethod.Invoke(service, new object[]
 			{
 				token

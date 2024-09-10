@@ -49,7 +49,11 @@ namespace starsky.foundation.platform.Models
 		{
 			get
 			{
-				if ( _sourceMaxWidth >= 100 ) return _sourceMaxWidth;
+				if ( _sourceMaxWidth >= 100 )
+				{
+					return _sourceMaxWidth;
+				}
+
 				return 100;
 			}
 			set => _sourceMaxWidth = value;
@@ -67,7 +71,11 @@ namespace starsky.foundation.platform.Models
 		{
 			get
 			{
-				if ( _overlayMaxWidth >= 100 ) return _overlayMaxWidth;
+				if ( _overlayMaxWidth >= 100 )
+				{
+					return _overlayMaxWidth;
+				}
+
 				return 100;
 			}
 			set => _overlayMaxWidth = value;

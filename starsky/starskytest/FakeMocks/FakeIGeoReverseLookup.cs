@@ -5,39 +5,41 @@ using starsky.feature.geolookup.Interfaces;
 using starsky.feature.geolookup.Models;
 using starsky.foundation.database.Models;
 
-namespace starskytest.FakeMocks
+namespace starskytest.FakeMocks;
+
+public class FakeIGeoReverseLookup : IGeoReverseLookup
 {
-	public class FakeIGeoReverseLookup : IGeoReverseLookup
+	private readonly List<FileIndexItem> _fileIndexItems = new();
+
+	public FakeIGeoReverseLookup(List<FileIndexItem>? fileIndexItems = null)
 	{
-		private readonly List<FileIndexItem> _fileIndexItems = new List<FileIndexItem>();
-
-		public FakeIGeoReverseLookup(List<FileIndexItem>? fileIndexItems = null)
+		if ( fileIndexItems != null )
 		{
-			if ( fileIndexItems != null ) _fileIndexItems = fileIndexItems;
+			_fileIndexItems = fileIndexItems;
 		}
+	}
 
-		public int Count { get; set; }
+	public int Count { get; set; }
 
-		public Task<List<FileIndexItem>> LoopFolderLookup(List<FileIndexItem> metaFilesInDirectory,
-			bool overwriteLocationNames)
+	public Task<List<FileIndexItem>> LoopFolderLookup(List<FileIndexItem> metaFilesInDirectory,
+		bool overwriteLocationNames)
+	{
+		Count++;
+		metaFilesInDirectory.AddRange(_fileIndexItems);
+		metaFilesInDirectory = _fileIndexItems.GroupBy(i => i.FilePath)
+			.Select(g => g.Last()) // get last item
+			.ToList();
+		return Task.FromResult(metaFilesInDirectory);
+	}
+
+	public Task<GeoLocationModel> GetLocation(double latitude, double longitude)
+	{
+		return Task.FromResult(new GeoLocationModel
 		{
-			Count++;
-			metaFilesInDirectory.AddRange(_fileIndexItems);
-			metaFilesInDirectory = _fileIndexItems.GroupBy(i => i.FilePath)
-				.Select(g => g.Last()) // get last item
-				.ToList();
-			return Task.FromResult(metaFilesInDirectory);
-		}
-
-		public Task<GeoLocationModel> GetLocation(double latitude, double longitude)
-		{
-			return Task.FromResult(new GeoLocationModel
-			{
-				IsSuccess = true,
-				Longitude = longitude,
-				Latitude = latitude,
-				LocationCity = "FakeLocationName"
-			});
-		}
+			IsSuccess = true,
+			Longitude = longitude,
+			Latitude = latitude,
+			LocationCity = "FakeLocationName"
+		});
 	}
 }

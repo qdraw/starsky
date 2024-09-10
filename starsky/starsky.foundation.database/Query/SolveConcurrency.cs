@@ -43,9 +43,9 @@ namespace starsky.foundation.database.Query
 			PropertyValues proposedValues, PropertyValues? databaseValues, string entryMetadataName,
 			OriginalValuesSetValuesDelegate entryOriginalValuesSetValues)
 		{
-			if ( _ is not FileIndexItem && 
-			     _ is not ThumbnailItem && 
-			     _ is not NotificationItem)
+			if ( _ is not FileIndexItem &&
+				 _ is not ThumbnailItem &&
+				 _ is not NotificationItem )
 			{
 				throw new NotSupportedException(
 					"[SolveConcurrency] Don't know how to handle concurrency conflicts for "

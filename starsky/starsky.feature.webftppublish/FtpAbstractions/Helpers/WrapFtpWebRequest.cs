@@ -61,7 +61,7 @@ namespace starsky.feature.webftppublish.FtpAbstractions.Helpers
 		/// <returns>Wrapper response</returns>
 		public IFtpWebResponse GetResponse()
 		{
-			return new WrapFtpWebResponse(( FtpWebResponse )_request.GetResponse());
+			return new WrapFtpWebResponse(( FtpWebResponse ) _request.GetResponse());
 		}
 
 		/// <summary>

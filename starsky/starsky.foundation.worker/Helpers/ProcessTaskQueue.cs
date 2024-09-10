@@ -95,7 +95,7 @@ namespace starsky.foundation.worker.Helpers
 				{
 					string? parentTraceId;
 					// Dequeue here
-					( workItem, metaData, parentTraceId ) =
+					(workItem, metaData, parentTraceId) =
 						await taskQueue.DequeueAsync(cancellationToken);
 
 					// set as parent for activity
@@ -145,7 +145,7 @@ namespace starsky.foundation.worker.Helpers
 			IWebLogger logger, CancellationToken cancellationToken)
 		{
 			logger.LogInformation($"Queued Hosted Service {taskQueue.GetType().Name} is " +
-			                      $"starting on {Environment.MachineName}");
+								  $"starting on {Environment.MachineName}");
 
 			while ( !cancellationToken.IsCancellationRequested )
 			{

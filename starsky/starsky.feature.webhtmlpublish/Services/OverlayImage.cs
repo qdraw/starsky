@@ -50,7 +50,9 @@ namespace starsky.feature.webhtmlpublish.Services
 			string outputFullFilePath, AppSettingsPublishProfiles profile)
 		{
 			if ( string.IsNullOrWhiteSpace(itemFileHash) )
+			{
 				throw new ArgumentNullException(nameof(itemFileHash));
+			}
 
 			if ( !_thumbnailStorage.ExistFile(itemFileHash) )
 			{
@@ -107,12 +109,21 @@ namespace starsky.feature.webhtmlpublish.Services
 			string outputFullFilePath, AppSettingsPublishProfiles profile)
 		{
 			if ( string.IsNullOrWhiteSpace(itemFilePath) )
+			{
 				throw new
 					ArgumentNullException(nameof(itemFilePath));
-			if ( !_iStorage.ExistFile(itemFilePath) )
-				throw new FileNotFoundException("subPath " + itemFilePath);
+			}
 
-			if ( _hostFileSystem.ExistFile(outputFullFilePath) ) return Task.FromResult(false);
+			if ( !_iStorage.ExistFile(itemFilePath) )
+			{
+				throw new FileNotFoundException("subPath " + itemFilePath);
+			}
+
+			if ( _hostFileSystem.ExistFile(outputFullFilePath) )
+			{
+				return Task.FromResult(false);
+			}
+
 			if ( !_hostFileSystem.ExistFile(profile.Path) )
 			{
 				throw new FileNotFoundException(

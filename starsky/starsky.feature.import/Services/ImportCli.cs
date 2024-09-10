@@ -46,7 +46,7 @@ namespace starsky.feature.import.Services
 			_appSettings.ApplicationType = AppSettings.StarskyAppType.Importer;
 
 			if ( ArgsHelper.NeedHelp(args) || new ArgsHelper(_appSettings)
-				    .GetPathFormArgs(args, false).Length <= 1 )
+					.GetPathFormArgs(args, false).Length <= 1 )
 			{
 				new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
 				return true;
@@ -74,10 +74,10 @@ namespace starsky.feature.import.Services
 			if ( _appSettings.IsVerbose() )
 			{
 				_console.WriteLine($"Options: DeleteAfter: {importSettings.DeleteAfter}, " +
-				                   $"RecursiveDirectory {importSettings.RecursiveDirectory}, " +
-				                   $"ColorClass (overwrite) {importSettings.ColorClass}, " +
-				                   $"Structure {_appSettings.Structure}, " +
-				                   $"IndexMode {importSettings.IndexMode}");
+								   $"RecursiveDirectory {importSettings.RecursiveDirectory}, " +
+								   $"ColorClass (overwrite) {importSettings.ColorClass}, " +
+								   $"Structure {_appSettings.Structure}, " +
+								   $"IndexMode {importSettings.IndexMode}");
 			}
 
 			var stopWatch = Stopwatch.StartNew();
@@ -126,9 +126,9 @@ namespace starsky.feature.import.Services
 					? item.FilePath
 					: "";
 				_console.WriteLine($"{item.Id};{item.Status};" +
-				                   $"{item.SourceFullFilePath};" +
-				                   $"{filePath};" +
-				                   $"{item.GetFileHashWithUpdate()}");
+								   $"{item.SourceFullFilePath};" +
+								   $"{filePath};" +
+								   $"{item.GetFileHashWithUpdate()}");
 			}
 		}
 	}

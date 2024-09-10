@@ -71,23 +71,23 @@ namespace starsky.foundation.thumbnailmeta.Services
 						(false, false, subPath, "folder or file not found")
 					};
 				case FolderOrFileModel.FolderOrFileTypeList.Folder:
-					{
-						var contentOfDir = _iStorage.GetAllFilesInDirectoryRecursive(subPath)
-							.Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
+				{
+					var contentOfDir = _iStorage.GetAllFilesInDirectoryRecursive(subPath)
+						.Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
 
-						var results = await contentOfDir
-							.ForEachAsync(async singleSubPath =>
-								await AddMetaThumbnail(singleSubPath, null!),
-								_appSettings.MaxDegreesOfParallelism);
+					var results = await contentOfDir
+						.ForEachAsync(async singleSubPath =>
+							await AddMetaThumbnail(singleSubPath, null!),
+							_appSettings.MaxDegreesOfParallelism);
 
-						return results!.ToList();
-					}
+					return results!.ToList();
+				}
 				default:
-					{
-						var result = ( await new FileHash(_iStorage).GetHashCodeAsync(subPath) );
-						return !result.Value ? new List<(bool, bool, string, string?)> { (false, false, subPath, "hash not found") } :
-							new List<(bool, bool, string, string?)> { await AddMetaThumbnail(subPath, result.Key) };
-					}
+				{
+					var result = ( await new FileHash(_iStorage).GetHashCodeAsync(subPath) );
+					return !result.Value ? new List<(bool, bool, string, string?)> { (false, false, subPath, "hash not found") } :
+						new List<(bool, bool, string, string?)> { await AddMetaThumbnail(subPath, result.Key) };
+				}
 			}
 		}
 
@@ -133,7 +133,10 @@ namespace starsky.foundation.thumbnailmeta.Services
 				_offsetDataMetaExifThumbnail.GetExifMetaDirectories(subPath);
 			var offsetData = _offsetDataMetaExifThumbnail.
 				ParseOffsetData(exifThumbnailDir, subPath);
-			if ( !offsetData.Success ) return (false, true, subPath, offsetData.Reason);
+			if ( !offsetData.Success )
+			{
+				return (false, true, subPath, offsetData.Reason);
+			}
 
 			return (await _writeMetaThumbnailService.WriteAndCropFile(fileHash, offsetData, sourceWidth,
 				sourceHeight, rotation, subPath), true, subPath, null);

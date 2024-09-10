@@ -14,10 +14,16 @@ namespace helpers
 			var baseDirectory = AppDomain.CurrentDomain
 				.BaseDirectory;
 			if ( baseDirectory == null )
+			{
 				throw new DirectoryNotFoundException("base directory is null, this is wrong");
+			}
+
 			var rootDirectory = Directory.GetParent(baseDirectory)?.Parent?.Parent?.Parent?.FullName;
 			if ( rootDirectory == null )
+			{
 				throw new DirectoryNotFoundException("rootDirectory is null, this is wrong");
+			}
+
 			return Path.Combine(rootDirectory, ClientAppFolder);
 		}
 

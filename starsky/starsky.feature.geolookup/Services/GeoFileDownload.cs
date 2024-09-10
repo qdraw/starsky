@@ -45,7 +45,7 @@ namespace starsky.feature.geolookup.Services
 			const string admin1CodesasciiTxt = "admin1CodesASCII.txt";
 
 			if ( !_hostStorage.ExistFile(
-				    Path.Combine(_appSettings.DependenciesFolder, CountryName + ".txt")) )
+					Path.Combine(_appSettings.DependenciesFolder, CountryName + ".txt")) )
 			{
 				var outputZip = Path.Combine(_appSettings.DependenciesFolder,
 					CountryName + ".zip");
@@ -62,7 +62,7 @@ namespace starsky.feature.geolookup.Services
 			}
 
 			if ( !_hostStorage.ExistFile(
-				    Path.Combine(_appSettings.DependenciesFolder, admin1CodesasciiTxt)) )
+					Path.Combine(_appSettings.DependenciesFolder, admin1CodesasciiTxt)) )
 			{
 				// code for the second administrative division,
 				// a county in the US, see file admin2Codes.txt; varchar(80)
@@ -73,7 +73,7 @@ namespace starsky.feature.geolookup.Services
 				if ( !baseResult )
 				{
 					await _httpClientHelper.Download(https +
-					                                 MirrorUrl + admin1CodesasciiTxt, outputFile);
+													 MirrorUrl + admin1CodesasciiTxt, outputFile);
 				}
 			}
 		}
@@ -93,8 +93,8 @@ namespace starsky.feature.geolookup.Services
 		internal void RemoveFailedDownload()
 		{
 			if ( !_hostStorage.ExistFile(Path.Combine(
-				    _appSettings.DependenciesFolder,
-				    CountryName + ".zip")) )
+					_appSettings.DependenciesFolder,
+					CountryName + ".zip")) )
 			{
 				return;
 			}
@@ -103,7 +103,11 @@ namespace starsky.feature.geolookup.Services
 			var zipLength = _hostStorage
 				.ReadStream(Path.Combine(_appSettings.DependenciesFolder, CountryName + ".zip"))
 				.Length;
-			if ( zipLength > MinimumSizeInBytes ) return;
+			if ( zipLength > MinimumSizeInBytes )
+			{
+				return;
+			}
+
 			_hostStorage.FileDelete(Path.Combine(_appSettings.DependenciesFolder,
 				CountryName + ".zip"));
 		}

@@ -71,7 +71,7 @@ public class OpenEditorPreflight : IOpenEditorPreflight
 		// Under Mac OS the ApplicationPath is a .app folder
 		// Under Windows the ApplicationPath is a .exe file
 		if ( _hostFileSystem.IsFolderOrFile(appPath) !=
-		     FolderOrFileModel.FolderOrFileTypeList.Deleted )
+			 FolderOrFileModel.FolderOrFileTypeList.Deleted )
 		{
 			return appPath;
 		}
@@ -91,7 +91,7 @@ public class OpenEditorPreflight : IOpenEditorPreflight
 		{
 			// Files that are not on disk
 			if ( _iStorage.IsFolderOrFile(fileIndexItem.FilePath!) ==
-			     FolderOrFileModel.FolderOrFileTypeList.Deleted )
+				 FolderOrFileModel.FolderOrFileTypeList.Deleted )
 			{
 				StatusCodesHelper.ReturnExifStatusError(fileIndexItem,
 					FileIndexItem.ExifStatus.NotFoundSourceMissing,
@@ -101,7 +101,7 @@ public class OpenEditorPreflight : IOpenEditorPreflight
 
 			// Dir is readonly / don't edit
 			if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(fileIndexItem)
-			     == FileIndexItem.ExifStatus.ReadOnly )
+				 == FileIndexItem.ExifStatus.ReadOnly )
 			{
 				StatusCodesHelper.ReturnExifStatusError(fileIndexItem,
 					FileIndexItem.ExifStatus.ReadOnly,
@@ -110,13 +110,13 @@ public class OpenEditorPreflight : IOpenEditorPreflight
 			}
 
 			if ( fileIndexItem.ImageFormat is ExtensionRolesHelper.ImageFormat.xmp
-			    or ExtensionRolesHelper.ImageFormat.meta_json )
+				or ExtensionRolesHelper.ImageFormat.meta_json )
 			{
 				continue;
 			}
 
 			if ( fileIndexItem.Status is FileIndexItem.ExifStatus.Default
-			    or FileIndexItem.ExifStatus.OkAndSame )
+				or FileIndexItem.ExifStatus.OkAndSame )
 			{
 				fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 			}

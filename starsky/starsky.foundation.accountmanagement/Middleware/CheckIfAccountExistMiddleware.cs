@@ -40,7 +40,7 @@ namespace starsky.foundation.accountmanagement.Middleware
 
 			if ( context.User.Identity?.IsAuthenticated == true && isApiCall )
 			{
-				var userManager = ( IUserManager )context.RequestServices.GetRequiredService(typeof(IUserManager));
+				var userManager = ( IUserManager ) context.RequestServices.GetRequiredService(typeof(IUserManager));
 
 				var id = GetUserTableIdFromClaims(context);
 				var result = await userManager.ExistAsync(id);

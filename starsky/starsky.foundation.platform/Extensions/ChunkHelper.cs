@@ -10,7 +10,10 @@ namespace starsky.foundation.platform.Extensions
 		/// </summary>
 		public static IEnumerable<IEnumerable<T>> ChunkyEnumerable<T>(this IEnumerable<T> source, int chunkSize)
 		{
-			if ( source == null ) yield break;
+			if ( source == null )
+			{
+				yield break;
+			}
 			// ReSharper disable once PossibleMultipleEnumeration
 			while ( source.Any() )
 			{

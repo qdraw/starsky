@@ -248,7 +248,11 @@ namespace starsky.feature.search.ViewModels
 		{
 			get
 			{
-				if ( string.IsNullOrEmpty(SearchQuery) ) return PageViewType.PageType.Search.ToString();
+				if ( string.IsNullOrEmpty(SearchQuery) )
+				{
+					return PageViewType.PageType.Search.ToString();
+				}
+
 				return SearchQuery == TrashKeyword.TrashKeywordString ? PageViewType.PageType.Trash.ToString()
 					: PageViewType.PageType.Search.ToString();
 			}
@@ -342,10 +346,21 @@ namespace starsky.feature.search.ViewModels
 		/// <returns>false = (skip( continue to next item))</returns>
 		public bool SearchOperatorContinue(int indexer, int max)
 		{
-			if ( SearchOperatorOptionsInternal == null ) return true;
-			if ( indexer <= -1 || indexer > max ) return true;
+			if ( SearchOperatorOptionsInternal == null )
+			{
+				return true;
+			}
+
+			if ( indexer <= -1 || indexer > max )
+			{
+				return true;
+			}
 			// for -Datetime=1 (03-03-2019 00:00:00-03-03-2019 23:59:59), this are two queries >= fail!!
-			if ( indexer >= SearchOperatorOptionsInternal.Count ) return true; // used when general words without update 
+			if ( indexer >= SearchOperatorOptionsInternal.Count )
+			{
+				return true; // used when general words without update 
+			}
+
 			var returnResult = SearchOperatorOptionsInternal[indexer];
 			return returnResult;
 		}
@@ -365,9 +380,16 @@ namespace starsky.feature.search.ViewModels
 			var lastStringValue = rgx.Match(item).Value;
 
 			// set default
-			if ( string.IsNullOrEmpty(lastStringValue) ) lastStringValue = string.Empty;
+			if ( string.IsNullOrEmpty(lastStringValue) )
+			{
+				lastStringValue = string.Empty;
+			}
 
-			if ( lastStringValue == "||" ) return '|';
+			if ( lastStringValue == "||" )
+			{
+				return '|';
+			}
+
 			return '&';
 		}
 
@@ -377,7 +399,7 @@ namespace starsky.feature.search.ViewModels
 		/// <returns></returns>
 		public SearchViewModel Clone()
 		{
-			return ( SearchViewModel )MemberwiseClone();
+			return ( SearchViewModel ) MemberwiseClone();
 		}
 
 		/// <summary>
@@ -446,7 +468,10 @@ namespace starsky.feature.search.ViewModels
 
 			foreach ( Match regexInUrl in regexInUrlMatches )
 			{
-				if ( string.IsNullOrEmpty(regexInUrl.Value) ) continue;
+				if ( string.IsNullOrEmpty(regexInUrl.Value) )
+				{
+					continue;
+				}
 
 				if ( regexInUrl.Value.Length <= 2 )
 				{
@@ -502,7 +527,10 @@ namespace starsky.feature.search.ViewModels
 		public static SearchViewModel NarrowSearch(SearchViewModel model)
 		{
 			// ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-			if ( model.FileIndexItems == null ) model = new SearchViewModel();
+			if ( model.FileIndexItems == null )
+			{
+				model = new SearchViewModel();
+			}
 
 			for ( var i = 0; i < model.SearchIn.Count; i++ )
 			{
@@ -581,7 +609,7 @@ namespace starsky.feature.search.ViewModels
 
 			model.FileIndexItems = model.FileIndexItems?
 				.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name
-							&& ( bool? )p.GetType().GetProperty(property.Name)?.GetValue(p, null) == boolIsValue
+							&& ( bool? ) p.GetType().GetProperty(property.Name)?.GetValue(p, null) == boolIsValue
 				).ToList();
 			return model;
 		}
@@ -596,7 +624,7 @@ namespace starsky.feature.search.ViewModels
 				case SearchForOptionType.Not:
 					model.FileIndexItems = model.FileIndexItems!
 						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name
-									&& ( ExtensionRolesHelper.ImageFormat )p.GetType().GetProperty(property.Name)?
+									&& ( ExtensionRolesHelper.ImageFormat ) p.GetType().GetProperty(property.Name)?
 										.GetValue(p, null)!
 									!= // not
 									castImageFormat
@@ -605,7 +633,7 @@ namespace starsky.feature.search.ViewModels
 				default:
 					model.FileIndexItems = model.FileIndexItems!
 						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name
-									&& ( ExtensionRolesHelper.ImageFormat )p.GetType().GetProperty(property.Name)?
+									&& ( ExtensionRolesHelper.ImageFormat ) p.GetType().GetProperty(property.Name)?
 										.GetValue(p, null)! == castImageFormat
 						).ToList();
 					break;
@@ -626,21 +654,21 @@ namespace starsky.feature.search.ViewModels
 				case SearchForOptionType.LessThen:
 					model.FileIndexItems = model.FileIndexItems!
 						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name
-									&& ( DateTime )p.GetType().GetProperty(property.Name)?.GetValue(p, null)!
+									&& ( DateTime ) p.GetType().GetProperty(property.Name)?.GetValue(p, null)!
 									<= parsedDateTime
 						).ToList();
 					break;
 				case SearchForOptionType.GreaterThen:
 					model.FileIndexItems = model.FileIndexItems!
 						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name
-									&& ( DateTime )p.GetType().GetProperty(property.Name)?.GetValue(p, null)!
+									&& ( DateTime ) p.GetType().GetProperty(property.Name)?.GetValue(p, null)!
 									>= parsedDateTime
 						).ToList();
 					break;
 				default:
 					model.FileIndexItems = model.FileIndexItems!
 						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name
-									&& ( DateTime )p.GetType().GetProperty(property.Name)?.GetValue(p, null)!
+									&& ( DateTime ) p.GetType().GetProperty(property.Name)?.GetValue(p, null)!
 									== parsedDateTime
 						).ToList();
 					break;
@@ -700,7 +728,11 @@ namespace starsky.feature.search.ViewModels
 					 RegexOptions.None, TimeSpan.FromMilliseconds(100)) &&
 				 int.TryParse(input, out var relativeValue) )
 			{
-				if ( relativeValue >= 1 ) relativeValue *= -1; // always in the past
+				if ( relativeValue >= 1 )
+				{
+					relativeValue *= -1; // always in the past
+				}
+
 				if ( relativeValue > -60000 ) // 24-11-1854
 				{
 					return DateTime.Today.AddDays(relativeValue);
@@ -727,7 +759,10 @@ namespace starsky.feature.search.ViewModels
 					pattern,
 					CultureInfo.InvariantCulture,
 					DateTimeStyles.None, out dateTime);
-				if ( dateTime.Year > 2 ) return dateTime;
+				if ( dateTime.Year > 2 )
+				{
+					return dateTime;
+				}
 			}
 			return dateTime.Year > 2 ? dateTime : DateTime.Now;
 		}

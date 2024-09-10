@@ -39,7 +39,11 @@ namespace starsky.foundation.sync.SyncServices
 		{
 			var fileIndexItem = await _query.GetObjectByFilePathAsync(subPath);
 			// on a new database ->
-			if ( subPath == "/" && fileIndexItem == null ) fileIndexItem = new FileIndexItem();
+			if ( subPath == "/" && fileIndexItem == null )
+			{
+				fileIndexItem = new FileIndexItem();
+			}
+
 			if ( fileIndexItem == null )
 			{
 				_logger.LogInformation($"[ManualSync] NotFoundNotInIndex skip for: {subPath}");

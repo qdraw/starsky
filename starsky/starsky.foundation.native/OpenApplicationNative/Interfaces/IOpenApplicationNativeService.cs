@@ -8,7 +8,7 @@ public interface IOpenApplicationNativeService
 	/// </summary>
 	/// <returns>true is supported and false is not supported</returns>
 	bool DetectToUseOpenApplication();
-	
+
 	/// <summary>
 	/// Open with Default Editor
 	/// Please check DetectToUseOpenApplication() before using this method
@@ -16,7 +16,7 @@ public interface IOpenApplicationNativeService
 	/// <param name="fullPathAndApplicationUrl">List first item is fullFilePath, second is ApplicationUrl</param>
 	/// <returns>open = true, null is unsupported</returns>
 	bool? OpenApplicationAtUrl(List<(string fullFilePath, string applicationUrl)> fullPathAndApplicationUrl);
-	
+
 	/// <summary>
 	/// Open with Default Editor
 	/// Please check DetectToUseOpenApplication() before using this method

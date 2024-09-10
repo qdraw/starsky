@@ -50,7 +50,11 @@ namespace starsky.Controllers
 		public IActionResult Status(
 			string f = "/")
 		{
-			if ( _cache == null ) return NotFound("cache service is missing");
+			if ( _cache == null )
+			{
+				return NotFound("cache service is missing");
+			}
+
 			return Json(new GeoCacheStatusService(_cache).Status(f));
 		}
 

@@ -245,14 +245,17 @@ public class PeriodicThumbnailScanHostedServiceTest
 			logger,
 			scopeFactory);
 
-		using CancellationTokenSource source = new CancellationTokenSource();
+		using var source = new CancellationTokenSource();
 		var token = source.Token;
 		source.Cancel(); // <- cancel before start
 
 		var dynMethod = service.GetType().GetMethod("ExecuteAsync",
 			BindingFlags.NonPublic | BindingFlags.Instance);
 		if ( dynMethod == null )
+		{
 			throw new Exception("missing ExecuteAsync");
+		}
+
 		dynMethod.Invoke(service, new object[] { token });
 
 		Assert.IsTrue(logger.TrackedInformation.Count == 0);

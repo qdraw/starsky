@@ -24,7 +24,7 @@ namespace helpers
 			return Directory.GetParent(AppDomain.CurrentDomain
 				.BaseDirectory)!.Parent!.Parent!.Parent!.FullName;
 		}
-		
+
 		public static void ZipGeneric()
 		{
 			var fromFolder = Path.Join(BasePath(), Build.GenericRuntimeName);
@@ -53,7 +53,7 @@ namespace helpers
 			if ( getRuntimesWithoutGeneric.Count == 0 )
 			{
 				Log.Information("There are no runtime specific items selected\n" +
-				                "So skip ZipRuntimes");
+								"So skip ZipRuntimes");
 				return;
 			}
 
@@ -89,8 +89,8 @@ namespace helpers
 			if ( noUnitTest )
 			{
 				Log.Information(">> ZipHtmlCoverageReport " +
-				                "is disable due the --no-unit-test flag\n" +
-				                "So skip ZipHtmlCoverageReport");
+								"is disable due the --no-unit-test flag\n" +
+								"So skip ZipHtmlCoverageReport");
 				return;
 			}
 

@@ -32,8 +32,10 @@ namespace starsky.feature.health.HealthCheck
 					.IsFolderOrFile(path)).ToList();
 
 			if ( resultsList.Count == 0 )
+			{
 				return Task.FromResult(new HealthCheckResult(context.Registration.FailureStatus,
 					$"Not configured"));
+			}
 
 			return Task.FromResult(
 				resultsList.Exists(p => p == FolderOrFileModel.FolderOrFileTypeList.Deleted)

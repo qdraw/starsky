@@ -56,7 +56,11 @@ namespace starsky.feature.import.Models
 			set
 			{
 				// Changed this => value used te be without check
-				if ( string.IsNullOrEmpty(value) ) return;
+				if ( string.IsNullOrEmpty(value) )
+				{
+					return;
+				}
+
 				AppSettings.StructureCheck(value);
 				_structure = value;
 			}

@@ -86,7 +86,10 @@ public class ManualThumbnailGenerationService : IManualThumbnailGenerationServic
 				?.Success == true).DistinctBy(p => p.FilePath);
 		foreach ( var item in searchFor )
 		{
-			if ( item.Tags!.Contains(TrashKeyword.TrashKeywordString) ) continue;
+			if ( item.Tags!.Contains(TrashKeyword.TrashKeywordString) )
+			{
+				continue;
+			}
 
 			item.LastChanged = new List<string> { "LastEdited", "FileHash" };
 			result.Add(item);

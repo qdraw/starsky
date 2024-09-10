@@ -76,8 +76,8 @@ public sealed class ExifTool : IExifTool
 			!beforeFileHash.Contains(FileHash.GeneratedPostFix), cancellationToken);
 
 		if ( stream.Length <= 15 &&
-		     ( await StreamToStringHelper.StreamToStringAsync(stream, false) )
-		     .Contains("Fake ExifTool", StringComparison.InvariantCultureIgnoreCase) )
+			 ( await StreamToStringHelper.StreamToStringAsync(stream, false) )
+			 .Contains("Fake ExifTool", StringComparison.InvariantCultureIgnoreCase) )
 		{
 			await stream.DisposeAsync();
 			_logger.LogError(
@@ -216,8 +216,8 @@ internal class StreamToStreamRunner
 			var result = await command.Task.ConfigureAwait(false);
 
 			_logger.LogInformation($"[RunProcessAsync] {result.Success} ~ exifTool " +
-			                       $"{referenceInfoAndPath} {exifToolInputArguments} " +
-			                       $"run with result: {result.Success}  ~ ");
+								   $"{referenceInfoAndPath} {exifToolInputArguments} " +
+								   $"run with result: {result.Success}  ~ ");
 
 			memoryStream.Seek(0, SeekOrigin.Begin);
 
@@ -226,8 +226,8 @@ internal class StreamToStreamRunner
 		catch ( Win32Exception exception )
 		{
 			throw new ArgumentException("Error when trying to start the exifTool process.  " +
-			                            "Please make sure exifTool is installed, and its path is properly " +
-			                            "specified in the options.", exception);
+										"Please make sure exifTool is installed, and its path is properly " +
+										"specified in the options.", exception);
 		}
 	}
 }

@@ -22,9 +22,16 @@ namespace starsky.Helpers
 		/// <param name="httpContext">current context</param>
 		public void SetAntiForgeryCookie(HttpContext httpContext)
 		{
-			if ( httpContext == null ) return;
+			if ( httpContext == null )
+			{
+				return;
+			}
+
 			var tokens = _antiForgery.GetAndStoreTokens(httpContext).RequestToken;
-			if ( tokens == null ) return;
+			if ( tokens == null )
+			{
+				return;
+			}
 
 			httpContext.Response.Cookies.Append(
 				"X-XSRF-TOKEN", tokens,

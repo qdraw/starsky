@@ -42,7 +42,11 @@ namespace starsky.foundation.database.Query
 			foreach ( var filePath in filePathList )
 			{
 				var subPath = PathHelper.RemoveLatestSlash(filePath);
-				if ( filePath == "/" ) subPath = "/";
+				if ( filePath == "/" )
+				{
+					subPath = "/";
+				}
+
 				predicates.Add(p => p.ParentDirectory == subPath && p.IsDirectory == true);
 			}
 

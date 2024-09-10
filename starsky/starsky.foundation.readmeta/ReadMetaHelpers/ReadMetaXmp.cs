@@ -32,11 +32,17 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			var xmpSubPath =
 				ExtensionRolesHelper.ReplaceExtensionWithXmp(databaseItem.FilePath);
 			// also add when the file is a jpeg, we are not writing to it then
-			if ( _iStorage.ExistFile(xmpSubPath) ) databaseItem.AddSidecarExtension("xmp");
+			if ( _iStorage.ExistFile(xmpSubPath) )
+			{
+				databaseItem.AddSidecarExtension("xmp");
+			}
 
 			// Read content from sidecar xmp file
 			if ( !ExtensionRolesHelper.IsExtensionForceXmp(databaseItem.FilePath) ||
-			     !_iStorage.ExistFile(xmpSubPath) ) return databaseItem;
+				 !_iStorage.ExistFile(xmpSubPath) )
+			{
+				return databaseItem;
+			}
 
 			// Read the text-content of the xmp file.
 			var xmpStream = _iStorage.ReadStream(xmpSubPath);
@@ -86,7 +92,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		private static string? GetNullNameSpace(IXmpPropertyInfo property, string xmpName)
 		{
 			if ( property.Path == xmpName && !string.IsNullOrEmpty(property.Value)
-			                              && string.IsNullOrEmpty(property.Namespace) )
+										  && string.IsNullOrEmpty(property.Namespace) )
 			{
 				return property.Value;
 			}
@@ -103,8 +109,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		private static string? GetContentNameSpace(IXmpPropertyInfo property, string xmpName)
 		{
 			if ( property.Path == xmpName && !string.IsNullOrEmpty(property.Value)
-			                              && !string.IsNullOrEmpty(property.Namespace) )
-				// the difference it this ^^!^^
+										  && !string.IsNullOrEmpty(property.Namespace) )
+			// the difference it this ^^!^^
 			{
 				return property.Value;
 			}
@@ -131,24 +137,42 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 				// Path=dc:title[1] Namespace= Value=The object name
 				//    Path=dc:title[1]/xml:lang Namespace=http://www.w3...
 				var title = GetNullNameSpace(property, "dc:title[1]");
-				if ( title != null ) item.Title = title;
+				if ( title != null )
+				{
+					item.Title = title;
+				}
 
 				// Path=exif:ISOSpeedRatings Namespace=http://ns.adobe.com/exif/1.0/ Value=
 				// Path=exif:ISOSpeedRatings[1] Namespace= Value=25
 				var isoSpeed = GetNullNameSpace(property, "exif:ISOSpeedRatings[1]");
-				if ( isoSpeed != null ) item.SetIsoSpeed(isoSpeed);
+				if ( isoSpeed != null )
+				{
+					item.SetIsoSpeed(isoSpeed);
+				}
 
 				var height = GetContentNameSpace(property, "exif:PixelXDimension");
-				if ( height != null ) item.SetImageHeight(height);
+				if ( height != null )
+				{
+					item.SetImageHeight(height);
+				}
 
 				var width = GetContentNameSpace(property, "exif:PixelYDimension");
-				if ( width != null ) item.SetImageWidth(width);
+				if ( width != null )
+				{
+					item.SetImageWidth(width);
+				}
 
 				var lensModel = GetContentNameSpace(property, "exifEX:LensModel");
-				if ( lensModel != null ) item.SetMakeModel(lensModel, 2);
+				if ( lensModel != null )
+				{
+					item.SetMakeModel(lensModel, 2);
+				}
 
 				var countryCode = GetContentNameSpace(property, "Iptc4xmpCore:CountryCode");
-				if ( countryCode != null ) item.LocationCountryCode = countryCode;
+				if ( countryCode != null )
+				{
+					item.LocationCountryCode = countryCode;
+				}
 
 				// ImageStabilisation is not found in XMP
 
@@ -166,19 +190,25 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			//   Path=dc:description[1] Namespace= Value=caption
 			//   Path=dc:description[1]/xml:lang Namespace=http...
 			var description = GetNullNameSpace(property, "dc:description[1]");
-			if ( description != null ) item.Description = description;
+			if ( description != null )
+			{
+				item.Description = description;
+			}
 
 			// Path=dc:subject Namespace=http://purl.org/dc/elements/1.1/ Value=
 			// Path=dc:subject[1] Namespace= Value=keyword
 			var tags = GetNullNameSpace(property, "dc:subject[1]");
-			if ( tags != null ) item.Tags = tags;
+			if ( tags != null )
+			{
+				item.Tags = tags;
+			}
 
 			// Path=dc:subject[2] Namespace= Value=keyword2
 			if ( !string.IsNullOrEmpty(property.Path) &&
-			     property.Path.Contains("dc:subject[") &&
-			     property.Path != "dc:subject[1]" &&
-			     !string.IsNullOrEmpty(property.Value) &&
-			     string.IsNullOrEmpty(property.Namespace) )
+				 property.Path.Contains("dc:subject[") &&
+				 property.Path != "dc:subject[1]" &&
+				 !string.IsNullOrEmpty(property.Value) &&
+				 string.IsNullOrEmpty(property.Namespace) )
 			{
 				var tagsStringBuilder = new StringBuilder();
 				tagsStringBuilder.Append(item.Tags);
@@ -209,15 +239,29 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 				}
 			}
 
-			if ( gpsAltitude == null || gpsAltitudeRef == null ) return;
-			if ( !gpsAltitude.Contains('/') ) return;
+			if ( gpsAltitude == null || gpsAltitudeRef == null )
+			{
+				return;
+			}
+
+			if ( !gpsAltitude.Contains('/') )
+			{
+				return;
+			}
 
 			var locationAltitude = MathFraction.Fraction(gpsAltitude);
-			if ( Math.Abs(locationAltitude) < 0 ) return;
+			if ( Math.Abs(locationAltitude) < 0 )
+			{
+				return;
+			}
+
 			item.LocationAltitude = locationAltitude;
 
 			//For items under the sea level
-			if ( gpsAltitudeRef == "1" ) item.LocationAltitude = item.LocationAltitude * -1;
+			if ( gpsAltitudeRef == "1" )
+			{
+				item.LocationAltitude = item.LocationAltitude * -1;
+			}
 		}
 
 
@@ -242,28 +286,46 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
 				// exif:ExposureTime http://ns.adobe.com/exif/1.0/
 				var shutterSpeed = GetContentNameSpace(property, "exif:ExposureTime");
-				if ( shutterSpeed != null ) item.ShutterSpeed = shutterSpeed;
+				if ( shutterSpeed != null )
+				{
+					item.ShutterSpeed = shutterSpeed;
+				}
 
 				// exif:FNumber http://ns.adobe.com/exif/1.0/
 				var aperture = GetContentNameSpace(property, "exif:FNumber");
-				if ( aperture != null ) item.Aperture = MathFraction.Fraction(aperture);
+				if ( aperture != null )
+				{
+					item.Aperture = MathFraction.Fraction(aperture);
+				}
 
 				// Path=tiff:Make Namespace=http://ns.adobe.com/tiff/1.0/ Value=SONY
 				var make = GetContentNameSpace(property, "tiff:Make");
-				if ( make != null ) item.SetMakeModel(make, 0);
+				if ( make != null )
+				{
+					item.SetMakeModel(make, 0);
+				}
 
 				// Path=tiff:Model Namespace=http://ns.adobe.com/tiff/1.0/ Value=SLT-A58
 				var model = GetContentNameSpace(property, "tiff:Model");
-				if ( model != null ) item.SetMakeModel(model, 1);
+				if ( model != null )
+				{
+					item.SetMakeModel(model, 1);
+				}
 
 				// Path=exif:FocalLength Namespace=http://ns.adobe.com/exif/1.0/ Value=200/1
 				// Path=exif:FocalLength Namespace=http://ns.adobe.com/exif/1.0/ Value=18/1
 				var focalLength = GetContentNameSpace(property, "exif:FocalLength");
-				if ( focalLength != null ) item.FocalLength = MathFraction.Fraction(focalLength);
+				if ( focalLength != null )
+				{
+					item.FocalLength = MathFraction.Fraction(focalLength);
+				}
 
 				// Path=xmp:CreatorTool Namespace=http://ns.adobe.com/xap/1.0/ Value=SLT-A58 v1.00
 				var software = GetContentNameSpace(property, "xmp:CreatorTool");
-				if ( software != null ) item.Software = software;
+				if ( software != null )
+				{
+					item.Software = software;
+				}
 			}
 
 			return item;
@@ -294,11 +356,17 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		{
 			//  Path=tiff:ImageLength Namespace=http://ns.adobe.com/tiff/1.0/ Value=13656
 			var height = GetContentNameSpace(property, "tiff:ImageLength");
-			if ( height != null ) item.SetImageHeight(height);
+			if ( height != null )
+			{
+				item.SetImageHeight(height);
+			}
 
 			//  Path=tiff:ImageWidth Namespace=http://ns.adobe.com/tiff/1.0/ Value=15504
 			var width = GetContentNameSpace(property, "tiff:ImageWidth");
-			if ( width != null ) item.SetImageWidth(width);
+			if ( width != null )
+			{
+				item.SetImageWidth(width);
+			}
 		}
 
 		private static void SetCombinedLatLong(
@@ -332,7 +400,10 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 					CultureInfo.InvariantCulture,
 					DateTimeStyles.None,
 					out var dateTime);
-				if ( dateTime.Year >= 3 ) item.DateTime = dateTime;
+				if ( dateTime.Year >= 3 )
+				{
+					item.DateTime = dateTime;
+				}
 			}
 
 			// Option 2 (Datetime)
@@ -367,15 +438,24 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		{
 			// Path=photoshop:City Namespace=http://ns.adobe.com/photoshop/1.0/ Value=Epe
 			var locationCity = GetContentNameSpace(property, "photoshop:City");
-			if ( locationCity != null ) item.LocationCity = locationCity;
+			if ( locationCity != null )
+			{
+				item.LocationCity = locationCity;
+			}
 
 			// Path=photoshop:State Namespace=http://ns.adobe.com/photoshop/1.0/ Value=Gelderland
 			var locationState = GetContentNameSpace(property, "photoshop:State");
-			if ( locationState != null ) item.LocationState = locationState;
+			if ( locationState != null )
+			{
+				item.LocationState = locationState;
+			}
 
 			// Path=photoshop:Country Namespace=http://ns.adobe.com/photoshop/1.0/ Value=Nederland
 			var locationCountry = GetContentNameSpace(property, "photoshop:Country");
-			if ( locationCountry != null ) item.LocationCountry = locationCountry;
+			if ( locationCountry != null )
+			{
+				item.LocationCountry = locationCountry;
+			}
 		}
 	}
 }

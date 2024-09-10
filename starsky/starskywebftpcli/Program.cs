@@ -29,7 +29,7 @@ namespace starskywebftpcli
 
 			services.AddOpenTelemetryMonitoring(appSettings);
 			services.AddTelemetryLogging(appSettings);
-			
+
 			serviceProvider = services.BuildServiceProvider();
 
 			var storageSelector = serviceProvider.GetRequiredService<ISelectorStorage>();

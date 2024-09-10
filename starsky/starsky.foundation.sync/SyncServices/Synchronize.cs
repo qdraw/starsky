@@ -73,10 +73,15 @@ namespace starsky.foundation.sync.SyncServices
 		{
 			// Prefix / for database
 			subPath = PathHelper.PrefixDbSlash(subPath);
-			if ( subPath != "/" ) subPath = PathHelper.RemoveLatestSlash(subPath);
+			if ( subPath != "/" )
+			{
+				subPath = PathHelper.RemoveLatestSlash(subPath);
+			}
 
 			if ( FilterCommonTempFiles.Filter(subPath) || _syncIgnoreCheck.Filter(subPath) )
+			{
 				return FilterCommonTempFiles.DefaultOperationNotSupported(subPath);
+			}
 
 			_console.WriteLine($"[Synchronize] Sync {subPath} {DateTimeDebug()}");
 

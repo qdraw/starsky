@@ -70,11 +70,16 @@ public sealed class SwaggerExportHelper : BackgroundService
 	public bool Add03AppExport(AppSettings appSettings, ISelectorStorage selectorStorage,
 		ISwaggerProvider swaggerProvider)
 	{
-		if ( appSettings.AddSwagger != true || appSettings.AddSwaggerExport != true ) return false;
+		if ( appSettings.AddSwagger != true || appSettings.AddSwaggerExport != true )
+		{
+			return false;
+		}
 
 		var swaggerJsonText = GenerateSwagger(swaggerProvider, appSettings.Name);
 		if ( string.IsNullOrEmpty(swaggerJsonText) )
+		{
 			throw new ArgumentException("swaggerJsonText = null", nameof(swaggerProvider));
+		}
 
 		var swaggerJsonFullPath =
 			Path.Join(appSettings.TempFolder, appSettings.Name.ToLowerInvariant() + ".json");
@@ -92,8 +97,11 @@ public sealed class SwaggerExportHelper : BackgroundService
 		IHostApplicationLifetime applicationLifetime)
 	{
 		if ( appSettings.AddSwagger != true ||
-		     appSettings.AddSwaggerExport != true ||
-		     appSettings.AddSwaggerExportExitAfter != true ) return false;
+			 appSettings.AddSwaggerExport != true ||
+			 appSettings.AddSwaggerExportExitAfter != true )
+		{
+			return false;
+		}
 
 		applicationLifetime.StopApplication();
 		_logger!.LogInformation("App is stopped");
@@ -111,7 +119,11 @@ public sealed class SwaggerExportHelper : BackgroundService
 	/// <returns></returns>
 	internal static string GenerateSwagger(ISwaggerProvider? swaggerProvider, string docName)
 	{
-		if ( swaggerProvider == null ) return string.Empty;
+		if ( swaggerProvider == null )
+		{
+			return string.Empty;
+		}
+
 		var swaggerDocument = swaggerProvider.GetSwagger(docName, null, "/");
 		var stringOutput = JsonConvert.SerializeObject(swaggerDocument,
 			Formatting.Indented,

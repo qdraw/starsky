@@ -161,7 +161,11 @@ public sealed class FileHash
 	/// <returns>Task with a md5 hash</returns>
 	private async Task<string> CalculateMd5Async(string fullFilePath)
 	{
-		if ( !_iStorage.ExistFile(fullFilePath) ) return string.Empty;
+		if ( !_iStorage.ExistFile(fullFilePath) )
+		{
+			return string.Empty;
+		}
+
 		using ( var stream = _iStorage.ReadStream(fullFilePath, MaxReadSize) )
 		{
 			if ( stream == Stream.Null )
@@ -192,8 +196,8 @@ public sealed class FileHash
 			{
 				int length;
 				while ( ( length = await stream
-					       .ReadAsync(block, cancellationToken)
-					       .ConfigureAwait(false) ) > 0 )
+						   .ReadAsync(block, cancellationToken)
+						   .ConfigureAwait(false) ) > 0 )
 				{
 					md5.TransformBlock(block, 0, length, null, 0);
 				}

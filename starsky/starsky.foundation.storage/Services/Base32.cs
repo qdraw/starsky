@@ -44,14 +44,21 @@ namespace starsky.foundation.storage.Services
 			Digits = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567".ToCharArray();
 			Mask = Digits.Length - 1;
 			Shift = NumberOfTrailingZeros(Digits.Length);
-			for ( int i = 0; i < Digits.Length; i++ ) CharMap[Digits[i]] = i;
+			for ( int i = 0; i < Digits.Length; i++ )
+			{
+				CharMap[Digits[i]] = i;
+			}
 		}
 
 		private static int NumberOfTrailingZeros(int i)
 		{
 			// HD, Figure 5-14
 			int y;
-			if ( i == 0 ) return 32;
+			if ( i == 0 )
+			{
+				return 32;
+			}
+
 			int n = 31;
 			y = i << 16;
 			if ( y != 0 )
@@ -81,7 +88,7 @@ namespace starsky.foundation.storage.Services
 				i = y;
 			}
 
-			return n - ( int )( ( uint )( i << 1 ) >> 31 );
+			return n - ( int ) ( ( uint ) ( i << 1 ) >> 31 );
 		}
 
 		public static byte[] Decode(string encoded)
@@ -123,7 +130,7 @@ namespace starsky.foundation.storage.Services
 				{
 					continue;
 				}
-				result[next++] = ( byte )( buffer >> ( bitsLeft - 8 ) );
+				result[next++] = ( byte ) ( buffer >> ( bitsLeft - 8 ) );
 				bitsLeft -= 8;
 			}
 
@@ -180,9 +187,17 @@ namespace starsky.foundation.storage.Services
 
 		private static string Base32ReturnPadOutput(bool padOutput, StringBuilder result)
 		{
-			if ( !padOutput ) return result.ToString();
+			if ( !padOutput )
+			{
+				return result.ToString();
+			}
+
 			var padding = 8 - ( result.Length % 8 );
-			if ( padding > 0 ) result.Append(new string('=', padding == 8 ? 0 : padding));
+			if ( padding > 0 )
+			{
+				result.Append(new string('=', padding == 8 ? 0 : padding));
+			}
+
 			return result.ToString();
 		}
 

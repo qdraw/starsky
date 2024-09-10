@@ -30,10 +30,10 @@ namespace starsky.foundation.platform.VersionHelpers
 		}
 
 		private static readonly Regex ParseEx = new Regex(@"^(?<major>\d+)" +
-		                                                  @"(?>\.(?<minor>\d+))?" +
-		                                                  @"(?>\.(?<patch>\d+))?" +
-		                                                  @"(?>\-(?<pre>[0-9A-Za-z\-\.]+))?" +
-		                                                  @"(?>\+(?<build>[0-9A-Za-z\-\.]+))?$",
+														  @"(?>\.(?<minor>\d+))?" +
+														  @"(?>\.(?<patch>\d+))?" +
+														  @"(?>\-(?<pre>[0-9A-Za-z\-\.]+))?" +
+														  @"(?>\+(?<build>[0-9A-Za-z\-\.]+))?$",
 			RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture,
 			TimeSpan.FromSeconds(0.5));
 
@@ -68,12 +68,16 @@ namespace starsky.foundation.platform.VersionHelpers
 			var minorMatch = match.Groups["minor"];
 			var minor = 0;
 			if ( minorMatch.Success )
+			{
 				minor = int.Parse(minorMatch.Value, CultureInfo.InvariantCulture);
+			}
 
 			var patchMatch = match.Groups["patch"];
 			var patch = 0;
 			if ( patchMatch.Success )
+			{
 				patch = int.Parse(patchMatch.Value, CultureInfo.InvariantCulture);
+			}
 
 			var prerelease = match.Groups["pre"].Value;
 			var build = match.Groups["build"].Value;
@@ -137,7 +141,10 @@ namespace starsky.foundation.platform.VersionHelpers
 		public int CompareTo(SemVersion? other)
 		{
 			var r = CompareByPrecedence(other);
-			if ( r != 0 ) return r;
+			if ( r != 0 )
+			{
+				return r;
+			}
 
 			// If other is null, CompareByPrecedence() returns 1
 			return CompareComponent(Build, other!.Build);
@@ -158,16 +165,27 @@ namespace starsky.foundation.platform.VersionHelpers
 		private int CompareByPrecedence(SemVersion? other)
 		{
 			if ( other is null )
+			{
 				return 1;
+			}
 
 			var r = Major.CompareTo(other.Major);
-			if ( r != 0 ) return r;
+			if ( r != 0 )
+			{
+				return r;
+			}
 
 			r = Minor.CompareTo(other.Minor);
-			if ( r != 0 ) return r;
+			if ( r != 0 )
+			{
+				return r;
+			}
 
 			r = Patch.CompareTo(other.Patch);
-			if ( r != 0 ) return r;
+			if ( r != 0 )
+			{
+				return r;
+			}
 
 			return CompareComponent(Prerelease, other.Prerelease, true);
 		}
@@ -177,12 +195,19 @@ namespace starsky.foundation.platform.VersionHelpers
 			var aEmpty = string.IsNullOrEmpty(a);
 			var bEmpty = string.IsNullOrEmpty(b);
 			if ( aEmpty && bEmpty )
+			{
 				return 0;
+			}
 
 			if ( aEmpty )
+			{
 				return nonemptyIsLower ? 1 : -1;
+			}
+
 			if ( bEmpty )
+			{
 				return nonemptyIsLower ? -1 : 1;
+			}
 
 			var aComps = a.Split('.');
 			var bComps = b!.Split('.');
@@ -202,7 +227,10 @@ namespace starsky.foundation.platform.VersionHelpers
 				if ( aIsNum && bIsNum )
 				{
 					var r = aNum.CompareTo(bNum);
-					if ( r != 0 ) return r;
+					if ( r != 0 )
+					{
+						return r;
+					}
 				}
 				else
 				{
@@ -249,27 +277,35 @@ namespace starsky.foundation.platform.VersionHelpers
 		public override bool Equals(object? obj)
 		{
 			if ( obj is null )
+			{
 				return false;
+			}
 
 			if ( ReferenceEquals(this, obj) )
+			{
 				return true;
+			}
 
-			var other = ( SemVersion )obj;
+			var other = ( SemVersion ) obj;
 
 			return Major == other.Major
-			       && Minor == other.Minor
-			       && Patch == other.Patch
-			       && string.Equals(Prerelease, other.Prerelease, StringComparison.Ordinal)
-			       && string.Equals(Build, other.Build, StringComparison.Ordinal);
+				   && Minor == other.Minor
+				   && Patch == other.Patch
+				   && string.Equals(Prerelease, other.Prerelease, StringComparison.Ordinal)
+				   && string.Equals(Build, other.Build, StringComparison.Ordinal);
 		}
 
 		public static bool operator ==(SemVersion? left, SemVersion? right)
 		{
 			if ( ReferenceEquals(left, right) )
+			{
 				return true;
+			}
 
 			if ( left is null || right is null )
+			{
 				return false;
+			}
 
 			return left.Equals(right);
 		}
@@ -287,8 +323,16 @@ namespace starsky.foundation.platform.VersionHelpers
 		/// <returns><see langword="true"/> if the two values are equal, otherwise <see langword="false"/>.</returns>
 		public static bool Equals(SemVersion? versionA, SemVersion? versionB)
 		{
-			if ( ReferenceEquals(versionA, versionB) ) return true;
-			if ( versionA is null || versionB is null ) return false;
+			if ( ReferenceEquals(versionA, versionB) )
+			{
+				return true;
+			}
+
+			if ( versionA is null || versionB is null )
+			{
+				return false;
+			}
+
 			return versionA.Equals(versionB);
 		}
 
@@ -297,13 +341,21 @@ namespace starsky.foundation.platform.VersionHelpers
 			string bc)
 		{
 			if ( aIsNum )
+			{
 				return -1;
+			}
+
 			if ( bIsNum )
+			{
 				return 1;
+			}
+
 			var r = string.CompareOrdinal(ac, bc);
 			// ReSharper disable once ConvertIfStatementToReturnStatement
 			if ( r != 0 )
+			{
 				return r;
+			}
 
 			return int.MaxValue;
 		}
@@ -317,9 +369,21 @@ namespace starsky.foundation.platform.VersionHelpers
 		/// and <paramref name="versionB"/>.</returns>
 		internal static int Compare(SemVersion? versionA, SemVersion? versionB)
 		{
-			if ( ReferenceEquals(versionA, versionB) ) return 0;
-			if ( versionA is null ) return -1;
-			if ( versionB is null ) return 1;
+			if ( ReferenceEquals(versionA, versionB) )
+			{
+				return 0;
+			}
+
+			if ( versionA is null )
+			{
+				return -1;
+			}
+
+			if ( versionB is null )
+			{
+				return 1;
+			}
+
 			return versionA.CompareTo(versionB);
 		}
 

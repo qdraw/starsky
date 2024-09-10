@@ -30,13 +30,17 @@ namespace starsky.foundation.http.Streaming
 			// > when you do nothing
 			const string fileNameHeader = "filename";
 			if ( string.IsNullOrEmpty(request.Headers[fileNameHeader]) )
+			{
 				return Base32.Encode(FileHash.GenerateRandomBytes(8)) + ".unknown";
+			}
 
 			// file without base64 encoding; return slug based url
 			if ( Base64Helper.TryParse(request.Headers[fileNameHeader]).Length == 0 )
+			{
 				return GenerateSlugHelper.GenerateSlug(
 					Path.GetFileNameWithoutExtension(request.Headers[fileNameHeader]),
 					true, false, true) + Path.GetExtension(request.Headers[fileNameHeader]);
+			}
 
 			var requestHeadersBytes = Base64Helper.TryParse(request.Headers[fileNameHeader]);
 			var requestHeaders = Encoding.ASCII.GetString(requestHeadersBytes);
@@ -69,11 +73,13 @@ namespace starsky.foundation.http.Streaming
 			if ( !MultipartRequestHelper.IsMultipartContentType(contentType) )
 			{
 				if ( contentType != "image/jpeg" && contentType != "application/octet-stream" )
+				{
 					throw new FileLoadException(
 						$"Expected a multipart request, but got {contentType}; add the header 'content-type' ");
+				}
 
 				var randomFolderName = "stream_" +
-				                       Base32.Encode(FileHash.GenerateRandomBytes(4));
+									   Base32.Encode(FileHash.GenerateRandomBytes(4));
 				var fullFilePath = Path.Combine(appSettings.TempFolder, randomFolderName,
 					headerFileName);
 
@@ -107,7 +113,7 @@ namespace starsky.foundation.http.Streaming
 					section.ContentDisposition, out var contentDisposition);
 
 				if ( hasContentDispositionHeader && contentDisposition != null &&
-				     MultipartRequestHelper.HasFileContentDisposition(contentDisposition) )
+					 MultipartRequestHelper.HasFileContentDisposition(contentDisposition) )
 				{
 					var sourceFileName = contentDisposition.FileName.ToString()
 						.Replace("\"", string.Empty);
@@ -118,7 +124,7 @@ namespace starsky.foundation.http.Streaming
 						Path.GetFileNameWithoutExtension(sourceFileName),
 						true, false, true); // underscore allowed
 					var randomFolderName = "stream_" +
-					                       Base32.Encode(FileHash.GenerateRandomBytes(4));
+										   Base32.Encode(FileHash.GenerateRandomBytes(4));
 					var fullFilePath = Path.Combine(appSettings.TempFolder, randomFolderName,
 						tempHash + inputExtension);
 					tempPaths.Add(fullFilePath);

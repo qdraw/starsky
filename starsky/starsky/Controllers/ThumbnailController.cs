@@ -72,7 +72,7 @@ namespace starsky.Controllers
 			}
 
 			if ( _thumbnailStorage.ExistFile(
-				    ThumbnailNameHelper.Combine(f, ThumbnailSize.TinyMeta)) )
+					ThumbnailNameHelper.Combine(f, ThumbnailSize.TinyMeta)) )
 			{
 				var stream =
 					_thumbnailStorage.ReadStream(
@@ -143,7 +143,9 @@ namespace starsky.Controllers
 
 			// Success has all items (except tinyMeta)
 			if ( data is { Small: true, Large: true, ExtraLarge: true } )
+			{
 				return Json(data);
+			}
 
 			var sourcePath = await _query.GetSubPathByHashAsync(f);
 			var isThumbnailSupported =
@@ -175,7 +177,10 @@ namespace starsky.Controllers
 
 			// When using the api to check using javascript
 			// use the cached version of imageFormat, otherwise you have to check if it deleted
-			if ( json ) return Json("OK");
+			if ( json )
+			{
+				return Json("OK");
+			}
 
 			stream = _thumbnailStorage.ReadStream(
 				ThumbnailNameHelper.Combine(f, size));
@@ -231,7 +236,10 @@ namespace starsky.Controllers
 			// Get the text before at (@) so replace @2000 with nothing to match  fileHash
 			var beforeAt = Regex.Match(f, ".*(?=@)", RegexOptions.None,
 				TimeSpan.FromSeconds(1)).Value;
-			if ( !string.IsNullOrEmpty(beforeAt) ) f = beforeAt;
+			if ( !string.IsNullOrEmpty(beforeAt) )
+			{
+				f = beforeAt;
+			}
 
 			// Restrict the fileHash to letters and digits only
 			// I/O function calls should not be vulnerable to path injection attacks
@@ -267,7 +275,7 @@ namespace starsky.Controllers
 				_query.ResetItemByHash(f);
 
 				if ( string.IsNullOrEmpty(filePath) ||
-				     await _query.GetObjectByFilePathAsync(filePath) == null )
+					 await _query.GetObjectByFilePathAsync(filePath) == null )
 				{
 					SetExpiresResponseHeadersToZero();
 					return NotFound("not in index");
@@ -279,7 +287,7 @@ namespace starsky.Controllers
 			if ( !_iStorage.ExistFile(sourcePath) )
 			{
 				return NotFound("There is no thumbnail image " + f + " and no source image " +
-				                sourcePath);
+								sourcePath);
 			}
 
 			if ( !isSingleItem )

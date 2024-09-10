@@ -144,8 +144,8 @@ public sealed class DownloadPhotoController : Controller
 				fileIndexItem.FileHash!);
 
 			if ( !_thumbnailStorage.ExistFile(
-				    ThumbnailNameHelper.Combine(fileIndexItem.FileHash!,
-					    ThumbnailSize.Large)) )
+					ThumbnailNameHelper.Combine(fileIndexItem.FileHash!,
+						ThumbnailSize.Large)) )
 			{
 				Response.StatusCode = 500;
 				return Json("Thumbnail generation failed");

@@ -43,14 +43,19 @@ namespace starsky.foundation.database.DataProtection
 			{
 				if ( exception is not RetryLimitExceededException &&
 					 exception is not MySqlConnector.MySqlException &&
-					 exception is not Microsoft.Data.Sqlite.SqliteException ) throw;
+					 exception is not Microsoft.Data.Sqlite.SqliteException )
+				{
+					throw;
+				}
 
 				// MySqlConnector.MySqlException (0x80004005): Table 'starsky.DataProtectionKeys' doesn't exist
 				// or Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such table: DataProtectionKeys
 				if ( !exception.Message.Contains("0x80004005") &&
 					 !exception.Message.Contains(
 						 "no such table: DataProtectionKeys") )
+				{
 					return new List<XElement>();
+				}
 
 				_logger.LogInformation("run migration: dotnet ef database update");
 				_dbContext.Database.Migrate();
@@ -91,7 +96,10 @@ namespace starsky.foundation.database.DataProtection
 				if ( exception is not DbUpdateException &&
 					 exception is not RetryLimitExceededException &&
 					 exception is not MySqlConnector.MySqlException &&
-					 exception is not Microsoft.Data.Sqlite.SqliteException ) throw;
+					 exception is not Microsoft.Data.Sqlite.SqliteException )
+				{
+					throw;
+				}
 
 				var retryInterval = _dbContext.GetType().FullName?.Contains("test") == true ?
 					TimeSpan.FromSeconds(0) : TimeSpan.FromSeconds(5);

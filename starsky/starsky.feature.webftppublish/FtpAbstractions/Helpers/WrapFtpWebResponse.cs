@@ -22,9 +22,15 @@ namespace starsky.feature.webftppublish.FtpAbstractions.Helpers
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if ( !disposing ) return;
-			if ( _response == null ) return;
-			( ( IDisposable )_response ).Dispose();
+			if ( !disposing )
+			{
+				return;
+			}
+
+			if ( _response == null )
+			{
+				return;
+			} ( ( IDisposable ) _response ).Dispose();
 			_response = null;
 		}
 

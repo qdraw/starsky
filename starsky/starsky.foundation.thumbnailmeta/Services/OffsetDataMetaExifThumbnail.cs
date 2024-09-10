@@ -80,7 +80,11 @@ namespace starsky.foundation.thumbnailmeta.Services
 					var widthValue = exifSubIfdDirectoryTags
 						.FirstOrDefault(p => p.Type == ExifDirectoryBase.TagImageWidth)
 						?.Description;
-					if ( heightValue == null || widthValue == null ) continue;
+					if ( heightValue == null || widthValue == null )
+					{
+						continue;
+					}
+
 					heightPixels = heightValue;
 					widthPixels = widthValue;
 				}
@@ -106,12 +110,14 @@ namespace starsky.foundation.thumbnailmeta.Services
 		public OffsetModel ParseOffsetData(ExifThumbnailDirectory? exifThumbnailDir, string subPath)
 		{
 			if ( exifThumbnailDir == null )
+			{
 				return new OffsetModel
 				{
 					Success = false,
 					Reason =
 						$"{FilenamesHelper.GetFileName(subPath)} ExifThumbnailDirectory null"
 				};
+			}
 
 			long thumbnailOffset = long.Parse(exifThumbnailDir!.GetDescription(
 				ExifThumbnailDirectory.TagThumbnailOffset)!.Split(' ')[0]);

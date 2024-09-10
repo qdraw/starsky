@@ -69,7 +69,7 @@ public interface IStorage
 	/// <param name="path">where to write to</param>
 	/// <returns>is Success</returns>
 	bool WriteStream(Stream stream, string path);
-	
+
 	/// <summary>
 	/// Append To Open Stream
 	/// </summary>
@@ -87,6 +87,6 @@ public interface IStorage
 	Task<bool> WriteStreamAsync(Stream stream, string path);
 
 	StorageInfo Info(string path);
-	
+
 	bool IsFileReady(string path);
 }

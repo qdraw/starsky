@@ -7,7 +7,11 @@ public class UserOverviewModel
 {
 	public UserOverviewModel(List<User>? objectAllUsersResult = null)
 	{
-		if ( objectAllUsersResult == null ) return;
+		if ( objectAllUsersResult == null )
+		{
+			return;
+		}
+
 		Users = objectAllUsersResult;
 		IsSuccess = true;
 	}

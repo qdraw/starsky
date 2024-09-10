@@ -53,7 +53,9 @@ namespace starsky.Controllers
 			// When all items are not found
 			// allow read only
 			if ( fileIndexResultsList.TrueForAll(p => p.Status != FileIndexItem.ExifStatus.Ok) )
+			{
 				return NotFound(fileIndexResultsList);
+			}
 
 			// NOT covered: when try to export for example image thumbnails of xml file
 
@@ -93,7 +95,10 @@ namespace starsky.Controllers
 					return Json("Not Ready");
 			}
 
-			if ( json ) return Json("OK");
+			if ( json )
+			{
+				return Json("OK");
+			}
 
 			var fs = _hostFileSystemStorage.ReadStream(sourceFullPath!);
 			// Return the right mime type

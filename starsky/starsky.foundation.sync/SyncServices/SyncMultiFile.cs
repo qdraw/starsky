@@ -76,7 +76,10 @@ namespace starsky.foundation.sync.SyncServices
 			ISynchronize.SocketUpdateDelegate? updateDelegate = null,
 			bool addParentFolder = true)
 		{
-			if ( dbItems == null ) return new List<FileIndexItem>();
+			if ( dbItems == null )
+			{
+				return new List<FileIndexItem>();
+			}
 
 			dbItems = DeleteStatusHelper.AddDeleteStatus(dbItems, FileIndexItem.ExifStatus.DeletedAndSame);
 
@@ -108,7 +111,11 @@ namespace starsky.foundation.sync.SyncServices
 				// only for new items that needs to be added to the db
 				var newItemIndex = dbItems.FindIndex(
 					p => p.FilePath == newItem.FilePath);
-				if ( newItemIndex < 0 ) continue;
+				if ( newItemIndex < 0 )
+				{
+					continue;
+				}
+
 				newItem.Status = FileIndexItem.ExifStatus.Ok;
 				DeleteStatusHelper.AddDeleteStatus(newItem);
 				dbItems[newItemIndex] = newItem;
@@ -122,7 +129,11 @@ namespace starsky.foundation.sync.SyncServices
 				dbItems = await new AddParentList(_subPathStorage, _query).AddParentItems(dbItems);
 			}
 
-			if ( updateDelegate == null ) return dbItems;
+			if ( updateDelegate == null )
+			{
+				return dbItems;
+			}
+
 			return await PushToSocket(dbItems, updateDelegate);
 		}
 

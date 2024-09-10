@@ -7,126 +7,125 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
+using starsky.feature.search.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
-using starsky.feature.search.Services;
 using starskytest.FakeMocks;
 
-namespace starskytest.Controllers
+namespace starskytest.Controllers;
+
+[TestClass]
+public sealed class SearchSuggestControllerTest
 {
-	[TestClass]
-	public sealed class SearchSuggestControllerTest
+	private readonly IMemoryCache _memoryCache;
+	private readonly Query _query;
+	private readonly SearchSuggestionsService _searchSuggest;
+
+	public SearchSuggestControllerTest()
 	{
-		private readonly SearchSuggestionsService _searchSuggest;
-		private readonly Query _query;
-		private readonly IMemoryCache _memoryCache;
+		var provider = new ServiceCollection()
+			.AddMemoryCache()
+			.BuildServiceProvider();
+		_memoryCache = provider.GetRequiredService<IMemoryCache>();
 
-		public SearchSuggestControllerTest()
+		var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
+		builder.UseInMemoryDatabase(nameof(SearchSuggestController));
+		var options = builder.Options;
+		var context = new ApplicationDbContext(options);
+		_query = new Query(context, new AppSettings(), null!, new FakeIWebLogger(), _memoryCache);
+		_searchSuggest =
+			new SearchSuggestionsService(context, _memoryCache, null!, new AppSettings());
+	}
+
+	private async Task InjectMockedData()
+	{
+		if ( !string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("hash_9")) )
 		{
-			var provider = new ServiceCollection()
-				.AddMemoryCache()
-				.BuildServiceProvider();
-			_memoryCache = provider.GetRequiredService<IMemoryCache>();
-
-			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-			builder.UseInMemoryDatabase(nameof(SearchSuggestController));
-			var options = builder.Options;
-			var context = new ApplicationDbContext(options);
-			_query = new Query(context, new AppSettings(), null!, new FakeIWebLogger(), _memoryCache);
-			_searchSuggest = new SearchSuggestionsService(context,_memoryCache, null!, new AppSettings());
+			return;
 		}
 
-		private async Task InjectMockedData()
+		for ( var i = 0; i < 10; i++ )
 		{
-			if (!string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("hash_9"))) return;
-			    
-			for ( var i = 0; i < 10; i++ )
+			var tags = i % 2 == 1 ? "enter, sandman, exit, live" : "enter, sandman, exit";
+			await _query.AddItemAsync(new FileIndexItem
 			{
-				var tags = i % 2 == 1 ? "enter, sandman, exit, live" : "enter, sandman, exit";
-				await _query.AddItemAsync(new FileIndexItem
-				{
-					FileName = $"{i}.jpg",
-					FileHash = $"hash_{i}",
-					ParentDirectory = "/",
-					Tags = tags
-				});
-			}
+				FileName = $"{i}.jpg",
+				FileHash = $"hash_{i}",
+				ParentDirectory = "/",
+				Tags = tags
+			});
 		}
+	}
 
-		[TestMethod]
-		public async Task Suggestion_IsMoreThan10()
-		{
-			await InjectMockedData();
-			var controller = new SearchSuggestController(_searchSuggest);
-			var result = await controller.Suggest("e") as JsonResult;
-			var list = result!.Value as List<string>;
-			CollectionAssert.AreEqual(new List<string>{"enter","exit"}, list);
-		}
+	[TestMethod]
+	public async Task Suggestion_IsMoreThan10()
+	{
+		await InjectMockedData();
+		var controller = new SearchSuggestController(_searchSuggest);
+		var result = await controller.Suggest("e") as JsonResult;
+		var list = result!.Value as List<string>;
+		CollectionAssert.AreEqual(new List<string> { "enter", "exit" }, list);
+	}
 
-		[TestMethod]
-		public async Task Suggestion_Nothing()
+	[TestMethod]
+	public async Task Suggestion_Nothing()
+	{
+		var controller = new SearchSuggestController(_searchSuggest)
 		{
-			var controller = new SearchSuggestController(_searchSuggest)
-			{
-				ControllerContext = {HttpContext = new DefaultHttpContext()}
-			};
-			var result = await controller.Suggest(string.Empty) as JsonResult;
-			var list = result!.Value as List<string>;
-	        
-			Assert.IsFalse(list!.Count != 0);
-		}
+			ControllerContext = { HttpContext = new DefaultHttpContext() }
+		};
+		var result = await controller.Suggest(string.Empty) as JsonResult;
+		var list = result!.Value as List<string>;
 
-		[TestMethod]
-		public async Task Suggestion_IsLessThan10()
-		{
-			await InjectMockedData();
-			var controller = new SearchSuggestController(_searchSuggest);
-			var result = await controller.Suggest("l") as JsonResult; // search for live
-			var list = result!.Value as List<string>;
-			CollectionAssert.AreEqual(new List<string>(), list);
-		}
-        
-		[TestMethod]
-		public async Task AllResultsCheck()
-		{
-			await InjectMockedData();
-			var controller = new SearchSuggestController(_searchSuggest);
-			var result = await controller.All() as JsonResult; // search for live
-			var list = result!.Value as List<KeyValuePair<string, int>>;
+		Assert.IsFalse(list!.Count != 0);
+	}
 
-			var expected = new List<KeyValuePair<string, int>>
-			{
-				new KeyValuePair<string, int>("enter", 10),
-				new KeyValuePair<string, int>("sandman", 10),
-				new KeyValuePair<string, int>("exit", 10)
-			};
-	        
-			CollectionAssert.AreEqual(expected, list);
-		}
-        
-		[TestMethod]
-		public async Task Inflate_HappyFlow()
-		{
-			// Clean cache if not exist
-			_memoryCache.Remove(nameof(SearchSuggestionsService));
-	        
-			await InjectMockedData();
-			var controller = new SearchSuggestController(_searchSuggest);
-			await controller.Inflate();
-	        
-			_memoryCache.TryGetValue(nameof(SearchSuggestionsService),
-				out var cacheResult);
+	[TestMethod]
+	public async Task Suggestion_IsLessThan10()
+	{
+		await InjectMockedData();
+		var controller = new SearchSuggestController(_searchSuggest);
+		var result = await controller.Suggest("l") as JsonResult; // search for live
+		var list = result!.Value as List<string>;
+		CollectionAssert.AreEqual(new List<string>(), list);
+	}
 
-			var keyValuePairs = cacheResult as List<KeyValuePair<string, int>>;
-			var expected = new List<KeyValuePair<string, int>>
-			{
-				new KeyValuePair<string, int>("enter", 10),
-				new KeyValuePair<string, int>("sandman", 10),
-				new KeyValuePair<string, int>("exit", 10)
-			};
-			CollectionAssert.AreEqual(expected, keyValuePairs);
-		}
+	[TestMethod]
+	public async Task AllResultsCheck()
+	{
+		await InjectMockedData();
+		var controller = new SearchSuggestController(_searchSuggest);
+		var result = await controller.All() as JsonResult; // search for live
+		var list = result!.Value as List<KeyValuePair<string, int>>;
+
+		var expected = new List<KeyValuePair<string, int>>
+		{
+			new("enter", 10), new("sandman", 10), new("exit", 10)
+		};
+
+		CollectionAssert.AreEqual(expected, list);
+	}
+
+	[TestMethod]
+	public async Task Inflate_HappyFlow()
+	{
+		// Clean cache if not exist
+		_memoryCache.Remove(nameof(SearchSuggestionsService));
+
+		await InjectMockedData();
+		var controller = new SearchSuggestController(_searchSuggest);
+		await controller.Inflate();
+
+		_memoryCache.TryGetValue(nameof(SearchSuggestionsService),
+			out var cacheResult);
+
+		var keyValuePairs = cacheResult as List<KeyValuePair<string, int>>;
+		var expected = new List<KeyValuePair<string, int>>
+		{
+			new("enter", 10), new("sandman", 10), new("exit", 10)
+		};
+		CollectionAssert.AreEqual(expected, keyValuePairs);
 	}
 }

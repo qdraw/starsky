@@ -66,7 +66,7 @@ namespace starsky.Controllers
 			// Added filter to prevent redirects based on tainted, user-controlled data
 			// unescaped: ^[a-zA-Z0-9_\-+"'/=:,\.>< ]+$
 			if ( !Regex.IsMatch(t, "^[a-zA-Z0-9_\\-+\"'/=:,\\.>< ]+$",
-				    RegexOptions.None, TimeSpan.FromMilliseconds(100)) )
+					RegexOptions.None, TimeSpan.FromMilliseconds(100)) )
 			{
 				return BadRequest("`t` is not allowed");
 			}
@@ -95,7 +95,9 @@ namespace starsky.Controllers
 			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
 
 			if ( !IsCaseSensitiveRedirect("/search", Request.Path.Value) )
+			{
 				return PhysicalFile(_clientApp, TextHtmlMimeType);
+			}
 
 			// if not case sensitive is already served
 			if ( string.IsNullOrEmpty(t) )
@@ -106,7 +108,7 @@ namespace starsky.Controllers
 			// Added filter to prevent redirects based on tainted, user-controlled data
 			// unescaped: ^[a-zA-Z0-9_\-+"'/=:>< ]+$
 			if ( !Regex.IsMatch(t, "^[a-zA-Z0-9_\\-+\"'/=:>< ]+$",
-				    RegexOptions.None, TimeSpan.FromMilliseconds(100)) )
+					RegexOptions.None, TimeSpan.FromMilliseconds(100)) )
 			{
 				return BadRequest("`t` is not allowed");
 			}

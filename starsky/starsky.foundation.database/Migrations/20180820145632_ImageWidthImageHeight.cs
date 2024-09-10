@@ -10,13 +10,13 @@ namespace starsky.foundation.database.Migrations
 				name: "ImageHeight",
 				table: "FileIndex",
 				nullable: false,
-				defaultValue: ( ushort )0);
+				defaultValue: ( ushort ) 0);
 
 			migrationBuilder.AddColumn<ushort>(
 				name: "ImageWidth",
 				table: "FileIndex",
 				nullable: false,
-				defaultValue: ( ushort )0);
+				defaultValue: ( ushort ) 0);
 		}
 
 		protected override void Down(MigrationBuilder migrationBuilder)

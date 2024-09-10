@@ -87,10 +87,10 @@ public partial class Query : IQuery
 	{
 		// cache code:
 		if ( cacheTime != null &&
-		     _appSettings.AddMemoryCache == true &&
-		     _cache != null &&
-		     _cache.TryGetValue(
-			     GetObjectByFilePathAsyncCacheName(filePath), out var data) )
+			 _appSettings.AddMemoryCache == true &&
+			 _cache != null &&
+			 _cache.TryGetValue(
+				 GetObjectByFilePathAsyncCacheName(filePath), out var data) )
 		{
 			if ( !( data is FileIndexItem fileIndexItem ) )
 			{
@@ -143,7 +143,7 @@ public partial class Query : IQuery
 
 		// if result is not null return cached value
 		if ( _cache.TryGetValue(queryHashListCacheName, out var cachedSubPath)
-		     && !string.IsNullOrEmpty(( string? ) cachedSubPath) )
+			 && !string.IsNullOrEmpty(( string? ) cachedSubPath) )
 		{
 			return ( string ) cachedSubPath;
 		}
@@ -189,7 +189,7 @@ public partial class Query : IQuery
 			// Clone to avoid reference when cache exists
 			CacheUpdateItem(new List<FileIndexItem> { updateStatusContent.Clone() });
 			if ( _appSettings.Verbose == true )
-				// Ef core changes debug
+			// Ef core changes debug
 			{
 				_logger.LogDebug(context.ChangeTracker.DebugView.LongView);
 			}
@@ -335,7 +335,7 @@ public partial class Query : IQuery
 		foreach ( var item in updateStatusContent.ToList() )
 		{
 			if ( item.Status == FileIndexItem.ExifStatus.OkAndSame ||
-			     item.Status == FileIndexItem.ExifStatus.Default )
+				 item.Status == FileIndexItem.ExifStatus.Default )
 			{
 				item.Status = FileIndexItem.ExifStatus.Ok;
 			}
@@ -345,7 +345,7 @@ public partial class Query : IQuery
 				item.ParentDirectory!);
 
 			if ( !_cache.TryGetValue(queryCacheName,
-				    out var objectFileFolders) )
+					out var objectFileFolders) )
 			{
 				skippedCacheItems.Add(item.ParentDirectory!);
 				continue;
@@ -359,14 +359,14 @@ public partial class Query : IQuery
 
 			var obj = displayFileFolders.Find(p => p.FilePath == item.FilePath);
 			if ( obj != null )
-				// remove add again
+			// remove add again
 			{
 				displayFileFolders.Remove(obj);
 			}
 
 			if ( item.Status ==
-			     FileIndexItem.ExifStatus.Ok ) // ExifStatus.default is already changed
-				// Add here item to cached index
+				 FileIndexItem.ExifStatus.Ok ) // ExifStatus.default is already changed
+											   // Add here item to cached index
 			{
 				displayFileFolders.Add(item);
 			}
@@ -582,7 +582,7 @@ public partial class Query : IQuery
 		{
 			return ( await context.FileIndex.TagWith("QueryGetItemByHashAsync").FirstOrDefaultAsync(
 				p => p.FileHash == fileHash
-				     && p.IsDirectory != true
+					 && p.IsDirectory != true
 			) )?.FilePath;
 		}
 

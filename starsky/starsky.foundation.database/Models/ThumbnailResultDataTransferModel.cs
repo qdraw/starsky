@@ -8,10 +8,25 @@ public class ThumbnailResultDataTransferModel
 	public ThumbnailResultDataTransferModel(string fileHash, bool? tinyMeta = null, bool? small = null, bool? large = null, bool? extraLarge = null)
 	{
 		FileHash = fileHash;
-		if ( tinyMeta != null ) TinyMeta = tinyMeta;
-		if ( small != null ) Small = small;
-		if ( large != null ) Large = large;
-		if ( extraLarge != null ) ExtraLarge = extraLarge;
+		if ( tinyMeta != null )
+		{
+			TinyMeta = tinyMeta;
+		}
+
+		if ( small != null )
+		{
+			Small = small;
+		}
+
+		if ( large != null )
+		{
+			Large = large;
+		}
+
+		if ( extraLarge != null )
+		{
+			ExtraLarge = extraLarge;
+		}
 	}
 
 	/// <summary>

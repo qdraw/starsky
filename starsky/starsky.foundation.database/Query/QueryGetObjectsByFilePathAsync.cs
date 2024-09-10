@@ -44,13 +44,21 @@ namespace starsky.foundation.database.Query
 				switch ( collections )
 				{
 					case false:
-						if ( !success ) break;
+						if ( !success )
+						{
+							break;
+						}
+
 						item = cachedResult.Where(p =>
 							p.ParentDirectory == parentPath &&
 							p.FileName == FilenamesHelper.GetFileName(path)).ToList();
 						break;
 					case true:
-						if ( !success ) break;
+						if ( !success )
+						{
+							break;
+						}
+
 						item = cachedResult.Where(p =>
 							p.ParentDirectory == parentPath &&
 							p.FileCollectionName ==

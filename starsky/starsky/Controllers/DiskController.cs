@@ -65,7 +65,8 @@ public sealed class DiskController : Controller
 		{
 			var toAddStatus = new SyncViewModel
 			{
-				FilePath = subPath, Status = FileIndexItem.ExifStatus.Ok
+				FilePath = subPath,
+				Status = FileIndexItem.ExifStatus.Ok
 			};
 
 			if ( _iStorage.ExistFolder(subPath) )
@@ -77,7 +78,8 @@ public sealed class DiskController : Controller
 
 			await _query.AddItemAsync(new FileIndexItem(subPath)
 			{
-				IsDirectory = true, ImageFormat = ExtensionRolesHelper.ImageFormat.directory
+				IsDirectory = true,
+				ImageFormat = ExtensionRolesHelper.ImageFormat.directory
 			});
 
 			// add to fs
@@ -108,7 +110,8 @@ public sealed class DiskController : Controller
 	{
 		var list = syncResultsList.Select(t => new FileIndexItem(t.FilePath)
 		{
-			Status = t.Status, IsDirectory = true
+			Status = t.Status,
+			IsDirectory = true
 		}).ToList();
 
 		var webSocketResponse = new ApiNotificationResponseModel<
@@ -158,7 +161,7 @@ public sealed class DiskController : Controller
 
 		return Json(currentStatus
 			? rename.Where(p => p.Status
-			                    != FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList()
+								!= FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList()
 			: rename);
 	}
 }

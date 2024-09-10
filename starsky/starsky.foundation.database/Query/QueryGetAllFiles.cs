@@ -36,7 +36,11 @@ namespace starsky.foundation.database.Query
 		internal static List<FileIndexItem> FormatOk(IReadOnlyCollection<FileIndexItem?>? input,
 			FileIndexItem.ExifStatus fromStatus = FileIndexItem.ExifStatus.Default)
 		{
-			if ( input == null ) return new List<FileIndexItem>();
+			if ( input == null )
+			{
+				return new List<FileIndexItem>();
+			}
+
 			return input.Where(p => p != null).Select(p =>
 			{
 				// status check for some referenced based code
@@ -90,7 +94,11 @@ namespace starsky.foundation.database.Query
 			foreach ( var filePath in filePathList )
 			{
 				var subPath = PathHelper.RemoveLatestSlash(filePath);
-				if ( filePath == "/" ) subPath = "/";
+				if ( filePath == "/" )
+				{
+					subPath = "/";
+				}
+
 				predicates.Add(p => p.IsDirectory == false && p.ParentDirectory == subPath);
 			}
 

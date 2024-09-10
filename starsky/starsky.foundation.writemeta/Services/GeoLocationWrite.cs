@@ -45,9 +45,12 @@ namespace starsky.foundation.writemeta.Services
 			bool syncLocationNames)
 		{
 			foreach ( var metaFileItem in metaFilesInDirectory.Where(metaFileItem =>
-				         ExtensionRolesHelper.IsExtensionExifToolSupported(metaFileItem.FileName)) )
+						 ExtensionRolesHelper.IsExtensionExifToolSupported(metaFileItem.FileName)) )
 			{
-				if ( _appSettings.IsVerbose() ) _console.Write(" 👟 ");
+				if ( _appSettings.IsVerbose() )
+				{
+					_console.Write(" 👟 ");
+				}
 
 				var comparedNamesList = new List<string>
 				{
@@ -57,6 +60,7 @@ namespace starsky.foundation.writemeta.Services
 				};
 
 				if ( syncLocationNames )
+				{
 					comparedNamesList.AddRange(new List<string>
 					{
 						nameof(FileIndexItem.LocationCity).ToLowerInvariant(),
@@ -64,6 +68,7 @@ namespace starsky.foundation.writemeta.Services
 						nameof(FileIndexItem.LocationCountry).ToLowerInvariant(),
 						nameof(FileIndexItem.LocationCountryCode).ToLowerInvariant()
 					});
+				}
 
 				await _exifToolCmdHelper.UpdateAsync(metaFileItem, comparedNamesList);
 

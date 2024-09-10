@@ -103,7 +103,7 @@ public class MetaUpdateService : IMetaUpdateService
 
 			_logger.LogError($"Missing in key: {fileIndexItem.FilePath}",
 				new InvalidDataException($"changedFileIndexItemName: " +
-				                         $"{string.Join(",", changedFileIndexItemName)}"));
+										 $"{string.Join(",", changedFileIndexItemName)}"));
 			throw new ArgumentException($"Missing in key: {fileIndexItem.FilePath}",
 				nameof(changedFileIndexItemName));
 		}
@@ -129,7 +129,7 @@ public class MetaUpdateService : IMetaUpdateService
 		await RotationThumbnailExecute(rotateClock, fileIndexItem);
 
 		if ( fileIndexItem.IsDirectory != true
-		     && ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName) )
+			 && ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName) )
 		{
 			// feature to exif update
 			var exifUpdateFilePaths = new List<string> { fileIndexItem.FilePath! };
@@ -152,7 +152,7 @@ public class MetaUpdateService : IMetaUpdateService
 				: $"[UpdateWriteDiskDatabase] ExifTool result: {exifResult} path:{fileIndexItem.FilePath}");
 		}
 		else if ( fileIndexItem.ImageFormat != ExtensionRolesHelper.ImageFormat.xmp &&
-		          fileIndexItem.ImageFormat != ExtensionRolesHelper.ImageFormat.meta_json )
+				  fileIndexItem.ImageFormat != ExtensionRolesHelper.ImageFormat.meta_json )
 		{
 			await new FileIndexItemJsonParser(_iStorage).WriteAsync(fileIndexItem);
 		}

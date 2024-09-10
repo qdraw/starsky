@@ -50,8 +50,11 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		private async Task InsertSearchData()
 		{
 			if ( !string.IsNullOrEmpty(
-				await _query.GetSubPathByHashAsync("09876543456789")) ) return;
-			
+				await _query.GetSubPathByHashAsync("09876543456789")) )
+			{
+				return;
+			}
+
 			_insertSearchDataHiJpgInput = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "hi.jpg",

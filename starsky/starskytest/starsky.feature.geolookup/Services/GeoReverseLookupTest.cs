@@ -34,7 +34,9 @@ public sealed class GeoReverseLookupTest
 	{
 		var path = Path.Combine(new CreateAnImage().BasePath, "tmp-dependencies");
 		if ( new StorageHostFullPathFilesystem(new FakeIWebLogger()).ExistFolder(path) )
+		{
 			new StorageHostFullPathFilesystem(new FakeIWebLogger()).FolderDelete(path);
+		}
 	}
 
 	private void Setup()
@@ -49,8 +51,10 @@ public sealed class GeoReverseLookupTest
 		// create a temp folder
 		if ( !new StorageHostFullPathFilesystem(new FakeIWebLogger()).ExistFolder(_appSettings
 			    .DependenciesFolder) )
+		{
 			new StorageHostFullPathFilesystem(new FakeIWebLogger()).CreateDirectory(_appSettings
 				.DependenciesFolder);
+		}
 
 		// We mock the data to avoid http request during tests
 

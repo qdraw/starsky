@@ -24,7 +24,11 @@ namespace starsky.foundation.storage.Helpers
 		/// <exception cref="FileNotFoundException">when file is not found</exception>
 		public async Task<T?> ReadAsync<T>(string jsonSubPath)
 		{
-			if ( !_iStorage.ExistFile(jsonSubPath) ) throw new FileNotFoundException(jsonSubPath);
+			if ( !_iStorage.ExistFile(jsonSubPath) )
+			{
+				throw new FileNotFoundException(jsonSubPath);
+			}
+
 			var stream = _iStorage.ReadStream(jsonSubPath);
 			var jsonAsString = await StreamToStringHelper.StreamToStringAsync(stream);
 			var returnFileIndexItem = JsonSerializer.Deserialize<T>(jsonAsString, DefaultJsonSerializer.CamelCase);

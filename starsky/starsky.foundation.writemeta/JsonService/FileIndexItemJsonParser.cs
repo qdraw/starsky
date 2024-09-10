@@ -45,7 +45,10 @@ namespace starsky.foundation.writemeta.JsonService
 			var jsonSubPath = JsonSidecarLocation.JsonLocation(fileIndexItem.ParentDirectory!,
 				fileIndexItem.FileName!);
 			// when sidecar file does not exist
-			if ( !_iStorage.ExistFile(jsonSubPath) ) return fileIndexItem;
+			if ( !_iStorage.ExistFile(jsonSubPath) )
+			{
+				return fileIndexItem;
+			}
 
 			var returnContainer =
 				await new DeserializeJson(_iStorage).ReadAsync<MetadataContainer>(jsonSubPath);

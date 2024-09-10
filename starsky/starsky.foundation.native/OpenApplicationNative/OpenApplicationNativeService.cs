@@ -36,7 +36,7 @@ public class OpenApplicationNativeService : IOpenApplicationNativeService
 	{
 		// Linux is not supported yet
 		if ( runtimeInformationIsOsPlatform(OSPlatform.Linux) ||
-		     runtimeInformationIsOsPlatform(OSPlatform.FreeBSD) )
+			 runtimeInformationIsOsPlatform(OSPlatform.FreeBSD) )
 		{
 			return false;
 		}
@@ -111,7 +111,7 @@ public class OpenApplicationNativeService : IOpenApplicationNativeService
 		{
 			var fullPaths = group.Select(item => item.Item1).ToList();
 			var applicationUrl = group.Key;
-			results.Add(( fullPaths, applicationUrl ));
+			results.Add((fullPaths, applicationUrl));
 		}
 
 		return results;
