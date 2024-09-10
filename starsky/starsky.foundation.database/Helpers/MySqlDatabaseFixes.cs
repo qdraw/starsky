@@ -191,12 +191,12 @@ namespace starsky.foundation.database.Helpers
 		{
 			if ( command.Connection?.State != ConnectionState.Open )
 			{
-				return new List<string>();
+				return [];
 			}
 
 			var tableNames = new List<string>();
 			await using var reader = await command.ExecuteReaderAsync();
-			while ( reader.Read() )
+			while ( await reader.ReadAsync() )
 			{
 				// at least two columns
 				tableNames.Add(reader.GetString(0) + "," + reader.GetString(1));
