@@ -31,11 +31,28 @@ public class DesktopEditorControllerTest
 
 		var result = controller.OpenAmountConfirmationChecker("/test.jpg;/test2.jpg");
 
-		var castedResult = ( JsonResult )result;
-		var boolValue = ( bool? )castedResult.Value;
+		var castedResult = ( JsonResult ) result;
+		var boolValue = ( bool? ) castedResult.Value;
 		// mock is always true
 
 		Assert.IsTrue(boolValue);
+	}
+
+	[TestMethod]
+	public void OpenAmountConfirmationChecker_ReturnsBadRequest()
+	{
+		// Arrange
+		var controller = new DesktopEditorController(new OpenEditorDesktopService(new AppSettings(),
+			new FakeIOpenApplicationNativeService(new List<string>(), "test"),
+			new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>())));
+
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+
+		// Act
+		var result = controller.OpenAmountConfirmationChecker(null!);
+
+		// Assert
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 	}
 
 	[TestMethod]
@@ -51,9 +68,26 @@ public class DesktopEditorControllerTest
 		};
 
 		var result = await controller.OpenAsync("/test.jpg;/test2.jpg");
-		var castedResult = ( BadRequestObjectResult )result;
+		var castedResult = ( BadRequestObjectResult ) result;
 
 		Assert.AreEqual(400, castedResult.StatusCode);
+	}
+
+	[TestMethod]
+	public async Task OpenAsync_ReturnsBadRequest()
+	{
+		// Arrange
+		var controller = new DesktopEditorController(new OpenEditorDesktopService(new AppSettings(),
+			new FakeIOpenApplicationNativeService(new List<string>(), "test"),
+			new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>())));
+
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+
+		// Act
+		var result = await controller.OpenAsync(null!);
+
+		// Assert
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 	}
 
 	[TestMethod]
@@ -72,8 +106,8 @@ public class DesktopEditorControllerTest
 		var result = await controller.OpenAsync("/test.jpg;/test2.jpg");
 		Assert.AreEqual(206, controller.HttpContext.Response.StatusCode);
 
-		var castedResult = ( JsonResult )result;
-		var arrayValues = ( List<PathImageFormatExistsAppPathModel>? )castedResult.Value;
+		var castedResult = ( JsonResult ) result;
+		var arrayValues = ( List<PathImageFormatExistsAppPathModel>? ) castedResult.Value;
 
 		Assert.AreEqual(0, arrayValues?.Count);
 	}
@@ -83,7 +117,7 @@ public class DesktopEditorControllerTest
 	{
 		var preflight = new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>
 		{
-			new PathImageFormatExistsAppPathModel
+			new()
 			{
 				AppPath = "test",
 				Status = FileIndexItem.ExifStatus.Ok,
@@ -105,8 +139,8 @@ public class DesktopEditorControllerTest
 		var result = await controller.OpenAsync("/test.jpg;/test2.jpg");
 		Assert.AreEqual(200, controller.HttpContext.Response.StatusCode);
 
-		var castedResult = ( JsonResult )result;
-		var arrayValues = ( List<PathImageFormatExistsAppPathModel>? )castedResult.Value;
+		var castedResult = ( JsonResult ) result;
+		var arrayValues = ( List<PathImageFormatExistsAppPathModel>? ) castedResult.Value;
 
 		Assert.AreEqual(1, arrayValues?.Count);
 	}

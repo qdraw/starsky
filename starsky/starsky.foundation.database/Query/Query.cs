@@ -49,12 +49,19 @@ public partial class Query : IQuery
 	/// <returns>FileIndex-objects with database data</returns>
 	public FileIndexItem? GetObjectByFilePath(string filePath)
 	{
-		if ( filePath != "/" ) filePath = PathHelper.RemoveLatestSlash(filePath);
+		if ( filePath != "/" )
+		{
+			filePath = PathHelper.RemoveLatestSlash(filePath);
+		}
 
 		FileIndexItem? LocalQuery(ApplicationDbContext context)
 		{
 			var item = context.FileIndex.FirstOrDefault(p => p.FilePath == filePath);
-			if ( item != null ) item.Status = FileIndexItem.ExifStatus.Ok;
+			if ( item != null )
+			{
+				item.Status = FileIndexItem.ExifStatus.Ok;
+			}
+
 			return item;
 		}
 
@@ -85,7 +92,11 @@ public partial class Query : IQuery
 		     _cache.TryGetValue(
 			     GetObjectByFilePathAsyncCacheName(filePath), out var data) )
 		{
-			if ( !( data is FileIndexItem fileIndexItem ) ) return null;
+			if ( !( data is FileIndexItem fileIndexItem ) )
+			{
+				return null;
+			}
+
 			fileIndexItem.Status = FileIndexItem.ExifStatus.OkAndSame;
 			return fileIndexItem;
 		}
@@ -95,7 +106,9 @@ public partial class Query : IQuery
 
 		// cache code:
 		if ( cacheTime == null || _appSettings.AddMemoryCache != true || result == null )
+		{
 			return result;
+		}
 
 		SetGetObjectByFilePathCache(filePath, result.Clone(), cacheTime);
 
@@ -120,19 +133,25 @@ public partial class Query : IQuery
 	public async Task<string?> GetSubPathByHashAsync(string fileHash)
 	{
 		// The CLI programs uses no cache
-		if ( !IsCacheEnabled() || _cache == null ) return await QueryGetItemByHashAsync(fileHash);
+		if ( !IsCacheEnabled() || _cache == null )
+		{
+			return await QueryGetItemByHashAsync(fileHash);
+		}
 
 		// Return values from IMemoryCache
 		var queryHashListCacheName = CachingDbName("hashList", fileHash);
 
 		// if result is not null return cached value
 		if ( _cache.TryGetValue(queryHashListCacheName, out var cachedSubPath)
-		     && !string.IsNullOrEmpty(( string? )cachedSubPath) ) return ( string )cachedSubPath;
+		     && !string.IsNullOrEmpty(( string? ) cachedSubPath) )
+		{
+			return ( string ) cachedSubPath;
+		}
 
 		cachedSubPath = await QueryGetItemByHashAsync(fileHash);
 
 		_cache.Set(queryHashListCacheName, cachedSubPath, new TimeSpan(48, 0, 0));
-		return ( string? )cachedSubPath;
+		return ( string? ) cachedSubPath;
 	}
 
 	/// <summary>
@@ -141,11 +160,17 @@ public partial class Query : IQuery
 	/// <param name="fileHash">base32 fileHash</param>
 	public void ResetItemByHash(string? fileHash)
 	{
-		if ( _cache == null || _appSettings.AddMemoryCache == false ) return;
+		if ( _cache == null || _appSettings.AddMemoryCache == false )
+		{
+			return;
+		}
 
 		var queryCacheName = CachingDbName("hashList", fileHash);
 
-		if ( _cache.TryGetValue(queryCacheName, out _) ) _cache.Remove(queryCacheName);
+		if ( _cache.TryGetValue(queryCacheName, out _) )
+		{
+			_cache.Remove(queryCacheName);
+		}
 	}
 
 	/// <summary>
@@ -165,7 +190,9 @@ public partial class Query : IQuery
 			CacheUpdateItem(new List<FileIndexItem> { updateStatusContent.Clone() });
 			if ( _appSettings.Verbose == true )
 				// Ef core changes debug
+			{
 				_logger.LogDebug(context.ChangeTracker.DebugView.LongView);
+			}
 
 			// object cache path is used to avoid updates
 			SetGetObjectByFilePathCache(fileIndexItem.FilePath!, updateStatusContent,
@@ -204,7 +231,11 @@ public partial class Query : IQuery
 		{
 			// Skip if Duplicate entry
 			// MySqlConnector.MySqlException (0x80004005): Duplicate entry for key 'PRIMARY'
-			if ( !exception.Message.Contains("Duplicate") ) throw;
+			if ( !exception.Message.Contains("Duplicate") )
+			{
+				throw;
+			}
+
 			_logger.LogError(exception,
 				$"[UpdateItemAsync] Skipped MySqlException Duplicate entry for key {updateStatusContent.FilePath}");
 		}
@@ -221,12 +252,16 @@ public partial class Query : IQuery
 	public async Task<List<FileIndexItem>> UpdateItemAsync(
 		List<FileIndexItem> updateStatusContentList)
 	{
-		if ( updateStatusContentList.Count == 0 ) return new List<FileIndexItem>();
+		if ( updateStatusContentList.Count == 0 )
+		{
+			return new List<FileIndexItem>();
+		}
 
 		async Task<List<FileIndexItem>> LocalQuery(DbContext context,
 			List<FileIndexItem> fileIndexItems)
 		{
 			foreach ( var item in fileIndexItems )
+			{
 				try
 				{
 					context.Attach(item).State = EntityState.Modified;
@@ -236,11 +271,14 @@ public partial class Query : IQuery
 					// System.InvalidOperationException: The property 'FileIndexItem.Id' has a temporary value while attempting to change the entity's state to 'Modified'
 					// Issue #994
 				}
+			}
 
 			await context.SaveChangesAsync();
 
 			foreach ( var item in fileIndexItems )
+			{
 				context.Attach(item).State = EntityState.Detached;
+			}
 
 			CacheUpdateItem(fileIndexItems);
 			return fileIndexItems;
@@ -288,14 +326,19 @@ public partial class Query : IQuery
 	/// <param name="updateStatusContent">items to update</param>
 	public void CacheUpdateItem(List<FileIndexItem> updateStatusContent)
 	{
-		if ( _cache == null || _appSettings.AddMemoryCache == false ) return;
+		if ( _cache == null || _appSettings.AddMemoryCache == false )
+		{
+			return;
+		}
 
 		var skippedCacheItems = new HashSet<string>();
 		foreach ( var item in updateStatusContent.ToList() )
 		{
 			if ( item.Status == FileIndexItem.ExifStatus.OkAndSame ||
 			     item.Status == FileIndexItem.ExifStatus.Default )
+			{
 				item.Status = FileIndexItem.ExifStatus.Ok;
+			}
 
 			// ToList() > Collection was modified; enumeration operation may not execute.
 			var queryCacheName = CachingDbName(nameof(FileIndexItem),
@@ -309,7 +352,7 @@ public partial class Query : IQuery
 			}
 
 			objectFileFolders ??= new List<FileIndexItem>();
-			var displayFileFolders = ( List<FileIndexItem> )objectFileFolders;
+			var displayFileFolders = ( List<FileIndexItem> ) objectFileFolders;
 
 			// make it a list to avoid enum errors
 			displayFileFolders = displayFileFolders.ToList();
@@ -317,12 +360,16 @@ public partial class Query : IQuery
 			var obj = displayFileFolders.Find(p => p.FilePath == item.FilePath);
 			if ( obj != null )
 				// remove add again
+			{
 				displayFileFolders.Remove(obj);
+			}
 
 			if ( item.Status ==
 			     FileIndexItem.ExifStatus.Ok ) // ExifStatus.default is already changed
 				// Add here item to cached index
+			{
 				displayFileFolders.Add(item);
+			}
 
 			// make it a list to avoid enum errors
 			displayFileFolders = displayFileFolders.ToList();
@@ -334,8 +381,10 @@ public partial class Query : IQuery
 		}
 
 		if ( skippedCacheItems.Count >= 1 && _appSettings.Verbose == true )
+		{
 			_logger.LogInformation(
 				$"[CacheUpdateItem] skipped: {string.Join(", ", skippedCacheItems)}");
+		}
 	}
 
 	/// <summary>
@@ -343,11 +392,19 @@ public partial class Query : IQuery
 	///     This Does remove a SINGLE item from the cache NOT from the database
 	/// </summary>
 	/// <param name="updateStatusContent"></param>
+	[SuppressMessage("ReSharper",
+		"S4136: All 'RemoveCacheItem' method overloads should be adjacent.")]
 	public void RemoveCacheItem(List<FileIndexItem> updateStatusContent)
 	{
-		if ( _cache == null || _appSettings.AddMemoryCache == false ) return;
+		if ( _cache == null || _appSettings.AddMemoryCache == false )
+		{
+			return;
+		}
 
-		foreach ( var item in updateStatusContent.ToList() ) RemoveCacheItem(item);
+		foreach ( var item in updateStatusContent.ToList() )
+		{
+			RemoveCacheItem(item);
+		}
 	}
 
 	/// <summary>
@@ -357,11 +414,17 @@ public partial class Query : IQuery
 	public bool RemoveCacheParentItem(string directoryName)
 	{
 		// Add protection for disabled caching
-		if ( _cache == null || _appSettings.AddMemoryCache == false ) return false;
+		if ( _cache == null || _appSettings.AddMemoryCache == false )
+		{
+			return false;
+		}
 
 		var queryCacheName = CachingDbName(nameof(FileIndexItem),
 			PathHelper.RemoveLatestSlash(directoryName.Clone().ToString()!));
-		if ( !_cache.TryGetValue(queryCacheName, out _) ) return false;
+		if ( !_cache.TryGetValue(queryCacheName, out _) )
+		{
+			return false;
+		}
 
 		_cache.Remove(queryCacheName);
 		return true;
@@ -375,7 +438,10 @@ public partial class Query : IQuery
 	public bool AddCacheParentItem(string directoryName, List<FileIndexItem> items)
 	{
 		// Add protection for disabled caching
-		if ( _cache == null || _appSettings.AddMemoryCache == false ) return false;
+		if ( _cache == null || _appSettings.AddMemoryCache == false )
+		{
+			return false;
+		}
 
 		var queryCacheName = CachingDbName(nameof(FileIndexItem),
 			PathHelper.RemoveLatestSlash(directoryName.Clone().ToString()!));
@@ -402,7 +468,11 @@ public partial class Query : IQuery
 		async Task<FileIndexItem> LocalQuery(ApplicationDbContext context)
 		{
 			// only in test case fileIndex is null
-			if ( context.FileIndex != null ) await context.FileIndex.AddAsync(fileIndexItem);
+			if ( context.FileIndex != null )
+			{
+				await context.FileIndex.AddAsync(fileIndexItem);
+			}
+
 			await context.SaveChangesAsync();
 			// Fix for: The instance of entity type 'Item' cannot be tracked because
 			// another instance with the same key value for {'Id'} is already being tracked
@@ -462,7 +532,9 @@ public partial class Query : IQuery
 		var toAddList = new List<FileIndexItem>();
 		// ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
 		foreach ( var pathShouldExist in pathListShouldExist )
+		{
 			if ( !indexItems.Select(p => p.FilePath).Contains(pathShouldExist) )
+			{
 				toAddList.Add(new FileIndexItem(pathShouldExist)
 				{
 					IsDirectory = true,
@@ -471,6 +543,8 @@ public partial class Query : IQuery
 					Software = pathShouldExist == "/" ? "Root object" : string.Empty,
 					Status = FileIndexItem.ExifStatus.Ok
 				});
+			}
+		}
 
 		await AddRangeAsync(toAddList);
 		return toAddList;
@@ -492,7 +566,11 @@ public partial class Query : IQuery
 	private async Task<FileIndexItem?> GetObjectByFilePathQueryAsync(
 		string filePath)
 	{
-		if ( filePath != "/" ) filePath = PathHelper.RemoveLatestSlash(filePath);
+		if ( filePath != "/" )
+		{
+			filePath = PathHelper.RemoveLatestSlash(filePath);
+		}
+
 		var paths = new List<string> { filePath };
 		return ( await GetObjectsByFilePathQueryAsync(paths) )
 			.FirstOrDefault();
@@ -528,7 +606,11 @@ public partial class Query : IQuery
 	internal static string CachingDbName(string functionName, string? singleItemDbPath)
 	{
 		// when is nothing assume its the home item
-		if ( string.IsNullOrWhiteSpace(singleItemDbPath) ) singleItemDbPath = "/";
+		if ( string.IsNullOrWhiteSpace(singleItemDbPath) )
+		{
+			singleItemDbPath = "/";
+		}
+
 		// For creating an unique name: DetailView_/2018/01/1.jpg
 		var uniqueSingleDbCacheNameBuilder = new StringBuilder();
 		uniqueSingleDbCacheNameBuilder.Append(functionName + "_" + singleItemDbPath);
@@ -560,7 +642,11 @@ public partial class Query : IQuery
 			// https://go.microsoft.com/fwlink/?linkid=2097913
 			await Task.Delay(delay);
 			var context = new InjectServiceScope(_scopeFactory).Context();
-			if ( context == null! ) throw new AggregateException("Query Context is null");
+			if ( context == null! )
+			{
+				throw new AggregateException("Query Context is null");
+			}
+
 			context.Attach(updateStatusContent).State = EntityState.Modified;
 			await context.SaveChangesAsync();
 			context.Attach(updateStatusContent).State = EntityState.Unchanged;
@@ -605,7 +691,11 @@ public partial class Query : IQuery
 	/// <returns>true when enabled</returns>
 	internal bool IsCacheEnabled()
 	{
-		if ( _cache == null || _appSettings.AddMemoryCache == false ) return false;
+		if ( _cache == null || _appSettings.AddMemoryCache == false )
+		{
+			return false;
+		}
+
 		return true;
 	}
 
@@ -619,17 +709,26 @@ public partial class Query : IQuery
 	internal void AddCacheItem(FileIndexItem updateStatusContent)
 	{
 		// If cache is turned of
-		if ( _cache == null || _appSettings.AddMemoryCache == false ) return;
+		if ( _cache == null || _appSettings.AddMemoryCache == false )
+		{
+			return;
+		}
 
 		var queryCacheName = CachingDbName(nameof(FileIndexItem),
 			updateStatusContent.ParentDirectory!);
 
-		if ( !_cache.TryGetValue(queryCacheName, out var objectFileFolders) ) return;
+		if ( !_cache.TryGetValue(queryCacheName, out var objectFileFolders) )
+		{
+			return;
+		}
 
 		objectFileFolders ??= new List<FileIndexItem>();
-		var displayFileFolders = ( List<FileIndexItem> )objectFileFolders;
+		var displayFileFolders = ( List<FileIndexItem> ) objectFileFolders;
 
-		if ( updateStatusContent.FilePath == "/" ) return;
+		if ( updateStatusContent.FilePath == "/" )
+		{
+			return;
+		}
 
 		displayFileFolders.Add(updateStatusContent);
 		// Order by filename
@@ -647,15 +746,21 @@ public partial class Query : IQuery
 	public void RemoveCacheItem(FileIndexItem updateStatusContent)
 	{
 		// Add protection for disabled caching
-		if ( _cache == null || _appSettings.AddMemoryCache == false ) return;
+		if ( _cache == null || _appSettings.AddMemoryCache == false )
+		{
+			return;
+		}
 
 		var queryCacheName = CachingDbName(nameof(FileIndexItem),
 			updateStatusContent.ParentDirectory!);
 
-		if ( !_cache.TryGetValue(queryCacheName, out var objectFileFolders) ) return;
+		if ( !_cache.TryGetValue(queryCacheName, out var objectFileFolders) )
+		{
+			return;
+		}
 
 		objectFileFolders ??= new List<FileIndexItem>();
-		var displayFileFolders = ( List<FileIndexItem> )objectFileFolders;
+		var displayFileFolders = ( List<FileIndexItem> ) objectFileFolders;
 
 		// Order by filename
 		displayFileFolders = displayFileFolders
