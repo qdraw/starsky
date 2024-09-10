@@ -415,6 +415,27 @@ public sealed class ExportControllerTest
 	}
 
 	[TestMethod]
+	public void Mkdir_ReturnsBadRequest()
+	{
+		// Arrange
+		var storage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var export = new ExportService(_query, _appSettings, selectorStorage,
+			new FakeIWebLogger(),
+			new FakeIThumbnailService(selectorStorage));
+		var controller = new ExportController(_bgTaskQueue, selectorStorage, export);
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+
+		// Act
+		var result = controller.Status(null!);
+
+		// Assert
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+	}
+
+	[TestMethod]
 	public void Status_Returns_NotReady_When_StatusIsFalse()
 	{
 		// Arrange

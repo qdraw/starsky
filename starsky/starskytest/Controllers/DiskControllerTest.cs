@@ -270,6 +270,24 @@ public sealed class DiskControllerTest
 	}
 
 	[TestMethod]
+	public async Task Mkdir_ReturnsBadRequest()
+	{
+		// Arrange
+		var controller =
+			new DiskController(_query, new FakeSelectorStorage(),
+				new FakeIWebSocketConnectionsService(), new FakeINotificationQuery());
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+
+		// Act
+		var result = await controller.Mkdir(null!);
+
+		// Assert
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+	}
+
+	[TestMethod]
 	public async Task SyncControllerTest_Mkdir_Good_SocketUpdate()
 	{
 		await InsertSearchData();
