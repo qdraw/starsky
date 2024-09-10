@@ -9,7 +9,11 @@ public class CreateFakeStarskyWindowsExe
 	public CreateFakeStarskyWindowsExe()
 	{
 		var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-		if ( string.IsNullOrEmpty(dirName) ) return;
+		if ( string.IsNullOrEmpty(dirName) )
+		{
+			return;
+		}
+
 		var parentFolder = Path.Combine(dirName, "FakeCreateAn",
 			"CreateFakeStarskyExe");
 		var path = Path.Combine(parentFolder, "starsky.exe");
