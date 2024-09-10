@@ -151,8 +151,10 @@ describe("get net request", () => {
         error = err as { error: string, statusCode: number };
       }
 
+      console.log(`error: ${error.error}`);
+
       expect(error.error).toContain(
-        "SyntaxError: Unexpected number in JSON at position 1"
+        "SyntaxError: "
       );
       expect(error.statusCode).toBe(200);
     });

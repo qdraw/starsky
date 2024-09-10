@@ -5,9 +5,9 @@
         <TargetFramework>net8.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{dcf1f6cb-1c65-4394-bef7-cccc2967b56c}</ProjectGuid>
-        <RuntimeFrameworkVersion>8.0.3</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion>8.0.8</RuntimeFrameworkVersion>
         <DebugType>Full</DebugType>
-        <Version>0.6.0</Version>
+        <Version>0.6.1</Version>
         <Nullable>enable</Nullable>
         <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>

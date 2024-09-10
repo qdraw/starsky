@@ -421,7 +421,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		/// </summary>
 		/// <param name="fullFileParentFolderPath">One folder deeper than where the folder </param>
 		/// <param name="itemName">blog item name</param>
-		/// <param name="renderCopyResult"></param>
+		/// <param name="renderCopyResult">[[string,bool],[]]</param>
 		/// <param name="deleteFolderAfterwards"></param>
 		public async Task GenerateZip(string fullFileParentFolderPath, string itemName,
 			Dictionary<string, bool>? renderCopyResult,
@@ -429,13 +429,14 @@ namespace starsky.feature.webhtmlpublish.Services
 		{
 			ArgumentNullException.ThrowIfNull(renderCopyResult);
 
-			var fileNames = renderCopyResult.Where(p => p.Value).Select(p => p.Key).ToList();
+			// to keep non publish files out use Where(p => p.Value)
+			var fileNames = renderCopyResult.Select(p => p.Key).ToList();
 
 			var slugItemName = GenerateSlugHelper.GenerateSlug(itemName, true);
 			var filePaths = fileNames
 				.Select(p => Path.Combine(fullFileParentFolderPath, slugItemName, p)).ToList();
 
-			new Zipper().CreateZip(fullFileParentFolderPath, filePaths, fileNames,
+			new Zipper(_logger).CreateZip(fullFileParentFolderPath, filePaths, fileNames,
 				slugItemName);
 
 			// Write a single file to be sure that writing is ready

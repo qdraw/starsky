@@ -7,6 +7,10 @@ namespace starsky.foundation.database.Query
 {
 	public static class SolveConcurrency
 	{
+		/// <summary>
+		/// Make sure you add the right type in the check
+		/// </summary>
+		/// <param name="concurrencyExceptionEntries">Entry items</param>
 		internal static void SolveConcurrencyExceptionLoop(
 			IReadOnlyList<EntityEntry> concurrencyExceptionEntries)
 		{
@@ -29,20 +33,24 @@ namespace starsky.foundation.database.Query
 		/// Database concurrency refers to situations in which multiple processes or users access or change the same data in a database at the same time.
 		/// @see: https://docs.microsoft.com/en-us/ef/core/saving/concurrency
 		/// </summary>
-		/// <param name="entryEntity">item</param>
+		/// <param name="_">item</param>
 		/// <param name="proposedValues">new update</param>
 		/// <param name="databaseValues">old database item</param>
 		/// <param name="entryMetadataName">meta name</param>
 		/// <param name="entryOriginalValuesSetValues">entry item</param>
 		/// <exception cref="NotSupportedException">unknown how to fix</exception>
-		internal static void SolveConcurrencyException(object entryEntity,
+		internal static void SolveConcurrencyException(object _,
 			PropertyValues proposedValues, PropertyValues? databaseValues, string entryMetadataName,
 			OriginalValuesSetValuesDelegate entryOriginalValuesSetValues)
 		{
-			if ( !( entryEntity is FileIndexItem ) )
+			if ( _ is not FileIndexItem && 
+			     _ is not ThumbnailItem && 
+			     _ is not NotificationItem)
+			{
 				throw new NotSupportedException(
-					"Don't know how to handle concurrency conflicts for "
+					"[SolveConcurrency] Don't know how to handle concurrency conflicts for "
 					+ entryMetadataName);
+			}
 
 			foreach ( var property in proposedValues.Properties )
 			{

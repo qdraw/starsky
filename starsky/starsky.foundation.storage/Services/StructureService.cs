@@ -230,7 +230,7 @@ namespace starsky.foundation.storage.Services
 
 				var matchCollection = new
 						Regex(DateRegexPattern + "|{filenamebase}|\\*|.ext|.",
-							RegexOptions.None, TimeSpan.FromMilliseconds(200))
+							RegexOptions.None, TimeSpan.FromMilliseconds(1000))
 					.Matches(structureItem);
 
 				var matchList = new List<StructureRange>();

@@ -4,6 +4,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
+using starsky.foundation.storage.Storage;
 
 namespace starsky.foundation.storage.ArchiveFormats
 {
@@ -11,7 +13,13 @@ namespace starsky.foundation.storage.ArchiveFormats
 	[SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
 	public sealed class Zipper
 	{
+		private readonly StorageHostFullPathFilesystem _hostStorage;
 
+		public Zipper(IWebLogger logger)
+		{
+			_hostStorage = new StorageHostFullPathFilesystem(logger);
+		}
+		
 		/// <summary>
 		/// Extract zip file to a folder
 		/// </summary>
@@ -27,17 +35,32 @@ namespace starsky.foundation.storage.ArchiveFormats
 			// Without this, a malicious zip file could try to traverse outside of the expected
 			// extraction path.
 			storeZipFolderFullPath = PathHelper.AddBackslash(storeZipFolderFullPath);
-			using ( ZipArchive archive = ZipFile.OpenRead(zipInputFullPath) )
+			using ( var archive = ZipFile.OpenRead(zipInputFullPath) )
 			{
-				foreach ( ZipArchiveEntry entry in archive.Entries )
+				foreach ( var entry in archive.Entries )
 				{
 					// Gets the full path to ensure that relative segments are removed.
-					string destinationPath = Path.GetFullPath(Path.Combine(storeZipFolderFullPath, entry.FullName));
+					var destinationPath = Path.GetFullPath(Path.Combine(storeZipFolderFullPath, entry.FullName));
 
 					// Ordinal match is safest, case-sensitive volumes can be mounted within volumes that
 					// are case-insensitive.
-					if ( destinationPath.StartsWith(storeZipFolderFullPath, StringComparison.Ordinal) )
-						entry.ExtractToFile(destinationPath, true);
+					if ( !destinationPath.StartsWith(storeZipFolderFullPath,
+						    StringComparison.Ordinal) )
+					{
+						continue;
+					}
+					
+					// Folders inside zips give sometimes issues
+					if ( entry.FullName.EndsWith('/') )
+					{
+						if ( !_hostStorage.ExistFolder(destinationPath) )
+						{
+							_hostStorage.CreateDirectory(destinationPath);
+						}
+						continue;
+					}
+						
+					entry.ExtractToFile(destinationPath, true);
 				}
 			}
 
@@ -69,6 +92,7 @@ namespace starsky.foundation.storage.ArchiveFormats
 		/// <param name="fileNames">list of filenames</param>
 		/// <param name="zipOutputFilename">to name of the zip file (zipHash)</param>
 		/// <returns>a zip in the temp folder</returns>
+		[SuppressMessage("Usage", "S2325:Make CreateZip a static method")]
 		public string CreateZip(string storeZipFolderFullPath, List<string> filePaths,
 			List<string> fileNames, string zipOutputFilename)
 		{

@@ -473,7 +473,7 @@ namespace starsky.foundation.storage.Storage
 			 */
 			RecurseFind(path, findList);
 
-			return findList.OrderBy(x => x).ToList();
+			return [.. findList.OrderBy(x => x)];
 		}
 
 		internal Tuple<string[], string[]> GetFilesAndDirectories(string path)

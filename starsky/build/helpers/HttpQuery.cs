@@ -44,7 +44,23 @@ public static class HttpQuery
 				.Cast<string>().ToList();
 		}
 
-		var hightestVersion = versionsResult.MaxBy(v => new Version(v))!;
-		return new Version(hightestVersion);
+		var hightestVersion = versionsResult.MaxBy(SafeVersion);
+		return SafeVersion(hightestVersion);
+	}
+
+	private static Version SafeVersion(string? version)
+	{
+		if ( string.IsNullOrEmpty(version) )
+		{
+			return new Version(0,0);
+		}
+		try
+		{
+			return new Version(version);
+		}
+		catch ( FormatException )
+		{
+			return new Version(0,0);
+		}
 	}
 }

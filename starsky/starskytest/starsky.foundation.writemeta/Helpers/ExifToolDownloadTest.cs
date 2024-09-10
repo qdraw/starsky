@@ -30,6 +30,11 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		/// shasum -a 1 file.zip
 		/// </summary>
 		private static readonly string ExampleCheckSum =
+			"SHA256(Image-ExifTool-11.99.tar.gz)= " + CreateAnExifToolTarGz.Sha256 + "\n" +
+			"SHA256(exiftool-12.94_32.zip)= e0521db2115b3ee07f531ed7e3f686c57fca23b742c8f88b387aef6b682a12fe\n" +
+			$"SHA256(exiftool-11.99_64.zip)= {CreateAnExifToolWindows.Sha256}\n" +
+			"SHA256(exiftool-11.99.zip)= " + CreateAnExifToolWindows.Sha1 + "\n" +
+			"SHA256(ExifTool-11.99.dmg)= e0521db2115b3ee07f531ed7e3f686c57fca23b742c8f88b387aef6b682a12fe\n" +
 			"SHA1(Image-ExifTool-11.99.tar.gz)= " + CreateAnExifToolTarGz.Sha1 + "\n" +
 			"SHA1(exiftool-11.99.zip)= " + CreateAnExifToolWindows.Sha1 + "\n" +
 			"SHA1(ExifTool-11.99.dmg)= 3d30a4846eab278387be51b91ef4121916375ded\n" +
@@ -78,15 +83,16 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		public void GetWindowsZipFromChecksum()
 		{
 			var result = ExifToolDownload.GetWindowsZipFromChecksum(ExampleCheckSum);
-			Assert.AreEqual("exiftool-11.99.zip", result);
+			Assert.AreEqual("exiftool-11.99_64.zip", result);
 		}
 
 		[TestMethod]
 		public async Task DownloadCheckSums_BaseChecksumDoesExist()
 		{
+			var checkSumUrl = "https://exiftool.org/checksums.txt";
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
-				{ "https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum) },
+				{checkSumUrl , new StringContent(ExampleCheckSum) },
 			});
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory,
 				new FakeIWebLogger());
@@ -94,7 +100,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			// Happy flow
 			var result =
 				await new ExifToolDownload(httpClientHelper, _appSettings, new FakeIWebLogger())
-					.DownloadCheckSums();
+					.DownloadCheckSums(checkSumUrl);
+			
 			Assert.AreEqual(ExampleCheckSum, result?.Value);
 			Assert.IsTrue(result?.Key);
 		}
@@ -119,7 +126,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 					.DownloadCheckSums();
 
 			Assert.AreEqual(ExampleCheckSum, result?.Value);
-			Assert.IsFalse(result?.Key);
+			Assert.IsTrue(result?.Key);
 		}
 
 		[TestMethod]
@@ -145,12 +152,12 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			{
 				{ "https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum) },
 				{
-					"https://exiftool.org/exiftool-11.99.zip",
-					new ByteArrayContent(CreateAnExifToolWindows.Bytes.ToArray())
+					"https://exiftool.org/exiftool-11.99_64.zip",
+					new ByteArrayContent([.. CreateAnExifToolWindows.Bytes])
 				},
 				{
 					"https://exiftool.org/Image-ExifTool-11.99.tar.gz",
-					new ByteArrayContent(CreateAnExifToolTarGz.Bytes.ToArray())
+					new ByteArrayContent([.. CreateAnExifToolTarGz.Bytes])
 				},
 			});
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory,
@@ -378,7 +385,6 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				true);
 		}
 
-
 		[TestMethod]
 		public async Task DownloadExifTool_existVerbose_UnixOnly()
 		{
@@ -412,8 +418,12 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			{
 				{ "https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum) },
 				{
-					"https://exiftool.org/exiftool-11.99.zip",
-					new ByteArrayContent(CreateAnExifToolWindows.Bytes.ToArray())
+					"https://exiftool.org/exiftool-11.99_64.zip",
+					new ByteArrayContent([.. CreateAnExifToolWindows.Bytes])
+				},
+				{
+					"https://qdraw.nl/special/mirror/exiftool/exiftool-11.99_64.zip",
+					new ByteArrayContent([.. CreateAnExifToolWindows.Bytes])
 				}
 			});
 
@@ -422,16 +432,17 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var result =
 				await new ExifToolDownload(httpClientHelper, _appSettings, new FakeIWebLogger())
 					.StartDownloadForWindows();
+			
 			Assert.IsTrue(result);
 
 			// And run again
-			// ByteArray content is Disposed afterwards
+			// ByteArray content is Disposed afterward
 			var fakeIHttpProvider2 = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
 				{ "https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum) },
 				{
-					"https://exiftool.org/exiftool-11.99.zip",
-					new ByteArrayContent(CreateAnExifToolWindows.Bytes.ToArray())
+					"https://exiftool.org/exiftool-11.99_64.zip",
+					new ByteArrayContent([.. CreateAnExifToolWindows.Bytes])
 				}
 			});
 			var httpClientHelper2 = new HttpClientHelper(fakeIHttpProvider2, _serviceScopeFactory,
@@ -445,7 +456,6 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		}
 
 		[TestMethod]
-		[ExpectedException(typeof(HttpRequestException))]
 		public async Task StartDownloadForWindows_Fail()
 		{
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
@@ -455,12 +465,13 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory,
 				new FakeIWebLogger());
-			await new ExifToolDownload(httpClientHelper, _appSettings, new FakeIWebLogger())
+			var result = await new ExifToolDownload(httpClientHelper, _appSettings, new FakeIWebLogger())
 				.StartDownloadForWindows();
+			
+			Assert.IsFalse(result);
 		}
 
 		[TestMethod]
-		[ExpectedException(typeof(HttpRequestException))]
 		public async Task StartDownloadForUnix_Fail()
 		{
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
@@ -468,10 +479,14 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				{ "https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum) },
 			});
 
+			var logger = new FakeIWebLogger();
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory,
 				new FakeIWebLogger());
-			await new ExifToolDownload(httpClientHelper, _appSettings, new FakeIWebLogger())
+			var result = await new ExifToolDownload(httpClientHelper, _appSettings, logger)
 				.StartDownloadForUnix();
+			
+			Assert.IsFalse(result);
+			Assert.AreEqual(2, logger.TrackedExceptions.Count(p => p.Item2?.Contains("file is not downloaded") == true));
 		}
 
 		[TestMethod]
@@ -496,7 +511,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			Assert.IsTrue(result);
 
 			// And run again
-			// ByteArray content is Disposed afterwards
+			// ByteArray content is Disposed afterward
 			var fakeIHttpProvider2 = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
 				{ "https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum) },
@@ -516,15 +531,15 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		}
 
 		[TestMethod]
-		public void CheckSha1_Good()
+		public void CheckSha256_Good()
 		{
 			var fakeIStorage = new FakeIStorage(new List<string> { "/" },
-				new List<string> { "/exiftool.exe" },
+				["/exiftool.exe"],
 				new List<byte[]> { CreateAnExifToolTarGz.Bytes.ToArray() });
 
 			var result2 =
 				new ExifToolDownload(null!, _appSettings, new FakeIWebLogger(), fakeIStorage)
-					.CheckSha1("/exiftool.exe", new List<string> { CreateAnExifToolTarGz.Sha1 });
+					.CheckSha256("/exiftool.exe", new List<string> { CreateAnExifToolTarGz.Sha256 });
 			Assert.IsTrue(result2);
 		}
 
@@ -532,17 +547,16 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		public void CheckSha1_Bad()
 		{
 			var fakeIStorage = new FakeIStorage(new List<string> { "/" },
-				new List<string> { "/exiftool.exe" },
+				["/exiftool.exe"],
 				new List<byte[]> { CreateAnExifToolTarGz.Bytes.ToArray() });
 
 			var result2 =
 				new ExifToolDownload(null!, _appSettings, new FakeIWebLogger(), fakeIStorage)
-					.CheckSha1("/exiftool.exe", new List<string> { "random_value" });
+					.CheckSha256("/exiftool.exe", new List<string> { "random_value" });
 			Assert.IsFalse(result2);
 		}
 
 		[TestMethod]
-		[ExpectedException(typeof(HttpRequestException))]
 		public async Task StartDownloadForUnix_WrongHash()
 		{
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
@@ -553,29 +567,34 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 					new StringContent("FAIL")
 				}
 			});
+			var logger = new FakeIWebLogger();
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory,
 				new FakeIWebLogger());
+			
 			var result =
-				await new ExifToolDownload(httpClientHelper, _appSettings, new FakeIWebLogger())
+				await new ExifToolDownload(httpClientHelper, _appSettings, logger)
 					.StartDownloadForUnix();
+			
 			Assert.IsFalse(result);
+			Assert.AreEqual(1, logger.TrackedExceptions.Count(p => p.Item2?.Contains("file is not downloaded") == true));
 		}
 
 		[TestMethod]
-		[ExpectedException(typeof(HttpRequestException))]
 		public async Task StartDownloadForWindows_WrongHash()
 		{
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
 				{ "https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum) },
-				{ "https://exiftool.org/exiftool-11.99.zip", new StringContent("FAIL") }
+				{ "https://exiftool.org/exiftool-11.99_64.zip", new StringContent("FAIL") }
 			});
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory,
 				new FakeIWebLogger());
+			var logger = new FakeIWebLogger();
 			var result =
-				await new ExifToolDownload(httpClientHelper, _appSettings, new FakeIWebLogger())
+				await new ExifToolDownload(httpClientHelper, _appSettings, logger)
 					.StartDownloadForWindows();
 			Assert.IsFalse(result);
+			Assert.IsTrue(logger.TrackedExceptions.Exists(p => p.Item2?.Contains("Checksum for ") == true));
 		}
 
 		[TestMethod]
@@ -592,26 +611,17 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 					new StringContent("FAIL")
 				}
 			});
+			var logger = new FakeIWebLogger();
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory,
-				new FakeIWebLogger());
+				logger);
 
-			try
-			{
-				await new ExifToolDownload(httpClientHelper, _appSettings, new FakeIWebLogger())
-					.DownloadForUnix("Image-ExifTool-11.99.tar.gz",
-						new List<string>().ToArray(), true);
-			}
-			catch ( HttpRequestException httpRequestException )
-			{
-				// Expected:<checksum for ---/Debug/netcoreapp3.1/temp/exiftool.tar.gz is not valid
-				Assert.IsTrue(httpRequestException.Message.Contains("checksum for "));
-				Assert.IsTrue(httpRequestException.Message.Contains("is not valid"));
-				return;
-			}
+			await new ExifToolDownload(httpClientHelper, _appSettings, logger)
+				.DownloadForUnix("Image-ExifTool-11.99.tar.gz",
+					[]);
 
-			throw new HttpRequestException("This test should hit the catch");
+			Assert.IsTrue(logger.TrackedExceptions.Exists(p => p.Item2?.Contains("Checksum for ") == true));
+			Assert.IsTrue(logger.TrackedExceptions.Exists(p => p.Item2?.Contains("is not valid") == true));
 		}
-
 
 		[TestMethod]
 		public async Task DownloadForWindows_FromMirrorInsteadOfMainSource()
@@ -619,7 +629,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
 				{
-					"https://qdraw.nl/special/mirror/exiftool/exiftool-11.99.zip",
+					"https://qdraw.nl/special/mirror/exiftool/exiftool-11.99_64.zip",
 					new StringContent("FAIL")
 				},
 				{
@@ -630,21 +640,12 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory,
 				new FakeIWebLogger());
 
-			try
-			{
-				await new ExifToolDownload(httpClientHelper, _appSettings, new FakeIWebLogger())
-					.DownloadForWindows("exiftool-11.99.zip", new List<string>().ToArray(),
-						true);
-			}
-			catch ( HttpRequestException httpRequestException )
-			{
-				// Expected:<checksum for ---/Debug/netcoreapp3.1/temp/exiftool.tar.gz is not valid
-				Assert.IsTrue(httpRequestException.Message.Contains("checksum for "));
-				Assert.IsTrue(httpRequestException.Message.Contains("is not valid"));
-				return;
-			}
-
-			throw new HttpRequestException("This test should hit the catch");
+			var logger = new FakeIWebLogger();
+			var result = await new ExifToolDownload(httpClientHelper, _appSettings, logger)
+				.DownloadForWindows("exiftool-11.99_64.zip", []);
+			
+			Assert.IsFalse(result);
+			Assert.AreEqual(1,logger.TrackedExceptions.Count(p => p.Item2?.Contains("Checksum for") == true));
 		}
 
 		[TestMethod]
@@ -652,13 +653,13 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		{
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>());
 
-			var example =
-				"SHA1(Image-ExifTool-12.40.tar.gz)= 09f3bee6491251390028580eb8af990e79674ada\n" +
-				"SHA1(exiftool-12.40.zip)= 9428bb167512a8eec5891d3b8d2341427688f2f8\n" +
-				"SHA1(ExifTool-12.40.dmg)= e20ed19da096807774b68cf8c15e29f1903ca641\n" +
-				"MD5 (Image-ExifTool-12.40.tar.gz) = 72b40d69cf518edebbf5b661465950e7\n" +
-				"MD5 (exiftool-12.40.zip) = fc834fd43d79da19fcb6461fb791b275\n" +
-				"MD5 (ExifTool-12.40.dmg) = b30e391a4b53564de60a72f4347cade4\n";
+			const string example = "SHA256(Image-ExifTool-12.94.tar.gz)= d029485b7aff73e1c4806bbaaf87617dd98c5d2762f1d3a033e0ca926d7484e0\n" +
+			                       "SHA256(exiftool-12.94_32.zip)= e0521db2115b3ee07f531ed7e3f686c57fca23b742c8f88b387aef6b682a12fe\n" +
+			                       "SHA256(exiftool-12.94_64.zip)= 60df34ccc3440e18738304fe294c38b127eb8a88c2316abc1dbd7f634a23ee7a\n" +
+			                       "SHA256(ExifTool-12.94.pkg)= 59f96cf7c5250b609ad1c8e56cd7ddccc620b5448a3d8b3f3368f39a580a1059\n" +
+			                       "MD5 (Image-ExifTool-12.40.tar.gz) = 72b40d69cf518edebbf5b661465950e7\n" +
+			                       "MD5 (exiftool-12.40.zip) = fc834fd43d79da19fcb6461fb791b275\n" +
+			                       "MD5 (ExifTool-12.40.dmg) = b30e391a4b53564de60a72f4347cade4\n";
 
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory,
 				new FakeIWebLogger());
@@ -675,21 +676,39 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		{
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>());
 
-			var example =
-				"SHA1(Image-ExifTool-12.40.tar.gz)= 09f3bee6491251390028580eb8af990e79674ada\n" +
-				"SHA1(exiftool-12.40.zip)= 9428bb167512a8eec5891d3b8d2341427688f2f8\n" +
-				"SHA1(ExifTool-12.40.dmg)= e20ed19da096807774b68cf8c15e29f1903ca641\n" +
-				"MD5 (Image-ExifTool-12.40.tar.gz) = 72b40d69cf518edebbf5b661465950e7\n" +
-				"MD5 (exiftool-12.40.zip) = fc834fd43d79da19fcb6461fb791b275\n" +
-				"MD5 (ExifTool-12.40.dmg) = b30e391a4b53564de60a72f4347cade4\n";
-
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory,
 				new FakeIWebLogger());
 
 			var exifToolDownload = new ExifToolDownload(httpClientHelper, new AppSettings(),
 				new FakeIWebLogger(), new FakeIStorage());
-			var result = exifToolDownload.GetChecksumsFromTextFile(example);
-			Assert.AreEqual(3, result.Length);
+			var result = exifToolDownload.GetChecksumsFromTextFile(ExampleCheckSum);
+			Assert.AreEqual(4, result.Length);
+		}
+
+		[DataTestMethod] // [Theory]
+		[DataRow(true)]
+		[DataRow(false)]
+		public void MoveFileIfExist_WithFolder(bool outputFolderAlreadyExists)
+		{
+			var storage = new FakeIStorage();
+			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>());
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory,
+				new FakeIWebLogger());
+			var exifToolDownload = new ExifToolDownload(httpClientHelper, new AppSettings(),
+				new FakeIWebLogger(), storage);
+
+			storage.CreateDirectory("/");
+			storage.CreateDirectory("/test");
+			storage.CreateDirectory($"/test/test");
+			storage.CreateDirectory($"/test/test/test_01");
+			if ( outputFolderAlreadyExists )
+			{
+				storage.CreateDirectory("/output");
+			}
+			
+			exifToolDownload.MoveFileIfExist("/", "test_01", "/", "output" );
+
+			Assert.IsTrue(storage.ExistFolder("/output"));
 		}
 	}
 }

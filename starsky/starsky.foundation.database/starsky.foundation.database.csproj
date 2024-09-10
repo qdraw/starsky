@@ -6,22 +6,22 @@
         <ProjectGuid>{46588bf9-d745-460d-a22d-d8fdfc698809}</ProjectGuid>
         <DebugType>Full</DebugType>
         <DefineConstants>T</DefineConstants>
-        <Version>0.6.0</Version>
+        <Version>0.6.1</Version>
         <Nullable>enable</Nullable>
         <RootNamespace>starsky.foundation.database</RootNamespace>
         <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="8.0.3" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.3" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.3" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.3" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.3" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.3" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="8.0.8" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.8" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.8" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.8" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="8.0.3" />
-        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.1"/>
+        <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="8.0.8" />
+        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2"/>
         <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0"/>
     </ItemGroup>
 
@@ -83,9 +83,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="..\..\documentation\docs\developer-guide\migrations\migrations.md">
-        <Link>migrations.md</Link>
-      </Content>
+        <Content Include="..\..\documentation\docs\developer-guide\migrations\migrations.md">
+            <Link>migrations.md</Link>
+        </Content>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

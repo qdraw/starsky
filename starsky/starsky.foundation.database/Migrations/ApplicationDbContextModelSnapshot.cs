@@ -19,7 +19,7 @@ namespace starsky.foundation.database.Migrations
             modelBuilder
                 .HasAnnotation("MySql:CharSet", "utf8mb4")
                 .HasAnnotation("MySql:CharSetDelegation", DelegationModes.ApplyToAll)
-                .HasAnnotation("ProductVersion", "8.0.1");
+                .HasAnnotation("ProductVersion", "8.0.8");
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.Credential", b =>
                 {
@@ -38,6 +38,9 @@ namespace starsky.foundation.database.Migrations
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("IterationCount")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Secret")
                         .HasMaxLength(1024)

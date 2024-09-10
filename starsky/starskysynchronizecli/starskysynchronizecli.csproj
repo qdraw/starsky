@@ -5,9 +5,9 @@
         <TargetFramework>net8.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{7e1136a7-cc43-49d2-91d3-48e557f0fb66}</ProjectGuid>
-        <RuntimeFrameworkVersion>8.0.3</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion>8.0.8</RuntimeFrameworkVersion>
         <RootNamespace>starskysynchronizecli</RootNamespace>
-        <Version>0.6.0</Version>
+        <Version>0.6.1</Version>
         <Nullable>enable</Nullable>
         <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>

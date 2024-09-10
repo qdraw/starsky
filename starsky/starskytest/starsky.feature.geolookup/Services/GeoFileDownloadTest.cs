@@ -52,7 +52,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 	            }
             });
             
-            var geoFileDownload = new GeoFileDownload(appSettings, httpClientHelper, new FakeSelectorStorage(storage));
+            var geoFileDownload = new GeoFileDownload(appSettings, httpClientHelper, new FakeSelectorStorage(storage), new FakeIWebLogger());
 
             // Act
             await geoFileDownload.DownloadAsync();
@@ -87,7 +87,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 		        }
 	        });
             
-	        var geoFileDownload = new GeoFileDownload(appSettings, httpClientHelper, new FakeSelectorStorage(storage));
+	        var geoFileDownload = new GeoFileDownload(appSettings, httpClientHelper, new FakeSelectorStorage(storage), new FakeIWebLogger());
 
 	        // Act
 	        await geoFileDownload.DownloadAsync();
@@ -112,7 +112,7 @@ namespace starskytest.starsky.feature.geolookup.Services
             var httpClientHelper = new FakeIHttpClientHelper(storage, new Dictionary<string, KeyValuePair<bool, string>>());
             
             var appSettings = new AppSettings { DependenciesFolder = _dependenciesFolder3 };
-            var geoFileDownload = new GeoFileDownload(appSettings, httpClientHelper, new FakeSelectorStorage(storage));
+            var geoFileDownload = new GeoFileDownload(appSettings, httpClientHelper, new FakeSelectorStorage(storage), new FakeIWebLogger());
         
             storage.CreateDirectory(_dependenciesFolder3);
             await storage.WriteStreamAsync(StringToStreamHelper.StringToStream("1"),
@@ -136,7 +136,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 	        var httpClientHelper = new FakeIHttpClientHelper(storage, 
 		        new Dictionary<string, KeyValuePair<bool, string>>());
 	        var appSettings = new AppSettings { DependenciesFolder = _dependenciesFolder4 };
-	        var geoFileDownload = new GeoFileDownload(appSettings, httpClientHelper, new FakeSelectorStorage(storage));
+	        var geoFileDownload = new GeoFileDownload(appSettings, httpClientHelper, new FakeSelectorStorage(storage), new FakeIWebLogger());
 	        
 	        geoFileDownload.CreateDependenciesFolder();
 	        
@@ -152,7 +152,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 	        var httpClientHelper = new FakeIHttpClientHelper(storage, 
 		        new Dictionary<string, KeyValuePair<bool, string>>());
 	        var appSettings = new AppSettings { DependenciesFolder = _dependenciesFolder5 };
-	        var geoFileDownload = new GeoFileDownload(appSettings, httpClientHelper, new FakeSelectorStorage(storage));
+	        var geoFileDownload = new GeoFileDownload(appSettings, httpClientHelper, new FakeSelectorStorage(storage), new FakeIWebLogger());
 	        
 	        geoFileDownload.CreateDependenciesFolder();
 
@@ -173,7 +173,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 	        var httpClientHelper = new FakeIHttpClientHelper(storage, 
 		        new Dictionary<string, KeyValuePair<bool, string>>());
 	        var appSettings = new AppSettings { DependenciesFolder = _dependenciesFolder6 };
-	        var geoFileDownload = new GeoFileDownload(appSettings, httpClientHelper, new FakeSelectorStorage(storage));
+	        var geoFileDownload = new GeoFileDownload(appSettings, httpClientHelper, new FakeSelectorStorage(storage), new FakeIWebLogger());
 	        
 	        geoFileDownload.CreateDependenciesFolder();
 	        geoFileDownload.MinimumSizeInBytes = -1;

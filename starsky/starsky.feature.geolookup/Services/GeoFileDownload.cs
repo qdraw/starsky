@@ -4,6 +4,7 @@ using starsky.feature.geolookup.Interfaces;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.ArchiveFormats;
 using starsky.foundation.storage.Interfaces;
@@ -17,16 +18,18 @@ namespace starsky.feature.geolookup.Services
 		private readonly AppSettings _appSettings;
 		private readonly IHttpClientHelper _httpClientHelper;
 		private readonly IStorage _hostStorage;
+		private readonly IWebLogger _logger;
 
 		public const string CountryName = "cities1000";
 		internal long MinimumSizeInBytes { get; set; } = 7000000; // 7 MB
 
 		public GeoFileDownload(AppSettings appSettings, IHttpClientHelper httpClientHelper,
-			ISelectorStorage selectorStorage)
+			ISelectorStorage selectorStorage, IWebLogger logger)
 		{
 			_appSettings = appSettings;
 			_httpClientHelper = httpClientHelper;
 			_hostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+			_logger = logger;
 		}
 
 		internal const string BaseUrl =
@@ -39,7 +42,7 @@ namespace starsky.feature.geolookup.Services
 			RemoveFailedDownload();
 			CreateDependenciesFolder();
 			const string https = "https://";
-			const string admin1codesasciiTxt = "admin1CodesASCII.txt";
+			const string admin1CodesasciiTxt = "admin1CodesASCII.txt";
 
 			if ( !_hostStorage.ExistFile(
 				    Path.Combine(_appSettings.DependenciesFolder, CountryName + ".txt")) )
@@ -55,22 +58,22 @@ namespace starsky.feature.geolookup.Services
 						outputZip);
 				}
 
-				new Zipper().ExtractZip(outputZip, _appSettings.DependenciesFolder);
+				new Zipper(_logger).ExtractZip(outputZip, _appSettings.DependenciesFolder);
 			}
 
 			if ( !_hostStorage.ExistFile(
-				    Path.Combine(_appSettings.DependenciesFolder, admin1codesasciiTxt)) )
+				    Path.Combine(_appSettings.DependenciesFolder, admin1CodesasciiTxt)) )
 			{
 				// code for the second administrative division,
 				// a county in the US, see file admin2Codes.txt; varchar(80)
 				var outputFile = Path.Combine(_appSettings.DependenciesFolder,
-					admin1codesasciiTxt);
+					admin1CodesasciiTxt);
 				var baseResult = await _httpClientHelper.Download(https +
-					BaseUrl + admin1codesasciiTxt, outputFile);
+					BaseUrl + admin1CodesasciiTxt, outputFile);
 				if ( !baseResult )
 				{
 					await _httpClientHelper.Download(https +
-					                                 MirrorUrl + admin1codesasciiTxt, outputFile);
+					                                 MirrorUrl + admin1CodesasciiTxt, outputFile);
 				}
 			}
 		}

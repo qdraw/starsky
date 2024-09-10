@@ -29,42 +29,42 @@ public class ThumbnailQueryErrorTest
 		{
 			throw new System.NotImplementedException();
 		}
-		
+
 		public void SetPropertyModified(IProperty property)
 		{
 			throw new System.NotImplementedException();
 		}
-		
+
 		public bool IsModified(IProperty property)
 		{
 			throw new System.NotImplementedException();
 		}
-		
+
 		public bool HasTemporaryValue(IProperty property)
 		{
 			throw new System.NotImplementedException();
 		}
-		
+
 		public bool IsStoreGenerated(IProperty property)
 		{
 			throw new System.NotImplementedException();
 		}
-		
+
 		public object GetCurrentValue(IPropertyBase propertyBase)
 		{
 			throw new System.NotImplementedException();
 		}
-		
+
 		public TProperty GetCurrentValue<TProperty>(IPropertyBase propertyBase)
 		{
 			throw new System.NotImplementedException();
 		}
-		
+
 		public object GetOriginalValue(IPropertyBase propertyBase)
 		{
 			throw new System.NotImplementedException();
 		}
-		
+
 		public TProperty GetOriginalValue<TProperty>(IProperty property)
 		{
 			throw new System.NotImplementedException();
@@ -75,7 +75,7 @@ public class ThumbnailQueryErrorTest
 		{
 			throw new NotImplementedException();
 		}
-		
+
 		public EntityEntry ToEntityEntry()
 		{
 			IsCalledDbUpdateConcurrency = true;
@@ -103,12 +103,13 @@ public class ThumbnailQueryErrorTest
 		// ReSharper disable once UnassignedGetOnlyAutoProperty
 		public IEntityType EntityType { get; }
 		public EntityState EntityState { get; set; }
+
 		// ReSharper disable once UnassignedGetOnlyAutoProperty
 		public IUpdateEntry SharedIdentityEntry { get; }
 
 #pragma warning restore 8618
 	}
-	
+
 	private class AppDbContextConcurrencyException : ApplicationDbContext
 	{
 		[SuppressMessage("ReSharper", "VirtualMemberCallInConstructor")]
@@ -134,17 +135,18 @@ public class ThumbnailQueryErrorTest
 			if ( Count <= MinCount )
 			{
 				throw new DbUpdateConcurrencyException("t",
-					new List<IUpdateEntry>{new UpdateEntryUpdateConcurrency()});
+					new List<IUpdateEntry> { new UpdateEntryUpdateConcurrency() });
 			}
+
 			return Task.FromResult(Count);
-		}	
-			
+		}
+
 		public override Task AddRangeAsync(params object[] entities)
 		{
 			return Task.CompletedTask;
-		}	
+		}
 	}
-			
+
 	[TestMethod]
 	public async Task ThumbnailQuery_ConcurrencyException()
 	{
@@ -152,16 +154,15 @@ public class ThumbnailQueryErrorTest
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
 			.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 			.Options;
-			
-		var fakeQuery = new ThumbnailQuery(new AppDbContextConcurrencyException(options)
-		{
-			MinCount = 1
-		},null!,new FakeIWebLogger());
-		await fakeQuery.RenameAsync("1","1");
-			
+
+		var fakeQuery =
+			new ThumbnailQuery(new AppDbContextConcurrencyException(options) { MinCount = 1 },
+				null!, new FakeIWebLogger());
+		await fakeQuery.RenameAsync("1", "1");
+
 		Assert.IsTrue(IsCalledDbUpdateConcurrency);
 	}
-		
+
 	[TestMethod]
 	public async Task ThumbnailQuery_DoubleConcurrencyException()
 	{
@@ -169,16 +170,15 @@ public class ThumbnailQueryErrorTest
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
 			.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 			.Options;
-			
-		var fakeQuery = new ThumbnailQuery(new AppDbContextConcurrencyException(options)
-		{
-			MinCount = 2
-		},null!,new FakeIWebLogger());
-		await fakeQuery.RenameAsync("1","2");
-			
+
+		var fakeQuery =
+			new ThumbnailQuery(new AppDbContextConcurrencyException(options) { MinCount = 2 },
+				null!, new FakeIWebLogger());
+		await fakeQuery.RenameAsync("1", "2");
+
 		Assert.IsTrue(IsCalledDbUpdateConcurrency);
 	}
-		
+
 	[TestMethod]
 	public async Task ThumbnailQuery_3ConcurrencyException()
 	{
@@ -186,16 +186,14 @@ public class ThumbnailQueryErrorTest
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
 			.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 			.Options;
-			
-		var fakeQuery = new ThumbnailQuery(new AppDbContextConcurrencyException(options)
-		{
-			MinCount = 3
-		},null!,new FakeIWebLogger());
-		await fakeQuery.RenameAsync("1","2");
-			
+
+		var fakeQuery =
+			new ThumbnailQuery(new AppDbContextConcurrencyException(options) { MinCount = 3 },
+				null!, new FakeIWebLogger());
+		await fakeQuery.RenameAsync("1", "2");
+
 		Assert.IsTrue(IsCalledDbUpdateConcurrency);
 	}
-	
 
 
 	private static bool IsCalledMySqlSaveDbExceptionContext { get; set; }
@@ -203,20 +201,24 @@ public class ThumbnailQueryErrorTest
 	private class MySqlSaveDbExceptionContext : ApplicationDbContext
 	{
 		private readonly string _error;
+		private readonly MySqlErrorCode _key;
 
-		public MySqlSaveDbExceptionContext(DbContextOptions options, string error) : base(options)
+		public MySqlSaveDbExceptionContext(DbContextOptions options, string error,
+			MySqlErrorCode key) : base(options)
 		{
 			_error = error;
+			_key = key;
 		}
-		
+
 		public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
 		{
 			IsCalledMySqlSaveDbExceptionContext = true;
-			throw CreateMySqlException(_error);
+			throw CreateMySqlException(_error, _key);
 		}
-		
-		[SuppressMessage("Usage", "S6602:\"Find\" method should be used instead of the \"FirstOrDefault\" extension")]
-		private static MySqlException CreateMySqlException(string message)
+
+		[SuppressMessage("Usage",
+			"S6602:\"Find\" method should be used instead of the \"FirstOrDefault\" extension")]
+		private static MySqlException CreateMySqlException(string message, MySqlErrorCode key)
 		{
 			// MySqlErrorCode errorCode, string? sqlState, string message, Exception? innerException
 
@@ -224,40 +226,41 @@ public class ThumbnailQueryErrorTest
 				typeof(MySqlException).GetConstructors(
 					BindingFlags.Instance |
 					BindingFlags.NonPublic | BindingFlags.InvokeMethod);
-			var ctor = ctorLIst.FirstOrDefault(p => 
-				p.ToString() == "Void .ctor(MySqlConnector.MySqlErrorCode, System.String, System.String, System.Exception)" );
-				
+			var ctor = ctorLIst.FirstOrDefault(p =>
+				p.ToString() ==
+				"Void .ctor(MySqlConnector.MySqlErrorCode, System.String, System.String, System.Exception)");
+
 			var instance =
-				( MySqlException ) ctor?.Invoke(new object[]
+				( MySqlException )ctor?.Invoke(new object[]
 				{
-					MySqlErrorCode.AccessDenied,
-					"test",
-					message,
-					new Exception()
+					key, "test", message, new Exception()
 				})!;
 			return instance;
 		}
 	}
-	
-	[TestMethod]
-	public async Task AddThumbnailRangeAsync_ShouldCatchPrimaryKeyHit()
+
+	[DataTestMethod] // [Theory]
+	[DataRow(MySqlErrorCode.DuplicateKey)]
+	[DataRow(MySqlErrorCode.DuplicateKeyEntry)]
+	public async Task AddThumbnailRangeAsync_ShouldCatchPrimaryKeyHit(MySqlErrorCode code)
 	{
 		IsCalledMySqlSaveDbExceptionContext = false;
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
 			.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 			.Options;
-			
-		var fakeQuery = new ThumbnailQuery(new MySqlSaveDbExceptionContext(options,"Duplicate entry '1' for key 'PRIMARY'"),
-			null!,new FakeIWebLogger());
-		
+
+		var fakeQuery = new ThumbnailQuery(
+			new MySqlSaveDbExceptionContext(options, "Duplicate entry '1' for key 'PRIMARY'", code),
+			null!, new FakeIWebLogger());
+
 		await fakeQuery.AddThumbnailRangeAsync(new List<ThumbnailResultDataTransferModel>
 		{
 			new ThumbnailResultDataTransferModel("t")
 		});
-			
+
 		Assert.IsTrue(IsCalledMySqlSaveDbExceptionContext);
 	}
-	
+
 	[TestMethod]
 	[ExpectedException(typeof(MySqlException))]
 	public async Task AddThumbnailRangeAsync_SomethingElseShould_ExpectedException()
@@ -266,10 +269,11 @@ public class ThumbnailQueryErrorTest
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
 			.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 			.Options;
-			
-		var fakeQuery = new ThumbnailQuery(new MySqlSaveDbExceptionContext(options,"Something else"),
-			null!,new FakeIWebLogger());
-		
+
+		var fakeQuery = new ThumbnailQuery(
+			new MySqlSaveDbExceptionContext(options, "Something else", MySqlErrorCode.AbortingConnection),
+			null!, new FakeIWebLogger());
+
 		await fakeQuery.AddThumbnailRangeAsync(new List<ThumbnailResultDataTransferModel>
 		{
 			new ThumbnailResultDataTransferModel("t")

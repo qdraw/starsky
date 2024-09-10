@@ -5,7 +5,7 @@
         <!-- SonarQube needs this -->
         <ProjectGuid>{3b84ed27-fef0-4c2b-8cb5-04b7fdb613f8}</ProjectGuid>
         <DebugType>Full</DebugType>
-        <Version>0.6.0</Version>
+        <Version>0.6.1</Version>
         <RootNamespace>starsky.foundation.webtelemetry</RootNamespace>
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
@@ -20,20 +20,20 @@
 
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.3" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.8" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
         <!--      instead of : Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0-->
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
-        <PackageReference Include="OpenTelemetry" Version="1.7.0"/>
-        <PackageReference Include="OpenTelemetry.Api" Version="1.7.0"/>
-        <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.7.0"/>
-        <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.7.0"/>
-        <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.7.1"/>
-        <PackageReference Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" Version="1.0.0-beta.10"/>
-        <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.7.0"/>
-        <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="8.0.0"/>
-        <PackageReference Include="System.Text.Json" Version="8.0.2"/>
+        <PackageReference Include="OpenTelemetry" Version="1.9.0"/>
+        <PackageReference Include="OpenTelemetry.Api" Version="1.9.0"/>
+        <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.9.0"/>
+        <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.9.0"/>
+        <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.9.0"/>
+        <PackageReference Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" Version="1.0.0-beta.11" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.9.0" />
+        <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="8.0.1" />
+        <PackageReference Include="System.Text.Json" Version="8.0.4" />
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

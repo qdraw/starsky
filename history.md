@@ -41,11 +41,25 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.6.1 - _(Unreleased)_ - 2024-03-? {#v0.6.1}
+## version 0.6.2 - _(Unreleased)_ - 2024-08-?? {#v0.6.2}
+
+- [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.302 (Runtime: 8.0.6) (PR #1601)
+- [x] (Changed) _Front-end_ Upgrade npm packages (PR #1603)
+- [x] (Fixed) _Back-end_ Query execution was interrupted, Regex Timeout (Issue #1628, #1590) (PR #1676)
+- [x] (Fixed) _Back-end_ Download Exiftool did not work (PR #1677)
+- [x] (Changed) _Back-end_ Change password hashing security and auto-upgrade path (PR #1688)
+
+## version 0.6.1 - 2024-05-16 {#v0.6.1}
 
 - [x] (Changed) _Front-end_  Make prev / next more contrast (PR #1511)
 - [x] (Fixed) _Docs_ Demo site is not working (PR #1486)
 - [x] (Fixed) _Back-end_  GetFileNameRegex refactor to avoid timeouts (PR #1515)
+- [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.204 (Runtime: 8.0.4) (PR #1541)
+- [x] (Fixed) _Back-end_ Unhandled exception DbUpdateException (PR #1558 Issue #1489)
+- [x] (Fixed) _Back-end_ Regex timeout IsExtensionForce (PR #1542 Issue #1537)
+- [x] (Fixed) _Back-end_ Concurrency conflicts bug (PR #1565 Issue #1564)
+- [x] (Changed) Back-end Upgrade to .NET 8 - SDK 8.0.300 (Runtime: 8.0.5) (PR #1584)
+- [x] (Changed) _App_ Update Electron version (PR #1586)
 
 ## version 0.6.0 - 2024-03-15 {#v0.6.0}
 

@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.accountmanagement.Interfaces;
-using starsky.foundation.accountmanagement.Models;
 using starsky.foundation.accountmanagement.Models.Account;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
@@ -23,6 +22,8 @@ namespace starsky.Controllers
 		private readonly IAntiforgery _antiForgery;
 		private readonly IStorage _storageHostFullPathFilesystem;
 
+		private const string ModelError = "Model is not correct";
+
 		public AccountController(IUserManager userManager, AppSettings appSettings,
 			IAntiforgery antiForgery, ISelectorStorage selectorStorage)
 		{
@@ -34,7 +35,7 @@ namespace starsky.Controllers
 		}
 
 		/// <summary>
-		/// Check the account status of the current logged in user
+		/// Check the account status of the current logged-in user
 		/// </summary>
 		/// <response code="200">Logged in</response>
 		/// <response code="401">When not logged in</response>
@@ -113,6 +114,8 @@ namespace starsky.Controllers
 		[AllowAnonymous]
 		public IActionResult LoginGet(string? returnUrl = null, bool? fromLogout = null)
 		{
+			if ( !ModelState.IsValid ) return BadRequest(ModelError);
+			
 			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
 			var clientApp = Path.Combine(_appSettings.BaseDirectoryProject,
 				"clientapp", "build", "index.html");
@@ -143,7 +146,9 @@ namespace starsky.Controllers
 		[AllowAnonymous]
 		public async Task<IActionResult> LoginPost(LoginViewModel model)
 		{
-			ValidateResult validateResult =
+			if ( !ModelState.IsValid ) return BadRequest(ModelError);
+
+			var validateResult =
 				await _userManager.ValidateAsync("Email", model.Email, model.Password);
 
 			if ( !validateResult.Success )
@@ -192,6 +197,8 @@ namespace starsky.Controllers
 		[AllowAnonymous]
 		public IActionResult Logout(string? returnUrl = null)
 		{
+			if ( !ModelState.IsValid ) return BadRequest(ModelError);
+
 			_userManager.SignOut(HttpContext);
 			// fromLogout is used in middleware
 			return RedirectToAction(nameof(LoginGet),
@@ -205,7 +212,7 @@ namespace starsky.Controllers
 		/// <returns>Change secret status</returns>
 		/// <response code="200">successful login</response>
 		/// <response code="400">Model is not correct</response>
-		/// <response code="401"> please login first or your current password is not correct</response>
+		/// <response code="401">please log in first or your current password is not correct</response>
 		[HttpPost("/api/account/change-secret")]
 		[ProducesResponseType(typeof(string), 200)]
 		[ProducesResponseType(typeof(string), 400)]
@@ -222,7 +229,7 @@ namespace starsky.Controllers
 			if ( !ModelState.IsValid ||
 			     model.ChangedPassword != model.ChangedConfirmPassword )
 			{
-				return BadRequest("Model is not correct");
+				return BadRequest(ModelError);
 			}
 
 			var currentUserId = _userManager.GetCurrentUser(HttpContext)?.Id;
@@ -280,7 +287,7 @@ namespace starsky.Controllers
 
 			// If we got this far, something failed, redisplay form
 			Response.StatusCode = 400;
-			return Json("Model is not correct");
+			return Json(ModelError);
 		}
 
 		/// <summary>

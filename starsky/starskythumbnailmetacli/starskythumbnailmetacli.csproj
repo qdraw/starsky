@@ -5,9 +5,9 @@
         <TargetFramework>net8.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{a0cce905-ae43-4d1b-a97a-2bcd2c010ed1}</ProjectGuid>
-        <RuntimeFrameworkVersion>8.0.3</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion>8.0.8</RuntimeFrameworkVersion>
         <RootNamespace>starskythumbnailmetacli</RootNamespace>
-        <Version>0.6.0</Version>
+        <Version>0.6.1</Version>
         <Nullable>enable</Nullable>
         <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>

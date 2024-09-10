@@ -298,5 +298,10 @@ namespace starskytest.FakeCreateAn
 		/// File hash to check the content of the zip file
 		/// </summary>
 		public static readonly string Sha1 = "0da554d4cf5f4c15591da109ae070742ecfceb65";
+		
+		/// <summary>
+		/// File hash to check the content of the zip file
+		/// </summary>
+		public static readonly string Sha256 = "8d85367eeddc2d84e2770eb7eda8de90a98ed6681966803ec8448310dfd53c5b";
 	}
 }
