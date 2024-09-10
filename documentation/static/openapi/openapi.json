@@ -1691,7 +1691,7 @@
               "unresolvedReference": false
             },
             "401": {
-              "description": "please login first",
+              "description": "please log in first",
               "headers": {},
               "content": {},
               "links": {},
@@ -2383,7 +2383,7 @@
               "unresolvedReference": false
             },
             "400": {
-              "description": "ignored, please check if the 'f' path exist or use a folder string to clear the cache",
+              "description": "ignored, please check if the 'f' path exist or use a folder string to clear\r\nthe cache",
               "headers": {},
               "content": {},
               "links": {},
@@ -2478,7 +2478,7 @@
               "unresolvedReference": false
             },
             "400": {
-              "description": "ignored, please check if the 'f' path exist or use a folder string to clear the cache",
+              "description": "ignored, please check if the 'f' path exist or use a folder string to clear\r\nthe cache",
               "headers": {},
               "content": {},
               "links": {},
@@ -2573,7 +2573,7 @@
               "unresolvedReference": false
             },
             "400": {
-              "description": "ignored, please check if the 'f' path exist or use a folder string to clear the cache",
+              "description": "ignored, please check if the 'f' path exist or use a folder string to clear\r\nthe cache",
               "headers": {},
               "content": {},
               "links": {},
@@ -2619,7 +2619,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "Remove files from the disk, but the file must contain the !delete! (TrashKeyword.TrashKeywordString) tag",
+          "summary": "Remove files from the disk, but the file must contain the !delete!\r\n(TrashKeyword.TrashKeywordString) tag",
           "parameters": [
             {
               "unresolvedReference": false,
@@ -2745,7 +2745,7 @@
               "unresolvedReference": false
             },
             "404": {
-              "description": "item not found on disk or !delete! (TrashKeyword.TrashKeywordString) tag is missing",
+              "description": "item not found on disk or !delete! (TrashKeyword.TrashKeywordString) tag is\r\nmissing",
               "headers": {},
               "content": {
                 "application/json": {
@@ -3154,6 +3154,14 @@
               "links": {},
               "extensions": {},
               "unresolvedReference": false
+            },
+            "400": {
+              "description": "Bad Request",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
             }
           },
           "callbacks": {},
@@ -3435,7 +3443,7 @@
               "name": "f",
               "in": 0,
               "description": "from subPath",
-              "required": false,
+              "required": true,
               "deprecated": false,
               "allowEmptyValue": false,
               "style": 2,
@@ -3712,7 +3720,7 @@
               "name": "f",
               "in": 0,
               "description": "string, subPath to find the file",
-              "required": false,
+              "required": true,
               "deprecated": false,
               "allowEmptyValue": false,
               "style": 2,
@@ -3750,6 +3758,14 @@
             },
             "404": {
               "description": "source image missing",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "400": {
+              "description": "Bad Request",
               "headers": {},
               "content": {},
               "links": {},
@@ -16513,5 +16529,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "716F0E961DE79E2B5004480C79004F97BBDBF87EA32B34A6ECAAC3AF78A28C334638C9DE511DB465E175EAB354CC9A9AEAE8C0B77F4875EBE4E9860019ABB46A"
+  "hashCode": "A713BED7F4084EC344034A8E12264AF7CBA9C75811FE84A2306FEAFF8B48AFA257C4B59373A67DC02D8B28BA06819A707F191BCB9797F6DC6243A6948BF7EEF5"
 }
