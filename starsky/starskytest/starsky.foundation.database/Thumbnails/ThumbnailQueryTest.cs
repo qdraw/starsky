@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +14,6 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.database.Thumbnails;
 
 [TestClass]
-[SuppressMessage("ReSharper", "UseCollectionExpression")]
 public class ThumbnailQueryTest
 {
 	private readonly ApplicationDbContext _context;
@@ -114,16 +112,12 @@ public class ThumbnailQueryTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ObjectDisposedException))]
 	public async Task AddThumbnailRangeAsync_Disposed_NoServiceScope()
 	{
 		// Arrange
 		var data = new List<ThumbnailResultDataTransferModel>
 		{
-			new("627445", null, null,
-				true),
-			new("8127445", null, null,
-				true)
+			new("627445", null, null, true), new("8127445", null, null, true)
 		};
 
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -134,12 +128,12 @@ public class ThumbnailQueryTest
 		var thumbnailQuery =
 			new ThumbnailQuery(dbContext, null, new FakeIWebLogger()); // <-- no service scope
 
-		// And dispose
+		// Dispose the DbContext
 		await dbContext.DisposeAsync();
 
-		// Act
-		await thumbnailQuery.AddThumbnailRangeAsync(data);
-		// no service scope so exception
+		// Act & Assert
+		await Assert.ThrowsExceptionAsync<ObjectDisposedException>(async () =>
+			await thumbnailQuery.AddThumbnailRangeAsync(data));
 	}
 
 	[TestMethod]
@@ -167,7 +161,7 @@ public class ThumbnailQueryTest
 		// Assert
 		Assert.IsNotNull(result);
 		Assert.AreEqual(2, result.Count);
-		Assert.AreEqual(2, _context.Thumbnails.Count(p =>
+		Assert.AreEqual(2, await _context.Thumbnails.CountAsync(p =>
 			p.FileHash == "file" + ThumbnailSize.Small
 			|| p.FileHash == "file" + ThumbnailSize.Large));
 
@@ -181,12 +175,12 @@ public class ThumbnailQueryTest
 			.Where(p => p.FileHash == "file" + ThumbnailSize.Large)
 			.All(x => x.Large == true));
 
-		Assert.IsTrue(dbResult
+		Assert.IsTrue(await dbResult
 			.Where(p => p.FileHash == "file" + ThumbnailSize.Small)
-			.All(x => x.Small == true));
-		Assert.IsTrue(dbResult
+			.AllAsync(x => x.Small == true));
+		Assert.IsTrue(await dbResult
 			.Where(p => p.FileHash == "file" + ThumbnailSize.Large)
-			.All(x => x.Large == true));
+			.AllAsync(x => x.Large == true));
 	}
 
 	[TestMethod]
@@ -658,7 +652,6 @@ public class ThumbnailQueryTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ObjectDisposedException))]
 	public async Task UpdateDatabase_Disposed_NoServiceScope()
 	{
 		// Arrange
@@ -672,14 +665,13 @@ public class ThumbnailQueryTest
 		var thumbnailQuery =
 			new ThumbnailQuery(dbContext, null, new FakeIWebLogger()); // <-- no service scope
 
-		// And dispose
+		// Dispose the DbContext
 		await dbContext.DisposeAsync();
 
-		// Act
-		await thumbnailQuery.UpdateAsync(data);
-		// no service scope so exception
+		// Act & Assert
+		await Assert.ThrowsExceptionAsync<ObjectDisposedException>(async () =>
+			await thumbnailQuery.UpdateAsync(data));
 	}
-
 
 	[TestMethod]
 	public async Task UpdateDatabase_Disposed_Success()
@@ -694,7 +686,8 @@ public class ThumbnailQueryTest
 
 		dbContext.Thumbnails.Add(new ThumbnailItem { FileHash = "123wruiweriu" });
 		await dbContext.SaveChangesAsync();
-		var item = dbContext.Thumbnails.FirstOrDefault(p => p.FileHash == "123wruiweriu");
+		var item =
+			await dbContext.Thumbnails.FirstOrDefaultAsync(p => p.FileHash == "123wruiweriu");
 
 		// And dispose
 		await dbContext.DisposeAsync();
@@ -711,9 +704,7 @@ public class ThumbnailQueryTest
 		Assert.IsTrue(item2.FirstOrDefault()!.Large);
 	}
 
-
 	[TestMethod]
-	[ExpectedException(typeof(ObjectDisposedException))]
 	public async Task Get_Disposed_NoServiceScope()
 	{
 		// Arrange
@@ -725,12 +716,12 @@ public class ThumbnailQueryTest
 		var thumbnailQuery =
 			new ThumbnailQuery(dbContext, null, new FakeIWebLogger()); // <-- no service scope
 
-		// And dispose
+		// Dispose the DbContext
 		await dbContext.DisposeAsync();
 
-		// Act
-		await thumbnailQuery.Get("data");
-		// no service scope so exception
+		// Act & Assert
+		await Assert.ThrowsExceptionAsync<ObjectDisposedException>(async () =>
+			await thumbnailQuery.Get("data"));
 	}
 
 	[TestMethod]
@@ -745,7 +736,7 @@ public class ThumbnailQueryTest
 
 		dbContext.Thumbnails.Add(new ThumbnailItem { FileHash = "test123", Large = true });
 		await dbContext.SaveChangesAsync();
-		var item = dbContext.Thumbnails.FirstOrDefault(p => p.FileHash == "test123");
+		var item = await dbContext.Thumbnails.FirstOrDefaultAsync(p => p.FileHash == "test123");
 
 		// And dispose
 		await dbContext.DisposeAsync();
@@ -763,7 +754,6 @@ public class ThumbnailQueryTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ObjectDisposedException))]
 	public async Task RemoveThumbnailsAsync_Disposed_NoServiceScope()
 	{
 		// Arrange
@@ -775,12 +765,12 @@ public class ThumbnailQueryTest
 		var thumbnailQuery =
 			new ThumbnailQuery(dbContext, null, new FakeIWebLogger()); // <-- no service scope
 
-		// And dispose
+		// Dispose the DbContext
 		await dbContext.DisposeAsync();
 
-		// Act
-		await thumbnailQuery.RemoveThumbnailsAsync(new List<string> { "data" });
-		// no service scope so exception
+		// Act & Assert
+		await Assert.ThrowsExceptionAsync<ObjectDisposedException>(async () =>
+			await thumbnailQuery.RemoveThumbnailsAsync(new List<string> { "data" }));
 	}
 
 	[TestMethod]
@@ -796,7 +786,8 @@ public class ThumbnailQueryTest
 
 		dbContext.Thumbnails.Add(new ThumbnailItem { FileHash = "8439573458435", Large = true });
 		await dbContext.SaveChangesAsync();
-		var item = dbContext.Thumbnails.FirstOrDefault(p => p.FileHash == "8439573458435");
+		var item =
+			await dbContext.Thumbnails.FirstOrDefaultAsync(p => p.FileHash == "8439573458435");
 		Assert.IsNotNull(item);
 
 		// And dispose
@@ -813,7 +804,6 @@ public class ThumbnailQueryTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ObjectDisposedException))]
 	public async Task RenameAsync_Disposed_NoServiceScope()
 	{
 		// Arrange
@@ -825,14 +815,13 @@ public class ThumbnailQueryTest
 		var thumbnailQuery =
 			new ThumbnailQuery(dbContext, null, new FakeIWebLogger()); // <-- no service scope
 
-		// And dispose
+		// Dispose the DbContext
 		await dbContext.DisposeAsync();
 
-		// Act
-		await thumbnailQuery.RenameAsync("data", "after");
-		// no service scope so exception
+		// Act & Assert
+		await Assert.ThrowsExceptionAsync<ObjectDisposedException>(async () =>
+			await thumbnailQuery.RenameAsync("data", "after"));
 	}
-
 
 	[TestMethod]
 	public async Task RenameAsync_Disposed_Success()
@@ -847,7 +836,8 @@ public class ThumbnailQueryTest
 
 		dbContext.Thumbnails.Add(new ThumbnailItem { FileHash = "5478349895834", Large = true });
 		await dbContext.SaveChangesAsync();
-		var item = dbContext.Thumbnails.FirstOrDefault(p => p.FileHash == "5478349895834");
+		var item =
+			await dbContext.Thumbnails.FirstOrDefaultAsync(p => p.FileHash == "5478349895834");
 		Assert.IsNotNull(item);
 
 		// And dispose
