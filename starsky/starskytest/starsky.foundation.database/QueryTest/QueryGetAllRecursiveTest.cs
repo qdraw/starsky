@@ -112,16 +112,21 @@ public sealed class QueryGetAllRecursiveTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(MySqlException))]
 	public async Task QueryGetAllRecursive_GeneralException()
 	{
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
 			.UseInMemoryDatabase("MovieListDatabase")
 			.Options;
-		var fakeQuery = new Query(new MySqlSaveDbExceptionContext(options, MySqlErrorCode.None),
-			null!, CreateNewScope(), new FakeIWebLogger());
+		var fakeQuery = new Query(
+			new MySqlSaveDbExceptionContext(options, MySqlErrorCode.None),
+			null!,
+			CreateNewScope(),
+			new FakeIWebLogger()
+		);
 
-		await fakeQuery.GetAllRecursiveAsync("test");
+		// Assert that a MySqlException is thrown when GetAllRecursiveAsync is called
+		await Assert.ThrowsExceptionAsync<MySqlException>(async () =>
+			await fakeQuery.GetAllRecursiveAsync("test"));
 	}
 
 	private class MySqlSaveDbExceptionContext : ApplicationDbContext
