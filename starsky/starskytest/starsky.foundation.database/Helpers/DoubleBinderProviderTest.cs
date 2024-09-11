@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Primitives;
@@ -12,38 +13,20 @@ namespace starskytest.starsky.foundation.database.Helpers;
 [TestClass]
 public class DoubleBinderProviderTest
 {
-	[SuppressMessage("ReSharper", "UnassignedGetOnlyAutoProperty")]
-	private class MyClass :ModelBinderProviderContext
-	{
-		public override IModelBinder CreateBinder(ModelMetadata metadata)
-		{
-			return null!;
-		}
-
-		public override BindingInfo BindingInfo { get; } = new BindingInfo();
-
-#pragma warning disable CS8764 // Nullability of return type doesn't match...
-		public override ModelMetadata? Metadata { get; }
-		public override IModelMetadataProvider? MetadataProvider { get; }
-#pragma warning restore CS8764 // Nullability of return type doesn't match...
-
-	}
-	
 	[TestMethod]
 	public void DoubleBinderProviderTest_1()
 	{
 		var doubleBinderProvider = new DoubleBinderProvider();
-		
+
 		var result = doubleBinderProvider.GetBinder(new MyClass());
 		Assert.IsNull(result);
 	}
-	
+
 	[TestMethod]
 	[ExpectedException(typeof(ArgumentNullException))]
 	public void DoubleBinderProviderTest_2_Null()
 	{
 		var doubleBinderProvider = new DoubleBinderProvider();
-		
 		var result = doubleBinderProvider.GetBinder(null!);
 		Assert.IsNull(result);
 	}
@@ -53,31 +36,33 @@ public class DoubleBinderProviderTest
 	{
 		var binder = new DefaultModelBindingContext
 		{
-			ModelName = "test", ValueProvider = new QueryStringValueProvider(
-				new BindingSource("query", "query", false, true), 
-				new QueryCollection(new Dictionary<string, StringValues> {{"test", "1.1"}}), 
-				System.Globalization.CultureInfo.InvariantCulture)
+			ModelName = "test",
+			ValueProvider = new QueryStringValueProvider(
+				new BindingSource("query", "query", false, true),
+				new QueryCollection(new Dictionary<string, StringValues> { { "test", "1.1" } }),
+				CultureInfo.InvariantCulture)
 		};
 		new DoubleModelBinder().BindModelAsync(binder);
 		Assert.AreEqual(1.1, binder.Result.Model);
 	}
-	
+
 	[TestMethod]
 	public void DoubleModelBinder_EmptyString()
 	{
 		var binder = new DefaultModelBindingContext
 		{
-			ModelName = "test", ValueProvider = new QueryStringValueProvider(
-				new BindingSource("query", "query", false, true), 
+			ModelName = "test",
+			ValueProvider = new QueryStringValueProvider(
+				new BindingSource("query", "query", false, true),
 				new QueryCollection(new Dictionary<string, StringValues>
 				{
-					{"test", string.Empty}
-				}), System.Globalization.CultureInfo.InvariantCulture)
+					{ "test", string.Empty }
+				}), CultureInfo.InvariantCulture)
 		};
 		new DoubleModelBinder().BindModelAsync(binder);
 		Assert.AreEqual(null, binder.Result.Model);
 	}
-	
+
 	[TestMethod]
 	[SuppressMessage("ReSharper", "UseObjectOrCollectionInitializer")]
 	public void DoubleModelBinder_DefaultFlowComma()
@@ -85,14 +70,14 @@ public class DoubleBinderProviderTest
 		var binder = new DefaultModelBindingContext();
 		binder.ModelName = "test";
 		binder.ValueProvider = new QueryStringValueProvider(
-			new BindingSource("query", "query", false, true), 
-			new QueryCollection(new Dictionary<string, StringValues> {{"test", "1,1"}}),
-			System.Globalization.CultureInfo.InvariantCulture);
+			new BindingSource("query", "query", false, true),
+			new QueryCollection(new Dictionary<string, StringValues> { { "test", "1,1" } }),
+			CultureInfo.InvariantCulture);
 		new DoubleModelBinder().BindModelAsync(binder);
 		Assert.AreEqual(11d, binder.Result.Model);
 	}
-	
-		
+
+
 	[TestMethod]
 	[SuppressMessage("ReSharper", "UseObjectOrCollectionInitializer")]
 	public void DoubleModelBinder_NonValidNumber()
@@ -100,10 +85,26 @@ public class DoubleBinderProviderTest
 		var binder = new DefaultModelBindingContext();
 		binder.ModelName = "test";
 		binder.ValueProvider = new QueryStringValueProvider(
-			new BindingSource("query", "query", false, true), 
-			new QueryCollection(new Dictionary<string, StringValues> {{"test", "___NaN__"}}),
-			System.Globalization.CultureInfo.InvariantCulture);
+			new BindingSource("query", "query", false, true),
+			new QueryCollection(new Dictionary<string, StringValues> { { "test", "___NaN__" } }),
+			CultureInfo.InvariantCulture);
 		new DoubleModelBinder().BindModelAsync(binder);
 		Assert.AreEqual(null, binder.Result.Model);
+	}
+
+	[SuppressMessage("ReSharper", "UnassignedGetOnlyAutoProperty")]
+	private class MyClass : ModelBinderProviderContext
+	{
+		public override BindingInfo BindingInfo { get; } = new();
+
+		public override IModelBinder CreateBinder(ModelMetadata metadata)
+		{
+			return null!;
+		}
+
+#pragma warning disable CS8764 // Nullability of return type doesn't match...
+		public override ModelMetadata? Metadata { get; }
+		public override IModelMetadataProvider? MetadataProvider { get; }
+#pragma warning restore CS8764 // Nullability of return type doesn't match...
 	}
 }
