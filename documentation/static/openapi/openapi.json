@@ -10494,7 +10494,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "Get thumbnail for index pages (300 px or 150px or 1000px (based on whats there))",
+          "summary": "Get thumbnail for index pages (300 px or 150px or 1000px (based on what's there))",
           "parameters": [
             {
               "unresolvedReference": false,
@@ -10620,7 +10620,7 @@
           ],
           "responses": {
             "200": {
-              "description": "ok view content to see whats ready",
+              "description": "ok view content to see what's ready",
               "headers": {},
               "content": {},
               "links": {},
@@ -16529,5 +16529,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "EF3E80612A4DE42E92727CDBA18B33EFE351B98B8121009BE34562816830F7AF8BB8AE42F8ED761DD5FFB4FBABCA18B2029669F11DEC0AB7EE60541AA7D91C3C"
+  "hashCode": "F46BA9F9B32EB4D82CEF3BE9DC6D287E389C8E4AF71D6B93813013E7343A8749C9551D753797888C05F72C5C49458CBF54C886818FF66A161455BA62D002C15D"
 }
