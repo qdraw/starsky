@@ -98,30 +98,37 @@ public sealed class AppSettingsTest
 		Assert.IsTrue(datasource.Contains("Data Source="));
 	}
 
-
 	[TestMethod]
-	[ExpectedException(typeof(ArgumentException))]
 	public void AppSettingsProviderTest_SQLite_ExpectException()
 	{
 		_appSettings.DatabaseType = AppSettings.DatabaseTypeList.Sqlite;
-		// should give exception
-		_appSettings.SqLiteFullPath(string.Empty, null!);
+
+		Assert.ThrowsException<ArgumentException>(() =>
+			_appSettings.SqLiteFullPath(string.Empty, null!)
+		);
+		// Optionally, you can assert specific properties of the exception here, but it's not required.
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ArgumentException))]
 	public void AppSettingsProviderTest_MySQL_ExpectException()
 	{
 		_appSettings.DatabaseType = AppSettings.DatabaseTypeList.Mysql;
-		_appSettings.SqLiteFullPath(string.Empty, null!);
+
+		Assert.ThrowsException<ArgumentException>(() =>
+			_appSettings.SqLiteFullPath(string.Empty, null!)
+		);
+		// Optionally, you can assert specific properties of the exception here, but it's not required.
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ArgumentException))]
 	public void AppSettingsProviderTest_StructureFails_withoutExtAndNoSlash()
 	{
-		_appSettings.Structure = "\\d";
-		Assert.AreEqual("d", _appSettings.Structure);
+		Assert.ThrowsException<ArgumentException>(() =>
+			{
+				_appSettings.Structure = "\\d";
+				Assert.AreEqual("d", _appSettings.Structure);
+			}
+		);
 	}
 
 	[TestMethod]
@@ -244,7 +251,7 @@ public sealed class AppSettingsTest
 		var value = AppSettings.ConvertTimeZoneId("Antarctica/Troll");
 
 		// Linux: Antarctica/Troll
-		// Windows: In older versions it does not exists
+		// Windows: In older versions it does not exist
 
 		Assert.AreEqual("Antarctica/Troll", value.Id);
 	}
