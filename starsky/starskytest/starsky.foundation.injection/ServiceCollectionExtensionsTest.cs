@@ -83,16 +83,16 @@ public class ServiceCollectionExtensionsTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ArgumentOutOfRangeException))]
 	public void Add_LifeTime_InvalidType()
 	{
 		var overwriteInjectionLifetime = new OverwriteInjectionLifetime();
 		var propertyObject = overwriteInjectionLifetime.GetType().GetProperty("Type");
 		propertyObject?.SetValue(overwriteInjectionLifetime, 44, null); // <-- this could not happen
 
-		var serviceCollection = new ServiceCollection() as IServiceCollection;
-		serviceCollection.Add(overwriteInjectionLifetime.Type, typeof(TestInjectionClass));
-		// expect exception
+		IServiceCollection serviceCollection = new ServiceCollection();
+
+		Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+			serviceCollection.Add(overwriteInjectionLifetime.Type, typeof(TestInjectionClass)));
 	}
 
 
@@ -156,8 +156,9 @@ public class ServiceCollectionExtensionsTest
 		propertyObject?.SetValue(overwriteInjectionLifetime, 44, null); // <-- this could not happen
 
 		IServiceCollection serviceCollection = new ServiceCollection();
-		
-		Assert.ThrowsException<ArgumentOutOfRangeException>(() => serviceCollection.Add(typeof(ITestInjectionClass),
+
+		Assert.ThrowsException<ArgumentOutOfRangeException>(() => serviceCollection.Add(
+			typeof(ITestInjectionClass),
 			typeof(TestInjectionClass), overwriteInjectionLifetime.Type));
 	}
 

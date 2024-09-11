@@ -188,7 +188,6 @@ public class SqlXmlRepositoryTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(NullReferenceException))]
 	public void SqlXmlRepositoryTest_StoreElement_Exception_Other()
 	{
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -199,7 +198,8 @@ public class SqlXmlRepositoryTest
 		var repo =
 			new SqlXmlRepository(
 				new StoreElementException2OtherException(options), null!, logger);
-		repo.StoreElement(new XElement("x1", "x1"), "hi");
+		Assert.ThrowsException<NullReferenceException>(() =>
+			repo.StoreElement(new XElement("x1", "x1"), "hi"));
 	}
 
 	private class AppDbMySqlException : ApplicationDbContext
