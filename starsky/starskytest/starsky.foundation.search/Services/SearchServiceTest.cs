@@ -1042,7 +1042,6 @@ public sealed class SearchServiceTest
 
 
 	[TestMethod]
-	[ExpectedException(typeof(ArgumentException))]
 	public async Task SearchService_Search_ToLong_ArgumentException()
 	{
 		const string longTestText =
@@ -1084,7 +1083,7 @@ public sealed class SearchServiceTest
 			" elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit" +
 			" amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna ";
 
-		await _search.Search(longTestText);
+		await Assert.ThrowsExceptionAsync<ArgumentException>(() => _search.Search(longTestText));
 		// Expect ArgumentException
 	}
 }
