@@ -83,6 +83,19 @@ public sealed class SearchSuggestControllerTest
 	}
 
 	[TestMethod]
+	public async Task Suggest_InvalidModel()
+	{
+		var controller = new SearchSuggestController(_searchSuggest)
+		{
+			ControllerContext = { HttpContext = new DefaultHttpContext() }
+		};
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+		var result = await controller.Suggest("Invalid");
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+	}
+
+	[TestMethod]
 	public async Task Suggestion_IsLessThan10()
 	{
 		await InjectMockedData();
