@@ -26,37 +26,55 @@ public sealed class ExifToolHostStorageServiceTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ArgumentException))]
 	public async Task ExifToolHostStorageService_NotFound_Exception()
 	{
+		// Arrange
 		var appSettings = new AppSettings { ExifToolPath = "Z://Non-exist" };
-
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
+		var fakeStorage = new FakeIStorage(
+			new List<string> { "/" },
 			new List<string> { "/test.jpg" },
-			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() }
+		);
 
-		await new ExifToolHostStorageService(new FakeSelectorStorage(fakeStorage), appSettings,
-				new FakeIWebLogger())
-			.WriteTagsAsync("/test.jpg", "-Software=\"Qdraw 2.0\"");
+		var service = new ExifToolHostStorageService(
+			new FakeSelectorStorage(fakeStorage),
+			appSettings,
+			new FakeIWebLogger()
+		);
+
+		// Act & Assert
+		await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
+		{
+			await service.WriteTagsAsync("/test.jpg", "-Software=\"Qdraw 2.0\"");
+		});
 	}
 
 	/// <summary>
 	///     WriteTagsAndRenameThumbnailAsyncTest
 	/// </summary>
 	[TestMethod]
-	[ExpectedException(typeof(ArgumentException))]
 	public async Task WriteTagsAndRenameThumbnailAsync_NotFound_Exception()
 	{
+		// Arrange
 		var appSettings = new AppSettings { ExifToolPath = "Z://Non-exist" };
-
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
+		var fakeStorage = new FakeIStorage(
+			new List<string> { "/" },
 			new List<string> { "/test.jpg" },
-			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() }
+		);
 
-		await new ExifToolHostStorageService(new FakeSelectorStorage(fakeStorage), appSettings,
-				new FakeIWebLogger())
-			.WriteTagsAndRenameThumbnailAsync("/test.jpg", null,
+		var service = new ExifToolHostStorageService(
+			new FakeSelectorStorage(fakeStorage),
+			appSettings,
+			new FakeIWebLogger()
+		);
+
+		// Act & Assert
+		await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
+		{
+			await service.WriteTagsAndRenameThumbnailAsync("/test.jpg", null,
 				"-Software=\"Qdraw 2.0\"");
+		});
 	}
 
 	[TestMethod]
@@ -183,17 +201,26 @@ public sealed class ExifToolHostStorageServiceTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ArgumentException))]
 	public async Task ExifToolHostStorageService_WriteTagsThumbnailAsync_NotFound_Exception()
 	{
+		// Arrange
 		var appSettings = new AppSettings { ExifToolPath = "Z://Non-exist" };
-
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
+		var fakeStorage = new FakeIStorage(
+			new List<string> { "/" },
 			new List<string> { "/test.jpg" },
-			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() }
+		);
 
-		await new ExifToolHostStorageService(new FakeSelectorStorage(fakeStorage), appSettings,
-				new FakeIWebLogger())
-			.WriteTagsThumbnailAsync("/test.jpg", "-Software=\"Qdraw 2.0\"");
+		var service = new ExifToolHostStorageService(
+			new FakeSelectorStorage(fakeStorage),
+			appSettings,
+			new FakeIWebLogger()
+		);
+
+		// Act & Assert
+		await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
+		{
+			await service.WriteTagsThumbnailAsync("/test.jpg", "-Software=\"Qdraw 2.0\"");
+		});
 	}
 }
