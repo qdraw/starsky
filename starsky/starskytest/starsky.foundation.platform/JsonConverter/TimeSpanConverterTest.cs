@@ -109,12 +109,17 @@ public sealed class JsonTimeSpanConverterTests
 		Assert.IsFalse(actual.HasValue);
 	}
 
-	[ExpectedException(typeof(JsonException))]
 	[TestMethod]
 	public void NullableTimeSpanInvalidDeserializationTest()
 	{
-		JsonSerializer.Deserialize<
-			NullableTestClass>(@"{""TimeSpan"":1}");
+		// Act & Assert
+		var exception = Assert.ThrowsException<JsonException>(() =>
+		{
+			JsonSerializer.Deserialize<NullableTestClass>(@"{""TimeSpan"":1}");
+		});
+
+		// Additional assertions (optional)
+		Assert.IsNotNull(exception);
 	}
 
 	[TestMethod]

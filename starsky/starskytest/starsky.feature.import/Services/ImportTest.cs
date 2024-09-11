@@ -579,7 +579,6 @@ public sealed class ImportTest
 	}
 
 	[TestMethod]
-	// [ExpectedException(typeof(AggregateException))]
 	public async Task Importer_Over100Times()
 	{
 		var appSettings = new AppSettings();
@@ -599,6 +598,7 @@ public sealed class ImportTest
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
 			new FakeIThumbnailQuery(), new FakeMemoryCache()) { MaxTryGetDestinationPath = 0 };
 
+		// used to be:[ExpectedException(typeof(AggregateException))]
 		await Assert.ThrowsExceptionAsync<AggregateException>(async () =>
 			await importService.Importer(new List<string> { "/test.jpg" },
 				new ImportSettingsModel()));
