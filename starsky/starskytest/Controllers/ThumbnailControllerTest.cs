@@ -400,6 +400,17 @@ public sealed class ThumbnailControllerTest
 		var thumbnailAnswer = actionResult?.StatusCode;
 		Assert.AreEqual(404, thumbnailAnswer);
 	}
+	
+	[TestMethod]
+	public async Task ByZoomFactor_ModelState()
+	{
+		var controller = new ThumbnailController(_query, new FakeSelectorStorage());
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+		var result =
+			await controller.ByZoomFactorAsync("InValid", 1);
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+	}
 
 	[TestMethod]
 	public async Task ByZoomFactor_InputBadRequest()
