@@ -48,6 +48,16 @@ public sealed class SearchControllerTest
 		Assert.AreEqual(0, searchViewResult?.FileIndexItems?.Count);
 		Assert.AreEqual("Search", searchViewResult?.PageType);
 	}
+	
+	[TestMethod]
+	public async Task Index_InvalidModel()
+	{
+		var controller = new SearchController(_search);
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+		var result = await controller.Index("Invalid");
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+	}
 
 	[TestMethod]
 	public async Task SearchControllerTest_Index_OneKeyword()
@@ -79,6 +89,16 @@ public sealed class SearchControllerTest
 		var searchViewResult = jsonResult!.Value as SearchViewModel;
 		Assert.AreEqual(0, searchViewResult!.FileIndexItems?.Count);
 	}
+	
+	[TestMethod]
+	public async Task Trash_InvalidModel()
+	{
+		var controller = new SearchController(_search);
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+		var result = await controller.Trash();
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+	}
 
 	[TestMethod]
 	public async Task SearchControllerTest_RelativeApi_Prev()
@@ -101,6 +121,16 @@ public sealed class SearchControllerTest
 
 		await _query.RemoveItemAsync(item0);
 		await _query.RemoveItemAsync(item1);
+	}
+	
+	[TestMethod]
+	public async Task SearchRelative_InvalidModel()
+	{
+		var controller = new SearchController(_search);
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+		var result = await controller.SearchRelative("Invalid", "Invalid");
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 	}
 
 	[TestMethod]
@@ -198,5 +228,15 @@ public sealed class SearchControllerTest
 		var jsonResult = controller.RemoveCache("1234567890987654") as JsonResult;
 		var resultValue = jsonResult!.Value as string;
 		Assert.AreEqual("cache cleared", resultValue);
+	}
+	
+	[TestMethod]
+	public void RemoveCache_InvalidModel()
+	{
+		var controller = new SearchController(_search);
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+		var result = controller.RemoveCache("Invalid");
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 	}
 }
