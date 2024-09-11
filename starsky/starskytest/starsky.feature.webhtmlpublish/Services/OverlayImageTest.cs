@@ -56,76 +56,57 @@ public sealed class OverlayImageTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ArgumentNullException))]
 	public async Task ResizeOverlayImageThumbnails_null()
 	{
-		var overlayImage =
-			new OverlayImage(_selectorStorage);
-
-		await overlayImage.ResizeOverlayImageThumbnails(null!, null!,
-			new AppSettingsPublishProfiles());
-		// > ArgumentNullException
+		var overlayImage = new OverlayImage(_selectorStorage);
+		await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+			await overlayImage.ResizeOverlayImageThumbnails(null!, null!,
+				new AppSettingsPublishProfiles()));
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ArgumentNullException))]
 	public async Task ResizeOverlayImageLarge_null_exception()
 	{
-		var overlayImage =
-			new OverlayImage(_selectorStorage);
-
-		await overlayImage.ResizeOverlayImageLarge(null!, null!,
-			new AppSettingsPublishProfiles());
-		// > ArgumentNullException
+		var overlayImage = new OverlayImage(_selectorStorage);
+		await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+			await overlayImage.ResizeOverlayImageLarge(null!, null!,
+				new AppSettingsPublishProfiles()));
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(FileNotFoundException))]
 	public async Task ResizeOverlayImageThumbnails_itemFileHash_Not_Found()
 	{
-		var overlayImage =
-			new OverlayImage(_selectorStorage);
-
-		await overlayImage.ResizeOverlayImageThumbnails("non-exist.jpg", "/out.jpg",
-			new AppSettingsPublishProfiles { SourceMaxWidth = 100, OverlayMaxWidth = 1 });
-		// itemFileHash not found
+		var overlayImage = new OverlayImage(_selectorStorage);
+		await Assert.ThrowsExceptionAsync<FileNotFoundException>(async () =>
+			await overlayImage.ResizeOverlayImageThumbnails("non-exist.jpg", "/out.jpg",
+				new AppSettingsPublishProfiles { SourceMaxWidth = 100, OverlayMaxWidth = 1 }));
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(FileNotFoundException))]
 	public async Task ResizeOverlayImageThumbnails_overlay_image_missing()
 	{
-		var overlayImage =
-			new OverlayImage(_selectorStorage);
-
-		await overlayImage.ResizeOverlayImageThumbnails("test.jpg", "/out.jpg",
-			new AppSettingsPublishProfiles { SourceMaxWidth = 100, OverlayMaxWidth = 1 });
-		// > overlay image missing
+		var overlayImage = new OverlayImage(_selectorStorage);
+		await Assert.ThrowsExceptionAsync<FileNotFoundException>(async () =>
+			await overlayImage.ResizeOverlayImageThumbnails("test.jpg", "/out.jpg",
+				new AppSettingsPublishProfiles { SourceMaxWidth = 100, OverlayMaxWidth = 1 }));
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(FileNotFoundException))]
 	public async Task ResizeOverlayImageLarge_File_Not_Found()
 	{
-		var overlayImage =
-			new OverlayImage(_selectorStorage);
-
-		await overlayImage.ResizeOverlayImageLarge("non-exist.jpg",
-			"/out.jpg",
-			new AppSettingsPublishProfiles { SourceMaxWidth = 100, OverlayMaxWidth = 1 });
-		// itemFileHash not found
+		var overlayImage = new OverlayImage(_selectorStorage);
+		await Assert.ThrowsExceptionAsync<FileNotFoundException>(async () =>
+			await overlayImage.ResizeOverlayImageLarge("non-exist.jpg", "/out.jpg",
+				new AppSettingsPublishProfiles { SourceMaxWidth = 100, OverlayMaxWidth = 1 }));
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(FileNotFoundException))]
 	public async Task ResizeOverlayImageLarge_overlay_image_missing()
 	{
-		var overlayImage =
-			new OverlayImage(_selectorStorage);
-
-		await overlayImage.ResizeOverlayImageLarge("/test.jpg", "/out.jpg",
-			new AppSettingsPublishProfiles { SourceMaxWidth = 100, OverlayMaxWidth = 1 });
-		// > overlay image missing
+		var overlayImage = new OverlayImage(_selectorStorage);
+		await Assert.ThrowsExceptionAsync<FileNotFoundException>(async () =>
+			await overlayImage.ResizeOverlayImageLarge("/test.jpg", "/out.jpg",
+				new AppSettingsPublishProfiles { SourceMaxWidth = 100, OverlayMaxWidth = 1 }));
 	}
 
 	[TestMethod]
