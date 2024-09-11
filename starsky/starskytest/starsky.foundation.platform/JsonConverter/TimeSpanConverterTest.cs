@@ -64,12 +64,17 @@ public sealed class JsonTimeSpanConverterTests
 		Assert.AreEqual(new TimeSpan(1, 2, 3), actual.TimeSpan);
 	}
 
-	[ExpectedException(typeof(JsonException))]
 	[TestMethod]
 	public void TimeSpanInvalidDeserializationTest()
 	{
-		JsonSerializer.Deserialize<
-			TestClass>(@"{""TimeSpan"":null}");
+		// Arrange
+		const string json = @"{""TimeSpan"":null}";
+
+		// Act & Assert
+		Assert.ThrowsException<JsonException>(() =>
+		{
+			JsonSerializer.Deserialize<TestClass>(json);
+		});
 	}
 
 	[TestMethod]

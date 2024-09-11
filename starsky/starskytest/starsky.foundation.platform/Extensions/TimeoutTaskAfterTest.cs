@@ -24,14 +24,16 @@ namespace starskytest.starsky.foundation.platform.Extensions
 		}
 		
 		[TestMethod]
-		[Timeout(5000)]
-		[ExpectedException(typeof(TimeoutException))]
-		public async Task TimeoutAfter_CheckIfTimeouts_WhenIsZero()
+		[Timeout(5000)] // This ensures that the test itself has a timeout of 5 seconds
+		public async Task TimeoutAfter_CheckIfTimeouts_WhenIsZero1()
 		{
-			// zero is not allowed as time
-			await EndlessTest().TimeoutAfter(0);
-			// expect TimeoutException
+			// Act & Assert
+			var exception = await Assert.ThrowsExceptionAsync<TimeoutException>(() => EndlessTest().TimeoutAfter(0));
+
+			// Additional assertions (optional)
+			Assert.AreEqual("timeout less than 0", exception.Message);
 		}
+
 		
 		[TestMethod]
 #if DEBUG
