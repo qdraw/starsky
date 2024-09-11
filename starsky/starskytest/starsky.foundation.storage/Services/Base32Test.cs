@@ -23,10 +23,13 @@ public sealed class Base32Test
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(DecodingException))]
 	public void Base32EncodeDecodeTestFail()
 	{
-		Base32.Decode("54678945346"); // will fail
+		// Act & Assert
+		Assert.ThrowsException<DecodingException>(() =>
+		{
+			Base32.Decode("54678945346"); // This should fail and throw DecodingException
+		});
 	}
 
 	[TestMethod]
@@ -37,10 +40,13 @@ public sealed class Base32Test
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ArgumentOutOfRangeException))]
 	public void Base32Encode_OutRange()
 	{
-		// the length (1 << 28 )
-		Base32.Encode(new byte[268435456]);
+		// Act & Assert
+		Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+		{
+			// the length (1 << 28 )
+			Base32.Encode(new byte[268435456]);
+		});
 	}
 }

@@ -8,6 +8,67 @@ namespace starskytest.starsky.foundation.platform.Helpers;
 [TestClass]
 public class PathHelperTests
 {
+	private const string TestContentVeryLongString =
+		"this-is-a-really-long-slug-that-goes-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-and-on-and-on-and-on-and-on-and-on-and-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-and-on-and-and-on-and-on-and-on-and-on-and-and-on-and-on-and-on-and-" +
+		"and-on-and-on-and-on-and-on-and-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-and-on-and-on-and-on-and-on-" +
+		"and-and-on-and-on-and-on-and-on-and-on-and-on-and-and-on-and-on-and-on-and-and-on-" +
+		"and-on-and-on-and-and-on-and-on-and-on-and-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
+		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and" +
+		"-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on" +
+		"-and-on-and-on-and-on-and-on-and-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
+		"on-and-on-and-on-and-and-on-and-and-on-and-on-and-on-and-and-on-and-and-on-and-" +
+		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-and-on-and" +
+		"-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and" +
+		"-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and" +
+		"-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and" +
+		"-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and";
+
 	[DataTestMethod] // [Theory]
 	[DataRow("path/to/file.txt", "file.txt")]
 	[DataRow("file.txt", "file.txt")]
@@ -23,7 +84,7 @@ public class PathHelperTests
 		// Assert
 		Assert.AreEqual(expectedFileName, actualFileName);
 	}
-	
+
 	[DataTestMethod] // [Theory]
 	[DataRow("path/to/file.txt", "file.txt")]
 	[DataRow("/test/file/", "")]
@@ -39,11 +100,13 @@ public class PathHelperTests
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ArgumentException))]
 	public void GetFileName_ReturnsFileName_WithMaliciousInput()
 	{
-		// Act and Assert
-		PathHelper.GetFileName(TestContentVeryLongString);
+		// Act & Assert
+		Assert.ThrowsException<ArgumentException>(() =>
+		{
+			PathHelper.GetFileName(TestContentVeryLongString);
+		});
 	}
 
 	[TestMethod]
@@ -360,65 +423,4 @@ public class PathHelperTests
 		Assert.AreEqual("/path/to/file1", result[0]);
 		Assert.AreEqual("/path/to/file2", result[1]);
 	}
-
-	private const string TestContentVeryLongString =
-		"this-is-a-really-long-slug-that-goes-on-and-on-and-on-and-on-and-on-and-on-" +
-		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
-		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
-		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
-		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
-		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
-		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
-		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
-		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
-		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
-		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
-		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
-		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
-		"and-on-and-on-and-on-and-on-and-on-and-on-and-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-and-on-" +
-		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
-		"and-and-on-and-on-and-on-and-on-and-on-and-and-on-and-on-and-on-and-on-and-on-" +
-		"and-on-and-and-on-and-and-on-and-on-and-on-and-on-and-and-on-and-on-and-on-and-" +
-		"and-on-and-on-and-on-and-on-and-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
-		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-and-on-and-on-and-on-and-on-" +
-		"and-and-on-and-on-and-on-and-on-and-on-and-on-and-and-on-and-on-and-on-and-and-on-" +
-		"and-on-and-on-and-and-on-and-on-and-on-and-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-" +
-		"and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and" +
-		"-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on" +
-		"-and-on-and-on-and-on-and-on-and-and-on-and-on-and-on-and-on-and-on-and-on-and-" +
-		"on-and-on-and-on-and-and-on-and-and-on-and-on-and-on-and-and-on-and-and-on-and-" +
-		"on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-on-and-and-on-and" +
-		"-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and" +
-		"-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and" +
-		"-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and" +
-		"-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and";
 }

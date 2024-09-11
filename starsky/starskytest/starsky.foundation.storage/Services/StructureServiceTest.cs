@@ -58,13 +58,17 @@ public sealed class StructureServiceTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(FieldAccessException))]
 	public void ParseFileName_FieldAccessException_Null()
 	{
-		new StructureService(new FakeIStorage(), null!).ParseSubfolders(
-			new DateTime(2020, 01, 01,
-				01, 01, 01, DateTimeKind.Local));
-		// ExpectedException
+		// Arrange
+		var service = new StructureService(new FakeIStorage(), null!);
+
+		// Act & Assert
+		Assert.ThrowsException<FieldAccessException>(() =>
+		{
+			service.ParseSubfolders(
+				new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local));
+		});
 	}
 
 	[TestMethod]

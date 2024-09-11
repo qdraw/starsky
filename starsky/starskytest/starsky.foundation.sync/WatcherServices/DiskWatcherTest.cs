@@ -289,19 +289,22 @@ public sealed class DiskWatcherTest
 
 
 	[TestMethod]
-	[ExpectedException(typeof(NullReferenceException))]
 	public void OnRenamed_ShouldHitQueueProcessor()
 	{
+		// Arrange
 		var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper
 		{
 			CrashOnEnableRaisingEvents = true
 		};
 
-		var event1 = new RenamedEventArgs(WatcherChangeTypes.Renamed,
-			"t", "test.jpg", "test2.jpg");
+		var event1 = new RenamedEventArgs(WatcherChangeTypes.Renamed, "t", "test.jpg", "test2.jpg");
 
-		new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), null!)
-			.OnRenamed(null!, event1);
+		// Act & Assert
+		 Assert.ThrowsException<NullReferenceException>(() =>
+		{
+			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), null!)
+				.OnRenamed(null!, event1);
+		});
 	}
 
 	[TestMethod]

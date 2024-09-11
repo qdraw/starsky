@@ -240,12 +240,17 @@ public class ThumbnailQueryTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ArgumentNullException))]
 	public async Task AddThumbnailRangeAsync_NullFileHashes_ArgumentException()
 	{
-		// Act
-		await _thumbnailQuery.AddThumbnailRangeAsync(
-			new List<ThumbnailResultDataTransferModel> { new(null!) });
+		// Arrange
+		var thumbnailQuery = _thumbnailQuery; // Ensure this is initialized as needed
+
+		// Act & Assert
+		await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+		{
+			await thumbnailQuery.AddThumbnailRangeAsync(
+				new List<ThumbnailResultDataTransferModel> { new(null!) });
+		});
 	}
 
 

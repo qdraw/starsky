@@ -160,11 +160,10 @@ public sealed class VersionHelpersTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ArgumentException))]
-	public void Test()
+	public void SemVersion_Parse_test()
 	{
-		SemVersion.Parse("test");
-		// expect wrong input
+		// Act & Assert
+		Assert.ThrowsException<ArgumentException>(() => { SemVersion.Parse("test"); });
 	}
 
 	[TestMethod]

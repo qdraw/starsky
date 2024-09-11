@@ -139,11 +139,13 @@ public sealed class AppSettingsTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ArgumentException))]
 	public void AppSettingsProviderTest_StructureCheck_MissingFirstSlash()
 	{
-		AppSettings.StructureCheck("d/test.ext");
-		// >= ArgumentException
+		// Act & Assert
+		Assert.ThrowsException<ArgumentException>(() =>
+		{
+			AppSettings.StructureCheck("d/test.ext");
+		});
 	}
 
 	[TestMethod]
@@ -159,10 +161,12 @@ public sealed class AppSettingsTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ArgumentException))]
 	public void AppSettingsProviderTest_NoFolderMissingFirstSlash()
 	{
-		AppSettings.StructureCheck("dion.ext");
+		Assert.ThrowsException<ArgumentException>(() =>
+		{
+			AppSettings.StructureCheck("dion.ext");
+		});
 		// >= ArgumentException
 	}
 

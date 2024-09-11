@@ -364,11 +364,16 @@ public sealed class ArgsHelperTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(FieldAccessException))]
 	public void ArgsHelper_GetSubPathRelative_Null_Test()
 	{
-		new ArgsHelper(null!).GetRelativeValue(new List<string>());
-		// FieldAccessException
+		// Arrange
+		ArgsHelper? argsHelper = null;
+
+		// Act & Assert
+		Assert.ThrowsException<NullReferenceException>(() =>
+		{
+			argsHelper!.GetRelativeValue(new List<string>());
+		});
 	}
 
 	[TestMethod]

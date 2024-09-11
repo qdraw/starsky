@@ -16,7 +16,6 @@ public sealed class DecodingExceptionTest
 		// Arrange
 #pragma warning disable SYSLIB0050
 		var info = new SerializationInfo(typeof(Exception), new FormatterConverter());
-#pragma warning restore SYSLIB0050
 		info.AddValue("Message", "");
 		info.AddValue("InnerException", new Exception());
 		info.AddValue("HelpURL", "");
@@ -29,7 +28,7 @@ public sealed class DecodingExceptionTest
 		                                                     BindingFlags.NonPublic)
 			.FirstOrDefault();
 
-		if (ctor == null)
+		if ( ctor == null )
 		{
 			Assert.Fail("No suitable constructor found for DecodingException.");
 		}
@@ -37,14 +36,15 @@ public sealed class DecodingExceptionTest
 		// Act & Assert
 		var ex = Assert.ThrowsException<DecodingException>(() =>
 		{
-			var instance = (DecodingException)ctor.Invoke(new object[]
+			var instance = ( DecodingException ) ctor.Invoke(new object[]
 			{
 				info, new StreamingContext(StreamingContextStates.All)
 			});
 			throw instance;
 		});
+#pragma warning restore SYSLIB0050
 
 		// Optionally verify the exception message or other properties
-		Assert.IsTrue(ex.ToString().Contains("System.Exception")); 
+		Assert.IsTrue(ex.ToString().Contains("System.Exception"));
 	}
 }

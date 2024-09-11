@@ -20,10 +20,8 @@ public sealed class WebSocketConnectionsMiddlewareTest
 	{
 		// Act & Assert
 		var exception = Assert.ThrowsException<ArgumentNullException>(() =>
-		{
 			new WebSocketConnectionsMiddleware(null!,
-				null!, new WebSocketConnectionsService(new FakeIWebLogger()));
-		});
+				null!, new WebSocketConnectionsService(new FakeIWebLogger())));
 
 		// Additional assertion (optional)
 		Assert.AreEqual("options", exception.ParamName);
