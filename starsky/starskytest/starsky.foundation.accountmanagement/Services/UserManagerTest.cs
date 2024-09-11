@@ -80,13 +80,15 @@ public sealed class UserManagerTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ArgumentNullException))]
 	public async Task SignInSystemArgumentNullException()
 	{
 		var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(),
 			_memoryCache);
-		// not having SignUpAsync registered!
-		Assert.IsFalse(await userManager.SignIn(new DefaultHttpContext(), new User { Id = 1 }));
+
+		// not having SignUpAsync registered
+		await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+			await userManager.SignIn(new DefaultHttpContext(),
+				new User { Id = 1 }));
 	}
 
 	[TestMethod]
