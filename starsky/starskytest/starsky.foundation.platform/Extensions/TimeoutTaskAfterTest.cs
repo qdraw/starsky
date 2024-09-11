@@ -16,11 +16,15 @@ public sealed class TimeoutTaskAfterTest
 
 	[TestMethod]
 	[Timeout(5000)]
-	[ExpectedException(typeof(TimeoutException))]
 	public async Task TimeoutAfter_CheckIfTimeouts_ExpectException()
 	{
-		await EndlessTest().TimeoutAfter(1);
-		// expect TimeoutException
+		// Act & Assert
+		var exception =
+			await Assert.ThrowsExceptionAsync<TimeoutException>(() =>
+				EndlessTest().TimeoutAfter(1));
+
+		// Additional assertions (optional)
+		Assert.AreEqual("[TimeoutTaskAfter] task operation has timed out", exception.Message);
 	}
 
 	[TestMethod]
