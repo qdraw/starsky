@@ -15,6 +15,9 @@ namespace starskytest.starsky.foundation.native.OpenApplicationNative.Helpers;
 [TestClass]
 public class MacOsOpenUrlTests
 {
+	private const string ConsoleApp = "/System/Applications/Utilities/Console.app";
+	private const string ConsoleName = "Console";
+
 	[TestMethod]
 	public void OpenDefault_NonMacOS()
 	{
@@ -34,10 +37,6 @@ public class MacOsOpenUrlTests
 
 		MacOsOpenUrl.OpenDefault(["not important"], OSPlatform.OSX);
 	}
-
-
-	private const string ConsoleApp = "/System/Applications/Utilities/Console.app";
-	private const string ConsoleName = "Console";
 
 	[TestMethod]
 	public async Task TestMethodWithSpecificApp__MacOnly()
