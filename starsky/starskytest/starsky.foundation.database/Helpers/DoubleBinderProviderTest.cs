@@ -23,12 +23,12 @@ public class DoubleBinderProviderTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ArgumentNullException))]
 	public void DoubleBinderProviderTest_2_Null()
 	{
 		var doubleBinderProvider = new DoubleBinderProvider();
-		var result = doubleBinderProvider.GetBinder(null!);
-		Assert.IsNull(result);
+
+		// Assert that an ArgumentNullException is thrown when GetBinder is called with null
+		Assert.ThrowsException<ArgumentNullException>(() => doubleBinderProvider.GetBinder(null!));
 	}
 
 	[TestMethod]
