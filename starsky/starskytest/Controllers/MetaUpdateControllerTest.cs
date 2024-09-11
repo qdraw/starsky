@@ -326,8 +326,9 @@ public sealed class MetaUpdateControllerTest
 			new FakeIMetaUpdateService(),
 			new FakeIUpdateBackgroundTaskQueue(),
 			new FakeIWebLogger(), new FakeIServiceScopeFactory());
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
 
-		var result = await controller.UpdateAsync(null!, null!, true) as
+		var result = await controller.UpdateAsync(new FileIndexItem(), string.Empty, true) as
 			BadRequestObjectResult;
 		
 		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));

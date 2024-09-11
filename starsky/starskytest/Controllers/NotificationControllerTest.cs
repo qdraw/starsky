@@ -53,8 +53,9 @@ public sealed class NotificationControllerTest
 	public async Task UpdateAsync_BadRequest_InValidModel()
 	{
 		var controller = new NotificationController(new FakeINotificationQuery());
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
 
-		var result = await controller.GetNotifications(null!);
+		var result = await controller.GetNotifications(DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)) as BadRequestObjectResult;
 		
 		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
 	}
