@@ -88,10 +88,7 @@ public class ThumbnailQueryErrorTest
 			new MySqlSaveDbExceptionContext(options, "Duplicate entry '1' for key 'PRIMARY'", code),
 			null!, new FakeIWebLogger());
 
-		await fakeQuery.AddThumbnailRangeAsync(new List<ThumbnailResultDataTransferModel>
-		{
-			new("t")
-		});
+		await fakeQuery.AddThumbnailRangeAsync([new ThumbnailResultDataTransferModel("t")]);
 
 		Assert.IsTrue(IsCalledMySqlSaveDbExceptionContext);
 	}
@@ -176,7 +173,7 @@ public class ThumbnailQueryErrorTest
 			// System.NullReferenceException: Object reference not set to an instance of an object.
 		}
 
-		public object? GetRelationshipSnapshotValue(IPropertyBase propertyBase)
+		public object GetRelationshipSnapshotValue(IPropertyBase propertyBase)
 		{
 			throw new NotImplementedException();
 		}
