@@ -4487,7 +4487,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "Reverse lookup for Geo Information and/or add Geo location based on a GPX file within the same directory",
+          "summary": "Reverse lookup for Geo Information and/or add Geo location based on a GPX file within the same\r\ndirectory",
           "parameters": [
             {
               "unresolvedReference": false,
@@ -16529,5 +16529,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "A713BED7F4084EC344034A8E12264AF7CBA9C75811FE84A2306FEAFF8B48AFA257C4B59373A67DC02D8B28BA06819A707F191BCB9797F6DC6243A6948BF7EEF5"
+  "hashCode": "EF3E80612A4DE42E92727CDBA18B33EFE351B98B8121009BE34562816830F7AF8BB8AE42F8ED761DD5FFB4FBABCA18B2029669F11DEC0AB7EE60541AA7D91C3C"
 }
