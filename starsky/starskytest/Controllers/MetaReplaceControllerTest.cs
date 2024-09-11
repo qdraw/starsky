@@ -126,7 +126,7 @@ public sealed class MetaReplaceControllerTest
 			});
 		}
 
-		_query.GetObjectByFilePath(_createAnImage.DbPath);
+		await _query.GetObjectByFilePathAsync(_createAnImage.DbPath);
 	}
 
 	private static IServiceScopeFactory NewScopeFactory()
@@ -289,5 +289,31 @@ public sealed class MetaReplaceControllerTest
 
 		var expected = "{\"" + createAnImage.DbPath + "\":[\"tags\"]}";
 		Assert.AreEqual(expected, actual);
+	}
+	
+		
+	[TestMethod]
+	public async Task Replace_ReturnsBadRequest()
+	{
+		// Arrange
+		var controller = new MetaReplaceController(new FakeIMetaReplaceService(),
+			new FakeIUpdateBackgroundTaskQueue(),
+			new FakeIRealtimeConnectionsService(), new FakeIWebLogger(), new FakeIServiceScopeFactory());
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+
+		// Act
+		var result = await controller.Replace(null!, null!, null!, null!);
+
+		// Assert
+		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+	}
+	
+}
+
+internal class FakeIServiceScopeFactory : IServiceScopeFactory
+{
+	public IServiceScope CreateScope()
+	{
+		throw new NotImplementedException();
 	}
 }

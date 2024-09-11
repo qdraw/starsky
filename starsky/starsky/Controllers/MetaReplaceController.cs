@@ -54,6 +54,11 @@ namespace starsky.Controllers
 		public async Task<IActionResult> Replace(string f, string fieldName, string search,
 			string replace, bool collections = true)
 		{
+			if ( !ModelState.IsValid )
+			{
+				return BadRequest("Model is not valid");
+			}
+			
 			var stopwatch = StopWatchLogger.StartUpdateReplaceStopWatch();
 
 			var fileIndexResultsList = await _metaReplaceService

@@ -28,6 +28,11 @@ public sealed class GeoReverseLookupController : Controller
 	[Produces("application/json")]
 	public async Task<IActionResult> GeoReverseLookup(double latitude, double longitude)
 	{
+		if ( !ModelState.IsValid )
+		{
+			return BadRequest("Model is not valid");
+		}
+		
 		var result = await _geoReverseLookup.GetLocation(latitude, longitude);
 		return Ok(result);
 	}
