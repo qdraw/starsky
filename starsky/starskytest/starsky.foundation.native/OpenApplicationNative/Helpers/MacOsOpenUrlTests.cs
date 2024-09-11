@@ -123,11 +123,11 @@ public class MacOsOpenUrlTests
 		Assert.ThrowsException<DllNotFoundException>(() =>
 			MacOsOpenUrl.OpenApplicationAtUrl(["not important"], "not important", OSPlatform.OSX));
 	}
-	
+
 	[TestMethod]
 	public void OpenURLsWithApplicationAtURL__NonMacOS1()
 	{
-		if (OperatingSystemHelper.GetPlatform() == OSPlatform.OSX)
+		if ( OperatingSystemHelper.GetPlatform() == OSPlatform.OSX )
 		{
 			Assert.Inconclusive("This test is for Windows / Linux only");
 			return;
@@ -141,7 +141,7 @@ public class MacOsOpenUrlTests
 	[TestMethod]
 	public void NsWorkspaceSharedWorkSpace__NonMacOS()
 	{
-		if (OperatingSystemHelper.GetPlatform() == OSPlatform.OSX)
+		if ( OperatingSystemHelper.GetPlatform() == OSPlatform.OSX )
 		{
 			Assert.Inconclusive("This test is for Windows / Linux only");
 			return;
@@ -153,15 +153,16 @@ public class MacOsOpenUrlTests
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(DllNotFoundException))]
 	public void InvokeOpenUrl__NonMacOS()
 	{
+		// Arrange
 		if ( OperatingSystemHelper.GetPlatform() == OSPlatform.OSX )
 		{
-			Assert.Inconclusive("This test if for Windows / Linux only");
+			Assert.Inconclusive("This test is for Windows/Linux only.");
 			return;
 		}
 
-		MacOsOpenUrl.InvokeOpenUrl(IntPtr.Zero);
+		// Act & Assert
+		Assert.ThrowsException<DllNotFoundException>(() => MacOsOpenUrl.InvokeOpenUrl(IntPtr.Zero));
 	}
 }
