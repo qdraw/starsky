@@ -79,7 +79,7 @@ public class AreListsEqualHelperTests
 		// Assert
 		Assert.IsFalse(result);
 	}
-	
+
 	[TestMethod]
 	public void AreListsEqual_OneListNull()
 	{

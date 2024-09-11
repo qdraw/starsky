@@ -126,12 +126,14 @@ public sealed class ArgsHelperTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(FieldAccessException))]
 	public void ArgsHelper_GetPathFormArgsTest_FieldAccessException()
 	{
-		// inject appSettings!
+		// Arrange
 		var args = new List<string> { "-p", "/" }.ToArray();
-		new ArgsHelper(null!).GetPathFormArgs(args);
+
+		// Act & Assert
+		Assert.ThrowsException<FieldAccessException>(() =>
+			new ArgsHelper(null!).GetPathFormArgs(args));
 	}
 
 	[TestMethod]
@@ -173,12 +175,14 @@ public sealed class ArgsHelperTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(FieldAccessException))]
 	public void GetPathListFormArgsTest__FieldAccessException()
 	{
-		// inject appSettings!
+		// Arrange
 		var args = new List<string> { "-p", "/" }.ToArray();
-		new ArgsHelper(null!).GetPathListFormArgs(args);
+
+		// Act & Assert
+		Assert.ThrowsException<FieldAccessException>(() =>
+			new ArgsHelper(null!).GetPathListFormArgs(args));
 	}
 
 	[TestMethod]
