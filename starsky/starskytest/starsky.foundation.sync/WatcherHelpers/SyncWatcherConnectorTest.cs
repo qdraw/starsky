@@ -19,311 +19,294 @@ using starsky.foundation.sync.WatcherHelpers;
 using starskytest.Controllers;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.sync.WatcherHelpers
+namespace starskytest.starsky.foundation.sync.WatcherHelpers;
+
+[TestClass]
+public sealed class SyncWatcherConnectorTest
 {
-	[TestClass]
-	public sealed class SyncWatcherConnectorTest
+	[TestMethod]
+	public async Task Sync_ArgumentException()
 	{
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentException))]
-		public async Task Sync_ArgumentException()
+		// Arrange
+		var syncWatcherPreflight = new SyncWatcherConnector(null!, null!,
+			null!, null!, null!, null!);
+
+		// Act & Assert
+		await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
 		{
-			// ReSharper disable once AssignNullToNotNullAttribute
-			var syncWatcherPreflight =
-				new SyncWatcherConnector(null!, null!,
-					null!, null!, null!, null!);
 			await syncWatcherPreflight.Sync(
 				new Tuple<string, string?, WatcherChangeTypes>("test", null!,
 					WatcherChangeTypes.Changed));
-		}
+		});
+	}
 
-		[TestMethod]
-		public async Task Sync_CheckInput()
+
+	[TestMethod]
+	public async Task Sync_CheckInput()
+	{
+		var sync = new FakeISynchronize();
+		var appSettings = new AppSettings();
+		var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(), sync,
+			new FakeIWebSocketConnectionsService(),
+			new FakeIQuery(), new FakeIWebLogger(), new FakeINotificationQuery());
+		await syncWatcherPreflight.Sync(
+			new Tuple<string, string?, WatcherChangeTypes>(
+				Path.Combine(appSettings.StorageFolder, "test"), null,
+				WatcherChangeTypes.Changed));
+
+		Assert.AreEqual("/test", sync.Inputs[0].Item1);
+	}
+
+	[TestMethod]
+	[ExpectedException(typeof(InvalidOperationException))]
+	public async Task Sync_InjectScopes_NullReferenceException()
+	{
+		var appSettings = new AppSettings();
+		var services = new ServiceCollection();
+		var serviceProvider = services.BuildServiceProvider();
+		var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+		var syncWatcherPreflight = new SyncWatcherConnector(scope);
+		await syncWatcherPreflight.Sync(
+			new Tuple<string, string?, WatcherChangeTypes>(
+				Path.Combine(appSettings.StorageFolder, "test"), null,
+				WatcherChangeTypes.Changed));
+	}
+
+	[TestMethod]
+	public async Task Sync_Rename()
+	{
+		var sync = new FakeISynchronize();
+		var appSettings = new AppSettings();
+		var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(), sync,
+			new FakeIWebSocketConnectionsService(),
+			new FakeIQuery(), new FakeIWebLogger(), new FakeINotificationQuery());
+		var result = await syncWatcherPreflight.Sync(
+			new Tuple<string, string?, WatcherChangeTypes>(
+				Path.Combine(appSettings.StorageFolder, "test"),
+				Path.Combine(appSettings.StorageFolder, "test2"), WatcherChangeTypes.Renamed));
+
+		Assert.AreEqual("/test", sync.Inputs[0].Item1);
+		Assert.AreEqual("/test2", sync.Inputs[1].Item1);
+		// result
+		Assert.AreEqual("/test", result[0].FilePath);
+		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, result[0].Status);
+	}
+
+
+	[TestMethod]
+	public async Task Sync_Rename_skipNull()
+	{
+		var sync = new FakeISynchronize();
+		var appSettings = new AppSettings();
+		var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(), sync,
+			new FakeIWebSocketConnectionsService(), new FakeIQuery(),
+			new FakeIWebLogger(), new FakeINotificationQuery());
+		await syncWatcherPreflight.Sync(
+			new Tuple<string, string?, WatcherChangeTypes>(
+				Path.Combine(appSettings.StorageFolder, "test"), null,
+				WatcherChangeTypes.Renamed));
+
+		Assert.AreEqual("/test", sync.Inputs[0].Item1);
+	}
+
+	[TestMethod]
+	public void Sync_CheckInput_Socket()
+	{
+		var sync = new FakeISynchronize(new List<FileIndexItem>
 		{
-			var sync = new FakeISynchronize();
-			var appSettings = new AppSettings();
-			var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(), sync,
-				new FakeIWebSocketConnectionsService(),
-				new FakeIQuery(), new FakeIWebLogger(), new FakeINotificationQuery());
-			await syncWatcherPreflight.Sync(
-				new Tuple<string, string?, WatcherChangeTypes>(
-					Path.Combine(appSettings.StorageFolder, "test"), null,
-					WatcherChangeTypes.Changed));
+			new("/test") { Status = FileIndexItem.ExifStatus.Ok }
+		});
+		var websockets = new FakeIWebSocketConnectionsService();
+		var appSettings = new AppSettings();
+		var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(),
+			sync, websockets, new FakeIQuery(), new FakeIWebLogger(),
+			new FakeINotificationQuery());
+		syncWatcherPreflight.Sync(
+			new Tuple<string, string?, WatcherChangeTypes>(
+				Path.Combine(appSettings.StorageFolder, "test"), null,
+				WatcherChangeTypes.Changed));
 
-			Assert.AreEqual("/test", sync.Inputs[0].Item1);
-		}
+		Assert.AreEqual(1, websockets
+			.FakeSendToAllAsync.Count(p => !p.StartsWith("[system]")));
 
-		[TestMethod]
-		[ExpectedException(typeof(InvalidOperationException))]
-		public async Task Sync_InjectScopes_NullReferenceException()
+		var value = websockets.FakeSendToAllAsync.Find(p =>
+			!p.StartsWith("[system]"));
+		Assert.IsTrue(value?.Contains("filePath\":\"/test\""));
+		Assert.AreEqual("/test", sync.Inputs[0].Item1);
+	}
+
+	[TestMethod]
+	public void Sync_CheckInput_Socket_Ignore()
+	{
+		var sync = new FakeISynchronize(new List<FileIndexItem>
 		{
-			var appSettings = new AppSettings();
-			var services = new ServiceCollection();
-			var serviceProvider = services.BuildServiceProvider();
-			var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			new("/test") { Status = FileIndexItem.ExifStatus.OperationNotSupported }
+		});
+		var websockets = new FakeIWebSocketConnectionsService();
+		var appSettings = new AppSettings();
+		var syncWatcherConnector = new SyncWatcherConnector(appSettings,
+			sync, websockets, new FakeIQuery(), new FakeIWebLogger(),
+			new FakeINotificationQuery());
+		syncWatcherConnector.Sync(
+			new Tuple<string, string?, WatcherChangeTypes>(
+				Path.Combine(appSettings.StorageFolder, "test"), null,
+				WatcherChangeTypes.Changed));
 
-			var syncWatcherPreflight = new SyncWatcherConnector(scope);
-			await syncWatcherPreflight.Sync(
-				new Tuple<string, string?, WatcherChangeTypes>(
-					Path.Combine(appSettings.StorageFolder, "test"), null,
-					WatcherChangeTypes.Changed));
-		}
+		Assert.AreEqual(0, websockets.FakeSendToAllAsync.Count);
+		Assert.AreEqual("/test", sync.Inputs[0].Item1);
+	}
 
-		[TestMethod]
-		public async Task Sync_Rename()
+	[TestMethod]
+	public void Sync_CheckInput_CheckIfCacheIsUpdated()
+	{
+		var sync = new FakeISynchronize(new List<FileIndexItem>
 		{
-			var sync = new FakeISynchronize();
-			var appSettings = new AppSettings();
-			var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(), sync,
-				new FakeIWebSocketConnectionsService(),
-				new FakeIQuery(), new FakeIWebLogger(), new FakeINotificationQuery());
-			var result = await syncWatcherPreflight.Sync(
-				new Tuple<string, string?, WatcherChangeTypes>(
-					Path.Combine(appSettings.StorageFolder, "test"),
-					Path.Combine(appSettings.StorageFolder, "test2"), WatcherChangeTypes.Renamed));
+			new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }
+		});
+		var websockets = new FakeIWebSocketConnectionsService();
+		var appSettings = new AppSettings();
 
-			Assert.AreEqual("/test", sync.Inputs[0].Item1);
-			Assert.AreEqual("/test2", sync.Inputs[1].Item1);
-			// result
-			Assert.AreEqual("/test", result[0].FilePath);
-			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, result[0].Status);
-		}
+		var provider = new ServiceCollection()
+			.AddMemoryCache()
+			.BuildServiceProvider();
+		var memoryCache = provider.GetService<IMemoryCache>();
 
+		var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
+		builderDb.UseInMemoryDatabase(nameof(DownloadPhotoControllerTest));
+		var options = builderDb.Options;
+		var context = new ApplicationDbContext(options);
 
-		[TestMethod]
-		public async Task Sync_Rename_skipNull()
-		{
-			var sync = new FakeISynchronize();
-			var appSettings = new AppSettings();
-			var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(), sync,
-				new FakeIWebSocketConnectionsService(), new FakeIQuery(),
-				new FakeIWebLogger(), new FakeINotificationQuery());
-			await syncWatcherPreflight.Sync(
-				new Tuple<string, string?, WatcherChangeTypes>(
-					Path.Combine(appSettings.StorageFolder, "test"), null,
-					WatcherChangeTypes.Renamed));
+		var query = new Query(context, new AppSettings(), null!, new FakeIWebLogger(),
+			memoryCache);
 
-			Assert.AreEqual("/test", sync.Inputs[0].Item1);
-		}
-
-		[TestMethod]
-		public void Sync_CheckInput_Socket()
-		{
-			var sync = new FakeISynchronize(new List<FileIndexItem>
+		query.AddCacheParentItem("/",
+			new List<FileIndexItem>
 			{
-				new FileIndexItem("/test") { Status = FileIndexItem.ExifStatus.Ok }
-			});
-			var websockets = new FakeIWebSocketConnectionsService();
-			var appSettings = new AppSettings();
-			var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(),
-				sync, websockets, new FakeIQuery(), new FakeIWebLogger(),
-				new FakeINotificationQuery());
-			syncWatcherPreflight.Sync(
-				new Tuple<string, string?, WatcherChangeTypes>(
-					Path.Combine(appSettings.StorageFolder, "test"), null,
-					WatcherChangeTypes.Changed));
-
-			Assert.AreEqual(1, websockets
-				.FakeSendToAllAsync.Count(p => !p.StartsWith("[system]")));
-
-			var value = websockets.FakeSendToAllAsync.Find(p =>
-				!p.StartsWith("[system]"));
-			Assert.IsTrue(value?.Contains("filePath\":\"/test\""));
-			Assert.AreEqual("/test", sync.Inputs[0].Item1);
-		}
-
-		[TestMethod]
-		public void Sync_CheckInput_Socket_Ignore()
-		{
-			var sync = new FakeISynchronize(new List<FileIndexItem>
-			{
-				new FileIndexItem("/test")
+				new("/test.jpg")
 				{
-					Status = FileIndexItem.ExifStatus.OperationNotSupported
+					IsDirectory = false,
+					Tags = "This should not be the tags",
+					ParentDirectory = "/"
 				}
 			});
-			var websockets = new FakeIWebSocketConnectionsService();
-			var appSettings = new AppSettings();
-			var syncWatcherConnector = new SyncWatcherConnector(appSettings,
-				sync, websockets, new FakeIQuery(), new FakeIWebLogger(),
-				new FakeINotificationQuery());
-			syncWatcherConnector.Sync(
-				new Tuple<string, string?, WatcherChangeTypes>(
-					Path.Combine(appSettings.StorageFolder, "test"), null,
-					WatcherChangeTypes.Changed));
 
-			Assert.AreEqual(0, websockets.FakeSendToAllAsync.Count);
-			Assert.AreEqual("/test", sync.Inputs[0].Item1);
-		}
+		var syncWatcherConnector = new SyncWatcherConnector(appSettings,
+			sync, websockets, query, new FakeIWebLogger(), new FakeINotificationQuery());
 
-		[TestMethod]
-		public void Sync_CheckInput_CheckIfCacheIsUpdated()
+		syncWatcherConnector.Sync(
+			new Tuple<string, string?, WatcherChangeTypes>(
+				Path.Combine(appSettings.StorageFolder, "test.jpg"), null,
+				WatcherChangeTypes.Changed));
+
+		Assert.AreEqual(string.Empty, query.SingleItem("/test.jpg")?.FileIndexItem?.Tags);
+	}
+
+	[TestMethod]
+	public void Sync_CheckInput_CheckIfCacheIsUpdated_ButIgnoreNotInIndexFile()
+	{
+		var sync = new FakeISynchronize(new List<FileIndexItem>
 		{
-			var sync = new FakeISynchronize(new List<FileIndexItem>
+			//    = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = > source is missing
+			new("/test.jpg") { Status = FileIndexItem.ExifStatus.NotFoundSourceMissing }
+		});
+		var websockets = new FakeIWebSocketConnectionsService();
+		var appSettings = new AppSettings();
+
+		var provider = new ServiceCollection()
+			.AddMemoryCache()
+			.BuildServiceProvider();
+		var memoryCache = provider.GetService<IMemoryCache>();
+
+		var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
+		builderDb.UseInMemoryDatabase(nameof(DownloadPhotoControllerTest));
+		var options = builderDb.Options;
+		var context = new ApplicationDbContext(options);
+
+		var query = new Query(context, new AppSettings(), null!, new FakeIWebLogger(),
+			memoryCache);
+
+		query.AddCacheParentItem("/",
+			new List<FileIndexItem>
 			{
-				new FileIndexItem("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }
-			});
-			var websockets = new FakeIWebSocketConnectionsService();
-			var appSettings = new AppSettings();
-
-			var provider = new ServiceCollection()
-				.AddMemoryCache()
-				.BuildServiceProvider();
-			var memoryCache = provider.GetService<IMemoryCache>();
-
-			var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
-			builderDb.UseInMemoryDatabase(nameof(DownloadPhotoControllerTest));
-			var options = builderDb.Options;
-			var context = new ApplicationDbContext(options);
-
-			var query = new Query(context, new AppSettings(), null!, new FakeIWebLogger(),
-				memoryCache);
-
-			query.AddCacheParentItem("/",
-				new List<FileIndexItem>
+				new("/test.jpg")
 				{
-					new FileIndexItem("/test.jpg")
-					{
-						IsDirectory = false,
-						Tags = "This should not be the tags",
-						ParentDirectory = "/"
-					}
-				});
-
-			var syncWatcherConnector = new SyncWatcherConnector(appSettings,
-				sync, websockets, query, new FakeIWebLogger(), new FakeINotificationQuery());
-
-			syncWatcherConnector.Sync(
-				new Tuple<string, string?, WatcherChangeTypes>(
-					Path.Combine(appSettings.StorageFolder, "test.jpg"), null,
-					WatcherChangeTypes.Changed));
-
-			Assert.AreEqual(string.Empty, query.SingleItem("/test.jpg")?.FileIndexItem?.Tags);
-		}
-
-		[TestMethod]
-		public void Sync_CheckInput_CheckIfCacheIsUpdated_ButIgnoreNotInIndexFile()
-		{
-			var sync = new FakeISynchronize(new List<FileIndexItem>
-			{
-				//    = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = > source is missing
-				new FileIndexItem("/test.jpg")
-				{
-					Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
+					IsDirectory = false,
+					Tags = "This should not be the tags",
+					ParentDirectory = "/"
 				}
 			});
-			var websockets = new FakeIWebSocketConnectionsService();
-			var appSettings = new AppSettings();
 
-			var provider = new ServiceCollection()
-				.AddMemoryCache()
-				.BuildServiceProvider();
-			var memoryCache = provider.GetService<IMemoryCache>();
+		var syncWatcherConnector = new SyncWatcherConnector(appSettings,
+			sync, websockets, query, new FakeIWebLogger(), new FakeINotificationQuery());
 
-			var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
-			builderDb.UseInMemoryDatabase(nameof(DownloadPhotoControllerTest));
-			var options = builderDb.Options;
-			var context = new ApplicationDbContext(options);
+		syncWatcherConnector.Sync(
+			new Tuple<string, string?, WatcherChangeTypes>(
+				Path.Combine(appSettings.StorageFolder, "test.jpg"), null,
+				WatcherChangeTypes.Changed));
 
-			var query = new Query(context, new AppSettings(), null!, new FakeIWebLogger(),
-				memoryCache);
+		Assert.AreEqual(0, query.DisplayFileFolders().Count());
+	}
 
-			query.AddCacheParentItem("/",
-				new List<FileIndexItem>
-				{
-					new FileIndexItem("/test.jpg")
-					{
-						IsDirectory = false,
-						Tags = "This should not be the tags",
-						ParentDirectory = "/"
-					}
-				});
-
-			var syncWatcherConnector = new SyncWatcherConnector(appSettings,
-				sync, websockets, query, new FakeIWebLogger(), new FakeINotificationQuery());
-
-			syncWatcherConnector.Sync(
-				new Tuple<string, string?, WatcherChangeTypes>(
-					Path.Combine(appSettings.StorageFolder, "test.jpg"), null,
-					WatcherChangeTypes.Changed));
-
-			Assert.AreEqual(0, query.DisplayFileFolders().Count());
-		}
-
-		[TestMethod]
-		public void FilterBefore_AllowedStatus()
+	[TestMethod]
+	public void FilterBefore_AllowedStatus()
+	{
+		var fileIndexItems = new List<FileIndexItem>
 		{
-			var fileIndexItems = new List<FileIndexItem>
+			new() { FilePath = "/1.jpg", Status = FileIndexItem.ExifStatus.Deleted },
+			new() { FilePath = "/2.jpg", Status = FileIndexItem.ExifStatus.Ok },
+			new() { FilePath = "/3.jpg", Status = FileIndexItem.ExifStatus.NotFoundNotInIndex },
+			new()
 			{
-				new FileIndexItem
-				{
-					FilePath = "/1.jpg", Status = FileIndexItem.ExifStatus.Deleted
-				},
-				new FileIndexItem()
-				{
-					FilePath = "/2.jpg", Status = FileIndexItem.ExifStatus.Ok
-				},
-				new FileIndexItem()
-				{
-					FilePath = "/3.jpg",
-					Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
-				},
-				new FileIndexItem()
-				{
-					FilePath = "/4.jpg",
-					Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
-				}
-			};
+				FilePath = "/4.jpg", Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
+			}
+		};
 
-			var result = SyncWatcherConnector.FilterBefore(fileIndexItems);
-			Assert.AreEqual(4, result.Count);
-		}
+		var result = SyncWatcherConnector.FilterBefore(fileIndexItems);
+		Assert.AreEqual(4, result.Count);
+	}
 
-		[TestMethod]
-		public void FilterBefore_AllowedStatus_removeDuplicates()
+	[TestMethod]
+	public void FilterBefore_AllowedStatus_removeDuplicates()
+	{
+		var fileIndexItems = new List<FileIndexItem>
 		{
-			var fileIndexItems = new List<FileIndexItem>
-			{
-				new FileIndexItem { FilePath = "/1.jpg", Status = FileIndexItem.ExifStatus.Ok },
-				new FileIndexItem()
-				{
-					FilePath = "/1.jpg", Status = FileIndexItem.ExifStatus.Ok
-				},
-			};
-			var result = SyncWatcherConnector.FilterBefore(fileIndexItems);
-			Assert.AreEqual(1, result.Count);
-		}
+			new() { FilePath = "/1.jpg", Status = FileIndexItem.ExifStatus.Ok },
+			new() { FilePath = "/1.jpg", Status = FileIndexItem.ExifStatus.Ok }
+		};
+		var result = SyncWatcherConnector.FilterBefore(fileIndexItems);
+		Assert.AreEqual(1, result.Count);
+	}
 
-		[TestMethod]
-		public void Sync_InjectScopes()
-		{
-			var services = new ServiceCollection();
+	[TestMethod]
+	public void Sync_InjectScopes()
+	{
+		var services = new ServiceCollection();
 
-			services.AddSingleton<ISynchronize, FakeISynchronize>();
-			services.AddSingleton<AppSettings>();
-			services.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
-			services.AddSingleton<IQuery, FakeIQuery>();
-			services.AddSingleton<IWebLogger, FakeIWebLogger>();
-			services.AddMemoryCache();
+		services.AddSingleton<ISynchronize, FakeISynchronize>();
+		services.AddSingleton<AppSettings>();
+		services.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
+		services.AddSingleton<IQuery, FakeIQuery>();
+		services.AddSingleton<IWebLogger, FakeIWebLogger>();
+		services.AddMemoryCache();
 
-			var serviceProvider = services.BuildServiceProvider();
+		var serviceProvider = services.BuildServiceProvider();
 
-			var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+		var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
-			var syncWatcherPreflight = new SyncWatcherConnector(scope);
-			var result = syncWatcherPreflight.InjectScopes();
+		var syncWatcherPreflight = new SyncWatcherConnector(scope);
+		var result = syncWatcherPreflight.InjectScopes();
 
-			Assert.IsTrue(result);
-		}
+		Assert.IsTrue(result);
+	}
 
-		[TestMethod]
-		public void Sync_InjectScopes_False()
-		{
-			var syncWatcherPreflight = new SyncWatcherConnector(null!,
-				null!, null!, null!, null!, null!);
+	[TestMethod]
+	public void Sync_InjectScopes_False()
+	{
+		var syncWatcherPreflight = new SyncWatcherConnector(null!,
+			null!, null!, null!, null!, null!);
 
-			var result = syncWatcherPreflight.InjectScopes();
-			Assert.IsFalse(result);
-		}
+		var result = syncWatcherPreflight.InjectScopes();
+		Assert.IsFalse(result);
 	}
 }
