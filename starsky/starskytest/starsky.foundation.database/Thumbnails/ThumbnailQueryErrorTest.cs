@@ -97,7 +97,6 @@ public class ThumbnailQueryErrorTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(MySqlException))]
 	public async Task AddThumbnailRangeAsync_SomethingElseShould_ExpectedException()
 	{
 		IsCalledMySqlSaveDbExceptionContext = false;
@@ -108,12 +107,13 @@ public class ThumbnailQueryErrorTest
 		var fakeQuery = new ThumbnailQuery(
 			new MySqlSaveDbExceptionContext(options, "Something else",
 				MySqlErrorCode.AbortingConnection),
-			null!, new FakeIWebLogger());
+			null!,
+			new FakeIWebLogger()
+		);
 
-		await fakeQuery.AddThumbnailRangeAsync(new List<ThumbnailResultDataTransferModel>
-		{
-			new("t")
-		});
+		// Assert that a MySqlException is thrown when AddThumbnailRangeAsync is called
+		await Assert.ThrowsExceptionAsync<MySqlException>(async () =>
+			await fakeQuery.AddThumbnailRangeAsync([new ThumbnailResultDataTransferModel("t")]));
 	}
 
 	private class UpdateEntryUpdateConcurrency : IUpdateEntry
