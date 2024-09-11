@@ -177,13 +177,20 @@ public sealed class ThumbnailQueuedHostedServiceTest
 		await service.StopAsync(CancellationToken.None);
 	}
 
-	[ExpectedException(typeof(ArgumentNullException))]
 	[TestMethod]
 	public async Task ThumbnailQueuedHostedServiceTest_ArgumentNullExceptionFail()
 	{
+		// Arrange
 		Func<CancellationToken, ValueTask>? func = null;
-		// ReSharper disable once ExpressionIsAlwaysNull
-		await _bgTaskQueue.QueueBackgroundWorkItemAsync(func!, string.Empty);
+
+		// Act & Assert
+		await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+		{
+			// ReSharper disable once ExpressionIsAlwaysNull
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(func!, string.Empty);
+		});
+
+		// Additional verification
 		Assert.IsNull(func);
 	}
 

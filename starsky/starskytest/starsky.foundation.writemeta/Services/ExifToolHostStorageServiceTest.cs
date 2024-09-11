@@ -29,7 +29,7 @@ public sealed class ExifToolHostStorageServiceTest
 	[ExpectedException(typeof(ArgumentException))]
 	public async Task ExifToolHostStorageService_NotFound_Exception()
 	{
-		var appSettings = new AppSettings { ExifToolPath = "Z://Non-exist", };
+		var appSettings = new AppSettings { ExifToolPath = "Z://Non-exist" };
 
 		var fakeStorage = new FakeIStorage(new List<string> { "/" },
 			new List<string> { "/test.jpg" },
@@ -41,13 +41,13 @@ public sealed class ExifToolHostStorageServiceTest
 	}
 
 	/// <summary>
-	/// WriteTagsAndRenameThumbnailAsyncTest
+	///     WriteTagsAndRenameThumbnailAsyncTest
 	/// </summary>
 	[TestMethod]
 	[ExpectedException(typeof(ArgumentException))]
 	public async Task WriteTagsAndRenameThumbnailAsync_NotFound_Exception()
 	{
-		var appSettings = new AppSettings { ExifToolPath = "Z://Non-exist", };
+		var appSettings = new AppSettings { ExifToolPath = "Z://Non-exist" };
 
 		var fakeStorage = new FakeIStorage(new List<string> { "/" },
 			new List<string> { "/test.jpg" },
@@ -77,7 +77,8 @@ public sealed class ExifToolHostStorageServiceTest
 			hostFileSystemStorage.FolderDelete(outputPath);
 		}
 
-		await new TarBal(hostFileSystemStorage, new FakeIWebLogger()).ExtractTarGz(memoryStream, outputPath,
+		await new TarBal(hostFileSystemStorage, new FakeIWebLogger()).ExtractTarGz(memoryStream,
+			outputPath,
 			CancellationToken.None);
 		var imageExifToolVersionFolder = hostFileSystemStorage.GetDirectories(outputPath)
 			.FirstOrDefault(p => p.StartsWith(Path.Combine(outputPath, "Image-ExifTool-")))?
@@ -93,7 +94,7 @@ public sealed class ExifToolHostStorageServiceTest
 
 		var appSettings = new AppSettings
 		{
-			ExifToolPath = Path.Combine(imageExifToolVersionFolder, "exiftool"),
+			ExifToolPath = Path.Combine(imageExifToolVersionFolder, "exiftool")
 		};
 
 		var fakeStorage = new FakeIStorage(new List<string> { "/" },
@@ -185,7 +186,7 @@ public sealed class ExifToolHostStorageServiceTest
 	[ExpectedException(typeof(ArgumentException))]
 	public async Task ExifToolHostStorageService_WriteTagsThumbnailAsync_NotFound_Exception()
 	{
-		var appSettings = new AppSettings { ExifToolPath = "Z://Non-exist", };
+		var appSettings = new AppSettings { ExifToolPath = "Z://Non-exist" };
 
 		var fakeStorage = new FakeIStorage(new List<string> { "/" },
 			new List<string> { "/test.jpg" },
