@@ -5,65 +5,70 @@ using starsky.feature.search.Interfaces;
 using starsky.feature.search.ViewModels;
 using starsky.Helpers;
 
-namespace starsky.Controllers
+namespace starsky.Controllers;
+
+public sealed class SearchSuggestController : Controller
 {
-	public sealed class SearchSuggestController : Controller
+	private readonly ISearchSuggest _suggest;
+
+	public SearchSuggestController(ISearchSuggest suggest)
 	{
-		private readonly ISearchSuggest _suggest;
+		_suggest = suggest;
+	}
 
-		public SearchSuggestController(ISearchSuggest suggest)
+	/// <summary>
+	///     Gets the list of search results (cached)
+	/// </summary>
+	/// <param name="t">search query</param>
+	/// <returns>the search results</returns>
+	/// <response code="200">the search results</response>
+	[HttpGet("/api/suggest")]
+	[ProducesResponseType(typeof(SearchViewModel), 200)] // ok
+	[Produces("application/json")]
+	[Authorize]
+	// ^ ^ ^ ^ = = = = = = = = = = = = = = = = = =
+	public async Task<IActionResult> Suggest(string t)
+	{
+		if ( string.IsNullOrEmpty(t) )
 		{
-			_suggest = suggest;
+			CacheControlOverwrite.SetExpiresResponseHeaders(Request); // 4 weeks
 		}
 
-		/// <summary>
-		/// Gets the list of search results (cached)
-		/// </summary>
-		/// <param name="t">search query</param>
-		/// <returns>the search results</returns>
-		/// <response code="200">the search results</response>
-		[HttpGet("/api/suggest")]
-		[ProducesResponseType(typeof(SearchViewModel), 200)] // ok
-		[Produces("application/json")]
-		[Authorize]
-		// ^ ^ ^ ^ = = = = = = = = = = = = = = = = = =
-		public async Task<IActionResult> Suggest(string t)
+		if ( !ModelState.IsValid )
 		{
-			if ( string.IsNullOrEmpty(t) )
-			{
-				CacheControlOverwrite.SetExpiresResponseHeaders(Request); // 4 weeks
-			}
-			var model = await _suggest.SearchSuggest(t);
-			return Json(model);
+			return BadRequest("Model invalid");
 		}
 
-		/// <summary>
-		/// Show all items in the search suggest cache
-		/// </summary>
-		/// <returns>a keyList with search suggestions</returns>
-		/// <response code="200">the search results</response>
-		[HttpGet("/api/suggest/all")]
-		[ProducesResponseType(typeof(SearchViewModel), 200)] // ok
-		[Produces("application/json")]
-		[Authorize]
-		// ^ ^ ^ ^ = = = = = = = = = = = = = = = = = =
-		public async Task<IActionResult> All()
-		{
-			return Json(await _suggest.GetAllSuggestions());
-		}
+		var model = await _suggest.SearchSuggest(t);
+		return Json(model);
+	}
 
-		/// <summary>
-		/// To fill the cache with the data (only if cache is not already filled)
-		/// </summary>
-		/// <returns></returns>
-		/// <response code="200">inflate done</response>
-		[HttpGet("/api/suggest/inflate")]
-		[ProducesResponseType(200)] // ok
-		[AllowAnonymous]
-		public async Task<IActionResult> Inflate()
-		{
-			await _suggest.Inflate();
-			return Ok();
-		}
+	/// <summary>
+	///     Show all items in the search suggest cache
+	/// </summary>
+	/// <returns>a keyList with search suggestions</returns>
+	/// <response code="200">the search results</response>
+	[HttpGet("/api/suggest/all")]
+	[ProducesResponseType(typeof(SearchViewModel), 200)] // ok
+	[Produces("application/json")]
+	[Authorize]
+	// ^ ^ ^ ^ = = = = = = = = = = = = = = = = = =
+	public async Task<IActionResult> All()
+	{
+		return Json(await _suggest.GetAllSuggestions());
+	}
+
+	/// <summary>
+	///     To fill the cache with the data (only if cache is not already filled)
+	/// </summary>
+	/// <returns></returns>
+	/// <response code="200">inflate done</response>
+	[HttpGet("/api/suggest/inflate")]
+	[ProducesResponseType(200)] // ok
+	[AllowAnonymous]
+	public async Task<IActionResult> Inflate()
+	{
+		await _suggest.Inflate();
+		return Ok();
 	}
 }
