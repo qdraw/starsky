@@ -112,14 +112,18 @@ public sealed class JsonTimeSpanConverterTests
 			NullableTestClass>(@"{""TimeSpan"":1}");
 	}
 
-	[ExpectedException(typeof(JsonException))]
 	[TestMethod]
 	public void TimeSpanInvalidDeserializationUsingOptionsTest()
 	{
+		// Arrange
 		var options = new JsonSerializerOptions();
 		options.Converters.Add(new JsonTimeSpanConverter());
 
-		JsonSerializer.Deserialize<TimeSpan>(@"null", options);
+		// Act & Assert
+		Assert.ThrowsException<JsonException>(() =>
+		{
+			JsonSerializer.Deserialize<TimeSpan>(@"null", options);
+		});
 	}
 
 	private class TestClass
