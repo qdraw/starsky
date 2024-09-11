@@ -58,19 +58,24 @@ public sealed class SyncWatcherConnectorTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(InvalidOperationException))]
 	public async Task Sync_InjectScopes_NullReferenceException()
 	{
+		// Arrange
 		var appSettings = new AppSettings();
 		var services = new ServiceCollection();
 		var serviceProvider = services.BuildServiceProvider();
 		var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
 		var syncWatcherPreflight = new SyncWatcherConnector(scope);
-		await syncWatcherPreflight.Sync(
-			new Tuple<string, string?, WatcherChangeTypes>(
-				Path.Combine(appSettings.StorageFolder, "test"), null,
-				WatcherChangeTypes.Changed));
+
+		// Act & Assert
+		await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () =>
+		{
+			await syncWatcherPreflight.Sync(
+				new Tuple<string, string?, WatcherChangeTypes>(
+					Path.Combine(appSettings.StorageFolder, "test"), null,
+					WatcherChangeTypes.Changed));
+		});
 	}
 
 	[TestMethod]
