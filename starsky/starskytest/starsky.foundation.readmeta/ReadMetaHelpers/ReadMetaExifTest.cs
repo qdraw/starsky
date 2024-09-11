@@ -145,12 +145,13 @@ public class ReadMetaExifTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ArgumentException))]
 	public void ParseExifDirectory_NullItem()
 	{
-		var readMetaExif = new ReadMetaExif(new FakeIStorage(), new AppSettings(),
-			new FakeIWebLogger());
-		readMetaExif.ParseExifDirectory([], null);
-		// expect exception
+		var readMetaExif =
+			new ReadMetaExif(new FakeIStorage(), new AppSettings(), new FakeIWebLogger());
+
+		Assert.ThrowsException<ArgumentException>(() =>
+			readMetaExif.ParseExifDirectory([], null)
+		);
 	}
 }
