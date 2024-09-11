@@ -66,7 +66,6 @@ public sealed class SetupDatabaseTypesTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(AggregateException))]
 	public void BuilderDbFactorySwitch_fail()
 	{
 		var appSettings = new AppSettings { Verbose = true };
@@ -75,17 +74,19 @@ public sealed class SetupDatabaseTypesTest
 
 		var services = new ServiceCollection();
 
-		new SetupDatabaseTypes(appSettings, services).BuilderDbFactorySwitch();
-		// expect exception
+		// Assert that an AggregateException is thrown when BuilderDbFactorySwitch is called
+		Assert.ThrowsException<AggregateException>(() =>
+			new SetupDatabaseTypes(appSettings, services).BuilderDbFactorySwitch());
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(AggregateException))]
 	public void BuilderDb_fail()
 	{
 		var appSettings = new AppSettings { Verbose = true };
-		new SetupDatabaseTypes(appSettings).BuilderDb();
-		// expect exception
+
+		// Assert that an AggregateException is thrown when BuilderDb is called
+		Assert.ThrowsException<AggregateException>(() =>
+			new SetupDatabaseTypes(appSettings).BuilderDb());
 	}
 
 	[TestMethod]
