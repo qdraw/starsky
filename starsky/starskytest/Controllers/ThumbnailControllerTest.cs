@@ -157,12 +157,12 @@ public sealed class ThumbnailControllerTest
 	}
 	
 	[TestMethod]
-	public void Thumbnail_InvalidModel()
+	public async Task Thumbnail_InvalidModel()
 	{
 		var controller = new ThumbnailController(_query, new FakeSelectorStorage());
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
-		var result = controller.Thumbnail("Invalid");
+		var result = await controller.Thumbnail("Invalid");
 		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 	}
 
@@ -654,12 +654,12 @@ public sealed class ThumbnailControllerTest
 	}
 	
 	[TestMethod]
-	public void ListSizesByHash_InvalidModel()
+	public async Task ListSizesByHash_InvalidModel()
 	{
 		var controller = new ThumbnailController(_query, new FakeSelectorStorage());
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
-		var result = controller.ListSizesByHash("Invalid");
+		var result = await controller.ListSizesByHash("Invalid");
 		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 	}
 
