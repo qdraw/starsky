@@ -279,13 +279,14 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(NullReferenceException))]
 	public async Task GetObjectsByFilePathQueryAsyncTest_NullReferenceException()
 	{
 		var logger = new FakeIWebLogger();
-		var fakeQuery = new Query(null!,
-			null!, null!, logger);
-		await fakeQuery.GetObjectsByFilePathQueryAsync(new List<string> { "test" });
+		var fakeQuery = new Query(null!, null!, null!, logger);
+
+		// Assert that a NullReferenceException is thrown when GetObjectsByFilePathQueryAsync is called
+		await Assert.ThrowsExceptionAsync<NullReferenceException>(async () =>
+			await fakeQuery.GetObjectsByFilePathQueryAsync(["test"]));
 	}
 
 	[TestMethod]
