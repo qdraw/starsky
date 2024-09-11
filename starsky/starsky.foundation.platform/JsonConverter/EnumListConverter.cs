@@ -1,14 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace starsky.foundation.platform.JsonConverter;
 
 /// <summary>
-/// Enum converter for Lists with Enum into Json
+///     Enum converter for Lists with Enum into Json
 /// </summary>
 /// <typeparam name="T">Enum</typeparam>
+[SuppressMessage("ReSharper", "S6966: Await ReadAsync instead.",
+	Justification = "There is no Async jet")]
 public class EnumListConverter<T> : JsonConverter<List<T>> where T : struct, Enum
 {
 	public override List<T> Read(ref Utf8JsonReader reader, Type typeToConvert,

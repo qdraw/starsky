@@ -55,6 +55,17 @@ namespace starskytest.Controllers
 				await controller.InfoAsync("/source_missing.jpg") as NotFoundObjectResult;
 			Assert.AreEqual(404, notFoundResult?.StatusCode);
 		}
+		
+		[TestMethod]
+		public async Task Index_BadRequest()
+		{
+			var controller = new MetaInfoController(_metaInfo);
+
+			controller.ModelState.AddModelError("Key", "ErrorMessage");
+
+			var result = await controller.InfoAsync("/source_missing.jpg");		
+			Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+		}
 
 		[TestMethod]
 		public async Task ReadOnly()

@@ -168,12 +168,14 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(List<ImportIndexItem>), 206)] // file already imported
 		[ProducesResponseType(404)] // url 404
 		[Produces("application/json")]
-		public async Task<IActionResult> FromUrl(string fileUrl, string filename, string structure)
+		public async Task<IActionResult> FromUrl(string fileUrl, string? filename, string structure)
 		{
-			if ( filename == null )
+			if ( !ModelState.IsValid )
 			{
-				filename = Base32.Encode(FileHash.GenerateRandomBytes(8)) + ".unknown";
+				return BadRequest("Model invalid");
 			}
+			
+			filename ??= Base32.Encode(FileHash.GenerateRandomBytes(8)) + ".unknown";
 
 			// I/O function calls should not be vulnerable to path injection attacks
 			if ( !Regex.IsMatch(filename, "^[a-zA-Z0-9_\\s\\.]+$",

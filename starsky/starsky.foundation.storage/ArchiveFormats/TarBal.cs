@@ -123,13 +123,18 @@ public sealed class TarBal
 		}
 	}
 
-	private static async Task<string> CreateLongFileName(long size, Stream stream,
+	private async Task<string> CreateLongFileName(long size, Stream stream,
 		CancellationToken cancellationToken)
 	{
 		//If Type Tag is 'L' we have a filename that is longer than the 100 bytes reserved for it in the header.
 		//We read it here and save it temporarily as it will be the file name of the next block where the actual data is
 		var buf = new byte[size];
-		await stream.ReadAsync(buf, 0, buf.Length, cancellationToken);
+		var actualSize = await stream.ReadAsync(buf, 0, buf.Length, cancellationToken);
+		if ( actualSize != size )
+		{
+			_logger.LogError("[CreateLongFileName] less than {size} bytes read", size);
+		}
+
 		return Encoding.ASCII.GetString(buf).Trim('\0');
 	}
 
@@ -147,7 +152,12 @@ public sealed class TarBal
 		{
 			var str = new MemoryStream();
 			var buf = new byte[size];
-			await stream.ReadAsync(buf, 0, buf.Length, cancellationToken);
+			var actualSize = await stream.ReadAsync(buf, 0, buf.Length, cancellationToken);
+			if ( actualSize != size )
+			{
+				_logger.LogError("[CreateFileOrDirectory] less than {size} bytes read", size);
+			}
+
 			await str.WriteAsync(buf, 0, buf.Length, cancellationToken);
 			_storage.WriteStreamOpenOrCreate(str, output);
 		}

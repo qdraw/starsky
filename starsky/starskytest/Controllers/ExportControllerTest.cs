@@ -115,8 +115,25 @@ public sealed class ExportControllerTest
 		var controller = new ExportController(_bgTaskQueue, storageSelector, export);
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
-		var actionResult = await controller.CreateZip("/fail") as NotFoundObjectResult;
-		Assert.AreEqual(404, actionResult?.StatusCode);
+		var result = await controller.CreateZip("/fail") as NotFoundObjectResult;
+		Assert.AreEqual(404, result?.StatusCode);
+	}
+
+	[TestMethod]
+	public async Task CreateZip_BadRequest()
+	{
+		var iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
+		var storageSelector = new FakeSelectorStorage(iStorage);
+		var export = new ExportService(_query, _appSettings, storageSelector,
+			new FakeIWebLogger(), new FakeIThumbnailService(storageSelector));
+		var controller = new ExportController(_bgTaskQueue, storageSelector, export);
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+
+		var result = await controller.CreateZip(null!);
+
+		// Assert
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 	}
 
 	[TestMethod]
@@ -415,6 +432,27 @@ public sealed class ExportControllerTest
 	}
 
 	[TestMethod]
+	public void Mkdir_ReturnsBadRequest()
+	{
+		// Arrange
+		var storage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var export = new ExportService(_query, _appSettings, selectorStorage,
+			new FakeIWebLogger(),
+			new FakeIThumbnailService(selectorStorage));
+		var controller = new ExportController(_bgTaskQueue, selectorStorage, export);
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+
+		// Act
+		var result = controller.Status(null!);
+
+		// Assert
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+	}
+
+	[TestMethod]
 	public void Status_Returns_NotReady_When_StatusIsFalse()
 	{
 		// Arrange
@@ -435,6 +473,23 @@ public sealed class ExportControllerTest
 		var jsonResult = ( JsonResult ) result;
 		Assert.AreEqual("Not Ready", jsonResult.Value);
 		Assert.AreEqual(206, httpContext.Response.StatusCode);
+	}
+
+	[TestMethod]
+	public void Status_BadRequest()
+	{
+		var iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
+		var storageSelector = new FakeSelectorStorage(iStorage);
+		var export = new ExportService(_query, _appSettings, storageSelector,
+			new FakeIWebLogger(), new FakeIThumbnailService(storageSelector));
+		var controller = new ExportController(_bgTaskQueue, storageSelector, export);
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+
+		var result = controller.Status(null!);
+
+		// Assert
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 	}
 
 	[TestMethod]

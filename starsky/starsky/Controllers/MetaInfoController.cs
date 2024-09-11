@@ -36,6 +36,11 @@ namespace starsky.Controllers
 		[Produces("application/json")]
 		public async Task<IActionResult> InfoAsync(string f, bool collections = true)
 		{
+			if ( !ModelState.IsValid )
+			{
+				return BadRequest("Model invalid");
+			}
+			
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
 
 			var fileIndexResultsList = await _metaInfo.GetInfoAsync(inputFilePaths, collections);

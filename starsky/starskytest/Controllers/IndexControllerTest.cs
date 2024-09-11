@@ -118,6 +118,18 @@ namespace starskytest.Controllers
 			var jsonCollection = actionResult?.Value as ArchiveViewModel;
 			Assert.AreEqual("test", jsonCollection?.FileIndexItems.FirstOrDefault()?.FileHash);
 		}
+		
+		[TestMethod]
+		public void Index_BadRequest()
+		{
+			var controller = new IndexController(new FakeIQuery(), new AppSettings());
+
+			controller.ModelState.AddModelError("Key", "ErrorMessage");
+
+			var result = controller.Index(null!);
+			
+			Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+		}
 
 		[TestMethod]
 		public void HomeControllerIndex404Test()

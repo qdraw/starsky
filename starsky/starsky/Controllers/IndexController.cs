@@ -46,6 +46,11 @@ namespace starsky.Controllers
 			bool hideDelete = true,
 			SortType sort = SortType.FileName)
 		{
+			if ( !ModelState.IsValid )
+			{
+				return BadRequest("Model invalid");
+			}
+			
 			// Used in Detail and Index View => does not hide this single item
 			var colorClassActiveList = FileIndexItem.GetColorClassList(colorClass);
 
