@@ -22,8 +22,8 @@ namespace starskytest.starsky.foundation.accountmanagement.Services;
 [TestClass]
 public sealed class UserManagerTest
 {
-	private readonly IMemoryCache _memoryCache;
 	private readonly ApplicationDbContext _dbContext;
+	private readonly IMemoryCache _memoryCache;
 
 	public UserManagerTest()
 	{
@@ -49,7 +49,7 @@ public sealed class UserManagerTest
 		Assert.IsFalse(result.Success);
 		Assert.AreEqual(ValidateResultError.CredentialTypeNotFound, result.Error);
 	}
-		
+
 	[TestMethod]
 	public async Task ValidateAsync_CredentialType_stringEmpty()
 	{
@@ -80,13 +80,15 @@ public sealed class UserManagerTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ArgumentNullException))]
 	public async Task SignInSystemArgumentNullException()
 	{
 		var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(),
 			_memoryCache);
+
 		// not having SignUpAsync registered
-		Assert.IsFalse(await userManager.SignIn(new DefaultHttpContext(), new User { Id = 1 }));
+		await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+			await userManager.SignIn(new DefaultHttpContext(),
+				new User { Id = 1 }));
 	}
 
 	[TestMethod]
@@ -135,7 +137,7 @@ public sealed class UserManagerTest
 				Name = "test",
 				Id = 1,
 				Credentials =
-					new List<Credential> { new Credential { Identifier = "email" } }
+					new List<Credential> { new() { Identifier = "email" } }
 			}).ToList();
 
 		Assert.AreEqual("test", claims.Find(p => p.Type == ClaimTypes.Name)?.Value);
@@ -156,7 +158,7 @@ public sealed class UserManagerTest
 		Assert.AreEqual("1", claims.Find(p => p.Type == ClaimTypes.NameIdentifier)?.Value);
 		Assert.AreEqual("", claims.Find(p => p.Type == ClaimTypes.Email)?.Value);
 	}
-	
+
 	[TestMethod]
 	public async Task ValidateAsync_Credential_NotFound()
 	{
@@ -164,7 +166,7 @@ public sealed class UserManagerTest
 			_memoryCache);
 
 		var test = await _dbContext.CredentialTypes.AnyAsync(p => p.Code == "email");
-		if (!test)
+		if ( !test )
 		{
 			_dbContext.CredentialTypes.Add(
 				new CredentialType { Code = "email", Name = "t" });
@@ -184,7 +186,7 @@ public sealed class UserManagerTest
 			_memoryCache);
 
 		var test = await _dbContext.CredentialTypes.AnyAsync(p => p.Code == "email");
-		if (!test)
+		if ( !test )
 		{
 			_dbContext.CredentialTypes.Add(
 				new CredentialType { Code = "email", Name = "T" });
@@ -197,7 +199,8 @@ public sealed class UserManagerTest
 		{
 			Identifier = "test_0005",
 			CredentialTypeId = credentialTypesCode!.Id,
-			Secret = "t5cJrj735BKTx6bNw2snWzkKb5lsXDSreT9Fpz5YLJw=", // "pass123456789" Iterate Legacy
+			Secret =
+				"t5cJrj735BKTx6bNw2snWzkKb5lsXDSreT9Fpz5YLJw=", // "pass123456789" Iterate Legacy
 			Extra = "0kp9rQX22yeGPl3FSyZFlg=="
 		});
 		await _dbContext.SaveChangesAsync();
@@ -215,18 +218,16 @@ public sealed class UserManagerTest
 	public async Task ValidateAsync_Transform_To_Iterate100K(bool cacheEnabled)
 	{
 		var test = await _dbContext.CredentialTypes.AnyAsync(p => p.Code == "email");
-		if (!test)
+		if ( !test )
 		{
 			_dbContext.CredentialTypes.Add(
 				new CredentialType { Code = "email", Name = "T" });
 			await _dbContext.SaveChangesAsync();
 		}
+
 		var credentialTypesCode = await _dbContext.CredentialTypes.FirstOrDefaultAsync();
 
-		await _dbContext.Users.AddAsync(new User
-		{
-			Name = "test_0008",
-		});
+		await _dbContext.Users.AddAsync(new User { Name = "test_0008" });
 		await _dbContext.SaveChangesAsync();
 
 		var cred = new Credential
@@ -234,7 +235,8 @@ public sealed class UserManagerTest
 			Identifier = "test_0008",
 			CredentialTypeId = credentialTypesCode!.Id,
 			CredentialType = credentialTypesCode,
-			Secret = "t5cJrj735BKTx6bNw2snWzkKb5lsXDSreT9Fpz5YLJw=", // "pass123456789" (IterateLegacy)
+			Secret =
+				"t5cJrj735BKTx6bNw2snWzkKb5lsXDSreT9Fpz5YLJw=", // "pass123456789" (IterateLegacy)
 			Extra = "0kp9rQX22yeGPl3FSyZFlg==",
 			IterationCount = IterationCountType.IterateLegacySha1,
 			User = await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == "test_0008"),
@@ -250,14 +252,14 @@ public sealed class UserManagerTest
 		}
 
 		var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(),
-			cacheEnabled ? _memoryCache: null);
-		
+			cacheEnabled ? _memoryCache : null);
+
 		var result = await userManager.ValidateAsync(credentialTypesCode.Code!, "test_0008",
 			"pass123456789");
 
 		var credAfterTransform = await _dbContext.Credentials
 			.FirstOrDefaultAsync(p => p.Identifier == "test_0008");
-		
+
 		Assert.IsTrue(result.Success);
 		Assert.AreEqual("jCCNdJCtH6h1UBhEHkHawc+zt9PqQaEEubc8yc5CGTw=", credAfterTransform?.Secret);
 		Assert.AreEqual(IterationCountType.Iterate100KSha256, credAfterTransform?.IterationCount);
@@ -540,7 +542,8 @@ public sealed class UserManagerTest
 			userManager.ChangeSecret("email", "fdksdnfdsfl@sdnklffsd.com", "pass123456789");
 
 
-		var emailType = await _dbContext.CredentialTypes.FirstOrDefaultAsync(p => p.Code == "email");
+		var emailType =
+			await _dbContext.CredentialTypes.FirstOrDefaultAsync(p => p.Code == "email");
 		_dbContext.Remove(emailType!);
 
 		await _dbContext.SaveChangesAsync();
@@ -571,18 +574,12 @@ public sealed class UserManagerTest
 		Assert.IsNotNull(user);
 	}
 
-	private class AppDbContextRetryLimitExceededException(DbContextOptions options)
-		: ApplicationDbContext(options)
-	{
-		public override DbSet<User> Users => throw new RetryLimitExceededException("general");
-	}
-
 	[TestMethod]
 	public async Task UserManager_AllUsers_RetryException()
 	{
 		var logger = new FakeIWebLogger();
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-			.UseInMemoryDatabase(databaseName: "MovieListDatabase")
+			.UseInMemoryDatabase("MovieListDatabase")
 			.Options;
 
 		var userManager = new UserManager(new AppDbContextRetryLimitExceededException(options),
@@ -690,10 +687,7 @@ public sealed class UserManagerTest
 	public async Task GetRoleAsync_Exists()
 	{
 		_dbContext.Users.Add(new User { Id = 45475, Name = "test" });
-		_dbContext.Roles.Add(new Role
-		{
-			Code = "test_role_892453", Name = "test", Id = 47583945
-		});
+		_dbContext.Roles.Add(new Role { Code = "test_role_892453", Name = "test", Id = 47583945 });
 		_dbContext.UserRoles.Add(new UserRole { UserId = 45475, RoleId = 47583945 });
 
 		await _dbContext.SaveChangesAsync();
@@ -750,7 +744,7 @@ public sealed class UserManagerTest
 
 		Assert.AreEqual(count, _dbContext.Roles.Count());
 	}
-	
+
 	[TestMethod]
 	public void RemoveFromRole_WrongCode_RoleObject()
 	{
@@ -832,14 +826,11 @@ public sealed class UserManagerTest
 			.GetCurrentUserId(context);
 		Assert.AreEqual(-1, currentUserId);
 	}
-	
+
 	[TestMethod]
 	public void GetCurrentUserId_NotLoggedIn2()
 	{
-		var context = new DefaultHttpContext
-		{
-			User = new ClaimsPrincipal()
-		};
+		var context = new DefaultHttpContext { User = new ClaimsPrincipal() };
 		var currentUserId = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(),
 				_memoryCache)
 			.GetCurrentUserId(context);
@@ -979,7 +970,7 @@ public sealed class UserManagerTest
 	[TestMethod]
 	public async Task UserManager_GetRoleAddToUser_Administrator()
 	{
-		var beforeItem = new User() { Name = "test1234567" };
+		var beforeItem = new User { Name = "test1234567" };
 		await _dbContext.Users.AddAsync(beforeItem);
 		await _dbContext.SaveChangesAsync();
 
@@ -1006,7 +997,7 @@ public sealed class UserManagerTest
 	[TestMethod]
 	public async Task UserManager_GetRoleAddToUser_User()
 	{
-		var beforeItem = new User() { Name = "27898349abc9487" };
+		var beforeItem = new User { Name = "27898349abc9487" };
 		await _dbContext.Users.AddAsync(beforeItem);
 		await _dbContext.SaveChangesAsync();
 
@@ -1033,7 +1024,7 @@ public sealed class UserManagerTest
 	[TestMethod]
 	public async Task UserManager_GetRoleAddToUser_BogusRole()
 	{
-		var beforeItem = new User() { Name = "27898349abc9487" };
+		var beforeItem = new User { Name = "27898349abc9487" };
 		await _dbContext.Users.AddAsync(beforeItem);
 		await _dbContext.SaveChangesAsync();
 
@@ -1071,20 +1062,21 @@ public sealed class UserManagerTest
 
 		await _dbContext.SaveChangesAsync();
 
-		await _dbContext.Users.AddAsync(new User() { Name = id });
+		await _dbContext.Users.AddAsync(new User { Name = id });
 		await _dbContext.SaveChangesAsync();
 		var beforeItem =
 			await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == id);
 
 		Assert.IsNotNull(beforeItem);
-		Assert.AreEqual(id, (await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == id))?.Name);
+		Assert.AreEqual(id,
+			( await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == id) )?.Name);
 
 		var userManager = new UserManager(_dbContext,
 			new AppSettings
 			{
 				AddMemoryCache = false,
 				AccountRegisterFirstRoleAdmin = true,
-				AccountRegisterDefaultRole = AccountRoles.AppAccountRoles.User,
+				AccountRegisterDefaultRole = AccountRoles.AppAccountRoles.User
 			}, new FakeIWebLogger(), _memoryCache);
 
 		var roleAddToUser = userManager.GetRoleAddToUser(testEmail, beforeItem);
@@ -1096,5 +1088,11 @@ public sealed class UserManagerTest
 
 		// check right roles
 		Assert.AreEqual("Administrator", roleAddToUser);
+	}
+
+	private class AppDbContextRetryLimitExceededException(DbContextOptions options)
+		: ApplicationDbContext(options)
+	{
+		public override DbSet<User> Users => throw new RetryLimitExceededException("general");
 	}
 }

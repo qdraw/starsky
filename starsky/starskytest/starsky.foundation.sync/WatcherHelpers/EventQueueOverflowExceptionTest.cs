@@ -26,7 +26,6 @@ public sealed class EventQueueOverflowExceptionTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(EventQueueOverflowException))]
 	public void EventQueueOverflowException_Protected()
 	{
 #pragma warning disable SYSLIB0050
@@ -52,7 +51,8 @@ public sealed class EventQueueOverflowExceptionTest
 				info, new StreamingContext(StreamingContextStates.All)
 			});
 
-		throw instance;
+		Assert.ThrowsException<EventQueueOverflowException>(() => throw instance);
+
 #pragma warning restore SYSLIB0050
 	}
 }

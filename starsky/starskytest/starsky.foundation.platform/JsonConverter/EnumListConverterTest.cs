@@ -1,9 +1,9 @@
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.JsonConverter;
 
 namespace starskytest.starsky.foundation.platform.JsonConverter;
@@ -11,14 +11,28 @@ namespace starskytest.starsky.foundation.platform.JsonConverter;
 [TestClass]
 public class EnumListConverterTests
 {
+	public enum ValueType
+	{
+		Value1,
+		Value2,
+		Value3
+	}
+
 	[TestMethod]
-	[ExpectedException(typeof(JsonException))]
 	public void No_StartArray()
 	{
 		// Arrange
 		const string json = "{\"ValueTypes\":\"Value1\"}";
 		var options = DefaultJsonSerializer.CamelCase;
-		JsonSerializer.Deserialize<ValueTypeContainer>(json, options);
+
+		// Act & Assert
+		var ex = Assert.ThrowsException<JsonException>(() =>
+		{
+			JsonSerializer.Deserialize<ValueTypeContainer>(json, options);
+		});
+
+		// Additional assertions to verify the exception message, if necessary
+		Assert.IsTrue(ex.Message.Contains("The JSON value could not be converted"));
 	}
 
 	[TestMethod]
@@ -58,56 +72,69 @@ public class EnumListConverterTests
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(JsonException), "Unknown enum value: InvalidValue")]
 	public void TestYourEnumContainer_Deserialize_InvalidValue()
 	{
 		// Arrange
 		const string json = "{\"ValueTypes\":[\"Value1\",\"InvalidValue\",\"Value2\"]}";
+		var options = DefaultJsonSerializer.CamelCase;
 
-		// Act
-		JsonSerializer.Deserialize<ValueTypeContainer>(json, DefaultJsonSerializer.CamelCase);
+		// Act & Assert
+		var ex = Assert.ThrowsException<JsonException>(() =>
+		{
+			JsonSerializer.Deserialize<ValueTypeContainer>(json, options);
+		});
 
-		// Assert
-		// Should throw JsonException
+		// Verify the exception message to ensure it contains the expected details
+		Assert.IsTrue(ex.Message.Contains("Unknown enum value: InvalidValue"),
+			"Exception message does not contain expected text.");
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(JsonException), "Unexpected end of JSON input")]
 	public void TestYourEnumContainer_Deserialize_UnexpectedEnd()
 	{
 		// Arrange
 		const string json = "{\"ValueTypes\":[\"Value1\",\"Value2\"";
+		var options = DefaultJsonSerializer.CamelCase;
 
-		// Act
-		JsonSerializer.Deserialize<ValueTypeContainer>(json, DefaultJsonSerializer.CamelCase);
+		// Act & Assert
+		var ex = Assert.ThrowsException<JsonException>(() =>
+		{
+			JsonSerializer.Deserialize<ValueTypeContainer>(json, options);
+		});
 
-		// Assert
-		// Should throw JsonException
+		// Verify the exception message to ensure it contains the expected text
+		Assert.IsTrue(
+			ex.Message.Contains("Expected depth to be zero at the end of the JSON payload."),
+			"Exception message does not contain expected text.");
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(JsonException))]
 	public void Read_WhenTokenTypeIsNotStartArray_ThrowsJsonException()
 	{
 		// Arrange
-		var reader = new Utf8JsonReader(Array.Empty<byte>());
 		var converter =
 			new EnumListConverter<ValueType>(); // Replace YourEnum with the actual enum type
 
 		// Act & Assert
-		converter.Read(ref reader, typeof(List<ValueType>), new JsonSerializerOptions());
+		Assert.ThrowsException<JsonException>(() =>
+		{
+			var reader = new Utf8JsonReader(Array.Empty<byte>());
+			converter.Read(ref reader, typeof(List<ValueType>), new JsonSerializerOptions());
+		});
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(JsonException))]
 	public void Read_WhenTokenTypeIsNotString_ThrowsJsonException()
 	{
 		// Arrange
-		var reader = new Utf8JsonReader(new[] { ( byte )'[', ( byte )'1', ( byte )']' });
 		var converter = new EnumListConverter<ValueType>();
 
 		// Act & Assert
-		converter.Read(ref reader, typeof(List<ValueType>), new JsonSerializerOptions());
+		Assert.ThrowsException<JsonException>(() =>
+		{
+			var reader = new Utf8JsonReader(new[] { ( byte ) '[', ( byte ) '1', ( byte ) ']' });
+			converter.Read(ref reader, typeof(List<ValueType>), new JsonSerializerOptions());
+		});
 	}
 
 	[TestMethod]
@@ -129,7 +156,6 @@ public class EnumListConverterTests
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(JsonException))]
 	public void InvalidArrayWithNumber_ThrowJsonException()
 	{
 		// Arrange
@@ -137,23 +163,19 @@ public class EnumListConverterTests
 
 		// JSON array with a non-string token
 		const string json = "[1]";
-		var reader = new Utf8JsonReader(Encoding.UTF8.GetBytes(json));
-		reader.Read();
 
 		// Act & Assert
-		converter.Read(ref reader, typeof(List<ValueType>), new JsonSerializerOptions());
+		Assert.ThrowsException<JsonException>(() =>
+		{
+			var reader = new Utf8JsonReader(Encoding.UTF8.GetBytes(json));
+			reader.Read(); // Read the start of the array
+			converter.Read(ref reader, typeof(List<ValueType>), new JsonSerializerOptions());
+		});
 	}
 
 	public class ValueTypeContainer
 	{
 		[JsonConverter(typeof(EnumListConverter<ValueType>))]
 		public List<ValueType> ValueTypes { get; set; } = [];
-	}
-
-	public enum ValueType
-	{
-		Value1,
-		Value2,
-		Value3
 	}
 }

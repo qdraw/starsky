@@ -93,22 +93,23 @@ public sealed class ThumbnailQueuedHostedServiceTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ToManyUsageException))]
 	public async Task Count_AddOneForCount_UsageException()
 	{
+		// Arrange
 		var e = new FakeICpuUsageListener(100d);
 		Console.WriteLine(e.CpuUsageMean);
 
-		var backgroundQueue =
-			new ThumbnailBackgroundTaskQueue(e, new FakeIWebLogger(), new AppSettings(),
-				_scopeFactory);
+		var backgroundQueue = new ThumbnailBackgroundTaskQueue(e, new FakeIWebLogger(),
+			new AppSettings(), _scopeFactory);
 
-		await backgroundQueue.QueueBackgroundWorkItemAsync(_ => ValueTask.CompletedTask,
-			string.Empty);
-
-		var count = backgroundQueue.Count();
-
-		Assert.AreEqual(0, count);
+		// Act & Assert
+		await Assert.ThrowsExceptionAsync<ToManyUsageException>(async () =>
+		{
+			await backgroundQueue.QueueBackgroundWorkItemAsync(_ => ValueTask.CompletedTask,
+				string.Empty);
+			var count = backgroundQueue.Count();
+			Assert.AreEqual(0, count);
+		});
 	}
 
 	/// <summary>
@@ -176,13 +177,20 @@ public sealed class ThumbnailQueuedHostedServiceTest
 		await service.StopAsync(CancellationToken.None);
 	}
 
-	[ExpectedException(typeof(ArgumentNullException))]
 	[TestMethod]
 	public async Task ThumbnailQueuedHostedServiceTest_ArgumentNullExceptionFail()
 	{
+		// Arrange
 		Func<CancellationToken, ValueTask>? func = null;
-		// ReSharper disable once ExpressionIsAlwaysNull
-		await _bgTaskQueue.QueueBackgroundWorkItemAsync(func!, string.Empty);
+
+		// Act & Assert
+		await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+		{
+			// ReSharper disable once ExpressionIsAlwaysNull
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(func!, string.Empty);
+		});
+
+		// Additional verification
 		Assert.IsNull(func);
 	}
 

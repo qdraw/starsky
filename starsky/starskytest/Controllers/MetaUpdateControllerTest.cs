@@ -318,4 +318,19 @@ public sealed class MetaUpdateControllerTest
 
 		Assert.AreEqual(400, result?.StatusCode);
 	}
+
+	[TestMethod]
+	public async Task UpdateAsync_BadRequest_InValidModel()
+	{
+		var controller = new MetaUpdateController(new FakeMetaPreflight(),
+			new FakeIMetaUpdateService(),
+			new FakeIUpdateBackgroundTaskQueue(),
+			new FakeIWebLogger(), new FakeIServiceScopeFactory());
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+
+		var result = await controller.UpdateAsync(new FileIndexItem(), string.Empty, true) as
+			BadRequestObjectResult;
+		
+		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+	}
 }

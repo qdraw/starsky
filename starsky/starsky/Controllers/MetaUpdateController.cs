@@ -67,6 +67,11 @@ namespace starsky.Controllers
 			bool append,
 			bool collections = true, int rotateClock = 0)
 		{
+			if ( !ModelState.IsValid )
+			{
+				return BadRequest("Model is not valid");
+			}
+			
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
 			if ( inputFilePaths.Length == 0 )
 			{

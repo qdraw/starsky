@@ -6,3 +6,4 @@ steps:
       packageType: sdk
       version: 8.0.401
       installationPath: $(Agent.ToolsDirectory)/dotnet
+      performMultiLevelLookup: true

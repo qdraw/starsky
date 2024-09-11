@@ -26,7 +26,6 @@ public sealed class ToManyUsageExceptionTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ToManyUsageException))]
 	public void ToManyUsageException_Protected()
 	{
 #pragma warning disable SYSLIB0050
@@ -56,7 +55,7 @@ public sealed class ToManyUsageExceptionTest
 				info, new StreamingContext(StreamingContextStates.All)
 			});
 
-		throw instance;
+		Assert.ThrowsException<ToManyUsageException>(() => throw instance);
 #pragma warning restore SYSLIB0050
 	}
 }

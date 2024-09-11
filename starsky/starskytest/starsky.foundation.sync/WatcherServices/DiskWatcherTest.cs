@@ -228,20 +228,25 @@ public sealed class DiskWatcherTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(NullReferenceException))]
 	public void OnChanged_ShouldHitQueueProcessor()
 	{
+		// Arrange
 		var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper
 		{
 			CrashOnEnableRaisingEvents = true
 		};
 
-		var event1 = new FileSystemEventArgs(WatcherChangeTypes.Changed,
-			"t", "test.jpg");
+		var event1 = new FileSystemEventArgs(WatcherChangeTypes.Changed, "t", "test.jpg");
 		var watcher = new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), null!);
-		watcher.OnChanged(null!, event1);
 
-		watcher.Dispose();
+		// Act & Assert
+		Assert.ThrowsException<NullReferenceException>(() =>
+		{
+			watcher.OnChanged(null!, event1);
+
+			// Cleanup
+			watcher.Dispose();
+		});
 	}
 
 	[TestMethod]
@@ -284,19 +289,22 @@ public sealed class DiskWatcherTest
 
 
 	[TestMethod]
-	[ExpectedException(typeof(NullReferenceException))]
 	public void OnRenamed_ShouldHitQueueProcessor()
 	{
+		// Arrange
 		var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper
 		{
 			CrashOnEnableRaisingEvents = true
 		};
 
-		var event1 = new RenamedEventArgs(WatcherChangeTypes.Renamed,
-			"t", "test.jpg", "test2.jpg");
+		var event1 = new RenamedEventArgs(WatcherChangeTypes.Renamed, "t", "test.jpg", "test2.jpg");
 
-		new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), null!)
-			.OnRenamed(null!, event1);
+		// Act & Assert
+		 Assert.ThrowsException<NullReferenceException>(() =>
+		{
+			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), null!)
+				.OnRenamed(null!, event1);
+		});
 	}
 
 	[TestMethod]

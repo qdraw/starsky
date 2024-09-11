@@ -76,28 +76,35 @@ public class ExifToolServiceTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(TaskCanceledException))]
 	public async Task WriteTagsAndRenameThumbnailAsync_TaskCanceledException__UnixOnly()
 	{
-		if ( new AppSettings().IsWindows )
+		if (new AppSettings().IsWindows)
 		{
-			Assert.Inconclusive("This test if for Unix Only");
+			Assert.Inconclusive("This test is for Unix Only");
 			return;
 		}
 
-		var storage = new FakeIStorage(new List<string> { "/" },
+		// Arrange
+		var storage = new FakeIStorage(
+			new List<string> { "/" },
 			new List<string> { "/image.jpg" },
-			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() }
+		);
 
-		var service = new ExifToolService(new FakeSelectorStorage(storage),
-			new AppSettings { ExifToolPath = _exifToolPath }, new FakeIWebLogger());
+		var service = new ExifToolService(
+			new FakeSelectorStorage(storage),
+			new AppSettings { ExifToolPath = _exifToolPath },
+			new FakeIWebLogger()
+		);
 
 		using var cancelSource = new CancellationTokenSource();
 		var token = cancelSource.Token;
-		await cancelSource.CancelAsync();
+		await cancelSource.CancelAsync(); // Trigger cancellation
 
-		await service.WriteTagsAndRenameThumbnailAsync("/image.jpg",
-			null, "", token);
-		// Cancel token
+		// Act & Assert
+		await Assert.ThrowsExceptionAsync<TaskCanceledException>(async () =>
+		{
+			await service.WriteTagsAndRenameThumbnailAsync("/image.jpg", null, "", token);
+		});
 	}
 }

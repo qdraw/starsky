@@ -32,7 +32,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 			scopeFactory);
 
 		using var cancelToken = new CancellationTokenSource();
-		cancelToken.Cancel();
+		await cancelToken.CancelAsync();
 
 		await periodicThumbnailScanHostedService.StartBackgroundAsync(false,
 			cancelToken.Token);
@@ -68,7 +68,6 @@ public class PeriodicThumbnailScanHostedServiceTest
 
 	[TestMethod]
 	[Timeout(5000)]
-	[ExpectedException(typeof(OperationCanceledException))]
 	public async Task StartBackgroundAsync_StartDirect()
 	{
 		var services = new ServiceCollection();
@@ -86,8 +85,9 @@ public class PeriodicThumbnailScanHostedServiceTest
 		using var cancelToken = new CancellationTokenSource();
 		await cancelToken.CancelAsync();
 
-		await periodicThumbnailScanHostedService.StartBackgroundAsync(true,
-			cancelToken.Token);
+		await Assert.ThrowsExceptionAsync<OperationCanceledException>(async () =>
+			await periodicThumbnailScanHostedService.StartBackgroundAsync(true,
+				cancelToken.Token));
 	}
 
 	[TestMethod]
@@ -204,7 +204,6 @@ public class PeriodicThumbnailScanHostedServiceTest
 
 	[TestMethod]
 	[Timeout(5000)]
-	[ExpectedException(typeof(OperationCanceledException))]
 	public async Task RunJob_Canceled()
 	{
 		var services = new ServiceCollection();
@@ -226,8 +225,9 @@ public class PeriodicThumbnailScanHostedServiceTest
 		using var cancelToken = new CancellationTokenSource();
 		await cancelToken.CancelAsync();
 
-		await periodicThumbnailScanHostedService.RunJob(
-			cancelToken.Token);
+		await Assert.ThrowsExceptionAsync<OperationCanceledException>(async () =>
+			await periodicThumbnailScanHostedService.RunJob(
+				cancelToken.Token));
 	}
 
 	[TestMethod]

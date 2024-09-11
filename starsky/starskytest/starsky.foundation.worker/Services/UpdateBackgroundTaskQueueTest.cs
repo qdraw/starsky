@@ -135,13 +135,19 @@ public sealed class UpdateBackgroundTaskQueueTest
 		await service.StopAsync(CancellationToken.None);
 	}
 
-	[ExpectedException(typeof(ArgumentNullException))]
 	[TestMethod]
 	public async Task BackgroundTaskQueueTest_ArgumentNullExceptionFail()
 	{
+		// Arrange
 		Func<CancellationToken, ValueTask>? func = null;
-		// ReSharper disable once ExpressionIsAlwaysNull
-		await _bgTaskQueue.QueueBackgroundWorkItemAsync(func!, string.Empty);
+
+		// Act & Assert
+		await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+		{
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(func!, string.Empty);
+		});
+
+		// Additional assert to verify state if needed
 		Assert.IsNull(func);
 	}
 
