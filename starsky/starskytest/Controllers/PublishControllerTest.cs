@@ -165,8 +165,8 @@ public sealed class PublishControllerTest
 
 		Assert.AreEqual(404, actionResult?.StatusCode);
 	}
-	
-		
+
+
 	[TestMethod]
 	public async Task PublishCreateReturnsBadRequest()
 	{
@@ -273,16 +273,16 @@ public sealed class PublishControllerTest
 		var result = actionResult?.Value is bool;
 		Assert.IsTrue(result);
 	}
-	
+
 	[TestMethod]
 	public void Exist_ModelState()
 	{
 		var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
 			new FakeIWebHtmlPublishService(),
-			new FakeIMetaInfo(new List<FileIndexItem>()),
+			new FakeIMetaInfo([]),
 			new FakeSelectorStorage(),
 			_bgTaskQueue, new FakeIWebLogger());
-		
+
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 
 		// Act
