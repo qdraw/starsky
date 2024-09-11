@@ -165,6 +165,27 @@ public sealed class PublishControllerTest
 
 		Assert.AreEqual(404, actionResult?.StatusCode);
 	}
+	
+		
+	[TestMethod]
+	public async Task PublishCreateReturnsBadRequest()
+	{
+		// Arrange
+		var controller = new PublishController(new AppSettings(),
+			new FakeIPublishPreflight(),
+			new FakeIWebHtmlPublishService(),
+			new FakeIMetaInfo([]),
+			new FakeSelectorStorage(),
+			_bgTaskQueue, new FakeIWebLogger());
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+
+		// Act
+		var result = await controller.PublishCreateAsync("/not-found.jpg",
+			"test", "test", true);
+
+		// Assert
+		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+	}
 
 
 	[TestMethod]
@@ -251,5 +272,23 @@ public sealed class PublishControllerTest
 		var actionResult = controller.Exist(string.Empty) as JsonResult;
 		var result = actionResult?.Value is bool;
 		Assert.IsTrue(result);
+	}
+	
+	[TestMethod]
+	public void Exist_ModelState()
+	{
+		var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
+			new FakeIWebHtmlPublishService(),
+			new FakeIMetaInfo(new List<FileIndexItem>()),
+			new FakeSelectorStorage(),
+			_bgTaskQueue, new FakeIWebLogger());
+		
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+
+		// Act
+		var result = controller.Exist(string.Empty);
+
+		// Assert
+		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
 	}
 }

@@ -135,6 +135,11 @@ public sealed class PublishController : Controller
 	[ProducesResponseType(typeof(void), 401)]
 	public IActionResult Exist(string itemName)
 	{
+		if ( !ModelState.IsValid )
+		{
+			return BadRequest("Model invalid");
+		}
+		
 		return Json(CheckIfNameExist(GenerateSlugHelper.GenerateSlug(itemName)));
 	}
 
