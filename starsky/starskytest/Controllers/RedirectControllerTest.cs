@@ -20,7 +20,7 @@ public sealed class RedirectControllerTest
 	}
 
 	[TestMethod]
-	public void RedirectControllerTest_SubpathRelative()
+	public void RedirectControllerTest_SubPathRelative()
 	{
 		var appSettings = new AppSettings { Structure = "/yyyyMMdd/{filenamebase}.ext" };
 		var controller = new RedirectController(_fakeSelectorStorage, appSettings);
@@ -32,7 +32,20 @@ public sealed class RedirectControllerTest
 	}
 
 	[TestMethod]
-	public void RedirectControllerTest_SubpathRelativeMinusValue()
+	public void RedirectControllerTest_SubPathRelative_ModelState()
+	{
+		var appSettings = new AppSettings { Structure = "/yyyyMMdd/{filenamebase}.ext" };
+		var controller = new RedirectController(_fakeSelectorStorage, appSettings);
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+
+		var result = controller.SubPathRelative(0);
+
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+	}
+
+	[TestMethod]
+	public void RedirectControllerTest_SubPathRelativeMinusValue()
 	{
 		var appSettings = new AppSettings { Structure = "/yyyyMMdd/{filenamebase}.ext" };
 		var controller = new RedirectController(_fakeSelectorStorage, appSettings);
