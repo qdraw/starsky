@@ -566,21 +566,28 @@ public sealed class BufferingFileSystemWatcherTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(NullReferenceException))]
 	public void InvokeHandlerFileSystemEventHandler_NullReferenceException()
 	{
+		// Arrange
 		var watcher = new FileSystemWatcher(_tempFolder);
 		var wrapper = new BufferingFileSystemWatcher(watcher);
 
 		var message = string.Empty;
 		FileSystemEventHandler welcome = (_, s) => { message = s.FullPath; };
 
-		wrapper.InvokeHandler(welcome, null!);
-		Assert.IsNotNull(message);
+		// Act & Assert
+		Assert.ThrowsException<NullReferenceException>(() =>
+		{
+			wrapper.InvokeHandler(welcome, null!);
 
-		wrapper.EnableRaisingEvents = false;
-		wrapper.Dispose();
-		watcher.Dispose();
+			// Cleanup
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
+			watcher.Dispose();
+		});
+
+		// Optionally, check that the message is not altered
+		Assert.IsNotNull(message);
 	}
 
 	[TestMethod]
@@ -599,20 +606,27 @@ public sealed class BufferingFileSystemWatcherTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ArgumentNullException))]
 	public void InvokeHandler_RenamedEventHandler_ExpectException()
 	{
+		// Arrange
 		var watcher = new FileSystemWatcher(_tempFolder);
 		var wrapper = new BufferingFileSystemWatcher(watcher);
 
 		var message = string.Empty;
 		RenamedEventHandler welcome = (_, s) => { message = s.FullPath; };
 
-		wrapper.InvokeHandler(welcome, null);
+		// Act & Assert
+		Assert.ThrowsException<ArgumentNullException>(() =>
+		{
+			wrapper.InvokeHandler(welcome, null);
 
-		wrapper.EnableRaisingEvents = false;
-		wrapper.Dispose();
-		watcher.Dispose();
+			// Cleanup
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
+			watcher.Dispose();
+		});
+
+		// Optionally, check that the message is not altered
 		Assert.IsNotNull(message);
 	}
 
@@ -629,21 +643,28 @@ public sealed class BufferingFileSystemWatcherTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(NullReferenceException))]
 	public void InvokeHandler_ErrorEventHandler()
 	{
+		// Arrange
 		var watcher = new FileSystemWatcher(_tempFolder);
 		var wrapper = new BufferingFileSystemWatcher(watcher);
 
 		var message = string.Empty;
 		ErrorEventHandler welcome = (_, s) => { message = s.ToString(); };
 
-		wrapper.InvokeHandler(welcome, null!);
-		Assert.IsNotNull(message);
+		// Act & Assert
+		Assert.ThrowsException<NullReferenceException>(() =>
+		{
+			wrapper.InvokeHandler(welcome, null!);
 
-		wrapper.EnableRaisingEvents = false;
-		wrapper.Dispose();
-		watcher.Dispose();
+			// Cleanup
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
+			watcher.Dispose();
+		});
+
+		// Optionally, check that the message was not altered
+		Assert.IsNotNull(message);
 	}
 
 	[TestMethod]
