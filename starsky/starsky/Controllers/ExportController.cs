@@ -46,6 +46,11 @@ public sealed class ExportController : Controller
 	public async Task<IActionResult> CreateZip(string f, bool collections = true,
 		bool thumbnail = false)
 	{
+		if ( !ModelState.IsValid )
+		{
+			return BadRequest("Model invalid");
+		}
+
 		var inputFilePaths = PathHelper.SplitInputFilePaths(f);
 		var (zipOutputName, fileIndexResultsList) =
 			await _export.PreflightAsync(inputFilePaths, collections, thumbnail);

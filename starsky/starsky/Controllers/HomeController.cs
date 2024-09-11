@@ -17,6 +17,8 @@ namespace starsky.Controllers;
 public sealed class HomeController : Controller
 {
 	private const string TextHtmlMimeType = "text/html";
+	private const string ModelInvalidText = "Model invalid";
+
 	private readonly IAntiforgery _antiForgery;
 	private readonly string _clientApp;
 
@@ -42,7 +44,7 @@ public sealed class HomeController : Controller
 	{
 		if ( !ModelState.IsValid )
 		{
-			return BadRequest("Model invalid");
+			return BadRequest(ModelInvalidText);
 		}
 
 		new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
@@ -65,7 +67,7 @@ public sealed class HomeController : Controller
 	{
 		if ( !ModelState.IsValid )
 		{
-			return BadRequest("Model invalid");
+			return BadRequest(ModelInvalidText);
 		}
 
 		if ( string.IsNullOrEmpty(t) )
@@ -104,9 +106,9 @@ public sealed class HomeController : Controller
 	{
 		if ( !ModelState.IsValid )
 		{
-			return BadRequest("Model invalid");
+			return BadRequest(ModelInvalidText);
 		}
-		
+
 		new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
 
 		if ( !IsCaseSensitiveRedirect("/search", Request.Path.Value) )
@@ -148,9 +150,9 @@ public sealed class HomeController : Controller
 	{
 		if ( !ModelState.IsValid )
 		{
-			return BadRequest("Model invalid");
+			return BadRequest(ModelInvalidText);
 		}
-		
+
 		if ( IsCaseSensitiveRedirect("/trash", Request.Path.Value) )
 		{
 			return Redirect(AppendPathBasePrefix(Request.PathBase.Value, $"/trash?p={p}"));
@@ -216,8 +218,9 @@ public sealed class HomeController : Controller
 	{
 		if ( !ModelState.IsValid )
 		{
-			return BadRequest("Model invalid");
+			return BadRequest(ModelInvalidText);
 		}
+
 		new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
 		return PhysicalFile(_clientApp, TextHtmlMimeType);
 	}

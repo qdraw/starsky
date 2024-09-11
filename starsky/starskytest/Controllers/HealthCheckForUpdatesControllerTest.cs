@@ -35,7 +35,6 @@ public sealed class HealthCheckForUpdatesControllerTest
 
 
 	[TestMethod]
-	[ExpectedException(typeof(NotSupportedException))]
 	public async Task CheckForUpdates_NotSupportedException()
 	{
 		var input = new TestOverWriteEnumModel { Value = UpdateStatus.Disabled };
@@ -51,8 +50,12 @@ public sealed class HealthCheckForUpdatesControllerTest
 
 		Assert.IsNotNull(input.Value);
 
-		await new HealthCheckForUpdatesController(fakeService,
-			new FakeISpecificVersionReleaseInfo()).CheckForUpdates();
+		var sut = new HealthCheckForUpdatesController(fakeService,
+			new FakeISpecificVersionReleaseInfo());
+
+		// 	ExpectedException
+		await Assert.ThrowsExceptionAsync<NotSupportedException>(async () =>
+			await sut.CheckForUpdates());
 	}
 
 	[TestMethod]
