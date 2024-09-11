@@ -30,7 +30,7 @@ public class SqlXmlRepositoryTest
 		_repository = new SqlXmlRepository(_dbContext, serviceScope, new FakeIWebLogger());
 	}
 
-	private IServiceScopeFactory CreateNewScope()
+	private static IServiceScopeFactory CreateNewScope()
 	{
 		var services = new ServiceCollection();
 		services.AddDbContext<ApplicationDbContext>(options =>
