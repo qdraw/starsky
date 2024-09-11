@@ -379,12 +379,13 @@ public sealed class FileIndexItemTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(AggregateException))]
 	public void FileIndexItemTest_SetMakeModel_WrongPipeLength()
 	{
 		var item = new FileIndexItem();
-		item.SetMakeModel("Apple", 95);
-		// this index (95) never exist
+
+		// Assert that an AggregateException is thrown when SetMakeModel is called with an invalid index
+		Assert.ThrowsException<AggregateException>(() =>
+			item.SetMakeModel("Apple", 95)); // this index (95) never exists
 	}
 
 	[TestMethod]
