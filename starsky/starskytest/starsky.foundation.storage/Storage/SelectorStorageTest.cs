@@ -10,7 +10,7 @@ namespace starskytest.starsky.foundation.storage.Storage;
 public class SelectorStorageTest
 {
 	/// <summary>
-	/// Service Provider
+	///     Service Provider
 	/// </summary>
 	private readonly IServiceProvider _serviceProvider;
 
@@ -21,8 +21,25 @@ public class SelectorStorageTest
 		_serviceProvider = sp.GetRequiredService<IServiceProvider>();
 	}
 
+	[TestMethod]
+	public void Get_ArgumentOutOfRangeException()
+	{
+		// Arrange
+		var myClass = new MyClass();
+		var propertyObject = myClass.GetType().GetProperty("Type");
+
+		// Set an invalid value that should trigger an exception
+		propertyObject?.SetValue(myClass, 44, null);
+
+		// Act & Assert
+		Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+		{
+			new SelectorStorage(_serviceProvider).Get(myClass.Type);
+		});
+	}
+
 	/// <summary>
-	/// Used to overwrite with reflection
+	///     Used to overwrite with reflection
 	/// </summary>
 	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
 	[SuppressMessage("Usage",
@@ -31,18 +48,5 @@ public class SelectorStorageTest
 	private class MyClass
 	{
 		public SelectorStorage.StorageServices Type { get; set; }
-	}
-
-	[TestMethod]
-	[ExpectedException(typeof(ArgumentOutOfRangeException))]
-	public void Get_ArgumentOutOfRangeException()
-	{
-		var myClass = new MyClass();
-		var propertyObject = myClass.GetType().GetProperty("Type");
-		propertyObject?.SetValue(myClass, 44,
-			null); // <-- this could not happen
-
-		new SelectorStorage(_serviceProvider).Get(myClass.Type);
-		// expect exception
 	}
 }

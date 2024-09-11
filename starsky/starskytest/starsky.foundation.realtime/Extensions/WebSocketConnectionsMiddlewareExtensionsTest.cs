@@ -43,10 +43,18 @@ public sealed class WebSocketConnectionsMiddlewareExtensionsTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ArgumentNullException))]
 	public void ExpectedException_ArgumentNullException()
 	{
-		var app = null as IApplicationBuilder;
-		app!.MapWebSocketConnections("/test1", new WebSocketConnectionsOptions());
+		// Arrange
+		IApplicationBuilder app = null!;
+
+		// Act & Assert
+		var exception = Assert.ThrowsException<ArgumentNullException>(() =>
+		{
+			app.MapWebSocketConnections("/test1", new WebSocketConnectionsOptions());
+		});
+
+		// Optionally, verify the exception message or other properties
+		Assert.AreEqual("app", exception.ParamName); // Assuming the exception's ParamName is "app"
 	}
 }
