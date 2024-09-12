@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import * as useFileList from "../../../hooks/use-filelist";
 import { IFileList } from "../../../hooks/use-filelist";
 import * as useLocation from "../../../hooks/use-location/use-location";

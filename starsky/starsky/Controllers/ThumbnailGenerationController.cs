@@ -31,6 +31,11 @@ namespace starsky.Controllers
 		[Produces("application/json")]
 		public async Task<IActionResult> ThumbnailGeneration(string f)
 		{
+			if ( !ModelState.IsValid )
+			{
+				return BadRequest("Model invalid");
+			}
+			
 			var subPath = f != "/" ? PathHelper.RemoveLatestSlash(f) : "/";
 			var subPathStorage = _selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 

@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { MemoryRouter } from "react-router-dom";
 import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
 import * as useLocation from "../../../hooks/use-location/use-location";

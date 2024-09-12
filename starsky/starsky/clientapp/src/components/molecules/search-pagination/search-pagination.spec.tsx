@@ -1,5 +1,5 @@
 import { render } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { MemoryRouter } from "react-router-dom";
 import { Router } from "../../../router-app/router-app";
 import SearchPagination from "./search-pagination";

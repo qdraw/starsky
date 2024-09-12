@@ -1,5 +1,5 @@
 import { fireEvent, render, RenderResult } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { Router } from "../../../router-app/router-app";
 import * as Modal from "../../atoms/modal/modal";
 import ModalDisplayOptions from "./modal-display-options";

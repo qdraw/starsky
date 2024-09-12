@@ -1,5 +1,5 @@
 import { render } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 
 type ModalPropTypes = {
   children: (hookValues: any) => any;

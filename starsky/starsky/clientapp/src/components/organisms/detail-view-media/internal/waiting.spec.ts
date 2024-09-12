@@ -1,5 +1,5 @@
 import { RefObject } from "react";
-import { act } from "react-dom/test-utils"; // Import 'act' to handle async updates
+import { act } from "react"; // Import 'act' to handle async updates
 import { Waiting } from "./waiting";
 
 describe("Waiting function", () => {

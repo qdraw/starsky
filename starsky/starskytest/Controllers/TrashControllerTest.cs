@@ -21,6 +21,16 @@ public class TrashControllerTest
 	}
 
 	[TestMethod]
+	public async Task ThumbnailGeneration_AddModelError()
+	{
+		var controller = new TrashController(
+			new FakeIMoveToTrashService(new List<FileIndexItem>()));
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+		var result = await controller.TrashMoveAsync("Invalid", true);
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+	}
+
+	[TestMethod]
 	public async Task TrashControllerTest_NotFound()
 	{
 		var controller = new TrashController(
@@ -37,25 +47,25 @@ public class TrashControllerTest
 		var controller = new TrashController(
 			new FakeIMoveToTrashService(new List<FileIndexItem>
 			{
-				new FileIndexItem("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }
+				new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }
 			}));
 		var result = await controller.TrashMoveAsync("/test.jpg", true) as JsonResult;
 		var resultValue = result?.Value as List<FileIndexItem>;
 
 		Assert.AreEqual(1, resultValue?.Count);
 	}
-	
+
 	[TestMethod]
 	public void DetectToUseSystemTrash_Ok()
 	{
 		var controller = new TrashController(
 			new FakeIMoveToTrashService(new List<FileIndexItem>()));
-		
+
 		// Used for end2end tests to enable or disable the trash
 		var result = controller.DetectToUseSystemTrash() as JsonResult;
-		
+
 		var tryParseResult = bool.TryParse(result?.Value?.ToString(), out var resultValue);
-		
+
 		Assert.IsTrue(tryParseResult);
 		Assert.IsTrue(resultValue);
 	}

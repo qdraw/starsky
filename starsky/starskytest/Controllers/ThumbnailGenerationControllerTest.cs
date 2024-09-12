@@ -12,41 +12,55 @@ using starsky.foundation.worker.Metrics;
 using starsky.foundation.worker.Services;
 using starskytest.FakeMocks;
 
-namespace starskytest.Controllers
+namespace starskytest.Controllers;
+
+[TestClass]
+public sealed class ThumbnailGenerationControllerTest
 {
-	[TestClass]
-	public sealed class ThumbnailGenerationControllerTest
+	public ThumbnailGenerationControllerTest()
 	{
-		public ThumbnailGenerationControllerTest()
-		{
-			var services = new ServiceCollection();
-			services.AddSingleton<IHostedService, UpdateBackgroundQueuedHostedService>();
-			services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
-			// metrics
-			services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
-			services.AddSingleton<UpdateBackgroundQueuedMetrics>();
+		var services = new ServiceCollection();
+		services.AddSingleton<IHostedService, UpdateBackgroundQueuedHostedService>();
+		services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
+		// metrics
+		services.AddSingleton<IMeterFactory, FakeIMeterFactory>();
+		services.AddSingleton<UpdateBackgroundQueuedMetrics>();
 
-			var serviceProvider = services.BuildServiceProvider();
-			serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
-		}
+		var serviceProvider = services.BuildServiceProvider();
+		serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
+	}
 
-		[TestMethod]
-		public async Task ThumbnailGeneration_Endpoint()
-		{
-			var selectorStorage =
-				new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" }));
-			var controller = new ThumbnailGenerationController(selectorStorage,
-				new ManualThumbnailGenerationService(new FakeIQuery(),
-					new FakeIWebLogger(), new FakeIWebSocketConnectionsService(),
-					new FakeIThumbnailService(selectorStorage),
-					new FakeThumbnailBackgroundTaskQueue()));
+	[TestMethod]
+	public async Task ThumbnailGeneration_Endpoint()
+	{
+		var selectorStorage =
+			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" }));
+		var controller = new ThumbnailGenerationController(selectorStorage,
+			new ManualThumbnailGenerationService(new FakeIQuery(),
+				new FakeIWebLogger(), new FakeIWebSocketConnectionsService(),
+				new FakeIThumbnailService(selectorStorage),
+				new FakeThumbnailBackgroundTaskQueue()));
 
-			var json = await controller.ThumbnailGeneration("/") as JsonResult;
-			Assert.IsNotNull(json);
-			var result = json.Value as string;
+		var json = await controller.ThumbnailGeneration("/") as JsonResult;
+		Assert.IsNotNull(json);
+		var result = json.Value as string;
 
-			Assert.IsNotNull(result);
-			Assert.AreEqual("Job started", result);
-		}
+		Assert.IsNotNull(result);
+		Assert.AreEqual("Job started", result);
+	}
+
+	[TestMethod]
+	public async Task ThumbnailGeneration_AddModelError()
+	{
+		var selectorStorage =
+			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" }));
+		var controller = new ThumbnailGenerationController(selectorStorage,
+			new ManualThumbnailGenerationService(new FakeIQuery(),
+				new FakeIWebLogger(), new FakeIWebSocketConnectionsService(),
+				new FakeIThumbnailService(selectorStorage),
+				new FakeThumbnailBackgroundTaskQueue()));
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+		var result = await controller.ThumbnailGeneration("/");
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 	}
 }

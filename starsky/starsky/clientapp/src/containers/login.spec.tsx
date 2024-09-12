@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import * as useFetch from "../hooks/use-fetch";
 import { IConnectionDefault } from "../interfaces/IConnectionDefault";
 import { Router } from "../router-app/router-app";
