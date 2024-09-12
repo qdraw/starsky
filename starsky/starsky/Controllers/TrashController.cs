@@ -20,7 +20,7 @@ public class TrashController : Controller
 	}
 
 	/// <summary>
-	/// Move a file to the trash
+	///     Move a file to the trash
 	/// </summary>
 	/// <param name="f">subPath filepath to file, split by dot comma (;)</param>
 	/// <param name="collections">stack collections</param>
@@ -36,6 +36,11 @@ public class TrashController : Controller
 	[Produces("application/json")]
 	public async Task<IActionResult> TrashMoveAsync(string f, bool collections = false)
 	{
+		if ( !ModelState.IsValid )
+		{
+			return BadRequest("Model invalid");
+		}
+
 		var inputFilePaths = PathHelper.SplitInputFilePaths(f);
 		if ( inputFilePaths.Length == 0 )
 		{
@@ -49,8 +54,8 @@ public class TrashController : Controller
 	}
 
 	/// <summary>
-	/// Is the system trash supported
-	/// Used in End2End tests to enable or disable the trash
+	///     Is the system trash supported
+	///     Used in End2End tests to enable or disable the trash
 	/// </summary>
 	/// <returns>bool with json (IActionResult Result)</returns>
 	/// <response code="200">the item including the updated content</response>

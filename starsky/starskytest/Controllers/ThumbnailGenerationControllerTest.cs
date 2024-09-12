@@ -48,4 +48,19 @@ public sealed class ThumbnailGenerationControllerTest
 		Assert.IsNotNull(result);
 		Assert.AreEqual("Job started", result);
 	}
+
+	[TestMethod]
+	public async Task ThumbnailGeneration_AddModelError()
+	{
+		var selectorStorage =
+			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" }));
+		var controller = new ThumbnailGenerationController(selectorStorage,
+			new ManualThumbnailGenerationService(new FakeIQuery(),
+				new FakeIWebLogger(), new FakeIWebSocketConnectionsService(),
+				new FakeIThumbnailService(selectorStorage),
+				new FakeThumbnailBackgroundTaskQueue()));
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+		var result = await controller.ThumbnailGeneration("/");
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+	}
 }
