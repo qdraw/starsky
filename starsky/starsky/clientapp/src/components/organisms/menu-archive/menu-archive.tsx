@@ -1,11 +1,9 @@
 import React, { memo, useEffect, useState } from "react";
 import { ArchiveContext, defaultStateFallback } from "../../../contexts/archive-context";
-import useGlobalSettings from "../../../hooks/use-global-settings";
 import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import useLocation from "../../../hooks/use-location/use-location";
 import { newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
 import localization from "../../../localization/localization.json";
-import { Language } from "../../../shared/language";
 import { GetArchiveSearchMenuHeaderClass } from "../../../shared/menu/get-archive-search-menu-header-class";
 import { Select } from "../../../shared/select";
 import { Sidebar } from "../../../shared/sidebar";
@@ -31,17 +29,11 @@ import ModalDownload from "../modal-download/modal-download";
 import ModalPublishToggleWrapper from "../modal-publish/modal-publish-toggle-wrapper";
 import NavContainer from "../nav-container/nav-container";
 import { UploadMenuItem } from "./internal/upload-menu-item";
+import { SelectMenuItem } from "./internal/select-menu-item.tsx";
 
 interface IMenuArchiveProps {}
 
 const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
-  const settings = useGlobalSettings();
-  const language = new Language(settings.language);
-
-  // Content
-  const MessageSelectAction = language.key(localization.MessageSelectAction);
-  const MessageLabels = language.key(localization.MessageLabels);
-
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
   const [enableMoreMenu, setEnableMoreMenu] = React.useState(false);
 
@@ -178,33 +170,11 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
             select={select}
           />
 
-          {!select ? (
-            <button
-              className="item item--select"
-              data-test="menu-item-select"
-              onClick={() => {
-                removeSidebarSelection();
-              }}
-              onKeyDown={(event) => {
-                event.key === "Enter" && removeSidebarSelection();
-              }}
-            >
-              {MessageSelectAction}
-            </button>
-          ) : null}
-
-          {select ? (
-            <button
-              className="item item--labels"
-              data-test="menu-archive-labels"
-              onKeyDown={(event) => {
-                event.key === "Enter" && toggleLabels();
-              }}
-              onClick={() => toggleLabels()}
-            >
-              {MessageLabels}
-            </button>
-          ) : null}
+          <SelectMenuItem
+            select={select}
+            removeSidebarSelection={removeSidebarSelection}
+            toggleLabels={toggleLabels}
+          />
 
           {/* default more menu */}
           {!select ? (
