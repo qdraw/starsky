@@ -1,5 +1,5 @@
-import { act, fireEvent, render } from "@testing-library/react";
-import React from "react";
+import { fireEvent, render } from "@testing-library/react";
+import React, { act } from "react";
 import { BrowserRouter, MemoryRouter } from "react-router-dom";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IDetailView, PageType } from "../../../interfaces/IDetailView";
@@ -1320,7 +1320,7 @@ describe("MenuDetailView", () => {
       }
     } as IDetailView;
 
-    it("rotate click", async () => {
+    it("[menu detail view] rotate click", async () => {
       jest.useFakeTimers();
       jest.spyOn(React, "useContext").mockReset();
 
