@@ -82,7 +82,9 @@ public class WindowsOpenDesktopAppTests
 	[TestMethod]
 	public void W_OpenDefault_NonWindows()
 	{
-		var result = WindowsOpenDesktopApp.OpenDefault(["any value"], OSPlatform.Linux);
+		var result =
+			WindowsOpenDesktopApp.OpenDefault(["W_OpenDefault_NonWindows any value"],
+				OSPlatform.Linux);
 		Assert.IsNull(result);
 	}
 
@@ -95,7 +97,8 @@ public class WindowsOpenDesktopAppTests
 			return;
 		}
 
-		var result = WindowsOpenDesktopApp.OpenDefault(["any value"], OSPlatform.Windows);
+		var result = WindowsOpenDesktopApp.OpenDefault(["W_OpenDefault2_NonWindows any value"],
+			OSPlatform.Windows);
 
 		Assert.IsTrue(result);
 	}
@@ -109,7 +112,7 @@ public class WindowsOpenDesktopAppTests
 			return;
 		}
 
-		var result = WindowsOpenDesktopApp.OpenDefault(["any value"]);
+		var result = WindowsOpenDesktopApp.OpenDefault(["W_OpenDefault3_NonWindows any value"]);
 
 		Console.WriteLine(result);
 
@@ -144,7 +147,8 @@ public class WindowsOpenDesktopAppTests
 	[TestMethod]
 	public void W_OpenApplicationAtUrl_NonWindows()
 	{
-		var result = WindowsOpenDesktopApp.OpenApplicationAtUrl(new List<string> { "any value" },
+		var result = WindowsOpenDesktopApp.OpenApplicationAtUrl(
+			new List<string> { "W_OpenApplicationAtUrl_NonWindows any value" },
 			"app", OSPlatform.Linux);
 		Assert.IsNull(result);
 	}
@@ -161,7 +165,8 @@ public class WindowsOpenDesktopAppTests
 		Assert.ThrowsException<Win32Exception>(() =>
 		{
 			// Code that is expected to throw the exception
-			WindowsOpenDesktopApp.OpenApplicationAtUrl(["any value"],
+			WindowsOpenDesktopApp.OpenApplicationAtUrl(
+				["W_OpenApplicationAtUrl2_NonWindows any value"],
 				"/not_found_849539453", OSPlatform.Windows);
 		});
 	}
@@ -178,7 +183,8 @@ public class WindowsOpenDesktopAppTests
 		Assert.ThrowsException<Win32Exception>(() =>
 		{
 			// Code that is expected to throw the exception
-			WindowsOpenDesktopApp.OpenApplicationAtUrl(["any value"],
+			WindowsOpenDesktopApp.OpenApplicationAtUrl(
+				["W_OpenApplicationAtUrl3_NonWindows any value"],
 				"app");
 		});
 	}

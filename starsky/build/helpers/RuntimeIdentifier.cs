@@ -30,7 +30,6 @@ public static class RuntimeIdentifier
 		return $"{os}-{architecture}";
 	}
 
-
 	public static bool IsReadyToRunSupported(string toRuntimeIdentifier)
 	{
 		var currentIdentifier = GetCurrentRuntimeIdentifier();

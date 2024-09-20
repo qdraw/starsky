@@ -1,23 +1,111 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "$ref": "#/definitions/build",
-  "title": "Build Schema",
+  "properties": {
+    "Branch": {
+      "type": "string",
+      "description": "Overwrite branch name"
+    },
+    "Configuration": {
+      "type": "string",
+      "description": "Configuration to build - Default is 'Debug' (local) or 'Release' (server)",
+      "enum": [
+        "Debug",
+        "Release"
+      ]
+    },
+    "NoClient": {
+      "type": "boolean",
+      "description": "Skip clientside code"
+    },
+    "NoDependencies": {
+      "type": "boolean",
+      "description": "Skip Dependencies download e.g. exiftool / geo data, nuget/npm deps are always installed"
+    },
+    "NoPublish": {
+      "type": "boolean",
+      "description": "Skip Publish step"
+    },
+    "NoSonar": {
+      "type": "boolean",
+      "description": "Is SonarQube Disabled"
+    },
+    "NoTest": {
+      "type": "boolean",
+      "description": "Is Unit Test Disabled (same as NoUnitTest, NoUnitTests, NoTest and NoTests)"
+    },
+    "NoTests": {
+      "type": "boolean",
+      "description": "Is Unit Test Disabled (same as NoUnitTest, NoUnitTests, NoTest and NoTests)"
+    },
+    "NoUnitTest": {
+      "type": "boolean",
+      "description": "Is Unit Test Disabled (same as NoUnitTest, NoUnitTests, NoTest and NoTests)"
+    },
+    "NoUnitTests": {
+      "type": "boolean",
+      "description": "Is Unit Test Disabled (same as NoUnitTest, NoUnitTests, NoTest and NoTests)"
+    },
+    "ReadyToRun": {
+      "type": "boolean",
+      "description": "Enable Ready to run builds"
+    },
+    "Runtime": {
+      "type": "string",
+      "description": "Runtime arg"
+    },
+    "Solution": {
+      "type": "string",
+      "description": "Path to a solution file that is automatically loaded"
+    }
+  },
   "definitions": {
-    "build": {
-      "type": "object",
+    "Host": {
+      "type": "string",
+      "enum": [
+        "AppVeyor",
+        "AzurePipelines",
+        "Bamboo",
+        "Bitbucket",
+        "Bitrise",
+        "GitHubActions",
+        "GitLab",
+        "Jenkins",
+        "Rider",
+        "SpaceAutomation",
+        "TeamCity",
+        "Terminal",
+        "TravisCI",
+        "VisualStudio",
+        "VSCode"
+      ]
+    },
+    "ExecutableTarget": {
+      "type": "string",
+      "enum": [
+        "BuildNetCore",
+        "BuildNetCoreRuntimeSpecific",
+        "Client",
+        "Compile",
+        "CoverageReport",
+        "DownloadDependencies",
+        "ShowSettingsInformation",
+        "SonarBuildTest",
+        "TestNetCore",
+        "Zip"
+      ]
+    },
+    "Verbosity": {
+      "type": "string",
+      "description": "",
+      "enum": [
+        "Verbose",
+        "Normal",
+        "Minimal",
+        "Quiet"
+      ]
+    },
+    "NukeBuild": {
       "properties": {
-        "Branch": {
-          "type": "string",
-          "description": "Overwrite branch name"
-        },
-        "Configuration": {
-          "type": "string",
-          "description": "Configuration to build - Default is 'Debug' (local) or 'Release' (server)",
-          "enum": [
-            "Debug",
-            "Release"
-          ]
-        },
         "Continue": {
           "type": "boolean",
           "description": "Indicates to continue a previously failed build attempt"
@@ -27,61 +115,12 @@
           "description": "Shows the help text for this build assembly"
         },
         "Host": {
-          "type": "string",
           "description": "Host for execution. Default is 'automatic'",
-          "enum": [
-            "AppVeyor",
-            "AzurePipelines",
-            "Bamboo",
-            "Bitbucket",
-            "Bitrise",
-            "GitHubActions",
-            "GitLab",
-            "Jenkins",
-            "Rider",
-            "SpaceAutomation",
-            "TeamCity",
-            "Terminal",
-            "TravisCI",
-            "VisualStudio",
-            "VSCode"
-          ]
-        },
-        "NoClient": {
-          "type": "boolean",
-          "description": "Skip clientside code"
-        },
-        "NoDependencies": {
-          "type": "boolean",
-          "description": "Skip Dependencies download e.g. exiftool / geo data, nuget/npm deps are always installed"
+          "$ref": "#/definitions/Host"
         },
         "NoLogo": {
           "type": "boolean",
           "description": "Disables displaying the NUKE logo"
-        },
-        "NoPublish": {
-          "type": "boolean",
-          "description": "Skip Publish step"
-        },
-        "NoSonar": {
-          "type": "boolean",
-          "description": "Is SonarQube Disabled"
-        },
-        "NoTest": {
-          "type": "boolean",
-          "description": "Is Unit Test Disabled (same as NoUnitTest, NoUnitTests, NoTest and NoTests)"
-        },
-        "NoTests": {
-          "type": "boolean",
-          "description": "Is Unit Test Disabled (same as NoUnitTest, NoUnitTests, NoTest and NoTests)"
-        },
-        "NoUnitTest": {
-          "type": "boolean",
-          "description": "Is Unit Test Disabled (same as NoUnitTest, NoUnitTests, NoTest and NoTests)"
-        },
-        "NoUnitTests": {
-          "type": "boolean",
-          "description": "Is Unit Test Disabled (same as NoUnitTest, NoUnitTests, NoTest and NoTests)"
         },
         "Partition": {
           "type": "string",
@@ -98,71 +137,30 @@
             "type": "string"
           }
         },
-        "ReadyToRun": {
-          "type": "boolean",
-          "description": "Enable Ready to run builds"
-        },
         "Root": {
           "type": "string",
           "description": "Root directory during build execution"
-        },
-        "Runtime": {
-          "type": "string",
-          "description": "Runtime arg"
         },
         "Skip": {
           "type": "array",
           "description": "List of targets to be skipped. Empty list skips all dependencies",
           "items": {
-            "type": "string",
-            "enum": [
-              "BuildNetCore",
-              "BuildNetCoreRuntimeSpecific",
-              "Client",
-              "Compile",
-              "CoverageReport",
-              "DownloadDependencies",
-              "ShowSettingsInformation",
-              "SonarBuildTest",
-              "TestNetCore",
-              "Zip"
-            ]
+            "$ref": "#/definitions/ExecutableTarget"
           }
-        },
-        "Solution": {
-          "type": "string",
-          "description": "Path to a solution file that is automatically loaded"
         },
         "Target": {
           "type": "array",
           "description": "List of targets to be invoked. Default is '{default_target}'",
           "items": {
-            "type": "string",
-            "enum": [
-              "BuildNetCore",
-              "BuildNetCoreRuntimeSpecific",
-              "Client",
-              "Compile",
-              "CoverageReport",
-              "DownloadDependencies",
-              "ShowSettingsInformation",
-              "SonarBuildTest",
-              "TestNetCore",
-              "Zip"
-            ]
+            "$ref": "#/definitions/ExecutableTarget"
           }
         },
         "Verbosity": {
-          "type": "string",
           "description": "Logging verbosity during build execution. Default is 'Normal'",
-          "enum": [
-            "Minimal",
-            "Normal",
-            "Quiet",
-            "Verbose"
-          ]
+          "$ref": "#/definitions/Verbosity"
         }
       }
     }
-  }
+  },
+  "$ref": "#/definitions/NukeBuild"
 }
