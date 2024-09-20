@@ -28,13 +28,13 @@ public static class SonarQube
 	/// <summary>
 	///     @see: https://www.nuget.org/packages/dotnet-sonarscanner
 	/// </summary>
-	public const string SonarQubePackageVersion = "8.0.3";
+	private const string SonarQubePackageVersion = "8.0.3";
 
-	public const string SonarQubeDotnetSonarScannerApi =
+	private const string SonarQubeDotnetSonarScannerApi =
 		"https://api.nuget.org/v3-flatcontainer/dotnet-sonarscanner/index.json";
 
-	public const string GitCommand = "git";
-	public const string DefaultBranchName = "master";
+	private const string GitCommand = "git";
+	private const string DefaultBranchName = "master";
 
 	public static void InstallSonarTool(bool noUnitTest, bool noSonar)
 	{
@@ -53,7 +53,7 @@ public static class SonarQube
 		CheckLatestVersionDotNetSonarScanner().Wait();
 
 		var rootDirectory = Directory.GetParent(AppDomain.CurrentDomain
-			.BaseDirectory!)!.Parent!.Parent!.Parent!.FullName;
+			.BaseDirectory)!.Parent!.Parent!.Parent!.FullName;
 
 		Log.Information(rootDirectory);
 

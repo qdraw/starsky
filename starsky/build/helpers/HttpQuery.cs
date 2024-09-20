@@ -48,12 +48,13 @@ public static class HttpQuery
 		return SafeVersion(hightestVersion);
 	}
 
-	private static Version SafeVersion(string? version)
+	static Version SafeVersion(string? version)
 	{
 		if ( string.IsNullOrEmpty(version) )
 		{
 			return new Version(0, 0);
 		}
+
 		try
 		{
 			return new Version(version);
