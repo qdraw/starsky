@@ -21,7 +21,7 @@ public class MacOsOpenUrlTests
 	[TestMethod]
 	public void OpenDefault_NonMacOS()
 	{
-		var result = MacOsOpenUrl.OpenDefault(["any value"], OSPlatform.Linux);
+		var result = MacOsOpenUrl.OpenDefault(["OpenDefault_NonMacOS any value"], OSPlatform.Linux);
 		Assert.IsNull(result);
 	}
 
@@ -105,7 +105,8 @@ public class MacOsOpenUrlTests
 	[TestMethod]
 	public void OpenApplicationAtUrl_NonMacOs()
 	{
-		var result = MacOsOpenUrl.OpenApplicationAtUrl(new List<string> { "any value" }, "app",
+		var result = MacOsOpenUrl.OpenApplicationAtUrl(
+			new List<string> { "OpenApplicationAtUrl_NonMacOs any value" }, "app",
 			OSPlatform.Linux);
 		Assert.IsNull(result);
 	}
