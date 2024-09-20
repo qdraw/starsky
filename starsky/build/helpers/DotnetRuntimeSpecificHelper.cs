@@ -93,10 +93,12 @@ public static class DotnetRuntimeSpecificHelper
 		foreach ( var runtime in getRuntimesWithoutGeneric )
 		{
 			var runtimeTempFolder = Path.Combine(BasePath(), runtime, "dependencies");
-			FileSystemTasks.CopyDirectoryRecursively(genericTempFolderFullPath,
-				runtimeTempFolder, DirectoryExistsPolicy.Merge, FileExistsPolicy.Overwrite);
 
-			// For Windows its not needed to copy unix dependencies 
+			AbsolutePath.Create(genericTempFolderFullPath).Copy(
+				AbsolutePath.Create(runtimeTempFolder),
+				ExistsPolicy.FileOverwrite, createDirectories: true);
+
+			// For Windows, it's not needed to copy unix dependencies 
 			if ( runtime.StartsWith("win") &&
 			     Directory.Exists(Path.Combine(runtimeTempFolder, "exiftool-unix")) )
 			{
@@ -135,7 +137,7 @@ public static class DotnetRuntimeSpecificHelper
 
 		DotNetBuild(p => p
 			.SetProjectFile(solution)
-			// Implicit restore here, since .NET 8 self contained is disabled
+			// Implicit restore here, since .NET 8 self-contained is disabled
 			// in dotnet restore and there a no options to enable it
 			.EnableNoLogo()
 			.DisableRunCodeAnalysis()
@@ -145,7 +147,7 @@ public static class DotnetRuntimeSpecificHelper
 				args
 					// OverwriteRuntimeIdentifier is done via Directory.Build.props
 					// Building a solution with a specific RuntimeIdentifier is not supported
-					// Dont use SetRuntime
+					// Don't use SetRuntime
 					.Add($"/p:OverwriteRuntimeIdentifier={runtime}")
 					// Warnings are disabled because in Generic build they are already checked
 					.Add("-v q")

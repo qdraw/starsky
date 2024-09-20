@@ -5,7 +5,6 @@ using Nuke.Common.IO;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Serilog;
-using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 namespace helpers;
@@ -96,8 +95,9 @@ public static class DotnetTestHelper
 
 			foreach ( var item in coverageEnum )
 			{
-				CopyFile(Path.Combine(WorkingDirectory.GetSolutionParentFolder(), item),
-					coverageFilePath, FileExistsPolicy.Overwrite);
+				var fromPath = AbsolutePath.Create(Path.Combine(WorkingDirectory.GetSolutionParentFolder(), item));
+				var toPath = AbsolutePath.Create(coverageFilePath);
+				fromPath.Copy(toPath, ExistsPolicy.FileOverwrite);
 			}
 
 			if ( !FileExists(coverageFilePath) )
