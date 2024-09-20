@@ -12507,7 +12507,7 @@
               "properties": {},
               "additionalPropertiesAllowed": true,
               "enum": [],
-              "nullable": true,
+              "nullable": false,
               "deprecated": false,
               "extensions": {},
               "unresolvedReference": false
@@ -16529,5 +16529,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "F46BA9F9B32EB4D82CEF3BE9DC6D287E389C8E4AF71D6B93813013E7343A8749C9551D753797888C05F72C5C49458CBF54C886818FF66A161455BA62D002C15D"
+  "hashCode": "A64C252937474B18BCB781D5DAC80F823DC00C520B1ABAB237B7B733CA4AB6FFCC01A0C1AA0AE4816E36E2D249DB6185B9FD4F2AC4B14F345F31D3830D81C56D"
 }
