@@ -40,9 +40,9 @@ jobs:
     - name: Build (Windows)
       shell: pwsh
       working-directory: ./starsky
-      run: pwsh build.ps1 --Target BuildNetCore --no-sonar --no-dependencies --no-publish --skip --no-logo 
+      run: pwsh build.ps1 --Target BuildNetCore --no-sonar --no-dependencies --no-publish --no-logo 
       
     - name: Test (Windows)
       shell: pwsh
       working-directory: ./starsky
-      run: pwsh build.ps1 --Target TestNetCore --no-sonar --no-dependencies --no-publish --skip --no-logo
+      run: pwsh build.ps1 --Target TestNetCore --no-sonar --no-dependencies --no-publish --no-logo
