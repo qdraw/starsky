@@ -15,7 +15,7 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 namespace helpers;
 
 /// <summary>
-///     use --skip to run only this test
+///     use --skip TARGET/TASK to run only this test
 /// </summary>
 [SuppressMessage("Sonar",
 	"S2629: Don't use string interpolation in logging message templates",
