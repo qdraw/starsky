@@ -25,7 +25,7 @@ steps:
       SONAR_TOKEN: $(STARSKY_SONAR_TOKEN)
     inputs:
       filePath: "starsky/build.ps1"
-      arguments: '${{ parameters.runtimeArg }} --target SonarBuildTest --branch "$(Build.SourceBranch)" --skip --no-logo'
+      arguments: '${{ parameters.runtimeArg }} --target SonarBuildTest  --branch "$(Build.SourceBranch)" --no-logo'
       pwsh: true
       workingDirectory: "$(Build.SourcesDirectory)/starsky/"
 
@@ -36,7 +36,7 @@ steps:
       BUILD_SOURCEBRANCH: $(Build.SourceBranch)
     inputs:
       filePath: "starsky/build.ps1"
-      arguments: '${{ parameters.runtimeArg }} --no-unit-tests --target SonarBuildTest --branch "$(Build.SourceBranch)" --skip --no-logo'
+      arguments: '${{ parameters.runtimeArg }} --target SonarBuildTest --skip Client --no-unit-tests  --branch "$(Build.SourceBranch)" --no-logo'
       pwsh: true
       workingDirectory: "$(Build.SourcesDirectory)/starsky/"
 
@@ -45,7 +45,7 @@ steps:
     condition: and(succeeded(), eq('${{ parameters.readyToRunEnabled }}', true) )
     inputs:
       filePath: "starsky/build.ps1"
-      arguments: '${{ parameters.runtimeArg }} --target BuildNetCoreRuntimeSpecific --skip --no-logo --ready-to-run'
+      arguments: '${{ parameters.runtimeArg }} --target BuildNetCoreRuntimeSpecific --skip Client SonarBuildTest --no-logo --ready-to-run'
       pwsh: true
       workingDirectory: "$(Build.SourcesDirectory)/starsky/"
 
@@ -54,7 +54,7 @@ steps:
     condition: and(succeeded(), ne('${{ parameters.readyToRunEnabled }}', true) )
     inputs:
       filePath: "starsky/build.ps1"
-      arguments: '${{ parameters.runtimeArg }} --target BuildNetCoreRuntimeSpecific --skip --no-logo'
+      arguments: '${{ parameters.runtimeArg }} --target BuildNetCoreRuntimeSpecific --skip Client SonarBuildTest --no-logo'
       pwsh: true
       workingDirectory: "$(Build.SourcesDirectory)/starsky/"
 
