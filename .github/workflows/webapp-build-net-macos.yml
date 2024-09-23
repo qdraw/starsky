@@ -40,9 +40,9 @@ jobs:
     - name: "BuildNetCore (MacOS)"
       shell: bash
       working-directory: ./starsky
-      run: bash build.sh --Target BuildNetCore --no-sonar --no-publish --no-dependencies --skip --no-logo
+      run: bash build.sh --Target BuildNetCore --no-sonar --no-publish --no-dependencies --no-logo
 
     - name: "TestNetCore (MacOS)"
       shell: bash
       working-directory: ./starsky
-      run: bash build.sh --Target TestNetCore --skip --no-logo --no-publish
+      run: bash build.sh --Target TestNetCore --no-logo --no-publish
