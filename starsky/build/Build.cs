@@ -35,7 +35,7 @@ public sealed class Build : NukeBuild
 	///   - Microsoft VSCode           https://nuke.build/vscode
 	public static int Main() => Execute<Build>(x => x.Compile);
 
-	// Use `--target BuildNetCoreRuntimeSpecific --skip` parameter to run only this task 
+	// Use `--target BuildNetCoreRuntimeSpecific --skip TASK` parameter to run only this task 
 
 	[Parameter(
 		"Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
