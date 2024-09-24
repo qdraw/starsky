@@ -32,7 +32,7 @@ steps:
       BUILD_SOURCEBRANCH: $(Build.SourceBranch)
     inputs:
       filePath: "starsky/build.ps1"
-      arguments: '${{ parameters.runtimeArg }} --target Client --skip --no-logo'
+      arguments: '${{ parameters.runtimeArg }} --target Client --no-logo'
       pwsh: true
       workingDirectory: "$(Build.SourcesDirectory)/starsky/"
 
@@ -43,6 +43,6 @@ steps:
       BUILD_SOURCEBRANCH: $(Build.SourceBranch)
     inputs:
       filePath: "starsky/build.ps1"
-      arguments: '${{ parameters.runtimeArg }} --no-unit-tests --target Client --skip --no-logo'
+      arguments: '${{ parameters.runtimeArg }} --no-unit-tests --target Client --no-logo'
       pwsh: true
       workingDirectory: "$(Build.SourcesDirectory)/starsky/"
