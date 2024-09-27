@@ -7,7 +7,7 @@ namespace starsky.foundation.native.OpenApplicationNative.Helpers;
 public static class WindowsOpenDesktopApp
 {
 	/// <summary>
-	/// Add check if is Windows
+	///     Add check if is Windows
 	/// </summary>
 	/// <param name="fileUrls">full file paths</param>
 	/// <param name="platform">running platform</param>
@@ -35,7 +35,7 @@ public static class WindowsOpenDesktopApp
 	}
 
 	/// <summary>
-	/// Does NOT check if file exists
+	///     Does NOT check if file exists
 	/// </summary>
 	/// <param name="fileUrl">Absolute Path of file</param>
 	/// <returns></returns>
@@ -60,7 +60,7 @@ public static class WindowsOpenDesktopApp
 	}
 
 	/// <summary>
-	/// Skip if is MacOS
+	///     Skip if is Mac OS
 	/// </summary>
 	/// <param name="fileUrls"></param>
 	/// <param name="applicationUrl"></param>
@@ -76,7 +76,7 @@ public static class WindowsOpenDesktopApp
 	}
 
 	/// <summary>
-	/// Internal
+	///     Internal
 	/// </summary>
 	/// <param name="fileUrls"></param>
 	/// <param name="applicationUrl"></param>

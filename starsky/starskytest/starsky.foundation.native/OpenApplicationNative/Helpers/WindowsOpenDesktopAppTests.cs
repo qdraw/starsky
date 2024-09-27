@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Win32;
 using starsky.foundation.native.OpenApplicationNative.Helpers;
 using starsky.foundation.platform.Models;
+using starskytest.FakeCreateAn;
 using starskytest.FakeCreateAn.CreateFakeStarskyExe;
 
 namespace starskytest.starsky.foundation.native.OpenApplicationNative.Helpers;
@@ -82,6 +83,7 @@ public class WindowsOpenDesktopAppTests
 	[TestMethod]
 	public void W_OpenDefault_NonWindows()
 	{
+		// this does nothing
 		var result =
 			WindowsOpenDesktopApp.OpenDefault(["W_OpenDefault_NonWindows any value"],
 				OSPlatform.Linux);
@@ -89,7 +91,7 @@ public class WindowsOpenDesktopAppTests
 	}
 
 	[TestMethod]
-	public void W_OpenDefault2_NonWindows()
+	public void W_OpenDefault2_NonWindows_WithFlag()
 	{
 		if ( new AppSettings().IsWindows )
 		{
@@ -97,14 +99,14 @@ public class WindowsOpenDesktopAppTests
 			return;
 		}
 
-		var result = WindowsOpenDesktopApp.OpenDefault(["W_OpenDefault2_NonWindows any value"],
+		var result = WindowsOpenDesktopApp.OpenDefault(["W_OpenDefault2_NonWindows_WithFlag.txt"],
 			OSPlatform.Windows);
 
 		Assert.IsTrue(result);
 	}
 
 	[TestMethod]
-	public void W_OpenDefault3_NonWindows()
+	public void W_OpenDefault3_NonWindows_NoFlag()
 	{
 		if ( new AppSettings().IsWindows )
 		{
@@ -112,9 +114,7 @@ public class WindowsOpenDesktopAppTests
 			return;
 		}
 
-		var result = WindowsOpenDesktopApp.OpenDefault(["W_OpenDefault3_NonWindows any value"]);
-
-		Console.WriteLine(result);
+		var result = WindowsOpenDesktopApp.OpenDefault(["W_OpenDefault3_NonWindows_NoFlag"]);
 
 		Assert.IsTrue(result);
 	}
