@@ -1,9 +1,9 @@
 import WebSocketService from "../websocket-service";
 
 export class FakeWebSocketService implements WebSocketService {
-  private onOpenEvent: Event;
+  private readonly onOpenEvent: Event;
 
-  private onCloseEvent: CloseEvent;
+  private readonly onCloseEvent: CloseEvent;
 
   public OnOpenCalled: boolean = false;
   public OnCloseCalled: boolean = false;

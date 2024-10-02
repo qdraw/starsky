@@ -8,7 +8,7 @@ export class ClipboardHelper {
   /**
    * Name of the sessionStorage
    */
-  private clipBoardName = "starskyClipboardData";
+  private readonly clipBoardName = "starskyClipboardData";
 
   public Copy(
     tagsReference: React.RefObject<HTMLDivElement>,

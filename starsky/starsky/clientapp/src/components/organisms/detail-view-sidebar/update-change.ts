@@ -11,11 +11,11 @@ import { URLPath } from "../../../shared/url/url-path";
 import { UrlQuery } from "../../../shared/url/url-query";
 
 export class UpdateChange {
-  private fileIndexItem: IFileIndexItem;
-  private setFileIndexItem: (value: React.SetStateAction<IFileIndexItem>) => void;
-  private dispatch: React.Dispatch<DetailViewAction>;
-  private history: IUseLocation;
-  private state: IDetailView;
+  private readonly fileIndexItem: IFileIndexItem;
+  private readonly setFileIndexItem: (value: React.SetStateAction<IFileIndexItem>) => void;
+  private readonly dispatch: React.Dispatch<DetailViewAction>;
+  private readonly history: IUseLocation;
+  private readonly state: IDetailView;
 
   constructor(
     fileIndexItem: IFileIndexItem,
