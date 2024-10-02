@@ -1,7 +1,7 @@
 [
   "Microsoft.AspNetCore.Mvc.NewtonsoftJson 8.0.8",
   "Microsoft.Extensions.Hosting.WindowsServices 8.0.0",
-  "Swashbuckle.AspNetCore 6.7.3",
+  "Swashbuckle.AspNetCore 6.8.1",
   "Microsoft.Extensions.Caching.Abstractions 8.0.0",
   "Microsoft.Extensions.Caching.Memory 8.0.0",
   "Microsoft.Extensions.Hosting.Abstractions 8.0.0",
