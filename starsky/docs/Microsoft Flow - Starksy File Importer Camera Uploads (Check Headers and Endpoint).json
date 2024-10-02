@@ -3,21 +3,21 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "logicAppName": {
-      "type": "String",
+      "type": "string",
       "metadata": {
         "description": "Name of the logic app."
       }
     },
     "logicAppLocation": {
       "defaultValue": "[resourceGroup().location]",
-      "type": "String",
+      "type": "string",
       "metadata": {
         "description": "Location of the logic app."
       }
     },
-    "dropbox_Connection_Name": {
+    "dropboxConnectionName": {
       "defaultValue": "dropbox",
-      "type": "String",
+      "type": "string",
       "metadata": {
         "description": "Name of the connection."
       }
@@ -26,9 +26,12 @@
   "resources": [
     {
       "type": "Microsoft.Logic/workflows",
-      "name": "[parameters('logicAppName')]",
       "apiVersion": "2016-06-01",
+      "name": "[parameters('logicAppName')]",
       "location": "[parameters('logicAppLocation')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/connections', parameters('dropboxConnectionName'))]"
+      ],
       "properties": {
         "state": "Disabled",
         "definition": {
@@ -36,11 +39,9 @@
           "contentVersion": "1.0.0.0",
           "parameters": {
             "$connections": {
-              "defaultValue": {},
               "type": "Object"
             },
             "$authentication": {
-              "defaultValue": {},
               "type": "SecureObject"
             }
           },
@@ -78,7 +79,6 @@
             "Condition_2": {
               "actions": {
                 "HTTP": {
-                  "runAfter": {},
                   "type": "Http",
                   "inputs": {
                     "method": "POST",
@@ -90,7 +90,7 @@
                     "body": "@triggerBody()",
                     "authentication": {
                       "type": "Basic",
-                      "username": "dionvanvelde@gmail.com",
+                      "username": "YOUR_EMAIL@GMAIL.COM",
                       "password": ""
                     }
                   }
@@ -98,7 +98,6 @@
                 "Condition": {
                   "actions": {
                     "Copy_file": {
-                      "runAfter": {},
                       "metadata": {
                         "flowSystemMetadata": {
                           "swaggerOperationId": "CopyFile"
@@ -155,12 +154,10 @@
                   "type": "If"
                 }
               },
-              "runAfter": {},
               "expression": "@contains(triggerOutputs()['headers']['Content-Type'], 'jpeg')",
               "type": "If"
             }
           },
-          "outputs": {},
           "description": "test"
         },
         "parameters": {
@@ -168,8 +165,8 @@
             "value": {
               "dropbox": {
                 "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', parameters('logicAppLocation'), '/managedApis/', 'dropbox')]",
-                "connectionId": "[resourceId('Microsoft.Web/connections', parameters('dropbox_Connection_Name'))]",
-                "connectionName": "[parameters('dropbox_Connection_Name')]"
+                "connectionId": "[resourceId('Microsoft.Web/connections', parameters('dropboxConnectionName'))]",
+                "connectionName": "[parameters('dropboxConnectionName')]"
               }
             }
           }
@@ -184,21 +181,18 @@
             }
           }
         }
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.Web/connections', parameters('dropbox_Connection_Name'))]"
-      ]
+      }
     },
     {
       "type": "Microsoft.Web/connections",
-      "name": "[parameters('dropbox_Connection_Name')]",
       "apiVersion": "2016-06-01",
+      "name": "[parameters('dropboxConnectionName')]",
       "location": "[parameters('logicAppLocation')]",
       "properties": {
         "api": {
           "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', parameters('logicAppLocation'), '/managedApis/', 'dropbox')]"
         },
-        "displayName": "[parameters('dropbox_Connection_Name')]"
+        "displayName": "[parameters('dropboxConnectionName')]"
       }
     }
   ]
