@@ -82,7 +82,7 @@ describe("Create Rename Dir (22)", () => {
 
 		cy.visit(config.apiEnvEndpoint, {
 			headers: {
-				"x-force-html": true,
+				"x-force-html": "true",
 			},
 		});
 		cy.get("body")
@@ -218,7 +218,7 @@ describe("Create Rename Dir (22)", () => {
 
         cy.request(config.apiTrash).then((response) => {
           const message = response.body.fileIndexItems.find(
-            (x: any) =>
+            (x: {filePath: string}) =>
               x.filePath === "/starsky-end2end-test/z_test_auto_created_update"
           );
           if (
@@ -238,7 +238,7 @@ describe("Create Rename Dir (22)", () => {
 
             cy.request(config.apiTrash).then((response2) => {
               const message2 = response2.body.fileIndexItems.find(
-                (x: any) =>
+                (x: {filePath: string}) =>
                   x.filePath === "/starsky-end2end-test/z_test_auto_created_update"
               );
               if (

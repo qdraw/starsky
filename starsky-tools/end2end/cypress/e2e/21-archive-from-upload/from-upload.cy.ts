@@ -87,7 +87,7 @@ describe('Archive (from upload) (21)', () => {
       const socket = new WebSocket(socketUrl)
       const keyword = `realtime-update-test${Math.floor(Math.random() * 100)}`
 
-      socket.onmessage = function (message: any) {
+      socket.onmessage = function (message: {data: string}) {
         if (
           message.data.includes(keyword) &&
 					message.data.includes('/starsky-end2end-test/20200822_111408.jpg') &&
@@ -135,8 +135,9 @@ describe('Archive (from upload) (21)', () => {
       url: config.notificationApi as string
     }).then((response3) => {
       const notification = response3.body as [{ content: string }]
+      cy.log(notification[0].content)
 
-      const dataObjects: any[] = []
+      const dataObjects: string[] = []
       for (const item1 of notification) {
         if (
           item1.content.includes(keyword) &&
