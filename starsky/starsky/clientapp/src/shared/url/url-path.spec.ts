@@ -293,6 +293,7 @@ describe("url-path", () => {
       try {
         new URLPath().StartOnSlash("");
       } catch (error) {
+        expect(error).toBeInstanceOf(Error);
         return;
       }
       throw new Error("should not pass");

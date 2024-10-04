@@ -1,11 +1,11 @@
 import { ImageObject, PositionObject } from "./pan-and-zoom-image";
 
 export class OnWheelMouseAction {
-  private image: ImageObject;
-  private setPosition: React.Dispatch<React.SetStateAction<PositionObject>>;
+  private readonly image: ImageObject;
+  private readonly setPosition: React.Dispatch<React.SetStateAction<PositionObject>>;
   public position: PositionObject;
-  private containerRef: React.RefObject<HTMLButtonElement>;
-  private onWheelCallback: (z: number) => void;
+  private readonly containerRef: React.RefObject<HTMLButtonElement>;
+  private readonly onWheelCallback: (z: number) => void;
 
   constructor(
     image: ImageObject,
