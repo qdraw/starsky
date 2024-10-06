@@ -20,13 +20,13 @@ export async function SetupFileWatcher() {
       persistent: true,
       interval: 600,
       binaryInterval: 1200,
-      alwaysStat: true
+      alwaysStat: true,
     })
     .on("change", (path, stats) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       ActionWhenFileIsChanged(path, stats);
     });
 
-  FileWatcherObjects.add([watch, tempPathIncludingBaseUrl]);
+  FileWatcherObjects.add([watch as any, tempPathIncludingBaseUrl]);
   logger.info(`[SetupFileWatcher] add: ${tempPathIncludingBaseUrl}`);
 }
