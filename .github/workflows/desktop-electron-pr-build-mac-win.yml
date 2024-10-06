@@ -35,10 +35,15 @@ jobs:
         working-directory: ./starsky
         run: cp starsky-win-x64.zip starsky-osx-x64.zip
                 
-      - name: Unzip Mac OS bundle
+      - name: Unzip Mac OS bundle x64
         shell: bash
         working-directory: ./starsky
         run: unzip starsky-osx-x64.zip -d osx-x64     
+
+      - name: Unzip Mac OS bundle arm64
+        shell: bash
+        working-directory: ./starsky
+        run: unzip starsky-osx-x64.zip -d osx-arm64     
                     
       - name: Unzip Windows bundle
         shell: bash
