@@ -38,7 +38,7 @@ git clone "https://github.com/qdraw/starsky.git"
 ```
 
 2. Get the `dotnet` 8.0.302 SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download or https://versionsof.net/
-3. Get a recent version of nodejs (18.x or newer)
+3. Get a recent version of nodejs (20.x or newer)
 
 4. Make a build of all the projects and run the tests
     from the root folder of the repository
