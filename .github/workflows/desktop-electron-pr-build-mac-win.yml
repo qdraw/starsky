@@ -22,9 +22,15 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, windows-latest]
-    
+
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set node version
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+      
       - name: Fake Starsky Zip (Windows)
         shell: bash
         working-directory: ./starsky
@@ -34,12 +40,17 @@ jobs:
         shell: bash
         working-directory: ./starsky
         run: cp starsky-win-x64.zip starsky-osx-x64.zip
-                
-      - name: Unzip Mac OS bundle
+
+      - name: Unzip Mac OS bundle x64
         shell: bash
         working-directory: ./starsky
-        run: unzip starsky-osx-x64.zip -d osx-x64     
-                    
+        run: unzip starsky-osx-x64.zip -d osx-x64
+
+      - name: Unzip Mac OS bundle arm64
+        shell: bash
+        working-directory: ./starsky
+        run: unzip starsky-osx-x64.zip -d osx-arm64
+
       - name: Unzip Windows bundle
         shell: bash
         working-directory: ./starsky
