@@ -59,9 +59,9 @@
         <WarningLevel>0</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.8" />
-        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.8"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.8.1"/>
     </ItemGroup>
     <!-- generate xml file for swagger -->
     <PropertyGroup>
@@ -219,7 +219,7 @@
     </PropertyGroup>
 
     <!-- remove cultures (https://stackoverflow.com/a/34362524)-->
-    
+
     <Target Name="AfterPackage" AfterTargets="CopyAllFilesToSingleFolderForPackage"/>
 
     <ItemGroup>

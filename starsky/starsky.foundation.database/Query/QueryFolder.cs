@@ -38,7 +38,10 @@ namespace starsky.foundation.database.Query
 			bool enableCollections = true,
 			bool hideDeleted = true)
 		{
-			if ( subPath != "/" ) PathHelper.RemoveLatestSlash(subPath);
+			if ( subPath != "/" )
+			{
+				PathHelper.RemoveLatestSlash(subPath);
+			}
 
 			var fileIndexItems = CacheQueryDisplayFileFolders(subPath);
 
@@ -87,14 +90,19 @@ namespace starsky.foundation.database.Query
 			var fallbackResult = new Tuple<bool, List<FileIndexItem>>(false,
 				new List<FileIndexItem>());
 			if ( _cache == null || _appSettings?.AddMemoryCache == false )
+			{
 				return fallbackResult;
+			}
 
 			// Return values from IMemoryCache
 			var queryCacheName = CachingDbName(nameof(FileIndexItem),
 				subPath);
 
 			if ( !_cache.TryGetValue(queryCacheName,
-					out var objectFileFolders) ) return fallbackResult;
+					out var objectFileFolders) )
+			{
+				return fallbackResult;
+			}
 
 			var result = objectFileFolders as List<FileIndexItem> ??
 						 new List<FileIndexItem>();
@@ -104,11 +112,17 @@ namespace starsky.foundation.database.Query
 		private List<FileIndexItem> CacheQueryDisplayFileFolders(string subPath)
 		{
 			// The CLI programs uses no cache
-			if ( _cache == null || _appSettings.AddMemoryCache == false ) return QueryDisplayFileFolders(subPath);
+			if ( _cache == null || _appSettings.AddMemoryCache == false )
+			{
+				return QueryDisplayFileFolders(subPath);
+			}
 
 			var (isSuccess, objectFileFolders) = CacheGetParentFolder(subPath);
 
-			if ( isSuccess ) return objectFileFolders;
+			if ( isSuccess )
+			{
+				return objectFileFolders;
+			}
 
 			objectFileFolders = QueryDisplayFileFolders(subPath);
 

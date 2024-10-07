@@ -67,7 +67,11 @@ namespace starsky.foundation.database.Models
 			get { return ArgsPrivate; }
 			set
 			{
-				if ( value == null ) return;
+				if ( value == null )
+				{
+					return;
+				}
+
 				ArgsPrivate = value;
 			}
 		}

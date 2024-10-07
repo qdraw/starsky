@@ -12,9 +12,9 @@ interface IGetAllTransferObject {
 type NullableIArchiveOrDetailView = IArchive | IDetailView | null;
 
 export class FileListCache {
-  private cachePrefix = "starsky;";
+  private readonly cachePrefix = "starsky;";
 
-  private timeoutInMinutes = 3;
+  private readonly timeoutInMinutes = 3;
 
   /**
    * Remove item by fileName

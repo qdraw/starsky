@@ -11,7 +11,11 @@ namespace starskytest.FakeCreateAn.CreateAnImageWithThumbnail
 		public CreateAnImageWithThumbnail()
 		{
 			var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-			if ( string.IsNullOrEmpty(dirName) ) return;
+			if ( string.IsNullOrEmpty(dirName) )
+			{
+				return;
+			}
+
 			var path = Path.Combine(dirName, "FakeCreateAn",
 				"CreateAnImageWithThumbnail", "poppy.jpg");
 

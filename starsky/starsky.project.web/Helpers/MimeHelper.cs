@@ -35,7 +35,7 @@ namespace starsky.project.web.Helpers
 		public static string GetMimeType(string fileExtWithoutDot)
 		{
 			if ( fileExtWithoutDot.Length > 0 &&
-			     MimeTypesDictionary.ContainsKey(fileExtWithoutDot.ToLowerInvariant()) )
+				 MimeTypesDictionary.ContainsKey(fileExtWithoutDot.ToLowerInvariant()) )
 			{
 				return MimeTypesDictionary[fileExtWithoutDot.ToLowerInvariant()];
 			}

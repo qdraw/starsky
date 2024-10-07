@@ -23,51 +23,141 @@ public class ThumbnailQueryErrorTest
 {
 	private static bool IsCalledDbUpdateConcurrency { get; set; }
 
+
+	private static bool IsCalledMySqlSaveDbExceptionContext { get; set; }
+
+	[TestMethod]
+	public async Task ThumbnailQuery_ConcurrencyException()
+	{
+		IsCalledDbUpdateConcurrency = false;
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase("MovieListDatabase")
+			.Options;
+
+		var fakeQuery =
+			new ThumbnailQuery(new AppDbContextConcurrencyException(options) { MinCount = 1 },
+				null!, new FakeIWebLogger());
+		await fakeQuery.RenameAsync("1", "1");
+
+		Assert.IsTrue(IsCalledDbUpdateConcurrency);
+	}
+
+	[TestMethod]
+	public async Task ThumbnailQuery_DoubleConcurrencyException()
+	{
+		IsCalledDbUpdateConcurrency = false;
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase("MovieListDatabase")
+			.Options;
+
+		var fakeQuery =
+			new ThumbnailQuery(new AppDbContextConcurrencyException(options) { MinCount = 2 },
+				null!, new FakeIWebLogger());
+		await fakeQuery.RenameAsync("1", "2");
+
+		Assert.IsTrue(IsCalledDbUpdateConcurrency);
+	}
+
+	[TestMethod]
+	public async Task ThumbnailQuery_3ConcurrencyException()
+	{
+		IsCalledDbUpdateConcurrency = false;
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase("MovieListDatabase")
+			.Options;
+
+		var fakeQuery =
+			new ThumbnailQuery(new AppDbContextConcurrencyException(options) { MinCount = 3 },
+				null!, new FakeIWebLogger());
+		await fakeQuery.RenameAsync("1", "2");
+
+		Assert.IsTrue(IsCalledDbUpdateConcurrency);
+	}
+
+	[DataTestMethod] // [Theory]
+	[DataRow(MySqlErrorCode.DuplicateKey)]
+	[DataRow(MySqlErrorCode.DuplicateKeyEntry)]
+	public async Task AddThumbnailRangeAsync_ShouldCatchPrimaryKeyHit(MySqlErrorCode code)
+	{
+		IsCalledMySqlSaveDbExceptionContext = false;
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase("MovieListDatabase")
+			.Options;
+
+		var fakeQuery = new ThumbnailQuery(
+			new MySqlSaveDbExceptionContext(options, "Duplicate entry '1' for key 'PRIMARY'", code),
+			null!, new FakeIWebLogger());
+
+		await fakeQuery.AddThumbnailRangeAsync([new ThumbnailResultDataTransferModel("t")]);
+
+		Assert.IsTrue(IsCalledMySqlSaveDbExceptionContext);
+	}
+
+	[TestMethod]
+	public async Task AddThumbnailRangeAsync_SomethingElseShould_ExpectedException()
+	{
+		IsCalledMySqlSaveDbExceptionContext = false;
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase("MovieListDatabase")
+			.Options;
+
+		var fakeQuery = new ThumbnailQuery(
+			new MySqlSaveDbExceptionContext(options, "Something else",
+				MySqlErrorCode.AbortingConnection),
+			null!,
+			new FakeIWebLogger()
+		);
+
+		// Assert that a MySqlException is thrown when AddThumbnailRangeAsync is called
+		await Assert.ThrowsExceptionAsync<MySqlException>(async () =>
+			await fakeQuery.AddThumbnailRangeAsync([new ThumbnailResultDataTransferModel("t")]));
+	}
+
 	private class UpdateEntryUpdateConcurrency : IUpdateEntry
 	{
 		public void SetOriginalValue(IProperty property, object? value)
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public void SetPropertyModified(IProperty property)
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public bool IsModified(IProperty property)
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public bool HasTemporaryValue(IProperty property)
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public bool IsStoreGenerated(IProperty property)
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public object GetCurrentValue(IPropertyBase propertyBase)
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public TProperty GetCurrentValue<TProperty>(IPropertyBase propertyBase)
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public object GetOriginalValue(IPropertyBase propertyBase)
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public TProperty GetOriginalValue<TProperty>(IProperty property)
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public void SetStoreGeneratedValue(IProperty property, object? value,
@@ -83,7 +173,7 @@ public class ThumbnailQueryErrorTest
 			// System.NullReferenceException: Object reference not set to an instance of an object.
 		}
 
-		public object? GetRelationshipSnapshotValue(IPropertyBase propertyBase)
+		public object GetRelationshipSnapshotValue(IPropertyBase propertyBase)
 		{
 			throw new NotImplementedException();
 		}
@@ -147,57 +237,6 @@ public class ThumbnailQueryErrorTest
 		}
 	}
 
-	[TestMethod]
-	public async Task ThumbnailQuery_ConcurrencyException()
-	{
-		IsCalledDbUpdateConcurrency = false;
-		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-			.UseInMemoryDatabase(databaseName: "MovieListDatabase")
-			.Options;
-
-		var fakeQuery =
-			new ThumbnailQuery(new AppDbContextConcurrencyException(options) { MinCount = 1 },
-				null!, new FakeIWebLogger());
-		await fakeQuery.RenameAsync("1", "1");
-
-		Assert.IsTrue(IsCalledDbUpdateConcurrency);
-	}
-
-	[TestMethod]
-	public async Task ThumbnailQuery_DoubleConcurrencyException()
-	{
-		IsCalledDbUpdateConcurrency = false;
-		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-			.UseInMemoryDatabase(databaseName: "MovieListDatabase")
-			.Options;
-
-		var fakeQuery =
-			new ThumbnailQuery(new AppDbContextConcurrencyException(options) { MinCount = 2 },
-				null!, new FakeIWebLogger());
-		await fakeQuery.RenameAsync("1", "2");
-
-		Assert.IsTrue(IsCalledDbUpdateConcurrency);
-	}
-
-	[TestMethod]
-	public async Task ThumbnailQuery_3ConcurrencyException()
-	{
-		IsCalledDbUpdateConcurrency = false;
-		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-			.UseInMemoryDatabase(databaseName: "MovieListDatabase")
-			.Options;
-
-		var fakeQuery =
-			new ThumbnailQuery(new AppDbContextConcurrencyException(options) { MinCount = 3 },
-				null!, new FakeIWebLogger());
-		await fakeQuery.RenameAsync("1", "2");
-
-		Assert.IsTrue(IsCalledDbUpdateConcurrency);
-	}
-
-
-	private static bool IsCalledMySqlSaveDbExceptionContext { get; set; }
-
 	private class MySqlSaveDbExceptionContext : ApplicationDbContext
 	{
 		private readonly string _error;
@@ -231,52 +270,11 @@ public class ThumbnailQueryErrorTest
 				"Void .ctor(MySqlConnector.MySqlErrorCode, System.String, System.String, System.Exception)");
 
 			var instance =
-				( MySqlException )ctor?.Invoke(new object[]
+				( MySqlException ) ctor?.Invoke(new object[]
 				{
 					key, "test", message, new Exception()
 				})!;
 			return instance;
 		}
-	}
-
-	[DataTestMethod] // [Theory]
-	[DataRow(MySqlErrorCode.DuplicateKey)]
-	[DataRow(MySqlErrorCode.DuplicateKeyEntry)]
-	public async Task AddThumbnailRangeAsync_ShouldCatchPrimaryKeyHit(MySqlErrorCode code)
-	{
-		IsCalledMySqlSaveDbExceptionContext = false;
-		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-			.UseInMemoryDatabase(databaseName: "MovieListDatabase")
-			.Options;
-
-		var fakeQuery = new ThumbnailQuery(
-			new MySqlSaveDbExceptionContext(options, "Duplicate entry '1' for key 'PRIMARY'", code),
-			null!, new FakeIWebLogger());
-
-		await fakeQuery.AddThumbnailRangeAsync(new List<ThumbnailResultDataTransferModel>
-		{
-			new ThumbnailResultDataTransferModel("t")
-		});
-
-		Assert.IsTrue(IsCalledMySqlSaveDbExceptionContext);
-	}
-
-	[TestMethod]
-	[ExpectedException(typeof(MySqlException))]
-	public async Task AddThumbnailRangeAsync_SomethingElseShould_ExpectedException()
-	{
-		IsCalledMySqlSaveDbExceptionContext = false;
-		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-			.UseInMemoryDatabase(databaseName: "MovieListDatabase")
-			.Options;
-
-		var fakeQuery = new ThumbnailQuery(
-			new MySqlSaveDbExceptionContext(options, "Something else", MySqlErrorCode.AbortingConnection),
-			null!, new FakeIWebLogger());
-
-		await fakeQuery.AddThumbnailRangeAsync(new List<ThumbnailResultDataTransferModel>
-		{
-			new ThumbnailResultDataTransferModel("t")
-		});
 	}
 }

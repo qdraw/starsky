@@ -13,7 +13,11 @@ public static class Sha256
 
 	public static string ComputeSha256(byte[]? input)
 	{
-		if ( input == null || input.Length == 0 ) return string.Empty;
+		if ( input == null || input.Length == 0 )
+		{
+			return string.Empty;
+		}
+
 		var hash = string.Empty;
 		// Initialize a SHA256 hash object
 		// Compute the hash of the given string

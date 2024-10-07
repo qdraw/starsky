@@ -50,7 +50,7 @@ namespace starsky.feature.health.UpdateCheck.Services
 		{
 			if ( _appSettings == null || _appSettings.CheckForUpdates == false )
 			{
-				return ( UpdateStatus.Disabled, string.Empty );
+				return (UpdateStatus.Disabled, string.Empty);
 			}
 
 			currentVersion = string.IsNullOrWhiteSpace(currentVersion)
@@ -64,9 +64,9 @@ namespace starsky.feature.health.UpdateCheck.Services
 			}
 
 			if ( _cache.TryGetValue(QueryCheckForUpdatesCacheName,
-				    out var cacheResult) && cacheResult != null )
+					out var cacheResult) && cacheResult != null )
 			{
-				return Parse(( List<ReleaseModel> )cacheResult, currentVersion);
+				return Parse(( List<ReleaseModel> ) cacheResult, currentVersion);
 			}
 
 			cacheResult = await QueryIsUpdateNeededAsync();
@@ -74,7 +74,7 @@ namespace starsky.feature.health.UpdateCheck.Services
 			_cache.Set(QueryCheckForUpdatesCacheName, cacheResult,
 				new TimeSpan(48, 0, 0));
 
-			return Parse(( List<ReleaseModel>? )cacheResult, currentVersion);
+			return Parse(( List<ReleaseModel>? ) cacheResult, currentVersion);
 		}
 
 
@@ -84,7 +84,7 @@ namespace starsky.feature.health.UpdateCheck.Services
 			var (key, value) = await _httpClientHelper.ReadString(GithubStarskyReleaseApi);
 			if ( !key )
 			{
-				( key, value ) = await _httpClientHelper.ReadString(GithubStarskyReleaseMirrorApi);
+				(key, value) = await _httpClientHelper.ReadString(GithubStarskyReleaseMirrorApi);
 			}
 
 			return !key
@@ -110,9 +110,9 @@ namespace starsky.feature.health.UpdateCheck.Services
 				.FirstOrDefault(p => p is { Draft: false, PreRelease: false })?.TagName;
 
 			if ( string.IsNullOrWhiteSpace(tagName) ||
-			     !tagName.StartsWith('v') )
+				 !tagName.StartsWith('v') )
 			{
-				return ( UpdateStatus.NoReleasesFound, string.Empty );
+				return (UpdateStatus.NoReleasesFound, string.Empty);
 			}
 
 			try
@@ -124,11 +124,11 @@ namespace starsky.feature.health.UpdateCheck.Services
 				var status = isNewer
 					? UpdateStatus.NeedToUpdate
 					: UpdateStatus.CurrentVersionIsLatest;
-				return ( status, latestVersion.ToString() );
+				return (status, latestVersion.ToString());
 			}
 			catch ( ArgumentException )
 			{
-				return ( UpdateStatus.InputNotValid, string.Empty );
+				return (UpdateStatus.InputNotValid, string.Empty);
 			}
 		}
 	}

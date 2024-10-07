@@ -38,7 +38,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.0.401
+        dotnet-version: 8.0.402
 
     - name: Cache nuget packages (*nix)
       uses: actions/cache@v4
@@ -52,12 +52,12 @@ jobs:
     - name: "BuildNetCore (Ubuntu)"
       shell: bash
       working-directory: ./starsky
-      run: bash build.sh --Target BuildNetCore --no-sonar --no-publish --no-dependencies --skip --no-logo
+      run: bash build.sh --Target BuildNetCore --no-sonar --no-publish --no-dependencies --no-logo
 
     - name: "TestNetCore (Ubuntu)"
       shell: bash
       working-directory: ./starsky
-      run: bash build.sh --Target TestNetCore --skip --no-logo --no-publish
+      run: bash build.sh --Target TestNetCore --no-logo --no-publish
   
     - name: "Set locale to: nl_NL.UTF-8"
       run: |
@@ -71,7 +71,7 @@ jobs:
       working-directory: ./starsky
       run: |
           export LANG="nl_NL.UTF-8"
-          bash build.sh --Target TestNetCore --skip --no-dependencies --no-publish --no-logo
+          bash build.sh --Target TestNetCore --no-dependencies --no-publish --no-logo
 
   trigger_pipe_release_desktop:
   

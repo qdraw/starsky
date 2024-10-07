@@ -91,7 +91,10 @@ namespace starsky.foundation.database.Import
 			updateStatusContent.AddToDatabase = DateTime.UtcNow;
 			await dbContext.ImportIndex.AddAsync(updateStatusContent);
 			await dbContext.SaveChangesAsync();
-			if ( writeConsole ) _console.Write("⬆️");
+			if ( writeConsole )
+			{
+				_console.Write("⬆️");
+			}
 			// removed MySqlException catch
 			return true;
 		}
@@ -162,7 +165,7 @@ namespace starsky.foundation.database.Import
 			catch ( DbUpdateConcurrencyException exception )
 			{
 				_logger.LogInformation(exception, "[RemoveItemAsync] catch-ed " +
-				                          "DbUpdateConcurrencyException (do nothing)");
+										  "DbUpdateConcurrencyException (do nothing)");
 			}
 
 			return importIndexItem;

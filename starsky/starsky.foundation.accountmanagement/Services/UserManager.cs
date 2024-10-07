@@ -66,15 +66,20 @@ public sealed class UserManager : IUserManager
 	public async Task<UserOverviewModel> AllUsersAsync()
 	{
 		if ( IsCacheEnabled() &&
-		     _cache?.TryGetValue(AllUsersCacheKey, out var objectAllUsersResult) == true )
-			return new UserOverviewModel(( List<User>? )objectAllUsersResult);
+			 _cache?.TryGetValue(AllUsersCacheKey, out var objectAllUsersResult) == true )
+		{
+			return new UserOverviewModel(( List<User>? ) objectAllUsersResult);
+		}
 
 		try
 		{
 			var allUsers = await _dbContext.Users.TagWith("AllUsersAsync").ToListAsync();
 			if ( IsCacheEnabled() )
+			{
 				_cache!.Set(AllUsersCacheKey, allUsers,
 					new TimeSpan(99, 0, 0));
+			}
+
 			return new UserOverviewModel(allUsers);
 		}
 		catch ( RetryLimitExceededException exception )
@@ -94,7 +99,10 @@ public sealed class UserManager : IUserManager
 	public User? Exist(string identifier)
 	{
 		var credential = _dbContext.Credentials.FirstOrDefault(p => p.Identifier == identifier);
-		if ( credential == null ) return null;
+		if ( credential == null )
+		{
+			return null;
+		}
 
 		var user = _dbContext.Users.FirstOrDefault(p => p.Id == credential.UserId);
 		return user;
@@ -103,7 +111,9 @@ public sealed class UserManager : IUserManager
 	public async Task<User?> ExistAsync(int userTableId)
 	{
 		if ( !IsCacheEnabled() )
+		{
 			return await _dbContext.Users.FirstOrDefaultAsync(p => p.Id == userTableId);
+		}
 
 		var users = ( await AllUsersAsync() ).Users;
 		return users.Find(p => p.Id == userTableId);
@@ -126,7 +136,9 @@ public sealed class UserManager : IUserManager
 		AddDefaultRolePermissions();
 
 		if ( string.IsNullOrEmpty(identifier) || string.IsNullOrEmpty(secret) )
+		{
 			return new SignUpResult(success: false, error: SignUpResultError.NullString);
+		}
 
 		// The email is stored in the Credentials database
 		var user = Exist(identifier);
@@ -143,7 +155,10 @@ public sealed class UserManager : IUserManager
 			// to get the id
 			user = await _dbContext.Users.FirstOrDefaultAsync(p => p.Created == createdDate);
 
-			if ( user == null ) throw new AggregateException("user should not be null");
+			if ( user == null )
+			{
+				throw new AggregateException("user should not be null");
+			}
 		}
 
 		// Add a user role based on a user id
@@ -151,12 +166,17 @@ public sealed class UserManager : IUserManager
 		AddToRole(user, roleToAdd);
 
 		if ( credentialType == null )
+		{
 			return new SignUpResult(success: false,
 				error: SignUpResultError.CredentialTypeNotFound);
+		}
 
 		var credential =
 			await _dbContext.Credentials.FirstOrDefaultAsync(p => p.Identifier == identifier);
-		if ( credential != null ) return new SignUpResult(user, true);
+		if ( credential != null )
+		{
+			return new SignUpResult(user, true);
+		}
 
 		// Check if credential not already exist
 		credential = new Credential
@@ -186,7 +206,10 @@ public sealed class UserManager : IUserManager
 	{
 		var role = _dbContext.Roles.TagWith("AddToRole").FirstOrDefault(r => r.Code == roleCode);
 
-		if ( role == null ) return;
+		if ( role == null )
+		{
+			return;
+		}
 
 		AddToRole(user, role);
 	}
@@ -201,7 +224,10 @@ public sealed class UserManager : IUserManager
 		var userRole =
 			_dbContext.UserRoles.FirstOrDefault(p => p.User != null && p.User.Id == user.Id);
 
-		if ( userRole != null || role == null ) return;
+		if ( userRole != null || role == null )
+		{
+			return;
+		}
 
 		// Add a user role based on a user id
 		userRole = new UserRole { UserId = user.Id, RoleId = role.Id };
@@ -214,7 +240,10 @@ public sealed class UserManager : IUserManager
 		var role = _dbContext.Roles.TagWith("RemoveFromRole").FirstOrDefault(
 			r => string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
 
-		if ( role == null ) return;
+		if ( role == null )
+		{
+			return;
+		}
 
 		RemoveFromRole(user, role);
 	}
@@ -223,7 +252,10 @@ public sealed class UserManager : IUserManager
 	{
 		var userRole = _dbContext.UserRoles.Find(user.Id, role.Id);
 
-		if ( userRole == null ) return;
+		if ( userRole == null )
+		{
+			return;
+		}
 
 		_dbContext.UserRoles.Remove(userRole);
 		_dbContext.SaveChanges();
@@ -236,13 +268,17 @@ public sealed class UserManager : IUserManager
 			ct => ct.Code != null && ct.Code.ToLower().Equals(credentialTypeCode.ToLower()));
 
 		if ( credentialType == null )
+		{
 			return new ChangeSecretResult(false, ChangeSecretResultError.CredentialTypeNotFound);
+		}
 
 		var credential = _dbContext.Credentials.TagWith("ChangeSecret").FirstOrDefault(
 			c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
 
 		if ( credential == null || identifier == null )
+		{
 			return new ChangeSecretResult(false, ChangeSecretResultError.CredentialNotFound);
+		}
 
 		var salt = Pbkdf2Hasher.GenerateRandomSalt();
 		var hash = Pbkdf2Hasher.ComputeHash(secret, salt);
@@ -254,8 +290,10 @@ public sealed class UserManager : IUserManager
 		_dbContext.SaveChanges();
 
 		if ( IsCacheEnabled() )
+		{
 			_cache!.Set(CredentialCacheKey(credentialType, identifier),
 				credential, new TimeSpan(99, 0, 0));
+		}
 
 		return new ChangeSecretResult(true);
 	}
@@ -271,15 +309,20 @@ public sealed class UserManager : IUserManager
 		var cacheKey = "credentialTypeCode_" + credentialTypeCode;
 		// Add caching for credentialType
 		if ( IsCacheEnabled() && _cache?.TryGetValue(cacheKey,
-			    out var objectCredentialTypeCode) == true )
-			return ( CredentialType? )objectCredentialTypeCode;
+				out var objectCredentialTypeCode) == true )
+		{
+			return ( CredentialType? ) objectCredentialTypeCode;
+		}
 
 		var credentialTypeSelect = _dbContext.CredentialTypes.AsNoTracking()
 			.TagWith("CredentialType").Where(
 				ct => ct.Code != null && ct.Code.ToLower().Equals(credentialTypeCode.ToLower()))
 			.Select(x => new { x.Id, x.Code, x.Name, x.Position }).FirstOrDefault();
 
-		if ( credentialTypeSelect == null ) return null;
+		if ( credentialTypeSelect == null )
+		{
+			return null;
+		}
 
 		var credentialType = new CredentialType
 		{
@@ -290,8 +333,11 @@ public sealed class UserManager : IUserManager
 		};
 
 		if ( IsCacheEnabled() )
+		{
 			_cache!.Set(cacheKey, credentialType,
 				new TimeSpan(99, 0, 0));
+		}
+
 		return credentialType;
 	}
 
@@ -299,7 +345,9 @@ public sealed class UserManager : IUserManager
 	{
 		var model = new RegisterViewModel
 		{
-			Email = userName, Password = password, ConfirmPassword = confirmPassword
+			Email = userName,
+			Password = password,
+			ConfirmPassword = confirmPassword
 		};
 
 		var context = new ValidationContext(model, null, null);
@@ -322,26 +370,36 @@ public sealed class UserManager : IUserManager
 	{
 		// No Password
 		if ( string.IsNullOrWhiteSpace(secret) )
+		{
 			return new ValidateResult(success: false, error: ValidateResultError.SecretNotValid);
+		}
 
 		var credentialType = GetCachedCredentialType(credentialTypeCode);
 
 		if ( credentialType == null )
+		{
 			return new ValidateResult(success: false,
 				error: ValidateResultError.CredentialTypeNotFound);
+		}
 
 		var credential = CachedCredential(credentialType, identifier);
 
 		if ( credential?.Extra == null )
+		{
 			return new ValidateResult(success: false,
 				error: ValidateResultError.CredentialNotFound);
+		}
 
 		var userData = ( await AllUsersAsync() ).Users.Find(p => p.Id == credential.UserId);
 		if ( userData == null )
+		{
 			return new ValidateResult(success: false, error: ValidateResultError.UserNotFound);
+		}
 
 		if ( userData.LockoutEnabled && userData.LockoutEnd >= DateTime.UtcNow )
+		{
 			return new ValidateResult(success: false, error: ValidateResultError.Lockout);
+		}
 
 		// To compare the secret
 		var salt = Convert.FromBase64String(credential.Extra);
@@ -363,9 +421,16 @@ public sealed class UserManager : IUserManager
 
 	public async Task<bool> SignIn(HttpContext httpContext, User? user, bool isPersistent = false)
 	{
-		if ( user == null ) return false;
+		if ( user == null )
+		{
+			return false;
+		}
+
 		var claims = GetUserClaims(user).ToList();
-		if ( claims.Count == 0 ) return false;
+		if ( claims.Count == 0 )
+		{
+			return false;
+		}
 
 		var identity =
 			new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -393,19 +458,25 @@ public sealed class UserManager : IUserManager
 	{
 		var credentialType = GetCachedCredentialType(credentialTypeCode);
 		if ( credentialType == null )
+		{
 			return new ValidateResult
 			{
-				Success = false, Error = ValidateResultError.CredentialTypeNotFound
+				Success = false,
+				Error = ValidateResultError.CredentialTypeNotFound
 			};
+		}
 
 		var credential = await _dbContext.Credentials.FirstOrDefaultAsync(
 			c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
 
 		if ( credential == null )
+		{
 			return new ValidateResult
 			{
-				Success = false, Error = ValidateResultError.CredentialNotFound
+				Success = false,
+				Error = ValidateResultError.CredentialNotFound
 			};
+		}
 
 		var user = await _dbContext.Users.FirstOrDefaultAsync(p => p.Id == credential.UserId);
 
@@ -413,10 +484,13 @@ public sealed class UserManager : IUserManager
 			await _dbContext.UserRoles.FirstOrDefaultAsync(p => p.UserId == credential.UserId);
 
 		if ( userRole == null || user == null )
+		{
 			return new ValidateResult
 			{
-				Success = false, Error = ValidateResultError.CredentialNotFound
+				Success = false,
+				Error = ValidateResultError.CredentialNotFound
 			};
+		}
 
 		_dbContext.Credentials.Remove(credential);
 		_dbContext.Users.Remove(user);
@@ -435,14 +509,23 @@ public sealed class UserManager : IUserManager
 
 	public int GetCurrentUserId(HttpContext httpContext)
 	{
-		if ( httpContext.User.Identity?.IsAuthenticated == false ) return -1;
+		if ( httpContext.User.Identity?.IsAuthenticated == false )
+		{
+			return -1;
+		}
 
 		var claim =
 			httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
 
-		if ( claim == null ) return -1;
+		if ( claim == null )
+		{
+			return -1;
+		}
 
-		if ( !int.TryParse(claim.Value, out var currentUserId) ) return -1;
+		if ( !int.TryParse(claim.Value, out var currentUserId) )
+		{
+			return -1;
+		}
 
 		return currentUserId;
 	}
@@ -457,19 +540,35 @@ public sealed class UserManager : IUserManager
 	public User? GetUser(string credentialTypeCode, string identifier)
 	{
 		var credentialType = GetCachedCredentialType(credentialTypeCode);
-		if ( credentialType == null ) return null;
+		if ( credentialType == null )
+		{
+			return null;
+		}
+
 		var credential = _dbContext.Credentials.FirstOrDefault(
 			c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
-		if ( credential == null ) return null;
+		if ( credential == null )
+		{
+			return null;
+		}
+
 		return _dbContext.Users.TagWith("GetUser").FirstOrDefault(p => p.Id == credential.UserId);
 	}
 
 	public Role? GetRole(string credentialTypeCode, string identifier)
 	{
 		var user = GetUser(credentialTypeCode, identifier);
-		if ( user == null ) return null;
+		if ( user == null )
+		{
+			return null;
+		}
+
 		var role = _dbContext.UserRoles.FirstOrDefault(p => p.User != null && p.User.Id == user.Id);
-		if ( role == null ) return new Role();
+		if ( role == null )
+		{
+			return new Role();
+		}
+
 		var roleId = role.RoleId;
 		return _dbContext.Roles.TagWith("GetRole").FirstOrDefault(p => p.Id == roleId);
 	}
@@ -479,7 +578,11 @@ public sealed class UserManager : IUserManager
 		var role =
 			await _dbContext.UserRoles.FirstOrDefaultAsync(p =>
 				p.User != null && p.User.Id == userId);
-		if ( role == null ) return null;
+		if ( role == null )
+		{
+			return null;
+		}
+
 		var roleId = role.RoleId;
 		return await _dbContext.Roles.TagWith("GetRole").FirstOrDefaultAsync(p => p.Id == roleId);
 	}
@@ -550,11 +653,14 @@ public sealed class UserManager : IUserManager
 
 		// When not exist add it
 		if ( credentialType == null &&
-		     credentialTypeCode.Equals("email", StringComparison.CurrentCultureIgnoreCase) )
+			 credentialTypeCode.Equals("email", StringComparison.CurrentCultureIgnoreCase) )
 		{
 			credentialType = new CredentialType
 			{
-				Code = "email", Name = "email", Position = 1, Id = 1
+				Code = "email",
+				Name = "email",
+				Position = 1,
+				Id = 1
 			};
 			await _dbContext.CredentialTypes.AddAsync(credentialType);
 			await _dbContext.SaveChangesAsync();
@@ -568,7 +674,11 @@ public sealed class UserManager : IUserManager
 	/// </summary>
 	internal async Task AddUserToCache(User user)
 	{
-		if ( !IsCacheEnabled() ) return;
+		if ( !IsCacheEnabled() )
+		{
+			return;
+		}
+
 		var allUsers = ( await AllUsersAsync() ).Users;
 		var index = allUsers.Find(p => p.Id == user.Id);
 		if ( allUsers.Exists(p => p.Id == user.Id) && index != null )
@@ -590,7 +700,11 @@ public sealed class UserManager : IUserManager
 	/// </summary>
 	private async Task RemoveUserFromCacheAsync(User user)
 	{
-		if ( !IsCacheEnabled() ) return;
+		if ( !IsCacheEnabled() )
+		{
+			return;
+		}
+
 		var allUsers = ( await AllUsersAsync() ).Users;
 		allUsers.Remove(user);
 		_cache!.Set(AllUsersCacheKey, allUsers,
@@ -610,14 +724,18 @@ public sealed class UserManager : IUserManager
 		var roleToAddToUser = _appSettings.AccountRegisterDefaultRole.ToString();
 
 		if ( _appSettings.AccountRegisterFirstRoleAdmin == true &&
-		     !_dbContext.Users.Any(p => p != user) )
+			 !_dbContext.Users.Any(p => p != user) )
+		{
 			return AccountRoles.AppAccountRoles.Administrator.ToString();
+		}
 
 		if ( _appSettings.AccountRolesByEmailRegisterOverwrite != null
-		     && _appSettings.AccountRolesByEmailRegisterOverwrite
-			     .TryGetValue(identifier, out var emailsForConfig) &&
-		     AccountRoles.GetAllRoles().Contains(emailsForConfig) )
+			 && _appSettings.AccountRolesByEmailRegisterOverwrite
+				 .TryGetValue(identifier, out var emailsForConfig) &&
+			 AccountRoles.GetAllRoles().Contains(emailsForConfig) )
+		{
 			return emailsForConfig;
+		}
 
 		return roleToAddToUser;
 	}
@@ -635,14 +753,19 @@ public sealed class UserManager : IUserManager
 	/// <returns>Credential data object</returns>
 	internal Credential? CachedCredential(CredentialType credentialType, string? identifier)
 	{
-		if ( string.IsNullOrEmpty(identifier) ) return null;
+		if ( string.IsNullOrEmpty(identifier) )
+		{
+			return null;
+		}
 
 		var key = CredentialCacheKey(credentialType, identifier);
 
 		// Add caching for credentialType
 		if ( IsCacheEnabled() && _cache?.TryGetValue(key,
-			    out var objectCredentialTypeCode) == true )
-			return ( Credential? )objectCredentialTypeCode;
+				out var objectCredentialTypeCode) == true )
+		{
+			return ( Credential? ) objectCredentialTypeCode;
+		}
 
 		var credentialSelect = _dbContext.Credentials.AsNoTracking().TagWith("Credential").Where(
 			c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier).Select(x =>
@@ -657,7 +780,10 @@ public sealed class UserManager : IUserManager
 				x.Identifier
 			}).FirstOrDefault();
 
-		if ( credentialSelect == null ) return null;
+		if ( credentialSelect == null )
+		{
+			return null;
+		}
 
 		var credential = new Credential
 		{
@@ -670,7 +796,10 @@ public sealed class UserManager : IUserManager
 			Identifier = credentialSelect.Identifier
 		};
 
-		if ( IsCacheEnabled() ) _cache!.Set(key, credential, new TimeSpan(99, 0, 0));
+		if ( IsCacheEnabled() )
+		{
+			_cache!.Set(key, credential, new TimeSpan(99, 0, 0));
+		}
 
 		return credential;
 	}
@@ -679,7 +808,10 @@ public sealed class UserManager : IUserManager
 		string secret,
 		CredentialType credentialType)
 	{
-		if ( credential.IterationCount == IterationCountType.Iterate100KSha256 ) return;
+		if ( credential.IterationCount == IterationCountType.Iterate100KSha256 )
+		{
+			return;
+		}
 
 		credential.IterationCount = IterationCountType.Iterate100KSha256;
 		credential.Secret = Pbkdf2Hasher.ComputeHash(secret, salt);
@@ -691,12 +823,17 @@ public sealed class UserManager : IUserManager
 	internal async Task<ValidateResult> ResetAndSuccess(int accessFailedCount, int userId,
 		User? userData)
 	{
-		if ( accessFailedCount <= 0 ) return new ValidateResult(userData, true);
+		if ( accessFailedCount <= 0 )
+		{
+			return new ValidateResult(userData, true);
+		}
 
 		userData = await _dbContext.Users.FindAsync(userId);
 		if ( userData == null )
+		{
 			return new ValidateResult(success: false,
 				error: ValidateResultError.UserNotFound);
+		}
 
 		userData.LockoutEnabled = false;
 		userData.AccessFailedCount = 0;
@@ -712,8 +849,11 @@ public sealed class UserManager : IUserManager
 		var errorReason = ValidateResultError.SecretNotValid;
 		var userData = await _dbContext.Users.FindAsync(userId);
 		if ( userData == null )
+		{
 			return new ValidateResult(success: false,
 				error: ValidateResultError.UserNotFound);
+		}
+
 		userData.AccessFailedCount++;
 		if ( userData.AccessFailedCount >= 3 )
 		{
@@ -730,7 +870,10 @@ public sealed class UserManager : IUserManager
 
 	internal IEnumerable<Claim> GetUserClaims(User? user)
 	{
-		if ( user == null || user.Id == 0 ) return new List<Claim>();
+		if ( user == null || user.Id == 0 )
+		{
+			return new List<Claim>();
+		}
 
 		var email =
 			user.Credentials?.FirstOrDefault(p =>
@@ -756,7 +899,11 @@ public sealed class UserManager : IUserManager
 		foreach ( var roleId in roleIds )
 		{
 			var role = _dbContext.Roles.Find(roleId);
-			if ( role?.Code == null ) continue;
+			if ( role?.Code == null )
+			{
+				continue;
+			}
+
 			claims.Add(new Claim(ClaimTypes.Role, role.Code));
 			claims.AddRange(GetUserPermissionClaims(role));
 		}
@@ -774,7 +921,11 @@ public sealed class UserManager : IUserManager
 		foreach ( var permissionId in permissionIds )
 		{
 			var permission = _dbContext.Permissions.Find(permissionId);
-			if ( permission?.Code == null ) continue;
+			if ( permission?.Code == null )
+			{
+				continue;
+			}
+
 			claims.Add(new Claim("Permission", permission.Code!));
 		}
 
@@ -788,13 +939,16 @@ public sealed class UserManager : IUserManager
 			var permission =
 				_dbContext.Permissions.FirstOrDefault(p => p.Code == permissionEnum.ToString());
 
-			if ( permission != null ) continue;
+			if ( permission != null )
+			{
+				continue;
+			}
 
 			permission = new Permission
 			{
 				Name = permissionEnum.ToString(),
 				Code = permissionEnum.ToString(),
-				Position = ( int )permissionEnum
+				Position = ( int ) permissionEnum
 			};
 			_dbContext.Permissions.Add(permission);
 			_dbContext.SaveChanges();
@@ -817,11 +971,18 @@ public sealed class UserManager : IUserManager
 			var permission = _dbContext.Permissions.FirstOrDefault(p =>
 				p.Code == rolePermissionsDictionary.Value.ToString());
 
-			if ( permission == null || role == null ) continue;
+			if ( permission == null || role == null )
+			{
+				continue;
+			}
+
 			var rolePermission = _dbContext.RolePermissions.FirstOrDefault(p =>
 				p.RoleId == role.Id && p.PermissionId == permission.Id);
 
-			if ( rolePermission != null ) continue;
+			if ( rolePermission != null )
+			{
+				continue;
+			}
 
 			rolePermission = new RolePermission { RoleId = role.Id, PermissionId = permission.Id };
 

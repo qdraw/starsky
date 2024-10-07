@@ -14,20 +14,19 @@ namespace starskytest.FakeMocks;
 
 public class FakeIStorage : IStorage
 {
-	private readonly List<string?> _outputSubPathFolders =
-		new List<string?>();
+	private readonly Dictionary<string, byte[]?> _byteList = new();
+
+
+	private readonly Exception? _exception;
+
+	private readonly Dictionary<string, DateTime>? _lastEditDict = new();
 
 	private readonly List<string?>
-		_outputSubPathFiles = new List<string?>();
+		_outputSubPathFiles = new();
 
-	private readonly Dictionary<string, DateTime>? _lastEditDict =
-		new Dictionary<string, DateTime>();
-
-	private readonly Dictionary<string, byte[]?> _byteList =
-		new Dictionary<string, byte[]?>();
+	private readonly List<string?> _outputSubPathFolders = new();
 
 	/// <summary>
-	/// 
 	/// </summary>
 	/// <param name="outputSubPathFolders">/</param>
 	/// <param name="outputSubPathFiles">/test.jpg</param>
@@ -57,7 +56,7 @@ public class FakeIStorage : IStorage
 		if ( byteListSource != null &&
 		     byteListSource.Count == _outputSubPathFiles.Count )
 		{
-			for ( int i = 0; i < _outputSubPathFiles.Count; i++ )
+			for ( var i = 0; i < _outputSubPathFiles.Count; i++ )
 			{
 				_byteList.Add(_outputSubPathFiles[i]!, byteListSource[i]);
 			}
@@ -77,8 +76,6 @@ public class FakeIStorage : IStorage
 		_exception = exception;
 	}
 
-
-	private readonly Exception? _exception;
 	public int ExceptionCount { get; set; }
 
 	public bool IsFileReady(string path)
@@ -113,7 +110,7 @@ public class FakeIStorage : IStorage
 	}
 
 	/// <summary>
-	/// Mock of Move folder
+	///     Mock of Move folder
 	/// </summary>
 	/// <param name="fromPath">subPath from location</param>
 	/// <param name="toPath">to SubPath location</param>
@@ -147,7 +144,10 @@ public class FakeIStorage : IStorage
 
 	public void FileCopy(string fromPath, string toPath)
 	{
-		if ( !ExistFile(fromPath) ) return;
+		if ( !ExistFile(fromPath) )
+		{
+			return;
+		}
 
 		_outputSubPathFiles.Add(toPath);
 		_byteList.Add(toPath, _byteList[fromPath]);
@@ -155,7 +155,11 @@ public class FakeIStorage : IStorage
 
 	public bool FileDelete(string path)
 	{
-		if ( !ExistFile(path) ) return false;
+		if ( !ExistFile(path) )
+		{
+			return false;
+		}
+
 		var index = _outputSubPathFiles.IndexOf(path);
 		_outputSubPathFiles[index] = null!;
 		return true;
@@ -168,7 +172,11 @@ public class FakeIStorage : IStorage
 
 	public bool FolderDelete(string path)
 	{
-		if ( !ExistFolder(path) ) return false;
+		if ( !ExistFolder(path) )
+		{
+			return false;
+		}
+
 		var index = _outputSubPathFolders.IndexOf(path);
 		_outputSubPathFolders[index] = null;
 
@@ -217,7 +225,7 @@ public class FakeIStorage : IStorage
 	}
 
 	/// <summary>
-	/// Should output: /2020/01/2020_01_01 and /2020/01/2020_01_01 test
+	///     Should output: /2020/01/2020_01_01 and /2020/01/2020_01_01 test
 	/// </summary>
 	/// <param name="path"></param>
 	/// <returns></returns>
@@ -234,33 +242,8 @@ public class FakeIStorage : IStorage
 		return folderFileListNotRecursive.Cast<string>();
 	}
 
-	private static bool CheckAndFixChildFolders(string parentFolder,
-		string childFolder)
-	{
-		var replaced = childFolder.Replace(parentFolder, childFolder);
-		if ( replaced.Contains('/') ||
-		     replaced.Contains(Path.DirectorySeparatorChar) )
-		{
-			return true;
-		}
-
-		return false;
-	}
-
-	private static bool CheckAndFixParentFiles(string parentFolder,
-		string filePath)
-	{
-		if ( parentFolder != string.Empty &&
-		     !filePath.StartsWith(parentFolder) ) return false;
-		// unescaped: (\/|\\)\w+.[a-z]{1,4}$
-		return Regex.Match(filePath,
-				$"^{Regex.Escape(parentFolder)}" +
-				"(\\/|\\\\)\\w+.[a-z]{1,4}$")
-			.Success;
-	}
-
 	/// <summary>
-	/// Returns a list of directories // Get list of child folders
+	///     Returns a list of directories // Get list of child folders
 	/// </summary>
 	/// <param name="path">subPath</param>
 	/// <returns>list of paths</returns>
@@ -268,7 +251,10 @@ public class FakeIStorage : IStorage
 	public IEnumerable<KeyValuePair<string, DateTime>>
 		GetDirectoryRecursive(string path)
 	{
-		if ( path != "/" ) path = PathHelper.RemoveLatestSlash(path);
+		if ( path != "/" )
+		{
+			path = PathHelper.RemoveLatestSlash(path);
+		}
 
 		if ( !ExistFolder(path) )
 		{
@@ -288,7 +274,7 @@ public class FakeIStorage : IStorage
 	}
 
 	/// <summary>
-	/// Read Stream (and keep open)
+	///     Read Stream (and keep open)
 	/// </summary>
 	/// <param name="path">location</param>
 	/// <param name="maxRead">how many bytes are read (default all or -1)</param>
@@ -346,8 +332,10 @@ public class FakeIStorage : IStorage
 
 			_byteList.Add(path, byteArray);
 			if ( byteArray.Length == 0 )
+			{
 				throw new FileLoadException(
 					$"FakeIStorage WriteStream => path {path} is 0 bytes");
+			}
 		}
 
 		return true;
@@ -409,7 +397,7 @@ public class FakeIStorage : IStorage
 	}
 
 	/// <summary>
-	/// Write and dispose afterwards
+	///     Write and dispose afterwards
 	/// </summary>
 	/// <param name="stream">stream</param>
 	/// <param name="path">where to write to</param>
@@ -464,6 +452,35 @@ public class FakeIStorage : IStorage
 		};
 	}
 
+	private static bool CheckAndFixChildFolders(string parentFolder,
+		string childFolder)
+	{
+		var replaced = childFolder.Replace(parentFolder, childFolder);
+		if ( replaced.Contains('/') ||
+		     replaced.Contains(Path.DirectorySeparatorChar) )
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	private static bool CheckAndFixParentFiles(string parentFolder,
+		string filePath)
+	{
+		if ( parentFolder != string.Empty &&
+		     !filePath.StartsWith(parentFolder) )
+		{
+			return false;
+		}
+
+		// unescaped: (\/|\\)\w+.[a-z]{1,4}$
+		return Regex.Match(filePath,
+				$"^{Regex.Escape(parentFolder)}" +
+				"(\\/|\\\\)\\w+.[a-z]{1,4}$")
+			.Success;
+	}
+
 	public DateTime SetLastWriteTime(string path, DateTime? dateTime = null)
 	{
 		SetDateTime(path, dateTime ?? DateTime.Now);
@@ -472,7 +489,11 @@ public class FakeIStorage : IStorage
 
 	private void SetDateTime(string path, DateTime dateTime)
 	{
-		if ( _lastEditDict == null ) return;
+		if ( _lastEditDict == null )
+		{
+			return;
+		}
+
 		if ( _lastEditDict.Any(p => p.Key == path) )
 		{
 			_lastEditDict[path] = dateTime;

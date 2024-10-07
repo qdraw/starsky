@@ -15,7 +15,11 @@ namespace starsky.foundation.database.Query
 		[SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract")]
 		public InjectServiceScope(IServiceScopeFactory? scopeFactory)
 		{
-			if ( scopeFactory == null ) return;
+			if ( scopeFactory == null )
+			{
+				return;
+			}
+
 			var scope = scopeFactory.CreateScope();
 			_dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 		}

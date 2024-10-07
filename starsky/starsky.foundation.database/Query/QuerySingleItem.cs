@@ -69,7 +69,11 @@ public partial class Query
 		SortType? sort = SortType.FileName)
 	{
 		// reject empty requests
-		if ( string.IsNullOrWhiteSpace(singleItemDbPath) ) return null;
+		if ( string.IsNullOrWhiteSpace(singleItemDbPath) )
+		{
+			return null;
+		}
+
 		var parentFolder = FilenamesHelper.GetParentPath(singleItemDbPath);
 
 		// RemoveLatestSlash is for '/' folder
@@ -119,7 +123,7 @@ public partial class Query
 		if ( currentFileIndexItem.IsDirectory == true )
 		{
 			currentFileIndexItem.CollectionPaths = new List<string> { singleItemDbPath };
-			
+
 			return new DetailView
 			{
 				IsDirectory = true,
@@ -169,7 +173,10 @@ public partial class Query
 		List<FileIndexItem> fileIndexItemsList, SortType sortType)
 	{
 		// Check if this is item is not !deleted! yet
-		if ( currentFileIndexItem == null ) return new RelativeObjects();
+		if ( currentFileIndexItem == null )
+		{
+			return new RelativeObjects();
+		}
 
 		fileIndexItemsList = SortHelper.Helper(fileIndexItemsList, sortType).ToList();
 

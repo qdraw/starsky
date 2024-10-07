@@ -6,216 +6,237 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
+using starsky.feature.search.Services;
+using starsky.feature.search.ViewModels;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
-using starsky.feature.search.Services;
-using starsky.feature.search.ViewModels;
 using starskytest.FakeMocks;
 
-namespace starskytest.Controllers
+namespace starskytest.Controllers;
+
+[TestClass]
+public sealed class SearchControllerTest
 {
-	[TestClass]
-	public sealed class SearchControllerTest
+	private readonly Query _query;
+	private readonly SearchService _search; // or ISearch
+
+	public SearchControllerTest()
 	{
-		private readonly Query _query;
-		private readonly SearchService _search; // or ISearch
+		var provider = new ServiceCollection()
+			.AddMemoryCache()
+			.BuildServiceProvider();
+		var memoryCache = provider.GetService<IMemoryCache>();
 
-		public SearchControllerTest()
+		var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
+		builder.UseInMemoryDatabase(nameof(SearchController));
+		var options = builder.Options;
+		var context = new ApplicationDbContext(options);
+		_query = new Query(context, new AppSettings(), null!, new FakeIWebLogger(), memoryCache);
+		_search = new SearchService(context, new FakeIWebLogger(), memoryCache);
+	}
+
+
+	[TestMethod]
+	public async Task SearchControllerTest_ZeroItems_Index()
+	{
+		var controller = new SearchController(_search);
+		var jsonResult = await controller.Index("98765456789987") as JsonResult;
+		var searchViewResult = jsonResult!.Value as SearchViewModel;
+
+		Assert.AreEqual(0, searchViewResult?.FileIndexItems?.Count);
+		Assert.AreEqual("Search", searchViewResult?.PageType);
+	}
+	
+	[TestMethod]
+	public async Task Index_InvalidModel()
+	{
+		var controller = new SearchController(_search);
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+		var result = await controller.Index("Invalid");
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+	}
+
+	[TestMethod]
+	public async Task SearchControllerTest_Index_OneKeyword()
+	{
+		var item0 = await _query.AddItemAsync(new FileIndexItem
 		{
-			var provider = new ServiceCollection()
-				.AddMemoryCache()
-				.BuildServiceProvider();
-			var memoryCache = provider.GetService<IMemoryCache>();
+			FileName = "Test.jpg", ParentDirectory = "/", Tags = "test"
+		});
+		var controller = new SearchController(_search);
+		var jsonResult = await controller.Index("test") as JsonResult;
+		var searchViewResult = jsonResult!.Value as SearchViewModel;
 
-			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-			builder.UseInMemoryDatabase(nameof(SearchController));
-			var options = builder.Options;
-			var context = new ApplicationDbContext(options);
-			_query = new Query(context, new AppSettings(), null!, new FakeIWebLogger(), memoryCache);
-			_search = new SearchService(context, new FakeIWebLogger(), memoryCache);
-		}
+		// some values
+		Assert.AreEqual(1, searchViewResult?.SearchCount);
+		Assert.AreEqual(1, searchViewResult?.FileIndexItems?.Count);
+		Assert.AreEqual(SearchViewModel.SearchForOptionType.Equal,
+			searchViewResult?.SearchForOptions[0]);
+		Assert.AreEqual("test", searchViewResult?.SearchQuery);
+		Assert.AreEqual(nameof(FileIndexItem.Tags), searchViewResult?.SearchIn[0]);
 
-        
-		[TestMethod]
-		public async Task SearchControllerTest_ZeroItems_Index()
+		await _query.RemoveItemAsync(item0);
+	}
+
+	[TestMethod]
+	public async Task SearchControllerTest_TrashZeroItems()
+	{
+		var controller = new SearchController(_search);
+		var jsonResult = await controller.Trash() as JsonResult;
+		var searchViewResult = jsonResult!.Value as SearchViewModel;
+		Assert.AreEqual(0, searchViewResult!.FileIndexItems?.Count);
+	}
+	
+	[TestMethod]
+	public async Task Trash_InvalidModel()
+	{
+		var controller = new SearchController(_search);
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+		var result = await controller.Trash();
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+	}
+
+	[TestMethod]
+	public async Task SearchControllerTest_RelativeApi_Prev()
+	{
+		var item0 = await _query.AddItemAsync(new FileIndexItem
 		{
-			var controller = new SearchController(_search);
-			var jsonResult = await controller.Index("98765456789987") as JsonResult;
-			var searchViewResult = jsonResult!.Value as SearchViewModel;
-	        
-			Assert.AreEqual(0,searchViewResult?.FileIndexItems?.Count);
-			Assert.AreEqual("Search",searchViewResult?.PageType);
-
-		}
-
-		[TestMethod]
-		public async Task SearchControllerTest_Index_OneKeyword()
+			FileName = "test.jpg", ParentDirectory = "/", Tags = "test", FileHash = "FileHash1"
+		});
+		var item1 = await _query.AddItemAsync(new FileIndexItem
 		{
-			var item0 = await _query.AddItemAsync(new FileIndexItem
-			{
-				FileName = "Test.jpg",
-				ParentDirectory = "/",
-				Tags = "test"
-			});
-			var controller = new SearchController(_search);
-			var jsonResult = await controller.Index("test") as JsonResult;
-			var searchViewResult = jsonResult!.Value as SearchViewModel;
-		    
-			// some values
-			Assert.AreEqual(1,searchViewResult?.SearchCount);
-			Assert.AreEqual(1,searchViewResult?.FileIndexItems?.Count);
-			Assert.AreEqual(SearchViewModel.SearchForOptionType.Equal,searchViewResult?.SearchForOptions[0]);
-			Assert.AreEqual("test",searchViewResult?.SearchQuery);
-			Assert.AreEqual(nameof(FileIndexItem.Tags),searchViewResult?.SearchIn[0]);
+			FileName = "test1.jpg", ParentDirectory = "/", Tags = "test"
+		});
+		var controller = new SearchController(_search);
+		var jsonResult = await controller.SearchRelative("/test1.jpg", "test") as JsonResult;
+		var relativeObjects = jsonResult!.Value as RelativeObjects;
 
-			await _query.RemoveItemAsync(item0);
-		}
+		// some values
+		Assert.AreEqual("/test.jpg", relativeObjects!.PrevFilePath);
+		Assert.AreEqual("FileHash1", relativeObjects.PrevHash);
 
-		[TestMethod]
-		public async Task SearchControllerTest_TrashZeroItems()
+		await _query.RemoveItemAsync(item0);
+		await _query.RemoveItemAsync(item1);
+	}
+	
+	[TestMethod]
+	public async Task SearchRelative_InvalidModel()
+	{
+		var controller = new SearchController(_search);
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+		var result = await controller.SearchRelative("Invalid", "Invalid");
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+	}
+
+	[TestMethod]
+	public async Task SearchControllerTest_RelativeApi_Next()
+	{
+		var item0 = await _query.AddItemAsync(new FileIndexItem
 		{
-			var controller = new SearchController(_search);
-			var jsonResult = await controller.Trash() as JsonResult;
-			var searchViewResult = jsonResult!.Value as SearchViewModel;
-			Assert.AreEqual(0,searchViewResult!.FileIndexItems?.Count);
-		}
-        
-		[TestMethod]
-		public async Task SearchControllerTest_RelativeApi_Prev()
+			FileName = "test.jpg", ParentDirectory = "/", Tags = "test", FileHash = "FileHash1"
+		});
+		var item1 = await _query.AddItemAsync(new FileIndexItem
 		{
-			var item0 = await _query.AddItemAsync(new FileIndexItem
-			{
-				FileName = "test.jpg",
-				ParentDirectory = "/",
-				Tags = "test",
-				FileHash = "FileHash1"
-			});
-			var item1 = await _query.AddItemAsync(new FileIndexItem
-			{
-				FileName = "test1.jpg",
-				ParentDirectory = "/",
-				Tags = "test"
-			});
-			var controller = new SearchController(_search);
-			var jsonResult = await controller.SearchRelative("/test1.jpg","test") as JsonResult;
-			var relativeObjects = jsonResult!.Value as RelativeObjects;
-		    
-			// some values
-			Assert.AreEqual("/test.jpg",relativeObjects!.PrevFilePath);
-			Assert.AreEqual("FileHash1",relativeObjects.PrevHash);
+			FileName = "test1.jpg", ParentDirectory = "/", Tags = "test", FileHash = "FileHash2"
+		});
+		var controller = new SearchController(_search);
+		var jsonResult = await controller.SearchRelative("/test.jpg", "test") as JsonResult;
+		var relativeObjects = jsonResult!.Value as RelativeObjects;
 
-			await _query.RemoveItemAsync(item0);
-			await _query.RemoveItemAsync(item1);
-		}
-        
-		[TestMethod]
-		public async Task SearchControllerTest_RelativeApi_Next()
+		// some values
+		Assert.AreEqual("/test1.jpg", relativeObjects!.NextFilePath);
+		Assert.AreEqual("FileHash2", relativeObjects.NextHash);
+
+		await _query.RemoveItemAsync(item0);
+		await _query.RemoveItemAsync(item1);
+	}
+
+	[TestMethod]
+	public async Task SearchRelative_NotFound()
+	{
+		var controller = new SearchController(_search);
+		var notFoundObjectResult =
+			await controller.SearchRelative("/not-found.jpg", "test") as NotFoundObjectResult;
+
+		Assert.AreEqual(404, notFoundObjectResult!.StatusCode);
+	}
+
+	[TestMethod]
+	public async Task SearchRelative_LastItem()
+	{
+		var item0 = await _query.AddItemAsync(new FileIndexItem
 		{
-			var item0 = await _query.AddItemAsync(new FileIndexItem
-			{
-				FileName = "test.jpg",
-				ParentDirectory = "/",
-				Tags = "test",
-				FileHash = "FileHash1"
-			});
-			var item1 = await _query.AddItemAsync(new FileIndexItem
-			{
-				FileName = "test1.jpg",
-				ParentDirectory = "/",
-				Tags = "test",
-				FileHash = "FileHash2"
-			});
-			var controller = new SearchController(_search);
-			var jsonResult = await controller.SearchRelative("/test.jpg","test") as JsonResult;
-			var relativeObjects = jsonResult!.Value as RelativeObjects;
-		    
-			// some values
-			Assert.AreEqual("/test1.jpg",relativeObjects!.NextFilePath);
-			Assert.AreEqual("FileHash2",relativeObjects.NextHash);
-
-			await _query.RemoveItemAsync(item0);
-			await _query.RemoveItemAsync(item1);
-		}
-
-		[TestMethod]
-		public async Task SearchRelative_NotFound()
+			FileName = "test.jpg", ParentDirectory = "/", Tags = "test", FileHash = "FileHash1"
+		});
+		var item1 = await _query.AddItemAsync(new FileIndexItem
 		{
-			var controller = new SearchController(_search);
-			var notFoundObjectResult = await controller.SearchRelative("/not-found.jpg","test") as NotFoundObjectResult;
+			FileName = "test1.jpg", ParentDirectory = "/", Tags = "test", FileHash = "FileHash2"
+		});
+		var controller = new SearchController(_search);
+		var jsonResult = await controller.SearchRelative("/test1.jpg", "test") as JsonResult;
+		var relativeObjects = jsonResult!.Value as RelativeObjects;
 
-			Assert.AreEqual(404, notFoundObjectResult!.StatusCode);
-		}
+		Assert.IsNull(relativeObjects?.NextFilePath);
+		Assert.IsNull(relativeObjects?.NextHash);
 
-		[TestMethod]
-		public async Task SearchRelative_LastItem()
-		{
-			var item0 = await _query.AddItemAsync(new FileIndexItem
-			{
-				FileName = "test.jpg",
-				ParentDirectory = "/",
-				Tags = "test",
-				FileHash = "FileHash1"
-			});
-			var item1 = await _query.AddItemAsync(new FileIndexItem
-			{
-				FileName = "test1.jpg",
-				ParentDirectory = "/",
-				Tags = "test",
-				FileHash = "FileHash2"
-			});
-			var controller = new SearchController(_search);
-			var jsonResult = await controller.SearchRelative("/test1.jpg","test") as JsonResult;
-			var relativeObjects = jsonResult!.Value as RelativeObjects;
-		    
-			Assert.IsNull(relativeObjects?.NextFilePath);
-			Assert.IsNull(relativeObjects?.NextHash);
+		await _query.RemoveItemAsync(item0);
+		await _query.RemoveItemAsync(item1);
+	}
 
-			await _query.RemoveItemAsync(item0);
-			await _query.RemoveItemAsync(item1);
-		}
+	[TestMethod]
+	public void GetIndexFilePathFromSearch_Notfound()
+	{
+		var result = SearchController.GetIndexFilePathFromSearch(new SearchViewModel(), "test");
+		Assert.AreEqual(-1, result);
+	}
 
-		[TestMethod]
-		public void GetIndexFilePathFromSearch_Notfound()
-		{
-			var result = SearchController.GetIndexFilePathFromSearch(new SearchViewModel(),"test");
-			Assert.AreEqual(-1, result);
-		}
-        
-		[TestMethod]
-		public void RemoveCache_NotFound()
-		{
-			var controller = new SearchController(_search);
-			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+	[TestMethod]
+	public void RemoveCache_NotFound()
+	{
+		var controller = new SearchController(_search);
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
-			var jsonResult = controller.RemoveCache("non-existing-cache-item") as JsonResult;
-			var resultValue = jsonResult!.Value as string;
-			Assert.AreEqual( "there is no cached item", resultValue);
-		}
-        
-		[TestMethod]
-		public void RemoveCache_CacheDisabled()
-		{
-			var controller = new SearchController(new SearchService(null!,null!));
-			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+		var jsonResult = controller.RemoveCache("non-existing-cache-item") as JsonResult;
+		var resultValue = jsonResult!.Value as string;
+		Assert.AreEqual("there is no cached item", resultValue);
+	}
 
-			var jsonResult = controller.RemoveCache("non-existing-cache-item") as JsonResult;
-			var resultValue = jsonResult!.Value as string;
-			Assert.AreEqual( "cache disabled in config", resultValue);
-		}
-        
-		[TestMethod]
-		public async Task RemoveCache_cacheCleared()
-		{
-			var controller = new SearchController(_search);
-			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+	[TestMethod]
+	public void RemoveCache_CacheDisabled()
+	{
+		var controller = new SearchController(new SearchService(null!, null!));
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
-			await _search.Search("1234567890987654");
-	        
-			var jsonResult = controller.RemoveCache("1234567890987654") as JsonResult;
-			var resultValue = jsonResult!.Value as string;
-			Assert.AreEqual( "cache cleared", resultValue);
-		}
+		var jsonResult = controller.RemoveCache("non-existing-cache-item") as JsonResult;
+		var resultValue = jsonResult!.Value as string;
+		Assert.AreEqual("cache disabled in config", resultValue);
+	}
+
+	[TestMethod]
+	public async Task RemoveCache_cacheCleared()
+	{
+		var controller = new SearchController(_search);
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+		await _search.Search("1234567890987654");
+
+		var jsonResult = controller.RemoveCache("1234567890987654") as JsonResult;
+		var resultValue = jsonResult!.Value as string;
+		Assert.AreEqual("cache cleared", resultValue);
+	}
+	
+	[TestMethod]
+	public void RemoveCache_InvalidModel()
+	{
+		var controller = new SearchController(_search);
+		controller.ControllerContext.HttpContext = new DefaultHttpContext();
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+		var result = controller.RemoveCache("Invalid");
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 	}
 }

@@ -16,7 +16,11 @@ namespace starskytest.starsky.foundation.storage.Storage
 			Stream LocalGet()
 			{
 				i++;
-				if ( i != 3 ) throw new IOException();
+				if ( i != 3 )
+				{
+					throw new IOException();
+				}
+
 				return new MemoryStream(CreateAnImageNoExif.Bytes.ToArray());
 			}
 

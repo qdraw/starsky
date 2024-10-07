@@ -242,7 +242,11 @@ public class RenameService
 		// remove both values when ONE OF those two values are null
 		for ( var i = 0; i < toFileSubPaths.Count; i++ )
 		{
-			if ( toFileSubPaths[i] != null && inputFileSubPaths[i] != null ) continue;
+			if ( toFileSubPaths[i] != null && inputFileSubPaths[i] != null )
+			{
+				continue;
+			}
+
 			toFileSubPaths.RemoveAt(i);
 			inputFileSubPaths.RemoveAt(i);
 			fileIndexResultsList.Add(new FileIndexItem
@@ -483,7 +487,10 @@ public class RenameService
 		_query.RemoveCacheParentItem(inputParentSubFolder);
 
 		var toParentSubFolder = FilenamesHelper.GetParentPath(toFileSubPath);
-		if ( string.IsNullOrEmpty(toParentSubFolder) ) toParentSubFolder = "/";
+		if ( string.IsNullOrEmpty(toParentSubFolder) )
+		{
+			toParentSubFolder = "/";
+		}
 
 		// clear cache (to FileSubPath parents)
 		_query.RemoveCacheParentItem(toParentSubFolder);

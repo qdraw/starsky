@@ -60,14 +60,17 @@ namespace starskytest.starsky.foundation.storage.Helpers
 		}
 
 		[TestMethod]
-		[ExpectedException(typeof(FileNotFoundException))]
 		public async Task ReadTest_NotFound()
 		{
+			// Arrange
 			var fakeStorage = new FakeIStorage();
 			var itemJsonParser = new DeserializeJson(fakeStorage);
 
-			await itemJsonParser.ReadAsync<FileIndexItemJsonParserTest_TestModel>("/notfound.json");
-			// expect error
+			// Act & Assert
+			await Assert.ThrowsExceptionAsync<FileNotFoundException>(async () =>
+			{
+				await itemJsonParser.ReadAsync<FileIndexItemJsonParserTest_TestModel>("/notfound.json");
+			});
 		}
 	}
 

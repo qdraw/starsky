@@ -176,6 +176,20 @@ namespace starskytest.Controllers
 					BadRequestResult;
 			Assert.AreEqual(400, actionResult?.StatusCode);
 		}
+		
+		[TestMethod]
+		public async Task FromUrl_BadRequest()
+		{
+			var importController = new ImportController(_import, _appSettings,
+				_bgTaskQueue, null!, new FakeSelectorStorage(new FakeIStorage()), _scopeFactory,
+				new FakeIWebLogger()) { ControllerContext = RequestWithFile(), };
+			importController.ModelState.AddModelError("Key", "ErrorMessage");
+
+			var result =
+				await importController.FromUrl(null!, null!, null!);
+			
+			Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+		}
 
 		[TestMethod]
 		public async Task FromUrl_RequestFromWhiteListedDomain_NotFound()

@@ -51,35 +51,29 @@ public class AreListsEqualHelperTests
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ArgumentNullException))]
 	public void AreListsEqual_NullLists_ArgumentNullException()
 	{
 		// Arrange
 		List<int> list1 = null!;
 		List<int> list2 = null!;
 
-		// Act
-		var result = AreListsEqualHelper.AreListsEqual(list1, list2);
-
-		// Assert
-		Assert.IsTrue(result);
+		// Act & Assert
+		Assert.ThrowsException<ArgumentNullException>(() =>
+			AreListsEqualHelper.AreListsEqual(list1, list2));
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ArgumentNullException))]
 	public void AreListsEqual_OneListNull_ArgumentNullException()
 	{
 		// Arrange
 		var list1 = new List<int> { 1, 2, 3 };
 		List<int>? list2 = null;
 
-		// Act
-		var result = AreListsEqualHelper.AreListsEqual(list1, list2!);
-
-		// Assert
-		Assert.IsFalse(result);
+		// Act & Assert
+		Assert.ThrowsException<ArgumentNullException>(() =>
+			AreListsEqualHelper.AreListsEqual(list1, list2!));
 	}
-	
+
 	[TestMethod]
 	public void AreListsEqual_OneListNull()
 	{

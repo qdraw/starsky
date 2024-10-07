@@ -157,7 +157,10 @@ namespace starsky.foundation.writemeta.Helpers
 			command = UpdateMakeModelCommand(command, comparedNames, updateModel);
 			command = UpdateImageStabilization(command, comparedNames, updateModel);
 
-			if ( command == initCommand ) return string.Empty;
+			if ( command == initCommand )
+			{
+				return string.Empty;
+			}
 
 			return command;
 		}
@@ -174,12 +177,18 @@ namespace starsky.foundation.writemeta.Helpers
 			foreach ( var subPath in inputSubPaths )
 			{
 				// only for raw files
-				if ( !ExtensionRolesHelper.IsExtensionForceXmp(subPath) ) return;
+				if ( !ExtensionRolesHelper.IsExtensionForceXmp(subPath) )
+				{
+					return;
+				}
 
 				var withXmpPath = ExtensionRolesHelper.ReplaceExtensionWithXmp(subPath);
 
 				if ( _iStorage.IsFolderOrFile(withXmpPath) !=
-				     FolderOrFileModel.FolderOrFileTypeList.Deleted ) continue;
+					 FolderOrFileModel.FolderOrFileTypeList.Deleted )
+				{
+					continue;
+				}
 
 				var exifCopy = new ExifCopy(_iStorage, _thumbnailStorage, _exifTool,
 					_readMeta, _thumbnailQuery, _webLogger);
@@ -192,7 +201,7 @@ namespace starsky.foundation.writemeta.Helpers
 				var command = ExifToolCommandLineArgs(updateModel, comparedNames, true);
 
 				await _exifTool.WriteTagsAsync(withXmpPath, command);
-				
+
 				_webLogger.LogInformation($"Done xmp file for: {withXmpPath}");
 			}
 		}
@@ -246,7 +255,7 @@ namespace starsky.foundation.writemeta.Helpers
 			}
 
 			if ( !string.IsNullOrEmpty(updateModel.FileHash) &&
-			     _thumbnailStorage.ExistFile(updateModel.FileHash) )
+				 _thumbnailStorage.ExistFile(updateModel.FileHash) )
 			{
 				await _exifTool.WriteTagsThumbnailAsync(updateModel.FileHash, command);
 			}
@@ -287,8 +296,8 @@ namespace starsky.foundation.writemeta.Helpers
 				{
 					gpsAltitudeRef = "1";
 					gpsAltitude = "-" +
-					              ( updateModel.LocationAltitude * -1 ).ToString(CultureInfo
-						              .InvariantCulture);
+								  ( updateModel.LocationAltitude * -1 ).ToString(CultureInfo
+									  .InvariantCulture);
 				}
 
 				command +=
@@ -339,7 +348,7 @@ namespace starsky.foundation.writemeta.Helpers
 			if ( comparedNames.Contains(nameof(FileIndexItem.Tags).ToLowerInvariant()) )
 			{
 				command += " -sep \", \" \"-xmp:subject\"=\"" + updateModel.Tags
-				                                              + $" \" -Keywords=\"{updateModel.Tags}\""; // space before
+															  + $" \" -Keywords=\"{updateModel.Tags}\""; // space before
 			}
 
 			return command;
@@ -351,7 +360,7 @@ namespace starsky.foundation.writemeta.Helpers
 			if ( comparedNames.Contains(nameof(FileIndexItem.LocationCity).ToLowerInvariant()) )
 			{
 				command += " -City=\"" + updateModel.LocationCity
-				                       + "\" -xmp:City=\"" + updateModel.LocationCity + "\"";
+									   + "\" -xmp:City=\"" + updateModel.LocationCity + "\"";
 			}
 
 			return command;
@@ -373,8 +382,8 @@ namespace starsky.foundation.writemeta.Helpers
 			if ( comparedNames.Contains(nameof(FileIndexItem.LocationState).ToLowerInvariant()) )
 			{
 				command += " -State=\"" + updateModel.LocationState
-				                        + "\" -Province-State=\"" + updateModel.LocationState +
-				                        "\"";
+										+ "\" -Province-State=\"" + updateModel.LocationState +
+										"\"";
 			}
 
 			return command;
@@ -386,8 +395,8 @@ namespace starsky.foundation.writemeta.Helpers
 			if ( comparedNames.Contains(nameof(FileIndexItem.LocationCountry).ToLowerInvariant()) )
 			{
 				command += " -Country=\"" + updateModel.LocationCountry
-				                          + "\" -Country-PrimaryLocationName=\"" +
-				                          updateModel.LocationCountry + "\"";
+										  + "\" -Country-PrimaryLocationName=\"" +
+										  updateModel.LocationCountry + "\"";
 			}
 
 			return command;
@@ -397,12 +406,12 @@ namespace starsky.foundation.writemeta.Helpers
 			string command, List<string> comparedNames, FileIndexItem updateModel)
 		{
 			if ( comparedNames.Contains(
-				    nameof(FileIndexItem.LocationCountryCode).ToLowerInvariant()) )
+					nameof(FileIndexItem.LocationCountryCode).ToLowerInvariant()) )
 			{
 				command += " -Country-PrimaryLocationCode=\"" + updateModel.LocationCountryCode
-				                                              + "\" -XMP:CountryCode=\"" +
-				                                              updateModel.LocationCountryCode +
-				                                              "\"";
+															  + "\" -XMP:CountryCode=\"" +
+															  updateModel.LocationCountryCode +
+															  "\"";
 			}
 
 			return command;
@@ -414,9 +423,9 @@ namespace starsky.foundation.writemeta.Helpers
 			if ( comparedNames.Contains(nameof(FileIndexItem.Description).ToLowerInvariant()) )
 			{
 				command += " -Caption-Abstract=\"" + updateModel.Description
-				                                   + "\" -Description=\"" +
-				                                   updateModel.Description + "\""
-				                                   + $" \"-xmp-dc:description={updateModel.Description}\"";
+												   + "\" -Description=\"" +
+												   updateModel.Description + "\""
+												   + $" \"-xmp-dc:description={updateModel.Description}\"";
 			}
 
 			return command;
@@ -434,7 +443,9 @@ namespace starsky.foundation.writemeta.Helpers
 			FileIndexItem updateModel, bool includeSoftware)
 		{
 			if ( !comparedNames.Contains(nameof(FileIndexItem.Software).ToLowerInvariant()) )
+			{
 				return command;
+			}
 
 			if ( includeSoftware )
 			{
@@ -465,7 +476,9 @@ namespace starsky.foundation.writemeta.Helpers
 			FileIndexItem updateModel)
 		{
 			if ( !comparedNames.Contains(nameof(FileIndexItem.ImageHeight).ToLowerInvariant()) )
+			{
 				return command;
+			}
 
 			// add space before
 			command +=
@@ -486,7 +499,9 @@ namespace starsky.foundation.writemeta.Helpers
 			FileIndexItem updateModel)
 		{
 			if ( !comparedNames.Contains(nameof(FileIndexItem.ImageWidth).ToLowerInvariant()) )
+			{
 				return command;
+			}
 
 			// add space before
 			command +=
@@ -501,8 +516,8 @@ namespace starsky.foundation.writemeta.Helpers
 			if ( comparedNames.Contains(nameof(FileIndexItem.Title).ToLowerInvariant()) )
 			{
 				command += " -ObjectName=\"" + updateModel.Title + "\""
-				           + " \"-title\"=" + "\"" + updateModel.Title + "\""
-				           + $" \"-xmp-dc:title={updateModel.Title}\"";
+						   + " \"-title\"=" + "\"" + updateModel.Title + "\""
+						   + $" \"-xmp-dc:title={updateModel.Title}\"";
 			}
 
 			return command;
@@ -512,15 +527,15 @@ namespace starsky.foundation.writemeta.Helpers
 			FileIndexItem updateModel)
 		{
 			if ( comparedNames.Contains(nameof(FileIndexItem.ColorClass).ToLowerInvariant()) &&
-			     updateModel.ColorClass != ColorClassParser.Color.DoNotChange )
+				 updateModel.ColorClass != ColorClassParser.Color.DoNotChange )
 			{
-				var intColorClass = ( int )updateModel.ColorClass;
+				var intColorClass = ( int ) updateModel.ColorClass;
 
 				var colorDisplayName = EnumHelper.GetDisplayName(updateModel.ColorClass);
 				command += " \"-xmp:Label\"=" + "\"" + colorDisplayName + "\"" + " -ColorClass=\"" +
-				           intColorClass +
-				           "\" -Prefs=\"Tagged:0 ColorClass:" + intColorClass +
-				           " Rating:0 FrameNum:0\" ";
+						   intColorClass +
+						   "\" -Prefs=\"Tagged:0 ColorClass:" + intColorClass +
+						   " Rating:0 FrameNum:0\" ";
 			}
 
 			return command;
@@ -531,9 +546,9 @@ namespace starsky.foundation.writemeta.Helpers
 		{
 			// // exiftool -Orientation#=5
 			if ( comparedNames.Contains(nameof(FileIndexItem.Orientation).ToLowerInvariant()) &&
-			     updateModel.Orientation != FileIndexItem.Rotation.DoNotChange )
+				 updateModel.Orientation != FileIndexItem.Rotation.DoNotChange )
 			{
-				var intOrientation = ( int )updateModel.Orientation;
+				var intOrientation = ( int ) updateModel.Orientation;
 				command += " \"-Orientation#=" + intOrientation + "\" ";
 			}
 
@@ -544,7 +559,7 @@ namespace starsky.foundation.writemeta.Helpers
 			FileIndexItem updateModel)
 		{
 			if ( comparedNames.Contains(nameof(FileIndexItem.DateTime).ToLowerInvariant()) &&
-			     updateModel.DateTime.Year > 2 )
+				 updateModel.DateTime.Year > 2 )
 			{
 				var exifToolDatetimeString = updateModel.DateTime.ToString(
 					"yyyy:MM:dd HH:mm:ss",
@@ -573,7 +588,9 @@ namespace starsky.foundation.writemeta.Helpers
 			// Warning: Sorry, Aperture is not writable => FNumber is writable
 			// XMP,http://ns.adobe.com/exif/1.0/,exif:FNumber,9/1
 			if ( !comparedNames.Contains(nameof(FileIndexItem.Aperture).ToLowerInvariant()) )
+			{
 				return command;
+			}
 
 			var aperture = updateModel.Aperture.ToString(CultureInfo.InvariantCulture);
 			command += $" -FNumber=\"{aperture}\" \"-xmp:FNumber={aperture}\" ";
@@ -586,7 +603,9 @@ namespace starsky.foundation.writemeta.Helpers
 			// // -ExposureTime=1/31
 			// Warning: Sorry, ShutterSpeed is not writable => ExposureTime is writable
 			if ( !comparedNames.Contains(nameof(FileIndexItem.ShutterSpeed).ToLowerInvariant()) )
+			{
 				return command;
+			}
 
 			command +=
 				$" -ExposureTime=\"{updateModel.ShutterSpeed}\" \"-xmp:ExposureTime={updateModel.ShutterSpeed}\" ";
@@ -599,7 +618,9 @@ namespace starsky.foundation.writemeta.Helpers
 		{
 			// Make and Model are not writable so those never exist in this list
 			if ( !comparedNames.Contains(nameof(FileIndexItem.MakeModel).ToLowerInvariant()) )
+			{
 				return command;
+			}
 
 			var make = updateModel.Make;
 			var model = updateModel.Model;
@@ -619,7 +640,9 @@ namespace starsky.foundation.writemeta.Helpers
 			FileIndexItem updateModel)
 		{
 			if ( !comparedNames.Contains(nameof(FileIndexItem.FocalLength).ToLowerInvariant()) )
+			{
 				return command;
+			}
 
 			var focalLength =
 				$"{updateModel.FocalLength.ToString(CultureInfo.InvariantCulture)} mm";
@@ -632,8 +655,8 @@ namespace starsky.foundation.writemeta.Helpers
 			FileIndexItem updateModel)
 		{
 			if ( comparedNames.Contains(nameof(FileIndexItem.ImageStabilisation)
-				     .ToLowerInvariant()) &&
-			     updateModel.ImageStabilisation != ImageStabilisationType.Unknown )
+					 .ToLowerInvariant()) &&
+				 updateModel.ImageStabilisation != ImageStabilisationType.Unknown )
 			{
 				// there is no XMP version of the name
 				command += " -ImageStabilization=\"" + updateModel.ImageStabilisation + "\"";

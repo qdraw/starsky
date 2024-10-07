@@ -6,73 +6,64 @@ using starsky.feature.health.HealthCheck;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.feature.health.HealthCheck
+namespace starskytest.starsky.feature.health.HealthCheck;
+
+[TestClass]
+public sealed class PathExistHealthCheckTest
 {
-	[TestClass]
-	public sealed class PathExistHealthCheckTest
+	[TestMethod]
+	public async Task RunSuccessful()
 	{
-		[TestMethod]
-		public async Task RunSuccessful()
+		var pathExistOptions = new PathExistOptions();
+		pathExistOptions.AddPath(new CreateAnImage().BasePath);
+
+		var healthCheck = new HealthCheckContext
 		{
-			var pathExistOptions = new PathExistOptions();
-			pathExistOptions.AddPath(new CreateAnImage().BasePath);
+			Registration = new HealthCheckRegistration("te",
+				new PathExistHealthCheck(pathExistOptions, new FakeIWebLogger()), null, null)
+		};
+		var result =
+			await new PathExistHealthCheck(pathExistOptions, new FakeIWebLogger())
+				.CheckHealthAsync(healthCheck);
+		Assert.AreEqual(HealthStatus.Healthy, result.Status);
+	}
 
-			var healthCheck = new HealthCheckContext
-			{
-				Registration = new HealthCheckRegistration("te",
-					new PathExistHealthCheck(pathExistOptions, new FakeIWebLogger()), null, null)
-			};
-			var result =
-				await new PathExistHealthCheck(pathExistOptions, new FakeIWebLogger())
-					.CheckHealthAsync(healthCheck);
-			Assert.AreEqual(HealthStatus.Healthy, result.Status);
-		}
+	[TestMethod]
+	public async Task RunFailNonExistPath()
+	{
+		var pathExistOptions = new PathExistOptions();
+		pathExistOptions.AddPath("000000000000----non-exist");
 
-		[TestMethod]
-		public async Task RunFailNonExistPath()
+		var healthCheck = new HealthCheckContext
 		{
-			var pathExistOptions = new PathExistOptions();
-			pathExistOptions.AddPath("000000000000----non-exist");
+			Registration = new HealthCheckRegistration("te",
+				new PathExistHealthCheck(pathExistOptions, new FakeIWebLogger()), null, null)
+		};
+		var result =
+			await new PathExistHealthCheck(pathExistOptions, new FakeIWebLogger())
+				.CheckHealthAsync(healthCheck);
+		Assert.AreEqual(HealthStatus.Unhealthy, result.Status);
+	}
 
-			var healthCheck = new HealthCheckContext
-			{
-				Registration = new HealthCheckRegistration("te",
-					new PathExistHealthCheck(pathExistOptions, new FakeIWebLogger()), null, null)
-			};
-			var result =
-				await new PathExistHealthCheck(pathExistOptions, new FakeIWebLogger())
-					.CheckHealthAsync(healthCheck);
-			Assert.AreEqual(HealthStatus.Unhealthy, result.Status);
-		}
-
-		[TestMethod]
-		public async Task RunFail_No_Input()
+	[TestMethod]
+	public async Task RunFail_No_Input()
+	{
+		var pathExistOptions = new PathExistOptions();
+		var healthCheck = new HealthCheckContext
 		{
-			var pathExistOptions = new PathExistOptions();
-			var healthCheck = new HealthCheckContext
-			{
-				Registration = new HealthCheckRegistration("te",
-					new PathExistHealthCheck(pathExistOptions, new FakeIWebLogger()), null, null)
-			};
-			var result =
-				await new PathExistHealthCheck(pathExistOptions, new FakeIWebLogger())
-					.CheckHealthAsync(healthCheck);
-			Assert.AreEqual(HealthStatus.Unhealthy, result.Status);
-		}
+			Registration = new HealthCheckRegistration("te",
+				new PathExistHealthCheck(pathExistOptions, new FakeIWebLogger()), null, null)
+		};
+		var result =
+			await new PathExistHealthCheck(pathExistOptions, new FakeIWebLogger())
+				.CheckHealthAsync(healthCheck);
+		Assert.AreEqual(HealthStatus.Unhealthy, result.Status);
+	}
 
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public async Task RunFail_Null_Input()
-		{
-			var healthCheck = new HealthCheckContext
-			{
-				Registration = new HealthCheckRegistration("te",
-					new PathExistHealthCheck(null!, new FakeIWebLogger()),
-					null, null)
-			};
-			await new PathExistHealthCheck(null!, new FakeIWebLogger()).CheckHealthAsync(
-				healthCheck);
-			// expect ArgumentNullException:
-		}
+	[TestMethod]
+	public void RunFail_Null_Input()
+	{
+		Assert.ThrowsException<ArgumentNullException>(() =>
+			new PathExistHealthCheck(null!, new FakeIWebLogger()));
 	}
 }

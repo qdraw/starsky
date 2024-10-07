@@ -36,8 +36,8 @@ namespace starsky.foundation.thumbnailmeta.Helpers
 			int destX = 0;
 			int destY = 0;
 
-			nPercentW = ( ( float )smallWidth / ( float )sourceWidth );
-			nPercentH = ( ( float )smallHeight / ( float )sourceHeight );
+			nPercentW = ( ( float ) smallWidth / ( float ) sourceWidth );
+			nPercentH = ( ( float ) smallHeight / ( float ) sourceHeight );
 			if ( nPercentH < nPercentW )
 			{
 				nPercent = nPercentH;
@@ -51,8 +51,8 @@ namespace starsky.foundation.thumbnailmeta.Helpers
 												( sourceHeight * nPercent ) ) / 2);
 			}
 
-			int destWidth = ( int )( sourceWidth * nPercent );
-			int destHeight = ( int )( sourceHeight * nPercent );
+			int destWidth = ( int ) ( sourceWidth * nPercent );
+			int destHeight = ( int ) ( sourceHeight * nPercent );
 
 			return new ImageSizeModel(destWidth, destHeight, destX, destY);
 		}

@@ -53,7 +53,11 @@ public class ThumbnailQuery : IThumbnailQuery
 		// InvalidOperationException can also be disposed
 		catch ( InvalidOperationException )
 		{
-			if ( _scopeFactory == null ) throw;
+			if ( _scopeFactory == null )
+			{
+				throw;
+			}
+
 			return await AddThumbnailRangeInternalAsync(
 				new InjectServiceScope(_scopeFactory).Context(), thumbnailItems);
 		}
@@ -70,7 +74,7 @@ public class ThumbnailQuery : IThumbnailQuery
 
 		var updateThumbnailNewItemsList = new List<ThumbnailItem>();
 		foreach ( var item in thumbnailItems
-			         .Where(p => p.FileHash != null).DistinctBy(p => p.FileHash) )
+					 .Where(p => p.FileHash != null).DistinctBy(p => p.FileHash) )
 		{
 			updateThumbnailNewItemsList.Add(new ThumbnailItem(item.FileHash!, item.TinyMeta,
 				item.Small, item.Large, item.ExtraLarge, item.Reasons));
@@ -121,18 +125,18 @@ public class ThumbnailQuery : IThumbnailQuery
 			// Skip if Duplicate entry
 			// MySqlConnector.MySqlException (0x80004005): Duplicate entry for key 'PRIMARY'
 			// https://github.com/qdraw/starsky/issues/1248 https://github.com/qdraw/starsky/issues/1489
-			if (mySqlException is { ErrorCode: MySqlErrorCode.DuplicateKey } 
-			    or { ErrorCode: MySqlErrorCode.DuplicateKeyEntry } )
+			if ( mySqlException is { ErrorCode: MySqlErrorCode.DuplicateKey }
+				or { ErrorCode: MySqlErrorCode.DuplicateKeyEntry } )
 			{
 				_logger.LogInformation("[SaveChangesDuplicate] OK Duplicate entry error occurred: " +
-				                       $"{mySqlException.Message}");
+									   $"{mySqlException.Message}");
 				return;
 			}
-			
+
 			_logger.LogError($"[SaveChangesDuplicate] T:{exception.GetType()} " +
-			                 $"M:{exception.Message} " +
-			                 $"I: {exception.InnerException} " +
-			                 $"ErrorCode: {mySqlException?.ErrorCode}");
+							 $"M:{exception.Message} " +
+							 $"I: {exception.InnerException} " +
+							 $"ErrorCode: {mySqlException?.ErrorCode}");
 
 			throw;
 		}
@@ -147,7 +151,11 @@ public class ThumbnailQuery : IThumbnailQuery
 		// InvalidOperationException can also be disposed
 		catch ( InvalidOperationException )
 		{
-			if ( _scopeFactory == null ) throw;
+			if ( _scopeFactory == null )
+			{
+				throw;
+			}
+
 			return await GetInternalAsync(new InjectServiceScope(_scopeFactory).Context(),
 				fileHash);
 		}
@@ -179,7 +187,11 @@ public class ThumbnailQuery : IThumbnailQuery
 		// InvalidOperationException can also be disposed
 		catch ( InvalidOperationException )
 		{
-			if ( _scopeFactory == null ) throw;
+			if ( _scopeFactory == null )
+			{
+				throw;
+			}
+
 			await RemoveThumbnailsInternalAsync(new InjectServiceScope(_scopeFactory).Context(),
 				deletedFileHashes);
 		}
@@ -214,7 +226,11 @@ public class ThumbnailQuery : IThumbnailQuery
 		// InvalidOperationException can also be disposed
 		catch ( InvalidOperationException )
 		{
-			if ( _scopeFactory == null ) throw;
+			if ( _scopeFactory == null )
+			{
+				throw;
+			}
+
 			return await RenameInternalAsync(new InjectServiceScope(_scopeFactory).Context(),
 				beforeFileHash, newFileHash);
 		}
@@ -241,9 +257,10 @@ public class ThumbnailQuery : IThumbnailQuery
 	private async Task<bool> RenameInternalAsync(ApplicationDbContext dbContext,
 		string? beforeFileHash, string? newFileHash)
 	{
-		if ( beforeFileHash == null || newFileHash == null) {
+		if ( beforeFileHash == null || newFileHash == null )
+		{
 			_logger.LogError($"[ThumbnailQuery] Null " +
-			                 $"beforeFileHash={beforeFileHash}; or newFileHash={newFileHash}; is null");
+							 $"beforeFileHash={beforeFileHash}; or newFileHash={newFileHash}; is null");
 			return false;
 		}
 
@@ -253,7 +270,10 @@ public class ThumbnailQuery : IThumbnailQuery
 		var beforeItem = beforeOrNewItems.Find(p => p.FileHash == beforeFileHash);
 		var newItem = beforeOrNewItems.Find(p => p.FileHash == newFileHash);
 
-		if ( beforeItem == null ) return false;
+		if ( beforeItem == null )
+		{
+			return false;
+		}
 
 		dbContext.Thumbnails.Remove(beforeItem);
 
@@ -274,8 +294,8 @@ public class ThumbnailQuery : IThumbnailQuery
 	public async Task<List<ThumbnailItem>> UnprocessedGeneratedThumbnails()
 	{
 		return await _context.Thumbnails.Where(p => ( p.ExtraLarge == null
-		                                              || p.Large == null || p.Small == null )
-		                                            && !string.IsNullOrEmpty(p.FileHash))
+													  || p.Large == null || p.Small == null )
+													&& !string.IsNullOrEmpty(p.FileHash))
 			.ToListAsync();
 	}
 
@@ -288,7 +308,11 @@ public class ThumbnailQuery : IThumbnailQuery
 		// InvalidOperationException can also be disposed
 		catch ( InvalidOperationException )
 		{
-			if ( _scopeFactory == null ) throw;
+			if ( _scopeFactory == null )
+			{
+				throw;
+			}
+
 			return await UpdateInternalAsync(new InjectServiceScope(_scopeFactory).Context(), item);
 		}
 	}
@@ -336,7 +360,11 @@ public class ThumbnailQuery : IThumbnailQuery
 		{
 			var indexOfAlreadyExists =
 				alreadyExistingThumbnailItems.FindIndex(p => p.FileHash == item.FileHash);
-			if ( indexOfAlreadyExists == -1 ) continue;
+			if ( indexOfAlreadyExists == -1 )
+			{
+				continue;
+			}
+
 			var alreadyExists = alreadyExistingThumbnailItems[indexOfAlreadyExists];
 			context.Attach(item).State = EntityState.Detached;
 
@@ -355,9 +383,9 @@ public class ThumbnailQuery : IThumbnailQuery
 			}
 
 			if ( item.TinyMeta == alreadyExists.TinyMeta &&
-			     item.Large == alreadyExists.Large &&
-			     item.Small == alreadyExists.Small &&
-			     item.ExtraLarge == alreadyExists.ExtraLarge )
+				 item.Large == alreadyExists.Large &&
+				 item.Small == alreadyExists.Small &&
+				 item.ExtraLarge == alreadyExists.ExtraLarge )
 			{
 				equalThumbnailItems.Add(alreadyExists);
 				continue;
@@ -366,6 +394,6 @@ public class ThumbnailQuery : IThumbnailQuery
 			updateThumbnailItems.Add(alreadyExists);
 		}
 
-		return ( newThumbnailItems, updateThumbnailItems, equalThumbnailItems );
+		return (newThumbnailItems, updateThumbnailItems, equalThumbnailItems);
 	}
 }

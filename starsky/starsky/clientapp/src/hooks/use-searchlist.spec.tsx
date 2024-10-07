@@ -1,4 +1,4 @@
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { newIArchive } from "../interfaces/IArchive";
 import { PageType } from "../interfaces/IDetailView";
 import { newIFileIndexItem, newIFileIndexItemArray } from "../interfaces/IFileIndexItem";

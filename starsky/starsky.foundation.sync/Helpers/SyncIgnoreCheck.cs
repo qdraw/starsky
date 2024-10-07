@@ -18,7 +18,10 @@ namespace starsky.foundation.sync.Helpers
 		{
 			var isSynced = _appSettings.SyncIgnore.Exists(subPath.StartsWith);
 			if ( isSynced && _appSettings.IsVerbose() )
+			{
 				_console.WriteLine($"sync ignored for: {subPath}");
+			}
+
 			return isSynced;
 		}
 	}

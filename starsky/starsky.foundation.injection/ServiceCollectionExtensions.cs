@@ -43,9 +43,13 @@ namespace starsky.foundation.injection
 			foreach ( var type in typesWithAttributes )
 			{
 				if ( type.ImplementationType == null )
+				{
 					serviceCollection.Add(type.ServiceType!, type.Lifetime!.Value);
+				}
 				else
+				{
 					serviceCollection.Add(type.ImplementationType, type.ServiceType!, type.Lifetime!.Value);
+				}
 			}
 		}
 

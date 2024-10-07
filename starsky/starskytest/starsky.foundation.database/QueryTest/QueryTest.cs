@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -153,12 +154,12 @@ public sealed class QueryTest
 		Assert.AreEqual(_insertSearchDatahiJpgInput.FileHash, hiJpgOutput?.FileHash);
 
 		// other api Get Object By FilePath
-		hiJpgOutput = _query.GetObjectByFilePath(_insertSearchDatahiJpgInput.FilePath!);
+		hiJpgOutput = await _query.GetObjectByFilePathAsync(_insertSearchDatahiJpgInput.FilePath!);
 		Assert.AreEqual(_insertSearchDatahiJpgInput.FilePath, hiJpgOutput?.FilePath);
 	}
 
 	/// <summary>
-	///     Item exist but not in folder cache, it now add this item to cache #228
+	///     Item exist but not in folder cache, it now adds this item to cache #228
 	/// </summary>
 	[TestMethod]
 	public async Task SingleItem_ItemExistInDbButNotInFolderCache()
@@ -166,7 +167,7 @@ public sealed class QueryTest
 		await _query.AddItemAsync(new FileIndexItem("/cache_test") { IsDirectory = true });
 		var existingItem = new FileIndexItem("/cache_test/test.jpg");
 		await _query.AddItemAsync(existingItem);
-		_query.AddCacheParentItem("/cache_test", new List<FileIndexItem> { existingItem });
+		_query.AddCacheParentItem("/cache_test", [existingItem]);
 		const string newItem = "/cache_test/test2.jpg";
 		await _query.AddItemAsync(new FileIndexItem(newItem));
 
@@ -195,7 +196,7 @@ public sealed class QueryTest
 		// And dispose
 		await dbContext.DisposeAsync();
 
-		var items = await query.GetAllFilesAsync(new List<string> { "/" }, 0);
+		var items = await query.GetAllFilesAsync(["/"], 0);
 
 		Assert.AreEqual("/test.jpg", items[0].FilePath);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, items[0].Status);
@@ -699,7 +700,7 @@ public sealed class QueryTest
 		item.Tags = "test";
 		await query.UpdateItemAsync(item);
 
-		var getItem = query.GetObjectByFilePath("/test/010101.jpg");
+		var getItem = await _query.GetObjectByFilePathAsync("/test/010101.jpg");
 		Assert.IsNotNull(getItem);
 		Assert.AreEqual("test", getItem.Tags);
 
@@ -707,6 +708,7 @@ public sealed class QueryTest
 	}
 
 	[TestMethod]
+	[SuppressMessage("Usage", "S6966: GetObjectByFilePath")]
 	public async Task Query_GetObjectByFilePath_home()
 	{
 		var serviceScope = CreateNewScope();
@@ -810,7 +812,7 @@ public sealed class QueryTest
 		item.Tags = "test";
 		await query.UpdateItemAsync(new List<FileIndexItem> { item });
 
-		var getItem = query.GetObjectByFilePath("/test/010101.jpg");
+		var getItem = await query.GetObjectByFilePathAsync("/test/010101.jpg");
 		Assert.IsNotNull(getItem);
 		Assert.AreEqual("test", getItem.Tags);
 
@@ -1090,7 +1092,7 @@ public sealed class QueryTest
 				.FileIndexItem;
 		Assert.AreEqual("#", cachingDeleted001Update!.Tags);
 		Assert.AreNotEqual(string.Empty, cachingDeleted001Update.Tags);
-		// AreNotEqual: When it item used cache  it will return string.empty
+		// AreNotEqual: When its item used cache  it will return string.empty
 	}
 
 	[TestMethod]
@@ -1111,7 +1113,7 @@ public sealed class QueryTest
 		_query.CacheUpdateItem(new List<FileIndexItem> { item1 });
 
 		_memoryCache.TryGetValue(name, out var objectFileFolders);
-		var displayFileFolders = ( List<FileIndexItem>? )objectFileFolders;
+		var displayFileFolders = ( List<FileIndexItem>? ) objectFileFolders;
 		Assert.IsNotNull(displayFileFolders);
 
 		Assert.AreEqual("hi", displayFileFolders.Find(p => p.FileName == "cache")?.Tags);
@@ -1285,19 +1287,22 @@ public sealed class QueryTest
 		};
 		await _query.AddItemAsync(toUpdate.FirstOrDefault()!);
 
-		foreach ( var item in toUpdate ) item.Tags = "updated";
+		foreach ( var item in toUpdate )
+		{
+			item.Tags = "updated";
+		}
 
 		await _query.UpdateItemAsync(toUpdate);
 
 		var fileObjectByFilePath =
-			_query.GetObjectByFilePath("/3456784567890987654/3456784567890987654.jpg");
+			await _query.GetObjectByFilePathAsync("/3456784567890987654/3456784567890987654.jpg");
 		Assert.AreEqual("updated", fileObjectByFilePath?.Tags);
 	}
 
 	[TestMethod]
 	public async Task Query_updateStatusContentList_Async()
 	{
-		// for updateing multiple items
+		// for update-ing multiple items
 		var toUpdate = new List<FileIndexItem>
 		{
 			new()
@@ -1310,7 +1315,10 @@ public sealed class QueryTest
 		};
 		await _query.AddItemAsync(toUpdate.FirstOrDefault()!);
 
-		foreach ( var item in toUpdate ) item.Tags = "updated";
+		foreach ( var item in toUpdate )
+		{
+			item.Tags = "updated";
+		}
 
 		await _query.UpdateItemAsync(toUpdate);
 

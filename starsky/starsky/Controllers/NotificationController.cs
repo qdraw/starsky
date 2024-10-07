@@ -30,6 +30,11 @@ namespace starsky.Controllers
 		[Produces("application/json")]
 		public async Task<IActionResult> GetNotifications(string dateTime)
 		{
+			if ( !ModelState.IsValid )
+			{
+				return BadRequest("Model is not valid");
+			}
+			
 			var (parsed, parsedDateTime) = ParseDate(dateTime);
 
 			if ( !parsed || ( DateTime.UtcNow - parsedDateTime ).TotalDays >= 1 )
@@ -43,10 +48,14 @@ namespace starsky.Controllers
 		{
 			var isParsed = DateTime.TryParse(dateTime, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var parsedDateTime);
 			if ( isParsed )
+			{
 				return new Tuple<bool, DateTime>(true, parsedDateTime.ToUniversalTime());
+			}
 
 			if ( !int.TryParse(dateTime, out var parsedInt) )
+			{
 				return new Tuple<bool, DateTime>(false, DateTime.UtcNow);
+			}
 
 			parsedDateTime = DateTime.UtcNow.AddHours(parsedInt * -1);
 			return new Tuple<bool, DateTime>(true, parsedDateTime.ToUniversalTime());

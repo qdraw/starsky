@@ -8,6 +8,7 @@ export const envName = Cypress.env().name;
 
 // checkStatusCode
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
     interface Chainable {
       checkStatusCode: typeof checkStatusCode;
@@ -30,6 +31,7 @@ Cypress.Commands.add("checkStatusCode", checkStatusCode);
 
 // resetStorage
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
     interface Chainable {
       resetStorage: typeof resetStorage;
@@ -48,6 +50,7 @@ Cypress.Commands.add("resetStorage", resetStorage);
 
 // Send Auth Header as cookie
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
     interface Chainable {
       sendAuthenticationHeader: typeof sendAuthenticationHeader;
@@ -89,7 +92,7 @@ function sendAuthenticationHeader() {
         "AUTH_PASS"
       )}`,
       failOnStatusCode: false,
-    }).then((res) => {
+    }).then(() => {
       // expect(res.status).to.eq(200)
     });
   });
@@ -99,6 +102,7 @@ Cypress.Commands.add("sendAuthenticationHeader", sendAuthenticationHeader);
 
 // upload
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
     interface Chainable {
       uploadFile: typeof uploadFile;
@@ -135,8 +139,8 @@ function hexStringToByte(str) {
   if (!str) {
     return new Uint8Array();
   }
-  var a = [];
-  for (var i = 0, len = str.length; i < len; i += 2) {
+  const a = [];
+  for (let i = 0, len = str.length; i < len; i += 2) {
     a.push(parseInt(str.substr(i, 2), 16));
   }
   return new Uint8Array(a);
@@ -146,6 +150,7 @@ Cypress.Commands.add("uploadFile", uploadFile);
 
 // // API upload
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
     interface Chainable {
       fileRequest: typeof fileRequest;
@@ -164,10 +169,10 @@ function fileRequest(fileName: string, to: string, imageType: string) {
     xhr.open("POST", "/api/upload");
     xhr.setRequestHeader("accept", "application/json");
     xhr.setRequestHeader("to", to);
-    xhr.onload = function (e) {
+    xhr.onload = function () {
       // done(xhr)
     };
-    xhr.onerror = function (e) {
+    xhr.onerror = function () {
       // done(xhr)
     };
     xhr.send(data);

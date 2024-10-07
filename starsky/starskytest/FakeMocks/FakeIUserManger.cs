@@ -71,10 +71,13 @@ public class FakeIUserManger : IUserManager
 		var result = _userOverviewModel.Users.Find(p =>
 			p.Credentials?.FirstOrDefault()?.Identifier == identifier);
 		if ( result == null )
+		{
 			return new ChangeSecretResult(false, ChangeSecretResultError.CredentialNotFound);
+		}
+
 		result.Credentials!.FirstOrDefault()!.IterationCount = IterationCountType.Iterate100KSha256;
 		result.Credentials!.FirstOrDefault()!.Secret = secret;
-		
+
 		return new ChangeSecretResult(true);
 	}
 
@@ -86,9 +89,14 @@ public class FakeIUserManger : IUserManager
 			p.Credentials?.FirstOrDefault()?.Identifier == identifier);
 
 		if ( result?.Credentials?.FirstOrDefault()?.Secret == secret )
+		{
 			validateResult.Success = true;
+		}
 		else
+		{
 			validateResult.Error = ValidateResultError.SecretNotValid;
+		}
+
 		return Task.FromResult(validateResult);
 	}
 

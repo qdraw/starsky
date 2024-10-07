@@ -128,7 +128,9 @@ public class FakeUserManagerActiveUsers : IUserManager
 	public User? GetUser(string credentialTypeCode, string identifier)
 	{
 		if ( CurrentUser != null && !Users.Contains(CurrentUser!) )
+		{
 			Users.Add(CurrentUser!);
+		}
 
 		return Users.Find(p => p.Credentials?.Any(credential =>
 			credential.Identifier == identifier) == true);
@@ -147,7 +149,11 @@ public class FakeUserManagerActiveUsers : IUserManager
 
 	public User? Exist(string identifier)
 	{
-		if ( Credentials.Identifier == identifier ) return CurrentUser;
+		if ( Credentials.Identifier == identifier )
+		{
+			return CurrentUser;
+		}
+
 		return null;
 	}
 
@@ -171,13 +177,8 @@ public class FakeUserManagerActiveUsers : IUserManager
 		return password != "false";
 	}
 
-	public CredentialType? GetCachedCredentialType(string email)
+	public CredentialType GetCachedCredentialType(string? credentialTypeCode)
 	{
 		return new CredentialType { Code = "email" };
-	}
-
-	public void AddUserToCache(User user)
-	{
-		throw new NotImplementedException();
 	}
 }

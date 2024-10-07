@@ -11,7 +11,7 @@ public static class ReflectionExtensions
 		// Set the flags so that private and public fields from instances will be found
 		const BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 		var field = obj.GetType().GetField(name, bindingFlags);
-		return ( T )field?.GetValue(obj)!;
+		return ( T ) field?.GetValue(obj)!;
 	}
 }
 

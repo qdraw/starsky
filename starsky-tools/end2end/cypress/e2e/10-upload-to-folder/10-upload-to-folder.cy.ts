@@ -63,8 +63,9 @@ describe('Upload to folder (10)', () => {
     cy.log('next upload 2')
 
     cy.intercept('/starsky/api/upload', (req) => {
-      req.headers['to'] = config.mkdirPath + "/" + fileName2,
-      req.headers['to2'] = config.mkdirPath + "/" + fileName2
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      req.headers.to = config.mkdirPath + "/" + fileName2,
+      req.headers.to2 = config.mkdirPath + "/" + fileName2
 
     }).as('upload2')
 

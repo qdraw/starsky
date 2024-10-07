@@ -20,7 +20,7 @@ namespace starsky.feature.webftppublish.FtpAbstractions.Services
 		/// <returns>new Requester</returns>
 		public IFtpWebRequest Create(string uri)
 		{
-			return new WrapFtpWebRequest(( FtpWebRequest )WebRequest.Create(uri));
+			return new WrapFtpWebRequest(( FtpWebRequest ) WebRequest.Create(uri));
 		}
 	}
 }

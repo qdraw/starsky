@@ -19,7 +19,10 @@ namespace starsky.foundation.database.Models
 		/// </summary>
 		public FileIndexItem()
 		{
-			if ( AddToDatabase.Year == 0 ) SetAddToDatabase();
+			if ( AddToDatabase.Year == 0 )
+			{
+				SetAddToDatabase();
+			}
 		}
 
 		/// <summary>
@@ -77,9 +80,15 @@ namespace starsky.foundation.database.Models
 		public void SetFilePath(string? value)
 		{
 			var parentPath = FilenamesHelper.GetParentPath(value);
-			if ( string.IsNullOrEmpty(parentPath) ) parentPath = "/";
+			if ( string.IsNullOrEmpty(parentPath) )
+			{
+				parentPath = "/";
+			}
 			// Home has no parentDirectory and filename slash
-			if ( value != "/" ) _parentDirectory = parentPath;
+			if ( value != "/" )
+			{
+				_parentDirectory = parentPath;
+			}
 
 			_fileName = PathHelper.GetFileName(value);
 			// filenames are without starting slash
@@ -193,7 +202,11 @@ namespace starsky.foundation.database.Models
 			get => HashSetHelper.StringToHashSet(Tags?.Trim()!);
 			set
 			{
-				if ( value == null ) return;
+				if ( value == null )
+				{
+					return;
+				}
+
 				_tags = HashSetHelper.HashSetToString(value);
 			}
 		}
@@ -452,13 +465,20 @@ namespace starsky.foundation.database.Models
 		/// <returns></returns>
 		public static List<ColorClassParser.Color> GetColorClassList(string? colorClassString = null)
 		{
-			if ( string.IsNullOrWhiteSpace(colorClassString) ) return new List<ColorClassParser.Color>();
+			if ( string.IsNullOrWhiteSpace(colorClassString) )
+			{
+				return new List<ColorClassParser.Color>();
+			}
 
 			var colorClassStringList = new List<string>();
 
 			if ( !colorClassString.Contains(',') )
 			{
-				if ( !int.TryParse(colorClassString, out var parsedInt) ) return new List<ColorClassParser.Color>();
+				if ( !int.TryParse(colorClassString, out var parsedInt) )
+				{
+					return new List<ColorClassParser.Color>();
+				}
+
 				colorClassStringList.Add(parsedInt.ToString());
 			}
 			if ( colorClassString.Contains(',') )
@@ -582,7 +602,10 @@ namespace starsky.foundation.database.Models
 		/// <returns>enum value of the output rotation</returns>
 		public Rotation RelativeOrientation(int relativeRotation = 0)
 		{
-			if ( Orientation == Rotation.DoNotChange ) Orientation = Rotation.Horizontal;
+			if ( Orientation == Rotation.DoNotChange )
+			{
+				Orientation = Rotation.Horizontal;
+			}
 
 			var currentOrientation = _orderRotation.FindIndex(i => i == Orientation);
 
@@ -664,7 +687,9 @@ namespace starsky.foundation.database.Models
 		public void SetImageWidth(int imageWidth)
 		{
 			if ( imageWidth is >= 1 and <= ushort.MaxValue )
-				ImageWidth = ( ushort )imageWidth;
+			{
+				ImageWidth = ( ushort ) imageWidth;
+			}
 		}
 
 		/// <summary>
@@ -686,7 +711,9 @@ namespace starsky.foundation.database.Models
 		public void SetImageHeight(int imageHeight)
 		{
 			if ( imageHeight is >= 1 and <= ushort.MaxValue )
-				ImageHeight = ( ushort )imageHeight;
+			{
+				ImageHeight = ( ushort ) imageHeight;
+			}
 		}
 
 
@@ -724,7 +751,11 @@ namespace starsky.foundation.database.Models
 		{
 			get
 			{
-				if ( string.IsNullOrWhiteSpace(SidecarExtensions) ) return new HashSet<string>();
+				if ( string.IsNullOrWhiteSpace(SidecarExtensions) )
+				{
+					return new HashSet<string>();
+				}
+
 				return
 					new HashSet<string>(
 						SidecarExtensions.Split('|')
@@ -761,7 +792,7 @@ namespace starsky.foundation.database.Models
 		/// <returns>FileIndexItem duplicated</returns>
 		public FileIndexItem Clone()
 		{
-			return ( FileIndexItem )MemberwiseClone();
+			return ( FileIndexItem ) MemberwiseClone();
 		}
 
 		/// <summary>
@@ -798,8 +829,15 @@ namespace starsky.foundation.database.Models
 			get => string.IsNullOrEmpty(_shutterSpeed) ? string.Empty : _shutterSpeed;
 			set
 			{
-				if ( string.IsNullOrEmpty(_shutterSpeed) ) _shutterSpeed = string.Empty;
-				if ( value?.Length <= 20 ) _shutterSpeed = value;
+				if ( string.IsNullOrEmpty(_shutterSpeed) )
+				{
+					_shutterSpeed = string.Empty;
+				}
+
+				if ( value?.Length <= 20 )
+				{
+					_shutterSpeed = value;
+				}
 			}
 		}
 
@@ -830,7 +868,9 @@ namespace starsky.foundation.database.Models
 		public void SetIsoSpeed(int isoSpeed)
 		{
 			if ( isoSpeed is >= 1 and <= ushort.MaxValue )
-				IsoSpeed = ( ushort )isoSpeed;
+			{
+				IsoSpeed = ( ushort ) isoSpeed;
+			}
 		}
 
 		/// <summary>
@@ -880,9 +920,17 @@ namespace starsky.foundation.database.Models
 		{
 			get
 			{
-				if ( string.IsNullOrEmpty(_makeModel) ) return string.Empty;
+				if ( string.IsNullOrEmpty(_makeModel) )
+				{
+					return string.Empty;
+				}
+
 				var makeModelList = MakeModel?.Split("|".ToCharArray());
-				if ( makeModelList?.Length != MakeModelFixedLength ) return string.Empty;
+				if ( makeModelList?.Length != MakeModelFixedLength )
+				{
+					return string.Empty;
+				}
+
 				return makeModelList[0];
 			}
 		}
@@ -895,7 +943,11 @@ namespace starsky.foundation.database.Models
 		{
 			get
 			{
-				if ( string.IsNullOrEmpty(_makeModel) ) return string.Empty;
+				if ( string.IsNullOrEmpty(_makeModel) )
+				{
+					return string.Empty;
+				}
+
 				var makeModelList = MakeModel?.Split("|".ToCharArray());
 				return makeModelList?.Length != MakeModelFixedLength ? string.Empty : makeModelList[1];
 			}
@@ -909,11 +961,21 @@ namespace starsky.foundation.database.Models
 		{
 			get
 			{
-				if ( string.IsNullOrEmpty(_makeModel) ) return string.Empty;
+				if ( string.IsNullOrEmpty(_makeModel) )
+				{
+					return string.Empty;
+				}
+
 				var makeModelList = MakeModel?.Split("|".ToCharArray());
-				if ( makeModelList?.Length != MakeModelFixedLength ) return string.Empty;
+				if ( makeModelList?.Length != MakeModelFixedLength )
+				{
+					return string.Empty;
+				}
 				// ReSharper disable once ConvertIfStatementToReturnStatement
-				if ( string.IsNullOrEmpty(Model) ) return makeModelList[2];
+				if ( string.IsNullOrEmpty(Model) )
+				{
+					return makeModelList[2];
+				}
 				// It replaces the Camera Model in the lens
 				var lensModel = makeModelList[2].Replace(Model, string.Empty).Trim();
 				return lensModel;
@@ -966,7 +1028,10 @@ namespace starsky.foundation.database.Models
 			{
 				return;
 			}
-			if ( fieldIndex > MakeModelFixedLength ) throw new AggregateException("index is higher than MakeModelFixedLength");
+			if ( fieldIndex > MakeModelFixedLength )
+			{
+				throw new AggregateException("index is higher than MakeModelFixedLength");
+			}
 
 			var titleValue = addedValue.Replace("|", string.Empty);
 
@@ -983,8 +1048,11 @@ namespace starsky.foundation.database.Models
 			makeModelList[fieldIndex] = titleValue;
 
 			// Store Make: APPLE as Apple in the database
-			if ( fieldIndex == 0 ) makeModelList[fieldIndex] =
+			if ( fieldIndex == 0 )
+			{
+				makeModelList[fieldIndex] =
 				CultureInfo.InvariantCulture.TextInfo.ToTitleCase(titleValue.ToLowerInvariant());
+			}
 
 			_makeModel = FixedListToString(makeModelList);
 		}

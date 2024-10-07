@@ -19,7 +19,7 @@ namespace starsky.foundation.storage.ArchiveFormats
 		{
 			_hostStorage = new StorageHostFullPathFilesystem(logger);
 		}
-		
+
 		/// <summary>
 		/// Extract zip file to a folder
 		/// </summary>
@@ -29,7 +29,10 @@ namespace starsky.foundation.storage.ArchiveFormats
 		[SuppressMessage("Usage", "S5042:Make sure that decompressing this archive file is safe")]
 		public bool ExtractZip(string zipInputFullPath, string storeZipFolderFullPath)
 		{
-			if ( !File.Exists(zipInputFullPath) ) return false;
+			if ( !File.Exists(zipInputFullPath) )
+			{
+				return false;
+			}
 			// Ensures that the last character on the extraction path
 			// is the directory separator char. 
 			// Without this, a malicious zip file could try to traverse outside of the expected
@@ -45,11 +48,11 @@ namespace starsky.foundation.storage.ArchiveFormats
 					// Ordinal match is safest, case-sensitive volumes can be mounted within volumes that
 					// are case-insensitive.
 					if ( !destinationPath.StartsWith(storeZipFolderFullPath,
-						    StringComparison.Ordinal) )
+							StringComparison.Ordinal) )
 					{
 						continue;
 					}
-					
+
 					// Folders inside zips give sometimes issues
 					if ( entry.FullName.EndsWith('/') )
 					{
@@ -59,7 +62,7 @@ namespace starsky.foundation.storage.ArchiveFormats
 						}
 						continue;
 					}
-						
+
 					entry.ExtractToFile(destinationPath, true);
 				}
 			}
@@ -77,7 +80,7 @@ namespace starsky.foundation.storage.ArchiveFormats
 				// only the first item
 				using var entryStream = entry.Open();
 				using var reader = new BinaryReader(entryStream);
-				result.Add(entry.FullName, reader.ReadBytes(( int )entry.Length));
+				result.Add(entry.FullName, reader.ReadBytes(( int ) entry.Length));
 			}
 			return result;
 		}

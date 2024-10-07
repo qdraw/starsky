@@ -18,7 +18,7 @@ namespace starsky.foundation.database.Helpers
 		public FileIndexItem.ExifStatus IsReadOnlyStatus(FileIndexItem fileIndexItem)
 		{
 			if ( fileIndexItem.IsDirectory == true &&
-			     _appSettings.IsReadOnly(fileIndexItem.FilePath!) )
+				 _appSettings.IsReadOnly(fileIndexItem.FilePath!) )
 			{
 				return FileIndexItem.ExifStatus.DirReadOnly;
 			}
@@ -33,7 +33,10 @@ namespace starsky.foundation.database.Helpers
 
 		public FileIndexItem.ExifStatus IsReadOnlyStatus(DetailView? detailView)
 		{
-			if ( _appSettings == null ) throw new DllNotFoundException("add app settings to ctor");
+			if ( _appSettings == null )
+			{
+				throw new DllNotFoundException("add app settings to ctor");
+			}
 
 			if ( detailView == null )
 			{
@@ -56,7 +59,7 @@ namespace starsky.foundation.database.Helpers
 		public static FileIndexItem.ExifStatus IsDeletedStatus(FileIndexItem? fileIndexItem)
 		{
 			return fileIndexItem?.Tags != null &&
-			       fileIndexItem.Tags.Contains(TrashKeyword.TrashKeywordString)
+				   fileIndexItem.Tags.Contains(TrashKeyword.TrashKeywordString)
 				? FileIndexItem.ExifStatus.Deleted
 				: FileIndexItem.ExifStatus.Default;
 		}
@@ -64,7 +67,7 @@ namespace starsky.foundation.database.Helpers
 		public static FileIndexItem.ExifStatus IsDeletedStatus(DetailView? detailView)
 		{
 			if ( !string.IsNullOrEmpty(detailView?.FileIndexItem?.Tags) &&
-			     detailView.FileIndexItem.Tags.Contains(TrashKeyword.TrashKeywordString) )
+				 detailView.FileIndexItem.Tags.Contains(TrashKeyword.TrashKeywordString) )
 			{
 				return FileIndexItem.ExifStatus.Deleted;
 			}
@@ -135,7 +138,10 @@ namespace starsky.foundation.database.Helpers
 			FileIndexItem.ExifStatus statusResults, List<FileIndexItem> fileIndexResultsList)
 		{
 			// Readonly is allowed
-			if ( statusResults != FileIndexItem.ExifStatus.ReadOnly ) return;
+			if ( statusResults != FileIndexItem.ExifStatus.ReadOnly )
+			{
+				return;
+			}
 
 			statusModel.Status = FileIndexItem.ExifStatus.ReadOnly;
 			fileIndexResultsList.Add(statusModel);

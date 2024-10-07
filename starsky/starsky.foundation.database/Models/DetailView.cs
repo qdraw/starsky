@@ -70,7 +70,11 @@ public sealed class DetailView
 		// Paths that are used
 		var collectionSubPathList = fileIndexItem.CollectionPaths;
 		// when not running in collections mode only update one file
-		if ( !collections ) collectionSubPathList = new List<string> { subPath };
+		if ( !collections )
+		{
+			collectionSubPathList = new List<string> { subPath };
+		}
+
 		return collectionSubPathList;
 	}
 }

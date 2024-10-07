@@ -31,13 +31,16 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		}
 
 		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public async Task CreateThumbTest_FileHash_FileHashNull()
 		{
-			await new Thumbnail(_iStorage, _iStorage, new FakeIWebLogger(), new AppSettings())
-				.CreateThumbAsync(
-					"/notfound.jpg", null!);
-			// expect ArgumentNullException
+			// Arrange
+			var thumbnailService = new Thumbnail(_iStorage, _iStorage, new FakeIWebLogger(), new AppSettings());
+
+			// Act & Assert
+			await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+			{
+				await thumbnailService.CreateThumbAsync("/notfound.jpg", null!);
+			});
 		}
 
 		[TestMethod]

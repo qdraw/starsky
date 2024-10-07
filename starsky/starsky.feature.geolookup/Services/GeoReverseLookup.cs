@@ -83,19 +83,26 @@ public sealed class GeoReverseLookup : IGeoReverseLookup
 		metaFilesInDirectory = RemoveNoUpdateItems(metaFilesInDirectory, overwriteLocationNames);
 
 		var subPath = metaFilesInDirectory.FirstOrDefault()?.ParentDirectory;
-		if ( subPath == null ) return metaFilesInDirectory;
+		if ( subPath == null )
+		{
+			return metaFilesInDirectory;
+		}
 
 		new GeoCacheStatusService(_cache).StatusUpdate(subPath, metaFilesInDirectory.Count * 2,
 			StatusType.Total);
 
 		foreach ( var metaFileItem in metaFilesInDirectory.Select(
-			         (value, index) => new { value, index }) )
+					 (value, index) => new { value, index }) )
 		{
 			var result =
 				await GetLocation(metaFileItem.value.Latitude, metaFileItem.value.Longitude);
 			new GeoCacheStatusService(_cache).StatusUpdate(metaFileItem.value.ParentDirectory!,
 				metaFileItem.index, StatusType.Current);
-			if ( !result.IsSuccess ) continue;
+			if ( !result.IsSuccess )
+			{
+				continue;
+			}
+
 			metaFileItem.value.LocationCity = result.LocationCity;
 			metaFileItem.value.LocationState = result.LocationState;
 			metaFileItem.value.LocationCountry = result.LocationCountry;
@@ -111,7 +118,10 @@ public sealed class GeoReverseLookup : IGeoReverseLookup
 
 	public async Task<GeoLocationModel> GetLocation(double latitude, double longitude)
 	{
-		if ( _reverseGeoCode == null ) ( _, _reverseGeoCode ) = await SetupAsync();
+		if ( _reverseGeoCode == null )
+		{
+			(_, _reverseGeoCode) = await SetupAsync();
+		}
 
 		var status = new GeoLocationModel
 		{
@@ -186,12 +196,15 @@ public sealed class GeoReverseLookup : IGeoReverseLookup
 				Path.Combine(_appSettings.DependenciesFolder,
 					GeoFileDownload.CountryName + ".txt")));
 
-		return ( _admin1CodesAscii, _reverseGeoCode );
+		return (_admin1CodesAscii, _reverseGeoCode);
 	}
 
 	internal string? GetAdmin1Name(string countryCode, string[] adminCodes)
 	{
-		if ( _admin1CodesAscii == null || adminCodes.Length != 4 ) return null;
+		if ( _admin1CodesAscii == null || adminCodes.Length != 4 )
+		{
+			return null;
+		}
 
 		var admin1Code = countryCode + "." + adminCodes[0];
 
@@ -214,26 +227,28 @@ public sealed class GeoReverseLookup : IGeoReverseLookup
 	{
 		// this will overwrite the location names, that have a gps location 
 		if ( overwriteLocationNames )
+		{
 			return metaFilesInDirectory.Where(
 					metaFileItem =>
 						Math.Abs(metaFileItem.Latitude) > 0.001 &&
 						Math.Abs(metaFileItem.Longitude) > 0.001)
 				.ToList();
+		}
 
 		// the default situation
 		return metaFilesInDirectory.Where(
 			metaFileItem =>
 				Math.Abs(metaFileItem.Latitude) > 0.001 && Math.Abs(metaFileItem.Longitude) > 0.001
-				                                        && ( string.IsNullOrEmpty(metaFileItem
-					                                             .LocationCity)
-				                                             || string.IsNullOrEmpty(metaFileItem
-					                                             .LocationState)
-				                                             || string.IsNullOrEmpty(metaFileItem
-					                                             .LocationCountry)
-				                                        ) // for now NO check on: metaFileItem.LocationCountryCode
-				                                        && ExtensionRolesHelper
-					                                        .IsExtensionExifToolSupported(
-						                                        metaFileItem.FileName)
+														&& ( string.IsNullOrEmpty(metaFileItem
+																 .LocationCity)
+															 || string.IsNullOrEmpty(metaFileItem
+																 .LocationState)
+															 || string.IsNullOrEmpty(metaFileItem
+																 .LocationCountry)
+														) // for now NO check on: metaFileItem.LocationCountryCode
+														&& ExtensionRolesHelper
+															.IsExtensionExifToolSupported(
+																metaFileItem.FileName)
 		).ToList();
 	}
 }

@@ -15,7 +15,7 @@ public static class RuntimeIdentifier
 		}
 
 		if ( RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ||
-		     RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD) )
+			 RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD) )
 		{
 			os = "linux";
 		}
@@ -30,7 +30,6 @@ public static class RuntimeIdentifier
 		return $"{os}-{architecture}";
 	}
 
-
 	public static bool IsReadyToRunSupported(string toRuntimeIdentifier)
 	{
 		var currentIdentifier = GetCurrentRuntimeIdentifier();
@@ -40,7 +39,7 @@ public static class RuntimeIdentifier
 	static bool IsReadyToRunSupported(string currentIdentifier, string toRuntimeIdentifier)
 	{
 		if ( ReadyToRunSupportedPlatforms.SupportedPlatforms.TryGetValue(currentIdentifier,
-			    out var supportedTargets) )
+				out var supportedTargets) )
 		{
 			return supportedTargets.Contains(toRuntimeIdentifier);
 		}

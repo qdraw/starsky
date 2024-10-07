@@ -79,7 +79,9 @@ namespace starsky.Controllers
 
 			var model = new UserIdentifierStatusModel
 			{
-				Name = currentUser.Name, Id = currentUser.Id, Created = currentUser.Created,
+				Name = currentUser.Name,
+				Id = currentUser.Id,
+				Created = currentUser.Created,
 			};
 
 			var credentials = _userManager.GetCredentialsByUserId(currentUser.Id);
@@ -89,10 +91,10 @@ namespace starsky.Controllers
 				model.CredentialTypeIds = null;
 				return Json(model);
 			}
-			
+
 			model.CredentialsIdentifiers?.Add(credentials.Identifier!);
 			model.CredentialTypeIds?.Add(credentials.CredentialTypeId);
-			
+
 			var role = await _userManager.GetRoleAsync(currentUser.Id);
 			model.RoleCode = role?.Code;
 
@@ -114,14 +116,20 @@ namespace starsky.Controllers
 		[AllowAnonymous]
 		public IActionResult LoginGet(string? returnUrl = null, bool? fromLogout = null)
 		{
-			if ( !ModelState.IsValid ) return BadRequest(ModelError);
-			
+			if ( !ModelState.IsValid )
+			{
+				return BadRequest(ModelError);
+			}
+
 			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
 			var clientApp = Path.Combine(_appSettings.BaseDirectoryProject,
 				"clientapp", "build", "index.html");
 
 			if ( !_storageHostFullPathFilesystem.ExistFile(clientApp) )
+			{
 				return Content("Please check if the client code exist");
+			}
+
 			return PhysicalFile(clientApp, "text/html");
 		}
 
@@ -146,7 +154,10 @@ namespace starsky.Controllers
 		[AllowAnonymous]
 		public async Task<IActionResult> LoginPost(LoginViewModel model)
 		{
-			if ( !ModelState.IsValid ) return BadRequest(ModelError);
+			if ( !ModelState.IsValid )
+			{
+				return BadRequest(ModelError);
+			}
 
 			var validateResult =
 				await _userManager.ValidateAsync("Email", model.Email, model.Password);
@@ -197,7 +208,10 @@ namespace starsky.Controllers
 		[AllowAnonymous]
 		public IActionResult Logout(string? returnUrl = null)
 		{
-			if ( !ModelState.IsValid ) return BadRequest(ModelError);
+			if ( !ModelState.IsValid )
+			{
+				return BadRequest(ModelError);
+			}
 
 			_userManager.SignOut(HttpContext);
 			// fromLogout is used in middleware
@@ -227,14 +241,14 @@ namespace starsky.Controllers
 			}
 
 			if ( !ModelState.IsValid ||
-			     model.ChangedPassword != model.ChangedConfirmPassword )
+				 model.ChangedPassword != model.ChangedConfirmPassword )
 			{
 				return BadRequest(ModelError);
 			}
 
 			var currentUserId = _userManager.GetCurrentUser(HttpContext)?.Id;
 			currentUserId ??= -1;
-			var credential = _userManager.GetCredentialsByUserId(( int )currentUserId);
+			var credential = _userManager.GetCredentialsByUserId(( int ) currentUserId);
 
 			// Re-check password
 			var validateResult = await _userManager.ValidateAsync(
@@ -297,9 +311,13 @@ namespace starsky.Controllers
 		/// <returns></returns>
 		private async Task<bool> IsAccountRegisterClosed(bool userIdentityIsAuthenticated)
 		{
-			if ( userIdentityIsAuthenticated ) return false;
+			if ( userIdentityIsAuthenticated )
+			{
+				return false;
+			}
+
 			return _appSettings.IsAccountRegisterOpen != true &&
-			       ( await _userManager.AllUsersAsync() ).Users.Count != 0;
+				   ( await _userManager.AllUsersAsync() ).Users.Count != 0;
 		}
 
 		/// <summary>
@@ -322,7 +340,7 @@ namespace starsky.Controllers
 			}
 
 			if ( !await IsAccountRegisterClosed(
-				    User.Identity?.IsAuthenticated == true) )
+					User.Identity?.IsAuthenticated == true) )
 			{
 				return Json("RegisterStatus open");
 			}

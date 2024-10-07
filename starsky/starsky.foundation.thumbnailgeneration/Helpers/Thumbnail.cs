@@ -57,18 +57,18 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 						}
 					};
 				case FolderOrFileModel.FolderOrFileTypeList.Folder:
-					{
-						var contentOfDir = _iStorage.GetAllFilesInDirectoryRecursive(subPath)
-							.Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
-						toAddFilePaths.AddRange(contentOfDir);
-						break;
-					}
+				{
+					var contentOfDir = _iStorage.GetAllFilesInDirectoryRecursive(subPath)
+						.Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
+					toAddFilePaths.AddRange(contentOfDir);
+					break;
+				}
 				case FolderOrFileModel.FolderOrFileTypeList.File:
 				default:
-					{
-						toAddFilePaths.Add(subPath);
-						break;
-					}
+				{
+					toAddFilePaths.Add(subPath);
+					break;
+				}
 			}
 
 			var resultChunkList = await toAddFilePaths.ForEachAsync(
@@ -103,8 +103,15 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		/// <returns>true, if successful</returns>
 		internal Task<IEnumerable<GenerationResultModel>> CreateThumbAsync(string? subPath, string fileHash, bool skipExtraLarge = false)
 		{
-			if ( string.IsNullOrWhiteSpace(fileHash) ) throw new ArgumentNullException(nameof(fileHash));
-			if ( string.IsNullOrWhiteSpace(subPath) ) throw new ArgumentNullException(nameof(fileHash));
+			if ( string.IsNullOrWhiteSpace(fileHash) )
+			{
+				throw new ArgumentNullException(nameof(fileHash));
+			}
+
+			if ( string.IsNullOrWhiteSpace(subPath) )
+			{
+				throw new ArgumentNullException(nameof(fileHash));
+			}
 
 			return CreateThumbInternal(subPath, fileHash, skipExtraLarge);
 		}
@@ -186,7 +193,11 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		private static ThumbnailSize ThumbnailToSourceSize(bool skipExtraLarge)
 		{
 			var thumbnailToSourceSize = ThumbnailSize.ExtraLarge;
-			if ( skipExtraLarge ) thumbnailToSourceSize = ThumbnailSize.Large;
+			if ( skipExtraLarge )
+			{
+				thumbnailToSourceSize = ThumbnailSize.Large;
+			}
+
 			return thumbnailToSourceSize;
 		}
 
@@ -285,10 +296,18 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		internal bool RemoveCorruptImage(string fileHash,
 			ThumbnailSize thumbnailToSourceSize)
 		{
-			if ( !_thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(fileHash, thumbnailToSourceSize)) ) return false;
+			if ( !_thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(fileHash, thumbnailToSourceSize)) )
+			{
+				return false;
+			}
+
 			var imageFormat = ExtensionRolesHelper.GetImageFormat(_thumbnailStorage.ReadStream(
 				ThumbnailNameHelper.Combine(fileHash, thumbnailToSourceSize), 160));
-			if ( imageFormat != ExtensionRolesHelper.ImageFormat.unknown ) return false;
+			if ( imageFormat != ExtensionRolesHelper.ImageFormat.unknown )
+			{
+				return false;
+			}
+
 			_thumbnailStorage.FileDelete(ThumbnailNameHelper.Combine(fileHash, thumbnailToSourceSize));
 			return true;
 		}
@@ -330,7 +349,10 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 					await SaveThumbnailImageFormat(image, imageFormat, outputStream);
 
 					// When thumbnailOutputHash is nothing return stream instead of writing down
-					if ( string.IsNullOrEmpty(thumbnailOutputHash) ) return (outputStream, result);
+					if ( string.IsNullOrEmpty(thumbnailOutputHash) )
+					{
+						return (outputStream, result);
+					}
 
 					// only when a hash exists
 					await _thumbnailStorage.WriteStreamAsync(outputStream, thumbnailOutputHash);
@@ -342,7 +364,11 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			{
 				const string imageCannotBeLoadedErrorMessage = "Image cannot be loaded";
 				var message = ex.Message;
-				if ( message.StartsWith(imageCannotBeLoadedErrorMessage) ) message = imageCannotBeLoadedErrorMessage;
+				if ( message.StartsWith(imageCannotBeLoadedErrorMessage) )
+				{
+					message = imageCannotBeLoadedErrorMessage;
+				}
+
 				_logger.LogError($"[ResizeThumbnailFromThumbnailImage] Exception {fileHash} {message}", ex);
 				result.Success = false;
 				result.ErrorMessage = message;
@@ -477,11 +503,17 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		/// <returns>Is successful? // private feature</returns>
 		internal async Task<bool> RotateThumbnail(string fileHash, int orientation, int width = 1000, int height = 0)
 		{
-			if ( !_thumbnailStorage.ExistFile(fileHash) ) return false;
+			if ( !_thumbnailStorage.ExistFile(fileHash) )
+			{
+				return false;
+			}
 
 			// the orientation is -1 or 1
 			var rotateMode = RotateMode.Rotate90;
-			if ( orientation == -1 ) rotateMode = RotateMode.Rotate270;
+			if ( orientation == -1 )
+			{
+				rotateMode = RotateMode.Rotate270;
+			}
 
 			try
 			{

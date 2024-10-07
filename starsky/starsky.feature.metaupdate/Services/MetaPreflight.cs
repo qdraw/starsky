@@ -64,7 +64,7 @@ namespace starsky.feature.metaupdate.Services
 			{
 				// Files that are not on disk
 				if ( _iStorage!.IsFolderOrFile(fileIndexItem.FilePath!) ==
-				     FolderOrFileModel.FolderOrFileTypeList.Deleted )
+					 FolderOrFileModel.FolderOrFileTypeList.Deleted )
 				{
 					StatusCodesHelper.ReturnExifStatusError(fileIndexItem,
 						FileIndexItem.ExifStatus.NotFoundSourceMissing,
@@ -74,7 +74,7 @@ namespace starsky.feature.metaupdate.Services
 
 				// Dir is readonly / don't edit
 				if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(fileIndexItem)
-				     == FileIndexItem.ExifStatus.ReadOnly )
+					 == FileIndexItem.ExifStatus.ReadOnly )
 				{
 					StatusCodesHelper.ReturnExifStatusError(fileIndexItem,
 						FileIndexItem.ExifStatus.ReadOnly,
@@ -90,14 +90,14 @@ namespace starsky.feature.metaupdate.Services
 
 				// this one is good :)
 				if ( fileIndexItem.Status is FileIndexItem.ExifStatus.Default
-				    or FileIndexItem.ExifStatus.OkAndSame )
+					or FileIndexItem.ExifStatus.OkAndSame )
 				{
 					fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 				}
 
 				// Deleted is allowed but the status need be updated
 				if ( ( StatusCodesHelper.IsDeletedStatus(fileIndexItem)
-				       == FileIndexItem.ExifStatus.Deleted ) )
+					   == FileIndexItem.ExifStatus.Deleted ) )
 				{
 					fileIndexItem.Status = FileIndexItem.ExifStatus.Deleted;
 				}
@@ -112,7 +112,7 @@ namespace starsky.feature.metaupdate.Services
 
 			AddNotFoundInIndexStatus.Update(inputFilePaths, fileIndexUpdateList);
 
-			return ( fileIndexUpdateList, changedFileIndexItemName );
+			return (fileIndexUpdateList, changedFileIndexItemName);
 		}
 
 		/// <summary>
@@ -124,7 +124,7 @@ namespace starsky.feature.metaupdate.Services
 		{
 			// fileIndexItem.Latitude == 0 || fileIndexItem.Longitude == 0
 			if ( Math.Abs(fileIndexItem.Latitude) < 0.000001d ||
-			     Math.Abs(fileIndexItem.Longitude) < 0.000001d )
+				 Math.Abs(fileIndexItem.Longitude) < 0.000001d )
 			{
 				return;
 			}
@@ -153,8 +153,10 @@ namespace starsky.feature.metaupdate.Services
 			int rotateClock)
 		{
 			if ( changedFileIndexItemName == null ||
-			     string.IsNullOrEmpty(collectionsFileIndexItem.FilePath) )
+				 string.IsNullOrEmpty(collectionsFileIndexItem.FilePath) )
+			{
 				throw new MissingFieldException(nameof(changedFileIndexItemName));
+			}
 
 			// compare and add changes to collectionsDetailView
 			var comparedNamesList = FileIndexCompareHelper.Compare(collectionsFileIndexItem,
@@ -167,7 +169,7 @@ namespace starsky.feature.metaupdate.Services
 			collectionsFileIndexItem.LastChanged = comparedNamesList;
 
 			if ( changedFileIndexItemName.TryAdd(collectionsFileIndexItem.FilePath!,
-				    comparedNamesList) )
+					comparedNamesList) )
 			{
 				return;
 			}
@@ -187,7 +189,10 @@ namespace starsky.feature.metaupdate.Services
 			ICollection<string> comparedNamesList)
 		{
 			// Do orientation / Rotate if needed (after compare)
-			if ( !FileIndexItem.IsRelativeOrientation(rotateClock) ) return fileIndexItem;
+			if ( !FileIndexItem.IsRelativeOrientation(rotateClock) )
+			{
+				return fileIndexItem;
+			}
 			// run this on detail view => statusModel is always default
 			fileIndexItem.SetRelativeOrientation(rotateClock);
 

@@ -103,7 +103,11 @@ namespace starsky.foundation.database.Helpers
 		/// <exception cref="AggregateException">services is null</exception>
 		public void BuilderDb(string? foundationDatabaseName = "")
 		{
-			if ( _services == null ) throw new AggregateException("services is missing");
+			if ( _services == null )
+			{
+				throw new AggregateException("services is missing");
+			}
+
 			if ( _logger != null && _appSettings.IsVerbose() )
 			{
 				_logger.LogInformation($"Database connection: {_appSettings.DatabaseConnection}");

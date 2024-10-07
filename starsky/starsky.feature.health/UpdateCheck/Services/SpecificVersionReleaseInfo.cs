@@ -48,16 +48,16 @@ public class SpecificVersionReleaseInfo : ISpecificVersionReleaseInfo
 		}
 
 		if ( _cache.TryGetValue(GetSpecificVersionReleaseInfoCacheName,
-			    out var cacheResult) && cacheResult != null )
+				out var cacheResult) && cacheResult != null )
 		{
-			return Parse(( string )cacheResult, versionToCheckFor);
+			return Parse(( string ) cacheResult, versionToCheckFor);
 		}
 
 		cacheResult = await QuerySpecificVersionInfo();
 		_cache.Set(GetSpecificVersionReleaseInfoCacheName, cacheResult,
 			new TimeSpan(48, 0, 0));
 
-		return Parse(( string )cacheResult, versionToCheckFor);
+		return Parse(( string ) cacheResult, versionToCheckFor);
 	}
 
 	internal string Parse(string json, string? versionToCheckFor)
@@ -80,7 +80,9 @@ public class SpecificVersionReleaseInfo : ISpecificVersionReleaseInfo
 		}
 
 		if ( dict?.TryGetValue(versionToCheckFor, out var valueDict) is not true )
+		{
 			return string.Empty;
+		}
 
 		var outputValue = valueDict.TryGetValue("en", out var languageValue)
 			? ConvertMarkdownLinkToHtml(languageValue)
@@ -107,7 +109,11 @@ public class SpecificVersionReleaseInfo : ISpecificVersionReleaseInfo
 		var (key, value) = await _httpClientHelper.ReadString(
 			"https://" + SpecificVersionReleaseInfoUrl);
 
-		if ( key ) return value;
+		if ( key )
+		{
+			return value;
+		}
+
 		_webLogger.LogInformation($"[SpecificVersionReleaseInfo] {value} [end]");
 		return string.Empty;
 	}

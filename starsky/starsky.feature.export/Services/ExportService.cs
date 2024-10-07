@@ -126,7 +126,11 @@ public class ExportService : IExport
 		{
 			var itemFileIndexItem = _query.SingleItem(item, null,
 				false, false)?.FileIndexItem;
-			if ( itemFileIndexItem == null ) continue;
+			if ( itemFileIndexItem == null )
+			{
+				continue;
+			}
+
 			itemFileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 			fileIndexResultsList.Add(itemFileIndexItem);
 		}
@@ -152,7 +156,9 @@ public class ExportService : IExport
 		await _hostFileSystemStorage.WriteStreamAsync(StringToStreamHelper.StringToStream("OK"),
 			doneFileFullPath);
 		if ( _appSettings.IsVerbose() )
+		{
 			_logger.LogInformation("[CreateZip] Zip done: " + doneFileFullPath);
+		}
 	}
 
 	/// <summary>
@@ -195,7 +201,10 @@ public class ExportService : IExport
 			if ( !ExtensionRolesHelper.IsExtensionForceXmp(item.FilePath) ||
 				 !_iStorage.ExistFile(
 					 ExtensionRolesHelper.ReplaceExtensionWithXmp(
-						 item.FilePath)) ) continue;
+						 item.FilePath)) )
+			{
+				continue;
+			}
 
 			var xmpFileFullPath = _appSettings.DatabasePathToFilePath(
 				ExtensionRolesHelper.ReplaceExtensionWithXmp(
@@ -273,7 +282,9 @@ public class ExportService : IExport
 		var doneFileFullPath = Path.Combine(_appSettings.TempFolder, zipOutputFileName) + ".done";
 
 		if ( !_hostFileSystemStorage.ExistFile(sourceFullPath) )
+		{
 			return new Tuple<bool?, string?>(null, null);
+		}
 
 		// Read a single file to be sure that writing is ready
 		return new Tuple<bool?, string?>(_hostFileSystemStorage.ExistFile(doneFileFullPath),

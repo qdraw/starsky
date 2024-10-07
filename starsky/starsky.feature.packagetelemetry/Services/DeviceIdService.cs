@@ -67,7 +67,10 @@ public class DeviceIdService : IDeviceIdService
 	internal async Task<string> DeviceIdDatabaseId()
 	{
 		var item = await _settingsService.GetSetting(SettingsType.DeviceId);
-		if ( !string.IsNullOrEmpty(item?.Value) ) return item.Value;
+		if ( !string.IsNullOrEmpty(item?.Value) )
+		{
+			return item.Value;
+		}
 
 		var generatedString = $"zz{Sha256.ComputeSha256(FileHash.GenerateRandomBytes(30))}";
 		await _settingsService.AddOrUpdateSetting(SettingsType.DeviceId, generatedString);
@@ -88,7 +91,11 @@ public class DeviceIdService : IDeviceIdService
 			return await StreamToStringHelper.StreamToStringAsync(stream);
 		}
 
-		if ( !_hostStorage.ExistFile(BsdHostIdPath) ) return string.Empty;
+		if ( !_hostStorage.ExistFile(BsdHostIdPath) )
+		{
+			return string.Empty;
+		}
+
 		var streamBsd = _hostStorage.ReadStream(BsdHostIdPath);
 		return await StreamToStringHelper.StreamToStringAsync(streamBsd);
 	}
@@ -101,7 +108,10 @@ public class DeviceIdService : IDeviceIdService
 	{
 		// ioreg -rd1 -c IOPlatformExpertDevice
 		var result = await Command.Run(IoReg, "-rd1", "-c", "IOPlatformExpertDevice").Task;
-		if ( !result.Success ) return string.Empty;
+		if ( !result.Success )
+		{
+			return string.Empty;
+		}
 
 		var match = Regex.Match(result.StandardOutput, "\"IOPlatformUUID\" = \"[\\d+\\w+-]+\"",
 			RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));

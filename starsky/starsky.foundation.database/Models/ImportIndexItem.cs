@@ -225,8 +225,10 @@ namespace starsky.foundation.database.Models
 				}
 
 				// add the first one
-				if ( i == 0 && structuredCharArray != escapeChar ) newString.Append(structuredCharArray);
-
+				if ( i == 0 && structuredCharArray != escapeChar )
+				{
+					newString.Append(structuredCharArray);
+				}
 			}
 			return newString.ToString();
 		}

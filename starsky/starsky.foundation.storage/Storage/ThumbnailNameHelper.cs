@@ -80,7 +80,9 @@ namespace starsky.foundation.storage.Storage
 			}
 
 			if ( string.IsNullOrEmpty(afterAtString) )
+			{
 				return ThumbnailSize.Large;
+			}
 
 			int.TryParse(afterAtString, NumberStyles.Number,
 				CultureInfo.InvariantCulture, out var afterAt);
@@ -95,7 +97,11 @@ namespace starsky.foundation.storage.Storage
 		public static string Combine(string fileHash, ThumbnailSize size,
 			bool appendExtension = false)
 		{
-			if ( appendExtension ) return fileHash + GetAppend(size) + ".jpg";
+			if ( appendExtension )
+			{
+				return fileHash + GetAppend(size) + ".jpg";
+			}
+
 			return fileHash + GetAppend(size);
 		}
 

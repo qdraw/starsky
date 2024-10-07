@@ -9,7 +9,12 @@ public class CreateFakeStarskyUnixBash
 	public CreateFakeStarskyUnixBash()
 	{
 		var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-		if ( string.IsNullOrEmpty(dirName) ) return;
+		// if the dirName is null, skip the test
+		if ( string.IsNullOrEmpty(dirName) )
+		{
+			return;
+		}
+
 		var parentFolder = Path.Combine(dirName, "FakeCreateAn",
 			"CreateFakeStarskyExe");
 		var path = Path.Combine(parentFolder, "starsky");
@@ -26,7 +31,7 @@ public class CreateFakeStarskyUnixBash
 	public string FullFilePath { get; set; } = string.Empty;
 
 	/// <summary>
-	/// ApplicationUrl is the same as FullFilePath
+	///     ApplicationUrl is the same as FullFilePath
 	/// </summary>
 	public string ApplicationUrl => FullFilePath;
 }

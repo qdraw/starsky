@@ -81,7 +81,10 @@ namespace starsky.foundation.sync.WatcherServices
 			}
 			set
 			{
-				if ( _containedFsw.EnableRaisingEvents == value ) return;
+				if ( _containedFsw.EnableRaisingEvents == value )
+				{
+					return;
+				}
 
 				StopRaisingBufferedEvents();
 				_cancellationTokenSource = new CancellationTokenSource();
@@ -91,7 +94,9 @@ namespace starsky.foundation.sync.WatcherServices
 				//  accepting more duplicates (which may occure anyway).
 				_containedFsw.EnableRaisingEvents = value;
 				if ( value )
+				{
 					RaiseBufferedEventsUntilCancelled();
+				}
 			}
 		}
 
@@ -188,7 +193,10 @@ namespace starsky.foundation.sync.WatcherServices
 			add
 			{
 				if ( _onCreatedHandler == null )
+				{
 					_containedFsw.Created += BufferEvent;
+				}
+
 				_onCreatedHandler += value;
 			}
 			remove
@@ -203,7 +211,10 @@ namespace starsky.foundation.sync.WatcherServices
 			add
 			{
 				if ( _onChangedHandler == null )
+				{
 					_containedFsw.Changed += BufferEvent;
+				}
+
 				_onChangedHandler += value;
 			}
 			remove
@@ -218,7 +229,10 @@ namespace starsky.foundation.sync.WatcherServices
 			add
 			{
 				if ( _onDeletedHandler == null )
+				{
 					_containedFsw.Deleted += BufferEvent;
+				}
+
 				_onDeletedHandler += value;
 			}
 			remove
@@ -233,7 +247,10 @@ namespace starsky.foundation.sync.WatcherServices
 			add
 			{
 				if ( _onRenamedHandler == null )
+				{
 					_containedFsw.Renamed += BufferEvent;
+				}
+
 				_onRenamedHandler += value;
 			}
 			remove
@@ -245,7 +262,11 @@ namespace starsky.foundation.sync.WatcherServices
 
 		internal void BufferEvent(object _, FileSystemEventArgs e)
 		{
-			if ( _fileSystemEventBuffer.TryAdd(e) ) return;
+			if ( _fileSystemEventBuffer.TryAdd(e) )
+			{
+				return;
+			}
+
 			var ex = new EventQueueOverflowException($"Event queue size {_fileSystemEventBuffer.BoundedCapacity} events exceeded.");
 			InvokeHandler(_onErrorHandler!, new ErrorEventArgs(ex));
 		}
@@ -262,13 +283,19 @@ namespace starsky.foundation.sync.WatcherServices
 			add
 			{
 				if ( _onErrorHandler == null )
+				{
 					_containedFsw.Error += BufferingFileSystemWatcher_Error;
+				}
+
 				_onErrorHandler += value;
 			}
 			remove
 			{
 				if ( _onErrorHandler == null )
+				{
 					_containedFsw.Error -= BufferingFileSystemWatcher_Error;
+				}
+
 				_onErrorHandler -= value;
 			}
 		}
@@ -284,7 +311,9 @@ namespace starsky.foundation.sync.WatcherServices
 			FileSystemEventArgs fileSystemEventArgs)
 		{
 			if ( _onAllChangesHandler != null )
+			{
 				InvokeHandler(_onAllChangesHandler, fileSystemEventArgs);
+			}
 			else
 			{
 				switch ( fileSystemEventArgs.ChangeType )
@@ -316,7 +345,9 @@ namespace starsky.foundation.sync.WatcherServices
 				{
 					if ( _onExistedHandler != null ||
 						 _onAllChangesHandler != null )
+					{
 						NotifyExistingFiles();
+					}
 
 					foreach ( FileSystemEventArgs fileSystemEventArgs in
 							 _fileSystemEventBuffer.GetConsumingEnumerable(

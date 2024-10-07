@@ -71,9 +71,15 @@ namespace starsky.feature.metaupdate.Services
 
 				var statusResults = StatusCodesHelper.IsDeletedStatus(detailView);
 				// only when default status to avoid unneeded checks
-				if ( statusResults == FileIndexItem.ExifStatus.Default ) statusResults = _statusCodeHelper.IsReadOnlyStatus(detailView);
+				if ( statusResults == FileIndexItem.ExifStatus.Default )
+				{
+					statusResults = _statusCodeHelper.IsReadOnlyStatus(detailView);
+				}
 				// when everything is checked, it should be good
-				if ( statusResults == FileIndexItem.ExifStatus.Default ) statusResults = FileIndexItem.ExifStatus.Ok;
+				if ( statusResults == FileIndexItem.ExifStatus.Default )
+				{
+					statusResults = FileIndexItem.ExifStatus.Ok;
+				}
 
 				var collectionSubPathList = DetailView.GetCollectionSubPathList(detailView.FileIndexItem, collections, subPath);
 

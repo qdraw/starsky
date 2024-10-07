@@ -17,20 +17,19 @@ public class InterfaceQueryTest
 	public void InterfaceQueryTest_SingleItem()
 	{
 		var query = new FakeIQuery() as IQuery;
-		
+
 		var result = query.SingleItem("/", new List<ColorClassParser.Color>());
-		
+
 		Assert.IsNull(result);
 	}
-	
+
 	[TestMethod]
-	[ExpectedException(typeof(NotImplementedException))]
 	public void InterfaceQueryTest_SingleItem2()
 	{
 		var query = new FakeIQuery() as IQuery;
-		
-		query.SingleItem(new List<FileIndexItem>(),"/", 
-			new List<ColorClassParser.Color>());
-		// implement this
+
+		// Assert that a NotImplementedException is thrown when SingleItem is called
+		Assert.ThrowsException<NotImplementedException>(() =>
+			query.SingleItem(new List<FileIndexItem>(), "/", new List<ColorClassParser.Color>()));
 	}
 }

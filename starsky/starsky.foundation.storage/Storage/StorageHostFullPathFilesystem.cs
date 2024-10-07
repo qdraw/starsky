@@ -92,7 +92,10 @@ namespace starsky.foundation.storage.Storage
 
 		public bool FolderDelete(string path)
 		{
-			if ( !Directory.Exists(path) ) return false;
+			if ( !Directory.Exists(path) )
+			{
+				return false;
+			}
 
 			foreach ( var directory in Directory.GetDirectories(path) )
 			{
@@ -133,11 +136,14 @@ namespace starsky.foundation.storage.Storage
 			}
 			catch ( Exception exception )
 			{
-				if ( exception is not (UnauthorizedAccessException
-				    or DirectoryNotFoundException) ) throw;
+				if ( exception is not ( UnauthorizedAccessException
+					or DirectoryNotFoundException ) )
+				{
+					throw;
+				}
 
 				_logger.LogError(exception, "[GetAllFilesInDirectory] " +
-				                            "catch-ed UnauthorizedAccessException/DirectoryNotFoundException");
+											"catch-ed UnauthorizedAccessException/DirectoryNotFoundException");
 				return Array.Empty<string>();
 			}
 
@@ -205,11 +211,15 @@ namespace starsky.foundation.storage.Storage
 				}
 				catch ( Exception exception )
 				{
-					if ( exception is not (UnauthorizedAccessException
-					    or DirectoryNotFoundException) ) throw;
+					if ( exception is not ( UnauthorizedAccessException
+						or DirectoryNotFoundException ) )
+					{
+						throw;
+					}
+
 					_logger?.LogError("[StorageHostFullPathFilesystem] Catch-ed " +
-					                  "DirectoryNotFoundException/UnauthorizedAccessException => " +
-					                  exception.Message);
+									  "DirectoryNotFoundException/UnauthorizedAccessException => " +
+									  exception.Message);
 				}
 			}
 
@@ -245,7 +255,10 @@ namespace starsky.foundation.storage.Storage
 		/// <returns>Stream with data (non-disposed)</returns>
 		public Stream ReadStream(string path, int maxRead = -1)
 		{
-			if ( !ExistFile(path) ) throw new FileNotFoundException(path);
+			if ( !ExistFile(path) )
+			{
+				throw new FileNotFoundException(path);
+			}
 
 			try
 			{
@@ -364,17 +377,20 @@ namespace starsky.foundation.storage.Storage
 
 		public bool WriteStream(Stream stream, string path)
 		{
-			if ( !stream.CanRead ) return false;
+			if ( !stream.CanRead )
+			{
+				return false;
+			}
 
 			bool LocalRun()
 			{
 				stream.Seek(0, SeekOrigin.Begin);
 
 				using ( var fileStream = new FileStream(path,
-					       FileMode.Create,
-					       FileAccess.Write, FileShare.ReadWrite,
-					       4096,
-					       FileOptions.Asynchronous) )
+						   FileMode.Create,
+						   FileAccess.Write, FileShare.ReadWrite,
+						   4096,
+						   FileOptions.Asynchronous) )
 				{
 					stream.CopyTo(fileStream);
 					// fileStream is disposed due using
@@ -393,15 +409,18 @@ namespace starsky.foundation.storage.Storage
 
 		public bool WriteStreamOpenOrCreate(Stream stream, string path)
 		{
-			if ( !stream.CanRead ) return false;
+			if ( !stream.CanRead )
+			{
+				return false;
+			}
 
 			stream.Seek(0, SeekOrigin.Begin);
 
 			using ( var fileStream = new FileStream(path,
-				       FileMode.OpenOrCreate, // <= that's the difference
-				       FileAccess.Write, FileShare.ReadWrite,
-				       4096,
-				       FileOptions.Asynchronous) )
+					   FileMode.OpenOrCreate, // <= that's the difference
+					   FileAccess.Write, FileShare.ReadWrite,
+					   4096,
+					   FileOptions.Asynchronous) )
 			{
 				stream.CopyTo(fileStream);
 			}
@@ -418,7 +437,10 @@ namespace starsky.foundation.storage.Storage
 		/// <returns>success or fail</returns>
 		public async Task<bool> WriteStreamAsync(Stream stream, string path)
 		{
-			if ( !stream.CanRead ) return false;
+			if ( !stream.CanRead )
+			{
+				return false;
+			}
 
 			async Task<bool> LocalRun()
 			{
@@ -432,8 +454,8 @@ namespace starsky.foundation.storage.Storage
 				}
 
 				using ( var fileStream = new FileStream(path, FileMode.Create,
-					       FileAccess.Write, FileShare.Read, 4096,
-					       FileOptions.Asynchronous | FileOptions.SequentialScan) )
+						   FileAccess.Write, FileShare.Read, 4096,
+						   FileOptions.Asynchronous | FileOptions.SequentialScan) )
 				{
 					await stream.CopyToAsync(fileStream);
 					await fileStream.FlushAsync();
@@ -488,7 +510,7 @@ namespace starsky.foundation.storage.Storage
 			catch ( Exception exception )
 			{
 				_logger.LogInformation($"[StorageHostFullPathFilesystem] " +
-				                       $"catch-ed ex: {exception.Message} -  {path}");
+									   $"catch-ed ex: {exception.Message} -  {path}");
 				return new Tuple<string[], string[]>(
 					new List<string>().ToArray(),
 					new List<string>().ToArray()

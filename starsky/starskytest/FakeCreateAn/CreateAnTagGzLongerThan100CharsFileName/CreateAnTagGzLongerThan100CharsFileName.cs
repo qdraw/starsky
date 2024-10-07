@@ -14,7 +14,11 @@ namespace starskytest.FakeCreateAn.CreateAnTagGzLongerThan100CharsFileName
 		public CreateAnTagGzLongerThan100CharsFileName()
 		{
 			var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-			if ( string.IsNullOrEmpty(dirName) ) return;
+			if ( string.IsNullOrEmpty(dirName) )
+			{
+				return;
+			}
+
 			var path = Path.Combine(dirName, "FakeCreateAn",
 				"CreateAnTagGzLongerThan100CharsFileName", "longer_than_100_chars_linux.tar.gz");
 

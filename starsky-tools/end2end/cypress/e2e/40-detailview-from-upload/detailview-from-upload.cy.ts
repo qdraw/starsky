@@ -1,4 +1,3 @@
-import { uploadFileName1 } from 'integration/10-upload-to-folder/upload-filename1'
 import { envName, envFolder } from '../../support/commands'
 import configFile from './config.json'
 import flow from './flow.json'

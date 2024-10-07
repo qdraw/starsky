@@ -51,7 +51,7 @@ public class UpdateAppSettingsByPath : IUpdateAppSettingsByPath
 		}
 
 		AppSettingsCompareHelper.Compare(_appSettings, appSettingTransferObject);
-		var transfer = ( AppSettingsTransferObject )_appSettings;
+		var transfer = ( AppSettingsTransferObject ) _appSettings;
 
 		// should not forget app: prefix
 		var jsonOutput = JsonSerializer.Serialize(new { app = transfer },

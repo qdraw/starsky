@@ -45,13 +45,14 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 				_logger.LogInformation($"[ReadMetaGpx] SystemXmlXmlException for {subPath}");
 				return new FileIndexItem(subPath)
 				{
-					Tags = "SystemXmlXmlException", ColorClass = ColorClassParser.Color.None
+					Tags = "SystemXmlXmlException",
+					ColorClass = ColorClassParser.Color.None
 				};
 			}
 
 			var title = readGpxFile.FirstOrDefault()?.Title ?? string.Empty;
 			var dateTime = readGpxFile.FirstOrDefault()?.DateTime ??
-			               new DateTime(0, DateTimeKind.Utc);
+						   new DateTime(0, DateTimeKind.Utc);
 			var latitude = readGpxFile.FirstOrDefault()?.Latitude ?? 0d;
 			var longitude = readGpxFile.FirstOrDefault()?.Longitude ?? 0d;
 			var altitude = readGpxFile.FirstOrDefault()?.Altitude ?? 0d;
@@ -71,7 +72,11 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		internal static DateTime ConvertDateTime(DateTime dateTime, bool useLocal,
 			double latitude, double longitude)
 		{
-			if ( !useLocal ) return dateTime;
+			if ( !useLocal )
+			{
+				return dateTime;
+			}
+
 			var localTimeZoneNameResult = TimeZoneLookup
 				.GetTimeZone(latitude, longitude).Result;
 			var localTimeZone =
@@ -82,13 +87,21 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		private static string GetTrkName(XmlNode? gpxDoc, XmlNamespaceManager namespaceManager)
 		{
 			var trkNodeList = gpxDoc?.SelectNodes("//x:trk", namespaceManager);
-			if ( trkNodeList == null ) return string.Empty;
+			if ( trkNodeList == null )
+			{
+				return string.Empty;
+			}
+
 			var trkName = new StringBuilder();
 			foreach ( XmlElement node in trkNodeList )
 			{
 				foreach ( XmlElement childNode in node.ChildNodes )
 				{
-					if ( childNode.Name != "name" ) continue;
+					if ( childNode.Name != "name" )
+					{
+						continue;
+					}
+
 					trkName.Append(childNode.InnerText);
 					return trkName.ToString();
 				}
@@ -153,7 +166,11 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			namespaceManager.AddNamespace("x", GpxXmlNameSpaceName);
 
 			XmlNodeList? nodeList = gpxDoc.SelectNodes("//x:trkpt", namespaceManager);
-			if ( nodeList == null ) return new List<GeoListItem>();
+			if ( nodeList == null )
+			{
+				return new List<GeoListItem>();
+			}
+
 			geoList ??= new List<GeoListItem>();
 
 			var title = GetTrkName(gpxDoc, namespaceManager);
@@ -180,7 +197,11 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 						elevation = double.Parse(childNode.InnerText, CultureInfo.InvariantCulture);
 					}
 
-					if ( childNode.Name != "time" ) continue;
+					if ( childNode.Name != "time" )
+					{
+						continue;
+					}
+
 					var datetimeString = childNode.InnerText;
 
 					// 2018-08-21T19:15:41Z
@@ -203,7 +224,11 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 					Altitude = elevation
 				});
 
-				if ( returnAfter == count ) return geoList;
+				if ( returnAfter == count )
+				{
+					return geoList;
+				}
+
 				count++;
 			}
 

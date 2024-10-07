@@ -1,5 +1,5 @@
 import { render } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import * as DropArea from "../../components/atoms/drop-area/drop-area";
 import { newIFileIndexItem } from "../../interfaces/IFileIndexItem";
 import { Import } from "./import";

@@ -1,6 +1,6 @@
 import { fireEvent, render, RenderResult } from "@testing-library/react";
 import { useState } from "react";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { BrowserRouter } from "react-router-dom";
 import * as FileHashImage from "../../components/atoms/file-hash-image/file-hash-image";
 import { IFileHashImageProps } from "../../components/atoms/file-hash-image/file-hash-image";

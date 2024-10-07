@@ -11,142 +11,143 @@ using starsky.foundation.writemeta.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.writemeta.Helpers
+namespace starskytest.starsky.foundation.writemeta.Helpers;
+
+[TestClass]
+public sealed class ExifToolTest
 {
-	[TestClass]
-	public sealed class ExifToolTest
+	[TestMethod]
+	public async Task ExifTool_ArgumentException()
 	{
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentException))]
-		public async Task ExifTool_NotFound_Exception()
-		{
-			var appSettings = new AppSettings { ExifToolPath = "Z://Non-exist", };
+		var appSettings = new AppSettings { ExifToolPath = "Z://Non-exist" };
 
-			var fakeStorage = new FakeIStorage(new List<string> { "/" },
-				new List<string> { "/test.jpg" },
-				new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+		var fakeStorage = new FakeIStorage(new List<string> { "/" },
+			["/test.jpg"],
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
-			await new ExifToolService(new FakeSelectorStorage(fakeStorage), appSettings,
-					new FakeIWebLogger())
-				.WriteTagsAsync("/test.jpg", "-Software=\"Qdraw 2.0\"");
-		}
+		var sut = new ExifToolService(new FakeSelectorStorage(fakeStorage), appSettings,
+			new FakeIWebLogger());
 
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentException))]
-		public async Task ExifTool_WriteTagsThumbnailAsync_NotFound_Exception()
-		{
-			var appSettings = new AppSettings { ExifToolPath = "Z://Non-exist", };
+		await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
+			await sut.WriteTagsAsync("/test.jpg", "-Software=\"Qdraw 2.0\""));
+	}
 
-			var fakeStorage = new FakeIStorage(new List<string> { "/" },
-				new List<string> { "/test.jpg" },
-				new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+	[TestMethod]
+	public async Task ExifTool_WriteTagsThumbnailAsync_NotFound_Exception()
+	{
+		var appSettings = new AppSettings { ExifToolPath = "Z://Non-exist" };
 
-			await new ExifToolService(new FakeSelectorStorage(fakeStorage), appSettings,
-					new FakeIWebLogger())
-				.WriteTagsThumbnailAsync("/test.jpg", "-Software=\"Qdraw 2.0\"");
-		}
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.jpg"],
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
-		[TestMethod]
-		public async Task ExifTool_RenameThumbnailByStream_Length26()
-		{
-			var appSettings = new AppSettings { ExifToolPath = "Z://Non-exist", };
+		var sut = new ExifToolService(new FakeSelectorStorage(fakeStorage), appSettings,
+			new FakeIWebLogger());
 
-			var fakeStorage = new FakeIStorage(new List<string> { "/" },
-				new List<string> { "/test.jpg" },
-				new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+		await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
+			await sut.WriteTagsAsync("/test.jpg", "-Software=\"Qdraw 2.0\""));
+	}
 
-			var result =
-				await new ExifTool(fakeStorage, fakeStorage, appSettings, new FakeIWebLogger())
-					.RenameThumbnailByStream("OLDHASH", new MemoryStream(), true);
+	[TestMethod]
+	public async Task ExifTool_RenameThumbnailByStream_Length26()
+	{
+		var appSettings = new AppSettings { ExifToolPath = "Z://Non-exist" };
 
-			Assert.AreEqual(26, result.Length);
-		}
+		var fakeStorage = new FakeIStorage(new List<string> { "/" },
+			["/test.jpg"],
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
-		[TestMethod]
-		public async Task ExifTool_RenameThumbnailByStream_Fail()
-		{
-			var appSettings = new AppSettings { ExifToolPath = "Z://Non-exist", };
-
-			var fakeStorage = new FakeIStorage(new List<string> { "/" },
-				new List<string> { "/test.jpg" },
-				new List<byte[]> { CreateAnImage.Bytes.ToArray() });
-
-			var result =
-				await new ExifTool(fakeStorage, fakeStorage, appSettings, new FakeIWebLogger())
-					.RenameThumbnailByStream("OLDHASH", new MemoryStream(), false);
-
-			Assert.AreEqual(0, result.Length);
-		}
-
-		[TestMethod]
-		public async Task ExifTool_RenameThumbnailByStream_NotDisposed_CanWrite()
-		{
-			var appSettings = new AppSettings { ExifToolPath = "Z://Non-exist", };
-
-			var fakeStorage = new FakeIStorage(new List<string> { "/" },
-				new List<string> { "/test.jpg" },
-				new List<byte[]> { CreateAnImage.Bytes.ToArray() });
-
-			var stream = new MemoryStream();
+		var result =
 			await new ExifTool(fakeStorage, fakeStorage, appSettings, new FakeIWebLogger())
-				.RenameThumbnailByStream("OLDHASH", stream, true);
+				.RenameThumbnailByStream("OLDHASH", new MemoryStream(), true);
 
-			Assert.IsTrue(stream.CanWrite);
-		}
+		Assert.AreEqual(26, result.Length);
+	}
 
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public void StreamToStreamRunner_ArgumentNullException()
+	[TestMethod]
+	public async Task ExifTool_RenameThumbnailByStream_Fail()
+	{
+		var appSettings = new AppSettings { ExifToolPath = "Z://Non-exist" };
+
+		var fakeStorage = new FakeIStorage(new List<string> { "/" },
+			new List<string> { "/test.jpg" },
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+
+		var result =
+			await new ExifTool(fakeStorage, fakeStorage, appSettings, new FakeIWebLogger())
+				.RenameThumbnailByStream("OLDHASH", new MemoryStream(), false);
+
+		Assert.AreEqual(0, result.Length);
+	}
+
+	[TestMethod]
+	public async Task ExifTool_RenameThumbnailByStream_NotDisposed_CanWrite()
+	{
+		var appSettings = new AppSettings { ExifToolPath = "Z://Non-exist" };
+
+		var fakeStorage = new FakeIStorage(new List<string> { "/" },
+			new List<string> { "/test.jpg" },
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+
+		var stream = new MemoryStream();
+		await new ExifTool(fakeStorage, fakeStorage, appSettings, new FakeIWebLogger())
+			.RenameThumbnailByStream("OLDHASH", stream, true);
+
+		Assert.IsTrue(stream.CanWrite);
+	}
+
+	[TestMethod]
+	public void StreamToStreamRunner_ArgumentNullException()
+	{
+		Assert.ThrowsException<ArgumentNullException>(() =>
+			new StreamToStreamRunner(new AppSettings(), null!,
+				new FakeIWebLogger()));
+	}
+
+	[TestMethod]
+	public async Task RunProcessAsync_RunChildObject_UnixOnly()
+	{
+		// Unix only
+		var appSettings = new AppSettings { Verbose = true, ExifToolPath = "/bin/ls" };
+		if ( appSettings.IsWindows || !File.Exists("/bin/ls") )
 		{
-			_ = new StreamToStreamRunner(new AppSettings(), null!,
-				new FakeIWebLogger());
+			Assert.Inconclusive("This test if for Unix Only");
+			return;
 		}
 
-		[TestMethod]
-		public async Task RunProcessAsync_RunChildObject_UnixOnly()
+		var runner = new StreamToStreamRunner(appSettings,
+			new MemoryStream([]), new FakeIWebLogger());
+		var result = await runner.RunProcessAsync(string.Empty, "test / unit test");
+
+		await StreamToStringHelper.StreamToStringAsync(result, false);
+
+		Assert.AreEqual(0, result.Length);
+	}
+
+	[TestMethod]
+	public async Task WriteTagsAndRenameThumbnailAsync_Disposed()
+	{
+		var storage =
+			new FakeIStorage(new ObjectDisposedException("disposed"));
+
+		var exifTool = new ExifTool(storage,
+			storage,
+			new AppSettings(), new FakeIWebLogger());
+
+		var exceptionMessage = string.Empty;
+		try
 		{
-			// Unix only
-			var appSettings = new AppSettings { Verbose = true, ExifToolPath = "/bin/ls" };
-			if ( appSettings.IsWindows || !File.Exists("/bin/ls") )
-			{
-				Assert.Inconclusive("This test if for Unix Only");
-				return;
-			}
-
-			var runner = new StreamToStreamRunner(appSettings,
-				new MemoryStream(Array.Empty<byte>()), new FakeIWebLogger());
-			var result = await runner.RunProcessAsync(string.Empty, "test / unit test");
-
-			await StreamToStringHelper.StreamToStringAsync(result, false);
-
-			Assert.AreEqual(0, result.Length);
+			await exifTool.WriteTagsAndRenameThumbnailAsync("test.jpg", null, "");
 		}
-
-		[TestMethod]
-		public async Task WriteTagsAndRenameThumbnailAsync_Disposed()
+		catch ( ObjectDisposedException e )
 		{
-			var storage =
-				new FakeIStorage(new ObjectDisposedException("disposed"));
-
-			var exifTool = new ExifTool(storage,
-				storage,
-				new AppSettings(), new FakeIWebLogger());
-
-			var exceptionMessage = string.Empty;
-			try
-			{
-				await exifTool.WriteTagsAndRenameThumbnailAsync("test.jpg", null, "");
-			}
-			catch ( ObjectDisposedException e )
-			{
-				// Expected
-				exceptionMessage = e.Message;
-			}
-
-			Assert.IsTrue(exceptionMessage.StartsWith("Cannot access a disposed object."));
-			Assert.IsTrue(exceptionMessage.EndsWith("Object name: 'disposed'."));
-
-			Assert.AreEqual(1, storage.ExceptionCount);
+			// Expected
+			exceptionMessage = e.Message;
 		}
+
+		Assert.IsTrue(exceptionMessage.StartsWith("Cannot access a disposed object."));
+		Assert.IsTrue(exceptionMessage.EndsWith("Object name: 'disposed'."));
+
+		Assert.AreEqual(1, storage.ExceptionCount);
 	}
 }

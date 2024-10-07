@@ -1,4 +1,4 @@
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { IArchive, newIArchive } from "../interfaces/IArchive";
 import { IDetailView, IRelativeObjects, PageType } from "../interfaces/IDetailView";
 import { newIFileIndexItem, newIFileIndexItemArray } from "../interfaces/IFileIndexItem";
@@ -145,7 +145,7 @@ describe("UseFileList", () => {
           return { ...newIArchive(), dateCache: Date.now() };
         });
 
-      hook.fetchUseFileListContentCache(
+      await hook.fetchUseFileListContentCache(
         "location",
         "location",
         new AbortController(),
@@ -168,7 +168,7 @@ describe("UseFileList", () => {
 
       setFetchSpy(200, PageType.Archive);
 
-      hook.fetchUseFileListContentCache(
+      await hook.fetchUseFileListContentCache(
         "location",
         "location",
         new AbortController(),

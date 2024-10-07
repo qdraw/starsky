@@ -84,15 +84,15 @@ namespace starsky.feature.webhtmlpublish.Services
 				}
 
 				if ( profile.ContentType == TemplateContentType.Html
-				     && !new ParseRazor(_hostStorage, _logger).Exist(profile.Template) )
+					 && !new ParseRazor(_hostStorage, _logger).Exist(profile.Template) )
 				{
 					errors.Add($"View Path {profile.Template} should exists");
 					continue;
 				}
 
 				if ( !_hostStorage.ExistFile(profile.Path) && (
-					    profile.ContentType == TemplateContentType.Jpeg
-					    || profile.ContentType == TemplateContentType.OnlyFirstJpeg ) )
+						profile.ContentType == TemplateContentType.Jpeg
+						|| profile.ContentType == TemplateContentType.OnlyFirstJpeg ) )
 				{
 					errors.Add($"Image Path {profile.Path} should exists");
 				}
@@ -134,12 +134,15 @@ namespace starsky.feature.webhtmlpublish.Services
 		public string GetNameConsole(string inputPath, IReadOnlyList<string> args)
 		{
 			var name = ArgsHelper.GetName(args);
-			if ( !string.IsNullOrWhiteSpace(name) ) return name;
+			if ( !string.IsNullOrWhiteSpace(name) )
+			{
+				return name;
+			}
 
 			var suggestedInput = Path.GetFileName(inputPath);
 
 			_console.WriteLine("\nWhat is the name of the item? (for: " + suggestedInput +
-			                   " press Enter)\n ");
+							   " press Enter)\n ");
 			name = _console.ReadLine();
 
 			if ( string.IsNullOrEmpty(name) )

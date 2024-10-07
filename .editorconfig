@@ -37,15 +37,28 @@ trim_trailing_whitespace = true
 tab_width = 4
 # New line preferences
 csharp_new_line_before_open_brace = all
+csharp_new_line_before_open_brace_for_methods = true
+csharp_new_line_before_open_brace_for_control_blocks = true
+csharp_preserve_single_line_statements = false
+csharp_style_allow_embedded_statements_on_same_line_experimental = false
 csharp_new_line_before_else = true
 csharp_new_line_before_catch = true
 csharp_new_line_before_finally = true
 csharp_new_line_before_members_in_object_initializers = true
 csharp_new_line_before_members_in_anonymous_types = true
+csharp_new_line_between_query_expression_clauses = true
 csharp_new_line_within_query_expression_clauses = true
 csharp_wrap_before_eq = false
 place_attribute_on_same_line = "never"
 # csharp_style_namespace_declarations = file_scoped:warning
+
+# https://dotnettips.wordpress.com/2023/06/27/microsoft-net-code-analysis-always-add-braces-in-c/
+dotnet_diagnostic.IDE0011.severity = warning
+csharp_prefer_braces = true:error
+dotnet_diagnostic.SA1500.severity = warning
+dotnet_diagnostic.SA1503.severity = warning
+dotnet_diagnostic.SA1520.severity = warning
+
 
 # Indentation preferences
 csharp_indent_block_contents = true
@@ -53,6 +66,8 @@ csharp_indent_braces = false
 csharp_indent_case_contents = true
 csharp_indent_switch_labels = true
 csharp_indent_labels = one_less_than_current
+csharp_indent_case_contents_when_block = false
+csharp_space_after_cast = true
 
 # Prefer "var" everywhere
 csharp_style_var_for_built_in_types = true:suggestion

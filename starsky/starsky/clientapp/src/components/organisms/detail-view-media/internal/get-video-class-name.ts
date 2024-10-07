@@ -1,3 +1,4 @@
+// ignore: Provide multiple methods instead of using "isPaused" to determine which action to take.
 export function GetVideoClassName(isPaused: boolean, isStarted: boolean): string {
   if (isPaused) {
     if (isStarted) {

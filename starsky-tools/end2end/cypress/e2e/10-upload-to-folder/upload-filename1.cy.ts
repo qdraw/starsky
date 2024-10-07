@@ -1,4 +1,4 @@
-export function uploadFileName1 (url: string, fileName1: string, check = true) {
+export function uploadFileName1 (url: string, fileName1: string) {
   cy.visit(url)
 
   cy.get('.item.item--more').click()

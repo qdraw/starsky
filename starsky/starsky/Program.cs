@@ -14,7 +14,7 @@ namespace starsky
 	public static class Program
 	{
 		[SuppressMessage("Usage", "S6603: The collection-specific TrueForAll " +
-		                          "method should be used instead of the All extension")]
+								  "method should be used instead of the All extension")]
 		public static async Task Main(string[] args)
 		{
 			var appSettingsPath = Path.Join(
@@ -66,7 +66,7 @@ namespace starsky
 			builder.WebHost.ConfigureKestrel(k =>
 			{
 				k.Limits.MaxRequestLineSize = 65536; //64Kb
-				// AddServerHeader removes the header: Server: Kestrel
+													 // AddServerHeader removes the header: Server: Kestrel
 				k.AddServerHeader = false;
 			});
 

@@ -39,7 +39,10 @@ namespace starsky.foundation.writemeta.Services
 		/// <param name="xmpPath">location</param>
 		public void XmpCreate(string xmpPath)
 		{
-			if ( _iStorage.ExistFile(xmpPath) ) return;
+			if ( _iStorage.ExistFile(xmpPath) )
+			{
+				return;
+			}
 
 			var plainTextStream = StringToStreamHelper.StringToStream(XmpStartContent);
 			// dispose in WriteStream
@@ -54,13 +57,19 @@ namespace starsky.foundation.writemeta.Services
 		public async Task<string> XmpSync(string subPath)
 		{
 			// only for raw files
-			if ( !ExtensionRolesHelper.IsExtensionForceXmp(subPath) ) return subPath;
+			if ( !ExtensionRolesHelper.IsExtensionForceXmp(subPath) )
+			{
+				return subPath;
+			}
 
 			var withXmp = ExtensionRolesHelper.ReplaceExtensionWithXmp(subPath);
 
 			// only for files that not exist yet
 			if ( _iStorage.IsFolderOrFile(withXmp) !=
-			     FolderOrFileModel.FolderOrFileTypeList.Deleted ) return withXmp;
+				 FolderOrFileModel.FolderOrFileTypeList.Deleted )
+			{
+				return withXmp;
+			}
 
 			XmpCreate(withXmp);
 

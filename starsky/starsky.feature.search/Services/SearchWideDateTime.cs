@@ -112,7 +112,10 @@ namespace starsky.feature.search.Services
 			// Searching for entire day
 			if ( model.SearchForOptions[indexer] != SearchViewModel.SearchForOptionType.Equal ||
 				 dateTime.Hour != 0 || dateTime.Minute != 0 || dateTime.Second != 0 ||
-				 dateTime.Millisecond != 0 ) return;
+				 dateTime.Millisecond != 0 )
+			{
+				return;
+			}
 
 			model.SearchForOptions[indexer] = SearchViewModel.SearchForOptionType.GreaterThen;
 			model.SearchForOptions.Add(SearchViewModel.SearchForOptionType.LessThen);

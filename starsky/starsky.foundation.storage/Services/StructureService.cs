@@ -52,8 +52,12 @@ namespace starsky.foundation.storage.Services
 		public string? ParseSubfolders(int? getSubPathRelative, string fileNameBase = "",
 			string extensionWithoutDot = "")
 		{
-			if ( getSubPathRelative == null ) return null;
-			var dateTime = DateTime.Now.AddDays(( double )getSubPathRelative);
+			if ( getSubPathRelative == null )
+			{
+				return null;
+			}
+
+			var dateTime = DateTime.Now.AddDays(( double ) getSubPathRelative);
 			return ParseSubfolders(dateTime, fileNameBase, extensionWithoutDot);
 		}
 
@@ -127,7 +131,9 @@ namespace starsky.foundation.storage.Services
 		{
 			var matchDirectFolderName = RemoveAsteriskFromString(currentChildFolderBuilder);
 			if ( matchDirectFolderName != "/" && p == parentFolderBuilder + matchDirectFolderName )
+			{
 				return true;
+			}
 
 			var matchRegex = new Regex(
 				parentFolderBuilder + currentChildFolderBuilder.ToString().Replace("*", ".+"),
@@ -191,8 +197,8 @@ namespace starsky.foundation.storage.Services
 		private void CheckStructureFormat()
 		{
 			if ( !string.IsNullOrEmpty(_structure) &&
-			     _structure.StartsWith('/') && _structure.EndsWith(".ext") &&
-			     _structure != "/.ext" )
+				 _structure.StartsWith('/') && _structure.EndsWith(".ext") &&
+				 _structure != "/.ext" )
 			{
 				return;
 			}
@@ -226,7 +232,10 @@ namespace starsky.foundation.storage.Services
 			var parsedStructuredList = new List<List<StructureRange>>();
 			foreach ( var structureItem in structureList )
 			{
-				if ( string.IsNullOrWhiteSpace(structureItem) ) continue;
+				if ( string.IsNullOrWhiteSpace(structureItem) )
+				{
+					continue;
+				}
 
 				var matchCollection = new
 						Regex(DateRegexPattern + "|{filenamebase}|\\*|.ext|.",
@@ -271,7 +280,7 @@ namespace starsky.foundation.storage.Services
 			{
 				// Ignore escaped items
 				if ( !match.Value.StartsWith('\\') && match.Index == 0 &&
-				     match.Length == pattern.Length )
+					 match.Length == pattern.Length )
 				{
 					return dateTime.ToString(pattern, CultureInfo.InvariantCulture);
 				}

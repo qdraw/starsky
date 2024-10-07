@@ -276,6 +276,7 @@ public sealed class AppSettings
 		get
 		{
 			if ( string.IsNullOrEmpty(_structure) )
+			{
 				//   - dd 	            The day of the month, from 01 through 31.
 				//   - MM 	            The month, from 01 through 12.
 				//   - yyyy 	        The year as a four-digit number.
@@ -291,12 +292,17 @@ public sealed class AppSettings
 				//   - *starksy*        Match the folder match that contains the word 'starksy'
 				//    Please update /starskyimportercli/readme.md when this changes
 				return "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_{filenamebase}.ext";
+			}
 
 			return _structure;
 		}
 		set // using Json importer
 		{
-			if ( string.IsNullOrEmpty(value) || value == "/" ) return;
+			if ( string.IsNullOrEmpty(value) || value == "/" )
+			{
+				return;
+			}
+
 			var structure = PathHelper.PrefixDbSlash(value);
 			_structure = PathHelper.RemoveLatestBackslash(structure);
 			// Structure regex check
@@ -312,7 +318,11 @@ public sealed class AppSettings
 	{
 		get
 		{
-			if ( CameraTimeZoneInfo == null ) return string.Empty;
+			if ( CameraTimeZoneInfo == null )
+			{
+				return string.Empty;
+			}
+
 			return CameraTimeZoneInfo.Id;
 		}
 		set => CameraTimeZoneInfo = ConvertTimeZoneId(value);
@@ -395,7 +405,10 @@ public sealed class AppSettings
 			: ExifToolPathPrivate;
 		set
 		{
-			if ( value != ExifToolPathDefaultPrivate ) ExifToolPathPrivate = value;
+			if ( value != ExifToolPathDefaultPrivate )
+			{
+				ExifToolPathPrivate = value;
+			}
 		}
 	}
 
@@ -462,19 +475,29 @@ public sealed class AppSettings
 	{
 		get
 		{
-			if ( string.IsNullOrEmpty(_webFtp) ) return string.Empty;
+			if ( string.IsNullOrEmpty(_webFtp) )
+			{
+				return string.Empty;
+			}
+
 			return _webFtp;
 		}
 		set
 		{
 			// Anonymous FTP is not supported
 			// Make sure that '@' in username is '%40'
-			if ( string.IsNullOrEmpty(value) ) return;
+			if ( string.IsNullOrEmpty(value) )
+			{
+				return;
+			}
+
 			var uriAddress = new Uri(value);
 			if ( uriAddress.UserInfo.Split(":".ToCharArray()).Length == 2
-			     && uriAddress.Scheme == "ftp"
-			     && uriAddress.LocalPath.Length >= 1 )
+				 && uriAddress.Scheme == "ftp"
+				 && uriAddress.LocalPath.Length >= 1 )
+			{
 				_webFtp = value;
+			}
 		}
 	}
 
@@ -497,7 +520,11 @@ public sealed class AppSettings
 		get => PublishProfilesPrivate;
 		set
 		{
-			if ( value == null ) return;
+			if ( value == null )
+			{
+				return;
+			}
+
 			PublishProfilesPrivate = value.OrderBy(obj => obj.Key)
 				.ToDictionary(obj => obj.Key,
 					obj => obj.Value);
@@ -534,7 +561,8 @@ public sealed class AppSettings
 	///     Value for AccountRolesDefaultByEmailRegisterOverwrite
 	/// </summary>
 	private Dictionary<string, string>
-		AccountRolesByEmailRegisterOverwritePrivate { get; } =
+		AccountRolesByEmailRegisterOverwritePrivate
+	{ get; } =
 		new();
 
 	/// <summary>
@@ -550,11 +578,17 @@ public sealed class AppSettings
 		get => AccountRolesByEmailRegisterOverwritePrivate;
 		init
 		{
-			if ( value == null ) return;
+			if ( value == null )
+			{
+				return;
+			}
+
 			foreach ( var singleValue in value.Where(singleValue =>
-				         AccountRoles.GetAllRoles().Contains(singleValue.Value)) )
+						 AccountRoles.GetAllRoles().Contains(singleValue.Value)) )
+			{
 				AccountRolesByEmailRegisterOverwritePrivate.TryAdd(
 					singleValue.Key, singleValue.Value);
+			}
 		}
 	}
 
@@ -748,20 +782,32 @@ public sealed class AppSettings
 	private void CreateDefaultFolders()
 	{
 		if ( !Directory.Exists(BaseDirectoryProject) )
+		{
 			Directory.CreateDirectory(BaseDirectoryProject);
+		}
 
 		// Cache for thumbs
 		if ( !Directory.Exists(ThumbnailTempFolder) )
+		{
 			Directory.CreateDirectory(ThumbnailTempFolder);
+		}
 
 		// default location to store source images. you should change this
-		if ( !Directory.Exists(StorageFolder) ) Directory.CreateDirectory(StorageFolder);
+		if ( !Directory.Exists(StorageFolder) )
+		{
+			Directory.CreateDirectory(StorageFolder);
+		}
 
 		// may be cleaned after restart (not implemented)
-		if ( !Directory.Exists(TempFolder) ) Directory.CreateDirectory(TempFolder);
+		if ( !Directory.Exists(TempFolder) )
+		{
+			Directory.CreateDirectory(TempFolder);
+		}
 
 		if ( !Directory.Exists(DependenciesFolder) )
+		{
 			Directory.CreateDirectory(DependenciesFolder);
+		}
 	}
 
 	public bool IsVerbose()
@@ -779,7 +825,10 @@ public sealed class AppSettings
 
 	internal static TimeZoneInfo ConvertTimeZoneId(string value)
 	{
-		if ( string.IsNullOrEmpty(value) ) return TimeZoneInfo.Local;
+		if ( string.IsNullOrEmpty(value) )
+		{
+			return TimeZoneInfo.Local;
+		}
 
 		// when windows 2019 is more common: TimeZoneInfo FindSystemTimeZoneById
 		// Windows 10 May 2019 https://learn.microsoft.com/en-us/dotnet/core/extensions/globalization-icu
@@ -794,7 +843,9 @@ public sealed class AppSettings
 	public static void StructureCheck(string? structure)
 	{
 		if ( string.IsNullOrEmpty(structure) )
+		{
 			throw new ArgumentNullException(structure, "(StructureCheck) Structure is empty");
+		}
 
 		// Unescaped regex:
 		//      ^(\/.+)?\/([\/_ A-Z0-9*{}\.\\-]+(?=\.ext))\.ext$
@@ -803,10 +854,13 @@ public sealed class AppSettings
 			"^(\\/.+)?\\/([\\/_ A-Z0-9*{}\\.\\\\-]+(?=\\.ext))\\.ext$",
 			RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(300));
 
-		if ( structureRegex.Match(structure).Success ) return;
+		if ( structureRegex.Match(structure).Success )
+		{
+			return;
+		}
 
 		throw new ArgumentException("(StructureCheck) Structure is not confirm regex - " +
-		                            structure);
+									structure);
 	}
 
 	private string GetDefaultExifToolPath()
@@ -823,7 +877,10 @@ public sealed class AppSettings
 	/// <returns>true = don't edit</returns>
 	public bool IsReadOnly(string f)
 	{
-		if ( ReadOnlyFolders.Count == 0 ) return false;
+		if ( ReadOnlyFolders.Count == 0 )
+		{
+			return false;
+		}
 
 		var result = ReadOnlyFolders.Find(f.Contains);
 		return result != null;
@@ -852,28 +909,43 @@ public sealed class AppSettings
 			Environment.SpecialFolder.UserProfile); // can be null on azure webapp
 
 		var appSettings = this.CloneViaJson();
-		if ( appSettings == null ) return new AppSettings();
+		if ( appSettings == null )
+		{
+			return new AppSettings();
+		}
 
 		if ( appSettings.DatabaseType != DatabaseTypeList.Sqlite )
+		{
 			appSettings.DatabaseConnection = CloneToDisplaySecurityWarning;
+		}
 
 		if ( appSettings.DatabaseType == DatabaseTypeList.Sqlite &&
-		     !string.IsNullOrEmpty(userProfileFolder) )
+			 !string.IsNullOrEmpty(userProfileFolder) )
+		{
 			appSettings.DatabaseConnection =
 				appSettings.DatabaseConnection.Replace(userProfileFolder, "~");
+		}
 
 		if ( !string.IsNullOrEmpty(appSettings.WebFtp) )
+		{
 			appSettings._webFtp = CloneToDisplaySecurityWarning;
+		}
 
 		if ( !string.IsNullOrEmpty(appSettings.AppSettingsPath) &&
-		     !string.IsNullOrEmpty(userProfileFolder) )
+			 !string.IsNullOrEmpty(userProfileFolder) )
+		{
 			appSettings.AppSettingsPath =
 				appSettings.AppSettingsPath.Replace(userProfileFolder, "~");
+		}
 
 		if ( appSettings.PublishProfiles != null )
+		{
 			foreach ( var value in appSettings.PublishProfiles.SelectMany(profile =>
-				         profile.Value) )
+						 profile.Value) )
+			{
 				ReplaceAppSettingsPublishProfilesCloneToDisplay(value);
+			}
+		}
 
 		ReplaceOpenTelemetryData(appSettings);
 
@@ -882,34 +954,53 @@ public sealed class AppSettings
 
 	private static void ReplaceOpenTelemetryData(AppSettings appSettings)
 	{
-		if ( appSettings.OpenTelemetry == null ) return;
+		if ( appSettings.OpenTelemetry == null )
+		{
+			return;
+		}
 
 		if ( !string.IsNullOrEmpty(appSettings.OpenTelemetry.Header) )
+		{
 			appSettings.OpenTelemetry.Header =
 				CloneToDisplaySecurityWarning;
+		}
 
 		if ( !string.IsNullOrEmpty(appSettings.OpenTelemetry.MetricsHeader) )
+		{
 			appSettings.OpenTelemetry.MetricsHeader =
 				CloneToDisplaySecurityWarning;
+		}
 
 		if ( !string.IsNullOrEmpty(appSettings.OpenTelemetry.LogsHeader) )
+		{
 			appSettings.OpenTelemetry.LogsHeader =
 				CloneToDisplaySecurityWarning;
+		}
 
 		if ( !string.IsNullOrEmpty(appSettings.OpenTelemetry.TracesHeader) )
+		{
 			appSettings.OpenTelemetry.TracesHeader =
 				CloneToDisplaySecurityWarning;
+		}
 	}
 
 	private static void ReplaceAppSettingsPublishProfilesCloneToDisplay(
 		AppSettingsPublishProfiles value)
 	{
 		if ( !string.IsNullOrEmpty(value.Path) &&
-		     value.Path != AppSettingsPublishProfiles.GetDefaultPath() )
+			 value.Path != AppSettingsPublishProfiles.GetDefaultPath() )
+		{
 			value.Path = CloneToDisplaySecurityWarning;
-		else if ( value.Path == AppSettingsPublishProfiles.GetDefaultPath() ) value.ResetPath();
+		}
+		else if ( value.Path == AppSettingsPublishProfiles.GetDefaultPath() )
+		{
+			value.ResetPath();
+		}
 
-		if ( !string.IsNullOrEmpty(value.Prepend) ) value.Prepend = CloneToDisplaySecurityWarning;
+		if ( !string.IsNullOrEmpty(value.Prepend) )
+		{
+			value.Prepend = CloneToDisplaySecurityWarning;
+		}
 	}
 
 	/// <summary>
@@ -956,7 +1047,10 @@ public sealed class AppSettings
 	/// <returns>replaced output</returns>
 	private string _pathToDatabaseStyle(string subPath)
 	{
-		if ( Path.DirectorySeparatorChar.ToString() == "\\" ) subPath = subPath.Replace("\\", "/");
+		if ( Path.DirectorySeparatorChar.ToString() == "\\" )
+		{
+			subPath = subPath.Replace("\\", "/");
+		}
 
 		return subPath;
 	}
@@ -968,7 +1062,10 @@ public sealed class AppSettings
 	/// <returns>replaced output</returns>
 	private string _pathToFilePathStyle(string subPath)
 	{
-		if ( Path.DirectorySeparatorChar.ToString() == "\\" ) subPath = subPath.Replace("/", "\\");
+		if ( Path.DirectorySeparatorChar.ToString() == "\\" )
+		{
+			subPath = subPath.Replace("/", "\\");
+		}
 
 		return subPath;
 	}
@@ -994,7 +1091,11 @@ public sealed class AppSettings
 	/// <returns>the value or the input when nothing is found</returns>
 	internal static string ReplaceEnvironmentVariable(string input)
 	{
-		if ( string.IsNullOrEmpty(input) || !input.StartsWith('$') ) return input;
+		if ( string.IsNullOrEmpty(input) || !input.StartsWith('$') )
+		{
+			return input;
+		}
+
 		var value = Environment.GetEnvironmentVariable(input.Remove(0, 1));
 		return string.IsNullOrEmpty(value) ? input : value;
 	}
@@ -1012,28 +1113,43 @@ public sealed class AppSettings
 	public string SqLiteFullPath(string connectionString, string baseDirectoryProject)
 	{
 		if ( DatabaseType == DatabaseTypeList.Mysql &&
-		     string.IsNullOrWhiteSpace(connectionString) )
+			 string.IsNullOrWhiteSpace(connectionString) )
+		{
 			throw new ArgumentException("The 'DatabaseConnection' field is null or empty");
+		}
 
 		if ( DatabaseType != DatabaseTypeList.Sqlite )
+		{
 			return connectionString; // mysql does not need this
-		if ( IsVerbose() ) Console.WriteLine(connectionString);
+		}
+
+		if ( IsVerbose() )
+		{
+			Console.WriteLine(connectionString);
+		}
 
 		if ( !connectionString.Contains("Data Source=") )
+		{
 			throw
 				new ArgumentException("missing Data Source in connection string");
+		}
 
 		var databaseFileName = connectionString.Replace("Data Source=", "");
 
 		// Check if path is not absolute already
 		if ( databaseFileName.Contains('/') || databaseFileName.Contains('\\') )
+		{
 			return connectionString;
+		}
 
 		// Return if running in Microsoft.EntityFrameworkCore.Sqlite (location is now root folder)
-		if ( baseDirectoryProject.Contains("entityframeworkcore") ) return connectionString;
+		if ( baseDirectoryProject.Contains("entityframeworkcore") )
+		{
+			return connectionString;
+		}
 
 		var dataSource = "Data Source=" + baseDirectoryProject +
-		                 Path.DirectorySeparatorChar + databaseFileName;
+						 Path.DirectorySeparatorChar + databaseFileName;
 		return dataSource;
 	}
 
@@ -1062,8 +1178,10 @@ public sealed class AppSettings
 			var destinationProperty = destinationType.GetProperty(sourceProperty.Name);
 
 			if ( destinationProperty == null ||
-			     !destinationProperty.CanWrite )
+				 !destinationProperty.CanWrite )
+			{
 				continue;
+			}
 
 			var value = sourceProperty.GetValue(source);
 			destinationProperty.SetValue(destination, value);
