@@ -201,6 +201,11 @@ jobs:
         working-directory: ./starsky-tools/build-tools
         run: npm run release-version-check
 
+      - name: Use node version
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
       - name: NpmCi
         working-directory: ./starskydesktop
         run: npm ci
