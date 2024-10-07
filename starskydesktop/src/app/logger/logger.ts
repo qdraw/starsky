@@ -11,20 +11,20 @@ const winstonLogger = winston.createLogger({
   defaultMeta: { service: "app" },
   transports: [
     new winston.transports.Console({
-      level: "info"
+      level: "info",
     }),
     new winston.transports.Console({
-      level: "warn"
+      level: "warn",
     }),
     new winston.transports.File({
       dirname: path.join(electronCacheLocation(), "logs"),
-      filename: `${today}_app_combined.log`
-    })
-  ]
+      filename: `${today}_app_combined.log`,
+    }),
+  ],
 });
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-class logger {
+class Logger {
   static info(message: unknown, ...meta: unknown[]) {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
@@ -46,4 +46,4 @@ class logger {
   }
 }
 
-export default logger;
+export default Logger;

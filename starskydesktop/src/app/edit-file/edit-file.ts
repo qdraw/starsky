@@ -1,5 +1,6 @@
 import { BrowserWindow } from "electron";
-import { IFileIndexItem } from "src/shared/IFileindexItem";
+import { IDetailView } from "../../shared/IDetailView";
+import { IFileIndexItem } from "../../shared/IFileindexItem";
 import { GetBaseUrlFromSettings } from "../config/get-base-url-from-settings";
 import UrlQuery from "../config/url-query";
 import { createErrorWindow } from "../error-window/create-error-window";
@@ -48,7 +49,7 @@ export async function EditFile(fromMainWindow: BrowserWindow) {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-explicit-any
-  const fileIndexItem = (result.data as any).fileIndexItem as IFileIndexItem;
+  const fileIndexItem = (result.data as unknown as IDetailView).fileIndexItem as IFileIndexItem;
 
   await createParentFolders(fileIndexItem.parentDirectory);
 
