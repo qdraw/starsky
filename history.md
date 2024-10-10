@@ -51,6 +51,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Back-end_ Fixed models for replace (PR #1740)
 - [x] (Changed) _Tools_ Update cypress and eslint to 9 (PR #1740)
 - [x] (Changed) _Front-end_ Make more properties readonly for internal security (PR #1740)
+- [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.403 (Runtime: 8.0.10) (PR #1751)
 
 ## version 0.6.1 - 2024-05-16 {#v0.6.1}
 
