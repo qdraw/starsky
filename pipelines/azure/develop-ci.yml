@@ -61,7 +61,7 @@ stages:
     timeoutInMinutes: 35 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 10 # how much time to give 'run always even if cancelled tasks' before stopping them
     pool:
-      vmImage: 'ubuntu-22.04'
+      vmImage: 'ubuntu-24.04'
       demands:
       - msbuild
       - java
