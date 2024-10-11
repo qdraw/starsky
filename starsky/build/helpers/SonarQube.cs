@@ -200,7 +200,11 @@ public static class SonarQube
 		var githubPrNumber = EnvironmentVariable("PR_NUMBER_GITHUB");
 		var githubBaseBranch = EnvironmentVariable("GITHUB_BASE_REF");
 		var githubRepoSlug = EnvironmentVariable("GITHUB_REPOSITORY");
-
+		
+		// todo REMOVE!!!!!!!!!
+		branchName = DefaultBranchName;
+		isPrBuild = false;
+		
 		Information($">> Selecting Branch: {branchName}");
 
 		var sonarQubeCoverageFile =
