@@ -206,6 +206,7 @@ public static class SonarQube
 		var sonarQubeCoverageFile =
 			Path.Combine(WorkingDirectory.GetSolutionParentFolder(), coverageFile);
 		Information(">> SonarQubeCoverageFile: " + sonarQubeCoverageFile);
+		Information(">> GetSolutionParentFolder: " + WorkingDirectory.GetSolutionParentFolder());
 
 		var sonarArguments = new StringBuilder()
 			.Append("sonarscanner ")
@@ -214,6 +215,7 @@ public static class SonarQube
 			.Append($"/d:sonar.host.url={url} ")
 			.Append($"/k:{GetSonarKey()} ")
 			.Append("/n:Starsky ")
+			.Append($"/d:sonar.projectBaseDir={WorkingDirectory.GetSolutionParentFolder()} ")
 			.Append($"/d:sonar.token={sonarToken} ")
 			.Append("/o:" + organisation + " ")
 			.Append($"/d:sonar.typescript.tsconfigPath={tsconfig} ")
