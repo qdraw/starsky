@@ -28,138 +28,37 @@ namespace build;
 [ShutdownDotNetAfterServerBuild]
 public sealed class Build : NukeBuild
 {
-	/// Support plugins are available for:
-	///   - JetBrains ReSharper        https://nuke.build/resharper
-	///   - JetBrains Rider            https://nuke.build/rider
-	///   - Microsoft VisualStudio     https://nuke.build/visualstudio
-	///   - Microsoft VSCode           https://nuke.build/vscode
-	public static int Main() => Execute<Build>(x => x.Compile);
-
-	// Use `--target BuildNetCoreRuntimeSpecific --skip TASK` parameter to run only this task 
-
-	[Parameter(
-		"Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
-	readonly Configuration Configuration = Configuration.Release;
-
 	public const string GenericRuntimeName = "generic-netcore";
 
-	[Parameter("Runtime arg")] readonly string Runtime = GenericRuntimeName;
-
-	[Parameter("Is SonarQube Disabled")] readonly bool NoSonar;
-
-	[Parameter(
-		"Is Unit Test Disabled (same as NoUnitTest, NoUnitTests, NoTest and NoTests)")]
-	readonly bool NoUnitTest;
-
-	[Parameter(
-		"Is Unit Test Disabled (same as NoUnitTest, NoUnitTests, NoTest and NoTests)")]
-	readonly bool NoUnitTests;
-
-	[Parameter(
-		"Is Unit Test Disabled (same as NoUnitTest, NoUnitTests, NoTest and NoTests)")]
-	readonly bool NoTest;
-
-	[Parameter(
-		"Is Unit Test Disabled (same as NoUnitTest, NoUnitTests, NoTest and NoTests)")]
-	readonly bool NoTests;
-
-	[Parameter("Skip clientside code")] readonly bool NoClient;
+	/// <summary>
+	///     Link to GeoCli.csproj
+	/// </summary>
+	const string GeoCliCsproj = "starskygeocli/starskygeocli.csproj";
 
 	/// <summary>
-	/// --no-dependencies
-	/// Only applies for External dependencies
-	/// Nuget & NPM dependencies are always installed
+	///     Npm and node are required for preflight checks and building frontend code
 	/// </summary>
-	[Parameter("Skip Dependencies download e.g. exiftool / " +
-			   "geo data, nuget/npm deps are always installed")]
-	readonly bool NoDependencies;
+	public const string NpmBaseCommand = "npm";
 
 	/// <summary>
-	/// --no-unit-test, --no-unit-tests, --no-test, --no-tests
+	///     Node name
 	/// </summary>
-	/// <returns></returns>
-	bool IsUnitTestDisabled()
-	{
-		// --no-unit-test, --no-unit-tests, --no-test, --no-tests
-		return NoUnitTest || NoUnitTests || NoTest || NoTests;
-	}
+	public const string NodeBaseCommand = "node";
 
 	/// <summary>
-	/// --no-publish
+	///     Client App folder
 	/// </summary>
-	[Parameter("Skip Publish step")]
-	readonly bool NoPublish;
-
-	bool IsPublishDisabled()
-	{
-		// --no-publish
-		return NoPublish;
-	}
+	public const string ClientAppFolder = "starsky/clientapp";
 
 	/// <summary>
-	/// Overwrite Branch name
+	///     Java is only needed for SonarQube, skip sonarCube with the --no-sonar flag
 	/// </summary>
-	/// <returns>only if overwritten</returns>
-	[Parameter("Overwrite branch name")]
-	readonly string Branch = string.Empty;
+	public const string JavaBaseCommand = "java";
 
 	/// <summary>
-	/// Overwrite Branch name
+	///     List of output projects
 	/// </summary>
-	/// <returns>only if overwritten</returns>
-	string GetBranchName()
-	{
-		var branchName = Branch;
-		if ( !string.IsNullOrEmpty(branchName) &&
-			 branchName.StartsWith("refs/heads/") )
-		{
-			branchName = branchName.Replace("refs/heads/", "");
-		}
-
-		return branchName;
-	}
-
-	/// <summary>
-	/// Enable for Ready to run build
-	/// Only is combination is supported
-	/// @see: https://learn.microsoft.com/en-us/dotnet/core/deploying/ready-to-run
-	/// for build combinations, if not supported, it will auto skip
-	/// </summary>
-	/// <returns>true if explicit enabled</returns>
-	[Parameter("Enable Ready to run builds")]
-	readonly bool ReadyToRun;
-
-	/// <summary>
-	/// --ready-to-run
-	/// </summary>
-	/// <returns></returns>
-	bool IsReadyToRunEnabled()
-	{
-		return ReadyToRun;
-	}
-
-	/// <summary>
-	/// Only the OS specific runtimes, so skip generic-netcore
-	/// </summary>
-	/// <returns>Only OS specific runtimes</returns>
-	List<string> GetRuntimesWithoutGeneric()
-	{
-		return Runtime.Split(",",
-				StringSplitOptions.TrimEntries)
-			.Where(p => p != GenericRuntimeName)
-			.ToList();
-	}
-
-	/// <summary>
-	/// Solution .sln file
-	/// </summary>
-	[Solution(SuppressBuildProjectCheck = true)]
-	readonly Solution Solution = new();
-
-	/// <summary>
-	/// List of output projects
-	/// </summary>
-	public static readonly List<string> PublishProjectsList = new List<string>
+	public static readonly List<string> PublishProjectsList = new()
 	{
 		"starskyadmincli",
 		"starskygeocli",
@@ -173,38 +72,79 @@ public sealed class Build : NukeBuild
 	};
 
 	/// <summary>
-	/// If the project: '.NET ReadyToRun' is enabled for faster startup
-	/// Only if supported & feature flag is enabled
+	///     If the project: '.NET ReadyToRun' is enabled for faster startup
+	///     Only if supported & feature flag is enabled
 	/// </summary>
-	public static readonly List<string> ReadyToRunProjectsList = new List<string>
+	public static readonly List<string> ReadyToRunProjectsList = new()
 	{
 		"starsky", "starskyimportercli", "starskywebftpcli"
 	};
 
 	/// <summary>
-	/// Link to GeoCli.csproj
+	///     Overwrite Branch name
 	/// </summary>
-	const string GeoCliCsproj = "starskygeocli/starskygeocli.csproj";
+	/// <returns>only if overwritten</returns>
+	[Parameter("Overwrite branch name")]
+	readonly string Branch = string.Empty;
+
+	// Use `--target BuildNetCoreRuntimeSpecific --skip TASK` parameter to run only this task 
+
+	[Parameter(
+		"Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
+	readonly Configuration Configuration = Configuration.Release;
+
+	[Parameter("Skip clientside code")] readonly bool NoClient;
 
 	/// <summary>
-	/// Npm and node are required for preflight checks and building frontend code
+	///     --no-dependencies
+	///     Only applies for External dependencies
+	///     Nuget & NPM dependencies are always installed
 	/// </summary>
-	public const string NpmBaseCommand = "npm";
+	[Parameter("Skip Dependencies download e.g. exiftool / " +
+	           "geo data, nuget/npm deps are always installed")]
+	readonly bool NoDependencies;
 
 	/// <summary>
-	/// Node name
+	///     --no-publish
 	/// </summary>
-	public const string NodeBaseCommand = "node";
+	[Parameter("Skip Publish step")]
+	readonly bool NoPublish;
+
+	[Parameter("Is SonarQube Disabled")] readonly bool NoSonar;
+
+	[Parameter(
+		"Is Unit Test Disabled (same as NoUnitTest, NoUnitTests, NoTest and NoTests)")]
+	readonly bool NoTest;
+
+	[Parameter(
+		"Is Unit Test Disabled (same as NoUnitTest, NoUnitTests, NoTest and NoTests)")]
+	readonly bool NoTests;
+
+	[Parameter(
+		"Is Unit Test Disabled (same as NoUnitTest, NoUnitTests, NoTest and NoTests)")]
+	readonly bool NoUnitTest;
+
+	[Parameter(
+		"Is Unit Test Disabled (same as NoUnitTest, NoUnitTests, NoTest and NoTests)")]
+	readonly bool NoUnitTests;
 
 	/// <summary>
-	/// Client App folder
+	///     Enable for Ready to run build
+	///     Only is combination is supported
+	///     @see: https://learn.microsoft.com/en-us/dotnet/core/deploying/ready-to-run
+	///     for build combinations, if not supported, it will auto skip
 	/// </summary>
-	public const string ClientAppFolder = "starsky/clientapp";
+	/// <returns>true if explicit enabled</returns>
+	[Parameter("Enable Ready to run builds")]
+	readonly bool ReadyToRun;
+
+	[Parameter("Runtime arg")] readonly string Runtime = GenericRuntimeName;
 
 	/// <summary>
-	/// Java is only needed for SonarQube, skip sonarCube with the --no-sonar flag
+	///     Solution .sln file
 	/// </summary>
-	public const string JavaBaseCommand = "java";
+	[Solution(SuppressBuildProjectCheck = true)]
+	readonly Solution Solution = new();
 
 	Target Client => p => p
 		.Executes(() =>
@@ -234,66 +174,11 @@ public sealed class Build : NukeBuild
 			}
 		});
 
-	void ShowSettingsInfo()
-	{
-		Log.Information("---");
-		Log.Information("Settings:");
-
-		Log.Information(
-			$"Current RID: {RuntimeIdentifier.GetCurrentRuntimeIdentifier()}");
-
-		Log.Information("SolutionParentFolder: " +
-						WorkingDirectory.GetSolutionParentFolder());
-
-		Log.Information(NoClient
-			? "Client is: disabled"
-			: "Client is: enabled");
-
-		Log.Information(IsUnitTestDisabled()
-			? "Unit test: disabled"
-			: "Unit test: enabled");
-
-		Log.Information(IsPublishDisabled()
-			? "Publish: disabled"
-			: "Publish: enabled");
-
-		Log.Information(NoSonar ||
-						string.IsNullOrEmpty(SonarQube.GetSonarKey()) ||
-						string.IsNullOrEmpty(SonarQube.GetSonarToken())
-			? "Sonarcloud scan: disabled"
-			: "Sonarcloud scan: enabled");
-
-		Log.Information(NoDependencies
-			? "External dependencies: disabled"
-			: "External dependencies: enabled");
-
-		Log.Information(IsReadyToRunEnabled()
-			? "ReadyToRun faster startup: enabled"
-			: "ReadyToRun faster startup: disabled");
-
-		if ( !string.IsNullOrEmpty(GetBranchName()) )
-		{
-			Log.Information("(Overwrite) Branch:");
-			Log.Information(GetBranchName());
-		}
-
-		if ( GetRuntimesWithoutGeneric().Count != 0 )
-		{
-			Log.Information("(Set) Runtime:");
-			foreach ( var runtime in GetRuntimesWithoutGeneric() )
-			{
-				Log.Information($"- {runtime}");
-			}
-		}
-
-		Log.Information("---");
-	}
-
 	Target ShowSettingsInformation => p => p
 		.Executes(ShowSettingsInfo);
 
 	/// <summary>
-	/// Default Target
+	///     Default Target
 	/// </summary>
 	Target Compile => p => p
 		.DependsOn(ShowSettingsInformation)
@@ -418,7 +303,7 @@ public sealed class Build : NukeBuild
 		});
 
 	/// <summary>
-	/// Generates html coverage report
+	///     Generates html coverage report
 	/// </summary>
 	Target CoverageReport => p => p
 		.DependsOn(Client)
@@ -430,4 +315,110 @@ public sealed class Build : NukeBuild
 				CoverageReportHelper.GenerateHtml(IsUnitTestDisabled());
 			ZipperHelper.ZipHtmlCoverageReport(folder, IsUnitTestDisabled());
 		});
+
+	/// Support plugins are available for:
+	/// - JetBrains ReSharper        https://nuke.build/resharper
+	/// - JetBrains Rider            https://nuke.build/rider
+	/// - Microsoft VisualStudio     https://nuke.build/visualstudio
+	/// - Microsoft VSCode           https://nuke.build/vscode
+	public static int Main() => Execute<Build>(x => x.Compile);
+
+	/// <summary>
+	///     --no-unit-test, --no-unit-tests, --no-test, --no-tests
+	/// </summary>
+	/// <returns></returns>
+	bool IsUnitTestDisabled() =>
+		// --no-unit-test, --no-unit-tests, --no-test, --no-tests
+		NoUnitTest || NoUnitTests || NoTest || NoTests;
+
+	bool IsPublishDisabled() =>
+		// --no-publish
+		NoPublish;
+
+	/// <summary>
+	///     Overwrite Branch name
+	/// </summary>
+	/// <returns>only if overwritten</returns>
+	string GetBranchName()
+	{
+		var branchName = Branch;
+		if ( !string.IsNullOrEmpty(branchName) &&
+		     branchName.StartsWith("refs/heads/") )
+		{
+			branchName = branchName.Replace("refs/heads/", "");
+		}
+
+		return branchName;
+	}
+
+	/// <summary>
+	///     --ready-to-run
+	/// </summary>
+	/// <returns></returns>
+	bool IsReadyToRunEnabled() => ReadyToRun;
+
+	/// <summary>
+	///     Only the OS specific runtimes, so skip generic-netcore
+	/// </summary>
+	/// <returns>Only OS specific runtimes</returns>
+	List<string> GetRuntimesWithoutGeneric() =>
+		Runtime.Split(",",
+				StringSplitOptions.TrimEntries)
+			.Where(p => p != GenericRuntimeName)
+			.ToList();
+
+	void ShowSettingsInfo()
+	{
+		Log.Information("---");
+		Log.Information("Settings:");
+
+		Log.Information(
+			$"Current RID: {RuntimeIdentifier.GetCurrentRuntimeIdentifier()}");
+
+		Log.Information("SolutionParentFolder: " +
+		                WorkingDirectory.GetSolutionParentFolder());
+
+		Log.Information(NoClient
+			? "Client is: disabled"
+			: "Client is: enabled");
+
+		Log.Information(IsUnitTestDisabled()
+			? "Unit test: disabled"
+			: "Unit test: enabled");
+
+		Log.Information(IsPublishDisabled()
+			? "Publish: disabled"
+			: "Publish: enabled");
+
+		Log.Information(NoSonar ||
+		                string.IsNullOrEmpty(SonarQube.GetSonarKey()) ||
+		                string.IsNullOrEmpty(SonarQube.GetSonarToken())
+			? "Sonarcloud scan: disabled"
+			: "Sonarcloud scan: enabled");
+
+		Log.Information(NoDependencies
+			? "External dependencies: disabled"
+			: "External dependencies: enabled");
+
+		Log.Information(IsReadyToRunEnabled()
+			? "ReadyToRun faster startup: enabled"
+			: "ReadyToRun faster startup: disabled");
+
+		if ( !string.IsNullOrEmpty(GetBranchName()) )
+		{
+			Log.Information("(Overwrite) Branch:");
+			Log.Information(GetBranchName());
+		}
+
+		if ( GetRuntimesWithoutGeneric().Count != 0 )
+		{
+			Log.Information("(Set) Runtime:");
+			foreach ( var runtime in GetRuntimesWithoutGeneric() )
+			{
+				Log.Information($"- {runtime}");
+			}
+		}
+
+		Log.Information("---");
+	}
 }
