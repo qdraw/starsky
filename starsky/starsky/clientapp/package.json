@@ -35,7 +35,7 @@
     "@storybook/addon-interactions": "^8.3.0",
     "@storybook/addon-links": "^8.3.0",
     "@storybook/builder-vite": "^8.3.0",
-    "@storybook/react": "^8.3.0",
+    "@storybook/react": "^8.3.2",
     "@storybook/react-vite": "^8.3.0",
     "@testing-library/jest-dom": "^6.5.0",
     "@testing-library/react": "^14.3.1",
