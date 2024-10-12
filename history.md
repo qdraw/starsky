@@ -41,7 +41,10 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.6.2 - _(Unreleased)_ - 2024-08-?? {#v0.6.2}
+## version 0.6.3 - _(Unreleased)_ - 2024-08-?? {#v0.6.3}
+- nothing
+
+## version 0.6.2 - 2024-10-11 {#v0.6.2}
 
 - [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.302 (Runtime: 8.0.6) (PR #1601)
 - [x] (Changed) _Front-end_ Upgrade npm packages (PR #1603)
