@@ -3,12 +3,12 @@ import { IArchiveProps } from "../interfaces/IArchiveProps";
 import { URLPath } from "./url/url-path";
 
 export class Select {
-  private select: string[] | undefined = [];
-  private setSelect: React.Dispatch<React.SetStateAction<string[] | undefined>> = () => {
+  private readonly select: string[] | undefined = [];
+  private readonly setSelect: React.Dispatch<React.SetStateAction<string[] | undefined>> = () => {
     /* should do nothing */
   };
-  private history: IUseLocation = {} as IUseLocation;
-  private state: IArchiveProps;
+  private readonly history: IUseLocation = {} as IUseLocation;
+  private readonly state: IArchiveProps;
 
   constructor(
     select: string[] | undefined,

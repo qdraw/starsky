@@ -35,14 +35,14 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.0.401
+        dotnet-version: 8.0.403
         
     - name: Build (Windows)
       shell: pwsh
       working-directory: ./starsky
-      run: pwsh build.ps1 --Target BuildNetCore --no-sonar --no-dependencies --no-publish --skip --no-logo 
+      run: pwsh build.ps1 --Target BuildNetCore --no-sonar --no-dependencies --no-publish --no-logo 
       
     - name: Test (Windows)
       shell: pwsh
       working-directory: ./starsky
-      run: pwsh build.ps1 --Target TestNetCore --no-sonar --no-dependencies --no-publish --skip --no-logo
+      run: pwsh build.ps1 --Target TestNetCore --no-sonar --no-dependencies --no-publish --no-logo

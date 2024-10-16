@@ -22,7 +22,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.401
+          dotnet-version: 8.0.403
 
       - name: Build --no-unit-test linux-arm,linux-arm64,win-x64,osx-x64,linux-x64,osx-arm64 --ready-to-run
         shell: bash
@@ -200,6 +200,11 @@ jobs:
         shell: bash
         working-directory: ./starsky-tools/build-tools
         run: npm run release-version-check
+
+      - name: Use node version
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
 
       - name: NpmCi
         working-directory: ./starskydesktop

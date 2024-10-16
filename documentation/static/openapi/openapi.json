@@ -1,7 +1,7 @@
 {
   "info": {
     "title": "Starsky",
-    "version": "0.6.1.0",
+    "version": "0.6.2.0",
     "extensions": {}
   },
   "servers": [
@@ -12507,7 +12507,7 @@
               "properties": {},
               "additionalPropertiesAllowed": true,
               "enum": [],
-              "nullable": true,
+              "nullable": false,
               "deprecated": false,
               "extensions": {},
               "unresolvedReference": false
@@ -16529,5 +16529,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "F46BA9F9B32EB4D82CEF3BE9DC6D287E389C8E4AF71D6B93813013E7343A8749C9551D753797888C05F72C5C49458CBF54C886818FF66A161455BA62D002C15D"
+  "hashCode": "2EC0F8C7B075F2DEB8D78D50C8D03EA222ED981352DE2537CBB48E46B75750E338A656714942542494272CA3F06CA21DA53AA917339104961D8B8739DA4A0024"
 }

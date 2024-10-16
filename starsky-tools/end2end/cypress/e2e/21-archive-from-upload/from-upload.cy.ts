@@ -64,54 +64,6 @@ describe('Archive (from upload) (21)', () => {
     ).should('have.length', 1)
   })
 
-  it('test realtime update 2 websockets (21)', {
-    retries: { runMode: 4, openMode: 2 }
-  }, () => {
-    return new Cypress.Promise((resolve) => {
-
-      // skip this test currently for windows
-      
-      if (!config.isEnabled || Cypress.platform === 'win32') {
-        cy.log(`test skipped isEnabled: ${config.isEnabled} platform: ${Cypress.platform}` )
-        resolve();
-        return;
-      }
-
-      const sourceTags = 'tete de balacha, bergtop, mist, flaine'
-      const url = Cypress.config().baseUrl
-      const socketUrl =
-				url
-				  .replace(config.url, '')
-				  .replace('http://', 'ws://')
-				  .replace('https://', 'wss://') + config.realtime
-      const socket = new WebSocket(socketUrl)
-      const keyword = `realtime-update-test${Math.floor(Math.random() * 100)}`
-
-      socket.onmessage = function (message: any) {
-        if (
-          message.data.includes(keyword) &&
-					message.data.includes('/starsky-end2end-test/20200822_111408.jpg') &&
-					message.data.includes('"type":"MetaUpdate"')
-        ) {
-          resolve()
-        }
-      }
-
-      cy.request({
-        method: 'POST',
-        url: config.updateApi, // baseUrl is prepend to URL
-        form: true, // indicates the body should be form urlencoded and sets Content-Type: application/x-www-form-urlencoded headers
-        body: {
-          append: false,
-          collections: true,
-          tags: keyword,
-          f: '/starsky-end2end-test/20200822_111408.jpg'
-        }
-      })
-      resetAfterwards(sourceTags)
-    })
-  })
-
   it('test realtime update notification api 3 (21)', () => {
     if (!config.isEnabled) return
 
@@ -135,8 +87,9 @@ describe('Archive (from upload) (21)', () => {
       url: config.notificationApi as string
     }).then((response3) => {
       const notification = response3.body as [{ content: string }]
+      cy.log(notification[0].content)
 
-      const dataObjects: any[] = []
+      const dataObjects: string[] = []
       for (const item1 of notification) {
         if (
           item1.content.includes(keyword) &&
@@ -160,52 +113,53 @@ describe('Archive (from upload) (21)', () => {
     resetAfterwards(sourceTags)
   })
 
-  // test fails always
-  // xit('test realtime update (21)', {
-  //   retries: { runMode: 2, openMode: 2 }
-  // }, async () => {
-  //   if (!config.isEnabled) return
+  it('test realtime update 2 websockets (21)', {
+    retries: { runMode: 4, openMode: 2 }
+  }, () => {
+    return new Cypress.Promise((resolve) => {
 
-  //   await new Cypress.Promise((resolve) => {
-  //     if (!config.isEnabled) return
+      // skip this test currently for windows
+      
+      if (!config.isEnabled || Cypress.platform === 'win32') {
+        cy.log(`test skipped isEnabled: ${config.isEnabled} platform: ${Cypress.platform}` )
+        resolve();
+        return;
+      }
 
-  //     const sourceTags = 'tete de balacha, bergtop, mist, flaine'
-  //     const keyword = `realtime-update-test${Math.floor(Math.random() * 100)}`
+      const sourceTags = 'tete de balacha, bergtop, mist, flaine'
+      const url = Cypress.config().baseUrl
+      const socketUrl =
+				url
+				  .replace(config.url, '')
+				  .replace('http://', 'ws://')
+				  .replace('https://', 'wss://') + config.realtime
+      const socket = new WebSocket(socketUrl)
+      const keyword = `realtime-update-test${Math.floor(Math.random() * 100)}`
 
-  //     cy.window().should(({ window }) => {
-  //       window.document.body.addEventListener(
-  //         'USE_SOCKETS',
-  //         (dataItem: any) => {
-  //           console.log(dataItem.detail.data)
+      socket.onmessage = function (message: {data: string}) {
+        if (
+          message.data.includes(keyword) &&
+					message.data.includes('/starsky-end2end-test/20200822_111408.jpg') &&
+					message.data.includes('"type":"MetaUpdate"')
+        ) {
+          resolve()
+        }
+      }
 
-  //           for (const item1 of dataItem.detail.data) {
-  //             if (
-  //               item1.tags.includes(keyword) &&
-  // 							item1.filePath.includes(
-  // 							  '/starsky-end2end-test/20200822_111408.jpg'
-  // 							)
-  //             ) {
-  //               resolve()
-  //             }
-  //           }
-  //         }
-  //       )
-
-  //       cy.request({
-  //         method: 'POST',
-  //         url: config.updateApi, // baseUrl is prepend to URL
-  //         form: true, // indicates the body should be form urlencoded and sets Content-Type: application/x-www-form-urlencoded headers
-  //         body: {
-  //           append: false,
-  //           collections: true,
-  //           tags: keyword,
-  //           f: '/starsky-end2end-test/20200822_111408.jpg'
-  //         }
-  //       })
-  //       resetAfterwards(sourceTags)
-  //     })
-  //   })
-  // })
+      cy.request({
+        method: 'POST',
+        url: config.updateApi, // baseUrl is prepend to URL
+        form: true, // indicates the body should be form urlencoded and sets Content-Type: application/x-www-form-urlencoded headers
+        body: {
+          append: false,
+          collections: true,
+          tags: keyword,
+          f: '/starsky-end2end-test/20200822_111408.jpg'
+        }
+      })
+      resetAfterwards(sourceTags)
+    })
+  })
 
   function resetAfterwards (sourceTags: string): void {
     cy.log('next step: reset afterwards')

@@ -87,7 +87,7 @@ export function SpawnCleanMacOs(appStarskyPath: string, processPlatform: string)
       .then(() => {
         resolve(true);
       })
-      .catch((err) => {
+      .catch((err: Error) => {
         reject(err);
       });
   });

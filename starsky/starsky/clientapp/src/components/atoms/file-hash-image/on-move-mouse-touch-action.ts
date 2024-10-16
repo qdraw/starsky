@@ -1,9 +1,9 @@
 import { PositionObject } from "./pan-and-zoom-image";
 
 export class OnMoveMouseTouchAction {
-  private setPosition: React.Dispatch<React.SetStateAction<PositionObject>>;
-  private position: PositionObject;
-  private isPanning: boolean;
+  private readonly setPosition: React.Dispatch<React.SetStateAction<PositionObject>>;
+  private readonly position: PositionObject;
+  private readonly isPanning: boolean;
 
   constructor(
     isPanning: boolean,

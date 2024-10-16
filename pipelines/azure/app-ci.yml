@@ -44,7 +44,7 @@ stages:
   - job: buildnetcore
     displayName: 'Build .NET Core'
     pool:
-      vmImage: 'ubuntu-22.04'
+      vmImage: 'ubuntu-24.04'
 
     steps:
     - checkout: self
@@ -90,8 +90,8 @@ stages:
   - job: build
     displayName: 'Build Electron'
     pool:
-      vmImage: 'ubuntu-22.04'
-    container: electronuserland/builder:18-wine
+      vmImage: 'ubuntu-24.04'
+    container: electronuserland/builder:20-wine
     steps:
     - task: DownloadPipelineArtifact@2
       inputs:

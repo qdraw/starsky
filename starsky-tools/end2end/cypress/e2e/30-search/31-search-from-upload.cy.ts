@@ -1,6 +1,5 @@
 import { envName, envFolder } from '../../support/commands'
 import configFile from './config.json'
-import flow from './flow.json'
 const config = configFile[envFolder][envName]
 
 describe('Search -from upload (31)', () => {

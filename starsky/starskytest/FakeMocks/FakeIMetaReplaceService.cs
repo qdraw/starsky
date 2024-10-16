@@ -33,14 +33,15 @@ namespace starskytest.FakeMocks
 		[SuppressMessage("ReSharper", "CollectionNeverQueried.Global")] 
 		public List<FakeIMetaReplaceServiceData> Data { get; set; } = new List<FakeIMetaReplaceServiceData>();
 		
-		public Task<List<FileIndexItem>> Replace(string f, string fieldName, string search, string replace,
+		public Task<List<FileIndexItem>> Replace(string f, string fieldName, string search, string? replace,
 			bool collections)
 		{
-			Data.Add(new FakeIMetaReplaceServiceData{f = f,fieldName = fieldName, search = search, replace = replace});
+			var replaceItem = replace ?? string.Empty;
+			Data.Add(new FakeIMetaReplaceServiceData{f = f,fieldName = fieldName, search = search, replace = replaceItem});
 			
 			return Task.FromResult(MetaReplaceService.SearchAndReplace(
 				_input.Where(p => p.FilePath == f).ToList(), fieldName, search,
-				replace));
+				replaceItem));
 		}
 	}
 }

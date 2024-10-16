@@ -69,7 +69,7 @@ export function PostSingleFormData(
 }
 
 class ProcessResponse {
-  private endpoint: string;
+  private readonly endpoint: string;
 
   constructor(endpoint: string) {
     this.endpoint = endpoint;

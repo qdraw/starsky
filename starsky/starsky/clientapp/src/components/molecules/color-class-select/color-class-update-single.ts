@@ -7,15 +7,15 @@ import { Language, SupportedLanguages } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url/url-query";
 
 export class ColorClassUpdateSingle {
-  private isEnabled = false;
-  private setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  private filePath: string;
-  private collections: boolean;
-  private setIsError: (value: React.SetStateAction<string>) => void;
-  private language: SupportedLanguages;
-  private setCurrentColorClass: (value: React.SetStateAction<number | undefined>) => void;
-  private onToggle: (value: number) => void;
-  private clearAfter: boolean | undefined;
+  private readonly isEnabled: boolean = false;
+  private readonly setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  private readonly filePath: string;
+  private readonly collections: boolean;
+  private readonly setIsError: (value: React.SetStateAction<string>) => void;
+  private readonly language: SupportedLanguages;
+  private readonly setCurrentColorClass: (value: React.SetStateAction<number | undefined>) => void;
+  private readonly onToggle: (value: number) => void;
+  private readonly clearAfter: boolean | undefined;
 
   constructor(
     isEnabled: boolean,
