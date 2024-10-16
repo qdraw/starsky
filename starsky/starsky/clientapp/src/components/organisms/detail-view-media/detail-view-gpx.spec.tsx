@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import L from "leaflet";
+import { act } from "react";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { Coordinates } from "../../../shared/coordinates-position.types";
 import * as FetchXml from "../../../shared/fetch/fetch-xml";

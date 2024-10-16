@@ -19,6 +19,7 @@ STARSKYURL=http://localhost:5000
 
 ## Due Cookie protecion:
 
+Clear cookies first
 Before login visit http://localhost:4000/account/login
 This will set an valid X-XSRF-TOKEN:"CfDJ8Hx..." cookie
 and go back to http://localhost:4000
