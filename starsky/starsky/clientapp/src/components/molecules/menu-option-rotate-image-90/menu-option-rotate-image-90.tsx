@@ -2,7 +2,6 @@ import React, { Dispatch, memo } from "react";
 import { DetailViewAction } from "../../../contexts/detailview-context.tsx";
 import { IDetailView } from "../../../interfaces/IDetailView.ts";
 import localization from "../../../localization/localization.json";
-
 import FetchPost from "../../../shared/fetch/fetch-post";
 import { UrlQuery } from "../../../shared/url/url-query.ts";
 import MenuOption from "../../atoms/menu-option/menu-option.tsx";
@@ -54,7 +53,7 @@ const MenuOptionRotateImage90: React.FunctionComponent<IMenuOptionMenuOptionRota
         isReadOnly={isReadOnly}
         onClickKeydown={rotateImage90}
         localization={localization.MessageRotateToRight}
-        testName="rotate"
+        testName="rotate" // data-test
       />
     );
   });

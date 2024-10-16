@@ -1,39 +1,60 @@
 import { Dispatch } from "react";
 import { DetailViewAction } from "../../../../contexts/detailview-context";
 import { IDetailView } from "../../../../interfaces/IDetailView";
-import { RequestNewFileHash } from "./request-new-filehash";
+import { Orientation } from "../../../../interfaces/IFileIndexItem";
+import { CastToInterface } from "../../../../shared/cast-to-interface";
+import FetchGet from "../../../../shared/fetch/fetch-get";
+import { UrlQuery } from "../../../../shared/url/url-query";
 
-// Delay function to wrap setTimeout in a Promise for better async handling
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-// Function to request a new file hash with retry support
-async function requestFileHashWithRetry(
+export async function RequestNewFileHash(
   state: IDetailView,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  dispatch: Dispatch<DetailViewAction>,
-  retries: number = 0,
-  maxRetries: number = 3
-): Promise<void> {
-  const result = await RequestNewFileHash(state, setIsLoading, dispatch);
-
-  if (result === false && retries < maxRetries) {
-    // Retry after a delay if the attempt failed and max retries not reached
-    await delay(7000);
-    await requestFileHashWithRetry(state, setIsLoading, dispatch, retries + 1, maxRetries);
-  } else {
+  dispatch: Dispatch<DetailViewAction>
+): Promise<boolean | null> {
+  const resultGet = await FetchGet(new UrlQuery().UrlIndexServerApi({ f: state.subPath }));
+  if (!resultGet) return null;
+  if (resultGet.statusCode !== 200) {
+    console.error(resultGet);
     setIsLoading(false);
+    return null;
   }
+  const media = new CastToInterface().MediaDetailView(resultGet.data).data;
+  const orientation = media?.fileIndexItem?.orientation
+    ? media.fileIndexItem.orientation
+    : Orientation.Horizontal;
+
+  // the hash changes if you rotate an image
+  if (media.fileIndexItem.fileHash === state.fileIndexItem.fileHash) return false;
+
+  dispatch({
+    type: "update",
+    orientation,
+    fileHash: media.fileIndexItem.fileHash,
+    filePath: media.fileIndexItem.filePath
+  });
+  setIsLoading(false);
+  return true;
 }
 
-// Function to trigger the whole process with an initial delay
-export async function TriggerFileHashRequest(
+export function TriggerFileHashRequest(
   state: IDetailView,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
   dispatch: Dispatch<DetailViewAction>,
-  maxRetries: number = 3
-): Promise<void> {
-  await delay(3000);
-  await requestFileHashWithRetry(state, setIsLoading, dispatch, 0, maxRetries);
+  retry: number
+) {
+  // there is an async backend event triggered, sometimes there is an que
+  setTimeout(() => {
+    RequestNewFileHash(state, setIsLoading, dispatch).then((result) => {
+      if (result === false) {
+        setTimeout(() => {
+          RequestNewFileHash(state, setIsLoading, dispatch).then(() => {
+            // when it didn't change after two tries
+            setIsLoading(false);
+          });
+        }, 7000);
+      }
+    });
+  }, 3000);
+
+  console.log(retry);
 }
