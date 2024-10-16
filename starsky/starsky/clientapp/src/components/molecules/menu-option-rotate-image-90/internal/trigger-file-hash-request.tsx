@@ -40,21 +40,22 @@ export function TriggerFileHashRequest(
   state: IDetailView,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
   dispatch: Dispatch<DetailViewAction>,
-  retry: number
+  retry: number = 0
 ) {
-  // there is an async backend event triggered, sometimes there is an que
-  setTimeout(() => {
-    RequestNewFileHash(state, setIsLoading, dispatch).then((result) => {
-      if (result === false) {
-        setTimeout(() => {
-          RequestNewFileHash(state, setIsLoading, dispatch).then(() => {
-            // when it didn't change after two tries
-            setIsLoading(false);
-          });
-        }, 7000);
-      }
-    });
-  }, 3000);
+  const maxRetries = 3;
+  const delay = 3000;
 
-  console.log(retry);
+  const attemptRequest = (currentRetry: number) => {
+    setTimeout(() => {
+      RequestNewFileHash(state, setIsLoading, dispatch).then((result) => {
+        if (result === false && currentRetry < maxRetries) {
+          attemptRequest(currentRetry + 1);
+        } else {
+          setIsLoading(false);
+        }
+      });
+    }, delay);
+  };
+
+  attemptRequest(retry);
 }
