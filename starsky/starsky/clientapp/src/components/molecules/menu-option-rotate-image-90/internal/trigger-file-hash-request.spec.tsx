@@ -28,10 +28,9 @@ describe("TriggerFileHashRequest", () => {
       jest.advanceTimersByTime(100);
     });
 
-    console.log("after TriggerFileHashRequest");
-
     jest.advanceTimersByTime(1);
     jest.runAllTimers();
     expect(requestSpy).toHaveBeenCalledTimes(1);
+    jest.useRealTimers();
   });
 });
