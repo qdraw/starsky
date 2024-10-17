@@ -2,12 +2,13 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import localization from "../../../../localization/localization.json";
 import { Language, SupportedLanguages } from "../../../../shared/language";
 import { ILatLong } from "../modal-geo";
+import { UpdateButtonActive } from "./update-button-active";
 import { UpdateButtonWrapper } from "./update-button-wrapper";
 import { UpdateGeoLocation } from "./update-geo-location";
 
 jest.mock("./update-geo-location");
 
-describe("UpdateButtonWrapper", () => {
+describe("UpdateButtonActive", () => {
   const parentDirectory = "parentDirectory";
   const selectedSubPath = "selectedSubPath";
   const location: ILatLong = { latitude: 0, longitude: 0 };
@@ -21,15 +22,15 @@ describe("UpdateButtonWrapper", () => {
     jest.clearAllMocks();
   });
 
-  it("[wrapper] calls UpdateGeoLocation when clicked and updates location", async () => {
+  it("[UpdateButtonActive] calls UpdateGeoLocation when clicked and updates location", async () => {
     (UpdateGeoLocation as jest.Mock).mockResolvedValueOnce({} as any);
 
     const { getByTestId } = render(
-      <UpdateButtonWrapper
+      <UpdateButtonActive
         handleExit={handleExit}
-        isLocationUpdated={true}
         parentDirectory={parentDirectory}
         location={location}
+        language={language}
         selectedSubPath={selectedSubPath}
         setError={setError}
         setIsLoading={setIsLoading}
@@ -42,24 +43,7 @@ describe("UpdateButtonWrapper", () => {
     expect(handleExit).toHaveBeenCalledTimes(1);
   });
 
-  it("[wrapper] disables button when location is not updated", () => {
-    const { getByText } = render(
-      <UpdateButtonWrapper
-        handleExit={handleExit}
-        isLocationUpdated={false}
-        parentDirectory={parentDirectory}
-        location={location}
-        selectedSubPath={selectedSubPath}
-        setError={setError}
-        setIsLoading={setIsLoading}
-        propsCollections={propsCollections}
-      />
-    );
-    const button = getByText(language.key(localization.MessageAddLocation)) as HTMLButtonElement;
-    expect(button.disabled).toBe(true);
-  });
-
-  it("[wrapper] enables button when location is updated", () => {
+  it("[UpdateButtonActive] enables button when location is updated", () => {
     const { getByText } = render(
       <UpdateButtonWrapper
         handleExit={handleExit}
