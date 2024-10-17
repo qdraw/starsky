@@ -41,7 +41,7 @@ steps:
     inputs:
       command: 'custom'
       workingDirectory: "$(Build.SourcesDirectory)/starsky/starsky/clientapp/"
-      customCommand: "run audit"
+      customCommand: "audit"
 
   - task: PowerShell@2
     displayName: "Nuke Client [--no-unit-tests]"
