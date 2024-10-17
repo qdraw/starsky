@@ -324,6 +324,8 @@ public sealed class ArgsHelper
 					"--path or -p == parameter: (string) ; full path (select a folder), " +
 					"use '-p' for current directory");
 				_console.WriteLine("--name or -n == parameter: (string) ; name of blog item ");
+				_console.WriteLine(
+					"--profile: (string) ; name of profile to select (default to first)");
 				break;
 			case AppSettings.StarskyAppType.Importer:
 				// When this change please update ./readme.md
@@ -1014,5 +1016,30 @@ public sealed class ArgsHelper
 		}
 
 		return colorClass;
+	}
+
+	/// <summary>
+	///     Get profile value from args
+	/// </summary>
+	/// <param name="args">input args</param>
+	/// <returns>number, but valid with colorClass</returns>
+	public static string GetProfile(IReadOnlyList<string> args)
+	{
+		// --profile
+		var profile = string.Empty;
+
+		for ( var arg = 0; arg < args.Count; arg++ )
+		{
+			if ( !args[arg].Equals("--profile",
+				     StringComparison.CurrentCultureIgnoreCase) ||
+			     arg + 1 == args.Count )
+			{
+				continue;
+			}
+
+			profile = args[arg + 1];
+		}
+
+		return profile;
 	}
 }

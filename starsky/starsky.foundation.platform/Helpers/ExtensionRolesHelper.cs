@@ -357,7 +357,7 @@ public static partial class ExtensionRolesHelper
 
 		// ReSharper disable once ConvertIfStatementToReturnStatement
 		if ( filename.ToLowerInvariant().EndsWith(".meta.json") &&
-			 checkThisList.Contains("meta.json") )
+		     checkThisList.Contains("meta.json") )
 		{
 			return true;
 		}
@@ -390,6 +390,7 @@ public static partial class ExtensionRolesHelper
 			{
 				continue;
 			}
+
 			// Extension must be three letters
 			// removed: ExtensionForceXmpUseList.Contains(match.Value.Remove(0, 1).ToLowerInvariant()) && 
 			if ( filename.Length >= match.Index + 4 )
@@ -417,17 +418,14 @@ public static partial class ExtensionRolesHelper
 		2000)]
 	private static partial Regex FileExtensionRegex();
 
+	[SuppressMessage("ReSharper", "MustUseReturnValue")]
+	[SuppressMessage("Sonar", "S2674: stream.Read return value isn't used")]
 	private static byte[] ReadBuffer(Stream stream, int size)
 	{
 		var buffer = new byte[size];
 		try
 		{
-			var count = stream.Read(buffer, 0, buffer.Length);
-			if ( count != size )
-			{
-				Console.WriteLine("Size does not match");
-			}
-
+			stream.Read(buffer, 0, buffer.Length);
 			stream.Close();
 			stream.Flush();
 			stream.Dispose(); // also flush
@@ -608,7 +606,7 @@ public static partial class ExtensionRolesHelper
 	private static ImageFormat? GetImageFormatMpeg4(byte[] bytes)
 	{
 		var fTypMp4 = new byte[] { 102, 116, 121, 112 }; //  00  00  00  [skip this byte]
-														 // 66  74  79  70 QuickTime Container 3GG, 3GP, 3G2 	FLV
+		// 66  74  79  70 QuickTime Container 3GG, 3GP, 3G2 	FLV
 
 		if ( fTypMp4.SequenceEqual(bytes.Skip(4).Take(fTypMp4.Length)) )
 		{
@@ -629,13 +627,13 @@ public static partial class ExtensionRolesHelper
 		var gpx = new byte[] { 60, 103, 112 }; // <gpx
 
 		if ( gpx.SequenceEqual(bytes.Take(gpx.Length)) ||
-			 gpx.SequenceEqual(bytes.Skip(21).Take(gpx.Length)) ||
-			 gpx.SequenceEqual(bytes.Skip(39).Take(gpx.Length)) ||
-			 gpx.SequenceEqual(bytes.Skip(1).Take(gpx.Length)) ||
-			 gpx.SequenceEqual(bytes.Skip(56).Take(gpx.Length)) ||
-			 gpx.SequenceEqual(bytes.Skip(57).Take(gpx.Length)) ||
-			 gpx.SequenceEqual(bytes.Skip(60).Take(gpx.Length)) ||
-			 gpx.SequenceEqual(bytes.Skip(55).Take(gpx.Length)) )
+		     gpx.SequenceEqual(bytes.Skip(21).Take(gpx.Length)) ||
+		     gpx.SequenceEqual(bytes.Skip(39).Take(gpx.Length)) ||
+		     gpx.SequenceEqual(bytes.Skip(1).Take(gpx.Length)) ||
+		     gpx.SequenceEqual(bytes.Skip(56).Take(gpx.Length)) ||
+		     gpx.SequenceEqual(bytes.Skip(57).Take(gpx.Length)) ||
+		     gpx.SequenceEqual(bytes.Skip(60).Take(gpx.Length)) ||
+		     gpx.SequenceEqual(bytes.Skip(55).Take(gpx.Length)) )
 		{
 			return ImageFormat.gpx;
 		}
