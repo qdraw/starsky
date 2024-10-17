@@ -20,7 +20,7 @@ describe("MenuOptionArchiveRename", () => {
   function mockModal() {
     modalSpy.mockReset();
     modalSpy = jest.spyOn(ModalArchiveRename, "default").mockImplementation(() => {
-      return <h1 data-test="modal-archive-mkdir">test</h1>;
+      return <h1 data-test="modal-archive-rename">test</h1>;
     });
   }
 
@@ -33,7 +33,7 @@ describe("MenuOptionArchiveRename", () => {
   it("should not show the modal initially", () => {
     mockModal();
     const component = renderComponent();
-    expect(screen.queryByTestId("modal-archive-mkdir")).not.toBeTruthy();
+    expect(screen.queryByTestId("modal-archive-rename")).not.toBeTruthy();
     expect(modalSpy).toHaveBeenCalledTimes(0);
     component.unmount();
   });
@@ -41,10 +41,11 @@ describe("MenuOptionArchiveRename", () => {
   it("should open the modal when the button is clicked", () => {
     mockModal();
     const component = renderComponent();
-    fireEvent.click(screen.getByTestId("mkdir"));
+
+    fireEvent.click(screen.getByTestId("rename"));
     expect(modalSpy).toHaveBeenCalledTimes(1);
 
-    expect(screen.getByTestId("modal-archive-mkdir")).toBeTruthy();
+    expect(screen.getByTestId("modal-archive-rename")).toBeTruthy();
     component.unmount();
   });
 
@@ -53,11 +54,8 @@ describe("MenuOptionArchiveRename", () => {
     mockModalHandleExit();
 
     const component = renderComponent();
-    fireEvent.click(screen.getByTestId("mkdir"));
-    expect(screen.getByTestId("mkdir")).toBeTruthy();
-
-    // Simulate closing the modal
-    fireEvent.click(screen.getByTestId("mkdir"));
+    fireEvent.click(screen.getByTestId("rename"));
+    expect(screen.getByTestId("rename")).toBeTruthy();
 
     expect(stateSpy).toHaveBeenCalledTimes(1);
     expect(stateSpy).toHaveBeenCalledWith(false);
@@ -68,8 +66,8 @@ describe("MenuOptionArchiveRename", () => {
     mockModal();
 
     const component = renderComponent(true);
-    fireEvent.click(screen.getByTestId("mkdir"));
-    expect(screen.queryByTestId("modal-archive-mkdir")).not.toBeTruthy();
+    fireEvent.click(screen.getByTestId("rename"));
+    expect(screen.queryByTestId("modal-archive-rename")).not.toBeTruthy();
     component.unmount();
   });
 });
