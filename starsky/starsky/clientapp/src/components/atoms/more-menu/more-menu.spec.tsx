@@ -1,6 +1,6 @@
-import { act, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { useState } from "react";
-import MoreMenu, { MoreMenuEventCloseConst } from "./more-menu";
+import MoreMenu from "./more-menu";
 
 describe("More Menu", () => {
   it("renders", () => {
@@ -48,23 +48,6 @@ describe("More Menu", () => {
     menuContext.click();
 
     expect(menuContext.className).toBe("menu-context menu-context--hide");
-
-    element.unmount();
-  });
-
-  it("turn off using event", (done) => {
-    const element = render(<MoreMenuWrapper></MoreMenuWrapper>);
-
-    const menuContext = screen.queryAllByTestId("menu-context")[0];
-
-    window.addEventListener(MoreMenuEventCloseConst, () => {
-      expect(menuContext.className).toBe("menu-context menu-context--hide");
-      done();
-    });
-
-    act(() => {
-      window.dispatchEvent(new CustomEvent(MoreMenuEventCloseConst));
-    });
 
     element.unmount();
   });

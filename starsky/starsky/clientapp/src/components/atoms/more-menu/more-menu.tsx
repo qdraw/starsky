@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
@@ -8,8 +8,6 @@ type MoreMenuPropTypes = {
   enableMoreMenu?: boolean;
   setEnableMoreMenu: React.Dispatch<boolean>;
 };
-
-export const MoreMenuEventCloseConst = "CLOSE_MORE_MENU";
 
 const MoreMenu: React.FunctionComponent<MoreMenuPropTypes> = ({
   children,
@@ -21,18 +19,6 @@ const MoreMenu: React.FunctionComponent<MoreMenuPropTypes> = ({
   const MessageMore = language.key(localization.MessageMore);
 
   const offMoreMenu = () => setEnableMoreMenu(false);
-
-  // todo: Should refactor to avoid the usage in upload files
-  // don't use MoreMenuEventCloseConst in upload files
-  useEffect(() => {
-    // Bind the event listener
-    window.addEventListener(MoreMenuEventCloseConst, offMoreMenu);
-
-    return () => {
-      // Unbind the event listener on clean up
-      window.removeEventListener(MoreMenuEventCloseConst, offMoreMenu);
-    };
-  });
 
   return (
     <>
