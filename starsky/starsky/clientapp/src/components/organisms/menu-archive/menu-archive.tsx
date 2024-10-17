@@ -48,7 +48,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   const removeSidebarSelection = () =>
     new Select(select, setSelect, state, history).removeSidebarSelection();
 
-  // Command + A for mac os || Ctrl + A for windows
+  // Command + A for macOS || Ctrl + A for windows
   useHotKeys({ key: "a", ctrlKeyOrMetaKey: true }, allSelection, []);
 
   /* only update when the state is changed */
