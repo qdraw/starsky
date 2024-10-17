@@ -12,6 +12,7 @@ import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-men
 import MenuOptionModal from "../../atoms/menu-option-modal/menu-option-modal";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
+import { MenuOptionArchiveRename } from "../../molecules/menu-option-archive-rename/menu-option-archive-rename.tsx";
 import MenuOptionDesktopEditorOpenSelectionNoSelectWarning from "../../molecules/menu-option-desktop-editor-open-selection-no-select-warning/menu-option-desktop-editor-open-selection-no-select-warning";
 import MenuOptionDesktopEditorOpenSelection from "../../molecules/menu-option-desktop-editor-open-selection/menu-option-desktop-editor-open-selection";
 import { MenuOptionMkdir } from "../../molecules/menu-option-mkdir/menu-option-mkdir.tsx";
@@ -22,7 +23,6 @@ import { MenuOptionSelectionUndo } from "../../molecules/menu-option-selection-u
 import { MenuSelectCount } from "../../molecules/menu-select-count/menu-select-count";
 import { MenuSelectFurther } from "../../molecules/menu-select-further/menu-select-further";
 import ModalDropAreaFilesAdded from "../../molecules/modal-drop-area-files-added/modal-drop-area-files-added";
-import ModalArchiveRename from "../modal-archive-rename/modal-archive-rename";
 import ModalArchiveSynchronizeManually from "../modal-archive-synchronize-manually/modal-archive-synchronize-manually";
 import ModalDisplayOptions from "../modal-display-options/modal-display-options";
 import ModalDownload from "../modal-download/modal-download";
@@ -80,7 +80,6 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
   const [isDisplayOptionsOpen, setIsDisplayOptionsOpen] = React.useState(false);
   const [isSynchronizeManuallyOpen, setIsSynchronizeManuallyOpen] = React.useState(false);
-  const [isModalRenameFolder, setIsModalRenameFolder] = React.useState(false);
   const [dropAreaUploadFilesList, setDropAreaUploadFilesList] =
     React.useState(newIFileIndexItemArray());
 
@@ -113,17 +112,6 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
           parentFolder={new URLPath().StringToIUrl(history.location.search).f}
           handleExit={() => setIsSynchronizeManuallyOpen(!isSynchronizeManuallyOpen)}
           isOpen={isSynchronizeManuallyOpen}
-        />
-      ) : null}
-
-      {isModalRenameFolder && !readOnly && state.subPath !== "/" ? (
-        <ModalArchiveRename
-          subPath={state.subPath}
-          dispatch={dispatch}
-          handleExit={() => {
-            setIsModalRenameFolder(!isModalRenameFolder);
-          }}
-          isOpen={isModalRenameFolder}
         />
       ) : null}
 
@@ -194,13 +182,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                 />
               ) : null}
 
-              <MenuOptionModal
-                isReadOnly={readOnly || state.subPath === "/"}
-                isSet={isModalRenameFolder}
-                set={() => setIsModalRenameFolder(!isModalRenameFolder)}
-                localization={localization.MessageRenameDir}
-                testName="rename"
-              />
+              <MenuOptionArchiveRename readOnly={readOnly} state={state} dispatch={dispatch} />
 
               <MenuOptionMoveFolderToTrash
                 isReadOnly={readOnly || state.subPath === "/"}
