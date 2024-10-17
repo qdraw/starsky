@@ -2,7 +2,7 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import localization from "../../../../localization/localization.json";
 import { Language, SupportedLanguages } from "../../../../shared/language";
 import { ILatLong } from "../modal-geo";
-import { UpdateButton } from "./update-button";
+import { UpdateButtonWrapper } from "./update-button-wrapper";
 import { UpdateGeoLocation } from "./update-geo-location";
 
 jest.mock("./update-geo-location");
@@ -25,7 +25,7 @@ describe("UpdateButton", () => {
     (UpdateGeoLocation as jest.Mock).mockResolvedValueOnce({} as any);
 
     const { getByTestId } = render(
-      <UpdateButton
+      <UpdateButtonWrapper
         handleExit={handleExit}
         isLocationUpdated={true}
         parentDirectory={parentDirectory}
@@ -44,7 +44,7 @@ describe("UpdateButton", () => {
 
   it("disables button when location is not updated", () => {
     const { getByText } = render(
-      <UpdateButton
+      <UpdateButtonWrapper
         handleExit={handleExit}
         isLocationUpdated={false}
         parentDirectory={parentDirectory}
@@ -61,7 +61,7 @@ describe("UpdateButton", () => {
 
   it("enables button when location is updated", () => {
     const { getByText } = render(
-      <UpdateButton
+      <UpdateButtonWrapper
         handleExit={handleExit}
         isLocationUpdated={true}
         parentDirectory={parentDirectory}

@@ -7,7 +7,7 @@ import * as AddDefaultMarker from "./internal/add-default-marker";
 import { GetZoom } from "./internal/get-zoom";
 import { OnDrag } from "./internal/on-drag";
 import { RealtimeMapUpdate } from "./internal/realtime-map-update";
-import * as UpdateButton from "./internal/update-button";
+import * as UpdateButtonWrapper from "./internal/update-button-wrapper";
 import * as updateGeoLocation from "./internal/update-geo-location";
 import ModalGeo, { ILatLong } from "./modal-geo";
 
@@ -194,7 +194,7 @@ describe("ModalGeo", () => {
 
     it("check if form is disabled it hides the button", async () => {
       const updateButtonSpy = jest
-        .spyOn(UpdateButton, "UpdateButton")
+        .spyOn(UpdateButtonWrapper, "UpdateButtonWrapper")
         .mockImplementationOnce(() => {
           return <div>test</div>;
         });
@@ -219,7 +219,7 @@ describe("ModalGeo", () => {
 
     it("check if form is enabled it shows the button", () => {
       const updateButtonSpy = jest
-        .spyOn(UpdateButton, "UpdateButton")
+        .spyOn(UpdateButtonWrapper, "UpdateButtonWrapper")
         .mockImplementationOnce(() => {
           return <div>test</div>;
         });

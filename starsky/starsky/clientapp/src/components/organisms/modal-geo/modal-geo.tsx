@@ -9,7 +9,7 @@ import Modal from "../../atoms/modal/modal";
 import Preloader from "../../atoms/preloader/preloader";
 import { LatLongRound } from "./internal/lat-long-round";
 import { RealtimeMapUpdate } from "./internal/realtime-map-update";
-import { UpdateButton } from "./internal/update-button";
+import { UpdateButtonWrapper } from "./internal/update-button-wrapper";
 import { UpdateMap } from "./internal/update-map";
 
 interface IModalMoveFileProps {
@@ -122,7 +122,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
             {language.key(localization.MessageCancel)}
           </button>
           {isFormEnabled ? (
-            <UpdateButton
+            <UpdateButtonWrapper
               handleExit={props.handleExit}
               isLocationUpdated={isLocationUpdated}
               parentDirectory={parentDirectory}

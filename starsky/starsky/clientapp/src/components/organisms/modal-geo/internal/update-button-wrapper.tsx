@@ -6,7 +6,7 @@ import { ILatLong } from "../modal-geo";
 import { UpdateButtonActive } from "./update-button-active";
 import { UpdateButtonDisabled } from "./update-button-disabled";
 
-interface UpdateButtonProps {
+interface IUpdateButtonWrapperProps {
   parentDirectory: string;
   selectedSubPath: string;
   location: ILatLong;
@@ -17,7 +17,7 @@ interface UpdateButtonProps {
   handleExit: (result: IGeoLocationModel | null) => void;
 }
 
-export const UpdateButton: React.FC<UpdateButtonProps> = ({
+export const UpdateButtonWrapper: React.FC<IUpdateButtonWrapperProps> = ({
   parentDirectory,
   selectedSubPath,
   location,
