@@ -15,8 +15,6 @@ describe("UpdateButton", () => {
   const setIsLoading = jest.fn();
   const propsCollections = true;
   const handleExit = jest.fn();
-  const latitude = 0;
-  const longitude = 0;
   const language = new Language(SupportedLanguages.en);
 
   beforeEach(() => {
@@ -25,15 +23,18 @@ describe("UpdateButton", () => {
 
   it("calls UpdateGeoLocation when clicked and updates location", async () => {
     (UpdateGeoLocation as jest.Mock).mockResolvedValueOnce({} as any);
+
     const { getByTestId } = render(
-      new UpdateButton(
-        parentDirectory,
-        selectedSubPath,
-        location,
-        setError,
-        setIsLoading,
-        propsCollections
-      ).updateButton(true, handleExit, latitude, longitude, language)
+      <UpdateButton
+        handleExit={handleExit}
+        isLocationUpdated={true}
+        parentDirectory={parentDirectory}
+        location={location}
+        selectedSubPath={selectedSubPath}
+        setError={setError}
+        setIsLoading={setIsLoading}
+        propsCollections={propsCollections}
+      />
     );
     const button = getByTestId("update-geo-location");
     fireEvent.click(button);
@@ -43,14 +44,16 @@ describe("UpdateButton", () => {
 
   it("disables button when location is not updated", () => {
     const { getByText } = render(
-      new UpdateButton(
-        parentDirectory,
-        selectedSubPath,
-        location,
-        setError,
-        setIsLoading,
-        propsCollections
-      ).updateButton(false, handleExit, latitude, longitude, language)
+      <UpdateButton
+        handleExit={handleExit}
+        isLocationUpdated={false}
+        parentDirectory={parentDirectory}
+        location={location}
+        selectedSubPath={selectedSubPath}
+        setError={setError}
+        setIsLoading={setIsLoading}
+        propsCollections={propsCollections}
+      />
     );
     const button = getByText(language.key(localization.MessageAddLocation)) as HTMLButtonElement;
     expect(button.disabled).toBe(true);
@@ -58,14 +61,16 @@ describe("UpdateButton", () => {
 
   it("enables button when location is updated", () => {
     const { getByText } = render(
-      new UpdateButton(
-        parentDirectory,
-        selectedSubPath,
-        location,
-        setError,
-        setIsLoading,
-        propsCollections
-      ).updateButton(true, handleExit, latitude, longitude, language)
+      <UpdateButton
+        handleExit={handleExit}
+        isLocationUpdated={true}
+        parentDirectory={parentDirectory}
+        location={location}
+        selectedSubPath={selectedSubPath}
+        setError={setError}
+        setIsLoading={setIsLoading}
+        propsCollections={propsCollections}
+      />
     );
     const button = getByText(language.key(localization.MessageAddLocation)) as HTMLButtonElement;
 

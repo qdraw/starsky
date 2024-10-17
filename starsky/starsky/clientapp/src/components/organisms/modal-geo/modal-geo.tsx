@@ -121,16 +121,18 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
           >
             {language.key(localization.MessageCancel)}
           </button>
-          {isFormEnabled
-            ? new UpdateButton(
-                parentDirectory,
-                selectedSubPath,
-                location,
-                setError,
-                setIsLoading,
-                props.collections
-              ).updateButton(isLocationUpdated, props.handleExit, latitude, longitude, language)
-            : null}
+          {isFormEnabled ? (
+            <UpdateButton
+              handleExit={props.handleExit}
+              isLocationUpdated={isLocationUpdated}
+              parentDirectory={parentDirectory}
+              location={location}
+              selectedSubPath={selectedSubPath}
+              setError={setError}
+              setIsLoading={setIsLoading}
+              propsCollections={props.collections}
+            />
+          ) : null}
           <div className="lat-long">
             <b>Latitude:</b>{" "}
             <FormControl

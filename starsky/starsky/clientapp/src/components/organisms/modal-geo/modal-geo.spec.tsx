@@ -2,14 +2,14 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import L, { LatLng } from "leaflet";
 import * as Modal from "../../atoms/modal/modal";
-import ModalGeo, { ILatLong } from "./modal-geo";
 import { AddDefaultClickSetMarker } from "./internal/add-default-click-set-marker";
 import * as AddDefaultMarker from "./internal/add-default-marker";
 import { GetZoom } from "./internal/get-zoom";
 import { OnDrag } from "./internal/on-drag";
 import { RealtimeMapUpdate } from "./internal/realtime-map-update";
-import { UpdateButton } from "./internal/update-button";
+import * as UpdateButton from "./internal/update-button";
 import * as updateGeoLocation from "./internal/update-geo-location";
+import ModalGeo, { ILatLong } from "./modal-geo";
 
 describe("ModalGeo", () => {
   beforeEach(() => {
@@ -194,7 +194,7 @@ describe("ModalGeo", () => {
 
     it("check if form is disabled it hides the button", async () => {
       const updateButtonSpy = jest
-        .spyOn(UpdateButton.prototype, "updateButton")
+        .spyOn(UpdateButton, "UpdateButton")
         .mockImplementationOnce(() => {
           return <div>test</div>;
         });
@@ -219,7 +219,7 @@ describe("ModalGeo", () => {
 
     it("check if form is enabled it shows the button", () => {
       const updateButtonSpy = jest
-        .spyOn(UpdateButton.prototype, "updateButton")
+        .spyOn(UpdateButton, "UpdateButton")
         .mockImplementationOnce(() => {
           return <div>test</div>;
         });
@@ -239,9 +239,19 @@ describe("ModalGeo", () => {
 
       expect(updateButtonSpy).toHaveBeenCalledTimes(2);
 
-      expect(updateButtonSpy).toHaveBeenLastCalledWith(false, expect.any(Function), 51, 3, {
-        selectedLanguage: "en"
-      });
+      expect(updateButtonSpy).toHaveBeenLastCalledWith(
+        {
+          handleExit: expect.any(Function),
+          isLocationUpdated: false,
+          location: { latitude: 51, longitude: 3 },
+          parentDirectory: "/",
+          propsCollections: undefined,
+          selectedSubPath: "/test.jpg",
+          setError: expect.any(Function),
+          setIsLoading: expect.any(Function)
+        },
+        {}
+      );
 
       modal.unmount();
     });
