@@ -36,6 +36,13 @@ steps:
       pwsh: true
       workingDirectory: "$(Build.SourcesDirectory)/starsky/"
 
+  - task: Npm@1
+    displayName: "Npm Audit"
+    inputs:
+      command: 'custom'
+      workingDirectory: "$(Build.SourcesDirectory)/starsky/starsky/clientapp/"
+      customCommand: "run audit"
+
   - task: PowerShell@2
     displayName: "Nuke Client [--no-unit-tests]"
     condition: and(succeeded(), ne('${{ parameters.jest }}', true) )
