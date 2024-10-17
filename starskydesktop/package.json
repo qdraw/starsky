@@ -11,7 +11,7 @@
     "jest": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage",
     "jest-ci": "npm run jest -- --config jest.config.ci.mjs",
     "test": "npm run jest -- --watch",
-    "lint": "echo off -----------------------------------------------------------------------------------------------------------------",
+    "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "fix": "npm run lint:fix",
     "sonar": "node sonar-scanner.js",
@@ -92,6 +92,7 @@
     "winston": "^3.14.2"
   },
   "devDependencies": {
+    "@eslint/js": "^9.12.0",
     "@types/jest": "^29.5.13",
     "@types/react": "^18.3.10",
     "@types/react-dom": "^18.3.0",
@@ -100,7 +101,7 @@
     "@typescript-eslint/parser": "^8.8.0",
     "cross-env": "^7.0.3",
     "electron": "^32.1.2",
-    "eslint": "^9.11.1",
+    "eslint": "^9.12.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^18.0.0",
     "eslint-import-resolver-typescript": "^3.6.3",
@@ -109,12 +110,14 @@
     "eslint-plugin-jsx-a11y": "^6.10.0",
     "eslint-plugin-react": "^7.37.1",
     "eslint-plugin-react-hooks": "^4.6.2",
+    "globals": "^15.11.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "rimraf": "^6.0.1",
     "sonarqube-scanner": "^4.2.3",
     "ts-jest": "^29.2.5",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.2",
+    "typescript-eslint": "^8.8.1"
   },
   "optionalDependencies": {
     "copy-webpack-plugin": "^12.0.2",
