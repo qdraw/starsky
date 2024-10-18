@@ -501,6 +501,31 @@ public sealed class ArgsHelperTest
 
 		Assert.IsTrue(contains);
 	}
+	
+	[TestMethod]
+	public void ArgsHelper_NeedHelpShowDialog_OpenTelemetry()
+	{
+		var console = new FakeConsoleWrapper();
+		var appSettings = new AppSettings
+		{
+			ApplicationType = AppSettings.StarskyAppType.Sync,
+			OpenTelemetry = new OpenTelemetrySettings
+			{
+				LogsEndpoint = "http://localhost:4317",
+				TracesEndpoint = "http://localhost:4318",
+				MetricsEndpoint = "http://localhost:4319"
+			},
+			Verbose = true
+		};
+		new ArgsHelper(appSettings, console).NeedHelpShowDialog();
+		
+		Assert.IsTrue(console.WrittenLines.Exists(p => p.Contains($"OpenTelemetry LogsEndpoint: " +
+			                $"{appSettings.OpenTelemetry.LogsEndpoint}")));
+		Assert.IsTrue(console.WrittenLines.Exists(p => p.Contains($"OpenTelemetry TracesEndpoint: " +
+			                $"{appSettings.OpenTelemetry.TracesEndpoint}")));
+		Assert.IsTrue(console.WrittenLines.Exists(p => p.Contains($"OpenTelemetry MetricsEndpoint: " +
+			                $"{appSettings.OpenTelemetry.MetricsEndpoint}")));
+	}
 
 	[TestMethod]
 	[ExpectedException(typeof(FieldAccessException))]

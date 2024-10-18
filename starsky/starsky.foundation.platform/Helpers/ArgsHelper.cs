@@ -416,18 +416,18 @@ public sealed class ArgsHelper
 		// OpenTelemetry
 		if ( !string.IsNullOrEmpty(_appSettings.OpenTelemetry?.LogsEndpoint) )
 		{
-			_console.WriteLine($"LogsEndpoint {_appSettings.OpenTelemetry.LogsEndpoint} ");
+			_console.WriteLine($"OpenTelemetry LogsEndpoint: {_appSettings.OpenTelemetry.LogsEndpoint} ");
 		}
 
 		if ( !string.IsNullOrEmpty(_appSettings.OpenTelemetry?.MetricsEndpoint) )
 		{
 			_console.WriteLine(
-				$"MetricsEndpoint {_appSettings.OpenTelemetry.MetricsEndpoint} ");
+				$"OpenTelemetry MetricsEndpoint: {_appSettings.OpenTelemetry.MetricsEndpoint} ");
 		}
 
 		if ( !string.IsNullOrEmpty(_appSettings.OpenTelemetry?.TracesEndpoint) )
 		{
-			_console.WriteLine($"TracesEndpoint {_appSettings.OpenTelemetry.TracesEndpoint} ");
+			_console.WriteLine($"OpenTelemetry TracesEndpoint: {_appSettings.OpenTelemetry.TracesEndpoint} ");
 		}
 
 		_console.Write("SyncIgnore ");
