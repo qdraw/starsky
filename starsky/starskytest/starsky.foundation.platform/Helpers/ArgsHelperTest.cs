@@ -631,4 +631,20 @@ public sealed class ArgsHelperTest
 		var args = new List<string> { "-n", "test" }.ToArray();
 		Assert.AreEqual("test", ArgsHelper.GetName(args));
 	}
+
+	[TestMethod]
+	public void ArgsHelper_GetProfile()
+	{
+		var args = new List<string> { "--profile", "test" }.ToArray();
+		var value = ArgsHelper.GetProfile(args);
+		Assert.AreEqual("test", value);
+	}
+	
+	[TestMethod]
+	public void ArgsHelper_GetProfile_StringEmpty()
+	{
+		var args = new List<string> { "--profile"}.ToArray();
+		var value = ArgsHelper.GetProfile(args);
+		Assert.AreEqual(string.Empty, value);
+	}
 }
