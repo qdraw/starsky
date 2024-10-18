@@ -173,7 +173,7 @@ public sealed class ArgsHelperTest
 		Assert.AreEqual(1, result.Count);
 		Assert.AreEqual(Directory.GetCurrentDirectory(), result.FirstOrDefault());
 	}
-	
+
 	[TestMethod]
 	public void GetPathListFormArgs_PathStartsWithDash_CurrentDirectoryReturned()
 	{
@@ -229,23 +229,36 @@ public sealed class ArgsHelperTest
 	}
 
 	[TestMethod]
-	[ExcludeFromCoverage]
-	public void ArgsHelper_IfSubPathTest()
+	public void ArgsHelper_IfSubPathTest1()
 	{
-		_appSettings.StorageFolder = new CreateAnImage().BasePath;
 		var args = new List<string> { "-s", "/" }.ToArray();
 		Assert.IsTrue(ArgsHelper.IsSubPathOrPath(args));
+	}
 
+	[TestMethod]
+	public void ArgsHelper_IfSubPathTest2()
+	{
 		// Default
-		args = new List<string> { string.Empty }.ToArray();
+		var args = new List<string> { string.Empty }.ToArray();
 		Assert.IsTrue(ArgsHelper.IsSubPathOrPath(args));
+	}
 
-		args = new List<string> { "-p", "/" }.ToArray();
+	[TestMethod]
+	public void ArgsHelper_IfSubPathTest3()
+	{
+		var args = new List<string> { "-p", "/" }.ToArray();
 		Assert.IsFalse(ArgsHelper.IsSubPathOrPath(args));
 	}
 
 	[TestMethod]
-	public void ArgsHelper_CurrentDirectory_IfSubpathTest()
+	public void ArgsHelper_IfSubPathTest4()
+	{
+		var args = new List<string> { "--path", "/" }.ToArray();
+		Assert.IsFalse(ArgsHelper.IsSubPathOrPath(args));
+	}
+
+	[TestMethod]
+	public void ArgsHelper_CurrentDirectory_IfSubPathTest()
 	{
 		// for selecting the current directory
 		var args = new List<string> { "-p" }.ToArray();

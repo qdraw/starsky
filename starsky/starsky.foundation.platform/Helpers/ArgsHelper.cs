@@ -416,7 +416,8 @@ public sealed class ArgsHelper
 		// OpenTelemetry
 		if ( !string.IsNullOrEmpty(_appSettings.OpenTelemetry?.LogsEndpoint) )
 		{
-			_console.WriteLine($"OpenTelemetry LogsEndpoint: {_appSettings.OpenTelemetry.LogsEndpoint} ");
+			_console.WriteLine(
+				$"OpenTelemetry LogsEndpoint: {_appSettings.OpenTelemetry.LogsEndpoint} ");
 		}
 
 		if ( !string.IsNullOrEmpty(_appSettings.OpenTelemetry?.MetricsEndpoint) )
@@ -427,7 +428,8 @@ public sealed class ArgsHelper
 
 		if ( !string.IsNullOrEmpty(_appSettings.OpenTelemetry?.TracesEndpoint) )
 		{
-			_console.WriteLine($"OpenTelemetry TracesEndpoint: {_appSettings.OpenTelemetry.TracesEndpoint} ");
+			_console.WriteLine(
+				$"OpenTelemetry TracesEndpoint: {_appSettings.OpenTelemetry.TracesEndpoint} ");
 		}
 
 		_console.Write("SyncIgnore ");
@@ -804,7 +806,7 @@ public sealed class ArgsHelper
 			return false;
 		}
 
-		// Detect if a input is a fullPath or a subPath.
+		// Detect if an input is a fullPath or a subPath.
 		for ( var arg = 0; arg < args.Count; arg++ )
 		{
 			if ( ( args[arg].Equals("--subpath", StringComparison.CurrentCultureIgnoreCase) ||
