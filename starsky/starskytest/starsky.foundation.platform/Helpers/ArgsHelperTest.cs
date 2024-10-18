@@ -538,6 +538,22 @@ public sealed class ArgsHelperTest
 	}
 
 	[TestMethod]
+	public void ArgsHelper_NeedHelpShowDialog_OpenTelemetry_Null()
+	{
+		var console = new FakeConsoleWrapper();
+		var appSettings = new AppSettings
+		{
+			ApplicationType = AppSettings.StarskyAppType.Sync,
+			OpenTelemetry = null, // on purpose null
+			Verbose = true
+		};
+		new ArgsHelper(appSettings, console).NeedHelpShowDialog();
+
+		// does not contain OpenTelemetry, because it is null
+		Assert.IsFalse(console.WrittenLines.Exists(p => p.Contains("OpenTelemetry")));
+	}
+
+	[TestMethod]
 	public void ArgsHelper_NeedHelpShowDialog_Null_Test()
 	{
 		Assert.ThrowsException<FieldAccessException>(() =>
