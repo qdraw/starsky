@@ -9,7 +9,7 @@ This document is auto generated
 
 | Path                                              | Type  | Description                                                                     | 
 |---------------------------------------------------|-------|---------------------------------------------------------------------------------|
-| __/api/account/status__                           | GET   | Check the account status of the current logged in user                          |
+| __/api/account/status__                           | GET   | Check the account status of the current logged-in user                          |
 | __/account/login__                                | GET   | Login form page (HTML)                                                          |
 | __/api/account/login__                            | POST  | Login the current HttpContext in                                                |
 | __/api/account/logout__                           | POST  | Logout the current HttpContext out                                              |
@@ -28,7 +28,7 @@ This document is auto generated
 | __/api/cache/list__                               | GET   | Get Database Cache (only the cache)                                             |
 | __/api/remove-cache__                             | GET   | Delete Database Cache (only the cache)                                          |
 | __/api/remove-cache__                             | POST  | Delete Database Cache (only the cache)                                          |
-| __/api/delete__                                   | DELETE| Remove files from the disk, but the file must contain the !delete! (TrashKeyw...|
+| __/api/delete__                                   | DELETE| Remove files from the disk, but the file must contain the !delete!(TrashKeywo...|
 | _Parameters: f (subPaths, separated by dot comma), collections (true is to update files with the same name before                         _ |
 | _ the extenstion)                                                                                                                         _ |
 | __/api/desktop-editor/open__                      | POST  | Open a file in the default editor or a specific editor on the desktop           |
@@ -101,7 +101,7 @@ This document is auto generated
 | __/api/suggest/inflate__                          | GET   | To fill the cache with the data (only if cache is not already filled)           |
 | __/api/synchronize__                              | POST  | Faster API to Check if directory is changed (not recursive)                     |
 | __/api/synchronize__                              | GET   | Faster API to Check if directory is changed (not recursive)                     |
-| __/api/thumbnail/small/\{f\}__                    | GET   | Get thumbnail for index pages (300 px or 150px or 1000px (based on whats there))|
+| __/api/thumbnail/small/\{f\}__                    | GET   | Get thumbnail for index pages (300 px or 150px or 1000px (based on what's the...|
 | __/api/thumbnail/list-sizes/\{f\}__               | GET   | Get overview of what exists by name                                             |
 | __/api/thumbnail/\{f\}__                          | GET   | Get thumbnail with fallback to original source image.Return source image when...|
 | _Parameters: f (one single fileHash (NOT path)), filePath (fallback FilePath), isSingleItem (true = load original),                       _ |
