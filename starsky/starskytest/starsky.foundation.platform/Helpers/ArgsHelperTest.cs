@@ -126,7 +126,7 @@ public sealed class ArgsHelperTest
 	}
 
 	[TestMethod]
-	public void ArgsHelper_GetPathFormArgsTest_FieldAccessException()
+	public void GetPathFormArgs_FieldAccessException()
 	{
 		// Arrange
 		var args = new List<string> { "-p", "/" }.ToArray();
@@ -137,7 +137,7 @@ public sealed class ArgsHelperTest
 	}
 
 	[TestMethod]
-	public void GetPathListFormArgsTest_SingleItem()
+	public void GetPathListFormArgs_SingleItem()
 	{
 		var args = new List<string> { "-p", "/" }.ToArray();
 		Assert.AreEqual("/",
@@ -145,7 +145,7 @@ public sealed class ArgsHelperTest
 	}
 
 	[TestMethod]
-	public void GetPathListFormArgsTest_MultipleItems()
+	public void GetPathListFormArgs_MultipleItems()
 	{
 		var args = new List<string> { "-p", "\"/;/test\"" }.ToArray();
 		var result = new ArgsHelper(_appSettings).GetPathListFormArgs(args);
@@ -155,7 +155,7 @@ public sealed class ArgsHelperTest
 	}
 
 	[TestMethod]
-	public void GetPathListFormArgsTest_IgnoreNullOrWhiteSpace()
+	public void GetPathListFormArgs_IgnoreNullOrWhiteSpace()
 	{
 		var args = new List<string> { "-p", "\"/;\"" }.ToArray();
 		var result = new ArgsHelper(_appSettings).GetPathListFormArgs(args);
@@ -165,13 +165,27 @@ public sealed class ArgsHelperTest
 	}
 
 	[TestMethod]
-	public void GetPathListFormArgsTest_CurrentDirectory()
+	public void GetPathListFormArgs_CurrentDirectory()
 	{
 		var args = new List<string> { "-p" }.ToArray();
 		var result = new ArgsHelper(_appSettings).GetPathListFormArgs(args);
 
 		Assert.AreEqual(1, result.Count);
 		Assert.AreEqual(Directory.GetCurrentDirectory(), result.FirstOrDefault());
+	}
+	
+	[TestMethod]
+	public void GetPathListFormArgs_PathStartsWithDash_CurrentDirectoryReturned()
+	{
+		// Arrange
+		var argsHelper = new ArgsHelper(new AppSettings());
+		var args = new List<string> { "-p", "-otherarg" };
+
+		// Act
+		var result = argsHelper.GetPathListFormArgs(args);
+
+		// Assert
+		Assert.AreEqual(Directory.GetCurrentDirectory(), result[0]);
 	}
 
 	[TestMethod]
