@@ -130,7 +130,7 @@ public partial class TheSolutionShould
 		return [.. directory.Split(["\\"], StringSplitOptions.None)];
 	}
 
-	private static IEnumerable<Match> GetProjectsFromSolutionFileContents(
+	private static MatchCollection GetProjectsFromSolutionFileContents(
 		string solutionFileContents)
 	{
 		var regex = ProjectFileNameRegex();
