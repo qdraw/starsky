@@ -25,7 +25,7 @@ namespace starskytest.Architecture;
 ///     http://helix.sitecore.net/introduction/index.html
 /// </remarks>
 [TestClass]
-public class TheSolutionShould
+public partial class TheSolutionShould
 {
 	private const string SolutionName = "starsky.sln";
 
@@ -102,7 +102,7 @@ public class TheSolutionShould
 		AssertLayerReferences(invalidProjectReferences, Project);
 	}
 
-	private static Dictionary<string, IList<string>> GetProjectsWithReferences()
+	private static Dictionary<string, List<string>> GetProjectsWithReferences()
 	{
 		var solutionFilePath = GetSolutionFilePath();
 		var solutionFileContents = File.ReadAllText(solutionFilePath);
@@ -127,17 +127,13 @@ public class TheSolutionShould
 
 	private static IList<string> GetPathParts(string directory)
 	{
-		return directory
-			.Split(new[] { "\\" }, StringSplitOptions.None)
-			.ToList();
+		return [.. directory.Split(["\\"], StringSplitOptions.None)];
 	}
 
 	private static IEnumerable<Match> GetProjectsFromSolutionFileContents(
 		string solutionFileContents)
 	{
-		var regex = new Regex(
-			"Project\\(\"\\{[\\w-]*\\}\"\\) = \"([\\w _]*.*)\", \"(.*\\.(cs|vcx|vb)proj)\"",
-			RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+		var regex = ProjectFileNameRegex();
 		return regex.Matches(solutionFileContents);
 	}
 
@@ -148,7 +144,7 @@ public class TheSolutionShould
 		return result;
 	}
 
-	private static IList<string> GetReferencedProjects(string solutionFilePath,
+	private static List<string> GetReferencedProjects(string solutionFilePath,
 		string projectFilePath)
 	{
 		var rootedProjectFilePath =
@@ -180,7 +176,7 @@ public class TheSolutionShould
 		return result;
 	}
 
-	private static void GetInvalidReferences(KeyValuePair<string, IList<string>> project,
+	private static void GetInvalidReferences(KeyValuePair<string, List<string>> project,
 		string[] invalidLayers, List<string> invalidReferences)
 	{
 		invalidReferences.AddRange(project.Value
@@ -237,6 +233,9 @@ public class TheSolutionShould
 		{
 			// This is a known issue, as the Trash feature references the MetaUpdate feature
 			// This should be refactored in the future
+
+			// when update also update docs!!!
+
 			return;
 		}
 
@@ -245,4 +244,7 @@ public class TheSolutionShould
 			$"{invalidReferences.Count} invalid reference{( invalidReferences.Count == 1 ? " was" : "s were" )} " +
 			$"found: {string.Join(", ", invalidReferences)}. Expected 0");
 	}
+
+	[GeneratedRegex("Project\\(\"\\{[\\w-]*\\}\"\\) = \"([\\w _]*.*)\", \"(.*\\.(cs|vcx|vb)proj)\"", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
+	private static partial Regex ProjectFileNameRegex();
 }
