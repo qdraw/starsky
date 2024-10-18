@@ -232,12 +232,11 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		}
 
 		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public async Task ResizeThumbnailImageFormat_NullInput()
 		{
-			await Thumbnail.SaveThumbnailImageFormat(null!,
-				ExtensionRolesHelper.ImageFormat.bmp, null!);
-			// ArgumentNullException
+			await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+				await Thumbnail.SaveThumbnailImageFormat(null!,
+					ExtensionRolesHelper.ImageFormat.bmp, null!));
 		}
 
 		[TestMethod]

@@ -126,7 +126,7 @@ public sealed class ArgsHelperTest
 	}
 
 	[TestMethod]
-	public void ArgsHelper_GetPathFormArgsTest_FieldAccessException()
+	public void GetPathFormArgs_FieldAccessException()
 	{
 		// Arrange
 		var args = new List<string> { "-p", "/" }.ToArray();
@@ -137,7 +137,7 @@ public sealed class ArgsHelperTest
 	}
 
 	[TestMethod]
-	public void GetPathListFormArgsTest_SingleItem()
+	public void GetPathListFormArgs_SingleItem()
 	{
 		var args = new List<string> { "-p", "/" }.ToArray();
 		Assert.AreEqual("/",
@@ -145,7 +145,7 @@ public sealed class ArgsHelperTest
 	}
 
 	[TestMethod]
-	public void GetPathListFormArgsTest_MultipleItems()
+	public void GetPathListFormArgs_MultipleItems()
 	{
 		var args = new List<string> { "-p", "\"/;/test\"" }.ToArray();
 		var result = new ArgsHelper(_appSettings).GetPathListFormArgs(args);
@@ -155,7 +155,7 @@ public sealed class ArgsHelperTest
 	}
 
 	[TestMethod]
-	public void GetPathListFormArgsTest_IgnoreNullOrWhiteSpace()
+	public void GetPathListFormArgs_IgnoreNullOrWhiteSpace()
 	{
 		var args = new List<string> { "-p", "\"/;\"" }.ToArray();
 		var result = new ArgsHelper(_appSettings).GetPathListFormArgs(args);
@@ -165,7 +165,7 @@ public sealed class ArgsHelperTest
 	}
 
 	[TestMethod]
-	public void GetPathListFormArgsTest_CurrentDirectory()
+	public void GetPathListFormArgs_CurrentDirectory()
 	{
 		var args = new List<string> { "-p" }.ToArray();
 		var result = new ArgsHelper(_appSettings).GetPathListFormArgs(args);
@@ -175,7 +175,21 @@ public sealed class ArgsHelperTest
 	}
 
 	[TestMethod]
-	public void GetPathListFormArgsTest__FieldAccessException()
+	public void GetPathListFormArgs_PathStartsWithDash_CurrentDirectoryReturned()
+	{
+		// Arrange
+		var argsHelper = new ArgsHelper(new AppSettings());
+		var args = new List<string> { "-p", "-otherarg" };
+
+		// Act
+		var result = argsHelper.GetPathListFormArgs(args);
+
+		// Assert
+		Assert.AreEqual(Directory.GetCurrentDirectory(), result[0]);
+	}
+
+	[TestMethod]
+	public void GetPathListFormArgsTest_FieldAccessException()
 	{
 		// Arrange
 		var args = new List<string> { "-p", "/" }.ToArray();
@@ -215,23 +229,36 @@ public sealed class ArgsHelperTest
 	}
 
 	[TestMethod]
-	[ExcludeFromCoverage]
-	public void ArgsHelper_IfSubPathTest()
+	public void ArgsHelper_IfSubPathTest1()
 	{
-		_appSettings.StorageFolder = new CreateAnImage().BasePath;
 		var args = new List<string> { "-s", "/" }.ToArray();
 		Assert.IsTrue(ArgsHelper.IsSubPathOrPath(args));
+	}
 
+	[TestMethod]
+	public void ArgsHelper_IfSubPathTest2()
+	{
 		// Default
-		args = new List<string> { string.Empty }.ToArray();
+		var args = new List<string> { string.Empty }.ToArray();
 		Assert.IsTrue(ArgsHelper.IsSubPathOrPath(args));
+	}
 
-		args = new List<string> { "-p", "/" }.ToArray();
+	[TestMethod]
+	public void ArgsHelper_IfSubPathTest3()
+	{
+		var args = new List<string> { "-p", "/" }.ToArray();
 		Assert.IsFalse(ArgsHelper.IsSubPathOrPath(args));
 	}
 
 	[TestMethod]
-	public void ArgsHelper_CurrentDirectory_IfSubpathTest()
+	public void ArgsHelper_IfSubPathTest4()
+	{
+		var args = new List<string> { "--path", "/" }.ToArray();
+		Assert.IsFalse(ArgsHelper.IsSubPathOrPath(args));
+	}
+
+	[TestMethod]
+	public void ArgsHelper_CurrentDirectory_IfSubPathTest()
 	{
 		// for selecting the current directory
 		var args = new List<string> { "-p" }.ToArray();
@@ -345,6 +372,14 @@ public sealed class ArgsHelperTest
 		{
 			Environment.SetEnvironmentVariable(t, string.Empty);
 		}
+	}
+
+	[TestMethod]
+	public void ArgsHelper_GetRelativeValue_Null_Test()
+	{
+		var args = new List<string> { "--subpathrelative", "1" }.ToArray();
+		Assert.ThrowsException<FieldAccessException>(() =>
+			new ArgsHelper(null!).GetRelativeValue(args));
 	}
 
 	[TestMethod]
@@ -503,20 +538,60 @@ public sealed class ArgsHelperTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(FieldAccessException))]
-	public void ArgsHelper_NeedHelpShowDialog_Null_Test()
+	public void ArgsHelper_NeedHelpShowDialog_OpenTelemetry()
 	{
-		new ArgsHelper(null!).NeedHelpShowDialog();
-		// FieldAccessException
+		var console = new FakeConsoleWrapper();
+		var appSettings = new AppSettings
+		{
+			ApplicationType = AppSettings.StarskyAppType.Sync,
+			OpenTelemetry = new OpenTelemetrySettings
+			{
+				LogsEndpoint = "http://localhost:4317",
+				TracesEndpoint = "http://localhost:4318",
+				MetricsEndpoint = "http://localhost:4319"
+			},
+			Verbose = true
+		};
+		new ArgsHelper(appSettings, console).NeedHelpShowDialog();
+
+		Assert.IsTrue(console.WrittenLines.Exists(p => p.Contains($"OpenTelemetry LogsEndpoint: " +
+			$"{appSettings.OpenTelemetry.LogsEndpoint}")));
+		Assert.IsTrue(console.WrittenLines.Exists(p =>
+			p.Contains($"OpenTelemetry TracesEndpoint: " +
+			           $"{appSettings.OpenTelemetry.TracesEndpoint}")));
+		Assert.IsTrue(console.WrittenLines.Exists(p =>
+			p.Contains($"OpenTelemetry MetricsEndpoint: " +
+			           $"{appSettings.OpenTelemetry.MetricsEndpoint}")));
 	}
 
+	[TestMethod]
+	public void ArgsHelper_NeedHelpShowDialog_OpenTelemetry_Null()
+	{
+		var console = new FakeConsoleWrapper();
+		var appSettings = new AppSettings
+		{
+			ApplicationType = AppSettings.StarskyAppType.Sync,
+			OpenTelemetry = null, // on purpose null
+			Verbose = true
+		};
+		new ArgsHelper(appSettings, console).NeedHelpShowDialog();
+
+		// does not contain OpenTelemetry, because it is null
+		Assert.IsFalse(console.WrittenLines.Exists(p => p.Contains("OpenTelemetry")));
+	}
 
 	[TestMethod]
-	[ExpectedException(typeof(FieldAccessException))]
+	public void ArgsHelper_NeedHelpShowDialog_Null_Test()
+	{
+		Assert.ThrowsException<FieldAccessException>(() =>
+			new ArgsHelper(null!).NeedHelpShowDialog());
+	}
+
+	[TestMethod]
 	public void ArgsHelper_SetEnvironmentToAppSettings_Null_Test()
 	{
-		new ArgsHelper(null!).SetEnvironmentToAppSettings();
-		// FieldAccessException
+		Assert.ThrowsException<FieldAccessException>(() =>
+			new ArgsHelper(null!).SetEnvironmentToAppSettings());
 	}
 
 	[TestMethod]
@@ -630,5 +705,21 @@ public sealed class ArgsHelperTest
 		_appSettings.StorageFolder = new CreateAnImage().BasePath;
 		var args = new List<string> { "-n", "test" }.ToArray();
 		Assert.AreEqual("test", ArgsHelper.GetName(args));
+	}
+
+	[TestMethod]
+	public void ArgsHelper_GetProfile()
+	{
+		var args = new List<string> { "--profile", "test" }.ToArray();
+		var value = ArgsHelper.GetProfile(args);
+		Assert.AreEqual("test", value);
+	}
+
+	[TestMethod]
+	public void ArgsHelper_GetProfile_StringEmpty()
+	{
+		var args = new List<string> { "--profile" }.ToArray();
+		var value = ArgsHelper.GetProfile(args);
+		Assert.AreEqual(string.Empty, value);
 	}
 }

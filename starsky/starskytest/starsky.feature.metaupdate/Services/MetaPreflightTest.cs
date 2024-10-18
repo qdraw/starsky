@@ -114,15 +114,13 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		}
 		
 		[TestMethod]
-		[ExpectedException(typeof(MissingFieldException))]
 		public void UpdateServiceTest_CompareAllLabelsAndRotation_NullMissingFieldException()
 		{
-			MetaPreflight.
-				CompareAllLabelsAndRotation(null!, null!,
-					null!, false, 0);
-			// ==>> MissingFieldException
+			Assert.ThrowsException<MissingFieldException>(() =>
+				MetaPreflight.
+					CompareAllLabelsAndRotation(null!, null!,
+						null!, false, 0));
 		}
-		
 		
 		[TestMethod]
 		public void UpdateServiceTest_CompareAllLabelsAndRotation_AppendIsFalse()

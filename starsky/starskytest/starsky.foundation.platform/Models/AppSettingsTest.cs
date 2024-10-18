@@ -171,11 +171,10 @@ public sealed class AppSettingsTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ArgumentNullException))]
 	public void AppSettingsProviderTest_Null()
 	{
-		AppSettings.StructureCheck(string.Empty);
-		// >= ArgumentException
+		Assert.ThrowsException<ArgumentNullException>(() =>
+			AppSettings.StructureCheck(string.Empty));
 	}
 
 	[TestMethod]
