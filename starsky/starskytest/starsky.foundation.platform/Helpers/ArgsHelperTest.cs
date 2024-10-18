@@ -175,7 +175,7 @@ public sealed class ArgsHelperTest
 	}
 
 	[TestMethod]
-	public void GetPathListFormArgsTest__FieldAccessException()
+	public void GetPathListFormArgsTest_FieldAccessException()
 	{
 		// Arrange
 		var args = new List<string> { "-p", "/" }.ToArray();
@@ -348,6 +348,14 @@ public sealed class ArgsHelperTest
 	}
 
 	[TestMethod]
+	public void ArgsHelper_GetRelativeValue_Null_Test()
+	{
+		var args = new List<string> { "--subpathrelative", "1" }.ToArray();
+		Assert.ThrowsException<FieldAccessException>(() =>
+			new ArgsHelper(null!).GetRelativeValue(args));
+	}
+
+	[TestMethod]
 	public void ArgsHelper_GetSubPathRelativeTest()
 	{
 		var args = new List<string> { "--subpathrelative", "1" }.ToArray();
@@ -501,7 +509,7 @@ public sealed class ArgsHelperTest
 
 		Assert.IsTrue(contains);
 	}
-	
+
 	[TestMethod]
 	public void ArgsHelper_NeedHelpShowDialog_OpenTelemetry()
 	{
@@ -518,30 +526,29 @@ public sealed class ArgsHelperTest
 			Verbose = true
 		};
 		new ArgsHelper(appSettings, console).NeedHelpShowDialog();
-		
+
 		Assert.IsTrue(console.WrittenLines.Exists(p => p.Contains($"OpenTelemetry LogsEndpoint: " +
-			                $"{appSettings.OpenTelemetry.LogsEndpoint}")));
-		Assert.IsTrue(console.WrittenLines.Exists(p => p.Contains($"OpenTelemetry TracesEndpoint: " +
-			                $"{appSettings.OpenTelemetry.TracesEndpoint}")));
-		Assert.IsTrue(console.WrittenLines.Exists(p => p.Contains($"OpenTelemetry MetricsEndpoint: " +
-			                $"{appSettings.OpenTelemetry.MetricsEndpoint}")));
+			$"{appSettings.OpenTelemetry.LogsEndpoint}")));
+		Assert.IsTrue(console.WrittenLines.Exists(p =>
+			p.Contains($"OpenTelemetry TracesEndpoint: " +
+			           $"{appSettings.OpenTelemetry.TracesEndpoint}")));
+		Assert.IsTrue(console.WrittenLines.Exists(p =>
+			p.Contains($"OpenTelemetry MetricsEndpoint: " +
+			           $"{appSettings.OpenTelemetry.MetricsEndpoint}")));
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(FieldAccessException))]
 	public void ArgsHelper_NeedHelpShowDialog_Null_Test()
 	{
-		new ArgsHelper(null!).NeedHelpShowDialog();
-		// FieldAccessException
+		Assert.ThrowsException<FieldAccessException>(() =>
+			new ArgsHelper(null!).NeedHelpShowDialog());
 	}
 
-
 	[TestMethod]
-	[ExpectedException(typeof(FieldAccessException))]
 	public void ArgsHelper_SetEnvironmentToAppSettings_Null_Test()
 	{
-		new ArgsHelper(null!).SetEnvironmentToAppSettings();
-		// FieldAccessException
+		Assert.ThrowsException<FieldAccessException>(() =>
+			new ArgsHelper(null!).SetEnvironmentToAppSettings());
 	}
 
 	[TestMethod]
@@ -664,11 +671,11 @@ public sealed class ArgsHelperTest
 		var value = ArgsHelper.GetProfile(args);
 		Assert.AreEqual("test", value);
 	}
-	
+
 	[TestMethod]
 	public void ArgsHelper_GetProfile_StringEmpty()
 	{
-		var args = new List<string> { "--profile"}.ToArray();
+		var args = new List<string> { "--profile" }.ToArray();
 		var value = ArgsHelper.GetProfile(args);
 		Assert.AreEqual(string.Empty, value);
 	}

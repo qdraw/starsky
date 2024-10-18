@@ -266,13 +266,12 @@ public sealed class QueryUpdateItemError
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(NotSupportedException))]
 	public void Query_UpdateItem_NotSupportedException()
 	{
-		SolveConcurrency.SolveConcurrencyException(null!,
-			new FakePropertyValues(null!), new FakePropertyValues(null!),
-			"", _ => IsWrittenConcurrencyException = true);
-		// expect error
+		Assert.ThrowsException<NotSupportedException>(() =>
+			SolveConcurrency.SolveConcurrencyException(null!,
+				new FakePropertyValues(null!), new FakePropertyValues(null!),
+				"", _ => IsWrittenConcurrencyException = true));
 	}
 
 	[TestMethod]
