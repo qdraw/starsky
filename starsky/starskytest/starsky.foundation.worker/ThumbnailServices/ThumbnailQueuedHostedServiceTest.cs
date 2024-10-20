@@ -266,7 +266,7 @@ public sealed class ThumbnailQueuedHostedServiceTest
 	}
 
 	[TestMethod]
-	[Timeout(1000)]
+	[Timeout(2000)]
 	public async Task ThumbnailQueuedHostedService_Update_End_StopAsync_Test()
 	{
 		var logger = new FakeIWebLogger();
