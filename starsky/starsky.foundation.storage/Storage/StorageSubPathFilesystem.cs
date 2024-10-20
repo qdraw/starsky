@@ -292,7 +292,7 @@ public sealed class StorageSubPathFilesystem : IStorage
 			var actualRead = fileStream.Read(buffer, 0, maxRead);
 			if ( actualRead != maxRead )
 			{
-				_logger.LogError("[StorageSubPathFileSystem] ReadStream: actualRead != maxRead");
+				_logger.LogDebug("[StorageSubPathFileSystem] ReadStream: actualRead != maxRead");
 			}
 
 			fileStream.Flush();
