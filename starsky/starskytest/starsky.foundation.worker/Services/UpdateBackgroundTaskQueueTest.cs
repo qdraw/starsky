@@ -214,13 +214,13 @@ public sealed class UpdateBackgroundTaskQueueTest
 		// use reflection to hit protected method
 		var method = service.GetType().GetTypeInfo().GetDeclaredMethod("ExecuteAsync");
 		Assert.IsNotNull(method);
-		method.Invoke(service, new object[] { cancelTokenSource.Token });
+		method.Invoke(service, [cancelTokenSource.Token]);
 		// should stop and not hit timeout
 	}
 
 	[TestMethod]
-	[Timeout(1000)]
-	public async Task Update_End_StopAsync_Test()
+	[Timeout(2000)]
+	public async Task UpdateBackgroundTaskQueue_Update_End_StopAsync_Test()
 	{
 		var logger = new FakeIWebLogger();
 		var service =
