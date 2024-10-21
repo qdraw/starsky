@@ -98,7 +98,7 @@ public class SyncThumbnailTableAsyncTest
 		Assert.AreEqual(5, content.Count);
 
 		// should not overwrite the existing data
-		var counter = dbContext.Thumbnails.Count();
+		var counter = await dbContext.Thumbnails.CountAsync();
 
 		Assert.AreEqual(1, counter);
 		
@@ -130,7 +130,8 @@ public class SyncThumbnailTableAsyncTest
 				ImageFormat = ExtensionRolesHelper.ImageFormat.xmp
 			}})).Count);
 		
-		Assert.AreEqual(0, ( await query.UnprocessedGeneratedThumbnails() ).Count);
+		var result = await query.GetMissingThumbnailsBatchAsync(0,100);
+		Assert.AreEqual(0, result.Count);
 	}
 	
 	[TestMethod]
@@ -146,6 +147,7 @@ public class SyncThumbnailTableAsyncTest
 				ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
 			}})).Count);
 		
-		Assert.AreEqual(0, ( await query.UnprocessedGeneratedThumbnails() ).Count);
+		var result = await query.GetMissingThumbnailsBatchAsync(0,100);
+		Assert.AreEqual(0, result.Count);
 	}
 }

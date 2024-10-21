@@ -61,6 +61,10 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 			// Process each batch
 			var fileHashesList = missingThumbnails.Select(p => p.FileHash).ToList();
 			var queryItems = await _query.GetObjectsByFileHashAsync(fileHashesList);
+			if ( queryItems.Count == 0 )
+			{
+				break;
+			}
 			
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{

@@ -613,19 +613,19 @@ public class ThumbnailQueryTest
 
 
 	[TestMethod]
-	public async Task UnprocessedGeneratedThumbnails_EmptyDb()
+	public async Task GetMissingThumbnailsBatchAsync_EmptyDb()
 	{
 		var serviceScope = CreateNewScope("UnprocessedGeneratedThumbnails1");
 		var context = serviceScope.CreateScope().ServiceProvider
 			.GetRequiredService<ApplicationDbContext>();
 
 		var query = new ThumbnailQuery(context, null!, new FakeIWebLogger());
-		var result = await query.UnprocessedGeneratedThumbnails();
+		var result = await query.GetMissingThumbnailsBatchAsync(0,100);
 		Assert.AreEqual(0, result.Count);
 	}
 
 	[TestMethod]
-	public async Task UnprocessedGeneratedThumbnails_OneResult()
+	public async Task GetMissingThumbnailsBatchAsync_OneResult()
 	{
 		var serviceScope = CreateNewScope("UnprocessedGeneratedThumbnails2");
 		var context = serviceScope.CreateScope().ServiceProvider
@@ -635,12 +635,12 @@ public class ThumbnailQueryTest
 		await context.SaveChangesAsync();
 
 		var query = new ThumbnailQuery(context, null!, new FakeIWebLogger());
-		var result = await query.UnprocessedGeneratedThumbnails();
+		var result = await query.GetMissingThumbnailsBatchAsync(0,100);
 		Assert.AreEqual(1, result.Count);
 	}
 
 	[TestMethod]
-	public async Task UnprocessedGeneratedThumbnails_OneResultOfTwo()
+	public async Task GetMissingThumbnailsBatchAsync_OneResultOfTwo()
 	{
 		var serviceScope = CreateNewScope("UnprocessedGeneratedThumbnails3");
 		var context = serviceScope.CreateScope().ServiceProvider
@@ -652,7 +652,7 @@ public class ThumbnailQueryTest
 		await context.SaveChangesAsync();
 
 		var query = new ThumbnailQuery(context, null!, new FakeIWebLogger());
-		var result = await query.UnprocessedGeneratedThumbnails();
+		var result = await query.GetMissingThumbnailsBatchAsync(0,100);
 		Assert.AreEqual(1, result.Count);
 	}
 
