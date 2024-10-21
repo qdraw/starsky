@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,7 @@ public class FakeIThumbnailQuery : IThumbnailQuery
 		}
 	}
 
+	[SuppressMessage("ReSharper", "UnusedParameter.Local")]
 	public FakeIThumbnailQuery( ApplicationDbContext _, IServiceScope _2, IWebLogger _3)
 	{
 		// should bind to the context
@@ -95,9 +97,15 @@ public class FakeIThumbnailQuery : IThumbnailQuery
 		return Task.FromResult(true);
 	}
 
-	public Task<List<ThumbnailItem>> UnprocessedGeneratedThumbnails()
+	public Task<List<ThumbnailItem>> GetMissingThumbnailsBatchAsync(int pageNumber, int pageSize)
 	{
-		return Task.FromResult(_content.Where(p => p.ExtraLarge == null || p.Large == null || p.Small == null).ToList());
+		return Task.FromResult(_content
+			.Where(p => ( p.ExtraLarge == null
+			              || p.Large == null || p.Small == null )
+			            && !string.IsNullOrEmpty(p.FileHash))
+			.OrderBy(t => t.FileHash) // Ensure a consistent ordering
+			.Skip(pageNumber * pageSize)
+			.Take(pageSize).ToList());
 	}
 
 	public Task<bool> UpdateAsync(ThumbnailItem item)

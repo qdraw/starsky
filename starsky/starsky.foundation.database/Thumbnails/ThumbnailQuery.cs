@@ -20,8 +20,8 @@ namespace starsky.foundation.database.Thumbnails;
 public class ThumbnailQuery : IThumbnailQuery
 {
 	private readonly ApplicationDbContext _context;
-	private readonly IServiceScopeFactory? _scopeFactory;
 	private readonly IWebLogger _logger;
+	private readonly IServiceScopeFactory? _scopeFactory;
 
 	public ThumbnailQuery(ApplicationDbContext context, IServiceScopeFactory? scopeFactory,
 		IWebLogger logger)
@@ -41,6 +41,104 @@ public class ThumbnailQuery : IThumbnailQuery
 		}
 
 		return AddThumbnailRangeInternalRetryDisposedAsync(thumbnailItems);
+	}
+
+	public async Task<List<ThumbnailItem>> Get(string? fileHash = null)
+	{
+		try
+		{
+			return await GetInternalAsync(_context, fileHash);
+		}
+		// InvalidOperationException can also be disposed
+		catch ( InvalidOperationException )
+		{
+			if ( _scopeFactory == null )
+			{
+				throw;
+			}
+
+			return await GetInternalAsync(new InjectServiceScope(_scopeFactory).Context(),
+				fileHash);
+		}
+	}
+
+	public async Task RemoveThumbnailsAsync(List<string> deletedFileHashes)
+	{
+		if ( deletedFileHashes.Count == 0 )
+		{
+			return;
+		}
+
+		try
+		{
+			await RemoveThumbnailsInternalAsync(_context, deletedFileHashes);
+		}
+		// InvalidOperationException can also be disposed
+		catch ( InvalidOperationException )
+		{
+			if ( _scopeFactory == null )
+			{
+				throw;
+			}
+
+			await RemoveThumbnailsInternalAsync(new InjectServiceScope(_scopeFactory).Context(),
+				deletedFileHashes);
+		}
+	}
+
+	public async Task<bool> RenameAsync(string beforeFileHash, string newFileHash)
+	{
+		try
+		{
+			return await RenameInternalAsync(_context, beforeFileHash, newFileHash);
+		}
+		// InvalidOperationException can also be disposed
+		catch ( InvalidOperationException )
+		{
+			if ( _scopeFactory == null )
+			{
+				throw;
+			}
+
+			return await RenameInternalAsync(new InjectServiceScope(_scopeFactory).Context(),
+				beforeFileHash, newFileHash);
+		}
+		catch ( DbUpdateConcurrencyException concurrencyException )
+		{
+			_logger.LogInformation("[ThumbnailQuery] try to fix DbUpdateConcurrencyException",
+				concurrencyException);
+			SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+			try
+			{
+				await _context.SaveChangesAsync();
+			}
+			catch ( DbUpdateConcurrencyException e )
+			{
+				_logger.LogInformation(e,
+					"[ThumbnailQuery] save failed after DbUpdateConcurrencyException");
+				return false;
+			}
+
+			return true;
+		}
+	}
+
+	public async Task<bool> UpdateAsync(ThumbnailItem item)
+	{
+		try
+		{
+			return await UpdateInternalAsync(_context, item);
+		}
+		// InvalidOperationException can also be disposed
+		catch ( InvalidOperationException )
+		{
+			if ( _scopeFactory == null )
+			{
+				throw;
+			}
+
+			return await UpdateInternalAsync(new InjectServiceScope(_scopeFactory).Context(), item);
+		}
 	}
 
 	private async Task<List<ThumbnailItem>?> AddThumbnailRangeInternalRetryDisposedAsync(
@@ -74,7 +172,7 @@ public class ThumbnailQuery : IThumbnailQuery
 
 		var updateThumbnailNewItemsList = new List<ThumbnailItem>();
 		foreach ( var item in thumbnailItems
-					 .Where(p => p.FileHash != null).DistinctBy(p => p.FileHash) )
+			         .Where(p => p.FileHash != null).DistinctBy(p => p.FileHash) )
 		{
 			updateThumbnailNewItemsList.Add(new ThumbnailItem(item.FileHash!, item.TinyMeta,
 				item.Small, item.Large, item.ExtraLarge, item.Reasons));
@@ -126,38 +224,20 @@ public class ThumbnailQuery : IThumbnailQuery
 			// MySqlConnector.MySqlException (0x80004005): Duplicate entry for key 'PRIMARY'
 			// https://github.com/qdraw/starsky/issues/1248 https://github.com/qdraw/starsky/issues/1489
 			if ( mySqlException is { ErrorCode: MySqlErrorCode.DuplicateKey }
-				or { ErrorCode: MySqlErrorCode.DuplicateKeyEntry } )
+			    or { ErrorCode: MySqlErrorCode.DuplicateKeyEntry } )
 			{
-				_logger.LogInformation("[SaveChangesDuplicate] OK Duplicate entry error occurred: " +
-									   $"{mySqlException.Message}");
+				_logger.LogInformation(
+					"[SaveChangesDuplicate] OK Duplicate entry error occurred: " +
+					$"{mySqlException.Message}");
 				return;
 			}
 
 			_logger.LogError($"[SaveChangesDuplicate] T:{exception.GetType()} " +
-							 $"M:{exception.Message} " +
-							 $"I: {exception.InnerException} " +
-							 $"ErrorCode: {mySqlException?.ErrorCode}");
+			                 $"M:{exception.Message} " +
+			                 $"I: {exception.InnerException} " +
+			                 $"ErrorCode: {mySqlException?.ErrorCode}");
 
 			throw;
-		}
-	}
-
-	public async Task<List<ThumbnailItem>> Get(string? fileHash = null)
-	{
-		try
-		{
-			return await GetInternalAsync(_context, fileHash);
-		}
-		// InvalidOperationException can also be disposed
-		catch ( InvalidOperationException )
-		{
-			if ( _scopeFactory == null )
-			{
-				throw;
-			}
-
-			return await GetInternalAsync(new InjectServiceScope(_scopeFactory).Context(),
-				fileHash);
 		}
 	}
 
@@ -171,30 +251,6 @@ public class ThumbnailQuery : IThumbnailQuery
 			: await context
 				.Thumbnails.Where(p => p.FileHash == fileHash)
 				.ToListAsync();
-	}
-
-	public async Task RemoveThumbnailsAsync(List<string> deletedFileHashes)
-	{
-		if ( deletedFileHashes.Count == 0 )
-		{
-			return;
-		}
-
-		try
-		{
-			await RemoveThumbnailsInternalAsync(_context, deletedFileHashes);
-		}
-		// InvalidOperationException can also be disposed
-		catch ( InvalidOperationException )
-		{
-			if ( _scopeFactory == null )
-			{
-				throw;
-			}
-
-			await RemoveThumbnailsInternalAsync(new InjectServiceScope(_scopeFactory).Context(),
-				deletedFileHashes);
-		}
 	}
 
 	internal static async Task<bool> RemoveThumbnailsInternalAsync(
@@ -217,50 +273,13 @@ public class ThumbnailQuery : IThumbnailQuery
 		return true;
 	}
 
-	public async Task<bool> RenameAsync(string beforeFileHash, string newFileHash)
-	{
-		try
-		{
-			return await RenameInternalAsync(_context, beforeFileHash, newFileHash);
-		}
-		// InvalidOperationException can also be disposed
-		catch ( InvalidOperationException )
-		{
-			if ( _scopeFactory == null )
-			{
-				throw;
-			}
-
-			return await RenameInternalAsync(new InjectServiceScope(_scopeFactory).Context(),
-				beforeFileHash, newFileHash);
-		}
-		catch ( DbUpdateConcurrencyException concurrencyException )
-		{
-			_logger.LogInformation("[ThumbnailQuery] try to fix DbUpdateConcurrencyException",
-				concurrencyException);
-			SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
-			try
-			{
-				await _context.SaveChangesAsync();
-			}
-			catch ( DbUpdateConcurrencyException e )
-			{
-				_logger.LogInformation(e,
-					"[ThumbnailQuery] save failed after DbUpdateConcurrencyException");
-				return false;
-			}
-
-			return true;
-		}
-	}
-
 	private async Task<bool> RenameInternalAsync(ApplicationDbContext dbContext,
 		string? beforeFileHash, string? newFileHash)
 	{
 		if ( beforeFileHash == null || newFileHash == null )
 		{
 			_logger.LogError($"[ThumbnailQuery] Null " +
-							 $"beforeFileHash={beforeFileHash}; or newFileHash={newFileHash}; is null");
+			                 $"beforeFileHash={beforeFileHash}; or newFileHash={newFileHash}; is null");
 			return false;
 		}
 
@@ -291,30 +310,17 @@ public class ThumbnailQuery : IThumbnailQuery
 		return true;
 	}
 
-	public async Task<List<ThumbnailItem>> UnprocessedGeneratedThumbnails()
+	public async Task<List<ThumbnailItem>> GetMissingThumbnailsBatchAsync(int pageNumber,
+		int pageSize)
 	{
-		return await _context.Thumbnails.Where(p => ( p.ExtraLarge == null
-													  || p.Large == null || p.Small == null )
-													&& !string.IsNullOrEmpty(p.FileHash))
+		return await _context.Thumbnails
+			.Where(p => ( p.ExtraLarge == null
+			              || p.Large == null || p.Small == null )
+			            && !string.IsNullOrEmpty(p.FileHash))
+			.OrderBy(t => t.FileHash) // Ensure a consistent ordering
+			.Skip(pageNumber * pageSize)
+			.Take(pageSize)
 			.ToListAsync();
-	}
-
-	public async Task<bool> UpdateAsync(ThumbnailItem item)
-	{
-		try
-		{
-			return await UpdateInternalAsync(_context, item);
-		}
-		// InvalidOperationException can also be disposed
-		catch ( InvalidOperationException )
-		{
-			if ( _scopeFactory == null )
-			{
-				throw;
-			}
-
-			return await UpdateInternalAsync(new InjectServiceScope(_scopeFactory).Context(), item);
-		}
 	}
 
 	internal static async Task<bool> UpdateInternalAsync(ApplicationDbContext dbContext,
@@ -326,7 +332,7 @@ public class ThumbnailQuery : IThumbnailQuery
 	}
 
 	/// <summary>
-	/// Check for Duplicates in the database
+	///     Check for Duplicates in the database
 	/// </summary>
 	/// <param name="context"></param>
 	/// <param name="updateThumbnailNewItemsList"></param>
@@ -383,9 +389,9 @@ public class ThumbnailQuery : IThumbnailQuery
 			}
 
 			if ( item.TinyMeta == alreadyExists.TinyMeta &&
-				 item.Large == alreadyExists.Large &&
-				 item.Small == alreadyExists.Small &&
-				 item.ExtraLarge == alreadyExists.ExtraLarge )
+			     item.Large == alreadyExists.Large &&
+			     item.Small == alreadyExists.Small &&
+			     item.ExtraLarge == alreadyExists.ExtraLarge )
 			{
 				equalThumbnailItems.Add(alreadyExists);
 				continue;
@@ -394,6 +400,6 @@ public class ThumbnailQuery : IThumbnailQuery
 			updateThumbnailItems.Add(alreadyExists);
 		}
 
-		return (newThumbnailItems, updateThumbnailItems, equalThumbnailItems);
+		return ( newThumbnailItems, updateThumbnailItems, equalThumbnailItems );
 	}
 }

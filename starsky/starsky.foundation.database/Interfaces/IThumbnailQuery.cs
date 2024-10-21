@@ -11,7 +11,7 @@ public interface IThumbnailQuery
 	Task<List<ThumbnailItem>> Get(string? fileHash = null);
 	Task RemoveThumbnailsAsync(List<string> deletedFileHashes);
 	Task<bool> RenameAsync(string beforeFileHash, string newFileHash);
-	Task<List<ThumbnailItem>> UnprocessedGeneratedThumbnails();
+	Task<List<ThumbnailItem>> GetMissingThumbnailsBatchAsync(int pageNumber, int pageSize);
 
 	/// <summary>
 	/// Update specific thumbnail item with data

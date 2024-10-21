@@ -32,7 +32,6 @@ public class UpdateStatusGeneratedThumbnailService : IUpdateStatusGeneratedThumb
 		// in the next step only the fileHash is included
 		var dtoObjects = generationResults
 			.Where(p => !p.IsNotFound)
-			.Where(p => ExtensionRolesHelper.IsExtensionThumbnailSupported(p.SubPath))
 			.DistinctBy(p => p.FileHash)
 			.Select(p => p.FileHash)
 			.Select(fileHash => new ThumbnailResultDataTransferModel(fileHash)).ToList();

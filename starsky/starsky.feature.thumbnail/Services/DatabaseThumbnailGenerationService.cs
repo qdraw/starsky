@@ -8,7 +8,6 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Enums;
-using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
@@ -21,13 +20,13 @@ namespace starsky.feature.thumbnail.Services;
 	InjectionLifetime = InjectionLifetime.Scoped)]
 public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationService
 {
+	private readonly IThumbnailQueuedHostedService _bgTaskQueue;
+	private readonly IWebSocketConnectionsService _connectionsService;
 	private readonly IWebLogger _logger;
 	private readonly IQuery _query;
-	private readonly IWebSocketConnectionsService _connectionsService;
-	private readonly IThumbnailService _thumbnailService;
-	private readonly IThumbnailQueuedHostedService _bgTaskQueue;
-	private readonly IUpdateStatusGeneratedThumbnailService _updateStatusGeneratedThumbnailService;
 	private readonly IThumbnailQuery _thumbnailQuery;
+	private readonly IThumbnailService _thumbnailService;
+	private readonly IUpdateStatusGeneratedThumbnailService _updateStatusGeneratedThumbnailService;
 
 	public DatabaseThumbnailGenerationService(IQuery query, IWebLogger logger,
 		IWebSocketConnectionsService connectionsService,
@@ -46,35 +45,34 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 
 	public async Task StartBackgroundQueue(DateTime endTime)
 	{
-		var thumbnailItems = await _thumbnailQuery.UnprocessedGeneratedThumbnails();
-		var fileHashesList = thumbnailItems.Select(p => p.FileHash).ToList();
-		var queryItems = await _query.GetObjectsByFileHashAsync(fileHashesList);
+		var totalProcessed = 0;
+		var currentPage = 0;
+		const int batchSize = 100;
+    
+		//todo: add a check to see if the service is already running
+		
+		List<ThumbnailItem> missingThumbnails;
 
-		foreach ( var chuckedItems in thumbnailItems.ChunkyEnumerable(50) )
+		do
 		{
-			// When the CPU is to high its gives a Error 500
+			// Query missing thumbnails in batches
+			missingThumbnails = await _thumbnailQuery.GetMissingThumbnailsBatchAsync(currentPage, batchSize);
+        
+			// Process each batch
+			var fileHashesList = missingThumbnails.Select(p => p.FileHash).ToList();
+			var queryItems = await _query.GetObjectsByFileHashAsync(fileHashesList);
+			
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
-				await FilterAndWorkThumbnailGeneration(endTime,
-					chuckedItems.ToList(), queryItems);
+				await WorkThumbnailGeneration(missingThumbnails, queryItems);
 			}, "DatabaseThumbnailGenerationService");
-		}
-	}
+				
+			totalProcessed += missingThumbnails.Count;
+			currentPage++;
 
-	internal async Task<IEnumerable<ThumbnailItem>> FilterAndWorkThumbnailGeneration(
-		DateTime endTime,
-		List<ThumbnailItem> chuckedItems,
-		List<FileIndexItem> queryItems)
-	{
-		// todo: refactor 
-		// message:Cancel job due timeout
-
-		if ( endTime > DateTime.UtcNow )
-		{
-			return await WorkThumbnailGeneration(chuckedItems, queryItems);
-		}
-
-		return new List<ThumbnailItem>();
+			_logger.LogInformation($"[DatabaseThumbnailGenerationService] Processed {totalProcessed} thumbnails so far...");
+        
+		} while (missingThumbnails.Count == batchSize); 
 	}
 
 	internal async Task<IEnumerable<ThumbnailItem>> WorkThumbnailGeneration(
@@ -87,7 +85,7 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 		{
 			var fileIndexItem = fileIndexItems.Find(p => p.FileHash == item.FileHash);
 			if ( fileIndexItem?.FilePath == null ||
-				 fileIndexItem.Status != FileIndexItem.ExifStatus.Ok )
+			     fileIndexItem.Status != FileIndexItem.ExifStatus.Ok )
 			{
 				// when null set to false
 				item.Small ??= false;
