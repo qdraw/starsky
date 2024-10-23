@@ -48,16 +48,22 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 		var totalProcessed = 0;
 		var currentPage = 0;
 		const int batchSize = 100;
-    
+
+		if ( _thumbnailQuery.IsRunningJobAsync() )
+		{
+			return;
+		}
+
 		//todo: add a check to see if the service is already running
-		
+
 		List<ThumbnailItem> missingThumbnails;
 
 		do
 		{
 			// Query missing thumbnails in batches
-			missingThumbnails = await _thumbnailQuery.GetMissingThumbnailsBatchAsync(currentPage, batchSize);
-        
+			missingThumbnails =
+				await _thumbnailQuery.GetMissingThumbnailsBatchAsync(currentPage, batchSize);
+
 			// Process each batch
 			var fileHashesList = missingThumbnails.Select(p => p.FileHash).ToList();
 			var queryItems = await _query.GetObjectsByFileHashAsync(fileHashesList);
@@ -65,18 +71,17 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 			{
 				break;
 			}
-			
-			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
-			{
-				await WorkThumbnailGeneration(missingThumbnails, queryItems);
-			}, "DatabaseThumbnailGenerationService");
-				
+
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(
+				async _ => { await WorkThumbnailGeneration(missingThumbnails, queryItems); },
+				"DatabaseThumbnailGenerationService");
+
 			totalProcessed += missingThumbnails.Count;
 			currentPage++;
 
-			_logger.LogInformation($"[DatabaseThumbnailGenerationService] Processed {totalProcessed} thumbnails so far...");
-        
-		} while (missingThumbnails.Count == batchSize); 
+			_logger.LogInformation(
+				$"[DatabaseThumbnailGenerationService] Processed {totalProcessed} thumbnails so far...");
+		} while ( missingThumbnails.Count == batchSize );
 	}
 
 	internal async Task<IEnumerable<ThumbnailItem>> WorkThumbnailGeneration(

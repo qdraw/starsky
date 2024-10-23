@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
 using starsky.foundation.database.Data;
@@ -21,14 +22,16 @@ public class ThumbnailQuery : IThumbnailQuery
 {
 	private readonly ApplicationDbContext _context;
 	private readonly IWebLogger _logger;
+	private readonly IMemoryCache _memoryCache;
 	private readonly IServiceScopeFactory? _scopeFactory;
 
 	public ThumbnailQuery(ApplicationDbContext context, IServiceScopeFactory? scopeFactory,
-		IWebLogger logger)
+		IWebLogger logger, IMemoryCache memoryCache)
 	{
 		_context = context;
 		_scopeFactory = scopeFactory;
 		_logger = logger;
+		_memoryCache = memoryCache;
 	}
 
 	public Task<List<ThumbnailItem>?> AddThumbnailRangeAsync(
@@ -139,6 +142,31 @@ public class ThumbnailQuery : IThumbnailQuery
 
 			return await UpdateInternalAsync(new InjectServiceScope(_scopeFactory).Context(), item);
 		}
+	}
+
+	public bool IsRunningJob()
+	{
+		return _memoryCache.TryGetValue($"{nameof(ThumbnailQuery)}_IsRunningJob",
+			out bool isRunning) && isRunning;
+	}
+
+	public bool SetRunningJob(bool value)
+	{
+		_memoryCache.Set($"{nameof(ThumbnailQuery)}_IsRunningJob", value, TimeSpan.FromMinutes(30));
+		return true;
+	}
+
+	public async Task<List<ThumbnailItem>> GetMissingThumbnailsBatchAsync(int pageNumber,
+		int pageSize)
+	{
+		return await _context.Thumbnails
+			.Where(p => ( p.ExtraLarge == null
+			              || p.Large == null || p.Small == null )
+			            && !string.IsNullOrEmpty(p.FileHash))
+			.OrderBy(t => t.FileHash) // Ensure a consistent ordering
+			.Skip(pageNumber * pageSize)
+			.Take(pageSize)
+			.ToListAsync();
 	}
 
 	private async Task<List<ThumbnailItem>?> AddThumbnailRangeInternalRetryDisposedAsync(
@@ -308,19 +336,6 @@ public class ThumbnailQuery : IThumbnailQuery
 		await dbContext.SaveChangesAsync();
 
 		return true;
-	}
-
-	public async Task<List<ThumbnailItem>> GetMissingThumbnailsBatchAsync(int pageNumber,
-		int pageSize)
-	{
-		return await _context.Thumbnails
-			.Where(p => ( p.ExtraLarge == null
-			              || p.Large == null || p.Small == null )
-			            && !string.IsNullOrEmpty(p.FileHash))
-			.OrderBy(t => t.FileHash) // Ensure a consistent ordering
-			.Skip(pageNumber * pageSize)
-			.Take(pageSize)
-			.ToListAsync();
 	}
 
 	internal static async Task<bool> UpdateInternalAsync(ApplicationDbContext dbContext,
