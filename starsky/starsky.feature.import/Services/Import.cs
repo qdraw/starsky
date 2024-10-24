@@ -18,7 +18,6 @@ using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.database.Thumbnails;
 using starsky.foundation.injection;
-using starsky.foundation.thumbnailmeta.Interfaces;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
@@ -29,6 +28,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.thumbnailmeta.Interfaces;
 using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.Services;
 
@@ -37,37 +37,36 @@ using starsky.foundation.writemeta.Services;
 namespace starsky.feature.import.Services;
 
 /// <summary>
-/// Also known as ImportService - Import.cs
+///     Also known as ImportService - Import.cs
 /// </summary>
 [Service(typeof(IImport), InjectionLifetime = InjectionLifetime.Scoped)]
 public class Import : IImport
 {
-	private readonly IImportQuery? _importQuery;
-
-	// storage providers
-	private readonly IStorage _filesystemStorage;
-	private readonly IStorage _subPathStorage;
-	private readonly IStorage _thumbnailStorage;
+	/// <summary>
+	///     Used when File has no exif date in description
+	/// </summary>
+	internal const string MessageDateTimeBasedOnFilename = "Date and Time based on filename";
 
 	private readonly AppSettings _appSettings;
 
-	private readonly ReadMeta _readMetaHost;
+	private readonly IConsole _console;
 	private readonly IExifTool _exifTool;
+
+	// storage providers
+	private readonly IStorage _filesystemStorage;
+	private readonly IImportQuery? _importQuery;
+	private readonly IWebLogger _logger;
+
+	private readonly IMemoryCache _memoryCache;
+	private readonly IMetaExifThumbnailService _metaExifThumbnailService;
 	private readonly IQuery _query;
 
-	private readonly IConsole _console;
-	private readonly IMetaExifThumbnailService _metaExifThumbnailService;
-
-	private readonly IMemoryCache? _memoryCache;
+	private readonly ReadMeta _readMetaHost;
 	private readonly IServiceScopeFactory? _serviceScopeFactory;
-	private readonly IWebLogger _logger;
-	private readonly UpdateImportTransformations _updateImportTransformations;
+	private readonly IStorage _subPathStorage;
 	private readonly IThumbnailQuery _thumbnailQuery;
-
-	/// <summary>
-	/// Used when File has no exif date in description
-	/// </summary>
-	internal const string MessageDateTimeBasedOnFilename = "Date and Time based on filename";
+	private readonly IStorage _thumbnailStorage;
+	private readonly UpdateImportTransformations _updateImportTransformations;
 
 	[SuppressMessage("Usage",
 		"S107: Constructor has 8 parameters, which is greater than the 7 authorized")]
@@ -106,8 +105,19 @@ public class Import : IImport
 	}
 
 	/// <summary>
-	/// Check if the item can be add to the database
-	/// Run `importer` to perform the action
+	///     Number of checks for files with the same filePath.
+	///     Change only to get Exceptions earlier
+	/// </summary>
+	internal int MaxTryGetDestinationPath { get; set; } = 100;
+
+	/// <summary>
+	///     Temp place to store parent Directories to avoid lots of Database requests
+	/// </summary>
+	private List<string> AddedParentDirectories { get; } = new();
+
+	/// <summary>
+	///     Check if the item can be added to the database
+	///     Run `importer` to perform the action
 	/// </summary>
 	/// <param name="fullFilePathsList">paths</param>
 	/// <param name="importSettings">settings</param>
@@ -127,7 +137,7 @@ public class Import : IImport
 
 		var importIndexItemsList = ( await includedDirectoryFilePaths
 			.ForEachAsync(
-				async (includedFilePath)
+				async includedFilePath
 					=> await PreflightPerFile(includedFilePath, importSettings),
 				_appSettings.MaxDegreesOfParallelism) )!.ToList();
 
@@ -136,6 +146,38 @@ public class Import : IImport
 		importIndexItemsList =
 			CheckForDuplicateNaming(importIndexItemsList.ToList(), directoriesContent);
 		CheckForReadOnlyFileSystems(importIndexItemsList, importSettings.DeleteAfter);
+
+		return importIndexItemsList;
+	}
+
+	/// <summary>
+	///     Run import on list of files and folders (full path style)
+	/// </summary>
+	/// <param name="inputFullPathList">list of files and folders (full path style)</param>
+	/// <param name="importSettings">settings</param>
+	/// <returns>status object</returns>
+	public async Task<List<ImportIndexItem>> Importer(IEnumerable<string> inputFullPathList,
+		ImportSettingsModel importSettings)
+	{
+		var preflightItemList = await Preflight(inputFullPathList.ToList(), importSettings);
+
+		// When directory is empty 
+		if ( preflightItemList.Count == 0 )
+		{
+			return new List<ImportIndexItem>();
+		}
+
+		var directoriesContent = ParentFoldersDictionary(preflightItemList);
+		if ( importSettings.IndexMode )
+		{
+			await CreateParentFolders(directoriesContent);
+		}
+
+		var importIndexItemsList = ( await preflightItemList.AsEnumerable()
+			.ForEachAsync(
+				async preflightItem
+					=> await Importer(preflightItem, importSettings),
+				_appSettings.MaxDegreesOfParallelism) )!.ToList();
 
 		return importIndexItemsList;
 	}
@@ -150,7 +192,7 @@ public class Import : IImport
 
 		var parentFolders = new List<Tuple<string?, List<string>>>();
 		foreach ( var itemSourceFullFilePath in importIndexItemsList.Select(item =>
-					 item.SourceFullFilePath) )
+			         item.SourceFullFilePath) )
 		{
 			var parentFolder = Directory.GetParent(itemSourceFullFilePath)
 				?.FullName;
@@ -170,8 +212,8 @@ public class Import : IImport
 		{
 			var fileStorageInfo = _filesystemStorage.Info(parentFolder.Item1!);
 			if ( fileStorageInfo.IsFolderOrFile !=
-				 FolderOrFileModel.FolderOrFileTypeList.Folder ||
-				 fileStorageInfo.IsFileSystemReadOnly != true )
+			     FolderOrFileModel.FolderOrFileTypeList.Folder ||
+			     fileStorageInfo.IsFileSystemReadOnly != true )
 			{
 				continue;
 			}
@@ -197,8 +239,8 @@ public class Import : IImport
 	}
 
 	/// <summary>
-	/// Get a Dictionary with all the content of the parent folders
-	/// Used to scan for duplicate names
+	///     Get a Dictionary with all the content of the parent folders
+	///     Used to scan for duplicate names
 	/// </summary>
 	/// <param name="importIndexItemsList">files to import, use FileIndexItem.ParentDirectory and status Ok</param>
 	/// <returns>All parent folders with content</returns>
@@ -207,12 +249,12 @@ public class Import : IImport
 	{
 		var directoriesContent = new Dictionary<string, List<string>>();
 		foreach ( var importIndexItemFileIndexItemParentDirectory in importIndexItemsList.Where(
-						 p =>
-							 p.Status == ImportStatus.Ok)
-					 .Select(p => p.FileIndexItem?.ParentDirectory) )
+				         p =>
+					         p.Status == ImportStatus.Ok)
+			         .Select(p => p.FileIndexItem?.ParentDirectory) )
 		{
 			if ( importIndexItemFileIndexItemParentDirectory == null ||
-				 directoriesContent.ContainsKey(importIndexItemFileIndexItemParentDirectory) )
+			     directoriesContent.ContainsKey(importIndexItemFileIndexItemParentDirectory) )
 			{
 				continue;
 			}
@@ -229,7 +271,7 @@ public class Import : IImport
 	}
 
 	/// <summary>
-	/// Preflight for duplicate fileNames
+	///     Preflight for duplicate fileNames
 	/// </summary>
 	/// <param name="importIndexItemsList">list of files to be imported</param>
 	/// <param name="directoriesContent">Dictionary of all parent folders</param>
@@ -240,7 +282,7 @@ public class Import : IImport
 		Dictionary<string, List<string>> directoriesContent)
 	{
 		foreach ( var importIndexItem in importIndexItemsList.Where(p =>
-					 p.Status == ImportStatus.Ok) )
+			         p.Status == ImportStatus.Ok) )
 		{
 			if ( importIndexItem.FileIndexItem == null )
 			{
@@ -285,7 +327,7 @@ public class Import : IImport
 
 
 	/// <summary>
-	/// To Add files form directory to list
+	///     To Add files form directory to list
 	/// </summary>
 	/// <param name="fullFilePathsList">full file Path</param>
 	/// <param name="importSettings">settings to add recursive</param>
@@ -297,7 +339,7 @@ public class Import : IImport
 		foreach ( var fullFilePath in fullFilePathsList )
 		{
 			if ( _filesystemStorage.ExistFolder(fullFilePath) &&
-				 importSettings.RecursiveDirectory )
+			     importSettings.RecursiveDirectory )
 			{
 				// recursive
 				includedDirectoryFilePaths.AddRange(_filesystemStorage
@@ -308,7 +350,7 @@ public class Import : IImport
 			}
 
 			if ( _filesystemStorage.ExistFolder(fullFilePath) &&
-				 !importSettings.RecursiveDirectory )
+			     !importSettings.RecursiveDirectory )
 			{
 				// non-recursive
 				includedDirectoryFilePaths.AddRange(_filesystemStorage
@@ -327,7 +369,7 @@ public class Import : IImport
 		return includedDirectoryFilePaths;
 	}
 
-	internal async Task<ImportIndexItem> PreflightPerFile(
+	private async Task<ImportIndexItem> PreflightPerFile(
 		KeyValuePair<string, bool> inputFileFullPath,
 		ImportSettingsModel importSettings)
 	{
@@ -361,7 +403,7 @@ public class Import : IImport
 
 		// Check if extension is correct && Check if the file is correct
 		if ( !ExtensionRolesHelper.IsExtensionSyncSupported(inputFileFullPath.Key) ||
-			 !ExtensionRolesHelper.IsExtensionSyncSupported($".{imageFormat}") )
+		     !ExtensionRolesHelper.IsExtensionSyncSupported($".{imageFormat}") )
 		{
 			ConsoleIfVerbose($"❌ extension not supported: {inputFileFullPath.Key}");
 			return new ImportIndexItem
@@ -386,7 +428,7 @@ public class Import : IImport
 		}
 
 		if ( importSettings.IndexMode &&
-			 await _importQuery!.IsHashInImportDbAsync(hashList.Key) )
+		     await _importQuery!.IsHashInImportDbAsync(hashList.Key) )
 		{
 			ConsoleIfVerbose($"🤷 Ignored, exist already {inputFileFullPath.Key}");
 			return new ImportIndexItem
@@ -399,7 +441,7 @@ public class Import : IImport
 			};
 		}
 
-		// Only accept files with correct meta data
+		// Only accept files with correct metadata
 		// Check if there is a xmp file that contains data
 		var fileIndexItem =
 			await _readMetaHost.ReadExifAndXmpFromFileAsync(inputFileFullPath.Key);
@@ -425,13 +467,13 @@ public class Import : IImport
 
 
 	/// <summary>
-	/// Create a new import object
+	///     Create a new import object
 	/// </summary>
 	/// <param name="inputFileFullPath">full file path</param>
 	/// <param name="imageFormat">is it jpeg or png or something different</param>
 	/// <param name="fileHashCode">file hash base32</param>
 	/// <param name="fileIndexItem">database item</param>
-	/// <param name="colorClassTransformation">Force to update colorclass</param>
+	/// <param name="colorClassTransformation">Force to update colorClass</param>
 	/// <param name="size">Add filesize in bytes</param>
 	/// <returns></returns>
 	private ImportIndexItem ObjectCreateIndexItem(
@@ -453,7 +495,7 @@ public class Import : IImport
 			ColorClass = fileIndexItem.ColorClass
 		};
 
-		// used for files without a Exif Date for example WhatsApp images
+		// used for files without an Exif Date for example WhatsApp images
 		if ( fileIndexItem.DateTime.Year == 1 )
 		{
 			importIndexItem.FileIndexItem.DateTime =
@@ -491,7 +533,7 @@ public class Import : IImport
 	}
 
 	/// <summary>
-	/// Overwrite structures when importing using a header
+	///     Overwrite structures when importing using a header
 	/// </summary>
 	/// <param name="importIndexItem"></param>
 	/// <param name="overwriteStructure">to overwrite, keep empty to ignore</param>
@@ -527,39 +569,7 @@ public class Import : IImport
 	}
 
 	/// <summary>
-	/// Run import on list of files and folders (full path style)
-	/// </summary>
-	/// <param name="inputFullPathList">list of files and folders (full path style)</param>
-	/// <param name="importSettings">settings</param>
-	/// <returns>status object</returns>
-	public async Task<List<ImportIndexItem>> Importer(IEnumerable<string> inputFullPathList,
-		ImportSettingsModel importSettings)
-	{
-		var preflightItemList = await Preflight(inputFullPathList.ToList(), importSettings);
-
-		// When directory is empty 
-		if ( preflightItemList.Count == 0 )
-		{
-			return new List<ImportIndexItem>();
-		}
-
-		var directoriesContent = ParentFoldersDictionary(preflightItemList);
-		if ( importSettings.IndexMode )
-		{
-			await CreateParentFolders(directoriesContent);
-		}
-
-		var importIndexItemsList = ( await preflightItemList.AsEnumerable()
-			.ForEachAsync(
-				async (preflightItem)
-					=> await Importer(preflightItem, importSettings),
-				_appSettings.MaxDegreesOfParallelism) )!.ToList();
-
-		return importIndexItemsList;
-	}
-
-	/// <summary>
-	/// fail/pass, right type, string=subPath, string?2= error reason
+	///     fail/pass, right type, string=subPath, string?2= error reason
 	/// </summary>
 	/// <param name="importIndexItemsList"></param>
 	/// <param name="importSettings"></param>
@@ -569,14 +579,14 @@ public class Import : IImport
 			importIndexItemsList, ImportSettingsModel importSettings)
 	{
 		if ( _appSettings.MetaThumbnailOnImport == false ||
-			 !importSettings.IndexMode )
+		     !importSettings.IndexMode )
 		{
 			return new List<(bool, bool, string, string?)>();
 		}
 
 		var items = importIndexItemsList
 			.Where(p => p.Status == ImportStatus.Ok)
-			.Select(p => (p.FilePath, p.FileIndexItem!.FileHash)).Cast<(string, string)>()
+			.Select(p => ( p.FilePath, p.FileIndexItem!.FileHash )).Cast<(string, string)>()
 			.ToList();
 
 		if ( items.Count == 0 )
@@ -588,8 +598,8 @@ public class Import : IImport
 	}
 
 	/// <summary>
-	/// Run the import on the config file
-	/// Does NOT add anything to the database
+	///     Run the import on the config file
+	///     Does NOT add anything to the database
 	/// </summary>
 	/// <param name="importIndexItem">config file</param>
 	/// <param name="importSettings">optional settings</param>
@@ -606,11 +616,11 @@ public class Import : IImport
 		var xmpExistForThisFileType = ExistXmpSidecarForThisFileType(importIndexItem);
 
 		if ( xmpExistForThisFileType || ( _appSettings.ExifToolImportXmpCreate
-										  && ExtensionRolesHelper.IsExtensionForceXmp(
-											  importIndexItem.FilePath) ) )
+		                                  && ExtensionRolesHelper.IsExtensionForceXmp(
+			                                  importIndexItem.FilePath) ) )
 		{
 			// When a xmp file already exist (only for raws)
-			// AND when this created afterwards with the ExifToolImportXmpCreate setting  (only for raws)
+			// AND when this created afterward with the ExifToolImportXmpCreate setting  (only for raws)
 			importIndexItem.FileIndexItem!.AddSidecarExtension("xmp");
 		}
 
@@ -647,9 +657,9 @@ public class Import : IImport
 				new SetupDatabaseTypes(_appSettings), _query,
 				_memoryCache, _appSettings, _serviceScopeFactory, _logger);
 			updateItemAsync = queryFactory.Query()!.UpdateItemAsync;
-			queryThumbnailUpdateDelegate = (thumbnailItems) => new ThumbnailQueryFactory(
+			queryThumbnailUpdateDelegate = thumbnailItems => new ThumbnailQueryFactory(
 					new SetupDatabaseTypes(_appSettings), _serviceScopeFactory,
-					_thumbnailQuery, _logger).ThumbnailQuery()!
+					_thumbnailQuery, _logger, _memoryCache).ThumbnailQuery()!
 				.AddThumbnailRangeAsync(thumbnailItems);
 		}
 
@@ -681,7 +691,7 @@ public class Import : IImport
 		if ( _appSettings.IsVerbose() )
 		{
 			_logger.LogInformation("[Import] Next Action = Copy" +
-								   $" {importIndexItem.SourceFullFilePath} {importIndexItem.FilePath}");
+			                       $" {importIndexItem.SourceFullFilePath} {importIndexItem.FilePath}");
 		}
 
 		var hostStorageFileSize = _filesystemStorage.Info(importIndexItem.SourceFullFilePath).Size;
@@ -721,21 +731,22 @@ public class Import : IImport
 		string? fileHash, bool indexMode)
 	{
 		if ( fileHash == null || _appSettings.MetaThumbnailOnImport == false || !indexMode ||
-			 queryThumbnailUpdateDelegate == null )
+		     queryThumbnailUpdateDelegate == null )
 		{
 			return;
 		}
+
 		// Check if fastest version is available to show 
 		var setStatus = _thumbnailStorage.ExistFile(
 			ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.TinyMeta));
 		await queryThumbnailUpdateDelegate(new List<ThumbnailResultDataTransferModel>
 		{
-			new ThumbnailResultDataTransferModel(fileHash, setStatus)
+			new(fileHash, setStatus)
 		});
 	}
 
 	/// <summary>
-	/// To Move Files after import
+	///     To Move Files after import
 	/// </summary>
 	/// <param name="importSettings">to enable the 'Delete After' flag</param>
 	/// <param name="importIndexItem">item</param>
@@ -757,8 +768,8 @@ public class Import : IImport
 	}
 
 	/// <summary>
-	///	From here on the item is exit in the storage folder
-	/// Creation of a sidecar xmp file
+	///     From here on the item is exit in the storage folder
+	///     Creation of a sidecar xmp file
 	/// </summary>
 	/// <param name="importIndexItem"></param>
 	/// <param name="xmpExistForThisFileType"></param>
@@ -775,7 +786,7 @@ public class Import : IImport
 	}
 
 	/// <summary>
-	/// Support for include sidecar files - True when exist and current filetype is raw
+	///     Support for include sidecar files - True when exist and current filetype is raw
 	/// </summary>
 	/// <param name="importIndexItem">to get the SourceFullFilePath</param>
 	/// <returns>True when exist and current filetype is raw</returns>
@@ -791,12 +802,12 @@ public class Import : IImport
 			ExtensionRolesHelper.ReplaceExtensionWithXmp(importIndexItem
 				.SourceFullFilePath);
 		return ExtensionRolesHelper.IsExtensionForceXmp(importIndexItem
-				   .SourceFullFilePath) &&
-			   _filesystemStorage.ExistFile(xmpSourceFullFilePath);
+			       .SourceFullFilePath) &&
+		       _filesystemStorage.ExistFile(xmpSourceFullFilePath);
 	}
 
 	/// <summary>
-	/// Add item to database
+	///     Add item to database
 	/// </summary>
 	internal async Task AddToQueryAndImportDatabaseAsync(
 		ImportIndexItem importIndexItem,
@@ -807,8 +818,8 @@ public class Import : IImport
 			if ( _appSettings.IsVerbose() )
 			{
 				_logger.LogInformation(" AddToQueryAndImportDatabaseAsync Ignored - " +
-									   $"IndexMode {importSettings.IndexMode} " +
-									   $"TestConnection {_importQuery?.TestConnection()}");
+				                       $"IndexMode {importSettings.IndexMode} " +
+				                       $"TestConnection {_importQuery?.TestConnection()}");
 			}
 
 			return;
@@ -830,7 +841,7 @@ public class Import : IImport
 	}
 
 	/// <summary>
-	/// Remove from database
+	///     Remove from database
 	/// </summary>
 	internal async Task RemoveFromQueryAndImportDatabaseAsync(
 		ImportIndexItem importIndexItem,
@@ -841,8 +852,8 @@ public class Import : IImport
 			if ( _appSettings.IsVerbose() )
 			{
 				_logger.LogInformation(" RemoveToQueryAndImportDatabaseAsync Ignored - " +
-									   $"IndexMode {importSettings.IndexMode} " +
-									   $"TestConnection {_importQuery?.TestConnection()}");
+				                       $"IndexMode {importSettings.IndexMode} " +
+				                       $"TestConnection {_importQuery?.TestConnection()}");
 			}
 
 			return;
@@ -863,13 +874,7 @@ public class Import : IImport
 	}
 
 	/// <summary>
-	/// Number of checks for files with the same filePath.
-	/// Change only to get Exceptions earlier
-	/// </summary>
-	internal int MaxTryGetDestinationPath { get; set; } = 100;
-
-	/// <summary>
-	/// Append test_1.jpg to filepath (subPath style)
+	///     Append test_1.jpg to filepath (subPath style)
 	/// </summary>
 	/// <param name="fileName">the fileName</param>
 	/// <param name="index">number</param>
@@ -891,7 +896,7 @@ public class Import : IImport
 	}
 
 	/// <summary>
-	/// Create parent folders if the folder does not exist on disk
+	///     Create parent folders if the folder does not exist on disk
 	/// </summary>
 	/// <param name="directoriesContent">List of all ParentFolders</param>
 	private async Task CreateParentFolders(Dictionary<string, List<string>> directoriesContent)
@@ -925,19 +930,14 @@ public class Import : IImport
 	}
 
 	/// <summary>
-	/// Temp place to store parent Directories to avoid lots of Database requests
-	/// </summary>
-	private List<string> AddedParentDirectories { get; set; } = new List<string>();
-
-	/// <summary>
-	/// Create a directory in the database
+	///     Create a directory in the database
 	/// </summary>
 	/// <param name="parentPath">path to create</param>
 	/// <returns>async task</returns>
 	private async Task CreateNewDatabaseDirectory(string parentPath)
 	{
 		if ( AddedParentDirectories.Contains(parentPath) ||
-			 _query.SingleItem(parentPath) != null )
+		     _query.SingleItem(parentPath) != null )
 		{
 			return;
 		}

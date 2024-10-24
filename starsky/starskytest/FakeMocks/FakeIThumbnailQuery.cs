@@ -13,10 +13,12 @@ namespace starskytest.FakeMocks;
 
 public class FakeIThumbnailQuery : IThumbnailQuery
 {
+	private bool _isRunningJob;
 	private readonly List<ThumbnailItem> _content = new();
 
-	public FakeIThumbnailQuery(List<ThumbnailItem>? items = null)
+	public FakeIThumbnailQuery(List<ThumbnailItem>? items = null, bool isRunningJob = false)
 	{
+		_isRunningJob = isRunningJob;
 		if ( items != null )
 		{
 			_content = items;
@@ -133,11 +135,12 @@ public class FakeIThumbnailQuery : IThumbnailQuery
 
 	public bool IsRunningJob()
 	{
-		throw new NotImplementedException();
+		return _isRunningJob;
 	}
 
 	public bool SetRunningJob(bool value)
 	{
-		throw new NotImplementedException();
+		_isRunningJob = value;
+		return _isRunningJob;
 	}
 }

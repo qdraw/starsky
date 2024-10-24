@@ -49,7 +49,7 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 		var currentPage = 0;
 		const int batchSize = 100;
 
-		if ( _thumbnailQuery.IsRunningJobAsync() )
+		if ( _thumbnailQuery.IsRunningJob() )
 		{
 			return;
 		}

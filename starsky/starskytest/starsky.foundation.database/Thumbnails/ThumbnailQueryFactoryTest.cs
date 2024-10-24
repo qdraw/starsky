@@ -18,8 +18,10 @@ public sealed class ThumbnailQueryFactoryTest
 	[TestMethod]
 	public void QueryFactoryTest_Null()
 	{
-		var query = new ThumbnailQueryFactory(
-			null, null, null, null!).ThumbnailQuery();
+		var factory = new ThumbnailQueryFactory(
+			null, null,
+			null, null!, null!);
+		var query = factory.ThumbnailQuery();
 		Assert.IsNull(query);
 	}
 
@@ -28,7 +30,7 @@ public sealed class ThumbnailQueryFactoryTest
 	{
 		var queryFactory = new ThumbnailQueryFactory(null, null,
 			new ThumbnailQuery(null!, null, new FakeIWebLogger(), new FakeMemoryCache()),
-			new FakeIWebLogger());
+			new FakeIWebLogger(), new FakeMemoryCache());
 		var query = queryFactory.ThumbnailQuery();
 		Assert.AreEqual(typeof(ThumbnailQuery), query!.GetType());
 	}
@@ -46,7 +48,7 @@ public sealed class ThumbnailQueryFactoryTest
 				services), null,
 			new ThumbnailQuery(new ApplicationDbContext(options), null, new FakeIWebLogger(),
 				new FakeMemoryCache()),
-			new FakeIWebLogger());
+			new FakeIWebLogger(), new FakeMemoryCache());
 		var query = queryFactory.ThumbnailQuery();
 		Assert.AreEqual(typeof(ThumbnailQuery), query!.GetType());
 	}
@@ -60,7 +62,7 @@ public sealed class ThumbnailQueryFactoryTest
 		});
 
 		var queryFactory = new ThumbnailQueryFactory(null, null, fakeIQuery,
-			new FakeIWebLogger());
+			new FakeIWebLogger(), new FakeMemoryCache());
 		var query = queryFactory.ThumbnailQuery();
 
 
@@ -79,7 +81,7 @@ public sealed class ThumbnailQueryFactoryTest
 		});
 
 		var queryFactory = new ThumbnailQueryFactory(null, null, fakeIQuery,
-			new FakeIWebLogger());
+			new FakeIWebLogger(), new FakeMemoryCache());
 
 		var query = queryFactory.ThumbnailQuery();
 

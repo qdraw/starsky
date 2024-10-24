@@ -22,11 +22,11 @@ public class ThumbnailQuery : IThumbnailQuery
 {
 	private readonly ApplicationDbContext _context;
 	private readonly IWebLogger _logger;
-	private readonly IMemoryCache _memoryCache;
+	private readonly IMemoryCache? _memoryCache;
 	private readonly IServiceScopeFactory? _scopeFactory;
 
 	public ThumbnailQuery(ApplicationDbContext context, IServiceScopeFactory? scopeFactory,
-		IWebLogger logger, IMemoryCache memoryCache)
+		IWebLogger logger, IMemoryCache? memoryCache = null)
 	{
 		_context = context;
 		_scopeFactory = scopeFactory;
