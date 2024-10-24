@@ -36,7 +36,7 @@ public class ThumbnailQueryErrorTest
 
 		var fakeQuery =
 			new ThumbnailQuery(new AppDbContextConcurrencyException(options) { MinCount = 1 },
-				null!, new FakeIWebLogger());
+				null!, new FakeIWebLogger(), new FakeMemoryCache());
 		await fakeQuery.RenameAsync("1", "1");
 
 		Assert.IsTrue(IsCalledDbUpdateConcurrency);
@@ -52,7 +52,7 @@ public class ThumbnailQueryErrorTest
 
 		var fakeQuery =
 			new ThumbnailQuery(new AppDbContextConcurrencyException(options) { MinCount = 2 },
-				null!, new FakeIWebLogger());
+				null!, new FakeIWebLogger(), new FakeMemoryCache());
 		await fakeQuery.RenameAsync("1", "2");
 
 		Assert.IsTrue(IsCalledDbUpdateConcurrency);
@@ -68,7 +68,7 @@ public class ThumbnailQueryErrorTest
 
 		var fakeQuery =
 			new ThumbnailQuery(new AppDbContextConcurrencyException(options) { MinCount = 3 },
-				null!, new FakeIWebLogger());
+				null!, new FakeIWebLogger(), new FakeMemoryCache());
 		await fakeQuery.RenameAsync("1", "2");
 
 		Assert.IsTrue(IsCalledDbUpdateConcurrency);
@@ -86,7 +86,7 @@ public class ThumbnailQueryErrorTest
 
 		var fakeQuery = new ThumbnailQuery(
 			new MySqlSaveDbExceptionContext(options, "Duplicate entry '1' for key 'PRIMARY'", code),
-			null!, new FakeIWebLogger());
+			null!, new FakeIWebLogger(), new FakeMemoryCache());
 
 		await fakeQuery.AddThumbnailRangeAsync([new ThumbnailResultDataTransferModel("t")]);
 
@@ -105,7 +105,7 @@ public class ThumbnailQueryErrorTest
 			new MySqlSaveDbExceptionContext(options, "Something else",
 				MySqlErrorCode.AbortingConnection),
 			null!,
-			new FakeIWebLogger()
+			new FakeIWebLogger(), new FakeMemoryCache()
 		);
 
 		// Assert that a MySqlException is thrown when AddThumbnailRangeAsync is called

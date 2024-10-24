@@ -31,7 +31,7 @@ public class MoveToTrashServiceTest
 		var moveToTrashService = new MoveToTrashService(appSettings,
 			new FakeIQuery(new List<FileIndexItem>
 			{
-				new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }
+				new(path) { Status = FileIndexItem.ExifStatus.Ok }
 			}),
 			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(),
 			trashService, new FakeIMetaUpdateService(),
@@ -55,14 +55,8 @@ public class MoveToTrashServiceTest
 		var moveToTrashService = new MoveToTrashService(appSettings,
 			new FakeIQuery(new List<FileIndexItem>
 			{
-				new FileIndexItem(path)
-				{
-					IsDirectory = false, Status = FileIndexItem.ExifStatus.Ok
-				},
-				new FileIndexItem(dirPath)
-				{
-					IsDirectory = true, Status = FileIndexItem.ExifStatus.Ok
-				}
+				new(path) { IsDirectory = false, Status = FileIndexItem.ExifStatus.Ok },
+				new(dirPath) { IsDirectory = true, Status = FileIndexItem.ExifStatus.Ok }
 			}),
 			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(),
 			trashService, new FakeIMetaUpdateService(),
@@ -85,7 +79,7 @@ public class MoveToTrashServiceTest
 		var moveToTrashService = new MoveToTrashService(appSettings,
 			new FakeIQuery(new List<FileIndexItem>
 			{
-				new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }
+				new(path) { Status = FileIndexItem.ExifStatus.Ok }
 			}),
 			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(),
 			trashService, new FakeIMetaUpdateService(),
@@ -107,7 +101,7 @@ public class MoveToTrashServiceTest
 		var moveToTrashService = new MoveToTrashService(appSettings,
 			new FakeIQuery(new List<FileIndexItem>
 			{
-				new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }
+				new(path) { Status = FileIndexItem.ExifStatus.Ok }
 			}),
 			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(),
 			trashService, new FakeIMetaUpdateService(),
@@ -123,13 +117,13 @@ public class MoveToTrashServiceTest
 	public async Task InMetaTrash_StatusOk_IsNotSupported_AndEnabled()
 	{
 		const string path = "/test/test.jpg";
-		var trashService = new FakeITrashService() { IsSupported = false };
+		var trashService = new FakeITrashService { IsSupported = false };
 		var appSettings = new AppSettings { UseSystemTrash = true }; // see supported
 		var metaUpdate = new FakeIMetaUpdateService();
 		var moveToTrashService = new MoveToTrashService(appSettings,
 			new FakeIQuery(new List<FileIndexItem>
 			{
-				new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }
+				new(path) { Status = FileIndexItem.ExifStatus.Ok }
 			}),
 			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(),
 			trashService, metaUpdate,
@@ -147,14 +141,14 @@ public class MoveToTrashServiceTest
 	public async Task InMetaTrash_StatusOk_IsSupported_AndDisabled()
 	{
 		const string path = "/test/test.jpg";
-		var trashService = new FakeITrashService() { IsSupported = true };
+		var trashService = new FakeITrashService { IsSupported = true };
 		var appSettings =
 			new AppSettings { UseSystemTrash = false }; // see supported and other test
 		var metaUpdate = new FakeIMetaUpdateService();
 		var moveToTrashService = new MoveToTrashService(appSettings,
 			new FakeIQuery(new List<FileIndexItem>
 			{
-				new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }
+				new(path) { Status = FileIndexItem.ExifStatus.Ok }
 			}),
 			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(),
 			trashService, metaUpdate,
@@ -172,13 +166,13 @@ public class MoveToTrashServiceTest
 	public async Task InMetaTrash_StatusDeleted()
 	{
 		const string path = "/test/test.jpg";
-		var trashService = new FakeITrashService() { IsSupported = false };
+		var trashService = new FakeITrashService { IsSupported = false };
 		var appSettings = new AppSettings { UseSystemTrash = true }; // see supported
 		var metaUpdate = new FakeIMetaUpdateService();
 		var moveToTrashService = new MoveToTrashService(appSettings,
 			new FakeIQuery(new List<FileIndexItem>
 			{
-				new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Deleted }
+				new(path) { Status = FileIndexItem.ExifStatus.Deleted }
 			}),
 			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(),
 			trashService, metaUpdate,
@@ -197,7 +191,7 @@ public class MoveToTrashServiceTest
 	{
 		const string path = "/test/test.jpg";
 
-		var trashService = new FakeITrashService() { IsSupported = false };
+		var trashService = new FakeITrashService { IsSupported = false };
 		var appSettings = new AppSettings
 		{
 			UseSystemTrash = false, DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
@@ -228,7 +222,7 @@ public class MoveToTrashServiceTest
 				new FakeIWebLogger()), new FakeIWebLogger(), new ReadMetaSubPathStorage(
 				new FakeSelectorStorage(storage),
 				appSettings, null!, new FakeIWebLogger()), new FakeIThumbnailService(),
-			new ThumbnailQuery(dbContext, null, new FakeIWebLogger()));
+			new ThumbnailQuery(dbContext, null, new FakeIWebLogger(), new FakeMemoryCache()));
 
 		var metaPreflight = new MetaPreflight(query, appSettings,
 			new FakeSelectorStorage(storage), new FakeIWebLogger());
@@ -253,7 +247,7 @@ public class MoveToTrashServiceTest
 		const string path = "/test";
 		const string childItem = "/test/test.jpg";
 
-		var trashService = new FakeITrashService() { IsSupported = false };
+		var trashService = new FakeITrashService { IsSupported = false };
 		var appSettings = new AppSettings
 		{
 			UseSystemTrash = false, DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
@@ -278,8 +272,7 @@ public class MoveToTrashServiceTest
 			new FakeIWebLogger());
 		var addedItem = await query.AddRangeAsync(new List<FileIndexItem>
 		{
-			new FileIndexItem(path) { Id = 8830, IsDirectory = true },
-			new FileIndexItem(childItem) { Id = 8831 }
+			new(path) { Id = 8830, IsDirectory = true }, new(childItem) { Id = 8831 }
 		});
 		Console.WriteLine("add done");
 
@@ -289,7 +282,7 @@ public class MoveToTrashServiceTest
 				new FakeIWebLogger()), new FakeIWebLogger(), new ReadMetaSubPathStorage(
 				new FakeSelectorStorage(storage),
 				appSettings, null!, new FakeIWebLogger()), new FakeIThumbnailService(),
-			new ThumbnailQuery(dbContext, null, new FakeIWebLogger()));
+			new ThumbnailQuery(dbContext, null, new FakeIWebLogger(), new FakeMemoryCache()));
 
 		var metaPreflight = new MetaPreflight(query, appSettings,
 			new FakeSelectorStorage(storage), new FakeIWebLogger());
@@ -312,19 +305,19 @@ public class MoveToTrashServiceTest
 		Assert.AreEqual(TrashKeyword.TrashKeywordString, result[0].Tags);
 		Assert.AreEqual(TrashKeyword.TrashKeywordString, result[1].Tags);
 	}
-	
+
 	[TestMethod]
 	public void DetectToUseSystemTrash_False()
 	{
-		var trashService = new FakeITrashService(){IsSupported = false};
-		var moveToTrashService = new MoveToTrashService(new AppSettings(), new FakeIQuery(), 
-			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(), 
-			trashService, new FakeIMetaUpdateService(), 
+		var trashService = new FakeITrashService { IsSupported = false };
+		var moveToTrashService = new MoveToTrashService(new AppSettings(), new FakeIQuery(),
+			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(),
+			trashService, new FakeIMetaUpdateService(),
 			new FakeITrashConnectionService());
 
 		// used for end2end test to enable / disable the trash
-		var result =  moveToTrashService.DetectToUseSystemTrash();
-		
+		var result = moveToTrashService.DetectToUseSystemTrash();
+
 		Assert.IsFalse(result);
 	}
 
@@ -332,20 +325,20 @@ public class MoveToTrashServiceTest
 	public async Task AppendChildItemsToTrashList_NoAny()
 	{
 		const string path = "/test/test.jpg";
-		var trashService = new FakeITrashService() { IsSupported = false };
+		var trashService = new FakeITrashService { IsSupported = false };
 		var appSettings = new AppSettings { UseSystemTrash = true }; // see supported
 		var metaUpdate = new FakeIMetaUpdateService();
 		var moveToTrashService = new MoveToTrashService(appSettings,
 			new FakeIQuery(new List<FileIndexItem>
 			{
-				new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Deleted }
+				new(path) { Status = FileIndexItem.ExifStatus.Deleted }
 			}),
 			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(),
 			trashService, metaUpdate,
 			new FakeITrashConnectionService());
 
 		var (fileIndexResultsList, _) = await moveToTrashService.AppendChildItemsToTrashList(
-			new List<FileIndexItem> { new FileIndexItem("") },
+			new List<FileIndexItem> { new("") },
 			new Dictionary<string, List<string>>());
 
 		Assert.AreEqual(FileIndexItem.ExifStatus.Default,

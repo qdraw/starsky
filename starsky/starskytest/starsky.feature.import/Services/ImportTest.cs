@@ -69,7 +69,7 @@ public sealed class ImportTest
 			new FakeIImportQuery(),
 			new FakeExifTool(_iStorageFake, appSettings), null!, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new FakeMemoryCache());
 
 		var result = await importService.Preflight(
 			new List<string> { "/test.jpg" },
@@ -94,7 +94,7 @@ public sealed class ImportTest
 			new FakeIImportQuery(),
 			new FakeExifTool(_iStorageFake, appSettings), null!,
 			_console, new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new FakeMemoryCache());
 
 		var result = await importService.Preflight(
 			new List<string> { "/test.jpg" },
@@ -114,7 +114,7 @@ public sealed class ImportTest
 			new FakeIImportQuery(),
 			new FakeExifTool(_iStorageFake, appSettings), null!,
 			_console, new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new FakeMemoryCache());
 
 		var result = await importService.Preflight(
 			new List<string> { "/color_class_winner.jpg" },
@@ -138,7 +138,7 @@ public sealed class ImportTest
 			new FakeIImportQuery(),
 			new FakeExifTool(_iStorageFake, appSettings),
 			null!, _console, new FakeIMetaExifThumbnailService(),
-			new FakeIWebLogger(), new FakeIThumbnailQuery());
+			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeMemoryCache());
 
 		var result = await importService.Preflight(
 			new List<string> { "/color_class_winner.jpg" }, // <- in this test we change it
@@ -170,7 +170,7 @@ public sealed class ImportTest
 			new FakeIImportQuery(),
 			new FakeExifTool(_iStorageFake, appSettings), null!, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new FakeMemoryCache());
 
 		var result = await importService.Preflight(
 			new List<string> { "/2020-04-27 11:07:00.jpg" },
@@ -197,7 +197,7 @@ public sealed class ImportTest
 			new FakeIImportQuery(),
 			new FakeExifTool(_iStorageFake, appSettings), null!, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new FakeMemoryCache());
 
 		var result = await importService.Preflight(
 			new List<string> { "/test.jpg" },
@@ -686,7 +686,7 @@ public sealed class ImportTest
 			), appSettings, fakeImportQuery,
 			new FakeExifTool(_iStorageFake, appSettings), fakeDbQuery, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new FakeMemoryCache());
 
 		var result = await importService.Importer(
 			new ImportIndexItem
