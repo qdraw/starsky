@@ -146,13 +146,27 @@ public class ThumbnailQuery : IThumbnailQuery
 
 	public bool IsRunningJob()
 	{
-		return _memoryCache.TryGetValue($"{nameof(ThumbnailQuery)}_IsRunningJob",
-			out bool isRunning) && isRunning;
+		if ( _memoryCache == null )
+		{
+			_logger.LogInformation("[ThumbnailQuery] MemoryCache disabled IsRunningJob");
+			return false;
+		}
+
+		_memoryCache.TryGetValue($"{nameof(ThumbnailQuery)}_IsRunningJob",
+			out bool isRunning);
+		return isRunning;
 	}
 
 	public bool SetRunningJob(bool value)
 	{
-		_memoryCache.Set($"{nameof(ThumbnailQuery)}_IsRunningJob", value, TimeSpan.FromMinutes(30));
+		if ( _memoryCache == null )
+		{
+			_logger.LogInformation("[ThumbnailQuery] MemoryCache disabled SetRunningJob");
+			return false;
+		}
+
+		_memoryCache.Set($"{nameof(ThumbnailQuery)}_IsRunningJob",
+			value, TimeSpan.FromDays(2));
 		return true;
 	}
 
