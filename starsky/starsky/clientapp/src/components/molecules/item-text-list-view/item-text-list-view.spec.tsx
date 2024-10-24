@@ -45,6 +45,24 @@ describe("ItemTextListView", () => {
     );
   });
 
+  it("list of no error item", () => {
+    const fileIndexItems = [
+      {
+        filePath: "/test/image.jpg",
+        fileName: "image.jpg",
+        status: IExifStatus.ServerError,
+        isDirectory: false
+      }
+    ] as IFileIndexItem[];
+    const list = render(<ItemTextListView fileIndexItems={fileIndexItems} callback={() => {}} />);
+
+    const item = screen.getByTestId("image.jpg-error-status");
+
+    expect(item).toBeFalsy();
+
+    list.unmount();
+  });
+
   it("list of 1 directory item", () => {
     const fileIndexItems = [
       {
