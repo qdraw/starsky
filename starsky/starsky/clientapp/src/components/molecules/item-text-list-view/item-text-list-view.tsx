@@ -1,9 +1,9 @@
+import { FunctionComponent } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
-import { FunctionComponent } from "react";
 import { GetBoxClassName } from "./internal/get-box-class-name.ts";
 
 interface ItemListProps {
@@ -51,8 +51,12 @@ const ItemTextListView: FunctionComponent<ItemListProps> = (props) => {
               </button>
             ) : null}
             {!item.isDirectory ? item.fileName : null}
-            {item.status !== IExifStatus.Ok && item.status !== IExifStatus.Default ? (
-              <em className="error-status">{item.status}</em>
+            {item.status !== IExifStatus.Ok &&
+            item.status !== IExifStatus.Default &&
+            item.status !== IExifStatus.OkAndSame ? (
+              <em data-test={item.fileName + "-error-status"} className="error-status">
+                {item.status}
+              </em>
             ) : null}
           </li>
         ))}

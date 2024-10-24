@@ -42,7 +42,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## List of versions
 
 ## version 0.6.3 - _(Unreleased)_ - 2024-08-?? {#v0.6.3}
-- nothing
+
+- [x] (Fixed) _Front-end_ OkAndSame status in Upload Modal gives the wrong status (PR #1783)
 
 ## version 0.6.2 - 2024-10-11 {#v0.6.2}
 
