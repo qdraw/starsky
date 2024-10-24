@@ -45,23 +45,38 @@ describe("ItemTextListView", () => {
     );
   });
 
-  it("list of no error item", () => {
-    const fileIndexItems = [
-      {
-        filePath: "/test/image.jpg",
-        fileName: "image.jpg",
-        status: IExifStatus.ServerError,
-        isDirectory: false
+  const statusCorrectlyTheoryData = [
+    { status: IExifStatus.OkAndSame, shouldShowError: false },
+    { status: IExifStatus.ServerError, shouldShowError: true },
+    { status: IExifStatus.NotFoundSourceMissing, shouldShowError: true },
+    { status: IExifStatus.Ok, shouldShowError: false },
+    { status: IExifStatus.ReadOnly, shouldShowError: true }
+  ];
+
+  test.each(statusCorrectlyTheoryData)(
+    "error-status should render %s",
+    ({ status, shouldShowError }) => {
+      const fileIndexItems = [
+        {
+          filePath: "/test/image.jpg",
+          fileName: "image.jpg",
+          status: status,
+          isDirectory: false
+        }
+      ] as IFileIndexItem[];
+      const list = render(<ItemTextListView fileIndexItems={fileIndexItems} callback={() => {}} />);
+
+      const item = screen.queryByTestId("image.jpg-error-status");
+
+      if (shouldShowError) {
+        expect(item).toBeTruthy();
+      } else {
+        expect(item).toBeFalsy();
       }
-    ] as IFileIndexItem[];
-    const list = render(<ItemTextListView fileIndexItems={fileIndexItems} callback={() => {}} />);
 
-    const item = screen.getByTestId("image.jpg-error-status");
-
-    expect(item).toBeFalsy();
-
-    list.unmount();
-  });
+      list.unmount();
+    }
+  );
 
   it("list of 1 directory item", () => {
     const fileIndexItems = [
