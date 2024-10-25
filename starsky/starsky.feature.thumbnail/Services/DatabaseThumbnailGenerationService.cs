@@ -43,7 +43,7 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 		_updateStatusGeneratedThumbnailService = updateStatusGeneratedThumbnailService;
 	}
 
-	public async Task StartBackgroundQueue(DateTime endTime)
+	public async Task StartBackgroundQueue()
 	{
 		if ( _thumbnailQuery.IsRunningJob() )
 		{
@@ -55,7 +55,7 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 			"DatabaseThumbnailGenerationService");
 	}
 
-	internal async Task WorkThumbnailGenerationLoop()
+	private async Task WorkThumbnailGenerationLoop()
 	{
 		_thumbnailQuery.SetRunningJob(true);
 
