@@ -45,24 +45,30 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 
 	public async Task StartBackgroundQueue(DateTime endTime)
 	{
-		var totalProcessed = 0;
-		var currentPage = 0;
-		const int batchSize = 100;
-
 		if ( _thumbnailQuery.IsRunningJob() )
 		{
 			return;
 		}
 
-		//todo: add a check to see if the service is already running
+		await _bgTaskQueue.QueueBackgroundWorkItemAsync(
+			async _ => { await WorkThumbnailGenerationLoop(); },
+			"DatabaseThumbnailGenerationService");
+	}
+
+	internal async Task WorkThumbnailGenerationLoop()
+	{
+		_thumbnailQuery.SetRunningJob(true);
 
 		List<ThumbnailItem> missingThumbnails;
+		var totalProcessed = 0;
+		var currentPage = 0;
+		const int batchSize = 100;
 
 		do
 		{
-			// Query missing thumbnails in batches
 			missingThumbnails =
-				await _thumbnailQuery.GetMissingThumbnailsBatchAsync(currentPage, batchSize);
+				await _thumbnailQuery.GetMissingThumbnailsBatchAsync(currentPage,
+					batchSize);
 
 			// Process each batch
 			var fileHashesList = missingThumbnails.Select(p => p.FileHash).ToList();
@@ -72,16 +78,16 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 				break;
 			}
 
-			await _bgTaskQueue.QueueBackgroundWorkItemAsync(
-				async _ => { await WorkThumbnailGeneration(missingThumbnails, queryItems); },
-				"DatabaseThumbnailGenerationService");
+			await WorkThumbnailGeneration(missingThumbnails, queryItems);
 
 			totalProcessed += missingThumbnails.Count;
 			currentPage++;
 
 			_logger.LogInformation(
-				$"[DatabaseThumbnailGenerationService] Processed {totalProcessed} thumbnails so far...");
+				$"[DatabaseThumbnailGenerationService] Processed {totalProcessed} thumbnails so far... ({DateTime.UtcNow:HH:mm:ss})");
 		} while ( missingThumbnails.Count == batchSize );
+
+		_thumbnailQuery.SetRunningJob(false);
 	}
 
 	internal async Task<IEnumerable<ThumbnailItem>> WorkThumbnailGeneration(
@@ -123,7 +129,9 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 		}
 
 		var filteredData = resultData
-			.Where(p => p.Status is FileIndexItem.ExifStatus.Ok or FileIndexItem.ExifStatus.OkAndSame).ToList();
+			.Where(p =>
+				p.Status is FileIndexItem.ExifStatus.Ok or FileIndexItem.ExifStatus.OkAndSame)
+			.ToList();
 
 		if ( filteredData.Count == 0 )
 		{

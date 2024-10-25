@@ -173,7 +173,29 @@ public class ThumbnailQuery : IThumbnailQuery
 	public async Task<List<ThumbnailItem>> GetMissingThumbnailsBatchAsync(int pageNumber,
 		int pageSize)
 	{
-		return await _context.Thumbnails
+		try
+		{
+			return await GetMissingThumbnailsBatchInternalAsync(_context, pageNumber, pageSize);
+		}
+		// InvalidOperationException can also be disposed
+		catch ( InvalidOperationException )
+		{
+			if ( _scopeFactory == null )
+			{
+				throw;
+			}
+
+			return await GetMissingThumbnailsBatchInternalAsync(
+				new InjectServiceScope(_scopeFactory).Context(),
+				pageNumber, pageSize);
+		}
+	}
+
+	private static async Task<List<ThumbnailItem>> GetMissingThumbnailsBatchInternalAsync(
+		ApplicationDbContext context, int pageNumber,
+		int pageSize)
+	{
+		return await context.Thumbnails
 			.Where(p => ( p.ExtraLarge == null
 			              || p.Large == null || p.Small == null )
 			            && !string.IsNullOrEmpty(p.FileHash))
