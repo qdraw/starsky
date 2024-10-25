@@ -10,7 +10,7 @@ using starsky.foundation.platform.Helpers;
 namespace starsky.foundation.database.Query;
 
 /// <summary>
-///     QueryGetObjectsByFileHashAsync & GetObjectsByFileHashAsync
+///     QueryGetObjectsByFileHashAsync and GetObjectsByFileHashAsync
 /// </summary>
 public partial class Query
 {

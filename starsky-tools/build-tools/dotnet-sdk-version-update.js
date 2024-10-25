@@ -5,12 +5,12 @@
  * Use parameter to match version and the path. it defaults to the solution
  */
 
-const { join, dirname } = require("path");
-const { readFile, writeFile } = require("fs").promises;
-const { readFileSync, existsSync, appendFileSync } = require("fs");
-const { getFiles } = require("./lib/get-files-directory");
-const { prefixPath } = require("./lib/prefix-path.const.js");
-const { httpsGet } = require("./lib/https-get.js");
+const {join, dirname} = require("path");
+const {readFile, writeFile} = require("fs").promises;
+const {readFileSync, existsSync, appendFileSync} = require("fs");
+const {getFiles} = require("./lib/get-files-directory");
+const {prefixPath} = require("./lib/prefix-path.const.js");
+const {httpsGet} = require("./lib/https-get.js");
 
 let newRunTimeVersion = "8.0.x";
 
@@ -35,7 +35,7 @@ if (argv) {
 	// regex: ^(\d+\.)?(\d+\.)?(\*|x|\d+)$
 	for (const argItem of argv) {
 		if (
-			argItem.match(new RegExp("^(\\d+\\.)?(\\d+\\.)?(\\*|x|\\d+)$", "i"))
+			argItem.match(/^(\d+\.)?(\d+\.)?(\*|x|\d+)$/i)
 		) {
 			newRunTimeVersion = argItem;
 		} else if (existsSync(argItem)) {
@@ -171,8 +171,8 @@ function replaceEnvDockerFileContent(fileContent, what, sdkResult) {
 	// replace variables with sdk version
 	const buildBaseImageRegex = new RegExp(
 		"((BUILD)|(BASE))_?(IMAGE)=mcr\\.microsoft\\.com/dotnet/" +
-			what +
-			":(d|.)+",
+		what +
+		":(d|.)+",
 		"ig"
 	);
 	const buildBaseImageMatches = fileContent.match(buildBaseImageRegex);
@@ -184,7 +184,7 @@ function replaceEnvDockerFileContent(fileContent, what, sdkResult) {
 			); // sdkResult = to version
 			console.log(
 				"    ✅ ✓  replaceEnvDockerFileContent - build/base " +
-					replacedResult
+				replacedResult
 			);
 			fileContent = fileContent.replace(
 				buildBaseImageMatch,
@@ -235,8 +235,8 @@ function replaceMcrFileContent(fileContent, what, sdkResult) {
 	// FROM (--platform=\$BUILDPLATFORM)?( )?mcr\.microsoft\.com\/dotnet\/sdk:(\d|\.)+ AS
 	const sdkFromBuildPlatformRegex = new RegExp(
 		"FROM (--platform=\\$BUILDPLATFORM)?( )?mcr\\.microsoft\\.com/dotnet/" +
-			what +
-			":(d|.)+ AS",
+		what +
+		":(d|.)+ AS",
 		"g"
 	);
 	const sdkfromBuildPlatformMatches = fileContent.match(
@@ -259,8 +259,8 @@ function replaceMcrFileContent(fileContent, what, sdkResult) {
 	// replace variables with sdk version
 	const buildBaseImageRegex = new RegExp(
 		"ARG ((BUILD)|(BASE))_(IMAGE)=mcr\\.microsoft\\.com/dotnet/" +
-			what +
-			":(d|.)+",
+		what +
+		":(d|.)+",
 		"g"
 	);
 	const buildBaseImageMatches = fileContent.match(buildBaseImageRegex);
@@ -380,11 +380,11 @@ async function getBlobSdkReleaseNotesPage(blobObject) {
 
 async function updateAzureYmlFile(filePathList, sdkVersion) {
 	await filePathList.forEach(async (filePath) => {
-		if (filePath.match(new RegExp("^.+.yml$", "i"))) {
+		if (filePath.match(/^.+.yml$/i)) {
 			let buffer = await readFile(filePath);
 			let fileContent = buffer.toString("utf8");
 
-			let taskUseDotNetRegex = new RegExp("task: UseDotNet@2", "g");
+			let taskUseDotNetRegex = /task: UseDotNet@2/g;
 
 			const taskUseDotNetMatch = taskUseDotNetRegex.exec(fileContent);
 
@@ -398,9 +398,9 @@ async function updateAzureYmlFile(filePathList, sdkVersion) {
 				const numberOfSpacesBefore =
 					taskUseDotNetMatch.index - startNewLineIndex + 1;
 
-				var versionTag = " ".repeat(numberOfSpacesBefore) + "version: ";
+				const versionTag = " ".repeat(numberOfSpacesBefore) + "version: ";
 
-				var versionRegex = new RegExp(versionTag + "[0-9.]+", "g");
+				const versionRegex = new RegExp(versionTag + "[0-9.]+", "g");
 				if (fileContent.match(versionRegex)) {
 					fileContent = fileContent.replace(
 						versionRegex,
@@ -408,9 +408,9 @@ async function updateAzureYmlFile(filePathList, sdkVersion) {
 					);
 				}
 
-				var displayNameTag =
+				const displayNameTag =
 					" ".repeat(numberOfSpacesBefore - 2) + "displayName: ";
-				var displayNameTagRegex = new RegExp(
+				const displayNameTagRegex = new RegExp(
 					displayNameTag + ".+",
 					"g"
 				);
@@ -419,9 +419,9 @@ async function updateAzureYmlFile(filePathList, sdkVersion) {
 					fileContent = fileContent.replace(
 						displayNameTagRegex,
 						displayNameTag +
-							"'Use .NET SDK " +
-							sdkVersion +
-							"'"
+						"'Use .NET SDK " +
+						sdkVersion +
+						"'"
 					);
 				}
 				await writeFile(filePath, fileContent);
@@ -436,10 +436,7 @@ async function updateAzureYmlFile(filePathList, sdkVersion) {
 			//   buildImage: "mcr.microsoft.com/dotnet/sdk:6.0"
 			//   baseImage: "mcr.microsoft.com/dotnet/aspnet:6.0"
 
-			var buildBaseImageVariableRegex = new RegExp(
-				'(build|base)Image: ?"mcr.microsoft.com',
-				"ig"
-			);
+			const buildBaseImageVariableRegex = /(build|base)Image: ?"mcr.microsoft.com/ig;
 			const buildBaseImageVariableMatch =
 				buildBaseImageVariableRegex.exec(fileContent);
 			if (buildBaseImageVariableMatch != null) {
@@ -484,15 +481,15 @@ async function replaceAzureDockerYmlFile(fileContent, what) {
 
 	const buildBaseImageRegex = new RegExp(
 		'((BUILD)|(BASE))_?(IMAGE): "mcr\\.microsoft\\.com/dotnet/' +
-			what +
-			":(d|.)+",
+		what +
+		":(d|.)+",
 		"ig"
 	);
 	const buildBaseImageMatches = fileContent.match(buildBaseImageRegex);
 	if (buildBaseImageMatches) {
 		for (const buildBaseImageMatch of buildBaseImageMatches) {
 			const replacedResult = buildBaseImageMatch.replace(
-				/(\d|\.)+\"$/g,
+				/(\d|\.)+"$/g,
 				targetVersion + '"'
 			); // sdkResult = to version
 			console.log("  ✅ ✓  Azure Yml - build/base " + replacedResult);
@@ -507,11 +504,11 @@ async function replaceAzureDockerYmlFile(fileContent, what) {
 
 async function updateGithubYmlFile(filePathList, sdkVersion) {
 	await filePathList.forEach(async (filePath) => {
-		if (filePath.match(new RegExp("^.+.github.+.yml$", "i"))) {
+		if (filePath.match(/^.+.github.+.yml$/i)) {
 			let buffer = await readFile(filePath);
 			let fileContent = buffer.toString("utf8");
 
-			var actionsSetupDotNet = new RegExp(
+			const actionsSetupDotNet = new RegExp(
 				"uses: actions\\/setup-dotnet@v[0-9.]+\n\\s+with:\n\\s+dotnet-version: [0-9.]+",
 				"g"
 			);
@@ -529,8 +526,7 @@ async function updateGithubYmlFile(filePathList, sdkVersion) {
 				console.log(
 					`✅ ✓ ${filePath} - Github Yml is updated to ${sdkVersion}`
 				);
-			}
-			else {
+			} else {
 				console.log(
 					`❌ ${filePath} - Github Yml is not updated to ${sdkVersion}`
 				);
@@ -572,7 +568,7 @@ async function sortNetFrameworkMoniker(frameworkMonikerByPath, newTargetVersionA
 		// console.log(referencedProjectPaths)
 
 		if (referencedProjectPaths.length === 0) {
-			const netMonikerFallback = "net" + newTargetVersionAsFallback.match(/^\d\.\d/ig,"")[0];
+			const netMonikerFallback = "net" + newTargetVersionAsFallback.match(/^\d\.\d/ig, "")[0];
 			frameworkMonikerByPath[filePath].push(netMonikerFallback);
 			console.log(
 				`🎁 ${filePath} - is using default ${netMonikerFallback}`
@@ -675,7 +671,7 @@ async function updateNetFrameworkMoniker(sortedFrameworkMonikerByPath) {
 		if (usedTargetFrameworkMonikers.find((p) => p.startsWith("net"))) {
 			const lastNet = usedTargetFrameworkMonikers[0];
 
-			var targetFrameworkRegex = new RegExp(
+			const targetFrameworkRegex = new RegExp(
 				"<TargetFramework>.+</TargetFramework>",
 				"g"
 			);
@@ -693,7 +689,7 @@ async function updateNetFrameworkMoniker(sortedFrameworkMonikerByPath) {
 
 			fileContent = fileContent.replace(
 				targetFrameworkRegex,
-				`<TargetFramework>${lastNet}<\/TargetFramework>`
+				`<TargetFramework>${lastNet}</TargetFramework>`
 			);
 
 			await writeFile(filePath, fileContent);
@@ -708,8 +704,7 @@ async function updateNetFrameworkMoniker(sortedFrameworkMonikerByPath) {
 				usedTargetFrameworkMonikers[filePath] = [];
 			}
 			usedTargetFrameworkMonikers[filePath].push(lastNet);
-		}
-		else {
+		} else {
 			console.log(
 				`❌ ✖ ${filePath} - is skipped to ${usedTargetFrameworkMonikers}`
 			);
@@ -718,10 +713,7 @@ async function updateNetFrameworkMoniker(sortedFrameworkMonikerByPath) {
 }
 
 async function getNetMonikerByCsProjFilePath(filePath) {
-	var targetFrameworkRegex = new RegExp(
-		"<TargetFramework>.+</TargetFramework>",
-		"g"
-	);
+	const targetFrameworkRegex = /<TargetFramework>.+<\/TargetFramework>/g;
 
 	let buffer = await readFile(filePath);
 	let fileContent = buffer.toString("utf8");
@@ -742,10 +734,7 @@ async function updateRuntimeFrameworkVersion(filePathList, newTargetVersion) {
 			let fileContent = buffer.toString("utf8");
 
 			// <TargetFramework>net
-			const targetFrameworkNetStandard = new RegExp(
-				"(<TargetFramework>net)",
-				"g"
-			);
+			const targetFrameworkNetStandard = /(<TargetFramework>net)/g;
 			const targetFrameworkNetStandardMatch = fileContent.match(
 				targetFrameworkNetStandard
 			);
@@ -763,8 +752,8 @@ async function updateRuntimeFrameworkVersion(filePathList, newTargetVersion) {
 				if (fileXmlMatch == null) {
 					console.log(
 						"✖ " +
-							filePath +
-							" - RuntimeFrameworkVersion tag is not included"
+						filePath +
+						" - RuntimeFrameworkVersion tag is not included"
 					);
 				} else {
 					// fileXmlMatch != null
@@ -843,15 +832,15 @@ async function updateSingleNugetPackageVersion(filePath) {
 					!!nugetResult.data &&
 					!!nugetResult.data[0]
 				) {
-					const firstResult = { ...nugetResult.data[0] };
+					const firstResult = {...nugetResult.data[0]};
 
 					if (firstResult.id === toUpdatePackageName) {
-						var findedVersions = firstResult.versions.filter((x) =>
+						const findedVersions = firstResult.versions.filter((x) =>
 							x.version.startsWith(searchVersion)
 						);
 
 						if (findedVersions.length >= 1) {
-							var sortfindedVersions = findedVersions
+							const sortfindedVersions = findedVersions
 								.sort((x) => x.version)
 								.reverse();
 
@@ -911,7 +900,7 @@ async function updateSingleNugetPackageVersion(filePath) {
 								toUpdatePackageReference.replace(
 									versionXMLRegex,
 									`Version="${newVersion}" `
-								).replace("\" >","\">");
+								).replace("\" >", "\">");
 
 							fileContent = fileContent.replace(
 								toUpdatePackageReference,
@@ -958,10 +947,7 @@ function sortFilterOnExeCSproj(filePathList) {
 		let fileContent = buffer.toString("utf8");
 
 		// <OutputType>Exe<\/OutputType>|(Microsoft\.NET\.Sdk\.Web)|(Microsoft\.NET\.Test\.Sdk)
-		const isExeRegex = new RegExp(
-			"<OutputType>Exe</OutputType>|(Microsoft.NET.Sdk.Web)|(Microsoft.NET.Test.Sdk)",
-			"ig"
-		);
+		const isExeRegex = /<OutputType>Exe<\/OutputType>|(Microsoft.NET.Sdk.Web)|(Microsoft.NET.Test.Sdk)/ig;
 
 		const isExeMatches = fileContent.match(isExeRegex);
 
@@ -994,8 +980,8 @@ async function updateGlobalJsonFiles(filePathList, sdkVersionInput) {
 		if (globalJsonFile?.strictVersion !== true) {
 			console.log(
 				"✖ " +
-					filePath +
-					" - strictVersion is not enabled so skip upgrade globalJson file"
+				filePath +
+				" - strictVersion is not enabled so skip upgrade globalJson file"
 			);
 		}
 
