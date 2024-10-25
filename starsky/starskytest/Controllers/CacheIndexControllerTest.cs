@@ -107,7 +107,7 @@ public sealed class CacheIndexControllerTest
 			FileName = "file2.jpg", ParentDirectory = "/cacheDeleteTest", IsDirectory = false
 		};
 		_context.FileIndex.Add(newItem);
-		_context.SaveChanges();
+		await _context.SaveChangesAsync();
 		// Write changes to database
 
 		// Check if there is one item in the cache
