@@ -6,7 +6,7 @@
 
 const stdin = process.openStdin();
 
-stdin.addListener("data", function(d) {
+stdin.addListener("data", function (d) {
 	// note:  d is an object, and when converted to a string it will
 	// end with a linefeed.  so we (rather crudely) account for that  
 	// with toString() and then trim() 
@@ -18,10 +18,7 @@ stdin.addListener("data", function(d) {
 
 
 function checkNewVersion(newVersion) {
-	const versionRegexChecker = new RegExp(
-		"^([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+[0-9A-Za-z-]+)?$",
-		"g"
-	);
+	const versionRegexChecker = /^(\d+)\.(\d+)\.(\d+)(?:-([\dA-Za-z-]+(?:\.[\dA-Za-z-]+)*))?(?:\+[\dA-Za-z-]+)?$/g;
 	const versionRegexMatch = newVersion.match(versionRegexChecker);
 	if (versionRegexMatch == null) {
 		console.log(

@@ -86,11 +86,11 @@ async function updateVersions(filePathList) {
 			let fileContent = buffer.toString("utf8");
 
 			// unescaped: (<Version>)([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?(<\/Version>)
-			var versionXMLRegex = new RegExp(
+			const versionXMLRegex = new RegExp(
 				"(<Version>)([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+[0-9A-Za-z-]+)?(</Version>)",
 				"g"
 			);
-			var fileXmlMatch = fileContent.match(versionXMLRegex);
+			const fileXmlMatch = fileContent.match(versionXMLRegex);
 			if (fileXmlMatch == null) {
 				console.log("✖ " + filePath + " - Version tag is not included");
 			} else if (fileXmlMatch != null) {
@@ -106,11 +106,11 @@ async function updateVersions(filePathList) {
 		} else if (filePath.match(new RegExp("package.json?$", "i"))) {
 			let buffer = await readFile(filePath);
 			let fileJsonContent = buffer.toString("utf8");
-			var versionJsonRegex = new RegExp(
+			const versionJsonRegex = new RegExp(
 				'"version": ?"([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+[0-9A-Za-z-]+)?(s?)"(s?)',
 				"g"
 			);
-			var fileJsonMatch = fileJsonContent.match(versionJsonRegex);
+			const fileJsonMatch = fileJsonContent.match(versionJsonRegex);
 			if (fileJsonMatch == null) {
 				console.log(
 					"✖ " + filePath + "  - Version tag is not included "

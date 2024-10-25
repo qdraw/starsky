@@ -19,12 +19,12 @@ if (!fs.existsSync(clientAppFolderPath)) {
 	exit(1);
 }
 
-deleteFolderRecursive = function (path) {
-	var files = [];
+const deleteFolderRecursive = function (path) {
+	let files = [];
 	if (fs.existsSync(path)) {
 		files = fs.readdirSync(path);
 		files.forEach(function (file, index) {
-			var curPath = path + "/" + file;
+			const curPath = path + "/" + file;
 			if (fs.lstatSync(curPath).isDirectory()) {
 				// recurse
 				deleteFolderRecursive(curPath);
@@ -74,7 +74,7 @@ function getNpxCreateCreateApp() {
 
 	const updateSpawn = spawnSync(
 		"npm",
-		["create", "-y", "vite@latest", myAppName, , "--", "--template", "react-ts"],
+		["create", "-y", "vite@latest", myAppName, "--", "--template", "react-ts"],
 		{
 			cwd: createReactTempFolder,
 			env: process.env,
