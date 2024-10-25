@@ -164,8 +164,17 @@ namespace starsky.foundation.database.Import
 			}
 			catch ( DbUpdateConcurrencyException exception )
 			{
-				_logger.LogInformation(exception, "[RemoveItemAsync] catch-ed " +
-										  "DbUpdateConcurrencyException (do nothing)");
+				_logger.LogInformation("[RemoveItemAsync] catch-ed " +
+										  "DbUpdateConcurrencyException (retry) {exception}", exception.Message);
+				try
+				{
+					await RetryHelper.DoAsync(LocalRemoveDefaultQuery, TimeSpan.FromSeconds(2), 2);
+				}
+				catch ( AggregateException )
+				{
+					_logger.LogInformation("[RemoveItemAsync] catch-ed " +
+					                       "AggregateException (ignored after retry) {exception}", exception.Message);
+				}
 			}
 
 			return importIndexItem;

@@ -123,7 +123,7 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 		}
 
 		var filteredData = resultData
-			.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList();
+			.Where(p => p.Status is FileIndexItem.ExifStatus.Ok or FileIndexItem.ExifStatus.OkAndSame).ToList();
 
 		if ( filteredData.Count == 0 )
 		{
