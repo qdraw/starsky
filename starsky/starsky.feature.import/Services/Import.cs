@@ -57,7 +57,7 @@ public class Import : IImport
 	private readonly IImportQuery? _importQuery;
 	private readonly IWebLogger _logger;
 
-	private readonly IMemoryCache _memoryCache;
+	private readonly IMemoryCache? _memoryCache;
 	private readonly IMetaExifThumbnailService _metaExifThumbnailService;
 	private readonly IQuery _query;
 

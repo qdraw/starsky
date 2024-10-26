@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -248,5 +249,54 @@ public sealed class ImportQueryTest
 		).ToListAsync();
 
 		Assert.AreEqual(0, queryFromDb.Count);
+	}
+
+	[TestMethod]
+	public async Task RemoveItemAsync_DbUpdateConcurrencyException()
+	{
+		var addedItems = new List<ImportIndexItem>
+		{
+			new() { FileHash = "RemoveAsync_Disposed__1" }
+		};
+
+		var serviceScopeFactory = CreateNewScope();
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase("MovieListDatabase")
+			.Options;
+		var dbContext = new ConcurrencyExceptionApplicationDbContext(options);
+
+		var webLogger = new FakeIWebLogger();
+		var importQuery = new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper(),
+			webLogger, dbContext);
+
+		await importQuery.RemoveItemAsync(addedItems[0], 1);
+
+		Assert.IsTrue(webLogger.TrackedInformation[0].Item2?.StartsWith(
+			"Import [RemoveItemAsync] catch-ed " +
+			"DbUpdateConcurrencyException (retry)"));
+		Assert.IsTrue(webLogger.TrackedInformation[1].Item2?
+			.StartsWith("Import [RemoveItemAsync] catch-ed " +
+			            "AggregateException (ignored after retry)"));
+	}
+
+	private class ConcurrencyExceptionApplicationDbContext : ApplicationDbContext
+	{
+		public ConcurrencyExceptionApplicationDbContext(DbContextOptions options) : base(options)
+		{
+		}
+
+		public override DbSet<FileIndexItem> FileIndex
+		{
+			get => throw new DbUpdateConcurrencyException();
+			set
+			{
+				// do nothing
+			}
+		}
+
+		public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+		{
+			throw new DbUpdateConcurrencyException();
+		}
 	}
 }

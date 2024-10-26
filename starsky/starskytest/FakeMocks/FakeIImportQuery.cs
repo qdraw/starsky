@@ -88,7 +88,8 @@ public class FakeIImportQuery : IImportQuery
 		return importIndexItemList;
 	}
 
-	public async Task<ImportIndexItem> RemoveItemAsync(ImportIndexItem importIndexItem)
+	public async Task<ImportIndexItem> RemoveItemAsync(ImportIndexItem importIndexItem,
+		int maxAttemptCount = 3)
 	{
 		try
 		{

@@ -19,7 +19,7 @@ public sealed class ThumbnailQueryFactory
 
 	public ThumbnailQueryFactory(SetupDatabaseTypes? setupDatabaseTypes,
 		IServiceScopeFactory? serviceScopeFactory, IThumbnailQuery? thumbnailQuery,
-		IWebLogger logger, IMemoryCache memoryCache)
+		IWebLogger logger, IMemoryCache? memoryCache)
 	{
 		_setupDatabaseTypes = setupDatabaseTypes;
 		_serviceScopeFactory = serviceScopeFactory;

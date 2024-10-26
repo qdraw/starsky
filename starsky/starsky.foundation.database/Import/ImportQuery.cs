@@ -112,7 +112,8 @@ public sealed class ImportQuery : IImportQuery
 		return importIndexItemList;
 	}
 
-	public async Task<ImportIndexItem> RemoveItemAsync(ImportIndexItem importIndexItem)
+	public async Task<ImportIndexItem> RemoveItemAsync(ImportIndexItem importIndexItem,
+		int maxAttemptCount = 3)
 	{
 		async Task<bool> LocalRemoveDefaultQuery()
 		{
@@ -144,7 +145,7 @@ public sealed class ImportQuery : IImportQuery
 		{
 			// Files that are locked
 			await RetryHelper.DoAsync(LocalRemoveDefaultQuery,
-				TimeSpan.FromSeconds(2), 4);
+				TimeSpan.FromSeconds(2), maxAttemptCount);
 		}
 		catch ( ObjectDisposedException )
 		{
@@ -161,7 +162,8 @@ public sealed class ImportQuery : IImportQuery
 				exception.Message);
 			try
 			{
-				await RetryHelper.DoAsync(LocalRemoveDefaultQuery, TimeSpan.FromSeconds(2), 2);
+				await RetryHelper.DoAsync(LocalRemoveDefaultQuery, TimeSpan.FromSeconds(2),
+					maxAttemptCount);
 			}
 			catch ( AggregateException )
 			{
