@@ -54,7 +54,8 @@ public class CheckHealthTests
 	[DataRow("TimeoutCheck", "timeout", "Timeout exception", "Timeout stack trace")]
 	[DataRow("VersionMismatchCheck", "Version mismatch", "Version mismatch error",
 		"Version mismatch stack trace")]
-	public void CreateHealthEntryLog_LogError_ShouldLogCorrectMessage(string key, string description,
+	public void CreateHealthEntryLog_LogError_ShouldLogCorrectMessage(string key,
+		string description,
 		string? exceptionMessage, string? stackTrace)
 	{
 		// Arrange
@@ -99,16 +100,17 @@ public class CheckHealthTests
 
 		// Act
 		var result = checkHealthService.CreateHealthEntryLog(healthReport);
-		
+
 		// Assert
 		Assert.AreEqual(healthReport.Status == HealthStatus.Healthy, result.IsHealthy);
 		Assert.AreEqual(healthReport.TotalDuration, result.TotalDuration);
 		Assert.AreEqual(healthReport.Entries.Count, result.Entries.Count);
 		Assert.AreEqual(healthReport.Entries.First().Key, result.Entries.FirstOrDefault()?.Name);
-		Assert.AreEqual(healthReport.Entries.First().Value.Duration, result.Entries.FirstOrDefault()?.Duration);
+		Assert.AreEqual(healthReport.Entries.First().Value.Duration,
+			result.Entries.FirstOrDefault()?.Duration);
 		Assert.AreEqual(healthReport.Entries.First().Value.Status == HealthStatus.Healthy,
 			result.Entries.FirstOrDefault()?.IsHealthy);
-		Assert.AreEqual(healthReport.Entries.First().Value.Description ?? string.Empty,	
+		Assert.AreEqual(healthReport.Entries.First().Value.Description ?? string.Empty,
 			result.Entries.FirstOrDefault()?.Description);
 	}
 
@@ -156,10 +158,9 @@ public class CheckHealthTests
 	}
 
 	[DataTestMethod]
-	[DataRow(true, true, HealthStatus.Healthy, true)]
-	[DataRow(true, false, HealthStatus.Unhealthy, false)]
-	public async Task CheckHealthAsyncWithTimeout_ShouldSetCache(bool addMemoryCache,
-		bool isHealthy,
+	[DataRow(true, HealthStatus.Healthy, true)]
+	[DataRow(false, HealthStatus.Unhealthy, false)]
+	public async Task CheckHealthAsyncWithTimeout_ShouldSetCache(bool isHealthy,
 		HealthStatus healthStatus, bool expectCache)
 	{
 		var cache = new MemoryCache(new MemoryCacheOptions());
