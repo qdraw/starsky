@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using starsky.foundation.platform.Extensions;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.VersionHelpers;
 using starsky.project.web.ViewModels;
 
@@ -30,12 +31,14 @@ public sealed class HealthController : Controller
 	private const string ApiVersionHeaderName = "x-api-version";
 
 	private readonly IMemoryCache? _cache;
+	private readonly IWebLogger _logger;
 	private readonly HealthCheckService _service;
 
-	public HealthController(HealthCheckService service,
+	public HealthController(HealthCheckService service, IWebLogger logger,
 		IMemoryCache? memoryCache = null)
 	{
 		_service = service;
+		_logger = logger;
 		_cache = memoryCache;
 	}
 
@@ -133,7 +136,7 @@ public sealed class HealthController : Controller
 		return Json(health);
 	}
 
-	private static HealthView CreateHealthEntryLog(HealthReport result)
+	private HealthView CreateHealthEntryLog(HealthReport result)
 	{
 		var health = new HealthView
 		{
@@ -149,10 +152,15 @@ public sealed class HealthController : Controller
 					Duration = value.Duration,
 					Name = key,
 					IsHealthy = value.Status == HealthStatus.Healthy,
-					Description = value.Description + value.Exception?.Message +
-					              value.Exception?.StackTrace
+					Description = value.Description
 				}
 			);
+
+			if ( value.Status != HealthStatus.Healthy )
+			{
+				_logger.LogError($"HealthCheck {key} failed {value.Description} " +
+				                 $"{value.Exception?.Message} {value.Exception?.StackTrace}");
+			}
 		}
 
 		return health;

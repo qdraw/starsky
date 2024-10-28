@@ -20,7 +20,7 @@ public sealed class HealthControllerTest
 	{
 		var fakeHealthCheckService = new FakeHealthCheckService(true);
 		var controller =
-			new HealthController(fakeHealthCheckService)
+			new HealthController(fakeHealthCheckService, new FakeIWebLogger())
 			{
 				ControllerContext = { HttpContext = new DefaultHttpContext() }
 			};
@@ -41,7 +41,7 @@ public sealed class HealthControllerTest
 	{
 		var fakeHealthCheckService = new FakeHealthCheckService(false);
 		var controller =
-			new HealthController(fakeHealthCheckService)
+			new HealthController(fakeHealthCheckService, new FakeIWebLogger())
 			{
 				ControllerContext = { HttpContext = new DefaultHttpContext() }
 			};
@@ -56,13 +56,29 @@ public sealed class HealthControllerTest
 		Assert.IsTrue(castedResult.Entries.Count != 0);
 		Assert.IsTrue(castedResult.TotalDuration == TimeSpan.Zero);
 	}
+	
+	[TestMethod]
+	public async Task HealthControllerTest_Details_False_Logging()
+	{
+		var fakeHealthCheckService = new FakeHealthCheckService(false);
+		var logger = new FakeIWebLogger();
+		var controller =
+			new HealthController(fakeHealthCheckService, logger)
+			{
+				ControllerContext = { HttpContext = new DefaultHttpContext() }
+			};
+
+		await controller.Details();
+		
+		Assert.IsTrue(logger.TrackedExceptions.LastOrDefault().Item2?.Contains($"HealthCheck test failed"));
+	}
 
 	[TestMethod]
 	public async Task HealthControllerTest_Index_True()
 	{
 		var fakeHealthCheckService = new FakeHealthCheckService(true);
 		var controller =
-			new HealthController(fakeHealthCheckService)
+			new HealthController(fakeHealthCheckService, new FakeIWebLogger())
 			{
 				ControllerContext = { HttpContext = new DefaultHttpContext() }
 			};
@@ -78,7 +94,7 @@ public sealed class HealthControllerTest
 	{
 		var fakeHealthCheckService = new FakeHealthCheckService(false);
 		var controller =
-			new HealthController(fakeHealthCheckService)
+			new HealthController(fakeHealthCheckService, new FakeIWebLogger())
 			{
 				ControllerContext = { HttpContext = new DefaultHttpContext() }
 			};
@@ -91,7 +107,7 @@ public sealed class HealthControllerTest
 	[TestMethod]
 	public void Version_NoVersion()
 	{
-		var controller = new HealthController(null!)
+		var controller = new HealthController(null!, new FakeIWebLogger())
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
 		};
@@ -102,7 +118,7 @@ public sealed class HealthControllerTest
 	[TestMethod]
 	public void Version_NoVersion_BadRequest()
 	{
-		var controller = new HealthController(null!)
+		var controller = new HealthController(null!, new FakeIWebLogger())
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
 		};
@@ -116,7 +132,7 @@ public sealed class HealthControllerTest
 	[TestMethod]
 	public void Version_Version_newer()
 	{
-		var controller = new HealthController(null!)
+		var controller = new HealthController(null!, new FakeIWebLogger())
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
 		};
@@ -128,7 +144,7 @@ public sealed class HealthControllerTest
 	[TestMethod]
 	public void Version_Version_older()
 	{
-		var controller = new HealthController(null!)
+		var controller = new HealthController(null!, new FakeIWebLogger())
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
 		};
@@ -140,7 +156,7 @@ public sealed class HealthControllerTest
 	[TestMethod]
 	public void Version_Version_AsParam_older()
 	{
-		var controller = new HealthController(null!)
+		var controller = new HealthController(null!, new FakeIWebLogger())
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
 		};
@@ -151,7 +167,7 @@ public sealed class HealthControllerTest
 	[TestMethod]
 	public void Version_Version_beta1_isBefore()
 	{
-		var controller = new HealthController(null!)
+		var controller = new HealthController(null!, new FakeIWebLogger())
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
 		};
@@ -166,7 +182,7 @@ public sealed class HealthControllerTest
 	[TestMethod]
 	public void Version_Version_eq()
 	{
-		var controller = new HealthController(null!)
+		var controller = new HealthController(null!, new FakeIWebLogger())
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
 		};
@@ -180,7 +196,7 @@ public sealed class HealthControllerTest
 	[TestMethod]
 	public void Version_Version_NonValidInput()
 	{
-		var controller = new HealthController(null!)
+		var controller = new HealthController(null!, new FakeIWebLogger())
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
 		};
@@ -194,7 +210,7 @@ public sealed class HealthControllerTest
 	[TestMethod]
 	public void Version_Version_0()
 	{
-		var controller = new HealthController(null!)
+		var controller = new HealthController(null!, new FakeIWebLogger())
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
 		};
@@ -207,7 +223,7 @@ public sealed class HealthControllerTest
 	public async Task CheckHealthAsyncWithTimeout_ShouldTimeout()
 	{
 		var result = await new HealthController(
-				new FakeHealthCheckService(true))
+				new FakeHealthCheckService(true), new FakeIWebLogger())
 			.CheckHealthAsyncWithTimeout(-1);
 		Assert.AreEqual(HealthStatus.Unhealthy, result.Status);
 	}
@@ -215,8 +231,9 @@ public sealed class HealthControllerTest
 	[TestMethod]
 	public async Task CheckHealthAsyncWithTimeout_ShouldSucceed()
 	{
-		var result = await new HealthController(new FakeHealthCheckService(true))
-			.CheckHealthAsyncWithTimeout();
+		var result =
+			await new HealthController(new FakeHealthCheckService(true), new FakeIWebLogger())
+				.CheckHealthAsyncWithTimeout();
 		Assert.AreEqual(HealthStatus.Healthy, result.Status);
 	}
 
@@ -239,7 +256,8 @@ public sealed class HealthControllerTest
 		};
 
 		var result = await new HealthController(
-				new FakeHealthCheckService(true), new FakeMemoryCache(cachedItem))
+				new FakeHealthCheckService(true), new FakeIWebLogger(),
+				new FakeMemoryCache(cachedItem))
 			.CheckHealthAsyncWithTimeout();
 
 		Assert.AreEqual(HealthStatus.Healthy, result.Status);
@@ -265,7 +283,8 @@ public sealed class HealthControllerTest
 		};
 
 		var result = await new HealthController(
-				new FakeHealthCheckService(false), new FakeMemoryCache(cachedItem))
+				new FakeHealthCheckService(false), new FakeIWebLogger(),
+				new FakeMemoryCache(cachedItem))
 			.CheckHealthAsyncWithTimeout();
 		Assert.AreEqual(HealthStatus.Healthy, result.Status);
 	}
