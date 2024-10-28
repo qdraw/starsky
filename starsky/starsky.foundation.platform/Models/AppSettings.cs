@@ -493,8 +493,8 @@ public sealed class AppSettings
 
 			var uriAddress = new Uri(value);
 			if ( uriAddress.UserInfo.Split(":".ToCharArray()).Length == 2
-				 && uriAddress.Scheme == "ftp"
-				 && uriAddress.LocalPath.Length >= 1 )
+			     && uriAddress.Scheme == "ftp"
+			     && uriAddress.LocalPath.Length >= 1 )
 			{
 				_webFtp = value;
 			}
@@ -561,8 +561,7 @@ public sealed class AppSettings
 	///     Value for AccountRolesDefaultByEmailRegisterOverwrite
 	/// </summary>
 	private Dictionary<string, string>
-		AccountRolesByEmailRegisterOverwritePrivate
-	{ get; } =
+		AccountRolesByEmailRegisterOverwritePrivate { get; } =
 		new();
 
 	/// <summary>
@@ -584,7 +583,7 @@ public sealed class AppSettings
 			}
 
 			foreach ( var singleValue in value.Where(singleValue =>
-						 AccountRoles.GetAllRoles().Contains(singleValue.Value)) )
+				         AccountRoles.GetAllRoles().Contains(singleValue.Value)) )
 			{
 				AccountRolesByEmailRegisterOverwritePrivate.TryAdd(
 					singleValue.Key, singleValue.Value);
@@ -664,7 +663,8 @@ public sealed class AppSettings
 	///     this setting.
 	/// </summary>
 	[PackageTelemetry]
-	public List<CameraMakeModel>? VideoUseLocalTime { get; set; } = new() { new("Sony", "A58") };
+	public List<CameraMakeModel>? VideoUseLocalTime { get; set; } =
+		new() { new CameraMakeModel("Sony", "A58") };
 
 	/// <summary>
 	///     Private storage for EnablePackageTelemetry
@@ -762,14 +762,20 @@ public sealed class AppSettings
 	public int? ThumbnailGenerationIntervalInMinutes { get; set; } = 15;
 
 	/// <summary>
+	///     Clean non referenced thumbnails on startup
+	///     Recommended to keep false
+	/// </summary>
+	public bool? ThumbnailCleanupSkipOnStartup { get; set; } = false;
+
+	/// <summary>
 	///     Skip download GeoFiles on startup
-	///     Recommended to to keep false
+	///     Recommended to keep false
 	/// </summary>
 	public bool? GeoFilesSkipDownloadOnStartup { get; set; } = false;
 
 	/// <summary>
 	///     Skip download ExifTool on startup
-	///     Recommended to to keep false
+	///     Recommended to keep false
 	/// </summary>
 	public bool? ExiftoolSkipDownloadOnStartup { get; set; } = false;
 
@@ -860,7 +866,7 @@ public sealed class AppSettings
 		}
 
 		throw new ArgumentException("(StructureCheck) Structure is not confirm regex - " +
-									structure);
+		                            structure);
 	}
 
 	private string GetDefaultExifToolPath()
@@ -920,7 +926,7 @@ public sealed class AppSettings
 		}
 
 		if ( appSettings.DatabaseType == DatabaseTypeList.Sqlite &&
-			 !string.IsNullOrEmpty(userProfileFolder) )
+		     !string.IsNullOrEmpty(userProfileFolder) )
 		{
 			appSettings.DatabaseConnection =
 				appSettings.DatabaseConnection.Replace(userProfileFolder, "~");
@@ -932,7 +938,7 @@ public sealed class AppSettings
 		}
 
 		if ( !string.IsNullOrEmpty(appSettings.AppSettingsPath) &&
-			 !string.IsNullOrEmpty(userProfileFolder) )
+		     !string.IsNullOrEmpty(userProfileFolder) )
 		{
 			appSettings.AppSettingsPath =
 				appSettings.AppSettingsPath.Replace(userProfileFolder, "~");
@@ -941,7 +947,7 @@ public sealed class AppSettings
 		if ( appSettings.PublishProfiles != null )
 		{
 			foreach ( var value in appSettings.PublishProfiles.SelectMany(profile =>
-						 profile.Value) )
+				         profile.Value) )
 			{
 				ReplaceAppSettingsPublishProfilesCloneToDisplay(value);
 			}
@@ -988,7 +994,7 @@ public sealed class AppSettings
 		AppSettingsPublishProfiles value)
 	{
 		if ( !string.IsNullOrEmpty(value.Path) &&
-			 value.Path != AppSettingsPublishProfiles.GetDefaultPath() )
+		     value.Path != AppSettingsPublishProfiles.GetDefaultPath() )
 		{
 			value.Path = CloneToDisplaySecurityWarning;
 		}
@@ -1113,7 +1119,7 @@ public sealed class AppSettings
 	public string SqLiteFullPath(string connectionString, string baseDirectoryProject)
 	{
 		if ( DatabaseType == DatabaseTypeList.Mysql &&
-			 string.IsNullOrWhiteSpace(connectionString) )
+		     string.IsNullOrWhiteSpace(connectionString) )
 		{
 			throw new ArgumentException("The 'DatabaseConnection' field is null or empty");
 		}
@@ -1149,7 +1155,7 @@ public sealed class AppSettings
 		}
 
 		var dataSource = "Data Source=" + baseDirectoryProject +
-						 Path.DirectorySeparatorChar + databaseFileName;
+		                 Path.DirectorySeparatorChar + databaseFileName;
 		return dataSource;
 	}
 
@@ -1178,7 +1184,7 @@ public sealed class AppSettings
 			var destinationProperty = destinationType.GetProperty(sourceProperty.Name);
 
 			if ( destinationProperty == null ||
-				 !destinationProperty.CanWrite )
+			     !destinationProperty.CanWrite )
 			{
 				continue;
 			}
