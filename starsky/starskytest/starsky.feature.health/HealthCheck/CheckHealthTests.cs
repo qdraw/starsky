@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.health.HealthCheck.Service;
@@ -75,8 +76,9 @@ public class CheckHealthTests
 	[TestMethod]
 	public async Task CheckHealthAsyncWithTimeout_ShouldTimeout()
 	{
-		var result = await new CheckHealthService(new FakeHealthCheckService(true), new FakeIWebLogger())
-			.CheckHealthWithTimeoutAsync(-1);
+		var result =
+			await new CheckHealthService(new FakeHealthCheckService(true), new FakeIWebLogger())
+				.CheckHealthWithTimeoutAsync(-1);
 		Assert.AreEqual(HealthStatus.Unhealthy, result.Status);
 	}
 
@@ -112,5 +114,29 @@ public class CheckHealthTests
 			new FakeIWebLogger(), new FakeMemoryCache(cachedItem)).CheckHealthWithTimeoutAsync();
 
 		Assert.AreEqual(HealthStatus.Healthy, result.Status);
+	}
+
+	[DataTestMethod]
+	[DataRow(true, true, HealthStatus.Healthy, true)]
+	[DataRow(true, false, HealthStatus.Unhealthy, false)]
+	public async Task CheckHealthAsyncWithTimeout_ShouldSetCache(bool addMemoryCache, bool isHealthy,
+		HealthStatus healthStatus, bool expectCache)
+	{
+		var cache = new MemoryCache(new MemoryCacheOptions());
+		var result = await new CheckHealthService(new FakeHealthCheckService(isHealthy),
+			new FakeIWebLogger(), cache).CheckHealthWithTimeoutAsync();
+
+		cache.TryGetValue(CheckHealthService.CacheKey, out var cachedResult);
+
+		if ( expectCache )
+		{
+			Assert.AreEqual(result, cachedResult);
+		}
+		else
+		{
+			Assert.IsNull(cachedResult);
+		}
+
+		Assert.AreEqual(healthStatus, result.Status);
 	}
 }

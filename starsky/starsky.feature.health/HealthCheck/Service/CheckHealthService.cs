@@ -14,6 +14,7 @@ namespace starsky.feature.health.HealthCheck.Service;
 [Service(typeof(ICheckHealthService), InjectionLifetime = InjectionLifetime.Scoped)]
 public class CheckHealthService : ICheckHealthService
 {
+	internal const string CacheKey = "health";
 	private readonly IMemoryCache? _cache;
 	private readonly IWebLogger _logger;
 	private readonly HealthCheckService _service;
@@ -63,11 +64,10 @@ public class CheckHealthService : ICheckHealthService
 	/// <returns>report</returns>
 	public async Task<HealthReport> CheckHealthWithTimeoutAsync(int timeoutTime = 15000)
 	{
-		const string healthControllerCacheKey = "health";
 		try
 		{
 			if ( _cache != null &&
-			     _cache.TryGetValue(healthControllerCacheKey, out var objectHealthStatus) &&
+			     _cache.TryGetValue(CacheKey, out var objectHealthStatus) &&
 			     objectHealthStatus is HealthReport healthStatus &&
 			     healthStatus.Status == HealthStatus.Healthy )
 			{
@@ -77,7 +77,7 @@ public class CheckHealthService : ICheckHealthService
 			var result = await _service.CheckHealthAsync().TimeoutAfter(timeoutTime);
 			if ( _cache != null && result.Status == HealthStatus.Healthy )
 			{
-				_cache.Set(healthControllerCacheKey, result, new TimeSpan(0, 1, 30));
+				_cache.Set(CacheKey, result, new TimeSpan(0, 1, 30));
 			}
 
 			return result;
