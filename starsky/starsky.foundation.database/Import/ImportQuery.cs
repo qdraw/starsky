@@ -130,7 +130,7 @@ public sealed class ImportQuery : IImportQuery
 		}
 		catch ( InvalidOperationException )
 		{
-			await LocalRemoveDefaultQuery();
+			await LocalRemoveQueryRetry();
 		}
 		catch ( DbUpdateConcurrencyException exception )
 		{
