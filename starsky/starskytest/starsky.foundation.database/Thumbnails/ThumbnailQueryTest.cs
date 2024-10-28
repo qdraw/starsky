@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
@@ -672,6 +673,47 @@ public class ThumbnailQueryTest
 		var result = await query.GetMissingThumbnailsBatchAsync(0, 100);
 		Assert.AreEqual(1, result.Count);
 	}
+	
+	[TestMethod]
+	public async Task GetMissingThumbnailsBatchAsync_Disposed()
+	{
+		var serviceScope = CreateNewScope("GetMissingThumbnailsBatchAsync_Disposed");
+		var context = serviceScope.CreateScope().ServiceProvider
+			.GetRequiredService<ApplicationDbContext>();
+
+		context.Thumbnails.Add(new ThumbnailItem("123", null, true, null, null));
+		await context.SaveChangesAsync();
+
+		// Dispose to check service scope
+		await context.DisposeAsync();
+
+		var query = new ThumbnailQuery(context, serviceScope, new FakeIWebLogger(), new FakeMemoryCache());
+		var result = await query.GetMissingThumbnailsBatchAsync(0, 100);
+		Assert.AreEqual(1, result.Count);
+	}
+	
+	[TestMethod]
+	public async Task GetMissingThumbnailsBatchAsync_Disposed_ServiceScopeMissing()
+	{
+		var serviceScope = CreateNewScope("GetMissingThumbnailsBatchAsync_Disposed");
+		var context = serviceScope.CreateScope().ServiceProvider
+			.GetRequiredService<ApplicationDbContext>();
+
+		context.Thumbnails.Add(new ThumbnailItem("123", null, true, null, null));
+		await context.SaveChangesAsync();
+
+		// Dispose to check service scope
+		await context.DisposeAsync();
+
+		// No service scope
+		var query = new ThumbnailQuery(context, null!, new FakeIWebLogger(), new FakeMemoryCache());
+		
+		await Assert.ThrowsExceptionAsync<ObjectDisposedException>(async () =>
+		{
+			await query.GetMissingThumbnailsBatchAsync(0, 100);
+		});
+	}
+
 
 	[TestMethod]
 	public async Task UpdateDatabase_Disposed_NoServiceScope()
@@ -880,5 +922,50 @@ public class ThumbnailQueryTest
 		var item2 = await thumbnailQuery.Get("after");
 
 		Assert.IsTrue(item2.FirstOrDefault()!.Large);
+	}
+
+	[TestMethod]
+	public void SetIsRunningJob_WithCache()
+	{
+		var cache = new MemoryCache(new MemoryCacheOptions());
+		var thumbnailQuery = new ThumbnailQuery(null!, null!, new FakeIWebLogger(),
+			cache);
+
+		Assert.IsFalse(cache.TryGetValue($"{nameof(ThumbnailQuery)}_IsRunningJob", out var _));
+
+		thumbnailQuery.SetRunningJob(true);
+
+		Assert.IsTrue(cache.TryGetValue($"{nameof(ThumbnailQuery)}_IsRunningJob", out var value));
+		Assert.IsTrue(( bool? ) value);
+	}
+
+	[TestMethod]
+	public void IsRunningJob_WithCache()
+	{
+		var cache = new MemoryCache(new MemoryCacheOptions());
+		cache.Set($"{nameof(ThumbnailQuery)}_IsRunningJob", true);
+
+		var thumbnailQuery = new ThumbnailQuery(null!, null!, new FakeIWebLogger(),
+			cache);
+
+		Assert.IsTrue(thumbnailQuery.IsRunningJob());
+	}
+
+	[TestMethod]
+	public void SetIsRunningJob_NoCache()
+	{
+		// no CACHE
+		var thumbnailQuery = new ThumbnailQuery(null!, null!, new FakeIWebLogger());
+
+		Assert.IsFalse(thumbnailQuery.SetRunningJob(true));
+	}
+
+	[TestMethod]
+	public void IsRunningJob_NoCache()
+	{
+		// no CACHE
+		var thumbnailQuery = new ThumbnailQuery(null!, null!, new FakeIWebLogger());
+
+		Assert.IsFalse(thumbnailQuery.IsRunningJob());
 	}
 }
