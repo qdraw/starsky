@@ -127,6 +127,8 @@ machinename with your computer name in lowercase)_
     _default false_ _in app true_
 38. `DefaultDesktopEditor` List of Properties that contain the default editor by imageFormat
     _default none_
+39. `ThumbnailCleanupSkipOnStartup` Skip the cleanup of the thumbnail folder on startup
+    _default false_
 
 ### Appsettings.json example
 

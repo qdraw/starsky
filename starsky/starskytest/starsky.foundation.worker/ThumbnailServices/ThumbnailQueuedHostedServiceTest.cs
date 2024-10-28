@@ -178,6 +178,41 @@ public sealed class ThumbnailQueuedHostedServiceTest
 	}
 
 	[TestMethod]
+	public void ThrowExceptionIfCpuUsageIsToHigh_ShouldThrowException_WhenCpuUsageIsHigh()
+	{
+		// Arrange
+		var cpuUsageListenerService = new FakeICpuUsageListener(90);
+
+		var logger = new FakeIWebLogger();
+		var appSettings =
+			new AppSettings { CpuUsageMaxPercentage = 80 }; // Set max CPU usage threshold
+
+		var queue = new ThumbnailBackgroundTaskQueue(cpuUsageListenerService, logger, appSettings,
+			_scopeFactory);
+
+		// Act & Assert
+		Assert.ThrowsException<ToManyUsageException>(() =>
+			queue.ThrowExceptionIfCpuUsageIsToHigh("TestMetaData"));
+	}
+
+	[TestMethod]
+	public void ThrowExceptionIfCpuUsageIsToHigh_SkipIfToLow()
+	{
+		// Arrange
+		var cpuUsageListenerService = new FakeICpuUsageListener(2);
+
+		var logger = new FakeIWebLogger();
+		var appSettings =
+			new AppSettings { CpuUsageMaxPercentage = 80 }; // Set max CPU usage threshold
+
+		var queue = new ThumbnailBackgroundTaskQueue(cpuUsageListenerService, logger, appSettings,
+			_scopeFactory);
+
+		// Act & Assert
+		Assert.IsTrue(queue.ThrowExceptionIfCpuUsageIsToHigh("TestMetaData"));
+	}
+
+	[TestMethod]
 	public async Task ThumbnailQueuedHostedServiceTest_ArgumentNullExceptionFail()
 	{
 		// Arrange

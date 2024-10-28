@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -13,242 +15,408 @@ using starsky.foundation.database.Query;
 using starsky.foundation.platform.Interfaces;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.database.Import
+namespace starskytest.starsky.foundation.database.Import;
+
+[TestClass]
+public sealed class ImportQueryTest
 {
-	[TestClass]
-	public sealed class ImportQueryTest
+	private readonly ApplicationDbContext _dbContext;
+	private readonly ImportQuery _importQuery;
+	private readonly IServiceScopeFactory _serviceScope;
+
+	public ImportQueryTest()
 	{
-		private readonly ImportQuery _importQuery;
-		private readonly ApplicationDbContext _dbContext;
-		private readonly IServiceScopeFactory _serviceScope;
+		_serviceScope = CreateNewScope();
+		var scope = _serviceScope.CreateScope();
+		_dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-		public ImportQueryTest()
+		_importQuery = new ImportQuery(_serviceScope, new FakeConsoleWrapper(),
+			new FakeIWebLogger(), _dbContext);
+	}
+
+	private static IServiceScopeFactory CreateNewScope(string? name = null)
+	{
+		name ??= nameof(ImportQueryTest);
+		var services = new ServiceCollection();
+		services.AddDbContext<ApplicationDbContext>(options =>
+			options.UseInMemoryDatabase(name));
+		services.AddSingleton<IConsole, FakeConsoleWrapper>();
+		var serviceProvider = services.BuildServiceProvider();
+		return serviceProvider.GetRequiredService<IServiceScopeFactory>();
+	}
+
+	[TestMethod]
+	public void TestConnection_True()
+	{
+		var result = _importQuery.TestConnection();
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public void TestConnection_Null()
+	{
+		var result = new ImportQuery(null, new FakeConsoleWrapper(), new FakeIWebLogger())
+			.TestConnection();
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task IsHashInImportDbAsync_True()
+	{
+		var dbContext = new InjectServiceScope(_serviceScope).Context();
+
+		await dbContext.ImportIndex.AddAsync(new ImportIndexItem
 		{
-			_serviceScope = CreateNewScope();
-			var scope = _serviceScope.CreateScope();
-			_dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+			Status = ImportStatus.Ok, FileHash = "TEST2", AddToDatabase = DateTime.UtcNow
+		});
+		await dbContext.SaveChangesAsync();
 
-			_importQuery = new ImportQuery(_serviceScope, new FakeConsoleWrapper(),
-				new FakeIWebLogger());
+		var result = await _importQuery.IsHashInImportDbAsync("TEST2");
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public async Task IsHashInImportDbAsync_NotFound()
+	{
+		_dbContext.ImportIndex.Add(new ImportIndexItem
+		{
+			Status = ImportStatus.Ok, FileHash = "TEST", AddToDatabase = DateTime.UtcNow
+		});
+
+		var result = await _importQuery.IsHashInImportDbAsync("Not-found");
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task IsHashInImportDbAsync_ContextFail()
+	{
+		var result = await new ImportQuery(null,
+			new FakeConsoleWrapper(), new FakeIWebLogger()).IsHashInImportDbAsync("TEST");
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task AddAsync()
+	{
+		var expectedResult = new ImportIndexItem { FileHash = "TEST3" };
+		var serviceScopeFactory = CreateNewScope();
+		var scope = serviceScopeFactory.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+		await new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper(),
+			new FakeIWebLogger()).AddAsync(expectedResult);
+
+		var queryFromDb = await dbContext.ImportIndex.FirstOrDefaultAsync(
+			p => p.FileHash == expectedResult.FileHash);
+
+		Assert.AreEqual(expectedResult.FileHash, queryFromDb?.FileHash);
+	}
+
+	[TestMethod]
+	public async Task History()
+	{
+		var expectedResult = new ImportIndexItem
+		{
+			AddToDatabase = DateTime.UtcNow, FileHash = "TEST8"
+		};
+		var serviceScopeFactory = CreateNewScope();
+
+		await new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper(),
+			new FakeIWebLogger()).AddAsync(expectedResult);
+
+		var historyResult = new ImportQuery(serviceScopeFactory,
+			new FakeConsoleWrapper(), new FakeIWebLogger()).History();
+
+		if ( historyResult.Count == 0 )
+		{
+			throw new WebException("should not be 0");
 		}
 
-		private IServiceScopeFactory CreateNewScope()
-		{
-			var services = new ServiceCollection();
-			services.AddDbContext<ApplicationDbContext>(options =>
-				options.UseInMemoryDatabase(nameof(ImportQueryTest)));
-			services.AddSingleton<IConsole, FakeConsoleWrapper>();
-			var serviceProvider = services.BuildServiceProvider();
-			return serviceProvider.GetRequiredService<IServiceScopeFactory>();
-		}
+		Assert.IsTrue(historyResult.Exists(p => p.FileHash == "TEST8"));
+	}
 
-		[TestMethod]
-		public void TestConnection_True()
+	[TestMethod]
+	public async Task AddRangeAsync()
+	{
+		var expectedResult = new List<ImportIndexItem>
 		{
-			var result = _importQuery.TestConnection();
-			Assert.IsTrue(result);
-		}
+			new() { FileHash = "TEST4" }, new() { FileHash = "TEST5" }
+		};
+		var serviceScopeFactory = CreateNewScope();
+		var scope = serviceScopeFactory.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-		[TestMethod]
-		public void TestConnection_Null()
+		await new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper(),
+			new FakeIWebLogger()).AddRangeAsync(expectedResult);
+
+		var queryFromDb = await dbContext.ImportIndex
+			.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5").ToListAsync();
+		Assert.AreEqual(expectedResult.FirstOrDefault()?.FileHash,
+			queryFromDb.FirstOrDefault()?.FileHash);
+		Assert.AreEqual(expectedResult[1].FileHash, queryFromDb[1].FileHash);
+	}
+
+	[TestMethod]
+	public void AddRange()
+	{
+		var expectedResult = new List<ImportIndexItem>
 		{
-			var result = new ImportQuery(null, new FakeConsoleWrapper(), new FakeIWebLogger())
-				.TestConnection();
-			Assert.IsFalse(result);
-		}
+			new() { FileHash = "TEST4" }, new() { FileHash = "TEST5" }
+		};
+		var serviceScopeFactory = CreateNewScope();
+		var scope = serviceScopeFactory.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-		[TestMethod]
-		public async Task IsHashInImportDbAsync_True()
+		new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper(), new FakeIWebLogger())
+			.AddRange(expectedResult);
+
+		var queryFromDb = dbContext
+			.ImportIndex.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5").ToList();
+		Assert.AreEqual(expectedResult.FirstOrDefault()!.FileHash,
+			queryFromDb.FirstOrDefault()!.FileHash);
+		Assert.AreEqual(expectedResult[1].FileHash, queryFromDb[1].FileHash);
+	}
+
+	[TestMethod]
+	public async Task RemoveItemAsync_RemovesItemFromImportIndex()
+	{
+		// Arrange
+		var importIndexItem = new ImportIndexItem { Id = 1825 };
+
+		// Set up a temporary in-memory database for testing
+		var serviceProvider = new ServiceCollection()
+			.AddDbContext<ApplicationDbContext>(options =>
+				options.UseInMemoryDatabase("TestDatabase123456789"))
+			.BuildServiceProvider();
+
+		using ( var scope = serviceProvider.CreateScope() )
 		{
-			var dbContext = new InjectServiceScope(_serviceScope).Context();
+			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-			await dbContext.ImportIndex.AddAsync(new ImportIndexItem
-			{
-				Status = ImportStatus.Ok, FileHash = "TEST2", AddToDatabase = DateTime.UtcNow,
-			});
+			// Add the importIndexItem to the import index
+			dbContext.ImportIndex.Add(importIndexItem);
 			await dbContext.SaveChangesAsync();
-
-			var result = await _importQuery.IsHashInImportDbAsync("TEST2");
-			Assert.IsTrue(result);
 		}
 
-		[TestMethod]
-		public async Task IsHashInImportDbAsync_NotFound()
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+		var console = new FakeConsoleWrapper();
+		var logger = new FakeIWebLogger();
+		using ( var scope = serviceProvider.CreateScope() )
 		{
-			_dbContext.ImportIndex.Add(new ImportIndexItem
-			{
-				Status = ImportStatus.Ok, FileHash = "TEST", AddToDatabase = DateTime.UtcNow,
-			});
+			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+			var importQuery = new ImportQuery(scopeFactory, console, logger, dbContext);
 
-			var result = await _importQuery.IsHashInImportDbAsync("Not-found");
-			Assert.IsFalse(result);
+			// Act
+			await importQuery.RemoveItemAsync(importIndexItem);
 		}
 
-		[TestMethod]
-		public async Task IsHashInImportDbAsync_ContextFail()
+		// Assert
+		using ( var scope = serviceProvider.CreateScope() )
 		{
-			var result = await new ImportQuery(null,
-				new FakeConsoleWrapper(), new FakeIWebLogger()).IsHashInImportDbAsync("TEST");
-			Assert.IsFalse(result);
-		}
-
-		[TestMethod]
-		public async Task AddAsync()
-		{
-			var expectedResult = new ImportIndexItem { FileHash = "TEST3" };
-			var serviceScopeFactory = CreateNewScope();
-			var scope = serviceScopeFactory.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-			await new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper(),
-				new FakeIWebLogger()).AddAsync(expectedResult);
+			// Ensure that the item is removed from the import index
+			Assert.IsFalse(await dbContext.ImportIndex.AnyAsync(x => x.Id == importIndexItem.Id));
+		}
+	}
 
-			var queryFromDb = await dbContext.ImportIndex.FirstOrDefaultAsync(
-				p => p.FileHash == expectedResult.FileHash);
+	[TestMethod]
+	public async Task ImportQuery_RemoveAsync_Disposed()
+	{
+		var addedItems = new List<ImportIndexItem>
+		{
+			new() { FileHash = "RemoveAsync_Disposed__1" },
+			new() { FileHash = "RemoveAsync_Disposed__2" }
+		};
 
-			Assert.AreEqual(expectedResult.FileHash, queryFromDb?.FileHash);
+		var serviceScopeFactory = CreateNewScope();
+		var scope = serviceScopeFactory.CreateScope();
+		var dbContextDisposed = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+		await dbContextDisposed.ImportIndex.AddRangeAsync(addedItems);
+		await dbContextDisposed.SaveChangesAsync();
+
+		// Dispose here
+		await dbContextDisposed.DisposeAsync();
+
+		var importQuery = new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper(),
+			new FakeIWebLogger(), dbContextDisposed);
+
+		await importQuery.RemoveItemAsync(addedItems[0]);
+		await importQuery.RemoveItemAsync(addedItems[1]);
+
+		var context = new InjectServiceScope(serviceScopeFactory).Context();
+		var queryFromDb = await context.FileIndex.Where(p =>
+			p.FileHash == addedItems[0].FilePath || p.FileHash == addedItems[1].FilePath
+		).ToListAsync();
+
+		Assert.AreEqual(0, queryFromDb.Count);
+	}
+
+	[TestMethod]
+	public async Task RemoveItemAsync_ShouldDetachEntity()
+	{
+		// Arrange
+		var importIndexItem = new ImportIndexItem { Id = 1020, FileHash = "testhash" };
+		_dbContext.ImportIndex.Add(importIndexItem);
+		// Attach something to the local cache
+		_dbContext.Set<ImportIndexItem>()
+			.Local.Add(importIndexItem);
+		await _dbContext.SaveChangesAsync();
+
+		// Act
+		await _importQuery.RemoveItemAsync(importIndexItem);
+
+		// Assert
+		var local =
+			_dbContext.ImportIndex.Local.FirstOrDefault(entry => entry.Id == importIndexItem.Id);
+		Assert.IsNull(local);
+	}
+
+	[TestMethod]
+	public async Task RemoveItemAsync_DbUpdateConcurrencyException()
+	{
+		var addedItems = new List<ImportIndexItem>
+		{
+			new() { FileHash = "RemoveAsync_Disposed__3" }
+		};
+
+		var serviceScopeFactory =
+			CreateNewScope(nameof(RemoveItemAsync_DbUpdateConcurrencyException));
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(nameof(RemoveItemAsync_DbUpdateConcurrencyException))
+			.Options;
+		var dbContext = new ConcurrencyExceptionApplicationDbContext(options);
+
+		var webLogger = new FakeIWebLogger();
+		var importQuery = new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper(),
+			webLogger, dbContext);
+
+		await importQuery.RemoveItemAsync(addedItems[0], 1);
+
+		Assert.AreEqual(2, webLogger.TrackedInformation.Count);
+		Assert.IsTrue(webLogger.TrackedInformation[0].Item2?.StartsWith(
+			"Import [RemoveItemAsync] catch-ed " +
+			"DbUpdateConcurrencyException (retry)"));
+		Assert.IsTrue(webLogger.TrackedInformation[1].Item2?.StartsWith(
+			"Import [RemoveItemAsync] catch-ed " +
+			"AggregateException (ignored after retry)"));
+	}
+
+	[TestMethod]
+	public async Task RemoveItemAsync_SqliteExceptionApplicationDbContext()
+	{
+		var addedItems = new List<ImportIndexItem>
+		{
+			new() { FileHash = "RemoveAsync_Disposed__4" }
+		};
+
+		var serviceScopeFactory =
+			CreateNewScope(nameof(RemoveItemAsync_SqliteExceptionApplicationDbContext));
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(nameof(RemoveItemAsync_SqliteExceptionApplicationDbContext))
+			.Options;
+		var dbContext = new SqliteExceptionApplicationDbContext(options);
+
+		var webLogger = new FakeIWebLogger();
+		var importQuery = new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper(),
+			webLogger, dbContext);
+
+		await importQuery.RemoveItemAsync(addedItems[0], 1);
+
+		Assert.AreEqual(1, webLogger.TrackedInformation.Count);
+		Assert.IsTrue(webLogger.TrackedInformation[0].Item2?.StartsWith(
+			"Import [RemoveItemAsync] catch-ed " +
+			"AggregateException (ignored after retry)"));
+	}
+
+	private class ConcurrencyExceptionApplicationDbContext : ApplicationDbContext
+	{
+		public ConcurrencyExceptionApplicationDbContext(DbContextOptions options) : base(options)
+		{
 		}
 
-		[TestMethod]
-		public async Task History()
+		public override DbSet<FileIndexItem> FileIndex
 		{
-			var expectedResult = new ImportIndexItem
+			get => throw new DbUpdateConcurrencyException();
+			set
 			{
-				AddToDatabase = DateTime.UtcNow, FileHash = "TEST8"
-			};
-			var serviceScopeFactory = CreateNewScope();
-
-			await new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper(),
-				new FakeIWebLogger()).AddAsync(expectedResult);
-
-			var historyResult = new ImportQuery(serviceScopeFactory,
-				new FakeConsoleWrapper(), new FakeIWebLogger()).History();
-
-			if ( historyResult.Count == 0 )
-			{
-				throw new WebException("should not be 0");
+				// do nothing
 			}
-
-			Assert.IsTrue(historyResult.Exists(p => p.FileHash == "TEST8"));
 		}
 
-		[TestMethod]
-		public async Task AddRangeAsync()
+		public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
 		{
-			var expectedResult = new List<ImportIndexItem>
-			{
-				new ImportIndexItem { FileHash = "TEST4" },
-				new ImportIndexItem { FileHash = "TEST5" }
-			};
-			var serviceScopeFactory = CreateNewScope();
-			var scope = serviceScopeFactory.CreateScope();
-			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+			throw new DbUpdateConcurrencyException();
+		}
+	}
+	
+	[TestMethod]
+	public async Task RemoveItemAsync_InValidOperationExceptionApplicationDbContext()
+	{
+		var addedItems = new List<ImportIndexItem>
+		{
+			new() { FileHash = "RemoveAsync_InValidOperationException" }
+		};
 
-			await new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper(),
-				new FakeIWebLogger()).AddRangeAsync(expectedResult);
+		var serviceScopeFactory =
+			CreateNewScope(nameof(RemoveItemAsync_InValidOperationExceptionApplicationDbContext));
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(nameof(RemoveItemAsync_InValidOperationExceptionApplicationDbContext))
+			.Options;
+		var dbContext = new InValidOperationExceptionApplicationDbContext(options);
 
-			var queryFromDb = dbContext.ImportIndex
-				.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5").ToList();
-			Assert.AreEqual(expectedResult.FirstOrDefault()?.FileHash,
-				queryFromDb.FirstOrDefault()?.FileHash);
-			Assert.AreEqual(expectedResult[1].FileHash, queryFromDb[1].FileHash);
+		var webLogger = new FakeIWebLogger();
+		var importQuery = new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper(),
+			webLogger, dbContext);
+
+		await importQuery.RemoveItemAsync(addedItems[0], 1);
+
+		Assert.AreEqual(1, webLogger.TrackedInformation.Count);
+		Assert.IsTrue(webLogger.TrackedInformation[0].Item2?.StartsWith(
+			"Import [RemoveItemAsync] catch-ed " +
+			"AggregateException (ignored after retry)"));
+	}
+	
+	private class InValidOperationExceptionApplicationDbContext : ApplicationDbContext
+	{
+		public InValidOperationExceptionApplicationDbContext(DbContextOptions options) : base(options)
+		{
 		}
 
-		[TestMethod]
-		public void AddRange()
+		public override DbSet<FileIndexItem> FileIndex
 		{
-			var expectedResult = new List<ImportIndexItem>
+			get => throw new InvalidOperationException();
+			set
 			{
-				new ImportIndexItem { FileHash = "TEST4" },
-				new ImportIndexItem { FileHash = "TEST5" }
-			};
-			var serviceScopeFactory = CreateNewScope();
-			var scope = serviceScopeFactory.CreateScope();
-			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-			new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper(), new FakeIWebLogger())
-				.AddRange(expectedResult);
-
-			var queryFromDb = dbContext
-				.ImportIndex.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5").ToList();
-			Assert.AreEqual(expectedResult.FirstOrDefault()!.FileHash,
-				queryFromDb.FirstOrDefault()!.FileHash);
-			Assert.AreEqual(expectedResult[1].FileHash, queryFromDb[1].FileHash);
-		}
-
-		[TestMethod]
-		public async Task RemoveItemAsync_RemovesItemFromImportIndex()
-		{
-			// Arrange
-			var importIndexItem = new ImportIndexItem { Id = 1825 };
-
-			// Set up a temporary in-memory database for testing
-			var serviceProvider = new ServiceCollection()
-				.AddDbContext<ApplicationDbContext>(options =>
-					options.UseInMemoryDatabase(databaseName: "TestDatabase123456789"))
-				.BuildServiceProvider();
-
-			using ( var scope = serviceProvider.CreateScope() )
-			{
-				var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-				// Add the importIndexItem to the import index
-				dbContext.ImportIndex.Add(importIndexItem);
-				await dbContext.SaveChangesAsync();
-			}
-
-			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-			var console = new FakeConsoleWrapper();
-			var logger = new FakeIWebLogger();
-			using ( var scope = serviceProvider.CreateScope() )
-			{
-				var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-				var importQuery = new ImportQuery(scopeFactory, console, logger, dbContext);
-
-				// Act
-				await importQuery.RemoveItemAsync(importIndexItem);
-			}
-
-			// Assert
-			using ( var scope = serviceProvider.CreateScope() )
-			{
-				var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-				// Ensure that the item is removed from the import index
-				Assert.IsFalse(dbContext.ImportIndex.Any(x => x.Id == importIndexItem.Id));
+				// do nothing
 			}
 		}
-		
-		[TestMethod]
-		public async Task ImportQuery_RemoveAsync_Disposed()
+
+		public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
 		{
-			var addedItems = new List<ImportIndexItem>
+			throw new InvalidOperationException();
+		}
+	}
+
+	private class SqliteExceptionApplicationDbContext : ApplicationDbContext
+	{
+		public SqliteExceptionApplicationDbContext(DbContextOptions options) : base(options)
+		{
+		}
+
+		public override DbSet<FileIndexItem> FileIndex
+		{
+			get => throw new SqliteException("Database is locked", 1);
+			set
 			{
-				new ImportIndexItem {FileHash = "RemoveAsync_Disposed__1"},
-				new ImportIndexItem {FileHash = "RemoveAsync_Disposed__2"}
-			};
-			
-			var serviceScopeFactory = CreateNewScope();
-			var scope = serviceScopeFactory.CreateScope();
-			var dbContextDisposed = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+				// do nothing
+			}
+		}
 
-			await dbContextDisposed.ImportIndex.AddRangeAsync(addedItems);
-			await dbContextDisposed.SaveChangesAsync();
-		
-			// Dispose here
-			await dbContextDisposed.DisposeAsync();
-
-			var importQuery = new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper(), new FakeIWebLogger(), dbContextDisposed);
-
-			await importQuery.RemoveItemAsync(addedItems[0]);
-			await importQuery.RemoveItemAsync(addedItems[1]);
-
-			var context = new InjectServiceScope(serviceScopeFactory).Context();
-			var queryFromDb = context.FileIndex.Where(p => 
-				p.FileHash == addedItems[0].FilePath || p.FileHash == addedItems[1].FilePath
-			).ToList();
-
-			Assert.AreEqual(0, queryFromDb.Count);
+		public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+		{
+			throw new SqliteException("Database is locked", 1);
 		}
 	}
 }

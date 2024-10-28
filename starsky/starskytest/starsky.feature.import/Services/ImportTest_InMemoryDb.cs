@@ -18,189 +18,182 @@ using starsky.foundation.storage.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.feature.import.Services
+namespace starskytest.starsky.feature.import.Services;
+
+/// <summary>
+///     Also known as ImportServiceTest (Also check the FakeDb version)
+/// </summary>
+[TestClass]
+public sealed class ImportTestInMemoryDb
 {
-	/// <summary>
-	/// Also known as ImportServiceTest (Also check the FakeDb version)
-	/// </summary>
-	[TestClass]
-	public sealed class ImportTestInMemoryDb
+	private readonly AppSettings _appSettings;
+	private readonly IConsole _console;
+	private readonly string _exampleHash;
+	private readonly IImportQuery _importQuery;
+	private readonly FakeIStorage _iStorageFake;
+	private readonly IQuery _query;
+
+	public ImportTestInMemoryDb()
 	{
-		private readonly IQuery _query;
-		private readonly AppSettings _appSettings;
-		private readonly FakeIStorage _iStorageFake;
-		private readonly IConsole _console;
-		private readonly IImportQuery _importQuery;
-		private readonly string _exampleHash;
+		var provider = new ServiceCollection()
+			.AddMemoryCache();
 
-		public ImportTestInMemoryDb()
+		_appSettings = new AppSettings
 		{
-			var provider = new ServiceCollection()
-				.AddMemoryCache();
+			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase, Verbose = true
+		};
 
-			_appSettings = new AppSettings
+		provider.AddSingleton(_appSettings);
+
+		new SetupDatabaseTypes(_appSettings, provider).BuilderDb();
+		provider.AddScoped<IQuery, Query>();
+		provider.AddScoped<IImportQuery, ImportQuery>();
+		provider.AddScoped<IWebLogger, FakeIWebLogger>();
+		provider.AddSingleton<IConsole, FakeConsoleWrapper>();
+		var serviceProvider = provider.BuildServiceProvider();
+
+		_query = serviceProvider.GetRequiredService<IQuery>();
+		_importQuery = serviceProvider.GetRequiredService<IImportQuery>();
+
+		_console = new ConsoleWrapper();
+
+		_iStorageFake = new FakeIStorage(
+			new List<string> { "/" },
+			new List<string> { "/test.jpg", "/color_class_winner.jpg" },
+			new List<byte[]>
 			{
-				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase, Verbose = true
-			};
+				CreateAnImage.Bytes.ToArray(), CreateAnImageColorClass.Bytes.ToArray()
+			}
+		);
 
-			provider.AddSingleton(_appSettings);
+		_exampleHash = new FileHash(_iStorageFake).GetHashCode("/test.jpg").Key;
+	}
 
-			new SetupDatabaseTypes(_appSettings, provider).BuilderDb();
-			provider.AddScoped<IQuery, Query>();
-			provider.AddScoped<IImportQuery, ImportQuery>();
-			provider.AddScoped<IWebLogger, FakeIWebLogger>();
-			provider.AddSingleton<IConsole, FakeConsoleWrapper>();
-			var serviceProvider = provider.BuildServiceProvider();
+	[TestMethod]
+	public async Task Importer_Gpx()
+	{
+		var storage = new FakeIStorage(
+			new List<string> { "/" },
+			new List<string> { "/test.gpx" },
+			new List<byte[]> { CreateAnGpx.Bytes.ToArray() });
 
-			_query = serviceProvider.GetRequiredService<IQuery>();
-			_importQuery = serviceProvider.GetRequiredService<IImportQuery>();
+		var importService = new Import(new FakeSelectorStorage(storage), _appSettings,
+			new FakeIImportQuery(),
+			new FakeExifTool(storage, _appSettings), _query, _console,
+			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
+			new FakeIThumbnailQuery(), new FakeMemoryCache());
+		var expectedFilePath =
+			await ImportTest.GetExpectedFilePathAsync(storage, _appSettings, "/test.gpx");
 
-			_console = new ConsoleWrapper();
+		var result = await importService.Importer(new List<string> { "/test.gpx" },
+			new ImportSettingsModel());
 
-			_iStorageFake = new FakeIStorage(
-				new List<string> { "/" },
-				new List<string> { "/test.jpg", "/color_class_winner.jpg" },
-				new List<byte[]>
-				{
-					CreateAnImage.Bytes.ToArray(), CreateAnImageColorClass.Bytes.ToArray()
-				}
-			);
+		var getResult = await _query.GetObjectByFilePathAsync(expectedFilePath);
+		Assert.IsNotNull(getResult);
+		Assert.AreEqual(expectedFilePath, getResult.FilePath);
+		Assert.AreEqual(ImportStatus.Ok, result[0].Status);
 
-			_exampleHash = new FileHash(_iStorageFake).GetHashCode("/test.jpg").Key;
-		}
+		await _query.RemoveItemAsync(getResult);
+	}
 
-		[TestMethod]
-		public async Task Importer_Gpx()
-		{
-			var storage = new FakeIStorage(
-				new List<string> { "/" },
-				new List<string> { "/test.gpx" },
-				new List<byte[]> { CreateAnGpx.Bytes.ToArray() });
+	[TestMethod]
+	public async Task Importer_OverwriteStructure_HappyFlow()
+	{
+		var importService = new Import(new FakeSelectorStorage(_iStorageFake),
+			_appSettings, new FakeIImportQuery(),
+			new FakeExifTool(_iStorageFake, _appSettings), _query, _console,
+			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
+			new FakeIThumbnailQuery(), new FakeMemoryCache());
 
-			var importService = new Import(new FakeSelectorStorage(storage), _appSettings,
-				new FakeIImportQuery(),
-				new FakeExifTool(storage, _appSettings), _query, _console,
-				new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-				new FakeIThumbnailQuery(), new FakeMemoryCache());
-			var expectedFilePath =
-				await ImportTest.GetExpectedFilePathAsync(storage, _appSettings, "/test.gpx");
+		var result = await importService.Importer(new List<string> { "/test.jpg" },
+			new ImportSettingsModel { Structure = "/yyyy/MM/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext" });
 
-			var result = await importService.Importer(new List<string> { "/test.gpx" },
-				new ImportSettingsModel());
+		var expectedFilePath = await ImportTest.GetExpectedFilePathAsync(_iStorageFake,
+			new AppSettings { Structure = "/yyyy/MM/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext" },
+			"/test.jpg");
 
-			var getResult = await _query.GetObjectByFilePathAsync(expectedFilePath);
-			Assert.IsNotNull(getResult);
-			Assert.AreEqual(expectedFilePath, getResult.FilePath);
-			Assert.AreEqual(ImportStatus.Ok, result[0].Status);
+		Assert.AreEqual(expectedFilePath, result[0].FilePath);
+		var queryResult = await _query.GetObjectByFilePathAsync(expectedFilePath);
 
-			await _query.RemoveItemAsync(getResult);
-		}
+		Assert.IsNotNull(queryResult);
+		Assert.AreEqual(expectedFilePath, queryResult.FilePath);
 
-		[TestMethod]
-		public async Task Importer_OverwriteStructure_HappyFlow()
-		{
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake),
-				_appSettings, new FakeIImportQuery(),
-				new FakeExifTool(_iStorageFake, _appSettings), _query, _console,
-				new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-				new FakeIThumbnailQuery(), new FakeMemoryCache());
+		_iStorageFake.FileDelete(expectedFilePath);
+		await _query.RemoveItemAsync(queryResult);
+	}
 
-			var result = await importService.Importer(new List<string> { "/test.jpg" },
-				new ImportSettingsModel
-				{
-					Structure = "/yyyy/MM/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext"
-				});
+	[TestMethod]
+	public async Task Importer_HappyFlow_ItShouldAddTo_ImportDb()
+	{
+		var importService = new Import(new FakeSelectorStorage(_iStorageFake),
+			_appSettings, _importQuery,
+			new FakeExifTool(_iStorageFake, _appSettings), _query,
+			_console, new FakeIMetaExifThumbnailService(),
+			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeMemoryCache());
 
-			var expectedFilePath = await ImportTest.GetExpectedFilePathAsync(_iStorageFake,
-				new AppSettings { Structure = "/yyyy/MM/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext" },
-				"/test.jpg");
+		await importService.Importer(new List<string> { "/test.jpg" },
+			new ImportSettingsModel { Structure = "/yyyy/MM/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext" });
 
-			Assert.AreEqual(expectedFilePath, result[0].FilePath);
-			var queryResult = await _query.GetObjectByFilePathAsync(expectedFilePath);
+		var isHashInImportDb = await _importQuery.IsHashInImportDbAsync(_exampleHash);
+		Assert.IsTrue(isHashInImportDb);
 
-			Assert.IsNotNull(queryResult);
-			Assert.AreEqual(expectedFilePath, queryResult.FilePath);
+		var expectedFilePath = await ImportTest.GetExpectedFilePathAsync(_iStorageFake,
+			new AppSettings { Structure = "/yyyy/MM/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext" },
+			"/test.jpg");
 
-			_iStorageFake.FileDelete(expectedFilePath);
-			await _query.RemoveItemAsync(queryResult);
-		}
+		var queryResult = await _query.GetObjectByFilePathAsync(expectedFilePath);
+		Assert.IsNotNull(queryResult);
 
-		[TestMethod]
-		public async Task Importer_HappyFlow_ItShouldAddTo_ImportDb()
-		{
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake),
-				_appSettings, _importQuery,
-				new FakeExifTool(_iStorageFake, _appSettings), _query,
-				_console, new FakeIMetaExifThumbnailService(),
-				new FakeIWebLogger(), new FakeIThumbnailQuery());
+		_iStorageFake.FileDelete(expectedFilePath);
+		await _query.RemoveItemAsync(queryResult);
+	}
 
-			await importService.Importer(new List<string> { "/test.jpg" },
-				new ImportSettingsModel
-				{
-					Structure = "/yyyy/MM/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext"
-				});
+	[TestMethod]
+	public async Task Importer_OverwriteColorClass()
+	{
+		var importService = new Import(new FakeSelectorStorage(_iStorageFake),
+			_appSettings, new FakeIImportQuery(),
+			new FakeExifTool(_iStorageFake, _appSettings),
+			_query, _console, new FakeIMetaExifThumbnailService(),
+			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeMemoryCache());
 
-			var isHashInImportDb = await _importQuery.IsHashInImportDbAsync(_exampleHash);
-			Assert.IsTrue(isHashInImportDb);
+		var expectedFilePath =
+			await ImportTest.GetExpectedFilePathAsync(_iStorageFake, _appSettings, "/test.jpg");
+		var result = await importService.Importer(new List<string> { "/test.jpg" },
+			new ImportSettingsModel { ColorClass = 5 });
 
-			var expectedFilePath = await ImportTest.GetExpectedFilePathAsync(_iStorageFake,
-				new AppSettings { Structure = "/yyyy/MM/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext" },
-				"/test.jpg");
+		Assert.IsNotNull(result.FirstOrDefault());
+		Assert.AreEqual(expectedFilePath, result.FirstOrDefault()!.FilePath);
+		var queryResult = await _query.GetObjectByFilePathAsync(expectedFilePath);
+		Assert.IsNotNull(queryResult);
 
-			var queryResult = await _query.GetObjectByFilePathAsync(expectedFilePath);
-			Assert.IsNotNull(queryResult);
+		Assert.AreEqual(expectedFilePath, queryResult.FilePath);
+		Assert.AreEqual(ColorClassParser.Color.Typical, queryResult.ColorClass);
 
-			_iStorageFake.FileDelete(expectedFilePath);
-			await _query.RemoveItemAsync(queryResult);
-		}
+		_iStorageFake.FileDelete(expectedFilePath);
+		await _query.RemoveItemAsync(queryResult);
+	}
 
-		[TestMethod]
-		public async Task Importer_OverwriteColorClass()
-		{
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake),
-				_appSettings, new FakeIImportQuery(),
-				new FakeExifTool(_iStorageFake, _appSettings),
-				_query, _console, new FakeIMetaExifThumbnailService(),
-				new FakeIWebLogger(), new FakeIThumbnailQuery());
+	[TestMethod]
+	public async Task Importer_ToDefaultFolderStructure_default_HappyFlow()
+	{
+		var importService = new Import(new FakeSelectorStorage(_iStorageFake),
+			_appSettings, new FakeIImportQuery(),
+			new FakeExifTool(_iStorageFake, _appSettings),
+			_query, _console, new FakeIMetaExifThumbnailService(),
+			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeMemoryCache());
 
-			var expectedFilePath =
-				await ImportTest.GetExpectedFilePathAsync(_iStorageFake, _appSettings, "/test.jpg");
-			var result = await importService.Importer(new List<string> { "/test.jpg" },
-				new ImportSettingsModel { ColorClass = 5 });
+		var expectedFilePath =
+			await ImportTest.GetExpectedFilePathAsync(_iStorageFake, _appSettings, "/test.jpg");
+		var result = await importService.Importer(new List<string> { "/test.jpg" },
+			new ImportSettingsModel());
 
-			Assert.IsNotNull(result.FirstOrDefault());
-			Assert.AreEqual(expectedFilePath, result.FirstOrDefault()!.FilePath);
-			var queryResult = await _query.GetObjectByFilePathAsync(expectedFilePath);
-			Assert.IsNotNull(queryResult);
+		Assert.AreEqual(expectedFilePath, result[0].FilePath);
+		var queryResult = await _query.GetObjectByFilePathAsync(expectedFilePath);
+		Assert.IsNotNull(queryResult);
+		Assert.AreEqual(expectedFilePath, queryResult.FilePath);
 
-			Assert.AreEqual(expectedFilePath, queryResult.FilePath);
-			Assert.AreEqual(ColorClassParser.Color.Typical, queryResult.ColorClass);
-
-			_iStorageFake.FileDelete(expectedFilePath);
-			await _query.RemoveItemAsync(queryResult);
-		}
-
-		[TestMethod]
-		public async Task Importer_ToDefaultFolderStructure_default_HappyFlow()
-		{
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake),
-				_appSettings, new FakeIImportQuery(),
-				new FakeExifTool(_iStorageFake, _appSettings),
-				_query, _console, new FakeIMetaExifThumbnailService(),
-				new FakeIWebLogger(), new FakeIThumbnailQuery());
-
-			var expectedFilePath =
-				await ImportTest.GetExpectedFilePathAsync(_iStorageFake, _appSettings, "/test.jpg");
-			var result = await importService.Importer(new List<string> { "/test.jpg" },
-				new ImportSettingsModel());
-
-			Assert.AreEqual(expectedFilePath, result[0].FilePath);
-			var queryResult = await _query.GetObjectByFilePathAsync(expectedFilePath);
-			Assert.IsNotNull(queryResult);
-			Assert.AreEqual(expectedFilePath, queryResult.FilePath);
-
-			_iStorageFake.FileDelete(expectedFilePath);
-			await _query.RemoveItemAsync(queryResult);
-		}
+		_iStorageFake.FileDelete(expectedFilePath);
+		await _query.RemoveItemAsync(queryResult);
 	}
 }

@@ -14,20 +14,10 @@ using starsky.foundation.http.Services;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
+using starskytest.ExtensionMethods;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.feature.packagetelemetry.Services;
-
-public static class ExtensionMethods
-{
-	public static async Task InvokeAsync(this MethodInfo @this, object obj,
-		params object[] parameters)
-	{
-		dynamic awaitable = @this.Invoke(obj, parameters)!;
-		await awaitable;
-		awaitable.GetAwaiter();
-	}
-}
 
 [TestClass]
 public sealed class PackageTelemetryBackgroundServiceTest

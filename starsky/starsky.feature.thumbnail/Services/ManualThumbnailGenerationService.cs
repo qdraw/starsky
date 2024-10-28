@@ -17,19 +17,21 @@ using starsky.foundation.thumbnailgeneration.Models;
 using starsky.foundation.worker.ThumbnailServices.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
+
 namespace starsky.feature.thumbnail.Services;
 
 [Service(typeof(IManualThumbnailGenerationService),
 	InjectionLifetime = InjectionLifetime.Scoped)]
 public class ManualThumbnailGenerationService : IManualThumbnailGenerationService
 {
+	private readonly IThumbnailQueuedHostedService _bgTaskQueue;
+	private readonly IWebSocketConnectionsService _connectionsService;
 	private readonly IWebLogger _logger;
 	private readonly IQuery _query;
-	private readonly IWebSocketConnectionsService _connectionsService;
 	private readonly IThumbnailService _thumbnailService;
-	private readonly IThumbnailQueuedHostedService _bgTaskQueue;
 
-	public ManualThumbnailGenerationService(IQuery query, IWebLogger logger, IWebSocketConnectionsService connectionsService,
+	public ManualThumbnailGenerationService(IQuery query, IWebLogger logger,
+		IWebSocketConnectionsService connectionsService,
 		IThumbnailService thumbnailService,
 		IThumbnailQueuedHostedService bgTaskQueue)
 	{
@@ -42,11 +44,9 @@ public class ManualThumbnailGenerationService : IManualThumbnailGenerationServic
 
 	public async Task ManualBackgroundQueue(string subPath)
 	{
-		// When the CPU is to high its gives a Error 500
-		await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
-		{
-			await WorkThumbnailGeneration(subPath);
-		}, subPath);
+		// When the CPU is too high its gives an Error 500
+		await _bgTaskQueue.QueueBackgroundWorkItemAsync(
+			async _ => { await WorkThumbnailGeneration(subPath); }, subPath);
 	}
 
 	internal async Task WorkThumbnailGeneration(string subPath)
@@ -62,12 +62,14 @@ public class ManualThumbnailGenerationService : IManualThumbnailGenerationServic
 
 			if ( result.Count == 0 )
 			{
-				_logger.LogInformation($"[ThumbnailGenerationController] done - no results {subPath}");
+				_logger.LogInformation(
+					$"[ThumbnailGenerationController] done - no results {subPath}");
 				return;
 			}
 
 			var webSocketResponse =
-				new ApiNotificationResponseModel<List<FileIndexItem>>(result, ApiNotificationType.ThumbnailGeneration);
+				new ApiNotificationResponseModel<List<FileIndexItem>>(result,
+					ApiNotificationType.ThumbnailGeneration);
 			await _connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
 
 			_logger.LogInformation($"[ThumbnailGenerationController] done {subPath}");
@@ -78,7 +80,8 @@ public class ManualThumbnailGenerationService : IManualThumbnailGenerationServic
 		}
 	}
 
-	internal static List<FileIndexItem> WhichFilesNeedToBePushedForUpdates(List<GenerationResultModel> thumbs, IEnumerable<FileIndexItem> getAllFilesAsync)
+	internal static List<FileIndexItem> WhichFilesNeedToBePushedForUpdates(
+		List<GenerationResultModel> thumbs, IEnumerable<FileIndexItem> getAllFilesAsync)
 	{
 		var result = new List<FileIndexItem>();
 		var searchFor = getAllFilesAsync.Where(item =>
@@ -98,5 +101,3 @@ public class ManualThumbnailGenerationService : IManualThumbnailGenerationServic
 		return result;
 	}
 }
-
-

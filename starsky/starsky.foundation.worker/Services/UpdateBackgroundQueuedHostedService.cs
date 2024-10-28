@@ -32,7 +32,7 @@ namespace starsky.foundation.worker.Services
 		public override async Task StopAsync(CancellationToken stoppingToken)
 		{
 			_logger.LogInformation(
-				$"QueuedHostedService {_taskQueue.GetType().Name} is stopping.");
+				$"QueuedHostedService {_taskQueue.GetType().Name} is stopping. Counts: {_taskQueue.Count()}");
 			await base.StopAsync(stoppingToken);
 		}
 	}

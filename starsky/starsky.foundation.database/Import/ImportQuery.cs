@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
@@ -13,172 +14,189 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 
-namespace starsky.foundation.database.Import
+namespace starsky.foundation.database.Import;
+
+[Service(typeof(IImportQuery), InjectionLifetime = InjectionLifetime.Scoped)]
+public sealed class ImportQuery : IImportQuery
 {
-	[Service(typeof(IImportQuery), InjectionLifetime = InjectionLifetime.Scoped)]
-	public sealed class ImportQuery : IImportQuery
+	private readonly IConsole _console;
+	private readonly ApplicationDbContext? _dbContext;
+	private readonly bool _isConnection;
+	private readonly IWebLogger _logger;
+	private readonly IServiceScopeFactory? _scopeFactory;
+
+	/// <summary>
+	///     Query Already imported Database
+	///     inject a scope to:
+	///     @see:
+	///     https://docs.microsoft.com/nl-nl/ef/core/miscellaneous/configuring-dbcontext#avoiding-dbcontext-threading-issues
+	/// </summary>
+	/// <param name="scopeFactory">to avoid threading issues with DbContext</param>
+	/// <param name="console">console output</param>
+	/// <param name="logger"></param>
+	/// <param name="dbContext"></param>
+	public ImportQuery(IServiceScopeFactory? scopeFactory, IConsole console, IWebLogger logger,
+		ApplicationDbContext? dbContext = null)
 	{
-		private readonly bool _isConnection;
-		private readonly IServiceScopeFactory? _scopeFactory;
-		private readonly ApplicationDbContext? _dbContext;
-		private readonly IConsole _console;
-		private readonly IWebLogger _logger;
+		_scopeFactory = scopeFactory;
 
-		/// <summary>
-		/// Query Already imported Database
-		/// inject a scope to:
-		/// @see: https://docs.microsoft.com/nl-nl/ef/core/miscellaneous/configuring-dbcontext#avoiding-dbcontext-threading-issues
-		/// </summary>
-		/// <param name="scopeFactory">to avoid threading issues with DbContext</param>
-		/// <param name="console">console output</param>
-		/// <param name="logger"></param>
-		/// <param name="dbContext"></param>
-		public ImportQuery(IServiceScopeFactory? scopeFactory, IConsole console, IWebLogger logger,
-			ApplicationDbContext? dbContext = null)
+		_console = console;
+		_logger = logger;
+		_dbContext = dbContext;
+		_isConnection = TestConnection();
+	}
+
+	/// <summary>
+	///     Test if the database connection is there
+	/// </summary>
+	/// <returns>successful database connection</returns>
+	public bool TestConnection()
+	{
+		return !_isConnection ? GetDbContext().TestConnection(_logger) : _isConnection;
+	}
+
+	public async Task<bool> IsHashInImportDbAsync(string fileHashCode)
+	{
+		if ( _isConnection )
 		{
-			_scopeFactory = scopeFactory;
-
-			_console = console;
-			_logger = logger;
-			_dbContext = dbContext;
-			_isConnection = TestConnection();
+			var value = await GetDbContext().ImportIndex.CountAsync(p =>
+				p.FileHash == fileHashCode) != 0; // there is no any in ef core
+			return value;
 		}
 
-		/// <summary>
-		/// Get the database context
-		/// </summary>
-		/// <returns>database context</returns>
-		private ApplicationDbContext GetDbContext()
+		// When there is no mysql connection continue
+		Console.WriteLine(">> _isConnection == false");
+		return false;
+	}
+
+	/// <summary>
+	///     Add a new item to the imported database
+	/// </summary>
+	/// <param name="updateStatusContent">import database item</param>
+	/// <param name="writeConsole">add icon to console</param>
+	/// <returns>fail or success</returns>
+	public async Task<bool> AddAsync(ImportIndexItem updateStatusContent,
+		bool writeConsole = true)
+	{
+		var dbContext = GetDbContext();
+		updateStatusContent.AddToDatabase = DateTime.UtcNow;
+		await dbContext.ImportIndex.AddAsync(updateStatusContent);
+		await dbContext.SaveChangesAsync();
+		if ( writeConsole )
 		{
-			return ( _scopeFactory != null
-				? new InjectServiceScope(_scopeFactory).Context()
-				: _dbContext )!;
+			_console.Write("⬆️");
 		}
 
-		/// <summary>
-		/// Test if the database connection is there
-		/// </summary>
-		/// <returns>successful database connection</returns>
-		public bool TestConnection()
+		// removed MySqlException catch
+		return true;
+	}
+
+	/// <summary>
+	///     Get imported items for today
+	/// </summary>
+	/// <returns>List of items</returns>
+	public List<ImportIndexItem> History()
+	{
+		return GetDbContext().ImportIndex
+			.Where(p => p.AddToDatabase >= DateTime.UtcNow.AddDays(-1)).ToList();
+		// for debug: p.AddToDatabase >= DateTime.UtcNow.AddDays(-2) && p.Id % 6 == 1
+	}
+
+	public async Task<List<ImportIndexItem>> AddRangeAsync(
+		List<ImportIndexItem> importIndexItemList)
+	{
+		var dbContext = GetDbContext();
+		await dbContext.ImportIndex.AddRangeAsync(importIndexItemList);
+		await dbContext.SaveChangesAsync();
+		_console.Write($"⬆️ {importIndexItemList.Count} "); // arrowUp
+		return importIndexItemList;
+	}
+
+	public async Task<ImportIndexItem> RemoveItemAsync(ImportIndexItem importIndexItem,
+		int maxAttemptCount = 3)
+	{
+		try
 		{
-			return !_isConnection ? GetDbContext().TestConnection(_logger) : _isConnection;
+			await LocalRemoveQuery(_dbContext!);
+		}
+		catch ( SqliteException )
+		{
+			// Files that are locked
+			await LocalRemoveQueryRetry();
+		}
+		catch ( ObjectDisposedException )
+		{
+			await LocalRemoveDefaultQuery();
+		}
+		catch ( InvalidOperationException )
+		{
+			await LocalRemoveQueryRetry();
+		}
+		catch ( DbUpdateConcurrencyException exception )
+		{
+			_logger.LogInformation("Import [RemoveItemAsync] catch-ed " +
+			                       $"DbUpdateConcurrencyException (retry) {exception.Message}");
+			await LocalRemoveQueryRetry();
 		}
 
-		public async Task<bool> IsHashInImportDbAsync(string fileHashCode)
-		{
-			if ( _isConnection )
-			{
-				var value = await GetDbContext().ImportIndex.CountAsync(p =>
-					p.FileHash == fileHashCode) != 0; // there is no any in ef core
-				return value;
-			}
+		return importIndexItem;
 
-			// When there is no mysql connection continue
-			Console.WriteLine($">> _isConnection == false");
-			return false;
-		}
-
-		/// <summary>
-		/// Add a new item to the imported database
-		/// </summary>
-		/// <param name="updateStatusContent">import database item</param>
-		/// <param name="writeConsole">add icon to console</param>
-		/// <returns>fail or success</returns>
-		public async Task<bool> AddAsync(ImportIndexItem updateStatusContent,
-			bool writeConsole = true)
+		async Task<bool> LocalRemoveDefaultQuery()
 		{
-			var dbContext = GetDbContext();
-			updateStatusContent.AddToDatabase = DateTime.UtcNow;
-			await dbContext.ImportIndex.AddAsync(updateStatusContent);
-			await dbContext.SaveChangesAsync();
-			if ( writeConsole )
-			{
-				_console.Write("⬆️");
-			}
-			// removed MySqlException catch
+			await LocalRemoveQuery(new InjectServiceScope(_scopeFactory).Context());
 			return true;
 		}
 
-		/// <summary>
-		/// Get imported items for today
-		/// </summary>
-		/// <returns>List of items</returns>
-		public List<ImportIndexItem> History()
+		async Task LocalRemoveQuery(ApplicationDbContext context)
 		{
-			return GetDbContext().ImportIndex
-				.Where(p => p.AddToDatabase >= DateTime.UtcNow.AddDays(-1)).ToList();
-			// for debug: p.AddToDatabase >= DateTime.UtcNow.AddDays(-2) && p.Id % 6 == 1
-		}
-
-		public async Task<List<ImportIndexItem>> AddRangeAsync(
-			List<ImportIndexItem> importIndexItemList)
-		{
-			var dbContext = GetDbContext();
-			await dbContext.ImportIndex.AddRangeAsync(importIndexItemList);
-			await dbContext.SaveChangesAsync();
-			_console.Write($"⬆️ {importIndexItemList.Count} "); // arrowUp
-			return importIndexItemList;
-		}
-
-		public async Task<ImportIndexItem> RemoveItemAsync(ImportIndexItem importIndexItem)
-		{
-			async Task<bool> LocalRemoveDefaultQuery()
+			// Detach first https://stackoverflow.com/a/42475617
+			var local = context.Set<ImportIndexItem>()
+				.Local
+				.FirstOrDefault(entry => entry.Id.Equals(importIndexItem.Id));
+			if ( local != null )
 			{
-				await LocalRemoveQuery(new InjectServiceScope(_scopeFactory).Context());
-				return true;
+				context.Entry(local).State = EntityState.Detached;
 			}
 
-			async Task LocalRemoveQuery(ApplicationDbContext context)
-			{
-				// Detach first https://stackoverflow.com/a/42475617
-				var local = context.Set<FileIndexItem>()
-					.Local
-					.FirstOrDefault(entry => entry.Id.Equals(importIndexItem.Id));
-				if ( local != null )
-				{
-					context.Entry(local).State = EntityState.Detached;
-				}
+			// keep conditional marker for test
+			context.ImportIndex?.Remove(importIndexItem);
+			await context.SaveChangesAsync();
+		}
 
-				// keep conditional marker for test
-				context.ImportIndex?.Remove(importIndexItem);
-				await context.SaveChangesAsync();
-			}
-
+		async Task LocalRemoveQueryRetry()
+		{
 			try
 			{
-				await LocalRemoveQuery(_dbContext!);
+				await RetryHelper.DoAsync(LocalRemoveDefaultQuery, TimeSpan.FromSeconds(2),
+					maxAttemptCount);
 			}
-			catch ( Microsoft.Data.Sqlite.SqliteException )
+			catch ( AggregateException exception )
 			{
-				// Files that are locked
-				await RetryHelper.DoAsync(LocalRemoveDefaultQuery,
-					TimeSpan.FromSeconds(2), 4);
+				_logger.LogInformation("Import [RemoveItemAsync] catch-ed " +
+				                       $"AggregateException (ignored after retry) {exception.Message}");
 			}
-			catch ( ObjectDisposedException )
-			{
-				await LocalRemoveDefaultQuery();
-			}
-			catch ( InvalidOperationException )
-			{
-				await LocalRemoveDefaultQuery();
-			}
-			catch ( DbUpdateConcurrencyException exception )
-			{
-				_logger.LogInformation(exception, "[RemoveItemAsync] catch-ed " +
-										  "DbUpdateConcurrencyException (do nothing)");
-			}
-
-			return importIndexItem;
 		}
+	}
 
 
-		public List<ImportIndexItem> AddRange(List<ImportIndexItem> importIndexItemList)
-		{
-			var dbContext = GetDbContext();
-			dbContext.ImportIndex.AddRange(importIndexItemList);
-			dbContext.SaveChanges();
-			_console.Write($"⬆️ {importIndexItemList.Count} ️"); // arrow up
-			return importIndexItemList;
-		}
+	/// <summary>
+	///     Get the database context
+	/// </summary>
+	/// <returns>database context</returns>
+	private ApplicationDbContext GetDbContext()
+	{
+		return ( _scopeFactory != null
+			? new InjectServiceScope(_scopeFactory).Context()
+			: _dbContext )!;
+	}
+
+
+	public List<ImportIndexItem> AddRange(List<ImportIndexItem> importIndexItemList)
+	{
+		var dbContext = GetDbContext();
+		dbContext.ImportIndex.AddRange(importIndexItemList);
+		dbContext.SaveChanges();
+		_console.Write($"⬆️ {importIndexItemList.Count} ️"); // arrow up
+		return importIndexItemList;
 	}
 }

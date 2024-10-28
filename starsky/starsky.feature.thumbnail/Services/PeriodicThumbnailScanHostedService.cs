@@ -103,7 +103,7 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 			await using var asyncScope = _factory.CreateAsyncScope();
 			var service = asyncScope.ServiceProvider
 				.GetRequiredService<IDatabaseThumbnailGenerationService>();
-			await service.StartBackgroundQueue(DateTime.UtcNow.Add(Period));
+			await service.StartBackgroundQueue();
 			_executionCount++;
 			// Executed PeriodicThumbnailScanHostedService
 			_logger.LogDebug(

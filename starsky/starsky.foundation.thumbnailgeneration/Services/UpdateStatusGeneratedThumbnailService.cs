@@ -5,13 +5,13 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Enums;
-using starsky.foundation.platform.Helpers;
 using starsky.foundation.thumbnailgeneration.Interfaces;
 using starsky.foundation.thumbnailgeneration.Models;
 
 namespace starsky.foundation.thumbnailgeneration.Services;
 
-[Service(typeof(IUpdateStatusGeneratedThumbnailService), InjectionLifetime = InjectionLifetime.Scoped)]
+[Service(typeof(IUpdateStatusGeneratedThumbnailService),
+	InjectionLifetime = InjectionLifetime.Scoped)]
 public class UpdateStatusGeneratedThumbnailService : IUpdateStatusGeneratedThumbnailService
 {
 	private readonly IThumbnailQuery _thumbnailQuery;
@@ -22,7 +22,7 @@ public class UpdateStatusGeneratedThumbnailService : IUpdateStatusGeneratedThumb
 	}
 
 	/// <summary>
-	/// Ignores the not found items to update
+	///     Ignores the not found items to update
 	/// </summary>
 	/// <param name="generationResults">items</param>
 	/// <returns>updated data transfer list</returns>
@@ -32,7 +32,6 @@ public class UpdateStatusGeneratedThumbnailService : IUpdateStatusGeneratedThumb
 		// in the next step only the fileHash is included
 		var dtoObjects = generationResults
 			.Where(p => !p.IsNotFound)
-			.Where(p => ExtensionRolesHelper.IsExtensionThumbnailSupported(p.SubPath))
 			.DistinctBy(p => p.FileHash)
 			.Select(p => p.FileHash)
 			.Select(fileHash => new ThumbnailResultDataTransferModel(fileHash)).ToList();
@@ -45,6 +44,7 @@ public class UpdateStatusGeneratedThumbnailService : IUpdateStatusGeneratedThumb
 			{
 				continue;
 			}
+
 			dtoObjects[index].Change(generationResult.Size, generationResult.Success);
 			dtoObjects[index].Reasons = generationResult.ErrorMessage;
 		}
@@ -54,11 +54,12 @@ public class UpdateStatusGeneratedThumbnailService : IUpdateStatusGeneratedThumb
 	}
 
 	/// <summary>
-	/// Remove items with status not found
+	///     Remove items with status not found
 	/// </summary>
 	/// <param name="generationResults">items</param>
 	/// <returns>remove by fileHash</returns>
-	public async Task<List<string>> RemoveNotfoundStatusAsync(List<GenerationResultModel> generationResults)
+	public async Task<List<string>> RemoveNotfoundStatusAsync(
+		List<GenerationResultModel> generationResults)
 	{
 		// in the next step only the fileHash is included
 		var dtoObjects = generationResults
