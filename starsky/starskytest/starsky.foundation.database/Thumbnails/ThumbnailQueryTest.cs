@@ -675,15 +675,15 @@ public class ThumbnailQueryTest
 	}
 	
 	[TestMethod]
-	public async Task GetMissingThumbnailsBatchAsync_Disposed()
+	public async Task GetMissingThumbnailsBatchAsync_Disposed_Recover()
 	{
 		var serviceScope = CreateNewScope("GetMissingThumbnailsBatchAsync_Disposed");
 		var context = serviceScope.CreateScope().ServiceProvider
 			.GetRequiredService<ApplicationDbContext>();
-
+		
 		context.Thumbnails.Add(new ThumbnailItem("123", null, true, null, null));
 		await context.SaveChangesAsync();
-
+		
 		// Dispose to check service scope
 		await context.DisposeAsync();
 
@@ -695,13 +695,10 @@ public class ThumbnailQueryTest
 	[TestMethod]
 	public async Task GetMissingThumbnailsBatchAsync_Disposed_ServiceScopeMissing()
 	{
-		var serviceScope = CreateNewScope("GetMissingThumbnailsBatchAsync_Disposed");
+		var serviceScope = CreateNewScope("GetMissingThumbnailsBatchAsync_Disposed_ServiceScopeMissing");
 		var context = serviceScope.CreateScope().ServiceProvider
 			.GetRequiredService<ApplicationDbContext>();
-
-		context.Thumbnails.Add(new ThumbnailItem("123", null, true, null, null));
-		await context.SaveChangesAsync();
-
+		
 		// Dispose to check service scope
 		await context.DisposeAsync();
 
