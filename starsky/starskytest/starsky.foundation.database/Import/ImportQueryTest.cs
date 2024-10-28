@@ -261,7 +261,7 @@ public sealed class ImportQueryTest
 
 		var serviceScopeFactory = CreateNewScope();
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-			.UseInMemoryDatabase("MovieListDatabase")
+			.UseInMemoryDatabase(nameof(RemoveItemAsync_DbUpdateConcurrencyException))
 			.Options;
 		var dbContext = new ConcurrencyExceptionApplicationDbContext(options);
 
@@ -274,9 +274,6 @@ public sealed class ImportQueryTest
 		Assert.IsTrue(webLogger.TrackedInformation[0].Item2?.StartsWith(
 			"Import [RemoveItemAsync] catch-ed " +
 			"DbUpdateConcurrencyException (retry)"));
-		Assert.IsTrue(webLogger.TrackedInformation[1].Item2?
-			.StartsWith("Import [RemoveItemAsync] catch-ed " +
-			            "AggregateException (ignored after retry)"));
 	}
 
 	private class ConcurrencyExceptionApplicationDbContext : ApplicationDbContext

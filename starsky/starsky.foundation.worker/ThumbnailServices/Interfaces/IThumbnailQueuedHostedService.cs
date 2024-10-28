@@ -4,5 +4,5 @@ namespace starsky.foundation.worker.ThumbnailServices.Interfaces;
 
 public interface IThumbnailQueuedHostedService : IBaseBackgroundTaskQueue
 {
-	// nothing here
+	bool ThrowExceptionIfCpuUsageIsToHigh(string metaData);
 }

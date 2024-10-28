@@ -84,7 +84,8 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 			currentPage++;
 
 			_logger.LogInformation(
-				$"[DatabaseThumbnailGenerationService] Processed {totalProcessed} thumbnails so far... ({DateTime.UtcNow:HH:mm:ss})");
+				$"[DatabaseThumbnailGenerationService] " +
+				$"Processed {totalProcessed} thumbnails so far... ({DateTime.UtcNow:HH:mm:ss})");
 		} while ( missingThumbnails.Count == batchSize );
 
 		_thumbnailQuery.SetRunningJob(false);
@@ -110,8 +111,11 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 				continue;
 			}
 
-			var generationResultModels = ( await _thumbnailService.CreateThumbAsync(fileIndexItem
-				.FilePath!, fileIndexItem.FileHash!) ).ToList();
+			var generationResultModels = (
+				await _thumbnailService.CreateThumbAsync(fileIndexItem
+					.FilePath!, fileIndexItem.FileHash!) ).ToList();
+
+			_bgTaskQueue.ThrowExceptionIfCpuUsageIsToHigh("WorkThumbnailGeneration");
 
 			await _updateStatusGeneratedThumbnailService.AddOrUpdateStatusAsync(
 				generationResultModels);
