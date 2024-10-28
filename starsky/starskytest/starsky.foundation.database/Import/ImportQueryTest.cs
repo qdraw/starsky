@@ -31,7 +31,7 @@ public sealed class ImportQueryTest
 		_dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
 		_importQuery = new ImportQuery(_serviceScope, new FakeConsoleWrapper(),
-			new FakeIWebLogger());
+			new FakeIWebLogger(), _dbContext);
 	}
 
 	private static IServiceScopeFactory CreateNewScope(string? name = null)
@@ -254,6 +254,26 @@ public sealed class ImportQueryTest
 	}
 
 	[TestMethod]
+	public async Task RemoveItemAsync_ShouldDetachEntity()
+	{
+		// Arrange
+		var importIndexItem = new ImportIndexItem { Id = 1020, FileHash = "testhash" };
+		_dbContext.ImportIndex.Add(importIndexItem);
+		// Attach something to the local cache
+		_dbContext.Set<ImportIndexItem>()
+			.Local.Add(importIndexItem);
+		await _dbContext.SaveChangesAsync();
+
+		// Act
+		await _importQuery.RemoveItemAsync(importIndexItem);
+
+		// Assert
+		var local =
+			_dbContext.ImportIndex.Local.FirstOrDefault(entry => entry.Id == importIndexItem.Id);
+		Assert.IsNull(local);
+	}
+
+	[TestMethod]
 	public async Task RemoveItemAsync_DbUpdateConcurrencyException()
 	{
 		var addedItems = new List<ImportIndexItem>
@@ -283,27 +303,6 @@ public sealed class ImportQueryTest
 			"AggregateException (ignored after retry)"));
 	}
 
-	private class ConcurrencyExceptionApplicationDbContext : ApplicationDbContext
-	{
-		public ConcurrencyExceptionApplicationDbContext(DbContextOptions options) : base(options)
-		{
-		}
-
-		public override DbSet<FileIndexItem> FileIndex
-		{
-			get => throw new DbUpdateConcurrencyException();
-			set
-			{
-				// do nothing
-			}
-		}
-
-		public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-		{
-			throw new DbUpdateConcurrencyException();
-		}
-	}
-	
 	[TestMethod]
 	public async Task RemoveItemAsync_SqliteExceptionApplicationDbContext()
 	{
@@ -330,17 +329,16 @@ public sealed class ImportQueryTest
 			"Import [RemoveItemAsync] catch-ed " +
 			"AggregateException (ignored after retry)"));
 	}
-	
-	
-	private class SqliteExceptionApplicationDbContext : ApplicationDbContext
+
+	private class ConcurrencyExceptionApplicationDbContext : ApplicationDbContext
 	{
-		public SqliteExceptionApplicationDbContext(DbContextOptions options) : base(options)
+		public ConcurrencyExceptionApplicationDbContext(DbContextOptions options) : base(options)
 		{
 		}
 
 		public override DbSet<FileIndexItem> FileIndex
 		{
-			get => throw new SqliteException("Database is locked",1);
+			get => throw new DbUpdateConcurrencyException();
 			set
 			{
 				// do nothing
@@ -349,7 +347,28 @@ public sealed class ImportQueryTest
 
 		public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
 		{
-			throw new SqliteException("Database is locked",1);
+			throw new DbUpdateConcurrencyException();
+		}
+	}
+
+	private class SqliteExceptionApplicationDbContext : ApplicationDbContext
+	{
+		public SqliteExceptionApplicationDbContext(DbContextOptions options) : base(options)
+		{
+		}
+
+		public override DbSet<FileIndexItem> FileIndex
+		{
+			get => throw new SqliteException("Database is locked", 1);
+			set
+			{
+				// do nothing
+			}
+		}
+
+		public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+		{
+			throw new SqliteException("Database is locked", 1);
 		}
 	}
 }

@@ -150,7 +150,7 @@ public sealed class ImportQuery : IImportQuery
 		async Task LocalRemoveQuery(ApplicationDbContext context)
 		{
 			// Detach first https://stackoverflow.com/a/42475617
-			var local = context.Set<FileIndexItem>()
+			var local = context.Set<ImportIndexItem>()
 				.Local
 				.FirstOrDefault(entry => entry.Id.Equals(importIndexItem.Id));
 			if ( local != null )
