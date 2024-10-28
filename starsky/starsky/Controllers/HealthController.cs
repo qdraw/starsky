@@ -152,7 +152,7 @@ public sealed class HealthController : Controller
 					Duration = value.Duration,
 					Name = key,
 					IsHealthy = value.Status == HealthStatus.Healthy,
-					Description = value.Description
+					Description = value.Description ?? string.Empty
 				}
 			);
 
