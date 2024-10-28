@@ -14,6 +14,24 @@ namespace starskytest.starsky.feature.thumbnail.Services;
 public class DatabaseThumbnailGenerationServiceTest
 {
 	[TestMethod]
+	public async Task StartBackgroundQueue_IsJobRunningSoSkip()
+	{
+		var bgTaskQueue = new FakeThumbnailBackgroundTaskQueue();
+		var databaseThumbnailGenerationService = new DatabaseThumbnailGenerationService(
+			new FakeIQuery(), new FakeIWebLogger(), new FakeIWebSocketConnectionsService(),
+			new FakeIThumbnailService(),
+			new FakeIThumbnailQuery(null, true), // mock running job
+			bgTaskQueue,
+			new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery())
+		);
+
+		await databaseThumbnailGenerationService.StartBackgroundQueue();
+
+		Assert.AreEqual(0, bgTaskQueue.Count());
+	}
+	
+	
+	[TestMethod]
 	public async Task StartBackgroundQueue_NoContentSoHitOnce()
 	{
 		var bgTaskQueue = new FakeThumbnailBackgroundTaskQueue();
