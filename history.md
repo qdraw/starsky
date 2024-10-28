@@ -16,7 +16,7 @@
       updated in the database_
     - [starskyThumbnailCli](starsky/starskythumbnailcli/readme.md) _speed web performance by
       generating smaller images_
-    - [Starsky Business Logic](starsky/starskybusinesslogic/readme.md) _business logic libraries (
+    - [Starsky Business Logic](starsky/starskybusinesslogic/readme.md) _internal libraries (
       .NET)_
     - [starskyTest](starsky/starskytest/readme.md) _mstest unit tests (for .NET)_
 - [starsky-tools](starsky-tools/readme.md) _nodejs tools to add-on tasks_
@@ -44,6 +44,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## version 0.6.3 - _(Unreleased)_ - 2024-08-?? {#v0.6.3}
 
 - [x] (Fixed) _Front-end_ OkAndSame status in Upload Modal gives the wrong status (PR #1783)
+- [x] (Changed) _Back-end_ Behavior of generating thumbnails on the background (PR #1780)
+- [x] (Added) _Back-end_ Add cleanup of non-linked thumbnails on startup (PR #1780)
 
 ## version 0.6.2 - 2024-10-11 {#v0.6.2}
 
