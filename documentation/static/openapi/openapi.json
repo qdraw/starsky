@@ -13068,6 +13068,22 @@
             "extensions": {},
             "unresolvedReference": false
           },
+          "thumbnailCleanupSkipOnStartup": {
+            "type": "boolean",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
           "geoFilesSkipDownloadOnStartup": {
             "type": "boolean",
             "readOnly": false,
@@ -16529,5 +16545,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "2EC0F8C7B075F2DEB8D78D50C8D03EA222ED981352DE2537CBB48E46B75750E338A656714942542494272CA3F06CA21DA53AA917339104961D8B8739DA4A0024"
+  "hashCode": "021F535B447DDB742972710749C1E76441395FDA434C46F5480525DE017586A05980D709823A7E8D43222528C81D5085609C68429AC55E2D3729567D44A9455B"
 }
