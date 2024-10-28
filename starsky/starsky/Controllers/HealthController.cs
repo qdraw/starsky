@@ -1,14 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using starsky.foundation.platform.Extensions;
+using starsky.feature.health.HealthCheck.Interfaces;
 using starsky.foundation.platform.VersionHelpers;
 using starsky.project.web.ViewModels;
 
@@ -29,14 +27,11 @@ public sealed class HealthController : Controller
 	/// </summary>
 	private const string ApiVersionHeaderName = "x-api-version";
 
-	private readonly IMemoryCache? _cache;
-	private readonly HealthCheckService _service;
+	private readonly ICheckHealthService _checkHealthService;
 
-	public HealthController(HealthCheckService service,
-		IMemoryCache? memoryCache = null)
+	public HealthController(ICheckHealthService checkHealthService)
 	{
-		_service = service;
-		_cache = memoryCache;
+		_checkHealthService = checkHealthService;
 	}
 
 	/// <summary>
@@ -54,7 +49,7 @@ public sealed class HealthController : Controller
 	[AllowAnonymous]
 	public async Task<IActionResult> Index()
 	{
-		var result = await CheckHealthAsyncWithTimeout(10000);
+		var result = await _checkHealthService.CheckHealthWithTimeoutAsync(10000);
 		if ( result.Status == HealthStatus.Healthy )
 		{
 			return Content(result.Status.ToString());
@@ -62,47 +57,6 @@ public sealed class HealthController : Controller
 
 		Response.StatusCode = 503;
 		return Content(result.Status.ToString());
-	}
-
-	/// <summary>
-	///     With timeout after 15 seconds
-	/// </summary>
-	/// <param name="timeoutTime">in milliseconds, defaults to 15 seconds</param>
-	/// <returns>report</returns>
-	internal async Task<HealthReport> CheckHealthAsyncWithTimeout(int timeoutTime = 15000)
-	{
-		const string healthControllerCacheKey = "health";
-		try
-		{
-			if ( _cache != null &&
-			     _cache.TryGetValue(healthControllerCacheKey, out var objectHealthStatus) &&
-			     objectHealthStatus is HealthReport healthStatus &&
-			     healthStatus.Status == HealthStatus.Healthy )
-			{
-				return healthStatus;
-			}
-
-			var result = await _service.CheckHealthAsync().TimeoutAfter(timeoutTime);
-			if ( _cache != null && result.Status == HealthStatus.Healthy )
-			{
-				_cache.Set(healthControllerCacheKey, result, new TimeSpan(0, 1, 30));
-			}
-
-			return result;
-		}
-		catch ( TimeoutException exception )
-		{
-			var entry = new HealthReportEntry(
-				HealthStatus.Unhealthy,
-				"timeout",
-				TimeSpan.FromMilliseconds(timeoutTime),
-				exception,
-				null);
-
-			return new HealthReport(
-				new Dictionary<string, HealthReportEntry> { { "timeout", entry } },
-				TimeSpan.FromMilliseconds(timeoutTime));
-		}
 	}
 
 
@@ -122,40 +76,15 @@ public sealed class HealthController : Controller
 	[ProducesResponseType(401)]
 	public async Task<IActionResult> Details()
 	{
-		var result = await CheckHealthAsyncWithTimeout();
+		var result = await _checkHealthService.CheckHealthWithTimeoutAsync();
 
-		var health = CreateHealthEntryLog(result);
+		var health = _checkHealthService.CreateHealthEntryLog(result);
 		if ( !health.IsHealthy )
 		{
 			Response.StatusCode = 503;
 		}
 
 		return Json(health);
-	}
-
-	private static HealthView CreateHealthEntryLog(HealthReport result)
-	{
-		var health = new HealthView
-		{
-			IsHealthy = result.Status == HealthStatus.Healthy,
-			TotalDuration = result.TotalDuration
-		};
-
-		foreach ( var (key, value) in result.Entries )
-		{
-			health.Entries.Add(
-				new HealthEntry
-				{
-					Duration = value.Duration,
-					Name = key,
-					IsHealthy = value.Status == HealthStatus.Healthy,
-					Description = value.Description + value.Exception?.Message +
-					              value.Exception?.StackTrace
-				}
-			);
-		}
-
-		return health;
 	}
 
 	/// <summary>
