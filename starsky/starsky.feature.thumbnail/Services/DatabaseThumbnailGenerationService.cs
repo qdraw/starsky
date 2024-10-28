@@ -88,9 +88,12 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 				$"Processed {totalProcessed} thumbnails so far... ({DateTime.UtcNow:HH:mm:ss})");
 		} while ( missingThumbnails.Count == batchSize );
 
-		_logger.LogInformation(
-			$"[DatabaseThumbnailGenerationService] Next Clear Running Job" +
-			$"Processed {totalProcessed} thumbnails in total ({DateTime.UtcNow:HH:mm:ss})");
+		if ( totalProcessed >= 1 )
+		{
+			_logger.LogInformation(
+				$"[DatabaseThumbnailGenerationService] Done" +
+				$"Processed {totalProcessed} thumbnails in total, next clear running job ({DateTime.UtcNow:HH:mm:ss})");
+		}
 
 		_thumbnailQuery.SetRunningJob(false);
 	}
