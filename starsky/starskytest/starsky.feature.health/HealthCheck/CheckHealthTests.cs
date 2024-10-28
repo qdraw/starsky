@@ -28,17 +28,10 @@ public class CheckHealthTests
 		return exception;
 	}
 
-	[DataTestMethod]
-	[DataRow("HealthyCheck", "Healthy", null, null)]
-	[DataRow("UnhealthyCheck", "Unhealthy", "Some error occurred", "Stack trace")]
-	[DataRow("TimeoutCheck", "timeout", "Timeout exception", "Timeout stack trace")]
-	[DataRow("VersionMismatchCheck", "Version mismatch", "Version mismatch error",
-		"Version mismatch stack trace")]
-	public void LogError_ShouldLogCorrectMessage(string key, string description,
-		string? exceptionMessage, string? stackTrace)
+	private static HealthReport CreateHealthReport(string key, string description,
+		string? exceptionMessage,
+		string? stackTrace)
 	{
-		// Arrange
-		var logger = new FakeIWebLogger();
 		var healthReportEntry = new HealthReportEntry(
 			HealthStatus.Unhealthy,
 			description,
@@ -51,7 +44,23 @@ public class CheckHealthTests
 		var healthReport = new HealthReport(
 			new Dictionary<string, HealthReportEntry> { { key, healthReportEntry } },
 			TimeSpan.Zero);
+		return healthReport;
+	}
 
+	[DataTestMethod]
+	[DataRow("HealthyCheck", null, null, null)]
+	[DataRow("HealthyCheck", "Healthy", null, null)]
+	[DataRow("UnhealthyCheck", "Unhealthy", "Some error occurred", "Stack trace")]
+	[DataRow("TimeoutCheck", "timeout", "Timeout exception", "Timeout stack trace")]
+	[DataRow("VersionMismatchCheck", "Version mismatch", "Version mismatch error",
+		"Version mismatch stack trace")]
+	public void CreateHealthEntryLog_LogError_ShouldLogCorrectMessage(string key, string description,
+		string? exceptionMessage, string? stackTrace)
+	{
+		// Arrange
+		var logger = new FakeIWebLogger();
+
+		var healthReport = CreateHealthReport(key, description, exceptionMessage, stackTrace);
 		var checkHealthService = new CheckHealthService(null!, logger);
 
 		// Act
@@ -72,6 +81,36 @@ public class CheckHealthTests
 		}
 	}
 
+	[DataTestMethod]
+	[DataRow("HealthyCheck", null, null, null)]
+	[DataRow("HealthyCheck", "Healthy", null, null)]
+	[DataRow("UnhealthyCheck", "Unhealthy", "Some error occurred", "Stack trace")]
+	[DataRow("TimeoutCheck", "timeout", "Timeout exception", "Timeout stack trace")]
+	[DataRow("VersionMismatchCheck", "Version mismatch", "Version mismatch error",
+		"Version mismatch stack trace")]
+	public void CreateHealthEntryLog_Result(string key, string description,
+		string? exceptionMessage, string? stackTrace)
+	{
+		// Arrange
+		var logger = new FakeIWebLogger();
+
+		var healthReport = CreateHealthReport(key, description, exceptionMessage, stackTrace);
+		var checkHealthService = new CheckHealthService(null!, logger);
+
+		// Act
+		var result = checkHealthService.CreateHealthEntryLog(healthReport);
+		
+		// Assert
+		Assert.AreEqual(healthReport.Status == HealthStatus.Healthy, result.IsHealthy);
+		Assert.AreEqual(healthReport.TotalDuration, result.TotalDuration);
+		Assert.AreEqual(healthReport.Entries.Count, result.Entries.Count);
+		Assert.AreEqual(healthReport.Entries.First().Key, result.Entries.FirstOrDefault()?.Name);
+		Assert.AreEqual(healthReport.Entries.First().Value.Duration, result.Entries.FirstOrDefault()?.Duration);
+		Assert.AreEqual(healthReport.Entries.First().Value.Status == HealthStatus.Healthy,
+			result.Entries.FirstOrDefault()?.IsHealthy);
+		Assert.AreEqual(healthReport.Entries.First().Value.Description ?? string.Empty,	
+			result.Entries.FirstOrDefault()?.Description);
+	}
 
 	[TestMethod]
 	public async Task CheckHealthAsyncWithTimeout_ShouldTimeout()
@@ -119,7 +158,8 @@ public class CheckHealthTests
 	[DataTestMethod]
 	[DataRow(true, true, HealthStatus.Healthy, true)]
 	[DataRow(true, false, HealthStatus.Unhealthy, false)]
-	public async Task CheckHealthAsyncWithTimeout_ShouldSetCache(bool addMemoryCache, bool isHealthy,
+	public async Task CheckHealthAsyncWithTimeout_ShouldSetCache(bool addMemoryCache,
+		bool isHealthy,
 		HealthStatus healthStatus, bool expectCache)
 	{
 		var cache = new MemoryCache(new MemoryCacheOptions());
