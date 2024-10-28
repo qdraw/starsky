@@ -115,6 +115,32 @@ public sealed class ImportQuery : IImportQuery
 	public async Task<ImportIndexItem> RemoveItemAsync(ImportIndexItem importIndexItem,
 		int maxAttemptCount = 3)
 	{
+		try
+		{
+			await LocalRemoveQuery(_dbContext!);
+		}
+		catch ( SqliteException )
+		{
+			// Files that are locked
+			await LocalRemoveQueryRetry();
+		}
+		catch ( ObjectDisposedException )
+		{
+			await LocalRemoveDefaultQuery();
+		}
+		catch ( InvalidOperationException )
+		{
+			await LocalRemoveDefaultQuery();
+		}
+		catch ( DbUpdateConcurrencyException exception )
+		{
+			_logger.LogInformation("Import [RemoveItemAsync] catch-ed " +
+			                       $"DbUpdateConcurrencyException (retry) {exception.Message}");
+			await LocalRemoveQueryRetry();
+		}
+
+		return importIndexItem;
+
 		async Task<bool> LocalRemoveDefaultQuery()
 		{
 			await LocalRemoveQuery(new InjectServiceScope(_scopeFactory).Context());
@@ -137,44 +163,21 @@ public sealed class ImportQuery : IImportQuery
 			await context.SaveChangesAsync();
 		}
 
-		try
+		async Task LocalRemoveQueryRetry()
 		{
-			await LocalRemoveQuery(_dbContext!);
-		}
-		catch ( SqliteException )
-		{
-			// Files that are locked
-			await RetryHelper.DoAsync(LocalRemoveDefaultQuery,
-				TimeSpan.FromSeconds(2), maxAttemptCount);
-		}
-		catch ( ObjectDisposedException )
-		{
-			await LocalRemoveDefaultQuery();
-		}
-		catch ( InvalidOperationException )
-		{
-			await LocalRemoveDefaultQuery();
-		}
-		catch ( DbUpdateConcurrencyException exception )
-		{
-			_logger.LogInformation("Import [RemoveItemAsync] catch-ed " +
-			                       "DbUpdateConcurrencyException (retry) {exception}",
-				exception.Message);
 			try
 			{
 				await RetryHelper.DoAsync(LocalRemoveDefaultQuery, TimeSpan.FromSeconds(2),
 					maxAttemptCount);
 			}
-			catch ( AggregateException )
+			catch ( AggregateException exception )
 			{
 				_logger.LogInformation("Import [RemoveItemAsync] catch-ed " +
-				                       "AggregateException (ignored after retry) {exception}",
-					exception.Message);
+				                       $"AggregateException (ignored after retry) {exception.Message}");
 			}
 		}
-
-		return importIndexItem;
 	}
+
 
 	/// <summary>
 	///     Get the database context

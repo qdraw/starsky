@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -33,11 +34,12 @@ public sealed class ImportQueryTest
 			new FakeIWebLogger());
 	}
 
-	private static IServiceScopeFactory CreateNewScope()
+	private static IServiceScopeFactory CreateNewScope(string? name = null)
 	{
+		name ??= nameof(ImportQueryTest);
 		var services = new ServiceCollection();
 		services.AddDbContext<ApplicationDbContext>(options =>
-			options.UseInMemoryDatabase(nameof(ImportQueryTest)));
+			options.UseInMemoryDatabase(name));
 		services.AddSingleton<IConsole, FakeConsoleWrapper>();
 		var serviceProvider = services.BuildServiceProvider();
 		return serviceProvider.GetRequiredService<IServiceScopeFactory>();
@@ -256,10 +258,11 @@ public sealed class ImportQueryTest
 	{
 		var addedItems = new List<ImportIndexItem>
 		{
-			new() { FileHash = "RemoveAsync_Disposed__1" }
+			new() { FileHash = "RemoveAsync_Disposed__3" }
 		};
 
-		var serviceScopeFactory = CreateNewScope();
+		var serviceScopeFactory =
+			CreateNewScope(nameof(RemoveItemAsync_DbUpdateConcurrencyException));
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
 			.UseInMemoryDatabase(nameof(RemoveItemAsync_DbUpdateConcurrencyException))
 			.Options;
@@ -271,9 +274,13 @@ public sealed class ImportQueryTest
 
 		await importQuery.RemoveItemAsync(addedItems[0], 1);
 
+		Assert.AreEqual(2, webLogger.TrackedInformation.Count);
 		Assert.IsTrue(webLogger.TrackedInformation[0].Item2?.StartsWith(
 			"Import [RemoveItemAsync] catch-ed " +
 			"DbUpdateConcurrencyException (retry)"));
+		Assert.IsTrue(webLogger.TrackedInformation[1].Item2?.StartsWith(
+			"Import [RemoveItemAsync] catch-ed " +
+			"AggregateException (ignored after retry)"));
 	}
 
 	private class ConcurrencyExceptionApplicationDbContext : ApplicationDbContext
@@ -294,6 +301,55 @@ public sealed class ImportQueryTest
 		public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
 		{
 			throw new DbUpdateConcurrencyException();
+		}
+	}
+	
+	[TestMethod]
+	public async Task RemoveItemAsync_SqliteExceptionApplicationDbContext()
+	{
+		var addedItems = new List<ImportIndexItem>
+		{
+			new() { FileHash = "RemoveAsync_Disposed__4" }
+		};
+
+		var serviceScopeFactory =
+			CreateNewScope(nameof(RemoveItemAsync_SqliteExceptionApplicationDbContext));
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(nameof(RemoveItemAsync_SqliteExceptionApplicationDbContext))
+			.Options;
+		var dbContext = new SqliteExceptionApplicationDbContext(options);
+
+		var webLogger = new FakeIWebLogger();
+		var importQuery = new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper(),
+			webLogger, dbContext);
+
+		await importQuery.RemoveItemAsync(addedItems[0], 1);
+
+		Assert.AreEqual(1, webLogger.TrackedInformation.Count);
+		Assert.IsTrue(webLogger.TrackedInformation[0].Item2?.StartsWith(
+			"Import [RemoveItemAsync] catch-ed " +
+			"AggregateException (ignored after retry)"));
+	}
+	
+	
+	private class SqliteExceptionApplicationDbContext : ApplicationDbContext
+	{
+		public SqliteExceptionApplicationDbContext(DbContextOptions options) : base(options)
+		{
+		}
+
+		public override DbSet<FileIndexItem> FileIndex
+		{
+			get => throw new SqliteException("Database is locked",1);
+			set
+			{
+				// do nothing
+			}
+		}
+
+		public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+		{
+			throw new SqliteException("Database is locked",1);
 		}
 	}
 }
