@@ -6,6 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Models;
+using starsky.foundation.settings.Enums;
+using starsky.foundation.settings.Formats;
+using starsky.foundation.settings.Interfaces;
 using starsky.foundation.thumbnailgeneration.Interfaces;
 
 namespace starsky.feature.thumbnail.Services;
@@ -33,8 +36,8 @@ public class CleanThumbnailHostedService : BackgroundService
 	{
 		using var scope = _serviceScopeFactory.CreateScope();
 		var appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
-
-		if ( appSettings.ThumbnailCleanupSkipOnStartup == true )
+		var settingService = scope.ServiceProvider.GetRequiredService<ISettingsService>();
+		if ( !await ContinueDueSettings(appSettings, settingService) )
 		{
 			return [];
 		}
@@ -43,5 +46,25 @@ public class CleanThumbnailHostedService : BackgroundService
 
 		var thumbnailCleaner = scope.ServiceProvider.GetRequiredService<IThumbnailCleaner>();
 		return await thumbnailCleaner.CleanAllUnusedFilesAsync();
+	}
+
+	internal static async Task<bool> ContinueDueSettings(AppSettings appSettings,
+		ISettingsService settingService)
+	{
+		if ( appSettings.ThumbnailCleanupSkipOnStartup == true )
+		{
+			return false;
+		}
+
+		var lastRun = await settingService.GetSetting<DateTime?>(
+			SettingsType.CleanUpThumbnailDatabaseLastRun);
+		var shouldBeLaterThan = DateTime.UtcNow.AddDays(-4);
+		var continueRun = !lastRun.HasValue || lastRun.Value <= shouldBeLaterThan;
+
+		await settingService.AddOrUpdateSetting(SettingsType.CleanUpThumbnailDatabaseLastRun,
+			DateTime.UtcNow.ToString(
+				DateTime.UtcNow.ToDefaultSettingsFormat()));
+
+		return continueRun;
 	}
 }

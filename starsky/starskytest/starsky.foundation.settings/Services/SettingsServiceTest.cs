@@ -23,7 +23,7 @@ public class SettingsServiceTest
 		return new ApplicationDbContext(options);
 	}
 
-	private static async Task RemoveAsync(ApplicationDbContext dbContext, SettingsType key )
+	private static async Task RemoveAsync(ApplicationDbContext dbContext, SettingsType key)
 	{
 		var item = await dbContext.Settings.FirstOrDefaultAsync(p => p.Key == Enum.GetName(key));
 		if ( item != null )
@@ -37,70 +37,62 @@ public class SettingsServiceTest
 	public async Task GetSetting()
 	{
 		var dbContext = SetScope();
-		var value = DateTime.UtcNow.ToString(
-			SettingsFormats.LastSyncBackgroundDateTime,
-			CultureInfo.InvariantCulture);
+		var value = DateTime.UtcNow.ToDefaultSettingsFormat();
 		dbContext.Settings.Add(new SettingsItem
 		{
-			Key = Enum.GetName(SettingsType.LastSyncBackgroundDateTime)!,
-			Value = value
+			Key = Enum.GetName(SettingsType.LastSyncBackgroundDateTime)!, Value = value
 		});
 		await dbContext.SaveChangesAsync();
 
-
-		var item = await new SettingsService(dbContext,null!).GetSetting(SettingsType
+		var item = await new SettingsService(dbContext, null!).GetSetting(SettingsType
 			.LastSyncBackgroundDateTime);
-		
+
 		Assert.AreEqual(value, item?.Value);
 
 		await RemoveAsync(dbContext, SettingsType
 			.LastSyncBackgroundDateTime);
 	}
-	
+
 	[TestMethod]
 	public async Task GetSettingCast_DateTime()
 	{
 		var dbContext = SetScope();
 		var datetime = DateTime.UtcNow;
-		var value = datetime.ToString(
-			SettingsFormats.LastSyncBackgroundDateTime,
-			CultureInfo.InvariantCulture);
 		dbContext.Settings.Add(new SettingsItem
 		{
 			Key = Enum.GetName(SettingsType.LastSyncBackgroundDateTime)!,
-			Value = value
+			Value = datetime.ToDefaultSettingsFormat()
 		});
 		await dbContext.SaveChangesAsync();
 
-		var item = await new SettingsService(dbContext,null!)
+		var item = await new SettingsService(dbContext, null!)
 			.GetSetting<DateTime>(SettingsType
-			.LastSyncBackgroundDateTime);
-		
-		Assert.AreEqual(datetime.ToString(CultureInfo.InvariantCulture), 
+				.LastSyncBackgroundDateTime);
+
+		Assert.AreEqual(datetime.ToString(CultureInfo.InvariantCulture),
 			item.ToUniversalTime().ToString(CultureInfo.InvariantCulture));
 		await RemoveAsync(dbContext, SettingsType
 			.LastSyncBackgroundDateTime);
 	}
-	
+
 	[TestMethod]
 	public async Task GetSettingCast_String()
 	{
 		var dbContext = SetScope();
 		dbContext.Settings.Add(new SettingsItem
 		{
-			Key = Enum.GetName(SettingsType.LastSyncBackgroundDateTime)!,
-			Value = "test"
+			Key = Enum.GetName(SettingsType.LastSyncBackgroundDateTime)!, Value = "test"
 		});
 		await dbContext.SaveChangesAsync();
 
-		var item = await new SettingsService(dbContext,null!).GetSetting<string>(SettingsType
+		var item = await new SettingsService(dbContext, null!).GetSetting<string>(SettingsType
 			.LastSyncBackgroundDateTime);
-		
+
 		Assert.AreEqual("test", item);
 		await RemoveAsync(dbContext, SettingsType
 			.LastSyncBackgroundDateTime);
 	}
-	
+
 	[TestMethod]
 	public async Task GetSettingCast_DateTime_Fail()
 	{
@@ -112,64 +104,59 @@ public class SettingsServiceTest
 		});
 		await dbContext.SaveChangesAsync();
 
-		var item = await new SettingsService(dbContext,null!)
+		var item = await new SettingsService(dbContext, null!)
 			.GetSetting<DateTime>(SettingsType
-			.LastSyncBackgroundDateTime);
+				.LastSyncBackgroundDateTime);
 
 		DateTime defaultDatetime = default;
-		Assert.AreEqual(defaultDatetime.ToString(CultureInfo.InvariantCulture), 
+		Assert.AreEqual(defaultDatetime.ToString(CultureInfo.InvariantCulture),
 			item.ToUniversalTime().ToString(CultureInfo.InvariantCulture));
 		await RemoveAsync(dbContext, SettingsType
 			.LastSyncBackgroundDateTime);
 	}
-	
+
 	[TestMethod]
 	public async Task AddOrUpdateSetting_Null()
 	{
 		var dbContext = SetScope();
 
 		var item =
-			await new SettingsService(dbContext,null!).AddOrUpdateSetting(
-				new SettingsItem
-				{
-					Key = null!,
-					Value = null!
-				});
+			await new SettingsService(dbContext, null!).AddOrUpdateSetting(
+				new SettingsItem { Key = null!, Value = null! });
 		Assert.IsNull(item);
 	}
-	
+
 	[TestMethod]
 	public async Task AddOrUpdateSetting_ItemAdded()
 	{
 		var dbContext = SetScope();
 
 		var item =
-			await new SettingsService(dbContext,null!).AddOrUpdateSetting(
+			await new SettingsService(dbContext, null!).AddOrUpdateSetting(
 				new SettingsItem
 				{
-					Key = Enum.GetName(SettingsType.LastSyncBackgroundDateTime)!,
-					Value = "test"
+					Key = Enum.GetName(SettingsType.LastSyncBackgroundDateTime)!, Value = "test"
 				});
 		Assert.IsNotNull(item);
 		Assert.AreEqual("test", item.Value);
-		
+
 		var dbResult = await dbContext.Settings.FirstOrDefaultAsync(p =>
 			p.Key == Enum.GetName(SettingsType.LastSyncBackgroundDateTime));
 		Assert.AreEqual("test", dbResult?.Value);
 		await RemoveAsync(dbContext, SettingsType
 			.LastSyncBackgroundDateTime);
 	}
-	
-	private IServiceScopeFactory CreateNewScope()
+
+	private static IServiceScopeFactory CreateNewScope()
 	{
 		var services = new ServiceCollection();
 		services.AddMemoryCache();
-		services.AddDbContext<ApplicationDbContext>(options => 
+		services.AddDbContext<ApplicationDbContext>(options =>
 			options.UseInMemoryDatabase(nameof(SettingsServiceTest)));
 		var serviceProvider = services.BuildServiceProvider();
 		return serviceProvider.GetRequiredService<IServiceScopeFactory>();
 	}
-	
+
 	[TestMethod]
 	public async Task AddOrUpdateSetting_ItemAdded_Disposed()
 	{
@@ -178,17 +165,16 @@ public class SettingsServiceTest
 			.GetRequiredService<IServiceScopeFactory>();
 
 		await dbContext.DisposeAsync();
-		
+
 		var item =
-			await new SettingsService(dbContext,scopeFactory).AddOrUpdateSetting(
+			await new SettingsService(dbContext, scopeFactory).AddOrUpdateSetting(
 				new SettingsItem
 				{
-					Key = Enum.GetName(SettingsType.LastSyncBackgroundDateTime)!,
-					Value = "test"
+					Key = Enum.GetName(SettingsType.LastSyncBackgroundDateTime)!, Value = "test"
 				});
 		Assert.IsNotNull(item);
 		Assert.AreEqual("test", item.Value);
-		
+
 		// restore disposed state
 		dbContext = scopeFactory.CreateScope().ServiceProvider
 			.GetRequiredService<ApplicationDbContext>();
@@ -196,30 +182,30 @@ public class SettingsServiceTest
 		var dbResult = await dbContext.Settings.FirstOrDefaultAsync(p =>
 			p.Key == Enum.GetName(SettingsType.LastSyncBackgroundDateTime));
 		Assert.AreEqual("test", dbResult?.Value);
-		
+
 		await RemoveAsync(dbContext, SettingsType
 			.LastSyncBackgroundDateTime);
 	}
-	
+
 	[TestMethod]
 	public async Task AddOrUpdateSetting_ItemAdded_ViaEnum()
 	{
 		var dbContext = SetScope();
 
 		var item =
-			await new SettingsService(dbContext,null!).AddOrUpdateSetting(
+			await new SettingsService(dbContext, null!).AddOrUpdateSetting(
 				SettingsType.LastSyncBackgroundDateTime, "test");
 		Assert.IsNotNull(item);
 		Assert.AreEqual("test", item.Value);
-		
+
 		var dbResult = await dbContext.Settings.FirstOrDefaultAsync(p =>
 			p.Key == Enum.GetName(SettingsType.LastSyncBackgroundDateTime));
-		
+
 		Assert.AreEqual("test", dbResult?.Value);
 		await RemoveAsync(dbContext, SettingsType
 			.LastSyncBackgroundDateTime);
 	}
-	
+
 	[TestMethod]
 	public async Task AddOrUpdateSetting_ItemUpdated_Disposed()
 	{
@@ -227,26 +213,24 @@ public class SettingsServiceTest
 			.GetRequiredService<IServiceScopeFactory>();
 		var dbContext = scopeFactory.CreateScope().ServiceProvider
 			.GetRequiredService<ApplicationDbContext>();
-		
+
 		await dbContext.DisposeAsync();
-		
-		await new SettingsService(dbContext,scopeFactory).AddOrUpdateSetting(
+
+		await new SettingsService(dbContext, scopeFactory).AddOrUpdateSetting(
 			new SettingsItem
 			{
-				Key = Enum.GetName(SettingsType.LastSyncBackgroundDateTime)!,
-				Value = "test0"
+				Key = Enum.GetName(SettingsType.LastSyncBackgroundDateTime)!, Value = "test0"
 			});
-		
-		var item = await new SettingsService(dbContext,scopeFactory).AddOrUpdateSetting(
+
+		var item = await new SettingsService(dbContext, scopeFactory).AddOrUpdateSetting(
 			new SettingsItem
 			{
-				Key = Enum.GetName(SettingsType.LastSyncBackgroundDateTime)!,
-				Value = "test"
+				Key = Enum.GetName(SettingsType.LastSyncBackgroundDateTime)!, Value = "test"
 			});
 
 		Assert.IsNotNull(item);
 		Assert.AreEqual("test", item.Value);
-		
+
 		// restore disposed state
 		dbContext = scopeFactory.CreateScope().ServiceProvider
 			.GetRequiredService<ApplicationDbContext>();
@@ -254,36 +238,68 @@ public class SettingsServiceTest
 		var dbResult = await dbContext.Settings.FirstOrDefaultAsync(p =>
 			p.Key == Enum.GetName(SettingsType.LastSyncBackgroundDateTime));
 		Assert.AreEqual("test", dbResult?.Value);
-		
+
 		await RemoveAsync(dbContext, SettingsType
 			.LastSyncBackgroundDateTime);
 	}
-	
+
 	[TestMethod]
 	public async Task AddOrUpdateSetting_ItemUpdated()
 	{
 		var dbContext = SetScope();
-		await new SettingsService(dbContext,null!).AddOrUpdateSetting(
+		await new SettingsService(dbContext, null!).AddOrUpdateSetting(
 			new SettingsItem
 			{
-				Key = Enum.GetName(SettingsType.LastSyncBackgroundDateTime)!,
-				Value = "test0"
+				Key = Enum.GetName(SettingsType.LastSyncBackgroundDateTime)!, Value = "test0"
 			});
-		
-		var item = await new SettingsService(dbContext,null!).AddOrUpdateSetting(
+
+		var item = await new SettingsService(dbContext, null!).AddOrUpdateSetting(
 			new SettingsItem
 			{
-				Key = Enum.GetName(SettingsType.LastSyncBackgroundDateTime)!,
-				Value = "test"
+				Key = Enum.GetName(SettingsType.LastSyncBackgroundDateTime)!, Value = "test"
 			});
 
 		Assert.IsNotNull(item);
 		Assert.AreEqual("test", item.Value);
-		
+
 		var dbResult = await dbContext.Settings.FirstOrDefaultAsync(p =>
 			p.Key == Enum.GetName(SettingsType.LastSyncBackgroundDateTime));
 		Assert.AreEqual("test", dbResult?.Value);
 		await RemoveAsync(dbContext, SettingsType
 			.LastSyncBackgroundDateTime);
+	}
+
+	[TestMethod]
+	[DataRow(null, default, typeof(DateTime))]
+	[DataRow("2024-01-01T02:00:00Z", "2024-01-01T02:00:00Z", typeof(DateTime))]
+	[DataRow("invalid-date", default, typeof(DateTime))]
+	[DataRow("test-value", "test-value", typeof(string))]
+	[DataRow("test-value", default(int), typeof(int))]
+	public void CastSettingTheory(string? inputValue, object expectedValue, Type targetType)
+	{
+		// Arrange
+		var data =
+			inputValue == null ? null : new SettingsItem { Value = inputValue };
+
+		// Act
+		var result = typeof(SettingsService)
+			.GetMethod(nameof(SettingsService.CastSetting))?
+			.MakeGenericMethod(targetType)
+			.Invoke(null, [data!]);
+
+		// Assert
+		if ( targetType == typeof(DateTime) )
+		{
+			var expectedDateTime = expectedValue is string dateString
+				? DateTime.ParseExact(dateString, SettingsFormats.DefaultSettingsDateTimeFormat,
+					CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal)
+				: default;
+			Assert.AreEqual(expectedDateTime.ToDefaultSettingsFormat(),
+				( ( DateTime ) result! ).ToDefaultSettingsFormat());
+		}
+		else
+		{
+			Assert.AreEqual(expectedValue, result);
+		}
 	}
 }

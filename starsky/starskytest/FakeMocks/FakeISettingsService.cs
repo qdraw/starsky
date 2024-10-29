@@ -48,4 +48,16 @@ public class FakeISettingsService : ISettingsService
 		return await AddOrUpdateSetting(
 			new SettingsItem { Key = Enum.GetName(key)!, Value = value });
 	}
+
+	public Task RemoveSetting(SettingsType key)
+	{
+		var existingItem = Items.FindIndex(p => p.Key == key.ToString());
+		if ( existingItem <= 0 )
+		{
+			return Task.CompletedTask;
+		}
+
+		Items[existingItem] = null!;
+		return Task.CompletedTask;
+	}
 }

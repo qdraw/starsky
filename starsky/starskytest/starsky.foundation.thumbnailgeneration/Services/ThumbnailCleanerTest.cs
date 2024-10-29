@@ -17,8 +17,6 @@ using starsky.foundation.thumbnailgeneration.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
-// #pragma warning disable 618
-
 namespace starskytest.starsky.foundation.thumbnailgeneration.Services;
 
 [TestClass]
@@ -45,6 +43,7 @@ public sealed class ThumbnailCleanerTest
 	{
 		var sut = new ThumbnailCleaner(new FakeIStorage(), _query, new FakeIWebLogger(),
 			new FakeIThumbnailQuery());
+
 		await Assert.ThrowsExceptionAsync<DirectoryNotFoundException>(async () =>
 			await sut.CleanAllUnusedFilesAsync());
 	}
@@ -99,7 +98,11 @@ public sealed class ThumbnailCleanerTest
 	public async Task ThumbnailCleanerTestAsync_CatchException()
 	{
 		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { ThumbnailNameHelper.Combine("hash1234", ThumbnailSize.Large) });
+			new List<string>
+			{
+				// set hash
+				ThumbnailNameHelper.Combine("hash1234", ThumbnailSize.Large)
+			});
 
 		var fakeQuery =
 			new FakeIQueryException(
@@ -164,7 +167,11 @@ public sealed class ThumbnailCleanerTest
 	public async Task ThumbnailCleanerTestAsync_RemoveFromThumbnailTable()
 	{
 		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { ThumbnailNameHelper.Combine("35874453877", ThumbnailSize.Large) });
+			new List<string>
+			{
+				// set hash
+				ThumbnailNameHelper.Combine("35874453877", ThumbnailSize.Large)
+			});
 
 		var fakeQuery = new FakeIQuery();
 		var thumbnailQuery = new FakeIThumbnailQuery(new List<ThumbnailItem>

@@ -12,6 +12,7 @@
     <ItemGroup>
         <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>
         <ProjectReference Include="..\starsky.foundation.realtime\starsky.foundation.realtime.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.settings\starsky.foundation.settings.csproj"/>
         <ProjectReference Include="..\starsky.foundation.thumbnailgeneration\starsky.foundation.thumbnailgeneration.csproj"/>
         <ProjectReference Include="..\starsky.foundation.worker\starsky.foundation.worker.csproj"/>
     </ItemGroup>
