@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,15 +19,14 @@ namespace starsky.feature.syncbackground.Helpers;
 
 public class OnStartupSync
 {
-	private readonly ISynchronize _synchronize;
-	private readonly ISettingsService _settingsService;
+	private readonly AppSettings _appSettings;
+	private readonly IDiskWatcherBackgroundTaskQueue _backgroundTaskQueue;
 	private readonly IWebLogger _logger;
 	private readonly IServiceScopeFactory _serviceScopeFactory;
-	private readonly IDiskWatcherBackgroundTaskQueue _backgroundTaskQueue;
-	private readonly AppSettings _appSettings;
+	private readonly ISettingsService _settingsService;
+	private readonly ISynchronize _synchronize;
 
 	/// <summary>
-	/// 
 	/// </summary>
 	/// <param name="serviceScopeFactory">req: IRealtimeConnectionsService</param>
 	/// <param name="backgroundTaskQueue"></param>
@@ -36,7 +34,8 @@ public class OnStartupSync
 	/// <param name="synchronize"></param>
 	/// <param name="settingsService"></param>
 	/// <param name="logger"></param>
-	public OnStartupSync(IServiceScopeFactory serviceScopeFactory, IDiskWatcherBackgroundTaskQueue backgroundTaskQueue, AppSettings appSettings,
+	public OnStartupSync(IServiceScopeFactory serviceScopeFactory,
+		IDiskWatcherBackgroundTaskQueue backgroundTaskQueue, AppSettings appSettings,
 		ISynchronize synchronize, ISettingsService settingsService, IWebLogger logger)
 	{
 		_serviceScopeFactory = serviceScopeFactory;
@@ -49,10 +48,8 @@ public class OnStartupSync
 
 	public async Task StartUpSync()
 	{
-		await _backgroundTaskQueue.QueueBackgroundWorkItemAsync(async token =>
-		{
-			await StartUpSyncTask();
-		}, nameof(StartUpSync));
+		await _backgroundTaskQueue.QueueBackgroundWorkItemAsync(
+			async _ => { await StartUpSyncTask(); }, nameof(StartUpSync));
 	}
 
 	public async Task StartUpSyncTask()
@@ -61,6 +58,7 @@ public class OnStartupSync
 		{
 			return;
 		}
+
 		var lastUpdatedValue = await _settingsService.GetSetting<DateTime>(
 			SettingsType.LastSyncBackgroundDateTime);
 
@@ -68,7 +66,7 @@ public class OnStartupSync
 
 		await _settingsService.AddOrUpdateSetting(
 			SettingsType.LastSyncBackgroundDateTime,
-			DateTime.UtcNow.ToString(SettingsFormats.LastSyncBackgroundDateTime, CultureInfo.InvariantCulture));
+			DateTime.UtcNow.ToDefaultSettingsFormat());
 
 		_logger.LogInformation("Sync on startup done");
 	}
@@ -76,13 +74,14 @@ public class OnStartupSync
 	internal async Task PushToSockets(List<FileIndexItem> updatedList)
 	{
 		using var scope = _serviceScopeFactory.CreateScope();
-		var webSocketConnectionsService = scope.ServiceProvider.GetRequiredService<IWebSocketConnectionsService>();
+		var webSocketConnectionsService =
+			scope.ServiceProvider.GetRequiredService<IWebSocketConnectionsService>();
 		var notificationQuery = scope.ServiceProvider.GetRequiredService<INotificationQuery>();
 		var webSocketResponse =
-			new ApiNotificationResponseModel<List<FileIndexItem>>(updatedList, ApiNotificationType.OnStartupSyncBackgroundSync);
+			new ApiNotificationResponseModel<List<FileIndexItem>>(updatedList,
+				ApiNotificationType.OnStartupSyncBackgroundSync);
 
 		await webSocketConnectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
 		await notificationQuery.AddNotification(webSocketResponse);
 	}
-
 }

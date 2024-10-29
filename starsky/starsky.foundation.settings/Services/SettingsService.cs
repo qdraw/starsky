@@ -50,38 +50,11 @@ public sealed class SettingsService : ISettingsService
 		return CastSetting<T>(data);
 	}
 
-	public static T? CastSetting<T>(SettingsItem? data)
-	{
-		if ( data?.Value == null )
-		{
-			return default;
-		}
-
-		if ( typeof(T) == typeof(DateTime) && DateTime.TryParseExact(data.Value,
-				SettingsFormats.LastSyncBackgroundDateTime,
-				CultureInfo.InvariantCulture,
-				DateTimeStyles.AssumeUniversal,
-				out var expectDateTime) )
-		{
-			return ( T ) ( object ) expectDateTime;
-		}
-
-		try
-		{
-			return ( T? ) ( object? ) data.Value;
-		}
-		catch ( InvalidCastException )
-		{
-			return default;
-		}
-	}
-
 	public async Task<SettingsItem?> AddOrUpdateSetting(SettingsType key, string value)
 	{
 		return await AddOrUpdateSetting(new SettingsItem
 		{
-			Key = Enum.GetName(key) ?? string.Empty,
-			Value = value
+			Key = Enum.GetName(key) ?? string.Empty, Value = value
 		});
 	}
 
@@ -95,7 +68,6 @@ public sealed class SettingsService : ISettingsService
 		var existingItem = ( await GetSetting(settingsType) )?.Value;
 		if ( string.IsNullOrEmpty(existingItem) )
 		{
-
 			try
 			{
 				return await AddItem(_context, item);
@@ -118,6 +90,33 @@ public sealed class SettingsService : ISettingsService
 		}
 	}
 
+	public static T? CastSetting<T>(SettingsItem? data)
+	{
+		if ( data?.Value == null )
+		{
+			return default;
+		}
+
+		if ( ( typeof(T) == typeof(DateTime) || typeof(T) == typeof(DateTime?) ) &&
+		     DateTime.TryParseExact(data.Value,
+			     SettingsFormats.DefaultSettingsDateTimeFormat,
+			     CultureInfo.InvariantCulture,
+			     DateTimeStyles.AssumeUniversal,
+			     out var expectDateTime) )
+		{
+			return ( T ) ( object ) expectDateTime;
+		}
+
+		try
+		{
+			return ( T? ) ( object? ) data.Value;
+		}
+		catch ( InvalidCastException )
+		{
+			return default;
+		}
+	}
+
 	private static async Task<SettingsItem> AddItem(ApplicationDbContext context, SettingsItem item)
 	{
 		context.Settings.Add(item);
@@ -126,7 +125,8 @@ public sealed class SettingsService : ISettingsService
 		return item;
 	}
 
-	private static async Task<SettingsItem> UpdateItem(ApplicationDbContext context, SettingsItem item)
+	private static async Task<SettingsItem> UpdateItem(ApplicationDbContext context,
+		SettingsItem item)
 	{
 		context.Attach(item).State = EntityState.Modified;
 		context.Settings.Update(item);
