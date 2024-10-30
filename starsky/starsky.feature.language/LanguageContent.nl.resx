@@ -1,0 +1,679 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="MessageMoveFolderIntoTrashIntroText" xml:space="preserve">
+    <value>Weet u zeker dat u deze map naar de prullenbak wilt verplaatsen?</value>
+  </data>
+  <data name="MessageCancel" xml:space="preserve">
+    <value>Annuleren</value>
+  </data>
+  <data name="MessageTrash" xml:space="preserve">
+    <value>Prullenbak</value>
+  </data>
+  <data name="MessageMoveToTrash" xml:space="preserve">
+    <value>Verplaatsen naar prullenbak</value>
+  </data>
+  <data name="MessageMoveCurrentFolderToTrash" xml:space="preserve">
+    <value>Huidige map naar prullenbak</value>
+  </data>
+  <data name="MessageMove" xml:space="preserve">
+    <value>Verplaats</value>
+  </data>
+  <data name="MessageTo" xml:space="preserve">
+    <value>naar</value>
+  </data>
+  <data name="MessageRestoreFromTrash" xml:space="preserve">
+    <value>Herstellen uit prullenbak</value>
+  </data>
+  <data name="MessageSynchronizeManually" xml:space="preserve">
+    <value>Handmatig synchroniseren</value>
+  </data>
+  <data name="MessageDownload" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="MessagePublish" xml:space="preserve">
+    <value>Publiceren</value>
+  </data>
+  <data name="MessageReadOnlyFile" xml:space="preserve">
+    <value>Alleen-lezen bestand</value>
+  </data>
+  <data name="MessageNotFoundSourceMissing" xml:space="preserve">
+    <value>Niet gevonden. Bron ontbreekt.</value>
+  </data>
+  <data name="MessageServerInputError" xml:space="preserve">
+    <value>Er is iets mis met de input</value>
+  </data>
+  <data name="MessageIsInTheTrash" xml:space="preserve">
+    <value>Staat in de prullenbak</value>
+  </data>
+  <data name="MessageDeletedRestoreInstruction" xml:space="preserve">
+    <value>'Zet terug uit prullenbak' om het item te bewerken</value>
+  </data>
+  <data name="MessageHome" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="MessagePhotosOfThisWeek" xml:space="preserve">
+    <value>Foto's van deze week</value>
+  </data>
+  <data name="MessageImport" xml:space="preserve">
+    <value>Importeren</value>
+  </data>
+  <data name="MessagePreferences" xml:space="preserve">
+    <value>Voorkeuren</value>
+  </data>
+  <data name="MessageLogout" xml:space="preserve">
+    <value>Uitloggen</value>
+  </data>
+  <data name="MessageSaved" xml:space="preserve">
+    <value>Opgeslagen</value>
+  </data>
+  <data name="MessageImportHeader" xml:space="preserve">
+    <value>Importeren</value>
+  </data>
+  <data name="MessageCloseDetailScreenDialog" xml:space="preserve">
+    <value>Sluit detailscherm</value>
+  </data>
+  <data name="MessageCloseDialogBackToFolder" xml:space="preserve">
+    <value>Terug naar map</value>
+  </data>
+  <data name="MessageIncludingColonWord" xml:space="preserve">
+    <value>Inclusief: </value>
+  </data>
+  <data name="MessageAddLocation" xml:space="preserve">
+    <value>Voeg locatie toe</value>
+  </data>
+  <data name="MessageUpdateLocation" xml:space="preserve">
+    <value>Werk locatie bij</value>
+  </data>
+  <data name="MessageViewLocation" xml:space="preserve">
+    <value>Bekijk locatie</value>
+  </data>
+  <data name="MessageErrorGenericFail" xml:space="preserve">
+    <value>Er is iets misgegaan met het updaten. Probeer het opnieuw</value>
+  </data>
+  <data name="MessageNoPhotosInFolder" xml:space="preserve">
+    <value>Er zijn geen foto's in deze map</value>
+  </data>
+  <data name="MessageNewUserNoPhotosInFolder" xml:space="preserve">
+    <value>Nieuw? Stel je schijflocatie in de instellingen.</value>
+  </data>
+  <data name="MessageItemsOutsideFilter" xml:space="preserve">
+    <value>Er zijn meer items, maar deze vallen buiten je filters. Om alles te zien klik op 'Herstel Filter'</value>
+  </data>
+  <data name="MessageSelectPresentPerfect" xml:space="preserve">
+    <value>geselecteerd</value>
+  </data>
+  <data name="MessageSelectAction" xml:space="preserve">
+    <value>Selecteer</value>
+  </data>
+  <data name="MessageNoneSelected" xml:space="preserve">
+    <value>Niets geselecteerd</value>
+  </data>
+  <data name="MessageUndoSelection" xml:space="preserve">
+    <value>Undo selectie</value>
+  </data>
+  <data name="MessageSelectAll" xml:space="preserve">
+    <value>Alles selecteren</value>
+  </data>
+  <data name="MessageAllName" xml:space="preserve">
+    <value>Alles</value>
+  </data>
+  <data name="MessageSelectFurther" xml:space="preserve">
+    <value>Verder selecteren</value>
+  </data>
+  <data name="MessageGoToParentFolder" xml:space="preserve">
+    <value>Ga naar bovenliggende map</value>
+  </data>
+  <data name="MessageMkdir" xml:space="preserve">
+    <value>Map maken</value>
+  </data>
+  <data name="MessageRenameDir" xml:space="preserve">
+    <value>Naam wijzigen</value>
+  </data>
+  <data name="MessageLabels" xml:space="preserve">
+    <value>Labels</value>
+  </data>
+  <data name="MessageRenameFileName" xml:space="preserve">
+    <value>Bestandsnaam wijzigen</value>
+  </data>
+  <data name="MessageRotateToRight" xml:space="preserve">
+    <value>Rotatie naar rechts</value>
+  </data>
+  <data name="MessageDeleteImmediately" xml:space="preserve">
+    <value>Verwijder onmiddellijk</value>
+  </data>
+  <data name="MessageVideoPlayBackError" xml:space="preserve">
+    <value>Er is iets mis met het afspelen van deze video. Probeer eens via het menu 'Meer' en 'Download'.</value>
+  </data>
+  <data name="MessageVideoNotFound" xml:space="preserve">
+    <value>Deze video is niet gevonden</value>
+  </data>
+  <data name="MessageColorClassIsUpdated" xml:space="preserve">
+    <value>Colorclass is bijgewerkt</value>
+  </data>
+  <data name="ColorClassColour0" xml:space="preserve">
+    <value>Kleurloos</value>
+  </data>
+  <data name="ColorClassColour1" xml:space="preserve">
+    <value>Roze</value>
+  </data>
+  <data name="ColorClassColour2" xml:space="preserve">
+    <value>Rood</value>
+  </data>
+  <data name="ColorClassColour3" xml:space="preserve">
+    <value>Oranje</value>
+  </data>
+  <data name="ColorClassColour4" xml:space="preserve">
+    <value>Geel</value>
+  </data>
+  <data name="ColorClassColour5" xml:space="preserve">
+    <value>Groen</value>
+  </data>
+  <data name="ColorClassColour6" xml:space="preserve">
+    <value>Azuur</value>
+  </data>
+  <data name="ColorClassColour7" xml:space="preserve">
+    <value>Blauw</value>
+  </data>
+  <data name="ColorClassColour8" xml:space="preserve">
+    <value>Grijs</value>
+  </data>
+  <data name="ColorClassColourResetFilter" xml:space="preserve">
+    <value>Herstel filter</value>
+  </data>
+  <data name="MessageCloseDialog" xml:space="preserve">
+    <value>Sluiten</value>
+  </data>
+  <data name="MessageDesktopEditorOpenSingleFile" xml:space="preserve">
+    <value>Open bestand</value>
+  </data>
+  <data name="MessageDesktopEditorOpenMultipleFiles" xml:space="preserve">
+    <value>Open bestanden</value>
+  </data>
+  <data name="MessageDesktopEditorUnableToOpen" xml:space="preserve">
+    <value>Sorry, er iets misgegaan met het openen van het bestand</value>
+  </data>
+  <data name="MessageDesktopEditorConfirmationHeading" xml:space="preserve">
+    <value>Wil je echt alle geselecteerde foto's bewerken?</value>
+  </data>
+  <data name="MessageDesktopEditorConfirmationIntroText" xml:space="preserve">
+    <value>Deze melding is bedoeld om te voorkomen dat er eventuele problemen optreden, zoals het vastlopen van je computer.</value>
+  </data>
+  <data name="MessageItemSelectionRequired" xml:space="preserve">
+    <value>Selecteer alstublieft eerst minstens één item voordat u doorgaat.</value>
+  </data>
+  <data name="MessageAppSettingsEntireAppScope" xml:space="preserve">
+    <value>De AppSettings mogen alleen worden aangepast door Administrators. Deze instellingen worden toegepast voor de gehele applicatie.</value>
+  </data>
+  <data name="MessageChangeNeedReSync" xml:space="preserve">
+    <value>Je hebt deze instelling veranderd, nu dien je een volledige sync uit te voeren. Ga naar de hoofdmap, het meer-menu en klik op handmatig synchroniseren.</value>
+  </data>
+  <data name="MessageAppSettingsStorageFolder" xml:space="preserve">
+    <value>Opslag map</value>
+  </data>
+  <data name="MessageAppSettingStorageFolderSaveFail" xml:space="preserve">
+    <value>Sorry het opslaan van de map is niet gelukt, de map is niet gevonden</value>
+  </data>
+  <data name="MessageAppSettingStorageFolderEnvUsedFail" xml:space="preserve">
+    <value>Update alsjeblieft de 'app__storageFolder' environment variable om de opslag locatie te veranderen</value>
+  </data>
+  <data name="MessageSwitchButtonDesktopCollectionsRawOn" xml:space="preserve">
+    <value>Raw eerst</value>
+  </data>
+  <data name="MessageSwitchButtonDesktopCollectionsJpegDefaultOff" xml:space="preserve">
+    <value>Jpeg eerst</value>
+  </data>
+  <data name="MessageSwitchButtonDesktopApplication" xml:space="preserve">
+    <value>AppSettings: Desktop applicatie</value>
+  </data>
+  <data name="MessageSwitchButtonDesktopApplicationDescription" xml:space="preserve">
+    <value>Deze instellingen zijn alleen beschikbaar als desktop applicatie</value>
+  </data>
+  <data name="MessageAppSettingDefaultEditorPhotos" xml:space="preserve">
+    <value>Standaardtoepassing om foto's te bewerken:</value>
+  </data>
+  <data name="MessageAppSettingDefaultEditorPhotosDescription" xml:space="preserve">
+    <value>Hou leeg om de standaardtoepassing van het systeem te gebruiken</value>
+  </data>
+  <data name="MessageSwitchButtonDesktopCollectionsUpdateError" xml:space="preserve">
+    <value>Er ging iets met het updaten van de collectie voorkeur </value>
+  </data>
+  <data name="MessageSwitchButtonDesktopCollectionsUpdateSuccess" xml:space="preserve">
+    <value>De collection voorkeur is bijgewerkt</value>
+  </data>
+  <data name="MessageSwitchButtonDesktopCollectionsRawJpegUpdateError" xml:space="preserve">
+    <value>Er ging iets mis bij het bijwerken van de voorkeur voor Raw / Jpeg</value>
+  </data>
+  <data name="MessageSwitchButtonDesktopCollectionsRawJpegUpdateSuccess" xml:space="preserve">
+    <value>De voorkeur voor Raw / Jpeg is bijgewerkt</value>
+  </data>
+  <data name="MessageUnknownUsername" xml:space="preserve">
+    <value>Onbekende gebruikersnaam</value>
+  </data>
+  <data name="MessageDesktopMailLocalhostUsername" xml:space="preserve">
+    <value>Desktop gebruiker</value>
+  </data>
+  <data name="MessageUsername" xml:space="preserve">
+    <value>Gebruikersnaam</value>
+  </data>
+  <data name="MessageRole" xml:space="preserve">
+    <value>Rol</value>
+  </data>
+  <data name="MessageExamplePassword" xml:space="preserve">
+    <value>superveilig</value>
+  </data>
+  <data name="MessageCurrentPassword" xml:space="preserve">
+    <value>Voer uw huidige wachtwoord in</value>
+  </data>
+  <data name="MessageChangedPassword" xml:space="preserve">
+    <value>Voer uw nieuwe wachtwoord in</value>
+  </data>
+  <data name="MessageChangedConfirmPassword" xml:space="preserve">
+    <value>Herhaal je nieuwe wachtwoord</value>
+  </data>
+  <data name="MessageNoPassword" xml:space="preserve">
+    <value>Voer het huidige en nieuwe wachtwoord in</value>
+  </data>
+  <data name="MessagePassword" xml:space="preserve">
+    <value>Geef je wachtwoord op</value>
+  </data>
+  <data name="MessagePasswordChanged" xml:space="preserve">
+    <value>Je wachtwoord is succesvol veranderd</value>
+  </data>
+  <data name="MessagePasswordNoMatch" xml:space="preserve">
+    <value>De wachtwoorden komen niet overeen</value>
+  </data>
+  <data name="MessagePasswordModalError" xml:space="preserve">
+    <value>Het nieuwe wachtwoord voldoet niet aan de criteria</value>
+  </data>
+  <data name="MessageCreateNewAccount" xml:space="preserve">
+    <value>Maak nieuw account</value>
+  </data>
+  <data name="MessageExampleUsername" xml:space="preserve">
+    <value>dont@mail.me</value>
+  </data>
+  <data name="MessageConfirmPassword" xml:space="preserve">
+    <value>Vul je wachtwoord nog een keer in</value>
+  </data>
+  <data name="MessageNoUsernamePassword" xml:space="preserve">
+    <value>Voer een emailadres en een wachtwoord in</value>
+  </data>
+  <data name="MessageWrongFormatEmailAddress" xml:space="preserve">
+    <value>Controleer je email adres</value>
+  </data>
+  <data name="MessagePasswordToShort" xml:space="preserve">
+    <value>Gebruik minimaal 8 tekens voor je wachtwoord</value>
+  </data>
+  <data name="MessageRejectedBadRequest" xml:space="preserve">
+    <value>Dit verzoek is afgewezen aangezien er niet voldaan is aan de beveiligingseisen (Error 400)</value>
+  </data>
+  <data name="MessageRegistrationTurnedOff" xml:space="preserve">
+    <value>Registratie is uitgezet</value>
+  </data>
+  <data name="MessageSignInInstead" xml:space="preserve">
+    <value>In plaats daarvan inloggen</value>
+  </data>
+  <data name="MessageLegalCreateAccountHtml" xml:space="preserve">
+    <value>Door het creëren van een account gaat u akkoord met de &lt;a href="/legal/toc.nl.html" data-test="toc"&gt;Algemene Voorwaarden&lt;/a&gt; van Starsky. Raadpleeg en bekijk hier onze &lt;a href="/legal/privacy-policy.nl.html" data-test="privacy"&gt;Privacykennisgeving&lt;/a&gt; en onze &lt;a href="/legal/privacy-policy.nl.html#cookie"&gt;Cookieverklaring&lt;/a&gt;.</value>
+  </data>
+  <data name="MessageFieldMaxLength" xml:space="preserve">
+    <value>Het onderstaande veld mag maximaal {maxlength} tekens hebben</value>
+  </data>
+  <data name="MessageWrongUsernamePassword" xml:space="preserve">
+    <value>Je gebruikersnaam of wachtwoord is niet juist. Probeer het opnieuw</value>
+  </data>
+  <data name="MessageLockedOut" xml:space="preserve">
+    <value>Je hebt te vaak geprobeerd in te loggen, probeer het over een uur nog een keer</value>
+  </data>
+  <data name="MessageConnection" xml:space="preserve">
+    <value>Er is geen verbinding mogelijk, probeer het later opnieuw</value>
+  </data>
+  <data name="MessageDatabaseConnection" xml:space="preserve">
+    <value>Er zijn problemen met de verbinding met de database. Controleer en pas de appsettings aan</value>
+  </data>
+  <data name="LogoutWarning" xml:space="preserve">
+    <value>Wil je uitloggen?</value>
+  </data>
+  <data name="MessageStayLoggedIn" xml:space="preserve">
+    <value>Blijf ingelogd</value>
+  </data>
+  <data name="MessageLogin" xml:space="preserve">
+    <value>Inloggen</value>
+  </data>
+  <data name="MessageCreateAccount" xml:space="preserve">
+    <value>Account maken</value>
+  </data>
+  <data name="MessageMore" xml:space="preserve">
+    <value>Meer</value>
+  </data>
+  <data name="MessagePrevious" xml:space="preserve">
+    <value>Vorige</value>
+  </data>
+  <data name="MessageNext" xml:space="preserve">
+    <value>Volgende</value>
+  </data>
+  <data name="MessageAddName" xml:space="preserve">
+    <value>Toevoegen</value>
+  </data>
+  <data name="MessageTagsWithColon" xml:space="preserve">
+    <value>Tags: </value>
+  </data>
+  <data name="MessageInfoWithColon" xml:space="preserve">
+    <value>Info: </value>
+  </data>
+  <data name="MessageTagsDescription" xml:space="preserve">
+    <value>Tags zijn gescheiden door komma's</value>
+  </data>
+  <data name="MessageTitleWithColon" xml:space="preserve">
+    <value>Titel: </value>
+  </data>
+  <data name="MessageOverwriteName" xml:space="preserve">
+    <value>Overschrijven</value>
+  </data>
+  <data name="MessageTitleName" xml:space="preserve">
+    <value>Titel</value>
+  </data>
+  <data name="MessageInfoName" xml:space="preserve">
+    <value>Info</value>
+  </data>
+  <data name="MessageWriteErrorReadOnly" xml:space="preserve">
+    <value>Eén of meerdere bestanden zijn alleen lezen. Alleen de bestanden met schrijfrechten zijn geupdate.</value>
+  </data>
+  <data name="MessageErrorNotFoundSourceMissingRunSync" xml:space="preserve">
+    <value>Eén of meerdere bestanden zijn al verdwenen. Alleen de bestanden die wel aanwezig zijn geupdate. Draai een handmatige sync</value>
+  </data>
+  <data name="MessageSearchAndReplaceNameLong" xml:space="preserve">
+    <value>Zoeken en vervangen</value>
+  </data>
+  <data name="MessageSearchAndReplaceNameShort" xml:space="preserve">
+    <value>Vervangen</value>
+  </data>
+  <data name="MessageModifyName" xml:space="preserve">
+    <value>Wijzigen</value>
+  </data>
+  <data name="MessageForceSyncCurrentFolder" xml:space="preserve">
+    <value>Handmatig synchroniseren van huidige map</value>
+  </data>
+  <data name="MessageWhereToFindReleaseReleasesUrlTokenHtml" xml:space="preserve">
+    <value>&lt;a target='_blank' href='https://docs.qdraw.nl/download/' rel='noopener'&gt; {releasesToken}&lt;/a&gt;</value>
+  </data>
+  <data name="MessageWhereToFindReleaseReleasesUrlTokenContent" xml:space="preserve">
+    <value>Ga naar het release overzicht</value>
+  </data>
+  <data name="WhereToFindReleaseElectronApp" xml:space="preserve">
+    <value>Ga naar het Help menu en dan release overzicht</value>
+  </data>
+  <data name="MessageNewVersionUpdateToken" xml:space="preserve">
+    <value>Er is een nieuwe versie beschikbaar {WhereToFindRelease} {otherInfo}</value>
+  </data>
+  <data name="MessageHealthStatusCriticalErrorsWithTheFollowingComponents" xml:space="preserve">
+    <value>Er zijn kritieke fouten in de volgende onderdelen:</value>
+  </data>
+  <data name="MessageNoPhotos" xml:space="preserve">
+    <value>Er zijn geen foto's</value>
+  </data>
+  <data name="MessageFilesAdded" xml:space="preserve">
+    <value>Deze bestanden zijn toegevoegd</value>
+  </data>
+  <data name="MessageApplicationException" xml:space="preserve">
+    <value>We hebben een op dit moment een verstoring op de applicatie</value>
+  </data>
+  <data name="MessageRefreshPageTryAgain" xml:space="preserve">
+    <value>Herlaad de applicatie om het opnieuw te proberen</value>
+  </data>
+  <data name="MessagePublishSelection" xml:space="preserve">
+    <value>Publiceer selectie</value>
+  </data>
+  <data name="MessageGenericExportFail" xml:space="preserve">
+    <value>Er is iets misgegaan met exporteren</value>
+  </data>
+  <data name="MessageRetryExportFail" xml:space="preserve">
+    <value>Probeer het opnieuw</value>
+  </data>
+  <data name="MessageExportReady" xml:space="preserve">
+    <value>Het bestand {createZipKey} is klaar met exporteren.</value>
+  </data>
+  <data name="MessageDownloadAsZipArchive" xml:space="preserve">
+    <value>Download als zip-archief</value>
+  </data>
+  <data name="MessageOneMomentPlease" xml:space="preserve">
+    <value>Een moment geduld alstublieft</value>
+  </data>
+  <data name="MessageItemName" xml:space="preserve">
+    <value>Waar gaat het item over?</value>
+  </data>
+  <data name="MessageItemNameInUse" xml:space="preserve">
+    <value>Deze naam is al in gebruik, kies een andere naam</value>
+  </data>
+  <data name="MessagePublishProfileName" xml:space="preserve">
+    <value>Profiel instelling</value>
+  </data>
+  <data name="MessagePublishProfileNamesErrored" xml:space="preserve">
+    <value>Profiel instelling: {publishProfileNames} bevat bestand locatie fouten</value>
+  </data>
+  <data name="MessageSelectionName" xml:space="preserve">
+    <value>Selectie</value>
+  </data>
+  <data name="MessageReadOnlyFolder" xml:space="preserve">
+    <value>Alleen lezen map</value>
+  </data>
+  <data name="MessageUpdateLabels" xml:space="preserve">
+    <value>Labels wijzigingen</value>
+  </data>
+  <data name="MessageColorClassification" xml:space="preserve">
+    <value>Kleur-Classificatie</value>
+  </data>
+  <data name="MessageDateTimeAgoEdited" xml:space="preserve">
+    <value>geleden bewerkt</value>
+  </data>
+  <data name="MessageDateLessThan1Minute" xml:space="preserve">
+    <value>minder dan één minuut</value>
+  </data>
+  <data name="MessageDateMinutes" xml:space="preserve">
+    <value>minuten</value>
+  </data>
+  <data name="MessageDateHour" xml:space="preserve">
+    <value>uur</value>
+  </data>
+  <data name="MessageCopiedLabels" xml:space="preserve">
+    <value>De labels zijn gekopieerd</value>
+  </data>
+  <data name="MessagePasteLabels" xml:space="preserve">
+    <value>De labels zijn overschreven</value>
+  </data>
+  <data name="MessageCreationDate" xml:space="preserve">
+    <value>Aanmaakdatum</value>
+  </data>
+  <data name="MessageCreationDateIsAtUnknownTime" xml:space="preserve">
+    <value>is op een onbekend moment</value>
+  </data>
+  <data name="MessageNounNameless" xml:space="preserve">
+    <value>Naamloze</value>
+  </data>
+  <data name="MessageNounNone" xml:space="preserve">
+    <value>Geen enkele</value>
+  </data>
+  <data name="MessageLocation" xml:space="preserve">
+    <value>locatie</value>
+  </data>
+  <data name="MessageCreateNewFolderFeature" xml:space="preserve">
+    <value>Nieuwe map aanmaken</value>
+  </data>
+  <data name="MessageNonValidDirectoryName" xml:space="preserve">
+    <value>Controleer de naam, deze map kan niet zo worden aangemaakt</value>
+  </data>
+  <data name="MessageGeneralMkdirCreateError" xml:space="preserve">
+    <value>Er is misgegaan met het aanmaken van deze map</value>
+  </data>
+  <data name="MessageDirectoryExistError" xml:space="preserve">
+    <value>De map bestaat al, probeer een andere naam</value>
+  </data>
+  <data name="MessageRenameCurrentFolder" xml:space="preserve">
+    <value>Huidige mapnaam wijzigen</value>
+  </data>
+  <data name="MessageRemoveCache" xml:space="preserve">
+    <value>Verwijder cache van huidige map</value>
+  </data>
+  <data name="MessageGeoSync" xml:space="preserve">
+    <value>Voeg geolocatie automatisch toe</value>
+  </data>
+  <data name="MessageGeoSyncExplainer" xml:space="preserve">
+    <value>De locatie wordt afgeleid van een gpx bestand die zich in de huidige map bevind en op basis van de locatie worden er plaatsnamen bij de afbeeldingen gevoegd</value>
+  </data>
+  <data name="MessageManualThumbnailSync" xml:space="preserve">
+    <value>Thumbnail afbeeldingen generen</value>
+  </data>
+  <data name="MessageManualThumbnailSyncExplainer" xml:space="preserve">
+    <value>Deze actie genereert op de achtergrond veel miniatuurafbeeldingen, dit heeft invloed op de prestaties</value>
+  </data>
+  <data name="MessageNonValidExtension" xml:space="preserve">
+    <value>Dit bestand kan zo niet worden weggeschreven</value>
+  </data>
+  <data name="MessageChangeToDifferentExtension" xml:space="preserve">
+    <value>Let op! Je veranderd de extensie van het bestand, deze kan hierdoor onleesbaar worden</value>
+  </data>
+  <data name="MessageRenameServerError" xml:space="preserve">
+    <value>Er is iets misgegaan met de aanvraag, probeer het later opnieuw</value>
+  </data>
+  <data name="MessageDisplayOptions" xml:space="preserve">
+    <value>Weergave opties</value>
+  </data>
+  <data name="MessageDisplayOptionsSwitchButtonCollectionsOff" xml:space="preserve">
+    <value>Toon raw bestanden</value>
+  </data>
+  <data name="MessageDisplayOptionsSwitchButtonCollectionsOn" xml:space="preserve">
+    <value>Verberg raw bestanden</value>
+  </data>
+  <data name="MessageDisplayOptionsSwitchButtonIsSingleItemOff" xml:space="preserve">
+    <value>Alles inladen</value>
+  </data>
+  <data name="MessageDisplayOptionsSwitchButtonIsSingleItemOn" xml:space="preserve">
+    <value>Klein inladen</value>
+  </data>
+  <data name="MessageDisplayOptionsSwitchButtonIsSocketOn" xml:space="preserve">
+    <value>Realtime updates</value>
+  </data>
+  <data name="MessageDisplayOptionsSwitchButtonIsSocketOff" xml:space="preserve">
+    <value>Ververs zelf</value>
+  </data>
+  <data name="MessageDownloadSelection" xml:space="preserve">
+    <value>Download selectie</value>
+  </data>
+  <data name="MessageOriginalFile" xml:space="preserve">
+    <value>Origineel bestand</value>
+  </data>
+  <data name="MessageThumbnailFile" xml:space="preserve">
+    <value>Thumbnail</value>
+  </data>
+  <data name="MessageModalDatetime" xml:space="preserve">
+    <value>Datum en tijd bewerken</value>
+  </data>
+  <data name="MessageYear" xml:space="preserve">
+    <value>Jaar</value>
+  </data>
+  <data name="MessageMonth" xml:space="preserve">
+    <value>Maand</value>
+  </data>
+  <data name="MessageDate" xml:space="preserve">
+    <value>Dag</value>
+  </data>
+  <data name="MessageTime" xml:space="preserve">
+    <value>Tijd</value>
+  </data>
+  <data name="MessageErrorDatetime" xml:space="preserve">
+    <value>De datum en tijd zijn incorrect ingegeven</value>
+  </data>
+  <data name="MessageDeleteIntroText" xml:space="preserve">
+    <value>Weet je zeker dat je dit bestand wilt verwijderen van alle devices?</value>
+  </data>
+  <data name="MessageConnectionRealtimeError" xml:space="preserve">
+    <value>De verbinding is niet helemaal oké. We proberen het te herstellen</value>
+  </data>
+  <data name="MessageApplicationFailed" xml:space="preserve">
+    <value>De verbinding is niet helemaal oké. Probeer te herladen</value>
+  </data>
+  <data name="MessageNumberOfResults" xml:space="preserve">
+    <value>resultaten</value>
+  </data>
+  <data name="MessageNoResult" xml:space="preserve">
+    <value>Geen resultaat</value>
+  </data>
+  <data name="MessageTryOtherQuery" xml:space="preserve">
+    <value>Probeer een andere zoekopdracht</value>
+  </data>
+  <data name="MessagePageNumberToken" xml:space="preserve">
+    <value>Pagina {pageNumber} van </value>
+  </data>
+  <data name="MessageEmptyTrash" xml:space="preserve">
+    <value>Er staat niets in de prullenmand</value>
+  </data>
+  <data name="MessageNotFound" xml:space="preserve">
+    <value>Oeps niet gevonden</value>
+  </data>
+  <data name="MessageGoToHome" xml:space="preserve">
+    <value>Ga naar de homepagina</value>
+  </data>
+  <data name="MessageReadMoreHere" xml:space="preserve">
+    <value>Lees meer hier</value>
+  </data>
+  <data name="temp1" xml:space="preserve">
+    <value>.</value>
+  </data>
+</root>
