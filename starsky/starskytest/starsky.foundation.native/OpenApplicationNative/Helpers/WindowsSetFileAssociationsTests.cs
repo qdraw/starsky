@@ -6,6 +6,7 @@ using starsky.foundation.native.OpenApplicationNative.Helpers;
 using starsky.foundation.platform.Models;
 using starskytest.FakeCreateAn.CreateFakeStarskyExe;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace starskytest.starsky.foundation.native.OpenApplicationNative.Helpers;
 
@@ -53,7 +54,7 @@ public partial class WindowsSetFileAssociationsTests
 	}
 
 	[TestMethod]
-	public void WindowsSetFileAssociations_EnsureAssociationsSet()
+	public async Task WindowsSetFileAssociations_EnsureAssociationsSet()
 	{
 		if ( !new AppSettings().IsWindows )
 		{
@@ -72,7 +73,13 @@ public partial class WindowsSetFileAssociationsTests
 			});
 
 		var valueKey = GetRegistryValue();
-		valueKey ??= GetRegistryValue();
+
+		if ( valueKey == null )
+		{
+			Console.WriteLine("Registry key not found, waiting for registry to update");
+			await Task.Delay(1000); // Wait for the registry to update
+			valueKey = GetRegistryValue();
+		}
 
 		Assert.IsNotNull(valueKey);
 		var match = GetFilePathFromRegistryRegex().Match(valueKey);
