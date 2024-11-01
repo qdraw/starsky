@@ -46,6 +46,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Fixed) _Front-end_ OkAndSame status in Upload Modal gives the wrong status (PR #1783)
 - [x] (Changed) _Back-end_ Behavior of generating thumbnails on the background (PR #1780)
 - [x] (Added) _Back-end_ Add cleanup of non-linked thumbnails on startup (PR #1780)
+- [x] (Security) _Back-end_ Move stacktrace out of endpoint into logging (PR #1787)
+- [x] (Added) _Back-end_ Save last cleanup DateTime to avoid many runs (PR #1789)
 
 ## version 0.6.2 - 2024-10-11 {#v0.6.2}
 
