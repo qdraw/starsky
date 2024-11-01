@@ -23,7 +23,7 @@
     "update:yes": "npm run update:install"
   },
   "devDependencies": {
-    "@eslint/js": "^9.11.1",
+    "@eslint/js": "^9.12.0",
     "@types/node": "^22.7.4",
     "cypress": "^13.15.0",
     "eslint": "^9.11.1",
