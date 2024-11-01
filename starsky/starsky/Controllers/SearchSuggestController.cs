@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,9 +30,10 @@ public sealed class SearchSuggestController : Controller
 	// ^ ^ ^ ^ = = = = = = = = = = = = = = = = = =
 	public async Task<IActionResult> Suggest(string t)
 	{
-		if ( string.IsNullOrEmpty(t) )
+		if ( string.IsNullOrWhiteSpace(t) )
 		{
 			CacheControlOverwrite.SetExpiresResponseHeaders(Request); // 4 weeks
+			return Json(new List<string>());
 		}
 
 		if ( !ModelState.IsValid )

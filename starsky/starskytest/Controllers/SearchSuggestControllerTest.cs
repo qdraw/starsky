@@ -70,13 +70,20 @@ public sealed class SearchSuggestControllerTest
 	}
 
 	[TestMethod]
-	public async Task Suggestion_Nothing()
+	[DataRow(null)]
+	[DataRow("")]
+	[DataRow(" ")]
+	public async Task Suggestion_Nothing(string t)
 	{
 		var controller = new SearchSuggestController(_searchSuggest)
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
 		};
-		var result = await controller.Suggest(string.Empty) as JsonResult;
+		
+		// this will hit ModelState.IsValid
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+		
+		var result = await controller.Suggest(t) as JsonResult;
 		var list = result!.Value as List<string>;
 
 		Assert.IsFalse(list!.Count != 0);
