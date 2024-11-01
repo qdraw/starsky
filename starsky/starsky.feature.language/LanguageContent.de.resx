@@ -1,0 +1,679 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="MessageMoveFolderIntoTrashIntroText" xml:space="preserve">
+    <value>Möchten Sie diesen Ordner wirklich in den Papierkorb verschieben?</value>
+  </data>
+  <data name="MessageCancel" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="MessageTrash" xml:space="preserve">
+    <value>Papierkorb</value>
+  </data>
+  <data name="MessageMoveToTrash" xml:space="preserve">
+    <value>In den Papierkorb verschieben</value>
+  </data>
+  <data name="MessageMoveCurrentFolderToTrash" xml:space="preserve">
+    <value>Aktuellen Ordner in den Papierkorb verschieben</value>
+  </data>
+  <data name="MessageMove" xml:space="preserve">
+    <value>Verschieb</value>
+  </data>
+  <data name="MessageTo" xml:space="preserve">
+    <value>in</value>
+  </data>
+  <data name="MessageRestoreFromTrash" xml:space="preserve">
+    <value>Aus dem Papierkorb wiederherstellen</value>
+  </data>
+  <data name="MessageSynchronizeManually" xml:space="preserve">
+    <value>Manuell synchronisieren</value>
+  </data>
+  <data name="MessageDownload" xml:space="preserve">
+    <value>Herunterladen</value>
+  </data>
+  <data name="MessagePublish" xml:space="preserve">
+    <value>Veröffentlichen</value>
+  </data>
+  <data name="MessageReadOnlyFile" xml:space="preserve">
+    <value>Schreibgeschützte Datei</value>
+  </data>
+  <data name="MessageNotFoundSourceMissing" xml:space="preserve">
+    <value>Nicht gefunden. Quelle fehlt.</value>
+  </data>
+  <data name="MessageServerInputError" xml:space="preserve">
+    <value>Etwas stimmt nicht mit der Eingabe</value>
+  </data>
+  <data name="MessageIsInTheTrash" xml:space="preserve">
+    <value>Befindet sich im Papierkorb</value>
+  </data>
+  <data name="MessageDeletedRestoreInstruction" xml:space="preserve">
+    <value>'Aus dem Papierkorb wiederherstellen', um das Element zu bearbeiten</value>
+  </data>
+  <data name="MessageHome" xml:space="preserve">
+    <value>Startseite</value>
+  </data>
+  <data name="MessagePhotosOfThisWeek" xml:space="preserve">
+    <value>Fotos dieser Woche</value>
+  </data>
+  <data name="MessageImport" xml:space="preserve">
+    <value>Import</value>
+  </data>
+  <data name="MessagePreferences" xml:space="preserve">
+    <value>Einstellungen</value>
+  </data>
+  <data name="MessageLogout" xml:space="preserve">
+    <value>Ausloggen</value>
+  </data>
+  <data name="MessageSaved" xml:space="preserve">
+    <value>Gespeichert</value>
+  </data>
+  <data name="MessageImportHeader" xml:space="preserve">
+    <value>Import</value>
+  </data>
+  <data name="MessageCloseDetailScreenDialog" xml:space="preserve">
+    <value>Detailbildschirm schließen</value>
+  </data>
+  <data name="MessageCloseDialogBackToFolder" xml:space="preserve">
+    <value>Elternordner</value>
+  </data>
+  <data name="MessageIncludingColonWord" xml:space="preserve">
+    <value>Inklusive: </value>
+  </data>
+  <data name="MessageAddLocation" xml:space="preserve">
+    <value>Ort hinzufügen</value>
+  </data>
+  <data name="MessageUpdateLocation" xml:space="preserve">
+    <value>Ort aktualisieren</value>
+  </data>
+  <data name="MessageViewLocation" xml:space="preserve">
+    <value>Ort anzeigen</value>
+  </data>
+  <data name="MessageErrorGenericFail" xml:space="preserve">
+    <value>Bei der Aktualisierung ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut</value>
+  </data>
+  <data name="MessageNoPhotosInFolder" xml:space="preserve">
+    <value>In diesem Ordner befinden sich keine Fotos</value>
+  </data>
+  <data name="MessageNewUserNoPhotosInFolder" xml:space="preserve">
+    <value>Neu? Legen Sie Ihren Laufwerksspeicherort in den Einstellungen fest.</value>
+  </data>
+  <data name="MessageItemsOutsideFilter" xml:space="preserve">
+    <value>Es gibt mehr Elemente, aber diese befinden sich außerhalb Ihrer Filter. Um alles zu sehen, klicken Sie auf 'Filter zurücksetzen'</value>
+  </data>
+  <data name="MessageSelectPresentPerfect" xml:space="preserve">
+    <value>ausgewählt</value>
+  </data>
+  <data name="MessageSelectAction" xml:space="preserve">
+    <value>Auswählen</value>
+  </data>
+  <data name="MessageNoneSelected" xml:space="preserve">
+    <value>Nichts ausgewählt</value>
+  </data>
+  <data name="MessageUndoSelection" xml:space="preserve">
+    <value>Auswahl rückgängig machen</value>
+  </data>
+  <data name="MessageSelectAll" xml:space="preserve">
+    <value>Alles auswählen</value>
+  </data>
+  <data name="MessageAllName" xml:space="preserve">
+    <value>Alles</value>
+  </data>
+  <data name="MessageSelectFurther" xml:space="preserve">
+    <value>Weiter auswählen</value>
+  </data>
+  <data name="MessageGoToParentFolder" xml:space="preserve">
+    <value>Zum übergeordneten Ordner gehen</value>
+  </data>
+  <data name="MessageMkdir" xml:space="preserve">
+    <value>Ordner erstellen</value>
+  </data>
+  <data name="MessageRenameDir" xml:space="preserve">
+    <value>Umbenennen</value>
+  </data>
+  <data name="MessageLabels" xml:space="preserve">
+    <value>Etiketten</value>
+  </data>
+  <data name="MessageRenameFileName" xml:space="preserve">
+    <value>Dateinamen umbenennen</value>
+  </data>
+  <data name="MessageRotateToRight" xml:space="preserve">
+    <value>Drehung nach rechts</value>
+  </data>
+  <data name="MessageDeleteImmediately" xml:space="preserve">
+    <value>Unmittelbar löschen</value>
+  </data>
+  <data name="MessageVideoPlayBackError" xml:space="preserve">
+    <value>Beim Abspielen dieses Videos ist etwas schiefgelaufen. Versuchen Sie 'Weitere' und 'Download'.</value>
+  </data>
+  <data name="MessageVideoNotFound" xml:space="preserve">
+    <value>Dieses Video wurde nicht gefunden</value>
+  </data>
+  <data name="MessageColorClassIsUpdated" xml:space="preserve">
+    <value>Farbklasse wurde aktualisiert</value>
+  </data>
+  <data name="ColorClassColour0" xml:space="preserve">
+    <value>Farblos</value>
+  </data>
+  <data name="ColorClassColour1" xml:space="preserve">
+    <value>Rosa</value>
+  </data>
+  <data name="ColorClassColour2" xml:space="preserve">
+    <value>Rot</value>
+  </data>
+  <data name="ColorClassColour3" xml:space="preserve">
+    <value>Orange</value>
+  </data>
+  <data name="ColorClassColour4" xml:space="preserve">
+    <value>Gelb</value>
+  </data>
+  <data name="ColorClassColour5" xml:space="preserve">
+    <value>Grün</value>
+  </data>
+  <data name="ColorClassColour6" xml:space="preserve">
+    <value>Azurblau</value>
+  </data>
+  <data name="ColorClassColour7" xml:space="preserve">
+    <value>Blau</value>
+  </data>
+  <data name="ColorClassColour8" xml:space="preserve">
+    <value>Grau</value>
+  </data>
+  <data name="ColorClassColourResetFilter" xml:space="preserve">
+    <value>Filter zurücksetzen</value>
+  </data>
+  <data name="MessageCloseDialog" xml:space="preserve">
+    <value>Schließen</value>
+  </data>
+  <data name="MessageDesktopEditorOpenSingleFile" xml:space="preserve">
+    <value>Datei öffnen</value>
+  </data>
+  <data name="MessageDesktopEditorOpenMultipleFiles" xml:space="preserve">
+    <value>Dateien öffnen</value>
+  </data>
+  <data name="MessageDesktopEditorUnableToOpen" xml:space="preserve">
+    <value>Entschuldigung, beim Öffnen der Datei ist ein Fehler aufgetreten</value>
+  </data>
+  <data name="MessageDesktopEditorConfirmationHeading" xml:space="preserve">
+    <value>Möchten Sie wirklich alle ausgewählten Fotos bearbeiten?</value>
+  </data>
+  <data name="MessageDesktopEditorConfirmationIntroText" xml:space="preserve">
+    <value>Dieser Hinweis soll potenzielle Probleme wie das Einfrieren Ihres Computers verhindern</value>
+  </data>
+  <data name="MessageItemSelectionRequired" xml:space="preserve">
+    <value>Bitte wählen Sie mindestens einen Artikel aus, bevor Sie fortfahren.</value>
+  </data>
+  <data name="MessageAppSettingsEntireAppScope" xml:space="preserve">
+    <value>Die AppSettings dürfen nur von Administratoren geändert werden. Diese Einstellungen gelten für die gesamte Anwendung.</value>
+  </data>
+  <data name="MessageChangeNeedReSync" xml:space="preserve">
+    <value>Sie haben diese Einstellung geändert, jetzt müssen Sie eine vollständige Synchronisierung durchführen. Gehen Sie zum Stammverzeichnis, zum Menü 'Weitere Optionen' und klicken Sie auf manuelle Synchronisierung.</value>
+  </data>
+  <data name="MessageAppSettingsStorageFolder" xml:space="preserve">
+    <value>Speicherordner</value>
+  </data>
+  <data name="MessageAppSettingStorageFolderSaveFail" xml:space="preserve">
+    <value>Entschuldigung, Speichern nicht möglich, Verzeichnis konnte nicht gefunden werden</value>
+  </data>
+  <data name="MessageAppSettingStorageFolderEnvUsedFail" xml:space="preserve">
+    <value>Bitte aktualisieren Sie die Umgebungsvariable 'app__storageFolder', um den Speicherort zu ändern</value>
+  </data>
+  <data name="MessageSwitchButtonDesktopCollectionsRawOn" xml:space="preserve">
+    <value>Raw zuerst</value>
+  </data>
+  <data name="MessageSwitchButtonDesktopCollectionsJpegDefaultOff" xml:space="preserve">
+    <value>Jpeg zuerst</value>
+  </data>
+  <data name="MessageSwitchButtonDesktopApplication" xml:space="preserve">
+    <value>App-Einstellungen: Desktop-Anwendung</value>
+  </data>
+  <data name="MessageSwitchButtonDesktopApplicationDescription" xml:space="preserve">
+    <value>Diese Einstellungen sind nur verfügbar, wenn sie als Desktop-Anwendung verwendet werden</value>
+  </data>
+  <data name="MessageAppSettingDefaultEditorPhotos" xml:space="preserve">
+    <value>Standardanwendung zum Bearbeiten von Fotos:</value>
+  </data>
+  <data name="MessageAppSettingDefaultEditorPhotosDescription" xml:space="preserve">
+    <value>Leer lassen, um die Standard-Systemanwendung zu verwenden</value>
+  </data>
+  <data name="MessageSwitchButtonDesktopCollectionsUpdateError" xml:space="preserve">
+    <value>Beim Aktualisieren der Sammlungseinstellungen ist ein Fehler aufgetreten</value>
+  </data>
+  <data name="MessageSwitchButtonDesktopCollectionsUpdateSuccess" xml:space="preserve">
+    <value>Die Sammlungseinstellung wurde aktualisiert</value>
+  </data>
+  <data name="MessageSwitchButtonDesktopCollectionsRawJpegUpdateError" xml:space="preserve">
+    <value>Beim Aktualisieren der Raw / Jpeg-Einstellungen ist ein Fehler aufgetreten</value>
+  </data>
+  <data name="MessageSwitchButtonDesktopCollectionsRawJpegUpdateSuccess" xml:space="preserve">
+    <value>Die Raw / Jpeg-Einstellung wurde aktualisiert</value>
+  </data>
+  <data name="MessageUnknownUsername" xml:space="preserve">
+    <value>Unbekannter Benutzername</value>
+  </data>
+  <data name="MessageDesktopMailLocalhostUsername" xml:space="preserve">
+    <value>Desktop Benutzer</value>
+  </data>
+  <data name="MessageUsername" xml:space="preserve">
+    <value>Benutzername</value>
+  </data>
+  <data name="MessageRole" xml:space="preserve">
+    <value>Rolle</value>
+  </data>
+  <data name="MessageExamplePassword" xml:space="preserve">
+    <value>supersicher</value>
+  </data>
+  <data name="MessageCurrentPassword" xml:space="preserve">
+    <value>Geben Sie Ihr aktuelles Passwort ein</value>
+  </data>
+  <data name="MessageChangedPassword" xml:space="preserve">
+    <value>Geben Sie Ihr neues Passwort ein</value>
+  </data>
+  <data name="MessageChangedConfirmPassword" xml:space="preserve">
+    <value>Und Ihr neues Passwort erneut</value>
+  </data>
+  <data name="MessageNoPassword" xml:space="preserve">
+    <value>Geben Sie das aktuelle und das neue Passwort ein</value>
+  </data>
+  <data name="MessagePassword" xml:space="preserve">
+    <value>Geben Sie Ihr Passwort ein</value>
+  </data>
+  <data name="MessagePasswordChanged" xml:space="preserve">
+    <value>Ihr Passwort wurde erfolgreich geändert</value>
+  </data>
+  <data name="MessagePasswordNoMatch" xml:space="preserve">
+    <value>Die Passwörter stimmen nicht überein</value>
+  </data>
+  <data name="MessagePasswordModalError" xml:space="preserve">
+    <value>Das neue Passwort entspricht nicht den Kriterien</value>
+  </data>
+  <data name="MessageCreateNewAccount" xml:space="preserve">
+    <value>Neues Konto erstellen</value>
+  </data>
+  <data name="MessageExampleUsername" xml:space="preserve">
+    <value>dont@mail.me</value>
+  </data>
+  <data name="MessageConfirmPassword" xml:space="preserve">
+    <value>Geben Sie Ihr Passwort erneut ein</value>
+  </data>
+  <data name="MessageNoUsernamePassword" xml:space="preserve">
+    <value>Geben Sie eine E-Mail-Adresse und ein Passwort ein</value>
+  </data>
+  <data name="MessageWrongFormatEmailAddress" xml:space="preserve">
+    <value>Überprüfen Sie Ihre E-Mail-Adresse</value>
+  </data>
+  <data name="MessagePasswordToShort" xml:space="preserve">
+    <value>Verwenden Sie mindestens 8 Zeichen für Ihr Passwort</value>
+  </data>
+  <data name="MessageRejectedBadRequest" xml:space="preserve">
+    <value>Dieses Anfrage wurde abgelehnt, weil die Sicherheitsanforderungen nicht erfüllt wurden  (Fehler 400)</value>
+  </data>
+  <data name="MessageRegistrationTurnedOff" xml:space="preserve">
+    <value>Die Registrierung ist deaktiviert</value>
+  </data>
+  <data name="MessageSignInInstead" xml:space="preserve">
+    <value>Stattdessen anmelden</value>
+  </data>
+  <data name="MessageLegalCreateAccountHtml" xml:space="preserve">
+    <value>Durch das Erstellen eines Kontos stimmen Sie den &lt;a href="/legal/toc.en.html" data-test="toc"&gt;Allgemeinen Geschäftsbedingungen&lt;/a&gt; von Starsky zu. Bitte beachten Sie unsere &lt;a href="/legal/privacy-policy.en.html" data-test="privacy"&gt;Datenschutzerklärung&lt;/a&gt; und unsere &lt;a href="/legal/privacy-policy.en.html#cookie"&gt;Cookie-Richtlinie&lt;/a&gt;.</value>
+  </data>
+  <data name="MessageFieldMaxLength" xml:space="preserve">
+    <value>Das Feld unten kann maximal {maxlength} Zeichen enthalten</value>
+  </data>
+  <data name="MessageWrongUsernamePassword" xml:space="preserve">
+    <value>Ihr Benutzername oder Ihr Passwort ist falsch. Bitte versuchen Sie es erneut.</value>
+  </data>
+  <data name="MessageLockedOut" xml:space="preserve">
+    <value>Sie haben zu oft versucht, sich anzumelden. Bitte versuchen Sie es in einer Stunde erneut.</value>
+  </data>
+  <data name="MessageConnection" xml:space="preserve">
+    <value>Es ist keine Verbindung möglich, bitte versuchen Sie es später erneut.</value>
+  </data>
+  <data name="MessageDatabaseConnection" xml:space="preserve">
+    <value>Es gibt Probleme mit der Verbindung zur Datenbank. Überprüfen und bearbeiten Sie die App-Einstellungen.</value>
+  </data>
+  <data name="LogoutWarning" xml:space="preserve">
+    <value>Möchten Sie sich abmelden?</value>
+  </data>
+  <data name="MessageStayLoggedIn" xml:space="preserve">
+    <value>Angemeldet bleiben</value>
+  </data>
+  <data name="MessageLogin" xml:space="preserve">
+    <value>Anmelden</value>
+  </data>
+  <data name="MessageCreateAccount" xml:space="preserve">
+    <value>Konto erstellen</value>
+  </data>
+  <data name="MessageMore" xml:space="preserve">
+    <value>Mehr</value>
+  </data>
+  <data name="MessagePrevious" xml:space="preserve">
+    <value>Vorherige</value>
+  </data>
+  <data name="MessageNext" xml:space="preserve">
+    <value>Nächste</value>
+  </data>
+  <data name="MessageAddName" xml:space="preserve">
+    <value>Hinzufügen zu</value>
+  </data>
+  <data name="MessageTagsWithColon" xml:space="preserve">
+    <value>Schlagwörter: </value>
+  </data>
+  <data name="MessageInfoWithColon" xml:space="preserve">
+    <value>Info: </value>
+  </data>
+  <data name="MessageTagsDescription" xml:space="preserve">
+    <value>Schlagwörter sind durch Kommas getrennt</value>
+  </data>
+  <data name="MessageTitleWithColon" xml:space="preserve">
+    <value>Titel: </value>
+  </data>
+  <data name="MessageOverwriteName" xml:space="preserve">
+    <value>Überschreiben</value>
+  </data>
+  <data name="MessageTitleName" xml:space="preserve">
+    <value>Titel</value>
+  </data>
+  <data name="MessageInfoName" xml:space="preserve">
+    <value>Info</value>
+  </data>
+  <data name="MessageWriteErrorReadOnly" xml:space="preserve">
+    <value>Eine oder mehrere Dateien sind schreibgeschützt. Es wurden nur die Dateien mit Schreibrechten aktualisiert.</value>
+  </data>
+  <data name="MessageErrorNotFoundSourceMissingRunSync" xml:space="preserve">
+    <value>Eine oder mehrere Dateien sind bereits verschwunden. Es werden nur die vorhandenen Dateien aktualisiert. Führen Sie eine manuelle Synchronisierung durch</value>
+  </data>
+  <data name="MessageSearchAndReplaceNameLong" xml:space="preserve">
+    <value>Suchen und ersetzen</value>
+  </data>
+  <data name="MessageSearchAndReplaceNameShort" xml:space="preserve">
+    <value>Ersetzen</value>
+  </data>
+  <data name="MessageModifyName" xml:space="preserve">
+    <value>Ändern</value>
+  </data>
+  <data name="MessageForceSyncCurrentFolder" xml:space="preserve">
+    <value>Aktuelles Verzeichnis manuell synchronisieren</value>
+  </data>
+  <data name="MessageWhereToFindReleaseReleasesUrlTokenHtml" xml:space="preserve">
+    <value>&lt;a target='_blank' href='https://docs.qdraw.nl/download/' rel='noopener'&gt; {releasesToken}&lt;/a&gt;</value>
+  </data>
+  <data name="MessageWhereToFindReleaseReleasesUrlTokenContent" xml:space="preserve">
+    <value>Gehen Sie zur Release-Übersicht</value>
+  </data>
+  <data name="WhereToFindReleaseElectronApp" xml:space="preserve">
+    <value>Gehen Sie zum Hilfemenü und dann zur Release-Übersicht</value>
+  </data>
+  <data name="MessageNewVersionUpdateToken" xml:space="preserve">
+    <value>Eine neue Version ist verfügbar {WhereToFindRelease} {otherInfo}</value>
+  </data>
+  <data name="MessageHealthStatusCriticalErrorsWithTheFollowingComponents" xml:space="preserve">
+    <value>In den folgenden Komponenten liegen kritische Fehler vor:</value>
+  </data>
+  <data name="MessageNoPhotos" xml:space="preserve">
+    <value>Es gibt keine Bilder</value>
+  </data>
+  <data name="MessageFilesAdded" xml:space="preserve">
+    <value>Diese Dateien wurden hinzugefügt</value>
+  </data>
+  <data name="MessageApplicationException" xml:space="preserve">
+    <value>Wir haben derzeit eine Störung bei der Anwendung</value>
+  </data>
+  <data name="MessageRefreshPageTryAgain" xml:space="preserve">
+    <value>Laden Sie die Anwendung herunter, um die Option zu testen</value>
+  </data>
+  <data name="MessagePublishSelection" xml:space="preserve">
+    <value>Auswahl veröffentlichen</value>
+  </data>
+  <data name="MessageGenericExportFail" xml:space="preserve">
+    <value>Beim Exportieren ist ein Fehler aufgetreten</value>
+  </data>
+  <data name="MessageRetryExportFail" xml:space="preserve">
+    <value>Dies erneut versuchen</value>
+  </data>
+  <data name="MessageExportReady" xml:space="preserve">
+    <value>Die Datei {createZipKey} wurde erfolgreich exportiert.</value>
+  </data>
+  <data name="MessageDownloadAsZipArchive" xml:space="preserve">
+    <value>Als ZIP-Archiv herunterladen</value>
+  </data>
+  <data name="MessageOneMomentPlease" xml:space="preserve">
+    <value>Einen Moment bitte</value>
+  </data>
+  <data name="MessageItemName" xml:space="preserve">
+    <value>Worum geht es bei dem Element?</value>
+  </data>
+  <data name="MessageItemNameInUse" xml:space="preserve">
+    <value>Dieser Name wird bereits verwendet. Bitte wählen Sie einen anderen Namen</value>
+  </data>
+  <data name="MessagePublishProfileName" xml:space="preserve">
+    <value>Profil-Einstellung</value>
+  </data>
+  <data name="MessagePublishProfileNamesErrored" xml:space="preserve">
+    <value>Profil-Einstellung: {publishProfileNames} enthält Dateipfadfehler</value>
+  </data>
+  <data name="MessageSelectionName" xml:space="preserve">
+    <value>Auswahl</value>
+  </data>
+  <data name="MessageReadOnlyFolder" xml:space="preserve">
+    <value>Nur-Lese-Ordner</value>
+  </data>
+  <data name="MessageUpdateLabels" xml:space="preserve">
+    <value>Etiketten aktualisieren</value>
+  </data>
+  <data name="MessageColorClassification" xml:space="preserve">
+    <value>Farbklassifizierung</value>
+  </data>
+  <data name="MessageDateTimeAgoEdited" xml:space="preserve">
+    <value>vorher bearbeitet</value>
+  </data>
+  <data name="MessageDateLessThan1Minute" xml:space="preserve">
+    <value>weniger als eine Minute</value>
+  </data>
+  <data name="MessageDateMinutes" xml:space="preserve">
+    <value>Minuten</value>
+  </data>
+  <data name="MessageDateHour" xml:space="preserve">
+    <value>Stunde</value>
+  </data>
+  <data name="MessageCopiedLabels" xml:space="preserve">
+    <value>Die Labels wurden kopiert</value>
+  </data>
+  <data name="MessagePasteLabels" xml:space="preserve">
+    <value>Die Labels wurden überschrieben</value>
+  </data>
+  <data name="MessageCreationDate" xml:space="preserve">
+    <value>Erstellungsdatum</value>
+  </data>
+  <data name="MessageCreationDateIsAtUnknownTime" xml:space="preserve">
+    <value>ist zu einem unbekannten Zeitpunkt</value>
+  </data>
+  <data name="MessageNounNameless" xml:space="preserve">
+    <value>Unbenannt</value>
+  </data>
+  <data name="MessageNounNone" xml:space="preserve">
+    <value>Nicht eine</value>
+  </data>
+  <data name="MessageLocation" xml:space="preserve">
+    <value>Lokalisierung</value>
+  </data>
+  <data name="MessageCreateNewFolderFeature" xml:space="preserve">
+    <value>Neuen Ordner erstellen</value>
+  </data>
+  <data name="MessageNonValidDirectoryName" xml:space="preserve">
+    <value>Überprüfen Sie den Namen, dieser Ordner kann nicht auf diese Weise erstellt werden</value>
+  </data>
+  <data name="MessageGeneralMkdirCreateError" xml:space="preserve">
+    <value>Beim Erstellen dieses Ordners ist ein Fehler aufgetreten</value>
+  </data>
+  <data name="MessageDirectoryExistError" xml:space="preserve">
+    <value>Der Ordner existiert bereits. Versuchen Sie einen anderen Namen</value>
+  </data>
+  <data name="MessageRenameCurrentFolder" xml:space="preserve">
+    <value>Aktuellen Ordner umbenennen</value>
+  </data>
+  <data name="MessageRemoveCache" xml:space="preserve">
+    <value>Aktualisieren Sie den Cache des aktuellen Verzeichnisses</value>
+  </data>
+  <data name="MessageGeoSync" xml:space="preserve">
+    <value>Geolocation automatisch hinzufügen</value>
+  </data>
+  <data name="MessageGeoSyncExplainer" xml:space="preserve">
+    <value>Der Ort wird aus einer in dem aktuellen Ordner befindlichen gpx-Datei abgeleitet und basierend auf dem Ort werden Ortsnamen den Bildern hinzugefügt</value>
+  </data>
+  <data name="MessageManualThumbnailSync" xml:space="preserve">
+    <value>Miniaturbilder generieren</value>
+  </data>
+  <data name="MessageManualThumbnailSyncExplainer" xml:space="preserve">
+    <value>Diese Aktion generiert im Hintergrund viele Miniaturbilder, was sich auf die Leistung auswirkt</value>
+  </data>
+  <data name="MessageNonValidExtension" xml:space="preserve">
+    <value>Diese Datei kann nicht gespeichert werden</value>
+  </data>
+  <data name="MessageChangeToDifferentExtension" xml:space="preserve">
+    <value>Achtung! Sie ändern die Dateierweiterung, was dazu führen kann, dass sie nicht lesbar wird</value>
+  </data>
+  <data name="MessageRenameServerError" xml:space="preserve">
+    <value>Bei der Anfrage ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut</value>
+  </data>
+  <data name="MessageDisplayOptions" xml:space="preserve">
+    <value>Anzeigeoptionen</value>
+  </data>
+  <data name="MessageDisplayOptionsSwitchButtonCollectionsOff" xml:space="preserve">
+    <value>Rohdateien anzeigen</value>
+  </data>
+  <data name="MessageDisplayOptionsSwitchButtonCollectionsOn" xml:space="preserve">
+    <value>Rohdateien ausblenden</value>
+  </data>
+  <data name="MessageDisplayOptionsSwitchButtonIsSingleItemOff" xml:space="preserve">
+    <value>Alles laden</value>
+  </data>
+  <data name="MessageDisplayOptionsSwitchButtonIsSingleItemOn" xml:space="preserve">
+    <value>Kleine Ladung</value>
+  </data>
+  <data name="MessageDisplayOptionsSwitchButtonIsSocketOn" xml:space="preserve">
+    <value>Echtzeitupdates</value>
+  </data>
+  <data name="MessageDisplayOptionsSwitchButtonIsSocketOff" xml:space="preserve">
+    <value>Selbst aktualisieren</value>
+  </data>
+  <data name="MessageDownloadSelection" xml:space="preserve">
+    <value>Auswahl herunterladen</value>
+  </data>
+  <data name="MessageOriginalFile" xml:space="preserve">
+    <value>Originaldatei</value>
+  </data>
+  <data name="MessageThumbnailFile" xml:space="preserve">
+    <value>Vorschaubild</value>
+  </data>
+  <data name="MessageModalDatetime" xml:space="preserve">
+    <value>Datum und Uhrzeit bearbeiten</value>
+  </data>
+  <data name="MessageYear" xml:space="preserve">
+    <value>Jahr</value>
+  </data>
+  <data name="MessageMonth" xml:space="preserve">
+    <value>Monat</value>
+  </data>
+  <data name="MessageDate" xml:space="preserve">
+    <value>Tag</value>
+  </data>
+  <data name="MessageTime" xml:space="preserve">
+    <value>Zeit</value>
+  </data>
+  <data name="MessageErrorDatetime" xml:space="preserve">
+    <value>Das Datum und die Uhrzeit wurden falsch eingegeben</value>
+  </data>
+  <data name="MessageDeleteIntroText" xml:space="preserve">
+    <value>Möchten Sie diese Datei wirklich von allen Geräten löschen?</value>
+  </data>
+  <data name="MessageConnectionRealtimeError" xml:space="preserve">
+    <value>Die Verbindung stimmt nicht ganz. Wir versuchen es zu beheben</value>
+  </data>
+  <data name="MessageApplicationFailed" xml:space="preserve">
+    <value>Die Verbindung stimmt nicht ganz. Wir versuchen es zu beheben</value>
+  </data>
+  <data name="MessageNumberOfResults" xml:space="preserve">
+    <value>Ergebnisse</value>
+  </data>
+  <data name="MessageNoResult" xml:space="preserve">
+    <value>Kein Ergebnis</value>
+  </data>
+  <data name="MessageTryOtherQuery" xml:space="preserve">
+    <value>Versuchen Sie eine andere Suchanfrage</value>
+  </data>
+  <data name="MessagePageNumberToken" xml:space="preserve">
+    <value>Seite {pageNumber} von </value>
+  </data>
+  <data name="MessageEmptyTrash" xml:space="preserve">
+    <value>Es befindet sich nichts im Papierkorb</value>
+  </data>
+  <data name="MessageNotFound" xml:space="preserve">
+    <value>Nicht gefunden</value>
+  </data>
+  <data name="MessageGoToHome" xml:space="preserve">
+    <value>Gehe zur Startseite</value>
+  </data>
+  <data name="MessageReadMoreHere" xml:space="preserve">
+    <value>Lesen Sie hier mehr</value>
+  </data>
+  <data name="temp1" xml:space="preserve">
+    <value>.</value>
+  </data>
+</root>

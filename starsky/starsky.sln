@@ -166,6 +166,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.settings", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.desktop", "starsky.feature.desktop\starsky.feature.desktop.csproj", "{B88C2815-D154-4C6D-AE37-2E150AEBF73D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.language", "starsky.feature.language\starsky.feature.language.csproj", "{B307BF6B-A101-4AFD-B166-DB26BC790787}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -368,6 +370,10 @@ Global
 		{B88C2815-D154-4C6D-AE37-2E150AEBF73D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B88C2815-D154-4C6D-AE37-2E150AEBF73D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B88C2815-D154-4C6D-AE37-2E150AEBF73D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B307BF6B-A101-4AFD-B166-DB26BC790787}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B307BF6B-A101-4AFD-B166-DB26BC790787}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B307BF6B-A101-4AFD-B166-DB26BC790787}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B307BF6B-A101-4AFD-B166-DB26BC790787}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -428,5 +434,6 @@ Global
 		{A62C129C-5D0C-4A0A-B5AA-261E041FF55D} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
 		{F2C4C9DE-22A1-4B34-AC1D-0F08353E0742} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
 		{B88C2815-D154-4C6D-AE37-2E150AEBF73D} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
+		{B307BF6B-A101-4AFD-B166-DB26BC790787} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
 	EndGlobalSection
 EndGlobal
