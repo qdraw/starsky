@@ -35,7 +35,7 @@ public sealed class PackageTelemetryBackgroundServiceTest
 		services.AddSingleton<IQuery, FakeIQuery>();
 		services.AddSingleton<IDeviceIdService, FakeIDeviceIdService>();
 
-		var serviceProvider = services.BuildServiceProvider();
+		var serviceProvider = 
 		_serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
 		var appSettings = serviceProvider.GetRequiredService<AppSettings>();

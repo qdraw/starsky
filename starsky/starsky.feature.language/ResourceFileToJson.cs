@@ -11,7 +11,9 @@ public class Class1
 		var properties =
 			typeof(LanguageContent).GetProperties(BindingFlags.Static | BindingFlags.NonPublic);
 		var cultures = GetAllCultures.CulturesOfResource<LanguageContent>()
-			.OrderBy(p => p.Name);
+			.Select(p => p.Name)
+			.Order(new CustomCultureComparer(["en", "nl", "de"])).ToList();
+
 		var translations = new Dictionary<string, Dictionary<string, string>>();
 
 		foreach ( var property in properties )
@@ -23,13 +25,11 @@ public class Class1
 
 			var propertyTranslations = new Dictionary<string, string>();
 
-			foreach ( var culture in cultures )
+			foreach ( var cultureName in cultures )
 			{
-				LanguageContent.Culture = new CultureInfo(culture.Name);
+				LanguageContent.Culture = new CultureInfo(cultureName);
 				var value = property.GetValue(null) as string;
-				propertyTranslations[culture.Name] = value;
-
-				// Console.WriteLine($"{property.Name} ({culture}): {value}");
+				propertyTranslations[cultureName] = value;
 			}
 
 			translations[property.Name] = propertyTranslations;
