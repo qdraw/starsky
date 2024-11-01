@@ -30,7 +30,7 @@ public sealed class SearchSuggestController : Controller
 	// ^ ^ ^ ^ = = = = = = = = = = = = = = = = = =
 	public async Task<IActionResult> Suggest(string t)
 	{
-		if ( string.IsNullOrEmpty(t) )
+		if ( string.IsNullOrWhiteSpace(t) )
 		{
 			CacheControlOverwrite.SetExpiresResponseHeaders(Request); // 4 weeks
 			return Json(new List<string>());
