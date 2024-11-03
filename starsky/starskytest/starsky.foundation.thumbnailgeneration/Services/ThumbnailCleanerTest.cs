@@ -190,4 +190,16 @@ public sealed class ThumbnailCleanerTest
 		var getter = await thumbnailQuery.Get("35874453877");
 		Assert.AreEqual(0, getter.Count);
 	}
+
+	[DataTestMethod]
+	[DataRow("filehash@size", "filehash")]
+	[DataRow("filehash", "filehash")]
+	[DataRow("", "")]
+	[DataRow("filehash@", "filehash")]
+	[DataRow("@filehash", "")]
+	public void GetFileHashWithoutSize_ReturnsExpectedResult(string input, string expected)
+	{
+		var result = ThumbnailCleaner.GetFileHashWithoutSize(input);
+		Assert.AreEqual(expected, result);
+	}
 }
