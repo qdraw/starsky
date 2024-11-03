@@ -108,8 +108,7 @@ public class ThumbnailQueryErrorTest
 			new FakeIWebLogger(), new FakeMemoryCache()
 		);
 
-		// Assert that a MySqlException is thrown when AddThumbnailRangeAsync is called
-		await Assert.ThrowsExceptionAsync<MySqlException>(async () =>
+		await Assert.ThrowsExceptionAsync<DbUpdateException>(async () =>
 			await fakeQuery.AddThumbnailRangeAsync([new ThumbnailResultDataTransferModel("t")]));
 	}
 
@@ -252,7 +251,7 @@ public class ThumbnailQueryErrorTest
 		public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
 		{
 			IsCalledMySqlSaveDbExceptionContext = true;
-			throw CreateMySqlException(_error, _key);
+			throw new DbUpdateException("dbUpdate", CreateMySqlException(_error, _key));
 		}
 
 		[SuppressMessage("Usage",
