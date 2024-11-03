@@ -14,21 +14,16 @@ using starsky.foundation.platform.Models;
 namespace starsky.feature.thumbnail.Services;
 
 /// <summary>
-/// @see: https://medium.com/medialesson/run-and-manage-periodic-background-tasks-in-asp-net-core-6-with-c-578a31f4b7a3
+///     @see:
+///     https://medium.com/medialesson/run-and-manage-periodic-background-tasks-in-asp-net-core-6-with-c-578a31f4b7a3
 /// </summary>
 [Service(typeof(IHostedService),
 	InjectionLifetime = InjectionLifetime.Singleton)]
 public class PeriodicThumbnailScanHostedService : BackgroundService
 {
-	private readonly IWebLogger _logger;
 	private readonly IServiceScopeFactory _factory;
+	private readonly IWebLogger _logger;
 	private int _executionCount;
-
-	internal TimeSpan Period { get; set; }
-
-	internal int MinimumIntervalInMinutes { get; set; } = 3;
-
-	internal bool IsEnabled { get; set; }
 
 	public PeriodicThumbnailScanHostedService(AppSettings appSettings,
 		IWebLogger logger,
@@ -47,6 +42,12 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 
 		Period = TimeSpan.FromMinutes(60);
 	}
+
+	internal TimeSpan Period { get; set; }
+
+	internal int MinimumIntervalInMinutes { get; set; } = 3;
+
+	internal bool IsEnabled { get; set; }
 
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
@@ -80,7 +81,8 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 		}
 		catch ( OperationCanceledException exception )
 		{
-			_logger.LogError("[StartBackgroundAsync] catch-ed OperationCanceledException",
+			_logger.LogError(
+				$"[StartBackgroundAsync] catch-ed OperationCanceledException {exception.Message}",
 				exception);
 		}
 

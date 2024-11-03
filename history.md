@@ -49,6 +49,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Security) _Back-end_ Move stacktrace out of endpoint into logging (PR #1787)
 - [x] (Added) _Back-end_ Save last cleanup DateTime to avoid many runs (PR #1789)
 - [x] (Fixed) _Back-end_ Suggest API gives 200 when no suggestions are found (PR #1797)
+- [x] (Fixed) _Back-end_ Timeout in Thumbnail cleaner fixed (PR #1798)
+- [x] (Fixed) _Back-end_ Add logging for thumbnail background scanning (PR #1798)
 
 ## version 0.6.2 - 2024-10-11 {#v0.6.2}
 

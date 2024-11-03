@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Storage;
 using starsky.foundation.database.Interfaces;
@@ -103,22 +101,23 @@ public sealed class ThumbnailCleaner : IThumbnailCleaner
 		}
 	}
 
-	private static HashSet<string> GetFileNamesWithExtension(List<string> allThumbnailFiles)
+	internal static HashSet<string> GetFileNamesWithExtension(List<string> allThumbnailFiles)
 	{
 		var results = new List<string>();
 		foreach ( var thumbnailFile in allThumbnailFiles )
 		{
 			var fileHash = Path.GetFileNameWithoutExtension(thumbnailFile);
-			var fileHashWithoutSize = Regex.Match(fileHash, "^.*(?=(@))",
-				RegexOptions.None, TimeSpan.FromMilliseconds(100)).Value;
-			if ( string.IsNullOrEmpty(fileHashWithoutSize) )
-			{
-				fileHashWithoutSize = fileHash;
-			}
-
+			var fileHashWithoutSize = GetFileHashWithoutSize(fileHash);
 			results.Add(fileHashWithoutSize);
 		}
 
 		return [..results];
+	}
+
+	internal static string GetFileHashWithoutSize(string fileHash)
+	{
+		var atIndex = fileHash.IndexOf('@');
+		var fileHashWithoutSize = atIndex >= 0 ? fileHash.Substring(0, atIndex) : fileHash;
+		return fileHashWithoutSize;
 	}
 }

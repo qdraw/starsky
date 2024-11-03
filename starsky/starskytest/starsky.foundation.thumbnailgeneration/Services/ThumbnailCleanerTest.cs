@@ -190,4 +190,36 @@ public sealed class ThumbnailCleanerTest
 		var getter = await thumbnailQuery.Get("35874453877");
 		Assert.AreEqual(0, getter.Count);
 	}
+
+	[DataTestMethod]
+	[DataRow("filehash@size.jpg", "anotherfile@size.png", "filehash", "anotherfile")]
+	[DataRow("filehash.jpg", "anotherfile.png", "filehash", "anotherfile")]
+	[DataRow("filehash@.jpg", "anotherfile@.png", "filehash", "anotherfile")]
+	[DataRow("filehash@size.jpg", "filehash@size.png", "filehash", null)]
+	public void GetFileNamesWithExtension_ReturnsExpectedResult(params string?[] parameters)
+	{
+		// Arrange
+		var input = parameters.Take(parameters.Length / 2).ToArray();
+		var expected = parameters.Skip(parameters.Length / 2)
+			.Where(p => p != null).ToArray();
+
+		// Act
+		var result = ThumbnailCleaner.GetFileNamesWithExtension(
+			new List<string>(input!)).ToList();
+
+		// Assert
+		CollectionAssert.AreEqual(expected, result);
+	}
+
+	[DataTestMethod]
+	[DataRow("filehash@size", "filehash")]
+	[DataRow("filehash", "filehash")]
+	[DataRow("", "")]
+	[DataRow("filehash@", "filehash")]
+	[DataRow("@filehash", "")]
+	public void GetFileHashWithoutSize_ReturnsExpectedResult(string input, string expected)
+	{
+		var result = ThumbnailCleaner.GetFileHashWithoutSize(input);
+		Assert.AreEqual(expected, result);
+	}
 }
