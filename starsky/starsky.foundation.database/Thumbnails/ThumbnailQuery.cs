@@ -283,7 +283,7 @@ public class ThumbnailQuery : IThumbnailQuery
 		catch ( Exception exception )
 		{
 			// Check if the inner exception is a MySqlException
-			var mySqlException = exception as MySqlException;
+			var mySqlException = exception.InnerException as MySqlException;
 			// Skip if Duplicate entry
 			// MySqlConnector.MySqlException (0x80004005): Duplicate entry for key 'PRIMARY'
 			// https://github.com/qdraw/starsky/issues/1248 https://github.com/qdraw/starsky/issues/1489
@@ -299,7 +299,8 @@ public class ThumbnailQuery : IThumbnailQuery
 			_logger.LogError($"[SaveChangesDuplicate] T:{exception.GetType()} " +
 			                 $"M:{exception.Message} " +
 			                 $"I: {exception.InnerException} " +
-			                 $"ErrorCode: {mySqlException?.ErrorCode}");
+			                 $"IM: {mySqlException?.Message} " +
+			                 $"IM ErrorCode: {mySqlException?.ErrorCode}");
 
 			throw;
 		}
