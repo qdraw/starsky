@@ -101,18 +101,13 @@ public sealed class ThumbnailCleaner : IThumbnailCleaner
 		}
 	}
 
-	private static HashSet<string> GetFileNamesWithExtension(List<string> allThumbnailFiles)
+	internal static HashSet<string> GetFileNamesWithExtension(List<string> allThumbnailFiles)
 	{
 		var results = new List<string>();
 		foreach ( var thumbnailFile in allThumbnailFiles )
 		{
 			var fileHash = Path.GetFileNameWithoutExtension(thumbnailFile);
 			var fileHashWithoutSize = GetFileHashWithoutSize(fileHash);
-			if ( string.IsNullOrEmpty(fileHashWithoutSize) )
-			{
-				fileHashWithoutSize = fileHash;
-			}
-
 			results.Add(fileHashWithoutSize);
 		}
 
