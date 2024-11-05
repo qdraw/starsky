@@ -72,7 +72,7 @@ const parseRelativeDate = (
 };
 /**
  * Get Date complete parsed for example: Monday, 4 May 2020
- * @param dateTime 2018-09-11T11:23:19 or 2018-09-11T11:23:19Z
+ * @param dateTime 2018-09-11T11:23:19, 2018-09-11T11:23:19Z or 2020-04-28T10:44:43.123456+01:00
  * @param locate Language
  */
 const parseDate = (dateTime: string | undefined, locate: SupportedLanguages): string => {
