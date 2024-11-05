@@ -1,4 +1,4 @@
-import { SupportedLanguages } from "./language";
+import {SupportedLanguages} from "./language";
 
 /**
  * Is the date Valid?
@@ -77,8 +77,11 @@ const parseRelativeDate = (
  */
 const parseDate = (dateTime: string | undefined, locate: SupportedLanguages): string => {
   if (!dateTime) return "";
+  const timeZoneRegex = /\+\d{2}:\d{2}/;
+  const isIncludeTimezone = timeZoneRegex.test(dateTime);
+
   // UTC DateTime already ends with Z
-  const dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
+  const dateTimeObject = new Date(!dateTime.endsWith("Z") && !isIncludeTimezone ? `${dateTime}Z` : dateTime);
   // We prefer British English, uses day-month-year order
   const locateString = locate === SupportedLanguages.en ? "en-GB" : locate.toString();
   if (dateTime.endsWith("Z")) {

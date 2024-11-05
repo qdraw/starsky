@@ -10,7 +10,7 @@ import {
   parseTimeHour,
   SecondsToHours
 } from "./date";
-import { SupportedLanguages } from "./language";
+import {SupportedLanguages} from "./language";
 
 describe("date", () => {
   describe("parseDate", () => {
@@ -24,6 +24,12 @@ describe("date", () => {
       //                   NOT Invalid!
       expect(result).not.toBe("Invalid Date");
     });
+
+    it("Timezone time", () => {
+      const result = parseDate("2020-04-28T10:44:43.123456+01:00", SupportedLanguages.nl);
+      expect(result).not.toBe("Invalid Date");
+    });
+
     it("wrong format", () => {
       const result = parseDate("2020-30", SupportedLanguages.nl);
       expect(result).toBe("Invalid Date");
@@ -219,11 +225,11 @@ describe("date", () => {
 
       let dayBeforeYesterday = `${dayBeforeYesterdayDate.getFullYear()}-
         ${leftPad(dayBeforeYesterdayDate.getMonth() + 1)}-${leftPad(
-          dayBeforeYesterdayDate.getDate()
-        )}T
+        dayBeforeYesterdayDate.getDate()
+      )}T
         ${leftPad(dayBeforeYesterdayDate.getHours())}:${leftPad(
-          dayBeforeYesterdayDate.getMinutes()
-        )}:
+        dayBeforeYesterdayDate.getMinutes()
+      )}:
         ${leftPad(dayBeforeYesterdayDate.getSeconds())}`;
 
       // remove space and newlines from prev variable
