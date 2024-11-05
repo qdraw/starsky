@@ -70,15 +70,24 @@ const parseRelativeDate = (
       return parseDate(inputDateTime, locate);
   }
 };
+
+const IsIncludeTimezone = (dateTime: string): boolean => {
+  const timeZoneRegex = /\+\d{2}:\d{2}/;
+  return timeZoneRegex.test(dateTime);
+};
+
 /**
  * Get Date complete parsed for example: Monday, 4 May 2020
- * @param dateTime 2018-09-11T11:23:19 or 2018-09-11T11:23:19Z
+ * @param dateTime 2018-09-11T11:23:19, 2018-09-11T11:23:19Z or 2020-04-28T10:44:43.123456+01:00
  * @param locate Language
  */
 const parseDate = (dateTime: string | undefined, locate: SupportedLanguages): string => {
   if (!dateTime) return "";
+
   // UTC DateTime already ends with Z
-  const dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
+  const dateTimeObject = new Date(
+    !dateTime.endsWith("Z") && !IsIncludeTimezone(dateTime) ? `${dateTime}Z` : dateTime
+  );
   // We prefer British English, uses day-month-year order
   const locateString = locate === SupportedLanguages.en ? "en-GB" : locate.toString();
   if (dateTime.endsWith("Z")) {
@@ -107,7 +116,9 @@ const parseDateDate = (dateTime: string | undefined): number => {
   if (!isValidDate(dateTime) || !dateTime) {
     return 1;
   }
-  const dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
+  const dateTimeObject = new Date(
+    !dateTime.endsWith("Z") && !IsIncludeTimezone(dateTime) ? `${dateTime}Z` : dateTime
+  );
   // toLocaleDateString assumes that the input is UTC, which is usually not the case
   const numberValue = dateTimeObject.toLocaleDateString([], {
     timeZone: !dateTime.endsWith("Z") ? "UTC" : undefined,
@@ -124,7 +135,9 @@ const parseDateYear = (dateTime: string | undefined): number => {
   if (!isValidDate(dateTime) || !dateTime) {
     return 1;
   }
-  const dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
+  const dateTimeObject = new Date(
+    !dateTime.endsWith("Z") && !IsIncludeTimezone(dateTime) ? `${dateTime}Z` : dateTime
+  );
   // toLocaleDateString assumes that the input is UTC, which is usually not the case
   const numberValue = dateTimeObject.toLocaleDateString([], {
     timeZone: !dateTime.endsWith("Z") ? "UTC" : undefined,
@@ -141,7 +154,9 @@ const parseDateMonth = (dateTime: string | undefined): number => {
   if (!isValidDate(dateTime) || !dateTime) {
     return 1;
   }
-  const dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
+  const dateTimeObject = new Date(
+    !dateTime.endsWith("Z") && !IsIncludeTimezone(dateTime) ? `${dateTime}Z` : dateTime
+  );
   // toLocaleDateString assumes that the input is UTC, which is usually not the case
   const numberValue = dateTimeObject.toLocaleDateString([], {
     timeZone: !dateTime.endsWith("Z") ? "UTC" : undefined,
@@ -158,7 +173,9 @@ const parseTime = (dateTime: string | undefined): string => {
   if (!isValidDate(dateTime) || !dateTime) {
     return "";
   }
-  const dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
+  const dateTimeObject = new Date(
+    !dateTime.endsWith("Z") && !IsIncludeTimezone(dateTime) ? `${dateTime}Z` : dateTime
+  );
 
   // toLocaleDateString assumes that the input is UTC, which is usually not the case
   return dateTimeObject.toLocaleTimeString([], {
@@ -178,7 +195,9 @@ const parseTimeHour = (dateTime: string | undefined): number => {
   if (!isValidDate(dateTime) || !dateTime) {
     return 1;
   }
-  const dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
+  const dateTimeObject = new Date(
+    !dateTime.endsWith("Z") && !IsIncludeTimezone(dateTime) ? `${dateTime}Z` : dateTime
+  );
   // toLocaleDateString assumes that the input is UTC, which is usually not the case
   const numberValue = dateTimeObject.toLocaleTimeString([], {
     timeZone: !dateTime.endsWith("Z") ? "UTC" : undefined,
