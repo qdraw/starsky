@@ -10,7 +10,7 @@ import {
   parseTimeHour,
   SecondsToHours
 } from "./date";
-import {SupportedLanguages} from "./language";
+import { SupportedLanguages } from "./language";
 
 describe("date", () => {
   describe("parseDate", () => {
@@ -196,7 +196,6 @@ describe("date", () => {
       const result = isValidDate("2020-04-28T10:44:43.123456+01:00");
       expect(result).toBe(true);
     });
-
   });
 
   describe("parseRelativeDate", () => {
@@ -261,11 +260,11 @@ describe("date", () => {
 
       let dayBeforeYesterday = `${dayBeforeYesterdayDate.getFullYear()}-
         ${leftPad(dayBeforeYesterdayDate.getMonth() + 1)}-${leftPad(
-        dayBeforeYesterdayDate.getDate()
-      )}T
+          dayBeforeYesterdayDate.getDate()
+        )}T
         ${leftPad(dayBeforeYesterdayDate.getHours())}:${leftPad(
-        dayBeforeYesterdayDate.getMinutes()
-      )}:
+          dayBeforeYesterdayDate.getMinutes()
+        )}:
         ${leftPad(dayBeforeYesterdayDate.getSeconds())}`;
 
       // remove space and newlines from prev variable
