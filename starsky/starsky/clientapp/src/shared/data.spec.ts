@@ -27,7 +27,7 @@ describe("date", () => {
 
     it("Timezone time", () => {
       const result = parseDate("2020-04-28T10:44:43.123456+01:00", SupportedLanguages.nl);
-      expect(result).not.toBe("Invalid Date");
+      expect(result).toBe("dinsdag 28 april 2020");
     });
 
     it("wrong format", () => {
@@ -57,6 +57,11 @@ describe("date", () => {
       expect(result).toBe("01:01:01");
     });
 
+    it("Timezone time (parseTime)", () => {
+      const result = parseTime("2020-04-28T10:44:43.123456+01:00");
+      expect(result).toBe("09:44:43");
+    });
+
     it("right formatted summer time (nl)", () => {
       const result = parseTime("2020-04-10T23:40:33");
       expect(result).toBe("23:40:33");
@@ -77,6 +82,11 @@ describe("date", () => {
     it("right formatted (nl)", () => {
       const result = parseTimeHour("2020-01-01T01:01:01");
       expect(result).toBe(1);
+    });
+
+    it("Timezone time (parseTimeHour)", () => {
+      const result = parseTimeHour("2020-04-28T10:44:43.123456+01:00");
+      expect(result).toBe(9);
     });
 
     it("right formatted summer time (nl)", () => {
@@ -101,6 +111,11 @@ describe("date", () => {
       expect(result).toBe(1);
     });
 
+    it("Timezone time (parseDateDate)", () => {
+      const result = parseDateDate("2020-04-28T10:44:43.123456+01:00");
+      expect(result).toBe(28);
+    });
+
     it("right formatted summer time (nl)", () => {
       const result = parseDateDate("2020-04-10T23:40:33");
       expect(result).toBe(10);
@@ -121,6 +136,11 @@ describe("date", () => {
     it("right formatted (nl)", () => {
       const result = parseDateMonth("2020-01-01T01:01:01");
       expect(result).toBe(1);
+    });
+
+    it("Timezone time (parseDateMonth)", () => {
+      const result = parseDateMonth("2020-04-28T10:44:43.123456+01:00");
+      expect(result).toBe(4);
     });
 
     it("right formatted summer time (nl)", () => {
@@ -145,6 +165,11 @@ describe("date", () => {
       expect(result).toBe(2020);
     });
 
+    it("Timezone time (parseDateYear)", () => {
+      const result = parseDateYear("2020-04-28T10:44:43.123456+01:00");
+      expect(result).toBe(2020);
+    });
+
     it("right formatted summer time (nl)", () => {
       const result = parseDateYear("2020-12-10T23:40:33");
       expect(result).toBe(2020);
@@ -166,6 +191,12 @@ describe("date", () => {
       const result = isValidDate("2019-10-12 14:12:00");
       expect(result).toBeTruthy();
     });
+
+    it("Timezone time (isValidDate)", () => {
+      const result = isValidDate("2020-04-28T10:44:43.123456+01:00");
+      expect(result).toBe(true);
+    });
+
   });
 
   describe("parseRelativeDate", () => {
@@ -182,6 +213,11 @@ describe("date", () => {
     it("non valid date", () => {
       const result = parseRelativeDate("2019-02-40T01:00:00+00:00", SupportedLanguages.en);
       expect(result).toBe("");
+    });
+
+    it("Timezone time (isValidDate)", () => {
+      const result = parseRelativeDate("2020-04-28T10:44:43.123456+01:00", SupportedLanguages.en);
+      expect(result).toBe("Tuesday, 28 April 2020");
     });
 
     it("yesterday", () => {
