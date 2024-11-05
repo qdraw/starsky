@@ -216,7 +216,8 @@ describe("date", () => {
 
     it("Timezone time (isValidDate)", () => {
       const result = parseRelativeDate("2020-04-28T10:44:43.123456+01:00", SupportedLanguages.en);
-      expect(result).toBe("Tuesday, 28 April 2020");
+      expect(result).toContain("Tuesday"); // with or without comma
+      expect(result).toContain("28 April 2020");
     });
 
     it("yesterday", () => {
