@@ -116,7 +116,7 @@ describe("MenuOptionDesktopEditorOpenSelectionNoSelectWarning", () => {
 
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
-    const MessageItemSelectionRequired = language.key(localization.MessageItemSelectionRequired);
+    const MessageItemSelectionRequired = language.key(localization.MessageItemSelectionAdvised);
 
     const component = render(
       <MenuOptionDesktopEditorOpenSelectionNoSelectWarning select={[]} isReadOnly={false} />
@@ -175,7 +175,7 @@ describe("MenuOptionDesktopEditorOpenSelectionNoSelectWarning", () => {
 
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
-    const MessageItemSelectionRequired = language.key(localization.MessageItemSelectionRequired);
+    const MessageItemSelectionRequired = language.key(localization.MessageItemSelectionAdvised);
 
     const component = render(
       <MenuOptionDesktopEditorOpenSelectionNoSelectWarning select={[]} isReadOnly={false} />

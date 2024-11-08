@@ -334,10 +334,10 @@
     "nl": "Deze melding is bedoeld om te voorkomen dat er eventuele problemen optreden, zoals het vastlopen van je computer.",
     "de": "Dieser Hinweis soll potenzielle Probleme wie das Einfrieren Ihres Computers verhindern"
   },
-  "MessageItemSelectionRequired": {
-    "en": "Please select at least one item before proceeding.",
-    "nl": "Selecteer alstublieft eerst minstens één item voordat u doorgaat.",
-    "de": "Bitte wählen Sie mindestens einen Artikel aus, bevor Sie fortfahren."
+  "MessageItemSelectionAdvised": {
+    "en": "The current folder will open. Press 'Select' to open an item",
+    "nl": "De huidige map wordt geopend. Druk op 'Selecteren' om een item te openen.",
+    "de": "Der aktuelle Ordner wird geöffnet. Drücken Sie 'Auswählen', um ein Element zu öffnen."
   },
   "MessageAppSettingsEntireAppScope": {
     "en": "The AppSettings may only be modified by Administrators. These settings are applied for the entire application.",
