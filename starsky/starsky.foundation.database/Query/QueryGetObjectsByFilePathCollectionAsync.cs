@@ -49,6 +49,12 @@ public partial class Query : IQuery
 
 		foreach ( var path in filePathList )
 		{
+			if ( path == "/" )
+			{
+				predicates.Add(p => p.FilePath == "/");
+				continue;
+			}
+
 			var fileNameWithoutExtension = FilenamesHelper.GetFileNameWithoutExtension(path);
 			if ( string.IsNullOrEmpty(FilenamesHelper.GetFileExtensionWithoutDot(path)) )
 			{

@@ -154,14 +154,17 @@ public partial class Query : IQuery
 	{
 		if ( inputFilePaths.Length == 0 )
 		{
-			return new List<FileIndexItem>();
+			return [];
 		}
 
+		List<FileIndexItem> result;
 		if ( collections )
 		{
-			return await GetObjectsByFilePathCollectionQueryAsync(inputFilePaths.ToList());
+			result = await GetObjectsByFilePathCollectionQueryAsync(inputFilePaths.ToList());
+			return result;
 		}
 
-		return await GetObjectsByFilePathQueryAsync(inputFilePaths.ToList());
+		result = await GetObjectsByFilePathQueryAsync(inputFilePaths.ToList());
+		return result;
 	}
 }

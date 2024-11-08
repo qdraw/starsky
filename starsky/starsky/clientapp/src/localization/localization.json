@@ -314,6 +314,11 @@
     "nl": "Open bestanden",
     "de": "Dateien öffnen"
   },
+  "MessageDesktopEditorOpenSingleFolder": {
+    "en": "Open current folder",
+    "nl": "Open huidige map",
+    "de": "Aktuellen Ordner öffnen"
+  },
   "MessageDesktopEditorUnableToOpen": {
     "en": "Sorry, something went wrong opening the file",
     "nl": "Sorry, er iets misgegaan met het openen van het bestand",

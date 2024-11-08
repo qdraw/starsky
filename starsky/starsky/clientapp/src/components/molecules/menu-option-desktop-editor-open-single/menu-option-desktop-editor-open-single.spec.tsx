@@ -14,8 +14,30 @@ import MenuOptionDesktopEditorOpenSingle, {
 
 describe("MenuOptionDesktopEditorOpenSingle", () => {
   it("should render without errors", () => {
-    render(<MenuOptionDesktopEditorOpenSingle subPath="" collections={false} isReadOnly={true} />);
-    // You can add more specific assertions about the rendered output if needed
+    render(
+      <MenuOptionDesktopEditorOpenSingle
+        isDirectory={false}
+        subPath=""
+        collections={false}
+        isReadOnly={true}
+      />
+    );
+  });
+
+  it("should render without errors", () => {
+    const component = render(
+      <MenuOptionDesktopEditorOpenSingle
+        isDirectory={true}
+        subPath=""
+        collections={false}
+        isReadOnly={true}
+      />
+    );
+    const element = screen.getByTestId("menu-option-desktop-editor-open-single");
+
+    expect(component).toBeTruthy();
+    expect(element).toBeTruthy();
+    expect(element).toBe("");
   });
 
   it("should call OpenDesktopSingle when MenuOption is clicked", () => {
@@ -49,6 +71,7 @@ describe("MenuOptionDesktopEditorOpenSingle", () => {
       <MenuOptionDesktopEditorOpenSingle
         subPath={subPath}
         collections={collections}
+        isDirectory={false}
         isReadOnly={isReadOnly}
       />
     );
@@ -83,6 +106,7 @@ describe("MenuOptionDesktopEditorOpenSingle", () => {
       <MenuOptionDesktopEditorOpenSingle
         subPath={"/test.jpg"}
         collections={false}
+        isDirectory={false}
         isReadOnly={false}
       />
     );
@@ -122,6 +146,7 @@ describe("MenuOptionDesktopEditorOpenSingle", () => {
       <MenuOptionDesktopEditorOpenSingle
         subPath={subPath}
         collections={collections}
+        isDirectory={false}
         isReadOnly={isReadOnly}
       />
     );
@@ -175,6 +200,7 @@ describe("MenuOptionDesktopEditorOpenSingle", () => {
       <MenuOptionDesktopEditorOpenSingle
         subPath={subPath}
         collections={collections}
+        isDirectory={false}
         isReadOnly={isReadOnly}
       />
     );
@@ -248,6 +274,7 @@ describe("MenuOptionDesktopEditorOpenSingle", () => {
       <MenuOptionDesktopEditorOpenSingle
         subPath={subPath}
         collections={collections}
+        isDirectory={false}
         isReadOnly={isReadOnly}
       />
     );

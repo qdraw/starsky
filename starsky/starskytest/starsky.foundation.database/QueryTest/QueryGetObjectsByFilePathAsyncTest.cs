@@ -71,7 +71,7 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 				.GetRequiredService<ApplicationDbContext>(), new AppSettings(), CreateNewScope(),
 			new FakeIWebLogger(), _memoryCache);
 
-		var dirName = "/cache_02";
+		const string dirName = "/cache_02";
 		query.AddCacheParentItem(dirName,
 			new List<FileIndexItem>
 			{
@@ -87,6 +87,34 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 		Assert.AreEqual(2, result.Count);
 		Assert.AreEqual($"{dirName}/test1.jpg", result[0].FilePath);
 		Assert.AreEqual($"{dirName}/test1.dng", result[1].FilePath);
+	}
+
+	[TestMethod]
+	[DataRow(true)]
+	[DataRow(false)]
+	public async Task GetObjectsByFilePathAsync_collectionTrue_HomeItem(bool isCollection)
+	{
+		var query = new Query(CreateNewScope().CreateScope().ServiceProvider
+				.GetRequiredService<ApplicationDbContext>(), new AppSettings(), CreateNewScope(),
+			new FakeIWebLogger(), _memoryCache);
+
+		const string dirName = "/";
+		query.AddCacheParentItem(dirName,
+			new List<FileIndexItem>
+			{
+				new(dirName),
+				new($"{dirName}/test1.jpg"),
+				new($"{dirName}/test1.dng"),
+				new($"{dirName}/test2.jpg"),
+				new($"{dirName}/test2.dng")
+			});
+
+		var result =
+			await query.GetObjectsByFilePathAsync(new List<string> { dirName },
+				isCollection);
+
+		Assert.AreEqual(1, result.Count);
+		Console.WriteLine();
 	}
 
 	[TestMethod]

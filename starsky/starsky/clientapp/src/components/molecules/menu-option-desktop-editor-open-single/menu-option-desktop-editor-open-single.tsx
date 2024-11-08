@@ -15,6 +15,7 @@ interface IMenuOptionDesktopEditorOpenSingleProps {
   collections: boolean;
   isReadOnly: boolean;
   setEnableMoreMenu?: React.Dispatch<React.SetStateAction<boolean>>;
+  isDirectory: boolean;
 }
 
 export async function OpenDesktopSingle(
@@ -41,7 +42,7 @@ export async function OpenDesktopSingle(
 }
 
 const MenuOptionDesktopEditorOpenSingle: React.FunctionComponent<IMenuOptionDesktopEditorOpenSingleProps> =
-  memo(({ subPath, collections, isReadOnly }) => {
+  memo(({ subPath, collections, isReadOnly, isDirectory }) => {
     // Check API to know if feature is needed!
     const featuresResult = useFetch(new UrlQuery().UrlApiFeaturesAppSettings(), "get");
     const dataFeatures = featuresResult?.data as IEnvFeatures | undefined;
@@ -52,6 +53,10 @@ const MenuOptionDesktopEditorOpenSingle: React.FunctionComponent<IMenuOptionDesk
     const MessageDesktopEditorUnableToOpen = language.key(
       localization.MessageDesktopEditorUnableToOpen
     );
+
+    const localizationLabel = isDirectory
+      ? localization.MessageDesktopEditorOpenSingleFolder
+      : localization.MessageDesktopEditorOpenSingleFile;
 
     // for showing a notification
     const [isError, setIsError] = useState("");
@@ -92,7 +97,7 @@ const MenuOptionDesktopEditorOpenSingle: React.FunctionComponent<IMenuOptionDesk
                 isReadOnly
               )
             }
-            localization={localization.MessageDesktopEditorOpenSingleFile}
+            localization={localizationLabel}
           />
         ) : null}
       </>
