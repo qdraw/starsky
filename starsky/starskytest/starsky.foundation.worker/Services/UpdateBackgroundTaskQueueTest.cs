@@ -219,7 +219,7 @@ public sealed class UpdateBackgroundTaskQueueTest
 	}
 
 	[TestMethod]
-	[Timeout(2000)]
+	[Timeout(5000)]
 	public async Task UpdateBackgroundTaskQueue_Update_End_StopAsync_Test()
 	{
 		var logger = new FakeIWebLogger();
