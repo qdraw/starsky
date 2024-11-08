@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { FunctionComponent, memo, useState } from "react";
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
@@ -13,7 +13,7 @@ interface IMenuOptionDesktopEditorOpenSelectionNoSelectWarningProps {
   isReadOnly: boolean;
 }
 
-const MenuOptionDesktopEditorOpenSelectionNoSelectWarning: React.FunctionComponent<IMenuOptionDesktopEditorOpenSelectionNoSelectWarningProps> =
+const MenuOptionDesktopEditorOpenSelectionNoSelectWarning: FunctionComponent<IMenuOptionDesktopEditorOpenSelectionNoSelectWarningProps> =
   memo(({ select, isReadOnly }) => {
     const selectArray = select ?? [];
     // Check API to know if feature is needed!
@@ -26,7 +26,7 @@ const MenuOptionDesktopEditorOpenSelectionNoSelectWarning: React.FunctionCompone
     // Get language keys
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
-    const MessageItemSelectionRequired = language.key(localization.MessageItemSelectionRequired);
+    const MessageItemSelectionAdvised = language.key(localization.MessageItemSelectionAdvised);
 
     /**
      * Open editor with keys -  command + e
@@ -36,7 +36,7 @@ const MenuOptionDesktopEditorOpenSelectionNoSelectWarning: React.FunctionCompone
         setIsError("");
         return;
       }
-      setIsError(MessageItemSelectionRequired);
+      setIsError(MessageItemSelectionAdvised);
     });
 
     return (
