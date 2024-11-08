@@ -1243,6 +1243,7 @@ describe("MenuArchive", () => {
         .spyOn(useFetch, "default")
         .mockImplementationOnce(() => newIConnectionDefault())
         .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault())
         .mockImplementationOnce(() => newIConnectionDefault());
 
       const state = {
