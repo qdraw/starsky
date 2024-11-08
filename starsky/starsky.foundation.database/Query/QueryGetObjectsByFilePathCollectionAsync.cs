@@ -10,59 +10,60 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 
-namespace starsky.foundation.database.Query
+namespace starsky.foundation.database.Query;
+
+/// <summary>
+///     QueryGetObjectsByFilePathCollectionAsync
+/// </summary>
+public partial class Query : IQuery
 {
 	/// <summary>
-	/// QueryGetObjectsByFilePathCollectionAsync
 	/// </summary>
-	public partial class Query : IQuery
+	/// <param name="subPath"></param>
+	/// <returns></returns>
+	internal async Task<List<FileIndexItem>> GetObjectsByFilePathCollectionAsync(string subPath)
 	{
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="subPath"></param>
-		/// <returns></returns>
-		internal async Task<List<FileIndexItem>> GetObjectsByFilePathCollectionAsync(string subPath)
+		return await GetObjectsByFilePathCollectionQueryAsync(new List<string> { subPath });
+	}
+
+	internal async Task<List<FileIndexItem>> GetObjectsByFilePathCollectionQueryAsync(
+		List<string> filePathList)
+	{
+		try
 		{
-			return await GetObjectsByFilePathCollectionQueryAsync(new List<string> { subPath });
+			return FormatOk(await GetObjectsByFilePathCollectionQuery(_context, filePathList)
+				.ToListAsync());
 		}
-
-		internal async Task<List<FileIndexItem>> GetObjectsByFilePathCollectionQueryAsync(List<string> filePathList)
+		catch ( ObjectDisposedException )
 		{
-			try
-			{
-				return FormatOk(await GetObjectsByFilePathCollectionQuery(_context, filePathList).ToListAsync());
-			}
-			catch ( ObjectDisposedException )
-			{
-				return FormatOk(await GetObjectsByFilePathCollectionQuery(
-					new InjectServiceScope(_scopeFactory).Context(), filePathList).ToListAsync());
-			}
+			return FormatOk(await GetObjectsByFilePathCollectionQuery(
+				new InjectServiceScope(_scopeFactory).Context(), filePathList).ToListAsync());
 		}
+	}
 
-		private static IOrderedQueryable<FileIndexItem> GetObjectsByFilePathCollectionQuery(ApplicationDbContext context,
-			IEnumerable<string> filePathList)
+	private static IOrderedQueryable<FileIndexItem> GetObjectsByFilePathCollectionQuery(
+		ApplicationDbContext context,
+		IEnumerable<string> filePathList)
+	{
+		var predicates = new List<Expression<Func<FileIndexItem, bool>>>();
+
+		foreach ( var path in filePathList )
 		{
-			var predicates = new List<Expression<Func<FileIndexItem, bool>>>();
-
-			// ReSharper disable once LoopCanBeConvertedToQuery
-			foreach ( var path in filePathList )
+			var fileNameWithoutExtension = FilenamesHelper.GetFileNameWithoutExtension(path);
+			if ( string.IsNullOrEmpty(FilenamesHelper.GetFileExtensionWithoutDot(path)) )
 			{
-				var fileNameWithoutExtension = FilenamesHelper.GetFileNameWithoutExtension(path);
-				if ( string.IsNullOrEmpty(FilenamesHelper.GetFileExtensionWithoutDot(path)) )
-				{
-					predicates.Add(p => p.ParentDirectory == FilenamesHelper.GetParentPath(path)
-										&& p.FileName == fileNameWithoutExtension);
-					continue;
-				}
 				predicates.Add(p => p.ParentDirectory == FilenamesHelper.GetParentPath(path)
-									&& p.FileName != null
-									&& p.FileName.StartsWith(fileNameWithoutExtension + "."));
+				                    && p.FileName == fileNameWithoutExtension);
+				continue;
 			}
 
-			var predicate = PredicateBuilder.OrLoop(predicates);
-
-			return context.FileIndex.Where(predicate).OrderBy(r => r.FileName);
+			predicates.Add(p => p.ParentDirectory == FilenamesHelper.GetParentPath(path)
+			                    && p.FileName != null
+			                    && p.FileName.StartsWith(fileNameWithoutExtension + "."));
 		}
+
+		var predicate = PredicateBuilder.OrLoop(predicates);
+
+		return context.FileIndex.Where(predicate).OrderBy(r => r.FileName);
 	}
 }

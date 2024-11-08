@@ -12,7 +12,7 @@ public static partial class FilenamesHelper
 	/// <summary>
 	///     Regex to match if the filename is valid
 	///     use the same as in the front-end
-	///     pre compiled regex
+	///     pre compiled regular expression
 	///     Regex.IsMatch
 	/// </summary>
 	/// <returns>Regex object</returns>
