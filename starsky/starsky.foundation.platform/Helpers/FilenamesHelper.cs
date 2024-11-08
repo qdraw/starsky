@@ -58,7 +58,7 @@ public static partial class FilenamesHelper
 
 	/// <summary>
 	///     Regex to get FileName Without Extension
-	///     pre compiled regex
+	///     pre compiled regular expression
 	///     Regex.Match
 	/// </summary>
 	/// <returns>Regex object</returns>
@@ -82,7 +82,7 @@ public static partial class FilenamesHelper
 
 	/// <summary>
 	///     Regex to File Extension Without Dot
-	///     pre compiled regex
+	///     pre compiled regular expression
 	///     Regex.Match
 	/// </summary>
 	/// <returns>Regex object</returns>
@@ -110,7 +110,7 @@ public static partial class FilenamesHelper
 
 	/// <summary>
 	///     Return UNIX style parent paths back
-	///     Get Parent Regex
+	///     Get Parent regular expression
 	///     unescaped regex: /.+(?=\/[^/]+$)/
 	/// </summary>
 	/// <param name="filePath">unix style subPath</param>

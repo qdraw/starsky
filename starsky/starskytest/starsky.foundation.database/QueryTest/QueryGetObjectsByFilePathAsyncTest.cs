@@ -94,27 +94,18 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 	[DataRow(false)]
 	public async Task GetObjectsByFilePathAsync_collectionTrue_HomeItem(bool isCollection)
 	{
-		var query = new Query(CreateNewScope().CreateScope().ServiceProvider
-				.GetRequiredService<ApplicationDbContext>(), new AppSettings(), CreateNewScope(),
-			new FakeIWebLogger(), _memoryCache);
-
 		const string dirName = "/";
-		query.AddCacheParentItem(dirName,
-			new List<FileIndexItem>
-			{
-				new(dirName),
-				new($"{dirName}/test1.jpg"),
-				new($"{dirName}/test1.dng"),
-				new($"{dirName}/test2.jpg"),
-				new($"{dirName}/test2.dng")
-			});
+		var item = new FileIndexItem(dirName);
+		await _query.AddItemAsync(item);
 
 		var result =
-			await query.GetObjectsByFilePathAsync(new List<string> { dirName },
+			await _query.GetObjectsByFilePathAsync(new List<string> { dirName },
 				isCollection);
 
 		Assert.AreEqual(1, result.Count);
-		Console.WriteLine();
+		Assert.AreEqual(dirName, result[0].FilePath);
+		
+		await _query.RemoveItemAsync(item);
 	}
 
 	[TestMethod]
@@ -124,7 +115,7 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 				.GetRequiredService<ApplicationDbContext>(), new AppSettings(), CreateNewScope(),
 			new FakeIWebLogger(), _memoryCache);
 
-		var dirName = "/implicit_item_02";
+		const string dirName = "/implicit_item_02";
 		await query.AddRangeAsync(new List<FileIndexItem>
 		{
 			new($"{dirName}/test1.jpg"),
