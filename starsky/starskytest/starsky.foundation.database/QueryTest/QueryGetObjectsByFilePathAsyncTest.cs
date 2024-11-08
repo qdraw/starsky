@@ -71,7 +71,7 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 				.GetRequiredService<ApplicationDbContext>(), new AppSettings(), CreateNewScope(),
 			new FakeIWebLogger(), _memoryCache);
 
-		var dirName = "/cache_02";
+		const string dirName = "/cache_02";
 		query.AddCacheParentItem(dirName,
 			new List<FileIndexItem>
 			{
@@ -90,13 +90,32 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 	}
 
 	[TestMethod]
+	[DataRow(true)]
+	[DataRow(false)]
+	public async Task GetObjectsByFilePathAsync_collectionTrue_HomeItem(bool isCollection)
+	{
+		const string dirName = "/";
+		var item = new FileIndexItem(dirName);
+		await _query.AddItemAsync(item);
+
+		var result =
+			await _query.GetObjectsByFilePathAsync(new List<string> { dirName },
+				isCollection);
+
+		Assert.AreEqual(1, result.Count);
+		Assert.AreEqual(dirName, result[0].FilePath);
+		
+		await _query.RemoveItemAsync(item);
+	}
+
+	[TestMethod]
 	public async Task GetObjectsByFilePathAsync_notImplicitSet_cache_collectionTrue()
 	{
 		var query = new Query(CreateNewScope().CreateScope().ServiceProvider
 				.GetRequiredService<ApplicationDbContext>(), new AppSettings(), CreateNewScope(),
 			new FakeIWebLogger(), _memoryCache);
 
-		var dirName = "/implicit_item_02";
+		const string dirName = "/implicit_item_02";
 		await query.AddRangeAsync(new List<FileIndexItem>
 		{
 			new($"{dirName}/test1.jpg"),

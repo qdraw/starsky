@@ -14,9 +14,53 @@ import MenuOptionDesktopEditorOpenSingle, {
 
 describe("MenuOptionDesktopEditorOpenSingle", () => {
   it("should render without errors", () => {
-    render(<MenuOptionDesktopEditorOpenSingle subPath="" collections={false} isReadOnly={true} />);
-    // You can add more specific assertions about the rendered output if needed
+    render(
+      <MenuOptionDesktopEditorOpenSingle
+        isDirectory={false}
+        subPath=""
+        collections={false}
+        isReadOnly={true}
+      />
+    );
   });
+
+  const displayTextTheoryData = [
+    { isDirectory: true, expectedText: localization.MessageDesktopEditorOpenSingleFolder.en },
+    { isDirectory: false, expectedText: localization.MessageDesktopEditorOpenSingleFile.en }
+  ];
+
+  test.each(displayTextTheoryData)(
+    "should render text correctly for isDirectory=$isDirectory",
+    ({ isDirectory, expectedText }) => {
+      const mockGetIConnectionDefaultFeatureToggle = {
+        statusCode: 200,
+        data: {
+          openEditorEnabled: true
+        } as IEnvFeatures
+      } as IConnectionDefault;
+
+      const useFetchSpy = jest
+        .spyOn(useFetch, "default")
+        .mockImplementationOnce(() => mockGetIConnectionDefaultFeatureToggle);
+
+      const component = render(
+        <MenuOptionDesktopEditorOpenSingle
+          isDirectory={isDirectory}
+          subPath="/test.jpg"
+          collections={false}
+          isReadOnly={true}
+        />
+      );
+
+      const element = component.getByTestId("menu-option-desktop-editor-open-single");
+
+      expect(component).toBeTruthy();
+      expect(element).toBeTruthy();
+      expect(element.textContent).toBe(expectedText);
+      expect(useFetchSpy).toHaveBeenCalled();
+      component.unmount();
+    }
+  );
 
   it("should call OpenDesktopSingle when MenuOption is clicked", () => {
     const mockGetIConnectionDefaultFeatureToggle = {
@@ -49,6 +93,7 @@ describe("MenuOptionDesktopEditorOpenSingle", () => {
       <MenuOptionDesktopEditorOpenSingle
         subPath={subPath}
         collections={collections}
+        isDirectory={false}
         isReadOnly={isReadOnly}
       />
     );
@@ -83,6 +128,7 @@ describe("MenuOptionDesktopEditorOpenSingle", () => {
       <MenuOptionDesktopEditorOpenSingle
         subPath={"/test.jpg"}
         collections={false}
+        isDirectory={false}
         isReadOnly={false}
       />
     );
@@ -122,6 +168,7 @@ describe("MenuOptionDesktopEditorOpenSingle", () => {
       <MenuOptionDesktopEditorOpenSingle
         subPath={subPath}
         collections={collections}
+        isDirectory={false}
         isReadOnly={isReadOnly}
       />
     );
@@ -175,6 +222,7 @@ describe("MenuOptionDesktopEditorOpenSingle", () => {
       <MenuOptionDesktopEditorOpenSingle
         subPath={subPath}
         collections={collections}
+        isDirectory={false}
         isReadOnly={isReadOnly}
       />
     );
@@ -248,6 +296,7 @@ describe("MenuOptionDesktopEditorOpenSingle", () => {
       <MenuOptionDesktopEditorOpenSingle
         subPath={subPath}
         collections={collections}
+        isDirectory={false}
         isReadOnly={isReadOnly}
       />
     );

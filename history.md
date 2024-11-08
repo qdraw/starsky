@@ -52,6 +52,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Fixed) _Back-end_ Timeout in Thumbnail cleaner fixed (PR #1798)
 - [x] (Fixed) _Back-end_ Add logging for thumbnail background scanning (PR #1798)
 - [x] (Fixed) _Front-end_ Invalid date parsing (PR #1802, Issue #1508)
+- [x] (Fixed) _Back-end_ Fix for query home item (PR #1803)
+- [x] (Added) _Front-end_ Add UI element to open current folder in archive view (PR #1803)
 
 ## version 0.6.2 - 2024-10-11 {#v0.6.2}
 

@@ -364,6 +364,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({ state, d
 
             <MenuOptionDesktopEditorOpenSingle
               subPath={state.subPath}
+              isDirectory={false}
               isReadOnly={state.isReadOnly}
               collections={state.collections === true}
             />

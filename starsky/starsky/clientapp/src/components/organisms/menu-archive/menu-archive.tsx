@@ -15,6 +15,7 @@ import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search
 import { MenuOptionArchiveRename } from "../../molecules/menu-option-archive-rename/menu-option-archive-rename.tsx";
 import MenuOptionDesktopEditorOpenSelectionNoSelectWarning from "../../molecules/menu-option-desktop-editor-open-selection-no-select-warning/menu-option-desktop-editor-open-selection-no-select-warning";
 import MenuOptionDesktopEditorOpenSelection from "../../molecules/menu-option-desktop-editor-open-selection/menu-option-desktop-editor-open-selection";
+import MenuOptionDesktopEditorOpenSingle from "../../molecules/menu-option-desktop-editor-open-single/menu-option-desktop-editor-open-single.tsx";
 import { MenuOptionMkdir } from "../../molecules/menu-option-mkdir/menu-option-mkdir.tsx";
 import MenuOptionMoveFolderToTrash from "../../molecules/menu-option-move-folder-to-trash/menu-option-move-folder-to-trash";
 import MenuOptionMoveToTrash from "../../molecules/menu-option-move-to-trash/menu-option-move-to-trash";
@@ -189,6 +190,13 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                 subPath={state.subPath}
                 dispatch={dispatch}
                 setEnableMoreMenu={setEnableMoreMenu}
+              />
+
+              <MenuOptionDesktopEditorOpenSingle
+                subPath={state.subPath}
+                isReadOnly={state.isReadOnly}
+                isDirectory={true}
+                collections={state.collections === true}
               />
             </MoreMenu>
           ) : null}

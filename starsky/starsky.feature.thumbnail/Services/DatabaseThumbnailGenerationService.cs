@@ -45,6 +45,9 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 
 	public async Task StartBackgroundQueue()
 	{
+		// why Task.Yield -> https://medium.com/@thepen0411/how-to-resolve-the-net-background-service-blocking-issue-c96086de8acd
+		await Task.Yield();
+
 		if ( _thumbnailQuery.IsRunningJob() )
 		{
 			return;
