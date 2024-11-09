@@ -829,6 +829,11 @@
     "nl": "locatie",
     "de": "Lokalisierung"
   },
+  "MessageNoExtensionItem": {
+    "en": "without extension",
+    "nl": "zonder extensie",
+    "de": "ohne Erweiterung"
+  },
   "MessageCreateNewFolderFeature": {
     "en": "Create new folder",
     "nl": "Nieuwe map aanmaken",

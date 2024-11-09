@@ -8,7 +8,7 @@ import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { INavigateState } from "../../../interfaces/INavigateState";
 import localization from "../../../localization/localization.json";
-import { Comma } from "../../../shared/comma";
+import { CommaSeperatedFileList } from "../../../shared/comma-seperated-filelist/comma-seperated-filelist";
 import { IsEditedNow } from "../../../shared/date";
 import FetchPost from "../../../shared/fetch/fetch-post";
 import { FileListCache } from "../../../shared/filelist-cache";
@@ -59,6 +59,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({ state, d
   const MessageMoveToTrash = language.key(localization.MessageMoveToTrash);
   const MessageIncludingColonWord = language.key(localization.MessageIncludingColonWord);
   const MessageRestoreFromTrash = language.key(localization.MessageRestoreFromTrash);
+  const MessageNoExtensionItem = language.key(localization.MessageNoExtensionItem);
   const MessageLabels = language.key(localization.MessageLabels);
 
   const history = useLocation();
@@ -341,7 +342,10 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({ state, d
                 <em data-test="trash-including">
                   <br />
                   {MessageIncludingColonWord}
-                  {new Comma().CommaSpaceLastDot(state.fileIndexItem.collectionPaths)}
+                  {new CommaSeperatedFileList().CommaSpaceLastDot(
+                    state.fileIndexItem.collectionPaths,
+                    MessageNoExtensionItem
+                  )}
                 </em>
               ) : null}
             </MenuOption>
