@@ -13,202 +13,204 @@ using starsky.foundation.readmeta.ReadMetaHelpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 
-namespace starsky.foundation.readmeta.Services
+namespace starsky.foundation.readmeta.Services;
+
+/// <summary>
+///     Read Meta from file
+/// </summary>
+public sealed class ReadMeta : IReadMeta
 {
-	public sealed class ReadMeta : IReadMeta
+	private const string CachePrefix = "info_";
+	private readonly AppSettings? _appSettings;
+	private readonly IMemoryCache? _cache;
+	private readonly IStorage _iStorage;
+	private readonly ReadMetaExif _readExif;
+	private readonly ReadMetaGpx _readMetaGpx;
+	private readonly ReadMetaXmp _readXmp;
+
+	/// <summary>
+	///     Used to get from all locations
+	/// </summary>
+	/// <param name="iStorage"></param>
+	/// <param name="appSettings"></param>
+	/// <param name="memoryCache"></param>
+	/// <param name="logger"></param>
+	public ReadMeta(IStorage iStorage, AppSettings appSettings, IMemoryCache? memoryCache,
+		IWebLogger logger)
 	{
-		private readonly AppSettings? _appSettings;
-		private readonly IMemoryCache? _cache;
-		private readonly IStorage _iStorage;
-		private readonly ReadMetaExif _readExif;
-		private readonly ReadMetaXmp _readXmp;
-		private readonly ReadMetaGpx _readMetaGpx;
+		_appSettings = appSettings;
+		_cache = memoryCache;
+		_iStorage = iStorage;
+		_readExif = new ReadMetaExif(_iStorage, appSettings, logger);
+		_readXmp = new ReadMetaXmp(_iStorage, logger);
+		_readMetaGpx = new ReadMetaGpx(logger);
+	}
 
-		/// <summary>
-		/// Used to get from all locations
-		/// </summary>
-		/// <param name="iStorage"></param>
-		/// <param name="appSettings"></param>
-		/// <param name="memoryCache"></param>
-		/// <param name="logger"></param>
-		public ReadMeta(IStorage iStorage, AppSettings appSettings, IMemoryCache? memoryCache,
-			IWebLogger logger)
+	// used by the html generator
+	public async Task<List<FileIndexItem>> ReadExifAndXmpFromFileAddFilePathHashAsync(
+		List<string> subPathList, List<string>? fileHashes = null)
+	{
+		var fileIndexList = new List<FileIndexItem>();
+
+		for ( var i = 0; i < subPathList.Count; i++ )
 		{
-			_appSettings = appSettings;
-			_cache = memoryCache;
-			_iStorage = iStorage;
-			_readExif = new ReadMetaExif(_iStorage, appSettings, logger);
-			_readXmp = new ReadMetaXmp(_iStorage, logger);
-			_readMetaGpx = new ReadMetaGpx(logger);
+			var subPath = subPathList[i];
+
+			var returnItem = await ReadExifAndXmpFromFileAsync(subPath);
+			var stream = _iStorage.ReadStream(subPath, 50);
+			var imageFormat = ExtensionRolesHelper.GetImageFormat(stream);
+			await stream.DisposeAsync();
+
+			returnItem!.ImageFormat = imageFormat;
+			returnItem.FileName = Path.GetFileName(subPath);
+			returnItem.IsDirectory = false;
+			returnItem.Status = FileIndexItem.ExifStatus.Ok;
+			returnItem.ParentDirectory = FilenamesHelper.GetParentPath(subPath);
+
+			if ( fileHashes == null || fileHashes.Count <= i )
+			{
+				returnItem.FileHash =
+					( await new FileHash(_iStorage).GetHashCodeAsync(subPath) ).Key;
+			}
+			else
+			{
+				returnItem.FileHash = fileHashes[i];
+			}
+
+			fileIndexList.Add(returnItem);
 		}
 
-		private async Task<FileIndexItem> ReadExifAndXmpFromFileDirectAsync(string subPath)
+		return fileIndexList;
+	}
+
+	/// <summary>
+	///     Different types including GPX
+	///     Cached view >> IMemoryCache
+	///     Short living cache Max 1. minutes
+	/// </summary>
+	/// <param name="subPath">path</param>
+	/// <returns>metaData</returns>
+	public async Task<FileIndexItem?> ReadExifAndXmpFromFileAsync(string subPath)
+	{
+		// The CLI programs uses no cache
+		if ( _cache == null || _appSettings?.AddMemoryCache == false )
 		{
-			if ( _iStorage.ExistFile(subPath)
-				 && ExtensionRolesHelper.IsExtensionForceGpx(subPath) )
-			{
-				// Get the item back with DateTime as Camera local datetime
-				return await _readMetaGpx.ReadGpxFromFileReturnAfterFirstFieldAsync(
-					_iStorage.ReadStream(subPath),
-					subPath); // use local
-			}
-
-			var fileIndexItemWithPath = new FileIndexItem(subPath);
-
-			// Read first the sidecar file
-			var xmpFileIndexItem =
-				await _readXmp.XmpGetSidecarFileAsync(fileIndexItemWithPath.Clone());
-
-			// if the sidecar file is not complete, read the original file
-			// when reading a .xmp file direct ignore the readExifFromFile
-			if ( ExtensionRolesHelper.IsExtensionSidecar(subPath) )
-			{
-				return xmpFileIndexItem;
-			}
-
-			if ( xmpFileIndexItem.IsoSpeed != 0
-				 && !string.IsNullOrEmpty(xmpFileIndexItem.Make)
-				 && xmpFileIndexItem.DateTime.Year != 0
-				 && !string.IsNullOrEmpty(xmpFileIndexItem.ShutterSpeed) )
-			{
-				return xmpFileIndexItem;
-			}
-
-			// so the sidecar file is not used to store the most important tags
-			var fileExifItemFile = _readExif.ReadExifFromFile(subPath, fileIndexItemWithPath);
-
-			// overwrite content with incomplete sidecar file (this file can contain tags)
-			FileIndexCompareHelper.Compare(fileExifItemFile, xmpFileIndexItem);
-			return fileExifItemFile;
+			return await ReadExifAndXmpFromFileDirectAsync(subPath);
 		}
 
-		// used by the html generator
-		public async Task<List<FileIndexItem>> ReadExifAndXmpFromFileAddFilePathHashAsync(
-			List<string> subPathList, List<string>? fileHashes = null)
+		// Return values from IMemoryCache
+		var queryReadMetaCacheName = CachePrefix + subPath;
+
+		// Return Cached object if it exist
+		if ( _cache.TryGetValue(queryReadMetaCacheName, out var objectExifToolModel) )
 		{
-			var fileIndexList = new List<FileIndexItem>();
-
-			for ( int i = 0; i < subPathList.Count; i++ )
-			{
-				var subPath = subPathList[i];
-
-				var returnItem = await ReadExifAndXmpFromFileAsync(subPath);
-				var stream = _iStorage.ReadStream(subPath, 50);
-				var imageFormat = ExtensionRolesHelper.GetImageFormat(stream);
-				await stream.DisposeAsync();
-
-				returnItem!.ImageFormat = imageFormat;
-				returnItem.FileName = Path.GetFileName(subPath);
-				returnItem.IsDirectory = false;
-				returnItem.Status = FileIndexItem.ExifStatus.Ok;
-				returnItem.ParentDirectory = FilenamesHelper.GetParentPath(subPath);
-
-				if ( fileHashes == null || fileHashes.Count <= i )
-				{
-					returnItem.FileHash =
-						( await new FileHash(_iStorage).GetHashCodeAsync(subPath) ).Key;
-				}
-				else
-				{
-					returnItem.FileHash = fileHashes[i];
-				}
-
-				fileIndexList.Add(returnItem);
-			}
-
-			return fileIndexList;
+			return objectExifToolModel as FileIndexItem;
 		}
 
-		private const string CachePrefix = "info_";
+		// Try to catch a new object
+		objectExifToolModel = await ReadExifAndXmpFromFileDirectAsync(subPath);
 
-		/// <summary>
-		/// Different types including GPX
-		/// Cached view >> IMemoryCache
-		/// Short living cache Max 1. minutes
-		/// </summary>
-		/// <param name="subPath">path</param>
-		/// <returns>metaData</returns>
-		public async Task<FileIndexItem?> ReadExifAndXmpFromFileAsync(string subPath)
+		_cache.Set(queryReadMetaCacheName, objectExifToolModel,
+			new TimeSpan(0, 1, 0));
+		return ( FileIndexItem? ) objectExifToolModel!;
+	}
+
+	/// <summary>
+	///     Update cache list of items in the cache
+	///     assumes that subPath style is used
+	/// </summary>
+	/// <param name="objectExifToolModel">list of items to update</param>
+	public void UpdateReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel)
+	{
+		foreach ( var item in objectExifToolModel )
 		{
-			// The CLI programs uses no cache
-			if ( _cache == null || _appSettings?.AddMemoryCache == false )
-			{
-				return await ReadExifAndXmpFromFileDirectAsync(subPath);
-			}
+			UpdateReadMetaCache(item.FilePath!, item);
+		}
+	}
 
-			// Return values from IMemoryCache
-			var queryReadMetaCacheName = CachePrefix + subPath;
-
-			// Return Cached object if it exist
-			if ( _cache.TryGetValue(queryReadMetaCacheName, out var objectExifToolModel) )
-			{
-				return objectExifToolModel as FileIndexItem;
-			}
-
-			// Try to catch a new object
-			objectExifToolModel = await ReadExifAndXmpFromFileDirectAsync(subPath);
-
-			_cache.Set(queryReadMetaCacheName, objectExifToolModel,
-				new TimeSpan(0, 1, 0));
-			return ( FileIndexItem? ) objectExifToolModel!;
+	/// <summary>
+	///     only for ReadMeta! Cache
+	///     Why removing, The Update command does not update the entire object.
+	///     When you update tags, other tags will be null
+	/// </summary>
+	/// <param name="fullFilePath">can also be a subPath</param>
+	public bool? RemoveReadMetaCache(string fullFilePath)
+	{
+		if ( _cache == null || _appSettings?.AddMemoryCache == false )
+		{
+			return null;
 		}
 
+		var queryCacheName = CachePrefix + fullFilePath;
 
-		/// <summary>
-		/// Update Cache only for ReadMeta!
-		/// To 15 minutes
-		/// </summary>
-		/// <param name="fullFilePath">can also be a subPath</param>
-		/// <param name="objectExifToolModel">the item</param>
-		public void UpdateReadMetaCache(string fullFilePath, FileIndexItem objectExifToolModel)
+		if ( !_cache.TryGetValue(queryCacheName, out _) )
 		{
-			if ( _cache == null || _appSettings?.AddMemoryCache == false )
-			{
-				return;
-			}
-
-			var toUpdateObject = objectExifToolModel.Clone();
-			var queryReadMetaCacheName = CachePrefix + fullFilePath;
-			RemoveReadMetaCache(fullFilePath);
-			_cache.Set(queryReadMetaCacheName, toUpdateObject,
-				new TimeSpan(0, 15, 0));
+			return false;
 		}
 
-		/// <summary>
-		/// Update cache list of items in the cache
-		/// assumes that subPath style is used
-		/// </summary>
-		/// <param name="objectExifToolModel">list of items to update</param>
-		public void UpdateReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel)
+		// continue = go to the next item in the list
+		_cache.Remove(queryCacheName);
+		return true;
+	}
+
+	private async Task<FileIndexItem> ReadExifAndXmpFromFileDirectAsync(string subPath)
+	{
+		if ( _iStorage.ExistFile(subPath)
+		     && ExtensionRolesHelper.IsExtensionForceGpx(subPath) )
 		{
-			foreach ( var item in objectExifToolModel )
-			{
-				UpdateReadMetaCache(item.FilePath!, item);
-			}
+			// Get the item back with DateTime as Camera local datetime
+			return await _readMetaGpx.ReadGpxFromFileReturnAfterFirstFieldAsync(
+				_iStorage.ReadStream(subPath),
+				subPath); // use local
 		}
 
-		/// <summary>
-		/// only for ReadMeta! Cache
-		/// Why removing, The Update command does not update the entire object.
-		/// When you update tags, other tags will be null 
-		/// </summary>
-		/// <param name="fullFilePath">can also be a subPath</param>
-		public bool? RemoveReadMetaCache(string fullFilePath)
+		var fileIndexItemWithPath = new FileIndexItem(subPath);
+
+		// Read first the sidecar file
+		var xmpFileIndexItem =
+			await _readXmp.XmpGetSidecarFileAsync(fileIndexItemWithPath.Clone());
+
+		// if the sidecar file is not complete, read the original file
+		// when reading a .xmp file direct ignore the readExifFromFile
+		if ( ExtensionRolesHelper.IsExtensionSidecar(subPath) )
 		{
-			if ( _cache == null || _appSettings?.AddMemoryCache == false )
-			{
-				return null;
-			}
-
-			var queryCacheName = CachePrefix + fullFilePath;
-
-			if ( !_cache.TryGetValue(queryCacheName, out _) )
-			{
-				return false;
-			}
-			// continue = go to the next item in the list
-			_cache.Remove(queryCacheName);
-			return true;
+			return xmpFileIndexItem;
 		}
+
+		if ( xmpFileIndexItem.IsoSpeed != 0
+		     && !string.IsNullOrEmpty(xmpFileIndexItem.Make)
+		     && xmpFileIndexItem.DateTime.Year != 0
+		     && !string.IsNullOrEmpty(xmpFileIndexItem.ShutterSpeed) )
+		{
+			return xmpFileIndexItem;
+		}
+
+		// so the sidecar file is not used to store the most important tags
+		var fileExifItemFile = _readExif.ReadExifFromFile(subPath, fileIndexItemWithPath);
+
+		// overwrite content with incomplete sidecar file (this file can contain tags)
+		FileIndexCompareHelper.Compare(fileExifItemFile, xmpFileIndexItem);
+		return fileExifItemFile;
+	}
+
+
+	/// <summary>
+	///     Update Cache only for ReadMeta!
+	///     To 15 minutes
+	/// </summary>
+	/// <param name="fullFilePath">can also be a subPath</param>
+	/// <param name="objectExifToolModel">the item</param>
+	public void UpdateReadMetaCache(string fullFilePath, FileIndexItem objectExifToolModel)
+	{
+		if ( _cache == null || _appSettings?.AddMemoryCache == false )
+		{
+			return;
+		}
+
+		var toUpdateObject = objectExifToolModel.Clone();
+		var queryReadMetaCacheName = CachePrefix + fullFilePath;
+		RemoveReadMetaCache(fullFilePath);
+		_cache.Set(queryReadMetaCacheName, toUpdateObject,
+			new TimeSpan(0, 15, 0));
 	}
 }
