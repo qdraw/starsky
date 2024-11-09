@@ -370,7 +370,7 @@ public sealed class ExifReadTest
 		Assert.AreEqual("E 18-200mm F3.5-6.3 OSS LE", item.LensModel);
 		Assert.AreEqual(ImageStabilisationType.On, item.ImageStabilisation);
 	}
-	
+
 	[TestMethod]
 	public void ExifRead_CreateAnImageA330Raw_ReadExifFromFileTest()
 	{
@@ -399,7 +399,8 @@ public sealed class ExifReadTest
 		Assert.AreEqual(new DateTime(2010, 2, 3, 17, 23, 7, DateTimeKind.Local),
 			item.DateTime);
 
-		Assert.AreEqual("Sony|DSLR-A330|Sony DT 18-55mm F3.5-5.6 SAM (SAL1855) or SAM II", item.MakeModel);
+		Assert.AreEqual("Sony|DSLR-A330|Sony DT 18-55mm F3.5-5.6 SAM (SAL1855) or SAM II",
+			item.MakeModel);
 		Assert.AreEqual("Sony", item.Make);
 		Assert.AreEqual("DSLR-A330", item.Model);
 		Assert.AreEqual("Sony DT 18-55mm F3.5-5.6 SAM (SAL1855) or SAM II", item.LensModel);

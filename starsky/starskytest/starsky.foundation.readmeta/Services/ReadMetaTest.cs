@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
+using starsky.foundation.storage.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -82,11 +84,12 @@ public sealed class ReadMetaTest
 		Assert.AreEqual(string.Empty,
 			( await readMeta.ReadExifAndXmpFromFileAsync("/test.jpg") )!.Tags);
 	}
-	
+
 	[TestMethod]
 	public async Task UpdateReadMetaCache_AppSettings_Null()
 	{
-		var readMeta = new ReadMeta(new FakeIStorage(), new AppSettings{AddMemoryCache = false}, new FakeMemoryCache(),
+		var readMeta = new ReadMeta(new FakeIStorage(), new AppSettings { AddMemoryCache = false },
+			new FakeMemoryCache(),
 			new FakeIWebLogger());
 
 		readMeta.UpdateReadMetaCache(new List<FileIndexItem> { new("/test.jpg") { Tags = "t2" } });
@@ -247,5 +250,49 @@ public sealed class ReadMetaTest
 			await readMeta.ReadExifAndXmpFromFileAsync("/test.jpg");
 
 		Assert.AreEqual(string.Empty, result?.Tags);
+	}
+
+	[TestMethod]
+	[DataRow(true)]
+	[DataRow(false)]
+	public async Task ReadExifAndXmpFromFileAddFilePathHashAsync_ShouldGenerateHash(
+		bool isNullOrEmptyList)
+	{
+		var newImage = CreateAnImageA6600.Bytes.ToArray();
+		var expectedHash =
+			await FileHash.CalculateHashAsync(new MemoryStream([.. CreateAnImageA6600.Bytes]));
+
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.jpg"], new List<byte[]> { newImage });
+
+		var readMetaSubPathStorage = new ReadMeta(
+			fakeStorage, new AppSettings(), new FakeMemoryCache(), new FakeIWebLogger());
+
+		var list = isNullOrEmptyList ? new List<string>() : null;
+		var result =
+			await readMetaSubPathStorage.ReadExifAndXmpFromFileAddFilePathHashAsync(
+				new List<string> { "/test.jpg" }, list);
+
+		Assert.AreEqual(1, result.Count);
+		Assert.AreEqual(expectedHash, result[0].FileHash);
+	}
+
+	[TestMethod]
+	public async Task ReadExifAndXmpFromFileAddFilePathHashAsync_ShouldGenerateHash()
+	{
+		var newImage = CreateAnImageA6600.Bytes.ToArray();
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.jpg"], new List<byte[]> { newImage });
+
+		var readMetaSubPathStorage = new ReadMeta(
+			fakeStorage, new AppSettings(), new FakeMemoryCache(), new FakeIWebLogger());
+
+		var result =
+			await readMetaSubPathStorage.ReadExifAndXmpFromFileAddFilePathHashAsync(
+				new List<string> { "/test.jpg" }, ["test_hash"]);
+
+		// should get the hash from the list
+		Assert.AreEqual(1, result.Count);
+		Assert.AreEqual("test_hash", result[0].FileHash);
 	}
 }

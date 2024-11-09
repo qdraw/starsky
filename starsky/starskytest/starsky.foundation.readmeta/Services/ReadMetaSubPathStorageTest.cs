@@ -15,6 +15,9 @@ namespace starskytest.starsky.foundation.readmeta.Services;
 [TestClass]
 public class ReadMetaSubPathStorageTest
 {
+	/// <summary>
+	///     Test the STORAGE abstraction
+	/// </summary>
 	[TestMethod]
 	public async Task ReadExifAndXmpFromFile()
 	{
