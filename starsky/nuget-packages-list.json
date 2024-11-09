@@ -53,8 +53,8 @@
   "Microsoft.AspNetCore.Identity.EntityFrameworkCore 8.0.10",
   "Microsoft.Extensions.Hosting 8.0.1",
   "Microsoft.NET.Test.Sdk 17.11.1",
-  "MSTest.TestAdapter 3.6.1",
-  "MSTest.TestFramework 3.6.1",
+  "MSTest.TestAdapter 3.6.2",
+  "MSTest.TestFramework 3.6.2",
   "coverlet.collector 6.0.2",
   "Microsoft.AspNetCore.Mvc.Formatters.Json 2.2.0",
   "Microsoft.AspNetCore.Identity 2.2.0"
