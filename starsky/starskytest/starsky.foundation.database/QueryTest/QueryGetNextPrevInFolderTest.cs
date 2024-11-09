@@ -29,17 +29,26 @@ public class QueryGetNextPrevInFolderTest
 	}
 
 	[TestMethod]
+	// directory is included
 	[DataRow("/collection", "/collection/20241106_155823_DSC00339", 4,
 		"/collection/20241106_155758_DSC00338.jpg",
 		"/collection/20241106_155823_DSC00339",
 		"/collection/20241106_155823_DSC00339.jpg",
 		"/collection/20241106_155825_DSC00340.jpg")]
+	// raw is included
 	[DataRow("/collection", "/collection/20241106_155758_DSC00338.arw", 4,
 		"/collection/20241106_155758_DSC00338.arw",
 		"/collection/20241106_155758_DSC00338.jpg",
 		"/collection/20241106_155823_DSC00339.jpg",
 		"/collection/20241106_155825_DSC00340.jpg")]
+	// selected file is already favorite
 	[DataRow("/collection", "/collection/20241106_155825_DSC00340.jpg", 3,
+		"/collection/20241106_155758_DSC00338.jpg",
+		"/collection/20241106_155823_DSC00339.jpg",
+		"/collection/20241106_155825_DSC00340.jpg",
+		null)]
+	// not found should be skipped
+	[DataRow("/collection", "/collection/NOT_FOUND_FILE.jpg", 3,
 		"/collection/20241106_155758_DSC00338.jpg",
 		"/collection/20241106_155823_DSC00339.jpg",
 		"/collection/20241106_155825_DSC00340.jpg",
