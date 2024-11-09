@@ -124,7 +124,7 @@ public sealed class ReadMeta : IReadMeta
 	{
 		foreach ( var item in objectExifToolModel )
 		{
-			UpdateReadMetaCache(item.FilePath!, item);
+			UpdateReadMetaCacheSingle(item.FilePath!, item);
 		}
 	}
 
@@ -151,6 +151,27 @@ public sealed class ReadMeta : IReadMeta
 		// continue = go to the next item in the list
 		_cache.Remove(queryCacheName);
 		return true;
+	}
+
+
+	/// <summary>
+	///     Update Cache only for ReadMeta!
+	///     To 15 minutes
+	/// </summary>
+	/// <param name="fullFilePath">can also be a subPath</param>
+	/// <param name="objectExifToolModel">the item</param>
+	private void UpdateReadMetaCacheSingle(string fullFilePath, FileIndexItem objectExifToolModel)
+	{
+		if ( _cache == null || _appSettings?.AddMemoryCache == false )
+		{
+			return;
+		}
+
+		var toUpdateObject = objectExifToolModel.Clone();
+		var queryReadMetaCacheName = CachePrefix + fullFilePath;
+		RemoveReadMetaCache(fullFilePath);
+		_cache.Set(queryReadMetaCacheName, toUpdateObject,
+			new TimeSpan(0, 15, 0));
 	}
 
 	private async Task<FileIndexItem> ReadExifAndXmpFromFileDirectAsync(string subPath)
@@ -191,26 +212,5 @@ public sealed class ReadMeta : IReadMeta
 		// overwrite content with incomplete sidecar file (this file can contain tags)
 		FileIndexCompareHelper.Compare(fileExifItemFile, xmpFileIndexItem);
 		return fileExifItemFile;
-	}
-
-
-	/// <summary>
-	///     Update Cache only for ReadMeta!
-	///     To 15 minutes
-	/// </summary>
-	/// <param name="fullFilePath">can also be a subPath</param>
-	/// <param name="objectExifToolModel">the item</param>
-	public void UpdateReadMetaCache(string fullFilePath, FileIndexItem objectExifToolModel)
-	{
-		if ( _cache == null || _appSettings?.AddMemoryCache == false )
-		{
-			return;
-		}
-
-		var toUpdateObject = objectExifToolModel.Clone();
-		var queryReadMetaCacheName = CachePrefix + fullFilePath;
-		RemoveReadMetaCache(fullFilePath);
-		_cache.Set(queryReadMetaCacheName, toUpdateObject,
-			new TimeSpan(0, 15, 0));
 	}
 }
