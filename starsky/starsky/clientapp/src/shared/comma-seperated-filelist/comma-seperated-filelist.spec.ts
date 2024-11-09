@@ -23,6 +23,11 @@ describe("CommaSeperatedFileList", () => {
     expect(result).toBe("without extension");
   });
 
+  test("should handle translated fallback for inputs without dots", () => {
+    const result = comma.CommaSpaceLastDot(["example", "another", "final"], "__test123__");
+    expect(result).toBe("__test123__");
+  });
+
   test("should handle mixed inputs with and without dots", () => {
     const result = comma.CommaSpaceLastDot(["example.test", "another", "final.test"]);
     expect(result).toBe("test, without extension");
