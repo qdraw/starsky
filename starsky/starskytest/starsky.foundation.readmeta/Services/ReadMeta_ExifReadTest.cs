@@ -14,6 +14,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.ReadMetaHelpers;
 using starsky.project.web.Attributes;
 using starskytest.FakeCreateAn;
+using starskytest.FakeCreateAn.CreateAnImageA6600Raw;
 using starskytest.FakeMocks;
 using XmpCore;
 using XmpCore.Impl;
@@ -332,6 +333,41 @@ public sealed class ExifReadTest
 		Assert.AreEqual("SLT-A58", item.Model);
 		Assert.AreEqual("24-105mm F3.5-4.5", item.LensModel);
 		Assert.AreEqual(ImageStabilisationType.Unknown, item.ImageStabilisation);
+	}
+
+	[TestMethod]
+	public void ExifRead_CreateAnImageA6600Raw_ReadExifFromFileTest()
+	{
+		var newImage = new CreateAnImageA6600Raw().Bytes.ToArray();
+		var fakeStorage = new FakeIStorage(new List<string> { "/" },
+			new List<string> { "/test.dng" }, new List<byte[]> { newImage });
+
+		var item =
+			new ReadMetaExif(fakeStorage, null!, new FakeIWebLogger()).ReadExifFromFile(
+				"/test.dng");
+
+		Assert.AreEqual(ColorClassParser.Color.None, item.ColorClass);
+		Assert.AreEqual(string.Empty, item.Description);
+		Assert.IsFalse(item.IsDirectory);
+		Assert.AreEqual(string.Empty, item.Tags);
+		Assert.AreEqual(string.Empty, item.Title);
+		Assert.AreEqual(0, item.Latitude, 0.000001);
+		Assert.AreEqual(0, item.Longitude, 0.000001);
+		Assert.AreEqual(1, item.ImageHeight);
+		Assert.AreEqual(1, item.ImageWidth);
+		Assert.AreEqual(string.Empty, item.LocationCity);
+		Assert.AreEqual(string.Empty, item.LocationState);
+		Assert.AreEqual(string.Empty, item.LocationCountry);
+		Assert.AreEqual(0, item.LocationAltitude);
+		Assert.AreEqual(18, item.FocalLength);
+		Assert.AreEqual(new DateTime(2024, 11, 7, 14, 05, 35, DateTimeKind.Local),
+			item.DateTime);
+
+		Assert.AreEqual("Sony|ILCE-6600|E 18-200mm F3.5-6.3 OSS LE", item.MakeModel);
+		Assert.AreEqual("Sony", item.Make);
+		Assert.AreEqual("ILCE-6600", item.Model);
+		Assert.AreEqual("E 18-200mm F3.5-6.3 OSS LE", item.LensModel);
+		Assert.AreEqual(ImageStabilisationType.On, item.ImageStabilisation);
 	}
 
 	[TestMethod]
