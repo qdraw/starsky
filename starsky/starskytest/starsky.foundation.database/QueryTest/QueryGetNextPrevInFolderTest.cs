@@ -123,4 +123,47 @@ public class QueryGetNextPrevInFolderTest
 
 		await _query.RemoveItemAsync(items);
 	}
+
+	[TestMethod]
+	public async Task QueryGetNextPrevInFolder_DoesNotIncludeMetaJsonOrXmp()
+	{
+		// Arrange
+		const string parentFolderPath = "/collection";
+		const string currentFolder = "/collection/DSC00338.jpg";
+		var items = new List<FileIndexItem>
+		{
+			new()
+			{
+				FilePath = "/collection/DSC00338.jpg",
+				ParentDirectory = parentFolderPath,
+				ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
+			},
+			new()
+			{
+				FilePath = "/collection/DSC00340.json",
+				ParentDirectory = parentFolderPath,
+				ImageFormat = ExtensionRolesHelper.ImageFormat.meta_json
+			},
+			new()
+			{
+				FilePath = "/collection/DSC00341.xmp",
+				ParentDirectory = parentFolderPath,
+				ImageFormat = ExtensionRolesHelper.ImageFormat.xmp
+			}
+		};
+
+		_context.FileIndex.AddRange(items);
+		await _context.SaveChangesAsync();
+
+		// Act
+		var result = _query.QueryGetNextPrevInFolder(parentFolderPath, currentFolder);
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.IsFalse(result.Exists(p =>
+			p.ImageFormat == ExtensionRolesHelper.ImageFormat.meta_json));
+		Assert.IsFalse(result.Exists(p => p.ImageFormat == ExtensionRolesHelper.ImageFormat.xmp));
+
+		await _query.RemoveItemAsync(items);
+	}
 }
