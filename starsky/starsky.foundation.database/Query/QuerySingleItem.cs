@@ -7,7 +7,7 @@ using starsky.foundation.platform.Helpers;
 namespace starsky.foundation.database.Query;
 
 /// <summary>
-/// QuerySingleItem
+///     QuerySingleItem
 /// </summary>
 public partial class Query
 {
@@ -17,7 +17,7 @@ public partial class Query
 	// With Caching feature :)
 
 	/// <summary>
-	/// SingleItemPath do the query for singleItem + return detailView object
+	///     SingleItemPath do the query for singleItem + return detailView object
 	/// </summary>
 	/// <param name="singleItemDbPath"></param>
 	/// <param name="colorClassActiveList">list of colorClasses to show, default show all</param>
@@ -51,7 +51,7 @@ public partial class Query
 	}
 
 	/// <summary>
-	/// fileIndexItemsList, Create an detailView object
+	///     fileIndexItemsList, Create an detailView object
 	/// </summary>
 	/// <param name="fileIndexItemsList">list of fileIndexItems</param>
 	/// <param name="singleItemDbPath">database style path</param>
@@ -115,7 +115,7 @@ public partial class Query
 
 		// To know when a file is deleted
 		if ( currentFileIndexItem.Tags != null &&
-			 currentFileIndexItem.Tags.Contains(TrashKeyword.TrashKeywordString) )
+		     currentFileIndexItem.Tags.Contains(TrashKeyword.TrashKeywordString) )
 		{
 			currentFileIndexItem.Status = FileIndexItem.ExifStatus.Deleted;
 		}
@@ -129,12 +129,12 @@ public partial class Query
 				IsDirectory = true,
 				SubPath = singleItemDbPath,
 				FileIndexItem = currentFileIndexItem,
-				Collections = enableCollections,
+				Collections = enableCollections
 			};
 		}
 
 		if ( currentFileIndexItem.Tags != null &&
-			 currentFileIndexItem.Tags.Contains(TrashKeyword.TrashKeywordString) )
+		     currentFileIndexItem.Tags.Contains(TrashKeyword.TrashKeywordString) )
 		{
 			hideDeleted = false;
 		}
@@ -158,6 +158,7 @@ public partial class Query
 
 		// First item is current item
 		var collectionPaths = new List<string> { singleItemDbPath };
+		// include directories here
 		collectionPaths.AddRange(fileIndexItemsList
 			.Where(p => p.FileCollectionName == currentFileIndexItem.FileCollectionName)
 			.Select(p => p.FilePath)!);
@@ -180,8 +181,8 @@ public partial class Query
 
 		fileIndexItemsList = SortHelper.Helper(fileIndexItemsList, sortType).ToList();
 
-		var currentIndex =
-			fileIndexItemsList.FindIndex(p => p.FilePath == currentFileIndexItem.FilePath);
+		var currentIndex = fileIndexItemsList.FindIndex(p =>
+			p.FilePath == currentFileIndexItem.FilePath);
 		var relativeObject = new RelativeObjects();
 
 		if ( currentIndex != fileIndexItemsList.Count - 1 )

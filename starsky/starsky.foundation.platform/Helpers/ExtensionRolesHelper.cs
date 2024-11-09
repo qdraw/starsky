@@ -100,7 +100,7 @@ public static partial class ExtensionRolesHelper
 	private static readonly List<string> ExtensionPng = new() { "png" };
 
 	/// <summary>
-	///     GPX, list of geo locations
+	///     GPX, list of geolocations
 	/// </summary>
 	private static readonly List<string> ExtensionGpx = new() { "gpx" };
 
