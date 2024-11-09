@@ -131,9 +131,10 @@
         <Content Include="FakeCreateAn\CreateAnImageA6600Raw\head_part.arw">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-    </ItemGroup>
-    <ItemGroup>
-      <Folder Include="FakeCreateAn\CreateAnImageA330Raw\" />
+        <None Remove="FakeCreateAn\CreateAnImageA330Raw\head_part.arw" />
+        <Content Include="FakeCreateAn\CreateAnImageA330Raw\head_part.arw">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

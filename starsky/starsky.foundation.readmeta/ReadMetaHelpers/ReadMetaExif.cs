@@ -280,7 +280,8 @@ public sealed class ReadMetaExif
 		var make = GetMakeModel(allExifItems, true);
 		if ( make != string.Empty ) // string.Empty = is not the right tag or empty tag
 		{
-			item.SetMakeModel(make, 0);
+			// sometimes a make can have a space at the end
+			item.SetMakeModel(make.Trim(), 0);
 		}
 
 		var model = GetMakeModel(allExifItems, false);
