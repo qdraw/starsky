@@ -124,7 +124,7 @@ public sealed class ReadMeta : IReadMeta
 	{
 		foreach ( var item in objectExifToolModel )
 		{
-			UpdateReadMetaCacheSingle(item.FilePath!, item);
+			UpdateReadMetaCache(item.FilePath!, item);
 		}
 	}
 
@@ -153,14 +153,13 @@ public sealed class ReadMeta : IReadMeta
 		return true;
 	}
 
-
 	/// <summary>
 	///     Update Cache only for ReadMeta!
 	///     To 15 minutes
 	/// </summary>
 	/// <param name="fullFilePath">can also be a subPath</param>
 	/// <param name="objectExifToolModel">the item</param>
-	private void UpdateReadMetaCacheSingle(string fullFilePath, FileIndexItem objectExifToolModel)
+	internal void UpdateReadMetaCache(string fullFilePath, FileIndexItem objectExifToolModel)
 	{
 		if ( _cache == null || _appSettings?.AddMemoryCache == false )
 		{
