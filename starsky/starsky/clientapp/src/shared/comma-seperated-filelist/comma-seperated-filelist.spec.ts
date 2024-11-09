@@ -15,17 +15,17 @@ describe("CommaSeperatedFileList", () => {
 
   test("should return comma-separated last parts after dot for multiple inputs", () => {
     const result = comma.CommaSpaceLastDot(["example.test", "another.example", "final.test"]);
-    expect(result).toBe("test, example, test");
+    expect(result).toBe("example, test");
   });
 
   test("should handle inputs without dots", () => {
     const result = comma.CommaSpaceLastDot(["example", "another", "final"]);
-    expect(result).toBe("example, without extension, final");
+    expect(result).toBe("without extension");
   });
 
   test("should handle mixed inputs with and without dots", () => {
     const result = comma.CommaSpaceLastDot(["example.test", "another", "final.test"]);
-    expect(result).toBe("test, without extension, test");
+    expect(result).toBe("test, without extension");
   });
 
   test("should handle mixed inputs with and without dots", () => {
@@ -34,6 +34,6 @@ describe("CommaSeperatedFileList", () => {
       "/collection/20241106_155823_DSC00339",
       "final.test"
     ]);
-    expect(result).toBe("test, without extension, test");
+    expect(result).toBe("test, without extension");
   });
 });

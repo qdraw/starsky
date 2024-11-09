@@ -838,7 +838,7 @@ describe("MenuDetailView", () => {
 
       expect(trashIncl).toBeTruthy();
 
-      expect(trashIncl?.textContent).toBe("Including: jpg, arw");
+      expect(trashIncl?.textContent).toBe("Including: arw, jpg");
 
       act(() => {
         component.unmount();

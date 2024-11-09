@@ -8,7 +8,6 @@ export class CommaSeperatedFileList {
       } else {
         uniqueExtensions.add(messageNoExtensionItem ? messageNoExtensionItem : "without extension");
       }
-      uniqueExtensions.add(fileExtension);
     }
     return Array.from(uniqueExtensions).sort();
   }
@@ -16,7 +15,9 @@ export class CommaSeperatedFileList {
   public CommaSpaceLastDot(inputs: string[], messageNoExtensionItem?: string): string {
     let output = "";
     const uniqueExtensionsArray = this.GetUniqueExtensions(inputs, messageNoExtensionItem);
+
     for (let index = 0; index < uniqueExtensionsArray.length; index++) {
+      output += uniqueExtensionsArray[index];
       if (index !== uniqueExtensionsArray.length - 1) {
         output += ", ";
       }
