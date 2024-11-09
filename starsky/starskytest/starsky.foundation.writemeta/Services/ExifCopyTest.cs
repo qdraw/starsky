@@ -5,6 +5,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Helpers;
+using starsky.foundation.storage.Storage;
+using starsky.foundation.writemeta.Helpers;
 using starsky.foundation.writemeta.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
@@ -100,6 +102,41 @@ public sealed class ExifCopyTest
 
 		Assert.IsTrue(storage.ExistFile("/test.xmp"));
 		var xmpContentReadStream = storage.ReadStream("/test.xmp");
+		var xmpContent = await StreamToStringHelper.StreamToStringAsync(xmpContentReadStream);
+
+		// Those values are injected by fakeExifTool
+		Assert.IsTrue(xmpContent.Contains(
+			"<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Image::ExifTool 11.30'>"));
+		Assert.IsTrue(xmpContent.Contains("<rdf:li>test</rdf:li>"));
+	}
+
+	[TestMethod]
+	public async Task ExifToolCmdHelper_TestForFakeExifToolInjectio111n()
+	{
+		var path =
+			"/Users/dion/data/git/starsky/starsky/starskytest/FakeCreateAn/CreateAnImageA6600Raw/20241107_140535_DSC00732.arw";
+		var xmpPath =
+			"/Users/dion/data/git/starsky/starsky/starskytest/FakeCreateAn/CreateAnImageA6600Raw/20241107_140535_DSC00732.xmp";
+
+		// var folderPaths = new List<string> { "/" };
+		// var inputSubPaths = new List<string> { "/test.dng" };
+
+		// var storage =
+		// 	new FakeIStorage(folderPaths, inputSubPaths,
+		// 		new List<byte[]> { new CreateAnImageA6600Raw().Bytes.ToArray() });
+
+		var storage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+
+		var readMeta = new ReadMeta(storage, _appSettings,
+			null, new FakeIWebLogger());
+		var fakeExifTool =
+			new ExifTool(storage, new FakeIStorage(), _appSettings, new FakeIWebLogger());
+
+		await new ExifCopy(storage, storage, fakeExifTool, readMeta, new FakeIThumbnailQuery(),
+				new FakeIWebLogger())
+			.XmpSync(path);
+
+		var xmpContentReadStream = storage.ReadStream(xmpPath);
 		var xmpContent = await StreamToStringHelper.StreamToStringAsync(xmpContentReadStream);
 
 		// Those values are injected by fakeExifTool

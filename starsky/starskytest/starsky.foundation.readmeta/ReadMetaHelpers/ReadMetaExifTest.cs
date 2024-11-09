@@ -7,6 +7,7 @@ using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Exif.Makernotes;
 using MetadataExtractor.Formats.Xmp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.ReadMetaHelpers;
 using starskytest.FakeCreateAn;
@@ -153,5 +154,41 @@ public class ReadMetaExifTest
 		Assert.ThrowsException<ArgumentException>(() =>
 			readMetaExif.ParseExifDirectory([], null)
 		);
+	}
+
+	[TestMethod]
+	public void ParseExifDirectory_WithExampleData_ShouldReturnExpectedFileIndexItem()
+	{
+		// Arrange
+		var exifIfd0Directory = new ExifIfd0Directory();
+		exifIfd0Directory.Set(ExifDirectoryBase.TagMake, "Canon");
+		exifIfd0Directory.Set(ExifDirectoryBase.TagModel, "EOS 80D");
+		exifIfd0Directory.Set(ExifDirectoryBase.TagOrientation,
+			"Top, left side (Horizontal / normal)");
+
+		// Yes this one has duplicate models, that how sony stores it
+		var exifIfd0Directory2 = new ExifSubIfdDirectory();
+		exifIfd0Directory2.Set(ExifDirectoryBase.TagLensSpecification, "18-200mm f/3,5-6,3");
+		exifIfd0Directory2.Set(ExifDirectoryBase.TagLensModel, "E 18-200mm F3.5-6.3 OSS LE");
+
+		var exifSubIfdDirectory = new ExifSubIfdDirectory();
+		exifSubIfdDirectory.Set(ExifDirectoryBase.TagFocalLength, "50 mm");
+
+		var directories =
+			new List<Directory> { exifIfd0Directory, exifSubIfdDirectory, exifIfd0Directory2 };
+
+		var fileIndexItem = new FileIndexItem("/path/to/file.jpg");
+
+		var readMetaExif = new ReadMetaExif(null!, null!, null!);
+
+		// Act
+		var result = readMetaExif.ParseExifDirectory(directories, fileIndexItem);
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.AreEqual("Canon", result.Make);
+		Assert.AreEqual("EOS 80D", result.Model);
+		Assert.AreEqual(FileIndexItem.Rotation.Horizontal, result.Orientation);
+		Assert.AreEqual("E 18-200mm F3.5-6.3 OSS LE", result.LensModel);
 	}
 }

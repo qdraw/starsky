@@ -20,7 +20,7 @@ public class CreateAnImageA6600Raw
 		}
 
 		var path = Path.Combine(dirName, "FakeCreateAn",
-			"CreateAnImageA6600Raw", "CreateAnImageA6600Raw.tiff");
+			"CreateAnImageA6600Raw", "head_part.arw");
 
 		Bytes = [..StreamToBytes(path)];
 	}

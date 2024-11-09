@@ -353,13 +353,13 @@ public sealed class ExifReadTest
 		Assert.AreEqual(string.Empty, item.Title);
 		Assert.AreEqual(0, item.Latitude, 0.000001);
 		Assert.AreEqual(0, item.Longitude, 0.000001);
-		Assert.AreEqual(1, item.ImageHeight);
-		Assert.AreEqual(1, item.ImageWidth);
+		Assert.AreEqual(4000, item.ImageHeight);
+		Assert.AreEqual(6000, item.ImageWidth);
 		Assert.AreEqual(string.Empty, item.LocationCity);
 		Assert.AreEqual(string.Empty, item.LocationState);
 		Assert.AreEqual(string.Empty, item.LocationCountry);
 		Assert.AreEqual(0, item.LocationAltitude);
-		Assert.AreEqual(18, item.FocalLength);
+		Assert.AreEqual(0, item.FocalLength);
 		Assert.AreEqual(new DateTime(2024, 11, 7, 14, 05, 35, DateTimeKind.Local),
 			item.DateTime);
 

@@ -101,7 +101,7 @@ public sealed class ReadMeta : IReadMeta
 		// Return values from IMemoryCache
 		var queryReadMetaCacheName = CachePrefix + subPath;
 
-		// Return Cached object if it exist
+		// Return Cached object if exist
 		if ( _cache.TryGetValue(queryReadMetaCacheName, out var objectExifToolModel) )
 		{
 			return objectExifToolModel as FileIndexItem;
