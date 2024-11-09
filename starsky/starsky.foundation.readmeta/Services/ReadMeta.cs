@@ -46,7 +46,12 @@ public sealed class ReadMeta : IReadMeta
 		_readMetaGpx = new ReadMetaGpx(logger);
 	}
 
-	// used by the html generator
+	/// <summary>
+	///     used by the html generator
+	/// </summary>
+	/// <param name="subPathList">list of paths</param>
+	/// <param name="fileHashes">file hashes</param>
+	/// <returns>items</returns>
 	public async Task<List<FileIndexItem>> ReadExifAndXmpFromFileAddFilePathHashAsync(
 		List<string> subPathList, List<string>? fileHashes = null)
 	{
