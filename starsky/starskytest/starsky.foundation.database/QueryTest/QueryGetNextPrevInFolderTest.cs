@@ -1,13 +1,16 @@
+using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
-using starskytest.Controllers;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.QueryTest;
@@ -24,7 +27,8 @@ public class QueryGetNextPrevInFolderTest
 		var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
 		builder.UseInMemoryDatabase(nameof(QueryGetNextPrevInFolderTest));
 		_context = new ApplicationDbContext(builder.Options);
-		_query = new Query(_context, new AppSettings(), new FakeIServiceScopeFactory(),
+		_query = new Query(_context, new AppSettings(),
+			new FakeIServiceScopeFactory(nameof(QueryGetNextPrevInFolderTest)),
 			new FakeIWebLogger(), new FakeMemoryCache());
 	}
 
@@ -165,5 +169,71 @@ public class QueryGetNextPrevInFolderTest
 		Assert.IsFalse(result.Exists(p => p.ImageFormat == ExtensionRolesHelper.ImageFormat.xmp));
 
 		await _query.RemoveItemAsync(items);
+	}
+
+	[TestMethod]
+	public void QueryGetNextPrevInFolder_HandlesMySqlProtocolException()
+	{
+		// Arrange
+		var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
+		var customContext = new MySqlProtocolExceptionDbContext(builder.Options);
+		var serviceScopeFactory = new FakeIServiceScopeFactory();
+		var query = new Query(customContext, new AppSettings(), serviceScopeFactory,
+			new FakeIWebLogger(), new FakeMemoryCache());
+
+		const string parentFolderPath = "/collection";
+		const string currentFolder = "/collection/20241106_155758_DSC00338";
+		var items = new List<FileIndexItem>
+		{
+			new()
+			{
+				FilePath = "/collection/20241106_155758_DSC00338.arw",
+				ParentDirectory = parentFolderPath,
+				ImageFormat = ExtensionRolesHelper.ImageFormat.tiff
+			}
+		};
+
+		var serviceScope = serviceScopeFactory.CreateScope();
+		var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+		dbContext.FileIndex.AddRange(items);
+		dbContext.SaveChanges();
+
+		// Act
+		var result = query.QueryGetNextPrevInFolder(parentFolderPath, currentFolder);
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.AreEqual(items.Count, result.Count);
+		Assert.AreEqual(items[0].FilePath, result[0].FilePath);
+
+		// Cleanup
+		dbContext.Remove(items[0]);
+		dbContext.SaveChanges();
+	}
+
+	private class MySqlProtocolExceptionDbContext(DbContextOptions<ApplicationDbContext> options)
+		: ApplicationDbContext(options)
+	{
+		public override DbSet<FileIndexItem> FileIndex
+		{
+			get
+			{
+				var exceptionType = typeof(MySqlProtocolException);
+				var constructor = exceptionType.GetConstructor(
+					BindingFlags.NonPublic | BindingFlags.Instance,
+					null,
+					[typeof(string)],
+					null
+				) ?? throw new InvalidOperationException("Constructor not found.");
+
+				var exceptionInstance =
+					( MySqlProtocolException ) constructor.Invoke(new object[]
+					{
+						"Test exception"
+					});
+				throw exceptionInstance;
+			}
+		}
 	}
 }
