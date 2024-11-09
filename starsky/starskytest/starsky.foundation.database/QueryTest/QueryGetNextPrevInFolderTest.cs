@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
@@ -28,70 +29,89 @@ public class QueryGetNextPrevInFolderTest
 	}
 
 	[TestMethod]
-	public void QueryGetNextPrevInFolder_ReturnsExpectedResult()
+	[DataRow("/collection", "/collection/20241106_155823_DSC00339", 4,
+		"/collection/20241106_155758_DSC00338.jpg",
+		"/collection/20241106_155823_DSC00339",
+		"/collection/20241106_155823_DSC00339.jpg",
+		"/collection/20241106_155825_DSC00340.jpg")]
+	[DataRow("/collection", "/collection/20241106_155758_DSC00338.arw", 4,
+		"/collection/20241106_155758_DSC00338.arw",
+		"/collection/20241106_155758_DSC00338.jpg",
+		"/collection/20241106_155823_DSC00339.jpg",
+		"/collection/20241106_155825_DSC00340.jpg")]
+	[DataRow("/collection", "/collection/20241106_155825_DSC00340.jpg", 3,
+		"/collection/20241106_155758_DSC00338.jpg",
+		"/collection/20241106_155823_DSC00339.jpg",
+		"/collection/20241106_155825_DSC00340.jpg",
+		null)]
+	public async Task QueryGetNextPrevInFolder_ReturnsExpectedResult(string parentFolderPath,
+		string currentFolder, int expectedCount, string expectedFilePath1, string expectedFilePath2,
+		string expectedFilePath3, string? expectedFilePath4)
 	{
 		// Arrange
-		const string parentFolderPath = "/map_collection_bug";
-		const string currentFolder = "/map_collection_bug/20241106_155823_DSC00339";
 		var items = new List<FileIndexItem>
 		{
 			new()
 			{
-				FilePath = "/map_collection_bug/20241106_155758_DSC00338.arw",
+				FilePath = "/collection/20241106_155758_DSC00338.arw",
 				ParentDirectory = parentFolderPath,
 				ImageFormat = ExtensionRolesHelper.ImageFormat.tiff
 			},
 			new()
 			{
-				FilePath = "/map_collection_bug/20241106_155758_DSC00338.jpg",
+				FilePath = "/collection/20241106_155758_DSC00338.jpg",
 				ParentDirectory = parentFolderPath,
 				ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
 			},
 			new()
 			{
-				FilePath = "/map_collection_bug/20241106_155823_DSC00339",
+				FilePath = "/collection/20241106_155823_DSC00339",
 				ParentDirectory = parentFolderPath,
 				ImageFormat = ExtensionRolesHelper.ImageFormat.directory
 			},
 			new()
 			{
-				FilePath = "/map_collection_bug/20241106_155823_DSC00339.arw",
+				FilePath = "/collection/20241106_155823_DSC00339.arw",
 				ParentDirectory = parentFolderPath,
 				ImageFormat = ExtensionRolesHelper.ImageFormat.tiff
 			},
 			new()
 			{
-				FilePath = "/map_collection_bug/20241106_155823_DSC00339.jpg",
+				FilePath = "/collection/20241106_155823_DSC00339.jpg",
 				ParentDirectory = parentFolderPath,
 				ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
 			},
 			new()
 			{
-				FilePath = "/map_collection_bug/20241106_155825_DSC00340.arw",
+				FilePath = "/collection/20241106_155825_DSC00340.arw",
 				ParentDirectory = parentFolderPath,
 				ImageFormat = ExtensionRolesHelper.ImageFormat.tiff
 			},
 			new()
 			{
-				FilePath = "/map_collection_bug/20241106_155825_DSC00340.jpg",
+				FilePath = "/collection/20241106_155825_DSC00340.jpg",
 				ParentDirectory = parentFolderPath,
 				ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
 			}
 		};
 
 		_context.FileIndex.AddRange(items);
-		_context.SaveChanges();
+		await _context.SaveChangesAsync();
 
 		// Act
 		var result = _query.QueryGetNextPrevInFolder(parentFolderPath, currentFolder);
 
 		// Assert
 		Assert.IsNotNull(result);
-		
-		Assert.AreEqual(4, result.Count);
-		Assert.AreEqual("/map_collection_bug/20241106_155758_DSC00338.jpg", result[0].FilePath);
-		Assert.AreEqual("/map_collection_bug/20241106_155823_DSC00339", result[1].FilePath);
-		Assert.AreEqual("/map_collection_bug/20241106_155823_DSC00339.jpg", result[2].FilePath);
-		Assert.AreEqual("/map_collection_bug/20241106_155825_DSC00340.jpg", result[3].FilePath);
+		Assert.AreEqual(expectedCount, result.Count);
+		Assert.AreEqual(expectedFilePath1, result[0].FilePath);
+		Assert.AreEqual(expectedFilePath2, result[1].FilePath);
+		Assert.AreEqual(expectedFilePath3, result[2].FilePath);
+		if ( expectedFilePath4 != null )
+		{
+			Assert.AreEqual(expectedFilePath4, result[3].FilePath);
+		}
+
+		await _query.RemoveItemAsync(items);
 	}
 }

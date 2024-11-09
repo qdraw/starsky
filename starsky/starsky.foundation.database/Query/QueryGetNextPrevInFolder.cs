@@ -31,8 +31,8 @@ public partial class Query
 
 			// For the case when there is a folder named: test and a file test.jpg
 			var itemWithSameNameInQueryResult = items.Find(p => p.FilePath == currentFolder);
-			if ( groupedItems.Exists(p => p.FilePath != currentFolder)
-			     && itemWithSameNameInQueryResult != null )
+			if ( itemWithSameNameInQueryResult != null &&
+			     !groupedItems.Exists(p => p.FileName == itemWithSameNameInQueryResult.FileName) )
 			{
 				groupedItems.Add(itemWithSameNameInQueryResult);
 			}
