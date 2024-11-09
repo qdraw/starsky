@@ -19,7 +19,7 @@ export class CommaSeperatedFileList {
       if (element !== fileExtension) {
         uniqueExtensions.add(fileExtension);
       } else {
-        uniqueExtensions.add(messageNoExtensionItem ? messageNoExtensionItem : "without extension");
+        uniqueExtensions.add(messageNoExtensionItem || "without extension");
       }
     }
     return Array.from(uniqueExtensions).sort((a, b) =>
