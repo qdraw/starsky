@@ -28,6 +28,18 @@ describe("CommaSeperatedFileList", () => {
     expect(result).toBe("__test123__");
   });
 
+  test("should ignore/handle empty string translated for inputs without dots", () => {
+    // yes empty string is a non-valid option
+    const result = comma.CommaSpaceLastDot(["example.test", "another", "final.test"], "");
+    expect(result).toBe(", test");
+  });
+
+  test("should ignore/handle null translated for inputs without dots", () => {
+    // yes null is a non-valid option
+    const result = comma.CommaSpaceLastDot(["example.test", "another", "final.test"], null!);
+    expect(result).toBe("test, without extension");
+  });
+
   test("should handle mixed inputs with and without dots", () => {
     const result = comma.CommaSpaceLastDot(["example.test", "another", "final.test"]);
     expect(result).toBe("test, without extension");

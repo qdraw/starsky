@@ -14,12 +14,14 @@ export class CommaSeperatedFileList {
 
   private GetUniqueExtensions(inputs: string[], messageNoExtensionItem?: string): Array<string> {
     const uniqueExtensions = new Set<string>();
+    const messageNoExtension = messageNoExtensionItem ?? "without extension";
+
     for (const element of inputs) {
       const fileExtension = element.split(".")[element.split(".").length - 1];
       if (element !== fileExtension) {
         uniqueExtensions.add(fileExtension);
       } else {
-        uniqueExtensions.add(messageNoExtensionItem || "without extension");
+        uniqueExtensions.add(messageNoExtension);
       }
     }
     return Array.from(uniqueExtensions).sort((a, b) =>
