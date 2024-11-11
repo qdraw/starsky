@@ -41,7 +41,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.6.3 - _(Unreleased)_ - 2024-08-?? {#v0.6.3}
+## version 0.6.3 - _(Unreleased)_ - 2024-11-?? {#v0.6.3}
 
 - [x] (Fixed) _Front-end_ OkAndSame status in Upload Modal gives the wrong status (PR #1783)
 - [x] (Changed) _Back-end_ Behavior of generating thumbnails on the background (PR #1780)
@@ -63,7 +63,9 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Fixed) _Front-end_ increase description limit (Issue #1810) (PR #1814)
 - [x] (Fixed) _Back-end_ Change reading order to favor XMP for description/title field (PR #1814)
 - [x] (Fixed) _Back-end_ OrderBy ImageFormat and then alphabet (PR #1815)
-- [x] (Added) _Back-end_ WebP support for sync, reading & writing (PR #1813)
+- [x] (Added) _Back-end_ WebP support for sync, thumbnails, reading & writing (PR #1813)
+- [x] (Added) _Back-end_ Psd support for sync, reading & writing (no thumbnail) (PR #1817)
+- [x] (Added) _Front-end_ Cache display issue with fileName contains (PR #1817)
 
 ## version 0.6.2 - 2024-10-11 {#v0.6.2}
 
