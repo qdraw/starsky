@@ -1,6 +1,8 @@
 import { IArchive, newIArchive, SortType } from "../interfaces/IArchive";
-import { newDetailView, PageType } from "../interfaces/IDetailView";
-import { newIFileIndexItem } from "../interfaces/IFileIndexItem";
+import { IDetailView, newDetailView, PageType } from "../interfaces/IDetailView";
+import { IExifStatus } from "../interfaces/IExifStatus";
+import { IFileIndexItem, newIFileIndexItem } from "../interfaces/IFileIndexItem";
+import { IUrl } from "../interfaces/IUrl";
 import { FileListCache } from "./filelist-cache";
 
 describe("FileListCache", () => {
@@ -198,6 +200,108 @@ describe("FileListCache", () => {
       });
 
       expect(imageFormatStorageKey === fileNameStorageKey).toBeFalsy();
+    });
+
+    it("should not confuse 20241106_171136_DSC00389_e2.jpg and 20241106_171136_DSC00389.psd", () => {
+      const urlObject: IUrl = {
+        f: "/__REPLACE__",
+        collections: false,
+        colorClass: [],
+        sort: undefined
+      };
+
+      const parentDirectory = "/test";
+
+      const fileIndexItems: IFileIndexItem[] = [
+        {
+          filePath: "/test/20241106_171136_DSC00389_e2.jpg",
+          fileName: "20241106_171136_DSC00389_e2.jpg",
+          fileCollectionName: "20241106_171136_DSC00389_e2",
+          fileHash: "",
+          status: IExifStatus.Ok,
+          isDirectory: false,
+          parentDirectory
+        },
+        {
+          filePath: "/test/20241106_171136_DSC00389.psd",
+          fileName: "20241106_171136_DSC00389.psd",
+          fileCollectionName: "20241106_171136_DSC00389",
+          fileHash: "",
+          status: IExifStatus.Ok,
+          isDirectory: false,
+          parentDirectory
+        }
+      ];
+
+      const parentItem: IArchive = {
+        subPath: "/test",
+        fileIndexItems,
+        pageType: PageType.Archive,
+        breadcrumb: [],
+        relativeObjects: {
+          nextFilePath: "",
+          prevFilePath: "",
+          nextHash: "",
+          prevHash: "",
+          args: [""]
+        },
+        colorClassActiveList: [],
+        colorClassUsage: [],
+        collectionsCount: 0,
+        isReadOnly: false,
+        dateCache: Date.now()
+      };
+
+      const detailViewItem: IDetailView = {
+        fileIndexItem: {
+          filePath: "/test/20241106_171136_DSC00389_e2.jpg",
+          fileCollectionName: "20241106_171136_DSC00389_e2",
+          fileHash: "",
+          fileName: "20241106_171136_DSC00389_e2.jpg",
+          status: IExifStatus.Ok,
+          isDirectory: false,
+          parentDirectory
+        },
+        subPath: "",
+        pageType: PageType.DetailView,
+        breadcrumb: [],
+        relativeObjects: {
+          nextFilePath: "",
+          prevFilePath: "",
+          nextHash: "",
+          prevHash: "",
+          args: [""]
+        },
+        colorClassActiveList: [],
+        isReadOnly: false,
+        dateCache: Date.now()
+      };
+
+      // Set the parent item in the cache
+      fileListCache.CacheSetObject({ ...urlObject, f: "/test" }, parentItem);
+
+      // Update the detail view item in the cache
+      fileListCache.CacheSetObject(
+        { ...urlObject, f: "/test/20241106_171136_DSC00389_e2.jpg" },
+        detailViewItem
+      );
+
+      // Retrieve the updated parent item from the cache
+      const updatedParentItem = fileListCache.CacheGetObject({
+        ...urlObject,
+        f: parentDirectory
+      }) as IArchive;
+
+      // Ensure the correct item was updated
+      const updatedItem = updatedParentItem.fileIndexItems.find(
+        (item) => item.fileName === "20241106_171136_DSC00389_e2.jpg"
+      );
+      const notUpdatedItem = updatedParentItem.fileIndexItems.find(
+        (item) => item.fileName === "20241106_171136_DSC00389.psd"
+      );
+
+      expect(updatedItem).toEqual(detailViewItem.fileIndexItem);
+      expect(notUpdatedItem).toEqual(fileIndexItems[1]);
     });
 
     it("ignore when old", () => {
