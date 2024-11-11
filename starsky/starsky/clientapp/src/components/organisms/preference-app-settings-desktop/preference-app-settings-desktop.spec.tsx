@@ -253,9 +253,10 @@ describe("PreferencesAppSettingsDesktop", () => {
 
     await waitFor(() => {
       const query =
-        "DefaultDesktopEditor%5B0%5D.ImageFormats%5B0%5D=jpg&DefaultDesktopEditor%5B0%5D.ImageFormats%" +
-        "5B1%5D=png&DefaultDesktopEditor%5B0%5D.ImageFormats%5B2%5D=bmp&DefaultDesktopEditor%5B0%5D.ImageFormats%5B3%5D=tiff&" +
-        "DefaultDesktopEditor%5B0%5D.ApplicationPath=test";
+        "DefaultDesktopEditor%5B0%5D.ImageFormats%5B0%5D=jpg&DefaultDesktopEditor%5B0%5D." +
+        "ImageFormats%5B1%5D=png&DefaultDesktopEditor%5B0%5D.ImageFormats%5B2%5D=bmp&" +
+        "DefaultDesktopEditor%5B0%5D.ImageFormats%5B3%5D=tiff&DefaultDesktopEditor%5B0%5D." +
+        "ImageFormats%5B4%5D=webp&DefaultDesktopEditor%5B0%5D.ApplicationPath=test";
 
       expect(spyFetchPost).toHaveBeenCalledTimes(1);
       expect(spyFetchPost).toHaveBeenCalledWith(new UrlQuery().UrlApiAppSettings(), query);
@@ -354,13 +355,15 @@ describe("updateDefaultEditorPhotos", () => {
 
     expect(spyFetchPost).toHaveBeenCalled();
     const query =
-      "DefaultDesktopEditor%5B0%5D.ImageFormats%5B0%5D=jpg&DefaultDesktopEditor%5B0%5D.ImageFormats%" +
-      "5B1%5D=png&DefaultDesktopEditor%5B0%5D.ImageFormats%5B2%5D=bmp&DefaultDesktopEditor%5B0%5D.ImageFormats%5B3%5D=tiff&" +
-      "DefaultDesktopEditor%5B0%5D.ApplicationPath=test";
+      "DefaultDesktopEditor%5B0%5D.ImageFormats%5B0%5D=jpg&DefaultDesktopEditor%5B0%5D.ImageFormats" +
+      "%5B1%5D=png&DefaultDesktopEditor%5B0%5D.ImageFormats%5B2%5D=bmp&DefaultDesktopEditor%5B0%5D." +
+      "ImageFormats%5B3%5D=tiff&DefaultDesktopEditor%5B0%5D.ImageFormats%5B4%5D=webp&DefaultDesktopEditor%5B0%5D." +
+      "ApplicationPath=test";
+
     expect(spyFetchPost).toHaveBeenCalledWith(new UrlQuery().UrlApiAppSettings(), query);
   });
 
-  it("Create new item in Array if emthy array", async () => {
+  it("should update existing editor and add new editor if array is not empty", async () => {
     const value = {
       target: { innerText: "test" }
     } as unknown as ChangeEvent<HTMLDivElement>;
@@ -388,10 +391,14 @@ describe("updateDefaultEditorPhotos", () => {
     expect(spyFetchPost).toHaveBeenCalled();
 
     const query2 =
-      "DefaultDesktopEditor%5B0%5D.ImageFormats%5B0%5D=jpg&DefaultDesktopEditor%5B0%5D.ImageFormats%5B1%5D=png&DefaultDesktopEditor" +
-      "%5B0%5D.ImageFormats%5B2%5D=bmp&DefaultDesktopEditor%5B0%5D.ImageFormats%5B3%5D=tiff&DefaultDesktopEditor%5B0%5D.ApplicationPath=%2Fexist_app&" +
-      "DefaultDesktopEditor%5B1%5D.ImageFormats%5B0%5D=jpg&DefaultDesktopEditor%5B1%5D.ImageFormats%5B1%5D=png&DefaultDesktopEditor%5B1%5D.ImageFormats%5B2%5D=bmp&" +
-      "DefaultDesktopEditor%5B1%5D.ImageFormats%5B3%5D=tiff&DefaultDesktopEditor%5B1%5D.ApplicationPath=test";
+      "DefaultDesktopEditor%5B0%5D.ImageFormats%5B0%5D=jpg&DefaultDesktopEditor%5B0%5D." +
+      "ImageFormats%5B1%5D=png&DefaultDesktopEditor%5B0%5D.ImageFormats%5B2%5D=bmp&" +
+      "DefaultDesktopEditor%5B0%5D.ImageFormats%5B3%5D=tiff&" +
+      "DefaultDesktopEditor%5B0%5D.ImageFormats%5B4%5D=webp&DefaultDesktopEditor" +
+      "%5B0%5D.ApplicationPath=%2Fexist_app&DefaultDesktopEditor%5B1%5D.ImageFormats%5B0%5D=jpg" +
+      "&DefaultDesktopEditor%5B1%5D.ImageFormats%5B1%5D=png&DefaultDesktopEditor%5B1%5D.ImageFormats%5B2%5D=bmp" +
+      "&DefaultDesktopEditor%5B1%5D.ImageFormats%5B3%5D=tiff&DefaultDesktopEditor%5B1%5D.ImageFormats%5B4%5D=webp" +
+      "&DefaultDesktopEditor%5B1%5D.ApplicationPath=test";
 
     expect(spyFetchPost).toHaveBeenCalledWith(new UrlQuery().UrlApiAppSettings(), query2);
   });
