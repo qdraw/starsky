@@ -78,6 +78,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
     props.imageFormat !== ImageFormat.bmp &&
     props.imageFormat !== ImageFormat.gif &&
     props.imageFormat !== ImageFormat.jpg &&
+    props.imageFormat !== ImageFormat.webp &&
     props.imageFormat !== ImageFormat.png
   ) {
     return (

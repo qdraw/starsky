@@ -11,7 +11,7 @@ namespace starsky.foundation.platform.Helpers;
 public static partial class ExtensionRolesHelper
 {
 	/// <summary>
-	///     ImageFormat based on first bytes
+	///     ImageFormat based on first bytes, so read first bytes
 	/// </summary>
 	[SuppressMessage("ReSharper", "InconsistentNaming")]
 	public enum ImageFormat
@@ -111,11 +111,10 @@ public static partial class ExtensionRolesHelper
 	private static readonly List<string> ExtensionMp4 = new() { "mp4", "mov" };
 
 	/// <summary>
-	/// WebP imageFormat
+	///     WebP imageFormat
 	/// </summary>
 	private static readonly List<string> ExtensionWebp = new() { "webp" };
 
-	
 	private static readonly Dictionary<ImageFormat, List<string>>
 		MapFileTypesToExtensionDictionary =
 			new()
@@ -149,6 +148,7 @@ public static partial class ExtensionRolesHelper
 			extensionList.AddRange(ExtensionMp4);
 			extensionList.AddRange(ExtensionXmp);
 			extensionList.AddRange(ExtensionJsonSidecar);
+			extensionList.AddRange(ExtensionWebp);
 			return extensionList;
 		}
 	}
@@ -167,6 +167,7 @@ public static partial class ExtensionRolesHelper
 			extensionList.AddRange(ExtensionGif);
 			extensionList.AddRange(ExtensionPng);
 			extensionList.AddRange(ExtensionMp4);
+			extensionList.AddRange(ExtensionWebp);
 			return extensionList;
 		}
 	}
@@ -188,6 +189,7 @@ public static partial class ExtensionRolesHelper
 			extensionList.AddRange(ExtensionBmp);
 			extensionList.AddRange(ExtensionGif);
 			extensionList.AddRange(ExtensionPng);
+			extensionList.AddRange(ExtensionWebp);
 			return extensionList;
 		}
 	}
@@ -449,7 +451,7 @@ public static partial class ExtensionRolesHelper
 
 	/// <summary>
 	///     Get the format of the image by looking the first bytes
-	///     Stream is Flushed / Disposed afterwards
+	///     Stream is Flushed / Disposed afterward
 	/// </summary>
 	/// <param name="stream">stream</param>
 	/// <returns>ImageFormat enum</returns>
@@ -533,7 +535,28 @@ public static partial class ExtensionRolesHelper
 			return ImageFormat.meta_json;
 		}
 
+		if ( GetImageFormatMetaWebp(bytes) != null )
+		{
+			return ImageFormat.webp;
+		}
+
 		return ImageFormat.unknown;
+	}
+
+	private static ImageFormat? GetImageFormatMetaWebp(byte[] bytes)
+	{
+		var webpFirstPart = new byte[] { 82, 73, 70, 70 };
+		var webpSecondPart = new byte[] { 87, 69, 66, 80 };
+
+		var isFirstPart = webpFirstPart.SequenceEqual(bytes.Take(webpFirstPart.Length));
+		var isSecondPart = webpSecondPart.SequenceEqual(bytes.Skip(8).Take(webpSecondPart.Length));
+
+		if ( isFirstPart && isSecondPart )
+		{
+			return ImageFormat.webp;
+		}
+
+		return null;
 	}
 
 	private static ImageFormat? GetImageFormatMetaJson(byte[] bytes)
