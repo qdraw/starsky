@@ -26,8 +26,8 @@
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1"/>
         <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1"/>
-        <PackageReference Include="MSTest.TestAdapter" Version="3.6.2" />
-        <PackageReference Include="MSTest.TestFramework" Version="3.6.2" />
+        <PackageReference Include="MSTest.TestAdapter" Version="3.6.2"/>
+        <PackageReference Include="MSTest.TestFramework" Version="3.6.2"/>
         <PackageReference Include="coverlet.collector" Version="6.0.2">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -143,9 +143,13 @@
         <Content Include="FakeCreateAn\CreateAnImageLongDescriptionTitle\CreateAnImageLongDescriptionTitle.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <None Remove="FakeCreateAn\CreateAnImageWebP\test.webp" />
+        <None Remove="FakeCreateAn\CreateAnImageWebP\test.webp"/>
         <Content Include="FakeCreateAn\CreateAnImageWebP\test.webp">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <None Remove="FakeCreateAn\CreateAnImagePsd\test.psd"/>
+        <Content Include="FakeCreateAn\CreateAnImagePsd\test.psd">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
 

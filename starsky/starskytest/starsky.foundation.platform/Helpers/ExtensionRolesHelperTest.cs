@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
 using starskytest.FakeCreateAn;
 using starskytest.FakeCreateAn.CreateAnImageCorrupt;
+using starskytest.FakeCreateAn.CreateAnImagePsd;
 using starskytest.FakeCreateAn.CreateAnImageWebP;
 
 namespace starskytest.starsky.foundation.platform.Helpers;
@@ -511,7 +512,7 @@ public sealed class ExtensionRolesHelperTest
 	}
 
 	[TestMethod]
-	public void Gpx_CreateAnWebP()
+	public void WebP_CreateAnWebP()
 	{
 		var createAnImage = new CreateAnImageWebP().Bytes.ToArray();
 		var result = ExtensionRolesHelper.GetImageFormat(createAnImage);
@@ -536,6 +537,23 @@ public sealed class ExtensionRolesHelperTest
 		var fileType = ExtensionRolesHelper.GetImageFormat(
 			ExtensionRolesHelper.HexStringToByteArray(hexValue.Replace(" ", "")));
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown, fileType);
+	}
+
+	[TestMethod]
+	public void Psd_CreateAnPsd()
+	{
+		var createAnImage = new CreateAnImagePsd().Bytes.ToArray();
+		var result = ExtensionRolesHelper.GetImageFormat(createAnImage);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.psd, result);
+	}
+
+	[TestMethod]
+	public void Files_GetImageFormat_PsdHex()
+	{
+		var fileType = ExtensionRolesHelper.GetImageFormat(
+			ExtensionRolesHelper.HexStringToByteArray(
+				"38 42 50 53".Replace(" ", "")));
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.psd, fileType);
 	}
 
 	[TestMethod]
