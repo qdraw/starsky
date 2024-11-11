@@ -12,7 +12,7 @@
 
 # Stage 1 Front-end
 # # docker buildx imagetools inspect node:18-alpine
-FROM --platform=$BUILDPLATFORM node:18-alpine AS react-build
+FROM --platform=$BUILDPLATFORM node:20-alpine AS react-build
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 
@@ -27,6 +27,7 @@ RUN for i in 1 2 3; do \
       npm ci --legacy-peer-deps --prefer-offline --no-audit --no-fund --ignore-scripts && break || sleep 15; \
     done && \
     npm run build && \
+    rm -rf node_modules && \
     echo "react done"
 
 # no alpine build since there is no support for multi-arch
