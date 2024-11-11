@@ -63,6 +63,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Fixed) _Front-end_ increase description limit (Issue #1810) (PR #1814)
 - [x] (Fixed) _Back-end_ Change reading order to favor XMP for description/title field (PR #1814)
 - [x] (Fixed) _Back-end_ OrderBy ImageFormat and then alphabet (PR #1815)
+- [x] (Added) _Back-end_ WebP support for sync, reading & writing (PR #1813)
 
 ## version 0.6.2 - 2024-10-11 {#v0.6.2}
 
