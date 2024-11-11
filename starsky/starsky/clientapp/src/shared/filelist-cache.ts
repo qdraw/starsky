@@ -90,7 +90,7 @@ export class FileListCache {
         }
       }
       if (urlObject.collections) {
-        if (item?.fileName.startsWith(detailview.fileIndexItem.fileCollectionName)) {
+        if (item?.fileCollectionName === detailview.fileIndexItem.fileCollectionName) {
           parentItem.fileIndexItems[index] = detailview.fileIndexItem;
         }
       }

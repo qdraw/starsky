@@ -74,7 +74,7 @@ const fetchUseFileListContentCache = async (
   const content = new FileListCache().CacheGet(locationSearch);
   if (content) {
     console.log(
-      ` -- Fetch Content ${new Date(content.dateCache).toLocaleTimeString()} ${locationSearch} -- `
+      ` -- Cache Content ${new Date(content.dateCache).toLocaleTimeString()} ${locationSearch} -- `
     );
     setPageTypeHelper(content);
   } else {

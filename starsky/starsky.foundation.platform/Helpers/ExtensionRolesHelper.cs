@@ -26,6 +26,7 @@ public static partial class ExtensionRolesHelper
 		gif = 14,
 		png = 15,
 		webp = 16,
+		psd = 17,
 
 		// Sidecar files
 		xmp = 30,
@@ -115,6 +116,11 @@ public static partial class ExtensionRolesHelper
 	/// </summary>
 	private static readonly List<string> ExtensionWebp = new() { "webp" };
 
+	/// <summary>
+	///     Psd imageFormat
+	/// </summary>
+	private static readonly List<string> ExtensionPsd = new() { "psd" };
+
 	private static readonly Dictionary<ImageFormat, List<string>>
 		MapFileTypesToExtensionDictionary =
 			new()
@@ -127,7 +133,8 @@ public static partial class ExtensionRolesHelper
 				{ ImageFormat.gpx, ExtensionGpx },
 				{ ImageFormat.mp4, ExtensionMp4 },
 				{ ImageFormat.xmp, ExtensionXmp },
-				{ ImageFormat.webp, ExtensionWebp }
+				{ ImageFormat.webp, ExtensionWebp },
+				{ ImageFormat.psd, ExtensionPsd }
 			};
 
 	/// <summary>
@@ -149,6 +156,7 @@ public static partial class ExtensionRolesHelper
 			extensionList.AddRange(ExtensionXmp);
 			extensionList.AddRange(ExtensionJsonSidecar);
 			extensionList.AddRange(ExtensionWebp);
+			extensionList.AddRange(ExtensionPsd);
 			return extensionList;
 		}
 	}
@@ -168,6 +176,7 @@ public static partial class ExtensionRolesHelper
 			extensionList.AddRange(ExtensionPng);
 			extensionList.AddRange(ExtensionMp4);
 			extensionList.AddRange(ExtensionWebp);
+			extensionList.AddRange(ExtensionPsd);
 			return extensionList;
 		}
 	}
@@ -540,7 +549,24 @@ public static partial class ExtensionRolesHelper
 			return ImageFormat.webp;
 		}
 
+		if ( GetImageFormatPsd(bytes) != null )
+		{
+			return ImageFormat.psd;
+		}
+
 		return ImageFormat.unknown;
+	}
+
+	private static ImageFormat? GetImageFormatPsd(byte[] bytes)
+	{
+		// HEX 38 42 50 53
+		var psd = new byte[] { 56, 66, 80, 83 };
+		if ( psd.SequenceEqual(bytes.Take(psd.Length)) )
+		{
+			return ImageFormat.psd;
+		}
+
+		return null;
 	}
 
 	private static ImageFormat? GetImageFormatMetaWebp(byte[] bytes)

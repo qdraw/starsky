@@ -306,10 +306,6 @@ between 1 and 2 items
 	background-image: url("../images/baseline-file-jpg-24px.svg");
 }
 
-.list-image-box > .box-content.isDirectory-false > .img-box--webp {
-	background-image: url("../images/baseline-file-outline.svg");
-}
-
 .list-image-box > .box-content.isDirectory-false > .img-box--xmp {
 	background-image: url("../images/baseline-file-xmp-24px.svg");
 }
@@ -322,6 +318,11 @@ between 1 and 2 items
 	background-image: url("../images/baseline-file-png-24px.svg");
 }
 
+.list-image-box > .box-content.isDirectory-false > .img-box--psd,
+.list-image-box > .box-content.isDirectory-false > .img-box--webp {
+	background-image: url("../images/baseline-file-outline.svg");
+}
+
 @media (prefers-color-scheme: dark) {
 	.list-image-box > .box-content.isDirectory-false > .img-box--error,
 	.list-image-box > .box-content.isDirectory-false > .img-box--gpx,
@@ -330,7 +331,8 @@ between 1 and 2 items
 	.list-image-box > .box-content.isDirectory-false > .img-box--jpg,
 	.list-image-box > .box-content.isDirectory-false > .img-box--bmp,
 	.list-image-box > .box-content.isDirectory-false > .img-box--png,
-	.list-image-box > .box-content.isDirectory-false > .img-box--webp {
+	.list-image-box > .box-content.isDirectory-false > .img-box--webp,
+	.list-image-box > .box-content.isDirectory-false > .img-box--psd {
 		filter: invert(100%);
 	}
 }
