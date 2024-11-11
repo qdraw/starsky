@@ -25,6 +25,7 @@ public static partial class ExtensionRolesHelper
 		bmp = 13,
 		gif = 14,
 		png = 15,
+		webp = 16,
 
 		// Sidecar files
 		xmp = 30,
@@ -109,6 +110,12 @@ public static partial class ExtensionRolesHelper
 	/// </summary>
 	private static readonly List<string> ExtensionMp4 = new() { "mp4", "mov" };
 
+	/// <summary>
+	/// WebP imageFormat
+	/// </summary>
+	private static readonly List<string> ExtensionWebp = new() { "webp" };
+
+	
 	private static readonly Dictionary<ImageFormat, List<string>>
 		MapFileTypesToExtensionDictionary =
 			new()
@@ -120,7 +127,8 @@ public static partial class ExtensionRolesHelper
 				{ ImageFormat.png, ExtensionPng },
 				{ ImageFormat.gpx, ExtensionGpx },
 				{ ImageFormat.mp4, ExtensionMp4 },
-				{ ImageFormat.xmp, ExtensionXmp }
+				{ ImageFormat.xmp, ExtensionXmp },
+				{ ImageFormat.webp, ExtensionWebp }
 			};
 
 	/// <summary>

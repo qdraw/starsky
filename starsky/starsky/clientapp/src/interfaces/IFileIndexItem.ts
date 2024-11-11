@@ -1,4 +1,4 @@
-import { IExifStatus } from "./IExifStatus";
+import {IExifStatus} from "./IExifStatus";
 
 export interface IFileIndexItem {
   lastEdited?: string;
@@ -44,6 +44,7 @@ export enum ImageFormat {
   bmp = "bmp",
   gif = "gif",
   png = "png",
+  webp = "webp",
   xmp = "xmp",
   meta_json = "meta_json",
   gpx = "gpx",
