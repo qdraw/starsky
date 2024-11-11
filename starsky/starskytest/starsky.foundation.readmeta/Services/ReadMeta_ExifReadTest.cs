@@ -17,6 +17,7 @@ using starskytest.FakeCreateAn;
 using starskytest.FakeCreateAn.CreateAnImageA330Raw;
 using starskytest.FakeCreateAn.CreateAnImageA6600Raw;
 using starskytest.FakeCreateAn.CreateAnImageLongDescriptionTitle;
+using starskytest.FakeCreateAn.CreateAnImageWebP;
 using starskytest.FakeMocks;
 using XmpCore;
 using XmpCore.Impl;
@@ -423,6 +424,48 @@ public sealed class ExifReadTest
 		Assert.AreEqual("DSLR-A330", item.Model);
 		Assert.AreEqual("Sony DT 18-55mm F3.5-5.6 SAM (SAL1855) or SAM II", item.LensModel);
 		Assert.AreEqual(ImageStabilisationType.On, item.ImageStabilisation);
+	}
+
+	[TestMethod]
+	public void ExifRead_CreateAnImageWebP_ReadExifFromFileTest()
+	{
+		var newImage = new CreateAnImageWebP().Bytes.ToArray();
+		var fakeStorage = new FakeIStorage(new List<string> { "/" },
+			new List<string> { "/test.webp" }, new List<byte[]> { newImage });
+
+		var item =
+			new ReadMetaExif(fakeStorage, null!, new FakeIWebLogger()).ReadExifFromFile(
+				"/test.webp");
+
+		Assert.AreEqual(ColorClassParser.Color.WinnerAlt, item.ColorClass);
+		Assert.AreEqual(9, item.Aperture);
+		Assert.AreEqual(ColorClassParser.Color.WinnerAlt, item.ColorClass);
+		Assert.AreEqual(new DateTime(2024, 11, 6, 17, 14, 2, DateTimeKind.Local), item.DateTime);
+		Assert.AreEqual(18, item.FocalLength);
+		Assert.AreEqual(0, item.Id);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.webp, item.ImageFormat);
+		Assert.AreEqual(( ushort ) 1, item.ImageHeight);
+		Assert.AreEqual(ImageStabilisationType.Unknown, item.ImageStabilisation);
+		Assert.AreEqual(( ushort ) 1, item.ImageWidth);
+		Assert.IsFalse(item.IsDirectory);
+		Assert.AreEqual(( ushort ) 12800, item.IsoSpeed);
+		Assert.AreEqual(50.8646861111, item.Latitude, 0.0000000001);
+		Assert.AreEqual("E 18-200mm F3.5-6.3 OSS LE", item.LensModel);
+		Assert.AreEqual(69, item.LocationAltitude);
+		Assert.AreEqual(string.Empty, item.LocationCity);
+		Assert.AreEqual(string.Empty, item.LocationCountry);
+		Assert.AreEqual("NLD", item.LocationCountryCode);
+		Assert.AreEqual(string.Empty, item.LocationState);
+		Assert.AreEqual(5.8325499999, item.Longitude, 0.0000000001);
+		Assert.AreEqual("Sony", item.Make);
+		Assert.AreEqual("Sony|ILCE-6600|E 18-200mm F3.5-6.3 OSS LE", item.MakeModel);
+		Assert.AreEqual("ILCE-6600", item.Model);
+		Assert.AreEqual(FileIndexItem.Rotation.Horizontal, item.Orientation);
+		Assert.AreEqual("1/60", item.ShutterSpeed);
+		Assert.AreEqual(string.Empty, item.SidecarExtensions);
+		Assert.AreEqual("Qdraw 1.0", item.Software);
+		Assert.AreEqual("Geulpoort, Valkenburg, Geul, poort, kasteel, kerk", item.Tags);
+		Assert.AreEqual("Geulpoort", item.Title);
 	}
 
 	[TestMethod]

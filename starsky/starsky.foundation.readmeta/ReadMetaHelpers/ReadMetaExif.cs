@@ -399,6 +399,11 @@ public sealed class ReadMetaExif
 			return ExtensionRolesHelper.ImageFormat.gif;
 		}
 
+		if ( allExifItems.Exists(p => p.Name == "WebP") )
+		{
+			return ExtensionRolesHelper.ImageFormat.webp;
+		}
+
 		return ExtensionRolesHelper.ImageFormat.unknown;
 	}
 
@@ -565,13 +570,13 @@ public sealed class ReadMetaExif
 		if ( !string.IsNullOrEmpty(xmpTitle) )
 		{
 			return xmpTitle;
-		}	
-		
+		}
+
 		var iptcDirectory = allExifItems.OfType<IptcDirectory>().FirstOrDefault();
 		var iptcObjectName = iptcDirectory?.Tags.FirstOrDefault(
 			p => p.Name == "Object Name")?.Description;
 		iptcObjectName ??= string.Empty;
-		
+
 		return iptcObjectName;
 	}
 

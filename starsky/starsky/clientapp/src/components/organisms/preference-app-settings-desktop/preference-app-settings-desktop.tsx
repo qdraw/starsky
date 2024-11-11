@@ -13,7 +13,13 @@ import FormControl from "../../atoms/form-control/form-control";
 import SwitchButton from "../../atoms/switch-button/switch-button";
 
 const defaultEditorApplication = {
-  imageFormats: [ImageFormat.jpg, ImageFormat.png, ImageFormat.bmp, ImageFormat.tiff]
+  imageFormats: [
+    ImageFormat.jpg,
+    ImageFormat.png,
+    ImageFormat.bmp,
+    ImageFormat.tiff,
+    ImageFormat.webp
+  ]
 } as IAppSettingsDefaultEditorApplication;
 
 export async function UpdateDefaultEditorPhotos(
