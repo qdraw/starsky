@@ -570,6 +570,8 @@ public sealed class ReadMetaExif
 		var iptcDirectory = allExifItems.OfType<IptcDirectory>().FirstOrDefault();
 		var iptcObjectName = iptcDirectory?.Tags.FirstOrDefault(
 			p => p.Name == "Object Name")?.Description;
+		iptcObjectName ??= string.Empty;
+		
 		return iptcObjectName;
 	}
 
