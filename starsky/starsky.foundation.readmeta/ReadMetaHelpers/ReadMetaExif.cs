@@ -557,35 +557,37 @@ public sealed class ReadMetaExif
 		return result;
 	}
 
-	public static string GetObjectName(List<Directory> allExifItems)
+	public static string? GetObjectName(List<Directory> allExifItems)
 	{
-		var iptcDirectory = allExifItems.OfType<IptcDirectory>().FirstOrDefault();
-
-		var objectName = iptcDirectory?.Tags.FirstOrDefault(
-			p => p.Name == "Object Name")?.Description;
-
-		if ( !string.IsNullOrEmpty(objectName) )
-		{
-			return objectName;
-		}
-
 		// Xmp readings
 		var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();
-		return GetXmpData(xmpDirectory, "dc:title[1]");
+		var xmpTitle = GetXmpData(xmpDirectory, "dc:title[1]");
+		if ( !string.IsNullOrEmpty(xmpTitle) )
+		{
+			return xmpTitle;
+		}	
+		
+		var iptcDirectory = allExifItems.OfType<IptcDirectory>().FirstOrDefault();
+		var iptcObjectName = iptcDirectory?.Tags.FirstOrDefault(
+			p => p.Name == "Object Name")?.Description;
+		iptcObjectName ??= string.Empty;
+		
+		return iptcObjectName;
 	}
 
-	public static string GetCaptionAbstract(List<Directory> allExifItems)
+	public static string? GetCaptionAbstract(List<Directory> allExifItems)
 	{
-		var iptcDirectory = allExifItems.OfType<IptcDirectory>().FirstOrDefault();
-		var caption = iptcDirectory?.GetDescription(IptcDirectory.TagCaption);
+		var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();
+		var xmpCaption = GetXmpData(xmpDirectory, "dc:description[1]");
 
-		if ( !string.IsNullOrEmpty(caption) )
+		if ( !string.IsNullOrEmpty(xmpCaption) )
 		{
-			return caption;
+			return xmpCaption;
 		}
 
-		var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();
-		return GetXmpData(xmpDirectory, "dc:description[1]");
+		var iptcDirectory = allExifItems.OfType<IptcDirectory>().FirstOrDefault();
+		var caption = iptcDirectory?.GetDescription(IptcDirectory.TagCaption);
+		return caption;
 	}
 
 	public static string GetExifKeywords(List<Directory> allExifItems)

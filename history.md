@@ -60,6 +60,9 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Fixed) _Back-end_ next/prev fixes to ignore xmp/json files (PR #1806)
 - [x] (Fixed) _Back-end_ LensModel to loop and avoid returning default values. (PR #1807)
 - [x] (Fixed) _Back-end_ LensModel add tests for sony raw files to avoid default values (PR #1807)
+- [x] (Fixed) _Front-end_ increase description limit (Issue #1810) (PR #1814)
+- [x] (Fixed) _Back-end_ Change reading order to favor XMP for description/title field (PR #1814)
+- [x] (Fixed) _Back-end_ OrderBy ImageFormat and then alphabet (PR #1815)
 
 ## version 0.6.2 - 2024-10-11 {#v0.6.2}
 
