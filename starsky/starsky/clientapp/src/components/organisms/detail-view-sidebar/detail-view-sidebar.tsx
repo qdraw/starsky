@@ -96,6 +96,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       });
       setCollections(collectionsList);
     }
+
     // For the display
     const [formEnabled, setFormEnabled] = React.useState(true);
     useEffect(() => {
@@ -216,7 +217,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
           <h4>{MessageInfoName}</h4>
           <FormControl
             onBlur={handleChange}
-            maxlength={1024}
+            maxlength={5000}
             name="description"
             reference={descriptionReference}
             contentEditable={formEnabled}

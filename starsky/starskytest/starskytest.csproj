@@ -131,9 +131,17 @@
         <Content Include="FakeCreateAn\CreateAnImageA6600Raw\head_part.arw">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <None Remove="FakeCreateAn\CreateAnImageA330Raw\head_part.arw" />
+        <None Remove="FakeCreateAn\CreateAnImageA330Raw\head_part.arw"/>
         <Content Include="FakeCreateAn\CreateAnImageA330Raw\head_part.arw">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <None Remove="FakeCreateAn\CreateAnImageLongDescriptionTitle\CreateAnImageLongDescriptionTitle.jpg"/>
+        <Content Include="FakeCreateAn\CreateAnImageLongDescriptionTitle\CreateAnImageLongDescriptionTitle.jpg">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <None Remove="FakeCreateAn\CreateAnImageLongDescriptionTitle\CreateAnImageLongDescriptionTitle.json"/>
+        <Content Include="FakeCreateAn\CreateAnImageLongDescriptionTitle\CreateAnImageLongDescriptionTitle.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
 

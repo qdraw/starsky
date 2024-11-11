@@ -16,6 +16,7 @@ using starsky.project.web.Attributes;
 using starskytest.FakeCreateAn;
 using starskytest.FakeCreateAn.CreateAnImageA330Raw;
 using starskytest.FakeCreateAn.CreateAnImageA6600Raw;
+using starskytest.FakeCreateAn.CreateAnImageLongDescriptionTitle;
 using starskytest.FakeMocks;
 using XmpCore;
 using XmpCore.Impl;
@@ -334,6 +335,23 @@ public sealed class ExifReadTest
 		Assert.AreEqual("SLT-A58", item.Model);
 		Assert.AreEqual("24-105mm F3.5-4.5", item.LensModel);
 		Assert.AreEqual(ImageStabilisationType.Unknown, item.ImageStabilisation);
+	}
+
+	[TestMethod]
+	public void ExifRead_ReadExifFromFileTest_LongDescriptionTitle()
+	{
+		var newImage = new CreateAnImageLongDescriptionTitle();
+		var imageBytes = newImage.Bytes.ToArray();
+		var fakeStorage = new FakeIStorage(new List<string> { "/" },
+			new List<string> { "/test.jpg" }, new List<byte[]> { imageBytes });
+
+		var item =
+			new ReadMetaExif(fakeStorage, null!, new FakeIWebLogger()).ReadExifFromFile(
+				"/test.jpg");
+
+		Assert.AreEqual(newImage.JsonExpectData?.Description, item.Description);
+		Assert.AreEqual(newImage.JsonExpectData?.Tags, item.Tags);
+		Assert.AreEqual(newImage.JsonExpectData?.Title, item.Title);
 	}
 
 	[TestMethod]
