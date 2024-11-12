@@ -288,7 +288,7 @@ public sealed class MetaUpdateServiceTest
 			"/test.jpg");
 		var updateItem = new FileIndexItem("/test.jpg")
 		{
-			Orientation = FileIndexItem.Rotation.Horizontal,
+			Orientation = RotationModel.Rotation.Horizontal,
 			Status = FileIndexItem.ExifStatus.Ok,
 			FileHash = "test"
 		};

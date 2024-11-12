@@ -5,23 +5,23 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
-using starsky.foundation.thumbnailmeta.Helpers;
-using starsky.foundation.thumbnailmeta.Interfaces;
-using starsky.foundation.thumbnailmeta.Models;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.thumbnailmeta.Helpers;
+using starsky.foundation.thumbnailmeta.Models;
+using starsky.foundation.thumbnailmeta.ServicesTinySize.Interfaces;
 
-namespace starsky.foundation.thumbnailmeta.Services;
+namespace starsky.foundation.thumbnailmeta.ServicesTinySize;
 
 [Service(typeof(IWriteMetaThumbnailService), InjectionLifetime = InjectionLifetime.Scoped)]
 public sealed class WriteMetaThumbnailService : IWriteMetaThumbnailService
 {
+	private readonly AppSettings _appSettings;
 	private readonly IWebLogger _logger;
 	private readonly IStorage _thumbnailStorage;
-	private readonly AppSettings _appSettings;
 
 	public WriteMetaThumbnailService(ISelectorStorage selectorStorage, IWebLogger logger,
 		AppSettings appSettings)
@@ -33,7 +33,7 @@ public sealed class WriteMetaThumbnailService : IWriteMetaThumbnailService
 
 	public async Task<bool> WriteAndCropFile(string fileHash,
 		OffsetModel offsetData, int sourceWidth,
-		int sourceHeight, FileIndexItem.Rotation rotation,
+		int sourceHeight, RotationModel.Rotation rotation,
 		string? reference = null)
 	{
 		if ( offsetData.Data == null )
@@ -43,8 +43,9 @@ public sealed class WriteMetaThumbnailService : IWriteMetaThumbnailService
 
 		try
 		{
+			// TODO check if not Index offsetData.Index
 			using ( var thumbnailStream =
-				   new MemoryStream(offsetData.Data, offsetData.Index, offsetData.Count) )
+			       new MemoryStream(offsetData.Data, 0, offsetData.Count) )
 			using ( var smallImage = await Image.LoadAsync(thumbnailStream) )
 			using ( var outputStream = new MemoryStream() )
 			{
@@ -64,9 +65,8 @@ public sealed class WriteMetaThumbnailService : IWriteMetaThumbnailService
 				smallImage.Mutate(
 					i => i.Resize(larger, 0, KnownResamplers.Lanczos3));
 
-				var rotate = RotateEnumToDegrees(rotation);
 				smallImage.Mutate(
-					i => i.Rotate(rotate));
+					i => i.Rotate(rotation.ToDegrees()));
 
 				await smallImage.SaveAsJpegAsync(outputStream);
 
@@ -83,34 +83,10 @@ public sealed class WriteMetaThumbnailService : IWriteMetaThumbnailService
 		}
 		catch ( Exception exception )
 		{
-			const string imageCannotBeLoadedErrorMessage = "Image cannot be loaded";
-
-			var message = exception.Message;
-			if ( message.StartsWith(imageCannotBeLoadedErrorMessage) )
-			{
-				message = imageCannotBeLoadedErrorMessage;
-			}
-
 			_logger.LogInformation(
-				$"[WriteFile@meta] Meta data read - Exception {reference} {message} - can continue without",
+				$"[WriteFile@meta] Meta data read - Exception {reference} {ImageErrorMessage.Error(exception)} - can continue without",
 				exception);
 			return false;
-		}
-	}
-
-	internal static float RotateEnumToDegrees(FileIndexItem.Rotation rotation)
-	{
-		// ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
-		switch ( rotation )
-		{
-			case FileIndexItem.Rotation.Rotate180:
-				return 180;
-			case FileIndexItem.Rotation.Rotate90Cw:
-				return 90;
-			case FileIndexItem.Rotation.Rotate270Cw:
-				return 270;
-			default:
-				return 0;
 		}
 	}
 }

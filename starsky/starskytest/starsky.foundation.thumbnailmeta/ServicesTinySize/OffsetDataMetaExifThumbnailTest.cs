@@ -5,12 +5,14 @@ using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Jpeg;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
-using starsky.foundation.thumbnailmeta.Services;
+using starsky.foundation.thumbnailmeta.ServicesTinySize;
 using starskytest.FakeCreateAn;
+using starskytest.FakeCreateAn.CreateAnImageA330Raw;
+using starskytest.FakeCreateAn.CreateAnImageA6600Raw;
 using starskytest.FakeCreateAn.CreateAnImageWithThumbnail;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.thumbnailmeta.Services;
+namespace starskytest.starsky.foundation.thumbnailmeta.ServicesTinySize;
 
 [TestClass]
 public sealed class OffsetDataMetaExifThumbnailTest
@@ -24,7 +26,7 @@ public sealed class OffsetDataMetaExifThumbnailTest
 		Assert.AreEqual(null, exifThumbnailDirectory);
 		Assert.AreEqual(0, width);
 		Assert.AreEqual(0, height);
-		Assert.AreEqual(FileIndexItem.Rotation.DoNotChange, rotation);
+		Assert.AreEqual(RotationModel.Rotation.DoNotChange, rotation);
 	}
 
 	[TestMethod]
@@ -52,9 +54,12 @@ public sealed class OffsetDataMetaExifThumbnailTest
 		Assert.AreEqual(thumbnailDirectory, exifThumbnailDirectory);
 		Assert.AreEqual(0, width);
 		Assert.AreEqual(0, height);
-		Assert.AreEqual(FileIndexItem.Rotation.DoNotChange, rotation);
+		Assert.AreEqual(RotationModel.Rotation.DoNotChange, rotation);
 	}
 
+	/// <summary>
+	///     Happy flow
+	/// </summary>
 	[TestMethod]
 	public void ParseMetaThumbnail_CheckJpeg_Success()
 	{
@@ -77,7 +82,41 @@ public sealed class OffsetDataMetaExifThumbnailTest
 		Assert.AreEqual(thumbnailDirectory, exifThumbnailDirectory);
 		Assert.AreEqual(150, width);
 		Assert.AreEqual(100, height);
-		Assert.AreEqual(FileIndexItem.Rotation.Horizontal, rotation);
+		Assert.AreEqual(RotationModel.Rotation.Horizontal, rotation);
+	}
+
+	/// <summary>
+	///     Happy flow RAW
+	/// </summary>
+	[TestMethod]
+	[DataRow("/A3330.arw", 3880, 2600)]
+	[DataRow("/A6600.arw", 6000, 4000)]
+	public void ParseMetaThumbnail_CheckRaw_Success(string fileName, int expectedWidth,
+		int expectedHeight)
+	{
+		var storage = new FakeIStorage(
+			new List<string> { "/" },
+			new List<string> { "/A6600.arw", "/A3330.arw" },
+			new List<byte[]>
+			{
+				new CreateAnImageA6600Raw().Bytes.ToArray(),
+				new CreateAnImageA330Raw().Bytes.ToArray()
+			});
+
+		var (allExifItems, thumbnailDirectory) = new OffsetDataMetaExifThumbnail(
+			new FakeSelectorStorage(storage),
+			new FakeIWebLogger()).ReadExifMetaDirectories(fileName);
+
+		var service = new OffsetDataMetaExifThumbnail(
+			new FakeSelectorStorage(storage),
+			new FakeIWebLogger());
+		var (exifThumbnailDirectory, width, height, rotation) =
+			service.ParseMetaThumbnail(allExifItems, thumbnailDirectory);
+
+		Assert.AreEqual(thumbnailDirectory, exifThumbnailDirectory);
+		Assert.AreEqual(expectedWidth, width);
+		Assert.AreEqual(expectedHeight, height);
+		Assert.AreEqual(RotationModel.Rotation.Horizontal, rotation);
 	}
 
 	[TestMethod]
@@ -85,21 +124,23 @@ public sealed class OffsetDataMetaExifThumbnailTest
 	{
 		var container = new List<Directory>();
 		var dir2 = new ExifSubIfdDirectory();
-		dir2.Set(ExifDirectoryBase.TagImageHeight, "10");
-		dir2.Set(ExifDirectoryBase.TagImageWidth, "12");
+		dir2.Set(ExifDirectoryBase.TagExifImageHeight, "10");
+		dir2.Set(ExifDirectoryBase.TagExifImageWidth, "12");
 		container.Add(dir2);
 		var dir3 = new ExifIfd0Directory();
 		dir3.Set(ExifDirectoryBase.TagOrientation, 6);
 		container.Add(dir3);
 		var storage = new FakeIStorage();
 
-		var (_, width, height, rotation) = new OffsetDataMetaExifThumbnail(
+		var service = new OffsetDataMetaExifThumbnail(
 			new FakeSelectorStorage(storage),
-			new FakeIWebLogger()).ParseMetaThumbnail(container, new ExifThumbnailDirectory(1));
+			new FakeIWebLogger());
+		var (_, width, height, rotation) =
+			service.ParseMetaThumbnail(container, new ExifThumbnailDirectory(1));
 
 		Assert.AreEqual(12, width);
 		Assert.AreEqual(10, height);
-		Assert.AreEqual(FileIndexItem.Rotation.Rotate90Cw, rotation);
+		Assert.AreEqual(RotationModel.Rotation.Rotate90Cw, rotation);
 	}
 
 	[TestMethod]
@@ -121,7 +162,7 @@ public sealed class OffsetDataMetaExifThumbnailTest
 
 		Assert.AreEqual(12, width);
 		Assert.AreEqual(10, height);
-		Assert.AreEqual(FileIndexItem.Rotation.Rotate90Cw, rotation);
+		Assert.AreEqual(RotationModel.Rotation.Rotate90Cw, rotation);
 	}
 
 	[TestMethod]
@@ -140,7 +181,7 @@ public sealed class OffsetDataMetaExifThumbnailTest
 
 		Assert.AreEqual(0, width);
 		Assert.AreEqual(0, height);
-		Assert.AreEqual(FileIndexItem.Rotation.DoNotChange, rotation);
+		Assert.AreEqual(RotationModel.Rotation.DoNotChange, rotation);
 	}
 
 	[TestMethod]

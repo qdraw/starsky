@@ -538,40 +538,17 @@ namespace starsky.foundation.database.Models
 		/// </value>
 		[JsonConverter(typeof(JsonStringEnumConverter))]
 		// newtonsoft uses: StringEnumConverter
-		public Rotation Orientation { get; set; } = Rotation.DoNotChange;
-
-		/// <summary>
-		/// Exit Rotation values
-		/// </summary>
-		public enum Rotation
-		{
-			DoNotChange = -1,
-
-			// There are more types:
-			// https://www.daveperrett.com/articles/2012/07/28/exif-orientation-handling-is-a-ghetto/
-
-			[Display(Name = "Horizontal (normal)")]
-			Horizontal = 1,
-
-			[Display(Name = "Rotate 90 CW")]
-			Rotate90Cw = 6,
-
-			[Display(Name = "Rotate 180")]
-			Rotate180 = 3,
-
-			[Display(Name = "Rotate 270 CW")]
-			Rotate270Cw = 8
-		}
+		public RotationModel.Rotation Orientation { get; set; } = RotationModel.Rotation.DoNotChange;
 
 		/// <summary>
 		/// The logic order of the rotation. Used when rotate relative. And after the last one it starts with the first item.
 		/// </summary>
-		private readonly List<Rotation> _orderRotation = new List<Rotation>
+		private readonly List<RotationModel.Rotation> _orderRotation = new List<RotationModel.Rotation>
 		{
-			Rotation.Horizontal,
-			Rotation.Rotate90Cw,
-			Rotation.Rotate180,
-			Rotation.Rotate270Cw
+			RotationModel.Rotation.Horizontal,
+			RotationModel.Rotation.Rotate90Cw,
+			RotationModel.Rotation.Rotate180,
+			RotationModel.Rotation.Rotate270Cw
 		};
 
 		/// <summary>
@@ -600,11 +577,11 @@ namespace starsky.foundation.database.Models
 		/// </summary>
 		/// <param name="relativeRotation">The relative rotation. +1 left, -1 right</param>
 		/// <returns>enum value of the output rotation</returns>
-		public Rotation RelativeOrientation(int relativeRotation = 0)
+		public RotationModel.Rotation RelativeOrientation(int relativeRotation = 0)
 		{
-			if ( Orientation == Rotation.DoNotChange )
+			if ( Orientation == RotationModel.Rotation.DoNotChange )
 			{
-				Orientation = Rotation.Horizontal;
+				Orientation = RotationModel.Rotation.Horizontal;
 			}
 
 			var currentOrientation = _orderRotation.FindIndex(i => i == Orientation);
@@ -627,25 +604,25 @@ namespace starsky.foundation.database.Models
 		/// </summary>
 		/// <param name="orientationString">The orientation string (used by exif 1,6,8)</param>
 		/// <returns></returns>
-		public Rotation SetAbsoluteOrientation(string orientationString = "0")
+		public RotationModel.Rotation SetAbsoluteOrientation(string orientationString = "0")
 		{
 
 			switch ( orientationString )
 			{
 				case "1":
-					Orientation = Rotation.Horizontal;
+					Orientation = RotationModel.Rotation.Horizontal;
 					return Orientation;
 				case "6":
-					Orientation = Rotation.Rotate90Cw;
+					Orientation = RotationModel.Rotation.Rotate90Cw;
 					return Orientation;
 				case "3":
-					Orientation = Rotation.Rotate180;
+					Orientation = RotationModel.Rotation.Rotate180;
 					return Orientation;
 				case "8":
-					Orientation = Rotation.Rotate270Cw;
+					Orientation = RotationModel.Rotation.Rotate270Cw;
 					return Orientation;
 				default: // Fallback by for example 'null'
-					Orientation = Rotation.DoNotChange;
+					Orientation = RotationModel.Rotation.DoNotChange;
 					return Orientation;
 			}
 		}

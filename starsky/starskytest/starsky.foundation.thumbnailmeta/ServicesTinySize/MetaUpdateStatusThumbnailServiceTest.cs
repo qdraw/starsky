@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.thumbnailmeta.Services;
+using starsky.foundation.thumbnailmeta.ServicesTinySize;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.thumbnailmeta.Services;
+namespace starskytest.starsky.foundation.thumbnailmeta.ServicesTinySize;
 
 [TestClass]
 public class MetaUpdateStatusThumbnailServiceTest

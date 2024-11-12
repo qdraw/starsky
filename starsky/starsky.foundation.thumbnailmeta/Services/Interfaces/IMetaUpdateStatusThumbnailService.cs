@@ -1,14 +1,16 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace starsky.foundation.thumbnailmeta.Interfaces;
+namespace starsky.foundation.thumbnailmeta.ServicesTinySize.Interfaces;
 
 public interface IMetaUpdateStatusThumbnailService
 {
 	/// <summary>
-	/// 
 	/// </summary>
-	/// <param name="statusResultsWithSubPaths">fail/pass, right type, string=subPath, string?2= error reason</param>
+	/// <param name="statusResultsWithSubPaths">
+	///     fail/pass, right type, string=subPath, string?2= error
+	///     reason
+	/// </param>
 	/// <returns></returns>
 	Task UpdateStatusThumbnail(List<(bool, bool, string, string?)> statusResultsWithSubPaths);
 }
