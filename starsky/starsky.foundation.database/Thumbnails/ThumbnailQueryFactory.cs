@@ -36,20 +36,19 @@ public sealed class ThumbnailQueryFactory
 		}
 
 		var context = _setupDatabaseTypes?.BuilderDbFactory();
-		if ( _thumbnailQuery.GetType() == typeof(ThumbnailQuery) && context != null &&
-		     _memoryCache != null )
+		if ( _thumbnailQuery.GetType() == typeof(ThumbnailQuery) && context != null )
 		{
 			return new ThumbnailQuery(context, _serviceScopeFactory, _logger, _memoryCache);
 		}
 
 		// FakeIQuery should skip creation
 		var isAnyContentIncluded =
-			_thumbnailQuery.GetReflectionFieldValue<List<ThumbnailItem>?>("_content")?.Count != 0;
+			_thumbnailQuery.GetReflectionFieldValue<List<ThumbnailItem>?>("_content") != null;
 
 		if ( !isAnyContentIncluded )
 		{
 			return Activator.CreateInstance(_thumbnailQuery.GetType(),
-				context, _serviceScopeFactory, _logger) as IThumbnailQuery;
+				context, _serviceScopeFactory, _logger, _memoryCache) as IThumbnailQuery;
 		}
 
 		_logger.LogInformation("FakeIThumbnailQuery _content detected");
