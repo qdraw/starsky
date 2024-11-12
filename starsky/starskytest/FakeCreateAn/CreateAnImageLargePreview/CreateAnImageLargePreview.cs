@@ -1,29 +1,17 @@
-using System;
-using System.Collections.Immutable;
 using System.IO;
 using System.Reflection;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeMocks;
 
-namespace starskytest.FakeCreateAn.CreateAnImageA330Raw;
+namespace starskytest.FakeCreateAn.CreateAnImageLargePreview;
 
-public class CreateAnImageA330Raw
+public class CreateAnImageLargePreview
 {
 	private readonly string _dirName;
-	public readonly ImmutableArray<byte> Bytes = [..Array.Empty<byte>()];
 
-	public CreateAnImageA330Raw()
+	public CreateAnImageLargePreview()
 	{
 		_dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;
-		if ( string.IsNullOrEmpty(_dirName) )
-		{
-			return;
-		}
-
-		var path = Path.Combine(_dirName, "FakeCreateAn",
-			"CreateAnImageA330Raw", "head_part.arw");
-
-		Bytes = [..StreamToBytes(path)];
 	}
 
 	public byte[] BytesFullImage
@@ -31,7 +19,7 @@ public class CreateAnImageA330Raw
 		get
 		{
 			var path = Path.Combine(_dirName, "FakeCreateAn",
-				"CreateAnImageA330Raw", "DSC01028.ARW");
+				"CreateAnImageLargePreview", "20241112_110839_DSC02741.jpg");
 			return StreamToBytes(path);
 		}
 	}

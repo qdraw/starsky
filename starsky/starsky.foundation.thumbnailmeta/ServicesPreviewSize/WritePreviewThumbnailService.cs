@@ -49,7 +49,7 @@ public class WritePreviewThumbnailService : IWritePreviewThumbnailService
 
 		foreach ( var size in thumbnailFromThumbnailUpdateList )
 		{
-			if ( previewIdentify.Width <= size.Width() )
+			if ( previewIdentify.Width >= size.Width() )
 			{
 				await ResizeAsync(offsetData, rotation, size, fileHash, reference);
 			}
@@ -77,6 +77,8 @@ public class WritePreviewThumbnailService : IWritePreviewThumbnailService
 					i => i.Resize(size.Width(), 0, KnownResamplers.Lanczos3));
 				previewImage.Mutate(
 					i => i.Rotate(rotation.ToDegrees()));
+
+				await previewImage.SaveAsJpegAsync(outputStream);
 
 				await _thumbnailStorage.WriteStreamAsync(outputStream,
 					ThumbnailNameHelper.Combine(fileHash, size));

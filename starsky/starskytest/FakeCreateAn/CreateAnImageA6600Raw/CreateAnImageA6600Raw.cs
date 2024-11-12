@@ -9,20 +9,31 @@ namespace starskytest.FakeCreateAn.CreateAnImageA6600Raw;
 
 public class CreateAnImageA6600Raw
 {
+	private readonly string _dirName;
 	public readonly ImmutableArray<byte> Bytes = [..Array.Empty<byte>()];
 
 	public CreateAnImageA6600Raw()
 	{
-		var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-		if ( string.IsNullOrEmpty(dirName) )
+		_dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;
+		if ( string.IsNullOrEmpty(_dirName) )
 		{
 			return;
 		}
 
-		var path = Path.Combine(dirName, "FakeCreateAn",
+		var path = Path.Combine(_dirName, "FakeCreateAn",
 			"CreateAnImageA6600Raw", "head_part.arw");
 
 		Bytes = [..StreamToBytes(path)];
+	}
+
+	public byte[] BytesFullImage
+	{
+		get
+		{
+			var path = Path.Combine(_dirName, "FakeCreateAn",
+				"CreateAnImageA6600Raw", "20241107_140535_DSC00732.arw");
+			return StreamToBytes(path);
+		}
 	}
 
 	private static byte[] StreamToBytes(string path)

@@ -1,15 +1,20 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.thumbnailmeta.Helpers;
 using starsky.foundation.thumbnailmeta.Models;
+using starsky.foundation.thumbnailmeta.ServicesPreviewSize.Helpers;
 using starsky.foundation.thumbnailmeta.ServicesPreviewSize.Interfaces;
 using Directory = MetadataExtractor.Directory;
+using File = TagLib.File;
 
 namespace starsky.foundation.thumbnailmeta.ServicesPreviewSize;
 
@@ -26,20 +31,21 @@ public class OffsetDataMetaExifPreviewThumbnail : IOffsetDataMetaExifPreviewThum
 
 	public OffsetModel ParseOffsetData(List<Directory> allExifItems, string subPath)
 	{
-		var exifIfd0Directories = allExifItems.OfType<ExifIfd0Directory>();
-		var exifIfd0DirectoriesTags = exifIfd0Directories.FirstOrDefault()?.Tags;
-		if ( exifIfd0DirectoriesTags == null )
+		var json = JsonSerializer.Serialize(allExifItems);
+
+
+		var (offsetSuccess, offset, byteSizeSuccess, byteSize) =
+			GetOffsetAndByteSize(allExifItems, subPath);
+
+		if ( !offsetSuccess || !byteSizeSuccess )
 		{
 			return new OffsetModel
 			{
 				Success = false,
-				Reason =
-					$"{FilenamesHelper.GetFileName(subPath)} ExifIfd0Directory null"
+				Reason = $"{FilenamesHelper.GetFileName(subPath)} offset or byteSize failed"
 			};
 		}
 
-		var (offsetSuccess, offset, byteSizeSuccess, byteSize) =
-			GetOffsetAndByteSize(exifIfd0DirectoriesTags);
 		var thumbnail = new byte[byteSize];
 
 		using ( var imageStream = _iStorage.ReadStream(subPath) )
@@ -71,20 +77,75 @@ public class OffsetDataMetaExifPreviewThumbnail : IOffsetDataMetaExifPreviewThum
 		return allExifItems;
 	}
 
-	private static (bool offsetSuccess, int offset, bool byteSizeSuccess, int byteSize)
-		GetOffsetAndByteSize(IReadOnlyList<Tag> exifIfd0Directories)
+	private (bool offsetSuccess, int offset, bool byteSizeSuccess, int byteSize)
+		GetOffsetAndByteSize(List<Directory> allExifItems, string subPath)
 	{
+		for ( var i = 0; i < 2; i++ )
+		{
+			var (offsetSuccess, offset, byteSizeSuccess, byteSize) = i switch
+			{
+				0 => GetOffsetAndByteSizeForRaw(allExifItems),
+				1 => GetOffsetAndByteSizeForJpeg(subPath),
+				_ => throw new ArgumentOutOfRangeException()
+			};
+			if ( offsetSuccess && byteSizeSuccess )
+			{
+				return ( offsetSuccess, offset, byteSizeSuccess, byteSize );
+			}
+		}
+
+		return ( false, 0, false, 0 );
+	}
+
+	private (bool offsetSuccess, int offset, bool byteSizeSuccess, int byteSize)
+		GetOffsetAndByteSizeForJpeg(string subPath)
+	{
+		var file = TagLib.File.Create(new TagLibSharpAbstractions.MemoryFileAbstraction(_iStorage.ReadStream(subPath)));
+		var t = file.Tag;
+		
+		// var test = new PreviewImageExtractor().GetImageSize(
+		// 	"/Users/dion/data/git/starsky/starsky/starskytest/FakeCreateAn/CreateAnImageLargePreview/20241112_110839_DSC02741.jpg");
+
+		var test = new PreviewImageExtractor().ExtractTagData(
+			"/Users/dion/data/git/starsky/starsky/starskytest/FakeCreateAn/CreateAnImageLargePreview/20241112_110839_DSC02741.jpg",
+			0x2001);
+
+		//var t = PreviewImageExtractor.ExtractPreviewImage(_iStorage.ReadStream(subPath));
+
+		// PreviewImageExtractor.ExtractPreviewImage(new MemoryStream())
+		// var sonyMakerNote = allExifItems.OfType<SonyType1MakernoteDirectory>().ToList();
+		// var preview = sonyMakerNote.FirstOrDefault()?.Tags.FirstOrDefault(p => p.Type == SonyType1MakernoteDirectory.TagPreviewImageSize)?.Description;
+		// var preview1 = sonyMakerNote.FirstOrDefault()?.Tags.FirstOrDefault(p => p.Type == SonyType1MakernoteDirectory.TagPreviewImage)?.Description;
+		// var test = sonyMakerNote.FirstOrDefault()?.Tags.(0x2001);
+		//
+		return ( false, 0, false, 0 );
+	}
+
+	private static (bool offsetSuccess, int offset, bool byteSizeSuccess, int byteSize)
+		GetOffsetAndByteSizeForRaw(List<Directory> allExifItems)
+	{
+		var exifIfd0Directories = allExifItems.OfType<ExifIfd0Directory>().ToList();
+		var exifIfd0DirectoriesTags = exifIfd0Directories.FirstOrDefault()?.Tags;
+		var isCompression = exifIfd0DirectoriesTags?
+			.FirstOrDefault(p => p.Type == ExifDirectoryBase.TagCompression)
+			?.Description;
+		if ( exifIfd0DirectoriesTags == null || isCompression == null ||
+		     !isCompression.Contains("JPEG") )
+		{
+			return ( false, 0, false, 0 );
+		}
+
 		// you can get offset of thumbnail by JpegIFOffset(0x0201) Tag in IFD1,
 		// size of thumbnail by JpegIFByteCount(0x0202) 
 		// https://www.media.mit.edu/pia/Research/deepview/exif.html
 
 		// Unknown tag (0x0201) - 135330
-		var offsetAsString = exifIfd0Directories.FirstOrDefault(p => p.Type == 513)
+		var offsetAsString = exifIfd0DirectoriesTags.FirstOrDefault(p => p.Type == 513)
 			?.Description;
 		var offsetSuccess = int.TryParse(offsetAsString, out var offset);
 
 		// Unknown tag (0x0202) - 840155
-		var byteSizeAsString = exifIfd0Directories.FirstOrDefault(p => p.Type == 514)
+		var byteSizeAsString = exifIfd0DirectoriesTags.FirstOrDefault(p => p.Type == 514)
 			?.Description;
 		var byteSizeSuccess = int.TryParse(byteSizeAsString, out var byteSize);
 

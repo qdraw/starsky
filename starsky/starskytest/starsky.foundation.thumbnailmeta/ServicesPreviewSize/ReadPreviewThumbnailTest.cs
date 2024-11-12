@@ -11,6 +11,7 @@ using starsky.foundation.thumbnailmeta.ServicesPreviewSize;
 using starskytest.FakeCreateAn;
 using starskytest.FakeCreateAn.CreateAnImageA330Raw;
 using starskytest.FakeCreateAn.CreateAnImageA6600Raw;
+using starskytest.FakeCreateAn.CreateAnImageLargePreview;
 using starskytest.FakeCreateAn.CreateAnImageWithThumbnail;
 using starskytest.FakeMocks;
 
@@ -31,15 +32,17 @@ public class ReadPreviewThumbnailTest
 				"/poppy.jpg",
 				ThumbnailNameHelper.Combine("test", ThumbnailSize.TinyMeta),
 				"/A330.arw",
-				"/A6600.arw"
+				"/A6600.arw",
+				"/13mini.jpg"
 			},
 			new List<byte[]>
 			{
 				CreateAnImage.Bytes.ToArray(),
 				new CreateAnImageWithThumbnail().Bytes.ToArray(),
 				CreateAnImage.Bytes.ToArray(),
-				new CreateAnImageA330Raw().Bytes.ToArray(),
-				new CreateAnImageA6600Raw().Bytes.ToArray()
+				new CreateAnImageA330Raw().BytesFullImage,
+				new CreateAnImageA6600Raw().BytesFullImage,
+				new CreateAnImageLargePreview().BytesFullImage
 			}
 		);
 	}
@@ -59,9 +62,10 @@ public class ReadPreviewThumbnailTest
 	}
 
 	[TestMethod]
-	[DataRow("/A330.arw", "meta_image1", 192, 128)]
-	[DataRow("/A6600.arw", "meta_image2", 192, 127)]
-	[DataRow("/poppy.jpg", "meta_image3", 180, 120)]
+	[DataRow("/A330.arw", "preview_image1", 1000, 668)]
+	[DataRow("/A6600.arw", "preview_image2", 1000, 668)]
+	[DataRow("/poppy.jpg", "preview_image3", 1000, 120)]
+	[DataRow("/13mini.jpg", "preview_image4", 1000, 668)]
 	public async Task Image_WithThumbnail_InMemoryIntegrationTest(string subPath, string hash,
 		int expectedWidth, int expectedHeight)
 	{
@@ -75,11 +79,14 @@ public class ReadPreviewThumbnailTest
 			.AddPreviewThumbnail(subPath, $"/{hash}");
 
 		Assert.IsTrue(result.Item1);
-		Assert.IsTrue(_iStorageFake.ExistFile($"/{hash}@meta"));
+		Assert.IsTrue(_iStorageFake.ExistFile($"/{hash}"));
+		Assert.IsTrue(_iStorageFake.ExistFile($"/{hash}@300"));
 
-		var readStream = _iStorageFake.ReadStream($"/{hash}@meta");
-		
-		await new StorageHostFullPathFilesystem(new FakeIWebLogger()).WriteStreamAsync(readStream, $"/tmp/{hash}@meta");
+		var exportStream = _iStorageFake.ReadStream($"/{hash}");
+		await new StorageHostFullPathFilesystem(new FakeIWebLogger()).WriteStreamAsync(exportStream,
+			$"/tmp/{hash}.jpg");
+
+		var readStream = _iStorageFake.ReadStream($"/{hash}");
 
 		var decoder = new DecoderOptions();
 		var imageInfo = await Image.IdentifyAsync(decoder, readStream);
