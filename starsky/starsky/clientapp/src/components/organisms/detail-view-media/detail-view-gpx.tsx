@@ -62,7 +62,7 @@ const DetailViewGpx: React.FC = () => {
     map.scrollWheelZoom.disable();
     map.boxZoom.disable();
     map.keyboard.disable();
-    if (map.tap) map.tap.disable();
+    if (map.tapHold) map.tapHold.disable();
 
     map.fitBounds(tracks);
 

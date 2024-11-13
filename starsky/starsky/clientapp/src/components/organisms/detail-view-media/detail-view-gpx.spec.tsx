@@ -88,7 +88,7 @@ describe("DetailViewGpx", () => {
           scrollWheelZoom: { disable: jest.fn() },
           boxZoom: { disable: jest.fn() },
           keyboard: { disable: jest.fn() },
-          tap: { disable: jest.fn() }
+          tapHold: { disable: jest.fn() }
         };
       });
 
@@ -136,7 +136,7 @@ describe("DetailViewGpx", () => {
           scrollWheelZoom: { disable: jest.fn() },
           boxZoom: { disable: jest.fn() },
           keyboard: { disable: jest.fn() },
-          tap: { disable: jest.fn() },
+          tapHold: { disable: jest.fn() },
           zoomIn
         };
       });
@@ -195,7 +195,7 @@ describe("DetailViewGpx", () => {
           scrollWheelZoom: { disable: jest.fn() },
           boxZoom: { disable: jest.fn() },
           keyboard: { disable: jest.fn() },
-          tap: { disable: jest.fn() },
+          tapHold: { disable: jest.fn() },
           zoomOut
         };
       });
@@ -262,7 +262,7 @@ describe("DetailViewGpx", () => {
           scrollWheelZoom: { disable: jest.fn() },
           boxZoom: { disable: jest.fn() },
           keyboard: { disable: jest.fn() },
-          tap: { disable: jest.fn() },
+          tapHold: { disable: jest.fn() },
           zoomOut
         };
       });
@@ -322,7 +322,7 @@ describe("DetailViewGpx", () => {
           scrollWheelZoom: { disable: jest.fn() },
           boxZoom: { disable: jest.fn() },
           keyboard: { disable: jest.fn() },
-          tap: { disable: jest.fn() },
+          tapHold: { disable: jest.fn() },
           setView: setViewSpy
         };
       };
