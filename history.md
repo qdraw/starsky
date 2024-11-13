@@ -68,6 +68,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Added) _Front-end_ Cache display issue with fileName contains (PR #1817)
 - [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.404 (Runtime: 8.0.11) (PR #1821)
 - [x] (Fixed) _Back-end_ Prev/Next issue with duplicates in cache (PR #1827)
+- [x] (Changed) _Front-end_ Update npm depedencies, leaflet changes (PR #1825)
 
 ## version 0.6.2 - 2024-10-11 {#v0.6.2}
 
