@@ -2,7 +2,7 @@
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         <ProjectGuid>{67a8a132-6551-4042-96a4-3ec507b0cb83}</ProjectGuid>
-        <Version>0.6.2</Version>
+        <Version>0.6.3</Version>
         <Nullable>enable</Nullable>
         <RootNamespace>starsky.feature.settings</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>

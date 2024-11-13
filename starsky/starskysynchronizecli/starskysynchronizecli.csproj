@@ -7,7 +7,7 @@
         <ProjectGuid>{7e1136a7-cc43-49d2-91d3-48e557f0fb66}</ProjectGuid>
         <RuntimeFrameworkVersion>8.0.11</RuntimeFrameworkVersion>
         <RootNamespace>starskysynchronizecli</RootNamespace>
-        <Version>0.6.2</Version>
+        <Version>0.6.3</Version>
         <Nullable>enable</Nullable>
         <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
