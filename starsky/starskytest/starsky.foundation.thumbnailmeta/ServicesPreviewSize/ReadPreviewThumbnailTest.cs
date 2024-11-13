@@ -66,6 +66,7 @@ public class ReadPreviewThumbnailTest
 	[DataRow("/A6600.arw", "preview_image2", 1000, 668)]
 	[DataRow("/poppy.jpg", "preview_image3", 1000, 120)]
 	[DataRow("/13mini.jpg", "preview_image4", 1000, 668)]
+	[Timeout(5000)]
 	public async Task Image_WithThumbnail_InMemoryIntegrationTest(string subPath, string hash,
 		int expectedWidth, int expectedHeight)
 	{

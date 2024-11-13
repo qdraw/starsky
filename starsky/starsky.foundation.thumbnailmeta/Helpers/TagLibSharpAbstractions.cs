@@ -1,28 +1,29 @@
 using System.IO;
+using File = TagLib.File;
 
 namespace starsky.foundation.thumbnailmeta.Helpers;
 
 public class TagLibSharpAbstractions
 {
-	public class MemoryFileAbstraction : TagLib.File.IFileAbstraction
+	public class FileBytesAbstraction : File.IFileAbstraction
 	{
-		readonly Stream stream;
-
-		public MemoryFileAbstraction (Stream data)
+		public FileBytesAbstraction(string name, Stream stream)
 		{
-			stream = data;
+			Name = name;
+
+			ReadStream = stream;
+			WriteStream = stream;
 		}
 
-		public string Name => "MEMORY";
-
-		public Stream ReadStream => stream;
-
-		public Stream WriteStream => stream;
-
-		public void CloseStream (Stream stream)
+		public void CloseStream(Stream stream)
 		{
-			// This causes a stackoverflow
-			//stream?.Close();
+			stream.Dispose();
 		}
+
+		public string Name { get; }
+
+		public Stream ReadStream { get; }
+
+		public Stream WriteStream { get; }
 	}
 }

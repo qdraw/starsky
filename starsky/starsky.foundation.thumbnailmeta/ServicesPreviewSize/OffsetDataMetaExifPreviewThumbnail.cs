@@ -2,9 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
+using MetadataExtractor.Formats.Exif.Makernotes;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Metadata.Profiles.Exif;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
@@ -100,9 +105,53 @@ public class OffsetDataMetaExifPreviewThumbnail : IOffsetDataMetaExifPreviewThum
 	private (bool offsetSuccess, int offset, bool byteSizeSuccess, int byteSize)
 		GetOffsetAndByteSizeForJpeg(string subPath)
 	{
-		var file = TagLib.File.Create(new TagLibSharpAbstractions.MemoryFileAbstraction(_iStorage.ReadStream(subPath)));
+		var directories = ImageMetadataReader.ReadMetadata(
+			"/Users/dion/data/fotobieb/2024/11/2024_11_11_d/20241111_181721_DSC00782.jpg");
+		var directory = directories.OfType<SonyType1MakernoteDirectory>().FirstOrDefault();
+
+		SonyMakerNotesParser.ParseSonyMakerNotes(
+			"/Users/dion/data/fotobieb/2024/11/2024_11_11_d/20241111_181721_DSC00782.jpg");
+
+		return ( false, 0, false, 0 );
+
+		// Check if directory contains PreviewImage tag (0x2001)
+		var previewImageTag = directory.GetObject(0x2001);
+		if ( previewImageTag is byte[] previewImageData )
+		{
+			System.IO.File.WriteAllBytes("/tmp/sony_preview_image.jpg", previewImageData);
+			Console.WriteLine(
+				"Sony preview image extracted successfully to 'sony_preview_image.jpg'.");
+		}
+		else
+		{
+			Console.WriteLine("Preview image tag not found in Sony MakerNotes.");
+		}
+
+		using ( var image = Image.Load(_iStorage.ReadStream(subPath)) )
+		{
+			var exifProfile = image.Metadata.ExifProfile;
+			if ( exifProfile != null )
+			{
+				var makerNote = exifProfile.Values.FirstOrDefault(p => p.Tag == ExifTag.MakerNote)
+					?.GetValue() as byte[];
+				var str = Encoding.Default.GetString(makerNote);
+				// Access Exif tags
+				Console.WriteLine();
+			}
+		}
+
+
+		var file =
+			File.Create(new TagLibSharpAbstractions.FileBytesAbstraction("test.jpg",
+				_iStorage.ReadStream(subPath)));
 		var t = file.Tag;
-		
+		var json = JsonSerializer.Serialize(t,
+			new JsonSerializerOptions
+			{
+				WriteIndented = true,
+				NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
+			});
+
 		// var test = new PreviewImageExtractor().GetImageSize(
 		// 	"/Users/dion/data/git/starsky/starsky/starskytest/FakeCreateAn/CreateAnImageLargePreview/20241112_110839_DSC02741.jpg");
 
