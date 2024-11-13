@@ -10,23 +10,6 @@ namespace starsky.foundation.database.Query;
 
 public partial class Query // For folder displays only
 {
-	/// <summary>
-	///     Query all FileIndexItems with the type folder
-	/// </summary>
-	/// <returns>List of all folders in database, including content</returns>
-	public List<FileIndexItem> GetAllFolders()
-	{
-		try
-		{
-			return _context.FileIndex.Where(p => p.IsDirectory == true).ToList();
-		}
-		catch ( ObjectDisposedException )
-		{
-			var context = new InjectServiceScope(_scopeFactory).Context();
-			return context.FileIndex.Where(p => p.IsDirectory == true).ToList();
-		}
-	}
-
 
 	// Class for displaying folder content
 	// This is the query part

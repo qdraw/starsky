@@ -511,8 +511,6 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(1, results.Count);
 			Assert.AreEqual("/test.jpg", results[0].FilePath);
 		}
-
-		
 				
 		[TestMethod]
 		public async Task Folder_DuplicateFolders_Implicit()
@@ -528,7 +526,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			await syncFolder.Folder("/");
 
-			var allFolders = _query.GetAllFolders();
+			var allFolders = (_query as FakeIQuery)?.GetAllFolders();
 			if ( allFolders == null )
 			{
 				throw new NullReferenceException(
@@ -553,7 +551,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			await syncFolder.Folder("/DuplicateFolder");
 
-			var allFolders = _query.GetAllFolders().Where(p => p.FilePath == "/DuplicateFolder").ToList();
+			var allFolders = (_query as FakeIQuery)?.GetAllFolders().Where(p => p.FilePath == "/DuplicateFolder").ToList();
 			Assert.IsNotNull(allFolders);
 			
 			Assert.AreEqual("/DuplicateFolder", allFolders.Find(p => p.FilePath == "/DuplicateFolder")?.FilePath);

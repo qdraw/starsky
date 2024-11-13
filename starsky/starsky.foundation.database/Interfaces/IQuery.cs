@@ -145,12 +145,6 @@ public interface IQuery
 
 	void ResetItemByHash(string fileHash);
 
-	/// <summary>
-	/// Only global search for all folder
-	/// </summary>
-	/// <returns></returns>
-	List<FileIndexItem> GetAllFolders();
-
 	Task<List<FileIndexItem>> GetFoldersAsync(string subPath);
 
 	Task<List<FileIndexItem>> GetAllObjectsAsync(string subPath);
