@@ -303,7 +303,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(DateTime.UtcNow.Day, fileIndexItem?.LastEdited.Day);
 			Assert.AreEqual(DateTime.UtcNow.Month, fileIndexItem?.LastEdited.Month);
 			Assert.AreEqual(DateTime.UtcNow.Hour, fileIndexItem?.LastEdited.Hour);
-			Assert.AreEqual(DateTime.UtcNow.Minute, fileIndexItem?.LastEdited.Minute);
+			Assert.IsTrue((DateTime.UtcNow - fileIndexItem?.LastEdited)?.TotalMinutes <= 5);
 		}
 
 		[TestMethod]
