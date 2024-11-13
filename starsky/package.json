@@ -10,5 +10,8 @@
     "lint:fix": "cd starsky && cd clientapp && npm run lint:fix",
     "lint": "cd starsky && cd clientapp && npm run lint",
     "update:install": "cd starsky && cd clientapp && npm run update:install"
+  },
+  "devDependencies": {
+    "body-parser": "^1.20.3"
   }
 }
