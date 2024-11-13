@@ -103,8 +103,8 @@ public partial class Query // For folder displays only
 			return fallbackResult;
 		}
 
-		var result = objectFileFolders as List<FileIndexItem> ??
-		             new List<FileIndexItem>();
+		var result = ( objectFileFolders as List<FileIndexItem> ??
+		               new List<FileIndexItem>() ).DistinctBy(p => p.FilePath).ToList();
 		return new Tuple<bool, List<FileIndexItem>>(true, result);
 	}
 
