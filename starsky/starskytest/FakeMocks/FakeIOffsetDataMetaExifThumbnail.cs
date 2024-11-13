@@ -1,22 +1,21 @@
 using MetadataExtractor.Formats.Exif;
 using starsky.foundation.database.Models;
-using starsky.foundation.thumbnailmeta.Interfaces;
 using starsky.foundation.thumbnailmeta.Models;
+using starsky.foundation.thumbnailmeta.ServicesTinySize.Interfaces;
 
-namespace starskytest.FakeMocks
+namespace starskytest.FakeMocks;
+
+public class FakeIOffsetDataMetaExifThumbnail : IOffsetDataMetaExifThumbnail
 {
-	public class FakeIOffsetDataMetaExifThumbnail : IOffsetDataMetaExifThumbnail
+	public OffsetModel ParseOffsetData(ExifThumbnailDirectory? exifThumbnailDir,
+		string subPath)
 	{
-		public OffsetModel ParseOffsetData(ExifThumbnailDirectory? exifThumbnailDir,
-			string subPath)
-		{
-			return new OffsetModel { Success = true };
-		}
+		return new OffsetModel { Success = true };
+	}
 
-		public (ExifThumbnailDirectory?, int, int, FileIndexItem.Rotation) GetExifMetaDirectories(
-			string subPath)
-		{
-			return ( null, 0, 0, FileIndexItem.Rotation.Horizontal );
-		}
+	public (ExifThumbnailDirectory?, int, int, RotationModel.Rotation) GetExifMetaDirectories(
+		string subPath)
+	{
+		return ( null, 0, 0, RotationModel.Rotation.Horizontal );
 	}
 }

@@ -151,6 +151,19 @@
         <Content Include="FakeCreateAn\CreateAnImagePsd\test.psd">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <None Remove="FakeCreateAn\CreateAnImageA6600Raw\20241107_140535_DSC00732.arw"/>
+        <Content Include="FakeCreateAn\CreateAnImageA6600Raw\20241107_140535_DSC00732.arw">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <None Remove="FakeCreateAn\CreateAnImageA330Raw\DSC01028.ARW"/>
+        <Content Include="FakeCreateAn\CreateAnImageA330Raw\DSC01028.ARW">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <None Remove="FakeCreateAn\CreateAnImageLargePreview\20240621_205041_DSC06164.jpg"/>
+        <None Remove="FakeCreateAn\CreateAnImageLargePreview\20241112_110839_DSC02741.jpg"/>
+        <Content Include="FakeCreateAn\CreateAnImageLargePreview\20241112_110839_DSC02741.jpg">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

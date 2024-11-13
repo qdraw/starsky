@@ -1,0 +1,136 @@
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using MetadataExtractor;
+using MetadataExtractor.Formats.Exif;
+using starsky.foundation.database.Models;
+using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
+using starsky.foundation.readmeta.ReadMetaHelpers;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
+using starsky.foundation.thumbnailmeta.Helpers;
+using starsky.foundation.thumbnailmeta.Models;
+using starsky.foundation.thumbnailmeta.ServicesTinySize.Interfaces;
+using Directory = MetadataExtractor.Directory;
+
+[assembly: InternalsVisibleTo("starskytest")]
+
+namespace starsky.foundation.thumbnailmeta.ServicesTinySize;
+
+[Service(typeof(IOffsetDataMetaExifThumbnail), InjectionLifetime = InjectionLifetime.Scoped)]
+public sealed class OffsetDataMetaExifThumbnail : IOffsetDataMetaExifThumbnail
+{
+	private readonly IStorage _iStorage;
+	private readonly IWebLogger _logger;
+
+	public OffsetDataMetaExifThumbnail(ISelectorStorage selectorStorage, IWebLogger logger)
+	{
+		_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+		_logger = logger;
+	}
+
+	public (ExifThumbnailDirectory?, int, int, RotationModel.Rotation)
+		GetExifMetaDirectories(string subPath)
+	{
+		var (allExifItems, exifThumbnailDir) = ReadExifMetaDirectories(subPath);
+		return ParseMetaThumbnail(allExifItems, exifThumbnailDir, subPath);
+	}
+
+	public OffsetModel ParseOffsetData(ExifThumbnailDirectory? exifThumbnailDir, string subPath)
+	{
+		if ( exifThumbnailDir == null )
+		{
+			return new OffsetModel
+			{
+				Success = false,
+				Reason =
+					$"{FilenamesHelper.GetFileName(subPath)} ExifThumbnailDirectory null"
+			};
+		}
+
+		var thumbnailOffset = long.Parse(exifThumbnailDir!.GetDescription(
+			ExifThumbnailDirectory.TagThumbnailOffset)!.Split(' ')[0]);
+		const int maxIssue35Offset = 12;
+		var thumbnailLength = int.Parse(exifThumbnailDir.GetDescription(
+			ExifThumbnailDirectory.TagThumbnailLength)!.Split(' ')[0]) + maxIssue35Offset;
+		var thumbnail = new byte[thumbnailLength];
+
+		using ( var imageStream = _iStorage.ReadStream(subPath) )
+		{
+			imageStream.Seek(thumbnailOffset, SeekOrigin.Begin);
+
+			var actualRead = imageStream.Read(thumbnail, 0, thumbnailLength);
+			if ( actualRead != thumbnailLength )
+			{
+				_logger.LogError("[ParseOffsetData] ReadStream: actualRead != maxRead");
+			}
+		}
+
+		// work around Metadata Extractor issue #35
+		if ( thumbnailLength <= maxIssue35Offset + 1 )
+		{
+			_logger.LogInformation(
+				$"[ParseOffsetData] thumbnailLength : {thumbnailLength} {maxIssue35Offset + 1}");
+			return new OffsetModel
+			{
+				Success = false, Reason = $"{FilenamesHelper.GetFileName(subPath)} offsetLength"
+			};
+		}
+
+		var issue35Offset = 0;
+		for ( var offset = 0; offset <= maxIssue35Offset; ++offset )
+		{
+			// 0xffd8 is the JFIF start of image segment indicator
+			if ( thumbnail[offset] == 0xff && thumbnail[offset + 1] == 0xd8 )
+			{
+				issue35Offset = offset;
+				break;
+			}
+		}
+
+		return new OffsetModel
+		{
+			Success = true,
+			Index = issue35Offset,
+			Count = thumbnailLength - issue35Offset,
+			Data = thumbnail // byte array
+		};
+	}
+
+	internal (List<Directory>?, ExifThumbnailDirectory?) ReadExifMetaDirectories(string subPath)
+	{
+		using ( var stream = _iStorage.ReadStream(subPath) )
+		{
+			var allExifItems =
+				ImageMetadataReader.ReadMetadata(stream).ToList();
+			var exifThumbnailDir =
+				allExifItems.Find(p =>
+					p.Name == "Exif Thumbnail") as ExifThumbnailDirectory;
+
+			return ( allExifItems, exifThumbnailDir );
+		}
+	}
+
+	internal (ExifThumbnailDirectory?, int, int, RotationModel.Rotation) ParseMetaThumbnail(
+		List<Directory>? allExifItems,
+		ExifThumbnailDirectory? exifThumbnailDir, string? reference = null)
+	{
+		if ( exifThumbnailDir == null || allExifItems == null )
+		{
+			return ( null, 0, 0, RotationModel.Rotation.DoNotChange );
+		}
+
+		var (width, height) = GetImageSize.GetSize(allExifItems);
+		if ( height == 0 || width == 0 )
+		{
+			_logger.LogInformation(
+				$"[ParseMetaThumbnail] ${reference} has no height or width {width}x{height} ");
+		}
+
+		var rotation = ReadMetaExif.GetOrientationFromExifItem(allExifItems);
+		return ( exifThumbnailDir, width, height, rotation );
+	}
+}

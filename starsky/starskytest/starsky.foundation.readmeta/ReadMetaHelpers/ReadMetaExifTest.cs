@@ -188,7 +188,7 @@ public class ReadMetaExifTest
 		Assert.IsNotNull(result);
 		Assert.AreEqual("Canon", result.Make);
 		Assert.AreEqual("EOS 80D", result.Model);
-		Assert.AreEqual(FileIndexItem.Rotation.Horizontal, result.Orientation);
+		Assert.AreEqual(RotationModel.Rotation.Horizontal, result.Orientation);
 		Assert.AreEqual("E 18-200mm F3.5-6.3 OSS LE", result.LensModel);
 	}
 }

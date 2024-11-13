@@ -3,20 +3,21 @@ using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
-using starsky.foundation.thumbnailmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.thumbnailmeta.ServicesTinySize.Interfaces;
 
-namespace starsky.foundation.thumbnailmeta.Services;
+namespace starsky.foundation.thumbnailmeta.ServicesTinySize;
 
 [Service(typeof(IMetaUpdateStatusThumbnailService), InjectionLifetime = InjectionLifetime.Scoped)]
 public class MetaUpdateStatusThumbnailService : IMetaUpdateStatusThumbnailService
 {
-	private readonly IThumbnailQuery _thumbnailQuery;
 	private readonly FileHash _fileHashStorage;
+	private readonly IThumbnailQuery _thumbnailQuery;
 
-	public MetaUpdateStatusThumbnailService(IThumbnailQuery thumbnailQuery, ISelectorStorage selectorStorage)
+	public MetaUpdateStatusThumbnailService(IThumbnailQuery thumbnailQuery,
+		ISelectorStorage selectorStorage)
 	{
 		_thumbnailQuery = thumbnailQuery;
 		var storage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
@@ -24,10 +25,11 @@ public class MetaUpdateStatusThumbnailService : IMetaUpdateStatusThumbnailServic
 	}
 
 	/// <summary>
-	/// 
+	///     Update status to Database
 	/// </summary>
 	/// <param name="statusResultsWithSubPaths">fail/pass, string=subPath, string?2= error reason</param>
-	public async Task UpdateStatusThumbnail(List<(bool, bool, string, string?)> statusResultsWithSubPaths)
+	public async Task UpdateStatusThumbnail(
+		List<(bool, bool, string, string?)> statusResultsWithSubPaths)
 	{
 		var statusResultsWithFileHashes = new List<ThumbnailResultDataTransferModel>();
 		foreach ( var (status, rightType, subPath, reason) in statusResultsWithSubPaths )
