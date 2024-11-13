@@ -28,7 +28,7 @@ public static class SonarQube
 	/// <summary>
 	///     @see: https://www.nuget.org/packages/dotnet-sonarscanner
 	/// </summary>
-	private const string SonarQubePackageVersion = "9.0.1";
+	private const string SonarQubePackageVersion = "9.0.2";
 
 	private const string SonarQubeDotnetSonarScannerApi =
 		"https://api.nuget.org/v3-flatcontainer/dotnet-sonarscanner/index.json";
