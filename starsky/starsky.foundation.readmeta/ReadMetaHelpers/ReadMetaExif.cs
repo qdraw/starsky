@@ -326,15 +326,12 @@ public sealed class ReadMetaExif
 			sonyDirectory?.GetDescription(SonyType1MakernoteDirectory.TagImageStabilisation);
 		// 0 	0x0000	Off
 		// 1 	0x0001	On
-		switch ( imageStabilisation )
+		return imageStabilisation switch
 		{
-			case "Off":
-				return ImageStabilisationType.Off;
-			case "On":
-				return ImageStabilisationType.On;
-		}
-
-		return ImageStabilisationType.Unknown;
+			"Off" => ImageStabilisationType.Off,
+			"On" => ImageStabilisationType.On,
+			_ => ImageStabilisationType.Unknown
+		};
 	}
 
 	internal static string GetLocationCountryCode(List<Directory> allExifItems)

@@ -129,6 +129,56 @@ public class QueryGetNextPrevInFolderTest
 	}
 
 	[TestMethod]
+	public async Task QueryGetNextPrevInFolder_Duplicate()
+	{
+		const string parentFolderPath = "/collection";
+		const string currentFolder = "/collection/DSC00338.jpg";
+		var items = new List<FileIndexItem>
+		{
+			new()
+			{
+				FilePath = "/test/20241107_133153_DSC00647.jpg",
+				FileHash = "IQJOWVXWYWKCJX3WI4QVBLLPGQ",
+				ParentDirectory = parentFolderPath,
+				ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
+			},
+			new()
+			{
+				FilePath = "/test/20241107_133428_DSC00651_e.jpg",
+				FileHash = "TKI2Z5WAP7GR3RKMKIUV3D5RZY",
+				ParentDirectory = parentFolderPath,
+				ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
+			},
+			new()
+			{
+				FilePath = "/test/20241107_133428_DSC00651_e.jpg",
+				FileHash = "TKI2Z5WAP7GR3RKMKIUV3D5RZY",
+				ParentDirectory = parentFolderPath,
+				ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
+			},
+			new()
+			{
+				FilePath = "/test/20241107_133428_DSC00651.jpg",
+				FileHash = "KXBZECUFUOIG3BPPU4HCSDEHZM",
+				ParentDirectory = parentFolderPath,
+				ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
+			}
+		};
+
+		_context.FileIndex.AddRange(items);
+		await _context.SaveChangesAsync();
+
+		// Act
+		var result = _query.QueryGetNextPrevInFolder(parentFolderPath, currentFolder);
+
+		Assert.IsNotNull(result);
+		Assert.AreEqual(items.Count - 1, result.Count);
+
+		// clean
+		await _query.RemoveItemAsync(items);
+	}
+
+	[TestMethod]
 	public async Task QueryGetNextPrevInFolder_DoesNotIncludeMetaJsonOrXmp()
 	{
 		// Arrange

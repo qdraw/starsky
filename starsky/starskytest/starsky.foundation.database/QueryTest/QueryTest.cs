@@ -492,6 +492,14 @@ public sealed class QueryTest
 			ColorClass = ColorClassParser.Color.Winner // 1
 		});
 
+		var image1duplicate = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "1.jpg",
+			ParentDirectory = "/duplicates_test",
+			FileHash = "123458465522",
+			ColorClass = ColorClassParser.Color.Winner // 1
+		});
+
 		var image2 = await _query.AddItemAsync(new FileIndexItem
 		{
 			FileName = "2.jpg",
@@ -506,6 +514,8 @@ public sealed class QueryTest
 		Assert.AreEqual(image0.FilePath, result[0].FilePath);
 		Assert.AreEqual(image1.FilePath, result[1].FilePath);
 		Assert.AreEqual(image2.FilePath, result[2].FilePath);
+
+		await _query.RemoveItemAsync([image0, image1, image1duplicate, image2]);
 	}
 
 	[TestMethod]

@@ -4,42 +4,41 @@ using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 
-namespace starsky.foundation.database.Helpers
+namespace starsky.foundation.database.Helpers;
+
+public sealed class Duplicate
 {
-	public sealed class Duplicate
+	private readonly IQuery _query;
+
+	public Duplicate(IQuery query)
 	{
-		private readonly IQuery _query;
+		_query = query;
+	}
 
-		public Duplicate(IQuery query)
+	/// <summary>
+	///     Check and remove duplicate from database!
+	/// </summary>
+	/// <param name="databaseSubFolderList"></param>
+	/// <returns></returns>
+	public async Task<List<FileIndexItem>> RemoveDuplicateAsync(
+		List<FileIndexItem> databaseSubFolderList)
+	{
+		// Get a list of duplicate items
+		var duplicateItemsByFilePath = databaseSubFolderList.GroupBy(item => item.FilePath)
+			.SelectMany(grp => grp.Skip(1).Take(1)).ToList();
+
+		// ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+		foreach ( var duplicateItemByName in duplicateItemsByFilePath )
 		{
-			_query = query;
-		}
-
-		/// <summary>
-		/// Check and remove duplicate from database
-		/// </summary>
-		/// <param name="databaseSubFolderList"></param>
-		/// <returns></returns>
-		public async Task<List<FileIndexItem>> RemoveDuplicateAsync(
-			List<FileIndexItem> databaseSubFolderList)
-		{
-			// Get a list of duplicate items
-			var duplicateItemsByFilePath = databaseSubFolderList.GroupBy(item => item.FilePath)
-				.SelectMany(grp => grp.Skip(1).Take(1)).ToList();
-
-			// ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
-			foreach ( var duplicateItemByName in duplicateItemsByFilePath )
+			var duplicateItems = databaseSubFolderList.Where(p =>
+				p.FilePath == duplicateItemByName.FilePath).ToList();
+			for ( var i = 1; i < duplicateItems.Count; i++ )
 			{
-				var duplicateItems = databaseSubFolderList.Where(p =>
-					p.FilePath == duplicateItemByName.FilePath).ToList();
-				for ( var i = 1; i < duplicateItems.Count; i++ )
-				{
-					databaseSubFolderList.Remove(duplicateItems[i]);
-					await _query.RemoveItemAsync(duplicateItems[i]);
-				}
+				databaseSubFolderList.Remove(duplicateItems[i]);
+				await _query.RemoveItemAsync(duplicateItems[i]);
 			}
-
-			return databaseSubFolderList;
 		}
+
+		return databaseSubFolderList;
 	}
 }

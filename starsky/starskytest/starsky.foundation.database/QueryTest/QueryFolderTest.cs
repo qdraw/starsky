@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -47,6 +48,34 @@ public sealed class QueryFolderTest
 
 		var result = queryNoCache.CacheGetParentFolder("/");
 		Assert.IsFalse(result.Item1);
+	}
+
+	[TestMethod]
+	public void CacheGetParentFolder_ShouldReturnCachedItems_Duplicates()
+	{
+		var query = new Query(CreateNewScope().CreateScope().ServiceProvider
+				.GetRequiredService<ApplicationDbContext>(), new AppSettings(),
+			CreateNewScope(), new FakeIWebLogger(), _memoryCache);
+
+		// Arrange
+		const string subPath = "/test_folder";
+		var fileIndexItems = new List<FileIndexItem>
+		{
+			new() { FilePath = "/test_folder/file1.jpg" },
+			new() { FilePath = "/test_folder/file2.jpg" },
+			new() { FilePath = "/test_folder/file2.jpg" }
+		};
+		var cacheKey = Query.CachingDbName(nameof(FileIndexItem), subPath);
+		_memoryCache?.Set(cacheKey, fileIndexItems);
+
+		// Act
+		var result = query.CacheGetParentFolder(subPath);
+
+		// Assert
+		Assert.IsTrue(result.Item1);
+		Assert.AreEqual(2, result.Item2.Count);
+		Assert.AreEqual("/test_folder/file1.jpg", result.Item2[0].FilePath);
+		Assert.AreEqual("/test_folder/file2.jpg", result.Item2[1].FilePath);
 	}
 
 	[TestMethod]
