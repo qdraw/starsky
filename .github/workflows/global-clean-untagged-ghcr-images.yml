@@ -5,17 +5,15 @@ on:
   schedule:
     - cron:  '45 03 * * *'
     
-jobs:
-  run:
 
+jobs:
+  delete_versions:
     runs-on: ubuntu-latest
-    steps:    
-    
-    - name: Delete all containers from repository without tags
-      uses: Chizkiyahu/delete-untagged-ghcr-action@v5
-      with:
-        token: ${{ secrets.WORKFLOW_GITHUB }}
-        repository_owner: ${{ github.repository_owner }}
-        repository: ${{ github.repository }}
-        untagged_only: true
-        owner_type: user # or org
+    steps:
+      - uses: actions/delete-package-versions@v5
+        with: 
+          package-name: 'starsky'
+          token: ${{ secrets.WORKFLOW_GITHUB }}
+          package-type: 'container'
+          min-versions-to-keep: 10
+          delete-only-untagged-versions: 'true'
