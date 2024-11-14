@@ -9,7 +9,7 @@ steps:
 
   - task: Cache@2
     inputs:
-      key: 'npm | documentation | "$(Agent.OS)" | $(Build.SourcesDirectory)/documentation/package-lock.json'
+      key: 'npm | documentation | "$(Agent.OS)" | $(Build.SourcesDirectory)/documentation/package.json'
       restoreKeys: |
         npm | clientapp | "$(Agent.OS)"
       path: ${{ parameters.npmConfigCache }}
