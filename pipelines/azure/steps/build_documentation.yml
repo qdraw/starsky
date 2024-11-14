@@ -25,7 +25,7 @@ steps:
         npm -v
 
   - task: PowerShell@2
-    displayName: "[doc..] npm ci"
+    displayName: "[doc..] npm install"
     inputs:
       targetType: "inline"
       workingDirectory: documentation
