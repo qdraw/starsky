@@ -51,7 +51,7 @@ jobs:
         working-directory: ./starsky
         run: bash build.sh --no-publish --no-dependencies --no-sonar
         
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}  
           file: ./starsky/starskytest/coverage-merge-cobertura.xml
