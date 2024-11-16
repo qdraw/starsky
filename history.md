@@ -42,7 +42,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## List of versions
 
 ## version 0.6.4 - _(Unreleased)_ - 2024-11-?? {#v0.6.3}
-- nothing yet
+
+- [x] (Fixed) _Back-end_ Notification duplicate error handling (Issue #1832) (PR #1834)
   
 ## version 0.6.3 - 2024-11-14 {#v0.6.3}
 
