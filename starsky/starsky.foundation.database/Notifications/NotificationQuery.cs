@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
@@ -15,49 +16,87 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 
-namespace starsky.foundation.database.Notifications
+namespace starsky.foundation.database.Notifications;
+
+[Service(typeof(INotificationQuery), InjectionLifetime = InjectionLifetime.Scoped)]
+public sealed class NotificationQuery : INotificationQuery
 {
-	[Service(typeof(INotificationQuery), InjectionLifetime = InjectionLifetime.Scoped)]
-	public sealed class NotificationQuery : INotificationQuery
+	private readonly ApplicationDbContext _context;
+	private readonly IWebLogger _logger;
+	private readonly IServiceScopeFactory _scopeFactory;
+
+	public NotificationQuery(ApplicationDbContext context, IWebLogger logger,
+		IServiceScopeFactory scopeFactory)
 	{
-		private readonly ApplicationDbContext _context;
-		private readonly IWebLogger _logger;
-		private readonly IServiceScopeFactory _scopeFactory;
+		_context = context;
+		_logger = logger;
+		_scopeFactory = scopeFactory;
+	}
 
-		public NotificationQuery(ApplicationDbContext context, IWebLogger logger,
-			IServiceScopeFactory scopeFactory)
+	public Task<List<NotificationItem>> GetNewerThan(DateTime parsedDateTime)
+	{
+		var unixTime = ( ( DateTimeOffset ) parsedDateTime ).ToUnixTimeSeconds() - 1;
+		return _context.Notifications.Where(x => x.DateTimeEpoch > unixTime).ToListAsync();
+	}
+
+	public Task<List<NotificationItem>> GetOlderThan(DateTime parsedDateTime)
+	{
+		var unixTime = ( ( DateTimeOffset ) parsedDateTime ).ToUnixTimeSeconds();
+		return _context.Notifications.Where(x => x.DateTimeEpoch < unixTime).ToListAsync();
+	}
+
+	public async Task RemoveAsync(IEnumerable<NotificationItem> content)
+	{
+		_context.Notifications.RemoveRange(content);
+		await _context.SaveChangesAsync();
+	}
+
+	/// <summary>
+	///     Add notification to the database
+	/// </summary>
+	/// <param name="content">Content</param>
+	/// <typeparam name="T">Type</typeparam>
+	/// <returns>DatabaseItem</returns>
+	public Task<NotificationItem> AddNotification<T>(ApiNotificationResponseModel<T> content)
+	{
+		var stringMessage = JsonSerializer.Serialize(content,
+			DefaultJsonSerializer.CamelCaseNoEnters);
+		return AddNotification(stringMessage);
+	}
+
+	/// <summary>
+	///     Add content to database
+	/// </summary>
+	/// <param name="content">json content</param>
+	/// <returns>item with id</returns>
+	public async Task<NotificationItem> AddNotification(string content)
+	{
+		var item = new NotificationItem
 		{
-			_context = context;
-			_logger = logger;
-			_scopeFactory = scopeFactory;
-		}
+			DateTime = DateTime.UtcNow,
+			DateTimeEpoch = DateTimeOffset.Now.ToUnixTimeSeconds(),
+			Content = content
+		};
 
-		public async Task<NotificationItem> AddNotification(string content)
+		return await RetryHelper.DoAsync(LocalAddQuery, TimeSpan.FromSeconds(1));
+
+		async Task<NotificationItem> LocalAdd(ApplicationDbContext context)
 		{
-			var item = new NotificationItem
+			try
 			{
-				DateTime = DateTime.UtcNow,
-				DateTimeEpoch = DateTimeOffset.Now.ToUnixTimeSeconds(),
-				Content = content
-			};
-
-			return await RetryHelper.DoAsync(LocalAddQuery, TimeSpan.FromSeconds(1));
-
-			async Task<NotificationItem> LocalAdd(ApplicationDbContext context)
+				context.Entry(item).State = EntityState.Added;
+				await context.Notifications.AddAsync(item);
+				await context.SaveChangesAsync();
+				return item;
+			}
+			catch ( DbUpdateException updateException )
 			{
-				try
-				{
-					context.Entry(item).State = EntityState.Added;
-					await context.Notifications.AddAsync(item);
-					await context.SaveChangesAsync();
-					return item;
-				}
-				catch ( DbUpdateConcurrencyException concurrencyException )
+				if ( updateException is DbUpdateConcurrencyException )
 				{
 					_logger.LogInformation(
 						"[AddNotification] try to fix DbUpdateConcurrencyException",
-						concurrencyException);
-					SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+						updateException);
+					SolveConcurrency.SolveConcurrencyExceptionLoop(updateException.Entries);
 					try
 					{
 						await _context.SaveChangesAsync();
@@ -68,48 +107,40 @@ namespace starsky.foundation.database.Notifications
 							"[AddNotification] save failed after DbUpdateConcurrencyException");
 					}
 				}
+				else if ( updateException.InnerException is SqliteException
+				         {
+					         SqliteErrorCode: 19
+				         } )
+				{
+					_logger.LogInformation($"[AddNotification] SqliteException retry next: " +
+					                       $"{updateException.InnerException.Message}");
 
-				return item;
+					item.Id = 0;
+					await LocalAddQuery();
+				}
+				else
+				{
+					_logger.LogError(updateException,
+						$"[AddNotification] no solution maybe retry? M: {updateException.Message}");
+					throw;
+				}
 			}
 
-			async Task<NotificationItem> LocalAddQuery()
+			return item;
+		}
+
+		async Task<NotificationItem> LocalAddQuery()
+		{
+			try
 			{
-				try
-				{
-					return await LocalAdd(_context);
-				}
-				catch ( ObjectDisposedException )
-				{
-					// Include create new scope factory
-					var context = new InjectServiceScope(_scopeFactory).Context();
-					return await LocalAdd(context);
-				}
+				return await LocalAdd(_context);
 			}
-		}
-
-		public Task<NotificationItem> AddNotification<T>(ApiNotificationResponseModel<T> content)
-		{
-			var stringMessage = JsonSerializer.Serialize(content,
-				DefaultJsonSerializer.CamelCaseNoEnters);
-			return AddNotification(stringMessage);
-		}
-
-		public Task<List<NotificationItem>> GetNewerThan(DateTime parsedDateTime)
-		{
-			var unixTime = ( ( DateTimeOffset ) parsedDateTime ).ToUnixTimeSeconds() - 1;
-			return _context.Notifications.Where(x => x.DateTimeEpoch > unixTime).ToListAsync();
-		}
-
-		public Task<List<NotificationItem>> GetOlderThan(DateTime parsedDateTime)
-		{
-			var unixTime = ( ( DateTimeOffset ) parsedDateTime ).ToUnixTimeSeconds();
-			return _context.Notifications.Where(x => x.DateTimeEpoch < unixTime).ToListAsync();
-		}
-
-		public async Task RemoveAsync(IEnumerable<NotificationItem> content)
-		{
-			_context.Notifications.RemoveRange(content);
-			await _context.SaveChangesAsync();
+			catch ( ObjectDisposedException )
+			{
+				// Include create new scope factory
+				var context = new InjectServiceScope(_scopeFactory).Context();
+				return await LocalAdd(context);
+			}
 		}
 	}
 }
