@@ -8,6 +8,11 @@ Welcome to the first steps of your journey with Starsky!
 
 > Note: This guide assumes that you have already download and installed the Application: How to setup the desktop application using [Windows](../getting-started/desktop/desktop-windows.md) and [Mac OS](../getting-started/desktop/desktop-macos.md) you can find in the [Windows Guide](../getting-started/desktop/desktop-windows.md) and [Mac OS Guide](../getting-started/desktop/desktop-macos.md)
 
+If you are looking for the command to reset Gatekeeper: Learn more in the [Mac OS Guide](../getting-started/desktop/desktop-macos.md)
+```
+codesign --force --deep -s - /Applications/Starsky.app && xattr -rd com.apple.quarantine /Applications/Starsky.app
+```
+
 ## Setting Storage Folder
 
 -   Once you have installed Starsky, you can start it by opening the Starsky application.
