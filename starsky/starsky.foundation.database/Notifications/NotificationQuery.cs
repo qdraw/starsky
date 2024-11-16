@@ -120,8 +120,8 @@ public sealed class NotificationQuery : INotificationQuery
 				}
 				else
 				{
-					_logger.LogInformation(updateException,
-						"[AddNotification] save failed");
+					_logger.LogError(updateException,
+						$"[AddNotification] no solution maybe retry? M: {updateException.Message}");
 					throw;
 				}
 			}

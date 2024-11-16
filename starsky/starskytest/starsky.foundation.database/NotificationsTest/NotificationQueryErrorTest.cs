@@ -80,7 +80,32 @@ public sealed class NotificationQueryErrorTest
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
 			.UseInMemoryDatabase(nameof(AddNotification_ShouldHandleUniqueConstraintError))
 			.Options;
-		var context = new DbUpdateExceptionException(options) { MinCount = 1 };
+		var context = new DbUpdateExceptionException(options)
+		{
+			MinCount = 1, InnerException = new SqliteException("t", 19, 19)
+		};
+
+		// Act
+		var sut = new NotificationQuery(context, new FakeIWebLogger(), null!);
+		var result = await sut.AddNotification(content);
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.AreEqual(content, result.Content);
+	}
+	
+	[TestMethod]
+	public async Task AddNotification_ShouldRetry_GeneralException()
+	{
+		// Arrange
+		const string content = "Test notification";
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(nameof(AddNotification_ShouldHandleUniqueConstraintError))
+			.Options;
+		var context = new DbUpdateExceptionException(options)
+		{
+			MinCount = 1, InnerException = new AggregateException("test")
+		};
 
 		// Act
 		var sut = new NotificationQuery(context, new FakeIWebLogger(), null!);
@@ -187,14 +212,15 @@ public sealed class NotificationQueryErrorTest
 
 		private int Count { get; set; }
 
+		public Exception InnerException { get; set; }
+
 		public override Task<int> SaveChangesAsync(
 			CancellationToken cancellationToken = default)
 		{
 			Count++;
 			if ( Count <= MinCount )
 			{
-				var sqliteException = new SqliteException("t", 19, 19);
-				throw new DbUpdateException("t", sqliteException,
+				throw new DbUpdateException("t", InnerException,
 					new List<IUpdateEntry>());
 			}
 
