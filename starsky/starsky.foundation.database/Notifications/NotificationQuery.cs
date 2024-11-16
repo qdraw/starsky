@@ -33,13 +33,6 @@ public sealed class NotificationQuery : INotificationQuery
 		_scopeFactory = scopeFactory;
 	}
 
-	public Task<NotificationItem> AddNotification<T>(ApiNotificationResponseModel<T> content)
-	{
-		var stringMessage = JsonSerializer.Serialize(content,
-			DefaultJsonSerializer.CamelCaseNoEnters);
-		return AddNotification(stringMessage);
-	}
-
 	public Task<List<NotificationItem>> GetNewerThan(DateTime parsedDateTime)
 	{
 		var unixTime = ( ( DateTimeOffset ) parsedDateTime ).ToUnixTimeSeconds() - 1;
@@ -58,6 +51,24 @@ public sealed class NotificationQuery : INotificationQuery
 		await _context.SaveChangesAsync();
 	}
 
+	/// <summary>
+	///     Add notification to the database
+	/// </summary>
+	/// <param name="content">Content</param>
+	/// <typeparam name="T">Type</typeparam>
+	/// <returns>DatabaseItem</returns>
+	public Task<NotificationItem> AddNotification<T>(ApiNotificationResponseModel<T> content)
+	{
+		var stringMessage = JsonSerializer.Serialize(content,
+			DefaultJsonSerializer.CamelCaseNoEnters);
+		return AddNotification(stringMessage);
+	}
+
+	/// <summary>
+	///     Add content to database
+	/// </summary>
+	/// <param name="content">json content</param>
+	/// <returns>item with id</returns>
 	public async Task<NotificationItem> AddNotification(string content)
 	{
 		var item = new NotificationItem
