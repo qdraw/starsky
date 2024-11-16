@@ -82,7 +82,9 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 		catch ( OperationCanceledException exception )
 		{
 			_logger.LogError(
-				$"[StartBackgroundAsync] catch-ed OperationCanceledException {exception.Message}",
+				$"[StartBackgroundAsync] catch-ed OperationCanceledException " +
+				$"Src:{exception.Source} Mes:{exception.Message} SaTtr:{exception.StackTrace}" +
+				$" Inner:{exception.InnerException?.StackTrace} HRes:{exception.HResult}",
 				exception);
 		}
 
