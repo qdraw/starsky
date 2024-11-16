@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -68,6 +69,26 @@ public sealed class NotificationQueryErrorTest
 		await fakeQuery.AddNotification("");
 
 		Assert.IsTrue(IsCalledDbUpdateConcurrency);
+	}
+
+
+	[TestMethod]
+	public async Task AddNotification_ShouldHandleUniqueConstraintError()
+	{
+		// Arrange
+		const string content = "Test notification";
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(nameof(AddNotification_ShouldHandleUniqueConstraintError))
+			.Options;
+		var context = new DbUpdateExceptionException(options) { MinCount = 1 };
+
+		// Act
+		var sut = new NotificationQuery(context, new FakeIWebLogger(), null!);
+		var result = await sut.AddNotification(content);
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.AreEqual(content, result.Content);
 	}
 
 	private class UpdateEntryUpdateConcurrency : IUpdateEntry
@@ -157,6 +178,28 @@ public sealed class NotificationQueryErrorTest
 		// ReSharper disable once UnassignedGetOnlyAutoProperty
 		public IUpdateEntry SharedIdentityEntry { get; }
 #pragma warning restore 8618
+	}
+
+	private class DbUpdateExceptionException(DbContextOptions options)
+		: ApplicationDbContext(options)
+	{
+		public int MinCount { get; set; }
+
+		private int Count { get; set; }
+
+		public override Task<int> SaveChangesAsync(
+			CancellationToken cancellationToken = default)
+		{
+			Count++;
+			if ( Count <= MinCount )
+			{
+				var sqliteException = new SqliteException("t", 19, 19);
+				throw new DbUpdateException("t", sqliteException,
+					new List<IUpdateEntry>());
+			}
+
+			return Task.FromResult(Count);
+		}
 	}
 
 	private class AppDbContextConcurrencyException : ApplicationDbContext
