@@ -80,7 +80,7 @@ public sealed class NotificationQueryErrorTest
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
 			.UseInMemoryDatabase(nameof(AddNotification_ShouldHandleUniqueConstraintError))
 			.Options;
-		var context = new DbUpdateExceptionException(options)
+		var context = new DbUpdateExceptionApplicationDbContext(options)
 		{
 			MinCount = 1, InnerException = new SqliteException("t", 19, 19)
 		};
@@ -93,7 +93,7 @@ public sealed class NotificationQueryErrorTest
 		Assert.IsNotNull(result);
 		Assert.AreEqual(content, result.Content);
 	}
-	
+
 	[TestMethod]
 	public async Task AddNotification_ShouldRetry_GeneralException()
 	{
@@ -102,7 +102,7 @@ public sealed class NotificationQueryErrorTest
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
 			.UseInMemoryDatabase(nameof(AddNotification_ShouldHandleUniqueConstraintError))
 			.Options;
-		var context = new DbUpdateExceptionException(options)
+		var context = new DbUpdateExceptionApplicationDbContext(options)
 		{
 			MinCount = 1, InnerException = new AggregateException("test")
 		};
@@ -205,14 +205,14 @@ public sealed class NotificationQueryErrorTest
 #pragma warning restore 8618
 	}
 
-	private class DbUpdateExceptionException(DbContextOptions options)
+	private class DbUpdateExceptionApplicationDbContext(DbContextOptions options)
 		: ApplicationDbContext(options)
 	{
-		public int MinCount { get; set; }
+		public required int MinCount { get; set; }
 
 		private int Count { get; set; }
 
-		public Exception InnerException { get; set; }
+		public required Exception InnerException { get; set; }
 
 		public override Task<int> SaveChangesAsync(
 			CancellationToken cancellationToken = default)
