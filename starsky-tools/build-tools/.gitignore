@@ -3,3 +3,4 @@ create-docusaurus-tmp-folder/**
 mirror/ffmpeg/*.zip
 mirror/exiftool/*.zip
 mirror/exiftool/*.tar.gz
+mirror/geonames/**
