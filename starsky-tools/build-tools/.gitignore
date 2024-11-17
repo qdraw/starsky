@@ -1,2 +1,4 @@
 create-docusaurus-tmp-folder/**
-ffmpeg_binaries/**
+
+ffmpeg/*.zip
+!ffmpeg/index.json

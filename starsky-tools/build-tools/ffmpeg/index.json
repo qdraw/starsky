@@ -1,0 +1,34 @@
+{
+    "binaries": [
+        {
+            "architecture": "windows-x64",
+            "url": "ffmpeg-6.1-win-64.zip",
+            "sha512": "5702ef34f69c3d8113e3c7133b19c63c1b7fe2d95c6b58e306cea69ab1fbbbf4f223454081fe88e47e02caac2c1370ff22fde749b9cb3f86493b37d3e245737b"
+        },
+        {
+            "architecture": "linux-x64",
+            "url": "ffmpeg-6.1-linux-64.zip",
+            "sha512": "f5c54c9eb9aa249fa3a51a33e90f028dd00b87de8f3068a1619dd916d9e7e33e2ba05ccade5c26227223094c5446c5a20a70a2b2d8acd882685fa0b13fa90324"
+        },
+        {
+            "architecture": "linux-arm",
+            "url": "ffmpeg-6.1-linux-armhf-32.zip",
+            "sha512": "e28e97b6fce3be34f2fd133e65e33fcf5b83cf3b11626cdff7576e2e19dbbaf31465f9f434cf8a6e243226f9d77db777799974f6750251c7b7132a42ada53e15"
+        },
+        {
+            "architecture": "linux-arm64",
+            "url": "ffmpeg-6.1-linux-arm-64.zip",
+            "sha512": "ac8522caae603a3e4bd16c2a7a8fab0e0dbf323d60cab3f87796d50ab56537ae3b0d110c0c02658b60a16106c8db3240ebc52a7d829af7067cd2ee3634822b81"
+        },
+        {
+            "architecture": "osx-x64",
+            "url": "ffmpeg-6.1-macos-64.zip",
+            "sha512": "b4b0a48b5f7a41ee93dafd05ffe86e8083b2ead51de96daa31df31d5bff79295468f32f95dd8b20f12e063d26c7b5843214879b0b672b2c032f53bdc3229d9e1"
+        },
+        {
+            "architecture": "osx-arm64",
+            "url": "ffmpeg71arm.zip",
+            "sha512": "5968c8eb48f6fcfb67cfcc77edf9656c46cff058227d997101c242ed0f1d4a69a814a79a1999897dbde2454b3f2b811328c063a48ae30890a8fdeffabf1ce620"
+        }
+    ]
+}
