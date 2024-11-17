@@ -1,4 +1,5 @@
 create-docusaurus-tmp-folder/**
 
-ffmpeg/*.zip
-!ffmpeg/index.json
+mirror/ffmpeg/*.zip
+mirror/exiftool/*.zip
+mirror/exiftool/*.tar.gz

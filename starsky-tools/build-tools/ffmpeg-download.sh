@@ -3,7 +3,7 @@ FFBINARIES_API="https://ffbinaries.com/api/v1/version/6.1"
 OSX_ARM64_URL="https://www.osxexperts.net/ffmpeg71arm.zip"
 OSX_ARM64_NAME="osx-arm64"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-BINARY_FOLDERNAME="ffmpeg"
+BINARY_FOLDERNAME="mirror/ffmpeg"
 INDEX_FILE="index.json"
 
 LAST_CHAR_SCRIPT_DIR=${SCRIPT_DIR:length-1:1}
@@ -14,13 +14,13 @@ LAST_CHAR_BINARY_FOLDERNAME=${BINARY_FOLDERNAME:length-1:1}
 
 INDEX_FILE_PATH=$SCRIPT_DIR$BINARY_FOLDERNAME$INDEX_FILE
 
-echo "Cleaning up previous binaries... $SCRIPT_DIR$BINARY_FOLDERNAME"
-rm -rf $SCRIPT_DIR$BINARY_FOLDERNAME
 
 # Fetch the JSON data
 FFBINARIES_JSON=$(curl -s $FFBINARIES_API)
 
 # Create a directory to store the binaries
+echo "Cleaning up previous binaries... $SCRIPT_DIR$BINARY_FOLDERNAME"
+rm -rf $SCRIPT_DIR$BINARY_FOLDERNAME
 mkdir -p $SCRIPT_DIR$BINARY_FOLDERNAME
 cd $SCRIPT_DIR$BINARY_FOLDERNAME
 
@@ -56,7 +56,6 @@ while read -r ARCHITECTURE && read -r URL <&3; do
   if [ "$CURRENT_ARCHITECTURE" == "linux-32" ] || [ "$CURRENT_ARCHITECTURE" == "linux-armel" ]; then
     continue
   fi
-
 
   CURRENT_ARCHITECTURE="$(MAP_ARCHITECTURE_NAME $CURRENT_ARCHITECTURE)"
 
