@@ -44,13 +44,21 @@ MAP_ARCHITECTURE_NAME () {
   fi
 }
 
+# populate_array_from_variable() {
+#   local variable_content="$1"
+#   local array_name="$2"
+
+#   while IFS= read -r line; do
+#     eval "$array_name+=(\"\$line\")"
+#   done < <(echo "$variable_content")
+# }
+
 populate_array_from_variable() {
   local variable_content="$1"
   local array_name="$2"
 
-  while IFS= read -r line; do
-    eval "$array_name+=(\"\$line\")"
-  done < <(echo "$variable_content")
+  IFS=$'\n' read -rd '' -a temp_array <<< "$variable_content"
+  eval "$array_name=(\"\${temp_array[@]}\")"
 }
 
 # Initialize arrays
