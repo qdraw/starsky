@@ -44,12 +44,34 @@ MAP_ARCHITECTURE_NAME () {
   fi
 }
 
+populate_array_from_variable() {
+  local variable_content="$1"
+  local array_name="$2"
+
+  while IFS= read -r line; do
+    eval "$array_name+=(\"\$line\")"
+  done < <(echo "$variable_content")
+}
+
+# Initialize arrays
+ARCHITECTURES_ARRAY=()
+BINARY_URLS_ARRAY=()
+
+# Populate arrays using the function
+populate_array_from_variable "$ARCHITECTURES" ARCHITECTURES_ARRAY
+populate_array_from_variable "$BINARY_URLS" BINARY_URLS_ARRAY
 
 
-while read -r ARCHITECTURE && read -r URL <&3; do
+for i in "${!ARCHITECTURES_ARRAY[@]}"; do
+
+  ARCHITECTURE="${ARCHITECTURES_ARRAY[$i]}"
+  URL="${BINARY_URLS_ARRAY[$i]}"
 
   # Extract architecture and URL
   FILENAME=$(basename "$URL")
+  NEW_VERSION=""
+  FILENAME_UPDATED=$(echo "$FILENAME" | sed -E "s/(-|\.)([0-9]+\.[0-9]+)(-|\.|$)/\1$NEW_VERSION\3/")
+
   CURRENT_ARCHITECTURE=$(echo "$ARCHITECTURE" | sed -n 's/.*"\([^"]*\)":{.*ffmpeg.*/\1/p')
 
   # skip if linux-armel or linux-32
@@ -65,9 +87,11 @@ while read -r ARCHITECTURE && read -r URL <&3; do
 
   FILE_HASH=$(openssl dgst -sha512 "$FILENAME" | awk '{print $2}')
 
+  mv "$FILENAME" "$FILENAME_UPDATED"
+
   # Add to output JSON
-  OUTPUT_JSON="${OUTPUT_JSON}{\"architecture\":\"$CURRENT_ARCHITECTURE\",\"url\":\"$FILENAME\",\"sha512\":\"$FILE_HASH\"},"
-done < <(echo "$ARCHITECTURES") 3< <(echo "$BINARY_URLS")
+  OUTPUT_JSON="${OUTPUT_JSON}{\"architecture\":\"$CURRENT_ARCHITECTURE\",\"url\":\"$FILENAME_UPDATED\",\"sha512\":\"$FILE_HASH\"},"
+done
 
 # Add osx-arm64 explicitly
 echo "Adding custom architecture $OSX_ARM64_NAME with URL $OSX_ARM64_URL..."
