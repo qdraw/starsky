@@ -5,6 +5,7 @@ OSX_ARM64_NAME="osx-arm64"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 BINARY_FOLDERNAME="mirror/ffmpeg"
 INDEX_FILE="index.json"
+CHECK_FILES=("ffmpeg-linux-64.zip" "ffmpeg-linux-arm-64.zip" "ffmpeg-linux-armhf-32.zip" "ffmpeg-macos-64.zip" "ffmpeg-win-64.zip" "ffmpeg71arm.zip")
 
 LAST_CHAR_SCRIPT_DIR=${SCRIPT_DIR:length-1:1}
 [[ $LAST_CHAR_SCRIPT_DIR != "/" ]] && SCRIPT_DIR="$SCRIPT_DIR/"; :
@@ -44,15 +45,6 @@ MAP_ARCHITECTURE_NAME () {
   fi
 }
 
-# populate_array_from_variable() {
-#   local variable_content="$1"
-#   local array_name="$2"
-
-#   while IFS= read -r line; do
-#     eval "$array_name+=(\"\$line\")"
-#   done < <(echo "$variable_content")
-# }
-
 populate_array_from_variable() {
   local variable_content="$1"
   local array_name="$2"
@@ -77,8 +69,7 @@ for i in "${!ARCHITECTURES_ARRAY[@]}"; do
 
   # Extract architecture and URL
   FILENAME=$(basename "$URL")
-  NEW_VERSION=""
-  FILENAME_UPDATED=$(echo "$FILENAME" | sed -E "s/(-|\.)([0-9]+\.[0-9]+)(-|\.|$)/\1$NEW_VERSION\3/")
+  FILENAME_UPDATED=$(echo "$FILENAME" | sed -E "s/[-.]([0-9]+\.[0-9]+)[-.]/-/")
 
   CURRENT_ARCHITECTURE=$(echo "$ARCHITECTURE" | sed -n 's/.*"\([^"]*\)":{.*ffmpeg.*/\1/p')
 
@@ -90,7 +81,7 @@ for i in "${!ARCHITECTURES_ARRAY[@]}"; do
   CURRENT_ARCHITECTURE="$(MAP_ARCHITECTURE_NAME $CURRENT_ARCHITECTURE)"
 
   # Download the binary
-  echo "Downloading $URL for $CURRENT_ARCHITECTURE $FILENAME..."
+  echo "Downloading $URL for $CURRENT_ARCHITECTURE [$FILENAME] $FILENAME_UPDATED..."
   curl -L -O "$URL"
 
   FILE_HASH=$(openssl dgst -sha512 "$FILENAME" | awk '{print $2}')
@@ -120,5 +111,19 @@ echo "All ffmpeg binaries downloaded successfully."
 node -e "console.log(JSON.stringify(JSON.parse(require('fs') \
       .readFileSync(process.argv[1])), null, 4));" $INDEX_FILE_PATH > $INDEX_FILE_PATH.bak
 mv $INDEX_FILE_PATH.bak $INDEX_FILE_PATH
+
+
+for CHECK_FILE in "${CHECK_FILES[@]}"; do
+  if [ -f "$SCRIPT_DIR$BINARY_FOLDERNAME$CHECK_FILE" ] && [ "$(stat -c%s "$SCRIPT_DIR$BINARY_FOLDERNAME$CHECK_FILE" 2>/dev/null || stat -f%z "$SCRIPT_DIR$BINARY_FOLDERNAME$CHECK_FILE")" -gt 17874368 ]; then
+    echo "✅ $CHECK_FILE exists and is larger than 17 MB."
+  elif [ -f "$SCRIPT_DIR$BINARY_FOLDERNAME$CHECK_FILE" ]; then
+    echo "⛌ FAIL -> $CHECK_FILE exists but is 17 MB or smaller."
+    exit 1
+  else
+    echo "⛌ FAIL -> $CHECK_FILE does not exist."
+    exit 1
+  fi
+done
+
 
 echo "URLs with architectures saved to $INDEX_FILE_PATH"
