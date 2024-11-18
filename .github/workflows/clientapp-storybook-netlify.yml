@@ -47,9 +47,11 @@ jobs:
           path: ./starsky/starsky/clientapp/storybook-static
 
       - name: Install Netlify
+        if: github.event_name != 'pull_request'
         run: npm install netlify-cli@17.37.2 -g
         
       - name: Deploy to Netlify
+        if: github.event_name != 'pull_request'
         id: netlify_deploy
         working-directory: ./starsky/starsky/clientapp/storybook-static
         run: |
