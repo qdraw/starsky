@@ -53,9 +53,9 @@ jobs:
       - name: Deploy to Netlify
         if: github.event_name != 'pull_request'
         id: netlify_deploy
-        working-directory: ./starsky/starsky/clientapp/storybook-static
+        working-directory: ./starsky/starsky/clientapp
         run: |
           netlify deploy \
-            --dir mirror \
+            --dir storybook-static \
             --site ${{ secrets.NETLIFY_STORYBOOK_SITE_ID }} \
             --auth ${{ secrets.NETLIFY_AUTH_TOKEN }}
