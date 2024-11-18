@@ -15,9 +15,10 @@ public class FfMpegDownload : IFfMpegDownload
 	private readonly IWebLogger _logger;
 	private readonly Uri FFMpegApiBasePath = new("https://starsky-dependencies.netlify.app/ffmpeg");
 
-	private readonly Uri FFMpegApiIndex =
+	private readonly Uri _ffMpegApiIndex =
 		new("https://starsky-dependencies.netlify.app/ffmpeg/index.json");
-
+	private readonly Uri _ffMpegApiIndex =
+		new("https://qdraw.nl/special/mirror/ffmpeg/index.json");
 	public FfMpegDownload(IHttpClientHelper httpClientHelper, AppSettings appSettings,
 		IWebLogger logger)
 	{
@@ -46,7 +47,12 @@ public class FfMpegDownload : IFfMpegDownload
 
 	private async Task DownloadIndex()
 	{
-		await _httpClientHelper.ReadString(FFMpegApiIndex);
+		var result = await _httpClientHelper.ReadString(_ffMpegApiIndex);
+		if ( !result.Key )
+		{
+			_logger.LogError("[FfMpegDownload] Index not found");
+			return;
+		}
 	}
 
 	private async Task Download(Uri FFMpegDownloadBasePath)
