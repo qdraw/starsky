@@ -65,6 +65,9 @@ populate_array_from_variable "$BINARY_URLS" BINARY_URLS_ARRAY
 for i in "${!ARCHITECTURES_ARRAY[@]}"; do
 
   ARCHITECTURE="${ARCHITECTURES_ARRAY[$i]}"
+  # if ARCHITECTURE ends with ":{"ffmpeg replace it with "" remove quotes from the string
+  ARCHITECTURE=$(echo $ARCHITECTURE | sed 's/:{"ffmpeg"//' | sed 's/"//g')
+    
   # skip if linux-armel or linux-32
   if [ "$ARCHITECTURE" == "linux-32" ] || [ "$ARCHITECTURE" == "linux-armel" ]; then
     continue
