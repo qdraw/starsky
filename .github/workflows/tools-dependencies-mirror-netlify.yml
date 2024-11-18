@@ -21,7 +21,7 @@ name: Tools dependencies mirror netlify
 
 jobs:
   test:
-    name: Build
+    name: Mirror
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
