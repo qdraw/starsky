@@ -65,6 +65,11 @@ populate_array_from_variable "$BINARY_URLS" BINARY_URLS_ARRAY
 for i in "${!ARCHITECTURES_ARRAY[@]}"; do
 
   ARCHITECTURE="${ARCHITECTURES_ARRAY[$i]}"
+  # skip if linux-armel or linux-32
+  if [ "$ARCHITECTURE" == "linux-32" ] || [ "$ARCHITECTURE" == "linux-armel" ]; then
+    continue
+  fi
+    
   echo "Processing architecture: $ARCHITECTURE..."
   
   URL="${BINARY_URLS_ARRAY[$i]}"
@@ -72,11 +77,6 @@ for i in "${!ARCHITECTURES_ARRAY[@]}"; do
   # Extract architecture and URL
   FILENAME=$(basename "$URL")
   FILENAME_UPDATED=$(echo "$FILENAME" | sed -E "s/[-.]([0-9]+\.[0-9]+)[-.]/-/")
-
-  # skip if linux-armel or linux-32
-  if [ "ARCHITECTURE" == "linux-32" ] || [ "ARCHITECTURE" == "linux-armel" ]; then
-    continue
-  fi
 
   CURRENT_ARCHITECTURE="$(MAP_ARCHITECTURE_NAME $ARCHITECTURE)"
 
@@ -112,7 +112,6 @@ node -e "console.log(JSON.stringify(JSON.parse(require('fs') \
       .readFileSync(process.argv[1])), null, 4));" $INDEX_FILE_PATH > $INDEX_FILE_PATH.bak
 mv $INDEX_FILE_PATH.bak $INDEX_FILE_PATH
 
-
 for CHECK_FILE in "${CHECK_FILES[@]}"; do
   if [ -f "$SCRIPT_DIR$BINARY_FOLDERNAME$CHECK_FILE" ] && [ "$(stat -c%s "$SCRIPT_DIR$BINARY_FOLDERNAME$CHECK_FILE" 2>/dev/null || stat -f%z "$SCRIPT_DIR$BINARY_FOLDERNAME$CHECK_FILE")" -gt 17874368 ]; then
     echo "✅ $CHECK_FILE exists and is larger than 17 MB."
@@ -124,6 +123,5 @@ for CHECK_FILE in "${CHECK_FILES[@]}"; do
     exit 1
   fi
 done
-
 
 echo "URLs with architectures saved to $INDEX_FILE_PATH"
