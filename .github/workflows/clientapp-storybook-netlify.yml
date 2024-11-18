@@ -5,12 +5,12 @@ on:
     - 'starsky/starsky/clientapp/.storybook/**'
     - 'starsky/starsky/clientapp/package.json'
     - 'starsky/starsky/clientapp/package-lock.json'    
-    - 'github/workflows/clientapp-storybook-netlify.yml'
+    - '.github/workflows/clientapp-storybook-netlify.yml'
   push:
     branches: [ master ]
     paths:
     - 'starsky/starsky/clientapp/**'
-    - 'github/workflows/clientapp-storybook-netlify.yml'
+    - '.github/workflows/clientapp-storybook-netlify.yml'
   workflow_dispatch:
     
 name: storybook clientapp netlify
