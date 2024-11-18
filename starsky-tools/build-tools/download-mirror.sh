@@ -1,6 +1,7 @@
 #!/bin/bash
 
-GH_SCRIPT_DIR="https://raw.githubusercontent.com/qdraw/starsky/refs/heads/feature/202411_ffmpeg/starsky-tools/build-tools/"
+# feature: https://raw.githubusercontent.com/qdraw/starsky/refs/heads/feature/202411_ffmpeg/starsky-tools/build-tools/
+GH_SCRIPT_DIR="https://raw.githubusercontent.com/qdraw/starsky/refs/heads/master/starsky-tools/build-tools/"
 
 LAST_CHAR_GH_SCRIPT_DIR=${GH_SCRIPT_DIR:length-1:1}
 [[ $LAST_CHAR_GH_SCRIPT_DIR != "/" ]] && GH_SCRIPT_DIR="$GH_SCRIPT_DIR/"; :
