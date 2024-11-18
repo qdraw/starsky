@@ -44,18 +44,14 @@ jobs:
           name: storybook-static
           path: ./starsky/starsky/clientapp/storybook-static
 
+      - name: Install Netlify
+        run: npm install netlify-cli@17.37.2 -g
+        
       - name: Deploy to Netlify
-        uses: nwtgck/actions-netlify@v3.0
-        if: github.event_name != 'pull_request'
-        with:
-          publish-dir: './starsky/starsky/clientapp/storybook-static'
-          production-branch: master
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          deploy-message: "Deploy from GitHub Actions"
-          enable-pull-request-comment: false
-          enable-commit-comment: true
-          overwrites-pull-request-comment: true
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-        timeout-minutes: 1
+        id: netlify_deploy
+        working-directory: ./starsky-tools/build-tools/        
+        run: |
+          netlify deploy \
+            --dir mirror \
+            --site ${{ secrets.NETLIFY_STORYBOOK_SITE_ID }} \
+            --auth ${{ secrets.NETLIFY_AUTH_TOKEN }}
