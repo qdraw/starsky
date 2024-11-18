@@ -35,13 +35,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-tools-mirror
-          path: ./starsky/starsky-tools/build-tools/mirror
+          path: ./starsky-tools/build-tools/mirror/
 
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v3.0
         if: github.event_name != 'pull_request'
         with:
-          publish-dir: './starsky/starsky-tools/build-tools/mirror'
+          publish-dir: './starsky-tools/build-tools/mirror/'
           production-branch: master
           github-token: ${{ secrets.GITHUB_TOKEN }}
           deploy-message: "Deploy from GitHub Actions"
