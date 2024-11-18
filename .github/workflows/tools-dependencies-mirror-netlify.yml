@@ -6,6 +6,7 @@ on:
     - 'starsky/starsky-tools/download-mirror-ffmpeg.sh'
     - 'starsky/starsky-tools/download-mirror-geonames.sh'
     - 'starsky/starsky-tools/download-mirror.sh'
+    - '.github/workflows/tools-dependencies-mirror-netlify.yml'
   push:
     branches: [ master ]
     paths:
@@ -13,6 +14,7 @@ on:
     - 'starsky/starsky-tools/download-mirror-ffmpeg.sh'
     - 'starsky/starsky-tools/download-mirror-geonames.sh'
     - 'starsky/starsky-tools/download-mirror.sh'
+    - '.github/workflows/tools-dependencies-mirror-netlify.yml'    
   workflow_dispatch:
     
 name: Tools dependencies mirror netlify
@@ -29,11 +31,17 @@ jobs:
         working-directory: starsky-tools/build-tools
         run: bash download-mirror.sh
 
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-tools-mirror
+          path: ./starsky/starsky-tools/build-tools/mirror
+
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v3.0
         if: github.event_name != 'pull_request'
         with:
-          publish-dir: './starsky-tools/build-tools/mirror'
+          publish-dir: './starsky/starsky-tools/build-tools/mirror'
           production-branch: master
           github-token: ${{ secrets.GITHUB_TOKEN }}
           deploy-message: "Deploy from GitHub Actions"
