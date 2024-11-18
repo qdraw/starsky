@@ -73,25 +73,23 @@ for i in "${!ARCHITECTURES_ARRAY[@]}"; do
   FILENAME=$(basename "$URL")
   FILENAME_UPDATED=$(echo "$FILENAME" | sed -E "s/[-.]([0-9]+\.[0-9]+)[-.]/-/")
 
-  CURRENT_ARCHITECTURE=$(echo "$ARCHITECTURE" | sed -n 's/.*"\([^"]*\)":{.*ffmpeg.*/\1/p')
-
   # skip if linux-armel or linux-32
-  if [ "$CURRENT_ARCHITECTURE" == "linux-32" ] || [ "$CURRENT_ARCHITECTURE" == "linux-armel" ]; then
+  if [ "ARCHITECTURE" == "linux-32" ] || [ "ARCHITECTURE" == "linux-armel" ]; then
     continue
   fi
 
-  CURRENT_ARCHITECTURE="$(MAP_ARCHITECTURE_NAME $CURRENT_ARCHITECTURE)"
+  CURRENT_ARCHITECTURE="$(MAP_ARCHITECTURE_NAME $ARCHITECTURE)"
 
   # Download the binary
   echo "Downloading $URL for $CURRENT_ARCHITECTURE [$FILENAME] $FILENAME_UPDATED..."
   curl -L -O "$URL"
 
-  FILE_HASH=$(openssl dgst -sha512 "$FILENAME" | awk '{print $2}')
+  FILE_HASH=$(openssl dgst -sha256 "$FILENAME" | awk '{print $2}')
 
   mv "$FILENAME" "$FILENAME_UPDATED"
 
   # Add to output JSON
-  OUTPUT_JSON="${OUTPUT_JSON}{\"architecture\":\"$CURRENT_ARCHITECTURE\",\"url\":\"$FILENAME_UPDATED\",\"sha512\":\"$FILE_HASH\"},"
+  OUTPUT_JSON="${OUTPUT_JSON}{\"architecture\":\"$CURRENT_ARCHITECTURE\",\"url\":\"$FILENAME_UPDATED\",\"sha256\":\"$FILE_HASH\"},"
 done
 
 # Add osx-arm64 explicitly
@@ -99,8 +97,8 @@ echo "Adding custom architecture $OSX_ARM64_NAME with URL $OSX_ARM64_URL..."
 curl -L -O "$OSX_ARM64_URL"
 
 OSX_ARM64_FILENAME=$(basename "$OSX_ARM64_URL")
-OSX_ARM64_HASH=$(openssl dgst -sha512 "$OSX_ARM64_FILENAME" | awk '{print $2}')
-OUTPUT_JSON="${OUTPUT_JSON}{\"architecture\":\"$OSX_ARM64_NAME\",\"url\":\"$OSX_ARM64_FILENAME\",\"sha512\":\"$OSX_ARM64_HASH\"},"
+OSX_ARM64_HASH=$(openssl dgst -sha256 "$OSX_ARM64_FILENAME" | awk '{print $2}')
+OUTPUT_JSON="${OUTPUT_JSON}{\"architecture\":\"$OSX_ARM64_NAME\",\"url\":\"$OSX_ARM64_FILENAME\",\"sha256\":\"$OSX_ARM64_HASH\"},"
 
 # Finalize JSON
 OUTPUT_JSON="${OUTPUT_JSON%,}]}" # Remove trailing comma and close the JSON array
