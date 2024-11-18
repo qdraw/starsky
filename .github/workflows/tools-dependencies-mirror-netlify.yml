@@ -43,7 +43,7 @@ jobs:
         run: touch index.html && ls -lah && pwd       
 
       - name: Install Netlify
-        run: npm install netlify-cli@17.10.1 -g
+        run: npm install netlify-cli@17.37.2 -g
         
       - name: Deploy to Netlify
         id: netlify_deploy
