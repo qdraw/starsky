@@ -41,7 +41,7 @@ jobs:
         uses: nwtgck/actions-netlify@v3.0
         if: github.event_name != 'pull_request'
         with:
-          publish-dir: './starsky-tools/build-tools/mirror/'
+          publish-dir: './starsky/starsky-tools/build-tools/mirror/'
           production-branch: master
           github-token: ${{ secrets.GITHUB_TOKEN }}
           deploy-message: "Deploy from GitHub Actions"
