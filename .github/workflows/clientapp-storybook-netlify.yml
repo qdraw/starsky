@@ -49,7 +49,7 @@ jobs:
         
       - name: Deploy to Netlify
         id: netlify_deploy
-        working-directory: ./starsky-tools/build-tools/        
+        working-directory: ./starsky/starsky/clientapp/storybook-static
         run: |
           netlify deploy \
             --dir mirror \
