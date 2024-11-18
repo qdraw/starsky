@@ -111,9 +111,16 @@ echo "$OUTPUT_JSON" > $INDEX_FILE_PATH
 
 echo "All ffmpeg binaries downloaded successfully."
 
-node -e "console.log(JSON.stringify(JSON.parse(require('fs') \
-      .readFileSync(process.argv[1])), null, 4));" $INDEX_FILE_PATH > $INDEX_FILE_PATH.bak
-mv $INDEX_FILE_PATH.bak $INDEX_FILE_PATH
+if command -v node &> /dev/null
+then
+    node -e "console.log(JSON.stringify(JSON.parse(require('fs') \
+          .readFileSync(process.argv[1])), null, 4));" $INDEX_FILE_PATH > $INDEX_FILE_PATH.bak
+    mv $INDEX_FILE_PATH.bak $INDEX_FILE_PATH
+else
+    echo ""
+    echo -e "\033[31mWarning: Node.js is not installed. Skipping JSON formatting.\033[0m"
+    echo ""
+fi
 
 for CHECK_FILE in "${CHECK_FILES[@]}"; do
   if [ -f "$SCRIPT_DIR$BINARY_FOLDERNAME$CHECK_FILE" ] && [ "$(stat -c%s "$SCRIPT_DIR$BINARY_FOLDERNAME$CHECK_FILE" 2>/dev/null || stat -f%z "$SCRIPT_DIR$BINARY_FOLDERNAME$CHECK_FILE")" -gt 17874368 ]; then
