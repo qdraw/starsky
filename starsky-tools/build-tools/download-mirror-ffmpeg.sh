@@ -65,6 +65,8 @@ populate_array_from_variable "$BINARY_URLS" BINARY_URLS_ARRAY
 for i in "${!ARCHITECTURES_ARRAY[@]}"; do
 
   ARCHITECTURE="${ARCHITECTURES_ARRAY[$i]}"
+  echo "Processing architecture: $ARCHITECTURE..."
+  
   URL="${BINARY_URLS_ARRAY[$i]}"
 
   # Extract architecture and URL
