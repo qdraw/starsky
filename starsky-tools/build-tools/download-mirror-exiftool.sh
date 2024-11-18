@@ -22,6 +22,13 @@ LAST_CHAR_BINARY_FOLDERNAME=${BINARY_FOLDERNAME:length-1:1}
 # Fetch the JSON data
 EXIFTOOL_JSON=$(curl -s $EXIFTOOL_CHECKSUMS_API)
 
+if ! echo "$EXIFTOOL_JSON" | grep -q "SHA256"; then
+  echo "Display contents of $EXIFTOOL_CHECKSUMS_API"
+  echo $EXIFTOOL_JSON
+  echo "⛌ FAIL -> The word 'SHA256' is not present in the checksums data. Exiting..."
+  exit 1
+fi
+
 # Extract the latest version
 LATEST_EXIFTOOL_VERSION=$(echo "$EXIFTOOL_JSON" | grep -o '\b[0-9]\+\.[0-9]\+\b' | head -n 1)
 
@@ -31,7 +38,10 @@ WINDOWS_EXIFTOOL=$(echo "$EXIFTOOL_JSON" | grep -o "exiftool-${LATEST_EXIFTOOL_V
 
 CHECK_FILES=($LINUX_EXIFTOOL $WINDOWS_EXIFTOOL)
 
+echo "Cleaning up previous binaries... $SCRIPT_DIR$BINARY_FOLDERNAME"
 rm -rf $SCRIPT_DIR$BINARY_FOLDERNAME
+
+echo "Create new directory... $SCRIPT_DIR$BINARY_FOLDERNAME"
 mkdir -p $SCRIPT_DIR$BINARY_FOLDERNAME
 cd $SCRIPT_DIR$BINARY_FOLDERNAME
 

@@ -18,5 +18,13 @@ for SCRIPT_FILE in "${SCRIPT_FILES[@]}"; do
     echo "$SCRIPT_FILE does not exist."
     curl -o "$SCRIPT_FILE" "$GH_SCRIPT_DIR$SCRIPT_FILE"
   fi
+  
+  echo "Run $SCRIPT_FILE..."
   bash $SCRIPT_FILE
+
+  EXIT_CODE=$?
+  if [ $EXIT_CODE -ne 0 ]; then
+    echo "ERROR: $SCRIPT_FILE exited with code $EXIT_CODE"
+    exit $EXIT_CODE
+  fi
 done
