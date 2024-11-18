@@ -5,10 +5,12 @@ on:
     - 'starsky/starsky/clientapp/.storybook/**'
     - 'starsky/starsky/clientapp/package.json'
     - 'starsky/starsky/clientapp/package-lock.json'    
+    - '.github/workflows/clientapp-storybook-netlify.yml'
   push:
     branches: [ master ]
     paths:
     - 'starsky/starsky/clientapp/**'
+    - '.github/workflows/clientapp-storybook-netlify.yml'
   workflow_dispatch:
     
 name: storybook clientapp netlify
@@ -44,18 +46,16 @@ jobs:
           name: storybook-static
           path: ./starsky/starsky/clientapp/storybook-static
 
-      - name: Deploy to Netlify
-        uses: nwtgck/actions-netlify@v3.0
+      - name: Install Netlify
         if: github.event_name != 'pull_request'
-        with:
-          publish-dir: './starsky/starsky/clientapp/storybook-static'
-          production-branch: master
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          deploy-message: "Deploy from GitHub Actions"
-          enable-pull-request-comment: false
-          enable-commit-comment: true
-          overwrites-pull-request-comment: true
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-        timeout-minutes: 1
+        run: npm install netlify-cli@17.37.2 -g
+        
+      - name: Deploy to Netlify
+        if: github.event_name != 'pull_request'
+        id: netlify_deploy
+        working-directory: ./starsky/starsky/clientapp
+        run: |
+          netlify deploy \
+            --dir storybook-static \
+            --site ${{ secrets.NETLIFY_STORYBOOK_SITE_ID }} \
+            --auth ${{ secrets.NETLIFY_AUTH_TOKEN }}

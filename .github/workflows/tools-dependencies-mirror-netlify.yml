@@ -6,6 +6,7 @@ on:
     - 'starsky/starsky-tools/download-mirror-ffmpeg.sh'
     - 'starsky/starsky-tools/download-mirror-geonames.sh'
     - 'starsky/starsky-tools/download-mirror.sh'
+    - '.github/workflows/tools-dependencies-mirror-netlify.yml'
   push:
     branches: [ master ]
     paths:
@@ -13,34 +14,44 @@ on:
     - 'starsky/starsky-tools/download-mirror-ffmpeg.sh'
     - 'starsky/starsky-tools/download-mirror-geonames.sh'
     - 'starsky/starsky-tools/download-mirror.sh'
+    - '.github/workflows/tools-dependencies-mirror-netlify.yml'    
   workflow_dispatch:
     
 name: Tools dependencies mirror netlify
 
 jobs:
   test:
-    name: Build
+    name: Mirror
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
           
       - name: download-mirror.sh
-        working-directory: ./starsky/starsky-tools/build-tools
+        working-directory: starsky-tools/build-tools
         run: bash download-mirror.sh
 
-      - name: Deploy to Netlify
-        uses: nwtgck/actions-netlify@v3.0
-        if: github.event_name != 'pull_request'
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v4
         with:
-          publish-dir: './starsky/starsky-tools/build-tools/mirror'
-          production-branch: master
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          deploy-message: "Deploy from GitHub Actions"
-          enable-pull-request-comment: false
-          enable-commit-comment: true
-          overwrites-pull-request-comment: true
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_MIRROR_SITE_ID }}
-        timeout-minutes: 1
+          name: build-tools-mirror
+          path: ./starsky-tools/build-tools/mirror/
+
+      - name: ls && pwd
+        shell: bash
+        working-directory: ./starsky-tools/build-tools/mirror/
+        run: touch index.html && ls -lah && pwd       
+
+      - name: Install Netlify
+        if: github.event_name != 'pull_request'
+        run: npm install netlify-cli@17.37.2 -g
+        
+      - name: Deploy to Netlify
+        if: github.event_name != 'pull_request'
+        id: netlify_deploy
+        working-directory: ./starsky-tools/build-tools/        
+        run: |
+          netlify deploy \
+            --dir mirror \
+            --site ${{ secrets.NETLIFY_MIRROR_SITE_ID }} \
+            --auth ${{ secrets.NETLIFY_AUTH_TOKEN }}
