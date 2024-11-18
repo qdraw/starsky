@@ -26,14 +26,14 @@ jobs:
         uses: actions/checkout@v4
           
       - name: download-mirror.sh
-        working-directory: ./starsky/starsky-tools/build-tools
+        working-directory: starsky-tools/build-tools
         run: bash download-mirror.sh
 
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v3.0
         if: github.event_name != 'pull_request'
         with:
-          publish-dir: './starsky/starsky-tools/build-tools/mirror'
+          publish-dir: 'starsky-tools/build-tools/mirror'
           production-branch: master
           github-token: ${{ secrets.GITHUB_TOKEN }}
           deploy-message: "Deploy from GitHub Actions"
