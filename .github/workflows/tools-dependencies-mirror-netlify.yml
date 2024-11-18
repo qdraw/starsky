@@ -37,6 +37,11 @@ jobs:
           name: build-tools-mirror
           path: ./starsky-tools/build-tools/mirror/
 
+      - name: ls && pwd
+        shell: bash
+        working-directory: ./starsky-tools/build-tools/mirror/
+        run: ls -lah && pwd          
+
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v3.0
         if: github.event_name != 'pull_request'
