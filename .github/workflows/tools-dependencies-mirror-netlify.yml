@@ -1,0 +1,46 @@
+on:
+  pull_request:
+    branches: [ master ]
+    paths:
+    - 'starsky/starsky-tools/download-mirror-exiftool.sh'
+    - 'starsky/starsky-tools/download-mirror-ffmpeg.sh'
+    - 'starsky/starsky-tools/download-mirror-geonames.sh'
+    - 'starsky/starsky-tools/download-mirror.sh'
+  push:
+    branches: [ master ]
+    paths:
+    - 'starsky/starsky-tools/download-mirror-exiftool.sh'
+    - 'starsky/starsky-tools/download-mirror-ffmpeg.sh'
+    - 'starsky/starsky-tools/download-mirror-geonames.sh'
+    - 'starsky/starsky-tools/download-mirror.sh'
+  workflow_dispatch:
+    
+name: Tools dependencies mirror netlify
+
+jobs:
+  test:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+          
+      - name: download-mirror.sh
+        working-directory: ./starsky/starsky-tools/build-tools
+        run: bash download-mirror.sh
+
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v3.0
+        if: github.event_name != 'pull_request'
+        with:
+          publish-dir: './starsky/starsky-tools/build-tools/mirror'
+          production-branch: master
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: "Deploy from GitHub Actions"
+          enable-pull-request-comment: false
+          enable-commit-comment: true
+          overwrites-pull-request-comment: true
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        timeout-minutes: 1
