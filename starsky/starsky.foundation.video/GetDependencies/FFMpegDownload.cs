@@ -9,13 +9,14 @@ namespace starsky.foundation.video.GetDependencies;
 
 public class FfMpegDownload : IFfMpegDownload
 {
-	private const string FFMpegDownloadBasePath =
-		"https://qdraw.nl/special/mirror/ffmpeg/"; // with slash at the end
-
 	private readonly AppSettings _appSettings;
 	private readonly IStorage _hostFileSystemStorage;
 	private readonly IHttpClientHelper _httpClientHelper;
 	private readonly IWebLogger _logger;
+	private readonly Uri FFMpegApiBasePath = new("https://starsky-dependencies.netlify.app/ffmpeg");
+
+	private readonly Uri FFMpegApiIndex =
+		new("https://starsky-dependencies.netlify.app/ffmpeg/index.json");
 
 	public FfMpegDownload(IHttpClientHelper httpClientHelper, AppSettings appSettings,
 		IWebLogger logger)
@@ -26,11 +27,8 @@ public class FfMpegDownload : IFfMpegDownload
 		_logger = logger;
 	}
 
-	public async Task<bool> DownloadFFMpeg(OperatingSystem)
+	public async Task<bool> DownloadFFMpeg()
 	{
-		var currentPlatform = OperatingSystemHelper.GetPlatform();
-
-
 		if ( _appSettings.ExiftoolSkipDownloadOnStartup == true || _appSettings is
 			    { AddSwaggerExport: true, AddSwaggerExportExitAfter: true } )
 		{
@@ -42,6 +40,33 @@ public class FfMpegDownload : IFfMpegDownload
 		}
 
 		CreateDirectoryDependenciesFolderIfNotExists();
+
+		return true;
+	}
+
+	private async Task DownloadIndex()
+	{
+		await _httpClientHelper.ReadString(FFMpegApiIndex);
+	}
+
+	private async Task Download(Uri FFMpegDownloadBasePath)
+	{
+		// if ( !_hostFileSystemStorage.ExistFile(
+		// 	    Path.Combine(_appSettings.DependenciesFolder, CountryName + ".txt")) )
+		// {
+		// 	var outputZip = Path.Combine(_appSettings.DependenciesFolder,
+		// 		CountryName + ".zip");
+		// 	var baseResult =
+		// 		await _httpClientHelper.Download(https + BaseUrl + CountryName + ".zip",
+		// 			outputZip);
+		// 	if ( !baseResult )
+		// 	{
+		// 		await _httpClientHelper.Download(https + MirrorUrl + CountryName + ".zip",
+		// 			outputZip);
+		// 	}
+		//
+		// 	new Zipper(_logger).ExtractZip(outputZip, _appSettings.DependenciesFolder);
+		// }
 	}
 
 	private void CreateDirectoryDependenciesFolderIfNotExists()
