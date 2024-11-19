@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace starsky.foundation.native.Helpers;
+namespace starsky.foundation.platform.Architecture;
 
 public static class OperatingSystemHelper
 {
@@ -9,10 +9,8 @@ public static class OperatingSystemHelper
 		return GetPlatformInternal(RuntimeInformation.IsOSPlatform);
 	}
 
-	internal delegate bool IsOsPlatformDelegate(OSPlatform osPlatform);
-
 	/// <summary>
-	/// Used to make the function testable
+	///     Used to make the function testable
 	/// </summary>
 	/// <param name="isOsPlatformDelegate">Delegate to know what the OS is</param>
 	/// <returns>Runtime OS</returns>
@@ -37,4 +35,6 @@ public static class OperatingSystemHelper
 			? OSPlatform.FreeBSD
 			: OSPlatform.Create("Unknown");
 	}
+
+	internal delegate bool IsOsPlatformDelegate(OSPlatform osPlatform);
 }

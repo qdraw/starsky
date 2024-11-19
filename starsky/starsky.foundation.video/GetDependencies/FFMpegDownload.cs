@@ -1,24 +1,30 @@
+using System.Text.Json;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.video.GetDependencies.Interfaces;
+using starsky.foundation.video.GetDependencies.Models;
 
 namespace starsky.foundation.video.GetDependencies;
 
 public class FfMpegDownload : IFfMpegDownload
 {
 	private readonly AppSettings _appSettings;
+
+	private readonly Uri _ffMpegApiIndex =
+		new("https://starsky-dependencies.netlify.app/ffmpeg/index.json");
+
+	private readonly Uri _ffMpegApiIndexMirror =
+		new("https://qdraw.nl/special/mirror/ffmpeg/index.json");
+
 	private readonly IStorage _hostFileSystemStorage;
 	private readonly IHttpClientHelper _httpClientHelper;
 	private readonly IWebLogger _logger;
 	private readonly Uri FFMpegApiBasePath = new("https://starsky-dependencies.netlify.app/ffmpeg");
 
-	private readonly Uri _ffMpegApiIndex =
-		new("https://starsky-dependencies.netlify.app/ffmpeg/index.json");
-	private readonly Uri _ffMpegApiIndex =
-		new("https://qdraw.nl/special/mirror/ffmpeg/index.json");
 	public FfMpegDownload(IHttpClientHelper httpClientHelper, AppSettings appSettings,
 		IWebLogger logger)
 	{
@@ -42,17 +48,35 @@ public class FfMpegDownload : IFfMpegDownload
 
 		CreateDirectoryDependenciesFolderIfNotExists();
 
+		var index = await DownloadIndex();
+		await GetUrlFromIndex(index);
+
 		return true;
 	}
 
-	private async Task DownloadIndex()
+	private async Task<BinaryIndex?> GetUrlFromIndex(FfmpegBinariesIndex? index)
+	{
+		return index?.Binaries.Find(p => p.Architecture == "win64");
+	}
+
+	private async Task<FfmpegBinariesIndex?> DownloadIndex()
 	{
 		var result = await _httpClientHelper.ReadString(_ffMpegApiIndex);
-		if ( !result.Key )
+		if ( result.Key )
 		{
-			_logger.LogError("[FfMpegDownload] Index not found");
-			return;
+			return JsonSerializer.Deserialize<FfmpegBinariesIndex>(result.Value,
+				DefaultJsonSerializer.CamelCase);
 		}
+
+		result = await _httpClientHelper.ReadString(_ffMpegApiIndexMirror);
+		if ( result.Key )
+		{
+			return JsonSerializer.Deserialize<FfmpegBinariesIndex>(result.Value,
+				DefaultJsonSerializer.CamelCase);
+		}
+
+		_logger.LogError("[FfMpegDownload] Index not found");
+		return new FfmpegBinariesIndex { Success = false };
 	}
 
 	private async Task Download(Uri FFMpegDownloadBasePath)

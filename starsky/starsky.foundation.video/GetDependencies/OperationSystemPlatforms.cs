@@ -4,7 +4,7 @@ namespace starsky.foundation.video.GetDependencies;
 
 public class OperationSystemPlatforms
 {
-	public enum OSPlatformAndArchitecture
+	public enum OsPlatformAndArchitecture
 	{
 		Unknown,
 		[Display(Name = "win-x86")]

@@ -1,8 +1,8 @@
 using System.Runtime.InteropServices;
 using starsky.foundation.injection;
-using starsky.foundation.native.Helpers;
 using starsky.foundation.native.Trash.Helpers;
 using starsky.foundation.native.Trash.Interfaces;
+using starsky.foundation.platform.Architecture;
 
 namespace starsky.foundation.native.Trash;
 
@@ -10,7 +10,7 @@ namespace starsky.foundation.native.Trash;
 public class TrashService : ITrashService
 {
 	/// <summary>
-	/// Is the system trash supported
+	///     Is the system trash supported
 	/// </summary>
 	/// <returns>true if supported, false if not supported</returns>
 	public bool DetectToUseSystemTrash()
@@ -21,43 +21,8 @@ public class TrashService : ITrashService
 	}
 
 	/// <summary>
-	/// Use to overwrite the RuntimeInformation.IsOSPlatform
-	/// </summary>
-	internal delegate bool IsOsPlatformDelegate(OSPlatform osPlatform);
-
-	/// <summary>
-	/// Is the system trash supported
-	/// </summary>
-	/// <param name="runtimeInformationIsOsPlatform">RuntimeInformation.IsOSPlatform</param>
-	/// <param name="environmentUserInteractive">Environment.UserInteractive</param>
-	/// <param name="environmentUserName">Environment.UserName</param>
-	/// <returns>true if supported, false if not supported</returns>
-	internal static bool DetectToUseSystemTrashInternal(
-		IsOsPlatformDelegate runtimeInformationIsOsPlatform,
-		bool environmentUserInteractive,
-		string environmentUserName)
-	{
-		// ReSharper disable once ConvertIfStatementToReturnStatement
-		if ( runtimeInformationIsOsPlatform(OSPlatform.Linux) ||
-			 runtimeInformationIsOsPlatform(OSPlatform.FreeBSD) ||
-			 environmentUserName == "root" || !environmentUserInteractive )
-		{
-			return false;
-		}
-
-		// ReSharper disable once InvertIf
-		if ( runtimeInformationIsOsPlatform(OSPlatform.Windows) )
-		{
-			var (driveHasBin, _, _) = WindowsShellTrashBindingHelper.DriveHasRecycleBin();
-			return driveHasBin;
-		}
-
-		return true;
-	}
-
-	/// <summary>
-	/// Does not check if the file exists
-	/// Trash file for Mac OS and Windows
+	///     Does not check if the file exists
+	///     Trash file for Mac OS and Windows
 	/// </summary>
 	/// <param name="fullPath">system path</param>
 	/// <returns>operation succeed (NOT if file is gone)</returns>
@@ -73,4 +38,39 @@ public class TrashService : ITrashService
 		var (windowsTrash, _) = WindowsShellTrashBindingHelper.Trash(fullPaths, currentPlatform);
 		return macOsTrash ?? windowsTrash;
 	}
+
+	/// <summary>
+	///     Is the system trash supported
+	/// </summary>
+	/// <param name="runtimeInformationIsOsPlatform">RuntimeInformation.IsOSPlatform</param>
+	/// <param name="environmentUserInteractive">Environment.UserInteractive</param>
+	/// <param name="environmentUserName">Environment.UserName</param>
+	/// <returns>true if supported, false if not supported</returns>
+	internal static bool DetectToUseSystemTrashInternal(
+		IsOsPlatformDelegate runtimeInformationIsOsPlatform,
+		bool environmentUserInteractive,
+		string environmentUserName)
+	{
+		// ReSharper disable once ConvertIfStatementToReturnStatement
+		if ( runtimeInformationIsOsPlatform(OSPlatform.Linux) ||
+		     runtimeInformationIsOsPlatform(OSPlatform.FreeBSD) ||
+		     environmentUserName == "root" || !environmentUserInteractive )
+		{
+			return false;
+		}
+
+		// ReSharper disable once InvertIf
+		if ( runtimeInformationIsOsPlatform(OSPlatform.Windows) )
+		{
+			var (driveHasBin, _, _) = WindowsShellTrashBindingHelper.DriveHasRecycleBin();
+			return driveHasBin;
+		}
+
+		return true;
+	}
+
+	/// <summary>
+	///     Use to overwrite the RuntimeInformation.IsOSPlatform
+	/// </summary>
+	internal delegate bool IsOsPlatformDelegate(OSPlatform osPlatform);
 }

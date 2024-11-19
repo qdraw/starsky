@@ -1,16 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Win32;
-using starsky.foundation.native.Helpers;
 using starsky.foundation.native.OpenApplicationNative;
 using starsky.foundation.native.OpenApplicationNative.Helpers;
+using starsky.foundation.platform.Architecture;
 using starsky.foundation.platform.Models;
 using starskytest.FakeCreateAn.CreateFakeStarskyExe;
-using starskytest.starsky.foundation.native.Helpers;
+using starskytest.starsky.foundation.platform.Architecture;
 
 namespace starskytest.starsky.foundation.native.OpenApplicationNative;
 
@@ -53,7 +54,7 @@ public class OpenApplicationNativeServiceTest
 		CleanSetup();
 	}
 
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability",
+	[SuppressMessage("Interoperability",
 		"CA1416:Validate platform compatibility", Justification = "Check does exists")]
 	private static void CleanSetup()
 	{
@@ -69,15 +70,15 @@ public class OpenApplicationNativeServiceTest
 			Registry.CurrentUser.DeleteSubKeyTree($"Software\\Classes\\{Extension}", false);
 			Registry.CurrentUser.DeleteSubKeyTree($"Software\\Classes\\{ProgramId}", false);
 		}
-		catch ( IOException exception)
+		catch ( IOException exception )
 		{
 			Console.WriteLine($"[CleanSetup] Skip due IOException {exception.Message}");
 		}
-		catch ( UnauthorizedAccessException exception)
+		catch ( UnauthorizedAccessException exception )
 		{
-			Console.WriteLine($"[CleanSetup] Skip due UnauthorizedAccessException {exception.Message}");
+			Console.WriteLine(
+				$"[CleanSetup] Skip due UnauthorizedAccessException {exception.Message}");
 		}
-			
 	}
 
 	[TestMethod]

@@ -2,6 +2,10 @@
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
+        <!-- SonarQube needs this -->
+        <ProjectGuid>{c6f6b684-f8eb-4dfd-9143-33f0262153fe}</ProjectGuid>
+        <Version>0.6.3</Version>
+        <RootNamespace>starsky.foundation.sync</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
