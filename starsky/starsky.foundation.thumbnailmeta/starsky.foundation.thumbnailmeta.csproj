@@ -18,7 +18,7 @@
 
     <ItemGroup>
         <PackageReference Include="MetadataExtractor" Version="2.8.1"/>
-        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
+        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.6" />
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
