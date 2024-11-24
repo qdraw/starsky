@@ -6,6 +6,7 @@ import FetchGet from "../../../../shared/fetch/fetch-get.ts";
 import { FileListCache } from "../../../../shared/filelist-cache.ts";
 import { URLPath } from "../../../../shared/url/url-path.ts";
 import { UrlQuery } from "../../../../shared/url/url-query.ts";
+import { CacheControl } from "../../../../shared/fetch/cache-control.ts";
 
 /**
  * Remove Folder cache
@@ -20,7 +21,7 @@ export function RemoveCache(
   setIsLoading(true);
   new FileListCache().CacheCleanEverything();
   const parentFolder = propsParentFolder ?? "/";
-  FetchGet(new UrlQuery().UrlRemoveCache(new URLPath().encodeURI(parentFolder)))
+  FetchGet(new UrlQuery().UrlRemoveCache(new URLPath().encodeURI(parentFolder)), { CacheControl })
     .then(() => {
       return new Promise<string>((resolve) => {
         setTimeout(() => {
@@ -31,7 +32,7 @@ export function RemoveCache(
       });
     })
     .then((url: string) => {
-      return FetchGet(url, { "Cache-Control": "no-store, max-age=0" });
+      return FetchGet(url, { CacheControl });
     })
     .then((connectionResult) => {
       const removeCacheResult = new CastToInterface().MediaArchive(connectionResult.data);

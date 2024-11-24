@@ -5,6 +5,7 @@ import * as FetchPost from "../../../shared/fetch/fetch-post";
 import { UrlQuery } from "../../../shared/url/url-query";
 import * as Modal from "../../atoms/modal/modal";
 import ModalArchiveSynchronizeManually from "./modal-archive-synchronize-manually";
+import { CacheControl } from "../../../shared/fetch/cache-control.ts";
 
 describe("ModalArchiveSynchronizeManually", () => {
   beforeEach(() => {
@@ -105,7 +106,9 @@ describe("ModalArchiveSynchronizeManually", () => {
         });
 
         expect(fetchGetSpy).toHaveBeenCalled();
-        expect(fetchGetSpy).toHaveBeenCalledWith(new UrlQuery().UrlRemoveCache("/"));
+        expect(fetchGetSpy).toHaveBeenCalledWith(new UrlQuery().UrlRemoveCache("/"), {
+          CacheControl
+        });
 
         fetchGetSpy.mockReset();
       });
