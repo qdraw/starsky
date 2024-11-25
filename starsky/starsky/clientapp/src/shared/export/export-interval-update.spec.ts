@@ -3,6 +3,7 @@ import * as FetchGet from "../fetch/fetch-get";
 import { UrlQuery } from "../url/url-query";
 import { ExportIntervalUpdate } from "./export-interval-update";
 import { ProcessingState } from "./processing-state";
+import { CacheControl } from "../fetch/cache-control.ts";
 
 describe("ExportIntervalUpdate", () => {
   it("ready", async () => {
@@ -20,7 +21,9 @@ describe("ExportIntervalUpdate", () => {
     await ExportIntervalUpdate("test", setProcessingSpy);
 
     expect(fetchGetSpy).toHaveBeenCalled();
-    expect(fetchGetSpy).toHaveBeenCalledWith(new UrlQuery().UrlExportZipApi("test", true));
+    expect(fetchGetSpy).toHaveBeenCalledWith(new UrlQuery().UrlExportZipApi("test", true), {
+      CacheControl
+    });
     expect(setProcessingSpy).toHaveBeenCalled();
     expect(setProcessingSpy).toHaveBeenCalledWith(ProcessingState.ready);
   });
@@ -40,7 +43,9 @@ describe("ExportIntervalUpdate", () => {
     await ExportIntervalUpdate("test", setProcessingSpy);
 
     expect(fetchGetSpy).toHaveBeenCalled();
-    expect(fetchGetSpy).toHaveBeenCalledWith(new UrlQuery().UrlExportZipApi("test", true));
+    expect(fetchGetSpy).toHaveBeenCalledWith(new UrlQuery().UrlExportZipApi("test", true), {
+      CacheControl
+    });
     expect(setProcessingSpy).toHaveBeenCalled();
     expect(setProcessingSpy).toHaveBeenCalledWith(ProcessingState.fail);
   });
@@ -60,7 +65,9 @@ describe("ExportIntervalUpdate", () => {
     await ExportIntervalUpdate("test", setProcessingSpy);
 
     expect(fetchGetSpy).toHaveBeenCalled();
-    expect(fetchGetSpy).toHaveBeenCalledWith(new UrlQuery().UrlExportZipApi("test", true));
+    expect(fetchGetSpy).toHaveBeenCalledWith(new UrlQuery().UrlExportZipApi("test", true), {
+      CacheControl
+    });
     expect(setProcessingSpy).toHaveBeenCalledTimes(0);
   });
 
@@ -79,7 +86,9 @@ describe("ExportIntervalUpdate", () => {
     await ExportIntervalUpdate("test", setProcessingSpy);
 
     expect(fetchGetSpy).toHaveBeenCalled();
-    expect(fetchGetSpy).toHaveBeenCalledWith(new UrlQuery().UrlExportZipApi("test", true));
+    expect(fetchGetSpy).toHaveBeenCalledWith(new UrlQuery().UrlExportZipApi("test", true), {
+      CacheControl
+    });
     expect(setProcessingSpy).toHaveBeenCalledTimes(0);
   });
 });

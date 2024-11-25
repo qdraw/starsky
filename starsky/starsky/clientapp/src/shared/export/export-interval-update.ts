@@ -2,6 +2,7 @@ import { Dispatch } from "react";
 import FetchGet from "../fetch/fetch-get";
 import { UrlQuery } from "../url/url-query";
 import { ProcessingState } from "./processing-state";
+import { CacheControl } from "../fetch/cache-control.ts";
 
 export async function ExportIntervalUpdate(
   zipKey: string,
@@ -9,7 +10,7 @@ export async function ExportIntervalUpdate(
 ) {
   // need to check if ProcessingState = server
   if (!zipKey) return;
-  const result = await FetchGet(new UrlQuery().UrlExportZipApi(zipKey, true));
+  const result = await FetchGet(new UrlQuery().UrlExportZipApi(zipKey, true), { CacheControl });
 
   switch (result.statusCode) {
     case 200:

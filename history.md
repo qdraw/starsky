@@ -44,6 +44,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## version 0.6.4 - _(Unreleased)_ - 2024-11-?? {#v0.6.3}
 
 - [x] (Fixed) _Back-end_ Notification duplicate error handling (Issue #1832) (PR #1834)
+- [x] (Fixed) _Front-end_ Add cache headers for download publish for cloudfare (PR #1839)
   
 ## version 0.6.3 - 2024-11-14 {#v0.6.3}
 
