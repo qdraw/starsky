@@ -99,6 +99,7 @@ public sealed class ExportController : Controller
 		switch ( status )
 		{
 			case null:
+				CacheControlOverwrite.SetNoCacheResponseHeaders(Request);
 				return NotFound("Path is not found");
 			case false:
 				// Make sure the status is not cached
