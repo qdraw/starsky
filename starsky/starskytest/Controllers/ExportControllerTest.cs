@@ -503,6 +503,7 @@ public sealed class ExportControllerTest
 			new FakeIExport(new Dictionary<string, bool> { { f, true } });
 		var exportController = new ExportController(_bgTaskQueue,
 			new FakeSelectorStorage(fakeStorage), fakeExportService);
+		exportController.ControllerContext.HttpContext = new DefaultHttpContext();
 
 		// Act
 		var result = exportController.Status(f, json);
@@ -525,6 +526,7 @@ public sealed class ExportControllerTest
 			new FakeIExport(new Dictionary<string, bool> { { f, true } });
 		var exportController = new ExportController(_bgTaskQueue,
 			new FakeSelectorStorage(fakeStorage), fakeExportService);
+		exportController.ControllerContext.HttpContext = new DefaultHttpContext();
 
 		// Act
 		var result = exportController.Status(f);
