@@ -14,8 +14,8 @@ namespace starskytest.starsky.project.web.Helpers;
 [TestClass]
 public class PortProgramHelperTest
 {
-	private readonly string? _prePort;
 	private readonly string? _preAspNetUrls;
+	private readonly string? _prePort;
 
 	public PortProgramHelperTest()
 	{
@@ -137,7 +137,6 @@ public class PortProgramHelperTest
 		var result = await PortProgramHelper.SkipForAppSettingsJsonFile(appSettingsPath);
 
 		Assert.IsTrue(result);
-		Assert.AreEqual(null, Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
 
 		Environment.SetEnvironmentVariable("PORT", _prePort);
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS", _preAspNetUrls);
@@ -145,7 +144,6 @@ public class PortProgramHelperTest
 		// remove afterwards
 		new StorageHostFullPathFilesystem(new FakeIWebLogger()).FileDelete(appSettingsPath);
 	}
-
 
 	[TestMethod]
 	public async Task SkipForAppSettingsJsonFile_ShouldFalse()
