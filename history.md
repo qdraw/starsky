@@ -45,7 +45,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 - [x] (Fixed) _Back-end_ Notification duplicate error handling (Issue #1832) (PR #1834)
 - [x] (Fixed) _Front-end_ Add cache headers for download publish for cloudfare (PR #1839)
-  
+- [x] (Changed) _Back-end_ Small readablity fixes to avoid code smells (PR #1844)
+        
 ## version 0.6.3 - 2024-11-14 {#v0.6.3}
 
 - [x] (Fixed) _Front-end_ OkAndSame status in Upload Modal gives the wrong status (PR #1783)
