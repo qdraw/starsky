@@ -82,7 +82,7 @@ namespace starsky.Controllers
 
 			var (fileIndexResultsList, changedFileIndexItemName) =
 				await _metaPreflight.PreflightAsync(inputModel,
-					inputFilePaths.ToList(), append, collections, rotateClock);
+					[.. inputFilePaths], append, collections, rotateClock);
 
 			// Update >
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
@@ -107,7 +107,7 @@ namespace starsky.Controllers
 				return NotFound(fileIndexResultsList);
 			}
 
-			// Clone an new item in the list to display
+			// Clone a new item in the list to display
 			var returnNewResultList = fileIndexResultsList.Select(item => item.Clone()).ToList();
 
 			// when switching very fast between images the background task has not run yet
@@ -115,7 +115,7 @@ namespace starsky.Controllers
 
 			// Push direct to socket when update or replace to avoid undo after a second
 			_logger.LogInformation(
-				$"[UpdateController] send to socket {inputFilePaths.FirstOrDefault()}");
+				$"[UpdateController] send to socket {inputFilePaths[0]}");
 
 			await Task.Run(async () => await UpdateWebSocketTaskRun(fileIndexResultsList));
 
