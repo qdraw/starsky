@@ -4,22 +4,22 @@ public class AppSettingsExampleModel
 {
 	public class KestrelGlobalConfig
 	{
-		public KestrelConfig Kestrel { get; set; }
+		public KestrelConfig? Kestrel { get; set; }
 	}
 
 	public class KestrelConfig
 	{
-		public ExampleEndpoints Endpoints { get; set; }
+		public ExampleEndpoints? Endpoints { get; set; }
 	}
 
 	public class ExampleEndpoints
 	{
-		public EndpointObject Https { get; set; }
-		public EndpointObject Http { get; set; }
+		public EndpointObject? Https { get; set; }
+		public EndpointObject? Http { get; set; }
 	}
 
 	public class EndpointObject
 	{
-		public string Url { get; set; }
+		public string? Url { get; set; }
 	}
 }
