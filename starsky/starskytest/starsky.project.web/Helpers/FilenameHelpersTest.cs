@@ -108,6 +108,12 @@ public sealed class FilenameHelpersTest
 	[DataRow("/folder/file.ext#fragment", "ext")] // file with fragment
 	[DataRow("/folder/file.ext/", "")] // file with trailing slash
 	[DataRow("/folder/file.ext.", "")] // file with trailing dot
+	[DataRow("http://path/Lists/Test/Attachments/1/Document Test.docx", "docx")]
+	[DataRow("http://path/Lists/Test/Attachments/1/Document Test", "")] // no ext
+	[DataRow("http://path/Lists/Test/Attachments/1/Document Test.", "")] // no ext
+	[DataRow("http://path/Lists/Test/Attachments/1/Document Test.docx?query=param", "docx")]
+	[DataRow("http://path/Lists/Test/Attachments/1/Document Test.docx#fragment", "docx")]
+	[DataRow("http://path/Lists/Test/Attachments/1/Document Test.docx/", "")] // file with trailing slash
 	public void FilenamesHelper_GetFileExtensionWithoutDot(string filePath,
 		string expectedExtension)
 	{
