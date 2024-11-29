@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -99,13 +100,18 @@ public static partial class FilenamesHelper
 	/// <returns></returns>
 	public static string GetFileExtensionWithoutDot(string filename)
 	{
+		var uri = new Uri(filename, UriKind.RelativeOrAbsolute);
+		var path = uri.IsAbsoluteUri
+			? uri.LocalPath
+			: uri.OriginalString.Split('?')[0].Split('#')[0];
+
 		// ReSharper disable once ConvertIfStatementToReturnStatement
-		if ( !filename.Contains('.') )
+		if ( !path.Contains('.') )
 		{
 			return string.Empty;
 		}
 
-		return FileExtensionWithoutDotRegex().Match(filename).Value.ToLowerInvariant();
+		return FileExtensionWithoutDotRegex().Match(path).Value.ToLowerInvariant();
 	}
 
 	/// <summary>
