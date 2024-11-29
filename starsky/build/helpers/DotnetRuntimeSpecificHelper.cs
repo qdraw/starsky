@@ -143,18 +143,17 @@ public static class DotnetRuntimeSpecificHelper
 			.DisableRunCodeAnalysis()
 			.EnableSelfContained()
 			.SetConfiguration(configuration)
-			.SetProcessArgumentConfigurator(args =>
-				args
-					// OverwriteRuntimeIdentifier is done via Directory.Build.props
-					// Building a solution with a specific RuntimeIdentifier is not supported
-					// Don't use SetRuntime
-					.Add($"/p:OverwriteRuntimeIdentifier={runtime}")
-					// Warnings are disabled because in Generic build they are already checked
-					.Add("-v q")
-					.Add("/p:WarningLevel=0")
-					// SonarQube analysis is done in the generic build
-					.Add("/p:noSonar=true")
-					.Add(readyToRunArgument)
+			.AddProcessAdditionalArguments(
+				// OverwriteRuntimeIdentifier is done via Directory.Build.props
+				// Building a solution with a specific RuntimeIdentifier is not supported
+				// Don't use SetRuntime here
+				$"/p:OverwriteRuntimeIdentifier={runtime}",
+				// Warnings are disabled because in Generic build they are already checked
+				"-v q",
+				"/p:WarningLevel=0",
+				// SonarQube analysis is done in the generic build
+				"/p:noSonar=true",
+				readyToRunArgument
 			));
 	}
 
@@ -198,11 +197,9 @@ public static class DotnetRuntimeSpecificHelper
 				.SetProject(publishProjectFullPath)
 				.SetRuntime(runtime)
 				.EnableNoLogo()
-				.SetProcessArgumentConfigurator(args =>
-					args.Add("/p:noSonar=true")
-						.Add($"/p:OverwriteRuntimeIdentifier={runtime}")
-						.Add(readyToRunArgument)
-				)
+				.AddProcessAdditionalArguments("/p:noSonar=true",
+					$"/p:OverwriteRuntimeIdentifier={runtime}",
+					readyToRunArgument)
 			);
 		}
 	}

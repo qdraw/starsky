@@ -12,30 +12,31 @@ namespace starsky.project.web.Helpers;
 
 public static class PortProgramHelper
 {
-	public static async Task SetEnvPortAspNetUrlsAndSetDefault(string[] args,
+	public static async Task<bool> SetEnvPortAspNetUrlsAndSetDefault(string[] args,
 		string appSettingsPath)
 	{
 		if ( await SkipForAppSettingsJsonFile(appSettingsPath) )
 		{
-			return;
+			return true;
 		}
 
 		SetEnvPortAspNetUrls(args);
 		SetDefaultAspNetCoreUrls(args);
+		return false;
 	}
 
 	internal static async Task<bool> SkipForAppSettingsJsonFile(string appSettingsPath)
 	{
 		var appContainer = await ReadAppSettings.Read(appSettingsPath);
 		if ( appContainer?.Kestrel?.Endpoints?.Http?.Url == null &&
-			 appContainer?.Kestrel?.Endpoints?.Https?.Url == null )
+		     appContainer?.Kestrel?.Endpoints?.Https?.Url == null )
 		{
 			return false;
 		}
 
 		Console.WriteLine("Kestrel Endpoints are set in appsettings.json, " +
-						  "this results in skip setting the PORT and default " +
-						  "ASPNETCORE_URLS environment variable");
+		                  "this results in skip setting the PORT and default " +
+		                  "ASPNETCORE_URLS environment variable");
 		return true;
 	}
 
@@ -45,7 +46,7 @@ public static class PortProgramHelper
 		var portString = Environment.GetEnvironmentVariable("PORT");
 
 		if ( args.Contains("--urls") || string.IsNullOrEmpty(portString)
-									 || !int.TryParse(portString, out var port) )
+		                             || !int.TryParse(portString, out var port) )
 		{
 			return;
 		}
@@ -57,7 +58,7 @@ public static class PortProgramHelper
 	private static void SetEnvironmentVariableForPort(int port)
 	{
 		Console.WriteLine($"Set port from environment variable: {port} " +
-						  $"\nPro tip: Its recommended to use a https proxy like nginx or traefik");
+		                  $"\nPro tip: Its recommended to use a https proxy like nginx or traefik");
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS", $"http://*:{port}");
 	}
 

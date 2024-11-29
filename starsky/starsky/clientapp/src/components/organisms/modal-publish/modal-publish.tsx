@@ -13,6 +13,7 @@ import { UrlQuery } from "../../../shared/url/url-query";
 import FormControl from "../../atoms/form-control/form-control";
 import Modal from "../../atoms/modal/modal";
 import Select from "../../atoms/select/select";
+import { CacheControl } from "../../../shared/fetch/cache-control.ts";
 
 interface IModalPublishProps {
   isOpen: boolean;
@@ -97,7 +98,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
       return;
     }
 
-    FetchGet(new UrlQuery().UrlPublishExist(toUpdateItemName)).then((result) => {
+    FetchGet(new UrlQuery().UrlPublishExist(toUpdateItemName), { CacheControl }).then((result) => {
       if (result.statusCode !== 200) return;
       setExistItemName(result.data);
     });
