@@ -79,13 +79,9 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 				await RunJob(cancellationToken);
 			}
 		}
-		catch ( OperationCanceledException exception )
+		catch ( OperationCanceledException )
 		{
-			_logger.LogError(
-				$"[StartBackgroundAsync] catch-ed OperationCanceledException " +
-				$"Src:{exception.Source} Mes:{exception.Message} SaTtr:{exception.StackTrace}" +
-				$" Inner:{exception.InnerException?.StackTrace} HRes:{exception.HResult}",
-				exception);
+			// Expected when the host is shutting down
 		}
 
 		return null;
