@@ -159,4 +159,19 @@ public sealed class FilenameHelpersTest
 		var result = FilenamesHelper.IsValidFileName(filename);
 		Assert.AreEqual(expected, result);
 	}
+	
+	// Get parent path for FilenamesHelper.GetParentPath
+	[TestMethod]
+	[DataRow("/yes.jpg", "/")]
+	[DataRow("/sub/yes.jpg", "/sub")]
+	[DataRow("/sub/sub2/yes.jpg", "/sub/sub2")]
+	[DataRow("/sub/sub2/sub3/yes.jpg", "/sub/sub2/sub3")]
+	[DataRow("/sub/sub2/sub3/sub4/yes.jpg", "/sub/sub2/sub3/sub4")]
+	[DataRow("/sub/sub2/sub3/sub4/sub5/yes.jpg", "/sub/sub2/sub3/sub4/sub5")]
+	public void FilenamesHelper_GetParentPath(string filePath, string expected)
+	{
+		var result = FilenamesHelper.GetParentPath(filePath);
+		Assert.AreEqual(expected, result);
+	}
+	
 }
