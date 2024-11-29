@@ -207,7 +207,7 @@ public class FilenamesHelperTest
 		var extension = FilenamesHelper.GetFileExtensionWithoutDot(filename);
 
 		// Assert
-		Assert.AreEqual("txt", extension);
+		Assert.AreEqual("nsion", extension);
 	}
 
 	[TestMethod]

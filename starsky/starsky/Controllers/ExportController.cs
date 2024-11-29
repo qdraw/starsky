@@ -10,6 +10,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.worker.Interfaces;
+using starsky.Helpers;
 using starsky.project.web.Helpers;
 
 namespace starsky.Controllers;
@@ -86,6 +87,7 @@ public sealed class ExportController : Controller
 	[HttpGet("/api/export/zip/{f}.zip")]
 	[ProducesResponseType(200)] // "zip file"
 	[ProducesResponseType(206)] // "Not Ready"
+	[Produces("application/json")]
 	public ActionResult Status(string f, bool json = false)
 	{
 		if ( !ModelState.IsValid )
@@ -97,8 +99,11 @@ public sealed class ExportController : Controller
 		switch ( status )
 		{
 			case null:
+				CacheControlOverwrite.SetNoCacheResponseHeaders(Request);
 				return NotFound("Path is not found");
 			case false:
+				// Make sure the status is not cached
+				CacheControlOverwrite.SetNoCacheResponseHeaders(Request);
 				Response.StatusCode = 206;
 				return Json("Not Ready");
 		}
