@@ -90,34 +90,73 @@ public sealed class FilenameHelpersTest
 	}
 
 	[TestMethod]
-	[DataRow("/folder/test.mp4", "mp4")]
-	[DataRow("/test.mp4", "mp4")] // lowercase
-	[DataRow("/test.MP4", "mp4")] // uppercase
-	[DataRow("/test.jpeg", "jpeg")]
-	[DataRow("/test_image", "")] // no ext
-	[DataRow("/test.jpeg", "jpeg")]
-	[DataRow("/test.jpg.php", "php")]
-	[DataRow("/test.php%00.jpg", "jpg")]
-	[DataRow("/folder/.hiddenfile", "nfile")] // hidden file with no extension
-	[DataRow("/folder/.hiddenfile.jpg", "jpg")] // hidden file with extension
-	[DataRow("/folder/file.with.multiple.dots.ext", "ext")] // file with multiple dots
-	[DataRow("/folder/file_with_underscore.ext", "ext")] // file with underscore
-	[DataRow("/folder/file-with-dash.ext", "ext")] // file with dash
-	[DataRow("/folder/file with spaces.ext", "ext")] // file with spaces
-	[DataRow("/folder/file.ext?query=param", "ext")] // file with query parameters
-	[DataRow("/folder/file.ext#fragment", "ext")] // file with fragment
-	[DataRow("/folder/file.ext/", "")] // file with trailing slash
-	[DataRow("/folder/file.ext.", "")] // file with trailing dot
-	[DataRow("http://path/Lists/Test/Attachments/1/Document Test.docx", "docx")]
-	[DataRow("http://path/Lists/Test/Attachments/1/Document Test", "")] // no ext
-	[DataRow("http://path/Lists/Test/Attachments/1/Document Test.", "")] // no ext
-	[DataRow("http://path/Lists/Test/Attachments/1/Document Test.docx?query=param", "docx")]
-	[DataRow("http://path/Lists/Test/Attachments/1/Document Test.docx#fragment", "docx")]
-	[DataRow("http://path/Lists/Test/Attachments/1/Document Test.docx/", "")] // file with trailing slash
-	public void FilenamesHelper_GetFileExtensionWithoutDot(string filePath,
-		string expectedExtension)
+	[DataRow("/folder/test.mp4", "mp4", "test")]
+	[DataRow("/test.mp4", "mp4", "test")] // lowercase
+	[DataRow("/test.MP4", "mp4", "test")] // uppercase
+	[DataRow("/test.jpeg", "jpeg", "test")]
+	[DataRow("/test_image", "", "test_image")] // no ext
+	[DataRow("/test.jpeg", "jpeg", "test")]
+	[DataRow("/test.jpg.php", "php", "test.jpg")]
+	[DataRow("/test.php%00.jpg", "jpg", "test.php%00")]
+	[DataRow("/folder/.hiddenfile", "nfile", ".hiddenfile")] // hidden file with no extension
+	[DataRow("/folder/.hiddenfile.jpg", "jpg", ".hiddenfile")] // hidden file with extension
+	[DataRow("/folder/file.with.multiple.dots.ext", "ext",
+		"file.with.multiple.dots")] // file with multiple dots
+	[DataRow("/folder/file_with_underscore.ext", "ext",
+		"file_with_underscore")] // file with underscore
+	[DataRow("/folder/file-with-dash.ext", "ext", "file-with-dash")] // file with dash
+	[DataRow("/folder/file with spaces.ext", "ext", "file with spaces")] // file with spaces
+	[DataRow("/folder/file.ext?query=param", "ext", "file")] // file with query parameters
+	[DataRow("/folder/file.ext#fragment", "ext", "file")] // file with fragment
+	[DataRow("/folder/file.ext/", "", "")] // file with trailing slash
+	[DataRow("/folder/file.ext.", "", "file.ext.")] // file with trailing dot
+	[DataRow("http://path/Lists/Test/Attachments/1/Document Test.docx", "docx", "Document Test")]
+	[DataRow("http://path/Lists/Test/Attachments/1/Document Test", "", "Document Test")] // no ext
+	[DataRow("http://path/Lists/Test/Attachments/1/Document Test.", "", "Document Test.")] // no ext
+	[DataRow("http://path/Lists/Test/Attachments/1/Document Test.docx?query=param", "docx",
+		"Document Test")]
+	[DataRow("http://path/Lists/Test/Attachments/1/Document Test.docx#fragment", "docx",
+		"Document Test")]
+	[DataRow("http://path/Lists/Test/Attachments/1/Document Test.docx/", "",
+		"")] // file with trailing slash
+	public void FilenamesHelper_GetFileExtensionWithoutDot_FileName(string filePath,
+		string expectedExtension, string expectedFileName)
 	{
 		var result = FilenamesHelper.GetFileExtensionWithoutDot(filePath);
+		var fileName = FilenamesHelper.GetFileNameWithoutExtension(filePath);
+
 		Assert.AreEqual(expectedExtension, result);
+		Assert.AreEqual(expectedFileName, fileName);
+	}
+
+	[TestMethod]
+	[DataRow("test.jpg", true)]
+	[DataRow("_.com", true)]
+	[DataRow(".jpg", false)]
+	[DataRow("test", false)] // no extension
+	[DataRow("test.", false)] // trailing dot
+	[DataRow("test..jpg", false)] // double dot
+	[DataRow("test.jpg.", false)] // trailing dot after extension
+	[DataRow("test.jpg.exe", true)] // double extension
+	[DataRow("test@.jpg", false)] // special character in name
+	[DataRow("test jpg", false)] // space in name
+	[DataRow("test.jpg ", false)] // trailing space
+	[DataRow(" test.jpg", false)] // leading space
+	[DataRow("test.jpg/another.jpg", false)] // slash in name
+	[DataRow("test.jpg\\another.jpg", false)] // backslash in name
+	[DataRow("test..", false)] // double trailing dot
+	[DataRow("test..jpg", false)] // double dot before extension
+	[DataRow("test.jpg..", false)] // double trailing dot after extension
+	[DataRow("test.jpg..exe", false)] // double extension with dot
+	[DataRow("test@jpg", false)] // special character without dot
+	[DataRow("test jpg", false)] // space without dot
+	[DataRow("testjpg", false)] // no dot
+	[DataRow("testjpg.", false)] // trailing dot without extension
+	[DataRow("testjpg..", false)] // double trailing dot without extension
+	[DataRow("testjpg..exe", false)] // double extension without dot
+	public void FilenamesHelper_IsValidFileName(string filename, bool expected)
+	{
+		var result = FilenamesHelper.IsValidFileName(filename);
+		Assert.AreEqual(expected, result);
 	}
 }

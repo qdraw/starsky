@@ -43,14 +43,16 @@ public static partial class FilenamesHelper
 	public static string GetFileName(string filePath,
 		IsOsPlatformDelegate? runtimeInformationIsOsPlatform = null)
 	{
+		var path = GetFileNameToUrl(filePath);
+
 		runtimeInformationIsOsPlatform ??= RuntimeInformation.IsOSPlatform;
 		if ( !runtimeInformationIsOsPlatform(OSPlatform.Windows) )
 		{
-			return Path.GetFileName(filePath);
+			return Path.GetFileName(path);
 		}
 
 		const string magicString = "!@&#$#";
-		var systemPath = filePath.Replace("\\", magicString).Replace("/",
+		var systemPath = path.Replace("\\", magicString).Replace("/",
 			Path.DirectorySeparatorChar.ToString());
 		return Path.GetFileName(systemPath)
 			.Replace(Path.DirectorySeparatorChar.ToString(), "/")
@@ -93,6 +95,15 @@ public static partial class FilenamesHelper
 		100)]
 	private static partial Regex FileExtensionWithoutDotRegex();
 
+	private static string GetFileNameToUrl(string filename)
+	{
+		var uri = new Uri(filename, UriKind.RelativeOrAbsolute);
+		var path = uri.IsAbsoluteUri
+			? uri.LocalPath
+			: uri.OriginalString.Split('?')[0].Split('#')[0];
+		return path;
+	}
+
 	/// <summary>
 	///     Get File Extension without dot
 	/// </summary>
@@ -100,10 +111,7 @@ public static partial class FilenamesHelper
 	/// <returns></returns>
 	public static string GetFileExtensionWithoutDot(string filename)
 	{
-		var uri = new Uri(filename, UriKind.RelativeOrAbsolute);
-		var path = uri.IsAbsoluteUri
-			? uri.LocalPath
-			: uri.OriginalString.Split('?')[0].Split('#')[0];
+		var path = GetFileNameToUrl(filename);
 
 		// ReSharper disable once ConvertIfStatementToReturnStatement
 		if ( !path.Contains('.') )
