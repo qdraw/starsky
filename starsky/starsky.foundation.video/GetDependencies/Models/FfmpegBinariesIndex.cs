@@ -9,6 +9,19 @@ public class BinaryIndex
 
 public class FfmpegBinariesIndex
 {
-	public bool Success { get; set; } = true;
     public List<BinaryIndex> Binaries { get; set; }
+}
+
+public class FfmpegBinariesContainer {
+
+	public FfmpegBinariesContainer(Uri? indexUrl, bool success, FfmpegBinariesIndex? data)
+	{
+		Data = data;
+		IndexUrl = indexUrl;
+		Success = success;
+	}
+	
+	public bool Success { get; set; }
+	public Uri? IndexUrl { get; set; }
+	public FfmpegBinariesIndex? Data  { get; set; }
 }
