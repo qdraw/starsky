@@ -14,7 +14,7 @@ on:
   push:
     branches: [master]
     paths:
-    - 'starsky/**'
+    - 'starskydesktop/**'
   schedule:
     - cron:  '36 0 * * 0,2,4,6'
 
