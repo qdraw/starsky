@@ -1,7 +1,12 @@
-const scanner = require("sonarqube-scanner");
+const { scan } = require("sonarqube-scanner");
 const process = require('process');
 const path = require('path');
 const { execSync } = require('child_process');
+
+if (!scan) {
+  console.log("sonarqube-scanner is not installed. Please install it by running `npm install -D sonarqube-scanner`");
+  process.exit(1);
+}
 
 // src: https://gist.github.com/santoshshinde2012/b600d52d3bc0db2f62cf77a2044c3e05
 
@@ -111,9 +116,10 @@ const sonarScanner = async () => {
     console.log("Sonarqube scanner result:", result);
   };
 
-  scanner(params, callback);
+  scan(params, callback);
 };
 
 sonarScanner().catch((err) => console.error("Error during sonar scan", err)).then((e) => {
   console.log(e)
+  process.exit(1);
 });
