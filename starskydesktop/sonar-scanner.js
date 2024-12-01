@@ -121,5 +121,4 @@ const sonarScanner = async () => {
 
 sonarScanner().catch((err) => console.error("Error during sonar scan", err)).then((e) => {
   console.log(e)
-  process.exit(1);
 });
