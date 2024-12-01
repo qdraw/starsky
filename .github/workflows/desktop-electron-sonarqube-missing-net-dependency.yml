@@ -15,6 +15,7 @@ on:
     branches: [master]
     paths:
     - 'starskydesktop/**'
+    - '.github/workflows/desktop-electron-sonarqube-missing-net-dependency.yml'    
   schedule:
     - cron:  '36 0 * * 0,2,4,6'
 
