@@ -14,7 +14,8 @@ on:
   push:
     branches: [master]
     paths:
-    - 'starsky/**'
+    - 'starskydesktop/**'
+    - '.github/workflows/desktop-electron-sonarqube-missing-net-dependency.yml'    
   schedule:
     - cron:  '36 0 * * 0,2,4,6'
 
@@ -48,6 +49,11 @@ jobs:
           java-package: jdk # (jre, jdk, or jdk+fx) - defaults to jdk
           architecture: x64 # (x64 or x86) - defaults to x64
 
+      - name: Set node version
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
       - name: Cache sonarqube packages (*nix)
         uses: actions/cache@v4
         with:
@@ -64,7 +70,6 @@ jobs:
       - name: Test
         working-directory: ./starskydesktop
         env:
-          STARSKY_SONAR_KEY: ${{ secrets.STARSKY_SONAR_KEY }}
           STARSKY_SONAR_TOKEN: ${{ secrets.STARSKY_SONAR_TOKEN }}
           STARSKY_SONAR_ORGANISATION: ${{ secrets.STARSKY_SONAR_ORGANISATION }}
           STARSKY_SONAR_URL:  ${{ secrets.STARSKY_SONAR_URL }}        
