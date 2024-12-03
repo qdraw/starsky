@@ -92,7 +92,7 @@ for i in "${!ARCHITECTURES_ARRAY[@]}"; do
   mv "$FILENAME" "$FILENAME_UPDATED"
 
   # Add to output JSON
-  OUTPUT_JSON="${OUTPUT_JSON}{\"architecture\":\"$CURRENT_ARCHITECTURE\",\"url\":\"$FILENAME_UPDATED\",\"sha256\":\"$FILE_HASH\"},"
+  OUTPUT_JSON="${OUTPUT_JSON}{\"architecture\":\"$CURRENT_ARCHITECTURE\",\"fileName\":\"$FILENAME_UPDATED\",\"sha256\":\"$FILE_HASH\"},"
 done
 
 # Add osx-arm64 explicitly
@@ -101,7 +101,7 @@ curl -L -O "$OSX_ARM64_URL"
 
 OSX_ARM64_FILENAME=$(basename "$OSX_ARM64_URL")
 OSX_ARM64_HASH=$(openssl dgst -sha256 "$OSX_ARM64_FILENAME" | awk '{print $2}')
-OUTPUT_JSON="${OUTPUT_JSON}{\"architecture\":\"$OSX_ARM64_NAME\",\"url\":\"$OSX_ARM64_FILENAME\",\"sha256\":\"$OSX_ARM64_HASH\"},"
+OUTPUT_JSON="${OUTPUT_JSON}{\"architecture\":\"$OSX_ARM64_NAME\",\"fileName\":\"$OSX_ARM64_FILENAME\",\"sha256\":\"$OSX_ARM64_HASH\"},"
 
 # Finalize JSON
 OUTPUT_JSON="${OUTPUT_JSON%,}]}" # Remove trailing comma and close the JSON array
