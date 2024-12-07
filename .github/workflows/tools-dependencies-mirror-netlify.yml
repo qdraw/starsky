@@ -52,6 +52,7 @@ jobs:
         working-directory: ./starsky-tools/build-tools/        
         run: |
           netlify deploy \
+            --prod \
             --dir mirror \
             --site ${{ secrets.NETLIFY_MIRROR_SITE_ID }} \
             --auth ${{ secrets.NETLIFY_AUTH_TOKEN }}
