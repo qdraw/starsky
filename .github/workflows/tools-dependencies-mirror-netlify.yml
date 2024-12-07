@@ -2,18 +2,18 @@ on:
   pull_request:
     branches: [ master ]
     paths:
-    - 'starsky-tools/download-mirror-exiftool.sh'
-    - 'starsky-tools/download-mirror-ffmpeg.sh'
-    - 'starsky-tools/download-mirror-geonames.sh'
-    - 'starsky-tools/download-mirror.sh'
+    - 'starsky-tools/build-tools/download-mirror-exiftool.sh'
+    - 'starsky-tools/build-tools/download-mirror-ffmpeg.sh'
+    - 'starsky-tools/build-tools/download-mirror-geonames.sh'
+    - 'starsky-tools/build-tools/download-mirror.sh'
     - '.github/workflows/tools-dependencies-mirror-netlify.yml'
   push:
     branches: [ master ]
     paths:
-    - 'starsky-tools/download-mirror-exiftool.sh'
-    - 'starsky-tools/download-mirror-ffmpeg.sh'
-    - 'starsky-tools/download-mirror-geonames.sh'
-    - 'starsky-tools/download-mirror.sh'
+    - 'starsky-tools/build-tools/download-mirror-exiftool.sh'
+    - 'starsky-tools/build-tools/download-mirror-ffmpeg.sh'
+    - 'starsky-tools/build-tools/download-mirror-geonames.sh'
+    - 'starsky-tools/build-tools/download-mirror.sh'
     - '.github/workflows/tools-dependencies-mirror-netlify.yml'    
   workflow_dispatch:
     
