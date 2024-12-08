@@ -11,6 +11,7 @@ namespace starsky.foundation.video.GetDependencies;
 
 [Service(typeof(IFfMpegDownloadIndex), InjectionLifetime = InjectionLifetime.Scoped)]
 public class FfMpegDownloadIndex(IHttpClientHelper httpClientHelper, IWebLogger logger)
+	: IFfMpegDownloadIndex
 {
 	private const string QdrawMirrorDomain = "qdraw.nl/special/mirror/ffmpeg";
 	private const string NetlifyMirrorDomain = "_____starsky-dependencies.netlify.app/ffmpeg";

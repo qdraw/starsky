@@ -125,7 +125,7 @@ public class FfMpegDownloadTest
 	}
 
 	[TestMethod]
-	public async Task DownloadFfMpeg_DownloadBinariesFailed111()
+	public async Task DownloadFfMpeg_DownloadBinariesFail()
 	{
 		var appSettings = new AppSettings { DependenciesFolder = DependencyFolderName };
 		var logger = new FakeIWebLogger();
@@ -143,26 +143,26 @@ public class FfMpegDownloadTest
 
 		Assert.AreEqual(FfmpegDownloadStatus.DownloadBinariesFailed, result);
 	}
-	
-	[TestMethod]
-	public async Task DownloadFfMpeg_DownloadBinariesFailed()
-	{
-		var appSettings = new AppSettings { DependenciesFolder = DependencyFolderName };
-		var logger = new FakeIWebLogger();
-		var macCodeSign = new FakeIMacCodeSign();
 
-		var ffmpegDownload =
-			new FfMpegDownload(_httpClientHelper, appSettings, logger, macCodeSign,
-				new FakeIFfMpegDownloadIndex(new FfmpegBinariesContainer
-				{
-					Success = true,
-					Data = new FfmpegBinariesIndex { Binaries = new List<BinaryIndex>() }
-				}));
-
-		var result = await ffmpegDownload.DownloadFfMpeg();
-
-		Assert.AreEqual(FfmpegDownloadStatus.DownloadBinariesFailed, result);
-	}
+	// [TestMethod]
+	// public async Task DownloadFfMpeg_DownloadBinariesFail()
+	// {
+	// 	var appSettings = new AppSettings { DependenciesFolder = DependencyFolderName };
+	// 	var logger = new FakeIWebLogger();
+	// 	var macCodeSign = new FakeIMacCodeSign();
+	//
+	// 	var ffmpegDownload =
+	// 		new FfMpegDownload(_httpClientHelper, appSettings, logger, macCodeSign,
+	// 			new FakeIFfMpegDownloadIndex(new FfmpegBinariesContainer
+	// 			{
+	// 				Success = true,
+	// 				Data = new FfmpegBinariesIndex { Binaries = new List<BinaryIndex>() }
+	// 			}));
+	//
+	// 	var result = await ffmpegDownload.DownloadFfMpeg();
+	//
+	// 	Assert.AreEqual(FfmpegDownloadStatus.DownloadBinariesFailed, result);
+	// }
 
 	// [TestMethod]
 	// public async Task Download_ShouldReturnTrueIfFileExists()

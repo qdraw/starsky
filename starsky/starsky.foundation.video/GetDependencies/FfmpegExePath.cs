@@ -5,6 +5,7 @@ namespace starsky.foundation.video.GetDependencies;
 public class FfmpegExePath(AppSettings appSettings)
 {
 	private const string FfmpegDependenciesFolder = "ffmpeg";
+	private const string FfmpegExecutableBaseName = "ffmpeg";
 
 	internal string GetExeParentFolder()
 	{
@@ -14,7 +15,7 @@ public class FfmpegExePath(AppSettings appSettings)
 	internal string GetExePath(string currentArchitecture)
 	{
 		var exeFile = Path.Combine(appSettings.DependenciesFolder, FfmpegDependenciesFolder,
-			"ffmpeg");
+			FfmpegExecutableBaseName);
 		if ( currentArchitecture is "win-x64" or "win-arm64" )
 		{
 			exeFile += ".exe";
