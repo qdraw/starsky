@@ -18,7 +18,8 @@ namespace starskytest.starsky.foundation.writemeta.Services;
 [TestClass]
 public class ExifToolServiceTest
 {
-	private readonly string _exifToolPath = string.Empty;
+	private static readonly string ExifToolPath =
+		Path.Join(new CreateAnImage().BasePath, "exiftool-service-test-tmp");
 
 	public ExifToolServiceTest()
 	{
@@ -27,16 +28,29 @@ public class ExifToolServiceTest
 			return;
 		}
 
+		CreateFile();
+	}
+
+	private static void CreateFile()
+	{
 		var stream = StringToStreamHelper.StringToStream("#!/bin/bash\necho Fake ExifTool");
-		_exifToolPath = Path.Join(new CreateAnImage().BasePath, "exiftool-tmp");
 		new StorageHostFullPathFilesystem(new FakeIWebLogger()).WriteStream(stream,
-			_exifToolPath);
+			ExifToolPath);
 
 		var result = Command.Run("chmod", "+x",
-			_exifToolPath).Task.Result;
+			ExifToolPath).Task.Result;
 		if ( !result.Success )
 		{
 			throw new FileNotFoundException(result.StandardError);
+		}
+	}
+
+	[ClassCleanup]
+	public static void CleanExifToolServiceTest()
+	{
+		if ( File.Exists(ExifToolPath) )
+		{
+			File.Delete(ExifToolPath);
 		}
 	}
 
@@ -46,13 +60,16 @@ public class ExifToolServiceTest
 			new List<string> { "/image.jpg" },
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
+		CreateFile();
+
 		var service = new ExifToolService(new FakeSelectorStorage(storage),
-			new AppSettings { ExifToolPath = _exifToolPath }, new FakeIWebLogger());
+			new AppSettings { ExifToolPath = ExifToolPath }, new FakeIWebLogger());
 		var result = await service.WriteTagsAndRenameThumbnailAsync(
 			"/image.jpg",
 			null, "");
-
 		Assert.IsFalse(result.Key);
+
+		CleanExifToolServiceTest();
 	}
 
 	[TestMethod]
@@ -78,7 +95,7 @@ public class ExifToolServiceTest
 	[TestMethod]
 	public async Task WriteTagsAndRenameThumbnailAsync_TaskCanceledException__UnixOnly()
 	{
-		if (new AppSettings().IsWindows)
+		if ( new AppSettings().IsWindows )
 		{
 			Assert.Inconclusive("This test is for Unix Only");
 			return;
@@ -93,7 +110,7 @@ public class ExifToolServiceTest
 
 		var service = new ExifToolService(
 			new FakeSelectorStorage(storage),
-			new AppSettings { ExifToolPath = _exifToolPath },
+			new AppSettings { ExifToolPath = ExifToolPath },
 			new FakeIWebLogger()
 		);
 
