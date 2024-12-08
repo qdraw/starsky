@@ -1,11 +1,24 @@
 using Medallion.Shell;
+using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
+using starsky.foundation.video.GetDependencies.Interfaces;
 
 namespace starsky.foundation.video.GetDependencies;
 
-public class MacCodeSign(IStorage hostFileSystemStorage, IWebLogger logger)
+[Service(typeof(IMacCodeSign), InjectionLifetime = InjectionLifetime.Scoped)]
+public class MacCodeSign : IMacCodeSign
 {
+	private readonly IStorage _hostFileSystemStorage;
+	private readonly IWebLogger _logger;
+
+	public MacCodeSign(ISelectorStorage selectorStorage, IWebLogger logger)
+	{
+		_hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+		_logger = logger;
+	}
+	
 	public string CodeSignPath { get; set; } = "/usr/bin/codesign";
 	public string XattrPath { get; set; } = "/usr/bin/xattr";
 
@@ -22,9 +35,9 @@ public class MacCodeSign(IStorage hostFileSystemStorage, IWebLogger logger)
 
 	private async Task<bool> MacCodeSignExecutable(string exeFile)
 	{
-		if ( !hostFileSystemStorage.ExistFile(CodeSignPath) )
+		if ( !_hostFileSystemStorage.ExistFile(CodeSignPath) )
 		{
-			logger.LogError("[RunChmodOnFfmpegExe] WARNING: /usr/bin/codesign does not exist");
+			_logger.LogError("[RunChmodOnFfmpegExe] WARNING: /usr/bin/codesign does not exist");
 			return true;
 		}
 
@@ -35,16 +48,16 @@ public class MacCodeSign(IStorage hostFileSystemStorage, IWebLogger logger)
 			return true;
 		}
 
-		logger.LogError(
+		_logger.LogError(
 			$"codesign Command failed with exit code {result.ExitCode}: {result.StandardError}");
 		return false;
 	}
 
 	private async Task<bool> MacXattrExecutable(string exeFile)
 	{
-		if ( !hostFileSystemStorage.ExistFile(XattrPath) )
+		if ( !_hostFileSystemStorage.ExistFile(XattrPath) )
 		{
-			logger.LogError("[RunChmodOnFfmpegExe] WARNING: /usr/bin/xattr does not exist");
+			_logger.LogError("[RunChmodOnFfmpegExe] WARNING: /usr/bin/xattr does not exist");
 			return true;
 		}
 
@@ -55,8 +68,9 @@ public class MacCodeSign(IStorage hostFileSystemStorage, IWebLogger logger)
 			return true;
 		}
 
-		logger.LogError(
+		_logger.LogError(
 			$"xattr Command failed with exit code {result.ExitCode}: {result.StandardError}");
 		return false;
 	}
 }
+

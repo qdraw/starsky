@@ -1,36 +1,39 @@
-using Medallion.Shell;
 using starsky.foundation.http.Interfaces;
+using starsky.foundation.injection;
 using starsky.foundation.platform.Architecture;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.ArchiveFormats;
 using starsky.foundation.storage.Helpers;
-using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.video.GetDependencies.Interfaces;
 using starsky.foundation.video.GetDependencies.Models;
 
 namespace starsky.foundation.video.GetDependencies;
 
+[Service(typeof(IFfMpegDownload), InjectionLifetime = InjectionLifetime.Scoped)]
 public class FfMpegDownload : IFfMpegDownload
 {
-	private const string FfmpegDependenciesFolder = "ffmpeg";
 	private readonly AppSettings _appSettings;
 	private readonly FfMpegDownloadIndex _downloadIndex;
-	private readonly IStorage _hostFileSystemStorage;
+	private readonly FfmpegChmod _ffmpegChmod;
+	private readonly FfmpegExePath _ffmpegExePath;
+	private readonly StorageHostFullPathFilesystem _hostFileSystemStorage;
 	private readonly IHttpClientHelper _httpClientHelper;
 	private readonly IWebLogger _logger;
-	private readonly MacCodeSign _macCodeSign;
+	private readonly IMacCodeSign _macCodeSign;
 
 	public FfMpegDownload(IHttpClientHelper httpClientHelper, AppSettings appSettings,
-		IWebLogger logger)
+		IWebLogger logger, IMacCodeSign macCodeSign)
 	{
 		_httpClientHelper = httpClientHelper;
 		_appSettings = appSettings;
 		_hostFileSystemStorage = new StorageHostFullPathFilesystem(logger);
 		_logger = logger;
+		_macCodeSign = macCodeSign;
 		_downloadIndex = new FfMpegDownloadIndex(_httpClientHelper, _logger);
-		_macCodeSign = new MacCodeSign(_hostFileSystemStorage, _logger);
+		_ffmpegExePath = new FfmpegExePath(_appSettings);
+		_ffmpegChmod = new FfmpegChmod(_hostFileSystemStorage, _logger);
 	}
 
 	public async Task<bool> DownloadFfMpeg()
@@ -48,9 +51,8 @@ public class FfMpegDownload : IFfMpegDownload
 		CreateDirectoryDependenciesFolderIfNotExists();
 
 		var currentArchitecture = CurrentArchitecture.GetCurrentRuntimeIdentifier();
-		// var currentArchitecture = "osx-x64";
 
-		if ( _hostFileSystemStorage.ExistFile(GetExePath(currentArchitecture)) )
+		if ( _hostFileSystemStorage.ExistFile(_ffmpegExePath.GetExePath(currentArchitecture)) )
 		{
 			return true;
 		}
@@ -87,7 +89,7 @@ public class FfMpegDownload : IFfMpegDownload
 			return null;
 		}
 
-		if ( _hostFileSystemStorage.ExistFile(GetExePath(currentArchitecture)) )
+		if ( _hostFileSystemStorage.ExistFile(_ffmpegExePath.GetExePath(currentArchitecture)) )
 		{
 			return true;
 		}
@@ -108,10 +110,9 @@ public class FfMpegDownload : IFfMpegDownload
 			return null;
 		}
 
-		new Zipper(_logger).ExtractZip(zipFullFilePath,
-			Path.Combine(_appSettings.DependenciesFolder, FfmpegDependenciesFolder));
+		new Zipper(_logger).ExtractZip(zipFullFilePath, _ffmpegExePath.GetExeParentFolder());
 
-		if ( !_hostFileSystemStorage.ExistFile(GetExePath(currentArchitecture)) )
+		if ( !_hostFileSystemStorage.ExistFile(_ffmpegExePath.GetExePath(currentArchitecture)) )
 		{
 			return false;
 		}
@@ -120,21 +121,10 @@ public class FfMpegDownload : IFfMpegDownload
 		return true;
 	}
 
-	private string GetExePath(string currentArchitecture)
-	{
-		var exeFile = Path.Combine(_appSettings.DependenciesFolder, FfmpegDependenciesFolder,
-			"ffmpeg");
-		if ( currentArchitecture is "win-x64" or "win-arm64" )
-		{
-			exeFile += ".exe";
-		}
-
-		return exeFile;
-	}
 
 	private async Task<bool> PrepareBeforeRunning(string currentArchitecture)
 	{
-		var exeFile = GetExePath(currentArchitecture);
+		var exeFile = _ffmpegExePath.GetExePath(currentArchitecture);
 
 		if ( !_hostFileSystemStorage.ExistFile(Path.Combine(exeFile)) )
 		{
@@ -146,7 +136,7 @@ public class FfMpegDownload : IFfMpegDownload
 			return true;
 		}
 
-		if ( !await Chmod(exeFile) )
+		if ( !await _ffmpegChmod.Chmod(exeFile) )
 		{
 			return false;
 		}
@@ -158,27 +148,6 @@ public class FfMpegDownload : IFfMpegDownload
 
 		return true;
 	}
-
-	private async Task<bool> Chmod(string exeFile)
-	{
-		if ( !_hostFileSystemStorage.ExistFile("/bin/chmod") )
-		{
-			_logger.LogError("[RunChmodOnFfmpegExe] WARNING: /bin/chmod does not exist");
-			return true;
-		}
-
-		// command.run does not care about the $PATH
-		var result = await Command.Run("/bin/chmod", "0755", exeFile).Task;
-		if ( result.Success )
-		{
-			return true;
-		}
-
-		_logger.LogError(
-			$"command failed with exit code {result.ExitCode}: {result.StandardError}");
-		return false;
-	}
-
 
 	private async Task<bool> DownloadMirror(List<Uri> baseUrls, string zipFullFilePath,
 		BinaryIndex binaryIndex, int retryInSeconds = 15)
@@ -198,8 +167,7 @@ public class FfMpegDownload : IFfMpegDownload
 	{
 		foreach ( var path in new List<string>
 		         {
-			         _appSettings.DependenciesFolder,
-			         Path.Combine(_appSettings.DependenciesFolder, FfmpegDependenciesFolder)
+			         _appSettings.DependenciesFolder, _ffmpegExePath.GetExeParentFolder()
 		         } )
 		{
 			if ( _hostFileSystemStorage.ExistFolder(path) )
