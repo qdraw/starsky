@@ -60,22 +60,27 @@ public sealed class AppSettingsControllerTest
 	[TestMethod]
 	public async Task UpdateAppSettings_StorageFolder()
 	{
+		const string testFolder = "test-update-settings-storage";
 		var appSettings = new AppSettings();
 		var controller = new AppSettingsController(appSettings, new UpdateAppSettingsByPath(
 			appSettings,
 			new FakeSelectorStorage(
-				new FakeIStorage(new List<string> { $"{Path.DirectorySeparatorChar}test" }))));
+				new FakeIStorage(new List<string>
+				{
+					$"{Path.DirectorySeparatorChar}{testFolder}"
+				}))));
 
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 		var actionResult = await controller.UpdateAppSettings(new AppSettingsTransferObject
 		{
-			Verbose = true, StorageFolder = $"{Path.DirectorySeparatorChar}test"
+			Verbose = true, StorageFolder = $"{Path.DirectorySeparatorChar}{testFolder}"
 		}) as JsonResult;
 
 		var result = actionResult?.Value as AppSettings;
 		Assert.IsTrue(result?.Verbose);
-		Assert.AreEqual(Path.DirectorySeparatorChar + PathHelper.AddBackslash("test"),
+
+		Assert.AreEqual(Path.DirectorySeparatorChar + PathHelper.AddBackslash(testFolder),
 			result?.StorageFolder);
 	}
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +13,8 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+
+[assembly: InternalsVisibleTo("starskytest")]
 
 namespace starsky.foundation.http.Services;
 
@@ -24,12 +27,13 @@ public sealed class HttpClientHelper : IHttpClientHelper
 	private readonly List<string> _allowedDomains =
 	[
 		"dl.dropboxusercontent.com",
-		"qdraw.nl", // < used by test
+		"qdraw.nl", // < used by test and dependencies
 		"media.qdraw.nl", // < used by demo
 		"locker.ifttt.com",
 		"download.geonames.org",
 		"exiftool.org",
-		"api.github.com"
+		"api.github.com",
+		"starsky-dependencies.netlify.app"
 	];
 
 	/// <summary>
@@ -39,6 +43,14 @@ public sealed class HttpClientHelper : IHttpClientHelper
 
 	private readonly IWebLogger _logger;
 	private readonly IStorage? _storage;
+
+	internal HttpClientHelper(IHttpProvider httpProvider,
+		IStorage? storage, IWebLogger logger)
+	{
+		_httpProvider = httpProvider;
+		_logger = logger;
+		_storage = storage;
+	}
 
 	/// <summary>
 	///     Set Http Provider
@@ -133,14 +145,21 @@ public sealed class HttpClientHelper : IHttpClientHelper
 		}
 	}
 
+	public async Task<bool> Download(string sourceHttpUrl, string fullLocalPath,
+		int retryAfterInSeconds = 15)
+	{
+		var sourceUri = new Uri(sourceHttpUrl);
+		return await Download(sourceUri, fullLocalPath, retryAfterInSeconds);
+	}
+
 	/// <summary>
 	///     Downloads the specified source HTTPS URL.
 	/// </summary>
-	/// <param name="sourceHttpUrl">The source HTTPS URL.</param>
+	/// <param name="sourceUri">The source HTTPS URL.</param>
 	/// <param name="fullLocalPath">The full local path.</param>
 	/// <param name="retryAfterInSeconds">Retry after number of seconds</param>
 	/// <returns></returns>
-	public async Task<bool> Download(string sourceHttpUrl, string fullLocalPath,
+	public async Task<bool> Download(Uri sourceUri, string fullLocalPath,
 		int retryAfterInSeconds = 15)
 	{
 		if ( _storage == null )
@@ -148,28 +167,26 @@ public sealed class HttpClientHelper : IHttpClientHelper
 			throw new EndOfStreamException("is null " + nameof(_storage));
 		}
 
-		var sourceUri = new Uri(sourceHttpUrl);
-
 		_logger.LogInformation("[Download] HttpClientHelper > "
-		                       + sourceUri.Host + " ~ " + sourceHttpUrl);
+		                       + " ~ " + sourceUri);
 
 		// allow whitelist and https only
 		if ( !_allowedDomains.Contains(sourceUri.Host) ||
 		     sourceUri.Scheme != "https" )
 		{
 			_logger.LogInformation("[Download] HttpClientHelper > "
-			                       + "skip: domain not whitelisted " + " ~ " + sourceHttpUrl);
+			                       + "skip: domain not whitelisted " + " ~ " + sourceUri);
 			return false;
 		}
 
 		async Task<bool> DownloadAsync()
 		{
-			using var response = await _httpProvider.GetAsync(sourceHttpUrl);
+			using var response = await _httpProvider.GetAsync(sourceUri.ToString());
 			await using var streamToReadFrom = await response.Content.ReadAsStreamAsync();
 			if ( response.StatusCode != HttpStatusCode.OK )
 			{
 				_logger.LogInformation("[Download] HttpClientHelper > " +
-				                       response.StatusCode + " ~ " + sourceHttpUrl);
+				                       response.StatusCode + " ~ " + sourceUri);
 				return false;
 			}
 

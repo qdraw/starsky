@@ -12,231 +12,231 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.feature.settings.Services
+namespace starskytest.starsky.feature.settings.Services;
+
+[TestClass]
+public class UpdateAppSettingsByPathTests
 {
-	[TestClass]
-	public class UpdateAppSettingsByPathTests
+	[TestMethod]
+	public async Task UpdateAppSettingsAsync_ValidInput_Success()
 	{
-		[TestMethod]
-		public async Task UpdateAppSettingsAsync_ValidInput_Success()
+		var before = Environment.GetEnvironmentVariable("app__storageFolder");
+		Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
+
+		// Arrange
+		var testFolderPath = Path.DirectorySeparatorChar + "test-update-appSettings-by-path" +
+		                     Path.DirectorySeparatorChar;
+
+		var storage = new FakeIStorage(new List<string> { "/", testFolderPath });
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var updateAppSettingsByPath =
+			new UpdateAppSettingsByPath(new AppSettings(), selectorStorage);
+		var appSettingTransferObject = new AppSettingsTransferObject
 		{
-			var before = Environment.GetEnvironmentVariable("app__storageFolder");
-			Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
+			StorageFolder = testFolderPath, Verbose = true
+		};
 
-			// Arrange
-			var testFolderPath = Path.DirectorySeparatorChar.ToString() + "test" +
-			                     Path.DirectorySeparatorChar.ToString();
-
-			var storage = new FakeIStorage(new List<string> { "/", testFolderPath });
-			var selectorStorage = new FakeSelectorStorage(storage);
-			var updateAppSettingsByPath =
-				new UpdateAppSettingsByPath(new AppSettings(), selectorStorage);
-			var appSettingTransferObject = new AppSettingsTransferObject
-			{
-				StorageFolder = testFolderPath, Verbose = true
-			};
-
-			// Act
-			var result =
-				await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject);
-
-			Environment.SetEnvironmentVariable("app__storageFolder", before);
-
-			// Assert
-			Assert.AreEqual(200, result.StatusCode);
-			Assert.AreEqual("Updated", result.Message);
-		}
-
-		[TestMethod]
-		public async Task UpdateAppSettingsAsync_ValidInput_Success_CompareJson()
-		{
-			// Arrange
-
-			var before = Environment.GetEnvironmentVariable("app__storageFolder");
-			Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
-
-			var testFolderPath = Path.DirectorySeparatorChar + "test" +
-			                     Path.DirectorySeparatorChar;
-
-			var storage = new FakeIStorage(new List<string> { "/", testFolderPath });
-			var selectorStorage = new FakeSelectorStorage(storage);
-			var appSettings = new AppSettings();
-			var updateAppSettingsByPath = new UpdateAppSettingsByPath(appSettings, selectorStorage);
-			var appSettingTransferObject = new AppSettingsTransferObject
-			{
-				StorageFolder = testFolderPath, Verbose = true,
-			};
-
-			// Act
+		// Act
+		var result =
 			await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject);
 
-			var result =
-				( await StreamToStringHelper.StreamToStringAsync(
-					storage.ReadStream(appSettings.AppSettingsPath)) ).Replace("\r\n", "\n");
+		Environment.SetEnvironmentVariable("app__storageFolder", before);
 
-			Environment.SetEnvironmentVariable("app__storageFolder", before);
+		// Assert
+		Assert.AreEqual(200, result.StatusCode);
+		Assert.AreEqual("Updated", result.Message);
+	}
 
+	[TestMethod]
+	public async Task UpdateAppSettingsAsync_ValidInput_Success_CompareJson()
+	{
+		// Arrange
 
-			var storageFolderJson = JsonSerializer.Serialize(testFolderPath,
-				DefaultJsonSerializer.NoNamingPolicyBoolAsString);
+		var before = Environment.GetEnvironmentVariable("app__storageFolder");
+		Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
 
+		var testFolderPath = Path.DirectorySeparatorChar + "test-update-appSettings-by-path" +
+		                     Path.DirectorySeparatorChar;
 
-			// Assert
-			var expectedResult =
-				"{\n  \"app\": {\n    \"Verbose\": \"true\",\n    \"StorageFolder\": " + // rm quotes
-				storageFolderJson + ",\n";
-
-
-			Assert.IsTrue(result.Contains(expectedResult));
-		}
-
-		[TestMethod]
-		public async Task UpdateAppSettingsAsync_InvalidStorageFolder_Returns404()
+		var storage = new FakeIStorage(new List<string> { "/", testFolderPath });
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var appSettings = new AppSettings();
+		var updateAppSettingsByPath = new UpdateAppSettingsByPath(appSettings, selectorStorage);
+		var appSettingTransferObject = new AppSettingsTransferObject
 		{
-			var before = Environment.GetEnvironmentVariable("app__storageFolder");
-			Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
+			StorageFolder = testFolderPath, Verbose = true
+		};
 
-			// Arrange
-			var selectorStorage = new FakeSelectorStorage();
-			var updateAppSettingsByPath =
-				new UpdateAppSettingsByPath(new AppSettings(), selectorStorage);
-			var appSettingTransferObject = new AppSettingsTransferObject
-			{
-				StorageFolder = "NonExistentFolder"
-			};
+		// Act
+		await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject);
 
-			// Act
-			var result =
-				await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject);
+		var result =
+			( await StreamToStringHelper.StreamToStringAsync(
+				storage.ReadStream(appSettings.AppSettingsPath)) ).Replace("\r\n", "\n");
 
-			Environment.SetEnvironmentVariable("app__storageFolder", before);
+		Environment.SetEnvironmentVariable("app__storageFolder", before);
 
 
-			// Assert
-			Assert.AreEqual(404, result.StatusCode);
-			Assert.AreEqual("Location of StorageFolder on disk not found", result.Message);
-		}
+		var storageFolderJson = JsonSerializer.Serialize(testFolderPath,
+			DefaultJsonSerializer.NoNamingPolicyBoolAsString);
 
-		[TestMethod]
-		public async Task UpdateAppSettingsAsync_InvalidStorageFolder_Returns403()
+
+		// Assert
+		var expectedResult =
+			"{\n  \"app\": {\n    \"Verbose\": \"true\",\n    \"StorageFolder\": " + // rm quotes
+			storageFolderJson + ",\n";
+
+
+		Assert.IsTrue(result.Contains(expectedResult));
+	}
+
+	[TestMethod]
+	public async Task UpdateAppSettingsAsync_InvalidStorageFolder_Returns404()
+	{
+		var before = Environment.GetEnvironmentVariable("app__storageFolder");
+		Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
+
+		// Arrange
+		var selectorStorage = new FakeSelectorStorage();
+		var updateAppSettingsByPath =
+			new UpdateAppSettingsByPath(new AppSettings(), selectorStorage);
+		var appSettingTransferObject = new AppSettingsTransferObject
 		{
-			var before = Environment.GetEnvironmentVariable("app__storageFolder");
-			Environment.SetEnvironmentVariable("app__storageFolder", "test");
+			StorageFolder = "NonExistentFolder"
+		};
 
-			// Arrange
-			var selectorStorage =
-				new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" }));
-			var updateAppSettingsByPath =
-				new UpdateAppSettingsByPath(new AppSettings(), selectorStorage);
-			var appSettingTransferObject = new AppSettingsTransferObject { StorageFolder = "/" };
+		// Act
+		var result =
+			await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject);
 
-			// Act
-			var result =
-				await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject);
-
-			// Set back to what is was before
-			Environment.SetEnvironmentVariable("app__storageFolder", before);
-
-			// Assert
-			Assert.AreEqual(403, result.StatusCode);
-			Assert.AreEqual("There is an Environment variable set so you can't update it here",
-				result.Message);
-		}
+		Environment.SetEnvironmentVariable("app__storageFolder", before);
 
 
-		[TestMethod]
-		public async Task UpdateAppSettingsAsync_ValidInput_TwoTimes_Success()
+		// Assert
+		Assert.AreEqual(404, result.StatusCode);
+		Assert.AreEqual("Location of StorageFolder on disk not found", result.Message);
+	}
+
+	[TestMethod]
+	public async Task UpdateAppSettingsAsync_InvalidStorageFolder_Returns403()
+	{
+		var before = Environment.GetEnvironmentVariable("app__storageFolder");
+		Environment.SetEnvironmentVariable("app__storageFolder", "test-update-appSettings-by-path");
+
+		// Arrange
+		var selectorStorage =
+			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" }));
+		var updateAppSettingsByPath =
+			new UpdateAppSettingsByPath(new AppSettings(), selectorStorage);
+		var appSettingTransferObject = new AppSettingsTransferObject { StorageFolder = "/" };
+
+		// Act
+		var result =
+			await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject);
+
+		// Set back to what is was before
+		Environment.SetEnvironmentVariable("app__storageFolder", before);
+
+		// Assert
+		Assert.AreEqual(403, result.StatusCode);
+		Assert.AreEqual("There is an Environment variable set so you can't update it here",
+			result.Message);
+	}
+
+
+	[TestMethod]
+	public async Task UpdateAppSettingsAsync_ValidInput_TwoTimes_Success()
+	{
+		var before = Environment.GetEnvironmentVariable("app__storageFolder");
+		Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
+
+		// Arrange
+		var testFolderPath = Path.DirectorySeparatorChar + "test-update-appSettings-by-path" +
+		                     Path.DirectorySeparatorChar;
+
+		var storage = new FakeIStorage(new List<string> { "/", testFolderPath });
+		var appSettings = new AppSettings();
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var updateAppSettingsByPath = new UpdateAppSettingsByPath(appSettings, selectorStorage);
+		var appSettingTransferObject1 = new AppSettingsTransferObject { Verbose = true };
+
+		// Act
+		var re1 =
+			await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject1);
+		Assert.IsFalse(re1.IsError);
+
+		var fileResultString1 =
+			await StreamToStringHelper.StreamToStringAsync(
+				storage.ReadStream(appSettings.AppSettingsPath));
+		var fileResult1 = JsonSerializer.Deserialize<AppContainerAppSettings>(fileResultString1,
+			DefaultJsonSerializer.NoNamingPolicyBoolAsString);
+
+		Assert.IsNotNull(fileResult1);
+		Assert.IsTrue(fileResult1.App.Verbose);
+
+		var appSettingTransferObject2 = new AppSettingsTransferObject
 		{
-			var before = Environment.GetEnvironmentVariable("app__storageFolder");
-			Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
+			StorageFolder = testFolderPath
+		};
 
-			// Arrange
-			var testFolderPath = Path.DirectorySeparatorChar + "test" + Path.DirectorySeparatorChar;
+		await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject2);
 
-			var storage = new FakeIStorage(new List<string> { "/", testFolderPath });
-			var appSettings = new AppSettings();
-			var selectorStorage = new FakeSelectorStorage(storage);
-			var updateAppSettingsByPath = new UpdateAppSettingsByPath(appSettings, selectorStorage);
-			var appSettingTransferObject1 = new AppSettingsTransferObject { Verbose = true };
+		var fileResultString2 =
+			await StreamToStringHelper.StreamToStringAsync(
+				storage.ReadStream(appSettings.AppSettingsPath));
+		var fileResult2 = JsonSerializer.Deserialize<AppContainerAppSettings>(fileResultString2,
+			DefaultJsonSerializer.NoNamingPolicyBoolAsString);
 
-			// Act
-			var re1 =
-				await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject1);
-			Assert.IsFalse(re1.IsError);
+		Assert.IsNotNull(fileResult2);
 
-			var fileResultString1 =
-				await StreamToStringHelper.StreamToStringAsync(
-					storage.ReadStream(appSettings.AppSettingsPath));
-			var fileResult1 = JsonSerializer.Deserialize<AppContainerAppSettings>(fileResultString1,
-				DefaultJsonSerializer.NoNamingPolicyBoolAsString);
+		// Set back to what is was before
+		Environment.SetEnvironmentVariable("app__storageFolder", before);
 
-			Assert.IsNotNull(fileResult1);
-			Assert.IsTrue(fileResult1.App.Verbose);
+		Assert.AreEqual(testFolderPath, fileResult2.App.StorageFolder);
+		Assert.IsTrue(fileResult2.App.Verbose);
+	}
 
-			var appSettingTransferObject2 = new AppSettingsTransferObject
-			{
-				StorageFolder = testFolderPath
-			};
-
-			await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject2);
-
-			var fileResultString2 =
-				await StreamToStringHelper.StreamToStringAsync(
-					storage.ReadStream(appSettings.AppSettingsPath));
-			var fileResult2 = JsonSerializer.Deserialize<AppContainerAppSettings>(fileResultString2,
-				DefaultJsonSerializer.NoNamingPolicyBoolAsString);
-
-			Assert.IsNotNull(fileResult2);
-
-			// Set back to what is was before
-			Environment.SetEnvironmentVariable("app__storageFolder", before);
-
-			Assert.AreEqual(testFolderPath, fileResult2.App.StorageFolder);
-			Assert.IsTrue(fileResult2.App.Verbose);
-		}
-
-		[TestMethod]
-		public async Task UpdateAppSettingsAsync_ValidInput_Success_Desktop()
+	[TestMethod]
+	public async Task UpdateAppSettingsAsync_ValidInput_Success_Desktop()
+	{
+		var storage = new FakeIStorage();
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var updateAppSettingsByPath =
+			new UpdateAppSettingsByPath(new AppSettings(), selectorStorage);
+		var appSettingTransferObject = new AppSettingsTransferObject
 		{
-			var storage = new FakeIStorage();
-			var selectorStorage = new FakeSelectorStorage(storage);
-			var updateAppSettingsByPath =
-				new UpdateAppSettingsByPath(new AppSettings(), selectorStorage);
-			var appSettingTransferObject = new AppSettingsTransferObject
-			{
-				DesktopCollectionsOpen = CollectionsOpenType.RawJpegMode.Raw,
-				DefaultDesktopEditor =
-				[
-					new AppSettingsDefaultEditorApplication
-					{
-						ApplicationPath = "/test",
-						ImageFormats =
-							[ExtensionRolesHelper.ImageFormat.jpg]
-					}
-				]
-			};
+			DesktopCollectionsOpen = CollectionsOpenType.RawJpegMode.Raw,
+			DefaultDesktopEditor =
+			[
+				new AppSettingsDefaultEditorApplication
+				{
+					ApplicationPath = "/test",
+					ImageFormats =
+						[ExtensionRolesHelper.ImageFormat.jpg]
+				}
+			]
+		};
 
-			// Act
-			var result =
-				await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject);
+		// Act
+		var result =
+			await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject);
 
 
-			// Assert
-			Assert.AreEqual(200, result.StatusCode);
-			Assert.AreEqual("Updated", result.Message);
+		// Assert
+		Assert.AreEqual(200, result.StatusCode);
+		Assert.AreEqual("Updated", result.Message);
 
-			var fileResultString2 =
-				await StreamToStringHelper.StreamToStringAsync(
-					storage.ReadStream(new AppSettings().AppSettingsPath));
-			var fileResult2 = JsonSerializer.Deserialize<AppContainerAppSettings>(fileResultString2,
-				DefaultJsonSerializer.NoNamingPolicyBoolAsString);
+		var fileResultString2 =
+			await StreamToStringHelper.StreamToStringAsync(
+				storage.ReadStream(new AppSettings().AppSettingsPath));
+		var fileResult2 = JsonSerializer.Deserialize<AppContainerAppSettings>(fileResultString2,
+			DefaultJsonSerializer.NoNamingPolicyBoolAsString);
 
-			Assert.IsNotNull(fileResult2);
-			Assert.AreEqual(CollectionsOpenType.RawJpegMode.Raw,
-				fileResult2.App.DesktopCollectionsOpen);
-			Assert.AreEqual("/test", fileResult2.App.DefaultDesktopEditor[0].ApplicationPath);
-			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg,
-				fileResult2.App.DefaultDesktopEditor[0].ImageFormats[0]);
-		}
+		Assert.IsNotNull(fileResult2);
+		Assert.AreEqual(CollectionsOpenType.RawJpegMode.Raw,
+			fileResult2.App.DesktopCollectionsOpen);
+		Assert.AreEqual("/test", fileResult2.App.DefaultDesktopEditor[0].ApplicationPath);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg,
+			fileResult2.App.DefaultDesktopEditor[0].ImageFormats[0]);
 	}
 }

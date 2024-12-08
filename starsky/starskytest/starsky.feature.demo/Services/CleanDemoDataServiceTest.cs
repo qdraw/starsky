@@ -126,7 +126,7 @@ public class CleanDemoDataServiceTest
 
 		_appSettings.DemoData = new List<AppSettingsKeyValue>
 		{
-			new() { Key = "https://qdraw.nl", Value = "1" }
+			new() { Key = "https://qdraw.nl/", Value = "1" }
 		};
 
 		Environment.SetEnvironmentVariable("app__storageFolder", "/tmp");

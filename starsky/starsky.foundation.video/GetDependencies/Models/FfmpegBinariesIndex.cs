@@ -6,7 +6,7 @@ namespace starsky.foundation.video.GetDependencies.Models;
 public class BinaryIndex
 {
 	public string Architecture { get; set; }
-	public string Url { get; set; }
+	public string FileName { get; set; }
 	public string Sha256 { get; set; }
 }
 

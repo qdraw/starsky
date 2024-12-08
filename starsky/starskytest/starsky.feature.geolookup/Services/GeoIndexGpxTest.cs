@@ -36,6 +36,12 @@ public sealed class GeoIndexGpxTest
 		};
 	}
 
+	[ClassCleanup]
+	public static void CleanUpGeoIndexGpxTest()
+	{
+		CreateAnGpx.Dispose();
+	}
+
 	[TestMethod]
 	public void GeoIndexGpx_ConvertTimeZone_EuropeAmsterdam()
 	{

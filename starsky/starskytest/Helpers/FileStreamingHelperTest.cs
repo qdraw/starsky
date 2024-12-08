@@ -92,7 +92,7 @@ public sealed class FileStreamingHelperTest
 	}
 
 	[TestMethod]
-	public async Task FileStreamingHelperTest_FileStreamingHelper_StreamFile_imagejpeg()
+	public async Task FileStreamingHelperTest_FileStreamingHelper_StreamFile_imageJpeg()
 	{
 		var createAnImage = new CreateAnImage();
 
@@ -112,6 +112,8 @@ public sealed class FileStreamingHelperTest
 		// Clean
 		streamSelector.Get(SelectorStorage.StorageServices.HostFilesystem)
 			.FileDelete(formValueProvider.FirstOrDefault()!);
+
+		CleanParentFolder(formValueProvider.FirstOrDefault());
 	}
 
 	[TestMethod]
@@ -160,7 +162,7 @@ public sealed class FileStreamingHelperTest
 	[TestMethod]
 	public async Task FileStreamingHelper_MultipartRequestHelper()
 	{
-		var contentType = $"multipart/form-data; boundary=\"{Boundary}\"";
+		const string contentType = $"multipart/form-data; boundary=\"{Boundary}\"";
 
 		// string contentType, Stream requestBody, AppSettings appSettings, 
 		// ISelectorStorage selectorStorage, string headerFileName = null
@@ -172,8 +174,24 @@ public sealed class FileStreamingHelperTest
 
 		await FileStreamingHelper.StreamFile(contentType, stream, _appSettings, streamSelector);
 
-		var tempPath = storage.GetAllFilesInDirectoryRecursive(_appSettings.TempFolder)
-			.FirstOrDefault();
-		Assert.IsTrue(tempPath?.EndsWith("a.txt"));
+		var tempPath = storage.GetAllFilesInDirectoryRecursive(_appSettings.TempFolder).ToList()[0];
+
+		Assert.IsTrue(tempPath.EndsWith("a.txt"));
+
+		CleanParentFolder(tempPath);
+	}
+
+	private static void CleanParentFolder(string? tempPath)
+	{
+		if ( tempPath == null )
+		{
+			return;
+		}
+
+		var parentFolder = Directory.GetParent(tempPath);
+		if ( parentFolder?.Exists == true )
+		{
+			parentFolder.Delete();
+		}
 	}
 }

@@ -30,10 +30,10 @@ public sealed class MemoryCacheExtensionsTest
 
 		var buildServiceProvider = provider.BuildServiceProvider();
 		var memoryCache = buildServiceProvider.GetService<IMemoryCache>();
-		memoryCache?.Set("test", "");
+		memoryCache?.Set("test-memory-cache", "");
 		var keys = memoryCache?.GetKeys<string>().ToList();
 		Assert.AreEqual(1, keys?.Count);
-		Assert.AreEqual("test", keys?[0]);
+		Assert.AreEqual("test-memory-cache", keys?[0]);
 	}
 
 	[TestMethod]

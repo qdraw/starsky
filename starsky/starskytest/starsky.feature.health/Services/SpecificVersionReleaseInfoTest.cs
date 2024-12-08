@@ -14,6 +14,8 @@ namespace starskytest.starsky.feature.health.Services;
 [TestClass]
 public class SpecificVersionReleaseInfoTests
 {
+	private readonly IServiceScopeFactory? _nullServiceScopeFactory = null;
+
 	[TestMethod]
 	public async Task SpecificVersionMessage_NoCache()
 	{
@@ -36,7 +38,8 @@ public class SpecificVersionReleaseInfoTests
 			}
 		});
 
-		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, null, new FakeIWebLogger());
+		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, null as IServiceScopeFactory,
+			new FakeIWebLogger());
 
 		var specificVersionReleaseInfo =
 			new SpecificVersionReleaseInfo(httpClientHelper, null, memoryCache,
@@ -66,7 +69,8 @@ public class SpecificVersionReleaseInfoTests
 
 		var fakeIHttpProvider = new FakeIHttpProvider(); // return not found if not in cache
 
-		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, null, new FakeIWebLogger());
+		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _nullServiceScopeFactory,
+			new FakeIWebLogger());
 
 		var specificVersionReleaseInfo =
 			new SpecificVersionReleaseInfo(httpClientHelper,
@@ -102,7 +106,8 @@ public class SpecificVersionReleaseInfoTests
 			}
 		});
 
-		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, null, new FakeIWebLogger());
+		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _nullServiceScopeFactory,
+			new FakeIWebLogger());
 
 		var specificVersionReleaseInfo = // memory cache enabled
 			new SpecificVersionReleaseInfo(httpClientHelper,
@@ -139,7 +144,8 @@ public class SpecificVersionReleaseInfoTests
 			}
 		});
 
-		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, null, new FakeIWebLogger());
+		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _nullServiceScopeFactory,
+			new FakeIWebLogger());
 
 		var specificVersionReleaseInfo =
 			new SpecificVersionReleaseInfo(httpClientHelper,
@@ -193,7 +199,8 @@ public class SpecificVersionReleaseInfoTests
 	{
 		var fakeIHttpProvider = new FakeIHttpProvider();
 
-		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, null, new FakeIWebLogger());
+		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _nullServiceScopeFactory,
+			new FakeIWebLogger());
 
 		var specificVersionReleaseInfo =
 			new SpecificVersionReleaseInfo(httpClientHelper,
@@ -209,7 +216,8 @@ public class SpecificVersionReleaseInfoTests
 	{
 		var fakeIHttpProvider = new FakeIHttpProvider();
 
-		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, null, new FakeIWebLogger());
+		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _nullServiceScopeFactory,
+			new FakeIWebLogger());
 		const string example =
 			"{\n    \"0.6.0\" : {\n        \"en\": \"Content\"\n    },\n    \"0.6.0-beta.0\" : {\n        \"en\": \"Content\"\n    }\n}";
 
@@ -228,7 +236,8 @@ public class SpecificVersionReleaseInfoTests
 	{
 		var fakeIHttpProvider = new FakeIHttpProvider();
 
-		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, null, new FakeIWebLogger());
+		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _nullServiceScopeFactory,
+			new FakeIWebLogger());
 		const string example =
 			"{\n    \"0.6.0\" : {\n        \"en\": \"Content\"\n    },\n    \"0.6.0-beta.0\" : {\n        \"en\": \"Content\"\n    }\n}";
 
@@ -247,7 +256,8 @@ public class SpecificVersionReleaseInfoTests
 	{
 		var fakeIHttpProvider = new FakeIHttpProvider();
 
-		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, null, new FakeIWebLogger());
+		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _nullServiceScopeFactory,
+			new FakeIWebLogger());
 		const string example =
 			"{\n    \"0.6.0\" : {\n        --";
 
@@ -266,7 +276,8 @@ public class SpecificVersionReleaseInfoTests
 	{
 		var fakeIHttpProvider = new FakeIHttpProvider();
 
-		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, null, new FakeIWebLogger());
+		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _nullServiceScopeFactory,
+			new FakeIWebLogger());
 		const string example =
 			"{\n    \"0.6.0\" : {\n  }\n}";
 
@@ -284,7 +295,8 @@ public class SpecificVersionReleaseInfoTests
 	{
 		var fakeIHttpProvider = new FakeIHttpProvider();
 
-		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, null, new FakeIWebLogger());
+		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _nullServiceScopeFactory,
+			new FakeIWebLogger());
 		const string example =
 			"{\n    \"0.6.0\" : {\n        \"en\": \"[Link text Here](https://link-url-here.org)\"\n    },\n    \"0.6.0-beta.0\" : {\n        \"en\": \"Content\"\n    }\n}";
 
@@ -328,7 +340,8 @@ public class SpecificVersionReleaseInfoTests
 			}
 		});
 
-		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, null, new FakeIWebLogger());
+		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _nullServiceScopeFactory,
+			new FakeIWebLogger());
 		var specificVersionReleaseInfo =
 			new SpecificVersionReleaseInfo(httpClientHelper, null, null,
 				new FakeIWebLogger());
@@ -343,7 +356,8 @@ public class SpecificVersionReleaseInfoTests
 	{
 		var fakeIHttpProvider = new FakeIHttpProvider();
 
-		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, null, new FakeIWebLogger());
+		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _nullServiceScopeFactory,
+			new FakeIWebLogger());
 		var specificVersionReleaseInfo =
 			new SpecificVersionReleaseInfo(httpClientHelper, null, null,
 				new FakeIWebLogger());
@@ -358,7 +372,8 @@ public class SpecificVersionReleaseInfoTests
 	{
 		var fakeIHttpProvider = new FakeIHttpProvider();
 
-		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, null, new FakeIWebLogger());
+		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _nullServiceScopeFactory,
+			new FakeIWebLogger());
 		var specificVersionReleaseInfo =
 			new SpecificVersionReleaseInfo(httpClientHelper, null, null,
 				new FakeIWebLogger());

@@ -24,6 +24,12 @@ public class FakeIHttpClientHelper : IHttpClientHelper
 
 	public List<string> UrlsCalled { get; set; } = new();
 
+	public async Task<bool> Download(Uri sourceUri, string fullLocalPath,
+		int retryAfterInSeconds = 15)
+	{
+		return await Download(sourceUri.ToString(), fullLocalPath, retryAfterInSeconds);
+	}
+
 	public async Task<bool> Download(string sourceHttpUrl, string fullLocalPath,
 		int retryAfterInSeconds = 15)
 	{

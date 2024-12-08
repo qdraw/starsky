@@ -7,10 +7,10 @@ namespace starsky.foundation.video.GetDependencies;
 public class FfMpegDownloadIndex(IHttpClientHelper httpClientHelper, IWebLogger logger)
 {
 	private const string QdrawMirrorDomain = "qdraw.nl/special/mirror/ffmpeg";
-	private const string NetlifyMirrorDomain = "starsky-dependencies.netlify.app/ffmpeg";
+	private const string NetlifyMirrorDomain = "_____starsky-dependencies.netlify.app/ffmpeg";
 
-	private static readonly Uri FfMpegApiBasePath = new($"https://{NetlifyMirrorDomain}");
-	private static readonly Uri FfMpegApiBasePathMirror = new($"https://{NetlifyMirrorDomain}");
+	private static readonly Uri FfMpegApiBasePath = new($"https://{NetlifyMirrorDomain}/");
+	private static readonly Uri FfMpegApiBasePathMirror = new($"https://{QdrawMirrorDomain}/");
 	private static readonly List<Uri> BaseUris = [FfMpegApiBasePath, FfMpegApiBasePathMirror];
 
 	private readonly Uri _ffMpegApiIndex = new($"https://{NetlifyMirrorDomain}/index.json");
