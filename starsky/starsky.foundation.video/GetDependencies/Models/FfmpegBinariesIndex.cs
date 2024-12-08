@@ -5,18 +5,23 @@ namespace starsky.foundation.video.GetDependencies.Models;
 
 public class BinaryIndex
 {
-	public string Architecture { get; set; }
-	public string FileName { get; set; }
-	public string Sha256 { get; set; }
+	public required string Architecture { get; set; }
+	public required string FileName { get; set; }
+	public required string Sha256 { get; set; }
 }
 
 public class FfmpegBinariesIndex
 {
-	public List<BinaryIndex> Binaries { get; set; }
+	public required List<BinaryIndex> Binaries { get; set; }
 }
 
 public class FfmpegBinariesContainer
 {
+	public FfmpegBinariesContainer()
+	{
+		BaseUrls = [];
+	}
+
 	public FfmpegBinariesContainer(string apiResultValue, Uri? indexUrl, List<Uri> baseUrls,
 		bool success)
 	{

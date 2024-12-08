@@ -1,9 +1,15 @@
+using System.Runtime.CompilerServices;
 using starsky.foundation.http.Interfaces;
+using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.video.GetDependencies.Interfaces;
 using starsky.foundation.video.GetDependencies.Models;
+
+[assembly: InternalsVisibleTo("starskytest")]
 
 namespace starsky.foundation.video.GetDependencies;
 
+[Service(typeof(IFfMpegDownloadIndex), InjectionLifetime = InjectionLifetime.Scoped)]
 public class FfMpegDownloadIndex(IHttpClientHelper httpClientHelper, IWebLogger logger)
 {
 	private const string QdrawMirrorDomain = "qdraw.nl/special/mirror/ffmpeg";
@@ -13,26 +19,28 @@ public class FfMpegDownloadIndex(IHttpClientHelper httpClientHelper, IWebLogger 
 	private static readonly Uri FfMpegApiBasePathMirror = new($"https://{QdrawMirrorDomain}/");
 	private static readonly List<Uri> BaseUris = [FfMpegApiBasePath, FfMpegApiBasePathMirror];
 
-	private readonly Uri _ffMpegApiIndex = new($"https://{NetlifyMirrorDomain}/index.json");
-	private readonly Uri _ffMpegApiIndexMirror = new($"https://{QdrawMirrorDomain}/index.json");
+	internal static readonly Uri FfMpegApiIndex = new($"https://{NetlifyMirrorDomain}/index.json");
+
+	internal static readonly Uri FfMpegApiIndexMirror =
+		new($"https://{QdrawMirrorDomain}/index.json");
 
 	public async Task<FfmpegBinariesContainer> DownloadIndex()
 	{
-		var apiResult = await httpClientHelper.ReadString(_ffMpegApiIndex);
+		var apiResult = await httpClientHelper.ReadString(FfMpegApiIndex);
 		if ( apiResult.Key )
 		{
-			return new FfmpegBinariesContainer(apiResult.Value, _ffMpegApiIndex, BaseUris,
+			return new FfmpegBinariesContainer(apiResult.Value, FfMpegApiIndex, BaseUris,
 				true);
 		}
 
-		apiResult = await httpClientHelper.ReadString(_ffMpegApiIndexMirror);
+		apiResult = await httpClientHelper.ReadString(FfMpegApiIndexMirror);
 		if ( apiResult.Key )
 		{
-			return new FfmpegBinariesContainer(apiResult.Value, _ffMpegApiIndexMirror,
+			return new FfmpegBinariesContainer(apiResult.Value, FfMpegApiIndexMirror,
 				BaseUris, true);
 		}
 
-		logger.LogError("[FfMpegDownload] Index not found");
+		logger.LogError("[FfMpegDownloadIndex] Index not found");
 		return new FfmpegBinariesContainer(string.Empty, null, [], false);
 	}
 }

@@ -15,7 +15,7 @@ namespace starsky.foundation.video.GetDependencies;
 public class FfMpegDownload : IFfMpegDownload
 {
 	private readonly AppSettings _appSettings;
-	private readonly FfMpegDownloadIndex _downloadIndex;
+	private readonly IFfMpegDownloadIndex _downloadIndex;
 	private readonly FfmpegChmod _ffmpegChmod;
 	private readonly FfmpegExePath _ffmpegExePath;
 	private readonly StorageHostFullPathFilesystem _hostFileSystemStorage;
@@ -24,28 +24,28 @@ public class FfMpegDownload : IFfMpegDownload
 	private readonly IMacCodeSign _macCodeSign;
 
 	public FfMpegDownload(IHttpClientHelper httpClientHelper, AppSettings appSettings,
-		IWebLogger logger, IMacCodeSign macCodeSign)
+		IWebLogger logger, IMacCodeSign macCodeSign, IFfMpegDownloadIndex downloadIndex)
 	{
 		_httpClientHelper = httpClientHelper;
 		_appSettings = appSettings;
 		_hostFileSystemStorage = new StorageHostFullPathFilesystem(logger);
 		_logger = logger;
 		_macCodeSign = macCodeSign;
-		_downloadIndex = new FfMpegDownloadIndex(_httpClientHelper, _logger);
+		_downloadIndex = downloadIndex;
 		_ffmpegExePath = new FfmpegExePath(_appSettings);
 		_ffmpegChmod = new FfmpegChmod(_hostFileSystemStorage, _logger);
 	}
 
-	public async Task<bool> DownloadFfMpeg()
+	public async Task<FfmpegDownloadStatus> DownloadFfMpeg()
 	{
-		if ( _appSettings.FfmpegSkipDownloadOnStartup == true || _appSettings is
-			    { AddSwaggerExport: true, AddSwaggerExportExitAfter: true } )
+		if ( _appSettings.FfmpegSkipDownloadOnStartup == true
+		     || _appSettings is { AddSwaggerExport: true, AddSwaggerExportExitAfter: true } )
 		{
 			var name = _appSettings.FfmpegSkipDownloadOnStartup == true
 				? "FFMpegSkipDownloadOnStartup"
 				: "AddSwaggerExport and AddSwaggerExportExitAfter";
 			_logger.LogInformation($"[DownloadFFMpeg] Skipped due true of {name} setting");
-			return false;
+			return FfmpegDownloadStatus.SettingsDisabled;
 		}
 
 		CreateDirectoryDependenciesFolderIfNotExists();
@@ -54,19 +54,32 @@ public class FfMpegDownload : IFfMpegDownload
 
 		if ( _hostFileSystemStorage.ExistFile(_ffmpegExePath.GetExePath(currentArchitecture)) )
 		{
-			return true;
+			return FfmpegDownloadStatus.Ok;
 		}
 
 		var container = await _downloadIndex.DownloadIndex();
+		if ( !container.Success )
+		{
+			_logger.LogError("[FfMpegDownload] Index not found");
+			return FfmpegDownloadStatus.DownloadIndexFailed;
+		}
 
 		var binaryIndexBaseUrls = GetCurrentArchitectureIndexUrls(container,
 			currentArchitecture);
 
-		await Download(binaryIndexBaseUrls, currentArchitecture);
+		var download = await Download(binaryIndexBaseUrls, currentArchitecture);
+		if ( download is null or false )
+		{
+			_logger.LogError("[FfMpegDownload] Binaries not found");
+			return FfmpegDownloadStatus.DownloadBinariesFailed;
+		}
 
-		await PrepareBeforeRunning(currentArchitecture);
+		if ( !await PrepareBeforeRunning(currentArchitecture) )
+		{
+			return FfmpegDownloadStatus.PrepareBeforeRunningFailed;
+		}
 
-		return true;
+		return FfmpegDownloadStatus.Ok;
 	}
 
 	private static KeyValuePair<BinaryIndex?, List<Uri>> GetCurrentArchitectureIndexUrls(

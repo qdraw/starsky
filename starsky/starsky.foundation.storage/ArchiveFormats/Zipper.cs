@@ -72,8 +72,7 @@ public sealed class Zipper
 				}
 				catch ( DirectoryNotFoundException )
 				{
-					Console.WriteLine("Directory not found: " + destinationPath);
-					Directory.GetParent(destinationPath)?.Create();
+					Directory.GetParent(destinationPath)!.Create();
 					entry.ExtractToFile(destinationPath, true);
 				}
 			}

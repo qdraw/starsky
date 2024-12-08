@@ -61,6 +61,21 @@ public sealed class HttpClientHelperTest
 	}
 
 	[TestMethod]
+	public async Task Download_HttpClientHelper_Ok_ReadString_Ctor()
+	{
+		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
+		var httpClient = new HttpClient(fakeHttpMessageHandler);
+		var httpProvider = new HttpProvider(httpClient);
+		
+		var httpClientHelper =
+			new HttpClientHelper(httpProvider, new FakeIStorage(), new FakeIWebLogger());
+		
+		var output = await httpClientHelper.ReadString("https://qdraw.nl/test");
+		
+		Assert.IsTrue(output.Key);
+	}
+
+	[TestMethod]
 	public async Task Download_HttpClientHelper_HTTP_Not_Download()
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
