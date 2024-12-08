@@ -96,7 +96,7 @@ public sealed class AppSettingsControllerTest
 				new UpdateAppSettingsStatusModel { StatusCode = 403 }));
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 		await controller.UpdateAppSettings(
-			new AppSettingsTransferObject { StorageFolder = "test" });
+			new AppSettingsTransferObject { StorageFolder = "test-update-ignore-when-env" });
 
 		Assert.AreEqual(403, controller.Response.StatusCode);
 	}
@@ -119,7 +119,8 @@ public sealed class AppSettingsControllerTest
 	[TestMethod]
 	public async Task UpdateAppSettingsTest_StorageFolder_JsonCheck()
 	{
-		var storage = new FakeIStorage(new List<string> { "test" });
+		const string testFolder = "test-update-json-check";
+		var storage = new FakeIStorage(new List<string> { testFolder });
 		Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
 
 		var appSettings = new AppSettings
@@ -130,7 +131,7 @@ public sealed class AppSettingsControllerTest
 		var controller = new AppSettingsController(appSettings,
 			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(storage)));
 		await controller.UpdateAppSettings(
-			new AppSettingsTransferObject { Verbose = true, StorageFolder = "test" });
+			new AppSettingsTransferObject { Verbose = true, StorageFolder = testFolder });
 
 		Assert.IsTrue(storage.ExistFile(appSettings.AppSettingsPath));
 
