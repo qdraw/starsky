@@ -59,6 +59,9 @@ public sealed class ZipperTest
 		hostService.FolderDelete(testOutputFolder);
 		hostService.CreateDirectory(testOutputFolder);
 
+		Console.WriteLine("Zipped file:" + zipped + " ~ " + File.Exists(zipped));
+		Assert.IsTrue(File.Exists(zipped));
+
 		// Act
 		var result = new Zipper(new FakeIWebLogger()).ExtractZip(zipped,
 			testOutputFolder);
@@ -73,7 +76,8 @@ public sealed class ZipperTest
 		Console.WriteLine(outputFile);
 
 		Console.WriteLine("List content:");
-		Console.WriteLine(hostService.GetAllFilesInDirectory(testOutputFolder).ToList()[0]);
+		Console.WriteLine(hostService.GetAllFilesInDirectory(testOutputFolder).FirstOrDefault());
+		Assert.AreEqual(1, hostService.GetAllFilesInDirectory(testOutputFolder).Count());
 
 		Assert.IsTrue(Path.Exists(outputFile));
 

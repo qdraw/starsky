@@ -154,7 +154,7 @@
         </Content>
         <None Remove="FakeCreateAn\CreateAnZipFileMacOs\macOsSubfolder.zip"/>
         <Content Include="FakeCreateAn\CreateAnZipFileMacOs\macOsSubfolder.zip">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
 
