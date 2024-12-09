@@ -32,13 +32,19 @@ public class CreateAnZipFileMacOs
 			return;
 		}
 
-		var path = Path.Combine(dirName, "FakeCreateAn",
-			"CreateAnZipFileMacOs", "ArchiveWithDotFiles.zip");
+		var parentFolder = Path.Combine(dirName, "FakeCreateAn",
+			"CreateAnZipFileMacOs");
+		var path = Path.Combine(parentFolder, "ArchiveWithDotFiles.zip");
 		FilePath = path;
 
 		if ( File.Exists(path) )
 		{
 			return;
+		}
+
+		if ( !Directory.Exists(parentFolder) )
+		{
+			Directory.CreateDirectory(parentFolder);
 		}
 
 		File.WriteAllBytes(path, Convert.FromBase64String(Base64ZipString));
