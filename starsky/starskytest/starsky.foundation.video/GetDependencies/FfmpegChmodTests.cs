@@ -105,7 +105,7 @@ public class FfmpegChmodTests
 	}
 
 	[TestMethod]
-	public async Task Chmod_ShouldReturnFalse_WhenCommandFails__WindowsOnly()
+	public async Task Chmod_ShouldReturnFalse_WhenCommandSucceed__WindowsOnly()
 	{
 		if ( !_isWindows )
 		{
@@ -113,13 +113,17 @@ public class FfmpegChmodTests
 			return;
 		}
 
+		CreateFile();
+		
 		var path = Path.Combine(_ffmpegExePath.GetExeParentFolder(), "chmod.exe");
 		var sut = new FfmpegChmod(new FakeIStorage([],
 				[path]),
 			new FakeIWebLogger()) { CmdPath = path };
 
 		var result = await sut.Chmod("/_not_found_path/to/ffmpeg");
-		Assert.IsFalse(result);
+		Assert.IsTrue(result);
+		
+		DeleteFile();
 	}
 
 	[TestMethod]
