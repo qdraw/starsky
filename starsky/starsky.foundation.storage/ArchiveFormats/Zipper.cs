@@ -14,9 +14,11 @@ namespace starsky.foundation.storage.ArchiveFormats;
 public sealed class Zipper
 {
 	private readonly StorageHostFullPathFilesystem _hostStorage;
+	private readonly IWebLogger _logger;
 
 	public Zipper(IWebLogger logger)
 	{
+		_logger = logger;
 		_hostStorage = new StorageHostFullPathFilesystem(logger);
 	}
 
@@ -31,6 +33,7 @@ public sealed class Zipper
 	{
 		if ( !File.Exists(zipInputFullPath) )
 		{
+			_logger.LogError("[Zipper] Zip file not found: " + zipInputFullPath);
 			return false;
 		}
 

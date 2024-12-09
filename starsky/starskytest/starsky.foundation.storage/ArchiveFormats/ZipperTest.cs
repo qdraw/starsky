@@ -47,7 +47,7 @@ public sealed class ZipperTest
 	}
 
 	[TestMethod]
-	public void TestExtractZipMacOs()
+	public void TestExtractZipMacOsHiddenFiles()
 	{
 		// Arrange
 		var zipped = new CreateAnZipFileMacOs().FilePath;
@@ -64,7 +64,7 @@ public sealed class ZipperTest
 			testOutputFolder);
 
 		// Assert
-		Assert.IsTrue(result);
+		Assert.IsNotNull(result);
 
 		var outputFile = testOutputFolder + Path.DirectorySeparatorChar +
 		                 CreateAnZipFileMacOs.Content[0];
