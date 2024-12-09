@@ -15,30 +15,31 @@ public class MacCodeSign : IMacCodeSign
 
 	public MacCodeSign(ISelectorStorage selectorStorage, IWebLogger logger)
 	{
-		_hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+		_hostFileSystemStorage =
+			selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		_logger = logger;
 	}
-	
+
 	public string CodeSignPath { get; set; } = "/usr/bin/codesign";
 	public string XattrPath { get; set; } = "/usr/bin/xattr";
 
-	public async Task<bool> MacCodeSignAndXattrExecutable(string exeFile)
+	public async Task<bool?> MacCodeSignAndXattrExecutable(string exeFile)
 	{
 		var result = await MacCodeSignExecutable(exeFile);
-		if ( !result )
+		if ( result is null or false )
 		{
-			return false;
+			return result;
 		}
 
 		return await MacXattrExecutable(exeFile);
 	}
 
-	internal async Task<bool> MacCodeSignExecutable(string exeFile)
+	internal async Task<bool?> MacCodeSignExecutable(string exeFile)
 	{
 		if ( !_hostFileSystemStorage.ExistFile(CodeSignPath) )
 		{
 			_logger.LogError("[RunChmodOnFfmpegExe] WARNING: /usr/bin/codesign does not exist");
-			return true;
+			return null;
 		}
 
 		// command.run does not care about the $PATH
@@ -53,12 +54,12 @@ public class MacCodeSign : IMacCodeSign
 		return false;
 	}
 
-	internal async Task<bool> MacXattrExecutable(string exeFile)
+	internal async Task<bool?> MacXattrExecutable(string exeFile)
 	{
 		if ( !_hostFileSystemStorage.ExistFile(XattrPath) )
 		{
 			_logger.LogError("[RunChmodOnFfmpegExe] WARNING: /usr/bin/xattr does not exist");
-			return true;
+			return null;
 		}
 
 		// command.run does not care about the $PATH
@@ -73,4 +74,3 @@ public class MacCodeSign : IMacCodeSign
 		return false;
 	}
 }
-

@@ -25,12 +25,27 @@ public class MacCodeSignTests
 		_hostFileSystemStorage = new StorageHostFullPathFilesystem(_logger);
 		_macCodeSign = new MacCodeSign(new FakeSelectorStorage(_hostFileSystemStorage), _logger);
 		_testFolder = Path.Combine(new CreateAnImage().BasePath, "MacCodeSignTests");
+		CreateTestFolder();
+	}
+
+	private void CreateTestFolder()
+	{
+		if ( Directory.Exists(_testFolder) )
+		{
+			return;
+		}
+
 		Directory.CreateDirectory(_testFolder);
 	}
 
 	[TestCleanup]
 	public void Cleanup()
 	{
+		if ( !Directory.Exists(_testFolder) )
+		{
+			return;
+		}
+
 		Directory.Delete(_testFolder, true);
 	}
 
@@ -43,23 +58,29 @@ public class MacCodeSignTests
 		return exeFile;
 	}
 
-	private async Task<string> CreateStubFiles(int codeSignExitCode, int xattrExitCode)
+	private async Task CreateStubCodeSignFile(int codeSignExitCode)
 	{
 		var chmodHelper = new FfmpegChmod(_hostFileSystemStorage, new FakeIWebLogger());
-
-		var exeFile = await CreateStubExeFile();
-
 		var codeSignPath = Path.Combine(_testFolder, "codesign");
 		CreateStubFile(codeSignPath, $"#!/bin/bash\necho codesign\nexit {codeSignExitCode}");
 		_macCodeSign.CodeSignPath = codeSignPath;
+		await chmodHelper.Chmod(codeSignPath);
+	}
 
+	private async Task CreateStubXattrFile(int xattrExitCode)
+	{
+		var chmodHelper = new FfmpegChmod(_hostFileSystemStorage, new FakeIWebLogger());
 		var xattrPath = Path.Combine(_testFolder, "xattr");
 		CreateStubFile(xattrPath, $"#!/bin/bash\nexit {xattrExitCode}");
 		_macCodeSign.XattrPath = xattrPath;
-
-		await chmodHelper.Chmod(codeSignPath);
 		await chmodHelper.Chmod(xattrPath);
+	}
 
+	private async Task<string> CreateStubFiles(int codeSignExitCode, int xattrExitCode)
+	{
+		var exeFile = await CreateStubExeFile();
+		await CreateStubCodeSignFile(codeSignExitCode);
+		await CreateStubXattrFile(xattrExitCode);
 		return exeFile;
 	}
 
@@ -74,11 +95,52 @@ public class MacCodeSignTests
 	[DataRow(1, 0, false)]
 	[DataRow(0, 1, false)]
 	[DataRow(1, 1, false)]
-	public async Task MacCodeSignAndXattrExecutable_ShouldReturnExpectedResult(int codeSignExitCode,
+	public async Task MacCodeSignAndXattrExecutable_Status_ShouldReturnExpectedResult(
+		int codeSignExitCode,
 		int xattrExitCode, bool expectedResult)
 	{
 		// Arrange
 		var exeFile = await CreateStubFiles(codeSignExitCode, xattrExitCode);
+
+		// Act
+		var result = await _macCodeSign.MacCodeSignAndXattrExecutable(exeFile);
+
+		// Assert
+		Assert.AreEqual(expectedResult, result);
+	}
+
+	[TestMethod]
+	[DataRow(false, false, null)]
+	[DataRow(true, false, null)]
+	[DataRow(false, true, null)]
+	[DataRow(true, true, true)]
+	public async Task MacCodeSignAndXattrExecutable_NotFound_ShouldReturnExpectedResult(
+		bool codeSignExists,
+		bool xattrExists, bool? expectedResult)
+	{
+		Cleanup();
+		CreateTestFolder();
+
+		// Arrange
+		if ( xattrExists )
+		{
+			await CreateStubXattrFile(0);
+		}
+		else
+		{
+			_macCodeSign.XattrPath = Path.Combine(_testFolder, "xattr_not_found");
+		}
+
+		if ( codeSignExists )
+		{
+			await CreateStubCodeSignFile(0);
+		}
+		else
+		{
+			_macCodeSign.CodeSignPath = Path.Combine(_testFolder, "codesign_not_found");
+		}
+
+		var exeFile = await CreateStubExeFile();
 
 		// Act
 		var result = await _macCodeSign.MacCodeSignAndXattrExecutable(exeFile);
@@ -180,12 +242,12 @@ public class MacCodeSignTests
 
 		// Arrange
 		var exeFile = await CreateStubExeFile();
-		
+
 		var codeSignBefore = await Command.Run("codesign", "-dvv", exeFile).Task;
-		
+
 		// Act
 		var result = await _macCodeSign.MacCodeSignAndXattrExecutable(exeFile);
-		
+
 		var codeSignAfter = await Command.Run("codesign", "-dvv", exeFile).Task;
 		Console.WriteLine(codeSignAfter.StandardOutput);
 		Console.WriteLine(codeSignAfter.StandardError);

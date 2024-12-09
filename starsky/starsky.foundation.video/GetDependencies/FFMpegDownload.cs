@@ -156,7 +156,7 @@ public class FfMpegDownload : IFfMpegDownload
 
 		if ( currentArchitecture is "osx-x64" or "osx-arm64" )
 		{
-			return await _macCodeSign.MacCodeSignAndXattrExecutable(exeFile);
+			return await _macCodeSign.MacCodeSignAndXattrExecutable(exeFile) == true;
 		}
 
 		return true;
