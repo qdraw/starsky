@@ -163,8 +163,14 @@ public class MacCodeSignTests
 	}
 
 	[TestMethod]
-	public async Task MacCodeSignExecutable_ShouldLogError_WhenCodeSignFails()
+	public async Task MacCodeSignExecutable_ShouldLogError_WhenCodeSignFails__UnixOnly()
 	{
+		if ( new AppSettings().IsWindows )
+		{
+			Assert.Inconclusive("This test is only applicable on Unix-based systems.");
+			return;
+		}
+
 		// Arrange
 		var exeFile = await CreateStubFiles(1, 0);
 
