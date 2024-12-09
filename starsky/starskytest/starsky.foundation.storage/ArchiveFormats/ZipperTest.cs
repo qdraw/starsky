@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -64,27 +63,13 @@ public sealed class ZipperTest
 		// Assert
 		Assert.IsNotNull(result);
 
-		Console.WriteLine("--------------------");
-		foreach ( var dir in Directory.GetFiles(testOutputFolder) )
-		{
-			Console.WriteLine(dir);
-		}
+		// var outputFile =  Directory.GetFiles(Path.Combine(testOutputFolder, "__MACOSX"))[0];
+		var outputFile = Path.Combine(testOutputFolder, CreateAnZipFileMacOs.Content[0]);
 
-		Console.WriteLine("--------------------");
+		// WHY? rename to avoid issue to check if a file exists
+		File.Copy(outputFile, Path.Combine(testOutputFolder, "__ffmpeg"));
 
-		var contentsInFolder = hostService.GetAllFilesInDirectory(testOutputFolder);
-
-		foreach ( var content in contentsInFolder )
-		{
-			Console.WriteLine(content);
-		}
-
-		// foreach (var path in CreateAnZipFileMacOs.Content.Select(entry => Path.Combine(testOutputFolder, entry)))
-		// {
-		// 	Console.WriteLine(path);
-		// 	
-		// 	// Assert.IsTrue(File.Exists(path));
-		// }
+		Assert.IsTrue(Path.Exists(Path.Combine(testOutputFolder, "__ffmpeg")));
 
 		hostService.FolderDelete(testOutputFolder);
 	}
