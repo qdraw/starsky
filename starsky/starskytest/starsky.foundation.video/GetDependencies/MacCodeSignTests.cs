@@ -21,7 +21,7 @@ public class MacCodeSignTests
 	{
 		_logger = new FakeIWebLogger();
 		_hostFileSystemStorage = new StorageHostFullPathFilesystem(_logger);
-		_macCodeSign = new MacCodeSign(new FakeSelectorStorage(_hostFileSystemStorage), logger);
+		_macCodeSign = new MacCodeSign(new FakeSelectorStorage(_hostFileSystemStorage), _logger);
 		_testFolder = Path.Combine(new CreateAnImage().BasePath, "MacCodeSignTests");
 		Directory.CreateDirectory(_testFolder);
 	}
