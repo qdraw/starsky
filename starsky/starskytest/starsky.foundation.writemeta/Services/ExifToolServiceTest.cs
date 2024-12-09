@@ -54,7 +54,7 @@ public class ExifToolServiceTest
 		}
 	}
 
-	private async Task WriteTagsAndRenameThumbnailAsyncUnixPrivateTest()
+	private static async Task WriteTagsAndRenameThumbnailAsyncUnixPrivateTest()
 	{
 		var storage = new FakeIStorage(new List<string> { "/" },
 			new List<string> { "/image.jpg" },

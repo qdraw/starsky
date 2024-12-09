@@ -7,7 +7,6 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.ArchiveFormats;
 using starsky.foundation.storage.Helpers;
-using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.video.GetDependencies;
 using starskytest.FakeCreateAn;
@@ -20,7 +19,7 @@ public class FfmpegChmodTests
 {
 	private readonly FfmpegChmod _ffmpegChmod;
 	private readonly FfmpegExePath _ffmpegExePath;
-	private readonly IStorage _hostFileSystemStorage;
+	private readonly StorageHostFullPathFilesystem _hostFileSystemStorage;
 	private readonly bool _isWindows;
 	private readonly IWebLogger _logger;
 	private readonly string _parentFolder;
@@ -114,7 +113,7 @@ public class FfmpegChmodTests
 		}
 
 		CreateFile();
-		
+
 		var path = Path.Combine(_ffmpegExePath.GetExeParentFolder(), "chmod.exe");
 		var sut = new FfmpegChmod(new FakeIStorage([],
 				[path]),
@@ -122,7 +121,7 @@ public class FfmpegChmodTests
 
 		var result = await sut.Chmod("/_not_found_path/to/ffmpeg");
 		Assert.IsTrue(result);
-		
+
 		DeleteFile();
 	}
 
