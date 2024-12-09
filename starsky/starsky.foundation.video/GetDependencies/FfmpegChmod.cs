@@ -6,16 +6,17 @@ namespace starsky.foundation.video.GetDependencies;
 
 public class FfmpegChmod(IStorage hostFileSystemStorage, IWebLogger logger)
 {
+	public string CmdPath { get; set; } = "/bin/chmod";
 	internal async Task<bool> Chmod(string exeFile)
 	{
-		if ( !hostFileSystemStorage.ExistFile("/bin/chmod") )
+		if ( !hostFileSystemStorage.ExistFile(CmdPath) )
 		{
 			logger.LogError("[RunChmodOnFfmpegExe] WARNING: /bin/chmod does not exist");
 			return false;
 		}
 
 		// command.run does not care about the $PATH
-		var result = await Command.Run("/bin/chmod", "0755", exeFile).Task;
+		var result = await Command.Run(CmdPath, "0755", exeFile).Task;
 		if ( result.Success )
 		{
 			return true;
