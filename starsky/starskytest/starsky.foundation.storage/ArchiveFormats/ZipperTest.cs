@@ -63,14 +63,10 @@ public sealed class ZipperTest
 		// Assert
 		Assert.IsNotNull(result);
 
-		// var outputFile =  Directory.GetFiles(Path.Combine(testOutputFolder, "__MACOSX"))[0];
 		var outputFile = testOutputFolder + Path.DirectorySeparatorChar +
 		                 CreateAnZipFileMacOs.Content[0];
 
-		// WHY? rename to avoid issue to check if a file exists
-		File.Copy(outputFile, Path.Combine(testOutputFolder, "__ffmpeg"));
-
-		Assert.IsTrue(Path.Exists(Path.Combine(testOutputFolder, "__ffmpeg")));
+		Assert.IsTrue(Path.Exists(outputFile));
 
 		hostService.FolderDelete(testOutputFolder);
 	}
