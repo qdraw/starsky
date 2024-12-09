@@ -33,7 +33,7 @@ public class MacCodeSign : IMacCodeSign
 		return await MacXattrExecutable(exeFile);
 	}
 
-	private async Task<bool> MacCodeSignExecutable(string exeFile)
+	internal async Task<bool> MacCodeSignExecutable(string exeFile)
 	{
 		if ( !_hostFileSystemStorage.ExistFile(CodeSignPath) )
 		{
@@ -53,7 +53,7 @@ public class MacCodeSign : IMacCodeSign
 		return false;
 	}
 
-	private async Task<bool> MacXattrExecutable(string exeFile)
+	internal async Task<bool> MacXattrExecutable(string exeFile)
 	{
 		if ( !_hostFileSystemStorage.ExistFile(XattrPath) )
 		{
