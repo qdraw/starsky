@@ -54,7 +54,9 @@ public sealed class ZipperTest
 			Path.Combine(new CreateAnImage().BasePath, "test-folder-zip-folders-mac-os");
 
 		var hostService = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+
 		hostService.FolderDelete(testOutputFolder);
+		hostService.CreateDirectory(testOutputFolder);
 
 		// Act
 		var result = new Zipper(new FakeIWebLogger()).ExtractZip(zipped, testOutputFolder);
@@ -62,13 +64,13 @@ public sealed class ZipperTest
 		// Assert
 		Assert.IsNotNull(result);
 
-		Console.WriteLine("---");
+		Console.WriteLine("--------------------");
 		foreach ( var dir in Directory.GetFiles(testOutputFolder) )
 		{
 			Console.WriteLine(dir);
 		}
 
-		Console.WriteLine("---");
+		Console.WriteLine("--------------------");
 
 		foreach ( var entry in CreateAnZipFileMacOs.Content )
 		{
