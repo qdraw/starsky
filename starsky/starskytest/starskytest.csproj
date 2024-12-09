@@ -152,9 +152,9 @@
         <Content Include="FakeCreateAn\CreateAnImagePsd\test.psd">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <None Remove="FakeCreateAn\CreateAnZipFileMacOs\macOsSubfolder.zip"/>
-        <Content Include="FakeCreateAn\CreateAnZipFileMacOs\macOsSubfolder.zip">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        <None Remove="FakeCreateAn\CreateAnZipFileMacOs\ArchiveWithDotFiles.zip" />
+        <Content Include="FakeCreateAn\CreateAnZipFileMacOs\ArchiveWithDotFiles.zip">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
 

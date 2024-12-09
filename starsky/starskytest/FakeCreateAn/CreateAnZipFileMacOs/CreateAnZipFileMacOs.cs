@@ -15,7 +15,7 @@ public class CreateAnZipFileMacOs
 		}
 
 		var path = Path.Combine(dirName, "FakeCreateAn",
-			"CreateAnZipFileMacOs", "macOsSubfolder.zip");
+			"CreateAnZipFileMacOs", "ArchiveWithDotFiles.zip");
 		FilePath = path;
 	}
 
