@@ -87,4 +87,20 @@ public class FfMpegDownloadIndexTest
 
 		Assert.AreEqual(_example.Binaries.Count, result.Data?.Binaries.Count);
 	}
+
+	[TestMethod]
+	public async Task FfMpegDownloadIndexTest_NotFound()
+	{
+		// Arrange
+		var sut = new FfMpegDownloadIndex(
+			new FakeIHttpClientHelper(new FakeIStorage(),
+				new Dictionary<string, KeyValuePair<bool, string>>()), new FakeIWebLogger());
+		
+		// Act
+		var result = await sut.DownloadIndex();
+		
+		// Assert
+		Assert.IsNull(result.Data);
+		Assert.IsFalse(result.Success);
+	}
 }
