@@ -11,7 +11,7 @@ public class FfmpegChmod(IStorage hostFileSystemStorage, IWebLogger logger)
 		if ( !hostFileSystemStorage.ExistFile("/bin/chmod") )
 		{
 			logger.LogError("[RunChmodOnFfmpegExe] WARNING: /bin/chmod does not exist");
-			return true;
+			return false;
 		}
 
 		// command.run does not care about the $PATH
