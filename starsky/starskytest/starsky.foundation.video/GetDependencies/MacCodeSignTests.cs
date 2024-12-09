@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Medallion.Shell;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.video.GetDependencies;
@@ -95,10 +96,16 @@ public class MacCodeSignTests
 	[DataRow(1, 0, false)]
 	[DataRow(0, 1, false)]
 	[DataRow(1, 1, false)]
-	public async Task MacCodeSignAndXattrExecutable_Status_ShouldReturnExpectedResult(
+	public async Task MacCodeSignAndXattrExecutable_Status_ShouldReturnExpectedResult__UnixOnly(
 		int codeSignExitCode,
 		int xattrExitCode, bool expectedResult)
 	{
+		if ( new AppSettings().IsWindows )
+		{
+			Assert.Inconclusive("This test is only applicable on Unix-based systems.");
+			return;
+		}
+
 		// Arrange
 		var exeFile = await CreateStubFiles(codeSignExitCode, xattrExitCode);
 
@@ -114,10 +121,16 @@ public class MacCodeSignTests
 	[DataRow(true, false, null)]
 	[DataRow(false, true, null)]
 	[DataRow(true, true, true)]
-	public async Task MacCodeSignAndXattrExecutable_NotFound_ShouldReturnExpectedResult(
+	public async Task MacCodeSignAndXattrExecutable_NotFound_ShouldReturnExpectedResult__UnixOnly(
 		bool codeSignExists,
 		bool xattrExists, bool? expectedResult)
 	{
+		if ( new AppSettings().IsWindows )
+		{
+			Assert.Inconclusive("This test is only applicable on Unix-based systems.");
+			return;
+		}
+
 		Cleanup();
 		CreateTestFolder();
 
@@ -165,8 +178,14 @@ public class MacCodeSignTests
 	}
 
 	[TestMethod]
-	public async Task MacXattrExecutable_ShouldLogError_WhenXattrFails()
+	public async Task MacXattrExecutable_ShouldLogError_WhenXattrFails__UnixOnly()
 	{
+		if ( new AppSettings().IsWindows )
+		{
+			Assert.Inconclusive("This test is only applicable on Unix-based systems.");
+			return;
+		}
+
 		// Arrange
 		var exeFile = await CreateStubFiles(0, 1);
 

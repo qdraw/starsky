@@ -126,8 +126,14 @@ public class FfmpegChmodTests
 	}
 
 	[TestMethod]
-	public async Task Chmod_ShouldLogError_WhenCommandFails()
+	public async Task Chmod_ShouldLogError_WhenCommandFails__UnixOnly()
 	{
+		if ( new AppSettings().IsWindows )
+		{
+			Assert.Inconclusive("This test is only applicable on Unix-based systems.");
+			return;
+		}
+
 		var result = await _ffmpegChmod.Chmod("/_not_found_path/to/ffmpeg");
 		Assert.IsFalse(result);
 
