@@ -167,8 +167,6 @@ public class MacCodeSignTests
 		// Assert
 		Assert.AreEqual(string.Empty, xattrAfter.StandardOutput);
 		Assert.IsTrue(result);
-		
-		Cleanup();
 	}
 
 	[TestMethod]
