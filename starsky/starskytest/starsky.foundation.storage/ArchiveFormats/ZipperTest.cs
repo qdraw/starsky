@@ -62,6 +62,14 @@ public sealed class ZipperTest
 		// Assert
 		Assert.IsNotNull(result);
 
+		Console.WriteLine("---");
+		foreach ( var dir in Directory.GetFiles(testOutputFolder) )
+		{
+			Console.WriteLine(dir);
+		}
+
+		Console.WriteLine("---");
+
 		foreach ( var entry in CreateAnZipFileMacOs.Content )
 		{
 			var path = Path.Combine(testOutputFolder, entry);
