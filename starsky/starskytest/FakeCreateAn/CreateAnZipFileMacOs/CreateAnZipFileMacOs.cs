@@ -21,6 +21,5 @@ public class CreateAnZipFileMacOs
 
 	public string FilePath { get; set; } = string.Empty;
 
-	public static IEnumerable<string> Content { get; set; } =
-		new List<string> { "__MACOSX/._ffmpeg" };
+	public static List<string> Content { get; set; } = new() { "__MACOSX/._ffmpeg" };
 }

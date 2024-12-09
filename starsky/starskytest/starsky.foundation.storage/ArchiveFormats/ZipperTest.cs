@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.storage.ArchiveFormats;
@@ -72,9 +73,8 @@ public sealed class ZipperTest
 
 		Console.WriteLine("--------------------");
 
-		foreach ( var entry in CreateAnZipFileMacOs.Content )
+		foreach (var path in CreateAnZipFileMacOs.Content.Select(entry => Path.Combine(testOutputFolder, entry)))
 		{
-			var path = Path.Combine(testOutputFolder, entry);
 			Console.WriteLine(path);
 			Assert.IsTrue(File.Exists(path));
 		}
