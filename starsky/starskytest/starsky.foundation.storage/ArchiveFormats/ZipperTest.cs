@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.storage.ArchiveFormats;
@@ -58,13 +60,20 @@ public sealed class ZipperTest
 		hostService.CreateDirectory(testOutputFolder);
 
 		// Act
-		var result = new Zipper(new FakeIWebLogger()).ExtractZip(zipped, testOutputFolder);
+		var result = new Zipper(new FakeIWebLogger()).ExtractZip(zipped,
+			testOutputFolder);
 
 		// Assert
-		Assert.IsNotNull(result);
+		Assert.IsTrue(result);
 
 		var outputFile = testOutputFolder + Path.DirectorySeparatorChar +
 		                 CreateAnZipFileMacOs.Content[0];
+
+		Console.WriteLine("Output file:");
+		Console.WriteLine(outputFile);
+
+		Console.WriteLine("List content:");
+		Console.WriteLine(hostService.GetAllFilesInDirectory(testOutputFolder).ToList()[0]);
 
 		Assert.IsTrue(Path.Exists(outputFile));
 
