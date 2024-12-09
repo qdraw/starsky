@@ -61,10 +61,12 @@ public sealed class ZipperTest
 
 		// Assert
 		Assert.IsNotNull(result);
-		
+
 		foreach ( var entry in CreateAnZipFileMacOs.Content )
 		{
-			Assert.IsTrue(hostService.ExistFile(Path.Combine(testOutputFolder, entry)));
+			var path = Path.Combine(testOutputFolder, entry);
+			Console.WriteLine(path);
+			Assert.IsTrue(File.Exists(path));
 		}
 
 		hostService.FolderDelete(testOutputFolder);
