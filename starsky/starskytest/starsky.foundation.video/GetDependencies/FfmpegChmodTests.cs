@@ -132,7 +132,7 @@ public class FfmpegChmodTests
 		var result = await _ffmpegChmod.Chmod("/_not_found_path/to/ffmpeg");
 		Assert.IsFalse(result);
 
-		Assert.IsTrue(( ( FakeIWebLogger ) _logger ).TrackedExceptions.Any(entry =>
+		Assert.IsTrue(( ( FakeIWebLogger ) _logger ).TrackedExceptions.Exists(entry =>
 			entry.Item2?.Contains("command failed with exit code") == true));
 	}
 }
