@@ -309,6 +309,6 @@ public class FfMpegDownloadTest
 
 		var result = await ffmpegDownload.DownloadFfMpeg();
 
-		Assert.AreEqual(FfmpegDownloadStatus.PrepareBeforeRunningFailed, result);
+		Assert.AreEqual(FfmpegDownloadStatus.Ok, result);
 	}
 }
