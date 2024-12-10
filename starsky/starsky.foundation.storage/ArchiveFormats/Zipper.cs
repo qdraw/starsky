@@ -3,15 +3,18 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
+using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.storage.ArchiveFormats.Interfaces;
 using starsky.foundation.storage.Storage;
 
 namespace starsky.foundation.storage.ArchiveFormats;
 
 [SuppressMessage("Performance", "CA1822:Mark members as static")]
 [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
-public sealed class Zipper
+[Service(typeof(IZipper), InjectionLifetime = InjectionLifetime.Scoped)]
+public sealed class Zipper : IZipper
 {
 	private readonly StorageHostFullPathFilesystem _hostStorage;
 	private readonly IWebLogger _logger;

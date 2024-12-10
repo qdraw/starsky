@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
+using starsky.foundation.platform.Helpers;
 
 namespace starskytest.FakeCreateAn.CreateAnZipFileMacOs;
 
@@ -23,6 +25,8 @@ public class CreateAnZipFileMacOs
 	                                       "2DVKQHAAAABwAAAAGABgAAAAAAAEAAACkgasAAABmZm1wZWdVVAUAA8s" +
 	                                       "SV2d1eAsAAQT1AQAABBQAAABQSwUGAAAAAAI" +
 	                                       "AAgCrAAAABwEAAAAA";
+
+	public static readonly ImmutableArray<byte> Bytes = [..Base64Helper.TryParse(Base64ZipString)];
 
 	public CreateAnZipFileMacOs()
 	{

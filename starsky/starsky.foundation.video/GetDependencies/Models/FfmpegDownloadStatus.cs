@@ -6,5 +6,8 @@ public enum FfmpegDownloadStatus
 	SettingsDisabled,
 	DownloadIndexFailed,
 	DownloadBinariesFailed,
+	DownloadBinariesFailedMissingFileName,
+	DownloadBinariesFailedSha256Check,
+	DownloadBinariesFailedZipperNotExtracted,
 	PrepareBeforeRunningFailed
 }

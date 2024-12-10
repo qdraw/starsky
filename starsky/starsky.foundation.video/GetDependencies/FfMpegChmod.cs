@@ -1,13 +1,17 @@
 using Medallion.Shell;
+using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.video.GetDependencies.Interfaces;
 
 namespace starsky.foundation.video.GetDependencies;
 
-public class FfmpegChmod(IStorage hostFileSystemStorage, IWebLogger logger)
+[Service(typeof(IFfmpegChmod), InjectionLifetime = InjectionLifetime.Scoped)]
+public class FfMpegChmod(IStorage hostFileSystemStorage, IWebLogger logger) : IFfmpegChmod
 {
-	public string CmdPath { get; set; } = "/bin/chmod";
-	internal async Task<bool> Chmod(string exeFile)
+	internal string CmdPath { get; set; } = "/bin/chmod";
+
+	public async Task<bool> Chmod(string exeFile)
 	{
 		if ( !hostFileSystemStorage.ExistFile(CmdPath) )
 		{
