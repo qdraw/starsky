@@ -152,6 +152,10 @@
         <Content Include="FakeCreateAn\CreateAnImagePsd\test.psd">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <None Remove="FakeCreateAn\CreateAnZipfileFakeFFMpeg\ffmpeg.zip"/>
+        <Content Include="FakeCreateAn\CreateAnZipfileFakeFFMpeg\ffmpeg.zip">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
