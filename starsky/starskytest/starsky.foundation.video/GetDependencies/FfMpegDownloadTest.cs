@@ -250,13 +250,14 @@ public class FfMpegDownloadTest
 		var logger = new FakeIWebLogger();
 		var storage = new FakeIStorage(["/"],
 			new List<string> { $"FfMpegDownloadTest{Path.DirectorySeparatorChar}mock_test.zip" },
-			new List<byte[]?> { CreateAnZipFileMacOs.Bytes.ToArray() });
+			new List<byte[]?> { new CreateAnZipfileFakeFfMpeg().Bytes.ToArray() });
 
 		var zipper = new FakeIZipper(new List<Tuple<string, byte[]>>
 		{
 			new($"FfMpegDownloadTest{Path.DirectorySeparatorChar}mock_test.zip",
-				[.. CreateAnZipFileMacOs.Bytes])
+				[.. new CreateAnZipfileFakeFfMpeg().Bytes])
 		}, storage);
+		
 		var ffmpegDownload =
 			new FfMpegDownload(new FakeSelectorStorage(storage), appSettings,
 				logger,
@@ -264,7 +265,7 @@ public class FfMpegDownloadTest
 				{
 					Success = true,
 					Data = CreateExampleFile(
-						"4d116276a8049b9d914c94f2827126d3c99e3cc97f021d3611ac7901d17f8e73"),
+						"31852c0b33f35ff16e96d53be370ce86df92db6d4633ab0a8dae38acbf393ead"),
 					BaseUrls = new List<Uri> { new("https://qdraw.nl/") }
 				}), new FfMpegDownloadBinaries(new FakeSelectorStorage(storage), _httpClientHelper,
 					appSettings, logger, zipper),
@@ -272,6 +273,13 @@ public class FfMpegDownloadTest
 					new FakeIMacCodeSign(), new FfMpegChmod(storage, logger), appSettings, logger));
 
 		var result = await ffmpegDownload.DownloadFfMpeg();
+
+		// Chmod does not exist on windows
+		if ( appSettings.IsWindows )
+		{
+			Assert.AreEqual(FfmpegDownloadStatus.Ok, result);
+			return;
+		}
 
 		Assert.AreEqual(FfmpegDownloadStatus.PrepareBeforeRunningFailed, result);
 	}
@@ -297,11 +305,7 @@ public class FfMpegDownloadTest
 				[.. new CreateAnZipfileFakeFfMpeg().Bytes.ToArray()])
 		}, storage);
 
-		var hash = "31852c0b33f35ff16e96d53be370ce86df92db6d4633ab0a8dae38acbf393ead";
-		if ( appSettings.IsWindows )
-		{
-			hash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-		}
+		const string hash = "31852c0b33f35ff16e96d53be370ce86df92db6d4633ab0a8dae38acbf393ead";
 
 		var ffmpegDownload =
 			new FfMpegDownload(new FakeSelectorStorage(storage), appSettings,
