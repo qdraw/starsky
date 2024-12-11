@@ -69,6 +69,7 @@ public class FfMpegDownloadBinaries : IFfMpegDownloadBinaries
 
 		if ( !_hostFileSystemStorage.ExistFile(_ffmpegExePath.GetExePath(currentArchitecture)) )
 		{
+			_logger.LogError($"Zipper failed {_ffmpegExePath.GetExePath(currentArchitecture)}");
 			return FfmpegDownloadStatus.DownloadBinariesFailedZipperNotExtracted;
 		}
 
