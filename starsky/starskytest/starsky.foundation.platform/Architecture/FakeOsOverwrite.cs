@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace starskytest.starsky.foundation.native.Helpers;
+namespace starskytest.starsky.foundation.platform.Architecture;
 
 internal static class FakeOsOverwrite
 {
@@ -23,7 +23,7 @@ internal static class FakeOsOverwrite
 	{
 		return osPlatform == OSPlatform.FreeBSD;
 	}
-	
+
 	internal static bool IsUnknown(OSPlatform osPlatform)
 	{
 		return osPlatform == OSPlatform.Create("Unknown");
