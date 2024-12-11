@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -287,17 +288,23 @@ public class FfMpegDownloadTest
 			});
 		var zipper = new FakeIZipper(new List<Tuple<string, byte[]>>
 		{
-			new("FfMpegDownloadTest/mock_test.zip",
+			new($"FfMpegDownloadTest{Path.DirectorySeparatorChar}mock_test.zip",
 				[.. CreateAnZipFileMacOs.Bytes])
 		}, storage);
+
+		var hash = "4d116276a8049b9d914c94f2827126d3c99e3cc97f021d3611ac7901d17f8e73";
+		if ( appSettings.IsWindows )
+		{
+			hash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+		}
+		
 		var ffmpegDownload =
 			new FfMpegDownload(new FakeSelectorStorage(storage), appSettings,
 				logger,
 				new FakeIFfMpegDownloadIndex(new FfmpegBinariesContainer
 				{
 					Success = true,
-					Data = CreateExampleFile(
-						"4d116276a8049b9d914c94f2827126d3c99e3cc97f021d3611ac7901d17f8e73"),
+					Data = CreateExampleFile(hash),
 					BaseUrls = new List<Uri> { new("https://qdraw.nl/") }
 				}), new FfMpegDownloadBinaries(new FakeSelectorStorage(storage), _httpClientHelper,
 					appSettings, logger, zipper), new FfMpegPrepareBeforeRunning(
