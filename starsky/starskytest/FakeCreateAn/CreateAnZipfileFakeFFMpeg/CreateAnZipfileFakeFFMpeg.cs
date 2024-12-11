@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Reflection;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeMocks;
 
@@ -23,7 +24,16 @@ public class CreateAnZipfileFakeFfMpeg
 		var path = Path.Combine(dirName, "FakeCreateAn",
 			"CreateAnZipfileFakeFFMpeg", "ffmpeg.zip");
 
-		Bytes = [..StreamToBytes(path)];
+		if ( File.Exists(path) )
+		{
+			Bytes = [..StreamToBytes(path)];
+			return;
+		}
+
+		Bytes =
+		[
+			..Base64Helper.TryParse(CreateAnZipfileFakeFfMpegStaticFile.Base64CreateAnZipFile)
+		];
 	}
 
 	public static List<string> Content { get; set; } = new() { "ffmpeg", "ffmpeg.exe" };
