@@ -42,6 +42,11 @@ public class MacCodeSign : IMacCodeSign
 			return null;
 		}
 
+		if ( !_hostFileSystemStorage.ExistFile(exeFile) )
+		{
+			return null;
+		}
+
 		// command.run does not care about the $PATH
 		var result = await Command.Run(CodeSignPath, "--force", "--deep", "-s", "-", exeFile).Task;
 		if ( result.Success )
