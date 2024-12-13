@@ -53,7 +53,8 @@ public class MacCodeSignTests
 
 	private async Task<string> CreateStubExeFile()
 	{
-		var chmodHelper = new FfMpegChmod(_hostFileSystemStorage, new FakeIWebLogger());
+		var chmodHelper = new FfMpegChmod(new FakeSelectorStorage(_hostFileSystemStorage),
+			new FakeIWebLogger());
 		var exeFile = Path.Combine(_testFolder, "testExecutable");
 		CreateStubFile(exeFile, "#!/bin/bash\necho Fake Executable");
 		await chmodHelper.Chmod(exeFile);
@@ -62,7 +63,8 @@ public class MacCodeSignTests
 
 	private async Task CreateStubCodeSignFile(int codeSignExitCode)
 	{
-		var chmodHelper = new FfMpegChmod(_hostFileSystemStorage, new FakeIWebLogger());
+		var chmodHelper = new FfMpegChmod(new FakeSelectorStorage(_hostFileSystemStorage),
+			new FakeIWebLogger());
 		var codeSignPath = Path.Combine(_testFolder, "codesign");
 		CreateStubFile(codeSignPath, $"#!/bin/bash\necho codesign\nexit {codeSignExitCode}");
 		_macCodeSign.CodeSignPath = codeSignPath;
@@ -71,7 +73,8 @@ public class MacCodeSignTests
 
 	private async Task CreateStubXattrFile(int xattrExitCode)
 	{
-		var chmodHelper = new FfMpegChmod(_hostFileSystemStorage, new FakeIWebLogger());
+		var chmodHelper = new FfMpegChmod(new FakeSelectorStorage(_hostFileSystemStorage),
+			new FakeIWebLogger());
 		var xattrPath = Path.Combine(_testFolder, "xattr");
 		CreateStubFile(xattrPath, $"#!/bin/bash\nexit {xattrExitCode}");
 		_macCodeSign.XattrPath = xattrPath;

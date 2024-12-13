@@ -59,9 +59,9 @@
         <WarningLevel>0</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.11" />
-        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="7.1.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.11"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="7.1.0"/>
     </ItemGroup>
     <!-- generate xml file for swagger -->
     <PropertyGroup>
@@ -166,6 +166,7 @@
         <ProjectReference Include="..\starsky.foundation.realtime\starsky.foundation.realtime.csproj"/>
         <ProjectReference Include="..\starsky.foundation.sync\starsky.foundation.sync.csproj"/>
         <ProjectReference Include="..\starsky.foundation.thumbnailmeta\starsky.foundation.thumbnailmeta.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.video\starsky.foundation.video.csproj"/>
         <ProjectReference Include="..\starsky.foundation.worker\starsky.foundation.worker.csproj"/>
         <ProjectReference Include="..\starsky.project.web\starsky.project.web.csproj"/>
     </ItemGroup>

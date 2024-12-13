@@ -293,7 +293,9 @@ public class FfMpegDownloadTest
 				}), new FfMpegDownloadBinaries(new FakeSelectorStorage(storage), _httpClientHelper,
 					appSettings, logger, zipper),
 				new FfMpegPrepareBeforeRunning(new FakeSelectorStorage(storage),
-					new FakeIMacCodeSign(), new FfMpegChmod(storage, logger), appSettings, logger));
+					new FakeIMacCodeSign(),
+					new FfMpegChmod(new FakeSelectorStorage(storage), logger), appSettings,
+					logger));
 
 		var resultPrepFail = await ffmpegDownload.DownloadFfMpeg();
 

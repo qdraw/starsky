@@ -28,7 +28,7 @@ public class FfMpegChmodTests
 	{
 		_hostFileSystemStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 		_logger = new FakeIWebLogger();
-		_ffMpegChmod = new FfMpegChmod(_hostFileSystemStorage, _logger);
+		_ffMpegChmod = new FfMpegChmod(new FakeSelectorStorage(_hostFileSystemStorage), _logger);
 
 		_parentFolder = Path.Combine(new CreateAnImage().BasePath, "FfmpegChmodTests");
 
@@ -58,7 +58,7 @@ public class FfMpegChmodTests
 	[TestMethod]
 	public async Task Chmod_ShouldReturnFalse_WhenChmodDoesNotExist()
 	{
-		var sut = new FfMpegChmod(new FakeIStorage(), new FakeIWebLogger());
+		var sut = new FfMpegChmod(new FakeSelectorStorage(), new FakeIWebLogger());
 		var result = await sut.Chmod(_ffmpegExePath.GetExePath("linux-x64"));
 
 		Assert.IsFalse(result);
@@ -95,8 +95,8 @@ public class FfMpegChmodTests
 			return;
 		}
 
-		var sut = new FfMpegChmod(new FakeIStorage([],
-				["/bin/chmod"]),
+		var sut = new FfMpegChmod(new FakeSelectorStorage(new FakeIStorage([],
+				["/bin/chmod"])),
 			new FakeIWebLogger());
 
 		var result = await sut.Chmod("/_not_found_path/to/ffmpeg");
@@ -115,8 +115,8 @@ public class FfMpegChmodTests
 		CreateFile();
 
 		var path = Path.Combine(_ffmpegExePath.GetExeParentFolder(), "chmod.exe");
-		var sut = new FfMpegChmod(new FakeIStorage([],
-				[path]),
+		var sut = new FfMpegChmod(new FakeSelectorStorage(new FakeIStorage([],
+				[path])),
 			new FakeIWebLogger()) { CmdPath = path };
 
 		var result = await sut.Chmod("/_not_found_path/to/ffmpeg");

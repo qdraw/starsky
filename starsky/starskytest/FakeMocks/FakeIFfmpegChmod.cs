@@ -10,6 +10,6 @@ public class FakeIFfmpegChmod(IStorage hostFileSystemStorage) : IFfmpegChmod
 	public Task<bool> Chmod(string exeFile)
 	{
 		return Task.FromResult(hostFileSystemStorage.ExistFile(
-			new FfMpegChmod(hostFileSystemStorage, new FakeIWebLogger()).CmdPath));
+			new FfMpegChmod(new FakeSelectorStorage(hostFileSystemStorage), new FakeIWebLogger()).CmdPath));
 	}
 }

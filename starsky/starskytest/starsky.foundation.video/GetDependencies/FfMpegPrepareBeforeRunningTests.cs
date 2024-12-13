@@ -56,7 +56,8 @@ public class FfMpegPrepareBeforeRunningTests
 		var exeFile = new FfmpegExePath(new AppSettings()).GetExePath(architecture);
 		await WriteOrDeleteFile(fileExists, exeFile);
 
-		var chmodPath = new FfMpegChmod(_storage, new FakeIWebLogger()).CmdPath;
+		var chmodPath = new FfMpegChmod(new FakeSelectorStorage(_storage), new FakeIWebLogger())
+			.CmdPath;
 		await WriteOrDeleteFile(chmodSuccess, chmodPath);
 
 		var macCodeSign = new MacCodeSign(new FakeSelectorStorage(_storage), new FakeIWebLogger())

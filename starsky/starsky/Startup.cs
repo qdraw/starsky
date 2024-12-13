@@ -32,6 +32,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Extentions;
 using starsky.foundation.realtime.Model;
+using starsky.foundation.video.GetDependencies;
 using starsky.foundation.webtelemetry.Extensions;
 using starsky.foundation.webtelemetry.Helpers;
 using starsky.Helpers;
@@ -188,6 +189,7 @@ public sealed class Startup
 		services.AddSingleton<PackageTelemetryBackgroundService>();
 		services.AddSingleton<OnStartupSyncBackgroundService>();
 		services.AddSingleton<CleanDemoDataService>();
+		services.AddSingleton<FfMpegDownloadBackgroundService>();
 	}
 
 	/// <summary>
