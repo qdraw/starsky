@@ -10,6 +10,9 @@ namespace starsky.foundation.video.GetDependencies;
 [Service(typeof(IMacCodeSign), InjectionLifetime = InjectionLifetime.Scoped)]
 public class MacCodeSign : IMacCodeSign
 {
+	private const string CodeSignDefaultPath = "/usr/bin/codesign";
+	private const string XattrDefaultPath = "/usr/bin/xattr";
+
 	private readonly IStorage _hostFileSystemStorage;
 	private readonly IWebLogger _logger;
 
@@ -20,8 +23,8 @@ public class MacCodeSign : IMacCodeSign
 		_logger = logger;
 	}
 
-	public string CodeSignPath { get; set; } = "/usr/bin/codesign";
-	public string XattrPath { get; set; } = "/usr/bin/xattr";
+	internal string CodeSignPath { get; set; } = CodeSignDefaultPath;
+	internal string XattrPath { get; set; } = XattrDefaultPath;
 
 	public async Task<bool?> MacCodeSignAndXattrExecutable(string exeFile)
 	{
@@ -41,14 +44,15 @@ public class MacCodeSign : IMacCodeSign
 
 	internal async Task<bool?> MacCodeSignExecutable(string exeFile)
 	{
-		if ( !_hostFileSystemStorage.ExistFile(CodeSignPath) )
+		if ( !_hostFileSystemStorage.ExistFile(exeFile) )
 		{
-			_logger.LogError("[RunChmodOnFfmpegExe] WARNING: /usr/bin/codesign does not exist");
+			_logger.LogError($"[MacCodeSignExecutable] WARNING: {exeFile} does not exists");
 			return null;
 		}
 
-		if ( !_hostFileSystemStorage.ExistFile(exeFile) )
+		if ( !_hostFileSystemStorage.ExistFile(CodeSignPath) )
 		{
+			_logger.LogError("[MacCodeSignExecutable] WARNING: /usr/bin/codesign does not exist");
 			return null;
 		}
 
@@ -60,20 +64,21 @@ public class MacCodeSign : IMacCodeSign
 		}
 
 		_logger.LogError(
-			$"codesign Command failed with exit code {result.ExitCode}: {result.StandardError}");
+			$"[MacCodeSignExecutable] codesign Command failed with exit code {result.ExitCode}: {result.StandardError}");
 		return false;
 	}
 
 	internal async Task<bool?> MacXattrExecutable(string exeFile)
 	{
-		if ( !_hostFileSystemStorage.ExistFile(XattrPath) )
+		if ( !_hostFileSystemStorage.ExistFile(exeFile) )
 		{
-			_logger.LogError("[RunChmodOnFfmpegExe] WARNING: /usr/bin/xattr does not exist");
+			_logger.LogError($"[MacXattrExecutable] WARNING: {exeFile} does not exists");
 			return null;
 		}
 
-		if ( !_hostFileSystemStorage.ExistFile(exeFile) )
+		if ( !_hostFileSystemStorage.ExistFile(XattrPath) )
 		{
+			_logger.LogError("[MacXattrExecutable] WARNING: /usr/bin/xattr does not exist");
 			return null;
 		}
 
@@ -85,7 +90,7 @@ public class MacCodeSign : IMacCodeSign
 		}
 
 		_logger.LogError(
-			$"xattr Command failed with exit code {result.ExitCode}: {result.StandardError}");
+			$"[MacXattrExecutable] xattr Command failed with exit code {result.ExitCode}: {result.StandardError}");
 		return false;
 	}
 }
