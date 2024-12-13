@@ -17,15 +17,21 @@ public class FfmpegExePathTests
 		_ffmpegExePath = new FfmpegExePath(_appSettings);
 	}
 
-	[TestMethod]
-	public void GetExeParentFolder_ShouldReturnCorrectPath()
+	[DataTestMethod]
+	[DataRow(null, "ffmpeg")]
+	[DataRow("", "ffmpeg")]
+	[DataRow("win-x64", "ffmpeg-win-x64")]
+	[DataRow("win-arm64", "ffmpeg-win-arm64")]
+	[DataRow("linux-x64", "ffmpeg-linux-x64")]
+	[DataRow("osx-x64", "ffmpeg-osx-x64")]
+	public void GetExeParentFolder_CurrentArchitecture(string arch, string expectedFolder)
 	{
-		var expectedPath = Path.Combine(_appSettings.DependenciesFolder, "ffmpeg");
-		var result = _ffmpegExePath.GetExeParentFolder(string.Empty);
+		var expectedPath = Path.Combine(_appSettings.DependenciesFolder, expectedFolder);
+		var result = _ffmpegExePath.GetExeParentFolder(arch);
 		Assert.AreEqual(expectedPath, result);
 	}
 
-	[TestMethod]
+	[DataTestMethod]
 	[DataRow("win-x64", "ffmpeg.exe")]
 	[DataRow("win-arm64", "ffmpeg.exe")]
 	[DataRow("linux-x64", "ffmpeg")]
