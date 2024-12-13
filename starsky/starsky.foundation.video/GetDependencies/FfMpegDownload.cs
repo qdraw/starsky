@@ -47,9 +47,8 @@ public class FfMpegDownload : IFfMpegDownload
 			return FfmpegDownloadStatus.SettingsDisabled;
 		}
 
-		CreateDirectoryDependenciesFolderIfNotExists();
-
 		var currentArchitecture = CurrentArchitecture.GetCurrentRuntimeIdentifier();
+		CreateDirectoryDependenciesFolderIfNotExists(currentArchitecture);
 
 		if ( _hostFileSystemStorage.ExistFile(_ffmpegExePath.GetExePath(currentArchitecture)) )
 		{
@@ -93,11 +92,12 @@ public class FfMpegDownload : IFfMpegDownload
 	}
 
 
-	private void CreateDirectoryDependenciesFolderIfNotExists()
+	private void CreateDirectoryDependenciesFolderIfNotExists(string currentArchitecture)
 	{
 		foreach ( var path in new List<string>
 		         {
-			         _appSettings.DependenciesFolder, _ffmpegExePath.GetExeParentFolder()
+			         _appSettings.DependenciesFolder,
+			         _ffmpegExePath.GetExeParentFolder(currentArchitecture)
 		         } )
 		{
 			if ( _hostFileSystemStorage.ExistFolder(path) )

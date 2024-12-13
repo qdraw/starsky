@@ -65,7 +65,7 @@ public class FfMpegDownloadBinaries : IFfMpegDownloadBinaries
 			return FfmpegDownloadStatus.DownloadBinariesFailedSha256Check;
 		}
 
-		_zipper.ExtractZip(zipFullFilePath, _ffmpegExePath.GetExeParentFolder());
+		_zipper.ExtractZip(zipFullFilePath, _ffmpegExePath.GetExeParentFolder(currentArchitecture));
 
 		if ( !_hostFileSystemStorage.ExistFile(_ffmpegExePath.GetExePath(currentArchitecture)) )
 		{

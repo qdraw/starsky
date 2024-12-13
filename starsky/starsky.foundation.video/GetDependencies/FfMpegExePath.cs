@@ -7,14 +7,17 @@ public class FfmpegExePath(AppSettings appSettings)
 	private const string FfmpegDependenciesFolder = "ffmpeg";
 	private const string FfmpegExecutableBaseName = "ffmpeg";
 
-	internal string GetExeParentFolder()
+	internal string GetExeParentFolder(string currentArchitecture)
 	{
-		return Path.Combine(appSettings.DependenciesFolder, FfmpegDependenciesFolder);
+		return Path.Combine(appSettings.DependenciesFolder,
+			string.IsNullOrEmpty(currentArchitecture)
+				? FfmpegDependenciesFolder
+				: $"{FfmpegDependenciesFolder}-{currentArchitecture}");
 	}
 
 	internal string GetExePath(string currentArchitecture)
 	{
-		var exeFile = Path.Combine(appSettings.DependenciesFolder, FfmpegDependenciesFolder,
+		var exeFile = Path.Combine(GetExeParentFolder(currentArchitecture),
 			FfmpegExecutableBaseName);
 		if ( currentArchitecture is "win-x64" or "win-arm64" )
 		{

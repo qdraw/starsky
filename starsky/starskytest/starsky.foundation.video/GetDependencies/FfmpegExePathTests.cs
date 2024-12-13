@@ -21,7 +21,7 @@ public class FfmpegExePathTests
 	public void GetExeParentFolder_ShouldReturnCorrectPath()
 	{
 		var expectedPath = Path.Combine(_appSettings.DependenciesFolder, "ffmpeg");
-		var result = _ffmpegExePath.GetExeParentFolder();
+		var result = _ffmpegExePath.GetExeParentFolder(string.Empty);
 		Assert.AreEqual(expectedPath, result);
 	}
 
@@ -33,7 +33,8 @@ public class FfmpegExePathTests
 	public void GetExePath_ShouldReturnCorrectPath(string architecture, string expectedFileName)
 	{
 		var expectedPath =
-			Path.Combine(_appSettings.DependenciesFolder, "ffmpeg", expectedFileName);
+			Path.Combine(_appSettings.DependenciesFolder, $"ffmpeg-{architecture}",
+				expectedFileName);
 		var result = _ffmpegExePath.GetExePath(architecture);
 		Assert.AreEqual(expectedPath, result);
 	}

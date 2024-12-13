@@ -346,7 +346,10 @@ public class FfMpegDownloadTest
 					new FakeSelectorStorage(storage),
 					new FakeIMacCodeSign(new Dictionary<string, bool?>
 					{
-						{ "FfMpegDownloadTest/ffmpeg/ffmpeg", true }
+						{
+							$"FfMpegDownloadTest/ffmpeg-{CurrentArchitecture.GetCurrentRuntimeIdentifier()}/ffmpeg",
+							true
+						}
 					}), new FakeIFfmpegChmod(storage), appSettings, logger));
 
 		var resultAllStages = await ffmpegDownload.DownloadFfMpeg();

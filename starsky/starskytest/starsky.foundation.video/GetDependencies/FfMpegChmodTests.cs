@@ -38,7 +38,7 @@ public class FfMpegChmodTests
 
 	private void CreateFile()
 	{
-		_hostFileSystemStorage.CreateDirectory(_ffmpegExePath.GetExeParentFolder());
+		_hostFileSystemStorage.CreateDirectory(_ffmpegExePath.GetExeParentFolder("linux-x64"));
 		var stream = StringToStreamHelper.StringToStream("#!/bin/bash\necho Fake Ffmpeg");
 		_hostFileSystemStorage.WriteStream(stream,
 			_ffmpegExePath.GetExePath("linux-x64"));
@@ -47,7 +47,7 @@ public class FfMpegChmodTests
 		var (_, item) = result.FirstOrDefault(p => p.Key.Contains("exiftool"));
 
 		_hostFileSystemStorage.WriteStream(new MemoryStream(item),
-			Path.Combine(_ffmpegExePath.GetExeParentFolder(), "chmod.exe"));
+			Path.Combine(_ffmpegExePath.GetExeParentFolder("linux-x64"), "chmod.exe"));
 	}
 
 	private void DeleteFile()
@@ -114,7 +114,7 @@ public class FfMpegChmodTests
 
 		CreateFile();
 
-		var path = Path.Combine(_ffmpegExePath.GetExeParentFolder(), "chmod.exe");
+		var path = Path.Combine(_ffmpegExePath.GetExeParentFolder("win-x64"), "chmod.exe");
 		var sut = new FfMpegChmod(new FakeSelectorStorage(new FakeIStorage([],
 				[path])),
 			new FakeIWebLogger()) { CmdPath = path };
