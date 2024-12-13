@@ -25,6 +25,11 @@ public class MacCodeSign : IMacCodeSign
 
 	public async Task<bool?> MacCodeSignAndXattrExecutable(string exeFile)
 	{
+		if ( !_hostFileSystemStorage.ExistFile(exeFile) )
+		{
+			return null;
+		}
+
 		var result = await MacCodeSignExecutable(exeFile);
 		if ( result is null or false )
 		{
@@ -64,6 +69,11 @@ public class MacCodeSign : IMacCodeSign
 		if ( !_hostFileSystemStorage.ExistFile(XattrPath) )
 		{
 			_logger.LogError("[RunChmodOnFfmpegExe] WARNING: /usr/bin/xattr does not exist");
+			return null;
+		}
+
+		if ( !_hostFileSystemStorage.ExistFile(exeFile) )
+		{
 			return null;
 		}
 

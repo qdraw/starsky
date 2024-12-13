@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using Medallion.Shell;
@@ -281,5 +282,29 @@ public class MacCodeSignTests
 		Assert.IsTrue(result);
 		Assert.IsTrue(codeSignBefore.StandardError.Contains("code object is not signed at all"));
 		Assert.IsTrue(codeSignAfter.StandardError.Contains("Identifier=testExecutable"));
+	}
+
+	[TestMethod]
+	[DataRow(nameof(MacCodeSign.MacXattrExecutable))]
+	[DataRow(nameof(MacCodeSign.MacCodeSignAndXattrExecutable))]
+	[DataRow(nameof(MacCodeSign.MacCodeSignExecutable))]
+	[SuppressMessage("ReSharper", "ConvertSwitchStatementToSwitchExpression")]
+	public async Task NotFound(string serviceName)
+	{
+		bool? result = true;
+		switch ( serviceName )
+		{
+			case nameof(MacCodeSign.MacXattrExecutable):
+				result = await _macCodeSign.MacXattrExecutable("not-found");
+				break;
+			case nameof(MacCodeSign.MacCodeSignAndXattrExecutable):
+				result = await _macCodeSign.MacCodeSignAndXattrExecutable("not-found");
+				break;
+			case nameof(MacCodeSign.MacCodeSignExecutable):
+				result = await _macCodeSign.MacCodeSignExecutable("not-found");
+				break;
+		}
+
+		Assert.IsNull(result);
 	}
 }

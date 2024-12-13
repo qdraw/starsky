@@ -140,9 +140,30 @@ public class FfMpegDownloadTest
 				new FakeIFfMpegDownloadIndex(), new FakeIFfMpegDownloadBinaries(),
 				new FakeIFfMpegPrepareBeforeRunning());
 
-		var result = await ffmpegDownload.DownloadFfMpeg();
+		var resultMissingIndex = await ffmpegDownload.DownloadFfMpeg();
 
-		Assert.AreEqual(FfmpegDownloadStatus.DownloadIndexFailed, result);
+		Assert.AreEqual(FfmpegDownloadStatus.DownloadIndexFailed, resultMissingIndex);
+	}
+
+	[TestMethod]
+	public async Task DownloadFfMpeg_MissingIndex_DownloadBinariesFailedMissingFileName()
+	{
+		var appSettings = new AppSettings { DependenciesFolder = DependencyFolderName };
+		var logger = new FakeIWebLogger();
+
+		var ffmpegDownload =
+			new FfMpegDownload(new FakeSelectorStorage(), appSettings,
+				logger,
+				// No Index but it says is succeed
+				new FakeIFfMpegDownloadIndex(new FfmpegBinariesContainer { Success = true }),
+				new FfMpegDownloadBinaries(new FakeSelectorStorage(_storage), _httpClientHelper,
+					appSettings, logger, new Zipper(new FakeIWebLogger())),
+				new FakeIFfMpegPrepareBeforeRunning());
+
+		var resultMissingIndex = await ffmpegDownload.DownloadFfMpeg();
+
+		Assert.AreEqual(FfmpegDownloadStatus.DownloadBinariesFailedMissingFileName,
+			resultMissingIndex);
 	}
 
 	[TestMethod]
@@ -161,9 +182,10 @@ public class FfMpegDownloadTest
 				new FakeIFfMpegDownloadBinaries(FfmpegDownloadStatus
 					.DownloadBinariesFailedMissingFileName), new FakeIFfMpegPrepareBeforeRunning());
 
-		var result = await ffmpegDownload.DownloadFfMpeg();
+		var resultBinaryFail = await ffmpegDownload.DownloadFfMpeg();
 
-		Assert.AreEqual(FfmpegDownloadStatus.DownloadBinariesFailedMissingFileName, result);
+		Assert.AreEqual(FfmpegDownloadStatus.DownloadBinariesFailedMissingFileName,
+			resultBinaryFail);
 	}
 
 	[TestMethod]
@@ -187,9 +209,9 @@ public class FfMpegDownloadTest
 					Data = new FfmpegBinariesIndex { Binaries = new List<BinaryIndex>() }
 				}), new FakeIFfMpegDownloadBinaries(), new FakeIFfMpegPrepareBeforeRunning());
 
-		var result = await ffmpegDownload.DownloadFfMpeg();
+		var resultFileAlreadyExists = await ffmpegDownload.DownloadFfMpeg();
 
-		Assert.AreEqual(FfmpegDownloadStatus.Ok, result);
+		Assert.AreEqual(FfmpegDownloadStatus.Ok, resultFileAlreadyExists);
 	}
 
 	[TestMethod]
@@ -212,9 +234,9 @@ public class FfMpegDownloadTest
 					appSettings, logger, new Zipper(new FakeIWebLogger())),
 				new FakeIFfMpegPrepareBeforeRunning());
 
-		var result = await ffmpegDownload.DownloadFfMpeg();
+		var resultInvalidHash = await ffmpegDownload.DownloadFfMpeg();
 
-		Assert.AreEqual(FfmpegDownloadStatus.DownloadBinariesFailedSha256Check, result);
+		Assert.AreEqual(FfmpegDownloadStatus.DownloadBinariesFailedSha256Check, resultInvalidHash);
 	}
 
 	[TestMethod]
@@ -238,9 +260,10 @@ public class FfMpegDownloadTest
 					appSettings, logger, new Zipper(new FakeIWebLogger())),
 				new FakeIFfMpegPrepareBeforeRunning());
 
-		var result = await ffmpegDownload.DownloadFfMpeg();
+		var resultZipFail = await ffmpegDownload.DownloadFfMpeg();
 
-		Assert.AreEqual(FfmpegDownloadStatus.DownloadBinariesFailedZipperNotExtracted, result);
+		Assert.AreEqual(FfmpegDownloadStatus.DownloadBinariesFailedZipperNotExtracted,
+			resultZipFail);
 	}
 
 	[TestMethod]
@@ -257,7 +280,7 @@ public class FfMpegDownloadTest
 			new($"FfMpegDownloadTest{Path.DirectorySeparatorChar}mock_test.zip",
 				[.. new CreateAnZipfileFakeFfMpeg().Bytes])
 		}, storage);
-		
+
 		var ffmpegDownload =
 			new FfMpegDownload(new FakeSelectorStorage(storage), appSettings,
 				logger,
@@ -272,16 +295,16 @@ public class FfMpegDownloadTest
 				new FfMpegPrepareBeforeRunning(new FakeSelectorStorage(storage),
 					new FakeIMacCodeSign(), new FfMpegChmod(storage, logger), appSettings, logger));
 
-		var result = await ffmpegDownload.DownloadFfMpeg();
+		var resultPrepFail = await ffmpegDownload.DownloadFfMpeg();
 
 		// Chmod does not exist on windows
 		if ( appSettings.IsWindows )
 		{
-			Assert.AreEqual(FfmpegDownloadStatus.Ok, result);
+			Assert.AreEqual(FfmpegDownloadStatus.Ok, resultPrepFail);
 			return;
 		}
 
-		Assert.AreEqual(FfmpegDownloadStatus.PrepareBeforeRunningFailed, result);
+		Assert.AreEqual(FfmpegDownloadStatus.PrepareBeforeRunningFailed, resultPrepFail);
 	}
 
 	[TestMethod]
@@ -324,8 +347,8 @@ public class FfMpegDownloadTest
 						{ "FfMpegDownloadTest/ffmpeg/ffmpeg", true }
 					}), new FakeIFfmpegChmod(storage), appSettings, logger));
 
-		var result = await ffmpegDownload.DownloadFfMpeg();
+		var resultAllStages = await ffmpegDownload.DownloadFfMpeg();
 
-		Assert.AreEqual(FfmpegDownloadStatus.Ok, result);
+		Assert.AreEqual(FfmpegDownloadStatus.Ok, resultAllStages);
 	}
 }
