@@ -14,7 +14,7 @@ public class FfMpegDownloadIndex(IHttpClientHelper httpClientHelper, IWebLogger 
 	: IFfMpegDownloadIndex
 {
 	private const string QdrawMirrorDomain = "qdraw.nl/special/mirror/ffmpeg";
-	private const string NetlifyMirrorDomain = "_____starsky-dependencies.netlify.app/ffmpeg";
+	private const string NetlifyMirrorDomain = "starsky-dependencies.netlify.app/ffmpeg";
 
 	private static readonly Uri FfMpegApiBasePath = new($"https://{NetlifyMirrorDomain}/");
 	private static readonly Uri FfMpegApiBasePathMirror = new($"https://{QdrawMirrorDomain}/");
