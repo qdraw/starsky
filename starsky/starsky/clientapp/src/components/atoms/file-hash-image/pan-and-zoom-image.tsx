@@ -118,8 +118,10 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
         data-test="pan-zoom-image"
         ref={containerRef}
         onMouseDown={new OnMouseDownMouseAction(setPanning, position, setPosition).onMouseDown}
-        onTouchStart={(e) =>
-          new OnMouseDownMouseAction(setPanning, position, setPosition).onTouchStart(e as any)
+        onTouchStart={(touchEvent) =>
+          new OnMouseDownMouseAction(setPanning, position, setPosition).onTouchStart(
+            touchEvent as unknown as TouchEvent
+          )
         }
         onWheel={
           new OnWheelMouseAction(image, setPosition, position, containerRef, props.onWheelCallback)
