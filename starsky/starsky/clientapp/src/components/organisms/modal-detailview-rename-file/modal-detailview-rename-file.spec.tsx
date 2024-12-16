@@ -14,7 +14,9 @@ describe("ModalDetailviewRenameFile", () => {
   });
 
   it("renders", () => {
-    render(<ModalDetailviewRenameFile state={{} as any} isOpen={true} handleExit={() => {}} />);
+    render(
+      <ModalDetailviewRenameFile state={{} as IDetailView} isOpen={true} handleExit={() => {}} />
+    );
   });
 
   describe("rename", () => {
@@ -222,7 +224,11 @@ describe("ModalDetailviewRenameFile", () => {
       const handleExitSpy = jest.fn();
 
       const component = render(
-        <ModalDetailviewRenameFile state={{} as any} isOpen={true} handleExit={handleExitSpy} />
+        <ModalDetailviewRenameFile
+          state={{} as IDetailView}
+          isOpen={true}
+          handleExit={handleExitSpy}
+        />
       );
 
       expect(handleExitSpy).toHaveBeenCalled();

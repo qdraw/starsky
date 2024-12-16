@@ -1,3 +1,4 @@
+import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import MenuSearch from "./menu-search";
 
 export default {
@@ -5,7 +6,7 @@ export default {
 };
 
 export const Default = () => {
-  return <MenuSearch state={undefined as any} dispatch={() => {}} />;
+  return <MenuSearch state={undefined as unknown as IArchiveProps} dispatch={() => {}} />;
 };
 
 Default.storyName = "default";

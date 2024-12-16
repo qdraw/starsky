@@ -19,7 +19,7 @@ describe("ModalArchiveMkdir", () => {
     render(
       <ModalArchiveMkdir
         dispatch={jest.fn()}
-        state={{} as any}
+        state={{} as IArchiveProps}
         isOpen={true}
         handleExit={() => {}}
       />
@@ -166,7 +166,7 @@ describe("ModalArchiveMkdir", () => {
 
       const component = render(
         <ModalArchiveMkdir
-          state={{} as any}
+          state={{} as IArchiveProps}
           isOpen={true}
           dispatch={jest.fn()}
           handleExit={handleExitSpy}

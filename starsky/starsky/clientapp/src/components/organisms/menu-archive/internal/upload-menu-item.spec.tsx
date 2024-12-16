@@ -1,4 +1,5 @@
 import { render } from "@testing-library/react";
+import { IArchiveProps } from "../../../../interfaces/IArchiveProps";
 import * as DropArea from "../../../atoms/drop-area/drop-area";
 import { UploadMenuItem } from "./upload-menu-item";
 
@@ -9,7 +10,7 @@ describe("MenuArchive", () => {
         readOnly={true}
         setDropAreaUploadFilesList={() => {}}
         dispatch={() => {}}
-        state={{} as any}
+        state={{} as IArchiveProps}
       />
     );
   });
@@ -29,7 +30,7 @@ describe("MenuArchive", () => {
           readOnly={false}
           setDropAreaUploadFilesList={() => {}}
           dispatch={dispatch}
-          state={{} as any}
+          state={{} as IArchiveProps}
         />
       );
 

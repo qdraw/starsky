@@ -53,7 +53,7 @@ export type DetailViewAction =
       payload: IDetailView;
     };
 
-type IDetailViewContext = {
+export type IDetailViewContext = {
   state: IDetailView;
   dispatch: React.Dispatch<DetailViewAction>;
 };
