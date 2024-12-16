@@ -195,6 +195,10 @@ function npmUnInstall(packageName) {
 	console.log("-result of package");
 	console.log(uninstall.stdout);
 	console.log(uninstall.stout ? updateSpawn.stout : "");
+	if (uninstall.status !== 0) {
+		console.log(uninstall.stderr);
+		console.log("no exit yet; FAIL - npm install " + packageName);
+	}
 }
 
 // npmUnInstall can be done here
@@ -244,8 +248,10 @@ function npmInstall(packageName, force, dev) {
 	console.log("-result of " + packageName);
 	console.log(npmInstallSpawn.stdout);
 	console.log(npmInstallSpawn.stout ? updateSpawn.stout : "");
-	if (npmInstallSpawn.stout) {
-		exit(1);
+	if (npmInstallSpawn.status !== 0) {
+		console.log(npmInstallSpawn.stderr);
+		console.log("FAIL - npm install " + packageName);
+		exit(npmInstallSpawn.status);
 	}
 }
 
@@ -253,6 +259,12 @@ function npmInstall(packageName, force, dev) {
 
 console.log("next install");
 // npmInstall: name, force, dev
+
+// for conflicts
+npmUnInstall('@typescript-eslint/eslint-plugin');
+npmInstall('@typescript-eslint/eslint-plugin', true, true);
+npmUnInstall('@typescript-eslint/parser');
+npmInstall('@typescript-eslint/parser', true, true);
 
 npmInstall('leaflet', false, false);
 npmInstall('core-js', false, false);
@@ -286,6 +298,8 @@ npmInstall('@testing-library/jest-dom', false, true);
 npmInstall('@testing-library/react', false, true);
 // @testing-library/user-event is skipped
 
+
+
 console.log("npm install result:");
 const npmInstallSpawnResult = spawnSync(
 	"npm",
@@ -300,6 +314,11 @@ const npmInstallSpawnResult = spawnSync(
 );
 console.log(npmInstallSpawnResult.stdout);
 
+if (npmInstallSpawnResult.status !== 0) {
+	console.log(npmInstallSpawnResult.stderr);
+	console.log("FAIL - npm install");
+	exit(npmInstallSpawnResult.status);
+}
 
 // clean afterwards
 if (process.env.DEBUG !== "true") {
@@ -318,21 +337,42 @@ const lintSpawn = spawnSync("npm", ["run", "lint:fix"], {
 });
 console.log(lintSpawn.stdout);
 
+if (lintSpawn.status !== 0) {
+	console.log(lintSpawn.stderr);
+	console.log("FAIL -lint project");
+	exit(lintSpawn.status);
+}
+
 console.log("next: build project");
+
 const buildSpawn = spawnSync("npm", ["run", "build"], {
 	cwd: clientAppFolderPath,
 	env: process.env,
 	encoding: "utf-8",
 });
+
 console.log(buildSpawn.stdout);
 
+if (buildSpawn.status !== 0) {
+	console.log(buildSpawn.stderr);
+	console.log("FAIL -build project");
+	exit(buildSpawn.status);
+}
 
 console.log("next: test project");
+
 const testSpawn = spawnSync("npm", ["run", "test:ci"], {
 	cwd: clientAppFolderPath,
 	env: process.env,
 	encoding: "utf-8",
 });
+
 console.log(testSpawn.stdout);
+
+if (testSpawn.status !== 0) {
+	console.log(testSpawn.stderr);
+	console.log("FAIL -test project");
+	exit(testSpawn.status);
+}
 
 console.log("done");
