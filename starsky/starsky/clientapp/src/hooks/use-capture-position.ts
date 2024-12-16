@@ -9,14 +9,14 @@ const capturePosition = () => {
   const topCachedPosition = window.scrollY;
   return {
     freeze: () => {
-      (document.body as any).style.position = "fixed";
-      (document.body as any).style.top = `${topCachedPosition * -1}px`;
-      (document.body as any).style.width = "100%";
+      (document.body as HTMLElement).style.position = "fixed";
+      (document.body as HTMLElement).style.top = `${topCachedPosition * -1}px`;
+      (document.body as HTMLElement).style.width = "100%";
     },
     unfreeze: () => {
-      (document.body as any).style.position = "initial";
-      (document.body as any).style.top = "initial";
-      (document.body as any).style.width = "initial";
+      (document.body as HTMLElement).style.position = "initial";
+      (document.body as HTMLElement).style.top = "initial";
+      (document.body as HTMLElement).style.width = "initial";
       window.scrollTo(0, topCachedPosition);
     }
   } as ICaptionPosition;

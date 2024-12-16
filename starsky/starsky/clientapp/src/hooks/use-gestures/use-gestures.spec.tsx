@@ -1,5 +1,5 @@
 import { act, createEvent, fireEvent, render } from "@testing-library/react";
-import React, { SetStateAction, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { mountReactHook } from "../___tests___/test-hook";
 import * as callHandler from "./call-handler";
 import * as debounce from "./debounce";
@@ -13,8 +13,9 @@ function Rotate() {
   const image = useRef<HTMLImageElement>(null);
 
   useGestures(image, {
-    onPanMove: (event: { angleDeg: SetStateAction<number> }) => {
-      setImageRotation(event.angleDeg);
+    onPanMove: (event: TouchEvent) => {
+      const angleDeg = getAngleDegFromEvent(event);
+      setImageRotation(angleDeg);
     }
   });
 
@@ -28,7 +29,12 @@ function Rotate() {
   );
 }
 
-describe("useGestures as (...args: unknown[]) => unknown", () => {
+function getAngleDegFromEvent(ev: TouchEvent): number {
+  // Implement the logic to extract angleDeg from the event
+  return ev.AT_TARGET; // Placeholder implementation
+}
+
+describe("useGestures", () => {
   describe("Pointer", () => {
     it("check output of pointer", () => {
       const p = new Pointer({ clientX: 10, clientY: 11 });

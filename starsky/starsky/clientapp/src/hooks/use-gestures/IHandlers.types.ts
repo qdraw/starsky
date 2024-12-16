@@ -1,6 +1,6 @@
 export interface IHandlers {
   onPanStart?: () => void;
-  onPanMove?: (ev: any) => void;
+  onPanMove?: (ev: TouchEvent) => void;
   onSwipeLeft?: () => void;
   onSwipeRight?: () => void;
   onSwipeUp?: () => void;

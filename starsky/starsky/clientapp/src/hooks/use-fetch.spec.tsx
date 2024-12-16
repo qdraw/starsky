@@ -9,7 +9,7 @@ describe("UseFetch", () => {
   let setupComponent;
   let hook: IConnectionDefault;
 
-  let fetchSpy: jest.SpyInstance<any>;
+  let fetchSpy: jest.SpyInstance<Promise<Response>>;
 
   function setFetchSpy(statusCode: number) {
     const mockSuccessResponse = {

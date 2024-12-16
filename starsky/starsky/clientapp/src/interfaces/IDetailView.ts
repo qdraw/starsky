@@ -1,3 +1,4 @@
+import { SortType } from "./IArchive";
 import { IExifStatus } from "./IExifStatus";
 import { IFileIndexItem } from "./IFileIndexItem";
 
@@ -42,6 +43,7 @@ export interface IDetailView {
   collections?: boolean;
   dateCache: number;
   status: IExifStatus;
+  sort?: SortType;
 }
 
 export function newDetailView(): IDetailView {

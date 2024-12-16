@@ -1,8 +1,8 @@
 import { Pointer } from "./pointer";
 
 export interface ICurrentTouches {
-  preventDefault: any;
-  stopPropagation?: any;
+  preventDefault: () => void;
+  stopPropagation?: () => void;
   pointers?: Pointer[];
   delta: number;
   scale?: number;
