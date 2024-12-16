@@ -7,12 +7,12 @@ describe("BytesFormat", () => {
   });
 
   it("undefined", () => {
-    const result = BytesFormat(undefined as any);
+    const result = BytesFormat(undefined as unknown as number);
     expect(result).toBeFalsy();
   });
 
   it("null", () => {
-    const result = BytesFormat(null as any);
+    const result = BytesFormat(null as unknown as number);
     expect(result).toBeFalsy();
   });
 

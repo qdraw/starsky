@@ -10,8 +10,9 @@ describe("browser-detect", () => {
   });
 
   it("Fake IE11", () => {
-    (document.documentElement.style as any)["-ms-scroll-limit"] = true;
-    (document.documentElement.style as any)["-ms-ime-align"] = true;
+    const style = document.documentElement.style as unknown as { [key: string]: string };
+    style["-ms-scroll-limit"] = "true";
+    style["-ms-ime-align"] = "true";
 
     jest.spyOn(navigator, "userAgent", "get").mockImplementationOnce(() => {
       return "Trident";
@@ -20,7 +21,8 @@ describe("browser-detect", () => {
   });
 
   it("Fake IsIOS iphone", () => {
-    (document.documentElement.style as any)["WebkitAppearance"] = true;
+    const style = document.documentElement.style as unknown as { [key: string]: string };
+    style["WebkitAppearance"] = "true";
     jest.spyOn(navigator, "userAgent", "get").mockImplementationOnce(() => {
       return "Safari";
     });
@@ -31,7 +33,9 @@ describe("browser-detect", () => {
   });
 
   it("Fake IsIOS iPad", () => {
-    (document.documentElement.style as any)["WebkitAppearance"] = true;
+    const style = document.documentElement.style as unknown as { [key: string]: string };
+    style["WebkitAppearance"] = "true";
+
     document.ontouchend = jest.fn();
 
     Object.defineProperty(navigator, "maxTouchPoints", {
