@@ -51,7 +51,7 @@ export class LeafletEmptyImageUrlGridLayer extends GridLayer {
    */
   public _tileReady(
     coords: Coords,
-    err: any,
+    err: boolean | null,
     tile: {
       active?: boolean;
       coords: Coords;
