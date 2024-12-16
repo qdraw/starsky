@@ -45,7 +45,7 @@ const useIntersection = (
   ref: React.RefObject<Element>,
   options: IntersectionOptions = {},
   callback?: IntersectionChangeHandler
-) => {
+): boolean => {
   const { defaultIntersecting, once, ...opts } = options;
   const optsRef = useRef(opts);
   const [intersecting, setIntersecting] = useState(defaultIntersecting === true);

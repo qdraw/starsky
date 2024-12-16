@@ -124,9 +124,9 @@ class ProcessResponse {
           fileName: inputFilesList[index].name,
           status: IExifStatus.ServerError
         } as IFileIndexItem);
-      } else if (dataItem.fileIndexItem && (dataItem.status as IExifStatus) !== IExifStatus.Ok) {
+      } else if (dataItem.fileIndexItem && dataItem.status !== IExifStatus.Ok) {
         outputUploadFilesList.push(CastFileIndexItem(dataItem.fileIndexItem));
-      } else if (!dataItem.fileIndexItem && (dataItem.status as IExifStatus) !== IExifStatus.Ok) {
+      } else if (!dataItem.fileIndexItem && dataItem.status !== IExifStatus.Ok) {
         // when `/import` already existing item
         outputUploadFilesList.push({
           filePath: dataItem.filePath,
@@ -135,11 +135,9 @@ class ProcessResponse {
           fileHash: dataItem.fileHash,
           status: dataItem.status
         } as IFileIndexItem);
-      } else {
-        if (dataItem.fileIndexItem) {
-          dataItem.fileIndexItem.lastEdited = new Date().toISOString();
-          outputUploadFilesList.push(dataItem.fileIndexItem);
-        }
+      } else if (dataItem.fileIndexItem) {
+        dataItem.fileIndexItem.lastEdited = new Date().toISOString();
+        outputUploadFilesList.push(dataItem.fileIndexItem);
       }
     });
 

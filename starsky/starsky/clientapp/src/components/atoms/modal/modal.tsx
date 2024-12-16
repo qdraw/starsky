@@ -12,7 +12,7 @@ type ModalPropTypes = {
   root?: string;
   id?: string;
   isOpen: boolean;
-  handleExit: () => any;
+  handleExit: () => void;
   focusAfterExit?: HTMLElement;
   className?: string;
   dataTest?: string;
@@ -49,7 +49,7 @@ export default function Modal({
   focusAfterExit,
   className = "",
   dataTest = "modal-bg"
-}: ModalPropTypes): any {
+}: ModalPropTypes): JSX.Element | null {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const MessageCloseDialog = language.key(localization.MessageCloseDialog);

@@ -24,7 +24,7 @@ describe("PanAndZoomImage", () => {
       const component = render(
         <PanAndZoomImage
           src=""
-          setIsLoading={null as any}
+          setIsLoading={null as unknown as React.Dispatch<React.SetStateAction<boolean>>}
           translateRotation={Orientation.Horizontal}
           onWheelCallback={onWheelCallback}
           onResetCallback={jest.fn()}
@@ -73,7 +73,7 @@ describe("PanAndZoomImage", () => {
       const component = render(
         <PanAndZoomImage
           src=""
-          setIsLoading={null as any}
+          setIsLoading={null as unknown as React.Dispatch<React.SetStateAction<boolean>>}
           translateRotation={Orientation.Horizontal}
           onWheelCallback={onWheelCallback}
           onResetCallback={jest.fn()}
@@ -104,7 +104,7 @@ describe("PanAndZoomImage", () => {
       const component = render(
         <PanAndZoomImage
           src=""
-          setIsLoading={null as any}
+          setIsLoading={null as unknown as React.Dispatch<React.SetStateAction<boolean>>}
           translateRotation={Orientation.Horizontal}
           onWheelCallback={onWheelCallback}
           onResetCallback={jest.fn()}
@@ -147,7 +147,7 @@ describe("PanAndZoomImage", () => {
       const component = render(
         <PanAndZoomImage
           src=""
-          setIsLoading={null as any}
+          setIsLoading={null as unknown as React.Dispatch<React.SetStateAction<boolean>>}
           translateRotation={Orientation.Horizontal}
           onWheelCallback={onWheelCallback}
           onResetCallback={jest.fn()}
@@ -173,7 +173,7 @@ describe("PanAndZoomImage", () => {
       const component = render(
         <PanAndZoomImage
           src=""
-          setIsLoading={null as any}
+          setIsLoading={null as unknown as React.Dispatch<React.SetStateAction<boolean>>}
           translateRotation={Orientation.Horizontal}
           onWheelCallback={onWheelCallback}
           onResetCallback={jest.fn()}
@@ -202,7 +202,7 @@ describe("PanAndZoomImage", () => {
       const component = render(
         <PanAndZoomImage
           src=""
-          setIsLoading={null as any}
+          setIsLoading={null as unknown as React.Dispatch<React.SetStateAction<boolean>>}
           translateRotation={Orientation.Horizontal}
           onWheelCallback={jest.fn()}
           onResetCallback={jest.fn()}
@@ -228,7 +228,7 @@ describe("PanAndZoomImage", () => {
       const component = render(
         <PanAndZoomImage
           src=""
-          setIsLoading={null as any}
+          setIsLoading={null as unknown as React.Dispatch<React.SetStateAction<boolean>>}
           translateRotation={Orientation.Horizontal}
           onWheelCallback={jest.fn()}
           onResetCallback={jest.fn()}
@@ -249,7 +249,7 @@ describe("PanAndZoomImage", () => {
       const component = render(
         <PanAndZoomImage
           src=""
-          setIsLoading={null as any}
+          setIsLoading={null as unknown as React.Dispatch<React.SetStateAction<boolean>>}
           translateRotation={Orientation.Horizontal}
           onWheelCallback={jest.fn()}
           onResetCallback={onResetCallbackSpy}
@@ -275,7 +275,7 @@ describe("PanAndZoomImage", () => {
       const component = render(
         <PanAndZoomImage
           src=""
-          setIsLoading={null as any}
+          setIsLoading={null as unknown as React.Dispatch<React.SetStateAction<boolean>>}
           translateRotation={Orientation.Horizontal}
           onWheelCallback={jest.fn()}
           onResetCallback={onResetCallbackSpy}
