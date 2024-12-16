@@ -1,6 +1,6 @@
-import { act } from "@testing-library/react";
+import { act, RenderResult } from "@testing-library/react";
 import * as DifferenceInDate from "../../shared/date";
-import { mountReactHook } from "../___tests___/test-hook";
+import { mountReactHook, MountReactHookResult } from "../___tests___/test-hook";
 import * as useInterval from "../use-interval";
 import { FakeWebSocketService } from "./___tests___/fake-web-socket-service";
 import useSockets, { IUseSockets } from "./use-sockets";
@@ -8,12 +8,12 @@ import WebSocketService from "./websocket-service";
 import * as WsCurrentStart from "./ws-current-start";
 
 describe("useSockets", () => {
-  let setupComponent: any;
+  let setupComponent: MountReactHookResult;
   let hook: IUseSockets;
-  let component: any;
+  let component: RenderResult;
 
   function mountComponent() {
-    setupComponent = mountReactHook(useSockets, []); // Mount a Component with our hook
+    setupComponent = mountReactHook(useSockets, []) as unknown as MountReactHookResult; // Mount a Component with our hook
     hook = setupComponent.componentHook as IUseSockets;
     component = setupComponent.componentMount;
   }

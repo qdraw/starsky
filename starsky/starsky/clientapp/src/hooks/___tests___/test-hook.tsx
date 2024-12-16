@@ -1,8 +1,13 @@
-import { render } from "@testing-library/react";
+import { render, RenderResult } from "@testing-library/react";
 import { act } from "react";
 
 type ModalPropTypes = {
   children: (hookValues: unknown) => React.ReactNode;
+};
+
+export type MountReactHookResult = {
+  componentMount: RenderResult;
+  componentHook: object;
 };
 
 export const mountReactHook = (hook: (...args: unknown[]) => unknown, args: unknown[]) => {
@@ -22,5 +27,5 @@ export const mountReactHook = (hook: (...args: unknown[]) => unknown, args: unkn
       </Component>
     );
   });
-  return { componentMount, componentHook };
+  return { componentMount, componentHook } as MountReactHookResult;
 };

@@ -212,7 +212,7 @@ describe("ArchiveContextWrapper", () => {
     });
 
     it("When outside current directory it should be ignored 2", () => {
-      const dispatch = (e: any) => {
+      const dispatch = (e: { add: IFileIndexItem[]; type: string }) => {
         // should ignore the first one
         expect(e).toStrictEqual({
           add: [],
