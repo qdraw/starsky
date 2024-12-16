@@ -1,6 +1,5 @@
 import { fireEvent, render, RenderResult } from "@testing-library/react";
-import { useState } from "react";
-import { act } from "react";
+import { act, useState } from "react";
 import { BrowserRouter } from "react-router-dom";
 import * as FileHashImage from "../../components/atoms/file-hash-image/file-hash-image";
 import { IFileHashImageProps } from "../../components/atoms/file-hash-image/file-hash-image";
@@ -26,7 +25,6 @@ import DetailView from "./detailview";
 
 describe("DetailView", () => {
   const fileHashImageMock = (props: IFileHashImageProps) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [isError, setIsError] = useState(false);
     return (
       <div data-test="pan-zoom-image" className={isError ? "main--error" : undefined}>
@@ -507,10 +505,14 @@ describe("DetailView", () => {
         .spyOn(UpdateRelativeObject.prototype, "Update")
         .mockImplementationOnce(() => Promise.resolve() as any);
 
-      let handlerOnSwipeLeft: Function | undefined;
+      let handlerOnSwipeLeft: () => void;
       jest
         .spyOn(useGestures, "useGestures")
         .mockImplementationOnce((_, handler) => {
+          if (!handler.onSwipeLeft) {
+            console.error("handler.onSwipeLeft is not defined");
+            return;
+          }
           handlerOnSwipeLeft = handler.onSwipeLeft;
         })
         .mockImplementationOnce(() => {});
@@ -563,10 +565,14 @@ describe("DetailView", () => {
         .spyOn(UpdateRelativeObject.prototype, "Update")
         .mockImplementationOnce(() => Promise.resolve() as any);
 
-      let handlerOnSwipeLeft: Function | undefined;
+      let handlerOnSwipeLeft: () => void;
       jest
         .spyOn(useGestures, "useGestures")
         .mockImplementationOnce((_, handler) => {
+          if (!handler.onSwipeRight) {
+            console.error("handler.onSwipeRight is not defined");
+            return;
+          }
           handlerOnSwipeLeft = handler.onSwipeRight;
         })
         .mockImplementationOnce(() => {});

@@ -38,7 +38,7 @@ const MenuInlineSearch: FunctionComponent<IMenuSearchBarProps> = (props) => {
     setSuggest(result);
 
     // to avoid endless loops
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, [responseObject]);
 
   /** Submit the form */

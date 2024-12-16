@@ -36,7 +36,9 @@ const MoreMenu: React.FunctionComponent<MoreMenuPropTypes> = ({
         onChange={offMoreMenu}
         onClick={() => setEnableMoreMenu(false)}
         onKeyDown={(event) => {
-          event.key === "Enter" && setEnableMoreMenu(false);
+          if (event.key === "Enter") {
+            setEnableMoreMenu(false);
+          }
         }}
         data-test="menu-context"
         className={enableMoreMenu ? "menu-context" : "menu-context menu-context--hide"}

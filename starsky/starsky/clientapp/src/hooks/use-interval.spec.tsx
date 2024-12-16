@@ -4,7 +4,7 @@ import useInterval from "./use-interval";
 
 describe("useInterval", () => {
   interface UseIntervalComponentTestProps {
-    callback: Function;
+    callback: () => void;
     timer: number;
   }
 

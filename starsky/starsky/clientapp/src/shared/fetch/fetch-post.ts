@@ -25,7 +25,7 @@ const FetchPost = async (
   let res: Response;
   try {
     res = await fetch(url, settings);
-  } catch (err) {
+  } catch {
     return {
       statusCode: 999,
       data: null

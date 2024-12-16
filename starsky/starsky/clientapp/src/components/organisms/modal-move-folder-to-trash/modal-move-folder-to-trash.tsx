@@ -14,7 +14,7 @@ import Modal from "../../atoms/modal/modal";
 interface IModalMoveFolderToTrashProps {
   isOpen: boolean;
   subPath: string;
-  handleExit: Function;
+  handleExit: () => void;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 

@@ -1,7 +1,7 @@
 import React from "react";
+import useGlobalSettings from "../../../../hooks/use-global-settings.ts";
 import localization from "../../../../localization/localization.json";
 import { Language } from "../../../../shared/language.ts";
-import useGlobalSettings from "../../../../hooks/use-global-settings.ts";
 
 interface ISelectMenuItemProps {
   select?: string[];
@@ -31,7 +31,9 @@ export const SelectMenuItem: React.FunctionComponent<ISelectMenuItemProps> = ({
             removeSidebarSelection();
           }}
           onKeyDown={(event) => {
-            event.key === "Enter" && removeSidebarSelection();
+            if (event.key === "Enter") {
+              removeSidebarSelection();
+            }
           }}
         >
           {MessageSelectAction}
@@ -44,7 +46,9 @@ export const SelectMenuItem: React.FunctionComponent<ISelectMenuItemProps> = ({
           data-test="menu-archive-labels"
           onClick={() => toggleLabels()}
           onKeyDown={(event) => {
-            event.key === "Enter" && toggleLabels();
+            if (event.key === "Enter") {
+              toggleLabels();
+            }
           }}
         >
           {MessageLabels}

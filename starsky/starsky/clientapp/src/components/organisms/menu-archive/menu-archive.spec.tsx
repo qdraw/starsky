@@ -154,7 +154,7 @@ describe("MenuArchive", () => {
           return contextValues;
         });
 
-      const component = render(<MenuArchive>t</MenuArchive>);
+      const component = render(<MenuArchive />);
 
       expect(screen.getByTestId("selected-0")).toBeTruthy();
 
@@ -181,7 +181,7 @@ describe("MenuArchive", () => {
         .mockImplementationOnce(() => contextValues)
         .mockImplementationOnce(() => contextValues);
 
-      const component = render(<MenuArchive>t</MenuArchive>);
+      const component = render(<MenuArchive />);
 
       expect(screen.getByTestId("selected-2")).toBeTruthy();
 
@@ -414,7 +414,7 @@ describe("MenuArchive", () => {
         .mockImplementationOnce(() => contextValues)
         .mockImplementationOnce(() => contextValues);
 
-      const component = render(<MenuArchive>t</MenuArchive>);
+      const component = render(<MenuArchive />);
 
       const mkdir = screen.getByTestId("mkdir");
 
@@ -459,7 +459,7 @@ describe("MenuArchive", () => {
           return contextValues;
         });
 
-      const component = render(<MenuArchive>t</MenuArchive>);
+      const component = render(<MenuArchive />);
 
       const rename = screen.getByTestId("rename");
       expect(rename).not.toBeNull();
@@ -1260,6 +1260,9 @@ describe("MenuArchive", () => {
 
       jest
         .spyOn(React, "useContext")
+        .mockImplementationOnce(() => {
+          return contextValues;
+        })
         .mockImplementationOnce(() => {
           return contextValues;
         })

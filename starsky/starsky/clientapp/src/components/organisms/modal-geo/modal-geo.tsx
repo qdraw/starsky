@@ -68,7 +68,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
     );
 
     // when get new location
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, [latitude, longitude]);
 
   const [isLocationUpdated, setIsLocationUpdated] = useState<boolean>(false);
@@ -77,7 +77,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
     if (node !== null && mapState === null) {
       UpdateMap(node, location, isFormEnabled, setLocation, setIsLocationUpdated, setMapState);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, []);
 
   function subHeader(): string {

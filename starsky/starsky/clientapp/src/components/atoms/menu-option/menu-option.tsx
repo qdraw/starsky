@@ -25,7 +25,9 @@ const MenuOption: React.FunctionComponent<IMenuOptionProps> = memo(
               data-test={testName}
               onClick={onClickKeydown}
               onKeyDown={(event) => {
-                event.key === "Enter" && onClickKeydown();
+                if (event.key === "Enter") {
+                  onClickKeydown();
+                }
               }}
             >
               {Message}

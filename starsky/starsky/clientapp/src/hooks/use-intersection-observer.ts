@@ -66,11 +66,11 @@ const useIntersection = (
 
     return () => {
       if (!once && ref.current != null) {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
         observer.unobserve(ref.current);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, [optsRef.current]);
 
   return intersecting;

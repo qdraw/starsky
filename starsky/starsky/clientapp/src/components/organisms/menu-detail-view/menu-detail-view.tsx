@@ -293,7 +293,9 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({ state, d
               toggleLabels();
             }}
             onKeyDown={(event) => {
-              event.key === "Enter" && toggleLabels();
+              if (event.key === "Enter") {
+                toggleLabels();
+              }
             }}
           >
             {MessageLabels}
@@ -385,7 +387,9 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({ state, d
               toggleLabels();
             }}
             onKeyDown={(event) => {
-              event.key === "Enter" && toggleLabels();
+              if (event.key === "Enter") {
+                toggleLabels();
+              }
             }}
           >
             {MessageCloseDetailScreenDialog}

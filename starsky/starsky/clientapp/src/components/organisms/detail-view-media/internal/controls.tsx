@@ -49,7 +49,7 @@ export const Controls: React.FunctionComponent<IControlsProps> = ({
           )
         }
         onKeyDown={(event) => {
-          event.key === "Enter" &&
+          if (event.key === "Enter") {
             PlayPause(
               videoRef,
               setIsError,
@@ -59,6 +59,7 @@ export const Controls: React.FunctionComponent<IControlsProps> = ({
               setPaused,
               setIsLoading
             );
+          }
         }}
         type="button"
       >

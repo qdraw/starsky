@@ -1,7 +1,7 @@
 import { spawnSync } from "child_process";
-import { join } from "path";
+import path, { join } from "path";
+import process from "process";
 import { fileURLToPath } from "url";
-import path from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

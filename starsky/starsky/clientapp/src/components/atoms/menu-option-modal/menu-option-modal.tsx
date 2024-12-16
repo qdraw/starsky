@@ -47,7 +47,9 @@ const MenuOptionModal: React.FunctionComponent<IMenuOptionModalProps> = memo(
               data-test={testName}
               onClick={onClickHandler}
               onKeyDown={(event) => {
-                event.key === "Enter" && onClickHandler();
+                if (event.key === "Enter") {
+                  onClickHandler();
+                }
               }}
             >
               {Message}

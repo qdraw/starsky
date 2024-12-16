@@ -7,7 +7,7 @@ import ItemTextListView from "../../molecules/item-text-list-view/item-text-list
 
 interface IModalDropAreaFilesAddedProps {
   isOpen: boolean;
-  handleExit: Function;
+  handleExit: () => void;
   uploadFilesList: IFileIndexItem[];
 }
 
