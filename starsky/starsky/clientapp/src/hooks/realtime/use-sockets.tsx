@@ -100,7 +100,7 @@ const useSockets = (): IUseSockets => {
     };
 
     // When switching the feature toggle
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, [localStorage.getItem("use-sockets")]);
 
   return {

@@ -66,7 +66,7 @@ describe("Geo", () => {
     });
 
     it("valid example 2 (long)", () => {
-      const result = geo.Validate(51.893458349589349855, 15.83450934590345345);
+      const result = geo.Validate(51.89345834958934, 15.8345093459034);
 
       expect(result).toBeTruthy();
     });

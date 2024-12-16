@@ -37,7 +37,7 @@ function ArchiveWrapper(archive: Readonly<IArchiveProps>) {
     // don't update the cache
     dispatch({ type: "set", payload: archive });
     // disable to prevent duplicate api calls
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, [archive.subPath, archive.searchQuery, archive.pageNumber, archive.colorClassUsage]);
 
   useEffect(() => {

@@ -5,6 +5,7 @@ import useInterval from "../../../hooks/use-interval";
 import localization from "../../../localization/localization.json";
 import { ExportIntervalUpdate } from "../../../shared/export/export-interval-update";
 import { ProcessingState } from "../../../shared/export/processing-state";
+import { CacheControl } from "../../../shared/fetch/cache-control.ts";
 import FetchGet from "../../../shared/fetch/fetch-get";
 import FetchPost from "../../../shared/fetch/fetch-post";
 import { Language } from "../../../shared/language";
@@ -13,12 +14,11 @@ import { UrlQuery } from "../../../shared/url/url-query";
 import FormControl from "../../atoms/form-control/form-control";
 import Modal from "../../atoms/modal/modal";
 import Select from "../../atoms/select/select";
-import { CacheControl } from "../../../shared/fetch/cache-control.ts";
 
 interface IModalPublishProps {
   isOpen: boolean;
   select: Array<string> | undefined;
-  handleExit: Function;
+  handleExit: () => void;
 }
 
 /**

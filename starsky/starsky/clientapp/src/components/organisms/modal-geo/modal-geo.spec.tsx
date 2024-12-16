@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
 import { fireEvent, render, screen } from "@testing-library/react";
 import L, { LatLng } from "leaflet";
 import * as Modal from "../../atoms/modal/modal";
@@ -104,10 +103,10 @@ describe("ModalGeo", () => {
   describe("addDefaultClickSetMarker", () => {
     it("should remove other layers and add new one", () => {
       const map = {
-        on: (_name: string, fn: Function) => {
+        on: (_name: string, fn: (arg: object) => void) => {
           fn({ latlng: { lat: 1, lng: 1 } });
         },
-        eachLayer: (fn: Function) => {
+        eachLayer: (fn: (arg: object) => void) => {
           fn(new L.Marker(new LatLng(0, 0)));
           fn({});
         },
@@ -122,10 +121,10 @@ describe("ModalGeo", () => {
 
     it("should not add layers due readonly", () => {
       const map = {
-        on: (_name: string, fn: Function) => {
+        on: (_name: string, fn: (arg: object) => void) => {
           fn({ latlng: {} });
         },
-        eachLayer: (fn: Function) => {
+        eachLayer: (fn: (arg: L.Marker<any> | object) => void) => {
           fn(new L.Marker(new LatLng(0, 0)));
           fn({});
         },
@@ -143,10 +142,10 @@ describe("ModalGeo", () => {
     it("should trigger pan to", () => {
       const panToSpy = jest.fn();
       const map = {
-        on: (_name: string, fn: Function) => {
+        on: (_name: string, fn: (arg: object) => void) => {
           fn({ latlng: {} });
         },
-        eachLayer: (fn: Function) => {
+        eachLayer: (fn: (arg: object) => void) => {
           fn(new L.Marker(new LatLng(0, 0)));
           fn({});
         },

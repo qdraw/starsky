@@ -121,8 +121,7 @@ export class URLPath {
    * append=true&collections=true&tags=update
    * @param toUpdate
    */
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  public ObjectToSearchParams(toUpdate: Object): URLSearchParams {
+  public ObjectToSearchParams(toUpdate: object): URLSearchParams {
     const bodyParams = new URLSearchParams();
     for (const key of Object.entries(toUpdate)) {
       if (key[1] && key[1].length >= 1) {

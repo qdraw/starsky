@@ -460,7 +460,7 @@ describe("DetailViewSidebar", () => {
     it("Press v to paste return false", () => {
       let vPasteIsCalled = false;
 
-      function keyboardCallback(regex: RegExp, callback: Function) {
+      function keyboardCallback(regex: RegExp, callback: (arg0: KeyboardEvent) => void) {
         if (regex.source === "^v$") {
           const event = new KeyboardEvent("keydown", {
             bubbles: true,
@@ -503,7 +503,7 @@ describe("DetailViewSidebar", () => {
     it("Press v to paste return true", () => {
       let vPasteIsCalled = false;
 
-      function keyboardCallback(regex: RegExp, callback: Function) {
+      function keyboardCallback(regex: RegExp, callback: (arg0: KeyboardEvent) => void) {
         if (regex.source === "^v$") {
           const event = new KeyboardEvent("keydown", {
             bubbles: true,
@@ -546,7 +546,7 @@ describe("DetailViewSidebar", () => {
     it("Press c to copy", () => {
       let cCopyIsCalled = false;
 
-      function keyboardCallback(regex: RegExp, callback: Function) {
+      function keyboardCallback(regex: RegExp, callback: (arg0: KeyboardEvent) => void) {
         if (regex.source === "^c$") {
           const event = new KeyboardEvent("keydown", {
             bubbles: true,
@@ -622,7 +622,7 @@ describe("DetailViewSidebar", () => {
         .mockImplementationOnce((_, callback) => {
           callback({
             preventDefault: () => {}
-          });
+          } as unknown as KeyboardEvent);
         })
         .mockImplementationOnce(() => {});
 

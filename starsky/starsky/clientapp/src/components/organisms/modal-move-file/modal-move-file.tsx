@@ -17,7 +17,7 @@ import ItemTextListView from "../../molecules/item-text-list-view/item-text-list
 
 interface IModalMoveFileProps {
   isOpen: boolean;
-  handleExit: Function;
+  handleExit: () => void;
   selectedSubPath: string;
   parentDirectory: string;
 }

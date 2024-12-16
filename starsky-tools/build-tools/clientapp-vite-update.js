@@ -277,6 +277,7 @@ npmInstall('jest-environment-jsdom', false, true);
 npmInstall('identity-obj-proxy', false, true);
 npmInstall('isomorphic-fetch', false, true);
 npmInstall('eslint-plugin-react', false, true);
+npmInstall('typescript-eslint', false, true);
 npmInstall('eslint-config-prettier', false, true);
 npmInstall('eslint-plugin-prettier', false, true);
 npmInstall('eslint-plugin-jest-react', false, true);
@@ -297,6 +298,8 @@ npmInstall('@storybook/react-vite', false, true);
 npmInstall('@testing-library/jest-dom', false, true);
 npmInstall('@testing-library/react', false, true);
 // @testing-library/user-event is skipped
+
+
 
 
 

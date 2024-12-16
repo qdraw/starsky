@@ -3,7 +3,12 @@ import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem, newIFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import FetchPost from "../../../shared/fetch/fetch-post";
 
-const CastFileIndexItem = (element: any): IFileIndexItem => {
+const CastFileIndexItem = (element: {
+  fileHash: string;
+  filePath: string;
+  fileName: string;
+  status: IExifStatus;
+}): IFileIndexItem => {
   const uploadFileObject = newIFileIndexItem();
   uploadFileObject.fileHash = element.fileHash;
   uploadFileObject.filePath = element.filePath;
@@ -105,7 +110,14 @@ class ProcessResponse {
     }
 
     // Success
-    Array.from(response.data).forEach((dataItem: any) => {
+    (
+      response.data as {
+        fileIndexItem?: IFileIndexItem;
+        filePath?: string;
+        fileHash?: string;
+        status: IExifStatus;
+      }[]
+    ).forEach((dataItem) => {
       if (!dataItem) {
         outputUploadFilesList.push({
           filePath: inputFilesList[index].name,
@@ -124,8 +136,10 @@ class ProcessResponse {
           status: dataItem.status
         } as IFileIndexItem);
       } else {
-        dataItem.fileIndexItem.lastEdited = new Date().toISOString();
-        outputUploadFilesList.push(dataItem.fileIndexItem);
+        if (dataItem.fileIndexItem) {
+          dataItem.fileIndexItem.lastEdited = new Date().toISOString();
+          outputUploadFilesList.push(dataItem.fileIndexItem);
+        }
       }
     });
 

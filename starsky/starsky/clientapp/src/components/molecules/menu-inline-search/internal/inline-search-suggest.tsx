@@ -34,7 +34,7 @@ const InlineSearchSuggest: React.FunctionComponent<IInlineSearchSuggestProps> = 
       }
       setDefaultMenu([...newMenu]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, [props.featuresResult, props.featuresResult?.data?.systemTrashEnabled]);
 
   const [defaultMenu, setDefaultMenu] = useState([

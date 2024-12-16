@@ -39,7 +39,7 @@ export async function UpdateGeoLocation(
       bodyParams.append("locationState", model.locationState);
     }
     console.log(reverseGeoCodeResult.statusCode);
-  } catch (error) {
+  } catch {
     // do nothing
   }
 
@@ -52,7 +52,7 @@ export async function UpdateGeoLocation(
       setIsLoading(false);
       return Promise.resolve(null);
     }
-  } catch (error) {
+  } catch {
     setError(true);
     setIsLoading(false);
     return Promise.resolve(null);

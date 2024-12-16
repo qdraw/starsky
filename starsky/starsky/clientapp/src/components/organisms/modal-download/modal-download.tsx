@@ -14,7 +14,7 @@ import Modal from "../../atoms/modal/modal";
 interface IModalExportProps {
   isOpen: boolean;
   select: Array<string> | undefined;
-  handleExit: Function;
+  handleExit: () => void;
   collections: boolean;
 }
 

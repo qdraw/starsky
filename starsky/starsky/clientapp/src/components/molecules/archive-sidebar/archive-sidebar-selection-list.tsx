@@ -74,7 +74,9 @@ const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSel
                   <li key={item}>
                     <button
                       onKeyDown={(event) => {
-                        event.key === "Enter" && toggleSelection(item);
+                        if (event.key === "Enter") {
+                          toggleSelection(item);
+                        }
                       }}
                       onClick={() => toggleSelection(item)}
                       className="close"

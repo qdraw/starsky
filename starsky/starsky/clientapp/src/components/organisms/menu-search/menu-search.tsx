@@ -116,7 +116,9 @@ const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({ state, dispatch
                 removeSidebarSelection();
               }}
               onKeyDown={(event) => {
-                event.key === "Enter" && removeSidebarSelection();
+                if (event.key === "Enter") {
+                  removeSidebarSelection();
+                }
               }}
             >
               {MessageSelectAction}
@@ -129,7 +131,9 @@ const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({ state, dispatch
               className={"item item--labels"}
               onClick={() => toggleLabels()}
               onKeyDown={(event) => {
-                event.key === "Enter" && toggleLabels();
+                if (event.key === "Enter") {
+                  toggleLabels();
+                }
               }}
             >
               {MessageLabels}
