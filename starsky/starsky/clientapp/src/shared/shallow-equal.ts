@@ -1,10 +1,10 @@
 // https://github.com/dashed/shallowequal/blob/master/index.js
 
 const shallowEqual = (
-  objA: any,
-  objB: any,
-  compare?: (objA: any, objB: any, indexOrKey?: number | string) => boolean | undefined,
-  compareContext?: any
+  objA: unknown,
+  objB: unknown,
+  compare?: (objA: unknown, objB: unknown, indexOrKey?: number | string) => boolean | undefined,
+  compareContext?: unknown
 ): boolean => {
   let ret = compare ? compare.call(compareContext, objA, objB) : void 0;
 
@@ -35,8 +35,8 @@ const shallowEqual = (
       return false;
     }
 
-    const valueA = objA[key];
-    const valueB = objB[key];
+    const valueA = (objA as { [key: string]: unknown })[key];
+    const valueB = (objB as { [key: string]: unknown })[key];
 
     ret = compare ? compare.call(compareContext, valueA, valueB, key) : void 0;
 

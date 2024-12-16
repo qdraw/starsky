@@ -21,7 +21,7 @@ describe("UpdateProgressByClick function", () => {
   it("should update currentTime when videoRef and event.target are valid", () => {
     // Mock event
     const event = {
-      target: document.createElement("video") as any
+      target: document.createElement("video") as unknown as EventTarget
     } as React.MouseEvent;
 
     // Mock GetMousePosition to return a valid value
@@ -61,7 +61,7 @@ describe("UpdateProgressByClick function", () => {
   it("should not update currentTime when videoRef is not valid", () => {
     // Mock valid event
     const event = {
-      target: document.createElement("div") as any
+      target: document.createElement("div") as unknown as EventTarget
     } as React.MouseEvent;
 
     // Set videoRef to null
