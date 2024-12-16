@@ -21,6 +21,34 @@ describe("FileHashImage", () => {
       .mockImplementationOnce(() => Promise.resolve(true));
   });
 
+  function createPanZoomObjectWheelCallback(): (props: {
+    src: string;
+    onWheelCallback: (z: number) => void;
+  }) => JSX.Element {
+    return (props: { src: string; onWheelCallback: (z: number) => void }) => {
+      return (
+        <>
+          <img src={props.src} alt="test" />
+          <button onClick={() => props.onWheelCallback(1)}></button>
+        </>
+      );
+    };
+  }
+
+  function createPanZoomObjectResetCallback(): (props: {
+    src: string;
+    onResetCallback: (z: number) => void;
+  }) => JSX.Element {
+    return (props: { src: string; onResetCallback: (z: number) => void }) => {
+      return (
+        <>
+          <img src={props.src} alt="test" />
+          <button onClick={() => props.onResetCallback(1)}></button>
+        </>
+      );
+    };
+  }
+
   it("Rotation API is called return 202", async () => {
     console.log("-- Rotation API is called return 202 --");
 
@@ -135,14 +163,8 @@ describe("FileHashImage", () => {
 
     jest.spyOn(FetchGet, "default").mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    const panZoomObject = (props: any) => {
-      return (
-        <>
-          <img src={props.src} alt="test" />
-          <button onClick={props.onWheelCallback}></button>
-        </>
-      );
-    };
+    const panZoomObject = createPanZoomObjectWheelCallback();
+
     jest
       .spyOn(PanAndZoomImage, "default")
       .mockImplementationOnce(panZoomObject)
@@ -173,14 +195,7 @@ describe("FileHashImage", () => {
 
     jest.spyOn(FetchGet, "default").mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    const panZoomObject = (props: any) => {
-      return (
-        <>
-          <img src={props.src} alt="test" />
-          <button onClick={props.onWheelCallback}></button>
-        </>
-      );
-    };
+    const panZoomObject = createPanZoomObjectWheelCallback();
     jest
       .spyOn(PanAndZoomImage, "default")
       .mockImplementationOnce(panZoomObject)
@@ -214,18 +229,8 @@ describe("FileHashImage", () => {
 
     jest.spyOn(FetchGet, "default").mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    const panZoomObject = (props: any) => {
-      return (
-        <>
-          <img src={props.src} alt="test" />
-          <button onClick={props.onResetCallback}></button>
-        </>
-      );
-    };
-    jest
-      .spyOn(PanAndZoomImage, "default")
-      .mockImplementationOnce(panZoomObject)
-      .mockImplementationOnce(panZoomObject);
+    const panZoomObject = createPanZoomObjectWheelCallback();
+    jest.spyOn(PanAndZoomImage, "default").mockImplementationOnce(panZoomObject);
 
     const component = render(
       <FileHashImage fileHash="hash" id="/test.jpg" orientation={Orientation.Horizontal} />
@@ -250,14 +255,9 @@ describe("FileHashImage", () => {
 
     jest.spyOn(FetchGet, "default").mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    const panZoomObject = (props: any) => {
-      return (
-        <>
-          <img src={props.src} alt="test" />
-          <button onClick={props.onResetCallback}></button>
-        </>
-      );
-    };
+    // test reset callback instead of wheel callback
+    const panZoomObject = createPanZoomObjectResetCallback();
+
     jest
       .spyOn(PanAndZoomImage, "default")
       .mockImplementationOnce(panZoomObject)

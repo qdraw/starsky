@@ -14,7 +14,7 @@ export class SidebarUpdate {
   ): ISidebarUpdate => {
     if (!fieldName) return updateSidebar;
     if (!fieldValue) {
-      delete (updateSidebar as any)[fieldName];
+      delete (updateSidebar as Partial<ISidebarUpdate>)[fieldName as keyof ISidebarUpdate];
       return updateSidebar;
     }
 
