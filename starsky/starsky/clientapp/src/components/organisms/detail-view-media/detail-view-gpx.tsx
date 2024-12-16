@@ -32,16 +32,20 @@ const DetailViewGpx: React.FC = () => {
     mapReference.current.innerHTML = "";
     const container = L.DomUtil.get(mapReference.current);
     if (container != null) {
-      (container as any)._leaflet_id = null;
+      const containerCasted = container as HTMLElement;
+      (containerCasted as unknown as { _leaflet_id: null })._leaflet_id = null;
     }
 
-    const tracks: any[] = [];
+    const tracks: [number, number][] = [];
     const tracksNodeList: NodeListOf<Element> = (response.data as XMLDocument).querySelectorAll(
       "trkpt"
     );
 
     Array.from(tracksNodeList).forEach((element) => {
-      tracks.push([element.getAttribute("lat"), element.getAttribute("lon")]);
+      tracks.push([
+        parseFloat(element.getAttribute("lat") as string),
+        parseFloat(element.getAttribute("lon") as string)
+      ]);
     });
 
     // to avoid short inputs

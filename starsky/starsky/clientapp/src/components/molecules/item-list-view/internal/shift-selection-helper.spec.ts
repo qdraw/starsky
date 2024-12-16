@@ -1,4 +1,8 @@
-import { newIFileIndexItem, newIFileIndexItemArray } from "../../../../interfaces/IFileIndexItem";
+import {
+  IFileIndexItem,
+  newIFileIndexItem,
+  newIFileIndexItemArray
+} from "../../../../interfaces/IFileIndexItem";
 import { ShiftSelectionHelper } from "./shift-selection-helper";
 describe("ShiftSelectionHelper", () => {
   it("items undefined", () => {
@@ -9,7 +13,7 @@ describe("ShiftSelectionHelper", () => {
       },
       [],
       "test",
-      undefined as any
+      undefined as unknown as IFileIndexItem[]
     );
     expect(result).toBeFalsy();
   });
@@ -20,7 +24,7 @@ describe("ShiftSelectionHelper", () => {
         navigate: jest.fn(),
         location: window.location
       },
-      undefined as any,
+      undefined as unknown as string[],
       "test",
       newIFileIndexItemArray()
     );

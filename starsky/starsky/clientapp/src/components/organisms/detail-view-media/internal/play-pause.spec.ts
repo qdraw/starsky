@@ -1,5 +1,4 @@
-import { act } from "@testing-library/react";
-import React from "react";
+import React, { act } from "react";
 import { PlayPause } from "./play-pause";
 
 describe("YourComponent", () => {
@@ -57,7 +56,7 @@ describe("YourComponent", () => {
 
     act(() => {
       PlayPause(
-        videoRef2 as any,
+        videoRef2 as unknown as React.RefObject<HTMLVideoElement>,
         setIsErrorMock,
         "Error Message",
         setStartedMock,

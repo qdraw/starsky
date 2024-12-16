@@ -1,14 +1,16 @@
+import { ILocationObject } from "../../../../hooks/use-location/interfaces/ILocationObject";
 import { IUseLocation } from "../../../../hooks/use-location/interfaces/IUseLocation";
+import { NavigateFunction } from "../../../../hooks/use-location/type/NavigateFunction";
 import { UrlQuery } from "../../../../shared/url/url-query";
 import Navigate from "./navigate";
 
 describe("Navigate", () => {
   const history: IUseLocation = {
-    navigate: jest.fn() as any,
-    location: {} as any
+    navigate: jest.fn() as unknown as NavigateFunction,
+    location: {} as ILocationObject
   };
   const setFormFocus = jest.fn();
-  const inputFormControlReference = { current: { value: "" } } as any;
+  const inputFormControlReference = { current: { value: "" } } as React.RefObject<HTMLInputElement>;
   const query = "test query";
   const callback = jest.fn();
 

@@ -9,7 +9,12 @@ describe("ItemTextListView", () => {
   });
 
   it("renders undefined", () => {
-    render(<ItemTextListView fileIndexItems={undefined as any} callback={() => {}} />);
+    render(
+      <ItemTextListView
+        fileIndexItems={undefined as unknown as IFileIndexItem[]}
+        callback={() => {}}
+      />
+    );
 
     expect(screen.getByTestId("list-text-view-no-photos-in-folder")).toBeTruthy();
   });

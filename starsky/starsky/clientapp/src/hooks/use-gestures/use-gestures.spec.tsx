@@ -1,5 +1,5 @@
 import { act, createEvent, fireEvent, render } from "@testing-library/react";
-import React, { useRef, useState } from "react";
+import React, { SetStateAction, useRef, useState } from "react";
 import { mountReactHook } from "../___tests___/test-hook";
 import * as callHandler from "./call-handler";
 import * as debounce from "./debounce";
@@ -13,7 +13,7 @@ function Rotate() {
   const image = useRef<HTMLImageElement>(null);
 
   useGestures(image, {
-    onPanMove: (event: any) => {
+    onPanMove: (event: { angleDeg: SetStateAction<number> }) => {
       setImageRotation(event.angleDeg);
     }
   });

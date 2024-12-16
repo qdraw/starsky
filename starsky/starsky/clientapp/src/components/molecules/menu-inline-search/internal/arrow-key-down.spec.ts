@@ -6,7 +6,7 @@ describe("ArrowKeyDown", () => {
     ArrowKeyDown(
       {
         key: "t"
-      } as any,
+      } as React.KeyboardEvent<HTMLInputElement>,
       0,
       callback,
       document.createElement("input"),
@@ -22,7 +22,7 @@ describe("ArrowKeyDown", () => {
     ArrowKeyDown(
       {
         key: "ArrowDown"
-      } as any,
+      } as React.KeyboardEvent<HTMLInputElement>,
       0,
       callback,
       null,
@@ -37,7 +37,7 @@ describe("ArrowKeyDown", () => {
     ArrowKeyDown(
       {
         key: "ArrowDown"
-      } as any,
+      } as React.KeyboardEvent<HTMLInputElement>,
       0,
       callback,
       document.createElement("input"),
@@ -53,7 +53,7 @@ describe("ArrowKeyDown", () => {
     ArrowKeyDown(
       {
         key: "ArrowDown"
-      } as any,
+      } as React.KeyboardEvent<HTMLInputElement>,
       -1,
       callback,
       inputElement,
@@ -71,7 +71,7 @@ describe("ArrowKeyDown", () => {
     ArrowKeyDown(
       {
         key: "ArrowUp"
-      } as any,
+      } as React.KeyboardEvent<HTMLInputElement>,
       1,
       callback,
       inputElement,
@@ -89,7 +89,7 @@ describe("ArrowKeyDown", () => {
     ArrowKeyDown(
       {
         key: "ArrowDown"
-      } as any,
+      } as React.KeyboardEvent<HTMLInputElement>,
       1,
       callback,
       inputElement,
@@ -105,7 +105,7 @@ describe("ArrowKeyDown", () => {
     ArrowKeyDown(
       {
         key: "ArrowUp"
-      } as any,
+      } as React.KeyboardEvent<HTMLInputElement>,
       0,
       callback,
       inputElement,

@@ -112,7 +112,7 @@ describe("ColorClassSelectKeyboard", () => {
       .spyOn(ColorClassUpdateSingle, "ColorClassUpdateSingle")
       .mockImplementationOnce((_p1, _p2, _p3, _p4, setIsError) => {
         setIsError("true");
-        return { Update: jest.fn() } as any;
+        return { Update: jest.fn() } as unknown as ColorClassUpdateSingle.ColorClassUpdateSingle;
       });
 
     const component = render(
@@ -152,7 +152,7 @@ describe("ColorClassSelectKeyboard", () => {
       .spyOn(ColorClassUpdateSingle, "ColorClassUpdateSingle")
       .mockImplementationOnce((_p1, _p2, _p3, _p4, _p5, _p6, setCurrentColorClass) => {
         setCurrentColorClass(1);
-        return { Update: jest.fn() } as any;
+        return { Update: jest.fn() } as unknown as ColorClassUpdateSingle.ColorClassUpdateSingle;
       });
 
     const component = render(

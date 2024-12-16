@@ -14,6 +14,7 @@ import * as Link from "../../atoms/link/link";
 import * as MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
 import * as ModalArchiveMkdir from "../modal-archive-mkdir/modal-archive-mkdir";
 import * as ModalArchiveRename from "../modal-archive-rename/modal-archive-rename";
+import { IModalRenameFolderProps } from "../modal-archive-rename/modal-archive-rename";
 import * as ModalArchiveSynchronizeManually from "../modal-archive-synchronize-manually/modal-archive-synchronize-manually";
 import * as ModalDisplayOptions from "../modal-display-options/modal-display-options";
 import * as ModalDownload from "../modal-download/modal-download";
@@ -584,7 +585,9 @@ describe("MenuArchive", () => {
       const dispatch = jest.fn();
       const contextValues = { state, dispatch };
 
-      const modalMockElement = (props: any) => {
+      const modalMockElement = (props: {
+        dispatch: (action: { type: string; path: string }) => void;
+      }): JSX.Element => {
         return (
           <button
             id="test-btn-fake"
@@ -604,8 +607,12 @@ describe("MenuArchive", () => {
       jest
         .spyOn(ModalArchiveRename, "default")
         .mockReset()
-        .mockImplementationOnce(modalMockElement)
-        .mockImplementationOnce(modalMockElement);
+        .mockImplementationOnce(
+          modalMockElement as React.FunctionComponent<IModalRenameFolderProps>
+        )
+        .mockImplementationOnce(
+          modalMockElement as React.FunctionComponent<IModalRenameFolderProps>
+        );
 
       jest
         .spyOn(React, "useContext")
@@ -1241,6 +1248,7 @@ describe("MenuArchive", () => {
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest
         .spyOn(useFetch, "default")
+        .mockReset()
         .mockImplementationOnce(() => newIConnectionDefault())
         .mockImplementationOnce(() => newIConnectionDefault())
         .mockImplementationOnce(() => newIConnectionDefault())
@@ -1260,6 +1268,7 @@ describe("MenuArchive", () => {
 
       jest
         .spyOn(React, "useContext")
+        .mockReset()
         .mockImplementationOnce(() => {
           return contextValues;
         })

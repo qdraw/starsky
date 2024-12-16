@@ -11,7 +11,7 @@ import { UrlQuery } from "../../../shared/url/url-query";
 import FormControl from "../../atoms/form-control/form-control";
 import Modal from "../../atoms/modal/modal";
 
-interface IModalRenameFolderProps {
+export interface IModalRenameFolderProps {
   isOpen: boolean;
   handleExit: (state?: string) => void;
   subPath: string;
