@@ -56,7 +56,7 @@ describe("TimeUpdate function", () => {
 
   it("should update values and setIsLoading when refs are valid", () => {
     // Set up valid values for refs
-    videoRef = { current: { currentTime: 10, duration: 100 } as any };
+    videoRef = { current: { currentTime: 10, duration: 100 } as HTMLVideoElement };
 
     act(() => {
       TimeUpdate(videoRef, setIsLoadingMock, progressRef, scrubberRef, timeRef);
@@ -75,7 +75,7 @@ describe("TimeUpdate function", () => {
     videoRef = {
       current: {
         duration: 100
-      } as any
+      } as HTMLVideoElement
     };
 
     const setAttributeSpy = jest.fn();
@@ -84,7 +84,7 @@ describe("TimeUpdate function", () => {
         value: 0,
         getAttribute: jest.fn(),
         setAttribute: setAttributeSpy
-      } as any
+      } as unknown as HTMLProgressElement
     };
 
     act(() => {
