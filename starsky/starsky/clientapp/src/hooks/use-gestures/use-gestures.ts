@@ -95,13 +95,15 @@ const executeTouchMove = (
   }
 
   if (eventName) {
-    debounce(
-      (eventNameScoped: string, touchesScoped: ICurrentTouches, theGestureScoped: string) => {
-        callHandler(eventNameScoped, touchesScoped, handlers);
-        setGesture(theGestureScoped);
-      },
-      100
-    )(eventName, touches, theGesture);
+    debounce((...args: unknown[]) => {
+      const [eventNameScoped, touchesScoped, theGestureScoped] = args as [
+        string,
+        ICurrentTouches,
+        string
+      ];
+      callHandler(eventNameScoped, touchesScoped, handlers);
+      setGesture(theGestureScoped);
+    }, 100)(eventName, touches, theGesture);
   }
 };
 

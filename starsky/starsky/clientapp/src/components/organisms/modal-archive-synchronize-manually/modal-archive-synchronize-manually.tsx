@@ -65,18 +65,24 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
 
   function fetchGeoSyncStatus() {
     const parentFolder = props.parentFolder ?? "/";
-    FetchGet(new UrlQuery().UrlGeoStatus(new URLPath().encodeURI(parentFolder))).then((anyData) => {
-      if (anyData.statusCode !== 200 || !anyData.data) {
-        setGeoSyncPercentage(-1);
-        return;
-      }
+    FetchGet(new UrlQuery().UrlGeoStatus(new URLPath().encodeURI(parentFolder))).then(
+      (anyData: unknown) => {
+        const containerData = anyData as {
+          statusCode: number;
+          data: { current: number; total: number };
+        };
+        if (containerData.statusCode !== 200 || !containerData.data) {
+          setGeoSyncPercentage(-1);
+          return;
+        }
 
-      if (anyData.data.current === 0 && anyData.data.total === 0) {
-        setGeoSyncPercentage(0);
-        return;
+        if (containerData.data?.current === 0 && containerData.data.total === 0) {
+          setGeoSyncPercentage(0);
+          return;
+        }
+        setGeoSyncPercentage((containerData.data.current / containerData.data.total) * 100);
       }
-      setGeoSyncPercentage((anyData.data.current / anyData.data.total) * 100);
-    });
+    );
   }
 
   useInterval(() => fetchGeoSyncStatus(), 10000);

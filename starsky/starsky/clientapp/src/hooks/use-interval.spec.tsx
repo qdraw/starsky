@@ -24,7 +24,7 @@ describe("useInterval", () => {
 
   it("check if setInterval is called", () => {
     const clearIntervalSpy = jest.spyOn(window, "setInterval").mockImplementationOnce(() => {
-      return {} as any;
+      return {} as NodeJS.Timeout;
     });
 
     const component = render(<UseIntervalComponentTest timer={10} callback={jest.fn()} />);

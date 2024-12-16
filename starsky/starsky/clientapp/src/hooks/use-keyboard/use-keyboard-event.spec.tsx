@@ -6,7 +6,7 @@ describe("useKeyboardEvent", () => {
   interface UseKeyboardEventComponentTestProps {
     regex: RegExp;
     callback: (arg0: KeyboardEvent) => void;
-    dependencies: any[];
+    dependencies: React.DependencyList;
   }
 
   const UseKeyboardEventComponentTest: React.FunctionComponent<UseKeyboardEventComponentTestProps> =

@@ -44,11 +44,12 @@ const PreferencesAppSettingsStorageFolder: React.FunctionComponent = () => {
 
   useEffect(() => {
     function permissions(): boolean {
-      if (!permissionsData?.data?.includes || permissionsData?.statusCode !== 200) {
+      const data = permissionsData?.data as string[];
+      if (!data?.includes || permissionsData?.statusCode !== 200) {
         return false;
       }
       // AppSettingsWrite
-      return permissionsData.data.includes(new UrlQuery().KeyAccountPermissionAppSettingsWrite());
+      return data.includes(new UrlQuery().KeyAccountPermissionAppSettingsWrite());
     }
 
     setIsEnabled(permissions());

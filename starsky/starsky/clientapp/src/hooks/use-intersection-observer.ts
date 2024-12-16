@@ -6,7 +6,7 @@ type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void;
 
 // credits for: https://github.com/cats-oss/use-intersection
 
-type IntersectionOptions = {
+export type IntersectionOptions = {
   root?: React.RefObject<Element>;
   rootMargin?: string;
   threshold?: number | number[];
@@ -16,9 +16,9 @@ type IntersectionOptions = {
 
 export const newIntersectionObserver = (
   ref: React.RefObject<Element>,
-  setIntersecting: React.Dispatch<any>,
+  setIntersecting: React.Dispatch<React.SetStateAction<boolean>>,
   once: boolean | undefined,
-  optsRef: React.MutableRefObject<any>,
+  optsRef: React.MutableRefObject<IntersectionOptions>,
   callback?: IntersectionChangeHandler
 ): IntersectionObserver => {
   const observer = new IntersectionObserver(

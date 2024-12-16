@@ -84,7 +84,7 @@ export class UpdateChange {
     item: IConnectionDefault,
     resolve: (value: string | boolean | PromiseLike<string | boolean>) => void
   ) {
-    if (item.statusCode !== 200 || !item.data || item.data.length === 0) {
+    if (item.statusCode !== 200 || !item.data || (item.data as IFileIndexItem[]).length === 0) {
       resolve("wrong status code or missing data");
       return;
     }

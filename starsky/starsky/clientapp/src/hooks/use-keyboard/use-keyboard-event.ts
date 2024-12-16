@@ -19,7 +19,7 @@ import { useEffect } from "react";
 function useKeyboardEvent(
   regex: RegExp,
   callback: (arg0: KeyboardEvent) => void,
-  dependencies: any = []
+  dependencies: React.DependencyList = []
 ) {
   useEffect(() => {
     const handler = function (event: KeyboardEvent) {

@@ -32,7 +32,7 @@ export async function UpdateGeoLocation(
       new UrlQuery().UrlReverseLookup(location.latitude.toString(), location.longitude.toString())
     );
     if (reverseGeoCodeResult.statusCode === 200) {
-      model = reverseGeoCodeResult.data;
+      model = reverseGeoCodeResult.data as IGeoLocationModel;
       bodyParams.append("locationCity", model.locationCity);
       bodyParams.append("locationCountry", model.locationCountry);
       bodyParams.append("locationCountryCode", model.locationCountryCode);

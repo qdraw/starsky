@@ -65,13 +65,14 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
     setIsProcessing(ProcessingState.server);
 
     const zipKeyResult = await FetchPost(new UrlQuery().UrlPublishCreate(), bodyParams.toString());
+    const zipKeyResultData = zipKeyResult.data as string;
 
     if (zipKeyResult.statusCode !== 200 || !zipKeyResult.data) {
       setIsProcessing(ProcessingState.fail);
       return;
     }
-    setCreateZipKey(zipKeyResult.data);
-    await ExportIntervalUpdate(zipKeyResult.data, setIsProcessing);
+    setCreateZipKey(zipKeyResultData);
+    await ExportIntervalUpdate(zipKeyResultData, setIsProcessing);
   }
 
   const allPublishProfiles = useFetch(new UrlQuery().UrlPublish(), "get").data as
@@ -100,7 +101,9 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
 
     FetchGet(new UrlQuery().UrlPublishExist(toUpdateItemName), CacheControl).then((result) => {
       if (result.statusCode !== 200) return;
-      setExistItemName(result.data);
+
+      const resultData = result.data as boolean;
+      setExistItemName(resultData);
     });
   }
 

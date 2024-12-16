@@ -31,8 +31,8 @@ export class UpdateRelativeObject {
             rejects(new Error("status code not 200"));
             return;
           }
-          setRelativeObjects(result.data);
-          resolve(result.data);
+          setRelativeObjects(result.data as React.SetStateAction<IRelativeObjects>);
+          resolve(result.data as IRelativeObjects);
         })
         .catch((err: Error) => {
           console.error(err);

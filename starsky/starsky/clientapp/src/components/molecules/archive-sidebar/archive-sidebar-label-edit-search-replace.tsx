@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ArchiveContext } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location/use-location";
+import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { PageType } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
@@ -87,8 +88,8 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
     return bodyParams;
   }
 
-  function handleFetchPostResponse(anyData: { data: IFileIndexItem[] }) {
-    const result = new CastToInterface().InfoFileIndexArray(anyData.data);
+  function handleFetchPostResponse(anyData: IConnectionDefault) {
+    const result = new CastToInterface().InfoFileIndexArray(anyData.data as IFileIndexItem[]);
     result.forEach((element) => {
       if (element.status === IExifStatus.ReadOnly) setIsError(MessageWriteErrorReadOnly);
       if (element.status === IExifStatus.NotFoundSourceMissing)

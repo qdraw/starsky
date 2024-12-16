@@ -21,9 +21,9 @@ const InlineSearchSuggest: React.FunctionComponent<IInlineSearchSuggestProps> = 
   const history = useLocation();
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
+  const dataFeatures = props.featuresResult?.data as IEnvFeatures | undefined;
 
   useEffect(() => {
-    const dataFeatures = props.featuresResult?.data as IEnvFeatures | undefined;
     if (dataFeatures?.systemTrashEnabled || dataFeatures?.useLocalDesktop) {
       let newMenu = [...defaultMenu];
       if (dataFeatures?.systemTrashEnabled) {
@@ -35,7 +35,7 @@ const InlineSearchSuggest: React.FunctionComponent<IInlineSearchSuggestProps> = 
       setDefaultMenu([...newMenu]);
     }
     // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
-  }, [props.featuresResult, props.featuresResult?.data?.systemTrashEnabled]);
+  }, [props.featuresResult, dataFeatures?.systemTrashEnabled]);
 
   const [defaultMenu, setDefaultMenu] = useState([
     {

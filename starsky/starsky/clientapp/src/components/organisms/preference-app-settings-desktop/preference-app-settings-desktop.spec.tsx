@@ -121,7 +121,7 @@ describe("PreferencesAppSettingsDesktop", () => {
     expect(formControlSpy).toHaveBeenCalledWith(
       {
         children: "/test",
-        contentEditable: undefined,
+        contentEditable: false,
         name: "tags",
         onBlur: expect.anything(),
         spellcheck: true

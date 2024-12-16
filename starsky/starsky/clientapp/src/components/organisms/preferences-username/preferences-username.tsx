@@ -11,11 +11,18 @@ const PreferencesUsername: React.FunctionComponent = () => {
   const MessageUsername = language.key(localization.MessageUsername);
   const MessageRole = language.key(localization.MessageRole);
 
+  interface AccountStatusData {
+    credentialsIdentifiers: string[];
+    roleCode: string;
+  }
+
   const accountStatus = useFetch(new UrlQuery().UrlAccountStatus(), "get");
+  const accountStatusData = accountStatus?.data as AccountStatusData;
+
   let userName = language.key(localization.MessageUnknownUsername);
 
-  if (accountStatus.statusCode === 200 && accountStatus?.data?.credentialsIdentifiers[0]) {
-    userName = accountStatus?.data?.credentialsIdentifiers[0];
+  if (accountStatus.statusCode === 200 && accountStatusData?.credentialsIdentifiers[0]) {
+    userName = accountStatusData?.credentialsIdentifiers[0];
     if (userName === "mail@localhost") {
       userName = language.key(localization.MessageDesktopMailLocalhostUsername);
     }
@@ -31,7 +38,7 @@ const PreferencesUsername: React.FunctionComponent = () => {
         {userName}
       </div>
       <div className="content--subheader">{MessageRole}</div>
-      <div className="content--text preferences-role">{accountStatus?.data?.roleCode}</div>
+      <div className="content--text preferences-role">{accountStatusData?.roleCode}</div>
     </>
   );
 };

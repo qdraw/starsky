@@ -1,3 +1,5 @@
+import { ICurrentTouches } from "./ICurrentTouches.types";
+
 export interface IHandlers {
   onPanStart?: () => void;
   onPanMove?: (ev: TouchEvent) => void;
@@ -13,4 +15,8 @@ export interface IHandlers {
   onPinchStart?: () => void;
   onPinchChanged?: () => void;
   onPinchEnd?: () => void;
+}
+
+export interface IHandlersMapper {
+  [key: string]: (event?: ICurrentTouches) => void;
 }
