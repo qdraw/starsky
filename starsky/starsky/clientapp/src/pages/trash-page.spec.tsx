@@ -39,7 +39,9 @@ describe("TrashPage", () => {
   });
 
   it("Internal Error null", () => {
-    jest.spyOn(useSearchList, "default").mockImplementationOnce(() => null as any);
+    jest
+      .spyOn(useSearchList, "default")
+      .mockImplementationOnce(() => null as unknown as ISearchList);
 
     const component = render(<TrashPage />);
     expect(component.container.innerHTML).toBe("Something went wrong");
@@ -48,7 +50,9 @@ describe("TrashPage", () => {
   });
 
   it("Internal Error plain object", () => {
-    jest.spyOn(useSearchList, "default").mockImplementationOnce(() => ({}) as any);
+    jest
+      .spyOn(useSearchList, "default")
+      .mockImplementationOnce(() => ({}) as unknown as ISearchList);
 
     const component = render(<TrashPage />);
     expect(component.container.innerHTML).toBe("Something went wrong");
@@ -64,7 +68,7 @@ describe("TrashPage", () => {
     jest.spyOn(useSearchList, "default").mockImplementationOnce(() => {
       return {
         pageType: PageType.ApplicationException
-      } as any;
+      } as ISearchList;
     });
 
     const component = render(<TrashPage />);
@@ -81,7 +85,7 @@ describe("TrashPage", () => {
       return {
         archive: {},
         pageType: PageType.Loading
-      } as any;
+      } as ISearchList;
     });
 
     jest.spyOn(ArchiveContextWrapper, "default").mockImplementationOnce(() => {

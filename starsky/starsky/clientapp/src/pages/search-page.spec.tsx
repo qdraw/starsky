@@ -3,6 +3,7 @@ import * as Preloader from "../components/atoms/preloader/preloader";
 import * as ApplicationException from "../components/organisms/application-exception/application-exception";
 import * as ArchiveContextWrapper from "../contexts-wrappers/archive-wrapper";
 import * as useSearchList from "../hooks/use-searchlist";
+import { ISearchList } from "../hooks/use-searchlist";
 import { PageType } from "../interfaces/IDetailView";
 import { SearchPage } from "./search-page";
 
@@ -24,7 +25,9 @@ describe("SearchPage", () => {
   });
 
   it("Internal Error null", () => {
-    jest.spyOn(useSearchList, "default").mockImplementationOnce(() => null as any);
+    jest
+      .spyOn(useSearchList, "default")
+      .mockImplementationOnce(() => null as unknown as ISearchList);
 
     const component = render(<SearchPage />);
     expect(component.container.innerHTML).toBe("Something went wrong");
@@ -33,7 +36,9 @@ describe("SearchPage", () => {
   });
 
   it("Internal Error plain object", () => {
-    jest.spyOn(useSearchList, "default").mockImplementationOnce(() => ({}) as any);
+    jest
+      .spyOn(useSearchList, "default")
+      .mockImplementationOnce(() => ({}) as unknown as ISearchList);
 
     const component = render(<SearchPage />);
     expect(component.container.innerHTML).toBe("Something went wrong");
@@ -49,7 +54,7 @@ describe("SearchPage", () => {
     jest.spyOn(useSearchList, "default").mockImplementationOnce(() => {
       return {
         pageType: PageType.ApplicationException
-      } as any;
+      } as unknown as ISearchList;
     });
 
     const component = render(<SearchPage />);
@@ -66,7 +71,7 @@ describe("SearchPage", () => {
       return {
         archive: {},
         pageType: PageType.Loading
-      } as any;
+      } as unknown as ISearchList;
     });
 
     jest.spyOn(ArchiveContextWrapper, "default").mockImplementationOnce(() => {
