@@ -14,7 +14,7 @@ describe("Geo", () => {
     });
 
     it("point 1 has wrong input", () => {
-      let shouldGiveError: any;
+      let shouldGiveError: unknown;
       try {
         geo.Distance([1, 1, 1], []);
         throw Error("should fail");
@@ -27,11 +27,11 @@ describe("Geo", () => {
     });
 
     it("point 2 has wrong input", () => {
-      let shouldGiveError: any;
+      let shouldGiveError: unknown;
       try {
         geo.Distance([1, 1], []);
         throw Error("should fail");
-      } catch (error) {
+      } catch (error: unknown) {
         shouldGiveError = error;
       }
 

@@ -1,3 +1,4 @@
+import { newIArchive } from "../../../interfaces/IArchive";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
@@ -58,7 +59,7 @@ describe("Update Change", () => {
     it("wrong status code or missing data", async () => {
       const cacheSetSpy = jest
         .spyOn(FileListCache.prototype, "CacheSet")
-        .mockImplementationOnce(() => {});
+        .mockImplementationOnce(() => newIArchive());
 
       const fetchPostSpy = jest.spyOn(FetchPost, "default").mockImplementationOnce(() => {
         return Promise.resolve({
@@ -86,7 +87,7 @@ describe("Update Change", () => {
     it("item not in result", async () => {
       const cacheSetSpy = jest
         .spyOn(FileListCache.prototype, "CacheSet")
-        .mockImplementationOnce(() => {});
+        .mockImplementationOnce(() => newIArchive());
 
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
@@ -115,7 +116,7 @@ describe("Update Change", () => {
     it("contain result", async () => {
       const cacheSetSpy = jest
         .spyOn(FileListCache.prototype, "CacheSet")
-        .mockImplementationOnce(() => {});
+        .mockImplementationOnce(() => newIArchive());
 
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")

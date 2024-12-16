@@ -117,7 +117,7 @@ describe("ArchiveContext", () => {
 
     const cacheSetObjectSpy = jest
       .spyOn(FileListCache.prototype, "CacheSetObject")
-      .mockImplementationOnce(() => {});
+      .mockImplementationOnce(() => newIArchive());
 
     // fullPath input
     const action = { type: "force-reset", payload: state } as ArchiveAction;
@@ -154,7 +154,7 @@ describe("ArchiveContext", () => {
     const cacheSetObjectSpy = jest
       .spyOn(FileListCache.prototype, "CacheSetObject")
       .mockReset()
-      .mockImplementationOnce(() => {});
+      .mockImplementationOnce(() => newIArchive());
 
     // fullPath input
     const action = { type: "force-reset", payload: state } as ArchiveAction;
