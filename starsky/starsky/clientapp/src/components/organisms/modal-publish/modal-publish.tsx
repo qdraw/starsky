@@ -98,7 +98,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
       return;
     }
 
-    FetchGet(new UrlQuery().UrlPublishExist(toUpdateItemName), { CacheControl }).then((result) => {
+    FetchGet(new UrlQuery().UrlPublishExist(toUpdateItemName), CacheControl).then((result) => {
       if (result.statusCode !== 200) return;
       setExistItemName(result.data);
     });

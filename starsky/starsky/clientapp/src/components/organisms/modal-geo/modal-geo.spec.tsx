@@ -18,7 +18,7 @@ describe("ModalGeo", () => {
       return {
         addLayer: jest.fn(),
         on: jest.fn()
-      } as any;
+      } as unknown as L.Map;
     });
   });
 
@@ -124,7 +124,7 @@ describe("ModalGeo", () => {
         on: (_name: string, fn: (arg: object) => void) => {
           fn({ latlng: {} });
         },
-        eachLayer: (fn: (arg: L.Marker<any> | object) => void) => {
+        eachLayer: (fn: (arg: L.Marker<unknown> | object) => void) => {
           fn(new L.Marker(new LatLng(0, 0)));
           fn({});
         },

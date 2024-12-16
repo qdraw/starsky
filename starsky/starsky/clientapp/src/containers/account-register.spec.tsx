@@ -9,14 +9,18 @@ describe("AccountRegister", () => {
   it("renders", () => {
     jest
       .spyOn(FetchGet, "default")
-      .mockImplementationOnce(() => Promise.resolve({ statusCode: 4638 }) as any);
+      .mockImplementationOnce(
+        () => Promise.resolve({ statusCode: 4638 }) as Promise<IConnectionDefault>
+      );
     render(<AccountRegister />);
   });
 
   it("link to TOC exist", () => {
     jest
       .spyOn(FetchGet, "default")
-      .mockImplementationOnce(() => Promise.resolve({ statusCode: 876 }) as any);
+      .mockImplementationOnce(
+        () => Promise.resolve({ statusCode: 876 }) as Promise<IConnectionDefault>
+      );
     const component = render(<AccountRegister />);
     expect(screen.getByTestId("toc")).toBeTruthy();
 
@@ -26,7 +30,9 @@ describe("AccountRegister", () => {
   it("link to privacy exist", () => {
     jest
       .spyOn(FetchGet, "default")
-      .mockImplementationOnce(() => Promise.resolve({ statusCode: 123 }) as any);
+      .mockImplementationOnce(
+        () => Promise.resolve({ statusCode: 123 }) as Promise<IConnectionDefault>
+      );
     const component = render(<AccountRegister />);
     expect(component.getByTestId("privacy")).toBeTruthy();
 
