@@ -38,7 +38,7 @@ export class UpdateChange {
    * @param items - tuple with "value: string, name: string"
    */
   public Update(items: [string, string][]): Promise<string | boolean> {
-    const updateObject: any = { f: this.fileIndexItem.filePath };
+    const updateObject: Record<string, string> = { f: this.fileIndexItem.filePath };
 
     for (const [name, value] of items) {
       if (!name) continue;
@@ -48,7 +48,10 @@ export class UpdateChange {
       if (!replacedValue) replacedValue = AsciiNull();
 
       // compare
-      const fileIndexObject: any = this.fileIndexItem;
+      const fileIndexObject: Record<string, string> = this.fileIndexItem as unknown as Record<
+        string,
+        string
+      >;
 
       if (fileIndexObject[name] === undefined) {
         console.error("missing name", name);

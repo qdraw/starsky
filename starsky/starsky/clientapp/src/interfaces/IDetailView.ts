@@ -1,3 +1,4 @@
+import { IExifStatus } from "./IExifStatus";
 import { IFileIndexItem } from "./IFileIndexItem";
 
 export enum PageType {
@@ -40,6 +41,7 @@ export interface IDetailView {
   isReadOnly: boolean;
   collections?: boolean;
   dateCache: number;
+  status: IExifStatus;
 }
 
 export function newDetailView(): IDetailView {

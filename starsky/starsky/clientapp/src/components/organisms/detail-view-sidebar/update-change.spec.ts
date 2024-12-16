@@ -1,5 +1,7 @@
+import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
 import { newIArchive } from "../../../interfaces/IArchive";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
+import { IDetailView } from "../../../interfaces/IDetailView";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
 import { FileListCache } from "../../../shared/filelist-cache";
@@ -12,7 +14,13 @@ describe("Update Change", () => {
         return Promise.resolve({} as IConnectionDefault);
       });
 
-      new UpdateChange({} as any, jest.fn(), jest.fn(), {} as any, {} as any).Update([]);
+      new UpdateChange(
+        {} as unknown as IFileIndexItem,
+        jest.fn(),
+        jest.fn(),
+        {} as unknown as IUseLocation,
+        {} as unknown as IDetailView
+      ).Update([]);
 
       expect(fetchPostSpy).toHaveBeenCalledTimes(0);
     });
@@ -22,9 +30,13 @@ describe("Update Change", () => {
         return Promise.resolve({} as IConnectionDefault);
       });
 
-      new UpdateChange({} as any, jest.fn(), jest.fn(), {} as any, {} as any).Update([
-        ["", "test"]
-      ]);
+      new UpdateChange(
+        {} as unknown as IFileIndexItem,
+        jest.fn(),
+        jest.fn(),
+        {} as unknown as IUseLocation,
+        {} as unknown as IDetailView
+      ).Update([["", "test"]]);
 
       expect(fetchPostSpy).toHaveBeenCalledTimes(0);
     });
@@ -34,9 +46,13 @@ describe("Update Change", () => {
         return Promise.resolve({} as IConnectionDefault);
       });
 
-      new UpdateChange({ tag: "" } as any, jest.fn(), jest.fn(), {} as any, {} as any).Update([
-        ["tag", "test"]
-      ]);
+      new UpdateChange(
+        { tag: "" } as unknown as IFileIndexItem,
+        jest.fn(),
+        jest.fn(),
+        {} as unknown as IUseLocation,
+        {} as unknown as IDetailView
+      ).Update([["tag", "test"]]);
 
       expect(fetchPostSpy).toHaveBeenCalledTimes(1);
     });
@@ -49,9 +65,13 @@ describe("Update Change", () => {
           return Promise.resolve({} as IConnectionDefault);
         });
 
-      new UpdateChange({ tag: "test" } as any, jest.fn(), jest.fn(), {} as any, {} as any).Update([
-        ["tag", "test"]
-      ]);
+      new UpdateChange(
+        { tag: "test" } as unknown as IFileIndexItem,
+        jest.fn(),
+        jest.fn(),
+        {} as unknown as IUseLocation,
+        {} as unknown as IDetailView
+      ).Update([["tag", "test"]]);
 
       expect(fetchPostSpy).toHaveBeenCalledTimes(0);
     });
@@ -71,11 +91,11 @@ describe("Update Change", () => {
       });
 
       const result = await new UpdateChange(
-        { tag: "test1" } as any,
+        { tag: "test1" } as unknown as IFileIndexItem,
         jest.fn(),
         jest.fn(),
-        {} as any,
-        {} as any
+        {} as unknown as IUseLocation,
+        {} as unknown as IDetailView
       ).Update([["tag", "test"]]);
 
       expect(result).toBe("wrong status code or missing data");
@@ -100,11 +120,11 @@ describe("Update Change", () => {
         });
 
       const result = await new UpdateChange(
-        { tag: "test1" } as any,
+        { tag: "test1" } as unknown as IFileIndexItem,
         jest.fn(),
         jest.fn(),
-        { location: { search: "" } } as any,
-        {} as any
+        { location: { search: "" } } as unknown as IUseLocation,
+        {} as unknown as IDetailView
       ).Update([["tag", "test"]]);
 
       expect(result).toBe("item not in result");
@@ -129,11 +149,11 @@ describe("Update Change", () => {
         });
 
       const result = await new UpdateChange(
-        { tag: "test1", filePath: "/test.jpg" } as any,
+        { tag: "test1", filePath: "/test.jpg" } as unknown as IFileIndexItem,
         jest.fn(),
         jest.fn(),
-        { location: { search: "/test.jpg" } } as any,
-        {} as any
+        { location: { search: "/test.jpg" } } as unknown as IUseLocation,
+        {} as unknown as IDetailView
       ).Update([["tag", "test"]]);
 
       expect(result).toBe(true);
@@ -150,9 +170,13 @@ describe("Update Change", () => {
           return Promise.resolve({} as IConnectionDefault);
         });
 
-      await new UpdateChange({} as any, jest.fn(), jest.fn(), {} as any, {} as any).Update([
-        ["tags", "test"]
-      ]);
+      await new UpdateChange(
+        {} as unknown as IFileIndexItem,
+        jest.fn(),
+        jest.fn(),
+        {} as unknown as IUseLocation,
+        {} as unknown as IDetailView
+      ).Update([["tags", "test"]]);
 
       expect(fetchPostSpy).toHaveBeenCalledTimes(0);
     });

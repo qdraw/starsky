@@ -275,7 +275,7 @@ describe("FileListCache", () => {
         colorClassActiveList: [],
         isReadOnly: false,
         dateCache: Date.now()
-      };
+      } as unknown as IDetailView;
 
       // Set the parent item in the cache
       fileListCache.CacheSetObject({ ...urlObject, f: "/test" }, parentItem);

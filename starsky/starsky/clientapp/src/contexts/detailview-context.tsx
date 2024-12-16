@@ -18,7 +18,7 @@ const initialState: IDetailView = {
   colorClassActiveList: [],
   isReadOnly: false,
   dateCache: Date.now()
-};
+} as unknown as IDetailView;
 
 export type DetailViewAction =
   | {
