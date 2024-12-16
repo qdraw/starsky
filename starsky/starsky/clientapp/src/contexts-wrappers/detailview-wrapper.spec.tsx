@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { render, RenderResult } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import * as DetailView from "../containers/detailview/detailview";
 import * as useDetailViewContext from "../contexts/detailview-context";
@@ -33,13 +33,13 @@ describe("DetailViewWrapper", () => {
       const contextValues = {
         state: { fileIndexItem: newIFileIndexItem() },
         dispatch: jest.fn()
-      } as any;
+      } as unknown as useDetailViewContext.IDetailViewContext;
 
       jest
         .spyOn(useDetailViewContext, "useDetailViewContext")
-        .mockImplementationOnce(() => contextValues as any)
-        .mockImplementationOnce(() => contextValues as any)
-        .mockImplementationOnce(() => contextValues as any);
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues);
 
       const args = {
         ...newDetailView(),
@@ -64,12 +64,12 @@ describe("DetailViewWrapper", () => {
       const contextValues = {
         state: null,
         dispatch: jest.fn()
-      } as any;
+      } as unknown as useDetailViewContext.IDetailViewContext;
 
       jest
         .spyOn(useDetailViewContext, "useDetailViewContext")
         .mockReset()
-        .mockImplementationOnce(() => contextValues as any);
+        .mockImplementationOnce(() => contextValues);
 
       const args = { ...newDetailView() } as IDetailView;
       const component = render(<DetailViewWrapper {...args} />);
@@ -103,7 +103,10 @@ describe("DetailViewWrapper", () => {
     it("Check if event is received", () => {
       const dispatch = jest.fn();
       document.body.innerHTML = "";
-      const result = mountReactHook(DetailViewEventListenerUseEffect, [dispatch]);
+      const result = mountReactHook(
+        DetailViewEventListenerUseEffect as (...args: unknown[]) => unknown,
+        [dispatch]
+      );
 
       const detail = {
         data: [
@@ -128,7 +131,7 @@ describe("DetailViewWrapper", () => {
       expect(dispatch).toHaveBeenCalled();
       expect(dispatch).toHaveBeenCalledWith(detail.data[1]);
 
-      const element = result.componentMount as any;
+      const element = result.componentMount as unknown as RenderResult;
       element.unmount();
     });
   });

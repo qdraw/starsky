@@ -167,7 +167,7 @@ describe("ArchiveContextWrapper", () => {
     });
 
     it("Check if event is received", () => {
-      const dispatch = (e: any) => {
+      const dispatch = (e: { add: IFileIndexItem[]; type: string }) => {
         // should ignore the first one
         expect(e).toStrictEqual({
           add: [
@@ -186,7 +186,10 @@ describe("ArchiveContextWrapper", () => {
         });
       };
 
-      const result = mountReactHook(ArchiveEventListenerUseEffect, [dispatch]);
+      const result = mountReactHook(
+        ArchiveEventListenerUseEffect as (...args: unknown[]) => unknown,
+        [dispatch]
+      );
       const detail = {
         data: [
           {
@@ -217,7 +220,10 @@ describe("ArchiveContextWrapper", () => {
         });
       };
 
-      const result = mountReactHook(ArchiveEventListenerUseEffect, [dispatch]);
+      const result = mountReactHook(
+        ArchiveEventListenerUseEffect as (...args: unknown[]) => unknown,
+        [dispatch]
+      );
       const detail = {
         data: [
           {

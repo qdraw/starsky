@@ -6,7 +6,7 @@ describe("useHotKeys", () => {
   describe("should ignore", () => {
     it("missing input as empty object", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [{}, callback]);
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [{}, callback]);
 
       const event = new KeyboardEvent("keydown", {
         bubbles: true,
@@ -22,7 +22,10 @@ describe("useHotKeys", () => {
 
     it("missing input as undefined", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [undefined, callback]);
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
+        undefined,
+        callback
+      ]);
 
       const event = new KeyboardEvent("keydown", {
         bubbles: true,
@@ -41,7 +44,7 @@ describe("useHotKeys", () => {
 
       jest.spyOn(Keyboard.prototype, "isInForm").mockImplementationOnce(() => true);
 
-      const test = mountReactHook(useHotKeys, [
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
         {
           key: "q",
           altKey: true
@@ -65,7 +68,7 @@ describe("useHotKeys", () => {
   describe("pressing key with q", () => {
     it("should return when pressing alt+q and expect alt+q", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
         {
           key: "q",
           altKey: true
@@ -87,7 +90,7 @@ describe("useHotKeys", () => {
 
     it("should return when pressing control q and expect key:q", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
         {
           key: "q",
           ctrlKey: true
@@ -109,7 +112,7 @@ describe("useHotKeys", () => {
 
     it("should return when pressing command/meta q and expect cmd/meta+q", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
         {
           key: "q",
           metaKey: true
@@ -131,7 +134,7 @@ describe("useHotKeys", () => {
 
     it("should return when pressing shift+q and expect shift+q", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
         {
           key: "q",
           shiftKey: true
@@ -153,7 +156,7 @@ describe("useHotKeys", () => {
 
     it("should not return when pressing q and expect shift+q", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
         {
           key: "q",
           shiftKey: true
@@ -174,7 +177,7 @@ describe("useHotKeys", () => {
 
     it("should not return when pressing shift+q and expect q only", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
         {
           key: "q",
           shiftKey: true
@@ -195,7 +198,7 @@ describe("useHotKeys", () => {
 
     it("ctrlKeyOrMetaKey - should return when pressing command/meta with combination option enabled q", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
         {
           key: "q",
           ctrlKeyOrMetaKey: true
@@ -217,7 +220,7 @@ describe("useHotKeys", () => {
 
     it("ctrlKeyOrMetaKey - should return when pressing ctrlKey with combination option enabled q", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
         {
           key: "q",
           ctrlKeyOrMetaKey: true
@@ -239,7 +242,7 @@ describe("useHotKeys", () => {
 
     it("ctrlKeyOrMetaKey - should return when pressing cmdOrCtlr+shift+q", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
         {
           key: "q",
           ctrlKeyOrMetaKey: true,
@@ -263,7 +266,7 @@ describe("useHotKeys", () => {
 
     it("ctrlKeyOrMetaKey - should not return when pressing shiftKey with combination option enabled q", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
         {
           key: "q",
           ctrlKeyOrMetaKey: true
@@ -285,7 +288,7 @@ describe("useHotKeys", () => {
 
     it("ctrlKeyOrMetaKey - should not return when pressing q only with combination option enabled", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
         {
           key: "q",
           ctrlKeyOrMetaKey: true
@@ -308,7 +311,7 @@ describe("useHotKeys", () => {
 
     it("ctrlKeyOrMetaKey - should not return when pressing t only with combination option enabled", () => {
       const callback = jest.fn();
-      const test = mountReactHook(useHotKeys, [
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
         {
           key: "q",
           ctrlKeyOrMetaKey: true

@@ -2,8 +2,8 @@ import { newIArchive } from "../interfaces/IArchive";
 import { IConnectionDefault } from "../interfaces/IConnectionDefault";
 import { PageType } from "../interfaces/IDetailView";
 import { newIFileIndexItemArray } from "../interfaces/IFileIndexItem";
-import useFetch, { fetchContent } from "./use-fetch";
 import { mountReactHook } from "./___tests___/test-hook";
+import useFetch, { fetchContent } from "./use-fetch";
 
 describe("UseFetch", () => {
   let setupComponent;
@@ -31,7 +31,10 @@ describe("UseFetch", () => {
   }
 
   beforeEach(() => {
-    setupComponent = mountReactHook(useFetch, ["/default/", "get"]); // Mount a Component with our hook
+    setupComponent = mountReactHook(useFetch as (...args: unknown[]) => unknown, [
+      "/default/",
+      "get"
+    ]); // Mount a Component with our hook
     hook = setupComponent.componentHook as IConnectionDefault;
   });
 

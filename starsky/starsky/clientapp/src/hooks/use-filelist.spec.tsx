@@ -1,11 +1,10 @@
-import { act } from "react";
+import React, { act } from "react";
 import { IArchive, newIArchive } from "../interfaces/IArchive";
 import { IDetailView, IRelativeObjects, PageType } from "../interfaces/IDetailView";
 import { newIFileIndexItem, newIFileIndexItemArray } from "../interfaces/IFileIndexItem";
 import { FileListCache } from "../shared/filelist-cache";
 import { mountReactHook } from "./___tests___/test-hook";
 import useFileList, { IFileList, fetchContentUseFileList } from "./use-filelist";
-import React from "react";
 
 describe("UseFileList", () => {
   describe("Archive", () => {
@@ -32,7 +31,10 @@ describe("UseFileList", () => {
     }
 
     function mounter(path: string = "/default/") {
-      const setupComponent = mountReactHook(useFileList, [path, "1"]);
+      const setupComponent = mountReactHook(useFileList as (...args: unknown[]) => unknown, [
+        path,
+        "1"
+      ]);
       // Mount a Component with our hook
       const hook = setupComponent.componentHook as IFileList;
       return {

@@ -87,7 +87,7 @@ describe("DetailView", () => {
   } as IDetailView;
 
   describe("With context and test if image is loaded", () => {
-    let contextProvider: any;
+    let contextProvider: ContextDetailview.IDetailViewContext;
     let TestComponent: () => JSX.Element;
     let Component: RenderResult;
 
@@ -309,7 +309,7 @@ describe("DetailView", () => {
         .mockImplementationOnce(() => locationObject);
 
       jest.spyOn(UpdateRelativeObject.prototype, "Update").mockImplementationOnce(() => {
-        return Promise.resolve() as any;
+        return Promise.resolve<IRelativeObjects>({} as IRelativeObjects);
       });
 
       const detailview = render(<TestComponent />);
@@ -358,7 +358,7 @@ describe("DetailView", () => {
         .spyOn(UpdateRelativeObject.prototype, "Update")
         .mockReset()
         .mockImplementationOnce(() => {
-          return Promise.resolve() as any;
+          return Promise.resolve<IRelativeObjects>({} as IRelativeObjects);
         });
 
       const component = render(<TestComponent />);
@@ -461,7 +461,7 @@ describe("DetailView", () => {
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject);
       jest.spyOn(UpdateRelativeObject.prototype, "Update").mockImplementationOnce(() => {
-        return Promise.resolve() as any;
+        return Promise.resolve<IRelativeObjects>({} as IRelativeObjects);
       });
 
       const component = render(<TestComponent />);
@@ -503,7 +503,7 @@ describe("DetailView", () => {
 
       const updateRelativeObjectSpy = jest
         .spyOn(UpdateRelativeObject.prototype, "Update")
-        .mockImplementationOnce(() => Promise.resolve() as any);
+        .mockImplementationOnce(() => Promise.resolve<IRelativeObjects>({} as IRelativeObjects));
 
       let handlerOnSwipeLeft: () => void;
       jest
@@ -563,7 +563,7 @@ describe("DetailView", () => {
 
       const updateRelativeObjectSpy = jest
         .spyOn(UpdateRelativeObject.prototype, "Update")
-        .mockImplementationOnce(() => Promise.resolve() as any);
+        .mockImplementationOnce(() => Promise.resolve<IRelativeObjects>({} as IRelativeObjects));
 
       let handlerOnSwipeLeft: () => void;
       jest

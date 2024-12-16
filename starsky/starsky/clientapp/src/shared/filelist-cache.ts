@@ -188,13 +188,12 @@ export class FileListCache {
    */
   public ParseJson(cacheString: string | null): IArchive | IDetailView | null {
     if (!cacheString) return null;
-    let cacheData = {} as IArchive | IDetailView | null;
     try {
-      cacheData = JSON.parse(cacheString) as IArchive | IDetailView;
+      const cacheData = JSON.parse(cacheString) as IArchive | IDetailView;
+      return cacheData.dateCache ? cacheData : null;
     } catch (error) {
       console.error(error);
       return null;
     }
-    return cacheData.dateCache ? cacheData : null;
   }
 }

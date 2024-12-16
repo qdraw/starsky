@@ -2,10 +2,10 @@ import { render } from "@testing-library/react";
 import { act } from "react";
 
 type ModalPropTypes = {
-  children: (hookValues: any) => any;
+  children: (hookValues: unknown) => React.ReactNode;
 };
 
-export const mountReactHook = (hook: any, args: any[]) => {
+export const mountReactHook = (hook: (...args: unknown[]) => unknown, args: unknown[]) => {
   const Component = ({ children }: ModalPropTypes) => {
     return children(hook(...args));
   };

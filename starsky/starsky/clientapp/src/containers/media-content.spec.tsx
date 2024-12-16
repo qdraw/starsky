@@ -36,7 +36,7 @@ describe("MediaContent", () => {
       return {
         archive: { ...newIArchive() },
         pageType: PageType.Loading
-      } as any;
+      } as useFileList.IFileList;
     });
 
     // import * as useSockets from "../hooks/realtime/use-sockets";

@@ -93,9 +93,9 @@ export const Login: React.FC<ILoginProps> = () => {
 
         history.navigate(returnUrl, { replace: true });
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setLoading(false);
-      setError(err.message);
+      setError((err as { message: string }).message);
     }
   };
 
