@@ -105,6 +105,7 @@ export const executeTouchMove = (
       setGesture(theGestureScoped);
     }, 100)(eventName, touches, theGesture);
   }
+  return theGesture;
 };
 
 const executeTouchEnd = (
