@@ -79,7 +79,9 @@ describe("url-path", () => {
   describe("Change", () => {
     it("no field name should return null", () => {
       const result = sidebarUpdate.Change(
-        { currentTarget: { textContent: null, dataset: {} } } as any,
+        {
+          currentTarget: { textContent: null, dataset: {} }
+        } as unknown as React.ChangeEvent<HTMLInputElement>,
         {} as ISidebarUpdate
       );
       expect(result).toStrictEqual(null);
@@ -89,7 +91,7 @@ describe("url-path", () => {
       const result = sidebarUpdate.Change(
         {
           currentTarget: { textContent: null, dataset: { name: "test" } }
-        } as any,
+        } as unknown as React.ChangeEvent<HTMLInputElement>,
         {} as ISidebarUpdate
       );
       expect(result).toStrictEqual({});
@@ -99,7 +101,7 @@ describe("url-path", () => {
       const result = sidebarUpdate.Change(
         {
           currentTarget: { textContent: "test", dataset: { name: "tags" } }
-        } as any,
+        } as unknown as React.ChangeEvent<HTMLInputElement>,
         {} as ISidebarUpdate
       );
       expect(result).toStrictEqual({

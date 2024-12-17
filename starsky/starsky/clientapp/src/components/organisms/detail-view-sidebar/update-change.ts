@@ -69,7 +69,9 @@ export class UpdateChange {
       .toString()
       .replace(/%00/gi, AsciiNull());
 
-    if (bodyParams === "") return Promise.resolve("no body param");
+    if (bodyParams === "") {
+      return Promise.resolve("no body param");
+    }
 
     return new Promise((resolve) => {
       FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams)

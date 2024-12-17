@@ -5,7 +5,7 @@ const FetchPost = async (
   url: string,
   body: string | FormData,
   method: "post" | "delete" = "post",
-  headers: object = {}
+  headers: Record<string, string | undefined> = {}
 ): Promise<IConnectionDefault> => {
   const settings: RequestInit = {
     method: method,
@@ -19,7 +19,8 @@ const FetchPost = async (
   };
 
   if (typeof body === "string") {
-    (settings.headers as any)["Content-Type"] = "application/x-www-form-urlencoded";
+    (settings.headers as Record<string, string>)["Content-Type"] =
+      "application/x-www-form-urlencoded";
   }
 
   let res: Response;
