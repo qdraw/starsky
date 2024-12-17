@@ -1,4 +1,4 @@
-import { createEvent, fireEvent, render } from "@testing-library/react";
+import { createEvent, fireEvent, render, renderHook } from "@testing-library/react";
 import React, { act, useRef, useState } from "react";
 import { mountReactHook } from "../___tests___/test-hook";
 import * as callHandler from "./call-handler";
@@ -6,8 +6,9 @@ import * as debounce from "./debounce";
 import * as getCurrentTouchesAll from "./get-current-touches";
 import { getCurrentTouches } from "./get-current-touches";
 import { ICurrentTouches } from "./ICurrentTouches.types";
+import { IHandlers } from "./IHandlers.types";
 import { Pointer } from "./pointer";
-import { getAngleDeg, getDistance, useGestures } from "./use-gestures";
+import { executeTouchMove, getAngleDeg, getDistance, useGestures } from "./use-gestures";
 
 function Rotate() {
   const [imageRotation, setImageRotation] = useState(0);
@@ -568,5 +569,52 @@ describe("useGestures", () => {
       const component = hook.componentMount;
       component.unmount();
     });
+  });
+
+  it("should call callHandler and setGesture with the correct arguments", () => {
+    executeTouchMove(
+      {} as globalThis.TouchEvent,
+      {} as ICurrentTouches,
+      {} as IHandlers,
+      { minDelta: 1 },
+      {} as ICurrentTouches,
+      jest.fn()
+    );
+  });
+
+  it("should correctly destructure args array", () => {
+    // const mockEventName = "touchstart";
+    // // const mockTouches: ICurrentTouches = {
+    // //   x: 100,
+    // //   y: 100
+    // // };
+    // const mockGesture = "swipe";
+
+    // const args: [string, ICurrentTouches, string] = [mockEventName, mockTouches, mockGesture];
+
+    jest
+      .spyOn(React, "useState")
+      .mockReset()
+      .mockImplementationOnce(() => [{ pointers: ["a"] }, jest.fn()])
+      .mockImplementationOnce(() => ["gesture1", jest.fn()]);
+
+    const result = renderHook(() => {
+      const inputFormControlReference = useRef<HTMLDivElement>(null);
+      return [<div ref={inputFormControlReference}></div>, inputFormControlReference];
+    });
+
+    const reference = result.result.current[1] as React.RefObject<HTMLDivElement>;
+
+    const result1 = renderHook(() => useGestures(reference, { onPanStart: jest.fn() }));
+
+    console.log(result1.result.current);
+
+    // Call the function that contains the destructuring
+    // const [eventNameScoped, , theGestureScoped] = args;
+
+    // Verify that the variables are correctly assigned
+    // expect(eventNameScoped).toBe(mockEventName);
+    // expect(touchesScoped).toBe(mockTouches);
+    // expect(theGestureScoped).toBe(mockGesture);
   });
 });

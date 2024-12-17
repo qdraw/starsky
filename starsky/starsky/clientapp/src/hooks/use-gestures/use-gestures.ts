@@ -47,7 +47,7 @@ const executeTouchStart = (
   }
 };
 
-const executeTouchMove = (
+export const executeTouchMove = (
   event: globalThis.TouchEvent,
   currentTouches: ICurrentTouches,
   handlers: IHandlers,
