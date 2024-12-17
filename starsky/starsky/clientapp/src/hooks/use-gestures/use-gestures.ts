@@ -54,7 +54,7 @@ export const executeTouchMove = (
   options: { minDelta: number },
   touches: ICurrentTouches,
   setGesture: Dispatch<SetStateAction<string>>
-) => {
+): string | undefined => {
   if (event.touches.length === 2) {
     callHandler("onPinchChanged", currentTouches, handlers);
     return;
