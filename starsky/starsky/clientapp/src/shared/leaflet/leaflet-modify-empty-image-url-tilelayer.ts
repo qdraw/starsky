@@ -28,7 +28,7 @@ export class LeafletEmptyImageUrlTileLayer extends TileLayer {
 
         tile.onload = L.Util.falseFn;
         tile.onerror = L.Util.falseFn;
-        if (!(tile as HTMLImageElement).complete) {
+        if (!tile.complete) {
           tile.src = EmptyImageUrl; // Replace emptyImageUrl
           L.DomUtil.remove(tile);
           delete this._tiles[i];

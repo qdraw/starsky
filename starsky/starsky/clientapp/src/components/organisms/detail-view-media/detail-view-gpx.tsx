@@ -32,7 +32,7 @@ const DetailViewGpx: React.FC = () => {
     mapReference.current.innerHTML = "";
     const container = L.DomUtil.get(mapReference.current);
     if (container != null) {
-      (container as HTMLElement as unknown as { _leaflet_id: null })._leaflet_id = null;
+      (container as unknown as { _leaflet_id: null })._leaflet_id = null;
     }
 
     const tracks: [number, number][] = [];
