@@ -1,4 +1,4 @@
-import { createEvent, fireEvent, render, renderHook } from "@testing-library/react";
+import { createEvent, fireEvent, render } from "@testing-library/react";
 import React, { act, useRef, useState } from "react";
 import { mountReactHook } from "../___tests___/test-hook";
 import * as callHandler from "./call-handler";
@@ -571,50 +571,88 @@ describe("useGestures", () => {
     });
   });
 
-  it("should call callHandler and setGesture with the correct arguments", () => {
-    executeTouchMove(
-      {} as globalThis.TouchEvent,
-      {} as ICurrentTouches,
+  it("executeTouchMove returns emthy string", () => {
+    const result = executeTouchMove(
+      { touches: [] } as unknown as globalThis.TouchEvent,
+      {
+        x: 1,
+        y: 1,
+        deltaX: 1,
+        deltaY: 1
+      } as ICurrentTouches,
       {} as IHandlers,
-      { minDelta: 1 },
+      { minDelta: 0 },
       {} as ICurrentTouches,
       jest.fn()
     );
+
+    expect(result).toBe("");
   });
 
-  it("should correctly destructure args array", () => {
-    // const mockEventName = "touchstart";
-    // // const mockTouches: ICurrentTouches = {
-    // //   x: 100,
-    // //   y: 100
-    // // };
-    // const mockGesture = "swipe";
+  describe("executeTouchMove", () => {
+    const testCases = [
+      {
+        description: "swipeRight",
+        currentTouches: { x: 150, y: 150, deltaX: 1000, deltaY: 5 },
+        options: { minDelta: 10 },
+        expectedGesture: "swipeRight"
+      },
+      {
+        description: "swipeUp",
+        currentTouches: { x: 150, y: 150, deltaX: 5, deltaY: -1000 },
+        options: { minDelta: 10 },
+        expectedGesture: "swipeUp"
+      },
+      {
+        description: "swipeDown",
+        currentTouches: { x: 150, y: 150, deltaX: 5, deltaY: 1000 },
+        options: { minDelta: 10 },
+        expectedGesture: "swipeDown"
+      },
+      {
+        description: "swipeLeft",
+        currentTouches: { x: 150, y: 150, deltaX: -1000, deltaY: 5 },
+        options: { minDelta: 10 },
+        expectedGesture: "swipeLeft"
+      }
+    ];
 
-    // const args: [string, ICurrentTouches, string] = [mockEventName, mockTouches, mockGesture];
+    test.each(testCases)(
+      "should detect $description gesture",
+      ({ currentTouches, options, expectedGesture }) => {
+        jest.spyOn(debounce, "debounce").mockImplementationOnce((arg) => {
+          arg("onSwipe", {}, expectedGesture);
+          return jest.fn();
+        });
 
-    jest
-      .spyOn(React, "useState")
-      .mockReset()
-      .mockImplementationOnce(() => [{ pointers: ["a"] }, jest.fn()])
-      .mockImplementationOnce(() => ["gesture1", jest.fn()]);
+        const callHandlerSpy = jest
+          .spyOn(callHandler, "callHandler")
+          .mockImplementationOnce(() => {});
 
-    const result = renderHook(() => {
-      const inputFormControlReference = useRef<HTMLDivElement>(null);
-      return [<div ref={inputFormControlReference}></div>, inputFormControlReference];
-    });
+        const mockTouchEvent = { touches: [] } as unknown as globalThis.TouchEvent;
+        const handlers: IHandlers = {};
+        const previousTouches: ICurrentTouches = {} as ICurrentTouches;
+        const callback = jest.fn();
 
-    const reference = result.result.current[1] as React.RefObject<HTMLDivElement>;
+        const result = executeTouchMove(
+          mockTouchEvent,
+          currentTouches as ICurrentTouches,
+          handlers,
+          options,
+          previousTouches,
+          callback
+        );
 
-    const result1 = renderHook(() => useGestures(reference, { onPanStart: jest.fn() }));
+        // Verify that the condition is hit
+        expect(
+          Math.abs(currentTouches.deltaX) >= options.minDelta ||
+            Math.abs(currentTouches.deltaY) >= options.minDelta
+        ).toBe(true);
 
-    console.log(result1.result.current);
-
-    // Call the function that contains the destructuring
-    // const [eventNameScoped, , theGestureScoped] = args;
-
-    // Verify that the variables are correctly assigned
-    // expect(eventNameScoped).toBe(mockEventName);
-    // expect(touchesScoped).toBe(mockTouches);
-    // expect(theGestureScoped).toBe(mockGesture);
+        // Verify that the callback is called with the expected gesture
+        expect(callHandlerSpy).toHaveBeenCalled();
+        expect(result).toBe(expectedGesture);
+      }
+    );
   });
 });
