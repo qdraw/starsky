@@ -129,6 +129,7 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
         }
       >
         <div
+          data-test="pan-zoom-image-container"
           style={{
             transform: `translate(${position.x}px, ${position.y}px) scale(${position.z})`
           }}
