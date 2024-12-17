@@ -162,7 +162,7 @@ describe("ListImageTest", () => {
         <MemoryRouter>
           <ListImageNormalSelectContainer
             item={fileIndexItem}
-            onSelectionCallback={undefined as any}
+            onSelectionCallback={undefined as unknown as () => void}
           />
         </MemoryRouter>
       );

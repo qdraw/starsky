@@ -109,7 +109,7 @@ const ModalDesktopEditorOpenSelectionConfirmation: React.FunctionComponent<
               });
             }}
             onKeyDown={(event) => {
-              event.key === "Enter" &&
+              if (event.key === "Enter") {
                 OpenDesktop(
                   select ?? [],
                   isCollections,
@@ -121,6 +121,7 @@ const ModalDesktopEditorOpenSelectionConfirmation: React.FunctionComponent<
                     handleExit();
                   }
                 });
+              }
             }}
             autoFocus={true}
             data-test="editor-open-confirmation-yes"

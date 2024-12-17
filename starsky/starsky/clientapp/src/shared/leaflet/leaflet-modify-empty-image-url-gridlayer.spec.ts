@@ -8,7 +8,7 @@ describe("LeafletEmptyImageUrlGridLayer [leaflet-extension]", () => {
     const el = document.createElement("div");
 
     // mock a tile
-    (gridlayer as any)._tiles = {
+    (gridlayer as unknown as { _tiles: InternalTiles })._tiles = {
       test: {
         coords: {} as Coords,
         current: true,
@@ -28,7 +28,7 @@ describe("LeafletEmptyImageUrlGridLayer [leaflet-extension]", () => {
     // this is normaly excuted by leaflet
     gridlayer._removeTile("test");
 
-    expect((gridlayer as any)._tiles).toStrictEqual({});
+    expect((gridlayer as unknown as { _tiles: InternalTiles })._tiles).toStrictEqual({});
     expect(fire).toHaveBeenCalled();
   });
 
@@ -44,13 +44,13 @@ describe("LeafletEmptyImageUrlGridLayer [leaflet-extension]", () => {
       y: 10,
       z: 1
     } as Coords;
-    const el = document.createElement("div") as any;
+    const el = document.createElement("div") as unknown as HTMLElement;
 
     const gridlayer = new LeafletEmptyImageUrlGridLayer();
 
-    (gridlayer as any)._map = true;
+    (gridlayer as unknown as { _map: boolean })._map = true;
     // mock a tile
-    (gridlayer as any)._tiles = {
+    (gridlayer as unknown as { _tiles: InternalTiles })._tiles = {
       "51:10:1": {
         coords: exampleCoords,
         current: true,
@@ -59,13 +59,18 @@ describe("LeafletEmptyImageUrlGridLayer [leaflet-extension]", () => {
     } as InternalTiles;
 
     const _pruneTiles = jest.fn();
-    (gridlayer as any)._pruneTiles = _pruneTiles;
+    (gridlayer as unknown as { _pruneTiles: () => void })._pruneTiles = _pruneTiles;
 
-    (gridlayer as any)._noTilesToLoad = () => {
+    (gridlayer as unknown as { _noTilesToLoad: () => boolean })._noTilesToLoad = () => {
       return true;
     };
 
-    gridlayer._tileReady(exampleCoords, null, el);
+    gridlayer._tileReady(exampleCoords, null, {
+      getAttribute: jest.fn(),
+      coords: exampleCoords,
+      current: true,
+      el
+    });
 
     expect(_pruneTiles).toHaveBeenCalled();
     expect(requestAnimFrameSpy).toHaveBeenCalled();
@@ -85,14 +90,14 @@ describe("LeafletEmptyImageUrlGridLayer [leaflet-extension]", () => {
       y: 10,
       z: 1
     } as Coords;
-    const el = document.createElement("div") as any;
+    const el = document.createElement("div") as unknown as HTMLElement;
 
     const gridlayer = new LeafletEmptyImageUrlGridLayer();
 
-    (gridlayer as any)._map = true;
+    (gridlayer as unknown as { _map: boolean })._map = true;
 
     // mock a tile
-    (gridlayer as any)._tiles = {
+    (gridlayer as unknown as { _tiles: InternalTiles })._tiles = {
       "51:10:1": {
         coords: exampleCoords,
         current: true,
@@ -100,16 +105,21 @@ describe("LeafletEmptyImageUrlGridLayer [leaflet-extension]", () => {
       }
     } as InternalTiles;
 
-    (gridlayer as any)._map = {
+    (gridlayer as unknown as { _map: { _fadeAnimated: boolean } })._map = {
       _fadeAnimated: true
     };
 
-    (gridlayer as any)._noTilesToLoad = () => {
+    (gridlayer as unknown as { _noTilesToLoad: () => boolean })._noTilesToLoad = () => {
       return true;
     };
 
     // with error enabled
-    gridlayer._tileReady(exampleCoords, true, el);
+    gridlayer._tileReady(exampleCoords, true, {
+      getAttribute: jest.fn(),
+      coords: exampleCoords,
+      current: true,
+      el
+    });
 
     expect(requestAnimFrameSpy).toHaveBeenCalled();
     expect(timeoutSpy).toHaveBeenCalled();

@@ -2,6 +2,7 @@ import { act, render, screen } from "@testing-library/react";
 import * as useLocation from "../../../hooks/use-location/use-location";
 
 import React from "react";
+import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { IGeoLocationModel } from "../../../interfaces/IGeoLocationModel";
 import { Router } from "../../../router-app/router-app";
@@ -77,7 +78,7 @@ describe("DetailViewInfoLocation", () => {
         href: ""
       },
       navigate: jest.fn()
-    } as any;
+    } as unknown as IUseLocation;
     jest.spyOn(useLocation, "default").mockImplementationOnce(() => locationMock);
 
     const modalSpy = jest.spyOn(ModalGeo, "default").mockImplementationOnce((props) => {
@@ -115,7 +116,7 @@ describe("DetailViewInfoLocation", () => {
         search: ""
       },
       navigate: jest.fn()
-    } as any;
+    } as unknown as IUseLocation;
     jest.spyOn(useLocation, "default").mockImplementationOnce(() => locationMock);
 
     const modalSpy = jest.spyOn(ModalGeo, "default").mockImplementationOnce((props) => {

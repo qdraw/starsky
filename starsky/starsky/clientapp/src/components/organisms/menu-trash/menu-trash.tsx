@@ -121,7 +121,9 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({ state, dispatch }
                 removeSidebarSelection();
               }}
               onKeyDown={(event) => {
-                event.key === "Enter" && removeSidebarSelection();
+                if (event.key === "Enter") {
+                  removeSidebarSelection();
+                }
               }}
             >
               {MessageSelectAction}

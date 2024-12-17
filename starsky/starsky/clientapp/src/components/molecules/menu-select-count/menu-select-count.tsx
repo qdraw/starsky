@@ -26,7 +26,9 @@ export const MenuSelectCount: React.FunctionComponent<IMenuSelectCountProps> = (
             removeSidebarSelection();
           }}
           onKeyDown={(event) => {
-            event.key === "Enter" && removeSidebarSelection();
+            if (event.key === "Enter") {
+              removeSidebarSelection();
+            }
           }}
           className="item item--first item--close"
         >
@@ -41,7 +43,9 @@ export const MenuSelectCount: React.FunctionComponent<IMenuSelectCountProps> = (
             removeSidebarSelection();
           }}
           onKeyDown={(event) => {
-            event.key === "Enter" && removeSidebarSelection();
+            if (event.key === "Enter") {
+              removeSidebarSelection();
+            }
           }}
           className="item item--first item--close"
         >

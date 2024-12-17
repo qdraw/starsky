@@ -3,7 +3,7 @@ import React from "react";
 import useLocation from "./use-location";
 
 describe("useLocation", () => {
-  const UseLocationComponentTest: React.FunctionComponent<any> = () => {
+  const UseLocationComponentTest: React.FunctionComponent = () => {
     useLocation();
     return null;
   };

@@ -92,9 +92,9 @@ const PreferencesAppSettingsDesktop: React.FunctionComponent = () => {
   // roles
   const permissionsData = useFetch(new UrlQuery().UrlAccountPermissions(), "get");
 
-  const isAppSettingsWrite = permissionsData?.data?.includes(
-    new UrlQuery().KeyAccountPermissionAppSettingsWrite()
-  );
+  const isAppSettingsWrite =
+    Array.isArray(permissionsData?.data) &&
+    permissionsData.data.includes(new UrlQuery().KeyAccountPermissionAppSettingsWrite());
 
   const settings = useGlobalSettings();
 

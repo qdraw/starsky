@@ -1,4 +1,6 @@
 import { fireEvent, render } from "@testing-library/react";
+import { IUseLocation } from "../../../../hooks/use-location/interfaces/IUseLocation";
+import { IDetailView } from "../../../../interfaces/IDetailView";
 import { GoToParentFolder } from "./go-to-parent-folder";
 
 describe("GoToParentFolder", () => {
@@ -16,10 +18,14 @@ describe("GoToParentFolder", () => {
         parentDirectory: "parentDir",
         filePath: "filePath"
       }
-    } as any; // Define your state object as per your interface
+    } as IDetailView; // Define your state object as per your interface
 
     const { getByTestId } = render(
-      <GoToParentFolder isSearchQuery={true} history={history as any} state={state as any} />
+      <GoToParentFolder
+        isSearchQuery={true}
+        history={history as unknown as IUseLocation}
+        state={state as IDetailView}
+      />
     );
 
     const parentFolderLink = getByTestId("go-to-parent-folder");
@@ -45,10 +51,14 @@ describe("GoToParentFolder", () => {
         parentDirectory: "parentDir",
         filePath: "filePath"
       }
-    } as any; // Define your state object as per your interface
+    } as IDetailView; // Define your state object as per your interface
 
     const { getByTestId } = render(
-      <GoToParentFolder isSearchQuery={true} history={history as any} state={state as any} />
+      <GoToParentFolder
+        isSearchQuery={true}
+        history={history as unknown as IUseLocation}
+        state={state as IDetailView}
+      />
     );
 
     const parentFolderLink = getByTestId("go-to-parent-folder");
@@ -74,10 +84,14 @@ describe("GoToParentFolder", () => {
         parentDirectory: "parentDir",
         filePath: "filePath"
       }
-    } as any; // Define your state object as per your interface
+    } as unknown; // Define your state object as per your interface
 
     const { getByTestId } = render(
-      <GoToParentFolder isSearchQuery={true} history={history as any} state={state as any} />
+      <GoToParentFolder
+        isSearchQuery={true}
+        history={history as unknown as IUseLocation}
+        state={state as IDetailView}
+      />
     );
 
     const parentFolderLink = getByTestId("go-to-parent-folder");
@@ -89,7 +103,11 @@ describe("GoToParentFolder", () => {
 
   it("should not render when isSearchQuery is false", () => {
     const { container } = render(
-      <GoToParentFolder isSearchQuery={false} history={null as any} state={null as any} />
+      <GoToParentFolder
+        isSearchQuery={false}
+        history={null as unknown as IUseLocation}
+        state={null as unknown as IDetailView}
+      />
     );
 
     expect(container.firstChild).toBeNull();

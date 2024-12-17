@@ -5,6 +5,7 @@ import useInterval from "../../../hooks/use-interval";
 import localization from "../../../localization/localization.json";
 import { ExportIntervalUpdate } from "../../../shared/export/export-interval-update";
 import { ProcessingState } from "../../../shared/export/processing-state";
+import { CacheControl } from "../../../shared/fetch/cache-control.ts";
 import FetchGet from "../../../shared/fetch/fetch-get";
 import FetchPost from "../../../shared/fetch/fetch-post";
 import { Language } from "../../../shared/language";
@@ -13,12 +14,11 @@ import { UrlQuery } from "../../../shared/url/url-query";
 import FormControl from "../../atoms/form-control/form-control";
 import Modal from "../../atoms/modal/modal";
 import Select from "../../atoms/select/select";
-import { CacheControl } from "../../../shared/fetch/cache-control.ts";
 
 interface IModalPublishProps {
   isOpen: boolean;
   select: Array<string> | undefined;
-  handleExit: Function;
+  handleExit: () => void;
 }
 
 /**
@@ -65,13 +65,14 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
     setIsProcessing(ProcessingState.server);
 
     const zipKeyResult = await FetchPost(new UrlQuery().UrlPublishCreate(), bodyParams.toString());
+    const zipKeyResultData = zipKeyResult.data as string;
 
     if (zipKeyResult.statusCode !== 200 || !zipKeyResult.data) {
       setIsProcessing(ProcessingState.fail);
       return;
     }
-    setCreateZipKey(zipKeyResult.data);
-    await ExportIntervalUpdate(zipKeyResult.data, setIsProcessing);
+    setCreateZipKey(zipKeyResultData);
+    await ExportIntervalUpdate(zipKeyResultData, setIsProcessing);
   }
 
   const allPublishProfiles = useFetch(new UrlQuery().UrlPublish(), "get").data as
@@ -98,9 +99,11 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
       return;
     }
 
-    FetchGet(new UrlQuery().UrlPublishExist(toUpdateItemName), { CacheControl }).then((result) => {
+    FetchGet(new UrlQuery().UrlPublishExist(toUpdateItemName), CacheControl).then((result) => {
       if (result.statusCode !== 200) return;
-      setExistItemName(result.data);
+
+      const resultData = result.data as boolean;
+      setExistItemName(resultData);
     });
   }
 

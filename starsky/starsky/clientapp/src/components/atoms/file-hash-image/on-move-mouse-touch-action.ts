@@ -18,12 +18,12 @@ export class OnMoveMouseTouchAction {
     this.move = this.move.bind(this);
   }
 
-  public touchMove = (e: TouchEvent) => {
+  public touchMove(e: TouchEvent) {
     if (!e.touches) return;
     const clientX = e.touches[0].clientX;
     const clientY = e.touches[0].clientY;
     this.move(clientX, clientY);
-  };
+  }
 
   public mousemove = (event: MouseEvent) => {
     this.move(event.clientX, event.clientY);

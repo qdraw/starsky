@@ -1,11 +1,10 @@
-import { act } from "react";
+import React, { act } from "react";
 import { IArchive, newIArchive } from "../interfaces/IArchive";
 import { IDetailView, IRelativeObjects, PageType } from "../interfaces/IDetailView";
 import { newIFileIndexItem, newIFileIndexItemArray } from "../interfaces/IFileIndexItem";
 import { FileListCache } from "../shared/filelist-cache";
 import { mountReactHook } from "./___tests___/test-hook";
 import useFileList, { IFileList, fetchContentUseFileList } from "./use-filelist";
-import React from "react";
 
 describe("UseFileList", () => {
   describe("Archive", () => {
@@ -32,7 +31,10 @@ describe("UseFileList", () => {
     }
 
     function mounter(path: string = "/default/") {
-      const setupComponent = mountReactHook(useFileList, [path, "1"]);
+      const setupComponent = mountReactHook(useFileList as (...args: unknown[]) => unknown, [
+        path,
+        "1"
+      ]);
       // Mount a Component with our hook
       const hook = setupComponent.componentHook as IFileList;
       return {
@@ -207,14 +209,14 @@ describe("UseFileList", () => {
     it("setPageTypeHelper - undefined false", () => {
       const { hook } = mounter("/test.jpg");
 
-      const pageHelper = hook.setPageTypeHelper(undefined);
+      const pageHelper = hook.setPageTypeHelper(undefined as unknown as IDetailView);
       expect(pageHelper).toBeFalsy();
     });
 
     it("setPageTypeHelper - pageType not found false", () => {
       const { hook } = mounter("/test.jpg");
 
-      const pageHelper = hook.setPageTypeHelper({ pageType: "NotFound" });
+      const pageHelper = hook.setPageTypeHelper({ pageType: "NotFound" } as unknown as IDetailView);
       expect(pageHelper).toBeFalsy();
     });
 
@@ -223,7 +225,7 @@ describe("UseFileList", () => {
 
       const pageHelper = hook.setPageTypeHelper({
         pageType: "ApplicationException"
-      });
+      } as unknown as IDetailView);
       expect(pageHelper).toBeFalsy();
     });
 
@@ -232,7 +234,7 @@ describe("UseFileList", () => {
 
       const pageHelper = hook.setPageTypeHelper({
         pageType: "DifferentType"
-      });
+      } as unknown as IDetailView);
       expect(pageHelper).toBeFalsy();
     });
 
@@ -262,7 +264,7 @@ describe("UseFileList", () => {
           isReadOnly: false,
           dateCache: Date.now()
         } as IArchive
-      });
+      } as unknown as IArchive);
 
       expect(pageHelper).toBeTruthy();
       expect(useStateMock).toHaveBeenCalled();
@@ -307,7 +309,7 @@ describe("UseFileList", () => {
           pageType: PageType.DetailView,
           subPath: "/test.jpg"
         } as IDetailView
-      });
+      } as unknown as IDetailView);
 
       expect(pageHelper).toBeTruthy();
       expect(useStateMock).toHaveBeenCalled();

@@ -47,14 +47,14 @@ const executeTouchStart = (
   }
 };
 
-const executeTouchMove = (
+export const executeTouchMove = (
   event: globalThis.TouchEvent,
   currentTouches: ICurrentTouches,
   handlers: IHandlers,
   options: { minDelta: number },
   touches: ICurrentTouches,
   setGesture: Dispatch<SetStateAction<string>>
-) => {
+): string | undefined => {
   if (event.touches.length === 2) {
     callHandler("onPinchChanged", currentTouches, handlers);
     return;
@@ -95,14 +95,17 @@ const executeTouchMove = (
   }
 
   if (eventName) {
-    debounce(
-      (eventNameScoped: string, touchesScoped: ICurrentTouches, theGestureScoped: string) => {
-        callHandler(eventNameScoped, touchesScoped, handlers);
-        setGesture(theGestureScoped);
-      },
-      100
-    )(eventName, touches, theGesture);
+    debounce((...args: unknown[]) => {
+      const [eventNameScoped, touchesScoped, theGestureScoped] = args as [
+        string,
+        ICurrentTouches,
+        string
+      ];
+      callHandler(eventNameScoped, touchesScoped, handlers);
+      setGesture(theGestureScoped);
+    }, 100)(eventName, touches, theGesture);
   }
+  return theGesture;
 };
 
 const executeTouchEnd = (

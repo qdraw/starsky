@@ -12,7 +12,10 @@ describe("Modal", () => {
   });
 
   describe("Close Modal", () => {
-    function renderModal(): any {
+    function renderModal(): {
+      handleExit: jest.Mock;
+      element: RenderResult;
+    } {
       window.scrollTo = jest.fn();
       const handleExit = jest.fn();
       const element = render(
@@ -66,11 +69,11 @@ describe("Modal", () => {
   });
 
   describe("Open Modal", () => {
-    function renderModal2(): [jest.Mock<any, any>, RenderResult<any, HTMLElement>] {
+    function renderModal2(): [jest.Mock, RenderResult] {
       const spyScrollTo = jest.fn();
       window.scrollTo = spyScrollTo;
 
-      const handleExit = jest.fn() as any;
+      const handleExit = jest.fn();
       const component = render(
         <div>
           <Modal id="test-modal" isOpen={true} handleExit={handleExit}>
@@ -79,7 +82,7 @@ describe("Modal", () => {
           <div className="root" />
         </div>
       );
-      return [spyScrollTo, component as unknown as any];
+      return [spyScrollTo, component as unknown as RenderResult];
     }
 
     it("should open modal", () => {

@@ -1,8 +1,9 @@
-import { act, fireEvent, render, RenderResult, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, RenderResult, screen, waitFor } from "@testing-library/react";
+import { act } from "react";
 import { DetailViewContext } from "../../../contexts/detailview-context";
 import * as useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
 import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
-import { IRelativeObjects, PageType } from "../../../interfaces/IDetailView";
+import { IDetailView, IRelativeObjects, PageType } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { ClipboardHelper } from "../../../shared/clipboard-helper";
@@ -22,7 +23,7 @@ describe("DetailViewSidebar", () => {
       <DetailViewSidebar
         status={IExifStatus.Default}
         filePath={"/t"}
-        state={{ fileIndexItem: { lastEdited: "" } } as any}
+        state={{ fileIndexItem: { lastEdited: "" } } as unknown as IDetailView}
         dispatch={jest.fn()}
       ></DetailViewSidebar>
     );
@@ -37,7 +38,7 @@ describe("DetailViewSidebar", () => {
       <DetailViewSidebar
         status={IExifStatus.Default}
         filePath={"/t"}
-        state={undefined as any}
+        state={undefined as unknown as IDetailView}
         dispatch={jest.fn()}
       ></DetailViewSidebar>
     );
@@ -48,7 +49,10 @@ describe("DetailViewSidebar", () => {
   });
 
   describe("useContext-test", () => {
-    let contextProvider: any;
+    let contextProvider: {
+      dispatch: () => void;
+      state: IDetailView;
+    };
     let TestComponent: () => JSX.Element;
     let Component: RenderResult;
 
@@ -79,7 +83,7 @@ describe("DetailViewSidebar", () => {
           status: IExifStatus.Default,
           pageType: PageType.DetailView,
           colorClassActiveList: []
-        } as any
+        } as unknown as IDetailView
       };
 
       TestComponent = () => (
@@ -339,7 +343,10 @@ describe("DetailViewSidebar", () => {
   });
 
   describe("Special status", () => {
-    let contextProvider: any;
+    let contextProvider: {
+      dispatch: () => void;
+      state: IDetailView;
+    };
 
     beforeEach(() => {
       contextProvider = {
@@ -367,7 +374,7 @@ describe("DetailViewSidebar", () => {
           status: IExifStatus.Default,
           pageType: PageType.DetailView,
           colorClassActiveList: []
-        } as any
+        } as unknown as IDetailView
       };
     });
 
@@ -390,7 +397,7 @@ describe("DetailViewSidebar", () => {
           ></DetailViewSidebar>
         </DetailViewContext.Provider>
       );
-      const component = render(<DeletedTestComponent />);
+      const component = render(<DeletedTestComponent />) as RenderResult;
 
       const statusDeleted = component.queryByTestId("detailview-exifstatus-status-deleted");
       expect(statusDeleted).not.toBeNull();
@@ -399,8 +406,8 @@ describe("DetailViewSidebar", () => {
 
       const tagsField = screen.queryByTestId("detailview-sidebar-tags") as HTMLInputElement;
 
-      const description = findDataNameCurrent(component as any, "description");
-      const title = findDataNameCurrent(component as any, "title");
+      const description = findDataNameCurrent(component, "description");
+      const title = findDataNameCurrent(component, "title");
 
       expect(tagsField?.classList).toContain("form-control");
       expect(tagsField?.classList).toContain("disabled");
@@ -423,15 +430,15 @@ describe("DetailViewSidebar", () => {
           ></DetailViewSidebar>
         </DetailViewContext.Provider>
       );
-      const component = render(<DeletedTestComponent />);
+      const component = render(<DeletedTestComponent />) as RenderResult;
 
       const statusReadOnly = component.queryByTestId("detailview-exifstatus-status-read-only");
       expect(statusReadOnly).not.toBeNull();
 
       // Tags and other input fields are disabled
       const tags = screen.queryByTestId("detailview-sidebar-tags") as HTMLInputElement;
-      const description = findDataNameCurrent(component as any, "description");
-      const title = findDataNameCurrent(component as any, "title");
+      const description = findDataNameCurrent(component, "description");
+      const title = findDataNameCurrent(component, "title");
 
       await waitFor(() => expect(tags?.classList).toContain("form-control"));
 
@@ -455,12 +462,12 @@ describe("DetailViewSidebar", () => {
       status: IExifStatus.Default,
       pageType: PageType.DetailView,
       colorClassActiveList: []
-    } as any;
+    } as unknown as IDetailView;
 
     it("Press v to paste return false", () => {
       let vPasteIsCalled = false;
 
-      function keyboardCallback(regex: RegExp, callback: Function) {
+      function keyboardCallback(regex: RegExp, callback: (arg0: KeyboardEvent) => void) {
         if (regex.source === "^v$") {
           const event = new KeyboardEvent("keydown", {
             bubbles: true,
@@ -503,7 +510,7 @@ describe("DetailViewSidebar", () => {
     it("Press v to paste return true", () => {
       let vPasteIsCalled = false;
 
-      function keyboardCallback(regex: RegExp, callback: Function) {
+      function keyboardCallback(regex: RegExp, callback: (arg0: KeyboardEvent) => void) {
         if (regex.source === "^v$") {
           const event = new KeyboardEvent("keydown", {
             bubbles: true,
@@ -546,7 +553,7 @@ describe("DetailViewSidebar", () => {
     it("Press c to copy", () => {
       let cCopyIsCalled = false;
 
-      function keyboardCallback(regex: RegExp, callback: Function) {
+      function keyboardCallback(regex: RegExp, callback: (arg0: KeyboardEvent) => void) {
         if (regex.source === "^c$") {
           const event = new KeyboardEvent("keydown", {
             bubbles: true,
@@ -600,7 +607,7 @@ describe("DetailViewSidebar", () => {
           status: IExifStatus.Default,
           pageType: PageType.DetailView,
           colorClassActiveList: []
-        } as any
+        } as unknown as IDetailView
       };
 
       const isInFormSpy = jest
@@ -622,7 +629,7 @@ describe("DetailViewSidebar", () => {
         .mockImplementationOnce((_, callback) => {
           callback({
             preventDefault: () => {}
-          });
+          } as unknown as KeyboardEvent);
         })
         .mockImplementationOnce(() => {});
 

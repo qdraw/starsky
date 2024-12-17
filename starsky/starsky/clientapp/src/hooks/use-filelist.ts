@@ -15,18 +15,18 @@ export interface IFileList {
     locationLocal: string,
     locationSearch: string,
     abortController: AbortController,
-    setPageTypeHelper: (responseObject: any) => boolean,
+    setPageTypeHelper: (responseObject: IDetailView | IArchive) => boolean,
     resetPageTypeBeforeLoading: boolean,
     setPageType: (value: SetStateAction<PageType>) => void
   ) => Promise<void>;
-  setPageTypeHelper: (responseObject: any) => boolean;
+  setPageTypeHelper: (responseObject: IDetailView | IArchive) => boolean;
 }
 
 export const fetchContentUseFileList = async (
   locationLocal: string,
   locationSearch: string,
   abortController: AbortController,
-  setPageTypeHelper: (responseObject: any) => void,
+  setPageTypeHelper: (responseObject: IDetailView | IArchive) => void,
   resetPageTypeBeforeLoading: boolean,
   setPageType: (value: SetStateAction<PageType>) => void
 ): Promise<void> => {
@@ -54,8 +54,8 @@ export const fetchContentUseFileList = async (
     const responseObject = await res.json();
     setPageTypeHelper(responseObject);
     new FileListCache().CacheSet(locationSearch, responseObject);
-  } catch (e: any) {
-    if (e?.message?.indexOf("aborted") >= 0) {
+  } catch (e: unknown) {
+    if ((e as { message: string })?.message?.indexOf("aborted") >= 0) {
       return;
     }
     console.error(e);
@@ -67,7 +67,7 @@ const fetchUseFileListContentCache = async (
   locationLocal: string,
   locationSearch: string,
   abortController: AbortController,
-  setPageTypeHelper: (responseObject: any) => boolean,
+  setPageTypeHelper: (responseObject: IDetailView | IArchive) => boolean,
   resetPageTypeBeforeLoading: boolean,
   setPageType: (value: SetStateAction<PageType>) => void
 ): Promise<void> => {
@@ -105,7 +105,7 @@ const useFileList = (
   const [parent, setParent] = useState("/");
   const location = new UrlQuery().UrlQueryServerApi(locationSearch);
 
-  const setPageTypeHelper = (responseObject: any): boolean => {
+  const setPageTypeHelper = (responseObject: IDetailView | IArchive): boolean => {
     setParent(new URLPath().getParent(locationSearch));
 
     if (
@@ -149,7 +149,7 @@ const useFileList = (
     };
 
     // dependency: 'locationSearch'. is not added to avoid a lot of queries
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, [location]);
 
   return {

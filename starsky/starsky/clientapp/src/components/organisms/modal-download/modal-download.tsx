@@ -14,7 +14,7 @@ import Modal from "../../atoms/modal/modal";
 interface IModalExportProps {
   isOpen: boolean;
   select: Array<string> | undefined;
-  handleExit: Function;
+  handleExit: () => void;
   collections: boolean;
 }
 
@@ -72,8 +72,8 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
       setIsProcessing(ProcessingState.fail);
       return;
     }
-    setCreateZipKey(zipKeyResult.data);
-    await ExportIntervalUpdate(zipKeyResult.data, setIsProcessing);
+    setCreateZipKey(zipKeyResult.data as string);
+    await ExportIntervalUpdate(zipKeyResult.data as string, setIsProcessing);
   }
 
   useInterval(async () => {

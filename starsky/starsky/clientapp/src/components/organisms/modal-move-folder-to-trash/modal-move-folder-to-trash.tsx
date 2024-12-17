@@ -14,7 +14,7 @@ import Modal from "../../atoms/modal/modal";
 interface IModalMoveFolderToTrashProps {
   isOpen: boolean;
   subPath: string;
-  handleExit: Function;
+  handleExit: () => void;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -47,7 +47,7 @@ const ModalMoveFolderToTrash: React.FunctionComponent<IModalMoveFolderToTrashPro
           new CustomEvent<IApiNotificationResponseModel<IFileIndexItem[]>>(useSocketsEventName, {
             bubbles: false,
             detail: {
-              data: result.data,
+              data: result.data as IFileIndexItem[],
               type: "move-folder-to-trash-internal"
             }
           })

@@ -4,7 +4,7 @@ export default class WebSocketService {
   constructor(url: string, protocols?: string | string[]) {
     try {
       this.websocket = new WebSocket(url, protocols);
-    } catch (error) {
+    } catch {
       // do nothing here
     }
   }

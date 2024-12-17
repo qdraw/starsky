@@ -30,7 +30,10 @@ export function SkipDisplayOfUpdate(): boolean {
  */
 const HealthCheckForUpdates: FunctionComponent = () => {
   const checkForUpdates = useFetch(new UrlQuery().UrlHealthCheckForUpdates(), "get");
-  const releaseInfo = useFetch(new UrlQuery().UrlHealthReleaseInfo(checkForUpdates.data), "get");
+  const releaseInfo = useFetch(
+    new UrlQuery().UrlHealthReleaseInfo(checkForUpdates.data as string),
+    "get"
+  );
 
   const settings = useGlobalSettings();
 
@@ -53,7 +56,7 @@ const HealthCheckForUpdates: FunctionComponent = () => {
   const MessageNewVersionUpdateHtml = language.token(
     MessageNewVersionUpdateToken,
     ["{WhereToFindRelease}", "{otherInfo}"],
-    [WhereToFindRelease, releaseInfo.data]
+    [WhereToFindRelease, releaseInfo.data as string]
   );
 
   return (

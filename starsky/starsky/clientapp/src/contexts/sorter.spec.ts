@@ -13,7 +13,7 @@ describe("sorter", () => {
       } as IFileIndexItem
     ] as IFileIndexItem[];
 
-    const resultList = sorter(list, null as any);
+    const resultList = sorter(list, null as unknown as SortType);
 
     expect(resultList.length).toBe(0);
   });

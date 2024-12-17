@@ -1,5 +1,5 @@
 import { IArchive, newIArchive } from "../interfaces/IArchive";
-import { newDetailView, PageType } from "../interfaces/IDetailView";
+import { IDetailView, newDetailView, PageType } from "../interfaces/IDetailView";
 import { IFileIndexItem } from "../interfaces/IFileIndexItem";
 import { IMedia } from "../interfaces/IMedia";
 
@@ -7,17 +7,18 @@ export class CastToInterface {
   /**
    * Plain JS-object to casted object for Archive, Search and Trash pages
    */
-  MediaArchive = (data: any): IMedia<"Archive"> => {
+  MediaArchive = (data: unknown): IMedia<"Archive"> => {
+    const castedData = data as IArchive;
     const media = {
       type: "Archive"
     } as IMedia<"Archive">;
 
     if (
-      data.pageType === PageType.Archive ||
-      data.pageType === PageType.Search ||
-      data.pageType === PageType.Trash
+      castedData.pageType === PageType.Archive ||
+      castedData.pageType === PageType.Search ||
+      castedData.pageType === PageType.Trash
     ) {
-      media.data = data;
+      media.data = castedData;
       return media;
     }
     // default situation
@@ -28,13 +29,15 @@ export class CastToInterface {
   /**
    * Plain JS-object to casted object for DetailView pages
    */
-  MediaDetailView = (data: any): IMedia<"DetailView"> => {
+  MediaDetailView = (data: unknown): IMedia<"DetailView"> => {
     const media = {
       type: "DetailView"
     } as IMedia<"DetailView">;
 
-    if (data.pageType === PageType.DetailView) {
-      media.data = data;
+    const castedData = data as IDetailView;
+
+    if (castedData.pageType === PageType.DetailView) {
+      media.data = castedData;
       return media;
     }
     // default situation
@@ -45,7 +48,7 @@ export class CastToInterface {
   /**
    * Return casted list
    */
-  InfoFileIndexArray = (data: any): Array<IFileIndexItem> => {
+  InfoFileIndexArray = (data: unknown): Array<IFileIndexItem> => {
     if (typeof data === "string") return [];
     return data as Array<IFileIndexItem>;
   };

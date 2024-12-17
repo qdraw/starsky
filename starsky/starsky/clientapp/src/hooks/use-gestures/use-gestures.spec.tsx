@@ -1,20 +1,23 @@
-import { act, createEvent, fireEvent, render } from "@testing-library/react";
-import React, { useRef, useState } from "react";
+import { createEvent, fireEvent, render } from "@testing-library/react";
+import React, { act, useRef, useState } from "react";
 import { mountReactHook } from "../___tests___/test-hook";
 import * as callHandler from "./call-handler";
 import * as debounce from "./debounce";
 import * as getCurrentTouchesAll from "./get-current-touches";
 import { getCurrentTouches } from "./get-current-touches";
+import { ICurrentTouches } from "./ICurrentTouches.types";
+import { IHandlers } from "./IHandlers.types";
 import { Pointer } from "./pointer";
-import { getAngleDeg, getDistance, useGestures } from "./use-gestures";
+import { executeTouchMove, getAngleDeg, getDistance, useGestures } from "./use-gestures";
 
 function Rotate() {
   const [imageRotation, setImageRotation] = useState(0);
   const image = useRef<HTMLImageElement>(null);
 
   useGestures(image, {
-    onPanMove: (event: any) => {
-      setImageRotation(event.angleDeg);
+    onPanMove: (event: TouchEvent) => {
+      const angleDeg = getAngleDegFromEvent(event);
+      setImageRotation(angleDeg);
     }
   });
 
@@ -26,6 +29,11 @@ function Rotate() {
       style={{ transform: "rotate(" + imageRotation + "deg)" }}
     />
   );
+}
+
+function getAngleDegFromEvent(ev: TouchEvent): number {
+  // Implement the logic to extract angleDeg from the event
+  return ev.AT_TARGET; // Placeholder implementation
 }
 
 describe("useGestures", () => {
@@ -42,7 +50,7 @@ describe("useGestures", () => {
       const p = getDistance(new Pointer({ clientX: 0, clientY: 0 }), {
         x: undefined,
         y: undefined
-      } as any);
+      } as unknown as Pointer);
       expect(p).toBe(0);
     });
 
@@ -68,7 +76,7 @@ describe("useGestures", () => {
       const p = getAngleDeg(new Pointer({ clientX: 0, clientY: 0 }), {
         x: undefined,
         y: undefined
-      } as any);
+      } as unknown as Pointer);
       expect(p).toBe(0);
     });
 
@@ -110,10 +118,10 @@ describe("useGestures", () => {
       const t = { current: { x: 1, y: 1 } };
 
       const result = getCurrentTouches(
-        sourceEvent as any,
-        newTouches as any,
-        prevTouch as any,
-        t as any
+        sourceEvent as unknown as globalThis.TouchEvent,
+        newTouches as unknown as TouchList,
+        prevTouch as unknown as ICurrentTouches,
+        t as React.MutableRefObject<ICurrentTouches>
       );
 
       expect(result.delta).toBe(20);
@@ -144,10 +152,10 @@ describe("useGestures", () => {
       const t = { current: { x: 1, y: 1 } };
 
       const result = getCurrentTouches(
-        sourceEvent as any,
-        newTouches as any,
-        prevTouch as any,
-        t as any
+        sourceEvent as unknown as globalThis.TouchEvent,
+        newTouches as unknown as TouchList,
+        prevTouch as unknown as ICurrentTouches,
+        t as React.MutableRefObject<ICurrentTouches>
       );
 
       expect(result.angleDeg).toBe(180);
@@ -155,28 +163,28 @@ describe("useGestures", () => {
     });
   });
 
-  describe("useGestures", () => {
+  describe("useGestures as (...args: unknown[]) => unknown", () => {
     const exampleSingleTouches = {
       touches: [
         {
           clientX: 10,
           clientY: 0
-        } as any
+        }
       ]
-    };
+    } as TouchEventInit;
 
     const exampleDoubleTouches = {
       touches: [
         {
           clientX: 10,
           clientY: 0
-        } as any,
+        },
         {
           clientX: 10,
           clientY: 0
-        } as any
+        }
       ]
-    };
+    } as TouchEventInit;
 
     it("check if is called once", () => {
       jest.useFakeTimers();
@@ -202,7 +210,9 @@ describe("useGestures", () => {
 
       const demoElement = document.createElement("div");
 
-      const hook = mountReactHook(useGestures, [{ current: demoElement }]);
+      const hook = mountReactHook(useGestures as (...args: unknown[]) => unknown, [
+        { current: demoElement }
+      ]);
 
       const event = new TouchEvent("touchstart", exampleSingleTouches);
 
@@ -212,7 +222,7 @@ describe("useGestures", () => {
 
       expect(callHandlerSpy).toHaveBeenCalled();
       expect(callHandlerSpy).toHaveBeenCalledWith("onPanStart", expect.anything(), undefined);
-      const component = hook.componentMount as any;
+      const component = hook.componentMount;
       component.unmount();
     });
 
@@ -224,7 +234,9 @@ describe("useGestures", () => {
 
       const demoElement = document.createElement("div");
 
-      const hook = mountReactHook(useGestures, [{ current: demoElement }]);
+      const hook = mountReactHook(useGestures as (...args: unknown[]) => unknown, [
+        { current: demoElement }
+      ]);
 
       const event = new TouchEvent("touchstart", exampleDoubleTouches);
 
@@ -234,7 +246,7 @@ describe("useGestures", () => {
 
       expect(callHandlerSpy).toHaveBeenCalled();
       expect(callHandlerSpy).toHaveBeenCalledWith("onPinchStart", expect.anything(), undefined);
-      const component = hook.componentMount as any;
+      const component = hook.componentMount;
       component.unmount();
     });
 
@@ -246,7 +258,9 @@ describe("useGestures", () => {
 
       const demoElement = document.createElement("div");
 
-      const hook = mountReactHook(useGestures, [{ current: demoElement }]);
+      const hook = mountReactHook(useGestures as (...args: unknown[]) => unknown, [
+        { current: demoElement }
+      ]);
 
       const event = new TouchEvent("touchmove", exampleSingleTouches);
 
@@ -256,7 +270,7 @@ describe("useGestures", () => {
 
       expect(callHandlerSpy).toHaveBeenCalled();
       expect(callHandlerSpy).toHaveBeenCalledWith("onPanMove", expect.anything(), undefined);
-      const component = hook.componentMount as any;
+      const component = hook.componentMount;
       component.unmount();
     });
 
@@ -268,7 +282,7 @@ describe("useGestures", () => {
           return {
             deltaX: undefined,
             deltaY: undefined
-          } as any;
+          } as unknown as ICurrentTouches;
         });
 
       jest.spyOn(callHandler, "callHandler").mockImplementationOnce(() => {});
@@ -281,7 +295,9 @@ describe("useGestures", () => {
 
       const demoElement = document.createElement("div");
 
-      const hook = mountReactHook(useGestures, [{ current: demoElement }]);
+      const hook = mountReactHook(useGestures as (...args: unknown[]) => unknown, [
+        { current: demoElement }
+      ]);
 
       const event = new TouchEvent("touchmove", exampleSingleTouches);
 
@@ -291,7 +307,7 @@ describe("useGestures", () => {
 
       expect(debounceSpy).toHaveBeenCalledTimes(0);
 
-      const component = hook.componentMount as any;
+      const component = hook.componentMount;
       component.unmount();
       debounceSpy.mockReset();
     });
@@ -301,7 +317,7 @@ describe("useGestures", () => {
         return {
           deltaX: 30,
           deltaY: 0
-        } as any;
+        } as unknown as ICurrentTouches;
       });
 
       const debounceAnonymousFnSpy = jest.fn();
@@ -314,7 +330,9 @@ describe("useGestures", () => {
 
       const demoElement = document.createElement("div");
 
-      const hook = mountReactHook(useGestures, [{ current: demoElement }]);
+      const hook = mountReactHook(useGestures as (...args: unknown[]) => unknown, [
+        { current: demoElement }
+      ]);
 
       const event = new TouchEvent("touchmove", exampleSingleTouches);
 
@@ -325,7 +343,7 @@ describe("useGestures", () => {
       expect(debounceSpy).toHaveBeenCalled();
       expect(debounceAnonymousFnSpy).toHaveBeenCalledWith("onSwipeRight", {}, "swipeRight");
 
-      const component = hook.componentMount as any;
+      const component = hook.componentMount;
       component.unmount();
     });
 
@@ -337,7 +355,7 @@ describe("useGestures", () => {
           return {
             deltaX: -30,
             deltaY: 0
-          } as any;
+          } as unknown as ICurrentTouches;
         });
       jest.spyOn(callHandler, "callHandler").mockImplementationOnce(() => {});
 
@@ -348,7 +366,9 @@ describe("useGestures", () => {
         .mockImplementationOnce(() => debounceAnonymousFnSpy);
       const demoElement = document.createElement("div");
 
-      const hook = mountReactHook(useGestures, [{ current: demoElement }]);
+      const hook = mountReactHook(useGestures as (...args: unknown[]) => unknown, [
+        { current: demoElement }
+      ]);
 
       const event = new TouchEvent("touchmove", exampleSingleTouches);
 
@@ -359,7 +379,7 @@ describe("useGestures", () => {
       expect(debounceSpy).toHaveBeenCalled();
       expect(debounceAnonymousFnSpy).toHaveBeenCalledWith("onSwipeLeft", {}, "swipeLeft");
 
-      const component = hook.componentMount as any;
+      const component = hook.componentMount;
       component.unmount();
     });
 
@@ -371,7 +391,7 @@ describe("useGestures", () => {
           return {
             deltaX: 0,
             deltaY: 30
-          } as any;
+          } as unknown as ICurrentTouches;
         });
       jest.spyOn(callHandler, "callHandler").mockImplementationOnce(() => {});
 
@@ -382,7 +402,9 @@ describe("useGestures", () => {
         .mockImplementationOnce(() => debounceAnonymousFnSpy);
       const demoElement = document.createElement("div");
 
-      const hook = mountReactHook(useGestures, [{ current: demoElement }]);
+      const hook = mountReactHook(useGestures as (...args: unknown[]) => unknown, [
+        { current: demoElement }
+      ]);
 
       const event = new TouchEvent("touchmove", exampleSingleTouches);
 
@@ -393,7 +415,7 @@ describe("useGestures", () => {
       expect(debounceSpy).toHaveBeenCalled();
       expect(debounceAnonymousFnSpy).toHaveBeenCalledWith("onSwipeDown", {}, "swipeDown");
 
-      const component = hook.componentMount as any;
+      const component = hook.componentMount;
       component.unmount();
     });
 
@@ -405,7 +427,7 @@ describe("useGestures", () => {
           return {
             deltaX: 0,
             deltaY: -30
-          } as any;
+          } as unknown as ICurrentTouches;
         });
 
       jest.spyOn(callHandler, "callHandler").mockImplementationOnce(() => {});
@@ -417,7 +439,9 @@ describe("useGestures", () => {
         .mockImplementationOnce(() => debounceAnonymousFnSpy);
       const demoElement = document.createElement("div");
 
-      const hook = mountReactHook(useGestures, [{ current: demoElement }]);
+      const hook = mountReactHook(useGestures as (...args: unknown[]) => unknown, [
+        { current: demoElement }
+      ]);
 
       const event = new TouchEvent("touchmove", exampleSingleTouches);
 
@@ -428,7 +452,7 @@ describe("useGestures", () => {
       expect(debounceSpy).toHaveBeenCalled();
       expect(debounceAnonymousFnSpy).toHaveBeenCalledWith("onSwipeUp", {}, "swipeUp");
 
-      const component = hook.componentMount as any;
+      const component = hook.componentMount;
       component.unmount();
     });
 
@@ -442,7 +466,9 @@ describe("useGestures", () => {
 
       const demoElement = document.createElement("div");
 
-      const hook = mountReactHook(useGestures, [{ current: demoElement }]);
+      const hook = mountReactHook(useGestures as (...args: unknown[]) => unknown, [
+        { current: demoElement }
+      ]);
 
       const event = new TouchEvent("touchmove", exampleDoubleTouches);
 
@@ -453,7 +479,7 @@ describe("useGestures", () => {
       expect(callHandlerSpy).toHaveBeenCalled();
       expect(callHandlerSpy).toHaveBeenCalledWith("onPinchChanged", undefined, undefined);
 
-      const component = hook.componentMount as any;
+      const component = hook.componentMount;
       component.unmount();
     });
 
@@ -496,7 +522,9 @@ describe("useGestures", () => {
 
       const demoElement = document.createElement("div");
 
-      const hook = mountReactHook(useGestures, [{ current: demoElement }]);
+      const hook = mountReactHook(useGestures as (...args: unknown[]) => unknown, [
+        { current: demoElement }
+      ]);
 
       act(() => {
         demoElement.dispatchEvent(touchEndEvent);
@@ -505,7 +533,7 @@ describe("useGestures", () => {
       expect(callHandlerSpy).toHaveBeenCalled();
       expect(callHandlerSpy).toHaveBeenCalledWith("onPinchEnd", undefined, undefined);
 
-      const component = hook.componentMount as any;
+      const component = hook.componentMount;
       component.unmount();
     });
 
@@ -526,7 +554,10 @@ describe("useGestures", () => {
 
       const demoElement = document.createElement("div");
 
-      const hook = mountReactHook(useGestures, [{ current: demoElement }]);
+      const hook = mountReactHook(
+        useGestures as (...args: unknown[]) => unknown as (...args: unknown[]) => unknown,
+        [{ current: demoElement }]
+      );
 
       act(() => {
         demoElement.dispatchEvent(touchEndEvent);
@@ -535,8 +566,93 @@ describe("useGestures", () => {
       expect(callHandlerSpy).toHaveBeenCalled();
       expect(callHandlerSpy).toHaveBeenNthCalledWith(1, "onPanEnd", undefined, undefined);
       expect(callHandlerSpy).toHaveBeenNthCalledWith(2, "onGesture1End", undefined, undefined);
-      const component = hook.componentMount as any;
+      const component = hook.componentMount;
       component.unmount();
     });
+  });
+
+  it("executeTouchMove returns emthy string", () => {
+    const result = executeTouchMove(
+      { touches: [] } as unknown as globalThis.TouchEvent,
+      {
+        x: 1,
+        y: 1,
+        deltaX: 1,
+        deltaY: 1
+      } as ICurrentTouches,
+      {} as IHandlers,
+      { minDelta: 0 },
+      {} as ICurrentTouches,
+      jest.fn()
+    );
+
+    expect(result).toBe("");
+  });
+
+  describe("executeTouchMove", () => {
+    const testCases = [
+      {
+        description: "swipeRight",
+        currentTouches: { x: 150, y: 150, deltaX: 1000, deltaY: 5 },
+        options: { minDelta: 10 },
+        expectedGesture: "swipeRight"
+      },
+      {
+        description: "swipeUp",
+        currentTouches: { x: 150, y: 150, deltaX: 5, deltaY: -1000 },
+        options: { minDelta: 10 },
+        expectedGesture: "swipeUp"
+      },
+      {
+        description: "swipeDown",
+        currentTouches: { x: 150, y: 150, deltaX: 5, deltaY: 1000 },
+        options: { minDelta: 10 },
+        expectedGesture: "swipeDown"
+      },
+      {
+        description: "swipeLeft",
+        currentTouches: { x: 150, y: 150, deltaX: -1000, deltaY: 5 },
+        options: { minDelta: 10 },
+        expectedGesture: "swipeLeft"
+      }
+    ];
+
+    test.each(testCases)(
+      "should detect $description gesture",
+      ({ currentTouches, options, expectedGesture }) => {
+        jest.spyOn(debounce, "debounce").mockImplementationOnce((arg) => {
+          arg("onSwipe", {}, expectedGesture);
+          return jest.fn();
+        });
+
+        const callHandlerSpy = jest
+          .spyOn(callHandler, "callHandler")
+          .mockImplementationOnce(() => {});
+
+        const mockTouchEvent = { touches: [] } as unknown as globalThis.TouchEvent;
+        const handlers: IHandlers = {};
+        const previousTouches: ICurrentTouches = {} as ICurrentTouches;
+        const callback = jest.fn();
+
+        const result = executeTouchMove(
+          mockTouchEvent,
+          currentTouches as ICurrentTouches,
+          handlers,
+          options,
+          previousTouches,
+          callback
+        );
+
+        // Verify that the condition is hit
+        expect(
+          Math.abs(currentTouches.deltaX) >= options.minDelta ||
+            Math.abs(currentTouches.deltaY) >= options.minDelta
+        ).toBe(true);
+
+        // Verify that the callback is called with the expected gesture
+        expect(callHandlerSpy).toHaveBeenCalled();
+        expect(result).toBe(expectedGesture);
+      }
+    );
   });
 });

@@ -13,7 +13,7 @@ describe("FormControl", () => {
 
   describe("with events", () => {
     beforeAll(() => {
-      (window as any).getSelection = () => {
+      (window as { getSelection: () => void }).getSelection = () => {
         return {
           removeAllRanges: () => {}
         };

@@ -32,9 +32,7 @@ import NavContainer from "../nav-container/nav-container";
 import { SelectMenuItem } from "./internal/select-menu-item.tsx";
 import { UploadMenuItem } from "./internal/upload-menu-item";
 
-interface IMenuArchiveProps {}
-
-const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
+const MenuArchive: React.FunctionComponent = memo(() => {
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
   const [enableMoreMenu, setEnableMoreMenu] = React.useState(false);
 

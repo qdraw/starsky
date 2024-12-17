@@ -5,13 +5,18 @@ import * as toggleTabIndex from "./toggle-tab-index";
 describe("modalFreezeOpen", () => {
   it("modalFreezeOpen", () => {
     const freeze = jest.fn();
-    modalFreezeOpen(freeze, { current: null } as any, null, null);
+    modalFreezeOpen(freeze, { current: null } as React.RefObject<HTMLButtonElement>, null, null);
     expect(freeze).toHaveBeenCalled();
   });
 
   it("modalFreezeOpen focus", () => {
     const focus = jest.fn();
-    modalFreezeOpen(jest.fn(), { current: { focus } } as any, null, null);
+    modalFreezeOpen(
+      jest.fn(),
+      { current: { focus } } as unknown as React.RefObject<HTMLButtonElement>,
+      null,
+      null
+    );
     expect(focus).toHaveBeenCalled();
   });
 
@@ -19,7 +24,7 @@ describe("modalFreezeOpen", () => {
     const freeze = jest.fn();
     modalFreezeOpen(
       freeze,
-      { current: null } as any,
+      { current: null } as React.RefObject<HTMLButtonElement>,
       null,
       document.createElement("div") as HTMLElement
     );
@@ -43,7 +48,7 @@ describe("modalUnFreezeNotOpen", () => {
     const unFreeze = jest.fn();
     const toggleTabSpy = jest.spyOn(toggleTabIndex, "toggleTabIndex").mockImplementation(() => {});
 
-    modalUnFreezeNotOpen(unFreeze, { current: true } as any, null, undefined, {
+    modalUnFreezeNotOpen(unFreeze, { current: true } as unknown as Element, null, undefined, {
       current: false
     });
     expect(unFreeze).toHaveBeenCalled();
@@ -55,7 +60,7 @@ describe("modalUnFreezeNotOpen", () => {
     const unFreeze = jest.fn();
     const toggleTabSpy = jest.spyOn(toggleTabIndex, "toggleTabIndex").mockImplementation(() => {});
 
-    modalUnFreezeNotOpen(unFreeze, null, { current: true } as any, undefined, {
+    modalUnFreezeNotOpen(unFreeze, null, { current: true } as unknown as Element, undefined, {
       current: false
     });
     expect(unFreeze).toHaveBeenCalled();
@@ -76,7 +81,14 @@ describe("modalFreezeHelper", () => {
       unfreeze: unfreezeSpy
     }));
 
-    modalFreezeHelper(jest.fn() as any, "root", "id", true, { current: null }, div);
+    modalFreezeHelper(
+      jest.fn() as unknown as React.MutableRefObject<boolean>,
+      "root",
+      "id",
+      true,
+      { current: null },
+      div
+    );
     expect(freezeSpy).toHaveBeenCalled();
     expect(unfreezeSpy).not.toHaveBeenCalled();
   });
@@ -92,7 +104,14 @@ describe("modalFreezeHelper", () => {
       unfreeze: unfreezeSpy
     }));
 
-    modalFreezeHelper(jest.fn() as any, "root", "id", false, { current: null }, div);
+    modalFreezeHelper(
+      jest.fn() as unknown as React.MutableRefObject<boolean>,
+      "root",
+      "id",
+      false,
+      { current: null },
+      div
+    );
     expect(freezeSpy).not.toHaveBeenCalled();
     expect(unfreezeSpy).toHaveBeenCalled();
   });

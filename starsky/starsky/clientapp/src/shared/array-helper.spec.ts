@@ -4,7 +4,10 @@ describe("ArrayHelper", () => {
   const arrayHelper = new ArrayHelper();
 
   it("undefined return same output", () => {
-    const result = arrayHelper.UniqueResults(undefined as any, "test");
+    const result = arrayHelper.UniqueResults(
+      undefined as unknown as string[],
+      "test" as keyof string
+    );
     expect(result).toBeUndefined();
   });
 

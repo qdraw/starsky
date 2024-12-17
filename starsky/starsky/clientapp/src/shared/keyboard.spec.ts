@@ -107,7 +107,7 @@ describe("keyboard", () => {
       target.innerHTML = "input";
 
       const setStart = jest.fn();
-      (document.createRange as any) = () => ({
+      (document as { createRange: () => void }).createRange = () => ({
         setStart: () => setStart,
         setEnd: () => {},
         commonAncestorContainer: {
@@ -118,7 +118,7 @@ describe("keyboard", () => {
       });
 
       const addRange = jest.fn();
-      (window.getSelection as any) = () => {
+      (window as { getSelection: () => void }).getSelection = () => {
         return {
           removeAllRanges: () => {},
           addRange: addRange

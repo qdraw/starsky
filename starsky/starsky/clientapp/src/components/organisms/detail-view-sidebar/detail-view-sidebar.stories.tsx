@@ -1,6 +1,6 @@
 import { MemoryRouter } from "react-router-dom";
 import { DetailViewContext } from "../../../contexts/detailview-context";
-import { IRelativeObjects, PageType } from "../../../interfaces/IDetailView";
+import { IDetailView, IRelativeObjects, PageType } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import DetailViewSidebar from "./detail-view-sidebar";
@@ -35,7 +35,7 @@ export const Default = () => {
       status: IExifStatus.Default,
       pageType: PageType.DetailView,
       colorClassActiveList: []
-    } as any
+    } as unknown as IDetailView
   };
   return (
     <MemoryRouter>

@@ -4,9 +4,9 @@ import { MemoryRouter } from "react-router-dom";
 import * as useFetch from "../../../hooks/use-fetch";
 import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IEnvFeatures } from "../../../interfaces/IEnvFeatures";
-import MenuInlineSearch from "./menu-inline-search";
 import * as ArrowKeyDown from "./internal/arrow-key-down";
 import * as InlineSearchSuggest from "./internal/inline-search-suggest";
+import MenuInlineSearch from "./menu-inline-search";
 
 describe("menu-inline-search", () => {
   it("renders", () => {
@@ -105,7 +105,7 @@ describe("menu-inline-search", () => {
         systemTrashEnabled: true,
         useLocalDesktop: false
       } as IEnvFeatures
-    } as IConnectionDefault;
+    };
 
     it("default menu should show logout and trash in default mode", () => {
       dataFeaturesExample.data.useLocalDesktop = false;

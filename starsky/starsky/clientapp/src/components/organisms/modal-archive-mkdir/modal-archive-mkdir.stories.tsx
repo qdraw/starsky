@@ -1,3 +1,4 @@
+import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import ModalArchiveMkdir from "./modal-archive-mkdir";
 
 export default {
@@ -7,7 +8,7 @@ export default {
 export const Default = () => {
   return (
     <ModalArchiveMkdir
-      state={{} as any}
+      state={{} as IArchiveProps}
       dispatch={() => {}}
       isOpen={true}
       handleExit={() => {}}

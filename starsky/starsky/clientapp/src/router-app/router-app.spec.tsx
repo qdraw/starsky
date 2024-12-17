@@ -30,7 +30,7 @@ describe("Router", () => {
     jest.spyOn(SearchPage, "SearchPage").mockImplementationOnce(() => <></>);
 
     const searchListMock = jest.spyOn(useSearchList, "default").mockImplementationOnce(() => {
-      return [{} as ISearchList, () => {}] as any;
+      return [{} as ISearchList, () => {}] as unknown as ISearchList;
     });
 
     Router.navigate("search?q=t");
@@ -48,7 +48,7 @@ describe("Router", () => {
       .spyOn(useSearchList, "default")
       .mockReset()
       .mockImplementationOnce(() => {
-        return [{} as ISearchList, () => {}] as any;
+        return [{} as ISearchList, () => {}] as unknown as ISearchList;
       });
 
     jest.spyOn(TrashPage, "TrashPage").mockImplementationOnce(() => {

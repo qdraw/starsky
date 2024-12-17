@@ -1,6 +1,9 @@
 import { render } from "@testing-library/react";
-import React, { useRef } from "react";
-import useIntersection, { newIntersectionObserver } from "./use-intersection-observer";
+import React, { MutableRefObject, useRef } from "react";
+import useIntersection, {
+  IntersectionOptions,
+  newIntersectionObserver
+} from "./use-intersection-observer";
 
 describe("useIntersection", () => {
   const IntersectionComponentTest = () => {
@@ -28,7 +31,12 @@ describe("useIntersection", () => {
     const target = useRef<HTMLDivElement>(null);
     render(<div ref={target} />);
     const tagRef = { current: { scrollHeight: 100, clientHeight: 200 } };
-    newIntersectionObserver(target, jest.fn(), true, tagRef);
+    newIntersectionObserver(
+      target,
+      jest.fn(),
+      true,
+      tagRef as unknown as MutableRefObject<IntersectionOptions>
+    );
     return null;
   };
 

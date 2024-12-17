@@ -1,9 +1,16 @@
 import { fireEvent, render } from "@testing-library/react";
+import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { MenuOptionSelectionAll } from "./menu-option-selection-all";
 
 describe("MenuOptionSelectionAll", () => {
   it("renders", () => {
-    render(<MenuOptionSelectionAll select={["test"]} state={{} as any} allSelection={() => {}} />);
+    render(
+      <MenuOptionSelectionAll
+        select={["test"]}
+        state={{} as IArchiveProps}
+        allSelection={() => {}}
+      />
+    );
   });
 
   it("renders 2", () => {
@@ -13,7 +20,7 @@ describe("MenuOptionSelectionAll", () => {
         state={
           {
             fileIndexItems: []
-          } as any
+          } as unknown as IArchiveProps
         }
         allSelection={() => {}}
       />
@@ -28,7 +35,7 @@ describe("MenuOptionSelectionAll", () => {
         state={
           {
             fileIndexItems: []
-          } as any
+          } as unknown as IArchiveProps
         }
         allSelection={allSelection}
       />
@@ -52,7 +59,7 @@ describe("MenuOptionSelectionAll", () => {
         state={
           {
             fileIndexItems: []
-          } as any
+          } as unknown as IArchiveProps
         }
         allSelection={allSelection}
       />
@@ -73,7 +80,7 @@ describe("MenuOptionSelectionAll", () => {
         state={
           {
             fileIndexItems: []
-          } as any
+          } as unknown as IArchiveProps
         }
         allSelection={allSelection}
       />

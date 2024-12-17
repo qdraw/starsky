@@ -96,8 +96,8 @@ export const fetchContentUseSearchList = async (
     archiveMedia.data.colorClassUsage = [];
     archiveMedia.data.colorClassActiveList = [];
     setArchive(archiveMedia.data);
-  } catch (e: any) {
-    if (e?.message?.indexOf("aborted") >= 0) {
+  } catch (e: unknown) {
+    if ((e as Error)?.message?.indexOf("aborted") >= 0) {
       console.log("useSearchList aborted");
       return;
     }
@@ -133,7 +133,7 @@ const useSearchList = (
     };
 
     // dependency: 'locationSearch'. is not added to avoid a lot of queries
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, [location]);
 
   return {

@@ -41,10 +41,10 @@ export const fetchContent = async (
     });
     data = await res.json();
     statusCode = res.status;
-  } catch (event: any) {
+  } catch (event: unknown) {
     if (
-      event?.message?.indexOf("aborted") >= 0 ||
-      event?.message?.indexOf("Only absolute URLs are supported") >= 0
+      (event as Error)?.message?.indexOf("aborted") >= 0 ||
+      (event as Error)?.message?.indexOf("Only absolute URLs are supported") >= 0
     ) {
       return;
     }

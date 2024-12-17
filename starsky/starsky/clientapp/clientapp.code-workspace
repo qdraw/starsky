@@ -25,6 +25,7 @@
     "typescript.updateImportsOnFileMove.enabled": "always",
     "typescript.tsdk": "clientapp/node_modules/typescript/lib",
     "editor.formatOnSave": true,
-    "testing.openTesting": "neverOpen"
+    "testing.openTesting": "neverOpen",
+    "testing.automaticallyOpenTestResults": "neverOpen"
   }
 }

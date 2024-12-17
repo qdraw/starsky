@@ -11,7 +11,7 @@ import SwitchButton from "../../atoms/switch-button/switch-button";
 
 interface IModalDisplayOptionsProps {
   isOpen: boolean;
-  handleExit: Function;
+  handleExit: () => void;
 }
 
 const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = (props) => {

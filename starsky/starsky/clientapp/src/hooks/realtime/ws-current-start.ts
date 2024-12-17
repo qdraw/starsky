@@ -6,14 +6,19 @@ import { UrlQuery } from "../../shared/url/url-query";
 import { useSocketsEventName } from "./use-sockets.const";
 import WebSocketService from "./websocket-service";
 
-export function isKeepAliveMessage(item: any) {
+export interface KeepAliveMessage {
+  type?: string;
+  data?: IApiNotificationResponseModel<IFileIndexItem[]> | { dateTime: string };
+}
+
+export function isKeepAliveMessage(item: KeepAliveMessage) {
   if (!item?.type) return false;
   return item.type === "Welcome" || item.type === "Heartbeat";
 }
 
 export function HandleKeepAliveMessage(
   setKeepAliveTime: Dispatch<SetStateAction<Date>>,
-  item: any
+  item: KeepAliveMessage
 ) {
   if (!isKeepAliveMessage(item)) return;
   setKeepAliveTime(new Date());
@@ -21,9 +26,9 @@ export function HandleKeepAliveMessage(
 
 export function HandleKeepAliveServerMessage(
   setKeepAliveServerTime: Dispatch<SetStateAction<string>>,
-  item: any
+  item: KeepAliveMessage
 ) {
-  if (!isKeepAliveMessage(item) || !item.data?.dateTime) return;
+  if (!isKeepAliveMessage(item) || !item.data || !("dateTime" in item.data)) return;
   setKeepAliveServerTime(item.data.dateTime);
 }
 
@@ -36,7 +41,7 @@ export const NewWebSocketService = (): WebSocketService => {
  * @param data
  * @returns
  */
-export function parseJson(data: string): any {
+export function parseJson(data: string): KeepAliveMessage | null {
   try {
     return JSON.parse(data);
   } catch (error) {
@@ -109,7 +114,9 @@ export async function RestoreDataOnOpen(
       continue;
     }
     const item = parseJson(dataItem.content);
-    PushMessage(item);
+    if (item) {
+      PushMessage(item as unknown as IApiNotificationResponseModel<IFileIndexItem[]>);
+    }
     anyResults = true;
   }
   console.log(result.data);
@@ -118,18 +125,20 @@ export async function RestoreDataOnOpen(
 }
 
 export function FireOnMessage(
-  e: Event,
+  e: MessageEvent,
   setKeepAliveTime: Dispatch<SetStateAction<Date>>,
   setKeepAliveServerTime: Dispatch<SetStateAction<string>>
 ) {
-  const item = parseJson((e as any).data);
+  const item = parseJson(e.data);
 
-  if (isKeepAliveMessage(item)) {
+  if (item && isKeepAliveMessage(item)) {
     HandleKeepAliveMessage(setKeepAliveTime, item);
     HandleKeepAliveServerMessage(setKeepAliveServerTime, item);
     return;
   }
-  PushMessage(item);
+  if (item) {
+    PushMessage(item as unknown as IApiNotificationResponseModel<IFileIndexItem[]>);
+  }
 }
 
 export default function WsCurrentStart(

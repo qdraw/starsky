@@ -65,7 +65,7 @@ const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (props) 
 
     FetchPost(updateApiUrl, bodyParams.toString()).then((result) => {
       if (result.statusCode !== 200) return;
-      props.handleExit(result.data);
+      props.handleExit(result.data as IFileIndexItem[]);
     });
   }
 

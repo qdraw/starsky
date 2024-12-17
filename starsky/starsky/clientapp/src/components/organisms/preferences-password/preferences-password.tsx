@@ -54,7 +54,7 @@ const PreferencesPassword: React.FunctionComponent = () => {
       bodyParams.toString()
     );
     setLoading(false);
-    if (response.statusCode === 200 && response.data?.success) {
+    if (response.statusCode === 200 && (response.data as { success: boolean }).success) {
       setError(MessagePasswordChanged);
       return;
     }

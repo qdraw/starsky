@@ -1,4 +1,5 @@
 import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
+import { NavigateFunction } from "../../../hooks/use-location/type/NavigateFunction";
 import { IDetailView, IRelativeObjects } from "../../../interfaces/IDetailView";
 import { UpdateRelativeObject } from "../../../shared/update-relative-object";
 import { PrevNext } from "./prev-next";
@@ -34,7 +35,7 @@ describe("statusRemoved", () => {
   it("not called 2", () => {
     const history = { location: {} } as IUseLocation;
     const navigate = jest.fn();
-    history.navigate = () => Promise.resolve(navigate) as any;
+    history.navigate = () => Promise.resolve(navigate) as unknown as NavigateFunction;
 
     const setIsLoading = jest.fn();
 
@@ -67,7 +68,7 @@ describe("statusRemoved", () => {
   it("called 3", () => {
     const history = { location: {} } as IUseLocation;
     const navigate = jest.fn();
-    history.navigate = () => Promise.resolve(navigate) as any;
+    history.navigate = () => Promise.resolve(navigate) as unknown as NavigateFunction;
 
     const setIsLoading = jest.fn();
 
@@ -104,7 +105,7 @@ describe("statusRemoved", () => {
   it("called 4", () => {
     const history = { location: {} } as IUseLocation;
     const navigate = jest.fn();
-    history.navigate = () => Promise.resolve(navigate) as any;
+    history.navigate = () => Promise.resolve(navigate) as unknown as NavigateFunction;
 
     const setIsLoading = jest.fn();
 
@@ -143,7 +144,7 @@ describe("statusRemoved", () => {
   it("called 5", () => {
     const history = { location: {} } as IUseLocation;
     const navigate = jest.fn();
-    history.navigate = () => Promise.resolve(navigate) as any;
+    history.navigate = () => Promise.resolve(navigate) as unknown as NavigateFunction;
 
     const setIsLoading = jest.fn();
 
@@ -179,7 +180,7 @@ describe("statusRemoved", () => {
   it("called 6", () => {
     const history = { location: {} } as IUseLocation;
     const navigate = jest.fn();
-    history.navigate = () => Promise.resolve(navigate) as any;
+    history.navigate = () => Promise.resolve(navigate) as unknown as NavigateFunction;
 
     const setIsLoading = jest.fn();
 
@@ -220,7 +221,7 @@ describe("statusRemoved", () => {
 
     const history = { location: {} } as IUseLocation;
     const navigate = jest.fn();
-    history.navigate = () => Promise.resolve(navigate) as any;
+    history.navigate = () => Promise.resolve(navigate) as unknown as NavigateFunction;
 
     const setIsLoading = jest.fn();
 
@@ -250,7 +251,7 @@ describe("statusRemoved", () => {
 
     const history = { location: {} } as IUseLocation;
     const navigate = jest.fn();
-    history.navigate = () => Promise.resolve(navigate) as any;
+    history.navigate = () => Promise.resolve(navigate) as unknown as NavigateFunction;
 
     const setIsLoading = jest.fn();
 

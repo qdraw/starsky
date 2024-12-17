@@ -56,7 +56,7 @@ describe("shallowEqual", function () {
   });
 
   it("should not handle comparisons if `customizer` returns `true`", () => {
-    const customizer = function (value: any) {
+    const customizer = function (value: unknown) {
       return typeof value === "string" || undefined;
     };
 
@@ -66,7 +66,7 @@ describe("shallowEqual", function () {
   });
 
   it("should not handle comparisons if `customizer` returns `false`", () => {
-    const customizer = function (value: any) {
+    const customizer = function (value: unknown) {
       return typeof value === "string" ? false : undefined;
     };
 

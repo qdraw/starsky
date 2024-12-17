@@ -5,10 +5,10 @@ describe("ClipboardHelper", () => {
   const clipboardHelper = new ClipboardHelper();
   const clipBoardName = "starskyClipboardData";
 
-  function refGenerator(text: string): any {
+  function refGenerator(text: string): React.RefObject<HTMLDivElement> {
     const div = document.createElement("div");
     div.innerText = text;
-    return { current: div } as any;
+    return { current: div } as React.RefObject<HTMLDivElement>;
   }
 
   function getClipboardData(): IClipboardData {
@@ -48,7 +48,9 @@ describe("ClipboardHelper", () => {
 
   describe("Paste", () => {
     it("non valid ref", () => {
-      expect(clipboardHelper.Paste(null as any)).toBeFalsy();
+      expect(
+        clipboardHelper.Paste(null as unknown as (items: [string, string][]) => void)
+      ).toBeFalsy();
     });
 
     it("No clipboard data", () => {
@@ -78,7 +80,11 @@ describe("ClipboardHelper", () => {
 
   describe("PasteAsync", () => {
     it("non valid ref", async () => {
-      expect(await clipboardHelper.PasteAsync(null as any)).toBeFalsy();
+      expect(
+        await clipboardHelper.PasteAsync(
+          null as unknown as (items: [string, string][]) => Promise<string | boolean>
+        )
+      ).toBeFalsy();
     });
 
     it("should return false if updateChange returns false", async () => {

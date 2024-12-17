@@ -18,7 +18,7 @@ export class BrowserDetect {
   };
 
   public IsElectronApp = (): boolean => {
-    if ((window as any).isElectron === true) return true;
+    if ((window as { isElectron?: boolean }).isElectron === true) return true;
     return (
       navigator.userAgent.indexOf("Electron") > -1 && navigator.userAgent.indexOf("starsky/") > -1
     );

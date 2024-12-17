@@ -21,10 +21,10 @@ export class LeafletEmptyImageUrlTileLayer extends TileLayer {
    */
   public _abortLoading() {
     let i;
-    let tile: any;
+    let tile: HTMLImageElement;
     for (i in this._tiles) {
       if (this._tiles[i].coords.z !== this._tileZoom) {
-        tile = this._tiles[i].el;
+        tile = this._tiles[i].el as HTMLImageElement;
 
         tile.onload = L.Util.falseFn;
         tile.onerror = L.Util.falseFn;
