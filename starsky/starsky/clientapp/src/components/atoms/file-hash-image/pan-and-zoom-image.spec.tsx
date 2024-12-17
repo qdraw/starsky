@@ -1,5 +1,5 @@
 import { createEvent, fireEvent, render, screen } from "@testing-library/react";
-import { act } from "react";
+import React, { act } from "react";
 import { Orientation } from "../../../interfaces/IFileIndexItem";
 import { OnMoveMouseTouchAction } from "./on-move-mouse-touch-action";
 import { OnWheelMouseAction } from "./on-wheel-mouse-action";
@@ -295,6 +295,100 @@ describe("PanAndZoomImage", () => {
       });
 
       expect(onResetCallbackSpy).toHaveBeenCalled();
+
+      component.unmount();
+    });
+
+    it("should call setIsLoading with false when image is not loaded", () => {
+      const setIsLoadingMock = jest.fn();
+
+      // Mock the querySelector to return an image element that is not loaded
+      const containerRefMock = {
+        current: {
+          querySelector: jest.fn().mockReturnValue({
+            complete: true,
+            naturalHeight: 0
+          })
+        }
+      };
+
+      jest.spyOn(React, "useRef").mockReturnValueOnce(containerRefMock);
+
+      render(
+        <PanAndZoomImage
+          src="test.jpg"
+          translateRotation={Orientation.Horizontal}
+          onWheelCallback={jest.fn()}
+          onResetCallback={jest.fn()}
+          setIsLoading={setIsLoadingMock}
+          id="test-id"
+        />
+      );
+
+      // Verify that setIsLoading was called with true
+      expect(setIsLoadingMock).toHaveBeenCalledWith(true);
+    });
+
+    it("should call setIsLoading with true when image is not loaded", () => {
+      const setIsLoadingMock = jest.fn();
+
+      // Mock the querySelector to return an image element that is not loaded
+      const containerRefMock = {
+        current: {
+          querySelector: jest.fn().mockReturnValue({
+            complete: false,
+            naturalHeight: 0
+          })
+        }
+      };
+
+      jest.spyOn(React, "useRef").mockReturnValueOnce(containerRefMock);
+
+      render(
+        <PanAndZoomImage
+          src="test.jpg"
+          translateRotation={Orientation.Horizontal}
+          onWheelCallback={jest.fn()}
+          onResetCallback={jest.fn()}
+          setIsLoading={setIsLoadingMock}
+          id="test-id"
+        />
+      );
+
+      // Verify that setIsLoading was called with true
+      expect(setIsLoadingMock).toHaveBeenCalledWith(true);
+    });
+
+    it("should call touchMove on touch move event", async () => {
+      const spyOn = jest
+        .spyOn(OnMoveMouseTouchAction.prototype, "touchMove")
+        .mockImplementationOnce(() => {});
+
+      const component = render(
+        <PanAndZoomImage
+          src="test.jpg"
+          translateRotation={Orientation.Horizontal}
+          onWheelCallback={jest.fn()}
+          onResetCallback={jest.fn()}
+          setIsLoading={jest.fn()}
+          id="test-id"
+        />
+      );
+
+      const touchEvent = new TouchEvent("touchmove", {
+        touches: [
+          {
+            identifier: 1,
+            target: component.container,
+            clientX: 500,
+            clientY: 500
+          } as unknown as Touch
+        ]
+      });
+
+      window?.dispatchEvent(touchEvent);
+
+      expect(spyOn).toHaveBeenCalled();
 
       component.unmount();
     });
