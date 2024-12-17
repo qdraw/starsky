@@ -38,7 +38,7 @@ export class LeafletEmptyImageUrlGridLayer extends GridLayer {
     // Fired when a tile is removed (e.g. when a tile goes off the screen).
     this.fire("tileunload", {
       tile: tile.el,
-      coords: (this as any)._keyToTileCoords(key)
+      coords: (this as unknown as { _keyToTileCoords: (key: string) => void })._keyToTileCoords(key)
     });
   }
 
@@ -59,10 +59,10 @@ export class LeafletEmptyImageUrlGridLayer extends GridLayer {
       el: HTMLElement;
       loaded?: Date | number;
       retain?: boolean;
-      getAttribute?: any;
+      getAttribute?: (name: string) => string | null;
     }
   ) {
-    if (!this._map || tile.getAttribute("src") === "empty-image.gif") {
+    if (!this._map || (tile.getAttribute && tile.getAttribute("src") === "empty-image.gif")) {
       return;
     } // Replace emptyImageUrl
 
@@ -84,13 +84,16 @@ export class LeafletEmptyImageUrlGridLayer extends GridLayer {
     }
     tile.loaded = +new Date();
 
-    if ((this._map as any)._fadeAnimated) {
+    if ((this._map as unknown as { _fadeAnimated: boolean })._fadeAnimated) {
       L.DomUtil.setOpacity(tile.el, 0);
-      L.Util.cancelAnimFrame((this as any)._fadeFrame);
-      (this as any)._fadeFrame = L.Util.requestAnimFrame((this as any)._updateOpacity, this);
+      L.Util.cancelAnimFrame((this as unknown as { _fadeFrame: number })._fadeFrame);
+      (this as unknown as { _fadeFrame: number })._fadeFrame = L.Util.requestAnimFrame(
+        (this as unknown as { _updateOpacity: (timestamp: number) => void })._updateOpacity,
+        this
+      );
     } else {
       tile.active = true;
-      (this as any)._pruneTiles();
+      (this as unknown as { _pruneTiles: () => void })._pruneTiles();
     }
 
     if (!err) {
@@ -104,18 +107,24 @@ export class LeafletEmptyImageUrlGridLayer extends GridLayer {
       });
     }
 
-    if ((this as any)._noTilesToLoad()) {
-      (this as any)._loading = false;
+    if ((this as unknown as { _noTilesToLoad: () => boolean })._noTilesToLoad()) {
+      (this as unknown as { _loading: boolean })._loading = false;
       // @event load: Event
       // Fired when the grid layer loaded all visible tiles.
       this.fire("load");
 
-      if (L.Browser.ielt9 || !(this as any)._map._fadeAnimated) {
-        L.Util.requestAnimFrame((this as any)._pruneTiles, this);
+      if (
+        L.Browser.ielt9 ||
+        !(this as unknown as { _map: { _fadeAnimated: boolean } })._map._fadeAnimated
+      ) {
+        L.Util.requestAnimFrame((this as unknown as { _pruneTiles: () => void })._pruneTiles, this);
       } else {
         // Wait a bit more than 0.2 secs (the duration of the tile fade-in)
         // to trigger a pruning.
-        setTimeout(L.Util.bind((this as any)._pruneTiles, this), 250);
+        setTimeout(
+          L.Util.bind((this as unknown as { _pruneTiles: () => void })._pruneTiles, this),
+          250
+        );
       }
     }
   }
