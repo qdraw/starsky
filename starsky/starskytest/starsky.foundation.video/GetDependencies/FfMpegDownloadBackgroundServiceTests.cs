@@ -27,6 +27,7 @@ public sealed class FfMpegDownloadBackgroundServiceTests
 		services.AddSingleton<IFfMpegDownloadIndex, FakeIFfMpegDownloadIndex>();
 		services.AddSingleton<IFfMpegDownloadBinaries, FakeIFfMpegDownloadBinaries>();
 		services.AddSingleton<IFfMpegPrepareBeforeRunning, FakeIFfMpegPrepareBeforeRunning>();
+		services.AddSingleton<IFfMpegPreflightRunCheck, FakeIFfMpegPreflightRunCheck>();
 
 		var serviceProvider = services.BuildServiceProvider();
 		_serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();

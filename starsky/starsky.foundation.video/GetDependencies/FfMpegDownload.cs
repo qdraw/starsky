@@ -18,12 +18,14 @@ public class FfMpegDownload : IFfMpegDownload
 	private readonly FfmpegExePath _ffmpegExePath;
 	private readonly IStorage _hostFileSystemStorage;
 	private readonly IWebLogger _logger;
+	private readonly IFfMpegPreflightRunCheck _preflightRunCheck;
 	private readonly IFfMpegPrepareBeforeRunning _prepareBeforeRunning;
 
 	public FfMpegDownload(ISelectorStorage selectorStorage,
 		AppSettings appSettings,
 		IWebLogger logger, IFfMpegDownloadIndex downloadIndex,
-		IFfMpegDownloadBinaries downloadBinaries, IFfMpegPrepareBeforeRunning prepareBeforeRunning)
+		IFfMpegDownloadBinaries downloadBinaries, IFfMpegPrepareBeforeRunning prepareBeforeRunning,
+		IFfMpegPreflightRunCheck preflightRunCheck)
 	{
 		_appSettings = appSettings;
 		_hostFileSystemStorage =
@@ -33,6 +35,7 @@ public class FfMpegDownload : IFfMpegDownload
 		_ffmpegExePath = new FfmpegExePath(_appSettings);
 		_downloadBinaries = downloadBinaries;
 		_prepareBeforeRunning = prepareBeforeRunning;
+		_preflightRunCheck = preflightRunCheck;
 	}
 
 	public async Task<FfmpegDownloadStatus> DownloadFfMpeg()
@@ -76,6 +79,11 @@ public class FfMpegDownload : IFfMpegDownload
 		if ( !await _prepareBeforeRunning.PrepareBeforeRunning(currentArchitecture) )
 		{
 			return FfmpegDownloadStatus.PrepareBeforeRunningFailed;
+		}
+
+		if ( !await _preflightRunCheck.TryRun(currentArchitecture) )
+		{
+			return FfmpegDownloadStatus.PreflightRunCheckFailed;
 		}
 
 		return FfmpegDownloadStatus.Ok;

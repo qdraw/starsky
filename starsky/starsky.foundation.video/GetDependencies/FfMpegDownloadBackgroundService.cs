@@ -29,8 +29,11 @@ public sealed class FfMpegDownloadBackgroundService(IServiceScopeFactory service
 			scope.ServiceProvider.GetRequiredService<IFfMpegDownloadBinaries>();
 		var prepareBeforeRunning =
 			scope.ServiceProvider.GetRequiredService<IFfMpegPrepareBeforeRunning>();
+		var preflightBeforeRunning =
+			scope.ServiceProvider.GetRequiredService<IFfMpegPreflightRunCheck>();
 
-		await new FfMpegDownload(selectorStorage, appSettings, logger, downloadIndex,
-			downloadBinaries, prepareBeforeRunning).DownloadFfMpeg();
+		var service = new FfMpegDownload(selectorStorage, appSettings, logger, downloadIndex,
+			downloadBinaries, prepareBeforeRunning, preflightBeforeRunning);
+		await service.DownloadFfMpeg();
 	}
 }

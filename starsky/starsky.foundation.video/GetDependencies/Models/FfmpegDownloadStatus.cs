@@ -9,5 +9,6 @@ public enum FfmpegDownloadStatus
 	DownloadBinariesFailedMissingFileName,
 	DownloadBinariesFailedSha256Check,
 	DownloadBinariesFailedZipperNotExtracted,
-	PrepareBeforeRunningFailed
+	PrepareBeforeRunningFailed,
+	PreflightRunCheckFailed
 }
