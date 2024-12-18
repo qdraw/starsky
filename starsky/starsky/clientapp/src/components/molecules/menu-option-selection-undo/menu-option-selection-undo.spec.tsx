@@ -1,9 +1,16 @@
 import { fireEvent, render } from "@testing-library/react";
+import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { MenuOptionSelectionUndo } from "./menu-option-selection-undo";
 
 describe("MenuOptionSelectionUndo", () => {
   it("renders", () => {
-    render(<MenuOptionSelectionUndo select={[]} state={{} as any} undoSelection={() => {}} />);
+    render(
+      <MenuOptionSelectionUndo
+        select={[]}
+        state={{} as unknown as IArchiveProps}
+        undoSelection={() => {}}
+      />
+    );
   });
 
   it("renders 2", () => {
@@ -13,7 +20,7 @@ describe("MenuOptionSelectionUndo", () => {
         state={
           {
             fileIndexItems: []
-          } as any
+          } as unknown as IArchiveProps
         }
         undoSelection={() => {}}
       />
@@ -28,7 +35,7 @@ describe("MenuOptionSelectionUndo", () => {
         state={
           {
             fileIndexItems: []
-          } as any
+          } as unknown as IArchiveProps
         }
         undoSelection={undoSelection}
       />
@@ -47,7 +54,7 @@ describe("MenuOptionSelectionUndo", () => {
         state={
           {
             fileIndexItems: []
-          } as any
+          } as unknown as IArchiveProps
         }
         undoSelection={undoSelection}
       />

@@ -15,7 +15,7 @@ import Modal from "../../atoms/modal/modal";
 
 interface IModalRenameFileProps {
   isOpen: boolean;
-  handleExit: Function;
+  handleExit: () => void;
   state: IDetailView;
 }
 

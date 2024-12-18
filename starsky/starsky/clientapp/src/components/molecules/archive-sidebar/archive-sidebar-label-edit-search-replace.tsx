@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { ArchiveContext } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location/use-location";
+import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { PageType } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
-import { ISidebarUpdate } from "../../../interfaces/ISidebarUpdate";
+import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
+import { ISidebarGenericUpdate, ISidebarUpdate } from "../../../interfaces/ISidebarUpdate";
 import localization from "../../../localization/localization.json";
 import { CastToInterface } from "../../../shared/cast-to-interface";
 import FetchPost from "../../../shared/fetch/fetch-post";
@@ -86,8 +88,8 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
     return bodyParams;
   }
 
-  function handleFetchPostResponse(anyData: any) {
-    const result = new CastToInterface().InfoFileIndexArray(anyData.data);
+  function handleFetchPostResponse(anyData: IConnectionDefault) {
+    const result = new CastToInterface().InfoFileIndexArray(anyData.data as IFileIndexItem[]);
     result.forEach((element) => {
       if (element.status === IExifStatus.ReadOnly) setIsError(MessageWriteErrorReadOnly);
       if (element.status === IExifStatus.NotFoundSourceMissing)
@@ -142,7 +144,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
         bodyParams.set("search", fieldValue);
 
         const replaceFieldName = "replace" + Capitalize(fieldName);
-        const replaceAnyValue = (update as any)[replaceFieldName];
+        const replaceAnyValue = (update as unknown as ISidebarGenericUpdate)[replaceFieldName];
         const replaceValue: string = replaceAnyValue ?? "";
 
         bodyParams.set("replace", replaceValue);

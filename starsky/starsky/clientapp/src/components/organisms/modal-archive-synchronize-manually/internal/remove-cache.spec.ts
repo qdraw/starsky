@@ -1,9 +1,9 @@
 import { waitFor } from "@testing-library/react";
 import { PageType } from "../../../../interfaces/IDetailView";
+import { CacheControl } from "../../../../shared/fetch/cache-control.ts";
 import * as FetchGet from "../../../../shared/fetch/fetch-get";
 import { FileListCache } from "../../../../shared/filelist-cache";
 import { RemoveCache } from "./remove-cache";
-import { CacheControl } from "../../../../shared/fetch/cache-control.ts";
 
 describe("RemoveCache function", () => {
   beforeEach(() => {
@@ -34,9 +34,10 @@ describe("RemoveCache function", () => {
       .mockImplementationOnce(() => Promise.resolve({ statusCode: 200, data: null }));
     const parentFolder = "/parent";
     RemoveCache(jest.fn(), parentFolder, "search", jest.fn(), jest.fn());
-    expect(mockFetchGet).toHaveBeenCalledWith("/starsky/api/remove-cache?json=true&f=/parent", {
+    expect(mockFetchGet).toHaveBeenCalledWith(
+      "/starsky/api/remove-cache?json=true&f=/parent",
       CacheControl
-    });
+    );
     expect(mockFetchGet.mock.calls[0][0]).toContain("/remove-cache");
     expect(mockFetchGet.mock.calls[0][0]).toContain(
       "/starsky/api/remove-cache?json=true&f=/parent"
@@ -53,9 +54,10 @@ describe("RemoveCache function", () => {
     const parent: string | undefined = undefined as unknown as string;
 
     RemoveCache(jest.fn(), parent, "search", jest.fn(), jest.fn());
-    expect(mockFetchGet).toHaveBeenCalledWith("/starsky/api/remove-cache?json=true&f=/", {
+    expect(mockFetchGet).toHaveBeenCalledWith(
+      "/starsky/api/remove-cache?json=true&f=/",
       CacheControl
-    });
+    );
     expect(mockFetchGet.mock.calls[0][0]).toContain("/remove-cache");
     expect(mockFetchGet.mock.calls[0][0]).toContain("/starsky/api/remove-cache?json=true&f=/");
     mockFetchGet.mockRestore();
@@ -72,9 +74,10 @@ describe("RemoveCache function", () => {
 
     jest.runAllTimers();
 
-    expect(mockFetchGet).toHaveBeenCalledWith("/starsky/api/remove-cache?json=true&f=/parent", {
+    expect(mockFetchGet).toHaveBeenCalledWith(
+      "/starsky/api/remove-cache?json=true&f=/parent",
       CacheControl
-    });
+    );
 
     mockFetchGet.mockRestore();
   });

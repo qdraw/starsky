@@ -199,7 +199,7 @@ describe("DetailViewMp4", () => {
           bubbles: true,
           cancelable: true,
           target: progress
-        } as any)
+        } as unknown as Event)
       );
 
       expect(screen.queryByTestId("video-time")?.textContent).toBe("0:00 / 0:00");

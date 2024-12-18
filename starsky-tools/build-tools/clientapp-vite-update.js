@@ -1,200 +1,204 @@
 #!/usr/bin/node
 
-const {spawnSync} = require("child_process");
+const { spawnSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
-const {exit} = require("process");
+const { exit } = require("process");
 
 const clientAppFolderPath = path.join(
-	__dirname,
-	"..",
-	"..",
-	"starsky",
-	"starsky",
-	"clientapp"
+  __dirname,
+  "..",
+  "..",
+  "starsky",
+  "starsky",
+  "clientapp"
 );
 
 if (!fs.existsSync(clientAppFolderPath)) {
-	console.log("FAIL -clientAppFolderPath does not exists");
-	exit(1);
+  console.log("FAIL -clientAppFolderPath does not exists");
+  exit(1);
 }
 
 const deleteFolderRecursive = function (path) {
-	let files = [];
-	if (fs.existsSync(path)) {
-		files = fs.readdirSync(path);
-		files.forEach(function (file, index) {
-			const curPath = path + "/" + file;
-			if (fs.lstatSync(curPath).isDirectory()) {
-				// recurse
-				deleteFolderRecursive(curPath);
-			} else {
-				// delete file
-				fs.unlinkSync(curPath);
-			}
-		});
-		fs.rmdirSync(path);
-	}
+  let files = [];
+  if (fs.existsSync(path)) {
+    files = fs.readdirSync(path);
+    files.forEach(function (file, index) {
+      const curPath = path + "/" + file;
+      if (fs.lstatSync(curPath).isDirectory()) {
+        // recurse
+        deleteFolderRecursive(curPath);
+      } else {
+        // delete file
+        fs.unlinkSync(curPath);
+      }
+    });
+    fs.rmdirSync(path);
+  }
 };
 
 const createReactTempFolder = path.join(__dirname, "vite-tmp-folder");
 const myAppName = "my-app";
 const createReactMyAppFolder = path.join(
-	__dirname,
-	"vite-tmp-folder",
-	myAppName
+  __dirname,
+  "vite-tmp-folder",
+  myAppName
 );
 
 console.log("npm config set fund false --global");
 spawnSync("npm", ["config", "set", "fund", "false", "--global"], {
-	cwd: clientAppFolderPath,
-	env: process.env,
-	encoding: "utf-8",
+  cwd: clientAppFolderPath,
+  env: process.env,
+  encoding: "utf-8",
 });
 
 function getNpxCreateCreateApp() {
-	console.log("check " + createReactTempFolder);
-	if (fs.existsSync(createReactTempFolder)) {
-		deleteFolderRecursive(createReactTempFolder);
-	}
-	fs.mkdirSync(createReactTempFolder);
+  console.log("check " + createReactTempFolder);
+  if (fs.existsSync(createReactTempFolder)) {
+    deleteFolderRecursive(createReactTempFolder);
+  }
+  fs.mkdirSync(createReactTempFolder);
 
-	if (!fs.existsSync(createReactTempFolder)) {
-		console.log("FAIL -directory creating failed");
-		exit(1);
-	}
+  if (!fs.existsSync(createReactTempFolder)) {
+    console.log("FAIL -directory creating failed");
+    exit(1);
+  }
 
-	console.log("--createReactTempFolder");
-	console.log(createReactTempFolder);
+  console.log("--createReactTempFolder");
+  console.log(createReactTempFolder);
 
-	// npm create -y vite@latest my-app -- --template react-ts
-	console.log(
-		` npm create -y vite@latest ${myAppName} -- --template react-ts`
-	);
+  // npm create -y vite@latest my-app -- --template react-ts
+  console.log(
+    ` npm create -y vite@latest ${myAppName} -- --template react-ts`
+  );
 
-	const updateSpawn = spawnSync(
-		"npm",
-		["create", "-y", "vite@latest", myAppName, "--", "--template", "react-ts"],
-		{
-			cwd: createReactTempFolder,
-			env: process.env,
-			encoding: "utf-8",
-		}
-	);
+  const updateSpawn = spawnSync(
+    "npm",
+    ["create", "-y", "vite@latest", myAppName, "--", "--template", "react-ts"],
+    {
+      cwd: createReactTempFolder,
+      env: process.env,
+      encoding: "utf-8",
+    }
+  );
 
-	console.log("-result of npm create");
-	console.log(updateSpawn.stdout);
-	console.log(updateSpawn.stout ? updateSpawn.stout : "");
+  console.log("-result of npm create");
+  console.log(updateSpawn.stdout);
+  console.log(updateSpawn.stout ? updateSpawn.stout : "");
 
-	// run npm install in my-app folder
-	const createReactTempFolderMyApp = path.join(createReactTempFolder, myAppName);
-	const npmInstallMyAppSpawn = spawnSync(
-		"npm",
-		["install"],
-		{
-			cwd: createReactTempFolderMyApp,
-			env: process.env,
-			encoding: "utf-8",
-		}
-	);
+  // run npm install in my-app folder
+  const createReactTempFolderMyApp = path.join(createReactTempFolder, myAppName);
+  const npmInstallMyAppSpawn = spawnSync(
+    "npm",
+    ["install"],
+    {
+      cwd: createReactTempFolderMyApp,
+      env: process.env,
+      encoding: "utf-8",
+    }
+  );
 
-	console.log("-result of npm install in my-app folder");
-	console.log(npmInstallMyAppSpawn.stdout);
-	console.log(npmInstallMyAppSpawn.stout ? npmInstallMyAppSpawn.stout : "");
+  console.log("-result of npm install in my-app folder");
+  console.log(npmInstallMyAppSpawn.stdout);
+  console.log(npmInstallMyAppSpawn.stout ? npmInstallMyAppSpawn.stout : "");
 
 }
 
 if (process.env.DEBUG !== "true") {
-	getNpxCreateCreateApp();
+  getNpxCreateCreateApp();
 }
 
 if (
-	!fs.existsSync(path.join(createReactMyAppFolder, "package.json")) ||
-	!fs.existsSync(path.join(createReactMyAppFolder, "package-lock.json"))
+  !fs.existsSync(path.join(createReactMyAppFolder, "package.json")) ||
+  !fs.existsSync(path.join(createReactMyAppFolder, "package-lock.json"))
 ) {
-	console.log("FAIL --- should include package json files");
-	exit(1);
+  console.log("FAIL --- should include package json files");
+  exit(1);
 }
 
 if (fs.existsSync(path.join(clientAppFolderPath, "node_modules"))) {
-	deleteFolderRecursive(path.join(clientAppFolderPath, "node_modules"));
+  deleteFolderRecursive(path.join(clientAppFolderPath, "node_modules"));
 }
 
 const myAppPackageJson = JSON.parse(
-	fs
-		.readFileSync(path.join(createReactMyAppFolder, "package.json"))
-		.toString()
+  fs
+    .readFileSync(path.join(createReactMyAppFolder, "package.json"))
+    .toString()
 );
 const myAppPackageLockJson = JSON.parse(
-	fs
-		.readFileSync(path.join(createReactMyAppFolder, "package-lock.json"))
-		.toString()
+  fs
+    .readFileSync(path.join(createReactMyAppFolder, "package-lock.json"))
+    .toString()
 );
 
 // backup first
 let toClientAppPackageJson = JSON.parse(
-	fs.readFileSync(path.join(clientAppFolderPath, "package.json")).toString()
+  fs.readFileSync(path.join(clientAppFolderPath, "package.json")).toString()
 );
 fs.writeFileSync(
-	path.join(clientAppFolderPath, "package.json.bak"),
-	JSON.stringify(toClientAppPackageJson, null, 2)
+  path.join(clientAppFolderPath, "package.json.bak"),
+  JSON.stringify(toClientAppPackageJson, null, 2)
 );
 
 // overwrite
 fs.writeFileSync(
-	path.join(clientAppFolderPath, "package.json"),
-	JSON.stringify(myAppPackageJson, null, 2)
+  path.join(clientAppFolderPath, "package.json"),
+  JSON.stringify(myAppPackageJson, null, 2)
 );
 fs.writeFileSync(
-	path.join(clientAppFolderPath, "package-lock.json"),
-	JSON.stringify(myAppPackageLockJson, null, 2)
+  path.join(clientAppFolderPath, "package-lock.json"),
+  JSON.stringify(myAppPackageLockJson, null, 2)
 );
 
 // npm ci
 function npmCi() {
-	console.log(
-		"run > npm ci --no-audit --legacy-peer-deps | in: " +
-		clientAppFolderPath
-	);
-	const npmCiOne = spawnSync(
-		"npm",
-		["ci", "--no-audit", "--legacy-peer-deps"],
-		{
-			cwd: clientAppFolderPath,
-			env: process.env,
-			encoding: "utf-8",
-		}
-	);
+  console.log(
+    "run > npm ci --no-audit --legacy-peer-deps | in: " +
+    clientAppFolderPath
+  );
+  const npmCiOne = spawnSync(
+    "npm",
+    ["ci", "--no-audit", "--legacy-peer-deps"],
+    {
+      cwd: clientAppFolderPath,
+      env: process.env,
+      encoding: "utf-8",
+    }
+  );
 
-	console.log("-result of npmCiOne");
-	console.log(npmCiOne.stdout);
-	console.log(npmCiOne.stout ? updateSpawn.stout : "");
+  console.log("-result of npmCiOne");
+  console.log(npmCiOne.stdout);
+  console.log(npmCiOne.stout ? updateSpawn.stout : "");
 }
 
 npmCi();
 
 function npmUnInstall(packageName) {
-	console.log(`run > npm uninstall ${packageName} --save --legacy-peer-deps`);
-	const uninstall = spawnSync(
-		"npm",
-		[
-			"uninstall",
-			packageName,
-			"--no-audit",
-			"--save",
-			"--legacy-peer-deps",
-			"--no-fund",
-		],
-		{
-			cwd: clientAppFolderPath,
-			env: process.env,
-			encoding: "utf-8",
-		}
-	);
+  console.log(`run > npm uninstall ${packageName} --save --legacy-peer-deps`);
+  const uninstall = spawnSync(
+    "npm",
+    [
+      "uninstall",
+      packageName,
+      "--no-audit",
+      "--save",
+      "--legacy-peer-deps",
+      "--no-fund",
+    ],
+    {
+      cwd: clientAppFolderPath,
+      env: process.env,
+      encoding: "utf-8",
+    }
+  );
 
-	console.log("-result of package");
-	console.log(uninstall.stdout);
-	console.log(uninstall.stout ? updateSpawn.stout : "");
+  console.log("-result of package");
+  console.log(uninstall.stdout);
+  console.log(uninstall.stout ? updateSpawn.stout : "");
+  if (uninstall.status !== 0) {
+    console.log(uninstall.stderr);
+    console.log("no exit yet; FAIL - npm install " + packageName);
+  }
 }
 
 // npmUnInstall can be done here
@@ -202,57 +206,65 @@ function npmUnInstall(packageName) {
 // update packages in clientapp package json
 console.log("next: overwrite package json file");
 toClientAppPackageJson.dependencies = {
-	...toClientAppPackageJson.dependencies,
-	...myAppPackageJson.dependencies,
+  ...toClientAppPackageJson.dependencies,
+  ...myAppPackageJson.dependencies,
 };
 fs.writeFileSync(
-	path.join(clientAppFolderPath, "package.json"),
-	JSON.stringify(toClientAppPackageJson, null, 2)
+  path.join(clientAppFolderPath, "package.json"),
+  JSON.stringify(toClientAppPackageJson, null, 2)
 );
 fs.rmSync(path.join(clientAppFolderPath, "package.json.bak"));
 
 function npmInstall(packageName, force, dev) {
-	let forceText = "";
-	if (force) {
-		forceText = "--force";
-	}
-	let saveText = "--save";
-	if (dev) {
-		saveText = "--save-dev";
-	}
-	console.log(
-		"npm" +
-		" " +
-		"install --no-audit" +
-		" " +
-		packageName +
-		" " +
-		saveText +
-		" " +
-		forceText
-	);
-	const npmInstallSpawn = spawnSync(
-		"npm",
-		["install", "--no-audit", packageName, saveText, forceText],
-		{
-			cwd: clientAppFolderPath,
-			env: process.env,
-			encoding: "utf-8",
-		}
-	);
+  let forceText = "";
+  if (force) {
+    forceText = "--force";
+  }
+  let saveText = "--save";
+  if (dev) {
+    saveText = "--save-dev";
+  }
+  console.log(
+    "npm" +
+    " " +
+    "install --no-audit" +
+    " " +
+    packageName +
+    " " +
+    saveText +
+    " " +
+    forceText
+  );
+  const npmInstallSpawn = spawnSync(
+    "npm",
+    ["install", "--no-audit", packageName, saveText, forceText],
+    {
+      cwd: clientAppFolderPath,
+      env: process.env,
+      encoding: "utf-8",
+    }
+  );
 
-	console.log("-result of " + packageName);
-	console.log(npmInstallSpawn.stdout);
-	console.log(npmInstallSpawn.stout ? updateSpawn.stout : "");
-	if (npmInstallSpawn.stout) {
-		exit(1);
-	}
+  console.log("-result of " + packageName);
+  console.log(npmInstallSpawn.stdout);
+  console.log(npmInstallSpawn.stout ? updateSpawn.stout : "");
+  if (npmInstallSpawn.status !== 0) {
+    console.log(npmInstallSpawn.stderr);
+    console.log("FAIL - npm install " + packageName);
+    exit(npmInstallSpawn.status);
+  }
 }
 
 // uninstall not needed at the moment
 
 console.log("next install");
 // npmInstall: name, force, dev
+
+// for conflicts
+npmUnInstall('@typescript-eslint/eslint-plugin');
+npmInstall('@typescript-eslint/eslint-plugin', true, true);
+npmUnInstall('@typescript-eslint/parser');
+npmInstall('@typescript-eslint/parser', true, true);
 
 npmInstall('leaflet', false, false);
 npmInstall('core-js', false, false);
@@ -265,6 +277,7 @@ npmInstall('jest-environment-jsdom', false, true);
 npmInstall('identity-obj-proxy', false, true);
 npmInstall('isomorphic-fetch', false, true);
 npmInstall('eslint-plugin-react', false, true);
+npmInstall('typescript-eslint', false, true);
 npmInstall('eslint-config-prettier', false, true);
 npmInstall('eslint-plugin-prettier', false, true);
 npmInstall('eslint-plugin-jest-react', false, true);
@@ -286,53 +299,83 @@ npmInstall('@testing-library/jest-dom', false, true);
 npmInstall('@testing-library/react', false, true);
 // @testing-library/user-event is skipped
 
+
+
+
+
 console.log("npm install result:");
 const npmInstallSpawnResult = spawnSync(
-	"npm",
-	[
-		"install"
-	],
-	{
-		cwd: clientAppFolderPath,
-		env: process.env,
-		encoding: "utf-8",
-	}
+  "npm",
+  [
+    "install"
+  ],
+  {
+    cwd: clientAppFolderPath,
+    env: process.env,
+    encoding: "utf-8",
+  }
 );
 console.log(npmInstallSpawnResult.stdout);
 
+if (npmInstallSpawnResult.status !== 0) {
+  console.log(npmInstallSpawnResult.stderr);
+  console.log("FAIL - npm install");
+  exit(npmInstallSpawnResult.status);
+}
 
 // clean afterwards
 if (process.env.DEBUG !== "true") {
-	console.log("when exists rm " + createReactTempFolder);
-	if (fs.existsSync(createReactTempFolder)) {
-		deleteFolderRecursive(createReactTempFolder);
-	}
+  console.log("when exists rm " + createReactTempFolder);
+  if (fs.existsSync(createReactTempFolder)) {
+    deleteFolderRecursive(createReactTempFolder);
+  }
 }
 
 // run linter (and fix issues)
 console.log("next: run linter");
 const lintSpawn = spawnSync("npm", ["run", "lint:fix"], {
-	cwd: clientAppFolderPath,
-	env: process.env,
-	encoding: "utf-8",
+  cwd: clientAppFolderPath,
+  env: process.env,
+  encoding: "utf-8",
 });
 console.log(lintSpawn.stdout);
 
+if (lintSpawn.status !== 0) {
+  console.log(lintSpawn.stderr);
+  console.log("FAIL -lint project");
+  exit(lintSpawn.status);
+}
+
 console.log("next: build project");
+
 const buildSpawn = spawnSync("npm", ["run", "build"], {
-	cwd: clientAppFolderPath,
-	env: process.env,
-	encoding: "utf-8",
+  cwd: clientAppFolderPath,
+  env: process.env,
+  encoding: "utf-8",
 });
+
 console.log(buildSpawn.stdout);
 
+if (buildSpawn.status !== 0) {
+  console.log(buildSpawn.stderr);
+  console.log("FAIL -build project");
+  exit(buildSpawn.status);
+}
 
 console.log("next: test project");
+
 const testSpawn = spawnSync("npm", ["run", "test:ci"], {
-	cwd: clientAppFolderPath,
-	env: process.env,
-	encoding: "utf-8",
+  cwd: clientAppFolderPath,
+  env: process.env,
+  encoding: "utf-8",
 });
+
 console.log(testSpawn.stdout);
 
-console.log("done");
+if (testSpawn.status !== 0) {
+  console.log(testSpawn.stderr);
+  console.log("FAIL -test project");
+  exit(testSpawn.status);
+}
+
+console.log("🎉 Done Update - End of file");

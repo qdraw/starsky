@@ -4,7 +4,7 @@ import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 import MenuDefault from "../menu-default/menu-default";
 
-const ApplicationException: FunctionComponent<any> = () => {
+const ApplicationException: FunctionComponent = () => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const MessageApplicationException = language.key(localization.MessageApplicationException);

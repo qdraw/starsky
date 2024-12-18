@@ -5,8 +5,8 @@ import useKeyboardEvent from "./use-keyboard-event";
 describe("useKeyboardEvent", () => {
   interface UseKeyboardEventComponentTestProps {
     regex: RegExp;
-    callback: Function;
-    dependencies: any[];
+    callback: (arg0: KeyboardEvent) => void;
+    dependencies: React.DependencyList;
   }
 
   const UseKeyboardEventComponentTest: React.FunctionComponent<UseKeyboardEventComponentTestProps> =

@@ -1,3 +1,4 @@
+import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import MenuTrash from "./menu-trash";
 
 export default {
@@ -5,7 +6,9 @@ export default {
 };
 
 export const Default = () => {
-  return <MenuTrash state={{ fileIndexItems: [] } as any} dispatch={() => {}} />;
+  return (
+    <MenuTrash state={{ fileIndexItems: [] } as unknown as IArchiveProps} dispatch={() => {}} />
+  );
 };
 
 Default.storyName = "default";

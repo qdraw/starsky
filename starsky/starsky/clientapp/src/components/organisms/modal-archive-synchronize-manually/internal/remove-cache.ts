@@ -2,11 +2,11 @@ import { Dispatch, SetStateAction } from "react";
 import { ArchiveAction } from "../../../../contexts/archive-context.tsx";
 import { IArchiveProps } from "../../../../interfaces/IArchiveProps.ts";
 import { CastToInterface } from "../../../../shared/cast-to-interface.ts";
+import { CacheControl } from "../../../../shared/fetch/cache-control.ts";
 import FetchGet from "../../../../shared/fetch/fetch-get.ts";
 import { FileListCache } from "../../../../shared/filelist-cache.ts";
 import { URLPath } from "../../../../shared/url/url-path.ts";
 import { UrlQuery } from "../../../../shared/url/url-query.ts";
-import { CacheControl } from "../../../../shared/fetch/cache-control.ts";
 
 /**
  * Remove Folder cache
@@ -21,7 +21,7 @@ export function RemoveCache(
   setIsLoading(true);
   new FileListCache().CacheCleanEverything();
   const parentFolder = propsParentFolder ?? "/";
-  FetchGet(new UrlQuery().UrlRemoveCache(new URLPath().encodeURI(parentFolder)), { CacheControl })
+  FetchGet(new UrlQuery().UrlRemoveCache(new URLPath().encodeURI(parentFolder)), CacheControl)
     .then(() => {
       return new Promise<string>((resolve) => {
         setTimeout(() => {
@@ -32,7 +32,7 @@ export function RemoveCache(
       });
     })
     .then((url: string) => {
-      return FetchGet(url, { CacheControl });
+      return FetchGet(url, CacheControl);
     })
     .then((connectionResult) => {
       const removeCacheResult = new CastToInterface().MediaArchive(connectionResult.data);

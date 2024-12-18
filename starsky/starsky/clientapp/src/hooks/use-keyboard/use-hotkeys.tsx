@@ -34,7 +34,7 @@ function useHotKeys(
     /* should do nothing, you should overwrite this */
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _dependencies: any = []
+  _dependencies: React.DependencyList = []
 ) {
   useEffect(() => {
     const handler = function (event: KeyboardEvent) {

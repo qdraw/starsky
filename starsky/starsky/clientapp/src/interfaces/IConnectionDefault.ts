@@ -1,5 +1,5 @@
 export interface IConnectionDefault {
-  data: any;
+  data: unknown;
   statusCode: number;
 }
 export function newIConnectionDefault(): IConnectionDefault {

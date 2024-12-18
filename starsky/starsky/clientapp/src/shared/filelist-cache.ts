@@ -33,7 +33,7 @@ export class FileListCache {
    * @param urlObject params of url
    * @param value object with data
    */
-  public CacheSetObject(urlObject: IUrl, value: IArchive | IDetailView): any {
+  public CacheSetObject(urlObject: IUrl, value: IArchive | IDetailView): IDetailView | IArchive {
     this.CacheSetObjectWithoutParent(urlObject, value);
     this.CacheCleanOld();
     this.setParentItem(urlObject, value);
@@ -47,7 +47,10 @@ export class FileListCache {
     return urlObject;
   }
 
-  private CacheSetObjectWithoutParent(urlObject: IUrl, value: IArchive | IDetailView): any {
+  private CacheSetObjectWithoutParent(
+    urlObject: IUrl,
+    value: IArchive | IDetailView
+  ): void | IDetailView | IArchive {
     if (localStorage.getItem("clientCache") === "false") return;
     urlObject = this.SetDefaultUrlObjectValues(urlObject);
     value.dateCache = Date.now();
@@ -111,7 +114,7 @@ export class FileListCache {
     );
   }
 
-  public CacheSet(locationSearch: string, value: IArchive | IDetailView): any {
+  public CacheSet(locationSearch: string, value: IArchive | IDetailView): IDetailView | IArchive {
     const urlObject = new URLPath().StringToIUrl(locationSearch);
     return this.CacheSetObject(urlObject, value);
   }
@@ -185,13 +188,12 @@ export class FileListCache {
    */
   public ParseJson(cacheString: string | null): IArchive | IDetailView | null {
     if (!cacheString) return null;
-    let cacheData: any = {};
     try {
-      cacheData = JSON.parse(cacheString);
+      const cacheData = JSON.parse(cacheString) as IArchive | IDetailView;
+      return cacheData.dateCache ? cacheData : null;
     } catch (error) {
       console.error(error);
       return null;
     }
-    return cacheData.dateCache ? cacheData : null;
   }
 }

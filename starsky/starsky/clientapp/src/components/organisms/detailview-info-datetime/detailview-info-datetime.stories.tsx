@@ -1,4 +1,4 @@
-import { DetailViewContext } from "../../../contexts/detailview-context";
+import { DetailViewContext, IDetailViewContext } from "../../../contexts/detailview-context";
 import { IRelativeObjects, PageType } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
@@ -34,12 +34,12 @@ export const _Default = () => {
       status: IExifStatus.Default,
       pageType: PageType.DetailView,
       colorClassActiveList: []
-    } as any
-  };
+    } as unknown as IFileIndexItem
+  } as unknown as IDetailViewContext;
   return (
     <DetailViewContext.Provider value={contextProvider}>
       <DetailViewInfoDateTime
-        fileIndexItem={contextProvider.state}
+        fileIndexItem={contextProvider.state as unknown as IFileIndexItem}
         dispatch={contextProvider.dispatch}
         isFormEnabled={true}
         setFileIndexItem={() => {}}

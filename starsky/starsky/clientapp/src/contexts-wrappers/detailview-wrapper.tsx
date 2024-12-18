@@ -33,7 +33,7 @@ function DetailViewWrapper(detailViewProp: Readonly<IDetailView>) {
     if (!detailViewProp?.fileIndexItem) return;
     dispatch({ type: "reset", payload: detailViewProp });
     // should run only at start or change page
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, [detailViewProp.subPath]);
 
   useEffect(() => {

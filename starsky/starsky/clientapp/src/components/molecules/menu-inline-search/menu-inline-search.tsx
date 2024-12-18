@@ -30,15 +30,15 @@ const MenuInlineSearch: FunctionComponent<IMenuSearchBarProps> = (props) => {
   // can't set this inside effect or if ==> performance issue, runs to often
   const responseObject = useFetch(new UrlQuery().UrlSearchSuggestApi(query), "get");
   useEffect(() => {
-    if (!responseObject?.data?.length || responseObject.statusCode !== 200) {
+    if (!(responseObject?.data as string[])?.length || responseObject.statusCode !== 200) {
       if (suggest && suggest.length >= 1) setSuggest([]);
       return;
     }
-    const result: Array<string> = [...responseObject.data];
+    const result: Array<string> = [...(responseObject?.data as string[])];
     setSuggest(result);
 
     // to avoid endless loops
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, [responseObject]);
 
   /** Submit the form */

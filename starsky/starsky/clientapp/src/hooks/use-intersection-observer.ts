@@ -6,7 +6,7 @@ type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void;
 
 // credits for: https://github.com/cats-oss/use-intersection
 
-type IntersectionOptions = {
+export type IntersectionOptions = {
   root?: React.RefObject<Element>;
   rootMargin?: string;
   threshold?: number | number[];
@@ -16,9 +16,9 @@ type IntersectionOptions = {
 
 export const newIntersectionObserver = (
   ref: React.RefObject<Element>,
-  setIntersecting: React.Dispatch<any>,
+  setIntersecting: React.Dispatch<React.SetStateAction<boolean>>,
   once: boolean | undefined,
-  optsRef: React.MutableRefObject<any>,
+  optsRef: React.MutableRefObject<IntersectionOptions>,
   callback?: IntersectionChangeHandler
 ): IntersectionObserver => {
   const observer = new IntersectionObserver(
@@ -45,7 +45,7 @@ const useIntersection = (
   ref: React.RefObject<Element>,
   options: IntersectionOptions = {},
   callback?: IntersectionChangeHandler
-) => {
+): boolean => {
   const { defaultIntersecting, once, ...opts } = options;
   const optsRef = useRef(opts);
   const [intersecting, setIntersecting] = useState(defaultIntersecting === true);
@@ -66,11 +66,11 @@ const useIntersection = (
 
     return () => {
       if (!once && ref.current != null) {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
         observer.unobserve(ref.current);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, [optsRef.current]);
 
   return intersecting;

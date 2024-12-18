@@ -48,7 +48,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Back-end_ Small readablity fixes to avoid code smells (PR #1844)
 - [x] (Changed) _Back-end_ Filename checks for extensions (PR #1849)
 - [x] (Changed) _Back-end_ Improve tests for port mapper (PR #1850)
-        
+- [x] (Fixed) _Front-end_ Eslint update and remove of any (PR #1866)
+
 ## version 0.6.3 - 2024-11-14 {#v0.6.3}
 
 - [x] (Fixed) _Front-end_ OkAndSame status in Upload Modal gives the wrong status (PR #1783)

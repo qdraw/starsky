@@ -2,17 +2,17 @@ import "core-js/features/dom-collections/for-each";
 import React, { ReactNode, useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import useGlobalSettings from "../../../hooks/use-global-settings";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 import modalFreezeHelper from "./modal-freeze-helper";
 import modalInsertPortalDiv from "./modal-insert-portal-div";
-import localization from "../../../localization/localization.json";
 
 type ModalPropTypes = {
   children: ReactNode;
   root?: string;
   id?: string;
   isOpen: boolean;
-  handleExit: () => any;
+  handleExit: () => void;
   focusAfterExit?: HTMLElement;
   className?: string;
   dataTest?: string;
@@ -33,7 +33,7 @@ function ModalClassName(isOpen: boolean, className?: string) {
 
 function ifModalOpenHandleExit(
   event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-  handleExit: Function
+  handleExit: () => void
 ) {
   const target = event.target as HTMLElement;
   if (target.className.indexOf(ModalOpenClassName) === -1) return;
@@ -49,7 +49,7 @@ export default function Modal({
   focusAfterExit,
   className = "",
   dataTest = "modal-bg"
-}: ModalPropTypes): any {
+}: ModalPropTypes): JSX.Element | null {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const MessageCloseDialog = language.key(localization.MessageCloseDialog);
@@ -61,7 +61,7 @@ export default function Modal({
 
   useEffect(() => {
     return modalInsertPortalDiv(modal, forceUpdate, setForceUpdate, id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, []);
 
   const initialRender = useRef(false);
@@ -74,7 +74,9 @@ export default function Modal({
       <div
         onClick={(event) => ifModalOpenHandleExit(event, handleExit)}
         onKeyDown={(event) => {
-          event.key === "Enter" && handleExit();
+          if (event.key === "Enter") {
+            handleExit();
+          }
         }}
         data-test={dataTest}
         className={ModalClassName(isOpen, className)}

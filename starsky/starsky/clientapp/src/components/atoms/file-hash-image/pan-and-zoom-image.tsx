@@ -6,7 +6,7 @@ import { OnMouseDownMouseAction } from "./on-mouse-down-mouse-action";
 import { OnMoveMouseTouchAction } from "./on-move-mouse-touch-action";
 import { OnWheelMouseAction } from "./on-wheel-mouse-action";
 
-interface IPanAndZoomImage {
+export interface IPanAndZoomImage {
   src: string;
   setError?: React.Dispatch<React.SetStateAction<boolean>>;
   onErrorCallback?(): void;
@@ -52,7 +52,7 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
     props.setIsLoading(isLoaded === false);
 
     // use Memo gives issues elsewhere
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, [id]);
 
   const containerRef = useRef<HTMLButtonElement>(null);
@@ -118,8 +118,10 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
         data-test="pan-zoom-image"
         ref={containerRef}
         onMouseDown={new OnMouseDownMouseAction(setPanning, position, setPosition).onMouseDown}
-        onTouchStart={(e) =>
-          new OnMouseDownMouseAction(setPanning, position, setPosition).onTouchStart(e as any)
+        onTouchStart={(touchEvent) =>
+          new OnMouseDownMouseAction(setPanning, position, setPosition).onTouchStart(
+            touchEvent as unknown as TouchEvent
+          )
         }
         onWheel={
           new OnWheelMouseAction(image, setPosition, position, containerRef, props.onWheelCallback)
@@ -127,6 +129,7 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
         }
       >
         <div
+          data-test="pan-zoom-image-container"
           style={{
             transform: `translate(${position.x}px, ${position.y}px) scale(${position.z})`
           }}

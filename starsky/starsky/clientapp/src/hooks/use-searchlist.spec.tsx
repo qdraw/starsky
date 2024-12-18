@@ -2,15 +2,15 @@ import { act } from "react";
 import { newIArchive } from "../interfaces/IArchive";
 import { PageType } from "../interfaces/IDetailView";
 import { newIFileIndexItem, newIFileIndexItemArray } from "../interfaces/IFileIndexItem";
-import useSearchList, { fetchContentUseSearchList, ISearchList } from "./use-searchlist";
 import { mountReactHook } from "./___tests___/test-hook";
+import useSearchList, { fetchContentUseSearchList, ISearchList } from "./use-searchlist";
 
 describe("UseSearchList", () => {
   describe("Search", () => {
     let setupComponent;
     let hook: ISearchList;
 
-    let fetchSpy: jest.SpyInstance<any>;
+    let fetchSpy: jest.SpyInstance<Promise<Response>>;
 
     function setFetchSpy(statusCode: number, pageType: PageType) {
       const mockSuccessResponse = {
@@ -33,7 +33,11 @@ describe("UseSearchList", () => {
     }
 
     beforeEach(() => {
-      setupComponent = mountReactHook(useSearchList, ["test", "1", "true"]); // Mount a Component with our hook
+      setupComponent = mountReactHook(useSearchList as (...args: unknown[]) => unknown, [
+        "test",
+        "1",
+        "true"
+      ]); // Mount a Component with our hook
       hook = setupComponent.componentHook as ISearchList;
     });
 

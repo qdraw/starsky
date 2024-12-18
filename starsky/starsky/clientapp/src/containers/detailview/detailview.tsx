@@ -70,7 +70,7 @@ const DetailView: FC<IDetailView> = () => {
         // do nothing on catch error
       });
     // function UpdateRelativeObject  is not subject to change
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, [history.location.search, isSearchQuery, state.subPath]);
 
   // previous item
@@ -144,7 +144,7 @@ const DetailView: FC<IDetailView> = () => {
   // // When item is removed
   useEffect(() => {
     statusRemoved(state, relativeObjects, isSearchQuery, history, setRelativeObjects, setIsLoading);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, [state.fileIndexItem?.status]);
 
   // Reset Loading after changing page
@@ -257,6 +257,7 @@ const DetailView: FC<IDetailView> = () => {
                 ).next()
               }
               onKeyDown={(event) => {
+                // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                 event.key === "Enter" &&
                   new PrevNext(
                     relativeObjects,
@@ -289,6 +290,7 @@ const DetailView: FC<IDetailView> = () => {
                 ).prev()
               }
               onKeyDown={(event) => {
+                // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                 event.key === "Enter" &&
                   new PrevNext(
                     relativeObjects,

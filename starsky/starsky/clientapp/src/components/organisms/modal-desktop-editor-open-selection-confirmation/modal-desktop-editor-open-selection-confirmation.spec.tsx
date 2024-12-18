@@ -63,6 +63,7 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
   it("calls handleExit on close left top button click", () => {
     jest.spyOn(Modal, "default").mockImplementationOnce((element) => {
       element.handleExit();
+      return <></>;
     });
 
     // it auto close the modal

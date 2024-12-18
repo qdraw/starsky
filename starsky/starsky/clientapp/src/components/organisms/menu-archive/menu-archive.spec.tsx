@@ -1,5 +1,5 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import React from "react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import React, { act } from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import * as useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import { IArchive } from "../../../interfaces/IArchive";
@@ -14,6 +14,7 @@ import * as Link from "../../atoms/link/link";
 import * as MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
 import * as ModalArchiveMkdir from "../modal-archive-mkdir/modal-archive-mkdir";
 import * as ModalArchiveRename from "../modal-archive-rename/modal-archive-rename";
+import { IModalRenameFolderProps } from "../modal-archive-rename/modal-archive-rename";
 import * as ModalArchiveSynchronizeManually from "../modal-archive-synchronize-manually/modal-archive-synchronize-manually";
 import * as ModalDisplayOptions from "../modal-display-options/modal-display-options";
 import * as ModalDownload from "../modal-download/modal-download";
@@ -154,7 +155,7 @@ describe("MenuArchive", () => {
           return contextValues;
         });
 
-      const component = render(<MenuArchive>t</MenuArchive>);
+      const component = render(<MenuArchive />);
 
       expect(screen.getByTestId("selected-0")).toBeTruthy();
 
@@ -181,7 +182,7 @@ describe("MenuArchive", () => {
         .mockImplementationOnce(() => contextValues)
         .mockImplementationOnce(() => contextValues);
 
-      const component = render(<MenuArchive>t</MenuArchive>);
+      const component = render(<MenuArchive />);
 
       expect(screen.getByTestId("selected-2")).toBeTruthy();
 
@@ -414,7 +415,7 @@ describe("MenuArchive", () => {
         .mockImplementationOnce(() => contextValues)
         .mockImplementationOnce(() => contextValues);
 
-      const component = render(<MenuArchive>t</MenuArchive>);
+      const component = render(<MenuArchive />);
 
       const mkdir = screen.getByTestId("mkdir");
 
@@ -459,7 +460,7 @@ describe("MenuArchive", () => {
           return contextValues;
         });
 
-      const component = render(<MenuArchive>t</MenuArchive>);
+      const component = render(<MenuArchive />);
 
       const rename = screen.getByTestId("rename");
       expect(rename).not.toBeNull();
@@ -584,7 +585,9 @@ describe("MenuArchive", () => {
       const dispatch = jest.fn();
       const contextValues = { state, dispatch };
 
-      const modalMockElement = (props: any) => {
+      const modalMockElement = (props: {
+        dispatch: (action: { type: string; path: string }) => void;
+      }): JSX.Element => {
         return (
           <button
             id="test-btn-fake"
@@ -604,8 +607,12 @@ describe("MenuArchive", () => {
       jest
         .spyOn(ModalArchiveRename, "default")
         .mockReset()
-        .mockImplementationOnce(modalMockElement)
-        .mockImplementationOnce(modalMockElement);
+        .mockImplementationOnce(
+          modalMockElement as React.FunctionComponent<IModalRenameFolderProps>
+        )
+        .mockImplementationOnce(
+          modalMockElement as React.FunctionComponent<IModalRenameFolderProps>
+        );
 
       jest
         .spyOn(React, "useContext")
@@ -1241,6 +1248,7 @@ describe("MenuArchive", () => {
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest
         .spyOn(useFetch, "default")
+        .mockReset()
         .mockImplementationOnce(() => newIConnectionDefault())
         .mockImplementationOnce(() => newIConnectionDefault())
         .mockImplementationOnce(() => newIConnectionDefault())
@@ -1260,6 +1268,10 @@ describe("MenuArchive", () => {
 
       jest
         .spyOn(React, "useContext")
+        .mockReset()
+        .mockImplementationOnce(() => {
+          return contextValues;
+        })
         .mockImplementationOnce(() => {
           return contextValues;
         })

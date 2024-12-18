@@ -15,7 +15,7 @@ interface IModalForceDeleteProps {
   isOpen: boolean;
   select: Array<string> | undefined;
   setSelect: React.Dispatch<React.SetStateAction<string[] | undefined>>;
-  handleExit: Function;
+  handleExit: () => void;
   state: IArchiveProps;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   dispatch: React.Dispatch<ArchiveAction>;

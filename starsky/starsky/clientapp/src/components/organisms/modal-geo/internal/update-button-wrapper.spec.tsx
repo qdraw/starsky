@@ -1,4 +1,5 @@
 import { fireEvent, render, waitFor } from "@testing-library/react";
+import { IGeoLocationModel } from "../../../../interfaces/IGeoLocationModel";
 import localization from "../../../../localization/localization.json";
 import { Language, SupportedLanguages } from "../../../../shared/language";
 import { ILatLong } from "../modal-geo";
@@ -22,7 +23,7 @@ describe("UpdateButtonWrapper", () => {
   });
 
   it("[wrapper] calls UpdateGeoLocation when clicked and updates location", async () => {
-    (UpdateGeoLocation as jest.Mock).mockResolvedValueOnce({} as any);
+    (UpdateGeoLocation as jest.Mock).mockResolvedValueOnce({} as Promise<IGeoLocationModel | null>);
 
     const { getByTestId } = render(
       <UpdateButtonWrapper

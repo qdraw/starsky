@@ -1,3 +1,4 @@
+import { IDetailView } from "../../../interfaces/IDetailView";
 import ModalDetailviewRenameFile from "./modal-detailview-rename-file";
 
 export default {
@@ -7,7 +8,7 @@ export default {
 export const Default = () => {
   return (
     <ModalDetailviewRenameFile
-      state={{} as any}
+      state={{} as IDetailView}
       isOpen={true}
       handleExit={() => {}}
     ></ModalDetailviewRenameFile>

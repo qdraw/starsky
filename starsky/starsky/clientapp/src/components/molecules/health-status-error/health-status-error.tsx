@@ -25,12 +25,14 @@ const HealthStatusError: React.FunctionComponent = () => {
     <span key="warning">{MessageHealthStatusCriticalErrors}</span>
   ];
 
-  if (!healthCheck.data?.entries) {
+  const healthCheckData = healthCheck.data as { entries: IHealthEntry[] };
+
+  if (!healthCheckData?.entries) {
     content.push(
       <li key="backend-services">BackendServices HTTP StatusCode: {healthCheck.statusCode}</li>
     );
   } else {
-    healthCheck.data.entries.forEach((entry: IHealthEntry) => {
+    healthCheckData.entries.forEach((entry: IHealthEntry) => {
       if (entry.isHealthy) return;
       content.push(<li key={entry.name}> {entry.name}</li>);
     });

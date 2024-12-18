@@ -20,8 +20,8 @@ describe("inline-search-suggest", () => {
       inputFormControlReference: {
         current: {
           value: "default text"
-        } as any
-      },
+        }
+      } as React.RefObject<HTMLInputElement>,
       featuresResult: { data: { systemTrashEnabled: true }, statusCode: 200 },
       defaultText: "default text",
       callback: jest.fn()
@@ -56,8 +56,8 @@ describe("inline-search-suggest", () => {
         inputFormControlReference: {
           current: {
             value: "default text"
-          } as any
-        },
+          }
+        } as React.RefObject<HTMLInputElement>,
         featuresResult: {
           data: { systemTrashEnabled: true },
           statusCode: 200
@@ -76,8 +76,8 @@ describe("inline-search-suggest", () => {
         inputFormControlReference: {
           current: {
             value: "default text"
-          } as any
-        },
+          }
+        } as React.RefObject<HTMLInputElement>,
         featuresResult: {
           data: { useLocalDesktop: true },
           statusCode: 200

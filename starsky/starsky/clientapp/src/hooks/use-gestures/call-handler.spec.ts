@@ -1,20 +1,21 @@
 import { ICurrentTouches } from "./ICurrentTouches.types";
+import { IHandlers } from "./IHandlers.types";
 import { callHandler } from "./call-handler";
 
 describe("callHandler", () => {
   describe("callHandler", () => {
     it("should call test function", () => {
-      const handlers = { test: jest.fn() } as any;
-      callHandler("test", true as any, handlers);
+      const handlers = { test: jest.fn() } as unknown as IHandlers;
+      callHandler("test", true as unknown as ICurrentTouches, handlers);
 
-      expect(handlers.test).toHaveBeenCalled();
+      expect((handlers as { test: jest.Mock }).test).toHaveBeenCalled();
     });
 
     it("should not call test function", () => {
-      const handlers = { test: jest.fn() } as any;
-      callHandler(undefined as any, true as any, handlers);
+      const handlers = { test: jest.fn() } as unknown as IHandlers;
+      callHandler(undefined as unknown as string, true as unknown as ICurrentTouches, handlers);
 
-      expect(handlers.test).toHaveBeenCalledTimes(0);
+      expect((handlers as { test: jest.Mock }).test).toHaveBeenCalledTimes(0);
     });
   });
 

@@ -149,7 +149,7 @@ describe("HealthCheckForUpdates", () => {
 
     it("There a no links in the Notification when using electron", () => {
       // This is the difference
-      (window as any).isElectron = true;
+      (window as unknown as { isElectron: boolean }).isElectron = true;
 
       const mockGetIConnectionDefault = {
         statusCode: 202,
@@ -173,7 +173,7 @@ describe("HealthCheckForUpdates", () => {
       expect(useFetchSpy).toHaveBeenCalled();
 
       component.unmount();
-      (window as any).isElectron = null;
+      (window as unknown as { isElectron: null }).isElectron = null;
     });
   });
 });

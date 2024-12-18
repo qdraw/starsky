@@ -12,7 +12,7 @@ describe("ListImageTest", () => {
   });
 
   it("useIntersection = true", () => {
-    (useIntersection.default as jest.Mock<any>).mockImplementation(() => true);
+    (useIntersection.default as jest.Mock<boolean>).mockImplementation(() => true);
     const element = render(
       <ListImage fileHash={"test.jpg"} imageFormat={ImageFormat.jpg}>
         test

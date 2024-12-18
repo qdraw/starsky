@@ -9,7 +9,7 @@ describe("FileListCache", () => {
   const fileListCache = new FileListCache();
   describe("Test", () => {
     it("input and check if any result", () => {
-      fileListCache.CacheSet("?f=1", {} as any);
+      fileListCache.CacheSet("?f=1", {} as unknown as IArchive);
 
       const result = sessionStorage.getItem(
         fileListCache.CacheKeyGenerator({
@@ -112,7 +112,7 @@ describe("FileListCache", () => {
         fileIndexItems: [detailView.fileIndexItem]
       });
 
-      if ((window as any).debug) {
+      if ((window as unknown as { debug: boolean }).debug) {
         // only for debugging
         for (let index = 0; index < Object.keys(sessionStorage).length; index++) {
           const item = new FileListCache().ParseJson(
@@ -161,7 +161,7 @@ describe("FileListCache", () => {
     });
 
     it("check default value", () => {
-      fileListCache.CacheSet("", {} as any);
+      fileListCache.CacheSet("", {} as unknown as IArchive);
 
       const result = sessionStorage.getItem(
         fileListCache.CacheKeyGenerator({
@@ -178,7 +178,7 @@ describe("FileListCache", () => {
     });
 
     it("default sort value should be fileName", () => {
-      fileListCache.CacheSet("", {} as any);
+      fileListCache.CacheSet("", {} as unknown as IArchive);
 
       const explicitSet = fileListCache.CacheKeyGenerator({
         sort: SortType.fileName
@@ -189,7 +189,7 @@ describe("FileListCache", () => {
     });
 
     it("sort value should be fileName NOT imageFormat", () => {
-      fileListCache.CacheSet("", {} as any);
+      fileListCache.CacheSet("", {} as unknown as IArchive);
 
       const imageFormatStorageKey = fileListCache.CacheKeyGenerator({
         sort: SortType.imageFormat
@@ -275,7 +275,7 @@ describe("FileListCache", () => {
         colorClassActiveList: [],
         isReadOnly: false,
         dateCache: Date.now()
-      };
+      } as unknown as IDetailView;
 
       // Set the parent item in the cache
       fileListCache.CacheSetObject({ ...urlObject, f: "/test" }, parentItem);
@@ -314,7 +314,7 @@ describe("FileListCache", () => {
         JSON.stringify({
           data: 1,
           dateCache: 1
-        } as any)
+        } as { data: number; dateCache: number })
       );
 
       const cacheGetter = fileListCache.CacheGet("?f=2");
@@ -352,7 +352,7 @@ describe("FileListCache", () => {
         JSON.stringify({
           data: 1,
           dateCache: 1
-        } as any)
+        } as { data: number; dateCache: number })
       );
 
       fileListCache.CacheCleanOld();
@@ -370,7 +370,7 @@ describe("FileListCache", () => {
         key,
         JSON.stringify({
           data: 2
-        } as any)
+        } as { data: number; dateCache: number })
       );
       fileListCache.CacheCleanOld();
 
@@ -392,13 +392,13 @@ describe("FileListCache", () => {
         JSON.stringify({
           data: 2,
           dateCache: 2
-        } as any)
+        } as { data: number; dateCache: number })
       );
 
       const data4 = {
         data: 2,
         dateCache: Date.now()
-      } as any;
+      } as { data: number; dateCache: number };
       sessionStorage.setItem(
         fileListCache.CacheKeyGenerator({
           f: "4",
@@ -428,7 +428,7 @@ describe("FileListCache", () => {
         JSON.stringify({
           data: 2,
           dateCache: 2
-        } as any)
+        } as { data: number; dateCache: number })
       );
 
       sessionStorage.setItem(
@@ -440,7 +440,7 @@ describe("FileListCache", () => {
         JSON.stringify({
           data: 2,
           dateCache: Date.now()
-        } as any)
+        } as { data: number; dateCache: number })
       );
 
       fileListCache.CacheCleanEverything();
@@ -458,9 +458,9 @@ describe("FileListCache", () => {
       const data6 = {
         data: 2,
         dateCache: Date.now()
-      } as any;
+      } as { data: number; dateCache: number };
 
-      fileListCache.CacheSetObject({ f: "6" }, data6);
+      fileListCache.CacheSetObject({ f: "6" }, data6 as unknown as IDetailView);
 
       const checkIfItemNotExist = sessionStorage.getItem(
         fileListCache.CacheKeyGenerator({
@@ -478,10 +478,10 @@ describe("FileListCache", () => {
       const data7 = {
         data: 2,
         dateCache: Date.now()
-      } as any;
+      } as { data: number; dateCache: number };
 
       // before disabling
-      fileListCache.CacheSetObject({ f: "7" }, data7);
+      fileListCache.CacheSetObject({ f: "7" }, data7 as unknown as IDetailView);
 
       localStorage.setItem("clientCache", "false");
 

@@ -4,14 +4,14 @@ import ApplicationException from "./application-exception";
 
 describe("ApplicationException", () => {
   it("renders", () => {
-    render(<ApplicationException>t</ApplicationException>);
+    render(<ApplicationException />);
   });
 
   it("should have menu", () => {
     const menuDefaultSpy = jest.spyOn(MenuDefault, "default").mockImplementationOnce(() => {
       return <></>;
     });
-    const component = render(<ApplicationException>t</ApplicationException>);
+    const component = render(<ApplicationException />);
 
     expect(menuDefaultSpy).toHaveBeenCalled();
 
@@ -23,7 +23,7 @@ describe("ApplicationException", () => {
       return <></>;
     });
 
-    const component = render(<ApplicationException>t</ApplicationException>);
+    const component = render(<ApplicationException />);
 
     expect(screen.getByTestId("application-exception-header")).toBeTruthy();
 
@@ -45,7 +45,7 @@ describe("ApplicationException", () => {
       return <></>;
     });
 
-    const component = render(<ApplicationException>t</ApplicationException>);
+    const component = render(<ApplicationException />);
 
     expect(window.location.reload).not.toHaveBeenCalled();
 

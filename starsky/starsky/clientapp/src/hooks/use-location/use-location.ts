@@ -4,7 +4,7 @@ import { IUseLocation } from "./interfaces/IUseLocation";
 import { NavigateFn } from "./internal/navigate-fn";
 
 const useLocation = () => {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   const initialState: IUseLocation = {
     location: window.location,
     navigate: NavigateFn

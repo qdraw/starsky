@@ -48,7 +48,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
       progressRef,
       timeRef
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, [new URLPath().getFilePath(history.location.search)]);
 
   // Check if media is found
@@ -109,7 +109,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
           data-test="video"
           className={GetVideoClassName(paused, started)}
           onKeyDown={(event) => {
-            event.key === "Enter" &&
+            if (event.key === "Enter") {
               PlayPause(
                 videoRef,
                 setIsError,
@@ -119,8 +119,8 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
                 setPaused,
                 setIsLoading
               );
-            event.key === "Enter" &&
               TimeUpdate(videoRef, setIsLoading, progressRef, scrubberRef, timeRef);
+            }
           }}
           onClick={() => {
             PlayPause(

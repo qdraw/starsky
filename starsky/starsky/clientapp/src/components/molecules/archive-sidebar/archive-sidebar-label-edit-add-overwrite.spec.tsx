@@ -33,7 +33,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
   describe("with context", () => {
     let useContextSpy: jest.SpyInstance;
 
-    let dispatchedValues: any[] = [];
+    let dispatchedValues: AppContext.ArchiveAction[] = [];
 
     beforeEach(() => {
       // is used in multiple ways
@@ -57,7 +57,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
             }
           ]
         } as IArchive,
-        dispatch: (value: any) => {
+        dispatch: (value: AppContext.ArchiveAction) => {
           dispatchedValues.push(value);
         }
       } as AppContext.IArchiveContext;
@@ -132,7 +132,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
     it("click overwrite > generic fail > remove message retry when success", async () => {
       const connectionDefault: IConnectionDefault = {
         statusCode: 200,
-        data: [] as any[]
+        data: [] as AppContext.ArchiveAction[]
       };
 
       const mockIConnectionDefaultReject: Promise<IConnectionDefault> = Promise.reject();

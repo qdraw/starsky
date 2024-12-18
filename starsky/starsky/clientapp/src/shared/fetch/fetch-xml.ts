@@ -1,6 +1,6 @@
 import { IConnectionDefault } from "../../interfaces/IConnectionDefault";
 
-function isParseError(parsedDocument: any) {
+function isParseError(parsedDocument: Document) {
   // parser and parsererrorNS could be cached on startup for efficiency
   const parser = new DOMParser(),
     errorneousParse = parser.parseFromString("<", "text/xml"),

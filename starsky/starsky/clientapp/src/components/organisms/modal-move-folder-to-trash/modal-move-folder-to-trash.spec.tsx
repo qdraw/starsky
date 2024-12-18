@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { act } from "react";
-import * as IUseLocation from "../../../hooks/use-location/use-location";
+import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
+import * as useLocation from "../../../hooks/use-location/use-location";
 import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
@@ -233,14 +234,14 @@ describe("ModalMoveFolderToTrash component", () => {
     });
 
     // create a mock history object with a location object
-    const historySpy = jest.spyOn(IUseLocation, "default").mockImplementationOnce(() => {
+    const historySpy = jest.spyOn(useLocation, "default").mockImplementationOnce(() => {
       return {
         location: {
           pathname: "/",
           search: "?path=/path/to/folder"
         },
         navigate: jest.fn()
-      } as any;
+      } as unknown as IUseLocation;
     });
 
     // render the component and pass in the mock history object

@@ -1,5 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
+import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
+import { IDetailView } from "../../../interfaces/IDetailView";
 import * as Link from "../../atoms/link/link";
 import IsSearchQueryMenuSearchItem from "./is-search-query-menu-search-item";
 
@@ -11,14 +13,14 @@ describe("IsSearchQueryMenuSearchItem", () => {
         search: "test"
       },
       navigate: jest.fn()
-    } as any;
+    } as unknown as IUseLocation;
     render(
       <BrowserRouter>
         <IsSearchQueryMenuSearchItem
           history={history}
           setIsLoading={jest.fn()}
           isSearchQuery={true}
-          state={{ fileIndexItem: {} } as any}
+          state={{ fileIndexItem: {} } as IDetailView}
         />
       </BrowserRouter>
     );
@@ -33,13 +35,13 @@ describe("IsSearchQueryMenuSearchItem", () => {
       location: {
         search: "test"
       }
-    } as any;
+    } as unknown as IUseLocation;
     render(
       <IsSearchQueryMenuSearchItem
         history={history}
         setIsLoading={jest.fn()}
         isSearchQuery={true}
-        state={{ fileIndexItem: {} } as any}
+        state={{ fileIndexItem: {} } as IDetailView}
       />
     );
 
@@ -53,7 +55,7 @@ describe("IsSearchQueryMenuSearchItem", () => {
         basename: "/",
         search: "test"
       }
-    } as any;
+    } as unknown as IUseLocation;
 
     const loadingSpy = jest.fn();
     render(
@@ -62,7 +64,7 @@ describe("IsSearchQueryMenuSearchItem", () => {
           history={history}
           setIsLoading={loadingSpy}
           isSearchQuery={true}
-          state={{ fileIndexItem: {} } as any}
+          state={{ fileIndexItem: {} } as IDetailView}
         />
       </BrowserRouter>
     );
@@ -80,7 +82,7 @@ describe("IsSearchQueryMenuSearchItem", () => {
       location: {
         search: "test"
       }
-    } as any;
+    } as unknown as IUseLocation;
     const loadingSpy = jest.fn();
     render(
       <BrowserRouter>
@@ -88,7 +90,7 @@ describe("IsSearchQueryMenuSearchItem", () => {
           history={history}
           setIsLoading={loadingSpy}
           isSearchQuery={true}
-          state={{ fileIndexItem: {} } as any}
+          state={{ fileIndexItem: {} } as IDetailView}
         />
       </BrowserRouter>
     );
@@ -106,14 +108,14 @@ describe("IsSearchQueryMenuSearchItem", () => {
       location: {
         search: "?t=!delete!"
       }
-    } as any;
+    } as unknown as IUseLocation;
     render(
       <BrowserRouter>
         <IsSearchQueryMenuSearchItem
           history={history}
           setIsLoading={jest.fn()}
           isSearchQuery={true}
-          state={{ fileIndexItem: {} } as any}
+          state={{ fileIndexItem: {} } as IDetailView}
         />
       </BrowserRouter>
     );
@@ -129,13 +131,13 @@ describe("IsSearchQueryMenuSearchItem", () => {
       location: {
         search: "test"
       }
-    } as any;
+    } as unknown as IUseLocation;
     render(
       <IsSearchQueryMenuSearchItem
         history={history}
         setIsLoading={jest.fn()}
         isSearchQuery={false}
-        state={{ fileIndexItem: {} } as any}
+        state={{ fileIndexItem: {} } as IDetailView}
       />
     );
 

@@ -59,7 +59,11 @@ describe("ItemListView", () => {
     it("no content", () => {
       const component = render(
         <MemoryRouter>
-          <ItemListView iconList={true} fileIndexItems={undefined as any} colorClassUsage={[]} />
+          <ItemListView
+            iconList={true}
+            fileIndexItems={undefined as unknown as IFileIndexItem[]}
+            colorClassUsage={[]}
+          />
         </MemoryRouter>
       );
       expect(component.container.textContent).toBe("no content");
@@ -99,7 +103,7 @@ describe("ItemListView", () => {
 
       // https://stackoverflow.com/questions/43694975/jest-enzyme-using-mount-document-getelementbyid-returns-null-on-componen
       const div = document.createElement("div");
-      (window as any).domNode = div;
+      (window as unknown as { domNode: HTMLElement }).domNode = div;
       document.body.appendChild(div);
 
       const useLocationMock = {

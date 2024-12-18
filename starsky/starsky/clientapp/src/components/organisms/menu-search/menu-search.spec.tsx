@@ -1,6 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import React from "react";
-import { act } from "react";
+import React, { act } from "react";
 import * as useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import { IArchive } from "../../../interfaces/IArchive";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
@@ -11,13 +10,16 @@ import MenuSearch from "./menu-search";
 
 describe("MenuSearch", () => {
   it("renders", () => {
-    render(<MenuSearch state={undefined as any} dispatch={jest.fn()} />);
+    render(<MenuSearch state={undefined as unknown as IArchiveProps} dispatch={jest.fn()} />);
   });
 
   describe("with Context", () => {
     it("open hamburger menu", () => {
       const component = render(
-        <MenuSearch state={{ fileIndexItems: [] } as any} dispatch={jest.fn()} />
+        <MenuSearch
+          state={{ fileIndexItems: [] } as unknown as IArchiveProps}
+          dispatch={jest.fn()}
+        />
       );
 
       let hamburger = screen.queryByTestId("hamburger") as HTMLDivElement;
@@ -38,7 +40,10 @@ describe("MenuSearch", () => {
     it("un select items", () => {
       Router.navigate("/?select=1");
       const component = render(
-        <MenuSearch state={{ fileIndexItems: [] } as any} dispatch={jest.fn()} />
+        <MenuSearch
+          state={{ fileIndexItems: [] } as unknown as IArchiveProps}
+          dispatch={jest.fn()}
+        />
       );
 
       expect(Router.state.location.search).toBe("?select=1");
@@ -106,7 +111,10 @@ describe("MenuSearch", () => {
       });
 
       const component = render(
-        <MenuSearch state={{ fileIndexItems: [] } as any} dispatch={jest.fn()} />
+        <MenuSearch
+          state={{ fileIndexItems: [] } as unknown as IArchiveProps}
+          dispatch={jest.fn()}
+        />
       );
 
       const navOpen = screen.queryByTestId("nav-open") as HTMLDivElement;

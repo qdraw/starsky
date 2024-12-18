@@ -14,12 +14,15 @@ describe("LeafletEmptyImageUrlTileLayer [leaflet-extension]", () => {
       y: 10,
       z: 1
     } as Coords;
-    const el = document.createElement("div") as any;
+    const el = document.createElement("div") as HTMLDivElement;
 
-    const tileLayer = new LeafletEmptyImageUrlTileLayer("51:10:1");
+    const tileLayer = new LeafletEmptyImageUrlTileLayer("51:10:1") as unknown as {
+      _tiles: InternalTiles;
+      _abortLoading: () => void;
+    };
 
     // mock a tile
-    (tileLayer as any)._tiles = {
+    tileLayer._tiles = {
       "51:10:1": {
         coords: exampleCoords,
         current: true,
@@ -30,6 +33,6 @@ describe("LeafletEmptyImageUrlTileLayer [leaflet-extension]", () => {
     tileLayer._abortLoading();
 
     // no content anymore
-    expect((tileLayer as any)._tiles).toStrictEqual({});
+    expect(tileLayer._tiles).toStrictEqual({});
   });
 });

@@ -201,7 +201,7 @@ describe("Login", () => {
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample);
 
-    const mockPost: Promise<any> = Promise.resolve({
+    const mockPost: Promise<IConnectionDefault> = Promise.resolve({
       statusCode: 200,
       data: "ok"
     });
@@ -255,7 +255,7 @@ describe("Login", () => {
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample);
 
-    const mockPost: Promise<any> = Promise.resolve({
+    const mockPost: Promise<IConnectionDefault> = Promise.resolve({
       statusCode: 401,
       data: "fail"
     });
@@ -307,7 +307,7 @@ describe("Login", () => {
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample);
 
-    const mockPost: Promise<any> = Promise.resolve({
+    const mockPost: Promise<IConnectionDefault> = Promise.resolve({
       statusCode: 423,
       data: "fail"
     });

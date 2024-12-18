@@ -1,6 +1,5 @@
 import { fireEvent, render, RenderResult } from "@testing-library/react";
-import { useState } from "react";
-import { act } from "react";
+import { act, useState } from "react";
 import { BrowserRouter } from "react-router-dom";
 import * as FileHashImage from "../../components/atoms/file-hash-image/file-hash-image";
 import { IFileHashImageProps } from "../../components/atoms/file-hash-image/file-hash-image";
@@ -26,7 +25,6 @@ import DetailView from "./detailview";
 
 describe("DetailView", () => {
   const fileHashImageMock = (props: IFileHashImageProps) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [isError, setIsError] = useState(false);
     return (
       <div data-test="pan-zoom-image" className={isError ? "main--error" : undefined}>
@@ -89,7 +87,7 @@ describe("DetailView", () => {
   } as IDetailView;
 
   describe("With context and test if image is loaded", () => {
-    let contextProvider: any;
+    let contextProvider: ContextDetailview.IDetailViewContext;
     let TestComponent: () => JSX.Element;
     let Component: RenderResult;
 
@@ -311,7 +309,7 @@ describe("DetailView", () => {
         .mockImplementationOnce(() => locationObject);
 
       jest.spyOn(UpdateRelativeObject.prototype, "Update").mockImplementationOnce(() => {
-        return Promise.resolve() as any;
+        return Promise.resolve<IRelativeObjects>({} as IRelativeObjects);
       });
 
       const detailview = render(<TestComponent />);
@@ -360,7 +358,7 @@ describe("DetailView", () => {
         .spyOn(UpdateRelativeObject.prototype, "Update")
         .mockReset()
         .mockImplementationOnce(() => {
-          return Promise.resolve() as any;
+          return Promise.resolve<IRelativeObjects>({} as IRelativeObjects);
         });
 
       const component = render(<TestComponent />);
@@ -463,7 +461,7 @@ describe("DetailView", () => {
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject);
       jest.spyOn(UpdateRelativeObject.prototype, "Update").mockImplementationOnce(() => {
-        return Promise.resolve() as any;
+        return Promise.resolve<IRelativeObjects>({} as IRelativeObjects);
       });
 
       const component = render(<TestComponent />);
@@ -505,12 +503,16 @@ describe("DetailView", () => {
 
       const updateRelativeObjectSpy = jest
         .spyOn(UpdateRelativeObject.prototype, "Update")
-        .mockImplementationOnce(() => Promise.resolve() as any);
+        .mockImplementationOnce(() => Promise.resolve<IRelativeObjects>({} as IRelativeObjects));
 
-      let handlerOnSwipeLeft: Function | undefined;
+      let handlerOnSwipeLeft: () => void;
       jest
         .spyOn(useGestures, "useGestures")
         .mockImplementationOnce((_, handler) => {
+          if (!handler.onSwipeLeft) {
+            console.error("handler.onSwipeLeft is not defined");
+            return;
+          }
           handlerOnSwipeLeft = handler.onSwipeLeft;
         })
         .mockImplementationOnce(() => {});
@@ -561,12 +563,16 @@ describe("DetailView", () => {
 
       const updateRelativeObjectSpy = jest
         .spyOn(UpdateRelativeObject.prototype, "Update")
-        .mockImplementationOnce(() => Promise.resolve() as any);
+        .mockImplementationOnce(() => Promise.resolve<IRelativeObjects>({} as IRelativeObjects));
 
-      let handlerOnSwipeLeft: Function | undefined;
+      let handlerOnSwipeLeft: () => void;
       jest
         .spyOn(useGestures, "useGestures")
         .mockImplementationOnce((_, handler) => {
+          if (!handler.onSwipeRight) {
+            console.error("handler.onSwipeRight is not defined");
+            return;
+          }
           handlerOnSwipeLeft = handler.onSwipeRight;
         })
         .mockImplementationOnce(() => {});

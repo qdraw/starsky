@@ -1,11 +1,16 @@
-import { render } from "@testing-library/react";
+import { render, RenderResult } from "@testing-library/react";
 import { act } from "react";
 
 type ModalPropTypes = {
-  children: (hookValues: any) => any;
+  children: (hookValues: unknown) => React.ReactNode;
 };
 
-export const mountReactHook = (hook: any, args: any[]) => {
+export type MountReactHookResult = {
+  componentMount: RenderResult;
+  componentHook: object;
+};
+
+export const mountReactHook = (hook: (...args: unknown[]) => unknown, args: unknown[]) => {
   const Component = ({ children }: ModalPropTypes) => {
     return children(hook(...args));
   };
@@ -22,5 +27,5 @@ export const mountReactHook = (hook: any, args: any[]) => {
       </Component>
     );
   });
-  return { componentMount, componentHook };
+  return { componentMount, componentHook } as MountReactHookResult;
 };

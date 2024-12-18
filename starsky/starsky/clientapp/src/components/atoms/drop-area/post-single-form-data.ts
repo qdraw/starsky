@@ -3,7 +3,12 @@ import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem, newIFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import FetchPost from "../../../shared/fetch/fetch-post";
 
-const CastFileIndexItem = (element: any): IFileIndexItem => {
+const CastFileIndexItem = (element: {
+  fileHash: string;
+  filePath: string;
+  fileName: string;
+  status: IExifStatus;
+}): IFileIndexItem => {
   const uploadFileObject = newIFileIndexItem();
   uploadFileObject.fileHash = element.fileHash;
   uploadFileObject.filePath = element.filePath;
@@ -105,16 +110,23 @@ class ProcessResponse {
     }
 
     // Success
-    Array.from(response.data).forEach((dataItem: any) => {
+    (
+      response.data as {
+        fileIndexItem?: IFileIndexItem;
+        filePath?: string;
+        fileHash?: string;
+        status: IExifStatus;
+      }[]
+    ).forEach((dataItem) => {
       if (!dataItem) {
         outputUploadFilesList.push({
           filePath: inputFilesList[index].name,
           fileName: inputFilesList[index].name,
           status: IExifStatus.ServerError
         } as IFileIndexItem);
-      } else if (dataItem.fileIndexItem && (dataItem.status as IExifStatus) !== IExifStatus.Ok) {
+      } else if (dataItem.fileIndexItem && dataItem.status !== IExifStatus.Ok) {
         outputUploadFilesList.push(CastFileIndexItem(dataItem.fileIndexItem));
-      } else if (!dataItem.fileIndexItem && (dataItem.status as IExifStatus) !== IExifStatus.Ok) {
+      } else if (!dataItem.fileIndexItem && dataItem.status !== IExifStatus.Ok) {
         // when `/import` already existing item
         outputUploadFilesList.push({
           filePath: dataItem.filePath,
@@ -123,7 +135,7 @@ class ProcessResponse {
           fileHash: dataItem.fileHash,
           status: dataItem.status
         } as IFileIndexItem);
-      } else {
+      } else if (dataItem.fileIndexItem) {
         dataItem.fileIndexItem.lastEdited = new Date().toISOString();
         outputUploadFilesList.push(dataItem.fileIndexItem);
       }

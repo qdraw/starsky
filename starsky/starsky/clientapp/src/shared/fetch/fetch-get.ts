@@ -1,6 +1,9 @@
 import { IConnectionDefault } from "../../interfaces/IConnectionDefault";
 
-const FetchGet = async (url: string, headers: any = {}): Promise<IConnectionDefault> => {
+const FetchGet = async (
+  url: string,
+  headers: Record<string, string> = {}
+): Promise<IConnectionDefault> => {
   const settings = {
     method: "GET",
     credentials: "include" as RequestCredentials,

@@ -16,7 +16,11 @@ import { useEffect } from "react";
  * @param callback - function that is called
  * @param dependencies - deps array 
  */
-function useKeyboardEvent(regex: RegExp, callback: Function, dependencies: any = []) {
+function useKeyboardEvent(
+  regex: RegExp,
+  callback: (arg0: KeyboardEvent) => void,
+  dependencies: React.DependencyList = []
+) {
   useEffect(() => {
     const handler = function (event: KeyboardEvent) {
       if (regex?.exec(event.key)) {
@@ -27,7 +31,7 @@ function useKeyboardEvent(regex: RegExp, callback: Function, dependencies: any =
     return () => {
       window.removeEventListener("keydown", handler);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, [...dependencies, regex, callback]);
 }
 

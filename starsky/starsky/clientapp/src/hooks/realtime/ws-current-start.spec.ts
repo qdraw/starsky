@@ -1,5 +1,6 @@
 import { IConnectionDefault } from "../../interfaces/IConnectionDefault";
 import * as FetchGet from "../../shared/fetch/fetch-get";
+import { FakeWebSocketService } from "./___tests___/fake-web-socket-service";
 import { useSocketsEventName } from "./use-sockets.const";
 import WebSocketService from "./websocket-service";
 import WsCurrentStart, {
@@ -13,7 +14,6 @@ import WsCurrentStart, {
   parseJson,
   RestoreDataOnOpen
 } from "./ws-current-start";
-import { FakeWebSocketService } from "./___tests___/fake-web-socket-service";
 
 describe("WsCurrentStart", () => {
   const onOpenEvent = new Event("t");
@@ -32,7 +32,7 @@ describe("WsCurrentStart", () => {
         jest.fn(),
         NewFakeWebSocketService,
         "",
-        jest.fn() as any
+        jest.fn() as React.Dispatch<React.SetStateAction<string>>
       ) as FakeWebSocketService;
 
       expect(setSocketConnectedSpy).toHaveBeenCalled();
@@ -111,7 +111,7 @@ describe("WsCurrentStart", () => {
           data: '{"type" : "Welcome", "welcome": true}'
         }),
         setKeepAliveTimeSpy,
-        jest.fn() as any
+        jest.fn() as React.Dispatch<React.SetStateAction<string>>
       );
       expect(setKeepAliveTimeSpy).toHaveBeenCalled();
     });
@@ -121,7 +121,7 @@ describe("WsCurrentStart", () => {
       FireOnMessage(
         new MessageEvent("t", { data: '{"type" : "Welcome", "time": 1}' }),
         setKeepAliveTimeSpy,
-        jest.fn() as any
+        jest.fn() as React.Dispatch<React.SetStateAction<string>>
       );
       expect(setKeepAliveTimeSpy).toHaveBeenCalled();
     });
@@ -131,7 +131,7 @@ describe("WsCurrentStart", () => {
       FireOnMessage(
         new MessageEvent("t", { data: undefined }),
         setKeepAliveTimeSpy,
-        jest.fn() as any
+        jest.fn() as React.Dispatch<React.SetStateAction<string>>
       );
       expect(setKeepAliveTimeSpy).toHaveBeenCalledTimes(0);
     });
@@ -141,7 +141,7 @@ describe("WsCurrentStart", () => {
       FireOnMessage(
         new MessageEvent("t", { data: "1{1\\" }),
         setKeepAliveTimeSpy,
-        jest.fn() as any
+        jest.fn() as React.Dispatch<React.SetStateAction<string>>
       );
       expect(setKeepAliveTimeSpy).toHaveBeenCalledTimes(0);
     });
@@ -151,7 +151,7 @@ describe("WsCurrentStart", () => {
       FireOnMessage(
         new MessageEvent("t", { data: '{"data": 1}' }),
         setKeepAliveTimeSpy,
-        jest.fn() as any
+        jest.fn() as React.Dispatch<React.SetStateAction<string>>
       );
       expect(setKeepAliveTimeSpy).toHaveBeenCalledTimes(0);
     });
@@ -163,14 +163,20 @@ describe("WsCurrentStart", () => {
         done();
       });
 
-      FireOnMessage(new MessageEvent("t", { data: '{"data": 1}' }), jest.fn(), jest.fn() as any);
+      FireOnMessage(
+        new MessageEvent("t", { data: '{"data": 1}' }),
+        jest.fn(),
+        jest.fn() as React.Dispatch<React.SetStateAction<string>>
+      );
     });
   });
 
   describe("HandleKeepAliveMessage", () => {
     it("should ignore keep alive when sending real message", () => {
       const setKeepAliveTimeSpy = jest.fn();
-      HandleKeepAliveMessage(setKeepAliveTimeSpy, { data: '{"data": 1}' });
+      HandleKeepAliveMessage(setKeepAliveTimeSpy, {
+        data: '{"data": 1}' as unknown as { dateTime: string }
+      });
       expect(setKeepAliveTimeSpy).toHaveBeenCalledTimes(0);
     });
   });
@@ -179,7 +185,7 @@ describe("WsCurrentStart", () => {
     it("should ignore keep alive when sending real message", () => {
       const setKeepAliveServerTimeSpy = jest.fn();
       HandleKeepAliveServerMessage(setKeepAliveServerTimeSpy, {
-        data: '{"data": 1}'
+        data: '{"data": 1}' as unknown as { dateTime: string }
       });
       expect(setKeepAliveServerTimeSpy).toHaveBeenCalledTimes(0);
     });
@@ -187,14 +193,14 @@ describe("WsCurrentStart", () => {
       const setKeepAliveServerTimeSpy = jest.fn();
       HandleKeepAliveServerMessage(setKeepAliveServerTimeSpy, {
         type: "Welcome",
-        data: { dateTime: 1 }
+        data: { dateTime: 1 } as unknown as { dateTime: string }
       });
       expect(setKeepAliveServerTimeSpy).toHaveBeenCalledTimes(1);
     });
     it("should trigger when message has no welcome", () => {
       const setKeepAliveServerTimeSpy = jest.fn();
       HandleKeepAliveServerMessage(setKeepAliveServerTimeSpy, {
-        data: { dateTime: 1 }
+        data: { dateTime: 1 } as unknown as { dateTime: string }
       }); // should have type
       expect(setKeepAliveServerTimeSpy).toHaveBeenCalledTimes(0);
     });

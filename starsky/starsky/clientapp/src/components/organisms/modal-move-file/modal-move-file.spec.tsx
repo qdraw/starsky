@@ -2,6 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { act } from "react";
 import * as useFileList from "../../../hooks/use-filelist";
 import { IFileList } from "../../../hooks/use-filelist";
+import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
 import * as useLocation from "../../../hooks/use-location/use-location";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { PageType } from "../../../interfaces/IDetailView";
@@ -208,7 +209,7 @@ describe("ModalMoveFile", () => {
     const locationMockData = {
       location: jest.fn(),
       navigate: jest.fn()
-    } as any;
+    } as unknown as IUseLocation;
 
     // use as ==> import * as useLocation from '../hooks/use-location/use-location';
     jest

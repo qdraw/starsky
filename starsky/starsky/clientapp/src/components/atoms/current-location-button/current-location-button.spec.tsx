@@ -6,6 +6,19 @@ describe("CurrentLocationButton", () => {
     render(<CurrentLocationButton />);
   });
 
+  function globalNavigator() {
+    return global as unknown as {
+      navigator: {
+        geolocation: {
+          getCurrentPosition: (
+            success: (position: { coords: { latitude: number; longitude: number } }) => void,
+            error?: (error: Error) => void
+          ) => void;
+        };
+      };
+    };
+  }
+
   describe("context", () => {
     it("no navigator.geolocation wrong_location", async () => {
       const component = render(<CurrentLocationButton />);
@@ -33,7 +46,8 @@ describe("CurrentLocationButton", () => {
           )
         )
       };
-      (global as any).navigator.geolocation = mockGeolocation;
+
+      globalNavigator().navigator.geolocation = mockGeolocation;
 
       const callback = jest.fn();
       const component = render(<CurrentLocationButton callback={callback} />);
@@ -60,7 +74,7 @@ describe("CurrentLocationButton", () => {
           )
         )
       };
-      (global as any).navigator.geolocation = mockGeolocation;
+      globalNavigator().navigator.geolocation = mockGeolocation;
 
       const component = render(<CurrentLocationButton />);
       screen.getByRole("button").click();
@@ -75,7 +89,7 @@ describe("CurrentLocationButton", () => {
       const mockGeolocation = {
         getCurrentPosition: jest.fn().mockImplementationOnce((_, error) => Promise.resolve(error()))
       };
-      (global as any).navigator.geolocation = mockGeolocation;
+      globalNavigator().navigator.geolocation = mockGeolocation;
 
       const callback = jest.fn();
       const component = render(<CurrentLocationButton callback={callback} />);

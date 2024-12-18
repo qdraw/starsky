@@ -1,9 +1,9 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import React from "react";
-import { act } from "react";
+import React, { act } from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import * as useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import { IArchive } from "../../../interfaces/IArchive";
+import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { Router } from "../../../router-app/router-app";
@@ -16,11 +16,13 @@ import MenuTrash from "./menu-trash";
 
 describe("MenuTrash", () => {
   it("renders", () => {
-    render(<MenuTrash state={{ fileIndexItems: [] } as any} dispatch={jest.fn()} />);
+    render(
+      <MenuTrash state={{ fileIndexItems: [] } as unknown as IArchiveProps} dispatch={jest.fn()} />
+    );
   });
 
   describe("with Context", () => {
-    let contextValues: any;
+    let contextValues: { state: IArchive; dispatch: () => void };
 
     beforeEach(() => {
       const state = {
@@ -52,7 +54,10 @@ describe("MenuTrash", () => {
 
     it("open hamburger menu (MenuTrash)", () => {
       const component = render(
-        <MenuTrash state={{ fileIndexItems: [] } as any} dispatch={jest.fn()} />
+        <MenuTrash
+          state={{ fileIndexItems: [] } as unknown as IArchiveProps}
+          dispatch={jest.fn()}
+        />
       );
 
       let hamburger = screen.queryByTestId("hamburger") as HTMLDivElement;
@@ -546,7 +551,10 @@ describe("MenuTrash", () => {
       });
 
       const component = render(
-        <MenuTrash state={{ fileIndexItems: [] } as any} dispatch={jest.fn()} />
+        <MenuTrash
+          state={{ fileIndexItems: [] } as unknown as IArchiveProps}
+          dispatch={jest.fn()}
+        />
       );
 
       const navOpen = screen.queryByTestId("nav-open") as HTMLDivElement;

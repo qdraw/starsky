@@ -38,7 +38,7 @@ export class UpdateChange {
    * @param items - tuple with "value: string, name: string"
    */
   public Update(items: [string, string][]): Promise<string | boolean> {
-    const updateObject: any = { f: this.fileIndexItem.filePath };
+    const updateObject: Record<string, string> = { f: this.fileIndexItem.filePath };
 
     for (const [name, value] of items) {
       if (!name) continue;
@@ -48,7 +48,10 @@ export class UpdateChange {
       if (!replacedValue) replacedValue = AsciiNull();
 
       // compare
-      const fileIndexObject: any = this.fileIndexItem;
+      const fileIndexObject: Record<string, string> = this.fileIndexItem as unknown as Record<
+        string,
+        string
+      >;
 
       if (fileIndexObject[name] === undefined) {
         console.error("missing name", name);
@@ -66,7 +69,9 @@ export class UpdateChange {
       .toString()
       .replace(/%00/gi, AsciiNull());
 
-    if (bodyParams === "") return Promise.resolve("no body param");
+    if (bodyParams === "") {
+      return Promise.resolve("no body param");
+    }
 
     return new Promise((resolve) => {
       FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams)
@@ -81,7 +86,7 @@ export class UpdateChange {
     item: IConnectionDefault,
     resolve: (value: string | boolean | PromiseLike<string | boolean>) => void
   ) {
-    if (item.statusCode !== 200 || !item.data || item.data.length === 0) {
+    if (item.statusCode !== 200 || !item.data || (item.data as IFileIndexItem[]).length === 0) {
       resolve("wrong status code or missing data");
       return;
     }
