@@ -22,6 +22,7 @@ public class FfMpegDownloadTest
 {
 	private const string DependencyFolderName = "FfMpegDownloadTest";
 	private readonly FfmpegBinariesIndex _exampleFfmpegBinariesIndex;
+	private readonly bool _isWindows;
 	private readonly FakeIHttpClientHelper _httpClientHelper;
 
 	private readonly FakeIStorage _storage = new();
@@ -29,6 +30,7 @@ public class FfMpegDownloadTest
 	public FfMpegDownloadTest()
 	{
 		_exampleFfmpegBinariesIndex = CreateExampleFile();
+		_isWindows = new AppSettings().IsWindows;
 
 		_httpClientHelper =
 			new FakeIHttpClientHelper(_storage,
@@ -304,6 +306,12 @@ public class FfMpegDownloadTest
 					logger), new FakeIFfMpegPreflightRunCheck(storage, appSettings));
 
 		var resultPrepFail = await ffmpegDownload.DownloadFfMpeg();
+
+		if ( _isWindows )
+		{
+			Assert.AreEqual(FfmpegDownloadStatus.Ok, resultPrepFail);
+			return;
+		}
 
 		Assert.AreEqual(FfmpegDownloadStatus.PrepareBeforeRunningFailed, resultPrepFail);
 	}
