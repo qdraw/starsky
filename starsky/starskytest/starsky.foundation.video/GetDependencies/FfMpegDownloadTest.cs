@@ -61,6 +61,10 @@ public class FfMpegDownloadTest
 				},
 				new BinaryIndex
 				{
+					Architecture = "win-arm64", FileName = "mock_test.zip", Sha256 = sha256
+				},
+				new BinaryIndex
+				{
 					Architecture = "osx-x64", FileName = "mock_test.zip", Sha256 = sha256
 				},
 				new BinaryIndex

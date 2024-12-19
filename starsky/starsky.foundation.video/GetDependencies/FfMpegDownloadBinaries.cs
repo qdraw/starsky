@@ -39,12 +39,15 @@ public class FfMpegDownloadBinaries : IFfMpegDownloadBinaries
 		int retryInSeconds = 15)
 	{
 		var (binaryIndex, baseUrls) = binaryIndexKeyValuePair;
+
 		if ( binaryIndex?.FileName == null )
 		{
 			return FfmpegDownloadStatus.DownloadBinariesFailedMissingFileName;
 		}
 
-		if ( _hostFileSystemStorage.ExistFile(_ffmpegExePath.GetExePath(currentArchitecture)) )
+		var exePath = _ffmpegExePath.GetExePath(currentArchitecture);
+
+		if ( _hostFileSystemStorage.ExistFile(exePath) )
 		{
 			return FfmpegDownloadStatus.Ok;
 		}
@@ -67,9 +70,9 @@ public class FfMpegDownloadBinaries : IFfMpegDownloadBinaries
 
 		_zipper.ExtractZip(zipFullFilePath, _ffmpegExePath.GetExeParentFolder(currentArchitecture));
 
-		if ( !_hostFileSystemStorage.ExistFile(_ffmpegExePath.GetExePath(currentArchitecture)) )
+		if ( !_hostFileSystemStorage.ExistFile(exePath) )
 		{
-			_logger.LogError($"Zipper failed {_ffmpegExePath.GetExePath(currentArchitecture)}");
+			_logger.LogError($"Zipper failed {exePath}");
 			return FfmpegDownloadStatus.DownloadBinariesFailedZipperNotExtracted;
 		}
 

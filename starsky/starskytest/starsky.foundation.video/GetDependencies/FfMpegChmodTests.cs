@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -42,17 +43,29 @@ public class FfMpegChmodTests
 		var stream = StringToStreamHelper.StringToStream("#!/bin/bash\necho Fake Ffmpeg");
 		_hostFileSystemStorage.WriteStream(stream,
 			_ffmpegExePath.GetExePath("linux-x64"));
+		stream.Dispose();
 
 		var result = Zipper.ExtractZip([.. CreateAnExifToolWindows.Bytes]);
 		var (_, item) = result.FirstOrDefault(p => p.Key.Contains("exiftool"));
 
+		_hostFileSystemStorage.CreateDirectory(_ffmpegExePath.GetExeParentFolder("win-x64"));
+
 		_hostFileSystemStorage.WriteStream(new MemoryStream(item),
-			Path.Combine(_ffmpegExePath.GetExeParentFolder("linux-x64"), "chmod.exe"));
+			Path.Combine(_ffmpegExePath.GetExeParentFolder("win-x64"), "chmod.exe"));
 	}
 
 	private void DeleteFile()
 	{
-		_hostFileSystemStorage.FolderDelete(_parentFolder);
+		_hostFileSystemStorage.FileDelete(_ffmpegExePath.GetExePath("win-x64"));
+
+		try
+		{
+			_hostFileSystemStorage.FolderDelete(_parentFolder);
+		}
+		catch ( UnauthorizedAccessException )
+		{
+			// do nothing
+		}
 	}
 
 	[TestMethod]
@@ -104,7 +117,7 @@ public class FfMpegChmodTests
 	}
 
 	[TestMethod]
-	public async Task Chmod_ShouldReturnFalse_WhenCommandSucceed__WindowsOnly()
+	public async Task Chmod_ShouldReturnTrue_WhenCommandSucceed__WindowsOnly()
 	{
 		if ( !_isWindows )
 		{
@@ -115,11 +128,14 @@ public class FfMpegChmodTests
 		CreateFile();
 
 		var path = Path.Combine(_ffmpegExePath.GetExeParentFolder("win-x64"), "chmod.exe");
+		
+		Console.WriteLine("test> " + path);
+
 		var sut = new FfMpegChmod(new FakeSelectorStorage(new FakeIStorage([],
 				[path])),
 			new FakeIWebLogger()) { CmdPath = path };
 
-		var result = await sut.Chmod("/_not_found_path/to/ffmpeg");
+		var result = await sut.Chmod(path);
 		Assert.IsTrue(result);
 
 		DeleteFile();
