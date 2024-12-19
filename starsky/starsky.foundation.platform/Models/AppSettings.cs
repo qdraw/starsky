@@ -778,6 +778,13 @@ public sealed class AppSettings
 	///     Recommended to keep false
 	/// </summary>
 	public bool? ExiftoolSkipDownloadOnStartup { get; set; } = false;
+	
+	/// <summary>
+	///     Skip download Ffmpeg on startup
+	///     Recommended to keep false
+	/// </summary>
+	public bool? FfmpegSkipDownloadOnStartup { get; set; } = false;
+
 
 	public OpenTelemetrySettings? OpenTelemetry { get; set; } = new();
 

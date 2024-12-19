@@ -1,8 +1,8 @@
 using System.Runtime.InteropServices;
 using starsky.foundation.injection;
-using starsky.foundation.native.Helpers;
 using starsky.foundation.native.OpenApplicationNative.Helpers;
 using starsky.foundation.native.OpenApplicationNative.Interfaces;
+using starsky.foundation.platform.Architecture;
 
 namespace starsky.foundation.native.OpenApplicationNative;
 
@@ -10,7 +10,7 @@ namespace starsky.foundation.native.OpenApplicationNative;
 public class OpenApplicationNativeService : IOpenApplicationNativeService
 {
 	/// <summary>
-	/// Is Open File supported on this configuration
+	///     Is Open File supported on this configuration
 	/// </summary>
 	/// <returns>true if supported, false if not supported</returns>
 	public bool DetectToUseOpenApplication()
@@ -19,41 +19,9 @@ public class OpenApplicationNativeService : IOpenApplicationNativeService
 			Environment.UserInteractive);
 	}
 
-	/// <summary>
-	/// Use to overwrite the RuntimeInformation.IsOSPlatform
-	/// </summary>
-	internal delegate bool IsOsPlatformDelegate(OSPlatform osPlatform);
 
 	/// <summary>
-	/// Is Open File supported on this configuration
-	/// </summary>
-	/// <param name="runtimeInformationIsOsPlatform">RuntimeInformation.IsOSPlatform</param>
-	/// <param name="environmentUserInteractive">Environment.UserInteractive</param>
-	/// <returns>true if supported, false if not supported</returns>
-	internal static bool DetectToUseOpenApplicationInternal(
-		IsOsPlatformDelegate runtimeInformationIsOsPlatform,
-		bool environmentUserInteractive)
-	{
-		// Linux is not supported yet
-		if ( runtimeInformationIsOsPlatform(OSPlatform.Linux) ||
-			 runtimeInformationIsOsPlatform(OSPlatform.FreeBSD) )
-		{
-			return false;
-		}
-
-		// When running in Windows as Service it does not open the application
-		// On Mac OS it does open the application
-		if ( !environmentUserInteractive && runtimeInformationIsOsPlatform(OSPlatform.Windows) )
-		{
-			return false;
-		}
-
-		return true;
-	}
-
-
-	/// <summary>
-	/// Open file with specified application
+	///     Open file with specified application
 	/// </summary>
 	/// <param name="fullPathAndApplicationUrl">List first item is fullFilePath, second is ApplicationUrl</param>
 	/// <returns>true is operation succeed, false failed | null is platform unsupported</returns>
@@ -82,7 +50,49 @@ public class OpenApplicationNativeService : IOpenApplicationNativeService
 	}
 
 	/// <summary>
-	/// Open file with specified application
+	///     Open file with default application
+	/// </summary>
+	/// <param name="fullPaths">full path style</param>
+	/// <returns>true is operation succeed, false failed | null is platform unsupported</returns>
+	public bool? OpenDefault(List<string> fullPaths)
+	{
+		var currentPlatform = OperatingSystemHelper.GetPlatform();
+		var macOsOpenResult = MacOsOpenUrl.OpenDefault(fullPaths, currentPlatform);
+		var windowsOpenResult = WindowsOpenDesktopApp.OpenDefault(fullPaths,
+			currentPlatform);
+
+		return macOsOpenResult ?? windowsOpenResult;
+	}
+
+	/// <summary>
+	///     Is Open File supported on this configuration
+	/// </summary>
+	/// <param name="runtimeInformationIsOsPlatform">RuntimeInformation.IsOSPlatform</param>
+	/// <param name="environmentUserInteractive">Environment.UserInteractive</param>
+	/// <returns>true if supported, false if not supported</returns>
+	internal static bool DetectToUseOpenApplicationInternal(
+		IsOsPlatformDelegate runtimeInformationIsOsPlatform,
+		bool environmentUserInteractive)
+	{
+		// Linux is not supported yet
+		if ( runtimeInformationIsOsPlatform(OSPlatform.Linux) ||
+		     runtimeInformationIsOsPlatform(OSPlatform.FreeBSD) )
+		{
+			return false;
+		}
+
+		// When running in Windows as Service it does not open the application
+		// On Mac OS it does open the application
+		if ( !environmentUserInteractive && runtimeInformationIsOsPlatform(OSPlatform.Windows) )
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	/// <summary>
+	///     Open file with specified application
 	/// </summary>
 	/// <param name="fullPaths">full path style</param>
 	/// <param name="applicationUrl"> applicationUrl</param>
@@ -111,24 +121,14 @@ public class OpenApplicationNativeService : IOpenApplicationNativeService
 		{
 			var fullPaths = group.Select(item => item.Item1).ToList();
 			var applicationUrl = group.Key;
-			results.Add((fullPaths, applicationUrl));
+			results.Add(( fullPaths, applicationUrl ));
 		}
 
 		return results;
 	}
 
 	/// <summary>
-	/// Open file with default application
+	///     Use to overwrite the RuntimeInformation.IsOSPlatform
 	/// </summary>
-	/// <param name="fullPaths">full path style</param>
-	/// <returns>true is operation succeed, false failed | null is platform unsupported</returns>
-	public bool? OpenDefault(List<string> fullPaths)
-	{
-		var currentPlatform = OperatingSystemHelper.GetPlatform();
-		var macOsOpenResult = MacOsOpenUrl.OpenDefault(fullPaths, currentPlatform);
-		var windowsOpenResult = WindowsOpenDesktopApp.OpenDefault(fullPaths,
-			currentPlatform);
-
-		return macOsOpenResult ?? windowsOpenResult;
-	}
+	internal delegate bool IsOsPlatformDelegate(OSPlatform osPlatform);
 }
