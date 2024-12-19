@@ -1,6 +1,6 @@
 {
   "name": "mail",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "description": "",
   "main": "mail.js",
   "scripts": {
@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.4.7",
     "imap-simple": "^5.1.0",
     "request": "^2.88.2"
   }
