@@ -305,13 +305,6 @@ public class FfMpegDownloadTest
 
 		var resultPrepFail = await ffmpegDownload.DownloadFfMpeg();
 
-		// Chmod does not exist on windows
-		if ( appSettings.IsWindows )
-		{
-			Assert.AreEqual(FfmpegDownloadStatus.Ok, resultPrepFail);
-			return;
-		}
-
 		Assert.AreEqual(FfmpegDownloadStatus.PrepareBeforeRunningFailed, resultPrepFail);
 	}
 	
