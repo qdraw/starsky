@@ -14,7 +14,7 @@
   "dependencies": {
     "@security-patched/localtunnel": "^2.0.2-secpatched.3",
     "cookie-parser": "^1.4.7",
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-ws": "^5.0.2",
     "http-proxy": "^1.18.1"
