@@ -7,7 +7,7 @@
         <ProjectGuid>{a0cce905-ae43-4d1b-a97a-2bcd2c010ed1}</ProjectGuid>
         <RuntimeFrameworkVersion>8.0.11</RuntimeFrameworkVersion>
         <RootNamespace>starskythumbnailmetacli</RootNamespace>
-        <Version>0.6.3</Version>
+        <Version>0.6.4</Version>
         <Nullable>enable</Nullable>
         <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>

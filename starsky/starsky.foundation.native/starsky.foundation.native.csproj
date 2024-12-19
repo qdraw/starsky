@@ -7,6 +7,7 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <!-- SonarQube needs this -->
         <ProjectGuid>{e5d174bc-961a-46e9-ae91-ca10fdf5f5f3}</ProjectGuid>
+        <Version>0.6.4</Version>
         <RootNamespace>starsky.foundation.native</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
