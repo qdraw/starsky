@@ -47,6 +47,6 @@ image: https://media.qdraw.nl/log/de-7-dingen-die-ik-miste-bij-het-beheren-van-m
 - **0.6.0-beta.1 (2024-02-18)**: Fixed image import issues and updated Docker base packages.
 - **0.6.0-beta.0 (2024-02-11)**: Added support for OpenTelemetry and upgraded to .NET 8 SDK 8.0.100.
 
-These updates reflect the continuous efforts to enhance the Starsky project, ensuring better performance, security, and user experience. For more detailed release notes, you can refer to the [history file](https://github.com/qdraw/starsky/blob/e5b16cd83a1dada4066e7c909a272bd6f5b47589/history.md).
+These updates reflect the continuous efforts to enhance the Starsky project, ensuring better performance, security, and user experience. For more detailed release notes, you can refer to the [history file](https://docs.qdraw.nl/docs/advanced-options/history).
 
 This year has marked a significant improvement in the Starsky ecosystem, focusing on robustness, user-centric features, and maintaining a high standard of security and performance. We look forward to continuing this journey and achieving new milestones in the coming year.
