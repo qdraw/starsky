@@ -1,4 +1,13 @@
-### Starsky 2024 Year in Review
+---
+slug: starsky-2024-year-in-review
+title: "Starsky 2024 Year in Review 🚀"
+authors: dion
+tags: [photo mangement, software update]
+date: 2024-12-20
+image: https://media.qdraw.nl/log/de-7-dingen-die-ik-miste-bij-het-beheren-van-mijn-foto-collectie/embeded/01_video_search_cloud_starsky_v050.gif
+---
+
+# Starsky 2024 Year in Review
 
 2024 has been a transformative year for the Starsky project with significant updates and enhancements across various components. Below is a summary of the key updates and improvements:
 
