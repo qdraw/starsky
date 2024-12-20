@@ -4,7 +4,7 @@ title: "Starsky 2024 Year in Review 🚀"
 authors: dion
 tags: [photo mangement, software update]
 date: 2024-12-20
-image: https://media.qdraw.nl/log/de-7-dingen-die-ik-miste-bij-het-beheren-van-mijn-foto-collectie/embeded/01_video_search_cloud_starsky_v050.gif
+image: https://media.qdraw.nl/log/de-7-dingen-die-ik-miste-bij-het-beheren-van-mijn-foto-collectie/1000/02_starsky_v052_kl1k.jpg
 ---
 
 # Starsky 2024 Year in Review
