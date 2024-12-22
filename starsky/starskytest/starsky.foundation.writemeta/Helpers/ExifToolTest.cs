@@ -117,11 +117,39 @@ public sealed class ExifToolTest
 
 		var runner = new StreamToStreamRunner(appSettings,
 			new MemoryStream([]), new FakeIWebLogger());
-		var result = await runner.RunProcessAsync(string.Empty, "test / unit test");
+		var streamResult = await runner.RunProcessAsync(string.Empty, "test / unit test");
 
-		await StreamToStringHelper.StreamToStringAsync(result, false);
+		await StreamToStringHelper.StreamToStringAsync(streamResult, false);
 
-		Assert.AreEqual(0, result.Length);
+		Assert.AreEqual(0, streamResult.Length);
+		
+		await streamResult.DisposeAsync();
+	}
+
+	[TestMethod]
+	[DataRow("file.txt && dir")]
+	[DataRow("file.txt | ipconfig")]
+	[DataRow("file.txt && ipconfig")]
+	[DataRow("file.txt & powershell -Command \"Get-Process | Out-File output.txt\"")]
+	[DataRow("file.txt && curl https://qdraw.nl")]
+	[DataRow("\"file.txt\" && ipconfig")]
+	public async Task RunProcessAsync_Fuzzing(string argument)
+	{
+		var appSettings = new AppSettings { Verbose = true, ExifToolPath = "/bin/sh" };
+		if ( appSettings.IsWindows || !File.Exists("/bin/sh") )
+		{
+			Assert.Inconclusive("This test if for Unix Only");
+			return;
+		}
+
+		var runner = new StreamToStreamRunner(appSettings,
+			new MemoryStream([]), new FakeIWebLogger());
+		var streamResult = await runner.RunProcessAsync(argument, "test / unit test");
+
+		var stringResult = await StreamToStringHelper.StreamToStringAsync(streamResult);
+		
+		Assert.AreEqual(0, stringResult.Length);
+		Assert.AreEqual(string.Empty, stringResult);
 	}
 
 	[TestMethod]

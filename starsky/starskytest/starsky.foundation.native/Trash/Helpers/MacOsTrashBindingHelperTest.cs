@@ -5,8 +5,8 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.native.Helpers;
 using starsky.foundation.native.Trash.Helpers;
+using starsky.foundation.platform.Architecture;
 using starskytest.FakeCreateAn;
 
 namespace starskytest.starsky.foundation.native.Trash.Helpers;
