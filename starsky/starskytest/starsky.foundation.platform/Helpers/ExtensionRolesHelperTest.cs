@@ -7,6 +7,7 @@ using starskytest.FakeCreateAn;
 using starskytest.FakeCreateAn.CreateAnImageCorrupt;
 using starskytest.FakeCreateAn.CreateAnImagePsd;
 using starskytest.FakeCreateAn.CreateAnImageWebP;
+using starskytest.FakeCreateAn.CreateAnQuickTimeMp4;
 
 namespace starskytest.starsky.foundation.platform.Helpers;
 

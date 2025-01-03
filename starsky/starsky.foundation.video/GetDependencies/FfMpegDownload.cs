@@ -89,6 +89,18 @@ public class FfMpegDownload : IFfMpegDownload
 		return FfmpegDownloadStatus.Ok;
 	}
 
+	public string GetSetFfMpegPath()
+	{
+		var path = _ffmpegExePath.GetExePath(CurrentArchitecture.GetCurrentRuntimeIdentifier());
+		if ( _hostFileSystemStorage.ExistFile(_appSettings.FfmpegPath) )
+		{
+			return _appSettings.FfmpegPath;
+		}
+
+		_appSettings.FfmpegPath = path;
+		return path;
+	}
+
 	private static KeyValuePair<BinaryIndex?, List<Uri>> GetCurrentArchitectureIndexUrls(
 		FfmpegBinariesContainer container,
 		string currentArchitecture)

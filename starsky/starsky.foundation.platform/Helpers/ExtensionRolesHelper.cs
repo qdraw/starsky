@@ -107,7 +107,7 @@ public static partial class ExtensionRolesHelper
 	private static readonly List<string> ExtensionGpx = new() { "gpx" };
 
 	/// <summary>
-	///     Mp4 Videos in h264 codex
+	///     Mp4 Videos in h264 codex / And Quicktime
 	/// </summary>
 	private static readonly List<string> ExtensionMp4 = new() { "mp4", "mov" };
 
@@ -199,6 +199,16 @@ public static partial class ExtensionRolesHelper
 			extensionList.AddRange(ExtensionGif);
 			extensionList.AddRange(ExtensionPng);
 			extensionList.AddRange(ExtensionWebp);
+			return extensionList;
+		}
+	}
+
+	public static List<string> ExtensionVideoSupportedList
+	{
+		get
+		{
+			var extensionList = new List<string>();
+			extensionList.AddRange(ExtensionMp4);
 			return extensionList;
 		}
 	}
@@ -306,6 +316,12 @@ public static partial class ExtensionRolesHelper
 	public static bool IsExtensionThumbnailSupported(string? filename)
 	{
 		return IsExtensionForce(filename?.ToLowerInvariant(), ExtensionThumbSupportedList);
+	}
+
+
+	public static bool IsExtensionVideoSupported(string fileName)
+	{
+		return IsExtensionForce(fileName?.ToLowerInvariant(), ExtensionVideoSupportedList);
 	}
 
 	/// <summary>

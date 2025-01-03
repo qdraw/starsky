@@ -12,6 +12,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\starsky.foundation.http\starsky.foundation.http.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.writemeta\starsky.foundation.writemeta.csproj"/>
     </ItemGroup>
 
     <ItemGroup>

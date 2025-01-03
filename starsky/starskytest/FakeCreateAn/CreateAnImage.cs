@@ -228,7 +228,7 @@ public class CreateAnImage
 	                                                 "AAgBAwEBPwDaxwXE/9k=";
 
 	public static readonly ImmutableArray<byte> Bytes =
-		Base64Helper.TryParse(Base64JpgString).ToImmutableArray();
+		[..Base64Helper.TryParse(Base64JpgString)];
 
 	/// <summary>
 	///     The FullFile Path of the Directory of the Assemblies
