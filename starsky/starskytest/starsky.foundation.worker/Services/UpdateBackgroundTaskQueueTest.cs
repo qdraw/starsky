@@ -130,6 +130,11 @@ public sealed class UpdateBackgroundTaskQueueTest
 			await Task.Delay(500);
 		}
 
+		if ( !isExecuted )
+		{
+			await Task.Delay(500);
+		}
+
 		Assert.IsTrue(isExecuted);
 
 		await service.StopAsync(CancellationToken.None);

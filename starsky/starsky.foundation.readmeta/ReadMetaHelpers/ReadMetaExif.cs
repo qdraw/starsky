@@ -559,7 +559,7 @@ public sealed class ReadMetaExif
 		return result;
 	}
 
-	public static string? GetObjectName(List<Directory> allExifItems)
+	public static string GetObjectName(List<Directory> allExifItems)
 	{
 		// Xmp readings
 		var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();

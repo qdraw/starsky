@@ -5,28 +5,29 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.thumbnailgeneration.Services;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.thumbnailgeneration.Services
+namespace starskytest.starsky.foundation.thumbnailgeneration.Services;
+
+[TestClass]
+public sealed class ThumbnailServiceTest
 {
-	[TestClass]
-	public sealed class ThumbnailServiceTest
+	[TestMethod]
+	public async Task NotFound()
 	{
-		[TestMethod]
-		public async Task NotFound()
-		{
-			var resultModels = await new ThumbnailService(new FakeSelectorStorage(), 
-				new FakeIWebLogger(), new AppSettings(), 
-				new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery())).CreateThumbnailAsync("/not-found");
-			
-			Assert.IsFalse(resultModels.FirstOrDefault()!.Success);
-		}
-		
-		[TestMethod]
-		public async Task NotFoundNonExistingHash()
-		{
-			var result = await new ThumbnailService(new FakeSelectorStorage(), 
-					new FakeIWebLogger(), new AppSettings(),new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery()))
-				.CreateThumbAsync("/not-found","non-existing-hash");
-			Assert.IsFalse(result.FirstOrDefault()!.Success);
-		}
+		var sut = new ThumbnailService(new FakeSelectorStorage(),
+			new FakeIWebLogger(), new AppSettings(),
+			new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery()));
+		var resultModels = await sut.CreateThumbnailAsync("/not-found");
+
+		Assert.IsFalse(resultModels.FirstOrDefault()!.Success);
+	}
+
+	[TestMethod]
+	public async Task NotFoundNonExistingHash()
+	{
+		var sut = new ThumbnailService(new FakeSelectorStorage(),
+			new FakeIWebLogger(), new AppSettings(),
+			new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery()));
+		var result = await sut.CreateThumbAsync("/not-found", "non-existing-hash");
+		Assert.IsFalse(result.FirstOrDefault()!.Success);
 	}
 }
