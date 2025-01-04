@@ -2,10 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Thumbnails;
+using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
@@ -19,15 +22,16 @@ public class ThumbnailVideo
 {
 	private readonly AppSettings _appSettings;
 	private readonly IStorage _iStorage;
-	private readonly IWebLogger _logger;
+	private readonly ReadMeta _readMeta;
 	private readonly IVideoProcess _videoProcess;
 
-
-	public ThumbnailVideo(IStorage iStorage, IWebLogger logger, IVideoProcess videoProcess)
+	public ThumbnailVideo(IStorage iStorage, IWebLogger logger, IVideoProcess videoProcess,
+		AppSettings appSettings, IMemoryCache memoryCache)
 	{
 		_iStorage = iStorage;
-		_logger = logger;
 		_videoProcess = videoProcess;
+		_readMeta = new ReadMeta(iStorage,
+			appSettings, memoryCache, logger);
 	}
 
 	internal async Task<List<GenerationResultModel>> CreateThumbnailAsync(string subPath)
@@ -86,6 +90,22 @@ public class ThumbnailVideo
 		return CreateThumbInternal(subPath, fileHash, skipExtraLarge);
 	}
 
+	private IEnumerable<GenerationResultModel> FailedResult(string subPath, string fileHash,
+		bool existsFile,
+		string errorMessage)
+	{
+		return ThumbnailNameHelper.GeneratedThumbnailSizes.Select(size =>
+			new GenerationResultModel
+			{
+				SubPath = subPath,
+				FileHash = fileHash,
+				Success = false,
+				IsNotFound = !existsFile,
+				ErrorMessage = errorMessage,
+				Size = size
+			}).ToList();
+	}
+
 	private async Task<IEnumerable<GenerationResultModel>> CreateThumbInternal(string subPath,
 		string fileHash, bool skipExtraLarge = false)
 	{
@@ -94,48 +114,63 @@ public class ThumbnailVideo
 
 		if ( !extensionSupported || !existsFile )
 		{
-			return ThumbnailNameHelper.GeneratedThumbnailSizes.Select(size =>
-				new GenerationResultModel
-				{
-					SubPath = subPath,
-					FileHash = fileHash,
-					Success = false,
-					IsNotFound = !existsFile,
-					ErrorMessage = !extensionSupported ? "not supported" : "File is not found",
-					Size = size
-				}).ToList();
+			return FailedResult(subPath, fileHash, existsFile,
+				!extensionSupported ? "not supported" : "File is not found");
 		}
 
 		// File is already tested
 		if ( _iStorage.ExistFile(ErrorLogItemFullPath.GetErrorLogItemFullPath(subPath)) )
 		{
-			return ThumbnailNameHelper.GeneratedThumbnailSizes.Select(size =>
-				new GenerationResultModel
-				{
-					SubPath = subPath,
-					FileHash = fileHash,
-					Success = false,
-					IsNotFound = false,
-					ErrorMessage = "File already failed before",
-					Size = size
-				}).ToList();
+			return FailedResult(subPath, fileHash, true,
+				"File already failed before");
 		}
 
-		var result = await _videoProcess.Run(subPath, null, VideoProcessTypes.Thumbnail);
+		var videoResult = await _videoProcess.RunVideo(subPath,
+			fileHash, VideoProcessTypes.Thumbnail);
 
-		if ( !result )
+
+		if ( !videoResult.IsSuccess || string.IsNullOrWhiteSpace(videoResult.ResultPath) )
 		{
-			return ThumbnailNameHelper.GeneratedThumbnailSizes.Select(size =>
-				new GenerationResultModel
+			return FailedResult(subPath, fileHash, true,
+				"Failed to create thumbnail");
+		}
+
+		var meta = await _readMeta.ReadExifAndXmpFromFileAsync(videoResult.ResultPath);
+		if ( meta == null )
+		{
+			return FailedResult(subPath, fileHash, true,
+				"Failed to read meta");
+		}
+
+		// create based on the sizes a thumbnail image, skip if the source image is smaller
+		var results = ThumbnailNameHelper.GeneratedThumbnailSizes
+			.Where(p => !skipExtraLarge || p != ThumbnailSize.ExtraLarge)
+			.Select(size =>
+			{
+				var sizeInPixels = ThumbnailNameHelper.GetSize(size);
+				if ( meta.ImageWidth < sizeInPixels || meta.ImageHeight < sizeInPixels )
+				{
+					return new GenerationResultModel
+					{
+						SubPath = subPath,
+						FileHash = fileHash,
+						Success = false,
+						IsNotFound = false,
+						ErrorMessage = "Source image is smaller",
+						Size = size
+					};
+				}
+
+				return new GenerationResultModel
 				{
 					SubPath = subPath,
 					FileHash = fileHash,
-					Success = false,
+					Success = true,
 					IsNotFound = false,
-					ErrorMessage = "Failed to create thumbnail",
 					Size = size
-				}).ToList();
-		}
+				};
+			}).ToList();
+
 
 		return [];
 	}

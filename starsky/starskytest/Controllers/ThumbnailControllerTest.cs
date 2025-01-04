@@ -12,9 +12,9 @@ using starsky.Controllers;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
-using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
@@ -155,7 +155,7 @@ public sealed class ThumbnailControllerTest
 		var thumbnailAnswer = actionResult?.Value as string;
 		Assert.AreEqual("OK", thumbnailAnswer);
 	}
-	
+
 	[TestMethod]
 	public async Task Thumbnail_InvalidModel()
 	{
@@ -400,7 +400,7 @@ public sealed class ThumbnailControllerTest
 		var thumbnailAnswer = actionResult?.StatusCode;
 		Assert.AreEqual(404, thumbnailAnswer);
 	}
-	
+
 	[TestMethod]
 	public async Task ByZoomFactor_ModelState()
 	{
@@ -663,7 +663,7 @@ public sealed class ThumbnailControllerTest
 		var actionResult = await controller.ListSizesByHash("../") as BadRequestResult;
 		Assert.AreEqual(400, actionResult?.StatusCode);
 	}
-	
+
 	[TestMethod]
 	public async Task ListSizesByHash_InvalidModel()
 	{

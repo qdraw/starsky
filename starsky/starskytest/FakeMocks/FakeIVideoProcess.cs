@@ -6,8 +6,9 @@ namespace starskytest.FakeMocks;
 
 public class FakeIVideoProcess : IVideoProcess
 {
-	public Task<bool> Run(string subPath, string? beforeFileHash, VideoProcessTypes type)
+	public Task<VideoResult> RunVideo(string subPath, string? beforeFileHash,
+		VideoProcessTypes type)
 	{
-		return Task.FromResult(true);
+		return Task.FromResult(new VideoResult(true));
 	}
 }

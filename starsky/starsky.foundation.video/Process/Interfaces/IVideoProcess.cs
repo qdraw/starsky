@@ -2,6 +2,6 @@ namespace starsky.foundation.video.Process.Interfaces;
 
 public interface IVideoProcess
 {
-	Task<bool> Run(string subPath,
+	Task<VideoResult> RunVideo(string subPath,
 		string? beforeFileHash, VideoProcessTypes type);
 }

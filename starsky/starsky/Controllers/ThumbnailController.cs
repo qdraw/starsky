@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using starsky.foundation.database.Interfaces;
-using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
@@ -21,10 +21,10 @@ namespace starsky.Controllers;
 [Authorize]
 public sealed class ThumbnailController : Controller
 {
+	private const string ModelError = "Model is invalid";
 	private readonly IStorage _iStorage;
 	private readonly IQuery _query;
 	private readonly IStorage _thumbnailStorage;
-	private const string ModelError = "Model is invalid";
 
 	public ThumbnailController(IQuery query, ISelectorStorage selectorStorage)
 	{
@@ -125,7 +125,7 @@ public sealed class ThumbnailController : Controller
 		{
 			return BadRequest(ModelError);
 		}
-		
+
 		// For serving jpeg files
 		f = FilenamesHelper.GetFileNameWithoutExtension(f);
 
@@ -160,7 +160,7 @@ public sealed class ThumbnailController : Controller
 
 		var sourcePath = await _query.GetSubPathByHashAsync(f);
 		var isThumbnailSupported =
-			ExtensionRolesHelper.IsExtensionThumbnailSupported(sourcePath);
+			ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(sourcePath);
 		switch ( isThumbnailSupported )
 		{
 			case true when !string.IsNullOrEmpty(sourcePath):
@@ -239,7 +239,7 @@ public sealed class ThumbnailController : Controller
 		{
 			return BadRequest(ModelError);
 		}
-		
+
 		// f is Hash
 		// isSingleItem => detailView
 		// Retry thumbnail => is when you press reset thumbnail
@@ -313,7 +313,7 @@ public sealed class ThumbnailController : Controller
 			return Json("Thumbnail is not ready yet");
 		}
 
-		if ( ExtensionRolesHelper.IsExtensionThumbnailSupported(sourcePath) )
+		if ( ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(sourcePath) )
 		{
 			var fs1 = _iStorage.ReadStream(sourcePath);
 
@@ -355,7 +355,7 @@ public sealed class ThumbnailController : Controller
 		{
 			return BadRequest(ModelError);
 		}
-		
+
 		// For serving jpeg files
 		f = FilenamesHelper.GetFileNameWithoutExtension(f);
 
@@ -378,7 +378,7 @@ public sealed class ThumbnailController : Controller
 			sourcePath = filePath;
 		}
 
-		if ( ExtensionRolesHelper.IsExtensionThumbnailSupported(sourcePath) )
+		if ( ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(sourcePath) )
 		{
 			var fs1 = _iStorage.ReadStream(sourcePath);
 

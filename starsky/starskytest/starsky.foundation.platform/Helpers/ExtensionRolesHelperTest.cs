@@ -17,32 +17,32 @@ public sealed class ExtensionRolesHelperTest
 	[TestMethod]
 	public void Files_ExtensionThumbSupportedList_TiffMp4MovXMPCheck()
 	{
-		Assert.IsFalse(ExtensionRolesHelper.IsExtensionThumbnailSupported("file.tiff"));
-		Assert.IsFalse(ExtensionRolesHelper.IsExtensionThumbnailSupported("file.mp4"));
-		Assert.IsFalse(ExtensionRolesHelper.IsExtensionThumbnailSupported("file.mov"));
-		Assert.IsFalse(ExtensionRolesHelper.IsExtensionThumbnailSupported("file.xmp"));
+		Assert.IsFalse(ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported("file.tiff"));
+		Assert.IsFalse(ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported("file.mp4"));
+		Assert.IsFalse(ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported("file.mov"));
+		Assert.IsFalse(ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported("file.xmp"));
 	}
 
 	[TestMethod]
 	public void Files_ExtensionThumbSupportedList_JpgCheck()
 	{
-		Assert.IsTrue(ExtensionRolesHelper.IsExtensionThumbnailSupported("file.jpg"));
-		Assert.IsTrue(ExtensionRolesHelper.IsExtensionThumbnailSupported("file.bmp"));
+		Assert.IsTrue(ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported("file.jpg"));
+		Assert.IsTrue(ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported("file.bmp"));
 	}
 
 	[TestMethod]
 	public void Files_ExtensionThumbSupportedList_null()
 	{
-		Assert.IsFalse(ExtensionRolesHelper.IsExtensionThumbnailSupported(null));
+		Assert.IsFalse(ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(null));
 		// equal or less then three chars
-		Assert.IsFalse(ExtensionRolesHelper.IsExtensionThumbnailSupported("nul"));
+		Assert.IsFalse(ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported("nul"));
 	}
 
 	[TestMethod]
 	public void Files_ExtensionThumbSupportedList_FolderName()
 	{
 		Assert.IsFalse(
-			ExtensionRolesHelper.IsExtensionThumbnailSupported("Some Foldername"));
+			ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported("Some Foldername"));
 	}
 
 	[TestMethod]

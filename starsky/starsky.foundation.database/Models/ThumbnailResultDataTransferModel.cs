@@ -1,11 +1,12 @@
 using System;
-using starsky.foundation.platform.Enums;
+using starsky.foundation.platform.Thumbnails;
 
 namespace starsky.foundation.database.Models;
 
 public class ThumbnailResultDataTransferModel
 {
-	public ThumbnailResultDataTransferModel(string fileHash, bool? tinyMeta = null, bool? small = null, bool? large = null, bool? extraLarge = null)
+	public ThumbnailResultDataTransferModel(string fileHash, bool? tinyMeta = null,
+		bool? small = null, bool? large = null, bool? extraLarge = null)
 	{
 		FileHash = fileHash;
 		if ( tinyMeta != null )
@@ -29,10 +30,37 @@ public class ThumbnailResultDataTransferModel
 		}
 	}
 
+	public string? FileHash { get; set; }
+
 	/// <summary>
-	/// Null is to-do
-	/// True is done
-	/// False is Failed
+	///     150px, null is to-do, false is error, true, is done
+	/// </summary>
+	public bool? TinyMeta { get; set; }
+
+	/// <summary>
+	///     300px, null is to-do, false is error, true, is done
+	/// </summary>
+	public bool? Small { get; set; }
+
+	/// <summary>
+	///     1000px, null is to-do, false is error, true, is done
+	/// </summary>
+	public bool? Large { get; set; }
+
+	/// <summary>
+	///     2000px, null is to-do, false is error, true, is done
+	/// </summary>
+	public bool? ExtraLarge { get; set; }
+
+	/// <summary>
+	///     When something went wrong add message here
+	/// </summary>
+	public string? Reasons { get; set; }
+
+	/// <summary>
+	///     Null is to-do
+	///     True is done
+	///     False is Failed
 	/// </summary>
 	/// <param name="thumbnailSize">The size</param>
 	/// <param name="setStatus">Null is to-do |  True is done | False is Failed</param>
@@ -59,31 +87,4 @@ public class ThumbnailResultDataTransferModel
 				throw new ArgumentOutOfRangeException(nameof(thumbnailSize), thumbnailSize, null);
 		}
 	}
-
-	public string? FileHash { get; set; }
-
-	/// <summary>
-	/// 150px, null is to-do, false is error, true, is done
-	/// </summary>
-	public bool? TinyMeta { get; set; }
-
-	/// <summary>
-	/// 300px, null is to-do, false is error, true, is done
-	/// </summary>
-	public bool? Small { get; set; }
-
-	/// <summary>
-	/// 1000px, null is to-do, false is error, true, is done
-	/// </summary>
-	public bool? Large { get; set; }
-
-	/// <summary>
-	/// 2000px, null is to-do, false is error, true, is done
-	/// </summary>
-	public bool? ExtraLarge { get; set; }
-
-	/// <summary>
-	/// When something went wrong add message here
-	/// </summary>
-	public string? Reasons { get; set; }
 }

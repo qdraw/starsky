@@ -9,11 +9,11 @@ using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Metadata.Profiles.Exif;
 using SixLabors.ImageSharp.Processing;
-using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
@@ -24,6 +24,7 @@ using starsky.foundation.thumbnailgeneration.Models;
 
 namespace starsky.foundation.thumbnailgeneration.Helpers;
 
+[Obsolete("Use Factory instead")]
 public sealed class Thumbnail
 {
 	private readonly AppSettings _appSettings;
@@ -119,7 +120,8 @@ public sealed class Thumbnail
 		string fileHash, bool skipExtraLarge = false)
 	{
 		// FileType=supported + subPath=exit + fileHash=NOT exist
-		var extensionSupported = ExtensionRolesHelper.IsExtensionThumbnailSupported(subPath);
+		var extensionSupported =
+			ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(subPath);
 		var existsFile = _iStorage.ExistFile(subPath);
 		if ( !extensionSupported || !existsFile )
 		{

@@ -2,6 +2,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
+using starsky.foundation.thumbnailgeneration.GenerationFactory;
 using starsky.foundation.thumbnailgeneration.Services;
 using starskytest.FakeMocks;
 
@@ -16,7 +17,7 @@ public sealed class ThumbnailServiceTest
 		var sut = new ThumbnailService(new FakeSelectorStorage(),
 			new FakeIWebLogger(), new AppSettings(),
 			new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery()));
-		var resultModels = await sut.CreateThumbnailAsync("/not-found");
+		var resultModels = await sut.GenerateThumbnail("/not-found");
 
 		Assert.IsFalse(resultModels.FirstOrDefault()!.Success);
 	}
@@ -27,7 +28,7 @@ public sealed class ThumbnailServiceTest
 		var sut = new ThumbnailService(new FakeSelectorStorage(),
 			new FakeIWebLogger(), new AppSettings(),
 			new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery()));
-		var result = await sut.CreateThumbAsync("/not-found", "non-existing-hash");
+		var result = await sut.GenerateThumbnail("/not-found", "non-existing-hash");
 		Assert.IsFalse(result.FirstOrDefault()!.Success);
 	}
 }

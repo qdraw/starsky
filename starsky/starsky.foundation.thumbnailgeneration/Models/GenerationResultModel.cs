@@ -1,4 +1,4 @@
-using starsky.foundation.platform.Enums;
+using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Storage;
 
 namespace starsky.foundation.thumbnailgeneration.Models;

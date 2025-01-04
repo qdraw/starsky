@@ -38,7 +38,7 @@ public sealed class AllowedTypesController : Controller
 	[Produces("application/json")]
 	public IActionResult AllowedTypesMimetypeSyncThumb()
 	{
-		var mimeTypes = ExtensionRolesHelper.ExtensionThumbSupportedList
+		var mimeTypes = ExtensionRolesHelper.ExtensionImageSharpThumbnailSupportedList
 			.Select(MimeHelper.GetMimeType).ToHashSet();
 		return Json(mimeTypes);
 	}
@@ -62,7 +62,7 @@ public sealed class AllowedTypesController : Controller
 			return BadRequest("ModelState is not valid");
 		}
 
-		var result = ExtensionRolesHelper.IsExtensionThumbnailSupported(f);
+		var result = ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(f);
 		if ( !result )
 		{
 			Response.StatusCode = 415;

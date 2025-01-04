@@ -11,6 +11,7 @@ using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
 using starsky.foundation.thumbnailgeneration.Interfaces;
 using starsky.foundation.worker.ThumbnailServices.Interfaces;
 
@@ -122,7 +123,7 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 			}
 
 			var generationResultModels = (
-				await _thumbnailService.CreateThumbAsync(fileIndexItem
+				await _thumbnailService.GenerateThumbnail(fileIndexItem
 					.FilePath!, fileIndexItem.FileHash!) ).ToList();
 
 			_bgTaskQueue.ThrowExceptionIfCpuUsageIsToHigh("WorkThumbnailGeneration");

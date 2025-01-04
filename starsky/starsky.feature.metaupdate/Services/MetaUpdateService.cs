@@ -15,7 +15,7 @@ using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.thumbnailgeneration.Interfaces;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
 using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.JsonService;
 using ExifToolCmdHelper = starsky.foundation.writemeta.Helpers.ExifToolCmdHelper;
@@ -27,15 +27,15 @@ namespace starsky.feature.metaupdate.Services;
 [Service(typeof(IMetaUpdateService), InjectionLifetime = InjectionLifetime.Scoped)]
 public class MetaUpdateService : IMetaUpdateService
 {
-	private readonly IQuery _query;
 	private readonly IExifTool _exifTool;
-	private readonly IReadMetaSubPathStorage _readMeta;
 	private readonly IStorage _iStorage;
-	private readonly IStorage _thumbnailStorage;
-	private readonly IMetaPreflight _metaPreflight;
 	private readonly IWebLogger _logger;
-	private readonly IThumbnailService _thumbnailService;
+	private readonly IMetaPreflight _metaPreflight;
+	private readonly IQuery _query;
+	private readonly IReadMetaSubPathStorage _readMeta;
 	private readonly IThumbnailQuery _thumbnailQuery;
+	private readonly IThumbnailService _thumbnailService;
+	private readonly IStorage _thumbnailStorage;
 
 	[SuppressMessage("Usage",
 		"S107: Constructor has 8 parameters, which is greater than the 7 authorized")]
@@ -61,13 +61,17 @@ public class MetaUpdateService : IMetaUpdateService
 	}
 
 	/// <summary>
-	/// Run Update
+	///     Run Update
 	/// </summary>
-	/// <param name="changedFileIndexItemName">Per file stored  string{fileHash},
-	///     List*string*{FileIndexItem.name (e.g. Tags) that are changed}</param>
+	/// <param name="changedFileIndexItemName">
+	///     Per file stored  string{fileHash},
+	///     List*string*{FileIndexItem.name (e.g. Tags) that are changed}
+	/// </param>
 	/// <param name="fileIndexResultsList">items stored in the database</param>
-	/// <param name="inputModel">(only used when cache is disabled)
-	///     This model is overwritten in the database and ExifTool</param>
+	/// <param name="inputModel">
+	///     (only used when cache is disabled)
+	///     This model is overwritten in the database and ExifTool
+	/// </param>
 	/// <param name="collections">enable or disable this feature</param>
 	/// <param name="append">only for disabled cache or changedFileIndexItemName=null</param>
 	/// <param name="rotateClock">rotation value 1 left, -1 right, 0 nothing</param>
@@ -103,7 +107,7 @@ public class MetaUpdateService : IMetaUpdateService
 
 			_logger.LogError($"Missing in key: {fileIndexItem.FilePath}",
 				new InvalidDataException($"changedFileIndexItemName: " +
-										 $"{string.Join(",", changedFileIndexItemName)}"));
+				                         $"{string.Join(",", changedFileIndexItemName)}"));
 			throw new ArgumentException($"Missing in key: {fileIndexItem.FilePath}",
 				nameof(changedFileIndexItemName));
 		}
@@ -117,7 +121,7 @@ public class MetaUpdateService : IMetaUpdateService
 	}
 
 	/// <summary>
-	/// Update ExifTool, Thumbnail, Database and if needed rotateClock
+	///     Update ExifTool, Thumbnail, Database and if needed rotateClock
 	/// </summary>
 	/// <param name="fileIndexItem">output database object</param>
 	/// <param name="comparedNamesList">name of fields updated by exifTool</param>
@@ -129,7 +133,7 @@ public class MetaUpdateService : IMetaUpdateService
 		await RotationThumbnailExecute(rotateClock, fileIndexItem);
 
 		if ( fileIndexItem.IsDirectory != true
-			 && ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName) )
+		     && ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName) )
 		{
 			// feature to exif update
 			var exifUpdateFilePaths = new List<string> { fileIndexItem.FilePath! };
@@ -152,7 +156,7 @@ public class MetaUpdateService : IMetaUpdateService
 				: $"[UpdateWriteDiskDatabase] ExifTool result: {exifResult} path:{fileIndexItem.FilePath}");
 		}
 		else if ( fileIndexItem.ImageFormat != ExtensionRolesHelper.ImageFormat.xmp &&
-				  fileIndexItem.ImageFormat != ExtensionRolesHelper.ImageFormat.meta_json )
+		          fileIndexItem.ImageFormat != ExtensionRolesHelper.ImageFormat.meta_json )
 		{
 			await new FileIndexItemJsonParser(_iStorage).WriteAsync(fileIndexItem);
 		}
@@ -192,7 +196,7 @@ public class MetaUpdateService : IMetaUpdateService
 	}
 
 	/// <summary>
-	/// Run the Orientation changes on the thumbnail (only relative)
+	///     Run the Orientation changes on the thumbnail (only relative)
 	/// </summary>
 	/// <param name="rotateClock">-1 or 1</param>
 	/// <param name="fileIndexItem">object contains fileHash</param>

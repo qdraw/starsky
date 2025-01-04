@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,26 +10,26 @@ using starsky.feature.import.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.http.Streaming;
-using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 
 namespace starsky.Controllers;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S5693:Make sure the content " +
-	"length limit is safe here", Justification = "Is checked")]
+[SuppressMessage("Usage", "S5693:Make sure the content " +
+                          "length limit is safe here", Justification = "Is checked")]
 [Authorize]
 public class ImportThumbnailController : Controller
 {
 	private readonly AppSettings _appSettings;
-	private readonly ISelectorStorage _selectorStorage;
 	private readonly IStorage _hostFileSystemStorage;
 	private readonly IWebLogger _logger;
+	private readonly RemoveTempAndParentStreamFolderHelper _removeTempAndParentStreamFolderHelper;
+	private readonly ISelectorStorage _selectorStorage;
 	private readonly IThumbnailQuery _thumbnailQuery;
 	private readonly IStorage _thumbnailStorage;
-	private readonly RemoveTempAndParentStreamFolderHelper _removeTempAndParentStreamFolderHelper;
 
 	public ImportThumbnailController(AppSettings appSettings,
 		ISelectorStorage selectorStorage,
@@ -36,7 +37,8 @@ public class ImportThumbnailController : Controller
 	{
 		_appSettings = appSettings;
 		_selectorStorage = selectorStorage;
-		_hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+		_hostFileSystemStorage =
+			selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 		_logger = logger;
 		_thumbnailQuery = thumbnailQuery;
@@ -46,10 +48,10 @@ public class ImportThumbnailController : Controller
 	}
 
 	/// <summary>
-	/// Upload thumbnail to ThumbnailTempFolder
-	/// Make sure that the filename is correct, a base32 hash of length 26;
-	/// Overwrite if the Id is the same
-	/// Also known as Thumbnail Upload or Thumbnail Import
+	///     Upload thumbnail to ThumbnailTempFolder
+	///     Make sure that the filename is correct, a base32 hash of length 26;
+	///     Overwrite if the Id is the same
+	///     Also known as Thumbnail Upload or Thumbnail Import
 	/// </summary>
 	/// <returns>json of thumbnail urls</returns>
 	/// <response code="200">done</response>
@@ -60,7 +62,7 @@ public class ImportThumbnailController : Controller
 	[RequestFormLimits(MultipartBodyLengthLimit = 100_000_000)]
 	[RequestSizeLimit(100_000_000)] // in bytes, 100MB
 	[ProducesResponseType(typeof(List<ImportIndexItem>), 200)] // yes
-	[ProducesResponseType(typeof(List<ImportIndexItem>), 415)]  // wrong input
+	[ProducesResponseType(typeof(List<ImportIndexItem>), 415)] // wrong input
 	public async Task<IActionResult> Thumbnail()
 	{
 		var tempImportPaths = await Request.StreamFile(_appSettings, _selectorStorage);
@@ -83,7 +85,8 @@ public class ImportThumbnailController : Controller
 		return Json(thumbnailNamesWithSuffix);
 	}
 
-	internal static IEnumerable<ThumbnailResultDataTransferModel> MapToTransferObject(List<string> thumbnailNames)
+	internal static IEnumerable<ThumbnailResultDataTransferModel> MapToTransferObject(
+		List<string> thumbnailNames)
 	{
 		var items = new List<ThumbnailResultDataTransferModel>();
 		foreach ( var thumbnailNameWithSuffix in thumbnailNames )
@@ -94,6 +97,7 @@ public class ImportThumbnailController : Controller
 			item.Change(thumb, true);
 			items.Add(item);
 		}
+
 		return items;
 	}
 
@@ -117,16 +121,19 @@ public class ImportThumbnailController : Controller
 			// remove existing thumbnail if exist
 			if ( _thumbnailStorage.ExistFile(thumbToUpperCase) )
 			{
-				_logger.LogInformation($"[Import/Thumbnail] remove already exists - {thumbToUpperCase}");
+				_logger.LogInformation(
+					$"[Import/Thumbnail] remove already exists - {thumbToUpperCase}");
 				_thumbnailStorage.FileDelete(thumbToUpperCase);
 			}
 
 			thumbnailNamesWithSuffix.Add(thumbToUpperCase);
 		}
+
 		return thumbnailNamesWithSuffix;
 	}
 
-	internal async Task<bool> WriteThumbnails(List<string> tempImportPaths, List<string> thumbnailNames)
+	internal async Task<bool> WriteThumbnails(List<string> tempImportPaths,
+		List<string> thumbnailNames)
 	{
 		if ( tempImportPaths.Count != thumbnailNames.Count )
 		{
@@ -138,7 +145,8 @@ public class ImportThumbnailController : Controller
 		{
 			if ( !_hostFileSystemStorage.ExistFile(tempImportPaths[i]) )
 			{
-				_logger.LogInformation($"[Import/Thumbnail] ERROR {tempImportPaths[i]} does not exist");
+				_logger.LogInformation(
+					$"[Import/Thumbnail] ERROR {tempImportPaths[i]} does not exist");
 				continue;
 			}
 
@@ -146,8 +154,10 @@ public class ImportThumbnailController : Controller
 				_hostFileSystemStorage.ReadStream(tempImportPaths[i]), thumbnailNames[i]);
 
 			// Remove from temp folder to avoid long list of files
-			_removeTempAndParentStreamFolderHelper.RemoveTempAndParentStreamFolder(tempImportPaths[i]);
+			_removeTempAndParentStreamFolderHelper.RemoveTempAndParentStreamFolder(
+				tempImportPaths[i]);
 		}
+
 		return true;
 	}
 }

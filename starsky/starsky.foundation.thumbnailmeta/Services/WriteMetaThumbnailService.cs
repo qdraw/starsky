@@ -5,23 +5,23 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Thumbnails;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailmeta.Helpers;
 using starsky.foundation.thumbnailmeta.Interfaces;
 using starsky.foundation.thumbnailmeta.Models;
-using starsky.foundation.platform.Enums;
-using starsky.foundation.platform.Interfaces;
-using starsky.foundation.platform.Models;
-using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Storage;
 
 namespace starsky.foundation.thumbnailmeta.Services;
 
 [Service(typeof(IWriteMetaThumbnailService), InjectionLifetime = InjectionLifetime.Scoped)]
 public sealed class WriteMetaThumbnailService : IWriteMetaThumbnailService
 {
+	private readonly AppSettings _appSettings;
 	private readonly IWebLogger _logger;
 	private readonly IStorage _thumbnailStorage;
-	private readonly AppSettings _appSettings;
 
 	public WriteMetaThumbnailService(ISelectorStorage selectorStorage, IWebLogger logger,
 		AppSettings appSettings)
@@ -44,7 +44,7 @@ public sealed class WriteMetaThumbnailService : IWriteMetaThumbnailService
 		try
 		{
 			using ( var thumbnailStream =
-				   new MemoryStream(offsetData.Data, offsetData.Index, offsetData.Count) )
+			       new MemoryStream(offsetData.Data, offsetData.Index, offsetData.Count) )
 			using ( var smallImage = await Image.LoadAsync(thumbnailStream) )
 			using ( var outputStream = new MemoryStream() )
 			{

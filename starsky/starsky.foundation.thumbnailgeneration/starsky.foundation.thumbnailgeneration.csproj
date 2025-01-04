@@ -23,6 +23,10 @@
         <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.4"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <Folder Include="GenerationFactory\Ffmpeg\"/>
+    </ItemGroup>
+
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
         <SonarQubeExclude>true</SonarQubeExclude>
     </PropertyGroup>

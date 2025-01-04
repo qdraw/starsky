@@ -25,17 +25,21 @@ public class VideoProcessTests
 			new FakeIFfMpegPrepareBeforeRunning(),
 			new FfMpegPreflightRunCheck(new AppSettings(), new FakeIWebLogger()));
 
+		var exiftool = new ExifTool(hoststorage, hoststorage, new AppSettings(),
+			new FakeIWebLogger());
+
 		var videoProcess =
 			new VideoProcess(new FakeSelectorStorage(hoststorage), fakeFfmpegDownload,
-				new ExifTool(hoststorage, hoststorage, new AppSettings(), new FakeIWebLogger()),
-				new FakeIWebLogger(), new AppSettings(), new FakeIThumbnailQuery());
+				new VideoProcessThumbnailPost(new FakeSelectorStorage(hoststorage),
+					new AppSettings(), exiftool, new FakeIWebLogger(), new FakeIThumbnailQuery()),
+				new FakeIWebLogger());
 
 		// Act
-		var result = await videoProcess.Run(
+		var result = await videoProcess.RunVideo(
 			"/Users/dion/data/testcontent/deventer_op_stelten_2014-720p.mp4", "/tmp/test.jpg",
 			VideoProcessTypes.Thumbnail);
 
 		// Assert
-		Assert.IsTrue(result);
+		Assert.IsTrue(result.IsSuccess);
 	}
 }

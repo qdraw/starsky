@@ -189,7 +189,7 @@ public static partial class ExtensionRolesHelper
 	/// <value>
 	///     The extension thumb supported list.
 	/// </value>
-	public static List<string> ExtensionThumbSupportedList
+	public static List<string> ExtensionImageSharpThumbnailSupportedList
 	{
 		get
 		{
@@ -313,13 +313,14 @@ public static partial class ExtensionRolesHelper
 	/// </summary>
 	/// <param name="filename">the name of the file with extenstion</param>
 	/// <returns>true, if imageSharp can write to this</returns>
-	public static bool IsExtensionThumbnailSupported(string? filename)
+	public static bool IsExtensionImageSharpThumbnailSupported(string? filename)
 	{
-		return IsExtensionForce(filename?.ToLowerInvariant(), ExtensionThumbSupportedList);
+		return IsExtensionForce(filename?.ToLowerInvariant(),
+			ExtensionImageSharpThumbnailSupportedList);
 	}
 
 
-	public static bool IsExtensionVideoSupported(string fileName)
+	public static bool IsExtensionVideoSupported(string? fileName)
 	{
 		return IsExtensionForce(fileName?.ToLowerInvariant(), ExtensionVideoSupportedList);
 	}

@@ -11,32 +11,32 @@ using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
-using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.ArchiveFormats;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.thumbnailgeneration.Interfaces;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
 
 namespace starsky.feature.export.Services;
 
 /// <summary>
-/// Also known as Download
+///     Also known as Download
 /// </summary>
 [Service(typeof(IExport), InjectionLifetime = InjectionLifetime.Scoped)]
 public class ExportService : IExport
 {
-	private readonly IQuery _query;
 	private readonly AppSettings _appSettings;
-	private readonly IStorage _iStorage;
 	private readonly IStorage _hostFileSystemStorage;
+	private readonly IStorage _iStorage;
 	private readonly IWebLogger _logger;
+	private readonly IQuery _query;
 	private readonly IThumbnailService _thumbnailService;
 
 	public ExportService(IQuery query, AppSettings appSettings,
@@ -52,7 +52,7 @@ public class ExportService : IExport
 	}
 
 	/// <summary>
-	/// Export preflight
+	///     Export preflight
 	/// </summary>
 	/// <param name="inputFilePaths">list of subPaths</param>
 	/// <param name="collections">is stack collections enabled</param>
@@ -78,7 +78,7 @@ public class ExportService : IExport
 			}
 
 			if ( _iStorage.IsFolderOrFile(detailView.FileIndexItem.FilePath) ==
-				 FolderOrFileModel.FolderOrFileTypeList.Deleted )
+			     FolderOrFileModel.FolderOrFileTypeList.Deleted )
 			{
 				StatusCodesHelper.ReturnExifStatusError(detailView.FileIndexItem,
 					FileIndexItem.ExifStatus.NotFoundSourceMissing,
@@ -102,6 +102,52 @@ public class ExportService : IExport
 		return new Tuple<string, List<FileIndexItem>>(zipHash, fileIndexResultsList);
 	}
 
+	/// <summary>
+	///     Based on the preflight create a Zip Export
+	/// </summary>
+	/// <param name="fileIndexResultsList">Result of Preflight</param>
+	/// <param name="thumbnail">isThumbnail?</param>
+	/// <param name="zipOutputFileName">filename of zip file (no extension)</param>
+	/// <returns>nothing</returns>
+	public async Task CreateZip(List<FileIndexItem> fileIndexResultsList, bool thumbnail,
+		string zipOutputFileName)
+	{
+		var filePaths = await CreateListToExport(fileIndexResultsList, thumbnail);
+		var fileNames = await FilePathToFileNameAsync(filePaths, thumbnail);
+
+		new Zipper(_logger).CreateZip(_appSettings.TempFolder, filePaths, fileNames,
+			zipOutputFileName);
+
+		// Write a single file to be sure that writing is ready
+		var doneFileFullPath = Path.Combine(_appSettings.TempFolder, zipOutputFileName) + ".done";
+		await _hostFileSystemStorage.WriteStreamAsync(StringToStreamHelper.StringToStream("OK"),
+			doneFileFullPath);
+		if ( _appSettings.IsVerbose() )
+		{
+			_logger.LogInformation("[CreateZip] Zip done: " + doneFileFullPath);
+		}
+	}
+
+	/// <summary>
+	///     Is Zip Ready?
+	/// </summary>
+	/// <param name="zipOutputFileName">fileName without extension</param>
+	/// <returns>null if status file is not found, true if done file exist</returns>
+	public Tuple<bool?, string?> StatusIsReady(string zipOutputFileName)
+	{
+		var sourceFullPath = Path.Combine(_appSettings.TempFolder, zipOutputFileName) + ".zip";
+		var doneFileFullPath = Path.Combine(_appSettings.TempFolder, zipOutputFileName) + ".done";
+
+		if ( !_hostFileSystemStorage.ExistFile(sourceFullPath) )
+		{
+			return new Tuple<bool?, string?>(null, null);
+		}
+
+		// Read a single file to be sure that writing is ready
+		return new Tuple<bool?, string?>(_hostFileSystemStorage.ExistFile(doneFileFullPath),
+			sourceFullPath);
+	}
+
 	private async Task AddFileIndexResultsListForDirectory(DetailView detailView,
 		List<FileIndexItem> fileIndexResultsList)
 	{
@@ -109,8 +155,8 @@ public class ExportService : IExport
 			await _query.GetAllRecursiveAsync(detailView
 				.FileIndexItem?.FilePath!);
 		foreach ( var item in
-				 allFilesInFolder.Where(item =>
-					 item.FilePath != null && _iStorage.ExistFile(item.FilePath)) )
+		         allFilesInFolder.Where(item =>
+			         item.FilePath != null && _iStorage.ExistFile(item.FilePath)) )
 		{
 			item.Status = FileIndexItem.ExifStatus.Ok;
 			fileIndexResultsList.Add(item);
@@ -137,32 +183,7 @@ public class ExportService : IExport
 	}
 
 	/// <summary>
-	/// Based on the preflight create a Zip Export
-	/// </summary>
-	/// <param name="fileIndexResultsList">Result of Preflight</param>
-	/// <param name="thumbnail">isThumbnail?</param>
-	/// <param name="zipOutputFileName">filename of zip file (no extension)</param>
-	/// <returns>nothing</returns>
-	public async Task CreateZip(List<FileIndexItem> fileIndexResultsList, bool thumbnail,
-		string zipOutputFileName)
-	{
-		var filePaths = await CreateListToExport(fileIndexResultsList, thumbnail);
-		var fileNames = await FilePathToFileNameAsync(filePaths, thumbnail);
-
-		new Zipper(_logger).CreateZip(_appSettings.TempFolder, filePaths, fileNames, zipOutputFileName);
-
-		// Write a single file to be sure that writing is ready
-		var doneFileFullPath = Path.Combine(_appSettings.TempFolder, zipOutputFileName) + ".done";
-		await _hostFileSystemStorage.WriteStreamAsync(StringToStreamHelper.StringToStream("OK"),
-			doneFileFullPath);
-		if ( _appSettings.IsVerbose() )
-		{
-			_logger.LogInformation("[CreateZip] Zip done: " + doneFileFullPath);
-		}
-	}
-
-	/// <summary>
-	/// This list will be included in the zip - Export is called Download in the UI
+	///     This list will be included in the zip - Export is called Download in the UI
 	/// </summary>
 	/// <param name="fileIndexResultsList">the items</param>
 	/// <param name="thumbnail">add the thumbnail or the source image</param>
@@ -173,7 +194,7 @@ public class ExportService : IExport
 		var filePaths = new List<string>();
 
 		foreach ( var item in fileIndexResultsList.Where(p =>
-					 p.Status == FileIndexItem.ExifStatus.Ok && p.FileHash != null).ToList() )
+			         p.Status == FileIndexItem.ExifStatus.Ok && p.FileHash != null).ToList() )
 		{
 			if ( thumbnail )
 			{
@@ -181,7 +202,7 @@ public class ExportService : IExport
 					ThumbnailNameHelper.Combine(item.FileHash!, ThumbnailSize.Large, true));
 
 				await _thumbnailService
-					.CreateThumbAsync(item.FilePath!, item.FileHash!, true);
+					.GenerateThumbnail(item.FilePath!, item.FileHash!, true);
 
 				filePaths.Add(sourceThumb);
 				continue;
@@ -199,9 +220,9 @@ public class ExportService : IExport
 
 			// when there is .xmp sidecar file (but only when file is a RAW file, ignored when for example jpeg)
 			if ( !ExtensionRolesHelper.IsExtensionForceXmp(item.FilePath) ||
-				 !_iStorage.ExistFile(
-					 ExtensionRolesHelper.ReplaceExtensionWithXmp(
-						 item.FilePath)) )
+			     !_iStorage.ExistFile(
+				     ExtensionRolesHelper.ReplaceExtensionWithXmp(
+					     item.FilePath)) )
 			{
 				continue;
 			}
@@ -222,7 +243,7 @@ public class ExportService : IExport
 	}
 
 	/// <summary>
-	/// Get the filename (in case of thumbnail the source image name)
+	///     Get the filename (in case of thumbnail the source image name)
 	/// </summary>
 	/// <param name="filePaths">the full file paths </param>
 	/// <param name="thumbnail">copy the thumbnail (true) or the source image (false)</param>
@@ -252,7 +273,7 @@ public class ExportService : IExport
 	}
 
 	/// <summary>
-	/// to create a unique name of the zip using c# get hashcode
+	///     to create a unique name of the zip using c# get hashcode
 	/// </summary>
 	/// <param name="fileIndexResultsList">list of objects with fileHashes</param>
 	/// <returns>unique 'get hashcode' string</returns>
@@ -269,25 +290,5 @@ public class ExportService : IExport
 			.ToString(CultureInfo.InvariantCulture).ToLower().Replace("-", "A");
 
 		return shortName;
-	}
-
-	/// <summary>
-	/// Is Zip Ready?
-	/// </summary>
-	/// <param name="zipOutputFileName">fileName without extension</param>
-	/// <returns>null if status file is not found, true if done file exist</returns>
-	public Tuple<bool?, string?> StatusIsReady(string zipOutputFileName)
-	{
-		var sourceFullPath = Path.Combine(_appSettings.TempFolder, zipOutputFileName) + ".zip";
-		var doneFileFullPath = Path.Combine(_appSettings.TempFolder, zipOutputFileName) + ".done";
-
-		if ( !_hostFileSystemStorage.ExistFile(sourceFullPath) )
-		{
-			return new Tuple<bool?, string?>(null, null);
-		}
-
-		// Read a single file to be sure that writing is ready
-		return new Tuple<bool?, string?>(_hostFileSystemStorage.ExistFile(doneFileFullPath),
-			sourceFullPath);
 	}
 }

@@ -3,13 +3,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.database.Interfaces;
-using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.thumbnailgeneration.Interfaces;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
 using starsky.Helpers;
 using starsky.project.web.Helpers;
 
@@ -140,12 +140,12 @@ public sealed class DownloadPhotoController : Controller
 		if ( !data.Small || !data.Large || !data.ExtraLarge )
 		{
 			_logger.LogDebug("Thumbnail generation started");
-			await _thumbnailService.CreateThumbAsync(fileIndexItem.FilePath!,
+			await _thumbnailService.GenerateThumbnail(fileIndexItem.FilePath!,
 				fileIndexItem.FileHash!);
 
 			if ( !_thumbnailStorage.ExistFile(
-					ThumbnailNameHelper.Combine(fileIndexItem.FileHash!,
-						ThumbnailSize.Large)) )
+				    ThumbnailNameHelper.Combine(fileIndexItem.FileHash!,
+					    ThumbnailSize.Large)) )
 			{
 				Response.StatusCode = 500;
 				return Json("Thumbnail generation failed");

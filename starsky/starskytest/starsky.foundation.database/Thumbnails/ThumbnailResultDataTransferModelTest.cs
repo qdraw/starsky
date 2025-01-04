@@ -1,7 +1,7 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
-using starsky.foundation.platform.Enums;
+using starsky.foundation.platform.Thumbnails;
 
 namespace starskytest.starsky.foundation.database.Thumbnails;
 
