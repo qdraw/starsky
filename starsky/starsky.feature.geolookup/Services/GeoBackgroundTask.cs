@@ -15,97 +15,99 @@ using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Interfaces;
 
-namespace starsky.feature.geolookup.Services
+namespace starsky.feature.geolookup.Services;
+
+[Service(typeof(IGeoBackgroundTask), InjectionLifetime = InjectionLifetime.Scoped)]
+public class GeoBackgroundTask : IGeoBackgroundTask
 {
-	[Service(typeof(IGeoBackgroundTask), InjectionLifetime = InjectionLifetime.Scoped)]
-	public class GeoBackgroundTask : IGeoBackgroundTask
+	private readonly AppSettings _appSettings;
+	private readonly GeoIndexGpx _geoIndexGpx;
+	private readonly IGeoLocationWrite _geoLocationWrite;
+	private readonly IGeoReverseLookup _geoReverseLookup;
+	private readonly IStorage _iStorage;
+	private readonly IWebLogger _logger;
+	private readonly ReadMeta _readMeta;
+	private readonly IStorage _thumbnailStorage;
+
+	public GeoBackgroundTask(AppSettings appSettings, ISelectorStorage selectorStorage,
+		IGeoLocationWrite geoLocationWrite, IMemoryCache memoryCache,
+		IWebLogger logger, IGeoReverseLookup geoReverseLookup)
 	{
-		private readonly AppSettings _appSettings;
-		private readonly ReadMeta _readMeta;
-		private readonly IStorage _thumbnailStorage;
-		private readonly IStorage _iStorage;
-		private readonly IGeoLocationWrite _geoLocationWrite;
-		private readonly IWebLogger _logger;
-		private readonly GeoIndexGpx _geoIndexGpx;
-		private readonly IGeoReverseLookup _geoReverseLookup;
+		_appSettings = appSettings;
+		_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+		_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
+		_readMeta = new ReadMeta(_iStorage, appSettings, memoryCache, logger);
+		_geoLocationWrite = geoLocationWrite;
+		_logger = logger;
+		_geoIndexGpx = new GeoIndexGpx(_appSettings, _iStorage, logger, memoryCache);
+		_geoReverseLookup = geoReverseLookup;
+	}
 
-		public GeoBackgroundTask(AppSettings appSettings, ISelectorStorage selectorStorage,
-			IGeoLocationWrite geoLocationWrite, IMemoryCache memoryCache,
-			IWebLogger logger, IGeoReverseLookup geoReverseLookup)
+	public async Task<List<FileIndexItem>> GeoBackgroundTaskAsync(
+		string f = "/",
+		bool index = true,
+		bool overwriteLocationNames = false)
+	{
+		if ( !_iStorage.ExistFolder(f) )
 		{
-			_appSettings = appSettings;
-			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
-			_readMeta = new ReadMeta(_iStorage, appSettings, memoryCache, logger);
-			_geoLocationWrite = geoLocationWrite;
-			_logger = logger;
-			_geoIndexGpx = new GeoIndexGpx(_appSettings, _iStorage, logger, memoryCache);
-			_geoReverseLookup = geoReverseLookup;
+			return new List<FileIndexItem>();
 		}
 
-		public async Task<List<FileIndexItem>> GeoBackgroundTaskAsync(
-			string f = "/",
-			bool index = true,
-			bool overwriteLocationNames = false)
+		// use relative to StorageFolder
+		var listOfFiles = _iStorage.GetAllFilesInDirectory(f)
+			.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
+
+		var fileIndexList = await _readMeta
+			.ReadExifAndXmpFromFileAddFilePathHashAsync(listOfFiles);
+
+		var toMetaFilesUpdate = new List<FileIndexItem>();
+		if ( index )
 		{
-			if ( !_iStorage.ExistFolder(f) )
+			toMetaFilesUpdate =
+				await _geoIndexGpx
+					.LoopFolderAsync(fileIndexList);
+
+			if ( _appSettings.IsVerbose() )
 			{
-				return new List<FileIndexItem>();
-			}
-			// use relative to StorageFolder
-			var listOfFiles = _iStorage.GetAllFilesInDirectory(f)
-				.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
-
-			var fileIndexList = await _readMeta
-				.ReadExifAndXmpFromFileAddFilePathHashAsync(listOfFiles);
-
-			var toMetaFilesUpdate = new List<FileIndexItem>();
-			if ( index )
-			{
-				toMetaFilesUpdate =
-					await _geoIndexGpx
-						.LoopFolderAsync(fileIndexList);
-
-				if ( _appSettings.IsVerbose() )
-				{
-					Console.Write("¬");
-				}
-
-				await _geoLocationWrite
-					.LoopFolderAsync(toMetaFilesUpdate, false);
+				Console.Write("¬");
 			}
 
-			fileIndexList =
-				await _geoReverseLookup
-					.LoopFolderLookup(fileIndexList, overwriteLocationNames);
-
-			if ( fileIndexList.Count >= 1 )
-			{
-				await _geoLocationWrite.LoopFolderAsync(
-					fileIndexList, true);
-			}
-
-			// Loop though all options
-			fileIndexList.AddRange(toMetaFilesUpdate);
-
-			// update thumbs to avoid unnecessary re-generation
-			foreach ( var item in fileIndexList.GroupBy(i => i.FilePath).Select(g => g.First())
-				.ToList() )
-			{
-				var newThumb = ( await new FileHash(_iStorage).GetHashCodeAsync(item.FilePath!) ).Key;
-				if ( item.FileHash == newThumb )
-				{
-					continue;
-				}
-
-				new ThumbnailFileMoveAllSizes(_thumbnailStorage).FileMove(item.FileHash!, newThumb);
-				if ( _appSettings.IsVerbose() )
-				{
-					_logger.LogInformation("[/api/geo/sync] thumb rename + `" + item.FileHash + "`" + newThumb);
-				}
-			}
-
-			return fileIndexList;
+			await _geoLocationWrite
+				.LoopFolderAsync(toMetaFilesUpdate, false);
 		}
+
+		fileIndexList =
+			await _geoReverseLookup
+				.LoopFolderLookup(fileIndexList, overwriteLocationNames);
+
+		if ( fileIndexList.Count >= 1 )
+		{
+			await _geoLocationWrite.LoopFolderAsync(
+				fileIndexList, true);
+		}
+
+		// Loop though all options
+		fileIndexList.AddRange(toMetaFilesUpdate);
+
+		// update thumbs to avoid unnecessary re-generation
+		foreach ( var item in fileIndexList.GroupBy(i => i.FilePath).Select(g => g.First())
+			         .ToList() )
+		{
+			var newThumb = ( await new FileHash(_iStorage).GetHashCodeAsync(item.FilePath!) ).Key;
+			if ( item.FileHash == newThumb )
+			{
+				continue;
+			}
+
+			new ThumbnailFileMoveAllSizes(_thumbnailStorage, _appSettings).FileMove(item.FileHash!,
+				newThumb);
+			if ( _appSettings.IsVerbose() )
+			{
+				_logger.LogInformation("[/api/geo/sync] thumb rename + `" + item.FileHash + "`" +
+				                       newThumb);
+			}
+		}
+
+		return fileIndexList;
 	}
 }

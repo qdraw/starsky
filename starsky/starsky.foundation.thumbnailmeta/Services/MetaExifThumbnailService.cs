@@ -136,7 +136,8 @@ public sealed class MetaExifThumbnailService : IMetaExifThumbnailService
 		}
 
 		if ( _thumbnailStorage.ExistFile(
-			    ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.TinyMeta)) )
+			    ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.TinyMeta,
+				    _appSettings.ThumbnailImageFormat)) )
 		{
 			return ( true, true, subPath, "already exist" );
 		}

@@ -59,7 +59,8 @@ public sealed class WriteMetaThumbnailServiceTest
 
 		Assert.IsTrue(result);
 		Assert.IsTrue(
-			storage.ExistFile(ThumbnailNameHelper.Combine("test", ThumbnailSize.TinyMeta)));
+			storage.ExistFile(ThumbnailNameHelper.Combine("test",
+				ThumbnailSize.TinyMeta, new AppSettings().ThumbnailImageFormat)));
 	}
 
 	[TestMethod]

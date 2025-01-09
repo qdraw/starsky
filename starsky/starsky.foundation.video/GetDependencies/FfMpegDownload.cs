@@ -92,7 +92,8 @@ public class FfMpegDownload : IFfMpegDownload
 	public string GetSetFfMpegPath()
 	{
 		var path = _ffmpegExePath.GetExePath(CurrentArchitecture.GetCurrentRuntimeIdentifier());
-		if ( _hostFileSystemStorage.ExistFile(_appSettings.FfmpegPath) )
+		if ( _appSettings.FfmpegPath != null &&
+		     _hostFileSystemStorage.ExistFile(_appSettings.FfmpegPath) )
 		{
 			return _appSettings.FfmpegPath;
 		}

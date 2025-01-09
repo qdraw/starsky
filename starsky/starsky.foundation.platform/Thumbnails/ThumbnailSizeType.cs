@@ -11,6 +11,11 @@ public enum ThumbnailSize
 	Unknown = 0,
 
 	/// <summary>
+	///     Very tiny, 4x4 pixels.
+	/// </summary>
+	TinyIcon = 5,
+
+	/// <summary>
 	///     150px
 	/// </summary>
 	TinyMeta = 10,

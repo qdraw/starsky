@@ -738,7 +738,8 @@ public class Import : IImport
 
 		// Check if fastest version is available to show 
 		var setStatus = _thumbnailStorage.ExistFile(
-			ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.TinyMeta));
+			ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.TinyMeta,
+				_appSettings.ThumbnailImageFormat));
 		await queryThumbnailUpdateDelegate(new List<ThumbnailResultDataTransferModel>
 		{
 			new(fileHash, setStatus)

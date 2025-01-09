@@ -11,7 +11,6 @@ using starsky.foundation.thumbnailgeneration.Interfaces;
 
 namespace starsky.foundation.thumbnailgeneration.Helpers;
 
-[Obsolete("refactor to new Cli")]
 public sealed class ThumbnailCli
 {
 	private readonly AppSettings _appSettings;

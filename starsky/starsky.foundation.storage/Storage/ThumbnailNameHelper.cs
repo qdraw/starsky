@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Thumbnails;
 
 namespace starsky.foundation.storage.Storage;
@@ -34,6 +35,8 @@ public static partial class ThumbnailNameHelper
 	{
 		switch ( size )
 		{
+			case ThumbnailSize.TinyIcon:
+				return 4;
 			case ThumbnailSize.TinyMeta:
 				return 150;
 			case ThumbnailSize.Small:
@@ -51,6 +54,8 @@ public static partial class ThumbnailNameHelper
 	{
 		switch ( size )
 		{
+			case 4:
+				return ThumbnailSize.TinyIcon;
 			case 150:
 				return ThumbnailSize.TinyMeta;
 			case 300:
@@ -66,6 +71,7 @@ public static partial class ThumbnailNameHelper
 
 	public static ThumbnailSize GetSize(string fileName)
 	{
+		// todo: NOt always jpg
 		var fileNameWithoutExtension =
 			fileName.Replace(".jpg", string.Empty);
 
@@ -88,26 +94,24 @@ public static partial class ThumbnailNameHelper
 		return GetSize(afterAt);
 	}
 
-	public static string Combine(string fileHash, int size)
+	public static string Combine(string fileHash, int size,
+		ThumbnailImageFormat imageFormat)
 	{
-		return Combine(fileHash, GetSize(size));
+		return Combine(fileHash, GetSize(size), imageFormat);
 	}
 
 	public static string Combine(string fileHash, ThumbnailSize size,
-		bool appendExtension = false)
+		ThumbnailImageFormat imageFormat)
 	{
-		if ( appendExtension )
-		{
-			return fileHash + GetAppend(size) + ".jpg";
-		}
-
-		return fileHash + GetAppend(size);
+		return fileHash + GetAppend(size) + "." + imageFormat;
 	}
 
 	private static string GetAppend(ThumbnailSize size)
 	{
 		switch ( size )
 		{
+			case ThumbnailSize.TinyIcon:
+				return "@4";
 			case ThumbnailSize.TinyMeta:
 				return "@meta";
 			case ThumbnailSize.Small:

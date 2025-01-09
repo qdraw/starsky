@@ -5,11 +5,11 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Formats.Webp;
-using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Enums;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
 
-public static class SaveThumbnailImageFormatHelper
+internal static class SaveThumbnailImageFormatHelper
 {
 	/// <summary>
 	///     Used in ResizeThumbnailToStream to save based on the input settings
@@ -18,7 +18,7 @@ public static class SaveThumbnailImageFormatHelper
 	/// <param name="imageFormat">Files ImageFormat</param>
 	/// <param name="outputStream">input stream to save</param>
 	internal static Task SaveThumbnailImageFormat(Image image,
-		ExtensionRolesHelper.ImageFormat imageFormat,
+		ThumbnailImageFormat imageFormat,
 		MemoryStream outputStream)
 	{
 		ArgumentNullException.ThrowIfNull(outputStream);
@@ -34,12 +34,12 @@ public static class SaveThumbnailImageFormatHelper
 	/// <param name="imageFormat">Files ImageFormat</param>
 	/// <param name="outputStream">input stream to save</param>
 	private static async Task SaveThumbnailImageFormatInternal(Image image,
-		ExtensionRolesHelper.ImageFormat imageFormat,
+		ThumbnailImageFormat imageFormat,
 		MemoryStream outputStream)
 	{
 		switch ( imageFormat )
 		{
-			case ExtensionRolesHelper.ImageFormat.png:
+			case ThumbnailImageFormat.png:
 				await image.SaveAsync(outputStream,
 					new PngEncoder
 					{
@@ -49,7 +49,7 @@ public static class SaveThumbnailImageFormatHelper
 						TransparentColorMode = PngTransparentColorMode.Clear
 					});
 				return;
-			case ExtensionRolesHelper.ImageFormat.webp:
+			case ThumbnailImageFormat.webp:
 				await image.SaveAsync(outputStream,
 					new WebpEncoder { Quality = 80, EntropyPasses = 1, SkipMetadata = true });
 				return;

@@ -11,6 +11,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
@@ -27,6 +28,7 @@ namespace starsky.feature.metaupdate.Services;
 [Service(typeof(IMetaUpdateService), InjectionLifetime = InjectionLifetime.Scoped)]
 public class MetaUpdateService : IMetaUpdateService
 {
+	private readonly AppSettings _appSettings;
 	private readonly IExifTool _exifTool;
 	private readonly IStorage _iStorage;
 	private readonly IWebLogger _logger;
@@ -47,7 +49,7 @@ public class MetaUpdateService : IMetaUpdateService
 		IWebLogger logger,
 		IReadMetaSubPathStorage readMetaSubPathStorage,
 		IThumbnailService thumbnailService,
-		IThumbnailQuery thumbnailQuery)
+		IThumbnailQuery thumbnailQuery, AppSettings appSettings)
 	{
 		_query = query;
 		_exifTool = exifTool;
@@ -58,6 +60,7 @@ public class MetaUpdateService : IMetaUpdateService
 		_logger = logger;
 		_thumbnailService = thumbnailService;
 		_thumbnailQuery = thumbnailQuery;
+		_appSettings = appSettings;
 	}
 
 	/// <summary>
@@ -209,7 +212,7 @@ public class MetaUpdateService : IMetaUpdateService
 			foreach ( var size in ThumbnailNameHelper.AllThumbnailSizes )
 			{
 				var fileHash = ThumbnailNameHelper.Combine(
-					fileIndexItem.FileHash!, size);
+					fileIndexItem.FileHash!, size, _appSettings.ThumbnailImageFormat);
 				await _thumbnailService.RotateThumbnail(fileHash, rotateClock,
 					ThumbnailNameHelper.GetSize(size));
 			}

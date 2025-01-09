@@ -20,13 +20,14 @@ public sealed class MetaExifThumbnailServiceTest
 
 	public MetaExifThumbnailServiceTest()
 	{
+		var imageFormat = new AppSettings().ThumbnailImageFormat;
 		_iStorageFake = new FakeIStorage(
 			new List<string> { "/" },
 			new List<string>
 			{
 				"/no_thumbnail.jpg",
 				"/poppy.jpg",
-				ThumbnailNameHelper.Combine("test", ThumbnailSize.TinyMeta)
+				ThumbnailNameHelper.Combine("test", ThumbnailSize.TinyMeta, imageFormat)
 			},
 			new List<byte[]>
 			{
@@ -63,7 +64,8 @@ public sealed class MetaExifThumbnailServiceTest
 			.AddMetaThumbnail("/poppy.jpg", "/meta_image");
 
 		Assert.IsTrue(result.Item1);
-		Assert.IsTrue(_iStorageFake.ExistFile("/meta_image@meta"));
+		Assert.IsTrue(
+			_iStorageFake.ExistFile($"/meta_image@meta.{new AppSettings().ThumbnailImageFormat}"));
 	}
 
 	[TestMethod]

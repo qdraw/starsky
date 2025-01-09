@@ -222,7 +222,8 @@ public class MoveToTrashServiceTest
 				new FakeIWebLogger()), new FakeIWebLogger(), new ReadMetaSubPathStorage(
 				new FakeSelectorStorage(storage),
 				appSettings, null!, new FakeIWebLogger()), new FakeIThumbnailService(),
-			new ThumbnailQuery(dbContext, null, new FakeIWebLogger(), new FakeMemoryCache()));
+			new ThumbnailQuery(dbContext, null, new FakeIWebLogger(),
+				new FakeMemoryCache()), new AppSettings());
 
 		var metaPreflight = new MetaPreflight(query, appSettings,
 			new FakeSelectorStorage(storage), new FakeIWebLogger());
@@ -282,7 +283,8 @@ public class MoveToTrashServiceTest
 				new FakeIWebLogger()), new FakeIWebLogger(), new ReadMetaSubPathStorage(
 				new FakeSelectorStorage(storage),
 				appSettings, null!, new FakeIWebLogger()), new FakeIThumbnailService(),
-			new ThumbnailQuery(dbContext, null, new FakeIWebLogger(), new FakeMemoryCache()));
+			new ThumbnailQuery(dbContext, null,
+				new FakeIWebLogger(), new FakeMemoryCache()), new AppSettings());
 
 		var metaPreflight = new MetaPreflight(query, appSettings,
 			new FakeSelectorStorage(storage), new FakeIWebLogger());

@@ -159,8 +159,9 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 	/// <returns></returns>
 	private Task<string[]> Base64DataUriList(IEnumerable<FileIndexItem> fileIndexItemsList)
 	{
-		return new ToBase64DataUriList(_subPathStorage,
-			_thumbnailStorage, _logger, _appSettings).Create(fileIndexItemsList.ToList());
+		var service = new ToBase64DataUriList(_subPathStorage,
+			_thumbnailStorage, _logger, _appSettings, _thumbnailService);
+		return service.Create(fileIndexItemsList.ToList());
 	}
 
 	/// <summary>
@@ -362,17 +363,20 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 		// for less than 1000px
 		if ( profile.SourceMaxWidth <= 1000 &&
 		     _thumbnailStorage.ExistFile(
-			     ThumbnailNameHelper.Combine(item.FileHash!, ThumbnailSize.Large)) )
+			     ThumbnailNameHelper.Combine(item.FileHash!, ThumbnailSize.Large,
+				     _appSettings.ThumbnailImageFormat)) )
 		{
 			await _overlayImage.ResizeOverlayImageThumbnails(item.FileHash!, outputPath,
 				profile);
 		}
 		else if ( profile.SourceMaxWidth <= 2000 &&
 		          _thumbnailStorage.ExistFile(
-			          ThumbnailNameHelper.Combine(item.FileHash!, ThumbnailSize.ExtraLarge)) )
+			          ThumbnailNameHelper.Combine(item.FileHash!, ThumbnailSize.ExtraLarge,
+				          _appSettings.ThumbnailImageFormat)) )
 		{
 			await _overlayImage.ResizeOverlayImageThumbnails(
-				ThumbnailNameHelper.Combine(item.FileHash!, ThumbnailSize.ExtraLarge),
+				ThumbnailNameHelper.Combine(item.FileHash!, ThumbnailSize.ExtraLarge,
+					_appSettings.ThumbnailImageFormat),
 				outputPath, profile);
 		}
 		else if ( _subPathStorage.ExistFile(item.FilePath!) )

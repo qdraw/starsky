@@ -32,6 +32,7 @@ public class ThumbnailVideo
 		_videoProcess = videoProcess;
 		_readMeta = new ReadMeta(iStorage,
 			appSettings, memoryCache, logger);
+		_appSettings = appSettings;
 	}
 
 	internal async Task<List<GenerationResultModel>> CreateThumbnailAsync(string subPath)

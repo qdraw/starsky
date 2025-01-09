@@ -33,6 +33,11 @@ public class ThumbnailResultDataTransferModel
 	public string? FileHash { get; set; }
 
 	/// <summary>
+	///     4 pixel icon
+	/// </summary>
+	public bool? TinyIcon { get; set; }
+
+	/// <summary>
 	///     150px, null is to-do, false is error, true, is done
 	/// </summary>
 	public bool? TinyMeta { get; set; }
@@ -69,6 +74,9 @@ public class ThumbnailResultDataTransferModel
 	{
 		switch ( thumbnailSize )
 		{
+			case ThumbnailSize.TinyIcon:
+				TinyIcon = setStatus;
+				break;
 			case ThumbnailSize.TinyMeta:
 				TinyMeta = setStatus;
 				break;

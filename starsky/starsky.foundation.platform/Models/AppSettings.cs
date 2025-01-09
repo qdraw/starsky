@@ -343,6 +343,9 @@ public sealed class AppSettings
 		}
 	}
 
+	public ThumbnailImageFormat ThumbnailImageFormat { get; set; } =
+		ThumbnailImageFormat.jpg;
+
 	/// <summary>
 	///     Location of temp folder
 	/// </summary>
@@ -788,7 +791,7 @@ public sealed class AppSettings
 	/// <summary>
 	///     Exe path to Ffmpeg
 	/// </summary>
-	public string FfmpegPath { get; set; }
+	public string? FfmpegPath { get; set; }
 
 	public OpenTelemetrySettings? OpenTelemetry { get; set; } = new();
 

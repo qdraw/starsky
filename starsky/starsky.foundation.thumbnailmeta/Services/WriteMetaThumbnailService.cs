@@ -71,7 +71,8 @@ public sealed class WriteMetaThumbnailService : IWriteMetaThumbnailService
 				await smallImage.SaveAsJpegAsync(outputStream);
 
 				await _thumbnailStorage.WriteStreamAsync(outputStream,
-					ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.TinyMeta));
+					ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.TinyMeta,
+						_appSettings.ThumbnailImageFormat));
 				if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
 				{
 					_logger.LogInformation(

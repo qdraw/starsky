@@ -4,9 +4,9 @@ using SixLabors.ImageSharp.Processing;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
 
-public static class ImageSharpImageResizeHelper
+internal static class ImageSharpImageResizeHelper
 {
-	public static void ImageSharpImageResize(Image image, int width, bool removeExif)
+	internal static void ImageSharpImageResize(Image image, int width, bool removeExif)
 	{
 		// Add original rotation to the image as json
 		if ( image.Metadata.ExifProfile != null && !removeExif )

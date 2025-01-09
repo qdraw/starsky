@@ -3,14 +3,18 @@ using System.IO;
 using System.Threading.Tasks;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
-using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory;
 
-public class RotateThumbnailHelper(ISelectorStorage selectorStorage)
+public class RotateThumbnailHelper(
+	ISelectorStorage selectorStorage,
+	AppSettings appSettings,
+	IWebLogger logger)
 {
 	private readonly IStorage
 		_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
@@ -53,13 +57,13 @@ public class RotateThumbnailHelper(ISelectorStorage selectorStorage)
 
 				// Image<Rgba32> image, ExtensionRolesHelper.ImageFormat imageFormat, MemoryStream outputStream
 				await SaveThumbnailImageFormatHelper.SaveThumbnailImageFormat(image,
-					ExtensionRolesHelper.ImageFormat.jpg, stream);
+					appSettings.ThumbnailImageFormat, stream);
 				await _thumbnailStorage.WriteStreamAsync(stream, fileHash);
 			}
 		}
 		catch ( Exception ex )
 		{
-			Console.WriteLine(ex);
+			logger.LogError(ex, "[RotateThumbnailHelper] " + ex.Message);
 			return false;
 		}
 

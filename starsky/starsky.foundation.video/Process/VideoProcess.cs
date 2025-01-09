@@ -8,7 +8,7 @@ using starsky.foundation.video.Process.Interfaces;
 
 namespace starsky.foundation.video.Process;
 
-[Service(typeof(IVideoProcessThumbnailPost), InjectionLifetime = InjectionLifetime.Scoped)]
+[Service(typeof(IVideoProcess), InjectionLifetime = InjectionLifetime.Scoped)]
 public class VideoProcess : IVideoProcess
 {
 	private readonly IFfMpegDownload _ffMpegDownload;

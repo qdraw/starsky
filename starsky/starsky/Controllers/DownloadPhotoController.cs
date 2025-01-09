@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
@@ -18,6 +19,7 @@ namespace starsky.Controllers;
 [Authorize]
 public sealed class DownloadPhotoController : Controller
 {
+	private readonly AppSettings _appSettings;
 	private readonly IStorage _iStorage;
 	private readonly IWebLogger _logger;
 	private readonly IQuery _query;
@@ -25,13 +27,14 @@ public sealed class DownloadPhotoController : Controller
 	private readonly IStorage _thumbnailStorage;
 
 	public DownloadPhotoController(IQuery query, ISelectorStorage selectorStorage,
-		IWebLogger logger, IThumbnailService thumbnailService)
+		IWebLogger logger, IThumbnailService thumbnailService, AppSettings appSettings)
 	{
 		_query = query;
 		_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 		_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 		_thumbnailService = thumbnailService;
 		_logger = logger;
+		_appSettings = appSettings;
 	}
 
 	/// <summary>
@@ -130,11 +133,14 @@ public sealed class DownloadPhotoController : Controller
 		var data = new ThumbnailSizesExistStatusModel
 		{
 			Small = _thumbnailStorage.ExistFile(
-				ThumbnailNameHelper.Combine(fileIndexItem.FileHash!, ThumbnailSize.Small)),
+				ThumbnailNameHelper.Combine(fileIndexItem.FileHash!, ThumbnailSize.Small,
+					_appSettings.ThumbnailImageFormat)),
 			Large = _thumbnailStorage.ExistFile(
-				ThumbnailNameHelper.Combine(fileIndexItem.FileHash!, ThumbnailSize.Large)),
+				ThumbnailNameHelper.Combine(fileIndexItem.FileHash!, ThumbnailSize.Large,
+					_appSettings.ThumbnailImageFormat)),
 			ExtraLarge = _thumbnailStorage.ExistFile(
-				ThumbnailNameHelper.Combine(fileIndexItem.FileHash!, ThumbnailSize.ExtraLarge))
+				ThumbnailNameHelper.Combine(fileIndexItem.FileHash!, ThumbnailSize.ExtraLarge,
+					_appSettings.ThumbnailImageFormat))
 		};
 
 		if ( !data.Small || !data.Large || !data.ExtraLarge )
@@ -143,9 +149,9 @@ public sealed class DownloadPhotoController : Controller
 			await _thumbnailService.GenerateThumbnail(fileIndexItem.FilePath!,
 				fileIndexItem.FileHash!);
 
-			if ( !_thumbnailStorage.ExistFile(
-				    ThumbnailNameHelper.Combine(fileIndexItem.FileHash!,
-					    ThumbnailSize.Large)) )
+			var thumbnail = ThumbnailNameHelper.Combine(fileIndexItem.FileHash!,
+				ThumbnailSize.Large, _appSettings.ThumbnailImageFormat);
+			if ( !_thumbnailStorage.ExistFile(thumbnail) )
 			{
 				Response.StatusCode = 500;
 				return Json("Thumbnail generation failed");
@@ -153,7 +159,10 @@ public sealed class DownloadPhotoController : Controller
 		}
 
 		var thumbnailFileStream = _thumbnailStorage.ReadStream(
-			ThumbnailNameHelper.Combine(fileIndexItem.FileHash!, ThumbnailSize.Large));
-		return File(thumbnailFileStream, "image/jpeg");
+			ThumbnailNameHelper.Combine(fileIndexItem.FileHash!, ThumbnailSize.Large,
+				_appSettings.ThumbnailImageFormat));
+		return File(thumbnailFileStream,
+			MimeHelper.GetMimeType(_appSettings.ThumbnailImageFormat.ToString())
+		);
 	}
 }

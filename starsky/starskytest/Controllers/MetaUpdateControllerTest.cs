@@ -130,7 +130,7 @@ public sealed class MetaUpdateControllerTest
 			});
 		}
 
-		_query.GetObjectByFilePath(_createAnImage.DbPath);
+		await _query.GetObjectByFilePathAsync(_createAnImage.DbPath);
 	}
 
 	private IServiceScopeFactory NewScopeFactory()
@@ -165,7 +165,7 @@ public sealed class MetaUpdateControllerTest
 		var metaUpdateService = new MetaUpdateService(_query, _exifTool,
 			selectorStorage, new FakeMetaPreflight(),
 			new FakeIWebLogger(), new FakeReadMetaSubPathStorage(), new FakeIThumbnailService(),
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new AppSettings());
 
 		var controller = new MetaUpdateController(metaPreflight, metaUpdateService,
 			_bgTaskQueue,
@@ -209,7 +209,7 @@ public sealed class MetaUpdateControllerTest
 		var metaUpdateService = new MetaUpdateService(_query, _exifTool,
 			selectorStorage, new FakeMetaPreflight(),
 			new FakeIWebLogger(), new FakeReadMetaSubPathStorage(), new FakeIThumbnailService(),
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new AppSettings());
 
 		var controller = new MetaUpdateController(metaPreflight, metaUpdateService,
 			_bgTaskQueue,
@@ -262,7 +262,7 @@ public sealed class MetaUpdateControllerTest
 		var metaUpdateService = new MetaUpdateService(_query, _exifTool,
 			selectorStorage, new FakeMetaPreflight(),
 			new FakeIWebLogger(), new FakeReadMetaSubPathStorage(),
-			new FakeIThumbnailService(), new FakeIThumbnailQuery());
+			new FakeIThumbnailService(), new FakeIThumbnailQuery(), new AppSettings());
 
 		var controller = new MetaUpdateController(metaPreflight, metaUpdateService,
 			new FakeIUpdateBackgroundTaskQueue(),
@@ -305,7 +305,7 @@ public sealed class MetaUpdateControllerTest
 		var metaUpdateService = new MetaUpdateService(_query, _exifTool,
 			selectorStorage, new FakeMetaPreflight(),
 			new FakeIWebLogger(), new FakeReadMetaSubPathStorage(),
-			new FakeIThumbnailService(), new FakeIThumbnailQuery());
+			new FakeIThumbnailService(), new FakeIThumbnailQuery(), new AppSettings());
 
 		var controller = new MetaUpdateController(metaPreflight, metaUpdateService,
 			new FakeIUpdateBackgroundTaskQueue(),
@@ -330,7 +330,7 @@ public sealed class MetaUpdateControllerTest
 
 		var result = await controller.UpdateAsync(new FileIndexItem(), string.Empty, true) as
 			BadRequestObjectResult;
-		
+
 		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
 	}
 }

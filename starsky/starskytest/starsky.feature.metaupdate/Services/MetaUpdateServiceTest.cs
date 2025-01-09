@@ -98,7 +98,7 @@ public sealed class MetaUpdateServiceTest
 			new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
 			new FakeIWebLogger(), readMeta,
 			new FakeIThumbnailService(new FakeSelectorStorage(_iStorageFake)),
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new AppSettings());
 
 		await service.UpdateAsync(changedFileIndexItemName, fileIndexResultsList, updateItem,
 			false, false, 0);
@@ -144,7 +144,7 @@ public sealed class MetaUpdateServiceTest
 			new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
 			new FakeIWebLogger(), readMeta,
 			new FakeIThumbnailService(new FakeSelectorStorage(_iStorageFake)),
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new AppSettings());
 
 		await service.UpdateAsync(changedFileIndexItemName, fileIndexResultsList, null!, false,
 			false, 0);
@@ -204,7 +204,7 @@ public sealed class MetaUpdateServiceTest
 			new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
 			new FakeIWebLogger(), readMeta,
 			new FakeIThumbnailService(new FakeSelectorStorage(_iStorageFake)),
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new AppSettings());
 
 		await service.UpdateAsync(null, fileIndexResultsList,
 			toUpdateItem, false, false, 0);
@@ -245,7 +245,7 @@ public sealed class MetaUpdateServiceTest
 			new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
 			new FakeIWebLogger(), readMeta,
 			new FakeIThumbnailService(new FakeSelectorStorage(_iStorageFake)),
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new AppSettings());
 
 		await service.UpdateAsync(changedFileIndexItemName, fileIndexResultsList,
 			updateItem, false, false, 0);
@@ -269,7 +269,7 @@ public sealed class MetaUpdateServiceTest
 			new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
 			new FakeIWebLogger(), readMeta,
 			new FakeIThumbnailService(new FakeSelectorStorage(_iStorageFake)),
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new AppSettings());
 
 		await Assert.ThrowsExceptionAsync<ArgumentException>(async () => await service.UpdateAsync(
 			changedFileIndexItemName, fileIndexResultList,
@@ -303,7 +303,7 @@ public sealed class MetaUpdateServiceTest
 			new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
 			new FakeIWebLogger(), readMeta,
 			new FakeIThumbnailService(new FakeSelectorStorage(_iStorageFake)),
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new AppSettings());
 
 		await service
 			.UpdateAsync(changedFileIndexItemName, fileIndexResultsList, updateItem, false,
@@ -327,7 +327,7 @@ public sealed class MetaUpdateServiceTest
 			new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
 			new FakeIWebLogger(), readMeta,
 			new FakeIThumbnailService(new FakeSelectorStorage(_iStorageFake)),
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new AppSettings());
 
 		await service.ApplyOrGenerateUpdatedFileHash(new List<string>(),
 			detailView.FileIndexItem);
@@ -347,7 +347,7 @@ public sealed class MetaUpdateServiceTest
 		var service = new MetaUpdateService(_query, _exifTool,
 			new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
 			new FakeIWebLogger(), readMeta, thumbnailService,
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new AppSettings());
 
 		await service.RotationThumbnailExecute(0, new FileIndexItem("/test.jpg"));
 
@@ -367,7 +367,7 @@ public sealed class MetaUpdateServiceTest
 		var service = new MetaUpdateService(_query, _exifTool,
 			new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
 			new FakeIWebLogger(), readMeta, thumbnailService,
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new AppSettings());
 
 		await service.RotationThumbnailExecute(1, new FileIndexItem("/test.jpg"));
 

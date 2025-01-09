@@ -2,63 +2,64 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.thumbnailgeneration.Helpers;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
 
-namespace starsky.feature.webhtmlpublish.Helpers
+namespace starsky.feature.webhtmlpublish.Helpers;
+
+public class ToBase64DataUriList
 {
-	public class ToBase64DataUriList
+	private readonly AppSettings _appSettings;
+	private readonly IStorage _iStorage;
+	private readonly IWebLogger _logger;
+	private readonly IThumbnailService _thumbnailService;
+	private readonly IStorage _thumbnailStorage;
+
+	public ToBase64DataUriList(IStorage iStorage, IStorage thumbnailStorage, IWebLogger logger,
+		AppSettings appSettings, IThumbnailService thumbnailService)
 	{
-		private readonly IStorage _iStorage;
-		private readonly IStorage _thumbnailStorage;
-		private readonly IWebLogger _logger;
-		private readonly AppSettings _appSettings;
+		_iStorage = iStorage;
+		_thumbnailStorage = thumbnailStorage;
+		_logger = logger;
+		_appSettings = appSettings;
+		_thumbnailService = thumbnailService;
+	}
 
-		public ToBase64DataUriList(IStorage iStorage, IStorage thumbnailStorage, IWebLogger logger,
-			AppSettings appSettings)
+	[SuppressMessage("Usage", "S3966: Resource 'memoryStream' has " +
+	                          "already been disposed explicitly or through a using statement implicitly. " +
+	                          "Remove the redundant disposal.")]
+	public async Task<string[]> Create(List<FileIndexItem> fileIndexList)
+	{
+		var base64ImageArray = new string[fileIndexList.Count];
+		for ( var i = 0; i < fileIndexList.Count; i++ )
 		{
-			_iStorage = iStorage;
-			_thumbnailStorage = thumbnailStorage;
-			_logger = logger;
-			_appSettings = appSettings;
-		}
+			var item = fileIndexList[i];
 
-		[SuppressMessage("Usage", "S3966: Resource 'memoryStream' has " +
-								  "already been disposed explicitly or through a using statement implicitly. " +
-								  "Remove the redundant disposal.")]
-		public async Task<string[]> Create(List<FileIndexItem> fileIndexList)
-		{
-			var base64ImageArray = new string[fileIndexList.Count];
-			for ( var i = 0; i < fileIndexList.Count; i++ )
+			var (stream, status) = await _thumbnailService.GenerateThumbnail(item.FilePath!,
+				item.FileHash!,
+				ThumbnailImageFormat.png,
+				ThumbnailSize.TinyIcon);
+
+			if ( !status.Success || stream == null )
 			{
-				var item = fileIndexList[i];
-
-				var service = new Thumbnail(_iStorage,
-					_thumbnailStorage, _logger, _appSettings);
-
-				var (memoryStream, status, _) = await service.ResizeThumbnailFromSourceImage(
-					item.FilePath!, 4, null, true,
-					ExtensionRolesHelper.ImageFormat.png);
-
-				if ( !status )
-				{
-					// blank 1px x 1px image
-					base64ImageArray[i] =
-						"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAA" +
-						"C1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
-					// no need to dispose here
-					continue;
-				}
-
+				// blank 1px x 1px image
 				base64ImageArray[i] =
-					"data:image/png;base64," + Base64Helper.ToBase64(memoryStream!);
-				await memoryStream!.DisposeAsync();
+					"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAA" +
+					"C1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+				// no need to dispose here
+				continue;
 			}
 
-			return base64ImageArray;
+			base64ImageArray[i] =
+				"data:image/png;base64," + Base64Helper.ToBase64(stream);
+			await stream.DisposeAsync();
 		}
+
+		return base64ImageArray;
 	}
 }

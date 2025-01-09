@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using SixLabors.ImageSharp;
-using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
@@ -10,7 +10,7 @@ using starsky.foundation.thumbnailgeneration.Models;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
 
-public class ResizeThumbnailFromSourceImageHelper(
+internal class ResizeThumbnailFromSourceImageHelper(
 	ISelectorStorage selectorStorage,
 	IWebLogger logger)
 {
@@ -20,11 +20,11 @@ public class ResizeThumbnailFromSourceImageHelper(
 	private readonly IStorage _thumbnailStorage =
 		selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 
-	public async Task<(MemoryStream?, GenerationResultModel)> ResizeThumbnailFromSourceImage(
+	internal async Task<(MemoryStream?, GenerationResultModel)> ResizeThumbnailFromSourceImage(
 		string subPath,
-		int width, string? thumbnailOutputHash = null,
-		bool removeExif = false,
-		ExtensionRolesHelper.ImageFormat imageFormat = ExtensionRolesHelper.ImageFormat.jpg)
+		int width, string? thumbnailOutputHash,
+		bool removeExif,
+		ThumbnailImageFormat imageFormat)
 	{
 		var outputStream = new MemoryStream();
 		var result = new GenerationResultModel

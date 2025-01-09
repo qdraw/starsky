@@ -165,7 +165,7 @@ public sealed class ExifTool : IExifTool
 			return newHashCode;
 		}
 
-		var service = new ThumbnailFileMoveAllSizes(_thumbnailStorage);
+		var service = new ThumbnailFileMoveAllSizes(_thumbnailStorage, _appSettings);
 		service.FileMove(beforeFileHash, newHashCode);
 
 		return newHashCode;

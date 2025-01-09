@@ -9,7 +9,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using starsky.foundation.database.Interfaces;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
@@ -22,15 +24,18 @@ namespace starsky.Controllers;
 public sealed class ThumbnailController : Controller
 {
 	private const string ModelError = "Model is invalid";
+	private readonly ThumbnailImageFormat _imageFormat;
 	private readonly IStorage _iStorage;
 	private readonly IQuery _query;
 	private readonly IStorage _thumbnailStorage;
 
-	public ThumbnailController(IQuery query, ISelectorStorage selectorStorage)
+	public ThumbnailController(IQuery query, ISelectorStorage selectorStorage,
+		AppSettings appSettings)
 	{
 		_query = query;
 		_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 		_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
+		_imageFormat = appSettings.ThumbnailImageFormat;
 	}
 
 	/// <summary>
@@ -67,35 +72,38 @@ public sealed class ThumbnailController : Controller
 			return BadRequest();
 		}
 
-		if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f, ThumbnailSize.Small)) )
+		if ( _thumbnailStorage.ExistFile(
+			    ThumbnailNameHelper.Combine(f, ThumbnailSize.Small, _imageFormat)) )
 		{
 			var stream =
 				_thumbnailStorage.ReadStream(
-					ThumbnailNameHelper.Combine(f, ThumbnailSize.Small));
+					ThumbnailNameHelper.Combine(f, ThumbnailSize.Small, _imageFormat));
 			Response.Headers.TryAdd(xImageSizeHeader,
 				new StringValues(ThumbnailSize.Small.ToString()));
 			return File(stream, imageJpegMimeType);
 		}
 
 		if ( _thumbnailStorage.ExistFile(
-			    ThumbnailNameHelper.Combine(f, ThumbnailSize.TinyMeta)) )
+			    ThumbnailNameHelper.Combine(f, ThumbnailSize.TinyMeta, _imageFormat)) )
 		{
 			var stream =
 				_thumbnailStorage.ReadStream(
-					ThumbnailNameHelper.Combine(f, ThumbnailSize.TinyMeta));
+					ThumbnailNameHelper.Combine(f, ThumbnailSize.TinyMeta, _imageFormat));
 			Response.Headers.TryAdd(xImageSizeHeader,
 				new StringValues(ThumbnailSize.TinyMeta.ToString()));
 			return File(stream, imageJpegMimeType);
 		}
 
-		if ( !_thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f, ThumbnailSize.Large)) )
+		if ( !_thumbnailStorage.ExistFile(
+			    ThumbnailNameHelper.Combine(f, ThumbnailSize.Large, _imageFormat)) )
 		{
 			SetExpiresResponseHeadersToZero();
 			return NotFound("hash not found");
 		}
 
 		var streamDefaultThumbnail =
-			_thumbnailStorage.ReadStream(ThumbnailNameHelper.Combine(f, ThumbnailSize.Large));
+			_thumbnailStorage.ReadStream(
+				ThumbnailNameHelper.Combine(f, ThumbnailSize.Large, _imageFormat));
 		Response.Headers.TryAdd(xImageSizeHeader,
 			new StringValues(ThumbnailSize.Large.ToString()));
 		return File(streamDefaultThumbnail, imageJpegMimeType);
@@ -140,16 +148,16 @@ public sealed class ThumbnailController : Controller
 		{
 			TinyMeta =
 				_thumbnailStorage.ExistFile(
-					ThumbnailNameHelper.Combine(f, ThumbnailSize.TinyMeta)),
+					ThumbnailNameHelper.Combine(f, ThumbnailSize.TinyMeta, _imageFormat)),
 			Small =
 				_thumbnailStorage.ExistFile(
-					ThumbnailNameHelper.Combine(f, ThumbnailSize.Small)),
+					ThumbnailNameHelper.Combine(f, ThumbnailSize.Small, _imageFormat)),
 			Large =
 				_thumbnailStorage.ExistFile(
-					ThumbnailNameHelper.Combine(f, ThumbnailSize.Large)),
+					ThumbnailNameHelper.Combine(f, ThumbnailSize.Large, _imageFormat)),
 			ExtraLarge =
 				_thumbnailStorage.ExistFile(
-					ThumbnailNameHelper.Combine(f, ThumbnailSize.ExtraLarge))
+					ThumbnailNameHelper.Combine(f, ThumbnailSize.ExtraLarge, _imageFormat))
 		};
 
 		// Success has all items (except tinyMeta)
@@ -178,7 +186,8 @@ public sealed class ThumbnailController : Controller
 	private IActionResult ReturnThumbnailResult(string f, bool json, ThumbnailSize size)
 	{
 		Response.Headers.Append("x-image-size", new StringValues(size.ToString()));
-		var stream = _thumbnailStorage.ReadStream(ThumbnailNameHelper.Combine(f, size), 50);
+		var stream =
+			_thumbnailStorage.ReadStream(ThumbnailNameHelper.Combine(f, size, _imageFormat), 50);
 		var imageFormat = ExtensionRolesHelper.GetImageFormat(stream);
 		if ( imageFormat == ExtensionRolesHelper.ImageFormat.unknown )
 		{
@@ -194,12 +203,12 @@ public sealed class ThumbnailController : Controller
 		}
 
 		stream = _thumbnailStorage.ReadStream(
-			ThumbnailNameHelper.Combine(f, size));
+			ThumbnailNameHelper.Combine(f, size, _imageFormat));
 
 		// thumbs are always in jpeg
 		Response.Headers.Append("x-filename",
-			new StringValues(FilenamesHelper.GetFileName(f + ".jpg")));
-		return File(stream, "image/jpeg");
+			new StringValues(FilenamesHelper.GetFileName($"{f}.{_imageFormat}")));
+		return File(stream, MimeHelper.GetMimeType(_imageFormat.ToString()));
 	}
 
 	/// <summary>
@@ -271,12 +280,13 @@ public sealed class ThumbnailController : Controller
 			altSize = ThumbnailSize.ExtraLarge;
 		}
 
-		if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f, preferredSize)) )
+		if ( _thumbnailStorage.ExistFile(
+			    ThumbnailNameHelper.Combine(f, preferredSize, _imageFormat)) )
 		{
 			return ReturnThumbnailResult(f, json, preferredSize);
 		}
 
-		if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f, altSize)) )
+		if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f, altSize, _imageFormat)) )
 		{
 			return ReturnThumbnailResult(f, json, altSize);
 		}

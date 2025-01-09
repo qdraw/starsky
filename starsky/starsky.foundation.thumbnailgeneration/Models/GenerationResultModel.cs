@@ -1,3 +1,4 @@
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Storage;
 
@@ -11,6 +12,8 @@ public class GenerationResultModel
 	public bool IsNotFound { get; set; }
 	public string? ErrorMessage { get; set; } = string.Empty;
 	public ThumbnailSize Size { get; set; } = ThumbnailSize.Unknown;
+
+	public ThumbnailImageFormat ImageFormat { get; set; } = ThumbnailImageFormat.unknown;
 
 	public int SizeInPixels
 	{

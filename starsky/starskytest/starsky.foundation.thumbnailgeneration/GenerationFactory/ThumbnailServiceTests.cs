@@ -1,0 +1,374 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Enums;
+using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Thumbnails;
+using starsky.foundation.storage.Helpers;
+using starsky.foundation.storage.Services;
+using starsky.foundation.storage.Storage;
+using starsky.foundation.thumbnailgeneration.GenerationFactory;
+using starsky.foundation.thumbnailgeneration.Interfaces;
+using starskytest.FakeCreateAn;
+using starskytest.FakeMocks;
+
+namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory;
+
+[TestClass]
+public sealed class ThumbnailServiceTests
+{
+	private readonly AppSettings _appSettings;
+	private readonly string _fakeIStorageImageSubPath;
+
+	private readonly IUpdateStatusGeneratedThumbnailService
+		_fakeIUpdateStatusGeneratedThumbnailService;
+
+	private readonly ThumbnailImageFormat _imageFormat;
+
+	private readonly FakeIStorage _iStorage;
+	private readonly FakeSelectorStorage _selectorStorage;
+
+	public ThumbnailServiceTests()
+	{
+		_fakeIStorageImageSubPath = "/test.jpg";
+
+		_iStorage = new FakeIStorage(new List<string> { "/" },
+			new List<string> { _fakeIStorageImageSubPath },
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+		_selectorStorage = new FakeSelectorStorage(_iStorage);
+		_appSettings = new AppSettings();
+		_fakeIUpdateStatusGeneratedThumbnailService =
+			new FakeIUpdateStatusGeneratedThumbnailService();
+		_imageFormat = new AppSettings().ThumbnailImageFormat;
+	}
+
+	[TestMethod]
+	public async Task CreateThumbTest_FileHash_FileHashNull()
+	{
+		// Arrange
+		var sut = new ThumbnailService(_selectorStorage, new FakeIWebLogger(),
+			_appSettings, _fakeIUpdateStatusGeneratedThumbnailService);
+
+		// Act & Assert
+		await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+		{
+			await sut.GenerateThumbnail("/notfound.jpg", null!);
+		});
+	}
+
+	[TestMethod]
+	public async Task CreateThumbTest_FileHash_ImageSubPathNotFound()
+	{
+		var sut = new ThumbnailService(_selectorStorage, new FakeIWebLogger(),
+			_appSettings, _fakeIUpdateStatusGeneratedThumbnailService);
+
+		var isCreated =
+			await sut.GenerateThumbnail(
+				"/notfound.jpg", _fakeIStorageImageSubPath);
+		Assert.IsFalse(isCreated.FirstOrDefault()!.Success);
+	}
+
+	[TestMethod]
+	public async Task CreateThumbTest_FileHash_WrongImageType()
+	{
+		var sut = new ThumbnailService(_selectorStorage, new FakeIWebLogger(),
+			_appSettings, _fakeIUpdateStatusGeneratedThumbnailService);
+
+		var isCreated = await sut.GenerateThumbnail(
+			"/notfound.dng", _fakeIStorageImageSubPath);
+
+		Assert.IsFalse(isCreated.FirstOrDefault()!.Success);
+	}
+
+	[TestMethod]
+	public async Task CreateThumbTest_FileHash_AlreadyFailBefore()
+	{
+		var storage = new FakeIStorage(["/"],
+			[_fakeIStorageImageSubPath],
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+
+		var sut = new ThumbnailService(new FakeSelectorStorage(storage), new FakeIWebLogger(),
+			_appSettings, _fakeIUpdateStatusGeneratedThumbnailService);
+
+		await sut.WriteErrorMessageToBlockLog(_fakeIStorageImageSubPath, "fail");
+
+		var isCreated = ( await sut.GenerateThumbnail(_fakeIStorageImageSubPath,
+			_fakeIStorageImageSubPath) ).ToList();
+
+		Assert.IsFalse(isCreated.FirstOrDefault()!.Success);
+		Assert.AreEqual("File already failed before", isCreated.FirstOrDefault()!.ErrorMessage);
+	}
+
+	[TestMethod]
+	public async Task CreateThumbTest_FileHash_SkipExtraLarge()
+	{
+		var storage = new FakeIStorage(new List<string> { "/" },
+			new List<string> { _fakeIStorageImageSubPath },
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+
+		const string fileHash = "test_hash";
+
+		// skip extra large
+		// var isCreated = await new Thumbnail(storage,
+		// 	storage, new FakeIWebLogger(), new AppSettings()).CreateThumbAsync(
+		// 	_fakeIStorageImageSubPath, fileHash, true);
+		// Assert.IsTrue(isCreated.FirstOrDefault()!.Success);
+
+		Assert.IsTrue(storage.ExistFile(fileHash));
+		Assert.IsTrue(storage.ExistFile(
+			ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.Small,
+				new AppSettings().ThumbnailImageFormat)));
+		Assert.IsFalse(storage.ExistFile(
+			ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.ExtraLarge,
+				new AppSettings().ThumbnailImageFormat)));
+	}
+
+	[TestMethod]
+	public async Task CreateThumbTest_FileHash_IncludeExtraLarge()
+	{
+		var storage = new FakeIStorage(new List<string> { "/" },
+			new List<string> { _fakeIStorageImageSubPath },
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+
+		const string fileHash = "test_hash";
+		// include extra large
+		// var isCreated = await new Thumbnail(storage,
+		// 	storage, new FakeIWebLogger(), new AppSettings()).CreateThumbAsync(
+		// 	_fakeIStorageImageSubPath, fileHash);
+		// Assert.IsTrue(isCreated.FirstOrDefault()!.Success);
+
+		Assert.IsTrue(storage.ExistFile(fileHash));
+		Assert.IsTrue(storage.ExistFile(
+			ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.Small, _imageFormat)));
+		Assert.IsTrue(storage.ExistFile(
+			ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.ExtraLarge, _imageFormat)));
+	}
+
+	[TestMethod]
+	public async Task CreateThumbTest_1arg_ThumbnailAlreadyExist()
+	{
+		var storage = new FakeIStorage(new List<string> { "/" },
+			new List<string> { _fakeIStorageImageSubPath },
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+
+		var hash = ( await new FileHash(storage).GetHashCodeAsync(_fakeIStorageImageSubPath) )
+			.Key;
+		await storage.WriteStreamAsync(
+			StringToStreamHelper.StringToStream("not 0 bytes"),
+			ThumbnailNameHelper.Combine(hash, ThumbnailSize.ExtraLarge, _imageFormat));
+		await storage.WriteStreamAsync(
+			StringToStreamHelper.StringToStream("not 0 bytes"),
+			ThumbnailNameHelper.Combine(hash, ThumbnailSize.Large, _imageFormat));
+		await storage.WriteStreamAsync(
+			StringToStreamHelper.StringToStream("not 0 bytes"),
+			ThumbnailNameHelper.Combine(hash, ThumbnailSize.Small, _imageFormat));
+
+		// var isCreated = await new Thumbnail(storage,
+		// 	storage, new FakeIWebLogger(), new AppSettings()).CreateThumbnailAsync(
+		// 	_fakeIStorageImageSubPath);
+		// Assert.IsTrue(isCreated[0].Success);
+	}
+
+	// [TestMethod]
+	// public async Task CreateThumbTest_1arg_Folder()
+	// {
+	// 	var storage = new FakeIStorage(new List<string> { "/" },
+	// 		new List<string> { _fakeIStorageImageSubPath },
+	// 		new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+	//
+	// 	var isCreated = await new Thumbnail(storage,
+	// 		storage, new FakeIWebLogger(), new AppSettings()).CreateThumbnailAsync("/");
+	// 	Assert.IsTrue(isCreated[0].Success);
+	// }
+	//
+	// [TestMethod]
+	// public async Task CreateThumbTest_NullFail()
+	// {
+	// 	var storage = new FakeIStorage(new List<string> { "/test" },
+	// 		new List<string> { "/test/test.jpg" },
+	// 		new List<byte[]?> { null });
+	//
+	// 	var isCreated = await new Thumbnail(storage,
+	// 			storage, new FakeIWebLogger(), new AppSettings())
+	// 		.CreateThumbnailAsync("/test/test.jpg");
+	//
+	// 	Assert.AreEqual(0, isCreated.Count);
+	// }
+	//
+	// [TestMethod]
+	// public async Task ResizeThumbnailToStream__HostDependency__JPEG_Test()
+	// {
+	// 	var newImage = new CreateAnImage();
+	// 	var iStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+	//
+	// 	// string subPath, int width, string outputHash = null,bool removeExif = false,ExtensionRolesHelper.ImageFormat
+	// 	// imageFormat = ExtensionRolesHelper.ImageFormat.jpg
+	// 	var thumb = await new Thumbnail(iStorage,
+	// 		iStorage, new FakeIWebLogger(), new AppSettings()).ResizeThumbnailFromSourceImage(
+	// 		newImage.FullFilePath, 1, null, true);
+	// 	Assert.IsTrue(thumb.Item1?.CanRead);
+	// }
+	//
+	// [TestMethod]
+	// public async Task ResizeThumbnailToStream__PNG_Test()
+	// {
+	// 	var thumb = await new Thumbnail(_iStorage,
+	// 		_iStorage, new FakeIWebLogger(), new AppSettings()).ResizeThumbnailFromSourceImage(
+	// 		_fakeIStorageImageSubPath, 1, null, true,
+	// 		ExtensionRolesHelper.ImageFormat.png);
+	// 	Assert.IsTrue(thumb.Item1?.CanRead);
+	// }
+	//
+	// [TestMethod]
+	// public async Task ResizeThumbnailToStream_CorruptImage_MemoryStream()
+	// {
+	// 	var storage = new FakeIStorage(
+	// 		new List<string> { "/" },
+	// 		new List<string> { "test" },
+	// 		new List<byte[]> { Array.Empty<byte>() });
+	//
+	// 	var result = ( await new Thumbnail(storage,
+	// 				storage,
+	// 				new FakeIWebLogger(), new AppSettings())
+	// 			.ResizeThumbnailFromSourceImage("test", 1) )
+	// 		.Item1;
+	// 	Assert.IsNull(result);
+	// }
+	//
+	// [TestMethod]
+	// public async Task ResizeThumbnailToStream_CorruptImage_Status()
+	// {
+	// 	var storage = new FakeIStorage(
+	// 		new List<string> { "/" },
+	// 		new List<string> { "test" },
+	// 		new List<byte[]> { Array.Empty<byte>() });
+	//
+	// 	var result = ( await new Thumbnail(storage,
+	// 				storage,
+	// 				new FakeIWebLogger(), new AppSettings())
+	// 			.ResizeThumbnailFromSourceImage("test", 1) )
+	// 		.Item2;
+	// 	Assert.IsFalse(result);
+	// }
+	//
+	// [TestMethod]
+	// public async Task ResizeThumbnailImageFormat_NullInput()
+	// {
+	// 	await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+	// 		await Thumbnail.SaveThumbnailImageFormat(null!,
+	// 			ExtensionRolesHelper.ImageFormat.bmp, null!));
+	// }
+	//
+	// [TestMethod]
+	// public void RemoveCorruptImage_RemoveCorruptImage()
+	// {
+	// 	var storage = new FakeIStorage(
+	// 		new List<string> { "/" },
+	// 		new List<string> { ThumbnailNameHelper.Combine("test", ThumbnailSize.ExtraLarge) },
+	// 		new List<byte[]> { Array.Empty<byte>() });
+	//
+	// 	var result = new Thumbnail(storage,
+	// 			storage, new FakeIWebLogger(), new AppSettings())
+	// 		.RemoveCorruptImage("test", ThumbnailSize.ExtraLarge);
+	// 	Assert.IsTrue(result);
+	// }
+	//
+	// [TestMethod]
+	// public void RemoveCorruptImage_ShouldIgnore()
+	// {
+	// 	var storage = new FakeIStorage(
+	// 		new List<string> { "/" },
+	// 		new List<string> { ThumbnailNameHelper.Combine("test", ThumbnailSize.ExtraLarge) },
+	// 		new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+	//
+	// 	var result = new Thumbnail(
+	// 			storage, storage,
+	// 			new FakeIWebLogger(), new AppSettings())
+	// 		.RemoveCorruptImage("test", ThumbnailSize.Large);
+	// 	Assert.IsFalse(result);
+	// }
+	//
+	// [TestMethod]
+	// public void RemoveCorruptImage_NotExist()
+	// {
+	// 	var storage = new FakeIStorage(
+	// 		new List<string> { "/" },
+	// 		new List<string>(),
+	// 		new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+	//
+	// 	var result = new Thumbnail(storage,
+	// 			storage, new FakeIWebLogger(), new AppSettings())
+	// 		.RemoveCorruptImage("test", ThumbnailSize.Large);
+	// 	Assert.IsFalse(result);
+	// }
+	//
+	// [TestMethod]
+	// public async Task RotateThumbnail_NotFound()
+	// {
+	// 	var result = await new Thumbnail(_iStorage,
+	// 			_iStorage, new FakeIWebLogger(), new AppSettings())
+	// 		.RotateThumbnail("not-found", 0, 3);
+	// 	Assert.IsFalse(result);
+	// }
+	//
+	// [TestMethod]
+	// public async Task RotateThumbnail_Rotate()
+	// {
+	// 	var storage = new FakeIStorage(
+	// 		new List<string> { "/" },
+	// 		new List<string> { "/test.jpg" },
+	// 		new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+	//
+	// 	var result = await new Thumbnail(storage,
+	// 			storage, new FakeIWebLogger(), new AppSettings())
+	// 		.RotateThumbnail("/test.jpg", -1, 3);
+	//
+	// 	Assert.IsTrue(result);
+	// }
+	//
+	// [TestMethod]
+	// public async Task RotateThumbnail_Corrupt()
+	// {
+	// 	var storage = new FakeIStorage(
+	// 		new List<string> { "/" },
+	// 		new List<string> { "test" },
+	// 		new List<byte[]> { Array.Empty<byte>() });
+	//
+	// 	var result = await new Thumbnail(storage,
+	// 		storage, new FakeIWebLogger(), new AppSettings()).RotateThumbnail("test", 1);
+	// 	Assert.IsFalse(result);
+	// }
+	//
+	// [TestMethod]
+	// public async Task ResizeThumbnailFromThumbnailImage_CorruptInput()
+	// {
+	// 	var storage = new FakeIStorage(
+	// 		new List<string> { "/" },
+	// 		new List<string> { "test" },
+	// 		new List<byte[]> { Array.Empty<byte>() });
+	//
+	// 	var result = await new Thumbnail(storage,
+	// 			storage, new FakeIWebLogger(), new AppSettings())
+	// 		.ResizeThumbnailFromThumbnailImage("test", 1);
+	// 	Assert.IsNull(result.Item1);
+	// 	Assert.IsFalse(result.Item2.Success);
+	// }
+	//
+	// [TestMethod]
+	// public async Task CreateLargestImageFromSource_CorruptInput()
+	// {
+	// 	var storage = new FakeIStorage(
+	// 		new List<string> { "/" },
+	// 		new List<string> { "test" },
+	// 		new List<byte[]> { Array.Empty<byte>() });
+	//
+	// 	var result = await new Thumbnail(storage,
+	// 			storage, new FakeIWebLogger(), new AppSettings())
+	// 		.CreateLargestImageFromSource("test", "test", "test", ThumbnailSize.Small);
+	//
+	// 	Assert.IsFalse(result.Success);
+	// 	Assert.AreEqual("Image cannot be loaded", result.ErrorMessage);
+	// }
+}

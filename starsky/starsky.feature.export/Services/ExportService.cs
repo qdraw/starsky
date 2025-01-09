@@ -199,7 +199,8 @@ public class ExportService : IExport
 			if ( thumbnail )
 			{
 				var sourceThumb = Path.Combine(_appSettings.ThumbnailTempFolder,
-					ThumbnailNameHelper.Combine(item.FileHash!, ThumbnailSize.Large, true));
+					ThumbnailNameHelper.Combine(item.FileHash!,
+						ThumbnailSize.Large, _appSettings.ThumbnailImageFormat));
 
 				await _thumbnailService
 					.GenerateThumbnail(item.FilePath!, item.FileHash!, true);

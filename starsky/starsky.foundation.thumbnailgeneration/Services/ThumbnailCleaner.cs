@@ -8,6 +8,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
@@ -18,18 +19,20 @@ namespace starsky.foundation.thumbnailgeneration.Services;
 [Service(typeof(IThumbnailCleaner), InjectionLifetime = InjectionLifetime.Scoped)]
 public sealed class ThumbnailCleaner : IThumbnailCleaner
 {
+	private readonly AppSettings _appSettings;
 	private readonly IWebLogger _logger;
 	private readonly IQuery _query;
 	private readonly IThumbnailQuery _thumbnailQuery;
 	private readonly IStorage _thumbnailStorage;
 
 	public ThumbnailCleaner(IStorage thumbnailStorage, IQuery iQuery, IWebLogger logger,
-		IThumbnailQuery thumbnailQuery)
+		IThumbnailQuery thumbnailQuery, AppSettings appSettings)
 	{
 		_thumbnailStorage = thumbnailStorage;
 		_query = iQuery;
 		_logger = logger;
 		_thumbnailQuery = thumbnailQuery;
+		_appSettings = appSettings;
 	}
 
 	public async Task<List<string>> CleanAllUnusedFilesAsync(int chunkSize = 50)
@@ -82,13 +85,13 @@ public sealed class ThumbnailCleaner : IThumbnailCleaner
 			var fileHashesToDelete = new List<string>
 			{
 				ThumbnailNameHelper.Combine(resultFileHash,
-					ThumbnailSize.TinyMeta),
+					ThumbnailSize.TinyMeta, _appSettings.ThumbnailImageFormat),
 				ThumbnailNameHelper.Combine(resultFileHash,
-					ThumbnailSize.ExtraLarge),
+					ThumbnailSize.ExtraLarge, _appSettings.ThumbnailImageFormat),
 				ThumbnailNameHelper.Combine(resultFileHash,
-					ThumbnailSize.TinyMeta),
+					ThumbnailSize.TinyMeta, _appSettings.ThumbnailImageFormat),
 				ThumbnailNameHelper.Combine(resultFileHash,
-					ThumbnailSize.Large)
+					ThumbnailSize.Large, _appSettings.ThumbnailImageFormat)
 			};
 
 			foreach ( var fileHash in fileHashesToDelete )

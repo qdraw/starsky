@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using starsky.foundation.platform.Enums;
+using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
@@ -40,6 +43,13 @@ public class FakeIThumbnailService : IThumbnailService
 		string fileHash, bool skipExtraLarge = false)
 	{
 		return ( await CreateThumbAsync(subPath, fileHash) ).ToList();
+	}
+
+	public Task<(Stream?, GenerationResultModel)> GenerateThumbnail(string subPath, string fileHash,
+		ThumbnailImageFormat imageFormat,
+		ThumbnailSize size)
+	{
+		throw new NotImplementedException();
 	}
 
 	public Task<bool> RotateThumbnail(string fileHash, int orientation, int width = 1000,
