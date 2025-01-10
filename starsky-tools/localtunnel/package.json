@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@security-patched/localtunnel": "^2.0.2-secpatched.3",
+    "@security-patched/localtunnel": "^2.0.2-secpatched.4",
     "cookie-parser": "^1.4.7",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
