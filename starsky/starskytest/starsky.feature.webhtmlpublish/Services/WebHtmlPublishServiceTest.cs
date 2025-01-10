@@ -8,6 +8,7 @@ using starsky.feature.webhtmlpublish.Services;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
+using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory;
@@ -23,7 +24,7 @@ public sealed class WebHtmlPublishServiceTest
 	{
 		return new ThumbnailService(new FakeSelectorStorage(storage),
 			new FakeIWebLogger(), new AppSettings(),
-			new FakeIUpdateStatusGeneratedThumbnailService());
+			new FakeIUpdateStatusGeneratedThumbnailService(), new FakeIVideoProcess());
 	}
 
 	[TestMethod]
@@ -327,7 +328,10 @@ public sealed class WebHtmlPublishServiceTest
 			Verbose = true
 		};
 		var storage = new FakeIStorage(["/"],
-			new List<string> { "fileHash" },
+			[
+				ThumbnailNameHelper.Combine("fileHash", ThumbnailSize.Large,
+					new AppSettings().ThumbnailImageFormat)
+			],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var selectorStorage = new FakeSelectorStorage(storage);

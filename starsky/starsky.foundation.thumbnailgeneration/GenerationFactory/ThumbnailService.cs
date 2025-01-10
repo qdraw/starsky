@@ -19,6 +19,7 @@ using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Testers;
 using starsky.foundation.thumbnailgeneration.Interfaces;
 using starsky.foundation.thumbnailgeneration.Models;
+using starsky.foundation.video.Process.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
 
@@ -29,7 +30,8 @@ public class ThumbnailService(
 	ISelectorStorage selectorStorage,
 	IWebLogger logger,
 	AppSettings appSettings,
-	IUpdateStatusGeneratedThumbnailService updateStatusGeneratedThumbnailService)
+	IUpdateStatusGeneratedThumbnailService updateStatusGeneratedThumbnailService,
+	IVideoProcess videoProcess)
 	: IThumbnailService
 {
 	private readonly Func<string?, bool> _delegateToCheckIfExtensionIsSupported = e =>
@@ -40,7 +42,6 @@ public class ThumbnailService(
 
 	private readonly IStorage
 		_storage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-
 
 	/// <summary>
 	///     Can be used for directories or single files
@@ -54,11 +55,12 @@ public class ThumbnailService(
 		var (success, toAddFilePaths) = _folderToFileList.AddFiles(fileOrFolderPath,
 			_delegateToCheckIfExtensionIsSupported);
 
-		var sizes = ThumbnailSizes.GetSizes(skipExtraLarge);
+		var sizes = ThumbnailSizes.GetLargeToSmallSizes(skipExtraLarge);
 		if ( !success )
 		{
 			return ErrorGenerationResultModel
-				.FailedResult(sizes, fileOrFolderPath, string.Empty, false, "File is deleted");
+				.FailedResult(sizes, fileOrFolderPath, string.Empty,
+					false, "File is deleted");
 		}
 
 		var resultChunkList = await toAddFilePaths.ForEachAsync(
@@ -66,7 +68,6 @@ public class ThumbnailService(
 			appSettings.MaxDegreesOfParallelismThumbnail);
 
 		var generationResults = new List<GenerationResultModel>();
-
 		foreach ( var resultChunk in resultChunkList! )
 		{
 			generationResults.AddRange(resultChunk);
@@ -92,7 +93,7 @@ public class ThumbnailService(
 		var (success, toAddFilePaths) =
 			_folderToFileList.AddFiles(subPath, _delegateToCheckIfExtensionIsSupported);
 
-		var sizes = ThumbnailSizes.GetSizes(skipExtraLarge);
+		var sizes = ThumbnailSizes.GetLargeToSmallSizes(skipExtraLarge);
 		if ( !success || toAddFilePaths.Count != 1 )
 		{
 			return ErrorGenerationResultModel
@@ -139,11 +140,10 @@ public class ThumbnailService(
 			width, height);
 	}
 
-
 	private async Task<IEnumerable<GenerationResultModel>> GenerateThumbnailAsync(
 		string singleSubPath, string? fileHash, List<ThumbnailSize> sizes)
 	{
-		var factory = new ThumbnailGeneratorFactory(selectorStorage, logger, appSettings);
+		var factory = new ThumbnailGeneratorFactory(selectorStorage, logger, videoProcess);
 		var generator = factory.GetGenerator(singleSubPath);
 		if ( !string.IsNullOrEmpty(fileHash) )
 		{
@@ -164,7 +164,7 @@ public class ThumbnailService(
 	private async Task<(Stream?, GenerationResultModel)> GenerateSingleThumbnailAsync(
 		string singleSubPath, ThumbnailImageFormat imageFormat, ThumbnailSize size)
 	{
-		var factory = new ThumbnailGeneratorFactory(selectorStorage, logger, appSettings);
+		var factory = new ThumbnailGeneratorFactory(selectorStorage, logger, videoProcess);
 		var generator = factory.GetGenerator(singleSubPath);
 
 		var (fileHash, success) = await new FileHash(_storage).GetHashCodeAsync(singleSubPath);

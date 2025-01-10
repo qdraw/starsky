@@ -2,7 +2,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
@@ -13,7 +12,7 @@ namespace starskytest.starsky.foundation.storage.Storage;
 [TestClass]
 public sealed class StorageThumbnailFilesystemTest
 {
-	private readonly string _fileNameWithoutExtension;
+	private readonly string _fileName;
 	private readonly StorageThumbnailFilesystem _thumbnailStorage;
 
 	public StorageThumbnailFilesystemTest()
@@ -21,8 +20,7 @@ public sealed class StorageThumbnailFilesystemTest
 		var createNewImage = new CreateAnImage();
 		var appSettings = new AppSettings { ThumbnailTempFolder = createNewImage.BasePath };
 		_thumbnailStorage = new StorageThumbnailFilesystem(appSettings, new FakeIWebLogger());
-		_fileNameWithoutExtension =
-			FilenamesHelper.GetFileNameWithoutExtension(createNewImage.FileName);
+		_fileName = createNewImage.FileName;
 	}
 
 	[TestMethod]
@@ -35,7 +33,7 @@ public sealed class StorageThumbnailFilesystemTest
 	[TestMethod]
 	public void CombinePathShouldEndWithTestJpg2()
 	{
-		var result = _thumbnailStorage.CombinePath("test");
+		var result = _thumbnailStorage.CombinePath("test.jpg");
 		Assert.IsTrue(result.EndsWith("test.jpg"));
 	}
 
@@ -45,10 +43,10 @@ public sealed class StorageThumbnailFilesystemTest
 		var createNewImage = new CreateAnImage();
 
 		// first copy for parallel test
-		_thumbnailStorage.FileCopy(_fileNameWithoutExtension, "start_move_file");
+		_thumbnailStorage.FileCopy(_fileName, "start_move_file");
 
 		_thumbnailStorage.FileMove("start_move_file",
-			"StorageThumbnailFilesystemTest_FileMove");
+			"StorageThumbnailFilesystemTest_FileMove.jpg");
 
 		var path = Path.Combine(createNewImage.BasePath, "start_move_file" + ".jpg");
 		Assert.IsFalse(File.Exists(path));
@@ -69,16 +67,16 @@ public sealed class StorageThumbnailFilesystemTest
 	{
 		var createNewImage = new CreateAnImage();
 
-		_thumbnailStorage.FileCopy(_fileNameWithoutExtension,
-			"StorageThumbnailFilesystemTest_FileCopy");
+		_thumbnailStorage.FileCopy(_fileName,
+			"StorageThumbnailFilesystemTest_FileCopy.jpg");
 
-		var path = Path.Combine(createNewImage.BasePath, _fileNameWithoutExtension + ".jpg");
+		var path = Path.Combine(createNewImage.BasePath, _fileName);
 		Assert.IsTrue(File.Exists(path));
 		var path2 = Path.Combine(createNewImage.BasePath,
 			"StorageThumbnailFilesystemTest_FileCopy.jpg");
 		Assert.IsTrue(File.Exists(path2));
 
-		File.Delete(_fileNameWithoutExtension);
+		File.Delete(_fileName);
 		File.Delete(Path.Combine(createNewImage.BasePath,
 			"StorageThumbnailFilesystemTest_FileCopy.jpg"));
 
@@ -91,7 +89,7 @@ public sealed class StorageThumbnailFilesystemTest
 	{
 		var createNewImage = new CreateAnImage();
 
-		_thumbnailStorage.FileCopy("not_found", "StorageThumbnailFilesystemTest_FileCopy2");
+		_thumbnailStorage.FileCopy("not_found", "StorageThumbnailFilesystemTest_FileCopy2.jpg");
 
 		var path2 = Path.Combine(createNewImage.BasePath,
 			"StorageThumbnailFilesystemTest_FileCopy2.jpg");
@@ -110,7 +108,7 @@ public sealed class StorageThumbnailFilesystemTest
 		var createAnImage = new CreateAnImage();
 		Assert.IsNotNull(createAnImage);
 
-		var stream = _thumbnailStorage.ReadStream(_fileNameWithoutExtension);
+		var stream = _thumbnailStorage.ReadStream(_fileName);
 		Assert.AreEqual(CreateAnImage.Bytes.Length, stream.Length);
 
 		stream.Dispose();
@@ -122,7 +120,7 @@ public sealed class StorageThumbnailFilesystemTest
 		var createAnImage = new CreateAnImage();
 		Assert.IsNotNull(createAnImage);
 
-		var stream = _thumbnailStorage.ReadStream(_fileNameWithoutExtension, 100);
+		var stream = _thumbnailStorage.ReadStream(_fileName, 100);
 		Assert.AreEqual(100, stream.Length);
 
 		stream.Dispose();
@@ -170,7 +168,7 @@ public sealed class StorageThumbnailFilesystemTest
 
 		const string thumbnailId = "IsFileReady_thumbnailStorage";
 		// first copy for parallel test
-		_thumbnailStorage.FileCopy(_fileNameWithoutExtension, thumbnailId);
+		_thumbnailStorage.FileCopy(_fileName, thumbnailId);
 
 		var stream = _thumbnailStorage.ReadStream(thumbnailId);
 
@@ -184,7 +182,7 @@ public sealed class StorageThumbnailFilesystemTest
 		Assert.IsTrue(result2);
 
 		File.Delete(Path.Combine(createNewImage.BasePath,
-			$"{thumbnailId}.jpg"));
+			$"{thumbnailId}"));
 
 		Assert.IsFalse(_thumbnailStorage.ExistFile(thumbnailId));
 	}

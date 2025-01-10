@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using starsky.foundation.platform.Enums;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Thumbnails;
 
 namespace starsky.foundation.storage.Storage;
@@ -129,8 +130,9 @@ public static partial class ThumbnailNameHelper
 	{
 		return thumbnailOutputHash == null
 			? string.Empty
-			: Regex.Replace(thumbnailOutputHash, "@\\d+",
-				string.Empty, RegexOptions.None, TimeSpan.FromMilliseconds(100));
+			: FilenamesHelper.GetFileNameWithoutExtension(Regex.Replace(thumbnailOutputHash,
+				"@\\d+",
+				string.Empty, RegexOptions.None, TimeSpan.FromMilliseconds(100)));
 	}
 
 	/// <summary>

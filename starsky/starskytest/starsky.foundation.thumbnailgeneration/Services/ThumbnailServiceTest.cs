@@ -16,7 +16,7 @@ public sealed class ThumbnailServiceTest
 	{
 		var sut = new ThumbnailService(new FakeSelectorStorage(),
 			new FakeIWebLogger(), new AppSettings(),
-			new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery()));
+			new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery()), new FakeIVideoProcess());
 		var resultModels = await sut.GenerateThumbnail("/not-found");
 
 		Assert.IsFalse(resultModels.FirstOrDefault()!.Success);
@@ -27,7 +27,7 @@ public sealed class ThumbnailServiceTest
 	{
 		var sut = new ThumbnailService(new FakeSelectorStorage(),
 			new FakeIWebLogger(), new AppSettings(),
-			new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery()));
+			new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery()), new FakeIVideoProcess());
 		var result = await sut.GenerateThumbnail("/not-found", "non-existing-hash");
 		Assert.IsFalse(result.FirstOrDefault()!.Success);
 	}

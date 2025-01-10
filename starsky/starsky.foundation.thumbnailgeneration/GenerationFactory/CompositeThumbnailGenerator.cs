@@ -17,17 +17,19 @@ public class CompositeThumbnailGenerator(List<IThumbnailGenerator> generators, I
 		string fileHash, ThumbnailImageFormat imageFormat,
 		List<ThumbnailSize> thumbnailSizes)
 	{
+		var compositeResults = new List<GenerationResultModel>();
 		foreach ( var generator in generators )
 		{
 			try
 			{
-				var results =
-					( await generator.GenerateThumbnail(singleSubPath, fileHash, imageFormat,
-						thumbnailSizes) )
-					.ToList();
-				if ( results.All(p => p.Success) )
+				var result = (
+					await generator.GenerateThumbnail(singleSubPath, fileHash,
+						imageFormat,
+						thumbnailSizes) ).ToList();
+				compositeResults.AddOrUpdateRange(result);
+				if ( result.All(p => p.Success) )
 				{
-					return results;
+					return compositeResults;
 				}
 			}
 			catch ( Exception ex )
@@ -36,7 +38,12 @@ public class CompositeThumbnailGenerator(List<IThumbnailGenerator> generators, I
 			}
 		}
 
-		return ErrorGenerationResultModel.FailedResult(thumbnailSizes, singleSubPath,
-			string.Empty, true, "CompositeThumbnailGenerator failed");
+		if ( compositeResults.Count == 0 )
+		{
+			return ErrorGenerationResultModel.FailedResult(thumbnailSizes, singleSubPath,
+				string.Empty, true, "CompositeThumbnailGenerator failed");
+		}
+
+		return compositeResults;
 	}
 }

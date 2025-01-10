@@ -22,7 +22,7 @@ public sealed class ToBase64DataUriListTest
 			new List<string> { "/test.jpg" }, new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 		var thumbnailService = new ThumbnailService(new FakeSelectorStorage(fakeStorage),
 			new FakeIWebLogger(), new AppSettings(),
-			new FakeIUpdateStatusGeneratedThumbnailService());
+			new FakeIUpdateStatusGeneratedThumbnailService(), new FakeIVideoProcess());
 		var result = await new ToBase64DataUriList(fakeStorage,
 				fakeStorage, new FakeIWebLogger(), new AppSettings(), thumbnailService)
 			.Create(
@@ -38,7 +38,7 @@ public sealed class ToBase64DataUriListTest
 			new List<byte[]> { new CreateAnImageCorrupt().Bytes.ToArray() });
 		var thumbnailService = new ThumbnailService(new FakeSelectorStorage(fakeStorage),
 			new FakeIWebLogger(), new AppSettings(),
-			new FakeIUpdateStatusGeneratedThumbnailService());
+			new FakeIUpdateStatusGeneratedThumbnailService(), new FakeIVideoProcess());
 		var result = await new ToBase64DataUriList(fakeStorage,
 				fakeStorage, new FakeIWebLogger(), new AppSettings(), thumbnailService)
 			.Create(

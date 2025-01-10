@@ -1,12 +1,17 @@
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using SixLabors.ImageSharp;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Shared;
 using starsky.foundation.thumbnailgeneration.Models;
+
+[assembly:
+	InternalsVisibleTo(nameof(starsky.foundation.thumbnailgeneration.GenerationFactory.Generators))]
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
 
@@ -33,7 +38,9 @@ internal class ResizeThumbnailFromSourceImageHelper(
 			IsNotFound = false,
 			SizeInPixels = width,
 			Success = true,
-			SubPath = subPath
+			SubPath = subPath,
+			ImageFormat = imageFormat,
+			Size = ThumbnailNameHelper.GetSize(width)
 		};
 
 		try
@@ -54,8 +61,13 @@ internal class ResizeThumbnailFromSourceImageHelper(
 				}
 
 				// only when a hash exists
-				await _thumbnailStorage.WriteStreamAsync(outputStream, thumbnailOutputHash);
+				var fileHashWithExtension = ThumbnailNameHelper.Combine(thumbnailOutputHash,
+					result.Size, imageFormat);
+
+				await _thumbnailStorage.WriteStreamAsync(outputStream, fileHashWithExtension);
 				// Disposed in WriteStreamAsync
+
+				new RemoveCorruptThumbnail(_thumbnailStorage).RemoveAndThrow(fileHashWithExtension);
 			}
 		}
 		catch ( Exception ex )

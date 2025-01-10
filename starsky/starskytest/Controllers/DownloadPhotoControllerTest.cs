@@ -153,7 +153,7 @@ public sealed class DownloadPhotoControllerTest
 		var fileIndexItem = await InsertSearchData();
 		var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
 		var thumbnailService = new ThumbnailService(selectorStorage, new FakeIWebLogger(),
-			new AppSettings(), new FakeIUpdateStatusGeneratedThumbnailService());
+			new AppSettings(), new FakeIUpdateStatusGeneratedThumbnailService(), new FakeIVideoProcess());
 
 		// Act
 		var controller = new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger(),
@@ -172,7 +172,7 @@ public sealed class DownloadPhotoControllerTest
 		// Arrange
 		var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
 		var thumbnailService = new ThumbnailService(selectorStorage, new FakeIWebLogger(),
-			new AppSettings(), new FakeIUpdateStatusGeneratedThumbnailService());
+			new AppSettings(), new FakeIUpdateStatusGeneratedThumbnailService(), new FakeIVideoProcess());
 
 		// Act
 		var controller =
@@ -277,7 +277,7 @@ public sealed class DownloadPhotoControllerTest
 		var fileIndexItem = await InsertSearchData();
 		var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
 		var thumbnailService = new ThumbnailService(selectorStorage, new FakeIWebLogger(),
-			new AppSettings(), new FakeIUpdateStatusGeneratedThumbnailService());
+			new AppSettings(), new FakeIUpdateStatusGeneratedThumbnailService(), new FakeIVideoProcess());
 
 		// Act
 		var controller = new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger(),

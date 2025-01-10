@@ -5,7 +5,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 
-namespace starsky.foundation.thumbnailgeneration.GenerationFactory;
+namespace starsky.foundation.thumbnailgeneration.GenerationFactory.Testers;
 
 public class FolderToFileList(ISelectorStorage selectorStorage)
 {

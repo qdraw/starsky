@@ -81,6 +81,17 @@ public sealed class ThumbnailNameHelperTest
 	}
 
 	[TestMethod]
+	[DataRow("01234567890123456789123456@859693845", "01234567890123456789123456")]
+	[DataRow("01234567890123456789123456@859693845.webp", "01234567890123456789123456")]
+	[DataRow("T4CE5GNTHWFQ5AOXD7OYDMJERA@2000.jpg", "T4CE5GNTHWFQ5AOXD7OYDMJERA")]
+	[DataRow("T4CE5GNTHWFQ5AOXD7OYDMJERA@2000", "T4CE5GNTHWFQ5AOXD7OYDMJERA")]
+	public void RemoveSuffix(string input, string output)
+	{
+		var result2 = ThumbnailNameHelper.RemoveSuffix(input);
+		Assert.AreEqual(output, result2);
+	}
+
+	[TestMethod]
 	public void GetSize_Name_Large_NonValidLength()
 	{
 		var input = ThumbnailNameHelper.Combine("non_valid_length", ThumbnailSize.Large,

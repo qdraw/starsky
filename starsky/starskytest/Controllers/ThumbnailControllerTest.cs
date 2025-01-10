@@ -144,7 +144,7 @@ public sealed class ThumbnailControllerTest
 		// Create thumbnail in fake storage
 		var service = new ThumbnailService(new FakeSelectorStorage(storage),
 			new FakeIWebLogger(), new AppSettings(),
-			new FakeIUpdateStatusGeneratedThumbnailService());
+			new FakeIUpdateStatusGeneratedThumbnailService(), new FakeIVideoProcess());
 		await service.GenerateThumbnail(createAnImage.FilePath!, createAnImage.FileHash!);
 
 		// Check if exist
@@ -184,7 +184,7 @@ public sealed class ThumbnailControllerTest
 		// Create thumbnail in fake storage
 		var thumbnailService = new ThumbnailService(new FakeSelectorStorage(storage),
 			new FakeIWebLogger(), new AppSettings(),
-			new FakeIUpdateStatusGeneratedThumbnailService());
+			new FakeIUpdateStatusGeneratedThumbnailService(), new FakeIVideoProcess());
 
 		await thumbnailService.GenerateThumbnail(createAnImage.FilePath!, createAnImage.FileHash!);
 

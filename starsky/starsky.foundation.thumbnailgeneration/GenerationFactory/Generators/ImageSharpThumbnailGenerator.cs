@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Enums;
-using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
@@ -20,48 +19,36 @@ public class ImageSharpThumbnailGenerator(
 	IWebLogger logger)
 	: IThumbnailGenerator
 {
-	private readonly IStorage
-		_storage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-
-	private readonly IStorage
-		_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
+	private readonly ResizeThumbnailFromThumbnailImageHelper _resizeThumbnail =
+		new(selectorStorage, logger);
 
 	public async Task<IEnumerable<GenerationResultModel>> GenerateThumbnail(string singleSubPath,
 		string fileHash,
 		ThumbnailImageFormat imageFormat,
 		List<ThumbnailSize> thumbnailSizes)
 	{
-		var preflightResult = new Preflight(_storage).Test(thumbnailSizes, singleSubPath, fileHash);
-		if ( preflightResult != null )
+		var preflightResult =
+			new PreflightThumbnailGeneration(selectorStorage).Preflight(thumbnailSizes,
+				singleSubPath, fileHash,
+				imageFormat);
+		thumbnailSizes = PreflightThumbnailGeneration.MapThumbnailSizes(preflightResult);
+		if ( preflightResult.Any(p => !p.ToGenerate) || thumbnailSizes.Count == 0 )
 		{
 			return preflightResult;
 		}
 
+		var toGenerateSize = thumbnailSizes[0];
 		var (_, largeImageResult) =
-			await ResizeThumbnailFromSourceImage(thumbnailSizes[0], singleSubPath, fileHash,
+			await ResizeThumbnailFromSourceImage(toGenerateSize, singleSubPath, fileHash,
 				imageFormat);
 
-		var results = await thumbnailSizes.Skip(1).ForEachAsync(
-			async size
-				=> await ResizeThumbnailFromThumbnailImage(
-					fileHash, // source location
-					ThumbnailNameHelper.GetSize(size),
-					singleSubPath, // used for reference only
-					ThumbnailNameHelper.Combine(fileHash, size, imageFormat), imageFormat),
-			thumbnailSizes.Count);
+		var results = await _resizeThumbnail.ResizeThumbnailFromThumbnailImageLoop(singleSubPath,
+			fileHash, imageFormat, thumbnailSizes, toGenerateSize);
 
-		return results!.Select(p => p.Item2).Append(largeImageResult);
+		return preflightResult.AddOrUpdateRange(results?.Select(p => p.Item2))
+			.AddOrUpdateRange([largeImageResult]);
 	}
 
-	private async Task<(Stream?, GenerationResultModel)> ResizeThumbnailFromThumbnailImage(
-		string fileHash, // source location
-		int width, string? subPathReference, string? thumbnailOutputHash,
-		ThumbnailImageFormat imageFormat)
-	{
-		var service = new ResizeThumbnailFromThumbnailImageHelper(selectorStorage, logger);
-		return await service.ResizeThumbnailFromThumbnailImage(fileHash, width, subPathReference,
-			thumbnailOutputHash, false, imageFormat);
-	}
 
 	private async Task<(MemoryStream?, GenerationResultModel)> ResizeThumbnailFromSourceImage(
 		ThumbnailSize biggestThumbnailSize, string singleSubPath, string fileHash,

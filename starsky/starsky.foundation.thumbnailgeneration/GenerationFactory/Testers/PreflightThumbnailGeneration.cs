@@ -1,16 +1,30 @@
 using System.Collections.Generic;
 using System.Linq;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Models;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.Testers;
 
-public class Preflight(IStorage storage)
+public class PreflightThumbnailGeneration(ISelectorStorage selectorStorage)
 {
-	public List<GenerationResultModel>? Test(List<ThumbnailSize> thumbnailSizes, string subPath,
-		string fileHash)
+	private readonly IStorage
+		_storage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+
+	private readonly IStorage
+		_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
+
+	public static List<ThumbnailSize> MapThumbnailSizes(
+		List<GenerationResultModel> generationResults)
+	{
+		return generationResults.Where(p => p.ToGenerate).Select(p => p.Size).ToList();
+	}
+
+	public List<GenerationResultModel> Preflight(List<ThumbnailSize> thumbnailSizes, string subPath,
+		string fileHash, ThumbnailImageFormat imageFormat)
 	{
 		if ( thumbnailSizes.Count < ThumbnailSizes.GetSizes(true).Count )
 		{
@@ -22,7 +36,7 @@ public class Preflight(IStorage storage)
 
 		var extensionSupported =
 			ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(subPath);
-		var existsFile = storage.ExistFile(subPath);
+		var existsFile = _storage.ExistFile(subPath);
 		if ( !extensionSupported || !existsFile )
 		{
 			return thumbnailSizes.Select(size =>
@@ -33,12 +47,13 @@ public class Preflight(IStorage storage)
 					Success = false,
 					IsNotFound = !existsFile,
 					ErrorMessage = !extensionSupported ? "not supported" : "File is not found",
-					Size = size
+					Size = size,
+					ImageFormat = imageFormat
 				}).ToList();
 		}
 
 		// File is already tested
-		if ( storage.ExistFile(ErrorLogItemFullPath.GetErrorLogItemFullPath(subPath)) )
+		if ( _storage.ExistFile(ErrorLogItemFullPath.GetErrorLogItemFullPath(subPath)) )
 		{
 			return thumbnailSizes.Select(size =>
 				new GenerationResultModel
@@ -48,10 +63,16 @@ public class Preflight(IStorage storage)
 					Success = false,
 					IsNotFound = false,
 					ErrorMessage = "File already failed before",
-					Size = size
+					Size = size,
+					ImageFormat = imageFormat
 				}).ToList();
 		}
 
-		return null;
+		// check if sizes are already generated
+		var existsGenerationResults =
+			new ThumbnailExistsBySize(_thumbnailStorage).CheckIfExists(fileHash, subPath,
+				thumbnailSizes, imageFormat);
+
+		return existsGenerationResults;
 	}
 }
