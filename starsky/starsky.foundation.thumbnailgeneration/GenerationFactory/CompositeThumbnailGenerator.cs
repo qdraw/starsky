@@ -34,7 +34,8 @@ public class CompositeThumbnailGenerator(List<IThumbnailGenerator> generators, I
 			}
 			catch ( Exception ex )
 			{
-				logger.LogError($"Generator {generator.GetType().Name} failed: {ex.Message}");
+				logger.LogError($"[CompositeThumbnailGenerator] Generator " +
+				                $"{generator.GetType().Name} failed: {ex.Message} {ex.StackTrace}");
 			}
 		}
 

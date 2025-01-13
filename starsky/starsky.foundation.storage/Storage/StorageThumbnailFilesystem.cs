@@ -185,7 +185,7 @@ public sealed class StorageThumbnailFilesystem : IStorage
 
 	public StorageInfo Info(string path)
 	{
-		throw new NotImplementedException();
+		return new StorageHostFullPathFilesystem(_logger).Info(CombinePath(path));
 	}
 
 	internal string CombinePath(string fileHash)

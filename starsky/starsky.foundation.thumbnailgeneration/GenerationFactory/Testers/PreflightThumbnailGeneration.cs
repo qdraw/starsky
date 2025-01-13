@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using starsky.foundation.platform.Enums;
-using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
@@ -11,6 +10,8 @@ namespace starsky.foundation.thumbnailgeneration.GenerationFactory.Testers;
 
 public class PreflightThumbnailGeneration(ISelectorStorage selectorStorage)
 {
+	public delegate bool IsExtensionSupportedDelegate(string? filename);
+
 	private readonly IStorage
 		_storage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 
@@ -23,7 +24,9 @@ public class PreflightThumbnailGeneration(ISelectorStorage selectorStorage)
 		return generationResults.Where(p => p.ToGenerate).Select(p => p.Size).ToList();
 	}
 
-	public List<GenerationResultModel> Preflight(List<ThumbnailSize> thumbnailSizes, string subPath,
+	public List<GenerationResultModel> Preflight(
+		IsExtensionSupportedDelegate isExtensionSupportedDelegate,
+		List<ThumbnailSize> thumbnailSizes, string subPath,
 		string fileHash, ThumbnailImageFormat imageFormat)
 	{
 		if ( thumbnailSizes.Count < ThumbnailSizes.GetSizes(true).Count )
@@ -34,8 +37,8 @@ public class PreflightThumbnailGeneration(ISelectorStorage selectorStorage)
 				$"thumbnailSizes.Count <= {ThumbnailSizes.GetSizes(true).Count}");
 		}
 
-		var extensionSupported =
-			ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(subPath);
+		// eg. ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported
+		var extensionSupported = isExtensionSupportedDelegate(subPath);
 		var existsFile = _storage.ExistFile(subPath);
 		if ( !extensionSupported || !existsFile )
 		{

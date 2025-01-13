@@ -14,21 +14,31 @@ namespace starsky.foundation.thumbnailgeneration.GenerationFactory.Shared;
 
 public class SharedGenerate(ISelectorStorage selectorStorage, IWebLogger logger)
 {
-	private readonly ResizeThumbnailFromThumbnailImageHelper _resizeThumbnail =
-		new(selectorStorage, logger);
-	
+	/// <summary>
+	///     eg. ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported,
+	///     ExtensionRolesHelper.IsExtensionVideoSupported
+	/// </summary>
 	public delegate Task<(MemoryStream?, GenerationResultModel)> ResizeThumbnailFromSourceImage(
 		ThumbnailSize biggestThumbnailSize, string singleSubPath, string fileHash,
 		ThumbnailImageFormat imageFormat);
-	
-	public async Task<IEnumerable<GenerationResultModel>> GenerateThumbnail(ResizeThumbnailFromSourceImage resizeDelegate, string singleSubPath,
+
+	private readonly ResizeThumbnailFromThumbnailImageHelper _resizeThumbnail =
+		new(selectorStorage, logger);
+
+	public async Task<IEnumerable<GenerationResultModel>> GenerateThumbnail(
+		ResizeThumbnailFromSourceImage resizeDelegate,
+		PreflightThumbnailGeneration.IsExtensionSupportedDelegate isExtensionSupportedDelegate,
+		string singleSubPath,
 		string fileHash, ThumbnailImageFormat imageFormat,
 		List<ThumbnailSize> thumbnailSizes)
 	{
 		var preflightResult =
-			new PreflightThumbnailGeneration(selectorStorage).Preflight(thumbnailSizes,
+			new PreflightThumbnailGeneration(selectorStorage).Preflight(
+				isExtensionSupportedDelegate,
+				thumbnailSizes,
 				singleSubPath, fileHash,
 				imageFormat);
+
 		thumbnailSizes = PreflightThumbnailGeneration.MapThumbnailSizes(preflightResult);
 		if ( preflightResult.Any(p => !p.ToGenerate) || thumbnailSizes.Count == 0 )
 		{

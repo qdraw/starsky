@@ -61,7 +61,6 @@ public sealed class ThumbnailController : Controller
 		}
 
 		const string xImageSizeHeader = "x-image-size";
-		const string imageJpegMimeType = "image/jpeg";
 
 		f = FilenamesHelper.GetFileNameWithoutExtension(f);
 
@@ -80,7 +79,7 @@ public sealed class ThumbnailController : Controller
 					ThumbnailNameHelper.Combine(f, ThumbnailSize.Small, _imageFormat));
 			Response.Headers.TryAdd(xImageSizeHeader,
 				new StringValues(ThumbnailSize.Small.ToString()));
-			return File(stream, imageJpegMimeType);
+			return File(stream, MimeHelper.GetMimeType(_imageFormat.ToString()));
 		}
 
 		if ( _thumbnailStorage.ExistFile(
@@ -91,7 +90,7 @@ public sealed class ThumbnailController : Controller
 					ThumbnailNameHelper.Combine(f, ThumbnailSize.TinyMeta, _imageFormat));
 			Response.Headers.TryAdd(xImageSizeHeader,
 				new StringValues(ThumbnailSize.TinyMeta.ToString()));
-			return File(stream, imageJpegMimeType);
+			return File(stream, MimeHelper.GetMimeType(_imageFormat.ToString()));
 		}
 
 		if ( !_thumbnailStorage.ExistFile(
@@ -106,9 +105,8 @@ public sealed class ThumbnailController : Controller
 				ThumbnailNameHelper.Combine(f, ThumbnailSize.Large, _imageFormat));
 		Response.Headers.TryAdd(xImageSizeHeader,
 			new StringValues(ThumbnailSize.Large.ToString()));
-		return File(streamDefaultThumbnail, imageJpegMimeType);
+		return File(streamDefaultThumbnail, MimeHelper.GetMimeType(_imageFormat.ToString()));
 	}
-
 
 	/// <summary>
 	///     Get overview of what exists by name
@@ -205,7 +203,7 @@ public sealed class ThumbnailController : Controller
 		stream = _thumbnailStorage.ReadStream(
 			ThumbnailNameHelper.Combine(f, size, _imageFormat));
 
-		// thumbs are always in jpeg
+		// thumbs are always in jpeg or webp
 		Response.Headers.Append("x-filename",
 			new StringValues(FilenamesHelper.GetFileName($"{f}.{_imageFormat}")));
 		return File(stream, MimeHelper.GetMimeType(_imageFormat.ToString()));

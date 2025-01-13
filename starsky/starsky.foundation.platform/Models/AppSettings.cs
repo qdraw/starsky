@@ -343,6 +343,11 @@ public sealed class AppSettings
 		}
 	}
 
+	/// <summary>
+	///     Which format to use for the thumbnail
+	/// </summary>
+	[PackageTelemetry]
+	[JsonConverter(typeof(JsonStringEnumConverter))]
 	public ThumbnailImageFormat ThumbnailImageFormat { get; set; } =
 		ThumbnailImageFormat.jpg;
 

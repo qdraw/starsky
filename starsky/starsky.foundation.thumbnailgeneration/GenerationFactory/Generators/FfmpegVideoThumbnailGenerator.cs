@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Enums;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
@@ -26,7 +27,8 @@ public class FfmpegVideoThumbnailGenerator(
 		List<ThumbnailSize> thumbnailSizes)
 	{
 		return await new SharedGenerate(selectorStorage, logger).GenerateThumbnail(
-			ResizeThumbnailFromSourceImage, singleSubPath, fileHash,
+			ResizeThumbnailFromSourceImage, ExtensionRolesHelper.IsExtensionVideoSupported,
+			singleSubPath, fileHash,
 			imageFormat, thumbnailSizes);
 	}
 
