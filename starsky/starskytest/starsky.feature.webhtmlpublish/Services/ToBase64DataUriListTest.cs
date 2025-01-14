@@ -23,8 +23,7 @@ public sealed class ToBase64DataUriListTest
 		var thumbnailService = new ThumbnailService(new FakeSelectorStorage(fakeStorage),
 			new FakeIWebLogger(), new AppSettings(),
 			new FakeIUpdateStatusGeneratedThumbnailService(), new FakeIVideoProcess());
-		var result = await new ToBase64DataUriList(fakeStorage,
-				fakeStorage, new FakeIWebLogger(), new AppSettings(), thumbnailService)
+		var result = await new ToBase64DataUriList(thumbnailService)
 			.Create(
 				new List<FileIndexItem> { new("/test.jpg") });
 		Assert.IsTrue(result[0].Contains("data:image/png;base64,"));
@@ -39,8 +38,7 @@ public sealed class ToBase64DataUriListTest
 		var thumbnailService = new ThumbnailService(new FakeSelectorStorage(fakeStorage),
 			new FakeIWebLogger(), new AppSettings(),
 			new FakeIUpdateStatusGeneratedThumbnailService(), new FakeIVideoProcess());
-		var result = await new ToBase64DataUriList(fakeStorage,
-				fakeStorage, new FakeIWebLogger(), new AppSettings(), thumbnailService)
+		var result = await new ToBase64DataUriList(thumbnailService)
 			.Create(
 				new List<FileIndexItem> { new("/test.jpg") });
 		// to fallback image (1px x 1px)

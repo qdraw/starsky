@@ -29,12 +29,20 @@ public class PreflightThumbnailGeneration(ISelectorStorage selectorStorage)
 		List<ThumbnailSize> thumbnailSizes, string subPath,
 		string fileHash, ThumbnailImageFormat imageFormat)
 	{
-		if ( thumbnailSizes.Count < ThumbnailSizes.GetSizes(true).Count )
+		if ( thumbnailSizes.Count == 0 )
 		{
 			return ErrorGenerationResultModel.FailedResult(
 				ThumbnailSizes.GetSizes(true),
 				subPath, fileHash, false,
-				$"thumbnailSizes.Count <= {ThumbnailSizes.GetSizes(true).Count}");
+				$"No thumbnail sizes are given for {subPath}");
+		}
+
+		if ( imageFormat == ThumbnailImageFormat.unknown )
+		{
+			return ErrorGenerationResultModel.FailedResult(
+				ThumbnailSizes.GetSizes(true),
+				subPath, fileHash, false,
+				$"No valid image format is given for {subPath}");
 		}
 
 		// eg. ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported

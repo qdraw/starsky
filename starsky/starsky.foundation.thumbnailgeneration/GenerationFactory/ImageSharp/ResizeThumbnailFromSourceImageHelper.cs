@@ -31,6 +31,11 @@ internal class ResizeThumbnailFromSourceImageHelper(
 		bool removeExif,
 		ThumbnailImageFormat imageFormat)
 	{
+		if ( imageFormat == ThumbnailImageFormat.unknown )
+		{
+			throw new ImageProcessingException("non valid type");
+		}
+
 		var outputStream = new MemoryStream();
 		var result = new GenerationResultModel
 		{
@@ -42,6 +47,9 @@ internal class ResizeThumbnailFromSourceImageHelper(
 			ImageFormat = imageFormat,
 			Size = ThumbnailNameHelper.GetSize(width)
 		};
+
+		var fileHashWithExtension = ThumbnailNameHelper.Combine(thumbnailOutputHash ?? string.Empty,
+			ThumbnailNameHelper.GetSize(width), imageFormat);
 
 		try
 		{
@@ -60,14 +68,10 @@ internal class ResizeThumbnailFromSourceImageHelper(
 					return ( outputStream, result );
 				}
 
-				// only when a hash exists
-				var fileHashWithExtension = ThumbnailNameHelper.Combine(thumbnailOutputHash,
-					result.Size, imageFormat);
-
 				await _thumbnailStorage.WriteStreamAsync(outputStream, fileHashWithExtension);
 				// Disposed in WriteStreamAsync
 
-				new RemoveCorruptThumbnail(_thumbnailStorage).RemoveAndThrow(fileHashWithExtension);
+				new RemoveCorruptThumbnail(selectorStorage).RemoveIfCorrupt(fileHashWithExtension);
 			}
 		}
 		catch ( Exception ex )
@@ -84,10 +88,13 @@ internal class ResizeThumbnailFromSourceImageHelper(
 
 			result.Success = false;
 			result.ErrorMessage = message;
+
+			new RemoveCorruptThumbnail(selectorStorage).RemoveIfCorrupt(fileHashWithExtension);
+
 			return ( null, result );
 		}
 
-		result.ErrorMessage = "Ok but written to disk";
+		result.ErrorMessage = "Ok and written to disk";
 		return ( null, result );
 	}
 }

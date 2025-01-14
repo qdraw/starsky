@@ -159,8 +159,7 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 	/// <returns></returns>
 	private Task<string[]> Base64DataUriList(IEnumerable<FileIndexItem> fileIndexItemsList)
 	{
-		var service = new ToBase64DataUriList(_subPathStorage,
-			_thumbnailStorage, _logger, _appSettings, _thumbnailService);
+		var service = new ToBase64DataUriList(_thumbnailService);
 		return service.Create(fileIndexItemsList.ToList());
 	}
 

@@ -82,24 +82,6 @@ public sealed class ThumbnailServiceTests
 		Assert.IsFalse(isCreated.FirstOrDefault()!.Success);
 	}
 
-	[TestMethod]
-	public async Task CreateThumbTest_FileHash_AlreadyFailBefore()
-	{
-		var storage = new FakeIStorage(["/"],
-			[_fakeIStorageImageSubPath],
-			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
-
-		var sut = new ThumbnailService(new FakeSelectorStorage(storage), new FakeIWebLogger(),
-			_appSettings, _fakeIUpdateStatusGeneratedThumbnailService, new FakeIVideoProcess());
-
-		await sut.WriteErrorMessageToBlockLog(_fakeIStorageImageSubPath, "fail");
-
-		var isCreated = ( await sut.GenerateThumbnail(_fakeIStorageImageSubPath,
-			_fakeIStorageImageSubPath) ).ToList();
-
-		Assert.IsFalse(isCreated.FirstOrDefault()!.Success);
-		Assert.AreEqual("File already failed before", isCreated.FirstOrDefault()!.ErrorMessage);
-	}
 
 	[TestMethod]
 	[DataRow(true)]

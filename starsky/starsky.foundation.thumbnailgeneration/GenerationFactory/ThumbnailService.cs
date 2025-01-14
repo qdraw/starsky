@@ -11,11 +11,11 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
-using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Shared;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Testers;
 using starsky.foundation.thumbnailgeneration.Interfaces;
 using starsky.foundation.thumbnailgeneration.Models;
@@ -173,16 +173,12 @@ public class ThumbnailService(
 			return ( null, new GenerationResultModel() );
 		}
 
-		var isOkay =
-			await generator.GenerateThumbnail(singleSubPath, fileHash, imageFormat, [size]);
-		return ( null, isOkay.First() );
-	}
+		var generationResult =
+			( await generator.GenerateThumbnail(singleSubPath, fileHash,
+				imageFormat, [size]) ).First();
 
-	internal async Task WriteErrorMessageToBlockLog(string subPath, string errorMessage)
-	{
-		// todo write if the thumbnail generation fails
-		var stream = StringToStreamHelper.StringToStream("Thumbnail error " + errorMessage);
-		await _storage.WriteStreamAsync(stream,
-			ErrorLogItemFullPath.GetErrorLogItemFullPath(subPath));
+		var stream =
+			new GetThumbnailStream(selectorStorage).GetThumbnail(fileHash, size, imageFormat);
+		return ( stream, generationResult );
 	}
 }

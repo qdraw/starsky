@@ -16,6 +16,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services;
 [TestClass]
 public sealed class OverlayImageTest
 {
+	private readonly AppSettings _appSettings;
 	private readonly ISelectorStorage _selectorStorage;
 	private readonly FakeIStorage _storage;
 
@@ -25,13 +26,14 @@ public sealed class OverlayImageTest
 			new List<string> { "/test.jpg" },
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 		_selectorStorage = new FakeSelectorStorage(_storage);
+		_appSettings = new AppSettings();
 	}
 
 	[TestMethod]
 	public void FilePathOverlayImage_Case()
 	{
 		var image =
-			new OverlayImage(_selectorStorage).FilePathOverlayImage("TesT.Jpg",
+			new OverlayImage(_selectorStorage, _appSettings).FilePathOverlayImage("TesT.Jpg",
 				new AppSettingsPublishProfiles());
 		Assert.AreEqual("test.jpg", image);
 	}
@@ -40,7 +42,7 @@ public sealed class OverlayImageTest
 	public void FilePathOverlayImage_Append()
 	{
 		var image =
-			new OverlayImage(_selectorStorage).FilePathOverlayImage("Img.Jpg",
+			new OverlayImage(_selectorStorage, _appSettings).FilePathOverlayImage("Img.Jpg",
 				new AppSettingsPublishProfiles { Append = "_test" });
 		Assert.AreEqual("img_test.jpg", image);
 	}
@@ -49,7 +51,7 @@ public sealed class OverlayImageTest
 	public void FilePathOverlayImage_outputParentFullFilePathFolder()
 	{
 		var image =
-			new OverlayImage(_selectorStorage).FilePathOverlayImage(
+			new OverlayImage(_selectorStorage, _appSettings).FilePathOverlayImage(
 				string.Empty, "TesT.Jpg",
 				new AppSettingsPublishProfiles());
 		Assert.AreEqual(PathHelper.AddBackslash(string.Empty) + "test.jpg", image);
@@ -58,7 +60,7 @@ public sealed class OverlayImageTest
 	[TestMethod]
 	public async Task ResizeOverlayImageThumbnails_null()
 	{
-		var overlayImage = new OverlayImage(_selectorStorage);
+		var overlayImage = new OverlayImage(_selectorStorage, _appSettings);
 		await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
 			await overlayImage.ResizeOverlayImageThumbnails(null!, null!,
 				new AppSettingsPublishProfiles()));
@@ -67,7 +69,7 @@ public sealed class OverlayImageTest
 	[TestMethod]
 	public async Task ResizeOverlayImageLarge_null_exception()
 	{
-		var overlayImage = new OverlayImage(_selectorStorage);
+		var overlayImage = new OverlayImage(_selectorStorage, _appSettings);
 		await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
 			await overlayImage.ResizeOverlayImageLarge(null!, null!,
 				new AppSettingsPublishProfiles()));
@@ -76,7 +78,7 @@ public sealed class OverlayImageTest
 	[TestMethod]
 	public async Task ResizeOverlayImageThumbnails_itemFileHash_Not_Found()
 	{
-		var overlayImage = new OverlayImage(_selectorStorage);
+		var overlayImage = new OverlayImage(_selectorStorage, _appSettings);
 		await Assert.ThrowsExceptionAsync<FileNotFoundException>(async () =>
 			await overlayImage.ResizeOverlayImageThumbnails("non-exist.jpg", "/out.jpg",
 				new AppSettingsPublishProfiles { SourceMaxWidth = 100, OverlayMaxWidth = 1 }));
@@ -85,7 +87,7 @@ public sealed class OverlayImageTest
 	[TestMethod]
 	public async Task ResizeOverlayImageThumbnails_overlay_image_missing()
 	{
-		var overlayImage = new OverlayImage(_selectorStorage);
+		var overlayImage = new OverlayImage(_selectorStorage, _appSettings);
 		await Assert.ThrowsExceptionAsync<FileNotFoundException>(async () =>
 			await overlayImage.ResizeOverlayImageThumbnails("test.jpg", "/out.jpg",
 				new AppSettingsPublishProfiles { SourceMaxWidth = 100, OverlayMaxWidth = 1 }));
@@ -94,7 +96,7 @@ public sealed class OverlayImageTest
 	[TestMethod]
 	public async Task ResizeOverlayImageLarge_File_Not_Found()
 	{
-		var overlayImage = new OverlayImage(_selectorStorage);
+		var overlayImage = new OverlayImage(_selectorStorage, _appSettings);
 		await Assert.ThrowsExceptionAsync<FileNotFoundException>(async () =>
 			await overlayImage.ResizeOverlayImageLarge("non-exist.jpg", "/out.jpg",
 				new AppSettingsPublishProfiles { SourceMaxWidth = 100, OverlayMaxWidth = 1 }));
@@ -103,7 +105,7 @@ public sealed class OverlayImageTest
 	[TestMethod]
 	public async Task ResizeOverlayImageLarge_overlay_image_missing()
 	{
-		var overlayImage = new OverlayImage(_selectorStorage);
+		var overlayImage = new OverlayImage(_selectorStorage, _appSettings);
 		await Assert.ThrowsExceptionAsync<FileNotFoundException>(async () =>
 			await overlayImage.ResizeOverlayImageLarge("/test.jpg", "/out.jpg",
 				new AppSettingsPublishProfiles { SourceMaxWidth = 100, OverlayMaxWidth = 1 }));
@@ -113,7 +115,7 @@ public sealed class OverlayImageTest
 	public async Task ResizeOverlayImageLarge_Ignore_If_Exist()
 	{
 		var overlayImage =
-			new OverlayImage(_selectorStorage);
+			new OverlayImage(_selectorStorage, _appSettings);
 
 		await overlayImage.ResizeOverlayImageLarge("/test.jpg", "/test.jpg",
 			new AppSettingsPublishProfiles
@@ -129,9 +131,9 @@ public sealed class OverlayImageTest
 	public void ResizeOverlayImageThumbnails_Ignore_If_Exist()
 	{
 		var overlayImage =
-			new OverlayImage(_selectorStorage);
+			new OverlayImage(_selectorStorage, _appSettings);
 
-		overlayImage.ResizeOverlayImageThumbnails("/test.jpg", "/test.jpg",
+		overlayImage.ResizeOverlayImageThumbnails("/test" /* no extension */, "/test.jpg",
 			new AppSettingsPublishProfiles
 			{
 				SourceMaxWidth = 100, OverlayMaxWidth = 1, Path = "/test.jpg"
@@ -145,7 +147,7 @@ public sealed class OverlayImageTest
 	public async Task ResizeOverlayImageLarge_Done()
 	{
 		var overlayImage =
-			new OverlayImage(_selectorStorage);
+			new OverlayImage(_selectorStorage, _appSettings);
 
 		await overlayImage.ResizeOverlayImageLarge("/test.jpg", "/out_large.jpg",
 			new AppSettingsPublishProfiles
@@ -160,9 +162,10 @@ public sealed class OverlayImageTest
 	public async Task ResizeOverlayImageThumbnails_Done()
 	{
 		var overlayImage =
-			new OverlayImage(_selectorStorage);
+			new OverlayImage(_selectorStorage, _appSettings);
 
-		await overlayImage.ResizeOverlayImageThumbnails("/test.jpg", "/out_thumb.jpg",
+		await overlayImage.ResizeOverlayImageThumbnails("/test" /* no extension */,
+			"/out_thumb.jpg",
 			new AppSettingsPublishProfiles
 			{
 				SourceMaxWidth = 100, OverlayMaxWidth = 1, Path = "/test.jpg"

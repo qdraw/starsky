@@ -34,15 +34,15 @@ public class ResizeThumbnailFromSourceImageHelperTests
 			new FakeIWebLogger());
 
 		var (thumb, model) = await sut.ResizeThumbnailFromSourceImage(
-			newImage.FullFilePath, 1, null, true, thumbnailImageFormat);
+			newImage.FullFilePath, 4, null, true, thumbnailImageFormat);
 		var meta = ImageMetadataReader.ReadMetadata(new MemoryStream(thumb!.ToArray())).ToList();
 
 		Assert.IsTrue(thumb.CanRead);
-		Assert.AreEqual(1, ReadMetaExif.GetImageWidthHeight(meta, true));
-		Assert.AreEqual(1, ReadMetaExif.GetImageWidthHeight(meta, false));
+		Assert.AreEqual(4, ReadMetaExif.GetImageWidthHeight(meta, true));
+		Assert.AreEqual(3, ReadMetaExif.GetImageWidthHeight(meta, false));
 		Assert.AreEqual(thumbnailImageFormat, model.ImageFormat);
 		Assert.IsTrue(model.Success);
-		Assert.AreEqual(ThumbnailSize.Unknown, model.Size);
+		Assert.AreEqual(ThumbnailSize.TinyIcon, model.Size);
 	}
 
 	[TestMethod]
@@ -57,7 +57,7 @@ public class ResizeThumbnailFromSourceImageHelperTests
 			new FakeIWebLogger());
 
 		var (thumb, model) = await sut.ResizeThumbnailFromSourceImage(
-			"test", 1, null, true, ThumbnailImageFormat.jpg);
+			"test", 4, null, true, ThumbnailImageFormat.jpg);
 
 		Assert.IsNull(thumb);
 		Assert.IsFalse(model.Success);

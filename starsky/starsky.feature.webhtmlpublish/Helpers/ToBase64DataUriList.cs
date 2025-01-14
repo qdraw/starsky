@@ -4,32 +4,13 @@ using System.Threading.Tasks;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
-using starsky.foundation.platform.Interfaces;
-using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
-using starsky.foundation.storage.Interfaces;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
 
 namespace starsky.feature.webhtmlpublish.Helpers;
 
-public class ToBase64DataUriList
+public class ToBase64DataUriList(IThumbnailService thumbnailService)
 {
-	private readonly AppSettings _appSettings;
-	private readonly IStorage _iStorage;
-	private readonly IWebLogger _logger;
-	private readonly IThumbnailService _thumbnailService;
-	private readonly IStorage _thumbnailStorage;
-
-	public ToBase64DataUriList(IStorage iStorage, IStorage thumbnailStorage, IWebLogger logger,
-		AppSettings appSettings, IThumbnailService thumbnailService)
-	{
-		_iStorage = iStorage;
-		_thumbnailStorage = thumbnailStorage;
-		_logger = logger;
-		_appSettings = appSettings;
-		_thumbnailService = thumbnailService;
-	}
-
 	[SuppressMessage("Usage", "S3966: Resource 'memoryStream' has " +
 	                          "already been disposed explicitly or through a using statement implicitly. " +
 	                          "Remove the redundant disposal.")]
@@ -40,7 +21,7 @@ public class ToBase64DataUriList
 		{
 			var item = fileIndexList[i];
 
-			var (stream, status) = await _thumbnailService.GenerateThumbnail(item.FilePath!,
+			var (stream, status) = await thumbnailService.GenerateThumbnail(item.FilePath!,
 				item.FileHash!,
 				ThumbnailImageFormat.png,
 				ThumbnailSize.TinyIcon);

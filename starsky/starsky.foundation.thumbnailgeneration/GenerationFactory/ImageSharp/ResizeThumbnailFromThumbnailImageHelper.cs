@@ -96,7 +96,7 @@ internal class ResizeThumbnailFromThumbnailImageHelper(
 				await _thumbnailStorage.WriteStreamAsync(outputStream, outputFileHashWithExtension);
 				// Disposed in WriteStreamAsync
 
-				new RemoveCorruptThumbnail(_thumbnailStorage).RemoveAndThrow(
+				new RemoveCorruptThumbnail(selectorStorage).RemoveIfCorrupt(
 					outputFileHashWithExtension);
 			}
 		}
