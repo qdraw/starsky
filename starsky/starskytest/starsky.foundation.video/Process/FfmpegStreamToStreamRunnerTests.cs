@@ -81,9 +81,10 @@ public class FfmpegStreamToStreamRunnerTests
 		Assert.IsNotNull(stream);
 		Assert.IsTrue(result);
 
+		await file.DisposeAsync();
 		await stream.DisposeAsync();
 	}
-	
+
 	[TestMethod]
 	public async Task RunProcessAsync_WithInvalidFfmpegPath()
 	{
@@ -94,8 +95,10 @@ public class FfmpegStreamToStreamRunnerTests
 
 		await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
 			await sut.RunProcessAsync("-1", "image2", "test"));
+
+		await file.DisposeAsync();
 	}
-	
+
 	[TestMethod]
 	public async Task RunProcessAsync_WithInvalidFfmpegPath_WithInvalidStream()
 	{
@@ -104,5 +107,4 @@ public class FfmpegStreamToStreamRunnerTests
 		await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
 			await sut.RunProcessAsync("-1", "image2", "test"));
 	}
-	
 }
