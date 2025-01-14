@@ -70,9 +70,33 @@ public class FfmpegStreamToStreamRunnerTests
 	}
 
 	[TestMethod]
-	public async Task RunProcessAsync()
+	public async Task RunProcessAsync_HappyFlow()
 	{
 		await SetupFakeFfmpegExecutable();
+		var file = new StorageHostFullPathFilesystem(new FakeIWebLogger()).ReadStream(_readFile);
+		var sut = new FfmpegStreamToStreamRunner(_ffmpegExe, file, new FakeIWebLogger());
+
+		var (stream, result) = await sut.RunProcessAsync("-1", "image2", "test");
+
+		Assert.IsNotNull(stream);
+		Assert.IsTrue(result);
+
+		await file.DisposeAsync();
+		await stream.DisposeAsync();
+	}
+
+	[TestMethod]
+	public async Task RunProcessAsync_ExitCode()
+	{
+		if ( new AppSettings().IsWindows )
+		{
+			Assert.Inconclusive("This test is only applicable on Unix-based systems.");
+			return;
+		}
+
+		await SetupFakeFfmpegExecutable();
+		CreateStubFile(_readFile, "test_content\n exit 1");
+
 		var file = new StorageHostFullPathFilesystem(new FakeIWebLogger()).ReadStream(_readFile);
 		var sut = new FfmpegStreamToStreamRunner(_ffmpegExe, file, new FakeIWebLogger());
 
@@ -106,5 +130,12 @@ public class FfmpegStreamToStreamRunnerTests
 
 		await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
 			await sut.RunProcessAsync("-1", "image2", "test"));
+	}
+
+	[TestMethod]
+	public void FfmpegStreamToStreamRunner_Null()
+	{
+		Assert.ThrowsException<ArgumentNullException>(() =>
+			new FfmpegStreamToStreamRunner(null!, null!, new FakeIWebLogger()));
 	}
 }
