@@ -12,13 +12,13 @@ public class SelectorStorageTest
 	/// <summary>
 	///     Service Provider
 	/// </summary>
-	private readonly IServiceProvider _serviceProvider;
+	private readonly IServiceScopeFactory _scopeFactory;
 
 	public SelectorStorageTest()
 	{
 		var serviceCollection = new ServiceCollection();
 		var sp = serviceCollection.BuildServiceProvider();
-		_serviceProvider = sp.GetRequiredService<IServiceProvider>();
+		_scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
 	}
 
 	[TestMethod]
@@ -34,7 +34,7 @@ public class SelectorStorageTest
 		// Act & Assert
 		Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
 		{
-			new SelectorStorage(_serviceProvider).Get(myClass.Type);
+			new SelectorStorage(_scopeFactory).Get(myClass.Type);
 		});
 	}
 
