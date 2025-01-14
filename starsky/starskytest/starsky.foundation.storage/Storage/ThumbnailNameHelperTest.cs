@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Storage;
@@ -59,7 +60,7 @@ public sealed class ThumbnailNameHelperTest
 	{
 		var input = ThumbnailNameHelper.Combine("01234567890123456789123456",
 			2000, new AppSettings().ThumbnailImageFormat);
-		var result2 = ThumbnailNameHelper.GetSize(input);
+		var result2 = ThumbnailNameHelper.GetSize(input, ThumbnailImageFormat.jpg);
 		Assert.AreEqual(ThumbnailSize.ExtraLarge, result2);
 	}
 
@@ -68,7 +69,7 @@ public sealed class ThumbnailNameHelperTest
 	{
 		var input = ThumbnailNameHelper.Combine("01234567890123456789123456",
 			ThumbnailSize.Large, new AppSettings().ThumbnailImageFormat);
-		var result2 = ThumbnailNameHelper.GetSize(input);
+		var result2 = ThumbnailNameHelper.GetSize(input, ThumbnailImageFormat.jpg);
 		Assert.AreEqual(ThumbnailSize.Large, result2);
 	}
 
@@ -76,7 +77,7 @@ public sealed class ThumbnailNameHelperTest
 	public void GetSize_Name_NonValidLength()
 	{
 		var input = "01234567890123456789123456@859693845";
-		var result2 = ThumbnailNameHelper.GetSize(input);
+		var result2 = ThumbnailNameHelper.GetSize(input, ThumbnailImageFormat.jpg);
 		Assert.AreEqual(ThumbnailSize.Unknown, result2);
 	}
 
@@ -96,15 +97,15 @@ public sealed class ThumbnailNameHelperTest
 	{
 		var input = ThumbnailNameHelper.Combine("non_valid_length", ThumbnailSize.Large,
 			new AppSettings().ThumbnailImageFormat);
-		var result2 = ThumbnailNameHelper.GetSize(input);
+		var result2 = ThumbnailNameHelper.GetSize(input, ThumbnailImageFormat.jpg);
 		Assert.AreEqual(ThumbnailSize.Unknown, result2);
 	}
 
 	[TestMethod]
 	public void GetSize_Name_UnknownSize()
 	{
-		var input = "test_hash@4789358";
-		var result2 = ThumbnailNameHelper.GetSize(input);
+		const string input = "test_hash@4789358";
+		var result2 = ThumbnailNameHelper.GetSize(input, ThumbnailImageFormat.jpg);
 		Assert.AreEqual(ThumbnailSize.Unknown, result2);
 	}
 }

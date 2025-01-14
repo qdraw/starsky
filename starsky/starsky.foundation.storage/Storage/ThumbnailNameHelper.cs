@@ -70,11 +70,11 @@ public static partial class ThumbnailNameHelper
 		}
 	}
 
-	public static ThumbnailSize GetSize(string fileName)
+	public static ThumbnailSize GetSize(string fileName,
+		ThumbnailImageFormat imageFormat)
 	{
-		// todo: NOt always jpg
 		var fileNameWithoutExtension =
-			fileName.Replace(".jpg", string.Empty);
+			fileName.Replace($".{imageFormat}", string.Empty);
 
 		var afterAtString = Regex.Match(fileNameWithoutExtension, "@\\d+",
 				RegexOptions.None, TimeSpan.FromMilliseconds(200))
