@@ -31,7 +31,21 @@ public class RemoveCorruptThumbnailTests
 	}
 
 	[TestMethod]
-	public void RemoveAndThrow_Ignore()
+	public void RemoveIfCorrupt_NotExist()
+	{
+		var storage = new FakeIStorage(
+			["/"],
+			[],
+			[]);
+
+		var sut = new RemoveCorruptThumbnail(new FakeSelectorStorage(storage));
+		var result = sut.RemoveIfCorrupt("test");
+
+		Assert.IsNull(result);
+	}
+
+	[TestMethod]
+	public void RemoveIfCorrupt_Ignore()
 	{
 		var storage = new FakeIStorage(["/"],
 			[FakeIStorageImageSubPath],
@@ -45,7 +59,7 @@ public class RemoveCorruptThumbnailTests
 	}
 
 	[TestMethod]
-	public void RemoveAndThrow_IsRemoved()
+	public void RemoveIfCorrupt_IsRemoved()
 	{
 		byte[] emptyArray = [];
 		var storage = new FakeIStorage(["/"],

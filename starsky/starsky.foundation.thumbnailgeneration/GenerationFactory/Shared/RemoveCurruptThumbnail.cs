@@ -14,8 +14,13 @@ public class RemoveCorruptThumbnail(ISelectorStorage selectorStorage)
 	private readonly IStorage _thumbnailStorage =
 		selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 
-	public bool RemoveIfCorrupt(string outputFileHashWithExtension)
+	public bool? RemoveIfCorrupt(string outputFileHashWithExtension)
 	{
+		if ( !_thumbnailStorage.ExistFile(outputFileHashWithExtension) )
+		{
+			return null;
+		}
+		
 		if ( _thumbnailStorage.Info(outputFileHashWithExtension).Size > 10 )
 		{
 			return false;

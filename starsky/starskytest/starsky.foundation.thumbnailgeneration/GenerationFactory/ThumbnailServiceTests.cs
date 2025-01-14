@@ -167,51 +167,6 @@ public sealed class ThumbnailServiceTests
 		Assert.AreEqual(0, isCreated.Count);
 	}
 
-	//
-	// [TestMethod]
-	// public void RemoveCorruptImage_RemoveCorruptImage()
-	// {
-	// 	var storage = new FakeIStorage(
-	// 		new List<string> { "/" },
-	// 		new List<string> { ThumbnailNameHelper.Combine("test", ThumbnailSize.ExtraLarge) },
-	// 		new List<byte[]> { Array.Empty<byte>() });
-	//
-	// 	var result = new Thumbnail(storage,
-	// 			storage, new FakeIWebLogger(), new AppSettings())
-	// 		.RemoveCorruptImage("test", ThumbnailSize.ExtraLarge);
-	// 	Assert.IsTrue(result);
-	// }
-	//
-	// [TestMethod]
-	// public void RemoveCorruptImage_ShouldIgnore()
-	// {
-	// 	var storage = new FakeIStorage(
-	// 		new List<string> { "/" },
-	// 		new List<string> { ThumbnailNameHelper.Combine("test", ThumbnailSize.ExtraLarge) },
-	// 		new List<byte[]> { CreateAnImage.Bytes.ToArray() });
-	//
-	// 	var result = new Thumbnail(
-	// 			storage, storage,
-	// 			new FakeIWebLogger(), new AppSettings())
-	// 		.RemoveCorruptImage("test", ThumbnailSize.Large);
-	// 	Assert.IsFalse(result);
-	// }
-	//
-	// [TestMethod]
-	// public void RemoveCorruptImage_NotExist()
-	// {
-	// 	var storage = new FakeIStorage(
-	// 		new List<string> { "/" },
-	// 		new List<string>(),
-	// 		new List<byte[]> { CreateAnImage.Bytes.ToArray() });
-	//
-	// 	var result = new Thumbnail(storage,
-	// 			storage, new FakeIWebLogger(), new AppSettings())
-	// 		.RemoveCorruptImage("test", ThumbnailSize.Large);
-	// 	Assert.IsFalse(result);
-	// }
-	//
-
 	[TestMethod]
 	public async Task RotateThumbnail_NotFound()
 	{
