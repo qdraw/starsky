@@ -29,11 +29,16 @@ jobs:
       - name: Resolve package-lock.json conflicts
         run: |
           for project in ${{ steps.define-projects.outputs.projects }}; do
-            git diff --exit-code $project/package-lock.json > /dev/null || (
+            echo "Checking for conflicts in $project/package-lock.json"
+            if ! git diff --exit-code $project/package-lock.json > /dev/null; then
+              echo "Conflicts detected in $project/package-lock.json"
               git checkout --theirs $project/package-lock.json
               npm install --prefix $project
               git add $project/package-lock.json
-            )
+              echo "Conflicts resolved and changes added for $project/package-lock.json"
+            else
+              echo "No conflicts detected in $project/package-lock.json"
+            fi
           done
           git diff-index --quiet HEAD || git commit -m "Resolve package-lock.json conflicts"
 
