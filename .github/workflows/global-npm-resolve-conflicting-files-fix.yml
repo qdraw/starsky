@@ -22,6 +22,8 @@ jobs:
 
       - name: Merge master into branch
         run: |
+          git config --global user.email "qdraw@users.noreply.github.com"
+          git config --global user.name "Global npm resolve conflicting files fix script"
           git fetch origin
           git checkout ${{ github.head_ref }}
           git merge --allow-unrelated-histories origin/master || true
