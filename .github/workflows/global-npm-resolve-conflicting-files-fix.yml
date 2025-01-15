@@ -14,7 +14,7 @@ jobs:
         
       - name: Define projects
         id: define-projects
-        run: echo "::set-output name=projects::starskydesktop documentation"
+        run: echo "projects=starskydesktop documentation" >> $GITHUB_ENV
         
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -34,7 +34,7 @@ jobs:
 
       - name: Resolve package-lock.json conflicts
         run: |
-          for project in ${{ steps.define-projects.outputs.projects }}; do
+          for project in ${{ env.projects }}; do
             echo "Checking for conflicts in $project/package-lock.json"
             if ! git diff --exit-code $project/package-lock.json > /dev/null; then
               echo "Conflicts detected in $project/package-lock.json"
