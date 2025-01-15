@@ -24,7 +24,7 @@ jobs:
         run: |
           git fetch origin
           git checkout ${{ github.head_ref }}
-          git merge origin/master || true
+          git merge --allow-unrelated-histories origin/master || true
 
       - name: Resolve package-lock.json conflicts
         run: |
