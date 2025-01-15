@@ -1,0 +1,55 @@
+name: Global npm resolve conflicting files fix
+
+on:
+  workflow_dispatch:
+
+jobs:
+  resolve-conflicts:
+    if: github.ref != 'refs/heads/master'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Define projects
+        id: define-projects
+        run: echo "projects=starskydesktop documentation" >> $GITHUB_ENV
+        
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Setup git
+        run: |
+          git config --global user.email "qdraw@users.noreply.github.com"
+          git config --global user.name "Global npm resolve conflicting files fix script"
+          
+      - name: Merge master into branch
+        run: |
+          git fetch origin
+          git checkout ${{ github.head_ref }}
+          git merge origin/master -X theirs --allow-unrelated-histories
+
+      - name: Resolve package-lock.json conflicts
+        run: |
+          for project in ${{ env.projects }}; do
+            echo "Checking for conflicts in $project/package-lock.json"
+            if ! git diff --exit-code $project/package-lock.json > /dev/null; then
+              echo "Conflicts detected in $project/package-lock.json"
+              git checkout --theirs $project/package-lock.json
+              npm install --prefix $project
+              git add $project/package-lock.json
+              echo "Conflicts resolved and changes added for $project/package-lock.json"
+            else
+              echo "No conflicts detected in $project/package-lock.json"
+            fi
+          done
+          git diff-index --quiet HEAD || git commit -m "Resolve package-lock.json conflicts"
+
+      - name: Push changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git push origin HEAD:$(echo $GITHUB_REF | sed 's/refs\/heads\///')

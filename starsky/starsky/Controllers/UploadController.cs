@@ -89,12 +89,16 @@ public sealed class UploadController : Controller
 	public async Task<IActionResult> UploadToFolder()
 	{
 		var to = Request.Headers["to"].ToString();
+		
 		if ( string.IsNullOrWhiteSpace(to) )
 		{
+			_logger.LogInformation($"[UploadToFolder] Missing 'to' header in request");
 			return BadRequest("missing 'to' header");
 		}
 
 		var parentDirectory = GetParentDirectoryFromRequestHeader();
+		_logger.LogInformation($"[UploadToFolder] Upload Start to: {parentDirectory}");
+
 		if ( parentDirectory == null )
 		{
 			return NotFound(new ImportIndexItem { Status = ImportStatus.ParentDirectoryNotFound });
