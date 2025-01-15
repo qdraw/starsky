@@ -129,7 +129,7 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 		foreach ( var item in fileIndexItemsList.Where(item =>
 			         string.IsNullOrEmpty(item.FileHash)) )
 		{
-			item.FileHash = new FileHash(_subPathStorage).GetHashCode(item.FilePath!).Key;
+			item.FileHash = new FileHash(_subPathStorage, _logger).GetHashCode(item.FilePath!).Key;
 		}
 
 		return fileIndexItemsList;

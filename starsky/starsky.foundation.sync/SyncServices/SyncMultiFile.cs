@@ -101,7 +101,7 @@ public sealed class SyncMultiFile
 				or FileIndexItem.ExifStatus.DeletedAndSame);
 		var isSameUpdatedItemList = await list
 			.ForEachAsync(
-				async dbItem => await new SizeFileHashIsTheSameHelper(_subPathStorage)
+				async dbItem => await new SizeFileHashIsTheSameHelper(_subPathStorage, _logger)
 					.SizeFileHashIsTheSame(dbItems
 							.Where(p => p.FileCollectionName == dbItem.FileCollectionName).ToList(),
 						dbItem.FilePath!),

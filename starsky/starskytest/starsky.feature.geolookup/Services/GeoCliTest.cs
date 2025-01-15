@@ -80,7 +80,8 @@ public sealed class GeoCliTest
 		var storage = new FakeIStorage(new List<string> { "/" },
 			new List<string> { "/test.jpg" },
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
-		var hash = ( await new FileHash(storage).GetHashCodeAsync("/test.jpg") ).Key;
+		var hash =
+			( await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg") ).Key;
 		storage.FileCopy("/test.jpg", $"/{hash}.jpg");
 
 		var geoWrite = new FakeIGeoLocationWrite();
@@ -102,7 +103,8 @@ public sealed class GeoCliTest
 		var storage = new FakeIStorage(new List<string> { "/" },
 			new List<string> { "/test.jpg", "1" },
 			new List<byte[]> { CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray() });
-		var hash = ( await new FileHash(storage).GetHashCodeAsync("/test.jpg") ).Key;
+		var hash =
+			( await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg") ).Key;
 		storage.FileCopy("/test.jpg", $"/{hash}.jpg");
 
 		var geoWrite = new FakeIGeoLocationWrite();
@@ -127,7 +129,8 @@ public sealed class GeoCliTest
 		var storage = new FakeIStorage(new List<string> { "/" },
 			new List<string> { "/test.jpg", "1" },
 			new List<byte[]> { CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray() });
-		var hash = ( await new FileHash(storage).GetHashCodeAsync("/test.jpg") ).Key;
+		var hash =
+			( await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg") ).Key;
 		storage.FileCopy("/test.jpg", $"/{hash}.jpg");
 
 		var geoWrite = new FakeIGeoLocationWrite();

@@ -106,7 +106,8 @@ public sealed class MetaReplaceControllerTest
 	private async Task InsertSearchData(bool delete = false)
 	{
 		var fileHashCode =
-			( await new FileHash(_iStorage).GetHashCodeAsync(_createAnImage.DbPath) ).Key;
+			( await new FileHash(_iStorage, new FakeIWebLogger()).GetHashCodeAsync(_createAnImage
+				.DbPath) ).Key;
 
 		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync(fileHashCode)) )
 		{

@@ -151,7 +151,8 @@ public class ThumbnailService(
 				appSettings.ThumbnailImageFormat, sizes);
 		}
 
-		var (fileHashLocal, success) = await new FileHash(_storage).GetHashCodeAsync(singleSubPath);
+		var (fileHashLocal, success) =
+			await new FileHash(_storage, logger).GetHashCodeAsync(singleSubPath);
 		if ( !success )
 		{
 			return [];
@@ -167,10 +168,13 @@ public class ThumbnailService(
 		var factory = new ThumbnailGeneratorFactory(selectorStorage, logger, videoProcess);
 		var generator = factory.GetGenerator(singleSubPath);
 
-		var (fileHash, success) = await new FileHash(_storage).GetHashCodeAsync(singleSubPath);
+		var (fileHash, success) =
+			await new FileHash(_storage, logger).GetHashCodeAsync(singleSubPath);
 		if ( !success )
 		{
-			return ( null, new GenerationResultModel() );
+			return ( null, ErrorGenerationResultModel
+				.FailedResult(size, singleSubPath, fileHash,
+					true, "Invalid fileHash") );
 		}
 
 		var generationResult =

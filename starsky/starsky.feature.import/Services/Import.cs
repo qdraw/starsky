@@ -415,7 +415,7 @@ public class Import : IImport
 		}
 
 		var hashList = await
-			new FileHash(_filesystemStorage).GetHashCodeAsync(inputFileFullPath.Key);
+			new FileHash(_filesystemStorage, _logger).GetHashCodeAsync(inputFileFullPath.Key);
 		if ( !hashList.Value )
 		{
 			ConsoleIfVerbose($"❌ FileHash error {inputFileFullPath.Key}");

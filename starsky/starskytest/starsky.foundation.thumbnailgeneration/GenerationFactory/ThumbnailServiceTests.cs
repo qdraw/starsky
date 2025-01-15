@@ -116,7 +116,9 @@ public sealed class ThumbnailServiceTests
 			new List<string> { _fakeIStorageImageSubPath },
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
-		var hash = ( await new FileHash(storage).GetHashCodeAsync(_fakeIStorageImageSubPath) )
+		var hash =
+			( await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync(
+				_fakeIStorageImageSubPath) )
 			.Key;
 		await storage.WriteStreamAsync(
 			StringToStreamHelper.StringToStream("not 0 bytes"),
