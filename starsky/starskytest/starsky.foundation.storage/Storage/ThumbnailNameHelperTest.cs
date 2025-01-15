@@ -1,3 +1,4 @@
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Models;
@@ -17,31 +18,35 @@ public sealed class ThumbnailNameHelperTest
 	}
 
 	[TestMethod]
-	public void GetSize_TinyMeta_Int()
+	[DataRow(ThumbnailSize.TinyIcon, 4)]
+	[DataRow(ThumbnailSize.TinyMeta, 150)]
+	[DataRow(ThumbnailSize.Small, 300)]
+	[DataRow(ThumbnailSize.Large, 1000)]
+	[DataRow(ThumbnailSize.ExtraLarge, 2000)]
+	public void GetSize_Enum(ThumbnailSize size, int expected)
 	{
-		var result = ThumbnailNameHelper.GetSize(150);
-		Assert.AreEqual(ThumbnailSize.TinyMeta, result);
+		var result = ThumbnailNameHelper.GetSize(size);
+		Assert.AreEqual(expected, result);
 	}
 
 	[TestMethod]
-	public void GetSize_Small_Int()
+	public void GetSize_Enum_Invalid()
 	{
-		var result = ThumbnailNameHelper.GetSize(300);
-		Assert.AreEqual(ThumbnailSize.Small, result);
+		Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+			ThumbnailNameHelper.GetSize(ThumbnailSize.Unknown));
 	}
 
 	[TestMethod]
-	public void GetSize_Large_Int()
+	[DataRow(4, ThumbnailSize.TinyIcon)]
+	[DataRow(150, ThumbnailSize.TinyMeta)]
+	[DataRow(300, ThumbnailSize.Small)]
+	[DataRow(1000, ThumbnailSize.Large)]
+	[DataRow(2000, ThumbnailSize.ExtraLarge)]
+	[DataRow(9999999, ThumbnailSize.Unknown)]
+	public void GetSize_Int(int size, ThumbnailSize expected)
 	{
-		var result = ThumbnailNameHelper.GetSize(1000);
-		Assert.AreEqual(ThumbnailSize.Large, result);
-	}
-
-	[TestMethod]
-	public void GetSize_ExtraLarge_Int()
-	{
-		var result = ThumbnailNameHelper.GetSize(2000);
-		Assert.AreEqual(ThumbnailSize.ExtraLarge, result);
+		var result = ThumbnailNameHelper.GetSize(size);
+		Assert.AreEqual(expected, result);
 	}
 
 	[TestMethod]
@@ -53,6 +58,14 @@ public sealed class ThumbnailNameHelperTest
 			new AppSettings().ThumbnailImageFormat);
 
 		Assert.AreEqual(result, result2);
+	}
+
+	[TestMethod]
+	public void Combine_Enum_Invalid()
+	{
+		Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+			ThumbnailNameHelper.Combine(string.Empty, ThumbnailSize.Unknown,
+				ThumbnailImageFormat.jpg));
 	}
 
 	[TestMethod]
@@ -86,7 +99,9 @@ public sealed class ThumbnailNameHelperTest
 	[DataRow("01234567890123456789123456@859693845.webp", "01234567890123456789123456")]
 	[DataRow("T4CE5GNTHWFQ5AOXD7OYDMJERA@2000.jpg", "T4CE5GNTHWFQ5AOXD7OYDMJERA")]
 	[DataRow("T4CE5GNTHWFQ5AOXD7OYDMJERA@2000", "T4CE5GNTHWFQ5AOXD7OYDMJERA")]
-	public void RemoveSuffix(string input, string output)
+	[DataRow("", "")]
+	[DataRow(null, "")]
+	public void RemoveSuffix(string? input, string output)
 	{
 		var result2 = ThumbnailNameHelper.RemoveSuffix(input);
 		Assert.AreEqual(output, result2);

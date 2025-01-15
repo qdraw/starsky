@@ -16,17 +16,22 @@ public static class GenerationResultModelExtensions
 		this List<GenerationResultModel>? compositeResults,
 		List<GenerationResultModel>? result)
 	{
+		if ( compositeResults == null && result != null )
+		{
+			return result;
+		}
+
+		if ( result == null && compositeResults != null )
+		{
+			return compositeResults;
+		}
+
 		if ( compositeResults == null )
 		{
 			return [];
 		}
 
-		if ( result == null )
-		{
-			return compositeResults;
-		}
-
-		foreach ( var resultItem in result )
+		foreach ( var resultItem in result! )
 		{
 			var existingItem = compositeResults.FirstOrDefault(p =>
 				p.FileHash == resultItem.FileHash && p.Size == resultItem.Size);
