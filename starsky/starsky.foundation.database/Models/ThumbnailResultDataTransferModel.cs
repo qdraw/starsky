@@ -68,26 +68,26 @@ public class ThumbnailResultDataTransferModel
 	///     False is Failed
 	/// </summary>
 	/// <param name="thumbnailSize">The size</param>
-	/// <param name="setStatus">Null is to-do |  True is done | False is Failed</param>
+	/// <param name="setStatusTo">Null is to-do |  True is done | False is Failed</param>
 	/// <exception cref="ArgumentOutOfRangeException"></exception>
-	public void Change(ThumbnailSize? thumbnailSize = null, bool? setStatus = null)
+	public void Change(ThumbnailSize? thumbnailSize = null, bool? setStatusTo = null)
 	{
 		switch ( thumbnailSize )
 		{
 			case ThumbnailSize.TinyIcon:
-				TinyIcon = setStatus;
+				TinyIcon = setStatusTo;
 				break;
 			case ThumbnailSize.TinyMeta:
-				TinyMeta = setStatus;
+				TinyMeta = setStatusTo;
 				break;
 			case ThumbnailSize.Small:
-				Small = setStatus;
+				Small = setStatusTo;
 				break;
 			case ThumbnailSize.Large:
-				Large = setStatus;
+				Large = setStatusTo;
 				break;
 			case ThumbnailSize.ExtraLarge:
-				ExtraLarge = setStatus;
+				ExtraLarge = setStatusTo;
 				break;
 			case null:
 				break;

@@ -9,6 +9,7 @@ using starskytest.FakeMocks;
 
 namespace starskytest.starsky.feature.import.Services;
 
+[TestClass]
 public class ImportThumbnailServiceTests
 {
 	private readonly AppSettings _appSettings;
@@ -32,7 +33,7 @@ public class ImportThumbnailServiceTests
 	public async Task WriteThumbnailsTest_NotFound()
 	{
 		var logger = new FakeIWebLogger();
-		var sut = new ImportThumbnailService(new FakeSelectorStorage(), new FakeIWebLogger(),
+		var sut = new ImportThumbnailService(new FakeSelectorStorage(), logger,
 			_appSettings);
 
 		var result = await sut.WriteThumbnails(new List<string> { "123" },
@@ -95,4 +96,5 @@ public class ImportThumbnailServiceTests
 		Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
 			sut.MapToTransferObject(inputList));
 	}
+	
 }
