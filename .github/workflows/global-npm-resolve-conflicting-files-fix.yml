@@ -20,13 +20,16 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Merge master into branch
+      - name: Setup git
         run: |
           git config --global user.email "qdraw@users.noreply.github.com"
           git config --global user.name "Global npm resolve conflicting files fix script"
+          
+      - name: Merge master into branch
+        run: |
           git fetch origin
           git checkout ${{ github.head_ref }}
-          git merge --allow-unrelated-histories origin/master || true
+          git merge origin/master --strategy=theirs
 
       - name: Resolve package-lock.json conflicts
         run: |
