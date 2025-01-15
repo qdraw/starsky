@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
@@ -32,7 +31,7 @@ public class FfmpegVideoThumbnailGenerator(
 			imageFormat, thumbnailSizes);
 	}
 
-	private async Task<(MemoryStream?, GenerationResultModel)> ResizeThumbnailFromSourceImage(
+	private async Task<GenerationResultModel> ResizeThumbnailFromSourceImage(
 		ThumbnailSize biggestThumbnailSize, string singleSubPath, string fileHash,
 		ThumbnailImageFormat imageFormat)
 	{
@@ -40,8 +39,8 @@ public class FfmpegVideoThumbnailGenerator(
 			await videoProcess.RunVideo(singleSubPath, fileHash, VideoProcessTypes.Thumbnail);
 		if ( !result.IsSuccess || result.ResultPath == null )
 		{
-			return ( null, ErrorGenerationResultModel.FailedResult(biggestThumbnailSize,
-				singleSubPath, fileHash, true, result.ErrorMessage!) );
+			return ErrorGenerationResultModel.FailedResult(biggestThumbnailSize,
+				singleSubPath, fileHash, true, result.ErrorMessage!);
 		}
 
 		var service = new ResizeThumbnailFromSourceImageHelper(selectorStorage, logger);

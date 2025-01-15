@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Enums;
@@ -18,7 +17,7 @@ public class SharedGenerate(ISelectorStorage selectorStorage, IWebLogger logger)
 	///     eg. ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported,
 	///     ExtensionRolesHelper.IsExtensionVideoSupported
 	/// </summary>
-	public delegate Task<(MemoryStream?, GenerationResultModel)> ResizeThumbnailFromSourceImage(
+	public delegate Task<GenerationResultModel> ResizeThumbnailFromSourceImage(
 		ThumbnailSize biggestThumbnailSize, string singleSubPath, string fileHash,
 		ThumbnailImageFormat imageFormat);
 
@@ -46,14 +45,14 @@ public class SharedGenerate(ISelectorStorage selectorStorage, IWebLogger logger)
 		}
 
 		var toGenerateSize = thumbnailSizes[0];
-		var (_, largeImageResult) =
+		var largeImageResult =
 			await resizeDelegate(toGenerateSize, singleSubPath, fileHash,
 				imageFormat);
 
 		var results = await _resizeThumbnail.ResizeThumbnailFromThumbnailImageLoop(singleSubPath,
 			fileHash, imageFormat, thumbnailSizes, toGenerateSize);
 
-		return preflightResult.AddOrUpdateRange(results?.Select(p => p.Item2))
+		return preflightResult.AddOrUpdateRange(results)
 			.AddOrUpdateRange([largeImageResult]);
 	}
 }

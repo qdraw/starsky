@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,25 +20,55 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.
 [TestClass]
 public class ResizeThumbnailFromSourceImageHelperTests
 {
+	private const string TestPath = "test.jpg";
+	private const string FileHash = "test";
+
+	private readonly ResizeThumbnailFromSourceImageHelper _sut;
+
+	public ResizeThumbnailFromSourceImageHelperTests()
+	{
+		var storage = new FakeIStorage(
+			new List<string> { "/" },
+			new List<string> { TestPath },
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+
+		var selectorStorage = new FakeSelectorStorage(storage);
+		var logger = new FakeIWebLogger();
+		_sut = new ResizeThumbnailFromSourceImageHelper(selectorStorage, logger);
+	}
+
 	[TestMethod]
 	[DataRow(ThumbnailImageFormat.jpg)]
 	[DataRow(ThumbnailImageFormat.png)]
-	public async Task ResizeThumbnailToStream__HostDependency_Format_Test(
+	[DataRow(ThumbnailImageFormat.webp)]
+	public async Task ResizeThumbnailFromSourceImage__HostDependency_Format_Test(
 		ThumbnailImageFormat thumbnailImageFormat)
 	{
 		var newImage = new CreateAnImage();
 		var iStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+		const int width = 4;
+		var testOutputHash = Path.Combine(newImage.BasePath,
+			"test_hash_" + thumbnailImageFormat);
+		var testOutputPath = $"{testOutputHash}@{width}.{thumbnailImageFormat}";
 
-		// string subPath, int width, string outputHash = null,bool removeExif = false,ExtensionRolesHelper.ImageFormat
+		// string subPath, int width, string outputHash = null,bool
+		// removeExif = false,ExtensionRolesHelper.ImageFormat
 		// imageFormat = ExtensionRolesHelper.ImageFormat.jpg
-		var sut = new ResizeThumbnailFromSourceImageHelper(new FakeSelectorStorage(iStorage),
+		var sut = new ResizeThumbnailFromSourceImageHelper(
+			new FakeSelectorStorage(iStorage),
 			new FakeIWebLogger());
 
-		var (thumb, model) = await sut.ResizeThumbnailFromSourceImage(
-			newImage.FullFilePath, 4, null, true, thumbnailImageFormat);
-		var meta = ImageMetadataReader.ReadMetadata(new MemoryStream(thumb!.ToArray())).ToList();
+		var model = await sut.ResizeThumbnailFromSourceImage(
+			newImage.FullFilePath, width, testOutputHash,
+			true, thumbnailImageFormat);
 
-		Assert.IsTrue(thumb.CanRead);
+		var meta = ImageMetadataReader.ReadMetadata(
+			iStorage.ReadStream(testOutputPath)).ToList();
+
+		// clean
+		File.Delete(testOutputPath);
+
+		// asserts
 		Assert.AreEqual(4, ReadMetaExif.GetImageWidthHeight(meta, true));
 		Assert.AreEqual(3, ReadMetaExif.GetImageWidthHeight(meta, false));
 		Assert.AreEqual(thumbnailImageFormat, model.ImageFormat);
@@ -46,20 +77,67 @@ public class ResizeThumbnailFromSourceImageHelperTests
 	}
 
 	[TestMethod]
-	public async Task ResizeThumbnailToStream_CorruptImage_MemoryStream()
+	public async Task ResizeThumbnailFromSourceImage_CorruptInput()
 	{
 		var storage = new FakeIStorage(
 			["/"],
-			["test"],
+			[TestPath],
 			new List<byte[]> { Array.Empty<byte>() });
 
-		var sut = new ResizeThumbnailFromSourceImageHelper(new FakeSelectorStorage(storage),
+		var sut = new ResizeThumbnailFromThumbnailImageHelper(
+			new FakeSelectorStorage(storage),
 			new FakeIWebLogger());
 
-		var (thumb, model) = await sut.ResizeThumbnailFromSourceImage(
-			"test", 4, null, true, ThumbnailImageFormat.jpg);
+		var result = await sut.ResizeThumbnailFromThumbnailImage(FileHash,
+			ThumbnailSize.Large, 1, null, FileHash,
+			true, ThumbnailImageFormat.jpg);
 
-		Assert.IsNull(thumb);
-		Assert.IsFalse(model.Success);
+		Assert.IsFalse(result.Success);
+		Assert.IsFalse(result.IsNotFound);
+		Assert.AreEqual("Image cannot be loaded", result.ErrorMessage);
+	}
+
+	[TestMethod]
+	public async Task ResizeThumbnailFromSourceImage_Success()
+	{
+		var result = await _sut.ResizeThumbnailFromSourceImage(
+			TestPath, 4, "thumbnailOutputHash",
+			false, ThumbnailImageFormat.jpg);
+
+		Assert.IsTrue(result.Success);
+		Assert.AreEqual("thumbnailOutputHash", result.FileHash);
+		Assert.AreEqual(4, result.SizeInPixels);
+		Assert.AreEqual(ThumbnailImageFormat.jpg, result.ImageFormat);
+	}
+
+	[TestMethod]
+	public async Task ResizeThumbnailFromSourceImage_FileNotFound()
+	{
+		var result = await _sut.ResizeThumbnailFromSourceImage(
+			"non-existing-filepath", 4,
+			"thumbnailOutputHash",
+			false, ThumbnailImageFormat.jpg);
+
+		Assert.IsFalse(result.Success);
+		Assert.AreEqual("Image cannot be loaded", result.ErrorMessage);
+	}
+
+	[TestMethod]
+	public async Task ResizeThumbnailFromSourceImage_InvalidOutputHash()
+	{
+		await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
+			await _sut.ResizeThumbnailFromSourceImage(
+				"non-existing-filepath", 4, "",
+				false, ThumbnailImageFormat.jpg));
+	}
+
+	[TestMethod]
+	public async Task ResizeThumbnailFromSourceImage_InvalidImageFormat()
+	{
+		await Assert.ThrowsExceptionAsync<InvalidEnumArgumentException>(async () =>
+			await _sut.ResizeThumbnailFromSourceImage(
+				"non-existing-filepath", 4,
+				"thumbnailOutputHash",
+				false, ThumbnailImageFormat.unknown));
 	}
 }

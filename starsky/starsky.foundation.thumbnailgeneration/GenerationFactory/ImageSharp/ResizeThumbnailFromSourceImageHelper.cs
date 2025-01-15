@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -25,15 +26,16 @@ internal class ResizeThumbnailFromSourceImageHelper(
 	private readonly IStorage _thumbnailStorage =
 		selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 
-	internal async Task<(MemoryStream?, GenerationResultModel)> ResizeThumbnailFromSourceImage(
+	internal async Task<GenerationResultModel> ResizeThumbnailFromSourceImage(
 		string subPath,
 		int width, string? thumbnailOutputHash,
 		bool removeExif,
 		ThumbnailImageFormat imageFormat)
 	{
+		ArgumentException.ThrowIfNullOrWhiteSpace(thumbnailOutputHash);
 		if ( imageFormat == ThumbnailImageFormat.unknown )
 		{
-			throw new ImageProcessingException("non valid type");
+			throw new InvalidEnumArgumentException("imageFormat should not be unknown");
 		}
 
 		var outputStream = new MemoryStream();
@@ -48,7 +50,7 @@ internal class ResizeThumbnailFromSourceImageHelper(
 			Size = ThumbnailNameHelper.GetSize(width)
 		};
 
-		var fileHashWithExtension = ThumbnailNameHelper.Combine(thumbnailOutputHash ?? string.Empty,
+		var fileHashWithExtension = ThumbnailNameHelper.Combine(thumbnailOutputHash,
 			ThumbnailNameHelper.GetSize(width), imageFormat);
 
 		try
@@ -60,13 +62,6 @@ internal class ResizeThumbnailFromSourceImageHelper(
 				ImageSharpImageResizeHelper.ImageSharpImageResize(image, width, removeExif);
 				await SaveThumbnailImageFormatHelper.SaveThumbnailImageFormat(image, imageFormat,
 					outputStream);
-
-				// When thumbnailOutputHash is nothing return stream instead of writing down
-				if ( string.IsNullOrEmpty(thumbnailOutputHash) )
-				{
-					result.ErrorMessage = "Ok give stream back instead of disk write";
-					return ( outputStream, result );
-				}
 
 				await _thumbnailStorage.WriteStreamAsync(outputStream, fileHashWithExtension);
 				// Disposed in WriteStreamAsync
@@ -91,10 +86,10 @@ internal class ResizeThumbnailFromSourceImageHelper(
 
 			new RemoveCorruptThumbnail(selectorStorage).RemoveIfCorrupt(fileHashWithExtension);
 
-			return ( null, result );
+			return result;
 		}
 
 		result.ErrorMessage = "Ok and written to disk";
-		return ( null, result );
+		return result;
 	}
 }

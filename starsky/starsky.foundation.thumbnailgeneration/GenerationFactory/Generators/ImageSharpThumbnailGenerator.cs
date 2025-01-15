@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
@@ -30,7 +29,7 @@ public class ImageSharpThumbnailGenerator(
 			imageFormat, thumbnailSizes);
 	}
 
-	private async Task<(MemoryStream?, GenerationResultModel)> ResizeThumbnailFromSourceImage(
+	private async Task<GenerationResultModel> ResizeThumbnailFromSourceImage(
 		ThumbnailSize biggestThumbnailSize, string singleSubPath, string fileHash,
 		ThumbnailImageFormat imageFormat)
 	{

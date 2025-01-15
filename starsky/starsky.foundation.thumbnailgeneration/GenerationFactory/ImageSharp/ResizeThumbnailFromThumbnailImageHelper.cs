@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,7 +23,7 @@ internal class ResizeThumbnailFromThumbnailImageHelper(
 	private readonly IStorage _thumbnailStorage =
 		selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 
-	internal async Task<IEnumerable<(MemoryStream?, GenerationResultModel)>?>
+	internal async Task<IEnumerable<GenerationResultModel>?>
 		ResizeThumbnailFromThumbnailImageLoop(
 			string singleSubPath, string fileHash, ThumbnailImageFormat imageFormat,
 			List<ThumbnailSize> thumbnailSizes,
@@ -51,15 +52,21 @@ internal class ResizeThumbnailFromThumbnailImageHelper(
 	/// <param name="removeExif">remove meta data</param>
 	/// <param name="imageFormat">jpg, or png</param>
 	/// <param name="subPathReference">for reference only</param>
-	/// <returns>(stream, fileHash, and is ok)</returns>
-	internal async Task<(MemoryStream?, GenerationResultModel)> ResizeThumbnailFromThumbnailImage(
+	/// <returns>Result model</returns>
+	internal async Task<GenerationResultModel> ResizeThumbnailFromThumbnailImage(
 		string fileHash, // source location
 		ThumbnailSize inputThumbnailSize,
-		int width, string? subPathReference, string? thumbnailOutputHash,
+		int width, string? subPathReference, string thumbnailOutputHash,
 		bool removeExif,
 		ThumbnailImageFormat imageFormat
 	)
 	{
+		ArgumentException.ThrowIfNullOrWhiteSpace(thumbnailOutputHash);
+		if ( imageFormat == ThumbnailImageFormat.unknown )
+		{
+			throw new InvalidEnumArgumentException("imageFormat should not be unknown");
+		}
+
 		var outputStream = new MemoryStream();
 		var result = new GenerationResultModel
 		{
@@ -84,12 +91,6 @@ internal class ResizeThumbnailFromThumbnailImageHelper(
 				await SaveThumbnailImageFormatHelper.SaveThumbnailImageFormat(image, imageFormat,
 					outputStream);
 
-				// When thumbnailOutputHash is nothing return stream instead of writing down
-				if ( string.IsNullOrEmpty(thumbnailOutputHash) )
-				{
-					return ( outputStream, result );
-				}
-
 				// only when a hash exists
 				var outputFileHashWithExtension =
 					ThumbnailNameHelper.Combine(thumbnailOutputHash, result.Size, imageFormat);
@@ -113,9 +114,9 @@ internal class ResizeThumbnailFromThumbnailImageHelper(
 				ex);
 			result.Success = false;
 			result.ErrorMessage = message;
-			return ( null, result );
+			return result;
 		}
 
-		return ( outputStream, result );
+		return result;
 	}
 }

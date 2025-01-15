@@ -19,12 +19,22 @@ namespace starskytest.starsky.foundation.video.Process;
 public class FfmpegStreamToStreamRunnerTests
 {
 	private readonly StorageHostFullPathFilesystem _hostFullPathFilesystem;
-	private string _ffmpegExe;
-	private string _readFile;
+	private readonly string _ffmpegExe;
+	private readonly string _readFile;
 
 	public FfmpegStreamToStreamRunnerTests()
 	{
 		_hostFullPathFilesystem = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+		if ( new AppSettings().IsWindows )
+		{
+			_ffmpegExe = new CreateAnImage().BasePath + "ffmpeg.exe";
+		}
+		else
+		{
+			_ffmpegExe = new CreateAnImage().BasePath + "ffmpeg";
+		}
+
+		_readFile = new CreateAnImage().BasePath + "read_file";
 	}
 
 	private void CreateStubFile(string path, string content)
@@ -39,7 +49,6 @@ public class FfmpegStreamToStreamRunnerTests
 
 		CreateStubFile(new CreateAnImage().BasePath + "ffmpeg",
 			"#!/bin/bash\necho Fake Executable");
-		_readFile = new CreateAnImage().BasePath + "read_file";
 		CreateStubFile(_readFile, "test_content");
 
 		var ffmpegExe = new MemoryStream(zipper.FirstOrDefault(p => p.Key == "ffmpeg.exe").Value);
@@ -50,15 +59,6 @@ public class FfmpegStreamToStreamRunnerTests
 				new FakeIWebLogger())
 			.Chmod(
 				new CreateAnImage().BasePath + "ffmpeg");
-
-		if ( new AppSettings().IsWindows )
-		{
-			_ffmpegExe = new CreateAnImage().BasePath + "ffmpeg.exe";
-		}
-		else
-		{
-			_ffmpegExe = new CreateAnImage().BasePath + "ffmpeg";
-		}
 	}
 
 	[ClassCleanup]

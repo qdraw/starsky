@@ -1046,7 +1046,7 @@ public sealed class ReadMetaExif
 		var directoryNames = new[]
 		{
 			"JPEG", "PNG-IHDR", "BMP Header", "GIF Header", "QuickTime Track Header",
-			"Exif IFD0", "Exif SubIFD"
+			"Exif IFD0", "Exif SubIFD", "WebP"
 		};
 		foreach ( var dirName in directoryNames )
 		{
