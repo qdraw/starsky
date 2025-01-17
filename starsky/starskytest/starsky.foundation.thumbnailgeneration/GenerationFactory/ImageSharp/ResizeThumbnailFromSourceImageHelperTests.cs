@@ -62,9 +62,10 @@ public class ResizeThumbnailFromSourceImageHelperTests
 			newImage.FullFilePath, width, testOutputHash,
 			true, thumbnailImageFormat);
 
-		var meta = ImageMetadataReader.ReadMetadata(
-			iStorage.ReadStream(testOutputPath)).ToList();
-
+		var stream = iStorage.ReadStream(testOutputPath);
+		var meta = ImageMetadataReader.ReadMetadata(stream).ToList();
+		await stream.DisposeAsync();
+		
 		// clean
 		File.Delete(testOutputPath);
 
