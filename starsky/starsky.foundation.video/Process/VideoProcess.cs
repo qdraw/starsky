@@ -32,7 +32,7 @@ public class VideoProcess : IVideoProcess
 		{
 			case VideoProcessTypes.Thumbnail:
 				var (runResult, stream) = await RunFfmpeg(subPath,
-					"-frames:v 1", "image2", 1_000_000);
+					"-frames:v 1", "image2", 2_000_000);
 				return await _thumbnailPost.PostPrepThumbnail(runResult, stream, subPath);
 			default:
 				return new VideoResult(false, subPath);
