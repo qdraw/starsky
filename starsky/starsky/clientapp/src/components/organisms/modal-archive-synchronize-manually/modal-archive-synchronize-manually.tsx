@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from "react";
-import { ArchiveContext } from "../../../contexts/archive-context";
+import React, {useEffect, useState} from "react";
+import {ArchiveContext} from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useInterval from "../../../hooks/use-interval";
 import useLocation from "../../../hooks/use-location/use-location";
 import localization from "../../../localization/localization.json";
 import FetchGet from "../../../shared/fetch/fetch-get";
 import FetchPost from "../../../shared/fetch/fetch-post";
-import { Language } from "../../../shared/language";
-import { URLPath } from "../../../shared/url/url-path";
-import { UrlQuery } from "../../../shared/url/url-query";
+import {Language} from "../../../shared/language";
+import {URLPath} from "../../../shared/url/url-path";
+import {UrlQuery} from "../../../shared/url/url-query";
 import Modal from "../../atoms/modal/modal";
 import Preloader from "../../atoms/preloader/preloader";
 import ForceSyncWaitButton from "../../molecules/force-sync-wait-button/force-sync-wait-button";
-import { RemoveCache } from "./internal/remove-cache.ts";
+import {RemoveCache} from "./internal/remove-cache.ts";
 
 interface IModalDisplayOptionsProps {
   isOpen: boolean;
@@ -39,16 +39,16 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
   const [isLoading, setIsLoading] = useState(false);
 
   const history = useLocation();
-  const { dispatch } = React.useContext(ArchiveContext);
+  const {dispatch} = React.useContext(ArchiveContext);
 
   // the default is true
   const [collections, setCollections] = React.useState(
-    new URLPath().StringToIUrl(history.location.search).collections !== false
+    new URLPath().StringToIUrl(history.location.search).collections
   );
 
   /** update when changing values and search */
   useEffect(() => {
-    setCollections(new URLPath().StringToIUrl(history.location.search).collections !== false);
+    setCollections(new URLPath().StringToIUrl(history.location.search).collections);
   }, [collections, history.location.search]);
 
   const [geoSyncPercentage, setGeoSyncPercentage] = useState(0);
@@ -88,7 +88,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
   useInterval(() => fetchGeoSyncStatus(), 10000);
 
   function manualThumbnailSync() {
-    const parentFolder = props.parentFolder ?? "/";
+    const parentFolder = props.parentFolder && props.parentFolder.trim() !== "" ? props.parentFolder : "/";
     const bodyParams = new URLSearchParams();
     bodyParams.set("f", parentFolder);
     setIsLoading(true);
@@ -109,7 +109,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
         props.handleExit();
       }}
     >
-      {isLoading ? <Preloader isWhite={false} isOverlay={true} /> : ""}
+      {isLoading ? <Preloader isWhite={false} isOverlay={true}/> : ""}
 
       <div className="modal content--subheader">{MessageSynchronizeManually}</div>
       <div className="modal content--text">
