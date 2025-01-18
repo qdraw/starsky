@@ -87,4 +87,34 @@ public class GenerationResultModelExtensionsTests
 		Assert.IsTrue(updatedResults.Exists(x => x.FileHash == "hash1"));
 		Assert.IsTrue(updatedResults.Exists(x => x.FileHash == "hash2"));
 	}
+
+	[TestMethod]
+	public void AddOrUpdateRange_NullableCompositeResults_ReturnsResult()
+	{
+		IEnumerable<GenerationResultModel>? compositeResults = null;
+		var result = new List<GenerationResultModel>
+		{
+			new() { FileHash = "hash1", Size = ThumbnailSize.TinyIcon }
+		};
+
+		var updatedResults = compositeResults.AddOrUpdateRange(result);
+
+		Assert.AreEqual(1, updatedResults.Count);
+		Assert.AreEqual("hash1", updatedResults[0].FileHash);
+	}
+
+	[TestMethod]
+	public void AddOrUpdateRange_NullableResult_ReturnsCompositeResults()
+	{
+		var compositeResults = new List<GenerationResultModel>
+		{
+			new() { FileHash = "hash1", Size = ThumbnailSize.TinyIcon }
+		};
+		IEnumerable<GenerationResultModel>? result = null;
+
+		var updatedResults = compositeResults.AddOrUpdateRange(result);
+
+		Assert.AreEqual(1, updatedResults.Count);
+		Assert.AreEqual("hash1", updatedResults[0].FileHash);
+	}
 }
