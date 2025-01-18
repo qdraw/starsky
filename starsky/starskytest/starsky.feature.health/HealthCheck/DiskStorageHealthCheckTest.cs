@@ -4,6 +4,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.health.HealthCheck;
 using starsky.foundation.platform.Models;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.feature.health.HealthCheck;
 
@@ -18,7 +19,8 @@ public sealed class DiskStorageHealthCheckTest
 		DiskOptionsPercentageSetup.Setup(appSettings.TempFolder, diskOptions, 0.000001f);
 
 		var healthCheck = new HealthCheckContext();
-		var result = await new DiskStorageHealthCheck(diskOptions).CheckHealthAsync(healthCheck);
+		var sut = new DiskStorageHealthCheck(diskOptions, new FakeIWebLogger());
+		var result = await sut.CheckHealthAsync(healthCheck);
 		Assert.AreEqual(HealthStatus.Healthy, result.Status);
 	}
 
@@ -30,12 +32,14 @@ public sealed class DiskStorageHealthCheckTest
 
 		DiskOptionsPercentageSetup.Setup(appSettings.TempFolder, diskOptions, 1.01f);
 
+		var sut = new DiskStorageHealthCheck(diskOptions, new FakeIWebLogger());
+
 		var healthCheck = new HealthCheckContext
 		{
 			Registration = new HealthCheckRegistration("te",
-				new DiskStorageHealthCheck(diskOptions), null, null)
+				sut, null, null)
 		};
-		var result = await new DiskStorageHealthCheck(diskOptions).CheckHealthAsync(healthCheck);
+		var result = await sut.CheckHealthAsync(healthCheck);
 		Assert.AreEqual(HealthStatus.Unhealthy, result.Status);
 		Assert.IsTrue(result.Description?.Contains("Minimum configured megabytes for disk"));
 	}
@@ -46,12 +50,14 @@ public sealed class DiskStorageHealthCheckTest
 		var diskOptions = new DiskStorageOptions();
 		diskOptions.AddDrive("NonExistDisk:", 10);
 
+		var sut = new DiskStorageHealthCheck(diskOptions, new FakeIWebLogger());
+
 		var healthCheck = new HealthCheckContext
 		{
 			Registration = new HealthCheckRegistration("te",
-				new DiskStorageHealthCheck(diskOptions), null, null)
+				sut, null, null)
 		};
-		var result = await new DiskStorageHealthCheck(diskOptions).CheckHealthAsync(healthCheck);
+		var result = await sut.CheckHealthAsync(healthCheck);
 		Assert.AreEqual(HealthStatus.Unhealthy, result.Status);
 		Assert.IsTrue(result.Description?.Contains("is not present on system"));
 	}
@@ -64,7 +70,7 @@ public sealed class DiskStorageHealthCheckTest
 		DiskOptionsPercentageSetup.Setup(appSettings.TempFolder, diskOptions, 99.9f);
 
 		var healthCheck = new HealthCheckContext();
-		var sut = new DiskStorageHealthCheck(diskOptions);
+		var sut = new DiskStorageHealthCheck(diskOptions, new FakeIWebLogger());
 
 		await Assert.ThrowsExceptionAsync<NullReferenceException>(async () =>
 			await sut.CheckHealthAsync(healthCheck));
