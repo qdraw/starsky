@@ -14,6 +14,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Services;
 using starsky.foundation.thumbnailgeneration.GenerationFactory;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
@@ -153,7 +154,9 @@ public sealed class DownloadPhotoControllerTest
 		var fileIndexItem = await InsertSearchData();
 		var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
 		var thumbnailService = new ThumbnailService(selectorStorage, new FakeIWebLogger(),
-			new AppSettings(), new FakeIUpdateStatusGeneratedThumbnailService(), new FakeIVideoProcess());
+			new AppSettings(), new FakeIUpdateStatusGeneratedThumbnailService(),
+			new FakeIVideoProcess(),
+			new FileHashSubPathStorage(selectorStorage, new FakeIWebLogger()));
 
 		// Act
 		var controller = new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger(),
@@ -172,7 +175,9 @@ public sealed class DownloadPhotoControllerTest
 		// Arrange
 		var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
 		var thumbnailService = new ThumbnailService(selectorStorage, new FakeIWebLogger(),
-			new AppSettings(), new FakeIUpdateStatusGeneratedThumbnailService(), new FakeIVideoProcess());
+			new AppSettings(), new FakeIUpdateStatusGeneratedThumbnailService(),
+			new FakeIVideoProcess(),
+			new FileHashSubPathStorage(selectorStorage, new FakeIWebLogger()));
 
 		// Act
 		var controller =
@@ -277,7 +282,9 @@ public sealed class DownloadPhotoControllerTest
 		var fileIndexItem = await InsertSearchData();
 		var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
 		var thumbnailService = new ThumbnailService(selectorStorage, new FakeIWebLogger(),
-			new AppSettings(), new FakeIUpdateStatusGeneratedThumbnailService(), new FakeIVideoProcess());
+			new AppSettings(), new FakeIUpdateStatusGeneratedThumbnailService(),
+			new FakeIVideoProcess(),
+			new FileHashSubPathStorage(selectorStorage, new FakeIWebLogger()));
 
 		// Act
 		var controller = new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger(),

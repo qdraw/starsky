@@ -17,6 +17,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Models;
+using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory;
 using starskytest.FakeCreateAn;
@@ -144,7 +145,9 @@ public sealed class ThumbnailControllerTest
 		// Create thumbnail in fake storage
 		var service = new ThumbnailService(new FakeSelectorStorage(storage),
 			new FakeIWebLogger(), new AppSettings(),
-			new FakeIUpdateStatusGeneratedThumbnailService(), new FakeIVideoProcess());
+			new FakeIUpdateStatusGeneratedThumbnailService(), new FakeIVideoProcess(),
+			new FileHashSubPathStorage(new FakeSelectorStorage(storage), new FakeIWebLogger()));
+
 		await service.GenerateThumbnail(createAnImage.FilePath!, createAnImage.FileHash!);
 
 		// Check if exist
@@ -184,7 +187,8 @@ public sealed class ThumbnailControllerTest
 		// Create thumbnail in fake storage
 		var thumbnailService = new ThumbnailService(new FakeSelectorStorage(storage),
 			new FakeIWebLogger(), new AppSettings(),
-			new FakeIUpdateStatusGeneratedThumbnailService(), new FakeIVideoProcess());
+			new FakeIUpdateStatusGeneratedThumbnailService(), new FakeIVideoProcess(),
+			new FileHashSubPathStorage(new FakeSelectorStorage(storage), new FakeIWebLogger()));
 
 		await thumbnailService.GenerateThumbnail(createAnImage.FilePath!, createAnImage.FileHash!);
 

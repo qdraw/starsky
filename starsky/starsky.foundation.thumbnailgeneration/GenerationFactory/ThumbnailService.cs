@@ -12,8 +12,6 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Services;
-using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Shared;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Testers;
@@ -31,7 +29,8 @@ public class ThumbnailService(
 	IWebLogger logger,
 	AppSettings appSettings,
 	IUpdateStatusGeneratedThumbnailService updateStatusGeneratedThumbnailService,
-	IVideoProcess videoProcess)
+	IVideoProcess videoProcess,
+	IFileHashSubPathStorage fileHashSubPathStorage)
 	: IThumbnailService
 {
 	private readonly Func<string?, bool> _delegateToCheckIfExtensionIsSupported = e =>
@@ -39,9 +38,6 @@ public class ThumbnailService(
 		ExtensionRolesHelper.IsExtensionVideoSupported(e);
 
 	private readonly FolderToFileList _folderToFileList = new(selectorStorage);
-
-	private readonly IStorage
-		_storage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 
 	/// <summary>
 	///     Can be used for directories or single files
@@ -152,7 +148,7 @@ public class ThumbnailService(
 		}
 
 		var (fileHashLocal, success) =
-			await new FileHash(_storage, logger).GetHashCodeAsync(singleSubPath);
+			await fileHashSubPathStorage.GetHashCodeAsync(singleSubPath);
 		if ( !success )
 		{
 			return [];
@@ -169,7 +165,7 @@ public class ThumbnailService(
 		var generator = factory.GetGenerator(singleSubPath);
 
 		var (fileHash, success) =
-			await new FileHash(_storage, logger).GetHashCodeAsync(singleSubPath);
+			await fileHashSubPathStorage.GetHashCodeAsync(singleSubPath);
 		if ( !success )
 		{
 			return ( null, ErrorGenerationResultModel

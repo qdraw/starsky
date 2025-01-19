@@ -28,6 +28,13 @@ public sealed class FileHash
 	private readonly IStorage _iStorage;
 	private readonly IWebLogger _logger;
 
+	/// <summary>
+	///     Two public interfaces
+	///     Returns list of hashCodes
+	///     or one hashcode (base32)
+	/// </summary>
+	/// <param name="iStorage"></param>
+	/// <param name="logger"></param>
 	public FileHash(IStorage iStorage, IWebLogger logger)
 	{
 		_iStorage = iStorage;
@@ -35,13 +42,8 @@ public sealed class FileHash
 	}
 
 
-	// Two public interfaces
-	// Returns list of hashCodes
-	// or one hashcode (base32)
-
-
 	/// <summary>
-	///     Get the hashCodes of a array of files
+	///     Get the hashCodes of an array of files
 	///     Uses the default timeout
 	/// </summary>
 	/// <param name="filesInDirectorySubPath">array</param>
