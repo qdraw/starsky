@@ -22,8 +22,8 @@ public class FfMpegDownloadTest
 {
 	private const string DependencyFolderName = "FfMpegDownloadTest";
 	private readonly FfmpegBinariesIndex _exampleFfmpegBinariesIndex;
-	private readonly bool _isWindows;
 	private readonly FakeIHttpClientHelper _httpClientHelper;
+	private readonly bool _isWindows;
 
 	private readonly FakeIStorage _storage = new();
 
@@ -315,7 +315,7 @@ public class FfMpegDownloadTest
 
 		Assert.AreEqual(FfmpegDownloadStatus.PrepareBeforeRunningFailed, resultPrepFail);
 	}
-	
+
 	[TestMethod]
 	public async Task DownloadFfMpeg_PreflightRunCheckFailed()
 	{
@@ -412,5 +412,57 @@ public class FfMpegDownloadTest
 		var resultAllStages = await ffmpegDownload.DownloadFfMpeg();
 
 		Assert.AreEqual(FfmpegDownloadStatus.Ok, resultAllStages);
+	}
+
+	[TestMethod]
+	[DataRow(null)]
+	[DataRow("not-found")]
+	[DataRow("test")]
+	public void GetSetFfMpegPath_ReturnsCorrectPath_Found(string? dependenciesFolder)
+	{
+		var appSettings = new AppSettings { DependenciesFolder = dependenciesFolder! };
+
+		var logger = new FakeIWebLogger();
+		var expectedPath = Path.Combine(dependenciesFolder ?? "", "ffmpeg-osx-arm64", "ffmpeg");
+
+		var storage = new FakeIStorage(new List<string>(), new List<string> { expectedPath });
+
+		if ( dependenciesFolder == "not-found" )
+		{
+			storage = new FakeIStorage();
+		}
+
+		var ffmpegDownload = new FfMpegDownload(new FakeSelectorStorage(storage), appSettings,
+			logger,
+			new FakeIFfMpegDownloadIndex(), new FakeIFfMpegDownloadBinaries(),
+			new FakeIFfMpegPrepareBeforeRunning(), new FakeIFfMpegPreflightRunCheck());
+
+		var path = ffmpegDownload.GetSetFfMpegPath();
+
+		Assert.AreEqual(expectedPath, path);
+		Assert.AreEqual(expectedPath, appSettings.FfmpegPath);
+	}
+
+	[TestMethod]
+	public void GetSetFfMpegPath_ReturnsCorrectPath_AlreadySet()
+	{
+		var appSettings = new AppSettings
+		{
+			DependenciesFolder = "test", FfmpegPath = "/usr/local/bin/ffmpeg"
+		};
+
+		var logger = new FakeIWebLogger();
+		var storage = new FakeIStorage(new List<string>(),
+			new List<string> { "/usr/local/bin/ffmpeg" });
+
+		var ffmpegDownload = new FfMpegDownload(new FakeSelectorStorage(storage), appSettings,
+			logger,
+			new FakeIFfMpegDownloadIndex(), new FakeIFfMpegDownloadBinaries(),
+			new FakeIFfMpegPrepareBeforeRunning(), new FakeIFfMpegPreflightRunCheck());
+
+		var path = ffmpegDownload.GetSetFfMpegPath();
+
+		Assert.AreEqual("/usr/local/bin/ffmpeg", path);
+		Assert.AreEqual("/usr/local/bin/ffmpeg", appSettings.FfmpegPath);
 	}
 }
