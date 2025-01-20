@@ -423,9 +423,11 @@ public class FfMpegDownloadTest
 		var appSettings = new AppSettings { DependenciesFolder = dependenciesFolder! };
 
 		var logger = new FakeIWebLogger();
-		var expectedPath = Path.Combine(dependenciesFolder ?? "", "ffmpeg-osx-arm64", "ffmpeg");
+		var expectedPath = Path.Combine(dependenciesFolder ?? "",
+			$"ffmpeg-{CurrentArchitecture.GetCurrentRuntimeIdentifier()}",
+			"ffmpeg");
 
-		var storage = new FakeIStorage(new List<string>(), new List<string> { expectedPath });
+		var storage = new FakeIStorage([], [expectedPath]);
 
 		if ( dependenciesFolder == "not-found" )
 		{
