@@ -69,17 +69,20 @@ public sealed class StorageThumbnailFilesystemTest
 		var createAnImage = new CreateAnImage();
 
 		// first copy for parallel test
-		_thumbnailStorage.FileCopy(_fileName, "already_exists_file.jpg");
+		const string alreadyExistsFileName = "already_exists_file.jpg";
+		const string beforeTestFileName = "before_test_thumbnail.jpg";
+
+		_thumbnailStorage.FileCopy(_fileName, alreadyExistsFileName);
 		await _thumbnailStorage.WriteStreamAsync(StringToStreamHelper.StringToStream("1"),
-			"before_test_thumbnail");
+			beforeTestFileName);
 
-		_thumbnailStorage.FileMove("before_test_thumbnail", "already_exists_file.jpg");
+		_thumbnailStorage.FileMove(beforeTestFileName, alreadyExistsFileName);
 
-		Assert.AreEqual(CreateAnImage.Size, _thumbnailStorage.Info("already_exists_file").Size);
+		Assert.AreEqual(CreateAnImage.Size, _thumbnailStorage.Info(alreadyExistsFileName).Size);
 
 		File.Delete(Path.Combine(createAnImage.BasePath,
-			"already_exists_file.jpg"));
-		_thumbnailStorage.FileDelete("before_test_thumbnail");
+			alreadyExistsFileName));
+		_thumbnailStorage.FileDelete(beforeTestFileName);
 	}
 
 	[TestMethod]
