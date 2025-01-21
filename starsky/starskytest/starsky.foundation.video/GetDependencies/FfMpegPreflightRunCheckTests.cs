@@ -25,6 +25,7 @@ public class FfMpegPreflightRunCheckTests
 	private readonly StorageHostFullPathFilesystem _hostFileSystemStorage;
 	private readonly bool _isWindows;
 	private readonly IWebLogger _logger;
+	private readonly string _parentFolder;
 
 	public FfMpegPreflightRunCheckTests()
 	{
@@ -32,14 +33,30 @@ public class FfMpegPreflightRunCheckTests
 		_logger = new FakeIWebLogger();
 		_ffMpegChmod = new FfMpegChmod(new FakeSelectorStorage(_hostFileSystemStorage), _logger);
 
-		var parentFolder =
+		_parentFolder =
 			Path.Combine(new CreateAnImage().BasePath, "FfMpegPreflightRunCheckTests");
-		_appSettings = new AppSettings { DependenciesFolder = parentFolder };
+		_appSettings = new AppSettings { DependenciesFolder = _parentFolder };
 
 		_ffmpegExePath = new FfmpegExePath(_appSettings);
 		_currentArchitecture = CurrentArchitecture
 			.GetCurrentRuntimeIdentifier();
 		_isWindows = new AppSettings().IsWindows;
+	}
+
+	[TestCleanup]
+	public void CleanUpFfMpegPreflightRunCheckTests()
+	{
+		if ( _hostFileSystemStorage.ExistFolder(
+			    _ffmpegExePath.GetExeParentFolder(_currentArchitecture)) )
+		{
+			_hostFileSystemStorage.FolderDelete(
+				_ffmpegExePath.GetExeParentFolder(_currentArchitecture));
+		}
+
+		if ( _hostFileSystemStorage.ExistFolder(_parentFolder) )
+		{
+			_hostFileSystemStorage.FolderDelete(_parentFolder);
+		}
 	}
 
 	private async Task CreateFile(int exitCode, string echoName, bool enableChmod = true)

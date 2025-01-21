@@ -9,7 +9,7 @@ using starsky.foundation.video.Process.Interfaces;
 namespace starsky.foundation.video.Process;
 
 [Service(typeof(IVideoProcess), InjectionLifetime = InjectionLifetime.Scoped)]
-public class VideoProcess : IVideoProcess
+public sealed class VideoProcess : IVideoProcess
 {
 	private readonly IFfMpegDownload _ffMpegDownload;
 	private readonly IWebLogger _logger;

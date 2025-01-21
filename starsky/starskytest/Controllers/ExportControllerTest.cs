@@ -229,8 +229,9 @@ public sealed class ExportControllerTest
 
 		// Don't check if file exist due async
 		await service.StopAsync(CancellationToken.None);
-	}
 
+		File.Delete(sourceFullPath);
+	}
 
 	[TestMethod]
 	public async Task ExportControllerTest__ThumbTrue_CreateListToExport()

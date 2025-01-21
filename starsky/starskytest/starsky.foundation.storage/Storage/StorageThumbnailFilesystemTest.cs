@@ -1,5 +1,4 @@
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
@@ -25,13 +24,6 @@ public sealed class StorageThumbnailFilesystemTest
 
 	[TestMethod]
 	public void CombinePathShouldEndWithTestJpg()
-	{
-		var result = _thumbnailStorage.CombinePath("test.jpg");
-		Assert.IsTrue(result.EndsWith("test.jpg"));
-	}
-
-	[TestMethod]
-	public void CombinePathShouldEndWithTestJpg2()
 	{
 		var result = _thumbnailStorage.CombinePath("test.jpg");
 		Assert.IsTrue(result.EndsWith("test.jpg"));
@@ -131,11 +123,11 @@ public sealed class StorageThumbnailFilesystemTest
 	{
 		var createNewImage = new CreateAnImage();
 
-		_thumbnailStorage.WriteStream(new MemoryStream(CreateAnImage.Bytes.ToArray()),
-			"StorageThumbnailFilesystemTest_WriteStream");
+		_thumbnailStorage.WriteStream(new MemoryStream([.. CreateAnImage.Bytes]),
+			"StorageThumbnailFilesystemTest_WriteStream.jpg");
 
 		var readStream =
-			_thumbnailStorage.ReadStream("StorageThumbnailFilesystemTest_WriteStream");
+			_thumbnailStorage.ReadStream("StorageThumbnailFilesystemTest_WriteStream.jpg");
 		Assert.AreEqual(CreateAnImage.Bytes.Length, readStream.Length);
 		readStream.Dispose();
 
@@ -149,11 +141,11 @@ public sealed class StorageThumbnailFilesystemTest
 		var createNewImage = new CreateAnImage();
 
 		await _thumbnailStorage.WriteStreamAsync(
-			new MemoryStream(CreateAnImage.Bytes.ToArray()),
-			"StorageThumbnailFilesystemTest_WriteStreamAsync");
+			new MemoryStream([.. CreateAnImage.Bytes]),
+			"StorageThumbnailFilesystemTest_WriteStreamAsync.jpg");
 
 		var readStream =
-			_thumbnailStorage.ReadStream("StorageThumbnailFilesystemTest_WriteStreamAsync");
+			_thumbnailStorage.ReadStream("StorageThumbnailFilesystemTest_WriteStreamAsync.jpg");
 		Assert.AreEqual(CreateAnImage.Bytes.Length, readStream.Length);
 		await readStream.DisposeAsync();
 

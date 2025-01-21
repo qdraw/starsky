@@ -17,7 +17,7 @@ public class DiskStorageHealthCheck : IHealthCheck
 	private readonly IWebLogger _logger;
 	private readonly DiskStorageOptions _options;
 
-	public DiskStorageHealthCheck(DiskStorageOptions options, IWebLogger logger)
+	public DiskStorageHealthCheck(DiskStorageOptions? options, IWebLogger logger)
 	{
 		_options = options ?? throw new ArgumentNullException(nameof(options));
 		_logger = logger;
