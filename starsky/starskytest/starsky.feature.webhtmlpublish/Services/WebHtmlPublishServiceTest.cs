@@ -581,4 +581,79 @@ public sealed class WebHtmlPublishServiceTest
 		// is True instead of False
 		Assert.IsTrue(storage.ExistFile("/test.jpg"));
 	}
+
+	private static async Task<(WebHtmlPublishService, string, Dictionary<string, bool>,
+		StorageHostFullPathFilesystem)> GenerateZipCreateSut()
+	{
+		var appSettings = new AppSettings
+		{
+			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
+			{
+				{
+					"default",
+					new List<AppSettingsPublishProfiles>
+					{
+						new()
+						{
+							ContentType = TemplateContentType.Html,
+							Path = "index.html",
+							Template = "Index.cshtml"
+						}
+					}
+				}
+			},
+			Verbose = true
+		};
+
+		// REAL FS
+		var storage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+		var selectorStorage = new FakeSelectorStorage(storage);
+
+		var service = new WebHtmlPublishService(new PublishPreflight(appSettings,
+				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger()),
+			selectorStorage, appSettings,
+			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
+			new ConsoleWrapper(), new FakeIWebLogger(), new FakeIThumbnailService());
+
+		// Write to actual Disk
+
+		var profiles = new PublishPreflight(appSettings,
+				new ConsoleWrapper(), new FakeSelectorStorage(storage), new FakeIWebLogger())
+			.GetPublishProfileName("default");
+
+		var outputFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
+			"output_test_1234");
+		storage.CreateDirectory(outputFolderPath);
+
+		var output = await service.GenerateWebHtml(profiles,
+			profiles.FirstOrDefault()!, "testItem", new string[1],
+			new List<FileIndexItem> { new("test") },
+			outputFolderPath
+		);
+
+		return ( service, outputFolderPath, output, storage );
+	}
+
+	/// <summary>
+	///     Test GenerateZip
+	/// </summary>
+	/// <returns></returns>
+	[TestMethod]
+	public async Task GenerateZip_GenerateWebHtml_RealFsTest()
+	{
+		var (service, outputFolderPath, output, storage) =
+			await GenerateZipCreateSut();
+
+		await service.GenerateZip(outputFolderPath, "output_test_1234",
+			output);
+
+		// delete the folder
+		Assert.IsFalse(storage.ExistFolder(Path.Combine(new AppSettings().TempFolder,
+			"output_test_1234")));
+
+		Assert.IsTrue(storage.ExistFile(Path.Combine(outputFolderPath, "output_test_1234.zip")));
+
+		// this realFS
+		storage.FolderDelete(outputFolderPath);
+	}
 }

@@ -95,10 +95,8 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 	/// <param name="fullFileParentFolderPath">One folder deeper than where the folder </param>
 	/// <param name="itemName">blog item name</param>
 	/// <param name="renderCopyResult">[[string,bool],[]]</param>
-	/// <param name="deleteFolderAfterwards"></param>
 	public async Task GenerateZip(string fullFileParentFolderPath, string itemName,
-		Dictionary<string, bool>? renderCopyResult,
-		bool deleteFolderAfterwards = false)
+		Dictionary<string, bool>? renderCopyResult)
 	{
 		ArgumentNullException.ThrowIfNull(renderCopyResult);
 
@@ -117,11 +115,8 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 		await _hostFileSystemStorage.WriteStreamAsync(StringToStreamHelper.StringToStream("OK"),
 			doneFileFullPath);
 
-		if ( deleteFolderAfterwards )
-		{
-			_hostFileSystemStorage.FolderDelete(Path.Combine(_appSettings.TempFolder,
-				slugItemName));
-		}
+		_hostFileSystemStorage.FolderDelete(Path.Combine(_appSettings.TempFolder,
+			slugItemName));
 	}
 
 	internal List<FileIndexItem> AddFileHashIfNotExist(List<FileIndexItem> fileIndexItemsList)
