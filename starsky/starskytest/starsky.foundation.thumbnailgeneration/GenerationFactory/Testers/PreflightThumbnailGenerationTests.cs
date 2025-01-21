@@ -1,7 +1,11 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Testers;
+using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.Testers;
@@ -9,14 +13,25 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.T
 [TestClass]
 public class PreflightThumbnailGenerationTests
 {
+	private readonly string _nonValidImageSubPath;
 	private readonly PreflightThumbnailGeneration _sut;
 
 	public PreflightThumbnailGenerationTests()
 	{
-		_sut = new PreflightThumbnailGeneration(new FakeSelectorStorage());
+		_nonValidImageSubPath = "/non-valid.jpg";
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.jpg", _nonValidImageSubPath],
+			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray(), Array.Empty<byte>() });
+
+		_sut = new PreflightThumbnailGeneration(new FakeSelectorStorage(fakeStorage));
 	}
 
-	private static bool DelegateMock(string? filename)
+	private static bool DelegateMockReturnsFalse(string? filename)
+	{
+		return false;
+	}
+
+	private static bool DelegateMockReturnsTrue(string? filename)
 	{
 		return true;
 	}
@@ -26,7 +41,7 @@ public class PreflightThumbnailGenerationTests
 	{
 		// Arrange
 		const string subPath = "test.jpg";
-		var results = _sut.Preflight(DelegateMock,
+		var results = _sut.Preflight(DelegateMockReturnsFalse,
 			[],
 			subPath, "hash", ThumbnailImageFormat.jpg);
 
@@ -34,9 +49,11 @@ public class PreflightThumbnailGenerationTests
 		Assert.IsNotNull(results);
 		Assert.AreEqual(2, results.Count);
 		Assert.IsFalse(results[0].Success);
-		Assert.AreEqual($"{PreflightThumbnailGeneration.NoCountErrorPrefix}{subPath}", results[0].ErrorMessage);
+		Assert.AreEqual($"{PreflightThumbnailGeneration.NoCountErrorPrefix}{subPath}",
+			results[0].ErrorMessage);
 		Assert.IsFalse(results[1].Success);
-		Assert.AreEqual($"{PreflightThumbnailGeneration.NoCountErrorPrefix}{subPath}", results[1].ErrorMessage);
+		Assert.AreEqual($"{PreflightThumbnailGeneration.NoCountErrorPrefix}{subPath}",
+			results[1].ErrorMessage);
 	}
 
 	[TestMethod]
@@ -44,7 +61,7 @@ public class PreflightThumbnailGenerationTests
 	{
 		// Arrange
 		const string subPath = "test.jpg";
-		var results = _sut.Preflight(DelegateMock,
+		var results = _sut.Preflight(DelegateMockReturnsFalse,
 			[ThumbnailSize.Large],
 			subPath, "hash", ThumbnailImageFormat.unknown);
 
@@ -52,8 +69,55 @@ public class PreflightThumbnailGenerationTests
 		Assert.IsNotNull(results);
 		Assert.AreEqual(2, results.Count);
 		Assert.IsFalse(results[0].Success);
-		Assert.AreEqual($"{PreflightThumbnailGeneration.FormatUnknownPrefix}{subPath}", results[0].ErrorMessage);
+		Assert.AreEqual($"{PreflightThumbnailGeneration.FormatUnknownPrefix}{subPath}",
+			results[0].ErrorMessage);
 		Assert.IsFalse(results[1].Success);
-		Assert.AreEqual($"{PreflightThumbnailGeneration.FormatUnknownPrefix}{subPath}", results[1].ErrorMessage);
+		Assert.AreEqual($"{PreflightThumbnailGeneration.FormatUnknownPrefix}{subPath}",
+			results[1].ErrorMessage);
+	}
+
+	[TestMethod]
+	public void Preflight_NonValid_Image()
+	{
+		// Arrange
+		var results = _sut.Preflight(DelegateMockReturnsFalse,
+			[ThumbnailSize.Large],
+			// does not actually check if the image is valid
+			_nonValidImageSubPath, "hash", ThumbnailImageFormat.jpg);
+
+		// Assert
+		Assert.IsNotNull(results);
+		Assert.AreEqual(1, results.Count);
+		Assert.IsTrue(results.All(p => !p.Success));
+		Assert.AreEqual("not supported", results[0].ErrorMessage);
+	}
+
+	[TestMethod]
+	public void Preflight_NotFound_Image()
+	{
+		// Arrange
+		var results = _sut.Preflight(DelegateMockReturnsTrue,
+			[ThumbnailSize.Large],
+			"/not-found.jpg", "hash", ThumbnailImageFormat.jpg);
+
+		// Assert
+		Assert.IsNotNull(results);
+		Assert.AreEqual(1, results.Count);
+		Assert.IsTrue(results.All(p => !p.Success));
+		Assert.AreEqual("File is not found", results[0].ErrorMessage);
+	}
+	
+	[TestMethod]
+	public void Preflight_HappyFlow()
+	{
+		// Arrange
+		var results = _sut.Preflight(DelegateMockReturnsTrue,
+			[ThumbnailSize.Large],
+			_nonValidImageSubPath, "hash", ThumbnailImageFormat.jpg);
+
+		// Assert
+		Assert.IsNotNull(results);
+		Assert.AreEqual(1, results.Count);
+		Assert.IsTrue(results.All(p => p.Success));
 	}
 }
