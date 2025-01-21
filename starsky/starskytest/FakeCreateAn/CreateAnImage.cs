@@ -250,6 +250,11 @@ public class CreateAnImage
 		  Path.DirectorySeparatorChar ).Replace("./", string.Empty) + FileNamePrivate;
 
 	/// <summary>
+	/// Size in bytes of the image
+	/// </summary>
+	public const int Size = 9998;
+
+	/// <summary>
 	///     Use abstractions instead of a System.IO dependency
 	/// </summary>
 	public CreateAnImage()

@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
@@ -53,6 +54,32 @@ public sealed class StorageThumbnailFilesystemTest
 
 		var createAnImage = new CreateAnImage();
 		Assert.IsNotNull(createAnImage);
+	}
+
+	[TestMethod]
+	public void FileMove_NotFound()
+	{
+		Assert.IsFalse(_thumbnailStorage.FileMove("not-found",
+			"StorageThumbnailFilesystemTest_FileMove.jpg"));
+	}
+
+	[TestMethod]
+	public async Task FileMove_SkipIfAlreadyExists()
+	{
+		var createAnImage = new CreateAnImage();
+
+		// first copy for parallel test
+		_thumbnailStorage.FileCopy(_fileName, "already_exists_file.jpg");
+		await _thumbnailStorage.WriteStreamAsync(StringToStreamHelper.StringToStream("1"),
+			"before_test_thumbnail");
+
+		_thumbnailStorage.FileMove("before_test_thumbnail", "already_exists_file.jpg");
+
+		Assert.AreEqual(CreateAnImage.Size, _thumbnailStorage.Info("already_exists_file").Size);
+
+		File.Delete(Path.Combine(createAnImage.BasePath,
+			"already_exists_file.jpg"));
+		_thumbnailStorage.FileDelete("before_test_thumbnail");
 	}
 
 	[TestMethod]
@@ -241,5 +268,11 @@ public sealed class StorageThumbnailFilesystemTest
 	{
 		Assert.ThrowsException<NotSupportedException>(() =>
 			_thumbnailStorage.WriteStreamOpenOrCreate(Stream.Null, "not-found"));
+	}
+
+	[TestMethod]
+	public void Info()
+	{
+		Assert.AreEqual(CreateAnImage.Size, _thumbnailStorage.Info(_fileName).Size);
 	}
 }
