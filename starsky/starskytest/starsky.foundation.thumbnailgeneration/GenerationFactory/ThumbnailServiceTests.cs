@@ -51,7 +51,7 @@ public sealed class ThumbnailServiceTests
 	}
 
 	[TestMethod]
-	public async Task CreateThumbTest_FileHash_FileHashNull()
+	public async Task GenerateThumbnail_FileHash_FileHashNull()
 	{
 		// Arrange
 		var sut = new ThumbnailService(_selectorStorage, new FakeIWebLogger(),
@@ -60,13 +60,14 @@ public sealed class ThumbnailServiceTests
 			new FileHashSubPathStorage(new FakeSelectorStorage(), new FakeIWebLogger()));
 
 		// Act & Assert
-		var resultModels = await sut.GenerateThumbnail("/notfound.jpg", null!);
+		var resultModels = await sut.GenerateThumbnail(
+			"/not-found.jpg", null!);
 
 		Assert.IsFalse(resultModels.FirstOrDefault()!.Success);
 	}
 
 	[TestMethod]
-	public async Task CreateThumbTest_FileHash_ImageSubPathNotFound()
+	public async Task GenerateThumbnail_FileHash_ImageSubPathNotFound()
 	{
 		var sut = new ThumbnailService(_selectorStorage, new FakeIWebLogger(),
 			_appSettings, _fakeIUpdateStatusGeneratedThumbnailService,
@@ -75,13 +76,13 @@ public sealed class ThumbnailServiceTests
 
 		var isCreated =
 			await sut.GenerateThumbnail(
-				"/notfound.jpg", _fakeIStorageImageSubPath);
+				"/not-found.jpg", _fakeIStorageImageSubPath);
 
 		Assert.IsFalse(isCreated.FirstOrDefault()!.Success);
 	}
 
 	[TestMethod]
-	public async Task CreateThumbTest_FileHash_WrongImageType()
+	public async Task GenerateThumbnail_FileHash_WrongImageType()
 	{
 		var sut = new ThumbnailService(_selectorStorage, new FakeIWebLogger(),
 			_appSettings, _fakeIUpdateStatusGeneratedThumbnailService,
@@ -95,7 +96,7 @@ public sealed class ThumbnailServiceTests
 	}
 
 	[TestMethod]
-	public async Task CreateThumbTest_FileHash_Video_HappyFlow()
+	public async Task GenerateThumbnail_FileHash_Video_HappyFlow()
 	{
 		var sut = new ThumbnailService(_selectorStorage, new FakeIWebLogger(),
 			_appSettings, new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery()),
@@ -111,7 +112,7 @@ public sealed class ThumbnailServiceTests
 	}
 
 	[TestMethod]
-	public async Task CreateThumbTest_FileHash_Video_ProcessFailed()
+	public async Task GenerateThumbnail_FileHash_Video_ProcessFailed()
 	{
 		var sut = new ThumbnailService(_selectorStorage, new FakeIWebLogger(),
 			_appSettings, new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery()),
@@ -129,7 +130,7 @@ public sealed class ThumbnailServiceTests
 	[TestMethod]
 	[DataRow(true)]
 	[DataRow(false)]
-	public async Task CreateThumbTest_FileHash_IncludeOrSkipExtraLarge(bool includeExtraLarge)
+	public async Task GenerateThumbnail_FileHash_IncludeOrSkipExtraLarge(bool includeExtraLarge)
 	{
 		var storage = new FakeIStorage(["/"],
 			[_fakeIStorageImageSubPath],
@@ -156,7 +157,7 @@ public sealed class ThumbnailServiceTests
 	}
 
 	[TestMethod]
-	public async Task CreateThumbTest_1arg_ThumbnailAlreadyExist()
+	public async Task GenerateThumbnail_1arg_ThumbnailAlreadyExist()
 	{
 		var storage = new FakeIStorage(new List<string> { "/" },
 			new List<string> { _fakeIStorageImageSubPath },
@@ -188,7 +189,7 @@ public sealed class ThumbnailServiceTests
 	}
 
 	[TestMethod]
-	public async Task CreateThumbTest_1arg_Folder()
+	public async Task GenerateThumbnail_1arg_Folder()
 	{
 		var storage = new FakeIStorage(new List<string> { "/" },
 			new List<string> { _fakeIStorageImageSubPath },
@@ -205,7 +206,7 @@ public sealed class ThumbnailServiceTests
 	}
 
 	[TestMethod]
-	public async Task CreateThumbTest_NullFail()
+	public async Task GenerateThumbnail_NullFail()
 	{
 		var storage = new FakeIStorage(new List<string> { "/test" },
 			new List<string> { "/test/test.jpg" },
@@ -270,7 +271,7 @@ public sealed class ThumbnailServiceTests
 	}
 
 	[TestMethod]
-	public async Task NotFound()
+	public async Task GenerateThumbnail_NotFound()
 	{
 		var sut = new ThumbnailService(new FakeSelectorStorage(),
 			new FakeIWebLogger(), new AppSettings(),
@@ -283,7 +284,7 @@ public sealed class ThumbnailServiceTests
 	}
 
 	[TestMethod]
-	public async Task NotFound2()
+	public async Task GenerateThumbnail_NotFound2()
 	{
 		var sut = new ThumbnailService(new FakeSelectorStorage(),
 			new FakeIWebLogger(), new AppSettings(),
@@ -298,7 +299,7 @@ public sealed class ThumbnailServiceTests
 	}
 
 	[TestMethod]
-	public async Task GenerateThumbnail_NotFound()
+	public async Task GenerateThumbnail_NotFound3()
 	{
 		var storage = new FakeSelectorStorage(new FakeIStorage([],
 			[], [[.. CreateAnImage.Bytes]]));
@@ -338,7 +339,7 @@ public sealed class ThumbnailServiceTests
 	}
 
 	[TestMethod]
-	public async Task NotFoundNonExistingHash()
+	public async Task GenerateThumbnail_NotFoundNonExistingHash()
 	{
 		var sut = new ThumbnailService(new FakeSelectorStorage(),
 			new FakeIWebLogger(), new AppSettings(),
