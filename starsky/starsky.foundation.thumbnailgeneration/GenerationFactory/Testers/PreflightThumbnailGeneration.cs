@@ -12,6 +12,17 @@ public class PreflightThumbnailGeneration(ISelectorStorage selectorStorage)
 {
 	public delegate bool IsExtensionSupportedDelegate(string? filename);
 
+	/// <summary>
+	///     space at the end is important
+	/// </summary>
+	internal const string
+		NoCountErrorPrefix = "No thumbnail sizes are given for ";
+
+	/// <summary>
+	///     space at the end is important
+	/// </summary>
+	internal const string FormatUnknownPrefix = "No valid image format is given for ";
+
 	private readonly IStorage
 		_storage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 
@@ -34,7 +45,7 @@ public class PreflightThumbnailGeneration(ISelectorStorage selectorStorage)
 			return ErrorGenerationResultModel.FailedResult(
 				ThumbnailSizes.GetLargeToSmallSizes(true),
 				subPath, fileHash, false,
-				$"No thumbnail sizes are given for {subPath}");
+				$"{NoCountErrorPrefix}{subPath}");
 		}
 
 		if ( imageFormat == ThumbnailImageFormat.unknown )
@@ -42,7 +53,7 @@ public class PreflightThumbnailGeneration(ISelectorStorage selectorStorage)
 			return ErrorGenerationResultModel.FailedResult(
 				ThumbnailSizes.GetLargeToSmallSizes(true),
 				subPath, fileHash, false,
-				$"No valid image format is given for {subPath}");
+				$"{FormatUnknownPrefix}{subPath}");
 		}
 
 		// eg. ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported
