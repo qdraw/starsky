@@ -254,7 +254,7 @@ public sealed class ThumbnailServiceTests
 	public async Task GenerateThumbnail_NotFound()
 	{
 		var storage = new FakeSelectorStorage(new FakeIStorage([],
-			["/not-found.jpg"], [[.. CreateAnImage.Bytes]]));
+			[], [[.. CreateAnImage.Bytes]]));
 
 		var hashService = new FakeIFileHashSubPathStorage([( "/test.jpg", "hash", false )]);
 		var sut = new ThumbnailService(storage,
@@ -267,6 +267,27 @@ public sealed class ThumbnailServiceTests
 
 		Assert.IsNull(stream);
 		Assert.IsFalse(resultModels.Success);
+	}
+	
+	[TestMethod]
+	public async Task GenerateThumbnail_InvalidFileHash()
+	{
+		var storage = new FakeSelectorStorage(new FakeIStorage([],
+			["/test.jpg"], [[.. CreateAnImage.Bytes]]));
+
+		var hashService = new FakeIFileHashSubPathStorage([( "/test.jpg", "hash", false )]);
+		
+		var sut = new ThumbnailService(storage,
+			new FakeIWebLogger(), new AppSettings(),
+			new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery()),
+			new FakeIVideoProcess(), hashService);
+
+		var (stream, resultModels) = await sut.GenerateThumbnail("/test.jpg",
+			"hash", ThumbnailImageFormat.jpg, ThumbnailSize.Large);
+
+		Assert.IsNull(stream);
+		Assert.IsFalse(resultModels.Success);
+		Assert.IsTrue(resultModels.ErrorMessage?.Contains("Invalid fileHash"));
 	}
 
 	[TestMethod]
