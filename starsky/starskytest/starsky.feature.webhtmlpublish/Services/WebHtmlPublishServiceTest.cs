@@ -25,7 +25,8 @@ public sealed class WebHtmlPublishServiceTest
 	{
 		return new ThumbnailService(new FakeSelectorStorage(storage),
 			new FakeIWebLogger(), new AppSettings(),
-			new FakeIUpdateStatusGeneratedThumbnailService(), new FakeIVideoProcess(),
+			new FakeIUpdateStatusGeneratedThumbnailService(),
+			new FakeIVideoProcess(new FakeSelectorStorage(storage)),
 			new FileHashSubPathStorage(new FakeSelectorStorage(storage), new FakeIWebLogger()));
 	}
 

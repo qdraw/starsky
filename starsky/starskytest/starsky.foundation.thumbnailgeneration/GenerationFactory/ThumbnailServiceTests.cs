@@ -13,6 +13,7 @@ using starsky.foundation.thumbnailgeneration.GenerationFactory;
 using starsky.foundation.thumbnailgeneration.Interfaces;
 using starsky.foundation.thumbnailgeneration.Services;
 using starskytest.FakeCreateAn;
+using starskytest.FakeCreateAn.CreateAnQuickTimeMp4;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory;
@@ -22,6 +23,7 @@ public sealed class ThumbnailServiceTests
 {
 	private readonly AppSettings _appSettings;
 	private readonly string _fakeIStorageImageSubPath;
+	private readonly string _fakeIStorageImageSubPathVideo;
 
 	private readonly IUpdateStatusGeneratedThumbnailService
 		_fakeIUpdateStatusGeneratedThumbnailService;
@@ -33,10 +35,14 @@ public sealed class ThumbnailServiceTests
 	public ThumbnailServiceTests()
 	{
 		_fakeIStorageImageSubPath = "/test.jpg";
+		_fakeIStorageImageSubPathVideo = "/test.mp4";
 
-		var iStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { _fakeIStorageImageSubPath },
-			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+		var iStorage = new FakeIStorage(["/"],
+			[_fakeIStorageImageSubPath, _fakeIStorageImageSubPathVideo],
+			new List<byte[]>
+			{
+				CreateAnImage.Bytes.ToArray(), CreateAnQuickTimeMp4.Bytes.ToArray()
+			});
 		_selectorStorage = new FakeSelectorStorage(iStorage);
 		_appSettings = new AppSettings();
 		_fakeIUpdateStatusGeneratedThumbnailService =
@@ -49,7 +55,8 @@ public sealed class ThumbnailServiceTests
 	{
 		// Arrange
 		var sut = new ThumbnailService(_selectorStorage, new FakeIWebLogger(),
-			_appSettings, _fakeIUpdateStatusGeneratedThumbnailService, new FakeIVideoProcess(),
+			_appSettings, _fakeIUpdateStatusGeneratedThumbnailService,
+			new FakeIVideoProcess(_selectorStorage),
 			new FileHashSubPathStorage(new FakeSelectorStorage(), new FakeIWebLogger()));
 
 		// Act & Assert
@@ -62,7 +69,8 @@ public sealed class ThumbnailServiceTests
 	public async Task CreateThumbTest_FileHash_ImageSubPathNotFound()
 	{
 		var sut = new ThumbnailService(_selectorStorage, new FakeIWebLogger(),
-			_appSettings, _fakeIUpdateStatusGeneratedThumbnailService, new FakeIVideoProcess(),
+			_appSettings, _fakeIUpdateStatusGeneratedThumbnailService,
+			new FakeIVideoProcess(_selectorStorage),
 			new FileHashSubPathStorage(new FakeSelectorStorage(), new FakeIWebLogger()));
 
 		var isCreated =
@@ -76,7 +84,8 @@ public sealed class ThumbnailServiceTests
 	public async Task CreateThumbTest_FileHash_WrongImageType()
 	{
 		var sut = new ThumbnailService(_selectorStorage, new FakeIWebLogger(),
-			_appSettings, _fakeIUpdateStatusGeneratedThumbnailService, new FakeIVideoProcess(),
+			_appSettings, _fakeIUpdateStatusGeneratedThumbnailService,
+			new FakeIVideoProcess(_selectorStorage),
 			new FileHashSubPathStorage(new FakeSelectorStorage(), new FakeIWebLogger()));
 
 		var isCreated = await sut.GenerateThumbnail(
@@ -85,6 +94,21 @@ public sealed class ThumbnailServiceTests
 		Assert.IsFalse(isCreated.FirstOrDefault()!.Success);
 	}
 
+	[TestMethod]
+	public async Task CreateThumbTest_FileHash_Video()
+	{
+		var sut = new ThumbnailService(_selectorStorage, new FakeIWebLogger(),
+			_appSettings, new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery()),
+			new FakeIVideoProcess(_selectorStorage),
+			new FileHashSubPathStorage(_selectorStorage, new FakeIWebLogger()));
+
+		var isCreated = await sut.GenerateThumbnail(
+			_fakeIStorageImageSubPathVideo);
+
+		Assert.IsTrue(isCreated[0].Success);
+		Assert.IsTrue(isCreated[1].Success);
+		Assert.IsTrue(isCreated[2].Success);
+	}
 
 	[TestMethod]
 	[DataRow(true)]
@@ -97,7 +121,8 @@ public sealed class ThumbnailServiceTests
 
 		const string fileHash = "test_hash";
 		var sut = new ThumbnailService(new FakeSelectorStorage(storage), new FakeIWebLogger(),
-			_appSettings, _fakeIUpdateStatusGeneratedThumbnailService, new FakeIVideoProcess(),
+			_appSettings, _fakeIUpdateStatusGeneratedThumbnailService,
+			new FakeIVideoProcess(_selectorStorage),
 			new FileHashSubPathStorage(new FakeSelectorStorage(storage), new FakeIWebLogger()));
 
 		var isCreated =
@@ -136,7 +161,8 @@ public sealed class ThumbnailServiceTests
 			ThumbnailNameHelper.Combine(hash, ThumbnailSize.Small, _imageFormat));
 
 		var sut = new ThumbnailService(new FakeSelectorStorage(storage), new FakeIWebLogger(),
-			_appSettings, _fakeIUpdateStatusGeneratedThumbnailService, new FakeIVideoProcess(),
+			_appSettings, _fakeIUpdateStatusGeneratedThumbnailService,
+			new FakeIVideoProcess(_selectorStorage),
 			new FileHashSubPathStorage(new FakeSelectorStorage(storage), new FakeIWebLogger()));
 
 		var isCreated =
@@ -153,7 +179,8 @@ public sealed class ThumbnailServiceTests
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var sut = new ThumbnailService(new FakeSelectorStorage(storage), new FakeIWebLogger(),
-			_appSettings, _fakeIUpdateStatusGeneratedThumbnailService, new FakeIVideoProcess(),
+			_appSettings, _fakeIUpdateStatusGeneratedThumbnailService,
+			new FakeIVideoProcess(_selectorStorage),
 			new FileHashSubPathStorage(new FakeSelectorStorage(storage), new FakeIWebLogger()));
 
 		var isCreated = await sut.GenerateThumbnail("/");
@@ -169,7 +196,8 @@ public sealed class ThumbnailServiceTests
 			new List<byte[]?> { null });
 
 		var sut = new ThumbnailService(new FakeSelectorStorage(storage), new FakeIWebLogger(),
-			_appSettings, _fakeIUpdateStatusGeneratedThumbnailService, new FakeIVideoProcess(),
+			_appSettings, _fakeIUpdateStatusGeneratedThumbnailService,
+			new FakeIVideoProcess(_selectorStorage),
 			new FileHashSubPathStorage(new FakeSelectorStorage(storage), new FakeIWebLogger()));
 
 		var isCreated = await sut.GenerateThumbnail("/test/test.jpg");
@@ -181,7 +209,8 @@ public sealed class ThumbnailServiceTests
 	public async Task RotateThumbnail_NotFound()
 	{
 		var sut = new ThumbnailService(new FakeSelectorStorage(), new FakeIWebLogger(),
-			_appSettings, _fakeIUpdateStatusGeneratedThumbnailService, new FakeIVideoProcess(),
+			_appSettings, _fakeIUpdateStatusGeneratedThumbnailService,
+			new FakeIVideoProcess(_selectorStorage),
 			new FileHashSubPathStorage(new FakeSelectorStorage(), new FakeIWebLogger()));
 
 		var result = await sut.RotateThumbnail("not-found", 0, 3);
@@ -198,7 +227,8 @@ public sealed class ThumbnailServiceTests
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var sut = new ThumbnailService(new FakeSelectorStorage(storage), new FakeIWebLogger(),
-			_appSettings, _fakeIUpdateStatusGeneratedThumbnailService, new FakeIVideoProcess(),
+			_appSettings, _fakeIUpdateStatusGeneratedThumbnailService,
+			new FakeIVideoProcess(_selectorStorage),
 			new FileHashSubPathStorage(new FakeSelectorStorage(storage), new FakeIWebLogger()));
 		var result = await sut.RotateThumbnail("/test.jpg", -1, 3);
 
@@ -214,7 +244,8 @@ public sealed class ThumbnailServiceTests
 			new List<byte[]> { Array.Empty<byte>() });
 
 		var sut = new ThumbnailService(new FakeSelectorStorage(storage), new FakeIWebLogger(),
-			_appSettings, _fakeIUpdateStatusGeneratedThumbnailService, new FakeIVideoProcess(),
+			_appSettings, _fakeIUpdateStatusGeneratedThumbnailService,
+			new FakeIVideoProcess(_selectorStorage),
 			new FileHashSubPathStorage(new FakeSelectorStorage(storage), new FakeIWebLogger()));
 
 		var result = await sut.RotateThumbnail("/test.jpg", -1, 3);
@@ -228,7 +259,7 @@ public sealed class ThumbnailServiceTests
 		var sut = new ThumbnailService(new FakeSelectorStorage(),
 			new FakeIWebLogger(), new AppSettings(),
 			new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery()),
-			new FakeIVideoProcess(),
+			new FakeIVideoProcess(_selectorStorage),
 			new FileHashSubPathStorage(new FakeSelectorStorage(), new FakeIWebLogger()));
 		var resultModels = await sut.GenerateThumbnail("/not-found");
 
@@ -241,7 +272,7 @@ public sealed class ThumbnailServiceTests
 		var sut = new ThumbnailService(new FakeSelectorStorage(),
 			new FakeIWebLogger(), new AppSettings(),
 			new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery()),
-			new FakeIVideoProcess(),
+			new FakeIVideoProcess(_selectorStorage),
 			new FileHashSubPathStorage(new FakeSelectorStorage(), new FakeIWebLogger()));
 		var (stream, resultModels) = await sut.GenerateThumbnail("/not-found",
 			"hash", ThumbnailImageFormat.unknown, ThumbnailSize.Large);
@@ -260,7 +291,7 @@ public sealed class ThumbnailServiceTests
 		var sut = new ThumbnailService(storage,
 			new FakeIWebLogger(), new AppSettings(),
 			new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery()),
-			new FakeIVideoProcess(), hashService);
+			new FakeIVideoProcess(_selectorStorage), hashService);
 
 		var (stream, resultModels) = await sut.GenerateThumbnail("/test.jpg",
 			"hash", ThumbnailImageFormat.jpg, ThumbnailSize.Large);
@@ -268,7 +299,7 @@ public sealed class ThumbnailServiceTests
 		Assert.IsNull(stream);
 		Assert.IsFalse(resultModels.Success);
 	}
-	
+
 	[TestMethod]
 	public async Task GenerateThumbnail_InvalidFileHash()
 	{
@@ -276,11 +307,11 @@ public sealed class ThumbnailServiceTests
 			["/test.jpg"], [[.. CreateAnImage.Bytes]]));
 
 		var hashService = new FakeIFileHashSubPathStorage([( "/test.jpg", "hash", false )]);
-		
+
 		var sut = new ThumbnailService(storage,
 			new FakeIWebLogger(), new AppSettings(),
 			new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery()),
-			new FakeIVideoProcess(), hashService);
+			new FakeIVideoProcess(_selectorStorage), hashService);
 
 		var (stream, resultModels) = await sut.GenerateThumbnail("/test.jpg",
 			"hash", ThumbnailImageFormat.jpg, ThumbnailSize.Large);
@@ -296,7 +327,7 @@ public sealed class ThumbnailServiceTests
 		var sut = new ThumbnailService(new FakeSelectorStorage(),
 			new FakeIWebLogger(), new AppSettings(),
 			new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery()),
-			new FakeIVideoProcess(),
+			new FakeIVideoProcess(_selectorStorage),
 			new FileHashSubPathStorage(new FakeSelectorStorage(), new FakeIWebLogger()));
 		var result = await sut.GenerateThumbnail("/not-found", "non-existing-hash");
 		Assert.IsFalse(result.FirstOrDefault()!.Success);

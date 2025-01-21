@@ -19,11 +19,12 @@ public sealed class ToBase64DataUriListTest
 	[TestMethod]
 	public async Task TestIfContainsDataImageBaseHash()
 	{
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" }, new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.jpg"], new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 		var thumbnailService = new ThumbnailService(new FakeSelectorStorage(fakeStorage),
 			new FakeIWebLogger(), new AppSettings(),
-			new FakeIUpdateStatusGeneratedThumbnailService(), new FakeIVideoProcess(),
+			new FakeIUpdateStatusGeneratedThumbnailService(),
+			new FakeIVideoProcess(new FakeSelectorStorage(fakeStorage)),
 			new FileHashSubPathStorage(new FakeSelectorStorage(fakeStorage), new FakeIWebLogger()));
 
 		var result = await new ToBase64DataUriList(thumbnailService)
@@ -40,7 +41,8 @@ public sealed class ToBase64DataUriListTest
 			new List<byte[]> { new CreateAnImageCorrupt().Bytes.ToArray() });
 		var thumbnailService = new ThumbnailService(new FakeSelectorStorage(fakeStorage),
 			new FakeIWebLogger(), new AppSettings(),
-			new FakeIUpdateStatusGeneratedThumbnailService(), new FakeIVideoProcess(),
+			new FakeIUpdateStatusGeneratedThumbnailService(),
+			new FakeIVideoProcess(new FakeSelectorStorage(fakeStorage)),
 			new FileHashSubPathStorage(new FakeSelectorStorage(fakeStorage), new FakeIWebLogger()));
 
 		var result = await new ToBase64DataUriList(thumbnailService)
