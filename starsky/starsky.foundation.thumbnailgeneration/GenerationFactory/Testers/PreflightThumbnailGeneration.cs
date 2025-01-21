@@ -32,7 +32,7 @@ public class PreflightThumbnailGeneration(ISelectorStorage selectorStorage)
 		if ( thumbnailSizes.Count == 0 )
 		{
 			return ErrorGenerationResultModel.FailedResult(
-				ThumbnailSizes.GetSizes(true),
+				ThumbnailSizes.GetLargeToSmallSizes(true),
 				subPath, fileHash, false,
 				$"No thumbnail sizes are given for {subPath}");
 		}
@@ -40,7 +40,7 @@ public class PreflightThumbnailGeneration(ISelectorStorage selectorStorage)
 		if ( imageFormat == ThumbnailImageFormat.unknown )
 		{
 			return ErrorGenerationResultModel.FailedResult(
-				ThumbnailSizes.GetSizes(true),
+				ThumbnailSizes.GetLargeToSmallSizes(true),
 				subPath, fileHash, false,
 				$"No valid image format is given for {subPath}");
 		}

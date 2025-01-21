@@ -12,6 +12,30 @@ namespace starskytest.starsky.feature.health.HealthCheck;
 public sealed class DiskStorageHealthCheckTest
 {
 	[TestMethod]
+	public void Constructor_NullOptions_ThrowsArgumentNullException()
+	{
+		// Arrange
+		DiskStorageOptions? options = null;
+		var logger = new FakeIWebLogger();
+
+		// Act & Assert
+		Assert.ThrowsException<ArgumentNullException>(() =>
+			new DiskStorageHealthCheck(options, logger));
+	}
+
+	[TestMethod]
+	public void Constructor_ValidParameters_DoesNotThrow()
+	{
+		// Arrange
+		var options = new DiskStorageOptions();
+		var logger = new FakeIWebLogger();
+
+		// Act & Assert
+		var healthCheck = new DiskStorageHealthCheck(options, logger);
+		Assert.IsNotNull(healthCheck);
+	}
+
+	[TestMethod]
 	public async Task RunSuccessful()
 	{
 		var appSettings = new AppSettings();

@@ -47,8 +47,15 @@ public class VideoProcessThumbnailPost : IVideoProcessThumbnailPost
 
 	private static string GetJpegInFolderSubPath(string subPath)
 	{
-		return $"{FilenamesHelper.GetParentPath(subPath)}/" +
-		       $"{FilenamesHelper.GetFileNameWithoutExtension(subPath)}.jpg";
+		const string extension = "jpg";
+		var parentPath = FilenamesHelper.GetParentPath(subPath);
+		if ( parentPath == "/" )
+		{
+			return $"/{FilenamesHelper.GetFileNameWithoutExtension(subPath)}.{extension}";
+		}
+
+		return $"{parentPath}/" +
+		       $"{FilenamesHelper.GetFileNameWithoutExtension(subPath)}.{extension}";
 	}
 
 	private async Task WriteStreamInFolderSubPathAsync(Stream stream, string subPath,
