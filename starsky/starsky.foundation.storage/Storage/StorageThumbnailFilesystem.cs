@@ -49,12 +49,12 @@ public sealed class StorageThumbnailFilesystem : IStorage
 
 	public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string path)
 	{
-		throw new NotImplementedException();
+		throw new NotSupportedException();
 	}
 
 	public void FolderMove(string fromPath, string toPath)
 	{
-		throw new NotImplementedException();
+		throw new NotSupportedException();
 	}
 
 	public bool FileMove(string fromPath, string toPath)
@@ -113,12 +113,12 @@ public sealed class StorageThumbnailFilesystem : IStorage
 
 	public void CreateDirectory(string path)
 	{
-		throw new NotImplementedException();
+		throw new NotSupportedException();
 	}
 
 	public bool FolderDelete(string path)
 	{
-		throw new NotImplementedException();
+		throw new NotSupportedException();
 	}
 
 	public IEnumerable<string> GetAllFilesInDirectory(string path)
@@ -130,17 +130,17 @@ public sealed class StorageThumbnailFilesystem : IStorage
 
 	public IEnumerable<string> GetAllFilesInDirectoryRecursive(string path)
 	{
-		throw new NotImplementedException();
+		throw new NotSupportedException();
 	}
 
 	public IEnumerable<string> GetDirectories(string path)
 	{
-		throw new NotImplementedException();
+		throw new NotSupportedException();
 	}
 
 	public IEnumerable<KeyValuePair<string, DateTime>> GetDirectoryRecursive(string path)
 	{
-		throw new NotImplementedException();
+		throw new NotSupportedException();
 	}
 
 	/// <summary>
@@ -174,7 +174,7 @@ public sealed class StorageThumbnailFilesystem : IStorage
 
 	public bool WriteStreamOpenOrCreate(Stream stream, string path)
 	{
-		throw new NotImplementedException();
+		throw new NotSupportedException();
 	}
 
 	public Task<bool> WriteStreamAsync(Stream stream, string path)
