@@ -186,7 +186,7 @@ public sealed class SearchWideDateTimeTest
 			SearchWideDateTime.WideSearchDateTimeGet(model, 0, InvalidEnum());
 		});
 	}
-	
+
 	[DataTestMethod] // [Theory]
 	[DataRow("<")]
 	[DataRow(">")]
@@ -197,7 +197,7 @@ public sealed class SearchWideDateTimeTest
 		var model = new SearchViewModel();
 		model.SetAddSearchFor("2023-01-02 12:00:00"); // specific date instead of day only
 		model.SetAddSearchForOptions(value);
-		
+
 		// Act
 		Assert.ThrowsException<ArgumentNullException>(() =>
 		{
@@ -206,8 +206,9 @@ public sealed class SearchWideDateTimeTest
 	}
 
 	/// <summary>
-	/// Override the enum with reflection
-	/// Set invalid enum value to trigger an exception
+	///     Override the enum with reflection
+	///     Set invalid enum value to trigger an exception
+	///     Set Enum invalid value
 	/// </summary>
 	/// <returns></returns>
 	private static SearchWideDateTime.WideSearchDateTimeGetType InvalidEnum()

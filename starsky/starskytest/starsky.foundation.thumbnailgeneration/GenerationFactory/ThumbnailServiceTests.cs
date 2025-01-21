@@ -95,7 +95,7 @@ public sealed class ThumbnailServiceTests
 	}
 
 	[TestMethod]
-	public async Task CreateThumbTest_FileHash_Video()
+	public async Task CreateThumbTest_FileHash_Video_HappyFlow()
 	{
 		var sut = new ThumbnailService(_selectorStorage, new FakeIWebLogger(),
 			_appSettings, new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery()),
@@ -108,6 +108,22 @@ public sealed class ThumbnailServiceTests
 		Assert.IsTrue(isCreated[0].Success);
 		Assert.IsTrue(isCreated[1].Success);
 		Assert.IsTrue(isCreated[2].Success);
+	}
+
+	[TestMethod]
+	public async Task CreateThumbTest_FileHash_Video_ProcessFailed()
+	{
+		var sut = new ThumbnailService(_selectorStorage, new FakeIWebLogger(),
+			_appSettings, new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery()),
+			new FakeIVideoProcess(new FakeSelectorStorage()), // missing video,
+			new FileHashSubPathStorage(_selectorStorage, new FakeIWebLogger()));
+
+		var isCreated = await sut.GenerateThumbnail(
+			_fakeIStorageImageSubPathVideo);
+
+		Assert.IsFalse(isCreated[0].Success);
+		Assert.IsFalse(isCreated[1].Success);
+		Assert.IsFalse(isCreated[2].Success);
 	}
 
 	[TestMethod]

@@ -14,12 +14,24 @@ namespace starskytest.starsky.foundation.writemeta.Services;
 [TestClass]
 public sealed class ExifCopyTest
 {
-	private readonly AppSettings _appSettings;
+	private readonly AppSettings _appSettings = new();
 
-	public ExifCopyTest()
+	private (ExifCopy, FakeIStorage) CreateSut()
 	{
-		// get the service
-		_appSettings = new AppSettings();
+		var folderPaths = new List<string> { "/" };
+		var inputSubPaths = new List<string> { "/test.dng" };
+		var storage =
+			new FakeIStorage(folderPaths, inputSubPaths,
+				new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+
+		var fakeReadMeta = new ReadMeta(storage, _appSettings,
+			null, new FakeIWebLogger());
+		var fakeExifTool = new FakeExifTool(storage, _appSettings);
+
+		var sut = new ExifCopy(storage, storage, fakeExifTool, fakeReadMeta,
+			new FakeIThumbnailQuery(),
+			new FakeIWebLogger());
+		return ( sut, storage );
 	}
 
 	[TestMethod]
@@ -42,37 +54,19 @@ public sealed class ExifCopyTest
 	[TestMethod]
 	public async Task ExifToolCmdHelper_XmpSync()
 	{
-		var folderPaths = new List<string> { "/" };
-		var inputSubPaths = new List<string> { "/test.dng" };
-		var storage =
-			new FakeIStorage(folderPaths, inputSubPaths,
-				new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+		var (sut, _) = CreateSut();
 
-		var fakeReadMeta = new ReadMeta(storage, _appSettings,
-			null, new FakeIWebLogger());
-		var fakeExifTool = new FakeExifTool(storage, _appSettings);
-		var helperResult = await new ExifCopy(storage,
-			storage, fakeExifTool, fakeReadMeta,
-			new FakeIThumbnailQuery(), new FakeIWebLogger()).XmpSync("/test.dng");
+		var helperResult = await sut.XmpSync("/test.dng");
 		Assert.AreEqual("/test.xmp", helperResult);
 	}
 
 	[TestMethod]
 	public async Task ExifToolCmdHelper_XmpCreate()
 	{
-		var folderPaths = new List<string> { "/" };
-		var inputSubPaths = new List<string> { "/test.dng" };
-		var storage =
-			new FakeIStorage(folderPaths, inputSubPaths,
-				new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+		var (sut, storage) = CreateSut();
+		var job = sut.XmpCreate("/test.xmp");
+		Assert.IsTrue(job);
 
-		var fakeReadMeta = new ReadMeta(storage, _appSettings,
-			null, new FakeIWebLogger());
-		var fakeExifTool = new FakeExifTool(storage, _appSettings);
-
-		new ExifCopy(storage, storage, fakeExifTool, fakeReadMeta, new FakeIThumbnailQuery(),
-				new FakeIWebLogger())
-			.XmpCreate("/test.xmp");
 		var result =
 			await StreamToStringHelper.StreamToStringAsync(storage.ReadStream("/test.xmp"));
 		Assert.AreEqual("<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Starsky'>\n" +
@@ -81,22 +75,37 @@ public sealed class ExifCopyTest
 	}
 
 	[TestMethod]
+	public async Task ExifToolCmdHelper_XmpCreate_Twice()
+	{
+		var (sut, storage) = CreateSut();
+
+		// Run twice, that's my only way to test if the file is already there
+		sut.XmpCreate("/test.xmp");
+		var job2 = sut.XmpCreate("/test.xmp");
+
+		Assert.IsFalse(job2);
+
+		var result =
+			await StreamToStringHelper.StreamToStringAsync(storage.ReadStream("/test.xmp"));
+		Assert.AreEqual("<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Starsky'>\n" +
+		                "<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>\n</rdf:RDF>\n</x:xmpmeta>",
+			result);
+	}
+
+	[TestMethod]
+	public async Task ExifToolCmdHelper_XmpCreate_NotFound()
+	{
+		var (sut, _) = CreateSut();
+		var job = await sut.XmpSync("/not-found.dng");
+		Assert.AreEqual("/not-found.xmp", job);
+	}
+
+	[TestMethod]
 	public async Task ExifToolCmdHelper_TestForFakeExifToolInjection()
 	{
-		var folderPaths = new List<string> { "/" };
-		var inputSubPaths = new List<string> { "/test.dng" };
+		var (sut, storage) = CreateSut();
 
-		var storage =
-			new FakeIStorage(folderPaths, inputSubPaths,
-				new List<byte[]> { CreateAnImage.Bytes.ToArray() });
-
-		var readMeta = new ReadMeta(storage, _appSettings,
-			null, new FakeIWebLogger());
-		var fakeExifTool = new FakeExifTool(storage, _appSettings);
-
-		await new ExifCopy(storage, storage, fakeExifTool, readMeta, new FakeIThumbnailQuery(),
-				new FakeIWebLogger())
-			.XmpSync("/test.dng");
+		await sut.XmpSync("/test.dng");
 
 		Assert.IsTrue(storage.ExistFile("/test.xmp"));
 		var xmpContentReadStream = storage.ReadStream("/test.xmp");

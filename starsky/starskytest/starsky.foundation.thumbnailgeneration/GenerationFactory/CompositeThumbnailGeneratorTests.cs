@@ -15,9 +15,9 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory;
 [TestClass]
 public class CompositeThumbnailGeneratorTests
 {
-	private readonly FakeIWebLogger _logger;
 	private readonly CompositeThumbnailGenerator _compositeGenerator;
 	private readonly List<FakeThumbnailGenerator> _generatorMocks;
+	private readonly FakeIWebLogger _logger;
 
 	public CompositeThumbnailGeneratorTests()
 	{
@@ -29,6 +29,29 @@ public class CompositeThumbnailGeneratorTests
 		];
 		_compositeGenerator = new CompositeThumbnailGenerator(
 			_generatorMocks.Cast<IThumbnailGenerator>().ToList(), _logger);
+	}
+
+	[TestMethod]
+	public async Task GenerateNoItems()
+	{
+		// Arrange
+		var generatorMocks = new List<IThumbnailGenerator>();
+		var compositeGenerator = new CompositeThumbnailGenerator(
+			generatorMocks, _logger);
+		const string singleSubPath = "test.jpg";
+		const string fileHash = "hash";
+		var thumbnailSizes = new List<ThumbnailSize> { ThumbnailSize.Small };
+		const ThumbnailImageFormat imageFormat = ThumbnailImageFormat.jpg;
+
+		var results =
+			( await compositeGenerator.GenerateThumbnail(singleSubPath, fileHash, imageFormat,
+				thumbnailSizes) ).ToList();
+
+		// Assert
+		Assert.IsNotNull(results);
+		Assert.AreEqual(1, results.Count);
+		Assert.IsFalse(results[0].Success);
+		Assert.AreEqual("CompositeThumbnailGenerator failed", results[0].ErrorMessage);
 	}
 
 	[TestMethod]

@@ -37,16 +37,17 @@ public sealed class ExifCopy
 	///     Create a simple xmp starter file
 	/// </summary>
 	/// <param name="xmpPath">location</param>
-	public void XmpCreate(string xmpPath)
+	public bool XmpCreate(string xmpPath)
 	{
 		if ( _iStorage.ExistFile(xmpPath) )
 		{
-			return;
+			return false;
 		}
 
 		var plainTextStream = StringToStreamHelper.StringToStream(XmpStartContent);
 		// dispose in WriteStream
 		_iStorage.WriteStream(plainTextStream, xmpPath);
+		return true;
 	}
 
 	/// <summary>
