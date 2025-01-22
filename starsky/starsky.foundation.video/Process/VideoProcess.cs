@@ -52,10 +52,11 @@ public sealed class VideoProcess : IVideoProcess
 		string outputFormat, int maxRead)
 	{
 		var downloadStatus = await _ffMpegDownload.DownloadFfMpeg();
-		if ( downloadStatus != FfmpegDownloadStatus.Ok )
+		if ( downloadStatus != FfmpegDownloadStatus.Ok &&
+		     downloadStatus != FfmpegDownloadStatus.OkAlreadyExists )
 		{
 			_logger.LogDebug("[VideoProcess] FFMpeg download failed");
-			return ( new VideoResult(false, null, 
+			return ( new VideoResult(false, null,
 				"FFMpeg download failed"), Stream.Null );
 		}
 

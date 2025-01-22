@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Architecture;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.ArchiveFormats;
 using starsky.foundation.video.GetDependencies;
@@ -66,7 +67,6 @@ public class FfMpegDownloadBinariesTests
 		Assert.AreEqual(FfmpegDownloadStatus.DownloadBinariesFailed, result);
 	}
 
-
 	[TestMethod]
 	public async Task Download_InvalidShaHash()
 	{
@@ -110,14 +110,11 @@ public class FfMpegDownloadBinariesTests
 	[TestMethod]
 	public async Task Download_DownloadBinariesFailedZipperNotExtracted11()
 	{
-		// TODO fix
-
 		var storage = new FakeIStorage();
-		var zipper = new FakeIZipper(new List<Tuple<string, byte[]>>
-		{
-			new("FfMpegDownloadTest/mock_test.zip",
+		var zipper = new FakeIZipper([
+			new Tuple<string, byte[]>("FfMpegDownloadTest/mock_test.zip",
 				[.. CreateAnZipFileMacOs.Bytes])
-		}, storage);
+		], storage);
 		var sut = new FfMpegDownloadBinaries(new FakeSelectorStorage(storage), _httpClientHelper,
 			_appSettings, _logger, zipper);
 
@@ -134,5 +131,34 @@ public class FfMpegDownloadBinariesTests
 		var result = await sut.Download(binaryIndexKeyValuePair, "linux-x64");
 
 		Assert.AreEqual(FfmpegDownloadStatus.DownloadBinariesFailedZipperNotExtracted, result);
+	}
+
+	[TestMethod]
+	public async Task Download_OkAlreadyExists()
+	{
+		var storage = new FakeIStorage([], [
+			new FfmpegExePath(_appSettings).GetExePath()
+		]);
+
+		var zipper = new FakeIZipper([], storage);
+
+		var sut = new FfMpegDownloadBinaries(new FakeSelectorStorage(storage), _httpClientHelper,
+			_appSettings, _logger, zipper);
+
+		var binaryIndex = new BinaryIndex
+		{
+			FileName = "NOT_FOUND.zip",
+			Sha256 = "dummysha256",
+			Architecture = CurrentArchitecture
+				.GetCurrentRuntimeIdentifier()
+		};
+		var baseUrls = new List<Uri> { new("https://qdraw.nl/") };
+		var binaryIndexKeyValuePair =
+			new KeyValuePair<BinaryIndex?, List<Uri>>(binaryIndex, baseUrls);
+
+		var result = await sut.Download(binaryIndexKeyValuePair,
+			CurrentArchitecture.GetCurrentRuntimeIdentifier());
+
+		Assert.AreEqual(FfmpegDownloadStatus.OkAlreadyExists, result);
 	}
 }

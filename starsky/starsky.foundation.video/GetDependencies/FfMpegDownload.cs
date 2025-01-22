@@ -70,7 +70,8 @@ public class FfMpegDownload : IFfMpegDownload
 
 		var downloadStatus =
 			await _downloadBinaries.Download(binaryIndexBaseUrls, currentArchitecture);
-		if ( downloadStatus != FfmpegDownloadStatus.Ok )
+		if ( downloadStatus != FfmpegDownloadStatus.Ok &&
+		     downloadStatus != FfmpegDownloadStatus.OkAlreadyExists )
 		{
 			_logger.LogError($"[FfMpegDownload] Binaries downloading failed {downloadStatus}");
 			return downloadStatus;

@@ -3,6 +3,7 @@ namespace starsky.foundation.video.GetDependencies.Models;
 public enum FfmpegDownloadStatus
 {
 	Ok,
+	OkAlreadyExists,
 	SettingsDisabled,
 	DownloadIndexFailed,
 	DownloadBinariesFailed,

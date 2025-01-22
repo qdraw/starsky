@@ -49,7 +49,7 @@ public class FfMpegDownloadBinaries : IFfMpegDownloadBinaries
 
 		if ( _hostFileSystemStorage.ExistFile(exePath) )
 		{
-			return FfmpegDownloadStatus.Ok;
+			return FfmpegDownloadStatus.OkAlreadyExists;
 		}
 
 		var zipFullFilePath =
