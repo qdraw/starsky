@@ -43,6 +43,8 @@ public class FfmpegStreamToStreamRunnerTests
 	{
 		var stream = StringToStreamHelper.StringToStream(content);
 		_hostFullPathFilesystem.WriteStream(stream, path);
+		stream.Dispose();
+		stream.Close();
 	}
 
 	private async Task<string> SetupFakeFfmpegExecutable(int i)
@@ -96,11 +98,12 @@ public class FfmpegStreamToStreamRunnerTests
 
 		var (stream, result) = await sut.RunProcessAsync("-1",
 			"image2", "test");
+		
+		await file.DisposeAsync();
 
 		Assert.IsNotNull(stream);
 		Assert.IsTrue(result);
-
-		await file.DisposeAsync();
+		
 		await stream.DisposeAsync();
 	}
 

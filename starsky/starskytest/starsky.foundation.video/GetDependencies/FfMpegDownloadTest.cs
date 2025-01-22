@@ -423,9 +423,14 @@ public class FfMpegDownloadTest
 		var appSettings = new AppSettings { DependenciesFolder = dependenciesFolder! };
 
 		var logger = new FakeIWebLogger();
+		var exeExtension = string.Empty;
+		if ( new AppSettings().IsWindows )
+		{
+			exeExtension = ".exe";
+		}
 		var expectedPath = Path.Combine(dependenciesFolder ?? "",
 			$"ffmpeg-{CurrentArchitecture.GetCurrentRuntimeIdentifier()}",
-			"ffmpeg");
+			$"ffmpeg{exeExtension}");
 
 		var storage = new FakeIStorage([], [expectedPath]);
 
