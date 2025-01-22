@@ -40,7 +40,8 @@ public class VideoProcessTests
 	public async Task RunVideo_Default_False()
 	{
 		var result = await _videoProcess.RunVideo("/test",
-			"beforeFileHash", VideoProcessTypesTests.InvalidEnum());
+			"beforeFileHash", 
+			VideoProcessTypesTests.InvalidEnum());
 		Assert.IsFalse(result.IsSuccess);
 	}
 

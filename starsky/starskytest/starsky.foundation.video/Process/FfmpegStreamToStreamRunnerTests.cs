@@ -39,12 +39,10 @@ public class FfmpegStreamToStreamRunnerTests
 
 	}
 
-	private void CreateStubFile(string path, string content)
+	private async Task CreateStubFile(string path, string content)
 	{
 		var stream = StringToStreamHelper.StringToStream(content);
-		_hostFullPathFilesystem.WriteStream(stream, path);
-		stream.Dispose();
-		stream.Close();
+		await _hostFullPathFilesystem.WriteStreamAsync(stream, path);
 	}
 
 	private async Task<string> SetupFakeFfmpegExecutable(int i)
@@ -57,9 +55,9 @@ public class FfmpegStreamToStreamRunnerTests
 			new CreateAnZipfileFakeFfMpeg().Bytes
 		]);
 
-		CreateStubFile(_ffmpegExePosix,
+		await CreateStubFile(_ffmpegExePosix,
 			"#!/bin/bash\necho Fake Executable");
-		CreateStubFile(readFile + i, "test_content");
+		await CreateStubFile(readFile + i, "test_content");
 
 		var ffmpegExe = new MemoryStream(zipper.FirstOrDefault(p =>
 			p.Key == "ffmpeg.exe").Value);
@@ -92,14 +90,15 @@ public class FfmpegStreamToStreamRunnerTests
 	public async Task RunProcessAsync_HappyFlow()
 	{
 		var readFile = await SetupFakeFfmpegExecutable(0);
-		
-		var file = new StorageHostFullPathFilesystem(new FakeIWebLogger()).ReadStream(readFile);
-		var sut = new FfmpegStreamToStreamRunner(_ffmpegExe, file, new FakeIWebLogger());
+
+		var hostStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+		var sourceStream = hostStorage.ReadStream(readFile);
+		var sut = new FfmpegStreamToStreamRunner(_ffmpegExe, sourceStream, new FakeIWebLogger());
 
 		var (stream, result) = await sut.RunProcessAsync("-1",
 			"image2", "test");
 		
-		await file.DisposeAsync();
+		await sourceStream.DisposeAsync();
 
 		Assert.IsNotNull(stream);
 		Assert.IsTrue(result);
@@ -119,7 +118,7 @@ public class FfmpegStreamToStreamRunnerTests
 		var readFile = await SetupFakeFfmpegExecutable(1);
 
 		// overwrite the file with a bash script that will exit with code 1
-		CreateStubFile(_ffmpegExePosix,
+		await CreateStubFile(_ffmpegExePosix,
 			"#!/bin/bash\ntest_content\n exit 1");
 
 		var file = new StorageHostFullPathFilesystem(new FakeIWebLogger()).ReadStream(readFile);

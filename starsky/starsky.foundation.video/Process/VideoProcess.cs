@@ -55,14 +55,14 @@ public sealed class VideoProcess : IVideoProcess
 		if ( downloadStatus != FfmpegDownloadStatus.Ok )
 		{
 			_logger.LogDebug("[VideoProcess] FFMpeg download failed");
-			return ( new VideoResult(false, null, "FFMpeg download failed"), Stream.Null );
+			return ( new VideoResult(false, null, 
+				"FFMpeg download failed"), Stream.Null );
 		}
 
 		var sourceStream = _storage.ReadStream(subPath, maxRead);
+		var ffmpegPath = _ffMpegDownload.GetSetFfMpegPath();
 
-		var runner =
-			new FfmpegStreamToStreamRunner(_ffMpegDownload.GetSetFfMpegPath(), sourceStream,
-				_logger);
+		var runner = new FfmpegStreamToStreamRunner(ffmpegPath, sourceStream, _logger);
 		var (stream, success) =
 			await runner.RunProcessAsync(ffmpegInputArguments, outputFormat, subPath);
 
