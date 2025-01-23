@@ -64,16 +64,30 @@ public class ThumbnailResultDataTransferModelTest
 		Assert.IsTrue(model.Large);
 		Assert.IsTrue(model.ExtraLarge);
 	}
-	
+
 	[TestMethod]
 	public void ThumbnailResultDataTransferModel_Change_TinyIcon()
 	{
-		var model = new ThumbnailResultDataTransferModel("test", 
+		var model = new ThumbnailResultDataTransferModel("test",
 			true, true, true, true);
 		Assert.IsNull(model.TinyIcon);
 		model.Change(ThumbnailSize.TinyIcon, false);
 		Assert.AreEqual("test", model.FileHash);
 		Assert.IsFalse(model.TinyIcon);
+		Assert.IsTrue(model.TinyMeta);
+		Assert.IsTrue(model.Small);
+		Assert.IsTrue(model.Large);
+		Assert.IsTrue(model.ExtraLarge);
+	}
+
+	[TestMethod]
+	public void ThumbnailResultDataTransferModel_Change_TinyIcon_Status()
+	{
+		var model = new ThumbnailResultDataTransferModel("test",
+			true, true, true, true);
+		model.Change(ThumbnailSize.TinyIcon, true);
+		Assert.AreEqual("test", model.FileHash);
+		Assert.IsTrue(model.TinyIcon);
 		Assert.IsTrue(model.TinyMeta);
 		Assert.IsTrue(model.Small);
 		Assert.IsTrue(model.Large);
