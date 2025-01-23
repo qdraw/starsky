@@ -38,6 +38,8 @@ public class ExifToolStreamToStreamRunner
 		_logger.LogInformation(
 			$"info: {sourceStream.CanRead}  {sourceStream.CanSeek}  {sourceStream.CanWrite}");
 
+		sourceStream.Seek(0, SeekOrigin.Begin);
+
 		var argumentsWithPipeEnd = $"{exifToolInputArguments} -o - -";
 
 		var memoryStream = new MemoryStream();
