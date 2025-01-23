@@ -106,7 +106,7 @@ public class PreflightThumbnailGenerationTests
 		Assert.IsTrue(results.All(p => !p.Success));
 		Assert.AreEqual("File is not found", results[0].ErrorMessage);
 	}
-	
+
 	[TestMethod]
 	public void Preflight_HappyFlow()
 	{
@@ -119,5 +119,27 @@ public class PreflightThumbnailGenerationTests
 		Assert.IsNotNull(results);
 		Assert.AreEqual(1, results.Count);
 		Assert.IsTrue(results.All(p => p.Success));
+	}
+
+	[TestMethod]
+	public void Preflight_ErrorLock()
+	{
+		// Arrange
+
+		var fakeStorage = new FakeIStorage(["/"],
+			["/test.jpg", ErrorLogItemFullPath.GetErrorLogItemFullPath("/test.jpg")],
+			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray(), Array.Empty<byte>() });
+
+		var sut = new PreflightThumbnailGeneration(new FakeSelectorStorage(fakeStorage));
+
+		var results = sut.Preflight(DelegateMockReturnsTrue,
+			[ThumbnailSize.Large],
+			"/test.jpg", "hash", ThumbnailImageFormat.jpg);
+
+		// Assert
+		Assert.IsNotNull(results);
+		Assert.AreEqual(1, results.Count);
+		Assert.IsTrue(results.All(p => !p.Success));
+		Assert.AreEqual("File already failed before", results[0].ErrorMessage);
 	}
 }
