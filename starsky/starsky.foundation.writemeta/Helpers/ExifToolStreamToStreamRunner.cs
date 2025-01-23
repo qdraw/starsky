@@ -52,6 +52,7 @@ public class ExifToolStreamToStreamRunner
 					options: opts =>
 					{
 						opts.Encoding(Encoding.UTF8);
+						opts.DisposeOnExit(false); // dispose later?
 						opts.StartInfo(si =>
 							si.Arguments = argumentsWithPipeEnd);
 					})
@@ -64,6 +65,8 @@ public class ExifToolStreamToStreamRunner
 			                       $"run with result: {result.Success}  ~ ");
 
 			memoryStream.Seek(0, SeekOrigin.Begin);
+
+			command.Process.Dispose();
 
 			return memoryStream;
 		}
