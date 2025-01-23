@@ -89,10 +89,9 @@ public class FfmpegStreamToStreamRunnerTests
 	[TestMethod]
 	public async Task Ffmpeg_RunProcessAsync_HappyFlow()
 	{
-		var readFile = await SetupFakeFfmpegExecutable(0);
+		await SetupFakeFfmpegExecutable(0);
+		var sourceStream = new MemoryStream([0x01, 0x02, 0x03]);
 
-		var hostStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
-		var sourceStream = hostStorage.ReadStream(readFile);
 		var sut = new FfmpegStreamToStreamRunner(_ffmpegExe, sourceStream, new FakeIWebLogger());
 
 		var (stream, result) = await sut.RunProcessAsync("-1",
