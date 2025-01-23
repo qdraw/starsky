@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -50,12 +51,13 @@ public class ExifToolStreamToStreamRunner
 			var command = Default.Run(_appSettings.ExifToolPath,
 					options: opts =>
 					{
+						opts.Encoding(Encoding.UTF8);
 						opts.StartInfo(si =>
 							si.Arguments = argumentsWithPipeEnd);
 					})
 				< sourceStream > memoryStream;
 
-			var result = await command.Task.ConfigureAwait(false);
+			var result = await command.Task;
 
 			_logger.LogInformation($"[RunProcessAsync] {result.Success} ~ exifTool " +
 			                       $"{referenceInfoAndPath} {exifToolInputArguments} " +
