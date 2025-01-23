@@ -36,8 +36,9 @@ public class ExifToolStreamToStreamRunner
 	{
 		ArgumentNullException.ThrowIfNull(sourceStream);
 
-		_logger.LogInformation(
-			$"info: {sourceStream.CanRead}  {sourceStream.CanSeek}  {sourceStream.CanWrite}");
+		_logger.LogDebug(
+			$"info: {sourceStream.CanRead}  {sourceStream.CanSeek}  {sourceStream.CanWrite}" +
+			$" {sourceStream.Position}");
 
 		sourceStream.Seek(0, SeekOrigin.Begin);
 

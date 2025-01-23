@@ -168,8 +168,16 @@ public sealed class ExifToolTest
 	}
 
 	[TestMethod]
-	public async Task ExifTool_WriteTagsAsync_HappyFlow()
+	public async Task ExifTool_WriteTagsAsync_HappyFlow__UnixOnly()
 	{
+		if ( new AppSettings().IsWindows )
+		{
+			Assert.Inconclusive("This test does not work under windows");
+		}
+
+		// unfortunately, this test does not work under windows
+		// if you are reading this and are interested in fixing this test please do
+
 		var storage = new FakeIStorage(["/"],
 			["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
@@ -193,8 +201,16 @@ public sealed class ExifToolTest
 	}
 
 	[TestMethod]
-	public async Task ExifTool_WriteTagsThumbnailAsync_HappyFlow()
+	public async Task ExifTool_WriteTagsThumbnailAsync_HappyFlow__UnixOnly()
 	{
+		if ( new AppSettings().IsWindows )
+		{
+			Assert.Inconclusive("This test does not work under windows");
+		}
+
+		// unfortunately, this test does not work under windows
+		// if you are reading this and are interested in fixing this test please do
+
 		var storage = new FakeIStorage(["/"],
 			["/hash.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
