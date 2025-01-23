@@ -15,12 +15,10 @@ public class ExifToolStreamToStreamRunner
 {
 	private readonly AppSettings _appSettings;
 	private readonly IWebLogger _logger;
-	private readonly Stream _sourceStream;
 
-	public ExifToolStreamToStreamRunner(AppSettings appSettings, Stream sourceStream,
+	public ExifToolStreamToStreamRunner(AppSettings appSettings,
 		IWebLogger logger)
 	{
-		_sourceStream = sourceStream ?? throw new ArgumentNullException(nameof(sourceStream));
 		_appSettings = appSettings;
 		_logger = logger;
 	}
@@ -32,9 +30,14 @@ public class ExifToolStreamToStreamRunner
 	/// <param name="referenceInfoAndPath">reference path (only for display)</param>
 	/// <returns>bool if success</returns>
 	/// <exception cref="ArgumentException">if exifTool is missing</exception>
-	public async Task<Stream> RunProcessAsync(string exifToolInputArguments,
+	public async Task<Stream> RunProcessAsync(Stream sourceStream, string exifToolInputArguments,
 		string referenceInfoAndPath = "")
 	{
+		ArgumentNullException.ThrowIfNull(sourceStream);
+
+		_logger.LogInformation(
+			$"info: {sourceStream.CanRead}  {sourceStream.CanSeek}  {sourceStream.CanWrite}");
+
 		var argumentsWithPipeEnd = $"{exifToolInputArguments} -o - -";
 
 		var memoryStream = new MemoryStream();
@@ -48,7 +51,7 @@ public class ExifToolStreamToStreamRunner
 						opts.StartInfo(si =>
 							si.Arguments = argumentsWithPipeEnd);
 					})
-				< _sourceStream > memoryStream;
+				< sourceStream > memoryStream;
 
 			var result = await command.Task.ConfigureAwait(false);
 
