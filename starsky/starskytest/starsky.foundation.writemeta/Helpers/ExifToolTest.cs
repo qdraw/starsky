@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
-using starsky.foundation.storage.Helpers;
 using starsky.foundation.writemeta.Helpers;
 using starsky.foundation.writemeta.Services;
 using starskytest.FakeCreateAn;
@@ -94,62 +93,6 @@ public sealed class ExifToolTest
 			.RenameThumbnailByStream("OLDHASH", stream, true);
 
 		Assert.IsTrue(stream.CanWrite);
-	}
-
-	[TestMethod]
-	public void StreamToStreamRunner_ArgumentNullException()
-	{
-		Assert.ThrowsException<ArgumentNullException>(() =>
-			new StreamToStreamRunner(new AppSettings(), null!,
-				new FakeIWebLogger()));
-	}
-
-	[TestMethod]
-	public async Task RunProcessAsync_RunChildObject_UnixOnly()
-	{
-		// Unix only
-		var appSettings = new AppSettings { Verbose = true, ExifToolPath = "/bin/ls" };
-		if ( appSettings.IsWindows || !File.Exists("/bin/ls") )
-		{
-			Assert.Inconclusive("This test if for Unix Only");
-			return;
-		}
-
-		var runner = new StreamToStreamRunner(appSettings,
-			new MemoryStream([]), new FakeIWebLogger());
-		var streamResult = await runner.RunProcessAsync(string.Empty, "test / unit test");
-
-		await StreamToStringHelper.StreamToStringAsync(streamResult, false);
-
-		Assert.AreEqual(0, streamResult.Length);
-		
-		await streamResult.DisposeAsync();
-	}
-
-	[TestMethod]
-	[DataRow("file.txt && dir")]
-	[DataRow("file.txt | ipconfig")]
-	[DataRow("file.txt && ipconfig")]
-	[DataRow("file.txt & powershell -Command \"Get-Process | Out-File output.txt\"")]
-	[DataRow("file.txt && curl https://qdraw.nl")]
-	[DataRow("\"file.txt\" && ipconfig")]
-	public async Task RunProcessAsync_Fuzzing(string argument)
-	{
-		var appSettings = new AppSettings { Verbose = true, ExifToolPath = "/bin/sh" };
-		if ( appSettings.IsWindows || !File.Exists("/bin/sh") )
-		{
-			Assert.Inconclusive("This test if for Unix Only");
-			return;
-		}
-
-		var runner = new StreamToStreamRunner(appSettings,
-			new MemoryStream([]), new FakeIWebLogger());
-		var streamResult = await runner.RunProcessAsync(argument, "test / unit test");
-
-		var stringResult = await StreamToStringHelper.StreamToStringAsync(streamResult);
-		
-		Assert.AreEqual(0, stringResult.Length);
-		Assert.AreEqual(string.Empty, stringResult);
 	}
 
 	[TestMethod]

@@ -35,8 +35,6 @@ public class FfmpegStreamToStreamRunnerTests
 			"FfmpegStreamToStreamRunnerTests", "ffmpeg");
 
 		_ffmpegExe = new AppSettings().IsWindows ? _ffmpegExeWindows : _ffmpegExePosix;
-
-
 	}
 
 	private async Task CreateStubFile(string path, string content)
@@ -49,7 +47,7 @@ public class FfmpegStreamToStreamRunnerTests
 	{
 		var readFile = Path.Combine(new CreateAnImage().BasePath,
 			"FfmpegStreamToStreamRunnerTests", "read_file.");
-		
+
 		var zipper = Zipper.ExtractZip([
 			..
 			new CreateAnZipfileFakeFfMpeg().Bytes
@@ -84,6 +82,8 @@ public class FfmpegStreamToStreamRunnerTests
 			"read_file.1"));
 		File.Delete(Path.Combine(new CreateAnImage().BasePath, "FfmpegStreamToStreamRunnerTests",
 			"read_file.2"));
+		Directory.Delete(Path.Combine(new CreateAnImage().BasePath,
+			"FfmpegStreamToStreamRunnerTests"));
 	}
 
 	[TestMethod]
@@ -97,12 +97,12 @@ public class FfmpegStreamToStreamRunnerTests
 
 		var (stream, result) = await sut.RunProcessAsync("-1",
 			"image2", "test");
-		
+
 		await sourceStream.DisposeAsync();
 
 		Assert.IsNotNull(stream);
 		Assert.IsTrue(result);
-		
+
 		await stream.DisposeAsync();
 	}
 
