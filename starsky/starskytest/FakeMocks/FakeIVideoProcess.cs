@@ -16,6 +16,8 @@ public class FakeIVideoProcess(ISelectorStorage selectorStorage) : IVideoProcess
 	private readonly IStorage _thumbnailStorage =
 		selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 
+	private VideoResult _result = new(true, string.Empty, "Mocked");
+
 	public async Task<VideoResult> RunVideo(string subPath, string? beforeFileHash,
 		VideoProcessTypes type)
 	{
@@ -23,11 +25,22 @@ public class FakeIVideoProcess(ISelectorStorage selectorStorage) : IVideoProcess
 
 		var thumbnailName = ThumbnailNameHelper.Combine(beforeFileHash, ThumbnailSize.ExtraLarge,
 			ThumbnailImageFormat.jpg);
-		
+
 		await _thumbnailStorage.WriteStreamAsync(new MemoryStream([.. CreateAnImage.Bytes]),
 			thumbnailName
 		);
-		
-		return new VideoResult(true, thumbnailName, "Mocked");
+
+		_result.ResultPath = thumbnailName;
+		return _result;
+	}
+
+	public void SetSuccessResult()
+	{
+		_result = new VideoResult(true, string.Empty, "Mocked");
+	}
+
+	public void SetFailureResult(string errorMessage)
+	{
+		_result = new VideoResult { IsSuccess = false, ErrorMessage = $"{errorMessage} Mocked" };
 	}
 }
