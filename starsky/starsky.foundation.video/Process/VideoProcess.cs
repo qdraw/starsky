@@ -63,9 +63,9 @@ public sealed class VideoProcess : IVideoProcess
 		var sourceStream = _storage.ReadStream(subPath, maxRead);
 		var ffmpegPath = _ffMpegDownload.GetSetFfMpegPath();
 
-		var runner = new FfmpegStreamToStreamRunner(ffmpegPath, sourceStream, _logger);
+		var runner = new FfmpegStreamToStreamRunner(ffmpegPath, _logger);
 		var (stream, success) =
-			await runner.RunProcessAsync(ffmpegInputArguments, outputFormat, subPath);
+			await runner.RunProcessAsync(sourceStream, ffmpegInputArguments, outputFormat, subPath);
 
 		return ( new VideoResult(success, subPath), stream );
 	}

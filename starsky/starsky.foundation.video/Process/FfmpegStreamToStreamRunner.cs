@@ -7,11 +7,8 @@ namespace starsky.foundation.video.Process;
 /// <summary>
 ///     Handle Ffmpeg Streaming
 /// </summary>
-internal class FfmpegStreamToStreamRunner(string ffMpegPath, Stream sourceStream, IWebLogger logger)
+internal class FfmpegStreamToStreamRunner(string ffMpegPath, IWebLogger logger)
 {
-	private readonly Stream _sourceStream =
-		sourceStream ?? throw new ArgumentNullException(nameof(sourceStream));
-
 	/// <summary>
 	///     Run Command async (and keep stream open)
 	/// </summary>
@@ -20,9 +17,12 @@ internal class FfmpegStreamToStreamRunner(string ffMpegPath, Stream sourceStream
 	/// <param name="format">output format</param>
 	/// <returns>bool if success</returns>
 	/// <exception cref="ArgumentException">if exifTool is missing</exception>
-	public async Task<(Stream, bool)> RunProcessAsync(string ffmpegInputArguments, string format,
+	public async Task<(Stream, bool)> RunProcessAsync(Stream sourceStream,
+		string ffmpegInputArguments, string format,
 		string referenceInfoAndPath = "")
 	{
+		ArgumentNullException.ThrowIfNull(sourceStream);
+
 		var argumentsWithPipeEnd = $"-i pipe:0 {ffmpegInputArguments} -f {format} -";
 
 		var memoryStream = new MemoryStream();
@@ -36,7 +36,7 @@ internal class FfmpegStreamToStreamRunner(string ffMpegPath, Stream sourceStream
 						opts.StartInfo(si =>
 							si.Arguments = argumentsWithPipeEnd);
 					})
-				< _sourceStream > memoryStream;
+				< sourceStream > memoryStream;
 
 			var result = await command.Task.ConfigureAwait(false);
 

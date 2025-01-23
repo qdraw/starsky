@@ -92,9 +92,9 @@ public class FfmpegStreamToStreamRunnerTests
 		await SetupFakeFfmpegExecutable(0);
 		var sourceStream = new MemoryStream([0x01, 0x02, 0x03]);
 
-		var sut = new FfmpegStreamToStreamRunner(_ffmpegExe, sourceStream, new FakeIWebLogger());
+		var sut = new FfmpegStreamToStreamRunner(_ffmpegExe, new FakeIWebLogger());
 
-		var (stream, result) = await sut.RunProcessAsync("-1",
+		var (stream, result) = await sut.RunProcessAsync(sourceStream, "-1",
 			"image2", "test");
 
 		await sourceStream.DisposeAsync();
@@ -120,16 +120,17 @@ public class FfmpegStreamToStreamRunnerTests
 		await CreateStubFile(_ffmpegExePosix,
 			"#!/bin/bash\ntest_content\n exit 1");
 
-		var file = new StorageHostFullPathFilesystem(new FakeIWebLogger()).ReadStream(readFile);
-		var sut = new FfmpegStreamToStreamRunner(_ffmpegExe, file, new FakeIWebLogger());
+		var fileStream =
+			new StorageHostFullPathFilesystem(new FakeIWebLogger()).ReadStream(readFile);
+		var sut = new FfmpegStreamToStreamRunner(_ffmpegExe, new FakeIWebLogger());
 
-		var (stream, result) = await sut.RunProcessAsync("-1",
+		var (stream, result) = await sut.RunProcessAsync(fileStream, "-1",
 			"image2", "test");
 
 		Assert.IsNotNull(stream);
 		Assert.IsFalse(result);
 
-		await file.DisposeAsync();
+		await fileStream.DisposeAsync();
 		await stream.DisposeAsync();
 	}
 
@@ -138,33 +139,35 @@ public class FfmpegStreamToStreamRunnerTests
 	{
 		var readFile = await SetupFakeFfmpegExecutable(2);
 
-		var file = new StorageHostFullPathFilesystem(new FakeIWebLogger()).ReadStream(readFile);
-		var sut = new FfmpegStreamToStreamRunner("invalid", file,
+		var fileStream =
+			new StorageHostFullPathFilesystem(new FakeIWebLogger()).ReadStream(readFile);
+		var sut = new FfmpegStreamToStreamRunner("invalid",
 			new FakeIWebLogger());
 
 		await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
-			await sut.RunProcessAsync("-1",
+			await sut.RunProcessAsync(fileStream, "-1",
 				"image2", "test"));
 
-		await file.DisposeAsync();
+		await fileStream.DisposeAsync();
 	}
 
 	[TestMethod]
 	public async Task Ffmpeg_RunProcessAsync_WithInvalidPath_WithInvalidStream()
 	{
-		var sut = new FfmpegStreamToStreamRunner("invalid", Stream.Null,
+		var sut = new FfmpegStreamToStreamRunner("invalid",
 			new FakeIWebLogger());
 
 		await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
-			await sut.RunProcessAsync("-1", "image2",
+			await sut.RunProcessAsync(Stream.Null, "-1", "image2",
 				"test"));
 	}
 
 	[TestMethod]
-	public void Ffmpeg_StreamToStreamRunner_Null()
+	public async Task Ffmpeg_StreamToStreamRunner_Null()
 	{
-		Assert.ThrowsException<ArgumentNullException>(() =>
-			new FfmpegStreamToStreamRunner(null!, null!,
-				new FakeIWebLogger()));
+		await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+			await new FfmpegStreamToStreamRunner(null!,
+				new FakeIWebLogger()).RunProcessAsync(null!,
+				null!, null!));
 	}
 }
