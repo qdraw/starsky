@@ -109,7 +109,7 @@ public class ExifToolStreamToStreamRunnerTests
 	[DataRow("file.txt & powershell -Command \"Get-Process | Out-File output.txt\"")]
 	[DataRow("file.txt && curl https://qdraw.nl")]
 	[DataRow("\"file.txt\" && ipconfig")]
-	public async Task RunProcessAsync_Fuzzing(string argument)
+	public async Task ExifTool_RunProcessAsync_Fuzzing(string argument)
 	{
 		var appSettings = new AppSettings { Verbose = true, ExifToolPath = "/bin/sh" };
 		if ( appSettings.IsWindows || !File.Exists("/bin/sh") )
@@ -130,7 +130,7 @@ public class ExifToolStreamToStreamRunnerTests
 	}
 
 	[TestMethod]
-	public async Task RunProcessAsync_HappyFlow()
+	public async Task ExifTool_RunProcessAsync_HappyFlow()
 	{
 		var readFile = await SetupFakeExifToolExecutable(0);
 
@@ -150,7 +150,7 @@ public class ExifToolStreamToStreamRunnerTests
 	}
 
 	[TestMethod]
-	public async Task RunProcessAsync_ExitCode()
+	public async Task ExifTool_RunProcessAsync_ExitCode()
 	{
 		if ( new AppSettings().IsWindows )
 		{
@@ -178,7 +178,7 @@ public class ExifToolStreamToStreamRunnerTests
 	}
 
 	[TestMethod]
-	public async Task RunProcessAsync_WithInvalidFfmpegPath()
+	public async Task ExifTool_RunProcessAsync_WithInvalidFfmpegPath()
 	{
 		var readFile = await SetupFakeExifToolExecutable(2);
 
@@ -195,7 +195,7 @@ public class ExifToolStreamToStreamRunnerTests
 	}
 
 	[TestMethod]
-	public async Task RunProcessAsync_WithInvalidFfmpegPath_WithInvalidStream()
+	public async Task ExifTool_RunProcessAsync_WithInvalidPath_WithInvalidStream()
 	{
 		var sut = new ExifToolStreamToStreamRunner(new AppSettings { ExifToolPath = "invalid" },
 			Stream.Null,

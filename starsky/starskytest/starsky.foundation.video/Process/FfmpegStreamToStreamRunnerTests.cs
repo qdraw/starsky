@@ -70,7 +70,7 @@ public class FfmpegStreamToStreamRunnerTests
 	}
 
 	[ClassCleanup]
-	public static void CleanUp()
+	public static void Ffmpeg_CleanUp()
 	{
 		File.Delete(Path.Combine(new CreateAnImage().BasePath, "FfmpegStreamToStreamRunnerTests",
 			"ffmpeg"));
@@ -87,7 +87,7 @@ public class FfmpegStreamToStreamRunnerTests
 	}
 
 	[TestMethod]
-	public async Task RunProcessAsync_HappyFlow()
+	public async Task Ffmpeg_RunProcessAsync_HappyFlow()
 	{
 		var readFile = await SetupFakeFfmpegExecutable(0);
 
@@ -107,7 +107,7 @@ public class FfmpegStreamToStreamRunnerTests
 	}
 
 	[TestMethod]
-	public async Task RunProcessAsync_ExitCode()
+	public async Task Ffmpeg_RunProcessAsync_ExitCode()
 	{
 		if ( new AppSettings().IsWindows )
 		{
@@ -135,7 +135,7 @@ public class FfmpegStreamToStreamRunnerTests
 	}
 
 	[TestMethod]
-	public async Task RunProcessAsync_WithInvalidFfmpegPath()
+	public async Task Ffmpeg_RunProcessAsync_WithInvalidFfmpegPath()
 	{
 		var readFile = await SetupFakeFfmpegExecutable(2);
 
@@ -151,7 +151,7 @@ public class FfmpegStreamToStreamRunnerTests
 	}
 
 	[TestMethod]
-	public async Task RunProcessAsync_WithInvalidFfmpegPath_WithInvalidStream()
+	public async Task Ffmpeg_RunProcessAsync_WithInvalidPath_WithInvalidStream()
 	{
 		var sut = new FfmpegStreamToStreamRunner("invalid", Stream.Null,
 			new FakeIWebLogger());
@@ -162,7 +162,7 @@ public class FfmpegStreamToStreamRunnerTests
 	}
 
 	[TestMethod]
-	public void FfmpegStreamToStreamRunner_Null()
+	public void Ffmpeg_StreamToStreamRunner_Null()
 	{
 		Assert.ThrowsException<ArgumentNullException>(() =>
 			new FfmpegStreamToStreamRunner(null!, null!,
