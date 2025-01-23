@@ -177,12 +177,12 @@ public sealed class ExifToolTest
 		var (beforeHash, _) =
 			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg");
 
-		var sut = new ExifTool(storage, null!,
+		var sut = new ExifTool(storage, new FakeIStorage(),
 			_appSettingsWithExifTool, new FakeIWebLogger());
 
 		// Act
 		var result = await sut.WriteTagsAsync("/test.jpg", "-Software=\"Qdraw 2.0\"");
-		
+
 		// Assert
 		var (afterHash, _) =
 			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg");
@@ -191,7 +191,7 @@ public sealed class ExifToolTest
 		// Does change after update
 		Assert.AreNotEqual(beforeHash, afterHash);
 	}
-	
+
 	[TestMethod]
 	public async Task ExifTool_WriteTagsThumbnailAsync_HappyFlow()
 	{
@@ -202,12 +202,12 @@ public sealed class ExifToolTest
 		var (beforeHash, _) =
 			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync("/hash.jpg");
 
-		var sut = new ExifTool(null!, storage,
+		var sut = new ExifTool(new FakeIStorage(), storage,
 			_appSettingsWithExifTool, new FakeIWebLogger());
 
 		// Act
 		var result = await sut.WriteTagsThumbnailAsync("/hash.jpg", "-Software=\"Qdraw 2.0\"");
-		
+
 		// Assert
 		var (afterHash, _) =
 			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync("/hash.jpg");
