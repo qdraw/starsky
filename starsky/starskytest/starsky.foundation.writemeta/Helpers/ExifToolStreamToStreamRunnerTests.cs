@@ -17,9 +17,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers;
 public class ExifToolStreamToStreamRunnerTests
 {
 	private readonly AppSettings _appSettingsWithExifTool;
-	private readonly string _exifToolExe;
 	private readonly string _exifToolExePosix;
-	private readonly string _exifToolExeWindows;
 	private readonly StorageHostFullPathFilesystem _hostFullPathFilesystem;
 
 	public ExifToolStreamToStreamRunnerTests()
@@ -27,15 +25,15 @@ public class ExifToolStreamToStreamRunnerTests
 		_hostFullPathFilesystem = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 
 
-		_exifToolExeWindows = new CreateFakeExifToolWindows().ExifToolPath;
+		var exifToolExeWindows = new CreateFakeExifToolWindows().ExifToolPath;
 
 		_hostFullPathFilesystem.CreateDirectory(Path.Combine(new CreateAnImage().BasePath,
 			"ExifToolStreamToStreamRunnerTests"));
 		_exifToolExePosix = Path.Combine(new CreateAnImage().BasePath,
 			"ExifToolStreamToStreamRunnerTests", "exiftool");
 
-		_exifToolExe = new AppSettings().IsWindows ? _exifToolExeWindows : _exifToolExePosix;
-		_appSettingsWithExifTool = new AppSettings { ExifToolPath = _exifToolExe };
+		var exifToolExe = new AppSettings().IsWindows ? exifToolExeWindows : _exifToolExePosix;
+		_appSettingsWithExifTool = new AppSettings { ExifToolPath = exifToolExe };
 	}
 
 	[ClassCleanup]
@@ -55,20 +53,15 @@ public class ExifToolStreamToStreamRunnerTests
 		await _hostFullPathFilesystem.WriteStreamAsync(stream, path);
 	}
 
-	private async Task<string> SetupFakeExifToolExecutable(int i)
+	private async Task SetupFakeExifToolExecutable()
 	{
-		var readFile = Path.Combine(new CreateAnImage().BasePath,
-			"FfmpegStreamToStreamRunnerTests", "read_file.");
-
 		await CreateStubFile(_exifToolExePosix,
 			"#!/bin/bash\necho Fake Executable");
-		await CreateStubFile(readFile + i, "test_content");
 
 		await new FfMpegChmod(new FakeSelectorStorage(_hostFullPathFilesystem),
 				new FakeIWebLogger())
 			.Chmod(
 				_exifToolExePosix);
-		return readFile + i;
 	}
 
 	[TestMethod]
@@ -132,10 +125,10 @@ public class ExifToolStreamToStreamRunnerTests
 	[TestMethod]
 	public async Task ExifTool_RunProcessAsync_HappyFlow()
 	{
-		var readFile = await SetupFakeExifToolExecutable(0);
+		await SetupFakeExifToolExecutable();
 
-		var hostStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
-		var sourceStream = hostStorage.ReadStream(readFile);
+		var sourceStream = new MemoryStream([0x01, 0x02, 0x03]);
+
 		var sut = new ExifToolStreamToStreamRunner(_appSettingsWithExifTool, sourceStream,
 			new FakeIWebLogger());
 
@@ -158,14 +151,14 @@ public class ExifToolStreamToStreamRunnerTests
 			return;
 		}
 
-		var readFile = await SetupFakeExifToolExecutable(1);
+		await SetupFakeExifToolExecutable();
+		var sourceStream = new MemoryStream([0x01, 0x02, 0x03]);
 
 		// overwrite the file with a bash script that will exit with code 1
 		await CreateStubFile(_exifToolExePosix,
 			"#!/bin/bash\ntest_content\n exit 1");
 
-		var file = new StorageHostFullPathFilesystem(new FakeIWebLogger()).ReadStream(readFile);
-		var sut = new ExifToolStreamToStreamRunner(_appSettingsWithExifTool, file,
+		var sut = new ExifToolStreamToStreamRunner(_appSettingsWithExifTool, sourceStream,
 			new FakeIWebLogger());
 
 		var stream = await sut.RunProcessAsync("arg1",
@@ -173,25 +166,25 @@ public class ExifToolStreamToStreamRunnerTests
 
 		Assert.IsNotNull(stream);
 
-		await file.DisposeAsync();
+		await sourceStream.DisposeAsync();
 		await stream.DisposeAsync();
 	}
 
 	[TestMethod]
 	public async Task ExifTool_RunProcessAsync_WithInvalidFfmpegPath()
 	{
-		var readFile = await SetupFakeExifToolExecutable(2);
+		await SetupFakeExifToolExecutable();
+		var sourceStream = new MemoryStream([0x01, 0x02, 0x03]);
 
-		var file = new StorageHostFullPathFilesystem(new FakeIWebLogger()).ReadStream(readFile);
 		var sut = new ExifToolStreamToStreamRunner(new AppSettings { ExifToolPath = "invalid" },
-			file,
+			sourceStream,
 			new FakeIWebLogger());
 
 		await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
 			await sut.RunProcessAsync("-1",
 				"image2"));
 
-		await file.DisposeAsync();
+		await sourceStream.DisposeAsync();
 	}
 
 	[TestMethod]

@@ -11,6 +11,8 @@ public class CreateFakeExifToolWindows
 {
 	public readonly ImmutableArray<byte> Bytes = [..Array.Empty<byte>()];
 
+	public readonly string ExifToolPath = string.Empty;
+
 	public CreateFakeExifToolWindows()
 	{
 		var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -25,8 +27,6 @@ public class CreateFakeExifToolWindows
 		ExifToolPath = path;
 		Bytes = [..StreamToBytes(path)];
 	}
-
-	public string ExifToolPath { get; set; }
 
 	private static byte[] StreamToBytes(string path)
 	{
