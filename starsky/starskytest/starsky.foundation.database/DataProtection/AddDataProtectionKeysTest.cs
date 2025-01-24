@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
@@ -18,10 +19,10 @@ public class AddDataProtectionKeysTest
 		var service = new ServiceCollection() as IServiceCollection;
 
 		service.SetupDataProtection();
-		
+
 		Assert.IsTrue(service.Any(p => p.ToString().Contains("DataProtection")));
 	}
-	
+
 	[TestMethod]
 	public void SetupDataProtection_SetsXmlRepositoryFromServiceProvider()
 	{
@@ -42,16 +43,16 @@ public class AddDataProtectionKeysTest
 		Assert.IsInstanceOfType(protector, typeof(IDataProtector));
 	}
 
-	private class FakeIXmlRepository : IXmlRepository
+	private sealed class FakeIXmlRepository : IXmlRepository
 	{
 		public IReadOnlyCollection<XElement> GetAllElements()
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public void StoreElement(XElement element, string friendlyName)
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 	}
 }

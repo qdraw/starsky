@@ -222,7 +222,7 @@ public sealed class SearchWideDateTimeTest
 		return myClass.Type;
 	}
 
-	private class SetSearchWideDateTimeOverrideObject
+	private sealed class SetSearchWideDateTimeOverrideObject
 	{
 		public SearchWideDateTime.WideSearchDateTimeGetType Type { get; set; }
 	}

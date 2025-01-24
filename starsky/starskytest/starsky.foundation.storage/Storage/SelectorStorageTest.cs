@@ -45,7 +45,7 @@ public class SelectorStorageTest
 	[SuppressMessage("Usage",
 		"S1144:Unused private types or members should be removed")]
 	[SuppressMessage("Usage", "S3459:Unassigned members should be removed")]
-	private class MyClass
+	private sealed class MyClass
 	{
 		public SelectorStorage.StorageServices Type { get; set; }
 	}

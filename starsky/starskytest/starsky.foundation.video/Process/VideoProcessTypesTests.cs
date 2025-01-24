@@ -26,7 +26,7 @@ public class VideoProcessTypesTests
 		return myClass.Type;
 	}
 
-	private class SetSearchWideDateTimeOverrideObject
+	private sealed class SetSearchWideDateTimeOverrideObject
 	{
 		public VideoProcessTypes Type { get; set; }
 	}

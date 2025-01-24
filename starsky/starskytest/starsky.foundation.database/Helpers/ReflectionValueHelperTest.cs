@@ -7,23 +7,6 @@ namespace starskytest.starsky.foundation.database.Helpers;
 [TestClass]
 public class ReflectionValueHelperTest
 {
-	[SuppressMessage("Usage",
-		"S1144:Unused private types or members should be removed")]
-	[SuppressMessage("Usage",
-		"S2933:Fields that are only assigned in the constructor should be \"readonly\"")]
-	private class Foo
-	{
-#pragma warning disable CS0414
-		private string _bar = "test";
-#pragma warning restore CS0414
-	}
-
-	[SuppressMessage("Usage", "S2094:Classes should not be empty")]
-	private class FooNothing
-	{
-		// nothing here
-	}
-
 	[TestMethod]
 	public void TestReadField()
 	{
@@ -36,5 +19,22 @@ public class ReflectionValueHelperTest
 	{
 		var result = new FooNothing().GetReflectionFieldValue<string>("_bar");
 		Assert.AreEqual(null, result);
+	}
+
+	[SuppressMessage("Usage",
+		"S1144:Unused private types or members should be removed")]
+	[SuppressMessage("Usage",
+		"S2933:Fields that are only assigned in the constructor should be \"readonly\"")]
+	private sealed class Foo
+	{
+#pragma warning disable CS0414
+		private string _bar = "test";
+#pragma warning restore CS0414
+	}
+
+	[SuppressMessage("Usage", "S2094:Classes should not be empty")]
+	private sealed class FooNothing
+	{
+		// nothing here
 	}
 }

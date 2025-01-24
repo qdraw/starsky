@@ -93,7 +93,7 @@ public class DoubleBinderProviderTest
 	}
 
 	[SuppressMessage("ReSharper", "UnassignedGetOnlyAutoProperty")]
-	private class MyClass : ModelBinderProviderContext
+	private sealed class MyClass : ModelBinderProviderContext
 	{
 		public override BindingInfo BindingInfo { get; } = new();
 

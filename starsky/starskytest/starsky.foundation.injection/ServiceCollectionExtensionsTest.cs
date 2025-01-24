@@ -211,12 +211,12 @@ public class ServiceCollectionExtensionsTest
 			ServiceCollectionExtensions.GetExportedTypes(new AssemblyTestClass(exception)));
 	}
 
-	private class TestInjectionClass : ITestInjectionClass
+	private sealed class TestInjectionClass : ITestInjectionClass
 	{
 		public bool Enabled { get; set; } = true;
 	}
 
-	private class OverwriteInjectionLifetime
+	private sealed class OverwriteInjectionLifetime
 	{
 		[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
 		public InjectionLifetime Type { get; set; }

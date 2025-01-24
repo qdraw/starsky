@@ -1330,7 +1330,7 @@ public sealed class ImportTest
 		Assert.AreEqual(ImportStatus.Default, testItem?.Status);
 	}
 
-	private class FakeReadOnlyStorage : FakeIStorage
+	private sealed class FakeReadOnlyStorage : FakeIStorage
 	{
 		public override StorageInfo Info(string path)
 		{

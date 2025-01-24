@@ -87,7 +87,7 @@ public sealed class JsonBoolQuotedConverterTest
 	[SuppressMessage("Usage", "S1144:Unused private types or members should be removed")]
 	[SuppressMessage("Usage", "S3459:Unassigned members should be removed")]
 	[SuppressMessage("ReSharper", "PropertyCanBeMadeInitOnly.Local")]
-	private class KeyExample
+	private sealed class KeyExample
 	{
 		public bool Key { get; set; }
 	}

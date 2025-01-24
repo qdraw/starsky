@@ -298,12 +298,12 @@ public sealed class PackageTelemetryTest
 		Assert.AreEqual("-1", res3.Value);
 	}
 
-	private class TestClass
+	private sealed class TestClass
 	{
 		public bool Test { get; } = true;
 	}
 
-	private class PropValueTestClass
+	private sealed class PropValueTestClass
 	{
 		[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
 		public string Test { get; set; } = string.Empty;

@@ -600,7 +600,7 @@ public sealed class VersionHelpersTest
 		Assert.AreEqual(0, result);
 	}
 
-	private class SemVersionBasic
+	private sealed class SemVersionBasic
 	{
 		public SemVersionBasic(int major, int minor = 0, int patch = 0, string prerelease = "",
 			string build = "")

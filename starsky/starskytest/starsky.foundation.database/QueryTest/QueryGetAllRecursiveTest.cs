@@ -129,7 +129,7 @@ public sealed class QueryGetAllRecursiveTest
 			await fakeQuery.GetAllRecursiveAsync("test"));
 	}
 
-	private class MySqlSaveDbExceptionContext : ApplicationDbContext
+	private sealed class MySqlSaveDbExceptionContext : ApplicationDbContext
 	{
 		private readonly MySqlErrorCode _error;
 
