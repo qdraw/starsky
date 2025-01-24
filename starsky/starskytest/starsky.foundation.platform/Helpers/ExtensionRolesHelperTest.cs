@@ -23,6 +23,16 @@ public sealed class ExtensionRolesHelperTest
 		Assert.IsFalse(ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported("file.xmp"));
 	}
 
+	[DataTestMethod]
+	[DataRow("file.mp4")]
+	[DataRow("file.mov")]
+	public void Files_IsExtensionVideoSupported_VideoAndNotImages(string filePath)
+	{
+		// Check if Video is supported and NOT Image
+		Assert.IsTrue(ExtensionRolesHelper.IsExtensionVideoSupported(filePath));
+		Assert.IsFalse(ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(filePath));
+	}
+
 	[TestMethod]
 	public void Files_ExtensionThumbSupportedList_JpgCheck()
 	{
