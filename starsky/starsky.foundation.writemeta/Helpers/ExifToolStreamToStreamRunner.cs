@@ -40,8 +40,6 @@ public class ExifToolStreamToStreamRunner
 			$"info: {sourceStream.CanRead}  {sourceStream.CanSeek}  {sourceStream.CanWrite}" +
 			$" {sourceStream.Position}");
 
-		sourceStream.Seek(0, SeekOrigin.Begin);
-
 		var argumentsWithPipeEnd = $"{exifToolInputArguments} -o - -";
 
 		var memoryStream = new MemoryStream();
@@ -52,22 +50,18 @@ public class ExifToolStreamToStreamRunner
 			var command = Default.Run(_appSettings.ExifToolPath,
 					options: opts =>
 					{
-						opts.Encoding(Encoding.UTF8);
-						opts.DisposeOnExit(false); // dispose later?
 						opts.StartInfo(si =>
 							si.Arguments = argumentsWithPipeEnd);
 					})
 				< sourceStream > memoryStream;
 
-			var result = await command.Task;
+			var result = await command.Task.ConfigureAwait(false);
 
-			_logger.LogInformation($"[RunProcessAsync] {result.Success} ~ exifTool " +
+			_logger.LogInformation($"[ExifToolRunProcessAsync] {result.Success} ~ exifTool " +
 			                       $"{referenceInfoAndPath} {exifToolInputArguments} " +
 			                       $"run with result: {result.Success}  ~ ");
 
 			memoryStream.Seek(0, SeekOrigin.Begin);
-
-			command.Process.Dispose();
 
 			return memoryStream;
 		}
