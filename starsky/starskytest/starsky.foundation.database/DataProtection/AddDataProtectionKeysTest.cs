@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
@@ -47,12 +46,12 @@ public class AddDataProtectionKeysTest
 	{
 		public IReadOnlyCollection<XElement> GetAllElements()
 		{
-			throw new NotImplementedException();
+			return new List<XElement>();
 		}
 
 		public void StoreElement(XElement element, string friendlyName)
 		{
-			throw new NotImplementedException();
+			// do nothing because it mocked here
 		}
 	}
 }
