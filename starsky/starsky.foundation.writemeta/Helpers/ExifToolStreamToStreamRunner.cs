@@ -1,7 +1,6 @@
 using System;
 using System.ComponentModel;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -27,6 +26,7 @@ public class ExifToolStreamToStreamRunner
 	/// <summary>
 	///     Run Command async (and keep stream open)
 	/// </summary>
+	/// <param name="sourceStream">source image</param>
 	/// <param name="exifToolInputArguments">exifTool args</param>
 	/// <param name="referenceInfoAndPath">reference path (only for display)</param>
 	/// <returns>bool if success</returns>
