@@ -12,7 +12,6 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.Services;
@@ -166,7 +165,7 @@ public sealed class ExifToolCmdHelper
 	}
 
 	/// <summary>
-	///     Create a XMP file when it not exist
+	///     Create an XMP file when it not exist
 	/// </summary>
 	/// <param name="updateModel">model</param>
 	/// <param name="inputSubPaths">list of paths</param>
@@ -184,8 +183,7 @@ public sealed class ExifToolCmdHelper
 
 			var withXmpPath = ExtensionRolesHelper.ReplaceExtensionWithXmp(subPath);
 
-			if ( _iStorage.IsFolderOrFile(withXmpPath) !=
-			     FolderOrFileModel.FolderOrFileTypeList.Deleted )
+			if ( _iStorage.ExistFile(withXmpPath) )
 			{
 				continue;
 			}

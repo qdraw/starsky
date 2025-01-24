@@ -7,7 +7,6 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Models;
 using starsky.foundation.writemeta.Interfaces;
 using ExifToolCmdHelper = starsky.foundation.writemeta.Helpers.ExifToolCmdHelper;
 
@@ -66,8 +65,7 @@ public sealed class ExifCopy
 		var withXmpPath = ExtensionRolesHelper.ReplaceExtensionWithXmp(subPath);
 
 		// only for files that not exist yet
-		if ( _iStorage.IsFolderOrFile(withXmpPath) !=
-		     FolderOrFileModel.FolderOrFileTypeList.Deleted )
+		if ( _iStorage.ExistFile(withXmpPath) )
 		{
 			return withXmpPath;
 		}
