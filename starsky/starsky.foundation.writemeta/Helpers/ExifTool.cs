@@ -23,7 +23,6 @@ public sealed class ExifTool : IExifTool
 	private readonly AppSettings _appSettings;
 	private readonly IStorage _iStorage;
 	private readonly IWebLogger _logger;
-	private readonly ExifToolStreamToStreamRunner _runner;
 	private readonly IStorage _thumbnailStorage;
 
 	public ExifTool(IStorage sourceStorage, IStorage thumbnailStorage, AppSettings appSettings,
@@ -33,7 +32,6 @@ public sealed class ExifTool : IExifTool
 		_iStorage = sourceStorage;
 		_thumbnailStorage = thumbnailStorage;
 		_logger = logger;
-		_runner = new ExifToolStreamToStreamRunner(_appSettings, _logger);
 	}
 
 	/// <summary>
@@ -63,13 +61,14 @@ public sealed class ExifTool : IExifTool
 		_logger.LogInformation($"[WriteTagsAsync] Next update for {subPath}");
 
 		var inputStream = _iStorage.ReadStream(subPath);
-		var stream = await _runner.RunProcessAsync(inputStream, command, subPath);
+
+		var runner = new ExifToolStreamToStreamRunner(_appSettings, _logger);
+		var stream = await runner.RunProcessAsync(inputStream, command, subPath);
 
 		// Need to Dispose for Windows
 		// inputStream is disposed
 		await inputStream.DisposeAsync();
 
-		// stream is disposed in writeStreamAsync
 		return await _iStorage.WriteStreamAsync(stream, subPath);
 	}
 
@@ -82,8 +81,8 @@ public sealed class ExifTool : IExifTool
 	public async Task<bool> WriteTagsThumbnailAsync(string fileHash, string command)
 	{
 		var inputStream = _thumbnailStorage.ReadStream(fileHash);
-		var stream = await _runner.RunProcessAsync(inputStream,
-			command, fileHash);
+		var runner = new ExifToolStreamToStreamRunner(_appSettings, _logger);
+		var stream = await runner.RunProcessAsync(inputStream, command, fileHash);
 		// Need to Close/Dispose for Windows and needs before WriteStreamAsync
 		await inputStream.DisposeAsync();
 		return await _thumbnailStorage.WriteStreamAsync(stream, fileHash);
@@ -102,7 +101,8 @@ public sealed class ExifTool : IExifTool
 		beforeFileHash ??= await FileHash.CalculateHashAsync(sourceStream,
 			false, cancellationToken);
 
-		var stream = await _runner.RunProcessAsync(sourceStream, command, subPath);
+		var runner = new ExifToolStreamToStreamRunner(_appSettings, _logger);
+		var stream = await runner.RunProcessAsync(sourceStream, command, subPath);
 
 		// Need to Close / Dispose for Windows
 		sourceStream.Close();
