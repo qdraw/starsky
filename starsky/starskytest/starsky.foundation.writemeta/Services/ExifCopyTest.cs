@@ -93,6 +93,28 @@ public sealed class ExifCopyTest
 	}
 
 	[TestMethod]
+	public async Task ExifToolCmdHelper_XmpSync_Twice()
+	{
+		var (sut, storage) = CreateSut();
+
+		// Run twice, that's my only way to test if the file is already there
+		sut.XmpCreate("/test.xmp");
+
+		var job1 = await sut.XmpSync("/test.dng");
+		var job2 = await sut.XmpSync("/test.dng");
+
+		Assert.AreEqual("/test.xmp", job1);
+		Assert.AreEqual("/test.xmp", job2);
+		Assert.AreEqual(job1, job2);
+
+		var result =
+			await StreamToStringHelper.StreamToStringAsync(storage.ReadStream("/test.xmp"));
+		Assert.AreEqual("<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Starsky'>\n" +
+		                "<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>\n</rdf:RDF>\n</x:xmpmeta>",
+			result);
+	}
+
+	[TestMethod]
 	public async Task ExifToolCmdHelper_XmpCreate_NotFound()
 	{
 		var (sut, _) = CreateSut();
