@@ -16,7 +16,8 @@ on:
     - 'starsky/starsky/clientapp/**'
     - '.github/workflows/**'
   workflow_dispatch:
-    
+  schedule:
+    - cron:  '30 4 * * */1'    
 
 jobs:
   build:
