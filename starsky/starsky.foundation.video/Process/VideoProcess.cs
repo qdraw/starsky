@@ -32,7 +32,8 @@ public sealed class VideoProcess : IVideoProcess
 		{
 			case VideoProcessTypes.Thumbnail:
 				var (runResult, stream) = await RunFfmpeg(subPath,
-					"-frames:v 1", "image2", 2_000_000);
+					"-frames:v 1", "image2",
+					new Tuple<int, int>(500_000, -1));
 				return await _thumbnailPost.PostPrepThumbnail(runResult, stream, subPath);
 			default:
 				return new VideoResult(false, subPath);
@@ -49,7 +50,7 @@ public sealed class VideoProcess : IVideoProcess
 	/// <returns></returns>
 	private async Task<(VideoResult, Stream)> RunFfmpeg(string subPath,
 		string ffmpegInputArguments,
-		string outputFormat, int maxRead)
+		string outputFormat, Tuple<int, int> maxRead)
 	{
 		var downloadStatus = await _ffMpegDownload.DownloadFfMpeg();
 		if ( downloadStatus != FfmpegDownloadStatus.Ok &&
@@ -60,13 +61,31 @@ public sealed class VideoProcess : IVideoProcess
 				"FFMpeg download failed"), Stream.Null );
 		}
 
+		var (stream, success) = await RunFfmpegWithRetry(subPath,
+			ffmpegInputArguments,
+			outputFormat, maxRead.Item1);
+		if ( success )
+		{
+			return ( new VideoResult(success, subPath), stream );
+		}
+
+		_logger.LogInformation(
+			"[VideoProcess] Initial thumbnail generation failed, retrying with larger maxRead");
+		( stream, success ) = await RunFfmpegWithRetry(subPath,
+			ffmpegInputArguments,
+			outputFormat, maxRead.Item2);
+
+		return ( new VideoResult(success, subPath), stream );
+	}
+
+	private async Task<(Stream, bool)> RunFfmpegWithRetry(string subPath,
+		string ffmpegInputArguments, string outputFormat, int maxRead)
+	{
 		var sourceStream = _storage.ReadStream(subPath, maxRead);
 		var ffmpegPath = _ffMpegDownload.GetSetFfMpegPath();
 
 		var runner = new FfmpegStreamToStreamRunner(ffmpegPath, _logger);
-		var (stream, success) =
-			await runner.RunProcessAsync(sourceStream, ffmpegInputArguments, outputFormat, subPath);
-
-		return ( new VideoResult(success, subPath), stream );
+		return await runner.RunProcessAsync(sourceStream, ffmpegInputArguments, outputFormat,
+			subPath);
 	}
 }

@@ -43,10 +43,10 @@ internal class FfmpegStreamToStreamRunner(string ffMpegPath, IWebLogger logger)
 			if ( !result.Success )
 			{
 				var error = await command.StandardError.ReadToEndAsync();
-				logger.LogError("[RunProcessAsync] ffmpeg " + error);
+				logger.LogError("[FfmpegRunProcessAsync] ffmpeg " + error);
 			}
 
-			logger.LogInformation($"[RunProcessAsync] {result.Success} ~ ffmpeg " +
+			logger.LogInformation($"[FfmpegRunProcessAsync] {result.Success} ~ ffmpeg " +
 			                      $"{referenceInfoAndPath} {ffmpegInputArguments} " +
 			                      $"run with result: {result.Success}  ~ ");
 
