@@ -126,6 +126,9 @@ describe("Delete file from upload (50)", () => {
     cy.get(".modal .btn.btn--default").click();
     cy.wait("@delete4");
 
+    cy.wait(500);
+
+    // test 50
     cy.request(config.urlApiCollectionsFalse).then((res) => {
       expect(res.status).to.eq(200);
       expect(res.body.fileIndexItems.length).to.eq(3);
