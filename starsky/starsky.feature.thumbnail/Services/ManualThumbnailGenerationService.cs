@@ -12,7 +12,7 @@ using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
-using starsky.foundation.thumbnailgeneration.Interfaces;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
 using starsky.foundation.thumbnailgeneration.Models;
 using starsky.foundation.worker.ThumbnailServices.Interfaces;
 
@@ -54,7 +54,7 @@ public class ManualThumbnailGenerationService : IManualThumbnailGenerationServic
 		try
 		{
 			_logger.LogInformation($"[ThumbnailGenerationController] start {subPath}");
-			var thumbs = await _thumbnailService.CreateThumbnailAsync(subPath);
+			var thumbs = await _thumbnailService.GenerateThumbnail(subPath);
 			var getAllFilesAsync = await _query.GetAllFilesAsync(subPath);
 
 			var result =

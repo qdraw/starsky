@@ -11,33 +11,32 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.writemeta.Services;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.writemeta.Services
+namespace starskytest.starsky.foundation.writemeta.Services;
+
+[TestClass]
+public sealed class ExifToolDownloadBackgroundServiceTest
 {
-	[TestClass]
-	public sealed class ExifToolDownloadBackgroundServiceTest
+	private readonly IServiceScopeFactory _serviceScopeFactory;
+
+	public ExifToolDownloadBackgroundServiceTest()
 	{
-		private  readonly IServiceScopeFactory _serviceScopeFactory;
+		var services = new ServiceCollection();
+		services.AddSingleton<AppSettings>();
+		services.AddSingleton<BackgroundService, ExifToolDownloadBackgroundService>();
+		services.AddSingleton<IHttpClientHelper, HttpClientHelper>();
+		services.AddSingleton<IHttpProvider, FakeIHttpProvider>();
+		services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
+		services.AddSingleton<IWebLogger, FakeIWebLogger>();
 
-		public ExifToolDownloadBackgroundServiceTest()
-		{
-			var services = new ServiceCollection();
-			services.AddSingleton<AppSettings>();
-			services.AddSingleton<BackgroundService, ExifToolDownloadBackgroundService>();
-			services.AddSingleton<IHttpClientHelper, HttpClientHelper>();
-			services.AddSingleton<IHttpProvider, FakeIHttpProvider>();
-			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
-			services.AddSingleton<IWebLogger, FakeIWebLogger>();
+		var serviceProvider = services.BuildServiceProvider();
+		_serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+	}
 
-			var serviceProvider = services.BuildServiceProvider();
-			_serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-		}
-		
-		[TestMethod]
-		public async Task StartAsync()
-		{
-			var cancelToken = new CancellationToken();
-			await new ExifToolDownloadBackgroundService(_serviceScopeFactory).StartAsync(cancelToken);
-			Assert.IsNotNull(cancelToken);
-		}
+	[TestMethod]
+	public async Task StartAsync()
+	{
+		var cancelToken = new CancellationToken();
+		await new ExifToolDownloadBackgroundService(_serviceScopeFactory).StartAsync(cancelToken);
+		Assert.IsNotNull(cancelToken);
 	}
 }

@@ -252,11 +252,6 @@ public class FakeIQuery : IQuery
 		throw new NotImplementedException();
 	}
 
-	public List<FileIndexItem> GetAllFolders()
-	{
-		return _content.Where(p => p.IsDirectory == true).ToList();
-	}
-
 	public Task<List<FileIndexItem>> GetFoldersAsync(string subPath)
 	{
 		return Task.FromResult(_content
@@ -292,6 +287,11 @@ public class FakeIQuery : IQuery
 
 		_content.Add(fileIndexItem);
 		return fileIndexItem;
+	}
+
+	public Task<bool> ExistsAsync(string filePath)
+	{
+		throw new NotImplementedException();
 	}
 
 	public async Task<List<FileIndexItem>> AddRangeAsync(List<FileIndexItem> fileIndexItemList)
@@ -405,6 +405,11 @@ public class FakeIQuery : IQuery
 	{
 		var func = expression?.Compile();
 		return Task.FromResult(expression == null ? _content.Count : _content.Count(func!));
+	}
+
+	public List<FileIndexItem> GetAllFolders()
+	{
+		return _content.Where(p => p.IsDirectory == true).ToList();
 	}
 
 	[SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract")]

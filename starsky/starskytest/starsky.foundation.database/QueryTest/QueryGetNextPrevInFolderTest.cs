@@ -262,7 +262,8 @@ public class QueryGetNextPrevInFolderTest
 		dbContext.SaveChanges();
 	}
 
-	private class MySqlProtocolExceptionDbContext(DbContextOptions<ApplicationDbContext> options)
+	private sealed class MySqlProtocolExceptionDbContext(
+		DbContextOptions<ApplicationDbContext> options)
 		: ApplicationDbContext(options)
 	{
 		public override DbSet<FileIndexItem> FileIndex
