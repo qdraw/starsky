@@ -44,30 +44,24 @@ jobs:
             cp /tmp/$project-package.json $project/package.json
           done
 
-      - name: Check for changes in package-lock.json
-        run: |
-          for project in ${{ env.projects }}; do
-            if ! git diff --exit-code $project/package-lock.json > /dev/null; then
-              echo "Changes detected in $project/package-lock.json"
-              git add $project/package.json
-            else
-              echo "No changes detected in $project/package-lock.json"
-            fi
-          done
-          git diff-index --quiet HEAD || git commit -m "Check in package-lock.json changes"
-
       - name: Check for changes in package.json
         run: |
           for project in ${{ env.projects }}; do
             if ! git diff --exit-code $project/package.json > /dev/null; then
               echo "Changes detected in $project/package.json"
               git add $project/package.json
+              
+              pushd ${{ env.projects }}
+                npm install
+              popd
+              
+              git add $project/package-lock.json
+
             else
               echo "No changes detected in $project/package.json"
             fi
           done
           git diff-index --quiet HEAD || git commit -m "Check in package.json changes"
-
 
       - name: Push changes
         env:
