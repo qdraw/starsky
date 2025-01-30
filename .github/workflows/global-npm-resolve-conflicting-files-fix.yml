@@ -51,9 +51,9 @@ jobs:
               echo "Changes detected in $project/package.json"
               git add $project/package.json
               
-              pushd ${{ env.projects }}
+              cd $project
                 npm install
-              popd
+              cd -
               
               git add $project/package-lock.json
 
