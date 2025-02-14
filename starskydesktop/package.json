@@ -1,6 +1,6 @@
 {
   "name": "starsky",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "author": "Dion",
   "description": "Starsky",
   "main": "./dist/main.bundle.js",
@@ -99,7 +99,7 @@
     "@typescript-eslint/eslint-plugin": "^8.20.0",
     "@typescript-eslint/parser": "^8.21.0",
     "cross-env": "^7.0.3",
-    "electron": "^33.3.2",
+    "electron": "^33.4.0",
     "eslint": "^9.18.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^18.0.0",
