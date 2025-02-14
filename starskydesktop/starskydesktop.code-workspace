@@ -18,6 +18,7 @@
         "typescript.preferences.quoteStyle": "double",
         "typescript.updateImportsOnFileMove.enabled": "always",
         "cSpell.words": ["Starsky"],
-        "testing.openTesting": "neverOpen"
+        "testing.openTesting": "neverOpen",
+        "testing.automaticallyOpenTestResults": "neverOpen"
     }
 }
