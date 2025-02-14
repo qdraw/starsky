@@ -45,10 +45,14 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 - nothing yet
   
-## version 0.6.5 - 2024-02-13 {#v0.6.5}
+## version 0.6.5 - 2024-02-14 {#v0.6.5}
 
+- [x] (Added) Create 20241220-year-in-review.md (PR #1876)
+- [x] (Changed) _Front-end_ Client App - Vite - Upgrade dependencies (PR #1900)
 - [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.405 (Runtime: 8.0.12) (PR #1902)
 - [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.406 (Runtime: 8.0.13) (PR #1934)
+- [x] (Changed) _App_ version bumb and fix electron version issues (PR #1944)
+- [x] (Changed) Various npm dependency updates, including TypeScript, ESLint, React, and Electron in multiple PRs
 
 ## version 0.6.4 - 2024-12-19 {#v0.6.4}
 
