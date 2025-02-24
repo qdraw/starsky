@@ -208,7 +208,7 @@ public sealed class HealthCheckForUpdatesControllerTest
 		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 	}
 
-	private class TestOverWriteEnumModel
+	private sealed class TestOverWriteEnumModel
 	{
 		public UpdateStatus Value { get; set; }
 	}

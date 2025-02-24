@@ -13,15 +13,17 @@ namespace starsky.foundation.sync.Helpers;
 
 public class NewUpdateItemWrapper
 {
-	private readonly NewItem _newItem;
-	private readonly IQuery _query;
 	private readonly AppSettings _appSettings;
 	private readonly IWebLogger _logger;
+	private readonly NewItem _newItem;
+	private readonly IQuery _query;
 	private readonly IStorage _subPathStorage;
 
-	public NewUpdateItemWrapper(IQuery query, IStorage subPathStorage, AppSettings appSettings, IMemoryCache? memoryCache, IWebLogger logger)
+	public NewUpdateItemWrapper(IQuery query, IStorage subPathStorage, AppSettings appSettings,
+		IMemoryCache? memoryCache, IWebLogger logger)
 	{
-		_newItem = new NewItem(subPathStorage, new ReadMeta(subPathStorage, appSettings, memoryCache, logger));
+		_newItem = new NewItem(subPathStorage,
+			new ReadMeta(subPathStorage, appSettings, memoryCache, logger), logger);
 		_appSettings = appSettings;
 		_query = query;
 		_logger = logger;
@@ -29,7 +31,7 @@ public class NewUpdateItemWrapper
 	}
 
 	/// <summary>
-	/// Create an new item in the database
+	///     Create an new item in the database
 	/// </summary>
 	/// <param name="statusItem">contains the status</param>
 	/// <param name="subPath">relative path</param>
@@ -53,12 +55,13 @@ public class NewUpdateItemWrapper
 
 
 	/// <summary>
-	/// Create an new item in the database
+	///     Create an new item in the database
 	/// </summary>
 	/// <param name="statusItems">contains the status</param>
 	/// <param name="addParentItem"></param>
 	/// <returns>database item</returns>
-	internal async Task<List<FileIndexItem>> NewItem(List<FileIndexItem> statusItems, bool addParentItem)
+	internal async Task<List<FileIndexItem>> NewItem(List<FileIndexItem> statusItems,
+		bool addParentItem)
 	{
 		// Add a new Item
 		var dbItems = await _newItem.NewFileItemAsync(statusItems);
@@ -73,10 +76,12 @@ public class NewUpdateItemWrapper
 			await new AddParentList(_subPathStorage, _query)
 				.AddParentItems(okDbItems);
 		}
+
 		return dbItems;
 	}
 
-	internal async Task<FileIndexItem> HandleLastEditedIsSame(FileIndexItem updatedDbItem, bool? fileHashSame)
+	internal async Task<FileIndexItem> HandleLastEditedIsSame(FileIndexItem updatedDbItem,
+		bool? fileHashSame)
 	{
 		// ReSharper disable once InvertIf
 		if ( _appSettings.SyncAlwaysUpdateLastEditedTime != true && fileHashSame == true )
@@ -89,7 +94,7 @@ public class NewUpdateItemWrapper
 	}
 
 	/// <summary>
-	/// Only update the last edited time
+	///     Only update the last edited time
 	/// </summary>
 	/// <param name="updatedDbItem">item incl updated last edited time</param>
 	/// <returns>object with ok status</returns>
@@ -104,14 +109,15 @@ public class NewUpdateItemWrapper
 	}
 
 	/// <summary>
-	/// Update item to database
+	///     Update item to database
 	/// </summary>
 	/// <param name="dbItem">item to update</param>
 	/// <param name="size">byte size</param>
 	/// <param name="subPath">relative path</param>
 	/// <param name="addParentItems">auto add parent items</param>
 	/// <returns>same item</returns>
-	internal async Task<FileIndexItem> UpdateItem(FileIndexItem dbItem, long size, string subPath, bool addParentItems)
+	internal async Task<FileIndexItem> UpdateItem(FileIndexItem dbItem, long size, string subPath,
+		bool addParentItems)
 	{
 		if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
 		{
@@ -129,8 +135,8 @@ public class NewUpdateItemWrapper
 		{
 			await _query.AddParentItemsAsync(subPath);
 		}
+
 		DeleteStatusHelper.AddDeleteStatus(dbItem);
 		return updateItem;
 	}
-
 }

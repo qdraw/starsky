@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -141,6 +142,8 @@ public class CleanThumbnailHostedServiceTest
 		Assert.AreEqual(expectedResult, result);
 	}
 
+	[SuppressMessage("Performance",
+		"CA1852: Type can be sealed because it has no subtypes in its containing assembly")]
 	private class FakeServiceScope : IServiceScope
 	{
 		public FakeServiceScope(IServiceProvider serviceProvider)
@@ -162,7 +165,7 @@ public class CleanThumbnailHostedServiceTest
 		}
 	}
 
-	private class FakeServiceScopeFactory : IServiceScopeFactory
+	private sealed class FakeServiceScopeFactory : IServiceScopeFactory
 	{
 		private readonly IServiceProvider _serviceProvider;
 

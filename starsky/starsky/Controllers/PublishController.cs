@@ -113,7 +113,7 @@ public sealed class PublishController : Controller
 			var renderCopyResult = await _publishService.RenderCopy(info,
 				publishProfileName, itemName, location);
 			await _publishService.GenerateZip(_appSettings.TempFolder, itemName,
-				renderCopyResult, true);
+				renderCopyResult);
 			_webLogger.LogInformation($"[/api/publish/create] done: " +
 			                          $"{itemName} {DateTime.UtcNow}");
 		}, publishProfileName + "_" + itemName);

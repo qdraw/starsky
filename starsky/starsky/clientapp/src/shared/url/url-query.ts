@@ -1,6 +1,8 @@
-import { IUrl, newIUrl } from "../../interfaces/IUrl.ts";
-import { URLPath } from "./url-path";
-import { IsRelativeUrl } from "./url.ts";
+import {IUrl, newIUrl} from "../../interfaces/IUrl.ts";
+import {URLPath} from "./url-path";
+import {IsRelativeUrl} from "./url.ts";
+
+import packageJson from "../../../package.json";
 
 export class UrlQuery {
   public prefix: string = "/starsky";
@@ -93,11 +95,6 @@ export class UrlQuery {
 
   public UrlLogoutApi(): string {
     return `${this.prefix}/api/account/logout`;
-  }
-
-  private urlReplacePath(input: string): string {
-    const output = input.replace("#", "");
-    return output.replace(/\+/gi, "%2B");
   }
 
   public UrlAccountRegisterApi(): string {
@@ -336,7 +333,7 @@ export class UrlQuery {
   };
 
   public UrlApiFeaturesAppSettings = (): string => {
-    return this.prefix + "/api/env/features?v=0.6.0-rc.1";
+    return `${this.prefix}/api/env/features?v=` + packageJson.version;
   };
 
   public UrlApiDesktopEditorOpenAmountConfirmationChecker = (): string => {
@@ -444,5 +441,10 @@ export class UrlQuery {
 
   public DocsGettingStartedFirstSteps(): string {
     return "https://docs.qdraw.nl/docs/getting-started/first-steps";
+  }
+
+  private urlReplacePath(input: string): string {
+    const output = input.replace("#", "");
+    return output.replace(/\+/gi, "%2B");
   }
 }

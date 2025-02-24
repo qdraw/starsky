@@ -6,8 +6,8 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Medallion.Shell;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.native.Helpers;
 using starsky.foundation.native.OpenApplicationNative.Helpers;
+using starsky.foundation.platform.Architecture;
 using starskytest.FakeCreateAn;
 
 namespace starskytest.starsky.foundation.native.OpenApplicationNative.Helpers;

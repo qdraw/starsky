@@ -107,7 +107,7 @@ public static partial class ExtensionRolesHelper
 	private static readonly List<string> ExtensionGpx = new() { "gpx" };
 
 	/// <summary>
-	///     Mp4 Videos in h264 codex
+	///     Mp4 Videos in h264 codex / And Quicktime
 	/// </summary>
 	private static readonly List<string> ExtensionMp4 = new() { "mp4", "mov" };
 
@@ -189,7 +189,7 @@ public static partial class ExtensionRolesHelper
 	/// <value>
 	///     The extension thumb supported list.
 	/// </value>
-	public static List<string> ExtensionThumbSupportedList
+	public static List<string> ExtensionImageSharpThumbnailSupportedList
 	{
 		get
 		{
@@ -199,6 +199,16 @@ public static partial class ExtensionRolesHelper
 			extensionList.AddRange(ExtensionGif);
 			extensionList.AddRange(ExtensionPng);
 			extensionList.AddRange(ExtensionWebp);
+			return extensionList;
+		}
+	}
+
+	public static List<string> ExtensionVideoSupportedList
+	{
+		get
+		{
+			var extensionList = new List<string>();
+			extensionList.AddRange(ExtensionMp4);
 			return extensionList;
 		}
 	}
@@ -303,9 +313,16 @@ public static partial class ExtensionRolesHelper
 	/// </summary>
 	/// <param name="filename">the name of the file with extenstion</param>
 	/// <returns>true, if imageSharp can write to this</returns>
-	public static bool IsExtensionThumbnailSupported(string? filename)
+	public static bool IsExtensionImageSharpThumbnailSupported(string? filename)
 	{
-		return IsExtensionForce(filename?.ToLowerInvariant(), ExtensionThumbSupportedList);
+		return IsExtensionForce(filename?.ToLowerInvariant(),
+			ExtensionImageSharpThumbnailSupportedList);
+	}
+
+
+	public static bool IsExtensionVideoSupported(string? fileName)
+	{
+		return IsExtensionForce(fileName?.ToLowerInvariant(), ExtensionVideoSupportedList);
 	}
 
 	/// <summary>

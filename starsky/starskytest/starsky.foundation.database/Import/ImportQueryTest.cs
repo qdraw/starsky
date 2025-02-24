@@ -330,7 +330,35 @@ public sealed class ImportQueryTest
 			"AggregateException (ignored after retry)"));
 	}
 
-	private class ConcurrencyExceptionApplicationDbContext : ApplicationDbContext
+	[TestMethod]
+	public async Task RemoveItemAsync_InValidOperationExceptionApplicationDbContext()
+	{
+		var addedItems = new List<ImportIndexItem>
+		{
+			new() { FileHash = "RemoveAsync_InValidOperationException" }
+		};
+
+		var serviceScopeFactory =
+			CreateNewScope(nameof(RemoveItemAsync_InValidOperationExceptionApplicationDbContext));
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(
+				nameof(RemoveItemAsync_InValidOperationExceptionApplicationDbContext))
+			.Options;
+		var dbContext = new InValidOperationExceptionApplicationDbContext(options);
+
+		var webLogger = new FakeIWebLogger();
+		var importQuery = new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper(),
+			webLogger, dbContext);
+
+		await importQuery.RemoveItemAsync(addedItems[0], 1);
+
+		Assert.AreEqual(1, webLogger.TrackedInformation.Count);
+		Assert.IsTrue(webLogger.TrackedInformation[0].Item2?.StartsWith(
+			"Import [RemoveItemAsync] catch-ed " +
+			"AggregateException (ignored after retry)"));
+	}
+
+	private sealed class ConcurrencyExceptionApplicationDbContext : ApplicationDbContext
 	{
 		public ConcurrencyExceptionApplicationDbContext(DbContextOptions options) : base(options)
 		{
@@ -350,37 +378,11 @@ public sealed class ImportQueryTest
 			throw new DbUpdateConcurrencyException();
 		}
 	}
-	
-	[TestMethod]
-	public async Task RemoveItemAsync_InValidOperationExceptionApplicationDbContext()
+
+	private sealed class InValidOperationExceptionApplicationDbContext : ApplicationDbContext
 	{
-		var addedItems = new List<ImportIndexItem>
-		{
-			new() { FileHash = "RemoveAsync_InValidOperationException" }
-		};
-
-		var serviceScopeFactory =
-			CreateNewScope(nameof(RemoveItemAsync_InValidOperationExceptionApplicationDbContext));
-		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-			.UseInMemoryDatabase(nameof(RemoveItemAsync_InValidOperationExceptionApplicationDbContext))
-			.Options;
-		var dbContext = new InValidOperationExceptionApplicationDbContext(options);
-
-		var webLogger = new FakeIWebLogger();
-		var importQuery = new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper(),
-			webLogger, dbContext);
-
-		await importQuery.RemoveItemAsync(addedItems[0], 1);
-
-		Assert.AreEqual(1, webLogger.TrackedInformation.Count);
-		Assert.IsTrue(webLogger.TrackedInformation[0].Item2?.StartsWith(
-			"Import [RemoveItemAsync] catch-ed " +
-			"AggregateException (ignored after retry)"));
-	}
-	
-	private class InValidOperationExceptionApplicationDbContext : ApplicationDbContext
-	{
-		public InValidOperationExceptionApplicationDbContext(DbContextOptions options) : base(options)
+		public InValidOperationExceptionApplicationDbContext(DbContextOptions options) : base(
+			options)
 		{
 		}
 
@@ -399,7 +401,7 @@ public sealed class ImportQueryTest
 		}
 	}
 
-	private class SqliteExceptionApplicationDbContext : ApplicationDbContext
+	private sealed class SqliteExceptionApplicationDbContext : ApplicationDbContext
 	{
 		public SqliteExceptionApplicationDbContext(DbContextOptions options) : base(options)
 		{

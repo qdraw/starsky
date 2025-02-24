@@ -15,11 +15,16 @@
         <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj"/>
         <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>
         <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.video\starsky.foundation.video.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.6" />
-        <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.4" />
+        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.6"/>
+        <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.4"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="GenerationFactory\Ffmpeg\"/>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
