@@ -16,17 +16,17 @@ namespace starsky.foundation.video.Process;
 public class VideoProcessThumbnailPost : IVideoProcessThumbnailPost
 {
 	private readonly ExifCopy _exifCopy;
-	private readonly IStorage _storage;
+	private readonly IStorage _tempStorage;
 
 	public VideoProcessThumbnailPost(ISelectorStorage selectorStorage,
 		AppSettings appSettings, IExifTool exifTool, IWebLogger logger,
 		IThumbnailQuery thumbnailQuery)
 	{
-		_storage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+		_tempStorage = selectorStorage.Get(SelectorStorage.StorageServices.Temporary);
 		var thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
-		var readMeta = new ReadMeta(_storage,
+		var readMeta = new ReadMeta(_tempStorage,
 			appSettings, null!, logger);
-		_exifCopy = new ExifCopy(_storage,
+		_exifCopy = new ExifCopy(_tempStorage,
 			thumbnailStorage, exifTool, readMeta, thumbnailQuery, logger);
 	}
 
@@ -61,7 +61,7 @@ public class VideoProcessThumbnailPost : IVideoProcessThumbnailPost
 	private async Task WriteStreamInFolderSubPathAsync(Stream stream, string subPath,
 		string jpegInFolderSubPath)
 	{
-		await _storage.WriteStreamAsync(stream, jpegInFolderSubPath);
+		await _tempStorage.WriteStreamAsync(stream, jpegInFolderSubPath);
 
 		await _exifCopy.CopyExifPublish(subPath, jpegInFolderSubPath);
 	}

@@ -1108,6 +1108,20 @@ public sealed class AppSettings
 
 		return filepath;
 	}
+	
+	/// <summary>
+	///     Temp folder relative path
+	/// </summary>
+	/// <param name="databaseFilePath">databaseFilePath</param>
+	/// <returns></returns>
+	public string DatabasePathToTempFolderFilePath(string databaseFilePath)
+	{
+		var filepath = TempFolder + databaseFilePath;
+
+		filepath = _pathToFilePathStyle(filepath);
+
+		return filepath;
+	}
 
 	/// <summary>
 	///     Used to reference other environment variables in the config

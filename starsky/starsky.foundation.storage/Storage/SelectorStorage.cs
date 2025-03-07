@@ -25,7 +25,12 @@ public sealed class SelectorStorage : ISelectorStorage
 		/// <summary>
 		///     Use only to import from
 		/// </summary>
-		HostFilesystem
+		HostFilesystem,
+		
+		/// <summary>
+		/// Temporary storage 
+		/// </summary>
+		Temporary
 	}
 
 	private readonly IEnumerable<IStorage> _services;
@@ -46,6 +51,8 @@ public sealed class SelectorStorage : ISelectorStorage
 				o is StorageHostFullPathFilesystem),
 			StorageServices.Thumbnail => _services.First(o =>
 				o is StorageThumbnailFilesystem),
+			StorageServices.Temporary => _services.First(o =>
+				o is StorageTemporaryFilesystem),			
 			_ => throw new ArgumentOutOfRangeException(
 				nameof(storageServices), storageServices, null)
 		};
