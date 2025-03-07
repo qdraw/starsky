@@ -23,6 +23,7 @@ public sealed class ReadMeta : IReadMeta
 	private const string CachePrefix = "info_";
 	private readonly AppSettings? _appSettings;
 	private readonly IMemoryCache? _cache;
+	private readonly FileHash _fileHashHelper;
 	private readonly IStorage _iStorage;
 	private readonly ReadMetaExif _readExif;
 	private readonly ReadMetaGpx _readMetaGpx;
@@ -44,6 +45,7 @@ public sealed class ReadMeta : IReadMeta
 		_readExif = new ReadMetaExif(_iStorage, appSettings, logger);
 		_readXmp = new ReadMetaXmp(_iStorage, logger);
 		_readMetaGpx = new ReadMetaGpx(logger);
+		_fileHashHelper = new FileHash(_iStorage, logger);
 	}
 
 	/// <summary>
@@ -75,7 +77,7 @@ public sealed class ReadMeta : IReadMeta
 			if ( fileHashes == null || fileHashes.Count <= i )
 			{
 				returnItem.FileHash =
-					( await new FileHash(_iStorage).GetHashCodeAsync(subPath) ).Key;
+					( await _fileHashHelper.GetHashCodeAsync(subPath) ).Key;
 			}
 			else
 			{

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 
@@ -11,20 +12,26 @@ namespace starsky.foundation.sync.Helpers;
 
 public class SizeFileHashIsTheSameHelper
 {
+	private readonly IWebLogger _logger;
 	private readonly IStorage _subPathStorage;
 
-	public SizeFileHashIsTheSameHelper(IStorage subPathStorage)
+	public SizeFileHashIsTheSameHelper(IStorage subPathStorage, IWebLogger logger)
 	{
 		_subPathStorage = subPathStorage;
+		_logger = logger;
 	}
 
 	/// <summary>
-	/// When the same stop checking and return value
+	///     When the same stop checking and return value
 	/// </summary>
 	/// <param name="dbItems">item that contain size and fileHash</param>
 	/// <param name="subPath">which item</param>
-	/// <returns>Last Edited is the bool (null is should check further in process), FileHash Same bool (null is not checked) , database item</returns>
-	internal async Task<Tuple<bool?, bool?, FileIndexItem>> SizeFileHashIsTheSame(List<FileIndexItem> dbItems, string subPath)
+	/// <returns>
+	///     Last Edited is the bool (null is should check further in process), FileHash Same bool
+	///     (null is not checked) , database item
+	/// </returns>
+	internal async Task<Tuple<bool?, bool?, FileIndexItem>> SizeFileHashIsTheSame(
+		List<FileIndexItem> dbItems, string subPath)
 	{
 		var dbItem = dbItems.Find(p => p.FilePath == subPath);
 		if ( dbItem == null )
@@ -39,7 +46,8 @@ public class SizeFileHashIsTheSameHelper
 
 		// compare raw files
 		var otherRawItems = dbItems.Where(p =>
-			ExtensionRolesHelper.IsExtensionForceXmp(p.FilePath) && !ExtensionRolesHelper.IsExtensionSidecar(p.FilePath))
+				ExtensionRolesHelper.IsExtensionForceXmp(p.FilePath) &&
+				!ExtensionRolesHelper.IsExtensionSidecar(p.FilePath))
 			.Where(p => p.FilePath == subPath)
 			.Select(CompareLastEditIsTheSame)
 			.Where(p => p.Item1).ToList();
@@ -62,21 +70,21 @@ public class SizeFileHashIsTheSameHelper
 	}
 
 	/// <summary>
-	/// Compare the file hash en return 
+	///     Compare the file hash en return
 	/// </summary>
 	/// <param name="dbItem">database item</param>
 	/// <returns>tuple that has value: is the same; and the fileHash</returns>
 	private async Task<Tuple<bool, string>> CompareFileHashIsTheSame(FileIndexItem dbItem)
 	{
 		var (localHash, _) = await new
-			FileHash(_subPathStorage).GetHashCodeAsync(dbItem.FilePath!);
+			FileHash(_subPathStorage, _logger).GetHashCodeAsync(dbItem.FilePath!);
 		var isTheSame = dbItem.FileHash == localHash;
 		dbItem.FileHash = localHash;
 		return new Tuple<bool, string>(isTheSame, localHash);
 	}
 
 	/// <summary>
-	/// True when result is the same
+	///     True when result is the same
 	/// </summary>
 	/// <param name="dbItem"></param>
 	/// <returns>lastWriteTime is the same, lastWriteTime, filePath</returns>

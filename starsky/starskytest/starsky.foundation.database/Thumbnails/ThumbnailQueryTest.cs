@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Thumbnails;
-using starsky.foundation.platform.Enums;
+using starsky.foundation.platform.Thumbnails;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.Thumbnails;
@@ -673,38 +673,40 @@ public class ThumbnailQueryTest
 		var result = await query.GetMissingThumbnailsBatchAsync(0, 100);
 		Assert.AreEqual(1, result.Count);
 	}
-	
+
 	[TestMethod]
 	public async Task GetMissingThumbnailsBatchAsync_Disposed_Recover()
 	{
 		var serviceScope = CreateNewScope("GetMissingThumbnailsBatchAsync_Disposed");
 		var context = serviceScope.CreateScope().ServiceProvider
 			.GetRequiredService<ApplicationDbContext>();
-		
+
 		context.Thumbnails.Add(new ThumbnailItem("123", null, true, null, null));
 		await context.SaveChangesAsync();
-		
+
 		// Dispose to check service scope
 		await context.DisposeAsync();
 
-		var query = new ThumbnailQuery(context, serviceScope, new FakeIWebLogger(), new FakeMemoryCache());
+		var query = new ThumbnailQuery(context, serviceScope, new FakeIWebLogger(),
+			new FakeMemoryCache());
 		var result = await query.GetMissingThumbnailsBatchAsync(0, 100);
 		Assert.AreEqual(1, result.Count);
 	}
-	
+
 	[TestMethod]
 	public async Task GetMissingThumbnailsBatchAsync_Disposed_ServiceScopeMissing()
 	{
-		var serviceScope = CreateNewScope("GetMissingThumbnailsBatchAsync_Disposed_ServiceScopeMissing");
+		var serviceScope =
+			CreateNewScope("GetMissingThumbnailsBatchAsync_Disposed_ServiceScopeMissing");
 		var context = serviceScope.CreateScope().ServiceProvider
 			.GetRequiredService<ApplicationDbContext>();
-		
+
 		// Dispose to check service scope
 		await context.DisposeAsync();
 
 		// No service scope
 		var query = new ThumbnailQuery(context, null!, new FakeIWebLogger(), new FakeMemoryCache());
-		
+
 		await Assert.ThrowsExceptionAsync<ObjectDisposedException>(async () =>
 		{
 			await query.GetMissingThumbnailsBatchAsync(0, 100);
@@ -928,7 +930,7 @@ public class ThumbnailQueryTest
 		var thumbnailQuery = new ThumbnailQuery(null!, null!, new FakeIWebLogger(),
 			cache);
 
-		Assert.IsFalse(cache.TryGetValue($"{nameof(ThumbnailQuery)}_IsRunningJob", out var _));
+		Assert.IsFalse(cache.TryGetValue($"{nameof(ThumbnailQuery)}_IsRunningJob", out _));
 
 		thumbnailQuery.SetRunningJob(true);
 

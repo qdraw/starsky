@@ -521,7 +521,7 @@ public sealed class QueryUpdateItemError
 		Assert.IsTrue(IsCalledDbUpdateConcurrency);
 	}
 
-	private class UpdateEntryUpdateConcurrency : IUpdateEntry
+	private sealed class UpdateEntryUpdateConcurrency : IUpdateEntry
 	{
 		public void SetOriginalValue(IProperty property, object? value)
 		{
@@ -610,7 +610,7 @@ public sealed class QueryUpdateItemError
 #pragma warning restore 8618
 	}
 
-	private class AppDbContextConcurrencyException : ApplicationDbContext
+	private sealed class AppDbContextConcurrencyException : ApplicationDbContext
 	{
 		public AppDbContextConcurrencyException(DbContextOptions options) : base(options)
 		{
@@ -646,7 +646,7 @@ public sealed class QueryUpdateItemError
 	}
 
 
-	private class SqliteExceptionDbContext : ApplicationDbContext
+	private sealed class SqliteExceptionDbContext : ApplicationDbContext
 	{
 		public SqliteExceptionDbContext(DbContextOptions options) : base(options)
 		{
@@ -683,7 +683,7 @@ public sealed class QueryUpdateItemError
 		}
 	}
 
-	private class InvalidOperationExceptionDbContext : ApplicationDbContext
+	private sealed class InvalidOperationExceptionDbContext : ApplicationDbContext
 	{
 		public InvalidOperationExceptionDbContext(DbContextOptions options) : base(options)
 		{
@@ -697,7 +697,7 @@ public sealed class QueryUpdateItemError
 		}
 	}
 
-	private class MySqlSaveDbExceptionContext : ApplicationDbContext
+	private sealed class MySqlSaveDbExceptionContext : ApplicationDbContext
 	{
 		private readonly string _error;
 
@@ -732,7 +732,7 @@ public sealed class QueryUpdateItemError
 		}
 	}
 
-	private class FakePropertyValues : PropertyValues
+	private sealed class FakePropertyValues : PropertyValues
 	{
 #pragma warning disable EF1001
 		public FakePropertyValues(InternalEntityEntry internalEntry) : base(internalEntry)
@@ -786,7 +786,7 @@ public sealed class QueryUpdateItemError
 		}
 	}
 
-	private class AppDbInvalidOperationException : ApplicationDbContext
+	private sealed class AppDbInvalidOperationException : ApplicationDbContext
 	{
 		public AppDbInvalidOperationException(DbContextOptions options) : base(options)
 		{

@@ -66,7 +66,8 @@ public sealed class ImportTestInMemoryDb
 			}
 		);
 
-		_exampleHash = new FileHash(_iStorageFake).GetHashCode("/test.jpg").Key;
+		_exampleHash = new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCode("/test.jpg")
+			.Key;
 	}
 
 	[TestMethod]

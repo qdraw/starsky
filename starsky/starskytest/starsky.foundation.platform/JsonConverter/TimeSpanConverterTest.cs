@@ -136,13 +136,13 @@ public sealed class JsonTimeSpanConverterTests
 		});
 	}
 
-	private class TestClass
+	private sealed class TestClass
 	{
 		[JsonConverter(typeof(JsonTimeSpanConverter))]
 		public TimeSpan TimeSpan { get; set; }
 	}
 
-	private class NullableTestClass
+	private sealed class NullableTestClass
 	{
 		[JsonConverter(typeof(JsonTimeSpanConverter))]
 		public TimeSpan? TimeSpan { get; set; }
