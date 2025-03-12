@@ -64,10 +64,12 @@ jobs:
           context: ./starsky
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: TOOLS=true
-          
+          tags: |
+            ghcr.io/${{ github.repository }}:master
+            ghcr.io/${{ github.repository }}:unstable_nightly_${{ github.run_id }}
+
       - name: Build and don't push
         id: docker_build_pull_request
         uses: docker/build-push-action@v6
