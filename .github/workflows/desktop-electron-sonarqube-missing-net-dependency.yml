@@ -59,9 +59,9 @@ jobs:
         with:
           # nuget cache files are stored in `~/.sonar` on Linux/macOS
           path: ~/.sonar
-          key: ${{ runner.os }}-build-desktop-sonarqube
+          key: ${{ runner.os }}-build-desktop-sonar
           restore-keys: |
-            ${{ runner.os }}-build-desktop-sonarqube-
+            ${{ runner.os }}-build-desktop-sonar
             
       - name: NpmCi
         working-directory: ./starskydesktop
