@@ -8,24 +8,21 @@
       "allowedVersions": "<9",
       "groupName": ".NET packages",
       "groupSlug": "microsoft",
-      "commitMessageTopic": ".NET dependencies",
-      "remarks": "Starsky will skip version 9 of .NET because this version has limited support."
+      "commitMessageTopic": ".NET dependencies"
     },
     {
       "matchPackageNames": ["/AspNetCore/"],
       "allowedVersions": "<9",
       "groupName": "ASP.NET Core packages",
       "groupSlug": "aspnetcore",
-      "commitMessageTopic": "ASP.NET Core dependencies",
-      "remarks": "Starsky will skip version 9 of .NET because this version has limited support."
+      "commitMessageTopic": "ASP.NET Core dependencies"
     },
     {
       "matchPackageNames": ["/^Microsoft\\.EntityFrameworkCore/"],
       "allowedVersions": "<9",
       "groupName": "EF Core packages",
       "groupSlug": "efcore",
-      "commitMessageTopic": "EF Core dependencies",
-      "remarks": "Although version 9 of EF Core works on .NET 8 we want to ensure maximum compatibility with the .NET 8 LTS version."
+      "commitMessageTopic": "EF Core dependencies"
     },
     {
       "matchPackageNames": ["/^MSTest/", "/^Microsoft\\.Testing/", "/^xunit/", "/^NSubstitute/", "/^Microsoft.NET.Test.Sdk/"],
