@@ -41,7 +41,7 @@ jobs:
         id: buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Inspect Docker Buildx
+      - name: Inspect Docker Buildx ghcr.io/${{ github.repository }}-unstable-nightly
         run: |
           echo "Name:      ${{ steps.buildx.outputs.name }}"
           echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
@@ -54,7 +54,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ghcr.io/${{ github.repository }}
+            ghcr.io/${{ github.repository }}-unstable-nightly
 
       - name: Build and push master
         id: docker_build_push
@@ -67,8 +67,8 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: TOOLS=true
           tags: |
-            ghcr.io/${{ github.repository }}:master
-            ghcr.io/${{ github.repository }}:unstable_nightly_${{ github.run_id }}
+            ghcr.io/${{ github.repository }}-unstable-nightly:master
+            ghcr.io/${{ github.repository }}-unstable-nightly:v${{ github.run_id }}
 
       - name: Build and don't push
         id: docker_build_pull_request
