@@ -54,7 +54,7 @@ describe("reload redirect", () => {
 
     afterAll(() => {
       // restore `window.location` to the `jsdom` `Location` object
-      window.location = oldWindowLocation;
+      (window.location as Location) = oldWindowLocation as Location;
     });
 
     it("should get remote ipc key and app version", () => {
