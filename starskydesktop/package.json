@@ -88,7 +88,7 @@
     "electron-settings": "^4.0.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "wait-on": "^8.0.2",
+    "wait-on": "^8.0.3",
     "winston": "^3.17.0"
   },
   "devDependencies": {
@@ -99,7 +99,7 @@
     "@typescript-eslint/eslint-plugin": "^8.22.0",
     "@typescript-eslint/parser": "^8.24.0",
     "cross-env": "^7.0.3",
-    "electron": "^33.4.0",
+    "electron": "^33.4.3",
     "eslint": "^9.20.1",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^18.0.0",
