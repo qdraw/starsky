@@ -18,12 +18,20 @@ jobs:
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
 
-      - name: Delete old nightly_unstable tags
-        uses: actions/delete-package-versions@v5
-        with:
-          package-name: 'starsky'
-          token: ${{ secrets.WORKFLOW_GITHUB }}
-          package-type: 'container'
-          min-versions-to-keep: 10
-          delete-only-untagged-versions: false
-          filter-with-regex: "^unstable_nightly_.*"          
+      - name: Delete old unstable_nightly_ tags via API
+        run: |
+          TOKEN="${{ secrets.WORKFLOW_GITHUB }}"
+          OWNER="qdraw"
+          REPO="starsky"
+          PACKAGE_NAME="starsky"
+      
+          VERSIONS=$(curl -s -H "Authorization: token $TOKEN" \
+            "https://api.github.com/orgs/$OWNER/packages/container/$PACKAGE_NAME/versions" | 
+            jq -r '.[] | select(.metadata.container.tags[] | test("^unstable_nightly_.*")) | .id')
+      
+          for ID in $VERSIONS; do
+            curl -X DELETE -H "Authorization: token $TOKEN" \
+              "https://api.github.com/orgs/$OWNER/packages/container/$PACKAGE_NAME/versions/$ID"
+          done
+        env:
+          GH_TOKEN: ${{ secrets.WORKFLOW_GITHUB }}
