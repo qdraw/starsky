@@ -1,4 +1,4 @@
-name: Clean untagged ghcr images
+name: Clean untagged and nightly ghcr images
 
 on:
   workflow_dispatch:
@@ -17,3 +17,13 @@ jobs:
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
+
+      - name: Delete old nightly_unstable tags
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: 'starsky'
+          token: ${{ secrets.WORKFLOW_GITHUB }}
+          package-type: 'container'
+          min-versions-to-keep: 10
+          delete-only-untagged-versions: false
+          filter-with-regex: "^nightly_unstable.*"          
