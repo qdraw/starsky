@@ -7,6 +7,12 @@ on:
 
 name: WebApp Docker Release on tag for docker hub
 
+permissions:
+  contents: write
+  pull-requests: none 
+  issues: none
+  packages: write
+  
 jobs:
   deploy:
     runs-on: ubuntu-latest
