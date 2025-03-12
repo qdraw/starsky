@@ -44,7 +44,9 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## version 0.7.0-beta.0 - _(Unreleased)_ - 2025-01-? {#v0.7.0-beta.0}
 
 - nothing yet
-  
+
+## version 0.6.6 - 2024-03-12 {#v0.6.6}
+
 ## version 0.6.5 - 2024-02-14 {#v0.6.5}
 
 - [x] (Added) Create 20241220-year-in-review.md (PR #1876)
