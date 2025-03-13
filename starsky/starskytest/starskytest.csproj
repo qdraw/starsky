@@ -72,7 +72,7 @@
         <ProjectReference Include="..\starsky\starsky.csproj"/>
     </ItemGroup>
     <ItemGroup>
-        <DotNetCliToolReference Include="dotnet-reportgenerator-cli" Version="4.0.4"/>
+        <DotNetCliToolReference Include="dotnet-reportgenerator-cli" Version="4.6.7"/>
     </ItemGroup>
     <ItemGroup>
         <Compile Remove="coverage-report.zip"/>
