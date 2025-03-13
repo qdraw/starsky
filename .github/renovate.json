@@ -2,6 +2,8 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:base"],
   "dependencyDashboard": false,
+  "schedule": ["* 0-3 * * 0,2,4,6"],
+  "timezone": "Europe/Brussels",
   "packageRules": [
     {
       "matchPackageNames": ["/^Microsoft\\.Extensions/", "/^Microsoft\\.VisualStudio/", "/^System\\./"],
