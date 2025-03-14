@@ -4,7 +4,7 @@ import prettierPlugin from "eslint-plugin-prettier";
 import pluginReact from "eslint-plugin-react";
 import hooksPlugin from "eslint-plugin-react-hooks";
 import storybookPlugin from "eslint-plugin-storybook";
-import testingLibPlugin from 'eslint-plugin-testing-library';
+import testingLibPlugin from "eslint-plugin-testing-library";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
@@ -18,10 +18,10 @@ export default [
     ...pluginReact.configs.flat.recommended,
     settings: {
       react: {
-        version: "detect",
-      },
+        version: "detect"
+      }
     },
-    files: ['**/*.{js,jsx,mjs,cjs,ts,tsx}'],
+    files: ["**/*.{js,jsx,mjs,cjs,ts,tsx}"],
     plugins: {
       react: pluginReact,
       hooks: hooksPlugin,
@@ -33,28 +33,24 @@ export default [
     languageOptions: {
       parserOptions: {
         ecmaFeatures: {
-          jsx: true,
-        },
+          jsx: true
+        }
       },
       globals: {
-        ...globals.browser,
-      },
+        ...globals.browser
+      }
     },
     rules: {
-      'react/jsx-uses-react': 'error',
-      'react/jsx-uses-vars': 'error',
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-unsafe-function-type': 'warn',
+      "react/jsx-uses-react": "error",
+      "react/jsx-uses-vars": "error",
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-unsafe-function-type": "warn"
       // wait for https://github.com/facebook/react/pull/30774
       //  'react-hooks/rules-of-hooks': 'error',
       //'react-hooks/exhaustive-deps': 'error'
     }
   },
   {
-    ignores: [
-      "**/build/**",
-      "**/.storybook/middleware.js",
-      'tsconfig.json',
-    ]
+    ignores: ["**/build/**", "**/.storybook/middleware.js", "tsconfig.json"]
   }
 ];

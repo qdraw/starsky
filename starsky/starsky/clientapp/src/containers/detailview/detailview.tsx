@@ -231,6 +231,7 @@ const DetailView: FC<IDetailView> = () => {
           {!isError && state.fileIndexItem.fileHash ? (
             <FileHashImage
               setError={setIsError}
+              alt={state.fileIndexItem.title + " " + state.fileIndexItem.tags}
               id={state.fileIndexItem.filePath}
               setIsLoading={setIsLoading}
               fileHash={state.fileIndexItem.fileHash}

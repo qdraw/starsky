@@ -9,12 +9,16 @@ import { OnWheelMouseAction } from "./on-wheel-mouse-action";
 export interface IPanAndZoomImage {
   src: string;
   setError?: React.Dispatch<React.SetStateAction<boolean>>;
-  onErrorCallback?(): void;
   setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>;
   translateRotation: Orientation;
+  id?: string; // to known when an image is changed
+  alt?: string;
+
+  onErrorCallback?(): void;
+
   onWheelCallback(z: number): void;
+
   onResetCallback(): void;
-  id?: string; // to known when a image is changed
 }
 
 export type ImageObject = { width: number; height: number };
@@ -30,7 +34,7 @@ export type PositionObject = {
  * @see: jkettmann.com/jr-to-sr-refactoring-react-pan-and-zoom-image-component
  * @param param0:  IPanAndZoomImage
  */
-const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
+const PanAndZoomImage = ({ src, id, alt, ...props }: IPanAndZoomImage) => {
   const [panning, setPanning] = useState(false);
   const [image, setImage] = useState({ width: 0, height: 0 } as ImageObject);
 
@@ -137,7 +141,7 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
           {/* NOSONAR(S6847) */}
           <img
             className={`pan-zoom-image--image image--default ${props.translateRotation}`}
-            alt="image"
+            alt={alt}
             src={src}
             onLoad={new OnLoadMouseAction(setImage, props.setError, props.setIsLoading).onLoad}
             onError={() => {
