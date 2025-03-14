@@ -6,6 +6,8 @@ namespace starsky.foundation.database.Helpers;
 
 public static class Breadcrumbs
 {
+	private const string PathSeparatorAlwaysUnixStyle = "/";
+
 	/// <summary>
 	///     Breadcrumb returns a list of parent folders
 	///     it does not contain the current folder
@@ -24,14 +26,14 @@ public static class Breadcrumbs
 
 		var breadcrumb = new List<string>();
 
-		var filePathArray = filePath.Split("/".ToCharArray());
+		var filePathArray = filePath.Split(PathSeparatorAlwaysUnixStyle.ToCharArray());
 
 		var dir = 0;
 		while ( dir < filePathArray.Length - 1 )
 		{
 			if ( string.IsNullOrEmpty(filePathArray[dir]) )
 			{
-				breadcrumb.Add("/");
+				breadcrumb.Add(PathSeparatorAlwaysUnixStyle);
 			}
 			else
 			{
@@ -41,7 +43,7 @@ public static class Breadcrumbs
 				{
 					if ( !string.IsNullOrEmpty(filePathArray[i]) )
 					{
-						itemStringBuilder.Append("/" + filePathArray[i]);
+						itemStringBuilder.Append(PathSeparatorAlwaysUnixStyle + filePathArray[i]);
 					}
 				}
 
@@ -59,7 +61,7 @@ public static class Breadcrumbs
 		filePath = PathHelper.RemoveLatestBackslash(filePath) ?? string.Empty;
 		if ( string.IsNullOrEmpty(filePath) )
 		{
-			filePath = "/";
+			filePath = PathSeparatorAlwaysUnixStyle;
 		}
 
 		return filePath;
@@ -67,9 +69,9 @@ public static class Breadcrumbs
 
 	private static string ShouldPrefixWithSlash(string filePath)
 	{
-		if ( filePath[0].ToString() != "/" )
+		if ( filePath[0].ToString() != PathSeparatorAlwaysUnixStyle )
 		{
-			filePath = "/" + filePath;
+			filePath = PathSeparatorAlwaysUnixStyle + filePath;
 		}
 
 		return filePath;
