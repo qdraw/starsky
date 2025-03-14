@@ -340,7 +340,7 @@ public sealed class StorageHostFullPathFilesystemTest
 	}
 }
 
-internal class NotSupportedExceptionStream : Stream
+internal sealed class NotSupportedExceptionStream : Stream
 {
 	public override bool CanRead => true;
 	public override bool CanSeek => false;

@@ -45,7 +45,8 @@ public sealed class ImportTest
 				CreateAnImage.Bytes.ToArray(), CreateAnImageColorClass.Bytes.ToArray()
 			}
 		);
-		_exampleHash = new FileHash(_iStorageFake).GetHashCode("/test.jpg").Key;
+		_exampleHash = new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCode("/test.jpg")
+			.Key;
 
 		_iStorageDirectoryRecursive = new FakeIStorage(
 			new List<string> { "/", "/test", "/test/test" },
@@ -1329,7 +1330,7 @@ public sealed class ImportTest
 		Assert.AreEqual(ImportStatus.Default, testItem?.Status);
 	}
 
-	private class FakeReadOnlyStorage : FakeIStorage
+	private sealed class FakeReadOnlyStorage : FakeIStorage
 	{
 		public override StorageInfo Info(string path)
 		{

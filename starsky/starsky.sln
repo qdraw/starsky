@@ -170,6 +170,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.settings", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.desktop", "starsky.feature.desktop\starsky.feature.desktop.csproj", "{B88C2815-D154-4C6D-AE37-2E150AEBF73D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.video", "starsky.foundation.video\starsky.foundation.video.csproj", "{C6F6B684-F8EB-4DFD-9143-33F0262153FE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -372,6 +374,10 @@ Global
 		{B88C2815-D154-4C6D-AE37-2E150AEBF73D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B88C2815-D154-4C6D-AE37-2E150AEBF73D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B88C2815-D154-4C6D-AE37-2E150AEBF73D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6F6B684-F8EB-4DFD-9143-33F0262153FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6F6B684-F8EB-4DFD-9143-33F0262153FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6F6B684-F8EB-4DFD-9143-33F0262153FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6F6B684-F8EB-4DFD-9143-33F0262153FE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -432,5 +438,6 @@ Global
 		{A62C129C-5D0C-4A0A-B5AA-261E041FF55D} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
 		{F2C4C9DE-22A1-4B34-AC1D-0F08353E0742} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
 		{B88C2815-D154-4C6D-AE37-2E150AEBF73D} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
+		{C6F6B684-F8EB-4DFD-9143-33F0262153FE} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
 	EndGlobalSection
 EndGlobal

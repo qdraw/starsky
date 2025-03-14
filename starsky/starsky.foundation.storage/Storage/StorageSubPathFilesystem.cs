@@ -135,7 +135,7 @@ public sealed class StorageSubPathFilesystem : IStorage
 	}
 
 	/// <summary>
-	///     Create an Directory
+	///     Create a Directory
 	/// </summary>
 	/// <param name="path">subPath location</param>
 	public void CreateDirectory(string path)
@@ -199,7 +199,7 @@ public sealed class StorageSubPathFilesystem : IStorage
 
 		if ( !storage.ExistFolder(fullFilePath) )
 		{
-			return Enumerable.Empty<string>();
+			return [];
 		}
 
 		var imageFilesList = storage.GetAllFilesInDirectoryRecursive(fullFilePath);
@@ -226,7 +226,7 @@ public sealed class StorageSubPathFilesystem : IStorage
 
 		if ( !storage.ExistFolder(fullFilePath) )
 		{
-			return Enumerable.Empty<string>();
+			return [];
 		}
 
 		var folders = storage.GetDirectories(fullFilePath);
@@ -248,7 +248,7 @@ public sealed class StorageSubPathFilesystem : IStorage
 		var fullFilePath = _appSettings.DatabasePathToFilePath(path);
 		if ( !storage.ExistFolder(fullFilePath) )
 		{
-			return Enumerable.Empty<KeyValuePair<string, DateTime>>();
+			return [];
 		}
 
 		var folders = storage.GetDirectoryRecursive(fullFilePath);
@@ -277,6 +277,8 @@ public sealed class StorageSubPathFilesystem : IStorage
 			Console.WriteLine(path);
 		}
 
+		return new RetryStream().Retry(LocalGet);
+
 		Stream LocalGet()
 		{
 			var fullFilePath = _appSettings.DatabasePathToFilePath(path);
@@ -300,10 +302,7 @@ public sealed class StorageSubPathFilesystem : IStorage
 			fileStream.Dispose(); // also flush
 			return new MemoryStream(buffer);
 		}
-
-		return new RetryStream().Retry(LocalGet);
 	}
-
 
 	/// <summary>
 	///     Write fileStream to disk
@@ -332,7 +331,7 @@ public sealed class StorageSubPathFilesystem : IStorage
 		return service.WriteStreamAsync(stream, fullFilePath);
 	}
 
-	public DateTime SetLastWriteTime(string path, DateTime? dateTime = null)
+	internal DateTime SetLastWriteTime(string path, DateTime? dateTime = null)
 	{
 		var fullPath = _appSettings.DatabasePathToFilePath(path);
 

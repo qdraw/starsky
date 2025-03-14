@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
@@ -38,7 +40,7 @@ public class QueryAddRangeTest_Error
 
 		var fakeQuery =
 			new Query(sqLiteFailContext, new AppSettings(), scope, new FakeIWebLogger());
-		await fakeQuery.AddRangeAsync(new List<FileIndexItem> { new FileIndexItem("/test22.jpg") });
+		await fakeQuery.AddRangeAsync(new List<FileIndexItem> { new("/test22.jpg") });
 
 		Assert.AreEqual(1, sqLiteFailContext.Count);
 	}
@@ -57,13 +59,14 @@ public class QueryAddRangeTest_Error
 
 		var fakeQuery = new Query(dbUpdateExceptionDbContext, new AppSettings(), scope,
 			new FakeIWebLogger());
-		await fakeQuery.AddRangeAsync(new List<FileIndexItem> { new FileIndexItem("/test22.jpg") });
+		await fakeQuery.AddRangeAsync(new List<FileIndexItem> { new("/test22.jpg") });
 
 		Assert.AreEqual(1, dbUpdateExceptionDbContext.Count);
 	}
 }
 
-internal class SqliteExceptionDbContext(DbContextOptions options) : ApplicationDbContext(options)
+internal sealed class SqliteExceptionDbContext(DbContextOptions options)
+	: ApplicationDbContext(options)
 {
 	public int Count { get; set; }
 
@@ -77,7 +80,7 @@ internal class SqliteExceptionDbContext(DbContextOptions options) : ApplicationD
 		Count++;
 		if ( Count == 1 )
 		{
-			throw new Microsoft.Data.Sqlite.SqliteException("t", 1, 2);
+			throw new SqliteException("t", 1, 2);
 		}
 
 		return Count;
@@ -89,14 +92,15 @@ internal class SqliteExceptionDbContext(DbContextOptions options) : ApplicationD
 		Count++;
 		if ( Count == 1 )
 		{
-			throw new Microsoft.Data.Sqlite.SqliteException("t", 1, 2);
+			throw new SqliteException("t", 1, 2);
 		}
 
 		return Task.FromResult(Count);
 	}
 }
 
-internal class DbUpdateExceptionDbContext(DbContextOptions options) : ApplicationDbContext(options)
+internal sealed class DbUpdateExceptionDbContext(DbContextOptions options)
+	: ApplicationDbContext(options)
 {
 	public int Count { get; set; }
 
@@ -107,7 +111,7 @@ internal class DbUpdateExceptionDbContext(DbContextOptions options) : Applicatio
 		if ( Count == 1 )
 		{
 			throw new DbUpdateException("t",
-				new List<Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry>());
+				new List<EntityEntry>());
 		}
 
 		return Task.FromResult(Count);

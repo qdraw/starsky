@@ -129,7 +129,7 @@ public class QueryAddRangeTest
 			webLogger.TrackedExceptions[0].Item2);
 	}
 
-	private class ConcurrencyExceptionApplicationDbContext : ApplicationDbContext
+	private sealed class ConcurrencyExceptionApplicationDbContext : ApplicationDbContext
 	{
 		public ConcurrencyExceptionApplicationDbContext(DbContextOptions options) : base(options)
 		{

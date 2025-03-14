@@ -1090,7 +1090,7 @@ public sealed class UserManagerTest
 		Assert.AreEqual("Administrator", roleAddToUser);
 	}
 
-	private class AppDbContextRetryLimitExceededException(DbContextOptions options)
+	private sealed class AppDbContextRetryLimitExceededException(DbContextOptions options)
 		: ApplicationDbContext(options)
 	{
 		public override DbSet<User> Users => throw new RetryLimitExceededException("general");
