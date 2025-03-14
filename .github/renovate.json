@@ -1,0 +1,56 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:base"],
+  "dependencyDashboard": false,
+  "schedule": ["* 0-3 * * 0,2,4,6"],
+  "timezone": "Europe/Brussels",
+  "packageRules": [
+    {
+      "matchPackageNames": ["/^Microsoft\\.Extensions/", "/^Microsoft\\.VisualStudio/", "/^System\\./"],
+      "allowedVersions": "<9",
+      "groupName": ".NET packages",
+      "groupSlug": "microsoft",
+      "commitMessageTopic": ".NET dependencies"
+    },
+    {
+      "matchPackageNames": ["/AspNetCore/"],
+      "allowedVersions": "<9",
+      "groupName": "ASP.NET Core packages",
+      "groupSlug": "aspnetcore",
+      "commitMessageTopic": "ASP.NET Core dependencies"
+    },
+    {
+      "matchPackageNames": ["/^Microsoft\\.EntityFrameworkCore/"],
+      "allowedVersions": "<9",
+      "groupName": "EF Core packages",
+      "groupSlug": "efcore",
+      "commitMessageTopic": "EF Core dependencies"
+    },
+    {
+      "matchPackageNames": ["/^MSTest/", "/^Microsoft\\.Testing/", "/^xunit/", "/^NSubstitute/", "/^Microsoft.NET.Test.Sdk/"],
+      "groupName": "Test packages",
+      "groupSlug": "testfx",
+      "commitMessageTopic": "Test packages"
+    },
+    {
+      "matchPackageNames": ["/^@types/"],
+      "groupName": "Types packages",
+      "groupSlug": "typesfe"
+    },
+    {
+      "matchPackageNames": ["/eslint/"],
+      "groupName": "ES Lint packages",
+      "groupSlug": "eslintfe"
+    },
+    {
+      "matchPackageNames": ["/^vite/", "/^@vite/"],
+      "groupName": "Vite packages",
+      "groupSlug": "vitefe"
+    },
+    {
+      "matchPackageNames": ["/^vitest/", "/^@vitest/"],
+      "groupName": "ViTest packages",
+      "groupSlug": "vitestfe"
+    }
+  ]
+}

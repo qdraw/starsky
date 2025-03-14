@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
-        <RuntimeFrameworkVersion>8.0.13</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion>8.0.14</RuntimeFrameworkVersion>
         <DebugType>Full</DebugType>
         <!-- SonarQube needs this -->
         <ProjectGuid>{b3342a3e-64e1-442f-b4f7-f7a718508aac}</ProjectGuid>
@@ -21,22 +21,22 @@
     <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'"/>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'"/>
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.13" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.13" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.14" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.14" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
         <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
         <PackageReference Include="MSTest.TestAdapter" Version="3.6.3" />
         <PackageReference Include="MSTest.TestFramework" Version="3.6.3" />
-        <PackageReference Include="coverlet.collector" Version="6.0.2">
+        <PackageReference Include="coverlet.collector" Version="6.0.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
     </ItemGroup>
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.2.0"/>
-        <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.3.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.1"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -73,7 +73,7 @@
         <ProjectReference Include="..\starsky\starsky.csproj"/>
     </ItemGroup>
     <ItemGroup>
-        <DotNetCliToolReference Include="dotnet-reportgenerator-cli" Version="4.0.4"/>
+        <DotNetCliToolReference Include="dotnet-reportgenerator-cli" Version="4.6.7"/>
     </ItemGroup>
     <ItemGroup>
         <Compile Remove="coverage-report.zip"/>

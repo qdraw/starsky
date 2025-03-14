@@ -44,7 +44,18 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## version 0.7.0-beta.0 - _(Unreleased)_ - 2025-01-? {#v0.7.0-beta.0}
 
 - nothing yet
-  
+
+## version 0.6.6 - 2024-03-12 {#v0.6.6}
+
+- [x] (Added) _DevOps_ Created `.github/renovate.json` for Renovate configuration.  
+- [x] (Added) _CI/CD_ Updated `webapp-docker-release-on-tag-docker-hub.yml` permissions.  
+- [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.407 (Runtime: 8.0.12).  
+- [x] (Changed) _Back-end_ Updated Java version in `desktop-electron-sonarqube-missing-net-dependency.yml` to 21.  
+- [x] (Changed) _Front-end_ Updated various npm dependencies, including TypeScript, ESLint, React, and Electron.  
+- [x] (Changed) _Front-end_ Bumped application versions in multiple `package.json` files to 0.6.6.  
+- [x] (Changed) _Front-end_ Updated `dropbox-import/package-lock.json` and other npm dependencies to newer versions.  
+- [x] (Fixed) _General_ Addressed various versioning issues and dependency updates across the project.  
+
 ## version 0.6.5 - 2024-02-14 {#v0.6.5}
 
 - [x] (Added) Create 20241220-year-in-review.md (PR #1876)
