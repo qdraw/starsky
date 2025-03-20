@@ -33,7 +33,7 @@
   "Microsoft.Extensions.Configuration.EnvironmentVariables 8.0.0",
   "Microsoft.Extensions.Configuration.Json 8.0.1",
   "Microsoft.Extensions.Logging.Abstractions 8.0.3",
-  "System.Buffers 4.6.0",
+  "System.Buffers 4.6.1",
   "System.Threading.Tasks.Dataflow 9.0.0",
   "TimeZoneConverter 6.1.0",
   "GeoTimeZone 5.3.0",
