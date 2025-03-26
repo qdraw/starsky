@@ -266,6 +266,8 @@ npmInstall('@typescript-eslint/eslint-plugin', true, true);
 npmUnInstall('@typescript-eslint/parser');
 npmInstall('@typescript-eslint/parser', true, true);
 
+npmUnInstall('@testing-library/react');
+
 npmInstall('leaflet', false, false);
 npmInstall('core-js', false, false);
 npmInstall('react-router-dom', false, false);
@@ -296,7 +298,7 @@ npmInstall('@storybook/react', false, true);
 npmInstall('@storybook/react-vite', false, true);
 // @storybook/testing-library is skipped
 npmInstall('@testing-library/jest-dom', false, true);
-npmInstall('@testing-library/react', false, true);
+npmInstall('@testing-library/react', true, true);
 // @testing-library/user-event is skipped
 
 
