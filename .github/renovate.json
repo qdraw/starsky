@@ -32,6 +32,13 @@
       "commitMessageTopic": "ClientApp Front-end dependencies",
     },
     {
+      "matchPackageNames": ["/chokidar/"],
+      "allowedVersions": "<4",
+      "groupName": "chokidar desktop",
+      "groupSlug": "chokidar",
+      "commitMessageTopic": "chokidar"
+    },
+    {
       "matchPaths": ["starskydesktop/**"],
       "groupName": "Electron starskydesktop dependencies",
       "groupSlug": "starskydesktop",
