@@ -266,6 +266,8 @@ npmInstall('@typescript-eslint/eslint-plugin', true, true);
 npmUnInstall('@typescript-eslint/parser');
 npmInstall('@typescript-eslint/parser', true, true);
 
+npmUnInstall('@testing-library/react');
+
 npmInstall('leaflet', false, false);
 npmInstall('core-js', false, false);
 npmInstall('react-router-dom', false, false);
