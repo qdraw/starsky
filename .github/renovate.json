@@ -24,6 +24,18 @@
       "groupName": "Test packages",
       "groupSlug": "testfx",
       "commitMessageTopic": "Test packages"
+    },
+    {
+      "matchPaths": ["starsky/starsky/clientapp/**"],
+      "groupName": "ClientApp Front-end dependencies",
+      "groupSlug": "clientapp",
+      "commitMessageTopic": "ClientApp Front-end dependencies",
+    },
+    {
+      "matchPaths": ["starskydesktop/**"],
+      "groupName": "Electron starskydesktop dependencies",
+      "groupSlug": "starskydesktop",
+      "commitMessageTopic": "Electron dependencies",
     }
   ]
 }
