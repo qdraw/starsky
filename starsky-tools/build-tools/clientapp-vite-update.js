@@ -296,7 +296,7 @@ npmInstall('@storybook/react', false, true);
 npmInstall('@storybook/react-vite', false, true);
 // @storybook/testing-library is skipped
 npmInstall('@testing-library/jest-dom', false, true);
-npmInstall('@testing-library/react', false, true);
+npmInstall('@testing-library/react', true, true);
 // @testing-library/user-event is skipped
 
 
