@@ -43,6 +43,12 @@
       "groupName": "Electron starskydesktop dependencies",
       "groupSlug": "starskydesktop",
       "commitMessageTopic": "Electron dependencies",
+    },
+    {
+      "matchPaths": ["starsky-tools/**"],
+      "groupName": "Tools dependencies",
+      "groupSlug": "tools",
+      "commitMessageTopic": "Tools dependencies"
     }
   ]
 }
