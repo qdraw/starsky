@@ -48,7 +48,7 @@ RUN /bin/bash -c "\
     echo '<Project Sdk=\"Microsoft.NET.Sdk\"><PropertyGroup><OutputType>Exe</OutputType><ImplicitUsings>enable</ImplicitUsings><TargetFramework>net8.0</TargetFramework></PropertyGroup></Project>' > /documentation/documentation.csproj ; \
     echo '<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"15.0\" Sdk=\"Microsoft.Docker.Sdk\"></Project>' > /app/docker-compose.dcproj ; \
     echo 'Console.WriteLine(\"test\");' > /documentation/Program.cs ; \
-
+    \
     if [ \"$TARGETPLATFORM\" = \"linux/amd64\" ]; then \
         ./build.sh --runtime linux-x64 --no-client --ready-to-run --no-sonar --no-test --static-output-folder; \
     elif [ \"$TARGETPLATFORM\" = \"linux/arm64\" ]; then \
