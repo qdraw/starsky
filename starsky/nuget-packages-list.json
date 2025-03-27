@@ -1,7 +1,7 @@
 [
   "Microsoft.AspNetCore.Mvc.NewtonsoftJson 8.0.14",
   "Microsoft.Extensions.Hosting.WindowsServices 8.0.1",
-  "Swashbuckle.AspNetCore 7.3.1",
+  "Swashbuckle.AspNetCore 7.3.2",
   "Microsoft.Extensions.Caching.Abstractions 8.0.0",
   "Microsoft.Extensions.Caching.Memory 8.0.1",
   "Microsoft.Extensions.Hosting.Abstractions 8.0.1",
@@ -35,7 +35,7 @@
   "Microsoft.Extensions.Logging.Abstractions 8.0.3",
   "System.Buffers 4.6.1",
   "System.Threading.Tasks.Dataflow 9.0.0",
-  "TimeZoneConverter 6.1.0",
+  "TimeZoneConverter 7.0.0",
   "GeoTimeZone 6.0.0",
   "XmpCore 6.1.10.1",
   "MetadataExtractor 2.8.1",
