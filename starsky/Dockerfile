@@ -118,5 +118,6 @@ RUN chown starsky:starsky /app
 
 USER starsky
 
+EXPOSE 8080
 ENV ASPNETCORE_Environment=Production
 ENTRYPOINT ["dotnet", "starsky.dll"]
