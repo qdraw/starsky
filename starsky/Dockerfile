@@ -11,8 +11,8 @@
 # docker build -f starsky/Dockerfile . --no-cache --build-arg TEST=false
 
 # Stage 1 Front-end
-# docker buildx imagetools inspect node:20-alpine
-FROM --platform=$BUILDPLATFORM node:20-alpine AS react-build
+# docker buildx imagetools inspect node:22-alpine
+FROM --platform=$BUILDPLATFORM node:22-alpine AS react-build
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 
@@ -41,6 +41,7 @@ WORKDIR /app
 COPY . ./
 
 RUN /bin/bash -c "\
+    echo \"TARGETPLATFORM=$TARGETPLATFORM\" ; \
     rm /app/global.json ; \
     chmod +x ./build.sh ; \
     if [ \"$TARGETPLATFORM\" = \"linux/amd64\" ]; then \
@@ -53,7 +54,6 @@ RUN /bin/bash -c "\
     else \
         ./build.sh --no-client; \
     fi"
-
 
 # Stage 3 Testing
 FROM --platform=$BUILDPLATFORM build-env AS test
