@@ -11,7 +11,7 @@
 # docker build -f starsky/Dockerfile . --no-cache --build-arg TEST=false
 
 # Stage 1 Front-end
-# # docker buildx imagetools inspect node:18-alpine
+# docker buildx imagetools inspect node:20-alpine
 FROM --platform=$BUILDPLATFORM node:20-alpine AS react-build
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
@@ -22,7 +22,6 @@ ENV INLINE_RUNTIME_CHUNK=false
 ENV IMAGE_INLINE_SIZE_LIMIT=1
 ENV DISABLE_ESLINT_PLUGIN=true
 COPY starsky/clientapp/. ./
-# random npm ERR! code ECONNRESET
 RUN for i in 1 2 3; do \
       npm ci --legacy-peer-deps --prefer-offline --no-audit --no-fund --ignore-scripts && break || sleep 15; \
     done && \
@@ -30,24 +29,18 @@ RUN for i in 1 2 3; do \
     rm -rf node_modules && \
     echo "react done"
 
-# no alpine build since there is no support for multi-arch
-# docker buildx imagetools inspect mcr.microsoft.com/dotnet/sdk:6.0
+# Stage 2 .NET Build
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 ARG BUILDPLATFORM
 ARG TARGETPLATFORM
-# insert demo user and content
 ARG ISDEMO=""
 ENV E_ISDEMO=$ISDEMO
 
 RUN mkdir -p /app
 WORKDIR /app
 
-# copy everything else and build
+# Copy everything else and build
 COPY . ./
-
-WORKDIR /app
-
-# there is specific version matched in /app/global.json, but docker uses the latest
 
 RUN /bin/bash -c "\
     rm /app/global.json ; \
@@ -60,10 +53,9 @@ RUN /bin/bash -c "\
         ./build.sh --runtime linux-arm --no-client; \
     else \
         dotnet restore starsky.csproj ; \
-    fi \
+    fi"
 
-# no alpine build since there is no support for multi-arch
-# docker buildx imagetools inspect mcr.microsoft.com/dotnet/sdk:6.0
+# Stage 3 Testing
 FROM --platform=$BUILDPLATFORM build-env AS test
 ARG BUILDPLATFORM
 ARG TEST=true
@@ -87,14 +79,12 @@ RUN if [ "$TEST" = "true" ]; then \
       mkdir -p "/testresults" ;\
       touch "/testresults/test.disabled" ;\
     fi
-    
-# build runtime image (multiarch)
-# docker buildx imagetools inspect mcr.microsoft.com/dotnet/aspnet:6.0
+
+# Stage 4 Runtime Image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS release
 WORKDIR /app
 ARG TOOLS=false
 
-# # for debugging
 RUN if [ "$TOOLS" = "true" ]; then \
     apt-get update ;\
     apt-get upgrade -y ;\
@@ -106,26 +96,24 @@ else \
 fi && \
   groupadd --gid 1000 starsky \
     && useradd --uid 1000 --gid starsky --shell /bin/bash --create-home starsky
-    
-# copy dlls
+
+# Copy dlls
 COPY --chown=starsky:starsky --from=build-env /app/starsky/out /app
 
-# copy dependencies & demo content
+# Copy dependencies & demo content
 COPY --chown=starsky:starsky --from=build-env /app/dependencies /app/dependencies
 COPY --chown=starsky:starsky --from=build-env /app/temp /app/temp
 COPY --chown=starsky:starsky --from=build-env /app/data.db /app/app__data.db
 
-# copy react build
+# Copy react build
 COPY --chown=starsky:starsky --from=react-build /app/starsky/clientapp ./clientapp
 
 # Makes sure the test stage is run when using docker buildkit
 COPY --chown=starsky:starsky --from=test /testresults /tmp
 
-# you could mount this location
+# Create necessary directories and set ownership
 RUN mkdir -p /app/photos && chown starsky:starsky /app/photos
 RUN mkdir -p /app/thumbnailTempFolder && chown starsky:starsky /app/thumbnailTempFolder
-
-# and change owner of folder
 RUN chown starsky:starsky /app
 
 USER starsky
