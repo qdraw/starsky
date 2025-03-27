@@ -44,6 +44,7 @@ RUN /bin/bash -c "\
     echo \"TARGETPLATFORM=$TARGETPLATFORM\" ; \
     rm /app/global.json ; \
     chmod +x ./build.sh ; \
+    ls -lah ; \
     if [ \"$TARGETPLATFORM\" = \"linux/amd64\" ]; then \
         echo \"$TARGETPLATFORM\" ; \
         ./build.sh --runtime linux-x64 --no-client; \
