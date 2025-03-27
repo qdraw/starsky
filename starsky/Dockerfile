@@ -33,8 +33,6 @@ RUN for i in 1 2 3; do \
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 ARG BUILDPLATFORM
 ARG TARGETPLATFORM
-ARG ISDEMO=""
-ENV E_ISDEMO=$ISDEMO
 
 RUN mkdir -p /app
 WORKDIR /app
