@@ -56,7 +56,7 @@ RUN /bin/bash -c "\
     elif [ \"$TARGETPLATFORM\" = \"linux/arm/v7\" ]; then \
         ./build.sh --runtime linux-arm --no-client --no-sonar --no-test --static-output-folder; \
     else \
-        ./build.sh --no-client --no-sonar --no-test; \
+        ./build.sh --runtime linux-x64 --no-client --no-sonar --no-test --static-output-folder; \
     fi"
 
 # Stage 3 Runtime Image
@@ -77,7 +77,7 @@ fi && \
     && useradd --uid 1000 --gid starsky --shell /bin/bash --create-home starsky
 
 # Copy dlls
-COPY --chown=starsky:starsky --from=build-env /app/starsky/output /app
+COPY --chown=starsky:starsky --from=build-env /app/output /app
 
 # Copy react build
 COPY --chown=starsky:starsky --from=react-build /app/starsky/clientapp ./clientapp
