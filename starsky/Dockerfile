@@ -50,9 +50,9 @@ RUN /bin/bash -c "\
     echo 'Console.WriteLine(\"test\");' > /documentation/Program.cs ; \
 
     if [ \"$TARGETPLATFORM\" = \"linux/amd64\" ]; then \
-        ./build.sh --runtime linux-x64 --no-client --no-sonar --no-test --static-output-folder; \
+        ./build.sh --runtime linux-x64 --no-client --ready-to-run --no-sonar --no-test --static-output-folder; \
     elif [ \"$TARGETPLATFORM\" = \"linux/arm64\" ]; then \
-        ./build.sh --runtime linux-arm64 --no-client --no-sonar --no-test --static-output-folder; \
+        ./build.sh --runtime linux-arm64 --no-client --ready-to-run --no-sonar --no-test --static-output-folder; \
     elif [ \"$TARGETPLATFORM\" = \"linux/arm/v7\" ]; then \
         ./build.sh --runtime linux-arm --no-client --no-sonar --no-test --static-output-folder; \
     else \
@@ -76,21 +76,29 @@ RUN \
         -v
 
 # Stage 3 Runtime Image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS release
+FROM alpine:3.21.3 AS release
 WORKDIR /app
 ARG TOOLS=false
 
+RUN apk add --no-cache \
+        ca-certificates \
+        krb5-libs \
+        libgcc \
+        libintl \
+        libssl3 \
+        libstdc++ \
+        tzdata \
+        userspace-rcu \
+        zlib \
+        bash
+
 RUN if [ "$TOOLS" = "true" ]; then \
-    apt-get update ;\
-    apt-get upgrade -y ;\
-    apt-get install --no-install-recommends --no-install-suggests -y curl ;\
-    apt-get clean ;\
-    rm -rf /var/lib/apt/lists/* ;\
+    apk add --no-cache curl ;\
 else \
     echo "no tools for debug" ;\
 fi && \
-  groupadd --gid 1000 starsky \
-    && useradd --uid 1000 --gid starsky --shell /bin/bash --create-home starsky
+  addgroup -g 1000 starsky \
+      && adduser -D -u 1000 -G starsky -s /bin/bash starsky
 
 # Copy dlls
 COPY --chown=starsky:starsky --from=build-env /app/output /app
