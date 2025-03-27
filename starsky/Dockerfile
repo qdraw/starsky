@@ -62,22 +62,23 @@ ARG TEST=true
 
 WORKDIR /app
 
-RUN if [ "$TEST" = "true" ]; then \
-        mkdir -p "/testresults" ;\
-        if [ "$BUILDPLATFORM" = "$TARGETPLATFORM" ]; then \
-          echo "$TEST" "$BUILDPLATFORM" "$TARGETPLATFORM" ; \
+RUN /bin/bash -c "\
+    if [ \"$TEST" = \"true\" ]; then \
+        mkdir -p \"/testresults\" ;\
+        if [ \"$BUILDPLATFORM" = \"$TARGETPLATFORM\" ]; then \
+          echo \"$TEST" \"$BUILDPLATFORM\" \"$TARGETPLATFORM\" ; \
           dotnet test \
               -c release \
               --results-directory /testresults \
-              --logger "trx;LogFileName=test_results.trx" \
-              --collect:"XPlat Code Coverage" \
+              --logger \"trx;LogFileName=test_results.trx"\ \
+              --collect:\"XPlat Code Coverage\" \
               --settings build.vstest.runsettings \
               starskytest/starskytest.csproj ;\
         fi ;\
-        touch "/testresults/test.enabled" ;\
+        touch \"/testresults/test.enabled\" ;\
     else \
-      mkdir -p "/testresults" ;\
-      touch "/testresults/test.disabled" ;\
+      mkdir -p \"/testresults\" ;\
+      touch \"/testresults/test.disabled"\ ;\
     fi
 
 # Stage 4 Runtime Image
