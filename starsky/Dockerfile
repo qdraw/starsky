@@ -39,6 +39,7 @@ WORKDIR /app
 
 # Copy everything else and build
 COPY . ./
+COPY build/ /app/build/
 
 RUN /bin/bash -c "\
     echo \"TARGETPLATFORM=$TARGETPLATFORM\" ; \
