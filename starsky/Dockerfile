@@ -42,6 +42,7 @@ COPY . ./
 
 RUN /bin/bash -c "\
     rm /app/global.json ; \
+    chmod +x ./build.sh ; \
     if [ \"$TARGETPLATFORM\" = \"linux/amd64\" ]; then \
         echo \"$TARGETPLATFORM\" ; \
         ./build.sh --runtime linux-x64 --no-client; \
@@ -50,8 +51,9 @@ RUN /bin/bash -c "\
     elif [ \"$TARGETPLATFORM\" = \"linux/arm/v7\" ]; then \
         ./build.sh --runtime linux-arm --no-client; \
     else \
-        dotnet restore starsky.csproj ; \
+        ./build.sh --no-client; \
     fi"
+
 
 # Stage 3 Testing
 FROM --platform=$BUILDPLATFORM build-env AS test
