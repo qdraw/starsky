@@ -57,7 +57,23 @@ RUN /bin/bash -c "\
         ./build.sh --runtime linux-arm --no-client --no-sonar --no-test --static-output-folder; \
     else \
         ./build.sh --runtime linux-x64 --no-client --no-sonar --no-test --static-output-folder; \
-    fi"
+    fi" \
+
+WORKDIR /app
+
+RUN \
+    mkdir -p "/app/dependencies" && \
+    mkdir -p "/app/temp" && \
+    touch /app/temp/.gitkeep && \
+    dotnet run \
+        --project "/app/starskygeocli/starskygeocli.csproj" \
+        --configuration Release \
+        -- \
+        --connection "Data Source=/app/data.db" \
+        --dependencies "/app/dependencies" \
+        --tempfolder "/app/temp" \
+        -h \
+        -v
 
 # Stage 3 Runtime Image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS release
@@ -78,6 +94,11 @@ fi && \
 
 # Copy dlls
 COPY --chown=starsky:starsky --from=build-env /app/output /app
+
+# copy dependencies
+COPY --chown=starsky:starsky --from=build-env /app/dependencies /app/dependencies
+COPY --chown=starsky:starsky --from=build-env /app/temp /app/temp
+COPY --chown=starsky:starsky --from=build-env /app/data.db /app/app__data.db
 
 # Copy react build
 COPY --chown=starsky:starsky --from=react-build /app/starsky/clientapp ./clientapp
