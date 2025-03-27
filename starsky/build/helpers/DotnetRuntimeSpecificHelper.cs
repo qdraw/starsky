@@ -164,8 +164,9 @@ public static class DotnetRuntimeSpecificHelper
 	/// <param name="configuration">Release</param>
 	/// <param name="runtime">runtime identifier</param>
 	/// <param name="isReadyToRunEnabled">Is Ready To Run Enabled</param>
+	/// <param name="isStaticOutputFolderEnabled">used for docker</param>
 	public static void PublishNetCoreGenericCommand(Configuration configuration,
-		string runtime, bool isReadyToRunEnabled)
+		string runtime, bool isReadyToRunEnabled, bool isStaticOutputFolderEnabled)
 	{
 		foreach ( var publishProject in Build.PublishProjectsList )
 		{
@@ -176,9 +177,11 @@ public static class DotnetRuntimeSpecificHelper
 				WorkingDirectory.GetSolutionParentFolder(),
 				publishProject);
 
+			// used for docker
+			var runtimeName = isStaticOutputFolderEnabled ? "output" : runtime;
 			var outputFullPath = Path.Combine(
 				WorkingDirectory.GetSolutionParentFolder(),
-				runtime);
+				runtimeName);
 
 			var readyToRunArgument =
 				RuntimeIdentifier.IsReadyToRunSupported(runtime) &&

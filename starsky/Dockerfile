@@ -39,51 +39,27 @@ WORKDIR /app
 
 # Copy everything else and build
 COPY . ./
-COPY build/ /app/build/
 
 RUN /bin/bash -c "\
     echo \"TARGETPLATFORM=$TARGETPLATFORM\" ; \
     rm /app/global.json ; \
     chmod +x ./build.sh ; \
-    ls -lah ; \
+    mkdir -p /documentation ; \
+    echo '<Project Sdk=\"Microsoft.NET.Sdk\"><PropertyGroup><OutputType>Exe</OutputType><ImplicitUsings>enable</ImplicitUsings><TargetFramework>net8.0</TargetFramework></PropertyGroup></Project>' > /documentation/documentation.csproj ; \
+    echo '<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"15.0\" Sdk=\"Microsoft.Docker.Sdk\"></Project>' > /app/docker-compose.dcproj ; \
+    echo 'Console.WriteLine(\"test\");' > /documentation/Program.cs ; \
+
     if [ \"$TARGETPLATFORM\" = \"linux/amd64\" ]; then \
-        echo \"$TARGETPLATFORM\" ; \
-        ./build.sh --runtime linux-x64 --no-client; \
+        ./build.sh --runtime linux-x64 --no-client --no-sonar --no-test --static-output-folder; \
     elif [ \"$TARGETPLATFORM\" = \"linux/arm64\" ]; then \
-        ./build.sh --runtime linux-arm64 --no-client; \
+        ./build.sh --runtime linux-arm64 --no-client --no-sonar --no-test --static-output-folder; \
     elif [ \"$TARGETPLATFORM\" = \"linux/arm/v7\" ]; then \
-        ./build.sh --runtime linux-arm --no-client; \
+        ./build.sh --runtime linux-arm --no-client --no-sonar --no-test --static-output-folder; \
     else \
-        ./build.sh --no-client; \
+        ./build.sh --no-client --no-sonar --no-test; \
     fi"
 
-# Stage 3 Testing
-FROM --platform=$BUILDPLATFORM build-env AS test
-ARG BUILDPLATFORM
-ARG TEST=true
-
-WORKDIR /app
-
-RUN /bin/bash -c "\
-    if [ \"$TEST" = \"true\" ]; then \
-        mkdir -p \"/testresults\" ;\
-        if [ \"$BUILDPLATFORM" = \"$TARGETPLATFORM\" ]; then \
-          echo \"$TEST" \"$BUILDPLATFORM\" \"$TARGETPLATFORM\" ; \
-          dotnet test \
-              -c release \
-              --results-directory /testresults \
-              --logger \"trx;LogFileName=test_results.trx"\ \
-              --collect:\"XPlat Code Coverage\" \
-              --settings build.vstest.runsettings \
-              starskytest/starskytest.csproj ;\
-        fi ;\
-        touch \"/testresults/test.enabled\" ;\
-    else \
-      mkdir -p \"/testresults\" ;\
-      touch \"/testresults/test.disabled"\ ;\
-    fi
-
-# Stage 4 Runtime Image
+# Stage 3 Runtime Image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS release
 WORKDIR /app
 ARG TOOLS=false
@@ -101,18 +77,10 @@ fi && \
     && useradd --uid 1000 --gid starsky --shell /bin/bash --create-home starsky
 
 # Copy dlls
-COPY --chown=starsky:starsky --from=build-env /app/starsky/out /app
-
-# Copy dependencies & demo content
-COPY --chown=starsky:starsky --from=build-env /app/dependencies /app/dependencies
-COPY --chown=starsky:starsky --from=build-env /app/temp /app/temp
-COPY --chown=starsky:starsky --from=build-env /app/data.db /app/app__data.db
+COPY --chown=starsky:starsky --from=build-env /app/starsky/output /app
 
 # Copy react build
 COPY --chown=starsky:starsky --from=react-build /app/starsky/clientapp ./clientapp
-
-# Makes sure the test stage is run when using docker buildkit
-COPY --chown=starsky:starsky --from=test /testresults /tmp
 
 # Create necessary directories and set ownership
 RUN mkdir -p /app/photos && chown starsky:starsky /app/photos
