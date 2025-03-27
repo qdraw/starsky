@@ -81,7 +81,9 @@ WORKDIR /app
 ARG TOOLS=false
 
 RUN apk add --no-cache \
+        bash \
         ca-certificates \
+        curl \
         krb5-libs \
         libgcc \
         libintl \
@@ -89,15 +91,9 @@ RUN apk add --no-cache \
         libstdc++ \
         tzdata \
         userspace-rcu \
-        zlib \
-        bash
+        zlib
 
-RUN if [ "$TOOLS" = "true" ]; then \
-    apk add --no-cache curl ;\
-else \
-    echo "no tools for debug" ;\
-fi && \
-  addgroup -g 1000 starsky \
+RUN addgroup -g 1000 starsky \
       && adduser -D -u 1000 -G starsky -s /bin/bash starsky
 
 # Copy dlls
