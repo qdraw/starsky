@@ -146,12 +146,6 @@ public sealed class Build : NukeBuild
 	[Solution(SuppressBuildProjectCheck = true)]
 	readonly Solution Solution = new();
 
-	/// <summary>
-	///     --static-output-folder
-	/// </summary>
-	[Parameter("publish to static output folder instead of linux-arm or win-x64")]
-	readonly bool StaticOutputFolder;
-
 	Target Client => p => p
 		.Executes(() =>
 		{
@@ -260,7 +254,7 @@ public sealed class Build : NukeBuild
 					runtime, IsReadyToRunEnabled());
 				DotnetRuntimeSpecificHelper.PublishNetCoreGenericCommand(
 					Configuration,
-					runtime, IsReadyToRunEnabled(), IsStaticOutputFolderEnabled());
+					runtime, IsReadyToRunEnabled());
 			}
 
 			DotnetRuntimeSpecificHelper.CopyDependenciesFiles(NoDependencies,
@@ -358,13 +352,6 @@ public sealed class Build : NukeBuild
 	}
 
 	/// <summary>
-	///     --static-output-folder
-	/// </summary>
-	/// <returns></returns>
-	bool IsStaticOutputFolderEnabled() =>
-		GetRuntimesWithoutGeneric().Count == 1 && StaticOutputFolder;
-
-	/// <summary>
 	///     --ready-to-run
 	/// </summary>
 	/// <returns></returns>
@@ -416,10 +403,6 @@ public sealed class Build : NukeBuild
 		Log.Information(IsReadyToRunEnabled()
 			? "ReadyToRun faster startup: enabled"
 			: "ReadyToRun faster startup: disabled");
-
-		Log.Information(IsStaticOutputFolderEnabled()
-			? "Static output folder: enabled"
-			: "Static output folder: disabled");
 
 		if ( !string.IsNullOrEmpty(GetBranchName()) )
 		{
