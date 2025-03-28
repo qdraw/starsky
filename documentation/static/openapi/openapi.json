@@ -2383,7 +2383,7 @@
               "unresolvedReference": false
             },
             "400": {
-              "description": "ignored, please check if the 'f' path exist or use a folder string to clear\r\nthe cache",
+              "description": "ignored, please check if the 'f' path exist or use a folder string to clear\nthe cache",
               "headers": {},
               "content": {},
               "links": {},
@@ -2478,7 +2478,7 @@
               "unresolvedReference": false
             },
             "400": {
-              "description": "ignored, please check if the 'f' path exist or use a folder string to clear\r\nthe cache",
+              "description": "ignored, please check if the 'f' path exist or use a folder string to clear\nthe cache",
               "headers": {},
               "content": {},
               "links": {},
@@ -2573,7 +2573,7 @@
               "unresolvedReference": false
             },
             "400": {
-              "description": "ignored, please check if the 'f' path exist or use a folder string to clear\r\nthe cache",
+              "description": "ignored, please check if the 'f' path exist or use a folder string to clear\nthe cache",
               "headers": {},
               "content": {},
               "links": {},
@@ -2619,7 +2619,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "Remove files from the disk, but the file must contain the !delete!\r\n(TrashKeyword.TrashKeywordString) tag",
+          "summary": "Remove files from the disk, but the file must contain the !delete!\n(TrashKeyword.TrashKeywordString) tag",
           "parameters": [
             {
               "unresolvedReference": false,
@@ -2745,7 +2745,7 @@
               "unresolvedReference": false
             },
             "404": {
-              "description": "item not found on disk or !delete! (TrashKeyword.TrashKeywordString) tag is\r\nmissing",
+              "description": "item not found on disk or !delete! (TrashKeyword.TrashKeywordString) tag is\nmissing",
               "headers": {},
               "content": {
                 "application/json": {
@@ -4246,7 +4246,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "Get the exported zip, but first call 'createZip'\r\nuse for example this url: /export/zip/TNA995920129.zip\r\nTNA995920129 is from 'createZip'",
+          "summary": "Get the exported zip, but first call 'createZip'\nuse for example this url: /export/zip/TNA995920129.zip\nTNA995920129 is from 'createZip'",
           "parameters": [
             {
               "unresolvedReference": false,
@@ -4487,7 +4487,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "Reverse lookup for Geo Information and/or add Geo location based on a GPX file within the same\r\ndirectory",
+          "summary": "Reverse lookup for Geo Information and/or add Geo location based on a GPX file within the same\ndirectory",
           "parameters": [
             {
               "unresolvedReference": false,
@@ -4789,7 +4789,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "Check if the service has any known errors and return only a string\r\nPublic API",
+          "summary": "Check if the service has any known errors and return only a string\nPublic API",
           "parameters": [],
           "responses": {
             "200": {
@@ -4867,7 +4867,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "Check if the service has any known errors and return only a string\r\nPublic API",
+          "summary": "Check if the service has any known errors and return only a string\nPublic API",
           "parameters": [],
           "responses": {
             "200": {
@@ -4953,7 +4953,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "Check if the service has any known errors\r\nFor Authorized Users only",
+          "summary": "Check if the service has any known errors\nFor Authorized Users only",
           "parameters": [],
           "responses": {
             "200": {
@@ -5063,7 +5063,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "Check if Client/App version has a match with the API-version\r\nthe parameter 'version' is checked first, and if missing the x-api-version header is used",
+          "summary": "Check if Client/App version has a match with the API-version\nthe parameter 'version' is checked first, and if missing the x-api-version header is used",
           "parameters": [
             {
               "unresolvedReference": false,
@@ -6298,7 +6298,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "Upload thumbnail to ThumbnailTempFolder\r\nMake sure that the filename is correct, a base32 hash of length 26;\r\nOverwrite if the Id is the same\r\nAlso known as Thumbnail Upload or Thumbnail Import",
+          "summary": "Upload thumbnail to ThumbnailTempFolder\nMake sure that the filename is correct, a base32 hash of length 26;\nOverwrite if the Id is the same\nAlso known as Thumbnail Upload or Thumbnail Import",
           "parameters": [],
           "responses": {
             "200": {
@@ -8943,7 +8943,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "Get recent notifications\r\nUse dateTime 2022-04-16T17:33:10.323974Z to get the latest notifications\r\nor use numbers to get hours from now (e.g. 1 for last hour)",
+          "summary": "Get recent notifications\nUse dateTime 2022-04-16T17:33:10.323974Z to get the latest notifications\nor use numbers to get hours from now (e.g. 1 for last hour)",
           "parameters": [
             {
               "unresolvedReference": false,
@@ -9024,7 +9024,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "Get all publish profiles\r\nTo see the entire config check appSettings",
+          "summary": "Get all publish profiles\nTo see the entire config check appSettings",
           "parameters": [],
           "responses": {
             "200": {
@@ -9336,7 +9336,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "To give the user UI feedback when submitting the itemName\r\nTrue is not to continue with this name",
+          "summary": "To give the user UI feedback when submitting the itemName\nTrue is not to continue with this name",
           "parameters": [
             {
               "unresolvedReference": false,
@@ -9675,7 +9675,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "Get relative paths in a search query\r\nDoes not cover multiple pages (so it ends within the page)",
+          "summary": "Get relative paths in a search query\nDoes not cover multiple pages (so it ends within the page)",
           "parameters": [
             {
               "unresolvedReference": false,
@@ -9839,7 +9839,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "List of files with the tag: !delete! (TrashKeyword.TrashKeywordString)\r\nCaching is disabled on this api call",
+          "summary": "List of files with the tag: !delete! (TrashKeyword.TrashKeywordString)\nCaching is disabled on this api call",
           "parameters": [
             {
               "unresolvedReference": false,
@@ -10690,7 +10690,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "Get thumbnail with fallback to original source image.\r\nReturn source image when IsExtensionThumbnailSupported is true",
+          "summary": "Get thumbnail with fallback to original source image.\nReturn source image when IsExtensionThumbnailSupported is true",
           "parameters": [
             {
               "unresolvedReference": false,
@@ -10943,7 +10943,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "Get zoomed in image by fileHash.\r\nAt the moment this is the source image",
+          "summary": "Get zoomed in image by fileHash.\nAt the moment this is the source image",
           "parameters": [
             {
               "unresolvedReference": false,
@@ -11427,7 +11427,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "Is the system trash supported\r\nUsed in End2End tests to enable or disable the trash",
+          "summary": "Is the system trash supported\nUsed in End2End tests to enable or disable the trash",
           "parameters": [],
           "responses": {
             "200": {
@@ -11491,7 +11491,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "Upload to specific folder (does not check if already has been imported)\r\nUse the header 'to' to determine the location to where to upload\r\nAdd header 'filename' when uploading direct without form\r\n(ActionResult UploadToFolder)",
+          "summary": "Upload to specific folder (does not check if already has been imported)\nUse the header 'to' to determine the location to where to upload\nAdd header 'filename' when uploading direct without form\n(ActionResult UploadToFolder)",
           "parameters": [],
           "responses": {
             "200": {
@@ -11709,7 +11709,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "Upload sidecar file to specific folder (does not check if already has been imported)\r\nUse the header 'to' to determine the location to where to upload\r\nAdd header 'filename' when uploading direct without form\r\n(ActionResult UploadToFolderSidecarFile)",
+          "summary": "Upload sidecar file to specific folder (does not check if already has been imported)\nUse the header 'to' to determine the location to where to upload\nAdd header 'filename' when uploading direct without form\n(ActionResult UploadToFolderSidecarFile)",
           "parameters": [],
           "responses": {
             "200": {
@@ -16555,5 +16555,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "B92AE84F5564DCC9CA33568B8BD1A7CD6946D93D94BB62616FF864DF4328FF4A10D9DD10AD5534FDFA6EA66706349C0A3E598A5D25EFD4959C4FDA6D66EC576C"
+  "hashCode": "CB8DB126952DCABA462C2988E7490100AC42E858D759817E8D1D3B86D727BF498B1EB2952C19A6A7CE263C494B340722E394AC410D40BAD86EC8B5C9570AFFF7"
 }

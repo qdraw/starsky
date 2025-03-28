@@ -371,7 +371,8 @@ starsky-tools/build-tools/vite-tmp-folder/*
 **/win-arm64/*
 **/generic-netcore/*
 **/generic-netcore-starskyonly/*
-**/netframework-msbuild/*
+starsky/output/*
+
 
 starsky-linux-arm.zip
 starsky-linux-arm64.zip

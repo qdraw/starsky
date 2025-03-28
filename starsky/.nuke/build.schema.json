@@ -162,6 +162,10 @@
         "Solution": {
           "type": "string",
           "description": "Path to a solution file that is automatically loaded"
+        },
+        "StaticOutputFolder": {
+          "type": "boolean",
+          "description": "publish to static output folder instead of linux-arm or win-x64"
         }
       }
     },
