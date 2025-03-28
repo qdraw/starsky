@@ -2,7 +2,8 @@
 
 # ARM build test: 
 # cd /root_of_repo
-# docker buildx build --push starsky --tag qdraw/starsky:latest --platform linux/arm64
+# docker buildx build starsky --tag qdraw/starsky:latest --platform linux/arm64
+# docker run -it -p 6470:6470 -e PORT=6470 qdraw/starsky
 
 # docker compose build --progress=plain
 # DEBUG Dockerfile:
@@ -48,16 +49,7 @@ RUN /bin/bash -c "\
     echo '<Project Sdk=\"Microsoft.NET.Sdk\"><PropertyGroup><OutputType>Exe</OutputType><ImplicitUsings>enable</ImplicitUsings><TargetFramework>net8.0</TargetFramework></PropertyGroup></Project>' > /documentation/documentation.csproj ; \
     echo '<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"15.0\" Sdk=\"Microsoft.Docker.Sdk\"></Project>' > /app/docker-compose.dcproj ; \
     echo 'Console.WriteLine(\"test\");' > /documentation/Program.cs ; \
-    \
-    if [ \"$TARGETPLATFORM\" = \"linux/amd64\" ]; then \
-        ./build.sh --runtime linux-x64 --no-client --ready-to-run --no-sonar --no-test --static-output-folder; \
-    elif [ \"$TARGETPLATFORM\" = \"linux/arm64\" ]; then \
-        ./build.sh --runtime linux-arm64 --no-client --ready-to-run --no-sonar --no-test --static-output-folder; \
-    elif [ \"$TARGETPLATFORM\" = \"linux/arm/v7\" ]; then \
-        ./build.sh --runtime linux-arm --no-client --no-sonar --no-test --static-output-folder; \
-    else \
-        ./build.sh --runtime linux-x64 --no-client --no-sonar --no-test --static-output-folder; \
-    fi" \
+    ./build.sh --no-client --no-sonar --no-test "
 
 WORKDIR /app
 
@@ -76,26 +68,25 @@ RUN \
         -v
 
 # Stage 3 Runtime Image
-FROM alpine:3.21.3 AS release
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS release
 WORKDIR /app
+ARG TOOLS=false
 
-RUN apk add --no-cache \
-        bash \
-        ca-certificates \
-        curl \
-        krb5-libs \
-        libgcc \
-        libintl \
-        libssl3 \
-        libstdc++ \
-        tzdata \
-        userspace-rcu \
-        zlib \
-    && addgroup -g 1000 starsky \
-      && adduser -D -u 1000 -G starsky -s /bin/bash starsky
-
+# # for debugging
+RUN if [ "$TOOLS" = "true" ]; then \
+    apt-get update ;\
+    apt-get upgrade -y ;\
+    apt-get install --no-install-recommends --no-install-suggests -y curl nano;\
+    apt-get clean ;\
+    rm -rf /var/lib/apt/lists/* ;\
+else \
+    echo "no tools for debug" ;\
+fi && \
+  groupadd --gid 1000 starsky \
+    && useradd --uid 1000 --gid starsky --shell /bin/bash --create-home starsky 
+ 
 # Copy dlls
-COPY --chown=starsky:starsky --from=build-env /app/output /app
+COPY --chown=starsky:starsky --from=build-env /app/generic-netcore /app
 
 # copy dependencies
 COPY --chown=starsky:starsky --from=build-env /app/dependencies /app/dependencies
