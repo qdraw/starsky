@@ -2,7 +2,8 @@
 
 # ARM build test: 
 # cd /root_of_repo
-# docker buildx build --push starsky --tag qdraw/starsky:latest --platform linux/arm64
+# docker buildx build starsky --tag qdraw/starsky:latest --platform linux/arm64
+# docker run -it -p 6470:6470 -e PORT=6470 qdraw/starsky
 
 # docker compose build --progress=plain
 # DEBUG Dockerfile:
