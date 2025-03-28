@@ -76,7 +76,7 @@ ARG TOOLS=false
 RUN if [ "$TOOLS" = "true" ]; then \
     apt-get update ;\
     apt-get upgrade -y ;\
-    apt-get install --no-install-recommends --no-install-suggests -y curl ;\
+    apt-get install --no-install-recommends --no-install-suggests -y curl nano;\
     apt-get clean ;\
     rm -rf /var/lib/apt/lists/* ;\
 else \
