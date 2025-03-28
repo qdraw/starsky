@@ -10,6 +10,8 @@ namespace helpers;
 
 public static partial class ProjectCheckNetCoreCommandHelper
 {
+	const string BuildToolsPath = "starsky-tools/build-tools/";
+
 	static string GetBuildToolsFolder()
 	{
 		var baseDirectory = AppDomain.CurrentDomain
@@ -30,7 +32,7 @@ public static partial class ProjectCheckNetCoreCommandHelper
 	}
 
 	/// <summary>
-	/// Check for values in Csproj files
+	///     Check for values in Csproj files
 	/// </summary>
 	/// <param name="valueToCheckFor">the value to check for</param>
 	/// <exception cref="ArgumentException">if is missing</exception>
@@ -96,6 +98,12 @@ public static partial class ProjectCheckNetCoreCommandHelper
 		// Make sure every project has an unique projectGuid
 		ProjectGuid();
 
+		if ( !Directory.Exists(GetBuildToolsFolder()) )
+		{
+			Log.Warning("Skipping build tools {path} not found", GetBuildToolsFolder());
+			return;
+		}
+
 		ClientHelper.NpmPreflight();
 
 		// check branch names on CI
@@ -105,8 +113,6 @@ public static partial class ProjectCheckNetCoreCommandHelper
 		/* List of nuget packages */
 		Run(NpmBaseCommand, "run nuget-package-list", GetBuildToolsFolder());
 	}
-
-	const string BuildToolsPath = "starsky-tools/build-tools/";
 
 	[GeneratedRegex(
 		"(<ProjectGuid>){(([0-9A-Fa-f]{8}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{12}))}(<\\/ProjectGuid>)",

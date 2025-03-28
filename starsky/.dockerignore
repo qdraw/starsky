@@ -1,7 +1,7 @@
 .git
 .idea
 node_modules
-build
+!docker-compose.dcproj
 **/.classpath
 **/.dockerignore
 **/.env
@@ -27,3 +27,15 @@ build
 **/values.dev.yaml
 LICENSE
 README.md
+osx-arm64
+osx-x64
+win-arm64
+win-x64
+linux-arm64
+linux-x64
+starsky-osx-arm64.zip
+starsky-osx-x64.zip
+starsky-win-arm64.zip
+starsky-win-x64.zip
+starsky-linux-arm64.zip
+starsky-linux-x64.zip

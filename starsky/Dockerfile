@@ -11,8 +11,8 @@
 # docker build -f starsky/Dockerfile . --no-cache --build-arg TEST=false
 
 # Stage 1 Front-end
-# # docker buildx imagetools inspect node:18-alpine
-FROM --platform=$BUILDPLATFORM node:20-alpine AS react-build
+# docker buildx imagetools inspect node:22-alpine
+FROM --platform=$BUILDPLATFORM node:22-alpine AS react-build
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 
@@ -22,7 +22,6 @@ ENV INLINE_RUNTIME_CHUNK=false
 ENV IMAGE_INLINE_SIZE_LIMIT=1
 ENV DISABLE_ESLINT_PLUGIN=true
 COPY starsky/clientapp/. ./
-# random npm ERR! code ECONNRESET
 RUN for i in 1 2 3; do \
       npm ci --legacy-peer-deps --prefer-offline --no-audit --no-fund --ignore-scripts && break || sleep 15; \
     done && \
@@ -30,47 +29,35 @@ RUN for i in 1 2 3; do \
     rm -rf node_modules && \
     echo "react done"
 
-# no alpine build since there is no support for multi-arch
-# docker buildx imagetools inspect mcr.microsoft.com/dotnet/sdk:6.0
+# Stage 2 .NET Build
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 ARG BUILDPLATFORM
 ARG TARGETPLATFORM
-# insert demo user and content
-ARG ISDEMO=""
-ENV E_ISDEMO=$ISDEMO
 
 RUN mkdir -p /app
 WORKDIR /app
 
-# copy everything else and build
+# Copy everything else and build
 COPY . ./
 
-WORKDIR /app/starsky
-
-# there is specific version matched in /app/global.json, but docker uses the latest
-
 RUN /bin/bash -c "\
+    echo \"TARGETPLATFORM=$TARGETPLATFORM\" ; \
     rm /app/global.json ; \
+    chmod +x ./build.sh ; \
+    mkdir -p /documentation ; \
+    echo '<Project Sdk=\"Microsoft.NET.Sdk\"><PropertyGroup><OutputType>Exe</OutputType><ImplicitUsings>enable</ImplicitUsings><TargetFramework>net8.0</TargetFramework></PropertyGroup></Project>' > /documentation/documentation.csproj ; \
+    echo '<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"15.0\" Sdk=\"Microsoft.Docker.Sdk\"></Project>' > /app/docker-compose.dcproj ; \
+    echo 'Console.WriteLine(\"test\");' > /documentation/Program.cs ; \
+    \
     if [ \"$TARGETPLATFORM\" = \"linux/amd64\" ]; then \
-        echo \"$TARGETPLATFORM\" ; \
-        dotnet restore --runtime linux-x64 starsky.csproj ; \
+        ./build.sh --runtime linux-x64 --no-client --ready-to-run --no-sonar --no-test --static-output-folder; \
     elif [ \"$TARGETPLATFORM\" = \"linux/arm64\" ]; then \
-        dotnet restore --runtime linux-arm64 starsky.csproj ; \
+        ./build.sh --runtime linux-arm64 --no-client --ready-to-run --no-sonar --no-test --static-output-folder; \
     elif [ \"$TARGETPLATFORM\" = \"linux/arm/v7\" ]; then \
-        dotnet restore --runtime linux-arm starsky.csproj ; \
+        ./build.sh --runtime linux-arm --no-client --no-sonar --no-test --static-output-folder; \
     else \
-        dotnet restore starsky.csproj ; \
-    fi && \
-    if [ \"$TARGETPLATFORM\" = \"linux/amd64\" ]; then \
-        echo \"$TARGETPLATFORM\" ; \
-        dotnet publish -c release -o out --runtime linux-x64 --self-contained false --no-restore ; \
-    elif [ \"$TARGETPLATFORM\" = \"linux/arm64\" ]; then \
-        dotnet publish -c release -o out --runtime linux-arm64 --self-contained false --no-restore ; \
-    elif [ \"$TARGETPLATFORM\" = \"linux/arm/v7\" ]; then \
-        dotnet publish -c release -o out --runtime linux-arm --self-contained false --no-restore ; \
-    else \
-       dotnet publish -c release -o out ;\
-    fi"
+        ./build.sh --runtime linux-x64 --no-client --no-sonar --no-test --static-output-folder; \
+    fi" \
 
 WORKDIR /app
 
@@ -86,85 +73,45 @@ RUN \
         --dependencies "/app/dependencies" \
         --tempfolder "/app/temp" \
         -h \
-        -v  && \
-    if [ "$ISDEMO" != "" ]; then \
-        # it should cache faster \
-        dotnet build starsky/starsky.csproj --configuration Release ;\
-        DEMO_SEED_CLI_PATH="/app/starskydemoseedcli/starskydemoseedcli.csproj" ;\
-        DEPS_FOLDER="/app/dependencies" ;\
-        TEMP_FOLDER="/app/temp" ;\
-        mkdir -p "$DEPS_FOLDER" ;\
-        mkdir -p "$TEMP_FOLDER" ;\
-        dotnet run --project "$DEMO_SEED_CLI_PATH" --configuration Release -- --dependencies "$DEPS_FOLDER" --tempfolder "$TEMP_FOLDER" -h -v ;\
-    fi
+        -v
 
-# no alpine build since there is no support for multi-arch
-# docker buildx imagetools inspect mcr.microsoft.com/dotnet/sdk:6.0
-FROM --platform=$BUILDPLATFORM build-env AS test
-ARG BUILDPLATFORM
-ARG TEST=true
-
+# Stage 3 Runtime Image
+FROM alpine:3.21.3 AS release
 WORKDIR /app
 
-RUN if [ "$TEST" = "true" ]; then \
-        mkdir -p "/testresults" ;\
-        if [ "$BUILDPLATFORM" = "$TARGETPLATFORM" ]; then \
-          echo "$TEST" "$BUILDPLATFORM" "$TARGETPLATFORM" ; \
-          dotnet test \
-              -c release \
-              --results-directory /testresults \
-              --logger "trx;LogFileName=test_results.trx" \
-              --collect:"XPlat Code Coverage" \
-              --settings build.vstest.runsettings \
-              starskytest/starskytest.csproj ;\
-        fi ;\
-        touch "/testresults/test.enabled" ;\
-    else \
-      mkdir -p "/testresults" ;\
-      touch "/testresults/test.disabled" ;\
-    fi
-    
-# build runtime image (multiarch)
-# docker buildx imagetools inspect mcr.microsoft.com/dotnet/aspnet:6.0
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS release
-WORKDIR /app
-ARG TOOLS=false
+RUN apk add --no-cache \
+        bash \
+        ca-certificates \
+        curl \
+        krb5-libs \
+        libgcc \
+        libintl \
+        libssl3 \
+        libstdc++ \
+        tzdata \
+        userspace-rcu \
+        zlib \
+    && addgroup -g 1000 starsky \
+      && adduser -D -u 1000 -G starsky -s /bin/bash starsky
 
-# # for debugging
-RUN if [ "$TOOLS" = "true" ]; then \
-    apt-get update ;\
-    apt-get upgrade -y ;\
-    apt-get install --no-install-recommends --no-install-suggests -y curl ;\
-    apt-get clean ;\
-    rm -rf /var/lib/apt/lists/* ;\
-else \
-    echo "no tools for debug" ;\
-fi && \
-  groupadd --gid 1000 starsky \
-    && useradd --uid 1000 --gid starsky --shell /bin/bash --create-home starsky
-    
-# copy dlls
-COPY --chown=starsky:starsky --from=build-env /app/starsky/out /app
+# Copy dlls
+COPY --chown=starsky:starsky --from=build-env /app/output /app
 
-# copy dependencies & demo content
+# copy dependencies
 COPY --chown=starsky:starsky --from=build-env /app/dependencies /app/dependencies
 COPY --chown=starsky:starsky --from=build-env /app/temp /app/temp
 COPY --chown=starsky:starsky --from=build-env /app/data.db /app/app__data.db
 
-# copy react build
+# Copy react build
 COPY --chown=starsky:starsky --from=react-build /app/starsky/clientapp ./clientapp
 
-# Makes sure the test stage is run when using docker buildkit
-COPY --chown=starsky:starsky --from=test /testresults /tmp
-
-# you could mount this location
+# Create necessary directories and set ownership
 RUN mkdir -p /app/photos && chown starsky:starsky /app/photos
 RUN mkdir -p /app/thumbnailTempFolder && chown starsky:starsky /app/thumbnailTempFolder
-
-# and change owner of folder
 RUN chown starsky:starsky /app
 
 USER starsky
 
+EXPOSE 8080
 ENV ASPNETCORE_Environment=Production
 ENTRYPOINT ["dotnet", "starsky.dll"]
