@@ -78,7 +78,6 @@ RUN \
 # Stage 3 Runtime Image
 FROM alpine:3.21.3 AS release
 WORKDIR /app
-ARG TOOLS=false
 
 RUN apk add --no-cache \
         bash \
@@ -91,9 +90,8 @@ RUN apk add --no-cache \
         libstdc++ \
         tzdata \
         userspace-rcu \
-        zlib
-
-RUN addgroup -g 1000 starsky \
+        zlib \
+    && addgroup -g 1000 starsky \
       && adduser -D -u 1000 -G starsky -s /bin/bash starsky
 
 # Copy dlls
