@@ -24,7 +24,7 @@ public partial class Query
 				.GroupBy(item => item.FileCollectionName)
 				.Select(group =>
 					group.OrderByDescending(p =>
-						ExtensionRolesHelper.IsExtensionThumbnailSupported(p.FilePath)
+						ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(p.FilePath)
 					).First()
 				)
 				.ToList();

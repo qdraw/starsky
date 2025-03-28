@@ -344,6 +344,14 @@ public sealed class AppSettings
 	}
 
 	/// <summary>
+	///     Which format to use for the thumbnail
+	/// </summary>
+	[PackageTelemetry]
+	[JsonConverter(typeof(JsonStringEnumConverter))]
+	public ThumbnailImageFormat ThumbnailImageFormat { get; set; } =
+		ThumbnailImageFormat.jpg;
+
+	/// <summary>
 	///     Location of temp folder
 	/// </summary>
 	public string TempFolder
@@ -779,6 +787,17 @@ public sealed class AppSettings
 	/// </summary>
 	public bool? ExiftoolSkipDownloadOnStartup { get; set; } = false;
 
+	/// <summary>
+	///     Skip download Ffmpeg on startup
+	///     Recommended to keep false
+	/// </summary>
+	public bool? FfmpegSkipDownloadOnStartup { get; set; } = false;
+
+	/// <summary>
+	///     Exe path to Ffmpeg
+	/// </summary>
+	public string? FfmpegPath { get; set; }
+
 	public OpenTelemetrySettings? OpenTelemetry { get; set; } = new();
 
 	/// <summary>
@@ -1084,6 +1103,20 @@ public sealed class AppSettings
 	public string DatabasePathToFilePath(string databaseFilePath)
 	{
 		var filepath = StorageFolder + databaseFilePath;
+
+		filepath = _pathToFilePathStyle(filepath);
+
+		return filepath;
+	}
+	
+	/// <summary>
+	///     Temp folder relative path
+	/// </summary>
+	/// <param name="databaseFilePath">databaseFilePath</param>
+	/// <returns></returns>
+	public string DatabasePathToTempFolderFilePath(string databaseFilePath)
+	{
+		var filepath = TempFolder + databaseFilePath;
 
 		filepath = _pathToFilePathStyle(filepath);
 

@@ -228,7 +228,7 @@ public class CreateAnImage
 	                                                 "AAgBAwEBPwDaxwXE/9k=";
 
 	public static readonly ImmutableArray<byte> Bytes =
-		Base64Helper.TryParse(Base64JpgString).ToImmutableArray();
+		[..Base64Helper.TryParse(Base64JpgString)];
 
 	/// <summary>
 	///     The FullFile Path of the Directory of the Assemblies
@@ -248,6 +248,11 @@ public class CreateAnImage
 	public readonly string FullFilePath =
 		( Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) +
 		  Path.DirectorySeparatorChar ).Replace("./", string.Empty) + FileNamePrivate;
+
+	/// <summary>
+	/// Size in bytes of the image
+	/// </summary>
+	public const int Size = 9998;
 
 	/// <summary>
 	///     Use abstractions instead of a System.IO dependency

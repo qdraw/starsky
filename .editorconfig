@@ -59,6 +59,8 @@ dotnet_diagnostic.SA1500.severity = warning
 dotnet_diagnostic.SA1503.severity = warning
 dotnet_diagnostic.SA1520.severity = warning
 
+# Seal internal types
+dotnet_diagnostic.CA1852.severity = warning
 
 # Indentation preferences
 csharp_indent_block_contents = true

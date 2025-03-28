@@ -112,7 +112,7 @@ public class ThumbnailQueryErrorTest
 			await fakeQuery.AddThumbnailRangeAsync([new ThumbnailResultDataTransferModel("t")]));
 	}
 
-	private class UpdateEntryUpdateConcurrency : IUpdateEntry
+	private sealed class UpdateEntryUpdateConcurrency : IUpdateEntry
 	{
 		public void SetOriginalValue(IProperty property, object? value)
 		{
@@ -199,7 +199,7 @@ public class ThumbnailQueryErrorTest
 #pragma warning restore 8618
 	}
 
-	private class AppDbContextConcurrencyException : ApplicationDbContext
+	private sealed class AppDbContextConcurrencyException : ApplicationDbContext
 	{
 		[SuppressMessage("ReSharper", "VirtualMemberCallInConstructor")]
 		public AppDbContextConcurrencyException(DbContextOptions options) : base(options)
@@ -236,7 +236,7 @@ public class ThumbnailQueryErrorTest
 		}
 	}
 
-	private class MySqlSaveDbExceptionContext : ApplicationDbContext
+	private sealed class MySqlSaveDbExceptionContext : ApplicationDbContext
 	{
 		private readonly string _error;
 		private readonly MySqlErrorCode _key;
