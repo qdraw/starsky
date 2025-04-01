@@ -6,7 +6,7 @@
   "timezone": "Europe/Brussels",
   "packageRules": [
     {
-      "matchPackageNames": ["/^Microsoft\\.Extensions/", "/^Microsoft\\.VisualStudio/", "/^System\\./", "AspNetCore", "/^Microsoft\\.EntityFrameworkCore/"],
+      "matchPackageNames": ["/^Microsoft\\.Extensions/", "/^Microsoft\\.VisualStudio/", "/^System\\./", "AspNetCore", "/^Microsoft\\.EntityFrameworkCore/", "AspNetCore.HealthChecks.MySql", "AspNetCore.HealthChecks.Sqlite"],
       "allowedVersions": "<9",
       "groupName": ".NET packages",
       "groupSlug": "microsoft",
