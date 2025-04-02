@@ -12,6 +12,6 @@
     "update:install": "cd starsky && cd clientapp && npm run update:install"
   },
   "devDependencies": {
-    "body-parser": "^1.20.3"
+    "body-parser": "^2.0.0"
   }
 }
