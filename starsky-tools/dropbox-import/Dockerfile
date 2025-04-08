@@ -21,7 +21,9 @@ COPY starsky/ /opt/starsky/starsky
 # Build starskyimportercli
 WORKDIR /opt/starsky/starsky
 
-RUN rm /opt/starsky/global.json || true
+RUN ls /opt/starsky/starsky
+
+RUN rm /opt/starsky/starsky/global.json || true
 
 RUN dotnet publish starskyimportercli/starskyimportercli.csproj -c Release -o /opt/starsky/starskyimportercli
 
