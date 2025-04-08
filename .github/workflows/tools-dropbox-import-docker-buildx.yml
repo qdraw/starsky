@@ -64,7 +64,6 @@ jobs:
           platforms: linux/amd64,linux/arm64 # seg fault for: linux/arm/v7
           push: true
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: TOOLS=true
           tags: |
             ghcr.io/${{ github.repository }}-dropbox-import-deprecated:latest
             ghcr.io/${{ github.repository }}-dropbox-import-deprecated:v${{ github.run_id }}
@@ -74,6 +73,7 @@ jobs:
         uses: docker/build-push-action@v6
         if: github.event_name == 'pull_request'
         with:
-          context: ./starsky
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          context: .
+          file: starsky-tools/dropbox-import/Dockerfile
+          platforms: linux/amd64,linux/arm64 # seg fault for: linux/arm/v7
           push: false
