@@ -1,10 +1,12 @@
 # run from root of repo
 
-FROM alpine AS dropbox-import
+FROM node:18-alpine AS dropbox-import
 WORKDIR /opt/starsky/starsky-tools/dropbox-import
 
 # Copy dropbox-import files
 COPY starsky-tools/dropbox-import/ ./
+
+RUN npm ci
 
 # Set environment variables for Dropbox
 ENV STARSKYIMPORTERCLI=/opt/starsky/starskyimportercli
