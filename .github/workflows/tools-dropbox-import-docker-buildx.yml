@@ -1,0 +1,79 @@
+name: Tools Dropbox Import Docker Buildx
+
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'starsky-tools/dropbox-import/**'
+      - '.github/workflows/tools-dropbox-import-docker-buildx.yml'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - 'starsky-tools/dropbox-import/**'
+      - '.github/workflows/tools-dropbox-import-docker-buildx.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+    
+      - name: Check Out Repo 
+        uses: actions/checkout@v4
+        
+      - name: Log in to Github Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}        
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Inspect Docker Buildx ghcr.io/${{ github.repository }}-dropbox-import-deprecated
+        run: |
+          echo "Name:      ${{ steps.buildx.outputs.name }}"
+          echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
+          echo "Status:    ${{ steps.buildx.outputs.status }}"
+          echo "Flags:     ${{ steps.buildx.outputs.flags }}"
+          echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
+
+      - name: Extract metadata Github Actions (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ghcr.io/${{ github.repository }}-dropbox-import-deprecated
+
+      - name: Build and push master
+        id: docker_build_push
+        uses: docker/build-push-action@v6
+        if: github.event_name != 'pull_request'
+        with:
+          context: .
+          file: starsky-tools/dropbox-import/Dockerfile
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          push: true
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: TOOLS=true
+          tags: |
+            ghcr.io/${{ github.repository }}-dropbox-import-deprecated:latest
+            ghcr.io/${{ github.repository }}-dropbox-import-deprecated:v${{ github.run_id }}
+
+      - name: Build and don't push
+        id: docker_build_pull_request
+        uses: docker/build-push-action@v6
+        if: github.event_name == 'pull_request'
+        with:
+          context: ./starsky
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          push: false
