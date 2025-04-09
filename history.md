@@ -45,6 +45,10 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 - nothing yet
 
+## version 0.6.7 - 2024-04-?? {#v0.6.7}
+
+- [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.407 (Runtime: 8.0.14) (PR #2080)
+
 ## version 0.6.6 - 2024-03-12 {#v0.6.6}
 
 - [x] (Added) _DevOps_ Created `.github/renovate.json` for Renovate configuration.  
