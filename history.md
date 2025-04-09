@@ -48,6 +48,10 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## version 0.6.7 - 2024-04-?? {#v0.6.7}
 
 - [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.407 (Runtime: 8.0.14) (PR #2080)
+- [x] (Changed) _Back-end_ Add build CLI tools inside the Dockerfile 
+- [x] (Changed) _Back-end_ Update various dependecies though Renovate
+- [x] (Changed) _Back-end_ Refactor to make slash more clear Sonarcloud hint (PR #2017)
+- [x] (Changed) _Front-end_ Add alt to images (PR #2017)
 
 ## version 0.6.6 - 2024-03-12 {#v0.6.6}
 
