@@ -23,4 +23,4 @@ jobs:
           package-name: 'starsky-unstable-nightly'
           token: ${{ secrets.WORKFLOW_GITHUB }}
           package-type: 'container'
-          min-versions-to-keep: 30
+          min-versions-to-keep: 100
