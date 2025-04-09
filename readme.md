@@ -77,7 +77,7 @@ _See `./pipelines/azure` for details_
 
 #### Windows
 
-![Starsky .NET Core (Windows)](https://github.com/qdraw/starsky/workflows/Starsky%20.NET%20Core%20(Windows)/badge.svg)
+[![Windows .NET build](https://github.com/qdraw/starsky/actions/workflows/webapp-build-net-windows.yml/badge.svg?branch=master)](https://github.com/qdraw/starsky/actions/workflows/webapp-build-net-windows.yml)
 
 #### Ubuntu
 
