@@ -118,3 +118,29 @@ stages:
             value: '/starsky/starsky-generic-netcore.zip'
           - key: coverage-report
             value: '/starsky/starskytest/coverage-report.zip'
+
+- stage: dev-build
+  displayName: 'Deploy'
+  dependsOn: build
+  jobs:
+  - job: deploy
+    displayName: 'Deploy'
+    timeoutInMinutes: 30
+    cancelTimeoutInMinutes: 10
+    pool:
+      name: 'dev-build' # Custom agent pool
+    steps:
+
+    - checkout: none
+    - download: current
+      artifact: starsky-linux-x64.zip
+      patterns:
+        - starsky-linux-x64.zip
+
+    - task: ExtractFiles@1
+      displayName: 'Unzip starsky-linux-x64.zip'
+      inputs:
+        archiveFilePatterns: '$(Pipeline.Workspace)/starsky-linux-x64.zip'
+        destinationFolder: '/opt/starsky'
+        cleanDestinationFolder: true
+        overwriteExistingFiles: true
