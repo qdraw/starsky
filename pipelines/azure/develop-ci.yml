@@ -132,10 +132,12 @@ stages:
     steps:
 
     - checkout: none
-    - download: current
-      artifact: starsky-linux-x64.zip
-      patterns:
-        - starsky-linux-x64.zip
+
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        source: 'current'
+        artifactName: 'linux-x64'
+        path: '$(Pipeline.Workspace)'
 
     - task: ExtractFiles@1
       displayName: 'Unzip starsky-linux-x64.zip'
