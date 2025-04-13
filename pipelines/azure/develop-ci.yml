@@ -78,18 +78,22 @@ stages:
       parameters:
         npmConfigCache: $(npm_config_cache)
         jest: ${{ parameters.unitTestsEnabled }}
+        runtimeArg: '--runtime="linux-x64"'
 
     - template: /pipelines/azure/steps/build_server.yml
       parameters:
         vstest: ${{ parameters.unitTestsEnabled }}
         readyToRunEnabled: ${{ parameters.readyToRunEnabled }}
         nugetPackages: $(NUGET_PACKAGES)
+        runtimeArg: '--runtime="linux-x64"'
 
     - template: /pipelines/azure/steps/coverage_report_merge.yml
       parameters:
         unitTest: ${{ parameters.unitTestsEnabled }}
 
     - template: /pipelines/azure/steps/build_zip_bundle.yml
+      parameters:
+        runtimeArg: '--runtime="linux-x64"'
 
     - task: PowerShell@2
       condition: and(succeeded(), ne('${{ parameters.unitTestsEnabled }}', true) )
@@ -108,10 +112,8 @@ stages:
     - template: /pipelines/azure/steps/publish_artifacts.yml
       parameters:
         publish:
-          - key: linux-arm64
-            value: '/starsky/starsky-linux-arm64.zip'
-          - key: linux-arm
-            value: '/starsky/starsky-linux-arm.zip'
+          - key: linux-x64
+            value: '/starsky/starsky-linux-x64.zip'
           - key: generic-netcore
             value: '/starsky/starsky-generic-netcore.zip'
           - key: coverage-report
