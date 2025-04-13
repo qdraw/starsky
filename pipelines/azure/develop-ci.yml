@@ -119,7 +119,7 @@ stages:
           - key: coverage-report
             value: '/starsky/starskytest/coverage-report.zip'
 
-- stage: dev-build
+- stage: deploy
   displayName: 'Deploy'
   dependsOn: build
   jobs:
