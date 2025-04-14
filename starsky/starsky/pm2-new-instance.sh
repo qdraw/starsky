@@ -35,6 +35,7 @@ esac
 
 CURRENT_DIR=$(dirname "$0")
 OUTPUT_DIR=$CURRENT_DIR
+NO_PM2=false
 
 # command line args
 ARGUMENTS=("$@")
@@ -52,6 +53,7 @@ for ((i = 1; i <= $#; i++ )); do
         echo "     (or:) --runtime win-x64"
         echo "(optional) --port 4823"
         echo "(optional) --anywhere (to allow access from anywhere, defaults to false)"
+        echo "(optional) --no-pm2 (skip check)"
         exit 0
     fi
 
@@ -61,6 +63,11 @@ for ((i = 1; i <= $#; i++ )); do
     if [[ ${ARGUMENTS[CURRENT]} == "--anywhere" ]];
     then
         ANYWHERE=true
+    fi
+
+    if [[ ${ARGUMENTS[CURRENT]} == "--no-pm2" ]];
+    then
+        NO_PM2=true
     fi
 
     if [ $i -gt 1 ]; then
@@ -311,6 +318,11 @@ if [[ $ISIMPORTEROK -eq 0 ]]; then
   ln -sfn $DIRNAME"/starsky" ~/bin/starsky
 else
   echo "> SKIP symlink creation due wrong architecture"
+fi
+
+if [ "$NO_PM2" = true ] ; then
+    echo "Skipping pm2"
+    exit 0
 fi
 
 if ! command -v pm2 &> /dev/null
