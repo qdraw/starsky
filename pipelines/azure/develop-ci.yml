@@ -132,12 +132,12 @@ stages:
     strategy:
       matrix:
         build:
-          agentDemand: 'Agent.Name -equals eikpunt'
+          agentDemand: 'eikpunt'
       maxParallel: 1
     pool: 
       name: 'dev-build'
       demands:
-      - ${{ matrix.agentDemand }}
+      - "Agent.Name -equals $(agentDemand)"
     steps:
 
     - checkout: none
