@@ -167,4 +167,4 @@ stages:
         script: |
           cp -f pm2-new-instance.sh /opt/starsky/pm2-new-instance.sh
           cp -f $(Pipeline.Workspace)/starsky-linux-x64.zip /opt/starsky/starsky-linux-x64.zip
-          bash /opt/starsky/pm2-new-instance.sh
+          bash /opt/starsky/pm2-new-instance.sh --no-pm2
