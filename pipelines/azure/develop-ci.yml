@@ -16,6 +16,7 @@ variables:
   npm_config_cache: $(Pipeline.Workspace)/.npm
   NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
   SONAR_TOKEN: $(STARSKY_SONAR_TOKEN)
+  RUNTIME_ARG: '--runtime "linux-x64"'
 
 trigger:
   branches:
@@ -76,20 +77,25 @@ stages:
 
     - template: /pipelines/azure/steps/build_clientapp.yml
       parameters:
-        npmConfigCache: $(npm_config_cache)
         jest: ${{ parameters.unitTestsEnabled }}
+        runtimeArg: $(RUNTIME_ARG)
+        npmConfigCache: $(npm_config_cache)
 
     - template: /pipelines/azure/steps/build_server.yml
       parameters:
         vstest: ${{ parameters.unitTestsEnabled }}
         readyToRunEnabled: ${{ parameters.readyToRunEnabled }}
         nugetPackages: $(NUGET_PACKAGES)
+        runtimeArg: $(RUNTIME_ARG)
 
     - template: /pipelines/azure/steps/coverage_report_merge.yml
       parameters:
         unitTest: ${{ parameters.unitTestsEnabled }}
+        runtimeArg: $(RUNTIME_ARG)
 
     - template: /pipelines/azure/steps/build_zip_bundle.yml
+      parameters:
+        runtimeArg: $(RUNTIME_ARG)
 
     - task: PowerShell@2
       condition: and(succeeded(), ne('${{ parameters.unitTestsEnabled }}', true) )
@@ -108,11 +114,56 @@ stages:
     - template: /pipelines/azure/steps/publish_artifacts.yml
       parameters:
         publish:
-          - key: linux-arm64
-            value: '/starsky/starsky-linux-arm64.zip'
-          - key: linux-arm
-            value: '/starsky/starsky-linux-arm.zip'
+          - key: linux-x64
+            value: '/starsky/starsky-linux-x64.zip'
           - key: generic-netcore
             value: '/starsky/starsky-generic-netcore.zip'
           - key: coverage-report
             value: '/starsky/starskytest/coverage-report.zip'
+
+- stage: deploy
+  displayName: 'Deploy'
+  dependsOn: build
+  jobs:
+  - job: deploy
+    displayName: 'Deploy'
+    timeoutInMinutes: 30
+    cancelTimeoutInMinutes: 10
+    strategy:
+      matrix:
+        eikpunt:
+          agentDemand: eikpunt
+        twello:
+          agentDemand: twello
+      maxParallel: 1
+    pool: 
+      name: 'dev-build'
+      demands:
+      - "Agent.Name -equals $(agentDemand)"
+    steps:
+
+    - checkout: none
+
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download starsky-linux-x64.zip artifact'
+      inputs:
+        source: 'current'
+        artifactName: 'linux-x64'
+        path: '$(Pipeline.Workspace)'
+
+    - task: ExtractFiles@1
+      displayName: 'Unzip starsky-linux-x64.zip'
+      inputs:
+        archiveFilePatterns: '$(Pipeline.Workspace)/starsky-linux-x64.zip'
+        destinationFolder: '$(Pipeline.Workspace)/starsky'
+
+    - task: Bash@3
+      enabled: true
+      displayName: 'Run Deployment Script'
+      inputs:
+        workingDirectory: '$(Pipeline.Workspace)/starsky'
+        targetType: 'inline'
+        script: |
+          cp -f pm2-new-instance.sh /opt/starsky/pm2-new-instance.sh
+          cp -f $(Pipeline.Workspace)/starsky-linux-x64.zip /opt/starsky/starsky-linux-x64.zip
+          bash /opt/starsky/pm2-new-instance.sh --no-pm2

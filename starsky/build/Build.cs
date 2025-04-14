@@ -418,6 +418,10 @@ public sealed class Build : NukeBuild
 				Log.Information($"- {runtime}");
 			}
 		}
+		else
+		{
+			Log.Information("No Runtime");
+		}
 
 		Log.Information("---");
 	}
