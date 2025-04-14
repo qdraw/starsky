@@ -131,9 +131,9 @@ stages:
     cancelTimeoutInMinutes: 10
     strategy:
       matrix:
-        deploy1:
+        eikpunt:
           agentDemand: eikpunt
-        deploy2:
+        twello:
           agentDemand: twello
       maxParallel: 1
     pool: 
