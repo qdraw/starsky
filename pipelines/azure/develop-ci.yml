@@ -16,7 +16,6 @@ variables:
   npm_config_cache: $(Pipeline.Workspace)/.npm
   NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
   SONAR_TOKEN: $(STARSKY_SONAR_TOKEN)
-  RUNTIME_ARGS: '--runtime=\"linux-x64\"'
 
 trigger:
   branches:
@@ -77,25 +76,25 @@ stages:
 
     - template: /pipelines/azure/steps/build_clientapp.yml
       parameters:
+        jest: false
+        runtimeArg: '--runtime="linux-x64"'
         npmConfigCache: $(npm_config_cache)
-        jest: ${{ parameters.unitTestsEnabled }}
-        runtimeArg: $(RUNTIME_ARGS)
 
     - template: /pipelines/azure/steps/build_server.yml
       parameters:
         vstest: ${{ parameters.unitTestsEnabled }}
         readyToRunEnabled: ${{ parameters.readyToRunEnabled }}
         nugetPackages: $(NUGET_PACKAGES)
-        runtimeArg: $(RUNTIME_ARGS)
+        runtimeArg: '--runtime="linux-x64"'
 
     - template: /pipelines/azure/steps/coverage_report_merge.yml
       parameters:
         unitTest: ${{ parameters.unitTestsEnabled }}
-        runtimeArg: $(RUNTIME_ARGS)
+        runtimeArg: '--runtime="linux-x64"'
 
     - template: /pipelines/azure/steps/build_zip_bundle.yml
       parameters:
-        runtimeArg: $(RUNTIME_ARGS)
+        runtimeArg: '--runtime="linux-x64"'
 
     - task: PowerShell@2
       condition: and(succeeded(), ne('${{ parameters.unitTestsEnabled }}', true) )

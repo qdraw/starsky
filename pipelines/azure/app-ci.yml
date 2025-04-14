@@ -5,7 +5,6 @@ variables:
   CI: true
   npm_config_cache: $(Pipeline.Workspace)/.npm
   NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
-  RUNTIME_ARGS: '--runtime="win-x64,linux-x64,osx-x64,osx-arm64"'
 
 trigger:
   branches:
@@ -57,19 +56,19 @@ stages:
     - template: /pipelines/azure/steps/build_clientapp.yml
       parameters:
         jest: false
-        runtimeArg: $(RUNTIME_ARGS)
+        runtimeArg: '--runtime="win-x64,linux-x64,osx-x64,osx-arm64"'
         npmConfigCache: $(npm_config_cache)
 
     - template: /pipelines/azure/steps/build_server.yml
       parameters:
         vstest: false
         readyToRunEnabled: false
-        runtimeArg: $(RUNTIME_ARGS)
+        runtimeArg: '--runtime "win-x64,linux-x64,osx-x64,osx-arm64"'
         nugetPackages: $(NUGET_PACKAGES)
 
     - template: /pipelines/azure/steps/build_zip_bundle.yml
       parameters:
-        runtimeArg: $(RUNTIME_ARGS)
+        runtimeArg: '--runtime "win-x64,linux-x64,osx-x64,osx-arm64"'
 
     - template: /pipelines/azure/steps/publish_artifacts.yml
       parameters:
