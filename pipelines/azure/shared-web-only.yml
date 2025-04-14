@@ -8,15 +8,6 @@ variables:
   npm_config_cache: $(Pipeline.Workspace)/.npm
   NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
 
-schedules:
-  - cron: "0 0 * * *"
-    displayName: Daily midnight build
-    always: false
-    batch: true
-    branches:
-      include:
-      - master
-
 trigger:
   branches:
     include:
