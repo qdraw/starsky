@@ -133,10 +133,11 @@ stages:
       matrix:
         dev-build-1:
           demand: 'AZP_AGENT_NAME -equals "eikpunt"'
+      maxParallel: 1
     pool:
       name: 'dev-build'
       demands:
-      - ${{ matrix.demand }}
+      - $(demand)
     steps:
 
     - checkout: none
