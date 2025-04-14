@@ -129,13 +129,20 @@ stages:
     displayName: 'Deploy'
     timeoutInMinutes: 30
     cancelTimeoutInMinutes: 10
+    strategy:
+      matrix:
+        dev-build-1:
+          demand: 'AZP_AGENT_NAME -equals "eikpunt"'
     pool:
       name: 'dev-build'
+      demands:
+      - ${{ matrix.demand }}
     steps:
 
     - checkout: none
 
     - task: DownloadPipelineArtifact@2
+      displayName: 'Download starsky-linux-x64.zip artifact'
       inputs:
         source: 'current'
         artifactName: 'linux-x64'
@@ -149,7 +156,7 @@ stages:
 
     - task: Bash@3
       enabled: true
-      displayName: 'Extract file'
+      displayName: 'Run Deployment Script'
       inputs:
         workingDirectory: '$(Pipeline.Workspace)/starsky'
         targetType: 'inline'
