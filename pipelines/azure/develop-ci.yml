@@ -132,7 +132,7 @@ stages:
     strategy:
       matrix:
         build:
-          agentDemand: 'eikpunt'
+          agentDemand: eikpunt
       maxParallel: 1
     pool: 
       name: 'dev-build'
