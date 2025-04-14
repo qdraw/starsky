@@ -16,7 +16,7 @@ variables:
   npm_config_cache: $(Pipeline.Workspace)/.npm
   NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
   SONAR_TOKEN: $(STARSKY_SONAR_TOKEN)
-  RUNTIME_ARGS: '--runtime="linux-x64"'
+  RUNTIME_ARGS: '--runtime=\"linux-x64\"'
 
 trigger:
   branches:
