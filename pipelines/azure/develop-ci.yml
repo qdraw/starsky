@@ -131,8 +131,10 @@ stages:
     cancelTimeoutInMinutes: 10
     strategy:
       matrix:
-        build:
+        deploy1:
           agentDemand: eikpunt
+        deploy2:
+          agentDemand: twello
       maxParallel: 1
     pool: 
       name: 'dev-build'
@@ -141,9 +143,6 @@ stages:
     steps:
 
     - checkout: none
-
-    - script: |
-        echo $(agentDemand)
 
     - task: DownloadPipelineArtifact@2
       displayName: 'Download starsky-linux-x64.zip artifact'
