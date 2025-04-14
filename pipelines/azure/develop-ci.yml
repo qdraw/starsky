@@ -123,7 +123,7 @@ stages:
 
 - stage: deploy
   displayName: 'Deploy'
-  dependsOn: build
+  # dependsOn: build
   jobs:
   - job: deploy
     displayName: 'Deploy'
@@ -131,13 +131,13 @@ stages:
     cancelTimeoutInMinutes: 10
     strategy:
       matrix:
-        dev-build-1:
-          demand: 'agent.name -equals eikpunt'
+        build:
+          agentDemand: 'agent.name -equals eikpunt'
       maxParallel: 1
     pool: 
       name: 'dev-build'
       demands:
-      - $(demand)
+      - $(agentDemand)
     steps:
 
     - checkout: none
