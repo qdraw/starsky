@@ -52,6 +52,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Back-end_ Update various dependecies though Renovate
 - [x] (Changed) _Back-end_ Refactor to make slash more clear Sonarcloud hint (PR #2017)
 - [x] (Changed) _Front-end_ Add alt to images (PR #2017)
+- [x] (Added) _Dev-ops_ Deploy step for internal (PR #2094)
 
 ## version 0.6.6 - 2024-03-12 {#v0.6.6}
 
