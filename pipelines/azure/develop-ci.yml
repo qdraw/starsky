@@ -132,7 +132,7 @@ stages:
     strategy:
       matrix:
         dev-build-1:
-          demand: 'AZP_AGENT_NAME -equals "eikpunt"'
+          demand: 'agent.name -equals eikpunt'
       maxParallel: 1
     pool:
       name: 'dev-build'
