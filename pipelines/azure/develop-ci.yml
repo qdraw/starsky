@@ -134,7 +134,7 @@ stages:
         dev-build-1:
           demand: 'agent.name -equals eikpunt'
       maxParallel: 1
-    pool:
+    pool: 
       name: 'dev-build'
       demands:
       - $(demand)
