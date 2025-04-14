@@ -114,14 +114,17 @@ fi
 
 
 # settings
-echo "run with the following parameters "
+echo "Run with the following parameters: "
+
+if [ "$NO_PM2" = true ] ; then
+    NO_PM2_STATUSTEXT="--no-pm2 $NO_PM2"
+fi
 
 if [ "$ANYWHERE" = true ] ; then
     ANYWHERESTATUSTEXT="--anywhere $ANYWHERE"
 fi
 
-
-echo "--name" $PM2NAME " --runtime" $RUNTIME "--port" $PORT $ANYWHERESTATUSTEXT
+echo "--name" $PM2NAME " --runtime" $RUNTIME "--port" $PORT $ANYWHERESTATUSTEXT $NO_PM2_STATUSTEXT
 
 cd $OUTPUT_DIR
 
