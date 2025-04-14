@@ -132,7 +132,7 @@ stages:
     strategy:
       matrix:
         build:
-          agentDemand: 'agent.name -equals eikpunt'
+          agentDemand: 'Agent.Name -equals eikpunt'
       maxParallel: 1
     pool: 
       name: 'dev-build'
@@ -141,6 +141,9 @@ stages:
     steps:
 
     - checkout: none
+
+    - script: |
+        echo $(agentDemand)
 
     - task: DownloadPipelineArtifact@2
       displayName: 'Download starsky-linux-x64.zip artifact'
