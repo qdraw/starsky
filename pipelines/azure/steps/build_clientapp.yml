@@ -4,9 +4,6 @@ parameters:
   npmConfigCache: $(Pipeline.Workspace)/.npm
 
 steps:
-  - script: echo "name is $(Build.BuildNumber) ${{ parameters.runtimeArg }}"
-    displayName: "echo name is $(Build.BuildNumber) ${{ parameters.runtimeArg }}"
-
   - task: PowerShell@2
     displayName: "[Nuke/clientapp] dotnet tool restore"
     continueOnError: true

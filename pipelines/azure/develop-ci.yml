@@ -130,7 +130,7 @@ stages:
     timeoutInMinutes: 30
     cancelTimeoutInMinutes: 10
     pool:
-      name: 'dev-build' # Custom agent pool
+      name: 'dev-build'
     steps:
 
     - checkout: none
@@ -145,6 +145,15 @@ stages:
       displayName: 'Unzip starsky-linux-x64.zip'
       inputs:
         archiveFilePatterns: '$(Pipeline.Workspace)/starsky-linux-x64.zip'
-        destinationFolder: '/opt/starsky'
-        cleanDestinationFolder: true
-        overwriteExistingFiles: true
+        destinationFolder: '$(Pipeline.Workspace)/starsky'
+
+    - task: Bash@3
+      enabled: true
+      displayName: 'Extract file'
+      inputs:
+        workingDirectory: '$(Pipeline.Workspace)/starsky'
+        targetType: 'inline'
+        script: |
+          cp -f pm2-new-instance.sh /opt/starsky/pm2-new-instance.sh
+          cp -f $(Pipeline.Workspace)/starsky-linux-x64.zip /opt/starsky/starsky-linux-x64.zip
+          bash /opt/starsky/pm2-new-instance.sh

@@ -124,13 +124,13 @@ git clone "https://github.com/qdraw/starsky.git"
 _Using bash_
 
 ```sh
-./build.sh --runtime="linux-arm"
+./build.sh --runtime "linux-arm"
 ```
 
 _Using Powershell_
 
 ```powershell
-powershell -File build.ps1 -ScriptArgs '-runtime="linux-arm"'
+powershell -File build.ps1 -ScriptArgs '-runtime "linux-arm"'
 ```
 
 4.  Copy contents from the `linux-arm` folder to your Raspberry Pi
@@ -260,13 +260,13 @@ The Nuke script (build.sh/build.ps1) provide options to build for specific runti
 _Using bash_
 
 ```sh
-./build.sh --runtime="osx-x64,osx-arm64"
+./build.sh --runtime "osx-x64,osx-arm64"
 ```
 
 _Using powershell_
 
 ```powershell
-powershell -File build.ps1 -ScriptArgs '-runtime="osx-x64,osx-arm64"'
+powershell -File build.ps1 -ScriptArgs '-runtime "osx-x64,osx-arm64"'
 ```
 
 ### To build server app for 64 bits Windows
@@ -274,7 +274,7 @@ powershell -File build.ps1 -ScriptArgs '-runtime="osx-x64,osx-arm64"'
 _Using bash_
 
 ```sh
-./build.sh --runtime="win-x64"
+./build.sh --runtime "win-x64"
 ```
 
 _Using powershell_
