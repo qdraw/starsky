@@ -23,12 +23,12 @@
     "update:yes": "npm run update:install"
   },
   "devDependencies": {
-    "@eslint/js": "^9.20.0",
-    "@types/node": "^22.13.4",
-    "cypress": "^13.17.0",
-    "eslint": "^9.19.0",
-    "globals": "^15.15.0",
-    "typescript": "^5.7.2",
-    "typescript-eslint": "^8.24.1"
+    "@eslint/js": "^9.24.0",
+    "@types/node": "^22.14.1",
+    "cypress": "^14.3.0",
+    "eslint": "^9.24.0",
+    "globals": "^16.0.0",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.30.1"
   }
 }
