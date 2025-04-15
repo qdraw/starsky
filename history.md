@@ -45,25 +45,31 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 - nothing yet
 
-## version 0.6.7 - 2024-04-?? {#v0.6.7}
+## version 0.6.7 - 2024-04-15 {#v0.6.7}
 
 - [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.407 (Runtime: 8.0.14) (PR #2080)
-- [x] (Changed) _Back-end_ Add build CLI tools inside the Dockerfile 
-- [x] (Changed) _Back-end_ Update various dependecies though Renovate
+- [x] (Changed) _Back-end_ Add build CLI tools inside the Dockerfile
+- [x] (Changed) _Back-end_ Update various dependencies though Renovate
 - [x] (Changed) _Back-end_ Refactor to make slash more clear Sonarcloud hint (PR #2017)
 - [x] (Changed) _Front-end_ Add alt to images (PR #2017)
 - [x] (Added) _Dev-ops_ Deploy step for internal (PR #2094)
+- [x] (Changed) _Back-end_ Regex timeout for ThumbnailNameRegex (PR #2093)
+- [x] (Changed) _Front-end_ Update various dependencies (PR #2100)
 
 ## version 0.6.6 - 2024-03-12 {#v0.6.6}
 
-- [x] (Added) _DevOps_ Created `.github/renovate.json` for Renovate configuration.  
-- [x] (Added) _CI/CD_ Updated `webapp-docker-release-on-tag-docker-hub.yml` permissions.  
-- [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.407 (Runtime: 8.0.12).  
-- [x] (Changed) _Back-end_ Updated Java version in `desktop-electron-sonarqube-missing-net-dependency.yml` to 21.  
-- [x] (Changed) _Front-end_ Updated various npm dependencies, including TypeScript, ESLint, React, and Electron.  
-- [x] (Changed) _Front-end_ Bumped application versions in multiple `package.json` files to 0.6.6.  
-- [x] (Changed) _Front-end_ Updated `dropbox-import/package-lock.json` and other npm dependencies to newer versions.  
-- [x] (Fixed) _General_ Addressed various versioning issues and dependency updates across the project.  
+- [x] (Added) _DevOps_ Created `.github/renovate.json` for Renovate configuration.
+- [x] (Added) _CI/CD_ Updated `webapp-docker-release-on-tag-docker-hub.yml` permissions.
+- [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.407 (Runtime: 8.0.12).
+- [x] (Changed) _Back-end_ Updated Java version in
+  `desktop-electron-sonarqube-missing-net-dependency.yml` to 21.
+- [x] (Changed) _Front-end_ Updated various npm dependencies, including TypeScript, ESLint, React,
+  and Electron.
+- [x] (Changed) _Front-end_ Bumped application versions in multiple `package.json` files to 0.6.6.
+- [x] (Changed) _Front-end_ Updated `dropbox-import/package-lock.json` and other npm dependencies to
+  newer versions.
+- [x] (Fixed) _General_ Addressed various versioning issues and dependency updates across the
+  project.
 
 ## version 0.6.5 - 2024-02-14 {#v0.6.5}
 
@@ -72,7 +78,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.405 (Runtime: 8.0.12) (PR #1902)
 - [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.406 (Runtime: 8.0.13) (PR #1934)
 - [x] (Changed) _App_ version bumb and fix electron version issues (PR #1944)
-- [x] (Changed) _Front-end_ Various npm dependency updates, including TypeScript, ESLint, React, and Electron in multiple PRs
+- [x] (Changed) _Front-end_ Various npm dependency updates, including TypeScript, ESLint, React, and
+  Electron in multiple PRs
 
 ## version 0.6.4 - 2024-12-19 {#v0.6.4}
 
