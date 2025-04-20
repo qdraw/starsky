@@ -156,9 +156,7 @@ public partial class Query // For folder displays only
 			var queryItems = context.FileIndex
 				.TagWith("QueryDisplayFileFolders")
 				.Where(p => p.ParentDirectory == subPath && p.FileName != "/")
-				.OrderBy(p => p.FileName).AsEnumerable()
-				// remove duplicates from list
-				.GroupBy(t => t.FileName).Select(g => g.First());
+				.OrderBy(p => p.FileName).AsEnumerable().DistinctBy(p => p.FileName);
 			return queryItems.OrderBy(p => p.FileName, StringComparer.InvariantCulture).ToList();
 		}
 

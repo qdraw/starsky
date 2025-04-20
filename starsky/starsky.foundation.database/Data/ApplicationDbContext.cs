@@ -61,6 +61,10 @@ namespace starsky.foundation.database.Data
 			{
 				etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
 				etb.HasIndex(x => new { x.FileName, x.ParentDirectory });
+				// This filters on ParentDirectory and sort on fileName
+				etb.HasIndex(x => new { x.ParentDirectory, x.FileName });
+
+				etb.HasIndex(x => new { x.FilePath });
 
 				etb.Property(p => p.Size).HasColumnType("bigint");
 			});
@@ -183,6 +187,8 @@ namespace starsky.foundation.database.Data
 						.IsConcurrencyToken();
 
 					etb.Property(p => p.DateTimeEpoch).HasColumnType("bigint");
+					
+					etb.HasIndex(x => new { x.DateTimeEpoch });
 
 					etb.ToTable("Notifications");
 					etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
