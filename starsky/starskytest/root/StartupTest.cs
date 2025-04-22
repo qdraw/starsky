@@ -15,243 +15,243 @@ using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeMocks;
 
-namespace starskytest.root
+namespace starskytest.root;
+
+[TestClass]
+public sealed class StartupTest
 {
-	[TestClass]
-	public sealed class StartupTest
+	[TestMethod]
+	public void Startup_ConfigureServices()
 	{
-		[TestMethod]
-		public void Startup_ConfigureServices()
+		IServiceCollection serviceCollection = new ServiceCollection();
+		// needed for: AddMetrics
+		IConfiguration configuration =
+			new ConfigurationRoot(new List<IConfigurationProvider>());
+		serviceCollection.AddSingleton(configuration);
+
+		// should not crash
+		new Startup().ConfigureServices(serviceCollection);
+		Assert.IsNotNull(serviceCollection);
+	}
+
+	[TestMethod]
+	public void Startup_ConfigureServicesConfigure1()
+	{
+		var serviceCollection = new ServiceCollection();
+		serviceCollection.AddRouting();
+		serviceCollection.AddSingleton<AppSettings, AppSettings>();
+		serviceCollection.AddSingleton<IWebLogger, FakeIWebLogger>();
+		serviceCollection
+			.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
+		IConfiguration configuration =
+			new ConfigurationRoot(new List<IConfigurationProvider>());
+		serviceCollection.AddSingleton(configuration);
+		serviceCollection.AddAuthorization();
+		serviceCollection.AddControllers();
+		serviceCollection.AddLogging();
+		serviceCollection.AddMvcCore().AddApiExplorer().AddAuthorization().AddViews();
+
+		var serviceProvider = serviceCollection.BuildServiceProvider();
+		var serviceProviderInterface = serviceProvider.GetRequiredService<IServiceProvider>();
+
+		var applicationBuilder = new ApplicationBuilder(serviceProviderInterface);
+		IHostEnvironment env =
+			new HostingEnvironment { EnvironmentName = Environments.Development };
+
+		// should not crash
+		var startup = new Startup();
+
+		startup.ConfigureServices(serviceCollection);
+		var appSettings = serviceProvider.GetRequiredService<AppSettings>();
+		appSettings.UseRealtime = true;
+
+		startup.Configure(applicationBuilder, env);
+
+		Assert.IsNotNull(applicationBuilder);
+	}
+
+	[SuppressMessage("ReSharper", "ReturnTypeCanBeEnumerable.Local")]
+	private static List<object?>? GetMiddlewareInstance(IApplicationBuilder app)
+	{
+		const string middlewareTypeName =
+			"Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware";
+		var appBuilderType = typeof(ApplicationBuilder);
+		const BindingFlags bindingTypes1 = BindingFlags.Instance |
+		                                   BindingFlags.NonPublic;
+		var middlewareField = appBuilderType.GetField("_components", bindingTypes1);
+		var components = middlewareField?.GetValue(app);
+
+		if ( components != null )
 		{
-			IServiceCollection serviceCollection = new ServiceCollection();
-			// needed for: AddMetrics
-			IConfiguration configuration =
-				new ConfigurationRoot(new List<IConfigurationProvider>());
-			serviceCollection.AddSingleton(configuration);
+			var element = components as List<Func<RequestDelegate, RequestDelegate>>;
 
-			// should not crash
-			new Startup().ConfigureServices(serviceCollection);
-			Assert.IsNotNull(serviceCollection);
-		}
-
-		[TestMethod]
-		public void Startup_ConfigureServicesConfigure1()
-		{
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.AddRouting();
-			serviceCollection.AddSingleton<AppSettings, AppSettings>();
-			serviceCollection
-				.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
-			IConfiguration configuration =
-				new ConfigurationRoot(new List<IConfigurationProvider>());
-			serviceCollection.AddSingleton(configuration);
-			serviceCollection.AddAuthorization();
-			serviceCollection.AddControllers();
-			serviceCollection.AddLogging();
-			serviceCollection.AddMvcCore().AddApiExplorer().AddAuthorization().AddViews();
-
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-			var serviceProviderInterface = serviceProvider.GetRequiredService<IServiceProvider>();
-
-			var applicationBuilder = new ApplicationBuilder(serviceProviderInterface);
-			IHostEnvironment env =
-				new HostingEnvironment { EnvironmentName = Environments.Development };
-
-			// should not crash
-			var startup = new Startup();
-
-			startup.ConfigureServices(serviceCollection);
-			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
-			appSettings.UseRealtime = true;
-
-			startup.Configure(applicationBuilder, env);
-
-			Assert.IsNotNull(applicationBuilder);
-			Assert.IsNotNull(env);
-		}
-
-		[SuppressMessage("ReSharper", "ReturnTypeCanBeEnumerable.Local")]
-		private static List<object?>? GetMiddlewareInstance(IApplicationBuilder app)
-		{
-			const string middlewareTypeName =
-				"Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware";
-			var appBuilderType = typeof(ApplicationBuilder);
-			const BindingFlags bindingTypes1 = BindingFlags.Instance |
-			                                   BindingFlags.NonPublic;
-			var middlewareField = appBuilderType.GetField("_components", bindingTypes1);
-			var components = middlewareField?.GetValue(app);
-
-			if ( components != null )
+			var middlewares = element?.Where(p =>
+				p.Target?.ToString() == middlewareTypeName);
+			if ( middlewares == null )
 			{
-				var element = components as List<Func<RequestDelegate, RequestDelegate>>;
-
-				var middlewares = element?.Where(p =>
-					p.Target?.ToString() == middlewareTypeName);
-				if ( middlewares == null )
-				{
-					return null;
-				}
-
-				var status = new List<object?>();
-				foreach ( var middleware in middlewares )
-				{
-					var type = middleware.Target?.GetType();
-					const BindingFlags bindingTypes = BindingFlags.Instance |
-					                                  BindingFlags.NonPublic |
-					                                  BindingFlags.Public;
-					var privatePropertyInfo = type?.GetField("_args", bindingTypes);
-					var privateFieldValue =
-						privatePropertyInfo?.GetValue(middleware.Target) as object[];
-
-					status.Add(privateFieldValue);
-				}
-
-				return status;
+				return null;
 			}
 
-			return null;
+			var status = new List<object?>();
+			foreach ( var middleware in middlewares )
+			{
+				var type = middleware.Target?.GetType();
+				const BindingFlags bindingTypes = BindingFlags.Instance |
+				                                  BindingFlags.NonPublic |
+				                                  BindingFlags.Public;
+				var privatePropertyInfo = type?.GetField("_args", bindingTypes);
+				var privateFieldValue =
+					privatePropertyInfo?.GetValue(middleware.Target) as object[];
+
+				status.Add(privateFieldValue);
+			}
+
+			return status;
 		}
 
-		[TestMethod]
-		public void BasicFlow_Default()
-		{
-			var startup = new Startup();
-			var serviceCollection = new ServiceCollection();
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-			var serviceProviderInterface = serviceProvider.GetRequiredService<IServiceProvider>();
+		return null;
+	}
 
-			var applicationBuilder = new ApplicationBuilder(serviceProviderInterface);
-			var result = startup.SetupStaticFiles(applicationBuilder);
+	[TestMethod]
+	public void BasicFlow_Default()
+	{
+		var startup = new Startup();
+		var serviceCollection = new ServiceCollection();
+		var serviceProvider = serviceCollection.BuildServiceProvider();
+		var serviceProviderInterface = serviceProvider.GetRequiredService<IServiceProvider>();
 
-			Assert.IsNotNull(result);
-			Assert.IsTrue(result.Item1);
-			Assert.IsFalse(result.Item2);
-			Assert.IsFalse(result.Item3);
+		var applicationBuilder = new ApplicationBuilder(serviceProviderInterface);
+		var result = startup.SetupStaticFiles(applicationBuilder);
 
-			var middlewareInstance =
-				GetMiddlewareInstance(applicationBuilder)?.FirstOrDefault() as object?[];
-			var value = middlewareInstance?.FirstOrDefault() as OptionsWrapper<StaticFileOptions>;
+		Assert.IsNotNull(result);
+		Assert.IsTrue(result.Item1);
+		Assert.IsFalse(result.Item2);
+		Assert.IsFalse(result.Item3);
 
-			Assert.IsFalse(value?.Value.RequestPath.HasValue);
-			Assert.AreEqual(string.Empty, value?.Value.RequestPath.Value);
-		}
+		var middlewareInstance =
+			GetMiddlewareInstance(applicationBuilder)?.FirstOrDefault() as object?[];
+		var value = middlewareInstance?.FirstOrDefault() as OptionsWrapper<StaticFileOptions>;
 
-		[TestMethod]
-		public void BasicFlow_Assets()
-		{
-			var storage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
-			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject,
-				"wwwroot"));
-			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject,
-				"clientapp", "build", "assets"));
+		Assert.IsFalse(value?.Value.RequestPath.HasValue);
+		Assert.AreEqual(string.Empty, value?.Value.RequestPath.Value);
+	}
 
-			var startup = new Startup();
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.AddSingleton<AppSettings, AppSettings>();
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-			var serviceProviderInterface = serviceProvider.GetRequiredService<IServiceProvider>();
+	[TestMethod]
+	public void BasicFlow_Assets()
+	{
+		var storage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+		storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject,
+			"wwwroot"));
+		storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject,
+			"clientapp", "build", "assets"));
 
-			var applicationBuilder = new ApplicationBuilder(serviceProviderInterface);
-			startup.ConfigureServices(serviceCollection);
-			var result = startup.SetupStaticFiles(applicationBuilder);
+		var startup = new Startup();
+		var serviceCollection = new ServiceCollection();
+		serviceCollection.AddSingleton<AppSettings, AppSettings>();
+		var serviceProvider = serviceCollection.BuildServiceProvider();
+		var serviceProviderInterface = serviceProvider.GetRequiredService<IServiceProvider>();
 
-			Assert.IsNotNull(result);
+		var applicationBuilder = new ApplicationBuilder(serviceProviderInterface);
+		startup.ConfigureServices(serviceCollection);
+		var result = startup.SetupStaticFiles(applicationBuilder);
 
-			Console.WriteLine("result:");
-			Console.WriteLine("1: " + result.Item1 + " 2: " + result.Item2 + " 3: " + result.Item3);
+		Assert.IsNotNull(result);
 
-			Assert.IsTrue(result.Item1);
-			Assert.IsTrue(result.Item2);
-			Assert.IsTrue(result.Item3);
+		Console.WriteLine("result:");
+		Console.WriteLine("1: " + result.Item1 + " 2: " + result.Item2 + " 3: " + result.Item3);
 
-			var middlewareInstance =
-				GetMiddlewareInstance(applicationBuilder)?.ToList()[1] as object?[];
-			var value = middlewareInstance?.FirstOrDefault() as OptionsWrapper<StaticFileOptions>;
+		Assert.IsTrue(result.Item1);
+		Assert.IsTrue(result.Item2);
+		Assert.IsTrue(result.Item3);
 
-			Assert.IsFalse(value?.Value.RequestPath.HasValue);
-			Assert.AreEqual(string.Empty, value?.Value.RequestPath.Value);
-		}
+		var middlewareInstance =
+			GetMiddlewareInstance(applicationBuilder)?.ToList()[1] as object?[];
+		var value = middlewareInstance?.FirstOrDefault() as OptionsWrapper<StaticFileOptions>;
 
-		[TestMethod]
-		public void BasicFlow_Assets2()
-		{
-			var startup = new Startup();
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.AddSingleton<AppSettings, AppSettings>();
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-			var serviceProviderInterface = serviceProvider.GetRequiredService<IServiceProvider>();
+		Assert.IsFalse(value?.Value.RequestPath.HasValue);
+		Assert.AreEqual(string.Empty, value?.Value.RequestPath.Value);
+	}
 
-			var applicationBuilder = new ApplicationBuilder(serviceProviderInterface);
-			startup.ConfigureServices(serviceCollection);
+	[TestMethod]
+	public void BasicFlow_Assets2()
+	{
+		var startup = new Startup();
+		var serviceCollection = new ServiceCollection();
+		serviceCollection.AddSingleton<AppSettings, AppSettings>();
+		var serviceProvider = serviceCollection.BuildServiceProvider();
+		var serviceProviderInterface = serviceProvider.GetRequiredService<IServiceProvider>();
 
-			var storage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
-			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject,
-				"wwwroot"));
-			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject,
-				"clientapp", "build", "assets"));
+		var applicationBuilder = new ApplicationBuilder(serviceProviderInterface);
+		startup.ConfigureServices(serviceCollection);
 
-			var result = startup.SetupStaticFiles(applicationBuilder);
-			Assert.IsNotNull(result);
+		var storage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+		storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject,
+			"wwwroot"));
+		storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject,
+			"clientapp", "build", "assets"));
 
-			Console.WriteLine("result:");
-			Console.WriteLine("1: " + result.Item1 + " 2: " + result.Item2 + " 3: " + result.Item3);
+		var result = startup.SetupStaticFiles(applicationBuilder);
+		Assert.IsNotNull(result);
 
-			Assert.IsTrue(result.Item1);
-			Assert.IsTrue(result.Item2);
-			Assert.IsTrue(result.Item3);
+		Console.WriteLine("result:");
+		Console.WriteLine("1: " + result.Item1 + " 2: " + result.Item2 + " 3: " + result.Item3);
 
-			var middlewareInstance =
-				GetMiddlewareInstance(applicationBuilder)?.ToList()[2] as object?[];
-			var value = middlewareInstance?.FirstOrDefault() as OptionsWrapper<StaticFileOptions>;
+		Assert.IsTrue(result.Item1);
+		Assert.IsTrue(result.Item2);
+		Assert.IsTrue(result.Item3);
 
-			Assert.IsTrue(value?.Value.RequestPath.HasValue);
-			Assert.AreEqual("/assets", value?.Value.RequestPath.Value);
-		}
+		var middlewareInstance =
+			GetMiddlewareInstance(applicationBuilder)?.ToList()[2] as object?[];
+		var value = middlewareInstance?.FirstOrDefault() as OptionsWrapper<StaticFileOptions>;
 
-		[TestMethod]
-		public void BasicFlow_Assets_NotFound()
-		{
-			var startup = new Startup();
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.AddSingleton<AppSettings, AppSettings>();
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-			var serviceProviderInterface = serviceProvider.GetRequiredService<IServiceProvider>();
+		Assert.IsTrue(value?.Value.RequestPath.HasValue);
+		Assert.AreEqual("/assets", value?.Value.RequestPath.Value);
+	}
 
-			var applicationBuilder = new ApplicationBuilder(serviceProviderInterface);
-			startup.ConfigureServices(serviceCollection);
+	[TestMethod]
+	public void BasicFlow_Assets_NotFound()
+	{
+		var startup = new Startup();
+		var serviceCollection = new ServiceCollection();
+		serviceCollection.AddSingleton<AppSettings, AppSettings>();
+		var serviceProvider = serviceCollection.BuildServiceProvider();
+		var serviceProviderInterface = serviceProvider.GetRequiredService<IServiceProvider>();
 
-			var storage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
-			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject,
-				"wwwroot"));
+		var applicationBuilder = new ApplicationBuilder(serviceProviderInterface);
+		startup.ConfigureServices(serviceCollection);
 
-			var result = startup.SetupStaticFiles(applicationBuilder, "not-found-folder-name");
-			Assert.IsNotNull(result);
+		var storage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+		storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject,
+			"wwwroot"));
 
-			Console.WriteLine("result:");
-			Console.WriteLine("1: " + result.Item1 + " 2: " + result.Item2 + " 3: " + result.Item3);
+		var result = startup.SetupStaticFiles(applicationBuilder, "not-found-folder-name");
+		Assert.IsNotNull(result);
 
-			Assert.IsTrue(result.Item1);
-			Assert.IsTrue(result.Item2);
-			Assert.IsFalse(result.Item3);
-		}
+		Console.WriteLine("result:");
+		Console.WriteLine("1: " + result.Item1 + " 2: " + result.Item2 + " 3: " + result.Item3);
 
-		[TestMethod]
-		public void PrepareResponse_CheckValues()
-		{
-			var httpContext = new DefaultHttpContext();
-			var context = new StaticFileResponseContext(httpContext,
-				new NotFoundFileInfo("test"));
-			// Act
-			Startup.PrepareResponse(context);
-			// Assert
-			Assert.IsNotNull(context.Context.Response.Headers.Expires);
-			Assert.AreEqual("public, max-age=31536000",
-				context.Context.Response.Headers.CacheControl.ToString());
-		}
+		Assert.IsTrue(result.Item1);
+		Assert.IsTrue(result.Item2);
+		Assert.IsFalse(result.Item3);
+	}
+
+	[TestMethod]
+	public void PrepareResponse_CheckValues()
+	{
+		var httpContext = new DefaultHttpContext();
+		var context = new StaticFileResponseContext(httpContext,
+			new NotFoundFileInfo("test"));
+		// Act
+		Startup.PrepareResponse(context);
+		// Assert
+		Assert.IsNotNull(context.Context.Response.Headers.Expires);
+		Assert.AreEqual("public, max-age=31536000",
+			context.Context.Response.Headers.CacheControl.ToString());
 	}
 }

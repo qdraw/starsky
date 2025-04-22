@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 
 namespace starskytest.FakeMocks;
 
-public class FakeWebSocket : WebSocket
+public class FakeWebSocket(int? failOnCount = null) : WebSocket
 {
 	public List<string> FakeSendItems { get; set; } = new();
 
 	public List<WebSocketCloseStatus> FakeCloseOutputAsync { get; set; } = new();
 
 	private int FakeReceiveAsyncCounter { get; set; }
+	private int FakeSendAsyncCounter { get; set; }
 
 	public string ReceiveAsyncMessage { get; set; } = "message";
 
@@ -77,9 +78,15 @@ public class FakeWebSocket : WebSocket
 #pragma warning restore 1998
 		CancellationToken cancellationToken)
 	{
+		FakeSendAsyncCounter++;
 		if ( buffer is [63, 63] ) // search for 💥 and inject other exception
 		{
 			throw new NotSupportedException("Invalid message 💥");
+		}
+
+		if ( failOnCount == FakeSendAsyncCounter )
+		{
+			throw new WebSocketException(WebSocketError.InvalidState);
 		}
 
 		FakeSendItems.Add(Encoding.Default.GetString(buffer));

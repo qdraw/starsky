@@ -4,19 +4,17 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.realtime.Helpers;
 
-public sealed class WebSocketConnection
+public sealed class WebSocketConnection(
+	WebSocket webSocket,
+	IWebLogger logger,
+	int receivePayloadBufferSize = 4096)
 {
-	private readonly int _receivePayloadBufferSize;
-	private readonly WebSocket _webSocket;
-
-	public WebSocketConnection(WebSocket webSocket, int receivePayloadBufferSize = 4096)
-	{
-		_webSocket = webSocket ?? throw new ArgumentNullException(nameof(webSocket));
-		_receivePayloadBufferSize = receivePayloadBufferSize;
-	}
+	private readonly WebSocket _webSocket =
+		webSocket ?? throw new ArgumentNullException(nameof(webSocket));
 
 	public Guid Id { get; } = Guid.NewGuid();
 
@@ -28,22 +26,42 @@ public sealed class WebSocketConnection
 
 	public event EventHandler? NewConnection;
 
+	private static byte[] EncodeToByteArray(string message)
+	{
+		if ( string.IsNullOrWhiteSpace(message) )
+		{
+			throw new WebSocketException("[WebSocketConnection] no content in message");
+		}
+
+		return Encoding.ASCII.GetBytes(message);
+	}
+
 	/// <summary>
 	///     Need to check for WebSocketException
 	/// </summary>
 	/// <param name="message">message</param>
 	/// <param name="cancellationToken">cancel token</param>
 	/// <returns>Task</returns>
-	public Task SendAsync(string message, CancellationToken cancellationToken)
+	public async Task SendAsync(string message, CancellationToken cancellationToken)
 	{
-		if ( string.IsNullOrWhiteSpace(message) )
+		try
 		{
-			throw new WebSocketException("no content in message");
+			await _webSocket.SendAsync(new ArraySegment<byte>(EncodeToByteArray(message)),
+				WebSocketMessageType.Text,
+				true,
+				cancellationToken);
 		}
+		catch ( Exception exception )
+		{
+			if ( exception is WebSocketException )
+			{
+				logger.LogInformation(exception,
+					"[WebSocketConnection.SendAsync] Catch-ed WebSocketException");
+				return;
+			}
 
-		var bytes = Encoding.ASCII.GetBytes(message);
-		return _webSocket.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Text, true,
-			cancellationToken);
+			logger.LogError(exception, "[WebSocketConnection.SendAsync] Catch-ed Exception");
+		}
 	}
 
 	private async Task<WebSocketCloseStatus?> GetMessage(
@@ -95,7 +113,7 @@ public sealed class WebSocketConnection
 		try
 		{
 			NewConnection?.Invoke(this, EventArgs.Empty);
-			var receivePayloadBuffer = new byte[_receivePayloadBufferSize];
+			var receivePayloadBuffer = new byte[receivePayloadBufferSize];
 			var webSocketReceiveResult =
 				await _webSocket.ReceiveAsync(new ArraySegment<byte>(receivePayloadBuffer),
 					CancellationToken.None);
@@ -108,13 +126,14 @@ public sealed class WebSocketConnection
 		                                                       WebSocketError
 			                                                       .ConnectionClosedPrematurely )
 		{
-			Console.WriteLine(
-				"connection ConnectionClosedPrematurely (exception is catch-ed) ");
+			logger.LogInformation(
+				"[WebSocketConnection.Receive] ConnectionClosedPrematurely (exception is catch-ed) ");
 		}
 		catch ( OperationCanceledException )
 		{
 			// Happens when the application closes
-			Console.WriteLine("connection OperationCanceledException (exception is catch-ed)");
+			logger.LogInformation(
+				"[WebSocketConnection.Receive] OperationCanceledException (exception is catch-ed)");
 		}
 	}
 

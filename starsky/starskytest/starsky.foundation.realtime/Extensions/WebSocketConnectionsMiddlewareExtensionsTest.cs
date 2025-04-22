@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.realtime.Extentions;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.realtime.Model;
@@ -22,6 +23,9 @@ public sealed class WebSocketConnectionsMiddlewareExtensionsTest
 			.UseUrls("http://localhost:9824")
 			.ConfigureServices(services =>
 			{
+				services
+					.AddSingleton<IWebLogger,
+						FakeIWebLogger>();
 				services
 					.AddSingleton<IWebSocketConnectionsService,
 						FakeIWebSocketConnectionsService>();

@@ -17,9 +17,10 @@ public sealed class WebSocketConnectionsServiceTest
 	[TestMethod]
 	public async Task SendToAllAsync_success()
 	{
-		var service = new WebSocketConnectionsService(new FakeIWebLogger());
+		var logger = new FakeIWebLogger();
+		var service = new WebSocketConnectionsService();
 		var fakeSocket = new FakeWebSocket();
-		service.AddConnection(new WebSocketConnection(fakeSocket));
+		service.AddConnection(new WebSocketConnection(fakeSocket, logger));
 
 		await service.SendToAllAsync("test", CancellationToken.None);
 
@@ -30,21 +31,41 @@ public sealed class WebSocketConnectionsServiceTest
 	public async Task SendToAllAsync_WebsocketExceptionDueNoContent()
 	{
 		var logger = new FakeIWebLogger();
-		var service = new WebSocketConnectionsService(logger);
+		var service = new WebSocketConnectionsService();
 		var fakeSocket = new FakeWebSocket();
-		service.AddConnection(new WebSocketConnection(fakeSocket));
+		service.AddConnection(new WebSocketConnection(fakeSocket, logger));
 
 		await service.SendToAllAsync(null!, CancellationToken.None);
 		Assert.AreEqual(1, logger.TrackedInformation.Count);
 	}
 
 	[TestMethod]
+	public async Task SendToAllAsync_one_of_two_Fail()
+	{
+		var logger = new FakeIWebLogger();
+		var service = new WebSocketConnectionsService();
+		var fakeSocket = new FakeWebSocket(1); // mock one fail
+
+		service.AddConnection(new WebSocketConnection(fakeSocket, logger));
+		service.AddConnection(new WebSocketConnection(fakeSocket, logger));
+
+		await service.SendToAllAsync("test", CancellationToken.None);
+
+		// One of Two fails
+		Assert.AreEqual(1, fakeSocket.FakeSendItems.Count);
+		Assert.IsTrue(fakeSocket.FakeSendItems.LastOrDefault()?.StartsWith("test"));
+		Assert.AreEqual(1, logger.TrackedInformation.Count);
+		Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2
+			?.Contains("WebSocketException"));
+	}
+
+	[TestMethod]
 	public async Task SendToAllAsync_GenericException()
 	{
 		var logger = new FakeIWebLogger();
-		var service = new WebSocketConnectionsService(logger);
+		var service = new WebSocketConnectionsService();
 		var fakeSocket = new FakeWebSocket();
-		service.AddConnection(new WebSocketConnection(fakeSocket));
+		service.AddConnection(new WebSocketConnection(fakeSocket, logger));
 
 		const string message = "💥"; // magic string to trigger exception
 		await service.SendToAllAsync(message, CancellationToken.None);
@@ -54,9 +75,10 @@ public sealed class WebSocketConnectionsServiceTest
 	[TestMethod]
 	public async Task SendToAllAsync_Model_success()
 	{
-		var service = new WebSocketConnectionsService(new FakeIWebLogger());
+		var service = new WebSocketConnectionsService();
 		var fakeSocket = new FakeWebSocket();
-		service.AddConnection(new WebSocketConnection(fakeSocket));
+		var logger = new FakeIWebLogger();
+		service.AddConnection(new WebSocketConnection(fakeSocket, logger));
 
 		await service.SendToAllAsync(new ApiNotificationResponseModel<string>("test"),
 			CancellationToken.None);

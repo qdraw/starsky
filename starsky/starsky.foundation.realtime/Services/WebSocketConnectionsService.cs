@@ -2,12 +2,10 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.WebSockets;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
-using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Helpers;
@@ -19,12 +17,6 @@ namespace starsky.foundation.realtime.Services;
 public sealed class WebSocketConnectionsService : IWebSocketConnectionsService
 {
 	private readonly ConcurrentDictionary<Guid, WebSocketConnection> _connections = new();
-	private readonly IWebLogger _logger;
-
-	public WebSocketConnectionsService(IWebLogger logger)
-	{
-		_logger = logger;
-	}
 
 	public void AddConnection(WebSocketConnection connection)
 	{
@@ -38,25 +30,10 @@ public sealed class WebSocketConnectionsService : IWebSocketConnectionsService
 
 	public async Task SendToAllAsync(string message, CancellationToken cancellationToken)
 	{
-		try
-		{
-			var connectionsTasks = new List<Task>();
-			connectionsTasks.AddRange(_connections.Values.Select(connection =>
-				connection.SendAsync(message, cancellationToken)));
-			await Task.WhenAll(connectionsTasks);
-		}
-		catch ( Exception exception )
-		{
-			if ( exception is WebSocketException )
-			{
-				_logger.LogInformation(exception, "[SendToAllAsync] WebSocketException" +
-				                                  " during Task.WhenAll for WebSocket sends");
-				return;
-			}
-
-			_logger.LogError(exception, "[SendToAllAsync] Exception during Task.WhenAll " +
-			                            "for WebSocket sends");
-		}
+		var connectionsTasks = new List<Task>();
+		connectionsTasks.AddRange(_connections.Values.Select(connection =>
+			connection.SendAsync(message, cancellationToken)));
+		await Task.WhenAll(connectionsTasks);
 	}
 
 	public Task SendToAllAsync<T>(ApiNotificationResponseModel<T> message,
