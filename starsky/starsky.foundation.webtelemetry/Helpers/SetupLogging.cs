@@ -15,8 +15,15 @@ namespace starsky.foundation.webtelemetry.Helpers;
 public static class SetupLogging
 {
 	private const string HostNameKey = "host.name";
+
+	private const string DeploymentEnvironmentName = "deployment.environment";
+
 	private static readonly KeyValuePair<string, object> HostNameKeyValue = new(HostNameKey,
 		Environment.MachineName);
+
+	private static readonly KeyValuePair<string, object> DeploymentEnvironmentKeyValue = new(
+		DeploymentEnvironmentName,
+		Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "production");
 
 	[SuppressMessage("Usage", "S4792:Make sure that this logger's configuration is safe.")]
 	public static void AddTelemetryLogging(this IServiceCollection services,
@@ -29,21 +36,19 @@ public static class SetupLogging
 
 			if ( !string.IsNullOrEmpty(appSettings.OpenTelemetry?.LogsEndpoint) )
 			{
-				logging.AddOpenTelemetry(
-					builder =>
-						builder.AddOtlpExporter(
-								options =>
-								{
-									options.Protocol = OtlpExportProtocol.HttpProtobuf;
-									options.Headers = appSettings.OpenTelemetry.GetLogsHeader();
-									options.Endpoint =
-										new Uri(appSettings.OpenTelemetry.LogsEndpoint);
-								})
-							.SetResourceBuilder(
-								ResourceBuilder.CreateDefault()
-									.AddService(appSettings.OpenTelemetry.GetServiceName())
-									.AddAttributes([HostNameKeyValue])
-							)
+				logging.AddOpenTelemetry(builder =>
+					builder.AddOtlpExporter(options =>
+						{
+							options.Protocol = OtlpExportProtocol.HttpProtobuf;
+							options.Headers = appSettings.OpenTelemetry.GetLogsHeader();
+							options.Endpoint =
+								new Uri(appSettings.OpenTelemetry.LogsEndpoint);
+						})
+						.SetResourceBuilder(
+							ResourceBuilder.CreateDefault()
+								.AddService(appSettings.OpenTelemetry.GetServiceName())
+								.AddAttributes([HostNameKeyValue, DeploymentEnvironmentKeyValue])
+						)
 				);
 			}
 		});

@@ -19,7 +19,7 @@ namespace starsky.foundation.webtelemetry.Extensions;
 public static class OpenTelemetryExtension
 {
 	/// <summary>
-	/// Add Metrics and Monitoring for OpenTelemetry
+	///     Add Metrics and Monitoring for OpenTelemetry
 	/// </summary>
 	/// <param name="services">collection service</param>
 	/// <param name="appSettings">to use for OpenTelemetry keys and info</param>
@@ -42,7 +42,7 @@ public static class OpenTelemetryExtension
 			{
 				{
 					"deployment.environment",
-					Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? string.Empty
+					Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "production"
 				},
 				{ "service.name", appSettings.OpenTelemetry.GetServiceName() },
 				{ "service.namespace", appSettings.OpenTelemetry.GetServiceName() },
@@ -63,8 +63,7 @@ public static class OpenTelemetryExtension
 					p.SetDbStatementForText = false;
 #endif
 				})
-				.AddOtlpExporter(
-					o =>
+				.AddOtlpExporter(o =>
 					{
 						o.Endpoint =
 							new Uri(appSettings.OpenTelemetry.TracesEndpoint);
@@ -79,7 +78,7 @@ public static class OpenTelemetryExtension
 		}
 
 		if ( string.IsNullOrWhiteSpace(
-				appSettings.OpenTelemetry.MetricsEndpoint) )
+			    appSettings.OpenTelemetry.MetricsEndpoint) )
 		{
 			return;
 		}
@@ -91,14 +90,13 @@ public static class OpenTelemetryExtension
 				.AddRuntimeInstrumentation()
 				.AddMeter(ActivitySourceMeter.SyncNameSpace)
 				.AddMeter(ActivitySourceMeter.WorkerNameSpace)
-				.AddOtlpExporter(
-					o =>
-					{
-						o.ExportProcessorType = ExportProcessorType.Batch;
-						o.Endpoint = new Uri(appSettings.OpenTelemetry.MetricsEndpoint);
-						o.Protocol = OtlpExportProtocol.HttpProtobuf;
-						o.Headers = appSettings.OpenTelemetry.GetMetricsHeader();
-					})
+				.AddOtlpExporter(o =>
+				{
+					o.ExportProcessorType = ExportProcessorType.Batch;
+					o.Endpoint = new Uri(appSettings.OpenTelemetry.MetricsEndpoint);
+					o.Protocol = OtlpExportProtocol.HttpProtobuf;
+					o.Headers = appSettings.OpenTelemetry.GetMetricsHeader();
+				})
 				.SetResourceBuilder(
 					ResourceBuilder.CreateDefault()
 						.AddService(appSettings.OpenTelemetry.GetServiceName())
@@ -109,16 +107,16 @@ public static class OpenTelemetryExtension
 	internal static bool FilterPath(HttpContext context)
 	{
 		if ( ( context.Request.Path.Value?.EndsWith("/realtime") == true ||
-			   context.Request.Path.Value?.EndsWith("/api/health") == true ||
-			   context.Request.Path.Value?.EndsWith("/api/health/details") == true ||
-			   context.Request.Path.Value?.EndsWith("/api/open-telemetry/trace") == true )
-			 && context.Response.StatusCode == 200 )
+		       context.Request.Path.Value?.EndsWith("/api/health") == true ||
+		       context.Request.Path.Value?.EndsWith("/api/health/details") == true ||
+		       context.Request.Path.Value?.EndsWith("/api/open-telemetry/trace") == true )
+		     && context.Response.StatusCode == 200 )
 		{
 			return false;
 		}
 
 		if ( context.Request.Path.Value?.EndsWith("/api/index") == true
-			 && context.Response.StatusCode == 401 )
+		     && context.Response.StatusCode == 401 )
 		{
 			return false;
 		}
