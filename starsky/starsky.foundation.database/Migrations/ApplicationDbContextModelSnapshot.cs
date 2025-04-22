@@ -350,6 +350,10 @@ namespace starsky.foundation.database.Migrations
 
                     b.HasIndex("FilePath");
 
+                    b.HasIndex("ImageFormat");
+
+                    b.HasIndex("Tags");
+
                     b.HasIndex("FileName", "ParentDirectory");
 
                     b.HasIndex("ParentDirectory", "FileName");
