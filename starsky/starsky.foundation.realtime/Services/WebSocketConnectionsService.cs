@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Net.WebSockets;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,53 +12,50 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Helpers;
 using starsky.foundation.realtime.Interfaces;
 
-namespace starsky.foundation.realtime.Services
+namespace starsky.foundation.realtime.Services;
+
+[Service(typeof(IWebSocketConnectionsService), InjectionLifetime = InjectionLifetime.Singleton)]
+public sealed class WebSocketConnectionsService : IWebSocketConnectionsService
 {
-	[Service(typeof(IWebSocketConnectionsService), InjectionLifetime = InjectionLifetime.Singleton)]
-	public sealed class WebSocketConnectionsService : IWebSocketConnectionsService
+	private readonly ConcurrentDictionary<Guid, WebSocketConnection> _connections = new();
+	private readonly IWebLogger _logger;
+
+	public WebSocketConnectionsService(IWebLogger logger)
 	{
-		public WebSocketConnectionsService(IWebLogger logger)
+		_logger = logger;
+	}
+
+	public void AddConnection(WebSocketConnection connection)
+	{
+		_connections.TryAdd(connection.Id, connection);
+	}
+
+	public void RemoveConnection(Guid connectionId)
+	{
+		_connections.TryRemove(connectionId, out _);
+	}
+
+	public async Task SendToAllAsync(string message, CancellationToken cancellationToken)
+	{
+		try
 		{
-			_logger = logger;
+			var connectionsTasks = new List<Task>();
+			connectionsTasks.AddRange(_connections.Values.Select(connection =>
+				connection.SendAsync(message, cancellationToken)));
+			await Task.WhenAll(connectionsTasks);
 		}
-
-		private readonly ConcurrentDictionary<Guid, WebSocketConnection> _connections = new ConcurrentDictionary<Guid, WebSocketConnection>();
-		private readonly IWebLogger _logger;
-
-		public void AddConnection(WebSocketConnection connection)
+		catch ( Exception ex )
 		{
-			_connections.TryAdd(connection.Id, connection);
+			_logger.LogInformation(ex, "[SendToAllAsync] Exception during Task.WhenAll " +
+			                     "for WebSocket sends");
 		}
+	}
 
-		public void RemoveConnection(Guid connectionId)
-		{
-			_connections.TryRemove(connectionId, out _);
-		}
-
-		public Task SendToAllAsync(string message, CancellationToken cancellationToken)
-		{
-			List<Task> connectionsTasks = new List<Task>();
-			foreach ( WebSocketConnection connection in _connections.Values )
-			{
-				try
-				{
-					connectionsTasks.Add(connection.SendAsync(message, cancellationToken));
-				}
-				catch ( WebSocketException exception )
-				{
-					// if the client is closing the socket the wrong way
-					_logger.LogInformation(exception, "catch-ed exception socket");
-				}
-			}
-
-			return Task.WhenAll(connectionsTasks);
-		}
-
-		public Task SendToAllAsync<T>(ApiNotificationResponseModel<T> message, CancellationToken cancellationToken)
-		{
-			var stringMessage = JsonSerializer.Serialize(message,
-				DefaultJsonSerializer.CamelCaseNoEnters);
-			return SendToAllAsync(stringMessage, cancellationToken);
-		}
+	public Task SendToAllAsync<T>(ApiNotificationResponseModel<T> message,
+		CancellationToken cancellationToken)
+	{
+		var stringMessage = JsonSerializer.Serialize(message,
+			DefaultJsonSerializer.CamelCaseNoEnters);
+		return SendToAllAsync(stringMessage, cancellationToken);
 	}
 }
