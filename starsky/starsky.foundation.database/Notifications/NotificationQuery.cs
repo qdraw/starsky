@@ -72,6 +72,7 @@ public sealed class NotificationQuery : INotificationQuery
 	/// <returns>item with id</returns>
 	public async Task<NotificationItem> AddNotification(string content)
 	{
+		// should be lower than MEDIUMTEXT: 5_000_000 is 5MB
 		const int maxContentLength = 5_000_000;
 
 		var item = new NotificationItem
