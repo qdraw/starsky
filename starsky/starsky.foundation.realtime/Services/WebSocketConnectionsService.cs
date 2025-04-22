@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -44,10 +45,17 @@ public sealed class WebSocketConnectionsService : IWebSocketConnectionsService
 				connection.SendAsync(message, cancellationToken)));
 			await Task.WhenAll(connectionsTasks);
 		}
-		catch ( Exception ex )
+		catch ( Exception exception )
 		{
-			_logger.LogInformation(ex, "[SendToAllAsync] Exception during Task.WhenAll " +
-			                     "for WebSocket sends");
+			if ( exception is WebSocketException )
+			{
+				_logger.LogInformation(exception, "[SendToAllAsync] WebSocketException" +
+				                                  " during Task.WhenAll for WebSocket sends");
+				return;
+			}
+
+			_logger.LogError(exception, "[SendToAllAsync] Exception during Task.WhenAll " +
+			                            "for WebSocket sends");
 		}
 	}
 

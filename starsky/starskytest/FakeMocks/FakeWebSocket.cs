@@ -77,6 +77,11 @@ public class FakeWebSocket : WebSocket
 #pragma warning restore 1998
 		CancellationToken cancellationToken)
 	{
+		if ( buffer is [63, 63] ) // search for 💥 and inject other exception
+		{
+			throw new NotSupportedException("Invalid message 💥");
+		}
+
 		FakeSendItems.Add(Encoding.Default.GetString(buffer));
 	}
 }
