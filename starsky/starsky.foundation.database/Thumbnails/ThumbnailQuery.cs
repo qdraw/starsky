@@ -338,6 +338,14 @@ public class ThumbnailQuery : IThumbnailQuery
 		return true;
 	}
 
+
+	private static List<string> CreateHashesList(string beforeFileHash, string newFileHash)
+	{
+		return new List<string> { beforeFileHash, newFileHash }
+			.Where(hash => !string.IsNullOrWhiteSpace(hash))
+			.ToList();
+	}
+	
 	private async Task<bool> RenameInternalAsync(ApplicationDbContext dbContext,
 		string? beforeFileHash, string? newFileHash)
 	{
@@ -348,8 +356,10 @@ public class ThumbnailQuery : IThumbnailQuery
 			return false;
 		}
 
-		var beforeOrNewItems = await dbContext.Thumbnails.Where(p =>
-			p.FileHash == beforeFileHash || p.FileHash == newFileHash).ToListAsync();
+		var hashes = CreateHashesList(beforeFileHash, newFileHash);
+		var beforeOrNewItems = await dbContext.Thumbnails
+			.Where(p => hashes.Contains(p.FileHash))
+			.ToListAsync();
 
 		var beforeItem = beforeOrNewItems.Find(p => p.FileHash == beforeFileHash);
 		var newItem = beforeOrNewItems.Find(p => p.FileHash == newFileHash);
