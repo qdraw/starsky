@@ -84,7 +84,7 @@ _We assume that you run on a 64 bits Windows version_
 _When running bash_
 
 ```bash
-../starsky/build.sh --Runtime=win-x64
+../starsky/build.sh --Runtime win-x64
 ```
 
 For Windows there is a folder created: `starsky/win-x64` and this is copied to the desktop application
@@ -96,7 +96,7 @@ _We assume that you run it on an Intel powered Mac_
 _When running bash_
 
 ```bash
-../starsky/build.sh --Runtime=osx-x64
+../starsky/build.sh --Runtime osx-x64
 ```
 
 For Mac OS there is a folder created: `starsky/osx-x64` and this is copied to the desktop application

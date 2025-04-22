@@ -5,7 +5,7 @@
         <!-- SonarQube needs this -->
         <ProjectGuid>{3b84ed27-fef0-4c2b-8cb5-04b7fdb613f8}</ProjectGuid>
         <DebugType>Full</DebugType>
-        <Version>0.6.6</Version>
+        <Version>0.6.7</Version>
         <RootNamespace>starsky.foundation.webtelemetry</RootNamespace>
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
@@ -20,7 +20,7 @@
 
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.14" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.15" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1" />
         <!--      instead of : Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0-->
@@ -32,8 +32,8 @@
         <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.9.0"/>
         <PackageReference Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" Version="1.0.0-beta.11" />
         <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.9.0" />
-        <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="9.0.0" />
-        <PackageReference Include="System.Text.Json" Version="9.0.0" />
+        <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="9.0.4" />
+        <PackageReference Include="System.Text.Json" Version="9.0.4" />
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

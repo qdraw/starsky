@@ -16,7 +16,7 @@ dotnet tool update --global dotnet-ef
 
 ```bash
 # https://www.nuget.org/packages/dotnet-ef#versions-body-tab
-dotnet tool update --global dotnet-ef --version 8.0.1
+dotnet tool update --global dotnet-ef --version 8.0.15
 ```
 
 ## Set constance for EF Core (optional)

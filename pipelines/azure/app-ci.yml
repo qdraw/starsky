@@ -56,7 +56,7 @@ stages:
     - template: /pipelines/azure/steps/build_clientapp.yml
       parameters:
         jest: false
-        runtimeArg: '--runtime="win-x64,linux-x64,osx-x64,osx-arm64"'
+        runtimeArg: '--runtime "win-x64,linux-x64,osx-x64,osx-arm64"'
         npmConfigCache: $(npm_config_cache)
 
     - template: /pipelines/azure/steps/build_server.yml

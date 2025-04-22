@@ -37,7 +37,7 @@ to compile the application for development
 git clone "https://github.com/qdraw/starsky.git"
 ```
 
-2. Get the `dotnet` 8.0.406 SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download or https://versionsof.net/
+2. Get the `dotnet` 8.0.407 SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download or https://versionsof.net/
 3. Get a recent version of nodejs (20.x or newer)
 
 4. Make a build of all the projects and run the tests
@@ -124,13 +124,13 @@ git clone "https://github.com/qdraw/starsky.git"
 _Using bash_
 
 ```sh
-./build.sh --runtime="linux-arm"
+./build.sh --runtime "linux-arm"
 ```
 
 _Using Powershell_
 
 ```powershell
-powershell -File build.ps1 -ScriptArgs '-runtime="linux-arm"'
+powershell -File build.ps1 -ScriptArgs '-runtime "linux-arm"'
 ```
 
 4.  Copy contents from the `linux-arm` folder to your Raspberry Pi
@@ -260,13 +260,13 @@ The Nuke script (build.sh/build.ps1) provide options to build for specific runti
 _Using bash_
 
 ```sh
-./build.sh --runtime="osx-x64,osx-arm64"
+./build.sh --runtime "osx-x64,osx-arm64"
 ```
 
 _Using powershell_
 
 ```powershell
-powershell -File build.ps1 -ScriptArgs '-runtime="osx-x64,osx-arm64"'
+powershell -File build.ps1 -ScriptArgs '-runtime "osx-x64,osx-arm64"'
 ```
 
 ### To build server app for 64 bits Windows
@@ -274,7 +274,7 @@ powershell -File build.ps1 -ScriptArgs '-runtime="osx-x64,osx-arm64"'
 _Using bash_
 
 ```sh
-./build.sh --runtime="win-x64"
+./build.sh --runtime "win-x64"
 ```
 
 _Using powershell_
