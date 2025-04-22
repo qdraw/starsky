@@ -2,7 +2,6 @@ using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using starsky.foundation.platform.Enums;
-using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Thumbnails;
 
 namespace starsky.foundation.storage.Storage;
@@ -126,13 +125,14 @@ public static partial class ThumbnailNameHelper
 		}
 	}
 
+	[GeneratedRegex("@\\d+", RegexOptions.None, 1000)]
+	private static partial Regex AtDigitRegex();
+
 	public static string RemoveSuffix(string? thumbnailOutputHash)
 	{
 		return thumbnailOutputHash == null
 			? string.Empty
-			: FilenamesHelper.GetFileNameWithoutExtension(Regex.Replace(thumbnailOutputHash,
-				"@\\d+",
-				string.Empty, RegexOptions.None, TimeSpan.FromMilliseconds(100)));
+			: AtDigitRegex().Replace(thumbnailOutputHash, string.Empty);
 	}
 
 	/// <summary>
