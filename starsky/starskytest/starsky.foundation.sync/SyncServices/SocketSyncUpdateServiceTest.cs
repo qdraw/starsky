@@ -19,7 +19,7 @@ public class SocketSyncUpdateServiceTest
 		var service =
 			new SocketSyncUpdateService(socket, new FakeINotificationQuery(), new FakeIWebLogger());
 
-		await service.PushToSockets(new List<FileIndexItem> { new FileIndexItem("/test.jpg") });
+		await service.PushToSockets(new List<FileIndexItem> { new("/test.jpg") });
 
 		Assert.IsTrue(socket.FakeSendToAllAsync[0].Contains("/test.jpg"));
 	}
@@ -32,19 +32,16 @@ public class SocketSyncUpdateServiceTest
 		var service =
 			new SocketSyncUpdateService(socket, new FakeINotificationQuery(), new FakeIWebLogger());
 
-		await service.PushToSockets(new List<FileIndexItem> { new FileIndexItem("/test.jpg") });
+		await service.PushToSockets(new List<FileIndexItem> { new("/test.jpg") });
 
-		Assert.IsFalse(socket.FakeSendToAllAsync.Count != 0);
+		Assert.AreEqual(0, socket.FakeSendToAllAsync.Count);
 	}
 
 	[TestMethod]
 	public void FilterBefore_OkShouldPass()
 	{
 		var result = SocketSyncUpdateService.FilterBefore(
-			new List<FileIndexItem>
-			{
-				new FileIndexItem("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }
-			});
+			new List<FileIndexItem> { new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok } });
 
 		Assert.AreEqual(1, result.Count);
 		Assert.AreEqual("/test.jpg", result[0].FilePath);
@@ -56,10 +53,7 @@ public class SocketSyncUpdateServiceTest
 		var result = SocketSyncUpdateService.FilterBefore(
 			new List<FileIndexItem>
 			{
-				new FileIndexItem("/test.jpg")
-				{
-					Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
-				}
+				new("/test.jpg") { Status = FileIndexItem.ExifStatus.NotFoundSourceMissing }
 			});
 
 		Assert.AreEqual(1, result.Count);
@@ -70,10 +64,7 @@ public class SocketSyncUpdateServiceTest
 	public void FilterBefore_ShouldIgnoreHome()
 	{
 		var result = SocketSyncUpdateService.FilterBefore(
-			new List<FileIndexItem>
-			{
-				new FileIndexItem("/") { Status = FileIndexItem.ExifStatus.Ok }
-			});
+			new List<FileIndexItem> { new("/") { Status = FileIndexItem.ExifStatus.Ok } });
 
 		Assert.AreEqual(0, result.Count);
 	}

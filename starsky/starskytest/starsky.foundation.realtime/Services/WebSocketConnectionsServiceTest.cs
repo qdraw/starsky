@@ -9,50 +9,86 @@ using starsky.foundation.realtime.Helpers;
 using starsky.foundation.realtime.Services;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.realtime.Services
+namespace starskytest.starsky.foundation.realtime.Services;
+
+[TestClass]
+public sealed class WebSocketConnectionsServiceTest
 {
-	[TestClass]
-	public sealed class WebSocketConnectionsServiceTest 
+	[TestMethod]
+	public async Task SendToAllAsync_success()
 	{
-		[TestMethod]
-		public async Task SendToAllAsync_success()
-		{
-			var service = new WebSocketConnectionsService(new FakeIWebLogger());
-			var fakeSocket = new FakeWebSocket();
-			service.AddConnection(new WebSocketConnection(fakeSocket));
+		var logger = new FakeIWebLogger();
+		var service = new WebSocketConnectionsService();
+		var fakeSocket = new FakeWebSocket();
+		service.AddConnection(new WebSocketConnection(fakeSocket, logger));
 
-			await service.SendToAllAsync("test", CancellationToken.None);
-			
-			Assert.IsTrue(fakeSocket.FakeSendItems.LastOrDefault()?.StartsWith("test"));
-		}
-		
-		[TestMethod]
-		public async Task SendToAllAsync_ExceptionDueNoContent()
-		{
-			var logger = new FakeIWebLogger();
-			var service = new WebSocketConnectionsService(logger);
-			var fakeSocket = new FakeWebSocket();
-			service.AddConnection(new WebSocketConnection(fakeSocket));
+		await service.SendToAllAsync("test", CancellationToken.None);
 
-			await service.SendToAllAsync(null!, CancellationToken.None);
-			Assert.AreEqual(1,logger.TrackedInformation.Count);
-		}
-		
-		[TestMethod]
-		public async Task SendToAllAsync_Model_success()
-		{
-			var service = new WebSocketConnectionsService(new FakeIWebLogger());
-			var fakeSocket = new FakeWebSocket();
-			service.AddConnection(new WebSocketConnection(fakeSocket));
+		Assert.IsTrue(fakeSocket.FakeSendItems.LastOrDefault()?.StartsWith("test"));
+	}
 
-			await service.SendToAllAsync(new ApiNotificationResponseModel<string>("test"), CancellationToken.None);
+	[TestMethod]
+	public async Task SendToAllAsync_WebsocketExceptionDueNoContent()
+	{
+		var logger = new FakeIWebLogger();
+		var service = new WebSocketConnectionsService();
+		var fakeSocket = new FakeWebSocket();
+		service.AddConnection(new WebSocketConnection(fakeSocket, logger));
 
-			var json = JsonSerializer.Serialize(
-				new ApiNotificationResponseModel<string>("test"),
-				DefaultJsonSerializer.CamelCaseNoEnters);
-			Assert.AreEqual(json,fakeSocket.FakeSendItems.LastOrDefault());
+		await service.SendToAllAsync(null!, CancellationToken.None);
+		Assert.AreEqual(1, logger.TrackedInformation.Count);
+	}
 
-			Assert.AreEqual("{\"data\":\"test\",\"type\":\"Unknown\"}",fakeSocket.FakeSendItems.LastOrDefault());
-		}
+	[TestMethod]
+	public async Task SendToAllAsync_one_of_two_Fail()
+	{
+		var logger = new FakeIWebLogger();
+		var service = new WebSocketConnectionsService();
+		var fakeSocket = new FakeWebSocket(1); // mock one fail
+
+		service.AddConnection(new WebSocketConnection(fakeSocket, logger));
+		service.AddConnection(new WebSocketConnection(fakeSocket, logger));
+
+		await service.SendToAllAsync("test", CancellationToken.None);
+
+		// One of Two fails
+		Assert.AreEqual(1, fakeSocket.FakeSendItems.Count);
+		Assert.IsTrue(fakeSocket.FakeSendItems.LastOrDefault()?.StartsWith("test"));
+		Assert.AreEqual(1, logger.TrackedInformation.Count);
+		Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2
+			?.Contains("WebSocketException"));
+	}
+
+	[TestMethod]
+	public async Task SendToAllAsync_GenericException()
+	{
+		var logger = new FakeIWebLogger();
+		var service = new WebSocketConnectionsService();
+		var fakeSocket = new FakeWebSocket();
+		service.AddConnection(new WebSocketConnection(fakeSocket, logger));
+
+		const string message = "💥"; // magic string to trigger exception
+		await service.SendToAllAsync(message, CancellationToken.None);
+		Assert.AreEqual(1, logger.TrackedExceptions.Count);
+	}
+
+	[TestMethod]
+	public async Task SendToAllAsync_Model_success()
+	{
+		var service = new WebSocketConnectionsService();
+		var fakeSocket = new FakeWebSocket();
+		var logger = new FakeIWebLogger();
+		service.AddConnection(new WebSocketConnection(fakeSocket, logger));
+
+		await service.SendToAllAsync(new ApiNotificationResponseModel<string>("test"),
+			CancellationToken.None);
+
+		var json = JsonSerializer.Serialize(
+			new ApiNotificationResponseModel<string>("test"),
+			DefaultJsonSerializer.CamelCaseNoEnters);
+		Assert.AreEqual(json, fakeSocket.FakeSendItems.LastOrDefault());
+
+		Assert.AreEqual("{\"data\":\"test\",\"type\":\"Unknown\"}",
+			fakeSocket.FakeSendItems.LastOrDefault());
 	}
 }

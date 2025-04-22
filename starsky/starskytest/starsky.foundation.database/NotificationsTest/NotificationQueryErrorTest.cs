@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
@@ -116,7 +117,29 @@ public sealed class NotificationQueryErrorTest
 		Assert.AreEqual(content, result.Content);
 	}
 
-	private sealed class UpdateEntryUpdateConcurrency : IUpdateEntry
+	[TestMethod]
+	public async Task AddNotification_ShouldLogError_WhenInputExceedsMaxLength()
+	{
+		// Arrange
+		var longContent = new string('a', 5_000_001); // Create a string longer than 5,000,000
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(nameof(AddNotification_ShouldLogError_WhenInputExceedsMaxLength))
+			.Options;
+		var fakeLogger = new FakeIWebLogger();
+		var context = new ApplicationDbContext(options);
+
+		var sut = new NotificationQuery(context, fakeLogger, null!);
+
+		// Act
+		var result = await sut.AddNotification(longContent);
+
+		// Assert
+		Assert.IsTrue(fakeLogger.TrackedExceptions.Any(log =>
+			log.Item2?.Contains(NotificationQuery.ErrorMessageContentToLong) == true));
+		Assert.AreEqual(string.Empty, result.Content);
+	}
+
+	private class UpdateEntryUpdateConcurrency : IUpdateEntry
 	{
 		public void SetOriginalValue(IProperty property, object? value)
 		{
@@ -205,7 +228,7 @@ public sealed class NotificationQueryErrorTest
 #pragma warning restore 8618
 	}
 
-	private sealed class DbUpdateExceptionApplicationDbContext(DbContextOptions options)
+	private class DbUpdateExceptionApplicationDbContext(DbContextOptions options)
 		: ApplicationDbContext(options)
 	{
 		public required int MinCount { get; set; }
@@ -228,7 +251,7 @@ public sealed class NotificationQueryErrorTest
 		}
 	}
 
-	private sealed class AppDbContextConcurrencyException : ApplicationDbContext
+	private class AppDbContextConcurrencyException : ApplicationDbContext
 	{
 		public AppDbContextConcurrencyException(DbContextOptions options) : base(options)
 		{

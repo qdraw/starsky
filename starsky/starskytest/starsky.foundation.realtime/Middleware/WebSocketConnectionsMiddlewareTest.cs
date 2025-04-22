@@ -21,7 +21,8 @@ public sealed class WebSocketConnectionsMiddlewareTest
 		// Act & Assert
 		var exception = Assert.ThrowsException<ArgumentNullException>(() =>
 			new WebSocketConnectionsMiddleware(null!,
-				null!, new WebSocketConnectionsService(new FakeIWebLogger())));
+				null!, new WebSocketConnectionsService(),
+				new FakeIWebLogger()));
 
 		// Additional assertion (optional)
 		Assert.AreEqual("options", exception.ParamName);
@@ -34,7 +35,7 @@ public sealed class WebSocketConnectionsMiddlewareTest
 		var exception = Assert.ThrowsException<ArgumentNullException>(() =>
 		{
 			_ = new WebSocketConnectionsMiddleware(null!,
-				new WebSocketConnectionsOptions(), null!);
+				new WebSocketConnectionsOptions(), null!, new FakeIWebLogger());
 		});
 
 		// Additional assertion (optional)
@@ -47,7 +48,7 @@ public sealed class WebSocketConnectionsMiddlewareTest
 		var httpContext = new DefaultHttpContext();
 		var disabledWebSocketsMiddleware = new WebSocketConnectionsMiddleware(null!,
 			new WebSocketConnectionsOptions(),
-			new WebSocketConnectionsService(new FakeIWebLogger()));
+			new WebSocketConnectionsService(), new FakeIWebLogger());
 		await disabledWebSocketsMiddleware.Invoke(httpContext);
 		Assert.AreEqual(400, httpContext.Response.StatusCode);
 	}
@@ -59,7 +60,7 @@ public sealed class WebSocketConnectionsMiddlewareTest
 
 		var disabledWebSocketsMiddleware = new WebSocketConnectionsMiddleware(null!,
 			new WebSocketConnectionsOptions(),
-			new WebSocketConnectionsService(new FakeIWebLogger()));
+			new WebSocketConnectionsService(), new FakeIWebLogger());
 		await disabledWebSocketsMiddleware.Invoke(httpContext);
 
 		var socketManager = httpContext.WebSockets as FakeWebSocketManager;
@@ -81,7 +82,7 @@ public sealed class WebSocketConnectionsMiddlewareTest
 
 		var disabledWebSocketsMiddleware = new WebSocketConnectionsMiddleware(null!,
 			new WebSocketConnectionsOptions(),
-			new WebSocketConnectionsService(new FakeIWebLogger()));
+			new WebSocketConnectionsService(), new FakeIWebLogger());
 		await disabledWebSocketsMiddleware.Invoke(httpContext);
 
 		var socketManager = httpContext.WebSockets as FakeWebSocketManager;
@@ -98,7 +99,7 @@ public sealed class WebSocketConnectionsMiddlewareTest
 
 		var disabledWebSocketsMiddleware = new WebSocketConnectionsMiddleware(null!,
 			new WebSocketConnectionsOptions { AllowedOrigins = new HashSet<string> { "google" } },
-			new WebSocketConnectionsService(new FakeIWebLogger()));
+			new WebSocketConnectionsService(), new FakeIWebLogger());
 		await disabledWebSocketsMiddleware.Invoke(httpContext);
 
 		Assert.AreEqual(403, httpContext.Response.StatusCode);

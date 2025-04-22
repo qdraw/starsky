@@ -6,40 +6,31 @@
 namespace starsky.foundation.database.Migrations
 {
     /// <inheritdoc />
-    public partial class index : Migration
+    public partial class imageformattagsindex : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateIndex(
-                name: "IX_Notifications_DateTimeEpoch",
-                table: "Notifications",
-                column: "DateTimeEpoch");
+                name: "IX_FileIndex_ImageFormat",
+                table: "FileIndex",
+                column: "ImageFormat");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FileIndex_FilePath",
+                name: "IX_FileIndex_Tags",
                 table: "FileIndex",
-                column: "FilePath");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FileIndex_ParentDirectory_FileName",
-                table: "FileIndex",
-                columns: new[] { "ParentDirectory", "FileName" });
+                column: "Tags");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropIndex(
-                name: "IX_Notifications_DateTimeEpoch",
-                table: "Notifications");
-
-            migrationBuilder.DropIndex(
-                name: "IX_FileIndex_FilePath",
+                name: "IX_FileIndex_ImageFormat",
                 table: "FileIndex");
 
             migrationBuilder.DropIndex(
-                name: "IX_FileIndex_ParentDirectory_FileName",
+                name: "IX_FileIndex_Tags",
                 table: "FileIndex");
         }
     }
