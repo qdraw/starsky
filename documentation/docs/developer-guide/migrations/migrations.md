@@ -32,7 +32,7 @@ only when used mysql:
 
 ## Run Migration
 
-> Please think about this issue:
+> Please think about this issue: (do not use __only__ lowercase)
 >
 `warning CS8981: The type name 'limitdataprotectionkeyslength' only contains lower-cased ascii characters.`
 > `Such names may become reserved for the language`
