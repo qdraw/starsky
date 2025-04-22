@@ -21,6 +21,7 @@ namespace starsky.foundation.database.Notifications;
 [Service(typeof(INotificationQuery), InjectionLifetime = InjectionLifetime.Scoped)]
 public sealed class NotificationQuery : INotificationQuery
 {
+	internal const string ErrorMessageContentToLong = "Serialized content is too large";
 	private readonly ApplicationDbContext _context;
 	private readonly IWebLogger _logger;
 	private readonly IServiceScopeFactory _scopeFactory;
@@ -71,14 +72,23 @@ public sealed class NotificationQuery : INotificationQuery
 	/// <returns>item with id</returns>
 	public async Task<NotificationItem> AddNotification(string content)
 	{
+		const int maxContentLength = 5_000_000;
+
 		var item = new NotificationItem
 		{
 			DateTime = DateTime.UtcNow,
 			DateTimeEpoch = DateTimeOffset.Now.ToUnixTimeSeconds(),
-			Content = content
+			Content = content.Length < maxContentLength ? content : ""
 		};
 
-		return await RetryHelper.DoAsync(LocalAddQuery, TimeSpan.FromSeconds(1));
+		if ( content.Length <= maxContentLength )
+		{
+			return await RetryHelper.DoAsync(LocalAddQuery, TimeSpan.FromSeconds(1));
+		}
+
+		_logger.LogError($"[NotificationQuery]: {ErrorMessageContentToLong} " +
+		                 $"{content.Length} - First 100 chars: {content[..100]}");
+		return item;
 
 		async Task<NotificationItem> LocalAdd(ApplicationDbContext context)
 		{
