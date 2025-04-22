@@ -65,6 +65,8 @@ namespace starsky.foundation.database.Data
 				etb.HasIndex(x => new { x.ParentDirectory, x.FileName });
 
 				etb.HasIndex(x => new { x.FilePath });
+				etb.HasIndex(x => new { x.Tags });
+				etb.HasIndex(x => new { x.ImageFormat });
 
 				etb.Property(p => p.Size).HasColumnType("bigint");
 			});
