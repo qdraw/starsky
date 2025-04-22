@@ -45,6 +45,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 - [x] (Added) _Back-end_ Add database indexes for faster reading (PR #2108, PR #2112)
 - [x] (Fixed) _Back-end_ Add content length limit on Notification to avoid db errors (PR #2113)
+- [x] (Fixed) _Back-end_ websocket one error update skips other socket updates (PR #2114)
 
 ## version 0.6.7 - 2024-04-15 {#v0.6.7}
 
