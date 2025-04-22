@@ -125,14 +125,24 @@ public static partial class ThumbnailNameHelper
 		}
 	}
 
-	[GeneratedRegex("@\\d+", RegexOptions.None, 1000)]
-	private static partial Regex AtDigitRegex();
+	/// <summary>
+	/// Replace at and digit with empty string
+	/// @\d+.?\w{0,4}
+	/// </summary>
+	/// <returns></returns>
+	[GeneratedRegex(@"@\d+.?\w{0,4}", RegexOptions.None, 1000)]
+	private static partial Regex AtDigitAndExtensionRegex();
 
+	/// <summary>
+	/// Remove @2000 or @2000.jpg 
+	/// </summary>
+	/// <param name="thumbnailOutputHash">input hash with extension</param>
+	/// <returns>fileHash without suffix and or extension</returns>
 	public static string RemoveSuffix(string? thumbnailOutputHash)
 	{
 		return thumbnailOutputHash == null
 			? string.Empty
-			: AtDigitRegex().Replace(thumbnailOutputHash, string.Empty);
+			: AtDigitAndExtensionRegex().Replace(thumbnailOutputHash, string.Empty);
 	}
 
 	/// <summary>
