@@ -203,6 +203,12 @@ public class SearchService : ISearch
 		model.LastPageNumber = GetLastPageNumber(model.SearchCount);
 
 		model.ElapsedSeconds = stopWatch.Elapsed.TotalSeconds;
+
+		_logger.LogInformation($"[SearchService] Query: \"{model.SearchQuery}\" " +
+		                       $"TotalSeconds: {model.ElapsedSeconds} " +
+		                       $"SearchCount: {model.SearchCount} " +
+		                       $"Last Page: {model.LastPageNumber} ");
+
 		return model;
 	}
 
@@ -217,7 +223,7 @@ public class SearchService : ISearch
 	                                "method overloads to perform case-insensitive string comparisons",
 		Justification =
 			"EF Core does not support this:  System.InvalidOperationException: The LINQ expression 'DbSet<FileIndexItem>()")]
-	private async Task<SearchViewModel> WideSearch(IQueryable<FileIndexItem> sourceList,
+	private static async Task<SearchViewModel> WideSearch(IQueryable<FileIndexItem> sourceList,
 		SearchViewModel model)
 	{
 		var predicates = new List<Expression<Func<FileIndexItem, bool>>>();
@@ -321,8 +327,6 @@ public class SearchService : ISearch
 			}
 			// Need to have the type registered in FileIndexPropList
 		}
-
-		_logger.LogInformation($"[SearchService] search --> {model.SearchQuery}");
 
 		var predicate = PredicateExecution(predicates, model);
 
