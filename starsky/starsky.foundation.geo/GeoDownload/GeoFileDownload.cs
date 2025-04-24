@@ -1,5 +1,3 @@
-using System.IO;
-using System.Threading.Tasks;
 using starsky.feature.geolookup.Interfaces;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
@@ -10,7 +8,7 @@ using starsky.foundation.storage.ArchiveFormats;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 
-namespace starsky.feature.geolookup.Services
+namespace starsky.foundation.geo.GeoDownload
 {
 	[Service(typeof(IGeoFileDownload), InjectionLifetime = InjectionLifetime.Scoped)]
 	public sealed class GeoFileDownload : IGeoFileDownload

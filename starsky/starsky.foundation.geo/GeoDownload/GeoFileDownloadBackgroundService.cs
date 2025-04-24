@@ -1,6 +1,3 @@
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using starsky.feature.geolookup.Interfaces;
@@ -8,7 +5,7 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
-namespace starsky.feature.geolookup.Services
+namespace starsky.foundation.geo.GeoDownload
 {
 
 	[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]

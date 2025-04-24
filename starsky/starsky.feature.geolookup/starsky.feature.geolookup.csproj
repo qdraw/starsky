@@ -15,11 +15,11 @@
         <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
-        <PackageReference Include="NGeoNames" Version="1.5.1"/>
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.geo\starsky.foundation.geo.csproj" />
         <ProjectReference Include="..\starsky.foundation.http\starsky.foundation.http.csproj"/>
         <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>
         <ProjectReference Include="..\starsky.foundation.readmeta\starsky.foundation.readmeta.csproj"/>
