@@ -20,15 +20,15 @@ public sealed class ExifCopy
 		"</rdf:RDF>\n</x:xmpmeta>";
 
 	private readonly ExifToolCmdHelper _exifToolCmdHelper;
-	private readonly IStorage _iStorage;
+	private readonly IStorage _subPathStorage;
 	private readonly IReadMeta _readMeta;
 
-	public ExifCopy(IStorage iStorage, IStorage thumbnailStorage, IExifTool exifTool,
+	public ExifCopy(IStorage subPathStorage, IStorage thumbnailStorage, IExifTool exifTool,
 		IReadMeta readMeta, IThumbnailQuery thumbnailQuery, IWebLogger logger)
 	{
-		_iStorage = iStorage;
+		_subPathStorage = subPathStorage;
 		_readMeta = readMeta;
-		_exifToolCmdHelper = new ExifToolCmdHelper(exifTool, _iStorage,
+		_exifToolCmdHelper = new ExifToolCmdHelper(exifTool, _subPathStorage,
 			thumbnailStorage, _readMeta, thumbnailQuery, logger);
 	}
 
@@ -38,14 +38,14 @@ public sealed class ExifCopy
 	/// <param name="xmpPath">location</param>
 	public bool XmpCreate(string xmpPath)
 	{
-		if ( _iStorage.ExistFile(xmpPath) )
+		if ( _subPathStorage.ExistFile(xmpPath) )
 		{
 			return false;
 		}
 
 		var plainTextStream = StringToStreamHelper.StringToStream(XmpStartContent);
 		// dispose in WriteStream
-		_iStorage.WriteStream(plainTextStream, xmpPath);
+		_subPathStorage.WriteStream(plainTextStream, xmpPath);
 		return true;
 	}
 
@@ -65,7 +65,7 @@ public sealed class ExifCopy
 		var withXmpPath = ExtensionRolesHelper.ReplaceExtensionWithXmp(subPath);
 
 		// only for files that not exist yet
-		if ( _iStorage.ExistFile(withXmpPath) )
+		if ( _subPathStorage.ExistFile(withXmpPath) )
 		{
 			return withXmpPath;
 		}

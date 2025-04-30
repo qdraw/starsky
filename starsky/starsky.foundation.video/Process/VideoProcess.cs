@@ -32,11 +32,12 @@ public sealed class VideoProcess : IVideoProcess
 		{
 			case VideoProcessTypes.Thumbnail:
 				const int size = 500_000;
-				const int ms = 1_000_000;
-				var ffmpegArguments = $"-frames:v 1 -analyzeduration {ms} -probesize {size}";
+				const string ffmpegArguments = $"-frames:v 1";
 				var (runResult, stream) = await RunFfmpeg(subPath, ffmpegArguments,
 					"image2", new Tuple<int, int>(size, -1));
-				return await _thumbnailPost.PostPrepThumbnail(runResult, stream, subPath);
+				var result = await _thumbnailPost.PostPrepThumbnail(runResult, stream, subPath);
+				await stream.DisposeAsync();
+				return result;
 			default:
 				return new VideoResult(false, subPath);
 		}
@@ -48,11 +49,11 @@ public sealed class VideoProcess : IVideoProcess
 	/// <param name="subPath">where file is located</param>
 	/// <param name="ffmpegInputArguments">passed to ffmpeg</param>
 	/// <param name="outputFormat">image2 or something else</param>
-	/// <param name="maxRead">-1 is entire file, rest is bytes</param>
+	/// <param name="maxReadFirstAndSecondTime">-1 is entire file, rest is bytes</param>
 	/// <returns></returns>
 	private async Task<(VideoResult, Stream)> RunFfmpeg(string subPath,
 		string ffmpegInputArguments,
-		string outputFormat, Tuple<int, int> maxRead)
+		string outputFormat, Tuple<int, int> maxReadFirstAndSecondTime)
 	{
 		var downloadStatus = await _ffMpegDownload.DownloadFfMpeg();
 		if ( downloadStatus != FfmpegDownloadStatus.Ok &&
@@ -63,21 +64,22 @@ public sealed class VideoProcess : IVideoProcess
 				"FFMpeg download failed"), Stream.Null );
 		}
 
-		var (stream, success) = await RunFfmpegWithRetry(subPath,
-			ffmpegInputArguments,
-			outputFormat, maxRead.Item1);
-		if ( success )
+		foreach ( var time in (List<int> )[maxReadFirstAndSecondTime.Item1, maxReadFirstAndSecondTime.Item2] )
 		{
-			return ( new VideoResult(success, subPath), stream );
+			var (stream, success) = await RunFfmpegWithRetry(subPath,
+				ffmpegInputArguments,
+				outputFormat, time);
+			
+			_logger.LogInformation(
+				$"[VideoProcess] ({subPath}) Time: {time} Thumbnail generation status: {success}");
+			
+			if ( success )
+			{
+				return ( new VideoResult(success, subPath), stream );
+			}
 		}
-
-		_logger.LogInformation(
-			"[VideoProcess] Initial thumbnail generation failed, retrying with larger maxRead");
-		( stream, success ) = await RunFfmpegWithRetry(subPath,
-			ffmpegInputArguments,
-			outputFormat, maxRead.Item2);
-
-		return ( new VideoResult(success, subPath), stream );
+		
+		return ( new VideoResult(false, subPath), Stream.Null );
 	}
 
 	private async Task<(Stream, bool)> RunFfmpegWithRetry(string subPath,
