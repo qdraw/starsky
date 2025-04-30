@@ -43,6 +43,8 @@ RUN ./starsky/starskyimportercli -h
 # Copy dropbox-import files
 COPY --from=dropbox-import /opt/starsky/starsky-tools/dropbox-import ./starsky-tools/dropbox-import
 
+RUN mkdir -p /opt/starsky/starsky-tools/dropbox-import/temp && chmod 777 /opt/starsky/starsky-tools/dropbox-import/temp
+
 # Set environment variables
 ENV STARSKYIMPORTERCLI=/opt/starsky/starsky/starskyimportercli
 
