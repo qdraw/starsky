@@ -31,9 +31,11 @@ public sealed class VideoProcess : IVideoProcess
 		switch ( type )
 		{
 			case VideoProcessTypes.Thumbnail:
-				var (runResult, stream) = await RunFfmpeg(subPath,
-					"-frames:v 1", "image2",
-					new Tuple<int, int>(500_000, -1));
+				const int size = 500_000;
+				const int ms = 1_000_000;
+				var ffmpegArguments = $"-frames:v 1 -analyzeduration {ms} -probesize {size}";
+				var (runResult, stream) = await RunFfmpeg(subPath, ffmpegArguments,
+					"image2", new Tuple<int, int>(size, -1));
 				return await _thumbnailPost.PostPrepThumbnail(runResult, stream, subPath);
 			default:
 				return new VideoResult(false, subPath);

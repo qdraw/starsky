@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Medallion.Shell;
 using starsky.foundation.platform.Interfaces;
 using static Medallion.Shell.Shell;
 
@@ -40,15 +41,8 @@ internal class FfmpegStreamToStreamRunner(string ffMpegPath, IWebLogger logger)
 
 			var result = await command.Task.ConfigureAwait(false);
 
-			if ( !result.Success )
-			{
-				var error = await command.StandardError.ReadToEndAsync();
-				logger.LogError("[FfmpegRunProcessAsync] ffmpeg " + error);
-			}
-
-			logger.LogInformation($"[FfmpegRunProcessAsync] {result.Success} ~ ffmpeg " +
-			                      $"{referenceInfoAndPath} {ffmpegInputArguments} " +
-			                      $"run with result: {result.Success}  ~ ");
+			await LogInformationOrError(command, result,
+				referenceInfoAndPath, argumentsWithPipeEnd);
 
 			memoryStream.Seek(0, SeekOrigin.Begin);
 
@@ -60,5 +54,24 @@ internal class FfmpegStreamToStreamRunner(string ffMpegPath, IWebLogger logger)
 			                            "Please make sure ffmpeg is installed, and its path is properly " +
 			                            "specified in the options.", exception);
 		}
+	}
+
+	private async Task LogInformationOrError(Command command, CommandResult result,
+		string referenceInfoAndPath,
+		string argumentsWithPipeEnd)
+	{
+		if ( !result.Success )
+		{
+			var error = await command.StandardError.ReadToEndAsync();
+
+			logger.LogError($"[FfmpegRunProcessAsync] {result.Success} ~ ffmpeg " +
+			                $"{referenceInfoAndPath} {argumentsWithPipeEnd} " +
+			                $"run with result: \n {error}  ~ ");
+			return;
+		}
+
+		logger.LogInformation($"[FfmpegRunProcessAsync] {result.Success} ~ ffmpeg " +
+		                      $"{referenceInfoAndPath} {argumentsWithPipeEnd} " +
+						         $"run with result: {result.Success}  ~ ");
 	}
 }

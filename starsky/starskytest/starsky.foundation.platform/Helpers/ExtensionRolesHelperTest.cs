@@ -478,6 +478,29 @@ public sealed class ExtensionRolesHelperTest
 	}
 
 	[TestMethod]
+	public void Files_GetImageFormat_mjpeg_Test()
+	{
+		var fileType = ExtensionRolesHelper.GetImageFormat(
+		[
+			0, 0, 0, 20, 112, 110, 111, 116, 190, 79, 137, 23,
+			0, 0, 80, 73, 67, 84, 0, 1, 0, 0, 31, 132, 80, 73
+		]);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.mp4, fileType);
+	}
+
+	[TestMethod]
+	public void Files_GetImageFormat_avhd_Test()
+	{
+		var bytes = new byte[]
+		{
+			0, 0, 0, 0, 71, 64, 0, 16, 0, 0, 176, 17, 0, 0, 193, 0, 0, 0, 0, 224, 31, 0, 1
+		};
+		var fileType = ExtensionRolesHelper.GetImageFormat(
+			bytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.mp4, fileType);
+	}
+
+	[TestMethod]
 	public void GetImageFormat_QuickTimeMp4_Test()
 	{
 		var newImage = CreateAnQuickTimeMp4.Bytes.Take(15).ToArray();

@@ -107,9 +107,9 @@ public static partial class ExtensionRolesHelper
 	private static readonly List<string> ExtensionGpx = new() { "gpx" };
 
 	/// <summary>
-	///     Mp4 Videos in h264 codex / And Quicktime
+	///     Mp4 Videos in h264 codex / And Quicktime / mjpeg video
 	/// </summary>
-	private static readonly List<string> ExtensionMp4 = new() { "mp4", "mov" };
+	private static readonly List<string> ExtensionMp4 = new() { "mp4", "mov", "mts" };
 
 	/// <summary>
 	///     WebP imageFormat
@@ -493,7 +493,7 @@ public static partial class ExtensionRolesHelper
 	}
 
 	/// <summary>
-	///     Gets the image format.
+	///     Gets the image format. By first bytes
 	/// </summary>
 	/// <param name="bytes">The bytes of image</param>
 	/// <returns>imageFormat enum</returns>
@@ -691,6 +691,12 @@ public static partial class ExtensionRolesHelper
 		if ( fTypIsoM.SequenceEqual(bytes.Take(fTypIsoM.Length)) )
 		{
 			return ImageFormat.xmp;
+		}
+
+		var mjpegVideoFormat = new byte[] { 112, 110, 111, 116 };
+		if ( mjpegVideoFormat.SequenceEqual(bytes.Skip(4).Take(mjpegVideoFormat.Length)) )
+		{
+			return ImageFormat.mp4;
 		}
 
 		return null;
