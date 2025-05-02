@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -80,7 +79,7 @@ public sealed class StorageTemporaryFilesystem : IStorage
 	/// <returns>is file, folder or deleted</returns>
 	public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string path)
 	{
-		var fullFilePath = _appSettings.DatabasePathToFilePath(path);
+		var fullFilePath = _appSettings.DatabasePathToTempFolderFilePath(path);
 		return new StorageHostFullPathFilesystem(_logger).IsFolderOrFile(fullFilePath);
 	}
 
@@ -263,7 +262,6 @@ public sealed class StorageTemporaryFilesystem : IStorage
 	/// <param name="path">subPath</param>
 	/// <param name="maxRead">number of bytes to read (default -1 = all)</param>
 	/// <returns>FileStream or Stream.Null when file dont exist</returns>
-	[SuppressMessage("ReSharper", "MustUseReturnValue")]
 	public Stream ReadStream(string path, int maxRead = -1)
 	{
 		if ( !ExistFile(path) )

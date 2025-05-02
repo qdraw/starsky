@@ -59,13 +59,13 @@ public class ResizeThumbnailFromSourceImageHelperTests
 			new FakeIWebLogger());
 
 		var model = await sut.ResizeThumbnailFromSourceImage(
-			newImage.FullFilePath, width, testOutputHash,
+			newImage.FullFilePath, SelectorStorage.StorageServices.SubPath, width, testOutputHash,
 			true, thumbnailImageFormat);
 
 		var stream = iStorage.ReadStream(testOutputPath);
 		var meta = ImageMetadataReader.ReadMetadata(stream).ToList();
 		await stream.DisposeAsync();
-		
+
 		// clean
 		File.Delete(testOutputPath);
 
@@ -102,7 +102,7 @@ public class ResizeThumbnailFromSourceImageHelperTests
 	public async Task ResizeThumbnailFromSourceImage_Success()
 	{
 		var result = await _sut.ResizeThumbnailFromSourceImage(
-			TestPath, 4, "thumbnailOutputHash",
+			TestPath, SelectorStorage.StorageServices.SubPath, 4, "thumbnailOutputHash",
 			false, ThumbnailImageFormat.jpg);
 
 		Assert.IsTrue(result.Success);
@@ -115,7 +115,7 @@ public class ResizeThumbnailFromSourceImageHelperTests
 	public async Task ResizeThumbnailFromSourceImage_FileNotFound()
 	{
 		var result = await _sut.ResizeThumbnailFromSourceImage(
-			"non-existing-filepath", 4,
+			"non-existing-filepath", SelectorStorage.StorageServices.SubPath, 4,
 			"thumbnailOutputHash",
 			false, ThumbnailImageFormat.jpg);
 
@@ -128,7 +128,7 @@ public class ResizeThumbnailFromSourceImageHelperTests
 	{
 		await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
 			await _sut.ResizeThumbnailFromSourceImage(
-				"non-existing-filepath", 4, "",
+				"non-existing-filepath", SelectorStorage.StorageServices.SubPath, 4, "",
 				false, ThumbnailImageFormat.jpg));
 	}
 
@@ -137,7 +137,7 @@ public class ResizeThumbnailFromSourceImageHelperTests
 	{
 		await Assert.ThrowsExceptionAsync<InvalidEnumArgumentException>(async () =>
 			await _sut.ResizeThumbnailFromSourceImage(
-				"non-existing-filepath", 4,
+				"non-existing-filepath", SelectorStorage.StorageServices.SubPath, 4,
 				"thumbnailOutputHash",
 				false, ThumbnailImageFormat.unknown));
 	}

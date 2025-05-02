@@ -110,7 +110,8 @@ internal class ResizeThumbnailFromThumbnailImageHelper(
 				message = imageCannotBeLoadedErrorMessage;
 			}
 
-			logger.LogError($"[ResizeThumbnailFromThumbnailImage] Exception {fileHash} {message}",
+			logger.LogError(
+				$"[ResizeThumbnailFromThumbnailImageHelper] Exception H:{fileHash} M: {message}",
 				ex);
 			result.Success = false;
 			result.ErrorMessage = message;

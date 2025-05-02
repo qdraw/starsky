@@ -4,5 +4,5 @@ public interface IVideoProcessThumbnailPost
 {
 	Task<VideoResult> PostPrepThumbnail(VideoResult runResult,
 		Stream stream,
-		string subPath);
+		string subPath, string beforeFileHash);
 }

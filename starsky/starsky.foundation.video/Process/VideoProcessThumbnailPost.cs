@@ -14,21 +14,21 @@ public class VideoProcessThumbnailPost(ISelectorStorage selectorStorage)
 
 	public async Task<VideoResult> PostPrepThumbnail(VideoResult runResult,
 		Stream stream,
-		string subPath)
+		string subPath, string beforeFileHash)
 	{
 		if ( !runResult.IsSuccess )
 		{
 			return runResult;
 		}
 
-		var tmpPath = await WriteStreamInTempFolder(stream);
-		return new VideoResult(true, tmpPath);
+		var tmpPath = GetTempPath(beforeFileHash);
+		await _tempStorage.WriteStreamAsync(stream, tmpPath);
+		return new VideoResult(true, tmpPath,
+			SelectorStorage.StorageServices.Temporary);
 	}
 
-	private async Task<string> WriteStreamInTempFolder(Stream stream)
+	private static string GetTempPath(string beforeFileHash)
 	{
-		var tmpPath = $"{Guid.NewGuid():N}.jpg";
-		await _tempStorage.WriteStreamAsync(stream, tmpPath);
-		return tmpPath;
+		return $"{beforeFileHash}.jpg";
 	}
 }

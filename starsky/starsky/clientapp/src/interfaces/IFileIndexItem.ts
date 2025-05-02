@@ -1,4 +1,4 @@
-import { IExifStatus } from "./IExifStatus";
+import {IExifStatus} from "./IExifStatus";
 
 export interface IFileIndexItem {
   lastEdited?: string;
@@ -49,7 +49,9 @@ export enum ImageFormat {
   xmp = "xmp",
   meta_json = "meta_json",
   gpx = "gpx",
-  mp4 = "mp4"
+  mp4 = "mp4",
+  mjpeg = "mjpeg",
+  mts = "mts"
 }
 
 export enum Orientation {

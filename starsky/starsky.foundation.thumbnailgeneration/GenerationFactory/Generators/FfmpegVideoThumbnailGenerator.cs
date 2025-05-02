@@ -35,8 +35,8 @@ public class FfmpegVideoThumbnailGenerator(
 		ThumbnailSize biggestThumbnailSize, string singleSubPath, string fileHash,
 		ThumbnailImageFormat imageFormat)
 	{
-		var result =
-			await videoProcess.RunVideo(singleSubPath, fileHash, VideoProcessTypes.Thumbnail);
+		var result = await videoProcess.RunVideo(singleSubPath, fileHash,
+			VideoProcessTypes.Thumbnail);
 		if ( !result.IsSuccess || result.ResultPath == null )
 		{
 			return ErrorGenerationResultModel.FailedResult(biggestThumbnailSize,
@@ -44,8 +44,13 @@ public class FfmpegVideoThumbnailGenerator(
 		}
 
 		var service = new ResizeThumbnailFromSourceImageHelper(selectorStorage, logger);
-		return await service.ResizeThumbnailFromSourceImage(result.ResultPath,
-			ThumbnailNameHelper.GetSize(biggestThumbnailSize), fileHash, 
+		var generationResult = await service.ResizeThumbnailFromSourceImage(result.ResultPath,
+			result.ResultPathType,
+			ThumbnailNameHelper.GetSize(biggestThumbnailSize), fileHash,
 			false, imageFormat);
+
+		videoProcess.CleanTemporaryFile(result.ResultPath,
+			result.ResultPathType);
+		return generationResult;
 	}
 }

@@ -114,7 +114,7 @@ public sealed class MetaExifThumbnailService : IMetaExifThumbnailService
 		}
 
 		var first50BytesStream = _iStorage.ReadStream(subPath, 50);
-		var imageFormat = ExtensionRolesHelper.GetImageFormat(first50BytesStream);
+		var imageFormat = new ExtensionRolesHelper(_logger).GetImageFormat(first50BytesStream);
 
 		if ( imageFormat != ExtensionRolesHelper.ImageFormat.jpg &&
 		     imageFormat != ExtensionRolesHelper.ImageFormat.tiff )

@@ -248,9 +248,8 @@ public class Import : IImport
 		List<ImportIndexItem> importIndexItemsList)
 	{
 		var directoriesContent = new Dictionary<string, List<string>>();
-		foreach ( var importIndexItemFileIndexItemParentDirectory in importIndexItemsList.Where(
-				         p =>
-					         p.Status == ImportStatus.Ok)
+		foreach ( var importIndexItemFileIndexItemParentDirectory in importIndexItemsList.Where(p =>
+				         p.Status == ImportStatus.Ok)
 			         .Select(p => p.FileIndexItem?.ParentDirectory) )
 		{
 			if ( importIndexItemFileIndexItemParentDirectory == null ||
@@ -397,7 +396,7 @@ public class Import : IImport
 			};
 		}
 
-		var imageFormat = ExtensionRolesHelper.GetImageFormat(
+		var imageFormat = new ExtensionRolesHelper(_logger).GetImageFormat(
 			_filesystemStorage.ReadStream(inputFileFullPath.Key,
 				160));
 

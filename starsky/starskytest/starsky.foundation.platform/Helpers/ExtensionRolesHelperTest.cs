@@ -8,6 +8,7 @@ using starskytest.FakeCreateAn.CreateAnImageCorrupt;
 using starskytest.FakeCreateAn.CreateAnImagePsd;
 using starskytest.FakeCreateAn.CreateAnImageWebP;
 using starskytest.FakeCreateAn.CreateAnQuickTimeMp4;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.platform.Helpers;
 
@@ -158,6 +159,40 @@ public sealed class ExtensionRolesHelperTest
 			ExtensionRolesHelper.HexStringToByteArray(
 				"66 74 79 70 69 73 6F 6D".Replace(" ", "")));
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.mp4, fileType);
+	}
+
+	[TestMethod]
+	[DataRow("47 40 11 10 00 42 F0 25 00 01 C1 00 00 FF 01 FF 00 01 FC 80 14 " +
+	         "48 12 01 06 46 46 6D 70 65 67 09 53 65 72 76 69 63 65 30 31 77 7C 43 CA",
+		ExtensionRolesHelper.ImageFormat.mts,
+		DisplayName = "Valid MTS Pattern 1")]
+	[DataRow("00 00 00 00 47 40 00 10 00 00 B0 11 00 00 C1 00 00 00 00 E0 1F " +
+	         "00 01 E1 00 23 5A AB 82 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF",
+		ExtensionRolesHelper.ImageFormat.mts,
+		DisplayName = "Valid MTS Pattern 2")]
+	[DataRow("47 40 11 10 00 42 F0 25 00 01 C1 00 00",
+		ExtensionRolesHelper.ImageFormat.unknown,
+		DisplayName = "To short for MTS")]
+	[DataRow("47 5F FF 10 00 42 F0 25 00 01 C1 00 00 FF 01 FF 00 01 FC 80 14 " +
+	         "48 12 01 06 46 46 6D 70 65 67 09 53 65 72 76 69 63 65 30 31 77 7C 43 CA",
+		ExtensionRolesHelper.ImageFormat.unknown,
+		DisplayName = "Invalid PID (0x1FFF)")]
+	[DataRow("47 40 11 00 00 42 F0 25 00 01 C1 00 00 FF 01 FF 00 01 FC 80 14 " +
+	         "48 12 01 06 46 46 6D 70 65 67 09 53 65 72 76 69 63 65 30 31 77 7C 43 CA",
+		ExtensionRolesHelper.ImageFormat.unknown,
+		DisplayName = "Adaptation field control = 0 (invalid)")]
+	[DataRow("00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F 10 11 12 13 " +
+	         "14 15 16 17 18 19 1A 1B 1C 1D 1E 1F 20 21 22 23 24 25 26 27 28 29 2A 2B",
+		ExtensionRolesHelper.ImageFormat.unknown,
+		DisplayName = "No sync byte at offset 0 or 4")]
+	[DataRow("47 40 11",
+		ExtensionRolesHelper.ImageFormat.unknown,
+		DisplayName = "Not enough bytes for header fields")]
+	public void GetImageFormat_Mts(string hexValue, ExtensionRolesHelper.ImageFormat expected)
+	{
+		var fileType = ExtensionRolesHelper.GetImageFormat(
+			ExtensionRolesHelper.HexStringToByteArray(hexValue.Replace(" ", "")));
+		Assert.AreEqual(expected, fileType);
 	}
 
 	[TestMethod]
@@ -485,19 +520,7 @@ public sealed class ExtensionRolesHelperTest
 			0, 0, 0, 20, 112, 110, 111, 116, 190, 79, 137, 23,
 			0, 0, 80, 73, 67, 84, 0, 1, 0, 0, 31, 132, 80, 73
 		]);
-		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.mp4, fileType);
-	}
-
-	[TestMethod]
-	public void Files_GetImageFormat_avhd_Test()
-	{
-		var bytes = new byte[]
-		{
-			0, 0, 0, 0, 71, 64, 0, 16, 0, 0, 176, 17, 0, 0, 193, 0, 0, 0, 0, 224, 31, 0, 1
-		};
-		var fileType = ExtensionRolesHelper.GetImageFormat(
-			bytes);
-		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.mp4, fileType);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.mjpeg, fileType);
 	}
 
 	[TestMethod]
@@ -522,9 +545,10 @@ public sealed class ExtensionRolesHelperTest
 	public void Gpx_Stream_WithXmlPrefix()
 	{
 		var gpxExample = Encoding.ASCII.GetBytes(
-			"<?xml version=\"1.0\" encoding=\"UTF-8\" ?><gpx version=\"1.1\" creator=\"Trails 4.06 - https://www.trails.io\"");
+			"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" +
+			"<gpx version=\"1.1\" creator=\"Trails 4.06 - https://www.trails.io\"");
 		var ms = new MemoryStream(gpxExample);
-		var result = ExtensionRolesHelper.GetImageFormat(ms);
+		var result = new ExtensionRolesHelper(new FakeIWebLogger()).GetImageFormat(ms);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, result);
 	}
 
@@ -649,6 +673,6 @@ public sealed class ExtensionRolesHelperTest
 	public void GetImageFormat_NotFound()
 	{
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.notfound,
-			ExtensionRolesHelper.GetImageFormat(Stream.Null));
+			new ExtensionRolesHelper(new FakeIWebLogger()).GetImageFormat(Stream.Null));
 	}
 }

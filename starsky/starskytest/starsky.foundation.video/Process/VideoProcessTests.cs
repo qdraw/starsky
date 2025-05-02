@@ -1,8 +1,13 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Services;
+using starsky.foundation.storage.Storage;
 using starsky.foundation.video.GetDependencies.Models;
 using starsky.foundation.video.Process;
+using starskytest.FakeCreateAn.CreateAnQuickTimeMp4;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.video.Process;
@@ -11,23 +16,22 @@ namespace starskytest.starsky.foundation.video.Process;
 public class VideoProcessTests
 {
 	private readonly FakeIFfMpegDownload _ffMpegDownload;
+	private readonly FakeIStorage _storage;
 	private readonly VideoProcess _videoProcess;
 
 	public VideoProcessTests()
 	{
 		var logger = new FakeIWebLogger();
-		var storage = new FakeIStorage();
+		_storage = new FakeIStorage(["/"], ["/test.mp4"],
+			new List<byte[]?> { CreateAnQuickTimeMp4.Bytes.ToArray() });
 		_ffMpegDownload = new FakeIFfMpegDownload();
-		var thumbnailPost = new VideoProcessThumbnailPost(new FakeSelectorStorage(storage),
-			new AppSettings(), new FakeExifTool(storage,
-				new AppSettings()), new FakeIWebLogger(),
-			new FakeIThumbnailQuery());
+		var thumbnailPost = new VideoProcessThumbnailPost(new FakeSelectorStorage(_storage));
 
 		var selectorStorage = new FakeSelectorStorage();
-		selectorStorage.SetStorage(storage);
+		selectorStorage.SetStorage(_storage);
 
 		_videoProcess = new VideoProcess(selectorStorage, _ffMpegDownload,
-			thumbnailPost, logger);
+			thumbnailPost, logger, new AppSettings { StorageFolder = "/" });
 	}
 
 	[TestCleanup]
@@ -40,7 +44,7 @@ public class VideoProcessTests
 	public async Task RunVideo_Default_False()
 	{
 		var result = await _videoProcess.RunVideo("/test",
-			"beforeFileHash", 
+			"beforeFileHash",
 			VideoProcessTypesTests.InvalidEnum());
 		Assert.IsFalse(result.IsSuccess);
 	}
@@ -50,8 +54,11 @@ public class VideoProcessTests
 	{
 		// Arrange
 		const string subPath = "/test.mp4";
-		const string expectedPath = "/test.jpg";
-		const string beforeFileHash = "hash";
+		var fileHashService = new FileHash(_storage, new FakeIWebLogger());
+		var beforeFileHash = ( await fileHashService.GetHashCodeAsync(subPath) ).Key;
+		var expectedPath = $"{beforeFileHash}." +
+		                   $"{new AppSettings().ThumbnailImageFormat}";
+
 		const VideoProcessTypes type = VideoProcessTypes.Thumbnail;
 
 		await new FakeIFfMpegDownload().DownloadFfMpeg();
@@ -61,6 +68,7 @@ public class VideoProcessTests
 
 		// Assert
 		Assert.IsTrue(result.IsSuccess);
+		Assert.AreEqual(SelectorStorage.StorageServices.Temporary, result.ResultPathType);
 		Assert.AreEqual(expectedPath, result.ResultPath);
 	}
 

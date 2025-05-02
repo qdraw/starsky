@@ -61,7 +61,7 @@ public sealed class NewItem
 	{
 		var updatedDatabaseItem = await _readMeta.ReadExifAndXmpFromFileAsync(filePath);
 		var stream = _subPathStorage.ReadStream(filePath, 50);
-		updatedDatabaseItem!.ImageFormat = ExtensionRolesHelper.GetImageFormat(stream);
+		updatedDatabaseItem!.ImageFormat = new ExtensionRolesHelper(_logger).GetImageFormat(stream);
 		await stream.DisposeAsync();
 
 		// future: read json sidecar

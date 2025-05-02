@@ -11,6 +11,7 @@ using Microsoft.Extensions.Primitives;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
@@ -26,16 +27,18 @@ public sealed class ThumbnailController : Controller
 	private const string ModelError = "Model is invalid";
 	private readonly ThumbnailImageFormat _imageFormat;
 	private readonly IStorage _iStorage;
+	private readonly IWebLogger _logger;
 	private readonly IQuery _query;
 	private readonly IStorage _thumbnailStorage;
 
 	public ThumbnailController(IQuery query, ISelectorStorage selectorStorage,
-		AppSettings appSettings)
+		AppSettings appSettings, IWebLogger logger)
 	{
 		_query = query;
 		_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 		_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 		_imageFormat = appSettings.ThumbnailImageFormat;
+		_logger = logger;
 	}
 
 	/// <summary>
@@ -186,7 +189,7 @@ public sealed class ThumbnailController : Controller
 		Response.Headers.Append("x-image-size", new StringValues(size.ToString()));
 		var stream =
 			_thumbnailStorage.ReadStream(ThumbnailNameHelper.Combine(f, size, _imageFormat), 50);
-		var imageFormat = ExtensionRolesHelper.GetImageFormat(stream);
+		var imageFormat = new ExtensionRolesHelper(_logger).GetImageFormat(stream);
 		if ( imageFormat == ExtensionRolesHelper.ImageFormat.unknown )
 		{
 			SetExpiresResponseHeadersToZero();

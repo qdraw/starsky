@@ -385,7 +385,7 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 		}
 
 		var imageFormat =
-			ExtensionRolesHelper.GetImageFormat(
+			new ExtensionRolesHelper(_logger).GetImageFormat(
 				_hostFileSystemStorage.ReadStream(outputPath, 160));
 		if ( imageFormat == ExtensionRolesHelper.ImageFormat.jpg )
 		{

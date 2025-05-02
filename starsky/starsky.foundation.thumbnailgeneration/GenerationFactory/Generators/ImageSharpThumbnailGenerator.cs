@@ -35,6 +35,7 @@ public class ImageSharpThumbnailGenerator(
 	{
 		var service = new ResizeThumbnailFromSourceImageHelper(selectorStorage, logger);
 		return await service.ResizeThumbnailFromSourceImage(singleSubPath,
+			SelectorStorage.StorageServices.SubPath,
 			ThumbnailNameHelper.GetSize(biggestThumbnailSize), fileHash, false, imageFormat);
 	}
 }

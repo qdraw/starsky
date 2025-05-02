@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using MetadataExtractor;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.ReadMetaHelpers;
 using starsky.foundation.video.Process;
 using starskytest.FakeCreateAn;
@@ -14,26 +13,21 @@ namespace starskytest.starsky.foundation.video.Process;
 [TestClass]
 public class VideoProcessThumbnailPostTests
 {
-	private readonly VideoProcessThumbnailPost _videoProcessThumbnailPost;
 	private readonly FakeIStorage _storage;
+	private readonly VideoProcessThumbnailPost _videoProcessThumbnailPost;
 
 	public VideoProcessThumbnailPostTests()
 	{
 		_storage = new FakeIStorage();
 
 		var selectorStorage = new FakeSelectorStorage(_storage);
-		var exifTool = new FakeExifTool(_storage, new AppSettings());
-		var logger = new FakeIWebLogger();
-		var thumbnailQuery = new FakeIThumbnailQuery();
-
-		var appSettings = new AppSettings();
 		_videoProcessThumbnailPost = new VideoProcessThumbnailPost(
-			selectorStorage, appSettings, exifTool, logger, thumbnailQuery);
+			selectorStorage);
 	}
 
 	[DataTestMethod]
-	[DataRow("/test.mp4", "/test.jpg")]
-	[DataRow("/test/test.mov", "/test/test.jpg")]
+	[DataRow("/test.mp4", "file-hash-test-post-prep.jpg")]
+	[DataRow("/test/test.mov", "file-hash-test-post-prep.jpg")]
 	public async Task PostPrepThumbnail_Success_ReturnsVideoResult(string subPath,
 		string jpegInFolderSubPath)
 	{
@@ -43,14 +37,14 @@ public class VideoProcessThumbnailPostTests
 
 		// Act
 		var result = await _videoProcessThumbnailPost.PostPrepThumbnail(runResult,
-			stream, jpegInFolderSubPath);
+			stream, jpegInFolderSubPath, "file-hash-test-post-prep");
 
 		// Assert
 		Assert.IsTrue(result.IsSuccess);
 		Assert.AreEqual(jpegInFolderSubPath, result.ResultPath);
-		
+
 		Assert.IsTrue(_storage.ExistFile(result.ResultPath ?? ""));
-		
+
 		var writtenStream = _storage.ReadStream(result.ResultPath ?? "");
 		var meta = ImageMetadataReader.ReadMetadata(writtenStream).ToList();
 		await writtenStream.DisposeAsync();
@@ -69,7 +63,8 @@ public class VideoProcessThumbnailPostTests
 		var stream = new MemoryStream();
 
 		// Act
-		var result = await _videoProcessThumbnailPost.PostPrepThumbnail(runResult, stream, subPath);
+		var result = await _videoProcessThumbnailPost.PostPrepThumbnail(runResult, stream,
+			subPath, "test");
 
 		// Assert
 		Assert.IsFalse(result.IsSuccess);

@@ -23,11 +23,29 @@ internal class ResizeThumbnailFromSourceImageHelper(
 	private readonly IStorage _storage =
 		selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 
+	private readonly IStorage _tempStorage =
+		selectorStorage.Get(SelectorStorage.StorageServices.Temporary);
+
 	private readonly IStorage _thumbnailStorage =
 		selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 
-	internal async Task<GenerationResultModel> ResizeThumbnailFromSourceImage(
-		string subPath,
+	private IStorage GetStorage(SelectorStorage.StorageServices? resultResultPathType)
+	{
+		return resultResultPathType switch
+		{
+			SelectorStorage.StorageServices.SubPath => _storage,
+			SelectorStorage.StorageServices.Temporary => _tempStorage,
+			SelectorStorage.StorageServices.Thumbnail => _thumbnailStorage,
+			SelectorStorage.StorageServices.HostFilesystem => throw new ArgumentException(null,
+				nameof(resultResultPathType)),
+			null => throw new ArgumentException(null, nameof(resultResultPathType)),
+			_ => throw new ArgumentOutOfRangeException(nameof(resultResultPathType),
+				resultResultPathType, null)
+		};
+	}
+
+	internal async Task<GenerationResultModel> ResizeThumbnailFromSourceImage(string subPath,
+		SelectorStorage.StorageServices? subPathType,
 		int width, string? thumbnailOutputHash,
 		bool removeExif,
 		ThumbnailImageFormat imageFormat)
@@ -56,7 +74,7 @@ internal class ResizeThumbnailFromSourceImageHelper(
 		try
 		{
 			// resize the image and save it to the output stream
-			using ( var inputStream = _storage.ReadStream(subPath) )
+			using ( var inputStream = GetStorage(subPathType).ReadStream(subPath) )
 			using ( var image = await Image.LoadAsync(inputStream) )
 			{
 				ImageSharpImageResizeHelper.ImageSharpImageResize(image, width, removeExif);

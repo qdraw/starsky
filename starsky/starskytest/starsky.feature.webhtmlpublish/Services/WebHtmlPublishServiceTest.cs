@@ -651,6 +651,9 @@ public sealed class WebHtmlPublishServiceTest
 		Assert.IsFalse(storage.ExistFolder(Path.Combine(new AppSettings().TempFolder,
 			"output_test_1234")));
 
+		// This test creates a .done file in the temp folder
+		// git/starsky/starsky/starsky/bin/Debug/net8.0/temp/output_test_1234.done
+
 		Assert.IsTrue(storage.ExistFile(Path.Combine(outputFolderPath, "output_test_1234.zip")));
 
 		// this realFS
