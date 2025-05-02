@@ -43,7 +43,7 @@ public class WindowsShellTrashBindingHelperTest
 	{
 		var result = WindowsShellTrashBindingHelper.Trash("destPath", OSPlatform.Linux);
 
-		Assert.AreEqual(null, result.Item1);
+		Assert.IsNull(result.Item1);
 		Assert.IsTrue(result.Item2.Contains("Not supported"));
 	}
 

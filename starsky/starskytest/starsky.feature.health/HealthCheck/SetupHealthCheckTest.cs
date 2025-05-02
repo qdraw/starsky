@@ -23,7 +23,7 @@ public sealed class SetupHealthCheckTest
 		var services = new ServiceCollection();
 		// logger is not defined here (as designed)
 
-		Assert.ThrowsException<InvalidOperationException>(() =>
+		Assert.ThrowsExactly<InvalidOperationException>(() =>
 			new SetupHealthCheck(new AppSettings(), services).BuilderHealth());
 	}
 

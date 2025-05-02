@@ -73,7 +73,7 @@ public sealed class FileStreamingHelperTest
 		var httpContext = new DefaultHttpContext(); // or mock a `HttpContext`
 		httpContext.Request.Headers["token"] = "fake_token_here"; //Set header
 
-		await Assert.ThrowsExceptionAsync<FileLoadException>(async () =>
+		await Assert.ThrowsExactlyAsync<FileLoadException>(async () =>
 			await httpContext.Request.StreamFile(_appSettings,
 				new FakeSelectorStorage(new FakeIStorage())));
 	}
@@ -85,7 +85,7 @@ public sealed class FileStreamingHelperTest
 		httpContext.Request.Headers["token"] = "fake_token_here"; //Set header
 		httpContext.Request.ContentType = "multipart/form-data";
 
-		await Assert.ThrowsExceptionAsync<InvalidDataException>(async () =>
+		await Assert.ThrowsExactlyAsync<InvalidDataException>(async () =>
 			await httpContext.Request.StreamFile(_appSettings,
 				new FakeSelectorStorage(new FakeIStorage()))
 		);
@@ -104,7 +104,7 @@ public sealed class FileStreamingHelperTest
 		var formValueProvider = await FileStreamingHelper.StreamFile("image/jpeg",
 			requestBody, _appSettings, streamSelector);
 
-		Assert.AreNotEqual(null, formValueProvider.ToString());
+		Assert.IsNotNull(formValueProvider.ToString());
 		await requestBody.DisposeAsync();
 
 		Assert.IsNotNull(formValueProvider.FirstOrDefault());

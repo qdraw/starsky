@@ -204,7 +204,7 @@ public sealed class ExportControllerTest
 
 		var actionResult = await controller.CreateZip(_createAnImage.DbPath) as JsonResult;
 
-		Assert.AreNotEqual(null, actionResult);
+		Assert.IsNotNull(actionResult);
 		var zipHash = actionResult!.Value as string;
 
 		Assert.IsTrue(zipHash!.Contains("SR"));
@@ -218,7 +218,7 @@ public sealed class ExportControllerTest
 			sourceFullPath);
 
 		var actionResult2Zip = controller.Status(zipHash, true) as JsonResult;
-		Assert.AreNotEqual(null, actionResult2Zip);
+		Assert.IsNotNull(actionResult2Zip);
 
 		var resultValue = ( string? ) actionResult2Zip?.Value;
 

@@ -78,7 +78,7 @@ public class CleanDemoDataServiceTest
 
 		dynMethod.Invoke(service, new object[] { token });
 
-		Assert.IsTrue(_logger?.TrackedExceptions.Count == 0);
+		Assert.AreEqual(0, _logger?.TrackedExceptions.Count);
 
 		source.Dispose();
 	}

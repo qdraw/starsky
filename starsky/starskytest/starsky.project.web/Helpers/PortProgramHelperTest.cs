@@ -78,7 +78,7 @@ public class PortProgramHelperTest
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS", "");
 
 		PortProgramHelper.SetEnvPortAspNetUrls(new List<string>());
-		Assert.AreEqual(null, Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
+		Assert.IsNull(Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
 
 		Environment.SetEnvironmentVariable("PORT", _prePort);
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS", _preAspNetUrls);
@@ -130,7 +130,7 @@ public class PortProgramHelperTest
 		var result = await PortProgramHelper.SkipForAppSettingsJsonFile(appSettingsPath);
 
 		Assert.IsTrue(result);
-		Assert.AreEqual(null, Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
+		Assert.IsNull(Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
 
 		Environment.SetEnvironmentVariable("PORT", _prePort);
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS", _preAspNetUrls);

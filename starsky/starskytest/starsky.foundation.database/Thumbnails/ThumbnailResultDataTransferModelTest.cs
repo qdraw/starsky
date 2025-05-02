@@ -35,7 +35,8 @@ public class ThumbnailResultDataTransferModelTest
 	[TestMethod]
 	public void ThumbnailResultDataTransferModel_Ctor_4()
 	{
-		var model = new ThumbnailResultDataTransferModel("test", true, true, true);
+		var model = new ThumbnailResultDataTransferModel("test",
+			true, true, true);
 		Assert.AreEqual("test", model.FileHash);
 		Assert.IsTrue(model.TinyMeta);
 		Assert.IsTrue(model.Small);
@@ -109,7 +110,8 @@ public class ThumbnailResultDataTransferModelTest
 	[TestMethod]
 	public void ThumbnailResultDataTransferModel_Change_Large()
 	{
-		var model = new ThumbnailResultDataTransferModel("test", true, true, true, true);
+		var model = new ThumbnailResultDataTransferModel("test", true,
+			true, true, true);
 		model.Change(ThumbnailSize.Large, false);
 		Assert.AreEqual("test", model.FileHash);
 		Assert.IsTrue(model.TinyMeta);
@@ -126,17 +128,18 @@ public class ThumbnailResultDataTransferModelTest
 		Assert.AreEqual("test", model.FileHash);
 		Assert.IsTrue(model.TinyMeta);
 		Assert.IsTrue(model.Small);
-		Assert.AreEqual(null, model.Large);
+		Assert.IsNull(model.Large);
 		Assert.IsTrue(model.ExtraLarge);
 	}
 
 	[TestMethod]
 	public void ThumbnailResultDataTransferModel_Change_OutOfRange()
 	{
-		var model = new ThumbnailResultDataTransferModel("test", true, true, true, true);
+		var model = new ThumbnailResultDataTransferModel("test",
+			true, true, true, true);
 
 		// Act & Assert
-		Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+		Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
 			model.Change(ThumbnailSize.Unknown, false));
 	}
 }

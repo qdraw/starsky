@@ -119,7 +119,7 @@ public class ExifToolServiceTest
 		await cancelSource.CancelAsync(); // Trigger cancellation
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<TaskCanceledException>(async () =>
+		await Assert.ThrowsExactlyAsync<TaskCanceledException>(async () =>
 		{
 			await service.WriteTagsAndRenameThumbnailAsync("/image.jpg", null, "", token);
 		});

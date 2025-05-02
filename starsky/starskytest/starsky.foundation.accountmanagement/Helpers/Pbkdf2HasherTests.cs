@@ -68,7 +68,7 @@ public class Pbkdf2HasherTests
 
 		// Act
 		var hash1 = Pbkdf2Hasher.ComputeHash(password, salt, false); // 10,000 iterations
-		var hash2 = Pbkdf2Hasher.ComputeHash(password, salt);  // 100,000 iterations
+		var hash2 = Pbkdf2Hasher.ComputeHash(password, salt); // 100,000 iterations
 
 		// Assert
 		Assert.AreNotEqual(hash1, hash2);
@@ -83,11 +83,12 @@ public class Pbkdf2HasherTests
 		RandomNumberGenerator.Fill(salt);
 
 		// Act
-		var hash1 = Pbkdf2Hasher.ComputeHash(password, salt,false); // 10,000 iterations
-		var hash2 = Pbkdf2Hasher.ComputeHash(password, salt);  // 100,000 iterations
+		var hash1 = Pbkdf2Hasher.ComputeHash(password, salt, false); // 10,000 iterations
+		var hash2 = Pbkdf2Hasher.ComputeHash(password, salt); // 100,000 iterations
 
 		// Assert
-		Assert.AreEqual(hash1.Length, hash2.Length, "Hashes should have the same length regardless of iterations.");
+		Assert.AreEqual(hash1.Length, hash2.Length,
+			"Hashes should have the same length regardless of iterations.");
 		Assert.AreNotEqual(hash1, hash2, "Hashes should differ due to different iteration counts.");
 	}
 
@@ -98,9 +99,10 @@ public class Pbkdf2HasherTests
 		const string password = "testPassword";
 
 		// Act and Assert
-		Assert.ThrowsException<ArgumentNullException>(() => Pbkdf2Hasher.ComputeHash(password, null!));
+		Assert.ThrowsExactly<ArgumentNullException>(() =>
+			Pbkdf2Hasher.ComputeHash(password, null!));
 	}
-	
+
 	[TestMethod]
 	public void ComputeHash_ThrowsArgumentNullException_ForNullPassword()
 	{
@@ -109,7 +111,7 @@ public class Pbkdf2HasherTests
 		RandomNumberGenerator.Fill(salt);
 
 		// Act and Assert
-		Assert.ThrowsException<ArgumentNullException>(() => Pbkdf2Hasher.ComputeHash(null!, salt));
+		Assert.ThrowsExactly<ArgumentNullException>(() => Pbkdf2Hasher.ComputeHash(null!, salt));
 	}
 
 	[TestMethod]
@@ -126,7 +128,7 @@ public class Pbkdf2HasherTests
 		// Assert
 		Assert.AreNotEqual(hash1, hash2);
 	}
-	
+
 	[TestMethod]
 	public void GenerateRandomSalt_ShouldReturnCorrectLength()
 	{

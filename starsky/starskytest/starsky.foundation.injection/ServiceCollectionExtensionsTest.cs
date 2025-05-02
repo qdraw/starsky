@@ -21,7 +21,7 @@ public class ServiceCollectionExtensionsTest
 	public void Add_LifeTimeNull()
 	{
 		var serviceCollection = new ServiceCollection() as IServiceCollection;
-		Assert.ThrowsException<ArgumentNullException>(() =>
+		Assert.ThrowsExactly<ArgumentNullException>(() =>
 			serviceCollection.Add(InjectionLifetime.Scoped, null!));
 	}
 
@@ -29,7 +29,7 @@ public class ServiceCollectionExtensionsTest
 	public void Add_LifeTimeNull2()
 	{
 		var serviceCollection = new ServiceCollection() as IServiceCollection;
-		Assert.ThrowsException<ArgumentNullException>(() =>
+		Assert.ThrowsExactly<ArgumentNullException>(() =>
 			serviceCollection.Add(InjectionLifetime.Scoped, null!, null!));
 	}
 

@@ -175,7 +175,7 @@ public sealed class MetaReplaceControllerTest
 			throw new NullReferenceException(nameof(fileModel));
 		}
 
-		Assert.AreNotEqual(null, fileModel.FirstOrDefault()?.Tags);
+		Assert.IsNotNull(fileModel.FirstOrDefault()?.Tags);
 		Assert.AreEqual("7", fileModel.FirstOrDefault()?.Tags);
 
 		await _query.RemoveItemAsync(item);

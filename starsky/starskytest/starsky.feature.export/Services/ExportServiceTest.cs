@@ -163,6 +163,6 @@ public class ExportServiceTest
 		var fileName =
 			await exportService.FilePathToFileNameAsync(
 				new List<string> { "/test/not_found.jpg" }.ToArray(), true);
-		Assert.AreEqual(null, fileName[0]);
+		Assert.IsNull(fileName[0]);
 	}
 }

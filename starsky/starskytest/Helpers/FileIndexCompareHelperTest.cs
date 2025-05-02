@@ -252,14 +252,14 @@ namespace starskytest.Helpers
 		{
 			var t = new FileIndexItem { Tags = "test" };
 			var result = FileIndexCompareHelper.Get(t, "ThisTagDoesNotExist");
-			Assert.AreEqual(null, result);
+			Assert.IsNull(result);
 		}
 
 		[TestMethod]
 		public void FileIndexCompareHelperTest_GetValue_NullFileIndexItem()
 		{
 			var result = FileIndexCompareHelper.Get(null, nameof(FileIndexItem.Tags));
-			Assert.AreEqual(null, result);
+			Assert.IsNull(result);
 		}
 
 		[TestMethod]

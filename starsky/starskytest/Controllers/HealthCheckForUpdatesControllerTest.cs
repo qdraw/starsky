@@ -52,7 +52,7 @@ public sealed class HealthCheckForUpdatesControllerTest
 
 		var sut = new HealthCheckForUpdatesController(fakeService,
 			new FakeISpecificVersionReleaseInfo());
-		await Assert.ThrowsExceptionAsync<NotSupportedException>(async () =>
+		await Assert.ThrowsExactlyAsync<NotSupportedException>(async () =>
 			await sut.CheckForUpdates());
 	}
 

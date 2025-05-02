@@ -137,7 +137,7 @@ public sealed class DeleteControllerTest
 		Assert.IsNotNull(createAnImage1);
 
 		var actionResult = await controller.Delete(createAnImage?.FilePath!) as JsonResult;
-		Assert.AreNotEqual(null, actionResult);
+		Assert.IsNotNull(actionResult);
 		var jsonCollection = actionResult?.Value as List<FileIndexItem>;
 		Assert.AreEqual(createAnImage?.FilePath, jsonCollection?.FirstOrDefault()?.FilePath);
 

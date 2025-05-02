@@ -189,7 +189,7 @@ public sealed class MetaUpdateControllerTest
 			throw new NullReferenceException(nameof(fileModel));
 		}
 
-		Assert.AreNotEqual(null, fileModel.FirstOrDefault()?.Tags);
+		Assert.IsNotNull(fileModel.FirstOrDefault()?.Tags);
 	}
 
 	[TestMethod]

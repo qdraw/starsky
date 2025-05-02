@@ -182,8 +182,8 @@ public sealed class ThumbnailControllerTest
 				true, true) as JsonResult;
 
 		// Thumbnail exist
-		Assert.AreNotEqual(null, actionResult);
-		var thumbnailAnswer = actionResult?.Value as string;
+		Assert.IsNotNull(actionResult);
+		var thumbnailAnswer = actionResult.Value as string;
 		Assert.AreEqual("OK", thumbnailAnswer);
 	}
 
@@ -226,14 +226,14 @@ public sealed class ThumbnailControllerTest
 			await controller.Thumbnail(createAnImage.FileHash!, null, true) as FileStreamResult;
 
 		// Thumbnail exist
-		Assert.AreNotEqual(null, actionResult);
-		var thumbnailAnswer = actionResult?.ContentType;
+		Assert.IsNotNull(actionResult);
+		var thumbnailAnswer = actionResult.ContentType;
 
 		controller.Response.Headers.TryGetValue("x-filename", out var value);
 		Assert.AreEqual(createAnImage.FileHash + ".jpg", value.ToString());
 
 		Assert.AreEqual("image/jpeg", thumbnailAnswer);
-		await actionResult!.FileStream.DisposeAsync(); // for windows
+		await actionResult.FileStream.DisposeAsync(); // for windows
 	}
 
 	[TestMethod]
@@ -619,8 +619,8 @@ public sealed class ThumbnailControllerTest
 			await sut.ListSizesByHash("01234567890123456789123456") as
 				NotFoundObjectResult;
 
-		Assert.AreNotEqual(null, actionResult);
-		Assert.AreEqual(404, actionResult?.StatusCode);
+		Assert.IsNotNull(actionResult);
+		Assert.AreEqual(404, actionResult.StatusCode);
 	}
 
 	[TestMethod]

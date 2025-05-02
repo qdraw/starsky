@@ -63,7 +63,7 @@ public sealed class PathExistHealthCheckTest
 	[TestMethod]
 	public void RunFail_Null_Input()
 	{
-		Assert.ThrowsException<ArgumentNullException>(() =>
+		Assert.ThrowsExactly<ArgumentNullException>(() =>
 			new PathExistHealthCheck(null!, new FakeIWebLogger()));
 	}
 }

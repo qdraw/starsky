@@ -189,7 +189,7 @@ public sealed class WebHtmlPublishServiceTest
 			SetThumbnailService(storage));
 		var list =
 			service.AddFileHashIfNotExist(new List<FileIndexItem> { new("/test.jpg") });
-		Assert.IsTrue(list.FirstOrDefault()?.FileHash != string.Empty);
+		Assert.AreNotEqual(string.Empty, list.FirstOrDefault()?.FileHash);
 	}
 
 	[TestMethod]
@@ -534,9 +534,9 @@ public sealed class WebHtmlPublishServiceTest
 			true);
 
 		// True param situation
-		Assert.IsTrue(storage.GetAllFilesInDirectoryRecursive("/")
+		Assert.IsNotNull(storage.GetAllFilesInDirectoryRecursive("/")
 			.Cast<string?>().Where(p => p != null).Cast<string>()
-			.FirstOrDefault(p => p.Contains("src/test.jpg")) != null);
+			.FirstOrDefault(p => p.Contains("src/test.jpg")));
 
 		// is False instead of True
 		Assert.IsFalse(storage.ExistFile("/test.jpg"));
@@ -575,8 +575,8 @@ public sealed class WebHtmlPublishServiceTest
 			false);
 
 		// False situation
-		Assert.IsTrue(storage.GetAllFilesInDirectoryRecursive("/").Cast<string?>()
-			.FirstOrDefault(p => p != null && p.Contains("src/test.jpg")) != null);
+		Assert.IsNotNull(storage.GetAllFilesInDirectoryRecursive("/").Cast<string?>()
+			.FirstOrDefault(p => p != null && p.Contains("src/test.jpg")));
 
 		// is True instead of False
 		Assert.IsTrue(storage.ExistFile("/test.jpg"));

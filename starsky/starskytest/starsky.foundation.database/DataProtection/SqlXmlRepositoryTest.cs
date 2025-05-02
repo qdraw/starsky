@@ -58,7 +58,7 @@ public class SqlXmlRepositoryTest
 	public void SqlXmlRepositoryTest_ExpectedException_NullReferenceException()
 	{
 		var sut = new SqlXmlRepository(null!, null!, new FakeIWebLogger());
-		Assert.ThrowsException<NullReferenceException>(() => sut.GetAllElements());
+		Assert.ThrowsExactly<NullReferenceException>(() => sut.GetAllElements());
 		// ExpectedException NullReferenceException
 	}
 
@@ -93,7 +93,7 @@ public class SqlXmlRepositoryTest
 
 		var sut = new SqlXmlRepository(new AppDbMySqlException(options), null!,
 			new FakeIWebLogger());
-		Assert.ThrowsException<MySqlException>(() => sut.GetAllElements());
+		Assert.ThrowsExactly<MySqlException>(() => sut.GetAllElements());
 		// EnsureCreated is trowed as exception
 	}
 
@@ -198,7 +198,7 @@ public class SqlXmlRepositoryTest
 		var repo =
 			new SqlXmlRepository(
 				new StoreElementException2OtherException(options), null!, logger);
-		Assert.ThrowsException<NullReferenceException>(() =>
+		Assert.ThrowsExactly<NullReferenceException>(() =>
 			repo.StoreElement(new XElement("x1", "x1"), "hi"));
 	}
 
