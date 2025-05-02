@@ -120,6 +120,11 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 	private static readonly List<string> ExtensionMts = new() { "mts" };
 
 	/// <summary>
+	///     MJPEG video stream
+	/// </summary>
+	private static readonly List<string> ExtensionMjpeg = new() { "mjpeg", "mov" };
+
+	/// <summary>
 	///     WebP imageFormat
 	/// </summary>
 	private static readonly List<string> ExtensionWebp = new() { "webp" };
@@ -163,6 +168,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			extensionList.AddRange(ExtensionGpx);
 			extensionList.AddRange(ExtensionMp4);
 			extensionList.AddRange(ExtensionMts);
+			extensionList.AddRange(ExtensionMjpeg);
 			extensionList.AddRange(ExtensionXmp);
 			extensionList.AddRange(ExtensionJsonSidecar);
 			extensionList.AddRange(ExtensionWebp);
@@ -185,6 +191,8 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			extensionList.AddRange(ExtensionGif);
 			extensionList.AddRange(ExtensionPng);
 			extensionList.AddRange(ExtensionMp4);
+			extensionList.AddRange(ExtensionMts);
+			extensionList.AddRange(ExtensionMjpeg);
 			extensionList.AddRange(ExtensionWebp);
 			extensionList.AddRange(ExtensionPsd);
 			return extensionList;
@@ -220,6 +228,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			var extensionList = new List<string>();
 			extensionList.AddRange(ExtensionMp4);
 			extensionList.AddRange(ExtensionMts);
+			extensionList.AddRange(ExtensionMjpeg);
 			return extensionList;
 		}
 	}
@@ -248,6 +257,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			// reading does not allow xmp
 			extensionList.AddRange(ExtensionMp4);
 			extensionList.AddRange(ExtensionMts);
+			extensionList.AddRange(ExtensionMjpeg);
 			return extensionList;
 		}
 	}

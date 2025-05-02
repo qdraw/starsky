@@ -25,7 +25,7 @@ public sealed class BufferingFileSystemWatcherTest
 			_tempExistingFilesFolder);
 	}
 
-	[ClassCleanup]
+	[ClassCleanup(ClassCleanupBehavior.EndOfClass)]
 	public static void ClassCleanup()
 	{
 		Console.WriteLine("cleanup run");

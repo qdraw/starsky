@@ -106,7 +106,7 @@ public class ProgramTest
 			await Program.RunAsync(app).WaitAsync(TimeSpan.FromMilliseconds(1000)));
 	}
 
-	[ClassCleanup]
+	[ClassCleanup(ClassCleanupBehavior.EndOfClass)]
 	public static void CleanEnvsAfterwards()
 	{
 		// see also:

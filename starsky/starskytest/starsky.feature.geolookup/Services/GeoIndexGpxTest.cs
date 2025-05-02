@@ -36,7 +36,7 @@ public sealed class GeoIndexGpxTest
 		};
 	}
 
-	[ClassCleanup]
+	[ClassCleanup(ClassCleanupBehavior.EndOfClass)]
 	public static void CleanUpGeoIndexGpxTest()
 	{
 		CreateAnGpx.Dispose();

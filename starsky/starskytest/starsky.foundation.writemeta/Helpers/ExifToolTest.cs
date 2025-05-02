@@ -43,7 +43,7 @@ public sealed class ExifToolTest
 		_appSettingsWithExifTool = new AppSettings { ExifToolPath = exifToolExe };
 	}
 
-	[ClassCleanup]
+	[ClassCleanup(ClassCleanupBehavior.EndOfClass)]
 	public static void CleanUp()
 	{
 		var folder = Path.Combine(new CreateAnImage().BasePath,
