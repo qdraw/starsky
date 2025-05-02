@@ -135,7 +135,7 @@ public class SizeFileHashIsTheSameTest
 			.SizeFileHashIsTheSame(
 				dbItems,
 				"/101NZ_50/DSC_0045.NEF");
-		Assert.AreEqual(null, result.Item1);
-		Assert.AreEqual(null, result.Item2);
+		Assert.IsNull(result.Item1);
+		Assert.IsNull(result.Item2);
 	}
 }

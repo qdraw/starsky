@@ -32,7 +32,7 @@ public class SelectorStorageTest
 		propertyObject?.SetValue(myClass, 44, null);
 
 		// Act & Assert
-		Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+		Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
 		{
 			new SelectorStorage(_scopeFactory).Get(myClass.Type);
 		});

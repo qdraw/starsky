@@ -126,7 +126,7 @@ public class ResizeThumbnailFromSourceImageHelperTests
 	[TestMethod]
 	public async Task ResizeThumbnailFromSourceImage_InvalidOutputHash()
 	{
-		await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
+		await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
 			await _sut.ResizeThumbnailFromSourceImage(
 				"non-existing-filepath", SelectorStorage.StorageServices.SubPath, 4, "",
 				false, ThumbnailImageFormat.jpg));
@@ -135,7 +135,7 @@ public class ResizeThumbnailFromSourceImageHelperTests
 	[TestMethod]
 	public async Task ResizeThumbnailFromSourceImage_InvalidImageFormat()
 	{
-		await Assert.ThrowsExceptionAsync<InvalidEnumArgumentException>(async () =>
+		await Assert.ThrowsExactlyAsync<InvalidEnumArgumentException>(async () =>
 			await _sut.ResizeThumbnailFromSourceImage(
 				"non-existing-filepath", SelectorStorage.StorageServices.SubPath, 4,
 				"thumbnailOutputHash",

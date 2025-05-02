@@ -51,8 +51,8 @@ public class SyncThumbnailTableAsyncTest
 		Assert.IsNotNull(item);
 		Assert.IsTrue(item.TinyMeta);
 		Assert.IsTrue(item.Small);
-		Assert.AreEqual(null, item.Large);
-		Assert.AreEqual(null, item.Large);
+		Assert.IsNull(item.Large);
+		Assert.IsNull(item.Large);
 	}
 
 	[TestMethod]
@@ -114,8 +114,8 @@ public class SyncThumbnailTableAsyncTest
 		var item = await dbContext.Thumbnails.FirstOrDefaultAsync(p => p.FileHash == "duplicate");
 
 		Assert.IsNotNull(item);
-		Assert.AreEqual(null, item.TinyMeta);
-		Assert.AreEqual(null, item.Small);
+		Assert.IsNull(item.TinyMeta);
+		Assert.IsNull(item.Small);
 	}
 
 	[TestMethod]

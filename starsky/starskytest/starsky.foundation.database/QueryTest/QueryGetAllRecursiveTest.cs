@@ -125,7 +125,7 @@ public sealed class QueryGetAllRecursiveTest
 		);
 
 		// Assert that a MySqlException is thrown when GetAllRecursiveAsync is called
-		await Assert.ThrowsExceptionAsync<MySqlException>(async () =>
+		await Assert.ThrowsExactlyAsync<MySqlException>(async () =>
 			await fakeQuery.GetAllRecursiveAsync("test"));
 	}
 

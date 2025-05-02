@@ -444,7 +444,7 @@ public sealed class QueryTest
 		var releative2 = _query.GetNextPrevInFolder("/display/hi.jpg");
 
 		Assert.AreEqual("/display/hi2.jpg", releative2.NextFilePath);
-		Assert.AreEqual(null, releative2.PrevFilePath);
+		Assert.IsNull(releative2.PrevFilePath);
 	}
 
 	[TestMethod]
@@ -683,7 +683,7 @@ public sealed class QueryTest
 		// Request new; and check if content is updated in memory cache
 		single001 =
 			_query.SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_001.jpg");
-		Assert.AreEqual(null, single001?.RelativeObjects.NextFilePath);
+		Assert.IsNull(single001?.RelativeObjects.NextFilePath);
 
 		// For avoiding conflicts when running multiple unit tests
 		single001!.FileIndexItem!.Tags = TrashKeyword.TrashKeywordString;
@@ -861,7 +861,7 @@ public sealed class QueryTest
 
 		var item = new FileIndexItem("/test/010101.jpg");
 
-		await Assert.ThrowsExceptionAsync<AggregateException>(async () =>
+		await Assert.ThrowsExactlyAsync<AggregateException>(async () =>
 			await query.AddItemAsync(item));
 		// should fail due update
 	}
@@ -997,7 +997,7 @@ public sealed class QueryTest
 		// Request new; item must be updated in cache
 		single004 =
 			_query.SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_004.jpg");
-		Assert.AreEqual(null, single004?.RelativeObjects.PrevFilePath);
+		Assert.IsNull(single004?.RelativeObjects.PrevFilePath);
 
 		// For avoiding conflicts when running multiple unit tests
 		single004!.FileIndexItem!.Tags = TrashKeyword.TrashKeywordString;
@@ -1139,7 +1139,7 @@ public sealed class QueryTest
 		// already verbose
 		_query.CacheUpdateItem(new List<FileIndexItem> { item1 });
 
-		Assert.IsTrue(_logger.TrackedInformation.Count != 0);
+		Assert.AreNotEqual(0, _logger.TrackedInformation.Count);
 		Assert.IsTrue(_logger.TrackedInformation.FirstOrDefault().Item2
 			?.Contains("[CacheUpdateItem]"));
 	}
@@ -1450,7 +1450,7 @@ public sealed class QueryTest
 
 		var query = new Query(dbContext, new AppSettings(), null!, new FakeIWebLogger());
 
-		await Assert.ThrowsExceptionAsync<AggregateException>(async () =>
+		await Assert.ThrowsExactlyAsync<AggregateException>(async () =>
 			await query.RetryQueryUpdateSaveChangesAsync(new FileIndexItem { Id = 1 },
 				new Exception(), "test", 0));
 	}

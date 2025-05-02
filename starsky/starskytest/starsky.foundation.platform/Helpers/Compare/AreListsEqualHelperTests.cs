@@ -58,7 +58,7 @@ public class AreListsEqualHelperTests
 		List<int> list2 = null!;
 
 		// Act & Assert
-		Assert.ThrowsException<ArgumentNullException>(() =>
+		Assert.ThrowsExactly<ArgumentNullException>(() =>
 			AreListsEqualHelper.AreListsEqual(list1, list2));
 	}
 
@@ -70,7 +70,7 @@ public class AreListsEqualHelperTests
 		List<int>? list2 = null;
 
 		// Act & Assert
-		Assert.ThrowsException<ArgumentNullException>(() =>
+		Assert.ThrowsExactly<ArgumentNullException>(() =>
 			AreListsEqualHelper.AreListsEqual(list1, list2!));
 	}
 

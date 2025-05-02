@@ -457,14 +457,14 @@ public sealed class AppSettingsTest
 			AccountRolesByEmailRegisterOverwrite =
 				new Dictionary<string, string> { { "bogusEmail", "bogusRole" } }
 		};
-		Assert.IsTrue(appSettings.AccountRolesByEmailRegisterOverwrite.Count == 0);
+		Assert.AreEqual(0, appSettings.AccountRolesByEmailRegisterOverwrite.Count);
 	}
 
 	[TestMethod]
 	public void AccountRolesByEmailRegisterOverwrite_Null()
 	{
 		var appSettings = new AppSettings { AccountRolesByEmailRegisterOverwrite = null };
-		Assert.IsTrue(appSettings.AccountRolesByEmailRegisterOverwrite?.Count == 0);
+		Assert.AreEqual(0, appSettings.AccountRolesByEmailRegisterOverwrite?.Count);
 	}
 
 	[TestMethod]

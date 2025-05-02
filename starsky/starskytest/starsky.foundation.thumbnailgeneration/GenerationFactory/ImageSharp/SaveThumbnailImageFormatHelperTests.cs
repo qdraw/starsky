@@ -12,7 +12,7 @@ public class SaveThumbnailImageFormatHelperTests
 	[TestMethod]
 	public async Task ResizeThumbnailImageFormat_NullInput()
 	{
-		await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+		await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
 			await SaveThumbnailImageFormatHelper.SaveThumbnailImageFormat(null!,
 				ThumbnailImageFormat.jpg, null!));
 	}

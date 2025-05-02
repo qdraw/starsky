@@ -169,7 +169,7 @@ public sealed class SyncFolderTest
 
 		Assert.AreEqual(subPath, result[0].FilePath);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result[0].Status);
-		Assert.IsTrue(result[0].Size != 123456);
+		Assert.AreNotEqual(123456, result[0].Size);
 		Assert.IsFalse(string.IsNullOrWhiteSpace(result[0].Tags));
 	}
 
@@ -554,7 +554,7 @@ public sealed class SyncFolderTest
 			new List<string> { "/", "/2018", "/2018/02", "/2018/02/2018_02_01" },
 			new List<FileIndexItem> { new("/2018") });
 
-		Assert.AreEqual(null, await _query.GetObjectByFilePathAsync("/2018"));
+		Assert.IsNull(await _query.GetObjectByFilePathAsync("/2018"));
 		Assert.AreEqual("/2018/02",
 			( await _query.GetObjectByFilePathAsync("/2018/02") )?.FilePath);
 		Assert.AreEqual("/2018/02/2018_02_01",
@@ -573,7 +573,7 @@ public sealed class SyncFolderTest
 			new List<string> { "/", "/.git" },
 			new List<FileIndexItem> { new("/") });
 
-		Assert.AreEqual(null, await _query.GetObjectByFilePathAsync("/.git"));
+		Assert.IsNull(await _query.GetObjectByFilePathAsync("/.git"));
 	}
 
 	[TestMethod]
@@ -593,9 +593,9 @@ public sealed class SyncFolderTest
 			}
 		);
 
-		Assert.AreEqual(null, await _query.GetObjectByFilePathAsync("/2018"));
-		Assert.AreEqual(null, await _query.GetObjectByFilePathAsync("/2018/02"));
-		Assert.AreEqual(null, await _query.GetObjectByFilePathAsync("/2018/02/2018_02_01"));
+		Assert.IsNull(await _query.GetObjectByFilePathAsync("/2018"));
+		Assert.IsNull(await _query.GetObjectByFilePathAsync("/2018/02"));
+		Assert.IsNull(await _query.GetObjectByFilePathAsync("/2018/02/2018_02_01"));
 	}
 
 	[TestMethod]
@@ -610,9 +610,9 @@ public sealed class SyncFolderTest
 			new List<string> { "/", "/2018", "/2018/02", "/2018/02/2018_02_01" },
 			new List<FileIndexItem> { new("/2018") });
 
-		Assert.AreEqual(null, await _query.GetObjectByFilePathAsync("/2018"));
-		Assert.AreEqual(null, await _query.GetObjectByFilePathAsync("/2018/02"));
-		Assert.AreEqual(null, await _query.GetObjectByFilePathAsync("/2018/02/2018_02_01"));
+		Assert.IsNull(await _query.GetObjectByFilePathAsync("/2018"));
+		Assert.IsNull(await _query.GetObjectByFilePathAsync("/2018/02"));
+		Assert.IsNull(await _query.GetObjectByFilePathAsync("/2018/02/2018_02_01"));
 	}
 
 	[TestMethod]

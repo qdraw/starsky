@@ -47,7 +47,7 @@ public sealed class ThumbnailCleanerTest
 		var sut = new ThumbnailCleaner(new FakeIStorage(), _query, new FakeIWebLogger(),
 			new FakeIThumbnailQuery(), new AppSettings());
 
-		await Assert.ThrowsExceptionAsync<DirectoryNotFoundException>(async () =>
+		await Assert.ThrowsExactlyAsync<DirectoryNotFoundException>(async () =>
 			await sut.CleanAllUnusedFilesAsync());
 	}
 

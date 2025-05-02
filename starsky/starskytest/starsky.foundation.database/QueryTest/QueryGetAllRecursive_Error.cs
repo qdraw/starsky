@@ -46,7 +46,7 @@ public class QueryGetAllRecursiveError
 			null!, _serviceScopeFactory!, new FakeIWebLogger());
 		await fakeQuery.GetAllRecursiveAsync("test");
 
-		Assert.IsTrue(InvalidOperationExceptionDbContextCount == 1);
+		Assert.AreEqual(1, InvalidOperationExceptionDbContextCount);
 	}
 
 	private sealed class InvalidOperationExceptionDbContext : ApplicationDbContext

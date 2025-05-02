@@ -13,7 +13,7 @@ public sealed class ServiceCollectionExtensionTest
 	public void ServiceCollectionExtensions_ServiceCollectionConfigurePoco_null_Config_Test()
 	{
 		// Act & Assert
-		var exception = Assert.ThrowsException<ArgumentNullException>(() =>
+		var exception = Assert.ThrowsExactly<ArgumentNullException>(() =>
 		{
 			new ServiceCollection().ConfigurePoCo<AppSettings>(null!);
 		});
