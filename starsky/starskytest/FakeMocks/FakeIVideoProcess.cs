@@ -15,7 +15,9 @@ public class FakeIVideoProcess(ISelectorStorage selectorStorage) : IVideoProcess
 {
 	private readonly IStorage _thumbnailStorage =
 		selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
-
+	private readonly IStorage _temporaryStorage =
+		selectorStorage.Get(SelectorStorage.StorageServices.Temporary);
+	
 	private VideoResult _result = new(true, string.Empty,
 		SelectorStorage.StorageServices.Temporary, "Mocked");
 
@@ -38,7 +40,10 @@ public class FakeIVideoProcess(ISelectorStorage selectorStorage) : IVideoProcess
 	public void CleanTemporaryFile(string resultResultPath,
 		SelectorStorage.StorageServices? resultResultPathType)
 	{
-		throw new NotImplementedException();
+		if ( _temporaryStorage.ExistFile(resultResultPath) )
+		{
+			_temporaryStorage.FileDelete(resultResultPath);
+		}
 	}
 
 	public void SetSuccessResult()
