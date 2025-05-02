@@ -4,7 +4,7 @@
 
 # Stage 1 Front-end
 # # docker buildx imagetools inspect node:18-alpine
-FROM --platform=$BUILDPLATFORM node:18-alpine as react-build
+FROM --platform=$BUILDPLATFORM node:22-alpine as react-build
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 
@@ -19,7 +19,7 @@ RUN npm ci --legacy-peer-deps --prefer-offline --no-audit --no-fund
 RUN npm run build
 RUN echo "react done"
 
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0 AS build-env
 ARG BUILDPLATFORM
 ARG TARGETPLATFORM
 
