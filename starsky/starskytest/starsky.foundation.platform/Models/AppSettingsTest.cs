@@ -103,7 +103,7 @@ public sealed class AppSettingsTest
 	{
 		_appSettings.DatabaseType = AppSettings.DatabaseTypeList.Sqlite;
 
-		Assert.ThrowsException<ArgumentException>(() =>
+		Assert.ThrowsExactly<ArgumentException>(() =>
 			_appSettings.SqLiteFullPath(string.Empty, null!)
 		);
 		// Optionally, you can assert specific properties of the exception here, but it's not required.
@@ -114,7 +114,7 @@ public sealed class AppSettingsTest
 	{
 		_appSettings.DatabaseType = AppSettings.DatabaseTypeList.Mysql;
 
-		Assert.ThrowsException<ArgumentException>(() =>
+		Assert.ThrowsExactly<ArgumentException>(() =>
 			_appSettings.SqLiteFullPath(string.Empty, null!)
 		);
 		// Optionally, you can assert specific properties of the exception here, but it's not required.
@@ -123,7 +123,7 @@ public sealed class AppSettingsTest
 	[TestMethod]
 	public void AppSettingsProviderTest_StructureFails_withoutExtAndNoSlash()
 	{
-		Assert.ThrowsException<ArgumentException>(() =>
+		Assert.ThrowsExactly<ArgumentException>(() =>
 			{
 				_appSettings.Structure = "\\d";
 				Assert.AreEqual("d", _appSettings.Structure);
@@ -142,7 +142,7 @@ public sealed class AppSettingsTest
 	public void AppSettingsProviderTest_StructureCheck_MissingFirstSlash()
 	{
 		// Act & Assert
-		Assert.ThrowsException<ArgumentException>(() =>
+		Assert.ThrowsExactly<ArgumentException>(() =>
 		{
 			AppSettings.StructureCheck("d/test.ext");
 		});
@@ -163,7 +163,7 @@ public sealed class AppSettingsTest
 	[TestMethod]
 	public void AppSettingsProviderTest_NoFolderMissingFirstSlash()
 	{
-		Assert.ThrowsException<ArgumentException>(() =>
+		Assert.ThrowsExactly<ArgumentException>(() =>
 		{
 			AppSettings.StructureCheck("dion.ext");
 		});
@@ -173,7 +173,7 @@ public sealed class AppSettingsTest
 	[TestMethod]
 	public void AppSettingsProviderTest_Null()
 	{
-		Assert.ThrowsException<ArgumentNullException>(() =>
+		Assert.ThrowsExactly<ArgumentNullException>(() =>
 			AppSettings.StructureCheck(string.Empty));
 	}
 

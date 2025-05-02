@@ -93,8 +93,7 @@ public class ImportThumbnailServiceTests
 		var sut = new ImportThumbnailService(new FakeSelectorStorage(), new FakeIWebLogger(),
 			_appSettings);
 
-		Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+		Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
 			sut.MapToTransferObject(inputList));
 	}
-	
 }

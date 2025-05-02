@@ -181,7 +181,7 @@ public sealed class SearchWideDateTimeTest
 		// Write enum with reflection
 
 		// Act
-		Assert.ThrowsException<ArgumentException>(() =>
+		Assert.ThrowsExactly<ArgumentException>(() =>
 		{
 			SearchWideDateTime.WideSearchDateTimeGet(model, 0, InvalidEnum());
 		});
@@ -199,7 +199,7 @@ public sealed class SearchWideDateTimeTest
 		model.SetAddSearchForOptions(value);
 
 		// Act
-		Assert.ThrowsException<ArgumentNullException>(() =>
+		Assert.ThrowsExactly<ArgumentNullException>(() =>
 		{
 			SearchWideDateTime.WideSearchDateTimeGet(model, 0, InvalidEnum());
 		});

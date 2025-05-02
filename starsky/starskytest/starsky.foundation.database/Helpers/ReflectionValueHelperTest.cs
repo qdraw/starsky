@@ -18,7 +18,7 @@ public class ReflectionValueHelperTest
 	public void TestReadFieldNothing()
 	{
 		var result = new FooNothing().GetReflectionFieldValue<string>("_bar");
-		Assert.AreEqual(null, result);
+		Assert.IsNull(result);
 	}
 
 	[SuppressMessage("Usage",

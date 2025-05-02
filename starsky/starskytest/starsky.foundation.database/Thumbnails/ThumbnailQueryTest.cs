@@ -136,7 +136,7 @@ public class ThumbnailQueryTest
 		await dbContext.DisposeAsync();
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<ObjectDisposedException>(async () =>
+		await Assert.ThrowsExactlyAsync<ObjectDisposedException>(async () =>
 			await thumbnailQuery.AddThumbnailRangeAsync(data));
 	}
 
@@ -250,7 +250,7 @@ public class ThumbnailQueryTest
 		var thumbnailQuery = _thumbnailQuery; // Ensure this is initialized as needed
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+		await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
 		{
 			await thumbnailQuery.AddThumbnailRangeAsync(
 				new List<ThumbnailResultDataTransferModel> { new(null!) });
@@ -516,7 +516,7 @@ public class ThumbnailQueryTest
 		// Assert
 		var thumbnails = await _thumbnailQuery.Get();
 		Assert.IsTrue(thumbnails.Count >= 1);
-		Assert.IsTrue(thumbnails.Count(p => p.FileHash == "3456789") == 1);
+		Assert.AreEqual(1, thumbnails.Count(p => p.FileHash == "3456789"));
 
 		Assert.IsTrue(thumbnails.Where(p => p.FileHash == "3456789")
 			.All(x => x.Small == true));
@@ -707,7 +707,7 @@ public class ThumbnailQueryTest
 		// No service scope
 		var query = new ThumbnailQuery(context, null!, new FakeIWebLogger(), new FakeMemoryCache());
 
-		await Assert.ThrowsExceptionAsync<ObjectDisposedException>(async () =>
+		await Assert.ThrowsExactlyAsync<ObjectDisposedException>(async () =>
 		{
 			await query.GetMissingThumbnailsBatchAsync(0, 100);
 		});
@@ -733,7 +733,7 @@ public class ThumbnailQueryTest
 		await dbContext.DisposeAsync();
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<ObjectDisposedException>(async () =>
+		await Assert.ThrowsExactlyAsync<ObjectDisposedException>(async () =>
 			await thumbnailQuery.UpdateAsync(data));
 	}
 
@@ -786,7 +786,7 @@ public class ThumbnailQueryTest
 		await dbContext.DisposeAsync();
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<ObjectDisposedException>(async () =>
+		await Assert.ThrowsExactlyAsync<ObjectDisposedException>(async () =>
 			await thumbnailQuery.Get("data"));
 	}
 
@@ -816,8 +816,8 @@ public class ThumbnailQueryTest
 
 		var item2 = await thumbnailQuery.Get("test123");
 
-		Assert.IsTrue(item2.Count == 1);
-		Assert.IsTrue(item2.FirstOrDefault()!.Large);
+		Assert.AreEqual(1, item2.Count);
+		Assert.IsTrue(item2.FirstOrDefault()?.Large);
 	}
 
 	[TestMethod]
@@ -837,7 +837,7 @@ public class ThumbnailQueryTest
 		await dbContext.DisposeAsync();
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<ObjectDisposedException>(async () =>
+		await Assert.ThrowsExactlyAsync<ObjectDisposedException>(async () =>
 			await thumbnailQuery.RemoveThumbnailsAsync(new List<string> { "data" }));
 	}
 
@@ -869,7 +869,7 @@ public class ThumbnailQueryTest
 
 		var item2 = await thumbnailQuery.Get("8439573458435");
 
-		Assert.IsTrue(item2.Count == 0);
+		Assert.AreEqual(0, item2.Count);
 	}
 
 	[TestMethod]
@@ -889,7 +889,7 @@ public class ThumbnailQueryTest
 		await dbContext.DisposeAsync();
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<ObjectDisposedException>(async () =>
+		await Assert.ThrowsExactlyAsync<ObjectDisposedException>(async () =>
 			await thumbnailQuery.RenameAsync("data", "after"));
 	}
 

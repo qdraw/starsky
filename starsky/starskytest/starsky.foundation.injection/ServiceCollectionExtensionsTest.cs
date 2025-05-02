@@ -91,7 +91,7 @@ public class ServiceCollectionExtensionsTest
 
 		IServiceCollection serviceCollection = new ServiceCollection();
 
-		Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+		Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
 			serviceCollection.Add(overwriteInjectionLifetime.Type, typeof(TestInjectionClass)));
 	}
 
@@ -157,7 +157,7 @@ public class ServiceCollectionExtensionsTest
 
 		IServiceCollection serviceCollection = new ServiceCollection();
 
-		Assert.ThrowsException<ArgumentOutOfRangeException>(() => serviceCollection.Add(
+		Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => serviceCollection.Add(
 			typeof(ITestInjectionClass),
 			typeof(TestInjectionClass), overwriteInjectionLifetime.Type));
 	}
@@ -207,7 +207,7 @@ public class ServiceCollectionExtensionsTest
 	{
 		var exception = new NullReferenceException();
 
-		Assert.ThrowsException<InvalidOperationException>(() =>
+		Assert.ThrowsExactly<InvalidOperationException>(() =>
 			ServiceCollectionExtensions.GetExportedTypes(new AssemblyTestClass(exception)));
 	}
 

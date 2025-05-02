@@ -119,7 +119,7 @@ public sealed class QueryUpdateItemError
 			null!, _serviceScopeFactory!, new FakeIWebLogger());
 		await fakeQuery.UpdateItemAsync(new FileIndexItem("test"));
 
-		Assert.IsTrue(InvalidOperationExceptionDbContextCount == 1);
+		Assert.AreEqual(1, InvalidOperationExceptionDbContextCount);
 	}
 
 	[TestMethod]
@@ -138,7 +138,7 @@ public sealed class QueryUpdateItemError
 		);
 
 		// Assert that a MySqlException is thrown when UpdateItemAsync is called
-		await Assert.ThrowsExceptionAsync<MySqlException>(async () =>
+		await Assert.ThrowsExactlyAsync<MySqlException>(async () =>
 			await fakeQuery.UpdateItemAsync(new FileIndexItem("test")));
 	}
 
@@ -192,8 +192,7 @@ public sealed class QueryUpdateItemError
 
 		await context.FileIndex.AddAsync(new FileIndexItem("/test.jpg"));
 		await context.SaveChangesAsync();
-		var item = await context.FileIndex.FirstOrDefaultAsync(
-			p => p.FilePath == "/test.jpg");
+		var item = await context.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test.jpg");
 
 		var sqLiteFailContext = new SqliteExceptionDbContext(options);
 		Assert.AreEqual(0, sqLiteFailContext.Count);
@@ -223,8 +222,7 @@ public sealed class QueryUpdateItemError
 
 		await context.FileIndex.AddAsync(new FileIndexItem("/test.jpg"));
 		await context.SaveChangesAsync();
-		var item = await context.FileIndex.FirstOrDefaultAsync(
-			p => p.FilePath == "/test.jpg");
+		var item = await context.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test.jpg");
 
 		var sqLiteFailContext = new SqliteExceptionDbContext(options);
 		Assert.AreEqual(0, sqLiteFailContext.Count);
@@ -268,7 +266,7 @@ public sealed class QueryUpdateItemError
 	[TestMethod]
 	public void Query_UpdateItem_NotSupportedException()
 	{
-		Assert.ThrowsException<NotSupportedException>(() =>
+		Assert.ThrowsExactly<NotSupportedException>(() =>
 			SolveConcurrency.SolveConcurrencyException(null!,
 				new FakePropertyValues(null!), new FakePropertyValues(null!),
 				"", _ => IsWrittenConcurrencyException = true));
@@ -356,7 +354,7 @@ public sealed class QueryUpdateItemError
 		await query.RemoveItemAsync(testItem);
 
 		var afterResult = await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == path);
-		Assert.AreEqual(null, afterResult);
+		Assert.IsNull(afterResult);
 	}
 
 
@@ -391,10 +389,10 @@ public sealed class QueryUpdateItemError
 		await query.RemoveItemAsync(new List<FileIndexItem> { testItem1, testItem2 });
 
 		var afterResult1 = await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == path1);
-		Assert.AreEqual(null, afterResult1);
+		Assert.IsNull(afterResult1);
 
 		var afterResult2 = await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == path2);
-		Assert.AreEqual(null, afterResult2);
+		Assert.IsNull(afterResult2);
 	}
 
 	[TestMethod]

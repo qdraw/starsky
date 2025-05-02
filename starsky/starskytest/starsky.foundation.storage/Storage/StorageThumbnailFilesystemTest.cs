@@ -213,63 +213,63 @@ public sealed class StorageThumbnailFilesystemTest
 	[TestMethod]
 	public void IsFolderOrFile()
 	{
-		Assert.ThrowsException<NotSupportedException>(() =>
+		Assert.ThrowsExactly<NotSupportedException>(() =>
 			_thumbnailStorage.IsFolderOrFile("not-found"));
 	}
 
 	[TestMethod]
 	public void FolderMove()
 	{
-		Assert.ThrowsException<NotSupportedException>(() =>
+		Assert.ThrowsExactly<NotSupportedException>(() =>
 			_thumbnailStorage.FolderMove("not-found", "2"));
 	}
 
 	[TestMethod]
 	public void CreateDirectory()
 	{
-		Assert.ThrowsException<NotSupportedException>(() =>
+		Assert.ThrowsExactly<NotSupportedException>(() =>
 			_thumbnailStorage.CreateDirectory("not-found"));
 	}
 
 	[TestMethod]
 	public void FolderDelete()
 	{
-		Assert.ThrowsException<NotSupportedException>(() =>
+		Assert.ThrowsExactly<NotSupportedException>(() =>
 			_thumbnailStorage.FolderDelete("not-found"));
 	}
 
 	[TestMethod]
 	public void GetAllFilesInDirectoryRecursive()
 	{
-		Assert.ThrowsException<NotSupportedException>(() =>
+		Assert.ThrowsExactly<NotSupportedException>(() =>
 			_thumbnailStorage.GetAllFilesInDirectoryRecursive("not-found"));
 	}
 
 	[TestMethod]
 	public void GetDirectories()
 	{
-		Assert.ThrowsException<NotSupportedException>(() =>
+		Assert.ThrowsExactly<NotSupportedException>(() =>
 			_thumbnailStorage.GetDirectories("not-found"));
 	}
 
 	[TestMethod]
 	public void GetDirectoryRecursive()
 	{
-		Assert.ThrowsException<NotSupportedException>(() =>
+		Assert.ThrowsExactly<NotSupportedException>(() =>
 			_thumbnailStorage.GetDirectoryRecursive("not-found"));
 	}
 
 	[TestMethod]
 	public void ReadStream_NotFound()
 	{
-		Assert.ThrowsException<FileNotFoundException>(() =>
+		Assert.ThrowsExactly<FileNotFoundException>(() =>
 			_thumbnailStorage.ReadStream("not-found"));
 	}
 
 	[TestMethod]
 	public void WriteStreamOpenOrCreate()
 	{
-		Assert.ThrowsException<NotSupportedException>(() =>
+		Assert.ThrowsExactly<NotSupportedException>(() =>
 			_thumbnailStorage.WriteStreamOpenOrCreate(Stream.Null, "not-found"));
 	}
 

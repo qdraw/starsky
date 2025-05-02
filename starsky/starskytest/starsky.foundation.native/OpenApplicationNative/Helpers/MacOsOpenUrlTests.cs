@@ -35,7 +35,7 @@ public class MacOsOpenUrlTests
 		}
 
 		// Act & Assert
-		Assert.ThrowsException<DllNotFoundException>(() =>
+		Assert.ThrowsExactly<DllNotFoundException>(() =>
 			MacOsOpenUrl.OpenDefault(["not important"], OSPlatform.OSX));
 	}
 
@@ -121,7 +121,7 @@ public class MacOsOpenUrlTests
 		}
 
 		// Act & Assert
-		Assert.ThrowsException<DllNotFoundException>(() =>
+		Assert.ThrowsExactly<DllNotFoundException>(() =>
 			MacOsOpenUrl.OpenApplicationAtUrl(["not important"], "not important", OSPlatform.OSX));
 	}
 
@@ -135,7 +135,7 @@ public class MacOsOpenUrlTests
 		}
 
 		// Act & Assert
-		Assert.ThrowsException<DllNotFoundException>(() =>
+		Assert.ThrowsExactly<DllNotFoundException>(() =>
 			MacOsOpenUrl.OpenUrLsWithApplicationAtUrl(IntPtr.Zero, IntPtr.Zero, IntPtr.Zero));
 	}
 
@@ -149,7 +149,7 @@ public class MacOsOpenUrlTests
 		}
 
 		// Act & Assert
-		Assert.ThrowsException<DllNotFoundException>(() =>
+		Assert.ThrowsExactly<DllNotFoundException>(() =>
 			MacOsOpenUrl.NsWorkspaceSharedWorkSpace());
 	}
 
@@ -164,6 +164,6 @@ public class MacOsOpenUrlTests
 		}
 
 		// Act & Assert
-		Assert.ThrowsException<DllNotFoundException>(() => MacOsOpenUrl.InvokeOpenUrl(IntPtr.Zero));
+		Assert.ThrowsExactly<DllNotFoundException>(() => MacOsOpenUrl.InvokeOpenUrl(IntPtr.Zero));
 	}
 }

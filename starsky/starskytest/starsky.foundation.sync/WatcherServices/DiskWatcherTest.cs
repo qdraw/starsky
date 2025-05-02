@@ -240,7 +240,7 @@ public sealed class DiskWatcherTest
 		var watcher = new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), null!);
 
 		// Act & Assert
-		Assert.ThrowsException<NullReferenceException>(() =>
+		Assert.ThrowsExactly<NullReferenceException>(() =>
 		{
 			watcher.OnChanged(null!, event1);
 
@@ -300,7 +300,7 @@ public sealed class DiskWatcherTest
 		var event1 = new RenamedEventArgs(WatcherChangeTypes.Renamed, "t", "test.jpg", "test2.jpg");
 
 		// Act & Assert
-		 Assert.ThrowsException<NullReferenceException>(() =>
+		 Assert.ThrowsExactly<NullReferenceException>(() =>
 		{
 			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), null!)
 				.OnRenamed(null!, event1);
@@ -326,7 +326,7 @@ public sealed class DiskWatcherTest
 
 		Assert.AreEqual(1, processor.Data.Count);
 		Assert.AreEqual($"t{Path.DirectorySeparatorChar}test2.jpg", processor.Data[0].Item1);
-		Assert.AreEqual(null, processor.Data[0].Item2);
+		Assert.IsNull(processor.Data[0].Item2);
 	}
 
 	[TestMethod]
@@ -349,7 +349,7 @@ public sealed class DiskWatcherTest
 
 		Assert.AreEqual(1, processor.Data.Count);
 		Assert.AreEqual(_createAnImage.FullFilePath, processor.Data[0].Item1);
-		Assert.AreEqual(null, processor.Data[0].Item2);
+		Assert.IsNull(processor.Data[0].Item2);
 	}
 
 	[TestMethod]

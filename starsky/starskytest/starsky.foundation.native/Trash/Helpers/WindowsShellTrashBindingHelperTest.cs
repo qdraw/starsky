@@ -53,7 +53,7 @@ public class WindowsShellTrashBindingHelperTest
 		var result =
 			WindowsShellTrashBindingHelper.Trash(new List<string> { "destPath" }, OSPlatform.Linux);
 
-		Assert.AreEqual(null, result.Item1);
+		Assert.IsNull(result.Item1);
 		Assert.IsTrue(result.Item2.Contains("Not supported"));
 	}
 
@@ -61,70 +61,70 @@ public class WindowsShellTrashBindingHelperTest
 	public void FileOperationTrash_FOF_SILENT()
 	{
 		Assert.AreEqual(0x0004,
-			( ushort )WindowsShellTrashBindingHelper.ShFileOperations.FOF_SILENT);
+			( ushort ) WindowsShellTrashBindingHelper.ShFileOperations.FOF_SILENT);
 	}
 
 	[TestMethod]
 	public void FileOperationTrash_FOF_NOCONFIRMATION()
 	{
 		Assert.AreEqual(0x0010,
-			( ushort )WindowsShellTrashBindingHelper.ShFileOperations.FOF_NOCONFIRMATION);
+			( ushort ) WindowsShellTrashBindingHelper.ShFileOperations.FOF_NOCONFIRMATION);
 	}
 
 	[TestMethod]
 	public void FileOperationTrash_FOF_ALLOWUNDO()
 	{
 		Assert.AreEqual(0x0040,
-			( ushort )WindowsShellTrashBindingHelper.ShFileOperations.FOF_ALLOWUNDO);
+			( ushort ) WindowsShellTrashBindingHelper.ShFileOperations.FOF_ALLOWUNDO);
 	}
 
 	[TestMethod]
 	public void FileOperationTrash_FOF_SIMPLEPROGRESS()
 	{
 		Assert.AreEqual(0x0100,
-			( ushort )WindowsShellTrashBindingHelper.ShFileOperations.FOF_SIMPLEPROGRESS);
+			( ushort ) WindowsShellTrashBindingHelper.ShFileOperations.FOF_SIMPLEPROGRESS);
 	}
 
 	[TestMethod]
 	public void FileOperationTrash_FOF_NOERRORUI()
 	{
 		Assert.AreEqual(0x0400,
-			( ushort )WindowsShellTrashBindingHelper.ShFileOperations.FOF_NOERRORUI);
+			( ushort ) WindowsShellTrashBindingHelper.ShFileOperations.FOF_NOERRORUI);
 	}
 
 	[TestMethod]
 	public void FileOperationTrash_FOF_WANTNUKEWARNING()
 	{
 		Assert.AreEqual(0x4000,
-			( ushort )WindowsShellTrashBindingHelper.ShFileOperations.FOF_WANTNUKEWARNING);
+			( ushort ) WindowsShellTrashBindingHelper.ShFileOperations.FOF_WANTNUKEWARNING);
 	}
 
 	[TestMethod]
 	public void FileOperationType_FO_MOVE()
 	{
-		Assert.AreEqual(( uint )0x0001,
-			( uint )WindowsShellTrashBindingHelper.FileOperationType.FO_MOVE);
+		Assert.AreEqual(( uint ) 0x0001,
+			( uint ) WindowsShellTrashBindingHelper.FileOperationType.FO_MOVE);
 	}
 
 	[TestMethod]
 	public void FileOperationType_FO_COPY()
 	{
-		Assert.AreEqual(( uint )0x0002,
-			( uint )WindowsShellTrashBindingHelper.FileOperationType.FO_COPY);
+		Assert.AreEqual(( uint ) 0x0002,
+			( uint ) WindowsShellTrashBindingHelper.FileOperationType.FO_COPY);
 	}
 
 	[TestMethod]
 	public void FileOperationType_FO_DELETE()
 	{
-		Assert.AreEqual(( uint )0x0003,
-			( uint )WindowsShellTrashBindingHelper.FileOperationType.FO_DELETE);
+		Assert.AreEqual(( uint ) 0x0003,
+			( uint ) WindowsShellTrashBindingHelper.FileOperationType.FO_DELETE);
 	}
 
 	[TestMethod]
 	public void FileOperationType_FO_RENAME()
 	{
-		Assert.AreEqual(( uint )0x0004,
-			( uint )WindowsShellTrashBindingHelper.FileOperationType.FO_RENAME);
+		Assert.AreEqual(( uint ) 0x0004,
+			( uint ) WindowsShellTrashBindingHelper.FileOperationType.FO_RENAME);
 	}
 
 	[TestMethod]
@@ -175,7 +175,7 @@ public class WindowsShellTrashBindingHelperTest
 		// Shell32.dll is not available on Linux or Mac OS
 		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
 		{
-			Assert.AreEqual(null, hResult);
+			Assert.IsNull(hResult);
 			Assert.IsTrue(info?.Contains("Unable to load shared library"));
 			Assert.AreEqual(0, pShQueryRbInfo.i64NumItems);
 			return;

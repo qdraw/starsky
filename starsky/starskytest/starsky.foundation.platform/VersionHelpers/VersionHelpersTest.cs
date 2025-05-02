@@ -163,7 +163,7 @@ public sealed class VersionHelpersTest
 	public void SemVersion_Parse_test()
 	{
 		// Act & Assert
-		Assert.ThrowsException<ArgumentException>(() => { SemVersion.Parse("test"); });
+		Assert.ThrowsExactly<ArgumentException>(() => { SemVersion.Parse("test"); });
 	}
 
 	[TestMethod]

@@ -150,7 +150,7 @@ public sealed class ExifToolDownloadTest
 			await new ExifToolDownload(httpClientHelper, _appSettings, new FakeIWebLogger())
 				.DownloadCheckSums();
 
-		Assert.AreEqual(null, result);
+		Assert.IsNull(result);
 	}
 
 	[TestMethod]

@@ -179,7 +179,7 @@ public sealed class RenameServiceTest
 		Assert.AreEqual("test2.jpg", all.Find(p => p.FileName == "test2.jpg")?.FileName);
 
 		// old item is not in db
-		Assert.AreEqual(null, all.Find(p => p.FileName == "test.jpg")?.FileName);
+		Assert.IsNull(all.Find(p => p.FileName == "test.jpg")?.FileName);
 
 		// use cached view
 		var singleItem = _query.SingleItem(_folderExist.FilePath + "/test2.jpg");
@@ -517,7 +517,7 @@ public sealed class RenameServiceTest
 
 		Assert.AreEqual("/test_01.jpg",
 			_query.SingleItem("/test_01.jpg")?.FileIndexItem?.FilePath);
-		Assert.AreEqual(null, _query.SingleItem(itemInChildFolderPath));
+		Assert.IsNull(_query.SingleItem(itemInChildFolderPath));
 	}
 
 	[TestMethod]
@@ -544,8 +544,8 @@ public sealed class RenameServiceTest
 		Assert.AreEqual("/child_folder2/test_10.png",
 			_query.SingleItem("/child_folder2/test_10.png")?.FileIndexItem?.FilePath);
 
-		Assert.AreEqual(null, _query.SingleItem(itemInChildFolderPath));
-		Assert.AreEqual(null, _query.SingleItem("/child_folder/test_10.png"));
+		Assert.IsNull(_query.SingleItem(itemInChildFolderPath));
+		Assert.IsNull(_query.SingleItem("/child_folder/test_10.png"));
 	}
 
 	[TestMethod]

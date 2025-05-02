@@ -147,7 +147,7 @@ public sealed class UpdateBackgroundTaskQueueTest
 		Func<CancellationToken, ValueTask>? func = null;
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+		await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
 		{
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(func!, string.Empty);
 		});

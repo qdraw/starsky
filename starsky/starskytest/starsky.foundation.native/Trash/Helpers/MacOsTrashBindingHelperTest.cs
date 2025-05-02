@@ -20,7 +20,7 @@ public class MacOsTrashBindingHelperTest
 		var result =
 			MacOsTrashBindingHelper.Trash(new List<string> { "destPath" }, OSPlatform.Linux);
 
-		Assert.AreEqual(null, result);
+		Assert.IsNull(result);
 	}
 
 	[TestMethod]
@@ -56,7 +56,7 @@ public class MacOsTrashBindingHelperTest
 
 		await Task.Delay(1000);
 
-		Assert.AreEqual(true, result);
+		Assert.IsTrue(result);
 
 		var exists = File.Exists(destPath);
 		if ( exists )
@@ -146,7 +146,7 @@ public class MacOsTrashBindingHelperTest
 		}
 
 		// Act & Assert
-		Assert.ThrowsException<DllNotFoundException>(() =>
+		Assert.ThrowsExactly<DllNotFoundException>(() =>
 			MacOsTrashBindingHelper.TrashInternal(new List<string>()));
 	}
 
@@ -160,7 +160,7 @@ public class MacOsTrashBindingHelperTest
 		}
 
 		// Act & Assert
-		Assert.ThrowsException<DllNotFoundException>(() =>
+		Assert.ThrowsExactly<DllNotFoundException>(() =>
 			MacOsTrashBindingHelper.GetUrls(new List<string> { "value" }));
 	}
 
@@ -174,7 +174,7 @@ public class MacOsTrashBindingHelperTest
 		}
 
 		// Act & Assert
-		Assert.ThrowsException<DllNotFoundException>(() =>
+		Assert.ThrowsExactly<DllNotFoundException>(() =>
 			MacOsTrashBindingHelper.CreateCfString("value"));
 	}
 
@@ -188,7 +188,7 @@ public class MacOsTrashBindingHelperTest
 		}
 
 		// Act & Assert
-		Assert.ThrowsException<DllNotFoundException>(() =>
+		Assert.ThrowsExactly<DllNotFoundException>(() =>
 			MacOsTrashBindingHelper.GetSelector("value"));
 	}
 

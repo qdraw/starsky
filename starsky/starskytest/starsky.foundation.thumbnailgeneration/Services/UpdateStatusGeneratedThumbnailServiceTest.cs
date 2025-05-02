@@ -126,8 +126,8 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		var getResult = await query.Get(ExampleData[0].FileHash); // see the index
 		Assert.AreEqual(1, getResult.Count);
 		Assert.IsTrue(getResult[0].Large);
-		Assert.AreEqual(null, getResult[0].ExtraLarge);
-		Assert.AreEqual(null, getResult[0].Small);
+		Assert.IsNull(getResult[0].ExtraLarge);
+		Assert.IsNull(getResult[0].Small);
 	}
 
 	[TestMethod]
@@ -140,8 +140,8 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		var getResult = await query.Get(ExampleData[1].FileHash);
 		Assert.AreEqual(1, getResult.Count);
 		Assert.IsFalse(getResult[0].Large);
-		Assert.AreEqual(null, getResult[0].ExtraLarge);
-		Assert.AreEqual(null, getResult[0].Small);
+		Assert.IsNull(getResult[0].ExtraLarge);
+		Assert.IsNull(getResult[0].Small);
 	}
 
 
@@ -154,8 +154,8 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 
 		var getResult = await query.Get(ExampleData[2].FileHash);
 		Assert.AreEqual(1, getResult.Count);
-		Assert.AreEqual(null, getResult[0].Large);
-		Assert.AreEqual(null, getResult[0].ExtraLarge);
+		Assert.IsNull(getResult[0].Large);
+		Assert.IsNull(getResult[0].ExtraLarge);
 		Assert.IsTrue(getResult[0].Small);
 	}
 
@@ -168,8 +168,8 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 
 		var getResult = await query.Get(ExampleData[3].FileHash);
 		Assert.AreEqual(1, getResult.Count);
-		Assert.AreEqual(null, getResult[0].Large);
-		Assert.AreEqual(null, getResult[0].ExtraLarge);
+		Assert.IsNull(getResult[0].Large);
+		Assert.IsNull(getResult[0].ExtraLarge);
 		Assert.IsFalse(getResult[0].Small);
 	}
 
@@ -182,9 +182,9 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 
 		var getResult = await query.Get(ExampleData[4].FileHash);
 		Assert.AreEqual(1, getResult.Count);
-		Assert.AreEqual(null, getResult[0].Large);
+		Assert.IsNull(getResult[0].Large);
 		Assert.IsTrue(getResult[0].ExtraLarge);
-		Assert.AreEqual(null, getResult[0].Small);
+		Assert.IsNull(getResult[0].Small);
 	}
 
 	[TestMethod]
@@ -196,9 +196,9 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 
 		var getResult = await query.Get(ExampleData[5].FileHash);
 		Assert.AreEqual(1, getResult.Count);
-		Assert.AreEqual(null, getResult[0].Large);
+		Assert.IsNull(getResult[0].Large);
 		Assert.IsFalse(getResult[0].ExtraLarge);
-		Assert.AreEqual(null, getResult[0].Small);
+		Assert.IsNull(getResult[0].Small);
 	}
 
 	[TestMethod]

@@ -34,7 +34,7 @@ public sealed class DecodingExceptionTest
 		}
 
 		// Act & Assert
-		var ex = Assert.ThrowsException<DecodingException>(() =>
+		var ex = Assert.ThrowsExactly<DecodingException>(() =>
 		{
 			var instance = ( DecodingException ) ctor.Invoke(new object[]
 			{

@@ -66,12 +66,12 @@ public sealed class HttpClientHelperTest
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
 		var httpProvider = new HttpProvider(httpClient);
-		
+
 		var httpClientHelper =
 			new HttpClientHelper(httpProvider, new FakeIStorage(), new FakeIWebLogger());
-		
+
 		var output = await httpClientHelper.ReadString("https://qdraw.nl/test");
-		
+
 		Assert.IsTrue(output.Key);
 	}
 
@@ -153,7 +153,7 @@ public sealed class HttpClientHelperTest
 		var sut = new HttpClientHelper(new FakeIHttpProvider(), null as IServiceScopeFactory,
 			new FakeIWebLogger());
 
-		await Assert.ThrowsExceptionAsync<UriFormatException>(() => sut
+		await Assert.ThrowsExactlyAsync<UriFormatException>(() => sut
 			.Download("t", "T"));
 	}
 

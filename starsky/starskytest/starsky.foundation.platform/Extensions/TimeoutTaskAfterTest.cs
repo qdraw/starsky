@@ -20,7 +20,7 @@ public sealed class TimeoutTaskAfterTest
 	{
 		// Act & Assert
 		var exception =
-			await Assert.ThrowsExceptionAsync<TimeoutException>(() =>
+			await Assert.ThrowsExactlyAsync<TimeoutException>(() =>
 				EndlessTest().TimeoutAfter(1));
 
 		// Additional assertions (optional)
@@ -33,7 +33,7 @@ public sealed class TimeoutTaskAfterTest
 	{
 		// Act & Assert
 		var exception =
-			await Assert.ThrowsExceptionAsync<TimeoutException>(() =>
+			await Assert.ThrowsExactlyAsync<TimeoutException>(() =>
 				EndlessTest().TimeoutAfter(0));
 
 		// Additional assertions (optional)

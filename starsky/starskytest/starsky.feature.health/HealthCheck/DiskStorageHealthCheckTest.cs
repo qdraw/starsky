@@ -19,7 +19,7 @@ public sealed class DiskStorageHealthCheckTest
 		var logger = new FakeIWebLogger();
 
 		// Act & Assert
-		Assert.ThrowsException<ArgumentNullException>(() =>
+		Assert.ThrowsExactly<ArgumentNullException>(() =>
 			new DiskStorageHealthCheck(options, logger));
 	}
 
@@ -96,7 +96,7 @@ public sealed class DiskStorageHealthCheckTest
 		var healthCheck = new HealthCheckContext();
 		var sut = new DiskStorageHealthCheck(diskOptions, new FakeIWebLogger());
 
-		await Assert.ThrowsExceptionAsync<NullReferenceException>(async () =>
+		await Assert.ThrowsExactlyAsync<NullReferenceException>(async () =>
 			await sut.CheckHealthAsync(healthCheck));
 	}
 }

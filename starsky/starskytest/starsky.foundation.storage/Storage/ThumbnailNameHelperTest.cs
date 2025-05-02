@@ -32,7 +32,7 @@ public sealed class ThumbnailNameHelperTest
 	[TestMethod]
 	public void GetSize_Enum_Invalid()
 	{
-		Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+		Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
 			ThumbnailNameHelper.GetSize(ThumbnailSize.Unknown));
 	}
 
@@ -63,7 +63,7 @@ public sealed class ThumbnailNameHelperTest
 	[TestMethod]
 	public void Combine_Enum_Invalid()
 	{
-		Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+		Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
 			ThumbnailNameHelper.Combine(string.Empty, ThumbnailSize.Unknown,
 				ThumbnailImageFormat.jpg));
 	}

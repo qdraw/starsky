@@ -154,14 +154,14 @@ public sealed class PackageTelemetryTest
 	public void GetPropValue_Null()
 	{
 		var result = PackageTelemetry.GetPropValue(null, "test");
-		Assert.AreEqual(null, result);
+		Assert.IsNull(result);
 	}
 
 	[TestMethod]
 	public void GetPropValue_Null_Null()
 	{
 		var result = PackageTelemetry.GetPropValue(null, null!);
-		Assert.AreEqual(null, result);
+		Assert.IsNull(result);
 	}
 
 	[TestMethod]

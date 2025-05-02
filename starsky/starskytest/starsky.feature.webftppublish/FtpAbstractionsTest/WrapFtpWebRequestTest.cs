@@ -14,20 +14,20 @@ public sealed class WrapFtpWebRequestTest
 	[TestMethod]
 	public void Method_Set_Null()
 	{
-		Assert.ThrowsException<NullReferenceException>(() =>
+		Assert.ThrowsExactly<NullReferenceException>(() =>
 			new WrapFtpWebRequest(null!) { Method = "t" });
 	}
 
 	[TestMethod]
 	public void Method_Get_Null()
 	{
-		Assert.ThrowsException<NullReferenceException>(() => new WrapFtpWebRequest(null!).Method);
+		Assert.ThrowsExactly<NullReferenceException>(() => _ = new WrapFtpWebRequest(null!).Method);
 	}
 
 	[TestMethod]
 	public void Credentials_Set_Null()
 	{
-		Assert.ThrowsException<NullReferenceException>(() =>
+		Assert.ThrowsExactly<NullReferenceException>(() =>
 			new WrapFtpWebRequest(null!) { Credentials = new NetworkCredential() });
 	}
 
@@ -42,56 +42,56 @@ public sealed class WrapFtpWebRequestTest
 	[TestMethod]
 	public void UsePassive_Set_Null()
 	{
-		Assert.ThrowsException<NullReferenceException>(() =>
+		Assert.ThrowsExactly<NullReferenceException>(() =>
 			new WrapFtpWebRequest(null!) { UsePassive = true });
 	}
 
 	[TestMethod]
 	public void UsePassive_Get_Null()
 	{
-		Assert.ThrowsException<NullReferenceException>(
-			() => new WrapFtpWebRequest(null!).UsePassive);
+		Assert.ThrowsExactly<NullReferenceException>(() =>
+			_ = new WrapFtpWebRequest(null!).UsePassive);
 	}
 
 	[TestMethod]
 	public void UseBinary_Set_Null()
 	{
-		Assert.ThrowsException<NullReferenceException>(() =>
+		Assert.ThrowsExactly<NullReferenceException>(() =>
 			new WrapFtpWebRequest(null!) { UseBinary = true });
 	}
 
 	[TestMethod]
 	public void KeepAlive_Get_UseBinary()
 	{
-		Assert.ThrowsException<NullReferenceException>(() =>
-			new WrapFtpWebRequest(null!).UseBinary);
+		Assert.ThrowsExactly<NullReferenceException>(() =>
+			_ = new WrapFtpWebRequest(null!).UseBinary);
 	}
 
 	[TestMethod]
 	public void KeepAlive_Set_Null()
 	{
-		Assert.ThrowsException<NullReferenceException>(() =>
+		Assert.ThrowsExactly<NullReferenceException>(() =>
 			new WrapFtpWebRequest(null!) { KeepAlive = true });
 	}
 
 	[TestMethod]
 	public void KeepAlive_Get_Null()
 	{
-		Assert.ThrowsException<NullReferenceException>(() =>
+		Assert.ThrowsExactly<NullReferenceException>(() =>
 			_ = new WrapFtpWebRequest(null!).KeepAlive);
 	}
 
 	[TestMethod]
 	public void GetResponse_Get_Null()
 	{
-		Assert.ThrowsException<NullReferenceException>(() =>
+		Assert.ThrowsExactly<NullReferenceException>(() =>
 			new WrapFtpWebRequest(null!).GetResponse());
 	}
 
 	[TestMethod]
 	public void GetRequestStream_Get_Null()
 	{
-		Assert.ThrowsException<NullReferenceException>(() =>
+		Assert.ThrowsExactly<NullReferenceException>(() =>
 			new WrapFtpWebRequest(null!).GetRequestStream());
 	}
 }

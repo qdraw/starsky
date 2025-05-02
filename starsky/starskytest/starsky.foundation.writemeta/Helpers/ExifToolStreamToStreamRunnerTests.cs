@@ -67,7 +67,7 @@ public class ExifToolStreamToStreamRunnerTests
 	[TestMethod]
 	public async Task StreamToStreamRunner_ArgumentNullException()
 	{
-		await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+		await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
 			await new ExifToolStreamToStreamRunner(new AppSettings(),
 				new FakeIWebLogger()).RunProcessAsync(null!, "test / unit test"));
 	}
@@ -178,7 +178,7 @@ public class ExifToolStreamToStreamRunnerTests
 		var sut = new ExifToolStreamToStreamRunner(new AppSettings { ExifToolPath = "invalid" },
 			new FakeIWebLogger());
 
-		await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
+		await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
 			await sut.RunProcessAsync(sourceStream, "-1",
 				"image2"));
 
@@ -191,7 +191,7 @@ public class ExifToolStreamToStreamRunnerTests
 		var sut = new ExifToolStreamToStreamRunner(new AppSettings { ExifToolPath = "invalid" },
 			new FakeIWebLogger());
 
-		await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
+		await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
 			await sut.RunProcessAsync(Stream.Null,
 				"-1", "image2"));
 	}

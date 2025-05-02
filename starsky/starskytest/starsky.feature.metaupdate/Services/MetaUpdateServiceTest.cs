@@ -271,7 +271,7 @@ public sealed class MetaUpdateServiceTest
 			new FakeIThumbnailService(new FakeSelectorStorage(_iStorageFake)),
 			new FakeIThumbnailQuery(), new AppSettings());
 
-		await Assert.ThrowsExceptionAsync<ArgumentException>(async () => await service.UpdateAsync(
+		await Assert.ThrowsExactlyAsync<ArgumentException>(async () => await service.UpdateAsync(
 			changedFileIndexItemName, fileIndexResultList,
 			null!, false, false, 0));
 	}

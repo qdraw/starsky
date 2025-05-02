@@ -23,7 +23,7 @@ public sealed class ImportSettingsModelTest
 		var context = new DefaultHttpContext();
 		context.Request.Headers["Structure"] = "wrong";
 
-		Assert.ThrowsException<ArgumentException>(() => new ImportSettingsModel(context.Request));
+		Assert.ThrowsExactly<ArgumentException>(() => new ImportSettingsModel(context.Request));
 	}
 
 	[TestMethod]

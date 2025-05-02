@@ -108,7 +108,7 @@ public class ThumbnailQueryErrorTest
 			new FakeIWebLogger(), new FakeMemoryCache()
 		);
 
-		await Assert.ThrowsExceptionAsync<DbUpdateException>(async () =>
+		await Assert.ThrowsExactlyAsync<DbUpdateException>(async () =>
 			await fakeQuery.AddThumbnailRangeAsync([new ThumbnailResultDataTransferModel("t")]));
 	}
 

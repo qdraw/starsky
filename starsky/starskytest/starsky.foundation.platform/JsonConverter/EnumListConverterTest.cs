@@ -26,7 +26,7 @@ public class EnumListConverterTests
 		var options = DefaultJsonSerializer.CamelCase;
 
 		// Act & Assert
-		var ex = Assert.ThrowsException<JsonException>(() =>
+		var ex = Assert.ThrowsExactly<JsonException>(() =>
 		{
 			JsonSerializer.Deserialize<ValueTypeContainer>(json, options);
 		});
@@ -79,7 +79,7 @@ public class EnumListConverterTests
 		var options = DefaultJsonSerializer.CamelCase;
 
 		// Act & Assert
-		var ex = Assert.ThrowsException<JsonException>(() =>
+		var ex = Assert.ThrowsExactly<JsonException>(() =>
 		{
 			JsonSerializer.Deserialize<ValueTypeContainer>(json, options);
 		});

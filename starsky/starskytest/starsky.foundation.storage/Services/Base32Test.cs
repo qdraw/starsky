@@ -26,7 +26,7 @@ public sealed class Base32Test
 	public void Base32EncodeDecodeTestFail()
 	{
 		// Act & Assert
-		Assert.ThrowsException<DecodingException>(() =>
+		Assert.ThrowsExactly<DecodingException>(() =>
 		{
 			Base32.Decode("54678945346"); // This should fail and throw DecodingException
 		});
@@ -43,7 +43,7 @@ public sealed class Base32Test
 	public void Base32Encode_OutRange()
 	{
 		// Act & Assert
-		Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+		Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
 		{
 			// the length (1 << 28 )
 			Base32.Encode(new byte[268435456]);

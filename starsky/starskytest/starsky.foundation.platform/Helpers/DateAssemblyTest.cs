@@ -14,7 +14,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			// this gets the one from the test assembly
 			var date = DateAssembly.GetBuildDate(Assembly.GetExecutingAssembly());
-			Assert.IsTrue(date.Year == 1 );
+			Assert.AreEqual(1, date.Year);
 		}
 		
 		[TestMethod]
@@ -28,28 +28,28 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void GetBuildDate_NonExist()
 		{
 			var date = DateAssembly.GetBuildDate(typeof(short).Assembly);
-			Assert.IsTrue(date.Year == 1 );
+			Assert.AreEqual(1, date.Year);
 		}
 		
 		[TestMethod]
 		public void GetBuildDate_NonExist_DateAssemblyTest()
 		{
 			var date = DateAssembly.GetBuildDate(typeof(DateAssemblyTest).Assembly);
-			Assert.IsTrue(date.Year == 1 );
+			Assert.AreEqual(1, date.Year);
 		}
 
 		[TestMethod]
 		public void ParseBuildTime_WrongInput_NotContainBuild()
 		{
 			var date = DateAssembly.ParseBuildTime("111");
-			Assert.IsTrue(date.Year == 1 );
+			Assert.AreEqual(1, date.Year);
 		}
 		
 		[TestMethod]
 		public void ParseBuildTime_WrongInput_NotContainValidDate()
 		{
 			var date = DateAssembly.ParseBuildTime("000+build");
-			Assert.IsTrue(date.Year == 1 );
+			Assert.AreEqual(1, date.Year);
 		}
 	}
 }

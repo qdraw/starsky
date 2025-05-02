@@ -128,7 +128,7 @@ public sealed class QueryTest
 			homeItem = _query.SingleItem("/");
 		}
 
-		Assert.AreEqual(null, homeItem);
+		Assert.IsNull(homeItem);
 	}
 
 

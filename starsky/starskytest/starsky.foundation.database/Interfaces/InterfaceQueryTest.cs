@@ -29,7 +29,7 @@ public class InterfaceQueryTest
 		var query = new FakeIQuery() as IQuery;
 
 		// Assert that a NotImplementedException is thrown when SingleItem is called
-		Assert.ThrowsException<NotImplementedException>(() =>
+		Assert.ThrowsExactly<NotImplementedException>(() =>
 			query.SingleItem(new List<FileIndexItem>(), "/", new List<ColorClassParser.Color>()));
 	}
 }

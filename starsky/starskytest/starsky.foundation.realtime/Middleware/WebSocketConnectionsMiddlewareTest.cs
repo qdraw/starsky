@@ -19,7 +19,7 @@ public sealed class WebSocketConnectionsMiddlewareTest
 	public void NullOptions()
 	{
 		// Act & Assert
-		var exception = Assert.ThrowsException<ArgumentNullException>(() =>
+		var exception = Assert.ThrowsExactly<ArgumentNullException>(() =>
 			new WebSocketConnectionsMiddleware(null!,
 				null!, new WebSocketConnectionsService(),
 				new FakeIWebLogger()));
@@ -32,7 +32,7 @@ public sealed class WebSocketConnectionsMiddlewareTest
 	public void NullService()
 	{
 		// Act & Assert
-		var exception = Assert.ThrowsException<ArgumentNullException>(() =>
+		var exception = Assert.ThrowsExactly<ArgumentNullException>(() =>
 		{
 			_ = new WebSocketConnectionsMiddleware(null!,
 				new WebSocketConnectionsOptions(), null!, new FakeIWebLogger());

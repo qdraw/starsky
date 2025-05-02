@@ -66,7 +66,7 @@ public class CleanThumbnailHostedServiceTest
 
 		// Assert
 		// The method should throw a TimeoutException if it takes longer than 1 second to execute
-		await Assert.ThrowsExceptionAsync<TimeoutException>(async () =>
+		await Assert.ThrowsExactlyAsync<TimeoutException>(async () =>
 		{
 			await dynMethod.InvokeAsync(hostedService, stoppingToken)
 				.WaitAsync(TimeSpan.FromSeconds(1), new CancellationToken());

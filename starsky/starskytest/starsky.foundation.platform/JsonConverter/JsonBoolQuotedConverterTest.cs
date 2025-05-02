@@ -61,7 +61,7 @@ public sealed class JsonBoolQuotedConverterTest
 		var options = new JsonSerializerOptions { Converters = { new JsonBoolQuotedConverter() } };
 
 		// Act & Assert
-		var ex = Assert.ThrowsException<JsonException>(() =>
+		var ex = Assert.ThrowsExactly<JsonException>(() =>
 		{
 			JsonSerializer.Deserialize<KeyExample>(json, options);
 		});
