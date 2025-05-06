@@ -444,7 +444,11 @@ public sealed class QueryTest
 		var releative2 = _query.GetNextPrevInFolder("/display/hi.jpg");
 
 		Assert.AreEqual("/display/hi2.jpg", releative2.NextFilePath);
-		Assert.IsNull(releative2.PrevFilePath);
+		Assert.IsNotNull(releative2);
+		if ( releative2.PrevFilePath == null )
+		{
+			Assert.Fail(releative2.PrevFilePath);
+		}
 	}
 
 	[TestMethod]

@@ -11,7 +11,11 @@ public class OperatingSystemHelperTest
 	public void OperatingSystemHelper1()
 	{
 		var result = OperatingSystemHelper.GetPlatform();
-		Assert.IsNotNull(result);
+
+		Assert.IsTrue(result == OSPlatform.Windows ||
+			result == OSPlatform.OSX ||
+			result == OSPlatform.Linux ||
+			result == OSPlatform.FreeBSD);
 	}
 
 	[TestMethod]

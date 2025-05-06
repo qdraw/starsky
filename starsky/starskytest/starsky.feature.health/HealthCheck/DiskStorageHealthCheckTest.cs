@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,6 +13,10 @@ namespace starskytest.starsky.feature.health.HealthCheck;
 public sealed class DiskStorageHealthCheckTest
 {
 	[TestMethod]
+	[SuppressMessage("Performance",
+		"CA1806:Do not ignore method results",
+		Justification = "Should fail when null in constructor")]
+	[SuppressMessage("ReSharper", "ObjectCreationAsStatement")]
 	public void Constructor_NullOptions_ThrowsArgumentNullException()
 	{
 		// Arrange

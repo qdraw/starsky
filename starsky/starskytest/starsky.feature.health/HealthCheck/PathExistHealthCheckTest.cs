@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -61,6 +62,11 @@ public sealed class PathExistHealthCheckTest
 	}
 
 	[TestMethod]
+	[SuppressMessage("Performance",
+		"CA1806:Do not ignore method results",
+		Justification = "Should fail when null in constructor")]
+	[SuppressMessage("ReSharper",
+		"ObjectCreationAsStatement")]
 	public void RunFail_Null_Input()
 	{
 		Assert.ThrowsExactly<ArgumentNullException>(() =>

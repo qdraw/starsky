@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.webftppublish.FtpAbstractions.Helpers;
@@ -6,6 +7,11 @@ using starsky.feature.webftppublish.FtpAbstractions.Helpers;
 namespace starskytest.starsky.feature.webftppublish.FtpAbstractionsTest;
 
 [TestClass]
+[SuppressMessage("Performance",
+	"CA1806:Do not ignore method results",
+	Justification = "Should fail when null in constructor")]
+[SuppressMessage("ReSharper",
+	"ObjectCreationAsStatement")]
 public sealed class WrapFtpWebRequestTest
 {
 	// Use abstraction

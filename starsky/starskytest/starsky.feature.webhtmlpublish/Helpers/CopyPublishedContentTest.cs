@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.webhtmlpublish.Helpers;
@@ -30,6 +31,11 @@ public sealed class CopyPublishedContentTest
 	}
 
 	[TestMethod]
+	[SuppressMessage("Performance",
+		"CA1806:Do not ignore method results",
+		Justification = "Should fail when null in constructor")]
+	[SuppressMessage("ReSharper",
+		"ObjectCreationAsStatement")]
 	public void CopyContent_Null()
 	{
 		Assert.ThrowsExactly<ArgumentNullException>(() => new CopyPublishedContent(null!, null!));
