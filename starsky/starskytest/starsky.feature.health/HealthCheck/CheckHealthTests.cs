@@ -69,8 +69,8 @@ public class CheckHealthTests
 
 		// Assert
 		var loggedError = logger.TrackedExceptions.FirstOrDefault();
-		Assert.IsNotNull(loggedError);
 		Assert.IsTrue(loggedError.Item2?.Contains($"HealthCheck {key} failed {description}"));
+
 		if ( exceptionMessage != null )
 		{
 			Assert.IsTrue(loggedError.Item2?.Contains(exceptionMessage));

@@ -15,7 +15,7 @@ public sealed class WebSocketConnectionTest
 	public void Id_IsNotNull()
 	{
 		var socketConnection = new WebSocketConnection(new ClientWebSocket(), new FakeIWebLogger());
-		Assert.IsNotNull(socketConnection.Id);
+		Assert.AreNotEqual(string.Empty, socketConnection.Id.ToString());
 	}
 
 	[TestMethod]

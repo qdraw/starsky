@@ -48,8 +48,6 @@ public sealed class HealthCheckForUpdatesControllerTest
 		var fakeService = new FakeICheckForUpdates(
 			new KeyValuePair<UpdateStatus, string?>(input.Value, string.Empty));
 
-		Assert.IsNotNull(input.Value);
-
 		var sut = new HealthCheckForUpdatesController(fakeService,
 			new FakeISpecificVersionReleaseInfo());
 		await Assert.ThrowsExactlyAsync<NotSupportedException>(async () =>

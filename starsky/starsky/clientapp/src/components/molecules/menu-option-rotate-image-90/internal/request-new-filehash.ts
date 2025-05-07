@@ -23,9 +23,7 @@ export async function RequestNewFileHash(
     return null;
   }
   const media = new CastToInterface().MediaDetailView(resultGet.data).data;
-  const orientation = media?.fileIndexItem?.orientation
-    ? media.fileIndexItem.orientation
-    : Orientation.Horizontal;
+  const orientation = media?.fileIndexItem?.orientation ?? Orientation.Horizontal;
 
   // the hash changes if you rotate an image
   if (media.fileIndexItem.fileHash === state.fileIndexItem.fileHash) return false;

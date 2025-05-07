@@ -340,7 +340,6 @@ public class ThumbnailQueryTest
 		var result = await ThumbnailQuery.CheckForDuplicates(_context, items);
 
 		// Assert
-		Assert.IsNotNull(result.newThumbnailItems);
 		Assert.AreEqual(2, result.newThumbnailItems.Count);
 		Assert.IsTrue(result.newThumbnailItems.TrueForAll(x => x.Small == true));
 		Assert.IsTrue(result.Item1.Select(x => x.FileHash)
@@ -354,11 +353,10 @@ public class ThumbnailQueryTest
 		var items = new List<ThumbnailItem?> { null! };
 
 		// Act
-		var result = await ThumbnailQuery.CheckForDuplicates(_context, items);
+		var (newThumbnailItems, _, _) = await ThumbnailQuery.CheckForDuplicates(_context, items);
 
 		// Assert
-		Assert.IsNotNull(result.newThumbnailItems);
-		Assert.AreEqual(0, result.newThumbnailItems.Count);
+		Assert.AreEqual(0, newThumbnailItems.Count);
 	}
 
 	[TestMethod]
@@ -376,7 +374,6 @@ public class ThumbnailQueryTest
 		var result = await ThumbnailQuery.CheckForDuplicates(_context, items);
 
 		// Assert
-		Assert.IsNotNull(result.newThumbnailItems);
 		Assert.AreEqual(1, result.newThumbnailItems.Count);
 		Assert.IsTrue(result.newThumbnailItems.TrueForAll(x => x.Small == true));
 		Assert.IsTrue(result.Item1.Select(x => x.FileHash)
@@ -397,7 +394,6 @@ public class ThumbnailQueryTest
 		var result = await ThumbnailQuery.CheckForDuplicates(_context, items);
 
 		// Assert
-		Assert.IsNotNull(result.equalThumbnailItems);
 		Assert.AreEqual(1, result.equalThumbnailItems.Count);
 		Assert.IsTrue(result.equalThumbnailItems.TrueForAll(x => x.Small == true));
 		Assert.IsTrue(result.equalThumbnailItems.Select(x => x.FileHash)
@@ -545,13 +541,13 @@ public class ThumbnailQueryTest
 		};
 
 		// Act
-		var result = await ThumbnailQuery.CheckForDuplicates(_context, items);
+		var (newThumbnailItems, updateThumbnailItems, _) =
+			await ThumbnailQuery.CheckForDuplicates(_context, items);
 
 		// Assert
-		Assert.IsNotNull(result.updateThumbnailItems);
-		Assert.AreEqual(2, result.Item1.Count);
-		Assert.IsTrue(result.updateThumbnailItems.TrueForAll(x => x.Large == false));
-		Assert.IsTrue(result.updateThumbnailItems.Select(x => x.FileHash)
+		Assert.AreEqual(2, newThumbnailItems.Count);
+		Assert.IsTrue(updateThumbnailItems.TrueForAll(x => x.Large == false));
+		Assert.IsTrue(updateThumbnailItems.Select(x => x.FileHash)
 			.All(x => new List<string> { "123", "456" }.Contains(x)));
 	}
 

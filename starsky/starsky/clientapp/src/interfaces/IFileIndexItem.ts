@@ -1,4 +1,4 @@
-import {IExifStatus} from "./IExifStatus";
+import { IExifStatus } from "./IExifStatus";
 
 export interface IFileIndexItem {
   lastEdited?: string;

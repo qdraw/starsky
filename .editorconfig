@@ -61,6 +61,13 @@ dotnet_diagnostic.SA1520.severity = warning
 
 # https://gist.github.com/RealDotNetDave/dbae4d97358ba4515dd52e5b8ca87671
 
+# MSTEST0017: Assertion arguments should be passed in the correct order. 
+# 'actual' and 'expected'/'notExpected' arguments have been
+dotnet_diagnostic.MSTEST0017.severity = warning
+
+# MSTEST0032: Review or remove the assertion as its condition is known to be always true
+dotnet_diagnostic.MSTEST0032.severity = warning
+
 # Use ClassCleanupBehavior.EndOfClass with the [ClassCleanup]
 dotnet_diagnostic.MSTEST0034.severity = warning
 

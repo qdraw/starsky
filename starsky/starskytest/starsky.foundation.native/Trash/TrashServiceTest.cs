@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,10 +13,14 @@ namespace starskytest.starsky.foundation.native.Trash;
 public class TrashServiceTest
 {
 	[TestMethod]
-	public void TrashService_CanUseSystemTrash1()
+	public void TrashService_CanUseSystemTrash_Compare()
 	{
 		var result = new TrashService().DetectToUseSystemTrash();
-		Assert.IsNotNull(result);
+		var internalApi = TrashService.DetectToUseSystemTrashInternal(
+			RuntimeInformation.IsOSPlatform,
+			Environment.UserInteractive,
+			Environment.UserName);
+		Assert.AreEqual(internalApi, result);
 	}
 
 	[TestMethod]

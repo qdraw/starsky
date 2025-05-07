@@ -3,14 +3,14 @@ import { ArchiveContext } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location/use-location";
 import { newIArchive } from "../../../interfaces/IArchive";
+import { IArchiveProps } from "../../../interfaces/IArchiveProps.ts";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 import Link from "../../atoms/link/link";
 import Preloader from "../../atoms/preloader/preloader";
-import { GetFilterUrlColorClass } from "./internal/get-filter-url-color-class.ts";
-import { CleanColorClass } from "./internal/clean-color-class.ts";
 import { ClassNameContainer } from "./internal/class-name-container.ts";
-import localization from "../../../localization/localization.json";
-import { IArchiveProps } from "../../../interfaces/IArchiveProps.ts";
+import { CleanColorClass } from "./internal/clean-color-class.ts";
+import { GetFilterUrlColorClass } from "./internal/get-filter-url-color-class.ts";
 
 //  <ColorClassFilter itemsCount={this.props.collectionsCount} subPath={this.props.subPath}
 // colorClassActiveList={this.props.colorClassActiveList} colorClassUsage={this.props.colorClassUsage}></ColorClassFilter>
@@ -29,7 +29,7 @@ function stateFallback(state: IArchiveProps, props: IColorClassProp) {
       ...newIArchive(),
       colorClassUsage: props.colorClassUsage,
       colorClassActiveList: props.colorClassActiveList,
-      collectionsCount: props.itemsCount ? props.itemsCount : 0
+      collectionsCount: props.itemsCount ?? 0
     };
   }
   return state;
@@ -133,7 +133,7 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo((props) 
         )
       )}
       <div className="btn btn--default sort">
-        <span className="text">{!state.sort ? "fileName" : state.sort}</span>
+        <span className="text">{state.sort ?? "fileName"}</span>
         <span className="icon"></span>
       </div>
     </div>

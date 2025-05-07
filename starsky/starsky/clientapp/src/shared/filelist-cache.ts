@@ -41,9 +41,10 @@ export class FileListCache {
   }
 
   private SetDefaultUrlObjectValues(urlObject: IUrl): IUrl {
-    if (!urlObject.f) urlObject.f = "/";
-    if (urlObject.collections === undefined) urlObject.collections = true;
-    if (!urlObject.colorClass) urlObject.colorClass = [];
+    urlObject.f ??= "/";
+    if (urlObject.f === "") urlObject.f = "/";
+    urlObject.collections ??= true;
+    urlObject.colorClass ??= [];
     return urlObject;
   }
 
@@ -110,7 +111,7 @@ export class FileListCache {
       `c${urlObject.colorClass};l${urlObject.collections}` +
       // should have f:
       `f:${urlObject.f}` +
-      `;s${!urlObject.sort ? SortType.fileName : urlObject.sort}`
+      `;s${urlObject.sort ?? SortType.fileName}`
     );
   }
 

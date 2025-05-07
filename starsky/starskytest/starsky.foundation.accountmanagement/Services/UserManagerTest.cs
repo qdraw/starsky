@@ -332,7 +332,6 @@ public sealed class UserManagerTest
 			p.Name == "reset@google.com");
 
 		Assert.IsNotNull(userObject);
-		Assert.IsNotNull(userObject.AccessFailedCount);
 		Assert.AreEqual(0, userObject.AccessFailedCount);
 		Assert.AreEqual(DateTime.MinValue, userObject.LockoutEnd);
 		Assert.IsFalse(userObject.LockoutEnabled);

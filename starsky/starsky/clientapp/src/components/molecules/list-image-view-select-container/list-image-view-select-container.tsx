@@ -19,9 +19,9 @@ interface IListImageBox {
 
 const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> = memo(
   ({ item, className: propsClassName, onSelectionCallback, children }) => {
-    if (item.isDirectory === undefined) item.isDirectory = false;
+    item.isDirectory ??= false;
 
-    const className = !propsClassName ? "list-image-box" : propsClassName;
+    const className = propsClassName ?? "list-image-box";
     const history = useLocation();
 
     // Check if select exist or Length 0 or more

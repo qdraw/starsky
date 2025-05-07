@@ -1,6 +1,6 @@
-import {IUrl, newIUrl} from "../../interfaces/IUrl.ts";
-import {URLPath} from "./url-path";
-import {IsRelativeUrl} from "./url.ts";
+import { IUrl, newIUrl } from "../../interfaces/IUrl.ts";
+import { URLPath } from "./url-path";
+import { IsRelativeUrl } from "./url.ts";
 
 import packageJson from "../../../package.json";
 

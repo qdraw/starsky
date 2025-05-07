@@ -17,7 +17,7 @@ function SwitchButton(props: Readonly<ISwitchButtonProps>) {
     setRandom(Math.ceil(Math.random() * 100));
   }, []);
 
-  const [checked, setChecked] = useState(props.isOn ? props.isOn : false);
+  const [checked, setChecked] = useState(props.isOn ?? false);
 
   useEffect(() => {
     if (props.isOn === undefined) return;
@@ -38,7 +38,7 @@ function SwitchButton(props: Readonly<ISwitchButtonProps>) {
         type="radio"
         disabled={props.isEnabled === false}
         id={"switch_left_" + random}
-        name={!props.name ? "switchToggle" : props.name}
+        name={props.name ?? "switchToggle"}
         value={props.leftLabel}
         data-test="switch-button-left"
         onChange={onChange}
@@ -50,7 +50,7 @@ function SwitchButton(props: Readonly<ISwitchButtonProps>) {
         type="radio"
         id={"switch_right_" + random}
         disabled={props.isEnabled === false}
-        name={!props.name ? "switchToggle" : props.name}
+        name={props.name ?? "switchToggle"}
         value={props.rightLabel}
         data-test="switch-button-right"
         onChange={onChange}

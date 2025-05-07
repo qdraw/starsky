@@ -60,7 +60,7 @@ export class Select {
    */
   public removeSidebarSelection() {
     const urlObject = new URLPath().StringToIUrl(this.history.location.search);
-    const selectVar: string[] = urlObject.select ? urlObject.select : [];
+    const selectVar: string[] = urlObject.select ?? [];
     if (!urlObject.select) {
       urlObject.select = [];
     } else {

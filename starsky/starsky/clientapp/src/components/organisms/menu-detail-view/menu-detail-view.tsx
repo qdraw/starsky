@@ -169,9 +169,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({ state, d
       let newStatus = (resultDo.data as IFileIndexItem[])?.find(
         (x) => x.filePath === subPath
       )?.status;
-      if (!newStatus) {
-        newStatus = IExifStatus.Deleted;
-      }
+      newStatus ??= IExifStatus.Deleted;
       dispatch({
         type: "update",
         filePath: subPath,

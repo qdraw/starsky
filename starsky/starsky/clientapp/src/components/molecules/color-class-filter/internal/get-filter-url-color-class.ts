@@ -9,9 +9,7 @@ export function GetFilterUrlColorClass(
 ): string {
   const urlObject = new URLPath().StringToIUrl(historyLocationSearch);
 
-  if (!urlObject.colorClass) {
-    urlObject.colorClass = [];
-  }
+  urlObject.colorClass ??= [];
 
   if (!urlObject.colorClass || urlObject.colorClass.indexOf(item) === -1) {
     urlObject.colorClass.push(item);

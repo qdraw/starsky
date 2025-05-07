@@ -87,8 +87,8 @@ public class MacOsTrashBindingHelperTest
 			return;
 		}
 
-		var result = MacOsTrashBindingHelper.CreateCfArray(new List<IntPtr>().ToArray());
-		Assert.IsNotNull(result);
+		var result = MacOsTrashBindingHelper.CreateCfArray([]);
+		Assert.IsNotNull(result.ToString());
 	}
 
 	[TestMethod]
@@ -193,28 +193,33 @@ public class MacOsTrashBindingHelperTest
 	}
 
 	[TestMethod]
-	public void CfStringEncoding_UTF16()
+	[DynamicData(nameof(GetCfStringEncodingTestData), DynamicDataSourceType.Method)]
+	public void CfStringEncoding_Tests(uint expected, uint actual)
 	{
-		Assert.AreEqual(( uint ) 0x0100, ( uint ) MacOsTrashBindingHelper.CfStringEncoding.UTF16);
+		Assert.AreEqual(expected, actual);
 	}
 
-	[TestMethod]
-	public void CfStringEncoding_UTF16Be()
+	public static IEnumerable<object[]> GetCfStringEncodingTestData()
 	{
-		Assert.AreEqual(( uint ) 0x10000100,
-			( uint ) MacOsTrashBindingHelper.CfStringEncoding.UTF16BE);
-	}
-
-	[TestMethod]
-	public void CfStringEncoding_UTF16LE()
-	{
-		Assert.AreEqual(( uint ) 0x14000100,
-			( uint ) MacOsTrashBindingHelper.CfStringEncoding.UTF16LE);
-	}
-
-	[TestMethod]
-	public void CfStringEncoding_Ascii()
-	{
-		Assert.AreEqual(( uint ) 0x0600, ( uint ) MacOsTrashBindingHelper.CfStringEncoding.ASCII);
+		yield return
+		[
+			( uint ) 0x0100,
+			( uint ) MacOsTrashBindingHelper.CfStringEncoding.UTF16
+		];
+		yield return
+		[
+			( uint ) 0x10000100,
+			( uint ) MacOsTrashBindingHelper.CfStringEncoding.UTF16BE
+		];
+		yield return
+		[
+			( uint ) 0x14000100,
+			( uint ) MacOsTrashBindingHelper.CfStringEncoding.UTF16LE
+		];
+		yield return
+		[
+			( uint ) 0x0600,
+			( uint ) MacOsTrashBindingHelper.CfStringEncoding.ASCII
+		];
 	}
 }

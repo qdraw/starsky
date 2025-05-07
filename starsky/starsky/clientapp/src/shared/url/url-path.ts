@@ -212,9 +212,7 @@ export class URLPath {
 
   public toggleSelection(fileName: string, locationHash: string): IUrl {
     const urlObject = new URLPath().StringToIUrl(locationHash);
-    if (!urlObject.select) {
-      urlObject.select = [];
-    }
+    urlObject.select ??= [];
 
     if (!urlObject.select || urlObject.select.indexOf(fileName) === -1) {
       urlObject.select.push(fileName);
