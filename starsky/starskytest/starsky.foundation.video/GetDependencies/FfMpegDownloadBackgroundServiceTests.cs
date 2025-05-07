@@ -20,7 +20,7 @@ public sealed class FfMpegDownloadBackgroundServiceTests
 	public FfMpegDownloadBackgroundServiceTests()
 	{
 		var services = new ServiceCollection();
-		services.AddSingleton(new AppSettings { FfmpegSkipDownloadOnStartup = true });
+		services.AddSingleton(new AppSettings { FfmpegSkipDownloadOnStartup = false });
 		services.AddSingleton<BackgroundService, FfMpegDownloadBackgroundService>();
 		services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
 		services.AddSingleton<IWebLogger, FakeIWebLogger>();
@@ -38,6 +38,10 @@ public sealed class FfMpegDownloadBackgroundServiceTests
 	{
 		var cancelToken = CancellationToken.None;
 		await new FfMpegDownloadBackgroundService(_serviceScopeFactory).StartAsync(cancelToken);
-		Assert.IsNotNull(cancelToken);
+
+		var ffMpegDownloadIndex =
+			_serviceScopeFactory.CreateScope().ServiceProvider
+				.GetRequiredService<IFfMpegDownloadIndex>() as FakeIFfMpegDownloadIndex;
+		Assert.AreEqual(1, ffMpegDownloadIndex?.Count);
 	}
 }
