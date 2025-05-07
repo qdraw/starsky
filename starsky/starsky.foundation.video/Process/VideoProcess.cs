@@ -52,22 +52,22 @@ public sealed class VideoProcess : IVideoProcess
 		}
 	}
 
-	public void CleanTemporaryFile(string resultResultPath,
+	public bool CleanTemporaryFile(string resultResultPath,
 		SelectorStorage.StorageServices? resultResultPathType)
 	{
 		switch ( resultResultPathType )
 		{
 			case SelectorStorage.StorageServices.Temporary:
-				_tempStorage.FileDelete(resultResultPath);
-				break;
+				return _tempStorage.FileDelete(resultResultPath);
 			case SelectorStorage.StorageServices.SubPath:
-				_hostStorage.FileDelete(resultResultPath);
-				break;
+				return _hostStorage.FileDelete(resultResultPath);
 			default:
 				_logger.LogError(
 					$"[VideoProcess] CleanTemporaryFile: {resultResultPath} not deleted");
 				break;
 		}
+
+		return false;
 	}
 
 	/// <summary>

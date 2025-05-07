@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -87,5 +88,24 @@ public class VideoProcessTests
 		// Assert
 		Assert.IsFalse(result.IsSuccess);
 		Assert.AreEqual("FFMpeg download failed", result.ErrorMessage);
+	}
+
+	[DataTestMethod]
+	[DataRow("test.mp4", SelectorStorage.StorageServices.Temporary, true)]
+	[DataRow("not-found", SelectorStorage.StorageServices.Temporary, false)]
+	public async Task CleanTemp(string subPath,
+		SelectorStorage.StorageServices? resultResultPathType, bool expected)
+	{
+		// Arrange
+		await _storage.WriteStreamAsync(
+			new MemoryStream([.. CreateAnQuickTimeMp4.Bytes]),
+			"test.mp4");
+
+		// Act
+		var result = _videoProcess.CleanTemporaryFile(subPath,
+			resultResultPathType);
+
+		// Assert
+		Assert.AreEqual(expected, result);
 	}
 }

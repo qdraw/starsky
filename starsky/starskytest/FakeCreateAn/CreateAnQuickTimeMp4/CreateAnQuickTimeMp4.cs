@@ -541,8 +541,8 @@ public static class CreateAnQuickTimeMp4
 		"AAUAAAAoZGF0YQAAAAEAAAAAMjAyMC0wNC0wNFQxMTowNDo0NiswMjAw";
 
 	public static readonly ImmutableArray<byte> Bytes =
-		Base64Helper.TryParse(Base64QuickTimeMp4String).ToImmutableArray();
+		[..Base64Helper.TryParse(Base64QuickTimeMp4String)];
 
 	public static readonly ImmutableArray<byte> BytesWithLocation =
-		Base64Helper.TryParse(Base64QuickTimeMp4StringWithLocation).ToImmutableArray();
+		[..Base64Helper.TryParse(Base64QuickTimeMp4StringWithLocation)];
 }

@@ -7,6 +7,6 @@ public interface IVideoProcess
 	Task<VideoResult> RunVideo(string subPath,
 		string beforeFileHash, VideoProcessTypes type);
 
-	void CleanTemporaryFile(string resultResultPath,
+	bool CleanTemporaryFile(string resultResultPath,
 		SelectorStorage.StorageServices? resultResultPathType);
 }
