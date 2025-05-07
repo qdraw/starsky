@@ -67,7 +67,8 @@ public sealed class UpdateBackgroundTaskQueueTest
 				await _bgTaskQueue.DequeueAsync(token);
 			}
 		}, string.Empty);
-		Assert.IsNotNull(_bgTaskQueue);
+
+		Assert.AreEqual(1, _bgTaskQueue.Count());
 	}
 
 	[TestMethod]

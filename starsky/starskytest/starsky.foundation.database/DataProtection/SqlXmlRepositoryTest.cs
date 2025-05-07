@@ -117,8 +117,7 @@ public class SqlXmlRepositoryTest
 	{
 		_repository.StoreElement(new XElement("x1", "x1"), "hi2");
 
-		var item = _dbContext.DataProtectionKeys.FirstOrDefault(
-			p => p.FriendlyName == "hi2");
+		var item = _dbContext.DataProtectionKeys.FirstOrDefault(p => p.FriendlyName == "hi2");
 
 		Assert.AreEqual("hi2", item!.FriendlyName);
 	}
@@ -152,7 +151,7 @@ public class SqlXmlRepositoryTest
 		var error = logger.TrackedExceptions.Find(p =>
 			p.Item2?.Contains("AggregateException") == true);
 
-		Assert.IsNotNull(error);
+		Assert.IsNotNull(error.Item2);
 	}
 
 	[TestMethod]
@@ -184,7 +183,7 @@ public class SqlXmlRepositoryTest
 
 		Assert.AreEqual(0, count);
 
-		Assert.IsNotNull(error);
+		Assert.IsNotNull(error.Item2);
 	}
 
 	[TestMethod]

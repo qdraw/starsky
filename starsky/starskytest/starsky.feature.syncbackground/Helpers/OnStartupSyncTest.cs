@@ -14,100 +14,98 @@ using starsky.foundation.settings.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.feature.syncbackground.Helpers
+namespace starskytest.starsky.feature.syncbackground.Helpers;
+
+[TestClass]
+public sealed class OnStartupSyncTest
 {
-	[TestClass]
-	public sealed class OnStartupSyncTest
+	private static IServiceScopeFactory GetNewScope()
 	{
-		private static IServiceScopeFactory GetNewScope()
-		{
-			var services = new ServiceCollection();
-			services.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
-			services.AddSingleton<INotificationQuery, FakeINotificationQuery>();
-			services.AddSingleton<AppSettings>();
-			services.AddSingleton<ISynchronize, FakeISynchronize>();
-			services.AddSingleton<ISettingsService, FakeISettingsService>();
-			services.AddSingleton<IWebLogger, FakeIWebLogger>();
+		var services = new ServiceCollection();
+		services.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
+		services.AddSingleton<INotificationQuery, FakeINotificationQuery>();
+		services.AddSingleton<AppSettings>();
+		services.AddSingleton<ISynchronize, FakeISynchronize>();
+		services.AddSingleton<ISettingsService, FakeISettingsService>();
+		services.AddSingleton<IWebLogger, FakeIWebLogger>();
 
-			var serviceProvider = services.BuildServiceProvider();
-			return serviceProvider.GetRequiredService<IServiceScopeFactory>();
-		}
+		var serviceProvider = services.BuildServiceProvider();
+		return serviceProvider.GetRequiredService<IServiceScopeFactory>();
+	}
 
-		[TestMethod]
-		public async Task StartUpSync_DoesStoreAfterWards()
-		{
-			var scope = GetNewScope();
-			var appSettings = scope.CreateScope().ServiceProvider.GetRequiredService<AppSettings>();
-			var synchronize =
-				scope.CreateScope().ServiceProvider.GetRequiredService<ISynchronize>();
-			var settingsService = scope.CreateScope().ServiceProvider
-				.GetRequiredService<ISettingsService>();
-			var logger = scope.CreateScope().ServiceProvider.GetRequiredService<IWebLogger>();
+	[TestMethod]
+	public async Task StartUpSync_DoesStoreAfterWards()
+	{
+		var scope = GetNewScope();
+		var appSettings = scope.CreateScope().ServiceProvider.GetRequiredService<AppSettings>();
+		var synchronize =
+			scope.CreateScope().ServiceProvider.GetRequiredService<ISynchronize>();
+		var settingsService = scope.CreateScope().ServiceProvider
+			.GetRequiredService<ISettingsService>();
+		var logger = scope.CreateScope().ServiceProvider.GetRequiredService<IWebLogger>();
 
-			var startupSync = new OnStartupSync(scope,
-				new FakeDiskWatcherUpdateBackgroundTaskQueue(), appSettings, synchronize,
-				settingsService, logger);
-			await startupSync.StartUpSync();
+		var startupSync = new OnStartupSync(scope,
+			new FakeDiskWatcherUpdateBackgroundTaskQueue(), appSettings, synchronize,
+			settingsService, logger);
+		await startupSync.StartUpSync();
 
-			var setting = await settingsService.GetSetting<DateTime>(SettingsType
-				.LastSyncBackgroundDateTime);
+		var setting = await settingsService.GetSetting<DateTime>(SettingsType
+			.LastSyncBackgroundDateTime);
 
-			Assert.IsNotNull(setting);
-			Assert.AreEqual(DateTime.UtcNow.Day, setting.ToUniversalTime().Day);
-			Assert.AreEqual(DateTime.UtcNow.Hour, setting.ToUniversalTime().Hour);
-			Assert.IsTrue(( synchronize as FakeISynchronize )!.Inputs.Exists(p => p.Item1 == "/"));
-		}
+		Assert.AreEqual(DateTime.UtcNow.Day, setting.ToUniversalTime().Day);
+		Assert.AreEqual(DateTime.UtcNow.Hour, setting.ToUniversalTime().Hour);
+		Assert.IsTrue(( synchronize as FakeISynchronize )!.Inputs.Exists(p => p.Item1 == "/"));
+	}
 
-		[TestMethod]
-		public async Task StartUpSync_TurnedOff()
-		{
-			var scope = GetNewScope();
-			var appSettings = scope.CreateScope().ServiceProvider.GetRequiredService<AppSettings>();
-			var synchronize =
-				scope.CreateScope().ServiceProvider.GetRequiredService<ISynchronize>();
-			var settingsService = scope.CreateScope().ServiceProvider
-				.GetRequiredService<ISettingsService>();
-			var logger = scope.CreateScope().ServiceProvider.GetRequiredService<IWebLogger>();
+	[TestMethod]
+	public async Task StartUpSync_TurnedOff()
+	{
+		var scope = GetNewScope();
+		var appSettings = scope.CreateScope().ServiceProvider.GetRequiredService<AppSettings>();
+		var synchronize =
+			scope.CreateScope().ServiceProvider.GetRequiredService<ISynchronize>();
+		var settingsService = scope.CreateScope().ServiceProvider
+			.GetRequiredService<ISettingsService>();
+		var logger = scope.CreateScope().ServiceProvider.GetRequiredService<IWebLogger>();
 
-			appSettings.SyncOnStartup = false;
-			var startupSync = new OnStartupSync(scope,
-				new FakeDiskWatcherUpdateBackgroundTaskQueue(), appSettings, synchronize,
-				settingsService, logger);
+		appSettings.SyncOnStartup = false;
+		var startupSync = new OnStartupSync(scope,
+			new FakeDiskWatcherUpdateBackgroundTaskQueue(), appSettings, synchronize,
+			settingsService, logger);
 
-			// Assert
-			await startupSync.StartUpSync();
+		// Assert
+		await startupSync.StartUpSync();
 
-			var setting = await settingsService.GetSetting<DateTime>(SettingsType
-				.LastSyncBackgroundDateTime);
+		var setting = await settingsService.GetSetting<DateTime>(SettingsType
+			.LastSyncBackgroundDateTime);
 
-			Assert.IsFalse(( synchronize as FakeISynchronize )!.Inputs.Exists(p => p.Item1 == "/"));
+		Assert.IsFalse(( synchronize as FakeISynchronize )!.Inputs.Exists(p => p.Item1 == "/"));
 
-			Assert.AreEqual(1, setting.Year);
-			Assert.AreEqual(1, setting.Month);
-			Assert.AreEqual(1, setting.Day);
-		}
+		Assert.AreEqual(1, setting.Year);
+		Assert.AreEqual(1, setting.Month);
+		Assert.AreEqual(1, setting.Day);
+	}
 
-		[TestMethod]
-		public async Task StartUpSync_Sockets()
-		{
-			var scope = GetNewScope();
-			var appSettings = scope.CreateScope().ServiceProvider.GetRequiredService<AppSettings>();
-			var synchronize =
-				scope.CreateScope().ServiceProvider.GetRequiredService<ISynchronize>();
-			var settingsService = scope.CreateScope().ServiceProvider
-				.GetRequiredService<ISettingsService>();
-			var socketService = scope.CreateScope().ServiceProvider
-				.GetRequiredService<IWebSocketConnectionsService>();
-			var logger = scope.CreateScope().ServiceProvider.GetRequiredService<IWebLogger>();
+	[TestMethod]
+	public async Task StartUpSync_Sockets()
+	{
+		var scope = GetNewScope();
+		var appSettings = scope.CreateScope().ServiceProvider.GetRequiredService<AppSettings>();
+		var synchronize =
+			scope.CreateScope().ServiceProvider.GetRequiredService<ISynchronize>();
+		var settingsService = scope.CreateScope().ServiceProvider
+			.GetRequiredService<ISettingsService>();
+		var socketService = scope.CreateScope().ServiceProvider
+			.GetRequiredService<IWebSocketConnectionsService>();
+		var logger = scope.CreateScope().ServiceProvider.GetRequiredService<IWebLogger>();
 
-			var startupSync = new OnStartupSync(scope,
-				new FakeDiskWatcherUpdateBackgroundTaskQueue(), appSettings, synchronize,
-				settingsService, logger);
-			await startupSync.PushToSockets(new List<FileIndexItem>());
-			var result =
-				( socketService as
-					FakeIWebSocketConnectionsService )!.FakeSendToAllAsync.Count != 0;
-			Assert.IsTrue(result);
-		}
+		var startupSync = new OnStartupSync(scope,
+			new FakeDiskWatcherUpdateBackgroundTaskQueue(), appSettings, synchronize,
+			settingsService, logger);
+		await startupSync.PushToSockets(new List<FileIndexItem>());
+		var result =
+			( socketService as
+				FakeIWebSocketConnectionsService )!.FakeSendToAllAsync.Count != 0;
+		Assert.IsTrue(result);
 	}
 }

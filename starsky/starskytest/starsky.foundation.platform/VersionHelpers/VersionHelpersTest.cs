@@ -353,8 +353,8 @@ public sealed class VersionHelpersTest
 	[TestMethod]
 	public void GetHashCodeTest()
 	{
-		var version = new SemVersion(1).GetHashCode();
-		Assert.IsNotNull(version);
+		var hashCode = new SemVersion(1).GetHashCode();
+		Assert.AreNotEqual(0, hashCode);
 	}
 
 	[TestMethod]

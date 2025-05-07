@@ -76,7 +76,7 @@ public sealed class ThumbnailQueuedHostedServiceTest
 			}
 		}, string.Empty);
 
-		Assert.IsNotNull(_bgTaskQueue);
+		Assert.AreEqual(1, _bgTaskQueue.Count());
 	}
 
 	[TestMethod]

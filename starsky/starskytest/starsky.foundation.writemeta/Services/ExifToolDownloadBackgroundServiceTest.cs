@@ -35,8 +35,11 @@ public sealed class ExifToolDownloadBackgroundServiceTest
 	[TestMethod]
 	public async Task StartAsync()
 	{
-		var cancelToken = new CancellationToken();
+		var cancelToken = CancellationToken.None;
 		await new ExifToolDownloadBackgroundService(_serviceScopeFactory).StartAsync(cancelToken);
-		Assert.IsNotNull(cancelToken);
+
+		var logger = _serviceScopeFactory.CreateScope().ServiceProvider
+			.GetRequiredService<IWebLogger>();
+		Assert.IsNotNull(logger);
 	}
 }

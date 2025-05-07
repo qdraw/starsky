@@ -100,7 +100,7 @@ public sealed class ZipperTest
 		var result = new Zipper(new FakeIWebLogger()).ExtractZip(inputZipPath, testOutputFolder);
 
 		// Assert
-		Assert.IsNotNull(result);
+		Assert.IsTrue(result);
 
 		foreach ( var contentItem in CreateAnZipFileChildFolders.Content )
 		{

@@ -47,7 +47,6 @@ public class EnumListConverterTests
 
 		// Assert
 		Assert.IsNotNull(container);
-		Assert.IsNotNull(container.ValueTypes);
 		Assert.AreEqual(3, container.ValueTypes.Count);
 		Assert.AreEqual(ValueType.Value1, container.ValueTypes[0]);
 		Assert.AreEqual(ValueType.Value2, container.ValueTypes[1]);

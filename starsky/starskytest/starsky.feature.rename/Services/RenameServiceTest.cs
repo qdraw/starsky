@@ -144,10 +144,10 @@ public sealed class RenameServiceTest
 
 	private async Task RemoveFoldersAndFilesInDatabase()
 	{
-		Assert.IsNotNull(_folderExist);
-		Assert.IsNotNull(_folder1Exist);
-		Assert.IsNotNull(_fileInExist);
-		Assert.IsNotNull(_parentFolder);
+		Assert.IsNotNull(_folderExist.FilePath);
+		Assert.IsNotNull(_folder1Exist.FilePath);
+		Assert.IsNotNull(_fileInExist.FilePath);
+		Assert.IsNotNull(_parentFolder.FilePath);
 
 		await _query.RemoveItemAsync(_folderExist);
 		await _query.RemoveItemAsync(_folder1Exist);
@@ -161,10 +161,10 @@ public sealed class RenameServiceTest
 		// RenameFsTest_MoveFileToSameFolder_Items
 
 		await CreateFoldersAndFilesInDatabase();
-		Assert.IsNotNull(_folderExist);
-		Assert.IsNotNull(_folder1Exist);
-		Assert.IsNotNull(_fileInExist);
-		Assert.IsNotNull(_parentFolder);
+		Assert.IsNotNull(_folderExist.FilePath);
+		Assert.IsNotNull(_folder1Exist.FilePath);
+		Assert.IsNotNull(_fileInExist.FilePath);
+		Assert.IsNotNull(_parentFolder.FilePath);
 
 		var iStorage = new FakeIStorage(new List<string> { _folderExist.FilePath! },
 			new List<string> { _fileInExist.FilePath! });
@@ -1060,11 +1060,11 @@ public sealed class RenameServiceTest
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(ArgumentNullException))]
 	public async Task FromFolderToFolder_Null_exception()
 	{
-		await new RenameService(null!, null!).FromFolderToFolder(null!,
-			null!, null!, null!);
+		await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+			await new RenameService(null!, null!).FromFolderToFolder(null!,
+				null!, null!, null!));
 		// expect exception
 	}
 

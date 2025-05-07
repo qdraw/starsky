@@ -14,8 +14,8 @@ export function sorter(
       );
     case SortType.imageFormat:
       return [...concatenatedFileIndexItems].sort((a, b) => {
-        if (!a.imageFormat) a.imageFormat = ImageFormat.unknown;
-        if (!b.imageFormat) b.imageFormat = ImageFormat.unknown;
+        a.imageFormat ??= ImageFormat.unknown;
+        b.imageFormat ??= ImageFormat.unknown;
 
         const enumOrder = Object.values(ImageFormat);
         return (

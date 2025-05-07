@@ -35,9 +35,11 @@ public sealed class StartupTest
 			new ConfigurationRoot(new List<IConfigurationProvider>());
 		serviceCollection.AddSingleton(configuration);
 
-		// should not crash
 		new Startup().ConfigureServices(serviceCollection);
-		Assert.IsNotNull(serviceCollection);
+
+		var configurationService =
+			serviceCollection.BuildServiceProvider().GetService<IConfiguration>();
+		Assert.IsNotNull(configurationService, "IConfiguration should be registered.");
 	}
 
 	[TestMethod]
@@ -129,7 +131,6 @@ public sealed class StartupTest
 		var applicationBuilder = new ApplicationBuilder(serviceProviderInterface);
 		var result = startup.SetupStaticFiles(applicationBuilder);
 
-		Assert.IsNotNull(result);
 		Assert.IsTrue(result.Item1);
 		Assert.IsFalse(result.Item2);
 		Assert.IsFalse(result.Item3);
@@ -160,8 +161,6 @@ public sealed class StartupTest
 		var applicationBuilder = new ApplicationBuilder(serviceProviderInterface);
 		startup.ConfigureServices(serviceCollection);
 		var result = startup.SetupStaticFiles(applicationBuilder);
-
-		Assert.IsNotNull(result);
 
 		Console.WriteLine("result:");
 		Console.WriteLine("1: " + result.Item1 + " 2: " + result.Item2 + " 3: " + result.Item3);
@@ -197,7 +196,6 @@ public sealed class StartupTest
 			"clientapp", "build", "assets"));
 
 		var result = startup.SetupStaticFiles(applicationBuilder);
-		Assert.IsNotNull(result);
 
 		Console.WriteLine("result:");
 		Console.WriteLine("1: " + result.Item1 + " 2: " + result.Item2 + " 3: " + result.Item3);
@@ -231,7 +229,6 @@ public sealed class StartupTest
 			"wwwroot"));
 
 		var result = startup.SetupStaticFiles(applicationBuilder, "not-found-folder-name");
-		Assert.IsNotNull(result);
 
 		Console.WriteLine("result:");
 		Console.WriteLine("1: " + result.Item1 + " 2: " + result.Item2 + " 3: " + result.Item3);
@@ -247,10 +244,12 @@ public sealed class StartupTest
 		var httpContext = new DefaultHttpContext();
 		var context = new StaticFileResponseContext(httpContext,
 			new NotFoundFileInfo("test"));
+
 		// Act
 		Startup.PrepareResponse(context);
+
 		// Assert
-		Assert.IsNotNull(context.Context.Response.Headers.Expires);
+		Assert.IsNotEmpty(context.Context.Response.Headers.Expires.ToString());
 		Assert.AreEqual("public, max-age=31536000",
 			context.Context.Response.Headers.CacheControl.ToString());
 	}

@@ -163,10 +163,7 @@ public sealed class AppSettingsTest
 	[TestMethod]
 	public void AppSettingsProviderTest_NoFolderMissingFirstSlash()
 	{
-		Assert.ThrowsExactly<ArgumentException>(() =>
-		{
-			AppSettings.StructureCheck("dion.ext");
-		});
+		Assert.ThrowsExactly<ArgumentException>(() => { AppSettings.StructureCheck("dion.ext"); });
 		// >= ArgumentException
 	}
 
@@ -409,7 +406,7 @@ public sealed class AppSettingsTest
 	public void AppVersionBuildDateTime()
 	{
 		var appVersionBuildDateTime = new AppSettings().AppVersionBuildDateTime;
-		Assert.IsNotNull(appVersionBuildDateTime);
+		Assert.IsTrue(appVersionBuildDateTime.Year > 2000);
 	}
 
 	[TestMethod]
