@@ -1036,11 +1036,11 @@ public sealed class AppSettings
 	public string FullPathStorageFolderToDatabaseStyle(string subpath)
 	{
 		var databaseFilePath = subpath.Replace(StorageFolder, string.Empty);
-		databaseFilePath = _pathToDatabaseStyle(databaseFilePath);
+		databaseFilePath = PathReplaceToDatabaseStyle(databaseFilePath);
 
 		return PathHelper.PrefixDbSlash(databaseFilePath);
 	}
-	
+
 	/// <summary>
 	///     Temp folder ends always with a backslash
 	/// </summary>
@@ -1049,7 +1049,7 @@ public sealed class AppSettings
 	private string FullPathTempFolderToDatabaseStyle(string subpath)
 	{
 		var databaseFilePath = subpath.Replace(TempFolder, string.Empty);
-		databaseFilePath = _pathToDatabaseStyle(databaseFilePath);
+		databaseFilePath = PathReplaceToDatabaseStyle(databaseFilePath);
 		return PathHelper.PrefixDbSlash(databaseFilePath);
 	}
 
@@ -1061,16 +1061,6 @@ public sealed class AppSettings
 	public List<string> RenameListItemsToDbStyle(IEnumerable<string> localSubFolderList)
 	{
 		return localSubFolderList.Select(FullPathStorageFolderToDatabaseStyle).ToList();
-	}
-	
-	/// <summary>
-	///     Rename a list to database style (short style)
-	/// </summary>
-	/// <param name="localSubFolderList"></param>
-	/// <returns></returns>
-	public List<string> RenameTempListItemsToDbStyle(IEnumerable<string> localSubFolderList)
-	{
-		return localSubFolderList.Select(FullPathTempFolderToDatabaseStyle).ToList();
 	}
 
 	/// <summary>
@@ -1087,12 +1077,23 @@ public sealed class AppSettings
 			.ToList();
 	}
 
+
+	/// <summary>
+	///     Rename a list to database style (short style)
+	/// </summary>
+	/// <param name="localSubFolderList"></param>
+	/// <returns></returns>
+	public List<string> RenameTempListItemsToDbStyle(IEnumerable<string> localSubFolderList)
+	{
+		return localSubFolderList.Select(FullPathTempFolderToDatabaseStyle).ToList();
+	}
+
 	/// <summary>
 	///     Replace windows \\ > /
 	/// </summary>
 	/// <param name="subPath">path to replace</param>
 	/// <returns>replaced output</returns>
-	private string _pathToDatabaseStyle(string subPath)
+	private static string PathReplaceToDatabaseStyle(string subPath)
 	{
 		if ( Path.DirectorySeparatorChar.ToString() == "\\" )
 		{
@@ -1130,7 +1131,7 @@ public sealed class AppSettings
 
 		return filepath;
 	}
-	
+
 	/// <summary>
 	///     Temp folder relative path
 	/// </summary>
