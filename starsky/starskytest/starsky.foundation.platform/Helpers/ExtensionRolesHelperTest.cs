@@ -27,11 +27,20 @@ public sealed class ExtensionRolesHelperTest
 	[DataTestMethod]
 	[DataRow("file.mp4")]
 	[DataRow("file.mov")]
+	[DataRow("file.mts")]
 	public void Files_IsExtensionVideoSupported_VideoAndNotImages(string filePath)
 	{
 		// Check if Video is supported and NOT Image
 		Assert.IsTrue(ExtensionRolesHelper.IsExtensionVideoSupported(filePath));
 		Assert.IsFalse(ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(filePath));
+	}
+	
+	[DataTestMethod]
+	[DataRow(null)]
+	[DataRow("file.txt")]
+	public void Files_IsExtensionVideoSupported_NeverFound(string filePath)
+	{
+		Assert.IsFalse(ExtensionRolesHelper.IsExtensionVideoSupported(filePath));
 	}
 
 	[TestMethod]
