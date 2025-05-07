@@ -1108,7 +1108,7 @@ public sealed class AppSettings
 	/// </summary>
 	/// <param name="subPath">path to replace</param>
 	/// <returns>replaced output</returns>
-	private string _pathToFilePathStyle(string subPath)
+	private static string PathToFileReplacePathStyle(string subPath)
 	{
 		if ( Path.DirectorySeparatorChar.ToString() == "\\" )
 		{
@@ -1127,7 +1127,7 @@ public sealed class AppSettings
 	{
 		var filepath = StorageFolder + databaseFilePath;
 
-		filepath = _pathToFilePathStyle(filepath);
+		filepath = PathToFileReplacePathStyle(filepath);
 
 		return filepath;
 	}
@@ -1141,7 +1141,7 @@ public sealed class AppSettings
 	{
 		var filepath = TempFolder + databaseFilePath;
 
-		filepath = _pathToFilePathStyle(filepath);
+		filepath = PathToFileReplacePathStyle(filepath);
 
 		return filepath;
 	}
