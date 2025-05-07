@@ -73,17 +73,15 @@ public sealed class DiskController : Controller
 				FilePath = subPath, Status = FileIndexItem.ExifStatus.Ok
 			};
 
+			// if it exists make sure the item is added to the database
+			await AddIfExistItemAsync(subPath);
+
 			if ( _iStorage.ExistFolder(subPath) )
 			{
 				toAddStatus.Status = FileIndexItem.ExifStatus.OperationNotSupported;
 				syncResultsList.Add(toAddStatus);
 				continue;
 			}
-
-			await _query.AddItemAsync(new FileIndexItem(subPath)
-			{
-				IsDirectory = true, ImageFormat = ExtensionRolesHelper.ImageFormat.directory
-			});
 
 			// add to fs
 			_iStorage.CreateDirectory(subPath);
@@ -100,6 +98,17 @@ public sealed class DiskController : Controller
 		await SyncMessageToSocket(syncResultsList, ApiNotificationType.Mkdir);
 
 		return Json(syncResultsList);
+
+		async Task AddIfExistItemAsync(string subPath)
+		{
+			if ( !await _query.ExistsAsync(subPath) )
+			{
+				await _query.AddItemAsync(new FileIndexItem(subPath)
+				{
+					IsDirectory = true, ImageFormat = ExtensionRolesHelper.ImageFormat.directory
+				});
+			}
+		}
 	}
 
 	/// <summary>

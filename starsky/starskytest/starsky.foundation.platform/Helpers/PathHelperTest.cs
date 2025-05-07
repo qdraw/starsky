@@ -103,7 +103,7 @@ public class PathHelperTests
 	public void GetFileName_ReturnsFileName_WithMaliciousInput()
 	{
 		// Act & Assert
-		Assert.ThrowsException<ArgumentException>(() =>
+		Assert.ThrowsExactly<ArgumentException>(() =>
 		{
 			PathHelper.GetFileName(TestContentVeryLongString);
 		});
@@ -264,7 +264,7 @@ public class PathHelperTests
 		var actualPath = PathHelper.AddBackslash(null!);
 
 		// Assert
-		Assert.AreEqual(null, actualPath);
+		Assert.IsNull(actualPath);
 	}
 
 	[TestMethod]

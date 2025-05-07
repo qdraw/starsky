@@ -68,7 +68,7 @@ public class GetObjectsByFileHashAsyncTest
 		await dbContext.DisposeAsync();
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<AggregateException>(async () =>
+		await Assert.ThrowsExactlyAsync<AggregateException>(async () =>
 			await query.GetObjectsByFileHashAsync(new List<string> { "test123" }, 1));
 	}
 

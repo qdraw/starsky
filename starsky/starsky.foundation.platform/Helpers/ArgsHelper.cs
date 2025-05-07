@@ -717,7 +717,7 @@ public sealed class ArgsHelper
 
 		if ( dbStyle )
 		{
-			path = _appSettings.FullPathToDatabaseStyle(path);
+			path = _appSettings.FullPathStorageFolderToDatabaseStyle(path);
 		}
 
 		return path;

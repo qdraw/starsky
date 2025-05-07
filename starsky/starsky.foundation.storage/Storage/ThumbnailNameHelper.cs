@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using starsky.foundation.platform.Enums;
+using starsky.foundation.platform.Thumbnails;
 
 namespace starsky.foundation.storage.Storage;
 
@@ -34,6 +35,8 @@ public static partial class ThumbnailNameHelper
 	{
 		switch ( size )
 		{
+			case ThumbnailSize.TinyIcon:
+				return 4;
 			case ThumbnailSize.TinyMeta:
 				return 150;
 			case ThumbnailSize.Small:
@@ -51,6 +54,8 @@ public static partial class ThumbnailNameHelper
 	{
 		switch ( size )
 		{
+			case 4:
+				return ThumbnailSize.TinyIcon;
 			case 150:
 				return ThumbnailSize.TinyMeta;
 			case 300:
@@ -64,10 +69,11 @@ public static partial class ThumbnailNameHelper
 		}
 	}
 
-	public static ThumbnailSize GetSize(string fileName)
+	public static ThumbnailSize GetSize(string fileName,
+		ThumbnailImageFormat imageFormat)
 	{
 		var fileNameWithoutExtension =
-			fileName.Replace(".jpg", string.Empty);
+			fileName.Replace($".{imageFormat}", string.Empty);
 
 		var afterAtString = Regex.Match(fileNameWithoutExtension, "@\\d+",
 				RegexOptions.None, TimeSpan.FromMilliseconds(200))
@@ -88,26 +94,24 @@ public static partial class ThumbnailNameHelper
 		return GetSize(afterAt);
 	}
 
-	public static string Combine(string fileHash, int size)
+	public static string Combine(string fileHash, int size,
+		ThumbnailImageFormat imageFormat)
 	{
-		return Combine(fileHash, GetSize(size));
+		return Combine(fileHash, GetSize(size), imageFormat);
 	}
 
 	public static string Combine(string fileHash, ThumbnailSize size,
-		bool appendExtension = false)
+		ThumbnailImageFormat imageFormat)
 	{
-		if ( appendExtension )
-		{
-			return fileHash + GetAppend(size) + ".jpg";
-		}
-
-		return fileHash + GetAppend(size);
+		return fileHash + GetAppend(size) + "." + imageFormat;
 	}
 
 	private static string GetAppend(ThumbnailSize size)
 	{
 		switch ( size )
 		{
+			case ThumbnailSize.TinyIcon:
+				return "@4";
 			case ThumbnailSize.TinyMeta:
 				return "@meta";
 			case ThumbnailSize.Small:
@@ -121,14 +125,24 @@ public static partial class ThumbnailNameHelper
 		}
 	}
 
-	[GeneratedRegex("@\\d+", RegexOptions.None, 1000)]
-	private static partial Regex AtDigitRegex();
+	/// <summary>
+	/// Replace at and digit with empty string
+	/// @\d+.?\w{0,4}
+	/// </summary>
+	/// <returns></returns>
+	[GeneratedRegex(@"@\d+.?\w{0,4}", RegexOptions.None, 1000)]
+	private static partial Regex AtDigitAndExtensionRegex();
 
+	/// <summary>
+	/// Remove @2000 or @2000.jpg 
+	/// </summary>
+	/// <param name="thumbnailOutputHash">input hash with extension</param>
+	/// <returns>fileHash without suffix and or extension</returns>
 	public static string RemoveSuffix(string? thumbnailOutputHash)
 	{
 		return thumbnailOutputHash == null
 			? string.Empty
-			: AtDigitRegex().Replace(thumbnailOutputHash, string.Empty);
+			: AtDigitAndExtensionRegex().Replace(thumbnailOutputHash, string.Empty);
 	}
 
 	/// <summary>

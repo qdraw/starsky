@@ -66,8 +66,8 @@ namespace starskytest.Controllers
 			var controller = new IndexController(_query, new AppSettings());
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			var actionResult = controller.Index("/homecontrollertest/hi.jpg") as JsonResult;
-			Assert.AreNotEqual(null, actionResult);
-			var jsonCollection = actionResult?.Value as DetailView;
+			Assert.IsNotNull(actionResult);
+			var jsonCollection = actionResult.Value as DetailView;
 			Assert.AreEqual("home0012304590", jsonCollection?.FileIndexItem?.FileHash);
 		}
 
@@ -78,8 +78,8 @@ namespace starskytest.Controllers
 			var controller = new IndexController(_query, new AppSettings());
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			var actionResult = controller.Index("/homecontrollertest") as JsonResult;
-			Assert.AreNotEqual(null, actionResult);
-			var jsonCollection = actionResult?.Value as ArchiveViewModel;
+			Assert.IsNotNull(actionResult);
+			var jsonCollection = actionResult.Value as ArchiveViewModel;
 			Assert.AreEqual("home0012304590", jsonCollection?
 				.FileIndexItems.FirstOrDefault()?.FileHash);
 		}
@@ -97,8 +97,8 @@ namespace starskytest.Controllers
 			var controller = new IndexController(fakeQuery, new AppSettings());
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			var actionResult = controller.Index("/") as JsonResult;
-			Assert.AreNotEqual(null, actionResult);
-			var jsonCollection = actionResult?.Value as ArchiveViewModel;
+			Assert.IsNotNull(actionResult);
+			var jsonCollection = actionResult.Value as ArchiveViewModel;
 			Assert.AreEqual("test", jsonCollection?.FileIndexItems.FirstOrDefault()?.FileHash);
 		}
 
@@ -114,8 +114,8 @@ namespace starskytest.Controllers
 			var controller = new IndexController(fakeQuery, new AppSettings());
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			var actionResult = controller.Index(string.Empty) as JsonResult;
-			Assert.AreNotEqual(null, actionResult);
-			var jsonCollection = actionResult?.Value as ArchiveViewModel;
+			Assert.IsNotNull(actionResult);
+			var jsonCollection = actionResult.Value as ArchiveViewModel;
 			Assert.AreEqual("test", jsonCollection?.FileIndexItems.FirstOrDefault()?.FileHash);
 		}
 		
@@ -149,8 +149,8 @@ namespace starskytest.Controllers
 			var controller = new IndexController(new FakeIQuery(), new AppSettings());
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			var actionResult = controller.Index() as JsonResult;
-			Assert.AreNotEqual(null, actionResult);
-			var jsonCollection = actionResult?.Value as ArchiveViewModel;
+			Assert.IsNotNull(actionResult);
+			var jsonCollection = actionResult.Value as ArchiveViewModel;
 			Assert.AreEqual(0, jsonCollection?.FileIndexItems.Count());
 		}
 	}

@@ -18,6 +18,7 @@ using starskytest.FakeCreateAn.CreateAnImageA330Raw;
 using starskytest.FakeCreateAn.CreateAnImageA6600Raw;
 using starskytest.FakeCreateAn.CreateAnImageLongDescriptionTitle;
 using starskytest.FakeCreateAn.CreateAnImageWebP;
+using starskytest.FakeCreateAn.CreateAnQuickTimeMp4;
 using starskytest.FakeMocks;
 using XmpCore;
 using XmpCore.Impl;

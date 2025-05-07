@@ -559,7 +559,7 @@ public sealed class ReadMetaExif
 		return result;
 	}
 
-	public static string? GetObjectName(List<Directory> allExifItems)
+	public static string GetObjectName(List<Directory> allExifItems)
 	{
 		// Xmp readings
 		var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();
@@ -1046,7 +1046,7 @@ public sealed class ReadMetaExif
 		var directoryNames = new[]
 		{
 			"JPEG", "PNG-IHDR", "BMP Header", "GIF Header", "QuickTime Track Header",
-			"Exif IFD0", "Exif SubIFD"
+			"Exif IFD0", "Exif SubIFD", "WebP"
 		};
 		foreach ( var dirName in directoryNames )
 		{

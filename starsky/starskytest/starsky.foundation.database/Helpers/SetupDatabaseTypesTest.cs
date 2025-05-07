@@ -75,7 +75,7 @@ public sealed class SetupDatabaseTypesTest
 		var services = new ServiceCollection();
 
 		// Assert that an AggregateException is thrown when BuilderDbFactorySwitch is called
-		Assert.ThrowsException<AggregateException>(() =>
+		Assert.ThrowsExactly<AggregateException>(() =>
 			new SetupDatabaseTypes(appSettings, services).BuilderDbFactorySwitch());
 	}
 
@@ -85,7 +85,7 @@ public sealed class SetupDatabaseTypesTest
 		var appSettings = new AppSettings { Verbose = true };
 
 		// Assert that an AggregateException is thrown when BuilderDb is called
-		Assert.ThrowsException<AggregateException>(() =>
+		Assert.ThrowsExactly<AggregateException>(() =>
 			new SetupDatabaseTypes(appSettings).BuilderDb());
 	}
 

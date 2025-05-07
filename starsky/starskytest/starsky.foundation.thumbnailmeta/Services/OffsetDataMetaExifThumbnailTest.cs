@@ -21,7 +21,7 @@ public sealed class OffsetDataMetaExifThumbnailTest
 		var (exifThumbnailDirectory, width, height, rotation) = new OffsetDataMetaExifThumbnail(
 			new FakeSelectorStorage(),
 			new FakeIWebLogger()).ParseMetaThumbnail(null, null);
-		Assert.AreEqual(null, exifThumbnailDirectory);
+		Assert.IsNull(exifThumbnailDirectory);
 		Assert.AreEqual(0, width);
 		Assert.AreEqual(0, height);
 		Assert.AreEqual(FileIndexItem.Rotation.DoNotChange, rotation);

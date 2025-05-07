@@ -151,7 +151,7 @@ public class ReadMetaExifTest
 		var readMetaExif =
 			new ReadMetaExif(new FakeIStorage(), new AppSettings(), new FakeIWebLogger());
 
-		Assert.ThrowsException<ArgumentException>(() =>
+		Assert.ThrowsExactly<ArgumentException>(() =>
 			readMetaExif.ParseExifDirectory([], null)
 		);
 	}

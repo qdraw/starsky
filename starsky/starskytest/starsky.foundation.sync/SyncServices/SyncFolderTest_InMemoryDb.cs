@@ -119,10 +119,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,test0.Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,test2.Status);
 			
-			Assert.AreEqual(null, 
-				_query.GetObjectByFilePath("/Folder_InDbButNotOnDisk/test.jpg"));
-			Assert.AreEqual(null, 
-				_query.GetObjectByFilePath("/Folder_InDbButNotOnDisk/test2.jpg"));
+			Assert.IsNull(_query.GetObjectByFilePath("/Folder_InDbButNotOnDisk/test.jpg"));
+			Assert.IsNull(_query.GetObjectByFilePath("/Folder_InDbButNotOnDisk/test2.jpg"));
 		}
 		
 		[TestMethod]
@@ -158,14 +156,10 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(0, data.Count);
 			
 			// Check for database
-			Assert.AreEqual(null, 
-				await _query.GetObjectByFilePathAsync("/Folder_InDbButNotOnDisk2"));
-			Assert.AreEqual(null, 
-				await _query.GetObjectByFilePathAsync("/Folder_InDbButNotOnDisk2/test.jpg"));
-			Assert.AreEqual(null, 
-				await _query.GetObjectByFilePathAsync("/Folder_InDbButNotOnDisk2/test_dir/test.jpg"));
-			Assert.AreEqual(null, 
-				await _query.GetObjectByFilePathAsync("/Folder_InDbButNotOnDisk2/test_dir"));
+			Assert.IsNull(await _query.GetObjectByFilePathAsync("/Folder_InDbButNotOnDisk2"));
+			Assert.IsNull(await _query.GetObjectByFilePathAsync("/Folder_InDbButNotOnDisk2/test.jpg"));
+			Assert.IsNull(await _query.GetObjectByFilePathAsync("/Folder_InDbButNotOnDisk2/test_dir/test.jpg"));
+			Assert.IsNull(await _query.GetObjectByFilePathAsync("/Folder_InDbButNotOnDisk2/test_dir"));
 		}
 		
 		[TestMethod]
@@ -222,10 +216,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				(await _query.GetObjectByFilePathAsync("/Folder_InDbButNotOnDisk4"))?.FilePath);
 			Assert.AreEqual("/Folder_InDbButNotOnDisk4/test_dir", 
 				(await _query.GetObjectByFilePathAsync("/Folder_InDbButNotOnDisk4/test_dir"))?.FilePath);
-			Assert.AreEqual(null, 
-				await _query.GetObjectByFilePathAsync("/Folder_InDbButNotOnDisk4/test_dir/test.jpg"));
-			Assert.AreEqual(null, 
-				await _query.GetObjectByFilePathAsync("/Folder_InDbButNotOnDisk4/test.jpg"));
+			Assert.IsNull(await _query.GetObjectByFilePathAsync("/Folder_InDbButNotOnDisk4/test_dir/test.jpg"));
+			Assert.IsNull(await _query.GetObjectByFilePathAsync("/Folder_InDbButNotOnDisk4/test.jpg"));
 		}
 	}
 }

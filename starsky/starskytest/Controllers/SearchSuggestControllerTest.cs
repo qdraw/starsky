@@ -86,7 +86,7 @@ public sealed class SearchSuggestControllerTest
 		var result = await controller.Suggest(t) as JsonResult;
 		var list = result!.Value as List<string>;
 
-		Assert.IsFalse(list!.Count != 0);
+		Assert.AreEqual(0, list!.Count);
 	}
 
 	[TestMethod]

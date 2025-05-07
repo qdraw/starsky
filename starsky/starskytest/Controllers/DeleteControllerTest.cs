@@ -90,7 +90,8 @@ public sealed class DeleteControllerTest
 
 	private async Task<FileIndexItem?> InsertSearchData(bool delete = false)
 	{
-		var fileHashCode = new FileHash(_iStorage).GetHashCode(_createAnImage.DbPath).Key;
+		var fileHashCode = new FileHash(_iStorage, new FakeIWebLogger())
+			.GetHashCode(_createAnImage.DbPath).Key;
 
 		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync(fileHashCode)) )
 		{
@@ -136,7 +137,7 @@ public sealed class DeleteControllerTest
 		Assert.IsNotNull(createAnImage1);
 
 		var actionResult = await controller.Delete(createAnImage?.FilePath!) as JsonResult;
-		Assert.AreNotEqual(null, actionResult);
+		Assert.IsNotNull(actionResult);
 		var jsonCollection = actionResult?.Value as List<FileIndexItem>;
 		Assert.AreEqual(createAnImage?.FilePath, jsonCollection?.FirstOrDefault()?.FilePath);
 

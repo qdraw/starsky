@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.import.Models;
@@ -18,12 +19,17 @@ public sealed class ImportSettingsModelTest
 	}
 
 	[TestMethod]
+	[SuppressMessage("Performance",
+		"CA1806:Do not ignore method results",
+		Justification = "Should fail when null in constructor")]
+	[SuppressMessage("ReSharper",
+		"ObjectCreationAsStatement")]
 	public void ImportSettingsModel_FailingInput_Test()
 	{
 		var context = new DefaultHttpContext();
 		context.Request.Headers["Structure"] = "wrong";
 
-		Assert.ThrowsException<ArgumentException>(() => new ImportSettingsModel(context.Request));
+		Assert.ThrowsExactly<ArgumentException>(() => new ImportSettingsModel(context.Request));
 	}
 
 	[TestMethod]

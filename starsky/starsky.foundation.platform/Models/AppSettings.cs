@@ -344,6 +344,14 @@ public sealed class AppSettings
 	}
 
 	/// <summary>
+	///     Which format to use for the thumbnail
+	/// </summary>
+	[PackageTelemetry]
+	[JsonConverter(typeof(JsonStringEnumConverter))]
+	public ThumbnailImageFormat ThumbnailImageFormat { get; set; } =
+		ThumbnailImageFormat.jpg;
+
+	/// <summary>
 	///     Location of temp folder
 	/// </summary>
 	public string TempFolder
@@ -779,6 +787,17 @@ public sealed class AppSettings
 	/// </summary>
 	public bool? ExiftoolSkipDownloadOnStartup { get; set; } = false;
 
+	/// <summary>
+	///     Skip download Ffmpeg on startup
+	///     Recommended to keep false
+	/// </summary>
+	public bool? FfmpegSkipDownloadOnStartup { get; set; } = false;
+
+	/// <summary>
+	///     Exe path to Ffmpeg
+	/// </summary>
+	public string? FfmpegPath { get; set; }
+
 	public OpenTelemetrySettings? OpenTelemetry { get; set; } = new();
 
 	/// <summary>
@@ -1014,11 +1033,23 @@ public sealed class AppSettings
 	/// </summary>
 	/// <param name="subpath">in OS Style, StorageFolder ends with backslash</param>
 	/// <returns></returns>
-	public string FullPathToDatabaseStyle(string subpath)
+	public string FullPathStorageFolderToDatabaseStyle(string subpath)
 	{
 		var databaseFilePath = subpath.Replace(StorageFolder, string.Empty);
-		databaseFilePath = _pathToDatabaseStyle(databaseFilePath);
+		databaseFilePath = PathReplaceToDatabaseStyle(databaseFilePath);
 
+		return PathHelper.PrefixDbSlash(databaseFilePath);
+	}
+
+	/// <summary>
+	///     Temp folder ends always with a backslash
+	/// </summary>
+	/// <param name="subpath">in OS Style, StorageFolder ends with backslash</param>
+	/// <returns></returns>
+	private string FullPathTempFolderToDatabaseStyle(string subpath)
+	{
+		var databaseFilePath = subpath.Replace(TempFolder, string.Empty);
+		databaseFilePath = PathReplaceToDatabaseStyle(databaseFilePath);
 		return PathHelper.PrefixDbSlash(databaseFilePath);
 	}
 
@@ -1029,7 +1060,7 @@ public sealed class AppSettings
 	/// <returns></returns>
 	public List<string> RenameListItemsToDbStyle(IEnumerable<string> localSubFolderList)
 	{
-		return localSubFolderList.Select(FullPathToDatabaseStyle).ToList();
+		return localSubFolderList.Select(FullPathStorageFolderToDatabaseStyle).ToList();
 	}
 
 	/// <summary>
@@ -1041,9 +1072,20 @@ public sealed class AppSettings
 		IEnumerable<KeyValuePair<string, DateTime>> localSubFolderList)
 	{
 		return localSubFolderList.Select(item =>
-				new KeyValuePair<string, DateTime>(FullPathToDatabaseStyle(item.Key),
+				new KeyValuePair<string, DateTime>(FullPathStorageFolderToDatabaseStyle(item.Key),
 					item.Value))
 			.ToList();
+	}
+
+
+	/// <summary>
+	///     Rename a list to database style (short style)
+	/// </summary>
+	/// <param name="localSubFolderList"></param>
+	/// <returns></returns>
+	public List<string> RenameTempListItemsToDbStyle(IEnumerable<string> localSubFolderList)
+	{
+		return localSubFolderList.Select(FullPathTempFolderToDatabaseStyle).ToList();
 	}
 
 	/// <summary>
@@ -1051,7 +1093,7 @@ public sealed class AppSettings
 	/// </summary>
 	/// <param name="subPath">path to replace</param>
 	/// <returns>replaced output</returns>
-	private string _pathToDatabaseStyle(string subPath)
+	private static string PathReplaceToDatabaseStyle(string subPath)
 	{
 		if ( Path.DirectorySeparatorChar.ToString() == "\\" )
 		{
@@ -1066,7 +1108,7 @@ public sealed class AppSettings
 	/// </summary>
 	/// <param name="subPath">path to replace</param>
 	/// <returns>replaced output</returns>
-	private string _pathToFilePathStyle(string subPath)
+	private static string PathToFileReplacePathStyle(string subPath)
 	{
 		if ( Path.DirectorySeparatorChar.ToString() == "\\" )
 		{
@@ -1085,7 +1127,21 @@ public sealed class AppSettings
 	{
 		var filepath = StorageFolder + databaseFilePath;
 
-		filepath = _pathToFilePathStyle(filepath);
+		filepath = PathToFileReplacePathStyle(filepath);
+
+		return filepath;
+	}
+
+	/// <summary>
+	///     Temp folder relative path
+	/// </summary>
+	/// <param name="databaseFilePath">databaseFilePath</param>
+	/// <returns></returns>
+	public string DatabasePathToTempFolderFilePath(string databaseFilePath)
+	{
+		var filepath = TempFolder + databaseFilePath;
+
+		filepath = PathToFileReplacePathStyle(filepath);
 
 		return filepath;
 	}

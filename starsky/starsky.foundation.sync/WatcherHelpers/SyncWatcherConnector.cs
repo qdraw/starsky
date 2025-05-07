@@ -112,10 +112,10 @@ public sealed class SyncWatcherConnector
 		if ( type == WatcherChangeTypes.Renamed && !string.IsNullOrEmpty(toPath) )
 		{
 			// from path sync
-			var path = _appSettings!.FullPathToDatabaseStyle(fullFilePath);
+			var path = _appSettings!.FullPathStorageFolderToDatabaseStyle(fullFilePath);
 			await _synchronize!.Sync(path);
 
-			syncData.Add(new FileIndexItem(_appSettings.FullPathToDatabaseStyle(fullFilePath))
+			syncData.Add(new FileIndexItem(_appSettings.FullPathStorageFolderToDatabaseStyle(fullFilePath))
 			{
 				IsDirectory = true,
 				ImageFormat = ExtensionRolesHelper.ImageFormat.directory,
@@ -123,13 +123,13 @@ public sealed class SyncWatcherConnector
 			});
 
 			// and now to-path sync
-			var pathToDatabaseStyle = _appSettings.FullPathToDatabaseStyle(toPath);
+			var pathToDatabaseStyle = _appSettings.FullPathStorageFolderToDatabaseStyle(toPath);
 			syncData.AddRange(await _synchronize.Sync(pathToDatabaseStyle));
 		}
 		else
 		{
 			syncData =
-				await _synchronize!.Sync(_appSettings!.FullPathToDatabaseStyle(fullFilePath));
+				await _synchronize!.Sync(_appSettings!.FullPathStorageFolderToDatabaseStyle(fullFilePath));
 		}
 
 		var filtered = FilterBefore(syncData);

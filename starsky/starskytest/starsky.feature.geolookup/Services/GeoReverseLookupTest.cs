@@ -29,7 +29,7 @@ public sealed class GeoReverseLookupTest
 		Setup();
 	}
 
-	[ClassCleanup]
+	[ClassCleanup(ClassCleanupBehavior.EndOfClass)]
 	public static void ClassCleanUp()
 	{
 		var path = Path.Combine(new CreateAnImage().BasePath, "tmp-dependencies");

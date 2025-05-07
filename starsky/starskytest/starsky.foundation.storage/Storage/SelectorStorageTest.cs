@@ -12,13 +12,13 @@ public class SelectorStorageTest
 	/// <summary>
 	///     Service Provider
 	/// </summary>
-	private readonly IServiceProvider _serviceProvider;
+	private readonly IServiceScopeFactory _scopeFactory;
 
 	public SelectorStorageTest()
 	{
 		var serviceCollection = new ServiceCollection();
 		var sp = serviceCollection.BuildServiceProvider();
-		_serviceProvider = sp.GetRequiredService<IServiceProvider>();
+		_scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
 	}
 
 	[TestMethod]
@@ -32,9 +32,9 @@ public class SelectorStorageTest
 		propertyObject?.SetValue(myClass, 44, null);
 
 		// Act & Assert
-		Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+		Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
 		{
-			new SelectorStorage(_serviceProvider).Get(myClass.Type);
+			new SelectorStorage(_scopeFactory).Get(myClass.Type);
 		});
 	}
 
@@ -45,7 +45,7 @@ public class SelectorStorageTest
 	[SuppressMessage("Usage",
 		"S1144:Unused private types or members should be removed")]
 	[SuppressMessage("Usage", "S3459:Unassigned members should be removed")]
-	private class MyClass
+	private sealed class MyClass
 	{
 		public SelectorStorage.StorageServices Type { get; set; }
 	}

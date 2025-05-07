@@ -64,7 +64,7 @@ public sealed class StructureServiceTest
 		var service = new StructureService(new FakeIStorage(), null!);
 
 		// Act & Assert
-		Assert.ThrowsException<FieldAccessException>(() =>
+		Assert.ThrowsExactly<FieldAccessException>(() =>
 		{
 			service.ParseSubfolders(
 				new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local));
@@ -230,7 +230,7 @@ public sealed class StructureServiceTest
 	{
 		const string structure = "";
 		var sut = new StructureService(new FakeIStorage(), structure);
-		Assert.ThrowsException<FieldAccessException>(() => sut.ParseSubfolders(
+		Assert.ThrowsExactly<FieldAccessException>(() => sut.ParseSubfolders(
 			new DateTime(2020, 01, 01,
 				01, 01, 01, DateTimeKind.Local)));
 	}
@@ -240,7 +240,7 @@ public sealed class StructureServiceTest
 	{
 		const string structure = "/.ext";
 		var sut = new StructureService(new FakeIStorage(), structure);
-		Assert.ThrowsException<FieldAccessException>(() => sut.ParseSubfolders(
+		Assert.ThrowsExactly<FieldAccessException>(() => sut.ParseSubfolders(
 			new DateTime(2020, 01, 01,
 				01, 01, 01, DateTimeKind.Local)));
 	}
@@ -250,7 +250,7 @@ public sealed class StructureServiceTest
 	{
 		const string structure = "test/on";
 		var sut = new StructureService(new FakeIStorage(), structure);
-		Assert.ThrowsException<FieldAccessException>(() => sut.ParseSubfolders(
+		Assert.ThrowsExactly<FieldAccessException>(() => sut.ParseSubfolders(
 			new DateTime(2020, 01, 01,
 				01, 01, 01, DateTimeKind.Local)));
 		// ExpectedException

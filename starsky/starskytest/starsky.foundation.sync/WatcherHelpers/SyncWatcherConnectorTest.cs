@@ -32,7 +32,7 @@ public sealed class SyncWatcherConnectorTest
 			null!, null!, null!, null!);
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
+		await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
 		{
 			await syncWatcherPreflight.Sync(
 				new Tuple<string, string?, WatcherChangeTypes>("test", null!,
@@ -69,7 +69,7 @@ public sealed class SyncWatcherConnectorTest
 		var syncWatcherPreflight = new SyncWatcherConnector(scope);
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () =>
+		await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () =>
 		{
 			await syncWatcherPreflight.Sync(
 				new Tuple<string, string?, WatcherChangeTypes>(

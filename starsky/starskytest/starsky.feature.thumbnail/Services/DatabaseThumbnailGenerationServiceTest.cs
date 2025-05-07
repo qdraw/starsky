@@ -29,8 +29,8 @@ public class DatabaseThumbnailGenerationServiceTest
 
 		Assert.AreEqual(0, bgTaskQueue.Count());
 	}
-	
-	
+
+
 	[TestMethod]
 	public async Task StartBackgroundQueue_NoContentSoHitOnce()
 	{
@@ -194,7 +194,7 @@ public class DatabaseThumbnailGenerationServiceTest
 
 		Assert.AreEqual(1, result.Count);
 		Assert.AreEqual(1, ( await thumbnailQuery.Get("345742938fs_jk_df_kj") ).Count);
-		Assert.AreEqual(null, result.FirstOrDefault()!.Large);
+		Assert.IsNull(result.FirstOrDefault()!.Large);
 	}
 
 	[TestMethod]
@@ -218,10 +218,13 @@ public class DatabaseThumbnailGenerationServiceTest
 			new List<ThumbnailItem> { new("345742938fs_jk_df_kj", null, null, null, null) },
 			new List<FileIndexItem>
 			{
-				new() { FileHash = "345742938fs_jk_df_kj", Status = FileIndexItem.ExifStatus.Ok }
+				new()
+				{
+					FileHash = "345742938fs_jk_df_kj", Status = FileIndexItem.ExifStatus.Ok
+				}
 			}) ).ToList();
 
 		Assert.AreEqual(1, result.Count);
-		Assert.AreEqual(null, result.FirstOrDefault()!.Large);
+		Assert.IsNull(result.FirstOrDefault()!.Large);
 	}
 }

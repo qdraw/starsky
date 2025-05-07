@@ -5,10 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.platform.Helpers;
 
-public static partial class ExtensionRolesHelper
+public partial class ExtensionRolesHelper(IWebLogger logger)
 {
 	/// <summary>
 	///     ImageFormat based on first bytes, so read first bytes
@@ -42,6 +43,8 @@ public static partial class ExtensionRolesHelper
 
 		// video
 		mp4 = 50,
+		mjpeg = 51,
+		mts = 52,
 
 		// archives
 		zip = 60,
@@ -107,9 +110,19 @@ public static partial class ExtensionRolesHelper
 	private static readonly List<string> ExtensionGpx = new() { "gpx" };
 
 	/// <summary>
-	///     Mp4 Videos in h264 codex
+	///     Mp4 Videos in h264 codex / And Quicktime
 	/// </summary>
 	private static readonly List<string> ExtensionMp4 = new() { "mp4", "mov" };
+
+	/// <summary>
+	///     Video with MTS stream
+	/// </summary>
+	private static readonly List<string> ExtensionMts = new() { "mts" };
+
+	/// <summary>
+	///     MJPEG video stream
+	/// </summary>
+	private static readonly List<string> ExtensionMjpeg = new() { "mjpeg", "mov" };
 
 	/// <summary>
 	///     WebP imageFormat
@@ -132,6 +145,7 @@ public static partial class ExtensionRolesHelper
 				{ ImageFormat.png, ExtensionPng },
 				{ ImageFormat.gpx, ExtensionGpx },
 				{ ImageFormat.mp4, ExtensionMp4 },
+				{ ImageFormat.mts, ExtensionMts },
 				{ ImageFormat.xmp, ExtensionXmp },
 				{ ImageFormat.webp, ExtensionWebp },
 				{ ImageFormat.psd, ExtensionPsd }
@@ -153,6 +167,8 @@ public static partial class ExtensionRolesHelper
 			extensionList.AddRange(ExtensionPng);
 			extensionList.AddRange(ExtensionGpx);
 			extensionList.AddRange(ExtensionMp4);
+			extensionList.AddRange(ExtensionMts);
+			extensionList.AddRange(ExtensionMjpeg);
 			extensionList.AddRange(ExtensionXmp);
 			extensionList.AddRange(ExtensionJsonSidecar);
 			extensionList.AddRange(ExtensionWebp);
@@ -175,6 +191,8 @@ public static partial class ExtensionRolesHelper
 			extensionList.AddRange(ExtensionGif);
 			extensionList.AddRange(ExtensionPng);
 			extensionList.AddRange(ExtensionMp4);
+			extensionList.AddRange(ExtensionMts);
+			extensionList.AddRange(ExtensionMjpeg);
 			extensionList.AddRange(ExtensionWebp);
 			extensionList.AddRange(ExtensionPsd);
 			return extensionList;
@@ -189,7 +207,7 @@ public static partial class ExtensionRolesHelper
 	/// <value>
 	///     The extension thumb supported list.
 	/// </value>
-	public static List<string> ExtensionThumbSupportedList
+	public static List<string> ExtensionImageSharpThumbnailSupportedList
 	{
 		get
 		{
@@ -199,6 +217,18 @@ public static partial class ExtensionRolesHelper
 			extensionList.AddRange(ExtensionGif);
 			extensionList.AddRange(ExtensionPng);
 			extensionList.AddRange(ExtensionWebp);
+			return extensionList;
+		}
+	}
+
+	public static List<string> ExtensionVideoSupportedList
+	{
+		get
+		{
+			var extensionList = new List<string>();
+			extensionList.AddRange(ExtensionMp4);
+			extensionList.AddRange(ExtensionMts);
+			extensionList.AddRange(ExtensionMjpeg);
 			return extensionList;
 		}
 	}
@@ -226,6 +256,8 @@ public static partial class ExtensionRolesHelper
 			extensionList.AddRange(ExtensionTiff);
 			// reading does not allow xmp
 			extensionList.AddRange(ExtensionMp4);
+			extensionList.AddRange(ExtensionMts);
+			extensionList.AddRange(ExtensionMjpeg);
 			return extensionList;
 		}
 	}
@@ -303,9 +335,16 @@ public static partial class ExtensionRolesHelper
 	/// </summary>
 	/// <param name="filename">the name of the file with extenstion</param>
 	/// <returns>true, if imageSharp can write to this</returns>
-	public static bool IsExtensionThumbnailSupported(string? filename)
+	public static bool IsExtensionImageSharpThumbnailSupported(string? filename)
 	{
-		return IsExtensionForce(filename?.ToLowerInvariant(), ExtensionThumbSupportedList);
+		return IsExtensionForce(filename?.ToLowerInvariant(),
+			ExtensionImageSharpThumbnailSupportedList);
+	}
+
+
+	public static bool IsExtensionVideoSupported(string? fileName)
+	{
+		return IsExtensionForce(fileName?.ToLowerInvariant(), ExtensionVideoSupportedList);
 	}
 
 	/// <summary>
@@ -439,7 +478,7 @@ public static partial class ExtensionRolesHelper
 
 	[SuppressMessage("ReSharper", "MustUseReturnValue")]
 	[SuppressMessage("Sonar", "S2674: stream.Read return value isn't used")]
-	private static byte[] ReadBuffer(Stream stream, int size)
+	private byte[] ReadBuffer(Stream stream, int size)
 	{
 		var buffer = new byte[size];
 		try
@@ -451,7 +490,7 @@ public static partial class ExtensionRolesHelper
 		}
 		catch ( UnauthorizedAccessException ex )
 		{
-			Console.WriteLine(ex.Message);
+			logger.LogError($"[ExtensionRoleHelper] ReadBuffer: {ex.Message}");
 		}
 
 		return buffer;
@@ -464,7 +503,7 @@ public static partial class ExtensionRolesHelper
 	/// </summary>
 	/// <param name="stream">stream</param>
 	/// <returns>ImageFormat enum</returns>
-	public static ImageFormat GetImageFormat(Stream stream)
+	public ImageFormat GetImageFormat(Stream stream)
 	{
 		if ( stream == Stream.Null )
 		{
@@ -476,7 +515,7 @@ public static partial class ExtensionRolesHelper
 	}
 
 	/// <summary>
-	///     Gets the image format.
+	///     Gets the image format. By first bytes
 	/// </summary>
 	/// <param name="bytes">The bytes of image</param>
 	/// <returns>imageFormat enum</returns>
@@ -527,6 +566,16 @@ public static partial class ExtensionRolesHelper
 		if ( GetImageFormatMpeg4(bytes) != null )
 		{
 			return ImageFormat.mp4;
+		}
+
+		if ( GetImageFormatMJpegFormat(bytes) != null )
+		{
+			return ImageFormat.mjpeg;
+		}
+
+		if ( GetImageFormatMtsFormat(bytes) != null )
+		{
+			return ImageFormat.mts;
 		}
 
 		if ( pdf.SequenceEqual(bytes.Take(pdf.Length)) )
@@ -674,6 +723,53 @@ public static partial class ExtensionRolesHelper
 		if ( fTypIsoM.SequenceEqual(bytes.Take(fTypIsoM.Length)) )
 		{
 			return ImageFormat.xmp;
+		}
+
+		return null;
+	}
+
+	private static ImageFormat? GetImageFormatMJpegFormat(byte[] bytes)
+	{
+		var mjpegVideoFormat = new byte[] { 112, 110, 111, 116 };
+		if ( mjpegVideoFormat.SequenceEqual(bytes.Skip(4).Take(mjpegVideoFormat.Length)) )
+		{
+			return ImageFormat.mjpeg;
+		}
+
+		return null;
+	}
+
+	private static ImageFormat? GetImageFormatMtsFormat(byte[] bytes)
+	{
+		if ( bytes.Length < 44 )
+		{
+			return null;
+		}
+
+		int[] possibleOffsets = { 0, 4 };
+
+		foreach ( var offset in possibleOffsets )
+		{
+			if ( bytes[offset] != 0x47 )
+			{
+				continue;
+			}
+
+			// Extract fields from TS header
+			var b1 = bytes[offset + 1];
+			var b2 = bytes[offset + 2];
+			var b3 = bytes[offset + 3];
+
+			var pid = ( ( b1 & 0x1F ) << 8 ) | b2;
+			var adaptationFieldControl = ( b3 & 0x30 ) >> 4;
+
+			var pidValid = pid != 0x1FFF;
+			var adaptationValid = adaptationFieldControl != 0;
+
+			if ( pidValid && adaptationValid )
+			{
+				return ImageFormat.mts;
+			}
 		}
 
 		return null;

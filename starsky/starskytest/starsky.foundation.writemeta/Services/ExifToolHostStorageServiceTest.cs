@@ -43,7 +43,7 @@ public sealed class ExifToolHostStorageServiceTest
 		);
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
+		await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
 		{
 			await service.WriteTagsAsync("/test.jpg", "-Software=\"Qdraw 2.0\"");
 		});
@@ -70,7 +70,7 @@ public sealed class ExifToolHostStorageServiceTest
 		);
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
+		await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
 		{
 			await service.WriteTagsAndRenameThumbnailAsync("/test.jpg", null,
 				"-Software=\"Qdraw 2.0\"");
@@ -218,7 +218,7 @@ public sealed class ExifToolHostStorageServiceTest
 		);
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
+		await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
 		{
 			await service.WriteTagsThumbnailAsync("/test.jpg", "-Software=\"Qdraw 2.0\"");
 		});

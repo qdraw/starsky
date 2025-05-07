@@ -36,6 +36,12 @@ public sealed class GeoIndexGpxTest
 		};
 	}
 
+	[ClassCleanup(ClassCleanupBehavior.EndOfClass)]
+	public static void CleanUpGeoIndexGpxTest()
+	{
+		CreateAnGpx.Dispose();
+	}
+
 	[TestMethod]
 	public void GeoIndexGpx_ConvertTimeZone_EuropeAmsterdam()
 	{
@@ -86,7 +92,7 @@ public sealed class GeoIndexGpxTest
 		var sut = new GeoIndexGpx(new AppSettings { CameraTimeZone = "Europe/London" },
 			fakeIStorage, new FakeIWebLogger());
 
-		Assert.ThrowsException<ArgumentException>(() =>
+		Assert.ThrowsExactly<ArgumentException>(() =>
 			sut.ConvertTimeZone(inputDateTime));
 	}
 
@@ -119,7 +125,7 @@ public sealed class GeoIndexGpxTest
 		var returnFileIndexItems = await new GeoIndexGpx(_appSettings,
 			fakeIStorage, new FakeIWebLogger()).LoopFolderAsync(exampleFiles);
 
-		Assert.AreEqual(null, returnFileIndexItems.Find(p => p.FileName == "NotInRange.jpg"));
+		Assert.IsNull(returnFileIndexItems.Find(p => p.FileName == "NotInRange.jpg"));
 		Assert.AreEqual("01.jpg", returnFileIndexItems.Find(p => p.FileName == "01.jpg")?.FileName);
 	}
 }

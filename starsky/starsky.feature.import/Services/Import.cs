@@ -18,11 +18,11 @@ using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.database.Thumbnails;
 using starsky.foundation.injection;
-using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
@@ -248,9 +248,8 @@ public class Import : IImport
 		List<ImportIndexItem> importIndexItemsList)
 	{
 		var directoriesContent = new Dictionary<string, List<string>>();
-		foreach ( var importIndexItemFileIndexItemParentDirectory in importIndexItemsList.Where(
-				         p =>
-					         p.Status == ImportStatus.Ok)
+		foreach ( var importIndexItemFileIndexItemParentDirectory in importIndexItemsList.Where(p =>
+				         p.Status == ImportStatus.Ok)
 			         .Select(p => p.FileIndexItem?.ParentDirectory) )
 		{
 			if ( importIndexItemFileIndexItemParentDirectory == null ||
@@ -397,7 +396,7 @@ public class Import : IImport
 			};
 		}
 
-		var imageFormat = ExtensionRolesHelper.GetImageFormat(
+		var imageFormat = new ExtensionRolesHelper(_logger).GetImageFormat(
 			_filesystemStorage.ReadStream(inputFileFullPath.Key,
 				160));
 
@@ -415,7 +414,7 @@ public class Import : IImport
 		}
 
 		var hashList = await
-			new FileHash(_filesystemStorage).GetHashCodeAsync(inputFileFullPath.Key);
+			new FileHash(_filesystemStorage, _logger).GetHashCodeAsync(inputFileFullPath.Key);
 		if ( !hashList.Value )
 		{
 			ConsoleIfVerbose($"❌ FileHash error {inputFileFullPath.Key}");
@@ -738,7 +737,8 @@ public class Import : IImport
 
 		// Check if fastest version is available to show 
 		var setStatus = _thumbnailStorage.ExistFile(
-			ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.TinyMeta));
+			ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.TinyMeta,
+				_appSettings.ThumbnailImageFormat));
 		await queryThumbnailUpdateDelegate(new List<ThumbnailResultDataTransferModel>
 		{
 			new(fileHash, setStatus)

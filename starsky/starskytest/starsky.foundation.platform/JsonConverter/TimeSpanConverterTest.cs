@@ -71,10 +71,7 @@ public sealed class JsonTimeSpanConverterTests
 		const string json = @"{""TimeSpan"":null}";
 
 		// Act & Assert
-		Assert.ThrowsException<JsonException>(() =>
-		{
-			JsonSerializer.Deserialize<TestClass>(json);
-		});
+		Assert.ThrowsExactly<JsonException>(() => { JsonSerializer.Deserialize<TestClass>(json); });
 	}
 
 	[TestMethod]
@@ -113,7 +110,7 @@ public sealed class JsonTimeSpanConverterTests
 	public void NullableTimeSpanInvalidDeserializationTest()
 	{
 		// Act & Assert
-		var exception = Assert.ThrowsException<JsonException>(() =>
+		var exception = Assert.ThrowsExactly<JsonException>(() =>
 		{
 			JsonSerializer.Deserialize<NullableTestClass>(@"{""TimeSpan"":1}");
 		});
@@ -130,19 +127,19 @@ public sealed class JsonTimeSpanConverterTests
 		options.Converters.Add(new JsonTimeSpanConverter());
 
 		// Act & Assert
-		Assert.ThrowsException<JsonException>(() =>
+		Assert.ThrowsExactly<JsonException>(() =>
 		{
 			JsonSerializer.Deserialize<TimeSpan>(@"null", options);
 		});
 	}
 
-	private class TestClass
+	private sealed class TestClass
 	{
 		[JsonConverter(typeof(JsonTimeSpanConverter))]
 		public TimeSpan TimeSpan { get; set; }
 	}
 
-	private class NullableTestClass
+	private sealed class NullableTestClass
 	{
 		[JsonConverter(typeof(JsonTimeSpanConverter))]
 		public TimeSpan? TimeSpan { get; set; }

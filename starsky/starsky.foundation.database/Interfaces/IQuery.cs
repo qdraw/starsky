@@ -11,8 +11,8 @@ namespace starsky.foundation.database.Interfaces;
 public interface IQuery
 {
 	/// <summary>
-	/// Get a list of all files inside an folder (NOT recursive)
-	/// But this uses a database as source
+	///     Get a list of all files inside an folder (NOT recursive)
+	///     But this uses a database as source
 	/// </summary>
 	/// <param name="filePaths">relative database path</param>
 	/// <param name="timeout"></param>
@@ -20,8 +20,8 @@ public interface IQuery
 	Task<List<FileIndexItem>> GetAllFilesAsync(List<string> filePaths, int timeout = 1000);
 
 	/// <summary>
-	/// Get a list of all files inside an folder (NOT recursive)
-	/// But this uses a database as source
+	///     Get a list of all files inside a folder (NOT recursive)
+	///     But this uses a database as source
 	/// </summary>
 	/// <param name="subPath">relative database path</param>
 	/// <returns>list of FileIndex-objects</returns>
@@ -32,7 +32,7 @@ public interface IQuery
 	Task<List<FileIndexItem>> GetAllRecursiveAsync(List<string> filePathList);
 
 	/// <summary>
-	/// to do the query and return object
+	///     to do the query and return object
 	/// </summary>
 	/// <param name="subPath">subPath style</param>
 	/// <param name="colorClassActiveList">filter the colorClass</param>
@@ -53,7 +53,7 @@ public interface IQuery
 		bool hideDeleted = true);
 
 	/// <summary>
-	/// to do the query and return object
+	///     to do the query and return object
 	/// </summary>
 	/// <param name="singleItemDbPath"></param>
 	/// <param name="colorClassActiveList"></param>
@@ -69,7 +69,7 @@ public interface IQuery
 		SortType? sort = SortType.FileName);
 
 	/// <summary>
-	/// To make an object without any query
+	///     To make an object without any query
 	/// </summary>
 	/// <param name="fileIndexItemsList"></param>
 	/// <param name="singleItemDbPath"></param>
@@ -87,14 +87,14 @@ public interface IQuery
 		SortType? sort = SortType.FileName);
 
 	/// <summary>
-	/// Get FirstOrDefault for that filePath
+	///     Get FirstOrDefault for that filePath
 	/// </summary>
 	/// <param name="filePath">subPath style</param>
 	/// <returns>item</returns>
 	FileIndexItem? GetObjectByFilePath(string filePath);
 
 	/// <summary>
-	/// Get FirstOrDefault for that filePath
+	///     Get FirstOrDefault for that filePath
 	/// </summary>
 	/// <param name="filePath">subPath style</param>
 	/// <param name="cacheTime">time of cache </param>
@@ -102,7 +102,6 @@ public interface IQuery
 	Task<FileIndexItem?> GetObjectByFilePathAsync(string filePath, TimeSpan? cacheTime = null);
 
 	/// <summary>
-	/// 
 	/// </summary>
 	/// <param name="inputFilePath"></param>
 	/// <param name="collections"></param>
@@ -111,7 +110,7 @@ public interface IQuery
 		bool collections);
 
 	/// <summary>
-	/// Cached result that contain values
+	///     Cached result that contain values
 	/// </summary>
 	/// <param name="inputFilePaths">List of filePaths</param>
 	/// <param name="collections">enable implicit raw files with the same base name</param>
@@ -120,7 +119,7 @@ public interface IQuery
 		bool collections);
 
 	/// <summary>
-	/// Query direct by filePaths (without cache)
+	///     Query direct by filePaths (without cache)
 	/// </summary>
 	/// <param name="filePathList">List of filePaths</param>
 	/// <returns></returns>
@@ -133,7 +132,7 @@ public interface IQuery
 		List<FileIndexItem> updateStatusContentList);
 
 	/// <summary>
-	/// Clear the directory name from the cache
+	///     Clear the directory name from the cache
 	/// </summary>
 	/// <param name="directoryName">the path of the directory (there is no parent generation)</param>
 	bool RemoveCacheParentItem(string directoryName);
@@ -154,6 +153,8 @@ public interface IQuery
 
 	Task<FileIndexItem> AddItemAsync(FileIndexItem fileIndexItem);
 
+	Task<bool> ExistsAsync(string filePath);
+
 	Task<List<FileIndexItem>> AddRangeAsync(List<FileIndexItem> fileIndexItemList);
 
 	Task<FileIndexItem> UpdateItemAsync(FileIndexItem updateStatusContent);
@@ -163,7 +164,7 @@ public interface IQuery
 
 
 	/// <summary>
-	/// Update parent item with all data from child items
+	///     Update parent item with all data from child items
 	/// </summary>
 	/// <param name="directoryName">parent directory</param>
 	/// <param name="items">all items that are in this folder</param>
@@ -172,14 +173,14 @@ public interface IQuery
 		List<FileIndexItem> items);
 
 	/// <summary>
-	/// Cache API within Query to update cached items
-	/// For DisplayFileFolders and SingleItem
+	///     Cache API within Query to update cached items
+	///     For DisplayFileFolders and SingleItem
 	/// </summary>
 	/// <param name="updateStatusContent">items to update</param>
 	void CacheUpdateItem(List<FileIndexItem> updateStatusContent);
 
 	/// <summary>
-	/// And remove content from cache
+	///     And remove content from cache
 	/// </summary>
 	/// <param name="updateStatusContent">list of items</param>
 	void RemoveCacheItem(List<FileIndexItem> updateStatusContent);
@@ -188,14 +189,14 @@ public interface IQuery
 
 
 	/// <summary>
-	/// Add Sub Path Folder - Parent Folders
-	///  root(/)
-	///      /2017  *= index only this folder
-	///      /2018
-	/// If you use the cmd: $ starskycli -s "/2017"
-	/// the folder '2017' it self is not added 
-	/// and all parent paths are not included
-	/// this class does add those parent folders
+	///     Add Sub Path Folder - Parent Folders
+	///     root(/)
+	///     /2017  *= index only this folder
+	///     /2018
+	///     If you use the cmd: $ starskycli -s "/2017"
+	///     the folder '2017' it self is not added
+	///     and all parent paths are not included
+	///     this class does add those parent folders
 	/// </summary>
 	/// <param name="subPath">subPath as input</param>
 	/// <returns>void</returns>

@@ -58,7 +58,7 @@ public class SqlXmlRepositoryTest
 	public void SqlXmlRepositoryTest_ExpectedException_NullReferenceException()
 	{
 		var sut = new SqlXmlRepository(null!, null!, new FakeIWebLogger());
-		Assert.ThrowsException<NullReferenceException>(() => sut.GetAllElements());
+		Assert.ThrowsExactly<NullReferenceException>(() => sut.GetAllElements());
 		// ExpectedException NullReferenceException
 	}
 
@@ -93,7 +93,7 @@ public class SqlXmlRepositoryTest
 
 		var sut = new SqlXmlRepository(new AppDbMySqlException(options), null!,
 			new FakeIWebLogger());
-		Assert.ThrowsException<MySqlException>(() => sut.GetAllElements());
+		Assert.ThrowsExactly<MySqlException>(() => sut.GetAllElements());
 		// EnsureCreated is trowed as exception
 	}
 
@@ -198,11 +198,11 @@ public class SqlXmlRepositoryTest
 		var repo =
 			new SqlXmlRepository(
 				new StoreElementException2OtherException(options), null!, logger);
-		Assert.ThrowsException<NullReferenceException>(() =>
+		Assert.ThrowsExactly<NullReferenceException>(() =>
 			repo.StoreElement(new XElement("x1", "x1"), "hi"));
 	}
 
-	private class AppDbMySqlException : ApplicationDbContext
+	private sealed class AppDbMySqlException : ApplicationDbContext
 	{
 		public AppDbMySqlException(DbContextOptions options) : base(options)
 		{
@@ -214,7 +214,7 @@ public class SqlXmlRepositoryTest
 		public override DatabaseFacade Database => throw CreateMySqlException("EnsureCreated");
 	}
 
-	private class GetAllElementsAppDbMySqlException2 : ApplicationDbContext
+	private sealed class GetAllElementsAppDbMySqlException2 : ApplicationDbContext
 	{
 		public GetAllElementsAppDbMySqlException2(DbContextOptions options) : base(options)
 		{
@@ -226,7 +226,7 @@ public class SqlXmlRepositoryTest
 		public override DatabaseFacade Database => throw CreateMySqlException("EnsureCreated");
 	}
 
-	private class StoreElementException : ApplicationDbContext
+	private sealed class StoreElementException : ApplicationDbContext
 	{
 		public StoreElementException(DbContextOptions options) : base(options)
 		{
@@ -236,7 +236,7 @@ public class SqlXmlRepositoryTest
 			throw new DbUpdateException("general");
 	}
 
-	private class StoreElementException2RetryLimitExceededException : ApplicationDbContext
+	private sealed class StoreElementException2RetryLimitExceededException : ApplicationDbContext
 	{
 		public StoreElementException2RetryLimitExceededException(DbContextOptions options) :
 			base(options)
@@ -247,7 +247,7 @@ public class SqlXmlRepositoryTest
 			throw new RetryLimitExceededException("general");
 	}
 
-	private class StoreElementException2OtherException : ApplicationDbContext
+	private sealed class StoreElementException2OtherException : ApplicationDbContext
 	{
 		public StoreElementException2OtherException(DbContextOptions options) : base(options)
 		{

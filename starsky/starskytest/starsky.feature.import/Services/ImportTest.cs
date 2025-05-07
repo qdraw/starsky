@@ -45,7 +45,8 @@ public sealed class ImportTest
 				CreateAnImage.Bytes.ToArray(), CreateAnImageColorClass.Bytes.ToArray()
 			}
 		);
-		_exampleHash = new FileHash(_iStorageFake).GetHashCode("/test.jpg").Key;
+		_exampleHash = new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCode("/test.jpg")
+			.Key;
 
 		_iStorageDirectoryRecursive = new FakeIStorage(
 			new List<string> { "/", "/test", "/test/test" },
@@ -80,7 +81,7 @@ public sealed class ImportTest
 
 		Assert.IsNotNull(result.FirstOrDefault()?.FileIndexItem);
 		Assert.IsNotNull(result.FirstOrDefault()?.FileIndexItem?.FilePath);
-		Assert.IsTrue(result.FirstOrDefault()?.FileIndexItem?.Size != 0);
+		Assert.AreNotEqual(0, result.FirstOrDefault()?.FileIndexItem?.Size);
 	}
 
 	[TestMethod]
@@ -125,7 +126,7 @@ public sealed class ImportTest
 
 		Assert.IsNotNull(result.FirstOrDefault()?.FileIndexItem);
 		Assert.IsNotNull(result.FirstOrDefault()?.FileIndexItem?.FilePath);
-		Assert.IsTrue(result.FirstOrDefault()?.FileIndexItem?.Size != 0);
+		Assert.AreNotEqual(0, result.FirstOrDefault()?.FileIndexItem?.Size);
 		Assert.AreEqual(ColorClassParser.Color.Winner,
 			result.FirstOrDefault()?.FileIndexItem?.ColorClass);
 	}
@@ -152,7 +153,7 @@ public sealed class ImportTest
 
 		Assert.IsNotNull(result.FirstOrDefault()?.FileIndexItem);
 		Assert.IsNotNull(result.FirstOrDefault()?.FileIndexItem?.FilePath);
-		Assert.IsTrue(result.FirstOrDefault()?.FileIndexItem?.Size != 0);
+		Assert.AreNotEqual(0, result.FirstOrDefault()?.FileIndexItem?.Size);
 		Assert.AreEqual(ColorClassParser.Color.Typical,
 			result.FirstOrDefault()?.FileIndexItem?.ColorClass);
 	}
@@ -455,7 +456,7 @@ public sealed class ImportTest
 			new ImportSettingsModel());
 
 		Assert.IsNotNull(result);
-		Assert.IsTrue(result.Count == 0);
+		Assert.AreEqual(0, result.Count);
 	}
 
 	[TestMethod]
@@ -599,7 +600,7 @@ public sealed class ImportTest
 			new FakeIThumbnailQuery(), new FakeMemoryCache()) { MaxTryGetDestinationPath = 0 };
 
 		// used to be:[ExpectedException(typeof(AggregateException))]
-		await Assert.ThrowsExceptionAsync<AggregateException>(async () =>
+		await Assert.ThrowsExactlyAsync<AggregateException>(async () =>
 			await importService.Importer(new List<string> { "/test.jpg" },
 				new ImportSettingsModel()));
 	}
@@ -666,7 +667,7 @@ public sealed class ImportTest
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
 			new FakeIThumbnailQuery(), new FakeMemoryCache());
 
-		await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
+		await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
 			await importService.Importer(new List<string> { "/test.jpg" },
 				new ImportSettingsModel { Structure = "/.ext" }));
 	}
@@ -682,7 +683,7 @@ public sealed class ImportTest
 
 		var importService = new Import(new FakeSelectorStorageByType(
 				subPathStorage,
-				null!, _iStorageFake
+				null!, _iStorageFake, null!
 			), appSettings, fakeImportQuery,
 			new FakeExifTool(_iStorageFake, appSettings), fakeDbQuery, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
@@ -1136,8 +1137,9 @@ public sealed class ImportTest
 		await importService.AddToQueryAndImportDatabaseAsync(
 			new ImportIndexItem(), new ImportSettingsModel { IndexMode = false });
 
-		Assert.AreEqual(0, logger.TrackedInformation.Count(
-			p => p.Item2?.Contains("AddToQueryAndImportDatabaseAsync") == true));
+		Assert.AreEqual(0,
+			logger.TrackedInformation.Count(p =>
+				p.Item2?.Contains("AddToQueryAndImportDatabaseAsync") == true));
 	}
 
 	[TestMethod]
@@ -1159,8 +1161,9 @@ public sealed class ImportTest
 		await importService.RemoveFromQueryAndImportDatabaseAsync(
 			new ImportIndexItem(), new ImportSettingsModel { IndexMode = false });
 
-		Assert.AreEqual(0, logger.TrackedInformation.Count(
-			p => p.Item2?.Contains("AddToQueryAndImportDatabaseAsync") == true));
+		Assert.AreEqual(0,
+			logger.TrackedInformation.Count(p =>
+				p.Item2?.Contains("AddToQueryAndImportDatabaseAsync") == true));
 	}
 
 	[TestMethod]
@@ -1239,7 +1242,7 @@ public sealed class ImportTest
 
 		// Directory.GetParent returns null
 		Assert.AreEqual(1, readOnlyFileSystems.Count);
-		Assert.AreEqual(null, readOnlyFileSystems[0].Item1);
+		Assert.IsNull(readOnlyFileSystems[0].Item1);
 	}
 
 	[TestMethod]
@@ -1329,7 +1332,7 @@ public sealed class ImportTest
 		Assert.AreEqual(ImportStatus.Default, testItem?.Status);
 	}
 
-	private class FakeReadOnlyStorage : FakeIStorage
+	private sealed class FakeReadOnlyStorage : FakeIStorage
 	{
 		public override StorageInfo Info(string path)
 		{

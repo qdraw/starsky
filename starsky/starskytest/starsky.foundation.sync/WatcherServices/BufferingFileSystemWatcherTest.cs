@@ -25,7 +25,7 @@ public sealed class BufferingFileSystemWatcherTest
 			_tempExistingFilesFolder);
 	}
 
-	[ClassCleanup]
+	[ClassCleanup(ClassCleanupBehavior.EndOfClass)]
 	public static void ClassCleanup()
 	{
 		Console.WriteLine("cleanup run");
@@ -188,8 +188,8 @@ public sealed class BufferingFileSystemWatcherTest
 		var wrapper = new BufferingFileSystemWatcher(watcher);
 		wrapper.SynchronizingObject = null;
 
-		Assert.AreEqual(null, watcher.SynchronizingObject);
-		Assert.AreEqual(null, wrapper.SynchronizingObject);
+		Assert.IsNull(watcher.SynchronizingObject);
+		Assert.IsNull(wrapper.SynchronizingObject);
 
 		wrapper.EnableRaisingEvents = false;
 		wrapper.Dispose();
@@ -203,8 +203,8 @@ public sealed class BufferingFileSystemWatcherTest
 		var wrapper = new BufferingFileSystemWatcher(watcher);
 		wrapper.Site = null;
 
-		Assert.AreEqual(null, watcher.Site);
-		Assert.AreEqual(null, wrapper.Site);
+		Assert.IsNull(watcher.Site);
+		Assert.IsNull(wrapper.Site);
 
 		wrapper.EnableRaisingEvents = false;
 		wrapper.Dispose();
@@ -576,7 +576,7 @@ public sealed class BufferingFileSystemWatcherTest
 		FileSystemEventHandler welcome = (_, s) => { message = s.FullPath; };
 
 		// Act & Assert
-		Assert.ThrowsException<NullReferenceException>(() =>
+		Assert.ThrowsExactly<NullReferenceException>(() =>
 		{
 			wrapper.InvokeHandler(welcome, null!);
 
@@ -616,7 +616,7 @@ public sealed class BufferingFileSystemWatcherTest
 		RenamedEventHandler welcome = (_, s) => { message = s.FullPath; };
 
 		// Act & Assert
-		Assert.ThrowsException<ArgumentNullException>(() =>
+		Assert.ThrowsExactly<ArgumentNullException>(() =>
 		{
 			wrapper.InvokeHandler(welcome, null);
 
@@ -653,7 +653,7 @@ public sealed class BufferingFileSystemWatcherTest
 		ErrorEventHandler welcome = (_, s) => { message = s.ToString(); };
 
 		// Act & Assert
-		Assert.ThrowsException<NullReferenceException>(() =>
+		Assert.ThrowsExactly<NullReferenceException>(() =>
 		{
 			wrapper.InvokeHandler(welcome, null!);
 

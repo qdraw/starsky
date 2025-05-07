@@ -130,6 +130,11 @@ public sealed class UpdateBackgroundTaskQueueTest
 			await Task.Delay(500);
 		}
 
+		if ( !isExecuted )
+		{
+			await Task.Delay(500);
+		}
+
 		Assert.IsTrue(isExecuted);
 
 		await service.StopAsync(CancellationToken.None);
@@ -142,7 +147,7 @@ public sealed class UpdateBackgroundTaskQueueTest
 		Func<CancellationToken, ValueTask>? func = null;
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+		await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
 		{
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(func!, string.Empty);
 		});

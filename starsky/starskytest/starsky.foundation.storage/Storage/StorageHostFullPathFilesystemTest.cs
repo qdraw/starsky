@@ -29,7 +29,7 @@ public sealed class StorageHostFullPathFilesystemTest
 		Console.WriteLine("count => " + content.Count);
 
 		// Gives a list of the content in the temp folder.
-		Assert.IsTrue(content.Count != 0);
+		Assert.AreNotEqual(0, content.Count);
 	}
 
 	[TestMethod]
@@ -236,7 +236,7 @@ public sealed class StorageHostFullPathFilesystemTest
 		var service = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 
 		// Act & Assert
-		Assert.ThrowsException<FileNotFoundException>(() =>
+		Assert.ThrowsExactly<FileNotFoundException>(() =>
 		{
 			service.ReadStream("not-found-directory-24785895348934598543");
 		});
@@ -340,7 +340,7 @@ public sealed class StorageHostFullPathFilesystemTest
 	}
 }
 
-internal class NotSupportedExceptionStream : Stream
+internal sealed class NotSupportedExceptionStream : Stream
 {
 	public override bool CanRead => true;
 	public override bool CanSeek => false;

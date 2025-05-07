@@ -33,7 +33,7 @@ public sealed class SyncMultiFile
 		_appSettings = appSettings;
 		_newUpdateItemWrapper =
 			new NewUpdateItemWrapper(query, subPathStorage, appSettings, cache, logger);
-		_checkForStatusNotOkHelper = new CheckForStatusNotOkHelper(_subPathStorage);
+		_checkForStatusNotOkHelper = new CheckForStatusNotOkHelper(_subPathStorage, logger);
 	}
 
 	/// <summary>
@@ -101,7 +101,7 @@ public sealed class SyncMultiFile
 				or FileIndexItem.ExifStatus.DeletedAndSame);
 		var isSameUpdatedItemList = await list
 			.ForEachAsync(
-				async dbItem => await new SizeFileHashIsTheSameHelper(_subPathStorage)
+				async dbItem => await new SizeFileHashIsTheSameHelper(_subPathStorage, _logger)
 					.SizeFileHashIsTheSame(dbItems
 							.Where(p => p.FileCollectionName == dbItem.FileCollectionName).ToList(),
 						dbItem.FilePath!),
@@ -117,8 +117,7 @@ public sealed class SyncMultiFile
 		foreach ( var newItem in newItemsList )
 		{
 			// only for new items that needs to be added to the db
-			var newItemIndex = dbItems.FindIndex(
-				p => p.FilePath == newItem.FilePath);
+			var newItemIndex = dbItems.FindIndex(p => p.FilePath == newItem.FilePath);
 			if ( newItemIndex < 0 )
 			{
 				continue;
@@ -194,8 +193,7 @@ public sealed class SyncMultiFile
 		foreach ( var (isLastEditedSame, isFileHashSame, isSameUpdatedItem) in
 		         isSameUpdatedItemList.Where(p => p.Item1 != true) )
 		{
-			var updateItemIndex = dbItems.FindIndex(
-				p => p.FilePath == isSameUpdatedItem.FilePath);
+			var updateItemIndex = dbItems.FindIndex(p => p.FilePath == isSameUpdatedItem.FilePath);
 
 			if ( isLastEditedSame == false && isFileHashSame == true )
 			{

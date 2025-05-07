@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Thumbnails;
-using starsky.foundation.platform.Enums;
+using starsky.foundation.platform.Thumbnails;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.Thumbnails;
@@ -136,7 +136,7 @@ public class ThumbnailQueryTest
 		await dbContext.DisposeAsync();
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<ObjectDisposedException>(async () =>
+		await Assert.ThrowsExactlyAsync<ObjectDisposedException>(async () =>
 			await thumbnailQuery.AddThumbnailRangeAsync(data));
 	}
 
@@ -250,7 +250,7 @@ public class ThumbnailQueryTest
 		var thumbnailQuery = _thumbnailQuery; // Ensure this is initialized as needed
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+		await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
 		{
 			await thumbnailQuery.AddThumbnailRangeAsync(
 				new List<ThumbnailResultDataTransferModel> { new(null!) });
@@ -516,7 +516,7 @@ public class ThumbnailQueryTest
 		// Assert
 		var thumbnails = await _thumbnailQuery.Get();
 		Assert.IsTrue(thumbnails.Count >= 1);
-		Assert.IsTrue(thumbnails.Count(p => p.FileHash == "3456789") == 1);
+		Assert.AreEqual(1, thumbnails.Count(p => p.FileHash == "3456789"));
 
 		Assert.IsTrue(thumbnails.Where(p => p.FileHash == "3456789")
 			.All(x => x.Small == true));
@@ -673,39 +673,41 @@ public class ThumbnailQueryTest
 		var result = await query.GetMissingThumbnailsBatchAsync(0, 100);
 		Assert.AreEqual(1, result.Count);
 	}
-	
+
 	[TestMethod]
 	public async Task GetMissingThumbnailsBatchAsync_Disposed_Recover()
 	{
 		var serviceScope = CreateNewScope("GetMissingThumbnailsBatchAsync_Disposed");
 		var context = serviceScope.CreateScope().ServiceProvider
 			.GetRequiredService<ApplicationDbContext>();
-		
+
 		context.Thumbnails.Add(new ThumbnailItem("123", null, true, null, null));
 		await context.SaveChangesAsync();
-		
+
 		// Dispose to check service scope
 		await context.DisposeAsync();
 
-		var query = new ThumbnailQuery(context, serviceScope, new FakeIWebLogger(), new FakeMemoryCache());
+		var query = new ThumbnailQuery(context, serviceScope, new FakeIWebLogger(),
+			new FakeMemoryCache());
 		var result = await query.GetMissingThumbnailsBatchAsync(0, 100);
 		Assert.AreEqual(1, result.Count);
 	}
-	
+
 	[TestMethod]
 	public async Task GetMissingThumbnailsBatchAsync_Disposed_ServiceScopeMissing()
 	{
-		var serviceScope = CreateNewScope("GetMissingThumbnailsBatchAsync_Disposed_ServiceScopeMissing");
+		var serviceScope =
+			CreateNewScope("GetMissingThumbnailsBatchAsync_Disposed_ServiceScopeMissing");
 		var context = serviceScope.CreateScope().ServiceProvider
 			.GetRequiredService<ApplicationDbContext>();
-		
+
 		// Dispose to check service scope
 		await context.DisposeAsync();
 
 		// No service scope
 		var query = new ThumbnailQuery(context, null!, new FakeIWebLogger(), new FakeMemoryCache());
-		
-		await Assert.ThrowsExceptionAsync<ObjectDisposedException>(async () =>
+
+		await Assert.ThrowsExactlyAsync<ObjectDisposedException>(async () =>
 		{
 			await query.GetMissingThumbnailsBatchAsync(0, 100);
 		});
@@ -731,7 +733,7 @@ public class ThumbnailQueryTest
 		await dbContext.DisposeAsync();
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<ObjectDisposedException>(async () =>
+		await Assert.ThrowsExactlyAsync<ObjectDisposedException>(async () =>
 			await thumbnailQuery.UpdateAsync(data));
 	}
 
@@ -784,7 +786,7 @@ public class ThumbnailQueryTest
 		await dbContext.DisposeAsync();
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<ObjectDisposedException>(async () =>
+		await Assert.ThrowsExactlyAsync<ObjectDisposedException>(async () =>
 			await thumbnailQuery.Get("data"));
 	}
 
@@ -814,8 +816,8 @@ public class ThumbnailQueryTest
 
 		var item2 = await thumbnailQuery.Get("test123");
 
-		Assert.IsTrue(item2.Count == 1);
-		Assert.IsTrue(item2.FirstOrDefault()!.Large);
+		Assert.AreEqual(1, item2.Count);
+		Assert.IsTrue(item2.FirstOrDefault()?.Large);
 	}
 
 	[TestMethod]
@@ -835,7 +837,7 @@ public class ThumbnailQueryTest
 		await dbContext.DisposeAsync();
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<ObjectDisposedException>(async () =>
+		await Assert.ThrowsExactlyAsync<ObjectDisposedException>(async () =>
 			await thumbnailQuery.RemoveThumbnailsAsync(new List<string> { "data" }));
 	}
 
@@ -867,7 +869,7 @@ public class ThumbnailQueryTest
 
 		var item2 = await thumbnailQuery.Get("8439573458435");
 
-		Assert.IsTrue(item2.Count == 0);
+		Assert.AreEqual(0, item2.Count);
 	}
 
 	[TestMethod]
@@ -887,7 +889,7 @@ public class ThumbnailQueryTest
 		await dbContext.DisposeAsync();
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<ObjectDisposedException>(async () =>
+		await Assert.ThrowsExactlyAsync<ObjectDisposedException>(async () =>
 			await thumbnailQuery.RenameAsync("data", "after"));
 	}
 
@@ -928,7 +930,7 @@ public class ThumbnailQueryTest
 		var thumbnailQuery = new ThumbnailQuery(null!, null!, new FakeIWebLogger(),
 			cache);
 
-		Assert.IsFalse(cache.TryGetValue($"{nameof(ThumbnailQuery)}_IsRunningJob", out var _));
+		Assert.IsFalse(cache.TryGetValue($"{nameof(ThumbnailQuery)}_IsRunningJob", out _));
 
 		thumbnailQuery.SetRunningJob(true);
 

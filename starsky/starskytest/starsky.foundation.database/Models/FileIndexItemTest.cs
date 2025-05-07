@@ -384,7 +384,7 @@ public sealed class FileIndexItemTest
 		var item = new FileIndexItem();
 
 		// Assert that an AggregateException is thrown when SetMakeModel is called with an invalid index
-		Assert.ThrowsException<AggregateException>(() =>
+		Assert.ThrowsExactly<AggregateException>(() =>
 			item.SetMakeModel("Apple", 95)); // this index (95) never exists
 	}
 

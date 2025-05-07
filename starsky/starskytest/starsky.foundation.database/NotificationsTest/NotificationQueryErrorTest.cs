@@ -139,7 +139,7 @@ public sealed class NotificationQueryErrorTest
 		Assert.AreEqual(string.Empty, result.Content);
 	}
 
-	private class UpdateEntryUpdateConcurrency : IUpdateEntry
+	private sealed class UpdateEntryUpdateConcurrency : IUpdateEntry
 	{
 		public void SetOriginalValue(IProperty property, object? value)
 		{
@@ -228,7 +228,7 @@ public sealed class NotificationQueryErrorTest
 #pragma warning restore 8618
 	}
 
-	private class DbUpdateExceptionApplicationDbContext(DbContextOptions options)
+	private sealed class DbUpdateExceptionApplicationDbContext(DbContextOptions options)
 		: ApplicationDbContext(options)
 	{
 		public required int MinCount { get; set; }
@@ -251,7 +251,7 @@ public sealed class NotificationQueryErrorTest
 		}
 	}
 
-	private class AppDbContextConcurrencyException : ApplicationDbContext
+	private sealed class AppDbContextConcurrencyException : ApplicationDbContext
 	{
 		public AppDbContextConcurrencyException(DbContextOptions options) : base(options)
 		{
