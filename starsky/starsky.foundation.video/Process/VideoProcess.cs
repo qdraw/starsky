@@ -59,8 +59,6 @@ public sealed class VideoProcess : IVideoProcess
 		{
 			case SelectorStorage.StorageServices.Temporary:
 				return _tempStorage.FileDelete(resultResultPath);
-			case SelectorStorage.StorageServices.SubPath:
-				return _hostStorage.FileDelete(resultResultPath);
 			default:
 				_logger.LogError(
 					$"[VideoProcess] CleanTemporaryFile: {resultResultPath} not deleted");
