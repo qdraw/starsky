@@ -1,6 +1,8 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Helpers;
+using starsky.foundation.http.Interfaces;
+using starsky.foundation.http.Services;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -28,6 +30,8 @@ public static class Program
 
 		// Inject services
 		RegisterDependencies.Configure(services);
+		services.AddSingleton<IHttpClientHelper, HttpClientHelper>();
+
 		var serviceProvider = services.BuildServiceProvider();
 		var appSettings = serviceProvider.GetRequiredService<AppSettings>();
 

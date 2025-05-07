@@ -13,6 +13,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
@@ -230,9 +231,14 @@ public sealed class ThumbnailControllerTest
 		var thumbnailAnswer = actionResult.ContentType;
 
 		controller.Response.Headers.TryGetValue("x-filename", out var value);
-		Assert.AreEqual(createAnImage.FileHash + ".jpg", value.ToString());
+		Assert.AreEqual(createAnImage.FileHash + "." + new AppSettings().ThumbnailImageFormat,
+			value.ToString());
 
-		Assert.AreEqual("image/jpeg", thumbnailAnswer);
+		Assert.AreEqual(
+			new AppSettings().ThumbnailImageFormat == ThumbnailImageFormat.jpg
+				? "image/jpeg"
+				: "image/webp", thumbnailAnswer);
+
 		await actionResult.FileStream.DisposeAsync(); // for windows
 	}
 
@@ -633,7 +639,10 @@ public sealed class ThumbnailControllerTest
 
 		// Arrange
 		var storage = new FakeIStorage(new List<string>(),
-			new List<string> { "01234567890123456789123456.jpg" });
+			new List<string>
+			{
+				$"01234567890123456789123456.{new AppSettings().ThumbnailImageFormat}"
+			});
 
 		// Check if exist
 		var sut = CreateSut(storage, _query);

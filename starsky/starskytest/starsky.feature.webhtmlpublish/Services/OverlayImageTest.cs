@@ -23,8 +23,8 @@ public sealed class OverlayImageTest
 	public OverlayImageTest()
 	{
 		_storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" },
-			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+			new List<string> { "/test.jpg", "/test.webp" },
+			new List<byte[]> { CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray() });
 		_selectorStorage = new FakeSelectorStorage(_storage);
 		_appSettings = new AppSettings();
 	}
