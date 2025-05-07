@@ -58,35 +58,11 @@ public class VideoProcessTests
 		const string subPath = "/test.mp4";
 		var fileHashService = new FileHash(_storage, new FakeIWebLogger());
 		var beforeFileHash = ( await fileHashService.GetHashCodeAsync(subPath) ).Key;
-		var expectedPath = $"{beforeFileHash}." +
-		                   $"{new AppSettings().ThumbnailImageFormat}";
+		var expectedPath = $"{beforeFileHash}.jpg";
 
 		const VideoProcessTypes type = VideoProcessTypes.Thumbnail;
 
 		_ffMpegDownload.SetDownloadStatus(FfmpegDownloadStatus.Ok);
-		await _ffMpegDownload.DownloadFfMpeg();
-
-		// Act
-		var result = await _videoProcess.RunVideo(subPath, beforeFileHash, type);
-
-		// Assert
-		Assert.IsTrue(result.IsSuccess);
-		Assert.AreEqual(SelectorStorage.StorageServices.Temporary, result.ResultPathType);
-		Assert.AreEqual(expectedPath, result.ResultPath);
-	}
-
-	[TestMethod]
-	public async Task RunVideo_Thumbnail_111Success()
-	{
-		// Arrange
-		const string subPath = "/test.xmp";
-		var fileHashService = new FileHash(_storage, new FakeIWebLogger());
-		var beforeFileHash = ( await fileHashService.GetHashCodeAsync(subPath) ).Key;
-		var expectedPath = $"{beforeFileHash}." +
-		                   $"{new AppSettings().ThumbnailImageFormat}";
-
-		const VideoProcessTypes type = VideoProcessTypes.Thumbnail;
-
 		await _ffMpegDownload.DownloadFfMpeg();
 
 		// Act

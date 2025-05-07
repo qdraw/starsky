@@ -55,6 +55,7 @@ public sealed class ThumbnailCleanerTest
 	public async Task ThumbnailCleanerTestAsync_Cleaner()
 	{
 		var createAnImage = new CreateAnImage();
+		var imageFormat = new AppSettings().ThumbnailImageFormat;
 
 		var existFullDir = createAnImage.BasePath + Path.DirectorySeparatorChar + "thumb";
 		if ( !Directory.Exists(existFullDir) )
@@ -62,16 +63,16 @@ public sealed class ThumbnailCleanerTest
 			Directory.CreateDirectory(existFullDir);
 		}
 
-		if ( !File.Exists(Path.Join(existFullDir, "EXIST.jpg")) )
+		if ( !File.Exists(Path.Join(existFullDir, $"EXIST.{imageFormat}")) )
 		{
 			File.Copy(createAnImage.FullFilePath,
-				Path.Join(existFullDir, "EXIST.jpg"));
+				Path.Join(existFullDir, $"EXIST.{imageFormat}"));
 		}
 
-		if ( !File.Exists(Path.Join(existFullDir, "DELETE.jpg")) )
+		if ( !File.Exists(Path.Join(existFullDir, $"DELETE.{imageFormat}")) )
 		{
 			File.Copy(createAnImage.FullFilePath,
-				Path.Join(existFullDir, "DELETE.jpg"));
+				Path.Join(existFullDir, $"DELETE.{imageFormat}"));
 		}
 
 		await _query.AddItemAsync(new FileIndexItem { FileHash = "EXIST", FileName = "exst2" });

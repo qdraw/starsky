@@ -71,18 +71,20 @@ public sealed class ThumbnailNameHelperTest
 	[TestMethod]
 	public void GetSize_Name_ExtraLarge()
 	{
+		var imageFormat = new AppSettings().ThumbnailImageFormat;
 		var input = ThumbnailNameHelper.Combine("01234567890123456789123456",
-			2000, new AppSettings().ThumbnailImageFormat);
-		var result2 = ThumbnailNameHelper.GetSize(input, ThumbnailImageFormat.jpg);
+			2000, imageFormat);
+		var result2 = ThumbnailNameHelper.GetSize(input, imageFormat);
 		Assert.AreEqual(ThumbnailSize.ExtraLarge, result2);
 	}
 
 	[TestMethod]
 	public void GetSize_Name_Large()
 	{
+		var imageFormat = new AppSettings().ThumbnailImageFormat;
 		var input = ThumbnailNameHelper.Combine("01234567890123456789123456",
 			ThumbnailSize.Large, new AppSettings().ThumbnailImageFormat);
-		var result2 = ThumbnailNameHelper.GetSize(input, ThumbnailImageFormat.jpg);
+		var result2 = ThumbnailNameHelper.GetSize(input, imageFormat);
 		Assert.AreEqual(ThumbnailSize.Large, result2);
 	}
 

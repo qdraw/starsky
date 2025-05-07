@@ -124,7 +124,8 @@ public sealed class StorageThumbnailFilesystem : IStorage
 	public IEnumerable<string> GetAllFilesInDirectory(string path)
 	{
 		var dirInfo = new DirectoryInfo(_appSettings.ThumbnailTempFolder);
-		return dirInfo.EnumerateFiles("*.jpg", SearchOption.TopDirectoryOnly)
+		return dirInfo.EnumerateFiles($"*.{_appSettings.ThumbnailImageFormat}",
+				SearchOption.TopDirectoryOnly)
 			.Select(p => p.Name).ToList();
 	}
 

@@ -119,7 +119,7 @@ public sealed class GeoCliTest
 		await geoCli.CommandLineAsync(new List<string> { "-p" }.ToArray());
 
 		Assert.AreEqual(1, geoLookup.Count);
-		Assert.IsTrue(storage.ExistFile($"/{hash}.{new AppSettings().ThumbnailImageFormat}"));
+		Assert.IsTrue(storage.ExistFile($"/{hash}.jpg"));
 	}
 
 
@@ -145,6 +145,6 @@ public sealed class GeoCliTest
 		await geoCli.CommandLineAsync(new List<string> { "-p", "-v" }.ToArray());
 
 		Assert.AreEqual(1, geoLookup.Count);
-		Assert.IsTrue(storage.ExistFile($"/{hash}.{new AppSettings().ThumbnailImageFormat}"));
+		Assert.IsTrue(storage.ExistFile($"/{hash}.jpg"));
 	}
 }
