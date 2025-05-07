@@ -41,7 +41,7 @@ export class FileListCache {
   }
 
   private SetDefaultUrlObjectValues(urlObject: IUrl): IUrl {
-    urlObject.f ??= "/";
+    urlObject.f ||= "/";
     urlObject.collections ??= true;
     urlObject.colorClass ??= [];
     return urlObject;
