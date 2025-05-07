@@ -105,6 +105,16 @@ public sealed class StorageTemporaryFilesystem : IStorage
 	{
 		var inputFileFullPath = _appSettings.DatabasePathToTempFolderFilePath(fromPath);
 		var toFileFullPath = _appSettings.DatabasePathToTempFolderFilePath(toPath);
+		
+		var hostFilesystem = new StorageHostFullPathFilesystem(_logger);
+		var existOldFile = hostFilesystem.ExistFile(inputFileFullPath);
+		var existNewFile = hostFilesystem.ExistFile(toFileFullPath);
+
+		if ( !existOldFile || existNewFile )
+		{
+			return false;
+		}
+		
 		return new StorageHostFullPathFilesystem(_logger).FileMove(inputFileFullPath,
 			toFileFullPath);
 	}
@@ -116,8 +126,19 @@ public sealed class StorageTemporaryFilesystem : IStorage
 	/// <param name="toPath">toSubPath</param>
 	public void FileCopy(string fromPath, string toPath)
 	{
+		var hostFilesystem = new StorageHostFullPathFilesystem(_logger);
+		
 		var inputFileFullPath = _appSettings.DatabasePathToTempFolderFilePath(fromPath);
 		var toFileFullPath = _appSettings.DatabasePathToTempFolderFilePath(toPath);
+		
+		var existOldFile = hostFilesystem.ExistFile(inputFileFullPath);
+		var existNewFile = hostFilesystem.ExistFile(toFileFullPath);
+
+		if ( !existOldFile || existNewFile )
+		{
+			return;
+		}
+		
 		new StorageHostFullPathFilesystem(_logger).FileCopy(inputFileFullPath, toFileFullPath);
 	}
 
@@ -203,13 +224,13 @@ public sealed class StorageTemporaryFilesystem : IStorage
 		var imageFilesList = storage.GetAllFilesInDirectoryRecursive(fullFilePath);
 
 		// to filter use:
-		// ..etAllFilesInDirectory(subPath)
+		// ...etAllFilesInDirectory(subPath)
 		//	.Where(ExtensionRolesHelper.IsExtensionExifToolSupported)
 		// OR:
 		//  .Where(ExtensionRolesHelper.IsExtensionSyncSupported)
 
 		// convert back to subPath style
-		return _appSettings.RenameListItemsToDbStyle(imageFilesList.ToList());
+		return _appSettings.RenameTempListItemsToDbStyle(imageFilesList.ToList());
 	}
 
 	/// <summary>
@@ -318,7 +339,7 @@ public sealed class StorageTemporaryFilesystem : IStorage
 
 	public bool WriteStreamOpenOrCreate(Stream stream, string path)
 	{
-		throw new NotImplementedException();
+		throw new NotSupportedException();
 	}
 
 	public Task<bool> WriteStreamAsync(Stream stream, string path)

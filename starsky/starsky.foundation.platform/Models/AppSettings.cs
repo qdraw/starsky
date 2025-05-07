@@ -1033,11 +1033,23 @@ public sealed class AppSettings
 	/// </summary>
 	/// <param name="subpath">in OS Style, StorageFolder ends with backslash</param>
 	/// <returns></returns>
-	public string FullPathToDatabaseStyle(string subpath)
+	public string FullPathStorageFolderToDatabaseStyle(string subpath)
 	{
 		var databaseFilePath = subpath.Replace(StorageFolder, string.Empty);
 		databaseFilePath = _pathToDatabaseStyle(databaseFilePath);
 
+		return PathHelper.PrefixDbSlash(databaseFilePath);
+	}
+	
+	/// <summary>
+	///     Temp folder ends always with a backslash
+	/// </summary>
+	/// <param name="subpath">in OS Style, StorageFolder ends with backslash</param>
+	/// <returns></returns>
+	private string FullPathTempFolderToDatabaseStyle(string subpath)
+	{
+		var databaseFilePath = subpath.Replace(TempFolder, string.Empty);
+		databaseFilePath = _pathToDatabaseStyle(databaseFilePath);
 		return PathHelper.PrefixDbSlash(databaseFilePath);
 	}
 
@@ -1048,7 +1060,17 @@ public sealed class AppSettings
 	/// <returns></returns>
 	public List<string> RenameListItemsToDbStyle(IEnumerable<string> localSubFolderList)
 	{
-		return localSubFolderList.Select(FullPathToDatabaseStyle).ToList();
+		return localSubFolderList.Select(FullPathStorageFolderToDatabaseStyle).ToList();
+	}
+	
+	/// <summary>
+	///     Rename a list to database style (short style)
+	/// </summary>
+	/// <param name="localSubFolderList"></param>
+	/// <returns></returns>
+	public List<string> RenameTempListItemsToDbStyle(IEnumerable<string> localSubFolderList)
+	{
+		return localSubFolderList.Select(FullPathTempFolderToDatabaseStyle).ToList();
 	}
 
 	/// <summary>
@@ -1060,7 +1082,7 @@ public sealed class AppSettings
 		IEnumerable<KeyValuePair<string, DateTime>> localSubFolderList)
 	{
 		return localSubFolderList.Select(item =>
-				new KeyValuePair<string, DateTime>(FullPathToDatabaseStyle(item.Key),
+				new KeyValuePair<string, DateTime>(FullPathStorageFolderToDatabaseStyle(item.Key),
 					item.Value))
 			.ToList();
 	}

@@ -69,7 +69,7 @@ public sealed class StorageThumbnailFilesystemTest
 		var createAnImage = new CreateAnImage();
 
 		// first copy for parallel test
-		const string alreadyExistsFileName = "already_exists_file.jpg";
+		const string alreadyExistsFileName = "already_exists_file_thumbnail.jpg";
 		const string beforeTestFileName = "before_test_thumbnail.jpg";
 
 		_thumbnailStorage.FileCopy(_fileName, alreadyExistsFileName);

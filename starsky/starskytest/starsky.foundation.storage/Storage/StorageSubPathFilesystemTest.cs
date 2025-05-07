@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
+using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
@@ -18,10 +19,12 @@ public sealed class StorageSubPathFilesystemTest
 {
 	private readonly CreateAnImage _newImage;
 	private readonly StorageSubPathFilesystem _storage;
+	private readonly string _fileName;
 
 	public StorageSubPathFilesystemTest()
 	{
 		_newImage = new CreateAnImage();
+		_fileName  = _newImage.FileName;
 		var appSettings = new AppSettings { StorageFolder = _newImage.BasePath };
 		_storage = new StorageSubPathFilesystem(appSettings, new FakeIWebLogger());
 	}
@@ -248,5 +251,19 @@ public sealed class StorageSubPathFilesystemTest
 
 		_storage.FileDelete(subPath);
 		Assert.IsFalse(_storage.ExistFile(subPath));
+	}
+	
+	[TestMethod]
+	public void IsFolderOrFile_Exists()
+	{
+		var result = _storage.IsFolderOrFile(_fileName);
+		Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File, result);
+	}
+	
+	[TestMethod]
+	public void IsFolderOrFile_NotFound()
+	{
+		var result = _storage.IsFolderOrFile("not-found");
+		Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.Deleted, result);
 	}
 }
