@@ -349,7 +349,7 @@ public sealed class AppSettings
 	[PackageTelemetry]
 	[JsonConverter(typeof(JsonStringEnumConverter))]
 	public ThumbnailImageFormat ThumbnailImageFormat { get; set; } =
-		ThumbnailImageFormat.jpg;
+		ThumbnailImageFormat.webp;
 
 	/// <summary>
 	///     Location of temp folder
