@@ -36,8 +36,8 @@ internal class ResizeThumbnailFromSourceImageHelper(
 			SelectorStorage.StorageServices.SubPath => _storage,
 			SelectorStorage.StorageServices.Temporary => _tempStorage,
 			SelectorStorage.StorageServices.Thumbnail => _thumbnailStorage,
-			SelectorStorage.StorageServices.HostFilesystem => throw new ArgumentException(null,
-				nameof(resultResultPathType)),
+			SelectorStorage.StorageServices.HostFilesystem =>
+				throw new NotSupportedException("host type is not supported yet"),
 			null => throw new ArgumentException(null, nameof(resultResultPathType)),
 			_ => throw new ArgumentOutOfRangeException(nameof(resultResultPathType),
 				resultResultPathType, null)

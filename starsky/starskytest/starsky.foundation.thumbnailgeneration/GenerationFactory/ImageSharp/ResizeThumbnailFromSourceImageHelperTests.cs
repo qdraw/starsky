@@ -77,6 +77,7 @@ public class ResizeThumbnailFromSourceImageHelperTests
 		Assert.AreEqual(ThumbnailSize.TinyIcon, model.Size);
 	}
 
+
 	[TestMethod]
 	public async Task ResizeThumbnailFromSourceImage_CorruptInput()
 	{
@@ -98,17 +99,34 @@ public class ResizeThumbnailFromSourceImageHelperTests
 		Assert.AreEqual("Image cannot be loaded", result.ErrorMessage);
 	}
 
-	[TestMethod]
-	public async Task ResizeThumbnailFromSourceImage_Success()
+	[DataTestMethod]
+	[DataRow(SelectorStorage.StorageServices.SubPath)]
+	[DataRow(SelectorStorage.StorageServices.Temporary)]
+	[DataRow(SelectorStorage.StorageServices.Thumbnail)]
+	public async Task ResizeThumbnailFromSourceImage_Success(
+		SelectorStorage.StorageServices services)
 	{
 		var result = await _sut.ResizeThumbnailFromSourceImage(
-			TestPath, SelectorStorage.StorageServices.SubPath, 4, "thumbnailOutputHash",
+			TestPath, services, 4, "thumbnailOutputHash",
 			false, ThumbnailImageFormat.jpg);
 
 		Assert.IsTrue(result.Success);
 		Assert.AreEqual("thumbnailOutputHash", result.FileHash);
 		Assert.AreEqual(4, result.SizeInPixels);
 		Assert.AreEqual(ThumbnailImageFormat.jpg, result.ImageFormat);
+	}
+
+	[TestMethod]
+	public async Task ResizeThumbnailFromSourceImage_NotSupportedException()
+	{
+		var result = await _sut.ResizeThumbnailFromSourceImage(
+			TestPath,
+			SelectorStorage.StorageServices.HostFilesystem,
+			4, "thumbnailOutputHash",
+			false, ThumbnailImageFormat.jpg);
+
+		Assert.AreEqual("host type is not supported yet", result.ErrorMessage);
+		Assert.IsFalse(result.Success);
 	}
 
 	[TestMethod]

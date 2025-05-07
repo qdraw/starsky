@@ -683,7 +683,7 @@ public sealed class ImportTest
 
 		var importService = new Import(new FakeSelectorStorageByType(
 				subPathStorage,
-				null!, _iStorageFake
+				null!, _iStorageFake, null!
 			), appSettings, fakeImportQuery,
 			new FakeExifTool(_iStorageFake, appSettings), fakeDbQuery, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
