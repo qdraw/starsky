@@ -272,6 +272,10 @@ export class UrlQuery {
     return `${this.prefix}/api/delete`;
   };
 
+  public ImageFormat = (): string => {
+    return "webp";
+  };
+
   public UrlThumbnailImageLargeOrExtraLarge = (
     fileHash: string,
     filePath?: string,
@@ -282,7 +286,7 @@ export class UrlQuery {
         this.prefix +
         "/api/thumbnail/" +
         fileHash +
-        ".jpg?issingleitem=true&extraLarge=false" +
+        `.${this.ImageFormat()}?issingleitem=true&extraLarge=false` +
         "&filePath=" +
         filePath
       );
@@ -291,7 +295,7 @@ export class UrlQuery {
       this.prefix +
       "/api/thumbnail/" +
       fileHash +
-      "@2000.jpg?issingleitem=true&extraLarge=true" +
+      `@2000.${this.ImageFormat()}?issingleitem=true&extraLarge=true` +
       "&filePath=" +
       filePath
     );
@@ -299,9 +303,11 @@ export class UrlQuery {
 
   public UrlThumbnailImage = (fileHash: string, alwaysLoadImage: boolean): string => {
     if (alwaysLoadImage) {
-      return this.prefix + "/api/thumbnail/" + fileHash + ".jpg?issingleitem=true";
+      return (
+        this.prefix + "/api/thumbnail/" + fileHash + `.${this.ImageFormat()}?issingleitem=true`
+      );
     }
-    return this.prefix + "/api/thumbnail/small/" + fileHash + ".jpg";
+    return this.prefix + "/api/thumbnail/small/" + fileHash + `.${this.ImageFormat()}`;
   };
 
   /**
