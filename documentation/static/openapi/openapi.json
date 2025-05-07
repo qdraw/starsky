@@ -6298,7 +6298,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "Upload thumbnail to ThumbnailTempFolder\nMake sure that the filename is correct, a base32 hash of length 26;\nOverwrite if the Id is the same\nAlso known as Thumbnail Upload or Thumbnail Import",
+          "summary": "Upload thumbnail to ThumbnailTempFolder\nMake sure that the filename is correct, a base32 hash of length 26;\nOverwrite if the 'id' is the same\nAlso known as Thumbnail Upload or Thumbnail Import",
           "parameters": [],
           "responses": {
             "200": {
@@ -12182,6 +12182,30 @@
             "extensions": {},
             "unresolvedReference": false
           },
+          "thumbnailImageFormat": {
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false,
+            "reference": {
+              "isFragrament": false,
+              "type": 0,
+              "id": "ThumbnailImageFormat",
+              "isExternal": false,
+              "isLocal": true,
+              "referenceV3": "#/components/schemas/ThumbnailImageFormat",
+              "referenceV2": "#/definitions/ThumbnailImageFormat"
+            }
+          },
           "tempFolder": {
             "type": "string",
             "readOnly": false,
@@ -13102,6 +13126,38 @@
           },
           "exiftoolSkipDownloadOnStartup": {
             "type": "boolean",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "ffmpegSkipDownloadOnStartup": {
+            "type": "boolean",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "ffmpegPath": {
+            "type": "string",
             "readOnly": false,
             "writeOnly": false,
             "allOf": [],
@@ -15031,6 +15087,16 @@
           {
             "primitiveType": 0,
             "anyType": 0,
+            "value": 51
+          },
+          {
+            "primitiveType": 0,
+            "anyType": 0,
+            "value": 52
+          },
+          {
+            "primitiveType": 0,
+            "anyType": 0,
             "value": 60
           },
           {
@@ -16381,6 +16447,44 @@
         "extensions": {},
         "unresolvedReference": false
       },
+      "ThumbnailImageFormat": {
+        "type": "integer",
+        "format": "int32",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {},
+        "additionalPropertiesAllowed": true,
+        "enum": [
+          {
+            "primitiveType": 0,
+            "anyType": 0,
+            "value": 0
+          },
+          {
+            "primitiveType": 0,
+            "anyType": 0,
+            "value": 1
+          },
+          {
+            "primitiveType": 0,
+            "anyType": 0,
+            "value": 2
+          },
+          {
+            "primitiveType": 0,
+            "anyType": 0,
+            "value": 3
+          }
+        ],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
       "UserIdentifierStatusModel": {
         "type": "object",
         "readOnly": false,
@@ -16555,5 +16659,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "E94209E13579A53B356E9A1889C63EEAC0BD3867F2013A3AC1786D2ACFF1654974018D9F88C304203DF8C664B99F1946ED929BD7004085D44523F69B40D10A8C"
+  "hashCode": "3D60A2FA0A53E8B4089D043D1DE02C9A53A09E2E5D23B1355C7ACA448959F25D5BF8D1405EE58F3AFF6A94BE7D3BE2D03D0038077D933711A45788155B6B4794"
 }
