@@ -1,9 +1,9 @@
-import React, {memo, useEffect, useRef, useState} from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import useIntersection from "../../../hooks/use-intersection-observer";
 import useLocation from "../../../hooks/use-location/use-location";
-import {ImageFormat} from "../../../interfaces/IFileIndexItem";
-import {URLPath} from "../../../shared/url/url-path";
-import {UrlQuery} from "../../../shared/url/url-query";
+import { ImageFormat } from "../../../interfaces/IFileIndexItem";
+import { URLPath } from "../../../shared/url/url-path";
+import { UrlQuery } from "../../../shared/url/url-query";
 
 interface IListImageProps {
   children?: React.ReactNode;
@@ -22,7 +22,7 @@ const emptyImageUrl = "empty-image.gif";
  */
 const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
   const target = useRef<HTMLDivElement>(null);
-  const alt = props.alt ? props.alt : "afbeelding";
+  const alt = props.alt ?? "afbeelding";
 
   const [src, setSrc] = useState(props.fileHash);
 
@@ -54,7 +54,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
     // need to refresh
     if (
       new URLPath().getFilePath(historyLocation) !==
-      new URLPath().getFilePath(history.location.search) &&
+        new URLPath().getFilePath(history.location.search) &&
       isLoading
     ) {
       // data:images are blocked by a strict CSP
@@ -70,7 +70,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
     !props.fileHash ||
     !props.imageFormat
   ) {
-    return <div ref={target} data-test="list-image-img-error" className="img-box--error"/>;
+    return <div ref={target} data-test="list-image-img-error" className="img-box--error" />;
   }
 
   // for example show gpx, raw and mp4 as icon
@@ -114,7 +114,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
           onError={() => setError(true)}
         />
       ) : (
-        <div className="img-box--loading"/>
+        <div className="img-box--loading" />
       )}
     </div>
   );
