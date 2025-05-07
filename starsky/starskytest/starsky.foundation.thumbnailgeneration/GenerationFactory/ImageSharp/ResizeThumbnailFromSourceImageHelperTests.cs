@@ -130,6 +130,20 @@ public class ResizeThumbnailFromSourceImageHelperTests
 	}
 
 	[TestMethod]
+	public async Task ResizeThumbnailFromSourceImage_ArgumentException()
+	{
+		var result = await _sut.ResizeThumbnailFromSourceImage(
+			TestPath,
+			null!, // should be null to trigger exception
+			4, "thumbnailOutputHash",
+			false, ThumbnailImageFormat.jpg);
+
+		Assert.AreEqual("Value does not fall within the expected range. " +
+		                "(Parameter 'resultResultPathType')", result.ErrorMessage);
+		Assert.IsFalse(result.Success);
+	}
+
+	[TestMethod]
 	public async Task ResizeThumbnailFromSourceImage_FileNotFound()
 	{
 		var result = await _sut.ResizeThumbnailFromSourceImage(
