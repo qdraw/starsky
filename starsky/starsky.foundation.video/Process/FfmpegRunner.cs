@@ -12,7 +12,7 @@ public class FfmpegRunner(string ffMpegPath, IWebLogger logger)
 	{
 		ArgumentNullException.ThrowIfNull(fullFilePath);
 
-		var argumentsWithPipeEnd = $"-i {fullFilePath} {ffmpegInputArguments} -f {format} pipe:1";
+		var argumentsWithPipeEnd = $"-i \"{fullFilePath}\" {ffmpegInputArguments} -f {format} pipe:1";
 
 		var memoryStream = new MemoryStream();
 
