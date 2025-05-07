@@ -36,7 +36,7 @@ public sealed class FfMpegDownloadBackgroundServiceTests
 	[TestMethod]
 	public async Task StartAsync()
 	{
-		var cancelToken = new CancellationToken();
+		var cancelToken = CancellationToken.None;
 		await new FfMpegDownloadBackgroundService(_serviceScopeFactory).StartAsync(cancelToken);
 		Assert.IsNotNull(cancelToken);
 	}

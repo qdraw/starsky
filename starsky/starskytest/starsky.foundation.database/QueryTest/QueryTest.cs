@@ -445,7 +445,7 @@ public sealed class QueryTest
 
 		Assert.AreEqual("/display/hi2.jpg", releative2.NextFilePath);
 		Assert.IsNotNull(releative2);
-		if ( releative2.PrevFilePath == null )
+		if ( releative2.PrevFilePath != null )
 		{
 			Assert.Fail(releative2.PrevFilePath);
 		}

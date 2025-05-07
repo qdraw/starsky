@@ -33,7 +33,7 @@ public sealed class SearchViewModelTest
 
 		model.SetAddSearchInStringType(null!);
 
-		Assert.IsNotNull(model.SearchIn);
+		Assert.HasCount(0, model.SearchIn);
 	}
 
 	[TestMethod]
@@ -41,7 +41,7 @@ public sealed class SearchViewModelTest
 	{
 		var model = new SearchViewModel { SearchForInternal = null };
 
-		Assert.IsNotNull(model.SearchFor);
+		Assert.HasCount(0, model.SearchFor);
 	}
 
 	[TestMethod]
@@ -54,7 +54,7 @@ public sealed class SearchViewModelTest
 
 		model.SetAddSearchFor("");
 
-		Assert.IsNotNull(model.SearchFor);
+		Assert.HasCount(1, model.SearchFor);
 	}
 
 	[TestMethod]
@@ -62,7 +62,7 @@ public sealed class SearchViewModelTest
 	{
 		var model = new SearchViewModel { SearchForOptionsInternal = null };
 
-		Assert.IsNotNull(model.SearchForOptions);
+		Assert.HasCount(0, model.SearchForOptions);
 	}
 
 	[TestMethod]
@@ -75,7 +75,7 @@ public sealed class SearchViewModelTest
 
 		model.SetAddSearchForOptions("test");
 
-		Assert.IsNotNull(model.SearchForOptions);
+		Assert.HasCount(0, model.SearchForOptions);
 	}
 
 	[TestMethod]

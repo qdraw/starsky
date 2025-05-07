@@ -67,7 +67,7 @@ public sealed class ZipperTest
 			testOutputFolder);
 
 		// Assert
-		Assert.IsNotNull(result);
+		Assert.IsTrue(result);
 
 		var outputFile = testOutputFolder + Path.DirectorySeparatorChar +
 		                 CreateAnZipFileMacOs.Content[0];
