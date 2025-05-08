@@ -21,13 +21,13 @@
     <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'"/>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'"/>
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.15" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.15" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
-        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
-        <PackageReference Include="MSTest.TestAdapter" Version="3.8.3" />
-        <PackageReference Include="MSTest.TestFramework" Version="3.8.3" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.15"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.15"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0"/>
+        <PackageReference Include="MSTest.TestAdapter" Version="3.8.3"/>
+        <PackageReference Include="MSTest.TestFramework" Version="3.8.3"/>
         <PackageReference Include="coverlet.collector" Version="6.0.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -129,13 +129,7 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
         <None Remove="FakeCreateAn\CreateAnImageA6600Raw\head_part.arw"/>
-        <Content Include="FakeCreateAn\CreateAnImageA6600Raw\head_part.arw">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
         <None Remove="FakeCreateAn\CreateAnImageA330Raw\head_part.arw"/>
-        <Content Include="FakeCreateAn\CreateAnImageA330Raw\head_part.arw">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
         <None Remove="FakeCreateAn\CreateAnImageLongDescriptionTitle\CreateAnImageLongDescriptionTitle.jpg"/>
         <Content Include="FakeCreateAn\CreateAnImageLongDescriptionTitle\CreateAnImageLongDescriptionTitle.jpg">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -158,6 +152,18 @@
         </Content>
         <None Remove="FakeCreateAn\CreateFakeExifToolWindows\exiftool(-k).exe"/>
         <Content Include="FakeCreateAn\CreateFakeExifToolWindows\exiftool(-k).exe">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <None Remove="FakeCreateAn\CreateAnImageA330Raw\DSC01028.ARW"/>
+        <Content Include="FakeCreateAn\CreateAnImageA330Raw\DSC01028.ARW">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <None Remove="FakeCreateAn\CreateAnImageA6600Raw\20241107_140535_DSC00732.arw"/>
+        <Content Include="FakeCreateAn\CreateAnImageA6600Raw\20241107_140535_DSC00732.arw">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <None Remove="FakeCreateAn\CreateAnImageLargePreview\20241112_110839_DSC02741.jpg"/>
+        <Content Include="FakeCreateAn\CreateAnImageLargePreview\20241112_110839_DSC02741.jpg">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
