@@ -31,9 +31,10 @@ public sealed class Build : NukeBuild
 	public const string GenericRuntimeName = "generic-netcore";
 
 	/// <summary>
-	///     Link to GeoCli.csproj
+	///     Link to starskydependenciesdownloadcli.csproj
 	/// </summary>
-	const string GeoCliCsproj = "starskygeocli/starskygeocli.csproj";
+	const string DependenciesCliCsproj = "starskydependenciesdownloadcli/" +
+	                                     "starskydependenciesdownloadcli.csproj";
 
 	/// <summary>
 	///     Npm and node are required for preflight checks and building frontend code
@@ -203,7 +204,7 @@ public sealed class Build : NukeBuild
 				Configuration);
 			DotnetTestHelper.TestNetCoreGenericCommand(Configuration,
 				IsUnitTestDisabled());
-			DotnetGenericHelper.DownloadDependencies(Configuration, GeoCliCsproj,
+			DotnetGenericHelper.DownloadDependencies(Configuration, DependenciesCliCsproj,
 				NoDependencies, GenericRuntimeName);
 			MergeCoverageFiles.Merge(IsUnitTestDisabled());
 			SonarQube.SonarEnd(IsUnitTestDisabled(), NoSonar);

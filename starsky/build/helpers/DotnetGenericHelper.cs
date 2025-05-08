@@ -16,7 +16,7 @@ namespace helpers;
 public static class DotnetGenericHelper
 {
 	/// <summary>
-	/// dotnet restore for generic
+	///     dotnet restore for generic
 	/// </summary>
 	/// <param name="solution">solution file .sln</param>
 	public static void RestoreNetCoreCommand(Solution solution)
@@ -29,29 +29,27 @@ public static class DotnetGenericHelper
 	}
 
 	/// <summary>
-	/// dotnet build for generic helper
+	///     dotnet build for generic helper
 	/// </summary>
 	/// <param name="solution">the solution</param>
 	/// <param name="configuration">Debug or Release</param>
 	public static void BuildNetCoreGenericCommand(Solution solution,
-		Configuration configuration)
-	{
+		Configuration configuration) =>
 		DotNetBuild(p => p
 			.SetConfiguration(configuration)
 			.EnableNoRestore()
 			.EnableNoLogo()
 			.SetProjectFile(solution));
-	}
 
 	/// <summary>
-	/// Download Exiftool and geo deps
+	///     Download Exiftool and geo deps
 	/// </summary>
 	/// <param name="configuration">is Release</param>
-	/// <param name="geoCliCsproj">geo.csproj file</param>
+	/// <param name="dependenciesDownloadCli">dependencies .csproj file</param>
 	/// <param name="noDependencies">skip this step if true (external deps)</param>
 	/// <param name="genericNetcoreFolder">genericNetcoreFolder</param>
 	public static void DownloadDependencies(Configuration configuration,
-		string geoCliCsproj, bool noDependencies,
+		string dependenciesDownloadCli, bool noDependencies,
 		string genericNetcoreFolder)
 	{
 		if ( noDependencies )
@@ -69,7 +67,7 @@ public static class DotnetGenericHelper
 			Environment.SetEnvironmentVariable("app__DependenciesFolder", genericDepsFullPath);
 			Log.Information("Next: DownloadDependencies");
 			Log.Information("Run: {Path}", Path.Combine(
-				WorkingDirectory.GetSolutionParentFolder(), geoCliCsproj)
+				WorkingDirectory.GetSolutionParentFolder(), dependenciesDownloadCli)
 			);
 
 			DotNetRun(p => p
@@ -78,7 +76,7 @@ public static class DotnetGenericHelper
 				.EnableNoBuild()
 				.SetApplicationArguments("--runtime linux-x64,win-x64")
 				.SetProjectFile(Path.Combine(WorkingDirectory.GetSolutionParentFolder(),
-					geoCliCsproj)));
+					dependenciesDownloadCli)));
 		}
 		catch ( Exception exception )
 		{
@@ -123,9 +121,7 @@ public static class DotnetGenericHelper
 		}
 	}
 
-	static string BasePath()
-	{
-		return Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)
+	static string BasePath() =>
+		Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)
 			?.Parent?.Parent?.Parent?.FullName!;
-	}
 }
