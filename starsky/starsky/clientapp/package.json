@@ -28,7 +28,7 @@
     "leaflet": "^1.9.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.29.0"
+    "react-router-dom": "^7.5.2"
   },
   "devDependencies": {
     "@storybook/addon-essentials": "^8.5.5",
