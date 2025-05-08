@@ -14,11 +14,8 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.thumbnailmeta.Helpers;
 using starsky.foundation.thumbnailmeta.Models;
 using starsky.foundation.thumbnailmeta.PreviewSize.Interfaces;
-using starsky.foundation.thumbnailmeta.ServicesPreviewSize.Helpers;
-using starsky.foundation.thumbnailmeta.ServicesPreviewSize.Interfaces;
 using Directory = MetadataExtractor.Directory;
 using File = TagLib.File;
 
@@ -110,8 +107,8 @@ public class OffsetDataMetaExifPreviewThumbnail : IOffsetDataMetaExifPreviewThum
 			"/Users/dion/data/fotobieb/2024/11/2024_11_11_d/20241111_181721_DSC00782.jpg");
 		var directory = directories.OfType<SonyType1MakernoteDirectory>().FirstOrDefault();
 
-		SonyMakerNotesParser.ParseSonyMakerNotes(
-			"/Users/dion/data/fotobieb/2024/11/2024_11_11_d/20241111_181721_DSC00782.jpg");
+		// SonyMakerNotesParser.ParseSonyMakerNotes(
+		// 	"/Users/dion/data/fotobieb/2024/11/2024_11_11_d/20241111_181721_DSC00782.jpg");
 
 		return ( false, 0, false, 0 );
 
@@ -142,16 +139,16 @@ public class OffsetDataMetaExifPreviewThumbnail : IOffsetDataMetaExifPreviewThum
 		}
 
 
-		var file =
-			File.Create(new TagLibSharpAbstractions.FileBytesAbstraction("test.jpg",
-				_iStorage.ReadStream(subPath)));
-		var t = file.Tag;
-		var json = JsonSerializer.Serialize(t,
-			new JsonSerializerOptions
-			{
-				WriteIndented = true,
-				NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
-			});
+		// var file =
+		// 	File.Create(new TagLibSharpAbstractions.FileBytesAbstraction("test.jpg",
+		// 		_iStorage.ReadStream(subPath)));
+		// var t = file.Tag;
+		// var json = JsonSerializer.Serialize(t,
+		// 	new JsonSerializerOptions
+		// 	{
+		// 		WriteIndented = true,
+		// 		NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
+		// 	});
 
 		// var test = new PreviewImageExtractor().GetImageSize(
 		// 	"/Users/dion/data/git/starsky/starsky/starskytest/FakeCreateAn/CreateAnImageLargePreview/20241112_110839_DSC02741.jpg");
