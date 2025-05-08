@@ -14,6 +14,7 @@ using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.writemeta.Interfaces;
+using starsky.foundation.writemeta.Models;
 using starsky.foundation.writemeta.Services;
 
 namespace starsky.foundation.writemeta.Helpers;
@@ -49,21 +50,6 @@ public sealed class ExifToolCmdHelper
 
 
 	/// <summary>
-	///     To update ExifTool (both Thumbnail as Storage item)
-	/// </summary>
-	/// <param name="updateModel"></param>
-	/// <param name="inputSubPaths"></param>
-	/// <param name="comparedNames"></param>
-	/// <param name="includeSoftware"></param>
-	/// <returns></returns>
-	public string Update(FileIndexItem updateModel, List<string> inputSubPaths,
-		List<string> comparedNames, bool includeSoftware = true)
-	{
-		return UpdateAsyncWrapperBoth(updateModel, inputSubPaths, comparedNames,
-			includeSoftware).Result;
-	}
-
-	/// <summary>
 	///     For Raw files us an external .xmp sidecar file, and add this to the PathsList
 	/// </summary>
 	/// <param name="inputSubPaths">list of files to update</param>
@@ -88,24 +74,6 @@ public sealed class ExifToolCmdHelper
 		return pathsList;
 	}
 
-	/// <summary>
-	///     Wrapper to do Async tasks -- add variable to test make it in a unit test shorter
-	/// </summary>
-	/// <param name="updateModel"></param>
-	/// <param name="inputSubPaths"></param>
-	/// <param name="comparedNames"></param>
-	/// <param name="includeSoftware"></param>
-	/// <returns></returns>
-	private Task<string> UpdateAsyncWrapperBoth(FileIndexItem updateModel,
-		List<string> inputSubPaths,
-		List<string> comparedNames, bool includeSoftware = true)
-	{
-		var task = Task.Run(() => UpdateAsync(updateModel, inputSubPaths,
-			comparedNames, includeSoftware, true));
-		return Task.FromResult(task.Wait(TimeSpan.FromSeconds(20))
-			? task.Result.Item1
-			: string.Empty);
-	}
 
 	/// <summary>
 	///     Get command line args for exifTool by updateModel as data, comparedNames
@@ -204,7 +172,7 @@ public sealed class ExifToolCmdHelper
 		}
 	}
 
-	public Task<ValueTuple<string, List<string>>> UpdateAsync(FileIndexItem updateModel,
+	public Task<ExifToolWriteResultModel> UpdateAsync(FileIndexItem updateModel,
 		List<string> comparedNames, bool includeSoftware = true, bool renameThumbnail = true)
 	{
 		var exifUpdateFilePaths = new List<string> { updateModel.FilePath! };
@@ -222,7 +190,7 @@ public sealed class ExifToolCmdHelper
 	/// <param name="renameThumbnail">update name</param>
 	/// <param name="cancellationToken">to cancel</param>
 	/// <returns>Tuple (command, hash)</returns>
-	public async Task<ValueTuple<string, List<string>>> UpdateAsync(FileIndexItem updateModel,
+	public async Task<ExifToolWriteResultModel> UpdateAsync(FileIndexItem updateModel,
 		List<string> inputSubPaths, List<string> comparedNames, bool includeSoftware,
 		bool renameThumbnail, CancellationToken cancellationToken = default)
 	{
@@ -234,7 +202,7 @@ public sealed class ExifToolCmdHelper
 
 		var command = ExifToolCommandLineArgs(updateModel, comparedNames, includeSoftware);
 
-		var fileHashes = new List<string>();
+		var result = new ExifToolWriteResultModel(command);
 		foreach ( var path in subPathsList.Where(path => _iStorage.ExistFile(path)) )
 		{
 			// to rename to filename of the thumbnail to the new hash
@@ -248,18 +216,23 @@ public sealed class ExifToolCmdHelper
 			var newFileHash = ( await _exifTool.WriteTagsAndRenameThumbnailAsync(path,
 				beforeFileHash, command, cancellationToken) ).Value;
 
-			fileHashes.Add(newFileHash);
+			result.NewFileHashes.Add(newFileHash);
 			await _thumbnailQuery.RenameAsync(beforeFileHash, newFileHash);
 		}
 
-		if ( !string.IsNullOrEmpty(updateModel.FileHash) &&
-		     _thumbnailStorage.ExistFile(updateModel.FileHash) )
+		var exists = !string.IsNullOrEmpty(updateModel.FileHash) &&
+		             _thumbnailStorage.ExistFile(updateModel.FileHash);
+		if ( exists )
 		{
-			await _exifTool.WriteTagsThumbnailAsync(updateModel.FileHash, command);
+			await _exifTool.WriteTagsThumbnailAsync(updateModel.FileHash!, command);
 		}
 
-		return new ValueTuple<string, List<string>>(command, fileHashes);
+		result.NewFileHashesStatuses.Add(
+			new ValueTuple<bool, string?>(exists, updateModel.FileHash));
+
+		return result;
 	}
+
 
 	private async Task<string> BeforeFileHash(FileIndexItem updateModel, string path)
 	{

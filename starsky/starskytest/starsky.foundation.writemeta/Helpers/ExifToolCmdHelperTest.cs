@@ -23,7 +23,7 @@ public sealed class ExifToolCmdHelperTest
 	}
 
 	[TestMethod]
-	public void ExifToolCmdHelper_UpdateTest()
+	public async Task ExifToolCmdHelper_UpdateTest()
 	{
 		var updateModel = new FileIndexItem
 		{
@@ -63,29 +63,30 @@ public sealed class ExifToolCmdHelperTest
 			new List<string> { "/test.jpg" }, new List<byte[]>());
 
 		var fakeExifTool = new FakeExifTool(storage, _appSettings);
-		var helperResult = new ExifToolCmdHelper(fakeExifTool, storage, storage,
+		var helperResult = await new ExifToolCmdHelper(fakeExifTool, storage, storage,
 				new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
-			.Update(updateModel, inputSubPaths, comparedNames);
+			.UpdateAsync(updateModel, comparedNames);
 
-		Assert.IsTrue(helperResult.Contains(updateModel.Tags));
-		Assert.IsTrue(helperResult.Contains(updateModel.Description));
+		Assert.IsTrue(helperResult.Command.Contains(updateModel.Tags));
+		Assert.IsTrue(helperResult.Command.Contains(updateModel.Description));
 		Assert.IsTrue(
-			helperResult.Contains(updateModel.Latitude.ToString(CultureInfo.InvariantCulture)));
+			helperResult.Command.Contains(
+				updateModel.Latitude.ToString(CultureInfo.InvariantCulture)));
 		Assert.IsTrue(
-			helperResult.Contains(
+			helperResult.Command.Contains(
 				updateModel.Longitude.ToString(CultureInfo.InvariantCulture)));
 		Assert.IsTrue(
-			helperResult.Contains(
+			helperResult.Command.Contains(
 				updateModel.LocationAltitude.ToString(CultureInfo.InvariantCulture)));
-		Assert.IsTrue(helperResult.Contains(updateModel.LocationCity));
-		Assert.IsTrue(helperResult.Contains(updateModel.LocationState));
-		Assert.IsTrue(helperResult.Contains(updateModel.LocationCountry));
-		Assert.IsTrue(helperResult.Contains(updateModel.LocationCountryCode));
-		Assert.IsTrue(helperResult.Contains(updateModel.Title));
+		Assert.IsTrue(helperResult.Command.Contains(updateModel.LocationCity));
+		Assert.IsTrue(helperResult.Command.Contains(updateModel.LocationState));
+		Assert.IsTrue(helperResult.Command.Contains(updateModel.LocationCountry));
+		Assert.IsTrue(helperResult.Command.Contains(updateModel.LocationCountryCode));
+		Assert.IsTrue(helperResult.Command.Contains(updateModel.Title));
 	}
 
 	[TestMethod]
-	public void ExifToolCmdHelper_Update_UpdateLocationAltitudeCommandTest()
+	public async Task ExifToolCmdHelper_Update_UpdateLocationAltitudeCommandTest()
 	{
 		var updateModel = new FileIndexItem { LocationAltitude = -41 };
 		var comparedNames = new List<string>
@@ -101,13 +102,13 @@ public sealed class ExifToolCmdHelperTest
 			new FakeIStorage(folderPaths, inputSubPaths);
 		var fakeExifTool = new FakeExifTool(storage, _appSettings);
 
-		var helperResult = new ExifToolCmdHelper(fakeExifTool,
+		var helperResult = await new ExifToolCmdHelper(fakeExifTool,
 				storage, storage,
 				new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
-			.Update(updateModel, inputSubPaths, comparedNames);
+			.UpdateAsync(updateModel, comparedNames);
 
-		Assert.IsTrue(helperResult.Contains("-GPSAltitude=\"-41"));
-		Assert.IsTrue(helperResult.Contains("gpsaltituderef#=\"1"));
+		Assert.IsTrue(helperResult.Command.Contains("-GPSAltitude=\"-41"));
+		Assert.IsTrue(helperResult.Command.Contains("gpsaltituderef#=\"1"));
 	}
 
 	[TestMethod]
@@ -166,8 +167,8 @@ public sealed class ExifToolCmdHelperTest
 				new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
 			.UpdateAsync(updateModel, comparedNames);
 
-		Assert.IsTrue(helperResult.Item1.Contains("tags"));
-		Assert.IsTrue(helperResult.Item1.Contains("Description"));
+		Assert.IsTrue(helperResult.Command.Contains("tags"));
+		Assert.IsTrue(helperResult.Command.Contains("Description"));
 	}
 
 	[TestMethod]
@@ -193,8 +194,8 @@ public sealed class ExifToolCmdHelperTest
 				new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
 			.UpdateAsync(updateModel, comparedNames);
 
-		Assert.IsTrue(helperResult.Item1.Contains("tags"));
-		Assert.IsTrue(helperResult.Item1.Contains("Description"));
+		Assert.IsTrue(helperResult.Command.Contains("tags"));
+		Assert.IsTrue(helperResult.Command.Contains("Description"));
 	}
 
 
