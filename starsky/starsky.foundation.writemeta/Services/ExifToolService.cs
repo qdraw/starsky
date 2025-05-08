@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
@@ -8,6 +7,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Helpers;
 using starsky.foundation.writemeta.Interfaces;
+using starsky.foundation.writemeta.Models;
 
 namespace starsky.foundation.writemeta.Services;
 
@@ -32,7 +32,7 @@ public sealed class ExifToolService : IExifTool
 		return await _exifTool.WriteTagsAsync(subPath, command);
 	}
 
-	public async Task<KeyValuePair<bool, string>>
+	public async Task<ExifToolWriteTagsAndRenameThumbnailModel>
 		WriteTagsAndRenameThumbnailAsync(string subPath,
 			string? beforeFileHash, string command,
 			CancellationToken cancellationToken = default)

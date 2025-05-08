@@ -103,7 +103,7 @@ public sealed class ExifToolTest
 
 		var result =
 			await new ExifTool(fakeStorage, fakeStorage, appSettings, new FakeIWebLogger())
-				.RenameThumbnailByStream("OLDHASH", new MemoryStream(), true);
+				.RenameThumbnailByStream("OLDHASH", new MemoryStream(), true, "test");
 
 		Assert.AreEqual(26, result.newHashCode.Length);
 	}
@@ -119,7 +119,7 @@ public sealed class ExifToolTest
 
 		var result =
 			await new ExifTool(fakeStorage, fakeStorage, appSettings, new FakeIWebLogger())
-				.RenameThumbnailByStream("OLDHASH", new MemoryStream(), false);
+				.RenameThumbnailByStream("OLDHASH", new MemoryStream(), false, "test");
 
 		Assert.AreEqual(0, result.newHashCode.Length);
 	}
@@ -135,7 +135,7 @@ public sealed class ExifToolTest
 
 		var stream = new MemoryStream();
 		await new ExifTool(fakeStorage, fakeStorage, appSettings, new FakeIWebLogger())
-			.RenameThumbnailByStream("OLDHASH", stream, true);
+			.RenameThumbnailByStream("OLDHASH", stream, true, "test");
 
 		Assert.IsTrue(stream.CanWrite);
 	}

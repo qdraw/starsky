@@ -159,7 +159,7 @@ public class MetaUpdateService : IMetaUpdateService
 				  $"Null for: path:{fileIndexItem.FilePath} {DateTime.UtcNow.ToShortTimeString()}"
 				: $"[UpdateWriteDiskDatabase] ExifTool result: " +
 				  $"{result.Command} path:{fileIndexItem.FilePath} " +
-				  $"status: {string.Join(", ", result.NewFileHashesStatuses)}");
+				  $"status: {string.Join(", ", result.Rename)}");
 		}
 		else if ( fileIndexItem.ImageFormat != ExtensionRolesHelper.ImageFormat.xmp &&
 		          fileIndexItem.ImageFormat != ExtensionRolesHelper.ImageFormat.meta_json )

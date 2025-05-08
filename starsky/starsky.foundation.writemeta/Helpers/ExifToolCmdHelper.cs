@@ -171,7 +171,7 @@ public sealed class ExifToolCmdHelper
 		}
 	}
 
-	public Task<ExifToolWriteResultModel> UpdateAsync(FileIndexItem updateModel,
+	public Task<ExifToolCmdHelperWriteResultModel> UpdateAsync(FileIndexItem updateModel,
 		List<string> comparedNames, bool includeSoftware = true, bool renameThumbnail = true)
 	{
 		var exifUpdateFilePaths = new List<string> { updateModel.FilePath! };
@@ -189,7 +189,7 @@ public sealed class ExifToolCmdHelper
 	/// <param name="renameThumbnail">update name</param>
 	/// <param name="cancellationToken">to cancel</param>
 	/// <returns>Tuple (command, hash)</returns>
-	public async Task<ExifToolWriteResultModel> UpdateAsync(FileIndexItem updateModel,
+	public async Task<ExifToolCmdHelperWriteResultModel> UpdateAsync(FileIndexItem updateModel,
 		List<string> inputSubPaths, List<string> comparedNames, bool includeSoftware,
 		bool renameThumbnail, CancellationToken cancellationToken = default)
 	{
@@ -201,7 +201,7 @@ public sealed class ExifToolCmdHelper
 
 		var command = ExifToolCommandLineArgs(updateModel, comparedNames, includeSoftware);
 
-		var result = new ExifToolWriteResultModel(command);
+		var result = new ExifToolCmdHelperWriteResultModel(command);
 		foreach ( var path in subPathsList.Where(path => _iStorage.ExistFile(path)) )
 		{
 			// to rename to filename of the thumbnail to the new hash
@@ -214,17 +214,17 @@ public sealed class ExifToolCmdHelper
 			var beforeFileHash = await BeforeFileHash(updateModel, path);
 			// var beforeFileHashExists = _thumbnailStorage.ExistFile(beforeFileHash);
 
-			var newFileHash = ( await _exifTool.WriteTagsAndRenameThumbnailAsync(path,
-				beforeFileHash, command, cancellationToken) ).Value;
+			var renameModel = await _exifTool.WriteTagsAndRenameThumbnailAsync(path,
+				beforeFileHash, command, cancellationToken);
 
-			result.NewFileHashes.Add(newFileHash);
+			result.NewFileHashes.Add(renameModel.NewFileHash);
+			result.Rename.Add(renameModel);
+			await _thumbnailQuery.RenameAsync(beforeFileHash, renameModel.NewFileHash);
 
 			// var newFileHashExists = _thumbnailStorage.ExistFile(updateModel.FileHash!);
 			// result.NewFileHashesStatuses.Add(
 			// 	new ValueTuple<bool, bool, string?>(beforeFileHashExists,
 			// 		newFileHashExists, updateModel.FileHash));
-
-			await _thumbnailQuery.RenameAsync(beforeFileHash, newFileHash);
 		}
 
 		// var exists = !string.IsNullOrEmpty(updateModel.FileHash) &&

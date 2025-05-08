@@ -132,7 +132,7 @@ public sealed class ExifToolHostStorageServiceTest
 			hostFileSystemStorage.FolderDelete(outputPath);
 		}
 
-		Assert.IsFalse(renameThumbnailAsync.Key);
+		Assert.IsFalse(renameThumbnailAsync.IsSuccess);
 		Assert.IsTrue(fakeLogger.TrackedExceptions.Exists(p =>
 			p.Item2?.Contains("Fake Exiftool detected") == true));
 	}
@@ -195,7 +195,7 @@ public sealed class ExifToolHostStorageServiceTest
 			}
 		}
 
-		Assert.IsFalse(renameThumbnailAsync.Key);
+		Assert.IsFalse(renameThumbnailAsync.IsSuccess);
 		Assert.IsTrue(fakeLogger.TrackedExceptions.Exists(p =>
 			p.Item2?.Contains("Fake Exiftool detected") == true));
 	}
