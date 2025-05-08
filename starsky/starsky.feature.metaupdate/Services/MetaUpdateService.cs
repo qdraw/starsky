@@ -158,7 +158,8 @@ public class MetaUpdateService : IMetaUpdateService
 				? $"[UpdateWriteDiskDatabase] ExifTool result is Nothing or " +
 				  $"Null for: path:{fileIndexItem.FilePath} {DateTime.UtcNow.ToShortTimeString()}"
 				: $"[UpdateWriteDiskDatabase] ExifTool result: " +
-				  $"{result.Command} path:{fileIndexItem.FilePath}");
+				  $"{result.Command} path:{fileIndexItem.FilePath} " +
+				  $"status: {string.Join(", ", result.NewFileHashesStatuses)}");
 		}
 		else if ( fileIndexItem.ImageFormat != ExtensionRolesHelper.ImageFormat.xmp &&
 		          fileIndexItem.ImageFormat != ExtensionRolesHelper.ImageFormat.meta_json )

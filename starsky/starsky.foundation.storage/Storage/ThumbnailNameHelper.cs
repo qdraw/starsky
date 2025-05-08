@@ -11,20 +11,6 @@ namespace starsky.foundation.storage.Storage;
 /// </summary>
 public static partial class ThumbnailNameHelper
 {
-	/// <summary>
-	///     Without TinyMeta
-	/// </summary>
-	public static readonly ThumbnailSize[] GeneratedThumbnailSizes = new[]
-	{
-		ThumbnailSize.ExtraLarge, ThumbnailSize.Small, ThumbnailSize.Large
-	};
-
-	public static readonly ThumbnailSize[] SecondGeneratedThumbnailSizes = new[]
-	{
-		ThumbnailSize.Small, ThumbnailSize
-			.Large //  <- will be false when skipExtraLarge = true, its already created 
-	};
-
 	public static readonly ThumbnailSize[] AllThumbnailSizes = new[]
 	{
 		ThumbnailSize.TinyMeta, ThumbnailSize.ExtraLarge, ThumbnailSize.Small,
@@ -126,15 +112,15 @@ public static partial class ThumbnailNameHelper
 	}
 
 	/// <summary>
-	/// Replace at and digit with empty string
-	/// @\d+.?\w{0,4}
+	///     Replace at and digit with empty string
+	///     @\d+.?\w{0,4}
 	/// </summary>
 	/// <returns></returns>
 	[GeneratedRegex(@"@\d+.?\w{0,4}", RegexOptions.None, 1000)]
 	private static partial Regex AtDigitAndExtensionRegex();
 
 	/// <summary>
-	/// Remove @2000 or @2000.jpg 
+	///     Remove @2000 or @2000.jpg
 	/// </summary>
 	/// <param name="thumbnailOutputHash">input hash with extension</param>
 	/// <returns>fileHash without suffix and or extension</returns>

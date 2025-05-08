@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -213,22 +212,27 @@ public sealed class ExifToolCmdHelper
 			}
 
 			var beforeFileHash = await BeforeFileHash(updateModel, path);
+			// var beforeFileHashExists = _thumbnailStorage.ExistFile(beforeFileHash);
+
 			var newFileHash = ( await _exifTool.WriteTagsAndRenameThumbnailAsync(path,
 				beforeFileHash, command, cancellationToken) ).Value;
 
 			result.NewFileHashes.Add(newFileHash);
+
+			// var newFileHashExists = _thumbnailStorage.ExistFile(updateModel.FileHash!);
+			// result.NewFileHashesStatuses.Add(
+			// 	new ValueTuple<bool, bool, string?>(beforeFileHashExists,
+			// 		newFileHashExists, updateModel.FileHash));
+
 			await _thumbnailQuery.RenameAsync(beforeFileHash, newFileHash);
 		}
 
-		var exists = !string.IsNullOrEmpty(updateModel.FileHash) &&
-		             _thumbnailStorage.ExistFile(updateModel.FileHash);
-		if ( exists )
-		{
-			await _exifTool.WriteTagsThumbnailAsync(updateModel.FileHash!, command);
-		}
-
-		result.NewFileHashesStatuses.Add(
-			new ValueTuple<bool, string?>(exists, updateModel.FileHash));
+		// var exists = !string.IsNullOrEmpty(updateModel.FileHash) &&
+		//              _thumbnailStorage.ExistFile(updateModel.FileHash);
+		// if ( exists )
+		// {
+		// 	await _exifTool.WriteTagsThumbnailAsync(updateModel.FileHash!, command);
+		// }
 
 		return result;
 	}

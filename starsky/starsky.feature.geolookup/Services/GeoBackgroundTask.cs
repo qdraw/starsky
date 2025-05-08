@@ -100,7 +100,8 @@ public class GeoBackgroundTask : IGeoBackgroundTask
 				continue;
 			}
 
-			new ThumbnailFileMoveAllSizes(_thumbnailStorage, _appSettings).FileMove(item.FileHash!,
+			new ThumbnailFileMoveAllSizes(_thumbnailStorage, _appSettings, _logger).FileMove(
+				item.FileHash!,
 				newThumb);
 			if ( _appSettings.IsVerbose() )
 			{

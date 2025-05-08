@@ -130,8 +130,8 @@ public sealed class SyncMultiFile
 
 		if ( addParentFolder )
 		{
-			_logger.LogInformation("Add Parent Folder For: " +
-			                       string.Join(",", dbItems.Select(p => p.FilePath)));
+			_logger.LogDebug("[SyncMultiFile] Add Parent Folder For: " +
+			                 string.Join(",", dbItems.Select(p => p.FilePath)));
 
 			dbItems = await new AddParentList(_subPathStorage, _query).AddParentItems(dbItems);
 		}

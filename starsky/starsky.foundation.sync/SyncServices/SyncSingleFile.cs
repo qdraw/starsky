@@ -63,8 +63,8 @@ public sealed class SyncSingleFile
 		// route with database check
 		if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
 		{
-			_logger.LogInformation($"[SingleFile/db] info {subPath} " +
-			                       Synchronize.DateTimeDebug());
+			_logger.LogDebug($"[SingleFile/db] info {subPath} " +
+			                 Synchronize.DateTimeDebug());
 		}
 
 		// ignore all the 'wrong' files

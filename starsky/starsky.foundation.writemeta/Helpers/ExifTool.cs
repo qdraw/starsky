@@ -136,7 +136,6 @@ public sealed class ExifTool : IExifTool
 	/// <param name="isSuccess">isHashing success, otherwise skip this</param>
 	/// <param name="cancellationToken">cancel Token</param>
 	/// <returns></returns>
-	[SuppressMessage("ReSharper", "MustUseReturnValue")]
 	internal async Task<string> RenameThumbnailByStream(
 		string beforeFileHash, Stream stream, bool isSuccess,
 		CancellationToken cancellationToken = default)
@@ -163,7 +162,7 @@ public sealed class ExifTool : IExifTool
 			return newHashCode;
 		}
 
-		var service = new ThumbnailFileMoveAllSizes(_thumbnailStorage, _appSettings);
+		var service = new ThumbnailFileMoveAllSizes(_thumbnailStorage, _appSettings, _logger);
 		service.FileMove(beforeFileHash, newHashCode);
 
 		return newHashCode;
