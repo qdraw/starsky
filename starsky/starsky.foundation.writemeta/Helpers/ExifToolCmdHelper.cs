@@ -212,7 +212,6 @@ public sealed class ExifToolCmdHelper
 			}
 
 			var beforeFileHash = await BeforeFileHash(updateModel, path);
-			// var beforeFileHashExists = _thumbnailStorage.ExistFile(beforeFileHash);
 
 			var renameModel = await _exifTool.WriteTagsAndRenameThumbnailAsync(path,
 				beforeFileHash, command, cancellationToken);
@@ -220,23 +219,10 @@ public sealed class ExifToolCmdHelper
 			result.NewFileHashes.Add(renameModel.NewFileHash);
 			result.Rename.Add(renameModel);
 			await _thumbnailQuery.RenameAsync(beforeFileHash, renameModel.NewFileHash);
-
-			// var newFileHashExists = _thumbnailStorage.ExistFile(updateModel.FileHash!);
-			// result.NewFileHashesStatuses.Add(
-			// 	new ValueTuple<bool, bool, string?>(beforeFileHashExists,
-			// 		newFileHashExists, updateModel.FileHash));
 		}
-
-		// var exists = !string.IsNullOrEmpty(updateModel.FileHash) &&
-		//              _thumbnailStorage.ExistFile(updateModel.FileHash);
-		// if ( exists )
-		// {
-		// 	await _exifTool.WriteTagsThumbnailAsync(updateModel.FileHash!, command);
-		// }
 
 		return result;
 	}
-
 
 	private async Task<string> BeforeFileHash(FileIndexItem updateModel, string path)
 	{
