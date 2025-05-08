@@ -90,7 +90,8 @@ public sealed class SyncMultiFile
 			FileIndexItem.ExifStatus.DeletedAndSame);
 
 		var statusItems = _checkForStatusNotOkHelper
-			.CheckForStatusNotOk(dbItems.Select(p => p.FilePath).Cast<string>()).ToList();
+			.CheckForStatusNotOk(
+				dbItems.Select(p => p.FilePath).Cast<string>()).ToList();
 		UpdateCheckStatus(dbItems, statusItems);
 
 		AddSidecarExtensionData(dbItems, statusItems);
@@ -103,7 +104,8 @@ public sealed class SyncMultiFile
 			.ForEachAsync(
 				async dbItem => await new SizeFileHashIsTheSameHelper(_subPathStorage, _logger)
 					.SizeFileHashIsTheSame(dbItems
-							.Where(p => p.FileCollectionName == dbItem.FileCollectionName).ToList(),
+							.Where(p =>
+								p.FileCollectionName == dbItem.FileCollectionName).ToList(),
 						dbItem.FilePath!),
 				_appSettings.MaxDegreesOfParallelism);
 

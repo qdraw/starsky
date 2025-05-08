@@ -105,7 +105,7 @@ public sealed class ExifToolTest
 			await new ExifTool(fakeStorage, fakeStorage, appSettings, new FakeIWebLogger())
 				.RenameThumbnailByStream("OLDHASH", new MemoryStream(), true);
 
-		Assert.AreEqual(26, result.Length);
+		Assert.AreEqual(26, result.newHashCode.Length);
 	}
 
 	[TestMethod]
@@ -121,7 +121,7 @@ public sealed class ExifToolTest
 			await new ExifTool(fakeStorage, fakeStorage, appSettings, new FakeIWebLogger())
 				.RenameThumbnailByStream("OLDHASH", new MemoryStream(), false);
 
-		Assert.AreEqual(0, result.Length);
+		Assert.AreEqual(0, result.newHashCode.Length);
 	}
 
 	[TestMethod]

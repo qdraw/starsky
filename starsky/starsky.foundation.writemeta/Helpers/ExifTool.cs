@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
@@ -82,7 +83,8 @@ public sealed class ExifTool : IExifTool
 	{
 		var inputStream = _thumbnailStorage.ReadStream(fileHash);
 		var runner = new ExifToolStreamToStreamRunner(_appSettings, _logger);
-		var stream = await runner.RunProcessAsync(inputStream, command, fileHash);
+		var stream = await runner.RunProcessAsync(inputStream,
+			command, fileHash);
 		// Need to Close/Dispose for Windows and needs before WriteStreamAsync
 		await inputStream.DisposeAsync();
 		return await _thumbnailStorage.WriteStreamAsync(stream, fileHash);
@@ -108,7 +110,7 @@ public sealed class ExifTool : IExifTool
 		sourceStream.Close();
 		await sourceStream.DisposeAsync();
 
-		var newHashCode = await RenameThumbnailByStream(beforeFileHash, stream,
+		var (newHashCode,_) = await RenameThumbnailByStream(beforeFileHash, stream,
 			!beforeFileHash.Contains(FileHash.GeneratedPostFix), cancellationToken);
 
 		if ( stream.Length <= 15 &&
@@ -136,13 +138,14 @@ public sealed class ExifTool : IExifTool
 	/// <param name="isSuccess">isHashing success, otherwise skip this</param>
 	/// <param name="cancellationToken">cancel Token</param>
 	/// <returns></returns>
-	internal async Task<string> RenameThumbnailByStream(
+	internal async Task<(string newHashCode, List<(bool, ThumbnailSize)> result)> 
+		RenameThumbnailByStream(
 		string beforeFileHash, Stream stream, bool isSuccess,
 		CancellationToken cancellationToken = default)
 	{
 		if ( string.IsNullOrEmpty(beforeFileHash) || !isSuccess )
 		{
-			return string.Empty;
+			return (string.Empty, []);
 		}
 
 		var fileHashStream = await StreamGetFirstBytes.GetFirstBytesAsync(stream,
@@ -154,17 +157,17 @@ public sealed class ExifTool : IExifTool
 
 		if ( string.IsNullOrEmpty(newHashCode) )
 		{
-			return string.Empty;
+			return (string.Empty, []);
 		}
 
 		if ( beforeFileHash == newHashCode )
 		{
-			return newHashCode;
+			return (newHashCode, []);
 		}
 
 		var service = new ThumbnailFileMoveAllSizes(_thumbnailStorage, _appSettings, _logger);
-		service.FileMove(beforeFileHash, newHashCode);
+		var result = service.FileMove(beforeFileHash, newHashCode);
 
-		return newHashCode;
+		return (newHashCode, result);
 	}
 }
