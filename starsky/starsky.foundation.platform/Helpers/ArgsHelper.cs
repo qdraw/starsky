@@ -1045,17 +1045,26 @@ public sealed class ArgsHelper
 		return profile;
 	}
 
-	public static List<string> GetRuntimes(IReadOnlyList<string> args)
+	public static List<string> GetRuntimes(List<string> args)
 	{
 		// --runtime
 		var runtimes = new List<string>();
+		const string runtimeDash = "--runtime";
+		const string runtimeDashAndSpace = "--runtime ";
 
 		for ( var arg = 0; arg < args.Count; arg++ )
 		{
-			if ( !args[arg].Equals("--runtime",
+			if ( !args[arg].StartsWith(runtimeDash,
 				     StringComparison.CurrentCultureIgnoreCase) ||
 			     arg + 1 == args.Count )
 			{
+				if ( args[arg].Contains(runtimeDashAndSpace) ) // and space
+				{
+					var runtimeReplaced =
+						args[arg].Replace(runtimeDashAndSpace, string.Empty).Split(',');
+					runtimes.AddRange(runtimeReplaced);
+				}
+
 				continue;
 			}
 

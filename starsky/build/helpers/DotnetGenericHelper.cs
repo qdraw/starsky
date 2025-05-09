@@ -42,15 +42,15 @@ public static class DotnetGenericHelper
 			.SetProjectFile(solution));
 
 	/// <summary>
-	///     Download Exiftool and geo deps
+	///     Download Ffmpeg, Exiftool and geo deps
 	/// </summary>
 	/// <param name="configuration">is Release</param>
 	/// <param name="dependenciesDownloadCli">dependencies .csproj file</param>
 	/// <param name="noDependencies">skip this step if true (external deps)</param>
-	/// <param name="genericNetcoreFolder">genericNetcoreFolder</param>
+	/// <param name="runtime">can be generic or specific e.g. win-x64 or generic-netcore</param>
 	public static void DownloadDependencies(Configuration configuration,
 		string dependenciesDownloadCli, bool noDependencies,
-		string genericNetcoreFolder)
+		string runtime)
 	{
 		if ( noDependencies )
 		{
@@ -59,7 +59,7 @@ public static class DotnetGenericHelper
 		}
 
 		var genericDepsFullPath =
-			Path.Combine(BasePath(), genericNetcoreFolder, "dependencies");
+			Path.Combine(BasePath(), runtime, "dependencies");
 		Log.Information("genericDepsFullPath: {GenericDepsFullPath}", genericDepsFullPath);
 
 		try
@@ -73,8 +73,8 @@ public static class DotnetGenericHelper
 			DotNetRun(p => p
 				.SetConfiguration(configuration)
 				.EnableNoRestore()
-				.EnableNoBuild()
-				.SetApplicationArguments("--runtime linux-x64,win-x64")
+				// build it here
+				.SetApplicationArguments("--runtime " + runtime)
 				.SetProjectFile(Path.Combine(WorkingDirectory.GetSolutionParentFolder(),
 					dependenciesDownloadCli)));
 		}

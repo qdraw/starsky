@@ -212,19 +212,6 @@ public sealed class Build : NukeBuild
 				IsPublishDisabled());
 		});
 
-	[SuppressMessage("Usage",
-		"S1144:UnusedMember.Local", Justification = "Not production code.")]
-	// ReSharper disable once UnusedMember.Local
-	Target DownloadDependencies => p => p
-		.Executes(() =>
-		{
-			DotnetGenericHelper.DownloadDependencies(Configuration,
-				"starskygeocli/starskygeocli.csproj", NoDependencies,
-				GenericRuntimeName);
-			DotnetRuntimeSpecificHelper.CopyDependenciesFiles(NoDependencies,
-				GenericRuntimeName, GetRuntimesWithoutGeneric());
-		});
-
 	Target BuildNetCoreRuntimeSpecific => p => p
 		.DependsOn(SonarBuildTest)
 		.Executes(() =>
@@ -258,7 +245,9 @@ public sealed class Build : NukeBuild
 					runtime, IsReadyToRunEnabled());
 			}
 
-			DotnetRuntimeSpecificHelper.CopyDependenciesFiles(NoDependencies,
+			DotnetRuntimeSpecificHelper.CopyAndRunDependenciesFiles(Configuration,
+				DependenciesCliCsproj,
+				NoDependencies,
 				GenericRuntimeName, GetRuntimesWithoutGeneric());
 		});
 

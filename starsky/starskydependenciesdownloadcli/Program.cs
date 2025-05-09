@@ -44,7 +44,9 @@ public static class Program
 
 		await geoFileDownload.DownloadAsync();
 
-		var runtimes = ArgsHelper.GetRuntimes(args);
+		var runtimes = ArgsHelper.GetRuntimes([.. args]);
+		logger.LogInformation($"Runtimes: {string.Join(", ", runtimes)}");
+
 		await ffMpegDownload.DownloadFfMpeg(runtimes);
 		await exifToolDownload.DownloadExifTool(runtimes);
 	}

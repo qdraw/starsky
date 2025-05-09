@@ -19,6 +19,11 @@ public class FfMpegPreflightRunCheck(AppSettings appSettings, IWebLogger logger)
 
 	public async Task<bool> TryRun(string currentArchitecture)
 	{
+		if ( appSettings.FfmpegSkipPreflightCheck )
+		{
+			return false;
+		}
+		
 		var exePath = new FfmpegExePath(appSettings).GetExePath(currentArchitecture);
 
 		try
