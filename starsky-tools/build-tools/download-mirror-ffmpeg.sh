@@ -3,12 +3,13 @@
 # for: starsky-dependencies
 
 FFBINARIES_API="https://ffbinaries.com/api/v1/version/6.1"
-OSX_ARM64_URL="https://www.osxexperts.net/ffmpeg711arm.zip"
+OSX_ARM64_FILENAME="ffmpeg711arm.zip"
+OSX_ARM64_URL="https://www.osxexperts.net/"$OSX_ARM64_FILENAME
 OSX_ARM64_NAME="osx-arm64"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 BINARY_FOLDERNAME="mirror/ffmpeg"
 INDEX_FILE="index.json"
-CHECK_FILES=("ffmpeg-linux-64.zip" "ffmpeg-linux-arm-64.zip" "ffmpeg-linux-armhf-32.zip" "ffmpeg-macos-64.zip" "ffmpeg-win-64.zip" "ffmpeg71arm.zip")
+CHECK_FILES=("ffmpeg-linux-64.zip" "ffmpeg-linux-arm-64.zip" "ffmpeg-linux-armhf-32.zip" "ffmpeg-macos-64.zip" "ffmpeg-win-64.zip" $OSX_ARM64_FILENAME)
 
 LAST_CHAR_SCRIPT_DIR=${SCRIPT_DIR:length-1:1}
 [[ $LAST_CHAR_SCRIPT_DIR != "/" ]] && SCRIPT_DIR="$SCRIPT_DIR/"; :
