@@ -110,18 +110,18 @@ public class OffsetDataMetaExifPreviewThumbnail : IOffsetDataMetaExifPreviewThum
 
 		//return ( false, 0, false, 0 );
 
-		// Check if directory contains PreviewImage tag (0x2001)
-		var previewImageTag = directory.GetObject(0x2001);
-		if ( previewImageTag is byte[] previewImageData )
-		{
-			File.WriteAllBytes("/tmp/sony_preview_image.jpg", previewImageData);
-			Console.WriteLine(
-				"Sony preview image extracted successfully to 'sony_preview_image.jpg'.");
-		}
-		else
-		{
-			Console.WriteLine("Preview image tag not found in Sony MakerNotes.");
-		}
+		// // Check if directory contains PreviewImage tag (0x2001)
+		// var previewImageTag = directory.GetObject(0x2001);
+		// if ( previewImageTag is byte[] previewImageData )
+		// {
+		// 	File.WriteAllBytes("/tmp/sony_preview_image.jpg", previewImageData);
+		// 	Console.WriteLine(
+		// 		"Sony preview image extracted successfully to 'sony_preview_image.jpg'.");
+		// }
+		// else
+		// {
+		// 	Console.WriteLine("Preview image tag not found in Sony MakerNotes.");
+		// }
 
 		using ( var image = Image.Load(_iStorage.ReadStream(subPath)) )
 		{
@@ -154,6 +154,8 @@ public class OffsetDataMetaExifPreviewThumbnail : IOffsetDataMetaExifPreviewThum
 		var test = new PreviewImageExtractor().ExtractTagData(
 			"/Users/dion/data/git/starsky/starsky/starskytest/FakeCreateAn/CreateAnImageLargePreview/20241112_110839_DSC02741.jpg",
 			0x2001);
+
+		Console.WriteLine(test);
 
 		//var t = PreviewImageExtractor.ExtractPreviewImage(_iStorage.ReadStream(subPath));
 
