@@ -108,7 +108,7 @@ public class OffsetDataMetaExifPreviewThumbnail : IOffsetDataMetaExifPreviewThum
 		// SonyMakerNotesParser.ParseSonyMakerNotes(
 		// 	"/Users/dion/data/fotobieb/2024/11/2024_11_11_d/20241111_181721_DSC00782.jpg");
 
-		return ( false, 0, false, 0 );
+		//return ( false, 0, false, 0 );
 
 		// Check if directory contains PreviewImage tag (0x2001)
 		var previewImageTag = directory.GetObject(0x2001);
