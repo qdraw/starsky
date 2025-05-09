@@ -34,8 +34,9 @@ public partial class Query : IQuery
 			return FormatOk(await GetObjectsByFilePathCollectionQuery(_context, filePathList)
 				.ToListAsync());
 		}
-		catch ( ObjectDisposedException )
+		catch ( InvalidOperationException )
 		{
+			// includes ObjectDisposedException
 			return FormatOk(await GetObjectsByFilePathCollectionQuery(
 				new InjectServiceScope(_scopeFactory).Context(), filePathList).ToListAsync());
 		}
