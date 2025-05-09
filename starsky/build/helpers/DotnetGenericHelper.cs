@@ -16,7 +16,7 @@ namespace helpers;
 public static class DotnetGenericHelper
 {
 	/// <summary>
-	/// dotnet restore for generic
+	///     dotnet restore for generic
 	/// </summary>
 	/// <param name="solution">solution file .sln</param>
 	public static void RestoreNetCoreCommand(Solution solution)
@@ -29,30 +29,28 @@ public static class DotnetGenericHelper
 	}
 
 	/// <summary>
-	/// dotnet build for generic helper
+	///     dotnet build for generic helper
 	/// </summary>
 	/// <param name="solution">the solution</param>
 	/// <param name="configuration">Debug or Release</param>
 	public static void BuildNetCoreGenericCommand(Solution solution,
-		Configuration configuration)
-	{
+		Configuration configuration) =>
 		DotNetBuild(p => p
 			.SetConfiguration(configuration)
 			.EnableNoRestore()
 			.EnableNoLogo()
 			.SetProjectFile(solution));
-	}
 
 	/// <summary>
-	/// Download Exiftool and geo deps
+	///     Download Ffmpeg, Exiftool and geo deps
 	/// </summary>
 	/// <param name="configuration">is Release</param>
-	/// <param name="geoCliCsproj">geo.csproj file</param>
+	/// <param name="dependenciesDownloadCli">dependencies .csproj file</param>
 	/// <param name="noDependencies">skip this step if true (external deps)</param>
-	/// <param name="genericNetcoreFolder">genericNetcoreFolder</param>
+	/// <param name="runtime">can be generic or specific e.g. win-x64 or generic-netcore</param>
 	public static void DownloadDependencies(Configuration configuration,
-		string geoCliCsproj, bool noDependencies,
-		string genericNetcoreFolder)
+		string dependenciesDownloadCli, bool noDependencies,
+		string runtime)
 	{
 		if ( noDependencies )
 		{
@@ -61,24 +59,26 @@ public static class DotnetGenericHelper
 		}
 
 		var genericDepsFullPath =
-			Path.Combine(BasePath(), genericNetcoreFolder, "dependencies");
+			Path.Combine(BasePath(), runtime, "dependencies");
 		Log.Information("genericDepsFullPath: {GenericDepsFullPath}", genericDepsFullPath);
 
 		try
 		{
 			Environment.SetEnvironmentVariable("app__DependenciesFolder", genericDepsFullPath);
+			Environment.SetEnvironmentVariable("app__FfmpegSkipPreflightCheck", "true");
+
 			Log.Information("Next: DownloadDependencies");
 			Log.Information("Run: {Path}", Path.Combine(
-				WorkingDirectory.GetSolutionParentFolder(), geoCliCsproj)
+				WorkingDirectory.GetSolutionParentFolder(), dependenciesDownloadCli)
 			);
 
 			DotNetRun(p => p
 				.SetConfiguration(configuration)
 				.EnableNoRestore()
-				.EnableNoBuild()
-				.SetApplicationArguments("--runtime linux-x64,win-x64")
+				// build it here
+				.SetApplicationArguments("--runtime " + runtime)
 				.SetProjectFile(Path.Combine(WorkingDirectory.GetSolutionParentFolder(),
-					geoCliCsproj)));
+					dependenciesDownloadCli)));
 		}
 		catch ( Exception exception )
 		{
@@ -88,6 +88,7 @@ public static class DotnetGenericHelper
 		}
 
 		Environment.SetEnvironmentVariable("app__DependenciesFolder", string.Empty);
+		Environment.SetEnvironmentVariable("app__FfmpegSkipPreflightCheck", string.Empty);
 
 		Log.Information("   genericDepsFullPath: {GenericDepsFullPath}", genericDepsFullPath);
 		Log.Information("DownloadDependencies done");
@@ -123,9 +124,7 @@ public static class DotnetGenericHelper
 		}
 	}
 
-	static string BasePath()
-	{
-		return Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)
+	static string BasePath() =>
+		Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)
 			?.Parent?.Parent?.Parent?.FullName!;
-	}
 }

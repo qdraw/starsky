@@ -9,6 +9,7 @@ namespace starskytest.starskythumbnailcli;
 [TestClass]
 public sealed class ProgramTest
 {
+	private static string? _ffmpegSkipDownloadOnStartup;
 	private static string? _prePort;
 	private static string? _preAspNetUrls;
 	private static string? _diskWatcherSetting;
@@ -35,7 +36,9 @@ public sealed class ProgramTest
 			Environment.GetEnvironmentVariable("app__GeoFilesSkipDownloadOnStartup");
 		_exiftoolSkipDownloadOnStartup =
 			Environment.GetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup");
-
+		_ffmpegSkipDownloadOnStartup =
+			Environment.GetEnvironmentVariable("app__ffmpegSkipDownloadOnStartup");
+		
 		// also see:
 		// starsky/starskytest/root/ProgramTest.cs
 		// starskytest/starskythumbnailcli/ProgramTest.cs
@@ -44,6 +47,8 @@ public sealed class ProgramTest
 		Environment.SetEnvironmentVariable("app__GeoFilesSkipDownloadOnStartup", "true");
 		Environment.SetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup", "true");
 		Environment.SetEnvironmentVariable("app__EnablePackageTelemetry", "false");
+		Environment.SetEnvironmentVariable("app__FfmpegSkipDownloadOnStartup", "false");
+
 	}
 
 	[TestMethod]
@@ -67,5 +72,7 @@ public sealed class ProgramTest
 			_geoFilesSkipDownloadOnStartup);
 		Environment.SetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup",
 			_exiftoolSkipDownloadOnStartup);
+		Environment.SetEnvironmentVariable("app__FfmpegSkipDownloadOnStartup",
+			_ffmpegSkipDownloadOnStartup);
 	}
 }

@@ -794,6 +794,11 @@ public sealed class AppSettings
 	public bool? FfmpegSkipDownloadOnStartup { get; set; } = false;
 
 	/// <summary>
+	///     Skip a preflight check for ffmpeg
+	/// </summary>
+	public bool FfmpegSkipPreflightCheck { get; set; } = false;
+
+	/// <summary>
 	///     Exe path to Ffmpeg
 	/// </summary>
 	public string? FfmpegPath { get; set; }

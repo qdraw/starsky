@@ -2,27 +2,28 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starskysynchronizecli;
-using starskytest.FakeCreateAn;
+using starskyDependenciesDownloadCli;
 
-namespace starskytest.starskySynchronizeCli;
+namespace starskytest.starskyDependenciesDownloadCli;
 
 [TestClass]
-public sealed class SynchronizeCliTest
+public sealed class StarskyDependenciesDownloadCliTest
 {
+	private static string? _ffmpegSkipDownloadOnStartup;
 	private static string? _prePort;
 	private static string? _preAspNetUrls;
 	private static string? _diskWatcherSetting;
 	private static string? _syncOnStartup;
 	private static string? _thumbnailGenerationIntervalInMinutes;
 	private static string? _geoFilesSkipDownloadOnStartup;
-	private static string? _ffmpegSkipDownloadOnStartup;
+
 	private static string? _exiftoolSkipDownloadOnStartup;
 	// also see:
 	// starsky/starskytest/root/ProgramTest.cs
-	// starsky/starskytest/starskyGeoCli/starskyGeoCliTest.cs
+	// starskytest/starskythumbnailcli/ProgramTest.cs
+	// starsky/starskytest/starskySynchronizeCli/ProgramTest.cs
 
-	public SynchronizeCliTest()
+	public StarskyDependenciesDownloadCliTest()
 	{
 		_prePort = Environment.GetEnvironmentVariable("PORT");
 		_preAspNetUrls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS");
@@ -37,12 +38,16 @@ public sealed class SynchronizeCliTest
 			Environment.GetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup");
 		_ffmpegSkipDownloadOnStartup =
 			Environment.GetEnvironmentVariable("app__ffmpegSkipDownloadOnStartup");
-		
+
 		// also see:
 		// starsky/starskytest/root/ProgramTest.cs
-		// starsky/starskytest/starskyGeoCli/starskyGeoCliTest.cs
 		// starskytest/starskythumbnailcli/ProgramTest.cs
+		// starsky/starskytest/starskySynchronizeCli/ProgramTest.cs
 
+		Environment.SetEnvironmentVariable("ASPNETCORE_URLS", "http://*:9514");
+		Environment.SetEnvironmentVariable("app__useDiskWatcher", "false");
+		Environment.SetEnvironmentVariable("app__SyncOnStartup", "false");
+		Environment.SetEnvironmentVariable("app__thumbnailGenerationIntervalInMinutes", "0");
 		Environment.SetEnvironmentVariable("app__GeoFilesSkipDownloadOnStartup", "true");
 		Environment.SetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup", "true");
 		Environment.SetEnvironmentVariable("app__EnablePackageTelemetry", "false");
@@ -50,38 +55,12 @@ public sealed class SynchronizeCliTest
 	}
 
 	[TestMethod]
-	[Timeout(5000)]
-	public async Task SynchronizeCliHelpVerbose()
+	public async Task StarskyGeoCli_HelpVerbose()
 	{
 		var args = new List<string> { "-h", "-v" }.ToArray();
 		await Program.Main(args);
 		Assert.IsNotNull(args);
 	}
-
-	[TestMethod]
-	[Timeout(5000)]
-	public async Task SynchronizeCliHelpTest()
-	{
-		var newImage = new CreateAnImage();
-		var args = new List<string>
-		{
-			"-h",
-			"-v",
-			"-c",
-			"test",
-			"-d",
-			"InMemoryDatabase",
-			"-b",
-			newImage.BasePath,
-			"--thumbnailtempfolder",
-			newImage.BasePath,
-			"-e",
-			newImage.FullFilePath
-		}.ToArray();
-		await Program.Main(args);
-		Assert.IsNotNull(args);
-	}
-
 
 	[ClassCleanup(ClassCleanupBehavior.EndOfClass)]
 	public static void CleanEnvsAfterwards()

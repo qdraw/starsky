@@ -721,4 +721,26 @@ public sealed class ArgsHelperTest
 		var value = ArgsHelper.GetProfile(args);
 		Assert.AreEqual(string.Empty, value);
 	}
+
+	[DataTestMethod]
+	[DataRow("--runtime osx-arm64,osx-x64", "osx-arm64,osx-x64")]
+	[DataRow("--runtime win-x64", "win-x64")]
+	[DataRow("--runtime win-x64-linux-x64", "win-x64-linux-x64")]
+	[DataRow("--other value", "")]
+	public void GetRuntimes_ShouldReturnExpectedRuntimes(string args, string expected)
+	{
+		// Act
+		var result = ArgsHelper.GetRuntimes([.. args.Split(' ')]);
+
+		// Assert
+		Assert.AreEqual(expected, string.Join(",", result));
+	}
+
+	[TestMethod]
+	public void GetRuntimes_QuotedInFirstArgResults()
+	{
+		const string expected = "osx-arm64,osx-x64";
+		var result = ArgsHelper.GetRuntimes(["--runtime osx-arm64,osx-x64"]);
+		Assert.AreEqual(expected, string.Join(",", result));
+	}
 }
