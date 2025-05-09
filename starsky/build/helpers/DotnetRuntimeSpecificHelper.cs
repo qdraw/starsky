@@ -98,21 +98,21 @@ public static class DotnetRuntimeSpecificHelper
 				AbsolutePath.Create(runtimeTempFolder),
 				ExistsPolicy.FileOverwrite, createDirectories: true);
 
-			// For Windows, it's not needed to copy unix dependencies 
-			if ( runtime.StartsWith("win") &&
-			     Directory.Exists(Path.Combine(runtimeTempFolder, "exiftool-unix")) )
-			{
-				Directory.Delete(Path.Combine(runtimeTempFolder, "exiftool-unix"), true);
-				Log.Information("removed exiftool-unix for windows");
-			}
-
-			// ReSharper disable once InvertIf
-			if ( runtime.StartsWith("win") &&
-			     File.Exists(Path.Combine(runtimeTempFolder, "exiftool.tar.gz")) )
-			{
-				File.Delete(Path.Combine(runtimeTempFolder, "exiftool.tar.gz"));
-				Log.Information("removed exiftool.tar.gz for windows");
-			}
+			// // For Windows, it's not needed to copy unix dependencies 
+			// if ( runtime.StartsWith("win") &&
+			//      Directory.Exists(Path.Combine(runtimeTempFolder, "exiftool-unix")) )
+			// {
+			// 	Directory.Delete(Path.Combine(runtimeTempFolder, "exiftool-unix"), true);
+			// 	Log.Information("removed exiftool-unix for windows");
+			// }
+			//
+			// // ReSharper disable once InvertIf
+			// if ( runtime.StartsWith("win") &&
+			//      File.Exists(Path.Combine(runtimeTempFolder, "exiftool.tar.gz")) )
+			// {
+			// 	File.Delete(Path.Combine(runtimeTempFolder, "exiftool.tar.gz"));
+			// 	Log.Information("removed exiftool.tar.gz for windows");
+			// }
 		}
 	}
 

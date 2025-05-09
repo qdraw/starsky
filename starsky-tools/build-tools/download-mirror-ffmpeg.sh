@@ -1,6 +1,9 @@
 #!/bin/bash
+
+# for: starsky-dependencies
+
 FFBINARIES_API="https://ffbinaries.com/api/v1/version/6.1"
-OSX_ARM64_URL="https://www.osxexperts.net/ffmpeg71arm.zip"
+OSX_ARM64_URL="https://www.osxexperts.net/ffmpeg711arm.zip"
 OSX_ARM64_NAME="osx-arm64"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 BINARY_FOLDERNAME="mirror/ffmpeg"
@@ -33,7 +36,7 @@ BINARY_URLS=$(echo "$FFBINARIES_JSON" | grep -o '"ffmpeg":"[^"]*"' | sed 's/"ffm
 
 MAP_ARCHITECTURE_NAME () {
   if [ "$1" == "windows-64" ]; then
-    echo "windows-x64"
+    echo "win-x64"
   elif [ "$1" == "linux-64" ]; then
     echo "linux-x64"
   elif [ "$1" == "linux-armhf" ]; then

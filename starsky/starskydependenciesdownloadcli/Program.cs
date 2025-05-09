@@ -42,11 +42,10 @@ public static class Program
 		await RunMigrations.Run(serviceProvider.GetRequiredService<ApplicationDbContext>(),
 			logger, appSettings);
 
-		await exifToolDownload.DownloadExifTool(appSettings.IsWindows);
 		await geoFileDownload.DownloadAsync();
 
 		var runtimes = ArgsHelper.GetRuntimes(args);
-		if ( runtimes.Count > 0 ) runtimes = 
-		await ffMpegDownload.DownloadFfMpeg();
+		await ffMpegDownload.DownloadFfMpeg(runtimes);
+		await exifToolDownload.DownloadExifTool(runtimes);
 	}
 }

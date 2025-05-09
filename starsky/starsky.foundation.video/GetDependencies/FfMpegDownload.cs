@@ -38,6 +38,24 @@ public class FfMpegDownload : IFfMpegDownload
 		_preflightRunCheck = preflightRunCheck;
 	}
 
+	public async Task<List<FfmpegDownloadStatus>> DownloadFfMpeg(List<string> architectures)
+	{
+		if ( architectures.Count == 0 )
+		{
+			architectures.Add(CurrentArchitecture.GetCurrentRuntimeIdentifier());
+		}
+
+		var result = new List<FfmpegDownloadStatus>();
+		foreach ( var architecture in architectures.Where(p => p !=
+		                                                       DotnetRuntimeNames
+			                                                       .GenericRuntimeName) )
+		{
+			result.Add(await DownloadFfMpeg(architecture));
+		}
+
+		return result;
+	}
+
 	public async Task<FfmpegDownloadStatus> DownloadFfMpeg(string? architecture = null)
 	{
 		if ( _appSettings.FfmpegSkipDownloadOnStartup == true
@@ -103,6 +121,7 @@ public class FfMpegDownload : IFfMpegDownload
 		return path;
 	}
 
+
 	private static KeyValuePair<BinaryIndex?, List<Uri>> GetCurrentArchitectureIndexUrls(
 		FfmpegBinariesContainer container,
 		string currentArchitecture)
@@ -112,7 +131,6 @@ public class FfMpegDownload : IFfMpegDownload
 
 		return new KeyValuePair<BinaryIndex?, List<Uri>>(sortedData, container.BaseUrls);
 	}
-
 
 	private void CreateDirectoryDependenciesFolderIfNotExists(string currentArchitecture)
 	{

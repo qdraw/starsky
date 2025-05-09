@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Medallion.Shell;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Architecture;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.ArchiveFormats;
@@ -111,6 +112,25 @@ public sealed class ExifToolDownload : IExifToolDownload
 		}
 
 		return await RunChmodOnExifToolUnixExe();
+	}
+
+	public async Task<List<bool>> DownloadExifTool(List<string> architectures)
+	{
+		if ( architectures.Count == 0 )
+		{
+			architectures.Add(CurrentArchitecture.GetCurrentRuntimeIdentifier());
+		}
+
+		var result = new List<bool>();
+		foreach ( var architecture in architectures.Where(p => p !=
+		                                                       DotnetRuntimeNames
+			                                                       .GenericRuntimeName) )
+		{
+			var isWindows = DotnetRuntimeNames.IsWindows(architecture);
+			await DownloadExifTool(isWindows);
+		}
+
+		return result;
 	}
 
 	private void CreateDirectoryDependenciesFolderIfNotExists()
