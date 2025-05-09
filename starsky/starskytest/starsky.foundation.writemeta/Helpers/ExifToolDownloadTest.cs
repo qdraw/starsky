@@ -324,9 +324,11 @@ public sealed class ExifToolDownloadTest
 			_serviceScopeFactory, new FakeIWebLogger());
 
 		var result = await new ExifToolDownload(httpClientHelper, _appSettings,
-			new FakeIWebLogger()).DownloadExifTool(["win-x64"]);
+			new FakeIWebLogger()).DownloadExifTool(["win-x64", "linux-x64"]);
 
+		Assert.AreEqual(2, result.Count);
 		Assert.IsFalse(result[0]);
+		Assert.IsFalse(result[1]);
 	}
 
 	[TestMethod]
