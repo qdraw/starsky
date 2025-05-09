@@ -114,10 +114,10 @@ namespace starskytest.Helpers
 		[TestMethod]
 		public void FileIndexCompareHelperTest_Rotation_Compare()
 		{
-			var source = new FileIndexItem { Orientation = FileIndexItem.Rotation.Horizontal };
-			var update = new FileIndexItem { Orientation = FileIndexItem.Rotation.Rotate90Cw };
+			var source = new FileIndexItem { Orientation = ImageRotation.Rotation.Horizontal };
+			var update = new FileIndexItem { Orientation = ImageRotation.Rotation.Rotate90Cw };
 			FileIndexCompareHelper.Compare(source, update);
-			Assert.AreEqual(FileIndexItem.Rotation.Rotate90Cw, source.Orientation);
+			Assert.AreEqual(ImageRotation.Rotation.Rotate90Cw, source.Orientation);
 		}
 
 		[TestMethod]
@@ -268,8 +268,8 @@ namespace starskytest.Helpers
 			var list = new List<string>();
 			FileIndexCompareHelper.CompareRotation("t",
 				new FileIndexItem(),
-				FileIndexItem.Rotation.Horizontal,
-				FileIndexItem.Rotation.Horizontal, list);
+				ImageRotation.Rotation.Horizontal,
+				ImageRotation.Rotation.Horizontal, list);
 			Assert.IsNotNull(list);
 		}
 
@@ -408,7 +408,7 @@ namespace starskytest.Helpers
 			// Arrange
 			var sourceIndexItem = new FileIndexItem();
 			var updateObject = new FileIndexItem();
-			sourceIndexItem.Orientation = FileIndexItem.Rotation.DoNotChange;
+			sourceIndexItem.Orientation = ImageRotation.Rotation.DoNotChange;
 
 			// Act
 			var result = FileIndexCompareHelper.Compare(sourceIndexItem, updateObject);

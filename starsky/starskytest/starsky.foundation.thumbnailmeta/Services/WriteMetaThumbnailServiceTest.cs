@@ -25,7 +25,7 @@ public sealed class WriteMetaThumbnailServiceTest
 		var service = new WriteMetaThumbnailService(new FakeSelectorStorage(storage),
 			new FakeIWebLogger(), new AppSettings());
 		var result = await service.WriteAndCropFile("/test.jpg", new OffsetModel(), 0, 0,
-			FileIndexItem.Rotation.Horizontal);
+			ImageRotation.Rotation.Horizontal);
 		Assert.IsFalse(result);
 	}
 
@@ -38,7 +38,7 @@ public sealed class WriteMetaThumbnailServiceTest
 			new FakeIWebLogger(), new AppSettings());
 		var result = await service.WriteAndCropFile("/test.jpg",
 			new OffsetModel { Data = new byte[10] }, 0, 0,
-			FileIndexItem.Rotation.Horizontal);
+			ImageRotation.Rotation.Horizontal);
 		Assert.IsFalse(result);
 	}
 
@@ -55,51 +55,11 @@ public sealed class WriteMetaThumbnailServiceTest
 				Data = CreateAnImage.Bytes.ToArray(),
 				Index = 0
 			}, 6, 6,
-			FileIndexItem.Rotation.Horizontal);
+			ImageRotation.Rotation.Horizontal);
 
 		Assert.IsTrue(result);
 		Assert.IsTrue(
 			storage.ExistFile(ThumbnailNameHelper.Combine("test",
 				ThumbnailSize.TinyMeta, new AppSettings().ThumbnailImageFormat)));
-	}
-
-	[TestMethod]
-	public void RotateEnumToDegrees_Horizontal()
-	{
-		var result =
-			WriteMetaThumbnailService.RotateEnumToDegrees(FileIndexItem.Rotation.Horizontal);
-		Assert.AreEqual(0, result, 0.00001);
-	}
-
-	[TestMethod]
-	public void RotateEnumToDegrees_Default()
-	{
-		var result =
-			WriteMetaThumbnailService.RotateEnumToDegrees(FileIndexItem.Rotation.DoNotChange);
-		Assert.AreEqual(0, result, 0.00001);
-	}
-
-	[TestMethod]
-	public void RotateEnumToDegrees_180()
-	{
-		var result =
-			WriteMetaThumbnailService.RotateEnumToDegrees(FileIndexItem.Rotation.Rotate180);
-		Assert.AreEqual(180, result, 0.00001);
-	}
-
-	[TestMethod]
-	public void RotateEnumToDegrees_90()
-	{
-		var result =
-			WriteMetaThumbnailService.RotateEnumToDegrees(FileIndexItem.Rotation.Rotate90Cw);
-		Assert.AreEqual(90, result, 0.00001);
-	}
-
-	[TestMethod]
-	public void RotateEnumToDegrees_270()
-	{
-		var result =
-			WriteMetaThumbnailService.RotateEnumToDegrees(FileIndexItem.Rotation.Rotate270Cw);
-		Assert.AreEqual(270, result, 0.00001);
 	}
 }

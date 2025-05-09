@@ -58,7 +58,7 @@ public sealed class ReadMetaExif
 			ImageFormat = ExtensionRolesHelper.ImageFormat.unknown,
 			Status = FileIndexItem.ExifStatus.OperationNotSupported,
 			Tags = string.Empty,
-			Orientation = FileIndexItem.Rotation.Horizontal
+			Orientation = ImageRotation.Rotation.Horizontal
 		};
 
 		using ( var stream = _iStorage.ReadStream(subPath) )
@@ -171,7 +171,7 @@ public sealed class ReadMetaExif
 	{
 		// Orientation of image
 		var orientation = GetOrientationFromExifItem(allExifItems);
-		if ( orientation != FileIndexItem.Rotation.DoNotChange )
+		if ( orientation != ImageRotation.Rotation.DoNotChange )
 		{
 			item.Orientation = orientation;
 		}
@@ -404,7 +404,7 @@ public sealed class ReadMetaExif
 		return ExtensionRolesHelper.ImageFormat.unknown;
 	}
 
-	public static FileIndexItem.Rotation GetOrientationFromExifItem(
+	public static ImageRotation.Rotation GetOrientationFromExifItem(
 		IEnumerable<Directory> allExifItems)
 	{
 		var exifItem = allExifItems.OfType<ExifIfd0Directory>().FirstOrDefault();
@@ -414,21 +414,21 @@ public sealed class ReadMetaExif
 			?.Description;
 		if ( caption == null )
 		{
-			return FileIndexItem.Rotation.DoNotChange;
+			return ImageRotation.Rotation.DoNotChange;
 		}
 
 		switch ( caption )
 		{
 			case "Top, left side (Horizontal / normal)":
-				return FileIndexItem.Rotation.Horizontal;
+				return ImageRotation.Rotation.Horizontal;
 			case "Right side, top (Rotate 90 CW)":
-				return FileIndexItem.Rotation.Rotate90Cw;
+				return ImageRotation.Rotation.Rotate90Cw;
 			case "Bottom, right side (Rotate 180)":
-				return FileIndexItem.Rotation.Rotate180;
+				return ImageRotation.Rotation.Rotate180;
 			case "Left side, bottom (Rotate 270 CW)":
-				return FileIndexItem.Rotation.Rotate270Cw;
+				return ImageRotation.Rotation.Rotate270Cw;
 			default:
-				return FileIndexItem.Rotation.Horizontal;
+				return ImageRotation.Rotation.Horizontal;
 		}
 	}
 
