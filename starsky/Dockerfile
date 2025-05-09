@@ -58,7 +58,7 @@ RUN \
     mkdir -p "/app/temp" && \
     touch /app/temp/.gitkeep && \
     dotnet run \
-        --project "/app/starskygeocli/starskygeocli.csproj" \
+        --project "/app/starskydependenciesdownloadcli/starskydependenciesdownloadcli.csproj" \
         --configuration Release \
         -- \
         --connection "Data Source=/app/data.db" \

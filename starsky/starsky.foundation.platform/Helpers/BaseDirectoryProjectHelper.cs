@@ -7,7 +7,7 @@ public static class BaseDirectoryProjectHelper
 	private const string Starsky = "starsky";
 
 	/// <summary>
-	/// Root of the project with replaced value
+	///     Root of the project with replaced value
 	/// </summary>
 	public static string BaseDirectoryProject => AppDomain.CurrentDomain
 		.BaseDirectory
@@ -23,5 +23,6 @@ public static class BaseDirectoryProjectHelper
 		.Replace("starskygeocli", Starsky)
 		.Replace("starskytest", Starsky)
 		.Replace("starskydiskwatcherworkerservice", Starsky)
-		.Replace("starskydemoseedcli", Starsky);
+		.Replace("starskydemoseedcli", Starsky)
+		.Replace("starskydependenciesdownloadcli", Starsky);
 }

@@ -100,8 +100,9 @@ public class GeoBackgroundTask : IGeoBackgroundTask
 				continue;
 			}
 
-			new ThumbnailFileMoveAllSizes(_thumbnailStorage, _appSettings).FileMove(item.FileHash!,
-				newThumb);
+			new ThumbnailFileMoveAllSizes(_thumbnailStorage, _appSettings, _logger).FileMove(
+				item.FileHash!,
+				newThumb, item.FilePath);
 			if ( _appSettings.IsVerbose() )
 			{
 				_logger.LogInformation("[/api/geo/sync] thumb rename + `" + item.FileHash + "`" +

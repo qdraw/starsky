@@ -20,17 +20,17 @@ public static class CurrentArchitecture
 		var os = string.Empty;
 		if ( isOsPlatformDelegate(OSPlatform.Windows) )
 		{
-			os = "win";
+			os = DotnetRuntimeNames.OsWindowsPrefix;
 		}
 
 		if ( isOsPlatformDelegate(OSPlatform.Linux) || isOsPlatformDelegate(OSPlatform.FreeBSD) )
 		{
-			os = "linux";
+			os = DotnetRuntimeNames.OsLinuxPrefix;
 		}
 
 		if ( isOsPlatformDelegate(OSPlatform.OSX) )
 		{
-			os = "osx";
+			os = DotnetRuntimeNames.OsMacOsPrefix;
 		}
 
 		var architecture = architectureDelegate().ToString().ToLowerInvariant();

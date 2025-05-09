@@ -23,7 +23,6 @@ public class CheckSha256Helper(IStorage hostFileSystemStorage)
 		var byteHash = hashAlgorithm.ComputeHash(buffer);
 		var hash = BitConverter.ToString(byteHash).Replace("-", string.Empty).ToLowerInvariant();
 
-		Console.WriteLine(hash);
 		return checkSumOptions.AsEnumerable()
 			.Any(p => p.Equals(hash, StringComparison.InvariantCultureIgnoreCase));
 	}

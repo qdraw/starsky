@@ -15,6 +15,7 @@ public sealed class StarskyImporterCliProgramTest
 	private static string? _syncOnStartup;
 	private static string? _thumbnailGenerationIntervalInMinutes;
 	private static string? _geoFilesSkipDownloadOnStartup;
+	private static string? _ffmpegSkipDownloadOnStartup;
 
 	private static string? _exiftoolSkipDownloadOnStartup;
 	// also see:
@@ -35,7 +36,9 @@ public sealed class StarskyImporterCliProgramTest
 			Environment.GetEnvironmentVariable("app__GeoFilesSkipDownloadOnStartup");
 		_exiftoolSkipDownloadOnStartup =
 			Environment.GetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup");
-
+		_ffmpegSkipDownloadOnStartup =
+			Environment.GetEnvironmentVariable("app__ffmpegSkipDownloadOnStartup");
+		
 		// also see:
 		// starsky/starskytest/root/ProgramTest.cs
 		// starskytest/starskythumbnailcli/ProgramTest.cs
@@ -44,6 +47,7 @@ public sealed class StarskyImporterCliProgramTest
 		Environment.SetEnvironmentVariable("app__GeoFilesSkipDownloadOnStartup", "true");
 		Environment.SetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup", "true");
 		Environment.SetEnvironmentVariable("app__EnablePackageTelemetry", "false");
+		Environment.SetEnvironmentVariable("app__FfmpegSkipDownloadOnStartup", "false");
 	}
 
 
@@ -69,5 +73,7 @@ public sealed class StarskyImporterCliProgramTest
 			_geoFilesSkipDownloadOnStartup);
 		Environment.SetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup",
 			_exiftoolSkipDownloadOnStartup);
+		Environment.SetEnvironmentVariable("app__FfmpegSkipDownloadOnStartup",
+			_ffmpegSkipDownloadOnStartup);
 	}
 }

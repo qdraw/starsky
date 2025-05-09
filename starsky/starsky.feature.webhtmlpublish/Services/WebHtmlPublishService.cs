@@ -400,7 +400,7 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 	/// <summary>
 	///     Copy the metaData over the output path
 	/// </summary>
-	/// <param name="item">all the meta data</param>
+	/// <param name="item">all the metadata</param>
 	/// <param name="outputPath">absolute path on host disk</param>
 	private async Task MetaData(FileIndexItem item, string outputPath)
 	{

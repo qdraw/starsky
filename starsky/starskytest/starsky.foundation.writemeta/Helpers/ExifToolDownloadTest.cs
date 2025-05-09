@@ -19,6 +19,9 @@ using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.writemeta.Helpers;
 
+/// <summary>
+///     DownloadExifToolTest
+/// </summary>
 [TestClass]
 public sealed class ExifToolDownloadTest
 {
@@ -97,7 +100,7 @@ public sealed class ExifToolDownloadTest
 	[TestMethod]
 	public async Task DownloadCheckSums_BaseChecksumDoesExist()
 	{
-		var checkSumUrl = "https://exiftool.org/checksums.txt";
+		const string checkSumUrl = "https://exiftool.org/checksums.txt";
 		var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 		{
 			{ checkSumUrl, new StringContent(ExampleCheckSum) }
@@ -303,7 +306,7 @@ public sealed class ExifToolDownloadTest
 	}
 
 	[TestMethod]
-	public async Task DownloadExifTool_Windows()
+	public async Task DownloadExifTool_Windows_ChecksumNotFound()
 	{
 		var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(),
 			_serviceScopeFactory, new FakeIWebLogger());
@@ -312,6 +315,33 @@ public sealed class ExifToolDownloadTest
 			new FakeIWebLogger()).DownloadExifTool(true);
 
 		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public async Task DownloadExifTool_multiArg_Windows_ChecksumNotFound()
+	{
+		var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(),
+			_serviceScopeFactory, new FakeIWebLogger());
+
+		var result = await new ExifToolDownload(httpClientHelper, _appSettings,
+			new FakeIWebLogger()).DownloadExifTool(["win-x64", "linux-x64"]);
+
+		Assert.AreEqual(2, result.Count);
+		Assert.IsFalse(result[0]);
+		Assert.IsFalse(result[1]);
+	}
+
+	[TestMethod]
+	public async Task DownloadExifTool_multiArg_EmptyArray_ChecksumNotFound()
+	{
+		var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(),
+			_serviceScopeFactory, new FakeIWebLogger());
+
+		var result = await new ExifToolDownload(httpClientHelper, _appSettings,
+			new FakeIWebLogger()).DownloadExifTool([]);
+
+		Assert.AreEqual(1, result.Count);
+		Assert.IsFalse(result[0]);
 	}
 
 	[TestMethod]

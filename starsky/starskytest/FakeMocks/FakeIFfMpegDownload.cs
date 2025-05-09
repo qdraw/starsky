@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,7 +19,18 @@ public class FakeIFfMpegDownload : IFfMpegDownload
 {
 	private FfmpegDownloadStatus _status = FfmpegDownloadStatus.Ok;
 
-	public async Task<FfmpegDownloadStatus> DownloadFfMpeg()
+	public async Task<List<FfmpegDownloadStatus>> DownloadFfMpeg(List<string> architectures)
+	{
+		var result = new List<FfmpegDownloadStatus>();
+		foreach ( var architecture in architectures )
+		{
+			result.Add(await DownloadFfMpeg(architecture));
+		}
+
+		return result;
+	}
+
+	public async Task<FfmpegDownloadStatus> DownloadFfMpeg(string? architecture = null)
 	{
 		if ( _status != FfmpegDownloadStatus.Ok )
 		{

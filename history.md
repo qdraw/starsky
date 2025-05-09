@@ -45,6 +45,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 - [x] (Added) _Back-end_ Support for webp and video thumbnails (PR #1833)
 - [x] (Added) _Back-end_ Sonarcloud code style improvements (PR #2141)
+- [x] (Changed) _Back-end_ Make exiftool responses more clear (PR #2143)
+- [x] (Changed) _Back-end_ Download dependencies on build for cross build runtime (PR #2144)
 
 ## version 0.6.8 - 2025-05-07 {#v0.6.8}
 

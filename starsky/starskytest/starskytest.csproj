@@ -62,6 +62,7 @@
         <ProjectReference Include="..\starsky.foundation.writemeta\starsky.foundation.writemeta.csproj"/>
         <ProjectReference Include="..\starskyadmincli\starskyadmincli.csproj"/>
         <ProjectReference Include="..\starsky.project.web\starsky.project.web.csproj"/>
+        <ProjectReference Include="..\starskydependenciesdownloadcli\starskydependenciesdownloadcli.csproj" />
         <ProjectReference Include="..\starskygeocli\starskygeocli.csproj"/>
         <ProjectReference Include="..\starskyimportercli\starskyimportercli.csproj"/>
         <ProjectReference Include="..\starskysynchronizecli\starskysynchronizecli.csproj"/>

@@ -89,22 +89,6 @@ public class FfMpegDownloadTest
 		};
 	}
 
-	// [TestMethod]
-	// public async Task DownloadFfMpegTest()
-	// {
-	// 	var sut = new FfMpegDownload(
-	// 		new HttpClientHelper(new HttpProvider(new HttpClient()),
-	// 			new StorageHostFullPathFilesystem(new FakeIWebLogger()), new FakeIWebLogger()),
-	// 		new AppSettings(), new FakeIWebLogger(),
-	// 		new MacCodeSign(
-	// 			new FakeSelectorStorage(new StorageHostFullPathFilesystem(new FakeIWebLogger())),
-	// 			new FakeIWebLogger()));
-	//
-	// 	await sut.DownloadFfMpeg();
-	//
-	// 	Assert.Fail();
-	// }
-
 	[TestMethod]
 	[DataRow("FfmpegSkipDownloadOnStartup")]
 	[DataRow("AddSwaggerExportAndAddSwaggerExportExitAfter")]
@@ -134,6 +118,37 @@ public class FfMpegDownloadTest
 		Assert.AreEqual(FfmpegDownloadStatus.SettingsDisabled, result);
 	}
 
+	[DataTestMethod]
+	[DataRow("test-1,test-2", 2)]
+	[DataRow("", 1)]
+	[DataRow("", 1)]
+	public async Task DownloadFfMpeg_MultiArg(string arg, int count)
+	{
+		var storage = new FakeIStorage();
+		var appSettings = new AppSettings { DependenciesFolder = DependencyFolderName };
+		var logger = new FakeIWebLogger();
+
+		var ffmpegDownload =
+			new FfMpegDownload(new FakeSelectorStorage(storage), appSettings,
+				logger,
+				new FakeIFfMpegDownloadIndex(), new FakeIFfMpegDownloadBinaries(),
+				new FakeIFfMpegPrepareBeforeRunning(), new FakeIFfMpegPreflightRunCheck());
+
+		var resultMissingIndex = await ffmpegDownload.DownloadFfMpeg(
+			[.. arg.Split(",")]);
+
+		Assert.AreEqual(count, resultMissingIndex.Count);
+		if ( resultMissingIndex.Count == 2 )
+		{
+			Assert.AreEqual(FfmpegDownloadStatus.DownloadIndexFailed, resultMissingIndex[0]);
+			Assert.AreEqual(FfmpegDownloadStatus.DownloadIndexFailed, resultMissingIndex[1]);
+		}
+		else
+		{
+			Assert.AreEqual(FfmpegDownloadStatus.DownloadIndexFailed, resultMissingIndex[0]);
+		}
+	}
+
 	[TestMethod]
 	public async Task DownloadFfMpeg_MissingIndex()
 	{
@@ -158,7 +173,7 @@ public class FfMpegDownloadTest
 		var logger = new FakeIWebLogger();
 
 		var ffmpegDownload =
-			new FfMpegDownload(new FakeSelectorStorage(), appSettings,
+			new FfMpegDownload(new FakeSelectorStorage(_storage), appSettings,
 				logger,
 				// No Index but it says is succeed
 				new FakeIFfMpegDownloadIndex(new FfmpegBinariesContainer { Success = true }),
@@ -428,6 +443,7 @@ public class FfMpegDownloadTest
 		{
 			exeExtension = ".exe";
 		}
+
 		var expectedPath = Path.Combine(dependenciesFolder ?? "",
 			$"ffmpeg-{CurrentArchitecture.GetCurrentRuntimeIdentifier()}",
 			$"ffmpeg{exeExtension}");

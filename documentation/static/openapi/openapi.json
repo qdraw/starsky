@@ -13156,6 +13156,22 @@
             "extensions": {},
             "unresolvedReference": false
           },
+          "ffmpegSkipPreflightCheck": {
+            "type": "boolean",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
           "ffmpegPath": {
             "type": "string",
             "readOnly": false,
@@ -16659,5 +16675,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "163AB29D79A4D7091F611FC8D6F2862514F9C4D340D39FCD9EED675E4ADD879545F2E462FF0D1B615E38ABF0AB319A85FA60F6D998C34C556C360D74C7C37348"
+  "hashCode": "0404EAC316EF885F4B584EF5FF0AB98154AF1C130CD2DC9B7852E3E6CAFC711A28A1CDFAF151C9685A15FD11EA05AF61EA1F3273136182FED7CB393B6EACF266"
 }

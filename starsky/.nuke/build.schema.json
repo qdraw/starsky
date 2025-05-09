@@ -29,7 +29,6 @@
         "Client",
         "Compile",
         "CoverageReport",
-        "DownloadDependencies",
         "ShowSettingsInformation",
         "SonarBuildTest",
         "TestNetCore",

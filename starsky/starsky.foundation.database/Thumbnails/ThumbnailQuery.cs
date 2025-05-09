@@ -345,7 +345,14 @@ public class ThumbnailQuery : IThumbnailQuery
 			.Where(hash => !string.IsNullOrWhiteSpace(hash))
 			.ToList();
 	}
-	
+
+	/// <summary>
+	///     Internal Service to Rename ThumbnailQuery items
+	/// </summary>
+	/// <param name="dbContext">database context</param>
+	/// <param name="beforeFileHash">from hash</param>
+	/// <param name="newFileHash">to hash</param>
+	/// <returns>is success</returns>
 	private async Task<bool> RenameInternalAsync(ApplicationDbContext dbContext,
 		string? beforeFileHash, string? newFileHash)
 	{

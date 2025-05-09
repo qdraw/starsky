@@ -80,16 +80,18 @@ public static class DotnetRuntimeSpecificHelper
 		Log.Information("Clean up done");
 	}
 
-	public static void CopyDependenciesFiles(bool noDependencies,
-		string genericNetcoreFolder, List<string> getRuntimesWithoutGeneric)
+	public static void CopyAndRunDependenciesFiles(Configuration configuration,
+		string dependenciesCliCsproj,
+		bool noDependencies,
+		string fromGenericNetcoreFolder, List<string> getRuntimesWithoutGeneric)
 	{
-		if ( noDependencies || string.IsNullOrWhiteSpace(genericNetcoreFolder) )
+		if ( noDependencies || string.IsNullOrWhiteSpace(fromGenericNetcoreFolder) )
 		{
 			return;
 		}
 
 		var genericTempFolderFullPath =
-			Path.Combine(BasePath(), genericNetcoreFolder, "dependencies");
+			Path.Combine(BasePath(), fromGenericNetcoreFolder, "dependencies");
 		foreach ( var runtime in getRuntimesWithoutGeneric )
 		{
 			var runtimeTempFolder = Path.Combine(BasePath(), runtime, "dependencies");
@@ -98,21 +100,9 @@ public static class DotnetRuntimeSpecificHelper
 				AbsolutePath.Create(runtimeTempFolder),
 				ExistsPolicy.FileOverwrite, createDirectories: true);
 
-			// For Windows, it's not needed to copy unix dependencies 
-			if ( runtime.StartsWith("win") &&
-			     Directory.Exists(Path.Combine(runtimeTempFolder, "exiftool-unix")) )
-			{
-				Directory.Delete(Path.Combine(runtimeTempFolder, "exiftool-unix"), true);
-				Log.Information("removed exiftool-unix for windows");
-			}
-
-			// ReSharper disable once InvertIf
-			if ( runtime.StartsWith("win") &&
-			     File.Exists(Path.Combine(runtimeTempFolder, "exiftool.tar.gz")) )
-			{
-				File.Delete(Path.Combine(runtimeTempFolder, "exiftool.tar.gz"));
-				Log.Information("removed exiftool.tar.gz for windows");
-			}
+			DotnetGenericHelper.DownloadDependencies(configuration,
+				dependenciesCliCsproj,
+				noDependencies, runtime);
 		}
 	}
 

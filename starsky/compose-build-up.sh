@@ -80,7 +80,7 @@ then
     docker compose build $PROGRESS_LOGGER_ARG $NO_CACHE_ARG $UNIT_TEST_RUN_ARG
 
     echo "up everything"
-    docker-compose --env-file .env -f docker-compose.yml up --timeout 1000 --detach --remove-orphans
+    docker compose --env-file .env -f docker-compose.yml up --timeout 1000 --detach --remove-orphans
     
 else
     for SERVICE_NAME in "${SERVICES_TO_BUILD[@]}"
@@ -101,7 +101,7 @@ else
     done
     
     echo "up all services"
-    docker-compose --env-file .env -f docker-compose.yml up --timeout 1000 --detach --no-build --remove-orphans
+    docker compose --env-file .env -f docker-compose.yml up --timeout 1000 --detach --no-build --remove-orphans
 fi
 
 # To display duration
