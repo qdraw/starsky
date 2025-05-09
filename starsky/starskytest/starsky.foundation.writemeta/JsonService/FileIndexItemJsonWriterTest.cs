@@ -32,7 +32,7 @@ public sealed class FileIndexItemJsonParserTest
 		LocationCountry = "LocationCountry",
 		LocationState = "LocationState",
 		ColorClass = ColorClassParser.Color.WinnerAlt,
-		Orientation = FileIndexItem.Rotation.Rotate180,
+		Orientation = ImageRotation.Rotation.Rotate180,
 		ImageWidth = 100,
 		ImageHeight = 140,
 		ImageFormat = ExtensionRolesHelper.ImageFormat.jpg,

@@ -116,7 +116,7 @@ public class NewUpdateItemWrapperTest
 		{
 			Status = FileIndexItem.ExifStatus.OkAndSame, 
 			ColorClass = ColorClassParser.Color.None,
-			Orientation = FileIndexItem.Rotation.Horizontal,
+			Orientation = ImageRotation.Rotation.Horizontal,
 			ImageHeight = 2,
 			ImageWidth = 3,
 			ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
@@ -142,7 +142,7 @@ public class NewUpdateItemWrapperTest
 		{
 			Status = FileIndexItem.ExifStatus.OkAndSame, 
 			ColorClass = ColorClassParser.Color.Extras, // different
-			Orientation = FileIndexItem.Rotation.Horizontal,
+			Orientation = ImageRotation.Rotation.Horizontal,
 			ImageHeight = 2,
 			ImageWidth = 3,
 			ImageFormat = ExtensionRolesHelper.ImageFormat.jpg

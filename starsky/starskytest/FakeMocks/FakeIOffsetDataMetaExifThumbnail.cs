@@ -13,10 +13,10 @@ namespace starskytest.FakeMocks
 			return new OffsetModel { Success = true };
 		}
 
-		public (ExifThumbnailDirectory?, int, int, FileIndexItem.Rotation) GetExifMetaDirectories(
+		public (ExifThumbnailDirectory?, int, int, ImageRotation.Rotation) GetExifMetaDirectories(
 			string subPath)
 		{
-			return ( null, 0, 0, FileIndexItem.Rotation.Horizontal );
+			return ( null, 0, 0, ImageRotation.Rotation.Horizontal );
 		}
 	}
 }

@@ -9,7 +9,7 @@ namespace starsky.foundation.thumbnailmeta.Interfaces
 		OffsetModel ParseOffsetData(ExifThumbnailDirectory? exifThumbnailDir,
 			string subPath);
 
-		(ExifThumbnailDirectory?, int, int, FileIndexItem.Rotation) GetExifMetaDirectories(
+		(ExifThumbnailDirectory?, int, int, ImageRotation.Rotation) GetExifMetaDirectories(
 			string subPath);
 	}
 }

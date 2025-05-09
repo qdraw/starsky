@@ -38,7 +38,7 @@ public sealed class ExifToolCmdHelperTest
 			LocationCountryCode = "NLD",
 			Title = "Title",
 			ColorClass = ColorClassParser.Color.Trash,
-			Orientation = FileIndexItem.Rotation.Rotate90Cw,
+			Orientation = ImageRotation.Rotation.Rotate90Cw,
 			DateTime = DateTime.Now
 		};
 		var comparedNames = new List<string>

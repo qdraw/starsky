@@ -69,11 +69,11 @@ namespace starsky.foundation.database.Helpers
 					CompareDateTime(propertyB.Name, sourceIndexItem, ( DateTime? ) oldValue,
 						( DateTime? ) newValue, differenceList);
 				}
-				else if ( propertyType == typeof(FileIndexItem.Rotation) )
+				else if ( propertyType == typeof(ImageRotation.Rotation) )
 				{
 					CompareRotation(propertyB.Name, sourceIndexItem,
-						( FileIndexItem.Rotation? ) oldValue,
-						( FileIndexItem.Rotation? ) newValue, differenceList);
+						( ImageRotation.Rotation? ) oldValue,
+						( ImageRotation.Rotation? ) newValue, differenceList);
 				}
 				else if ( propertyType == typeof(ImageStabilisationType) )
 				{
@@ -235,11 +235,11 @@ namespace starsky.foundation.database.Helpers
 		/// <param name="newRotationValue">oldRotationValue to compare with newRotationValue</param>
 		/// <param name="differenceList">list of different values</param>
 		internal static void CompareRotation(string propertyName, FileIndexItem sourceIndexItem,
-			FileIndexItem.Rotation? oldRotationValue, FileIndexItem.Rotation? newRotationValue,
+			ImageRotation.Rotation? oldRotationValue, ImageRotation.Rotation? newRotationValue,
 			List<string> differenceList)
 		{
 			if ( oldRotationValue == newRotationValue || newRotationValue == null ||
-				 newRotationValue == FileIndexItem.Rotation.DoNotChange )
+				 newRotationValue == ImageRotation.Rotation.DoNotChange )
 			{
 				return;
 			}
