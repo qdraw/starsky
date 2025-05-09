@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starskyGeoCli;
+using starskyDependenciesDownloadCli;
 
 namespace starskytest.starskyDependenciesDownloadCli;
 
 [TestClass]
-public sealed class starskyDependenciesDownloadCliTest
+public sealed class StarskyDependenciesDownloadCliTest
 {
 	private static string? _ffmpegSkipDownloadOnStartup;
 	private static string? _prePort;
@@ -23,7 +23,7 @@ public sealed class starskyDependenciesDownloadCliTest
 	// starskytest/starskythumbnailcli/ProgramTest.cs
 	// starsky/starskytest/starskySynchronizeCli/ProgramTest.cs
 
-	public starskyDependenciesDownloadCliTest()
+	public StarskyDependenciesDownloadCliTest()
 	{
 		_prePort = Environment.GetEnvironmentVariable("PORT");
 		_preAspNetUrls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS");

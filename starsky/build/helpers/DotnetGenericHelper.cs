@@ -65,6 +65,8 @@ public static class DotnetGenericHelper
 		try
 		{
 			Environment.SetEnvironmentVariable("app__DependenciesFolder", genericDepsFullPath);
+			Environment.SetEnvironmentVariable("app__FfmpegSkipPreflightCheck", "true");
+
 			Log.Information("Next: DownloadDependencies");
 			Log.Information("Run: {Path}", Path.Combine(
 				WorkingDirectory.GetSolutionParentFolder(), dependenciesDownloadCli)
@@ -86,6 +88,7 @@ public static class DotnetGenericHelper
 		}
 
 		Environment.SetEnvironmentVariable("app__DependenciesFolder", string.Empty);
+		Environment.SetEnvironmentVariable("app__FfmpegSkipPreflightCheck", string.Empty);
 
 		Log.Information("   genericDepsFullPath: {GenericDepsFullPath}", genericDepsFullPath);
 		Log.Information("DownloadDependencies done");
