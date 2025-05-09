@@ -2,13 +2,12 @@ using System.Threading.Tasks;
 using starsky.foundation.database.Models;
 using starsky.foundation.thumbnailmeta.Models;
 
-namespace starsky.foundation.thumbnailmeta.Interfaces
+namespace starsky.foundation.thumbnailmeta.Interfaces;
+
+public interface IWriteMetaThumbnailService
 {
-	public interface IWriteMetaThumbnailService
-	{
-		Task<bool> WriteAndCropFile(string fileHash,
-			OffsetModel offsetData, int sourceWidth,
-			int sourceHeight, FileIndexItem.Rotation rotation,
-			string? reference = null);
-	}
+	Task<bool> WriteAndCropFile(string fileHash,
+		OffsetModel offsetData, int sourceWidth,
+		int sourceHeight, ImageRotation.Rotation rotation,
+		string? reference = null);
 }

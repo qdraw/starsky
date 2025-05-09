@@ -33,7 +33,7 @@ public sealed class WriteMetaThumbnailService : IWriteMetaThumbnailService
 
 	public async Task<bool> WriteAndCropFile(string fileHash,
 		OffsetModel offsetData, int sourceWidth,
-		int sourceHeight, FileIndexItem.Rotation rotation,
+		int sourceHeight, ImageRotation.Rotation rotation,
 		string? reference = null)
 	{
 		if ( offsetData.Data == null )
@@ -54,19 +54,16 @@ public sealed class WriteMetaThumbnailService : IWriteMetaThumbnailService
 				var result = NewImageSize.NewImageSizeCalc(smallImageWidth,
 					smallImageHeight, sourceWidth, sourceHeight);
 
-				smallImage.Mutate(
-					i => i.Resize(smallImageWidth, smallImageHeight, KnownResamplers.Lanczos3)
-						.Crop(new Rectangle(result.DestX, result.DestY, result.DestWidth,
-							result.DestHeight)));
+				smallImage.Mutate(i => i
+					.Resize(smallImageWidth, smallImageHeight, KnownResamplers.Lanczos3)
+					.Crop(new Rectangle(result.DestX, result.DestY, result.DestWidth,
+						result.DestHeight)));
 
 				var larger = ( int ) Math.Round(result.DestWidth * 1.2, 0);
 
-				smallImage.Mutate(
-					i => i.Resize(larger, 0, KnownResamplers.Lanczos3));
+				smallImage.Mutate(i => i.Resize(larger, 0, KnownResamplers.Lanczos3));
 
-				var rotate = RotateEnumToDegrees(rotation);
-				smallImage.Mutate(
-					i => i.Rotate(rotate));
+				smallImage.Mutate(i => i.Rotate(rotation.ToDegrees()));
 
 				await smallImage.SaveAsJpegAsync(outputStream);
 
@@ -96,22 +93,6 @@ public sealed class WriteMetaThumbnailService : IWriteMetaThumbnailService
 				$"[WriteFile@meta] Meta data read - Exception {reference} {message} - can continue without",
 				exception);
 			return false;
-		}
-	}
-
-	internal static float RotateEnumToDegrees(FileIndexItem.Rotation rotation)
-	{
-		// ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
-		switch ( rotation )
-		{
-			case FileIndexItem.Rotation.Rotate180:
-				return 180;
-			case FileIndexItem.Rotation.Rotate90Cw:
-				return 90;
-			case FileIndexItem.Rotation.Rotate270Cw:
-				return 270;
-			default:
-				return 0;
 		}
 	}
 }

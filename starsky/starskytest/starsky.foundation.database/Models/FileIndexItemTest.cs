@@ -192,45 +192,45 @@ public sealed class FileIndexItemTest
 	public void FileIndexItemTest_OrientationrelativeRotation0()
 	{
 		// keep the same
-		var t = new FileIndexItem { Orientation = FileIndexItem.Rotation.Horizontal };
-		Assert.AreEqual(FileIndexItem.Rotation.Horizontal, t.RelativeOrientation());
+		var t = new FileIndexItem { Orientation = ImageRotation.Rotation.Horizontal };
+		Assert.AreEqual(ImageRotation.Rotation.Horizontal, t.RelativeOrientation());
 	}
 
 	[TestMethod]
 	public void FileIndexItemTest_SetOrientationrelativeRotation0()
 	{
-		var fileObject = new FileIndexItem { Orientation = FileIndexItem.Rotation.Horizontal };
+		var fileObject = new FileIndexItem { Orientation = ImageRotation.Rotation.Horizontal };
 		fileObject.SetRelativeOrientation();
-		Assert.AreEqual(FileIndexItem.Rotation.Horizontal, fileObject.Orientation);
+		Assert.AreEqual(ImageRotation.Rotation.Horizontal, fileObject.Orientation);
 	}
 
 	[TestMethod]
 	public void FileIndexItemTest_OrientationrelativeRotation_270CwTest()
 	{
-		var fileObject = new FileIndexItem { Orientation = FileIndexItem.Rotation.Rotate270Cw };
-		Assert.AreEqual(FileIndexItem.Rotation.Horizontal, fileObject.RelativeOrientation(1));
+		var fileObject = new FileIndexItem { Orientation = ImageRotation.Rotation.Rotate270Cw };
+		Assert.AreEqual(ImageRotation.Rotation.Horizontal, fileObject.RelativeOrientation(1));
 	}
 
 
 	[TestMethod]
 	public void FileIndexItemTest_SetOrientationrelativeRotationMinus1()
 	{
-		var t = new FileIndexItem { Orientation = FileIndexItem.Rotation.Horizontal };
-		Assert.AreEqual(FileIndexItem.Rotation.Rotate270Cw, t.RelativeOrientation(-1));
+		var t = new FileIndexItem { Orientation = ImageRotation.Rotation.Horizontal };
+		Assert.AreEqual(ImageRotation.Rotation.Rotate270Cw, t.RelativeOrientation(-1));
 	}
 
 	[TestMethod]
 	public void FileIndexItemTest_SetOrientationrelativeRotationPlus1()
 	{
-		var t = new FileIndexItem { Orientation = FileIndexItem.Rotation.Horizontal };
-		Assert.AreEqual(FileIndexItem.Rotation.Rotate90Cw, t.RelativeOrientation(1));
+		var t = new FileIndexItem { Orientation = ImageRotation.Rotation.Horizontal };
+		Assert.AreEqual(ImageRotation.Rotation.Rotate90Cw, t.RelativeOrientation(1));
 	}
 
 	[TestMethod]
 	public void FileIndexItemTest_SetOrientationrelativeRotation_Rotate270Cw_Plus1()
 	{
-		var t = new FileIndexItem { Orientation = FileIndexItem.Rotation.Rotate270Cw };
-		Assert.AreEqual(FileIndexItem.Rotation.Horizontal, t.RelativeOrientation(1));
+		var t = new FileIndexItem { Orientation = ImageRotation.Rotation.Rotate270Cw };
+		Assert.AreEqual(ImageRotation.Rotation.Horizontal, t.RelativeOrientation(1));
 	}
 
 
@@ -238,36 +238,36 @@ public sealed class FileIndexItemTest
 	public void FileIndexItemTest_SetOrientationrelativeRelativeOrientation_Plus5()
 	{
 		// test not very good
-		var t = new FileIndexItem { Orientation = FileIndexItem.Rotation.Rotate270Cw };
-		Assert.AreEqual(FileIndexItem.Rotation.Horizontal, t.RelativeOrientation(5));
+		var t = new FileIndexItem { Orientation = ImageRotation.Rotation.Rotate270Cw };
+		Assert.AreEqual(ImageRotation.Rotation.Horizontal, t.RelativeOrientation(5));
 	}
 
 	[TestMethod]
 	public void FileIndexItemTest_SetAbsoluteOrientation_DoNotChange()
 	{
 		var rotationItem = new FileIndexItem().SetAbsoluteOrientation();
-		Assert.AreEqual(FileIndexItem.Rotation.DoNotChange, rotationItem);
+		Assert.AreEqual(ImageRotation.Rotation.DoNotChange, rotationItem);
 	}
 
 	[TestMethod]
 	public void FileIndexItemTest_SetAbsoluteOrientation_Rotate90Cw()
 	{
 		var rotationItem = new FileIndexItem().SetAbsoluteOrientation("6");
-		Assert.AreEqual(FileIndexItem.Rotation.Rotate90Cw, rotationItem);
+		Assert.AreEqual(ImageRotation.Rotation.Rotate90Cw, rotationItem);
 	}
 
 	[TestMethod]
 	public void FileIndexItemTest_SetAbsoluteOrientation_Rotate180()
 	{
 		var rotationItem = new FileIndexItem().SetAbsoluteOrientation("3");
-		Assert.AreEqual(FileIndexItem.Rotation.Rotate180, rotationItem);
+		Assert.AreEqual(ImageRotation.Rotation.Rotate180, rotationItem);
 	}
 
 	[TestMethod]
 	public void FileIndexItemTest_SetAbsoluteOrientation_Rotate270Cw()
 	{
 		var rotationItem = new FileIndexItem().SetAbsoluteOrientation("8");
-		Assert.AreEqual(FileIndexItem.Rotation.Rotate270Cw, rotationItem);
+		Assert.AreEqual(ImageRotation.Rotation.Rotate270Cw, rotationItem);
 	}
 
 	[TestMethod]

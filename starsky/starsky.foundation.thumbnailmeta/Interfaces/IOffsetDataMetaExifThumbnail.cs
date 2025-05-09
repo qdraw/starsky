@@ -2,14 +2,13 @@ using MetadataExtractor.Formats.Exif;
 using starsky.foundation.database.Models;
 using starsky.foundation.thumbnailmeta.Models;
 
-namespace starsky.foundation.thumbnailmeta.Interfaces
-{
-	public interface IOffsetDataMetaExifThumbnail
-	{
-		OffsetModel ParseOffsetData(ExifThumbnailDirectory? exifThumbnailDir,
-			string subPath);
+namespace starsky.foundation.thumbnailmeta.Interfaces;
 
-		(ExifThumbnailDirectory?, int, int, FileIndexItem.Rotation) GetExifMetaDirectories(
-			string subPath);
-	}
+public interface IOffsetDataMetaExifThumbnail
+{
+	OffsetModel ParseOffsetData(ExifThumbnailDirectory? exifThumbnailDir,
+		string subPath);
+
+	(ExifThumbnailDirectory?, int, int, ImageRotation.Rotation) GetExifMetaDirectories(
+		string subPath);
 }

@@ -130,7 +130,7 @@ public sealed class MetaPreflightTest
 				Tags = "initial Value",
 				FileName = "test.jpg",
 				ParentDirectory = "/",
-				Orientation = FileIndexItem.Rotation.Horizontal
+				Orientation = ImageRotation.Rotation.Horizontal
 			}
 		};
 
@@ -154,7 +154,7 @@ public sealed class MetaPreflightTest
 
 		// Check for value
 		Assert.AreEqual("updated Value", collectionsDetailView.FileIndexItem.Tags);
-		Assert.AreEqual(FileIndexItem.Rotation.Horizontal,
+		Assert.AreEqual(ImageRotation.Rotation.Horizontal,
 			collectionsDetailView.FileIndexItem.Orientation);
 	}
 
@@ -174,7 +174,7 @@ public sealed class MetaPreflightTest
 				Tags = "Value",
 				FileName = "test.jpg",
 				ParentDirectory = "/",
-				Orientation = FileIndexItem.Rotation.Horizontal
+				Orientation = ImageRotation.Rotation.Horizontal
 			}
 		};
 
@@ -211,7 +211,7 @@ public sealed class MetaPreflightTest
 				Tags = "initial Value",
 				FileName = "test.jpg",
 				ParentDirectory = "/",
-				Orientation = FileIndexItem.Rotation.Horizontal
+				Orientation = ImageRotation.Rotation.Horizontal
 			}
 		};
 
@@ -256,7 +256,7 @@ public sealed class MetaPreflightTest
 				false, -1);
 
 		// Check for value
-		Assert.AreEqual(FileIndexItem.Rotation.Rotate270Cw,
+		Assert.AreEqual(ImageRotation.Rotation.Rotate270Cw,
 			collectionsDetailView.FileIndexItem.Orientation);
 	}
 
@@ -323,9 +323,9 @@ public sealed class MetaPreflightTest
 		var compareList = new List<string>();
 
 		var rotationCompare = MetaPreflight.RotationCompare(0,
-			new FileIndexItem("/test.jpg") { Orientation = FileIndexItem.Rotation.Horizontal },
+			new FileIndexItem("/test.jpg") { Orientation = ImageRotation.Rotation.Horizontal },
 			compareList);
-		Assert.AreEqual(FileIndexItem.Rotation.Horizontal, rotationCompare.Orientation);
+		Assert.AreEqual(ImageRotation.Rotation.Horizontal, rotationCompare.Orientation);
 		Assert.AreEqual(0, compareList.Count);
 	}
 
@@ -334,9 +334,9 @@ public sealed class MetaPreflightTest
 	{
 		var compareList = new List<string>();
 		var rotationCompare = MetaPreflight.RotationCompare(1,
-			new FileIndexItem("/test.jpg") { Orientation = FileIndexItem.Rotation.Horizontal },
+			new FileIndexItem("/test.jpg") { Orientation = ImageRotation.Rotation.Horizontal },
 			compareList);
-		Assert.AreEqual(FileIndexItem.Rotation.Rotate90Cw, rotationCompare.Orientation);
+		Assert.AreEqual(ImageRotation.Rotation.Rotate90Cw, rotationCompare.Orientation);
 		Assert.AreEqual(nameof(FileIndexItem.Orientation).ToLowerInvariant(),
 			compareList.FirstOrDefault());
 	}
@@ -346,9 +346,9 @@ public sealed class MetaPreflightTest
 	{
 		var compareList = new List<string>();
 		var rotationCompare = MetaPreflight.RotationCompare(-1,
-			new FileIndexItem("/test.jpg") { Orientation = FileIndexItem.Rotation.Horizontal },
+			new FileIndexItem("/test.jpg") { Orientation = ImageRotation.Rotation.Horizontal },
 			compareList);
-		Assert.AreEqual(FileIndexItem.Rotation.Rotate270Cw,
+		Assert.AreEqual(ImageRotation.Rotation.Rotate270Cw,
 			rotationCompare.Orientation);
 		Assert.AreEqual(compareList.FirstOrDefault(),
 			nameof(FileIndexItem.Orientation).ToLowerInvariant());

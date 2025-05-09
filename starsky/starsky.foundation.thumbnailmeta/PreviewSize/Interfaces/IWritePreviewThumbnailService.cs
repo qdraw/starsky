@@ -7,6 +7,6 @@ namespace starsky.foundation.thumbnailmeta.PreviewSize.Interfaces;
 public interface IWritePreviewThumbnailService
 {
 	Task<bool> WriteFile(string fileHash,
-		OffsetModel offsetData, FileIndexItem.Rotation rotation,
+		OffsetModel offsetData, ImageRotation.Rotation rotation,
 		string? reference = null);
 }

@@ -508,7 +508,7 @@ public sealed class ExifToolCmdHelper
 	{
 		// // exiftool -Orientation#=5
 		if ( comparedNames.Contains(nameof(FileIndexItem.Orientation).ToLowerInvariant()) &&
-		     updateModel.Orientation != FileIndexItem.Rotation.DoNotChange )
+		     updateModel.Orientation != ImageRotation.Rotation.DoNotChange )
 		{
 			var intOrientation = ( int ) updateModel.Orientation;
 			command += " \"-Orientation#=" + intOrientation + "\" ";
