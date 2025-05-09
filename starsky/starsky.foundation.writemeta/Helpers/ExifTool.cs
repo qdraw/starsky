@@ -1,16 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Interfaces;
+using starsky.foundation.writemeta.Models;
 
 namespace starsky.foundation.writemeta.Helpers;
 
@@ -42,7 +43,7 @@ public sealed class ExifTool : IExifTool
 	/// <param name="command">exifTool command line args</param>
 	/// <param name="cancellationToken">to cancel</param>
 	/// <returns>true=success, newFileHash</returns>
-	public async Task<KeyValuePair<bool, string>> WriteTagsAndRenameThumbnailAsync(
+	public async Task<ExifToolWriteTagsAndRenameThumbnailModel> WriteTagsAndRenameThumbnailAsync(
 		string subPath,
 		string? beforeFileHash, string command, CancellationToken cancellationToken = default)
 	{
@@ -82,15 +83,14 @@ public sealed class ExifTool : IExifTool
 	{
 		var inputStream = _thumbnailStorage.ReadStream(fileHash);
 		var runner = new ExifToolStreamToStreamRunner(_appSettings, _logger);
-		var stream = await runner.RunProcessAsync(inputStream, command, fileHash);
+		var stream = await runner.RunProcessAsync(inputStream,
+			command, fileHash);
 		// Need to Close/Dispose for Windows and needs before WriteStreamAsync
 		await inputStream.DisposeAsync();
 		return await _thumbnailStorage.WriteStreamAsync(stream, fileHash);
 	}
 
-	[SuppressMessage("ReSharper", "InvertIf")]
-	[SuppressMessage("ReSharper", "RedundantArgumentDefaultValue")]
-	private async Task<KeyValuePair<bool, string>>
+	private async Task<ExifToolWriteTagsAndRenameThumbnailModel>
 		WriteTagsAndRenameThumbnailInternalAsync(string subPath,
 			string? beforeFileHash, string command,
 			CancellationToken cancellationToken = default)
@@ -108,8 +108,9 @@ public sealed class ExifTool : IExifTool
 		sourceStream.Close();
 		await sourceStream.DisposeAsync();
 
-		var newHashCode = await RenameThumbnailByStream(beforeFileHash, stream,
-			!beforeFileHash.Contains(FileHash.GeneratedPostFix), cancellationToken);
+		var (newHashCode, fileMoveResult) = await RenameThumbnailByStream(beforeFileHash, stream,
+			!beforeFileHash.Contains(FileHash.GeneratedPostFix),
+			subPath, cancellationToken);
 
 		if ( stream.Length <= 15 &&
 		     ( await StreamToStringHelper.StreamToStringAsync(stream, false) )
@@ -118,13 +119,14 @@ public sealed class ExifTool : IExifTool
 			await stream.DisposeAsync();
 			_logger.LogError(
 				$"[WriteTagsAndRenameThumbnailAsync] Fake Exiftool detected {subPath}");
-			return new KeyValuePair<bool, string>(false, beforeFileHash);
+			return new ExifToolWriteTagsAndRenameThumbnailModel(false, beforeFileHash);
 		}
 
 		stream.Seek(0, SeekOrigin.Begin);
 		var streamResult = await _iStorage.WriteStreamAsync(stream, subPath);
 
-		return new KeyValuePair<bool, string>(streamResult, newHashCode);
+		return new ExifToolWriteTagsAndRenameThumbnailModel(streamResult, newHashCode,
+			fileMoveResult);
 	}
 
 
@@ -136,14 +138,14 @@ public sealed class ExifTool : IExifTool
 	/// <param name="isSuccess">isHashing success, otherwise skip this</param>
 	/// <param name="cancellationToken">cancel Token</param>
 	/// <returns></returns>
-	[SuppressMessage("ReSharper", "MustUseReturnValue")]
-	internal async Task<string> RenameThumbnailByStream(
-		string beforeFileHash, Stream stream, bool isSuccess,
-		CancellationToken cancellationToken = default)
+	internal async Task<(string newHashCode, List<(bool, ThumbnailSize)> result)>
+		RenameThumbnailByStream(
+			string beforeFileHash, Stream stream, bool isSuccess, string? reference,
+			CancellationToken cancellationToken = default)
 	{
 		if ( string.IsNullOrEmpty(beforeFileHash) || !isSuccess )
 		{
-			return string.Empty;
+			return ( string.Empty, [] );
 		}
 
 		var fileHashStream = await StreamGetFirstBytes.GetFirstBytesAsync(stream,
@@ -155,17 +157,18 @@ public sealed class ExifTool : IExifTool
 
 		if ( string.IsNullOrEmpty(newHashCode) )
 		{
-			return string.Empty;
+			_logger.LogError($"[RenameThumbnailByStream] No new hashcode: {beforeFileHash}");
+			return ( string.Empty, [] );
 		}
 
 		if ( beforeFileHash == newHashCode )
 		{
-			return newHashCode;
+			return ( newHashCode, [] );
 		}
 
-		var service = new ThumbnailFileMoveAllSizes(_thumbnailStorage, _appSettings);
-		service.FileMove(beforeFileHash, newHashCode);
+		var service = new ThumbnailFileMoveAllSizes(_thumbnailStorage, _appSettings, _logger);
+		var fileMoveResult = service.FileMove(beforeFileHash, newHashCode, reference);
 
-		return newHashCode;
+		return ( newHashCode, fileMoveResult );
 	}
 }

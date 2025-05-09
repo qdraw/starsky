@@ -177,8 +177,8 @@ public sealed class GeoCli
 				continue;
 			}
 
-			new ThumbnailFileMoveAllSizes(_thumbnailStorage, _appSettings).FileMove(
-				item.FileHash!, newThumb);
+			new ThumbnailFileMoveAllSizes(_thumbnailStorage, _appSettings, _logger).FileMove(
+				item.FileHash!, newThumb, item.FilePath);
 			if ( _appSettings.IsVerbose() )
 			{
 				_console.WriteLine("thumb+ `" + item.FileHash + "`" + newThumb);
