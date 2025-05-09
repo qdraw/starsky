@@ -16,7 +16,6 @@ using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailmeta.Models;
 using starsky.foundation.thumbnailmeta.PreviewSize.Interfaces;
 using Directory = MetadataExtractor.Directory;
-using File = TagLib.File;
 
 namespace starsky.foundation.thumbnailmeta.ServicesPreviewSize;
 
@@ -103,7 +102,7 @@ public class OffsetDataMetaExifPreviewThumbnail : IOffsetDataMetaExifPreviewThum
 		GetOffsetAndByteSizeForJpeg(string subPath)
 	{
 		var directories = ImageMetadataReader.ReadMetadata(
-			"/Users/dion/data/fotobieb/2024/11/2024_11_11_d/20241111_181721_DSC00782.jpg");
+			"/Users/dion/data/fotobieb/2024/11/2024_11_11_d glow eindhoven/20241111_181721_DSC00782.jpg");
 		var directory = directories.OfType<SonyType1MakernoteDirectory>().FirstOrDefault();
 
 		// SonyMakerNotesParser.ParseSonyMakerNotes(
@@ -115,7 +114,7 @@ public class OffsetDataMetaExifPreviewThumbnail : IOffsetDataMetaExifPreviewThum
 		var previewImageTag = directory.GetObject(0x2001);
 		if ( previewImageTag is byte[] previewImageData )
 		{
-			System.IO.File.WriteAllBytes("/tmp/sony_preview_image.jpg", previewImageData);
+			File.WriteAllBytes("/tmp/sony_preview_image.jpg", previewImageData);
 			Console.WriteLine(
 				"Sony preview image extracted successfully to 'sony_preview_image.jpg'.");
 		}
