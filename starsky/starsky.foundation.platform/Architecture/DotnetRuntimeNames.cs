@@ -1,8 +1,11 @@
+using System.Collections.Generic;
+using System.Linq;
+
 namespace starsky.foundation.platform.Architecture;
 
 public static class DotnetRuntimeNames
 {
-	public const string GenericRuntimeName = "generic-netcore";
+	internal const string GenericRuntimeName = "generic-netcore";
 
 	internal const string OsWindowsPrefix = "win";
 	internal const string OsLinuxPrefix = "linux";
@@ -11,5 +14,17 @@ public static class DotnetRuntimeNames
 	public static bool IsWindows(string architecture)
 	{
 		return architecture.StartsWith(OsWindowsPrefix);
+	}
+
+	public static IEnumerable<string> GetArchitecturesNoGenericAndFallback(
+		List<string> architectures)
+	{
+		if ( architectures.Count == 0 )
+		{
+			architectures.Add(CurrentArchitecture.GetCurrentRuntimeIdentifier());
+		}
+
+		return architectures.Where(p => p !=
+		                                GenericRuntimeName);
 	}
 }

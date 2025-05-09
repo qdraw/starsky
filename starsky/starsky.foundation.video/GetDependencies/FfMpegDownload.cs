@@ -40,15 +40,9 @@ public class FfMpegDownload : IFfMpegDownload
 
 	public async Task<List<FfmpegDownloadStatus>> DownloadFfMpeg(List<string> architectures)
 	{
-		if ( architectures.Count == 0 )
-		{
-			architectures.Add(CurrentArchitecture.GetCurrentRuntimeIdentifier());
-		}
-
 		var result = new List<FfmpegDownloadStatus>();
-		foreach ( var architecture in architectures.Where(p => p !=
-		                                                       DotnetRuntimeNames
-			                                                       .GenericRuntimeName) )
+		foreach ( var architecture in
+		         DotnetRuntimeNames.GetArchitecturesNoGenericAndFallback(architectures) )
 		{
 			result.Add(await DownloadFfMpeg(architecture));
 		}

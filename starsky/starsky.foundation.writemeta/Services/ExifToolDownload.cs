@@ -116,15 +116,9 @@ public sealed class ExifToolDownload : IExifToolDownload
 
 	public async Task<List<bool>> DownloadExifTool(List<string> architectures)
 	{
-		if ( architectures.Count == 0 )
-		{
-			architectures.Add(CurrentArchitecture.GetCurrentRuntimeIdentifier());
-		}
-
 		var result = new List<bool>();
-		foreach ( var architecture in architectures.Where(p => p !=
-		                                                       DotnetRuntimeNames
-			                                                       .GenericRuntimeName) )
+		foreach ( var architecture in
+		         DotnetRuntimeNames.GetArchitecturesNoGenericAndFallback(architectures) )
 		{
 			var isWindows = DotnetRuntimeNames.IsWindows(architecture);
 			await DownloadExifTool(isWindows);
