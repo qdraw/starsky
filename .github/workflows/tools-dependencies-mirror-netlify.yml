@@ -18,6 +18,7 @@ on:
   workflow_dispatch:
     
 name: Tools dependencies mirror netlify
+# for: starsky-dependencies
 
 jobs:
   test:
