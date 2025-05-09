@@ -148,15 +148,18 @@ public class MetaUpdateService : IMetaUpdateService
 				TimeSpan.FromSeconds(5));
 
 			// Do an Exif Sync for all files, including thumbnails
-			var (exifResult, newFileHashes) = await exifTool.UpdateAsync(fileIndexItem,
-				exifUpdateFilePaths, comparedNamesList, true, true);
+			var result = await exifTool.UpdateAsync(fileIndexItem,
+				exifUpdateFilePaths,
+				comparedNamesList, true, true);
 
-			await ApplyOrGenerateUpdatedFileHash(newFileHashes, fileIndexItem);
+			await ApplyOrGenerateUpdatedFileHash(result.NewFileHashes, fileIndexItem);
 
-			_logger.LogInformation(string.IsNullOrEmpty(exifResult)
+			_logger.LogInformation(string.IsNullOrEmpty(result.Command)
 				? $"[UpdateWriteDiskDatabase] ExifTool result is Nothing or " +
 				  $"Null for: path:{fileIndexItem.FilePath} {DateTime.UtcNow.ToShortTimeString()}"
-				: $"[UpdateWriteDiskDatabase] ExifTool result: {exifResult} path:{fileIndexItem.FilePath}");
+				: $"[UpdateWriteDiskDatabase] ExifTool result: " +
+				  $"{result.Command} path:{fileIndexItem.FilePath} " +
+				  $"status: {string.Join(", ", result.Rename)}");
 		}
 		else if ( fileIndexItem.ImageFormat != ExtensionRolesHelper.ImageFormat.xmp &&
 		          fileIndexItem.ImageFormat != ExtensionRolesHelper.ImageFormat.meta_json )
@@ -186,12 +189,13 @@ public class MetaUpdateService : IMetaUpdateService
 		if ( !string.IsNullOrWhiteSpace(newFileHashes.FirstOrDefault()) )
 		{
 			fileIndexItem.FileHash = newFileHashes.FirstOrDefault();
-			_logger.LogInformation($"use fileHash from exiftool {fileIndexItem.FileHash}");
+			_logger.LogInformation($"[MetaUpdateService] Use fileHash from exiftool " +
+			                       $"{fileIndexItem.FileHash}");
 			return;
 		}
 
 		// when newFileHashes is null or string.empty
-		// rename is done in the exiftool helper
+		// when not is empty: rename is done in the exiftool helper
 		var newFileHash =
 			( await new FileHash(_iStorage, _logger).GetHashCodeAsync(fileIndexItem.FilePath!) )
 			.Key;

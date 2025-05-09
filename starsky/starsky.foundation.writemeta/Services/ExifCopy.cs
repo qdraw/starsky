@@ -20,8 +20,8 @@ public sealed class ExifCopy
 		"</rdf:RDF>\n</x:xmpmeta>";
 
 	private readonly ExifToolCmdHelper _exifToolCmdHelper;
-	private readonly IStorage _subPathStorage;
 	private readonly IReadMeta _readMeta;
+	private readonly IStorage _subPathStorage;
 
 	public ExifCopy(IStorage subPathStorage, IStorage thumbnailStorage, IExifTool exifTool,
 		IReadMeta readMeta, IThumbnailQuery thumbnailQuery, IWebLogger logger)
@@ -92,6 +92,6 @@ public sealed class ExifCopy
 		comparedNames.Add(nameof(FileIndexItem.Software));
 		updateModel!.SetFilePath(toSubPath);
 		return ( await _exifToolCmdHelper.UpdateAsync(updateModel,
-			comparedNames, true, false) ).Item1;
+			comparedNames, true, false) ).Command;
 	}
 }

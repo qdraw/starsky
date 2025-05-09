@@ -67,7 +67,7 @@ public class ExifToolServiceTest
 		var result = await service.WriteTagsAndRenameThumbnailAsync(
 			"/image.jpg",
 			null, "");
-		Assert.IsFalse(result.Key);
+		Assert.IsFalse(result.IsSuccess);
 
 		CleanExifToolServiceTest();
 	}

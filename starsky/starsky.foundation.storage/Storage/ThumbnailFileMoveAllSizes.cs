@@ -1,41 +1,40 @@
+using System.Collections.Generic;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
 
 namespace starsky.foundation.storage.Storage;
 
-public sealed class ThumbnailFileMoveAllSizes
+public sealed class ThumbnailFileMoveAllSizes(
+	IStorage thumbnailStorage,
+	AppSettings appSettings,
+	IWebLogger logger)
 {
-	private readonly AppSettings _appSettings;
-	private readonly IStorage _thumbnailStorage;
-
-	public ThumbnailFileMoveAllSizes(IStorage thumbnailStorage, AppSettings appSettings)
+	/// <summary>
+	///     Rename all thumbnails
+	/// </summary>
+	/// <param name="oldFileHash">from</param>
+	/// <param name="newHashCode">to</param>
+	/// <returns>Success, size</returns>
+	public List<(bool, ThumbnailSize)> FileMove(string oldFileHash, string newHashCode,
+		string? reference)
 	{
-		_thumbnailStorage = thumbnailStorage;
-		_appSettings = appSettings;
-	}
+		var status = new List<(bool, ThumbnailSize)>();
+		foreach ( var size in ThumbnailNameHelper.AllThumbnailSizes )
+		{
+			var oldName =
+				ThumbnailNameHelper.Combine(oldFileHash, size, appSettings.ThumbnailImageFormat);
+			var newName =
+				ThumbnailNameHelper.Combine(newHashCode, size, appSettings.ThumbnailImageFormat);
 
-	public void FileMove(string oldFileHash, string newHashCode)
-	{
-		_thumbnailStorage.FileMove(
-			ThumbnailNameHelper.Combine(oldFileHash, ThumbnailSize.Large,
-				_appSettings.ThumbnailImageFormat),
-			ThumbnailNameHelper.Combine(newHashCode, ThumbnailSize.Large,
-				_appSettings.ThumbnailImageFormat));
-		_thumbnailStorage.FileMove(
-			ThumbnailNameHelper.Combine(oldFileHash, ThumbnailSize.Small,
-				_appSettings.ThumbnailImageFormat),
-			ThumbnailNameHelper.Combine(newHashCode, ThumbnailSize.Small,
-				_appSettings.ThumbnailImageFormat));
-		_thumbnailStorage.FileMove(
-			ThumbnailNameHelper.Combine(oldFileHash, ThumbnailSize.ExtraLarge,
-				_appSettings.ThumbnailImageFormat),
-			ThumbnailNameHelper.Combine(newHashCode, ThumbnailSize.ExtraLarge,
-				_appSettings.ThumbnailImageFormat));
-		_thumbnailStorage.FileMove(
-			ThumbnailNameHelper.Combine(oldFileHash, ThumbnailSize.TinyMeta,
-				_appSettings.ThumbnailImageFormat),
-			ThumbnailNameHelper.Combine(newHashCode, ThumbnailSize.TinyMeta,
-				_appSettings.ThumbnailImageFormat));
+			var isSuccess = thumbnailStorage.FileMove(oldName, newName);
+
+			status.Add(( isSuccess, size ));
+		}
+
+		logger.LogInformation($"[FileMove] {reference} \nO: {oldFileHash} - N: {newHashCode} - " +
+		                      $"{string.Join(", ", status)}");
+		return status;
 	}
 }

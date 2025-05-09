@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Models;
@@ -7,6 +6,7 @@ using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.writemeta.Interfaces;
+using starsky.foundation.writemeta.Models;
 
 namespace starskytest.FakeMocks;
 
@@ -43,7 +43,7 @@ public sealed class FakeExifTool : IExifToolHostStorage
 		return true;
 	}
 
-	public async Task<KeyValuePair<bool, string>> WriteTagsAndRenameThumbnailAsync(
+	public async Task<ExifToolWriteTagsAndRenameThumbnailModel> WriteTagsAndRenameThumbnailAsync(
 		string subPath, string? beforeFileHash,
 		string command, CancellationToken cancellationToken = default)
 	{
@@ -57,7 +57,7 @@ public sealed class FakeExifTool : IExifToolHostStorage
 
 		var newFileHash =
 			( await new FileHash(_iStorage, new FakeIWebLogger()).GetHashCodeAsync(subPath) ).Key;
-		return new KeyValuePair<bool, string>(true, newFileHash);
+		return new ExifToolWriteTagsAndRenameThumbnailModel(true, newFileHash);
 	}
 
 	public Task<bool> WriteTagsThumbnailAsync(string fileHash, string command)
