@@ -121,7 +121,7 @@ public sealed class ExifToolDownload : IExifToolDownload
 		         DotnetRuntimeNames.GetArchitecturesNoGenericAndFallback(architectures) )
 		{
 			var isWindows = DotnetRuntimeNames.IsWindows(architecture);
-			await DownloadExifTool(isWindows);
+			result.Add(await DownloadExifTool(isWindows));
 		}
 
 		return result;
