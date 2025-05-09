@@ -332,6 +332,19 @@ public sealed class ExifToolDownloadTest
 	}
 
 	[TestMethod]
+	public async Task DownloadExifTool_multiArg_EmptyArray_ChecksumNotFound()
+	{
+		var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(),
+			_serviceScopeFactory, new FakeIWebLogger());
+
+		var result = await new ExifToolDownload(httpClientHelper, _appSettings,
+			new FakeIWebLogger()).DownloadExifTool([]);
+
+		Assert.AreEqual(1, result.Count);
+		Assert.IsFalse(result[0]);
+	}
+
+	[TestMethod]
 	public async Task DownloadExifTool_Skip_AddSwaggerExportExitAfter()
 	{
 		var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(),
