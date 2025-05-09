@@ -24,7 +24,7 @@ public static class ImageRotation
 		[Display(Name = "Rotate 270 CW")] Rotate270Cw = 8
 	}
 
-	public static float ToDegrees(this ImageRotation.Rotation rotation)
+	public static float ToDegrees(this Rotation rotation)
 	{
 		// ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 		return rotation switch

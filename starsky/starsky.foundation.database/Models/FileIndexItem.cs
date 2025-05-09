@@ -85,7 +85,6 @@ public sealed class FileIndexItem
 	/// </summary>
 	private const int MakeModelFixedLength = 3;
 
-
 	/// <summary>
 	///     The logic order of the rotation. Used when rotate relative. And after the last one it starts
 	///     with the first item.

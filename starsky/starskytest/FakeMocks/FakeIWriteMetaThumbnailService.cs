@@ -3,13 +3,14 @@ using starsky.foundation.database.Models;
 using starsky.foundation.thumbnailmeta.Interfaces;
 using starsky.foundation.thumbnailmeta.Models;
 
-namespace starskytest.FakeMocks;
-
-public class FakeIWriteMetaThumbnailService : IWriteMetaThumbnailService
+namespace starskytest.FakeMocks
 {
-	public Task<bool> WriteAndCropFile(string fileHash, OffsetModel offsetData, int sourceWidth,
-		int sourceHeight, ImageRotation.Rotation rotation, string? reference = null)
+	public class FakeIWriteMetaThumbnailService : IWriteMetaThumbnailService
 	{
-		return Task.FromResult(true);
+		public Task<bool> WriteAndCropFile(string fileHash, OffsetModel offsetData, int sourceWidth,
+			int sourceHeight, ImageRotation.Rotation rotation, string? reference = null)
+		{
+			return Task.FromResult(true);
+		}
 	}
 }

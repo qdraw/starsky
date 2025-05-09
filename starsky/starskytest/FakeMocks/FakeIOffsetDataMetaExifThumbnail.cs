@@ -3,19 +3,20 @@ using starsky.foundation.database.Models;
 using starsky.foundation.thumbnailmeta.Interfaces;
 using starsky.foundation.thumbnailmeta.Models;
 
-namespace starskytest.FakeMocks;
-
-public class FakeIOffsetDataMetaExifThumbnail : IOffsetDataMetaExifThumbnail
+namespace starskytest.FakeMocks
 {
-	public OffsetModel ParseOffsetData(ExifThumbnailDirectory? exifThumbnailDir,
-		string subPath)
+	public class FakeIOffsetDataMetaExifThumbnail : IOffsetDataMetaExifThumbnail
 	{
-		return new OffsetModel { Success = true };
-	}
+		public OffsetModel ParseOffsetData(ExifThumbnailDirectory? exifThumbnailDir,
+			string subPath)
+		{
+			return new OffsetModel { Success = true };
+		}
 
-	public (ExifThumbnailDirectory?, int, int, ImageRotation.Rotation) GetExifMetaDirectories(
-		string subPath)
-	{
-		return ( null, 0, 0, ImageRotation.Rotation.Horizontal );
+		public (ExifThumbnailDirectory?, int, int, ImageRotation.Rotation) GetExifMetaDirectories(
+			string subPath)
+		{
+			return ( null, 0, 0, ImageRotation.Rotation.Horizontal );
+		}
 	}
 }
