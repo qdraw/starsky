@@ -15,7 +15,7 @@ namespace starskyDependenciesDownloadCli;
 
 public static class Program
 {
-	public static async Task Main()
+	public static async Task Main(string[] args)
 	{
 		var services = new ServiceCollection();
 
@@ -44,6 +44,9 @@ public static class Program
 
 		await exifToolDownload.DownloadExifTool(appSettings.IsWindows);
 		await geoFileDownload.DownloadAsync();
+
+		var runtimes = ArgsHelper.GetRuntimes(args);
+		if ( runtimes.Count > 0 ) runtimes = 
 		await ffMpegDownload.DownloadFfMpeg();
 	}
 }

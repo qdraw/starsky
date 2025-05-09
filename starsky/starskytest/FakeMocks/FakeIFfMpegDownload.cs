@@ -18,7 +18,7 @@ public class FakeIFfMpegDownload : IFfMpegDownload
 {
 	private FfmpegDownloadStatus _status = FfmpegDownloadStatus.Ok;
 
-	public async Task<FfmpegDownloadStatus> DownloadFfMpeg()
+	public async Task<FfmpegDownloadStatus> DownloadFfMpeg(string? architecture = null)
 	{
 		if ( _status != FfmpegDownloadStatus.Ok )
 		{

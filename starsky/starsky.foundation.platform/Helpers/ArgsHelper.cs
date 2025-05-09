@@ -1044,4 +1044,25 @@ public sealed class ArgsHelper
 
 		return profile;
 	}
+
+	public static List<string> GetRuntimes(IReadOnlyList<string> args)
+	{
+		// --runtime
+		var runtimes = new List<string>();
+
+		for ( var arg = 0; arg < args.Count; arg++ )
+		{
+			if ( !args[arg].Equals("--runtime",
+				     StringComparison.CurrentCultureIgnoreCase) ||
+			     arg + 1 == args.Count )
+			{
+				continue;
+			}
+
+			var runtime = args[arg + 1].Split(',');
+			runtimes.AddRange(runtime);
+		}
+
+		return runtimes;
+	}
 }

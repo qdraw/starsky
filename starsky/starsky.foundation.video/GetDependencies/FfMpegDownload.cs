@@ -38,7 +38,7 @@ public class FfMpegDownload : IFfMpegDownload
 		_preflightRunCheck = preflightRunCheck;
 	}
 
-	public async Task<FfmpegDownloadStatus> DownloadFfMpeg()
+	public async Task<FfmpegDownloadStatus> DownloadFfMpeg(string? architecture = null)
 	{
 		if ( _appSettings.FfmpegSkipDownloadOnStartup == true
 		     || _appSettings is { AddSwaggerExport: true, AddSwaggerExportExitAfter: true } )
@@ -50,10 +50,10 @@ public class FfMpegDownload : IFfMpegDownload
 			return FfmpegDownloadStatus.SettingsDisabled;
 		}
 
-		var currentArchitecture = CurrentArchitecture.GetCurrentRuntimeIdentifier();
-		CreateDirectoryDependenciesFolderIfNotExists(currentArchitecture);
+		architecture ??= CurrentArchitecture.GetCurrentRuntimeIdentifier();
+		CreateDirectoryDependenciesFolderIfNotExists(architecture);
 
-		if ( _hostFileSystemStorage.ExistFile(_ffmpegExePath.GetExePath(currentArchitecture)) )
+		if ( _hostFileSystemStorage.ExistFile(_ffmpegExePath.GetExePath(architecture)) )
 		{
 			return FfmpegDownloadStatus.Ok;
 		}
@@ -66,10 +66,10 @@ public class FfMpegDownload : IFfMpegDownload
 		}
 
 		var binaryIndexBaseUrls = GetCurrentArchitectureIndexUrls(container,
-			currentArchitecture);
+			architecture);
 
 		var downloadStatus =
-			await _downloadBinaries.Download(binaryIndexBaseUrls, currentArchitecture);
+			await _downloadBinaries.Download(binaryIndexBaseUrls, architecture);
 		if ( downloadStatus != FfmpegDownloadStatus.Ok &&
 		     downloadStatus != FfmpegDownloadStatus.OkAlreadyExists )
 		{
@@ -77,12 +77,12 @@ public class FfMpegDownload : IFfMpegDownload
 			return downloadStatus;
 		}
 
-		if ( !await _prepareBeforeRunning.PrepareBeforeRunning(currentArchitecture) )
+		if ( !await _prepareBeforeRunning.PrepareBeforeRunning(architecture) )
 		{
 			return FfmpegDownloadStatus.PrepareBeforeRunningFailed;
 		}
 
-		if ( !await _preflightRunCheck.TryRun(currentArchitecture) )
+		if ( !await _preflightRunCheck.TryRun(architecture) )
 		{
 			return FfmpegDownloadStatus.PreflightRunCheckFailed;
 		}

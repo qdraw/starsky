@@ -4,7 +4,7 @@ namespace starsky.foundation.video.GetDependencies.Interfaces;
 
 public interface IFfMpegDownload
 {
-	Task<FfmpegDownloadStatus> DownloadFfMpeg();
+	Task<FfmpegDownloadStatus> DownloadFfMpeg(string? architecture = null);
 
 	string GetSetFfMpegPath();
 }
