@@ -50,7 +50,7 @@ public class QuicklookMacOs(IWebLogger logger)
 		return false;
 	}
 
-	private bool SaveCGImageAsFile(IntPtr cgImage, string outputPath,
+	internal bool SaveCGImageAsFile(IntPtr cgImage, string outputPath,
 		string uniformTypeIdentifier = "public.jpeg")
 	{
 		const uint kCFStringEncodingUTF8 = 0x08000100;

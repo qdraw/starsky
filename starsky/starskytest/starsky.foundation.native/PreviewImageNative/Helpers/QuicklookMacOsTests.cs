@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -16,7 +17,7 @@ public class QuicklookMacOsTests
 	private readonly FakeIWebLogger _logger = new();
 
 	[TestMethod]
-	public void GenerateThumbnail_ShouldReturnFalse_WhenNotMacOS()
+	public void GenerateThumbnail_DllNotFoundException__WindowsLinuxOnly()
 	{
 		// Arrange
 		if ( RuntimeInformation.IsOSPlatform(OSPlatform.OSX) )
@@ -27,10 +28,24 @@ public class QuicklookMacOsTests
 		var quicklook = new QuicklookMacOs(_logger);
 
 		// Act
-		var result = quicklook.GenerateThumbnail("input.jpg", "output.webp", 100, 100);
+		Assert.ThrowsExactly<DllNotFoundException>(() =>
+			quicklook.GenerateThumbnail("input.jpg", "output.webp", 100, 100));
+	}
 
-		// Assert
-		Assert.IsFalse(result);
+	[TestMethod]
+	public void SaveCGImageAsFile_DllNotFoundException__WindowsLinuxOnly()
+	{
+		// Arrange
+		if ( RuntimeInformation.IsOSPlatform(OSPlatform.OSX) )
+		{
+			Assert.Inconclusive("This test is only valid on non-macOS platforms.");
+		}
+
+		var quicklook = new QuicklookMacOs(_logger);
+
+		// Act
+		Assert.ThrowsExactly<DllNotFoundException>(() =>
+			quicklook.SaveCGImageAsFile(1, "output.webp"));
 	}
 
 	[TestMethod]
