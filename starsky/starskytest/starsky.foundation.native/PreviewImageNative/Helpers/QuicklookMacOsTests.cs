@@ -2,8 +2,9 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SixLabors.ImageSharp;
 using starsky.foundation.native.PreviewImageNative.Helpers;
-using starskytest.FakeCreateAn.CreateAnImagePsd;
+using starsky.foundation.platform.Models;
 using starskytest.FakeCreateAn.CreateAnImageWithThumbnail;
 using starskytest.FakeMocks;
 
@@ -83,7 +84,7 @@ public class QuicklookMacOsTests
 	}
 
 	[TestMethod]
-	public void GenerateThumbnail_ShouldReturnTrue_WhenValidInput__MacOnly()
+	public void GenerateThumbnail_ShouldReturnTrue_WhenValidInput_Jpeg__MacOnly()
 	{
 		// Arrange
 		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.OSX) )
@@ -91,36 +92,39 @@ public class QuicklookMacOsTests
 			Assert.Inconclusive("This test is only valid on macOS platforms.");
 		}
 
+		const string testName =
+			nameof(GenerateThumbnail_ShouldReturnTrue_WhenValidInput_Jpeg__MacOnly);
 		var quicklook = new QuicklookMacOs(_logger);
 		var tempInput = new CreateAnImageWithThumbnail().Bytes.ToArray();
-		var tempInputPath = Path.Combine("/tmp", "input.jpg");
+		var tempFolder = new AppSettings().TempFolder;
+		var tempInputPath = Path.Combine(tempFolder, $"{testName}_input.jpg");
 		File.WriteAllBytes(tempInputPath, tempInput);
-		
-		var tempOutput = Path.Combine("/tmp", "output.webp");
+
+		var tempOutput = Path.Combine(tempFolder, $"{testName}_output.jpg");
 
 		try
 		{
 			// Act
-			var result = quicklook.GenerateThumbnail(tempInputPath, 
-				"/tmp/thumbnail.webp", 150, 100);
+			var result = quicklook.GenerateThumbnail(tempInputPath,
+				tempOutput, 150, 100);
 
 			// Assert
-			Assert.IsFalse(result);
+			Assert.IsTrue(result);
+			Assert.IsTrue(File.Exists(tempOutput));
+			Assert.IsTrue(new FileInfo(tempOutput).Length > 0);
+			// detect with imageSharp if the image is a valid image
+			using var image = Image.Load(tempOutput);
+			Assert.IsNotNull(image);
+			Assert.AreEqual(150, image.Width);
+			Assert.AreEqual(100, image.Height);
 		}
 		finally
 		{
+			File.Delete(tempInputPath);
 			if ( File.Exists(tempOutput) )
 			{
 				File.Delete(tempOutput);
 			}
 		}
-	}
-
-	[TestMethod]
-	public void GenerateThumbnail_ShouldReturnTrue_WhenValidInput22__MacOnly()
-	{
-		var quicklook = new QuicklookMacOs(_logger);
-		quicklook.GenerateThumbnail("/Users/dion/data/fotobieb/2025/05/2025_05_09/20250509_143736_d.jpg", "/tmp/thubn.webp", 150, 100);
-
 	}
 }

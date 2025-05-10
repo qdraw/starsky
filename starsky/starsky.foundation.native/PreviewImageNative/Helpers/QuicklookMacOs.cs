@@ -50,7 +50,8 @@ public class QuicklookMacOs(IWebLogger logger)
 		return false;
 	}
 
-	private bool SaveCGImageAsFile(IntPtr cgImage, string outputPath)
+	private bool SaveCGImageAsFile(IntPtr cgImage, string outputPath,
+		string uniformTypeIdentifier = "public.jpeg")
 	{
 		const uint kCFStringEncodingUTF8 = 0x08000100;
 
@@ -60,11 +61,12 @@ public class QuicklookMacOs(IWebLogger logger)
 		// Create CFURL from path
 		var url = CFURLCreateWithFileSystemPath(IntPtr.Zero, cfStr, 0 /* POSIX */, false);
 
-		// Create type identifier for PNG
-		var pngType = CFStringCreateWithCString(IntPtr.Zero, "public.webp", kCFStringEncodingUTF8);
+		// Create type identifier for image format
+		var imageTypeIntPtr =
+			CFStringCreateWithCString(IntPtr.Zero, uniformTypeIdentifier, kCFStringEncodingUTF8);
 
 		// Create image destination
-		var destination = CGImageDestinationCreateWithURL(url, pngType, 1, IntPtr.Zero);
+		var destination = CGImageDestinationCreateWithURL(url, imageTypeIntPtr, 1, IntPtr.Zero);
 
 		if ( destination == IntPtr.Zero )
 		{
@@ -83,7 +85,7 @@ public class QuicklookMacOs(IWebLogger logger)
 		CFRelease(destination);
 		CFRelease(url);
 		CFRelease(cfStr);
-		CFRelease(pngType);
+		CFRelease(imageTypeIntPtr);
 		return true;
 	}
 
