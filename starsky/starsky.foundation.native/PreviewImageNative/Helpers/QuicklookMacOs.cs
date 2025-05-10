@@ -7,11 +7,6 @@ namespace starsky.foundation.native.PreviewImageNative.Helpers;
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 public class QuicklookMacOs(IWebLogger logger)
 {
-	public enum CfStringEncoding : uint
-	{
-		kCFStringEncodingUTF8 = 0x08000100
-	}
-
 	// Import the QuickLook framework
 	[DllImport("/System/Library/Frameworks/QuickLook.framework/QuickLook",
 		EntryPoint = "QLThumbnailImageCreate")]
@@ -137,6 +132,11 @@ public class QuicklookMacOs(IWebLogger logger)
 
 	[DllImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
 	private static extern void CFRelease(IntPtr cf);
+
+	private enum CfStringEncoding : uint
+	{
+		kCFStringEncodingUTF8 = 0x08000100
+	}
 
 	[SuppressMessage("Usage",
 		"S2342: Enumeration types should comply with a naming convention")]

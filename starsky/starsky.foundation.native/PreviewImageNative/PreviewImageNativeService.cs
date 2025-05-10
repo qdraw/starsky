@@ -1,14 +1,20 @@
 using System.Runtime.InteropServices;
+using starsky.foundation.injection;
 using starsky.foundation.native.PreviewImageNative.Helpers;
+using starsky.foundation.native.PreviewImageNative.Interfaces;
 using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.native.PreviewImageNative;
 
-public class PreviewImageNativeService(IWebLogger logger)
+[Service(typeof(IPreviewImageNativeService), InjectionLifetime = InjectionLifetime.Scoped)]
+public class PreviewImageNativeService(IWebLogger logger) : IPreviewImageNativeService
 {
 	public bool GeneratePreviewImage(string filePath, string outputPath, int width, int height)
 	{
-		return GeneratePreviewImage(RuntimeInformation.IsOSPlatform, filePath, outputPath, width,
+		return GeneratePreviewImage(RuntimeInformation.IsOSPlatform,
+			filePath,
+			outputPath,
+			width,
 			height);
 	}
 
