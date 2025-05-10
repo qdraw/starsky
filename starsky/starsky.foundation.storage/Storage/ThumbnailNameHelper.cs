@@ -11,11 +11,19 @@ namespace starsky.foundation.storage.Storage;
 /// </summary>
 public static partial class ThumbnailNameHelper
 {
-	public static readonly ThumbnailSize[] AllThumbnailSizes = new[]
-	{
+	/// <summary>
+	///     Without TinyMeta
+	/// </summary>
+	public static readonly ThumbnailSize[] GeneratedThumbnailSizes =
+	[
+		ThumbnailSize.ExtraLarge, ThumbnailSize.Small, ThumbnailSize.Large
+	];
+
+	public static readonly ThumbnailSize[] AllThumbnailSizes =
+	[
 		ThumbnailSize.TinyMeta, ThumbnailSize.ExtraLarge, ThumbnailSize.Small,
 		ThumbnailSize.Large
-	};
+	];
 
 	public static int GetSize(ThumbnailSize size)
 	{
@@ -78,6 +86,11 @@ public static partial class ThumbnailNameHelper
 		int.TryParse(afterAtString, NumberStyles.Number,
 			CultureInfo.InvariantCulture, out var afterAt);
 		return GetSize(afterAt);
+	}
+
+	public static int Width(this ThumbnailSize size)
+	{
+		return GetSize(size);
 	}
 
 	public static string Combine(string fileHash, int size,

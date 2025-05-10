@@ -374,8 +374,8 @@ public sealed class ExifReadTest
 		Assert.AreEqual(string.Empty, item.Title);
 		Assert.AreEqual(0, item.Latitude, 0.000001);
 		Assert.AreEqual(0, item.Longitude, 0.000001);
-		Assert.AreEqual(4000, item.ImageHeight);
-		Assert.AreEqual(6000, item.ImageWidth);
+		Assert.AreEqual(4024, item.ImageHeight);
+		Assert.AreEqual(6048, item.ImageWidth);
 		Assert.AreEqual(string.Empty, item.LocationCity);
 		Assert.AreEqual(string.Empty, item.LocationState);
 		Assert.AreEqual(string.Empty, item.LocationCountry);

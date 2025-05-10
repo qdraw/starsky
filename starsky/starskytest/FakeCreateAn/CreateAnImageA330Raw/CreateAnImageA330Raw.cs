@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Immutable;
 using System.IO;
 using System.Reflection;
@@ -9,7 +8,7 @@ namespace starskytest.FakeCreateAn.CreateAnImageA330Raw;
 
 public class CreateAnImageA330Raw
 {
-	public readonly ImmutableArray<byte> Bytes = [..Array.Empty<byte>()];
+	public readonly ImmutableArray<byte> Bytes = [];
 
 	public CreateAnImageA330Raw()
 	{
@@ -20,7 +19,7 @@ public class CreateAnImageA330Raw
 		}
 
 		var path = Path.Combine(dirName, "FakeCreateAn",
-			"CreateAnImageA330Raw", "head_part.arw");
+			"CreateAnImageA330Raw", "DSC01028.ARW");
 
 		Bytes = [..StreamToBytes(path)];
 	}
