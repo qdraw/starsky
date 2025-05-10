@@ -75,11 +75,7 @@ public class QuicklookMacOs(IWebLogger logger)
 		}
 
 		// Add image and finalize
-		CGImageDestinationAddImage(destination, cgImage, IntPtr.Zero);
-		if ( !CGImageDestinationFinalize(destination) )
-		{
-			logger.LogInformation("[QuicklookMacOs] Failed to finalize image");
-		}
+		ImageDestinationAddImageFinalize(destination, cgImage);
 
 		// Cleanup
 		CFRelease(destination);
@@ -87,6 +83,15 @@ public class QuicklookMacOs(IWebLogger logger)
 		CFRelease(cfStr);
 		CFRelease(imageTypeIntPtr);
 		return true;
+	}
+
+	internal void ImageDestinationAddImageFinalize(IntPtr destination, IntPtr cgImage)
+	{
+		CGImageDestinationAddImage(destination, cgImage, IntPtr.Zero);
+		if ( !CGImageDestinationFinalize(destination) )
+		{
+			logger.LogInformation("[QuicklookMacOs] Failed to finalize image");
+		}
 	}
 
 	[DllImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]

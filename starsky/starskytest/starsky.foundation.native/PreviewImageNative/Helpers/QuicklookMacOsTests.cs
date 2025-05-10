@@ -14,8 +14,6 @@ namespace starskytest.starsky.foundation.native.PreviewImageNative.Helpers;
 [TestClass]
 public class QuicklookMacOsTests
 {
-	private readonly FakeIWebLogger _logger = new();
-
 	[TestMethod]
 	public void GenerateThumbnail_DllNotFoundException__WindowsLinuxOnly()
 	{
@@ -25,27 +23,17 @@ public class QuicklookMacOsTests
 			Assert.Inconclusive("This test is only valid on non-macOS platforms.");
 		}
 
-		var quicklook = new QuicklookMacOs(_logger);
-
+		var (quicklook, _) = CreateSut();
 		// Act
 		Assert.ThrowsExactly<DllNotFoundException>(() =>
 			quicklook.GenerateThumbnail("input.jpg", "output.webp", 100, 100));
 	}
 
-	[TestMethod]
-	public void SaveCGImageAsFile_DllNotFoundException__WindowsLinuxOnly()
+	private static (QuicklookMacOs, FakeIWebLogger) CreateSut()
 	{
-		// Arrange
-		if ( RuntimeInformation.IsOSPlatform(OSPlatform.OSX) )
-		{
-			Assert.Inconclusive("This test is only valid on non-macOS platforms.");
-		}
-
-		var quicklook = new QuicklookMacOs(_logger);
-
-		// Act
-		Assert.ThrowsExactly<DllNotFoundException>(() =>
-			quicklook.SaveCGImageAsFile(1, "output.webp"));
+		var logger = new FakeIWebLogger();
+		var quicklook = new QuicklookMacOs(logger);
+		return ( quicklook, logger );
 	}
 
 	[TestMethod]
@@ -57,14 +45,14 @@ public class QuicklookMacOsTests
 			Assert.Inconclusive("This test is only valid on macOS platforms.");
 		}
 
-		var quicklook = new QuicklookMacOs(_logger);
+		var (quicklook, logger) = CreateSut();
 
 		// Act
 		var result = quicklook.GenerateThumbnail("", "output.webp", 100, 100);
 
 		// Assert
 		Assert.IsFalse(result);
-		Assert.IsTrue(_logger.TrackedInformation.Exists(log =>
+		Assert.IsTrue(logger.TrackedInformation.Exists(log =>
 			log.Item2?.Contains("Failed to create URL") == true));
 	}
 
@@ -77,7 +65,8 @@ public class QuicklookMacOsTests
 			Assert.Inconclusive("This test is only valid on macOS platforms.");
 		}
 
-		var quicklook = new QuicklookMacOs(_logger);
+		var (quicklook, logger) = CreateSut();
+
 		var tempInput = Path.GetTempFileName();
 
 		try
@@ -89,7 +78,7 @@ public class QuicklookMacOsTests
 
 			// Assert
 			Assert.IsFalse(result);
-			Assert.IsTrue(_logger.TrackedInformation.Exists(log =>
+			Assert.IsTrue(logger.TrackedInformation.Exists(log =>
 				log.Item2?.Contains("Failed to generate thumbnail") == true));
 		}
 		finally
@@ -109,7 +98,8 @@ public class QuicklookMacOsTests
 
 		const string testName =
 			nameof(GenerateThumbnail_ShouldReturnTrue_WhenValidInput_Jpeg__MacOnly);
-		var quicklook = new QuicklookMacOs(_logger);
+		var (quicklook, _) = CreateSut();
+
 		var tempInput = new CreateAnImageWithThumbnail().Bytes.ToArray();
 		var tempFolder = new AppSettings().TempFolder;
 		var tempInputPath = Path.Combine(tempFolder, $"{testName}_input.jpg");
@@ -141,5 +131,72 @@ public class QuicklookMacOsTests
 				File.Delete(tempOutput);
 			}
 		}
+	}
+
+	[TestMethod]
+	public void SaveCGImageAsFile_InvalidType__MacOnly()
+	{
+		// Arrange
+		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.OSX) )
+		{
+			Assert.Inconclusive("This test is only valid on macOS platforms.");
+		}
+
+		var (quicklook, logger) = CreateSut();
+
+		// Act
+		var result = quicklook.SaveCGImageAsFile(1, "output.webp", "invalid_type");
+		Assert.IsFalse(result);
+		Assert.IsTrue(logger.TrackedInformation.Exists(log =>
+			log.Item2?.Contains("Failed to create image destination") == true));
+	}
+
+	[TestMethod]
+	public void SaveCGImageAsFile_DllNotFoundException__WindowsLinuxOnly()
+	{
+		// Arrange
+		if ( RuntimeInformation.IsOSPlatform(OSPlatform.OSX) )
+		{
+			Assert.Inconclusive("This test is only valid on non-macOS platforms.");
+		}
+
+		var (quicklook, _) = CreateSut();
+
+		// Act
+		Assert.ThrowsExactly<DllNotFoundException>(() =>
+			quicklook.SaveCGImageAsFile(1, "output.webp"));
+	}
+
+	[TestMethod]
+	public void ImageDestinationAddImageFinalize_InvalidType__MacOnly()
+	{
+		// Arrange
+		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.OSX) )
+		{
+			Assert.Inconclusive("This test is only valid on macOS platforms.");
+		}
+
+		var (quicklook, logger) = CreateSut();
+
+		// Act
+		quicklook.ImageDestinationAddImageFinalize(IntPtr.Zero, IntPtr.Zero);
+		Assert.IsTrue(logger.TrackedInformation.Exists(log =>
+			log.Item2?.Contains("Failed to finalize image") == true));
+	}
+
+	[TestMethod]
+	public void ImageDestinationAddImageFinalize_DllNotFoundException__WindowsLinuxOnly()
+	{
+		// Arrange
+		if ( RuntimeInformation.IsOSPlatform(OSPlatform.OSX) )
+		{
+			Assert.Inconclusive("This test is only valid on non-macOS platforms.");
+		}
+
+		var (quicklook, _) = CreateSut();
+
+		// Act
+		Assert.ThrowsExactly<DllNotFoundException>(() =>
+			quicklook.ImageDestinationAddImageFinalize(1, IntPtr.Zero));
 	}
 }
