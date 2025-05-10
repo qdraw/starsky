@@ -68,7 +68,7 @@ public class QuickLookThumbnail
 		var url = CFURLCreateWithFileSystemPath(IntPtr.Zero, cfStr, 0 /* POSIX */, false);
 
 		// Create type identifier for PNG
-		var pngType = CFStringCreateWithCString(IntPtr.Zero, "public.webp", kCFStringEncodingUTF8);
+		var pngType = CFStringCreateWithCString(IntPtr.Zero, "public.jpeg", kCFStringEncodingUTF8);
 
 		// Create image destination
 		var destination = CGImageDestinationCreateWithURL(url, pngType, 1, IntPtr.Zero);
