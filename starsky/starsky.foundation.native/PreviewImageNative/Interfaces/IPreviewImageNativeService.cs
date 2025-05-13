@@ -2,5 +2,13 @@ namespace starsky.foundation.native.PreviewImageNative.Interfaces;
 
 public interface IPreviewImageNativeService
 {
+	/// <summary>
+	/// Creates an image preview using the native QuickLook framework on macOS.
+	/// </summary>
+	/// <param name="filePath">where from</param>
+	/// <param name="outputPath">to</param>
+	/// <param name="width">in pixels</param>
+	/// <param name="height">in pixels</param>
+	/// <returns>is success</returns>
 	bool GeneratePreviewImage(string filePath, string outputPath, int width, int height);
 }
