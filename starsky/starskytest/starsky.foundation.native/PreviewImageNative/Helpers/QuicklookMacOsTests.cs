@@ -199,4 +199,18 @@ public class QuicklookMacOsTests
 		Assert.ThrowsExactly<DllNotFoundException>(() =>
 			quicklook.ImageDestinationAddImageFinalize(1, IntPtr.Zero));
 	}
+
+	[TestMethod]
+	public void CreateCFStringCreateWithCString_DllNotFoundException__WindowsLinuxOnly()
+	{
+		// Arrange
+		if ( RuntimeInformation.IsOSPlatform(OSPlatform.OSX) )
+		{
+			Assert.Inconclusive("This test is only valid on non-macOS platforms.");
+		}
+
+		// Act
+		Assert.ThrowsExactly<DllNotFoundException>(() =>
+			QuicklookMacOs.CreateCFStringCreateWithCString("input.jpg"));
+	}
 }

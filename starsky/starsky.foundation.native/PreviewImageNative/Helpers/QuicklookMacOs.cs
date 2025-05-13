@@ -5,6 +5,10 @@ using starsky.foundation.platform.Interfaces;
 namespace starsky.foundation.native.PreviewImageNative.Helpers;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
+[SuppressMessage("Interoperability", "SYSLIB1054:Use \'LibraryImportAttribute\' " +
+                                     "instead of \'DllImportAttribute\' to generate P/Invoke " +
+                                     "marshalling code at compile time")]
+[SuppressMessage("Usage", "CA2101: Specify marshaling for P/Invoke string arguments")]
 public class QuicklookMacOs(IWebLogger logger)
 {
 	// Import the QuickLook framework
@@ -15,10 +19,7 @@ public class QuicklookMacOs(IWebLogger logger)
 
 	public bool GenerateThumbnail(string filePath, string outputPath, int width, int height)
 	{
-		var cfStr = CFStringCreateWithCString(IntPtr.Zero, filePath,
-			CfStringEncoding.kCFStringEncodingUTF8);
-		var url = CFURLCreateWithFileSystemPath(IntPtr.Zero, cfStr, CFURLPathStyle.POSIX, true);
-
+		var url = CreateCFStringCreateWithCString(filePath);
 		if ( url == IntPtr.Zero )
 		{
 			logger.LogInformation("[QuicklookMacOs] Error: Failed to create URL for {filePath}",
@@ -43,6 +44,20 @@ public class QuicklookMacOs(IWebLogger logger)
 
 		logger.LogInformation("[QuicklookMacOs] Failed to generate thumbnail");
 		return false;
+	}
+
+	internal static IntPtr CreateCFStringCreateWithCString(string filePath)
+	{
+		try
+		{
+			var cfStr = CFStringCreateWithCString(IntPtr.Zero, filePath,
+				CfStringEncoding.kCFStringEncodingUTF8);
+			return CFURLCreateWithFileSystemPath(IntPtr.Zero, cfStr, CFURLPathStyle.POSIX, true);
+		}
+		catch ( DllNotFoundException )
+		{
+			return IntPtr.Zero;
+		}
 	}
 
 	internal bool SaveCGImageAsFile(IntPtr cgImage, string outputPath,
