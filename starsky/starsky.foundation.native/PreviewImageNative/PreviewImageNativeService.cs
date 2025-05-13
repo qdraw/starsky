@@ -9,8 +9,13 @@ namespace starsky.foundation.native.PreviewImageNative;
 [Service(typeof(IPreviewImageNativeService), InjectionLifetime = InjectionLifetime.Scoped)]
 public class PreviewImageNativeService(IWebLogger logger) : IPreviewImageNativeService
 {
+	public bool IsSupported()
+	{
+		return IsSupported(RuntimeInformation.IsOSPlatform);
+	}
+
 	/// <summary>
-	/// Creates an image preview using the native QuickLook framework on macOS.
+	///     Creates an image preview using the native QuickLook framework on macOS.
 	/// </summary>
 	/// <param name="filePath">where from</param>
 	/// <param name="outputPath">to</param>
@@ -24,6 +29,11 @@ public class PreviewImageNativeService(IWebLogger logger) : IPreviewImageNativeS
 			outputPath,
 			width,
 			height);
+	}
+
+	internal static bool IsSupported(IsOsPlatformDelegate runtimeInformationIsOsPlatform)
+	{
+		return runtimeInformationIsOsPlatform(OSPlatform.OSX);
 	}
 
 	internal bool GeneratePreviewImage(

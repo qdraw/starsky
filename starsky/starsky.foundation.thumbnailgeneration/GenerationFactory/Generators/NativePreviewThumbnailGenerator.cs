@@ -1,27 +1,31 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using starsky.foundation.injection;
 using starsky.foundation.native.PreviewImageNative.Interfaces;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
+using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.thumbnailgeneration.GenerationFactory.Generators.Interfaces;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.NativePreview;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Shared;
 using starsky.foundation.thumbnailgeneration.Models;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.Generators;
 
+[Service(typeof(INativePreviewThumbnailGenerator), InjectionLifetime = InjectionLifetime.Scoped)]
 public class NativePreviewThumbnailGenerator(
 	ISelectorStorage selectorStorage,
 	IPreviewImageNativeService imageNativeService,
 	IWebLogger logger,
-	AppSettings appSettings)
-	: IThumbnailGenerator
+	AppSettings appSettings,
+	IReadMetaSubPathStorage readMeta)
+	: INativePreviewThumbnailGenerator
 {
 	private readonly IStorage _storage =
 		selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
@@ -31,7 +35,8 @@ public class NativePreviewThumbnailGenerator(
 		List<ThumbnailSize> thumbnailSizes)
 	{
 		return await new SharedGenerate(selectorStorage, logger).GenerateThumbnail(
-			ResizeThumbnailFromSourceImage, ExtensionRolesHelper.IsExtensionVideoSupported,
+			ResizeThumbnailFromSourceImage,
+			ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported,
 			singleSubPath, fileHash,
 			imageFormat, thumbnailSizes);
 	}
@@ -40,13 +45,16 @@ public class NativePreviewThumbnailGenerator(
 		ThumbnailSize biggestThumbnailSize, string singleSubPath, string fileHash,
 		ThumbnailImageFormat imageFormat)
 	{
-		var nativePreviewHelper = new NativePreviewHelper(imageNativeService, _storage, appSettings);
-		var result = nativePreviewHelper.NativePreviewImage(biggestThumbnailSize, singleSubPath, fileHash);
+		var nativePreviewHelper =
+			new NativePreviewHelper(imageNativeService, _storage, appSettings, readMeta);
+		var result =
+			await nativePreviewHelper.NativePreviewImage(biggestThumbnailSize, singleSubPath,
+				fileHash);
 
 		if ( !result.IsSuccess || result.ResultPath == null )
 		{
 			return ErrorGenerationResultModel.FailedResult(biggestThumbnailSize,
-				singleSubPath, fileHash, true, result.ErrorMessage!);
+				singleSubPath, fileHash, true, result.ErrorMessage);
 		}
 
 		var service = new ResizeThumbnailFromSourceImageHelper(selectorStorage, logger);

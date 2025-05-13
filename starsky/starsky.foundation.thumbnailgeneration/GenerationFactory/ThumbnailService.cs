@@ -30,7 +30,8 @@ public class ThumbnailService(
 	AppSettings appSettings,
 	IUpdateStatusGeneratedThumbnailService updateStatusGeneratedThumbnailService,
 	IVideoProcess videoProcess,
-	IFileHashSubPathStorage fileHashSubPathStorage)
+	IFileHashSubPathStorage fileHashSubPathStorage,
+	INativePreviewThumbnailGenerator nativePreviewThumbnailGenerator)
 	: IThumbnailService
 {
 	private readonly Func<string?, bool> _delegateToCheckIfExtensionIsSupported = e =>
@@ -139,7 +140,8 @@ public class ThumbnailService(
 	private async Task<IEnumerable<GenerationResultModel>> GenerateThumbnailAsync(
 		string singleSubPath, string? fileHash, List<ThumbnailSize> sizes)
 	{
-		var factory = new ThumbnailGeneratorFactory(selectorStorage, logger, videoProcess);
+		var factory = new ThumbnailGeneratorFactory(selectorStorage, logger, videoProcess,
+			nativePreviewThumbnailGenerator);
 		var generator = factory.GetGenerator(singleSubPath);
 		if ( !string.IsNullOrEmpty(fileHash) )
 		{
@@ -161,7 +163,8 @@ public class ThumbnailService(
 	private async Task<(Stream?, GenerationResultModel)> GenerateSingleThumbnailAsync(
 		string singleSubPath, ThumbnailImageFormat imageFormat, ThumbnailSize size)
 	{
-		var factory = new ThumbnailGeneratorFactory(selectorStorage, logger, videoProcess);
+		var factory = new ThumbnailGeneratorFactory(selectorStorage, logger, videoProcess,
+			nativePreviewThumbnailGenerator);
 		var generator = factory.GetGenerator(singleSubPath);
 
 		var (fileHash, success) =

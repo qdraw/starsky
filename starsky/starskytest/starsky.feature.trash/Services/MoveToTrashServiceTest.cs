@@ -221,7 +221,7 @@ public class MoveToTrashServiceTest
 				new FakeSelectorStorage(storage),
 				new FakeIWebLogger()), new FakeIWebLogger(), new ReadMetaSubPathStorage(
 				new FakeSelectorStorage(storage),
-				appSettings, null!, new FakeIWebLogger()), new FakeIThumbnailService(),
+				appSettings, new FakeIWebLogger()), new FakeIThumbnailService(),
 			new ThumbnailQuery(dbContext, null, new FakeIWebLogger(),
 				new FakeMemoryCache()), new AppSettings());
 
@@ -282,7 +282,7 @@ public class MoveToTrashServiceTest
 				new FakeSelectorStorage(storage),
 				new FakeIWebLogger()), new FakeIWebLogger(), new ReadMetaSubPathStorage(
 				new FakeSelectorStorage(storage),
-				appSettings, null!, new FakeIWebLogger()), new FakeIThumbnailService(),
+				appSettings, new FakeIWebLogger()), new FakeIThumbnailService(),
 			new ThumbnailQuery(dbContext, null,
 				new FakeIWebLogger(), new FakeMemoryCache()), new AppSettings());
 

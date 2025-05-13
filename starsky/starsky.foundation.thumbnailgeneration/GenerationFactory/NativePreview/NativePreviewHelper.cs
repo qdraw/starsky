@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using starsky.foundation.native.PreviewImageNative.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
@@ -14,23 +15,38 @@ public class NativePreviewHelper(
 	IPreviewImageNativeService previewService,
 	IStorage storage,
 	AppSettings appSettings,
-	IReadMetaSubPathStorage readMeta
-)
+	IReadMetaSubPathStorage readMeta)
 {
-	public NativePreviewResult NativePreviewImage(ThumbnailSize biggestThumbnailSize,
+	public async Task<NativePreviewResult> NativePreviewImage(ThumbnailSize biggestThumbnailSize,
 		string singleSubPath, string fileHash)
 	{
-		if ( !storage.ExistFile(singleSubPath) )
+		if ( !previewService.IsSupported() || !storage.ExistFile(singleSubPath) )
 		{
 			return new NativePreviewResult
 			{
-				IsSuccess = false, ErrorMessage = "File does not exist"
+				IsSuccess = false,
+				ErrorMessage = !previewService.IsSupported()
+					? "Native service not supported"
+					: "File does not exist"
 			};
 		}
 
-		var outputPath = Path.Combine(appSettings.TempFolder, fileHash + ".jpg");
-		var result = previewService.GeneratePreviewImage(singleSubPath, outputPath,
-			ThumbnailNameHelper.GetSize(biggestThumbnailSize), 0);
+		var metaData = await readMeta.ReadExifAndXmpFromFileAsync(singleSubPath);
+		var width = ThumbnailNameHelper.GetSize(biggestThumbnailSize);
+		var height =
+			( int ) Math.Round(( double ) metaData!.ImageHeight / metaData.ImageWidth * width);
+
+		var outputFileName = fileHash + ".jpg";
+		var outputFullPath = Path.Combine(appSettings.TempFolder, outputFileName);
+		var result =
+			previewService.GeneratePreviewImage(singleSubPath, outputFullPath, width, height);
+
+		return new NativePreviewResult
+		{
+			IsSuccess = result,
+			ResultPath = outputFileName,
+			ResultPathType = SelectorStorage.StorageServices.Temporary
+		};
 	}
 
 	public void CleanTemporaryFile(string resultResultPath,

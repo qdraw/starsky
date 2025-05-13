@@ -32,10 +32,10 @@ public class CompositeThumbnailGenerator(List<IThumbnailGenerator> generators, I
 					return compositeResults;
 				}
 			}
-			catch ( Exception ex )
+			catch ( Exception exception )
 			{
 				logger.LogError($"[CompositeThumbnailGenerator] Generator " +
-				                $"{generator.GetType().Name} failed: {ex.Message} {ex.StackTrace}");
+				                $"{generator.GetType().Name} failed: {exception.Message} {exception.StackTrace}");
 			}
 		}
 
