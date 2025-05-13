@@ -100,7 +100,7 @@ public static partial class ProjectCheckNetCoreCommandHelper
 
 		if ( !Directory.Exists(GetBuildToolsFolder()) )
 		{
-			Log.Warning("Skipping build tools {path} not found", GetBuildToolsFolder());
+			Log.Warning("Skipping build tools {Path} not found", GetBuildToolsFolder());
 			return;
 		}
 
