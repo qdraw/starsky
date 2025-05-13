@@ -21,6 +21,9 @@ namespace helpers;
 [SuppressMessage("Sonar",
 	"S6664: Reduce the number of Information logging calls within this code block",
 	Justification = "Not production code.")]
+[SuppressMessage("Sonar",
+	"S1075: Refactor your code not to use hardcoded absolute paths or URIs",
+	Justification = "Not production code.")]
 public static class SonarQube
 {
 	public const string SonarQubePackageName = "dotnet-sonarscanner";
