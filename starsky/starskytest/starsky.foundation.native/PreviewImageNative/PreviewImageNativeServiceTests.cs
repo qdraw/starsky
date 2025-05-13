@@ -1,4 +1,3 @@
-using System;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.native.PreviewImageNative;
@@ -55,7 +54,7 @@ public class PreviewImageNativeServiceTests
 	}
 
 	[TestMethod]
-	public void GeneratePreviewImage_DllNotFoundException__WindowsLinuxOnly()
+	public void GeneratePreviewImage_False__WindowsLinuxOnly()
 	{
 		// Arrange
 		if ( RuntimeInformation.IsOSPlatform(OSPlatform.OSX) )
@@ -66,9 +65,11 @@ public class PreviewImageNativeServiceTests
 		var (service, _) = CreateSut();
 
 		// Act
-		Assert.ThrowsExactly<DllNotFoundException>(() =>
-			service.GeneratePreviewImage(
-				os => os == OSPlatform.OSX, // Simulate macOS
-				"", "output.webp", 100, 100));
+		var result = service.GeneratePreviewImage(
+			os => os == OSPlatform.OSX, // Simulate macOS
+			"", "output.webp", 100, 100);
+
+		// Assert
+		Assert.IsFalse(result);
 	}
 }
