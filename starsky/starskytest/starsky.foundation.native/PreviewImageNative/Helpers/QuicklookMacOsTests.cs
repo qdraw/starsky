@@ -25,8 +25,7 @@ public class QuicklookMacOsTests
 
 		var (quicklook, _) = CreateSut();
 		// Act
-		Assert.ThrowsExactly<DllNotFoundException>(() =>
-			quicklook.GenerateThumbnail("input.jpg", "output.webp", 100, 100));
+		Assert.IsFalse(quicklook.GenerateThumbnail("input.jpg", "output.webp", 100, 100));
 	}
 
 	private static (QuicklookMacOs, FakeIWebLogger) CreateSut()
@@ -210,7 +209,7 @@ public class QuicklookMacOsTests
 		}
 
 		// Act
-		Assert.ThrowsExactly<DllNotFoundException>(() =>
-			QuicklookMacOs.CreateCFStringCreateWithCString("input.jpg"));
+		var result = QuicklookMacOs.CreateCFStringCreateWithCString("input.jpg");
+		Assert.AreEqual(0, result);
 	}
 }
