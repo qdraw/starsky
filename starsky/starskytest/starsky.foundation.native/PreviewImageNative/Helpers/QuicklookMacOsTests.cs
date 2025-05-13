@@ -15,7 +15,7 @@ namespace starskytest.starsky.foundation.native.PreviewImageNative.Helpers;
 public class QuicklookMacOsTests
 {
 	[TestMethod]
-	public void GenerateThumbnail_DllNotFoundException__WindowsLinuxOnly()
+	public void GenerateThumbnail_False__WindowsLinuxOnly()
 	{
 		// Arrange
 		if ( RuntimeInformation.IsOSPlatform(OSPlatform.OSX) )
@@ -200,7 +200,7 @@ public class QuicklookMacOsTests
 	}
 
 	[TestMethod]
-	public void CreateCFStringCreateWithCString_DllNotFoundException__WindowsLinuxOnly()
+	public void CreateCFStringCreateWithCString_Returns0__WindowsLinuxOnly()
 	{
 		// Arrange
 		if ( RuntimeInformation.IsOSPlatform(OSPlatform.OSX) )
