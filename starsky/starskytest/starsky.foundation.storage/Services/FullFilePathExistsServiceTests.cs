@@ -64,7 +64,7 @@ public class FullFilePathExistsServiceTests
 
 		Assert.AreEqual(expectedFullPath, result.FullFilePath);
 		Assert.AreEqual(isTempFile, result.IsTempFile);
-		Assert.AreEqual(expectedFileHash, result.FileHashWithExtension);
+		Assert.AreEqual(expectedFileHash, result.TempFileFileHashWithExtension);
 		Assert.AreEqual(isSuccess, result.IsSuccess);
 
 		if ( existsInHost )

@@ -44,17 +44,18 @@ public class FullFilePathExistsService(ISelectorStorage selectorStorage, AppSett
 		{
 			// non existing file
 			return new FullFilePathExistsResultModel(
-				false, fullFilePath, false, string.Empty);
+				false, fullFilePath, false,
+				string.Empty);
 		}
 
 		// temp file
-		var fileHashWithExtension =
+		var tempFileHashWithExtension =
 			GetTempFileHashWithExtension(subPath, beforeFileHashWithoutExtension);
-		await _tempStorage.WriteStreamAsync(sourceStream, fileHashWithExtension);
-		fullFilePath = appSettings.DatabasePathToTempFolderFilePath(fileHashWithExtension);
+		await _tempStorage.WriteStreamAsync(sourceStream, tempFileHashWithExtension);
+		fullFilePath = appSettings.DatabasePathToTempFolderFilePath(tempFileHashWithExtension);
 
 		return new FullFilePathExistsResultModel(
-			true, fullFilePath, true, fileHashWithExtension);
+			true, fullFilePath, true, tempFileHashWithExtension);
 	}
 
 	public void CleanTemporaryFile(string fileHashWithExtension, bool useTempStorageForInput)

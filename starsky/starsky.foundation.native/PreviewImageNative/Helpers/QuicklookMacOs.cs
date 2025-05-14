@@ -19,6 +19,8 @@ public class QuicklookMacOs(IWebLogger logger)
 
 	public bool GenerateThumbnail(string filePath, string outputPath, int width, int height)
 	{
+		filePath = filePath.Replace("//", "/");
+
 		var url = CreateCFStringCreateWithCString(filePath);
 		if ( url == IntPtr.Zero )
 		{

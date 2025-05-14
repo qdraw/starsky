@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using starsky.foundation.native.PreviewImageNative.Interfaces;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.readmeta.Interfaces;
@@ -15,9 +16,11 @@ namespace starsky.foundation.thumbnailgeneration.GenerationFactory.NativePreview
 public class NativePreviewHelper(
 	IPreviewImageNativeService previewService,
 	IStorage storage,
+	IStorage tempStorage,
 	AppSettings appSettings,
 	IReadMetaSubPathStorage readMeta,
-	IFullFilePathExistsService existsService)
+	IFullFilePathExistsService existsService,
+	IWebLogger logger)
 {
 	public async Task<NativePreviewResult> NativePreviewImage(ThumbnailSize biggestThumbnailSize,
 		string singleSubPath, string fileHash)
@@ -41,7 +44,8 @@ public class NativePreviewHelper(
 		var (_, fullFilePath, useTempStorageForInput, fileHashWithExtension) =
 			await existsService.GetFullFilePath(singleSubPath, fileHash);
 
-		var outputFullPath = Path.Combine(appSettings.TempFolder, fileHashWithExtension);
+		var previewImageName = $"{fileHash}.preview.jpg";
+		var outputFullPath = Path.Combine(appSettings.TempFolder, previewImageName);
 		var result =
 			previewService.GeneratePreviewImage(fullFilePath, outputFullPath, width, height);
 
@@ -50,14 +54,24 @@ public class NativePreviewHelper(
 		return new NativePreviewResult
 		{
 			IsSuccess = result,
-			ResultPath = fileHashWithExtension,
+			ResultPath = previewImageName,
 			ResultPathType = SelectorStorage.StorageServices.Temporary
 		};
 	}
 
-	public void CleanTemporaryFile(string resultResultPath,
+	public bool CleanTemporaryFile(string resultResultPath,
 		SelectorStorage.StorageServices? resultResultPathType)
 	{
-		throw new NotImplementedException();
+		switch ( resultResultPathType )
+		{
+			case SelectorStorage.StorageServices.Temporary:
+				return tempStorage.FileDelete(resultResultPath);
+			default:
+				logger.LogError(
+					$"[NativePreviewHelper] CleanTemporaryFile: {resultResultPath} not deleted");
+				break;
+		}
+
+		return false;
 	}
 }

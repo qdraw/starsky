@@ -33,6 +33,9 @@ public class NativePreviewThumbnailGenerator(
 	private readonly IStorage _storage =
 		selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 
+	private readonly IStorage _tempStorage =
+		selectorStorage.Get(SelectorStorage.StorageServices.Temporary);
+
 	public async Task<IEnumerable<GenerationResultModel>> GenerateThumbnail(string singleSubPath,
 		string fileHash, ThumbnailImageFormat imageFormat,
 		List<ThumbnailSize> thumbnailSizes)
@@ -49,7 +52,8 @@ public class NativePreviewThumbnailGenerator(
 		ThumbnailImageFormat imageFormat)
 	{
 		var nativePreviewHelper = new NativePreviewHelper(imageNativeService, _storage,
-			appSettings, readMeta, existsService);
+			_tempStorage, appSettings, readMeta, existsService, logger);
+
 		var result =
 			await nativePreviewHelper.NativePreviewImage(biggestThumbnailSize, singleSubPath,
 				fileHash);

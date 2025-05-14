@@ -51,7 +51,15 @@ internal static class SaveThumbnailImageFormatHelper
 				return;
 			case ThumbnailImageFormat.webp:
 				await image.SaveAsync(outputStream,
-					new WebpEncoder { Quality = 80, EntropyPasses = 1, SkipMetadata = true });
+					new WebpEncoder
+					{
+						Method = WebpEncodingMethod.Fastest,
+						Quality = 80,
+						EntropyPasses = 1,
+						SkipMetadata = true,
+						TransparentColorMode = WebpTransparentColorMode.Clear,
+						FileFormat = WebpFileFormatType.Lossy
+					});
 				return;
 			default:
 				await image.SaveAsync(outputStream, new JpegEncoder { Quality = 90 });
