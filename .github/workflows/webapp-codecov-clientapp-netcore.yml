@@ -26,7 +26,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.408
+          dotnet-version: 8.0.409
  
       - name: Cache node modules clientapp (*nix)
         uses: actions/cache@v4
