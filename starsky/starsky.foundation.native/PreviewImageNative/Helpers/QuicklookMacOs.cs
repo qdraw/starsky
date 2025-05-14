@@ -157,7 +157,7 @@ public class QuicklookMacOs(IWebLogger logger)
 
 	[SuppressMessage("Usage",
 		"S2342: Enumeration types should comply with a naming convention")]
-	internal enum CFURLPathStyle
+	public enum CFURLPathStyle
 	{
 		POSIX = 0,
 		HFS = 1,
@@ -166,7 +166,7 @@ public class QuicklookMacOs(IWebLogger logger)
 
 	// Define a structure for CGSize (used for image size)
 	[StructLayout(LayoutKind.Sequential)]
-	public struct CGSize
+	internal struct CGSize
 	{
 		public double Width;
 		public double Height;

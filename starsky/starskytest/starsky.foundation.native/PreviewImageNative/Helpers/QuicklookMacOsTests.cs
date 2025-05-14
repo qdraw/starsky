@@ -212,4 +212,33 @@ public class QuicklookMacOsTests
 		var result = QuicklookMacOs.CreateCFStringCreateWithCString("input.jpg");
 		Assert.AreEqual(0, result);
 	}
+
+	[TestMethod]
+	public void Size()
+	{
+		var result = new QuicklookMacOs.CGSize(10, 14);
+		Assert.AreEqual(10, result.Width);
+		Assert.AreEqual(14, result.Height);
+	}
+
+	[TestMethod]
+	[DataTestMethod]
+	[DataRow(QuicklookMacOs.CFURLPathStyle.HFS)]
+	[DataRow(QuicklookMacOs.CFURLPathStyle.POSIX)]
+	[DataRow(QuicklookMacOs.CFURLPathStyle.Windows)]
+	public void CfurlPathStyle(QuicklookMacOs.CFURLPathStyle type)
+	{
+		switch ( type )
+		{
+			case QuicklookMacOs.CFURLPathStyle.HFS:
+				Assert.AreEqual(1, ( int ) type);
+				break;
+			case QuicklookMacOs.CFURLPathStyle.POSIX:
+				Assert.AreEqual(0, ( int ) type);
+				break;
+			case QuicklookMacOs.CFURLPathStyle.Windows:
+				Assert.AreEqual(2, ( int ) type);
+				break;
+		}
+	}
 }
