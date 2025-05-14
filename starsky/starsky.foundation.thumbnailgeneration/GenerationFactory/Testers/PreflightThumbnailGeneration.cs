@@ -4,6 +4,7 @@ using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Models;
 using starsky.foundation.thumbnailgeneration.Models;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.Testers;
@@ -43,7 +44,7 @@ public class PreflightThumbnailGeneration(ISelectorStorage selectorStorage)
 		if ( thumbnailSizes.Count == 0 )
 		{
 			return ErrorGenerationResultModel.FailedResult(
-				ThumbnailSizes.GetLargeToSmallSizes(true),
+				ThumbnailSizes.GetLargeToSmallSizes(),
 				subPath, fileHash, false,
 				$"{NoCountErrorPrefix}{subPath}");
 		}
@@ -51,7 +52,7 @@ public class PreflightThumbnailGeneration(ISelectorStorage selectorStorage)
 		if ( imageFormat == ThumbnailImageFormat.unknown )
 		{
 			return ErrorGenerationResultModel.FailedResult(
-				ThumbnailSizes.GetLargeToSmallSizes(true),
+				ThumbnailSizes.GetLargeToSmallSizes(),
 				subPath, fileHash, false,
 				$"{FormatUnknownPrefix}{subPath}");
 		}

@@ -6,6 +6,7 @@ using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Generators.Interfaces;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Models;
 using starsky.foundation.thumbnailgeneration.Models;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory;

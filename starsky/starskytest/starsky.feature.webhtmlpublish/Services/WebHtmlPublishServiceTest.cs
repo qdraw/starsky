@@ -231,7 +231,7 @@ public sealed class WebHtmlPublishServiceTest
 			new FakeIThumbnailService(selectorStorage));
 
 		var result = service.ShouldSkipExtraLarge("");
-		Assert.IsFalse(result);
+		Assert.AreEqual(ThumbnailGenerationType.All, result);
 	}
 
 	[TestMethod]
@@ -252,7 +252,7 @@ public sealed class WebHtmlPublishServiceTest
 			new FakeIThumbnailService(selectorStorage));
 
 		var result = service.ShouldSkipExtraLarge("");
-		Assert.IsTrue(result);
+		Assert.AreEqual(ThumbnailGenerationType.SkipExtraLarge, result);
 	}
 
 	[TestMethod]

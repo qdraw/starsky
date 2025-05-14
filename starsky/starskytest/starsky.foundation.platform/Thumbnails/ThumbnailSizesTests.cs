@@ -13,11 +13,14 @@ public class ThumbnailSizesTests
 		// Arrange
 		var expectedSizes = new List<ThumbnailSize>
 		{
-			ThumbnailSize.ExtraLarge, ThumbnailSize.Large, ThumbnailSize.Small
+			ThumbnailSize.ExtraLarge,
+			ThumbnailSize.Large,
+			ThumbnailSize.Small,
+			ThumbnailSize.TinyMeta
 		};
 
 		// Act
-		var result = ThumbnailSizes.GetLargeToSmallSizes(false);
+		var result = ThumbnailSizes.GetLargeToSmallSizes();
 
 		// Assert
 		CollectionAssert.AreEqual(expectedSizes, result);
@@ -27,10 +30,26 @@ public class ThumbnailSizesTests
 	public void GetLargeToSmallSizes_WithoutExtraLarge()
 	{
 		// Arrange
-		var expectedSizes = new List<ThumbnailSize> { ThumbnailSize.Large, ThumbnailSize.Small };
+		var expectedSizes = new List<ThumbnailSize>
+		{
+			ThumbnailSize.Large, ThumbnailSize.Small, ThumbnailSize.TinyMeta
+		};
 
 		// Act
-		var result = ThumbnailSizes.GetLargeToSmallSizes(true);
+		var result = ThumbnailSizes.GetLargeToSmallSizes(ThumbnailGenerationType.SkipExtraLarge);
+
+		// Assert
+		CollectionAssert.AreEqual(expectedSizes, result);
+	}
+
+	[TestMethod]
+	public void GetLargeToSmallSizes_OnlySmall()
+	{
+		// Arrange
+		var expectedSizes = new List<ThumbnailSize> { ThumbnailSize.Small, ThumbnailSize.TinyMeta };
+
+		// Act
+		var result = ThumbnailSizes.GetLargeToSmallSizes(ThumbnailGenerationType.SmallOnly);
 
 		// Assert
 		CollectionAssert.AreEqual(expectedSizes, result);

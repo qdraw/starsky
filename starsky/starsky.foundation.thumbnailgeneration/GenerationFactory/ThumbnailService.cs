@@ -13,6 +13,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Models;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Shared;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Testers;
 using starsky.foundation.thumbnailgeneration.Interfaces;
@@ -44,15 +45,15 @@ public class ThumbnailService(
 	///     Can be used for directories or single files
 	/// </summary>
 	/// <param name="fileOrFolderPath">subPath of file or folder</param>
-	/// <param name="skipExtraLarge">skip large format creation</param>
+	/// <param name="type">skip large format creation</param>
 	/// <returns>results</returns>
 	public async Task<List<GenerationResultModel>> GenerateThumbnail(string fileOrFolderPath,
-		bool skipExtraLarge = false)
+		ThumbnailGenerationType type = ThumbnailGenerationType.All)
 	{
 		var (success, toAddFilePaths) = _folderToFileList.AddFiles(fileOrFolderPath,
 			_delegateToCheckIfExtensionIsSupported);
 
-		var sizes = ThumbnailSizes.GetLargeToSmallSizes(skipExtraLarge);
+		var sizes = ThumbnailSizes.GetLargeToSmallSizes(type);
 		if ( !success )
 		{
 			return ErrorGenerationResultModel
@@ -80,17 +81,18 @@ public class ThumbnailService(
 	/// </summary>
 	/// <param name="fileHash">hash</param>
 	/// <param name="subPath">subPath of file; make sure it is NOT a folder</param>
-	/// <param name="skipExtraLarge">skip large format creation</param>
+	/// <param name="type">skip large format creation</param>
 	/// <returns>results</returns>
 	/// <returns></returns>
 	public async Task<List<GenerationResultModel>> GenerateThumbnail(string subPath,
 		string fileHash,
-		bool skipExtraLarge = false)
+		ThumbnailGenerationType type = ThumbnailGenerationType.All)
 	{
 		var (success, toAddFilePaths) =
 			_folderToFileList.AddFiles(subPath, _delegateToCheckIfExtensionIsSupported);
 
-		var sizes = ThumbnailSizes.GetLargeToSmallSizes(skipExtraLarge);
+		var sizes = ThumbnailSizes.GetLargeToSmallSizes(type);
+
 		if ( !success || toAddFilePaths.Count != 1 )
 		{
 			return ErrorGenerationResultModel

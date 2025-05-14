@@ -4,16 +4,22 @@ namespace starsky.foundation.platform.Thumbnails;
 
 public static class ThumbnailSizes
 {
-	public static List<ThumbnailSize> GetLargeToSmallSizes(bool skipExtraLarge)
+	public static List<ThumbnailSize> GetLargeToSmallSizes(
+		ThumbnailGenerationType type = ThumbnailGenerationType.All)
 	{
 		var sizesList = new List<ThumbnailSize>();
 
-		if ( !skipExtraLarge )
+		if ( type == ThumbnailGenerationType.All )
 		{
 			sizesList.Add(ThumbnailSize.ExtraLarge);
 		}
 
-		sizesList.AddRange(new List<ThumbnailSize> { ThumbnailSize.Large, ThumbnailSize.Small });
+		if ( type is ThumbnailGenerationType.All or ThumbnailGenerationType.SkipExtraLarge )
+		{
+			sizesList.Add(ThumbnailSize.Large);
+		}
+
+		sizesList.AddRange(new List<ThumbnailSize> { ThumbnailSize.Small, ThumbnailSize.TinyMeta });
 		return sizesList;
 	}
 }

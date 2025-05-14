@@ -10,10 +10,10 @@ namespace starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
 public interface IThumbnailService
 {
 	Task<List<GenerationResultModel>> GenerateThumbnail(string fileOrFolderPath,
-		bool skipExtraLarge = false);
+		ThumbnailGenerationType type = ThumbnailGenerationType.All);
 
 	Task<List<GenerationResultModel>> GenerateThumbnail(string subPath, string fileHash,
-		bool skipExtraLarge = false);
+		ThumbnailGenerationType type = ThumbnailGenerationType.All);
 
 	/// <summary>
 	///     Get a single thumbnail

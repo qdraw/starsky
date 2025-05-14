@@ -47,7 +47,7 @@ public class PreflightThumbnailGenerationTests
 
 		// Assert
 		Assert.IsNotNull(results);
-		Assert.AreEqual(2, results.Count);
+		Assert.AreEqual(ThumbnailSizes.GetLargeToSmallSizes().Count, results.Count);
 		Assert.IsFalse(results[0].Success);
 		Assert.AreEqual($"{PreflightThumbnailGeneration.NoCountErrorPrefix}{subPath}",
 			results[0].ErrorMessage);
@@ -67,7 +67,7 @@ public class PreflightThumbnailGenerationTests
 
 		// Assert
 		Assert.IsNotNull(results);
-		Assert.AreEqual(2, results.Count);
+		Assert.AreEqual(ThumbnailSizes.GetLargeToSmallSizes().Count, results.Count);
 		Assert.IsFalse(results[0].Success);
 		Assert.AreEqual($"{PreflightThumbnailGeneration.FormatUnknownPrefix}{subPath}",
 			results[0].ErrorMessage);

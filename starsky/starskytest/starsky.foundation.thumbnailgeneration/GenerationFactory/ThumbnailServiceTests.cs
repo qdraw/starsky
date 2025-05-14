@@ -146,9 +146,10 @@ public sealed class ThumbnailServiceTests
 	}
 
 	[TestMethod]
-	[DataRow(true)]
-	[DataRow(false)]
-	public async Task GenerateThumbnail_FileHash_IncludeOrSkipExtraLarge(bool includeExtraLarge)
+	[DataRow(ThumbnailGenerationType.All)]
+	[DataRow(ThumbnailGenerationType.SkipExtraLarge)]
+	public async Task GenerateThumbnail_FileHash_IncludeOrSkipExtraLarge(
+		ThumbnailGenerationType type)
 	{
 		var storage = new FakeIStorage(["/"],
 			[_fakeIStorageImageSubPath],
@@ -158,7 +159,7 @@ public sealed class ThumbnailServiceTests
 		var sut = CreateSut(storage);
 
 		var isCreated =
-			await sut.GenerateThumbnail(_fakeIStorageImageSubPath, fileHash, includeExtraLarge);
+			await sut.GenerateThumbnail(_fakeIStorageImageSubPath, fileHash, type);
 
 		Assert.IsTrue(isCreated.FirstOrDefault()!.Success);
 		Assert.IsTrue(storage.ExistFile(
@@ -167,7 +168,7 @@ public sealed class ThumbnailServiceTests
 			ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.Small, _imageFormat)));
 
 		// depend on includeExtraLarge
-		Assert.AreEqual(!includeExtraLarge, storage.ExistFile(
+		Assert.AreEqual(type != ThumbnailGenerationType.SkipExtraLarge, storage.ExistFile(
 			ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.ExtraLarge, _imageFormat)));
 	}
 

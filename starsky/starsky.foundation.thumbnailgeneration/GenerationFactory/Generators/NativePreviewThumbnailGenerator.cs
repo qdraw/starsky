@@ -13,6 +13,7 @@ using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Models;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.NativePreview;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Shared;
 using starsky.foundation.thumbnailgeneration.Models;
