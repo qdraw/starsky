@@ -28,7 +28,7 @@ public class FullFilePathExistsService(ISelectorStorage selectorStorage, AppSett
 	/// <param name="subPath">subPath style</param>
 	/// <returns>(fullFilePath, isTempFile, fileHashWithExtension)</returns>
 	public async Task<FullFilePathExistsResultModel> GetFullFilePath(string subPath,
-		string beforeFileHash)
+		string beforeFileHashWithoutExtension)
 	{
 		var fullFilePath = appSettings.DatabasePathToFilePath(subPath);
 
@@ -48,12 +48,23 @@ public class FullFilePathExistsService(ISelectorStorage selectorStorage, AppSett
 		}
 
 		// temp file
-		var fileHashWithExtension = GetTempFileHashWithExtension(subPath, beforeFileHash);
+		var fileHashWithExtension =
+			GetTempFileHashWithExtension(subPath, beforeFileHashWithoutExtension);
 		await _tempStorage.WriteStreamAsync(sourceStream, fileHashWithExtension);
 		fullFilePath = appSettings.DatabasePathToTempFolderFilePath(fileHashWithExtension);
 
 		return new FullFilePathExistsResultModel(
 			true, fullFilePath, true, fileHashWithExtension);
+	}
+
+	public void CleanTemporaryFile(string fileHashWithExtension, bool useTempStorageForInput)
+	{
+		if ( !useTempStorageForInput )
+		{
+			return;
+		}
+
+		_tempStorage.FileDelete(fileHashWithExtension);
 	}
 
 	private static string GetTempFileHashWithExtension(string subPath, string beforeFileHash)

@@ -10,5 +10,7 @@ public interface IFullFilePathExistsService
 	/// <param name="subPath">subPath style</param>
 	/// <returns></returns>
 	Task<FullFilePathExistsResultModel> GetFullFilePath(string subPath,
-		string beforeFileHash);
+		string beforeFileHashWithoutExtension);
+
+	void CleanTemporaryFile(string fileHashWithExtension, bool useTempStorageForInput);
 }

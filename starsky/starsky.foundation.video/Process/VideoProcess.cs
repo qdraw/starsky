@@ -113,12 +113,7 @@ public sealed class VideoProcess : IVideoProcess
 		var result = await runner.RunProcessAsync(fullFilePath,
 			ffmpegInputArguments, outputFormat);
 
-		if ( !useTempStorageForInput )
-		{
-			return result;
-		}
-
-		_tempStorage.FileDelete(fileHashWithExtension);
+		_filePathExistsService.CleanTemporaryFile(fileHashWithExtension, useTempStorageForInput);
 		return result;
 	}
 }
