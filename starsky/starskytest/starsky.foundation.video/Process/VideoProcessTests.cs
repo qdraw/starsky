@@ -33,7 +33,8 @@ public class VideoProcessTests
 		selectorStorage.SetStorage(_storage);
 
 		_videoProcess = new VideoProcess(selectorStorage, _ffMpegDownload,
-			thumbnailPost, logger, new FullFilePathService(selectorStorage, new AppSettings()));
+			thumbnailPost, logger,
+			new FullFilePathExistsService(selectorStorage, new AppSettings()));
 	}
 
 	[TestCleanup]

@@ -9,9 +9,9 @@ using starsky.foundation.storage.Storage;
 
 namespace starsky.foundation.storage.Services;
 
-[Service(typeof(IFullFilePathService), InjectionLifetime = InjectionLifetime.Scoped)]
-public class FullFilePathService(ISelectorStorage selectorStorage, AppSettings appSettings)
-	: IFullFilePathService
+[Service(typeof(IFullFilePathExistsService), InjectionLifetime = InjectionLifetime.Scoped)]
+public class FullFilePathExistsService(ISelectorStorage selectorStorage, AppSettings appSettings)
+	: IFullFilePathExistsService
 {
 	private readonly IStorage _hostStorage =
 		selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
@@ -27,28 +27,33 @@ public class FullFilePathService(ISelectorStorage selectorStorage, AppSettings a
 	/// </summary>
 	/// <param name="subPath">subPath style</param>
 	/// <returns>(fullFilePath, isTempFile, fileHashWithExtension)</returns>
-	public async Task<(string, bool, string)> GetFullFilePath(string subPath,
+	public async Task<FullFilePathExistsResultModel> GetFullFilePath(string subPath,
 		string beforeFileHash)
 	{
 		var fullFilePath = appSettings.DatabasePathToFilePath(subPath);
 
 		if ( _hostStorage.ExistFile(appSettings.DatabasePathToFilePath(subPath)) )
 		{
-			return ( fullFilePath, false, string.Empty );
+			// Exists on host machine
+			return new FullFilePathExistsResultModel(
+				true, fullFilePath, false, string.Empty);
 		}
 
-		// Copy to Temp
 		var sourceStream = _storage.ReadStream(subPath);
 		if ( sourceStream == Stream.Null )
 		{
-			return ( fullFilePath, false, string.Empty );
+			// non existing file
+			return new FullFilePathExistsResultModel(
+				false, fullFilePath, false, string.Empty);
 		}
 
+		// temp file
 		var fileHashWithExtension = GetTempFileHashWithExtension(subPath, beforeFileHash);
 		await _tempStorage.WriteStreamAsync(sourceStream, fileHashWithExtension);
 		fullFilePath = appSettings.DatabasePathToTempFolderFilePath(fileHashWithExtension);
 
-		return ( fullFilePath, true, fileHashWithExtension );
+		return new FullFilePathExistsResultModel(
+			true, fullFilePath, true, fileHashWithExtension);
 	}
 
 	private static string GetTempFileHashWithExtension(string subPath, string beforeFileHash)

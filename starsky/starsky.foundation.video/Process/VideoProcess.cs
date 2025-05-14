@@ -13,20 +13,20 @@ namespace starsky.foundation.video.Process;
 public sealed class VideoProcess : IVideoProcess
 {
 	private readonly IFfMpegDownload _ffMpegDownload;
-	private readonly IFullFilePathService _filePathService;
+	private readonly IFullFilePathExistsService _filePathExistsService;
 	private readonly IWebLogger _logger;
 	private readonly IStorage _tempStorage;
 	private readonly IVideoProcessThumbnailPost _thumbnailPost;
 
 	public VideoProcess(ISelectorStorage selectorStorage, IFfMpegDownload ffMpegDownload,
 		IVideoProcessThumbnailPost thumbnailPost, IWebLogger logger,
-		IFullFilePathService filePathService)
+		IFullFilePathExistsService filePathExistsService)
 	{
 		_ffMpegDownload = ffMpegDownload;
 		_thumbnailPost = thumbnailPost;
 		_logger = logger;
 		_tempStorage = selectorStorage.Get(SelectorStorage.StorageServices.Temporary);
-		_filePathService = filePathService;
+		_filePathExistsService = filePathExistsService;
 	}
 
 	public async Task<VideoResult> RunVideo(string subPath,
@@ -44,7 +44,8 @@ public sealed class VideoProcess : IVideoProcess
 				await stream.DisposeAsync();
 				return result;
 			default:
-				return new VideoResult(false, subPath, SelectorStorage.StorageServices.SubPath);
+				return new VideoResult(false, subPath,
+					SelectorStorage.StorageServices.SubPath);
 		}
 	}
 
@@ -103,8 +104,8 @@ public sealed class VideoProcess : IVideoProcess
 	private async Task<(Stream, bool)> RunProcessAsync(string subPath, string beforeFileHash,
 		string ffmpegInputArguments, string outputFormat)
 	{
-		var (fullFilePath, useTempStorageForInput, fileHashWithExtension) =
-			await _filePathService.GetFullFilePath(subPath, beforeFileHash);
+		var (_, fullFilePath, useTempStorageForInput, fileHashWithExtension) =
+			await _filePathExistsService.GetFullFilePath(subPath, beforeFileHash);
 
 		// Run from temp file
 		var ffmpegPath = _ffMpegDownload.GetSetFfMpegPath();
