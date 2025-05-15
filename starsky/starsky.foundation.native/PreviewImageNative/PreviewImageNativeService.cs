@@ -10,6 +10,15 @@ namespace starsky.foundation.native.PreviewImageNative;
 public class PreviewImageNativeService(IWebLogger logger) : IPreviewImageNativeService
 {
 	/// <summary>
+	///     Get FileExtension without dot
+	/// </summary>
+	/// <returns>bmp or jpg</returns>
+	public string FileExtension()
+	{
+		return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "bmp" : "jpg";
+	}
+
+	/// <summary>
 	///     Creates an image preview using the native QuickLook framework on macOS.
 	/// </summary>
 	/// <param name="filePath">where from</param>

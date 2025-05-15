@@ -133,4 +133,19 @@ public class PreviewImageNativeServiceTests
 		var result = service.IsSupported();
 		Assert.IsFalse(result);
 	}
+
+	[TestMethod]
+	public void FileExtensionTest()
+	{
+		var ext = "jpg";
+		if ( RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
+		{
+			ext = "bmp";
+		}
+
+		var (service, _) = CreateSut();
+
+		var result = service.FileExtension();
+		Assert.AreEqual(ext, result);
+	}
 }

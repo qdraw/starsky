@@ -8,6 +8,8 @@ public interface IPreviewImageNativeService
 	/// <returns></returns>
 	bool IsSupported(int width = 512);
 
+	string FileExtension();
+
 	/// <summary>
 	///     Creates an image preview using the native QuickLook framework on macOS.
 	/// </summary>

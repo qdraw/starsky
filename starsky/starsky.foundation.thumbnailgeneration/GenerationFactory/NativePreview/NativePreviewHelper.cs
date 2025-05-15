@@ -45,7 +45,7 @@ public class NativePreviewHelper(
 		var (_, fullFilePath, useTempStorageForInput, fileHashWithExtension) =
 			await existsService.GetFullFilePath(singleSubPath, fileHash);
 
-		var previewImageName = $"{fileHash}.preview.jpg";
+		var previewImageName = GetPreviewImageName(fileHash);
 		var outputFullPath = Path.Combine(appSettings.TempFolder, previewImageName);
 		var result =
 			previewService.GeneratePreviewImage(fullFilePath, outputFullPath, width, height);
@@ -58,6 +58,11 @@ public class NativePreviewHelper(
 			ResultPath = previewImageName,
 			ResultPathType = SelectorStorage.StorageServices.Temporary
 		};
+	}
+
+	private string GetPreviewImageName(string fileHash)
+	{
+		return $"{fileHash}.preview.{previewService.FileExtension()}";
 	}
 
 	public bool CleanTemporaryFile(string resultResultPath,
