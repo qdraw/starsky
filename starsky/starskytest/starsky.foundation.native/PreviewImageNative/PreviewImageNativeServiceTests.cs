@@ -107,4 +107,30 @@ public class PreviewImageNativeServiceTests
 		// Assert
 		Assert.IsFalse(result);
 	}
+
+	[TestMethod]
+	public void IsSupported__MacAndWindowsOnly()
+	{
+		if ( RuntimeInformation.IsOSPlatform(OSPlatform.Linux) )
+		{
+			Assert.Inconclusive("This test is only valid on windows / mac os platforms.");
+		}
+
+		var (service, _) = CreateSut();
+		var big = service.IsSupported(1024);
+		Assert.AreEqual(!RuntimeInformation.IsOSPlatform(OSPlatform.Windows), big);
+	}
+
+	[TestMethod]
+	public void IsSupported__LinuxOnly()
+	{
+		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.Linux) )
+		{
+			Assert.Inconclusive("This test is only valid on LInux platforms.");
+		}
+
+		var (service, _) = CreateSut();
+		var result = service.IsSupported();
+		Assert.IsFalse(result);
+	}
 }
