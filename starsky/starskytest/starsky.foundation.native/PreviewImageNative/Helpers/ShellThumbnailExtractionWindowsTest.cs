@@ -35,6 +35,23 @@ public class ShellThumbnailExtractionWindowsTest
 	}
 
 	[TestMethod]
+	public void IsSupported_TooBig()
+	{
+		var result = ShellThumbnailExtractionWindows.IsSupported(1024, 768);
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
+	public void IsSupported_Small_Ok()
+	{
+		var result = ShellThumbnailExtractionWindows.IsSupported();
+		var expectedResult = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
+		                     RuntimeInformation.OSArchitecture ==
+		                     System.Runtime.InteropServices.Architecture.X64;
+		Assert.AreEqual(expectedResult, result);
+	}
+
+	[TestMethod]
 	public void GenerateThumbnail_UnsupportedPlatform_ReturnsFalse__OnlyOtherThanWindows()
 	{
 		if ( ShellThumbnailExtractionWindows.IsSupported() )

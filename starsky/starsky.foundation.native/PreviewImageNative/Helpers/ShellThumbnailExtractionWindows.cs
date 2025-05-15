@@ -6,16 +6,18 @@ namespace starsky.foundation.native.PreviewImageNative.Helpers;
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 public static class ShellThumbnailExtractionWindows
 {
-	public static bool IsSupported()
+	public static bool IsSupported(int width = 512, int height = 512)
 	{
-		return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
+		return width <= 512 && height <= 512 &&
+		       RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
 		       RuntimeInformation.OSArchitecture == Architecture.X64;
 	}
 
 	public static bool GenerateThumbnail(string inputPath, string outputBmpPath, int width,
 		int height)
 	{
-		return IsSupported() && GenerateThumbnailInternal(inputPath, outputBmpPath, width, height);
+		return IsSupported(width, height) &&
+		       GenerateThumbnailInternal(inputPath, outputBmpPath, width, height);
 	}
 
 	internal static bool GenerateThumbnailInternal(string inputPath, string outputBmpPath,
