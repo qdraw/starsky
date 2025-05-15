@@ -1,8 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace starsky.foundation.native.PreviewImageNative.Helpers;
 
-public class ShellThumbnailExtractionWindows
+[SuppressMessage("ReSharper", "InconsistentNaming")]
+public static class ShellThumbnailExtractionWindows
 {
 	public static bool IsSupported()
 	{
@@ -10,9 +12,14 @@ public class ShellThumbnailExtractionWindows
 		       RuntimeInformation.OSArchitecture == Architecture.X64;
 	}
 
-	public static void GenerateThumbnail(string inputPath, string outputBmpPath, int width,
+	public static bool GenerateThumbnail(string inputPath, string outputBmpPath, int width,
 		int height)
 	{
+		if ( !IsSupported() )
+		{
+			return false;
+		}
+
 		var factoryGuid = typeof(IShellItemImageFactory).GUID;
 		SHCreateItemFromParsingName(inputPath, IntPtr.Zero, factoryGuid, out var factory);
 
@@ -21,19 +28,19 @@ public class ShellThumbnailExtractionWindows
 
 		if ( hBitmap == IntPtr.Zero )
 		{
-			throw new Exception("Failed to get HBITMAP.");
+			throw new InvalidOperationException("Failed to get HBITMAP.");
 		}
 
 		SaveHBitmapToBmp(hBitmap, outputBmpPath);
 		DeleteObject(hBitmap); // prevent memory leak
+		return true;
 	}
 
-	private static void SaveHBitmapToBmp(IntPtr hBitmap, string outputPath)
+	internal static void SaveHBitmapToBmp(IntPtr hBitmap, string outputPath)
 	{
-		BITMAP bmp;
-		if ( GetObject(hBitmap, Marshal.SizeOf<BITMAP>(), out bmp) == 0 )
+		if ( GetObject(hBitmap, Marshal.SizeOf<BITMAP>(), out var bmp) == 0 )
 		{
-			throw new Exception("GetObject failed.");
+			throw new InvalidOperationException("GetObject failed.");
 		}
 
 		var headerSize = Marshal.SizeOf(typeof(BITMAPFILEHEADER)) +
@@ -68,11 +75,33 @@ public class ShellThumbnailExtractionWindows
 		// Copy pixel data
 		var pixelBytes = new byte[pixelDataSize];
 		Marshal.Copy(bmp.bmBits, pixelBytes, 0, pixelDataSize);
-		fs.Write(pixelBytes, 0, pixelBytes.Length);
+
+		var flippedImage = FlipImage(bmp, pixelBytes, pixelDataSize);
+
+		fs.Write(flippedImage, 0, pixelBytes.Length);
 	}
 
-	private static void WriteStruct<T>(Stream s, T strct)
+	private static byte[] FlipImage(BITMAP bmp, byte[] pixelBytes, int pixelDataSize)
 	{
+		var flippedBytes = new byte[pixelDataSize];
+
+		var rowSize = bmp.bmWidthBytes;
+		for ( var y = 0; y < bmp.bmHeight; y++ )
+		{
+			Array.Copy(pixelBytes, y * rowSize, flippedBytes,
+				( bmp.bmHeight - 1 - y ) * rowSize, rowSize);
+		}
+
+		return flippedBytes;
+	}
+
+	internal static void WriteStruct<T>(Stream s, T? strct)
+	{
+		if ( strct == null )
+		{
+			throw new ArgumentNullException(nameof(strct));
+		}
+
 		var bytes = new byte[Marshal.SizeOf<T>()];
 		var ptr = Marshal.AllocHGlobal(bytes.Length);
 		Marshal.StructureToPtr(strct, ptr, false);
