@@ -11,15 +11,17 @@ namespace starskytest.starsky.feature.thumbnail.Services;
 [TestClass]
 public class SmallThumbnailBackgroundJobServiceTests
 {
-	[TestMethod]
-	public async Task CreateJob_ShouldReturnFalse_WhenFileDoesNotExist()
+	[DataTestMethod]
+	[DataRow("/non-existent-file.jpg", DisplayName = "File Not Found")]
+	[DataRow(null, DisplayName = "Null")]
+	public async Task CreateJob_ShouldReturnFalse_WhenFileDoesNotExist(string? filePath)
 	{
 		// Arrange
 		var fakeStorage = new FakeIStorage();
 		var service = CreateService(fakeStorage);
 
 		// Act
-		var result = await service.CreateJob(true, "/non-existent-file.jpg");
+		var result = await service.CreateJob(true, filePath);
 
 		// Assert
 		Assert.IsFalse(result);
