@@ -50,31 +50,12 @@ public partial class Query
 		}
 	}
 
-	/// <summary>
-	///     Get a list of all files inside an folder (NOT recursive)
-	///     But this uses a database as source
-	/// </summary>
-	/// <param name="subPath">relative database path</param>
-	/// <returns>list of FileIndex-objects</returns>
-	public List<FileIndexItem> GetAllFiles(string subPath)
-	{
-		try
-		{
-			return GetAllFilesQuery(_context, new List<string> { subPath }).ToList()!;
-		}
-		catch ( ObjectDisposedException )
-		{
-			return GetAllFilesQuery(new InjectServiceScope(_scopeFactory).Context(),
-				new List<string> { subPath }).ToList()!;
-		}
-	}
-
 	internal static List<FileIndexItem> FormatOk(IReadOnlyCollection<FileIndexItem?>? input,
 		FileIndexItem.ExifStatus fromStatus = FileIndexItem.ExifStatus.Default)
 	{
 		if ( input == null )
 		{
-			return new List<FileIndexItem>();
+			return [];
 		}
 
 		return input.Where(p => p != null).Select(p =>

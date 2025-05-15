@@ -53,7 +53,7 @@ public sealed class RenameServiceTest
 		_query = new Query(context, appSettings, null,
 			new FakeIWebLogger(), memoryCache);
 
-		if ( _query.GetAllFiles("/").TrueForAll(p => p.FileName != _newImage.FileName) )
+		if ( _query.GetAllFilesAsync("/").Result.TrueForAll(p => p.FileName != _newImage.FileName) )
 		{
 			context.FileIndex.Add(new FileIndexItem
 			{

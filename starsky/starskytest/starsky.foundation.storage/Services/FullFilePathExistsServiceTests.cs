@@ -14,16 +14,15 @@ public class FullFilePathExistsServiceTests
 	private readonly FakeIStorage _hostStorage;
 	private readonly FakeSelectorStorageByType _selectorStorage;
 	private readonly FakeIStorage _subPathStorage;
-	private readonly FakeIStorage _tempStorage;
 
 	public FullFilePathExistsServiceTests()
 	{
 		_hostStorage = new FakeIStorage();
 		_subPathStorage = new FakeIStorage();
-		_tempStorage = new FakeIStorage();
+		var tempStorage = new FakeIStorage();
 		_selectorStorage =
 			new FakeSelectorStorageByType(_subPathStorage,
-				null!, _hostStorage, _tempStorage);
+				null!, _hostStorage, tempStorage);
 		_appSettings = new AppSettings { TempFolder = "/", StorageFolder = "/" };
 	}
 
@@ -83,7 +82,7 @@ public class FullFilePathExistsServiceTests
 		// Arrange
 		var fakeTempStorage = new FakeIStorage();
 		var appSettings = new AppSettings();
-		var selectorStorage = new FakeSelectorStorageByType(null, null, null, fakeTempStorage);
+		var selectorStorage = new FakeSelectorStorageByType(null!, null!, null!, fakeTempStorage);
 		var service = new FullFilePathExistsService(selectorStorage, appSettings);
 
 		const string fileHashWithExtension = "test-file.jpg";
@@ -103,7 +102,8 @@ public class FullFilePathExistsServiceTests
 		// Arrange
 		var fakeTempStorage = new FakeIStorage();
 		var appSettings = new AppSettings();
-		var selectorStorage = new FakeSelectorStorageByType(null, null, null, fakeTempStorage);
+		var selectorStorage = new FakeSelectorStorageByType(null!, null!,
+			null!, fakeTempStorage);
 		var service = new FullFilePathExistsService(selectorStorage, appSettings);
 
 		const string fileHashWithExtension = "test-file.jpg";

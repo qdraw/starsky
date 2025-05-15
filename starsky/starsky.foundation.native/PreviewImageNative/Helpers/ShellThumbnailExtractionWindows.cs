@@ -149,6 +149,10 @@ public class ShellThumbnailExtractionWindows(IWebLogger logger)
 		return factory;
 	}
 
+	[SuppressMessage("Interoperability",
+		"SYSLIB1096:Mark the type 'IShellItemImageFactory' with " +
+		"'GeneratedComInterfaceAttribute' instead of 'ComImportAttribute' " +
+		"to generate COM marshalling code at compile time")]
 	[ComImport]
 	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 	[Guid("bcc18b79-ba16-442f-80c4-8a59c30c463b")]
@@ -156,7 +160,6 @@ public class ShellThumbnailExtractionWindows(IWebLogger logger)
 	{
 		void GetImage(SIZE size, SIIGBF flags, out IntPtr phbm);
 	}
-
 
 	[Flags]
 	[SuppressMessage("Usage", "S2346: " +
