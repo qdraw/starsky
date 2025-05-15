@@ -11,11 +11,19 @@ namespace starsky.foundation.native.PreviewImageNative.Helpers;
 [SuppressMessage("Usage", "CA2101: Specify marshaling for P/Invoke string arguments")]
 public class QuicklookMacOs(IWebLogger logger)
 {
-	// Import the QuickLook framework
-	[DllImport("/System/Library/Frameworks/QuickLook.framework/QuickLook",
-		EntryPoint = "QLThumbnailImageCreate")]
-	private static extern IntPtr QLThumbnailImageCreate(IntPtr alloc, IntPtr url, CGSize size,
-		IntPtr options);
+	[SuppressMessage("Usage",
+		"S2342: Enumeration types should comply with a naming convention")]
+	public enum CFURLPathStyle
+	{
+		POSIX = 0,
+		HFS = 1,
+		Windows = 2
+	}
+
+	public static bool IsSupported()
+	{
+		return RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+	}
 
 	public bool GenerateThumbnail(string filePath, string outputPath, int width, int height)
 	{
@@ -47,6 +55,12 @@ public class QuicklookMacOs(IWebLogger logger)
 		logger.LogInformation("[QuicklookMacOs] Failed to generate thumbnail");
 		return false;
 	}
+
+	// Import the QuickLook framework
+	[DllImport("/System/Library/Frameworks/QuickLook.framework/QuickLook",
+		EntryPoint = "QLThumbnailImageCreate")]
+	private static extern IntPtr QLThumbnailImageCreate(IntPtr alloc, IntPtr url, CGSize size,
+		IntPtr options);
 
 	internal static IntPtr CreateCFStringCreateWithCString(string filePath)
 	{
@@ -153,15 +167,6 @@ public class QuicklookMacOs(IWebLogger logger)
 	private enum CfStringEncoding : uint
 	{
 		kCFStringEncodingUTF8 = 0x08000100
-	}
-
-	[SuppressMessage("Usage",
-		"S2342: Enumeration types should comply with a naming convention")]
-	public enum CFURLPathStyle
-	{
-		POSIX = 0,
-		HFS = 1,
-		Windows = 2
 	}
 
 	// Define a structure for CGSize (used for image size)

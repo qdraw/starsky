@@ -6,7 +6,7 @@ public interface IPreviewImageNativeService
 	///     Is Native supported?
 	/// </summary>
 	/// <returns></returns>
-	bool IsSupported();
+	bool IsSupported(int width = 512);
 
 	/// <summary>
 	///     Creates an image preview using the native QuickLook framework on macOS.

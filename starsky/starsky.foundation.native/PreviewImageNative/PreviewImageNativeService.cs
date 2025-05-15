@@ -9,11 +9,6 @@ namespace starsky.foundation.native.PreviewImageNative;
 [Service(typeof(IPreviewImageNativeService), InjectionLifetime = InjectionLifetime.Scoped)]
 public class PreviewImageNativeService(IWebLogger logger) : IPreviewImageNativeService
 {
-	public bool IsSupported()
-	{
-		return IsSupported(RuntimeInformation.IsOSPlatform);
-	}
-
 	/// <summary>
 	///     Creates an image preview using the native QuickLook framework on macOS.
 	/// </summary>
@@ -31,9 +26,16 @@ public class PreviewImageNativeService(IWebLogger logger) : IPreviewImageNativeS
 			height);
 	}
 
-	internal static bool IsSupported(IsOsPlatformDelegate runtimeInformationIsOsPlatform)
+	public bool IsSupported(int width = 512)
 	{
-		return runtimeInformationIsOsPlatform(OSPlatform.OSX);
+		return IsSupported(RuntimeInformation.IsOSPlatform, width);
+	}
+
+	private static bool IsSupported(IsOsPlatformDelegate runtimeInformationIsOsPlatform, int width)
+	{
+		return runtimeInformationIsOsPlatform(OSPlatform.OSX) ||
+		       ( runtimeInformationIsOsPlatform(OSPlatform.Windows)
+		         && RuntimeInformation.OSArchitecture == Architecture.X64 && width <= 512 );
 	}
 
 	internal bool GeneratePreviewImage(

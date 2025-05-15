@@ -25,19 +25,17 @@ public class ShellThumbnailExtractionWindows(IWebLogger logger)
 		int width,
 		int height)
 	{
-		var factoryGuid = typeof(IShellItemImageFactory).GUID;
-		SHCreateItemFromParsingName(inputPath, IntPtr.Zero, factoryGuid, out var factory);
-
 		var size = new SIZE { cx = width, cy = height };
 
 		try
 		{
+			var factory = ShCreateItemFromParsingName(inputPath);
 			factory.GetImage(size,
 				SIIGBF.SIIGBF_RESIZETOFIT | SIIGBF.SIIGBF_THUMBNAILONLY, out var hBitmap);
 			SaveHBitmapToBmp(hBitmap, outputBmpPath);
 			DeleteObject(hBitmap); // prevent memory leak
 		}
-		catch ( COMException )
+		catch ( Exception )
 		{
 			logger.LogInformation(
 				"[ShellThumbnailExtractionWindows] Error: Failed to create URL for {filePath}",
@@ -140,6 +138,13 @@ public class ShellThumbnailExtractionWindows(IWebLogger logger)
 		IntPtr pbc,
 		[MarshalAs(UnmanagedType.LPStruct)] Guid riid,
 		[MarshalAs(UnmanagedType.Interface)] out IShellItemImageFactory ppv);
+
+	private static IShellItemImageFactory ShCreateItemFromParsingName(string inputPath)
+	{
+		var factoryGuid = typeof(IShellItemImageFactory).GUID;
+		SHCreateItemFromParsingName(inputPath, IntPtr.Zero, factoryGuid, out var factory);
+		return factory;
+	}
 
 	[ComImport]
 	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]

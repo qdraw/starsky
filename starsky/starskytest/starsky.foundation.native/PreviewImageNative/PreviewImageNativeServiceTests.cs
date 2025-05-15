@@ -16,6 +16,19 @@ public class PreviewImageNativeServiceTests
 	}
 
 	[TestMethod]
+	public void GeneratePreviewImage_DefaultOption_ShouldReturnFalse_WhenNotMacOSorWindows()
+	{
+		// Arrange
+		var (service, _) = CreateSut();
+
+		// Act
+		var result = service.GeneratePreviewImage("input.jpg", "output.webp", 100, 100);
+
+		// Assert
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
 	public void GeneratePreviewImage_ShouldReturnFalse_WhenNotMacOSorWindows()
 	{
 		// Arrange

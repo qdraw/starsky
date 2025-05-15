@@ -25,7 +25,9 @@ public class NativePreviewHelper(
 	public async Task<NativePreviewResult> NativePreviewImage(ThumbnailSize biggestThumbnailSize,
 		string singleSubPath, string fileHash)
 	{
-		if ( !previewService.IsSupported() || !storage.ExistFile(singleSubPath) )
+		var width = ThumbnailNameHelper.GetSize(biggestThumbnailSize);
+
+		if ( !previewService.IsSupported(width) || !storage.ExistFile(singleSubPath) )
 		{
 			return new NativePreviewResult
 			{
@@ -37,7 +39,6 @@ public class NativePreviewHelper(
 		}
 
 		var metaData = await readMeta.ReadExifAndXmpFromFileAsync(singleSubPath);
-		var width = ThumbnailNameHelper.GetSize(biggestThumbnailSize);
 		var height =
 			( int ) Math.Round(( double ) metaData!.ImageHeight / metaData.ImageWidth * width);
 
