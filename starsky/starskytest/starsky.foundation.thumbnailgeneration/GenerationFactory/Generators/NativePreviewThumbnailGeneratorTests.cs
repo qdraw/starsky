@@ -66,7 +66,7 @@ public class NativePreviewThumbnailGeneratorTests
 	{
 		// Arrange
 		const string singleSubPath = "/test.jpg";
-		const string fileHash = "test-hash";
+		const string fileHash = "/test-hash";
 		const ThumbnailImageFormat imageFormat = ThumbnailImageFormat.jpg;
 		var thumbnailSizes = new List<ThumbnailSize> { ThumbnailSize.Small, ThumbnailSize.Large };
 
