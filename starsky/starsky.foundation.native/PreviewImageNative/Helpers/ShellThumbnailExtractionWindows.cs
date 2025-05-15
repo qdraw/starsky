@@ -1,5 +1,4 @@
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
 
 namespace starsky.foundation.native.PreviewImageNative.Helpers;
 
@@ -7,22 +6,23 @@ public class ShellThumbnailExtractionWindows
 {
 	public static bool IsSupported()
 	{
-		return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && 
-			RuntimeInformation.OSArchitecture == Architecture.X64;
+		return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
+		       RuntimeInformation.OSArchitecture == Architecture.X64;
 	}
 
-	public static void GenerateThumbnail(string inputPath, string outputBmpPath, int width, int height)
+	public static void GenerateThumbnail(string inputPath, string outputBmpPath, int width,
+		int height)
 	{
-		var iid = typeof(IShellItemImageFactory).GUID;
-		int hr = SHCreateItemFromParsingName(inputPath, IntPtr.Zero, ref iid, out var factoryObj);
-		if ( hr != 0 || factoryObj is not IShellItemImageFactory factory )
-			throw new COMException("Failed to get IShellItemImageFactory", hr);
+		var factoryGuid = typeof(IShellItemImageFactory).GUID;
+		SHCreateItemFromParsingName(inputPath, IntPtr.Zero, factoryGuid, out var factory);
 
 		var size = new SIZE { cx = width, cy = height };
 		factory.GetImage(size, SIIGBF.SIIGBF_RESIZETOFIT, out var hBitmap);
 
 		if ( hBitmap == IntPtr.Zero )
+		{
 			throw new Exception("Failed to get HBITMAP.");
+		}
 
 		SaveHBitmapToBmp(hBitmap, outputBmpPath);
 		DeleteObject(hBitmap); // prevent memory leak
@@ -32,11 +32,14 @@ public class ShellThumbnailExtractionWindows
 	{
 		BITMAP bmp;
 		if ( GetObject(hBitmap, Marshal.SizeOf<BITMAP>(), out bmp) == 0 )
+		{
 			throw new Exception("GetObject failed.");
+		}
 
-		int headerSize = Marshal.SizeOf(typeof(BITMAPFILEHEADER)) + Marshal.SizeOf(typeof(BITMAPINFOHEADER));
-		int pixelDataSize = bmp.bmWidthBytes * bmp.bmHeight;
-		int totalSize = headerSize + pixelDataSize;
+		var headerSize = Marshal.SizeOf(typeof(BITMAPFILEHEADER)) +
+		                 Marshal.SizeOf(typeof(BITMAPINFOHEADER));
+		var pixelDataSize = bmp.bmWidthBytes * bmp.bmHeight;
+		var totalSize = headerSize + pixelDataSize;
 
 		using var fs = new FileStream(outputPath, FileMode.Create);
 
@@ -53,7 +56,7 @@ public class ShellThumbnailExtractionWindows
 			biWidth = bmp.bmWidth,
 			biHeight = bmp.bmHeight,
 			biPlanes = 1,
-			biBitCount = ( ushort ) bmp.bmBitsPixel,
+			biBitCount = bmp.bmBitsPixel,
 			biCompression = 0, // BI_RGB
 			biSizeImage = ( uint ) pixelDataSize
 		};
@@ -63,15 +66,15 @@ public class ShellThumbnailExtractionWindows
 		WriteStruct(fs, infoHeader);
 
 		// Copy pixel data
-		byte[] pixelBytes = new byte[pixelDataSize];
+		var pixelBytes = new byte[pixelDataSize];
 		Marshal.Copy(bmp.bmBits, pixelBytes, 0, pixelDataSize);
 		fs.Write(pixelBytes, 0, pixelBytes.Length);
 	}
 
 	private static void WriteStruct<T>(Stream s, T strct)
 	{
-		byte[] bytes = new byte[Marshal.SizeOf<T>()];
-		IntPtr ptr = Marshal.AllocHGlobal(bytes.Length);
+		var bytes = new byte[Marshal.SizeOf<T>()];
+		var ptr = Marshal.AllocHGlobal(bytes.Length);
 		Marshal.StructureToPtr(strct, ptr, false);
 		Marshal.Copy(ptr, bytes, 0, bytes.Length);
 		Marshal.FreeHGlobal(ptr);
@@ -85,9 +88,12 @@ public class ShellThumbnailExtractionWindows
 	[DllImport("gdi32.dll", SetLastError = true)]
 	private static extern int GetObject(IntPtr hgdiobj, int cbBuffer, out BITMAP lpvObject);
 
-	[DllImport("shell32.dll", CharSet = CharSet.Unicode)]
-	private static extern int SHCreateItemFromParsingName(
-		string path, IntPtr pbc, ref Guid riid, out object ppv);
+	[DllImport("shell32.dll", CharSet = CharSet.Unicode, PreserveSig = false)]
+	private static extern void SHCreateItemFromParsingName(
+		[MarshalAs(UnmanagedType.LPWStr)] string pszPath,
+		IntPtr pbc,
+		[MarshalAs(UnmanagedType.LPStruct)] Guid riid,
+		[MarshalAs(UnmanagedType.Interface)] out IShellItemImageFactory ppv);
 
 	[ComImport]
 	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
