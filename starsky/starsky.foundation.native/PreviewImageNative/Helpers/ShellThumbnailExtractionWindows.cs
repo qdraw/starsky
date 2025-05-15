@@ -5,6 +5,12 @@ namespace starsky.foundation.native.PreviewImageNative.Helpers;
 
 public class ShellThumbnailExtractionWindows
 {
+	public static bool IsSupported()
+	{
+		return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && 
+			RuntimeInformation.OSArchitecture == Architecture.X64;
+	}
+
 	public static void GenerateThumbnail(string inputPath, string outputBmpPath, int width, int height)
 	{
 		var iid = typeof(IShellItemImageFactory).GUID;
