@@ -74,11 +74,10 @@ public class ShellThumbnailExtractionWindowsTest
 			Assert.Inconclusive("This test is only valid on unsupported platforms.");
 		}
 
-		Assert.ThrowsExactly<MarshalDirectiveException>(() =>
-		{
-			new ShellThumbnailExtractionWindows(new FakeIWebLogger()).GenerateThumbnailInternal(
+		var result = new ShellThumbnailExtractionWindows(new FakeIWebLogger())
+			.GenerateThumbnailInternal(
 				"input.jpg", "output.bmp", 100, 100);
-		});
+		Assert.IsFalse(result);
 	}
 
 	[TestMethod]
