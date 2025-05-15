@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -42,15 +43,15 @@ public class ManualThumbnailGenerationServiceTest
 		var storage = new FakeIStorage(new List<string> { "/" }, new List<string> { "/test.jpg" },
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
-		var socket = new FakeIWebSocketConnectionsService();
+		var socket = new FakeIThumbnailSocketService();
 		var selectorStorage = new FakeSelectorStorage(storage);
 		var controller = new ManualThumbnailGenerationService(new FakeIWebLogger(),
-			new FakeIThumbnailSocketService(),
+			socket,
 			new FakeIThumbnailService(selectorStorage), new FakeThumbnailBackgroundTaskQueue());
 
 		await controller.WorkThumbnailGeneration("/");
 
-		Assert.AreEqual(1, socket.FakeSendToAllAsync.Count(p => !p.StartsWith("[system]")));
+		Assert.AreEqual(1, socket.Results.Count);
 	}
 
 	[TestMethod]
@@ -73,65 +74,14 @@ public class ManualThumbnailGenerationServiceTest
 		const string message = "[ThumbnailGenerationController] reading not allowed";
 
 		var webLogger = new FakeIWebLogger();
-		// var controller = new ManualThumbnailGenerationService(new FakeIQuery(), 
-		// 	webLogger, new FakeIWebSocketConnectionsService(), new FakeIThumbnailService(null,
-		// 		new UnauthorizedAccessException(message)), new FakeThumbnailBackgroundTaskQueue());
-
-		var controller = new ManualThumbnailGenerationService(new FakeIWebLogger(),
-			new FakeIThumbnailSocketService(),
-			new FakeIThumbnailService(), new FakeThumbnailBackgroundTaskQueue());
+		var controller = new ManualThumbnailGenerationService(webLogger,
+			new ThumbnailSocketService(new FakeIQuery(), new FakeIWebSocketConnectionsService(),
+				webLogger,
+				new FakeINotificationQuery()), new FakeIThumbnailService(null,
+				new UnauthorizedAccessException(message)), new FakeThumbnailBackgroundTaskQueue());
 
 		await controller.WorkThumbnailGeneration("/");
 
 		Assert.IsTrue(webLogger.TrackedExceptions.FirstOrDefault().Item2?.Contains(message));
 	}
-
-	// [TestMethod]
-	// public void WhichFilesNeedToBePushedForUpdate_NothingToUpdate()
-	// {
-	// 	var result = ManualThumbnailGenerationService.WhichFilesNeedToBePushedForUpdates(
-	// 		new List<GenerationResultModel>(), new List<FileIndexItem>());
-	// 	Assert.AreEqual(0, result.Count);
-	// }
-	//
-	//
-	// [TestMethod]
-	// public void WhichFilesNeedToBePushedForUpdate_DoesNotExistInFilesList()
-	// {
-	// 	var result = ManualThumbnailGenerationService.WhichFilesNeedToBePushedForUpdates(
-	// 		new List<GenerationResultModel>
-	// 		{
-	// 			new GenerationResultModel{SubPath = "/test.jpg", Success = true}
-	// 		}, new List<FileIndexItem>());
-	// 	
-	// 	Assert.AreEqual(0, result.Count);
-	// }
-	//
-	// [TestMethod]
-	// public void WhichFilesNeedToBePushedForUpdate_DeletedSoIgnored()
-	// {
-	// 	var result = ManualThumbnailGenerationService.WhichFilesNeedToBePushedForUpdates(
-	// 		new List<GenerationResultModel>
-	// 		{
-	// 			new GenerationResultModel{SubPath = "/test.jpg", Success = true}
-	// 		}, new List<FileIndexItem>{new FileIndexItem("/test.jpg"){
-	// 			Status = FileIndexItem.ExifStatus.Ok,
-	// 			Tags = TrashKeyword.TrashKeywordString
-	// 		}});
-	// 	
-	// 	Assert.AreEqual(0, result.Count);
-	// }
-	//
-	//
-	// [TestMethod]
-	// public void WhichFilesNeedToBePushedForUpdate_ShouldMap()
-	// {
-	// 	var result = ManualThumbnailGenerationService.WhichFilesNeedToBePushedForUpdates(
-	// 		new List<GenerationResultModel>
-	// 		{
-	// 			new GenerationResultModel{SubPath = "/test.jpg", Success = true}
-	// 		}, new List<FileIndexItem>{new FileIndexItem("/test.jpg")});
-	// 	
-	// 	Assert.AreEqual(1, result.Count);
-	// }
 }

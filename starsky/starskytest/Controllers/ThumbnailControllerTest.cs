@@ -48,10 +48,12 @@ public sealed class ThumbnailControllerTest
 			null, new FakeIWebLogger(), memoryCache);
 	}
 
-	private static ThumbnailController CreateSut(IStorage storage, IQuery query)
+	private static ThumbnailController CreateSut(IStorage storage, IQuery query,
+		FakeISmallThumbnailBackgroundJobService? bgService = null)
 	{
+		bgService ??= new FakeISmallThumbnailBackgroundJobService();
 		var sut = new ThumbnailController(query, new FakeSelectorStorage(storage),
-			new AppSettings(), new FakeIWebLogger(), new FakeISmallThumbnailBackgroundJobService());
+			new AppSettings(), new FakeIWebLogger(), bgService);
 		sut.ControllerContext.HttpContext = new DefaultHttpContext();
 		return sut;
 	}
@@ -536,12 +538,16 @@ public sealed class ThumbnailControllerTest
 	public void ThumbnailSmallOrTinyMeta_NotFound()
 	{
 		var storage = new FakeIStorage();
-		var sut = CreateSut(storage, _query);
+
+		var bgService = new FakeISmallThumbnailBackgroundJobService();
+		var sut = CreateSut(storage, _query, bgService);
 
 		var actionResult =
-			sut.ThumbnailSmallOrTinyMeta("404filehash") as NotFoundObjectResult;
+			sut.ThumbnailSmallOrTinyMeta("404filehash", "/test.jpg") as NotFoundObjectResult;
 		var thumbnailAnswer = actionResult?.StatusCode;
+
 		Assert.AreEqual(404, thumbnailAnswer);
+		Assert.AreEqual("/test.jpg", bgService.FilePaths.LastOrDefault());
 	}
 
 	[TestMethod]
