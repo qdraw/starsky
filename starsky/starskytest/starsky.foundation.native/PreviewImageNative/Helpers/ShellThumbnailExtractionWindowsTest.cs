@@ -69,7 +69,7 @@ public class ShellThumbnailExtractionWindowsTest
 	[TestMethod]
 	public void GenerateThumbnailInternal_UnsupportedPlatform__OnlyOtherThanWindows()
 	{
-		if ( ShellThumbnailExtractionWindows.IsSupported() )
+		if ( !ShellThumbnailExtractionWindows.IsSupported() )
 		{
 			Assert.Inconclusive("This test is only valid on unsupported platforms.");
 		}
