@@ -550,4 +550,21 @@ public sealed class AppSettingsTest
 		Assert.AreEqual(source.StorageFolder, destination.StorageFolder);
 		Assert.AreEqual(source.Verbose, destination.Verbose);
 	}
+
+	[TestMethod]
+	public void AppSettings_AppSettingsLocalPath_Null()
+	{
+		var appSettings = new AppSettings { AppSettingsLocalPath = null! };
+		Assert.AreEqual(string.Empty, appSettings.AppSettingsLocalPath);
+	}
+	
+	[TestMethod]
+	public void AppSettings_AppSettingsLocalPath_AssemblyDirectory()
+	{
+		var appSettings = new AppSettings { AppSettingsLocalPath = "/test/{AssemblyDirectory}" };
+
+		var expectedResult = $"/test/{appSettings.BaseDirectoryProject}";
+		
+		Assert.AreEqual(expectedResult, appSettings.AppSettingsLocalPath);
+	}
 }
