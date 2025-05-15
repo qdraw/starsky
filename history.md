@@ -46,6 +46,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Added) _Back-end_ Handle background jobs for small thumbnails. (PR #2147)
 - [x] (Changed) _Back-end_ Database Query Refactoring GetAllFilesQuery / GetAllObjects (PR #2147)
 - [x] (Added) _Back-end_ Quicklook and Shell32 Native Thumbnails for macOS and Windows (PR #2147)
+- [x] (Added) _Back-end_ Update docs and add env for manual config (PR #2158)
 
 ## version 0.7.0-beta.0 - 2025-05-14 {#v0.7.0-beta.0}
 
