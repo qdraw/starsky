@@ -33,7 +33,7 @@ public class SmallThumbnailBackgroundJobService(
 
 		if ( bgTaskQueue.Count() >= 5000 )
 		{
-			logger.LogError("[SmallThumbnailBackgroundJobService] To many items in queue");
+			logger.LogError("[SmallThumbnailBackgroundJobService] Too many items in queue");
 			return false;
 		}
 
