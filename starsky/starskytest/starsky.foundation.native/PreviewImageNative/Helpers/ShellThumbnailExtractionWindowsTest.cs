@@ -95,7 +95,8 @@ public class ShellThumbnailExtractionWindowsTest
 		}
 
 		var (input, output) =
-			await CreateTempImage("GenerateThumbnail_HBitmapIsZero_ThrowsInvalidOperationException", true);
+			await CreateTempImage("GenerateThumbnail_HBitmapIsZero_ThrowsInvalidOperationException",
+				true);
 
 		// Mock or simulate the scenario where hBitmap is IntPtr.Zero
 		// This can be done by providing invalid input or mocking the interop call
@@ -135,9 +136,9 @@ public class ShellThumbnailExtractionWindowsTest
 	}
 
 	[TestMethod]
-	public void WriteStruct_ArgumentNullException()
+	public void WriteStruct_ArgumentException()
 	{
-		Assert.ThrowsExactly<ArgumentNullException>(() =>
+		Assert.ThrowsExactly<ArgumentException>(() =>
 		{
 			ShellThumbnailExtractionWindows.WriteStruct(null!,
 				"test");
