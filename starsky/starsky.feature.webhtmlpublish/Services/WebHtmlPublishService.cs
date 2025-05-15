@@ -130,11 +130,13 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 		return fileIndexItemsList;
 	}
 
-	internal bool ShouldSkipExtraLarge(string publishProfileName)
+	internal ThumbnailGenerationType ShouldSkipExtraLarge(string publishProfileName)
 	{
 		var skipExtraLarge = _publishPreflight.GetPublishProfileName(publishProfileName)
 			.TrueForAll(p => p.SourceMaxWidth <= 1999);
-		return skipExtraLarge;
+		return skipExtraLarge
+			? ThumbnailGenerationType.SkipExtraLarge
+			: ThumbnailGenerationType.All;
 	}
 
 	internal async Task PreGenerateThumbnail(IEnumerable<FileIndexItem> fileIndexItemsList,

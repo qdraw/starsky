@@ -6,6 +6,7 @@ using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Generators.Interfaces;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Models;
 using starsky.foundation.thumbnailgeneration.Models;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory;
@@ -32,10 +33,10 @@ public class CompositeThumbnailGenerator(List<IThumbnailGenerator> generators, I
 					return compositeResults;
 				}
 			}
-			catch ( Exception ex )
+			catch ( Exception exception )
 			{
 				logger.LogError($"[CompositeThumbnailGenerator] Generator " +
-				                $"{generator.GetType().Name} failed: {ex.Message} {ex.StackTrace}");
+				                $"{generator.GetType().Name} failed: {exception.Message} {exception.StackTrace}");
 			}
 		}
 

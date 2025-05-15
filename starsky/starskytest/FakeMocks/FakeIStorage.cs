@@ -150,7 +150,7 @@ public class FakeIStorage : IStorage
 		}
 
 		_outputSubPathFiles.Add(toPath);
-		_byteList.Add(toPath, _byteList[fromPath]);
+		_byteList.TryAdd(toPath, _byteList[fromPath]);
 	}
 
 	public bool FileDelete(string path)
@@ -237,8 +237,8 @@ public class FakeIStorage : IStorage
 
 		var parentPathWithSlash = string.IsNullOrEmpty(path) ? "/" : path;
 
-		var folderFileListNotRecursive = folderFileList.Where(
-			p => CheckAndFixChildFolders(parentPathWithSlash, p!)).ToList();
+		var folderFileListNotRecursive = folderFileList
+			.Where(p => CheckAndFixChildFolders(parentPathWithSlash, p!)).ToList();
 		return folderFileListNotRecursive.Cast<string>();
 	}
 

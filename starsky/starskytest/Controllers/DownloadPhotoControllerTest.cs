@@ -156,7 +156,8 @@ public sealed class DownloadPhotoControllerTest
 		var thumbnailService = new ThumbnailService(selectorStorage, new FakeIWebLogger(),
 			new AppSettings(), new FakeIUpdateStatusGeneratedThumbnailService(),
 			new FakeIVideoProcess(selectorStorage),
-			new FileHashSubPathStorage(selectorStorage, new FakeIWebLogger()));
+			new FileHashSubPathStorage(selectorStorage, new FakeIWebLogger()),
+			new FakeINativePreviewThumbnailGenerator());
 
 		// Act
 		var controller = new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger(),
@@ -177,7 +178,8 @@ public sealed class DownloadPhotoControllerTest
 		var thumbnailService = new ThumbnailService(selectorStorage, new FakeIWebLogger(),
 			new AppSettings(), new FakeIUpdateStatusGeneratedThumbnailService(),
 			new FakeIVideoProcess(selectorStorage),
-			new FileHashSubPathStorage(selectorStorage, new FakeIWebLogger()));
+			new FileHashSubPathStorage(selectorStorage, new FakeIWebLogger()),
+			new FakeINativePreviewThumbnailGenerator());
 
 		// Act
 		var controller =
@@ -284,7 +286,8 @@ public sealed class DownloadPhotoControllerTest
 		var thumbnailService = new ThumbnailService(selectorStorage, new FakeIWebLogger(),
 			new AppSettings(), new FakeIUpdateStatusGeneratedThumbnailService(),
 			new FakeIVideoProcess(selectorStorage),
-			new FileHashSubPathStorage(selectorStorage, new FakeIWebLogger()));
+			new FileHashSubPathStorage(selectorStorage, new FakeIWebLogger()),
+			new FakeINativePreviewThumbnailGenerator());
 
 		// Act
 		var controller = new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger(),

@@ -203,7 +203,8 @@ public class ExportService : IExport
 						ThumbnailSize.Large, _appSettings.ThumbnailImageFormat));
 
 				await _thumbnailService
-					.GenerateThumbnail(item.FilePath!, item.FileHash!, true);
+					.GenerateThumbnail(item.FilePath!, item.FileHash!,
+						ThumbnailGenerationType.SkipExtraLarge);
 
 				filePaths.Add(sourceThumb);
 				continue;

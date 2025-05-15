@@ -16,7 +16,8 @@ public class ThumbnailGeneratorFactoryTests
 		var selectorStorageMock = new FakeSelectorStorage();
 		var loggerMock = new FakeIWebLogger();
 		var videoProcessMock = new FakeIVideoProcess(selectorStorageMock);
-		_factory = new ThumbnailGeneratorFactory(selectorStorageMock, loggerMock, videoProcessMock);
+		_factory = new ThumbnailGeneratorFactory(selectorStorageMock, loggerMock, videoProcessMock,
+			new FakeINativePreviewThumbnailGenerator());
 	}
 
 	[TestMethod]

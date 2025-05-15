@@ -1051,7 +1051,7 @@ public sealed class AppSettings
 	/// </summary>
 	/// <param name="subpath">in OS Style, StorageFolder ends with backslash</param>
 	/// <returns></returns>
-	private string FullPathTempFolderToDatabaseStyle(string subpath)
+	internal string FullPathTempFolderToDatabaseStyle(string subpath)
 	{
 		var databaseFilePath = subpath.Replace(TempFolder, string.Empty);
 		databaseFilePath = PathReplaceToDatabaseStyle(databaseFilePath);

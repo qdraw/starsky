@@ -3,7 +3,7 @@ using System.Linq;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.thumbnailgeneration.Models;
 
-namespace starsky.foundation.thumbnailgeneration.GenerationFactory;
+namespace starsky.foundation.thumbnailgeneration.GenerationFactory.Models;
 
 public static class ErrorGenerationResultModel
 {

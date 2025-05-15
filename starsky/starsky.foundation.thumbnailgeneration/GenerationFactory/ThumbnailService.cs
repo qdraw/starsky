@@ -13,6 +13,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Models;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Shared;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Testers;
 using starsky.foundation.thumbnailgeneration.Interfaces;
@@ -30,7 +31,8 @@ public class ThumbnailService(
 	AppSettings appSettings,
 	IUpdateStatusGeneratedThumbnailService updateStatusGeneratedThumbnailService,
 	IVideoProcess videoProcess,
-	IFileHashSubPathStorage fileHashSubPathStorage)
+	IFileHashSubPathStorage fileHashSubPathStorage,
+	INativePreviewThumbnailGenerator nativePreviewThumbnailGenerator)
 	: IThumbnailService
 {
 	private readonly Func<string?, bool> _delegateToCheckIfExtensionIsSupported = e =>
@@ -43,15 +45,15 @@ public class ThumbnailService(
 	///     Can be used for directories or single files
 	/// </summary>
 	/// <param name="fileOrFolderPath">subPath of file or folder</param>
-	/// <param name="skipExtraLarge">skip large format creation</param>
+	/// <param name="type">skip large format creation</param>
 	/// <returns>results</returns>
 	public async Task<List<GenerationResultModel>> GenerateThumbnail(string fileOrFolderPath,
-		bool skipExtraLarge = false)
+		ThumbnailGenerationType type = ThumbnailGenerationType.All)
 	{
 		var (success, toAddFilePaths) = _folderToFileList.AddFiles(fileOrFolderPath,
 			_delegateToCheckIfExtensionIsSupported);
 
-		var sizes = ThumbnailSizes.GetLargeToSmallSizes(skipExtraLarge);
+		var sizes = ThumbnailSizes.GetLargeToSmallSizes(type);
 		if ( !success )
 		{
 			return ErrorGenerationResultModel
@@ -79,17 +81,18 @@ public class ThumbnailService(
 	/// </summary>
 	/// <param name="fileHash">hash</param>
 	/// <param name="subPath">subPath of file; make sure it is NOT a folder</param>
-	/// <param name="skipExtraLarge">skip large format creation</param>
+	/// <param name="type">skip large format creation</param>
 	/// <returns>results</returns>
 	/// <returns></returns>
 	public async Task<List<GenerationResultModel>> GenerateThumbnail(string subPath,
 		string fileHash,
-		bool skipExtraLarge = false)
+		ThumbnailGenerationType type = ThumbnailGenerationType.All)
 	{
 		var (success, toAddFilePaths) =
 			_folderToFileList.AddFiles(subPath, _delegateToCheckIfExtensionIsSupported);
 
-		var sizes = ThumbnailSizes.GetLargeToSmallSizes(skipExtraLarge);
+		var sizes = ThumbnailSizes.GetLargeToSmallSizes(type);
+
 		if ( !success || toAddFilePaths.Count != 1 )
 		{
 			return ErrorGenerationResultModel
@@ -99,6 +102,7 @@ public class ThumbnailService(
 		var generationResults = ( await GenerateThumbnailAsync(subPath, fileHash, sizes) ).ToList();
 		await updateStatusGeneratedThumbnailService.AddOrUpdateStatusAsync(generationResults);
 
+		// Socket updates are not the scope of this service
 		return generationResults;
 	}
 
@@ -139,7 +143,8 @@ public class ThumbnailService(
 	private async Task<IEnumerable<GenerationResultModel>> GenerateThumbnailAsync(
 		string singleSubPath, string? fileHash, List<ThumbnailSize> sizes)
 	{
-		var factory = new ThumbnailGeneratorFactory(selectorStorage, logger, videoProcess);
+		var factory = new ThumbnailGeneratorFactory(selectorStorage, logger, videoProcess,
+			nativePreviewThumbnailGenerator);
 		var generator = factory.GetGenerator(singleSubPath);
 		if ( !string.IsNullOrEmpty(fileHash) )
 		{
@@ -161,7 +166,8 @@ public class ThumbnailService(
 	private async Task<(Stream?, GenerationResultModel)> GenerateSingleThumbnailAsync(
 		string singleSubPath, ThumbnailImageFormat imageFormat, ThumbnailSize size)
 	{
-		var factory = new ThumbnailGeneratorFactory(selectorStorage, logger, videoProcess);
+		var factory = new ThumbnailGeneratorFactory(selectorStorage, logger, videoProcess,
+			nativePreviewThumbnailGenerator);
 		var generator = factory.GetGenerator(singleSubPath);
 
 		var (fileHash, success) =

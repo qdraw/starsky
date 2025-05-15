@@ -20,10 +20,11 @@ public class ToBase64DataUriList(IThumbnailService thumbnailService)
 		for ( var i = 0; i < fileIndexList.Count; i++ )
 		{
 			var item = fileIndexList[i];
+			const ThumbnailImageFormat format = ThumbnailImageFormat.png;
 
 			var (stream, status) = await thumbnailService.GenerateThumbnail(item.FilePath!,
 				item.FileHash!,
-				ThumbnailImageFormat.png,
+				format,
 				ThumbnailSize.TinyIcon);
 
 			if ( !status.Success || stream == null )
@@ -37,7 +38,7 @@ public class ToBase64DataUriList(IThumbnailService thumbnailService)
 			}
 
 			base64ImageArray[i] =
-				"data:image/png;base64," + Base64Helper.ToBase64(stream);
+				$"data:image/{format};base64," + Base64Helper.ToBase64(stream);
 			await stream.DisposeAsync();
 		}
 

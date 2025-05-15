@@ -1,8 +1,7 @@
 using starsky.foundation.injection;
-using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
-using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.video.GetDependencies.Interfaces;
 using starsky.foundation.video.GetDependencies.Models;
@@ -13,24 +12,21 @@ namespace starsky.foundation.video.Process;
 [Service(typeof(IVideoProcess), InjectionLifetime = InjectionLifetime.Scoped)]
 public sealed class VideoProcess : IVideoProcess
 {
-	private readonly AppSettings _appSettings;
 	private readonly IFfMpegDownload _ffMpegDownload;
-	private readonly IStorage _hostStorage;
+	private readonly IFullFilePathExistsService _filePathExistsService;
 	private readonly IWebLogger _logger;
-	private readonly IStorage _storage;
 	private readonly IStorage _tempStorage;
 	private readonly IVideoProcessThumbnailPost _thumbnailPost;
 
 	public VideoProcess(ISelectorStorage selectorStorage, IFfMpegDownload ffMpegDownload,
-		IVideoProcessThumbnailPost thumbnailPost, IWebLogger logger, AppSettings appSettings)
+		IVideoProcessThumbnailPost thumbnailPost, IWebLogger logger,
+		IFullFilePathExistsService filePathExistsService)
 	{
 		_ffMpegDownload = ffMpegDownload;
 		_thumbnailPost = thumbnailPost;
 		_logger = logger;
-		_storage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 		_tempStorage = selectorStorage.Get(SelectorStorage.StorageServices.Temporary);
-		_hostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
-		_appSettings = appSettings;
+		_filePathExistsService = filePathExistsService;
 	}
 
 	public async Task<VideoResult> RunVideo(string subPath,
@@ -48,7 +44,8 @@ public sealed class VideoProcess : IVideoProcess
 				await stream.DisposeAsync();
 				return result;
 			default:
-				return new VideoResult(false, subPath, SelectorStorage.StorageServices.SubPath);
+				return new VideoResult(false, subPath,
+					SelectorStorage.StorageServices.SubPath);
 		}
 	}
 
@@ -104,46 +101,11 @@ public sealed class VideoProcess : IVideoProcess
 				"Generation failed"), Stream.Null );
 	}
 
-	private static string GetTempFileHashWithExtension(string subPath, string beforeFileHash)
-	{
-		var fileHashWithExtension =
-			$"{beforeFileHash}.{FilenamesHelper.GetFileExtensionWithoutDot(subPath)}";
-		return fileHashWithExtension;
-	}
-
-	/// <summary>
-	/// </summary>
-	/// <param name="subPath"></param>
-	/// <returns>(fullFilePath, isTempFile, fileHashWithExtension)</returns>
-	private async Task<(string, bool, string)> GetFullFilePath(string subPath,
-		string beforeFileHash)
-	{
-		var fullFilePath = _appSettings.DatabasePathToFilePath(subPath);
-
-		if ( _hostStorage.ExistFile(_appSettings.DatabasePathToFilePath(subPath)) )
-		{
-			return ( fullFilePath, false, string.Empty );
-		}
-
-		// Copy to Temp
-		var sourceStream = _storage.ReadStream(subPath);
-		if ( sourceStream == Stream.Null )
-		{
-			return ( fullFilePath, false, string.Empty );
-		}
-
-		var fileHashWithExtension = GetTempFileHashWithExtension(subPath, beforeFileHash);
-		await _tempStorage.WriteStreamAsync(sourceStream, fileHashWithExtension);
-		fullFilePath = _appSettings.DatabasePathToTempFolderFilePath(fileHashWithExtension);
-
-		return ( fullFilePath, true, fileHashWithExtension );
-	}
-
 	private async Task<(Stream, bool)> RunProcessAsync(string subPath, string beforeFileHash,
 		string ffmpegInputArguments, string outputFormat)
 	{
-		var (fullFilePath, useTempStorageForInput, fileHashWithExtension) =
-			await GetFullFilePath(subPath, beforeFileHash);
+		var (_, fullFilePath, useTempStorageForInput, fileHashWithExtension) =
+			await _filePathExistsService.GetFullFilePath(subPath, beforeFileHash);
 
 		// Run from temp file
 		var ffmpegPath = _ffMpegDownload.GetSetFfMpegPath();
@@ -151,12 +113,7 @@ public sealed class VideoProcess : IVideoProcess
 		var result = await runner.RunProcessAsync(fullFilePath,
 			ffmpegInputArguments, outputFormat);
 
-		if ( !useTempStorageForInput )
-		{
-			return result;
-		}
-
-		_tempStorage.FileDelete(fileHashWithExtension);
+		_filePathExistsService.CleanTemporaryFile(fileHashWithExtension, useTempStorageForInput);
 		return result;
 	}
 }

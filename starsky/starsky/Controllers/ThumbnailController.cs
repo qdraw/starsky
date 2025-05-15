@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
+using starsky.feature.thumbnail.Interfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
@@ -29,34 +30,38 @@ public sealed class ThumbnailController : Controller
 	private readonly IStorage _iStorage;
 	private readonly IWebLogger _logger;
 	private readonly IQuery _query;
+	private readonly ISmallThumbnailBackgroundJobService _thumbnailBgService;
 	private readonly IStorage _thumbnailStorage;
 
 	public ThumbnailController(IQuery query, ISelectorStorage selectorStorage,
-		AppSettings appSettings, IWebLogger logger)
+		AppSettings appSettings, IWebLogger logger,
+		ISmallThumbnailBackgroundJobService thumbnailBgService)
 	{
 		_query = query;
 		_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 		_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 		_imageFormat = appSettings.ThumbnailImageFormat;
 		_logger = logger;
+		_thumbnailBgService = thumbnailBgService;
 	}
 
 	/// <summary>
 	///     Get thumbnail for index pages (300 px or 150px or 1000px (based on what's there))
 	/// </summary>
-	/// <param name="f">one single fileHash (NOT path)</param>
+	/// <param name="fileHash">one single fileHash (NOT path)</param>
+	/// <param name="f">filePath for generation</param>
 	/// <returns>thumbnail or status (IActionResult ThumbnailFromIndex)</returns>
 	/// <response code="200">returns content of the file</response>
 	/// <response code="400">string (f) input not allowed to avoid path injection attacks</response>
 	/// <response code="404">item not found on disk</response>
 	/// <response code="401">User unauthorized</response>
-	[HttpGet("/api/thumbnail/small/{f}")]
+	[HttpGet("/api/thumbnail/small/{fileHash}")]
 	[ProducesResponseType(200)] // file
 	[ProducesResponseType(400)] // string (f) input not allowed to avoid path injection attacks
 	[ProducesResponseType(404)] // not found
 	[AllowAnonymous] // <=== ALLOW FROM EVERYWHERE
 	[ResponseCache(Duration = 29030400)] // 4 weeks
-	public IActionResult ThumbnailSmallOrTinyMeta(string f)
+	public IActionResult ThumbnailSmallOrTinyMeta(string fileHash, string? f = null)
 	{
 		if ( !ModelState.IsValid )
 		{
@@ -65,49 +70,50 @@ public sealed class ThumbnailController : Controller
 
 		const string xImageSizeHeader = "x-image-size";
 
-		f = FilenamesHelper.GetFileNameWithoutExtension(f);
+		fileHash = FilenamesHelper.GetFileNameWithoutExtension(fileHash);
 
 		// Restrict the fileHash to letters and digits only
 		// I/O function calls should not be vulnerable to path injection attacks
-		if ( !ThumbnailNameHelper.ValidateThumbnailName(f) )
+		if ( !ThumbnailNameHelper.ValidateThumbnailName(fileHash) )
 		{
 			return BadRequest();
 		}
 
 		if ( _thumbnailStorage.ExistFile(
-			    ThumbnailNameHelper.Combine(f, ThumbnailSize.Small, _imageFormat)) )
+			    ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.Small, _imageFormat)) )
 		{
 			var stream =
 				_thumbnailStorage.ReadStream(
-					ThumbnailNameHelper.Combine(f, ThumbnailSize.Small, _imageFormat));
+					ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.Small, _imageFormat));
 			Response.Headers.TryAdd(xImageSizeHeader,
-				new StringValues(ThumbnailSize.Small.ToString()));
+				new StringValues(nameof(ThumbnailSize.Small)));
 			return File(stream, MimeHelper.GetMimeType(_imageFormat.ToString()));
 		}
 
 		if ( _thumbnailStorage.ExistFile(
-			    ThumbnailNameHelper.Combine(f, ThumbnailSize.TinyMeta, _imageFormat)) )
+			    ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.TinyMeta, _imageFormat)) )
 		{
 			var stream =
 				_thumbnailStorage.ReadStream(
-					ThumbnailNameHelper.Combine(f, ThumbnailSize.TinyMeta, _imageFormat));
+					ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.TinyMeta, _imageFormat));
 			Response.Headers.TryAdd(xImageSizeHeader,
-				new StringValues(ThumbnailSize.TinyMeta.ToString()));
+				new StringValues(nameof(ThumbnailSize.TinyMeta)));
 			return File(stream, MimeHelper.GetMimeType(_imageFormat.ToString()));
 		}
 
 		if ( !_thumbnailStorage.ExistFile(
-			    ThumbnailNameHelper.Combine(f, ThumbnailSize.Large, _imageFormat)) )
+			    ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.Large, _imageFormat)) )
 		{
+			_thumbnailBgService.CreateJob(HttpContext.User.Identity?.IsAuthenticated, f);
 			SetExpiresResponseHeadersToZero();
 			return NotFound("hash not found");
 		}
 
 		var streamDefaultThumbnail =
 			_thumbnailStorage.ReadStream(
-				ThumbnailNameHelper.Combine(f, ThumbnailSize.Large, _imageFormat));
+				ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.Large, _imageFormat));
 		Response.Headers.TryAdd(xImageSizeHeader,
-			new StringValues(ThumbnailSize.Large.ToString()));
+			new StringValues(nameof(ThumbnailSize.Large)));
 		return File(streamDefaultThumbnail, MimeHelper.GetMimeType(_imageFormat.ToString()));
 	}
 

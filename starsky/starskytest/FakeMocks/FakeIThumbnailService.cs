@@ -34,13 +34,13 @@ public class FakeIThumbnailService : IThumbnailService
 	public List<Tuple<string, int?, int?, int?>> InputsRotate { get; set; } = new();
 
 	public async Task<List<GenerationResultModel>> GenerateThumbnail(string fileOrFolderPath,
-		bool skipExtraLarge = false)
+		ThumbnailGenerationType type = ThumbnailGenerationType.All)
 	{
 		return await CreateThumbnailAsync(fileOrFolderPath);
 	}
 
 	public async Task<List<GenerationResultModel>> GenerateThumbnail(string subPath,
-		string fileHash, bool skipExtraLarge = false)
+		string fileHash, ThumbnailGenerationType type = ThumbnailGenerationType.All)
 	{
 		return ( await CreateThumbAsync(subPath, fileHash) ).ToList();
 	}

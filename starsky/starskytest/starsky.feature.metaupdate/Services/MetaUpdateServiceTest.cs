@@ -92,8 +92,8 @@ public sealed class MetaUpdateServiceTest
 		};
 
 		var readMeta = new ReadMetaSubPathStorage(
-			new FakeSelectorStorage(_iStorageFake), _appSettings,
-			_memoryCache, new FakeIWebLogger());
+			new FakeSelectorStorage(_iStorageFake), _appSettings, new FakeIWebLogger(),
+			_memoryCache);
 		var service = new MetaUpdateService(_query, _exifTool,
 			new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
 			new FakeIWebLogger(), readMeta,
@@ -199,7 +199,8 @@ public sealed class MetaUpdateServiceTest
 
 		var readMeta = new ReadMetaSubPathStorage(
 			new FakeSelectorStorage(_iStorageFake), _appSettings,
-			_memoryCache, new FakeIWebLogger());
+			new FakeIWebLogger(),
+			_memoryCache);
 		var service = new MetaUpdateService(_query, _exifTool,
 			new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
 			new FakeIWebLogger(), readMeta,
@@ -264,7 +265,8 @@ public sealed class MetaUpdateServiceTest
 
 		var readMeta = new ReadMetaSubPathStorage(
 			new FakeSelectorStorage(_iStorageFake), _appSettings,
-			_memoryCache, new FakeIWebLogger());
+			new FakeIWebLogger(),
+			_memoryCache);
 		var service = new MetaUpdateService(_query, _exifTool,
 			new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
 			new FakeIWebLogger(), readMeta,
@@ -322,7 +324,8 @@ public sealed class MetaUpdateServiceTest
 
 		var readMeta = new ReadMetaSubPathStorage(
 			new FakeSelectorStorage(_iStorageFake), _appSettings,
-			_memoryCache, new FakeIWebLogger());
+			new FakeIWebLogger(),
+			_memoryCache);
 		var service = new MetaUpdateService(_query, _exifTool,
 			new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
 			new FakeIWebLogger(), readMeta,
@@ -343,7 +346,8 @@ public sealed class MetaUpdateServiceTest
 				new FakeSelectorStorage(_iStorageFake));
 		var readMeta = new ReadMetaSubPathStorage(
 			new FakeSelectorStorage(_iStorageFake), _appSettings,
-			_memoryCache, new FakeIWebLogger());
+			new FakeIWebLogger(),
+			_memoryCache);
 		var service = new MetaUpdateService(_query, _exifTool,
 			new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
 			new FakeIWebLogger(), readMeta, thumbnailService,
@@ -362,7 +366,8 @@ public sealed class MetaUpdateServiceTest
 				new FakeSelectorStorage(_iStorageFake));
 		var readMeta = new ReadMetaSubPathStorage(
 			new FakeSelectorStorage(_iStorageFake), _appSettings,
-			_memoryCache, new FakeIWebLogger());
+			new FakeIWebLogger(),
+			_memoryCache);
 
 		var service = new MetaUpdateService(_query, _exifTool,
 			new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),

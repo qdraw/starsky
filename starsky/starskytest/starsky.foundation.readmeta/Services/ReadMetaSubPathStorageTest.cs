@@ -23,8 +23,8 @@ public class ReadMetaSubPathStorageTest
 	{
 		var fakeStorage = new FakeIStorage();
 		var readMetaSubPathStorage = new ReadMetaSubPathStorage(
-			new FakeSelectorStorage(fakeStorage), new AppSettings(), new FakeMemoryCache(),
-			new FakeIWebLogger());
+			new FakeSelectorStorage(fakeStorage), new AppSettings(),
+			new FakeIWebLogger(), new FakeMemoryCache());
 		var result = await readMetaSubPathStorage.ReadExifAndXmpFromFileAsync("test.jpg");
 		Assert.IsNotNull(result);
 		Assert.AreEqual("test.jpg", result.FileName);
@@ -36,8 +36,9 @@ public class ReadMetaSubPathStorageTest
 	{
 		var fakeStorage = new FakeIStorage();
 		var readMetaSubPathStorage = new ReadMetaSubPathStorage(
-			new FakeSelectorStorage(fakeStorage), new AppSettings(), new FakeMemoryCache(),
-			new FakeIWebLogger());
+			new FakeSelectorStorage(fakeStorage), new AppSettings(), new FakeIWebLogger(),
+			new FakeMemoryCache()
+		);
 		var result =
 			await readMetaSubPathStorage.ReadExifAndXmpFromFileAddFilePathHashAsync(
 				new List<string>(), new List<string>());
@@ -56,7 +57,7 @@ public class ReadMetaSubPathStorageTest
 
 		var readMetaSubPathStorage = new ReadMetaSubPathStorage(
 			new FakeSelectorStorage(fakeStorage),
-			new AppSettings(), memoryCache, new FakeIWebLogger());
+			new AppSettings(), new FakeIWebLogger(), memoryCache);
 		var addItem = new FileIndexItem("/test.jpg");
 		readMetaSubPathStorage.UpdateReadMetaCache(new List<FileIndexItem> { addItem });
 		var actualJson = JsonSerializer.Serialize(memoryCache.Get("info_/test.jpg"),
