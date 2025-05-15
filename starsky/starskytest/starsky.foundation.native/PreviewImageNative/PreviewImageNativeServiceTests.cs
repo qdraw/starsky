@@ -16,14 +16,14 @@ public class PreviewImageNativeServiceTests
 	}
 
 	[TestMethod]
-	public void GeneratePreviewImage_ShouldReturnFalse_WhenNotMacOS()
+	public void GeneratePreviewImage_ShouldReturnFalse_WhenNotMacOSorWindows()
 	{
 		// Arrange
 		var (service, logger) = CreateSut();
 
 		// Act
 		var result = service.GeneratePreviewImage(
-			os => os == OSPlatform.Windows, // Simulate non-macOS
+			os => os == OSPlatform.Linux, // Simulate non-macOS/windows
 			"input.jpg", "output.webp", 100, 100);
 
 		// Assert
@@ -46,6 +46,28 @@ public class PreviewImageNativeServiceTests
 		var result = service.GeneratePreviewImage(
 			os => os == OSPlatform.OSX, // Simulate macOS
 			"", "output.webp", 100, 100);
+
+		// Assert
+		Assert.IsFalse(result);
+		Assert.IsTrue(logger.TrackedInformation.Exists(log =>
+			log.Item2?.Contains("Failed to create URL") == true));
+	}
+
+	[TestMethod]
+	public void GeneratePreviewImage_ShouldReturnFalse_WhenThumbnailGenerationFails__WindowsOnly()
+	{
+		// Arrange
+		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
+		{
+			Assert.Inconclusive("This test is only valid on Windows platforms.");
+		}
+
+		var (service, logger) = CreateSut();
+
+		// Act
+		var result = service.GeneratePreviewImage(
+			os => os == OSPlatform.Windows,
+			"", "output.bmp", 100, 100);
 
 		// Assert
 		Assert.IsFalse(result);

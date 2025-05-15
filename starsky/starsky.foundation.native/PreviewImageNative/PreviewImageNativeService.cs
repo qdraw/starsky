@@ -40,13 +40,21 @@ public class PreviewImageNativeService(IWebLogger logger) : IPreviewImageNativeS
 		IsOsPlatformDelegate runtimeInformationIsOsPlatform,
 		string filePath, string outputPath, int width, int height)
 	{
-		// Linux or Windows is not supported yet
-		if ( !runtimeInformationIsOsPlatform(OSPlatform.OSX) )
+		if ( runtimeInformationIsOsPlatform(OSPlatform.Linux) ||
+		     runtimeInformationIsOsPlatform(OSPlatform.FreeBSD) )
 		{
 			return false;
 		}
 
-		return new QuicklookMacOs(logger).GenerateThumbnail(filePath, outputPath, width, height);
+		if ( runtimeInformationIsOsPlatform(OSPlatform.OSX) )
+		{
+			return new QuicklookMacOs(logger).GenerateThumbnail(filePath, outputPath, width,
+				height);
+		}
+
+		return new ShellThumbnailExtractionWindows(logger).GenerateThumbnail(filePath, outputPath,
+			width,
+			height);
 	}
 
 	/// <summary>

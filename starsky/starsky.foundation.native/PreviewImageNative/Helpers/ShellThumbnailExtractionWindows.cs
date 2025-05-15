@@ -1,10 +1,11 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.native.PreviewImageNative.Helpers;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-public static class ShellThumbnailExtractionWindows
+public class ShellThumbnailExtractionWindows(IWebLogger logger)
 {
 	public static bool IsSupported(int width = 512, int height = 512)
 	{
@@ -13,14 +14,14 @@ public static class ShellThumbnailExtractionWindows
 		       RuntimeInformation.OSArchitecture == Architecture.X64;
 	}
 
-	public static bool GenerateThumbnail(string inputPath, string outputBmpPath, int width,
+	public bool GenerateThumbnail(string inputPath, string outputBmpPath, int width,
 		int height)
 	{
 		return IsSupported(width, height) &&
 		       GenerateThumbnailInternal(inputPath, outputBmpPath, width, height);
 	}
 
-	internal static bool GenerateThumbnailInternal(string inputPath, string outputBmpPath,
+	internal bool GenerateThumbnailInternal(string inputPath, string outputBmpPath,
 		int width,
 		int height)
 	{
@@ -38,6 +39,9 @@ public static class ShellThumbnailExtractionWindows
 		}
 		catch ( COMException )
 		{
+			logger.LogInformation(
+				"[ShellThumbnailExtractionWindows] Error: Failed to create URL for {filePath}",
+				inputPath);
 			return false;
 		}
 

@@ -59,7 +59,7 @@ public class ShellThumbnailExtractionWindowsTest
 			Assert.Inconclusive("This test is only valid on unsupported platforms.");
 		}
 
-		var result = ShellThumbnailExtractionWindows.GenerateThumbnail(
+		var result = new ShellThumbnailExtractionWindows(new FakeIWebLogger()).GenerateThumbnail(
 			"input.jpg", "output.bmp", 100, 100);
 
 		Assert.IsFalse(result,
@@ -76,7 +76,7 @@ public class ShellThumbnailExtractionWindowsTest
 
 		Assert.ThrowsExactly<MarshalDirectiveException>(() =>
 		{
-			ShellThumbnailExtractionWindows.GenerateThumbnailInternal(
+			new ShellThumbnailExtractionWindows(new FakeIWebLogger()).GenerateThumbnailInternal(
 				"input.jpg", "output.bmp", 100, 100);
 		});
 	}
@@ -95,8 +95,9 @@ public class ShellThumbnailExtractionWindowsTest
 
 		try
 		{
-			var result = ShellThumbnailExtractionWindows.GenerateThumbnail(
-				input, output, 100, 67);
+			var result =
+				new ShellThumbnailExtractionWindows(new FakeIWebLogger()).GenerateThumbnail(
+					input, output, 100, 67);
 
 			Assert.IsTrue(result, "Expected GenerateThumbnail to return true.");
 			Assert.IsTrue(File.Exists(output), "Output file was not created.");
@@ -127,7 +128,7 @@ public class ShellThumbnailExtractionWindowsTest
 
 		// Mock or simulate the scenario where hBitmap is IntPtr.Zero
 		// This can be done by providing invalid input or mocking the interop call
-		var result = ShellThumbnailExtractionWindows.GenerateThumbnail(
+		var result = new ShellThumbnailExtractionWindows(new FakeIWebLogger()).GenerateThumbnail(
 			input, output, 100, 100);
 
 		Assert.IsFalse(result, "Expected GenerateThumbnail to return false.");
@@ -143,7 +144,7 @@ public class ShellThumbnailExtractionWindowsTest
 
 		Assert.ThrowsExactly<FileNotFoundException>(() =>
 		{
-			ShellThumbnailExtractionWindows.GenerateThumbnail(
+			new ShellThumbnailExtractionWindows(new FakeIWebLogger()).GenerateThumbnail(
 				"nonexistent.jpg", "output.bmp", 100, 100);
 		});
 	}
