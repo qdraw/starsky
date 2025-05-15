@@ -26,16 +26,19 @@ public static class ShellThumbnailExtractionWindows
 		SHCreateItemFromParsingName(inputPath, IntPtr.Zero, factoryGuid, out var factory);
 
 		var size = new SIZE { cx = width, cy = height };
-		factory.GetImage(size,
-			SIIGBF.SIIGBF_RESIZETOFIT | SIIGBF.SIIGBF_THUMBNAILONLY, out var hBitmap);
 
-		if ( hBitmap == IntPtr.Zero )
+		try
 		{
-			throw new InvalidOperationException("Failed to get HBITMAP.");
+			factory.GetImage(size,
+				SIIGBF.SIIGBF_RESIZETOFIT | SIIGBF.SIIGBF_THUMBNAILONLY, out var hBitmap);
+			SaveHBitmapToBmp(hBitmap, outputBmpPath);
+			DeleteObject(hBitmap); // prevent memory leak
+		}
+		catch ( COMException )
+		{
+			return false;
 		}
 
-		SaveHBitmapToBmp(hBitmap, outputBmpPath);
-		DeleteObject(hBitmap); // prevent memory leak
 		return true;
 	}
 

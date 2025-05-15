@@ -28,7 +28,7 @@ public class FullFilePathExistsServiceTests
 	}
 
 	[DataTestMethod]
-	[DataRow(true, "test-file.jpg", true, false, "",
+	[DataRow(true, "/test-file.jpg", true, false, "",
 		DisplayName = "File exists in host storage")]
 	[DataRow(true, "/file-remote.jpg", false, true, "filehash.jpg",
 		DisplayName = "File copied to temp storage")]
@@ -40,9 +40,8 @@ public class FullFilePathExistsServiceTests
 		// Arrange
 		if ( existsInHost )
 		{
-			var fullFilePath = Path.Combine(_appSettings.StorageFolder, subPath);
 			await _hostStorage.WriteStreamAsync(new MemoryStream([1, 2, 3]),
-				fullFilePath);
+				_appSettings.DatabasePathToFilePath(subPath));
 			await _subPathStorage.WriteStreamAsync(new MemoryStream([1, 2, 3]),
 				subPath);
 		}
@@ -62,10 +61,10 @@ public class FullFilePathExistsServiceTests
 			? _appSettings.DatabasePathToTempFolderFilePath(expectedFileHash)
 			: _appSettings.DatabasePathToFilePath(subPath);
 
+		Assert.AreEqual(isSuccess, result.IsSuccess);
 		Assert.AreEqual(expectedFullPath, result.FullFilePath);
 		Assert.AreEqual(isTempFile, result.IsTempFile);
 		Assert.AreEqual(expectedFileHash, result.TempFileFileHashWithExtension);
-		Assert.AreEqual(isSuccess, result.IsSuccess);
 
 		if ( existsInHost )
 		{
