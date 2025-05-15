@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Enums;
@@ -9,9 +10,11 @@ namespace starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
 
 public interface IThumbnailService
 {
+	[ExcludeFromCodeCoverage]
 	Task<List<GenerationResultModel>> GenerateThumbnail(string fileOrFolderPath,
 		ThumbnailGenerationType type = ThumbnailGenerationType.All);
 
+	[ExcludeFromCodeCoverage]
 	Task<List<GenerationResultModel>> GenerateThumbnail(string subPath, string fileHash,
 		ThumbnailGenerationType type = ThumbnailGenerationType.All);
 
