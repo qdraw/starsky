@@ -131,6 +131,13 @@ machinename with your computer name in lowercase)_
     _default none_
 40. `ThumbnailCleanupSkipOnStartup` Skip the cleanup of the thumbnail folder on startup
     _default false_
+41. `CpuUsageMaxPercentage` - Maximum CPU usage percentage for background tasks (default 75).
+42. `FfmpegSkipDownloadOnStartup` - Skip downloading FFmpeg on startup (default false).
+43. `FfmpegSkipPreflightCheck` - Skip preflight checks for FFmpeg (default false).
+44. `FfmpegPath` - Path to the FFmpeg executable.
+45. `SyncAlwaysUpdateLastEditedTime` - Update the last edited time in the database during sync (
+    default true).
+46. `UseSystemTrash` - Use the system trash for file deletions if supported (default null).
 
 ### Appsettings.json example
 
