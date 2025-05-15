@@ -12285,6 +12285,22 @@
             "extensions": {},
             "unresolvedReference": false
           },
+          "appSettingsLocalPath": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
           "isWindows": {
             "type": "boolean",
             "readOnly": true,
@@ -16706,5 +16722,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "4D463C731CB87C2FB3102EC678F1DE6AF7D702F8C27C671A9B91E8F9E899CDC6A3EFC7C95795BE5B4E46993D624ECEB252BA588FEAFDAED951A62962DF542102"
+  "hashCode": "4882E0113450F07FA0940FDA0F07C61C96E07313A29FAF0C907FAEFD323D24547C25CA4FB344530EAE3D283B39BF2597320F0FD22A55F70A279DD1F6406621B9"
 }
