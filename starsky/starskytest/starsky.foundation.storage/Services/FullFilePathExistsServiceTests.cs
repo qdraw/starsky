@@ -76,4 +76,44 @@ public class FullFilePathExistsServiceTests
 			_subPathStorage.FileDelete(subPath);
 		}
 	}
+
+	[TestMethod]
+	public async Task CleanTemporaryFile_ShouldDeleteFile_WhenUseTempStorageIsTrue()
+	{
+		// Arrange
+		var fakeTempStorage = new FakeIStorage();
+		var appSettings = new AppSettings();
+		var selectorStorage = new FakeSelectorStorageByType(null, null, null, fakeTempStorage);
+		var service = new FullFilePathExistsService(selectorStorage, appSettings);
+
+		const string fileHashWithExtension = "test-file.jpg";
+		await fakeTempStorage
+			.WriteStreamAsync(new MemoryStream([1, 2, 3]), fileHashWithExtension);
+
+		// Act
+		service.CleanTemporaryFile(fileHashWithExtension, true);
+
+		// Assert
+		Assert.IsFalse(fakeTempStorage.ExistFile(fileHashWithExtension));
+	}
+
+	[TestMethod]
+	public async Task CleanTemporaryFile_ShouldNotDeleteFile_WhenUseTempStorageIsFalse()
+	{
+		// Arrange
+		var fakeTempStorage = new FakeIStorage();
+		var appSettings = new AppSettings();
+		var selectorStorage = new FakeSelectorStorageByType(null, null, null, fakeTempStorage);
+		var service = new FullFilePathExistsService(selectorStorage, appSettings);
+
+		const string fileHashWithExtension = "test-file.jpg";
+		await fakeTempStorage
+			.WriteStreamAsync(new MemoryStream([1, 2, 3]), fileHashWithExtension);
+
+		// Act
+		service.CleanTemporaryFile(fileHashWithExtension, false);
+
+		// Assert
+		Assert.IsTrue(fakeTempStorage.ExistFile(fileHashWithExtension));
+	}
 }

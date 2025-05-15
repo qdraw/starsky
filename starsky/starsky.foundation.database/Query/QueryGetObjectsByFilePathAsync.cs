@@ -20,7 +20,7 @@ public partial class Query : IQuery
 	public async Task<List<FileIndexItem>> GetObjectsByFilePathAsync(string inputFilePath,
 		bool collections)
 	{
-		return await GetObjectsByFilePathAsync(new List<string> { inputFilePath }, collections);
+		return await GetObjectsByFilePathAsync([inputFilePath], collections);
 	}
 
 	/// <summary>

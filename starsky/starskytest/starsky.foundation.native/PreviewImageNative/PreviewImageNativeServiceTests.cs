@@ -109,6 +109,26 @@ public class PreviewImageNativeServiceTests
 	}
 
 	[TestMethod]
+	public void GeneratePreviewImage_False__MacLinuxOnly()
+	{
+		// Arrange
+		if ( RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
+		{
+			Assert.Inconclusive("This test is only valid on non-windows platforms.");
+		}
+
+		var (service, _) = CreateSut();
+
+		// Act
+		var result = service.GeneratePreviewImage(
+			os => os == OSPlatform.Windows, // Simulate windows
+			"", "output.bmp", 100, 100);
+
+		// Assert
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
 	public void IsSupported__MacAndWindowsOnly()
 	{
 		if ( RuntimeInformation.IsOSPlatform(OSPlatform.Linux) )

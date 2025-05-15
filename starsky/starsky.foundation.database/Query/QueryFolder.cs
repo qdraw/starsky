@@ -68,9 +68,8 @@ public partial class Query // For folder displays only
 
 	public Tuple<bool, List<FileIndexItem>> CacheGetParentFolder(string subPath)
 	{
-		var fallbackResult = new Tuple<bool, List<FileIndexItem>>(false,
-			new List<FileIndexItem>());
-		if ( _cache == null || _appSettings?.AddMemoryCache == false )
+		var fallbackResult = new Tuple<bool, List<FileIndexItem>>(false, []);
+		if ( _cache == null || _appSettings.AddMemoryCache == false )
 		{
 			return fallbackResult;
 		}
