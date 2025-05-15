@@ -41,7 +41,10 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.0-beta.0 - _(Unreleased)_ - 2025-01-? {#v0.7.0-beta.0}
+## version 0.7.0-beta.1 - _(Unreleased)_ - 2025-05-? {#v0.7.0-beta.1}
+- nothing yet
+
+## version 0.7.0-beta.0 - 2025-05-14 {#v0.7.0-beta.0}
 
 - [x] (Added) _Back-end_ Support for webp and video thumbnails (PR #1833)
 - [x] (Added) _Back-end_ Sonarcloud code style improvements (PR #2141)
