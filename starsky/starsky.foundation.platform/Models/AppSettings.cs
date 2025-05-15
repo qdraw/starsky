@@ -99,6 +99,11 @@ public sealed class AppSettings
 	/// <summary>
 	///     Private: Location of AppSettings Path
 	/// </summary>
+	private string? _appSettingsLocalPathPrivate;
+
+	/// <summary>
+	///     Private: Location of AppSettings Path
+	/// </summary>
 	private string? _appSettingsPathPrivate;
 
 	// DatabaseType > above this one
@@ -165,6 +170,7 @@ public sealed class AppSettings
 
 		// Set the default write to appSettings file
 		AppSettingsPath = Path.Combine(BaseDirectoryProject, "appsettings.patch.json");
+		AppSettingsLocalPath = Path.Combine(BaseDirectoryProject, "appsettings.local.json");
 
 		// AddMemoryCache defaults in prop
 	}
@@ -380,12 +386,25 @@ public sealed class AppSettings
 	/// <summary>
 	///     To store the settings by user in the AppData folder
 	///     Used by the Desktop App
+	///     See also AppSettingsLocalPath
 	/// </summary>
 	public string AppSettingsPath
 	{
 		get => AssemblyDirectoryReplacer(_appSettingsPathPrivate);
 		// ReSharper disable once MemberCanBePrivate.Global
 		set => _appSettingsPathPrivate = value; // set by ctor
+	}
+
+	/// <summary>
+	///     To store the settings by user in the AppData folder
+	///     Used by the Desktop App
+	///     See also AppSettingsPath
+	/// </summary>
+	public string AppSettingsLocalPath
+	{
+		get => AssemblyDirectoryReplacer(_appSettingsLocalPathPrivate);
+		// ReSharper disable once MemberCanBePrivate.Global
+		set => _appSettingsLocalPathPrivate = value; // set by ctor
 	}
 
 	/// <summary>
@@ -966,6 +985,13 @@ public sealed class AppSettings
 		{
 			appSettings.AppSettingsPath =
 				appSettings.AppSettingsPath.Replace(userProfileFolder, "~");
+		}
+
+		if ( !string.IsNullOrEmpty(appSettings.AppSettingsLocalPath) &&
+		     !string.IsNullOrEmpty(userProfileFolder) )
+		{
+			appSettings.AppSettingsLocalPath =
+				appSettings.AppSettingsLocalPath.Replace(userProfileFolder, "~");
 		}
 
 		if ( appSettings.PublishProfiles != null )
