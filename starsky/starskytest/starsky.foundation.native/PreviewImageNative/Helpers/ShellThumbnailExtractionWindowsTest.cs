@@ -142,11 +142,9 @@ public class ShellThumbnailExtractionWindowsTest
 			Assert.Inconclusive("This test is only valid on Windows x64.");
 		}
 
-		Assert.ThrowsExactly<FileNotFoundException>(() =>
-		{
-			new ShellThumbnailExtractionWindows(new FakeIWebLogger()).GenerateThumbnail(
-				"nonexistent.jpg", "output.bmp", 100, 100);
-		});
+		var result = new ShellThumbnailExtractionWindows(new FakeIWebLogger()).GenerateThumbnail(
+			"nonexistent.jpg", "output.bmp", 100, 100);
+		Assert.IsFalse(result, "Expected GenerateThumbnail to return false.");
 	}
 
 	[TestMethod]

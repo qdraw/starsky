@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.native.PreviewImageNative;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Storage;
@@ -49,7 +50,9 @@ public class NativePreviewHelperTests
 
 		// Assert
 		Assert.IsTrue(result.IsSuccess);
-		Assert.AreEqual("test-hash.preview.jpg", result.ResultPath);
+		
+		var extension = new PreviewImageNativeService(new FakeIWebLogger()).FileExtension();
+		Assert.AreEqual($"test-hash.preview.{extension}", result.ResultPath);
 	}
 
 	[TestMethod]
