@@ -97,37 +97,39 @@ machinename with your computer name in lowercase)_
 16. `httpsOn` Set all cookies in https Mode. You should enable before going to production. _(default
     false)_
 17. `Name` Name of the application, does not have much effect _(default Starsky)_
-18. `AppSettingsPath` To store the settings by user in the AppData folder _(default empty string)_
-19. `UseRealtime` Update the user interface realtime _default true_
-20. `UseDiskWatcher` Watch the disk for changes and update the database _default true_
-21. `CheckForUpdates` Check if there are updates on github and notify the user _default true_
-22. `SyncIgnore` Ignore pattern to not include disk items while running sync, uses always unix style
+18. `AppSettingsPath` To store the settings by user (can overwritten by app when clicking in
+    settings) in the AppData folder _(default empty string)_
+19. `appsettingsLocalPath` To store manual settings in the AppData folder _(default empty string)_
+20. `UseRealtime` Update the user interface realtime _default true_
+21. `UseDiskWatcher` Watch the disk for changes and update the database _default true_
+22. `CheckForUpdates` Check if there are updates on github and notify the user _default true_
+23. `SyncIgnore` Ignore pattern to not include disk items while running sync, uses always unix style
     and startsWith _default list with: /lost+found_
-23. `ImportIgnore` ImportIgnore filter  _default list with: "lost+found" ".Trashes"_
-24. `MaxDegreesOfParallelism` Number of jobs running in background _default 6_
-25. `MetaThumbnailOnImport` Create small thumbnails after import, is very fast _default true_
-26. `EnablePackageTelemetry` Telemetry is send for service improvement _default true_
-27. `EnablePackageTelemetryDebug` Debug Telemetry _default false_
-28. `AddSwaggerExportExitAfter` Quit application after exporting swagger files, should
+24. `ImportIgnore` ImportIgnore filter  _default list with: "lost+found" ".Trashes"_
+25. `MaxDegreesOfParallelism` Number of jobs running in background _default 6_
+26. `MetaThumbnailOnImport` Create small thumbnails after import, is very fast _default true_
+27. `EnablePackageTelemetry` Telemetry is send for service improvement _default true_
+28. `EnablePackageTelemetryDebug` Debug Telemetry _default false_
+29. `AddSwaggerExportExitAfter` Quit application after exporting swagger files, should
     have `AddSwagger` and `AddSwaggerExport` enabled _default false_
-29. `NoAccountLocalhost` No login needed when on localhost, used in Desktop App
-30. `VideoUseLocalTime` Use localtime by Camera make and model instead of UTC
-31. `SyncOnStartup` Sync Database on changes since latest start _default true_
-32. `ThumbnailGenerationIntervalInMinutes` Interval to generate thumbnails, to disable use value
+30. `NoAccountLocalhost` No login needed when on localhost, used in Desktop App
+31. `VideoUseLocalTime` Use localtime by Camera make and model instead of UTC
+32. `SyncOnStartup` Sync Database on changes since latest start _default true_
+33. `ThumbnailGenerationIntervalInMinutes` Interval to generate thumbnails, to disable use value
     lower than 3 _default 15_
-33. `GeoFilesSkipDownloadOnStartup` Skip download of GeoFiles on startup, _recommend to keep this
+34. `GeoFilesSkipDownloadOnStartup` Skip download of GeoFiles on startup, _recommend to keep this
     false or null_ - _default false_
-34. `ExiftoolSkipDownloadOnStartup` Skip download of Exiftool on startup, _recommend to keep this
+35. `ExiftoolSkipDownloadOnStartup` Skip download of Exiftool on startup, _recommend to keep this
     false or null_ - _default false_
-35. `AccountRolesByEmailRegisterOverwrite` Overwrite the default role for a user by email address,
+36. `AccountRolesByEmailRegisterOverwrite` Overwrite the default role for a user by email address,
     _default empty list_
-36. `OpenTelemetry` See logging in an external service, _default no enabled_
+37. `OpenTelemetry` See logging in an external service, _default no enabled_
     see [OpenTelemetry](https://docs.qdraw.nl/docs/developer-guide/logging/opentelemetry/)
-37. `UseLocalDesktop` Enable local desktop features (hide trash in Ui / Open in Application)
+38. `UseLocalDesktop` Enable local desktop features (hide trash in Ui / Open in Application)
     _default false_ _in app true_
-38. `DefaultDesktopEditor` List of Properties that contain the default editor by imageFormat
+39. `DefaultDesktopEditor` List of Properties that contain the default editor by imageFormat
     _default none_
-39. `ThumbnailCleanupSkipOnStartup` Skip the cleanup of the thumbnail folder on startup
+40. `ThumbnailCleanupSkipOnStartup` Skip the cleanup of the thumbnail folder on startup
     _default false_
 
 ### Appsettings.json example

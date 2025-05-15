@@ -482,7 +482,9 @@ public sealed class ArgsHelper
 			$"5. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".patch.json")}");
 		_console.WriteLine(
 			$"6. Environment variable: app__appsettingspath: {Environment.GetEnvironmentVariable("app__appsettingspath")}");
-		_console.WriteLine("7. Specific environment variables for example app__storageFolder");
+		_console.WriteLine(
+			$"7. Environment variable: app__appsettingslocalpath: {Environment.GetEnvironmentVariable("app__appsettingslocalpath")}");
+		_console.WriteLine("8. Specific environment variables for example app__storageFolder");
 
 		AppSpecificHelp();
 
