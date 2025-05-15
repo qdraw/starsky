@@ -28,6 +28,10 @@ The UI writes the settings to the `appsettings.patch.json` file.
 You can use the `appsettings.patch.json` file to configure the desktop application
 or use the Settings in the web application.
 
+## Manual Overwrite settings for Desktop
+
+See [Manual Overwrite settings for Desktop](config-options.md#manual-overwrite-settings-for-desktop)
+
 ### DefaultDesktopEditor
 
 This setting is done by ImageFormat,

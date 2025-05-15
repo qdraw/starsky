@@ -14,7 +14,7 @@ There are a few options that can be changed in the web application.
 
 These options are available though `appsettings.json` and environment variables.
 
-There are no mandatory options, but its recommended to change the storageFolder
+There are no mandatory options, but it's recommended to change the storageFolder
 to a folder on your local machine where the picture should be located.
 
 Environment variables are always preferred over `appsettings.json` values.
@@ -31,4 +31,11 @@ See the [Advanced options](../../advanced-options/starsky/readme.md) for more in
 Add the command line argument `--help` option to see all available options.
 The options are configured in `appsettings.json` and environment variables and command line
 arguments.
+
+## Manual Overwrite settings for Desktop
+
+If you want to manually overwrite the settings, you can use the `appsettings.local.json` file.
+This file is located for macOS `~/Library/Application Support/starsky/appsettings.local.json`
+and Windows `C:\Users\<username>\AppData\Local\starsky\appsettings.local.json`.
+When using the desktop app the environment variable `app__AppSettingsLocalPath` is used
 
