@@ -25,12 +25,14 @@ public sealed class SetupAppSettingsTest
 	}
 
 
-	[TestMethod]
-	public async Task SetLocalAppData_ShouldRead()
+	[DataTestMethod]
+	[DataRow("app__appsettingspath")]
+	[DataRow("app__appsettingslocalpath")]
+	public async Task SetLocalAppData_ShouldRead(string envName)
 	{
 		var appDataFolderFullPath =
 			Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location)!,
-				"setup_app_settings_test");
+				$"setup_app_settings_test_{envName}");
 
 		_hostStorage.CreateDirectory(appDataFolderFullPath);
 		var path = Path.Combine(appDataFolderFullPath, "appsettings.json");
@@ -50,7 +52,7 @@ public sealed class SetupAppSettingsTest
 		Assert.AreEqual(path, appSettings.AppSettingsPath);
 
 		_hostStorage.FolderDelete(appDataFolderFullPath);
-		Environment.SetEnvironmentVariable("app__appsettingspath", null);
+		Environment.SetEnvironmentVariable(envName, null);
 	}
 
 	[TestMethod]
