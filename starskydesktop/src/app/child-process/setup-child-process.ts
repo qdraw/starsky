@@ -52,6 +52,7 @@ function CreateTempThumbnailFolders() {
 function EnvHelper(appPort: number) {
   const databaseConnection = `Data Source=${path.join(electronCacheLocation(), "starsky.db")}`;
   const appSettingsPath = path.join(electronCacheLocation(), "appsettings.json");
+  const appSettingsLocalPath = path.join(electronCacheLocation(), "appsettings.local.json");
   const createTempThumbnailFolderResult = CreateTempThumbnailFolders();
 
   return {
@@ -59,6 +60,7 @@ function EnvHelper(appPort: number) {
     app__thumbnailTempFolder: createTempThumbnailFolderResult.thumbnailTempFolder,
     app__tempFolder: createTempThumbnailFolderResult.tempFolder,
     app__appsettingspath: appSettingsPath,
+    app__appsettingslocalpath: appSettingsLocalPath,
     app__NoAccountLocalhost: "true",
     app__UseLocalDesktop: "true",
     app__databaseConnection: databaseConnection,
@@ -70,11 +72,13 @@ function EnvHelper(appPort: number) {
 
 export async function setupChildProcess() {
   const appSettingsPath = path.join(electronCacheLocation(), "appsettings.json");
+  const appSettingsLocalPath = path.join(electronCacheLocation(), "appsettings.local.json");
 
   (global.shared as SharedSettings).port = await GetFreePort();
 
   logger.info(`next: port: ${(global.shared as SharedSettings).port}`);
   logger.info(`-appSettingsPath > ${appSettingsPath}`);
+  logger.info(`-appSettingsLocalPath > ${appSettingsLocalPath}`);
 
   const env = EnvHelper((global.shared as SharedSettings).port);
   process.env = { ...process.env, ...env };
