@@ -15,16 +15,19 @@ public static class ShellThumbnailExtractionWindows
 	public static bool GenerateThumbnail(string inputPath, string outputBmpPath, int width,
 		int height)
 	{
-		if ( !IsSupported() )
-		{
-			return false;
-		}
+		return IsSupported() && GenerateThumbnailInternal(inputPath, outputBmpPath, width, height);
+	}
 
+	internal static bool GenerateThumbnailInternal(string inputPath, string outputBmpPath,
+		int width,
+		int height)
+	{
 		var factoryGuid = typeof(IShellItemImageFactory).GUID;
 		SHCreateItemFromParsingName(inputPath, IntPtr.Zero, factoryGuid, out var factory);
 
 		var size = new SIZE { cx = width, cy = height };
-		factory.GetImage(size, SIIGBF.SIIGBF_RESIZETOFIT, out var hBitmap);
+		factory.GetImage(size,
+			SIIGBF.SIIGBF_RESIZETOFIT | SIIGBF.SIIGBF_THUMBNAILONLY, out var hBitmap);
 
 		if ( hBitmap == IntPtr.Zero )
 		{
@@ -43,6 +46,11 @@ public static class ShellThumbnailExtractionWindows
 			throw new InvalidOperationException("GetObject failed.");
 		}
 
+		SaveHBitmapToBmp(bmp, outputPath);
+	}
+
+	internal static void SaveHBitmapToBmp(BITMAP bmp, string outputPath)
+	{
 		var headerSize = Marshal.SizeOf(typeof(BITMAPFILEHEADER)) +
 		                 Marshal.SizeOf(typeof(BITMAPINFOHEADER));
 		var pixelDataSize = bmp.bmWidthBytes * bmp.bmHeight;
@@ -81,7 +89,7 @@ public static class ShellThumbnailExtractionWindows
 		fs.Write(flippedImage, 0, pixelBytes.Length);
 	}
 
-	private static byte[] FlipImage(BITMAP bmp, byte[] pixelBytes, int pixelDataSize)
+	internal static byte[] FlipImage(BITMAP bmp, byte[] pixelBytes, int pixelDataSize)
 	{
 		var flippedBytes = new byte[pixelDataSize];
 
@@ -97,14 +105,14 @@ public static class ShellThumbnailExtractionWindows
 
 	internal static void WriteStruct<T>(Stream s, T? strct)
 	{
-		if ( strct == null )
+		if ( EqualityComparer<T>.Default.Equals(strct, default) )
 		{
 			throw new ArgumentNullException(nameof(strct));
 		}
 
 		var bytes = new byte[Marshal.SizeOf<T>()];
 		var ptr = Marshal.AllocHGlobal(bytes.Length);
-		Marshal.StructureToPtr(strct, ptr, false);
+		Marshal.StructureToPtr(strct!, ptr, false);
 		Marshal.Copy(ptr, bytes, 0, bytes.Length);
 		Marshal.FreeHGlobal(ptr);
 		s.Write(bytes, 0, bytes.Length);
@@ -132,7 +140,11 @@ public static class ShellThumbnailExtractionWindows
 		void GetImage(SIZE size, SIIGBF flags, out IntPtr phbm);
 	}
 
-	private enum SIIGBF
+
+	[Flags]
+	[SuppressMessage("Usage", "S2342: " +
+	                          "Enumeration types should comply with a naming convention")]
+	internal enum SIIGBF
 	{
 		SIIGBF_RESIZETOFIT = 0x00,
 		SIIGBF_BIGGERSIZEOK = 0x01,
@@ -143,6 +155,8 @@ public static class ShellThumbnailExtractionWindows
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
+	[SuppressMessage("Usage", "S101: Rename class 'SIZE' " +
+	                          "to match pascal case naming rules, consider using 'Size'.")]
 	private struct SIZE
 	{
 		public int cx;
@@ -150,7 +164,9 @@ public static class ShellThumbnailExtractionWindows
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
-	private struct BITMAP
+	[SuppressMessage("Usage", "S101: Rename class 'BITMAP' " +
+	                          "to match pascal case naming rules, consider using 'Bitmap'.")]
+	internal struct BITMAP
 	{
 		public int bmType;
 		public int bmWidth;
@@ -162,6 +178,8 @@ public static class ShellThumbnailExtractionWindows
 	}
 
 	[StructLayout(LayoutKind.Sequential, Pack = 1)]
+	[SuppressMessage("Usage", "S101: Rename class 'BITMAPFILEHEADER' " +
+	                          "to match pascal case naming rules, consider using 'BitmapFileHeader'.")]
 	private struct BITMAPFILEHEADER
 	{
 		public ushort bfType;
@@ -172,6 +190,8 @@ public static class ShellThumbnailExtractionWindows
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
+	[SuppressMessage("Usage", "S101: Rename class 'BITMAPINFOHEADER' " +
+	                          "to match pascal case naming rules, consider using 'BitmapInfoHeader'.")]
 	private struct BITMAPINFOHEADER
 	{
 		public uint biSize;

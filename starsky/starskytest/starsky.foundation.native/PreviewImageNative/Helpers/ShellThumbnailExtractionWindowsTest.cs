@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SixLabors.ImageSharp;
@@ -33,7 +34,6 @@ public class ShellThumbnailExtractionWindowsTest
 		return ( tempInputPath, tempOutputPath );
 	}
 
-
 	[TestMethod]
 	public void GenerateThumbnail_UnsupportedPlatform_ReturnsFalse__OnlyOtherThanWindows()
 	{
@@ -47,6 +47,21 @@ public class ShellThumbnailExtractionWindowsTest
 
 		Assert.IsFalse(result,
 			"Expected GenerateThumbnail to return false on unsupported platforms.");
+	}
+
+	[TestMethod]
+	public void GenerateThumbnailInternal_UnsupportedPlatform__OnlyOtherThanWindows()
+	{
+		if ( ShellThumbnailExtractionWindows.IsSupported() )
+		{
+			Assert.Inconclusive("This test is only valid on unsupported platforms.");
+		}
+
+		Assert.ThrowsExactly<MarshalDirectiveException>(() =>
+		{
+			ShellThumbnailExtractionWindows.GenerateThumbnailInternal(
+				"input.jpg", "output.bmp", 100, 100);
+		});
 	}
 
 	[TestMethod]
@@ -87,23 +102,19 @@ public class ShellThumbnailExtractionWindowsTest
 	}
 
 	[TestMethod]
-	public async Task GenerateThumbnail_HBitmapIsZero_ThrowsInvalidOperationException()
+	public async Task GenerateThumbnail_HBitmapIsZero()
 	{
-		if ( !ShellThumbnailExtractionWindows.IsSupported() )
-		{
-			Assert.Inconclusive("This test is only valid on Windows x64.");
-		}
-
 		var (input, output) =
 			await CreateTempImage("GenerateThumbnail_HBitmapIsZero_ThrowsInvalidOperationException",
 				true);
 
 		// Mock or simulate the scenario where hBitmap is IntPtr.Zero
 		// This can be done by providing invalid input or mocking the interop call
-		ShellThumbnailExtractionWindows.GenerateThumbnail(
+		var result = ShellThumbnailExtractionWindows.GenerateThumbnail(
 			input, output, 100, 100);
-	}
 
+		Assert.IsFalse(result, "Expected GenerateThumbnail to return false.");
+	}
 
 	[TestMethod]
 	public void GenerateThumbnail_InvalidInput_ThrowsException__WindowsX64Only()
@@ -136,6 +147,39 @@ public class ShellThumbnailExtractionWindowsTest
 	}
 
 	[TestMethod]
+	public async Task SaveHBitmapToBmp()
+	{
+		var (_, output) =
+			await CreateTempImage("SaveHBitmapToBmp",
+				true);
+
+		ShellThumbnailExtractionWindows.SaveHBitmapToBmp(
+			new ShellThumbnailExtractionWindows.BITMAP { bmBits = 1 },
+			output);
+
+		Assert.IsTrue(File.Exists(output), "Output file was not created.");
+		Assert.IsTrue(new FileInfo(output).Length > 0, "Output file is empty.");
+
+		File.Delete(output);
+	}
+
+	[TestMethod]
+	public void SaveHBitmapToBmp__OnlyOtherThanWindows()
+	{
+		if ( ShellThumbnailExtractionWindows.IsSupported() )
+		{
+			Assert.Inconclusive("This test is only valid on unsupported platforms.");
+		}
+
+		Assert.ThrowsExactly<DllNotFoundException>(() =>
+		{
+			ShellThumbnailExtractionWindows.SaveHBitmapToBmp(
+				1,
+				string.Empty);
+		});
+	}
+
+	[TestMethod]
 	public void WriteStruct_ArgumentException()
 	{
 		Assert.ThrowsExactly<ArgumentException>(() =>
@@ -143,5 +187,45 @@ public class ShellThumbnailExtractionWindowsTest
 			ShellThumbnailExtractionWindows.WriteStruct(null!,
 				"test");
 		});
+	}
+
+	[TestMethod]
+	public void FlipImage_ShouldFlipImageVertically()
+	{
+		// Arrange
+		var bmp = new ShellThumbnailExtractionWindows.BITMAP
+		{
+			bmWidth = 3, bmHeight = 2, bmWidthBytes = 3
+		};
+
+		// Pixel data for a 3x2 image (2 rows, 3 pixels each)
+		// Row 1: [1, 2, 3]
+		// Row 2: [4, 5, 6]
+		var pixelBytes = new byte[] { 1, 2, 3, 4, 5, 6 };
+		var expectedFlippedBytes = new byte[] { 4, 5, 6, 1, 2, 3 };
+
+		// Act
+		var flippedBytes =
+			ShellThumbnailExtractionWindows.FlipImage(bmp, pixelBytes, pixelBytes.Length);
+
+		// Assert
+		CollectionAssert.AreEqual(expectedFlippedBytes, flippedBytes);
+	}
+
+	[TestMethod]
+	public void SiIgbf()
+	{
+		Assert.AreEqual("SIIGBF_RESIZETOFIT",
+			$"{ShellThumbnailExtractionWindows.SIIGBF.SIIGBF_RESIZETOFIT}");
+		Assert.AreEqual("SIIGBF_BIGGERSIZEOK",
+			$"{ShellThumbnailExtractionWindows.SIIGBF.SIIGBF_BIGGERSIZEOK}");
+		Assert.AreEqual("SIIGBF_MEMORYONLY",
+			$"{ShellThumbnailExtractionWindows.SIIGBF.SIIGBF_MEMORYONLY}");
+		Assert.AreEqual("SIIGBF_ICONONLY",
+			$"{ShellThumbnailExtractionWindows.SIIGBF.SIIGBF_ICONONLY}");
+		Assert.AreEqual("SIIGBF_THUMBNAILONLY",
+			$"{ShellThumbnailExtractionWindows.SIIGBF.SIIGBF_THUMBNAILONLY}");
+		Assert.AreEqual("SIIGBF_INCACHEONLY",
+			$"{ShellThumbnailExtractionWindows.SIIGBF.SIIGBF_INCACHEONLY}");
 	}
 }
