@@ -4,6 +4,9 @@ using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.native.PreviewImageNative.Helpers;
 
+[SuppressMessage("Interoperability",
+	"SYSLIB1054:Use \'LibraryImportAttribute\' instead of \'DllImportAttribute\' " +
+	"to generate P/Invoke marshalling code at compile time")]
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 public class ShellThumbnailExtractionWindows(IWebLogger logger)
 {
@@ -156,6 +159,8 @@ public class ShellThumbnailExtractionWindows(IWebLogger logger)
 
 
 	[Flags]
+	[SuppressMessage("Usage", "S2346: " +
+	                          "Rename 'SIIGBF_RESIZETOFIT' to 'None'.")]
 	[SuppressMessage("Usage", "S2342: " +
 	                          "Enumeration types should comply with a naming convention")]
 	internal enum SIIGBF
