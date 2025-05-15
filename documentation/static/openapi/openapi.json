@@ -10484,7 +10484,7 @@
       "extensions": {},
       "unresolvedReference": false
     },
-    "/api/thumbnail/small/{f}": {
+    "/api/thumbnail/small/{fileHash}": {
       "operations": {
         "Get": {
           "tags": [
@@ -10498,7 +10498,7 @@
           "parameters": [
             {
               "unresolvedReference": false,
-              "name": "f",
+              "name": "fileHash",
               "in": 2,
               "description": "one single fileHash (NOT path)",
               "required": true,
@@ -10506,6 +10506,37 @@
               "allowEmptyValue": false,
               "style": 3,
               "explode": false,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
+              "name": "f",
+              "in": 0,
+              "description": "filePath for generation",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
               "allowReserved": false,
               "schema": {
                 "type": "string",
@@ -16675,5 +16706,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "0404EAC316EF885F4B584EF5FF0AB98154AF1C130CD2DC9B7852E3E6CAFC711A28A1CDFAF151C9685A15FD11EA05AF61EA1F3273136182FED7CB393B6EACF266"
+  "hashCode": "4D463C731CB87C2FB3102EC678F1DE6AF7D702F8C27C671A9B91E8F9E899CDC6A3EFC7C95795BE5B4E46993D624ECEB252BA588FEAFDAED951A62962DF542102"
 }
