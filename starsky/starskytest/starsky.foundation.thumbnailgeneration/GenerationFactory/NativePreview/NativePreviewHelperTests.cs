@@ -14,11 +14,11 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.N
 [TestClass]
 public class NativePreviewHelperTests
 {
-	private readonly NativePreviewHelper _helper;
+	private readonly NativePreviewHelper _helper = CreateSut(true);
 
-	public NativePreviewHelperTests()
+	private static NativePreviewHelper CreateSut(bool isSupported)
 	{
-		var previewService = new FakeIPreviewImageNativeService();
+		var previewService = new FakeIPreviewImageNativeService(null, isSupported);
 		var storage = new FakeIStorage(["/"], [
 				"/valid-path.jpg"
 			],
@@ -31,8 +31,7 @@ public class NativePreviewHelperTests
 		var readMeta = new FakeReadMetaSubPathStorage();
 		var existsService = new FakeIFullFilePathExistsService();
 		var logger = new FakeIWebLogger();
-
-		_helper = new NativePreviewHelper(previewService, storage,
+		return new NativePreviewHelper(previewService, storage,
 			tempStorage, appSettings, readMeta, existsService, logger);
 	}
 
@@ -52,6 +51,9 @@ public class NativePreviewHelperTests
 		Assert.AreEqual("test-hash.preview.jpg", result.ResultPath);
 	}
 
+	/// <summary>
+	///     NativePreviewImageTests
+	/// </summary>
 	[TestMethod]
 	public async Task NativePreviewImage_ShouldReturnError_WhenFileDoesNotExist()
 	{
@@ -65,7 +67,25 @@ public class NativePreviewHelperTests
 
 		// Assert
 		Assert.IsFalse(result.IsSuccess);
-		Assert.AreEqual("File does not exist", result.ErrorMessage);
+		Assert.AreEqual(NativePreviewHelper.ErrorFileDoesNotExist,
+			result.ErrorMessage);
+	}
+
+	[TestMethod]
+	public async Task NativePreviewImage_ShouldReturnError_UnsupportedPlatform()
+	{
+		// Arrange
+		const string singleSubPath = "/invalid-path.jpg";
+		const string fileHash = "test-hash";
+		const ThumbnailSize thumbnailSize = ThumbnailSize.Small;
+
+		// Act
+		var sut = CreateSut(false);
+		var result = await sut.NativePreviewImage(thumbnailSize, singleSubPath, fileHash);
+
+		// Assert
+		Assert.IsFalse(result.IsSuccess);
+		Assert.AreEqual(NativePreviewHelper.ErrorNativeServiceNotSupported, result.ErrorMessage);
 	}
 
 	[TestMethod]

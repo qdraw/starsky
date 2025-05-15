@@ -22,6 +22,9 @@ public class NativePreviewHelper(
 	IFullFilePathExistsService existsService,
 	IWebLogger logger)
 {
+	internal const string ErrorFileDoesNotExist = "File does not exist";
+	internal const string ErrorNativeServiceNotSupported = "Native service not supported";
+
 	public async Task<NativePreviewResult> NativePreviewImage(ThumbnailSize biggestThumbnailSize,
 		string singleSubPath, string fileHash)
 	{
@@ -33,8 +36,8 @@ public class NativePreviewHelper(
 			{
 				IsSuccess = false,
 				ErrorMessage = !previewService.IsSupported()
-					? "Native service not supported"
-					: "File does not exist"
+					? ErrorNativeServiceNotSupported
+					: ErrorFileDoesNotExist
 			};
 		}
 
