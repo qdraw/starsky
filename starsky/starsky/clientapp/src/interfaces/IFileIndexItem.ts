@@ -2,6 +2,7 @@ import { IExifStatus } from "./IExifStatus";
 
 export interface IFileIndexItem {
   lastEdited?: string;
+  lastChanged?: string[];
   filePath: string;
   fileName: string;
   fileCollectionName: string;

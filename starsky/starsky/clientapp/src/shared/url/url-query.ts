@@ -1,6 +1,6 @@
-import { IUrl, newIUrl } from "../../interfaces/IUrl.ts";
-import { URLPath } from "./url-path";
-import { IsRelativeUrl } from "./url.ts";
+import {IUrl, newIUrl} from "../../interfaces/IUrl.ts";
+import {URLPath} from "./url-path";
+import {IsRelativeUrl} from "./url.ts";
 
 import packageJson from "../../../package.json";
 
@@ -301,13 +301,17 @@ export class UrlQuery {
     );
   };
 
-  public UrlThumbnailImage = (fileHash: string, alwaysLoadImage: boolean): string => {
+  public UrlThumbnailImage = (
+    fileHash: string,
+    filePath: string,
+    alwaysLoadImage: boolean
+  ): string => {
     if (alwaysLoadImage) {
       return (
         this.prefix + "/api/thumbnail/" + fileHash + `.${this.ImageFormat()}?issingleitem=true`
       );
     }
-    return this.prefix + "/api/thumbnail/small/" + fileHash + `.${this.ImageFormat()}`;
+    return `${this.prefix}/api/thumbnail/small/${fileHash}.${this.ImageFormat()}?f=${filePath}`;
   };
 
   /**

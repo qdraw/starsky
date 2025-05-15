@@ -8,13 +8,13 @@ jest.mock("../../../hooks/use-intersection-observer");
 
 describe("ListImageTest", () => {
   it("renders", () => {
-    render(<ListImage alt={"alt"} fileHash={"src"} imageFormat={ImageFormat.jpg} />);
+    render(<ListImage filePath={""} alt={"alt"} fileHash={"src"} imageFormat={ImageFormat.jpg} />);
   });
 
   it("useIntersection = true", () => {
     (useIntersection.default as jest.Mock<boolean>).mockImplementation(() => true);
     const element = render(
-      <ListImage fileHash={"test.jpg"} imageFormat={ImageFormat.jpg}>
+      <ListImage filePath={""} fileHash={"test.jpg"} imageFormat={ImageFormat.jpg}>
         test
       </ListImage>
     );
@@ -29,13 +29,15 @@ describe("ListImageTest", () => {
     fireEvent(img, keyDownEvent);
 
     expect(img).not.toBeNull();
-    expect(img.src).toContain(new UrlQuery().UrlThumbnailImage("test.jpg", false));
+    expect(img.src).toContain(new UrlQuery().UrlThumbnailImage("test.jpg", "", false));
 
     element.unmount();
   });
 
   it("img-box--error null", () => {
-    const element = render(<ListImage imageFormat={ImageFormat.jpg} fileHash={"null"} />);
+    const element = render(
+      <ListImage filePath={""} imageFormat={ImageFormat.jpg} fileHash={"null"} />
+    );
 
     const img = screen.queryAllByTestId("list-image-img-error")[0] as HTMLImageElement;
 
@@ -49,7 +51,8 @@ describe("ListImageTest", () => {
     const props = {
       fileHash: "abc123",
       alt: "test image",
-      imageFormat: ImageFormat.jpg
+      imageFormat: ImageFormat.jpg,
+      filePath: ""
     };
 
     jest.spyOn(useIntersection, "default").mockReturnValue(true);
@@ -68,7 +71,8 @@ describe("ListImageTest", () => {
     const props = {
       fileHash: "abc123",
       alt: "test image",
-      imageFormat: ImageFormat.unknown
+      imageFormat: ImageFormat.unknown,
+      filePath: ""
     };
 
     jest.spyOn(useIntersection, "default").mockReturnValue(true);
@@ -80,7 +84,9 @@ describe("ListImageTest", () => {
   });
 
   it("img-box--error null 2", () => {
-    const element = render(<ListImage imageFormat={ImageFormat.jpg} fileHash={"null"} />);
+    const element = render(
+      <ListImage filePath={""} imageFormat={ImageFormat.jpg} fileHash={"null"} />
+    );
 
     const img = screen.queryAllByTestId("list-image-img-error")[0] as HTMLImageElement;
 

@@ -8,6 +8,7 @@ import { UrlQuery } from "../../../shared/url/url-query";
 interface IListImageProps {
   children?: React.ReactNode;
   fileHash: string;
+  filePath: string;
   imageFormat?: ImageFormat;
   alt?: string;
 }
@@ -61,7 +62,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
       setSrc(emptyImageUrl); // 26 bytes
       return;
     }
-    setSrc(new UrlQuery().UrlThumbnailImage(props.fileHash, alwaysLoadImage));
+    setSrc(new UrlQuery().UrlThumbnailImage(props.fileHash, props.filePath, alwaysLoadImage));
   }, [props.fileHash, history.location.search, historyLocation, isLoading, alwaysLoadImage]);
 
   if (

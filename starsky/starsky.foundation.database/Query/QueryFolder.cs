@@ -10,7 +10,6 @@ namespace starsky.foundation.database.Query;
 
 public partial class Query // For folder displays only
 {
-
 	// Class for displaying folder content
 	// This is the query part
 	public IEnumerable<FileIndexItem> DisplayFileFolders(

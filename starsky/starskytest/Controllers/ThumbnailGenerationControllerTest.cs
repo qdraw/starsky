@@ -36,8 +36,8 @@ public sealed class ThumbnailGenerationControllerTest
 		var selectorStorage =
 			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" }));
 		var controller = new ThumbnailGenerationController(selectorStorage,
-			new ManualThumbnailGenerationService(new FakeIQuery(),
-				new FakeIWebLogger(), new FakeIWebSocketConnectionsService(),
+			new ManualThumbnailGenerationService(new FakeIWebLogger(),
+				new FakeIThumbnailSocketService(),
 				new FakeIThumbnailService(selectorStorage),
 				new FakeThumbnailBackgroundTaskQueue()));
 
@@ -55,10 +55,11 @@ public sealed class ThumbnailGenerationControllerTest
 		var selectorStorage =
 			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" }));
 		var controller = new ThumbnailGenerationController(selectorStorage,
-			new ManualThumbnailGenerationService(new FakeIQuery(),
-				new FakeIWebLogger(), new FakeIWebSocketConnectionsService(),
+			new ManualThumbnailGenerationService(new FakeIWebLogger(),
+				new FakeIThumbnailSocketService(),
 				new FakeIThumbnailService(selectorStorage),
 				new FakeThumbnailBackgroundTaskQueue()));
+
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 		var result = await controller.ThumbnailGeneration("/");
 		Assert.IsInstanceOfType<BadRequestObjectResult>(result);

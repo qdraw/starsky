@@ -102,6 +102,7 @@ public class ThumbnailService(
 		var generationResults = ( await GenerateThumbnailAsync(subPath, fileHash, sizes) ).ToList();
 		await updateStatusGeneratedThumbnailService.AddOrUpdateStatusAsync(generationResults);
 
+		// Socket updates are not the scope of this service
 		return generationResults;
 	}
 

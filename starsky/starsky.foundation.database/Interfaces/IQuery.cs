@@ -11,7 +11,7 @@ namespace starsky.foundation.database.Interfaces;
 public interface IQuery
 {
 	/// <summary>
-	///     Get a list of all files inside an folder (NOT recursive)
+	///     Get a list of all files inside a folder (NOT recursive)
 	///     But this uses a database as source
 	/// </summary>
 	/// <param name="filePaths">relative database path</param>
