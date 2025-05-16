@@ -211,9 +211,11 @@ public class FfMpegDownloadTest
 	}
 
 	[DataTestMethod]
-	[DataRow(true, DisplayName = "Ok")]
-	[DataRow(false, DisplayName = "PrepareBeforeRunningFailed")]
-	public async Task DownloadFfMpeg_FileAlreadyExists(bool isReady)
+	[DataRow(false, true, DisplayName = "TryRun False & Ok")]
+	[DataRow(false, false, DisplayName = "TryRun False & PrepareBeforeRunningFailed")]
+	[DataRow(true, true, DisplayName = "TryRun True & Ok 1")]
+	[DataRow(true, false, DisplayName = "TryRun True & Ok 2")]
+	public async Task DownloadFfMpeg_FileAlreadyExists(bool tryRun, bool isPrepareBeforeRunning)
 	{
 		var appSettings = new AppSettings { DependenciesFolder = DependencyFolderName };
 		var logger = new FakeIWebLogger();
@@ -232,13 +234,22 @@ public class FfMpegDownloadTest
 					Success = true,
 					Data = new FfmpegBinariesIndex { Binaries = new List<BinaryIndex>() }
 				}), new FakeIFfMpegDownloadBinaries(),
-				new FakeIFfMpegPrepareBeforeRunning(isReady),
-				new FakeIFfMpegPreflightRunCheck());
+				new FakeIFfMpegPrepareBeforeRunning(isPrepareBeforeRunning),
+				new FakeIFfMpegPreflightRunCheck(tryRun ? storage : null,
+					tryRun ? appSettings : null));
 
 		var resultFileAlreadyExists = await ffmpegDownload.DownloadFfMpeg();
 
+		if ( tryRun && !isPrepareBeforeRunning)
+		{
+			Assert.AreEqual(FfmpegDownloadStatus.Ok, resultFileAlreadyExists);
+			return;
+		}
+		
 		Assert.AreEqual(
-			isReady ? FfmpegDownloadStatus.Ok : FfmpegDownloadStatus.PrepareBeforeRunningFailed,
+			isPrepareBeforeRunning
+				? FfmpegDownloadStatus.Ok
+				: FfmpegDownloadStatus.PrepareBeforeRunningFailed,
 			resultFileAlreadyExists);
 	}
 
