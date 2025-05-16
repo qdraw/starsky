@@ -1,6 +1,4 @@
-using System.Threading.Tasks;
-
-namespace starsky.feature.geolookup.Interfaces
+namespace starsky.foundation.geo.GeoDownload.Interfaces
 {
 	public interface IGeoFileDownload
 	{

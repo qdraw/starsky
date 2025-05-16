@@ -3,8 +3,9 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using NGeoNames;
 using NGeoNames.Entities;
-using starsky.feature.geolookup.Interfaces;
 using starsky.foundation.geo.GeoDownload;
+using starsky.foundation.geo.GeoDownload.Interfaces;
+using starsky.foundation.geo.ReverseGeoCode.Interface;
 using starsky.foundation.geo.ReverseGeoCode.Model;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -20,7 +21,7 @@ namespace starsky.foundation.geo.ReverseGeoCode;
 /// <param name="serviceScopeFactory">used to get IGeoFileDownload - Abstraction to download Geo Data</param>
 /// <param name="logger">debug logger</param>
 public class ReverseGeoCodeService(AppSettings appSettings,
-	IServiceScopeFactory serviceScopeFactory, IWebLogger logger)
+	IServiceScopeFactory serviceScopeFactory, IWebLogger logger) : IReverseGeoCodeService
 {
 	private readonly IGeoFileDownload _geoFileDownload = serviceScopeFactory.CreateScope().ServiceProvider
 			.GetRequiredService<IGeoFileDownload>();

@@ -4,6 +4,7 @@ using starsky.feature.geolookup.Interfaces;
 using starsky.feature.geolookup.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
+using starsky.foundation.geo.GeoDownload.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;

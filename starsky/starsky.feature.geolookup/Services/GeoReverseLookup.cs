@@ -1,30 +1,22 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
-using NGeoNames;
-using NGeoNames.Entities;
 using starsky.feature.geolookup.Interfaces;
 using starsky.feature.geolookup.Models;
 using starsky.foundation.database.Models;
+using starsky.foundation.geo.ReverseGeoCode.Interface;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
-using starsky.foundation.platform.Interfaces;
-using starsky.foundation.platform.Models;
-using starsky.foundation.readmeta.Helpers;
 
 namespace starsky.feature.geolookup.Services;
 
 [Service(typeof(IGeoReverseLookup), InjectionLifetime = InjectionLifetime.Singleton)]
 public sealed class GeoReverseLookup : IGeoReverseLookup
 {
-	private readonly AppSettings _appSettings;
-	private readonly IWebLogger _logger;
+	private readonly IMemoryCache? _cache;
+	private readonly IReverseGeoCodeService _reverseGeoCodeService;
 
 	/// <summary>
 	///     Internal API - Getting GeoData
@@ -33,15 +25,11 @@ public sealed class GeoReverseLookup : IGeoReverseLookup
 	/// <param name="geoFileDownload">Abstraction to download Geo Data</param>
 	/// <param name="memoryCache">for keeping status</param>
 	/// <param name="logger">debug logger</param>
-	internal GeoReverseLookup(AppSettings appSettings, IGeoFileDownload geoFileDownload,
-		IWebLogger logger, IMemoryCache? memoryCache = null)
+	internal GeoReverseLookup(IReverseGeoCodeService reverseLookup,
+		IMemoryCache? memoryCache = null)
 	{
-		_appSettings = appSettings;
-		_logger = logger;
+		_reverseGeoCodeService = reverseLookup;
 		// Get the IGeoFileDownload from the service scope due different injection lifetime (singleton vs scoped)
-		_geoFileDownload = geoFileDownload;
-		_reverseGeoCode = null;
-		_admin1CodesAscii = null;
 		_cache = memoryCache;
 	}
 
@@ -66,11 +54,12 @@ public sealed class GeoReverseLookup : IGeoReverseLookup
 		new GeoCacheStatusService(_cache).StatusUpdate(subPath, metaFilesInDirectory.Count * 2,
 			StatusType.Total);
 
-		foreach ( var metaFileItem in metaFilesInDirectory.Select(
-					 (value, index) => new { value, index }) )
+		foreach ( var metaFileItem in metaFilesInDirectory.Select((value, index) =>
+			         new { value, index }) )
 		{
 			var result =
-				await GetLocation(metaFileItem.value.Latitude, metaFileItem.value.Longitude);
+				await _reverseGeoCodeService.GetLocation(metaFileItem.value.Latitude,
+					metaFileItem.value.Longitude);
 			new GeoCacheStatusService(_cache).StatusUpdate(metaFileItem.value.ParentDirectory!,
 				metaFileItem.index, StatusType.Current);
 			if ( !result.IsSuccess )
@@ -92,7 +81,6 @@ public sealed class GeoReverseLookup : IGeoReverseLookup
 	}
 
 
-
 	/// <summary>
 	///     Checks for files that already done
 	///     if latitude is not location 0,0, That's default
@@ -109,27 +97,25 @@ public sealed class GeoReverseLookup : IGeoReverseLookup
 		// this will overwrite the location names, that have a gps location 
 		if ( overwriteLocationNames )
 		{
-			return metaFilesInDirectory.Where(
-					metaFileItem =>
-						Math.Abs(metaFileItem.Latitude) > 0.001 &&
-						Math.Abs(metaFileItem.Longitude) > 0.001)
+			return metaFilesInDirectory.Where(metaFileItem =>
+					Math.Abs(metaFileItem.Latitude) > 0.001 &&
+					Math.Abs(metaFileItem.Longitude) > 0.001)
 				.ToList();
 		}
 
 		// the default situation
-		return metaFilesInDirectory.Where(
-			metaFileItem =>
-				Math.Abs(metaFileItem.Latitude) > 0.001 && Math.Abs(metaFileItem.Longitude) > 0.001
-														&& ( string.IsNullOrEmpty(metaFileItem
-																 .LocationCity)
-															 || string.IsNullOrEmpty(metaFileItem
-																 .LocationState)
-															 || string.IsNullOrEmpty(metaFileItem
-																 .LocationCountry)
-														) // for now NO check on: metaFileItem.LocationCountryCode
-														&& ExtensionRolesHelper
-															.IsExtensionExifToolSupported(
-																metaFileItem.FileName)
+		return metaFilesInDirectory.Where(metaFileItem =>
+			Math.Abs(metaFileItem.Latitude) > 0.001 && Math.Abs(metaFileItem.Longitude) > 0.001
+			                                        && ( string.IsNullOrEmpty(metaFileItem
+				                                             .LocationCity)
+			                                             || string.IsNullOrEmpty(metaFileItem
+				                                             .LocationState)
+			                                             || string.IsNullOrEmpty(metaFileItem
+				                                             .LocationCountry)
+			                                        ) // for now NO check on: metaFileItem.LocationCountryCode
+			                                        && ExtensionRolesHelper
+				                                        .IsExtensionExifToolSupported(
+					                                        metaFileItem.FileName)
 		).ToList();
 	}
 }
