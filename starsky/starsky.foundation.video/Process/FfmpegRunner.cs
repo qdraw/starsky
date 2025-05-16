@@ -38,8 +38,8 @@ public class FfmpegRunner(string ffMpegPath, IWebLogger logger)
 		{
 			throw new ArgumentException("Error when trying to start the ffmpeg process.  " +
 			                            "Please make sure ffmpeg is installed, and its path is properly " +
-			                            "specified in the options. " +
-			                            argumentsWithPipeEnd, exception);
+			                            "specified in the options. - " +
+			                            $" {ffMpegPath} {argumentsWithPipeEnd}", exception);
 		}
 	}
 
