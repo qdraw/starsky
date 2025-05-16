@@ -9,5 +9,6 @@ export enum IExifStatus {
   IgnoredAlreadyImported = "IgnoredAlreadyImported",
   OperationNotSupported = "OperationNotSupported",
   NotFoundNotInIndex = "NotFoundNotInIndex",
-  FileError = "FileError"
+  FileError = "FileError",
+  ExifWriteNotSupported = "ExifWriteNotSupported"
 }
