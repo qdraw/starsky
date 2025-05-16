@@ -4,7 +4,7 @@ using starsky.foundation.database.Models;
 
 namespace starsky.feature.geolookup.Interfaces;
 
-public interface IGeoReverseLookup
+public interface IGeoFolderReverseLookup
 {
 	Task<List<FileIndexItem>> LoopFolderLookup(
 		List<FileIndexItem> metaFilesInDirectory,

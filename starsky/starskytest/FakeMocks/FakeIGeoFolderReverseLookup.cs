@@ -8,11 +8,11 @@ using starsky.foundation.geo.ReverseGeoCode.Model;
 
 namespace starskytest.FakeMocks;
 
-public class FakeIGeoReverseLookup : IGeoReverseLookup
+public class FakeIGeoFolderReverseLookup : IGeoFolderReverseLookup
 {
 	private readonly List<FileIndexItem> _fileIndexItems = new();
 
-	public FakeIGeoReverseLookup(List<FileIndexItem>? fileIndexItems = null)
+	public FakeIGeoFolderReverseLookup(List<FileIndexItem>? fileIndexItems = null)
 	{
 		if ( fileIndexItems != null )
 		{

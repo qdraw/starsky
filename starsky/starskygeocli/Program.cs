@@ -39,7 +39,7 @@ public static class Program
 		new SetupDatabaseTypes(appSettings, services).BuilderDb();
 		serviceProvider = services.BuildServiceProvider();
 
-		var geoReverseLookup = serviceProvider.GetRequiredService<IGeoReverseLookup>();
+		var geoReverseLookup = serviceProvider.GetRequiredService<IGeoFolderReverseLookup>();
 		var geoLocationWrite = serviceProvider.GetRequiredService<IGeoLocationWrite>();
 		var geoFileDownload = serviceProvider.GetRequiredService<IGeoFileDownload>();
 

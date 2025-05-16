@@ -1,6 +1,5 @@
 using System.Globalization;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
+using System.Runtime.CompilerServices;
 using NGeoNames;
 using NGeoNames.Entities;
 using starsky.foundation.geo.GeoDownload;
@@ -12,21 +11,39 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Helpers;
 
+[assembly: InternalsVisibleTo("starskytest")]
+
 namespace starsky.foundation.geo.ReverseGeoCode;
 
-/// <summary>
-///     Getting GeoData
-/// </summary>
-/// <param name="appSettings">to know where to store the deps files</param>
-/// <param name="serviceScopeFactory">used to get IGeoFileDownload - Abstraction to download Geo Data</param>
-/// <param name="logger">debug logger</param>
-public class ReverseGeoCodeService(AppSettings appSettings,
-	IServiceScopeFactory serviceScopeFactory, IWebLogger logger) : IReverseGeoCodeService
+public class ReverseGeoCodeService : IReverseGeoCodeService
 {
-	private readonly IGeoFileDownload _geoFileDownload = serviceScopeFactory.CreateScope().ServiceProvider
-			.GetRequiredService<IGeoFileDownload>();
+	private readonly AppSettings _appSettings;
+	private readonly IGeoFileDownload _geoFileDownload;
+	private readonly IWebLogger _logger;
 	private IEnumerable<Admin1Code>? _admin1CodesAscii;
 	private ReverseGeoCode<ExtendedGeoName>? _reverseGeoCode;
+
+	// /// <summary>
+	// ///     Getting GeoData
+	// /// </summary>
+	// /// <param name="appSettings">to know where to store the deps files</param>
+	// /// <param name="serviceScopeFactory">used to get IGeoFileDownload - Abstraction to download Geo Data</param>
+	// /// <param name="logger">debug logger</param>
+	// public ReverseGeoCodeService(AppSettings appSettings,
+	// 	IGeoFileDownload geoFileDownload, IWebLogger logger)
+	// {
+	// 	_appSettings = appSettings;
+	// 	_geoFileDownload = serviceScopeFactory.CreateScope().ServiceProvider
+	// 		.GetRequiredService<IGeoFileDownload>();
+	// 	_logger = logger;
+	// }
+	public ReverseGeoCodeService(AppSettings appSettings,
+		IGeoFileDownload geoFileDownload, IWebLogger logger)
+	{
+		_appSettings = appSettings;
+		_geoFileDownload = geoFileDownload;
+		_logger = logger;
+	}
 
 	public async Task<GeoLocationModel> GetLocation(double latitude, double longitude)
 	{
@@ -88,14 +105,14 @@ public class ReverseGeoCodeService(AppSettings appSettings,
 		}
 		catch ( ArgumentException e )
 		{
-			logger.LogInformation("[GeoReverseLookup] " + e.Message);
+			_logger.LogInformation("[GeoReverseLookup] " + e.Message);
 		}
 
 		status.LocationState = GetAdmin1Name(nearestPlace.CountryCode, nearestPlace.Admincodes);
 
 		return status;
 	}
-	
+
 	internal string? GetAdmin1Name(string countryCode, string[] adminCodes)
 	{
 		if ( _admin1CodesAscii == null || adminCodes.Length != 4 )
@@ -114,13 +131,13 @@ public class ReverseGeoCodeService(AppSettings appSettings,
 		await _geoFileDownload.DownloadAsync();
 
 		_admin1CodesAscii = GeoFileReader.ReadAdmin1Codes(
-			Path.Combine(appSettings.DependenciesFolder, "admin1CodesASCII.txt"));
+			Path.Combine(_appSettings.DependenciesFolder, "admin1CodesASCII.txt"));
 
 		_reverseGeoCode = new ReverseGeoCode<ExtendedGeoName>(
 			GeoFileReader.ReadExtendedGeoNames(
-				Path.Combine(appSettings.DependenciesFolder,
+				Path.Combine(_appSettings.DependenciesFolder,
 					GeoFileDownload.CountryName + ".txt")));
 
-		return (_admin1CodesAscii, _reverseGeoCode);
+		return ( _admin1CodesAscii, _reverseGeoCode );
 	}
 }

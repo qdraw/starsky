@@ -2,12 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NGeoNames;
 using starsky.feature.geolookup.Services;
 using starsky.foundation.database.Models;
-using starsky.foundation.geo.GeoDownload.Interfaces;
+using starsky.foundation.geo.ReverseGeoCode;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Storage;
@@ -17,16 +16,24 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.geolookup.Services;
 
 [TestClass]
-public sealed class GeoReverseLookupTest
+public sealed class GeoFolderReverseLookupTest
 {
 	private AppSettings _appSettings = new();
 
 	/// <summary>
-	///     Initializes a new instance of the <see cref="GeoReverseLookupTest" /> class.
+	///     Initializes a new instance of the <see cref="GeoFolderReverseLookupTest" /> class.
 	/// </summary>
-	public GeoReverseLookupTest()
+	public GeoFolderReverseLookupTest()
 	{
 		Setup();
+	}
+
+	public ReverseGeoCodeService CreateReverseGeoCodeService()
+	{
+		var reverseGeoCodeService = new ReverseGeoCodeService(_appSettings,
+			new FakeIGeoFileDownload(),
+			new FakeIWebLogger());
+		return reverseGeoCodeService;
 	}
 
 	[ClassCleanup(ClassCleanupBehavior.EndOfClass)]
@@ -109,8 +116,8 @@ public sealed class GeoReverseLookupTest
 
 		Console.WriteLine(GeoFileDownloader.DEFAULTGEOFILEBASEURI);
 
-		await new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(),
-			new FakeIWebLogger()).LoopFolderLookup(folderOfPhotos, false);
+		await new GeoFolderReverseLookup(CreateReverseGeoCodeService()).LoopFolderLookup(
+			folderOfPhotos, false);
 
 		Assert.AreEqual("Argentina", buenosAires.LocationCountry);
 		Assert.AreEqual("ARG", buenosAires.LocationCountryCode);
@@ -127,9 +134,9 @@ public sealed class GeoReverseLookupTest
 		var item = new FileIndexItem();
 		var propertyObject = item.GetType().GetProperty(nameof(item.ParentDirectory));
 		propertyObject!.SetValue(item, null, null);
-
-		var result = await new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(),
-			new FakeIWebLogger()).LoopFolderLookup(new List<FileIndexItem> { item }, false);
+		var sut = new GeoFolderReverseLookup(CreateReverseGeoCodeService());
+		var result = await sut
+			.LoopFolderLookup(new List<FileIndexItem> { item }, false);
 
 		Assert.AreEqual(0, result.Count);
 	}
@@ -146,8 +153,9 @@ public sealed class GeoReverseLookupTest
 		};
 		var folderOfPhotos = new List<FileIndexItem> { vaticanCity };
 
-		await new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(),
-			new FakeIWebLogger()).LoopFolderLookup(folderOfPhotos, false);
+		var sut = new GeoFolderReverseLookup(CreateReverseGeoCodeService());
+
+		await sut.LoopFolderLookup(folderOfPhotos, false);
 
 		Assert.AreEqual("Vatican City", vaticanCity.LocationCity);
 	}
@@ -156,7 +164,7 @@ public sealed class GeoReverseLookupTest
 	public void GeoReverseLookup_RemoveNoUpdateItemsTest()
 	{
 		var list = new List<FileIndexItem> { new(), new() { Latitude = 50, Longitude = 50 } };
-		var result = GeoReverseLookup.RemoveNoUpdateItems(list, true);
+		var result = GeoFolderReverseLookup.RemoveNoUpdateItems(list, true);
 		Assert.AreEqual(1, result.Count);
 	}
 
@@ -166,135 +174,7 @@ public sealed class GeoReverseLookupTest
 		var list = new List<FileIndexItem> { new() { LocationCity = "Apeldoorn" }, new() };
 
 		// ignore city
-		var result = GeoReverseLookup.RemoveNoUpdateItems(list, false);
+		var result = GeoFolderReverseLookup.RemoveNoUpdateItems(list, false);
 		Assert.AreEqual(0, result.Count);
-	}
-
-	[TestMethod]
-	public void GetAdmin1Name_Null()
-	{
-		var geoReverseLookup = new GeoReverseLookup(_appSettings,
-			new FakeIGeoFileDownload(), new FakeIWebLogger());
-
-		var result = geoReverseLookup.GetAdmin1Name(string.Empty, Array.Empty<string>());
-		Assert.IsNull(result);
-	}
-
-	[TestMethod]
-	public async Task GetAdmin1Name_DifferentLength()
-	{
-		var geoReverseLookup = new GeoReverseLookup(_appSettings,
-			new FakeIGeoFileDownload(), new FakeIWebLogger());
-
-		await geoReverseLookup.SetupAsync();
-		var result = geoReverseLookup.GetAdmin1Name("NL", new string[3]);
-		Assert.IsNull(result);
-	}
-
-	[TestMethod]
-	public async Task GetLocation_NonValid()
-	{
-		var result = await new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(),
-			new FakeIWebLogger()).GetLocation(516897055, 52974817);
-
-		Assert.IsFalse(result.IsSuccess);
-	}
-
-	[TestMethod]
-	public async Task GetLocation_NonValid2()
-	{
-		var result = await new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(),
-			new FakeIWebLogger()).GetLocation(0, 0);
-
-		Assert.IsFalse(result.IsSuccess);
-	}
-
-	[TestMethod]
-	public async Task GetLocation_NearestPlace()
-	{
-		var result = await new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(),
-			new FakeIWebLogger()).GetLocation(51.69917, 5.304170);
-
-		Assert.IsTrue(result.IsSuccess);
-	}
-
-	[TestMethod]
-	public async Task GetLocation_NearestPlace_HitGeoDownload()
-	{
-		var fakeIGeoFileDownload = new FakeIGeoFileDownload();
-
-		await new GeoReverseLookup(_appSettings, fakeIGeoFileDownload,
-			new FakeIWebLogger()).GetLocation(51.69917, 5.304170);
-
-		Assert.AreEqual(1, fakeIGeoFileDownload.Count);
-	}
-
-	[TestMethod]
-	public async Task GetLocation_NearestPlace_WithServiceScope()
-	{
-		var services = new ServiceCollection();
-		services.AddSingleton<IGeoFileDownload, FakeIGeoFileDownload>();
-		var serviceProvider = services.BuildServiceProvider();
-		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-
-		var result = await new GeoReverseLookup(_appSettings, scopeFactory,
-			new FakeIWebLogger(), new FakeMemoryCache()).GetLocation(51.69917, 5.304170);
-
-		Assert.IsTrue(result.IsSuccess);
-	}
-
-	[TestMethod]
-	public async Task GetLocation_NearestPlace_WithServiceScope_HitGeoDownload()
-	{
-		var services = new ServiceCollection();
-		services.AddSingleton<IGeoFileDownload, FakeIGeoFileDownload>();
-		var serviceProvider = services.BuildServiceProvider();
-		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-
-		await new GeoReverseLookup(_appSettings, scopeFactory,
-			new FakeIWebLogger(), new FakeMemoryCache()).GetLocation(51.69917, 5.304170);
-
-		var fakeIGeoFileDownload =
-			serviceProvider.GetRequiredService<IGeoFileDownload>() as FakeIGeoFileDownload;
-		Assert.AreEqual(1, fakeIGeoFileDownload?.Count);
-	}
-
-	[TestMethod]
-	public async Task GetLocation_NearestPlace2_Uden()
-	{
-		// 51.6643,5.6196 = uden
-		var result = await new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(),
-			new FakeIWebLogger()).GetLocation(51.6643, 5.6196);
-		Assert.IsTrue(result.IsSuccess);
-	}
-
-
-	[TestMethod]
-	public async Task GetLocation_NearestPlace2_Valkenswaard()
-	{
-		// 51.34963/5.46038 = valkenswaard
-		var result = await new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(),
-			new FakeIWebLogger()).GetLocation(51.34963, 5.46038);
-
-		Assert.IsFalse(result.IsSuccess);
-		// 40.0 km
-		Assert.AreEqual("Distance to nearest place is too far", result.ErrorReason);
-	}
-
-	[TestMethod]
-	public async Task GetLocation_No_nearest_place_found()
-	{
-		await new StorageHostFullPathFilesystem(new FakeIWebLogger()).WriteStreamAsync(
-			StringToStreamHelper.StringToStream(string.Empty), // empty file yes!
-			Path.Combine(_appSettings.DependenciesFolder, "cities1000.txt"));
-
-		var result = await new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(),
-			new FakeIWebLogger()).GetLocation(51.34963, 5.46038);
-
-		// and undo empty file
-		Setup();
-
-		Assert.IsFalse(result.IsSuccess);
-		Assert.AreEqual("No nearest place found", result.ErrorReason);
 	}
 }

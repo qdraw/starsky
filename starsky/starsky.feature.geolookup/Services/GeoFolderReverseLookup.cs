@@ -12,8 +12,8 @@ using starsky.foundation.platform.Helpers;
 
 namespace starsky.feature.geolookup.Services;
 
-[Service(typeof(IGeoReverseLookup), InjectionLifetime = InjectionLifetime.Singleton)]
-public sealed class GeoReverseLookup : IGeoReverseLookup
+[Service(typeof(IGeoFolderReverseLookup), InjectionLifetime = InjectionLifetime.Singleton)]
+public sealed class GeoFolderReverseLookup : IGeoFolderReverseLookup
 {
 	private readonly IMemoryCache? _cache;
 	private readonly IReverseGeoCodeService _reverseGeoCodeService;
@@ -21,11 +21,9 @@ public sealed class GeoReverseLookup : IGeoReverseLookup
 	/// <summary>
 	///     Internal API - Getting GeoData
 	/// </summary>
-	/// <param name="appSettings">to know where to store the deps files</param>
-	/// <param name="geoFileDownload">Abstraction to download Geo Data</param>
+	/// <param name="reverseLookup">reverse geocode</param>
 	/// <param name="memoryCache">for keeping status</param>
-	/// <param name="logger">debug logger</param>
-	internal GeoReverseLookup(IReverseGeoCodeService reverseLookup,
+	internal GeoFolderReverseLookup(IReverseGeoCodeService reverseLookup,
 		IMemoryCache? memoryCache = null)
 	{
 		_reverseGeoCodeService = reverseLookup;

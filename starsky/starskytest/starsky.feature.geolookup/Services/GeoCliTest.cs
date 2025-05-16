@@ -19,7 +19,7 @@ public sealed class GeoCliTest
 	public async Task GeoCliInput_Notfound()
 	{
 		var console = new FakeConsoleWrapper();
-		var geoCli = new GeoCli(new FakeIGeoReverseLookup(), new FakeIGeoLocationWrite(),
+		var geoCli = new GeoCli(new FakeIGeoFolderReverseLookup(), new FakeIGeoLocationWrite(),
 			new FakeSelectorStorage(new FakeIStorage(new List<string>())), new AppSettings(),
 			console, new FakeIGeoFileDownload(), new FakeExifToolDownload(), new FakeIWebLogger());
 		await geoCli.CommandLineAsync(new List<string> { "-p" }.ToArray());
@@ -40,7 +40,7 @@ public sealed class GeoCliTest
 
 		var appSettings = new AppSettings();
 		var geoWrite = new FakeIGeoLocationWrite();
-		var geoLookup = new FakeIGeoReverseLookup();
+		var geoLookup = new FakeIGeoFolderReverseLookup();
 		var console = new FakeConsoleWrapper();
 		var geoCli = new GeoCli(geoLookup, geoWrite,
 			new FakeSelectorStorage(storage), appSettings,
@@ -62,7 +62,7 @@ public sealed class GeoCliTest
 
 		var appSettings = new AppSettings { Verbose = true };
 		var geoWrite = new FakeIGeoLocationWrite();
-		var geoLookup = new FakeIGeoReverseLookup();
+		var geoLookup = new FakeIGeoFolderReverseLookup();
 		var console = new FakeConsoleWrapper();
 		var geoCli = new GeoCli(geoLookup, geoWrite,
 			new FakeSelectorStorage(storage), appSettings,
@@ -85,7 +85,7 @@ public sealed class GeoCliTest
 		storage.FileCopy("/test.jpg", $"/{hash}.jpg");
 
 		var geoWrite = new FakeIGeoLocationWrite();
-		var geoLookup = new FakeIGeoReverseLookup();
+		var geoLookup = new FakeIGeoFolderReverseLookup();
 		var console = new FakeConsoleWrapper();
 		var geoCli = new GeoCli(geoLookup, geoWrite,
 			new FakeSelectorStorage(storage), new AppSettings(),
@@ -108,7 +108,7 @@ public sealed class GeoCliTest
 		storage.FileCopy("/test.jpg", $"/{hash}.jpg");
 
 		var geoWrite = new FakeIGeoLocationWrite();
-		var geoLookup = new FakeIGeoReverseLookup(new List<FileIndexItem>
+		var geoLookup = new FakeIGeoFolderReverseLookup(new List<FileIndexItem>
 		{
 			new("/test.jpg") { Latitude = 50, Longitude = 4, FileHash = "1" }
 		});
@@ -134,7 +134,7 @@ public sealed class GeoCliTest
 		storage.FileCopy("/test.jpg", $"/{hash}.jpg");
 
 		var geoWrite = new FakeIGeoLocationWrite();
-		var geoLookup = new FakeIGeoReverseLookup(new List<FileIndexItem>
+		var geoLookup = new FakeIGeoFolderReverseLookup(new List<FileIndexItem>
 		{
 			new("/test.jpg") { Latitude = 50, Longitude = 4, FileHash = "1" }
 		});

@@ -30,8 +30,8 @@ public sealed class GeoCli
 	private readonly IConsole _console;
 	private readonly IExifToolDownload _exifToolDownload;
 	private readonly IGeoFileDownload _geoFileDownload;
+	private readonly IGeoFolderReverseLookup _geoFolderReverseLookup;
 	private readonly IGeoLocationWrite _geoLocationWrite;
-	private readonly IGeoReverseLookup _geoReverseLookup;
 	private readonly IStorage _iStorage;
 	private readonly IWebLogger _logger;
 	private readonly ReadMeta _readMeta;
@@ -39,12 +39,12 @@ public sealed class GeoCli
 
 	[SuppressMessage("Usage",
 		"S107: Constructor has 8 parameters, which is greater than the 7 authorized")]
-	public GeoCli(IGeoReverseLookup geoReverseLookup,
+	public GeoCli(IGeoFolderReverseLookup geoFolderReverseLookup,
 		IGeoLocationWrite geoLocationWrite, ISelectorStorage selectorStorage,
 		AppSettings appSettings, IConsole console,
 		IGeoFileDownload geoFileDownload, IExifToolDownload exifToolDownload, IWebLogger logger)
 	{
-		_geoReverseLookup = geoReverseLookup;
+		_geoFolderReverseLookup = geoFolderReverseLookup;
 		_geoLocationWrite = geoLocationWrite;
 		_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 		_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
@@ -144,7 +144,7 @@ public sealed class GeoCli
 			_console.Write("(gps added)");
 		}
 
-		fileIndexList = await _geoReverseLookup.LoopFolderLookup(fileIndexList,
+		fileIndexList = await _geoFolderReverseLookup.LoopFolderLookup(fileIndexList,
 			ArgsHelper.GetAll(args));
 
 		if ( fileIndexList.Count >= 1 )
