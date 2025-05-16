@@ -79,11 +79,22 @@ internal class ResizeThumbnailFromThumbnailImageHelper(
 			Size = ThumbnailNameHelper.GetSize(width)
 		};
 
+		var inputFileHashWithExtension =
+			ThumbnailNameHelper.Combine(fileHash, inputThumbnailSize, imageFormat);
+
+		if ( !_thumbnailStorage.ExistFile(inputFileHashWithExtension) )
+		{
+			logger.LogError(
+				$"[ResizeThumbnailFromThumbnailImageHelper] " +
+				$"Thumbnail input not found H:{fileHash} F: {subPathReference} ");
+			result.Success = false;
+			result.ErrorMessage = "Image cannot be loaded, fileHash not found";
+			return result;
+		}
+
 		try
 		{
 			// resize the image and save it to the output stream
-			var inputFileHashWithExtension =
-				ThumbnailNameHelper.Combine(fileHash, inputThumbnailSize, imageFormat);
 			using ( var inputStream = _thumbnailStorage.ReadStream(inputFileHashWithExtension) )
 			using ( var image = await Image.LoadAsync(inputStream) )
 			{
@@ -101,23 +112,30 @@ internal class ResizeThumbnailFromThumbnailImageHelper(
 					outputFileHashWithExtension);
 			}
 		}
-		catch ( Exception ex )
+		catch ( Exception exception )
 		{
-			const string imageCannotBeLoadedErrorMessage = "Image cannot be loaded";
-			var message = ex.Message;
-			if ( message.StartsWith(imageCannotBeLoadedErrorMessage) )
-			{
-				message = imageCannotBeLoadedErrorMessage;
-			}
-
-			logger.LogError(
-				$"[ResizeThumbnailFromThumbnailImageHelper] Exception H:{fileHash} M: {message}",
-				ex);
-			result.Success = false;
-			result.ErrorMessage = message;
-			return result;
+			return SetError(result, exception, fileHash, subPathReference);
 		}
 
+		return result;
+	}
+
+	internal GenerationResultModel SetError(GenerationResultModel result, Exception exception,
+		string fileHash, string? subPathReference)
+	{
+		const string imageCannotBeLoadedErrorMessage = "Image cannot be loaded";
+		var message = exception.Message;
+		if ( message.StartsWith(imageCannotBeLoadedErrorMessage) )
+		{
+			message = imageCannotBeLoadedErrorMessage;
+		}
+
+		logger.LogError(
+			$"[ResizeThumbnailFromThumbnailImageHelper] " +
+			$"Exception H:{fileHash} M: {message} F: {subPathReference} ",
+			exception);
+		result.Success = false;
+		result.ErrorMessage = message;
 		return result;
 	}
 }
