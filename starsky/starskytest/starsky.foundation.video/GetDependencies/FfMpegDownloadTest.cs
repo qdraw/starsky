@@ -111,7 +111,7 @@ public class FfMpegDownloadTest
 		var ffmpegDownload =
 			new FfMpegDownload(new FakeSelectorStorage(), appSettings,
 				logger, new FakeIFfMpegDownloadIndex(), new FakeIFfMpegDownloadBinaries(),
-				new FakeIFfMpegPrepareBeforeRunning(), new FakeIFfMpegPreflightRunCheck());
+				new FakeIFfMpegPrepareBeforeRunning(false), new FakeIFfMpegPreflightRunCheck());
 
 		var result = await ffmpegDownload.DownloadFfMpeg();
 
@@ -132,7 +132,7 @@ public class FfMpegDownloadTest
 			new FfMpegDownload(new FakeSelectorStorage(storage), appSettings,
 				logger,
 				new FakeIFfMpegDownloadIndex(), new FakeIFfMpegDownloadBinaries(),
-				new FakeIFfMpegPrepareBeforeRunning(), new FakeIFfMpegPreflightRunCheck());
+				new FakeIFfMpegPrepareBeforeRunning(false), new FakeIFfMpegPreflightRunCheck());
 
 		var resultMissingIndex = await ffmpegDownload.DownloadFfMpeg(
 			[.. arg.Split(",")]);
@@ -159,7 +159,7 @@ public class FfMpegDownloadTest
 			new FfMpegDownload(new FakeSelectorStorage(), appSettings,
 				logger,
 				new FakeIFfMpegDownloadIndex(), new FakeIFfMpegDownloadBinaries(),
-				new FakeIFfMpegPrepareBeforeRunning(), new FakeIFfMpegPreflightRunCheck());
+				new FakeIFfMpegPrepareBeforeRunning(false), new FakeIFfMpegPreflightRunCheck());
 
 		var resultMissingIndex = await ffmpegDownload.DownloadFfMpeg();
 
@@ -179,7 +179,7 @@ public class FfMpegDownloadTest
 				new FakeIFfMpegDownloadIndex(new FfmpegBinariesContainer { Success = true }),
 				new FfMpegDownloadBinaries(new FakeSelectorStorage(_storage), _httpClientHelper,
 					appSettings, logger, new Zipper(new FakeIWebLogger())),
-				new FakeIFfMpegPrepareBeforeRunning(), new FakeIFfMpegPreflightRunCheck());
+				new FakeIFfMpegPrepareBeforeRunning(false), new FakeIFfMpegPreflightRunCheck());
 
 		var resultMissingIndex = await ffmpegDownload.DownloadFfMpeg();
 
@@ -197,11 +197,11 @@ public class FfMpegDownloadTest
 			new FfMpegDownload(new FakeSelectorStorage(), appSettings, logger,
 				new FakeIFfMpegDownloadIndex(new FfmpegBinariesContainer
 				{
-					Success = true,
-					Data = new FfmpegBinariesIndex { Binaries = new List<BinaryIndex>() }
+					Success = true, Data = new FfmpegBinariesIndex { Binaries = [] }
 				}),
 				new FakeIFfMpegDownloadBinaries(FfmpegDownloadStatus
-					.DownloadBinariesFailedMissingFileName), new FakeIFfMpegPrepareBeforeRunning(),
+					.DownloadBinariesFailedMissingFileName),
+				new FakeIFfMpegPrepareBeforeRunning(false),
 				new FakeIFfMpegPreflightRunCheck());
 
 		var resultBinaryFail = await ffmpegDownload.DownloadFfMpeg();
@@ -210,8 +210,10 @@ public class FfMpegDownloadTest
 			resultBinaryFail);
 	}
 
-	[TestMethod]
-	public async Task DownloadFfMpeg_FileAlreadyExists()
+	[DataTestMethod]
+	[DataRow(true, DisplayName = "Ok")]
+	[DataRow(false, DisplayName = "PrepareBeforeRunningFailed")]
+	public async Task DownloadFfMpeg_FileAlreadyExists(bool isReady)
 	{
 		var appSettings = new AppSettings { DependenciesFolder = DependencyFolderName };
 		var logger = new FakeIWebLogger();
@@ -229,12 +231,15 @@ public class FfMpegDownloadTest
 				{
 					Success = true,
 					Data = new FfmpegBinariesIndex { Binaries = new List<BinaryIndex>() }
-				}), new FakeIFfMpegDownloadBinaries(), new FakeIFfMpegPrepareBeforeRunning(),
+				}), new FakeIFfMpegDownloadBinaries(),
+				new FakeIFfMpegPrepareBeforeRunning(isReady),
 				new FakeIFfMpegPreflightRunCheck());
 
 		var resultFileAlreadyExists = await ffmpegDownload.DownloadFfMpeg();
 
-		Assert.AreEqual(FfmpegDownloadStatus.Ok, resultFileAlreadyExists);
+		Assert.AreEqual(
+			isReady ? FfmpegDownloadStatus.Ok : FfmpegDownloadStatus.PrepareBeforeRunningFailed,
+			resultFileAlreadyExists);
 	}
 
 	[TestMethod]
@@ -255,7 +260,7 @@ public class FfMpegDownloadTest
 				}),
 				new FfMpegDownloadBinaries(new FakeSelectorStorage(storage), _httpClientHelper,
 					appSettings, logger, new Zipper(new FakeIWebLogger())),
-				new FakeIFfMpegPrepareBeforeRunning(), new FakeIFfMpegPreflightRunCheck());
+				new FakeIFfMpegPrepareBeforeRunning(false), new FakeIFfMpegPreflightRunCheck());
 
 		var resultInvalidHash = await ffmpegDownload.DownloadFfMpeg();
 
@@ -281,7 +286,7 @@ public class FfMpegDownloadTest
 				}),
 				new FfMpegDownloadBinaries(new FakeSelectorStorage(storage), _httpClientHelper,
 					appSettings, logger, new Zipper(new FakeIWebLogger())),
-				new FakeIFfMpegPrepareBeforeRunning(), new FakeIFfMpegPreflightRunCheck());
+				new FakeIFfMpegPrepareBeforeRunning(false), new FakeIFfMpegPreflightRunCheck());
 
 		var resultZipFail = await ffmpegDownload.DownloadFfMpeg();
 
@@ -458,7 +463,7 @@ public class FfMpegDownloadTest
 		var ffmpegDownload = new FfMpegDownload(new FakeSelectorStorage(storage), appSettings,
 			logger,
 			new FakeIFfMpegDownloadIndex(), new FakeIFfMpegDownloadBinaries(),
-			new FakeIFfMpegPrepareBeforeRunning(), new FakeIFfMpegPreflightRunCheck());
+			new FakeIFfMpegPrepareBeforeRunning(false), new FakeIFfMpegPreflightRunCheck());
 
 		var path = ffmpegDownload.GetSetFfMpegPath();
 
@@ -481,7 +486,7 @@ public class FfMpegDownloadTest
 		var ffmpegDownload = new FfMpegDownload(new FakeSelectorStorage(storage), appSettings,
 			logger,
 			new FakeIFfMpegDownloadIndex(), new FakeIFfMpegDownloadBinaries(),
-			new FakeIFfMpegPrepareBeforeRunning(), new FakeIFfMpegPreflightRunCheck());
+			new FakeIFfMpegPrepareBeforeRunning(false), new FakeIFfMpegPreflightRunCheck());
 
 		var path = ffmpegDownload.GetSetFfMpegPath();
 

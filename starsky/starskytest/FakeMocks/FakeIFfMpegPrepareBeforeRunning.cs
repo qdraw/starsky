@@ -1,13 +1,12 @@
-using System;
 using System.Threading.Tasks;
 using starsky.foundation.video.GetDependencies.Interfaces;
 
 namespace starskytest.FakeMocks;
 
-public class FakeIFfMpegPrepareBeforeRunning : IFfMpegPrepareBeforeRunning
+public class FakeIFfMpegPrepareBeforeRunning(bool isReady = true) : IFfMpegPrepareBeforeRunning
 {
 	public Task<bool> PrepareBeforeRunning(string currentArchitecture)
 	{
-		throw new NotImplementedException();
+		return Task.FromResult(isReady);
 	}
 }

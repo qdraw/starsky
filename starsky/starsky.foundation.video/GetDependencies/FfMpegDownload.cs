@@ -67,7 +67,10 @@ public class FfMpegDownload : IFfMpegDownload
 
 		if ( _hostFileSystemStorage.ExistFile(_ffmpegExePath.GetExePath(architecture)) )
 		{
-			return FfmpegDownloadStatus.Ok;
+			var isReady = await _prepareBeforeRunning.PrepareBeforeRunning(architecture);
+			return isReady
+				? FfmpegDownloadStatus.Ok
+				: FfmpegDownloadStatus.PrepareBeforeRunningFailed;
 		}
 
 		var container = await _downloadIndex.DownloadIndex();
