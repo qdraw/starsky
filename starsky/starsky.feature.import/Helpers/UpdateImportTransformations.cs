@@ -49,11 +49,12 @@ public class UpdateImportTransformations
 	/// <param name="colorClassTransformation">change colorClass</param>
 	/// <param name="dateTimeParsedFromFileName">is date time parsed from fileName</param>
 	/// <param name="indexMode">should update database</param>
+	/// <param name="reverseGeoCode">reverse Geo Code</param>
 	internal async Task<FileIndexItem> UpdateTransformations(
 		QueryUpdateDelegate? queryUpdateDelegate,
 		FileIndexItem fileIndexItem,
 		int colorClassTransformation, bool dateTimeParsedFromFileName,
-		bool indexMode)
+		bool indexMode, bool reverseGeoCode)
 	{
 		if ( !ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName) )
 		{
