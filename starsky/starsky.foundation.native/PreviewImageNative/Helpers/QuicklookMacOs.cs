@@ -52,7 +52,8 @@ public class QuicklookMacOs(IWebLogger logger)
 			return SaveCGImageAsFile(thumbnailRef, outputPath);
 		}
 
-		logger.LogInformation("[QuicklookMacOs] Failed to generate thumbnail");
+		logger.LogInformation("[QuicklookMacOs] Failed to generate thumbnail" +
+		                      $" for F: {filePath} O: {outputPath}");
 		return false;
 	}
 
@@ -96,12 +97,13 @@ public class QuicklookMacOs(IWebLogger logger)
 
 		if ( destination == IntPtr.Zero )
 		{
-			logger.LogInformation("[QuicklookMacOs] Failed to create image destination");
+			logger.LogInformation("[QuicklookMacOs] Failed to create image destination"
+			                      + $" for F: {outputPath} U: {uniformTypeIdentifier}");
 			return false;
 		}
 
 		// Add image and finalize
-		ImageDestinationAddImageFinalize(destination, cgImage);
+		ImageDestinationAddImageFinalize(destination, cgImage, outputPath);
 
 		// Cleanup
 		CFRelease(destination);
@@ -111,12 +113,14 @@ public class QuicklookMacOs(IWebLogger logger)
 		return true;
 	}
 
-	internal void ImageDestinationAddImageFinalize(IntPtr destination, IntPtr cgImage)
+	internal void ImageDestinationAddImageFinalize(IntPtr destination, IntPtr cgImage,
+		string? reference = "")
 	{
 		CGImageDestinationAddImage(destination, cgImage, IntPtr.Zero);
 		if ( !CGImageDestinationFinalize(destination) )
 		{
-			logger.LogInformation("[QuicklookMacOs] Failed to finalize image");
+			logger.LogInformation("[QuicklookMacOs] Failed to finalize image" +
+			                      $" destination for R: {reference}");
 		}
 	}
 
@@ -171,15 +175,9 @@ public class QuicklookMacOs(IWebLogger logger)
 
 	// Define a structure for CGSize (used for image size)
 	[StructLayout(LayoutKind.Sequential)]
-	internal struct CGSize
+	internal struct CGSize(double width, double height)
 	{
-		public double Width;
-		public double Height;
-
-		public CGSize(double width, double height)
-		{
-			Width = width;
-			Height = height;
-		}
+		public double Width = width;
+		public double Height = height;
 	}
 }
