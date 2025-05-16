@@ -6,6 +6,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.geolookup.Services;
 using starsky.foundation.database.Models;
+using starsky.foundation.geo.ReverseGeoCode;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Storage;
@@ -98,8 +99,11 @@ public sealed class GeoBackgroundTaskTest
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() }
 		);
 		var storageSelector = new FakeSelectorStorage(storage);
-		var geoReverseLookup = new GeoReverseLookup(_appSettings, _geoFileDownload,
-			new FakeIWebLogger(), _memoryCache);
+
+		var reverseGeoCodeService = new ReverseGeoCodeService(_appSettings, _geoFileDownload,
+			new FakeIWebLogger());
+		var geoReverseLookup = new GeoFolderReverseLookup(reverseGeoCodeService,
+			_memoryCache);
 
 		var controller = new GeoBackgroundTask(_appSettings, storageSelector,
 			_geoLocationWrite, _memoryCache, new FakeIWebLogger(),
@@ -120,7 +124,7 @@ public sealed class GeoBackgroundTaskTest
 		);
 		var storageSelector = new FakeSelectorStorage(storage);
 
-		var geoReverseLookup = new FakeIGeoReverseLookup(new List<FileIndexItem>
+		var geoReverseLookup = new FakeIGeoFolderReverseLookup(new List<FileIndexItem>
 		{
 			new("/test.jpg") { FileHash = "2QOYZWMPACZAJ2MABGMOZ6CCPY" }
 		});
@@ -139,7 +143,7 @@ public sealed class GeoBackgroundTaskTest
 	{
 		var storage = new FakeIStorage(); // <= main folder not found
 		var storageSelector = new FakeSelectorStorage(storage);
-		var geoReverseLookup = new FakeIGeoReverseLookup();
+		var geoReverseLookup = new FakeIGeoFolderReverseLookup();
 
 		var controller = new GeoBackgroundTask(_appSettings, storageSelector,
 			_geoLocationWrite, _memoryCache,

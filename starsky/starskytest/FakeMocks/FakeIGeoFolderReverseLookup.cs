@@ -2,16 +2,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.feature.geolookup.Interfaces;
-using starsky.feature.geolookup.Models;
 using starsky.foundation.database.Models;
+using starsky.foundation.geo.ReverseGeoCode;
+using starsky.foundation.geo.ReverseGeoCode.Model;
 
 namespace starskytest.FakeMocks;
 
-public class FakeIGeoReverseLookup : IGeoReverseLookup
+public class FakeIGeoFolderReverseLookup : IGeoFolderReverseLookup
 {
 	private readonly List<FileIndexItem> _fileIndexItems = new();
 
-	public FakeIGeoReverseLookup(List<FileIndexItem>? fileIndexItems = null)
+	public FakeIGeoFolderReverseLookup(List<FileIndexItem>? fileIndexItems = null)
 	{
 		if ( fileIndexItems != null )
 		{

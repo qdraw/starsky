@@ -448,7 +448,7 @@ public class Import : IImport
 		// Parse the filename and create a new importIndexItem object
 		var importIndexItem = ObjectCreateIndexItem(inputFileFullPath.Key, imageFormat,
 			hashList.Key, fileIndexItem!, importSettings.ColorClass,
-			_filesystemStorage.Info(inputFileFullPath.Key).Size);
+			_filesystemStorage.Info(inputFileFullPath.Key).Size, importSettings.ReverseGeoCode);
 
 		// Update the parent and filenames
 		importIndexItem = ApplyStructure(importIndexItem, importSettings.Structure);
@@ -474,14 +474,14 @@ public class Import : IImport
 	/// <param name="fileIndexItem">database item</param>
 	/// <param name="colorClassTransformation">Force to update colorClass</param>
 	/// <param name="size">Add filesize in bytes</param>
+	/// <param name="importSettingsReverseGeoCode"></param>
 	/// <returns></returns>
-	private ImportIndexItem ObjectCreateIndexItem(
-		string inputFileFullPath,
+	private ImportIndexItem ObjectCreateIndexItem(string inputFileFullPath,
 		ExtensionRolesHelper.ImageFormat imageFormat,
 		string fileHashCode,
 		FileIndexItem fileIndexItem,
 		int colorClassTransformation,
-		long size)
+		long size, bool importSettingsReverseGeoCode)
 	{
 		var importIndexItem = new ImportIndexItem(_appSettings)
 		{
@@ -519,6 +519,11 @@ public class Import : IImport
 		importIndexItem.FileIndexItem.FileHash = fileHashCode;
 		importIndexItem.FileIndexItem.ImageFormat = imageFormat;
 		importIndexItem.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
+
+		if ( importSettingsReverseGeoCode )
+		{
+		}
+
 		if ( colorClassTransformation < 0 )
 		{
 			return importIndexItem;
@@ -669,7 +674,7 @@ public class Import : IImport
 		importIndexItem.FileIndexItem = await _updateImportTransformations
 			.UpdateTransformations(updateItemAsync, importIndexItem.FileIndexItem!,
 				importSettings.ColorClass, importIndexItem.DateTimeFromFileName,
-				importSettings.IndexMode);
+				importSettings.IndexMode, importSettings.ReverseGeoCode);
 
 		await UpdateCreateMetaThumbnail(queryThumbnailUpdateDelegate,
 			importIndexItem.FileIndexItem?.FileHash, importSettings.IndexMode);

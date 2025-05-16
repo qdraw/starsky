@@ -21,9 +21,9 @@ namespace starsky.feature.geolookup.Services;
 public class GeoBackgroundTask : IGeoBackgroundTask
 {
 	private readonly AppSettings _appSettings;
+	private readonly IGeoFolderReverseLookup _geoFolderReverseLookup;
 	private readonly GeoIndexGpx _geoIndexGpx;
 	private readonly IGeoLocationWrite _geoLocationWrite;
-	private readonly IGeoReverseLookup _geoReverseLookup;
 	private readonly IStorage _iStorage;
 	private readonly IWebLogger _logger;
 	private readonly ReadMeta _readMeta;
@@ -31,7 +31,7 @@ public class GeoBackgroundTask : IGeoBackgroundTask
 
 	public GeoBackgroundTask(AppSettings appSettings, ISelectorStorage selectorStorage,
 		IGeoLocationWrite geoLocationWrite, IMemoryCache memoryCache,
-		IWebLogger logger, IGeoReverseLookup geoReverseLookup)
+		IWebLogger logger, IGeoFolderReverseLookup geoFolderReverseLookup)
 	{
 		_appSettings = appSettings;
 		_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
@@ -40,7 +40,7 @@ public class GeoBackgroundTask : IGeoBackgroundTask
 		_geoLocationWrite = geoLocationWrite;
 		_logger = logger;
 		_geoIndexGpx = new GeoIndexGpx(_appSettings, _iStorage, logger, memoryCache);
-		_geoReverseLookup = geoReverseLookup;
+		_geoFolderReverseLookup = geoFolderReverseLookup;
 	}
 
 	public async Task<List<FileIndexItem>> GeoBackgroundTaskAsync(
@@ -77,7 +77,7 @@ public class GeoBackgroundTask : IGeoBackgroundTask
 		}
 
 		fileIndexList =
-			await _geoReverseLookup
+			await _geoFolderReverseLookup
 				.LoopFolderLookup(fileIndexList, overwriteLocationNames);
 
 		if ( fileIndexList.Count >= 1 )

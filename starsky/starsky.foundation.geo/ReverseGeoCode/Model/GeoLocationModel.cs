@@ -1,4 +1,4 @@
-namespace starsky.feature.geolookup.Models;
+namespace starsky.foundation.geo.ReverseGeoCode.Model;
 
 public sealed class GeoLocationModel
 {

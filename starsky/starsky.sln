@@ -174,6 +174,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.video", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskydependenciesdownloadcli", "starskydependenciesdownloadcli\starskydependenciesdownloadcli.csproj", "{A5BE4F80-975C-4F15-AB99-D046E6F8726D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.geo", "starsky.foundation.geo\starsky.foundation.geo.csproj", "{D6D53732-2CEC-489D-BE54-E15AEE30B6D5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -380,6 +382,10 @@ Global
 		{A5BE4F80-975C-4F15-AB99-D046E6F8726D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5BE4F80-975C-4F15-AB99-D046E6F8726D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5BE4F80-975C-4F15-AB99-D046E6F8726D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6D53732-2CEC-489D-BE54-E15AEE30B6D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6D53732-2CEC-489D-BE54-E15AEE30B6D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6D53732-2CEC-489D-BE54-E15AEE30B6D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6D53732-2CEC-489D-BE54-E15AEE30B6D5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -442,5 +448,6 @@ Global
 		{B88C2815-D154-4C6D-AE37-2E150AEBF73D} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
 		{C6F6B684-F8EB-4DFD-9143-33F0262153FE} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
 		{A5BE4F80-975C-4F15-AB99-D046E6F8726D} = {B974FC20-C3EE-4EB0-AF25-F0D8DA2C28D7}
+		{D6D53732-2CEC-489D-BE54-E15AEE30B6D5} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
 	EndGlobalSection
 EndGlobal
