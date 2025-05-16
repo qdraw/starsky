@@ -45,7 +45,7 @@ public class FfMpegPrepareBeforeRunning : IFfMpegPrepareBeforeRunning
 
 		if ( !await _ffmpegChmod.Chmod(exeFile) )
 		{
-			_logger.LogError("[FfMpegDownload] Chmod failed");
+			_logger.LogError($"[FfMpegDownload] Chmod failed {exeFile}");
 			return false;
 		}
 
