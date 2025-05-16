@@ -33,6 +33,7 @@ public class UpdateStatusGeneratedThumbnailService : IUpdateStatusGeneratedThumb
 		var dtoObjects = generationResults
 			.Where(p => !p.IsNotFound)
 			.DistinctBy(p => p.FileHash)
+			.Where(p => !string.IsNullOrWhiteSpace(p.FileHash))
 			.Select(p => p.FileHash)
 			.Select(fileHash => new ThumbnailResultDataTransferModel(fileHash)).ToList();
 
