@@ -108,7 +108,7 @@ public sealed class SwaggerExportHelperTest
 		var appSettings = new AppSettings { AddSwagger = true, AddSwaggerExport = true };
 		var swagger = new SwaggerExportHelper(null!, new FakeIWebLogger());
 
-		Assert.ThrowsException<ArgumentException>(() =>
+		Assert.ThrowsExactly<ArgumentException>(() =>
 			swagger.Add03AppExport(appSettings, new FakeSelectorStorage(), null!));
 	}
 

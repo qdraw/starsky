@@ -64,7 +64,7 @@ namespace starskytest.FakeMocks
 				}
 
 				// Check if the file is correct
-				var imageFormat = ExtensionRolesHelper.GetImageFormat(
+				var imageFormat = new ExtensionRolesHelper(new FakeIWebLogger()).GetImageFormat(
 					_selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem)
 						.ReadStream(inputFileFullPath, 160));
 

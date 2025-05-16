@@ -51,7 +51,9 @@ public sealed class EventQueueOverflowExceptionTest
 				info, new StreamingContext(StreamingContextStates.All)
 			});
 
+#pragma warning disable MSTEST0039
 		Assert.ThrowsException<EventQueueOverflowException>(() => throw instance);
+#pragma warning restore MSTEST0039
 
 #pragma warning restore SYSLIB0050
 	}

@@ -93,7 +93,7 @@ public sealed class StatusCodesHelperTest
 		DetailView? detailView = null;
 
 		// Assert that a DllNotFoundException is thrown when IsReadOnlyStatus is called with null AppSettings
-		Assert.ThrowsException<DllNotFoundException>(() =>
+		Assert.ThrowsExactly<DllNotFoundException>(() =>
 			new StatusCodesHelper(null!).IsReadOnlyStatus(detailView));
 	}
 

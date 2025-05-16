@@ -137,7 +137,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			// Test subfolder
 			var getAllFilesSubFolderExpectedResult = new List<FileIndexItem> {_insertSearchDataHi2SubfolderJpgInput};
 
-			var getAllResultSubfolder = _query.GetAllFiles("/basic/subfolder");
+			var getAllResultSubfolder = await _query.GetAllFilesAsync("/basic/subfolder");
             
 			CollectionAssert.AreEqual(getAllFilesSubFolderExpectedResult.Select(p => p.FilePath).ToList(), 
 				getAllResultSubfolder.Select(p => p.FilePath).ToList());

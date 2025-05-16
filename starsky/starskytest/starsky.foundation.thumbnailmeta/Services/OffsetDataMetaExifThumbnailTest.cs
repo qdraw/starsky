@@ -21,10 +21,10 @@ public sealed class OffsetDataMetaExifThumbnailTest
 		var (exifThumbnailDirectory, width, height, rotation) = new OffsetDataMetaExifThumbnail(
 			new FakeSelectorStorage(),
 			new FakeIWebLogger()).ParseMetaThumbnail(null, null);
-		Assert.AreEqual(null, exifThumbnailDirectory);
+		Assert.IsNull(exifThumbnailDirectory);
 		Assert.AreEqual(0, width);
 		Assert.AreEqual(0, height);
-		Assert.AreEqual(FileIndexItem.Rotation.DoNotChange, rotation);
+		Assert.AreEqual(ImageRotation.Rotation.DoNotChange, rotation);
 	}
 
 	[TestMethod]
@@ -52,7 +52,7 @@ public sealed class OffsetDataMetaExifThumbnailTest
 		Assert.AreEqual(thumbnailDirectory, exifThumbnailDirectory);
 		Assert.AreEqual(0, width);
 		Assert.AreEqual(0, height);
-		Assert.AreEqual(FileIndexItem.Rotation.DoNotChange, rotation);
+		Assert.AreEqual(ImageRotation.Rotation.DoNotChange, rotation);
 	}
 
 	[TestMethod]
@@ -77,7 +77,7 @@ public sealed class OffsetDataMetaExifThumbnailTest
 		Assert.AreEqual(thumbnailDirectory, exifThumbnailDirectory);
 		Assert.AreEqual(150, width);
 		Assert.AreEqual(100, height);
-		Assert.AreEqual(FileIndexItem.Rotation.Horizontal, rotation);
+		Assert.AreEqual(ImageRotation.Rotation.Horizontal, rotation);
 	}
 
 	[TestMethod]
@@ -99,7 +99,7 @@ public sealed class OffsetDataMetaExifThumbnailTest
 
 		Assert.AreEqual(12, width);
 		Assert.AreEqual(10, height);
-		Assert.AreEqual(FileIndexItem.Rotation.Rotate90Cw, rotation);
+		Assert.AreEqual(ImageRotation.Rotation.Rotate90Cw, rotation);
 	}
 
 	[TestMethod]
@@ -121,7 +121,7 @@ public sealed class OffsetDataMetaExifThumbnailTest
 
 		Assert.AreEqual(12, width);
 		Assert.AreEqual(10, height);
-		Assert.AreEqual(FileIndexItem.Rotation.Rotate90Cw, rotation);
+		Assert.AreEqual(ImageRotation.Rotation.Rotate90Cw, rotation);
 	}
 
 	[TestMethod]
@@ -140,7 +140,7 @@ public sealed class OffsetDataMetaExifThumbnailTest
 
 		Assert.AreEqual(0, width);
 		Assert.AreEqual(0, height);
-		Assert.AreEqual(FileIndexItem.Rotation.DoNotChange, rotation);
+		Assert.AreEqual(ImageRotation.Rotation.DoNotChange, rotation);
 	}
 
 	[TestMethod]

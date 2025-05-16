@@ -76,7 +76,7 @@ public sealed class ThumbnailQueuedHostedServiceTest
 			}
 		}, string.Empty);
 
-		Assert.IsNotNull(_bgTaskQueue);
+		Assert.AreEqual(1, _bgTaskQueue.Count());
 	}
 
 	[TestMethod]
@@ -103,7 +103,7 @@ public sealed class ThumbnailQueuedHostedServiceTest
 			new AppSettings(), _scopeFactory);
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<ToManyUsageException>(async () =>
+		await Assert.ThrowsExactlyAsync<ToManyUsageException>(async () =>
 		{
 			await backgroundQueue.QueueBackgroundWorkItemAsync(_ => ValueTask.CompletedTask,
 				string.Empty);
@@ -191,7 +191,7 @@ public sealed class ThumbnailQueuedHostedServiceTest
 			_scopeFactory);
 
 		// Act & Assert
-		Assert.ThrowsException<ToManyUsageException>(() =>
+		Assert.ThrowsExactly<ToManyUsageException>(() =>
 			queue.ThrowExceptionIfCpuUsageIsToHigh("TestMetaData"));
 	}
 
@@ -219,7 +219,7 @@ public sealed class ThumbnailQueuedHostedServiceTest
 		Func<CancellationToken, ValueTask>? func = null;
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+		await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
 		{
 			// ReSharper disable once ExpressionIsAlwaysNull
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(func!, string.Empty);

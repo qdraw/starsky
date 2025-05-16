@@ -34,12 +34,13 @@ public sealed class ThumbnailGenerationControllerTest
 	public async Task ThumbnailGeneration_Endpoint()
 	{
 		var selectorStorage =
-			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" }));
+			new FakeSelectorStorage(new FakeIStorage(["/"]));
 		var controller = new ThumbnailGenerationController(selectorStorage,
-			new ManualThumbnailGenerationService(new FakeIQuery(),
-				new FakeIWebLogger(), new FakeIWebSocketConnectionsService(),
+			new ManualThumbnailGenerationService(new FakeIWebLogger(),
+				new FakeIThumbnailSocketService(),
 				new FakeIThumbnailService(selectorStorage),
-				new FakeThumbnailBackgroundTaskQueue()));
+				new FakeThumbnailBackgroundTaskQueue()
+			));
 
 		var json = await controller.ThumbnailGeneration("/") as JsonResult;
 		Assert.IsNotNull(json);
@@ -55,10 +56,11 @@ public sealed class ThumbnailGenerationControllerTest
 		var selectorStorage =
 			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" }));
 		var controller = new ThumbnailGenerationController(selectorStorage,
-			new ManualThumbnailGenerationService(new FakeIQuery(),
-				new FakeIWebLogger(), new FakeIWebSocketConnectionsService(),
+			new ManualThumbnailGenerationService(new FakeIWebLogger(),
+				new FakeIThumbnailSocketService(),
 				new FakeIThumbnailService(selectorStorage),
 				new FakeThumbnailBackgroundTaskQueue()));
+
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 		var result = await controller.ThumbnailGeneration("/");
 		Assert.IsInstanceOfType<BadRequestObjectResult>(result);

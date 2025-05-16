@@ -28,7 +28,7 @@ public class DoubleBinderProviderTest
 		var doubleBinderProvider = new DoubleBinderProvider();
 
 		// Assert that an ArgumentNullException is thrown when GetBinder is called with null
-		Assert.ThrowsException<ArgumentNullException>(() => doubleBinderProvider.GetBinder(null!));
+		Assert.ThrowsExactly<ArgumentNullException>(() => doubleBinderProvider.GetBinder(null!));
 	}
 
 	[TestMethod]
@@ -60,7 +60,7 @@ public class DoubleBinderProviderTest
 				}), CultureInfo.InvariantCulture)
 		};
 		new DoubleModelBinder().BindModelAsync(binder);
-		Assert.AreEqual(null, binder.Result.Model);
+		Assert.IsNull(binder.Result.Model);
 	}
 
 	[TestMethod]
@@ -89,11 +89,11 @@ public class DoubleBinderProviderTest
 			new QueryCollection(new Dictionary<string, StringValues> { { "test", "___NaN__" } }),
 			CultureInfo.InvariantCulture);
 		new DoubleModelBinder().BindModelAsync(binder);
-		Assert.AreEqual(null, binder.Result.Model);
+		Assert.IsNull(binder.Result.Model);
 	}
 
 	[SuppressMessage("ReSharper", "UnassignedGetOnlyAutoProperty")]
-	private class MyClass : ModelBinderProviderContext
+	private sealed class MyClass : ModelBinderProviderContext
 	{
 		public override BindingInfo BindingInfo { get; } = new();
 

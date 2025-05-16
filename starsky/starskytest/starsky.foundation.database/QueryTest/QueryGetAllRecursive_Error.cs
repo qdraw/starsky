@@ -18,22 +18,38 @@ public class QueryGetAllRecursiveError
 {
 	private IServiceScopeFactory? _serviceScopeFactory;
 
+	public static int InvalidOperationExceptionDbContextCount { get; set; }
+
 	private void CreateScope()
 	{
 		var services = new ServiceCollection();
 		services.AddSingleton<AppSettings>();
 
 		services.AddSingleton<IWebLogger, FakeIWebLogger>();
-		services.AddDbContext<ApplicationDbContext>(options => 
+		services.AddDbContext<ApplicationDbContext>(options =>
 			options.UseInMemoryDatabase(nameof(CreateScope)));
-			
+
 		var serviceProvider = services.BuildServiceProvider();
 		_serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 	}
-	
-	public static int InvalidOperationExceptionDbContextCount { get; set; }
-		
-	private class InvalidOperationExceptionDbContext : ApplicationDbContext
+
+	[TestMethod]
+	public async Task GetAllRecursiveAsync_InvalidOperationExceptionDbContext()
+	{
+		InvalidOperationExceptionDbContextCount = 0;
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase("MovieListDatabase")
+			.Options;
+
+		CreateScope();
+		var fakeQuery = new Query(new InvalidOperationExceptionDbContext(options),
+			null!, _serviceScopeFactory!, new FakeIWebLogger());
+		await fakeQuery.GetAllRecursiveAsync("test");
+
+		Assert.AreEqual(1, InvalidOperationExceptionDbContextCount);
+	}
+
+	private sealed class InvalidOperationExceptionDbContext : ApplicationDbContext
 	{
 		public InvalidOperationExceptionDbContext(DbContextOptions options) : base(options)
 		{
@@ -52,21 +68,5 @@ public class QueryGetAllRecursiveError
 				// do nothing
 			}
 		}
-	}
-	
-	[TestMethod]
-	public async Task GetAllRecursiveAsync_InvalidOperationExceptionDbContext()
-	{
-		InvalidOperationExceptionDbContextCount = 0;
-		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-			.UseInMemoryDatabase(databaseName: "MovieListDatabase")
-			.Options;
-			
-		CreateScope();
-		var fakeQuery = new Query(new InvalidOperationExceptionDbContext(options), 
-			null!, _serviceScopeFactory! ,new FakeIWebLogger());
-		await fakeQuery.GetAllRecursiveAsync("test");
-			
-		Assert.IsTrue(InvalidOperationExceptionDbContextCount == 1);
 	}
 }

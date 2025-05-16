@@ -8,6 +8,7 @@ import { UrlQuery } from "../../../shared/url/url-query";
 interface IListImageProps {
   children?: React.ReactNode;
   fileHash: string;
+  filePath: string;
   imageFormat?: ImageFormat;
   alt?: string;
 }
@@ -22,7 +23,7 @@ const emptyImageUrl = "empty-image.gif";
  */
 const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
   const target = useRef<HTMLDivElement>(null);
-  const alt = props.alt ? props.alt : "afbeelding";
+  const alt = props.alt ?? "afbeelding";
 
   const [src, setSrc] = useState(props.fileHash);
 
@@ -61,7 +62,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
       setSrc(emptyImageUrl); // 26 bytes
       return;
     }
-    setSrc(new UrlQuery().UrlThumbnailImage(props.fileHash, alwaysLoadImage));
+    setSrc(new UrlQuery().UrlThumbnailImage(props.fileHash, props.filePath, alwaysLoadImage));
   }, [props.fileHash, history.location.search, historyLocation, isLoading, alwaysLoadImage]);
 
   if (
@@ -79,7 +80,10 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
     props.imageFormat !== ImageFormat.gif &&
     props.imageFormat !== ImageFormat.jpg &&
     props.imageFormat !== ImageFormat.webp &&
-    props.imageFormat !== ImageFormat.png
+    props.imageFormat !== ImageFormat.png &&
+    props.imageFormat !== ImageFormat.mp4 &&
+    props.imageFormat !== ImageFormat.mjpeg &&
+    props.imageFormat !== ImageFormat.mts
   ) {
     return (
       <div

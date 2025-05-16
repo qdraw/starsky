@@ -85,7 +85,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 		using var cancelToken = new CancellationTokenSource();
 		await cancelToken.CancelAsync();
 
-		await Assert.ThrowsExceptionAsync<OperationCanceledException>(async () =>
+		await Assert.ThrowsExactlyAsync<OperationCanceledException>(async () =>
 			await periodicThumbnailScanHostedService.StartBackgroundAsync(true,
 				cancelToken.Token));
 	}
@@ -198,7 +198,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 			scopeFactory);
 
 		var result = await periodicThumbnailScanHostedService.RunJob();
-		Assert.AreEqual(null, result);
+		Assert.IsNull(result);
 	}
 
 
@@ -225,7 +225,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 		using var cancelToken = new CancellationTokenSource();
 		await cancelToken.CancelAsync();
 
-		await Assert.ThrowsExceptionAsync<OperationCanceledException>(async () =>
+		await Assert.ThrowsExactlyAsync<OperationCanceledException>(async () =>
 			await periodicThumbnailScanHostedService.RunJob(
 				cancelToken.Token));
 	}
@@ -258,7 +258,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 
 		dynMethod.Invoke(service, new object[] { token });
 
-		Assert.IsTrue(logger.TrackedInformation.Count == 0);
-		Assert.IsTrue(logger.TrackedExceptions.Count == 0);
+		Assert.AreEqual(0, logger.TrackedInformation.Count);
+		Assert.AreEqual(0, logger.TrackedExceptions.Count);
 	}
 }

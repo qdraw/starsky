@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <!-- SonarQube needs this -->
+        <ProjectGuid>{c6f6b684-f8eb-4dfd-9143-33f0262153fe}</ProjectGuid>
+        <Version>0.7.0-beta.1</Version>
+        <RootNamespace>starsky.foundation.video</RootNamespace>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\starsky.foundation.http\starsky.foundation.http.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.writemeta\starsky.foundation.writemeta.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MedallionShell" Version="1.6.2"/>
+    </ItemGroup>
+
+</Project>

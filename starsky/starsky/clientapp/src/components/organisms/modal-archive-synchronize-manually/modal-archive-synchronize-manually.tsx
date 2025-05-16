@@ -43,12 +43,12 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
 
   // the default is true
   const [collections, setCollections] = React.useState(
-    new URLPath().StringToIUrl(history.location.search).collections !== false
+    new URLPath().StringToIUrl(history.location.search).collections
   );
 
   /** update when changing values and search */
   useEffect(() => {
-    setCollections(new URLPath().StringToIUrl(history.location.search).collections !== false);
+    setCollections(new URLPath().StringToIUrl(history.location.search).collections);
   }, [collections, history.location.search]);
 
   const [geoSyncPercentage, setGeoSyncPercentage] = useState(0);
@@ -88,7 +88,8 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
   useInterval(() => fetchGeoSyncStatus(), 10000);
 
   function manualThumbnailSync() {
-    const parentFolder = props.parentFolder ?? "/";
+    const parentFolder =
+      props.parentFolder && props.parentFolder.trim() !== "" ? props.parentFolder : "/";
     const bodyParams = new URLSearchParams();
     bodyParams.set("f", parentFolder);
     setIsLoading(true);

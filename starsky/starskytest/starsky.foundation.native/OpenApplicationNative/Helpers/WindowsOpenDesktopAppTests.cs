@@ -161,7 +161,7 @@ public class WindowsOpenDesktopAppTests
 			return;
 		}
 
-		Assert.ThrowsException<Win32Exception>(() =>
+		Assert.ThrowsExactly<Win32Exception>(() =>
 		{
 			// Code that is expected to throw the exception
 			WindowsOpenDesktopApp.OpenApplicationAtUrl(
@@ -179,7 +179,7 @@ public class WindowsOpenDesktopAppTests
 			return;
 		}
 
-		Assert.ThrowsException<Win32Exception>(() =>
+		Assert.ThrowsExactly<Win32Exception>(() =>
 		{
 			// Code that is expected to throw the exception
 			WindowsOpenDesktopApp.OpenApplicationAtUrl(

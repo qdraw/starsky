@@ -35,7 +35,7 @@ public sealed class RetryHelperTest
 		var count = 0;
 
 		// Act & Assert
-		var ex = Assert.ThrowsException<AggregateException>(() =>
+		var ex = Assert.ThrowsExactly<AggregateException>(() =>
 		{
 			RetryHelper.Do(Test, TimeSpan.Zero);
 		});
@@ -61,7 +61,7 @@ public sealed class RetryHelperTest
 	public void RetryFail_expect_ArgumentOutOfRangeException()
 	{
 		// Act & Assert
-		Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+		Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
 		{
 			bool Test()
 			{
@@ -100,7 +100,7 @@ public sealed class RetryHelperTest
 		var count = 0;
 
 		// Act & Assert
-		var ex = await Assert.ThrowsExceptionAsync<AggregateException>(async () =>
+		var ex = await Assert.ThrowsExactlyAsync<AggregateException>(async () =>
 		{
 			var result = await RetryHelper.DoAsync(Test, TimeSpan.Zero);
 			Assert.IsTrue(result); // This will not be reached if exception is thrown
@@ -126,7 +126,7 @@ public sealed class RetryHelperTest
 	public async Task Async_RetryFail_expect_ArgumentOutOfRangeException()
 	{
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<ArgumentOutOfRangeException>(async () =>
+		await Assert.ThrowsExactlyAsync<ArgumentOutOfRangeException>(async () =>
 		{
 			// should not be negative
 			await RetryHelper.DoAsync(Test, TimeSpan.Zero, 0);

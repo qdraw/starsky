@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
-using starsky.foundation.platform.Enums;
+using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.thumbnailgeneration.Interfaces;
 using starsky.foundation.thumbnailgeneration.Models;
 
@@ -33,6 +33,7 @@ public class UpdateStatusGeneratedThumbnailService : IUpdateStatusGeneratedThumb
 		var dtoObjects = generationResults
 			.Where(p => !p.IsNotFound)
 			.DistinctBy(p => p.FileHash)
+			.Where(p => !string.IsNullOrWhiteSpace(p.FileHash))
 			.Select(p => p.FileHash)
 			.Select(fileHash => new ThumbnailResultDataTransferModel(fileHash)).ToList();
 

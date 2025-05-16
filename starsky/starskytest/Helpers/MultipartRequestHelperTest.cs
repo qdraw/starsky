@@ -14,7 +14,7 @@ public sealed class MultipartRequestHelperTest
 	{
 		var mediaType = new MediaTypeHeaderValue("plain/text");
 
-		Assert.ThrowsException<InvalidDataException>(() =>
+		Assert.ThrowsExactly<InvalidDataException>(() =>
 			MultipartRequestHelper.GetBoundary(mediaType, 50));
 	}
 
@@ -23,7 +23,7 @@ public sealed class MultipartRequestHelperTest
 	{
 		var mediaType =
 			new MediaTypeHeaderValue("plain/text") { Boundary = new StringSegment("test") };
-		Assert.ThrowsException<InvalidDataException>(() =>
+		Assert.ThrowsExactly<InvalidDataException>(() =>
 			MultipartRequestHelper.GetBoundary(mediaType, 3));
 	}
 

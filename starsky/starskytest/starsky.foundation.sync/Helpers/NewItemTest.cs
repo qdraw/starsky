@@ -13,29 +13,32 @@ public class NewItemTest
 	[TestMethod]
 	public async Task NewItemTest_KeepDefault()
 	{
-		var storage = new FakeIStorage(new List<string>{"/"}, new List<string>{"/test.jpg"});
-		var newItem = await new NewItem(storage, new FakeReadMeta()).PrepareUpdateFileItemAsync(new FileIndexItem("/test.jpg")
-		{
-			LastChanged = new List<string>{"test"}
-		}, 100);
-		
-		Assert.AreEqual(FileIndexItem.ExifStatus.Ok,newItem.Status);
+		var storage = new FakeIStorage(new List<string> { "/" }, new List<string> { "/test.jpg" });
+		var newItem =
+			await new NewItem(storage, new FakeReadMeta(), new FakeIWebLogger())
+				.PrepareUpdateFileItemAsync(
+					new FileIndexItem("/test.jpg") { LastChanged = new List<string> { "test" } },
+					100);
 
-		Assert.AreEqual(100,newItem.Size);
+		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, newItem.Status);
+
+		Assert.AreEqual(100, newItem.Size);
 	}
-	
+
 	[TestMethod]
 	public async Task NewItemTest_SetOkAndSame()
 	{
-		var storage = new FakeIStorage(new List<string>{"/"}, new List<string>{"/test.jpg"});
-		var newItem = await new NewItem(storage, new FakeReadMeta()).PrepareUpdateFileItemAsync(new FileIndexItem("/test.jpg")
-		{
-			Tags = "test, fake read meta",
-			LastChanged = new List<string>()
-		}, 100);
-		
-		Assert.AreEqual(FileIndexItem.ExifStatus.OkAndSame,newItem.Status);
+		var storage = new FakeIStorage(new List<string> { "/" }, new List<string> { "/test.jpg" });
+		var newItem =
+			await new NewItem(storage, new FakeReadMeta(), new FakeIWebLogger())
+				.PrepareUpdateFileItemAsync(
+					new FileIndexItem("/test.jpg")
+					{
+						Tags = "test, fake read meta", LastChanged = new List<string>()
+					}, 100);
 
-		Assert.AreEqual(100,newItem.Size);
+		Assert.AreEqual(FileIndexItem.ExifStatus.OkAndSame, newItem.Status);
+
+		Assert.AreEqual(100, newItem.Size);
 	}
 }

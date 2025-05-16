@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Extensions;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 
 namespace starsky.foundation.storage.Services;
@@ -17,22 +18,33 @@ namespace starsky.foundation.storage.Services;
 	Justification = "Not used for passwords")]
 public sealed class FileHash
 {
-	private readonly IStorage _iStorage;
+	public const string GeneratedPostFix = "_T";
 
-	public FileHash(IStorage iStorage)
+	/// <summary>
+	///     114Kb
+	/// </summary>
+	public const int MaxReadSize = 114688;
+
+	private readonly IStorage _iStorage;
+	private readonly IWebLogger _logger;
+
+	/// <summary>
+	///     Two public interfaces
+	///     Returns list of hashCodes
+	///     or one hashcode (base32)
+	/// </summary>
+	/// <param name="iStorage"></param>
+	/// <param name="logger"></param>
+	public FileHash(IStorage iStorage, IWebLogger logger)
 	{
 		_iStorage = iStorage;
+		_logger = logger;
 	}
 
 
-	// Two public interfaces
-	// Returns list of hashCodes
-	// or one hashcode (base32)
-
-
 	/// <summary>
-	/// Get the hashCodes of a array of files
-	/// Uses the default timeout
+	///     Get the hashCodes of an array of files
+	///     Uses the default timeout
 	/// </summary>
 	/// <param name="filesInDirectorySubPath">array</param>
 	/// <returns>array of base32 hashes</returns>
@@ -44,7 +56,7 @@ public sealed class FileHash
 	}
 
 	/// <summary>
-	/// Returns a Base32 case insensitive fileHash, used with the default timeout of 1 minute
+	///     Returns a Base32 caseInsensitive fileHash, used with the default timeout of 1 minute
 	/// </summary>
 	/// <param name="subPath">subPath</param>
 	/// <param name="timeoutInMilliseconds">Timeout in ms seconds, before a random string will be returned</param>
@@ -67,7 +79,7 @@ public sealed class FileHash
 	}
 
 	/// <summary>
-	/// Wrapper to do Async tasks -- add variable to test make it in a unit test shorter
+	///     Wrapper to do Async tasks -- add variable to test make it in a unit test shorter
 	/// </summary>
 	/// <param name="fullFileName"></param>
 	/// <param name="timeoutInMilliseconds"></param>
@@ -82,10 +94,10 @@ public sealed class FileHash
 	}
 
 	/// <summary>
-	/// Get FileHash Async in the timeoutSeconds time
+	///     Get FileHash Async in the timeoutSeconds time
 	/// </summary>
 	/// <param name="fullFileName">full filePath on disk to have the file</param>
-	/// <param name="timeoutInMilliseconds">number of milli seconds to be hashed</param>
+	/// <param name="timeoutInMilliseconds">number of milliseconds to be hashed</param>
 	/// <returns></returns>
 	public async Task<KeyValuePair<string, bool>> GetHashCodeAsync(
 		string fullFileName, int timeoutInMilliseconds = 30000)
@@ -108,7 +120,7 @@ public sealed class FileHash
 		catch ( TimeoutException )
 		{
 			// Sometimes a Calc keeps waiting for days
-			Console.WriteLine(
+			_logger.LogError(
 				">>>>>>>>>>>            Timeout Md5 Hashing::: "
 				+ fullFileName
 				+ "            <<<<<<<<<<<<");
@@ -117,10 +129,8 @@ public sealed class FileHash
 		}
 	}
 
-	public const string GeneratedPostFix = "_T";
-
 	/// <summary>
-	/// Create a random string
+	///     Create a random string
 	/// </summary>
 	/// <param name="length">number of chars</param>
 	/// <returns>random string</returns>
@@ -149,13 +159,8 @@ public sealed class FileHash
 	}
 
 	/// <summary>
-	/// 114Kb
-	/// </summary>
-	public const int MaxReadSize = 114688;
-
-	/// <summary>
-	/// Calculate the hash based on the first 16 Kilobytes of the file
-	/// @see https://stackoverflow.com/a/45573180
+	///     Calculate the hash based on the first 16 Kilobytes of the file
+	///     @see https://stackoverflow.com/a/45573180
 	/// </summary>
 	/// <param name="fullFilePath">full File Path on disk</param>
 	/// <returns>Task with a md5 hash</returns>
@@ -178,7 +183,7 @@ public sealed class FileHash
 	}
 
 	/// <summary>
-	/// Does NOT seek at 0
+	///     Does NOT seek at 0
 	/// </summary>
 	/// <param name="stream">memory or filestream</param>
 	/// <param name="dispose">dispose afterwards</param>
@@ -196,8 +201,8 @@ public sealed class FileHash
 			{
 				int length;
 				while ( ( length = await stream
-						   .ReadAsync(block, cancellationToken)
-						   .ConfigureAwait(false) ) > 0 )
+					       .ReadAsync(block, cancellationToken)
+					       .ConfigureAwait(false) ) > 0 )
 				{
 					md5.TransformBlock(block, 0, length, null, 0);
 				}

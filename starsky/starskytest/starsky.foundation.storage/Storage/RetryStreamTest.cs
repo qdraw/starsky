@@ -25,7 +25,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 			}
 
 			var stream = new RetryStream(0).Retry(LocalGet);
-			Assert.IsTrue(stream.Length != 0);
+			Assert.AreNotEqual(0, stream.Length);
 		}
 		
 		[TestMethod]

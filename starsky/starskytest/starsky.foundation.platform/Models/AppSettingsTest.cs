@@ -103,7 +103,7 @@ public sealed class AppSettingsTest
 	{
 		_appSettings.DatabaseType = AppSettings.DatabaseTypeList.Sqlite;
 
-		Assert.ThrowsException<ArgumentException>(() =>
+		Assert.ThrowsExactly<ArgumentException>(() =>
 			_appSettings.SqLiteFullPath(string.Empty, null!)
 		);
 		// Optionally, you can assert specific properties of the exception here, but it's not required.
@@ -114,7 +114,7 @@ public sealed class AppSettingsTest
 	{
 		_appSettings.DatabaseType = AppSettings.DatabaseTypeList.Mysql;
 
-		Assert.ThrowsException<ArgumentException>(() =>
+		Assert.ThrowsExactly<ArgumentException>(() =>
 			_appSettings.SqLiteFullPath(string.Empty, null!)
 		);
 		// Optionally, you can assert specific properties of the exception here, but it's not required.
@@ -123,7 +123,7 @@ public sealed class AppSettingsTest
 	[TestMethod]
 	public void AppSettingsProviderTest_StructureFails_withoutExtAndNoSlash()
 	{
-		Assert.ThrowsException<ArgumentException>(() =>
+		Assert.ThrowsExactly<ArgumentException>(() =>
 			{
 				_appSettings.Structure = "\\d";
 				Assert.AreEqual("d", _appSettings.Structure);
@@ -142,7 +142,7 @@ public sealed class AppSettingsTest
 	public void AppSettingsProviderTest_StructureCheck_MissingFirstSlash()
 	{
 		// Act & Assert
-		Assert.ThrowsException<ArgumentException>(() =>
+		Assert.ThrowsExactly<ArgumentException>(() =>
 		{
 			AppSettings.StructureCheck("d/test.ext");
 		});
@@ -163,17 +163,14 @@ public sealed class AppSettingsTest
 	[TestMethod]
 	public void AppSettingsProviderTest_NoFolderMissingFirstSlash()
 	{
-		Assert.ThrowsException<ArgumentException>(() =>
-		{
-			AppSettings.StructureCheck("dion.ext");
-		});
+		Assert.ThrowsExactly<ArgumentException>(() => { AppSettings.StructureCheck("dion.ext"); });
 		// >= ArgumentException
 	}
 
 	[TestMethod]
 	public void AppSettingsProviderTest_Null()
 	{
-		Assert.ThrowsException<ArgumentNullException>(() =>
+		Assert.ThrowsExactly<ArgumentNullException>(() =>
 			AppSettings.StructureCheck(string.Empty));
 	}
 
@@ -409,7 +406,7 @@ public sealed class AppSettingsTest
 	public void AppVersionBuildDateTime()
 	{
 		var appVersionBuildDateTime = new AppSettings().AppVersionBuildDateTime;
-		Assert.IsNotNull(appVersionBuildDateTime);
+		Assert.IsTrue(appVersionBuildDateTime.Year > 2000);
 	}
 
 	[TestMethod]
@@ -457,14 +454,14 @@ public sealed class AppSettingsTest
 			AccountRolesByEmailRegisterOverwrite =
 				new Dictionary<string, string> { { "bogusEmail", "bogusRole" } }
 		};
-		Assert.IsTrue(appSettings.AccountRolesByEmailRegisterOverwrite.Count == 0);
+		Assert.AreEqual(0, appSettings.AccountRolesByEmailRegisterOverwrite.Count);
 	}
 
 	[TestMethod]
 	public void AccountRolesByEmailRegisterOverwrite_Null()
 	{
 		var appSettings = new AppSettings { AccountRolesByEmailRegisterOverwrite = null };
-		Assert.IsTrue(appSettings.AccountRolesByEmailRegisterOverwrite?.Count == 0);
+		Assert.AreEqual(0, appSettings.AccountRolesByEmailRegisterOverwrite?.Count);
 	}
 
 	[TestMethod]
@@ -552,5 +549,22 @@ public sealed class AppSettingsTest
 		// Assert
 		Assert.AreEqual(source.StorageFolder, destination.StorageFolder);
 		Assert.AreEqual(source.Verbose, destination.Verbose);
+	}
+
+	[TestMethod]
+	public void AppSettings_AppSettingsLocalPath_Null()
+	{
+		var appSettings = new AppSettings { AppSettingsLocalPath = null! };
+		Assert.AreEqual(string.Empty, appSettings.AppSettingsLocalPath);
+	}
+	
+	[TestMethod]
+	public void AppSettings_AppSettingsLocalPath_AssemblyDirectory()
+	{
+		var appSettings = new AppSettings { AppSettingsLocalPath = "/test/{AssemblyDirectory}" };
+
+		var expectedResult = $"/test/{appSettings.BaseDirectoryProject}";
+		
+		Assert.AreEqual(expectedResult, appSettings.AppSettingsLocalPath);
 	}
 }

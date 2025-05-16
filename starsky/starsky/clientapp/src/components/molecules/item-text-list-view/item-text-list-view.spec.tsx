@@ -55,7 +55,8 @@ describe("ItemTextListView", () => {
     { status: IExifStatus.ServerError, shouldShowError: true },
     { status: IExifStatus.NotFoundSourceMissing, shouldShowError: true },
     { status: IExifStatus.Ok, shouldShowError: false },
-    { status: IExifStatus.ReadOnly, shouldShowError: true }
+    { status: IExifStatus.ReadOnly, shouldShowError: true },
+    { status: IExifStatus.ExifWriteNotSupported, shouldShowError: false }
   ];
 
   test.each(statusCorrectlyTheoryData)(

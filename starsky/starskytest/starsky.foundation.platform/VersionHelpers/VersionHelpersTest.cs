@@ -163,7 +163,7 @@ public sealed class VersionHelpersTest
 	public void SemVersion_Parse_test()
 	{
 		// Act & Assert
-		Assert.ThrowsException<ArgumentException>(() => { SemVersion.Parse("test"); });
+		Assert.ThrowsExactly<ArgumentException>(() => { SemVersion.Parse("test"); });
 	}
 
 	[TestMethod]
@@ -353,8 +353,8 @@ public sealed class VersionHelpersTest
 	[TestMethod]
 	public void GetHashCodeTest()
 	{
-		var version = new SemVersion(1).GetHashCode();
-		Assert.IsNotNull(version);
+		var hashCode = new SemVersion(1).GetHashCode();
+		Assert.AreNotEqual(0, hashCode);
 	}
 
 	[TestMethod]
@@ -600,7 +600,7 @@ public sealed class VersionHelpersTest
 		Assert.AreEqual(0, result);
 	}
 
-	private class SemVersionBasic
+	private sealed class SemVersionBasic
 	{
 		public SemVersionBasic(int major, int minor = 0, int patch = 0, string prerelease = "",
 			string build = "")

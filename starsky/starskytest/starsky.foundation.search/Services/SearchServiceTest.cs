@@ -200,7 +200,7 @@ public sealed class SearchServiceTest
 	public void SearchService_RemoveCache_Disabled_Test()
 	{
 		var search = new SearchService(_dbContext, new FakeIWebLogger()); // cache is null!
-		Assert.AreEqual(null, search.RemoveCache("test"));
+		Assert.IsNull(search.RemoveCache("test"));
 	}
 
 	[TestMethod]
@@ -208,7 +208,7 @@ public sealed class SearchServiceTest
 	{
 		var search = new SearchService(_dbContext, new FakeIWebLogger(), _memoryCache,
 			new AppSettings { AddMemoryCache = false });
-		Assert.AreEqual(null, search.RemoveCache("test"));
+		Assert.IsNull(search.RemoveCache("test"));
 	}
 
 	[TestMethod]
@@ -497,7 +497,7 @@ public sealed class SearchServiceTest
 		await InsertSearchData();
 
 		// expect 5
-		var expectedCount = _dbContext.FileIndex.Count(p =>
+		var expectedCount = await _dbContext.FileIndex.CountAsync(p =>
 			p.ParentDirectory!.StartsWith("/stations"));
 
 		var stationsQueryResult =
@@ -514,7 +514,7 @@ public sealed class SearchServiceTest
 	{
 		await InsertSearchData();
 
-		var expectedCount = _dbContext.FileIndex.Count(p => p.Tags!.Contains("lelystad")
+		var expectedCount = await _dbContext.FileIndex.CountAsync(p => p.Tags!.Contains("lelystad")
 		                                                    && p.ParentDirectory!.Contains(
 			                                                    "stations2"));
 
@@ -617,7 +617,7 @@ public sealed class SearchServiceTest
 		var model = new SearchViewModel { SearchQuery = null };
 		_search.MatchSearch(model);
 
-		Assert.IsFalse(model.SearchIn.Count != 0);
+		Assert.AreEqual(0, model.SearchIn.Count);
 	}
 
 	[TestMethod]
@@ -1083,7 +1083,7 @@ public sealed class SearchServiceTest
 			" elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit" +
 			" amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna ";
 
-		await Assert.ThrowsExceptionAsync<ArgumentException>(() => _search.Search(longTestText));
+		await Assert.ThrowsExactlyAsync<ArgumentException>(() => _search.Search(longTestText));
 		// Expect ArgumentException
 	}
 }

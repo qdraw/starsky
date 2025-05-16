@@ -130,9 +130,7 @@ export function filterArchiveFromEvent(
   pushMessagesEvent: IFileIndexItem[],
   parentLocationPath?: string
 ) {
-  if (!parentLocationPath) {
-    parentLocationPath = "/";
-  }
+  parentLocationPath ??= "/";
 
   const toAddedFiles = [];
   for (const pushMessage of pushMessagesEvent) {

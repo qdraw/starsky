@@ -304,7 +304,7 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 		var fakeQuery = new Query(null!, null!, null!, logger);
 
 		// Assert that a NullReferenceException is thrown when GetObjectsByFilePathQueryAsync is called
-		await Assert.ThrowsExceptionAsync<NullReferenceException>(async () =>
+		await Assert.ThrowsExactlyAsync<NullReferenceException>(async () =>
 			await fakeQuery.GetObjectsByFilePathQueryAsync(["test"]));
 	}
 

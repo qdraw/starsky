@@ -482,7 +482,9 @@ public sealed class ArgsHelper
 			$"5. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".patch.json")}");
 		_console.WriteLine(
 			$"6. Environment variable: app__appsettingspath: {Environment.GetEnvironmentVariable("app__appsettingspath")}");
-		_console.WriteLine("7. Specific environment variables for example app__storageFolder");
+		_console.WriteLine(
+			$"7. Environment variable: app__appsettingslocalpath: {Environment.GetEnvironmentVariable("app__appsettingslocalpath")}");
+		_console.WriteLine("8. Specific environment variables for example app__storageFolder");
 
 		AppSpecificHelp();
 
@@ -717,7 +719,7 @@ public sealed class ArgsHelper
 
 		if ( dbStyle )
 		{
-			path = _appSettings.FullPathToDatabaseStyle(path);
+			path = _appSettings.FullPathStorageFolderToDatabaseStyle(path);
 		}
 
 		return path;
@@ -1043,5 +1045,35 @@ public sealed class ArgsHelper
 		}
 
 		return profile;
+	}
+
+	public static List<string> GetRuntimes(List<string> args)
+	{
+		// --runtime
+		var runtimes = new List<string>();
+		const string runtimeDash = "--runtime";
+		const string runtimeDashAndSpace = "--runtime ";
+
+		for ( var arg = 0; arg < args.Count; arg++ )
+		{
+			if ( !args[arg].StartsWith(runtimeDash,
+				     StringComparison.CurrentCultureIgnoreCase) ||
+			     arg + 1 == args.Count )
+			{
+				if ( args[arg].Contains(runtimeDashAndSpace) ) // and space
+				{
+					var runtimeReplaced =
+						args[arg].Replace(runtimeDashAndSpace, string.Empty).Split(',');
+					runtimes.AddRange(runtimeReplaced);
+				}
+
+				continue;
+			}
+
+			var runtime = args[arg + 1].Split(',');
+			runtimes.AddRange(runtime);
+		}
+
+		return runtimes;
 	}
 }

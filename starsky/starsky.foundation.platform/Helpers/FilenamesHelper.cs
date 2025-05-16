@@ -92,7 +92,7 @@ public static partial class FilenamesHelper
 	[GeneratedRegex(
 		"[^.][a-zA-Z0-9]{1,4}$",
 		RegexOptions.None,
-		100)]
+		1000)]
 	private static partial Regex FileExtensionWithoutDotRegex();
 
 	private static string GetFileNameToUrl(string filename)

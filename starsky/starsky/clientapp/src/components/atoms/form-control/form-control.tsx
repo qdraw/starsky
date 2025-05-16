@@ -19,7 +19,7 @@ interface IFormControlProps {
 }
 
 const FormControl: React.FunctionComponent<IFormControlProps> = ({ onBlur, ...props }) => {
-  const maxlength = props.maxlength ? props.maxlength : 255;
+  const maxlength = props.maxlength ?? 255;
 
   const [childLength, setChildLength] = useState(
     props.children?.toString().length ? props.children?.toString().length : 0
@@ -44,7 +44,7 @@ const FormControl: React.FunctionComponent<IFormControlProps> = ({ onBlur, ...pr
     setChildLength(childLength + element.clipboardData.getData("Text").length);
   };
 
-  const propsClassName = props.className ? props.className : "";
+  const propsClassName = props.className ?? "";
 
   return (
     <>
@@ -54,7 +54,7 @@ const FormControl: React.FunctionComponent<IFormControlProps> = ({ onBlur, ...pr
 
       {/* NOSONAR(S6847) */}
       <div
-        data-test={props["data-test"] ? props["data-test"] : "form-control"}
+        data-test={props["data-test"] ?? "form-control"}
         onBlur={new LimitLength(setChildLength, onBlur, maxlength).LimitLengthBlur}
         data-name={props.name}
         onKeyDown={new LimitLength(setChildLength, onBlur, maxlength).LimitLengthKey}

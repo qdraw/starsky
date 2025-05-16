@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
@@ -16,10 +17,15 @@ namespace starskytest.starsky.foundation.realtime.Middleware;
 public sealed class WebSocketConnectionsMiddlewareTest
 {
 	[TestMethod]
+	[SuppressMessage("Performance",
+		"CA1806:Do not ignore method results",
+		Justification = "Should fail when null in constructor")]
+	[SuppressMessage("ReSharper",
+		"ObjectCreationAsStatement")]
 	public void NullOptions()
 	{
 		// Act & Assert
-		var exception = Assert.ThrowsException<ArgumentNullException>(() =>
+		var exception = Assert.ThrowsExactly<ArgumentNullException>(() =>
 			new WebSocketConnectionsMiddleware(null!,
 				null!, new WebSocketConnectionsService(),
 				new FakeIWebLogger()));
@@ -32,7 +38,7 @@ public sealed class WebSocketConnectionsMiddlewareTest
 	public void NullService()
 	{
 		// Act & Assert
-		var exception = Assert.ThrowsException<ArgumentNullException>(() =>
+		var exception = Assert.ThrowsExactly<ArgumentNullException>(() =>
 		{
 			_ = new WebSocketConnectionsMiddleware(null!,
 				new WebSocketConnectionsOptions(), null!, new FakeIWebLogger());

@@ -14,6 +14,8 @@ using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Services;
+using starsky.foundation.thumbnailgeneration.GenerationFactory;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -46,7 +48,7 @@ public sealed class DownloadPhotoControllerTest
 		{
 			FileName = "test.jpg",
 			ParentDirectory = "/",
-			FileHash = "/home0012304590.jpg",
+			FileHash = "/home0012304590",
 			ColorClass = ColorClassParser.Color.Winner // 1
 		};
 
@@ -81,12 +83,12 @@ public sealed class DownloadPhotoControllerTest
 
 		// Act
 		var controller = new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger(),
-			new FakeIThumbnailService());
+			new FakeIThumbnailService(), new AppSettings());
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 		var actionResult = controller.DownloadSidecar("/test.xmp") as FileStreamResult;
-		Assert.AreNotEqual(null, actionResult);
+		Assert.IsNotNull(actionResult);
 
-		actionResult?.FileStream.Dispose();
+		actionResult.FileStream.Dispose();
 	}
 
 	[TestMethod]
@@ -97,7 +99,7 @@ public sealed class DownloadPhotoControllerTest
 
 		// Act
 		var controller = new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger(),
-			new FakeIThumbnailService());
+			new FakeIThumbnailService(), new AppSettings());
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 
@@ -116,14 +118,14 @@ public sealed class DownloadPhotoControllerTest
 		// Act
 		var controller =
 			new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger(),
-				new FakeIThumbnailService())
+				new FakeIThumbnailService(), new AppSettings())
 			{
 				ControllerContext = { HttpContext = new DefaultHttpContext() }
 			};
 		var actionResult = controller.DownloadSidecar("/test.jpg") as NotFoundObjectResult;
 
-		Assert.AreNotEqual(null, actionResult);
-		Assert.AreEqual(404, actionResult?.StatusCode);
+		Assert.IsNotNull(actionResult);
+		Assert.AreEqual(404, actionResult.StatusCode);
 	}
 
 	[TestMethod]
@@ -135,14 +137,14 @@ public sealed class DownloadPhotoControllerTest
 		// Act
 		var controller =
 			new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger(),
-				new FakeIThumbnailService())
+				new FakeIThumbnailService(), new AppSettings())
 			{
 				ControllerContext = { HttpContext = new DefaultHttpContext() }
 			};
 		var actionResult = controller.DownloadSidecar("/not-found.xmp") as NotFoundObjectResult;
 
-		Assert.AreNotEqual(null, actionResult);
-		Assert.AreEqual(404, actionResult?.StatusCode);
+		Assert.IsNotNull(actionResult);
+		Assert.AreEqual(404, actionResult.StatusCode);
 	}
 
 	[TestMethod]
@@ -151,16 +153,21 @@ public sealed class DownloadPhotoControllerTest
 		// Arrange
 		var fileIndexItem = await InsertSearchData();
 		var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
+		var thumbnailService = new ThumbnailService(selectorStorage, new FakeIWebLogger(),
+			new AppSettings(), new FakeIUpdateStatusGeneratedThumbnailService(),
+			new FakeIVideoProcess(selectorStorage),
+			new FileHashSubPathStorage(selectorStorage, new FakeIWebLogger()),
+			new FakeINativePreviewThumbnailGenerator());
 
 		// Act
 		var controller = new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger(),
-			new FakeIThumbnailService(selectorStorage));
+			thumbnailService, new AppSettings());
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 		var actionResult =
 			await controller.DownloadPhoto(fileIndexItem.FilePath!) as FileStreamResult;
-		Assert.AreNotEqual(null, actionResult);
+		Assert.IsNotNull(actionResult);
 
-		await actionResult!.FileStream.DisposeAsync();
+		await actionResult.FileStream.DisposeAsync();
 	}
 
 	[TestMethod]
@@ -168,18 +175,23 @@ public sealed class DownloadPhotoControllerTest
 	{
 		// Arrange
 		var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
+		var thumbnailService = new ThumbnailService(selectorStorage, new FakeIWebLogger(),
+			new AppSettings(), new FakeIUpdateStatusGeneratedThumbnailService(),
+			new FakeIVideoProcess(selectorStorage),
+			new FileHashSubPathStorage(selectorStorage, new FakeIWebLogger()),
+			new FakeINativePreviewThumbnailGenerator());
 
 		// Act
 		var controller =
 			new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger(),
-				new FakeIThumbnailService())
+				thumbnailService, new AppSettings())
 			{
 				ControllerContext = { HttpContext = new DefaultHttpContext() }
 			};
 		var actionResult = await controller.DownloadPhoto("?isthumbnail") as NotFoundObjectResult;
 
-		Assert.AreNotEqual(null, actionResult);
-		Assert.AreEqual(404, actionResult?.StatusCode);
+		Assert.IsNotNull(actionResult);
+		Assert.AreEqual(404, actionResult.StatusCode);
 	}
 
 	[TestMethod]
@@ -188,7 +200,7 @@ public sealed class DownloadPhotoControllerTest
 		// Arrange
 		var controller =
 			new DownloadPhotoController(_query, new FakeSelectorStorage(), new FakeIWebLogger(),
-				new FakeIThumbnailService())
+				new FakeIThumbnailService(), new AppSettings())
 			{
 				ControllerContext = { HttpContext = new DefaultHttpContext() }
 			};
@@ -214,13 +226,13 @@ public sealed class DownloadPhotoControllerTest
 		// Act
 		var controller =
 			new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger(),
-				new FakeIThumbnailService())
+				new FakeIThumbnailService(), new AppSettings())
 			{
 				ControllerContext = { HttpContext = new DefaultHttpContext() }
 			};
 
 		var actionResult = await controller.DownloadPhoto("/corrupt.jpg") as JsonResult;
-		Assert.AreNotEqual(null, actionResult);
+		Assert.IsNotNull(actionResult);
 
 		Assert.AreEqual(500, controller.Response.StatusCode);
 
@@ -237,14 +249,14 @@ public sealed class DownloadPhotoControllerTest
 		// Act
 		var controller =
 			new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger(),
-				new FakeIThumbnailService())
+				new FakeIThumbnailService(), new AppSettings())
 			{
 				ControllerContext = { HttpContext = new DefaultHttpContext() }
 			};
 		var actionResult = await controller.DownloadPhoto("/not-found.jpg") as NotFoundObjectResult;
 
-		Assert.AreNotEqual(null, actionResult);
-		Assert.AreEqual(404, actionResult?.StatusCode);
+		Assert.IsNotNull(actionResult);
+		Assert.AreEqual(404, actionResult.StatusCode);
 	}
 
 	[TestMethod]
@@ -256,13 +268,13 @@ public sealed class DownloadPhotoControllerTest
 
 		// Act
 		var controller = new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger(),
-			new FakeIThumbnailService());
+			new FakeIThumbnailService(), new AppSettings());
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 		var actionResult =
 			await controller.DownloadPhoto(fileIndexItem.FilePath!, false) as FileStreamResult;
-		Assert.AreNotEqual(null, actionResult);
+		Assert.IsNotNull(actionResult);
 
-		await actionResult!.FileStream.DisposeAsync();
+		await actionResult.FileStream.DisposeAsync();
 	}
 
 	[TestMethod]
@@ -271,10 +283,15 @@ public sealed class DownloadPhotoControllerTest
 		// Arrange
 		var fileIndexItem = await InsertSearchData();
 		var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
+		var thumbnailService = new ThumbnailService(selectorStorage, new FakeIWebLogger(),
+			new AppSettings(), new FakeIUpdateStatusGeneratedThumbnailService(),
+			new FakeIVideoProcess(selectorStorage),
+			new FileHashSubPathStorage(selectorStorage, new FakeIWebLogger()),
+			new FakeINativePreviewThumbnailGenerator());
 
 		// Act
 		var controller = new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger(),
-			new FakeIThumbnailService(selectorStorage));
+			thumbnailService, new AppSettings());
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 		// Run once
@@ -285,9 +302,9 @@ public sealed class DownloadPhotoControllerTest
 		// Run twice
 		var actionResult2 =
 			await controller.DownloadPhoto(fileIndexItem.FilePath!) as FileStreamResult;
-		Assert.AreNotEqual(null, actionResult2);
+		Assert.IsNotNull(actionResult2);
 
-		await actionResult2!.FileStream.DisposeAsync();
+		await actionResult2.FileStream.DisposeAsync();
 	}
 
 	[TestMethod]
@@ -301,12 +318,12 @@ public sealed class DownloadPhotoControllerTest
 
 		// Act
 		var controller = new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger(),
-			new FakeIThumbnailService());
+			new FakeIThumbnailService(), new AppSettings());
 		var actionResult =
 			await controller.DownloadPhoto(fileIndexItem.FilePath!) as NotFoundObjectResult;
-		Assert.AreNotEqual(null, actionResult);
-		Assert.AreEqual(404, actionResult?.StatusCode);
-		Assert.AreEqual("source image missing /test.jpg", actionResult?.Value);
+		Assert.IsNotNull(actionResult);
+		Assert.AreEqual(404, actionResult.StatusCode);
+		Assert.AreEqual("source image missing /test.jpg", actionResult.Value);
 	}
 
 	[TestMethod]
@@ -322,14 +339,14 @@ public sealed class DownloadPhotoControllerTest
 
 		// Act
 		var controller = new DownloadPhotoController(_query, selectorStorage,
-			new FakeIWebLogger(), new FakeIThumbnailService());
+			new FakeIWebLogger(), new FakeIThumbnailService(), new AppSettings());
 
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 		var actionResult =
 			await controller.DownloadPhoto(fileIndexItem.FilePath!) as NotFoundObjectResult;
 
-		Assert.AreNotEqual(null, actionResult);
-		Assert.AreEqual(404, actionResult?.StatusCode);
-		Assert.AreEqual("ThumbnailTempFolder not found", actionResult?.Value);
+		Assert.IsNotNull(actionResult);
+		Assert.AreEqual(404, actionResult.StatusCode);
+		Assert.AreEqual("ThumbnailTempFolder not found", actionResult.Value);
 	}
 }

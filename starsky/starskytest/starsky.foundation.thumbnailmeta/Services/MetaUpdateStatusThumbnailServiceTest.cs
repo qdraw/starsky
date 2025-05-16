@@ -14,7 +14,7 @@ public class MetaUpdateStatusThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new MetaUpdateStatusThumbnailService(query,
-			new FakeSelectorStorage());
+			new FakeSelectorStorage(), new FakeIWebLogger());
 		await service.UpdateStatusThumbnail(new List<(bool, bool, string, string?)>
 		{
 			( true, true, "/test.jpg", "test" ),

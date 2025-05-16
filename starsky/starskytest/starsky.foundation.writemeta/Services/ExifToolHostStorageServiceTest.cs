@@ -43,7 +43,7 @@ public sealed class ExifToolHostStorageServiceTest
 		);
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
+		await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
 		{
 			await service.WriteTagsAsync("/test.jpg", "-Software=\"Qdraw 2.0\"");
 		});
@@ -70,7 +70,7 @@ public sealed class ExifToolHostStorageServiceTest
 		);
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
+		await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
 		{
 			await service.WriteTagsAndRenameThumbnailAsync("/test.jpg", null,
 				"-Software=\"Qdraw 2.0\"");
@@ -132,7 +132,7 @@ public sealed class ExifToolHostStorageServiceTest
 			hostFileSystemStorage.FolderDelete(outputPath);
 		}
 
-		Assert.IsFalse(renameThumbnailAsync.Key);
+		Assert.IsFalse(renameThumbnailAsync.IsSuccess);
 		Assert.IsTrue(fakeLogger.TrackedExceptions.Exists(p =>
 			p.Item2?.Contains("Fake Exiftool detected") == true));
 	}
@@ -195,7 +195,7 @@ public sealed class ExifToolHostStorageServiceTest
 			}
 		}
 
-		Assert.IsFalse(renameThumbnailAsync.Key);
+		Assert.IsFalse(renameThumbnailAsync.IsSuccess);
 		Assert.IsTrue(fakeLogger.TrackedExceptions.Exists(p =>
 			p.Item2?.Contains("Fake Exiftool detected") == true));
 	}
@@ -218,7 +218,7 @@ public sealed class ExifToolHostStorageServiceTest
 		);
 
 		// Act & Assert
-		await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
+		await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
 		{
 			await service.WriteTagsThumbnailAsync("/test.jpg", "-Software=\"Qdraw 2.0\"");
 		});

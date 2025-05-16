@@ -12,6 +12,7 @@ namespace starskytest.root;
 [TestClass]
 public class ProgramTest
 {
+	private static string? _ffmpegSkipDownloadOnStartup;
 	private static string? _prePort;
 	private static string? _preAspNetUrls;
 	private static string? _diskWatcherSetting;
@@ -36,7 +37,9 @@ public class ProgramTest
 			Environment.GetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup");
 		_enablePackageTelemetry =
 			Environment.GetEnvironmentVariable("app__EnablePackageTelemetry");
-
+		_ffmpegSkipDownloadOnStartup =
+			Environment.GetEnvironmentVariable("app__ffmpegSkipDownloadOnStartup");
+		
 		// see also:
 		// starsky/starskytest/starskyGeoCli/starskyGeoCliTest.cs
 	}
@@ -59,11 +62,12 @@ public class ProgramTest
 		Environment.SetEnvironmentVariable("app__GeoFilesSkipDownloadOnStartup", "true");
 		Environment.SetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup", "true");
 		Environment.SetEnvironmentVariable("app__EnablePackageTelemetry", "false");
+		Environment.SetEnvironmentVariable("app__FfmpegSkipDownloadOnStartup", "false");
 
 		await Program.Main(["--do-not-start"]);
 
 		using HttpClient client = new();
-		await Assert.ThrowsExceptionAsync<HttpRequestException>(async () =>
+		await Assert.ThrowsExactlyAsync<HttpRequestException>(async () =>
 			await client.GetAsync("http://localhost:7514").TimeoutAfter(3000));
 		// and this address does not exist
 	}
@@ -89,7 +93,7 @@ public class ProgramTest
 		var builder = WebApplication.CreateBuilder(Array.Empty<string>());
 		var app = builder.Build();
 
-		await Assert.ThrowsExceptionAsync<TimeoutException>(async () =>
+		await Assert.ThrowsExactlyAsync<TimeoutException>(async () =>
 			await Program.RunAsync(app).TimeoutAfter(1000));
 	}
 
@@ -102,11 +106,11 @@ public class ProgramTest
 		var builder = WebApplication.CreateBuilder(Array.Empty<string>());
 		var app = builder.Build();
 
-		await Assert.ThrowsExceptionAsync<FormatException>(async () =>
+		await Assert.ThrowsExactlyAsync<FormatException>(async () =>
 			await Program.RunAsync(app).WaitAsync(TimeSpan.FromMilliseconds(1000)));
 	}
 
-	[ClassCleanup]
+	[ClassCleanup(ClassCleanupBehavior.EndOfClass)]
 	public static void CleanEnvsAfterwards()
 	{
 		// see also:
@@ -123,5 +127,7 @@ public class ProgramTest
 		Environment.SetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup",
 			_exiftoolSkipDownloadOnStartup);
 		Environment.SetEnvironmentVariable("app__EnablePackageTelemetry", _enablePackageTelemetry);
+		Environment.SetEnvironmentVariable("app__FfmpegSkipDownloadOnStartup",
+			_ffmpegSkipDownloadOnStartup);
 	}
 }

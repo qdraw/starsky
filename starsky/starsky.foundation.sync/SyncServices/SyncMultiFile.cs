@@ -33,7 +33,7 @@ public sealed class SyncMultiFile
 		_appSettings = appSettings;
 		_newUpdateItemWrapper =
 			new NewUpdateItemWrapper(query, subPathStorage, appSettings, cache, logger);
-		_checkForStatusNotOkHelper = new CheckForStatusNotOkHelper(_subPathStorage);
+		_checkForStatusNotOkHelper = new CheckForStatusNotOkHelper(_subPathStorage, logger);
 	}
 
 	/// <summary>
@@ -90,7 +90,8 @@ public sealed class SyncMultiFile
 			FileIndexItem.ExifStatus.DeletedAndSame);
 
 		var statusItems = _checkForStatusNotOkHelper
-			.CheckForStatusNotOk(dbItems.Select(p => p.FilePath).Cast<string>()).ToList();
+			.CheckForStatusNotOk(
+				dbItems.Select(p => p.FilePath).Cast<string>()).ToList();
 		UpdateCheckStatus(dbItems, statusItems);
 
 		AddSidecarExtensionData(dbItems, statusItems);
@@ -101,9 +102,10 @@ public sealed class SyncMultiFile
 				or FileIndexItem.ExifStatus.DeletedAndSame);
 		var isSameUpdatedItemList = await list
 			.ForEachAsync(
-				async dbItem => await new SizeFileHashIsTheSameHelper(_subPathStorage)
+				async dbItem => await new SizeFileHashIsTheSameHelper(_subPathStorage, _logger)
 					.SizeFileHashIsTheSame(dbItems
-							.Where(p => p.FileCollectionName == dbItem.FileCollectionName).ToList(),
+							.Where(p =>
+								p.FileCollectionName == dbItem.FileCollectionName).ToList(),
 						dbItem.FilePath!),
 				_appSettings.MaxDegreesOfParallelism);
 
@@ -117,8 +119,7 @@ public sealed class SyncMultiFile
 		foreach ( var newItem in newItemsList )
 		{
 			// only for new items that needs to be added to the db
-			var newItemIndex = dbItems.FindIndex(
-				p => p.FilePath == newItem.FilePath);
+			var newItemIndex = dbItems.FindIndex(p => p.FilePath == newItem.FilePath);
 			if ( newItemIndex < 0 )
 			{
 				continue;
@@ -131,8 +132,8 @@ public sealed class SyncMultiFile
 
 		if ( addParentFolder )
 		{
-			_logger.LogInformation("Add Parent Folder For: " +
-			                       string.Join(",", dbItems.Select(p => p.FilePath)));
+			_logger.LogDebug("[SyncMultiFile] Add Parent Folder For: " +
+			                 string.Join(",", dbItems.Select(p => p.FilePath)));
 
 			dbItems = await new AddParentList(_subPathStorage, _query).AddParentItems(dbItems);
 		}
@@ -194,8 +195,7 @@ public sealed class SyncMultiFile
 		foreach ( var (isLastEditedSame, isFileHashSame, isSameUpdatedItem) in
 		         isSameUpdatedItemList.Where(p => p.Item1 != true) )
 		{
-			var updateItemIndex = dbItems.FindIndex(
-				p => p.FilePath == isSameUpdatedItem.FilePath);
+			var updateItemIndex = dbItems.FindIndex(p => p.FilePath == isSameUpdatedItem.FilePath);
 
 			if ( isLastEditedSame == false && isFileHashSame == true )
 			{

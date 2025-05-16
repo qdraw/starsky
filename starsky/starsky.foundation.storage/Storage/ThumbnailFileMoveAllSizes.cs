@@ -1,31 +1,40 @@
-using starsky.foundation.platform.Enums;
+using System.Collections.Generic;
+using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
 
-namespace starsky.foundation.storage.Storage
+namespace starsky.foundation.storage.Storage;
+
+public sealed class ThumbnailFileMoveAllSizes(
+	IStorage thumbnailStorage,
+	AppSettings appSettings,
+	IWebLogger logger)
 {
-	public sealed class ThumbnailFileMoveAllSizes
+	/// <summary>
+	///     Rename all thumbnails
+	/// </summary>
+	/// <param name="oldFileHash">from</param>
+	/// <param name="newHashCode">to</param>
+	/// <returns>Success, size</returns>
+	public List<(bool, ThumbnailSize)> FileMove(string oldFileHash, string newHashCode,
+		string? reference)
 	{
-		private readonly IStorage _thumbnailStorage;
-
-		public ThumbnailFileMoveAllSizes(IStorage thumbnailStorage)
+		var status = new List<(bool, ThumbnailSize)>();
+		foreach ( var size in ThumbnailNameHelper.AllThumbnailSizes )
 		{
-			_thumbnailStorage = thumbnailStorage;
+			var oldName =
+				ThumbnailNameHelper.Combine(oldFileHash, size, appSettings.ThumbnailImageFormat);
+			var newName =
+				ThumbnailNameHelper.Combine(newHashCode, size, appSettings.ThumbnailImageFormat);
+
+			var isSuccess = thumbnailStorage.FileMove(oldName, newName);
+
+			status.Add(( isSuccess, size ));
 		}
 
-		public void FileMove(string oldFileHash, string newHashCode)
-		{
-			_thumbnailStorage.FileMove(
-				ThumbnailNameHelper.Combine(oldFileHash, ThumbnailSize.Large),
-				ThumbnailNameHelper.Combine(newHashCode, ThumbnailSize.Large));
-			_thumbnailStorage.FileMove(
-				ThumbnailNameHelper.Combine(oldFileHash, ThumbnailSize.Small),
-				ThumbnailNameHelper.Combine(newHashCode, ThumbnailSize.Small));
-			_thumbnailStorage.FileMove(
-				ThumbnailNameHelper.Combine(oldFileHash, ThumbnailSize.ExtraLarge),
-				ThumbnailNameHelper.Combine(newHashCode, ThumbnailSize.ExtraLarge));
-			_thumbnailStorage.FileMove(
-				ThumbnailNameHelper.Combine(oldFileHash, ThumbnailSize.TinyMeta),
-				ThumbnailNameHelper.Combine(newHashCode, ThumbnailSize.TinyMeta));
-		}
+		logger.LogInformation($"[FileMove] {reference} \nO: {oldFileHash} - N: {newHashCode} - " +
+		                      $"{string.Join(", ", status)}");
+		return status;
 	}
 }

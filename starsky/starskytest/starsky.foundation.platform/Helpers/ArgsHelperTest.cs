@@ -132,7 +132,7 @@ public sealed class ArgsHelperTest
 		var args = new List<string> { "-p", "/" }.ToArray();
 
 		// Act & Assert
-		Assert.ThrowsException<FieldAccessException>(() =>
+		Assert.ThrowsExactly<FieldAccessException>(() =>
 			new ArgsHelper(null!).GetPathFormArgs(args));
 	}
 
@@ -195,7 +195,7 @@ public sealed class ArgsHelperTest
 		var args = new List<string> { "-p", "/" }.ToArray();
 
 		// Act & Assert
-		Assert.ThrowsException<FieldAccessException>(() =>
+		Assert.ThrowsExactly<FieldAccessException>(() =>
 			new ArgsHelper(null!).GetPathListFormArgs(args));
 	}
 
@@ -378,7 +378,7 @@ public sealed class ArgsHelperTest
 	public void ArgsHelper_GetRelativeValue_Null_Test()
 	{
 		var args = new List<string> { "--subpathrelative", "1" }.ToArray();
-		Assert.ThrowsException<FieldAccessException>(() =>
+		Assert.ThrowsExactly<FieldAccessException>(() =>
 			new ArgsHelper(null!).GetRelativeValue(args));
 	}
 
@@ -405,7 +405,7 @@ public sealed class ArgsHelperTest
 		ArgsHelper? argsHelper = null;
 
 		// Act & Assert
-		Assert.ThrowsException<NullReferenceException>(() =>
+		Assert.ThrowsExactly<NullReferenceException>(() =>
 		{
 			argsHelper!.GetRelativeValue(new List<string>());
 		});
@@ -583,14 +583,14 @@ public sealed class ArgsHelperTest
 	[TestMethod]
 	public void ArgsHelper_NeedHelpShowDialog_Null_Test()
 	{
-		Assert.ThrowsException<FieldAccessException>(() =>
+		Assert.ThrowsExactly<FieldAccessException>(() =>
 			new ArgsHelper(null!).NeedHelpShowDialog());
 	}
 
 	[TestMethod]
 	public void ArgsHelper_SetEnvironmentToAppSettings_Null_Test()
 	{
-		Assert.ThrowsException<FieldAccessException>(() =>
+		Assert.ThrowsExactly<FieldAccessException>(() =>
 			new ArgsHelper(null!).SetEnvironmentToAppSettings());
 	}
 
@@ -598,7 +598,6 @@ public sealed class ArgsHelperTest
 	public void ArgsHelper_SetEnvironmentToAppSettingsTest()
 	{
 		var appSettings = new AppSettings();
-
 
 		var shortNameList = new ArgsHelper(appSettings).ShortNameList.ToArray();
 		var envNameList = new ArgsHelper(appSettings).EnvNameList.ToArray();
@@ -721,5 +720,27 @@ public sealed class ArgsHelperTest
 		var args = new List<string> { "--profile" }.ToArray();
 		var value = ArgsHelper.GetProfile(args);
 		Assert.AreEqual(string.Empty, value);
+	}
+
+	[DataTestMethod]
+	[DataRow("--runtime osx-arm64,osx-x64", "osx-arm64,osx-x64")]
+	[DataRow("--runtime win-x64", "win-x64")]
+	[DataRow("--runtime win-x64-linux-x64", "win-x64-linux-x64")]
+	[DataRow("--other value", "")]
+	public void GetRuntimes_ShouldReturnExpectedRuntimes(string args, string expected)
+	{
+		// Act
+		var result = ArgsHelper.GetRuntimes([.. args.Split(' ')]);
+
+		// Assert
+		Assert.AreEqual(expected, string.Join(",", result));
+	}
+
+	[TestMethod]
+	public void GetRuntimes_QuotedInFirstArgResults()
+	{
+		const string expected = "osx-arm64,osx-x64";
+		var result = ArgsHelper.GetRuntimes(["--runtime osx-arm64,osx-x64"]);
+		Assert.AreEqual(expected, string.Join(",", result));
 	}
 }

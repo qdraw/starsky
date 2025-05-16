@@ -21,7 +21,7 @@ public class ServiceCollectionExtensionsTest
 	public void Add_LifeTimeNull()
 	{
 		var serviceCollection = new ServiceCollection() as IServiceCollection;
-		Assert.ThrowsException<ArgumentNullException>(() =>
+		Assert.ThrowsExactly<ArgumentNullException>(() =>
 			serviceCollection.Add(InjectionLifetime.Scoped, null!));
 	}
 
@@ -29,7 +29,7 @@ public class ServiceCollectionExtensionsTest
 	public void Add_LifeTimeNull2()
 	{
 		var serviceCollection = new ServiceCollection() as IServiceCollection;
-		Assert.ThrowsException<ArgumentNullException>(() =>
+		Assert.ThrowsExactly<ArgumentNullException>(() =>
 			serviceCollection.Add(InjectionLifetime.Scoped, null!, null!));
 	}
 
@@ -91,7 +91,7 @@ public class ServiceCollectionExtensionsTest
 
 		IServiceCollection serviceCollection = new ServiceCollection();
 
-		Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+		Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
 			serviceCollection.Add(overwriteInjectionLifetime.Type, typeof(TestInjectionClass)));
 	}
 
@@ -157,7 +157,7 @@ public class ServiceCollectionExtensionsTest
 
 		IServiceCollection serviceCollection = new ServiceCollection();
 
-		Assert.ThrowsException<ArgumentOutOfRangeException>(() => serviceCollection.Add(
+		Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => serviceCollection.Add(
 			typeof(ITestInjectionClass),
 			typeof(TestInjectionClass), overwriteInjectionLifetime.Type));
 	}
@@ -207,16 +207,16 @@ public class ServiceCollectionExtensionsTest
 	{
 		var exception = new NullReferenceException();
 
-		Assert.ThrowsException<InvalidOperationException>(() =>
+		Assert.ThrowsExactly<InvalidOperationException>(() =>
 			ServiceCollectionExtensions.GetExportedTypes(new AssemblyTestClass(exception)));
 	}
 
-	private class TestInjectionClass : ITestInjectionClass
+	private sealed class TestInjectionClass : ITestInjectionClass
 	{
 		public bool Enabled { get; set; } = true;
 	}
 
-	private class OverwriteInjectionLifetime
+	private sealed class OverwriteInjectionLifetime
 	{
 		[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
 		public InjectionLifetime Type { get; set; }

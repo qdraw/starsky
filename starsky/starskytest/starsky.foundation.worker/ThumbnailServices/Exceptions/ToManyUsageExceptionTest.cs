@@ -55,7 +55,9 @@ public sealed class ToManyUsageExceptionTest
 				info, new StreamingContext(StreamingContextStates.All)
 			});
 
+#pragma warning disable MSTEST0039
 		Assert.ThrowsException<ToManyUsageException>(() => throw instance);
+#pragma warning restore MSTEST0039
 #pragma warning restore SYSLIB0050
 	}
 }

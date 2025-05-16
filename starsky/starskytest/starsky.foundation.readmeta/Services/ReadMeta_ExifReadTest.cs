@@ -18,6 +18,7 @@ using starskytest.FakeCreateAn.CreateAnImageA330Raw;
 using starskytest.FakeCreateAn.CreateAnImageA6600Raw;
 using starskytest.FakeCreateAn.CreateAnImageLongDescriptionTitle;
 using starskytest.FakeCreateAn.CreateAnImageWebP;
+using starskytest.FakeCreateAn.CreateAnQuickTimeMp4;
 using starskytest.FakeMocks;
 using XmpCore;
 using XmpCore.Impl;
@@ -460,7 +461,7 @@ public sealed class ExifReadTest
 		Assert.AreEqual("Sony", item.Make);
 		Assert.AreEqual("Sony|ILCE-6600|E 18-200mm F3.5-6.3 OSS LE", item.MakeModel);
 		Assert.AreEqual("ILCE-6600", item.Model);
-		Assert.AreEqual(FileIndexItem.Rotation.Horizontal, item.Orientation);
+		Assert.AreEqual(ImageRotation.Rotation.Horizontal, item.Orientation);
 		Assert.AreEqual("1/60", item.ShutterSpeed);
 		Assert.AreEqual(string.Empty, item.SidecarExtensions);
 		Assert.AreEqual("Qdraw 1.0", item.Software);
@@ -897,7 +898,7 @@ public sealed class ExifReadTest
 		// "Top, left side (Horizontal / normal)", -- 1
 
 		var rotation = ReadMetaExif.GetOrientationFromExifItem(new List<Directory> { dir3 });
-		Assert.AreEqual(FileIndexItem.Rotation.Horizontal, rotation);
+		Assert.AreEqual(ImageRotation.Rotation.Horizontal, rotation);
 	}
 
 	[TestMethod]
@@ -909,7 +910,7 @@ public sealed class ExifReadTest
 		var rotation = ReadMetaExif.GetOrientationFromExifItem(new List<Directory> { dir3 });
 		// 2 = unsuppored yet
 		// "Top, right side (Mirror horizontal)",
-		Assert.AreEqual(FileIndexItem.Rotation.Horizontal, rotation);
+		Assert.AreEqual(ImageRotation.Rotation.Horizontal, rotation);
 	}
 
 	[TestMethod]
@@ -919,7 +920,7 @@ public sealed class ExifReadTest
 		dir3.Set(ExifDirectoryBase.TagOrientation, 3);
 		// "Bottom, right side (Rotate 180)"
 		var rotation = ReadMetaExif.GetOrientationFromExifItem(new List<Directory> { dir3 });
-		Assert.AreEqual(FileIndexItem.Rotation.Rotate180, rotation);
+		Assert.AreEqual(ImageRotation.Rotation.Rotate180, rotation);
 	}
 
 	[TestMethod]
@@ -930,7 +931,7 @@ public sealed class ExifReadTest
 
 		var rotation = ReadMetaExif.GetOrientationFromExifItem(new List<Directory> { dir3 });
 		// Bottom, left side (Mirror vertical)
-		Assert.AreEqual(FileIndexItem.Rotation.Horizontal, rotation);
+		Assert.AreEqual(ImageRotation.Rotation.Horizontal, rotation);
 	}
 
 	[TestMethod]
@@ -941,7 +942,7 @@ public sealed class ExifReadTest
 		// "Left side, top (Mirror horizontal and rotate 270 CW)",
 
 		var rotation = ReadMetaExif.GetOrientationFromExifItem(new List<Directory> { dir3 });
-		Assert.AreEqual(FileIndexItem.Rotation.Horizontal, rotation);
+		Assert.AreEqual(ImageRotation.Rotation.Horizontal, rotation);
 	}
 
 	[TestMethod]
@@ -952,7 +953,7 @@ public sealed class ExifReadTest
 		// "Right side, top (Rotate 90 CW)", --6
 
 		var rotation = ReadMetaExif.GetOrientationFromExifItem(new List<Directory> { dir3 });
-		Assert.AreEqual(FileIndexItem.Rotation.Rotate90Cw, rotation);
+		Assert.AreEqual(ImageRotation.Rotation.Rotate90Cw, rotation);
 	}
 
 	[TestMethod]
@@ -963,7 +964,7 @@ public sealed class ExifReadTest
 		// "Right side, bottom (Mirror horizontal and rotate 90 CW)", --7
 
 		var rotation = ReadMetaExif.GetOrientationFromExifItem(new List<Directory> { dir3 });
-		Assert.AreEqual(FileIndexItem.Rotation.Horizontal, rotation);
+		Assert.AreEqual(ImageRotation.Rotation.Horizontal, rotation);
 	}
 
 	[TestMethod]
@@ -974,7 +975,7 @@ public sealed class ExifReadTest
 		// "Left side, bottom (Rotate 270 CW)") --8
 
 		var rotation = ReadMetaExif.GetOrientationFromExifItem(new List<Directory> { dir3 });
-		Assert.AreEqual(FileIndexItem.Rotation.Rotate270Cw, rotation);
+		Assert.AreEqual(ImageRotation.Rotation.Rotate270Cw, rotation);
 	}
 
 	[TestMethod]

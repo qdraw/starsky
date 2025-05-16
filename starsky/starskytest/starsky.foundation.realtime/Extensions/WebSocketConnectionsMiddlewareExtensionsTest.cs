@@ -53,7 +53,7 @@ public sealed class WebSocketConnectionsMiddlewareExtensionsTest
 		IApplicationBuilder app = null!;
 
 		// Act & Assert
-		var exception = Assert.ThrowsException<ArgumentNullException>(() =>
+		var exception = Assert.ThrowsExactly<ArgumentNullException>(() =>
 		{
 			app.MapWebSocketConnections("/test1", new WebSocketConnectionsOptions());
 		});

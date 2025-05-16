@@ -48,7 +48,7 @@ public class QueryRemoveItemAsyncTest
 		Assert.AreEqual(path, _query.GetObjectByFilePath(path)?.FilePath);
 
 		await _query.RemoveItemAsync(result);
-		Assert.AreEqual(null, _query.GetObjectByFilePath(path));
+		Assert.IsNull(_query.GetObjectByFilePath(path));
 	}
 		
 	[TestMethod]
@@ -59,8 +59,8 @@ public class QueryRemoveItemAsyncTest
 
 		await _query.RemoveItemAsync(new List<FileIndexItem>{result1, result2});
 
-		Assert.AreEqual(null, _query.GetObjectByFilePath("/QueryRemoveItemAsyncTest_AddOneItem_List_1"));
-		Assert.AreEqual(null, _query.GetObjectByFilePath("/QueryRemoveItemAsyncTest_AddOneItem_List_2"));
+		Assert.IsNull(_query.GetObjectByFilePath("/QueryRemoveItemAsyncTest_AddOneItem_List_1"));
+		Assert.IsNull(_query.GetObjectByFilePath("/QueryRemoveItemAsyncTest_AddOneItem_List_2"));
 	}
 	
 	[TestMethod]
@@ -88,9 +88,9 @@ public class QueryRemoveItemAsyncTest
 		await service.RemoveItemAsync(addedItems);
 			
 		var context = new InjectServiceScope(serviceScopeFactory).Context();
-		var queryFromDb = context.FileIndex.Where(p => 
+		var queryFromDb = await context.FileIndex.Where(p => 
 			p.FileHash == addedItems[0].FilePath || p.FileHash == addedItems[1].FilePath
-			).ToList();
+			).ToListAsync();
 
 		Assert.AreEqual(0, queryFromDb.Count);
 	}

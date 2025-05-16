@@ -111,7 +111,7 @@ const useSearchList = (
   pageNumber: number | undefined,
   resetPageTypeBeforeLoading: boolean
 ): ISearchList | null => {
-  if (!pageNumber) pageNumber = 0;
+  pageNumber ??= 0;
 
   const [archive, setArchive] = useState(newIArchive());
   const [pageType, setPageType] = useState(PageType.Loading);

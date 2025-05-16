@@ -86,7 +86,7 @@ public sealed class UserManagerTest
 			_memoryCache);
 
 		// not having SignUpAsync registered
-		await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+		await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
 			await userManager.SignIn(new DefaultHttpContext(),
 				new User { Id = 1 }));
 	}
@@ -332,7 +332,6 @@ public sealed class UserManagerTest
 			p.Name == "reset@google.com");
 
 		Assert.IsNotNull(userObject);
-		Assert.IsNotNull(userObject.AccessFailedCount);
 		Assert.AreEqual(0, userObject.AccessFailedCount);
 		Assert.AreEqual(DateTime.MinValue, userObject.LockoutEnd);
 		Assert.IsFalse(userObject.LockoutEnabled);
@@ -588,7 +587,7 @@ public sealed class UserManagerTest
 
 		Assert.AreEqual(0, users.Count);
 		Assert.IsTrue(logger.TrackedExceptions.LastOrDefault().Item2
-			?.Contains("RetryLimitExceededException") == true);
+			?.Contains("RetryLimitExceededException"));
 	}
 
 	[TestMethod]
@@ -1090,7 +1089,7 @@ public sealed class UserManagerTest
 		Assert.AreEqual("Administrator", roleAddToUser);
 	}
 
-	private class AppDbContextRetryLimitExceededException(DbContextOptions options)
+	private sealed class AppDbContextRetryLimitExceededException(DbContextOptions options)
 		: ApplicationDbContext(options)
 	{
 		public override DbSet<User> Users => throw new RetryLimitExceededException("general");

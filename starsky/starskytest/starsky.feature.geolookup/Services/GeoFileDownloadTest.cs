@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.geo.GeoDownload;
+using starsky.feature.geolookup.Services;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starskytest.FakeCreateAn;
@@ -136,7 +136,7 @@ public class GeoFileDownloadTests
 		await geoFileDownload.DownloadAsync();
 
 		// Assert
-		Assert.IsTrue(httpClientHelper.UrlsCalled.Count == 0);
+		Assert.AreEqual(0, httpClientHelper.UrlsCalled.Count);
 
 		storage.FolderDelete(_dependenciesFolder3);
 	}

@@ -40,10 +40,7 @@ public static class OpenTelemetryExtension
 				serviceInstanceId: Environment.MachineName
 			).AddAttributes(new Dictionary<string, object>
 			{
-				{
-					"deployment.environment",
-					Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "production"
-				},
+				{ "deployment.environment", appSettings.OpenTelemetry.GetEnvironmentName() },
 				{ "service.name", appSettings.OpenTelemetry.GetServiceName() },
 				{ "service.namespace", appSettings.OpenTelemetry.GetServiceName() },
 				{ "service.instance.id", appSettings.OpenTelemetry.GetServiceName() }

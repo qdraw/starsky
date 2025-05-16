@@ -8,7 +8,7 @@ namespace starsky.foundation.thumbnailmeta.Interfaces
 	{
 		Task<bool> WriteAndCropFile(string fileHash,
 			OffsetModel offsetData, int sourceWidth,
-			int sourceHeight, FileIndexItem.Rotation rotation,
+			int sourceHeight, ImageRotation.Rotation rotation,
 			string? reference = null);
 	}
 }

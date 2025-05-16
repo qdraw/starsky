@@ -6,12 +6,12 @@ using starsky.feature.webftppublish.FtpAbstractions.Services;
 namespace starskytest.starsky.feature.webftppublish.FtpAbstractionsTest;
 
 [TestClass]
-public sealed class FtpWebRequestFactoryTest
+public class FtpWebRequestFactoryTest
 {
 	[TestMethod]
 	public void FtpWebRequestFactoryTestCreate_UriFormatException()
 	{
-		Assert.ThrowsException<UriFormatException>(() => new FtpWebRequestFactory().Create("t"));
+		Assert.ThrowsExactly<UriFormatException>(() => new FtpWebRequestFactory().Create("t"));
 		// Invalid URI: The format of the URI could not be determined.
 	}
 
@@ -19,8 +19,7 @@ public sealed class FtpWebRequestFactoryTest
 	public void FtpWebRequestFactoryTestCreate_WebException()
 	{
 		var factory = new FtpWebRequestFactory();
-
 		var test = factory.Create("ftp://test:test@404.undefined");
-		Assert.ThrowsException<WebException>(() => test.GetResponse());
+		Assert.ThrowsExactly<WebException>(() => test.GetResponse());
 	}
 }

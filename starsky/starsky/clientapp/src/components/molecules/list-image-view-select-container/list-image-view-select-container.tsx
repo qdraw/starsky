@@ -8,20 +8,21 @@ import Preloader from "../../atoms/preloader/preloader";
 
 interface IListImageBox {
   item: IFileIndexItem;
+  className?: string;
+  children?: React.ReactNode;
+
   /**
    * When selecting and pressing shift
    * @param filePath the entire path (subPath style)
    */
   onSelectionCallback?(filePath: string): void;
-  className?: string;
-  children?: React.ReactNode;
 }
 
 const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> = memo(
   ({ item, className: propsClassName, onSelectionCallback, children }) => {
-    if (item.isDirectory === undefined) item.isDirectory = false;
+    item.isDirectory ??= false;
 
-    const className = !propsClassName ? "list-image-box" : propsClassName;
+    const className = propsClassName ?? "list-image-box";
     const history = useLocation();
 
     // Check if select exist or Length 0 or more
@@ -97,7 +98,7 @@ const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> = mem
       >
         {/* for slow connections show preloader icon */}
         {preloaderState ? preloader : null}
-        {/* the a href to the child page */}
+        {/* the <a href to the child page */}
         <Link
           onClick={preloaderStateOnClick}
           title={item.fileName}

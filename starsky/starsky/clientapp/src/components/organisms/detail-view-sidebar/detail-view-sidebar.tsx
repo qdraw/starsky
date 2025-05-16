@@ -119,7 +119,11 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       const name = event.currentTarget.dataset["name"];
 
       if (!name) return;
-      if (!value) value = AsciiNull();
+
+      // only when the value is null; add a null character
+      // this is needed for the server to update the field
+      value ??= AsciiNull();
+
       new UpdateChange(fileIndexItem, setFileIndexItem, dispatch, history, state).Update([
         [name, value]
       ]);

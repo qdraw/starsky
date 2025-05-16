@@ -48,11 +48,9 @@ public sealed class HealthCheckForUpdatesControllerTest
 		var fakeService = new FakeICheckForUpdates(
 			new KeyValuePair<UpdateStatus, string?>(input.Value, string.Empty));
 
-		Assert.IsNotNull(input.Value);
-
 		var sut = new HealthCheckForUpdatesController(fakeService,
 			new FakeISpecificVersionReleaseInfo());
-		await Assert.ThrowsExceptionAsync<NotSupportedException>(async () =>
+		await Assert.ThrowsExactlyAsync<NotSupportedException>(async () =>
 			await sut.CheckForUpdates());
 	}
 
@@ -208,7 +206,7 @@ public sealed class HealthCheckForUpdatesControllerTest
 		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 	}
 
-	private class TestOverWriteEnumModel
+	private sealed class TestOverWriteEnumModel
 	{
 		public UpdateStatus Value { get; set; }
 	}

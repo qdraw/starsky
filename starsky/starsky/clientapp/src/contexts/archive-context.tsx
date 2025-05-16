@@ -394,14 +394,14 @@ function CollectionsSortOnImageFormat(
  * @param colorclass - colorclass that has be added
  */
 function UpdateColorClassUsageActiveList(state: IArchiveProps, colorclass: number): void {
-  if (state.colorClassUsage === undefined) state.colorClassUsage = [];
+  state.colorClassUsage ??= [];
+  state.colorClassActiveList ??= [];
 
   // add to list of multiple colorclass items that can be selected
   if (state.colorClassUsage.indexOf(colorclass) === -1) {
     state.colorClassUsage.push(colorclass);
   }
 
-  if (state.colorClassActiveList === undefined) state.colorClassActiveList = [];
   // when the user selects by colorclass
   if (state.colorClassActiveList.length >= 1) return;
 

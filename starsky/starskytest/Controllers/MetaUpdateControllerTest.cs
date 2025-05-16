@@ -110,7 +110,8 @@ public sealed class MetaUpdateControllerTest
 	private async Task InsertSearchData(bool delete = false)
 	{
 		var fileHashCode =
-			( await new FileHash(_iStorage).GetHashCodeAsync(_createAnImage.DbPath) ).Key;
+			( await new FileHash(_iStorage, new FakeIWebLogger()).GetHashCodeAsync(_createAnImage
+				.DbPath) ).Key;
 
 		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync(fileHashCode)) )
 		{
@@ -130,7 +131,7 @@ public sealed class MetaUpdateControllerTest
 			});
 		}
 
-		_query.GetObjectByFilePath(_createAnImage.DbPath);
+		await _query.GetObjectByFilePathAsync(_createAnImage.DbPath);
 	}
 
 	private IServiceScopeFactory NewScopeFactory()
@@ -165,7 +166,7 @@ public sealed class MetaUpdateControllerTest
 		var metaUpdateService = new MetaUpdateService(_query, _exifTool,
 			selectorStorage, new FakeMetaPreflight(),
 			new FakeIWebLogger(), new FakeReadMetaSubPathStorage(), new FakeIThumbnailService(),
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new AppSettings());
 
 		var controller = new MetaUpdateController(metaPreflight, metaUpdateService,
 			_bgTaskQueue,
@@ -188,7 +189,7 @@ public sealed class MetaUpdateControllerTest
 			throw new NullReferenceException(nameof(fileModel));
 		}
 
-		Assert.AreNotEqual(null, fileModel.FirstOrDefault()?.Tags);
+		Assert.IsNotNull(fileModel.FirstOrDefault()?.Tags);
 	}
 
 	[TestMethod]
@@ -209,7 +210,7 @@ public sealed class MetaUpdateControllerTest
 		var metaUpdateService = new MetaUpdateService(_query, _exifTool,
 			selectorStorage, new FakeMetaPreflight(),
 			new FakeIWebLogger(), new FakeReadMetaSubPathStorage(), new FakeIThumbnailService(),
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new AppSettings());
 
 		var controller = new MetaUpdateController(metaPreflight, metaUpdateService,
 			_bgTaskQueue,
@@ -262,7 +263,7 @@ public sealed class MetaUpdateControllerTest
 		var metaUpdateService = new MetaUpdateService(_query, _exifTool,
 			selectorStorage, new FakeMetaPreflight(),
 			new FakeIWebLogger(), new FakeReadMetaSubPathStorage(),
-			new FakeIThumbnailService(), new FakeIThumbnailQuery());
+			new FakeIThumbnailService(), new FakeIThumbnailQuery(), new AppSettings());
 
 		var controller = new MetaUpdateController(metaPreflight, metaUpdateService,
 			new FakeIUpdateBackgroundTaskQueue(),
@@ -305,7 +306,7 @@ public sealed class MetaUpdateControllerTest
 		var metaUpdateService = new MetaUpdateService(_query, _exifTool,
 			selectorStorage, new FakeMetaPreflight(),
 			new FakeIWebLogger(), new FakeReadMetaSubPathStorage(),
-			new FakeIThumbnailService(), new FakeIThumbnailQuery());
+			new FakeIThumbnailService(), new FakeIThumbnailQuery(), new AppSettings());
 
 		var controller = new MetaUpdateController(metaPreflight, metaUpdateService,
 			new FakeIUpdateBackgroundTaskQueue(),
@@ -330,7 +331,7 @@ public sealed class MetaUpdateControllerTest
 
 		var result = await controller.UpdateAsync(new FileIndexItem(), string.Empty, true) as
 			BadRequestObjectResult;
-		
+
 		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
 	}
 }

@@ -26,7 +26,7 @@ public class EnumListConverterTests
 		var options = DefaultJsonSerializer.CamelCase;
 
 		// Act & Assert
-		var ex = Assert.ThrowsException<JsonException>(() =>
+		var ex = Assert.ThrowsExactly<JsonException>(() =>
 		{
 			JsonSerializer.Deserialize<ValueTypeContainer>(json, options);
 		});
@@ -47,7 +47,6 @@ public class EnumListConverterTests
 
 		// Assert
 		Assert.IsNotNull(container);
-		Assert.IsNotNull(container.ValueTypes);
 		Assert.AreEqual(3, container.ValueTypes.Count);
 		Assert.AreEqual(ValueType.Value1, container.ValueTypes[0]);
 		Assert.AreEqual(ValueType.Value2, container.ValueTypes[1]);
@@ -79,7 +78,7 @@ public class EnumListConverterTests
 		var options = DefaultJsonSerializer.CamelCase;
 
 		// Act & Assert
-		var ex = Assert.ThrowsException<JsonException>(() =>
+		var ex = Assert.ThrowsExactly<JsonException>(() =>
 		{
 			JsonSerializer.Deserialize<ValueTypeContainer>(json, options);
 		});
@@ -97,7 +96,7 @@ public class EnumListConverterTests
 		var options = DefaultJsonSerializer.CamelCase;
 
 		// Act & Assert
-		var ex = Assert.ThrowsException<JsonException>(() =>
+		var ex = Assert.ThrowsExactly<JsonException>(() =>
 		{
 			JsonSerializer.Deserialize<ValueTypeContainer>(json, options);
 		});
@@ -116,7 +115,7 @@ public class EnumListConverterTests
 			new EnumListConverter<ValueType>(); // Replace YourEnum with the actual enum type
 
 		// Act & Assert
-		Assert.ThrowsException<JsonException>(() =>
+		Assert.ThrowsExactly<JsonException>(() =>
 		{
 			var reader = new Utf8JsonReader(Array.Empty<byte>());
 			converter.Read(ref reader, typeof(List<ValueType>), new JsonSerializerOptions());
@@ -130,7 +129,7 @@ public class EnumListConverterTests
 		var converter = new EnumListConverter<ValueType>();
 
 		// Act & Assert
-		Assert.ThrowsException<JsonException>(() =>
+		Assert.ThrowsExactly<JsonException>(() =>
 		{
 			var reader = new Utf8JsonReader(new[] { ( byte ) '[', ( byte ) '1', ( byte ) ']' });
 			converter.Read(ref reader, typeof(List<ValueType>), new JsonSerializerOptions());
@@ -165,7 +164,7 @@ public class EnumListConverterTests
 		const string json = "[1]";
 
 		// Act & Assert
-		Assert.ThrowsException<JsonException>(() =>
+		Assert.ThrowsExactly<JsonException>(() =>
 		{
 			var reader = new Utf8JsonReader(Encoding.UTF8.GetBytes(json));
 			reader.Read(); // Read the start of the array

@@ -73,7 +73,7 @@ public sealed class FileStreamingHelperTest
 		var httpContext = new DefaultHttpContext(); // or mock a `HttpContext`
 		httpContext.Request.Headers["token"] = "fake_token_here"; //Set header
 
-		await Assert.ThrowsExceptionAsync<FileLoadException>(async () =>
+		await Assert.ThrowsExactlyAsync<FileLoadException>(async () =>
 			await httpContext.Request.StreamFile(_appSettings,
 				new FakeSelectorStorage(new FakeIStorage())));
 	}
@@ -85,14 +85,14 @@ public sealed class FileStreamingHelperTest
 		httpContext.Request.Headers["token"] = "fake_token_here"; //Set header
 		httpContext.Request.ContentType = "multipart/form-data";
 
-		await Assert.ThrowsExceptionAsync<InvalidDataException>(async () =>
+		await Assert.ThrowsExactlyAsync<InvalidDataException>(async () =>
 			await httpContext.Request.StreamFile(_appSettings,
 				new FakeSelectorStorage(new FakeIStorage()))
 		);
 	}
 
 	[TestMethod]
-	public async Task FileStreamingHelperTest_FileStreamingHelper_StreamFile_imagejpeg()
+	public async Task FileStreamingHelperTest_FileStreamingHelper_StreamFile_imageJpeg()
 	{
 		var createAnImage = new CreateAnImage();
 
@@ -104,7 +104,7 @@ public sealed class FileStreamingHelperTest
 		var formValueProvider = await FileStreamingHelper.StreamFile("image/jpeg",
 			requestBody, _appSettings, streamSelector);
 
-		Assert.AreNotEqual(null, formValueProvider.ToString());
+		Assert.IsNotNull(formValueProvider.ToString());
 		await requestBody.DisposeAsync();
 
 		Assert.IsNotNull(formValueProvider.FirstOrDefault());
@@ -112,6 +112,8 @@ public sealed class FileStreamingHelperTest
 		// Clean
 		streamSelector.Get(SelectorStorage.StorageServices.HostFilesystem)
 			.FileDelete(formValueProvider.FirstOrDefault()!);
+
+		CleanParentFolder(formValueProvider.FirstOrDefault());
 	}
 
 	[TestMethod]
@@ -160,7 +162,7 @@ public sealed class FileStreamingHelperTest
 	[TestMethod]
 	public async Task FileStreamingHelper_MultipartRequestHelper()
 	{
-		var contentType = $"multipart/form-data; boundary=\"{Boundary}\"";
+		const string contentType = $"multipart/form-data; boundary=\"{Boundary}\"";
 
 		// string contentType, Stream requestBody, AppSettings appSettings, 
 		// ISelectorStorage selectorStorage, string headerFileName = null
@@ -172,8 +174,24 @@ public sealed class FileStreamingHelperTest
 
 		await FileStreamingHelper.StreamFile(contentType, stream, _appSettings, streamSelector);
 
-		var tempPath = storage.GetAllFilesInDirectoryRecursive(_appSettings.TempFolder)
-			.FirstOrDefault();
-		Assert.IsTrue(tempPath?.EndsWith("a.txt"));
+		var tempPath = storage.GetAllFilesInDirectoryRecursive(_appSettings.TempFolder).ToList()[0];
+
+		Assert.IsTrue(tempPath.EndsWith("a.txt"));
+
+		CleanParentFolder(tempPath);
+	}
+
+	private static void CleanParentFolder(string? tempPath)
+	{
+		if ( tempPath == null )
+		{
+			return;
+		}
+
+		var parentFolder = Directory.GetParent(tempPath);
+		if ( parentFolder?.Exists == true )
+		{
+			parentFolder.Delete();
+		}
 	}
 }

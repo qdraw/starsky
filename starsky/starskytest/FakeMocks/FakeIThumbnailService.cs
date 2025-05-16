@@ -1,14 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using starsky.foundation.platform.Enums;
+using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.thumbnailgeneration.Interfaces;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
 using starsky.foundation.thumbnailgeneration.Models;
 
 namespace starskytest.FakeMocks;
@@ -30,7 +33,33 @@ public class FakeIThumbnailService : IThumbnailService
 
 	public List<Tuple<string, int?, int?, int?>> InputsRotate { get; set; } = new();
 
-	public Task<List<GenerationResultModel>> CreateThumbnailAsync(string subPath)
+	public async Task<List<GenerationResultModel>> GenerateThumbnail(string fileOrFolderPath,
+		ThumbnailGenerationType type = ThumbnailGenerationType.All)
+	{
+		return await CreateThumbnailAsync(fileOrFolderPath);
+	}
+
+	public async Task<List<GenerationResultModel>> GenerateThumbnail(string subPath,
+		string fileHash, ThumbnailGenerationType type = ThumbnailGenerationType.All)
+	{
+		return ( await CreateThumbAsync(subPath, fileHash) ).ToList();
+	}
+
+	public Task<(Stream?, GenerationResultModel)> GenerateThumbnail(string subPath, string fileHash,
+		ThumbnailImageFormat imageFormat,
+		ThumbnailSize size)
+	{
+		throw new NotImplementedException();
+	}
+
+	public Task<bool> RotateThumbnail(string fileHash, int orientation, int width = 1000,
+		int height = 0)
+	{
+		InputsRotate.Add(new Tuple<string, int?, int?, int?>(fileHash, orientation, width, height));
+		return Task.FromResult(true);
+	}
+
+	private Task<List<GenerationResultModel>> CreateThumbnailAsync(string subPath)
 	{
 		if ( _exception != null )
 		{
@@ -66,8 +95,8 @@ public class FakeIThumbnailService : IThumbnailService
 		return Task.FromResult(resultModel);
 	}
 
-	public Task<IEnumerable<GenerationResultModel>> CreateThumbAsync(string? subPath,
-		string fileHash, bool skipExtraLarge = false)
+	private Task<IEnumerable<GenerationResultModel>> CreateThumbAsync(string? subPath,
+		string fileHash)
 	{
 		ArgumentNullException.ThrowIfNull(subPath);
 
@@ -90,12 +119,5 @@ public class FakeIThumbnailService : IThumbnailService
 				FileHash = fileHash
 			}
 		}.AsEnumerable());
-	}
-
-	public Task<bool> RotateThumbnail(string fileHash, int orientation, int width = 1000,
-		int height = 0)
-	{
-		InputsRotate.Add(new Tuple<string, int?, int?, int?>(fileHash, orientation, width, height));
-		return Task.FromResult(true);
 	}
 }

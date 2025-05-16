@@ -32,7 +32,7 @@ public sealed class OffsetDataMetaExifThumbnail : IOffsetDataMetaExifThumbnail
 		_logger = logger;
 	}
 
-	public (ExifThumbnailDirectory?, int, int, FileIndexItem.Rotation)
+	public (ExifThumbnailDirectory?, int, int, ImageRotation.Rotation)
 		GetExifMetaDirectories(string subPath)
 	{
 		var (allExifItems, exifThumbnailDir) = ReadExifMetaDirectories(subPath);
@@ -114,13 +114,13 @@ public sealed class OffsetDataMetaExifThumbnail : IOffsetDataMetaExifThumbnail
 		}
 	}
 
-	internal (ExifThumbnailDirectory?, int, int, FileIndexItem.Rotation) ParseMetaThumbnail(
+	internal (ExifThumbnailDirectory?, int, int, ImageRotation.Rotation) ParseMetaThumbnail(
 		List<Directory>? allExifItems,
 		ExifThumbnailDirectory? exifThumbnailDir, string? reference = null)
 	{
 		if ( exifThumbnailDir == null || allExifItems == null )
 		{
-			return ( null, 0, 0, FileIndexItem.Rotation.DoNotChange );
+			return ( null, 0, 0, ImageRotation.Rotation.DoNotChange );
 		}
 
 		var jpegTags = allExifItems.OfType<JpegDirectory>().FirstOrDefault()?.Tags;

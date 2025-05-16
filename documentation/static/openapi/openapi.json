@@ -1,7 +1,7 @@
 {
   "info": {
     "title": "Starsky",
-    "version": "0.6.7.0",
+    "version": "0.7.0.0",
     "extensions": {}
   },
   "servers": [
@@ -6298,7 +6298,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "Upload thumbnail to ThumbnailTempFolder\nMake sure that the filename is correct, a base32 hash of length 26;\nOverwrite if the Id is the same\nAlso known as Thumbnail Upload or Thumbnail Import",
+          "summary": "Upload thumbnail to ThumbnailTempFolder\nMake sure that the filename is correct, a base32 hash of length 26;\nOverwrite if the 'id' is the same\nAlso known as Thumbnail Upload or Thumbnail Import",
           "parameters": [],
           "responses": {
             "200": {
@@ -10484,7 +10484,7 @@
       "extensions": {},
       "unresolvedReference": false
     },
-    "/api/thumbnail/small/{f}": {
+    "/api/thumbnail/small/{fileHash}": {
       "operations": {
         "Get": {
           "tags": [
@@ -10498,7 +10498,7 @@
           "parameters": [
             {
               "unresolvedReference": false,
-              "name": "f",
+              "name": "fileHash",
               "in": 2,
               "description": "one single fileHash (NOT path)",
               "required": true,
@@ -10506,6 +10506,37 @@
               "allowEmptyValue": false,
               "style": 3,
               "explode": false,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
+              "name": "f",
+              "in": 0,
+              "description": "filePath for generation",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
               "allowReserved": false,
               "schema": {
                 "type": "string",
@@ -12182,6 +12213,30 @@
             "extensions": {},
             "unresolvedReference": false
           },
+          "thumbnailImageFormat": {
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false,
+            "reference": {
+              "isFragrament": false,
+              "type": 0,
+              "id": "ThumbnailImageFormat",
+              "isExternal": false,
+              "isLocal": true,
+              "referenceV3": "#/components/schemas/ThumbnailImageFormat",
+              "referenceV2": "#/definitions/ThumbnailImageFormat"
+            }
+          },
           "tempFolder": {
             "type": "string",
             "readOnly": false,
@@ -12215,6 +12270,22 @@
             "unresolvedReference": false
           },
           "appSettingsPath": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "appSettingsLocalPath": {
             "type": "string",
             "readOnly": false,
             "writeOnly": false,
@@ -13102,6 +13173,54 @@
           },
           "exiftoolSkipDownloadOnStartup": {
             "type": "boolean",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "ffmpegSkipDownloadOnStartup": {
+            "type": "boolean",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "ffmpegSkipPreflightCheck": {
+            "type": "boolean",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "ffmpegPath": {
+            "type": "string",
             "readOnly": false,
             "writeOnly": false,
             "allOf": [],
@@ -15031,6 +15150,16 @@
           {
             "primitiveType": 0,
             "anyType": 0,
+            "value": 51
+          },
+          {
+            "primitiveType": 0,
+            "anyType": 0,
+            "value": 52
+          },
+          {
+            "primitiveType": 0,
+            "anyType": 0,
             "value": 60
           },
           {
@@ -15449,6 +15578,22 @@
             "unresolvedReference": false
           },
           "logsHeader": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "environmentName": {
             "type": "string",
             "readOnly": false,
             "writeOnly": false,
@@ -16381,6 +16526,44 @@
         "extensions": {},
         "unresolvedReference": false
       },
+      "ThumbnailImageFormat": {
+        "type": "integer",
+        "format": "int32",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {},
+        "additionalPropertiesAllowed": true,
+        "enum": [
+          {
+            "primitiveType": 0,
+            "anyType": 0,
+            "value": 0
+          },
+          {
+            "primitiveType": 0,
+            "anyType": 0,
+            "value": 1
+          },
+          {
+            "primitiveType": 0,
+            "anyType": 0,
+            "value": 2
+          },
+          {
+            "primitiveType": 0,
+            "anyType": 0,
+            "value": 3
+          }
+        ],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
       "UserIdentifierStatusModel": {
         "type": "object",
         "readOnly": false,
@@ -16555,5 +16738,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "E6275411F48DB560C721576722B4351DEE38392EA1132FFABCF03357C34E59577029FAB6EF43BC6CCAE45AD8B8E0E8C3CC74B6E2901ABA94C7E9EB83D7ACDEE7"
+  "hashCode": "03B90FC0BCD927E06D282FCF47FAF64847F1847B83604C4F01810BA533C6D5026F5A3BEC4D6ED29285DDCA193385429B9553ACF007CAE1EB35B12129BE59E74F"
 }

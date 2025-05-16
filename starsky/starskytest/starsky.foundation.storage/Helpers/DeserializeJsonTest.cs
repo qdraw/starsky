@@ -67,7 +67,7 @@ namespace starskytest.starsky.foundation.storage.Helpers
 			var itemJsonParser = new DeserializeJson(fakeStorage);
 
 			// Act & Assert
-			await Assert.ThrowsExceptionAsync<FileNotFoundException>(async () =>
+			await Assert.ThrowsExactlyAsync<FileNotFoundException>(async () =>
 			{
 				await itemJsonParser.ReadAsync<FileIndexItemJsonParserTest_TestModel>("/notfound.json");
 			});

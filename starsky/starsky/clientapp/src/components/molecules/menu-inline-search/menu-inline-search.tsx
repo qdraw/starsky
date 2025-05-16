@@ -19,7 +19,7 @@ const MenuInlineSearch: FunctionComponent<IMenuSearchBarProps> = (props) => {
   const [suggest, setSuggest] = useState(new Array<string>());
 
   // to store the search query
-  const [query, setQuery] = useState(props.defaultText ? props.defaultText : "");
+  const [query, setQuery] = useState(props.defaultText ?? "");
 
   // When pressing enter within the same page
   const inputFormControlReference = useRef<HTMLInputElement>(null);

@@ -23,7 +23,7 @@ public sealed class SetupHealthCheckTest
 		var services = new ServiceCollection();
 		// logger is not defined here (as designed)
 
-		Assert.ThrowsException<InvalidOperationException>(() =>
+		Assert.ThrowsExactly<InvalidOperationException>(() =>
 			new SetupHealthCheck(new AppSettings(), services).BuilderHealth());
 	}
 
@@ -33,7 +33,7 @@ public sealed class SetupHealthCheckTest
 		var services = new ServiceCollection();
 		// logger is not defined here (as designed)
 
-		Assert.ThrowsException<InvalidOperationException>(() => new SetupHealthCheck(
+		Assert.ThrowsExactly<InvalidOperationException>(() => new SetupHealthCheck(
 				new AppSettings { DatabaseType = AppSettings.DatabaseTypeList.Mysql }, services)
 			.BuilderHealth());
 	}
@@ -134,7 +134,7 @@ public sealed class SetupHealthCheckTest
 		services.AddSingleton<IWebLogger, FakeIWebLogger>();
 
 		// expect exception database type is not found
-		Assert.ThrowsException<AggregateException>(() =>
+		Assert.ThrowsExactly<AggregateException>(() =>
 			new SetupHealthCheck(appSettings, services).BuilderHealth());
 	}
 }

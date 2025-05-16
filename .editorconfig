@@ -59,6 +59,41 @@ dotnet_diagnostic.SA1500.severity = warning
 dotnet_diagnostic.SA1503.severity = warning
 dotnet_diagnostic.SA1520.severity = warning
 
+# https://gist.github.com/RealDotNetDave/dbae4d97358ba4515dd52e5b8ca87671
+
+# MSTEST0017: Assertion arguments should be passed in the correct order. 
+# 'actual' and 'expected'/'notExpected' arguments have been
+dotnet_diagnostic.MSTEST0017.severity = warning
+
+# MSTEST0032: Review or remove the assertion as its condition is known to be always true
+dotnet_diagnostic.MSTEST0032.severity = warning
+
+# Use ClassCleanupBehavior.EndOfClass with the [ClassCleanup]
+dotnet_diagnostic.MSTEST0034.severity = warning
+
+# [DeploymentItem] can be specified only on test class or test method
+dotnet_diagnostic.MSTEST0035.severity = warning
+
+# Do not use shadowing inside test class
+dotnet_diagnostic.MSTEST0036.severity = warning
+
+# Use proper 'Assert' methods
+dotnet_diagnostic.MSTEST0037.severity = warning
+
+# Don't use 'Assert.AreSame' or 'Assert.AreNotSame' with value types
+dotnet_diagnostic.MSTEST0038.severity = warning
+
+# Use newer 'Assert.Throws' methods
+dotnet_diagnostic.MSTEST0039.severity = warning
+
+# Do not assert inside 'async void' contexts
+dotnet_diagnostic.MSTEST0040.severity = warning
+
+# Use 'ConditionBaseAttribute' on test classes
+dotnet_diagnostic.MSTEST0041.severity = warning
+
+# Seal internal types
+dotnet_diagnostic.CA1852.severity = warning
 
 # Indentation preferences
 csharp_indent_block_contents = true

@@ -65,6 +65,8 @@ public static class SetupAppSettings
 		var appSettingsMachine = AppSettingsMachineNameWithDot();
 		var appSettingsPath =
 			Environment.GetEnvironmentVariable("app__appsettingspath") ?? string.Empty;
+		var appSettingsLocalPath =
+			Environment.GetEnvironmentVariable("app__appsettingslocalpath") ?? string.Empty;
 		return new List<string>
 		{
 			Path.Combine(baseDirectoryProject, "appsettings.json"),
@@ -72,7 +74,8 @@ public static class SetupAppSettings
 			Path.Combine(baseDirectoryProject, "appsettings.patch.json"),
 			Path.Combine(baseDirectoryProject, appSettingsMachine + "json"),
 			Path.Combine(baseDirectoryProject, appSettingsMachine + "patch.json"),
-			appSettingsPath
+			appSettingsPath,
+			appSettingsLocalPath
 		}.Where(p => !string.IsNullOrEmpty(p));
 	}
 

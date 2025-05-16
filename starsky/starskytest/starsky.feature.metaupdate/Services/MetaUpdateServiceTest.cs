@@ -11,8 +11,8 @@ using starsky.feature.metaupdate.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
-using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
@@ -92,13 +92,13 @@ public sealed class MetaUpdateServiceTest
 		};
 
 		var readMeta = new ReadMetaSubPathStorage(
-			new FakeSelectorStorage(_iStorageFake), _appSettings,
-			_memoryCache, new FakeIWebLogger());
+			new FakeSelectorStorage(_iStorageFake), _appSettings, new FakeIWebLogger(),
+			_memoryCache);
 		var service = new MetaUpdateService(_query, _exifTool,
 			new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
 			new FakeIWebLogger(), readMeta,
 			new FakeIThumbnailService(new FakeSelectorStorage(_iStorageFake)),
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new AppSettings());
 
 		await service.UpdateAsync(changedFileIndexItemName, fileIndexResultsList, updateItem,
 			false, false, 0);
@@ -144,7 +144,7 @@ public sealed class MetaUpdateServiceTest
 			new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
 			new FakeIWebLogger(), readMeta,
 			new FakeIThumbnailService(new FakeSelectorStorage(_iStorageFake)),
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new AppSettings());
 
 		await service.UpdateAsync(changedFileIndexItemName, fileIndexResultsList, null!, false,
 			false, 0);
@@ -199,12 +199,13 @@ public sealed class MetaUpdateServiceTest
 
 		var readMeta = new ReadMetaSubPathStorage(
 			new FakeSelectorStorage(_iStorageFake), _appSettings,
-			_memoryCache, new FakeIWebLogger());
+			new FakeIWebLogger(),
+			_memoryCache);
 		var service = new MetaUpdateService(_query, _exifTool,
 			new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
 			new FakeIWebLogger(), readMeta,
 			new FakeIThumbnailService(new FakeSelectorStorage(_iStorageFake)),
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new AppSettings());
 
 		await service.UpdateAsync(null, fileIndexResultsList,
 			toUpdateItem, false, false, 0);
@@ -245,7 +246,7 @@ public sealed class MetaUpdateServiceTest
 			new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
 			new FakeIWebLogger(), readMeta,
 			new FakeIThumbnailService(new FakeSelectorStorage(_iStorageFake)),
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new AppSettings());
 
 		await service.UpdateAsync(changedFileIndexItemName, fileIndexResultsList,
 			updateItem, false, false, 0);
@@ -264,14 +265,15 @@ public sealed class MetaUpdateServiceTest
 
 		var readMeta = new ReadMetaSubPathStorage(
 			new FakeSelectorStorage(_iStorageFake), _appSettings,
-			_memoryCache, new FakeIWebLogger());
+			new FakeIWebLogger(),
+			_memoryCache);
 		var service = new MetaUpdateService(_query, _exifTool,
 			new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
 			new FakeIWebLogger(), readMeta,
 			new FakeIThumbnailService(new FakeSelectorStorage(_iStorageFake)),
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new AppSettings());
 
-		await Assert.ThrowsExceptionAsync<ArgumentException>(async () => await service.UpdateAsync(
+		await Assert.ThrowsExactlyAsync<ArgumentException>(async () => await service.UpdateAsync(
 			changedFileIndexItemName, fileIndexResultList,
 			null!, false, false, 0));
 	}
@@ -288,7 +290,7 @@ public sealed class MetaUpdateServiceTest
 			"/test.jpg");
 		var updateItem = new FileIndexItem("/test.jpg")
 		{
-			Orientation = FileIndexItem.Rotation.Horizontal,
+			Orientation = ImageRotation.Rotation.Horizontal,
 			Status = FileIndexItem.ExifStatus.Ok,
 			FileHash = "test"
 		};
@@ -303,7 +305,7 @@ public sealed class MetaUpdateServiceTest
 			new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
 			new FakeIWebLogger(), readMeta,
 			new FakeIThumbnailService(new FakeSelectorStorage(_iStorageFake)),
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new AppSettings());
 
 		await service
 			.UpdateAsync(changedFileIndexItemName, fileIndexResultsList, updateItem, false,
@@ -322,12 +324,13 @@ public sealed class MetaUpdateServiceTest
 
 		var readMeta = new ReadMetaSubPathStorage(
 			new FakeSelectorStorage(_iStorageFake), _appSettings,
-			_memoryCache, new FakeIWebLogger());
+			new FakeIWebLogger(),
+			_memoryCache);
 		var service = new MetaUpdateService(_query, _exifTool,
 			new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
 			new FakeIWebLogger(), readMeta,
 			new FakeIThumbnailService(new FakeSelectorStorage(_iStorageFake)),
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new AppSettings());
 
 		await service.ApplyOrGenerateUpdatedFileHash(new List<string>(),
 			detailView.FileIndexItem);
@@ -343,11 +346,12 @@ public sealed class MetaUpdateServiceTest
 				new FakeSelectorStorage(_iStorageFake));
 		var readMeta = new ReadMetaSubPathStorage(
 			new FakeSelectorStorage(_iStorageFake), _appSettings,
-			_memoryCache, new FakeIWebLogger());
+			new FakeIWebLogger(),
+			_memoryCache);
 		var service = new MetaUpdateService(_query, _exifTool,
 			new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
 			new FakeIWebLogger(), readMeta, thumbnailService,
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new AppSettings());
 
 		await service.RotationThumbnailExecute(0, new FileIndexItem("/test.jpg"));
 
@@ -362,12 +366,13 @@ public sealed class MetaUpdateServiceTest
 				new FakeSelectorStorage(_iStorageFake));
 		var readMeta = new ReadMetaSubPathStorage(
 			new FakeSelectorStorage(_iStorageFake), _appSettings,
-			_memoryCache, new FakeIWebLogger());
+			new FakeIWebLogger(),
+			_memoryCache);
 
 		var service = new MetaUpdateService(_query, _exifTool,
 			new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
 			new FakeIWebLogger(), readMeta, thumbnailService,
-			new FakeIThumbnailQuery());
+			new FakeIThumbnailQuery(), new AppSettings());
 
 		await service.RotationThumbnailExecute(1, new FileIndexItem("/test.jpg"));
 

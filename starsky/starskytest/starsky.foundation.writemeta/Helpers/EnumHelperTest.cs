@@ -7,6 +7,14 @@ namespace starskytest.starsky.foundation.writemeta.Helpers;
 [TestClass]
 public class EnumHelperTest
 {
+	public enum TestType
+	{
+		[Display(Name = "First Display Name")] FirstValue,
+
+		[Display(Name = "Second Display Name")]
+		SecondValue
+	}
+
 	public enum TestValue
 	{
 		[Display(Name = "Test One")] Value1,
@@ -41,20 +49,20 @@ public class EnumHelperTest
 		var result = EnumHelper.GetDisplayName(enumValue);
 
 		// Assert
-		Assert.AreEqual(null, result);
+		Assert.IsNull(result);
 	}
 
 	[TestMethod]
 	public void Test_GetDisplayName_ReturnsEmptyString_ForEnumWithNullDisplayName()
 	{
 		// Arrange
-		var enumValue = TestValue.Value4;
+		const TestValue enumValue = TestValue.Value4;
 
 		// Act
 		var result = EnumHelper.GetDisplayName(enumValue);
 
 		// Assert
-		Assert.AreEqual(null, result);
+		Assert.IsNull(result);
 	}
 
 	[TestMethod]
@@ -67,7 +75,7 @@ public class EnumHelperTest
 		var result = EnumHelper.GetDisplayName(enumValue!);
 
 		// Assert
-		Assert.AreEqual(null, result);
+		Assert.IsNull(result);
 	}
 
 	[TestMethod]
@@ -93,7 +101,7 @@ public class EnumHelperTest
 		var result = EnumHelper.GetDisplayName(enumValue);
 
 		// Assert
-		Assert.AreEqual(null, result);
+		Assert.IsNull(result);
 	}
 
 	[TestMethod]
@@ -106,15 +114,7 @@ public class EnumHelperTest
 		var result = EnumHelper.GetDisplayName(enumValue);
 
 		// Assert
-		Assert.AreEqual(null, result);
-	}
-
-	public enum TestType
-	{
-		[Display(Name = "First Display Name")] FirstValue,
-
-		[Display(Name = "Second Display Name")]
-		SecondValue
+		Assert.IsNull(result);
 	}
 
 	[TestMethod]
@@ -144,7 +144,7 @@ public class EnumHelperTest
 	public void GetDisplayName_WithInvalidEnumValue_ReturnsNull()
 	{
 		// Arrange
-		var enumValue = ( TestType )100; // An invalid value
+		var enumValue = ( TestType ) 100; // An invalid value
 
 		// Act
 		var displayName = EnumHelper.GetDisplayName(enumValue);

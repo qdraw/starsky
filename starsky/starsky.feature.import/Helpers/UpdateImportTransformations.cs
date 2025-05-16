@@ -49,12 +49,11 @@ public class UpdateImportTransformations
 	/// <param name="colorClassTransformation">change colorClass</param>
 	/// <param name="dateTimeParsedFromFileName">is date time parsed from fileName</param>
 	/// <param name="indexMode">should update database</param>
-	/// <param name="reverseGeoCode">should reverse geocode</param>
 	internal async Task<FileIndexItem> UpdateTransformations(
 		QueryUpdateDelegate? queryUpdateDelegate,
 		FileIndexItem fileIndexItem,
 		int colorClassTransformation, bool dateTimeParsedFromFileName,
-		bool indexMode, bool reverseGeoCode)
+		bool indexMode)
 	{
 		if ( !ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName) )
 		{
@@ -74,11 +73,6 @@ public class UpdateImportTransformations
 			_logger.LogInformation($"[Import] ColorClassComparedNamesList " +
 			                       $"ExifTool Sync {fileIndexItem.FilePath}");
 			comparedNamesList = ColorClassComparedNamesList(comparedNamesList);
-		}
-
-		if ( reverseGeoCode )
-		{
-			comparedNamesList = ReverseGeoCodeComparedNamesList(comparedNamesList);
 		}
 
 		if ( comparedNamesList.Count == 0 )
@@ -101,7 +95,8 @@ public class UpdateImportTransformations
 
 		// Hash is changed after transformation
 		fileIndexItem.FileHash =
-			( await new FileHash(_subPathStorage).GetHashCodeAsync(fileIndexItem.FilePath!) )
+			( await new FileHash(_subPathStorage, _logger)
+				.GetHashCodeAsync(fileIndexItem.FilePath!) )
 			.Key;
 
 		await queryUpdateDelegate(fileIndexItem);
@@ -121,15 +116,6 @@ public class UpdateImportTransformations
 	internal static List<string> ColorClassComparedNamesList(List<string> list)
 	{
 		list.Add(nameof(FileIndexItem.ColorClass).ToLowerInvariant());
-		return list;
-	}
-
-	internal static List<string> ReverseGeoCodeComparedNamesList(List<string> list)
-	{
-		list.Add(nameof(FileIndexItem.LocationCity).ToLowerInvariant());
-		list.Add(nameof(FileIndexItem.LocationState).ToLowerInvariant());
-		list.Add(nameof(FileIndexItem.LocationCountry).ToLowerInvariant());
-		list.Add(nameof(FileIndexItem.LocationCountryCode).ToLowerInvariant());
 		return list;
 	}
 }

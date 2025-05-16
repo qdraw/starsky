@@ -41,11 +41,28 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.0-beta.0 - _(Unreleased)_ - 2025-01-? {#v0.7.0-beta.0}
+## version 0.7.0-beta.1 - _(Unreleased)_ - 2025-05-? {#v0.7.0-beta.1}
+
+- [x] (Added) _Back-end_ Handle background jobs for small thumbnails. (PR #2147)
+- [x] (Changed) _Back-end_ Database Query Refactoring GetAllFilesQuery / GetAllObjects (PR #2147)
+- [x] (Added) _Back-end_ Quicklook and Shell32 Native Thumbnails for macOS and Windows (PR #2147)
+- [x] (Added) _Back-end_ Update docs and add env for manual config (PR #2158)
+- [x] (Fixed) _Front-end_ ItemTextListView exclude ExifWriteNotSupported error display. (PR #2159)
+
+## version 0.7.0-beta.0 - 2025-05-14 {#v0.7.0-beta.0}
+
+- [x] (Added) _Back-end_ Support for webp and video thumbnails (PR #1833)
+- [x] (Added) _Back-end_ Sonarcloud code style improvements (PR #2141)
+- [x] (Changed) _Back-end_ Make exiftool responses more clear (PR #2143)
+- [x] (Changed) _Back-end_ Download dependencies on build for cross build runtime (PR #2144)
+- [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.409 (Runtime: 8.0.16) (PR #2156)
+
+## version 0.6.8 - 2025-05-07 {#v0.6.8}
 
 - [x] (Added) _Back-end_ Add database indexes for faster reading (PR #2108, PR #2112)
 - [x] (Fixed) _Back-end_ Add content length limit on Notification to avoid db errors (PR #2113)
 - [x] (Fixed) _Back-end_ websocket one error update skips other socket updates (PR #2114)
+- [x] (Fixed) _Back-end_ Avoid timeouts for CreateHashesList in ThumbnailQuery (PR #2115)
 
 ## version 0.6.7 - 2024-04-15 {#v0.6.7}
 
