@@ -8,6 +8,7 @@ using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
+using starsky.foundation.thumbnailgeneration.Models;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -78,8 +79,9 @@ public class ResizeThumbnailFromThumbnailImageHelperTests
 			"thumbnailOutputHash",
 			false, ThumbnailImageFormat.jpg);
 
+		Assert.IsFalse(result.IsNotFound);
 		Assert.IsFalse(result.Success);
-		Assert.AreEqual("Image cannot be loaded", result.ErrorMessage);
+		Assert.IsTrue(result.ErrorMessage?.Contains("Image cannot be loaded"));
 	}
 
 	[TestMethod]
@@ -102,5 +104,27 @@ public class ResizeThumbnailFromThumbnailImageHelperTests
 				100, "subPath",
 				"test", false,
 				ThumbnailImageFormat.unknown));
+	}
+
+	[TestMethod]
+	public void SetError_ShouldSetErrorMessageAndLogException()
+	{
+		// Arrange
+		var logger = new FakeIWebLogger();
+		var helper = new ResizeThumbnailFromThumbnailImageHelper(new FakeSelectorStorage(), logger);
+		var result = new GenerationResultModel();
+		var exception = new Exception("Image cannot be loaded: corrupted file");
+		const string fileHash = "testFileHash";
+		const string subPathReference = "testSubPath";
+
+		// Act
+		var updatedResult = helper.SetError(result, exception, fileHash, subPathReference);
+
+		// Assert
+		Assert.IsFalse(updatedResult.Success);
+		Assert.AreEqual("Image cannot be loaded", updatedResult.ErrorMessage);
+		Assert.AreEqual($"[ResizeThumbnailFromThumbnailImageHelper] " +
+		                $"Exception H:{fileHash} M: Image cannot be loaded F: {subPathReference}",
+			logger.TrackedExceptions.LastOrDefault().Item2?.Trim());
 	}
 }
