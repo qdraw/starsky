@@ -69,7 +69,8 @@ public class QuicklookMacOs(IWebLogger logger)
 		{
 			var cfStr = CFStringCreateWithCString(IntPtr.Zero, filePath,
 				CfStringEncoding.kCFStringEncodingUTF8);
-			return CFURLCreateWithFileSystemPath(IntPtr.Zero, cfStr, CFURLPathStyle.POSIX, true);
+			return CFURLCreateWithFileSystemPath(IntPtr.Zero,
+				cfStr, CFURLPathStyle.POSIX, false);
 		}
 		catch ( DllNotFoundException )
 		{
@@ -86,7 +87,8 @@ public class QuicklookMacOs(IWebLogger logger)
 		var cfStr = CFStringCreateWithCString(IntPtr.Zero, outputPath, kCFStringEncodingUTF8);
 
 		// Create CFURL from path
-		var url = CFURLCreateWithFileSystemPath(IntPtr.Zero, cfStr, 0 /* POSIX */, false);
+		var url = CFURLCreateWithFileSystemPath(IntPtr.Zero, cfStr,
+			0 /* POSIX */, false);
 
 		// Create type identifier for image format
 		var imageTypeIntPtr =
@@ -137,7 +139,6 @@ public class QuicklookMacOs(IWebLogger logger)
 		IntPtr filePath,
 		int pathStyle, // 0 = POSIX
 		bool isDirectory);
-
 
 	[DllImport("/System/Library/Frameworks/ImageIO.framework/ImageIO")]
 	private static extern IntPtr CGImageDestinationCreateWithURL(

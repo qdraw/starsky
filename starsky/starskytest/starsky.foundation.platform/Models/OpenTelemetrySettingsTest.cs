@@ -1,3 +1,4 @@
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
 
@@ -82,5 +83,26 @@ public class OpenTelemetrySettingsTest
 	{
 		var result = new OpenTelemetrySettings { MetricsHeader = "traces" }.GetMetricsHeader();
 		Assert.AreEqual("traces", result);
+	}
+
+	[TestMethod]
+	[DataRow("Development", null, "Development")]
+	[DataRow(null, "Staging", "Staging")]
+	[DataRow(null, null, "production")]
+	public void GetEnvironmentName_TheoryTests(string? environmentName, string? environmentVariable,
+		string expected)
+	{
+		// Arrange
+		Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", environmentVariable);
+		var settings = new OpenTelemetrySettings { EnvironmentName = environmentName };
+
+		// Act
+		var result = settings.GetEnvironmentName();
+
+		// Assert
+		Assert.AreEqual(expected, result);
+
+		// Cleanup
+		Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
 	}
 }
