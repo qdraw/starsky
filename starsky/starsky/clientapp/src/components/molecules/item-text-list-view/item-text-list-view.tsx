@@ -53,7 +53,8 @@ const ItemTextListView: FunctionComponent<ItemListProps> = (props) => {
             {!item.isDirectory ? item.fileName : null}
             {item.status !== IExifStatus.Ok &&
             item.status !== IExifStatus.Default &&
-            item.status !== IExifStatus.OkAndSame ? (
+            item.status !== IExifStatus.OkAndSame &&
+            item.status !== IExifStatus.ExifWriteNotSupported ? (
               <em data-test={item.fileName + "-error-status"} className="error-status">
                 {item.status}
               </em>
