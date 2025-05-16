@@ -21,10 +21,6 @@ public static class SetupLogging
 	private static readonly KeyValuePair<string, object> HostNameKeyValue = new(HostNameKey,
 		Environment.MachineName);
 
-	private static readonly KeyValuePair<string, object> DeploymentEnvironmentKeyValue = new(
-		DeploymentEnvironmentName,
-		Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "production");
-
 	[SuppressMessage("Usage", "S4792:Make sure that this logger's configuration is safe.")]
 	public static void AddTelemetryLogging(this IServiceCollection services,
 		AppSettings appSettings)
@@ -34,23 +30,32 @@ public static class SetupLogging
 			logging.ClearProviders();
 			logging.AddConsole();
 
-			if ( !string.IsNullOrEmpty(appSettings.OpenTelemetry?.LogsEndpoint) )
+			if ( string.IsNullOrEmpty(appSettings.OpenTelemetry?.LogsEndpoint) )
 			{
-				logging.AddOpenTelemetry(builder =>
-					builder.AddOtlpExporter(options =>
-						{
-							options.Protocol = OtlpExportProtocol.HttpProtobuf;
-							options.Headers = appSettings.OpenTelemetry.GetLogsHeader();
-							options.Endpoint =
-								new Uri(appSettings.OpenTelemetry.LogsEndpoint);
-						})
-						.SetResourceBuilder(
-							ResourceBuilder.CreateDefault()
-								.AddService(appSettings.OpenTelemetry.GetServiceName())
-								.AddAttributes([HostNameKeyValue, DeploymentEnvironmentKeyValue])
-						)
-				);
+				return;
 			}
+
+			var deploymentEnvironmentKeyValue = new KeyValuePair<string, object>(
+				DeploymentEnvironmentName,
+				appSettings.OpenTelemetry.GetEnvironmentName()
+			);
+			logging.AddOpenTelemetry(builder =>
+				builder.AddOtlpExporter(options =>
+					{
+						options.Protocol = OtlpExportProtocol.HttpProtobuf;
+						options.Headers = appSettings.OpenTelemetry.GetLogsHeader();
+						options.Endpoint =
+							new Uri(appSettings.OpenTelemetry.LogsEndpoint);
+					})
+					.SetResourceBuilder(
+						ResourceBuilder.CreateDefault()
+							.AddService(appSettings.OpenTelemetry.GetServiceName())
+							.AddAttributes([
+								HostNameKeyValue,
+								deploymentEnvironmentKeyValue
+							])
+					)
+			);
 		});
 
 		services.AddScoped<IWebLogger, WebLogger>();
