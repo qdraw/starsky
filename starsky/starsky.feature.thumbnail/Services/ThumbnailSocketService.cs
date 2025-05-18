@@ -23,10 +23,20 @@ public class ThumbnailSocketService(
 	IWebLogger logger,
 	INotificationQuery notificationQuery) : IThumbnailSocketService
 {
+	/// <summary>
+	///     Create a notification for all clients
+	/// </summary>
+	/// <param name="subPath">Can be both file or folder</param>
+	/// <param name="generateThumbnailResults">the results</param>
 	public async Task NotificationSocketUpdate(string subPath,
 		List<GenerationResultModel> generateThumbnailResults)
 	{
 		var fileIndexItems = await query.GetObjectsByFilePathAsync(subPath, false);
+
+		if ( fileIndexItems.FirstOrDefault()?.FilePath == subPath && fileIndexItems.Count == 1 )
+		{
+			fileIndexItems = await query.GetAllFilesAsync(subPath);
+		}
 
 		var result =
 			WhichFilesNeedToBePushedForUpdates(generateThumbnailResults, fileIndexItems);

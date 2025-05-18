@@ -41,6 +41,35 @@ public class ThumbnailSocketServiceTests
 	}
 
 	[TestMethod]
+	public async Task NotificationSocketUpdate_Folder_ShouldSendResults_WhenFilesNeedUpdate()
+	{
+		// Arrange
+		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
+		{
+			new("/") { IsDirectory = true }, new("/test.jpg") { Tags = "tag1" }
+		});
+
+		var fakeConnectionsService = new FakeIWebSocketConnectionsService();
+		var fakeNotificationQuery = new FakeINotificationQuery();
+		var logger = new FakeIWebLogger();
+
+		var service = new ThumbnailSocketService(
+			fakeQuery, fakeConnectionsService, logger, fakeNotificationQuery);
+
+		var generateThumbnailResults = new List<GenerationResultModel>
+		{
+			new() { SubPath = "/test.jpg", Success = true }
+		};
+
+		// Act
+		await service.NotificationSocketUpdate("/", generateThumbnailResults);
+
+		// Assert
+		Assert.AreEqual(1, fakeConnectionsService.FakeSendToAllAsync.Count);
+		Assert.AreEqual(1, fakeNotificationQuery.FakeContent.Count);
+	}
+
+	[TestMethod]
 	public async Task NotificationSocketUpdate_ShouldNotSendResults_WhenNoFilesNeedUpdate()
 	{
 		// Arrange
