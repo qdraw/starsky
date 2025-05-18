@@ -11,6 +11,17 @@ namespace starskytest.starsky.feature.thumbnail.Services;
 [TestClass]
 public class ThumbnailSocketServiceTests
 {
+	private static ThumbnailSocketService CreateSut(FakeIQuery fakeQuery,
+		FakeIWebSocketConnectionsService fakeConnectionsService,
+		FakeINotificationQuery fakeNotificationQuery)
+	{
+		var logger = new FakeIWebLogger();
+
+		var service = new ThumbnailSocketService(
+			fakeQuery, fakeConnectionsService, logger, fakeNotificationQuery);
+		return service;
+	}
+
 	[TestMethod]
 	public async Task NotificationSocketUpdate_ShouldSendResults_WhenFilesNeedUpdate()
 	{
@@ -22,10 +33,8 @@ public class ThumbnailSocketServiceTests
 
 		var fakeConnectionsService = new FakeIWebSocketConnectionsService();
 		var fakeNotificationQuery = new FakeINotificationQuery();
-		var logger = new FakeIWebLogger();
 
-		var service = new ThumbnailSocketService(
-			fakeQuery, fakeConnectionsService, logger, fakeNotificationQuery);
+		var service = CreateSut(fakeQuery, fakeConnectionsService, fakeNotificationQuery);
 
 		var generateThumbnailResults = new List<GenerationResultModel>
 		{
@@ -51,10 +60,8 @@ public class ThumbnailSocketServiceTests
 
 		var fakeConnectionsService = new FakeIWebSocketConnectionsService();
 		var fakeNotificationQuery = new FakeINotificationQuery();
-		var logger = new FakeIWebLogger();
 
-		var service = new ThumbnailSocketService(
-			fakeQuery, fakeConnectionsService, logger, fakeNotificationQuery);
+		var service = CreateSut(fakeQuery, fakeConnectionsService, fakeNotificationQuery);
 
 		var generateThumbnailResults = new List<GenerationResultModel>
 		{
@@ -70,6 +77,19 @@ public class ThumbnailSocketServiceTests
 	}
 
 	[TestMethod]
+	public async Task NotificationSocketUpdate_NoResults()
+	{
+		var fakeQuery = new FakeIQuery();
+		var fakeConnectionsService = new FakeIWebSocketConnectionsService();
+		var fakeNotificationQuery = new FakeINotificationQuery();
+
+		var service = CreateSut(fakeQuery, fakeConnectionsService, fakeNotificationQuery);
+
+		await service.NotificationSocketUpdate(null!, []);
+		Assert.AreEqual(0, fakeConnectionsService.FakeSendToAllAsync.Count);
+	}
+
+	[TestMethod]
 	public async Task NotificationSocketUpdate_ShouldNotSendResults_WhenNoFilesNeedUpdate()
 	{
 		// Arrange
@@ -80,10 +100,8 @@ public class ThumbnailSocketServiceTests
 
 		var fakeConnectionsService = new FakeIWebSocketConnectionsService();
 		var fakeNotificationQuery = new FakeINotificationQuery();
-		var logger = new FakeIWebLogger();
 
-		var service = new ThumbnailSocketService(
-			fakeQuery, fakeConnectionsService, logger, fakeNotificationQuery);
+		var service = CreateSut(fakeQuery, fakeConnectionsService, fakeNotificationQuery);
 
 		var generateThumbnailResults = new List<GenerationResultModel>
 		{
