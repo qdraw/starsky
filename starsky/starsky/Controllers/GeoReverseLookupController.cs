@@ -1,23 +1,16 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using starsky.feature.geolookup.Interfaces;
 using starsky.foundation.geo.ReverseGeoCode.Interface;
 
 namespace starsky.Controllers;
 
 [AllowAnonymous]
-public sealed class GeoReverseLookupController : Controller
+public sealed class GeoReverseLookupController(IReverseGeoCodeService reverseGeoCodeService)
+	: Controller
 {
-	private readonly IReverseGeoCodeService _reverseGeoCodeService;
-
-	public GeoReverseLookupController(IReverseGeoCodeService reverseGeoCodeService)
-	{
-		_reverseGeoCodeService = reverseGeoCodeService;
-	}
-
 	/// <summary>
-	/// Reverse geo lookup
+	///     Reverse geo lookup
 	/// </summary>
 	/// <param name="latitude">Latitude coordinate in Decimal Degree (DD)</param>
 	/// <param name="longitude">Longitude coordinate in DD</param>
@@ -33,8 +26,8 @@ public sealed class GeoReverseLookupController : Controller
 		{
 			return BadRequest("Model is not valid");
 		}
-		
-		var result = await _reverseGeoCodeService.GetLocation(latitude, longitude);
+
+		var result = await reverseGeoCodeService.GetLocation(latitude, longitude);
 		return Ok(result);
 	}
 }
