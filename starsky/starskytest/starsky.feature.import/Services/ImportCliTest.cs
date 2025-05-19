@@ -16,12 +16,13 @@ public sealed class ImportCliTest
 	public async Task ImporterCli_CheckIfExifToolIsCalled()
 	{
 		var fakeExifToolDownload = new FakeExifToolDownload();
+		var fakeGeoFileDownload = new FakeIGeoFileDownload();
 
 		var fakeConsole = new FakeConsoleWrapper(new List<string>());
 		await new ImportCli(
 				new FakeIImport(new FakeSelectorStorage()),
 				new AppSettings { TempFolder = "/___not___found_" },
-				fakeConsole, new FakeIWebLogger(), fakeExifToolDownload)
+				fakeConsole, new FakeIWebLogger(), fakeExifToolDownload, fakeGeoFileDownload)
 			.Importer(new List<string>().ToArray());
 
 		Assert.AreNotEqual(0, fakeExifToolDownload.Called.Count);
@@ -33,7 +34,8 @@ public sealed class ImportCliTest
 		var fakeConsole = new FakeConsoleWrapper(new List<string>());
 		await new ImportCli(
 				new FakeIImport(new FakeSelectorStorage()), new AppSettings(),
-				fakeConsole, new FakeIWebLogger(), new FakeExifToolDownload())
+				fakeConsole, new FakeIWebLogger(), new FakeExifToolDownload(),
+				new FakeIGeoFileDownload())
 			.Importer(new List<string>().ToArray());
 
 		Assert.IsTrue(fakeConsole.WrittenLines.FirstOrDefault()
@@ -50,7 +52,7 @@ public sealed class ImportCliTest
 
 		await new ImportCli(new FakeIImport(new FakeSelectorStorage(storage)),
 				new AppSettings(), new FakeConsoleWrapper(), webLogger,
-				new FakeExifToolDownload())
+				new FakeExifToolDownload(), new FakeIGeoFileDownload())
 			.Importer(
 				new List<string> { "-p", "/test" }.ToArray());
 		Assert.IsTrue(
@@ -68,7 +70,7 @@ public sealed class ImportCliTest
 
 		await new ImportCli(new FakeIImport(new FakeSelectorStorage(storage)),
 				new AppSettings(), fakeConsole, new FakeIWebLogger(),
-				new FakeExifToolDownload())
+				new FakeExifToolDownload(), new FakeIGeoFileDownload())
 			.Importer(
 				new List<string> { "-p", "/test", "--output", "csv" }.ToArray());
 
@@ -92,7 +94,7 @@ public sealed class ImportCliTest
 
 		var cli = new ImportCli(new FakeIImport(new FakeSelectorStorage(storage)),
 			new AppSettings { Verbose = true }, fakeConsole, webLogger,
-			new FakeExifToolDownload());
+			new FakeExifToolDownload(), new FakeIGeoFileDownload());
 
 		// verbose is entered here 
 		await cli.Importer(new List<string> { "-p", "/test", "-v", "true" }.ToArray());
@@ -112,7 +114,7 @@ public sealed class ImportCliTest
 
 		await new ImportCli(new FakeIImport(new FakeSelectorStorage(storage)),
 				new AppSettings { Verbose = false }, fakeConsole, webLogger,
-				new FakeExifToolDownload())
+				new FakeExifToolDownload(), new FakeIGeoFileDownload())
 			.Importer(new List<string> { "-p", "/test" }.ToArray());
 
 		Assert.IsTrue(
