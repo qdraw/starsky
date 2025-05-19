@@ -164,7 +164,7 @@ public class Import : IImport
 		// When directory is empty 
 		if ( preflightItemList.Count == 0 )
 		{
-			return new List<ImportIndexItem>();
+			return [];
 		}
 
 		var directoriesContent = ParentFoldersDictionary(preflightItemList);
