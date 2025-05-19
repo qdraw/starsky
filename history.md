@@ -49,6 +49,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Added) _Back-end_ Update docs and add env for manual config (PR #2158)
 - [x] (Fixed) _Front-end_ ItemTextListView exclude ExifWriteNotSupported error display. (PR #2159)
 - [x] (Fixed) _Back-end_ Fix for ThumbnailSocketService (PR #2166)
+- [x] (Added) _Back-end_ Add feature for import reverse geocode (PR #2165)
 
 ## version 0.7.0-beta.0 - 2025-05-14 {#v0.7.0-beta.0}
 
