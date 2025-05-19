@@ -85,4 +85,19 @@ public sealed class GeoFileDownloadBackgroundServiceTest
 
 		Assert.AreEqual(0, value?.Count);
 	}
+
+	[TestMethod]
+	public async Task StartAsync_Skip3_ApplicationTypeGeo()
+	{
+		var appSettings = _serviceScopeFactory.CreateScope().ServiceProvider
+			.GetRequiredService<AppSettings>();
+		var before = appSettings.ApplicationType;
+		appSettings.ApplicationType = AppSettings.StarskyAppType.Geo;
+		await new GeoFileDownloadBackgroundService(_serviceScopeFactory).StartAsync(
+			CancellationToken.None);
+		var value = _geoFileDownload as FakeIGeoFileDownload;
+		appSettings.ApplicationType = before;
+
+		Assert.AreEqual(0, value?.Count);
+	}
 }
