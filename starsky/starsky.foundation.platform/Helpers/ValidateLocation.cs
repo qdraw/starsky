@@ -15,17 +15,15 @@ public static class ValidateLocation
 		var latitudeRegex =
 			new Regex(
 				"^[+-]?(([1-8]?[0-9])(\\.[0-9]{1,6})?|90(\\.0{1,6})?)$",
-				RegexOptions.None, TimeSpan.FromMilliseconds(100));
+				RegexOptions.None, TimeSpan.FromMilliseconds(1000));
 
 		// un-escaped ^[+-]?((([1-9]?[0-9]|1[0-7][0-9])(\.[0-9]{1,6})?)|180(\.0{1,6})?)$
 		var longitudeRegex =
 			new Regex(
 				"^[+-]?((([1-9]?[0-9]|1[0-7][0-9])(\\.[0-9]{1,6})?)|180(\\.0{1,6})?)$",
-				RegexOptions.None, TimeSpan.FromMilliseconds(100));
+				RegexOptions.None, TimeSpan.FromMilliseconds(1000));
 
 		return latitudeRegex.IsMatch(latitudeValue) &&
-			   longitudeRegex.IsMatch(longitudeValue);
+		       longitudeRegex.IsMatch(longitudeValue);
 	}
 }
-
-

@@ -71,7 +71,7 @@ public sealed class UploadControllerTest
 		_import = new Import(selectorStorage, _appSettings, new FakeIImportQuery(),
 			new FakeExifTool(_iStorage, _appSettings), _query, new ConsoleWrapper(),
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), memoryCache);
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), memoryCache);
 
 		// Start using dependency injection
 		// Add random config to dependency injection

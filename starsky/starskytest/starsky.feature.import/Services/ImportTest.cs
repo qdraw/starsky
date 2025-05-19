@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.import.Models;
 using starsky.feature.import.Services;
 using starsky.foundation.database.Models;
+using starsky.foundation.geo.ReverseGeoCode;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -16,6 +17,7 @@ using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
+using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -70,7 +72,7 @@ public sealed class ImportTest
 			new FakeIImportQuery(),
 			new FakeExifTool(_iStorageFake, appSettings), null!, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Preflight(
 			new List<string> { "/test.jpg" },
@@ -95,7 +97,7 @@ public sealed class ImportTest
 			new FakeIImportQuery(),
 			new FakeExifTool(_iStorageFake, appSettings), null!,
 			_console, new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Preflight(
 			new List<string> { "/test.jpg" },
@@ -115,7 +117,7 @@ public sealed class ImportTest
 			new FakeIImportQuery(),
 			new FakeExifTool(_iStorageFake, appSettings), null!,
 			_console, new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Preflight(
 			new List<string> { "/color_class_winner.jpg" },
@@ -139,7 +141,8 @@ public sealed class ImportTest
 			new FakeIImportQuery(),
 			new FakeExifTool(_iStorageFake, appSettings),
 			null!, _console, new FakeIMetaExifThumbnailService(),
-			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(),
+			new FakeMemoryCache());
 
 		var result = await importService.Preflight(
 			new List<string> { "/color_class_winner.jpg" }, // <- in this test we change it
@@ -171,7 +174,7 @@ public sealed class ImportTest
 			new FakeIImportQuery(),
 			new FakeExifTool(_iStorageFake, appSettings), null!, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Preflight(
 			new List<string> { "/2020-04-27 11:07:00.jpg" },
@@ -181,7 +184,7 @@ public sealed class ImportTest
 		Assert.AreEqual(new DateTime(2020, 04, 27, 11, 07, 00, DateTimeKind.Local),
 			result.FirstOrDefault()?.DateTime);
 
-		Assert.AreEqual(Import.MessageDateTimeBasedOnFilename,
+		Assert.AreEqual(ObjectCreateIndexItemService.MessageDateTimeBasedOnFilename,
 			result.FirstOrDefault()?.FileIndexItem?.Description);
 	}
 
@@ -198,7 +201,7 @@ public sealed class ImportTest
 			new FakeIImportQuery(),
 			new FakeExifTool(_iStorageFake, appSettings), null!, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Preflight(
 			new List<string> { "/test.jpg" },
@@ -224,7 +227,7 @@ public sealed class ImportTest
 			new FakeIImportQuery(),
 			new FakeExifTool(storage, appSettings), null!,
 			_console, new FakeIMetaExifThumbnailService(), new WebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Preflight(
 			new List<string> { "/test.unknown" },
@@ -243,7 +246,7 @@ public sealed class ImportTest
 			new FakeIImportQuery(new List<string> { _exampleHash }),
 			new FakeExifTool(_iStorageFake, appSettings), null!, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Preflight(new List<string> { "/test.jpg" },
 			new ImportSettingsModel());
@@ -260,7 +263,7 @@ public sealed class ImportTest
 			new FakeIImportQuery(new List<string> { _exampleHash }),
 			new FakeExifTool(_iStorageFake, appSettings), null!, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Preflight(new List<string> { "/test.jpg" },
 			new ImportSettingsModel { IndexMode = false });
@@ -277,7 +280,7 @@ public sealed class ImportTest
 			appSettings, new FakeIImportQuery(),
 			new FakeExifTool(_iStorageFake, appSettings), null!, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Preflight(new List<string> { "/non-exist.jpg" },
 			new ImportSettingsModel());
@@ -294,7 +297,7 @@ public sealed class ImportTest
 			appSettings, new FakeIImportQuery(),
 			new FakeExifTool(_iStorageFake, appSettings), null!, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Preflight(new List<string> { "/non-exist" },
 			new ImportSettingsModel());
@@ -312,7 +315,7 @@ public sealed class ImportTest
 			appSettings, new FakeIImportQuery(),
 			new FakeExifTool(_iStorageDirectoryRecursive, appSettings),
 			null!, _console, new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var importIndexItems = await importService.Preflight(
 			new List<string> { "/" },
@@ -347,7 +350,7 @@ public sealed class ImportTest
 			new FakeIImportQuery(),
 			new FakeExifTool(_iStorageDirectoryRecursive, appSettings),
 			null!, _console, new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Preflight(new List<string> { "/test" },
 			new ImportSettingsModel { RecursiveDirectory = false });
@@ -423,15 +426,15 @@ public sealed class ImportTest
 		var appSettings = new AppSettings { Verbose = true };
 		var query = new FakeIQuery();
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+			["/"],
+			["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var importService = new Import(new FakeSelectorStorage(storage), appSettings,
 			new FakeIImportQuery(),
 			new FakeExifTool(storage, appSettings), query, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Importer(new List<string> { "/test.jpg" },
 			new ImportSettingsModel { DeleteAfter = true });
@@ -440,16 +443,97 @@ public sealed class ImportTest
 		Assert.IsFalse(storage.ExistFile("/test.jpg"));
 	}
 
+	private static AppSettings SetupReverseGeoCodeServiceData()
+	{
+		var appSettings = new AppSettings
+		{
+			DependenciesFolder =
+				Path.Combine(new CreateAnImage().BasePath, "tmp-dependencies-import-test")
+		};
+
+
+		// create a temp folder
+		if ( !new StorageHostFullPathFilesystem(new FakeIWebLogger()).ExistFolder(appSettings
+			    .DependenciesFolder) )
+		{
+			new StorageHostFullPathFilesystem(new FakeIWebLogger()).CreateDirectory(appSettings
+				.DependenciesFolder);
+		}
+
+		// We mock the data to avoid http request during tests
+
+		// Mockup data to: 
+		// map the city
+		const string mockCities1000 =
+			"2747351\t\'s-Hertogenbosch\t\'s-Hertogenbosch\t\'s Bosch,\'s-Hertogenbosch,Bois-le-Duc,Bolduque,Boscoducale,De Bosk,Den Bosch,Hertogenbosch,Herzogenbusch,Khertogenbos,Oeteldonk,Silva Ducis,Хертогенбос,’s-Hertogenbosch\t51.69917\t5.30417\tP\tPPLA\tNL\t\t06\t0796\t\t\t134520\t\t7\tEurope/Amsterdam\t2017-10-17\r\n" +
+			"6693230\tVilla Santa Rita\tVilla Santa Rita\t\t-34.61082\t-58.481\tP\tPPLX\tAR\t\t07\t02011\t\t\t34000\t\t25\tAmerica/Argentina/Buenos_Aires\t2017-05-08\r\n" +
+			"3713678\tBuenos Aires\tBuenos Aires\tBuenos Aires\t8.63146\t-79.94775\tP\tPPLA3\tPA\t\t13\t\t\t\t496\t\t232\tAmerica/Panama\t2017-08-16\r\n" +
+			"3713682\tBuenos Aires\tBuenos Aires\tBuenos Aires\t8.41384\t-81.4844\tP\tPPLA2\tPA\t\t12\t\t\t\t400\t\t336\tAmerica/Panama\t2017-08-16\r\n" +
+			"6691831\tVatican City\tVatican City\tCitta del Vaticano,Città del Vaticano,Ciudad del Vaticano,Etat de la Cite du Vatican,Staat Vatikanstadt,Staat der Vatikanstadt,Vatican,Vatican City,Vatican City State,Vaticano,Vatikan,Vatikanas,Vatikanstaden,Vatikanstadt,batikan,batikan si,État de la Cité du Vatican,Ватикан,바티칸,바티칸 시\t41.90268\t12.45414\tP\tPPLC\tVA\tIT\t\t\t\t\t829\t55\t61\tEurope/Vatican\t2018-08-17\n" +
+			"2747704\tSchalkhaar1\tSchalkhaar\tSchalkhaap\t52.26833\t6.19444\tP\tPPL\tNL\t\t15\t0150\t\t\t4610\t\t9\tEurope/Amsterdam\t2017-10-17\n";
+
+		new StorageHostFullPathFilesystem(new FakeIWebLogger()).WriteStream(
+			StringToStreamHelper.StringToStream(mockCities1000),
+			Path.Combine(appSettings.DependenciesFolder, "cities1000.txt"));
+
+		// Mockup data to:
+		// map the state and country
+
+		const string admin1CodesAscii = "NL.07\tNorth Holland\tNorth Holland\t2749879\r\n" +
+		                                "NL.06\tNorth Brabant\tNorth Brabant\t2749990\r\n" +
+		                                "NL.05\tLimburg\tLimburg\t2751596\r\n" +
+		                                "NL.03\tGelderland\tGelderland\t2755634\r\n" +
+		                                "AR.07\tBuenos Aires F.D.\tBuenos Aires F.D.\t3433955\r\n" +
+		                                "NL.15\tOverijssel\tOverijssel\t2748838\n";
+
+		new StorageHostFullPathFilesystem(new FakeIWebLogger()).WriteStream(
+			StringToStreamHelper.StringToStream(admin1CodesAscii),
+			Path.Combine(appSettings.DependenciesFolder, "admin1CodesASCII.txt"));
+		return appSettings;
+	}
+
+	[TestMethod]
+	public async Task Importer_ReverseGeoCode()
+	{
+		var appSettings = SetupReverseGeoCodeServiceData();
+		var query = new FakeIQuery();
+		var storage = new FakeIStorage(
+			["/"],
+			["/test.jpg"],
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+
+		var importService = new Import(new FakeSelectorStorage(storage), appSettings,
+			new FakeIImportQuery(),
+			new FakeExifTool(storage, appSettings), query, _console,
+			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
+			new FakeIThumbnailQuery(),
+			new ReverseGeoCodeService(appSettings, new FakeIGeoFileDownload(),
+				new FakeIWebLogger()), new FakeMemoryCache());
+
+		var result = await importService.Importer(new List<string> { "/test.jpg" },
+			new ImportSettingsModel { ReverseGeoCode = true });
+
+		// Expect
+		Assert.AreEqual(ImportStatus.Ok, result.FirstOrDefault()?.Status);
+		var fileIndexItem = result.FirstOrDefault()?.FileIndexItem;
+		Assert.IsTrue(storage.ExistFile("/test.jpg"));
+		Assert.IsNotNull(fileIndexItem);
+		Assert.AreEqual("Schalkhaar", fileIndexItem.LocationCity);
+		Assert.AreEqual("NLD", fileIndexItem.LocationCountryCode);
+		Assert.AreEqual("Netherlands", fileIndexItem.LocationCountry);
+		Assert.AreEqual("Overijssel", fileIndexItem.LocationState);
+	}
+
 	[TestMethod]
 	public async Task Importer_EmptyDirectory()
 	{
 		var appSettings = new AppSettings { Verbose = true };
-		var storage = new FakeIStorage(new List<string> { "/" });
+		var storage = new FakeIStorage(["/"]);
 		var importService = new Import(new FakeSelectorStorage(storage), appSettings,
 			new FakeIImportQuery(),
 			new FakeExifTool(storage, appSettings), null!, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Importer(
 			new List<string> { "/" },
@@ -473,7 +557,7 @@ public sealed class ImportTest
 			new FakeIImportQuery(),
 			new FakeExifTool(storage, appSettings), query, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 		var expectedFilePath = await GetExpectedFilePathAsync(storage, appSettings,
 			"/test.dng");
 
@@ -481,7 +565,7 @@ public sealed class ImportTest
 			new ImportSettingsModel());
 
 		Assert.AreEqual(expectedFilePath, result[0].FileIndexItem?.FilePath);
-		Assert.AreEqual(ImportStatus.Ok, result.FirstOrDefault()?.Status);
+		Assert.AreEqual(ImportStatus.Ok, result[0].Status);
 		// Apple is read from XMP
 		Assert.AreEqual("Apple", result[0].FileIndexItem?.Make);
 	}
@@ -502,7 +586,7 @@ public sealed class ImportTest
 			new FakeIImportQuery(),
 			new FakeExifTool(storage, appSettings), query,
 			_console, new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Importer(new List<string> { "/test.dng" },
 			new ImportSettingsModel());
@@ -530,10 +614,10 @@ public sealed class ImportTest
 		var importService = new Import(new FakeSelectorStorage(storage),
 			appSettings, new FakeIImportQuery(), new FakeExifTool(storage, appSettings), query,
 			_console, new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Importer(new List<string> { "/test.dng" },
-			new ImportSettingsModel());
+			new ImportSettingsModel { ReverseGeoCode = true });
 
 		Assert.AreEqual(1, result.Count);
 		var xmpExpectedFilePath = ( await GetExpectedFilePathAsync(storage, appSettings,
@@ -563,7 +647,7 @@ public sealed class ImportTest
 			new FakeIImportQuery(),
 			new FakeExifTool(storage, appSettings), query,
 			_console, new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		await importService.Importer(new List<string> { "/test.dng" },
 			new ImportSettingsModel());
@@ -597,7 +681,10 @@ public sealed class ImportTest
 			new FakeIImportQuery(),
 			new FakeExifTool(storage, appSettings), new FakeIQuery(), _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache()) { MaxTryGetDestinationPath = 0 };
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache())
+		{
+			MaxTryGetDestinationPath = 0
+		};
 
 		// used to be:[ExpectedException(typeof(AggregateException))]
 		await Assert.ThrowsExactlyAsync<AggregateException>(async () =>
@@ -622,7 +709,7 @@ public sealed class ImportTest
 			new FakeIImportQuery(),
 			new FakeExifTool(storage, appSettings), new FakeIQuery(), _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Importer(new List<string> { "/test.jpg" },
 			new ImportSettingsModel());
@@ -644,7 +731,7 @@ public sealed class ImportTest
 			appSettings, new FakeIImportQuery(),
 			new FakeExifTool(_iStorageFake, appSettings), query, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Importer(new List<string> { "/test.jpg" },
 			new ImportSettingsModel());
@@ -665,7 +752,7 @@ public sealed class ImportTest
 			new FakeIImportQuery(),
 			new FakeExifTool(_iStorageFake, appSettings), query, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
 			await importService.Importer(new List<string> { "/test.jpg" },
@@ -687,7 +774,7 @@ public sealed class ImportTest
 			), appSettings, fakeImportQuery,
 			new FakeExifTool(_iStorageFake, appSettings), fakeDbQuery, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Importer(
 			new ImportIndexItem
@@ -719,7 +806,7 @@ public sealed class ImportTest
 			new FakeIImportQuery(),
 			new FakeExifTool(storage, appSettings), query, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		await importService.Importer(new List<string> { "/test.jpg" },
 			new ImportSettingsModel());
@@ -744,7 +831,7 @@ public sealed class ImportTest
 			new FakeIImportQuery(),
 			new FakeExifTool(storage, appSettings), query, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		await importService.Importer(new List<string> { "/test.jpg" },
 			new ImportSettingsModel());
@@ -767,7 +854,7 @@ public sealed class ImportTest
 			new FakeIImportQuery(),
 			new FakeExifTool(storage, appSettings), query, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		await importService.Importer(new List<string> { "/test.jpg" },
 			new ImportSettingsModel());
@@ -794,7 +881,7 @@ public sealed class ImportTest
 			importQuery,
 			new FakeExifTool(storage, appSettings), query, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Importer(new List<string> { "/test.jpg" },
 			new ImportSettingsModel());
@@ -821,7 +908,7 @@ public sealed class ImportTest
 		var importService = new Import(new FakeSelectorStorage(storage), appSettings, null!,
 			new FakeExifTool(storage, appSettings), null!, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Importer(new List<string> { "/test.jpg" },
 			new ImportSettingsModel { IndexMode = false });
@@ -856,7 +943,7 @@ public sealed class ImportTest
 			importQuery,
 			new FakeExifTool(storage, appSettings), query, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var duplicatesExampleList = new List<ImportIndexItem>
 		{
@@ -928,7 +1015,7 @@ public sealed class ImportTest
 			importQuery,
 			new FakeExifTool(storage, appSettings), query, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var duplicatesExampleList = new List<ImportIndexItem>
 		{
@@ -950,7 +1037,8 @@ public sealed class ImportTest
 			new AppSettings(),
 			new FakeIImportQuery(), new FakeExifTool(_iStorageFake, new AppSettings()),
 			new FakeIQuery(), _console, new FakeIMetaExifThumbnailService(),
-			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(),
+			new FakeMemoryCache());
 
 		var result = await importService.Importer(
 			new ImportIndexItem { Status = ImportStatus.FileError },
@@ -965,7 +1053,8 @@ public sealed class ImportTest
 			new AppSettings { MetaThumbnailOnImport = false },
 			new FakeIImportQuery(), new FakeExifTool(_iStorageFake, new AppSettings()),
 			new FakeIQuery(), _console, new FakeIMetaExifThumbnailService(),
-			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(),
+			new FakeMemoryCache());
 
 		var result = await importService.CreateMataThumbnail(null!,
 			new ImportSettingsModel());
@@ -980,7 +1069,7 @@ public sealed class ImportTest
 			new FakeIImportQuery(), new FakeExifTool(_iStorageFake, new AppSettings()),
 			new FakeIQuery(), _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.CreateMataThumbnail(null!,
 			new ImportSettingsModel { IndexMode = false });
@@ -995,7 +1084,8 @@ public sealed class ImportTest
 			new AppSettings(),
 			new FakeIImportQuery(), new FakeExifTool(_iStorageFake, new AppSettings()),
 			new FakeIQuery(), _console, fakeExifThumbnailService,
-			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(),
+			new FakeMemoryCache());
 
 		var result = await importService.CreateMataThumbnail(
 			new List<ImportIndexItem>
@@ -1021,7 +1111,8 @@ public sealed class ImportTest
 			new AppSettings(),
 			new FakeIImportQuery(), new FakeExifTool(_iStorageFake, new AppSettings()),
 			new FakeIQuery(), _console, fakeExifThumbnailService,
-			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(),
+			new FakeMemoryCache());
 
 		await importService.CreateMataThumbnail(
 			new List<ImportIndexItem>
@@ -1046,7 +1137,8 @@ public sealed class ImportTest
 			new AppSettings(),
 			new FakeIImportQuery(), new FakeExifTool(_iStorageFake, new AppSettings()),
 			new FakeIQuery(), _console, fakeExifThumbnailService,
-			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(),
+			new FakeMemoryCache());
 
 		await importService.CreateMataThumbnail(
 			new List<ImportIndexItem>
@@ -1071,7 +1163,8 @@ public sealed class ImportTest
 			new AppSettings(),
 			new FakeIImportQuery(), new FakeExifTool(_iStorageFake, new AppSettings()),
 			new FakeIQuery(), _console, new FakeIMetaExifThumbnailService(),
-			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(),
+			new FakeMemoryCache());
 		var result = importService.ExistXmpSidecarForThisFileType(new ImportIndexItem());
 		Assert.IsFalse(result);
 	}
@@ -1088,7 +1181,7 @@ public sealed class ImportTest
 			appSettings, new FakeIImportQuery(), new FakeExifTool(storage, appSettings),
 			new FakeIQuery(),
 			_console, new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = importService.ExistXmpSidecarForThisFileType(new ImportIndexItem
 		{
@@ -1109,7 +1202,7 @@ public sealed class ImportTest
 			appSettings, new FakeIImportQuery(), new FakeExifTool(storage, appSettings),
 			new FakeIQuery(),
 			_console, new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = importService.ExistXmpSidecarForThisFileType(new ImportIndexItem
 		{
@@ -1132,6 +1225,7 @@ public sealed class ImportTest
 			appSettings, new FakeIImportQuery(new List<string>(), false),
 			new FakeExifTool(storage, appSettings), new FakeIQuery(),
 			_console, new FakeIMetaExifThumbnailService(), logger, new FakeIThumbnailQuery(),
+			new FakeIReverseGeoCodeService(),
 			new FakeMemoryCache());
 
 		await importService.AddToQueryAndImportDatabaseAsync(
@@ -1156,6 +1250,7 @@ public sealed class ImportTest
 			appSettings, new FakeIImportQuery(new List<string>(), false),
 			new FakeExifTool(storage, appSettings), new FakeIQuery(),
 			_console, new FakeIMetaExifThumbnailService(), logger, new FakeIThumbnailQuery(),
+			new FakeIReverseGeoCodeService(),
 			new FakeMemoryCache());
 
 		await importService.RemoveFromQueryAndImportDatabaseAsync(
@@ -1180,6 +1275,7 @@ public sealed class ImportTest
 			appSettings, new FakeIImportQuery(new List<string>(), false),
 			new FakeExifTool(storage, appSettings), new FakeIQuery(),
 			_console, new FakeIMetaExifThumbnailService(), logger, new FakeIThumbnailQuery(),
+			new FakeIReverseGeoCodeService(),
 			new FakeMemoryCache());
 
 		await importService.AddToQueryAndImportDatabaseAsync(
@@ -1211,6 +1307,7 @@ public sealed class ImportTest
 			appSettings, new FakeIImportQuery(new List<string>(), false),
 			new FakeExifTool(storage, appSettings), new FakeIQuery(),
 			_console, new FakeIMetaExifThumbnailService(), logger, new FakeIThumbnailQuery(),
+			new FakeIReverseGeoCodeService(),
 			new FakeMemoryCache());
 
 		var readOnlyFileSystems = importService.CheckForReadOnlyFileSystems(
@@ -1235,6 +1332,7 @@ public sealed class ImportTest
 			appSettings, new FakeIImportQuery(new List<string>(), false),
 			new FakeExifTool(storage, appSettings), new FakeIQuery(),
 			_console, new FakeIMetaExifThumbnailService(), logger, new FakeIThumbnailQuery(),
+			new FakeIReverseGeoCodeService(),
 			new FakeMemoryCache());
 
 		var readOnlyFileSystems = importService.CheckForReadOnlyFileSystems(
@@ -1256,6 +1354,7 @@ public sealed class ImportTest
 			appSettings, new FakeIImportQuery(new List<string>(), false),
 			new FakeExifTool(storage, appSettings), new FakeIQuery(),
 			_console, new FakeIMetaExifThumbnailService(), logger, new FakeIThumbnailQuery(),
+			new FakeIReverseGeoCodeService(),
 			new FakeMemoryCache());
 
 		var importIndexItems = new List<ImportIndexItem>
@@ -1284,6 +1383,7 @@ public sealed class ImportTest
 			appSettings, new FakeIImportQuery(new List<string>(), false),
 			new FakeExifTool(storage, appSettings), new FakeIQuery(),
 			_console, new FakeIMetaExifThumbnailService(), logger, new FakeIThumbnailQuery(),
+			new FakeIReverseGeoCodeService(),
 			new FakeMemoryCache());
 
 		var importIndexItems = new List<ImportIndexItem>
@@ -1316,6 +1416,7 @@ public sealed class ImportTest
 			appSettings, new FakeIImportQuery(new List<string>(), false),
 			new FakeExifTool(storage, appSettings), new FakeIQuery(),
 			_console, new FakeIMetaExifThumbnailService(), logger, new FakeIThumbnailQuery(),
+			new FakeIReverseGeoCodeService(),
 			new FakeMemoryCache());
 
 		var importIndexItems = new List<ImportIndexItem>

@@ -82,7 +82,7 @@ public sealed class ImportTestInMemoryDb
 			new FakeIImportQuery(),
 			new FakeExifTool(storage, _appSettings), _query, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 		var expectedFilePath =
 			await ImportTest.GetExpectedFilePathAsync(storage, _appSettings, "/test.gpx");
 
@@ -104,7 +104,7 @@ public sealed class ImportTestInMemoryDb
 			_appSettings, new FakeIImportQuery(),
 			new FakeExifTool(_iStorageFake, _appSettings), _query, _console,
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
-			new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Importer(new List<string> { "/test.jpg" },
 			new ImportSettingsModel { Structure = "/yyyy/MM/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext" });
@@ -130,7 +130,8 @@ public sealed class ImportTestInMemoryDb
 			_appSettings, _importQuery,
 			new FakeExifTool(_iStorageFake, _appSettings), _query,
 			_console, new FakeIMetaExifThumbnailService(),
-			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(),
+			new FakeMemoryCache());
 
 		await importService.Importer(new List<string> { "/test.jpg" },
 			new ImportSettingsModel { Structure = "/yyyy/MM/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext" });
@@ -156,7 +157,8 @@ public sealed class ImportTestInMemoryDb
 			_appSettings, new FakeIImportQuery(),
 			new FakeExifTool(_iStorageFake, _appSettings),
 			_query, _console, new FakeIMetaExifThumbnailService(),
-			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(),
+			new FakeMemoryCache());
 
 		var expectedFilePath =
 			await ImportTest.GetExpectedFilePathAsync(_iStorageFake, _appSettings, "/test.jpg");
@@ -182,7 +184,8 @@ public sealed class ImportTestInMemoryDb
 			_appSettings, new FakeIImportQuery(),
 			new FakeExifTool(_iStorageFake, _appSettings),
 			_query, _console, new FakeIMetaExifThumbnailService(),
-			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeMemoryCache());
+			new FakeIWebLogger(), new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(),
+			new FakeMemoryCache());
 
 		var expectedFilePath =
 			await ImportTest.GetExpectedFilePathAsync(_iStorageFake, _appSettings, "/test.jpg");

@@ -5,6 +5,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
@@ -65,7 +66,7 @@ public sealed class WriteMetaThumbnailService : IWriteMetaThumbnailService
 
 				smallImage.Mutate(i => i.Rotate(rotation.ToDegrees()));
 
-				await smallImage.SaveAsJpegAsync(outputStream);
+				await SaveAsImage(smallImage, outputStream);
 
 				await _thumbnailStorage.WriteStreamAsync(outputStream,
 					ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.TinyMeta,
@@ -93,6 +94,18 @@ public sealed class WriteMetaThumbnailService : IWriteMetaThumbnailService
 				$"[WriteFile@meta] Meta data read - Exception {reference} {message} - can continue without",
 				exception);
 			return false;
+		}
+	}
+
+	private async Task SaveAsImage(Image smallImage, MemoryStream outputStream)
+	{
+		if ( _appSettings.ThumbnailImageFormat == ThumbnailImageFormat.webp )
+		{
+			await smallImage.SaveAsWebpAsync(outputStream);
+		}
+		else
+		{
+			await smallImage.SaveAsJpegAsync(outputStream);
 		}
 	}
 }
