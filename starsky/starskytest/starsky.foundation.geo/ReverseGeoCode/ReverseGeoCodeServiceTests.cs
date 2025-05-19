@@ -49,8 +49,11 @@ public class ReverseGeoCodeServiceTests
 			"6693230\tVilla Santa Rita\tVilla Santa Rita\t\t-34.61082\t-58.481\tP\tPPLX\tAR\t\t07\t02011\t\t\t34000\t\t25\tAmerica/Argentina/Buenos_Aires\t2017-05-08\r\n" +
 			"3713678\tBuenos Aires\tBuenos Aires\tBuenos Aires\t8.63146\t-79.94775\tP\tPPLA3\tPA\t\t13\t\t\t\t496\t\t232\tAmerica/Panama\t2017-08-16\r\n" +
 			"3713682\tBuenos Aires\tBuenos Aires\tBuenos Aires\t8.41384\t-81.4844\tP\tPPLA2\tPA\t\t12\t\t\t\t400\t\t336\tAmerica/Panama\t2017-08-16\r\n" +
-			"6691831\tVatican City\tVatican City\tCitta del Vaticano,Città del Vaticano,Ciudad del Vaticano,Etat de la Cite du Vatican,Staat Vatikanstadt,Staat der Vatikanstadt,Vatican,Vatican City,Vatican City State,Vaticano,Vatikan,Vatikanas,Vatikanstaden,Vatikanstadt,batikan,batikan si,État de la Cité du Vatican,Ватикан,바티칸,바티칸 시\t41.90268\t12.45414\tP\tPPLC\tVA\tIT\t\t\t\t\t829\t55\t61\tEurope/Vatican\t2018-08-17\n";
-
+			"6691831\tVatican City\tVatican City\tCitta del Vaticano,Città del Vaticano,Ciudad del Vaticano,Etat de la Cite du Vatican,Staat Vatikanstadt,Staat der Vatikanstadt,Vatican,Vatican City,Vatican City State,Vaticano,Vatikan,Vatikanas,Vatikanstaden,Vatikanstadt,batikan,batikan si,État de la Cité du Vatican,Ватикан,바티칸,바티칸 시\t41.90268\t12.45414\tP\tPPLC\tVA\tIT\t\t\t\t\t829\t55\t61\tEurope/Vatican\t2018-08-17\n" +
+			// missing city Kumasi:
+			"2298890\tKumasi\t\tCoomassie,KMS,Kumase,Kumasi,Kumasi shaary,Kumasis,Kumaso,Kumassi,Kumasy,ku ma xi,kumashi,kumasi,kwmasy,Кумаси,Кумаси шаары,Кумасі,Կումասի,كوماسي,کوماسی,ਕੁਮਾਸੀ,クマシ,库马西,쿠마시\t6.68848\t-1.62443\tP\tPPLA\tGH\t\t02\t614\t\t\t2544530\t\t270\tAfrica/Accra\t2024-06-22\n" +
+			// missing country: greece
+			"256449\tNerokoúros\tNerokouros\tNerokouros,Nerokourou,Nerokoúros,Nerokoúrou,Νεροκούρος,Νεροκούρου\t35.47587\t24.03995\tP\tPPL\t \t\tESYE43\t43\t9325\t\t4388\t\t66\tEurope/Athens\t2012-12-05\n";
 
 		new StorageHostFullPathFilesystem(new FakeIWebLogger()).WriteStream(
 			StringToStreamHelper.StringToStream(mockCities1000),
@@ -198,5 +201,31 @@ public class ReverseGeoCodeServiceTests
 
 		Assert.IsFalse(result.IsSuccess);
 		Assert.AreEqual("No nearest place found", result.ErrorReason);
+	}
+
+	[TestMethod]
+	public async Task GetLocation_Missing_City()
+	{
+		var result = await new ReverseGeoCodeService(_appSettings, new FakeIGeoFileDownload(),
+			new FakeIWebLogger()).GetLocation(6.68848, -1.62443);
+
+		Assert.IsFalse(result.IsSuccess);
+		Assert.AreEqual("Ghana", result.LocationCountry);
+		Assert.AreEqual("GHA", result.LocationCountryCode);
+		Assert.IsNull(result.LocationState);
+		Assert.AreEqual(string.Empty, result.LocationCity);
+	}
+
+	[TestMethod]
+	public async Task GetLocation_Missing_CountryCode()
+	{
+		var result = await new ReverseGeoCodeService(_appSettings, new FakeIGeoFileDownload(),
+			new FakeIWebLogger()).GetLocation(35.47587, 24.03995);
+
+		Assert.IsFalse(result.IsSuccess);
+		Assert.IsNull(result.LocationCountry);
+		Assert.IsNull(result.LocationCountryCode);
+		Assert.IsNull(result.LocationState);
+		Assert.AreEqual("Nerokouros", result.LocationCity);
 	}
 }
