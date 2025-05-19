@@ -12,7 +12,7 @@ public class GeoReverseLookupControllerTest
 	[TestMethod]
 	public async Task GeoReverseLookup_Index()
 	{
-		var controller = new GeoReverseLookupController(new FakeIGeoFolderReverseLookup());
+		var controller = new GeoReverseLookupController(new FakeIReverseGeoCodeService());
 		var result = await controller.GeoReverseLookup(0, 0) as OkObjectResult;
 		Assert.AreEqual(200, result?.StatusCode);
 	}
@@ -21,7 +21,7 @@ public class GeoReverseLookupControllerTest
 	public async Task GeoReverseLookup_ReturnsBadRequest()
 	{
 		// Arrange
-		var controller = new GeoReverseLookupController(new FakeIGeoFolderReverseLookup());
+		var controller = new GeoReverseLookupController(new FakeIReverseGeoCodeService());
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 
 		// Act

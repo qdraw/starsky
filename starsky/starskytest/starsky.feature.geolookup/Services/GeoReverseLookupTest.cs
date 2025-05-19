@@ -124,7 +124,7 @@ public sealed class GeoFolderReverseLookupTest
 		Assert.AreEqual(string.Empty, northSea.LocationCountry);
 		Assert.AreEqual("'s-Hertogenbosch", cakeBakerPhoto.LocationCity);
 		Assert.AreEqual("North Brabant", cakeBakerPhoto.LocationState);
-		Assert.AreEqual("Nederland", cakeBakerPhoto.LocationCountry);
+		Assert.AreEqual("Netherlands", cakeBakerPhoto.LocationCountry);
 		Assert.AreEqual("NLD", cakeBakerPhoto.LocationCountryCode);
 	}
 

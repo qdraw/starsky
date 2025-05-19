@@ -17,6 +17,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.database.Thumbnails;
+using starsky.foundation.geo.ReverseGeoCode.Interface;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
@@ -42,11 +43,6 @@ namespace starsky.feature.import.Services;
 [Service(typeof(IImport), InjectionLifetime = InjectionLifetime.Scoped)]
 public class Import : IImport
 {
-	/// <summary>
-	///     Used when File has no exif date in description
-	/// </summary>
-	internal const string MessageDateTimeBasedOnFilename = "Date and Time based on filename";
-
 	private readonly AppSettings _appSettings;
 
 	private readonly IConsole _console;
@@ -59,6 +55,7 @@ public class Import : IImport
 
 	private readonly IMemoryCache? _memoryCache;
 	private readonly IMetaExifThumbnailService _metaExifThumbnailService;
+	private readonly ObjectCreateIndexItemService _objectCreateIndexItemService;
 	private readonly IQuery _query;
 
 	private readonly ReadMeta _readMetaHost;
@@ -80,6 +77,7 @@ public class Import : IImport
 		IMetaExifThumbnailService metaExifThumbnailService,
 		IWebLogger logger,
 		IThumbnailQuery thumbnailQuery,
+		IReverseGeoCodeService reverseGeoCode,
 		IMemoryCache? memoryCache = null,
 		IServiceScopeFactory? serviceScopeFactory = null)
 	{
@@ -102,6 +100,8 @@ public class Import : IImport
 		_updateImportTransformations = new UpdateImportTransformations(logger, _exifTool,
 			selectorStorage, appSettings, thumbnailQuery);
 		_thumbnailQuery = thumbnailQuery;
+		_objectCreateIndexItemService =
+			new ObjectCreateIndexItemService(appSettings, reverseGeoCode);
 	}
 
 	/// <summary>
@@ -144,7 +144,7 @@ public class Import : IImport
 		var directoriesContent = ParentFoldersDictionary(importIndexItemsList);
 
 		importIndexItemsList =
-			CheckForDuplicateNaming(importIndexItemsList.ToList(), directoriesContent);
+			CheckForDuplicateNaming([.. importIndexItemsList], directoriesContent);
 		CheckForReadOnlyFileSystems(importIndexItemsList, importSettings.DeleteAfter);
 
 		return importIndexItemsList;
@@ -446,9 +446,12 @@ public class Import : IImport
 			await _readMetaHost.ReadExifAndXmpFromFileAsync(inputFileFullPath.Key);
 
 		// Parse the filename and create a new importIndexItem object
-		var importIndexItem = ObjectCreateIndexItem(inputFileFullPath.Key, imageFormat,
+		// Prepare transformations here
+		var importIndexItem = await _objectCreateIndexItemService.ObjectCreateIndexItem(
+			inputFileFullPath.Key, imageFormat,
 			hashList.Key, fileIndexItem!, importSettings.ColorClass,
-			_filesystemStorage.Info(inputFileFullPath.Key).Size, importSettings.ReverseGeoCode);
+			_filesystemStorage.Info(inputFileFullPath.Key).Size,
+			importSettings.ReverseGeoCode);
 
 		// Update the parent and filenames
 		importIndexItem = ApplyStructure(importIndexItem, importSettings.Structure);
@@ -462,78 +465,6 @@ public class Import : IImport
 		{
 			_console.WriteLine(message);
 		}
-	}
-
-
-	/// <summary>
-	///     Create a new import object
-	/// </summary>
-	/// <param name="inputFileFullPath">full file path</param>
-	/// <param name="imageFormat">is it jpeg or png or something different</param>
-	/// <param name="fileHashCode">file hash base32</param>
-	/// <param name="fileIndexItem">database item</param>
-	/// <param name="colorClassTransformation">Force to update colorClass</param>
-	/// <param name="size">Add filesize in bytes</param>
-	/// <param name="importSettingsReverseGeoCode"></param>
-	/// <returns></returns>
-	private ImportIndexItem ObjectCreateIndexItem(string inputFileFullPath,
-		ExtensionRolesHelper.ImageFormat imageFormat,
-		string fileHashCode,
-		FileIndexItem fileIndexItem,
-		int colorClassTransformation,
-		long size, bool importSettingsReverseGeoCode)
-	{
-		var importIndexItem = new ImportIndexItem(_appSettings)
-		{
-			SourceFullFilePath = inputFileFullPath,
-			DateTime = fileIndexItem.DateTime,
-			FileHash = fileHashCode,
-			FileIndexItem = fileIndexItem,
-			Status = ImportStatus.Ok,
-			FilePath = fileIndexItem.FilePath,
-			ColorClass = fileIndexItem.ColorClass
-		};
-
-		// used for files without an Exif Date for example WhatsApp images
-		if ( fileIndexItem.DateTime.Year == 1 )
-		{
-			importIndexItem.FileIndexItem.DateTime =
-				importIndexItem.ParseDateTimeFromFileName();
-			// used to sync exifTool and to let the user know that the transformation has been applied
-			importIndexItem.FileIndexItem.Description = MessageDateTimeBasedOnFilename;
-			// only set when date is parsed if not ignore update
-			if ( importIndexItem.FileIndexItem.DateTime.Year != 1 )
-			{
-				importIndexItem.DateTimeFromFileName = true;
-			}
-		}
-
-		// Also add Camera brand to list
-		importIndexItem.MakeModel = importIndexItem.FileIndexItem.MakeModel;
-
-		// AddToDatabase is Used by the importer History agent
-		importIndexItem.FileIndexItem.AddToDatabase = DateTime.UtcNow;
-		importIndexItem.AddToDatabase = DateTime.UtcNow;
-
-		importIndexItem.FileIndexItem.Size = size;
-		importIndexItem.FileIndexItem.FileHash = fileHashCode;
-		importIndexItem.FileIndexItem.ImageFormat = imageFormat;
-		importIndexItem.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
-
-		if ( importSettingsReverseGeoCode )
-		{
-		}
-
-		if ( colorClassTransformation < 0 )
-		{
-			return importIndexItem;
-		}
-
-		// only when set in ImportSettingsModel
-		var colorClass = ( ColorClassParser.Color ) colorClassTransformation;
-		importIndexItem.FileIndexItem.ColorClass = colorClass;
-		importIndexItem.ColorClass = colorClass;
-		return importIndexItem;
 	}
 
 	/// <summary>
@@ -657,6 +588,7 @@ public class Import : IImport
 
 		if ( importSettings.IndexMode )
 		{
+			// database updates
 			var queryFactory = new QueryFactory(
 				new SetupDatabaseTypes(_appSettings), _query,
 				_memoryCache, _appSettings, _serviceScopeFactory, _logger);

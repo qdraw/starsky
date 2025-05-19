@@ -1,11 +1,13 @@
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using Microsoft.Extensions.DependencyInjection;
 using NGeoNames;
 using NGeoNames.Entities;
 using starsky.foundation.geo.GeoDownload;
 using starsky.foundation.geo.GeoDownload.Interfaces;
 using starsky.foundation.geo.ReverseGeoCode.Interface;
 using starsky.foundation.geo.ReverseGeoCode.Model;
+using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -15,6 +17,10 @@ using starsky.foundation.readmeta.Helpers;
 
 namespace starsky.foundation.geo.ReverseGeoCode;
 
+/// <summary>
+///     It's a singleton because the geodata is stored in-memory
+/// </summary>
+[Service(typeof(IReverseGeoCodeService), InjectionLifetime = InjectionLifetime.Singleton)]
 public class ReverseGeoCodeService : IReverseGeoCodeService
 {
 	private readonly AppSettings _appSettings;
@@ -23,21 +29,22 @@ public class ReverseGeoCodeService : IReverseGeoCodeService
 	private IEnumerable<Admin1Code>? _admin1CodesAscii;
 	private ReverseGeoCode<ExtendedGeoName>? _reverseGeoCode;
 
-	// /// <summary>
-	// ///     Getting GeoData
-	// /// </summary>
-	// /// <param name="appSettings">to know where to store the deps files</param>
-	// /// <param name="serviceScopeFactory">used to get IGeoFileDownload - Abstraction to download Geo Data</param>
-	// /// <param name="logger">debug logger</param>
-	// public ReverseGeoCodeService(AppSettings appSettings,
-	// 	IGeoFileDownload geoFileDownload, IWebLogger logger)
-	// {
-	// 	_appSettings = appSettings;
-	// 	_geoFileDownload = serviceScopeFactory.CreateScope().ServiceProvider
-	// 		.GetRequiredService<IGeoFileDownload>();
-	// 	_logger = logger;
-	// }
+	/// <summary>
+	///     Getting GeoData
+	/// </summary>
+	/// <param name="appSettings">to know where to store the deps files</param>
+	/// <param name="serviceScopeFactory">used to get IGeoFileDownload - Abstraction to download Geo Data</param>
+	/// <param name="logger">debug logger</param>
 	public ReverseGeoCodeService(AppSettings appSettings,
+		IServiceScopeFactory serviceScopeFactory, IWebLogger logger)
+	{
+		_appSettings = appSettings;
+		_geoFileDownload = serviceScopeFactory.CreateScope().ServiceProvider
+			.GetRequiredService<IGeoFileDownload>();
+		_logger = logger;
+	}
+
+	internal ReverseGeoCodeService(AppSettings appSettings,
 		IGeoFileDownload geoFileDownload, IWebLogger logger)
 	{
 		_appSettings = appSettings;
@@ -100,7 +107,7 @@ public class ReverseGeoCodeService : IReverseGeoCodeService
 		try
 		{
 			var region = new RegionInfo(nearestPlace.CountryCode);
-			status.LocationCountry = region.NativeName;
+			status.LocationCountry = region.EnglishName;
 			status.LocationCountryCode = region.ThreeLetterISORegionName;
 		}
 		catch ( ArgumentException e )

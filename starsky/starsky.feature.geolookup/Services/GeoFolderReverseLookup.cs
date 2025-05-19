@@ -12,25 +12,16 @@ using starsky.foundation.platform.Helpers;
 
 namespace starsky.feature.geolookup.Services;
 
+/// <summary>
+///     Internal API - Getting GeoData
+/// </summary>
+/// <param name="reverseLookup">reverse geocode</param>
+/// <param name="memoryCache">for keeping status</param>
 [Service(typeof(IGeoFolderReverseLookup), InjectionLifetime = InjectionLifetime.Singleton)]
-public sealed class GeoFolderReverseLookup : IGeoFolderReverseLookup
+public sealed class GeoFolderReverseLookup(
+	IReverseGeoCodeService reverseLookup,
+	IMemoryCache? memoryCache = null) : IGeoFolderReverseLookup
 {
-	private readonly IMemoryCache? _cache;
-	private readonly IReverseGeoCodeService _reverseGeoCodeService;
-
-	/// <summary>
-	///     Internal API - Getting GeoData
-	/// </summary>
-	/// <param name="reverseLookup">reverse geocode</param>
-	/// <param name="memoryCache">for keeping status</param>
-	internal GeoFolderReverseLookup(IReverseGeoCodeService reverseLookup,
-		IMemoryCache? memoryCache = null)
-	{
-		_reverseGeoCodeService = reverseLookup;
-		// Get the IGeoFileDownload from the service scope due different injection lifetime (singleton vs scoped)
-		_cache = memoryCache;
-	}
-
 	/// <summary>
 	///     Reverse Geo Syncing for a folder
 	/// </summary>
@@ -49,16 +40,16 @@ public sealed class GeoFolderReverseLookup : IGeoFolderReverseLookup
 			return metaFilesInDirectory;
 		}
 
-		new GeoCacheStatusService(_cache).StatusUpdate(subPath, metaFilesInDirectory.Count * 2,
+		new GeoCacheStatusService(memoryCache).StatusUpdate(subPath, metaFilesInDirectory.Count * 2,
 			StatusType.Total);
 
 		foreach ( var metaFileItem in metaFilesInDirectory.Select((value, index) =>
 			         new { value, index }) )
 		{
 			var result =
-				await _reverseGeoCodeService.GetLocation(metaFileItem.value.Latitude,
+				await reverseLookup.GetLocation(metaFileItem.value.Latitude,
 					metaFileItem.value.Longitude);
-			new GeoCacheStatusService(_cache).StatusUpdate(metaFileItem.value.ParentDirectory!,
+			new GeoCacheStatusService(memoryCache).StatusUpdate(metaFileItem.value.ParentDirectory!,
 				metaFileItem.index, StatusType.Current);
 			if ( !result.IsSuccess )
 			{
@@ -72,7 +63,7 @@ public sealed class GeoFolderReverseLookup : IGeoFolderReverseLookup
 		}
 
 		// Ready signal
-		new GeoCacheStatusService(_cache).StatusUpdate(subPath,
+		new GeoCacheStatusService(memoryCache).StatusUpdate(subPath,
 			metaFilesInDirectory.Count, StatusType.Current);
 
 		return metaFilesInDirectory;

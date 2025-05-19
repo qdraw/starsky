@@ -3,7 +3,6 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.feature.geolookup.Services;
 using starsky.foundation.geo.GeoDownload.Interfaces;
 using starsky.foundation.geo.ReverseGeoCode;
 using starsky.foundation.platform.Models;
@@ -17,7 +16,7 @@ namespace starskytest.starsky.foundation.geo.ReverseGeoCode;
 [TestClass]
 public class ReverseGeoCodeServiceTests
 {
-	private AppSettings _appSettings;
+	private AppSettings _appSettings = new();
 
 	public ReverseGeoCodeServiceTests()
 	{
@@ -71,7 +70,7 @@ public class ReverseGeoCodeServiceTests
 			Path.Combine(_appSettings.DependenciesFolder, "admin1CodesASCII.txt"));
 	}
 
-		
+
 	[TestMethod]
 	public void GetAdmin1Name_Null()
 	{
@@ -131,19 +130,19 @@ public class ReverseGeoCodeServiceTests
 		Assert.AreEqual(1, fakeIGeoFileDownload.Count);
 	}
 
-	// [TestMethod]
-	// public async Task GetLocation_NearestPlace_WithServiceScope()
-	// {
-	// 	var services = new ServiceCollection();
-	// 	services.AddSingleton<IGeoFileDownload, FakeIGeoFileDownload>();
-	// 	var serviceProvider = services.BuildServiceProvider();
-	// 	var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-	//
-	// 	var result = await new ReverseGeoCodeService(_appSettings,
-	// 		new FakeIWebLogger(), new FakeMemoryCache()).GetLocation(51.69917, 5.304170);
-	//
-	// 	Assert.IsTrue(result.IsSuccess);
-	// }
+	[TestMethod]
+	public async Task GetLocation_NearestPlace_WithServiceScope()
+	{
+		var services = new ServiceCollection();
+		services.AddSingleton<IGeoFileDownload, FakeIGeoFileDownload>();
+		var serviceProvider = services.BuildServiceProvider();
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+		var result = await new ReverseGeoCodeService(_appSettings, scopeFactory,
+			new FakeIWebLogger()).GetLocation(51.69917, 5.304170);
+
+		Assert.IsTrue(result.IsSuccess);
+	}
 
 	[TestMethod]
 	public async Task GetLocation_NearestPlace_WithServiceScope_HitGeoDownload()
@@ -153,8 +152,8 @@ public class ReverseGeoCodeServiceTests
 		var serviceProvider = services.BuildServiceProvider();
 		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
-		await new GeoFolderReverseLookup(_appSettings, scopeFactory,
-			new FakeIWebLogger(), new FakeMemoryCache()).GetLocation(51.69917, 5.304170);
+		await new ReverseGeoCodeService(_appSettings, scopeFactory,
+			new FakeIWebLogger()).GetLocation(51.69917, 5.304170);
 
 		var fakeIGeoFileDownload =
 			serviceProvider.GetRequiredService<IGeoFileDownload>() as FakeIGeoFileDownload;
@@ -165,7 +164,7 @@ public class ReverseGeoCodeServiceTests
 	public async Task GetLocation_NearestPlace2_Uden()
 	{
 		// 51.6643,5.6196 = uden
-		var result = await new GeoFolderReverseLookup(_appSettings, new FakeIGeoFileDownload(),
+		var result = await new ReverseGeoCodeService(_appSettings, new FakeIGeoFileDownload(),
 			new FakeIWebLogger()).GetLocation(51.6643, 5.6196);
 		Assert.IsTrue(result.IsSuccess);
 	}
@@ -175,7 +174,7 @@ public class ReverseGeoCodeServiceTests
 	public async Task GetLocation_NearestPlace2_Valkenswaard()
 	{
 		// 51.34963/5.46038 = valkenswaard
-		var result = await new GeoFolderReverseLookup(_appSettings, new FakeIGeoFileDownload(),
+		var result = await new ReverseGeoCodeService(_appSettings, new FakeIGeoFileDownload(),
 			new FakeIWebLogger()).GetLocation(51.34963, 5.46038);
 
 		Assert.IsFalse(result.IsSuccess);
@@ -190,7 +189,7 @@ public class ReverseGeoCodeServiceTests
 			StringToStreamHelper.StringToStream(string.Empty), // empty file yes!
 			Path.Combine(_appSettings.DependenciesFolder, "cities1000.txt"));
 
-		var result = await new GeoFolderReverseLookup(_appSettings, new FakeIGeoFileDownload(),
+		var result = await new ReverseGeoCodeService(_appSettings, new FakeIGeoFileDownload(),
 			new FakeIWebLogger()).GetLocation(51.34963, 5.46038);
 
 		// and undo empty file

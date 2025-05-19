@@ -66,14 +66,19 @@ public class UpdateImportTransformations
 		{
 			_logger.LogInformation($"[Import] DateTimeParsedFromFileName " +
 			                       $"ExifTool Sync {fileIndexItem.FilePath}");
-			comparedNamesList = DateTimeParsedComparedNamesList();
+			comparedNamesList = AddDateTimeParsedComparedNamesList();
 		}
 
 		if ( colorClassTransformation >= 0 )
 		{
 			_logger.LogInformation($"[Import] ColorClassComparedNamesList " +
 			                       $"ExifTool Sync {fileIndexItem.FilePath}");
-			comparedNamesList = ColorClassComparedNamesList(comparedNamesList);
+			comparedNamesList = AddColorClassToComparedNamesList(comparedNamesList);
+		}
+
+		if ( reverseGeoCode )
+		{
+			comparedNamesList = AddReverseGeoCodeToComparedNamesList(comparedNamesList);
 		}
 
 		if ( comparedNamesList.Count == 0 )
@@ -105,18 +110,27 @@ public class UpdateImportTransformations
 		return fileIndexItem.Clone();
 	}
 
-	internal static List<string> DateTimeParsedComparedNamesList()
+	internal static List<string> AddDateTimeParsedComparedNamesList()
 	{
-		return new List<string>
-		{
+		return
+		[
 			nameof(FileIndexItem.Description).ToLowerInvariant(),
 			nameof(FileIndexItem.DateTime).ToLowerInvariant()
-		};
+		];
 	}
 
-	internal static List<string> ColorClassComparedNamesList(List<string> list)
+	internal static List<string> AddColorClassToComparedNamesList(List<string> list)
 	{
 		list.Add(nameof(FileIndexItem.ColorClass).ToLowerInvariant());
+		return list;
+	}
+
+	internal static List<string> AddReverseGeoCodeToComparedNamesList(List<string> list)
+	{
+		list.Add(nameof(FileIndexItem.LocationCity).ToLowerInvariant());
+		list.Add(nameof(FileIndexItem.LocationCountry).ToLowerInvariant());
+		list.Add(nameof(FileIndexItem.LocationCountryCode).ToLowerInvariant());
+		list.Add(nameof(FileIndexItem.LocationState).ToLowerInvariant());
 		return list;
 	}
 }

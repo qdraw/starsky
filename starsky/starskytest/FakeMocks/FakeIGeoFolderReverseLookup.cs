@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using starsky.feature.geolookup.Interfaces;
 using starsky.foundation.database.Models;
-using starsky.foundation.geo.ReverseGeoCode;
 using starsky.foundation.geo.ReverseGeoCode.Model;
 
 namespace starskytest.FakeMocks;
