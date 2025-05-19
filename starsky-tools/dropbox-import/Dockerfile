@@ -44,6 +44,7 @@ RUN ./starsky/starskyimportercli -h
 COPY --from=dropbox-import /opt/starsky/starsky-tools/dropbox-import ./starsky-tools/dropbox-import
 
 RUN mkdir -p /opt/starsky/starsky-tools/dropbox-import/temp && chmod 777 /opt/starsky/starsky-tools/dropbox-import/temp
+RUN chmod +x /opt/starsky/starsky/dependencies/exiftool-unix/exiftool
 
 # Set environment variables
 ENV STARSKYIMPORTERCLI=/opt/starsky/starsky/starskyimportercli
