@@ -8,6 +8,20 @@ public class FakeIReverseGeoCodeService : IReverseGeoCodeService
 {
 	public Task<GeoLocationModel> GetLocation(double latitude, double longitude)
 	{
-		return Task.FromResult(new GeoLocationModel());
+		var status = new GeoLocationModel();
+
+		if ( !string.IsNullOrEmpty(status.LocationState) &&
+		     !string.IsNullOrEmpty(status.LocationCountry) &&
+		     !string.IsNullOrEmpty(status.LocationCountryCode) &&
+		     !string.IsNullOrEmpty(status.LocationCity) )
+		{
+			status.ErrorReason = "Success";
+			status.IsSuccess = true;
+			return Task.FromResult(status);
+		}
+
+		status.ErrorReason = "No location found";
+		status.IsSuccess = false;
+		return Task.FromResult(status);
 	}
 }

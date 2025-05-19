@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.geo.ReverseGeoCode;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -76,7 +77,7 @@ public class UpdateImportTransformations
 			comparedNamesList = AddColorClassToComparedNamesList(comparedNamesList);
 		}
 
-		if ( reverseGeoCode )
+		if ( ReverseGeoCodeService.ShouldApplyReverseGeoCode(reverseGeoCode, fileIndexItem) )
 		{
 			comparedNamesList = AddReverseGeoCodeToComparedNamesList(comparedNamesList);
 		}

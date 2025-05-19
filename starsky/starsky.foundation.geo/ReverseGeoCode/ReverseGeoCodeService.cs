@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
 using NGeoNames;
 using NGeoNames.Entities;
+using starsky.foundation.database.Models;
 using starsky.foundation.geo.GeoDownload;
 using starsky.foundation.geo.GeoDownload.Interfaces;
 using starsky.foundation.geo.ReverseGeoCode.Interface;
@@ -99,10 +100,44 @@ public class ReverseGeoCodeService : IReverseGeoCodeService
 			return status;
 		}
 
-		status.ErrorReason = "Success";
-		status.IsSuccess = true;
 		status.LocationCity = nearestPlace.NameASCII;
+		WriteLocationCountryAndCode(nearestPlace, status);
+		status.LocationState = GetAdmin1Name(nearestPlace.CountryCode, nearestPlace.Admincodes);
 
+		// also update: ShouldApplyReverseGeoCode
+		// State can be null
+		if ( !string.IsNullOrEmpty(status.LocationCountry) &&
+		     !string.IsNullOrEmpty(status.LocationCountryCode) &&
+		     !string.IsNullOrEmpty(status.LocationCity) )
+		{
+			status.ErrorReason = "Success";
+			status.IsSuccess = true;
+			return status;
+		}
+
+		status.ErrorReason = "No location found";
+		status.IsSuccess = false;
+		_logger.LogError("[GeoReverseLookup] " +
+		                 $"No location found for {status.Latitude} {status.Longitude}");
+		return status;
+	}
+
+
+	public static bool ShouldApplyReverseGeoCode(bool reverseGeoCode,
+		FileIndexItem fileIndexItem)
+	{
+		const double epsilon = 1e-6; // Define a small tolerance
+		return reverseGeoCode &&
+		       Math.Abs(fileIndexItem.Latitude) > epsilon &&
+		       Math.Abs(fileIndexItem.Longitude) > epsilon &&
+		       // State can be null
+		       !string.IsNullOrEmpty(fileIndexItem.LocationCity) &&
+		       !string.IsNullOrEmpty(fileIndexItem.LocationCountry) &&
+		       !string.IsNullOrEmpty(fileIndexItem.LocationCountryCode);
+	}
+
+	private void WriteLocationCountryAndCode(ExtendedGeoName nearestPlace, GeoLocationModel status)
+	{
 		// Catch is used for example the region VA (Vatican City)
 		try
 		{
@@ -114,10 +149,6 @@ public class ReverseGeoCodeService : IReverseGeoCodeService
 		{
 			_logger.LogInformation("[GeoReverseLookup] " + e.Message);
 		}
-
-		status.LocationState = GetAdmin1Name(nearestPlace.CountryCode, nearestPlace.Admincodes);
-
-		return status;
 	}
 
 	internal string? GetAdmin1Name(string countryCode, string[] adminCodes)
