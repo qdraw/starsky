@@ -122,7 +122,6 @@ public class ReverseGeoCodeService : IReverseGeoCodeService
 		return status;
 	}
 
-
 	public static bool ShouldApplyReverseGeoCode(bool reverseGeoCode,
 		FileIndexItem fileIndexItem)
 	{
@@ -159,7 +158,6 @@ public class ReverseGeoCodeService : IReverseGeoCodeService
 		}
 
 		var admin1Code = countryCode + "." + adminCodes[0];
-
 		var admin2Object = _admin1CodesAscii.FirstOrDefault(p => p.Code == admin1Code);
 		return admin2Object?.NameASCII;
 	}
