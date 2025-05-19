@@ -483,7 +483,8 @@ public sealed class ImportTest
 		                                "NL.06\tNorth Brabant\tNorth Brabant\t2749990\r\n" +
 		                                "NL.05\tLimburg\tLimburg\t2751596\r\n" +
 		                                "NL.03\tGelderland\tGelderland\t2755634\r\n" +
-		                                "AR.07\tBuenos Aires F.D.\tBuenos Aires F.D.\t3433955\r\n";
+		                                "AR.07\tBuenos Aires F.D.\tBuenos Aires F.D.\t3433955\r\n" +
+		                                "NL.15\tOverijssel\tOverijssel\t2748838\n";
 
 		new StorageHostFullPathFilesystem(new FakeIWebLogger()).WriteStream(
 			StringToStreamHelper.StringToStream(admin1CodesAscii),
@@ -520,6 +521,7 @@ public sealed class ImportTest
 		Assert.AreEqual("Schalkhaar", fileIndexItem.LocationCity);
 		Assert.AreEqual("NLD", fileIndexItem.LocationCountryCode);
 		Assert.AreEqual("Netherlands", fileIndexItem.LocationCountry);
+		Assert.AreEqual("Overijssel", fileIndexItem.LocationState);
 	}
 
 	[TestMethod]
