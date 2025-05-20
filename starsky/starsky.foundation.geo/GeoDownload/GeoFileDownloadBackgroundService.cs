@@ -37,7 +37,8 @@ public class GeoFileDownloadBackgroundService : BackgroundService
 
 			// Geo Helper has a direct need of this, other are downloaded when needed
 			// This Background service is for running offline 
-			if ( appSettings.ApplicationType == AppSettings.StarskyAppType.Geo )
+			if ( appSettings.ApplicationType is
+			    AppSettings.StarskyAppType.Geo or AppSettings.StarskyAppType.Importer )
 			{
 				return;
 			}

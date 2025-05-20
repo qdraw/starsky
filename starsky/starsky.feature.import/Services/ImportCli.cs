@@ -47,6 +47,7 @@ public class ImportCli
 
 		await _exifToolDownload.DownloadExifTool(_appSettings.IsWindows);
 		await _geoFileDownload.DownloadAsync();
+
 		_appSettings.ApplicationType = AppSettings.StarskyAppType.Importer;
 
 		if ( ArgsHelper.NeedHelp(args) || new ArgsHelper(_appSettings)
