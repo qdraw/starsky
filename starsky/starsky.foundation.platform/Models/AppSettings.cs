@@ -87,7 +87,12 @@ public sealed class AppSettings
 		/// <summary>
 		///     Seed application for demos
 		/// </summary>
-		DemoSeed = 10
+		DemoSeed = 10,
+
+		/// <summary>
+		///     Download external dependencies
+		/// </summary>
+		DependenciesDownload = 11
 	}
 
 	/// <summary>

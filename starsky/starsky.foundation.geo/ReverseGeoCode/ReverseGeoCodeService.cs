@@ -55,11 +55,6 @@ public class ReverseGeoCodeService : IReverseGeoCodeService
 
 	public async Task<GeoLocationModel> GetLocation(double latitude, double longitude)
 	{
-		if ( _reverseGeoCode == null )
-		{
-			( _, _reverseGeoCode ) = await SetupAsync();
-		}
-
 		var status = new GeoLocationModel
 		{
 			Longitude = longitude,
@@ -72,6 +67,13 @@ public class ReverseGeoCodeService : IReverseGeoCodeService
 		{
 			status.ErrorReason = "Non-valid location";
 			return status;
+		}
+
+		// do this after a non-valid check, this is more performance in the cli
+		// for load of images that do not have a location
+		if ( _reverseGeoCode == null )
+		{
+			( _, _reverseGeoCode ) = await SetupAsync();
 		}
 
 		// Create a point from a lat/long pair from which we want to conduct our search(es) (center)

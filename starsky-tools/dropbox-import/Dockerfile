@@ -44,7 +44,7 @@ RUN ./starsky/starskyimportercli -h
 COPY --from=dropbox-import /opt/starsky/starsky-tools/dropbox-import ./starsky-tools/dropbox-import
 
 RUN mkdir -p /opt/starsky/starsky-tools/dropbox-import/temp && chmod 777 /opt/starsky/starsky-tools/dropbox-import/temp
-RUN chmod +x /opt/starsky/starsky/dependencies/exiftool-unix/exiftool
+RUN chmod +x /opt/starsky/starsky/dependencies/exiftool-unix/exiftool && chown 1000:1000 /opt/starsky/starsky/dependencies/exiftool-unix/exiftool
 RUN mkdir -p /opt/starsky/starsky/dependencies && chmod 777 /opt/starsky/starsky/dependencies
 RUN mkdir -p /opt/starsky/starsky/temp && chmod 777 /opt/starsky/starsky/temp
 

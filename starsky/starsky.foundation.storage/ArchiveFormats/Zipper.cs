@@ -81,6 +81,11 @@ public sealed class Zipper : IZipper
 					Directory.GetParent(destinationPath)!.Create();
 					entry.ExtractToFile(destinationPath, true);
 				}
+				catch ( IOException exception )
+				{
+					_logger.LogError($"[Zipper] IOException: {zipInputFullPath}", exception);
+					return false;
+				}
 			}
 		}
 
