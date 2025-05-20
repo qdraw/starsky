@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.storage.ArchiveFormats;
 using starsky.foundation.storage.Storage;
@@ -186,5 +187,50 @@ public sealed class ZipperTest
 		archive.Dispose();
 
 		File.Delete(tempFileFullPath);
+	}
+
+	[TestMethod]
+	public async Task ExtractZip_ShouldReturnFalse_WhenIOExceptionOccurs()
+	{
+		// Arrange
+		var logger = new FakeIWebLogger();
+		var zipper = new Zipper(logger);
+
+		var zipFilePath = Path.Combine(Path.GetTempPath(), "test.zip");
+		var extractPath = Path.Combine(Path.GetTempPath(), "ExtractTest2");
+
+		if ( File.Exists(zipFilePath) )
+		{
+			File.Delete(zipFilePath);
+		}
+
+		Directory.CreateDirectory(extractPath);
+
+		using ( var zip = ZipFile.Open(zipFilePath, ZipArchiveMode.Create) )
+		{
+			var entry = zip.CreateEntry("test.txt");
+			await using var writer = new StreamWriter(entry.Open());
+			await writer.WriteAsync("Test content");
+		}
+
+		var lockedFilePath = Path.Combine(extractPath, "test.txt");
+		var lockedFile = new FileStream(lockedFilePath, FileMode.Create,
+			FileAccess.ReadWrite, FileShare.None);
+
+		// Act
+		var result = zipper.ExtractZip(zipFilePath, extractPath);
+
+		// Assert
+		Assert.IsFalse(result);
+		Assert.IsTrue(
+			logger.TrackedExceptions[^1].Item2?.Contains(
+				"[Zipper] IOException"));
+
+		// need to dispose of the locked file
+		await lockedFile.DisposeAsync();
+
+		// Cleanup
+		File.Delete(zipFilePath);
+		Directory.Delete(extractPath, true);
 	}
 }
