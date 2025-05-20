@@ -41,7 +41,11 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.0-beta.1 - _(Unreleased)_ - 2025-05-? {#v0.7.0-beta.1}
+## version 0.7.0 - _(Unreleased)_ - 2025-05-? {#v0.7.0}
+
+- nothing yet
+
+## version 0.7.0-beta.1 - 2025-05-20 {#v0.7.0-beta.1}
 
 - [x] (Added) _Back-end_ Handle background jobs for small thumbnails. (PR #2147)
 - [x] (Changed) _Back-end_ Database Query Refactoring GetAllFilesQuery / GetAllObjects (PR #2147)
