@@ -39,8 +39,8 @@ public class ThumbnailSocketService(
 			fileIndexItems = await query.GetAllFilesAsync(subPath);
 		}
 
-		var result =
-			WhichFilesNeedToBePushedForUpdates(generateThumbnailResults, fileIndexItems);
+		var result = WhichFilesNeedToBePushedForUpdates(
+			generateThumbnailResults, fileIndexItems);
 
 		if ( result.Count == 0 )
 		{
@@ -70,6 +70,8 @@ public class ThumbnailSocketService(
 				continue;
 			}
 
+			item.FileHash = thumbs.FirstOrDefault(p => p.SubPath == item.FilePath)
+				?.FileHash;
 			item.LastChanged = ["LastEdited", "FileHash", "Src"];
 			item.Status = FileIndexItem.ExifStatus.Ok;
 			item.LastEdited = DateTime.UtcNow;

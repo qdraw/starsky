@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.thumbnail.Services;
@@ -161,5 +162,32 @@ public class ThumbnailSocketServiceTests
 			new List<FileIndexItem> { new("/test.jpg") });
 
 		Assert.AreEqual(1, result.Count);
+	}
+
+	[TestMethod]
+	public void WhichFilesNeedToBePushedForUpdates_ShouldAssignCorrectFileHash()
+	{
+		// Arrange
+		var thumbs = new List<GenerationResultModel>
+		{
+			new() { SubPath = "/test/file1.jpg", FileHash = "hash1", Success = true },
+			new() { SubPath = "/test/file2.jpg", FileHash = "hash2", Success = true }
+		};
+
+		var fileIndexItems = new List<FileIndexItem>
+		{
+			new() { FilePath = "/test/file1.jpg", Tags = "tag1" },
+			new() { FilePath = "/test/file2.jpg", Tags = "tag2" }
+		};
+
+		// Act
+		var result =
+			ThumbnailSocketService.WhichFilesNeedToBePushedForUpdates(thumbs, fileIndexItems);
+
+		// Assert
+		Assert.AreEqual("hash1",
+			result.FirstOrDefault(x => x.FilePath == "/test/file1.jpg")?.FileHash);
+		Assert.AreEqual("hash2",
+			result.FirstOrDefault(x => x.FilePath == "/test/file2.jpg")?.FileHash);
 	}
 }
