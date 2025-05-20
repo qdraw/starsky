@@ -29,6 +29,8 @@ public static class Program
 		RegisterDependencies.Configure(services);
 		var serviceProvider = services.BuildServiceProvider();
 		var appSettings = serviceProvider.GetRequiredService<AppSettings>();
+		// need to set because it skips geo download background service
+		appSettings.ApplicationType = AppSettings.StarskyAppType.DependenciesDownload;
 
 		services.AddOpenTelemetryMonitoring(appSettings);
 		services.AddTelemetryLogging(appSettings);

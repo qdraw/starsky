@@ -89,6 +89,8 @@ public sealed class GeoFileDownloadBackgroundServiceTest
 	[DataTestMethod]
 	[DataRow(AppSettings.StarskyAppType.Geo, DisplayName = "Skip Geo due direct deps")]
 	[DataRow(AppSettings.StarskyAppType.Importer, DisplayName = "Skip Importer due direct deps")]
+	[DataRow(AppSettings.StarskyAppType.DependenciesDownload,
+		DisplayName = "Skip Downloader due direct deps")]
 	public async Task StartAsync_Skip3_ApplicationTypeGeoImport(AppSettings.StarskyAppType appType)
 	{
 		var appSettings = _serviceScopeFactory.CreateScope().ServiceProvider
