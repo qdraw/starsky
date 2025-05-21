@@ -11,6 +11,14 @@ namespace starsky.foundation.native.PreviewImageNative.Helpers;
 [SuppressMessage("Usage", "CA2101: Specify marshaling for P/Invoke string arguments")]
 public class QuicklookMacOs(IWebLogger logger)
 {
+	/// <summary>
+	///     Generate Images on Native macOS
+	/// </summary>
+	/// <param name="filePath">input path</param>
+	/// <param name="outputPath">output jpg</param>
+	/// <param name="width">should contain value</param>
+	/// <param name="height">optional value</param>
+	/// <returns>true if successful</returns>
 	public bool GenerateThumbnail(string filePath, string outputPath, int width, int height)
 	{
 		filePath = filePath.Replace("//", "/");

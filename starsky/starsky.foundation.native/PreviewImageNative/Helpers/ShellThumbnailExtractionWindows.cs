@@ -17,6 +17,14 @@ public class ShellThumbnailExtractionWindows(IWebLogger logger)
 		       RuntimeInformation.OSArchitecture == Architecture.X64;
 	}
 
+	/// <summary>
+	///     Generate Images on Native Windows
+	/// </summary>
+	/// <param name="inputPath">input path</param>
+	/// <param name="outputBmpPath">output bmp</param>
+	/// <param name="width">should contain value</param>
+	/// <param name="height">should contain value</param>
+	/// <returns>true if successful</returns>
 	public bool GenerateThumbnail(string inputPath, string outputBmpPath, int width,
 		int height)
 	{

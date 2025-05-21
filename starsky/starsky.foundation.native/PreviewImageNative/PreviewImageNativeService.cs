@@ -20,11 +20,12 @@ public class PreviewImageNativeService(IWebLogger logger) : IPreviewImageNativeS
 
 	/// <summary>
 	///     Creates an image preview using the native QuickLook framework on macOS.
+	///     Support for Windows is done via ShellThumbnailExtractionWindows
 	/// </summary>
 	/// <param name="filePath">where from</param>
 	/// <param name="outputPath">to</param>
 	/// <param name="width">in pixels</param>
-	/// <param name="height">in pixels</param>
+	/// <param name="height">in pixels (when using windows required)</param>
 	/// <returns>is success</returns>
 	public bool GeneratePreviewImage(string filePath, string outputPath, int width, int height)
 	{
