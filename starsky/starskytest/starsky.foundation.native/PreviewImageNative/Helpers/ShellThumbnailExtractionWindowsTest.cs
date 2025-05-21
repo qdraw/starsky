@@ -80,8 +80,17 @@ public class ShellThumbnailExtractionWindowsTest
 		Assert.IsFalse(result);
 	}
 
+	[TestMethod]
+	public void GenerateThumbnail_ArgumentException()
+	{
+		Assert.ThrowsExactly<ArgumentException>(() =>
+		{
+			new ShellThumbnailExtractionWindows(new FakeIWebLogger()).GenerateThumbnailInternal(
+				"input", "output", 100, 0);
+		});
+	}
+
 	[DataTestMethod]
-	[DataRow(0)]
 	[DataRow(67)]
 	public async Task GenerateThumbnail_ValidInput_CreatesThumbnail__OnlyOnWindowsX64(int height)
 	{

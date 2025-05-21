@@ -30,8 +30,7 @@ public class ShellThumbnailExtractionWindows(IWebLogger logger)
 	{
 		if ( height <= 0 )
 		{
-			var sourceHeight = ImageMetadataReaderWindowsBindings.GetImageHeight(inputPath);
-			height = ( int ) Math.Round(( double ) sourceHeight / width * width);
+			throw new ArgumentException("Height must be greater than zero.", nameof(height));
 		}
 
 		var size = new SIZE { cx = width, cy = height };
