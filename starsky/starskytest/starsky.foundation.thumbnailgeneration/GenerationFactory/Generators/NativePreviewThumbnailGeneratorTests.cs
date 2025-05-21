@@ -26,7 +26,6 @@ public class NativePreviewThumbnailGeneratorTests
 		var imageNativeService = new FakeIPreviewImageNativeService(storage);
 		var logger = new FakeIWebLogger();
 		var appSettings = new AppSettings();
-		var readMeta = new FakeReadMetaSubPathStorage();
 		var existsService = new FakeIFullFilePathExistsService();
 
 		_generator = new NativePreviewThumbnailGenerator(
@@ -34,7 +33,6 @@ public class NativePreviewThumbnailGeneratorTests
 			imageNativeService,
 			logger,
 			appSettings,
-			readMeta,
 			existsService
 		);
 	}
