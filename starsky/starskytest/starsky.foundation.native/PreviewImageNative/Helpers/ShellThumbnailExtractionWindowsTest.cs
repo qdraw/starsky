@@ -80,8 +80,10 @@ public class ShellThumbnailExtractionWindowsTest
 		Assert.IsFalse(result);
 	}
 
-	[TestMethod]
-	public async Task GenerateThumbnail_ValidInput_CreatesThumbnail__OnlyOnWindowsX64()
+	[DataTestMethod]
+	[DataRow(0)]
+	[DataRow(67)]
+	public async Task GenerateThumbnail_ValidInput_CreatesThumbnail__OnlyOnWindowsX64(int height)
 	{
 		if ( !ShellThumbnailExtractionWindows.IsSupported() )
 		{
@@ -90,13 +92,13 @@ public class ShellThumbnailExtractionWindowsTest
 
 		// Arrange
 		var (input, output) =
-			await CreateTempImage("GenerateThumbnail_ValidInput_CreatesThumbnail");
+			await CreateTempImage($"GenerateThumbnail_ValidInput_Creates_{height}");
 
 		try
 		{
 			var result =
 				new ShellThumbnailExtractionWindows(new FakeIWebLogger()).GenerateThumbnail(
-					input, output, 100, 67);
+					input, output, 100, height);
 
 			Assert.IsTrue(result, "Expected GenerateThumbnail to return true.");
 			Assert.IsTrue(File.Exists(output), "Output file was not created.");

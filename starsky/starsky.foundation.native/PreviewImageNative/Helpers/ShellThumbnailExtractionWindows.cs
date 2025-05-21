@@ -28,6 +28,12 @@ public class ShellThumbnailExtractionWindows(IWebLogger logger)
 		int width,
 		int height)
 	{
+		if ( height <= 0 )
+		{
+			var sourceHeight = ImageMetadataReaderWindowsBindings.GetImageHeight(inputPath);
+			height = ( int ) Math.Round(( double ) sourceHeight / width * width);
+		}
+
 		var size = new SIZE { cx = width, cy = height };
 
 		try

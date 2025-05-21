@@ -23,7 +23,7 @@ public class QuicklookMacOs(IWebLogger logger)
 			return false;
 		}
 
-		if ( height == 0 )
+		if ( height <= 0 )
 		{
 			var sourceHeight = ImageIoMacOsBindings.GetSourceHeight(url);
 			height = ( int ) Math.Round(( double ) sourceHeight / width * width);
