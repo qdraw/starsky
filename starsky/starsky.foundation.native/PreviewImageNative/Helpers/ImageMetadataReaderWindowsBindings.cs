@@ -6,6 +6,35 @@ public static class ImageMetadataReaderWindowsBindings
 {
 	public static int GetImageHeight(string imagePath)
 	{
+		var result = 0;
+		Exception? exception = null;
+
+		var thread = new Thread(() =>
+		{
+			try
+			{
+				result = GetImageHeightFactory(imagePath);
+			}
+			catch ( Exception ex )
+			{
+				exception = ex;
+			}
+		});
+
+		thread.SetApartmentState(ApartmentState.STA); // Cruciaal voor WIC!
+		thread.Start();
+		thread.Join();
+
+		if ( exception != null )
+		{
+			throw exception;
+		}
+
+		return result;
+	}
+
+	public static int GetImageHeightFactory(string imagePath)
+	{
 		IWICImagingFactory? factory = null;
 		IWICBitmapDecoder? decoder = null;
 		IWICBitmapFrameDecode? frame = null;
