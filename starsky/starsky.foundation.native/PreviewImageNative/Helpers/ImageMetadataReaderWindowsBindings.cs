@@ -61,6 +61,8 @@ public static class ImageMetadataReaderWindowsBindings
 
 	public static uint GetImageHeight(string path)
 	{
+		path = path.Replace(@"\\", @"\");
+
 		var hr = CoInitializeEx(IntPtr.Zero, CoInit.MultiThreaded);
 		if ( hr != 0 )
 		{
