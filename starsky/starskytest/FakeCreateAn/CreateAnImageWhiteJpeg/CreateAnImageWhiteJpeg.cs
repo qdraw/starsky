@@ -25,7 +25,7 @@ public class CreateAnImageWhiteJpeg
 		Bytes = [..StreamToBytes(path)];
 	}
 
-	public string FullFilePath { get; set; }
+	public string FullFilePath { get; set; } = string.Empty;
 
 	private static byte[] StreamToBytes(string path)
 	{
