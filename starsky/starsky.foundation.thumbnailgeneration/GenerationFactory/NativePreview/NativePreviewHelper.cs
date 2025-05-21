@@ -45,7 +45,11 @@ public class NativePreviewHelper(
 
 		var previewImageName = GetPreviewImageName(fileHash);
 		var outputFullPath = Path.Combine(appSettings.TempFolder, previewImageName);
-		var height = await GetImageHeight(fullFilePath);
+
+		// Calculate the height based on the source height and width
+		var sourceHeight = await GetImageHeight(fullFilePath);
+		var height = ( int ) Math.Round(( double ) sourceHeight / width * width);
+
 		var result = previewService.GeneratePreviewImage(fullFilePath,
 			outputFullPath, width, height);
 
