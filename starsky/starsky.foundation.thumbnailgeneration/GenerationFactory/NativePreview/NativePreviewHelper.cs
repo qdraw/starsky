@@ -4,7 +4,6 @@ using starsky.foundation.native.PreviewImageNative.Interfaces;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
-using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
@@ -17,7 +16,6 @@ public class NativePreviewHelper(
 	IStorage storage,
 	IStorage tempStorage,
 	AppSettings appSettings,
-	IReadMetaSubPathStorage readMeta,
 	IFullFilePathExistsService existsService,
 	IWebLogger logger)
 {
@@ -39,10 +37,6 @@ public class NativePreviewHelper(
 					: ErrorFileDoesNotExist
 			};
 		}
-
-		// var metaData = await readMeta.ReadExifAndXmpFromFileAsync(singleSubPath);
-		// var height =
-		// 	( int ) Math.Round(( double ) metaData!.ImageHeight / metaData.ImageWidth * width);
 
 		var (_, fullFilePath, useTempStorageForInput, fileHashWithExtension) =
 			await existsService.GetFullFilePath(singleSubPath, fileHash);

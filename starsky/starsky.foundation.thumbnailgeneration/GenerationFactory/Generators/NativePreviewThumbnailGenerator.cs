@@ -7,7 +7,6 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
-using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
@@ -26,7 +25,6 @@ public class NativePreviewThumbnailGenerator(
 	IPreviewImageNativeService imageNativeService,
 	IWebLogger logger,
 	AppSettings appSettings,
-	IReadMetaSubPathStorage readMeta,
 	IFullFilePathExistsService existsService)
 	: INativePreviewThumbnailGenerator
 {
@@ -52,7 +50,7 @@ public class NativePreviewThumbnailGenerator(
 		ThumbnailImageFormat imageFormat)
 	{
 		var nativePreviewHelper = new NativePreviewHelper(imageNativeService, _storage,
-			_tempStorage, appSettings, readMeta, existsService, logger);
+			_tempStorage, appSettings, existsService, logger);
 
 		var result =
 			await nativePreviewHelper.NativePreviewImage(biggestThumbnailSize, singleSubPath,
