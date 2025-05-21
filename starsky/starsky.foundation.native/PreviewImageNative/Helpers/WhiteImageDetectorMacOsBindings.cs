@@ -1,7 +1,13 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace starsky.foundation.native.PreviewImageNative.Helpers;
 
+[SuppressMessage("ReSharper", "InconsistentNaming")]
+[SuppressMessage("Interoperability", "SYSLIB1054:Use \'LibraryImportAttribute\' " +
+                                     "instead of \'DllImportAttribute\' to generate P/Invoke " +
+                                     "marshalling code at compile time")]
+[SuppressMessage("Usage", "CA2101: Specify marshaling for P/Invoke string arguments")]
 public static class WhiteImageDetectorMacOsBindings
 {
 	// ImageIO
@@ -11,13 +17,6 @@ public static class WhiteImageDetectorMacOsBindings
 	[DllImport("/System/Library/Frameworks/ImageIO.framework/ImageIO")]
 	private static extern IntPtr CGImageSourceCreateImageAtIndex(IntPtr source, int index,
 		IntPtr options);
-
-	// CoreGraphics
-	[DllImport("/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics")]
-	private static extern IntPtr CGDataProviderCopyData(IntPtr provider);
-
-	[DllImport("/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics")]
-	private static extern IntPtr CGImageGetDataProvider(IntPtr image);
 
 	[DllImport("/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics")]
 	private static extern int CGImageGetWidth(IntPtr image);
@@ -66,6 +65,13 @@ public static class WhiteImageDetectorMacOsBindings
 		var pixelData = new byte[bytesPerRow * height];
 		Marshal.Copy(data, pixelData, 0, pixelData.Length);
 
+		return IsPixelDataWhite(width, height, bytesPerRow, bytesPerPixel, pixelData);
+	}
+
+	internal static bool IsPixelDataWhite(int width, int height,
+		int bytesPerRow, int bytesPerPixel,
+		byte[] pixelData)
+	{
 		for ( var y = 0; y < height; y++ )
 		{
 			for ( var x = 0; x < width; x++ )
@@ -102,19 +108,11 @@ public static class WhiteImageDetectorMacOsBindings
 	private static extern int CGBitmapContextGetBytesPerRow(IntPtr context);
 
 	[StructLayout(LayoutKind.Sequential)]
-	private struct CGRect
+	private struct CGRect(double x, double y, double width, double height)
 	{
-		public double X;
-		public double Y;
-		public double Width;
-		public double Height;
-
-		public CGRect(double x, double y, double width, double height)
-		{
-			X = x;
-			Y = y;
-			Width = width;
-			Height = height;
-		}
+		public double X = x;
+		public double Y = y;
+		public double Width = width;
+		public double Height = height;
 	}
 }
