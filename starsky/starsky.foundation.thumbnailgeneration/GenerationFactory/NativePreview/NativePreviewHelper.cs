@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Threading.Tasks;
 using starsky.foundation.native.PreviewImageNative.Interfaces;
@@ -41,17 +40,16 @@ public class NativePreviewHelper(
 			};
 		}
 
-		var metaData = await readMeta.ReadExifAndXmpFromFileAsync(singleSubPath);
-		var height =
-			( int ) Math.Round(( double ) metaData!.ImageHeight / metaData.ImageWidth * width);
+		// var metaData = await readMeta.ReadExifAndXmpFromFileAsync(singleSubPath);
+		// var height =
+		// 	( int ) Math.Round(( double ) metaData!.ImageHeight / metaData.ImageWidth * width);
 
 		var (_, fullFilePath, useTempStorageForInput, fileHashWithExtension) =
 			await existsService.GetFullFilePath(singleSubPath, fileHash);
 
 		var previewImageName = GetPreviewImageName(fileHash);
 		var outputFullPath = Path.Combine(appSettings.TempFolder, previewImageName);
-		var result =
-			previewService.GeneratePreviewImage(fullFilePath, outputFullPath, width, height);
+		var result = previewService.GeneratePreviewImage(fullFilePath, outputFullPath, width, 0);
 
 		existsService.CleanTemporaryFile(fileHashWithExtension, useTempStorageForInput);
 
