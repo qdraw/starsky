@@ -43,7 +43,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.0 - _(Unreleased)_ - 2025-05-? {#v0.7.0}
 
-- nothing yet
+- [x] (Fixed) _Back-end_ Fix for when images are white on Mac OS, thumbnail gen. (PR #2176)
 
 ## version 0.7.0-beta.1 - 2025-05-20 {#v0.7.0-beta.1}
 
