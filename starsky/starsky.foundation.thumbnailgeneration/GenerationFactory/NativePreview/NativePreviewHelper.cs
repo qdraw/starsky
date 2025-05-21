@@ -1,11 +1,11 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using SixLabors.ImageSharp;
 using starsky.foundation.native.PreviewImageNative.Interfaces;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
+using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
@@ -19,6 +19,7 @@ public class NativePreviewHelper(
 	IStorage tempStorage,
 	AppSettings appSettings,
 	IFullFilePathExistsService existsService,
+	IReadMetaSubPathStorage readMeta,
 	IWebLogger logger)
 {
 	internal const string ErrorFileDoesNotExist = "File does not exist";
@@ -40,15 +41,15 @@ public class NativePreviewHelper(
 			};
 		}
 
+		var metaData = await readMeta.ReadExifAndXmpFromFileAsync(singleSubPath);
+		var height =
+			( int ) Math.Round(( double ) metaData!.ImageHeight / metaData.ImageWidth * width);
+
 		var (_, fullFilePath, useTempStorageForInput, fileHashWithExtension) =
 			await existsService.GetFullFilePath(singleSubPath, fileHash);
 
 		var previewImageName = GetPreviewImageName(fileHash);
 		var outputFullPath = Path.Combine(appSettings.TempFolder, previewImageName);
-
-		// Calculate the height based on the source height and width
-		var sourceHeight = await GetImageHeight(fullFilePath);
-		var height = ( int ) Math.Round(( double ) sourceHeight / width * width);
 
 		var result = previewService.GeneratePreviewImage(fullFilePath,
 			outputFullPath, width, height);
@@ -61,19 +62,6 @@ public class NativePreviewHelper(
 			ResultPath = previewImageName,
 			ResultPathType = SelectorStorage.StorageServices.Temporary
 		};
-	}
-
-	private static async Task<int> GetImageHeight(string filePath)
-	{
-		try
-		{
-			using var image = await Image.LoadAsync(filePath);
-			return image.Height;
-		}
-		catch ( Exception )
-		{
-			return 0;
-		}
 	}
 
 	private string GetPreviewImageName(string fileHash)
