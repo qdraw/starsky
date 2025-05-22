@@ -10367,116 +10367,6 @@
           "security": [],
           "servers": [],
           "extensions": {}
-        },
-        "Get": {
-          "tags": [
-            {
-              "name": "Synchronize",
-              "extensions": {},
-              "unresolvedReference": false
-            }
-          ],
-          "summary": "Faster API to Check if directory is changed (not recursive)",
-          "parameters": [
-            {
-              "unresolvedReference": false,
-              "name": "f",
-              "in": 0,
-              "description": "subPaths split by dot comma",
-              "required": false,
-              "deprecated": false,
-              "allowEmptyValue": false,
-              "style": 2,
-              "explode": true,
-              "allowReserved": false,
-              "schema": {
-                "type": "string",
-                "readOnly": false,
-                "writeOnly": false,
-                "allOf": [],
-                "oneOf": [],
-                "anyOf": [],
-                "required": [],
-                "properties": {},
-                "additionalPropertiesAllowed": true,
-                "enum": [],
-                "nullable": false,
-                "deprecated": false,
-                "extensions": {},
-                "unresolvedReference": false
-              },
-              "examples": {},
-              "content": {},
-              "extensions": {}
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "started sync as background job",
-              "headers": {},
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "string",
-                    "readOnly": false,
-                    "writeOnly": false,
-                    "allOf": [],
-                    "oneOf": [],
-                    "anyOf": [],
-                    "required": [],
-                    "properties": {},
-                    "additionalPropertiesAllowed": true,
-                    "enum": [],
-                    "nullable": false,
-                    "deprecated": false,
-                    "extensions": {},
-                    "unresolvedReference": false
-                  },
-                  "examples": {},
-                  "encoding": {},
-                  "extensions": {}
-                }
-              },
-              "links": {},
-              "extensions": {},
-              "unresolvedReference": false
-            },
-            "401": {
-              "description": "User unauthorized",
-              "headers": {},
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "string",
-                    "readOnly": false,
-                    "writeOnly": false,
-                    "allOf": [],
-                    "oneOf": [],
-                    "anyOf": [],
-                    "required": [],
-                    "properties": {},
-                    "additionalPropertiesAllowed": true,
-                    "enum": [],
-                    "nullable": false,
-                    "deprecated": false,
-                    "extensions": {},
-                    "unresolvedReference": false
-                  },
-                  "examples": {},
-                  "encoding": {},
-                  "extensions": {}
-                }
-              },
-              "links": {},
-              "extensions": {},
-              "unresolvedReference": false
-            }
-          },
-          "callbacks": {},
-          "deprecated": false,
-          "security": [],
-          "servers": [],
-          "extensions": {}
         }
       },
       "servers": [],
@@ -16743,5 +16633,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "DD96B03095FDD4C367DAB2DA1E9111153A7B5D6FE627F7264057AA234B23A2C41CF9B5C1493FE5E3D32E500464AFD00409FCD7C158DCADF5934211FBB2B38398"
+  "hashCode": "42FAE051339E737928AB37D0983041705B08CCAC20C12102C3BBFAE5D4E8F0E67B5F0986D19B2476910D05C456B5DF311EDA7C0D9D6D01537EA312FD3FEEDB7D"
 }
