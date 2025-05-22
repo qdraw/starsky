@@ -246,7 +246,7 @@ describe("MenuOptionDesktopEditorOpenSingle", () => {
           children: MessageDesktopEditorUnableToOpen,
           type: "danger"
         },
-        {}
+        undefined
       );
     });
     container.unmount();
@@ -320,7 +320,7 @@ describe("MenuOptionDesktopEditorOpenSingle", () => {
           children: MessageDesktopEditorUnableToOpen,
           type: "danger"
         },
-        {}
+        undefined
       );
 
       const errorMessage1 = screen.queryByTestId("notification-spy-button")?.innerHTML;

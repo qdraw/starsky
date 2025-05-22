@@ -89,20 +89,23 @@ describe("DetailViewInfoLocation", () => {
     });
 
     const setFileIndexItemSpy = jest.fn();
-    const modal = render(
-      <DetailViewInfoLocation
-        fileIndexItem={{} as IFileIndexItem}
-        isFormEnabled={false}
-        dispatch={jest.fn()}
-        setFileIndexItem={setFileIndexItemSpy}
-      ></DetailViewInfoLocation>
-    );
 
-    expect(setFileIndexItemSpy).toHaveBeenCalledTimes(0);
+    act(() => {
+      const modal = render(
+        <DetailViewInfoLocation
+          fileIndexItem={{} as IFileIndexItem}
+          isFormEnabled={false}
+          dispatch={jest.fn()}
+          setFileIndexItem={setFileIndexItemSpy}
+        ></DetailViewInfoLocation>
+      );
 
-    modalSpy.mockReset();
+      expect(setFileIndexItemSpy).toHaveBeenCalledTimes(0);
 
-    modal.unmount();
+      modalSpy.mockReset();
+
+      modal.unmount();
+    });
   });
 
   it("should close with callback data", () => {
@@ -126,21 +129,23 @@ describe("DetailViewInfoLocation", () => {
       return <div data-test="modal-geo-tmp-2">data_11</div>;
     });
 
-    const setFileIndexItemSpy = jest.fn();
-    const modal = render(
-      <DetailViewInfoLocation
-        fileIndexItem={{} as IFileIndexItem}
-        isFormEnabled={false}
-        dispatch={jest.fn()}
-        setFileIndexItem={setFileIndexItemSpy}
-      ></DetailViewInfoLocation>
-    );
+    act(() => {
+      const setFileIndexItemSpy = jest.fn();
+      const modal = render(
+        <DetailViewInfoLocation
+          fileIndexItem={{} as IFileIndexItem}
+          isFormEnabled={false}
+          dispatch={jest.fn()}
+          setFileIndexItem={setFileIndexItemSpy}
+        ></DetailViewInfoLocation>
+      );
 
-    expect(setFileIndexItemSpy).toHaveBeenCalledTimes(1);
-    expect(setFileIndexItemSpy).toHaveBeenCalledWith({ locationCity: "1a" });
+      expect(setFileIndexItemSpy).toHaveBeenCalledTimes(1);
+      expect(setFileIndexItemSpy).toHaveBeenCalledWith({ locationCity: "1a" });
 
-    modalSpy.mockReset();
+      modalSpy.mockReset();
 
-    modal.unmount();
+      modal.unmount();
+    });
   });
 });
