@@ -24,4 +24,5 @@ This is the default location when installing "Only for me"
 
 ## It runs
 
-See the [First Steps in the Getting Started Guide](../first-steps.md) for more info on how to setup the storage folder
+See the [First Steps in the Getting Started Guide](../first-steps.md) for more info on how to set up
+the storage folder
