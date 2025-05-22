@@ -66,6 +66,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Back-end_ Make exiftool responses more clear (PR #2143)
 - [x] (Changed) _Back-end_ Download dependencies on build for cross build runtime (PR #2144)
 - [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.409 (Runtime: 8.0.16) (PR #2156)
+- [x] (Breaking Change) _Back-end_ change default thumbnail format to webp (PR #1833)
 
 ## version 0.6.8 - 2025-05-07 {#v0.6.8}
 
