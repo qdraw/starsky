@@ -86,8 +86,13 @@ public class QuicklookMacOsTests
 		}
 	}
 
+	/// <summary>
+	///     Happy flow
+	/// </summary>
 	[TestMethod]
-	public void GenerateThumbnail_ShouldReturnTrue_WhenValidInput_Jpeg__MacOnly()
+	[DataRow(0)]
+	[DataRow(100)]
+	public void GenerateThumbnail_ShouldReturnTrue_WhenValidInput_Jpeg__MacOnly(int height)
 	{
 		// Arrange
 		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.OSX) )
@@ -101,16 +106,16 @@ public class QuicklookMacOsTests
 
 		var tempInput = new CreateAnImageWithThumbnail().Bytes.ToArray();
 		var tempFolder = new AppSettings().TempFolder;
-		var tempInputPath = Path.Combine(tempFolder, $"{testName}_input.jpg");
+		var tempInputPath = Path.Combine(tempFolder, $"{testName}{height}_input.jpg");
 		File.WriteAllBytes(tempInputPath, tempInput);
 
-		var tempOutput = Path.Combine(tempFolder, $"{testName}_output.jpg");
+		var tempOutput = Path.Combine(tempFolder, $"{testName}{height}_output.jpg");
 
 		try
 		{
 			// Act
 			var result = quicklook.GenerateThumbnail(tempInputPath,
-				tempOutput, 150, 100);
+				tempOutput, 150, height);
 
 			// Assert
 			Assert.IsTrue(result);
@@ -197,48 +202,5 @@ public class QuicklookMacOsTests
 		// Act
 		Assert.ThrowsExactly<DllNotFoundException>(() =>
 			quicklook.ImageDestinationAddImageFinalize(1, IntPtr.Zero));
-	}
-
-	[TestMethod]
-	public void CreateCFStringCreateWithCString_Returns0__WindowsLinuxOnly()
-	{
-		// Arrange
-		if ( RuntimeInformation.IsOSPlatform(OSPlatform.OSX) )
-		{
-			Assert.Inconclusive("This test is only valid on non-macOS platforms.");
-		}
-
-		// Act
-		var result = QuicklookMacOs.CreateCFStringCreateWithCString("input.jpg");
-		Assert.AreEqual(0, result);
-	}
-
-	[TestMethod]
-	public void Size()
-	{
-		var result = new QuicklookMacOs.CGSize(10, 14);
-		Assert.AreEqual(10, result.Width);
-		Assert.AreEqual(14, result.Height);
-	}
-
-	[TestMethod]
-	[DataTestMethod]
-	[DataRow(QuicklookMacOs.CFURLPathStyle.HFS)]
-	[DataRow(QuicklookMacOs.CFURLPathStyle.POSIX)]
-	[DataRow(QuicklookMacOs.CFURLPathStyle.Windows)]
-	public void CfurlPathStyle(QuicklookMacOs.CFURLPathStyle type)
-	{
-		switch ( type )
-		{
-			case QuicklookMacOs.CFURLPathStyle.HFS:
-				Assert.AreEqual(1, ( int ) type);
-				break;
-			case QuicklookMacOs.CFURLPathStyle.POSIX:
-				Assert.AreEqual(0, ( int ) type);
-				break;
-			case QuicklookMacOs.CFURLPathStyle.Windows:
-				Assert.AreEqual(2, ( int ) type);
-				break;
-		}
 	}
 }

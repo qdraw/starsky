@@ -52,7 +52,7 @@ public class NativePreviewThumbnailGenerator(
 		ThumbnailImageFormat imageFormat)
 	{
 		var nativePreviewHelper = new NativePreviewHelper(imageNativeService, _storage,
-			_tempStorage, appSettings, readMeta, existsService, logger);
+			_tempStorage, appSettings, existsService, readMeta, logger);
 
 		var result =
 			await nativePreviewHelper.NativePreviewImage(biggestThumbnailSize, singleSubPath,

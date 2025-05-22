@@ -18,8 +18,8 @@ public class NativePreviewHelper(
 	IStorage storage,
 	IStorage tempStorage,
 	AppSettings appSettings,
-	IReadMetaSubPathStorage readMeta,
 	IFullFilePathExistsService existsService,
+	IReadMetaSubPathStorage readMeta,
 	IWebLogger logger)
 {
 	internal const string ErrorFileDoesNotExist = "File does not exist";
@@ -50,8 +50,9 @@ public class NativePreviewHelper(
 
 		var previewImageName = GetPreviewImageName(fileHash);
 		var outputFullPath = Path.Combine(appSettings.TempFolder, previewImageName);
-		var result =
-			previewService.GeneratePreviewImage(fullFilePath, outputFullPath, width, height);
+
+		var result = previewService.GeneratePreviewImage(fullFilePath,
+			outputFullPath, width, height);
 
 		existsService.CleanTemporaryFile(fileHashWithExtension, useTempStorageForInput);
 

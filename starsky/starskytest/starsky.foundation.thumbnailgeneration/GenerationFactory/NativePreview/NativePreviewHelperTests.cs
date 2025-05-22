@@ -29,11 +29,11 @@ public class NativePreviewHelperTests
 			],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 		var appSettings = new AppSettings { TempFolder = "/temp" };
-		var readMeta = new FakeReadMetaSubPathStorage();
 		var existsService = new FakeIFullFilePathExistsService();
+		var readMeta = new FakeReadMetaSubPathStorage();
 		var logger = new FakeIWebLogger();
 		return new NativePreviewHelper(previewService, storage,
-			tempStorage, appSettings, readMeta, existsService, logger);
+			tempStorage, appSettings, existsService, readMeta, logger);
 	}
 
 	[TestMethod]
@@ -49,7 +49,7 @@ public class NativePreviewHelperTests
 
 		// Assert
 		Assert.IsTrue(result.IsSuccess);
-		
+
 		var extension = new PreviewImageNativeService(new FakeIWebLogger()).FileExtension();
 		Assert.AreEqual($"test-hash.preview.{extension}", result.ResultPath);
 	}

@@ -17,6 +17,14 @@ public class ShellThumbnailExtractionWindows(IWebLogger logger)
 		       RuntimeInformation.OSArchitecture == Architecture.X64;
 	}
 
+	/// <summary>
+	///     Generate Images on Native Windows
+	/// </summary>
+	/// <param name="inputPath">input path</param>
+	/// <param name="outputBmpPath">output bmp</param>
+	/// <param name="width">should contain value</param>
+	/// <param name="height">should contain value</param>
+	/// <returns>true if successful</returns>
 	public bool GenerateThumbnail(string inputPath, string outputBmpPath, int width,
 		int height)
 	{
@@ -28,6 +36,13 @@ public class ShellThumbnailExtractionWindows(IWebLogger logger)
 		int width,
 		int height)
 	{
+		if ( height <= 0 )
+		{
+			throw new ArgumentException("Height must be greater than zero.", nameof(height));
+		}
+
+		inputPath = inputPath.Replace(@"\\", @"\");
+
 		var size = new SIZE { cx = width, cy = height };
 
 		try
@@ -38,11 +53,12 @@ public class ShellThumbnailExtractionWindows(IWebLogger logger)
 			SaveHBitmapToBmp(hBitmap, outputBmpPath);
 			DeleteObject(hBitmap); // prevent memory leak
 		}
-		catch ( Exception )
+		catch ( Exception exception )
 		{
 			logger.LogInformation(
-				"[ShellThumbnailExtractionWindows] Error: Failed to create URL for {filePath}",
-				inputPath);
+				"[ShellThumbnailExtractionWindows] " +
+				$"Error: Failed to create URL for {inputPath} - {exception.Message}",
+				inputPath, exception);
 			return false;
 		}
 

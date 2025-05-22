@@ -11,30 +11,30 @@ namespace starsky.foundation.native.PreviewImageNative.Helpers;
 [SuppressMessage("Usage", "CA2101: Specify marshaling for P/Invoke string arguments")]
 public class QuicklookMacOs(IWebLogger logger)
 {
-	[SuppressMessage("Usage",
-		"S2342: Enumeration types should comply with a naming convention")]
-	public enum CFURLPathStyle
-	{
-		POSIX = 0,
-		HFS = 1,
-		Windows = 2
-	}
-
-	public static bool IsSupported()
-	{
-		return RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
-	}
-
+	/// <summary>
+	///     Generate Images on Native macOS
+	/// </summary>
+	/// <param name="filePath">input path</param>
+	/// <param name="outputPath">output jpg</param>
+	/// <param name="width">should contain value</param>
+	/// <param name="height">optional value</param>
+	/// <returns>true if successful</returns>
 	public bool GenerateThumbnail(string filePath, string outputPath, int width, int height)
 	{
 		filePath = filePath.Replace("//", "/");
 
-		var url = CreateCFStringCreateWithCString(filePath);
+		var url = CoreFoundationMacOsBindings.CreateCFStringCreateWithCString(filePath);
 		if ( url == IntPtr.Zero )
 		{
 			logger.LogInformation("[QuicklookMacOs] Error: Failed to create URL for {filePath}",
 				filePath);
 			return false;
+		}
+
+		if ( height <= 0 )
+		{
+			var sourceHeight = ImageIoMacOsBindings.GetSourceHeight(url);
+			height = ( int ) Math.Round(( double ) sourceHeight / width * width);
 		}
 
 		// Define the thumbnail size
@@ -63,20 +63,6 @@ public class QuicklookMacOs(IWebLogger logger)
 	private static extern IntPtr QLThumbnailImageCreate(IntPtr alloc, IntPtr url, CGSize size,
 		IntPtr options);
 
-	internal static IntPtr CreateCFStringCreateWithCString(string filePath)
-	{
-		try
-		{
-			var cfStr = CFStringCreateWithCString(IntPtr.Zero, filePath,
-				CfStringEncoding.kCFStringEncodingUTF8);
-			return CFURLCreateWithFileSystemPath(IntPtr.Zero,
-				cfStr, CFURLPathStyle.POSIX, false);
-		}
-		catch ( DllNotFoundException )
-		{
-			return IntPtr.Zero;
-		}
-	}
 
 	internal bool SaveCGImageAsFile(IntPtr cgImage, string outputPath,
 		string uniformTypeIdentifier = "public.jpeg")
@@ -112,7 +98,15 @@ public class QuicklookMacOs(IWebLogger logger)
 		CFRelease(url);
 		CFRelease(cfStr);
 		CFRelease(imageTypeIntPtr);
-		return true;
+
+		if ( !WhiteImageDetectorMacOsBindings.IsImageWhite(outputPath) )
+		{
+			return true;
+		}
+
+		// MacOS has a bug where it sometimes creates a white image
+		File.Delete(outputPath);
+		return false;
 	}
 
 	internal void ImageDestinationAddImageFinalize(IntPtr destination, IntPtr cgImage,
@@ -127,11 +121,8 @@ public class QuicklookMacOs(IWebLogger logger)
 	}
 
 	[DllImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
-	private static extern IntPtr CFURLCreateWithFileSystemPath(
-		IntPtr allocator,
-		IntPtr filePath, // CFStringRef
-		CFURLPathStyle pathStyle,
-		[MarshalAs(UnmanagedType.I1)] bool isDirectory);
+	private static extern IntPtr CFStringCreateWithCString(IntPtr alloc,
+		string str, uint encoding);
 
 	[DllImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
 	private static extern IntPtr CFURLCreateWithFileSystemPath(
@@ -156,23 +147,10 @@ public class QuicklookMacOs(IWebLogger logger)
 	[DllImport("/System/Library/Frameworks/ImageIO.framework/ImageIO")]
 	private static extern bool CGImageDestinationFinalize(IntPtr destination);
 
-	[DllImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
-	private static extern IntPtr CFStringCreateWithCString(
-		IntPtr allocator,
-		string cStr,
-		CfStringEncoding encoding);
-
-	[DllImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
-	private static extern IntPtr CFStringCreateWithCString(IntPtr alloc,
-		string str, uint encoding);
 
 	[DllImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
 	private static extern void CFRelease(IntPtr cf);
 
-	private enum CfStringEncoding : uint
-	{
-		kCFStringEncodingUTF8 = 0x08000100
-	}
 
 	// Define a structure for CGSize (used for image size)
 	[StructLayout(LayoutKind.Sequential)]
