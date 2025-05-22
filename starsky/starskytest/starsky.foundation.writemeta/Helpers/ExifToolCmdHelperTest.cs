@@ -108,23 +108,16 @@ public sealed class ExifToolCmdHelperTest
 				new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
 			.UpdateAsync(updateModel, comparedNames);
 
-		if ( new AppSettings().IsWindows )
-		{
-			Assert.AreEqual("", helperResult.Command);
-		}
-		else
-		{
-			const string expectedResult =
-				"-json -overwrite_original -sep \", \" \"-xmp:subject\"=\"tags, " +
-				"\\\"test\\\" \" -Keywords=\"tags, \\\"test\\\"\" " +
-				"-Caption-Abstract=\"Description \\\"test\\\"\" " +
-				"-Description=\"Description \\\"test\\\"\" " +
-				"\"-xmp-dc:description=Description \\\"test\\\"\" " +
-				"-ObjectName=\"Title \\\"test\\\"\" " +
-				"\"-title\"=\"Title \\\"test\\\"\" " +
-				"\"-xmp-dc:title=Title \\\"test\\\"\"";
-			Assert.AreEqual(expectedResult, helperResult.Command);
-		}
+		const string expectedResult =
+			"-json -overwrite_original -sep \", \" \"-xmp:subject\"=\"tags, " +
+			"\\\"test\\\" \" -Keywords=\"tags, \\\"test\\\"\" " +
+			"-Caption-Abstract=\"Description \\\"test\\\"\" " +
+			"-Description=\"Description \\\"test\\\"\" " +
+			"\"-xmp-dc:description=Description \\\"test\\\"\" " +
+			"-ObjectName=\"Title \\\"test\\\"\" " +
+			"\"-title\"=\"Title \\\"test\\\"\" " +
+			"\"-xmp-dc:title=Title \\\"test\\\"\"";
+		Assert.AreEqual(expectedResult, helperResult.Command);
 	}
 
 	[TestMethod]
