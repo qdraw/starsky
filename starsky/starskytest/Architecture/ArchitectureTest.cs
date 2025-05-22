@@ -227,18 +227,6 @@ public partial class TheSolutionShould
 	private static void AssertLayerReferences(IReadOnlyCollection<string> invalidReferences,
 		string layer)
 	{
-		if ( layer == "Feature" && invalidReferences.Any(p =>
-			    p.Contains(
-				    @"starsky.feature.trash references ..\starsky.feature.metaupdate\starsky.feature.metaupdate.csproj")) )
-		{
-			// This is a known issue, as the Trash feature references the MetaUpdate feature
-			// This should be refactored in the future
-
-			// when update also update docs!!!
-
-			return;
-		}
-
 		Assert.AreEqual(0, invalidReferences.Count,
 			$"There should be no Helix incompatible references in the {layer} layer. " +
 			$"{invalidReferences.Count} invalid reference{( invalidReferences.Count == 1 ? " was" : "s were" )} " +
