@@ -18,9 +18,19 @@ type ForceSyncWaitButtonPropTypes = {
   historyLocationSearch: string;
   callback(): void;
   dispatch: React.Dispatch<ArchiveAction>;
+  isShortLabel: boolean;
+  className?: string;
+  dataTest?: string;
 };
 
-const ForceSyncWaitTime = 10000;
+type ForceSyncRequestNewContentPropTypes = {
+  historyLocationSearch: string;
+  dispatch: React.Dispatch<ArchiveAction>;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  callback(): void;
+};
+
+const ForceSyncWaitTime = 5000;
 
 /**
  * Helper to get new content in the current view
@@ -29,8 +39,9 @@ const ForceSyncWaitTime = 10000;
 export async function ForceSyncRequestNewContent({
   historyLocationSearch,
   dispatch,
-  callback
-}: ForceSyncWaitButtonPropTypes): Promise<void> {
+  callback,
+  setIsLoading
+}: ForceSyncRequestNewContentPropTypes): Promise<void> {
   const url = new UrlQuery().UrlIndexServerApi(new URLPath().StringToIUrl(historyLocationSearch));
   FetchGet(url).then((connectionResult) => {
     if (connectionResult.statusCode !== 200) {
@@ -44,6 +55,7 @@ export async function ForceSyncRequestNewContent({
     if (payload.fileIndexItems) {
       dispatch({ type: "force-reset", payload });
     }
+    setIsLoading(false);
     callback();
   });
 }
@@ -52,7 +64,10 @@ const ForceSyncWaitButton: React.FunctionComponent<ForceSyncWaitButtonPropTypes>
   propsParentFolder,
   historyLocationSearch,
   callback,
-  dispatch
+  dispatch,
+  isShortLabel = false,
+  className = "btn btn--default",
+  dataTest = "force-sync"
 }) => {
   function forceSync(): Promise<IConnectionDefault> {
     const parentFolder = propsParentFolder ?? "/";
@@ -65,7 +80,13 @@ const ForceSyncWaitButton: React.FunctionComponent<ForceSyncWaitButtonPropTypes>
 
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageForceSyncCurrentFolder = language.key(localization.MessageForceSyncCurrentFolder);
+
+  let label;
+  if (isShortLabel) {
+    label = language.key(localization.MessageForceSync);
+  } else {
+    label = language.key(localization.MessageForceSyncCurrentFolder);
+  }
 
   const [startCounter, setStartCounter] = useState(0);
   // preloading icon
@@ -80,7 +101,8 @@ const ForceSyncWaitButton: React.FunctionComponent<ForceSyncWaitButtonPropTypes>
         ForceSyncRequestNewContent({
           dispatch,
           historyLocationSearch,
-          callback
+          callback,
+          setIsLoading
         });
       }, ForceSyncWaitTime);
     });
@@ -98,8 +120,8 @@ const ForceSyncWaitButton: React.FunctionComponent<ForceSyncWaitButtonPropTypes>
   return (
     <>
       {isLoading ? <Preloader isWhite={false} isOverlay={true} /> : ""}
-      <button className="btn btn--default" data-test="force-sync" onClick={() => startForceSync()}>
-        {MessageForceSyncCurrentFolder}
+      <button className={className} data-test={dataTest} onClick={() => startForceSync()}>
+        {label}
       </button>
     </>
   );

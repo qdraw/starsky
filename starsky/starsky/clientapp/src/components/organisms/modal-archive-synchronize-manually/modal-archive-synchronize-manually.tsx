@@ -115,6 +115,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
       <div className="modal content--subheader">{MessageSynchronizeManually}</div>
       <div className="modal content--text">
         <ForceSyncWaitButton
+          isShortLabel={false}
           propsParentFolder={props.parentFolder}
           historyLocationSearch={history.location.search}
           callback={() => props.handleExit()}

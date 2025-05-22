@@ -7,15 +7,9 @@ using starsky.foundation.sync.SyncInterfaces;
 namespace starsky.Controllers;
 
 [Authorize]
-public sealed class SynchronizeController : Controller
+public sealed class SynchronizeController(IManualBackgroundSyncService manualBackgroundSyncService)
+	: Controller
 {
-	private readonly IManualBackgroundSyncService _manualBackgroundSyncService;
-
-	public SynchronizeController(IManualBackgroundSyncService manualBackgroundSyncService)
-	{
-		_manualBackgroundSyncService = manualBackgroundSyncService;
-	}
-
 	/// <summary>
 	///     Faster API to Check if directory is changed (not recursive)
 	/// </summary>
@@ -24,7 +18,6 @@ public sealed class SynchronizeController : Controller
 	/// <response code="200">started sync as background job</response>
 	/// <response code="401">User unauthorized</response>
 	[HttpPost("/api/synchronize")]
-	[HttpGet("/api/synchronize")] // < = = = = = = = = subject to change!
 	[ProducesResponseType(typeof(string), 200)]
 	[ProducesResponseType(typeof(string), 401)]
 	[Produces("application/json")]
@@ -35,15 +28,12 @@ public sealed class SynchronizeController : Controller
 			return BadRequest("Model invalid");
 		}
 
-		var status = await _manualBackgroundSyncService.ManualSync(f);
-		switch ( status )
+		var status = await manualBackgroundSyncService.ManualSync(f);
+		return status switch
 		{
-			case FileIndexItem.ExifStatus.NotFoundNotInIndex:
-				return NotFound("Failed");
-			case FileIndexItem.ExifStatus.OperationNotSupported:
-				return BadRequest("Already started");
-		}
-
-		return Ok("Job created");
+			FileIndexItem.ExifStatus.NotFoundNotInIndex => NotFound("Failed"),
+			FileIndexItem.ExifStatus.OperationNotSupported => BadRequest("Already started"),
+			_ => Ok("Job created")
+		};
 	}
 }

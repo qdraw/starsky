@@ -219,6 +219,11 @@
     "nl": "Labels",
     "de": "Etiketten"
   },
+  "MessageForceSync": {
+    "en": "Refresh",
+    "nl": "Vernieuwen",
+    "de": "Aktualisieren"
+  },
   "MessageRenameFileName": {
     "en": "Rename file name",
     "nl": "Bestandsnaam wijzigen",
