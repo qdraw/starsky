@@ -41,6 +41,8 @@ public class ShellThumbnailExtractionWindows(IWebLogger logger)
 			throw new ArgumentException("Height must be greater than zero.", nameof(height));
 		}
 
+		inputPath = inputPath.Replace(@"\\", @"\");
+
 		var size = new SIZE { cx = width, cy = height };
 
 		try
@@ -51,11 +53,12 @@ public class ShellThumbnailExtractionWindows(IWebLogger logger)
 			SaveHBitmapToBmp(hBitmap, outputBmpPath);
 			DeleteObject(hBitmap); // prevent memory leak
 		}
-		catch ( Exception )
+		catch ( Exception exception )
 		{
 			logger.LogInformation(
-				"[ShellThumbnailExtractionWindows] Error: Failed to create URL for {filePath}",
-				inputPath);
+				"[ShellThumbnailExtractionWindows] " +
+				$"Error: Failed to create URL for {inputPath} - {exception.Message}",
+				inputPath, exception);
 			return false;
 		}
 

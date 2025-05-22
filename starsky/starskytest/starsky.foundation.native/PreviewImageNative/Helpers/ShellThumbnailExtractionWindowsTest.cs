@@ -16,9 +16,14 @@ namespace starskytest.starsky.foundation.native.PreviewImageNative.Helpers;
 public class ShellThumbnailExtractionWindowsTest
 {
 	private static async Task<(string, string)> CreateTempImage(string testName,
-		bool corrupt = false)
+		bool corrupt = false, bool doubleSlash = false)
 	{
 		var tempFolder = new AppSettings().TempFolder;
+		if ( doubleSlash )
+		{
+			tempFolder += @"\";
+		}
+		
 		var tempInputPath = Path.Combine(tempFolder, $"{testName}_input.jpg");
 		if ( !corrupt )
 		{
@@ -56,7 +61,7 @@ public class ShellThumbnailExtractionWindowsTest
 	{
 		if ( ShellThumbnailExtractionWindows.IsSupported() )
 		{
-			Assert.Inconclusive("This test is only valid on unsupported platforms.");
+			Assert.Inconclusive("This test is only valid on unsupported platforms. Linux/MacOS.");
 		}
 
 		var result = new ShellThumbnailExtractionWindows(new FakeIWebLogger()).GenerateThumbnail(
@@ -71,7 +76,7 @@ public class ShellThumbnailExtractionWindowsTest
 	{
 		if ( !ShellThumbnailExtractionWindows.IsSupported() )
 		{
-			Assert.Inconclusive("This test is only valid on unsupported platforms.");
+			Assert.Inconclusive("This test is only valid on unsupported platforms. Linux/MacOS.");
 		}
 
 		var result = new ShellThumbnailExtractionWindows(new FakeIWebLogger())
@@ -90,9 +95,17 @@ public class ShellThumbnailExtractionWindowsTest
 		});
 	}
 
+	/// <summary>
+	/// Happy flow
+	/// </summary>
+	/// <param name="height">expected height</param>
+	/// <param name="doubleSlashInPath">doubleSlashInPath</param>
+
 	[DataTestMethod]
-	[DataRow(67)]
-	public async Task GenerateThumbnail_ValidInput_CreatesThumbnail__OnlyOnWindowsX64(int height)
+	[DataRow(67,true)]
+	[DataRow(67,false)]
+
+	public async Task GenerateThumbnail_ValidInput_CreatesThumbnail__OnlyOnWindowsX64(int height, bool doubleSlashInPath)
 	{
 		if ( !ShellThumbnailExtractionWindows.IsSupported() )
 		{
@@ -101,7 +114,7 @@ public class ShellThumbnailExtractionWindowsTest
 
 		// Arrange
 		var (input, output) =
-			await CreateTempImage($"GenerateThumbnail_ValidInput_Creates_{height}");
+			await CreateTempImage($"GenerateThumbnail_ValidInput_Creates_{height}", false, doubleSlashInPath);
 
 		try
 		{
