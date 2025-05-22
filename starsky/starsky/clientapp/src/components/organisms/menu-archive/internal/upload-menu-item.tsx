@@ -21,7 +21,7 @@ export const UploadMenuItem: React.FunctionComponent<IUploadMenuItemProps> = ({
   if (readOnly)
     return (
       <li data-test="upload" className="menu-option disabled">
-        Upload
+        <button>Upload</button>
       </li>
     );
   return (
