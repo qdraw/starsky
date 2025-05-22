@@ -49,6 +49,10 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Fixed) _Back-end_ Architecture reference for trash and metaupdate (Issue #1778 & PR #2179)
 - [x] (Added) _Front-end_ Add refresh button to main menu (Issue #962 & PR #2180)
 
+### Breaking changes in 0.7.0-beta
+
+- [x] (Breaking Change) _Back-end_ change default thumbnail format to webp (PR #1833)
+
 ## version 0.7.0-beta.1 - 2025-05-20 {#v0.7.0-beta.1}
 
 - [x] (Added) _Back-end_ Handle background jobs for small thumbnails. (PR #2147)
