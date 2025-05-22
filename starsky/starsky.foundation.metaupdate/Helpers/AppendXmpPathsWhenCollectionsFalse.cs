@@ -1,8 +1,6 @@
-using System.Collections.Generic;
-using System.Linq;
 using starsky.foundation.platform.Helpers;
 
-namespace starsky.feature.metaupdate.Helpers;
+namespace starsky.foundation.metaupdate.Helpers;
 
 public static class AppendXmpPathsWhenCollectionsFalseHelper
 {

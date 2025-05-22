@@ -65,11 +65,6 @@ This method identifies invalid references for a given project based on the speci
 
 This method asserts that there are no invalid references for a given layer.
 
-## Known Issues
-
-- The `starsky.feature.trash` project references the `starsky.feature.metaupdate` project, which is
-  a known issue and should be refactored in the future.
-
 ## References
 
 - [Microservices and Evolutionary Architecture](https://www.thoughtworks.com/insights/blog/microservices-evolutionary-architecture)

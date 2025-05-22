@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using starsky.feature.metaupdate.Interfaces;
 using starsky.feature.realtime.Interface;
 using starsky.foundation.database.Models;
+using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -66,8 +66,8 @@ public sealed class MetaReplaceController : Controller
 		var fileIndexResultsList = await _metaReplaceService
 			.Replace(f, fieldName, search, replace, collections);
 
-		var resultsOkOrDeleteList = fileIndexResultsList.Where(
-			p => p.Status is FileIndexItem.ExifStatus.Ok
+		var resultsOkOrDeleteList = fileIndexResultsList.Where(p =>
+			p.Status is FileIndexItem.ExifStatus.Ok
 				or FileIndexItem.ExifStatus.OkAndSame
 				or FileIndexItem.ExifStatus.Deleted
 				or FileIndexItem.ExifStatus.DeletedAndSame).ToList();

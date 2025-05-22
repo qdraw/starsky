@@ -1,10 +1,10 @@
 using System.Runtime.CompilerServices;
 using System.Text;
-using starsky.feature.metaupdate.Interfaces;
 using starsky.feature.trash.Interfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.native.Trash.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.worker.Interfaces;
@@ -17,12 +17,12 @@ namespace starsky.feature.trash.Services;
 public class MoveToTrashService : IMoveToTrashService
 {
 	private readonly AppSettings _appSettings;
-	private readonly IQuery _query;
+	private readonly ITrashConnectionService _connectionService;
 	private readonly IMetaPreflight _metaPreflight;
+	private readonly IMetaUpdateService _metaUpdateService;
+	private readonly IQuery _query;
 	private readonly IUpdateBackgroundTaskQueue _queue;
 	private readonly ITrashService _systemTrashService;
-	private readonly IMetaUpdateService _metaUpdateService;
-	private readonly ITrashConnectionService _connectionService;
 
 	public MoveToTrashService(AppSettings appSettings, IQuery query,
 		IMetaPreflight metaPreflight,
@@ -41,18 +41,18 @@ public class MoveToTrashService : IMoveToTrashService
 	}
 
 	/// <summary>
-	/// Is supported and enabled in the feature toggle
+	///     Is supported and enabled in the feature toggle
 	/// </summary>
 	/// <returns>Should you use it?</returns>
 	public bool IsEnabled()
 	{
 		return _appSettings.UseSystemTrash == true &&
-			   _systemTrashService.DetectToUseSystemTrash();
+		       _systemTrashService.DetectToUseSystemTrash();
 	}
 
 	/// <summary>
-	/// Move a file to the internal trash or system trash
-	/// Depends on the feature toggle
+	///     Move a file to the internal trash or system trash
+	///     Depends on the feature toggle
 	/// </summary>
 	/// <param name="inputFilePaths">list of paths</param>
 	/// <param name="collections">is stack collections enabled</param>
@@ -65,7 +65,7 @@ public class MoveToTrashService : IMoveToTrashService
 			await _metaPreflight.PreflightAsync(inputModel, inputFilePaths,
 				false, collections, 0);
 
-		(fileIndexResultsList, changedFileIndexItemName) =
+		( fileIndexResultsList, changedFileIndexItemName ) =
 			await AppendChildItemsToTrashList(fileIndexResultsList, changedFileIndexItemName);
 
 		var moveToTrashList =
@@ -92,6 +92,17 @@ public class MoveToTrashService : IMoveToTrashService
 		return TrashConnectionService.StatusUpdate(moveToTrashList, isSystemTrashEnabled);
 	}
 
+	/// <summary>
+	///     Is it supported to use the system trash
+	///     But it does NOT check if the feature toggle is enabled
+	///     Used for end2end test to check if it an option to enable / disable the system trash
+	/// </summary>
+	/// <returns>true if supported</returns>
+	public bool DetectToUseSystemTrash()
+	{
+		return _systemTrashService.DetectToUseSystemTrash();
+	}
+
 	private async Task MetaTrashInQueue(Dictionary<string, List<string>> changedFileIndexItemName,
 		List<FileIndexItem> fileIndexResultsList, FileIndexItem inputModel, bool collections)
 	{
@@ -100,7 +111,7 @@ public class MoveToTrashService : IMoveToTrashService
 	}
 
 	/// <summary>
-	/// For directories add all sub files
+	///     For directories add all sub files
 	/// </summary>
 	/// <param name="moveToTrash"></param>
 	/// <param name="changedFileIndexItemName"></param>
@@ -115,7 +126,7 @@ public class MoveToTrashService : IMoveToTrashService
 
 		if ( parentSubPaths.Count == 0 )
 		{
-			return (moveToTrash, changedFileIndexItemName);
+			return ( moveToTrash, changedFileIndexItemName );
 		}
 
 		var childItems = ( await _query.GetAllObjectsAsync(parentSubPaths) )
@@ -132,7 +143,7 @@ public class MoveToTrashService : IMoveToTrashService
 			changedFileIndexItemName.TryAdd(childItem.FilePath!, new List<string> { "tags" });
 		}
 
-		return (moveToTrash, changedFileIndexItemName);
+		return ( moveToTrash, changedFileIndexItemName );
 	}
 
 	private async Task SystemTrashInQueue(List<FileIndexItem> moveToTrash)
@@ -145,16 +156,5 @@ public class MoveToTrashService : IMoveToTrashService
 		_systemTrashService.Trash(fullFilePaths);
 
 		await _query.RemoveItemAsync(moveToTrash);
-	}
-
-	/// <summary>
-	/// Is it supported to use the system trash
-	/// But it does NOT check if the feature toggle is enabled
-	/// Used for end2end test to check if it an option to enable / disable the system trash
-	/// </summary>
-	/// <returns>true if supported</returns>
-	public bool DetectToUseSystemTrash()
-	{
-		return _systemTrashService.DetectToUseSystemTrash();
 	}
 }

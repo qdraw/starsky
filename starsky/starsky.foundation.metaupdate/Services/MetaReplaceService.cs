@@ -1,15 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using starsky.feature.metaupdate.Helpers;
-using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.metaupdate.Helpers;
+using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -17,7 +13,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 
-namespace starsky.feature.metaupdate.Services;
+namespace starsky.foundation.metaupdate.Services;
 
 [Service(typeof(IMetaReplaceService), InjectionLifetime = InjectionLifetime.Scoped)]
 public class MetaReplaceService : IMetaReplaceService
