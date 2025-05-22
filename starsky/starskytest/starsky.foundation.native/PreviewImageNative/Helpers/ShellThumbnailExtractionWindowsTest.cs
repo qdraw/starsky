@@ -23,7 +23,7 @@ public class ShellThumbnailExtractionWindowsTest
 		{
 			tempFolder += @"\";
 		}
-		
+
 		var tempInputPath = Path.Combine(tempFolder, $"{testName}_input.jpg");
 		if ( !corrupt )
 		{
@@ -96,16 +96,15 @@ public class ShellThumbnailExtractionWindowsTest
 	}
 
 	/// <summary>
-	/// Happy flow
+	///     Happy flow
 	/// </summary>
 	/// <param name="height">expected height</param>
 	/// <param name="doubleSlashInPath">doubleSlashInPath</param>
-
 	[DataTestMethod]
-	[DataRow(67,true)]
-	[DataRow(67,false)]
-
-	public async Task GenerateThumbnail_ValidInput_CreatesThumbnail__OnlyOnWindowsX64(int height, bool doubleSlashInPath)
+	[DataRow(67, true)]
+	[DataRow(67, false)]
+	public async Task GenerateThumbnail_ValidInput_CreatesThumbnail__OnlyOnWindowsX64(int height,
+		bool doubleSlashInPath)
 	{
 		if ( !ShellThumbnailExtractionWindows.IsSupported() )
 		{
@@ -114,7 +113,8 @@ public class ShellThumbnailExtractionWindowsTest
 
 		// Arrange
 		var (input, output) =
-			await CreateTempImage($"GenerateThumbnail_ValidInput_Creates_{height}", false, doubleSlashInPath);
+			await CreateTempImage($"GenerateThumbnail_ValidInput_Creates_{height}", false,
+				doubleSlashInPath);
 
 		try
 		{
