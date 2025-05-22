@@ -1,3 +1,4 @@
+import "@testing-library/jest-dom";
 import { render, screen, waitFor } from "@testing-library/react";
 import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { PageType } from "../../../interfaces/IDetailView";
@@ -126,4 +127,49 @@ describe("ForceSyncWaitButton", () => {
     expect(callback).toHaveBeenCalled();
     expect(dispatch).not.toHaveBeenCalled();
   });
+
+  const defaultProps = {
+    historyLocationSearch: "",
+    callback: jest.fn(),
+    dispatch: jest.fn(),
+    isShortLabel: false
+  };
+
+  const buttonLabelClassNameTestCases = [
+    {
+      description: "renders with short label, custom class and custom dataTest",
+      isShortLabel: true,
+      className: "btn btn--primary",
+      dataTest: "custom-sync",
+      expectedClass: "btn btn--primary",
+      expectedDataTest: "custom-sync"
+    },
+    {
+      description: "renders with long label, default class and default dataTest",
+      isShortLabel: false,
+      className: undefined,
+      dataTest: undefined,
+      expectedClass: "btn btn--default",
+      expectedDataTest: "force-sync"
+    }
+  ];
+
+  test.each(buttonLabelClassNameTestCases)(
+    "$description",
+    ({ isShortLabel, className, dataTest, expectedClass, expectedDataTest }) => {
+      render(
+        <ForceSyncWaitButton
+          {...defaultProps}
+          isShortLabel={isShortLabel}
+          className={className}
+          dataTest={dataTest}
+        />
+      );
+
+      const button = screen.getByRole("button");
+      expect(button).toHaveClass(expectedClass);
+      expect(button).toHaveAttribute("data-test", expectedDataTest);
+      expect(button.textContent).toBeTruthy(); // label should render
+    }
+  );
 });
