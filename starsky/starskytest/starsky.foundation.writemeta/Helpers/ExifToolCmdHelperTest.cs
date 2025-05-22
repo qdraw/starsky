@@ -58,7 +58,6 @@ public sealed class ExifToolCmdHelperTest
 			nameof(FileIndexItem.DateTime).ToLowerInvariant()
 		};
 
-		var inputSubPaths = new List<string> { "/test.jpg" };
 		var storage = new FakeIStorage(new List<string> { "/" },
 			new List<string> { "/test.jpg" }, new List<byte[]>());
 
@@ -83,6 +82,42 @@ public sealed class ExifToolCmdHelperTest
 		Assert.IsTrue(helperResult.Command.Contains(updateModel.LocationCountry));
 		Assert.IsTrue(helperResult.Command.Contains(updateModel.LocationCountryCode));
 		Assert.IsTrue(helperResult.Command.Contains(updateModel.Title));
+	}
+
+	[TestMethod]
+	public async Task ExifToolCmdHelper_UpdateQuoteTest()
+	{
+		var updateModel = new FileIndexItem
+		{
+			Tags = "tags,\"test\"",
+			Description = "Description \"test\"",
+			Title = "Title \"test\""
+		};
+		var comparedNames = new List<string>
+		{
+			nameof(FileIndexItem.Tags).ToLowerInvariant(),
+			nameof(FileIndexItem.Description).ToLowerInvariant(),
+			nameof(FileIndexItem.Title).ToLowerInvariant()
+		};
+
+		var storage = new FakeIStorage(new List<string> { "/" },
+			new List<string> { "/test.jpg" }, new List<byte[]>());
+
+		var fakeExifTool = new FakeExifTool(storage, _appSettings);
+		var helperResult = await new ExifToolCmdHelper(fakeExifTool, storage, storage,
+				new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
+			.UpdateAsync(updateModel, comparedNames);
+
+		const string expectedResult =
+			"-json -overwrite_original -sep \", \" \"-xmp:subject\"=\"tags, " +
+			"\\\"test\\\" \" -Keywords=\"tags, \\\"test\\\"\" " +
+			"-Caption-Abstract=\"Description \\\"test\\\"\" " +
+			"-Description=\"Description \\\"test\\\"\" " +
+			"\"-xmp-dc:description=Description \\\"test\\\"\" " +
+			"-ObjectName=\"Title \\\"test\\\"\" " +
+			"\"-title\"=\"Title \\\"test\\\"\" " +
+			"\"-xmp-dc:title=Title \\\"test\\\"\"";
+		Assert.AreEqual(expectedResult, helperResult.Command);
 	}
 
 	[TestMethod]

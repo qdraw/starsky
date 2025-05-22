@@ -34,9 +34,8 @@ public sealed class FilenameHelpersTest
 		Assert.AreEqual("test.jpg", result);
 	}
 
-
 	[TestMethod]
-	public void FilenamesHelper_GetParentPath()
+	public void FilenamesHelper_GetParentPathYesJpeg()
 	{
 		var result = FilenamesHelper.GetParentPath("/yes.jpg");
 		Assert.AreEqual("/", result);
@@ -95,7 +94,6 @@ public sealed class FilenameHelpersTest
 	[DataRow("/test.MP4", "mp4", "test")] // uppercase
 	[DataRow("/test.jpeg", "jpeg", "test")]
 	[DataRow("/test_image", "", "test_image")] // no ext
-	[DataRow("/test.jpeg", "jpeg", "test")]
 	[DataRow("/test.jpg.php", "php", "test.jpg")]
 	[DataRow("/test.php%00.jpg", "jpg", "test.php%00")]
 	[DataRow("/folder/.hiddenfile", "nfile", ".hiddenfile")] // hidden file with no extension
@@ -145,11 +143,9 @@ public sealed class FilenameHelpersTest
 	[DataRow("test.jpg/another.jpg", false)] // slash in name
 	[DataRow("test.jpg\\another.jpg", false)] // backslash in name
 	[DataRow("test..", false)] // double trailing dot
-	[DataRow("test..jpg", false)] // double dot before extension
 	[DataRow("test.jpg..", false)] // double trailing dot after extension
 	[DataRow("test.jpg..exe", false)] // double extension with dot
 	[DataRow("test@jpg", false)] // special character without dot
-	[DataRow("test jpg", false)] // space without dot
 	[DataRow("testjpg", false)] // no dot
 	[DataRow("testjpg.", false)] // trailing dot without extension
 	[DataRow("testjpg..", false)] // double trailing dot without extension
@@ -159,7 +155,7 @@ public sealed class FilenameHelpersTest
 		var result = FilenamesHelper.IsValidFileName(filename);
 		Assert.AreEqual(expected, result);
 	}
-	
+
 	// Get parent path for FilenamesHelper.GetParentPath
 	[TestMethod]
 	[DataRow("/yes.jpg", "/")]
@@ -173,5 +169,4 @@ public sealed class FilenameHelpersTest
 		var result = FilenamesHelper.GetParentPath(filePath);
 		Assert.AreEqual(expected, result);
 	}
-	
 }

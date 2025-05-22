@@ -121,7 +121,6 @@ public class FfMpegDownloadTest
 	[DataTestMethod]
 	[DataRow("test-1,test-2", 2)]
 	[DataRow("", 1)]
-	[DataRow("", 1)]
 	public async Task DownloadFfMpeg_MultiArg(string arg, int count)
 	{
 		var storage = new FakeIStorage();
@@ -240,12 +239,12 @@ public class FfMpegDownloadTest
 
 		var resultFileAlreadyExists = await ffmpegDownload.DownloadFfMpeg();
 
-		if ( tryRun && !isPrepareBeforeRunning)
+		if ( tryRun && !isPrepareBeforeRunning )
 		{
 			Assert.AreEqual(FfmpegDownloadStatus.Ok, resultFileAlreadyExists);
 			return;
 		}
-		
+
 		Assert.AreEqual(
 			isPrepareBeforeRunning
 				? FfmpegDownloadStatus.Ok

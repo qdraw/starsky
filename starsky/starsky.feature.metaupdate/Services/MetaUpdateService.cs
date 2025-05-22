@@ -85,12 +85,10 @@ public class MetaUpdateService : IMetaUpdateService
 		bool collections, bool append, // only when changedFileIndexItemName = null
 		int rotateClock) // <- this one is needed
 	{
-		if ( changedFileIndexItemName == null )
-		{
-			changedFileIndexItemName = ( await _metaPreflight.PreflightAsync(inputModel,
-				fileIndexResultsList.Select(p => p.FilePath!).ToList(), append, collections,
-				rotateClock) ).changedFileIndexItemName;
-		}
+		// when null fill changedFileIndexItemName with preflight data
+		changedFileIndexItemName ??= ( await _metaPreflight.PreflightAsync(inputModel,
+			fileIndexResultsList.Select(p => p.FilePath!).ToList(), append, collections,
+			rotateClock) ).changedFileIndexItemName;
 
 		var updatedItems = new List<FileIndexItem>();
 		var fileIndexItemList = fileIndexResultsList
