@@ -306,11 +306,14 @@ public sealed class ExifToolCmdHelper
 	private static string UpdateKeywordsCommand(string command, List<string> comparedNames,
 		FileIndexItem updateModel)
 	{
-		if ( comparedNames.Contains(nameof(FileIndexItem.Tags).ToLowerInvariant()) )
+		if ( !comparedNames.Contains(nameof(FileIndexItem.Tags).ToLowerInvariant()) )
 		{
-			command += " -sep \", \" \"-xmp:subject\"=\"" + updateModel.Tags
-			                                              + $" \" -Keywords=\"{updateModel.Tags}\""; // space before
+			return command;
 		}
+
+		var tags = updateModel.Tags.QuotesCommandLineEscape();
+		command += " -sep \", \" \"-xmp:subject\"=\"" + tags
+		                                              + $" \" -Keywords=\"{tags}\""; // space before
 
 		return command;
 	}
@@ -379,16 +382,20 @@ public sealed class ExifToolCmdHelper
 		return command;
 	}
 
+
 	private static string UpdateDescriptionCommand(string command, List<string> comparedNames,
 		FileIndexItem updateModel)
 	{
-		if ( comparedNames.Contains(nameof(FileIndexItem.Description).ToLowerInvariant()) )
+		if ( !comparedNames.Contains(nameof(FileIndexItem.Description).ToLowerInvariant()) )
 		{
-			command += " -Caption-Abstract=\"" + updateModel.Description
-			                                   + "\" -Description=\"" +
-			                                   updateModel.Description + "\""
-			                                   + $" \"-xmp-dc:description={updateModel.Description}\"";
+			return command;
 		}
+
+		var description = updateModel.Description.QuotesCommandLineEscape();
+		command += " -Caption-Abstract=\"" + description
+		                                   + "\" -Description=\"" +
+		                                   description + "\""
+		                                   + $" \"-xmp-dc:description={description}\"";
 
 		return command;
 	}
@@ -475,12 +482,15 @@ public sealed class ExifToolCmdHelper
 	private static string UpdateTitleCommand(string command, List<string> comparedNames,
 		FileIndexItem updateModel)
 	{
-		if ( comparedNames.Contains(nameof(FileIndexItem.Title).ToLowerInvariant()) )
+		if ( !comparedNames.Contains(nameof(FileIndexItem.Title).ToLowerInvariant()) )
 		{
-			command += " -ObjectName=\"" + updateModel.Title + "\""
-			           + " \"-title\"=" + "\"" + updateModel.Title + "\""
-			           + $" \"-xmp-dc:title={updateModel.Title}\"";
+			return command;
 		}
+
+		var title = updateModel.Title.QuotesCommandLineEscape();
+		command += " -ObjectName=\"" + title + "\""
+		           + " \"-title\"=" + "\"" + title + "\""
+		           + $" \"-xmp-dc:title={title}\"";
 
 		return command;
 	}
