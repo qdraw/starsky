@@ -9,6 +9,7 @@ import { RealtimeMapUpdate } from "./internal/realtime-map-update";
 import * as UpdateButtonWrapper from "./internal/update-button-wrapper";
 import * as updateGeoLocation from "./internal/update-geo-location";
 import ModalGeo, { ILatLong } from "./modal-geo";
+import { act } from "react";
 
 describe("ModalGeo", () => {
   beforeEach(() => {
@@ -224,6 +225,8 @@ describe("ModalGeo", () => {
         });
 
       const handleExitSpy = jest.fn();
+
+      act(() => {});
       const modal = render(
         <ModalGeo
           parentDirectory="/"
@@ -249,7 +252,7 @@ describe("ModalGeo", () => {
           setError: expect.any(Function),
           setIsLoading: expect.any(Function)
         },
-        {}
+        undefined
       );
 
       modal.unmount();

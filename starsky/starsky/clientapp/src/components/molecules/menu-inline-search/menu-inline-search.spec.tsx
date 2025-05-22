@@ -167,7 +167,7 @@ describe("menu-inline-search", () => {
           setFormFocus: expect.any(Function),
           suggest: []
         },
-        {}
+        undefined
       );
 
       menuBar.unmount();

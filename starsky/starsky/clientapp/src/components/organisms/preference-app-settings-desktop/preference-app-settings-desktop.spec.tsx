@@ -126,7 +126,7 @@ describe("PreferencesAppSettingsDesktop", () => {
         onBlur: expect.anything(),
         spellcheck: true
       },
-      {}
+      undefined
     );
 
     expect(useFetchSpy).toHaveBeenCalled();
@@ -192,7 +192,7 @@ describe("PreferencesAppSettingsDesktop", () => {
     expect(switchButtonSpy).toHaveBeenCalled();
 
     expect(useFetchSpy).toHaveBeenCalled();
-    expect(useFetchSpy).toHaveBeenCalledTimes(6);
+    expect(useFetchSpy).toHaveBeenCalledTimes(4);
 
     component.unmount();
   });
