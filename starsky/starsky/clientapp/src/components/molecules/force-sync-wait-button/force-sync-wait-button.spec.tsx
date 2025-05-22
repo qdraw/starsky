@@ -14,6 +14,7 @@ describe("ForceSyncWaitButton", () => {
         historyLocationSearch={""}
         dispatch={jest.fn()}
         callback={jest.fn()}
+        isShortLabel={false}
       ></ForceSyncWaitButton>
     );
   });
@@ -29,7 +30,12 @@ describe("ForceSyncWaitButton", () => {
       .mockImplementationOnce(() => mockIConnectionDefault);
 
     const component = render(
-      <ForceSyncWaitButton historyLocationSearch={""} dispatch={jest.fn()} callback={jest.fn()} />
+      <ForceSyncWaitButton
+        isShortLabel={false}
+        historyLocationSearch={""}
+        dispatch={jest.fn()}
+        callback={jest.fn()}
+      />
     );
 
     const forceSync = screen.queryByTestId("force-sync") as HTMLButtonElement;
@@ -72,7 +78,8 @@ describe("ForceSyncWaitButton", () => {
     ForceSyncRequestNewContent({
       callback: jest.fn(),
       dispatch: jest.fn(),
-      historyLocationSearch: "?f=/"
+      historyLocationSearch: "?f=/",
+      setIsLoading: jest.fn()
     });
 
     expect(fetchGetSpy).toHaveBeenCalled();
@@ -91,7 +98,8 @@ describe("ForceSyncWaitButton", () => {
     await ForceSyncRequestNewContent({
       callback,
       dispatch,
-      historyLocationSearch: "?f=/"
+      historyLocationSearch: "?f=/",
+      setIsLoading: jest.fn()
     });
 
     expect(dispatch).toHaveBeenCalled();
@@ -111,7 +119,8 @@ describe("ForceSyncWaitButton", () => {
     await ForceSyncRequestNewContent({
       callback,
       dispatch,
-      historyLocationSearch: "?f=/"
+      historyLocationSearch: "?f=/",
+      setIsLoading: jest.fn()
     });
 
     expect(callback).toHaveBeenCalled();

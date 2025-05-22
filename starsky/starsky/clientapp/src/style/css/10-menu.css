@@ -201,6 +201,7 @@
   background-color: #90a4ae;
 }
 
+.header > .wrapper > .item.item--force-sync,
 .header > .wrapper > .item.item--labels,
 .header > .wrapper > .item.item--more,
 .header > .wrapper > .item.item--select,
@@ -239,6 +240,10 @@
 
 .header > .wrapper > .item.item--select:before {
   mask-image: url("../images/baseline-check_circle_outline-24px.svg");
+}
+
+.header > .wrapper > .item.item--force-sync:before {
+  mask-image: url("../images/baseline-refresh-24px.svg");
 }
 
 .header > .wrapper > .item.item--labels:before {
@@ -287,6 +292,18 @@
   .header > .wrapper > .item.item--labels,
   .header > .wrapper > .item.item--select {
     right: 88px;
+  }
+}
+
+.header > .wrapper > .item.item--force-sync {
+  position: absolute;
+  right: 210px;
+  top: 0px; /* for old firefox */
+}
+
+@media screen and (max-width: 450px) {
+  .header > .wrapper > .item.item--force-sync {
+    right: 190px;
   }
 }
 

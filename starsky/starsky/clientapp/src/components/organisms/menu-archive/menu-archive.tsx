@@ -11,6 +11,7 @@ import { URLPath } from "../../../shared/url/url-path";
 import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-menu-toggle";
 import MenuOptionModal from "../../atoms/menu-option-modal/menu-option-modal";
 import MoreMenu from "../../atoms/more-menu/more-menu";
+import ForceSyncWaitButton from "../../molecules/force-sync-wait-button/force-sync-wait-button.tsx";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
 import { MenuOptionArchiveRename } from "../../molecules/menu-option-archive-rename/menu-option-archive-rename.tsx";
 import MenuOptionDesktopEditorOpenSelectionNoSelectWarning from "../../molecules/menu-option-desktop-editor-open-selection-no-select-warning/menu-option-desktop-editor-open-selection-no-select-warning";
@@ -144,6 +145,15 @@ const MenuArchive: React.FunctionComponent = memo(() => {
           <MenuOptionDesktopEditorOpenSelectionNoSelectWarning
             isReadOnly={readOnly}
             select={select}
+          />
+
+          <ForceSyncWaitButton
+            isShortLabel={true}
+            historyLocationSearch={history.location.search}
+            className="item item--force-sync"
+            dataTest="menu-item-force-sync"
+            callback={() => {}}
+            dispatch={dispatch}
           />
 
           <SelectMenuItem

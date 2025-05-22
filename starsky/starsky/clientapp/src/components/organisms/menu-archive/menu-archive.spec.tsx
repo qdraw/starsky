@@ -11,6 +11,7 @@ import * as FetchPost from "../../../shared/fetch/fetch-post";
 import { UrlQuery } from "../../../shared/url/url-query";
 import * as DropArea from "../../atoms/drop-area/drop-area";
 import * as Link from "../../atoms/link/link";
+import * as ForceSyncWaitButton from "../../molecules/force-sync-wait-button/force-sync-wait-button";
 import * as MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
 import * as ModalArchiveMkdir from "../modal-archive-mkdir/modal-archive-mkdir";
 import * as ModalArchiveRename from "../modal-archive-rename/modal-archive-rename";
@@ -69,6 +70,29 @@ describe("MenuArchive", () => {
       selectButton?.click();
 
       expect(Router.state.location.search).toBe("?select=");
+
+      // and clean
+      component.unmount();
+    });
+
+    it("click on force sync button", () => {
+      Router.navigate("/");
+
+      const clickSpy = jest.fn();
+      const spyButton = jest.spyOn(ForceSyncWaitButton, "default").mockImplementation(() => {
+        return <button data-test="menu-item-force-sync" onClick={clickSpy}></button>;
+      });
+
+      const component = render(<MenuArchive />);
+
+      expect(clickSpy).toHaveBeenCalledTimes(0);
+
+      expect(spyButton).toHaveBeenCalled();
+
+      const forceButton = screen.getByTestId("menu-item-force-sync");
+      forceButton?.click();
+
+      expect(clickSpy).toHaveBeenCalled();
 
       // and clean
       component.unmount();
