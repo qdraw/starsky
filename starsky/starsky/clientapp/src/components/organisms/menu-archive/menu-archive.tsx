@@ -147,6 +147,7 @@ const MenuArchive: React.FunctionComponent = memo(() => {
             select={select}
           />
 
+          {/* ForceSyncWaitButton is not shown on mobile due limited space (450px) */}
           <ForceSyncWaitButton
             isShortLabel={true}
             historyLocationSearch={history.location.search}
