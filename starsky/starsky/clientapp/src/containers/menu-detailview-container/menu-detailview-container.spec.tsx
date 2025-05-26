@@ -32,11 +32,7 @@ describe("MenuDetailViewContainer", () => {
       .spyOn(MenuDetailView, "default")
       .mockImplementationOnce(() => null);
 
-    const component = render(
-      <MemoryRouter>
-        <MenuDetailViewContainer />
-      </MemoryRouter>
-    );
+    const component = render(<MenuDetailViewContainer />);
     expect(menuDetailViewSpy).toHaveBeenCalled();
 
     component.unmount();
