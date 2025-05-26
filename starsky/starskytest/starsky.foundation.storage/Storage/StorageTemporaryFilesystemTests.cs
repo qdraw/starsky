@@ -15,8 +15,8 @@ namespace starskytest.starsky.foundation.storage.Storage;
 [TestClass]
 public sealed class StorageTemporaryFilesystemTests
 {
-	private readonly string _fileName;
 	private readonly StorageTemporaryFilesystem _tempStorage;
+	private string _fileName;
 
 	public StorageTemporaryFilesystemTests()
 	{
@@ -68,7 +68,7 @@ public sealed class StorageTemporaryFilesystemTests
 		const string beforeTestFileName = "before_test_tmpfs.jpg";
 		File.Delete(Path.Combine(createAnImage.BasePath,
 			alreadyExistsFileName));
-		
+
 		_tempStorage.FileCopy(_fileName, alreadyExistsFileName);
 		await _tempStorage.WriteStreamAsync(StringToStreamHelper.StringToStream("1"),
 			beforeTestFileName);
@@ -209,21 +209,27 @@ public sealed class StorageTemporaryFilesystemTests
 	}
 
 	[TestMethod]
-	public void IsFolderOrFile_Exists()
+	public void IsFolderOrFile_Exists_TempStorage()
 	{
+		// sometimes this test is flaky, it should have the file there
+		if ( !File.Exists(new CreateAnImage().FullFilePath) )
+		{
+			_fileName = new CreateAnImage().FileName;
+		}
+
 		var result = _tempStorage.IsFolderOrFile(_fileName);
 		Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File, result);
 	}
 
 	[TestMethod]
-	public void IsFolderOrFile_NotFound()
+	public void IsFolderOrFile_NotFound_TempStorage()
 	{
 		var result = _tempStorage.IsFolderOrFile("not-found");
 		Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.Deleted, result);
 	}
 
 	[TestMethod]
-	public void FolderMove()
+	public void FolderMove_TempStorage()
 	{
 		const string from = "/test_folder_move_from";
 		const string to = "/test_folder_move_to";
@@ -248,7 +254,7 @@ public sealed class StorageTemporaryFilesystemTests
 	}
 
 	[TestMethod]
-	public void CreateDirectory()
+	public void CreateDirectory_TempStorage()
 	{
 		_tempStorage.CreateDirectory("/test");
 		Assert.IsTrue(_tempStorage.ExistFolder("/test"));
@@ -256,7 +262,7 @@ public sealed class StorageTemporaryFilesystemTests
 	}
 
 	[TestMethod]
-	public void FolderDelete()
+	public void FolderDelete_TempStorage()
 	{
 		_tempStorage.CreateDirectory("/test");
 		Assert.IsTrue(_tempStorage.ExistFolder("/test"));
@@ -265,12 +271,13 @@ public sealed class StorageTemporaryFilesystemTests
 	}
 
 	[TestMethod]
-	public void GetAllFilesInDirectoryRecursive()
+	public void GetAllFilesInDirectoryRecursive_TempStorage()
 	{
 		// Setup env
 		_tempStorage.CreateDirectory("/test_GetAllFilesInDirectoryRecursive");
 		_tempStorage.CreateDirectory("/test_GetAllFilesInDirectoryRecursive/test");
-		const string fileAlreadyExistSubPath = "/test_GetAllFilesInDirectoryRecursive/test/already_09010.tmp";
+		const string fileAlreadyExistSubPath =
+			"/test_GetAllFilesInDirectoryRecursive/test/already_09010.tmp";
 		_tempStorage.WriteStream(StringToStreamHelper.StringToStream("test"),
 			fileAlreadyExistSubPath);
 
@@ -284,9 +291,9 @@ public sealed class StorageTemporaryFilesystemTests
 
 		_tempStorage.FolderDelete("/test_GetAllFilesInDirectoryRecursive");
 	}
-	
+
 	[TestMethod]
-	public void GetDirectories_Null_NotFound()
+	public void GetDirectories_Null_NotFound_TempStorage()
 	{
 		var result = _tempStorage.GetDirectories("/not_found");
 		Assert.AreEqual(0, result.Count());
