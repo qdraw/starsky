@@ -140,8 +140,9 @@ public sealed class HttpClientHelper : IHttpClientHelper
 					result);
 			}
 		}
-		catch ( HttpRequestException exception )
+		catch ( Exception exception )
 		{
+			_logger.LogError("[PostString] HttpClientHelper > Exception ", exception);
 			return new KeyValuePair<bool, string>(false, exception.Message);
 		}
 	}
