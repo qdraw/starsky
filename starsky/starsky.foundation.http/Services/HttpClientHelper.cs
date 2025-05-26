@@ -140,6 +140,10 @@ public sealed class HttpClientHelper : IHttpClientHelper
 					result);
 			}
 		}
+		catch ( TaskCanceledException exception )
+		{
+			return new KeyValuePair<bool, string>(false, exception.Message);
+		}
 		catch ( HttpRequestException exception )
 		{
 			return new KeyValuePair<bool, string>(false, exception.Message);
