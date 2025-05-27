@@ -17,6 +17,7 @@ public sealed class SynchronizeCliTest
 	private static string? _thumbnailGenerationIntervalInMinutes;
 	private static string? _geoFilesSkipDownloadOnStartup;
 	private static string? _ffmpegSkipDownloadOnStartup;
+
 	private static string? _exiftoolSkipDownloadOnStartup;
 	// also see:
 	// starsky/starskytest/root/ProgramTest.cs
@@ -37,7 +38,7 @@ public sealed class SynchronizeCliTest
 			Environment.GetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup");
 		_ffmpegSkipDownloadOnStartup =
 			Environment.GetEnvironmentVariable("app__ffmpegSkipDownloadOnStartup");
-		
+
 		// also see:
 		// starsky/starskytest/root/ProgramTest.cs
 		// starsky/starskytest/starskyGeoCli/starskyGeoCliTest.cs
@@ -46,7 +47,7 @@ public sealed class SynchronizeCliTest
 		Environment.SetEnvironmentVariable("app__GeoFilesSkipDownloadOnStartup", "true");
 		Environment.SetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup", "true");
 		Environment.SetEnvironmentVariable("app__EnablePackageTelemetry", "false");
-		Environment.SetEnvironmentVariable("app__FfmpegSkipDownloadOnStartup", "false");
+		Environment.SetEnvironmentVariable("app__FfmpegSkipDownloadOnStartup", "true");
 	}
 
 	[TestMethod]
