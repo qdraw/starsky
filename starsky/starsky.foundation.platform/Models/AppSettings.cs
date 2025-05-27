@@ -677,6 +677,7 @@ public sealed class AppSettings
 	/// <summary>
 	///     Auto Sync on Startup
 	/// </summary>
+	[PackageTelemetry]
 	public bool? SyncOnStartup { get; set; } = true;
 
 	/// <summary>
@@ -727,6 +728,7 @@ public sealed class AppSettings
 	/// <summary>
 	///     Number of files to open before confirmation
 	/// </summary>
+	[PackageTelemetry]
 	public int? DesktopEditorAmountBeforeConfirmation { get; set; }
 
 	/// <summary>
@@ -756,7 +758,7 @@ public sealed class AppSettings
 	}
 
 	/// <summary>
-	///     Show what is send in console/logger
+	///     Show what is sent in console/logger
 	/// </summary>
 	public bool? EnablePackageTelemetryDebug { get; set; } = false;
 
@@ -764,7 +766,7 @@ public sealed class AppSettings
 	///     Time to wait to avoid duplicate requests in the UseDiskWatcher API
 	/// </summary>
 	[PackageTelemetry]
-	public double UseDiskWatcherIntervalInMilliseconds { get; set; } = 20000;
+	public double UseDiskWatcherIntervalInMilliseconds { get; set; } = 10000;
 
 	/// <summary>
 	///     When sync update last edited time in db, you disable it when you share a database between
@@ -786,45 +788,53 @@ public sealed class AppSettings
 	///     For background task with lower priority e.g. thumbnails
 	///     it skips the current task if the current process is to busy
 	/// </summary>
+	[PackageTelemetry]
 	public double CpuUsageMaxPercentage { get; set; } = 75;
 
 	/// <summary>
 	///     Background Task to run when the CPU is not busy
 	/// </summary>
+	[PackageTelemetry]
 	public int? ThumbnailGenerationIntervalInMinutes { get; set; } = 15;
 
 	/// <summary>
 	///     Clean non referenced thumbnails on startup
 	///     Recommended to keep false
 	/// </summary>
+	[PackageTelemetry]
 	public bool? ThumbnailCleanupSkipOnStartup { get; set; } = false;
 
 	/// <summary>
 	///     Skip download GeoFiles on startup
 	///     Recommended to keep false
 	/// </summary>
+	[PackageTelemetry]
 	public bool? GeoFilesSkipDownloadOnStartup { get; set; } = false;
 
 	/// <summary>
 	///     Skip download ExifTool on startup
 	///     Recommended to keep false
 	/// </summary>
+	[PackageTelemetry]
 	public bool? ExiftoolSkipDownloadOnStartup { get; set; } = false;
 
 	/// <summary>
 	///     Skip download Ffmpeg on startup
 	///     Recommended to keep false
 	/// </summary>
+	[PackageTelemetry]
 	public bool? FfmpegSkipDownloadOnStartup { get; set; } = false;
 
 	/// <summary>
 	///     Skip a preflight check for ffmpeg
 	/// </summary>
+	[PackageTelemetry]
 	public bool FfmpegSkipPreflightCheck { get; set; } = false;
 
 	/// <summary>
 	///     Exe path to Ffmpeg
 	/// </summary>
+	[PackageTelemetry]
 	public string? FfmpegPath { get; set; }
 
 	public OpenTelemetrySettings? OpenTelemetry { get; set; } = new();
@@ -884,7 +894,7 @@ public sealed class AppSettings
 			return TimeZoneInfo.Local;
 		}
 
-		// when windows 2019 is more common: TimeZoneInfo FindSystemTimeZoneById
+		// when Windows 2019 is more common: TimeZoneInfo FindSystemTimeZoneById
 		// Windows 10 May 2019 https://learn.microsoft.com/en-us/dotnet/core/extensions/globalization-icu
 		return TZConvert.GetTimeZoneInfo(value);
 	}
