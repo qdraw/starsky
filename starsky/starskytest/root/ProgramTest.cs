@@ -62,7 +62,7 @@ public class ProgramTest
 		Environment.SetEnvironmentVariable("app__GeoFilesSkipDownloadOnStartup", "true");
 		Environment.SetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup", "true");
 		Environment.SetEnvironmentVariable("app__EnablePackageTelemetry", "false");
-		Environment.SetEnvironmentVariable("app__FfmpegSkipDownloadOnStartup", "false");
+		Environment.SetEnvironmentVariable("app__FfmpegSkipDownloadOnStartup", "true");
 
 		await Program.Main(["--do-not-start"]);
 
