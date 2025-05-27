@@ -86,8 +86,7 @@ public sealed class StorageTemporaryFilesystemTests
 	public void Temporary_FileCopy_success()
 	{
 		var createNewImage = new CreateAnImage();
-
-
+		
 		_tempStorage.FileCopy(_fileName,
 			"StorageThumbnailFilesystemTest_FileCopy.jpg");
 
@@ -183,7 +182,7 @@ public sealed class StorageTemporaryFilesystemTests
 	}
 
 	[TestMethod]
-	public void Temporary_IsFileReady_thumbnailStorage()
+	public void Temporary_IsFileReady()
 	{
 		var createNewImage = new CreateAnImage();
 
@@ -209,7 +208,7 @@ public sealed class StorageTemporaryFilesystemTests
 	}
 
 	[TestMethod]
-	public void Temporary_IsFolderOrFile_Exists_TempStorage()
+	public void Temporary_IsFolderOrFile_Exists()
 	{
 		// sometimes this test is flaky, it should have the file there
 		if ( !File.Exists(new CreateAnImage().FullFilePath) )
@@ -222,14 +221,14 @@ public sealed class StorageTemporaryFilesystemTests
 	}
 
 	[TestMethod]
-	public void Temporary_IsFolderOrFile_NotFound_TempStorage()
+	public void Temporary_IsFolderOrFile_NotFound()
 	{
 		var result = _tempStorage.IsFolderOrFile("not-found");
 		Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.Deleted, result);
 	}
 
 	[TestMethod]
-	public void Temporary_FolderMove_TempStorage()
+	public void Temporary_FolderMove()
 	{
 		const string from = "/test_folder_move_from";
 		const string to = "/test_folder_move_to";
@@ -254,7 +253,7 @@ public sealed class StorageTemporaryFilesystemTests
 	}
 
 	[TestMethod]
-	public void Temporary_CreateDirectory_TempStorage()
+	public void Temporary_CreateDirectory()
 	{
 		_tempStorage.CreateDirectory("/test");
 		Assert.IsTrue(_tempStorage.ExistFolder("/test"));
@@ -262,7 +261,7 @@ public sealed class StorageTemporaryFilesystemTests
 	}
 
 	[TestMethod]
-	public void Temporary_FolderDelete_TempStorage()
+	public void Temporary_FolderDelete()
 	{
 		_tempStorage.CreateDirectory("/test");
 		Assert.IsTrue(_tempStorage.ExistFolder("/test"));
@@ -271,7 +270,7 @@ public sealed class StorageTemporaryFilesystemTests
 	}
 
 	[TestMethod]
-	public void Temporary_GetAllFilesInDirectoryRecursive_TempStorage()
+	public void Temporary_GetAllFilesInDirectoryRecursive()
 	{
 		// Setup env
 		_tempStorage.CreateDirectory("/test_GetAllFilesInDirectoryRecursive");
@@ -293,7 +292,7 @@ public sealed class StorageTemporaryFilesystemTests
 	}
 
 	[TestMethod]
-	public void Temporary_GetDirectories_Null_NotFound_TempStorage()
+	public void Temporary_GetDirectories_Null_NotFound()
 	{
 		var result = _tempStorage.GetDirectories("/not_found");
 		Assert.AreEqual(0, result.Count());
