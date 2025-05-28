@@ -36,7 +36,7 @@ namespace starsky.foundation.worker.Helpers
 			{
 				try
 				{
-					var secondsToWait = RoundUp(appSettings).Item1;
+					var (secondsToWait, _) = RoundUp(appSettings);
 					if ( secondsToWait.TotalMilliseconds > 10 )
 					{
 						await Task.Delay(secondsToWait, cancellationToken);
