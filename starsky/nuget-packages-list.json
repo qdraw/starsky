@@ -52,7 +52,7 @@
   "System.Text.Json 9.0.5",
   "Microsoft.AspNetCore.Identity.EntityFrameworkCore 8.0.16",
   "Microsoft.Extensions.Hosting 8.0.1",
-  "Microsoft.NET.Test.Sdk 17.14.0",
+  "Microsoft.NET.Test.Sdk 17.14.1",
   "MSTest.TestAdapter 3.9.1",
   "MSTest.TestFramework 3.9.1",
   "coverlet.collector 6.0.4",
