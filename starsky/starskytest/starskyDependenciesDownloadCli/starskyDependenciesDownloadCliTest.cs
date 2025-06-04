@@ -51,7 +51,7 @@ public sealed class StarskyDependenciesDownloadCliTest
 		Environment.SetEnvironmentVariable("app__GeoFilesSkipDownloadOnStartup", "true");
 		Environment.SetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup", "true");
 		Environment.SetEnvironmentVariable("app__EnablePackageTelemetry", "false");
-		Environment.SetEnvironmentVariable("app__FfmpegSkipDownloadOnStartup", "false");
+		Environment.SetEnvironmentVariable("app__ffmpegSkipDownloadOnStartup", "true");
 	}
 
 	[TestMethod]

@@ -43,11 +43,20 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.0 - _(Unreleased)_ - 2025-05-? {#v0.7.0}
 
+- nothing yet
+
+### Breaking changes in 0.7.0-beta.0-2
+
+- [x] (Breaking Change) _Back-end_ change default thumbnail format to webp (PR #1833)
+
+## version 0.7.0-beta.2 - 2025-05-27 {#v0.7.0-beta.2}
+
 - [x] (Fixed) _Back-end_ Fix for when images are white on macOS, thumbnail generation (PR #2176)
 - [x] (Fixed) _Back-end_ Quote handling for tags, description and title (Issue #1510 & PR #2177)
 - [x] (Fixed) _Front-end_ Upload button when readonly (Issue #2106 & PR #2178)
 - [x] (Fixed) _Back-end_ Architecture reference for trash and metaupdate (Issue #1778 & PR #2179)
 - [x] (Added) _Front-end_ Add refresh button to main menu (Issue #962 & PR #2180)
+- [x] (Fixed) _Back-end_ HttpClientHelper should not throw Exception when timeout (PR #2189)
 
 ## version 0.7.0-beta.1 - 2025-05-20 {#v0.7.0-beta.1}
 
@@ -66,6 +75,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Back-end_ Make exiftool responses more clear (PR #2143)
 - [x] (Changed) _Back-end_ Download dependencies on build for cross build runtime (PR #2144)
 - [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.409 (Runtime: 8.0.16) (PR #2156)
+- [x] (Breaking Change) _Back-end_ change default thumbnail format to webp (PR #1833)
 
 ## version 0.6.8 - 2025-05-07 {#v0.6.8}
 

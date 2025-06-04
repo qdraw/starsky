@@ -38,7 +38,7 @@ public sealed class ProgramTest
 			Environment.GetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup");
 		_ffmpegSkipDownloadOnStartup =
 			Environment.GetEnvironmentVariable("app__ffmpegSkipDownloadOnStartup");
-		
+
 		// also see:
 		// starsky/starskytest/root/ProgramTest.cs
 		// starskytest/starskythumbnailcli/ProgramTest.cs
@@ -47,8 +47,7 @@ public sealed class ProgramTest
 		Environment.SetEnvironmentVariable("app__GeoFilesSkipDownloadOnStartup", "true");
 		Environment.SetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup", "true");
 		Environment.SetEnvironmentVariable("app__EnablePackageTelemetry", "false");
-		Environment.SetEnvironmentVariable("app__FfmpegSkipDownloadOnStartup", "false");
-
+		Environment.SetEnvironmentVariable("app__FfmpegSkipDownloadOnStartup", "true");
 	}
 
 	[TestMethod]

@@ -297,13 +297,13 @@
 
 .header > .wrapper > .item.item--force-sync {
   position: absolute;
-  right: 210px;
+  right: 215px;
   top: 0px; /* for old firefox */
 }
 
 @media screen and (max-width: 450px) {
   .header > .wrapper > .item.item--force-sync {
-    right: 190px;
+    display: none;
   }
 }
 
