@@ -1,5 +1,5 @@
-import { act, createEvent, fireEvent, render, screen } from "@testing-library/react";
-import React from "react";
+import { createEvent, fireEvent, render, screen } from "@testing-library/react";
+import React, { act } from "react";
 import { Root, createRoot } from "react-dom/client";
 import { IDetailView } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";

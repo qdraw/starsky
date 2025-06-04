@@ -1,10 +1,10 @@
 import { render } from "@testing-library/react";
 import { act } from "react";
 import * as DropArea from "../../components/atoms/drop-area/drop-area";
-import { newIFileIndexItem } from "../../interfaces/IFileIndexItem";
-import { Import } from "./import";
 import * as Modal from "../../components/atoms/modal/modal.tsx";
 import * as ModalDropAreaFilesAdded from "../../components/molecules/modal-drop-area-files-added/modal-drop-area-files-added.tsx";
+import { newIFileIndexItem } from "../../interfaces/IFileIndexItem";
+import { Import } from "./import";
 
 describe("Import", () => {
   it("clears the drop area upload files list when modal is closed", () => {
@@ -27,7 +27,7 @@ describe("Import", () => {
 
     console.log(container.container.innerHTML);
 
-    expect(modalSpy1).toHaveBeenCalledTimes(2);
+    expect(modalSpy1).toHaveBeenCalledTimes(1);
 
     jest.spyOn(DropArea, "default").mockReset();
 

@@ -1,7 +1,7 @@
-import { act, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import * as useLocation from "../../../hooks/use-location/use-location";
 
-import React from "react";
+import React, { act } from "react";
 import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { IGeoLocationModel } from "../../../interfaces/IGeoLocationModel";
@@ -89,26 +89,27 @@ describe("DetailViewInfoLocation", () => {
     });
 
     const setFileIndexItemSpy = jest.fn();
-    const modal = render(
-      <DetailViewInfoLocation
-        fileIndexItem={{} as IFileIndexItem}
-        isFormEnabled={false}
-        dispatch={jest.fn()}
-        setFileIndexItem={setFileIndexItemSpy}
-      ></DetailViewInfoLocation>
-    );
 
-    expect(setFileIndexItemSpy).toHaveBeenCalledTimes(0);
+    act(() => {
+      const modal = render(
+        <DetailViewInfoLocation
+          fileIndexItem={{} as IFileIndexItem}
+          isFormEnabled={false}
+          dispatch={jest.fn()}
+          setFileIndexItem={setFileIndexItemSpy}
+        ></DetailViewInfoLocation>
+      );
 
-    modalSpy.mockReset();
+      expect(setFileIndexItemSpy).toHaveBeenCalledTimes(0);
 
-    modal.unmount();
+      modalSpy.mockReset();
+
+      modal.unmount();
+    });
   });
 
   it("should close with callback data", () => {
-    jest.spyOn(React, "useState").mockImplementationOnce(() => {
-      return [true, jest.fn()];
-    });
+    jest.spyOn(React, "useState").mockReset().mockReturnValueOnce([true, jest.fn()]);
 
     const locationMock = {
       location: {
@@ -117,7 +118,10 @@ describe("DetailViewInfoLocation", () => {
       },
       navigate: jest.fn()
     } as unknown as IUseLocation;
-    jest.spyOn(useLocation, "default").mockImplementationOnce(() => locationMock);
+    jest
+      .spyOn(useLocation, "default")
+      .mockReset()
+      .mockImplementationOnce(() => locationMock);
 
     const modalSpy = jest.spyOn(ModalGeo, "default").mockImplementationOnce((props) => {
       act(() => {
@@ -130,7 +134,7 @@ describe("DetailViewInfoLocation", () => {
     const modal = render(
       <DetailViewInfoLocation
         fileIndexItem={{} as IFileIndexItem}
-        isFormEnabled={false}
+        isFormEnabled={true}
         dispatch={jest.fn()}
         setFileIndexItem={setFileIndexItemSpy}
       ></DetailViewInfoLocation>

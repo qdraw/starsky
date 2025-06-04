@@ -20,16 +20,18 @@ describe("PreferencesUsername", () => {
       component.unmount();
     });
 
-    it("Incomplete data", () => {
-      jest.spyOn(useFetch, "default").mockImplementationOnce(() => {
-        return {
-          ...newIConnectionDefault(),
-          data: {
-            credentials: []
-          },
-          statusCode: 200
-        };
-      });
+    it("(PreferencesUsername) Incomplete data", () => {
+      const spyFetchData = {
+        ...newIConnectionDefault(),
+        data: {
+          credentials: []
+        },
+        statusCode: 200
+      };
+      jest
+        .spyOn(useFetch, "default")
+        .mockReset()
+        .mockImplementationOnce(() => spyFetchData);
 
       const component = render(<PreferencesUsername />);
       expect(screen.queryByTestId("preferences-username-text")?.textContent).toBe(
@@ -38,7 +40,7 @@ describe("PreferencesUsername", () => {
       component.unmount();
     });
 
-    it("should get the identifier", () => {
+    it("(PreferencesUsername) should get the identifier", () => {
       const testReply = {
         ...newIConnectionDefault(),
         data: {

@@ -1,4 +1,5 @@
-import { act, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import { act } from "react";
 import MenuDefault from "./menu-default";
 
 describe("MenuDefault", () => {

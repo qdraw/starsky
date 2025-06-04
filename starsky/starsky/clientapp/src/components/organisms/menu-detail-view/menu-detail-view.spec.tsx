@@ -1034,7 +1034,7 @@ describe("MenuDetailView", () => {
   });
 
   describe("file is marked as deleted", () => {
-    it("trash click to trash", () => {
+    it("(deleted) trash click to trash", () => {
       const state = {
         subPath: "/trashed/test1.jpg",
         fileIndexItem: {
@@ -1043,17 +1043,6 @@ describe("MenuDetailView", () => {
           fileName: "test1.jpg"
         }
       } as IDetailView;
-      const contextValues = { state, dispatch: jest.fn() };
-
-      jest.spyOn(React, "useContext").mockImplementationOnce(() => {
-        return contextValues;
-      });
-
-      const component = render(
-        <MemoryRouter>
-          <MenuDetailView state={state} dispatch={jest.fn()} />
-        </MemoryRouter>
-      );
 
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
@@ -1066,9 +1055,19 @@ describe("MenuDetailView", () => {
         .mockReset()
         .mockImplementationOnce(() => mockIConnectionDefault);
 
+      jest.spyOn(React, "useContext").mockClear();
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
       const trash = component.queryByTestId("trash");
       expect(trash).toBeTruthy();
-      trash?.click();
+      act(() => {
+        trash?.click();
+      });
 
       expect(spy).toHaveBeenCalledWith(
         new UrlQuery().UrlReplaceApi(),

@@ -1,8 +1,10 @@
-import { act, createEvent, fireEvent, render, screen } from "@testing-library/react";
+import { createEvent, fireEvent, render, screen } from "@testing-library/react";
+import { act } from "react";
 import { IFileIndexItem, newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
 import { Router } from "../../../router-app/router-app";
 import { URLPath } from "../../../shared/url/url-path";
 import ArchiveSidebarSelectionList from "./archive-sidebar-selection-list";
+
 describe("archive-sidebar-selection-list", () => {
   it("renders", () => {
     render(<ArchiveSidebarSelectionList fileIndexItems={newIFileIndexItemArray()} />);

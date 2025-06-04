@@ -1,4 +1,5 @@
-import { act, createEvent, fireEvent, render, screen } from "@testing-library/react";
+import { createEvent, fireEvent, render, screen } from "@testing-library/react";
+import { act } from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import * as FetchPost from "../../../shared/fetch/fetch-post";

@@ -240,9 +240,13 @@ describe("UseFileList", () => {
 
     it("setPageTypeHelper - pageType Archive", () => {
       const useStateMock = jest.fn();
-      jest.spyOn(React, "useState").mockImplementationOnce(() => {
-        return [true, useStateMock];
-      });
+      jest
+        .spyOn(React, "useState")
+        .mockReset()
+        .mockReturnValueOnce([true, useStateMock])
+        .mockReturnValueOnce([true, useStateMock])
+        .mockReturnValueOnce([true, useStateMock])
+        .mockReturnValueOnce([true, useStateMock]);
 
       const { hook } = mounter("/test.jpg");
 
@@ -294,12 +298,11 @@ describe("UseFileList", () => {
       const useStateMock = jest.fn();
       jest
         .spyOn(React, "useState")
-        .mockImplementationOnce(() => {
-          return [true, jest.fn()];
-        })
-        .mockImplementationOnce(() => {
-          return [true, useStateMock];
-        });
+        .mockReset()
+        .mockReturnValueOnce([true, useStateMock])
+        .mockReturnValueOnce([true, useStateMock])
+        .mockReturnValueOnce([true, useStateMock])
+        .mockReturnValueOnce([true, useStateMock]);
 
       const { hook } = mounter("/test.jpg");
 

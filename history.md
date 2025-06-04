@@ -43,7 +43,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.0 - _(Unreleased)_ - 2025-05-? {#v0.7.0}
 
-- nothing yet
+- [x] (Changed) _Front-end_ Upgrade packages to React 19 (PR #2181)
+- [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.410 (Runtime: 8.0.16) (PR #2196)
 
 ### Breaking changes in 0.7.0-beta.0-2
 
