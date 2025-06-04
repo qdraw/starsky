@@ -40,7 +40,7 @@ describe("PreferencesUsername", () => {
       component.unmount();
     });
 
-    it("should get the identifier", () => {
+    it("(PreferencesUsername) should get the identifier", () => {
       const testReply = {
         ...newIConnectionDefault(),
         data: {
