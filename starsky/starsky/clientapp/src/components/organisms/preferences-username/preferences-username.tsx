@@ -12,7 +12,7 @@ const PreferencesUsername: React.FunctionComponent = () => {
   const MessageRole = language.key(localization.MessageRole);
 
   interface AccountStatusData {
-    credentialsIdentifiers: string[];
+    credentialsIdentifiers?: string[];
     roleCode: string;
   }
 
@@ -21,7 +21,11 @@ const PreferencesUsername: React.FunctionComponent = () => {
 
   let userName = language.key(localization.MessageUnknownUsername);
 
-  if (accountStatus.statusCode === 200 && accountStatusData?.credentialsIdentifiers[0]) {
+  if (
+    accountStatus.statusCode === 200 &&
+    accountStatusData?.credentialsIdentifiers &&
+    accountStatusData?.credentialsIdentifiers.length >= 1
+  ) {
     userName = accountStatusData?.credentialsIdentifiers[0];
     if (userName === "mail@localhost") {
       userName = language.key(localization.MessageDesktopMailLocalhostUsername);
