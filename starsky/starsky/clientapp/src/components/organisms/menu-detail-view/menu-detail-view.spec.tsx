@@ -1034,7 +1034,7 @@ describe("MenuDetailView", () => {
   });
 
   describe("file is marked as deleted", () => {
-    it("trash click to trash", () => {
+    it("(deleted) trash click to trash", () => {
       const state = {
         subPath: "/trashed/test1.jpg",
         fileIndexItem: {
@@ -1049,11 +1049,7 @@ describe("MenuDetailView", () => {
         return contextValues;
       });
 
-      const component = render(
-        <MemoryRouter>
-          <MenuDetailView state={state} dispatch={jest.fn()} />
-        </MemoryRouter>
-      );
+      const component = render(<MenuDetailView state={state} dispatch={jest.fn()} />);
 
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
