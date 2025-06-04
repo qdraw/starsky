@@ -50,7 +50,7 @@ public class ObjectCreateIndexItemService(
 		if ( fileIndexItem.DateTime.Year == 1 )
 		{
 			importIndexItem.FileIndexItem.DateTime =
-				importIndexItem.ParseDateTimeFromFileName();
+				importIndexItem.ParseDateTimeFromFileName(imageFormat);
 			// used to sync exifTool and to let the user know that the transformation has been applied
 			importIndexItem.FileIndexItem.Description = MessageDateTimeBasedOnFilename;
 			// only set when date is parsed if not ignore update

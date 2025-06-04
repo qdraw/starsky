@@ -108,7 +108,7 @@ public sealed class GeoCli
 		{
 			var dateTime = DateTime.Now.AddDays(( double ) getSubPathRelative);
 			var path = _appSettings.DatabasePathToFilePath(
-				new StructureService(_iStorage, _appSettings.Structure)
+				new StructureService(_iStorage, _appSettings.Structure.DefaultPattern)
 					.ParseSubfolders(dateTime));
 			inputPath = !string.IsNullOrEmpty(path) ? path : string.Empty;
 		}

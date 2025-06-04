@@ -49,7 +49,7 @@ public sealed class ThumbnailCli
 		if ( getSubPathRelative != null )
 		{
 			subPath = new StructureService(_selectorStorage.Get(
-					SelectorStorage.StorageServices.SubPath), _appSettings.Structure)
+					SelectorStorage.StorageServices.SubPath), _appSettings.Structure.DefaultPattern)
 				.ParseSubfolders(getSubPathRelative)!;
 		}
 

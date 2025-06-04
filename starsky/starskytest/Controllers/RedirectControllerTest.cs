@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Models.Structure;
 using starskytest.FakeMocks;
 
 namespace starskytest.Controllers;
@@ -12,17 +13,20 @@ namespace starskytest.Controllers;
 [TestClass]
 public sealed class RedirectControllerTest
 {
-	private readonly FakeSelectorStorage _fakeSelectorStorage;
+	private readonly FakeSelectorStorage _fakeSelectorStorage = new();
 
-	public RedirectControllerTest()
+	private static AppSettings CreateAppSettings()
 	{
-		_fakeSelectorStorage = new FakeSelectorStorage();
+		return new AppSettings
+		{
+			Structure = new AppSettingsStructureModel("/yyyyMMdd/{filenamebase}.ext")
+		};
 	}
 
 	[TestMethod]
 	public void RedirectControllerTest_SubPathRelative()
 	{
-		var appSettings = new AppSettings { Structure = "/yyyyMMdd/{filenamebase}.ext" };
+		var appSettings = CreateAppSettings();
 		var controller = new RedirectController(_fakeSelectorStorage, appSettings);
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 		var result = controller.SubPathRelative(0) as JsonResult;
@@ -34,7 +38,7 @@ public sealed class RedirectControllerTest
 	[TestMethod]
 	public void RedirectControllerTest_SubPathRelative_ModelState()
 	{
-		var appSettings = new AppSettings { Structure = "/yyyyMMdd/{filenamebase}.ext" };
+		var appSettings = CreateAppSettings();
 		var controller = new RedirectController(_fakeSelectorStorage, appSettings);
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
@@ -47,7 +51,7 @@ public sealed class RedirectControllerTest
 	[TestMethod]
 	public void RedirectControllerTest_SubPathRelativeMinusValue()
 	{
-		var appSettings = new AppSettings { Structure = "/yyyyMMdd/{filenamebase}.ext" };
+		var appSettings = CreateAppSettings();
 		var controller = new RedirectController(_fakeSelectorStorage, appSettings);
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 		var result = controller.SubPathRelative(1) as JsonResult;
@@ -59,7 +63,7 @@ public sealed class RedirectControllerTest
 	[TestMethod]
 	public void RedirectControllerTest_LargeInt()
 	{
-		var appSettings = new AppSettings { Structure = "/yyyyMMdd/{filenamebase}.ext" };
+		var appSettings = CreateAppSettings();
 		var controller = new RedirectController(_fakeSelectorStorage, appSettings)
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
@@ -73,7 +77,7 @@ public sealed class RedirectControllerTest
 	[TestMethod]
 	public void RedirectControllerTest_SubPathRelativeRedirectToAction()
 	{
-		var appSettings = new AppSettings { Structure = "/yyyyMMdd/{filenamebase}.ext" };
+		var appSettings = CreateAppSettings();
 		var controller = new RedirectController(_fakeSelectorStorage, appSettings)
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
