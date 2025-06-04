@@ -1,4 +1,5 @@
-import { act, RenderResult } from "@testing-library/react";
+import { RenderResult } from "@testing-library/react";
+import { act } from "react";
 import * as DifferenceInDate from "../../shared/date";
 import { mountReactHook, MountReactHookResult } from "../___tests___/test-hook";
 import * as useInterval from "../use-interval";

@@ -1,5 +1,5 @@
-import { act, render, screen } from "@testing-library/react";
-import React, { useEffect } from "react";
+import { render, screen } from "@testing-library/react";
+import React, { act, useEffect } from "react";
 import { PageType } from "../../../interfaces/IDetailView";
 import { newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
 import { Router } from "../../../router-app/router-app";
