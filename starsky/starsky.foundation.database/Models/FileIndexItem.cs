@@ -763,10 +763,6 @@ public sealed class FileIndexItem
 	public void SetFilePath(string? value)
 	{
 		var parentPath = FilenamesHelper.GetParentPath(value);
-		if ( string.IsNullOrEmpty(parentPath) )
-		{
-			parentPath = "/";
-		}
 
 		// Home has no parentDirectory and filename slash
 		if ( value != "/" )
