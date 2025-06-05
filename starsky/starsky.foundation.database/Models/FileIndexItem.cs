@@ -81,9 +81,9 @@ public sealed class FileIndexItem
 	}
 
 	/// <summary>
-	///     Internal API: to [0,0,0]
+	///     Internal API: to [0,0,0,0]
 	/// </summary>
-	private const int MakeModelFixedLength = 3;
+	private const int MakeModelFixedLength = 4;
 
 	/// <summary>
 	///     The logic order of the rotation. Used when rotate relative. And after the last one it starts
@@ -646,13 +646,8 @@ public sealed class FileIndexItem
 				return string.Empty;
 			}
 
-			var makeModelList = MakeModel?.Split("|".ToCharArray());
-			if ( makeModelList?.Length != MakeModelFixedLength )
-			{
-				return string.Empty;
-			}
-
-			return makeModelList[0];
+			var makeModelList = MakeModel?.Split('|') ?? [];
+			return makeModelList.Length == 0 ? string.Empty : makeModelList[0];
 		}
 	}
 
@@ -669,8 +664,8 @@ public sealed class FileIndexItem
 				return string.Empty;
 			}
 
-			var makeModelList = MakeModel?.Split("|".ToCharArray());
-			return makeModelList?.Length != MakeModelFixedLength ? string.Empty : makeModelList[1];
+			var makeModelList = MakeModel?.Split('|') ?? [];
+			return makeModelList.Length < 2 ? string.Empty : makeModelList[1];
 		}
 	}
 
@@ -688,7 +683,7 @@ public sealed class FileIndexItem
 			}
 
 			var makeModelList = MakeModel?.Split("|".ToCharArray());
-			if ( makeModelList?.Length != MakeModelFixedLength )
+			if ( makeModelList == null || makeModelList.Length < 3 )
 			{
 				return string.Empty;
 			}
@@ -705,6 +700,24 @@ public sealed class FileIndexItem
 		}
 	}
 
+	/// <summary>
+	///     Get the Serial of the _makeModel
+	/// </summary>
+	[NotMapped]
+	public string MakeCameraSerial
+	{
+		get
+		{
+			if ( string.IsNullOrEmpty(_makeModel) )
+			{
+				return string.Empty;
+			}
+
+			var makeModelList = MakeModel?.Split('|') ?? [];
+			var serial = makeModelList.Length < 4 ? string.Empty : makeModelList[3];
+			return serial == "0" ? string.Empty : serial;
+		}
+	}
 
 	/// <summary>
 	///     The Zoom of the camera (that is currently used)
@@ -750,10 +763,6 @@ public sealed class FileIndexItem
 	public void SetFilePath(string? value)
 	{
 		var parentPath = FilenamesHelper.GetParentPath(value);
-		if ( string.IsNullOrEmpty(parentPath) )
-		{
-			parentPath = "/";
-		}
 
 		// Home has no parentDirectory and filename slash
 		if ( value != "/" )
@@ -1031,10 +1040,11 @@ public sealed class FileIndexItem
 	///     To add Make (without comma and TitleCase) and second follow by Model (same as input)
 	///     Followed by index 2: Lens info
 	///     (
-	///     Example Data: Sony|ILCE-6600|E 18-200mm F3.5-6.3 OSS LE
-	///     Index 1: Sony
-	///     Index 2: ILCE-6600
-	///     Index 3: E 18-200mm F3.5-6.3 OSS LE
+	///     Example Data: Sony|ILCE-6600|E 18-200mm F3.5-6.3 OSS LE|Serial
+	///     Index 0: Sony
+	///     Index 1: ILCE-6600
+	///     Index 2: E 18-200mm F3.5-6.3 OSS LE
+	///     Index 3: Serial
 	///     )
 	/// </summary>
 	/// <param name="addedValue">the text to add</param>
@@ -1053,10 +1063,10 @@ public sealed class FileIndexItem
 
 		var titleValue = addedValue.Replace("|", string.Empty);
 
-		var makeModelList = _makeModel?.Split("|".ToCharArray()).ToList();
+		var makeModelList = _makeModel?.Split('|').ToList();
 		if ( makeModelList?.Count != MakeModelFixedLength )
 		{
-			makeModelList = new List<string>();
+			makeModelList = [];
 			for ( var i = 0; i < MakeModelFixedLength; i++ )
 			{
 				makeModelList.Add(string.Empty);

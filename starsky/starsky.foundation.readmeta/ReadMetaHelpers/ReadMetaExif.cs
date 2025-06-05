@@ -117,6 +117,7 @@ public sealed class ReadMetaExif
 		SetArrayBasedItemsOrientation(allExifItems, item);
 		SetArrayBasedItemsLens(allExifItems, item);
 		SetArrayBasedItemsMakeModel(allExifItems, item);
+		SetArrayBasedItemSerial(allExifItems, item);
 		SetArrayBasedItemsSoftwareStabilization(allExifItems, item);
 
 		return item;
@@ -266,6 +267,16 @@ public sealed class ReadMetaExif
 		if ( lensModel != string.Empty )
 		{
 			item.SetMakeModel(lensModel, 2);
+		}
+	}
+
+	private static void SetArrayBasedItemSerial(List<Directory> allExifItems, FileIndexItem item)
+	{
+		var serialNumber = GetMakeSerial(allExifItems);
+
+		if ( serialNumber != string.Empty ) // string.Empty = is not the right tag or empty tag
+		{
+			item.SetMakeModel(serialNumber, 3);
 		}
 	}
 
@@ -488,6 +499,22 @@ public sealed class ReadMetaExif
 		return lensModel;
 	}
 
+	private static string GetMakeSerial(List<Directory> allExifItems)
+	{
+		var exifIfd0Directories = allExifItems.OfType<ExifSubIfdDirectory>();
+		var cameraSerial = string.Empty;
+		foreach ( var exifIfd0Directory in exifIfd0Directories )
+		{
+			var directoryItem =
+				exifIfd0Directory.GetDescription(ExifDirectoryBase.TagBodySerialNumber);
+			if ( !string.IsNullOrEmpty(directoryItem) && directoryItem != "----" )
+			{
+				cameraSerial = directoryItem;
+			}
+		}
+
+		return cameraSerial;
+	}
 
 	private void DisplayAllExif(IEnumerable<Directory> allExifItems)
 	{
@@ -510,8 +537,8 @@ public sealed class ReadMetaExif
 				continue;
 			}
 
-			foreach ( var property in xmpDirectory.XmpMeta.Properties.Where(
-				         p => !string.IsNullOrEmpty(p.Path)) )
+			foreach ( var property in xmpDirectory.XmpMeta.Properties.Where(p =>
+				         !string.IsNullOrEmpty(p.Path)) )
 			{
 				_logger.LogDebug(
 					$"{exifItem.Name},{property.Namespace},{property.Path},{property.Value}");
@@ -570,8 +597,8 @@ public sealed class ReadMetaExif
 		}
 
 		var iptcDirectory = allExifItems.OfType<IptcDirectory>().FirstOrDefault();
-		var iptcObjectName = iptcDirectory?.Tags.FirstOrDefault(
-			p => p.Name == "Object Name")?.Description;
+		var iptcObjectName = iptcDirectory?.Tags.FirstOrDefault(p => p.Name == "Object Name")
+			?.Description;
 		iptcObjectName ??= string.Empty;
 
 		return iptcObjectName;
@@ -781,18 +808,17 @@ public sealed class ReadMetaExif
 
 		foreach ( var exifItemTag in allExifItems.Select(p => p.Tags) )
 		{
-			var latitudeRefLocal = exifItemTag.FirstOrDefault(
-				p => p.DirectoryName == "GPS"
-				     && p.Name == "GPS Latitude Ref")?.Description;
+			var latitudeRefLocal = exifItemTag.FirstOrDefault(p => p.DirectoryName == "GPS"
+				&& p.Name == "GPS Latitude Ref")?.Description;
 
 			if ( latitudeRefLocal != null )
 			{
 				latitudeRef = latitudeRefLocal;
 			}
 
-			var latitudeLocal = exifItemTag.FirstOrDefault(
-				p => p.DirectoryName == "GPS"
-				     && p.Name == "GPS Latitude")?.Description;
+			var latitudeLocal = exifItemTag.FirstOrDefault(p => p.DirectoryName == "GPS"
+			                                                    && p.Name == "GPS Latitude")
+				?.Description;
 
 			if ( latitudeLocal != null )
 			{
@@ -800,9 +826,9 @@ public sealed class ReadMetaExif
 				continue;
 			}
 
-			var locationQuickTime = exifItemTag.FirstOrDefault(
-				p => p.DirectoryName == "QuickTime Metadata Header"
-				     && p.Name == "GPS Location")?.Description;
+			var locationQuickTime = exifItemTag.FirstOrDefault(p =>
+				p.DirectoryName == "QuickTime Metadata Header"
+				&& p.Name == "GPS Location")?.Description;
 			if ( locationQuickTime != null )
 			{
 				return GeoParser.ParseIsoString(locationQuickTime).Latitude;
@@ -864,18 +890,17 @@ public sealed class ReadMetaExif
 
 		foreach ( var exifItemTags in allExifItems.Select(p => p.Tags) )
 		{
-			var longitudeRefLocal = exifItemTags.FirstOrDefault(
-				p => p.DirectoryName == "GPS"
-				     && p.Name == "GPS Altitude Ref")?.Description;
+			var longitudeRefLocal = exifItemTags.FirstOrDefault(p => p.DirectoryName == "GPS"
+				&& p.Name == "GPS Altitude Ref")?.Description;
 
 			if ( longitudeRefLocal != null )
 			{
 				altitudeRef = longitudeRefLocal;
 			}
 
-			var altitudeLocal = exifItemTags.FirstOrDefault(
-				p => p.DirectoryName == "GPS"
-				     && p.Name == "GPS Altitude")?.Description;
+			var altitudeLocal = exifItemTags.FirstOrDefault(p => p.DirectoryName == "GPS"
+			                                                     && p.Name == "GPS Altitude")
+				?.Description;
 
 			if ( altitudeLocal != null )
 			{
@@ -960,18 +985,16 @@ public sealed class ReadMetaExif
 
 		foreach ( var exifItemTags in allExifItems.Select(p => p.Tags) )
 		{
-			var longitudeRefLocal = exifItemTags.FirstOrDefault(
-				p => p.DirectoryName == "GPS"
-				     && p.Name == "GPS Longitude Ref")?.Description;
+			var longitudeRefLocal = exifItemTags.FirstOrDefault(p => p.DirectoryName == "GPS"
+				&& p.Name == "GPS Longitude Ref")?.Description;
 
 			if ( longitudeRefLocal != null )
 			{
 				longitudeRef = longitudeRefLocal;
 			}
 
-			var longitudeLocal = exifItemTags.FirstOrDefault(
-				p => p.DirectoryName == "GPS"
-				     && p.Name == "GPS Longitude")?.Description;
+			var longitudeLocal = exifItemTags.FirstOrDefault(p => p.DirectoryName == "GPS"
+				&& p.Name == "GPS Longitude")?.Description;
 
 			if ( longitudeLocal != null )
 			{
@@ -979,9 +1002,9 @@ public sealed class ReadMetaExif
 				continue;
 			}
 
-			var locationQuickTime = exifItemTags.FirstOrDefault(
-				p => p.DirectoryName == "QuickTime Metadata Header"
-				     && p.Name == "GPS Location")?.Description;
+			var locationQuickTime = exifItemTags.FirstOrDefault(p =>
+				p.DirectoryName == "QuickTime Metadata Header"
+				&& p.Name == "GPS Location")?.Description;
 			if ( locationQuickTime != null )
 			{
 				return GeoParser.ParseIsoString(locationQuickTime).Longitude;

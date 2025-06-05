@@ -55,7 +55,7 @@ public sealed class StarskyDependenciesDownloadCliTest
 	}
 
 	[TestMethod]
-	public async Task StarskyGeoCli_HelpVerbose()
+	public async Task StarskyDependenciesDownloadCli_HelpVerbose()
 	{
 		var args = new List<string> { "-h", "-v" }.ToArray();
 		await Program.Main(args);

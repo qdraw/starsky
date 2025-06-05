@@ -165,6 +165,10 @@
         <Content Include="FakeCreateAn\CreateAnImageWhiteJpeg\white.jpg">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <None Remove="FakeCreateAn\CreateAnImageA6700\a6700.jpg" />
+        <Content Include="FakeCreateAn\CreateAnImageA6700\a6700.jpg">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

@@ -39,7 +39,8 @@ public sealed class ExifToolCmdHelperTest
 			Title = "Title",
 			ColorClass = ColorClassParser.Color.Trash,
 			Orientation = ImageRotation.Rotation.Rotate90Cw,
-			DateTime = DateTime.Now
+			DateTime = DateTime.Now,
+			MakeModel = "Apple|iPhone SE|iPhone SE back camera 4.15mm f/2.2|001"
 		};
 		var comparedNames = new List<string>
 		{
@@ -55,16 +56,17 @@ public sealed class ExifToolCmdHelperTest
 			nameof(FileIndexItem.Title).ToLowerInvariant(),
 			nameof(FileIndexItem.ColorClass).ToLowerInvariant(),
 			nameof(FileIndexItem.Orientation).ToLowerInvariant(),
-			nameof(FileIndexItem.DateTime).ToLowerInvariant()
+			nameof(FileIndexItem.DateTime).ToLowerInvariant(),
+			nameof(FileIndexItem.MakeModel).ToLowerInvariant()
 		};
 
 		var storage = new FakeIStorage(new List<string> { "/" },
 			new List<string> { "/test.jpg" }, new List<byte[]>());
 
 		var fakeExifTool = new FakeExifTool(storage, _appSettings);
-		var helperResult = await new ExifToolCmdHelper(fakeExifTool, storage, storage,
-				new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
-			.UpdateAsync(updateModel, comparedNames);
+		var sut = new ExifToolCmdHelper(fakeExifTool, storage, storage,
+			new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger());
+		var helperResult = await sut.UpdateAsync(updateModel, comparedNames);
 
 		Assert.IsTrue(helperResult.Command.Contains(updateModel.Tags));
 		Assert.IsTrue(helperResult.Command.Contains(updateModel.Description));
@@ -82,6 +84,10 @@ public sealed class ExifToolCmdHelperTest
 		Assert.IsTrue(helperResult.Command.Contains(updateModel.LocationCountry));
 		Assert.IsTrue(helperResult.Command.Contains(updateModel.LocationCountryCode));
 		Assert.IsTrue(helperResult.Command.Contains(updateModel.Title));
+		Assert.IsTrue(helperResult.Command.Contains(updateModel.MakeCameraSerial));
+		Assert.IsTrue(helperResult.Command.Contains(updateModel.Make));
+		Assert.IsTrue(helperResult.Command.Contains(updateModel.Model));
+		Assert.IsTrue(helperResult.Command.Contains(updateModel.LensModel));
 	}
 
 	[TestMethod]
