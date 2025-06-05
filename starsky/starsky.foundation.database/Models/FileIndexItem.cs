@@ -683,7 +683,7 @@ public sealed class FileIndexItem
 			}
 
 			var makeModelList = MakeModel?.Split("|".ToCharArray());
-			if ( makeModelList?.Length < 3 )
+			if ( makeModelList == null || makeModelList.Length < 3 )
 			{
 				return string.Empty;
 			}
