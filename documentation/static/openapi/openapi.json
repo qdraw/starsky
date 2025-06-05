@@ -8493,6 +8493,36 @@
             },
             {
               "unresolvedReference": false,
+              "name": "MakeCameraSerial",
+              "in": 0,
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
               "name": "FocalLength",
               "in": 0,
               "required": false,
@@ -14639,6 +14669,22 @@
             "extensions": {},
             "unresolvedReference": false
           },
+          "makeCameraSerial": {
+            "type": "string",
+            "readOnly": true,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
           "focalLength": {
             "type": "number",
             "format": "double",
@@ -16633,5 +16679,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "42FAE051339E737928AB37D0983041705B08CCAC20C12102C3BBFAE5D4E8F0E67B5F0986D19B2476910D05C456B5DF311EDA7C0D9D6D01537EA312FD3FEEDB7D"
+  "hashCode": "1163C6A4324A9EB19FF00379A2F28EADE8B0B6825EEFB11AAA6F3C2C50A940995AB106D4767E29BC8ECA41C84E2AD04236481B915B3155A2610001D341E6A977"
 }
