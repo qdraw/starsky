@@ -282,7 +282,7 @@ public sealed class FileIndexItemTest
 	{
 		var item = new FileIndexItem
 		{
-			MakeModel = "Apple|iPhone SE|iPhone SE back camera 4.15mm f/2.2"
+			MakeModel = "Apple|iPhone SE|iPhone SE back camera 4.15mm f/2.2|001"
 		};
 		Assert.AreEqual("Apple", item.Make);
 		Assert.AreEqual("iPhone SE", item.Model);
@@ -299,14 +299,14 @@ public sealed class FileIndexItemTest
 	[TestMethod]
 	public void LensModel_ShouldReplace()
 	{
-		var item = new FileIndexItem { MakeModel = "test|Canon|Canon Lens" };
+		var item = new FileIndexItem { MakeModel = "test|Canon|Canon Lens|" };
 		Assert.AreEqual("Lens", item.LensModel);
 	}
 
 	[TestMethod]
 	public void LensModel_ShouldNotReplace()
 	{
-		var item = new FileIndexItem { MakeModel = "test||Canon Lens" };
+		var item = new FileIndexItem { MakeModel = "test||Canon Lens|" };
 		Assert.AreEqual("Canon Lens", item.LensModel);
 	}
 
@@ -339,7 +339,7 @@ public sealed class FileIndexItemTest
 		item.SetMakeModel("iPhone", 1);
 
 		Assert.AreEqual("iPhone", item.Model);
-		Assert.AreEqual("|iPhone|", item.MakeModel);
+		Assert.AreEqual("|iPhone||", item.MakeModel);
 	}
 
 	[TestMethod]
@@ -349,14 +349,14 @@ public sealed class FileIndexItemTest
 		item.SetMakeModel("APPLE", 0);
 
 		Assert.AreEqual("Apple", item.Make);
-		Assert.AreEqual("Apple||", item.MakeModel);
+		Assert.AreEqual("Apple|||", item.MakeModel);
 	}
 
 	[TestMethod]
 	public void FileIndexItemTest_SetMakeModel_MakeWrongPipeLength()
 	{
 		var item = new FileIndexItem { MakeModel = "Apple|||||||" };
-		Assert.AreEqual(string.Empty, item.Make);
+		Assert.AreEqual("Apple", item.Make);
 		Assert.AreEqual(string.Empty, item.Model);
 	}
 
@@ -369,10 +369,10 @@ public sealed class FileIndexItemTest
 		item.SetMakeModel("iPad", 1);
 
 		item.SetMakeModel("Apple", 0);
-
 		item.SetMakeModel("Lens", 2);
+		item.SetMakeModel("Serial", 3);
 
-		Assert.AreEqual("Apple|iPad|Lens", item.MakeModel);
+		Assert.AreEqual("Apple|iPad|Lens|Serial", item.MakeModel);
 
 		Assert.AreEqual("Apple", item.Make);
 		Assert.AreEqual("iPad", item.Model);
@@ -396,7 +396,7 @@ public sealed class FileIndexItemTest
 		item.SetMakeModel("Apple", 0);
 		item.SetMakeModel("iPhone", 1);
 
-		Assert.AreEqual("Apple|iPhone|", item.MakeModel);
+		Assert.AreEqual("Apple|iPhone||", item.MakeModel);
 
 		Assert.AreEqual("Apple", item.Make);
 		Assert.AreEqual("iPhone", item.Model);
