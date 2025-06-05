@@ -713,9 +713,9 @@ public sealed class FileIndexItem
 				return string.Empty;
 			}
 
-			var makeModelList = MakeModel?.Split('|');
-			var serial = makeModelList is { Length: < 4 } ? string.Empty : makeModelList![3];
-			return serial == "0" ? string.Empty : serial;
+			var makeModelList = MakeModel?.Split('|') ?? [];
+			var serial = makeModelList.Length < 4 ? string.Empty : makeModelList[3];
+			return serial;
 		}
 	}
 
