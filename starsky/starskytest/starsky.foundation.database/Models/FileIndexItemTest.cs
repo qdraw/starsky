@@ -401,6 +401,70 @@ public sealed class FileIndexItemTest
 		Assert.AreEqual("Apple", item.Make);
 		Assert.AreEqual("iPhone", item.Model);
 	}
+	
+	[TestMethod]
+	[DataRow(null, "", DisplayName = "MakeModel is null")]
+	[DataRow("", "", DisplayName = "MakeModel is empty")]
+	[DataRow("Sony", "", DisplayName = "MakeModel has one element")]
+	[DataRow("Sony|ILCE-6600", "ILCE-6600", DisplayName = "MakeModel has two elements")]
+	[DataRow("Sony|ILCE-6600|Lens", "ILCE-6600", DisplayName = "MakeModel has more than two elements")]
+	[DataRow("|ILCE-6600", "ILCE-6600", DisplayName = "MakeModel starts with pipe")]
+	[DataRow("Sony|", "", DisplayName = "MakeModel ends with pipe")]
+	[DataRow("Sony||ILCE-6600", "", DisplayName = "MakeModel has empty second element")]
+	public void Model_AllCases(string? makeModel, string expected)
+	{
+		// Arrange
+		var fileIndexItem = new FileIndexItem { MakeModel = makeModel };
+
+		// Act
+		var result = fileIndexItem.Model;
+
+		// Assert
+		Assert.AreEqual(expected, result);
+	}
+	
+	[TestMethod]
+	[DataRow(null, "", DisplayName = "MakeModel is null")]
+	[DataRow("", "", DisplayName = "MakeModel is empty")]
+	[DataRow("Sony", "", DisplayName = "MakeModel has one element")]
+	[DataRow("Sony|ILCE-6600", "", DisplayName = "MakeModel has two elements")]
+	[DataRow("Sony|ILCE-6600|Lens", "", DisplayName = "MakeModel has three elements")]
+	[DataRow("Sony|ILCE-6600|Lens|12345", "12345", DisplayName = "MakeModel has four elements")]
+	[DataRow("Sony|ILCE-6600|Lens|0", "", DisplayName = "MakeModel fourth element is '0'")]
+	[DataRow("|ILCE-6600|Lens|Serial", "Serial", DisplayName = "MakeModel starts with pipe")]
+	[DataRow("Sony|ILCE-6600|Lens|", "", DisplayName = "MakeModel ends with pipe")]
+	public void MakeCameraSerial_AllCases(string? makeModel, string expected)
+	{
+		// Arrange
+		var fileIndexItem = new FileIndexItem { MakeModel = makeModel };
+
+		// Act
+		var result = fileIndexItem.MakeCameraSerial;
+
+		// Assert
+		Assert.AreEqual(expected, result);
+	}
+	
+	[TestMethod]
+	[DataRow(null, "", DisplayName = "MakeModel is null")]
+	[DataRow("", "", DisplayName = "MakeModel is empty")]
+	[DataRow("Sony", "", DisplayName = "MakeModel has one element")]
+	[DataRow("Sony|ILCE-6600", "", DisplayName = "MakeModel has two elements")]
+	[DataRow("Sony|ILCE-6600|Lens", "Lens", DisplayName = "MakeModel has three elements")]
+	[DataRow("Sony|ILCE-6600|ILCE-6600 Lens", "Lens", DisplayName = "Lens contains Model")]
+	[DataRow("|ILCE-6600|Lens", "Lens", DisplayName = "MakeModel starts with pipe")]
+	[DataRow("Sony|ILCE-6600|", "", DisplayName = "MakeModel ends with pipe")]
+	public void TestLensModel_AllCases(string? makeModel, string expected)
+	{
+		// Arrange
+		var fileIndexItem = new FileIndexItem { MakeModel = makeModel };
+
+		// Act
+		var result = fileIndexItem.LensModel;
+
+		// Assert
+		Assert.AreEqual(expected, result);
+	}
 
 	[TestMethod]
 	public void FileIndexItemTest_IsRelativeOrientation()
