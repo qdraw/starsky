@@ -45,7 +45,7 @@ public sealed class SyncCli
 		var getSubPathRelative = new ArgsHelper(_appSettings).GetRelativeValue(args);
 		if ( getSubPathRelative != null )
 		{
-			var parseSubPath = new StructureService(
+			var parseSubPath = new LegacyStructureService(
 					_selectorStorage.Get(SelectorStorage.StorageServices
 						.SubPath), _appSettings.Structure.DefaultPattern)
 				.ParseSubfolders(getSubPathRelative);

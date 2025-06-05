@@ -10,7 +10,8 @@ using starsky.foundation.storage.Models;
 
 namespace starsky.foundation.storage.Services;
 
-public sealed class StructureService
+[Obsolete("Use IStructureService instead")]
+public sealed class LegacyStructureService
 {
 	/// <summary>
 	///     Find 'Custom date and time format strings'
@@ -25,7 +26,7 @@ public sealed class StructureService
 	private readonly IStorage _storage;
 	private readonly string _structure;
 
-	public StructureService(IStorage storage, string structure)
+	public LegacyStructureService(IStorage storage, string structure)
 	{
 		_storage = storage;
 		_structure = structure;

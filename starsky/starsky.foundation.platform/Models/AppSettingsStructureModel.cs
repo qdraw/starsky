@@ -10,6 +10,7 @@ public class AppSettingsStructureModel(string? defaultPattern = null)
 	private const string GenericDefaultPattern =
 		"/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 
+
 	/// <summary>
 	///     Internal Structure save location
 	/// </summary>
@@ -47,6 +48,22 @@ public class AppSettingsStructureModel(string? defaultPattern = null)
 	}
 
 	public List<StructureRule> Rules { get; set; } = new();
+
+	/// <summary>
+	///     Feature to overwrite structures when importing using a header
+	///     Overwrite the structure in the ImportIndexItem
+	/// </summary>
+	/// <param name="overwriteStructure">overwrite structure</param>
+	public void OverrideDefaultPatternAndDisableRules(string overwriteStructure)
+	{
+		if ( string.IsNullOrWhiteSpace(overwriteStructure) )
+		{
+			return;
+		}
+
+		DefaultPattern = overwriteStructure;
+		Rules = [];
+	}
 
 	/// <summary>
 	///     To Check if the structure is any good

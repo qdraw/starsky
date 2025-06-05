@@ -4,6 +4,8 @@ using starsky.foundation.database.Models;
 using starsky.foundation.geo.ReverseGeoCode.Interface;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Structure;
+using starsky.foundation.storage.Structure.Helpers;
 
 namespace starsky.feature.import.Services;
 
@@ -49,8 +51,14 @@ public class ObjectCreateIndexItemService(
 		// used for files without an Exif Date for example WhatsApp images
 		if ( fileIndexItem.DateTime.Year == 1 )
 		{
-			importIndexItem.FileIndexItem.DateTime =
-				importIndexItem.ParseDateTimeFromFileName(imageFormat);
+			var inputModel = new StructureInputModel(
+				fileIndexItem.DateTime, importIndexItem.FileIndexItem.FileCollectionName!,
+				FilenamesHelper.GetFileExtensionWithoutDot(importIndexItem.FileIndexItem
+					.FileName!),
+				imageFormat);
+			var helper = new ParseDateTimeFromFileNameHelper(appSettings);
+			importIndexItem.FileIndexItem.DateTime = helper.ParseDateTimeFromFileName(inputModel);
+
 			// used to sync exifTool and to let the user know that the transformation has been applied
 			importIndexItem.FileIndexItem.Description = MessageDateTimeBasedOnFilename;
 			// only set when date is parsed if not ignore update

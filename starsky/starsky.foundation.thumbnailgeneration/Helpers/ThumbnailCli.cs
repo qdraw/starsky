@@ -48,7 +48,7 @@ public sealed class ThumbnailCli
 		var getSubPathRelative = new ArgsHelper(_appSettings).GetRelativeValue(args);
 		if ( getSubPathRelative != null )
 		{
-			subPath = new StructureService(_selectorStorage.Get(
+			subPath = new LegacyStructureService(_selectorStorage.Get(
 					SelectorStorage.StorageServices.SubPath), _appSettings.Structure.DefaultPattern)
 				.ParseSubfolders(getSubPathRelative)!;
 		}

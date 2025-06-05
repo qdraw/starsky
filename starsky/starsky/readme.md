@@ -148,7 +148,9 @@ machinename with your computer name in lowercase)_
     "StorageFolder": "Y:\\data\\photodirectory\\storage",
     "DatabaseType": "mysql",
     "DatabaseConnection": "Server=mysqlserver.nl;database=dbname;uid=username;pwd=password;",
-    "Structure": "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_{filenamebase}.ext",
+    "Structure": {
+        "DefaultPattern": "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext"
+    },
     "ReadOnlyFolders": ["/2015","/2018"],
     "AddMemoryCache": "true",
     "CameraTimeZone": "America/New_York",
@@ -161,6 +163,16 @@ machinename with your computer name in lowercase)_
 
 > Tip: When using the `mysql`-setting, make sure the database uses `utf8mb4` and as
 > collate `utf8mb4_unicode_ci` to avoid encoding errors.
+
+## Structure configuration change in version 0.7.0
+
+In versions older than 0.7.0 the `Structure` was set to: This changed is changed in version 0.7.0
+
+```
+{
+    "Structure": "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext" // legacy
+}
+```
 
 #### Appsettings Notes
 

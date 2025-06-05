@@ -29,6 +29,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.storage.Structure;
 using starsky.foundation.thumbnailmeta.Interfaces;
 using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.Services;
@@ -59,6 +60,7 @@ public class Import : IImport
 	private readonly IQuery _query;
 
 	private readonly ReadMeta _readMetaHost;
+	private readonly ISelectorStorage _selectorStorage;
 	private readonly IServiceScopeFactory? _serviceScopeFactory;
 	private readonly IStorage _subPathStorage;
 	private readonly IThumbnailQuery _thumbnailQuery;
@@ -83,6 +85,7 @@ public class Import : IImport
 	{
 		_importQuery = importQuery;
 
+		_selectorStorage = selectorStorage;
 		_filesystemStorage =
 			selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
@@ -477,27 +480,20 @@ public class Import : IImport
 		string overwriteStructure)
 	{
 		importIndexItem.Structure = _appSettings.Structure;
+		importIndexItem.Structure.OverrideDefaultPatternAndDisableRules(overwriteStructure);
 
-		// Feature to overwrite structures when importing using a header
-		// Overwrite the structure in the ImportIndexItem
-		if ( !string.IsNullOrWhiteSpace(overwriteStructure) )
-		{
-			importIndexItem.Structure = overwriteStructure;
-		}
+		var structureService = new StructureService(_selectorStorage, importIndexItem.Structure);
 
-		var structureService = new StructureService(_subPathStorage, importIndexItem.Structure);
-
-		importIndexItem.FileIndexItem!.ParentDirectory = structureService.ParseSubfolders(
-			importIndexItem.FileIndexItem.DateTime,
+		var inputModel = new StructureInputModel(
+			importIndexItem.FileIndexItem!.DateTime,
 			importIndexItem.FileIndexItem.FileCollectionName!,
 			FilenamesHelper.GetFileExtensionWithoutDot(importIndexItem.FileIndexItem
-				.FileName!));
+				.FileName!),
+			importIndexItem.FileIndexItem.ImageFormat);
 
-		importIndexItem.FileIndexItem.FileName = structureService.ParseFileName(
-			importIndexItem.FileIndexItem.DateTime,
-			importIndexItem.FileIndexItem.FileCollectionName!,
-			FilenamesHelper.GetFileExtensionWithoutDot(importIndexItem.FileIndexItem
-				.FileName!));
+		importIndexItem.FileIndexItem!.ParentDirectory =
+			structureService.ParseSubfolders(inputModel);
+		importIndexItem.FileIndexItem.FileName = structureService.ParseFileName(inputModel);
 		importIndexItem.FilePath = importIndexItem.FileIndexItem.FilePath;
 
 		return importIndexItem;

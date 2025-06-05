@@ -47,7 +47,7 @@ public class MetaThumbnailCommandLineHelper
 		var getSubPathRelative = new ArgsHelper(_appSettings).GetRelativeValue(args);
 		if ( getSubPathRelative != null )
 		{
-			subPath = new StructureService(
+			subPath = new LegacyStructureService(
 					_selectorStorage.Get(SelectorStorage.StorageServices.SubPath),
 					_appSettings.Structure.DefaultPattern)
 				.ParseSubfolders(getSubPathRelative);

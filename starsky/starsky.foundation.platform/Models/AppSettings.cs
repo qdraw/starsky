@@ -277,7 +277,7 @@ public sealed class AppSettings
 	///     Auto storage structure
 	/// </summary>
 	[PackageTelemetry]
-	public AppSettingsStructureModel Structure { get; set; }
+	public AppSettingsStructureModel Structure { get; set; } = new();
 
 	/// <summary>
 	///     Used for syncing gpx files

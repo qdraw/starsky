@@ -1,10 +1,12 @@
 using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.storage.Structure;
 
 namespace starsky.Controllers;
 
@@ -15,9 +17,7 @@ public sealed class RedirectController : Controller
 
 	public RedirectController(ISelectorStorage selectorStorage, AppSettings appSettings)
 	{
-		var storage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-		_structureService = new StructureService(storage,
-			SelectStructureSettingsService.GetStructureSetting(appSettings.Structure));
+		_structureService = new StructureService(selectorStorage, appSettings);
 	}
 
 	/// <summary>
@@ -51,7 +51,10 @@ public sealed class RedirectController : Controller
 		}
 
 		// expect something like this: /2018/09/2018_09_02/
-		var subPath = _structureService.ParseSubfolders(DateTime.Today.AddDays(value));
+		var inputModel = new StructureInputModel(
+			DateTime.Today.AddDays(value), string.Empty, string.Empty,
+			ExtensionRolesHelper.ImageFormat.jpg);
+		var subPath = _structureService.ParseSubfolders(inputModel);
 		if ( json )
 		{
 			return Json(subPath);

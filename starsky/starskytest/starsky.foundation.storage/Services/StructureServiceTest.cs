@@ -16,7 +16,7 @@ public sealed class StructureServiceTest
 	public void ParseFileName_DefaultDate()
 	{
 		const string structure = "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss.ext";
-		var importItem = new StructureService(new FakeIStorage(), structure);
+		var importItem = new LegacyStructureService(new FakeIStorage(), structure);
 		var dateTime = new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Local);
 		var fileName = importItem.ParseFileName(dateTime,
 			string.Empty, "jpg");
@@ -27,7 +27,7 @@ public sealed class StructureServiceTest
 	public void ParseFileName_LotsOfEscapeChars()
 	{
 		const string structure = "/yyyyMMdd_HHmmss_\\\\\\h\\\\\\m.ext";
-		var importItem = new StructureService(new FakeIStorage(), structure);
+		var importItem = new LegacyStructureService(new FakeIStorage(), structure);
 		var dateTime = new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Local);
 		var fileName = importItem.ParseFileName(dateTime,
 			string.Empty, "jpg");
@@ -38,7 +38,7 @@ public sealed class StructureServiceTest
 	public void ParseFileName_FileNameWithAppendix()
 	{
 		const string structure = "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_\\d.ext";
-		var importItem = new StructureService(new FakeIStorage(), structure);
+		var importItem = new LegacyStructureService(new FakeIStorage(), structure);
 		var dateTime = new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Local);
 		var fileName = importItem.ParseFileName(dateTime,
 			string.Empty, "jpg");
@@ -49,7 +49,7 @@ public sealed class StructureServiceTest
 	public void ParseFileName_FileNameBase()
 	{
 		const string structure = "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_{filenamebase}.ext";
-		var importItem = new StructureService(new FakeIStorage(), structure);
+		var importItem = new LegacyStructureService(new FakeIStorage(), structure);
 		var fileName = importItem.ParseFileName(
 			new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
 			"test", "jpg");
@@ -61,7 +61,7 @@ public sealed class StructureServiceTest
 	public void ParseFileName_FieldAccessException_Null()
 	{
 		// Arrange
-		var service = new StructureService(new FakeIStorage(), null!);
+		var service = new LegacyStructureService(new FakeIStorage(), null!);
 
 		// Act & Assert
 		Assert.ThrowsExactly<FieldAccessException>(() =>
@@ -80,7 +80,7 @@ public sealed class StructureServiceTest
 			new AppSettings { StorageFolder = new CreateAnImage().BasePath }, new FakeIWebLogger());
 		storage.CreateDirectory("test");
 
-		var result = new StructureService(storage, structure).ParseSubfolders(
+		var result = new LegacyStructureService(storage, structure).ParseSubfolders(
 			new DateTime(2020, 01, 01,
 				01, 01, 01, DateTimeKind.Local));
 
@@ -96,7 +96,7 @@ public sealed class StructureServiceTest
 			["/", "/test", "/something"],
 			[]);
 
-		var result = new StructureService(storage, structure).ParseSubfolders(
+		var result = new LegacyStructureService(storage, structure).ParseSubfolders(
 			new DateTime(2020, 01, 01,
 				01, 01, 01, DateTimeKind.Local));
 
@@ -112,7 +112,7 @@ public sealed class StructureServiceTest
 
 		var structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 
-		var result = new StructureService(storage, structure).ParseSubfolders(
+		var result = new LegacyStructureService(storage, structure).ParseSubfolders(
 			new DateTime(2020, 01, 01,
 				01, 01, 01, DateTimeKind.Local));
 
@@ -128,7 +128,7 @@ public sealed class StructureServiceTest
 
 		const string structure = "/*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 
-		var result = new StructureService(storage, structure).ParseSubfolders(
+		var result = new LegacyStructureService(storage, structure).ParseSubfolders(
 			new DateTime(2020, 01, 01,
 				01, 01, 01, DateTimeKind.Local));
 
@@ -144,7 +144,7 @@ public sealed class StructureServiceTest
 
 		const string structure = "/*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 
-		var result = new StructureService(storage, structure).ParseSubfolders(
+		var result = new LegacyStructureService(storage, structure).ParseSubfolders(
 			new DateTime(2020, 01, 01,
 				01, 01, 01, DateTimeKind.Local));
 
@@ -167,7 +167,7 @@ public sealed class StructureServiceTest
 
 		const string structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 
-		var result = new StructureService(storage, structure).ParseSubfolders(
+		var result = new LegacyStructureService(storage, structure).ParseSubfolders(
 			new DateTime(2020, 01, 01,
 				01, 01, 01, DateTimeKind.Local));
 
@@ -190,7 +190,7 @@ public sealed class StructureServiceTest
 
 		const string structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 
-		var result = new StructureService(storage, structure).ParseSubfolders(
+		var result = new LegacyStructureService(storage, structure).ParseSubfolders(
 			new DateTime(2020, 01, 01,
 				01, 01, 01, DateTimeKind.Local));
 
@@ -205,7 +205,7 @@ public sealed class StructureServiceTest
 
 		const string structure = "/{filenamebase}/file.ext";
 
-		var result = new StructureService(storage, structure).ParseSubfolders(
+		var result = new LegacyStructureService(storage, structure).ParseSubfolders(
 			new DateTime(2020, 01, 01,
 				01, 01, 01, DateTimeKind.Local), "test");
 		Assert.AreEqual("/test", result);
@@ -219,7 +219,7 @@ public sealed class StructureServiceTest
 
 		const string structure = "/con\\ten\\t.ext/file.ext";
 
-		var result = new StructureService(storage, structure).ParseSubfolders(
+		var result = new LegacyStructureService(storage, structure).ParseSubfolders(
 			new DateTime(2020, 01, 01,
 				01, 01, 01, DateTimeKind.Local), "test");
 		Assert.AreEqual("/content.unknown", result);
@@ -229,7 +229,7 @@ public sealed class StructureServiceTest
 	public void ParseSubfolders_FieldAccessException_String()
 	{
 		const string structure = "";
-		var sut = new StructureService(new FakeIStorage(), structure);
+		var sut = new LegacyStructureService(new FakeIStorage(), structure);
 		Assert.ThrowsExactly<FieldAccessException>(() => sut.ParseSubfolders(
 			new DateTime(2020, 01, 01,
 				01, 01, 01, DateTimeKind.Local)));
@@ -239,7 +239,7 @@ public sealed class StructureServiceTest
 	public void ParseSubfolders_FieldAccessException_DotExt()
 	{
 		const string structure = "/.ext";
-		var sut = new StructureService(new FakeIStorage(), structure);
+		var sut = new LegacyStructureService(new FakeIStorage(), structure);
 		Assert.ThrowsExactly<FieldAccessException>(() => sut.ParseSubfolders(
 			new DateTime(2020, 01, 01,
 				01, 01, 01, DateTimeKind.Local)));
@@ -249,7 +249,7 @@ public sealed class StructureServiceTest
 	public void ParseSubfolders_FieldAccessException_DoesNotStartWithSlash()
 	{
 		const string structure = "test/on";
-		var sut = new StructureService(new FakeIStorage(), structure);
+		var sut = new LegacyStructureService(new FakeIStorage(), structure);
 		Assert.ThrowsExactly<FieldAccessException>(() => sut.ParseSubfolders(
 			new DateTime(2020, 01, 01,
 				01, 01, 01, DateTimeKind.Local)));
@@ -261,7 +261,7 @@ public sealed class StructureServiceTest
 	{
 		const string structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 
-		var result = new StructureService(new FakeIStorage(), structure).ParseSubfolders(null);
+		var result = new LegacyStructureService(new FakeIStorage(), structure).ParseSubfolders(null);
 		Assert.IsNull(result);
 	}
 
@@ -269,7 +269,7 @@ public sealed class StructureServiceTest
 	public void ParseSubfolders_Int_RelativeToday()
 	{
 		const string structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
-		var result = new StructureService(new FakeIStorage(), structure).ParseSubfolders(0);
+		var result = new LegacyStructureService(new FakeIStorage(), structure).ParseSubfolders(0);
 		Assert.IsTrue(result?.Contains(DateTime.Now.ToString("yyyy_MM_dd")));
 	}
 }

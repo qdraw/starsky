@@ -7,6 +7,7 @@ using starsky.feature.geolookup.Services;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Services;
+using starsky.foundation.storage.Structure;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -31,7 +32,7 @@ public sealed class GeoCliTest
 	public async Task GeoCliInput_RelativeUrl_HappyFlow()
 	{
 		var relativeParentFolder = new AppSettings().DatabasePathToFilePath(
-			new StructureService(new FakeIStorage(), new AppSettings().Structure)
+			new StructureService(new FakeIStorage(), new AppSettings())
 				.ParseSubfolders(0)!);
 
 		var storage = new FakeIStorage(new List<string> { "/" },

@@ -18,6 +18,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.storage.Structure;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -405,13 +406,16 @@ public sealed class ImportTest
 			SourceFullFilePath = inputFileFullPath
 		};
 
-		var structureService = new StructureService(storage, appSettings.Structure);
-		importIndexItem.FileIndexItem!.ParentDirectory = structureService.ParseSubfolders(
+		var structureService =
+			new StructureService(new FakeSelectorStorage(storage), appSettings);
+		var inputModel = new StructureInputModel(
 			fileIndexItem.DateTime, fileIndexItem.FileCollectionName!,
-			FilenamesHelper.GetFileExtensionWithoutDot(fileIndexItem.FileName!));
-		importIndexItem.FileIndexItem.FileName = structureService.ParseFileName(
-			fileIndexItem.DateTime, fileIndexItem.FileCollectionName!,
-			FilenamesHelper.GetFileExtensionWithoutDot(fileIndexItem.FileName!));
+			FilenamesHelper.GetFileExtensionWithoutDot(fileIndexItem.FileName!),
+			ExtensionRolesHelper.ImageFormat.jpg);
+
+		importIndexItem.FileIndexItem!.ParentDirectory =
+			structureService.ParseSubfolders(inputModel);
+		importIndexItem.FileIndexItem.FileName = structureService.ParseFileName(inputModel);
 
 		var result = Import.AppendIndexerToFilePath(
 			importIndexItem.FileIndexItem.ParentDirectory!,
@@ -919,7 +923,10 @@ public sealed class ImportTest
 	[TestMethod]
 	public void Preflight_Predict_Duplicates()
 	{
-		var appSettings = new AppSettings { Structure = "/yyyy/yyyyMMdd_HHmmss_\\d.ext" };
+		var appSettings = new AppSettings
+		{
+			Structure = new AppSettingsStructureModel("/yyyy/yyyyMMdd_HHmmss_\\d.ext")
+		};
 		var query = new FakeIQuery();
 		var importQuery = new FakeIImportQuery();
 		var storage = new FakeIStorage(
@@ -988,7 +995,10 @@ public sealed class ImportTest
 	[TestMethod]
 	public void Preflight_Predict_Duplicates_MissingFileIndexObject()
 	{
-		var appSettings = new AppSettings { Structure = "/yyyy/yyyyMMdd_HHmmss_\\d.ext" };
+		var appSettings = new AppSettings
+		{
+			Structure = new AppSettingsStructureModel("/yyyy/yyyyMMdd_HHmmss_\\d.ext")
+		};
 		var importQuery = new FakeIImportQuery();
 		var query = new FakeIQuery();
 
