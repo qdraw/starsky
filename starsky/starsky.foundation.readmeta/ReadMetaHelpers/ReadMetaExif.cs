@@ -527,7 +527,7 @@ public sealed class ReadMetaExif
 		{
 			foreach ( var tag in exifItem.Tags )
 			{
-				_logger.LogInformation($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
+				_logger.LogDebug($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
 			}
 
 			// for xmp notes
@@ -540,7 +540,7 @@ public sealed class ReadMetaExif
 			foreach ( var property in xmpDirectory.XmpMeta.Properties.Where(p =>
 				         !string.IsNullOrEmpty(p.Path)) )
 			{
-				_logger.LogInformation(
+				_logger.LogDebug(
 					$"{exifItem.Name},{property.Namespace},{property.Path},{property.Value}");
 			}
 		}

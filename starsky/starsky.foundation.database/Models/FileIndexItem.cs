@@ -742,9 +742,6 @@ public sealed class FileIndexItem
 		}
 	}
 
-	// [MaxLength(100)]
-	// public string CameraSerial { get; set; }
-
 	/// <summary>
 	///     Is ImageStabilisation unknown, on or off
 	///     Currently Sony only
