@@ -26,7 +26,8 @@ namespace starskytest.starsky.foundation.readmeta.Services
 		                             "exif:ExposureTime=\"1/13\" exif:FNumber=\"9/1\" exif:FileSource=\"3\" exif:FlashpixVersion=\"0100\" exif:FocalLength=\"28/1\" exif:FocalLengthIn35mmFilm=\"42\" exif:GPSAltitude=\"190/10\" "+
 		                             "exif:GPSAltitudeRef=\"0\" exif:GPSLatitude=\"52,20.708N\" exif:GPSLongitude=\"5,55.840E\" exif:GPSMapDatum=\"WGS-84\" exif:GPSTimeStamp=\"2018-07-18T17:44:20Z\" exif:GPSVersionID=\"2.2.0.0\" "+
 		                             "exif:LightSource=\"0\" exif:MaxApertureValue=\"16205/3734\" exif:MeteringMode=\"5\" exif:PixelXDimension=\"5456\" exif:PixelYDimension=\"3632\" exif:Saturation=\"0\" exif:SceneCaptureType=\"0\" "+
-		                             "exif:SceneType=\"1\" exif:Sharpness=\"0\" exif:WhiteBalance=\"0\" exif:GPSDateTime=\"2018-07-18T17:44:20Z\" exifEX:InteroperabilityIndex=\"R98\" exifEX:LensModel=\"24-105mm F3.5-4.5\" "+
+		                             "exif:SceneType=\"1\" exif:Sharpness=\"0\" exif:WhiteBalance=\"0\" exif:GPSDateTime=\"2018-07-18T17:44:20Z\" exifEX:InteroperabilityIndex=\"R98\" exifEX:LensModel=\"24-105mm F3.5-4.5\" "+ 
+		                             "exifEX:BodySerialNumber=\"00000001\" " +
 		                             "exifEX:RecommendedExposureIndex=\"800\" exifEX:SensitivityType=\"2\" pdf:Keywords=\"zwavelzwam, update1235\" photoshop:ColorMode=\"0\" photoshop:City=\"Epe\" photoshop:State=\"Gelderland\" "+
 		                             "photoshop:Country=\"Nederland\" photoshop:DateCreated=\"2018-07-18T19:44:27+01:00\" pmi:sequenceNumber=\"1\" tiff:Compression=\"32767\" tiff:ImageLength=\"3656\" tiff:ImageWidth=\"5504\" "+
 		                             "tiff:Make=\"SONY\" tiff:Model=\"SLT-A58\" tiff:Orientation=\"1\" tiff:PhotometricInterpretation=\"32803\" tiff:PlanarConfiguration=\"1\" tiff:ResolutionUnit=\"2\" tiff:SamplesPerPixel=\"1\" "+
@@ -106,6 +107,11 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			Assert.AreEqual("Epe",data.LocationCity);
 			Assert.AreEqual("Gelderland",data.LocationState);
 			Assert.AreEqual("Nederland",data.LocationCountry);
+
+			Assert.AreEqual("24-105mm F3.5-4.5",data.LensModel);
+			Assert.AreEqual("00000001",data.MakeCameraSerial);
+			Assert.AreEqual("SLT-A58",data.Model);
+			Assert.AreEqual("Sony",data.Make);
 
 			Assert.AreEqual(ColorClassParser.Color.Winner,data.ColorClass);
             
