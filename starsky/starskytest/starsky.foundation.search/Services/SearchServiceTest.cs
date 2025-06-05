@@ -60,7 +60,7 @@ public sealed class SearchServiceTest
 				ImageFormat = ExtensionRolesHelper.ImageFormat.jpg,
 				DateTime = new DateTime(2014, 1, 1, 1, 1, 1,
 					DateTimeKind.Local),
-				MakeModel = "Apple|iPhone SE|",
+				MakeModel = "Apple|iPhone SE||",
 				Software = "PhotoTool x",
 				IsDirectory = false,
 				ColorClass = ColorClassParser.Color.WinnerAlt,
@@ -515,8 +515,8 @@ public sealed class SearchServiceTest
 		await InsertSearchData();
 
 		var expectedCount = await _dbContext.FileIndex.CountAsync(p => p.Tags!.Contains("lelystad")
-		                                                    && p.ParentDirectory!.Contains(
-			                                                    "stations2"));
+			&& p.ParentDirectory!.Contains(
+				"stations2"));
 
 		var item =
 			await _search.Search("lelystad -ParentDirectory:/stations2");

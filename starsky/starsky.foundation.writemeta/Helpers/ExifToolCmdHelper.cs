@@ -605,6 +605,13 @@ public sealed class ExifToolCmdHelper
 				$" -lensmodel=\"{updateModel.LensModel}\" -xmp:lensmodel=\"{updateModel.LensModel}\"";
 		}
 
+		if ( !string.IsNullOrWhiteSpace(updateModel.MakeCameraSerial) )
+		{
+			// add space before
+			command +=
+				$" -SerialNumber=\"{updateModel.MakeCameraSerial}\" -xmp:SerialNumber=\"{updateModel.MakeCameraSerial}\"";
+		}
+
 		return command;
 	}
 
