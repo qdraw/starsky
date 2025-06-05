@@ -646,8 +646,8 @@ public sealed class FileIndexItem
 				return string.Empty;
 			}
 
-			var makeModelList = MakeModel?.Split('|');
-			return makeModelList is { Length: < 1 } ? string.Empty : makeModelList![0];
+			var makeModelList = MakeModel?.Split('|') ?? [];
+			return makeModelList.Length == 0 ? string.Empty : makeModelList[0];
 		}
 	}
 
@@ -664,8 +664,8 @@ public sealed class FileIndexItem
 				return string.Empty;
 			}
 
-			var makeModelList = MakeModel?.Split('|');
-			return makeModelList is { Length: < 2 } ? string.Empty : makeModelList![1];
+			var makeModelList = MakeModel?.Split('|') ?? [];
+			return makeModelList.Length < 2 ? string.Empty : makeModelList[1];
 		}
 	}
 
