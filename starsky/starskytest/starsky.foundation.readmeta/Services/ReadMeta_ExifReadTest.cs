@@ -16,6 +16,7 @@ using starsky.project.web.Attributes;
 using starskytest.FakeCreateAn;
 using starskytest.FakeCreateAn.CreateAnImageA330Raw;
 using starskytest.FakeCreateAn.CreateAnImageA6600Raw;
+using starskytest.FakeCreateAn.CreateAnImageA6700;
 using starskytest.FakeCreateAn.CreateAnImageLongDescriptionTitle;
 using starskytest.FakeCreateAn.CreateAnImageWebP;
 using starskytest.FakeCreateAn.CreateAnQuickTimeMp4;
@@ -388,6 +389,43 @@ public sealed class ExifReadTest
 		Assert.AreEqual("Sony", item.Make);
 		Assert.AreEqual("ILCE-6600", item.Model);
 		Assert.AreEqual("E 18-200mm F3.5-6.3 OSS LE", item.LensModel);
+		Assert.AreEqual(string.Empty, item.MakeCameraSerial);
+		Assert.AreEqual(ImageStabilisationType.On, item.ImageStabilisation);
+	}
+	
+	[TestMethod]
+	public void ExifRead_CreateAnImageA6700_ReadExifFromFileTest()
+	{
+		var newImage = new CreateAnImageA6700().Bytes.ToArray();
+		var fakeStorage = new FakeIStorage(new List<string> { "/" },
+			new List<string> { "/test.jpg" }, new List<byte[]> { newImage });
+
+		var item =
+			new ReadMetaExif(fakeStorage, null!, new FakeIWebLogger()).ReadExifFromFile(
+				"/test.jpg");
+
+		Assert.AreEqual(ColorClassParser.Color.None, item.ColorClass);
+		Assert.AreEqual(string.Empty, item.Description);
+		Assert.IsFalse(item.IsDirectory);
+		Assert.AreEqual("t", item.Tags);
+		Assert.AreEqual(string.Empty, item.Title);
+		Assert.AreEqual(52.1333222222, item.Latitude, 0.000001);
+		Assert.AreEqual(6.0067055555, item.Longitude, 0.000001);
+		Assert.AreEqual(1, item.ImageHeight);
+		Assert.AreEqual(1, item.ImageWidth);
+		Assert.AreEqual("Loenen", item.LocationCity);
+		Assert.AreEqual("Gelderland", item.LocationState);
+		Assert.AreEqual("Nederland", item.LocationCountry);
+		Assert.AreEqual(36, item.LocationAltitude);
+		Assert.AreEqual(31, item.FocalLength);
+		Assert.AreEqual(new DateTime(2025, 5, 15, 10, 29, 48, DateTimeKind.Local),
+			item.DateTime);
+
+		Assert.AreEqual("Sony|ILCE-6700|E 18-200mm F3.5-6.3 OSS LE|02059361", item.MakeModel);
+		Assert.AreEqual("Sony", item.Make);
+		Assert.AreEqual("ILCE-6700", item.Model);
+		Assert.AreEqual("E 18-200mm F3.5-6.3 OSS LE", item.LensModel);
+		Assert.AreEqual("02059361", item.MakeCameraSerial);
 		Assert.AreEqual(ImageStabilisationType.On, item.ImageStabilisation);
 	}
 
@@ -459,8 +497,9 @@ public sealed class ExifReadTest
 		Assert.AreEqual(string.Empty, item.LocationState);
 		Assert.AreEqual(5.8325499999, item.Longitude, 0.0000000001);
 		Assert.AreEqual("Sony", item.Make);
-		Assert.AreEqual("Sony|ILCE-6600|E 18-200mm F3.5-6.3 OSS LE|", item.MakeModel);
+		Assert.AreEqual("Sony|ILCE-6600|E 18-200mm F3.5-6.3 OSS LE|0", item.MakeModel);
 		Assert.AreEqual("ILCE-6600", item.Model);
+		Assert.AreEqual(string.Empty, item.MakeCameraSerial);
 		Assert.AreEqual(ImageRotation.Rotation.Horizontal, item.Orientation);
 		Assert.AreEqual("1/60", item.ShutterSpeed);
 		Assert.AreEqual(string.Empty, item.SidecarExtensions);
