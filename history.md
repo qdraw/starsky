@@ -43,13 +43,17 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.0 - _(Unreleased)_ - 2025-05-? {#v0.7.0}
 
+- nothing yet
+
+### Breaking changes in 0.7.0-beta between version 0 and 2
+
+- [x] (Breaking Change) _Back-end_ change default thumbnail format to webp (PR #1833)
+
+## version 0.7.0-beta.3 - 2025-06-?? {#v0.7.0-beta.3}
+
 - [x] (Changed) _Front-end_ Upgrade packages to React 19 (PR #2181)
 - [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.410 (Runtime: 8.0.16) (PR #2196)
 - [x] (Added) _Back-end_ Add Camera Body Serial to FileIndexModel (PR #2206)
-
-### Breaking changes in 0.7.0-beta.0-2
-
-- [x] (Breaking Change) _Back-end_ change default thumbnail format to webp (PR #1833)
 
 ## version 0.7.0-beta.2 - 2025-05-27 {#v0.7.0-beta.2}
 
