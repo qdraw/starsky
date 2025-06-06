@@ -24,6 +24,7 @@ namespace starsky.feature.packagetelemetry.Services;
 public class PackageTelemetry : IPackageTelemetry
 {
 	internal const string PackageTelemetryUrl = "qdraw.nl/special/starsky/telemetry/index.php";
+
 	private readonly AppSettings _appSettings;
 	private readonly IDeviceIdService _deviceIdService;
 	private readonly IHttpClientHelper _httpClientHelper;
@@ -58,7 +59,15 @@ public class PackageTelemetry : IPackageTelemetry
 
 		if ( _appSettings.EnablePackageTelemetryDebug != true )
 		{
-			return await PostData(formEncodedData);
+			var postResult = await PostData(formEncodedData);
+			if ( !postResult )
+			{
+				_logger.LogError($"[PackageTelemetry] postResult: {postResult} - " +
+				                 $"Url: {PackageTelemetryUrl} - " +
+				                 $"Form: {formEncodedData}");
+			}
+
+			return postResult;
 		}
 
 		foreach ( var (key, value) in telemetryDataItems )
@@ -181,9 +190,11 @@ public class PackageTelemetry : IPackageTelemetry
 
 			if ( propValue?.GetType() == typeof(List<string>) ||
 			     propValue?.GetType() ==
-			     typeof(Dictionary<string, List<AppSettingsPublishProfiles>>) )
+			     typeof(Dictionary<string, List<AppSettingsPublishProfiles>>) ||
+			     propValue?.GetType() == typeof(List<CameraMakeModel>) ||
+			     propValue?.GetType() == typeof(List<AppSettingsDefaultEditorApplication>) )
 			{
-				value = ParseContent(propValue);
+				value = ParseContentToJson(propValue);
 			}
 
 			data.Add(new KeyValuePair<string, string>("AppSettings" + property.Name,
@@ -193,7 +204,7 @@ public class PackageTelemetry : IPackageTelemetry
 		return data;
 	}
 
-	internal static string ParseContent(object propValue)
+	internal static string ParseContentToJson(object propValue)
 	{
 		return JsonSerializer.Serialize(propValue);
 	}

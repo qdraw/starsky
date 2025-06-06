@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.InteropServices;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -146,7 +147,7 @@ public sealed class PackageTelemetryTest
 	[TestMethod]
 	public void ParseContent_Null()
 	{
-		var result = PackageTelemetry.ParseContent(null!);
+		var result = PackageTelemetry.ParseContentToJson(null!);
 		Assert.AreEqual("null", result);
 	}
 
@@ -296,6 +297,71 @@ public sealed class PackageTelemetryTest
 		var res3 =
 			result.Find(p => p.Key == "FileIndexItemCount");
 		Assert.AreEqual("-1", res3.Value);
+	}
+
+	[TestMethod]
+	[DataRow(typeof(List<string>), true, DisplayName = "Type is List<string>")]
+	[DataRow(typeof(Dictionary<string, List<AppSettingsPublishProfiles>>), true,
+		DisplayName = "Type is Dictionary<string, List<AppSettingsPublishProfiles>>")]
+	[DataRow(typeof(List<CameraMakeModel>), true, DisplayName = "Type is List<CameraMakeModel>")]
+	[DataRow(typeof(List<AppSettingsDefaultEditorApplication>), true,
+		DisplayName = "Type is List<AppSettingsDefaultEditorApplication>")]
+	[DataRow(typeof(string), false, DisplayName = "Type is string")]
+	[DataRow(typeof(int), false, DisplayName = "Type is int")]
+	public void TestPropValueTypeCheck(Type type, bool expected)
+	{
+		// Arrange
+		object propValue;
+		if ( type == typeof(List<string>) )
+		{
+			propValue = new List<string>();
+		}
+		else if ( type == typeof(Dictionary<string, List<AppSettingsPublishProfiles>>) )
+		{
+			propValue = new Dictionary<string, List<AppSettingsPublishProfiles>>();
+		}
+		else if ( type == typeof(List<CameraMakeModel>) )
+		{
+			propValue = new List<CameraMakeModel>();
+		}
+		else if ( type == typeof(List<AppSettingsDefaultEditorApplication>) )
+		{
+			propValue = new List<AppSettingsDefaultEditorApplication>();
+		}
+		else if ( type == typeof(string) )
+		{
+			propValue = "test";
+		}
+		else
+		{
+			propValue = 42;
+		}
+
+		// Act
+		var result = propValue.GetType() == typeof(List<string>) ||
+		             propValue.GetType() ==
+		             typeof(Dictionary<string, List<AppSettingsPublishProfiles>>) ||
+		             propValue.GetType() == typeof(List<CameraMakeModel>) ||
+		             propValue.GetType() == typeof(List<AppSettingsDefaultEditorApplication>);
+
+		// check for json
+		var isJsonSerializable = false;
+		if ( type != typeof(string) || type != typeof(int) || type != typeof(bool) )
+		{
+			try
+			{
+				var json = JsonSerializer.Serialize(propValue);
+				isJsonSerializable = !string.IsNullOrEmpty(json);
+			}
+			catch
+			{
+				isJsonSerializable = false;
+			}
+		}
+
+		// Assert
+		Assert.AreEqual(expected, result);
+		Assert.IsTrue(isJsonSerializable);
 	}
 
 	private sealed class TestClass

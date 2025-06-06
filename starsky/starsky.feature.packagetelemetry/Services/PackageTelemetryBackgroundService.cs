@@ -11,39 +11,40 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
 [assembly: InternalsVisibleTo("starskytest")]
-namespace starsky.feature.packagetelemetry.Services
+
+namespace starsky.feature.packagetelemetry.Services;
+
+[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
+public sealed class PackageTelemetryBackgroundService : BackgroundService
 {
+	private readonly IServiceScopeFactory _serviceScopeFactory;
 
-	[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
-	public sealed class PackageTelemetryBackgroundService : BackgroundService
+	public PackageTelemetryBackgroundService(IServiceScopeFactory serviceScopeFactory)
 	{
-		private readonly IServiceScopeFactory _serviceScopeFactory;
+		_serviceScopeFactory = serviceScopeFactory;
+	}
 
-		public PackageTelemetryBackgroundService(IServiceScopeFactory serviceScopeFactory)
+	/// <summary>
+	///     Running scoped services
+	///     @see: https://thinkrethink.net/2018/07/12/injecting-a-scoped-service-into-ihostedservice/
+	/// </summary>
+	/// <param name="stoppingToken">Cancellation Token, but it ignored</param>
+	/// <returns>CompletedTask</returns>
+	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+	{
+		using ( var scope = _serviceScopeFactory.CreateScope() )
 		{
-			_serviceScopeFactory = serviceScopeFactory;
-		}
+			var appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
+			var httpClientHelper = scope.ServiceProvider.GetRequiredService<IHttpClientHelper>();
+			var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>();
+			var query = scope.ServiceProvider.GetRequiredService<IQuery>();
+			var deviceIdService = scope.ServiceProvider.GetRequiredService<IDeviceIdService>();
 
-		/// <summary>
-		/// Running scoped services
-		/// @see: https://thinkrethink.net/2018/07/12/injecting-a-scoped-service-into-ihostedservice/
-		/// </summary>
-		/// <param name="stoppingToken">Cancellation Token, but it ignored</param>
-		/// <returns>CompletedTask</returns>
-		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-		{
-			using ( var scope = _serviceScopeFactory.CreateScope() )
+			if ( appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
 			{
-				var appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
-				var httpClientHelper = scope.ServiceProvider.GetRequiredService<IHttpClientHelper>();
-				var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>();
-				var query = scope.ServiceProvider.GetRequiredService<IQuery>();
-				var deviceIdService = scope.ServiceProvider.GetRequiredService<IDeviceIdService>();
-
-				if ( appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
-				{
-					await new PackageTelemetry(httpClientHelper, appSettings, logger, query, deviceIdService).PackageTelemetrySend();
-				}
+				var service = new PackageTelemetry(httpClientHelper, appSettings, logger, query,
+					deviceIdService);
+				await service.PackageTelemetrySend();
 			}
 		}
 	}
