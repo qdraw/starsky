@@ -110,7 +110,11 @@ public sealed class ImportTestInMemoryDb
 			new ImportSettingsModel { Structure = "/yyyy/MM/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext" });
 
 		var expectedFilePath = await ImportTest.GetExpectedFilePathAsync(_iStorageFake,
-			new AppSettings { Structure = "/yyyy/MM/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext" },
+			new AppSettings
+			{
+				Structure =
+					new AppSettingsStructureModel("/yyyy/MM/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext")
+			},
 			"/test.jpg");
 
 		Assert.AreEqual(expectedFilePath, result[0].FilePath);
@@ -140,7 +144,11 @@ public sealed class ImportTestInMemoryDb
 		Assert.IsTrue(isHashInImportDb);
 
 		var expectedFilePath = await ImportTest.GetExpectedFilePathAsync(_iStorageFake,
-			new AppSettings { Structure = "/yyyy/MM/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext" },
+			new AppSettings
+			{
+				Structure =
+					new AppSettingsStructureModel("/yyyy/MM/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext")
+			},
 			"/test.jpg");
 
 		var queryResult = await _query.GetObjectByFilePathAsync(expectedFilePath);

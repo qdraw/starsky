@@ -1,9 +1,14 @@
 using System;
+using System.Globalization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Storage;
 using starsky.foundation.storage.Structure;
 using starsky.foundation.storage.Structure.Helpers;
+using starskytest.FakeCreateAn;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.storage.Structure.Helpers;
 
@@ -27,6 +32,59 @@ public class ParseDateTimeFromFileNameHelperTests
 					new DateTime(0, DateTimeKind.Utc), string.Empty,
 					string.Empty, ExtensionRolesHelper.ImageFormat.notfound));
 		Assert.AreEqual(new DateTime(), dateTime);
+	}
+
+	[TestMethod]
+	public void ImportIndexItemParse_OverWriteStructureFeature_Test()
+	{
+		var createAnImageNoExif = new CreateAnImageNoExif();
+		var createAnImage = new CreateAnImage();
+
+		_appSettings.Structure = null!;
+		// Go to the default structure setting 
+		_appSettings.StorageFolder = createAnImage.BasePath;
+
+		// Use a strange structure setting to overwrite
+		var input = new ImportIndexItem(_appSettings)
+		{
+			SourceFullFilePath = createAnImageNoExif.FullFilePathWithDate,
+			Structure = "/HHmmss_yyyyMMdd.ext"
+		};
+
+		input.ParseDateTimeFromFileName();
+
+		DateTime.TryParseExact(
+			"20120101_123300",
+			"yyyyMMdd_HHmmss",
+			CultureInfo.InvariantCulture,
+			DateTimeStyles.None,
+			out var answerDateTime);
+
+		// Check if those overwrite is accepted
+		Assert.AreEqual(answerDateTime, input.DateTime);
+
+		new StorageHostFullPathFilesystem(new FakeIWebLogger()).FileDelete(createAnImageNoExif
+			.FullFilePathWithDate);
+	}
+
+	[TestMethod]
+	public void ParseDateTimeFromFileNameWithSpaces_Test()
+	{
+		var input = new ImportIndexItem(new AppSettings())
+		{
+			SourceFullFilePath = Path.DirectorySeparatorChar + "2018 08 20 19 03 00.jpg"
+		};
+
+		input.ParseDateTimeFromFileName();
+
+		DateTime.TryParseExact(
+			"20180820_190300",
+			"yyyyMMdd_HHmmss",
+			CultureInfo.InvariantCulture,
+			DateTimeStyles.None,
+			out var answerDateTime);
+
+		Assert.AreEqual(answerDateTime, input.DateTime);
 	}
 
 	[TestMethod]
@@ -131,7 +189,7 @@ public class ParseDateTimeFromFileNameHelperTests
 
 		Assert.AreEqual(answerDateTime, input.DateTime);
 	}
-	
+
 	[TestMethod]
 	public void ImportIndexItemParse_Structure_Fallback()
 	{
@@ -162,5 +220,4 @@ public class ParseDateTimeFromFileNameHelperTests
 
 		Assert.AreEqual(answerDateTime, input.DateTime);
 	}
-
 }

@@ -23,7 +23,7 @@ public class StructureService : IStructureService
 	///     \\?(d{1,4}|f{1,6}|F{1,6}|g{1,2}|h{1,2}|H{1,2}|K|m{1,2}|M{1,4}|s{1,2}|t{1,2}|y{1,5}|z{1,3})
 	/// </summary>
 	private const string DateRegexPattern =
-		"\\\\?(d{1,4}|f{1,6}|F{1,6}|g{1,2}|h{1,2}|H{1,2}|K|m{1,2}|M{1,4}|s{1,2}|t{1,2}|y{1,5}|z{1,3})";
+		@"\\?(d{1,4}|f{1,6}|F{1,6}|g{1,2}|h{1,2}|H{1,2}|K|m{1,2}|M{1,4}|s{1,2}|t{1,2}|y{1,5}|z{1,3})";
 
 	private readonly ISelectorStorage _selectorStorage;
 	private readonly AppSettingsStructureModel _structureModel;
@@ -40,7 +40,6 @@ public class StructureService : IStructureService
 		_selectorStorage = selectorStorage;
 		_structureModel = structureModel;
 	}
-
 
 	/// <summary>
 	///     Parse the parent folder and ignore the filename
@@ -62,6 +61,28 @@ public class StructureService : IStructureService
 			parsedStructuredList.GetRange(0, parsedStructuredList.Count - 1));
 	}
 
+	
+	/// <summary>
+	///     Parse the parent folder and ignore the filename
+	/// </summary>
+	/// <param name="getSubPathRelative">datetime relative to now</param>
+	/// <param name="fileNameBase">include fileName if requested in structure</param>
+	/// <param name="extensionWithoutDot">include parentFolder if requested in structure (not recommend)</param>
+	/// <returns>sub Path including folders</returns>
+	public string ParseSubfolders(int? getSubPathRelative, string fileNameBase = "",
+		string extensionWithoutDot = "")
+	{
+		if ( getSubPathRelative == null )
+		{
+			return string.Empty;
+		}
+
+		var dateTime = DateTime.Now.AddDays(( double ) getSubPathRelative);
+		var inputModel = new StructureInputModel(dateTime, fileNameBase,
+			extensionWithoutDot, ExtensionRolesHelper.ImageFormat.notfound);
+		return ParseSubfolders(inputModel);
+	}
+	
 	/// <summary>
 	///     Get the fileName from the structure and ignore the parent folders
 	///     Does NOT check if the file already exist
@@ -83,6 +104,7 @@ public class StructureService : IStructureService
 		return PathHelper.RemovePrefixDbSlash(
 			ApplyStructureRangeToStorage(parsedStructuredList));
 	}
+
 
 	internal static string GetStructureSetting(AppSettingsStructureModel config,
 		StructureInputModel input)

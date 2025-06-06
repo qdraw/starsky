@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -14,6 +13,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.storage.Structure;
 using starsky.foundation.writemeta.Interfaces;
 
 namespace starsky.feature.geolookup.Services;
@@ -32,9 +32,10 @@ public sealed class GeoCli
 	private readonly IGeoFileDownload _geoFileDownload;
 	private readonly IGeoFolderReverseLookup _geoFolderReverseLookup;
 	private readonly IGeoLocationWrite _geoLocationWrite;
-	private readonly IStorage _iStorage;
 	private readonly IWebLogger _logger;
 	private readonly ReadMeta _readMeta;
+	private readonly ISelectorStorage _selectorStorage;
+	private readonly IStorage _storage;
 	private readonly IStorage _thumbnailStorage;
 
 	[SuppressMessage("Usage",
@@ -46,9 +47,10 @@ public sealed class GeoCli
 	{
 		_geoFolderReverseLookup = geoFolderReverseLookup;
 		_geoLocationWrite = geoLocationWrite;
-		_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+		_selectorStorage = selectorStorage;
+		_storage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 		_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
-		_readMeta = new ReadMeta(_iStorage, appSettings, null!, logger);
+		_readMeta = new ReadMeta(_storage, appSettings, null!, logger);
 		_appSettings = appSettings;
 		_console = console;
 		_exifToolDownload = exifToolDownload;
@@ -106,18 +108,16 @@ public sealed class GeoCli
 		var getSubPathRelative = new ArgsHelper(_appSettings).GetRelativeValue(args);
 		if ( getSubPathRelative != null )
 		{
-			var dateTime = DateTime.Now.AddDays(( double ) getSubPathRelative);
-			var path = _appSettings.DatabasePathToFilePath(
-				new LegacyStructureService(_iStorage, _appSettings.Structure.DefaultPattern)
-					.ParseSubfolders(dateTime));
-			inputPath = !string.IsNullOrEmpty(path) ? path : string.Empty;
+			inputPath = _appSettings.DatabasePathToFilePath(
+				new StructureService(_selectorStorage, _appSettings)
+					.ParseSubfolders(getSubPathRelative));
 		}
 
 		// used in this session to find the files back
 		_appSettings.StorageFolder = inputPath;
 
-		if ( inputPath == null || _iStorage.IsFolderOrFile("/") ==
-		    FolderOrFileModel.FolderOrFileTypeList.Deleted )
+		if ( _storage.IsFolderOrFile("/") ==
+		     FolderOrFileModel.FolderOrFileTypeList.Deleted )
 		{
 			_console.WriteLine("Folder location is not found \n" +
 			                   $"Please try the `-h` command to get help \nDid search for: {inputPath}");
@@ -125,7 +125,7 @@ public sealed class GeoCli
 		}
 
 		// use relative to StorageFolder
-		var listOfFiles = _iStorage.GetAllFilesInDirectory("/")
+		var listOfFiles = _storage.GetAllFilesInDirectory("/")
 			.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 
 		var fileIndexList = await _readMeta.ReadExifAndXmpFromFileAddFilePathHashAsync(listOfFiles);
@@ -136,7 +136,7 @@ public sealed class GeoCli
 			_console.WriteLine($"CameraTimeZone: {_appSettings.CameraTimeZone}");
 			_console.WriteLine($"Folder: {inputPath}");
 
-			var geoIndexGpx = new GeoIndexGpx(_appSettings, _iStorage, _logger);
+			var geoIndexGpx = new GeoIndexGpx(_appSettings, _storage, _logger);
 			toMetaFilesUpdate = await geoIndexGpx.LoopFolderAsync(fileIndexList);
 
 			_console.Write("¬");
@@ -172,7 +172,7 @@ public sealed class GeoCli
 			         .ToList() )
 		{
 			var newThumb =
-				( await new FileHash(_iStorage, _logger).GetHashCodeAsync(item.FilePath!) ).Key;
+				( await new FileHash(_storage, _logger).GetHashCodeAsync(item.FilePath!) ).Key;
 			if ( item.FileHash == newThumb )
 			{
 				continue;

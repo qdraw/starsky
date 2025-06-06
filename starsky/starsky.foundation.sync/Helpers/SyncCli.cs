@@ -6,8 +6,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Services;
-using starsky.foundation.storage.Storage;
+using starsky.foundation.storage.Structure;
 using starsky.foundation.sync.SyncInterfaces;
 
 namespace starsky.foundation.sync.Helpers;
@@ -45,9 +44,7 @@ public sealed class SyncCli
 		var getSubPathRelative = new ArgsHelper(_appSettings).GetRelativeValue(args);
 		if ( getSubPathRelative != null )
 		{
-			var parseSubPath = new LegacyStructureService(
-					_selectorStorage.Get(SelectorStorage.StorageServices
-						.SubPath), _appSettings.Structure.DefaultPattern)
+			var parseSubPath = new StructureService(_selectorStorage, _appSettings)
 				.ParseSubfolders(getSubPathRelative);
 			if ( !string.IsNullOrEmpty(parseSubPath) )
 			{
