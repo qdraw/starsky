@@ -67,7 +67,7 @@ public class ImportSettingsModel
 				return;
 			}
 
-			AppSettings.StructureCheck(value);
+			AppSettingsStructureModel.StructureCheck(value);
 			_structure = value;
 		}
 	}
