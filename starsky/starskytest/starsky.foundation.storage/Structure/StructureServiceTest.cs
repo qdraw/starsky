@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.storage.Structure;
@@ -16,10 +17,12 @@ public sealed class StructureServiceTest
 	public void ParseFileName_DefaultDate()
 	{
 		const string structure = "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss.ext";
-		var importItem = new StructureService(new FakeIStorage(), structure);
+		var structureModel = new AppSettingsStructureModel(structure);
+		var importItem = new StructureService(new FakeSelectorStorage(), structureModel);
 		var dateTime = new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Local);
-		var fileName = importItem.ParseFileName(dateTime,
-			string.Empty, "jpg");
+
+		var fileName = importItem.ParseFileName(new StructureInputModel(dateTime,
+			string.Empty, "jpg", ExtensionRolesHelper.ImageFormat.jpg));
 		Assert.AreEqual("00010101_000000.jpg", fileName);
 	}
 
@@ -27,10 +30,11 @@ public sealed class StructureServiceTest
 	public void ParseFileName_LotsOfEscapeChars()
 	{
 		const string structure = "/yyyyMMdd_HHmmss_\\\\\\h\\\\\\m.ext";
-		var importItem = new StructureService(new FakeIStorage(), structure);
+		var structureModel = new AppSettingsStructureModel(structure);
+		var importItem = new StructureService(new FakeSelectorStorage(), structureModel);
 		var dateTime = new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Local);
-		var fileName = importItem.ParseFileName(dateTime,
-			string.Empty, "jpg");
+		var fileName = importItem.ParseFileName(new StructureInputModel(dateTime,
+			string.Empty, "jpg", ExtensionRolesHelper.ImageFormat.jpg));
 		Assert.AreEqual("00010101_000000_hm.jpg", fileName);
 	}
 
@@ -38,10 +42,12 @@ public sealed class StructureServiceTest
 	public void ParseFileName_FileNameWithAppendix()
 	{
 		const string structure = "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_\\d.ext";
-		var importItem = new StructureService(new FakeIStorage(), structure);
+		var structureModel = new AppSettingsStructureModel(structure);
+
+		var importItem = new StructureService(new FakeSelectorStorage(), structureModel);
 		var dateTime = new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Local);
-		var fileName = importItem.ParseFileName(dateTime,
-			string.Empty, "jpg");
+		var fileName = importItem.ParseFileName(new StructureInputModel(dateTime,
+			string.Empty, "jpg", ExtensionRolesHelper.ImageFormat.jpg));
 		Assert.AreEqual("00010101_000000_d.jpg", fileName);
 	}
 
@@ -49,10 +55,12 @@ public sealed class StructureServiceTest
 	public void ParseFileName_FileNameBase()
 	{
 		const string structure = "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_{filenamebase}.ext";
-		var importItem = new StructureService(new FakeIStorage(), structure);
-		var fileName = importItem.ParseFileName(
+		var structureModel = new AppSettingsStructureModel(structure);
+
+		var importItem = new StructureService(new FakeSelectorStorage(), structureModel);
+		var fileName = importItem.ParseFileName(new StructureInputModel(
 			new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
-			"test", "jpg");
+			"test", "jpg", ExtensionRolesHelper.ImageFormat.jpg));
 
 		Assert.AreEqual("20200101_010101_test.jpg", fileName);
 	}
@@ -61,13 +69,17 @@ public sealed class StructureServiceTest
 	public void ParseFileName_FieldAccessException_Null()
 	{
 		// Arrange
-		var service = new StructureService(new FakeIStorage(), null!);
+		var structureModel = new AppSettingsStructureModel();
+
+		var service = new StructureService(new FakeSelectorStorage(), structureModel);
 
 		// Act & Assert
 		Assert.ThrowsExactly<FieldAccessException>(() =>
 		{
-			service.ParseSubfolders(
-				new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local));
+			var model =
+				new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
+					string.Empty, string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
+			service.ParseSubfolders(model);
 		});
 	}
 
@@ -75,14 +87,17 @@ public sealed class StructureServiceTest
 	public void ParseSubfolders_TestFolder_RealFs()
 	{
 		const string structure = "/\\te\\s*/yyyyMMdd_HHmmss_{filenamebase}.ext";
+		var structureModel = new AppSettingsStructureModel(structure);
 
 		var storage = new StorageSubPathFilesystem(
 			new AppSettings { StorageFolder = new CreateAnImage().BasePath }, new FakeIWebLogger());
 		storage.CreateDirectory("test");
 
-		var result = new StructureService(storage, structure).ParseSubfolders(
-			new DateTime(2020, 01, 01,
-				01, 01, 01, DateTimeKind.Local));
+		var model =
+			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
+				string.Empty, string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
+		var result = new StructureService(new FakeSelectorStorage(storage), structureModel)
+			.ParseSubfolders(model);
 
 		Assert.AreEqual("/test", result);
 	}
@@ -91,14 +106,17 @@ public sealed class StructureServiceTest
 	public void ParseSubfolders_Asterisk_Test_Folder()
 	{
 		const string structure = "/\\t*/yyyyMMdd_HHmmss_{filenamebase}.ext";
+		var structureModel = new AppSettingsStructureModel(structure);
 
 		var storage = new FakeIStorage(
 			["/", "/test", "/something"],
 			[]);
+		var model =
+			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
+				string.Empty, string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
 
-		var result = new StructureService(storage, structure).ParseSubfolders(
-			new DateTime(2020, 01, 01,
-				01, 01, 01, DateTimeKind.Local));
+		var result = new StructureService(new FakeSelectorStorage(storage), structureModel)
+			.ParseSubfolders(model);
 
 		Assert.AreEqual("/test", result);
 	}
@@ -110,11 +128,14 @@ public sealed class StructureServiceTest
 			["/2020", "/2020/01"],
 			[]);
 
-		var structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
+		const string structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
+		var structureModel = new AppSettingsStructureModel(structure);
+		var model =
+			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
+				string.Empty, string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
 
-		var result = new StructureService(storage, structure).ParseSubfolders(
-			new DateTime(2020, 01, 01,
-				01, 01, 01, DateTimeKind.Local));
+		var result = new StructureService(new FakeSelectorStorage(storage), structureModel)
+			.ParseSubfolders(model);
 
 		Assert.AreEqual("/2020/01/2020_01_01", result);
 	}
@@ -127,10 +148,13 @@ public sealed class StructureServiceTest
 			new List<string>());
 
 		const string structure = "/*/yyyyMMdd_HHmmss_{filenamebase}.ext";
+		var structureModel = new AppSettingsStructureModel(structure);
+		var model =
+			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
+				string.Empty, string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
 
-		var result = new StructureService(storage, structure).ParseSubfolders(
-			new DateTime(2020, 01, 01,
-				01, 01, 01, DateTimeKind.Local));
+		var result = new StructureService(new FakeSelectorStorage(storage), structureModel)
+			.ParseSubfolders(model);
 
 		Assert.AreEqual("/default", result);
 	}
@@ -143,10 +167,13 @@ public sealed class StructureServiceTest
 			new List<string>());
 
 		const string structure = "/*/yyyyMMdd_HHmmss_{filenamebase}.ext";
+		var structureModel = new AppSettingsStructureModel(structure);
+		var model =
+			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
+				string.Empty, string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
 
-		var result = new StructureService(storage, structure).ParseSubfolders(
-			new DateTime(2020, 01, 01,
-				01, 01, 01, DateTimeKind.Local));
+		var result = new StructureService(new FakeSelectorStorage(storage), structureModel)
+			.ParseSubfolders(model);
 
 		Assert.AreEqual("/any", result);
 	}
@@ -166,10 +193,12 @@ public sealed class StructureServiceTest
 			new List<string>());
 
 		const string structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
+		var model =
+			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
+				string.Empty, string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
 
-		var result = new StructureService(storage, structure).ParseSubfolders(
-			new DateTime(2020, 01, 01,
-				01, 01, 01, DateTimeKind.Local));
+		var result = new StructureService(new FakeSelectorStorage(storage),
+			new AppSettingsStructureModel(structure)).ParseSubfolders(model);
 
 		Assert.AreEqual("/2020/01/2020_01_01 test", result);
 	}
@@ -189,10 +218,12 @@ public sealed class StructureServiceTest
 			new List<string>());
 
 		const string structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
+		var model =
+			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
+				string.Empty, string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
 
-		var result = new StructureService(storage, structure).ParseSubfolders(
-			new DateTime(2020, 01, 01,
-				01, 01, 01, DateTimeKind.Local));
+		var result = new StructureService(new FakeSelectorStorage(storage),
+			new AppSettingsStructureModel(structure)).ParseSubfolders(model);
 
 		Assert.AreEqual("/2020/01/2020_01_01", result);
 	}
@@ -205,9 +236,12 @@ public sealed class StructureServiceTest
 
 		const string structure = "/{filenamebase}/file.ext";
 
-		var result = new StructureService(storage, structure).ParseSubfolders(
-			new DateTime(2020, 01, 01,
-				01, 01, 01, DateTimeKind.Local), "test");
+		var model =
+			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
+				"test", string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
+		var result = new StructureService(new FakeSelectorStorage(storage),
+			new AppSettingsStructureModel(structure)).ParseSubfolders(model);
+
 		Assert.AreEqual("/test", result);
 	}
 
@@ -215,13 +249,16 @@ public sealed class StructureServiceTest
 	public void ParseSubfolders_ExtensionWantedInFolderName()
 	{
 		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string>());
+			[]);
 
-		const string structure = "/con\\ten\\t.ext/file.ext";
+		const string structure = @"/con\ten\t.ext/file.ext";
+		var model =
+			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
+				"test", string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
 
-		var result = new StructureService(storage, structure).ParseSubfolders(
-			new DateTime(2020, 01, 01,
-				01, 01, 01, DateTimeKind.Local), "test");
+		var result = new StructureService(new FakeSelectorStorage(storage),
+			new AppSettingsStructureModel(structure)).ParseSubfolders(model);
+
 		Assert.AreEqual("/content.unknown", result);
 	}
 
@@ -229,31 +266,39 @@ public sealed class StructureServiceTest
 	public void ParseSubfolders_FieldAccessException_String()
 	{
 		const string structure = "";
-		var sut = new StructureService(new FakeIStorage(), structure);
-		Assert.ThrowsExactly<FieldAccessException>(() => sut.ParseSubfolders(
-			new DateTime(2020, 01, 01,
-				01, 01, 01, DateTimeKind.Local)));
+		var model =
+			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
+				"test", string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
+
+		var sut = new StructureService(new FakeSelectorStorage(),
+			new AppSettingsStructureModel(structure));
+		Assert.ThrowsExactly<FieldAccessException>(() => sut.ParseSubfolders(model));
 	}
 
 	[TestMethod]
 	public void ParseSubfolders_FieldAccessException_DotExt()
 	{
 		const string structure = "/.ext";
-		var sut = new StructureService(new FakeIStorage(), structure);
-		Assert.ThrowsExactly<FieldAccessException>(() => sut.ParseSubfolders(
-			new DateTime(2020, 01, 01,
-				01, 01, 01, DateTimeKind.Local)));
+		var model =
+			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
+				"test", string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
+
+		var sut = new StructureService(new FakeSelectorStorage(),
+			new AppSettingsStructureModel(structure));
+		Assert.ThrowsExactly<FieldAccessException>(() => sut.ParseSubfolders(model));
 	}
 
 	[TestMethod]
 	public void ParseSubfolders_FieldAccessException_DoesNotStartWithSlash()
 	{
 		const string structure = "test/on";
-		var sut = new StructureService(new FakeIStorage(), structure);
-		Assert.ThrowsExactly<FieldAccessException>(() => sut.ParseSubfolders(
-			new DateTime(2020, 01, 01,
-				01, 01, 01, DateTimeKind.Local)));
-		// ExpectedException
+		var model =
+			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
+				"test", string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
+
+		var sut = new StructureService(new FakeSelectorStorage(),
+			new AppSettingsStructureModel(structure));
+		Assert.ThrowsExactly<FieldAccessException>(() => sut.ParseSubfolders(model));
 	}
 
 	[TestMethod]
@@ -261,7 +306,9 @@ public sealed class StructureServiceTest
 	{
 		const string structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 
-		var result = new StructureService(new FakeIStorage(), structure).ParseSubfolders(null);
+		var result =
+			new StructureService(new FakeSelectorStorage(),
+				new AppSettingsStructureModel(structure)).ParseSubfolders(null!);
 		Assert.IsNull(result);
 	}
 
@@ -269,7 +316,9 @@ public sealed class StructureServiceTest
 	public void ParseSubfolders_Int_RelativeToday()
 	{
 		const string structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
-		var result = new StructureService(new FakeIStorage(), structure).ParseSubfolders(0);
+		var result =
+			new StructureService(new FakeSelectorStorage(),
+				new AppSettingsStructureModel(structure)).ParseSubfolders(0);
 		Assert.IsTrue(result?.Contains(DateTime.Now.ToString("yyyy_MM_dd")));
 	}
 }

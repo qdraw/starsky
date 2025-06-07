@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
-using starsky.foundation.storage.Services;
+using starsky.foundation.storage.Structure;
 using starsky.foundation.thumbnailgeneration.Helpers;
 using starskytest.FakeMocks;
 
@@ -139,7 +139,7 @@ public sealed class ThumbnailCliTest
 
 		await thumbnailService.Thumbnail(["-t", "true", "-g", "0"]);
 
-		var subPathRelative = new LegacyStructureService(new FakeIStorage(), appSettings.Structure)
+		var subPathRelative = new StructureService(new FakeSelectorStorage(), appSettings.Structure)
 			.ParseSubfolders(0);
 
 		Assert.AreEqual(subPathRelative, fakeIThumbnailService.Inputs[0].Item1);

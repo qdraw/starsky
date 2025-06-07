@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
-using starsky.foundation.storage.Services;
+using starsky.foundation.storage.Structure;
 using starsky.foundation.sync.Helpers;
 using starskytest.FakeMocks;
 
@@ -108,7 +108,7 @@ public sealed class SyncCliTest
 		await syncCli.Sync(
 			new List<string> { "-g", "0" }.ToArray());
 
-		var subPathRelative = new LegacyStructureService(new FakeIStorage(), appSettings.Structure)
+		var subPathRelative = new StructureService(new FakeSelectorStorage(), appSettings.Structure)
 			.ParseSubfolders(0);
 
 		Assert.AreEqual(subPathRelative, fakeSync.Inputs[0].Item1);

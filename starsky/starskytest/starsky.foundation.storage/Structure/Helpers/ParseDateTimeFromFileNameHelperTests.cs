@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -15,6 +16,11 @@ namespace starskytest.starsky.foundation.storage.Structure.Helpers;
 [TestClass]
 public class ParseDateTimeFromFileNameHelperTests
 {
+	private readonly AppSettings _appSettings = new()
+	{
+		StorageFolder = new CreateAnImage().BasePath
+	};
+
 	[TestMethod]
 	public void ParseDateTimeFromFileNameHelper_RemoveEscapedCharactersTest()
 	{
@@ -48,10 +54,12 @@ public class ParseDateTimeFromFileNameHelperTests
 		var input = new ImportIndexItem(_appSettings)
 		{
 			SourceFullFilePath = createAnImageNoExif.FullFilePathWithDate,
-			Structure = "/HHmmss_yyyyMMdd.ext"
+			Structure = new AppSettingsStructureModel("/HHmmss_yyyyMMdd.ext")
 		};
 
-		input.ParseDateTimeFromFileName();
+		var model = new StructureInputModel(input.DateTime,
+			input.SourceFullFilePath, "jpg", ExtensionRolesHelper.ImageFormat.notfound);
+		new ParseDateTimeFromFileNameHelper(_appSettings).ParseDateTimeFromFileName(model);
 
 		DateTime.TryParseExact(
 			"20120101_123300",

@@ -125,8 +125,8 @@ public sealed class AppSettingsTest
 	{
 		Assert.ThrowsExactly<ArgumentException>(() =>
 			{
-				_appSettings.Structure = "\\d";
-				Assert.AreEqual("d", _appSettings.Structure);
+				_appSettings.Structure = new AppSettingsStructureModel("\\d");
+				Assert.AreEqual("d", _appSettings.Structure.DefaultPattern);
 			}
 		);
 	}
@@ -134,44 +134,8 @@ public sealed class AppSettingsTest
 	[TestMethod]
 	public void AppSettingsProviderTest_StructureFails_withExtAndNoSlash()
 	{
-		_appSettings.Structure = "\\d.ext";
-		Assert.AreEqual("/\\d.ext", _appSettings.Structure);
-	}
-
-	[TestMethod]
-	public void AppSettingsProviderTest_StructureCheck_MissingFirstSlash()
-	{
-		// Act & Assert
-		Assert.ThrowsExactly<ArgumentException>(() =>
-		{
-			AppSettings.StructureCheck("d/test.ext");
-		});
-	}
-
-	[TestMethod]
-	public void AppSettingsProviderTest_FolderWithFirstSlash()
-	{
-		AppSettings.StructureCheck("/d/dion.ext");
-	}
-
-	[TestMethod]
-	public void AppSettingsProviderTest_NoFolderWithFirstSlash()
-	{
-		AppSettings.StructureCheck("/dion.ext");
-	}
-
-	[TestMethod]
-	public void AppSettingsProviderTest_NoFolderMissingFirstSlash()
-	{
-		Assert.ThrowsExactly<ArgumentException>(() => { AppSettings.StructureCheck("dion.ext"); });
-		// >= ArgumentException
-	}
-
-	[TestMethod]
-	public void AppSettingsProviderTest_Null()
-	{
-		Assert.ThrowsExactly<ArgumentNullException>(() =>
-			AppSettings.StructureCheck(string.Empty));
+		_appSettings.Structure.DefaultPattern = "\\d.ext";
+		Assert.AreEqual("/\\d.ext", _appSettings.Structure.DefaultPattern);
 	}
 
 	[TestMethod]
@@ -557,14 +521,14 @@ public sealed class AppSettingsTest
 		var appSettings = new AppSettings { AppSettingsLocalPath = null! };
 		Assert.AreEqual(string.Empty, appSettings.AppSettingsLocalPath);
 	}
-	
+
 	[TestMethod]
 	public void AppSettings_AppSettingsLocalPath_AssemblyDirectory()
 	{
 		var appSettings = new AppSettings { AppSettingsLocalPath = "/test/{AssemblyDirectory}" };
 
 		var expectedResult = $"/test/{appSettings.BaseDirectoryProject}";
-		
+
 		Assert.AreEqual(expectedResult, appSettings.AppSettingsLocalPath);
 	}
 }

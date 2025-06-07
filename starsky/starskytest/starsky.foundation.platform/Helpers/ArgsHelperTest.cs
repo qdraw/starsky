@@ -615,6 +615,7 @@ public sealed class ArgsHelperTest
 
 			if ( envNameList[i] == "app__Structure" )
 			{
+				// todo this not valid anymore
 				shortTestList.Add("/{filename}.ext");
 				continue;
 			}
@@ -654,12 +655,10 @@ public sealed class ArgsHelperTest
 		// First inject values to evn
 		new ArgsHelper(appSettings).SetEnvironmentByArgs(shortTestList);
 
-
 		// and now read it back
 		new ArgsHelper(appSettings).SetEnvironmentToAppSettings();
 
-
-		Assert.AreEqual("/{filename}.ext", appSettings.Structure);
+		Assert.AreEqual("/{filename}.ext", appSettings.Structure.DefaultPattern);
 		Assert.AreEqual(AppSettings.DatabaseTypeList.InMemoryDatabase,
 			appSettings.DatabaseType);
 		Assert.AreEqual("test", appSettings.DatabaseConnection);
