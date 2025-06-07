@@ -15,7 +15,7 @@ and a relentless commitment to enhancing the user experience.
 In this blog post, we'll delve into the notable updates and advancements 
 encapsulated in the various releases of version 0.5.x of our software.
 
-/* truncate */
+<!-- truncate -->
 
 ## Version 0.5.13 - Front-end Accessibility and Code Refinement
 

@@ -181,9 +181,6 @@ copyFileSync(
 	"advanced-options/starsky-tools/slack-notification/readme.md"
 );
 
-copyFileSync("starsky-tools/sync/readme.md", "advanced-options/starsky-tools/sync/readme.md");
-
-
 touchSync("developer-guide/contributing/__do_not_edit_this__folder");
 
 writeFile(

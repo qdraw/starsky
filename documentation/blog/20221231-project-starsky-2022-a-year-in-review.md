@@ -11,7 +11,7 @@ image: https://media.qdraw.nl/log/de-7-dingen-die-ik-miste-bij-het-beheren-van-m
 
 So it was high time to optimise the time-consuming process of photo management. I really enjoy going out and taking pictures. But when I get home, it’s time to properly organise all those photos. That task is typically something we postpone, but it is nice to share the photos and experiences. I have developed a piece of software for this process and in this blog I will tell you what I have improved in this in 2022. This year it really started for the project. The first blog post about the project is a fact. In addition, a demo can also be viewed at [demo.qdraw.nl](https://demo.qdraw.nl)
 
-/* truncate */
+<!-- truncate -->
 
 ## 12 releases done in 2022
 
