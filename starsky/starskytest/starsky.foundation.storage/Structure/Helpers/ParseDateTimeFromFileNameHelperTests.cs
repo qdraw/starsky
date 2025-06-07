@@ -83,7 +83,9 @@ public class ParseDateTimeFromFileNameHelperTests
 			SourceFullFilePath = Path.DirectorySeparatorChar + "2018 08 20 19 03 00.jpg"
 		};
 
-		input.ParseDateTimeFromFileName();
+		var model = new StructureInputModel(input.DateTime,
+			input.SourceFullFilePath, "jpg", ExtensionRolesHelper.ImageFormat.notfound);
+		new ParseDateTimeFromFileNameHelper(_appSettings).ParseDateTimeFromFileName(model);
 
 		DateTime.TryParseExact(
 			"20180820_190300",
@@ -99,15 +101,15 @@ public class ParseDateTimeFromFileNameHelperTests
 	public void ParseDateTimeFromFileName_ReturnsValidDateTime()
 	{
 		// Arrange
-		var sourceFilePath = "path/to/2019-10-01_235959_filename.ext";
-		var structure = "/yyyy-MM-dd_HHmmss_{filenamebase}.ext";
-		var parser = new ImportIndexItem(_appSettings)
-		{
-			SourceFullFilePath = sourceFilePath, Structure = structure
-		};
-
+		const string sourceFilePath = "path/to/2019-10-01_235959_filename.ext";
+		const string structure = "/yyyy-MM-dd_HHmmss_{filenamebase}.ext";
+		_appSettings.Structure = new AppSettingsStructureModel(structure);
+		var model = new StructureInputModel(new DateTime(2019, 10, 1, 
+				23, 59, 59, DateTimeKind.Local),
+			sourceFilePath, "jpg", ExtensionRolesHelper.ImageFormat.notfound);
+		
 		// Act
-		var result = parser.ParseDateTimeFromFileName();
+		var result = new ParseDateTimeFromFileNameHelper(_appSettings).ParseDateTimeFromFileName(model);
 
 		// Assert
 		Assert.AreEqual(new DateTime(2019, 10, 1,
@@ -118,15 +120,15 @@ public class ParseDateTimeFromFileNameHelperTests
 	public void ParseDateTimeFromFileName_ReturnsNonValidName()
 	{
 		// Arrange
-		var sourceFilePath = "..jpg";
-		var structure = "/yyyy-MM-dd_HHmmss_{filenamebase}.ext";
+		const string sourceFilePath = "..jpg";
+		const string structure = "/yyyy-MM-dd_HHmmss_{filenamebase}.ext";
 		var parser = new ImportIndexItem(_appSettings)
 		{
 			SourceFullFilePath = sourceFilePath, Structure = structure
 		};
 
 		// Act
-		var result = parser.ParseDateTimeFromFileName();
+		var result = new ParseDateTimeFromFileNameHelper(_appSettings).ParseDateTimeFromFileName();
 
 		// Assert
 		Assert.AreEqual(new DateTime(), result);
