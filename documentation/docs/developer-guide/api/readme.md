@@ -82,9 +82,9 @@ This document is auto generated
 | _Title, DateTime, AddToDatabase, LastEdited, Latitude, Longitude, LocationAltitude, LocationCity, LocationState,                          _ |
 | _LocationCountry, LocationCountryCode, ColorClass, Orientation, ImageWidth, ImageHeight, ImageFormat, CollectionPaths,                    _ |
 | _SidecarExtensions, SidecarExtensionsList, Aperture, ShutterSpeed, IsoSpeed, Software, MakeModel, Make, Model, LensModel,                 _ |
-| _FocalLength, Size, ImageStabilisation, LastChanged, f (subPath filepath to file, split by dot comma (;)), append                         _ |
-| _(only for stings, add update to existing items), collections (StackCollections bool, default true), rotateClock                          _ |
-| _ (relative orientation -1 or 1)                                                                                                          _ |
+| _MakeCameraSerial, FocalLength, Size, ImageStabilisation, LastChanged, f (subPath filepath to file, split by dot                          _ |
+| _comma (;)), append (only for stings, add update to existing items), collections (StackCollections bool, default                          _ |
+| _ true), rotateClock (relative orientation -1 or 1)                                                                                       _ |
 | __/api/notification/notification__                | GET   | Get recent notificationsUse dateTime 2022-04-16T17:33:10.323974Z to get the l...|
 | __/api/publish__                                  | GET   | Get all publish profilesTo see the entire config check appSettings              |
 | __/api/publish/create__                           | POST  | Publish                                                                         |
@@ -100,8 +100,7 @@ This document is auto generated
 | __/api/suggest/all__                              | GET   | Show all items in the search suggest cache                                      |
 | __/api/suggest/inflate__                          | GET   | To fill the cache with the data (only if cache is not already filled)           |
 | __/api/synchronize__                              | POST  | Faster API to Check if directory is changed (not recursive)                     |
-| __/api/synchronize__                              | GET   | Faster API to Check if directory is changed (not recursive)                     |
-| __/api/thumbnail/small/\{f\}__                    | GET   | Get thumbnail for index pages (300 px or 150px or 1000px (based on what's the...|
+| __/api/thumbnail/small/\{fileHash\}__             | GET   | Get thumbnail for index pages (300 px or 150px or 1000px (based on what's the...|
 | __/api/thumbnail/list-sizes/\{f\}__               | GET   | Get overview of what exists by name                                             |
 | __/api/thumbnail/\{f\}__                          | GET   | Get thumbnail with fallback to original source image.Return source image when...|
 | _Parameters: f (one single fileHash (NOT path)), filePath (fallback FilePath), isSingleItem (true = load original),                       _ |
