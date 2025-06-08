@@ -104,12 +104,13 @@ public class ParseDateTimeFromFileNameHelperTests
 		const string sourceFilePath = "path/to/2019-10-01_235959_filename.ext";
 		const string structure = "/yyyy-MM-dd_HHmmss_{filenamebase}.ext";
 		_appSettings.Structure = new AppSettingsStructureModel(structure);
-		var model = new StructureInputModel(new DateTime(2019, 10, 1, 
+		var model = new StructureInputModel(new DateTime(2019, 10, 1,
 				23, 59, 59, DateTimeKind.Local),
 			sourceFilePath, "jpg", ExtensionRolesHelper.ImageFormat.notfound);
-		
+
 		// Act
-		var result = new ParseDateTimeFromFileNameHelper(_appSettings).ParseDateTimeFromFileName(model);
+		var result =
+			new ParseDateTimeFromFileNameHelper(_appSettings).ParseDateTimeFromFileName(model);
 
 		// Assert
 		Assert.AreEqual(new DateTime(2019, 10, 1,
@@ -122,13 +123,12 @@ public class ParseDateTimeFromFileNameHelperTests
 		// Arrange
 		const string sourceFilePath = "..jpg";
 		const string structure = "/yyyy-MM-dd_HHmmss_{filenamebase}.ext";
-		var parser = new ImportIndexItem(_appSettings)
-		{
-			SourceFullFilePath = sourceFilePath, Structure = structure
-		};
+		_appSettings.Structure = new AppSettingsStructureModel(structure);
 
 		// Act
-		var result = new ParseDateTimeFromFileNameHelper(_appSettings).ParseDateTimeFromFileName();
+		var result = new ParseDateTimeFromFileNameHelper(_appSettings).ParseDateTimeFromFileName(
+			new StructureInputModel(DateTime.UtcNow, sourceFilePath,
+				"jpg", ExtensionRolesHelper.ImageFormat.notfound));
 
 		// Assert
 		Assert.AreEqual(new DateTime(), result);
@@ -137,14 +137,13 @@ public class ParseDateTimeFromFileNameHelperTests
 	[TestMethod]
 	public void ParseDateTimeFromFileName_Test()
 	{
-		_appSettings.Structure = "/yyyyMMdd_HHmmss.ext";
+		const string structure = "/yyyyMMdd_HHmmss.ext";
+		_appSettings.Structure = new AppSettingsStructureModel(structure);
 
-		var input = new ImportIndexItem(_appSettings)
-		{
-			SourceFullFilePath = Path.DirectorySeparatorChar + "20180101_011223.jpg"
-		};
-
-		input.ParseDateTimeFromFileName();
+		var result = new ParseDateTimeFromFileNameHelper(_appSettings).ParseDateTimeFromFileName(
+			new StructureInputModel(DateTime.UtcNow,
+				"20180101_011223.jpg",
+				"jpg", ExtensionRolesHelper.ImageFormat.notfound));
 
 		DateTime.TryParseExact(
 			"20180101_011223",
@@ -153,20 +152,19 @@ public class ParseDateTimeFromFileNameHelperTests
 			DateTimeStyles.None,
 			out var answerDateTime);
 
-		Assert.AreEqual(answerDateTime, input.DateTime);
+		Assert.AreEqual(answerDateTime, result);
 	}
 
 	[TestMethod]
 	public void ImportIndexItemParse_ParseDateTimeFromFileNameWithExtraFileNameBase_Test()
 	{
-		_appSettings.Structure = "/yyyyMMdd_HHmmss_{filenamebase}.ext";
+		const string structure = "/yyyyMMdd_HHmmss_{filenamebase}.ext";
+		_appSettings.Structure = new AppSettingsStructureModel(structure);
 
-		var input = new ImportIndexItem(_appSettings)
-		{
-			SourceFullFilePath = Path.DirectorySeparatorChar + "2018-07-26 19.45.23.jpg"
-		};
-
-		input.ParseDateTimeFromFileName();
+		var result = new ParseDateTimeFromFileNameHelper(_appSettings).ParseDateTimeFromFileName(
+			new StructureInputModel(DateTime.UtcNow,
+				"2018-07-26 19.45.23.jpg",
+				"jpg", ExtensionRolesHelper.ImageFormat.notfound));
 
 		DateTime.TryParseExact(
 			"20180726_194523",
@@ -175,20 +173,19 @@ public class ParseDateTimeFromFileNameHelperTests
 			DateTimeStyles.None,
 			out var answerDateTime);
 
-		Assert.AreEqual(answerDateTime, input.DateTime);
+		Assert.AreEqual(answerDateTime, result);
 	}
 
 	[TestMethod]
 	public void ImportIndexItemParse_ParseDateTimeFromFileName_AppendixUsedInConfig()
 	{
-		_appSettings.Structure = "/yyyyMMdd_HHmmss_\\d\\e\\f\\g.ext";
+		const string structure = "/yyyyMMdd_HHmmss_\\d\\e\\f\\g.ext";
+		_appSettings.Structure = new AppSettingsStructureModel(structure);
 
-		var input = new ImportIndexItem(_appSettings)
-		{
-			SourceFullFilePath = Path.DirectorySeparatorChar + "20180726_194523.jpg"
-		};
-
-		input.ParseDateTimeFromFileName();
+		var result = new ParseDateTimeFromFileNameHelper(_appSettings).ParseDateTimeFromFileName(
+			new StructureInputModel(DateTime.UtcNow,
+				"20180726_194523.jpg",
+				"jpg", ExtensionRolesHelper.ImageFormat.notfound));
 
 		DateTime.TryParseExact(
 			"20180726_194523",
@@ -197,29 +194,32 @@ public class ParseDateTimeFromFileNameHelperTests
 			DateTimeStyles.None,
 			out var answerDateTime);
 
-		Assert.AreEqual(answerDateTime, input.DateTime);
+		Assert.AreEqual(answerDateTime, result);
 	}
 
 	[TestMethod]
 	public void ImportIndexItemParse_Structure_Fallback()
 	{
-		_appSettings.Structure = null!;
-		var input = new ImportIndexItem(_appSettings) { SourceFullFilePath = ".jpg" };
-		var result = input.ParseDateTimeFromFileName();
-		Assert.AreEqual(result, new DateTime());
+		_appSettings.Structure = new AppSettingsStructureModel();
+
+		var result = new ParseDateTimeFromFileNameHelper(_appSettings).ParseDateTimeFromFileName(
+			new StructureInputModel(DateTime.UtcNow,
+				".jpg",
+				"jpg", ExtensionRolesHelper.ImageFormat.notfound));
+
+		Assert.AreEqual(result, result);
 	}
 
 	[TestMethod]
 	public void ImportIndexItemParse_ParseDateTimeFromFileName_WithExtraDotsInName_Test()
 	{
-		_appSettings.Structure = "/yyyyMMdd_HHmmss.ext";
+		const string structure = "/yyyyMMdd_HHmmss.ext";
+		_appSettings.Structure = new AppSettingsStructureModel(structure);
 
-		var input = new ImportIndexItem(_appSettings)
-		{
-			SourceFullFilePath = Path.DirectorySeparatorChar + "2018-02-03 18.47.35.jpg"
-		};
-
-		input.ParseDateTimeFromFileName();
+		var result = new ParseDateTimeFromFileNameHelper(_appSettings).ParseDateTimeFromFileName(
+			new StructureInputModel(DateTime.UtcNow,
+				"2018-02-03 18.47.35.jpg",
+				"jpg", ExtensionRolesHelper.ImageFormat.notfound));
 
 		DateTime.TryParseExact(
 			"20180203_184735",
@@ -228,6 +228,6 @@ public class ParseDateTimeFromFileNameHelperTests
 			DateTimeStyles.None,
 			out var answerDateTime);
 
-		Assert.AreEqual(answerDateTime, input.DateTime);
+		Assert.AreEqual(answerDateTime, result);
 	}
 }
