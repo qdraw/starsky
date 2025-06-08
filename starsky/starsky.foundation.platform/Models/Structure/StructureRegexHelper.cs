@@ -11,5 +11,15 @@ internal static partial class StructureRegexHelper
 	/// <returns></returns>
 	[GeneratedRegex(@"^(\/.+)?\/([\/_ A-Z0-9*{}\.\\-]+(?=\.ext))\.ext$", RegexOptions.IgnoreCase,
 		300)]
-	internal static partial Regex StructureRegex();
+	private static partial Regex StructureRegex();
+	
+	/// <summary>
+	///     To Check if the structure is valid
+	/// </summary>
+	/// <param name="structure"></param>
+	internal static bool StructureCheck(string? structure)
+	{
+		return !string.IsNullOrEmpty(structure) && 
+		       StructureRegex().Match(structure).Success;
+	}
 }

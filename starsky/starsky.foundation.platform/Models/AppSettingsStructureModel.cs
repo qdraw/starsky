@@ -1,20 +1,23 @@
-using System;
 using System.Collections.Generic;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models.Structure;
 
 namespace starsky.foundation.platform.Models;
 
-public class AppSettingsStructureModel(string? defaultPattern = null)
+public class AppSettingsStructureModel
 {
 	private const string GenericDefaultPattern =
 		"/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 
-
 	/// <summary>
 	///     Internal Structure save location
 	/// </summary>
-	private string? _defaultPattern = defaultPattern;
+	private string? _defaultPattern;
+
+	public AppSettingsStructureModel(string? defaultPattern = null)
+	{
+		SetDefaultPattern(defaultPattern);
+	}
 
 	public string DefaultPattern
 	{
@@ -33,21 +36,34 @@ public class AppSettingsStructureModel(string? defaultPattern = null)
 		//   - *                (asterisk); match anything
 		//   - *starksy*        Match the folder match that contains the word 'starksy'
 		//    Please update /starskyimportercli/readme.md when this changes
-		set // using Json importer
-		{
-			if ( string.IsNullOrEmpty(value) || value == "/" )
-			{
-				return;
-			}
-
-			var structure = PathHelper.PrefixDbSlash(value);
-			_defaultPattern = PathHelper.RemoveLatestBackslash(structure);
-			// Structure regex check
-			StructureCheck(_defaultPattern);
-		}
+		set
+			=>
+				SetDefaultPattern(value);
 	}
 
 	public List<StructureRule> Rules { get; set; } = new();
+
+	public List<string> Errors { get; set; } = [];
+
+	private void SetDefaultPattern(string? value)
+	{
+		if ( string.IsNullOrEmpty(value) || value == "/" )
+		{
+			Errors.Add($"Structure '{value}' is not valid");
+			return;
+		}
+
+		var structure = PathHelper.PrefixDbSlash(value);
+		structure = PathHelper.RemoveLatestBackslash(structure);
+
+		if ( StructureRegexHelper.StructureCheck(structure) )
+		{
+			_defaultPattern = structure;
+			return;
+		}
+
+		Errors.Add($"Structure '{structure}' is not valid");
+	}
 
 	/// <summary>
 	///     Feature to overwrite structures when importing using a header
@@ -64,27 +80,6 @@ public class AppSettingsStructureModel(string? defaultPattern = null)
 		DefaultPattern = overwriteStructure;
 		Rules = [];
 	}
-
-	/// <summary>
-	///     To Check if the structure is any good
-	/// </summary>
-	/// <param name="structure"></param>
-	/// <exception cref="ArgumentException"></exception>
-	public static void StructureCheck(string? structure)
-	{
-		if ( string.IsNullOrEmpty(structure) )
-		{
-			throw new ArgumentNullException(structure, "(StructureCheck) Structure is empty");
-		}
-
-		if ( StructureRegexHelper.StructureRegex().Match(structure).Success )
-		{
-			return;
-		}
-
-		throw new ArgumentException("(StructureCheck) Structure is not confirm regex - " +
-		                            structure);
-	}
 }
 
 public class StructureRule
@@ -97,12 +92,18 @@ public class StructureRule
 		get => _pattern;
 		set
 		{
-			if ( StructureRegexHelper.StructureRegex().Match(value).Success )
+			if ( StructureRegexHelper.StructureCheck(value) )
 			{
 				_pattern = value;
 			}
+			else
+			{
+				Errors.Add($"Structure '{value}' is not valid");
+			}
 		}
 	}
+
+	public List<string> Errors { get; set; } = [];
 }
 
 public class StructureRuleConditions

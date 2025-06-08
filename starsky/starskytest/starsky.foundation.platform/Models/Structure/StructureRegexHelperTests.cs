@@ -1,8 +1,9 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Models.Structure;
 
-namespace starskytest.starsky.foundation.platform.Models;
+namespace starskytest.starsky.foundation.platform.Models.Structure;
 
 [TestClass]
 public class AppSettingsStructureModelTests
@@ -10,23 +11,20 @@ public class AppSettingsStructureModelTests
 	[TestMethod]
 	public void AppSettingsProviderTest_StructureCheck_MissingFirstSlash()
 	{
-		// Act & Assert
-		Assert.ThrowsExactly<ArgumentException>(() =>
-		{
-			AppSettingsStructureModel.StructureCheck("d/test.ext");
-		});
+		var result = StructureRegexHelper.StructureCheck("d/test.ext");
+		Assert.IsFalse(result);
 	}
 
 	[TestMethod]
 	public void AppSettingsProviderTest_FolderWithFirstSlash()
 	{
-		AppSettingsStructureModel.StructureCheck("/d/dion.ext");
+		StructureRegexHelper.StructureCheck("/d/dion.ext");
 	}
 
 	[TestMethod]
 	public void AppSettingsProviderTest_NoFolderWithFirstSlash()
 	{
-		AppSettingsStructureModel.StructureCheck("/dion.ext");
+		StructureRegexHelper.StructureCheck("/dion.ext");
 	}
 
 	[TestMethod]
@@ -34,7 +32,7 @@ public class AppSettingsStructureModelTests
 	{
 		Assert.ThrowsExactly<ArgumentException>(() =>
 		{
-			AppSettingsStructureModel.StructureCheck("dion.ext");
+			StructureRegexHelper.StructureCheck("dion.ext");
 		});
 		// >= ArgumentException
 	}
@@ -43,6 +41,6 @@ public class AppSettingsStructureModelTests
 	public void AppSettingsProviderTest_Null()
 	{
 		Assert.ThrowsExactly<ArgumentNullException>(() =>
-			AppSettingsStructureModel.StructureCheck(string.Empty));
+			StructureRegexHelper.StructureCheck(string.Empty));
 	}
 }

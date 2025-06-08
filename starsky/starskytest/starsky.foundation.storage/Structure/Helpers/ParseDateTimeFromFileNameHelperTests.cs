@@ -59,7 +59,7 @@ public class ParseDateTimeFromFileNameHelperTests
 
 		var model = new StructureInputModel(input.DateTime,
 			input.SourceFullFilePath, "jpg", ExtensionRolesHelper.ImageFormat.notfound);
-		new ParseDateTimeFromFileNameHelper(_appSettings).ParseDateTimeFromFileName(model);
+		new ParseDateTimeFromFileNameHelper(input.Structure).ParseDateTimeFromFileName(model);
 
 		DateTime.TryParseExact(
 			"20120101_123300",
