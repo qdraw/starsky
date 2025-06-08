@@ -11,6 +11,8 @@ image: https://media.qdraw.nl/log/de-7-dingen-die-ik-miste-bij-het-beheren-van-m
 
 2024 has been a transformative year for the Starsky project with significant updates and enhancements across various components. Below is a summary of the key updates and improvements:
 
+<!-- truncate -->
+
 #### Version 0.6.4 - 2024-12-19
 - Fixed back-end notification duplicate error handling.
 - Added cache headers for download publish for Cloudflare.

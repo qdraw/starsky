@@ -33,9 +33,6 @@ popd
 # pushd socket
 #     npm run update:install
 # popd
-pushd sync
-    npm run update:install
-popd
 pushd thumbnail
     npm run update:install
 popd

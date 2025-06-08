@@ -12,7 +12,7 @@ image: https://media.qdraw.nl/log/de-7-dingen-die-ik-miste-bij-het-beheren-van-m
 We're excited to unveil our latest release, Version 0.6.0, packed with exciting updates and
 enhancements to elevate your user experience! Let's dive into the key highlights of this release:
 
-/* truncate */
+<!-- truncate -->
 
 ## Backend Enhancements:
 
