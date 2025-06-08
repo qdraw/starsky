@@ -7,11 +7,23 @@ using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.storage.Structure.Helpers;
 
-public class ParseDateTimeFromFileNameHelper(AppSettings appSettings)
+public class ParseDateTimeFromFileNameHelper
 {
+	private readonly AppSettingsStructureModel _structure;
+
+	public ParseDateTimeFromFileNameHelper(AppSettings appSettings)
+	{
+		_structure = appSettings.Structure;
+	}
+
+	public ParseDateTimeFromFileNameHelper(AppSettingsStructureModel settingsStructure)
+	{
+		_structure = settingsStructure;
+	}
+
 	public DateTime ParseDateTimeFromFileName(StructureInputModel inputModel)
 	{
-		var structure = StructureService.GetStructureSetting(appSettings.Structure, inputModel);
+		var structure = StructureService.GetStructureSetting(_structure, inputModel);
 
 		// Depends on 'AppSettingsProvider.Structure'
 		// depends on SourceFullFilePath

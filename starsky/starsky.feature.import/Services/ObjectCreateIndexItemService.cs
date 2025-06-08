@@ -18,7 +18,6 @@ public class ObjectCreateIndexItemService(
 	/// </summary>
 	internal const string MessageDateTimeBasedOnFilename = "Date and Time based on filename";
 
-
 	/// <summary>
 	///     Create a new import object
 	/// </summary>
@@ -56,6 +55,7 @@ public class ObjectCreateIndexItemService(
 				FilenamesHelper.GetFileExtensionWithoutDot(importIndexItem.FileIndexItem
 					.FileName!),
 				imageFormat);
+			// todo: check if overwrite structure is needed here
 			var helper = new ParseDateTimeFromFileNameHelper(appSettings);
 			importIndexItem.FileIndexItem.DateTime = helper.ParseDateTimeFromFileName(inputModel);
 

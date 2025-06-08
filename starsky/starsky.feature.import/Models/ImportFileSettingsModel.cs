@@ -1,6 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Http;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Models.Structure;
 
 namespace starsky.feature.import.Models;
 
@@ -62,13 +63,10 @@ public class ImportSettingsModel
 		set
 		{
 			// Changed this => value used te be without check
-			if ( string.IsNullOrEmpty(value) )
+			if ( StructureRegexHelper.StructureCheck(value) )
 			{
-				return;
+				_structure = value;
 			}
-
-			StructureRegexHelper.StructureCheck(value);
-			_structure = value;
 		}
 	}
 

@@ -613,7 +613,7 @@ public sealed class ArgsHelperTest
 				continue;
 			}
 
-			if ( envNameList[i] == "app__Structure" )
+			if ( envNameList[i] == "app__Structure__DefaultPattern" )
 			{
 				// todo this not valid anymore
 				shortTestList.Add("/{filename}.ext");
