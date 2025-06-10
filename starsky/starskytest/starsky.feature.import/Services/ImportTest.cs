@@ -167,8 +167,8 @@ public sealed class ImportTest
 	{
 		var appSettings = new AppSettings();
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/2020-04-27 11:07:00.jpg" },
+			["/"],
+			["/2020-04-27 11:07:00.jpg"],
 			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() }
 		);
 		var importService = new Import(new FakeSelectorStorage(storage), appSettings,
@@ -748,7 +748,7 @@ public sealed class ImportTest
 	}
 
 	[TestMethod]
-	public async Task Importer_OverwriteStructure_ArgumentException()
+	public async Task Importer_OverwriteStructure_InvalidInput()
 	{
 		var appSettings = new AppSettings();
 		var query = new FakeIQuery();
@@ -758,9 +758,11 @@ public sealed class ImportTest
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
 			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
-		await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
-			await importService.Importer(new List<string> { "/test.jpg" },
-				new ImportSettingsModel { Structure = "/.ext" }));
+		var result = await importService.Importer(
+			new List<string> { "/test.jpg" },
+			new ImportSettingsModel { Structure = "/.ext" });
+
+		Assert.AreEqual("", result[0].Structure.Errors[0]);
 	}
 
 	[TestMethod]

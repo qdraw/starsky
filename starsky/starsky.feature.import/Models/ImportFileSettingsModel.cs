@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Models.Structure;
@@ -15,6 +16,8 @@ public class ImportSettingsModel
 
 	// This is optional, when not in use ignore this setting
 	private string _structure = string.Empty;
+
+	public List<string> StructureErrors = [];
 
 	// Default constructor
 	public ImportSettingsModel()
@@ -66,6 +69,10 @@ public class ImportSettingsModel
 			if ( StructureRegexHelper.StructureCheck(value) )
 			{
 				_structure = value;
+			}
+			else
+			{
+				StructureErrors.Add($"Structure '{value}' is not valid");
 			}
 		}
 	}
