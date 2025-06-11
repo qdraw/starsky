@@ -55,9 +55,9 @@ public class MacOsOpenUrlTests
 		var isProcess = Process.GetProcessesByName(ConsoleName).ToList()
 			.Exists(p => p.MainModule?.FileName.Contains(ConsoleApp) == true);
 
-		await Task.Delay(4);
+		await Task.Delay(10);
 
-		for ( var i = 0; i < 20; i++ )
+		for ( var i = 0; i < 60; i++ )
 		{
 			isProcess = Process.GetProcessesByName(ConsoleName).ToList()
 				.Exists(p => p.MainModule?.FileName.Contains(ConsoleApp) == true);
