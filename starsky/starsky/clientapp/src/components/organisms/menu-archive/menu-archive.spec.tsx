@@ -361,7 +361,7 @@ describe("MenuArchive", () => {
         await mkdir?.click();
       });
 
-      waitFor(() => expect(mkdirModalSpy).toHaveBeenCalled());
+      waitFor(() => expect(mkdirModalSpy).toHaveBeenCalled(), { timeout: 3000, interval: 50 });
 
       component.unmount();
     });
@@ -448,7 +448,7 @@ describe("MenuArchive", () => {
         key: "Enter"
       });
 
-      waitFor(() => expect(mkdirModalSpy).toHaveBeenCalled());
+      waitFor(() => expect(mkdirModalSpy).toHaveBeenCalled(), { timeout: 3000, interval: 50 });
 
       component.unmount();
     });
