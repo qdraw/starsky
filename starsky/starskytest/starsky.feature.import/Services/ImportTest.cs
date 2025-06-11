@@ -762,7 +762,7 @@ public sealed class ImportTest
 			new List<string> { "/test.jpg" },
 			new ImportSettingsModel { Structure = "/.ext" });
 
-		Assert.AreEqual("Structure '/.ext' is not valid", result[0].Structure.Errors[0]);
+		Assert.AreEqual("Structure '/.ext' is not valid", result[0].Structure.Errors.ToList()[0]);
 	}
 
 	[TestMethod]
