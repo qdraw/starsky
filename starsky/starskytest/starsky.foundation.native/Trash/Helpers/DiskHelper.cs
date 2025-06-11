@@ -4,9 +4,10 @@ using System.Runtime.InteropServices;
 
 namespace starskytest.starsky.foundation.native.Trash.Helpers;
 
-[SuppressMessage("Globalization", 
+[SuppressMessage("Globalization",
 	"CA2101:Specify marshaling for P/Invoke string arguments")]
-[SuppressMessage("Interoperability", "SYSLIB1054:Use \'LibraryImportAttribute\' instead of \'DllImportAttribute\' to generate P/Invoke marshalling code at compile time")]
+[SuppressMessage("Interoperability",
+	"SYSLIB1054:Use \'LibraryImportAttribute\' instead of \'DllImportAttribute\' to generate P/Invoke marshalling code at compile time")]
 public static class DiskHelper
 {
 	[DllImport("libc", SetLastError = true)]
@@ -19,21 +20,26 @@ public static class DiskHelper
 			throw new ArgumentNullException(nameof(filePath));
 		}
 
-		if ( statfs(filePath, out var stat) != 0 )
+		if ( statfs(filePath, out var stat) == 0 )
 		{
-			throw new InvalidOperationException($"statfs failed for path: {filePath}");
+			return stat.f_mntonname is "/" or "/System/Volumes/Data";
 		}
 
-		return stat.f_mntonname is "/" or "/System/Volumes/Data";
+		var errorCode = Marshal.GetLastWin32Error();
+		throw new InvalidOperationException(
+			$"statfs failed for path: {filePath}. Error code: {errorCode}");
 	}
 
 	public static string GetMountPoint(string filePath)
 	{
-		if ( statfs(filePath, out var stat) != 0 )
+		if ( statfs(filePath, out var stat) == 0 )
 		{
-			throw new InvalidOperationException($"statfs failed for path: {filePath}");
+			return stat.f_mntonname;
 		}
-		return stat.f_mntonname;
+
+		var errorCode = Marshal.GetLastWin32Error();
+		throw new InvalidOperationException(
+			$"statfs failed for path: {filePath}. Error code: {errorCode}");
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
