@@ -263,7 +263,7 @@ public sealed class StructureServiceTest
 		Assert.AreEqual("/content.unknown", result);
 	}
 
-//	[TestMethod]
+	[TestMethod]
 	public void ParseSubfolders_FieldAccessException_String()
 	{
 		const string structure = "";
@@ -276,7 +276,7 @@ public sealed class StructureServiceTest
 		Assert.ThrowsExactly<FieldAccessException>(() => sut.ParseSubfolders(model));
 	}
 
-//	[TestMethod]
+	[TestMethod]
 	public void ParseSubfolders_FieldAccessException_DotExt()
 	{
 		const string structure = "/.ext";
@@ -289,7 +289,7 @@ public sealed class StructureServiceTest
 		Assert.ThrowsExactly<FieldAccessException>(() => sut.ParseSubfolders(model));
 	}
 
-//	[TestMethod]
+	[TestMethod]
 	public void ParseSubfolders_Error_DoesNotStartWithSlash()
 	{
 		const string structure = "test/on";
