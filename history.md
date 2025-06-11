@@ -55,6 +55,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.410 (Runtime: 8.0.16) (PR #2196)
 - [x] (Added) _Back-end_ Add Camera Body Serial to FileIndexModel (PR #2206)
 - [x] (Removed) _Tools_ Remove old sync tool (PR #2208)
+- [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.411 (Runtime: 8.0.17) (PR #2215)
 
 ## version 0.7.0-beta.2 - 2025-05-27 {#v0.7.0-beta.2}
 
