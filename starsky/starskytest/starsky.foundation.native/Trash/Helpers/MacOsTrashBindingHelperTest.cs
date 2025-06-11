@@ -72,6 +72,18 @@ public class MacOsTrashBindingHelperTest
 			Path.Combine(Environment.GetFolderPath(
 					Environment.SpecialFolder.UserProfile),
 				".Trash", fileName);
+		
+		var isOnMainDisk = DiskHelper.IsOnMainDisk(createAnImage.FullFilePath);
+		Console.WriteLine($"Is on main disk: {isOnMainDisk}");
+		
+		// for running on a different disk, the trash path may be different
+		if ( !File.Exists(trashPath) )
+		{
+			
+			Console.WriteLine("Trash path not found, checking mount point...");
+			var mountPoint = DiskHelper.GetMountPoint(destPath);
+			trashPath = Path.Combine(mountPoint, ".Trash", fileName);
+		}
 
 		Assert.IsTrue(File.Exists(trashPath));
 
