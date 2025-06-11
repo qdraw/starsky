@@ -57,7 +57,9 @@ public class ObjectCreateIndexItemService(
 				imageFormat);
 			// todo: check if overwrite structure is needed here
 			var helper = new ParseDateTimeFromFileNameHelper(appSettings);
-			importIndexItem.FileIndexItem.DateTime = helper.ParseDateTimeFromFileName(inputModel);
+			var dateTimeFromFileName = helper.ParseDateTimeFromFileName(inputModel);
+			importIndexItem.FileIndexItem.DateTime = dateTimeFromFileName;
+			importIndexItem.DateTime = dateTimeFromFileName;
 
 			// used to sync exifTool and to let the user know that the transformation has been applied
 			importIndexItem.FileIndexItem.Description = MessageDateTimeBasedOnFilename;

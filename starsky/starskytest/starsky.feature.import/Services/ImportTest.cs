@@ -178,7 +178,7 @@ public sealed class ImportTest
 			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Preflight(
-			new List<string> { "/2020-04-27 11:07:00.jpg" },
+			["/2020-04-27 11:07:00.jpg"],
 			new ImportSettingsModel());
 
 		Assert.IsNotNull(result.FirstOrDefault());
@@ -762,7 +762,7 @@ public sealed class ImportTest
 			new List<string> { "/test.jpg" },
 			new ImportSettingsModel { Structure = "/.ext" });
 
-		Assert.AreEqual("", result[0].Structure.Errors[0]);
+		Assert.AreEqual("Structure '/.ext' is not valid", result[0].Structure.Errors[0]);
 	}
 
 	[TestMethod]

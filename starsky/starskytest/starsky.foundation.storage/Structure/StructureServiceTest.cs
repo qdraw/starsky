@@ -66,21 +66,21 @@ public sealed class StructureServiceTest
 	}
 
 	[TestMethod]
-	public void ParseFileName_FieldAccessException_Null()
+	public void ParseSubfolders_DefaultFallback()
 	{
 		// Arrange
-		var structureModel = new AppSettingsStructureModel();
+		var structureModel = new AppSettingsStructureModel { DefaultPattern = null! };
 
 		var service = new StructureService(new FakeSelectorStorage(), structureModel);
 
 		// Act & Assert
-		Assert.ThrowsExactly<FieldAccessException>(() =>
-		{
-			var model =
-				new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
-					string.Empty, string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
-			service.ParseSubfolders(model);
-		});
+		var model =
+			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
+				string.Empty, string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
+		var result = service.ParseSubfolders(model);
+
+		Assert.AreEqual("/2020/01/2020_01_01", result);
+		Assert.AreEqual(0, structureModel.Errors.Count);
 	}
 
 	[TestMethod]
@@ -289,27 +289,29 @@ public sealed class StructureServiceTest
 	}
 
 	[TestMethod]
-	public void ParseSubfolders_FieldAccessException_DoesNotStartWithSlash()
+	public void ParseSubfolders_Error_DoesNotStartWithSlash()
 	{
 		const string structure = "test/on";
 		var model =
 			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
 				"test", string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
 
-		var sut = new StructureService(new FakeSelectorStorage(),
-			new AppSettingsStructureModel(structure));
-		Assert.ThrowsExactly<FieldAccessException>(() => sut.ParseSubfolders(model));
+		var appSettings = new AppSettingsStructureModel(structure);
+		var sut = new StructureService(new FakeSelectorStorage(), appSettings);
+		var result = sut.ParseSubfolders(model);
+		Assert.IsNotNull(result);
+		Assert.AreEqual("/2020/01/2020_01_01", result);
+		Assert.AreEqual("Structure '/test/on' is not valid", appSettings.Errors[0]);
 	}
 
 	[TestMethod]
 	public void ParseSubfolders_Int_Null()
 	{
 		const string structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
-
-		var result =
-			new StructureService(new FakeSelectorStorage(),
-				new AppSettingsStructureModel(structure)).ParseSubfolders(null!);
-		Assert.IsNull(result);
+		int? subPathRelative = null;
+		var sut = new StructureService(new FakeSelectorStorage(),
+			new AppSettingsStructureModel(structure));
+		Assert.ThrowsExactly<ArgumentNullException>(() => sut.ParseSubfolders(subPathRelative));
 	}
 
 	[TestMethod]

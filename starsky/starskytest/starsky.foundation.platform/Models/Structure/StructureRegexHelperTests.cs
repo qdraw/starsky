@@ -1,6 +1,4 @@
-using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Models.Structure;
 
 namespace starskytest.starsky.foundation.platform.Models.Structure;
@@ -30,17 +28,17 @@ public class AppSettingsStructureModelTests
 	[TestMethod]
 	public void AppSettingsProviderTest_NoFolderMissingFirstSlash()
 	{
-		Assert.ThrowsExactly<ArgumentException>(() =>
-		{
-			StructureRegexHelper.StructureCheck("dion.ext");
-		});
-		// >= ArgumentException
+		var result = StructureRegexHelper.StructureCheck("dion.ext");
+		Assert.IsFalse(result);
 	}
 
 	[TestMethod]
-	public void AppSettingsProviderTest_Null()
+	[DataRow(null)]
+	[DataRow("")]
+	[DataRow(" ")]
+	public void AppSettingsProviderTest_Null(string? value)
 	{
-		Assert.ThrowsExactly<ArgumentNullException>(() =>
-			StructureRegexHelper.StructureCheck(string.Empty));
+		var result = StructureRegexHelper.StructureCheck(value);
+		Assert.IsFalse(result);
 	}
 }

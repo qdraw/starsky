@@ -61,7 +61,7 @@ public class StructureService : IStructureService
 			parsedStructuredList.GetRange(0, parsedStructuredList.Count - 1));
 	}
 
-	
+
 	/// <summary>
 	///     Parse the parent folder and ignore the filename
 	/// </summary>
@@ -74,7 +74,7 @@ public class StructureService : IStructureService
 	{
 		if ( getSubPathRelative == null )
 		{
-			return string.Empty;
+			throw new ArgumentNullException(nameof(getSubPathRelative));
 		}
 
 		var dateTime = DateTime.Now.AddDays(( double ) getSubPathRelative);
@@ -82,7 +82,7 @@ public class StructureService : IStructureService
 			extensionWithoutDot, ExtensionRolesHelper.ImageFormat.notfound);
 		return ParseSubfolders(inputModel);
 	}
-	
+
 	/// <summary>
 	///     Get the fileName from the structure and ignore the parent folders
 	///     Does NOT check if the file already exist

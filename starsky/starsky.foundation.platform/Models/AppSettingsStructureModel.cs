@@ -43,13 +43,12 @@ public class AppSettingsStructureModel
 
 	public List<StructureRule> Rules { get; set; } = new();
 
-	public List<string> Errors { get; set; } = [];
+	public HashSet<string> Errors { get; set; } = [];
 
 	private void SetDefaultPattern(string? value)
 	{
 		if ( string.IsNullOrEmpty(value) || value == "/" )
 		{
-			Errors.Add($"Structure '{value}' is not valid");
 			return;
 		}
 
@@ -62,7 +61,10 @@ public class AppSettingsStructureModel
 			return;
 		}
 
-		Errors.Add($"Structure '{structure}' is not valid");
+		if ( !string.IsNullOrEmpty(value) )
+		{
+			Errors.Add($"Structure '{structure}' is not valid");
+		}
 	}
 
 	/// <summary>
@@ -70,8 +72,18 @@ public class AppSettingsStructureModel
 	///     Overwrite the structure in the ImportIndexItem
 	/// </summary>
 	/// <param name="overwriteStructure">overwrite structure</param>
-	public void OverrideDefaultPatternAndDisableRules(string overwriteStructure)
+	/// <param name="importSettingsStructureErrors"></param>
+	public void OverrideDefaultPatternAndDisableRules(string overwriteStructure,
+		List<string> importSettingsStructureErrors)
 	{
+		if ( importSettingsStructureErrors.Count >= 1 )
+		{
+			foreach ( var error in importSettingsStructureErrors )
+			{
+				Errors.Add(error);
+			}
+		}
+
 		if ( string.IsNullOrWhiteSpace(overwriteStructure) )
 		{
 			return;

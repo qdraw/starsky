@@ -70,7 +70,7 @@ public class ImportSettingsModel
 			{
 				_structure = value;
 			}
-			else
+			else if ( !string.IsNullOrWhiteSpace(value) )
 			{
 				StructureErrors.Add($"Structure '{value}' is not valid");
 			}

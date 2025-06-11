@@ -203,7 +203,7 @@ public class Import : IImport
 			if ( parentFolders.TrueForAll(p => p.Item1 != parentFolder) )
 			{
 				parentFolders.Add(new Tuple<string?, List<string>>(parentFolder,
-					new List<string> { itemSourceFullFilePath }));
+					[itemSourceFullFilePath]));
 				continue;
 			}
 
@@ -457,7 +457,8 @@ public class Import : IImport
 			importSettings.ReverseGeoCode);
 
 		// Update the parent and filenames
-		importIndexItem = ApplyStructure(importIndexItem, importSettings.Structure);
+		importIndexItem = ApplyStructure(importIndexItem, importSettings.Structure,
+			importSettings.StructureErrors);
 
 		return importIndexItem;
 	}
@@ -475,12 +476,14 @@ public class Import : IImport
 	/// </summary>
 	/// <param name="importIndexItem"></param>
 	/// <param name="overwriteStructure">to overwrite, keep empty to ignore</param>
+	/// <param name="importSettingsStructureErrors"></param>
 	/// <returns>Names applied to FileIndexItem</returns>
 	private ImportIndexItem ApplyStructure(ImportIndexItem importIndexItem,
-		string overwriteStructure)
+		string overwriteStructure, List<string> importSettingsStructureErrors)
 	{
 		importIndexItem.Structure = _appSettings.Structure;
-		importIndexItem.Structure.OverrideDefaultPatternAndDisableRules(overwriteStructure);
+		importIndexItem.Structure.OverrideDefaultPatternAndDisableRules(overwriteStructure,
+			importSettingsStructureErrors);
 
 		var structureService = new StructureService(_selectorStorage, importIndexItem.Structure);
 
@@ -495,6 +498,7 @@ public class Import : IImport
 			structureService.ParseSubfolders(inputModel);
 		importIndexItem.FileIndexItem.FileName = structureService.ParseFileName(inputModel);
 		importIndexItem.FilePath = importIndexItem.FileIndexItem.FilePath;
+		// importIndexItem.DateTime = importIndexItem.FileIndexItem.DateTime;
 
 		return importIndexItem;
 	}

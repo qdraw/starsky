@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -123,19 +124,17 @@ public sealed class AppSettingsTest
 	[TestMethod]
 	public void AppSettingsProviderTest_StructureFails_withoutExtAndNoSlash()
 	{
-		Assert.ThrowsExactly<ArgumentException>(() =>
-			{
-				_appSettings.Structure = new AppSettingsStructureModel("\\d");
-				Assert.AreEqual("d", _appSettings.Structure.DefaultPattern);
-			}
-		);
+		var result = new AppSettingsStructureModel("\\d");
+		Assert.AreEqual("Structure '/\\d' is not valid", result.Errors.LastOrDefault());
 	}
 
 	[TestMethod]
-	public void AppSettingsProviderTest_StructureFails_withExtAndNoSlash()
+	public void AppSettingsProviderTest_Structure_withExtAndNoSlash()
 	{
-		_appSettings.Structure.DefaultPattern = "\\d.ext";
-		Assert.AreEqual("/\\d.ext", _appSettings.Structure.DefaultPattern);
+		var result = new AppSettingsStructureModel("\\d.ext");
+
+		Assert.AreEqual(0, result.Errors.Count);
+		Assert.AreEqual("/\\d.ext", result.DefaultPattern);
 	}
 
 	[TestMethod]

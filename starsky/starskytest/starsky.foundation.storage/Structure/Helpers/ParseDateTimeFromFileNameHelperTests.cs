@@ -1,6 +1,5 @@
 using System;
 using System.Globalization;
-using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -53,13 +52,13 @@ public class ParseDateTimeFromFileNameHelperTests
 		// Use a strange structure setting to overwrite
 		var input = new ImportIndexItem(_appSettings)
 		{
-			SourceFullFilePath = createAnImageNoExif.FullFilePathWithDate,
 			Structure = new AppSettingsStructureModel("/HHmmss_yyyyMMdd.ext")
 		};
 
 		var model = new StructureInputModel(input.DateTime,
-			input.SourceFullFilePath, "jpg", ExtensionRolesHelper.ImageFormat.notfound);
-		new ParseDateTimeFromFileNameHelper(input.Structure).ParseDateTimeFromFileName(model);
+			createAnImageNoExif.FileName, "jpg", ExtensionRolesHelper.ImageFormat.notfound);
+		var result =
+			new ParseDateTimeFromFileNameHelper(input.Structure).ParseDateTimeFromFileName(model);
 
 		DateTime.TryParseExact(
 			"20120101_123300",
@@ -69,7 +68,7 @@ public class ParseDateTimeFromFileNameHelperTests
 			out var answerDateTime);
 
 		// Check if those overwrite is accepted
-		Assert.AreEqual(answerDateTime, input.DateTime);
+		Assert.AreEqual(answerDateTime, result);
 
 		new StorageHostFullPathFilesystem(new FakeIWebLogger()).FileDelete(createAnImageNoExif
 			.FullFilePathWithDate);
@@ -78,14 +77,10 @@ public class ParseDateTimeFromFileNameHelperTests
 	[TestMethod]
 	public void ParseDateTimeFromFileNameWithSpaces_Test()
 	{
-		var input = new ImportIndexItem(new AppSettings())
-		{
-			SourceFullFilePath = Path.DirectorySeparatorChar + "2018 08 20 19 03 00.jpg"
-		};
-
-		var model = new StructureInputModel(input.DateTime,
-			input.SourceFullFilePath, "jpg", ExtensionRolesHelper.ImageFormat.notfound);
-		new ParseDateTimeFromFileNameHelper(_appSettings).ParseDateTimeFromFileName(model);
+		var model = new StructureInputModel(DateTime.Now,
+			"2018 08 20 19 03 00.jpg", "jpg", ExtensionRolesHelper.ImageFormat.notfound);
+		var result =
+			new ParseDateTimeFromFileNameHelper(_appSettings).ParseDateTimeFromFileName(model);
 
 		DateTime.TryParseExact(
 			"20180820_190300",
@@ -94,19 +89,20 @@ public class ParseDateTimeFromFileNameHelperTests
 			DateTimeStyles.None,
 			out var answerDateTime);
 
-		Assert.AreEqual(answerDateTime, input.DateTime);
+		Assert.AreEqual(answerDateTime, result);
 	}
 
 	[TestMethod]
 	public void ParseDateTimeFromFileName_ReturnsValidDateTime()
 	{
 		// Arrange
-		const string sourceFilePath = "path/to/2019-10-01_235959_filename.ext";
+		const string fileNameBase = "2019-10-01_235959_filename.ext";
 		const string structure = "/yyyy-MM-dd_HHmmss_{filenamebase}.ext";
 		_appSettings.Structure = new AppSettingsStructureModel(structure);
+
 		var model = new StructureInputModel(new DateTime(2019, 10, 1,
 				23, 59, 59, DateTimeKind.Local),
-			sourceFilePath, "jpg", ExtensionRolesHelper.ImageFormat.notfound);
+			fileNameBase, "jpg", ExtensionRolesHelper.ImageFormat.notfound);
 
 		// Act
 		var result =
