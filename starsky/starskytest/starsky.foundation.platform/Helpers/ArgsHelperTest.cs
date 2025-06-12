@@ -323,7 +323,7 @@ public sealed class ArgsHelperTest
 	public void ArgsHelper_SetEnvironmentByArgsShortTestListTest()
 	{
 		var shortNameList = new ArgsHelper(_appSettings).ShortNameList.ToArray();
-		var envNameList = new ArgsHelper(_appSettings).EnvNameList.ToArray();
+		var envNameList = ArgsHelper.EnvNameList.ToArray();
 
 		var shortTestList = new List<string>();
 		for ( var i = 0; i < shortNameList.Length; i++ )
@@ -351,7 +351,7 @@ public sealed class ArgsHelperTest
 	public void ArgsHelper_SetEnvironmentByArgsLongTestListTest()
 	{
 		var longNameList = new ArgsHelper(_appSettings).LongNameList.ToArray();
-		var envNameList = new ArgsHelper(_appSettings).EnvNameList.ToArray();
+		var envNameList = ArgsHelper.EnvNameList.ToArray();
 
 		var longTestList = new List<string>();
 		for ( var i = 0; i < longNameList.Length; i++ )
@@ -585,92 +585,6 @@ public sealed class ArgsHelperTest
 	{
 		Assert.ThrowsExactly<FieldAccessException>(() =>
 			new ArgsHelper(null!).NeedHelpShowDialog());
-	}
-
-	[TestMethod]
-	public void ArgsHelper_SetEnvironmentToAppSettings_Null_Test()
-	{
-		Assert.ThrowsExactly<FieldAccessException>(() =>
-			new ArgsHelper(null!).SetEnvironmentToAppSettings());
-	}
-
-	[TestMethod]
-	public void ArgsHelper_SetEnvironmentToAppSettingsTest()
-	{
-		var appSettings = new AppSettings();
-
-		var shortNameList = new ArgsHelper(appSettings).ShortNameList.ToArray();
-		var envNameList = new ArgsHelper(appSettings).EnvNameList.ToArray();
-
-		var shortTestList = new List<string>();
-		for ( var i = 0; i < envNameList.Length; i++ )
-		{
-			shortTestList.Add(shortNameList[i]);
-
-			if ( envNameList[i] == "app__DatabaseType" )
-			{
-				shortTestList.Add("InMemoryDatabase"); // need to exact good
-				continue;
-			}
-
-			if ( envNameList[i] == "app__Structure__DefaultPattern" )
-			{
-				// todo this not valid anymore
-				shortTestList.Add("/{filename}.ext");
-				continue;
-			}
-
-			if ( envNameList[i] == "app__DatabaseConnection" )
-			{
-				shortTestList.Add("test");
-				continue;
-			}
-
-			if ( envNameList[i] == "app__ExifToolPath" )
-			{
-				shortTestList.Add("app__ExifToolPath");
-				continue;
-			}
-
-			if ( envNameList[i] == "app__StorageFolder" )
-			{
-				shortTestList.Add("app__StorageFolder");
-				continue;
-			}
-
-			Console.WriteLine(envNameList[i]);
-
-			if ( envNameList[i] == "app__ExifToolImportXmpCreate" )
-			{
-				shortTestList.Add("true");
-				continue;
-			}
-
-			// Note:
-			// There are values add to the unknown values
-
-			shortTestList.Add(i.ToString());
-		}
-
-		// First inject values to evn
-		new ArgsHelper(appSettings).SetEnvironmentByArgs(shortTestList);
-
-		// and now read it back
-		new ArgsHelper(appSettings).SetEnvironmentToAppSettings();
-
-		Assert.AreEqual("/{filename}.ext", appSettings.Structure.DefaultPattern);
-		Assert.AreEqual(AppSettings.DatabaseTypeList.InMemoryDatabase,
-			appSettings.DatabaseType);
-		Assert.AreEqual("test", appSettings.DatabaseConnection);
-		Assert.AreEqual("app__ExifToolPath", appSettings.ExifToolPath);
-		Assert.IsTrue(appSettings.StorageFolder.Contains("app__StorageFolder"));
-
-
-		// Reset Environment after use
-		foreach ( var t in envNameList )
-		{
-			Environment.SetEnvironmentVariable(t, string.Empty);
-		}
 	}
 
 	[TestMethod]

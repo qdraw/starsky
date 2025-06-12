@@ -4,21 +4,15 @@ using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Services;
-using starsky.foundation.storage.Storage;
 using starsky.foundation.storage.Structure;
 
 namespace starsky.Controllers;
 
 [Authorize]
-public sealed class RedirectController : Controller
+public sealed class RedirectController(ISelectorStorage selectorStorage, AppSettings appSettings)
+	: Controller
 {
-	private readonly StructureService _structureService;
-
-	public RedirectController(ISelectorStorage selectorStorage, AppSettings appSettings)
-	{
-		_structureService = new StructureService(selectorStorage, appSettings);
-	}
+	private readonly StructureService _structureService = new(selectorStorage, appSettings);
 
 	/// <summary>
 	///     Redirect or view path to relative paths using the structure-config (see /api/env)

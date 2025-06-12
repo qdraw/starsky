@@ -498,7 +498,6 @@ public class Import : IImport
 			structureService.ParseSubfolders(inputModel);
 		importIndexItem.FileIndexItem.FileName = structureService.ParseFileName(inputModel);
 		importIndexItem.FilePath = importIndexItem.FileIndexItem.FilePath;
-		// importIndexItem.DateTime = importIndexItem.FileIndexItem.DateTime;
 
 		return importIndexItem;
 	}
