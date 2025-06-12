@@ -68,7 +68,7 @@ public class Import : IImport
 	private readonly UpdateImportTransformations _updateImportTransformations;
 
 	[SuppressMessage("Usage",
-		"S107: Constructor has 8 parameters, which is greater than the 7 authorized")]
+		"S107: Constructor has 12 parameters, which is greater than the 7 authorized")]
 	public Import(
 		ISelectorStorage selectorStorage,
 		AppSettings appSettings,
@@ -116,7 +116,7 @@ public class Import : IImport
 	/// <summary>
 	///     Temp place to store parent Directories to avoid lots of Database requests
 	/// </summary>
-	private List<string> AddedParentDirectories { get; } = new();
+	private List<string> AddedParentDirectories { get; } = [];
 
 	/// <summary>
 	///     Check if the item can be added to the database
@@ -135,7 +135,7 @@ public class Import : IImport
 		// When Directory is Empty
 		if ( includedDirectoryFilePaths.Count == 0 )
 		{
-			return new List<ImportIndexItem>();
+			return [];
 		}
 
 		var importIndexItemsList = ( await includedDirectoryFilePaths
@@ -190,7 +190,7 @@ public class Import : IImport
 	{
 		if ( !deleteAfter )
 		{
-			return new List<Tuple<string?, List<string>>>();
+			return [];
 		}
 
 		var parentFolders = new List<Tuple<string?, List<string>>>();
@@ -326,7 +326,6 @@ public class Import : IImport
 
 		return importIndexItemsList;
 	}
-
 
 	/// <summary>
 	///     To Add files form directory to list
