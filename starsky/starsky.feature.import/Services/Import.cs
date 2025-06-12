@@ -479,7 +479,7 @@ public class Import : IImport
 	/// <param name="importSettingsStructureErrors"></param>
 	/// <returns>Names applied to FileIndexItem</returns>
 	private ImportIndexItem ApplyStructure(ImportIndexItem importIndexItem,
-		string overwriteStructure, List<string> importSettingsStructureErrors)
+		string overwriteStructure, IReadOnlyList<string> importSettingsStructureErrors)
 	{
 		importIndexItem.Structure = _appSettings.Structure;
 		importIndexItem.Structure.OverrideDefaultPatternAndDisableRules(overwriteStructure,

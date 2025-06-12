@@ -74,7 +74,7 @@ public class AppSettingsStructureModel
 	/// <param name="overwriteStructure">overwrite structure</param>
 	/// <param name="importSettingsStructureErrors"></param>
 	public void OverrideDefaultPatternAndDisableRules(string overwriteStructure,
-		List<string> importSettingsStructureErrors)
+		IReadOnlyList<string> importSettingsStructureErrors)
 	{
 		if ( importSettingsStructureErrors.Count >= 1 )
 		{

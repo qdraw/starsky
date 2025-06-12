@@ -17,7 +17,9 @@ public class ImportSettingsModel
 	// This is optional, when not in use ignore this setting
 	private string _structure = string.Empty;
 
-	public List<string> StructureErrors = [];
+	private readonly List<string> _structureErrors = [];
+
+	public IReadOnlyList<string> StructureErrors => _structureErrors;
 
 	// Default constructor
 	public ImportSettingsModel()
@@ -72,7 +74,7 @@ public class ImportSettingsModel
 			}
 			else if ( !string.IsNullOrWhiteSpace(value) )
 			{
-				StructureErrors.Add($"Structure '{value}' is not valid");
+				_structureErrors.Add($"Structure '{value}' is not valid");
 			}
 		}
 	}
