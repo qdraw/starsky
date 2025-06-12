@@ -449,11 +449,12 @@ public class Import : IImport
 
 		// Parse the filename and create a new importIndexItem object
 		// Prepare transformations here
-		var importIndexItem = await _objectCreateIndexItemService.ObjectCreateIndexItem(
-			inputFileFullPath.Key, imageFormat,
-			hashList.Key, fileIndexItem!, importSettings.ColorClass,
-			_filesystemStorage.Info(inputFileFullPath.Key).Size,
-			importSettings.ReverseGeoCode);
+		var importIndexItem = _objectCreateIndexItemService.CreateObjectIndexItem(inputFileFullPath,
+			fileIndexItem, hashList, _filesystemStorage.Info(inputFileFullPath.Key).Size,
+			importSettings.ColorClass);
+		importIndexItem = await _objectCreateIndexItemService.TransformCreateIndexItem(
+			importIndexItem,
+			importSettings.ReverseGeoCode, importSettings.Structure);
 
 		// Update the parent and filenames
 		importIndexItem = ApplyStructure(importIndexItem, importSettings.Structure,

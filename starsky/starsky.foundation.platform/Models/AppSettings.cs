@@ -787,7 +787,7 @@ public sealed class AppSettings
 	///     Skip a preflight check for ffmpeg
 	/// </summary>
 	[PackageTelemetry]
-	public bool FfmpegSkipPreflightCheck { get; set; } = false;
+	public bool FfmpegSkipPreflightCheck { get; set; }
 
 	/// <summary>
 	///     Exe path to Ffmpeg
@@ -904,10 +904,7 @@ public sealed class AppSettings
 			Environment.SpecialFolder.UserProfile); // can be null on azure webapp
 
 		var appSettings = this.CloneViaJson();
-		if ( appSettings == null )
-		{
-			return new AppSettings();
-		}
+		appSettings ??= new AppSettings();
 
 		if ( appSettings.DatabaseType != DatabaseTypeList.Sqlite )
 		{

@@ -100,6 +100,13 @@ public sealed class ImportIndexItem
 	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 	public ColorClassParser.Color ColorClass { get; set; }
 
+	/// <summary>
+	///     Store imageformat like jpeg, png, webp
+	/// </summary>
+	public ExtensionRolesHelper.ImageFormat ImageFormat { get; set; }
+
+	public long Size { get; set; }
+
 	public string GetFileHashWithUpdate()
 	{
 		if ( FileIndexItem == null && FileHash != null )
