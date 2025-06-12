@@ -264,29 +264,40 @@ public sealed class StructureServiceTest
 	}
 
 	[TestMethod]
-	public void ParseSubfolders_FieldAccessException_String()
+	public void ParseSubfolders_DefaultValue_String()
 	{
 		const string structure = "";
 		var model =
 			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
 				"test", string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
 
+		var appSettingsStructureModel = new AppSettingsStructureModel(structure);
 		var sut = new StructureService(new FakeSelectorStorage(),
-			new AppSettingsStructureModel(structure));
-		Assert.ThrowsExactly<FieldAccessException>(() => sut.ParseSubfolders(model));
+			appSettingsStructureModel);
+		var result = sut.ParseSubfolders(model);
+
+		Assert.IsNotNull(result);
+		Assert.AreEqual("/2020/01/2020_01_01", result);
+		Assert.AreEqual(0, appSettingsStructureModel.Errors.Count);
 	}
 
 	[TestMethod]
-	public void ParseSubfolders_FieldAccessException_DotExt()
+	public void ParseSubfolders_Error_DotExt()
 	{
 		const string structure = "/.ext";
 		var model =
 			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
 				"test", string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
 
+		var appSettingsStructureModel = new AppSettingsStructureModel(structure);
 		var sut = new StructureService(new FakeSelectorStorage(),
-			new AppSettingsStructureModel(structure));
-		Assert.ThrowsExactly<FieldAccessException>(() => sut.ParseSubfolders(model));
+			appSettingsStructureModel);
+		var result = sut.ParseSubfolders(model);
+
+		Assert.IsNotNull(result);
+		Assert.AreEqual("/2020/01/2020_01_01", result);
+		Assert.AreEqual("Structure '/.ext' is not valid",
+			appSettingsStructureModel.Errors.ToList()[0]);
 	}
 
 	[TestMethod]
