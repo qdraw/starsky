@@ -103,27 +103,40 @@ public class ThumbnailQuery : IThumbnailQuery
 				throw;
 			}
 
-			return await RenameInternalAsync(new InjectServiceScope(_scopeFactory).Context(),
-				beforeFileHash, newFileHash);
+			try
+			{
+				return await RenameInternalAsync(new InjectServiceScope(_scopeFactory).Context(),
+					beforeFileHash, newFileHash);
+			}
+			catch ( DbUpdateConcurrencyException concurrencyException)
+			{
+				return await SolveDbUpdateConcurrencyException(concurrencyException);
+			}
 		}
 		catch ( DbUpdateConcurrencyException concurrencyException )
 		{
-			_logger.LogInformation("[ThumbnailQuery] try to fix DbUpdateConcurrencyException",
-				concurrencyException);
-			SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
-			try
-			{
-				await _context.SaveChangesAsync();
-			}
-			catch ( DbUpdateConcurrencyException e )
-			{
-				_logger.LogInformation(e,
-					"[ThumbnailQuery] save failed after DbUpdateConcurrencyException");
-				return false;
-			}
-
-			return true;
+			return await SolveDbUpdateConcurrencyException(concurrencyException);
 		}
+	}
+
+	private async Task<bool> SolveDbUpdateConcurrencyException(
+		DbUpdateConcurrencyException concurrencyException)
+	{
+		_logger.LogInformation("[ThumbnailQuery] try to fix DbUpdateConcurrencyException",
+			concurrencyException);
+		SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+		try
+		{
+			await _context.SaveChangesAsync();
+		}
+		catch ( DbUpdateConcurrencyException e )
+		{
+			_logger.LogInformation(e,
+				"[ThumbnailQuery] save failed after DbUpdateConcurrencyException");
+			return false;
+		}
+
+		return true;
 	}
 
 	public async Task<bool> UpdateAsync(ThumbnailItem item)
