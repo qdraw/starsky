@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ using starsky.foundation.platform.Services;
 using starsky.foundation.storage.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
+using VerifyMSTest;
 
 namespace starskytest.starsky.feature.import.Services;
 
@@ -24,7 +26,7 @@ namespace starskytest.starsky.feature.import.Services;
 ///     Also known as ImportServiceTest (Also check the FakeDb version)
 /// </summary>
 [TestClass]
-public sealed class ImportTestInMemoryDb
+public sealed class ImportTestInMemoryDb : VerifyBase
 {
 	private readonly AppSettings _appSettings;
 	private readonly IConsole _console;
@@ -95,6 +97,16 @@ public sealed class ImportTestInMemoryDb
 		Assert.AreEqual(ImportStatus.Ok, result[0].Status);
 
 		await _query.RemoveItemAsync(getResult);
+
+		await Verify(result);
+	}
+
+	private static async Task Verify(List<ImportIndexItem> result)
+	{
+		result[0].FileIndexItem!.Id = 1;
+		result[0].AddToDatabase = DateTime.MinValue;
+		result[0].FileIndexItem!.AddToDatabase = DateTime.MinValue;
+		await Verifier.Verify(result).DontScrubDateTimes();
 	}
 
 	[TestMethod]
@@ -110,7 +122,11 @@ public sealed class ImportTestInMemoryDb
 			new ImportSettingsModel { Structure = "/yyyy/MM/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext" });
 
 		var expectedFilePath = await ImportTest.GetExpectedFilePathAsync(_iStorageFake,
-			new AppSettings { Structure = "/yyyy/MM/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext" },
+			new AppSettings
+			{
+				Structure =
+					new AppSettingsStructureModel("/yyyy/MM/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext")
+			},
 			"/test.jpg");
 
 		Assert.AreEqual(expectedFilePath, result[0].FilePath);
@@ -118,6 +134,116 @@ public sealed class ImportTestInMemoryDb
 
 		Assert.IsNotNull(queryResult);
 		Assert.AreEqual(expectedFilePath, queryResult.FilePath);
+
+		_iStorageFake.FileDelete(expectedFilePath);
+		await _query.RemoveItemAsync(queryResult);
+	}
+
+	[TestMethod]
+	public async Task Importer_OverwriteStructure_SkipCustomRules()
+	{
+		var appSettings = new AppSettings
+		{
+			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase,
+			Structure = new AppSettingsStructureModel(
+				"/yyyy/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext")
+			{
+				Rules =
+				[
+					new StructureRule
+					{
+						Pattern = "/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext",
+						Conditions = new StructureRuleConditions
+						{
+							ImageFormats = [ExtensionRolesHelper.ImageFormat.jpg]
+						}
+					}
+				]
+			}
+		};
+		var importService = new Import(new FakeSelectorStorage(_iStorageFake),
+			appSettings, new FakeIImportQuery(),
+			new FakeExifTool(_iStorageFake, appSettings), _query, _console,
+			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
+
+		var result = await importService.Importer(new List<string> { "/test.jpg" },
+			new ImportSettingsModel { Structure = "/_yyyyMMdd_HHmmss.ext" });
+
+		var expectedFilePath = await ImportTest.GetExpectedFilePathAsync(_iStorageFake,
+			new AppSettings
+			{
+				Structure =
+					new AppSettingsStructureModel("/_yyyyMMdd_HHmmss.ext")
+			},
+			"/test.jpg");
+
+		Assert.AreEqual(expectedFilePath, result[0].FilePath);
+		var queryResult =
+			await _query.GetObjectByFilePathAsync(PathHelper.PrefixDbSlash(expectedFilePath));
+
+		Assert.IsNotNull(queryResult);
+		Assert.AreEqual(PathHelper.PrefixDbSlash(expectedFilePath), queryResult.FilePath);
+
+		_iStorageFake.FileDelete(expectedFilePath);
+		await _query.RemoveItemAsync(queryResult);
+	}
+	
+	[TestMethod]
+	public async Task Importer_UseCustomRules()
+	{
+		var appSettings = new AppSettings
+		{
+			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase,
+			Structure = new AppSettingsStructureModel(
+				"/yyyy/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext")
+			{
+				Rules =
+				[
+					new StructureRule
+					{
+						Pattern = "/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext",
+						Conditions = new StructureRuleConditions
+						{
+							ImageFormats = [ExtensionRolesHelper.ImageFormat.jpg]
+						}
+					},
+					new StructureRule
+					{
+						Pattern = "/yyyy/_yyyyMMdd_HHmmss.ext",
+						Conditions = new StructureRuleConditions
+						{
+							ImageFormats = [ExtensionRolesHelper.ImageFormat.mjpeg]
+						}
+					}
+				]
+			}
+		};
+		var importService = new Import(new FakeSelectorStorage(_iStorageFake),
+			appSettings, new FakeIImportQuery(),
+			new FakeExifTool(_iStorageFake, appSettings), _query, _console,
+			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
+
+		var result = await importService.Importer(
+			new List<string> { "/test.jpg" },
+			new ImportSettingsModel());
+
+		var expectedFilePath = await ImportTest.GetExpectedFilePathAsync(_iStorageFake,
+			new AppSettings
+			{
+				Structure =
+					new AppSettingsStructureModel(
+						"/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext")
+			},
+			"/test.jpg");
+
+		Assert.AreEqual(expectedFilePath, result[0].FilePath);
+		var queryResult =
+			await _query.GetObjectByFilePathAsync(PathHelper.PrefixDbSlash(expectedFilePath));
+
+		Assert.IsNotNull(queryResult);
+		Assert.AreEqual(PathHelper.PrefixDbSlash(expectedFilePath), queryResult.FilePath);
 
 		_iStorageFake.FileDelete(expectedFilePath);
 		await _query.RemoveItemAsync(queryResult);
@@ -140,7 +266,11 @@ public sealed class ImportTestInMemoryDb
 		Assert.IsTrue(isHashInImportDb);
 
 		var expectedFilePath = await ImportTest.GetExpectedFilePathAsync(_iStorageFake,
-			new AppSettings { Structure = "/yyyy/MM/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext" },
+			new AppSettings
+			{
+				Structure =
+					new AppSettingsStructureModel("/yyyy/MM/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext")
+			},
 			"/test.jpg");
 
 		var queryResult = await _query.GetObjectByFilePathAsync(expectedFilePath);

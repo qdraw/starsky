@@ -18,6 +18,23 @@ public sealed class ArgsHelper
 	private const string PathCommandLineArgLong = "--path";
 
 	/// <summary>
+	///     name of the env__ (__=:) use this order as 'LongNameList' and 'ShortNameList'
+	/// </summary>
+	public static readonly IEnumerable<string> EnvNameList = new List<string>
+	{
+		"app__DatabaseType",
+		"app__DatabaseConnection",
+		"app__StorageFolder",
+		"app__ThumbnailTempFolder",
+		"app__ExifToolPath",
+		"app__Structure__DefaultPattern",
+		"app__subpathrelative",
+		"app__ExifToolImportXmpCreate",
+		"app__TempFolder",
+		"app__DependenciesFolder"
+	}.AsReadOnly();
+
+	/// <summary>
 	///     AppSettings
 	/// </summary>
 	private readonly AppSettings _appSettings = new();
@@ -26,23 +43,6 @@ public sealed class ArgsHelper
 	///     Console abstraction, use this instead of Console
 	/// </summary>
 	private readonly IConsole _console = new ConsoleWrapper();
-
-	/// <summary>
-	///     name of the env__ (__=:) use this order as 'LongNameList' and 'ShortNameList'
-	/// </summary>
-	public readonly IEnumerable<string> EnvNameList = new List<string>
-	{
-		"app__DatabaseType",
-		"app__DatabaseConnection",
-		"app__StorageFolder",
-		"app__ThumbnailTempFolder",
-		"app__ExifToolPath",
-		"app__Structure",
-		"app__subpathrelative",
-		"app__ExifToolImportXmpCreate",
-		"app__TempFolder",
-		"app__DependenciesFolder"
-	}.AsReadOnly();
 
 	/// <summary>
 	///     Long input args, use this order as 'ShortNameList' and 'EnvNameList'
@@ -183,47 +183,6 @@ public sealed class ArgsHelper
 			}
 		}
 	}
-
-	/// <summary>
-	///     Set Environment Variables to appSettings (not used in .net core), used by framework app
-	/// </summary>
-	/// <exception cref="FieldAccessException">use with _appSettings</exception>
-	public void SetEnvironmentToAppSettings()
-	{
-		if ( _appSettings == null )
-		{
-			throw new FieldAccessException("AppSettings cannot be null at start");
-		}
-
-		var envNameList = EnvNameList.ToArray();
-		foreach ( var envUnderscoreName in envNameList )
-		{
-			var envValue = Environment.GetEnvironmentVariable(envUnderscoreName);
-			var envName = envUnderscoreName.Replace("app__", string.Empty);
-			if ( !string.IsNullOrEmpty(envValue) )
-			{
-				var propertyObject = _appSettings.GetType().GetProperty(envName);
-				if ( propertyObject == null )
-				{
-					continue;
-				}
-
-				var type = propertyObject.PropertyType;
-
-				// for enums
-				if ( propertyObject.PropertyType.IsEnum )
-				{
-					var envTypedObject = Enum.Parse(type, envValue);
-					propertyObject.SetValue(_appSettings, envTypedObject, null);
-					continue;
-				}
-
-				dynamic envTypedDynamic = Convert.ChangeType(envValue, type);
-				propertyObject.SetValue(_appSettings, envTypedDynamic, null);
-			}
-		}
-	}
-
 
 	/// <summary>
 	///     Based on args get the -h or --help commandline input
@@ -1020,6 +979,31 @@ public sealed class ArgsHelper
 		}
 
 		return colorClass;
+	}
+
+	/// <summary>
+	///     Get Source value from args
+	/// </summary>
+	/// <param name="args">input args</param>
+	/// <returns>source value</returns>
+	public static string GetSource(IReadOnlyList<string> args)
+	{
+		// --source
+		var source = string.Empty;
+
+		for ( var arg = 0; arg < args.Count; arg++ )
+		{
+			if ( !args[arg].Equals("--source",
+				     StringComparison.CurrentCultureIgnoreCase) ||
+			     arg + 1 == args.Count )
+			{
+				continue;
+			}
+
+			source = args[arg + 1];
+		}
+
+		return source;
 	}
 
 	/// <summary>
