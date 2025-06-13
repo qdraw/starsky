@@ -37,7 +37,7 @@ public class ParseDateTimeFromFileNameHelperTests
 					new StructureInputModel(
 						new DateTime(0, DateTimeKind.Utc), string.Empty,
 						string.Empty, ExtensionRolesHelper.ImageFormat.notfound));
-		Assert.AreEqual(new DateTime(), dateTime);
+		Assert.AreEqual(DateTime.MinValue, dateTime);
 	}
 
 	[TestMethod]
@@ -131,7 +131,7 @@ public class ParseDateTimeFromFileNameHelperTests
 					"jpg", ExtensionRolesHelper.ImageFormat.notfound));
 
 		// Assert
-		Assert.AreEqual(new DateTime(), result);
+		Assert.AreEqual(DateTime.MinValue, result);
 	}
 
 	[TestMethod]
