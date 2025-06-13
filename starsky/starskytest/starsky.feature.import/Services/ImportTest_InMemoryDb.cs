@@ -190,7 +190,7 @@ public sealed class ImportTestInMemoryDb : VerifyBase
 	}
 	
 	[TestMethod]
-	public async Task Importer_OverwriteStructure_UseCustomRules()
+	public async Task Importer_UseCustomRules()
 	{
 		var appSettings = new AppSettings
 		{
