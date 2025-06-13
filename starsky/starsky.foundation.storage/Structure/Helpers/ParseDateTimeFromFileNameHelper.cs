@@ -65,10 +65,10 @@ public class ParseDateTimeFromFileNameHelper(AppSettingsStructureModel settingsS
 		// For the situation that the image has no exif date and there is an appendix used (in the config)
 		if ( !string.IsNullOrWhiteSpace(fileName) && structuredFileName.Length >= fileName.Length )
 		{
-			var structuredFileName2 = structuredFileName.Substring(0, fileName.Length - 1);
+			 structuredFileName = structuredFileName.Substring(0, fileName.Length - 1);
 
 			DateTime.TryParseExact(fileName,
-				structuredFileName2,
+				structuredFileName,
 				CultureInfo.InvariantCulture,
 				DateTimeStyles.None,
 				out dateTime);
@@ -79,15 +79,12 @@ public class ParseDateTimeFromFileNameHelper(AppSettingsStructureModel settingsS
 			return dateTime;
 		}
 
-		// remove non numeric characters
 		if ( !string.IsNullOrWhiteSpace(fileName) && fileName.Length >= structuredFileName.Length )
 		{
 			var numericPattern = new Regex("[^0-9]", RegexOptions.None,
 				TimeSpan.FromMilliseconds(1000));
 			var fileName2 = numericPattern.Replace(fileName, string.Empty);
-
-			fileName2 = fileName2.Substring(0, structuredFileName.Length - 1);
-
+			
 			DateTime.TryParseExact(fileName2,
 				structuredFileName,
 				CultureInfo.InvariantCulture,
@@ -104,9 +101,8 @@ public class ParseDateTimeFromFileNameHelper(AppSettingsStructureModel settingsS
 		// used in the source filename AND the config
 		if ( !string.IsNullOrEmpty(fileName) && fileName.Length >= structuredFileName.Length )
 		{
-			var structuredFileName2 = structuredFileName.Substring(0, fileName.Length - 1);
 
-			structuredFileName = RemoveEscapedCharacters(structuredFileName2);
+			structuredFileName = RemoveEscapedCharacters(structuredFileName);
 
 			// short the filename with structuredFileName
 			fileName = fileName.Substring(0, structuredFileName.Length);

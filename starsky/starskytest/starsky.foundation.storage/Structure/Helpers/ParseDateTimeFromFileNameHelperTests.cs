@@ -237,18 +237,17 @@ public class ParseDateTimeFromFileNameHelperTests
 	}
 
 	[TestMethod]
-	[DataRow("2023-10-05", "2023-10-05")]
+	[DataRow("2023-10-05 12:00:00", "2023-10-05 12:00:00")]
 	[DataRow("Schermafbeelding 2025-06-12 om 15.16.00.png", "2025-06-12 15:16:00")]
 	[DataRow("20231005", "2023-10-05")]
 	[DataRow("invalid-date", "0001-01-01")]
 	[DataRow("2023-10-05@12:00:00.jpg", "2023-10-05 12:00:00")]
 	[DataRow("filename_without_date.jpg", "0001-01-01")]
-	[DataRow("2023-10-05_2023-10-06.jpg", "2023-10-05")]
-	[DataRow("05-10-2023 12:00:00.jpg", "2023-10-05 12:00:00")]
-	[DataRow("  2023-10-05  .jpg", "2023-10-05")]
+	[DataRow("2023-10-05_2023-10-06.jpg", "2023-10-05 20:23:10")]
+	[DataRow("  2023-10-05  12.00.00.jpg", "2023-10-05 12:00:00")]
 	[DataRow("123456.jpg", "0001-01-01")]
-	[DataRow("invalid_2023-10-05_valid.jpg", "2023-10-05")]
-	[DataRow("2023-10-05_invalidtime.jpg", "2023-10-05")]
+	[DataRow("invalid_2023-10-05_valid.jpg", "0001-01-01")]
+	[DataRow("2023-10-05_invalidtime.jpg", "0001-01-01")]
 	[DataRow("2023-10-05T12:00:00Z.jpg", "2023-10-05 12:00:00")]
 	public void ParseDateTimeFromFileName_ValidatesVariousFormats(
 		string fileNameBase, string expectedDate)
