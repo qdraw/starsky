@@ -47,7 +47,7 @@ public sealed class RedirectController(ISelectorStorage selectorStorage, AppSett
 		// expect something like this: /2018/09/2018_09_02/
 		var inputModel = new StructureInputModel(
 			DateTime.Today.AddDays(value), string.Empty, string.Empty,
-			ExtensionRolesHelper.ImageFormat.jpg);
+			ExtensionRolesHelper.ImageFormat.jpg, string.Empty);
 		var subPath = _structureService.ParseSubfolders(inputModel);
 		if ( json )
 		{

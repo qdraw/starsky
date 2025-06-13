@@ -454,11 +454,10 @@ public class Import : IImport
 			importSettings.ColorClass);
 		importIndexItem = await _objectCreateIndexItemService.TransformCreateIndexItem(
 			importIndexItem,
-			importSettings.ReverseGeoCode, importSettings.Structure);
+			importSettings);
 
 		// Update the parent and filenames
-		importIndexItem = ApplyStructure(importIndexItem, importSettings.Structure,
-			importSettings.StructureErrors);
+		importIndexItem = ApplyStructure(importIndexItem, importSettings);
 
 		return importIndexItem;
 	}
@@ -475,15 +474,14 @@ public class Import : IImport
 	///     Overwrite structures when importing using a header
 	/// </summary>
 	/// <param name="importIndexItem"></param>
-	/// <param name="overwriteStructure">to overwrite, keep empty to ignore</param>
-	/// <param name="importSettingsStructureErrors"></param>
+	/// <param name="settings">to overwrite, keep empty to ignore</param>
 	/// <returns>Names applied to FileIndexItem</returns>
 	private ImportIndexItem ApplyStructure(ImportIndexItem importIndexItem,
-		string overwriteStructure, IReadOnlyList<string> importSettingsStructureErrors)
+		ImportSettingsModel settings)
 	{
 		importIndexItem.Structure = _appSettings.Structure.Clone();
-		importIndexItem.Structure.OverrideDefaultPatternAndDisableRules(overwriteStructure,
-			importSettingsStructureErrors);
+		importIndexItem.Structure.OverrideDefaultPatternAndDisableRules(settings.Structure,
+			settings.StructureErrors);
 
 		var structureService = new StructureService(_selectorStorage, importIndexItem.Structure);
 
@@ -492,7 +490,8 @@ public class Import : IImport
 			importIndexItem.FileIndexItem.FileCollectionName!,
 			FilenamesHelper.GetFileExtensionWithoutDot(importIndexItem.FileIndexItem
 				.FileName!),
-			importIndexItem.FileIndexItem.ImageFormat);
+			importIndexItem.FileIndexItem.ImageFormat,
+			settings.Source);
 
 		importIndexItem.FileIndexItem!.ParentDirectory =
 			structureService.ParseSubfolders(inputModel);

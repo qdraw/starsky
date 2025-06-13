@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using starsky.feature.import.Models;
 using starsky.foundation.database.Models;
 using starsky.foundation.geo.ReverseGeoCode.Interface;
 using starsky.foundation.platform.Helpers;
@@ -56,12 +57,13 @@ public class ObjectCreateIndexItemService(
 	///     Create a new import object
 	/// </summary>
 	/// <param name="importIndexItem"></param>
-	/// <param name="importSettingsReverseGeoCode"></param>
+	/// <param name="settings"></param>
 	/// <returns></returns>
 	public async Task<ImportIndexItem> TransformCreateIndexItem(ImportIndexItem importIndexItem,
-		bool importSettingsReverseGeoCode, string overwriteStructure = "")
+		ImportSettingsModel settings)
 	{
-		UpdateForWithoutExif(importIndexItem.FileIndexItem!, importIndexItem, overwriteStructure);
+		UpdateForWithoutExif(importIndexItem.FileIndexItem!, importIndexItem,
+			settings.Structure, settings.Source);
 
 		// AddToDatabase is Used by the importer History agent
 		importIndexItem.FileIndexItem!.AddToDatabase = DateTime.UtcNow;
@@ -71,7 +73,7 @@ public class ObjectCreateIndexItemService(
 		importIndexItem.FileIndexItem.ImageFormat = importIndexItem.ImageFormat;
 		importIndexItem.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 
-		if ( !importSettingsReverseGeoCode )
+		if ( !settings.ReverseGeoCode )
 		{
 			return importIndexItem;
 		}
@@ -91,7 +93,7 @@ public class ObjectCreateIndexItemService(
 	}
 
 	private void UpdateForWithoutExif(FileIndexItem fileIndexItem,
-		ImportIndexItem importIndexItem, string overwriteStructure)
+		ImportIndexItem importIndexItem, string overwriteStructure, string settingsSource)
 	{
 		// used for files without an Exif Date for example WhatsApp images
 		if ( fileIndexItem.DateTime.Year != 1 )
@@ -103,7 +105,7 @@ public class ObjectCreateIndexItemService(
 			fileIndexItem.DateTime, importIndexItem.FileIndexItem!.FileCollectionName!,
 			FilenamesHelper.GetFileExtensionWithoutDot(importIndexItem.FileIndexItem
 				.FileName!),
-			importIndexItem.ImageFormat);
+			importIndexItem.ImageFormat, settingsSource);
 
 		var structureObject = CreateStructure(overwriteStructure);
 		var helper = new ParseDateTimeFromFileNameHelper(structureObject);

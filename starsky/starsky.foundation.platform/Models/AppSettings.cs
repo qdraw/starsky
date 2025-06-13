@@ -279,6 +279,10 @@ public sealed class AppSettings
 	[PackageTelemetry]
 	public AppSettingsStructureModel Structure { get; set; } = new();
 
+	[PackageTelemetry]
+	public List<AppSettingsImportTransformationModel> ImportTransformation { get; set; } =
+		[];
+
 	/// <summary>
 	///     Used for syncing gpx files
 	/// </summary>
@@ -642,6 +646,7 @@ public sealed class AppSettings
 	///     Ignore this part of a path while importing
 	///     use env variable: app__importIgnore__0 - value
 	///     Use always UNIX style
+	///     Ignore folders
 	/// </summary>
 	public List<string> ImportIgnore { get; set; } =
 		new() { "lost+found", ".Trashes" };

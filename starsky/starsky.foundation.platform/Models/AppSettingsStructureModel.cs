@@ -131,4 +131,5 @@ public class StructureRule
 public class StructureRuleConditions
 {
 	public List<ExtensionRolesHelper.ImageFormat> ImageFormats { get; set; } = [];
+	public string Source { get; set; } = string.Empty;
 }

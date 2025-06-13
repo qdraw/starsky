@@ -23,7 +23,8 @@ public sealed class StructureServiceTest
 		var dateTime = new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Local);
 
 		var fileName = importItem.ParseFileName(new StructureInputModel(dateTime,
-			string.Empty, "jpg", ExtensionRolesHelper.ImageFormat.jpg));
+			string.Empty, "jpg", ExtensionRolesHelper.ImageFormat.jpg,
+			string.Empty));
 		Assert.AreEqual("00010101_000000.jpg", fileName);
 	}
 
@@ -35,7 +36,7 @@ public sealed class StructureServiceTest
 		var importItem = new StructureService(new FakeSelectorStorage(), structureModel);
 		var dateTime = new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Local);
 		var fileName = importItem.ParseFileName(new StructureInputModel(dateTime,
-			string.Empty, "jpg", ExtensionRolesHelper.ImageFormat.jpg));
+			string.Empty, "jpg", ExtensionRolesHelper.ImageFormat.jpg, string.Empty));
 		Assert.AreEqual("00010101_000000_hm.jpg", fileName);
 	}
 
@@ -48,7 +49,8 @@ public sealed class StructureServiceTest
 		var importItem = new StructureService(new FakeSelectorStorage(), structureModel);
 		var dateTime = new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Local);
 		var fileName = importItem.ParseFileName(new StructureInputModel(dateTime,
-			string.Empty, "jpg", ExtensionRolesHelper.ImageFormat.jpg));
+			string.Empty, "jpg",
+			ExtensionRolesHelper.ImageFormat.jpg, string.Empty));
 		Assert.AreEqual("00010101_000000_d.jpg", fileName);
 	}
 
@@ -61,7 +63,7 @@ public sealed class StructureServiceTest
 		var importItem = new StructureService(new FakeSelectorStorage(), structureModel);
 		var fileName = importItem.ParseFileName(new StructureInputModel(
 			new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
-			"test", "jpg", ExtensionRolesHelper.ImageFormat.jpg));
+			"test", "jpg", ExtensionRolesHelper.ImageFormat.jpg, string.Empty));
 
 		Assert.AreEqual("20200101_010101_test.jpg", fileName);
 	}
@@ -77,7 +79,7 @@ public sealed class StructureServiceTest
 		// Act & Assert
 		var model =
 			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
-				string.Empty, string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
+				string.Empty, string.Empty, ExtensionRolesHelper.ImageFormat.jpg, string.Empty);
 		var result = service.ParseSubfolders(model);
 
 		Assert.AreEqual("/2020/01/2020_01_01", result);
@@ -96,7 +98,7 @@ public sealed class StructureServiceTest
 
 		var model =
 			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
-				string.Empty, string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
+				string.Empty, string.Empty, ExtensionRolesHelper.ImageFormat.jpg, string.Empty);
 		var result = new StructureService(new FakeSelectorStorage(storage), structureModel)
 			.ParseSubfolders(model);
 
@@ -114,7 +116,7 @@ public sealed class StructureServiceTest
 			[]);
 		var model =
 			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
-				string.Empty, string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
+				string.Empty, string.Empty, ExtensionRolesHelper.ImageFormat.jpg, string.Empty);
 
 		var result = new StructureService(new FakeSelectorStorage(storage), structureModel)
 			.ParseSubfolders(model);
@@ -133,7 +135,7 @@ public sealed class StructureServiceTest
 		var structureModel = new AppSettingsStructureModel(structure);
 		var model =
 			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
-				string.Empty, string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
+				string.Empty, string.Empty, ExtensionRolesHelper.ImageFormat.jpg, string.Empty);
 
 		var result = new StructureService(new FakeSelectorStorage(storage), structureModel)
 			.ParseSubfolders(model);
@@ -152,7 +154,7 @@ public sealed class StructureServiceTest
 		var structureModel = new AppSettingsStructureModel(structure);
 		var model =
 			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
-				string.Empty, string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
+				string.Empty, string.Empty, ExtensionRolesHelper.ImageFormat.jpg, string.Empty);
 
 		var result = new StructureService(new FakeSelectorStorage(storage), structureModel)
 			.ParseSubfolders(model);
@@ -171,7 +173,7 @@ public sealed class StructureServiceTest
 		var structureModel = new AppSettingsStructureModel(structure);
 		var model =
 			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
-				string.Empty, string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
+				string.Empty, string.Empty, ExtensionRolesHelper.ImageFormat.jpg, string.Empty);
 
 		var result = new StructureService(new FakeSelectorStorage(storage), structureModel)
 			.ParseSubfolders(model);
@@ -196,7 +198,7 @@ public sealed class StructureServiceTest
 		const string structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 		var model =
 			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
-				string.Empty, string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
+				string.Empty, string.Empty, ExtensionRolesHelper.ImageFormat.jpg, string.Empty);
 
 		var result = new StructureService(new FakeSelectorStorage(storage),
 			new AppSettingsStructureModel(structure)).ParseSubfolders(model);
@@ -221,7 +223,7 @@ public sealed class StructureServiceTest
 		const string structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 		var model =
 			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
-				string.Empty, string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
+				string.Empty, string.Empty, ExtensionRolesHelper.ImageFormat.jpg, string.Empty);
 
 		var result = new StructureService(new FakeSelectorStorage(storage),
 			new AppSettingsStructureModel(structure)).ParseSubfolders(model);
@@ -239,7 +241,7 @@ public sealed class StructureServiceTest
 
 		var model =
 			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
-				"test", string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
+				"test", string.Empty, ExtensionRolesHelper.ImageFormat.jpg, string.Empty);
 		var result = new StructureService(new FakeSelectorStorage(storage),
 			new AppSettingsStructureModel(structure)).ParseSubfolders(model);
 
@@ -255,7 +257,7 @@ public sealed class StructureServiceTest
 		const string structure = @"/con\ten\t.ext/file.ext";
 		var model =
 			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
-				"test", string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
+				"test", string.Empty, ExtensionRolesHelper.ImageFormat.jpg, string.Empty);
 
 		var result = new StructureService(new FakeSelectorStorage(storage),
 			new AppSettingsStructureModel(structure)).ParseSubfolders(model);
@@ -269,7 +271,7 @@ public sealed class StructureServiceTest
 		const string structure = "";
 		var model =
 			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
-				"test", string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
+				"test", string.Empty, ExtensionRolesHelper.ImageFormat.jpg, string.Empty);
 
 		var appSettingsStructureModel = new AppSettingsStructureModel(structure);
 		var sut = new StructureService(new FakeSelectorStorage(),
@@ -287,7 +289,7 @@ public sealed class StructureServiceTest
 		const string structure = "/.ext";
 		var model =
 			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
-				"test", string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
+				"test", string.Empty, ExtensionRolesHelper.ImageFormat.jpg, string.Empty);
 
 		var appSettingsStructureModel = new AppSettingsStructureModel(structure);
 		var sut = new StructureService(new FakeSelectorStorage(),
@@ -306,7 +308,7 @@ public sealed class StructureServiceTest
 		const string structure = "test/on";
 		var model =
 			new StructureInputModel(new DateTime(2020, 01, 01, 01, 01, 01, DateTimeKind.Local),
-				"test", string.Empty, ExtensionRolesHelper.ImageFormat.jpg);
+				"test", string.Empty, ExtensionRolesHelper.ImageFormat.jpg, string.Empty);
 
 		var appSettings = new AppSettingsStructureModel(structure);
 		var sut = new StructureService(new FakeSelectorStorage(), appSettings);

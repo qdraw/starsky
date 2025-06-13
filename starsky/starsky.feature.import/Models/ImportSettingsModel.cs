@@ -58,6 +58,8 @@ public class ImportSettingsModel
 		{
 			IndexMode = false;
 		}
+
+		Source = request.Headers["Source"].ToString();
 	}
 
 	/// <summary>
@@ -133,6 +135,11 @@ public class ImportSettingsModel
 	///     Enable reverse geocoding when importing files.
 	/// </summary>
 	public bool ReverseGeoCode { get; set; } = true;
+
+	/// <summary>
+	///     For importing files from a source
+	/// </summary>
+	public string Source { get; set; } = string.Empty;
 
 	public bool IsConsoleOutputModeDefault()
 	{

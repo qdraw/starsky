@@ -7,10 +7,13 @@ public class StructureInputModel(
 	DateTime dateTime,
 	string fileNameBase,
 	string extensionWithoutDot,
-	ExtensionRolesHelper.ImageFormat imageFormat)
+	ExtensionRolesHelper.ImageFormat imageFormat,
+	string settingsSource)
 {
 	public DateTime DateTime { get; set; } = dateTime;
 	public string FileNameBase { get; set; } = fileNameBase;
 	public string ExtensionWithoutDot { get; set; } = extensionWithoutDot;
 	public ExtensionRolesHelper.ImageFormat ImageFormat { get; set; } = imageFormat;
+
+	public string Source { get; set; } = settingsSource;
 }

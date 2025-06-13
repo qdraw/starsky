@@ -90,14 +90,14 @@ public sealed class ImportTest : VerifyBase
 		await Verify(result);
 	}
 
-	private static async Task Verify( List<ImportIndexItem> result)
+	private static async Task Verify(List<ImportIndexItem> result)
 	{
 		result[0].FileIndexItem!.Id = 1;
 		result[0].AddToDatabase = DateTime.MinValue;
 		result[0].FileIndexItem!.AddToDatabase = DateTime.MinValue;
 		await Verifier.Verify(result).DontScrubDateTimes();
 	}
-	
+
 	[TestMethod]
 	public async Task Preflight_SingleImage_Ignore()
 	{
@@ -423,7 +423,7 @@ public sealed class ImportTest : VerifyBase
 		var inputModel = new StructureInputModel(
 			fileIndexItem.DateTime, fileIndexItem.FileCollectionName!,
 			FilenamesHelper.GetFileExtensionWithoutDot(fileIndexItem.FileName!),
-			ExtensionRolesHelper.ImageFormat.jpg);
+			ExtensionRolesHelper.ImageFormat.jpg, string.Empty);
 
 		importIndexItem.FileIndexItem!.ParentDirectory =
 			structureService.ParseSubfolders(inputModel);

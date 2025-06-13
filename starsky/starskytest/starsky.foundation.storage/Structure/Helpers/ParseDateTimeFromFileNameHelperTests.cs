@@ -36,7 +36,7 @@ public class ParseDateTimeFromFileNameHelperTests
 				.ParseDateTimeFromFileName(
 					new StructureInputModel(
 						new DateTime(0, DateTimeKind.Utc), string.Empty,
-						string.Empty, ExtensionRolesHelper.ImageFormat.notfound));
+						string.Empty, ExtensionRolesHelper.ImageFormat.notfound, string.Empty));
 		Assert.AreEqual(DateTime.MinValue, dateTime);
 	}
 
@@ -57,7 +57,8 @@ public class ParseDateTimeFromFileNameHelperTests
 		};
 
 		var model = new StructureInputModel(input.DateTime,
-			createAnImageNoExif.FileName, "jpg", ExtensionRolesHelper.ImageFormat.notfound);
+			createAnImageNoExif.FileName, "jpg", ExtensionRolesHelper.ImageFormat.notfound,
+			string.Empty);
 		var result =
 			new ParseDateTimeFromFileNameHelper(input.Structure).ParseDateTimeFromFileName(model);
 
@@ -79,7 +80,8 @@ public class ParseDateTimeFromFileNameHelperTests
 	public void ParseDateTimeFromFileNameWithSpaces_Test()
 	{
 		var model = new StructureInputModel(DateTime.Now,
-			"2018 08 20 19 03 00.jpg", "jpg", ExtensionRolesHelper.ImageFormat.notfound);
+			"2018 08 20 19 03 00.jpg", "jpg",
+			ExtensionRolesHelper.ImageFormat.notfound, string.Empty);
 		var result =
 			new ParseDateTimeFromFileNameHelper(_appSettings.Structure)
 				.ParseDateTimeFromFileName(model);
@@ -104,7 +106,8 @@ public class ParseDateTimeFromFileNameHelperTests
 
 		var model = new StructureInputModel(new DateTime(2019, 10, 1,
 				23, 59, 59, DateTimeKind.Local),
-			fileNameBase, "jpg", ExtensionRolesHelper.ImageFormat.notfound);
+			fileNameBase, "jpg",
+			ExtensionRolesHelper.ImageFormat.notfound, string.Empty);
 
 		// Act
 		var result =
@@ -128,7 +131,7 @@ public class ParseDateTimeFromFileNameHelperTests
 		var result = new ParseDateTimeFromFileNameHelper(_appSettings.Structure)
 			.ParseDateTimeFromFileName(
 				new StructureInputModel(DateTime.UtcNow, sourceFilePath,
-					"jpg", ExtensionRolesHelper.ImageFormat.notfound));
+					"jpg", ExtensionRolesHelper.ImageFormat.notfound, string.Empty));
 
 		// Assert
 		Assert.AreEqual(DateTime.MinValue, result);
@@ -144,7 +147,7 @@ public class ParseDateTimeFromFileNameHelperTests
 			.ParseDateTimeFromFileName(
 				new StructureInputModel(DateTime.UtcNow,
 					"20180101_011223.jpg",
-					"jpg", ExtensionRolesHelper.ImageFormat.notfound));
+					"jpg", ExtensionRolesHelper.ImageFormat.notfound, string.Empty));
 
 		DateTime.TryParseExact(
 			"20180101_011223",
@@ -166,7 +169,7 @@ public class ParseDateTimeFromFileNameHelperTests
 			.ParseDateTimeFromFileName(
 				new StructureInputModel(DateTime.UtcNow,
 					"2018-07-26 19.45.23.jpg",
-					"jpg", ExtensionRolesHelper.ImageFormat.notfound));
+					"jpg", ExtensionRolesHelper.ImageFormat.notfound, string.Empty));
 
 		DateTime.TryParseExact(
 			"20180726_194523",
@@ -188,7 +191,7 @@ public class ParseDateTimeFromFileNameHelperTests
 			.ParseDateTimeFromFileName(
 				new StructureInputModel(DateTime.UtcNow,
 					"20180726_194523.jpg",
-					"jpg", ExtensionRolesHelper.ImageFormat.notfound));
+					"jpg", ExtensionRolesHelper.ImageFormat.notfound, string.Empty));
 
 		DateTime.TryParseExact(
 			"20180726_194523",
@@ -209,7 +212,7 @@ public class ParseDateTimeFromFileNameHelperTests
 			.ParseDateTimeFromFileName(
 				new StructureInputModel(DateTime.UtcNow,
 					".jpg",
-					"jpg", ExtensionRolesHelper.ImageFormat.notfound));
+					"jpg", ExtensionRolesHelper.ImageFormat.notfound, string.Empty));
 
 		Assert.AreEqual(result, result);
 	}
@@ -224,7 +227,7 @@ public class ParseDateTimeFromFileNameHelperTests
 			.ParseDateTimeFromFileName(
 				new StructureInputModel(DateTime.UtcNow,
 					"2018-02-03 18.47.35.jpg",
-					"jpg", ExtensionRolesHelper.ImageFormat.notfound));
+					"jpg", ExtensionRolesHelper.ImageFormat.notfound, string.Empty));
 
 		DateTime.TryParseExact(
 			"20180203_184735",
@@ -255,7 +258,7 @@ public class ParseDateTimeFromFileNameHelperTests
 		// Arrange
 		var settingsStructure = new AppSettingsStructureModel();
 		var inputModel = new StructureInputModel(DateTime.MinValue, fileNameBase, string.Empty,
-			ExtensionRolesHelper.ImageFormat.notfound);
+			ExtensionRolesHelper.ImageFormat.notfound, string.Empty);
 		var helper = new ParseDateTimeFromFileNameHelper(settingsStructure);
 
 		// Act

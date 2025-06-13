@@ -44,6 +44,27 @@ public class StructureService : IStructureService
 	/// <summary>
 	///     Parse the parent folder and ignore the filename
 	/// </summary>
+	/// <param name="getSubPathRelative">datetime relative to now</param>
+	/// <param name="fileNameBase">include fileName if requested in structure</param>
+	/// <param name="extensionWithoutDot">include parentFolder if requested in structure (not recommend)</param>
+	/// <returns>sub Path including folders</returns>
+	public string ParseSubfolders(int? getSubPathRelative, string fileNameBase = "",
+		string extensionWithoutDot = "", string source = "")
+	{
+		if ( getSubPathRelative == null )
+		{
+			throw new ArgumentNullException(nameof(getSubPathRelative));
+		}
+
+		var dateTime = DateTime.Now.AddDays(( double ) getSubPathRelative);
+		var inputModel = new StructureInputModel(dateTime, fileNameBase,
+			extensionWithoutDot, ExtensionRolesHelper.ImageFormat.directory, source);
+		return ParseSubfolders(inputModel);
+	}
+
+	/// <summary>
+	///     Parse the parent folder and ignore the filename
+	/// </summary>
 	/// <param name="inputModel">
 	///     DateTime to parse, include fileName if requested in structure, include
 	///     parentFolder if requested in structure (not recommend)
@@ -59,28 +80,6 @@ public class StructureService : IStructureService
 
 		return ApplyStructureRangeToStorage(
 			parsedStructuredList.GetRange(0, parsedStructuredList.Count - 1));
-	}
-
-
-	/// <summary>
-	///     Parse the parent folder and ignore the filename
-	/// </summary>
-	/// <param name="getSubPathRelative">datetime relative to now</param>
-	/// <param name="fileNameBase">include fileName if requested in structure</param>
-	/// <param name="extensionWithoutDot">include parentFolder if requested in structure (not recommend)</param>
-	/// <returns>sub Path including folders</returns>
-	public string ParseSubfolders(int? getSubPathRelative, string fileNameBase = "",
-		string extensionWithoutDot = "")
-	{
-		if ( getSubPathRelative == null )
-		{
-			throw new ArgumentNullException(nameof(getSubPathRelative));
-		}
-
-		var dateTime = DateTime.Now.AddDays(( double ) getSubPathRelative);
-		var inputModel = new StructureInputModel(dateTime, fileNameBase,
-			extensionWithoutDot, ExtensionRolesHelper.ImageFormat.notfound);
-		return ParseSubfolders(inputModel);
 	}
 
 	/// <summary>
@@ -111,8 +110,11 @@ public class StructureService : IStructureService
 	{
 		foreach ( var rule in config.Rules )
 		{
-			if ( rule.Conditions.ImageFormats.Contains(input.ImageFormat) &&
-			     !string.IsNullOrEmpty(rule.Pattern) )
+			if ( ( rule.Conditions.ImageFormats.Contains(input.ImageFormat) &&
+			       !string.IsNullOrEmpty(rule.Pattern) ) ||
+			     ( !string.IsNullOrEmpty(rule.Conditions.Source)
+			       && rule.Conditions.Source == input.Source &&
+			       !string.IsNullOrEmpty(rule.Pattern) ) )
 			{
 				return rule.Pattern;
 			}

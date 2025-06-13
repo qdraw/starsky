@@ -18,16 +18,6 @@ public sealed class ArgsHelper
 	private const string PathCommandLineArgLong = "--path";
 
 	/// <summary>
-	///     AppSettings
-	/// </summary>
-	private readonly AppSettings _appSettings = new();
-
-	/// <summary>
-	///     Console abstraction, use this instead of Console
-	/// </summary>
-	private readonly IConsole _console = new ConsoleWrapper();
-
-	/// <summary>
 	///     name of the env__ (__=:) use this order as 'LongNameList' and 'ShortNameList'
 	/// </summary>
 	public static readonly IEnumerable<string> EnvNameList = new List<string>
@@ -43,6 +33,16 @@ public sealed class ArgsHelper
 		"app__TempFolder",
 		"app__DependenciesFolder"
 	}.AsReadOnly();
+
+	/// <summary>
+	///     AppSettings
+	/// </summary>
+	private readonly AppSettings _appSettings = new();
+
+	/// <summary>
+	///     Console abstraction, use this instead of Console
+	/// </summary>
+	private readonly IConsole _console = new ConsoleWrapper();
 
 	/// <summary>
 	///     Long input args, use this order as 'ShortNameList' and 'EnvNameList'
@@ -979,6 +979,31 @@ public sealed class ArgsHelper
 		}
 
 		return colorClass;
+	}
+
+	/// <summary>
+	///     Get Source value from args
+	/// </summary>
+	/// <param name="args">input args</param>
+	/// <returns>source value</returns>
+	public static string GetSource(IReadOnlyList<string> args)
+	{
+		// --source
+		var source = string.Empty;
+
+		for ( var arg = 0; arg < args.Count; arg++ )
+		{
+			if ( !args[arg].Equals("--source",
+				     StringComparison.CurrentCultureIgnoreCase) ||
+			     arg + 1 == args.Count )
+			{
+				continue;
+			}
+
+			source = args[arg + 1];
+		}
+
+		return source;
 	}
 
 	/// <summary>
