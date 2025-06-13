@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models.Structure;
 
 namespace starsky.foundation.platform.Models;
@@ -91,6 +92,15 @@ public class AppSettingsStructureModel
 
 		DefaultPattern = overwriteStructure;
 		Rules = [];
+	}
+
+	/// <summary>
+	///     Clone the structure from appSettings, to avoid referenced objects
+	/// </summary>
+	/// <returns></returns>
+	public AppSettingsStructureModel Clone()
+	{
+		return this.CloneViaJson() ?? new AppSettingsStructureModel();
 	}
 }
 

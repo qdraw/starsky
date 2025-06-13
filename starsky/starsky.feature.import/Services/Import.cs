@@ -481,7 +481,7 @@ public class Import : IImport
 	private ImportIndexItem ApplyStructure(ImportIndexItem importIndexItem,
 		string overwriteStructure, IReadOnlyList<string> importSettingsStructureErrors)
 	{
-		importIndexItem.Structure = _appSettings.Structure;
+		importIndexItem.Structure = _appSettings.Structure.Clone();
 		importIndexItem.Structure.OverrideDefaultPatternAndDisableRules(overwriteStructure,
 			importSettingsStructureErrors);
 

@@ -21,6 +21,7 @@ using starsky.foundation.storage.Storage;
 using starsky.foundation.storage.Structure;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
+using VerifyMSTest;
 
 namespace starskytest.starsky.feature.import.Services;
 
@@ -28,7 +29,7 @@ namespace starskytest.starsky.feature.import.Services;
 ///     ImportTest.cs / ImportServiceTest
 /// </summary>
 [TestClass]
-public sealed class ImportTest
+public sealed class ImportTest : VerifyBase
 {
 	private readonly IConsole _console;
 	private readonly string _exampleHash;
@@ -85,8 +86,18 @@ public sealed class ImportTest
 		Assert.IsNotNull(result.FirstOrDefault()?.FileIndexItem);
 		Assert.IsNotNull(result.FirstOrDefault()?.FileIndexItem?.FilePath);
 		Assert.AreNotEqual(0, result.FirstOrDefault()?.FileIndexItem?.Size);
+
+		await Verify(result);
 	}
 
+	private static async Task Verify( List<ImportIndexItem> result)
+	{
+		result[0].FileIndexItem!.Id = 1;
+		result[0].AddToDatabase = DateTime.MinValue;
+		result[0].FileIndexItem!.AddToDatabase = DateTime.MinValue;
+		await Verifier.Verify(result).DontScrubDateTimes();
+	}
+	
 	[TestMethod]
 	public async Task Preflight_SingleImage_Ignore()
 	{
@@ -160,6 +171,7 @@ public sealed class ImportTest
 		Assert.AreNotEqual(0, result.FirstOrDefault()?.FileIndexItem?.Size);
 		Assert.AreEqual(ColorClassParser.Color.Typical,
 			result.FirstOrDefault()?.FileIndexItem?.ColorClass);
+		await Verify(result);
 	}
 
 	[TestMethod]
@@ -421,6 +433,7 @@ public sealed class ImportTest
 			importIndexItem.FileIndexItem.ParentDirectory!,
 			importIndexItem.FileIndexItem.FileName!,
 			index);
+
 		return result;
 	}
 

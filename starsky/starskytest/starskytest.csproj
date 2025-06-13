@@ -25,13 +25,14 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.17" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
         <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-        <PackageReference Include="MSTest.TestAdapter" Version="3.9.1"/>
-        <PackageReference Include="MSTest.TestFramework" Version="3.9.1"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1"/>
+        <PackageReference Include="MSTest.TestAdapter" Version="3.9.2"/>
+        <PackageReference Include="MSTest.TestFramework" Version="3.9.2"/>
         <PackageReference Include="coverlet.collector" Version="6.0.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Verify.MSTest" Version="30.4.0" />
     </ItemGroup>
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">
@@ -100,6 +101,18 @@
         <None Update="starsky.feature.health\ExampleData\CheckForUpdatesHelperTestSample.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+        <None Update="starsky.feature.import\Services\ImportTest.Preflight_SingleImage_ForceOverWrite_ColorClassOverwrite.verified.txt">
+            <DependentUpon>ImportTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.feature.import\Services\ImportTestInMemoryDb.Importer_Gpx.received.txt">
+            <DependentUpon>ImportTest_InMemoryDb.cs</DependentUpon>
+        </None>
+        <None Update="starsky.feature.import\Services\ImportTestInMemoryDb.Importer_Gpx.verified.txt">
+            <DependentUpon>ImportTest_InMemoryDb.cs</DependentUpon>
+        </None>
+        <None Update="starsky.feature.import\Services\ImportTest.Preflight_SingleImage_ForceOverWrite_ColorClassOverwrite.received.txt">
+          <DependentUpon>ImportTest.cs</DependentUpon>
+        </None>
     </ItemGroup>
     <ItemGroup>
         <None Remove="FakeCreateAn\CreateFakeExifToolWindows\exiftool.zip"/>
@@ -165,9 +178,9 @@
         <Content Include="FakeCreateAn\CreateAnImageWhiteJpeg\white.jpg">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <None Remove="FakeCreateAn\CreateAnImageA6700\a6700.jpg" />
+        <None Remove="FakeCreateAn\CreateAnImageA6700\a6700.jpg"/>
         <Content Include="FakeCreateAn\CreateAnImageA6700\a6700.jpg">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
 
