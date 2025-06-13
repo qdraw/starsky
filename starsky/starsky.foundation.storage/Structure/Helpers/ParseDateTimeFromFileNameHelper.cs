@@ -7,23 +7,11 @@ using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.storage.Structure.Helpers;
 
-public class ParseDateTimeFromFileNameHelper
+public class ParseDateTimeFromFileNameHelper(AppSettingsStructureModel settingsStructure)
 {
-	private readonly AppSettingsStructureModel _structure;
-
-	public ParseDateTimeFromFileNameHelper(AppSettings appSettings)
-	{
-		_structure = appSettings.Structure;
-	}
-
-	public ParseDateTimeFromFileNameHelper(AppSettingsStructureModel settingsStructure)
-	{
-		_structure = settingsStructure;
-	}
-
 	public DateTime ParseDateTimeFromFileName(StructureInputModel inputModel)
 	{
-		var structure = StructureService.GetStructureSetting(_structure, inputModel);
+		var structure = StructureService.GetStructureSetting(settingsStructure, inputModel);
 
 		// Depends on 'AppSettingsProvider.Structure'
 		// depends on SourceFullFilePath
@@ -77,9 +65,30 @@ public class ParseDateTimeFromFileNameHelper
 		// For the situation that the image has no exif date and there is an appendix used (in the config)
 		if ( !string.IsNullOrWhiteSpace(fileName) && structuredFileName.Length >= fileName.Length )
 		{
-			structuredFileName = structuredFileName.Substring(0, fileName.Length - 1);
+			var structuredFileName2 = structuredFileName.Substring(0, fileName.Length - 1);
 
 			DateTime.TryParseExact(fileName,
+				structuredFileName2,
+				CultureInfo.InvariantCulture,
+				DateTimeStyles.None,
+				out dateTime);
+		}
+
+		if ( dateTime.Year >= 2 )
+		{
+			return dateTime;
+		}
+
+		// remove non numeric characters
+		if ( !string.IsNullOrWhiteSpace(fileName) && fileName.Length >= structuredFileName.Length )
+		{
+			var numericPattern = new Regex("[^0-9]", RegexOptions.None,
+				TimeSpan.FromMilliseconds(1000));
+			var fileName2 = numericPattern.Replace(fileName, string.Empty);
+
+			fileName2 = fileName2.Substring(0, structuredFileName.Length - 1);
+
+			DateTime.TryParseExact(fileName2,
 				structuredFileName,
 				CultureInfo.InvariantCulture,
 				DateTimeStyles.None,
@@ -95,7 +104,9 @@ public class ParseDateTimeFromFileNameHelper
 		// used in the source filename AND the config
 		if ( !string.IsNullOrEmpty(fileName) && fileName.Length >= structuredFileName.Length )
 		{
-			structuredFileName = RemoveEscapedCharacters(structuredFileName);
+			var structuredFileName2 = structuredFileName.Substring(0, fileName.Length - 1);
+
+			structuredFileName = RemoveEscapedCharacters(structuredFileName2);
 
 			// short the filename with structuredFileName
 			fileName = fileName.Substring(0, structuredFileName.Length);

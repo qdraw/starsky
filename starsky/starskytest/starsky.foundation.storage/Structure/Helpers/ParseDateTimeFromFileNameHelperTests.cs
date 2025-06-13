@@ -32,10 +32,11 @@ public class ParseDateTimeFromFileNameHelperTests
 	public void ParseDateTimeFromFileName_Null()
 	{
 		var dateTime =
-			new ParseDateTimeFromFileNameHelper(new AppSettings()).ParseDateTimeFromFileName(
-				new StructureInputModel(
-					new DateTime(0, DateTimeKind.Utc), string.Empty,
-					string.Empty, ExtensionRolesHelper.ImageFormat.notfound));
+			new ParseDateTimeFromFileNameHelper(new AppSettings().Structure)
+				.ParseDateTimeFromFileName(
+					new StructureInputModel(
+						new DateTime(0, DateTimeKind.Utc), string.Empty,
+						string.Empty, ExtensionRolesHelper.ImageFormat.notfound));
 		Assert.AreEqual(new DateTime(), dateTime);
 	}
 
@@ -80,7 +81,8 @@ public class ParseDateTimeFromFileNameHelperTests
 		var model = new StructureInputModel(DateTime.Now,
 			"2018 08 20 19 03 00.jpg", "jpg", ExtensionRolesHelper.ImageFormat.notfound);
 		var result =
-			new ParseDateTimeFromFileNameHelper(_appSettings).ParseDateTimeFromFileName(model);
+			new ParseDateTimeFromFileNameHelper(_appSettings.Structure)
+				.ParseDateTimeFromFileName(model);
 
 		DateTime.TryParseExact(
 			"20180820_190300",
@@ -106,7 +108,8 @@ public class ParseDateTimeFromFileNameHelperTests
 
 		// Act
 		var result =
-			new ParseDateTimeFromFileNameHelper(_appSettings).ParseDateTimeFromFileName(model);
+			new ParseDateTimeFromFileNameHelper(_appSettings.Structure)
+				.ParseDateTimeFromFileName(model);
 
 		// Assert
 		Assert.AreEqual(new DateTime(2019, 10, 1,
@@ -122,9 +125,10 @@ public class ParseDateTimeFromFileNameHelperTests
 		_appSettings.Structure = new AppSettingsStructureModel(structure);
 
 		// Act
-		var result = new ParseDateTimeFromFileNameHelper(_appSettings).ParseDateTimeFromFileName(
-			new StructureInputModel(DateTime.UtcNow, sourceFilePath,
-				"jpg", ExtensionRolesHelper.ImageFormat.notfound));
+		var result = new ParseDateTimeFromFileNameHelper(_appSettings.Structure)
+			.ParseDateTimeFromFileName(
+				new StructureInputModel(DateTime.UtcNow, sourceFilePath,
+					"jpg", ExtensionRolesHelper.ImageFormat.notfound));
 
 		// Assert
 		Assert.AreEqual(new DateTime(), result);
@@ -136,10 +140,11 @@ public class ParseDateTimeFromFileNameHelperTests
 		const string structure = "/yyyyMMdd_HHmmss.ext";
 		_appSettings.Structure = new AppSettingsStructureModel(structure);
 
-		var result = new ParseDateTimeFromFileNameHelper(_appSettings).ParseDateTimeFromFileName(
-			new StructureInputModel(DateTime.UtcNow,
-				"20180101_011223.jpg",
-				"jpg", ExtensionRolesHelper.ImageFormat.notfound));
+		var result = new ParseDateTimeFromFileNameHelper(_appSettings.Structure)
+			.ParseDateTimeFromFileName(
+				new StructureInputModel(DateTime.UtcNow,
+					"20180101_011223.jpg",
+					"jpg", ExtensionRolesHelper.ImageFormat.notfound));
 
 		DateTime.TryParseExact(
 			"20180101_011223",
@@ -157,10 +162,11 @@ public class ParseDateTimeFromFileNameHelperTests
 		const string structure = "/yyyyMMdd_HHmmss_{filenamebase}.ext";
 		_appSettings.Structure = new AppSettingsStructureModel(structure);
 
-		var result = new ParseDateTimeFromFileNameHelper(_appSettings).ParseDateTimeFromFileName(
-			new StructureInputModel(DateTime.UtcNow,
-				"2018-07-26 19.45.23.jpg",
-				"jpg", ExtensionRolesHelper.ImageFormat.notfound));
+		var result = new ParseDateTimeFromFileNameHelper(_appSettings.Structure)
+			.ParseDateTimeFromFileName(
+				new StructureInputModel(DateTime.UtcNow,
+					"2018-07-26 19.45.23.jpg",
+					"jpg", ExtensionRolesHelper.ImageFormat.notfound));
 
 		DateTime.TryParseExact(
 			"20180726_194523",
@@ -178,10 +184,11 @@ public class ParseDateTimeFromFileNameHelperTests
 		const string structure = "/yyyyMMdd_HHmmss_\\d\\e\\f\\g.ext";
 		_appSettings.Structure = new AppSettingsStructureModel(structure);
 
-		var result = new ParseDateTimeFromFileNameHelper(_appSettings).ParseDateTimeFromFileName(
-			new StructureInputModel(DateTime.UtcNow,
-				"20180726_194523.jpg",
-				"jpg", ExtensionRolesHelper.ImageFormat.notfound));
+		var result = new ParseDateTimeFromFileNameHelper(_appSettings.Structure)
+			.ParseDateTimeFromFileName(
+				new StructureInputModel(DateTime.UtcNow,
+					"20180726_194523.jpg",
+					"jpg", ExtensionRolesHelper.ImageFormat.notfound));
 
 		DateTime.TryParseExact(
 			"20180726_194523",
@@ -198,10 +205,11 @@ public class ParseDateTimeFromFileNameHelperTests
 	{
 		_appSettings.Structure = new AppSettingsStructureModel();
 
-		var result = new ParseDateTimeFromFileNameHelper(_appSettings).ParseDateTimeFromFileName(
-			new StructureInputModel(DateTime.UtcNow,
-				".jpg",
-				"jpg", ExtensionRolesHelper.ImageFormat.notfound));
+		var result = new ParseDateTimeFromFileNameHelper(_appSettings.Structure)
+			.ParseDateTimeFromFileName(
+				new StructureInputModel(DateTime.UtcNow,
+					".jpg",
+					"jpg", ExtensionRolesHelper.ImageFormat.notfound));
 
 		Assert.AreEqual(result, result);
 	}
@@ -212,10 +220,11 @@ public class ParseDateTimeFromFileNameHelperTests
 		const string structure = "/yyyyMMdd_HHmmss.ext";
 		_appSettings.Structure = new AppSettingsStructureModel(structure);
 
-		var result = new ParseDateTimeFromFileNameHelper(_appSettings).ParseDateTimeFromFileName(
-			new StructureInputModel(DateTime.UtcNow,
-				"2018-02-03 18.47.35.jpg",
-				"jpg", ExtensionRolesHelper.ImageFormat.notfound));
+		var result = new ParseDateTimeFromFileNameHelper(_appSettings.Structure)
+			.ParseDateTimeFromFileName(
+				new StructureInputModel(DateTime.UtcNow,
+					"2018-02-03 18.47.35.jpg",
+					"jpg", ExtensionRolesHelper.ImageFormat.notfound));
 
 		DateTime.TryParseExact(
 			"20180203_184735",
@@ -225,5 +234,35 @@ public class ParseDateTimeFromFileNameHelperTests
 			out var answerDateTime);
 
 		Assert.AreEqual(answerDateTime, result);
+	}
+
+	[TestMethod]
+	[DataRow("2023-10-05", "2023-10-05")]
+	[DataRow("Schermafbeelding 2025-06-12 om 15.16.00.png", "2025-06-12 15:16:00")]
+	[DataRow("20231005", "2023-10-05")]
+	[DataRow("invalid-date", "0001-01-01")]
+	[DataRow("2023-10-05@12:00:00.jpg", "2023-10-05 12:00:00")]
+	[DataRow("filename_without_date.jpg", "0001-01-01")]
+	[DataRow("2023-10-05_2023-10-06.jpg", "2023-10-05")]
+	[DataRow("05-10-2023 12:00:00.jpg", "2023-10-05 12:00:00")]
+	[DataRow("  2023-10-05  .jpg", "2023-10-05")]
+	[DataRow("123456.jpg", "0001-01-01")]
+	[DataRow("invalid_2023-10-05_valid.jpg", "2023-10-05")]
+	[DataRow("2023-10-05_invalidtime.jpg", "2023-10-05")]
+	[DataRow("2023-10-05T12:00:00Z.jpg", "2023-10-05 12:00:00")]
+	public void ParseDateTimeFromFileName_ValidatesVariousFormats(
+		string fileNameBase, string expectedDate)
+	{
+		// Arrange
+		var settingsStructure = new AppSettingsStructureModel();
+		var inputModel = new StructureInputModel(DateTime.MinValue, fileNameBase, string.Empty,
+			ExtensionRolesHelper.ImageFormat.notfound);
+		var helper = new ParseDateTimeFromFileNameHelper(settingsStructure);
+
+		// Act
+		var result = helper.ParseDateTimeFromFileName(inputModel);
+
+		// Assert
+		Assert.AreEqual(DateTime.Parse(expectedDate, CultureInfo.InvariantCulture), result);
 	}
 }

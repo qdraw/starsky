@@ -8,18 +8,18 @@ namespace starsky.feature.import.Models;
 
 public class ImportSettingsModel
 {
+	private readonly List<string> _structureErrors = [];
+
 	/// <summary>
-	///     -1 is ignore
+	///     when set to -1 this means ignore
+	///     Int value between 0 and 8
 	/// </summary>
 	private int _colorClass = -1;
 
-
-	// This is optional, when not in use ignore this setting
+	/// <summary>
+	///     This is optional, when not in use ignore this setting
+	/// </summary>
 	private string _structure = string.Empty;
-
-	private readonly List<string> _structureErrors = [];
-
-	public IReadOnlyList<string> StructureErrors => _structureErrors;
 
 	// Default constructor
 	public ImportSettingsModel()
@@ -60,6 +60,15 @@ public class ImportSettingsModel
 		}
 	}
 
+	/// <summary>
+	///     List of structure errors
+	/// </summary>
+	public IReadOnlyList<string> StructureErrors => _structureErrors;
+
+	/// <summary>
+	///     Overwrite the structure setting,
+	///     when setting an invalid structure the default structure will be used
+	/// </summary>
 	public string Structure
 	{
 		get => string.IsNullOrEmpty(_structure)
@@ -79,13 +88,20 @@ public class ImportSettingsModel
 		}
 	}
 
+	/// <summary>
+	///     Delete after import
+	/// </summary>
 	public bool DeleteAfter { get; set; }
 
+	/// <summary>
+	///     Import all files in the directory recursively
+	/// </summary>
 	public bool RecursiveDirectory { get; set; }
 
 	/// <summary>
 	///     Overwrite ColorClass settings
 	///     Int value between 0 and 8
+	///     when set to -1 this means ignore
 	/// </summary>
 	public int ColorClass
 	{
@@ -108,7 +124,14 @@ public class ImportSettingsModel
 	/// </summary>
 	public bool IndexMode { get; set; }
 
+	/// <summary>
+	///     Which console output mode to use
+	/// </summary>
 	public ConsoleOutputMode ConsoleOutputMode { get; set; }
+
+	/// <summary>
+	///     Enable reverse geocoding when importing files.
+	/// </summary>
 	public bool ReverseGeoCode { get; set; } = true;
 
 	public bool IsConsoleOutputModeDefault()
