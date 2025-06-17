@@ -46,7 +46,8 @@ public sealed class ReplaceServiceTest
 				"/test5.dng",
 				"/test5.xmp",
 				"/test_ok_and_same.jpg",
-				"/test_deleted_and_same.jpg"
+				"/test_deleted_and_same.jpg",
+				"/test_default_status.jpg",
 			});
 		_metaReplace = new MetaReplaceService(_query,
 			new AppSettings { ReadOnlyFolders = new List<string> { "/readonly" } },
@@ -132,6 +133,28 @@ public sealed class ReplaceServiceTest
 		});
 
 		var output = await _metaReplace.Replace("/test_ok_and_same.jpg",
+			nameof(FileIndexItem.Tags), TrashKeyword.TrashKeywordString,
+			string.Empty, false);
+
+		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, output[0].Status);
+		Assert.AreEqual("test1, test", output[0].Tags);
+		await _query.RemoveItemAsync(item1);
+	}
+	
+	[TestMethod]
+	public async Task ReplaceServiceTest_replaceString_DefaultStatus()
+	{
+		// Default query can be Default
+
+		var item1 = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "test_default_status.jpg",
+			ParentDirectory = "/",
+			Tags = $"test1, {TrashKeyword.TrashKeywordString}, test",
+			Status = FileIndexItem.ExifStatus.Default // this Default if its first time in query
+		});
+
+		var output = await _metaReplace.Replace("/test_default_status.jpg",
 			nameof(FileIndexItem.Tags), TrashKeyword.TrashKeywordString,
 			string.Empty, false);
 
