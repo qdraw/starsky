@@ -551,6 +551,29 @@ public class ThumbnailQueryTest
 			.All(x => new List<string> { "123", "456" }.Contains(x)));
 	}
 
+	[DataTestMethod]
+	[DataRow("null")]
+	[DataRow("null2")]
+	public async Task CheckForDuplicates_Null(string command)
+	{
+		var item = command switch
+		{
+			"null" => null!,
+			"null2" => new ThumbnailItem(null!, null, true, null, null),
+			_ => null
+		};
+
+		var (newThumbnailItems, updateThumbnailItems, equalThumbnailItems) = await ThumbnailQuery.CheckForDuplicates(_context, 
+			new List<ThumbnailItem?>
+		{
+			item
+		});
+		Assert.AreEqual(0, newThumbnailItems.Count);
+		Assert.AreEqual(0, equalThumbnailItems.Count);
+		Assert.AreEqual(0, updateThumbnailItems.Count);
+
+	}
+
 	[TestMethod]
 	public async Task RenameAsync_ShouldRename()
 	{
