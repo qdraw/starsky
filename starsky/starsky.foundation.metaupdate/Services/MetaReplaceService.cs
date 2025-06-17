@@ -115,11 +115,6 @@ public class MetaReplaceService : IMetaReplaceService
 				continue;
 			}
 
-			if ( fileIndexItem.Status == FileIndexItem.ExifStatus.Default )
-			{
-				fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
-			}
-
 			fileIndexUpdatedList.Add(fileIndexItem);
 		}
 
