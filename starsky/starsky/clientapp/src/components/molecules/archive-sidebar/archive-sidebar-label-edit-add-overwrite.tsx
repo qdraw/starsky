@@ -187,7 +187,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
 
       {inputEnabled && select.length !== 0 ? (
         <button className="btn btn--info" data-test="overwrite" onClick={() => pushUpdate(false)}>
-          Overschrijven
+          {MessageOverwriteName}
         </button>
       ) : (
         <button disabled className="btn btn--info disabled">
