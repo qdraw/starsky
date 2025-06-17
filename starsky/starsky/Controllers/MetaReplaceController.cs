@@ -69,6 +69,7 @@ public sealed class MetaReplaceController : Controller
 		var resultsOkOrDeleteList = fileIndexResultsList.Where(p =>
 			p.Status is FileIndexItem.ExifStatus.Ok
 				or FileIndexItem.ExifStatus.OkAndSame
+				or FileIndexItem.ExifStatus.Default
 				or FileIndexItem.ExifStatus.Deleted
 				or FileIndexItem.ExifStatus.DeletedAndSame).ToList();
 
