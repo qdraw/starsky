@@ -427,4 +427,15 @@ public sealed class ReplaceServiceTest
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, output[0].Status);
 		Assert.AreEqual("test1, test", output[0].Tags);
 	}
+
+	[TestMethod]
+	public async Task ReplaceServiceTest_InvalidField()
+	{
+		var output = await _metaReplace.Replace("/test34598.jpg",
+			"Invalid-field-name", TrashKeyword.TrashKeywordString,
+			string.Empty, false);
+		
+		Assert.AreEqual(1, output.Count);
+		Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, output[0].Status);
+	}
 }
