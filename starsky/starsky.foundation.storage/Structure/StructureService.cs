@@ -182,7 +182,7 @@ public class StructureService : IStructureService
 	{
 		// allow only full word matches (so .ext is no match)
 		var matchCollection = new Regex(DateRegexPattern,
-			RegexOptions.None, TimeSpan.FromMilliseconds(100)).Matches(pattern);
+			RegexOptions.None, TimeSpan.FromMilliseconds(1000)).Matches(pattern);
 
 		foreach ( Match match in matchCollection )
 		{
@@ -313,7 +313,7 @@ public class StructureService : IStructureService
 
 		var matchRegex = new Regex(
 			parentFolderBuilder + currentChildFolderBuilder.ToString().Replace("*", ".+"),
-			RegexOptions.None, TimeSpan.FromMilliseconds(100)
+			RegexOptions.None, TimeSpan.FromMilliseconds(1000)
 		);
 		return matchRegex.IsMatch(p);
 	}
