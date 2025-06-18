@@ -3,7 +3,7 @@ namespace starsky.foundation.platform.Helpers;
 public static class GenerateSlugHelper
 {
 	/// <summary>
-	/// Generates a permalink slug for passed string
+	///     Generates a permalink slug for passed string
 	/// </summary>
 	/// <param name="phrase">input string</param>
 	/// <param name="allowUnderScore">to allow underscores in slug</param>
@@ -14,10 +14,13 @@ public static class GenerateSlugHelper
 		bool toLowerCase = true, bool allowAtSign = false)
 	{
 		var text = toLowerCase ? phrase.ToLowerInvariant() : phrase;
-		text = GenerateSlugHelperStaticRegex.CleanReplaceInvalidCharacters(text, allowAtSign, allowUnderScore);
+		text = GenerateSlugHelperReplacer.ReplaceSpecialCharacters(text);
+		text = GenerateSlugHelperStaticRegex.CleanReplaceInvalidCharacters(text,
+			allowAtSign,
+			allowUnderScore);
 		text = GenerateSlugHelperStaticRegex.CleanSpace(text);
 
-		text = text.Substring(0, text.Length <= 65 ? text.Length : 65).Trim(); // cut and trim
+		text = text[..(text.Length <= 65 ? text.Length : 65)].Trim(); // cut and trim
 		text = GenerateSlugHelperStaticRegex.ReplaceSpaceWithHyphen(text);
 		text = text.Trim('-'); // remove trailing hyphens
 		return text;

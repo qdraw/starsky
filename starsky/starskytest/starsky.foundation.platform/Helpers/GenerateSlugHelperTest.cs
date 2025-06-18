@@ -15,7 +15,7 @@ public class GenerateSlugHelperTest
 		// Length == 65
 		Assert.AreEqual(65, slug.Length);
 	}
-	
+
 	[TestMethod]
 	public void TestSpecialCharacters()
 	{
@@ -24,16 +24,16 @@ public class GenerateSlugHelperTest
 		var actualOutput = GenerateSlugHelper.GenerateSlug(input);
 		Assert.AreEqual(expectedOutput, actualOutput);
 	}
-	
+
 	[TestMethod]
 	public void TestLeadingTrailingSpaces()
 	{
-		const string input =  "   Trim Spaces   ";
+		const string input = "   Trim Spaces   ";
 		const string expectedOutput = "trim-spaces";
 		var actualOutput = GenerateSlugHelper.GenerateSlug(input);
 		Assert.AreEqual(expectedOutput, actualOutput);
 	}
-	
+
 	[TestMethod]
 	public void TestMixedCaseAndSpaces()
 	{
@@ -42,7 +42,7 @@ public class GenerateSlugHelperTest
 		var actualOutput = GenerateSlugHelper.GenerateSlug(input);
 		Assert.AreEqual(expectedOutput, actualOutput);
 	}
-	
+
 	[TestMethod]
 	public void TestTrailingHyphens()
 	{
@@ -51,7 +51,7 @@ public class GenerateSlugHelperTest
 		var actualOutput = GenerateSlugHelper.GenerateSlug(input);
 		Assert.AreEqual(expectedOutput, actualOutput);
 	}
-	
+
 	[TestMethod]
 	public void TestBeginHyphens()
 	{
@@ -116,5 +116,52 @@ public class GenerateSlugHelperTest
 	{
 		var slug = GenerateSlugHelper.GenerateSlug("a_b_c ");
 		Assert.AreEqual("abc", slug);
+	}
+
+	[DataTestMethod]
+	[DataRow("", "")]
+	[DataRow("Hello World", "hello-world")]
+	[DataRow("Hello World!", "hello-world")]
+	[DataRow("a_b_c ", "abc")]
+	[DataRow("    a_b_c    ", "abc")]
+	[DataRow("België", "belgie")]
+	[DataRow("Café", "cafe")]
+	[DataRow("Français", "francais")]
+	[DataRow("München", "munchen")]
+	[DataRow("São Paulo", "sao-paulo")]
+	[DataRow("Niño", "nino")]
+	[DataRow("ä", "a")]
+	[DataRow("ë", "e")]
+	[DataRow("é", "e")]
+	[DataRow("ç", "c")]
+	[DataRow("ü", "u")]
+	[DataRow("ñ", "n")]
+	[DataRow("ã", "a")]
+	[DataRow("ô", "o")]
+	[DataRow("ö", "o")]
+	[DataRow("ß", "ss")]
+	[DataRow("à", "a")]
+	[DataRow("á", "a")]
+	[DataRow("è", "e")]
+	[DataRow("ê", "e")]
+	[DataRow("ì", "i")]
+	[DataRow("í", "i")]
+	[DataRow("ò", "o")]
+	[DataRow("ó", "o")]
+	[DataRow("ù", "u")]
+	[DataRow("ú", "u")]
+	[DataRow("ý", "y")]
+	[DataRow("ÿ", "y")]
+	[DataRow("Æ", "ae")]
+	[DataRow("æ", "ae")]
+	[DataRow("Ø", "o")]
+	[DataRow("ø", "o")]
+	[DataRow("Å", "a")]
+	[DataRow("å", "a")]
+	public void GenerateSlug(string input, string expectedOutput)
+	{
+		// underscore is disabled by default
+		var slug = GenerateSlugHelper.GenerateSlug(input);
+		Assert.AreEqual(expectedOutput, slug);
 	}
 }
