@@ -70,10 +70,10 @@ public class MetaReplaceService : IMetaReplaceService
 
 		if ( !FileIndexCompareHelper.CheckIfPropertyExist(fieldName) )
 		{
-			return new List<FileIndexItem>
+			return [new FileIndexItem
 			{
-				new() { Status = FileIndexItem.ExifStatus.OperationNotSupported }
-			};
+				Status = FileIndexItem.ExifStatus.OperationNotSupported
+			}];
 		}
 
 		var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
@@ -148,6 +148,7 @@ public class MetaReplaceService : IMetaReplaceService
 		foreach ( var fileIndexItem in fileIndexResultsList.Where(
 			         p => p.Status
 				         is FileIndexItem.ExifStatus.Ok
+				         or FileIndexItem.ExifStatus.Default
 				         or FileIndexItem.ExifStatus.OkAndSame
 				         or FileIndexItem.ExifStatus.Deleted
 				         or FileIndexItem.ExifStatus.DeletedAndSame) )

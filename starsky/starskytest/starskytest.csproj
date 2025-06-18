@@ -25,14 +25,14 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.17" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
         <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1"/>
-        <PackageReference Include="MSTest.TestAdapter" Version="3.9.2"/>
-        <PackageReference Include="MSTest.TestFramework" Version="3.9.2"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+        <PackageReference Include="MSTest.TestAdapter" Version="3.9.3"/>
+        <PackageReference Include="MSTest.TestFramework" Version="3.9.3"/>
+        <PackageReference Include="Verify.MSTest" Version="30.4.0" />
         <PackageReference Include="coverlet.collector" Version="6.0.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Verify.MSTest" Version="30.4.0" />
     </ItemGroup>
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">
@@ -178,9 +178,9 @@
         <Content Include="FakeCreateAn\CreateAnImageWhiteJpeg\white.jpg">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <None Remove="FakeCreateAn\CreateAnImageA6700\a6700.jpg"/>
+        <None Remove="FakeCreateAn\CreateAnImageA6700\a6700.jpg" />
         <Content Include="FakeCreateAn\CreateAnImageA6700\a6700.jpg">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
 

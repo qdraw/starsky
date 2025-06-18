@@ -424,9 +424,16 @@ public class ThumbnailQuery : IThumbnailQuery
 		CheckForDuplicates(ApplicationDbContext context,
 			IEnumerable<ThumbnailItem?> updateThumbnailNewItemsList)
 	{
-		var nonNullItems = updateThumbnailNewItemsList.Where(item => item != null &&
-			item.FileHash != null!).Distinct().ToList();
+		var nonNullItems = updateThumbnailNewItemsList
+			.Where(item => item != null && item.FileHash != null!)
+			.Distinct()
+			.ToList();
 
+		if (nonNullItems.Count == 0 )
+		{
+			return ( [], [], [] );
+		}
+		
 		var dbThumbnailItems = await context.Thumbnails
 			.Where(p => nonNullItems.Select(x => x!.FileHash)
 				.Contains(p.FileHash)).ToListAsync();

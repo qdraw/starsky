@@ -114,7 +114,7 @@ namespace starsky.foundation.worker.Helpers
 			}
 			catch ( Exception ex )
 			{
-				logger.LogError(ex, "Error occurred executing task work item.");
+				logger.LogError(ex, $"Error occurred executing task work item. {ex.Message}");
 			}
 		}
 

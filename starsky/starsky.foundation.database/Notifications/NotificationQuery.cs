@@ -88,7 +88,7 @@ public sealed class NotificationQuery : INotificationQuery
 		}
 
 		_logger.LogError($"[NotificationQuery]: {ErrorMessageContentToLong} " +
-		                 $"{content.Length} - First 1000 chars: {content[..1000]}");
+		                 $"{content.Length} - First 3000 chars: {content[..3000]}");
 		return item;
 
 		async Task<NotificationItem> LocalAdd(ApplicationDbContext context)

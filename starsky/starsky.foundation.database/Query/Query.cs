@@ -784,7 +784,8 @@ public partial class Query : IQuery
 		{
 			return await LocalQuery(_context);
 		}
-		catch ( ObjectDisposedException )
+		// InvalidOperationException can also be disposed (ObjectDisposedException)
+		catch ( InvalidOperationException )
 		{
 			return await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
 		}
