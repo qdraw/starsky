@@ -1,3 +1,4 @@
+// this file is excluded from the build in vite.config.ts
 export const mockObserve = jest.fn();
 export const mockUnobserve = jest.fn();
 export const mockDisconnect = jest.fn();
