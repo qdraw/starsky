@@ -4,10 +4,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -131,8 +129,7 @@ public sealed class Startup
 			);
 
 		// There is a base-cookie and in index controller there is a method to generate a token that is used to send with the header: X-XSRF-TOKEN
-		services.AddAntiforgery(
-			options =>
+		services.AddAntiforgery(options =>
 			{
 				options.Cookie.Name = "_af";
 				options.Cookie.HttpOnly =
@@ -232,7 +229,7 @@ public sealed class Startup
 			options.Level = CompressionLevel.Fastest;
 		});
 	}
-	
+
 	/// <summary>
 	///     This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 	/// </summary>
