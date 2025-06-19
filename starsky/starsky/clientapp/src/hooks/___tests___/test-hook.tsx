@@ -1,6 +1,8 @@
 import { render, RenderResult } from "@testing-library/react";
 import { act } from "react";
 
+// this file is excluded from the build in vite.config.ts
+
 type ModalPropTypes = {
   children: (hookValues: unknown) => React.ReactNode;
 };
