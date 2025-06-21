@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import useLocation from "../../../hooks/use-location/use-location";
+import useLocation from "../../../hooks/use-location/use-location-legacy";
 import { URLPath } from "../../../shared/url/url-path";
 import { UrlQuery } from "../../../shared/url/url-query";
 import Link from "../../atoms/link/link";

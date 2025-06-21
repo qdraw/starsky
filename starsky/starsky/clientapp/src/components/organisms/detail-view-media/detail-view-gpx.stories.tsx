@@ -1,4 +1,4 @@
-import useLocation from "../../../hooks/use-location/use-location";
+import useLocation from "../../../hooks/use-location/use-location-legacy";
 import DetailViewGpx from "./detail-view-gpx";
 
 export default {

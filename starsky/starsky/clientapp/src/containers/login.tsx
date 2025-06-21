@@ -3,7 +3,7 @@ import ButtonStyled from "../components/atoms/button-styled/button-styled";
 import Preloader from "../components/atoms/preloader/preloader";
 import useFetch from "../hooks/use-fetch";
 import useGlobalSettings from "../hooks/use-global-settings";
-import useLocation from "../hooks/use-location/use-location";
+import useLocation from "../hooks/use-location/use-location-legacy";
 import localization from "../localization/localization.json";
 import { BrowserDetect } from "../shared/browser-detect";
 import { DocumentTitle } from "../shared/document-title";

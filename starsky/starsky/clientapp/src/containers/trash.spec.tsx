@@ -1,4 +1,5 @@
 import { render } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import * as useFetch from "../hooks/use-fetch";
 import { newIArchive } from "../interfaces/IArchive";
 import { newIConnectionDefault } from "../interfaces/IConnectionDefault";
@@ -18,12 +19,14 @@ describe("Trash", () => {
     jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
 
     const container = render(
-      <Trash
-        {...newIArchive()}
-        colorClassActiveList={[]}
-        colorClassUsage={[]}
-        fileIndexItems={[]}
-      />
+      <MemoryRouter>
+        <Trash
+          {...newIArchive()}
+          colorClassActiveList={[]}
+          colorClassUsage={[]}
+          fileIndexItems={[]}
+        />
+      </MemoryRouter>
     );
     expect(container.container.innerHTML).toContain("warning-box");
 

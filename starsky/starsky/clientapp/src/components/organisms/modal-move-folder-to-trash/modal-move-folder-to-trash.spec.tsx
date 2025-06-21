@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { act } from "react";
 import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
-import * as useLocation from "../../../hooks/use-location/use-location";
+import * as useLocation from "../../../hooks/use-location/use-location-legacy";
 import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import * as FetchPost from "../../../shared/fetch/fetch-post";

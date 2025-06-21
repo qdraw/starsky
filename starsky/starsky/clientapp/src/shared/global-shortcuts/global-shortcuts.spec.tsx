@@ -1,6 +1,6 @@
 import React from "react";
 import * as useHotKeysParent from "../../hooks/use-keyboard/use-hotkeys";
-import * as useLocation from "../../hooks/use-location/use-location";
+import * as useLocation from "../../hooks/use-location/use-location-legacy";
 import { UrlQuery } from "../url/url-query";
 import { GlobalShortcuts } from "./global-shortcuts";
 

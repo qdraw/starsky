@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import useGlobalSettings from "../../../../hooks/use-global-settings";
-import useLocation from "../../../../hooks/use-location/use-location";
+import useLocation from "../../../../hooks/use-location/use-location-legacy";
 import { IConnectionDefault } from "../../../../interfaces/IConnectionDefault";
 import { IEnvFeatures } from "../../../../interfaces/IEnvFeatures";
 import localization from "../../../../localization/localization.json";

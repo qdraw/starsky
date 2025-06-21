@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useState } from "react";
 import { ArchiveContext } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import useLocation from "../../../hooks/use-location/use-location";
+import useLocation from "../../../hooks/use-location/use-location-legacy.ts";
 import { newIArchive } from "../../../interfaces/IArchive";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps.ts";
 import localization from "../../../localization/localization.json";

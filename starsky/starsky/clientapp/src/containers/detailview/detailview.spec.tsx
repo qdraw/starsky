@@ -1,6 +1,6 @@
 import { fireEvent, render, RenderResult } from "@testing-library/react";
 import { act, useState } from "react";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, MemoryRouter } from "react-router-dom";
 import * as FileHashImage from "../../components/atoms/file-hash-image/file-hash-image";
 import { IFileHashImageProps } from "../../components/atoms/file-hash-image/file-hash-image";
 import * as Link from "../../components/atoms/link/link";
@@ -8,7 +8,7 @@ import * as MenuDetailView from "../../components/organisms/menu-detail-view/men
 import * as ContextDetailview from "../../contexts/detailview-context";
 import * as useFetch from "../../hooks/use-fetch";
 import * as useGestures from "../../hooks/use-gestures/use-gestures";
-import * as useLocation from "../../hooks/use-location/use-location";
+import * as useLocation from "../../hooks/use-location/use-location-legacy";
 import { newIConnectionDefault } from "../../interfaces/IConnectionDefault";
 import {
   IDetailView,
@@ -45,11 +45,15 @@ describe("DetailView", () => {
       .mockImplementationOnce((props) => fileHashImageMock(props));
   });
 
-  it("renders", () => {
+  it("renders DetailView", () => {
     jest
       .spyOn(FileHashImage, "default")
       .mockImplementationOnce((props) => fileHashImageMock(props));
-    render(<DetailView {...newDetailView()} />);
+    render(
+      <MemoryRouter>
+        <DetailView {...newDetailView()} />
+      </MemoryRouter>
+    );
   });
 
   const defaultState = {

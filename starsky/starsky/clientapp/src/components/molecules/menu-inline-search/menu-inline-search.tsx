@@ -1,6 +1,6 @@
 import { FormEvent, FunctionComponent, useEffect, useRef, useState } from "react";
 import useFetch from "../../../hooks/use-fetch";
-import useLocation from "../../../hooks/use-location/use-location";
+import useLocation from "../../../hooks/use-location/use-location-legacy";
 import { UrlQuery } from "../../../shared/url/url-query";
 import ArrowKeyDown from "./internal/arrow-key-down";
 import InlineSearchSuggest from "./internal/inline-search-suggest";
