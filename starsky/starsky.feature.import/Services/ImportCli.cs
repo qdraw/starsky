@@ -73,7 +73,8 @@ public class ImportCli
 			RecursiveDirectory = ArgsHelper.NeedRecursive(args),
 			IndexMode = ArgsHelper.GetIndexMode(args),
 			ColorClass = ArgsHelper.GetColorClass(args),
-			ConsoleOutputMode = ArgsHelper.GetConsoleOutputMode(args)
+			ConsoleOutputMode = ArgsHelper.GetConsoleOutputMode(args),
+			Origin = ArgsHelper.GetOrigin(args)
 		};
 
 		if ( _appSettings.IsVerbose() )
@@ -82,7 +83,8 @@ public class ImportCli
 			                   $"RecursiveDirectory {importSettings.RecursiveDirectory}, " +
 			                   $"ColorClass (overwrite) {importSettings.ColorClass}, " +
 			                   $"Structure {_appSettings.Structure}, " +
-			                   $"IndexMode {importSettings.IndexMode}");
+			                   $"IndexMode {importSettings.IndexMode}" +
+			                   $"Source {importSettings.Origin}");
 		}
 
 		var stopWatch = Stopwatch.StartNew();

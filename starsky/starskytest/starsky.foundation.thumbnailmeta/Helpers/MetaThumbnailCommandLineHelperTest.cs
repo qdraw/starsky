@@ -18,7 +18,7 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Helpers
 			var console = new FakeConsoleWrapper();
 			var metaCli = new MetaThumbnailCommandLineHelper(new FakeSelectorStorage(),
 				new AppSettings(), console, new FakeIMetaExifThumbnailService(),
-				new FakeIMetaUpdateStatusThumbnailService());
+				new FakeIMetaUpdateStatusThumbnailService(), new FakeIWebLogger());
 
 			await metaCli.CommandLineAsync(new List<string> { "-h", }.ToArray());
 
@@ -32,7 +32,7 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Helpers
 			var fakeMetaThumb = new FakeIMetaExifThumbnailService();
 			var metaCli = new MetaThumbnailCommandLineHelper(new FakeSelectorStorage(),
 				new AppSettings(), console, fakeMetaThumb,
-				new FakeIMetaUpdateStatusThumbnailService());
+				new FakeIMetaUpdateStatusThumbnailService(), new FakeIWebLogger());
 
 			await metaCli.CommandLineAsync(new List<string> { "-p", "/test" }.ToArray());
 
@@ -48,7 +48,7 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Helpers
 			var fakeMetaThumb = new FakeIMetaExifThumbnailService();
 			var metaCli = new MetaThumbnailCommandLineHelper(new FakeSelectorStorage(),
 				new AppSettings(), console, fakeMetaThumb,
-				new FakeIMetaUpdateStatusThumbnailService());
+				new FakeIMetaUpdateStatusThumbnailService(), new FakeIWebLogger());
 
 			await metaCli.CommandLineAsync(new List<string> { "-g", "0" }.ToArray());
 

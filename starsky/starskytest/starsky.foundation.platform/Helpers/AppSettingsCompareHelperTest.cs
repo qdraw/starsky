@@ -16,8 +16,91 @@ public sealed class AppSettingsCompareHelperTest
 		var input = new AppSettings();
 		AppSettingsCompareHelper.Compare(input);
 
-		Assert.AreEqual(input.Structure, new AppSettings().Structure);
+		Assert.AreEqual(input.Name, new AppSettings().Name);
 	}
+
+	[TestMethod]
+	public void Structure()
+	{
+		var source = new AppSettings
+		{
+			Structure =
+				new AppSettingsStructureModel("/yyyy_MM_dd/yyyyMMdd_HHmmss_{filenamebase}.ext")
+				{
+					Rules =
+					[
+						new StructureRule
+						{
+							Pattern = "/yyyy_MM_dd/clip/yyyyMMdd_HHmmss_{filenamebase}.ext",
+							Conditions = new StructureRuleConditions
+							{
+								ImageFormats = [ExtensionRolesHelper.ImageFormat.mp4]
+							}
+						}
+					]
+				}
+		};
+
+		var to = new AppSettings
+		{
+			Structure =
+				new AppSettingsStructureModel("/mm/yyyy_MM_dd/yyyyMMdd_HHmmss_{filenamebase}.ext")
+				{
+					Rules =
+					[
+						new StructureRule
+						{
+							Pattern = "/yyyy_MM_dd/test/yyyyMMdd_HHmmss_{filenamebase}.ext",
+							Conditions = new StructureRuleConditions
+							{
+								ImageFormats = [ExtensionRolesHelper.ImageFormat.jpg]
+							}
+						}
+					]
+				}
+		};
+
+		AppSettingsCompareHelper.Compare(source, to);
+
+		Assert.AreEqual(source.Structure.DefaultPattern, to.Structure.DefaultPattern);
+		Assert.AreEqual(source.Structure.Rules[0].Conditions, to.Structure.Rules[0].Conditions);
+		Assert.AreEqual(source.Structure.Rules[0].Pattern, to.Structure.Rules[0].Pattern);
+	}
+
+	[TestMethod]
+	public void Structure_Ignore_DefaultOption()
+	{
+		var source = new AppSettings
+		{
+			Structure =
+				new AppSettingsStructureModel("/yyyy_MM_dd/yyyyMMdd_HHmmss_{filenamebase}.ext")
+				{
+					Rules =
+					[
+						new StructureRule
+						{
+							Pattern = "/yyyy_MM_dd/clip/yyyyMMdd_HHmmss_{filenamebase}.ext",
+							Conditions = new StructureRuleConditions
+							{
+								ImageFormats = [ExtensionRolesHelper.ImageFormat.mp4]
+							}
+						}
+					]
+				}
+		};
+
+		var to = new AppSettings { Structure = new AppSettingsStructureModel() };
+
+		AppSettingsCompareHelper.Compare(source, to);
+
+		Assert.AreEqual("/yyyy_MM_dd/yyyyMMdd_HHmmss_{filenamebase}.ext",
+			source.Structure.DefaultPattern);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.mp4,
+			source.Structure.Rules[0].Conditions.ImageFormats[0]);
+		Assert.AreEqual("/yyyy_MM_dd/clip/yyyyMMdd_HHmmss_{filenamebase}.ext",
+			source.Structure.Rules[0].Pattern);
+	}
+
 
 	[TestMethod]
 	public void StringCompare()

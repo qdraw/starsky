@@ -28,6 +28,7 @@
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
         <PackageReference Include="MSTest.TestAdapter" Version="3.9.3"/>
         <PackageReference Include="MSTest.TestFramework" Version="3.9.3"/>
+        <PackageReference Include="Verify.MSTest" Version="30.4.0" />
         <PackageReference Include="coverlet.collector" Version="6.0.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -99,6 +100,18 @@
         </None>
         <None Update="starsky.feature.health\ExampleData\CheckForUpdatesHelperTestSample.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="starsky.feature.import\Services\ImportTest.Preflight_SingleImage_ForceOverWrite_ColorClassOverwrite.verified.txt">
+            <DependentUpon>ImportTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.feature.import\Services\ImportTestInMemoryDb.Importer_Gpx.received.txt">
+            <DependentUpon>ImportTest_InMemoryDb.cs</DependentUpon>
+        </None>
+        <None Update="starsky.feature.import\Services\ImportTestInMemoryDb.Importer_Gpx.verified.txt">
+            <DependentUpon>ImportTest_InMemoryDb.cs</DependentUpon>
+        </None>
+        <None Update="starsky.feature.import\Services\ImportTest.Preflight_SingleImage_ForceOverWrite_ColorClassOverwrite.received.txt">
+          <DependentUpon>ImportTest.cs</DependentUpon>
         </None>
     </ItemGroup>
     <ItemGroup>
