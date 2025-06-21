@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ArchiveContext } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useInterval from "../../../hooks/use-interval";
-import useLocation from "../../../hooks/use-location/use-location";
+import useLocation from "../../../hooks/use-location/use-location-legacy.ts";
 import localization from "../../../localization/localization.json";
 import FetchGet from "../../../shared/fetch/fetch-get";
 import FetchPost from "../../../shared/fetch/fetch-post";

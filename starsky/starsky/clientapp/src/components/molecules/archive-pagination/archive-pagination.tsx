@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import useLocation from "../../../hooks/use-location/use-location";
+import useLocation from "../../../hooks/use-location/use-location-legacy";
 import { IRelativeObjects } from "../../../interfaces/IDetailView";
 import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";

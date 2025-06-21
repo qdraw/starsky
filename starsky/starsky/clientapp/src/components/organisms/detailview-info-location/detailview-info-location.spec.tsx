@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import * as useLocation from "../../../hooks/use-location/use-location";
+import * as useLocation from "../../../hooks/use-location/use-location-legacy";
 
 import React, { act } from "react";
 import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";

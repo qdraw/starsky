@@ -1,10 +1,11 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useLocation as useRouterLocation } from "react-router-dom";
+
 import { INavigateState } from "../../interfaces/INavigateState";
 import { ILocationObject } from "./interfaces/ILocationObject";
 import { IUseLocation } from "./interfaces/IUseLocation";
 
-function useLocationState(): IUseLocation {
-  const locationReactRouter = useLocation();
+function useLocation(): IUseLocation {
+  const locationReactRouter = useRouterLocation();
   const navigate = useNavigate();
 
   const state = (locationReactRouter.state as INavigateState) ?? null;
@@ -15,4 +16,4 @@ function useLocationState(): IUseLocation {
   return { location, state, navigate };
 }
 
-export default useLocationState;
+export default useLocation;

@@ -1,5 +1,5 @@
 import React, { memo, useEffect } from "react";
-import useLocationState from "../../../hooks/use-location/use-location-state";
+import useLocation from "../../../hooks/use-location/use-location";
 import { PageType } from "../../../interfaces/IDetailView";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { URLPath } from "../../../shared/url/url-path";
@@ -22,7 +22,7 @@ interface ItemListProps {
  */
 const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
   // feature that saves the scroll height
-  const history = useLocationState();
+  const history = useLocation();
   const folderRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
