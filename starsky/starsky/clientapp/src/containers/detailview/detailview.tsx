@@ -8,7 +8,7 @@ import DetailViewSidebar from "../../components/organisms/detail-view-sidebar/de
 import { DetailViewContext } from "../../contexts/detailview-context";
 import { useGestures } from "../../hooks/use-gestures/use-gestures";
 import useKeyboardEvent from "../../hooks/use-keyboard/use-keyboard-event";
-import useLocation from "../../hooks/use-location/use-location";
+import useLocationState from "../../hooks/use-location/use-location-state";
 import { IDetailView, newDetailView } from "../../interfaces/IDetailView";
 import { ImageFormat } from "../../interfaces/IFileIndexItem";
 import { DocumentTitle } from "../../shared/document-title";
@@ -21,7 +21,7 @@ import { PrevNext } from "./helpers/prev-next";
 import { statusRemoved } from "./helpers/status-removed";
 
 const DetailView: FC<IDetailView> = () => {
-  const history = useLocation();
+  const history = useLocationState();
 
   // eslint-disable-next-line prefer-const
   let { state, dispatch } = useContext(DetailViewContext);
