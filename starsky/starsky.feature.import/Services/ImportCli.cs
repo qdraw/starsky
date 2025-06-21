@@ -74,7 +74,7 @@ public class ImportCli
 			IndexMode = ArgsHelper.GetIndexMode(args),
 			ColorClass = ArgsHelper.GetColorClass(args),
 			ConsoleOutputMode = ArgsHelper.GetConsoleOutputMode(args),
-			Source = ArgsHelper.GetSource(args)
+			Origin = ArgsHelper.GetOrigin(args)
 		};
 
 		if ( _appSettings.IsVerbose() )
@@ -84,7 +84,7 @@ public class ImportCli
 			                   $"ColorClass (overwrite) {importSettings.ColorClass}, " +
 			                   $"Structure {_appSettings.Structure}, " +
 			                   $"IndexMode {importSettings.IndexMode}" +
-			                   $"Source {importSettings.Source}");
+			                   $"Source {importSettings.Origin}");
 		}
 
 		var stopWatch = Stopwatch.StartNew();

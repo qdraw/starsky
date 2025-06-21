@@ -59,7 +59,7 @@ public class ImportSettingsModel
 			IndexMode = false;
 		}
 
-		Source = request.Headers["Source"].ToString();
+		Origin = request.Headers["Origin"].ToString();
 	}
 
 	/// <summary>
@@ -139,7 +139,7 @@ public class ImportSettingsModel
 	/// <summary>
 	///     For importing files from a source
 	/// </summary>
-	public string Source { get; set; } = string.Empty;
+	public string Origin { get; set; } = string.Empty;
 
 	public bool IsConsoleOutputModeDefault()
 	{

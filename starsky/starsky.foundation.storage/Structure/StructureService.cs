@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
@@ -20,25 +21,30 @@ public class StructureService : IStructureService
 	///     @see:
 	///     https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings
 	///     Not escaped regex:
-	///     \\?(d{1,4}|f{1,6}|F{1,6}|g{1,2}|h{1,2}|H{1,2}|K|m{1,2}|M{1,4}|s{1,2}|t{1,2}|y{1,5}|z{1,3})
+	///     \\?(d{1,4}|f{1,6}|F{1,6}|g{1,2}|H{1,2}|K|m{1,2}|M{1,4}|s{1,2}|t{1,2}|y{1,5}|z{1,3})
 	/// </summary>
 	private const string DateRegexPattern =
-		@"\\?(d{1,4}|f{1,6}|F{1,6}|g{1,2}|h{1,2}|H{1,2}|K|m{1,2}|M{1,4}|s{1,2}|t{1,2}|y{1,5}|z{1,3})";
+		@"\\?(d{1,4}|f{1,6}|F{1,6}|g{1,2}|H{1,2}|K|m{1,2}|M{1,4}|s{1,2}|t{1,2}|y{1,5}|z{1,3})";
+
+	private readonly IWebLogger _logger;
 
 	private readonly ISelectorStorage _selectorStorage;
 	private readonly AppSettingsStructureModel _structureModel;
 
-	public StructureService(ISelectorStorage selectorStorage, AppSettings appSettings)
+	public StructureService(ISelectorStorage selectorStorage, AppSettings appSettings,
+		IWebLogger logger)
 	{
 		_selectorStorage = selectorStorage;
 		_structureModel = appSettings.Structure;
+		_logger = logger;
 	}
 
 	public StructureService(ISelectorStorage selectorStorage,
-		AppSettingsStructureModel structureModel)
+		AppSettingsStructureModel structureModel, IWebLogger logger)
 	{
 		_selectorStorage = selectorStorage;
 		_structureModel = structureModel;
+		_logger = logger;
 	}
 
 	/// <summary>
@@ -131,7 +137,7 @@ public class StructureService : IStructureService
 	/// <param name="fileNameBase">source name, can be used in the options</param>
 	/// <param name="extensionWithoutDot">fileExtension without dot</param>
 	/// <returns>Object with Structure Range output</returns>
-	private static List<List<StructureRange>> ParseStructure(string structure,
+	private List<List<StructureRange>> ParseStructure(string structure,
 		DateTime dateTime,
 		string fileNameBase = "", string extensionWithoutDot = "")
 	{
@@ -177,7 +183,7 @@ public class StructureService : IStructureService
 	/// <param name="fileNameBase">source file name without extension</param>
 	/// <param name="extensionWithoutDot">fileExtension without dot</param>
 	/// <returns>Current item name, with parsed DateTime and without escape signs</returns>
-	private static string OutputStructureRangeItemParser(string pattern, DateTime dateTime,
+	private string OutputStructureRangeItemParser(string pattern, DateTime dateTime,
 		string fileNameBase, string extensionWithoutDot = "")
 	{
 		// allow only full word matches (so .ext is no match)
@@ -190,7 +196,17 @@ public class StructureService : IStructureService
 			if ( !match.Value.StartsWith('\\') && match.Index == 0 &&
 			     match.Length == pattern.Length )
 			{
-				return dateTime.ToString(pattern, CultureInfo.InvariantCulture);
+				try
+				{
+					return dateTime.ToString(pattern, CultureInfo.InvariantCulture);
+				}
+				catch ( FormatException exception )
+				{
+					_logger.LogError(exception,
+						$"StructureService: OutputStructureRangeItemParser: " +
+						$"Failed to parse pattern '{pattern}' with DateTime '{dateTime}'");
+					throw;
+				}
 			}
 		}
 

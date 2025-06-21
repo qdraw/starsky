@@ -483,7 +483,8 @@ public class Import : IImport
 		importIndexItem.Structure.OverrideDefaultPatternAndDisableRules(settings.Structure,
 			settings.StructureErrors);
 
-		var structureService = new StructureService(_selectorStorage, importIndexItem.Structure);
+		var structureService =
+			new StructureService(_selectorStorage, importIndexItem.Structure, _logger);
 
 		var inputModel = new StructureInputModel(
 			importIndexItem.FileIndexItem!.DateTime,
@@ -491,7 +492,7 @@ public class Import : IImport
 			FilenamesHelper.GetFileExtensionWithoutDot(importIndexItem.FileIndexItem
 				.FileName!),
 			importIndexItem.FileIndexItem.ImageFormat,
-			settings.Source);
+			settings.Origin);
 
 		importIndexItem.FileIndexItem!.ParentDirectory =
 			structureService.ParseSubfolders(inputModel);

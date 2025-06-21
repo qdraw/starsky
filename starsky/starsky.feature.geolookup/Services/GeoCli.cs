@@ -109,7 +109,7 @@ public sealed class GeoCli
 		if ( getSubPathRelative != null )
 		{
 			inputPath = _appSettings.DatabasePathToFilePath(
-				new StructureService(_selectorStorage, _appSettings)
+				new StructureService(_selectorStorage, _appSettings, _logger)
 					.ParseSubfolders(getSubPathRelative));
 		}
 

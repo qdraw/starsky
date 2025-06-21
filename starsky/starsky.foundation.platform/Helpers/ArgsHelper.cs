@@ -299,7 +299,8 @@ public sealed class ArgsHelper
 				                   "(default: false / only the selected folder) ");
 				_console.WriteLine(
 					"--structure == overwrite app-settings with file-directory structure " +
-					"based on exif and filename create datetime");
+					"based on exif and filename create datetime; " +
+					"set structure rules to empty to disable");
 				_console.WriteLine(
 					"--index or -i == parameter: (bool) ; indexing, false is always copy," +
 					" true is check if exist in db, default true");
@@ -307,6 +308,9 @@ public sealed class ArgsHelper
 					"--clean or -x == true is to add a xmp sidecar file for raws, default true");
 				_console.WriteLine(
 					"--colorclass == update color-class to this number value, default don't change");
+				_console.WriteLine(
+					"--origin == overwrite origin, Don't use with --structure. " +
+					"Used to reference structure settings and select a setting from this");
 				break;
 			case AppSettings.StarskyAppType.Sync:
 				// When this change please update ./readme.md
@@ -982,28 +986,28 @@ public sealed class ArgsHelper
 	}
 
 	/// <summary>
-	///     Get Source value from args
+	///     Get origin/Source value from args
 	/// </summary>
 	/// <param name="args">input args</param>
-	/// <returns>source value</returns>
-	public static string GetSource(IReadOnlyList<string> args)
+	/// <returns>origin/source value</returns>
+	public static string GetOrigin(IReadOnlyList<string> args)
 	{
-		// --source
-		var source = string.Empty;
+		// --origin
+		var origin = string.Empty;
 
 		for ( var arg = 0; arg < args.Count; arg++ )
 		{
-			if ( !args[arg].Equals("--source",
+			if ( !args[arg].Equals("--origin",
 				     StringComparison.CurrentCultureIgnoreCase) ||
 			     arg + 1 == args.Count )
 			{
 				continue;
 			}
 
-			source = args[arg + 1];
+			origin = args[arg + 1];
 		}
 
-		return source;
+		return origin;
 	}
 
 	/// <summary>

@@ -13,6 +13,7 @@ public class MetaThumbnailCommandLineHelper
 {
 	private readonly AppSettings _appSettings;
 	private readonly IConsole _console;
+	private readonly IWebLogger _logger;
 	private readonly IMetaExifThumbnailService _metaExifThumbnailService;
 	private readonly ISelectorStorage _selectorStorage;
 	private readonly IMetaUpdateStatusThumbnailService _statusThumbnailService;
@@ -20,13 +21,14 @@ public class MetaThumbnailCommandLineHelper
 	public MetaThumbnailCommandLineHelper(ISelectorStorage selectorStorage,
 		AppSettings appSettings,
 		IConsole console, IMetaExifThumbnailService metaExifThumbnailService,
-		IMetaUpdateStatusThumbnailService statusThumbnailService)
+		IMetaUpdateStatusThumbnailService statusThumbnailService, IWebLogger logger)
 	{
 		_selectorStorage = selectorStorage;
 		_appSettings = appSettings;
 		_metaExifThumbnailService = metaExifThumbnailService;
 		_console = console;
 		_statusThumbnailService = statusThumbnailService;
+		_logger = logger;
 	}
 
 	public async Task CommandLineAsync(string[] args)
@@ -46,7 +48,7 @@ public class MetaThumbnailCommandLineHelper
 		var getSubPathRelative = new ArgsHelper(_appSettings).GetRelativeValue(args);
 		if ( getSubPathRelative != null )
 		{
-			subPath = new StructureService(_selectorStorage, _appSettings)
+			subPath = new StructureService(_selectorStorage, _appSettings, _logger)
 				.ParseSubfolders(getSubPathRelative);
 		}
 

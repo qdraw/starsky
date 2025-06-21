@@ -15,16 +15,18 @@ public sealed class SyncCli
 {
 	private readonly AppSettings _appSettings;
 	private readonly IConsole _console;
+	private readonly IWebLogger _logger;
 	private readonly ISelectorStorage _selectorStorage;
 	private readonly ISynchronize _synchronize;
 
 	public SyncCli(ISynchronize synchronize, AppSettings appSettings, IConsole console,
-		ISelectorStorage selectorStorage)
+		ISelectorStorage selectorStorage, IWebLogger logger)
 	{
 		_appSettings = appSettings;
 		_console = console;
 		_synchronize = synchronize;
 		_selectorStorage = selectorStorage;
+		_logger = logger;
 	}
 
 	public async Task Sync(string[] args)
@@ -44,7 +46,7 @@ public sealed class SyncCli
 		var getSubPathRelative = new ArgsHelper(_appSettings).GetRelativeValue(args);
 		if ( getSubPathRelative != null )
 		{
-			var parseSubPath = new StructureService(_selectorStorage, _appSettings)
+			var parseSubPath = new StructureService(_selectorStorage, _appSettings, _logger)
 				.ParseSubfolders(getSubPathRelative);
 			if ( !string.IsNullOrEmpty(parseSubPath) )
 			{

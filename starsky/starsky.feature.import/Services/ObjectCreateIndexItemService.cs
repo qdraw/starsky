@@ -63,7 +63,7 @@ public class ObjectCreateIndexItemService(
 		ImportSettingsModel settings)
 	{
 		UpdateForWithoutExif(importIndexItem.FileIndexItem!, importIndexItem,
-			settings.Structure, settings.Source);
+			settings.Structure, settings.Origin);
 
 		// AddToDatabase is Used by the importer History agent
 		importIndexItem.FileIndexItem!.AddToDatabase = DateTime.UtcNow;

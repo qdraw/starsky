@@ -15,6 +15,7 @@ public sealed class ThumbnailCli
 {
 	private readonly AppSettings _appSettings;
 	private readonly IConsole _console;
+	private readonly IWebLogger _logger;
 	private readonly ISelectorStorage _selectorStorage;
 	private readonly IThumbnailCleaner _thumbnailCleaner;
 	private readonly IThumbnailService _thumbnailService;
@@ -22,13 +23,14 @@ public sealed class ThumbnailCli
 	public ThumbnailCli(AppSettings appSettings,
 		IConsole console, IThumbnailService thumbnailService,
 		IThumbnailCleaner thumbnailCleaner,
-		ISelectorStorage selectorStorage)
+		ISelectorStorage selectorStorage, IWebLogger webLogger)
 	{
 		_appSettings = appSettings;
 		_thumbnailService = thumbnailService;
 		_console = console;
 		_thumbnailCleaner = thumbnailCleaner;
 		_selectorStorage = selectorStorage;
+		_logger = webLogger;
 	}
 
 	public async Task Thumbnail(string[] args)
@@ -48,7 +50,7 @@ public sealed class ThumbnailCli
 		var getSubPathRelative = new ArgsHelper(_appSettings).GetRelativeValue(args);
 		if ( getSubPathRelative != null )
 		{
-			subPath = new StructureService(_selectorStorage, _appSettings)
+			subPath = new StructureService(_selectorStorage, _appSettings, _logger)
 				.ParseSubfolders(getSubPathRelative)!;
 		}
 

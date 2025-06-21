@@ -2,6 +2,7 @@ using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Structure;
@@ -9,10 +10,13 @@ using starsky.foundation.storage.Structure;
 namespace starsky.Controllers;
 
 [Authorize]
-public sealed class RedirectController(ISelectorStorage selectorStorage, AppSettings appSettings)
+public sealed class RedirectController(
+	ISelectorStorage selectorStorage,
+	AppSettings appSettings,
+	IWebLogger logger)
 	: Controller
 {
-	private readonly StructureService _structureService = new(selectorStorage, appSettings);
+	private readonly StructureService _structureService = new(selectorStorage, appSettings, logger);
 
 	/// <summary>
 	///     Redirect or view path to relative paths using the structure-config (see /api/env)
