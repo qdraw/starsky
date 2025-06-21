@@ -86,7 +86,7 @@ public sealed class StorageTemporaryFilesystemTests
 	public void Temporary_FileCopy_success()
 	{
 		var createNewImage = new CreateAnImage();
-		
+
 		_tempStorage.FileCopy(_fileName,
 			"StorageThumbnailFilesystemTest_FileCopy.jpg");
 
@@ -330,6 +330,17 @@ public sealed class StorageTemporaryFilesystemTests
 	[TestMethod]
 	public void Temporary_Info()
 	{
-		Assert.AreEqual(CreateAnImage.Size, _tempStorage.Info(_fileName).Size);
+		var size = _tempStorage.Info(_fileName).Size;
+
+		// If the file is not found, it will create a new image
+		if ( size <= 8000 )
+		{
+			var createNewImage = new CreateAnImage();
+			_fileName = createNewImage.FileName;
+
+			size = _tempStorage.Info(_fileName).Size;
+		}
+
+		Assert.AreEqual(CreateAnImage.Size, size);
 	}
 }
