@@ -419,7 +419,7 @@ public sealed class ImportTest : VerifyBase
 		};
 
 		var structureService =
-			new StructureService(new FakeSelectorStorage(storage), appSettings);
+			new StructureService(new FakeSelectorStorage(storage), appSettings, new FakeIWebLogger());
 		var inputModel = new StructureInputModel(
 			fileIndexItem.DateTime, fileIndexItem.FileCollectionName!,
 			FilenamesHelper.GetFileExtensionWithoutDot(fileIndexItem.FileName!),

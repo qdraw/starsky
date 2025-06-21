@@ -20,8 +20,8 @@ public sealed class SyncCliTest
 	{
 		var fakeSync = new FakeISynchronize();
 		await new SyncCli(fakeSync, new AppSettings(), new ConsoleWrapper(),
-			new FakeSelectorStorage()).Sync(
-			new List<string> { "" }.ToArray());
+			new FakeSelectorStorage(), new FakeIWebLogger()).Sync(
+			[""]);
 
 		Assert.AreEqual("/", fakeSync.Inputs[0].Item1);
 	}
@@ -32,8 +32,8 @@ public sealed class SyncCliTest
 		var fakeSync = new FakeISynchronize();
 		var console = new FakeConsoleWrapper();
 		await new SyncCli(fakeSync, new AppSettings(), console,
-			new FakeSelectorStorage()).Sync(
-			new List<string> { "" }.ToArray());
+			new FakeSelectorStorage(), new FakeIWebLogger()).Sync(
+			[""]);
 
 		Assert.IsTrue(console.WrittenLines.Exists(p => p.Contains("Not Found")));
 	}
@@ -44,8 +44,9 @@ public sealed class SyncCliTest
 		var fakeSync = new FakeISynchronize(new List<FileIndexItem> { new("/") });
 		var console = new FakeConsoleWrapper();
 		await new SyncCli(fakeSync, new AppSettings(), console,
-			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" }))).Sync(
-			new List<string> { "" }.ToArray());
+			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" })),
+			new FakeIWebLogger()).Sync(
+			[""]);
 
 		var t = console.WrittenLines.Exists(p => p.Contains("Not Found"));
 		Assert.IsFalse(t);
@@ -56,8 +57,8 @@ public sealed class SyncCliTest
 	{
 		var fakeSync = new FakeISynchronize();
 		await new SyncCli(fakeSync, new AppSettings(), new ConsoleWrapper(),
-			new FakeSelectorStorage()).Sync(
-			new List<string> { "-i", "false" }.ToArray());
+			new FakeSelectorStorage(), new FakeIWebLogger()).Sync(
+			["-i", "false"]);
 
 		Assert.AreEqual(0, fakeSync.Inputs.Count);
 	}
@@ -67,8 +68,8 @@ public sealed class SyncCliTest
 	{
 		var console = new FakeConsoleWrapper();
 		await new SyncCli(new FakeISynchronize(), new AppSettings(), console,
-			new FakeSelectorStorage()).Sync(
-			new List<string> { "-h" }.ToArray());
+			new FakeSelectorStorage(), new FakeIWebLogger()).Sync(
+			["-h"]);
 
 		Assert.IsTrue(console.WrittenLines[0].Contains("Help"));
 	}
@@ -79,9 +80,8 @@ public sealed class SyncCliTest
 		var fakeSync = new FakeISynchronize();
 		var appSettings = new AppSettings();
 		await new SyncCli(fakeSync, appSettings, new ConsoleWrapper(),
-			new FakeSelectorStorage()).Sync(
-			new List<string> { "-p", Path.Combine(appSettings.StorageFolder, "test") }
-				.ToArray());
+			new FakeSelectorStorage(), new FakeIWebLogger()).Sync(
+			["-p", Path.Combine(appSettings.StorageFolder, "test")]);
 
 		Assert.AreEqual("/test", fakeSync.Inputs[0].Item1);
 	}
@@ -92,8 +92,8 @@ public sealed class SyncCliTest
 		var fakeSync = new FakeISynchronize();
 		var appSettings = new AppSettings();
 		await new SyncCli(fakeSync, appSettings, new ConsoleWrapper(),
-			new FakeSelectorStorage()).Sync(
-			new List<string> { "-s", "/test" }.ToArray());
+			new FakeSelectorStorage(), new FakeIWebLogger()).Sync(
+			["-s", "/test"]);
 
 		Assert.AreEqual("/test", fakeSync.Inputs[0].Item1);
 	}
@@ -104,11 +104,13 @@ public sealed class SyncCliTest
 		var fakeSync = new FakeISynchronize();
 		var appSettings = new AppSettings();
 		var syncCli = new SyncCli(fakeSync, appSettings, new ConsoleWrapper(),
-			new FakeSelectorStorage());
+			new FakeSelectorStorage(), new FakeIWebLogger());
 		await syncCli.Sync(
-			new List<string> { "-g", "0" }.ToArray());
+			["-g", "0"]);
 
-		var subPathRelative = new StructureService(new FakeSelectorStorage(), appSettings.Structure)
+		var subPathRelative = new StructureService(new FakeSelectorStorage(), 
+				appSettings.Structure,
+				new FakeIWebLogger())
 			.ParseSubfolders(0);
 
 		Assert.AreEqual(subPathRelative, fakeSync.Inputs[0].Item1);

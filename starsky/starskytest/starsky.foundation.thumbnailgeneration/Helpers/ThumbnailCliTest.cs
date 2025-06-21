@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -22,9 +21,9 @@ public sealed class ThumbnailCliTest
 		var thumbnailService = new ThumbnailCli(new AppSettings(), fakeConsole,
 			new FakeIThumbnailService(new FakeSelectorStorage(storage)),
 			new FakeIThumbnailCleaner(),
-			new FakeSelectorStorage(storage));
+			new FakeSelectorStorage(storage), new FakeIWebLogger());
 
-		await thumbnailService.Thumbnail(Array.Empty<string>());
+		await thumbnailService.Thumbnail([]);
 
 		Assert.AreEqual(1, fakeConsole.WrittenLines.Count);
 	}
@@ -37,7 +36,7 @@ public sealed class ThumbnailCliTest
 		var fakeIThumbnailService = new FakeIThumbnailService(new FakeSelectorStorage(storage));
 		var thumbnailService = new ThumbnailCli(new AppSettings(), fakeConsole,
 			fakeIThumbnailService, new FakeIThumbnailCleaner(),
-			new FakeSelectorStorage(storage));
+			new FakeSelectorStorage(storage), new FakeIWebLogger());
 
 		await thumbnailService.Thumbnail(["-t", "true"]);
 
@@ -51,7 +50,7 @@ public sealed class ThumbnailCliTest
 		var storage = new FakeIStorage(new List<string> { "/" }, new List<string> { "/test.jpg" });
 		var thumbnailService = new ThumbnailCli(new AppSettings(), fakeConsole,
 			new FakeIThumbnailService(), new FakeIThumbnailCleaner(),
-			new FakeSelectorStorage(storage));
+			new FakeSelectorStorage(storage), new FakeIWebLogger());
 
 		await thumbnailService.Thumbnail(["-h"]);
 
@@ -66,7 +65,7 @@ public sealed class ThumbnailCliTest
 
 		var thumbnailService = new ThumbnailCli(new AppSettings(), new ConsoleWrapper(),
 			fakeThumbnail, new FakeIThumbnailCleaner(),
-			new FakeSelectorStorage(storage));
+			new FakeSelectorStorage(storage), new FakeIWebLogger());
 
 		await thumbnailService.Thumbnail(["-t", "false"]);
 
@@ -82,7 +81,7 @@ public sealed class ThumbnailCliTest
 		var appSettings = new AppSettings();
 		var thumbnailService = new ThumbnailCli(appSettings, fakeConsole,
 			fakeIThumbnailService, new FakeIThumbnailCleaner(),
-			new FakeSelectorStorage(storage));
+			new FakeSelectorStorage(storage), new FakeIWebLogger());
 
 		await thumbnailService.Thumbnail([
 			"-v", "true", "-t", "true", "-p", Path.Combine(appSettings.StorageFolder, "test")
@@ -100,7 +99,7 @@ public sealed class ThumbnailCliTest
 		var appSettings = new AppSettings();
 		var thumbnailService = new ThumbnailCli(appSettings, fakeConsole,
 			fakeIThumbnailService, new FakeIThumbnailCleaner(),
-			new FakeSelectorStorage(storage));
+			new FakeSelectorStorage(storage), new FakeIWebLogger());
 
 		await thumbnailService.Thumbnail(["-t", "true", "-s", "/test"]);
 
@@ -116,7 +115,7 @@ public sealed class ThumbnailCliTest
 		var appSettings = new AppSettings();
 		var thumbnailService = new ThumbnailCli(appSettings, fakeConsole,
 			fakeIThumbnailService, new FakeIThumbnailCleaner(),
-			new FakeSelectorStorage(storage));
+			new FakeSelectorStorage(storage), new FakeIWebLogger());
 
 		await thumbnailService.Thumbnail(["-t", "true", "-s", "/test.jpg"]);
 
@@ -135,11 +134,12 @@ public sealed class ThumbnailCliTest
 		var appSettings = new AppSettings();
 		var thumbnailService = new ThumbnailCli(appSettings, fakeConsole,
 			fakeIThumbnailService, new FakeIThumbnailCleaner(),
-			new FakeSelectorStorage(storage));
+			new FakeSelectorStorage(storage), new FakeIWebLogger());
 
 		await thumbnailService.Thumbnail(["-t", "true", "-g", "0"]);
 
-		var subPathRelative = new StructureService(new FakeSelectorStorage(), appSettings.Structure)
+		var subPathRelative = new StructureService(new FakeSelectorStorage(), appSettings.Structure,
+				new FakeIWebLogger())
 			.ParseSubfolders(0);
 
 		Assert.AreEqual(subPathRelative, fakeIThumbnailService.Inputs[0].Item1);
@@ -153,7 +153,7 @@ public sealed class ThumbnailCliTest
 		var fakeIThumbnailCleaner = new FakeIThumbnailCleaner();
 		var thumbnailService = new ThumbnailCli(new AppSettings(), fakeConsole,
 			new FakeIThumbnailService(new FakeSelectorStorage(storage)), fakeIThumbnailCleaner,
-			new FakeSelectorStorage(storage));
+			new FakeSelectorStorage(storage), new FakeIWebLogger());
 
 		await thumbnailService.Thumbnail(["--clean", "true"]);
 

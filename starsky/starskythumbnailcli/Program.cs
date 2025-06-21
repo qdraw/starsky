@@ -46,10 +46,11 @@ public static class Program
 
 		var console = serviceProvider.GetRequiredService<IConsole>();
 		var selectorStorage = serviceProvider.GetRequiredService<ISelectorStorage>();
+		var logger = serviceProvider.GetRequiredService<IWebLogger>();
 
 		// Help and other Command Line Tools args are included in the ThumbnailCLI
 		var thumbnailCli = new ThumbnailCli(appSettings, console,
-			thumbnailService, thumbnailCleaner, selectorStorage);
+			thumbnailService, thumbnailCleaner, selectorStorage, logger);
 		await thumbnailCli.Thumbnail(args);
 	}
 }

@@ -32,7 +32,7 @@ public sealed class GeoCliTest
 	public async Task GeoCliInput_RelativeUrl_HappyFlow()
 	{
 		var relativeParentFolder = new AppSettings().DatabasePathToFilePath(
-			new StructureService(new FakeSelectorStorage(), new AppSettings())
+			new StructureService(new FakeSelectorStorage(), new AppSettings(), new FakeIWebLogger())
 				.ParseSubfolders(0)!);
 
 		var storage = new FakeIStorage(new List<string> { "/" },

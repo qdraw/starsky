@@ -26,7 +26,7 @@ public sealed class RedirectControllerTest
 	public void RedirectControllerTest_SubPathRelative()
 	{
 		var appSettings = CreateAppSettings();
-		var controller = new RedirectController(_fakeSelectorStorage, appSettings);
+		var controller = new RedirectController(_fakeSelectorStorage, appSettings, new FakeIWebLogger());
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 		var result = controller.SubPathRelative(0) as JsonResult;
 
@@ -38,7 +38,7 @@ public sealed class RedirectControllerTest
 	public void RedirectControllerTest_SubPathRelative_ModelState()
 	{
 		var appSettings = CreateAppSettings();
-		var controller = new RedirectController(_fakeSelectorStorage, appSettings);
+		var controller = new RedirectController(_fakeSelectorStorage, appSettings, new FakeIWebLogger());
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 
@@ -51,7 +51,7 @@ public sealed class RedirectControllerTest
 	public void RedirectControllerTest_SubPathRelativeMinusValue()
 	{
 		var appSettings = CreateAppSettings();
-		var controller = new RedirectController(_fakeSelectorStorage, appSettings);
+		var controller = new RedirectController(_fakeSelectorStorage, appSettings, new FakeIWebLogger());
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 		var result = controller.SubPathRelative(1) as JsonResult;
 
@@ -63,7 +63,7 @@ public sealed class RedirectControllerTest
 	public void RedirectControllerTest_LargeInt()
 	{
 		var appSettings = CreateAppSettings();
-		var controller = new RedirectController(_fakeSelectorStorage, appSettings)
+		var controller = new RedirectController(_fakeSelectorStorage, appSettings, new FakeIWebLogger())
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
 		};
@@ -77,7 +77,7 @@ public sealed class RedirectControllerTest
 	public void RedirectControllerTest_SubPathRelativeRedirectToAction()
 	{
 		var appSettings = CreateAppSettings();
-		var controller = new RedirectController(_fakeSelectorStorage, appSettings)
+		var controller = new RedirectController(_fakeSelectorStorage, appSettings, new FakeIWebLogger())
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
 		};
