@@ -7,9 +7,6 @@ export default defineConfig({
   plugins: [react()],
   build: {
     rollupOptions: {
-      input: {
-        main: "src/main.tsx"
-      },
       external: [
         "src/hooks/___tests___/intersection-observer-mock.ts",
         "src/hooks/___tests___/test-hook.tsx"
