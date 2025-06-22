@@ -206,6 +206,16 @@ public sealed class ExifToolDownload : IExifToolDownload
 			return true;
 		}
 
+		// download checksum list from mirror
+		var checksums = await DownloadCheckSums(CheckSumLocationMirror);
+		if ( checksums == null )
+		{
+			return false;
+		}
+		
+		matchExifToolForUnixName = GetUnixTarGzFromChecksum(checksums.Value.Value);
+		getChecksumsFromTextFile = GetChecksumsFromTextFile(checksums.Value.Value);
+		
 		return await DownloadForUnix(ExiftoolDownloadBasePathMirror, matchExifToolForUnixName,
 			getChecksumsFromTextFile);
 	}
