@@ -4,8 +4,8 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.storage.Structure;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
 using starsky.foundation.thumbnailgeneration.Interfaces;
 
@@ -15,6 +15,7 @@ public sealed class ThumbnailCli
 {
 	private readonly AppSettings _appSettings;
 	private readonly IConsole _console;
+	private readonly IWebLogger _logger;
 	private readonly ISelectorStorage _selectorStorage;
 	private readonly IThumbnailCleaner _thumbnailCleaner;
 	private readonly IThumbnailService _thumbnailService;
@@ -22,13 +23,14 @@ public sealed class ThumbnailCli
 	public ThumbnailCli(AppSettings appSettings,
 		IConsole console, IThumbnailService thumbnailService,
 		IThumbnailCleaner thumbnailCleaner,
-		ISelectorStorage selectorStorage)
+		ISelectorStorage selectorStorage, IWebLogger webLogger)
 	{
 		_appSettings = appSettings;
 		_thumbnailService = thumbnailService;
 		_console = console;
 		_thumbnailCleaner = thumbnailCleaner;
 		_selectorStorage = selectorStorage;
+		_logger = webLogger;
 	}
 
 	public async Task Thumbnail(string[] args)
@@ -48,8 +50,7 @@ public sealed class ThumbnailCli
 		var getSubPathRelative = new ArgsHelper(_appSettings).GetRelativeValue(args);
 		if ( getSubPathRelative != null )
 		{
-			subPath = new StructureService(_selectorStorage.Get(
-					SelectorStorage.StorageServices.SubPath), _appSettings.Structure)
+			subPath = new StructureService(_selectorStorage, _appSettings, _logger)
 				.ParseSubfolders(getSubPathRelative)!;
 		}
 

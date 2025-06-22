@@ -29,6 +29,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.storage.Structure;
 using starsky.foundation.thumbnailmeta.Interfaces;
 using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.Services;
@@ -59,6 +60,7 @@ public class Import : IImport
 	private readonly IQuery _query;
 
 	private readonly ReadMeta _readMetaHost;
+	private readonly ISelectorStorage _selectorStorage;
 	private readonly IServiceScopeFactory? _serviceScopeFactory;
 	private readonly IStorage _subPathStorage;
 	private readonly IThumbnailQuery _thumbnailQuery;
@@ -66,7 +68,7 @@ public class Import : IImport
 	private readonly UpdateImportTransformations _updateImportTransformations;
 
 	[SuppressMessage("Usage",
-		"S107: Constructor has 8 parameters, which is greater than the 7 authorized")]
+		"S107: Constructor has 12 parameters, which is greater than the 7 authorized")]
 	public Import(
 		ISelectorStorage selectorStorage,
 		AppSettings appSettings,
@@ -83,6 +85,7 @@ public class Import : IImport
 	{
 		_importQuery = importQuery;
 
+		_selectorStorage = selectorStorage;
 		_filesystemStorage =
 			selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
@@ -113,7 +116,7 @@ public class Import : IImport
 	/// <summary>
 	///     Temp place to store parent Directories to avoid lots of Database requests
 	/// </summary>
-	private List<string> AddedParentDirectories { get; } = new();
+	private List<string> AddedParentDirectories { get; } = [];
 
 	/// <summary>
 	///     Check if the item can be added to the database
@@ -132,7 +135,7 @@ public class Import : IImport
 		// When Directory is Empty
 		if ( includedDirectoryFilePaths.Count == 0 )
 		{
-			return new List<ImportIndexItem>();
+			return [];
 		}
 
 		var importIndexItemsList = ( await includedDirectoryFilePaths
@@ -187,7 +190,7 @@ public class Import : IImport
 	{
 		if ( !deleteAfter )
 		{
-			return new List<Tuple<string?, List<string>>>();
+			return [];
 		}
 
 		var parentFolders = new List<Tuple<string?, List<string>>>();
@@ -200,7 +203,7 @@ public class Import : IImport
 			if ( parentFolders.TrueForAll(p => p.Item1 != parentFolder) )
 			{
 				parentFolders.Add(new Tuple<string?, List<string>>(parentFolder,
-					new List<string> { itemSourceFullFilePath }));
+					[itemSourceFullFilePath]));
 				continue;
 			}
 
@@ -324,7 +327,6 @@ public class Import : IImport
 		return importIndexItemsList;
 	}
 
-
 	/// <summary>
 	///     To Add files form directory to list
 	/// </summary>
@@ -447,14 +449,15 @@ public class Import : IImport
 
 		// Parse the filename and create a new importIndexItem object
 		// Prepare transformations here
-		var importIndexItem = await _objectCreateIndexItemService.ObjectCreateIndexItem(
-			inputFileFullPath.Key, imageFormat,
-			hashList.Key, fileIndexItem!, importSettings.ColorClass,
-			_filesystemStorage.Info(inputFileFullPath.Key).Size,
-			importSettings.ReverseGeoCode);
+		var importIndexItem = _objectCreateIndexItemService.CreateObjectIndexItem(inputFileFullPath,
+			fileIndexItem, hashList, _filesystemStorage.Info(inputFileFullPath.Key).Size,
+			importSettings.ColorClass, importSettings.Origin);
+		importIndexItem = await _objectCreateIndexItemService.TransformCreateIndexItem(
+			importIndexItem,
+			importSettings);
 
 		// Update the parent and filenames
-		importIndexItem = ApplyStructure(importIndexItem, importSettings.Structure);
+		importIndexItem = ApplyStructure(importIndexItem, importSettings);
 
 		return importIndexItem;
 	}
@@ -471,33 +474,29 @@ public class Import : IImport
 	///     Overwrite structures when importing using a header
 	/// </summary>
 	/// <param name="importIndexItem"></param>
-	/// <param name="overwriteStructure">to overwrite, keep empty to ignore</param>
+	/// <param name="settings">to overwrite, keep empty to ignore</param>
 	/// <returns>Names applied to FileIndexItem</returns>
 	private ImportIndexItem ApplyStructure(ImportIndexItem importIndexItem,
-		string overwriteStructure)
+		ImportSettingsModel settings)
 	{
-		importIndexItem.Structure = _appSettings.Structure;
+		importIndexItem.Structure = _appSettings.Structure.Clone();
+		importIndexItem.Structure.OverrideDefaultPatternAndDisableRules(settings.Structure,
+			settings.StructureErrors);
 
-		// Feature to overwrite structures when importing using a header
-		// Overwrite the structure in the ImportIndexItem
-		if ( !string.IsNullOrWhiteSpace(overwriteStructure) )
-		{
-			importIndexItem.Structure = overwriteStructure;
-		}
+		var structureService =
+			new StructureService(_selectorStorage, importIndexItem.Structure, _logger);
 
-		var structureService = new StructureService(_subPathStorage, importIndexItem.Structure);
-
-		importIndexItem.FileIndexItem!.ParentDirectory = structureService.ParseSubfolders(
-			importIndexItem.FileIndexItem.DateTime,
+		var inputModel = new StructureInputModel(
+			importIndexItem.FileIndexItem!.DateTime,
 			importIndexItem.FileIndexItem.FileCollectionName!,
 			FilenamesHelper.GetFileExtensionWithoutDot(importIndexItem.FileIndexItem
-				.FileName!));
+				.FileName!),
+			importIndexItem.FileIndexItem.ImageFormat,
+			settings.Origin);
 
-		importIndexItem.FileIndexItem.FileName = structureService.ParseFileName(
-			importIndexItem.FileIndexItem.DateTime,
-			importIndexItem.FileIndexItem.FileCollectionName!,
-			FilenamesHelper.GetFileExtensionWithoutDot(importIndexItem.FileIndexItem
-				.FileName!));
+		importIndexItem.FileIndexItem!.ParentDirectory =
+			structureService.ParseSubfolders(inputModel);
+		importIndexItem.FileIndexItem.FileName = structureService.ParseFileName(inputModel);
 		importIndexItem.FilePath = importIndexItem.FileIndexItem.FilePath;
 
 		return importIndexItem;
@@ -604,9 +603,9 @@ public class Import : IImport
 
 		// next: and save the database item
 		importIndexItem.FileIndexItem = await _updateImportTransformations
-			.UpdateTransformations(updateItemAsync, importIndexItem.FileIndexItem!,
-				importSettings.ColorClass, importIndexItem.DateTimeFromFileName,
-				importSettings.IndexMode, importSettings.ReverseGeoCode);
+			.UpdateTransformations(updateItemAsync, importSettings,
+				importIndexItem.FileIndexItem!,
+				importIndexItem.DateTimeFromFileName);
 
 		await UpdateCreateMetaThumbnail(queryThumbnailUpdateDelegate,
 			importIndexItem.FileIndexItem?.FileHash, importSettings.IndexMode);

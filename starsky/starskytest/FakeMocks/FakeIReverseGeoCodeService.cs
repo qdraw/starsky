@@ -4,11 +4,15 @@ using starsky.foundation.geo.ReverseGeoCode.Model;
 
 namespace starskytest.FakeMocks;
 
-public class FakeIReverseGeoCodeService : IReverseGeoCodeService
+public class FakeIReverseGeoCodeService(GeoLocationModel? geoLocationModel = null) : IReverseGeoCodeService
 {
 	public Task<GeoLocationModel> GetLocation(double latitude, double longitude)
 	{
 		var status = new GeoLocationModel();
+		if ( geoLocationModel != null )
+		{
+			status = geoLocationModel;
+		}
 
 		if ( !string.IsNullOrEmpty(status.LocationState) &&
 		     !string.IsNullOrEmpty(status.LocationCountry) &&

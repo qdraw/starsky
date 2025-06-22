@@ -110,7 +110,11 @@ public sealed class SetupHealthCheckTest
 					.UseInternalServiceProvider(efServiceProvider));
 
 		new SetupHealthCheck(
-				new AppSettings { DatabaseType = AppSettings.DatabaseTypeList.Sqlite },
+				new AppSettings
+				{
+					DatabaseType = AppSettings.DatabaseTypeList.Sqlite,
+					DatabaseConnection = "Data Source=:memory:"
+				},
 				services)
 			.BuilderHealth();
 

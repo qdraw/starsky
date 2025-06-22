@@ -11,38 +11,38 @@ using starsky.foundation.sync.SyncInterfaces;
 using starsky.foundation.webtelemetry.Extensions;
 using starsky.foundation.webtelemetry.Helpers;
 
-namespace starskysynchronizecli
+namespace starskysynchronizecli;
+
+public static class Program
 {
-	public static class Program
+	public static async Task Main(string[] args)
 	{
-		public static async Task Main(string[] args)
-		{
-			// Use args in application
-			new ArgsHelper().SetEnvironmentByArgs(args);
+		// Use args in application
+		new ArgsHelper().SetEnvironmentByArgs(args);
 
-			var services = new ServiceCollection();
+		var services = new ServiceCollection();
 
-			// Setup AppSettings
-			services = await SetupAppSettings.FirstStepToAddSingleton(services);
+		// Setup AppSettings
+		services = await SetupAppSettings.FirstStepToAddSingleton(services);
 
-			// Inject services
-			RegisterDependencies.Configure(services);
+		// Inject services
+		RegisterDependencies.Configure(services);
 
-			var serviceProvider = services.BuildServiceProvider();
-			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
+		var serviceProvider = services.BuildServiceProvider();
+		var appSettings = serviceProvider.GetRequiredService<AppSettings>();
 
-			services.AddOpenTelemetryMonitoring(appSettings);
-			services.AddTelemetryLogging(appSettings);
+		services.AddOpenTelemetryMonitoring(appSettings);
+		services.AddTelemetryLogging(appSettings);
 
-			new SetupDatabaseTypes(appSettings, services).BuilderDb();
-			serviceProvider = services.BuildServiceProvider();
+		new SetupDatabaseTypes(appSettings, services).BuilderDb();
+		serviceProvider = services.BuildServiceProvider();
 
-			var synchronize = serviceProvider.GetRequiredService<ISynchronize>();
-			var console = serviceProvider.GetRequiredService<IConsole>();
-			var selectorStorage = serviceProvider.GetRequiredService<ISelectorStorage>();
+		var synchronize = serviceProvider.GetRequiredService<ISynchronize>();
+		var console = serviceProvider.GetRequiredService<IConsole>();
+		var selectorStorage = serviceProvider.GetRequiredService<ISelectorStorage>();
+		var logger = serviceProvider.GetRequiredService<IWebLogger>();
 
-			// Help and other Command Line Tools args are included in the SyncCLI 
-			await new SyncCli(synchronize, appSettings, console, selectorStorage).Sync(args);
-		}
+		// Help and other Command Line Tools args are included in the SyncCLI 
+		await new SyncCli(synchronize, appSettings, console, selectorStorage, logger).Sync(args);
 	}
 }

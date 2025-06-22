@@ -19,7 +19,7 @@ namespace starsky.foundation.database.Migrations
             modelBuilder
                 .HasAnnotation("MySql:CharSet", "utf8mb4")
                 .HasAnnotation("MySql:CharSetDelegation", DelegationModes.ApplyToAll)
-                .HasAnnotation("ProductVersion", "8.0.15");
+                .HasAnnotation("ProductVersion", "8.0.17");
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.Credential", b =>
                 {
@@ -387,8 +387,19 @@ namespace starsky.foundation.database.Migrations
                     b.Property<string>("FilePath")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("ImageFormat")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("MakeModel")
                         .HasColumnType("TEXT");
+
+                    b.Property<string>("Origin")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("Size")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 

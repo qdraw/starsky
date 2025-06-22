@@ -6,80 +6,81 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Services;
-using starsky.foundation.storage.Storage;
+using starsky.foundation.storage.Structure;
 using starsky.foundation.sync.SyncInterfaces;
 
-namespace starsky.foundation.sync.Helpers
+namespace starsky.foundation.sync.Helpers;
+
+public sealed class SyncCli
 {
-	public sealed class SyncCli
+	private readonly AppSettings _appSettings;
+	private readonly IConsole _console;
+	private readonly IWebLogger _logger;
+	private readonly ISelectorStorage _selectorStorage;
+	private readonly ISynchronize _synchronize;
+
+	public SyncCli(ISynchronize synchronize, AppSettings appSettings, IConsole console,
+		ISelectorStorage selectorStorage, IWebLogger logger)
 	{
-		private readonly AppSettings _appSettings;
-		private readonly IConsole _console;
-		private readonly ISynchronize _synchronize;
-		private readonly ISelectorStorage _selectorStorage;
+		_appSettings = appSettings;
+		_console = console;
+		_synchronize = synchronize;
+		_selectorStorage = selectorStorage;
+		_logger = logger;
+	}
 
-		public SyncCli(ISynchronize synchronize, AppSettings appSettings, IConsole console, ISelectorStorage selectorStorage)
+	public async Task Sync(string[] args)
+	{
+		_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
+		_appSettings.ApplicationType = AppSettings.StarskyAppType.Sync;
+
+		if ( ArgsHelper.NeedHelp(args) )
 		{
-			_appSettings = appSettings;
-			_console = console;
-			_synchronize = synchronize;
-			_selectorStorage = selectorStorage;
+			new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
+			return;
 		}
 
-		public async Task Sync(string[] args)
+		new ArgsHelper().SetEnvironmentByArgs(args);
+
+		var subPath = new ArgsHelper(_appSettings).SubPathOrPathValue(args);
+		var getSubPathRelative = new ArgsHelper(_appSettings).GetRelativeValue(args);
+		if ( getSubPathRelative != null )
 		{
-			_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
-			_appSettings.ApplicationType = AppSettings.StarskyAppType.Sync;
-
-			if ( ArgsHelper.NeedHelp(args) )
+			var parseSubPath = new StructureService(_selectorStorage, _appSettings, _logger)
+				.ParseSubfolders(getSubPathRelative);
+			if ( !string.IsNullOrEmpty(parseSubPath) )
 			{
-				new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
-				return;
+				subPath = parseSubPath;
 			}
-
-			new ArgsHelper().SetEnvironmentByArgs(args);
-
-			var subPath = new ArgsHelper(_appSettings).SubPathOrPathValue(args);
-			var getSubPathRelative = new ArgsHelper(_appSettings).GetRelativeValue(args);
-			if ( getSubPathRelative != null )
-			{
-				var parseSubPath = new StructureService(
-						_selectorStorage.Get(SelectorStorage.StorageServices
-							.SubPath), _appSettings.Structure)
-					.ParseSubfolders(getSubPathRelative);
-				if ( !string.IsNullOrEmpty(parseSubPath) )
-				{
-					subPath = parseSubPath;
-				}
-			}
-
-			if ( ArgsHelper.GetIndexMode(args) )
-			{
-				var stopWatch = Stopwatch.StartNew();
-				_console.WriteLine($"Start indexing {subPath}");
-				var result = await _synchronize.Sync(subPath);
-				if ( result.TrueForAll(p => p.FilePath != subPath) )
-				{
-					_console.WriteLine($"Not Found: {subPath}");
-				}
-
-				stopWatch.Stop();
-				_console.WriteLine($"\nDone SyncFiles! {GetStopWatchText(stopWatch)}");
-			}
-			_console.WriteLine("Done!");
 		}
 
-		internal static string GetStopWatchText(Stopwatch stopWatch, int minMinutes = 3)
+		if ( ArgsHelper.GetIndexMode(args) )
 		{
-			var timeText = new StringBuilder(
-				$"(in sec: {Math.Round(stopWatch.Elapsed.TotalSeconds, 1)}");
-			if ( stopWatch.Elapsed.TotalMinutes >= minMinutes )
+			var stopWatch = Stopwatch.StartNew();
+			_console.WriteLine($"Start indexing {subPath}");
+			var result = await _synchronize.Sync(subPath);
+			if ( result.TrueForAll(p => p.FilePath != subPath) )
 			{
-				timeText.Append($" or {Math.Round(stopWatch.Elapsed.TotalMinutes, 1)} min");
+				_console.WriteLine($"Not Found: {subPath}");
 			}
-			timeText.Append(") ");
-			return timeText.ToString();
+
+			stopWatch.Stop();
+			_console.WriteLine($"\nDone SyncFiles! {GetStopWatchText(stopWatch)}");
 		}
+
+		_console.WriteLine("Done!");
+	}
+
+	internal static string GetStopWatchText(Stopwatch stopWatch, int minMinutes = 3)
+	{
+		var timeText = new StringBuilder(
+			$"(in sec: {Math.Round(stopWatch.Elapsed.TotalSeconds, 1)}");
+		if ( stopWatch.Elapsed.TotalMinutes >= minMinutes )
+		{
+			timeText.Append($" or {Math.Round(stopWatch.Elapsed.TotalMinutes, 1)} min");
+		}
+
+		timeText.Append(") ");
+		return timeText.ToString();
 	}
 }

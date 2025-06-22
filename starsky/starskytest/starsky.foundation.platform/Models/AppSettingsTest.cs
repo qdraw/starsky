@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -123,55 +124,17 @@ public sealed class AppSettingsTest
 	[TestMethod]
 	public void AppSettingsProviderTest_StructureFails_withoutExtAndNoSlash()
 	{
-		Assert.ThrowsExactly<ArgumentException>(() =>
-			{
-				_appSettings.Structure = "\\d";
-				Assert.AreEqual("d", _appSettings.Structure);
-			}
-		);
+		var result = new AppSettingsStructureModel("\\d");
+		Assert.AreEqual("Structure '/\\d' is not valid", result.Errors.LastOrDefault());
 	}
 
 	[TestMethod]
-	public void AppSettingsProviderTest_StructureFails_withExtAndNoSlash()
+	public void AppSettingsProviderTest_Structure_withExtAndNoSlash()
 	{
-		_appSettings.Structure = "\\d.ext";
-		Assert.AreEqual("/\\d.ext", _appSettings.Structure);
-	}
+		var result = new AppSettingsStructureModel("\\d.ext");
 
-	[TestMethod]
-	public void AppSettingsProviderTest_StructureCheck_MissingFirstSlash()
-	{
-		// Act & Assert
-		Assert.ThrowsExactly<ArgumentException>(() =>
-		{
-			AppSettings.StructureCheck("d/test.ext");
-		});
-	}
-
-	[TestMethod]
-	public void AppSettingsProviderTest_FolderWithFirstSlash()
-	{
-		AppSettings.StructureCheck("/d/dion.ext");
-	}
-
-	[TestMethod]
-	public void AppSettingsProviderTest_NoFolderWithFirstSlash()
-	{
-		AppSettings.StructureCheck("/dion.ext");
-	}
-
-	[TestMethod]
-	public void AppSettingsProviderTest_NoFolderMissingFirstSlash()
-	{
-		Assert.ThrowsExactly<ArgumentException>(() => { AppSettings.StructureCheck("dion.ext"); });
-		// >= ArgumentException
-	}
-
-	[TestMethod]
-	public void AppSettingsProviderTest_Null()
-	{
-		Assert.ThrowsExactly<ArgumentNullException>(() =>
-			AppSettings.StructureCheck(string.Empty));
+		Assert.AreEqual(0, result.Errors.Count);
+		Assert.AreEqual("/\\d.ext", result.DefaultPattern);
 	}
 
 	[TestMethod]
@@ -557,14 +520,14 @@ public sealed class AppSettingsTest
 		var appSettings = new AppSettings { AppSettingsLocalPath = null! };
 		Assert.AreEqual(string.Empty, appSettings.AppSettingsLocalPath);
 	}
-	
+
 	[TestMethod]
 	public void AppSettings_AppSettingsLocalPath_AssemblyDirectory()
 	{
 		var appSettings = new AppSettings { AppSettingsLocalPath = "/test/{AssemblyDirectory}" };
 
 		var expectedResult = $"/test/{appSettings.BaseDirectoryProject}";
-		
+
 		Assert.AreEqual(expectedResult, appSettings.AppSettingsLocalPath);
 	}
 }

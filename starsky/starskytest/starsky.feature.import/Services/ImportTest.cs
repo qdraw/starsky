@@ -18,8 +18,10 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.storage.Structure;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
+using VerifyMSTest;
 
 namespace starskytest.starsky.feature.import.Services;
 
@@ -27,7 +29,7 @@ namespace starskytest.starsky.feature.import.Services;
 ///     ImportTest.cs / ImportServiceTest
 /// </summary>
 [TestClass]
-public sealed class ImportTest
+public sealed class ImportTest : VerifyBase
 {
 	private readonly IConsole _console;
 	private readonly string _exampleHash;
@@ -84,6 +86,16 @@ public sealed class ImportTest
 		Assert.IsNotNull(result.FirstOrDefault()?.FileIndexItem);
 		Assert.IsNotNull(result.FirstOrDefault()?.FileIndexItem?.FilePath);
 		Assert.AreNotEqual(0, result.FirstOrDefault()?.FileIndexItem?.Size);
+
+		await Verify(result);
+	}
+
+	private static async Task Verify(List<ImportIndexItem> result)
+	{
+		result[0].FileIndexItem!.Id = 1;
+		result[0].AddToDatabase = DateTime.MinValue;
+		result[0].FileIndexItem!.AddToDatabase = DateTime.MinValue;
+		await Verifier.Verify(result).DontScrubDateTimes();
 	}
 
 	[TestMethod]
@@ -159,6 +171,7 @@ public sealed class ImportTest
 		Assert.AreNotEqual(0, result.FirstOrDefault()?.FileIndexItem?.Size);
 		Assert.AreEqual(ColorClassParser.Color.Typical,
 			result.FirstOrDefault()?.FileIndexItem?.ColorClass);
+		await Verify(result);
 	}
 
 	[TestMethod]
@@ -166,8 +179,8 @@ public sealed class ImportTest
 	{
 		var appSettings = new AppSettings();
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/2020-04-27 11:07:00.jpg" },
+			["/"],
+			["/2020-04-27 11:07:00.jpg"],
 			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() }
 		);
 		var importService = new Import(new FakeSelectorStorage(storage), appSettings,
@@ -177,7 +190,7 @@ public sealed class ImportTest
 			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Preflight(
-			new List<string> { "/2020-04-27 11:07:00.jpg" },
+			["/2020-04-27 11:07:00.jpg"],
 			new ImportSettingsModel());
 
 		Assert.IsNotNull(result.FirstOrDefault());
@@ -405,18 +418,22 @@ public sealed class ImportTest
 			SourceFullFilePath = inputFileFullPath
 		};
 
-		var structureService = new StructureService(storage, appSettings.Structure);
-		importIndexItem.FileIndexItem!.ParentDirectory = structureService.ParseSubfolders(
+		var structureService =
+			new StructureService(new FakeSelectorStorage(storage), appSettings, new FakeIWebLogger());
+		var inputModel = new StructureInputModel(
 			fileIndexItem.DateTime, fileIndexItem.FileCollectionName!,
-			FilenamesHelper.GetFileExtensionWithoutDot(fileIndexItem.FileName!));
-		importIndexItem.FileIndexItem.FileName = structureService.ParseFileName(
-			fileIndexItem.DateTime, fileIndexItem.FileCollectionName!,
-			FilenamesHelper.GetFileExtensionWithoutDot(fileIndexItem.FileName!));
+			FilenamesHelper.GetFileExtensionWithoutDot(fileIndexItem.FileName!),
+			ExtensionRolesHelper.ImageFormat.jpg, string.Empty);
+
+		importIndexItem.FileIndexItem!.ParentDirectory =
+			structureService.ParseSubfolders(inputModel);
+		importIndexItem.FileIndexItem.FileName = structureService.ParseFileName(inputModel);
 
 		var result = Import.AppendIndexerToFilePath(
 			importIndexItem.FileIndexItem.ParentDirectory!,
 			importIndexItem.FileIndexItem.FileName!,
 			index);
+
 		return result;
 	}
 
@@ -744,7 +761,7 @@ public sealed class ImportTest
 	}
 
 	[TestMethod]
-	public async Task Importer_OverwriteStructure_ArgumentException()
+	public async Task Importer_OverwriteStructure_InvalidInput()
 	{
 		var appSettings = new AppSettings();
 		var query = new FakeIQuery();
@@ -754,9 +771,11 @@ public sealed class ImportTest
 			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
 			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
-		await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
-			await importService.Importer(new List<string> { "/test.jpg" },
-				new ImportSettingsModel { Structure = "/.ext" }));
+		var result = await importService.Importer(
+			new List<string> { "/test.jpg" },
+			new ImportSettingsModel { Structure = "/.ext" });
+
+		Assert.AreEqual("Structure '/.ext' is not valid", result[0].Structure.Errors.ToList()[0]);
 	}
 
 	[TestMethod]
@@ -919,7 +938,10 @@ public sealed class ImportTest
 	[TestMethod]
 	public void Preflight_Predict_Duplicates()
 	{
-		var appSettings = new AppSettings { Structure = "/yyyy/yyyyMMdd_HHmmss_\\d.ext" };
+		var appSettings = new AppSettings
+		{
+			Structure = new AppSettingsStructureModel("/yyyy/yyyyMMdd_HHmmss_\\d.ext")
+		};
 		var query = new FakeIQuery();
 		var importQuery = new FakeIImportQuery();
 		var storage = new FakeIStorage(
@@ -988,7 +1010,10 @@ public sealed class ImportTest
 	[TestMethod]
 	public void Preflight_Predict_Duplicates_MissingFileIndexObject()
 	{
-		var appSettings = new AppSettings { Structure = "/yyyy/yyyyMMdd_HHmmss_\\d.ext" };
+		var appSettings = new AppSettings
+		{
+			Structure = new AppSettingsStructureModel("/yyyy/yyyyMMdd_HHmmss_\\d.ext")
+		};
 		var importQuery = new FakeIImportQuery();
 		var query = new FakeIQuery();
 
