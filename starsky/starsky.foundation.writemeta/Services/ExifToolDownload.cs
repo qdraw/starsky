@@ -180,9 +180,10 @@ public sealed class ExifToolDownload : IExifToolDownload
 
 	internal static string GetUnixTarGzFromChecksum(string checksumsValue)
 	{
-		// (?<=SHA1\()Image-ExifTool-[\d\.]+\.zip
-		var regexExifToolForWindowsName = new Regex(@"(?<=SHA256\()Image-ExifTool-[0-9\.]+\.tar.gz",
-			RegexOptions.None, TimeSpan.FromMilliseconds(100));
+		// (?<=SHA(2-)?256\()Image-ExifTool-[0-9\.]+\.tar.gz
+		var regexExifToolForWindowsName = new Regex(
+			@"(?<=SHA(2-)?256\()Image-ExifTool-[0-9\.]+\.tar.gz",
+			RegexOptions.None, TimeSpan.FromMilliseconds(1000));
 		return regexExifToolForWindowsName.Match(checksumsValue).Value;
 	}
 
