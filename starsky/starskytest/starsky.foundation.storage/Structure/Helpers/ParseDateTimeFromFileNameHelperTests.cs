@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -94,6 +95,49 @@ public class ParseDateTimeFromFileNameHelperTests
 			out var answerDateTime);
 
 		Assert.AreEqual(answerDateTime, result);
+	}
+	
+	[TestMethod]
+	public void ParseDateTimeFromFileName_NullStructure_ShouldReturnDefaultDateTime()
+	{
+		// Arrange
+		var settingsStructure = new AppSettingsStructureModel();
+
+		// Use reflection to set the DefaultPattern property
+		var propertyInfo = settingsStructure.GetType().GetProperty(
+			"DefaultPatternPrivate", BindingFlags.NonPublic | BindingFlags.Instance);
+		if (propertyInfo != null && propertyInfo.CanWrite)
+		{
+			propertyInfo.SetValue(settingsStructure, null);
+		}
+		
+		var helper = new ParseDateTimeFromFileNameHelper(settingsStructure);
+		var inputModel = new StructureInputModel(DateTime.MinValue, 
+			"test.jpg", string.Empty,
+			ExtensionRolesHelper.ImageFormat.notfound, string.Empty);
+	
+		// Act
+		var result = helper.ParseDateTimeFromFileName(inputModel);
+
+		// Assert
+		Assert.AreEqual(new DateTime(0, DateTimeKind.Utc), result);
+	}
+	
+	[TestMethod]
+	public void ParseDateTimeFromFileName_ValidDateTimeYear_ShouldReturnDateTime()
+	{
+		// Arrange
+		var settingsStructure = new AppSettingsStructureModel();
+		var helper = new ParseDateTimeFromFileNameHelper(settingsStructure);
+		var inputModel = new StructureInputModel(DateTime.MinValue, 
+			"20231015_123456_", string.Empty,
+			ExtensionRolesHelper.ImageFormat.notfound, string.Empty);
+
+		// Act
+		var result = helper.ParseDateTimeFromFileName(inputModel);
+
+		// Assert
+		Assert.AreEqual(new DateTime(2023, 10, 15, 12, 34, 56, DateTimeKind.Utc), result);
 	}
 
 	[TestMethod]

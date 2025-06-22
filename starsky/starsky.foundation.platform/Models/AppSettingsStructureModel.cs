@@ -14,7 +14,7 @@ public class AppSettingsStructureModel
 	/// <summary>
 	///     Internal Structure save location
 	/// </summary>
-	private string? _defaultPattern;
+	private string DefaultPatternPrivate { get; set; }
 
 	public AppSettingsStructureModel(string? defaultPattern = null)
 	{
@@ -23,7 +23,7 @@ public class AppSettingsStructureModel
 
 	public string DefaultPattern
 	{
-		get => string.IsNullOrEmpty(_defaultPattern) ? GenericDefaultPattern : _defaultPattern;
+		get => string.IsNullOrEmpty(DefaultPatternPrivate) ? GenericDefaultPattern : DefaultPatternPrivate;
 		//   - dd 	            The day of the month, from 01 through 31.
 		//   - MM 	            The month, from 01 through 12.
 		//   - yyyy 	        The year as a four-digit number.
@@ -59,7 +59,7 @@ public class AppSettingsStructureModel
 
 		if ( StructureRegexHelper.StructureCheck(structure) )
 		{
-			_defaultPattern = structure;
+			DefaultPatternPrivate = structure;
 			return;
 		}
 

@@ -21,11 +21,7 @@ public class ParseDateTimeFromFileNameHelper(AppSettingsStructureModel settingsS
 		}
 
 		// Replace asterisk > escape all options
-		var structuredFileName = structure.Split("/".ToCharArray()).LastOrDefault();
-		if ( structuredFileName == null || string.IsNullOrEmpty(inputModel.FileNameBase) )
-		{
-			return new DateTime(0, DateTimeKind.Utc);
-		}
+		var structuredFileName = structure.Split("/".ToCharArray()).LastOrDefault()!;
 
 		structuredFileName = structuredFileName.Replace("*", "");
 		structuredFileName = structuredFileName.Replace(".ext", string.Empty);
