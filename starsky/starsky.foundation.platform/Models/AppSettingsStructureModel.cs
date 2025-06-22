@@ -14,7 +14,7 @@ public class AppSettingsStructureModel
 	/// <summary>
 	///     Internal Structure save location
 	/// </summary>
-	private string DefaultPatternPrivate { get; set; }
+	private string DefaultPatternPrivate { get; set; } = string.Empty;
 
 	public AppSettingsStructureModel(string? defaultPattern = null)
 	{
