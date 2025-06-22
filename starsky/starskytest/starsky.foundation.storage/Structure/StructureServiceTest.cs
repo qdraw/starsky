@@ -346,6 +346,47 @@ public sealed class StructureServiceTest
 		var result =
 			new StructureService(new FakeSelectorStorage(),
 				new AppSettingsStructureModel(structure), new FakeIWebLogger()).ParseSubfolders(0);
-		Assert.IsTrue(result?.Contains(DateTime.Now.ToString("yyyy_MM_dd")));
+		Assert.IsTrue(result.Contains(DateTime.Now.ToString("yyyy_MM_dd")));
+	}
+
+	[DataTestMethod]
+	[DataRow("/{filenamebase}.ext", ExtensionRolesHelper.ImageFormat.png, "source1", "")]
+	[DataRow("/{filenamebase}.ext", ExtensionRolesHelper.ImageFormat.jpg, "source2", "")]
+	[DataRow("/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext",
+		ExtensionRolesHelper.ImageFormat.gif, "source3", "")]
+	[DataRow("/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext",
+		ExtensionRolesHelper.ImageFormat.bmp, "unknownSource",
+		"/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext")]
+	public void GetStructureSetting_ShouldReturnExpectedPattern(
+		string expectedPattern, ExtensionRolesHelper.ImageFormat imageFormat,
+		string origin, string defaultPattern)
+	{
+		// Arrange
+		var fakeConfig = new AppSettingsStructureModel
+		{
+			Rules =
+			[
+				new StructureRule
+				{
+					Conditions = new StructureRuleConditions
+					{
+						ImageFormats =
+							[imageFormat],
+						Origin = origin
+					},
+					Pattern = expectedPattern
+				}
+			],
+			DefaultPattern = defaultPattern
+		};
+
+		var fakeInput = new StructureInputModel(DateTime.MinValue, string.Empty,
+			string.Empty, imageFormat, origin);
+
+		// Act
+		var result = StructureService.GetStructureSetting(fakeConfig, fakeInput);
+
+		// Assert
+		Assert.AreEqual(expectedPattern, result);
 	}
 }

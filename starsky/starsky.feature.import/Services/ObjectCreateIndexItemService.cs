@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using starsky.feature.import.Helpers;
 using starsky.feature.import.Models;
 using starsky.foundation.database.Models;
 using starsky.foundation.geo.ReverseGeoCode.Interface;
@@ -23,7 +24,7 @@ public class ObjectCreateIndexItemService(
 
 	public ImportIndexItem CreateObjectIndexItem(KeyValuePair<string, bool> inputFileFullPath,
 		FileIndexItem? fileIndexItem, KeyValuePair<string, bool> hashList, long size,
-		int importSettingsColorClass)
+		int importSettingsColorClass, string origin)
 	{
 		var importIndexItem = new ImportIndexItem(appSettings)
 		{
@@ -37,10 +38,25 @@ public class ObjectCreateIndexItemService(
 			ImageFormat =
 				fileIndexItem?.ImageFormat ?? ExtensionRolesHelper.ImageFormat.unknown,
 			MakeModel = fileIndexItem?.MakeModel ?? string.Empty,
-			Size = size
+			Size = size,
+			Origin = origin
 		};
 
+		importIndexItem = OverwriteColorClass(importIndexItem, fileIndexItem,
+			importSettingsColorClass, origin);
+
+		return importIndexItem;
+	}
+
+	private ImportIndexItem OverwriteColorClass(ImportIndexItem importIndexItem,
+		FileIndexItem? fileIndexItem,
+		int importSettingsColorClass, string origin)
+	{
 		// Overwrite ColorClass when set in ImportSettingsModel
+		importSettingsColorClass = ( int ) new UpdateImportSettingsHelper(appSettings)
+			.ColorClassTransformation(importSettingsColorClass,
+				fileIndexItem, origin);
+
 		if ( importSettingsColorClass < 0 )
 		{
 			return importIndexItem;
@@ -50,6 +66,7 @@ public class ObjectCreateIndexItemService(
 		var colorClass = ( ColorClassParser.Color ) importSettingsColorClass;
 		importIndexItem.FileIndexItem!.ColorClass = colorClass;
 		importIndexItem.ColorClass = colorClass;
+
 		return importIndexItem;
 	}
 

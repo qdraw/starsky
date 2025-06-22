@@ -118,8 +118,8 @@ public class StructureService : IStructureService
 		{
 			if ( ( rule.Conditions.ImageFormats.Contains(input.ImageFormat) &&
 			       !string.IsNullOrEmpty(rule.Pattern) ) ||
-			     ( !string.IsNullOrEmpty(rule.Conditions.Source)
-			       && rule.Conditions.Source == input.Source &&
+			     ( !string.IsNullOrEmpty(rule.Conditions.Origin)
+			       && rule.Conditions.Origin == input.Origin &&
 			       !string.IsNullOrEmpty(rule.Pattern) ) )
 			{
 				return rule.Pattern;

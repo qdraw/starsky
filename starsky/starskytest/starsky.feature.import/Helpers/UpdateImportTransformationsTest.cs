@@ -35,7 +35,51 @@ public sealed class UpdateImportTransformationsTest
 
 		await updateImportTransformations.UpdateTransformations(updateItemAsync,
 			new FileIndexItem("/test.jpg") { ColorClass = ColorClassParser.Color.Typical }, 0,
-			false, true, true);
+			false, true, true, string.Empty);
+
+		var updatedItem = await query.GetObjectByFilePathAsync("/test.jpg");
+		Assert.AreEqual(ColorClassParser.Color.Typical, updatedItem?.ColorClass);
+	}
+
+	[TestMethod]
+	public async Task UpdateTransformations_ShouldUpdate_ColorClassFromAppSettings_IndexModeOn()
+	{
+		var storage = new FakeIStorage(
+			["/"],
+			["/test.jpg", "/test.xmp"],
+			new List<byte[]> { CreateAnPng.Bytes.ToArray(), CreateAnXmp.Bytes.ToArray() });
+
+		var appSettings = new AppSettings
+		{
+			ImportTransformation = new AppSettingsImportTransformationModel
+			{
+				Rules =
+				[
+					new TransformationRule
+					{
+						Conditions =
+							new TransformationConditions { Origin = "test-color-class" },
+						ColorClass = ColorClassParser.Color.Superior
+					}
+				]
+			}
+		};
+
+		var updateImportTransformations = new UpdateImportTransformations(new FakeIWebLogger(),
+			new FakeExifTool(storage, appSettings),
+			new FakeSelectorStorage(storage), appSettings,
+			new FakeIThumbnailQuery());
+
+		var query = new FakeIQuery();
+		await query.AddItemAsync(new FileIndexItem("/test.jpg") { FileHash = "test" });
+
+		UpdateImportTransformations.QueryUpdateDelegate updateItemAsync = query.UpdateItemAsync;
+
+		await updateImportTransformations.UpdateTransformations(updateItemAsync,
+			new FileIndexItem("/test.jpg") { ColorClass = ColorClassParser.Color.Typical },
+			-1,
+			false, true, true,
+			"test-color-class");
 
 		var updatedItem = await query.GetObjectByFilePathAsync("/test.jpg");
 		Assert.AreEqual(ColorClassParser.Color.Typical, updatedItem?.ColorClass);
@@ -62,7 +106,7 @@ public sealed class UpdateImportTransformationsTest
 
 		await updateImportTransformations.UpdateTransformations(updateItemAsync,
 			new FileIndexItem("/test.jpg") { ColorClass = ColorClassParser.Color.Typical }, 0,
-			false, false, true);
+			false, false, true, string.Empty);
 
 		var updatedItem = await query.GetObjectByFilePathAsync("/test.jpg");
 		// Are NOT equal!
@@ -90,7 +134,7 @@ public sealed class UpdateImportTransformationsTest
 
 		await updateImportTransformations.UpdateTransformations(updateItemAsync,
 			new FileIndexItem("/test.jpg") { Description = "test-ung" }, -1,
-			true, true, true);
+			true, true, true, string.Empty);
 
 		var updatedItem = await query.GetObjectByFilePathAsync("/test.jpg");
 		Assert.AreEqual("test-ung", updatedItem?.Description);

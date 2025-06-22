@@ -50,6 +50,7 @@
     DateTimeFromFileName: false,
     ColorClass: Typical,
     ImageFormat: jpg,
-    Size: 4808
+    Size: 4808,
+    Origin: 
   }
 ]

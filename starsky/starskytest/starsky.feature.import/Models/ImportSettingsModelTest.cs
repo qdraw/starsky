@@ -40,4 +40,13 @@ public sealed class ImportSettingsModelTest
 		model = new ImportSettingsModel(context.Request);
 		Assert.IsTrue(model.IndexMode);
 	}
+	
+	[TestMethod]
+	public void ImportSettingsModel_ImportOrigin_Test()
+	{
+		var context = new DefaultHttpContext();
+		context.Request.Headers["ImportOrigin"] = "test";
+		var model = new ImportSettingsModel(context.Request);
+		Assert.AreEqual("test", model.Origin);
+	}
 }

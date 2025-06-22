@@ -280,8 +280,7 @@ public sealed class AppSettings
 	public AppSettingsStructureModel Structure { get; set; } = new();
 
 	[PackageTelemetry]
-	public List<AppSettingsImportTransformationModel> ImportTransformation { get; set; } =
-		[];
+	public AppSettingsImportTransformationModel ImportTransformation { get; set; } = new();
 
 	/// <summary>
 	///     Used for syncing gpx files

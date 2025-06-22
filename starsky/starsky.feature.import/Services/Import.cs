@@ -451,7 +451,7 @@ public class Import : IImport
 		// Prepare transformations here
 		var importIndexItem = _objectCreateIndexItemService.CreateObjectIndexItem(inputFileFullPath,
 			fileIndexItem, hashList, _filesystemStorage.Info(inputFileFullPath.Key).Size,
-			importSettings.ColorClass);
+			importSettings.ColorClass, importSettings.Origin);
 		importIndexItem = await _objectCreateIndexItemService.TransformCreateIndexItem(
 			importIndexItem,
 			importSettings);
@@ -603,9 +603,9 @@ public class Import : IImport
 
 		// next: and save the database item
 		importIndexItem.FileIndexItem = await _updateImportTransformations
-			.UpdateTransformations(updateItemAsync, importIndexItem.FileIndexItem!,
-				importSettings.ColorClass, importIndexItem.DateTimeFromFileName,
-				importSettings.IndexMode, importSettings.ReverseGeoCode);
+			.UpdateTransformations(updateItemAsync, importSettings,
+				importIndexItem.FileIndexItem!,
+				importIndexItem.DateTimeFromFileName);
 
 		await UpdateCreateMetaThumbnail(queryThumbnailUpdateDelegate,
 			importIndexItem.FileIndexItem?.FileHash, importSettings.IndexMode);

@@ -193,7 +193,7 @@ public class PackageTelemetry : IPackageTelemetry
 			     typeof(Dictionary<string, List<AppSettingsPublishProfiles>>) ||
 			     propValue?.GetType() == typeof(List<CameraMakeModel>) ||
 			     propValue?.GetType() == typeof(List<AppSettingsDefaultEditorApplication>) ||
-			     propValue?.GetType() == typeof(List<AppSettingsImportTransformationModel>) )
+			     propValue?.GetType() == typeof(AppSettingsImportTransformationModel) )
 			{
 				value = ParseContentToJson(propValue);
 			}

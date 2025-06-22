@@ -134,5 +134,5 @@ public class StructureRuleConditions
 	[JsonConverter(typeof(EnumListConverter<ExtensionRolesHelper.ImageFormat>))]
 	public List<ExtensionRolesHelper.ImageFormat> ImageFormats { get; set; } = [];
 
-	public string Source { get; set; } = string.Empty;
+	public string Origin { get; set; } = string.Empty;
 }

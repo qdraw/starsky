@@ -48,6 +48,7 @@
     MakeModel: Sony|SLT-A58|24-105mm F3.5-4.5|,
     DateTimeFromFileName: false,
     ImageFormat: jpg,
-    Size: 9998
+    Size: 9998,
+    Origin: 
   }
 ]

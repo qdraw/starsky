@@ -42,6 +42,7 @@
     MakeModel: ,
     DateTimeFromFileName: false,
     ImageFormat: gpx,
-    Size: 6193
+    Size: 6193,
+    Origin: 
   }
 ]

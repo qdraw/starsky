@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using starsky.feature.import.Models;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.geo.ReverseGeoCode;
@@ -20,7 +21,6 @@ public class UpdateImportTransformations
 	public delegate Task<List<ThumbnailItem>?> QueryThumbnailUpdateDelegate(
 		List<ThumbnailResultDataTransferModel> thumbnailItems);
 
-
 	public delegate Task<FileIndexItem> QueryUpdateDelegate(FileIndexItem fileIndexItem);
 
 	private readonly AppSettings _appSettings;
@@ -29,6 +29,7 @@ public class UpdateImportTransformations
 	private readonly IStorage _subPathStorage;
 	private readonly IThumbnailQuery _thumbnailQuery;
 	private readonly IStorage _thumbnailStorage;
+	private readonly UpdateImportSettingsHelper _updateImportSettingsHelper;
 
 	public UpdateImportTransformations(IWebLogger logger,
 		IExifTool exifTool, ISelectorStorage selectorStorage, AppSettings appSettings,
@@ -40,6 +41,26 @@ public class UpdateImportTransformations
 		_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 		_appSettings = appSettings;
 		_thumbnailQuery = thumbnailQuery;
+		_updateImportSettingsHelper =
+			new UpdateImportSettingsHelper(_appSettings);
+	}
+
+
+	/// <summary>
+	///     Run Transformation on Import to the files in the database and Update fileHash in database
+	/// </summary>
+	/// <param name="queryUpdateDelegate"></param>
+	/// <param name="settings"></param>
+	/// <param name="fileIndexItem"></param>
+	/// <param name="dateTimeParsedFromFileName"></param>
+	/// <returns></returns>
+	internal async Task<FileIndexItem?> UpdateTransformations(
+		QueryUpdateDelegate? queryUpdateDelegate, ImportSettingsModel settings,
+		FileIndexItem fileIndexItem, bool dateTimeParsedFromFileName)
+	{
+		return await UpdateTransformations(queryUpdateDelegate, fileIndexItem,
+			settings.ColorClass, dateTimeParsedFromFileName,
+			settings.IndexMode, settings.ReverseGeoCode, settings.Origin);
 	}
 
 	/// <summary>
@@ -55,7 +76,7 @@ public class UpdateImportTransformations
 		QueryUpdateDelegate? queryUpdateDelegate,
 		FileIndexItem fileIndexItem,
 		int colorClassTransformation, bool dateTimeParsedFromFileName,
-		bool indexMode, bool reverseGeoCode)
+		bool indexMode, bool reverseGeoCode, string origin)
 	{
 		if ( !ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName) )
 		{
@@ -69,6 +90,10 @@ public class UpdateImportTransformations
 			                       $"ExifTool Sync {fileIndexItem.FilePath}");
 			comparedNamesList = AddDateTimeParsedComparedNamesList();
 		}
+
+		colorClassTransformation = ( int ) _updateImportSettingsHelper.ColorClassTransformation(
+			colorClassTransformation,
+			fileIndexItem, origin);
 
 		if ( colorClassTransformation >= 0 )
 		{
@@ -126,7 +151,7 @@ public class UpdateImportTransformations
 		return list;
 	}
 
-	internal static List<string> AddReverseGeoCodeToComparedNamesList(List<string> list)
+	private static List<string> AddReverseGeoCodeToComparedNamesList(List<string> list)
 	{
 		list.Add(nameof(FileIndexItem.LocationCity).ToLowerInvariant());
 		list.Add(nameof(FileIndexItem.LocationCountry).ToLowerInvariant());

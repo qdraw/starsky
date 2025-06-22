@@ -59,7 +59,8 @@ public class ImportSettingsModel
 			IndexMode = false;
 		}
 
-		Origin = request.Headers["Origin"].ToString();
+		// Use http-header 'ImportOrigin' to set this value because Origin is already used for urls
+		Origin = request.Headers["ImportOrigin"].ToString();
 	}
 
 	/// <summary>
@@ -138,6 +139,7 @@ public class ImportSettingsModel
 
 	/// <summary>
 	///     For importing files from a source
+	///     Use http-header 'ImportOrigin' to set this value because Origin is already used for urls
 	/// </summary>
 	public string Origin { get; set; } = string.Empty;
 

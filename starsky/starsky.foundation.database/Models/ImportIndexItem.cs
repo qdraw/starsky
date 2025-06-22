@@ -101,11 +101,20 @@ public sealed class ImportIndexItem
 	public ColorClassParser.Color ColorClass { get; set; }
 
 	/// <summary>
-	///     Store imageformat like jpeg, png, webp
+	///     Store imageFormat like jpeg, png, webp
 	/// </summary>
 	public ExtensionRolesHelper.ImageFormat ImageFormat { get; set; }
 
+	/// <summary>
+	///     Size of the file in bytes
+	/// </summary>
 	public long Size { get; set; }
+
+	/// <summary>
+	///     Where the file is imported from
+	/// </summary>
+	[MaxLength(100)]
+	public string Origin { get; set; } = string.Empty;
 
 	public string GetFileHashWithUpdate()
 	{
