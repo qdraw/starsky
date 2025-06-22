@@ -112,7 +112,7 @@ public static class AppSettingsCompareHelper
 			return;
 		}
 
-		sourceIndexItem?.GetType().GetProperty(propertyName)?.SetValue(sourceIndexItem,
+		sourceIndexItem!.GetType().GetProperty(propertyName)!.SetValue(sourceIndexItem,
 			newKeyValuePairStringStringValue, null);
 		differenceList.Add(propertyName.ToLowerInvariant());
 	}
@@ -207,7 +207,7 @@ public static class AppSettingsCompareHelper
 			return;
 		}
 
-		sourceIndexItem?.GetType().GetProperty(propertyBName)?.SetValue(sourceIndexItem,
+		sourceIndexItem.GetType().GetProperty(propertyBName)!.SetValue(sourceIndexItem,
 			newStructure, null);
 		differenceList.Add(propertyBName.ToLowerInvariant());
 	}
