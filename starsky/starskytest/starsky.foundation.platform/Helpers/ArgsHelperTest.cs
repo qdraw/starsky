@@ -594,6 +594,22 @@ public sealed class ArgsHelperTest
 		var value = ArgsHelper.GetColorClass(args);
 		Assert.AreEqual(1, value);
 	}
+	
+	[TestMethod]
+	public void ArgsHelper_GetOrigin()
+	{
+		var args = new List<string> { "--origin", "1" }.ToArray();
+		var value = ArgsHelper.GetOrigin(args);
+		Assert.AreEqual("1", value);
+	}
+	
+	[TestMethod]
+	public void ArgsHelper_GetOrigin_Fallback()
+	{
+		var args = new List<string> { "--origin" }.ToArray();
+		var value = ArgsHelper.GetOrigin(args);
+		Assert.AreEqual(string.Empty, value);
+	}
 
 	[TestMethod]
 	public void ArgsHelper_GetColorClass_99_Fallback()

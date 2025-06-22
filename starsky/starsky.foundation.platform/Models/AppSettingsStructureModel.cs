@@ -101,7 +101,7 @@ public class AppSettingsStructureModel
 	/// <returns></returns>
 	public AppSettingsStructureModel Clone()
 	{
-		return this.CloneViaJson() ?? new AppSettingsStructureModel();
+		return this.CloneViaJson()!;
 	}
 }
 

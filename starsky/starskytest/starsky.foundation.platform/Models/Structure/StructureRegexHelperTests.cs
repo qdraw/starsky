@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Models.Structure;
 
 namespace starskytest.starsky.foundation.platform.Models.Structure;
@@ -40,5 +41,34 @@ public class AppSettingsStructureModelTests
 	{
 		var result = StructureRegexHelper.StructureCheck(value);
 		Assert.IsFalse(result);
+	}
+	
+	[TestMethod]
+	public void InvalidPattern_ShouldAddErrorToErrorsList()
+	{
+		// Arrange
+		const string invalidPattern = "invalid_structure_pattern";
+		var fakeRule = new StructureRule {
+			// Act
+			Pattern = invalidPattern };
+
+		// Assert
+		Assert.AreEqual(1, fakeRule.Errors.Count);
+		Assert.AreEqual($"Structure '{invalidPattern}' is not valid", fakeRule.Errors[0]);
+	}
+	
+	
+	[TestMethod]
+	public void Clone_ShouldReturnNewInstance()
+	{
+		// Arrange
+		var model = new AppSettingsStructureModel();
+
+		// Act
+		var result = model.Clone();
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.IsInstanceOfType(result, typeof(AppSettingsStructureModel));
 	}
 }
