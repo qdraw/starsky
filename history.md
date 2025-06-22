@@ -49,7 +49,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
   [blog about it](https://docs.qdraw.nl/blog/smarter-imports-conditional-rules-structure-colorclass))
   (PR #2204)
 
-### Breaking changes in 0.7.0-beta between version 0 and 2
+### Breaking changes in 0.7.0-beta between version 0 and 3
 
 - [x] (Breaking Change) _Back-end_ change default thumbnail format to webp (PR #1833)
 - [x] (Breaking Change) _Back-end_ Structure for import has changed
