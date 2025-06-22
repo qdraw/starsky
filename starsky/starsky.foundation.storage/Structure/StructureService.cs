@@ -183,7 +183,7 @@ public class StructureService : IStructureService
 	/// <param name="fileNameBase">source file name without extension</param>
 	/// <param name="extensionWithoutDot">fileExtension without dot</param>
 	/// <returns>Current item name, with parsed DateTime and without escape signs</returns>
-	private string OutputStructureRangeItemParser(string pattern, DateTime dateTime,
+	internal string OutputStructureRangeItemParser(string pattern, DateTime dateTime,
 		string fileNameBase, string extensionWithoutDot = "")
 	{
 		// allow only full word matches (so .ext is no match)

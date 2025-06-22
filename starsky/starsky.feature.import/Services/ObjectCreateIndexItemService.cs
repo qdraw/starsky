@@ -142,9 +142,7 @@ public class ObjectCreateIndexItemService(
 
 	private AppSettingsStructureModel CreateStructure(string overwriteStructure)
 	{
-		var structure = appSettings.Structure.CloneViaJson();
-		structure ??= new AppSettingsStructureModel();
-
+		var structure = appSettings.Structure.CloneViaJson()!;
 		structure.OverrideDefaultPatternAndDisableRules(overwriteStructure,
 			[]);
 		return structure;

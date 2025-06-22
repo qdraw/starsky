@@ -389,4 +389,54 @@ public sealed class StructureServiceTest
 		// Assert
 		Assert.AreEqual(expectedPattern, result);
 	}
+	
+	[DataTestMethod]
+	[DataRow("yyyy", "2023")]
+	[DataRow("fffff", "00000")]
+	[DataRow("FFFFF", "")]
+	[DataRow("gg", "A.D.")]
+	[DataRow("HH", "01")]
+	[DataRow("mm", "01")]
+	[DataRow("M", "January 01")]
+	[DataRow("ss", "01")]
+	[DataRow("tt", "AM")]
+	[DataRow("zz", "+00")]
+	public void OutputStructureRangeItemParser_ShouldHandleVariousPatterns(
+		string pattern, string expected)
+	{
+		// Arrange
+		var fixedDateTime = new DateTime(2023, 
+			01, 01, 01, 01, 
+			01, DateTimeKind.Utc);
+		const string fileNameBase = "testFile";
+		const string extensionWithoutDot = "jpg";
+		var fakeLogger = new FakeIWebLogger();
+		var service = new StructureService(new FakeSelectorStorage(), new AppSettings(), fakeLogger);
+
+		// Act
+		var result = service.OutputStructureRangeItemParser(pattern, fixedDateTime, fileNameBase, extensionWithoutDot);
+
+		// Assert
+		Assert.AreEqual(expected, result);
+	}
+
+	[DataTestMethod]
+	[DataRow("K")]
+	public void OutputStructureRangeItemParser_ErrorHandling(
+		string pattern)
+	{
+		var fixedDateTime = new DateTime(2023, 
+			01, 01, 01, 01, 
+			01, DateTimeKind.Utc);
+		const string fileNameBase = "testFile";
+		const string extensionWithoutDot = "jpg";
+		var fakeLogger = new FakeIWebLogger();
+		var service = new StructureService(new FakeSelectorStorage(),
+			new AppSettings(), fakeLogger);
+		
+		// Act
+		Assert.ThrowsExactly<FormatException>(() => 
+			service.OutputStructureRangeItemParser(pattern, fixedDateTime, 
+				fileNameBase, extensionWithoutDot));
+	}
 }
