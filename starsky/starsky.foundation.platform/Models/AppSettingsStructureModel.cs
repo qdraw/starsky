@@ -59,7 +59,7 @@ public class AppSettingsStructureModel
 
 		if ( StructureRegexHelper.StructureCheck(structure) )
 		{
-			DefaultPatternPrivate = structure;
+			DefaultPatternPrivate = structure!;
 			return;
 		}
 
