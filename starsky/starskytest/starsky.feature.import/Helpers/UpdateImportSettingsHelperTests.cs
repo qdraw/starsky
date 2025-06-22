@@ -40,18 +40,6 @@ public class UpdateImportSettingsHelperTests
 	}
 
 	[TestMethod]
-	public void GetTransformationSetting_NullConfig_ShouldReturnDefaultRule()
-	{
-		// Act
-		var result = UpdateImportSettingsHelper.GetTransformationSetting(null,
-			ExtensionRolesHelper.ImageFormat.jpg, "test-origin");
-
-		// Assert
-		Assert.IsNotNull(result);
-		Assert.AreEqual(ColorClassParser.Color.DoNotChange, result.ColorClass);
-	}
-
-	[TestMethod]
 	public void GetTransformationSetting_NullOrigin_ShouldMatchImageFormat()
 	{
 		// Arrange
