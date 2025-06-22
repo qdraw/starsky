@@ -97,7 +97,6 @@ public class ParseDateTimeFromFileNameHelper(AppSettingsStructureModel settingsS
 		// used in the source filename AND the config
 		if ( !string.IsNullOrEmpty(fileName) && fileName.Length >= structuredFileName.Length )
 		{
-
 			structuredFileName = RemoveEscapedCharacters(structuredFileName);
 
 			// short the filename with structuredFileName
