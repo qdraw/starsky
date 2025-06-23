@@ -41,7 +41,11 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.0 - _(Unreleased)_ - 2025-05-? {#v0.7.0}
+## version 0.7.1 - _(Unreleased)_ - 2025-06-? {#v0.7.1}
+
+- nothing yet
+
+## version 0.7.0 - 2025-06-23 {#v0.7.0}
 
 - [x] (Fixed) _Back-end_ Replace with default status does now replace (PR #2224)
 - [x] (Breaking Change) _Back-end_ Structure for import has changed   (PR #2204) (see
