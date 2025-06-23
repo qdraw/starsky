@@ -101,6 +101,95 @@ public sealed class AppSettingsCompareHelperTest
 			source.Structure.Rules[0].Pattern);
 	}
 
+	[TestMethod]
+	public void AppSettingsImportTransformationModel()
+	{
+		var source = new AppSettings
+		{
+			ImportTransformation =
+				new AppSettingsImportTransformationModel
+				{
+					Rules =
+					[
+						new TransformationRule
+						{
+							ColorClass = ColorClassParser.Color.Superior,
+							Conditions = new TransformationConditions
+							{
+								ImageFormats = [ExtensionRolesHelper.ImageFormat.png],
+								Origin = "test-1"
+							}
+						}
+					]
+				}
+		};
+
+		var to = new AppSettings
+		{
+			ImportTransformation =
+				new AppSettingsImportTransformationModel
+				{
+					Rules =
+					[
+						new TransformationRule
+						{
+							ColorClass = ColorClassParser.Color.Extras,
+							Conditions = new TransformationConditions
+							{
+								ImageFormats = [ExtensionRolesHelper.ImageFormat.jpg],
+								Origin = "test"
+							}
+						}
+					]
+				}
+		};
+
+		AppSettingsCompareHelper.Compare(source, to);
+
+		Assert.AreEqual(source.ImportTransformation.Rules[0].ColorClass,
+			to.ImportTransformation.Rules[0].ColorClass);
+		Assert.AreEqual(source.ImportTransformation.Rules[0].Conditions.Origin,
+			to.ImportTransformation.Rules[0].Conditions.Origin);
+		Assert.AreEqual(source.ImportTransformation.Rules[0].Conditions.ImageFormats[0],
+			to.ImportTransformation.Rules[0].Conditions.ImageFormats[0]);
+	}
+
+	[TestMethod]
+	public void AppSettingsImportTransformationModel_Ignore_DefaultOption()
+	{
+		var source = new AppSettings
+		{
+			ImportTransformation = new AppSettingsImportTransformationModel
+			{
+				Rules =
+				[
+					new TransformationRule
+					{
+						ColorClass = ColorClassParser.Color.Superior,
+						Conditions = new TransformationConditions
+						{
+							ImageFormats = [ExtensionRolesHelper.ImageFormat.png],
+							Origin = "test-1"
+						}
+					}
+				]
+			}
+		};
+
+		var to = new AppSettings
+		{
+			ImportTransformation = new AppSettingsImportTransformationModel()
+		};
+
+		AppSettingsCompareHelper.Compare(source, to);
+
+		Assert.AreEqual(ColorClassParser.Color.Superior,
+			source.ImportTransformation.Rules[0].ColorClass);
+		Assert.AreEqual("test-1",
+			source.ImportTransformation.Rules[0].Conditions.Origin);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.png,
+			source.ImportTransformation.Rules[0].Conditions.ImageFormats[0]);
+	}
 
 	[TestMethod]
 	public void StringCompare()

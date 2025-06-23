@@ -308,6 +308,10 @@ public sealed class PackageTelemetryTest
 		DisplayName = "Type is List<AppSettingsDefaultEditorApplication>")]
 	[DataRow(typeof(string), false, DisplayName = "Type is string")]
 	[DataRow(typeof(int), false, DisplayName = "Type is int")]
+	[DataRow(typeof(AppSettingsImportTransformationModel), true,
+		DisplayName = "Type is AppSettingsImportTransformationModel")]
+	[DataRow(typeof(AppSettingsStructureModel), true,
+		DisplayName = "Type is AppSettingsStructureModel")]
 	public void TestPropValueTypeCheck(Type type, bool expected)
 	{
 		// Arrange
@@ -328,6 +332,14 @@ public sealed class PackageTelemetryTest
 		{
 			propValue = new List<AppSettingsDefaultEditorApplication>();
 		}
+		else if ( type == typeof(AppSettingsImportTransformationModel) )
+		{
+			propValue = new AppSettingsImportTransformationModel();
+		}
+		else if ( type == typeof(AppSettingsStructureModel) )
+		{
+			propValue = new AppSettingsStructureModel();
+		}
 		else if ( type == typeof(string) )
 		{
 			propValue = "test";
@@ -342,6 +354,8 @@ public sealed class PackageTelemetryTest
 		             propValue.GetType() ==
 		             typeof(Dictionary<string, List<AppSettingsPublishProfiles>>) ||
 		             propValue.GetType() == typeof(List<CameraMakeModel>) ||
+		             propValue.GetType() == typeof(AppSettingsImportTransformationModel) ||
+		             propValue.GetType() == typeof(AppSettingsStructureModel) ||
 		             propValue.GetType() == typeof(List<AppSettingsDefaultEditorApplication>);
 
 		// check for json
