@@ -44,18 +44,16 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## version 0.7.0 - _(Unreleased)_ - 2025-05-? {#v0.7.0}
 
 - [x] (Fixed) _Back-end_ Replace with default status does now replace (PR #2224)
-- [x] (Breaking Change) _Back-end_ Structure for import has changed
-  (see
+- [x] (Breaking Change) _Back-end_ Structure for import has changed   (PR #2204) (see
   [blog about it](https://docs.qdraw.nl/blog/smarter-imports-conditional-rules-structure-colorclass))
-  (PR #2204)
+- [x] (Breaking Change) _Back-end_ Exiftool checksum api breaks auto setup of the tool (PR #2238)
 
 ### Breaking changes in 0.7.0-beta between version 0 and 3
 
 - [x] (Breaking Change) _Back-end_ change default thumbnail format to webp (PR #1833)
-- [x] (Breaking Change) _Back-end_ Structure for import has changed
-  (see
+- [x] (Breaking Change) _Back-end_ Structure for import has changed   (PR #2204) (see
   [blog about it](https://docs.qdraw.nl/blog/smarter-imports-conditional-rules-structure-colorclass))
-  (PR #2204)
+- [x] (Breaking Change) _Back-end_ Exiftool checksum api breaks auto setup of the tool (PR #2238)
 
 ## version 0.7.0-beta.3 - 2025-06-11 {#v0.7.0-beta.3}
 

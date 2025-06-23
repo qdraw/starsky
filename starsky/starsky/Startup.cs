@@ -39,15 +39,6 @@ namespace starsky;
 
 public sealed class Startup
 {
-	/// <summary>
-	///     application/xhtml+xml image/svg+xml
-	/// </summary>
-	private static readonly string[] CompressionMimeTypes =
-	[
-		"application/xhtml+xml",
-		"image/svg+xml"
-	];
-
 	private readonly IConfigurationRoot _configuration;
 	private AppSettings? _appSettings;
 
@@ -221,8 +212,7 @@ public sealed class Startup
 		services.AddResponseCompression(options =>
 		{
 			options.Providers.Add<GzipCompressionProvider>();
-			options.MimeTypes =
-				ResponseCompressionDefaults.MimeTypes.Concat(CompressionMimeTypes);
+			options.MimeTypes = CompressionMime.GetCompressionMimeTypes();
 		});
 		services.Configure<GzipCompressionProviderOptions>(options =>
 		{

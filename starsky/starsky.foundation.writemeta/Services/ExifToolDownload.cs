@@ -140,17 +140,6 @@ public sealed class ExifToolDownload : IExifToolDownload
 		_hostFileSystemStorage.CreateDirectory(_appSettings.DependenciesFolder);
 	}
 
-	internal async Task<KeyValuePair<bool, string>?> DownloadCheckSums()
-	{
-		var baseLocationResult = await DownloadCheckSums(CheckSumLocation);
-		if ( baseLocationResult == null )
-		{
-			return await DownloadCheckSums(CheckSumLocationMirror);
-		}
-
-		return baseLocationResult;
-	}
-
 	internal async Task<KeyValuePair<bool, string>?> DownloadCheckSums(string checkSumUrl)
 	{
 		var checksums = await _httpClientHelper.ReadString(checkSumUrl);
@@ -159,15 +148,13 @@ public sealed class ExifToolDownload : IExifToolDownload
 			return checksums;
 		}
 
-		_logger.LogError(
-			$"Checksum loading failed {CheckSumLocation}, next retry from mirror ~ error > " +
-			checksums.Value);
+		_logger.LogError($"Checksum loading failed {CheckSumLocation}");
 		return null;
 	}
 
 	internal async Task<bool> StartDownloadForUnix()
 	{
-		var checksums = await DownloadCheckSums();
+		var checksums = await DownloadCheckSums(CheckSumLocation);
 		if ( checksums == null )
 		{
 			return false;
@@ -180,9 +167,10 @@ public sealed class ExifToolDownload : IExifToolDownload
 
 	internal static string GetUnixTarGzFromChecksum(string checksumsValue)
 	{
-		// (?<=SHA1\()Image-ExifTool-[\d\.]+\.zip
-		var regexExifToolForWindowsName = new Regex(@"(?<=SHA256\()Image-ExifTool-[0-9\.]+\.tar.gz",
-			RegexOptions.None, TimeSpan.FromMilliseconds(100));
+		// (?<=SHA(2-)?256\()Image-ExifTool-[0-9\.]+\.tar.gz
+		var regexExifToolForWindowsName = new Regex(
+			@"(?<=SHA(2-)?256\()Image-ExifTool-[0-9\.]+\.tar.gz",
+			RegexOptions.None, TimeSpan.FromMilliseconds(1000));
 		return regexExifToolForWindowsName.Match(checksumsValue).Value;
 	}
 
@@ -205,6 +193,16 @@ public sealed class ExifToolDownload : IExifToolDownload
 			return true;
 		}
 
+		// when failed: download checksum list from mirror
+		var checksums = await DownloadCheckSums(CheckSumLocationMirror);
+		if ( checksums == null )
+		{
+			return false;
+		}
+
+		matchExifToolForUnixName = GetUnixTarGzFromChecksum(checksums.Value.Value);
+		getChecksumsFromTextFile = GetChecksumsFromTextFile(checksums.Value.Value);
+
 		return await DownloadForUnix(ExiftoolDownloadBasePathMirror, matchExifToolForUnixName,
 			getChecksumsFromTextFile);
 	}
@@ -217,6 +215,12 @@ public sealed class ExifToolDownload : IExifToolDownload
 		if ( _hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()) )
 		{
 			return true;
+		}
+
+		if ( string.IsNullOrEmpty(matchExifToolForUnixName) )
+		{
+			_logger.LogError("[DownloadForUnix] matchExifToolForUnixName is empty");
+			return false;
 		}
 
 		var tarGzArchiveFullFilePath =
@@ -310,7 +314,7 @@ public sealed class ExifToolDownload : IExifToolDownload
 
 	internal async Task<bool> StartDownloadForWindows()
 	{
-		var checksums = await DownloadCheckSums();
+		var checksums = await DownloadCheckSums(CheckSumLocation);
 		if ( checksums == null )
 		{
 			return false;
@@ -324,7 +328,7 @@ public sealed class ExifToolDownload : IExifToolDownload
 	internal static string GetWindowsZipFromChecksum(string checksumsValue)
 	{
 		// (?<=SHA256\()exiftool-[\d\.]+_64\.zip
-		var regexExifToolForWindowsName = new Regex(@"(?<=SHA256\()exiftool-[0-9\.]+_64\.zip",
+		var regexExifToolForWindowsName = new Regex(@"(?<=SHA(2-)?256\()exiftool-[0-9\.]+_64\.zip",
 			RegexOptions.None, TimeSpan.FromMilliseconds(100));
 		return regexExifToolForWindowsName.Match(checksumsValue).Value;
 	}
@@ -368,6 +372,16 @@ public sealed class ExifToolDownload : IExifToolDownload
 			return true;
 		}
 
+		// when failed: download checksum list from mirror
+		var checksums = await DownloadCheckSums(CheckSumLocationMirror);
+		if ( checksums == null )
+		{
+			return false;
+		}
+
+		matchExifToolForWindowsName = GetWindowsZipFromChecksum(checksums.Value.Value);
+		getChecksumsFromTextFile = GetChecksumsFromTextFile(checksums.Value.Value);
+
 		return await DownloadForWindows(ExiftoolDownloadBasePathMirror, matchExifToolForWindowsName,
 			getChecksumsFromTextFile);
 	}
@@ -380,6 +394,12 @@ public sealed class ExifToolDownload : IExifToolDownload
 			    ExeExifToolWindowsFullFilePath()) )
 		{
 			return true;
+		}
+
+		if ( string.IsNullOrEmpty(matchExifToolForWindowsName) )
+		{
+			_logger.LogError("[DownloadForWindows] matchExifToolForWindowsName is empty");
+			return false;
 		}
 
 		var zipArchiveFullFilePath = Path.Combine(_appSettings.DependenciesFolder, "exiftool.zip");

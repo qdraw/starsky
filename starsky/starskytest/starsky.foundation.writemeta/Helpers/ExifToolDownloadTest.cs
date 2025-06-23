@@ -29,11 +29,11 @@ public sealed class ExifToolDownloadTest
 	///     shasum -a 1 file.zip
 	/// </summary>
 	private static readonly string ExampleCheckSum =
-		"SHA256(Image-ExifTool-11.99.tar.gz)= " + CreateAnExifToolTarGz.Sha256 + "\n" +
-		"SHA256(exiftool-12.94_32.zip)= e0521db2115b3ee07f531ed7e3f686c57fca23b742c8f88b387aef6b682a12fe\n" +
-		$"SHA256(exiftool-11.99_64.zip)= {CreateAnExifToolWindows.Sha256}\n" +
-		"SHA256(exiftool-11.99.zip)= " + CreateAnExifToolWindows.Sha1 + "\n" +
-		"SHA256(ExifTool-11.99.dmg)= e0521db2115b3ee07f531ed7e3f686c57fca23b742c8f88b387aef6b682a12fe\n" +
+		"SHA2-256(Image-ExifTool-11.99.tar.gz)= " + CreateAnExifToolTarGz.Sha256 + "\n" +
+		"SHA2-256(exiftool-12.94_32.zip)= e0521db2115b3ee07f531ed7e3f686c57fca23b742c8f88b387aef6b682a12fe\n" +
+		$"SHA2-256(exiftool-11.99_64.zip)= {CreateAnExifToolWindows.Sha256}\n" +
+		"SHA2-256(exiftool-11.99.zip)= " + CreateAnExifToolWindows.Sha1 + "\n" +
+		"SHA2-256(ExifTool-11.99.dmg)= e0521db2115b3ee07f531ed7e3f686c57fca23b742c8f88b387aef6b682a12fe\n" +
 		"SHA1(Image-ExifTool-11.99.tar.gz)= " + CreateAnExifToolTarGz.Sha1 + "\n" +
 		"SHA1(exiftool-11.99.zip)= " + CreateAnExifToolWindows.Sha1 + "\n" +
 		"SHA1(ExifTool-11.99.dmg)= 3d30a4846eab278387be51b91ef4121916375ded\n" +
@@ -118,29 +118,6 @@ public sealed class ExifToolDownloadTest
 	}
 
 	[TestMethod]
-	public async Task DownloadCheckSums_BaseChecksumDoesNotExist()
-	{
-		// Main source is down, but mirror is up
-		var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
-		{
-			{
-				"https://qdraw.nl/special/mirror/exiftool/checksums.txt",
-				new StringContent(ExampleCheckSum)
-			}
-		});
-		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory,
-			new FakeIWebLogger());
-
-		// Main source is down, but mirror is up
-		var result =
-			await new ExifToolDownload(httpClientHelper, _appSettings, new FakeIWebLogger())
-				.DownloadCheckSums();
-
-		Assert.AreEqual(ExampleCheckSum, result?.Value);
-		Assert.IsTrue(result?.Key);
-	}
-
-	[TestMethod]
 	public async Task DownloadCheckSums_BothServicesAreDown()
 	{
 		// Main & Mirror source are down
@@ -151,7 +128,7 @@ public sealed class ExifToolDownloadTest
 		// Main & Mirror source are down
 		var result =
 			await new ExifToolDownload(httpClientHelper, _appSettings, new FakeIWebLogger())
-				.DownloadCheckSums();
+				.DownloadCheckSums("https://exiftool.org/checksums.txt");
 
 		Assert.IsNull(result);
 	}
@@ -303,6 +280,21 @@ public sealed class ExifToolDownloadTest
 		RemoveTempFolderWithExifTool("starsky-tmp-dependencies-4835793");
 
 		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public async Task RunChmodOnExifToolUnixExe_NotFound()
+	{
+		var fakeIHttpProvider = new FakeIHttpProvider();
+		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory,
+			new FakeIWebLogger());
+		var appSettings = new AppSettings { DependenciesFolder = "/not-found" };
+
+		var exifToolDownload =
+			new ExifToolDownload(httpClientHelper, appSettings, new FakeIWebLogger());
+		var result = await exifToolDownload.RunChmodOnExifToolUnixExe();
+		
+		Assert.IsFalse(result);
 	}
 
 	[TestMethod]
@@ -515,7 +507,11 @@ public sealed class ExifToolDownloadTest
 	{
 		var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 		{
-			{ "https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum) }
+			{ "https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum) },
+			{
+				"https://qdraw.nl/special/mirror/exiftool/checksums.txt",
+				new StringContent(ExampleCheckSum)
+			}
 		});
 
 		var logger = new FakeIWebLogger();
@@ -538,7 +534,7 @@ public sealed class ExifToolDownloadTest
 			{ "https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum) },
 			{
 				"https://exiftool.org/Image-ExifTool-11.99.tar.gz",
-				new ByteArrayContent(CreateAnExifToolTarGz.Bytes.ToArray())
+				new ByteArrayContent([.. CreateAnExifToolTarGz.Bytes])
 			}
 		});
 
@@ -577,7 +573,63 @@ public sealed class ExifToolDownloadTest
 		var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 		{
 			{ "https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum) },
-			{ "https://exiftool.org/Image-ExifTool-11.99.tar.gz", new StringContent("FAIL") }
+			{ "https://exiftool.org/Image-ExifTool-11.99.tar.gz", new StringContent("FAIL") },
+			{
+				"https://qdraw.nl/special/mirror/exiftool/checksums.txt",
+				new StringContent(ExampleCheckSum)
+			},
+			{
+				"https://qdraw.nl/special/mirror/exiftool/Image-ExifTool-11.99.tar.gz",
+				new StringContent("FAIL")
+			}
+		});
+		var logger = new FakeIWebLogger();
+		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory,
+			new FakeIWebLogger());
+
+		var result =
+			await new ExifToolDownload(httpClientHelper, _appSettings, logger)
+				.StartDownloadForUnix();
+
+		Assert.IsFalse(result);
+		Assert.AreEqual(2,
+			logger.TrackedExceptions.Count(p =>
+				p.Item2?.Contains("Checksum") == true));
+	}
+	
+	[TestMethod]
+	public async Task StartDownloadForUnix_MirrorChecksumFailedNoDownload()
+	{
+		var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+		{
+			{ "https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum) },
+			{ "https://exiftool.org/Image-ExifTool-11.99.tar.gz", new StringContent("FAIL") },
+		});
+		var logger = new FakeIWebLogger();
+		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory,
+			new FakeIWebLogger());
+
+		var result =
+			await new ExifToolDownload(httpClientHelper, _appSettings, logger)
+				.StartDownloadForUnix();
+
+		Assert.IsFalse(result);
+		Assert.AreEqual(2,
+			logger.TrackedExceptions.Count(p =>
+				p.Item2?.Contains("Checksum") == true));
+	}
+	
+	[TestMethod]
+	public async Task StartDownloadForUnix_MirrorChecksumFailed_EmthyResult()
+	{
+		var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+		{
+			{ "https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum) },
+			{
+				"https://qdraw.nl/special/mirror/exiftool/checksums.txt",
+				new StringContent("")
+			},
+			{ "https://exiftool.org/Image-ExifTool-11.99.tar.gz", new StringContent("FAIL") },
 		});
 		var logger = new FakeIWebLogger();
 		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory,
@@ -590,7 +642,7 @@ public sealed class ExifToolDownloadTest
 		Assert.IsFalse(result);
 		Assert.AreEqual(1,
 			logger.TrackedExceptions.Count(p =>
-				p.Item2?.Contains("file is not downloaded") == true));
+				p.Item2?.Contains("[DownloadForUnix] matchExifToolForUnixName is empty") == true));
 	}
 
 	[TestMethod]
@@ -622,6 +674,10 @@ public sealed class ExifToolDownloadTest
 				new StringContent("FAIL")
 			},
 			{
+				"https://qdraw.nl/special/mirror/exiftool/checksums.txt",
+				new StringContent(ExampleCheckSum)
+			},
+			{
 				"https://qdraw.nl/special/mirror/exiftool/Image-ExifTool-11.99.tar.gz",
 				new StringContent("FAIL")
 			}
@@ -650,6 +706,10 @@ public sealed class ExifToolDownloadTest
 				new StringContent("FAIL")
 			},
 			{
+				"https://qdraw.nl/special/mirror/exiftool/checksums.txt",
+				new StringContent(ExampleCheckSum)
+			},
+			{
 				"https://qdraw.nl/special/mirror/exiftool/Image-ExifTool-11.99.tar.gz",
 				new StringContent("FAIL")
 			}
@@ -672,10 +732,10 @@ public sealed class ExifToolDownloadTest
 		var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>());
 
 		const string example =
-			"SHA256(Image-ExifTool-12.94.tar.gz)= d029485b7aff73e1c4806bbaaf87617dd98c5d2762f1d3a033e0ca926d7484e0\n" +
-			"SHA256(exiftool-12.94_32.zip)= e0521db2115b3ee07f531ed7e3f686c57fca23b742c8f88b387aef6b682a12fe\n" +
-			"SHA256(exiftool-12.94_64.zip)= 60df34ccc3440e18738304fe294c38b127eb8a88c2316abc1dbd7f634a23ee7a\n" +
-			"SHA256(ExifTool-12.94.pkg)= 59f96cf7c5250b609ad1c8e56cd7ddccc620b5448a3d8b3f3368f39a580a1059\n" +
+			"SHA2-256(Image-ExifTool-12.94.tar.gz)= d029485b7aff73e1c4806bbaaf87617dd98c5d2762f1d3a033e0ca926d7484e0\n" +
+			"SHA2-256(exiftool-12.94_32.zip)= e0521db2115b3ee07f531ed7e3f686c57fca23b742c8f88b387aef6b682a12fe\n" +
+			"SHA2-256(exiftool-12.94_64.zip)= 60df34ccc3440e18738304fe294c38b127eb8a88c2316abc1dbd7f634a23ee7a\n" +
+			"SHA2-256(ExifTool-12.94.pkg)= 59f96cf7c5250b609ad1c8e56cd7ddccc620b5448a3d8b3f3368f39a580a1059\n" +
 			"MD5 (Image-ExifTool-12.40.tar.gz) = 72b40d69cf518edebbf5b661465950e7\n" +
 			"MD5 (exiftool-12.40.zip) = fc834fd43d79da19fcb6461fb791b275\n" +
 			"MD5 (ExifTool-12.40.dmg) = b30e391a4b53564de60a72f4347cade4\n";
@@ -689,6 +749,31 @@ public sealed class ExifToolDownloadTest
 		Assert.AreEqual(0, result.Length);
 	}
 
+	[TestMethod]
+	public async Task StartDownloadForWindows_MirrorChecksumFailed_EmthyResult()
+	{
+		var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+		{
+			{ "https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum) },
+			{
+				"https://qdraw.nl/special/mirror/exiftool/checksums.txt",
+				new StringContent("")
+			},
+			{ "https://exiftool.org/exiftool-11.99_64.zip", new StringContent("FAIL") },
+		});
+		var logger = new FakeIWebLogger();
+		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory,
+			new FakeIWebLogger());
+
+		var result =
+			await new ExifToolDownload(httpClientHelper, _appSettings, logger)
+				.StartDownloadForWindows();
+
+		Assert.IsFalse(result);
+		Assert.AreEqual(1,
+			logger.TrackedExceptions.Count(p =>
+				p.Item2?.Contains("[DownloadForWindows] matchExifToolForWindowsName is empty") == true));
+	}
 
 	[TestMethod]
 	public void GetChecksumsFromTextFile_Good()
