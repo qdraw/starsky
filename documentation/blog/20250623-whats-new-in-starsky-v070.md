@@ -41,6 +41,10 @@ changes to configuration. Here’s what’s changed since v0.6.8:
       metadata (origin or format).
     - Great for workflows that separate e.g. screenshots from camera photos or test data.
 
+- **Thumbnail support for video files**
+    - Starsky can now view previews for video files. We use ffmpeg to generate thumbnails
+      for video files, which are stored in the thumbnail folder.
+
 - **Camera Body Serial in Database**
     - The camera’s serial number is now stored, enabling more detailed cataloguing.
 
@@ -51,7 +55,7 @@ changes to configuration. Here’s what’s changed since v0.6.8:
 - **Native thumbnail generation**
     - Starsky now uses the platform’s native QuickLook (on macOS) and the Windows shell image
       preview when loading an image, if available.
-  
+
     - This means:
         - On macOS, Starsky can display QuickLook previews, providing faster and more compatible
           image viewing for supported formats.
@@ -67,8 +71,8 @@ changes to configuration. Here’s what’s changed since v0.6.8:
 ### 🛠️ Bug Fixes & Improvements
 
 - Replace with default status now truly replaces (fix)
-- Fixed backend handling of timeouts (#2189), quote handling, and various edge cases with thumbnails and
-  notifications.
+- Fixed backend handling of timeouts (#2189), quote handling, and various edge cases with thumbnails
+  and notifications.
 - Improved architecture references for trash/metaupdate.
 - Tests failing in menu-archive component (#2216)
 - Upload menu placement was wrong in readonly mode (#2106)
@@ -80,7 +84,7 @@ changes to configuration. Here’s what’s changed since v0.6.8:
 ### 🖥️ Frontend Upgrades
 
 - **React 19**
-    - The frontend now runs on React 19.
+    - The frontend now runs on React 19 instead of React 18.
 - **Refresh Button**
     - New refresh button in the main menu.
 - **Upload Button and Accessibility**
