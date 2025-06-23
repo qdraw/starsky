@@ -140,17 +140,6 @@ public sealed class ExifToolDownload : IExifToolDownload
 		_hostFileSystemStorage.CreateDirectory(_appSettings.DependenciesFolder);
 	}
 
-	internal async Task<KeyValuePair<bool, string>?> DownloadCheckSums()
-	{
-		var baseLocationResult = await DownloadCheckSums(CheckSumLocation);
-		if ( baseLocationResult == null )
-		{
-			return await DownloadCheckSums(CheckSumLocationMirror);
-		}
-
-		return baseLocationResult;
-	}
-
 	internal async Task<KeyValuePair<bool, string>?> DownloadCheckSums(string checkSumUrl)
 	{
 		var checksums = await _httpClientHelper.ReadString(checkSumUrl);
@@ -167,7 +156,7 @@ public sealed class ExifToolDownload : IExifToolDownload
 
 	internal async Task<bool> StartDownloadForUnix()
 	{
-		var checksums = await DownloadCheckSums();
+		var checksums = await DownloadCheckSums(CheckSumLocation);
 		if ( checksums == null )
 		{
 			return false;
@@ -212,10 +201,10 @@ public sealed class ExifToolDownload : IExifToolDownload
 		{
 			return false;
 		}
-		
+
 		matchExifToolForUnixName = GetUnixTarGzFromChecksum(checksums.Value.Value);
 		getChecksumsFromTextFile = GetChecksumsFromTextFile(checksums.Value.Value);
-		
+
 		return await DownloadForUnix(ExiftoolDownloadBasePathMirror, matchExifToolForUnixName,
 			getChecksumsFromTextFile);
 	}
@@ -230,6 +219,12 @@ public sealed class ExifToolDownload : IExifToolDownload
 			return true;
 		}
 
+		if ( string.IsNullOrEmpty(matchExifToolForUnixName) )
+		{
+			_logger.LogError("[DownloadForUnix] matchExifToolForUnixName is empty");
+			return false;
+		}
+		
 		var tarGzArchiveFullFilePath =
 			Path.Combine(_appSettings.DependenciesFolder, "exiftool.tar.gz");
 
@@ -321,7 +316,7 @@ public sealed class ExifToolDownload : IExifToolDownload
 
 	internal async Task<bool> StartDownloadForWindows()
 	{
-		var checksums = await DownloadCheckSums();
+		var checksums = await DownloadCheckSums(CheckSumLocation);
 		if ( checksums == null )
 		{
 			return false;
@@ -335,7 +330,7 @@ public sealed class ExifToolDownload : IExifToolDownload
 	internal static string GetWindowsZipFromChecksum(string checksumsValue)
 	{
 		// (?<=SHA256\()exiftool-[\d\.]+_64\.zip
-		var regexExifToolForWindowsName = new Regex(@"(?<=SHA256\()exiftool-[0-9\.]+_64\.zip",
+		var regexExifToolForWindowsName = new Regex(@"(?<=SHA(2-)?256\()exiftool-[0-9\.]+_64\.zip",
 			RegexOptions.None, TimeSpan.FromMilliseconds(100));
 		return regexExifToolForWindowsName.Match(checksumsValue).Value;
 	}
