@@ -34,6 +34,7 @@ public sealed class PackageTelemetryBackgroundServiceTest
 		services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
 		services.AddSingleton<IQuery, FakeIQuery>();
 		services.AddSingleton<IDeviceIdService, FakeIDeviceIdService>();
+		services.AddSingleton<ILifetimeDiagnosticsService, FakeLifetimeDiagnosticsService>();
 
 		var serviceProvider = services.BuildServiceProvider();
 		_serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();

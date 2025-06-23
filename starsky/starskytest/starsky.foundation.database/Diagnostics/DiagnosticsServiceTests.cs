@@ -64,6 +64,27 @@ public class DiagnosticsServiceTests
 	}
 
 	[TestMethod]
+	public async Task AddOrUpdateItem_Null2()
+	{
+		var dbContext = SetScope();
+
+		var input = new TestOverWriteEnumModel
+		{
+			Value = DiagnosticsType.ApplicationStoppingLifetimeInMinutes
+		};
+
+		// Use reflection to set the updateStatus field to UpdateAvailable
+		// overwrite enum value
+		var propertyInfo = input.GetType().GetProperty("Value");
+		Assert.IsNotNull(propertyInfo);
+		propertyInfo.SetValue(input, 44, null); // <-- this could not happen
+
+		var item =
+			await new DiagnosticsService(dbContext, null!).AddOrUpdateItem(input.Value, null!);
+		Assert.IsNull(item);
+	}
+
+	[TestMethod]
 	public async Task AddOrUpdateItem_ItemAdded()
 	{
 		var dbContext = SetScope();
@@ -211,4 +232,9 @@ public class DiagnosticsServiceTests
 		await RemoveAsync(dbContext, DiagnosticsType
 			.ApplicationStoppingLifetimeInMinutes);
 	}
+}
+
+public class TestOverWriteEnumModel
+{
+	public DiagnosticsType Value { get; set; }
 }

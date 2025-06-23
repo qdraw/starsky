@@ -42,7 +42,8 @@ public sealed class PackageTelemetryTest
 		var httpClientHelper =
 			new HttpClientHelper(httpProvider, _nullServiceScopeFactory, new FakeIWebLogger());
 		var packageTelemetry = new PackageTelemetry(httpClientHelper, new AppSettings(),
-			new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
+			new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService(),
+			new FakeLifetimeDiagnosticsService());
 
 		var systemData = packageTelemetry.GetSystemData();
 		Assert.IsTrue(systemData.Exists(p => p.Key == "AppVersion"));
@@ -69,7 +70,8 @@ public sealed class PackageTelemetryTest
 		var httpClientHelper =
 			new HttpClientHelper(httpProvider, _nullServiceScopeFactory, new FakeIWebLogger());
 		var packageTelemetry = new PackageTelemetry(httpClientHelper, new AppSettings(),
-			new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
+			new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService(),
+			new FakeLifetimeDiagnosticsService());
 
 		var sourceValue = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
 		Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", "true");
@@ -95,7 +97,8 @@ public sealed class PackageTelemetryTest
 		var httpClientHelper =
 			new HttpClientHelper(httpProvider, _nullServiceScopeFactory, new FakeIWebLogger());
 		var packageTelemetry = new PackageTelemetry(httpClientHelper, new AppSettings(),
-			new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
+			new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService(),
+			new FakeLifetimeDiagnosticsService());
 
 		var sourceValue = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
 		Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", "true");
@@ -122,7 +125,8 @@ public sealed class PackageTelemetryTest
 		var httpClientHelper =
 			new HttpClientHelper(httpProvider, _nullServiceScopeFactory, new FakeIWebLogger());
 		var packageTelemetry = new PackageTelemetry(httpClientHelper, new AppSettings(),
-			new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
+			new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService(),
+			new FakeLifetimeDiagnosticsService());
 
 		var sourceValue = Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME");
 		Environment.SetEnvironmentVariable("WEBSITE_SITE_NAME", "test");
@@ -189,7 +193,8 @@ public sealed class PackageTelemetryTest
 		var httpClientHelper =
 			new HttpClientHelper(httpProvider, _nullServiceScopeFactory, new FakeIWebLogger());
 		var packageTelemetry = new PackageTelemetry(httpClientHelper, appSettings,
-			new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
+			new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService(),
+			new FakeLifetimeDiagnosticsService());
 		var result =
 			packageTelemetry.AddAppSettingsData(new List<KeyValuePair<string, string>>());
 
@@ -204,7 +209,8 @@ public sealed class PackageTelemetryTest
 		var httpClientHelper =
 			new HttpClientHelper(httpProvider, _nullServiceScopeFactory, new FakeIWebLogger());
 		var packageTelemetry = new PackageTelemetry(httpClientHelper, appSettings,
-			new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
+			new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService(),
+			new FakeLifetimeDiagnosticsService());
 		var result = await packageTelemetry.PackageTelemetrySend();
 		Assert.IsNull(result);
 	}
@@ -223,7 +229,8 @@ public sealed class PackageTelemetryTest
 		var httpClientHelper =
 			new HttpClientHelper(httpProvider, _nullServiceScopeFactory, new FakeIWebLogger());
 		var packageTelemetry = new PackageTelemetry(httpClientHelper, appSettings,
-			new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
+			new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService(),
+			new FakeLifetimeDiagnosticsService());
 		var result = await packageTelemetry.PackageTelemetrySend();
 		Assert.IsTrue(result);
 	}
@@ -245,7 +252,8 @@ public sealed class PackageTelemetryTest
 		var httpClientHelper =
 			new HttpClientHelper(httpProvider, _nullServiceScopeFactory, new FakeIWebLogger());
 		var packageTelemetry = new PackageTelemetry(httpClientHelper, appSettings,
-			new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
+			new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService(),
+			new FakeLifetimeDiagnosticsService());
 		var result = await packageTelemetry.PackageTelemetrySend();
 		Assert.IsNull(result);
 	}
@@ -258,7 +266,7 @@ public sealed class PackageTelemetryTest
 			new FakeIQuery(new List<FileIndexItem>
 			{
 				new("/test.jpg"), new("/test") { IsDirectory = true }
-			}), new FakeIDeviceIdService());
+			}), new FakeIDeviceIdService(), new FakeLifetimeDiagnosticsService());
 
 		var result =
 			await packageTelemetry.AddDatabaseData(new List<KeyValuePair<string, string>>());
@@ -282,7 +290,8 @@ public sealed class PackageTelemetryTest
 		var appSettings = new AppSettings { EnablePackageTelemetry = true };
 		var packageTelemetry = new PackageTelemetry(null!, appSettings,
 			new FakeIWebLogger(),
-			new FakeIQueryException(new WebException("test")), new FakeIDeviceIdService());
+			new FakeIQueryException(new WebException("test")), new FakeIDeviceIdService(),
+			new FakeLifetimeDiagnosticsService());
 		var result =
 			await packageTelemetry.AddDatabaseData(new List<KeyValuePair<string, string>>());
 
