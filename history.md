@@ -47,6 +47,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Breaking Change) _Back-end_ Structure for import has changed   (PR #2204) (see
   [blog about it](https://docs.qdraw.nl/blog/smarter-imports-conditional-rules-structure-colorclass))
 - [x] (Breaking Change) _Back-end_ Exiftool checksum api breaks auto setup of the tool (PR #2238)
+- [x] (Changed) _Back-end_ CompareHelper for ImportTransformation andStructureModel (PR #2239)
 
 ### Breaking changes in 0.7.0-beta between version 0 and 3
 
