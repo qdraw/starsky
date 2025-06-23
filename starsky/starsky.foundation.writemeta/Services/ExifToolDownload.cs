@@ -148,9 +148,7 @@ public sealed class ExifToolDownload : IExifToolDownload
 			return checksums;
 		}
 
-		_logger.LogError(
-			$"Checksum loading failed {CheckSumLocation}, next retry from mirror ~ error > " +
-			checksums.Value);
+		_logger.LogError($"Checksum loading failed {CheckSumLocation}");
 		return null;
 	}
 
@@ -195,7 +193,7 @@ public sealed class ExifToolDownload : IExifToolDownload
 			return true;
 		}
 
-		// download checksum list from mirror
+		// when failed: download checksum list from mirror
 		var checksums = await DownloadCheckSums(CheckSumLocationMirror);
 		if ( checksums == null )
 		{
@@ -224,7 +222,7 @@ public sealed class ExifToolDownload : IExifToolDownload
 			_logger.LogError("[DownloadForUnix] matchExifToolForUnixName is empty");
 			return false;
 		}
-		
+
 		var tarGzArchiveFullFilePath =
 			Path.Combine(_appSettings.DependenciesFolder, "exiftool.tar.gz");
 
@@ -374,6 +372,16 @@ public sealed class ExifToolDownload : IExifToolDownload
 			return true;
 		}
 
+		// when failed: download checksum list from mirror
+		var checksums = await DownloadCheckSums(CheckSumLocationMirror);
+		if ( checksums == null )
+		{
+			return false;
+		}
+
+		matchExifToolForWindowsName = GetWindowsZipFromChecksum(checksums.Value.Value);
+		getChecksumsFromTextFile = GetChecksumsFromTextFile(checksums.Value.Value);
+
 		return await DownloadForWindows(ExiftoolDownloadBasePathMirror, matchExifToolForWindowsName,
 			getChecksumsFromTextFile);
 	}
@@ -386,6 +394,12 @@ public sealed class ExifToolDownload : IExifToolDownload
 			    ExeExifToolWindowsFullFilePath()) )
 		{
 			return true;
+		}
+
+		if ( string.IsNullOrEmpty(matchExifToolForWindowsName) )
+		{
+			_logger.LogError("[DownloadForWindows] matchExifToolForWindowsName is empty");
+			return false;
 		}
 
 		var zipArchiveFullFilePath = Path.Combine(_appSettings.DependenciesFolder, "exiftool.zip");

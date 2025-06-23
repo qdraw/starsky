@@ -559,8 +559,14 @@ public sealed class ExifToolDownloadTest
 		{
 			{ "https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum) },
 			{ "https://exiftool.org/Image-ExifTool-11.99.tar.gz", new StringContent("FAIL") },
-			{ "https://qdraw.nl/special/mirror/exiftool/checksums.txt", new StringContent(ExampleCheckSum) },
-			{ "https://qdraw.nl/special/mirror/exiftool/Image-ExifTool-11.99.tar.gz", new StringContent("FAIL") },
+			{
+				"https://qdraw.nl/special/mirror/exiftool/checksums.txt",
+				new StringContent(ExampleCheckSum)
+			},
+			{
+				"https://qdraw.nl/special/mirror/exiftool/Image-ExifTool-11.99.tar.gz",
+				new StringContent("FAIL")
+			}
 		});
 		var logger = new FakeIWebLogger();
 		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory,
@@ -604,7 +610,10 @@ public sealed class ExifToolDownloadTest
 				"https://qdraw.nl/special/mirror/exiftool/exiftool-11.99.zip",
 				new StringContent("FAIL")
 			},
-			{ "https://qdraw.nl/special/mirror/exiftool/checksums.txt", new StringContent(ExampleCheckSum) },
+			{
+				"https://qdraw.nl/special/mirror/exiftool/checksums.txt",
+				new StringContent(ExampleCheckSum)
+			},
 			{
 				"https://qdraw.nl/special/mirror/exiftool/Image-ExifTool-11.99.tar.gz",
 				new StringContent("FAIL")
@@ -632,6 +641,10 @@ public sealed class ExifToolDownloadTest
 			{
 				"https://qdraw.nl/special/mirror/exiftool/exiftool-11.99_64.zip",
 				new StringContent("FAIL")
+			},
+			{
+				"https://qdraw.nl/special/mirror/exiftool/checksums.txt",
+				new StringContent(ExampleCheckSum)
 			},
 			{
 				"https://qdraw.nl/special/mirror/exiftool/Image-ExifTool-11.99.tar.gz",
