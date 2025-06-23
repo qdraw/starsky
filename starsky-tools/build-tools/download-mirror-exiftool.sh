@@ -22,10 +22,10 @@ LAST_CHAR_BINARY_FOLDERNAME=${BINARY_FOLDERNAME:length-1:1}
 # Fetch the JSON data
 EXIFTOOL_JSON=$(curl -s $EXIFTOOL_CHECKSUMS_API)
 
-if ! echo "$EXIFTOOL_JSON" | grep -q "SHA256"; then
+if ! echo "$EXIFTOOL_JSON" | grep -q "SHA2-256"; then
   echo "Display contents of $EXIFTOOL_CHECKSUMS_API"
   echo $EXIFTOOL_JSON
-  echo "⛌ FAIL -> The word 'SHA256' is not present in the checksums data. Exiting..."
+  echo "⛌ FAIL -> The word 'SHA2-256' is not present in the checksums data. Exiting..."
   exit 1
 fi
 
