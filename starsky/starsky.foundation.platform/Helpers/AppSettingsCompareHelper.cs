@@ -76,6 +76,19 @@ public static class AppSettingsCompareHelper
 				newStructure, differenceList);
 		}
 
+		if ( propertyB.PropertyType == typeof(AppSettingsImportTransformationModel) )
+		{
+			var oldImportTransformation =
+				( AppSettingsImportTransformationModel? ) propertyInfoFromA.GetValue(
+					sourceIndexItem,
+					null);
+			var newImportTransformation =
+				( AppSettingsImportTransformationModel? ) propertyB.GetValue(updateObject, null);
+			CompareAppSettingsImportTransformationModel(propertyB.Name, sourceIndexItem,
+				oldImportTransformation,
+				newImportTransformation, differenceList);
+		}
+
 		if ( propertyInfoFromA.PropertyType ==
 		     typeof(List<AppSettingsDefaultEditorApplication>) &&
 		     propertyB.PropertyType == typeof(List<AppSettingsDefaultEditorApplication>) )
@@ -209,6 +222,27 @@ public static class AppSettingsCompareHelper
 
 		sourceIndexItem.GetType().GetProperty(propertyBName)!.SetValue(sourceIndexItem,
 			newStructure, null);
+		differenceList.Add(propertyBName.ToLowerInvariant());
+	}
+
+	private static void CompareAppSettingsImportTransformationModel(string propertyBName,
+		AppSettings sourceIndexItem, AppSettingsImportTransformationModel? oldImportTransformation,
+		AppSettingsImportTransformationModel? newImportTransformation, List<string> differenceList)
+	{
+		if ( oldImportTransformation == null ||
+		     newImportTransformation == null ||
+		     // compare lists
+		     JsonSerializer.Serialize(oldImportTransformation) ==
+		     JsonSerializer.Serialize(newImportTransformation) ||
+		     // default options
+		     JsonSerializer.Serialize(newImportTransformation) ==
+		     JsonSerializer.Serialize(new AppSettingsImportTransformationModel()) )
+		{
+			return;
+		}
+
+		sourceIndexItem.GetType().GetProperty(propertyBName)!.SetValue(sourceIndexItem,
+			newImportTransformation, null);
 		differenceList.Add(propertyBName.ToLowerInvariant());
 	}
 
