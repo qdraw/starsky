@@ -8,7 +8,5 @@ public interface ISettingsService
 {
 	Task<SettingsItem?> GetSetting(SettingsType key);
 	Task<T?> GetSetting<T>(SettingsType key);
-
-	Task<SettingsItem?> AddOrUpdateSetting(SettingsItem item);
 	Task<SettingsItem?> AddOrUpdateSetting(SettingsType key, string value);
 }

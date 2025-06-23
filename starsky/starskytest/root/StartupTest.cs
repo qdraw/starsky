@@ -43,7 +43,7 @@ public sealed class StartupTest
 	}
 
 	[TestMethod]
-	public void Startup_ConfigureServicesConfigure1()
+	public void Startup_ConfigureServicesConfigure()
 	{
 		var serviceCollection = new ServiceCollection();
 		serviceCollection.AddRouting();
@@ -54,6 +54,7 @@ public sealed class StartupTest
 		IConfiguration configuration =
 			new ConfigurationRoot(new List<IConfigurationProvider>());
 		serviceCollection.AddSingleton(configuration);
+		serviceCollection.AddSingleton<IHostApplicationLifetime, ApplicationLifetime>();
 		serviceCollection.AddAuthorization();
 		serviceCollection.AddControllers();
 		serviceCollection.AddLogging();

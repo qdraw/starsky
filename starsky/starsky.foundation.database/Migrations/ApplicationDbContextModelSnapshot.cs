@@ -231,6 +231,27 @@ namespace starsky.foundation.database.Migrations
                     b.HasAnnotation("MySql:CharSet", "utf8mb4");
                 });
 
+            modelBuilder.Entity("starsky.foundation.database.Models.DiagnosticsItem", b =>
+                {
+                    b.Property<string>("Key")
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
+
+                    b.Property<DateTime>("LastEdited")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(4096)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Key");
+
+                    b.ToTable("Diagnostics", (string)null);
+
+                    b.HasAnnotation("MySql:CharSet", "utf8mb4");
+                });
+
             modelBuilder.Entity("starsky.foundation.database.Models.FileIndexItem", b =>
                 {
                     b.Property<int>("Id")

@@ -227,6 +227,8 @@ public sealed class Startup
 	/// <param name="env">Hosting Env</param>
 	public void Configure(IApplicationBuilder app, IHostEnvironment env)
 	{
+		TimeApplicationRunning.SetRunningTime(app);
+
 		app.UseResponseCompression();
 
 		if ( env.IsDevelopment() )
