@@ -283,6 +283,21 @@ public sealed class ExifToolDownloadTest
 	}
 
 	[TestMethod]
+	public async Task RunChmodOnExifToolUnixExe_NotFound()
+	{
+		var fakeIHttpProvider = new FakeIHttpProvider();
+		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory,
+			new FakeIWebLogger());
+		var appSettings = new AppSettings { DependenciesFolder = "/not-found" };
+
+		var exifToolDownload =
+			new ExifToolDownload(httpClientHelper, appSettings, new FakeIWebLogger());
+		var result = await exifToolDownload.RunChmodOnExifToolUnixExe();
+		
+		Assert.IsFalse(result);
+	}
+
+	[TestMethod]
 	public async Task DownloadExifTool_Windows_ChecksumNotFound()
 	{
 		var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(),
