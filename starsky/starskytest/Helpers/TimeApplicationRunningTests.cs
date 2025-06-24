@@ -32,7 +32,7 @@ public class TimeApplicationRunningTests
 		var appBuilder = new FakeApplicationBuilder(serviceProvider);
 
 		// Act
-		TimeApplicationRunning.SetRunningTime(appBuilder);
+		TimeApplicationRunning.SetRunningTime(appBuilder, DateTime.UtcNow.AddMinutes(-5));
 
 		// Simulate application stopping
 		await cancellationTokenSource.CancelAsync();
@@ -40,7 +40,9 @@ public class TimeApplicationRunningTests
 
 		// Assert
 		var time = await fakeDiagnosticsService.GetLastApplicationStoppingTimeInMinutes();
-		
+
+		Console.WriteLine(time);
+
 		Assert.IsTrue(time > 0.00000000001);
 		Assert.IsTrue(time < 1000);
 	}

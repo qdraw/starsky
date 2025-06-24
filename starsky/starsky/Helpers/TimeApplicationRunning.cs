@@ -8,9 +8,8 @@ namespace starsky.Helpers;
 
 public static class TimeApplicationRunning
 {
-	public static void SetRunningTime(IApplicationBuilder app)
+	public static void SetRunningTime(IApplicationBuilder app, DateTime startTime)
 	{
-		var startTime = DateTime.UtcNow;
 		var lifetime = app.ApplicationServices
 			.GetRequiredService<IHostApplicationLifetime>();
 
