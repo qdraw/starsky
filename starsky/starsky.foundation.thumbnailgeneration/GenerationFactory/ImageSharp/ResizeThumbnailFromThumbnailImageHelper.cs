@@ -86,7 +86,9 @@ internal class ResizeThumbnailFromThumbnailImageHelper(
 		{
 			logger.LogError(
 				$"[ResizeThumbnailFromThumbnailImageHelper] " +
-				$"Thumbnail input not found H:{fileHash} F: {subPathReference} ");
+				$"Thumbnail input not found H:{fileHash} F: {subPathReference} " +
+				$"S: {inputThumbnailSize} " +
+				$"InputFileHashWithExtension: {inputFileHashWithExtension} ");
 			result.Success = false;
 			result.ErrorMessage = "Image cannot be loaded, fileHash not found";
 			return result;

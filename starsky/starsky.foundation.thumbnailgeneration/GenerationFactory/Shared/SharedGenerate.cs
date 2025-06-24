@@ -45,14 +45,22 @@ public class SharedGenerate(ISelectorStorage selectorStorage, IWebLogger logger)
 		}
 
 		var toGenerateSize = thumbnailSizes[0];
-		var largeImageResult =
-			await resizeDelegate(toGenerateSize, singleSubPath, fileHash,
+		var largeImageResult = await resizeDelegate(toGenerateSize, singleSubPath, fileHash,
 				imageFormat);
 
+		if ( !largeImageResult.Success )
+		{
+			logger.LogError(
+				$"[SharedGenerate] ResizeThumbnailFromSourceImage failed for " +
+				$"S: {singleSubPath} - H: {fileHash} SI: {toGenerateSize}");
+			return preflightResult.AddOrUpdateRange([largeImageResult]);
+		}
+		
 		var results = await _resizeThumbnail.ResizeThumbnailFromThumbnailImageLoop(singleSubPath,
 			fileHash, imageFormat, thumbnailSizes, toGenerateSize);
 
-		return preflightResult.AddOrUpdateRange(results)
+		return preflightResult
+			.AddOrUpdateRange(results)
 			.AddOrUpdateRange([largeImageResult]);
 	}
 }
