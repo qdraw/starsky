@@ -47,16 +47,12 @@ public class TimeApplicationRunningTests
 		Assert.IsTrue(time < 1000);
 	}
 
-	private class FakeHostApplicationLifetime : IHostApplicationLifetime
+	private sealed class FakeHostApplicationLifetime(CancellationToken applicationStopping)
+		: IHostApplicationLifetime
 	{
-		public FakeHostApplicationLifetime(CancellationToken applicationStopping)
-		{
-			ApplicationStopping = applicationStopping;
-		}
-
 		public CancellationToken ApplicationStarted => CancellationToken.None;
 		public CancellationToken ApplicationStopped => CancellationToken.None;
-		public CancellationToken ApplicationStopping { get; }
+		public CancellationToken ApplicationStopping { get; } = applicationStopping;
 
 		public void StopApplication()
 		{
@@ -64,13 +60,9 @@ public class TimeApplicationRunningTests
 		}
 	}
 
-	private class FakeApplicationBuilder : IApplicationBuilder
+	private sealed class FakeApplicationBuilder(IServiceProvider serviceProvider)
+		: IApplicationBuilder
 	{
-		public FakeApplicationBuilder(IServiceProvider serviceProvider)
-		{
-			ApplicationServices = serviceProvider;
-		}
-
 		public IApplicationBuilder Use(Func<RequestDelegate, RequestDelegate> middleware)
 		{
 			throw new NotImplementedException();
@@ -86,8 +78,10 @@ public class TimeApplicationRunningTests
 			throw new NotImplementedException();
 		}
 
-		public IServiceProvider ApplicationServices { get; set; }
-		public IFeatureCollection ServerFeatures { get; }
-		public IDictionary<string, object?> Properties { get; }
+		public IServiceProvider ApplicationServices { get; set; } = serviceProvider;
+		public IFeatureCollection? ServerFeatures { get; } = new FeatureCollection();
+
+		public IDictionary<string, object?>? Properties { get; } =
+			new Dictionary<string, object?>();
 	}
 }
