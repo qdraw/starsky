@@ -15,15 +15,9 @@ using starsky.foundation.platform.Models;
 namespace starsky.feature.packagetelemetry.Services;
 
 [Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
-public sealed class PackageTelemetryBackgroundService : BackgroundService
+public sealed class PackageTelemetryBackgroundService(IServiceScopeFactory serviceScopeFactory)
+	: BackgroundService
 {
-	private readonly IServiceScopeFactory _serviceScopeFactory;
-
-	public PackageTelemetryBackgroundService(IServiceScopeFactory serviceScopeFactory)
-	{
-		_serviceScopeFactory = serviceScopeFactory;
-	}
-
 	/// <summary>
 	///     Running scoped services
 	///     @see: https://thinkrethink.net/2018/07/12/injecting-a-scoped-service-into-ihostedservice/
@@ -32,18 +26,20 @@ public sealed class PackageTelemetryBackgroundService : BackgroundService
 	/// <returns>CompletedTask</returns>
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
-		using ( var scope = _serviceScopeFactory.CreateScope() )
+		using ( var scope = serviceScopeFactory.CreateScope() )
 		{
 			var appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
 			var httpClientHelper = scope.ServiceProvider.GetRequiredService<IHttpClientHelper>();
 			var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>();
 			var query = scope.ServiceProvider.GetRequiredService<IQuery>();
 			var deviceIdService = scope.ServiceProvider.GetRequiredService<IDeviceIdService>();
+			var lifetimeDiagnosticsService =
+				scope.ServiceProvider.GetRequiredService<ILifetimeDiagnosticsService>();
 
 			if ( appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
 			{
 				var service = new PackageTelemetry(httpClientHelper, appSettings, logger, query,
-					deviceIdService);
+					deviceIdService, lifetimeDiagnosticsService);
 				await service.PackageTelemetrySend();
 			}
 		}

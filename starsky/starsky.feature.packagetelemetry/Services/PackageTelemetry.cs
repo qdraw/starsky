@@ -28,17 +28,20 @@ public class PackageTelemetry : IPackageTelemetry
 	private readonly AppSettings _appSettings;
 	private readonly IDeviceIdService _deviceIdService;
 	private readonly IHttpClientHelper _httpClientHelper;
+	private readonly ILifetimeDiagnosticsService _lifetimeDiagnosticsService;
 	private readonly IWebLogger _logger;
 	private readonly IQuery _query;
 
 	public PackageTelemetry(IHttpClientHelper httpClientHelper, AppSettings appSettings,
-		IWebLogger logger, IQuery query, IDeviceIdService deviceIdService)
+		IWebLogger logger, IQuery query, IDeviceIdService deviceIdService,
+		ILifetimeDiagnosticsService lifetimeDiagnosticsService)
 	{
 		_httpClientHelper = httpClientHelper;
 		_appSettings = appSettings;
 		_logger = logger;
 		_query = query;
 		_deviceIdService = deviceIdService;
+		_lifetimeDiagnosticsService = lifetimeDiagnosticsService;
 	}
 
 	public async Task<bool?> PackageTelemetrySend()
@@ -142,12 +145,15 @@ public class PackageTelemetry : IPackageTelemetry
 		var fileIndexItemTotalCount = -1;
 		var fileIndexItemDirectoryCount = -1;
 		var fileIndexItemCount = -1;
+		double lastApplicationStopping = -1;
 
 		try
 		{
 			fileIndexItemTotalCount = await _query.CountAsync();
 			fileIndexItemDirectoryCount = await _query.CountAsync(p => p.IsDirectory == true);
 			fileIndexItemCount = await _query.CountAsync(p => p.IsDirectory != true);
+			lastApplicationStopping =
+				await _lifetimeDiagnosticsService.GetLastApplicationStoppingTimeInMinutes();
 		}
 		catch ( Exception )
 		{
@@ -158,7 +164,9 @@ public class PackageTelemetry : IPackageTelemetry
 		{
 			new("FileIndexItemTotalCount", fileIndexItemTotalCount.ToString()),
 			new("FileIndexItemDirectoryCount", fileIndexItemDirectoryCount.ToString()),
-			new("FileIndexItemCount", fileIndexItemCount.ToString())
+			new("FileIndexItemCount", fileIndexItemCount.ToString()),
+			new("LastApplicationStoppingLifetimeInMinutes",
+				lastApplicationStopping.ToString(CultureInfo.InvariantCulture))
 		});
 
 		return data;
@@ -194,7 +202,7 @@ public class PackageTelemetry : IPackageTelemetry
 			     propValue?.GetType() == typeof(List<CameraMakeModel>) ||
 			     propValue?.GetType() == typeof(List<AppSettingsDefaultEditorApplication>) ||
 			     propValue?.GetType() == typeof(AppSettingsImportTransformationModel) ||
-			     propValue?.GetType() == typeof(AppSettingsStructureModel))
+			     propValue?.GetType() == typeof(AppSettingsStructureModel) )
 			{
 				value = ParseContentToJson(propValue);
 			}
