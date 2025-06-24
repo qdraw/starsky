@@ -529,7 +529,7 @@ public partial class Query : IQuery
 
 		var indexItems = await GetParentItems(pathListShouldExist);
 
-		var toAddList = ToAddListLoop(pathListShouldExist, indexItems);
+		var toAddList = AddParentItemsToAddListLoop(pathListShouldExist, indexItems);
 		await AddRangeAsync(toAddList);
 		return toAddList;
 	}
@@ -544,7 +544,7 @@ public partial class Query : IQuery
 
 	[SuppressMessage("ReSharper", "ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator")]
 	[SuppressMessage("Sonar", "S3267: Loops should be simplified using the \"Where\" LINQ method")]
-	private static List<FileIndexItem> ToAddListLoop(List<string> pathListShouldExist,
+	private static List<FileIndexItem> AddParentItemsToAddListLoop(List<string> pathListShouldExist,
 		List<FileIndexItem> indexItems)
 	{
 		var toAddList = new List<FileIndexItem>();
