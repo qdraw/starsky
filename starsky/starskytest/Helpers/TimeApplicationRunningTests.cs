@@ -79,9 +79,9 @@ public class TimeApplicationRunningTests
 		}
 
 		public IServiceProvider ApplicationServices { get; set; } = serviceProvider;
-		public IFeatureCollection? ServerFeatures { get; } = new FeatureCollection();
+		public IFeatureCollection ServerFeatures { get; } = new FeatureCollection();
 
-		public IDictionary<string, object?>? Properties { get; } =
+		public IDictionary<string, object?> Properties { get; } =
 			new Dictionary<string, object?>();
 	}
 }
