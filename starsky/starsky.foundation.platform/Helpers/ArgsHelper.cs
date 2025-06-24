@@ -365,6 +365,7 @@ public sealed class ArgsHelper
 			$"ThumbnailTempFolder (-f --thumbnailtempfolder) {_appSettings.ThumbnailTempFolder} ");
 		_console.WriteLine($"ExifToolPath  (-e --exiftoolpath) {_appSettings.ExifToolPath} ");
 		_console.WriteLine("Structure  (-u --structure) " + _appSettings.Structure);
+		_console.WriteLine("ImportTransformation " + _appSettings.ImportTransformation);
 		_console.WriteLine("CameraTimeZone " + _appSettings.CameraTimeZone);
 		_console.WriteLine("Name " + _appSettings.Name);
 		_console.WriteLine($"TempFolder {_appSettings.TempFolder} ");
