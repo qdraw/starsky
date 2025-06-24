@@ -42,22 +42,23 @@ public class AppSettingsStructureModelTests
 		var result = StructureRegexHelper.StructureCheck(value);
 		Assert.IsFalse(result);
 	}
-	
+
 	[TestMethod]
 	public void InvalidPattern_ShouldAddErrorToErrorsList()
 	{
 		// Arrange
 		const string invalidPattern = "invalid_structure_pattern";
-		var fakeRule = new StructureRule {
+		var fakeRule = new StructureRule
+		{
 			// Act
-			Pattern = invalidPattern };
+			Pattern = invalidPattern
+		};
 
 		// Assert
 		Assert.AreEqual(1, fakeRule.Errors.Count);
 		Assert.AreEqual($"Structure '{invalidPattern}' is not valid", fakeRule.Errors[0]);
 	}
-	
-	
+
 	[TestMethod]
 	public void Clone_ShouldReturnNewInstance()
 	{

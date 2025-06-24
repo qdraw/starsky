@@ -529,8 +529,25 @@ public partial class Query : IQuery
 
 		var indexItems = await GetParentItems(pathListShouldExist);
 
+		var toAddList = AddParentItemsToAddListLoop(pathListShouldExist, indexItems);
+		await AddRangeAsync(toAddList);
+		return toAddList;
+	}
+
+	/// <summary>
+	///     Use only when new Context item is created manually, otherwise there is only 1 context
+	/// </summary>
+	public async Task DisposeAsync()
+	{
+		await _context.DisposeAsync();
+	}
+
+	[SuppressMessage("ReSharper", "ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator")]
+	[SuppressMessage("Sonar", "S3267: Loops should be simplified using the \"Where\" LINQ method")]
+	private static List<FileIndexItem> AddParentItemsToAddListLoop(List<string> pathListShouldExist,
+		List<FileIndexItem> indexItems)
+	{
 		var toAddList = new List<FileIndexItem>();
-		// ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
 		foreach ( var pathShouldExist in pathListShouldExist )
 		{
 			if ( !indexItems.Select(p => p.FilePath).Contains(pathShouldExist) )
@@ -546,16 +563,7 @@ public partial class Query : IQuery
 			}
 		}
 
-		await AddRangeAsync(toAddList);
 		return toAddList;
-	}
-
-	/// <summary>
-	///     Use only when new Context item is created manually, otherwise there is only 1 context
-	/// </summary>
-	public async Task DisposeAsync()
-	{
-		await _context.DisposeAsync();
 	}
 
 	internal static string GetObjectByFilePathAsyncCacheName(string subPath)
