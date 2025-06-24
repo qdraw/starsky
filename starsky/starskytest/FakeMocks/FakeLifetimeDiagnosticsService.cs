@@ -7,13 +7,18 @@ namespace starskytest.FakeMocks;
 
 public class FakeLifetimeDiagnosticsService : ILifetimeDiagnosticsService
 {
+	private DateTime StartTime { get; set; }
+	
 	public Task<DiagnosticsItem?> AddOrUpdateApplicationStopping(DateTime startTime)
 	{
+		StartTime = startTime;
 		return Task.FromResult<DiagnosticsItem?>(new DiagnosticsItem());
 	}
 
 	public Task<double> GetLastApplicationStoppingTimeInMinutes()
 	{
-		return Task.FromResult<double>(0);
+		var uptime = DateTime.UtcNow - StartTime;
+		var minutes = Math.Round(uptime.TotalMinutes, 4);
+		return Task.FromResult(minutes);
 	}
 }
