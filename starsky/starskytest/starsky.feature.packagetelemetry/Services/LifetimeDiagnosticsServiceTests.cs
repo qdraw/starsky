@@ -29,14 +29,19 @@ public class LifetimeDiagnosticsServiceTests
 		Assert.AreEqual("30", result.Value);
 	}
 
-	[TestMethod]
-	public async Task GetLastApplicationStoppingTimeInMinutes_ValidValue_ReturnsMinutes()
+	[DataTestMethod]
+	[DataRow("45", 45)]
+	[DataRow("1.01", 1.01)]
+	[DataRow("invalid", -1)]
+	public async Task GetLastApplicationStoppingTimeInMinutes_ReturnsMinutes(
+		string value,
+		double expected)
 	{
 		// Arrange
 		var fakeDiagnosticsService = new FakeDiagnosticsService();
 		fakeDiagnosticsService.SetItem(new DiagnosticsItem
 		{
-			Key = nameof(DiagnosticsType.ApplicationStoppingLifetimeInMinutes), Value = "45"
+			Key = nameof(DiagnosticsType.ApplicationStoppingLifetimeInMinutes), Value = value
 		});
 		var fakeLogger = new FakeIWebLogger();
 		var service = new LifetimeDiagnosticsService(fakeDiagnosticsService, fakeLogger);
@@ -45,26 +50,6 @@ public class LifetimeDiagnosticsServiceTests
 		var result = await service.GetLastApplicationStoppingTimeInMinutes();
 
 		// Assert
-		Assert.AreEqual(45, result);
-	}
-
-	[TestMethod]
-	public async Task GetLastApplicationStoppingTimeInMinutes_InvalidValue_ReturnsMinusOne()
-	{
-		// Arrange
-		var fakeDiagnosticsService = new FakeDiagnosticsService();
-		fakeDiagnosticsService.SetItem(new DiagnosticsItem
-		{
-			Key = nameof(DiagnosticsType.ApplicationStoppingLifetimeInMinutes),
-			Value = "invalid"
-		});
-		var fakeLogger = new FakeIWebLogger();
-		var service = new LifetimeDiagnosticsService(fakeDiagnosticsService, fakeLogger);
-
-		// Act
-		var result = await service.GetLastApplicationStoppingTimeInMinutes();
-
-		// Assert
-		Assert.AreEqual(-1, result);
+		Assert.AreEqual(expected, result);
 	}
 }

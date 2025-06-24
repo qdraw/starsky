@@ -20,7 +20,8 @@ public class LifetimeDiagnosticsService(IDiagnosticsService diagnosticsService, 
 		var uptime = DateTime.UtcNow - startTime;
 		var minutes = Math.Round(uptime.TotalMinutes, 4);
 
-		logger.LogInformation($"[LifetimeDiagnosticsService] Application stopping lifetime in minutes: {minutes}");
+		logger.LogInformation(
+			$"[LifetimeDiagnosticsService] Application stopping lifetime in minutes: {minutes}");
 		var item = await diagnosticsService.AddOrUpdateItem(
 			DiagnosticsType.ApplicationStoppingLifetimeInMinutes,
 			minutes.ToString(CultureInfo.InvariantCulture));
@@ -32,7 +33,8 @@ public class LifetimeDiagnosticsService(IDiagnosticsService diagnosticsService, 
 		var item = await diagnosticsService.GetItem(
 			DiagnosticsType.ApplicationStoppingLifetimeInMinutes);
 
-		if ( !double.TryParse(item?.Value, out var result) )
+		if ( !double.TryParse(item?.Value, NumberStyles.Any,
+			    CultureInfo.InvariantCulture, out var result) )
 		{
 			return -1;
 		}
