@@ -52,4 +52,20 @@ public class LifetimeDiagnosticsServiceTests
 		// Assert
 		Assert.AreEqual(expected, result);
 	}
+
+	[TestMethod]
+	public async Task GetLastApplicationStoppingTimeInMinutes_Null()
+	{
+		// Arrange
+		var fakeDiagnosticsService = new FakeDiagnosticsService();
+		var fakeLogger = new FakeIWebLogger();
+		var service = new LifetimeDiagnosticsService(fakeDiagnosticsService, fakeLogger);
+
+		// Act 
+		// Item is not set, should return -1
+		var result = await service.GetLastApplicationStoppingTimeInMinutes();
+
+		// Assert
+		Assert.AreEqual(-1, result);
+	}
 }
