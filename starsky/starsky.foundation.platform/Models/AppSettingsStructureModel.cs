@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.JsonConverter;
@@ -11,19 +12,21 @@ public class AppSettingsStructureModel
 	private const string GenericDefaultPattern =
 		"/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 
-	/// <summary>
-	///     Internal Structure save location
-	/// </summary>
-	private string DefaultPatternPrivate { get; set; } = string.Empty;
-
 	public AppSettingsStructureModel(string? defaultPattern = null)
 	{
 		SetDefaultPattern(defaultPattern);
 	}
 
+	/// <summary>
+	///     Internal Structure save location
+	/// </summary>
+	private string DefaultPatternPrivate { get; set; } = string.Empty;
+
 	public string DefaultPattern
 	{
-		get => string.IsNullOrEmpty(DefaultPatternPrivate) ? GenericDefaultPattern : DefaultPatternPrivate;
+		get => string.IsNullOrEmpty(DefaultPatternPrivate)
+			? GenericDefaultPattern
+			: DefaultPatternPrivate;
 		//   - dd 	            The day of the month, from 01 through 31.
 		//   - MM 	            The month, from 01 through 12.
 		//   - yyyy 	        The year as a four-digit number.
@@ -102,6 +105,24 @@ public class AppSettingsStructureModel
 	public AppSettingsStructureModel Clone()
 	{
 		return this.CloneViaJson()!;
+	}
+
+	/// <summary>
+	///     Display the structure model as a string
+	/// </summary>
+	/// <returns>
+	///     a string like this: DefaultPattern:
+	///     /yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext, Rules: [No Rules], Errors: [No Errors]
+	/// </returns>
+	public override string ToString()
+	{
+		var rulesDisplay = Rules.Count > 0
+			? string.Join(", ", Rules.Select(r => r.Pattern))
+			: "No Rules";
+		var errorsDisplay = Errors.Count > 0 ? string.Join("; ", Errors) : "No Errors";
+
+		return
+			$"DefaultPattern: {DefaultPattern}, Rules: [{rulesDisplay}], Errors: [{errorsDisplay}]";
 	}
 }
 

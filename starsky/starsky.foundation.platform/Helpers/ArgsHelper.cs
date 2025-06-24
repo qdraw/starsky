@@ -365,6 +365,7 @@ public sealed class ArgsHelper
 			$"ThumbnailTempFolder (-f --thumbnailtempfolder) {_appSettings.ThumbnailTempFolder} ");
 		_console.WriteLine($"ExifToolPath  (-e --exiftoolpath) {_appSettings.ExifToolPath} ");
 		_console.WriteLine("Structure  (-u --structure) " + _appSettings.Structure);
+		_console.WriteLine("ImportTransformation " + _appSettings.ImportTransformation);
 		_console.WriteLine("CameraTimeZone " + _appSettings.CameraTimeZone);
 		_console.WriteLine("Name " + _appSettings.Name);
 		_console.WriteLine($"TempFolder {_appSettings.TempFolder} ");
@@ -922,16 +923,11 @@ public sealed class ArgsHelper
 	/// <returns>bool</returns>
 	public static bool NeedRecursive(IReadOnlyList<string> args)
 	{
-		var needRecursive = false;
+		var filteredArgs = args.Where(arg =>
+			arg.Equals("--recursive", StringComparison.CurrentCultureIgnoreCase) ||
+			arg.Equals("-r", StringComparison.CurrentCultureIgnoreCase));
 
-		foreach ( var arg in args )
-		{
-			if ( arg.Equals("--recursive", StringComparison.CurrentCultureIgnoreCase) ||
-			     arg.Equals("-r", StringComparison.CurrentCultureIgnoreCase) )
-			{
-				needRecursive = true;
-			}
-		}
+		var needRecursive = filteredArgs.Any();
 
 		return needRecursive;
 	}
@@ -944,16 +940,9 @@ public sealed class ArgsHelper
 	public static bool NeedCleanup(IReadOnlyList<string> args)
 	{
 		// -x --clean
-		var needCacheCleanup = false;
-
-		foreach ( var arg in args )
-		{
-			if ( arg.Equals("--clean", StringComparison.CurrentCultureIgnoreCase) ||
-			     arg.Equals("-x", StringComparison.CurrentCultureIgnoreCase) )
-			{
-				needCacheCleanup = true;
-			}
-		}
+		var needCacheCleanup = args.Any(arg =>
+			arg.Equals("--clean", StringComparison.CurrentCultureIgnoreCase) ||
+			arg.Equals("-x", StringComparison.CurrentCultureIgnoreCase));
 
 		return needCacheCleanup;
 	}

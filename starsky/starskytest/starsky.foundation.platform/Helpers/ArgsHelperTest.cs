@@ -57,15 +57,23 @@ public sealed class ArgsHelperTest
 		Assert.IsTrue(ArgsHelper.NeedVerbose(args));
 	}
 
-	[TestMethod]
-	[ExcludeFromCoverage]
-	public void ArgsHelper_NeedRecruisiveTest()
+	[DataTestMethod]
+	[DataRow("-r", "true")]
+	[DataRow("-r", null)]
+	[DataRow("--recursive", "true")]
+	[DataRow("--recursive", null)]
+	public void ArgsHelper_NeedRecursiveTest(string arg1, string? arg2)
 	{
-		var args = new List<string> { "-r" }.ToArray();
-		Assert.IsTrue(ArgsHelper.NeedRecursive(args));
+		string[] args;
+		if ( arg2 == null )
+		{
+			args = [arg1];
+		}
+		else
+		{
+			args = [arg1, arg2];
+		}
 
-		// Bool parse check
-		args = new List<string> { "-r", "true" }.ToArray();
 		Assert.IsTrue(ArgsHelper.NeedRecursive(args));
 	}
 
@@ -109,6 +117,16 @@ public sealed class ArgsHelperTest
 	{
 		var args = new List<string> { "-p", "/" }.ToArray();
 		Assert.AreEqual("/", new ArgsHelper(_appSettings).GetPathFormArgs(args));
+	}
+
+	[DataTestMethod]
+	[DataRow("-p", "test", "/test")]
+	[DataRow("--path", "test", "/test")]
+	public void ArgsHelper_GetPathFormArgsDataTest(string arg1, string arg2, string expected)
+	{
+		string[] args = [arg1, arg2];
+		var result = new ArgsHelper(_appSettings).GetPathFormArgs(args);
+		Assert.AreEqual(expected, result);
 	}
 
 	[TestMethod]
@@ -594,7 +612,7 @@ public sealed class ArgsHelperTest
 		var value = ArgsHelper.GetColorClass(args);
 		Assert.AreEqual(1, value);
 	}
-	
+
 	[TestMethod]
 	public void ArgsHelper_GetOrigin()
 	{
@@ -602,7 +620,7 @@ public sealed class ArgsHelperTest
 		var value = ArgsHelper.GetOrigin(args);
 		Assert.AreEqual("1", value);
 	}
-	
+
 	[TestMethod]
 	public void ArgsHelper_GetOrigin_Fallback()
 	{
