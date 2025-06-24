@@ -25,7 +25,7 @@ public class SharedGenerate(ISelectorStorage selectorStorage, IWebLogger logger)
 		new(selectorStorage, logger);
 
 	public async Task<IEnumerable<GenerationResultModel>> GenerateThumbnail(
-		ResizeThumbnailFromSourceImage resizeDelegate,
+		ResizeThumbnailFromSourceImage resizeThumbnailFromSourceImage,
 		PreflightThumbnailGeneration.IsExtensionSupportedDelegate isExtensionSupportedDelegate,
 		string singleSubPath,
 		string fileHash, ThumbnailImageFormat imageFormat,
@@ -45,8 +45,8 @@ public class SharedGenerate(ISelectorStorage selectorStorage, IWebLogger logger)
 		}
 
 		var toGenerateSize = thumbnailSizes[0];
-		var largeImageResult = await resizeDelegate(toGenerateSize, singleSubPath, fileHash,
-				imageFormat);
+		var largeImageResult = await resizeThumbnailFromSourceImage(toGenerateSize,
+			singleSubPath, fileHash, imageFormat);
 
 		if ( !largeImageResult.Success )
 		{
@@ -55,7 +55,7 @@ public class SharedGenerate(ISelectorStorage selectorStorage, IWebLogger logger)
 				$"S: {singleSubPath} - H: {fileHash} SI: {toGenerateSize}");
 			return preflightResult.AddOrUpdateRange([largeImageResult]);
 		}
-		
+
 		var results = await _resizeThumbnail.ResizeThumbnailFromThumbnailImageLoop(singleSubPath,
 			fileHash, imageFormat, thumbnailSizes, toGenerateSize);
 
