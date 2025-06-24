@@ -19,27 +19,27 @@ public partial class Query
 	{
 		if ( fileHashesList.Count == 0 )
 		{
-			return new List<FileIndexItem>();
+			return [];
 		}
 
 		async Task<List<FileIndexItem>> LocalQuery(ApplicationDbContext context)
 		{
-			var result = await context.FileIndex.TagWith("GetObjectsByFileHashAsync").Where(p =>
-				fileHashesList.Contains(p.FileHash!)).ToListAsync();
-			foreach ( var fileHash in fileHashesList )
-			{
-				if ( result.Find(p => p.FileHash == fileHash) == null )
+			var result = await context.FileIndex
+				.TagWith("GetObjectsByFileHashAsync").Where(p =>
+					fileHashesList.Contains(p.FileHash!)).ToListAsync();
+			var nonNullFileHashes = fileHashesList.Where(fileHash =>
+				result.Find(p => p.FileHash == fileHash) == null);
+			var toAddRange = nonNullFileHashes.Select(fileHash =>
+				new FileIndexItem
 				{
-					result.Add(new FileIndexItem
-					{
-						FileHash = fileHash,
-						Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
-					});
-				}
-			}
+					FileHash = fileHash, Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
+				});
+			result.AddRange(toAddRange);
 
 			return FormatOk(result);
 		}
+
+		return await RetryHelper.DoAsync(LocalDefaultQuery, TimeSpan.FromSeconds(3), retryCount);
 
 		async Task<List<FileIndexItem>> LocalDefaultQuery()
 		{
@@ -58,7 +58,5 @@ public partial class Query
 				return await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
 			}
 		}
-
-		return await RetryHelper.DoAsync(LocalDefaultQuery, TimeSpan.FromSeconds(3), retryCount);
 	}
 }
