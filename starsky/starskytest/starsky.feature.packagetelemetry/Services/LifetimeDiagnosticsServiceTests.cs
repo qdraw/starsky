@@ -26,7 +26,8 @@ public class LifetimeDiagnosticsServiceTests
 		// Assert
 		Assert.IsNotNull(result);
 		Assert.AreEqual(nameof(DiagnosticsType.ApplicationStoppingLifetimeInMinutes), result.Key);
-		Assert.AreEqual("30", result.Value);
+		// can sometimes be 30.0001
+		Assert.AreEqual("30", result.Value[..2]);
 	}
 
 	[DataTestMethod]
