@@ -53,7 +53,8 @@ public class SharedGenerate(ISelectorStorage selectorStorage, IWebLogger logger)
 		{
 			logger.LogError(
 				$"[SharedGenerate] ResizeThumbnailFromSourceImage failed for " +
-				$"S: {singleSubPath} - H: {fileHash} SI: {toGenerateSize}");
+				$"S: {singleSubPath} - H: {fileHash} " +
+				$"SI: {toGenerateSize} E: {largeImageResult.ErrorMessage} ");
 
 			var failedResults = UpdateAllSizesToFailure(
 				thumbnailSizes, fileHash, singleSubPath, imageFormat,
