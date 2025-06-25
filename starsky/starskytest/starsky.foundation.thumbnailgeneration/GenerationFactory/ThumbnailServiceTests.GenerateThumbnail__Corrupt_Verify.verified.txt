@@ -1,0 +1,46 @@
+﻿[
+  {
+    FileHash: 2QOYZWMPACZAJ2MABGMOZ6CCPY,
+    SubPath: /test/test.jpg,
+    Success: false,
+    ToGenerate: false,
+    IsNotFound: false,
+    ErrorMessage: Image cannot be loaded,
+    Size: ExtraLarge,
+    ImageFormat: webp,
+    SizeInPixels: 2000
+  },
+  {
+    FileHash: 2QOYZWMPACZAJ2MABGMOZ6CCPY,
+    SubPath: /test/test.jpg,
+    Success: false,
+    ToGenerate: false,
+    IsNotFound: false,
+    ErrorMessage: Image cannot be loaded,
+    Size: Large,
+    ImageFormat: webp,
+    SizeInPixels: 1000
+  },
+  {
+    FileHash: 2QOYZWMPACZAJ2MABGMOZ6CCPY,
+    SubPath: /test/test.jpg,
+    Success: false,
+    ToGenerate: false,
+    IsNotFound: false,
+    ErrorMessage: Image cannot be loaded,
+    Size: Small,
+    ImageFormat: webp,
+    SizeInPixels: 300
+  },
+  {
+    FileHash: 2QOYZWMPACZAJ2MABGMOZ6CCPY,
+    SubPath: /test/test.jpg,
+    Success: false,
+    ToGenerate: false,
+    IsNotFound: false,
+    ErrorMessage: Image cannot be loaded,
+    Size: TinyMeta,
+    ImageFormat: webp,
+    SizeInPixels: 150
+  }
+]

@@ -5,6 +5,7 @@ using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Testers;
 using starsky.foundation.thumbnailgeneration.Models;
@@ -25,7 +26,7 @@ public class SharedGenerate(ISelectorStorage selectorStorage, IWebLogger logger)
 		new(selectorStorage, logger);
 
 	public async Task<IEnumerable<GenerationResultModel>> GenerateThumbnail(
-		ResizeThumbnailFromSourceImage resizeDelegate,
+		ResizeThumbnailFromSourceImage resizeThumbnailFromSourceImage,
 		PreflightThumbnailGeneration.IsExtensionSupportedDelegate isExtensionSupportedDelegate,
 		string singleSubPath,
 		string fileHash, ThumbnailImageFormat imageFormat,
@@ -45,14 +46,58 @@ public class SharedGenerate(ISelectorStorage selectorStorage, IWebLogger logger)
 		}
 
 		var toGenerateSize = thumbnailSizes[0];
-		var largeImageResult =
-			await resizeDelegate(toGenerateSize, singleSubPath, fileHash,
-				imageFormat);
+		var largeImageResult = await resizeThumbnailFromSourceImage(toGenerateSize,
+			singleSubPath, fileHash, imageFormat);
+
+		if ( !largeImageResult.Success )
+		{
+			logger.LogError(
+				$"[SharedGenerate] ResizeThumbnailFromSourceImage failed for " +
+				$"S: {singleSubPath} - H: {fileHash} " +
+				$"SI: {toGenerateSize} E: {largeImageResult.ErrorMessage} ");
+
+			var failedResults = UpdateAllSizesToFailure(
+				thumbnailSizes, fileHash, singleSubPath, imageFormat,
+				largeImageResult.ErrorMessage);
+			return preflightResult
+				.AddOrUpdateRange(failedResults)
+				.AddOrUpdateRange([largeImageResult]);
+		}
 
 		var results = await _resizeThumbnail.ResizeThumbnailFromThumbnailImageLoop(singleSubPath,
 			fileHash, imageFormat, thumbnailSizes, toGenerateSize);
 
-		return preflightResult.AddOrUpdateRange(results)
+		return preflightResult
+			.AddOrUpdateRange(results)
 			.AddOrUpdateRange([largeImageResult]);
+	}
+
+	/// <summary>
+	///     Update the results with a failure for all sizes.
+	/// </summary>
+	/// <param name="thumbnailSizes">all sizes which to update</param>
+	/// <param name="thumbnailOutputHash">which item</param>
+	/// <param name="subPathReference">the path in subpath style</param>
+	/// <param name="imageFormat">jpg,png</param>
+	/// <param name="errorMessage">why it failed</param>
+	/// <returns></returns>
+	private static IEnumerable<GenerationResultModel> UpdateAllSizesToFailure(
+		List<ThumbnailSize> thumbnailSizes,
+		string thumbnailOutputHash,
+		string subPathReference,
+		ThumbnailImageFormat imageFormat,
+		string? errorMessage)
+	{
+		return thumbnailSizes.Select(size => new GenerationResultModel
+		{
+			FileHash = ThumbnailNameHelper.RemoveSuffix(thumbnailOutputHash),
+			IsNotFound = false,
+			SizeInPixels = ThumbnailNameHelper.GetSize(size),
+			Success = false,
+			SubPath = subPathReference,
+			ImageFormat = imageFormat,
+			Size = size,
+			ErrorMessage = errorMessage
+		});
 	}
 }

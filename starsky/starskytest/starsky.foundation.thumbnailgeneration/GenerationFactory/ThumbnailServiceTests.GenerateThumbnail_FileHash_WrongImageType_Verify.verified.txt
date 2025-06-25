@@ -1,0 +1,42 @@
+﻿[
+  {
+    FileHash: /test.jpg,
+    SubPath: /notfound.dng,
+    Success: false,
+    ToGenerate: false,
+    IsNotFound: true,
+    ErrorMessage: File is deleted,
+    Size: ExtraLarge,
+    SizeInPixels: 2000
+  },
+  {
+    FileHash: /test.jpg,
+    SubPath: /notfound.dng,
+    Success: false,
+    ToGenerate: false,
+    IsNotFound: true,
+    ErrorMessage: File is deleted,
+    Size: Large,
+    SizeInPixels: 1000
+  },
+  {
+    FileHash: /test.jpg,
+    SubPath: /notfound.dng,
+    Success: false,
+    ToGenerate: false,
+    IsNotFound: true,
+    ErrorMessage: File is deleted,
+    Size: Small,
+    SizeInPixels: 300
+  },
+  {
+    FileHash: /test.jpg,
+    SubPath: /notfound.dng,
+    Success: false,
+    ToGenerate: false,
+    IsNotFound: true,
+    ErrorMessage: File is deleted,
+    Size: TinyMeta,
+    SizeInPixels: 150
+  }
+]
