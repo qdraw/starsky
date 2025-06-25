@@ -142,6 +142,10 @@ public interface IQuery
 	Task<List<FileIndexItem>> GetObjectsByFileHashAsync(
 		List<string> fileHashesList, int retryCount = 2);
 
+	/// <summary>
+	///     Reset Cache for the item that is renamed
+	/// </summary>
+	/// <param name="fileHash">where to look for</param>
 	void ResetItemByHash(string fileHash);
 
 	Task<List<FileIndexItem>> GetFoldersAsync(string subPath);

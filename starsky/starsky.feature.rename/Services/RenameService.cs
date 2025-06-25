@@ -14,25 +14,18 @@ using starsky.foundation.storage.Models;
 
 namespace starsky.feature.rename.Services;
 
-public class RenameService
+public class RenameService(IQuery query, IStorage iStorage)
 {
-	private readonly IQuery _query;
-	private readonly IStorage _iStorage;
-
-	public RenameService(IQuery query, IStorage iStorage)
-	{
-		_query = query;
-		_iStorage = iStorage;
-	}
-
-	/// <summary>Move or rename files and update the database.
-	/// The services also returns the source folders/files as NotFoundSourceMissing</summary>
+	/// <summary>
+	///     Move or rename files and update the database.
+	///     The services also returns the source folders/files as NotFoundSourceMissing
+	/// </summary>
 	/// <param name="f">subPath to file or folder</param>
 	/// <param name="to">subPath location to move</param>
 	/// <param name="collections">true = copy files with the same name</param>
 	public async Task<List<FileIndexItem>> Rename(string f, string to, bool collections = true)
 	{
-		// -- param name="addDirectoryIfNotExist">true = create an directory if an parent directory is missing</param>
+		// -- param name="addDirectoryIfNotExist">true = create a directory if a parent directory is missing</param>
 
 		var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) =
 			InputOutputSubPathsPreflight(f, to, collections);
@@ -55,11 +48,11 @@ public class RenameService
 
 			var inputFileSubPath = inputFileSubPaths[i];
 			var toFileSubPath = toFileSubPaths[i];
-			var detailView = _query.SingleItem(inputFileSubPath, null, collections, false);
+			var detailView = query.SingleItem(inputFileSubPath, null, collections, false);
 
 			// The To location must be
-			var inputFileFolderStatus = _iStorage.IsFolderOrFile(inputFileSubPath);
-			var toFileFolderStatus = _iStorage.IsFolderOrFile(toFileSubPath);
+			var inputFileFolderStatus = iStorage.IsFolderOrFile(inputFileSubPath);
+			var toFileFolderStatus = iStorage.IsFolderOrFile(toFileSubPath);
 
 			var fileIndexItems = new List<FileIndexItem>();
 			switch ( inputFileFolderStatus )
@@ -96,6 +89,9 @@ public class RenameService
 						fileIndexResultsList, fileIndexItems, detailView!);
 					break;
 			}
+
+			// Reset Cache for the item that is renamed
+			query.ResetItemByHash(detailView!.FileIndexItem!.FileHash!);
 		}
 
 		return fileIndexResultsList;
@@ -111,7 +107,7 @@ public class RenameService
 		fileIndexItems.Add(detailView.FileIndexItem);
 
 		// To update the file that is changed
-		await _query.UpdateItemAsync(fileIndexItems);
+		await query.UpdateItemAsync(fileIndexItems);
 
 		fileIndexResultsList.AddRange(fileIndexItems);
 	}
@@ -121,9 +117,9 @@ public class RenameService
 		DetailView? detailView)
 	{
 		// clean from cache
-		_query.RemoveCacheParentItem(inputFileSubPath);
+		query.RemoveCacheParentItem(inputFileSubPath);
 
-		var fileIndexItems = await _query.GetAllRecursiveAsync(inputFileSubPath);
+		var fileIndexItems = await query.GetAllRecursiveAsync(inputFileSubPath);
 		// Rename child items
 		fileIndexItems.ForEach(p =>
 			{
@@ -139,10 +135,10 @@ public class RenameService
 		// in the final step we going to update the database item to the new name
 		var toCheckList = fileIndexItems.Select(p => p.FilePath).Cast<string>().ToList();
 		toCheckList.Add(toFileSubPath);
-		var checkOutput = await _query.GetObjectsByFilePathQueryAsync(toCheckList);
+		var checkOutput = await query.GetObjectsByFilePathQueryAsync(toCheckList);
 		foreach ( var item in checkOutput )
 		{
-			await _query.RemoveItemAsync(item);
+			await query.RemoveItemAsync(item);
 		}
 
 		// save before changing on disk
@@ -150,7 +146,7 @@ public class RenameService
 			detailView!, toFileSubPath);
 
 		// move entire folder
-		_iStorage.FolderMove(inputFileSubPath, toFileSubPath);
+		iStorage.FolderMove(inputFileSubPath, toFileSubPath);
 
 		fileIndexResultsList.Add(new FileIndexItem(inputFileSubPath)
 		{
@@ -168,15 +164,17 @@ public class RenameService
 	}
 
 	/// <summary>
-	/// Checks for inputs that denied the request
+	///     Checks for inputs that denied the request
 	/// </summary>
 	/// <param name="f">list of filePaths in string format (dot comma separated)</param>
 	/// <param name="to">list of filePaths in string format  (dot comma separated)</param>
 	/// <param name="collections">is Collections enabled</param>
-	/// <returns>Tuple that contains two items:
-	/// item1) Tuple of the input output string - when fails this two array's has no items
-	/// item2) the list of fileIndex Items.
-	/// This contains only values when something is wrong and the request is denied</returns>
+	/// <returns>
+	///     Tuple that contains two items:
+	///     item1) Tuple of the input output string - when fails this two array's has no items
+	///     item2) the list of fileIndex Items.
+	///     This contains only values when something is wrong and the request is denied
+	/// </returns>
 	internal Tuple<Tuple<string[], string[]>, List<FileIndexItem>> InputOutputSubPathsPreflight
 		(string f, string to, bool collections)
 	{
@@ -190,10 +188,7 @@ public class RenameService
 				new Tuple<string[], string[]>(Array.Empty<string>(), Array.Empty<string>()),
 				new List<FileIndexItem>
 				{
-					new FileIndexItem
-					{
-						Status = FileIndexItem.ExifStatus.OperationNotSupported
-					}
+					new() { Status = FileIndexItem.ExifStatus.OperationNotSupported }
 				}
 			);
 		}
@@ -207,7 +202,7 @@ public class RenameService
 			inputFileSubPaths[i] =
 				PathHelper.PrefixDbSlash(PathHelper.RemovePrefixDbSlash(inputFileSubPath));
 
-			var detailView = _query.SingleItem(inputFileSubPaths[i]!, null, collections, false);
+			var detailView = query.SingleItem(inputFileSubPaths[i]!, null, collections, false);
 			if ( detailView == null )
 			{
 				inputFileSubPaths[i] = null;
@@ -221,7 +216,7 @@ public class RenameService
 			toFileSubPaths[i] = PathHelper.PrefixDbSlash(toFileSubPath);
 
 			// to move
-			var detailView = _query.SingleItem(toFileSubPaths[i]!, null, collections, false);
+			var detailView = query.SingleItem(toFileSubPaths[i]!, null, collections, false);
 
 			// skip for files
 			if ( detailView?.FileIndexItem == null )
@@ -258,7 +253,7 @@ public class RenameService
 		// Check if two list are the same Length - Change this in the future BadRequest("f != to")
 		// when moving a file that does not exist (/non-exist.jpg to /non-exist2.jpg)
 		if ( toFileSubPaths.Count != inputFileSubPaths.Count ||
-			 toFileSubPaths.Count == 0 || inputFileSubPaths.Count == 0 )
+		     toFileSubPaths.Count == 0 || inputFileSubPaths.Count == 0 )
 		{
 			// files that not exist
 			fileIndexResultsList.Add(new FileIndexItem
@@ -276,10 +271,10 @@ public class RenameService
 	}
 
 	/// <summary>
-	/// Get the collections items when preflighting
-	/// Returns as Tuple
-	/// item1: inputFileSubPaths, toFileSubPaths
-	/// item2: list of fileIndex Results (which contains only error cases)
+	///     Get the collections items when preflighting
+	///     Returns as Tuple
+	///     item1: inputFileSubPaths, toFileSubPaths
+	///     item2: list of fileIndex Results (which contains only error cases)
 	/// </summary>
 	/// <param name="inputFileSubPaths">from where to copy (file or folder)</param>
 	/// <param name="toFileSubPaths">copy to (file or folder)</param>
@@ -305,7 +300,7 @@ public class RenameService
 		for ( var i = 0; i < inputFileSubPaths.Count; i++ )
 		{
 			// When the input is a folder, just copy the array
-			if ( _iStorage.ExistFolder(inputFileSubPaths[i]) )
+			if ( iStorage.ExistFolder(inputFileSubPaths[i]) )
 			{
 				inputCollectionFileSubPaths.Add(inputFileSubPaths[i]);
 				toCollectionFileSubPaths.Add(toFileSubPaths[i]);
@@ -313,7 +308,7 @@ public class RenameService
 			}
 
 			// when it is a file update the 'to paths'
-			var querySingleItemCollections = _query.SingleItem(inputFileSubPaths[i],
+			var querySingleItemCollections = query.SingleItem(inputFileSubPaths[i],
 				null, true, false);
 			var collectionPaths = querySingleItemCollections!.FileIndexItem!.CollectionPaths;
 
@@ -323,7 +318,7 @@ public class RenameService
 			{
 				var collectionItem = collectionPaths[j];
 				// When moving to a folder
-				if ( _iStorage.ExistFolder(toFileSubPaths[i]) )
+				if ( iStorage.ExistFolder(toFileSubPaths[i]) )
 				{
 					toCollectionFileSubPaths.Add(toFileSubPaths[i]);
 					continue;
@@ -355,7 +350,7 @@ public class RenameService
 	}
 
 	/// <summary>
-	/// Move sidecar files when those exist
+	///     Move sidecar files when those exist
 	/// </summary>
 	/// <param name="inputFileSubPath">from path</param>
 	/// <param name="toFileSubPath">to path</param>
@@ -366,9 +361,9 @@ public class RenameService
 			.JsonLocation(inputFileSubPath);
 		var jsonSidecarFile = JsonSidecarLocation.JsonLocation(toFileSubPath);
 
-		if ( _iStorage.ExistFile(jsonInputFileSubPathSidecarFile) )
+		if ( iStorage.ExistFile(jsonInputFileSubPathSidecarFile) )
 		{
-			_iStorage.FileMove(jsonInputFileSubPathSidecarFile, jsonSidecarFile);
+			iStorage.FileMove(jsonInputFileSubPathSidecarFile, jsonSidecarFile);
 		}
 
 		// xmp sidecar file move
@@ -381,9 +376,9 @@ public class RenameService
 			.ReplaceExtensionWithXmp(inputFileSubPath);
 		var xmpSidecarFile = ExtensionRolesHelper
 			.ReplaceExtensionWithXmp(toFileSubPath);
-		if ( _iStorage.ExistFile(xmpInputFileSubPathSidecarFile) )
+		if ( iStorage.ExistFile(xmpInputFileSubPathSidecarFile) )
 		{
-			_iStorage.FileMove(xmpInputFileSubPathSidecarFile, xmpSidecarFile);
+			iStorage.FileMove(xmpInputFileSubPathSidecarFile, xmpSidecarFile);
 		}
 	}
 
@@ -402,7 +397,7 @@ public class RenameService
 	}
 
 	/// <summary>
-	/// Copy from a folder to a folder
+	///     Copy from a folder to a folder
 	/// </summary>
 	/// <param name="inputFileSubPath">from path</param>
 	/// <param name="toFileSubPath">to path</param>
@@ -419,16 +414,16 @@ public class RenameService
 
 		// Store Child folders
 		var directChildFolders = new List<string>();
-		directChildFolders.AddRange(_iStorage.GetDirectoryRecursive(inputFileSubPath)
+		directChildFolders.AddRange(iStorage.GetDirectoryRecursive(inputFileSubPath)
 			.Select(p => p.Key));
 
 		// Store direct files
 		var directChildItems = new List<string>();
-		directChildItems.AddRange(_iStorage.GetAllFilesInDirectory(inputFileSubPath));
+		directChildItems.AddRange(iStorage.GetAllFilesInDirectory(inputFileSubPath));
 
 		// Replace all Recursive items in Query
 		// Does only replace in existing database items
-		var fileIndexItems = await _query.GetAllRecursiveAsync(inputFileSubPath);
+		var fileIndexItems = await query.GetAllRecursiveAsync(inputFileSubPath);
 
 		// Rename child items
 		fileIndexItems.ForEach(p =>
@@ -449,7 +444,7 @@ public class RenameService
 			// First FileSys (with folders)
 			var outputChildItem = inputChildFolder
 				.Replace(inputFileSubPath, toFileSubPath);
-			_iStorage.FolderMove(inputChildFolder, outputChildItem);
+			iStorage.FolderMove(inputChildFolder, outputChildItem);
 		}
 
 		// rename child files
@@ -457,7 +452,7 @@ public class RenameService
 		{
 			// First FileSys
 			var outputChildItem = inputChildItem.Replace(inputFileSubPath, toFileSubPath);
-			_iStorage.FileMove(inputChildItem, outputChildItem);
+			iStorage.FileMove(inputChildItem, outputChildItem);
 		}
 
 		// when renaming a folder it should warn the UI that it should remove the source item
@@ -484,7 +479,7 @@ public class RenameService
 
 		// from/input cache should be cleared
 		var inputParentSubFolder = FilenamesHelper.GetParentPath(inputFileSubPath);
-		_query.RemoveCacheParentItem(inputParentSubFolder);
+		query.RemoveCacheParentItem(inputParentSubFolder);
 
 		var toParentSubFolder = FilenamesHelper.GetParentPath(toFileSubPath);
 		if ( string.IsNullOrEmpty(toParentSubFolder) )
@@ -493,24 +488,24 @@ public class RenameService
 		}
 
 		// clear cache (to FileSubPath parents)
-		_query.RemoveCacheParentItem(toParentSubFolder);
+		query.RemoveCacheParentItem(toParentSubFolder);
 
 		// Check if the parent folder exist in the database
-		await _query.AddParentItemsAsync(toParentSubFolder);
+		await query.AddParentItemsAsync(toParentSubFolder);
 
 		// Save in database before change on disk
 		await SaveToDatabaseAsync(fileIndexItems, fileIndexResultsList,
 			detailView, toFileSubPath);
 
 		// add folder to file system
-		if ( !_iStorage.ExistFolder(toParentSubFolder) )
+		if ( !iStorage.ExistFolder(toParentSubFolder) )
 		{
-			_iStorage.CreateDirectory(toParentSubFolder);
+			iStorage.CreateDirectory(toParentSubFolder);
 			fileIndexResultsList.Add(
 				new FileIndexItem(toParentSubFolder) { Status = FileIndexItem.ExifStatus.Ok });
 		}
 
-		_iStorage.FileMove(inputFileSubPath, toFileSubPath);
+		iStorage.FileMove(inputFileSubPath, toFileSubPath);
 		MoveSidecarFile(inputFileSubPath, toFileSubPath);
 
 		// when renaming a folder it should warn the UI that it should remove the source item
@@ -543,20 +538,20 @@ public class RenameService
 		// from/input cache should be cleared
 		var inputParentSubFolder =
 			Breadcrumbs.BreadcrumbHelper(inputFileSubPath).LastOrDefault();
-		_query.RemoveCacheParentItem(inputParentSubFolder!);
+		query.RemoveCacheParentItem(inputParentSubFolder!);
 
 		// clear cache // parentSubFolder (to FileSubPath parents)
 		var toParentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
-		_query.RemoveCacheParentItem(toParentSubFolder!);
+		query.RemoveCacheParentItem(toParentSubFolder!);
 
 		// Check if the parent folder exist in the database // parentSubFolder
-		await _query.AddParentItemsAsync(toParentSubFolder!);
+		await query.AddParentItemsAsync(toParentSubFolder!);
 
 		await SaveToDatabaseAsync(fileIndexItems, fileIndexResultsList,
 			detailView, toFileSubPath);
 
 		// First update database and then update for disk watcher
-		_iStorage.FileMove(inputFileSubPath, toFileSubPath);
+		iStorage.FileMove(inputFileSubPath, toFileSubPath);
 		MoveSidecarFile(inputFileSubPath, toFileSubPath);
 	}
 }

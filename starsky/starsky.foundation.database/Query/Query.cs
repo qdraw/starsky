@@ -130,6 +130,11 @@ public partial class Query : IQuery
 			result, cacheTime.Value);
 	}
 
+	/// <summary>
+	///     Uses CachingDbName hashList
+	/// </summary>
+	/// <param name="fileHash">the file hash</param>
+	/// <returns>file path can be cached</returns>
 	public async Task<string?> GetSubPathByHashAsync(string fileHash)
 	{
 		// The CLI programs uses no cache

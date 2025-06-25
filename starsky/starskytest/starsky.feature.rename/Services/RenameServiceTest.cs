@@ -1091,4 +1091,35 @@ public sealed class RenameServiceTest
 		var after = await query.GetObjectByFilePathAsync(afterPath);
 		Assert.AreEqual(afterPath, after!.FilePath);
 	}
+
+	[TestMethod]
+	public async Task Rename_ShouldResetCacheForFileHash()
+	{
+		// Arrange
+		var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
+		builder.UseInMemoryDatabase(nameof(Rename_ShouldResetCacheForFileHash));
+		var context = new ApplicationDbContext(builder.Options);
+
+		var appSettings = new AppSettings { StorageFolder = "/", ThumbnailTempFolder = "/" };
+		var memoryCache = new MemoryCache(new MemoryCacheOptions());
+		var query = new Query(context, appSettings, null, new FakeIWebLogger(), memoryCache);
+
+		var fileIndexItem = new FileIndexItem { FileHash = "test-hash", FilePath = "/test.jpg" };
+		await query.AddItemAsync(fileIndexItem);
+
+		var setCacheResult = await query.GetSubPathByHashAsync(fileIndexItem.FileHash);
+		Assert.AreEqual("/test.jpg", setCacheResult,
+			"Cache should contain the item before rename.");
+
+		var fakeStorage = new FakeIStorage(["/"], ["/test.jpg"]);
+		var renameService = new RenameService(query, fakeStorage);
+
+		// Act
+		await renameService.Rename("/test.jpg", "/new-test.jpg");
+
+		// Assert
+		var cacheResult = await query.GetSubPathByHashAsync(fileIndexItem.FileHash);
+		Assert.AreEqual("/new-test.jpg", cacheResult,
+			"Cache should be reset after rename");
+	}
 }

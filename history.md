@@ -46,6 +46,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Back-end_ Change how status is handled for SharedThumbnail generation (PR #2243)
 - [x] (Changed) _Back-end_ Code quality code smells (PR #2242)
 - [x] (Added) _Back-end_ Store how long the application is running / diagnostics (PR #2241)
+- [x] (Fixed) _Back-end_ After renaming a file, the thumbnail is not updated (PR #2246)
 
 ## version 0.7.0 - 2025-06-23 {#v0.7.0}
 
