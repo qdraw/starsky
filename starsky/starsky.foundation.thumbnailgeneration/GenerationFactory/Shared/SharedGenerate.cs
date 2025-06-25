@@ -59,8 +59,8 @@ public class SharedGenerate(ISelectorStorage selectorStorage, IWebLogger logger)
 				thumbnailSizes, fileHash, singleSubPath, imageFormat,
 				largeImageResult.ErrorMessage);
 			return preflightResult
-				.AddOrUpdateRange([largeImageResult])
-				.AddOrUpdateRange(failedResults);
+				.AddOrUpdateRange(failedResults)
+				.AddOrUpdateRange([largeImageResult]);
 		}
 
 		var results = await _resizeThumbnail.ResizeThumbnailFromThumbnailImageLoop(singleSubPath,
