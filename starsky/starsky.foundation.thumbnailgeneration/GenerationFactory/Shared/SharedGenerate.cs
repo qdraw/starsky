@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using starsky.foundation.database.Migrations;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Thumbnails;
@@ -71,9 +70,9 @@ public class SharedGenerate(ISelectorStorage selectorStorage, IWebLogger logger)
 			.AddOrUpdateRange(results)
 			.AddOrUpdateRange([largeImageResult]);
 	}
-	
+
 	/// <summary>
-	/// Update the results with a failure for all sizes.
+	///     Update the results with a failure for all sizes.
 	/// </summary>
 	/// <param name="thumbnailSizes">all sizes which to update</param>
 	/// <param name="thumbnailOutputHash">which item</param>
@@ -82,10 +81,10 @@ public class SharedGenerate(ISelectorStorage selectorStorage, IWebLogger logger)
 	/// <param name="errorMessage">why it failed</param>
 	/// <returns></returns>
 	private static IEnumerable<GenerationResultModel> UpdateAllSizesToFailure(
-		List<ThumbnailSize> thumbnailSizes, 
-		string thumbnailOutputHash, 
-		string subPathReference, 
-		ThumbnailImageFormat imageFormat, 
+		List<ThumbnailSize> thumbnailSizes,
+		string thumbnailOutputHash,
+		string subPathReference,
+		ThumbnailImageFormat imageFormat,
 		string? errorMessage)
 	{
 		return thumbnailSizes.Select(size => new GenerationResultModel
