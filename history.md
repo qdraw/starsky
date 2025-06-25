@@ -43,7 +43,9 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.1 - _(Unreleased)_ - 2025-06-? {#v0.7.1}
 
-- nothing yet
+- [x] (Changed) _Back-end_ Change how status is handled for SharedThumbnail generation (PR #2243)
+- [x] (Changed) _Back-end_ Code quality code smells (PR #2242)
+- [x] (Added) _Back-end_ Store how long the application is running / diagnostics (PR #2241)
 
 ## version 0.7.0 - 2025-06-23 {#v0.7.0}
 
@@ -52,6 +54,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
   [blog about it](https://docs.qdraw.nl/blog/smarter-imports-conditional-rules-structure-colorclass))
 - [x] (Breaking Change) _Back-end_ Exiftool checksum api breaks auto setup of the tool (PR #2238)
 - [x] (Changed) _Back-end_ CompareHelper for ImportTransformation andStructureModel (PR #2239)
+- [x] (Changed) _Back-end_ Update version to 0.7.0 (PR #2240)
 
 ### Breaking changes in 0.7.0-beta between version 0 and 3
 
