@@ -114,8 +114,7 @@ public class FakeIQuery : IQuery
 		{
 			fileIndexItem.CollectionPaths = new List<string>();
 			fileIndexItem.CollectionPaths.AddRange(
-				_content.Where(
-						p => p.FileCollectionName == fileIndexItem.FileCollectionName)
+				_content.Where(p => p.FileCollectionName == fileIndexItem.FileCollectionName)
 					.Select(p => p.FilePath!)
 			);
 		}
@@ -249,7 +248,7 @@ public class FakeIQuery : IQuery
 
 	public void ResetItemByHash(string fileHash)
 	{
-		throw new NotImplementedException();
+		// do nothing
 	}
 
 	public Task<List<FileIndexItem>> GetFoldersAsync(string subPath)
