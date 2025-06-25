@@ -25,7 +25,7 @@ public class RenameService(IQuery query, IStorage iStorage)
 	/// <param name="collections">true = copy files with the same name</param>
 	public async Task<List<FileIndexItem>> Rename(string f, string to, bool collections = true)
 	{
-		// -- param name="addDirectoryIfNotExist">true = create an directory if an parent directory is missing</param>
+		// -- param name="addDirectoryIfNotExist">true = create a directory if a parent directory is missing</param>
 
 		var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) =
 			InputOutputSubPathsPreflight(f, to, collections);
