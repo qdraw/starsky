@@ -12,15 +12,17 @@ using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory;
 using starsky.foundation.thumbnailgeneration.Interfaces;
+using starsky.foundation.thumbnailgeneration.Models;
 using starsky.foundation.thumbnailgeneration.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeCreateAn.CreateAnQuickTimeMp4;
 using starskytest.FakeMocks;
+using VerifyMSTest;
 
 namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory;
 
 [TestClass]
-public sealed class ThumbnailServiceTests
+public sealed class ThumbnailServiceTests: VerifyBase
 {
 	private readonly AppSettings _appSettings;
 	private readonly string _fakeIStorageImageSubPath;
@@ -114,7 +116,23 @@ public sealed class ThumbnailServiceTests
 
 		Assert.IsFalse(isCreated.FirstOrDefault()!.Success);
 	}
+	
+	[TestMethod]
+	public async Task GenerateThumbnail_FileHash_WrongImageType_Verify()
+	{
+		var sut = CreateSut(new FakeIStorage());
 
+		var isCreated = await sut.GenerateThumbnail(
+			"/notfound.dng", _fakeIStorageImageSubPath);
+		
+		await Verify(isCreated);
+	}
+
+	private static async Task Verify(List<GenerationResultModel> result)
+	{
+		await Verifier.Verify(result).DontScrubDateTimes();
+	}
+	
 	[TestMethod]
 	public async Task GenerateThumbnail_FileHash_Video_HappyFlow()
 	{
@@ -217,7 +235,7 @@ public sealed class ThumbnailServiceTests
 	[TestMethod]
 	public async Task GenerateThumbnail_NullFail()
 	{
-		var storage = new FakeIStorage(new List<string> { "/test" },
+		var storage = new FakeIStorage(["/test"],
 			new List<string> { "/test/test.jpg" },
 			new List<byte[]?> { null });
 
@@ -226,6 +244,21 @@ public sealed class ThumbnailServiceTests
 		var isCreated = await sut.GenerateThumbnail("/test/test.jpg");
 
 		Assert.AreEqual(0, isCreated.Count);
+	}
+	
+	[TestMethod]
+	public async Task GenerateThumbnail__Corrupt_Verify()
+	{
+		var storage = new FakeIStorage(
+			["/test"],
+			["/test/test.jpg"],
+			new List<byte[]> { Array.Empty<byte>() });
+
+		var sut = CreateSut(storage);
+
+		var result = await sut.GenerateThumbnail("/test/test.jpg");
+
+		await Verify(result);
 	}
 
 	[TestMethod]

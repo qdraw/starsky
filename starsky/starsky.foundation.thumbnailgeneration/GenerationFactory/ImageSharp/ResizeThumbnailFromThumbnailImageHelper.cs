@@ -41,7 +41,6 @@ internal class ResizeThumbnailFromThumbnailImageHelper(
 		return results;
 	}
 
-
 	/// <summary>
 	///     Resize image from other thumbnail
 	/// </summary>
