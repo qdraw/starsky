@@ -1,12 +1,10 @@
 import React, { memo, useState } from "react";
-import { ArchiveAction } from "../../../contexts/archive-context";
 import localization from "../../../localization/localization.json";
 import MenuOptionModal from "../../atoms/menu-option-modal/menu-option-modal";
 import ModalMoveFolderToTrash from "../../organisms/modal-move-folder-to-trash/modal-move-folder-to-trash";
 interface IMenuOptionMoveToTrashProps {
   subPath: string;
   isReadOnly: boolean;
-  dispatch: React.Dispatch<ArchiveAction>;
   setEnableMoreMenu?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
