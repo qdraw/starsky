@@ -45,7 +45,18 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
   async function MoveFile() {
     const bodyParams = new URLSearchParams();
     bodyParams.append("f", props.selectedSubPath);
-    bodyParams.append("to", currentFolderPath);
+
+    // selectedSubPath can contain ; as a separator for multiple files the "to" path
+    // must contain the same number of paths which is currentFolderPath
+    // the "to" path is "{currentFolderPath};{currentFolderPath};{currentFolderPath}"
+    if (props.selectedSubPath.includes(";")) {
+      const selectedPaths = props.selectedSubPath.split(";").filter(Boolean);
+      // Create a string like "folder;folder;folder" with the same count as selectedPaths
+      const toValue = Array(selectedPaths.length).fill(currentFolderPath).join(";");
+      bodyParams.append("to", toValue);
+    } else {
+      bodyParams.append("to", currentFolderPath);
+    }
     bodyParams.append("collections", true.toString());
 
     const resultDo = await FetchPost(new UrlQuery().UrlDiskRename(), bodyParams.toString());
@@ -67,11 +78,21 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
     new FileListCache().CacheCleanEverything();
 
     // now go to the new location
-    const toNavigateUrl = new UrlQuery().updateFilePathHash(
-      history.location.search,
-      fileIndexItems[0].filePath
-    );
-    history.navigate(toNavigateUrl, { replace: true });
+    if (props.selectedSubPath.includes(";")) {
+      // when selecting multiple files
+      const toNavigateUrl = new UrlQuery().updateFilePathHash(
+        history.location.search,
+        fileIndexItems[0].parentDirectory
+      );
+      history.navigate(toNavigateUrl, { replace: true });
+    } else {
+      // a single file
+      const toNavigateUrl = new UrlQuery().updateFilePathHash(
+        history.location.search,
+        fileIndexItems[0].filePath
+      );
+      history.navigate(toNavigateUrl, { replace: true });
+    }
 
     // and close window
     props.handleExit();

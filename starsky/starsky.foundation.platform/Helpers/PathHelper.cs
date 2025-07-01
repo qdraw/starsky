@@ -211,9 +211,8 @@ public static class PathHelper
 		var inputFilePaths = f.Split(";".ToCharArray());
 		inputFilePaths = inputFilePaths.Where(x => !string.IsNullOrEmpty(x)).ToArray();
 
-		// Remove duplicates from list
 		// have a single slash in front the path
-		var inputHashSet = new HashSet<string>();
+		var inputHashSet = new List<string>();
 		foreach ( var path in inputFilePaths )
 		{
 			var subPath = RemovePrefixDbSlash(path);
