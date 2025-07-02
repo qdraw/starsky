@@ -148,7 +148,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## version 0.6.4 - 2024-12-19 {#v0.6.4}
 
 - [x] (Fixed) _Back-end_ Notification duplicate error handling (Issue #1832) (PR #1834)
-- [x] (Fixed) _Front-end_ Add cache headers for download publish for Cloudfare (PR #1839)
+- [x] (Fixed) _Front-end_ Add cache headers for download publish for Cloudflare (PR #1839)
 - [x] (Changed) _Back-end_ Small readability fixes to avoid code smells (PR #1844)
 - [x] (Changed) _Back-end_ Filename checks for extensions (PR #1849)
 - [x] (Changed) _Back-end_ Improve tests for port mapper (PR #1850)
