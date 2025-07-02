@@ -16,7 +16,6 @@ function createDirectory (config): void {
     cy.log('mkdir done')
     cy.log(res.body)
     cy.log(res.status.toString())
-    cy.wait(500);
   })
 }
 
