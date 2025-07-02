@@ -517,7 +517,8 @@ public class RenameService(IQuery query, IStorage iStorage)
 		DetailView detailView)
 	{
 		// you can't move the file to the same location
-		if ( inputFileSubPath == toFileSubPath )
+		// or if it already exists
+		if ( inputFileSubPath == toFileSubPath || iStorage.ExistFile(toFileSubPath) )
 		{
 			fileIndexResultsList.Add(new FileIndexItem
 			{

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/consistent-type-assertions */
+ 
 import { RequestOptions } from 'http'
 
 function createDirectory (config): void {
@@ -16,6 +16,7 @@ function createDirectory (config): void {
     cy.log('mkdir done')
     cy.log(res.body)
     cy.log(res.status.toString())
+    cy.wait(500);
   })
 }
 
@@ -28,6 +29,7 @@ export function checkIfExistAndCreate (config): void {
       'Content-Type': 'text/plain'
     }
   } as RequestOptions).then((data) => {
+    // cy.log(JSON.stringify(data))
     if (data.body.searchCount === 0) {
       cy.log('next: create directory')
       createDirectory(config)
