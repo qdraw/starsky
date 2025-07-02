@@ -18,8 +18,8 @@ const MenuOptionMoveFile: React.FunctionComponent<IMenuOptionMoveFile> = memo(
     if (typeof subPath === "string") {
       selectedSubPath = subPath;
     } else if (Array.isArray(subPath)) {
-      for (let i = 0; i < subPath.length; i++) {
-        selectedSubPath += `${subPath[i]};`;
+      for (const path of subPath) {
+        selectedSubPath += `${path};`;
       }
     }
 
