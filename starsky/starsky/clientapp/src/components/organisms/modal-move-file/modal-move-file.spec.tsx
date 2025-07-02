@@ -441,4 +441,60 @@ describe("ModalMoveFile", () => {
       });
     });
   });
+
+  it("shows error and does not navigate when statusCode !== 200", async () => {
+    jest.spyOn(useFileList, "default").mockReturnValue(startArchive);
+    jest.spyOn(useLocation, "default").mockReturnValue({
+      location: jest.fn() as unknown as Location,
+      navigate: jest.fn()
+    });
+
+    jest
+      .spyOn(Modal, "default")
+      .mockReset()
+      .mockImplementationOnce((props) => <>{props.children}</>)
+      .mockImplementationOnce((props) => <>{props.children}</>)
+      .mockImplementationOnce((props) => <>{props.children}</>);
+
+    // Local spyOn for FetchPost
+    const fetchPostSpy = jest.spyOn(FetchPost, "default").mockResolvedValueOnce({
+      statusCode: 500,
+      data: [
+        {
+          filePath: "/test.jpg",
+          fileName: "test.jpg",
+          status: "ServerError",
+          parentDirectory: "/"
+        }
+      ]
+    });
+
+    const handleExit = jest.fn();
+
+    const component = render(
+      <ModalMoveFile
+        isOpen={true}
+        handleExit={handleExit}
+        selectedSubPath="/test.jpg"
+        parentDirectory="/"
+      />
+    );
+
+    // go to a different folder to disable the button
+    const btnTest = screen.queryByTestId("btn-test");
+    expect(btnTest).toBeTruthy();
+
+    act(() => {
+      btnTest?.click();
+    });
+
+    const moveBtn = await screen.findByTestId("modal-move-file-btn-default");
+    await act(async () => {
+      moveBtn.click();
+    });
+
+    expect(await screen.findByTestId("modal-move-file-warning-box")).toBeInTheDocument();
+    expect(handleExit).not.toHaveBeenCalled();
+    expect(fetchPostSpy).toHaveBeenCalled();
+  });
 });
