@@ -47,6 +47,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Back-end_ Code quality code smells (PR #2242)
 - [x] (Added) _Back-end_ Store how long the application is running / diagnostics (PR #2241)
 - [x] (Fixed) _Back-end_ After renaming a file, the thumbnail is not updated (PR #2246)
+- [x] (Added) _Front-end_ Add menu option to move multiple files (PR #2251 / Issue #244)
 
 ## version 0.7.0 - 2025-06-23 {#v0.7.0}
 
@@ -147,7 +148,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## version 0.6.4 - 2024-12-19 {#v0.6.4}
 
 - [x] (Fixed) _Back-end_ Notification duplicate error handling (Issue #1832) (PR #1834)
-- [x] (Fixed) _Front-end_ Add cache headers for download publish for cloudfare (PR #1839)
+- [x] (Fixed) _Front-end_ Add cache headers for download publish for Cloudflare (PR #1839)
 - [x] (Changed) _Back-end_ Small readability fixes to avoid code smells (PR #1844)
 - [x] (Changed) _Back-end_ Filename checks for extensions (PR #1849)
 - [x] (Changed) _Back-end_ Improve tests for port mapper (PR #1850)

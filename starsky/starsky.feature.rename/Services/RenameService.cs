@@ -185,11 +185,8 @@ public class RenameService(IQuery query, IStorage iStorage)
 		if ( inputFileSubPaths.SequenceEqual(toFileSubPaths) )
 		{
 			return new Tuple<Tuple<string[], string[]>, List<FileIndexItem>>(
-				new Tuple<string[], string[]>(Array.Empty<string>(), Array.Empty<string>()),
-				new List<FileIndexItem>
-				{
-					new() { Status = FileIndexItem.ExifStatus.OperationNotSupported }
-				}
+				new Tuple<string[], string[]>([], []),
+				[new FileIndexItem { Status = FileIndexItem.ExifStatus.OperationNotSupported }]
 			);
 		}
 
@@ -520,7 +517,8 @@ public class RenameService(IQuery query, IStorage iStorage)
 		DetailView detailView)
 	{
 		// you can't move the file to the same location
-		if ( inputFileSubPath == toFileSubPath )
+		// or if it already exists
+		if ( inputFileSubPath == toFileSubPath || iStorage.ExistFile(toFileSubPath) )
 		{
 			fileIndexResultsList.Add(new FileIndexItem
 			{

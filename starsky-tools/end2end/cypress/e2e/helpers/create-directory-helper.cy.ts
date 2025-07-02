@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/consistent-type-assertions */
+ 
 import { RequestOptions } from 'http'
 
 function createDirectory (config): void {
@@ -28,6 +28,7 @@ export function checkIfExistAndCreate (config): void {
       'Content-Type': 'text/plain'
     }
   } as RequestOptions).then((data) => {
+    // cy.log(JSON.stringify(data))
     if (data.body.searchCount === 0) {
       cy.log('next: create directory')
       createDirectory(config)

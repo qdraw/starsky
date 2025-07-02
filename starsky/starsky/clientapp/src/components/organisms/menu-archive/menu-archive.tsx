@@ -18,6 +18,7 @@ import MenuOptionDesktopEditorOpenSelectionNoSelectWarning from "../../molecules
 import MenuOptionDesktopEditorOpenSelection from "../../molecules/menu-option-desktop-editor-open-selection/menu-option-desktop-editor-open-selection";
 import MenuOptionDesktopEditorOpenSingle from "../../molecules/menu-option-desktop-editor-open-single/menu-option-desktop-editor-open-single.tsx";
 import { MenuOptionMkdir } from "../../molecules/menu-option-mkdir/menu-option-mkdir.tsx";
+import MenuOptionMoveFile from "../../molecules/menu-option-move-file/menu-option-move-file.tsx";
 import MenuOptionMoveFolderToTrash from "../../molecules/menu-option-move-folder-to-trash/menu-option-move-folder-to-trash";
 import MenuOptionMoveToTrash from "../../molecules/menu-option-move-to-trash/menu-option-move-to-trash";
 import { MenuOptionSelectionAll } from "../../molecules/menu-option-selection-all/menu-option-selection-all";
@@ -197,7 +198,6 @@ const MenuArchive: React.FunctionComponent = memo(() => {
               <MenuOptionMoveFolderToTrash
                 isReadOnly={readOnly || state.subPath === "/"}
                 subPath={state.subPath}
-                dispatch={dispatch}
                 setEnableMoreMenu={setEnableMoreMenu}
               />
 
@@ -245,11 +245,19 @@ const MenuArchive: React.FunctionComponent = memo(() => {
                     setSelect={setSelect}
                     isReadOnly={readOnly}
                   />
-
                   <MenuOptionDesktopEditorOpenSelection
                     isReadOnly={readOnly}
                     select={select}
                     state={state}
+                    setEnableMoreMenu={setEnableMoreMenu}
+                  />
+                  <MenuOptionMoveFile
+                    isReadOnly={state.isReadOnly}
+                    subPath={new URLPath().MergeSelectParent(
+                      select,
+                      new URLPath().StringToIUrl(history.location.search).f
+                    )}
+                    parentDirectory={state.subPath}
                     setEnableMoreMenu={setEnableMoreMenu}
                   />
                 </>
