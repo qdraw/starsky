@@ -181,7 +181,88 @@ describe("ModalMoveFile", () => {
     modal.unmount();
   });
 
-  it("click to folder -> move", () => {
+  it("multi file click to folder -> move ", () => {
+    // use this import => import * as useFileList from '../hooks/use-filelist';
+    jest
+      .spyOn(useFileList, "default")
+      .mockImplementationOnce(() => startArchive)
+      .mockImplementationOnce(() => inTestFolderArchive);
+
+    // spy on fetch
+    // use this import => import * as FetchPost from '../shared/fetch-post';
+    jest.spyOn(FetchPost, "default").mockReset();
+
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      statusCode: 200,
+      data: [
+        {
+          filePath: "test",
+          status: IExifStatus.Ok,
+          pageType: PageType.Archive
+        }
+      ]
+    } as IConnectionDefault);
+    const fetchPostSpy = jest
+      .spyOn(FetchPost, "default")
+      .mockImplementationOnce(() => mockIConnectionDefault);
+
+    const locationMockData = {
+      location: jest.fn(),
+      navigate: jest.fn()
+    } as unknown as IUseLocation;
+
+    // use as ==> import * as useLocation from '../hooks/use-location/use-location';
+    jest
+      .spyOn(useLocation, "default")
+      .mockReset()
+      .mockImplementationOnce(() => locationMockData)
+      .mockImplementationOnce(() => locationMockData)
+      .mockImplementationOnce(() => locationMockData);
+
+    const modal = render(
+      <ModalMoveFile
+        parentDirectory="/"
+        selectedSubPath="/test.jpg;/test2.jpg"
+        isOpen={true}
+        handleExit={() => {}}
+      ></ModalMoveFile>
+    );
+
+    const btnTest = screen.queryByTestId("btn-test");
+    expect(btnTest).toBeTruthy();
+
+    act(() => {
+      btnTest?.click();
+    });
+
+    const btnDefault = screen.queryByTestId("modal-move-file-btn-default") as HTMLButtonElement;
+    // button isn't disabled anymore
+    expect(btnDefault.disabled).toBeFalsy();
+
+    act(() => {
+      // now move
+      btnDefault?.click();
+    });
+
+    expect(fetchPostSpy).toHaveBeenCalledTimes(1);
+
+    // generate url
+    const bodyParams = new URLSearchParams();
+    bodyParams.append("f", "/test.jpg;/test2.jpg");
+    bodyParams.append("to", "/test/;/test/");
+    bodyParams.append("collections", true.toString());
+
+    expect(fetchPostSpy).toHaveBeenCalledWith(
+      new UrlQuery().UrlDiskRename(),
+      bodyParams.toString()
+    );
+
+    // and cleanup
+    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+    modal.unmount();
+  });
+
+  it("single file click to folder -> move ", () => {
     // use this import => import * as useFileList from '../hooks/use-filelist';
     jest
       .spyOn(useFileList, "default")
@@ -290,11 +371,12 @@ describe("ModalMoveFile", () => {
     beforeEach(() => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      jest.spyOn(FetchPost, "default").mockClear();
+      jest.spyOn(FetchPost, "default").mockReset();
 
       // use this import => import * as useFileList from '../hooks/use-filelist';
       jest
         .spyOn(useFileList, "default")
+        .mockReset()
         .mockImplementationOnce(() => startArchive)
         .mockImplementationOnce(() => inTestFolderArchive)
         .mockImplementationOnce(() => inTestFolderArchive);
@@ -312,17 +394,13 @@ describe("ModalMoveFile", () => {
 
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
+        .mockReset()
         .mockImplementationOnce(() => mockIConnectionDefault)
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      // // import * as ItemTextListView from "../../molecules/item-text-list-view/item-text-list-view";
-      // jest
-      //   .spyOn(ItemTextListView, "default")
-      //   .mockImplementationOnce(() => null)
-      //   .mockImplementationOnce(() => null);
-
       jest
         .spyOn(Modal, "default")
+        .mockReset()
         .mockImplementationOnce((props) => <>{props.children}</>)
         .mockImplementationOnce((props) => <>{props.children}</>)
         .mockImplementationOnce((props) => <>{props.children}</>);
