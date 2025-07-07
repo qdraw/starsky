@@ -113,6 +113,9 @@
         <None Update="starsky.feature.import\Services\ImportTest.Preflight_SingleImage_ForceOverWrite_ColorClassOverwrite.received.txt">
           <DependentUpon>ImportTest.cs</DependentUpon>
         </None>
+        <None Update="starsky.feature.import\Services\ImportTest.Preflight_SingleImage_Verify_filePath=-a330.arw.verified.txt">
+          <DependentUpon>ImportTest.cs</DependentUpon>
+        </None>
     </ItemGroup>
     <ItemGroup>
         <None Remove="FakeCreateAn\CreateFakeExifToolWindows\exiftool.zip"/>
