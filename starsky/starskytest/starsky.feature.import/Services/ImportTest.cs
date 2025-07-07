@@ -20,6 +20,10 @@ using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.storage.Structure;
 using starskytest.FakeCreateAn;
+using starskytest.FakeCreateAn.CreateAnImageA330Raw;
+using starskytest.FakeCreateAn.CreateAnImageA6600Raw;
+using starskytest.FakeCreateAn.CreateAnImageA6700;
+using starskytest.FakeCreateAn.CreateAnQuickTimeMp4;
 using starskytest.FakeMocks;
 using VerifyMSTest;
 
@@ -77,7 +81,7 @@ public sealed class ImportTest : VerifyBase
 			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
 
 		var result = await importService.Preflight(
-			new List<string> { "/test.jpg" },
+			["/test.jpg"],
 			new ImportSettingsModel());
 
 		Assert.IsNotNull(result.FirstOrDefault());
@@ -90,12 +94,61 @@ public sealed class ImportTest : VerifyBase
 		await Verify(result);
 	}
 
-	private static async Task Verify(List<ImportIndexItem> result)
+	[DataTestMethod]
+	[DataRow("/a6660.arw")]
+	[DataRow("/test.mp4")]
+	[DataRow("/a330.arw")]
+	[DataRow("/a6700.arw")]
+	public async Task Preflight_SingleImage_Verify(string filePath)
+	{
+		var appSettings = new AppSettings();
+		var fakeIStorage = new FakeIStorage(["/"],
+			["/a6660.arw", "/test.mp4", "/a330.arw", "/a6700.arw"],
+			new List<byte[]>
+			{
+				new CreateAnImageA6600Raw().Bytes.ToArray(),
+				CreateAnQuickTimeMp4.Bytes.ToArray(),
+				new CreateAnImageA330Raw().Bytes.ToArray(),
+				new CreateAnImageA6700().Bytes.ToArray()
+			});
+
+		var importService = new Import(new FakeSelectorStorage(fakeIStorage), appSettings,
+			new FakeIImportQuery(),
+			new FakeExifTool(fakeIStorage, appSettings), null!, _console,
+			new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),
+			new FakeIThumbnailQuery(), new FakeIReverseGeoCodeService(), new FakeMemoryCache());
+
+		var result = await importService.Preflight(
+			[filePath],
+			new ImportSettingsModel());
+
+		Assert.IsNotNull(result.FirstOrDefault());
+		Assert.AreEqual(ImportStatus.Ok, result.FirstOrDefault()?.Status);
+
+		Assert.IsNotNull(result.FirstOrDefault()?.FileIndexItem);
+		Assert.IsNotNull(result.FirstOrDefault()?.FileIndexItem?.FilePath);
+		Assert.AreNotEqual(0, result.FirstOrDefault()?.FileIndexItem?.Size);
+
+		await Verify(result, filePath);
+	}
+
+	/// <summary>
+	///     Validator for the ImportIndexItem
+	/// </summary>
+	/// <param name="result">List of items</param>
+	private static async Task Verify(List<ImportIndexItem> result, params object?[] parameters)
 	{
 		result[0].FileIndexItem!.Id = 1;
 		result[0].AddToDatabase = DateTime.MinValue;
 		result[0].FileIndexItem!.AddToDatabase = DateTime.MinValue;
-		await Verifier.Verify(result).DontScrubDateTimes();
+		if ( parameters.Length > 0 )
+		{
+			await Verifier.Verify(result).DontScrubDateTimes().UseParameters(parameters);
+		}
+		else
+		{
+			await Verifier.Verify(result).DontScrubDateTimes();
+		}
 	}
 
 	[TestMethod]
@@ -419,7 +472,8 @@ public sealed class ImportTest : VerifyBase
 		};
 
 		var structureService =
-			new StructureService(new FakeSelectorStorage(storage), appSettings, new FakeIWebLogger());
+			new StructureService(new FakeSelectorStorage(storage), appSettings,
+				new FakeIWebLogger());
 		var inputModel = new StructureInputModel(
 			fileIndexItem.DateTime, fileIndexItem.FileCollectionName!,
 			FilenamesHelper.GetFileExtensionWithoutDot(fileIndexItem.FileName!),

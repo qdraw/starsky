@@ -1,0 +1,49 @@
+﻿[
+  {
+    FileHash: IVNS5VBXJTUKLGAYXEZBVJW3ZQ,
+    FilePath: /2010/02/2010_02_03/20100203_172307_a330.arw,
+    DateTime: 2010-02-03 17:23:07,
+    Status: Ok,
+    FileIndexItem: {
+      Id: 1,
+      FilePath: /2010/02/2010_02_03/20100203_172307_a330.arw,
+      FileName: 20100203_172307_a330.arw,
+      FileHash: IVNS5VBXJTUKLGAYXEZBVJW3ZQ,
+      FileCollectionName: 20100203_172307_a330,
+      ParentDirectory: /2010/02/2010_02_03,
+      IsDirectory: false,
+      Tags: ,
+      Status: Ok,
+      Description: ,
+      Title: ,
+      DateTime: 2010-02-03 17:23:07,
+      LocationCity: ,
+      LocationState: ,
+      LocationCountry: ,
+      LocationCountryCode: ,
+      Orientation: Horizontal,
+      ImageWidth: 3880,
+      ImageHeight: 2600,
+      ImageFormat: tiff,
+      SidecarExtensions: ,
+      ShutterSpeed: ,
+      Software: DSLR-A330 v1.10,
+      MakeModel: Sony|DSLR-A330|Sony DT 18-55mm F3.5-5.6 SAM (SAL1855) or SAM II|,
+      Make: Sony,
+      Model: DSLR-A330,
+      LensModel: Sony DT 18-55mm F3.5-5.6 SAM (SAL1855) or SAM II,
+      MakeCameraSerial: ,
+      Size: 50000,
+      ImageStabilisation: On
+    },
+    SourceFullFilePath: /a330.arw,
+    Structure: {
+      DefaultPattern: /yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext
+    },
+    MakeModel: Sony|DSLR-A330|Sony DT 18-55mm F3.5-5.6 SAM (SAL1855) or SAM II|,
+    DateTimeFromFileName: false,
+    ImageFormat: tiff,
+    Size: 50000,
+    Origin: 
+  }
+]
