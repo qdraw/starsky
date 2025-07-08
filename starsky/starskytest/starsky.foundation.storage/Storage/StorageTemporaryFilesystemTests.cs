@@ -83,7 +83,7 @@ public sealed class StorageTemporaryFilesystemTests
 	}
 
 	[TestMethod]
-	public void Temporary_FileCopy_success()
+	public async Task Temporary_FileCopy_success()
 	{
 		var createNewImage = new CreateAnImage();
 
@@ -97,11 +97,23 @@ public sealed class StorageTemporaryFilesystemTests
 		Assert.IsTrue(File.Exists(path2));
 
 		File.Delete(_fileName);
-		File.Delete(Path.Combine(createNewImage.BasePath,
-			"StorageThumbnailFilesystemTest_FileCopy.jpg"));
+		try
+		{
+			File.Delete(Path.Combine(createNewImage.BasePath,
+				"StorageThumbnailFilesystemTest_FileCopy.jpg"));
+		}
+		catch ( IOException )
+		{
+			Console.WriteLine("StorageThumbnailFilesystemTest_FileCopy" +
+				" was not deleted, retrying");
+			await Task.Delay(1000);
+			File.Delete(Path.Combine(createNewImage.BasePath,
+				"StorageThumbnailFilesystemTest_FileCopy.jpg"));
+		}
 
 		var createAnImage = new CreateAnImage();
 		Assert.IsNotNull(createAnImage);
+
 	}
 
 	[TestMethod]

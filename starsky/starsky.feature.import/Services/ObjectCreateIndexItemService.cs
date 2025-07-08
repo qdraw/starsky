@@ -24,6 +24,7 @@ public class ObjectCreateIndexItemService(
 
 	public ImportIndexItem CreateObjectIndexItem(KeyValuePair<string, bool> inputFileFullPath,
 		FileIndexItem? fileIndexItem, KeyValuePair<string, bool> hashList, long size,
+		ExtensionRolesHelper.ImageFormat imageFormat,
 		int importSettingsColorClass, string origin)
 	{
 		var importIndexItem = new ImportIndexItem(appSettings)
@@ -35,8 +36,7 @@ public class ObjectCreateIndexItemService(
 			Status = ImportStatus.Ok,
 			FilePath = fileIndexItem?.FilePath,
 			ColorClass = fileIndexItem?.ColorClass ?? ColorClassParser.Color.DoNotChange,
-			ImageFormat =
-				fileIndexItem?.ImageFormat ?? ExtensionRolesHelper.ImageFormat.unknown,
+			ImageFormat = imageFormat,
 			MakeModel = fileIndexItem?.MakeModel ?? string.Empty,
 			Size = size,
 			Origin = origin

@@ -451,7 +451,7 @@ public class Import : IImport
 		// Prepare transformations here
 		var importIndexItem = _objectCreateIndexItemService.CreateObjectIndexItem(inputFileFullPath,
 			fileIndexItem, hashList, _filesystemStorage.Info(inputFileFullPath.Key).Size,
-			importSettings.ColorClass, importSettings.Origin);
+			imageFormat, importSettings.ColorClass, importSettings.Origin);
 		importIndexItem = await _objectCreateIndexItemService.TransformCreateIndexItem(
 			importIndexItem,
 			importSettings);
