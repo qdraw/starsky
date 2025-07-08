@@ -48,6 +48,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Added) _Back-end_ Store how long the application is running / diagnostics (PR #2241)
 - [x] (Fixed) _Back-end_ After renaming a file, the thumbnail is not updated (PR #2246)
 - [x] (Added) _Front-end_ Add menu option to move multiple files (PR #2251 / Issue #244)
+- [x] (Fixed) _Back-end_ Add ImageFormat to Create Object IndexItem (PR #2258)
 
 ## version 0.7.0 - 2025-06-23 {#v0.7.0}
 
