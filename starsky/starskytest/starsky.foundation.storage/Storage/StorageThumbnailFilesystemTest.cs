@@ -184,7 +184,7 @@ public sealed class StorageThumbnailFilesystemTest
 	}
 
 	[TestMethod]
-	public void Thumbnail_IsFileReady_thumbnailStorage()
+	public async Task Thumbnail_IsFileReady_thumbnailStorage()
 	{
 		var createNewImage = new CreateAnImage();
 
@@ -197,8 +197,13 @@ public sealed class StorageThumbnailFilesystemTest
 		var result = _thumbnailStorage.IsFileReady(thumbnailId);
 		Assert.IsFalse(result);
 
-		// is disposed to late (as designed)
-		stream.Dispose();
+		// is disposed too late (as designed)
+		await stream.DisposeAsync();
+
+		if ( new AppSettings().IsWindows )
+		{
+			await Task.Delay(500);
+		}
 
 		var result2 = _thumbnailStorage.IsFileReady(thumbnailId);
 		Assert.IsTrue(result2);
