@@ -41,7 +41,10 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.1 - _(Unreleased)_ - 2025-06-? {#v0.7.1}
+## version 0.7.2 - _(Unreleased)_ - 2025-08-? {#v0.7.2}
+- nothing yet
+
+## version 0.7.1 - 2025-07-09 {#v0.7.1}
 
 - [x] (Changed) _Back-end_ Change how status is handled for SharedThumbnail generation (PR #2243)
 - [x] (Changed) _Back-end_ Code quality code smells (PR #2242)
