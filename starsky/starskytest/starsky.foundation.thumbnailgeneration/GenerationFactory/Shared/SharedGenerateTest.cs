@@ -78,7 +78,7 @@ public class SharedGenerateTest : VerifyBase
 		var largeImageResult = new GenerationResultModel
 		{
 			Success = false,
-			ErrorLog = false,
+			ErrorLog = true,
 			ErrorMessage = errorMessage,
 			Size = ThumbnailSize.Large,
 			FileHash = fileHash,

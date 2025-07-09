@@ -61,7 +61,8 @@ public class NativePreviewHelper(
 		{
 			IsSuccess = result,
 			ResultPath = previewImageName,
-			ResultPathType = SelectorStorage.StorageServices.Temporary
+			ResultPathType = SelectorStorage.StorageServices.Temporary,
+			ErrorLog = previewService.IsSupported(width)
 		};
 	}
 

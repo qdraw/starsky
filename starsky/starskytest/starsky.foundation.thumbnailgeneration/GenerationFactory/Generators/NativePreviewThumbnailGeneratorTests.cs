@@ -15,23 +15,22 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.G
 [TestClass]
 public class NativePreviewThumbnailGeneratorTests
 {
-	private readonly NativePreviewThumbnailGenerator _generator;
+	private readonly NativePreviewThumbnailGenerator _generator = CreateSut();
 
-	public NativePreviewThumbnailGeneratorTests()
+	private static NativePreviewThumbnailGenerator CreateSut(bool isSupported = true)
 	{
 		var storage = new FakeIStorage(["/"],
 			["/test.jpg", "/corrupted.jpg"],
-			new List<byte[]> { CreateAnImage.Bytes.ToArray(), 
-				Array.Empty<byte>() });
+			new List<byte[]> { CreateAnImage.Bytes.ToArray(), Array.Empty<byte>() });
 
 		var selectorStorage = new FakeSelectorStorage(storage);
-		var imageNativeService = new FakeIPreviewImageNativeService(storage);
+		var imageNativeService = new FakeIPreviewImageNativeService(storage, isSupported);
 		var logger = new FakeIWebLogger();
 		var appSettings = new AppSettings();
 		var readMeta = new FakeReadMetaSubPathStorage();
 		var existsService = new FakeIFullFilePathExistsService();
 
-		_generator = new NativePreviewThumbnailGenerator(
+		return new NativePreviewThumbnailGenerator(
 			selectorStorage,
 			imageNativeService,
 			logger,
@@ -84,9 +83,9 @@ public class NativePreviewThumbnailGeneratorTests
 			Assert.IsTrue(result.Success);
 		}
 	}
-	
+
 	[TestMethod]
-	public async Task GenerateThumbnail_ShouldReturnResults_Corrupted_Image()
+	public async Task GenerateThumbnail_ShouldReturnResults_Corrupted()
 	{
 		// Arrange
 		const string singleSubPath = "/corrupted.jpg";
@@ -96,14 +95,40 @@ public class NativePreviewThumbnailGeneratorTests
 
 		// Act
 		var results =
-			await _generator.GenerateThumbnail(singleSubPath, fileHash, imageFormat,
-				thumbnailSizes);
+			( await _generator.GenerateThumbnail(singleSubPath, fileHash, imageFormat,
+				thumbnailSizes) ).ToList();
 
 		// Assert
 		Assert.IsNotNull(results);
+		Assert.AreEqual(2, results.Count);
 		foreach ( var result in results )
 		{
 			Assert.IsFalse(result.Success);
+			Assert.AreEqual("Image cannot be loaded", result.ErrorMessage);
+			Assert.AreEqual(ThumbnailImageFormat.jpg, result.ImageFormat);
+			Assert.AreEqual(fileHash, result.FileHash);
 		}
+	}
+
+	[TestMethod]
+	public async Task GenerateThumbnail_ServiceNotSupported()
+	{
+		// Arrange
+		const string singleSubPath = "/test.jpg";
+		const string fileHash = "/test-hash";
+		const ThumbnailImageFormat imageFormat = ThumbnailImageFormat.jpg;
+		var thumbnailSizes = new List<ThumbnailSize> { ThumbnailSize.Small, ThumbnailSize.Large };
+
+		// Act
+		var results =
+			( await CreateSut(false).GenerateThumbnail(singleSubPath, fileHash, imageFormat,
+				thumbnailSizes) ).ToList();
+
+		// Assert
+		Assert.AreEqual(2, results.Count);
+		Assert.AreEqual("Native service not supported", results[0].ErrorMessage);
+		Assert.IsFalse(results[0].ErrorLog);
+		Assert.AreEqual("Native service not supported", results[1].ErrorMessage);
+		Assert.IsFalse(results[1].ErrorLog);
 	}
 }

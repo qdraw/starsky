@@ -44,6 +44,7 @@ public static class GenerationResultModelExtensions
 				existingItem.Size = resultItem.Size;
 				existingItem.ImageFormat = resultItem.ImageFormat;
 				existingItem.ToGenerate = resultItem.ToGenerate;
+				existingItem.ErrorLog = resultItem.ErrorLog;
 			}
 			else
 			{
