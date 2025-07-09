@@ -51,10 +51,14 @@ public class SharedGenerate(ISelectorStorage selectorStorage, IWebLogger logger)
 
 		if ( !largeImageResult.Success )
 		{
-			logger.LogError(
-				$"[SharedGenerate] ResizeThumbnailFromSourceImage failed for " +
-				$"S: {singleSubPath} - H: {fileHash} " +
-				$"SI: {toGenerateSize} E: {largeImageResult.ErrorMessage} ");
+			if ( largeImageResult.ErrorLog )
+			{
+				// when not supported it's not very useful to log as error
+				logger.LogError(
+					$"[SharedGenerate] ResizeThumbnailFromSourceImage failed for " +
+					$"S: {singleSubPath} - H: {fileHash} " +
+					$"SI: {toGenerateSize} E: {largeImageResult.ErrorMessage} ");
+			}
 
 			var failedResults = UpdateAllSizesToFailure(
 				thumbnailSizes, fileHash, singleSubPath, imageFormat,

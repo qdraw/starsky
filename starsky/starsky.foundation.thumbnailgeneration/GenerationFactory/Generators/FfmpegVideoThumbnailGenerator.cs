@@ -41,7 +41,7 @@ public class FfmpegVideoThumbnailGenerator(
 		if ( !result.IsSuccess || result.ResultPath == null )
 		{
 			return ErrorGenerationResultModel.FailedResult(biggestThumbnailSize,
-				singleSubPath, fileHash, true, result.ErrorMessage!);
+				singleSubPath, fileHash, true, true, result.ErrorMessage!);
 		}
 
 		var service = new ResizeThumbnailFromSourceImageHelper(selectorStorage, logger);

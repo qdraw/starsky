@@ -61,7 +61,7 @@ public class NativePreviewThumbnailGenerator(
 		if ( !result.IsSuccess || result.ResultPath == null )
 		{
 			return ErrorGenerationResultModel.FailedResult(biggestThumbnailSize,
-				singleSubPath, fileHash, true, result.ErrorMessage);
+				singleSubPath, fileHash, true, result.ErrorLog, result.ErrorMessage);
 		}
 
 		var service = new ResizeThumbnailFromSourceImageHelper(selectorStorage, logger);

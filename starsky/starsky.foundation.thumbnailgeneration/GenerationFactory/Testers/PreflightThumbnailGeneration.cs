@@ -45,7 +45,7 @@ public class PreflightThumbnailGeneration(ISelectorStorage selectorStorage)
 		{
 			return ErrorGenerationResultModel.FailedResult(
 				ThumbnailSizes.GetLargeToSmallSizes(),
-				subPath, fileHash, false,
+				subPath, fileHash, false, true,
 				$"{NoCountErrorPrefix}{subPath}");
 		}
 
@@ -54,6 +54,7 @@ public class PreflightThumbnailGeneration(ISelectorStorage selectorStorage)
 			return ErrorGenerationResultModel.FailedResult(
 				ThumbnailSizes.GetLargeToSmallSizes(),
 				subPath, fileHash, false,
+				true,
 				$"{FormatUnknownPrefix}{subPath}");
 		}
 

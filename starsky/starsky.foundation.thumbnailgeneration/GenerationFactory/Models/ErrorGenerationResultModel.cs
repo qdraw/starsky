@@ -10,6 +10,7 @@ public static class ErrorGenerationResultModel
 	internal static GenerationResultModel FailedResult(ThumbnailSize size,
 		string subPath, string fileHash,
 		bool existsFile,
+		bool errorLog,
 		string errorMessage)
 	{
 		return new GenerationResultModel
@@ -18,6 +19,7 @@ public static class ErrorGenerationResultModel
 			FileHash = fileHash,
 			Success = false,
 			IsNotFound = !existsFile,
+			ErrorLog = errorLog,
 			ErrorMessage = errorMessage,
 			Size = size
 		};
@@ -26,10 +28,11 @@ public static class ErrorGenerationResultModel
 	internal static List<GenerationResultModel> FailedResult(List<ThumbnailSize> sizes,
 		string subPath, string fileHash,
 		bool existsFile,
+		bool errorLog,
 		string errorMessage)
 	{
 		return sizes.Select(size =>
-			FailedResult(size, subPath, fileHash, existsFile, errorMessage)
+			FailedResult(size, subPath, fileHash, existsFile, errorLog, errorMessage)
 		).ToList();
 	}
 }

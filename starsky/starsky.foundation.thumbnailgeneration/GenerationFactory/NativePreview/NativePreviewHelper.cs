@@ -35,6 +35,7 @@ public class NativePreviewHelper(
 			return new NativePreviewResult
 			{
 				IsSuccess = false,
+				ErrorLog = previewService.IsSupported(width),
 				ErrorMessage = !previewService.IsSupported()
 					? ErrorNativeServiceNotSupported
 					: ErrorFileDoesNotExist

@@ -18,13 +18,15 @@ public class LifetimeDiagnosticsService(IDiagnosticsService diagnosticsService, 
 		DateTime startTime)
 	{
 		var uptime = DateTime.UtcNow - startTime;
-		var minutes = Math.Round(uptime.TotalMinutes, 4);
+		var minutesOutput = Math.Round(uptime.TotalMinutes, 4)
+			.ToString(CultureInfo.InvariantCulture);
 
 		logger.LogInformation(
-			$"[LifetimeDiagnosticsService] Application stopping lifetime in minutes: {minutes}");
+			$"[LifetimeDiagnosticsService] Application stopping lifetime in minutes: " +
+			$"{minutesOutput}");
 		var item = await diagnosticsService.AddOrUpdateItem(
 			DiagnosticsType.ApplicationStoppingLifetimeInMinutes,
-			minutes.ToString(CultureInfo.InvariantCulture));
+			minutesOutput);
 		return item;
 	}
 
