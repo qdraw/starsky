@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Storage;
@@ -37,7 +38,7 @@ public sealed class StorageThumbnailFilesystemTest
 		var createNewImage = new CreateAnImage();
 
 		// first copy for parallel test
-		_thumbnailStorage.FileCopy(_fileName, "start_move_file");
+		RetryHelper.Do(CreateStartMoveFileAsync, TimeSpan.FromSeconds(1));
 
 		_thumbnailStorage.FileMove("start_move_file",
 			"StorageThumbnailFilesystemTest_FileMove.jpg");
@@ -54,6 +55,15 @@ public sealed class StorageThumbnailFilesystemTest
 
 		var createAnImage = new CreateAnImage();
 		Assert.IsNotNull(createAnImage);
+		return;
+
+		bool CreateStartMoveFileAsync()
+		{
+			// first copy for parallel test
+			createNewImage = new CreateAnImage();
+			_thumbnailStorage.FileCopy(_fileName, "start_move_file");
+			return true;
+		}
 	}
 
 	[TestMethod]
