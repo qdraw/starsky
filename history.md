@@ -42,7 +42,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## List of versions
 
 ## version 0.7.2 - _(Unreleased)_ - 2025-08-? {#v0.7.2}
-- nothing yet
+
+- [x] (Changed) _Back-end_ Thumbnail Generation logging improvements (PR #2267)
 
 ## version 0.7.1 - 2025-07-09 {#v0.7.1}
 
