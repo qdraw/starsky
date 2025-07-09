@@ -61,6 +61,7 @@ public static class SetupLogging
 		return
 		[
 			new KeyValuePair<string, object>(HostNameKey, Environment.MachineName),
+			// ASPNETCORE_ENVIRONMENT
 			new KeyValuePair<string, object>(DeploymentEnvironmentName,
 				appSettings.OpenTelemetry!.GetEnvironmentName()),
 			new KeyValuePair<string, object>(AppVersionName, appSettings.AppVersion),
@@ -68,7 +69,7 @@ public static class SetupLogging
 				appSettings.AppVersionBuildDateTime.ToString(
 					new CultureInfo("nl-NL"))),
 			new KeyValuePair<string, object>(FrameworkDescriptionName,
-				RuntimeInformation.FrameworkDescription)
+				RuntimeInformation.FrameworkDescription),
 		];
 	}
 }
