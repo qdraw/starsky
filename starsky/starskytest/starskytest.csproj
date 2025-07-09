@@ -21,14 +21,14 @@
     <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'"/>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'"/>
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.18" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.18" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
-        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.18"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.18"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1"/>
         <PackageReference Include="MSTest.TestAdapter" Version="3.9.3"/>
         <PackageReference Include="MSTest.TestFramework" Version="3.9.3"/>
-        <PackageReference Include="Verify.MSTest" Version="30.4.0" />
+        <PackageReference Include="Verify.MSTest" Version="30.4.0"/>
         <PackageReference Include="coverlet.collector" Version="6.0.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -111,10 +111,13 @@
             <DependentUpon>ImportTest_InMemoryDb.cs</DependentUpon>
         </None>
         <None Update="starsky.feature.import\Services\ImportTest.Preflight_SingleImage_ForceOverWrite_ColorClassOverwrite.received.txt">
-          <DependentUpon>ImportTest.cs</DependentUpon>
+            <DependentUpon>ImportTest.cs</DependentUpon>
         </None>
         <None Update="starsky.feature.import\Services\ImportTest.Preflight_SingleImage_Verify_filePath=-a330.arw.verified.txt">
-          <DependentUpon>ImportTest.cs</DependentUpon>
+            <DependentUpon>ImportTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.thumbnailgeneration\GenerationFactory\Shared\SharedGenerateTest.GenerateThumbnail_Verify.received.txt">
+            <DependentUpon>SharedGenerateTest.cs</DependentUpon>
         </None>
     </ItemGroup>
     <ItemGroup>
@@ -181,9 +184,9 @@
         <Content Include="FakeCreateAn\CreateAnImageWhiteJpeg\white.jpg">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <None Remove="FakeCreateAn\CreateAnImageA6700\a6700.jpg" />
+        <None Remove="FakeCreateAn\CreateAnImageA6700\a6700.jpg"/>
         <Content Include="FakeCreateAn\CreateAnImageA6700\a6700.jpg">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
 

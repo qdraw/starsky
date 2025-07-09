@@ -73,6 +73,8 @@ internal class ResizeThumbnailFromThumbnailImageHelper(
 			IsNotFound = false,
 			SizeInPixels = width,
 			Success = true,
+			ToGenerate = false,
+			ErrorLog = true,
 			SubPath = subPathReference!,
 			ImageFormat = imageFormat,
 			Size = ThumbnailNameHelper.GetSize(width)

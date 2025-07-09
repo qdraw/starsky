@@ -39,7 +39,7 @@ public class ThumbnailSocketServiceTests
 
 		var generateThumbnailResults = new List<GenerationResultModel>
 		{
-			new() { SubPath = "/test.jpg", Success = true }
+			new() { SubPath = "/test.jpg", Success = true, FileHash = "test" }
 		};
 
 		// Act
@@ -66,7 +66,7 @@ public class ThumbnailSocketServiceTests
 
 		var generateThumbnailResults = new List<GenerationResultModel>
 		{
-			new() { SubPath = "/test.jpg", Success = true }
+			new() { SubPath = "/test.jpg", Success = true, FileHash = "test" }
 		};
 
 		// Act
@@ -106,7 +106,7 @@ public class ThumbnailSocketServiceTests
 
 		var generateThumbnailResults = new List<GenerationResultModel>
 		{
-			new() { SubPath = "/test.jpg", Success = true }
+			new() { SubPath = "/test.jpg", Success = true, FileHash = "test" }
 		};
 
 		// Act
@@ -130,7 +130,12 @@ public class ThumbnailSocketServiceTests
 	public void WhichFilesNeedToBePushedForUpdate_DoesNotExistInFilesList()
 	{
 		var result = ThumbnailSocketService.WhichFilesNeedToBePushedForUpdates(
-			[new GenerationResultModel { SubPath = "/test.jpg", Success = true }],
+			[
+				new GenerationResultModel
+				{
+					SubPath = "/test.jpg", Success = true, FileHash = "test"
+				}
+			],
 			new List<FileIndexItem>());
 
 		Assert.AreEqual(0, result.Count);
@@ -140,7 +145,12 @@ public class ThumbnailSocketServiceTests
 	public void WhichFilesNeedToBePushedForUpdate_DeletedSoIgnored()
 	{
 		var result = ThumbnailSocketService.WhichFilesNeedToBePushedForUpdates(
-			[new GenerationResultModel { SubPath = "/test.jpg", Success = true }],
+			[
+				new GenerationResultModel
+				{
+					SubPath = "/test.jpg", Success = true, FileHash = "test"
+				}
+			],
 			new List<FileIndexItem>
 			{
 				new("/test.jpg")
@@ -158,7 +168,10 @@ public class ThumbnailSocketServiceTests
 	public void WhichFilesNeedToBePushedForUpdate_ShouldMap()
 	{
 		var result = ThumbnailSocketService.WhichFilesNeedToBePushedForUpdates(
-			new List<GenerationResultModel> { new() { SubPath = "/test.jpg", Success = true } },
+			new List<GenerationResultModel>
+			{
+				new() { SubPath = "/test.jpg", Success = true, FileHash = "test" }
+			},
 			new List<FileIndexItem> { new("/test.jpg") });
 
 		Assert.AreEqual(1, result.Count);

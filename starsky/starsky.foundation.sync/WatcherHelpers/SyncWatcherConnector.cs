@@ -26,13 +26,13 @@ namespace starsky.foundation.sync.WatcherHelpers;
 
 public sealed class SyncWatcherConnector
 {
-	private ISynchronize? _synchronize;
+	private readonly IServiceScope? _serviceScope;
 	private AppSettings? _appSettings;
 	private IWebSocketConnectionsService? _connectionsService;
-	private IQuery? _query;
 	private IWebLogger? _logger;
-	private readonly IServiceScope? _serviceScope;
 	private INotificationQuery? _notificationQuery;
+	private IQuery? _query;
+	private ISynchronize? _synchronize;
 
 	internal SyncWatcherConnector(AppSettings appSettings, ISynchronize synchronize,
 		IWebSocketConnectionsService connectionsService, IQuery query, IWebLogger logger,
@@ -53,10 +53,11 @@ public sealed class SyncWatcherConnector
 
 	internal bool InjectScopes()
 	{
-		if ( _serviceScope == null )
+		if ( _serviceScope?.ServiceProvider == null )
 		{
 			return false;
 		}
+
 		// ISynchronize is a scoped service
 		_synchronize = _serviceScope.ServiceProvider.GetRequiredService<ISynchronize>();
 		_appSettings = _serviceScope.ServiceProvider.GetRequiredService<AppSettings>();
@@ -84,7 +85,7 @@ public sealed class SyncWatcherConnector
 		}
 
 		if ( _synchronize == null || _logger == null || _appSettings == null ||
-			 _connectionsService == null || _query == null )
+		     _connectionsService == null || _query == null )
 		{
 			throw new ArgumentException(
 				"any of:  _synchronize, _logger, _appSettings, _connectionsService or" +
@@ -95,7 +96,7 @@ public sealed class SyncWatcherConnector
 	}
 
 	/// <summary>
-	/// Internal sync connector task
+	///     Internal sync connector task
 	/// </summary>
 	/// <param name="watcherOutput">data</param>
 	/// <returns>Task with data</returns>
@@ -115,12 +116,13 @@ public sealed class SyncWatcherConnector
 			var path = _appSettings!.FullPathStorageFolderToDatabaseStyle(fullFilePath);
 			await _synchronize!.Sync(path);
 
-			syncData.Add(new FileIndexItem(_appSettings.FullPathStorageFolderToDatabaseStyle(fullFilePath))
-			{
-				IsDirectory = true,
-				ImageFormat = ExtensionRolesHelper.ImageFormat.directory,
-				Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
-			});
+			syncData.Add(
+				new FileIndexItem(_appSettings.FullPathStorageFolderToDatabaseStyle(fullFilePath))
+				{
+					IsDirectory = true,
+					ImageFormat = ExtensionRolesHelper.ImageFormat.directory,
+					Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
+				});
 
 			// and now to-path sync
 			var pathToDatabaseStyle = _appSettings.FullPathStorageFolderToDatabaseStyle(toPath);
@@ -129,17 +131,18 @@ public sealed class SyncWatcherConnector
 		else
 		{
 			syncData =
-				await _synchronize!.Sync(_appSettings!.FullPathStorageFolderToDatabaseStyle(fullFilePath));
+				await _synchronize!.Sync(
+					_appSettings!.FullPathStorageFolderToDatabaseStyle(fullFilePath));
 		}
 
 		var filtered = FilterBefore(syncData);
 		if ( filtered.Count == 0 )
 		{
 			_logger.LogInformation($"[SyncWatcherConnector/EndOperation] " +
-								   $"f:{filtered.Count}/s:{syncData.Count} ~ skip: " +
-								   string.Join(", ",
-									   syncData.Select(p => p.FileName).ToArray()) + " ~ " +
-								   string.Join(", ", syncData.Select(p => p.Status).ToArray()));
+			                       $"f:{filtered.Count}/s:{syncData.Count} ~ skip: " +
+			                       string.Join(", ",
+				                       syncData.Select(p => p.FileName).ToArray()) + " ~ " +
+			                       string.Join(", ", syncData.Select(p => p.Status).ToArray()));
 			return syncData;
 		}
 
@@ -147,8 +150,8 @@ public sealed class SyncWatcherConnector
 
 		// And update the query Cache
 		_query!.CacheUpdateItem(filtered.Where(p => p.Status == FileIndexItem.ExifStatus.Ok ||
-													p.Status == FileIndexItem.ExifStatus
-														.Deleted).ToList());
+		                                            p.Status == FileIndexItem.ExifStatus
+			                                            .Deleted).ToList());
 
 		// remove files that are not in the index from cache
 		_query.RemoveCacheItem(filtered.Where(p => p.Status is
@@ -164,14 +167,14 @@ public sealed class SyncWatcherConnector
 	}
 
 	/// <summary>
-	/// Both websockets and NotificationAPI
-	/// update users who are active right now
+	///     Both websockets and NotificationAPI
+	///     update users who are active right now
 	/// </summary>
 	/// <param name="filtered">list of messages to push</param>
 	private async Task PushToSockets(List<FileIndexItem> filtered)
 	{
 		_logger!.LogInformation("[SyncWatcherConnector/Socket] " +
-								string.Join(", ", filtered.Select(p => p.FilePath).ToArray()));
+		                        string.Join(", ", filtered.Select(p => p.FilePath).ToArray()));
 
 		var webSocketResponse =
 			new ApiNotificationResponseModel<List<FileIndexItem>>(filtered,

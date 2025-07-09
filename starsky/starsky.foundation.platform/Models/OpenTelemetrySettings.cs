@@ -29,6 +29,10 @@ public class OpenTelemetrySettings
 	/// </summary>
 	public string? EnvironmentName { get; set; }
 
+	/// <summary>
+	/// Give back the EnvironmentName or if empty the ASPNETCORE_ENVIRONMENT variable
+	/// </summary>
+	/// <returns>EnvironmentName or if empty the ASPNETCORE_ENVIRONMENT variable</returns>
 	public string GetEnvironmentName()
 	{
 		return string.IsNullOrWhiteSpace(EnvironmentName)

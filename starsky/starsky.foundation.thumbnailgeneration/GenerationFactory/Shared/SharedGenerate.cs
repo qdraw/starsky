@@ -22,6 +22,9 @@ public class SharedGenerate(ISelectorStorage selectorStorage, IWebLogger logger)
 		ThumbnailSize biggestThumbnailSize, string singleSubPath, string fileHash,
 		ThumbnailImageFormat imageFormat);
 
+	internal const string PrefixGenerateThumbnailErrorMessage =
+		"[SharedGenerate] ResizeThumbnailFromSourceImage failed for ";
+
 	private readonly ResizeThumbnailFromThumbnailImageHelper _resizeThumbnail =
 		new(selectorStorage, logger);
 
@@ -51,13 +54,18 @@ public class SharedGenerate(ISelectorStorage selectorStorage, IWebLogger logger)
 
 		if ( !largeImageResult.Success )
 		{
-			logger.LogError(
-				$"[SharedGenerate] ResizeThumbnailFromSourceImage failed for " +
-				$"S: {singleSubPath} - H: {fileHash} " +
-				$"SI: {toGenerateSize} E: {largeImageResult.ErrorMessage} ");
+			if ( largeImageResult.ErrorLog )
+			{
+				// when not supported it's not very useful to log as error
+				logger.LogError(
+					PrefixGenerateThumbnailErrorMessage +
+					$"S: {singleSubPath} - H: {fileHash} " +
+					$"SI: {toGenerateSize} E: {largeImageResult.ErrorMessage} ");
+			}
 
 			var failedResults = UpdateAllSizesToFailure(
 				thumbnailSizes, fileHash, singleSubPath, imageFormat,
+				largeImageResult.ErrorLog,
 				largeImageResult.ErrorMessage);
 			return preflightResult
 				.AddOrUpdateRange(failedResults)
@@ -79,6 +87,7 @@ public class SharedGenerate(ISelectorStorage selectorStorage, IWebLogger logger)
 	/// <param name="thumbnailOutputHash">which item</param>
 	/// <param name="subPathReference">the path in subpath style</param>
 	/// <param name="imageFormat">jpg,png</param>
+	/// <param name="errorLog"></param>
 	/// <param name="errorMessage">why it failed</param>
 	/// <returns></returns>
 	private static IEnumerable<GenerationResultModel> UpdateAllSizesToFailure(
@@ -86,6 +95,7 @@ public class SharedGenerate(ISelectorStorage selectorStorage, IWebLogger logger)
 		string thumbnailOutputHash,
 		string subPathReference,
 		ThumbnailImageFormat imageFormat,
+		bool errorLog,
 		string? errorMessage)
 	{
 		return thumbnailSizes.Select(size => new GenerationResultModel
@@ -97,7 +107,9 @@ public class SharedGenerate(ISelectorStorage selectorStorage, IWebLogger logger)
 			SubPath = subPathReference,
 			ImageFormat = imageFormat,
 			Size = size,
-			ErrorMessage = errorMessage
+			ErrorLog = errorLog,
+			ErrorMessage = errorMessage,
+			ToGenerate = false
 		});
 	}
 }

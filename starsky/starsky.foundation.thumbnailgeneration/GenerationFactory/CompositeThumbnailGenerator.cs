@@ -43,7 +43,8 @@ public class CompositeThumbnailGenerator(List<IThumbnailGenerator> generators, I
 		if ( compositeResults.Count == 0 )
 		{
 			return ErrorGenerationResultModel.FailedResult(thumbnailSizes, singleSubPath,
-				string.Empty, true, "CompositeThumbnailGenerator failed");
+				string.Empty, true,
+				imageFormat, true, "CompositeThumbnailGenerator failed");
 		}
 
 		return compositeResults;

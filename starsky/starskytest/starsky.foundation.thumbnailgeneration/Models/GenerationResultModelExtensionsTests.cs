@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.thumbnailgeneration.Models;
 
@@ -26,7 +27,17 @@ public class GenerationResultModelExtensionsTests
 		List<GenerationResultModel>? compositeResults = null;
 		var result = new List<GenerationResultModel>
 		{
-			new() { FileHash = "hash1", Size = ThumbnailSize.TinyIcon }
+			new()
+			{
+				FileHash = "hash1",
+				Size = ThumbnailSize.TinyIcon,
+				SubPath = "/test.jpg",
+				Success = false,
+				ToGenerate = false,
+				IsNotFound = false,
+				ErrorLog = false,
+				ImageFormat = ThumbnailImageFormat.unknown
+			}
 		};
 
 		var updatedResults = compositeResults.AddOrUpdateRange(result);

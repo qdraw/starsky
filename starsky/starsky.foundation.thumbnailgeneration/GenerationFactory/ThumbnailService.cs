@@ -58,7 +58,7 @@ public class ThumbnailService(
 		{
 			return ErrorGenerationResultModel
 				.FailedResult(sizes, fileOrFolderPath, string.Empty,
-					false, "File is deleted");
+					false, ThumbnailImageFormat.unknown, true, "File is deleted");
 		}
 
 		var resultChunkList = await toAddFilePaths.ForEachAsync(
@@ -96,7 +96,8 @@ public class ThumbnailService(
 		if ( !success || toAddFilePaths.Count != 1 )
 		{
 			return ErrorGenerationResultModel
-				.FailedResult(sizes, subPath, fileHash, false, "File is deleted");
+				.FailedResult(sizes, subPath, fileHash, false,
+					ThumbnailImageFormat.unknown, true, "File is deleted");
 		}
 
 		var generationResults = ( await GenerateThumbnailAsync(subPath, fileHash, sizes) ).ToList();
@@ -115,7 +116,8 @@ public class ThumbnailService(
 		if ( !success || toAddFilePaths.Count != 1 )
 		{
 			return ( null, ErrorGenerationResultModel
-				.FailedResult(size, subPath, fileHash, false, "File is deleted") );
+				.FailedResult(size, subPath, fileHash, false, imageFormat, true,
+					"File is deleted") );
 		}
 
 		var (stream, status) = await GenerateSingleThumbnailAsync(subPath, imageFormat, size);
@@ -176,7 +178,7 @@ public class ThumbnailService(
 		{
 			return ( null, ErrorGenerationResultModel
 				.FailedResult(size, singleSubPath, fileHash,
-					true, "Invalid fileHash") );
+					true, imageFormat, true, "Invalid fileHash") );
 		}
 
 		var generationResult =

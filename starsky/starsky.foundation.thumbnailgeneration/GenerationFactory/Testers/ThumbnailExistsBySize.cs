@@ -45,6 +45,7 @@ public class ThumbnailExistsBySize(IStorage thumbnailStorage)
 			ToGenerate = toGenerate,
 			IsNotFound = false,
 			ImageFormat = imageFormat,
+			ErrorLog = true,
 			ErrorMessage = string.Empty
 		};
 	}

@@ -67,9 +67,35 @@ public class CompositeThumbnailGeneratorTests
 		const ThumbnailImageFormat imageFormat = ThumbnailImageFormat.jpg;
 		var thumbnailSizes = new List<ThumbnailSize> { ThumbnailSize.Small };
 
-		var firstResults = new List<GenerationResultModel> { new() { Success = firstSuccess } };
+		var firstResults = new List<GenerationResultModel>
+		{
+			new()
+			{
+				Success = firstSuccess,
+				FileHash = "test",
+				SubPath = "/test.jpg",
+				ToGenerate = false,
+				IsNotFound = false,
+				ErrorLog = false,
+				Size = ThumbnailSize.Unknown,
+				ImageFormat = ThumbnailImageFormat.unknown
+			}
+		};
 
-		var secondResults = new List<GenerationResultModel> { new() { Success = secondSuccess } };
+		var secondResults = new List<GenerationResultModel>
+		{
+			new()
+			{
+				Success = secondSuccess,
+				FileHash = "test",
+				SubPath = "/test.jpg",
+				ToGenerate = false,
+				IsNotFound = false,
+				ErrorLog = false,
+				Size = ThumbnailSize.Unknown,
+				ImageFormat = ThumbnailImageFormat.unknown
+			}
+		};
 
 		_generatorMocks[0].SetResults(firstResults);
 		_generatorMocks[1].SetResults(secondResults);
@@ -96,7 +122,20 @@ public class CompositeThumbnailGeneratorTests
 
 		_generatorMocks[0].SetException(new Exception("Test exception"));
 
-		var secondResults = new List<GenerationResultModel> { new() { Success = secondSuccess } };
+		var secondResults = new List<GenerationResultModel>
+		{
+			new()
+			{
+				Success = secondSuccess,
+				FileHash = "test",
+				SubPath = "/test.jpg",
+				ToGenerate = false,
+				IsNotFound = false,
+				ErrorLog = false,
+				Size = ThumbnailSize.Unknown,
+				ImageFormat = ThumbnailImageFormat.unknown
+			}
+		};
 
 		_generatorMocks[1].SetResults(secondResults);
 

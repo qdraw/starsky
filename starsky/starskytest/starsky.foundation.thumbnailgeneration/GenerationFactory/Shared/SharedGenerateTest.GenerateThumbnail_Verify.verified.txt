@@ -1,0 +1,13 @@
+﻿[
+  {
+    FileHash: test-hash,
+    SubPath: /test.jpg,
+    Success: false,
+    ToGenerate: false,
+    IsNotFound: false,
+    ErrorLog: true,
+    ErrorMessage: Some error occurred,
+    Size: Large,
+    SizeInPixels: 1000
+  }
+]
