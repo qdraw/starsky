@@ -19,7 +19,7 @@ public sealed class StorageSubPathFilesystemTest
 {
 	private readonly CreateAnImage _newImage;
 	private readonly StorageSubPathFilesystem _storage;
-	private readonly string _fileName;
+	private string _fileName;
 
 	public StorageSubPathFilesystemTest()
 	{
@@ -165,7 +165,7 @@ public sealed class StorageSubPathFilesystemTest
 	[TestMethod]
 	public void FolderDelete()
 	{
-		var folderDeleteName = "temp_folder_delete";
+		const string folderDeleteName = "temp_folder_delete";
 		_storage.CreateDirectory($"/{folderDeleteName}");
 
 		_storage.FolderDelete($"/{folderDeleteName}");
@@ -254,14 +254,20 @@ public sealed class StorageSubPathFilesystemTest
 	}
 	
 	[TestMethod]
-	public void IsFolderOrFile_Exists()
+	public void SubPath_IsFolderOrFile_Exists()
 	{
+		// sometimes this test is flaky, it should have the file there
+		if ( !File.Exists(new CreateAnImage().FullFilePath) )
+		{
+			_fileName = new CreateAnImage().FileName;
+		}
+		
 		var result = _storage.IsFolderOrFile(_fileName);
 		Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File, result);
 	}
 	
 	[TestMethod]
-	public void IsFolderOrFile_NotFound()
+	public void SubPath_IsFolderOrFile_NotFound()
 	{
 		var result = _storage.IsFolderOrFile("not-found");
 		Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.Deleted, result);
