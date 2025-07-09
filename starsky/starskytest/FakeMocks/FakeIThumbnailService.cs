@@ -79,7 +79,10 @@ public class FakeIThumbnailService : IThumbnailService
 		if ( items == null )
 		{
 			return Task.FromResult(
-				new List<GenerationResultModel> { new() { SubPath = subPath, Success = true } });
+				new List<GenerationResultModel>
+				{
+					new() { SubPath = subPath, Success = true, FileHash = "test" }
+				});
 		}
 
 		var name = Base32.Encode(Encoding.UTF8.GetBytes(subPath));
@@ -89,7 +92,10 @@ public class FakeIThumbnailService : IThumbnailService
 		var resultModel = new List<GenerationResultModel>();
 		foreach ( var item in items )
 		{
-			resultModel.Add(new GenerationResultModel { SubPath = item, Success = true });
+			resultModel.Add(new GenerationResultModel
+			{
+				SubPath = item, Success = true, FileHash = "test"
+			});
 		}
 
 		return Task.FromResult(resultModel);

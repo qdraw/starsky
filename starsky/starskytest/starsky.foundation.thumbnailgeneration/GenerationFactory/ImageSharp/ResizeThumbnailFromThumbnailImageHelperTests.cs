@@ -112,7 +112,17 @@ public class ResizeThumbnailFromThumbnailImageHelperTests
 		// Arrange
 		var logger = new FakeIWebLogger();
 		var helper = new ResizeThumbnailFromThumbnailImageHelper(new FakeSelectorStorage(), logger);
-		var result = new GenerationResultModel();
+		var result = new GenerationResultModel
+		{
+			FileHash = "test",
+			SubPath = "test.jpg",
+			Success = false,
+			ToGenerate = false,
+			IsNotFound = false,
+			ErrorLog = false,
+			Size = ThumbnailSize.Unknown,
+			ImageFormat = ThumbnailImageFormat.unknown
+		};
 		var exception = new Exception("Image cannot be loaded: corrupted file");
 		const string fileHash = "testFileHash";
 		const string subPathReference = "testSubPath";

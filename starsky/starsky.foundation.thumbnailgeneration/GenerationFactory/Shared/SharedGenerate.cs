@@ -22,6 +22,9 @@ public class SharedGenerate(ISelectorStorage selectorStorage, IWebLogger logger)
 		ThumbnailSize biggestThumbnailSize, string singleSubPath, string fileHash,
 		ThumbnailImageFormat imageFormat);
 
+	internal const string PrefixGenerateThumbnailErrorMessage =
+		"[SharedGenerate] ResizeThumbnailFromSourceImage failed for ";
+
 	private readonly ResizeThumbnailFromThumbnailImageHelper _resizeThumbnail =
 		new(selectorStorage, logger);
 
@@ -55,7 +58,7 @@ public class SharedGenerate(ISelectorStorage selectorStorage, IWebLogger logger)
 			{
 				// when not supported it's not very useful to log as error
 				logger.LogError(
-					$"[SharedGenerate] ResizeThumbnailFromSourceImage failed for " +
+					PrefixGenerateThumbnailErrorMessage +
 					$"S: {singleSubPath} - H: {fileHash} " +
 					$"SI: {toGenerateSize} E: {largeImageResult.ErrorMessage} ");
 			}
@@ -101,7 +104,9 @@ public class SharedGenerate(ISelectorStorage selectorStorage, IWebLogger logger)
 			SubPath = subPathReference,
 			ImageFormat = imageFormat,
 			Size = size,
-			ErrorMessage = errorMessage
+			ErrorLog = true,
+			ErrorMessage = errorMessage,
+			ToGenerate = false
 		});
 	}
 }

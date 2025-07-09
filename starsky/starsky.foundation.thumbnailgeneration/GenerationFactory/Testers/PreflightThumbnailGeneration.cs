@@ -45,7 +45,7 @@ public class PreflightThumbnailGeneration(ISelectorStorage selectorStorage)
 		{
 			return ErrorGenerationResultModel.FailedResult(
 				ThumbnailSizes.GetLargeToSmallSizes(),
-				subPath, fileHash, false, true,
+				subPath, fileHash, false, imageFormat, true,
 				$"{NoCountErrorPrefix}{subPath}");
 		}
 
@@ -53,7 +53,7 @@ public class PreflightThumbnailGeneration(ISelectorStorage selectorStorage)
 		{
 			return ErrorGenerationResultModel.FailedResult(
 				ThumbnailSizes.GetLargeToSmallSizes(),
-				subPath, fileHash, false,
+				subPath, fileHash, false, imageFormat,
 				true,
 				$"{FormatUnknownPrefix}{subPath}");
 		}
@@ -72,7 +72,9 @@ public class PreflightThumbnailGeneration(ISelectorStorage selectorStorage)
 					IsNotFound = !existsFile,
 					ErrorMessage = !extensionSupported ? "not supported" : "File is not found",
 					Size = size,
-					ImageFormat = imageFormat
+					ErrorLog = true,
+					ImageFormat = imageFormat,
+					ToGenerate = false
 				}).ToList();
 		}
 
@@ -88,7 +90,9 @@ public class PreflightThumbnailGeneration(ISelectorStorage selectorStorage)
 					IsNotFound = false,
 					ErrorMessage = "File already failed before",
 					Size = size,
-					ImageFormat = imageFormat
+					ErrorLog = false,
+					ImageFormat = imageFormat,
+					ToGenerate = false
 				}).ToList();
 		}
 

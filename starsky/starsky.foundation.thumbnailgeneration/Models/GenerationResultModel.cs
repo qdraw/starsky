@@ -6,7 +6,7 @@ namespace starsky.foundation.thumbnailgeneration.Models;
 
 public class GenerationResultModel
 {
-	public string FileHash { get; set; } = string.Empty;
+	public required string FileHash { get; set; } = string.Empty;
 	public string SubPath { get; set; } = string.Empty;
 	public bool Success { get; set; }
 

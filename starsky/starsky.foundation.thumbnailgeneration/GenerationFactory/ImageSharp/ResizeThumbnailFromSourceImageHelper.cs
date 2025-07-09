@@ -63,9 +63,11 @@ internal class ResizeThumbnailFromSourceImageHelper(
 			IsNotFound = false,
 			SizeInPixels = width,
 			Success = true,
+			ToGenerate = false,
 			SubPath = subPath,
 			ImageFormat = imageFormat,
-			Size = ThumbnailNameHelper.GetSize(width)
+			Size = ThumbnailNameHelper.GetSize(width),
+			ErrorLog = true
 		};
 
 		var fileHashWithExtension = ThumbnailNameHelper.Combine(thumbnailOutputHash,
