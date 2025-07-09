@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,9 +19,10 @@ public class NativePreviewThumbnailGeneratorTests
 
 	public NativePreviewThumbnailGeneratorTests()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" },
-			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+		var storage = new FakeIStorage(["/"],
+			["/test.jpg", "/corrupted.jpg"],
+			new List<byte[]> { CreateAnImage.Bytes.ToArray(), 
+				Array.Empty<byte>() });
 
 		var selectorStorage = new FakeSelectorStorage(storage);
 		var imageNativeService = new FakeIPreviewImageNativeService(storage);
@@ -80,6 +82,28 @@ public class NativePreviewThumbnailGeneratorTests
 		foreach ( var result in results )
 		{
 			Assert.IsTrue(result.Success);
+		}
+	}
+	
+	[TestMethod]
+	public async Task GenerateThumbnail_ShouldReturnResults_Corrupted_Image()
+	{
+		// Arrange
+		const string singleSubPath = "/corrupted.jpg";
+		const string fileHash = "/test-hash";
+		const ThumbnailImageFormat imageFormat = ThumbnailImageFormat.jpg;
+		var thumbnailSizes = new List<ThumbnailSize> { ThumbnailSize.Small, ThumbnailSize.Large };
+
+		// Act
+		var results =
+			await _generator.GenerateThumbnail(singleSubPath, fileHash, imageFormat,
+				thumbnailSizes);
+
+		// Assert
+		Assert.IsNotNull(results);
+		foreach ( var result in results )
+		{
+			Assert.IsFalse(result.Success);
 		}
 	}
 }
