@@ -58,28 +58,21 @@ public sealed class SyncWatcherConnector
 			return false;
 		}
 
-		try
-		{
-			// ISynchronize is a scoped service
-			_synchronize = _serviceScope.ServiceProvider.GetRequiredService<ISynchronize>();
-			_appSettings = _serviceScope.ServiceProvider.GetRequiredService<AppSettings>();
-			_connectionsService = _serviceScope.ServiceProvider
-				.GetRequiredService<IWebSocketConnectionsService>();
-			var query = _serviceScope.ServiceProvider.GetRequiredService<IQuery>();
-			_logger = _serviceScope.ServiceProvider.GetRequiredService<IWebLogger>();
-			var memoryCache = _serviceScope.ServiceProvider.GetService<IMemoryCache>();
-			var serviceScopeFactory =
-				_serviceScope.ServiceProvider.GetService<IServiceScopeFactory>();
-			_query = new QueryFactory(new SetupDatabaseTypes(_appSettings), query,
-				memoryCache, _appSettings, serviceScopeFactory, _logger).Query();
-			_notificationQuery = _serviceScope.ServiceProvider
-				.GetService<INotificationQuery>();
-			return true;
-		}
-		catch ( ObjectDisposedException )
-		{
-			return false;
-		}
+		// ISynchronize is a scoped service
+		_synchronize = _serviceScope.ServiceProvider.GetRequiredService<ISynchronize>();
+		_appSettings = _serviceScope.ServiceProvider.GetRequiredService<AppSettings>();
+		_connectionsService = _serviceScope.ServiceProvider
+			.GetRequiredService<IWebSocketConnectionsService>();
+		var query = _serviceScope.ServiceProvider.GetRequiredService<IQuery>();
+		_logger = _serviceScope.ServiceProvider.GetRequiredService<IWebLogger>();
+		var memoryCache = _serviceScope.ServiceProvider.GetService<IMemoryCache>();
+		var serviceScopeFactory =
+			_serviceScope.ServiceProvider.GetService<IServiceScopeFactory>();
+		_query = new QueryFactory(new SetupDatabaseTypes(_appSettings), query,
+			memoryCache, _appSettings, serviceScopeFactory, _logger).Query();
+		_notificationQuery = _serviceScope.ServiceProvider
+			.GetService<INotificationQuery>();
+		return true;
 	}
 
 	public Task<List<FileIndexItem>> Sync(
