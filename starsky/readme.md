@@ -42,7 +42,7 @@ to compile the application for development
 git clone "https://github.com/qdraw/starsky.git"
 ```
 
-2. Get the `dotnet` 8.0.411 SDK. To get the 'Build apps - SDK' .NET Core
+2. Get the `dotnet` 8.0.412 SDK. To get the 'Build apps - SDK' .NET Core
    from https://www.microsoft.com/net/download or https://versionsof.net/
 3. Get a recent version of node.js (20.x or newer)
 
