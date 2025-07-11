@@ -36,6 +36,11 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		///     Extension: .meta.json
 		/// </summary>
 		meta_json = 31,
+		
+		/// <summary>
+		/// Extension: .import.json
+		/// </summary>
+		import_json = 32,
 
 		// documents
 		gpx = 40,
@@ -521,89 +526,48 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 	/// <returns>imageFormat enum</returns>
 	public static ImageFormat GetImageFormat(byte[] bytes)
 	{
+		if (bytes.Length == 0)
+		{
+			return ImageFormat.unknown;
+		}
+
 		// see http://web.archive.org/web/20150524232918/http://www.mikekunz.com/image_file_header.html
 		// on posix: 'od -t x1 -N 10 file.mp4'  
-		var bmp = Encoding.ASCII.GetBytes("BM"); // BMP
-		var gif = Encoding.ASCII.GetBytes("GIF"); // GIF
-		var png = new byte[] { 137, 80, 78, 71 }; // PNG
-		var pdf = new byte[] { 37, 80, 68, 70, 45 }; // pdf
-
-		if ( bmp.SequenceEqual(bytes.Take(bmp.Length)) )
+		var formatMapping = new Dictionary<byte[], ImageFormat>
 		{
-			return ImageFormat.bmp;
-		}
+			{ "BM"u8.ToArray(), ImageFormat.bmp },
+			{ "GIF"u8.ToArray(), ImageFormat.gif },
+			{ [137, 80, 78, 71], ImageFormat.png },
+			{ "%PDF-"u8.ToArray(), ImageFormat.pdf }
+		};
 
-		if ( gif.SequenceEqual(bytes.Take(gif.Length)) )
+		var matchedFormats = formatMapping
+			.Where(mapping => mapping.Key.SequenceEqual(bytes.Take(mapping.Key.Length)))
+			.Select(mapping => mapping.Value)
+			.ToList();
+
+		if (matchedFormats.Count == 1 )
 		{
-			return ImageFormat.gif;
+			return matchedFormats[0]; // Return the first match or handle multiple matches as needed
 		}
-
-		if ( png.SequenceEqual(bytes.Take(png.Length)) )
-		{
-			return ImageFormat.png;
-		}
-
-		if ( GetImageFormatTiff(bytes) != null )
-		{
-			return ImageFormat.tiff;
-		}
-
-		if ( GetImageFormatJpeg(bytes) != null )
-		{
-			return ImageFormat.jpg;
-		}
-
-		if ( GetImageFormatXmp(bytes) != null )
-		{
-			return ImageFormat.xmp;
-		}
-
-		if ( GetImageFormatGpx(bytes) != null )
-		{
-			return ImageFormat.gpx;
-		}
-
-		if ( GetImageFormatMpeg4(bytes) != null )
-		{
-			return ImageFormat.mp4;
-		}
-
-		if ( GetImageFormatMJpegFormat(bytes) != null )
-		{
-			return ImageFormat.mjpeg;
-		}
-
-		if ( GetImageFormatMtsFormat(bytes) != null )
-		{
-			return ImageFormat.mts;
-		}
-
-		if ( pdf.SequenceEqual(bytes.Take(pdf.Length)) )
-		{
-			return ImageFormat.pdf;
-		}
-
-		if ( GetImageFormatZip(bytes) != null )
-		{
-			return ImageFormat.zip;
-		}
-
-		if ( GetImageFormatMetaJson(bytes) != null )
-		{
-			return ImageFormat.meta_json;
-		}
-
-		if ( GetImageFormatMetaWebp(bytes) != null )
-		{
-			return ImageFormat.webp;
-		}
-
-		if ( GetImageFormatPsd(bytes) != null )
-		{
-			return ImageFormat.psd;
-		}
-
-		return ImageFormat.unknown;
+		
+		return GetImageFormatFromHelpers(bytes) ?? ImageFormat.unknown;
+	}
+	
+	private static ImageFormat? GetImageFormatFromHelpers(byte[] bytes)
+	{
+		return GetImageFormatTiff(bytes) ??
+		       GetImageFormatJpeg(bytes) ??
+		       GetImageFormatXmp(bytes) ??
+		       GetImageFormatGpx(bytes) ??
+		       GetImageFormatMpeg4(bytes) ??
+		       GetImageFormatMJpegFormat(bytes) ??
+		       GetImageFormatMtsFormat(bytes) ??
+		       GetImageFormatZip(bytes) ??
+		       GetImageFormatMetaJson(bytes) ??
+		       GetImageFormatImportJson(bytes) ??
+		       GetImageFormatMetaWebp(bytes) ??
+		       GetImageFormatPsd(bytes);
 	}
 
 	private static ImageFormat? GetImageFormatPsd(byte[] bytes)
@@ -636,32 +600,33 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 
 	private static ImageFormat? GetImageFormatMetaJson(byte[] bytes)
 	{
-		var metaJsonUnix = new byte[]
-		{
-			123, 10, 32, 32, 34, 36, 105, 100, 34, 58, 32, 34, 104, 116, 116, 112, 115, 58, 47,
-			47, 100, 111, 99, 115, 46, 113, 100, 114, 97, 119, 46, 110, 108, 47, 115, 99, 104,
-			101, 109, 97, 47, 109, 101, 116, 97, 45, 100, 97, 116, 97, 45, 99, 111, 110, 116,
-			97, 105, 110, 101, 114, 46, 106, 115, 111, 110, 34, 44
-		};
+		var metaJsonUnix =
+			"{\n  \"$id\": \"https://docs.qdraw.nl/schema/meta-data-container.json\","u8.ToArray();
+		var metaJsonWindows =
+			"{\r\n  \"$id\": \"https://docs.qdraw.nl/schema/meta-data-container.json\""u8.ToArray();
 		// or : { \n "$id": "https://docs.qdraw.nl/schema/meta-data-container.json",
 
-		var metaJsonWindows = new byte[]
-		{
-			// 13 is CR
-			123, 13, 10, 32, 32, 34, 36, 105, 100, 34, 58, 32, 34, 104, 116, 116, 112, 115, 58, 47,
-			47, 100, 111, 99, 115, 46, 113, 100, 114, 97, 119, 46, 110, 108, 47, 115, 99, 104, 101,
-			109, 97, 47, 109, 101, 116, 97, 45, 100, 97, 116, 97, 45, 99, 111, 110, 116, 97, 105,
-			110, 101, 114, 46, 106, 115, 111, 110, 34
-		};
-
-		if ( metaJsonUnix.SequenceEqual(bytes.Take(metaJsonUnix.Length)) )
+		if ( metaJsonUnix.SequenceEqual(bytes.Take(metaJsonUnix.Length)) ||
+		     metaJsonWindows.SequenceEqual(bytes.Take(metaJsonWindows.Length)) )
 		{
 			return ImageFormat.meta_json;
 		}
 
-		if ( metaJsonWindows.SequenceEqual(bytes.Take(metaJsonWindows.Length)) )
+		return null;
+	}
+	
+	private static ImageFormat? GetImageFormatImportJson(byte[] bytes)
+	{
+		var metaJsonUnix =
+			"{\n  \"$id\": \"https://docs.qdraw.nl/schema/import-data-container.json\","u8.ToArray();
+		var metaJsonWindows =
+			"{\r\n  \"$id\": \"https://docs.qdraw.nl/schema/import-data-container.json\""u8.ToArray();
+		// or : { \n "$id": "https://docs.qdraw.nl/schema/import-data-container.json",
+
+		if ( metaJsonUnix.SequenceEqual(bytes.Take(metaJsonUnix.Length)) ||
+		     metaJsonWindows.SequenceEqual(bytes.Take(metaJsonWindows.Length)) )
 		{
-			return ImageFormat.meta_json;
+			return ImageFormat.import_json;
 		}
 
 		return null;
@@ -711,7 +676,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 
 	private static ImageFormat? GetImageFormatMpeg4(byte[] bytes)
 	{
-		var fTypMp4 = new byte[] { 102, 116, 121, 112 }; //  00  00  00  [skip this byte]
+		var fTypMp4 = "ftyp"u8.ToArray(); //  00  00  00  [skip this byte]
 		// 66  74  79  70 QuickTime Container 3GG, 3GP, 3G2 	FLV
 
 		if ( fTypMp4.SequenceEqual(bytes.Skip(4).Take(fTypMp4.Length)) )
@@ -719,10 +684,10 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			return ImageFormat.mp4;
 		}
 
-		var fTypIsoM = new byte[] { 102, 116, 121, 112, 105, 115, 111, 109 };
+		var fTypIsoM = "ftypisom"u8.ToArray();
 		if ( fTypIsoM.SequenceEqual(bytes.Take(fTypIsoM.Length)) )
 		{
-			return ImageFormat.xmp;
+			return ImageFormat.mp4;
 		}
 
 		return null;
@@ -730,7 +695,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 
 	private static ImageFormat? GetImageFormatMJpegFormat(byte[] bytes)
 	{
-		var mjpegVideoFormat = new byte[] { 112, 110, 111, 116 };
+		var mjpegVideoFormat = "pnot"u8.ToArray();
 		if ( mjpegVideoFormat.SequenceEqual(bytes.Skip(4).Take(mjpegVideoFormat.Length)) )
 		{
 			return ImageFormat.mjpeg;
@@ -808,8 +773,8 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 
 	private static ImageFormat? GetImageFormatXmp(byte[] bytes)
 	{
-		var xmp = Encoding.ASCII.GetBytes("<x:xmpmeta"); // xmp
-		var xmp2 = Encoding.ASCII.GetBytes("<?xpacket"); // xmp
+		var xmp = "<x:xmpmeta"u8.ToArray(); // xmp
+		var xmp2 = "<?xpacket"u8.ToArray(); // xmp
 
 		if ( xmp.SequenceEqual(bytes.Take(xmp.Length)) )
 		{
