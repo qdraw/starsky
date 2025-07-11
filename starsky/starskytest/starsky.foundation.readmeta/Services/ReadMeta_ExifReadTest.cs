@@ -541,9 +541,10 @@ public sealed class ExifReadTest
 		var fakeStorage = new FakeIStorage(new List<string> { "/" },
 			new List<string> { "/test.jpg" }, new List<byte[]> { newImage });
 
+		var logger = new FakeIWebLogger();
 		var item =
 			new ReadMetaExif(fakeStorage, new AppSettings { Verbose = true },
-				new FakeIWebLogger()).ReadExifFromFile("/test.jpg");
+				logger).ReadExifFromFile("/test.jpg");
 		Assert.AreEqual("NLD", item.LocationCountryCode);
 	}
 
