@@ -106,7 +106,8 @@ public sealed class HttpClientHelper : IHttpClientHelper
 		}
 		catch ( Exception exception )
 		{
-			_logger.LogError("[ReadString] HttpClientHelper > Exception ", exception);
+			_logger.LogError($"[ReadString] HttpClientHelper > Exception {exception.Message}",
+				exception);
 			return new KeyValuePair<bool, string>(false, exception.Message);
 		}
 	}
