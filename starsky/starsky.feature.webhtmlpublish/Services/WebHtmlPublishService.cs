@@ -331,12 +331,13 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 			}
 			catch ( AggregateException e )
 			{
-				_logger.LogError(
-					$"[ResizerLocal] Skip due errors: (catch-ed exception) {item.FilePath} {item.FileHash}");
-				foreach ( var exception in e.InnerExceptions )
-				{
-					_logger.LogError("[ResizerLocal] " + exception.Message, exception);
-				}
+				var errorMessage =
+					$"[WebHtmlPublishService/ResizerLocal] Skip due errors: (catch-ed exception) {item.FilePath} {item.FileHash} - ";
+				errorMessage = e.InnerExceptions.Aggregate(errorMessage,
+					(current, exception) =>
+						current +
+						$" {exception.Message} {exception.InnerException?.Message} {exception.GetType().Name}");
+				_logger.LogError(errorMessage);
 			}
 		}
 
