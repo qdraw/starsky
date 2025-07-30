@@ -8,7 +8,6 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
-using starsky.foundation.database.Import;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Thumbnails;
 using starsky.foundation.platform.Thumbnails;
