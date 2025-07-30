@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
+import getTextLength from "./get-text-length";
 import { LimitLength } from "./limit-length";
 
 interface IFormControlProps {
@@ -20,10 +21,7 @@ interface IFormControlProps {
 
 const FormControl: React.FunctionComponent<IFormControlProps> = ({ onBlur, ...props }) => {
   const maxlength = props.maxlength ?? 255;
-
-  const [childLength, setChildLength] = useState(
-    props.children?.toString().length ? props.children?.toString().length : 0
-  );
+  const [childLength, setChildLength] = useState(getTextLength(props.children));
 
   // content
   const settings = useGlobalSettings();

@@ -108,7 +108,7 @@ public class ThumbnailQuery : IThumbnailQuery
 				return await RenameInternalAsync(new InjectServiceScope(_scopeFactory).Context(),
 					beforeFileHash, newFileHash);
 			}
-			catch ( DbUpdateConcurrencyException concurrencyException)
+			catch ( DbUpdateConcurrencyException concurrencyException )
 			{
 				return await SolveDbUpdateConcurrencyException(concurrencyException);
 			}
@@ -117,26 +117,6 @@ public class ThumbnailQuery : IThumbnailQuery
 		{
 			return await SolveDbUpdateConcurrencyException(concurrencyException);
 		}
-	}
-
-	private async Task<bool> SolveDbUpdateConcurrencyException(
-		DbUpdateConcurrencyException concurrencyException)
-	{
-		_logger.LogInformation("[ThumbnailQuery] try to fix DbUpdateConcurrencyException",
-			concurrencyException);
-		SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
-		try
-		{
-			await _context.SaveChangesAsync();
-		}
-		catch ( DbUpdateConcurrencyException e )
-		{
-			_logger.LogInformation(e,
-				"[ThumbnailQuery] save failed after DbUpdateConcurrencyException");
-			return false;
-		}
-
-		return true;
 	}
 
 	public async Task<bool> UpdateAsync(ThumbnailItem item)
@@ -202,6 +182,26 @@ public class ThumbnailQuery : IThumbnailQuery
 				new InjectServiceScope(_scopeFactory).Context(),
 				pageNumber, pageSize);
 		}
+	}
+
+	private async Task<bool> SolveDbUpdateConcurrencyException(
+		DbUpdateConcurrencyException concurrencyException)
+	{
+		_logger.LogInformation("[ThumbnailQuery] try to fix DbUpdateConcurrencyException",
+			concurrencyException);
+		SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+		try
+		{
+			await _context.SaveChangesAsync();
+		}
+		catch ( DbUpdateConcurrencyException e )
+		{
+			_logger.LogInformation(e,
+				"[ThumbnailQuery] save failed after DbUpdateConcurrencyException");
+			return false;
+		}
+
+		return true;
 	}
 
 	private static async Task<List<ThumbnailItem>> GetMissingThumbnailsBatchInternalAsync(
@@ -295,6 +295,14 @@ public class ThumbnailQuery : IThumbnailQuery
 		}
 		catch ( Exception exception )
 		{
+			if ( exception is DbUpdateConcurrencyException concurrencyException )
+			{
+				_logger.LogInformation(
+					"[SaveChangesDuplicate] Try to solve SolveDbUpdateConcurrencyException");
+				await SolveDbUpdateConcurrencyException(concurrencyException);
+				return;
+			}
+
 			// Check if the inner exception is a MySqlException
 			var mySqlException = exception.InnerException as MySqlException;
 			// Skip if Duplicate entry
@@ -309,11 +317,12 @@ public class ThumbnailQuery : IThumbnailQuery
 				return;
 			}
 
-			_logger.LogError($"[SaveChangesDuplicate] T:{exception.GetType()} " +
-			                 $"M:{exception.Message} " +
-			                 $"I: {exception.InnerException} " +
-			                 $"IM: {mySqlException?.Message} " +
-			                 $"IM ErrorCode: {mySqlException?.ErrorCode}");
+			_logger.LogError(
+				$"[SaveChangesDuplicate] -- Failed next Throw -- T:{exception.GetType()} " +
+				$"M:{exception.Message} " +
+				$"I: {exception.InnerException} " +
+				$"IM: {mySqlException?.Message} " +
+				$"IM ErrorCode: {mySqlException?.ErrorCode}");
 
 			throw;
 		}
@@ -429,11 +438,11 @@ public class ThumbnailQuery : IThumbnailQuery
 			.Distinct()
 			.ToList();
 
-		if (nonNullItems.Count == 0 )
+		if ( nonNullItems.Count == 0 )
 		{
 			return ( [], [], [] );
 		}
-		
+
 		var dbThumbnailItems = await context.Thumbnails
 			.Where(p => nonNullItems.Select(x => x!.FileHash)
 				.Contains(p.FileHash)).ToListAsync();
