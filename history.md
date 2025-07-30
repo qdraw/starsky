@@ -49,6 +49,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Security) _Back-end_ ImageSharp update (PR #2291)
 - [x] (Changed) _Front-end_ Fixed how Get Text Length is handled (PR #2292)
 - [x] (Changed) _Back-end_ Database concurrency handling improvements (PR #2292)
+- [x] (Changed) _Back-end_ Create a directory handle when a file already exists (PR #2292)
 
 ## version 0.7.1 - 2025-07-09 {#v0.7.1}
 
