@@ -12,7 +12,7 @@
   "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore 8.0.18",
   "MedallionShell 1.6.2",
   "RazorLight 2.3.1",
-  "SixLabors.ImageSharp 3.1.9",
+  "SixLabors.ImageSharp 3.1.11",
   "SixLabors.ImageSharp.Drawing 2.1.6",
   "Microsoft.AspNetCore.Authorization 8.0.18",
   "Microsoft.EntityFrameworkCore.Analyzers 8.0.18",
