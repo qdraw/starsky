@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
+using starsky.foundation.database.Import;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Thumbnails;
 using starsky.foundation.platform.Thumbnails;
@@ -985,5 +987,50 @@ public class ThumbnailQueryTest
 		var thumbnailQuery = new ThumbnailQuery(null!, null!, new FakeIWebLogger());
 
 		Assert.IsFalse(thumbnailQuery.IsRunningJob());
+	}
+	
+	[TestMethod]
+	public async Task AddThumbnailRangeAsync_DbUpdateConcurrencyException()
+	{
+		var addedItems = new List<ThumbnailResultDataTransferModel>
+		{
+			new("test123", null, true),
+		};
+
+		var serviceScopeFactory =
+			CreateNewScope(nameof(AddThumbnailRangeAsync_DbUpdateConcurrencyException));
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(nameof(AddThumbnailRangeAsync_DbUpdateConcurrencyException))
+			.Options;
+		var dbContext = new ConcurrencyExceptionApplicationDbContext(options);
+
+		var webLogger = new FakeIWebLogger();
+		var importQuery = new ThumbnailQuery(dbContext, serviceScopeFactory, webLogger);
+
+		await importQuery.AddThumbnailRangeAsync(addedItems);
+
+		Assert.AreEqual(3, webLogger.TrackedInformation.Count);
+		Assert.IsTrue(webLogger.TrackedInformation[0].Item2?.StartsWith("[SaveChangesDuplicate] " +
+			"Try to solve SolveDbUpdateConcurrencyException"));
+		Assert.IsTrue(webLogger.TrackedInformation[1].Item2?.StartsWith(
+			"[ThumbnailQuery] try to fix DbUpdateConcurrencyException"));
+	}
+	
+	private sealed class ConcurrencyExceptionApplicationDbContext(DbContextOptions options)
+		: ApplicationDbContext(options)
+	{
+		public override DbSet<FileIndexItem> FileIndex
+		{
+			get => throw new DbUpdateConcurrencyException();
+			set
+			{
+				// do nothing
+			}
+		}
+
+		public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+		{
+			throw new DbUpdateConcurrencyException();
+		}
 	}
 }
