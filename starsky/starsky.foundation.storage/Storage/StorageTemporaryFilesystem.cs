@@ -105,7 +105,7 @@ public sealed class StorageTemporaryFilesystem : IStorage
 	{
 		var inputFileFullPath = _appSettings.DatabasePathToTempFolderFilePath(fromPath);
 		var toFileFullPath = _appSettings.DatabasePathToTempFolderFilePath(toPath);
-		
+
 		var hostFilesystem = new StorageHostFullPathFilesystem(_logger);
 		var existOldFile = hostFilesystem.ExistFile(inputFileFullPath);
 		var existNewFile = hostFilesystem.ExistFile(toFileFullPath);
@@ -114,7 +114,7 @@ public sealed class StorageTemporaryFilesystem : IStorage
 		{
 			return false;
 		}
-		
+
 		return new StorageHostFullPathFilesystem(_logger).FileMove(inputFileFullPath,
 			toFileFullPath);
 	}
@@ -127,10 +127,10 @@ public sealed class StorageTemporaryFilesystem : IStorage
 	public void FileCopy(string fromPath, string toPath)
 	{
 		var hostFilesystem = new StorageHostFullPathFilesystem(_logger);
-		
+
 		var inputFileFullPath = _appSettings.DatabasePathToTempFolderFilePath(fromPath);
 		var toFileFullPath = _appSettings.DatabasePathToTempFolderFilePath(toPath);
-		
+
 		var existOldFile = hostFilesystem.ExistFile(inputFileFullPath);
 		var existNewFile = hostFilesystem.ExistFile(toFileFullPath);
 
@@ -138,7 +138,7 @@ public sealed class StorageTemporaryFilesystem : IStorage
 		{
 			return;
 		}
-		
+
 		new StorageHostFullPathFilesystem(_logger).FileCopy(inputFileFullPath, toFileFullPath);
 	}
 
@@ -157,10 +157,20 @@ public sealed class StorageTemporaryFilesystem : IStorage
 	///     Create a Directory
 	/// </summary>
 	/// <param name="path">subPath location</param>
-	public void CreateDirectory(string path)
+	public bool CreateDirectory(string path)
 	{
 		var inputFileFullPath = _appSettings.DatabasePathToTempFolderFilePath(path);
-		Directory.CreateDirectory(inputFileFullPath);
+		try
+		{
+			Directory.CreateDirectory(inputFileFullPath);
+			return true;
+		}
+		catch ( IOException exception )
+		{
+			_logger.LogError($"[CreateDirectory] IOException caught, " +
+			                 $"{path} - {inputFileFullPath}", exception);
+			return false;
+		}
 	}
 
 	/// <summary>

@@ -24,7 +24,7 @@ public sealed class StorageSubPathFilesystemTest
 	public StorageSubPathFilesystemTest()
 	{
 		_newImage = new CreateAnImage();
-		_fileName  = _newImage.FileName;
+		_fileName = _newImage.FileName;
 		var appSettings = new AppSettings { StorageFolder = _newImage.BasePath };
 		_storage = new StorageSubPathFilesystem(appSettings, new FakeIWebLogger());
 	}
@@ -174,6 +174,17 @@ public sealed class StorageSubPathFilesystemTest
 	}
 
 	[TestMethod]
+	public void SubPath_CreateDirectory_OverFile()
+	{
+		_storage.FolderDelete("/test2");
+
+		_storage.WriteStream(StringToStreamHelper.StringToStream("test"), "/test2");
+		Assert.IsFalse(_storage.CreateDirectory("/test2"));
+
+		_storage.FileDelete("/test2");
+	}
+
+	[TestMethod]
 	public void ReadStream_MaxLength()
 	{
 		var createAnImage = new CreateAnImage();
@@ -252,7 +263,7 @@ public sealed class StorageSubPathFilesystemTest
 		_storage.FileDelete(subPath);
 		Assert.IsFalse(_storage.ExistFile(subPath));
 	}
-	
+
 	[TestMethod]
 	public void SubPath_IsFolderOrFile_Exists()
 	{
@@ -261,11 +272,11 @@ public sealed class StorageSubPathFilesystemTest
 		{
 			_fileName = new CreateAnImage().FileName;
 		}
-		
+
 		var result = _storage.IsFolderOrFile(_fileName);
 		Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File, result);
 	}
-	
+
 	[TestMethod]
 	public void SubPath_IsFolderOrFile_NotFound()
 	{

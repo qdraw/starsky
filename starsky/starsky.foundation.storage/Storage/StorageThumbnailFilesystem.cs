@@ -111,7 +111,7 @@ public sealed class StorageThumbnailFilesystem : IStorage
 		return hostFilesystem.FileDelete(thumbPath);
 	}
 
-	public void CreateDirectory(string path)
+	public bool CreateDirectory(string path)
 	{
 		throw new NotSupportedException();
 	}
