@@ -105,7 +105,7 @@ public sealed class StorageTemporaryFilesystemTests
 		catch ( IOException )
 		{
 			Console.WriteLine("StorageThumbnailFilesystemTest_FileCopy" +
-				" was not deleted, retrying");
+			                  " was not deleted, retrying");
 			await Task.Delay(1000);
 			File.Delete(Path.Combine(createNewImage.BasePath,
 				"StorageThumbnailFilesystemTest_FileCopy.jpg"));
@@ -113,7 +113,6 @@ public sealed class StorageTemporaryFilesystemTests
 
 		var createAnImage = new CreateAnImage();
 		Assert.IsNotNull(createAnImage);
-
 	}
 
 	[TestMethod]
@@ -270,6 +269,17 @@ public sealed class StorageTemporaryFilesystemTests
 		_tempStorage.CreateDirectory("/test");
 		Assert.IsTrue(_tempStorage.ExistFolder("/test"));
 		_tempStorage.FolderDelete("/test");
+	}
+
+	[TestMethod]
+	public void Temporary_CreateDirectory_OverFile()
+	{
+		_tempStorage.FolderDelete("/test2");
+
+		_tempStorage.WriteStream(StringToStreamHelper.StringToStream("test"), "/test2");
+		Assert.IsFalse(_tempStorage.CreateDirectory("/test2"));
+
+		_tempStorage.FileDelete("/test2");
 	}
 
 	[TestMethod]

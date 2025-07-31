@@ -135,16 +135,6 @@ public sealed class StorageSubPathFilesystem : IStorage
 	}
 
 	/// <summary>
-	///     Create a Directory
-	/// </summary>
-	/// <param name="path">subPath location</param>
-	public void CreateDirectory(string path)
-	{
-		var inputFileFullPath = _appSettings.DatabasePathToFilePath(path);
-		Directory.CreateDirectory(inputFileFullPath);
-	}
-
-	/// <summary>
 	///     Delete folder and child items of that folder
 	/// </summary>
 	/// <param name="path">subPath</param>
@@ -329,6 +319,27 @@ public sealed class StorageSubPathFilesystem : IStorage
 		var fullFilePath = _appSettings.DatabasePathToFilePath(path);
 		var service = new StorageHostFullPathFilesystem(_logger);
 		return service.WriteStreamAsync(stream, fullFilePath);
+	}
+
+	/// <summary>
+	///     Create a Directory
+	/// </summary>
+	/// <param name="path">subPath location</param>
+	public bool CreateDirectory(string path)
+	{
+		var inputFileFullPath = _appSettings.DatabasePathToFilePath(path);
+
+		try
+		{
+			Directory.CreateDirectory(inputFileFullPath);
+			return true;
+		}
+		catch ( IOException exception )
+		{
+			_logger.LogError($"[CreateDirectory] IOException caught, " +
+			                 $"{path} - {inputFileFullPath}", exception);
+			return false;
+		}
 	}
 
 	internal DateTime SetLastWriteTime(string path, DateTime? dateTime = null)

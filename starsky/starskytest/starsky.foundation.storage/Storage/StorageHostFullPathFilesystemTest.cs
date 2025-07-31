@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
@@ -337,6 +338,22 @@ public sealed class StorageHostFullPathFilesystemTest
 		await stream.DisposeAsync();
 		File.Delete(expectedPath);
 		Assert.IsFalse(hostStorage.ExistFile(expectedPath));
+	}
+
+	[TestMethod]
+	public void Host_CreateDirectory_OverFile()
+	{
+		var hostStorage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+		var createNewImage = new CreateAnImage();
+		var expectedPath = Path.Combine(createNewImage.BasePath,
+			"Host_CreateDirectory_OverFile");
+
+		hostStorage.FolderDelete(expectedPath);
+
+		hostStorage.WriteStream(StringToStreamHelper.StringToStream("test"), expectedPath);
+		Assert.IsFalse(hostStorage.CreateDirectory(expectedPath));
+
+		hostStorage.FileDelete(expectedPath);
 	}
 }
 

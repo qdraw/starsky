@@ -16,7 +16,7 @@ public interface IStorage
 	void FileCopy(string fromPath, string toPath);
 	bool FileDelete(string path);
 
-	void CreateDirectory(string path);
+	bool CreateDirectory(string path);
 	bool FolderDelete(string path);
 
 	/// <summary>

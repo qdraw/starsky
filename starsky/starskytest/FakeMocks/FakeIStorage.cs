@@ -165,9 +165,10 @@ public class FakeIStorage : IStorage
 		return true;
 	}
 
-	public void CreateDirectory(string path)
+	public bool CreateDirectory(string path)
 	{
 		_outputSubPathFolders.Add(path);
+		return true;
 	}
 
 	public bool FolderDelete(string path)
