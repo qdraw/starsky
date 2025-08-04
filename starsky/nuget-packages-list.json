@@ -13,7 +13,7 @@
   "MedallionShell 1.6.2",
   "RazorLight 2.3.1",
   "SixLabors.ImageSharp 3.1.11",
-  "SixLabors.ImageSharp.Drawing 2.1.6",
+  "SixLabors.ImageSharp.Drawing 2.1.7",
   "Microsoft.AspNetCore.Authorization 8.0.18",
   "Microsoft.EntityFrameworkCore.Analyzers 8.0.18",
   "Microsoft.EntityFrameworkCore.Design 8.0.18",
