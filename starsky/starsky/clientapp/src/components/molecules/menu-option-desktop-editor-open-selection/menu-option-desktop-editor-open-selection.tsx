@@ -2,7 +2,7 @@ import React, { memo, useState } from "react";
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
-import useLocation from "../../../hooks/use-location/use-location";
+import useLocation from "../../../hooks/use-location/use-location-legacy";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { PageType } from "../../../interfaces/IDetailView";
 import { IEnvFeatures } from "../../../interfaces/IEnvFeatures";

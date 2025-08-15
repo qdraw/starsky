@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useState } from "react";
 import { ArchiveContext, defaultStateFallback } from "../../../contexts/archive-context";
 import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
-import useLocation from "../../../hooks/use-location/use-location";
+import useLocation from "../../../hooks/use-location/use-location-legacy.ts";
 import { newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
 import localization from "../../../localization/localization.json";
 import { GetArchiveSearchMenuHeaderClass } from "../../../shared/menu/get-archive-search-menu-header-class";

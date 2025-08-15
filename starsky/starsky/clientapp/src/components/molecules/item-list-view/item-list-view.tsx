@@ -2,7 +2,6 @@ import React, { memo, useEffect } from "react";
 import useLocation from "../../../hooks/use-location/use-location";
 import { PageType } from "../../../interfaces/IDetailView";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
-import { INavigateState } from "../../../interfaces/INavigateState";
 import { URLPath } from "../../../shared/url/url-path";
 import FlatListItem from "../../atoms/flat-list-item/flat-list-item";
 import ListImageChildItem from "../../atoms/list-image-child-item/list-image-child-item";
@@ -27,7 +26,9 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
   const folderRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const navigationState = history.location.state as INavigateState;
+    const navigationState = history.state;
+
+    console.log(navigationState);
 
     if (!navigationState?.filePath) return;
 

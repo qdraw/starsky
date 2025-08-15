@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { act } from "react";
 import { MemoryRouter } from "react-router-dom";
 import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
-import * as useLocation from "../../../hooks/use-location/use-location";
+import * as useLocation from "../../../hooks/use-location/use-location-legacy";
 import { IFileIndexItem, newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
 import { Router } from "../../../router-app/router-app";
 import * as FlatListItem from "../../atoms/flat-list-item/flat-list-item";
@@ -13,11 +13,13 @@ import ItemListView from "./item-list-view";
 describe("ItemListView", () => {
   it("renders (without state component)", () => {
     render(
-      <ItemListView
-        iconList={true}
-        fileIndexItems={newIFileIndexItemArray()}
-        colorClassUsage={[]}
-      />
+      <MemoryRouter>
+        <ItemListView
+          iconList={true}
+          fileIndexItems={newIFileIndexItemArray()}
+          colorClassUsage={[]}
+        />
+      </MemoryRouter>
     );
   });
 
@@ -71,7 +73,9 @@ describe("ItemListView", () => {
 
     it("text should be: New? Set your drive location in the settings. There are no photos in this folder", () => {
       const component = render(
-        <ItemListView iconList={true} fileIndexItems={[]} subPath="/" colorClassUsage={[]} />
+        <MemoryRouter>
+          <ItemListView iconList={true} fileIndexItems={[]} subPath="/" colorClassUsage={[]} />
+        </MemoryRouter>
       );
       expect(component.container.textContent).toContain(
         "New? Set your drive location in the settings."

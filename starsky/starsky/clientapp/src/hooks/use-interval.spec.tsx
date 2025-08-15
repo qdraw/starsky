@@ -1,5 +1,6 @@
 import { render } from "@testing-library/react";
 import React, { memo } from "react";
+import { MemoryRouter } from "react-router-dom";
 import useInterval from "./use-interval";
 
 describe("useInterval", () => {
@@ -19,7 +20,11 @@ describe("useInterval", () => {
     function callback() {
       done();
     }
-    render(<UseIntervalComponentTest timer={0} callback={callback}></UseIntervalComponentTest>);
+    render(
+      <MemoryRouter>
+        <UseIntervalComponentTest timer={0} callback={callback}></UseIntervalComponentTest>
+      </MemoryRouter>
+    );
   });
 
   it("check if setInterval is called", () => {
