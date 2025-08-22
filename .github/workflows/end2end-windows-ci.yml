@@ -22,7 +22,7 @@ jobs:
       WEBSITE_SITE_NAME: "ci"
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Create temp folder
         shell: powershell
