@@ -5,4 +5,5 @@ export interface IGeoLocationModel {
   locationState: string;
   longitude: number;
   latitude: number;
+  isSuccess: boolean;
 }

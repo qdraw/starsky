@@ -5,6 +5,7 @@ import useLocation from "../../../hooks/use-location/use-location";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { IGeoLocationModel } from "../../../interfaces/IGeoLocationModel";
 import localization from "../../../localization/localization.json";
+import { AsciiNull } from "../../../shared/ascii-null";
 import { Language } from "../../../shared/language";
 import ModalGeo from "../modal-geo/modal-geo";
 
@@ -96,7 +97,7 @@ const DetailViewInfoLocation: React.FunctionComponent<IDetailViewInfoLocationPro
         >
           <div className="icon icon--location" data-test="detailview-location-div" />
           <div className="icon icon--right icon--edit" />
-          {locationCity && locationCountry ? (
+          {locationCity && locationCountry && locationCity !== AsciiNull() ? (
             <>
               <b data-test="detailview-info-location-city">{locationCity}</b>
               <p>{locationCountry}</p>
