@@ -28,6 +28,10 @@ export interface ILatLong {
   longitude: number;
 }
 
+interface LeafletDiv extends HTMLDivElement {
+  _leaflet_id?: number | null;
+}
+
 const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
   latitude,
   longitude,
@@ -74,7 +78,8 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
   const [isLocationUpdated, setIsLocationUpdated] = useState<boolean>(false);
 
   const mapReference = useCallback((node: HTMLDivElement | null) => {
-    if (node !== null && mapState === null) {
+    const leafletNode = node as LeafletDiv;
+    if (node !== null && mapState === null && leafletNode._leaflet_id == null) {
       UpdateMap(node, location, isFormEnabled, setLocation, setIsLocationUpdated, setMapState);
     }
     // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
