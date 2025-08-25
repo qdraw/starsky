@@ -41,7 +41,10 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.2 - _(Unreleased)_ - 2025-08-01 {#v0.7.2}
+## version 0.7.3 - _(Unreleased)_ - 2025-08-26 {#v0.7.3}
+- nothing yet
+
+## version 0.7.2 - 2025-08-25 {#v0.7.2}
 
 - [x] (Changed) _Back-end_ Thumbnail Generation logging improvements (PR #2267)
 - [x] (Changed) _Front-end_ Npm packages (PR #2269 #2270 #2273 #2276 #2277 #2279 #2280 #2281 #2282)
@@ -50,6 +53,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Front-end_ Fixed how Get Text Length is handled (PR #2292)
 - [x] (Changed) _Back-end_ Database concurrency handling improvements (PR #2292)
 - [x] (Changed) _Back-end_ Create a directory handle when a file already exists (PR #2292)
+- [x] (Changed) _Front-end_ Allow distance to far map update (PR #2318) 
 
 ## version 0.7.1 - 2025-07-09 {#v0.7.1}
 
