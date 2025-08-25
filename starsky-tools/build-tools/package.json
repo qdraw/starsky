@@ -1,14 +1,14 @@
 {
   "name": "build-tools",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "",
   "main": "",
   "scripts": {
+    "app-version-update": "node app-version-update.js",
     "update": "echo 'keep this without any npm dependencies'",
     "update:install": "echo 'keep this without any npm dependencies'",
     "clientapp-vite-update": "node clientapp-vite-update",
     "documentation-create-docusaurus-update": "node documentation-create-docusaurus-update",
-    "app-version-update": "node app-version-update.js",
     "app-version-test": "node app-version-test.js",
     "project-guid": "node project-guid.js",
     "nuget-package-list": "node nuget-package-list.js",
