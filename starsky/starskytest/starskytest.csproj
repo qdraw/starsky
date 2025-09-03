@@ -26,8 +26,8 @@
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
         <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1"/>
-        <PackageReference Include="MSTest.TestAdapter" Version="3.10.3"/>
-        <PackageReference Include="MSTest.TestFramework" Version="3.10.3"/>
+        <PackageReference Include="MSTest.TestAdapter" Version="3.10.4"/>
+        <PackageReference Include="MSTest.TestFramework" Version="3.10.4"/>
         <PackageReference Include="Verify.MSTest" Version="30.7.3" />
         <PackageReference Include="coverlet.collector" Version="6.0.4">
             <PrivateAssets>all</PrivateAssets>
