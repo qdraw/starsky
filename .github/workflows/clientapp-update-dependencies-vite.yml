@@ -16,7 +16,7 @@ jobs:
         ref: master
         
     - name: Setup Node.js environment
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v5
       with:
         node-version: 18
         check-latest: true
