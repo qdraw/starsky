@@ -110,7 +110,7 @@ public class SettingsServiceTest
 
 		DateTime defaultDatetime = default;
 		Assert.AreEqual(defaultDatetime.ToString(CultureInfo.InvariantCulture),
-			item.ToUniversalTime().ToString(CultureInfo.InvariantCulture));
+			item.ToString(CultureInfo.InvariantCulture));
 		await RemoveAsync(dbContext, SettingsType
 			.LastSyncBackgroundDateTime);
 	}
