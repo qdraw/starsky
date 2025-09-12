@@ -14,9 +14,8 @@ public class CompressionMimeTests
 		var result = CompressionMime.GetCompressionMimeTypes().ToList();
 
 		// Assert
-		Assert.IsTrue(result.Contains("application/xhtml+xml"));
-		Assert.IsTrue(result.Contains("image/svg+xml"));
-		Assert.IsTrue(
-			result.Contains("text/plain")); // Example from ResponseCompressionDefaults.MimeTypes
+		Assert.Contains("application/xhtml+xml", result);
+		Assert.Contains("image/svg+xml", result);
+		Assert.Contains("text/plain", result); // Example from ResponseCompressionDefaults.MimeTypes
 	}
 }

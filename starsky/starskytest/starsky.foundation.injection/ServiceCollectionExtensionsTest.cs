@@ -168,7 +168,7 @@ public class ServiceCollectionExtensionsTest
 		var result =
 			ServiceCollectionExtensions.GetExportedTypes(typeof(TestInjectionClass).Assembly);
 		var count = result.Count();
-		Assert.IsTrue(count >= 100);
+		Assert.IsGreaterThanOrEqualTo(100, count);
 	}
 
 	[TestMethod]

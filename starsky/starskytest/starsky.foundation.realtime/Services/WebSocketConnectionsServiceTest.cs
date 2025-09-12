@@ -36,7 +36,7 @@ public sealed class WebSocketConnectionsServiceTest
 		service.AddConnection(new WebSocketConnection(fakeSocket, logger));
 
 		await service.SendToAllAsync(null!, CancellationToken.None);
-		Assert.AreEqual(1, logger.TrackedInformation.Count);
+		Assert.HasCount(1, logger.TrackedInformation);
 	}
 
 	[TestMethod]
@@ -52,9 +52,9 @@ public sealed class WebSocketConnectionsServiceTest
 		await service.SendToAllAsync("test", CancellationToken.None);
 
 		// One of Two fails
-		Assert.AreEqual(1, fakeSocket.FakeSendItems.Count);
+		Assert.HasCount(1, fakeSocket.FakeSendItems);
 		Assert.IsTrue(fakeSocket.FakeSendItems.LastOrDefault()?.StartsWith("test"));
-		Assert.AreEqual(1, logger.TrackedInformation.Count);
+		Assert.HasCount(1, logger.TrackedInformation);
 		Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2
 			?.Contains("WebSocketException"));
 	}
@@ -69,7 +69,7 @@ public sealed class WebSocketConnectionsServiceTest
 
 		const string message = "💥"; // magic string to trigger exception
 		await service.SendToAllAsync(message, CancellationToken.None);
-		Assert.AreEqual(1, logger.TrackedExceptions.Count);
+		Assert.HasCount(1, logger.TrackedExceptions);
 	}
 
 	[TestMethod]

@@ -176,7 +176,7 @@ public sealed class FileStreamingHelperTest
 
 		var tempPath = storage.GetAllFilesInDirectoryRecursive(_appSettings.TempFolder).ToList()[0];
 
-		Assert.IsTrue(tempPath.EndsWith("a.txt"));
+		Assert.EndsWith("a.txt", tempPath);
 
 		CleanParentFolder(tempPath);
 	}

@@ -28,7 +28,7 @@ public class ExportServiceTest
 		var (_, fileIndexResultsList) =
 			await exportService.PreflightAsync(new List<string> { "/test" }.ToArray());
 
-		Assert.AreEqual(1, fileIndexResultsList.Count);
+		Assert.HasCount(1, fileIndexResultsList);
 	}
 
 	[TestMethod]
@@ -48,7 +48,7 @@ public class ExportServiceTest
 		var (_, fileIndexResultsList) =
 			await exportService.PreflightAsync(new List<string> { "/test/test.jpg" }.ToArray());
 
-		Assert.AreEqual(3, fileIndexResultsList.Count);
+		Assert.HasCount(3, fileIndexResultsList);
 		Assert.AreEqual(1, fileIndexResultsList.Count(p => p.FilePath == "/test/test.jpg"));
 		Assert.AreEqual(1, fileIndexResultsList.Count(p => p.FilePath == "/test/test.dng"));
 	}
@@ -72,7 +72,7 @@ public class ExportServiceTest
 			await exportService.PreflightAsync(new List<string> { "/test/test.jpg" }.ToArray(),
 				false);
 
-		Assert.AreEqual(1, fileIndexResultsList.Count);
+		Assert.HasCount(1, fileIndexResultsList);
 		Assert.AreEqual(1, fileIndexResultsList.Count(p => p.FilePath == "/test/test.jpg"));
 		Assert.AreEqual(0, fileIndexResultsList.Count(p => p.FilePath == "/test/test.dng"));
 	}
@@ -94,7 +94,7 @@ public class ExportServiceTest
 		var (_, fileIndexResultsList) =
 			await exportService.PreflightAsync(new List<string> { "/test" }.ToArray());
 
-		Assert.AreEqual(0, fileIndexResultsList.Count);
+		Assert.IsEmpty(fileIndexResultsList);
 	}
 
 	[TestMethod]
@@ -128,7 +128,7 @@ public class ExportServiceTest
 			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
 		var (_, fileIndexResultsList) =
 			await exportService.PreflightAsync(new List<string> { "/test" }.ToArray());
-		Assert.AreEqual(1, fileIndexResultsList.Count);
+		Assert.HasCount(1, fileIndexResultsList);
 		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex,
 			fileIndexResultsList[0].Status);
 	}
@@ -141,7 +141,7 @@ public class ExportServiceTest
 		var (zipHash, _) =
 			await exportService.PreflightAsync(new List<string> { "/test" }.ToArray(), false, true);
 
-		Assert.IsTrue(zipHash.StartsWith("TN"));
+		Assert.StartsWith("TN", zipHash);
 	}
 
 	[TestMethod]
@@ -152,7 +152,7 @@ public class ExportServiceTest
 		var (zipHash, _) =
 			await exportService.PreflightAsync(new List<string> { "/test" }.ToArray(), false);
 
-		Assert.IsTrue(zipHash.StartsWith("SR"));
+		Assert.StartsWith("SR", zipHash);
 	}
 
 	[TestMethod]

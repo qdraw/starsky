@@ -30,11 +30,11 @@ public class OpenEditorPreflightTests
 
 		var result = await openEditorPreflight.PreflightAsync(inputFilePaths, collections);
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual("/test.jpg", result[0].SubPath);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result[0].Status);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown, result[0].ImageFormat);
-		Assert.IsTrue(result[0].FullFilePath.EndsWith("test.jpg"));
+		Assert.EndsWith("test.jpg", result[0].FullFilePath);
 		Assert.AreEqual(string.Empty, result[0].AppPath);
 	}
 
@@ -74,11 +74,11 @@ public class OpenEditorPreflightTests
 
 		var result = await openEditorPreflight.PreflightAsync(inputFilePaths, collections);
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual("/test.jpg", result[0].SubPath);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result[0].Status);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg, result[0].ImageFormat);
-		Assert.IsTrue(result[0].FullFilePath.EndsWith("test.jpg"));
+		Assert.EndsWith("test.jpg", result[0].FullFilePath);
 		Assert.AreEqual(string.Empty, result[0].AppPath);
 	}
 
@@ -120,11 +120,11 @@ public class OpenEditorPreflightTests
 
 		var result = await openEditorPreflight.PreflightAsync(inputFilePaths, collections);
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual("/test.jpg", result[0].SubPath);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result[0].Status);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg, result[0].ImageFormat);
-		Assert.IsTrue(result[0].FullFilePath.EndsWith("test.jpg"));
+		Assert.EndsWith("test.jpg", result[0].FullFilePath);
 		Assert.AreEqual("/app/test", result[0].AppPath);
 	}
 
@@ -148,7 +148,7 @@ public class OpenEditorPreflightTests
 		var result =
 			await openEditorPreflight.GetObjectsToOpenFromDatabase(inputFilePaths, collections);
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual("/test.jpg", result[0].FilePath);
 		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, result[0].Status);
 	}
@@ -178,7 +178,7 @@ public class OpenEditorPreflightTests
 		var result =
 			await openEditorPreflight.GetObjectsToOpenFromDatabase(inputFilePaths, collections);
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual("/readonly/test.jpg", result[0].FilePath);
 		Assert.AreEqual(FileIndexItem.ExifStatus.ReadOnly, result[0].Status);
 	}
@@ -209,7 +209,7 @@ public class OpenEditorPreflightTests
 		var result =
 			await openEditorPreflight.GetObjectsToOpenFromDatabase(inputFilePaths, collections);
 
-		Assert.AreEqual(0, result.Count);
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]
@@ -240,7 +240,7 @@ public class OpenEditorPreflightTests
 			await openEditorPreflight.GetObjectsToOpenFromDatabase(inputFilePaths, collections);
 
 		// Change the status to Ok
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual("/test.mp4", result[0].FilePath);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result[0].Status);
 	}
@@ -278,7 +278,7 @@ public class OpenEditorPreflightTests
 			await openEditorPreflight.GetObjectsToOpenFromDatabase(inputFilePaths, collections);
 
 		// removed duplicates
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual("/test.mp4", result[0].FilePath);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result[0].Status);
 	}
@@ -311,7 +311,7 @@ public class OpenEditorPreflightTests
 			await openEditorPreflight.GetObjectsToOpenFromDatabase(inputFilePaths, collections);
 
 		// Change the status to Ok
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual("/test.mp4", result[0].FilePath);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result[0].Status);
 	}
@@ -346,7 +346,7 @@ public class OpenEditorPreflightTests
 		var result = preflight.GroupByFileCollectionName(fileIndexList);
 
 		// Assert
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 
 		var collection1 = result.Find(p => p.FileCollectionName == "collection1");
 
@@ -393,7 +393,7 @@ public class OpenEditorPreflightTests
 		var result = preflight.GroupByFileCollectionName(fileIndexList);
 
 		// Assert
-		Assert.AreEqual(3, result.Count);
+		Assert.HasCount(3, result);
 
 		var collection1 = result.Find(p => p.FileCollectionName == "collection1");
 		var collection2 = result.Find(p => p.FileCollectionName == "collection2");
@@ -434,7 +434,7 @@ public class OpenEditorPreflightTests
 		var result = preflight.GroupByFileCollectionName(fileIndexList);
 
 		// Assert
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 
 		var collection1 = result.Find(p => p.FileCollectionName == "collection1");
 
@@ -471,7 +471,7 @@ public class OpenEditorPreflightTests
 		var result = preflight.GroupByFileCollectionName(fileIndexList);
 
 		// Assert
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 
 		var collection1 = result.Find(p => p.FileCollectionName == "collection1");
 
@@ -509,7 +509,7 @@ public class OpenEditorPreflightTests
 		var result = preflight.GroupByFileCollectionName(fileIndexList, false);
 
 		// Assert
-		Assert.AreEqual(2, result.Count);
+		Assert.HasCount(2, result);
 
 		var collection1Xmp = result.Find(p => p.FileName == "collection1.xmp");
 		var collection1Jpg = result.Find(p => p.FileName == "collection1.jpg");
@@ -548,7 +548,7 @@ public class OpenEditorPreflightTests
 		var result = preflight.GroupByFileCollectionName(fileIndexList);
 
 		// Assert
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 
 		var collection1 = result.Find(p => p.FileCollectionName == "collection1");
 

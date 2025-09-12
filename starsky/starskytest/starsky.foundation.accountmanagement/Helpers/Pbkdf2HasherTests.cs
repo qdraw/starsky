@@ -21,7 +21,7 @@ public class Pbkdf2HasherTests
 
 		// Assert
 		Assert.IsNotNull(hash);
-		Assert.IsTrue(hash.Length > 0);
+		Assert.IsGreaterThan(0, hash.Length);
 	}
 
 	[TestMethod]

@@ -57,11 +57,11 @@ public sealed class WebSocketConnectionTest
 		// when this unit test keeps hanging the end signal has not passed correctly
 		await socketConnection.ReceiveMessagesUntilCloseAsync();
 
-		Assert.IsTrue(message.StartsWith("message"));
+		Assert.StartsWith("message", message);
 	}
 
 	[TestMethod]
-	[Timeout(2000)]
+	[Timeout(2000, CooperativeCancellation = true)]
 	public async Task ReceiveMessagesUntil_ConnectionClosedPrematurely_And_Exit()
 	{
 		var fakeSocket = new FakeWebSocket
@@ -71,11 +71,11 @@ public sealed class WebSocketConnectionTest
 		var socketConnection = new WebSocketConnection(fakeSocket, new FakeIWebLogger());
 
 		var message = "";
-		socketConnection.ReceiveText += (sender, s) => { message = s; };
+		socketConnection.ReceiveText += (_, s) => { message = s; };
 
 		// when this unit test keeps hanging the end signal has not passed correctly
 		await socketConnection.ReceiveMessagesUntilCloseAsync();
 
-		Assert.IsTrue(message.StartsWith("message"));
+		Assert.StartsWith("message", message);
 	}
 }

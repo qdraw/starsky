@@ -105,6 +105,8 @@ public sealed class ExportControllerTest
 		_bgTaskQueue = new UpdateBackgroundTaskQueue(scopeFactory);
 	}
 
+	public TestContext TestContext { get; set; }
+
 	[TestMethod]
 	public async Task ExportController_CreateZipNotFound()
 	{
@@ -205,11 +207,12 @@ public sealed class ExportControllerTest
 		var actionResult = await controller.CreateZip(_createAnImage.DbPath) as JsonResult;
 
 		Assert.IsNotNull(actionResult);
-		var zipHash = actionResult!.Value as string;
+		var zipHash = actionResult.Value as string;
 
-		Assert.IsTrue(zipHash!.Contains("SR"));
+		Assert.IsNotNull(zipHash);
+		Assert.Contains("SR", zipHash);
 
-		await Task.Delay(150);
+		await Task.Delay(150, TestContext.CancellationTokenSource.Token);
 
 		// Get from real fs in to fake memory
 		var sourceFullPath = Path.Join(appSettings.TempFolder, zipHash) + ".zip";
@@ -281,7 +284,7 @@ public sealed class ExportControllerTest
 
 		var filePaths = await export.CreateListToExport(fileIndexResultsList, true);
 
-		Assert.AreEqual(0, filePaths.Count);
+		Assert.IsEmpty(filePaths);
 	}
 
 
@@ -305,7 +308,7 @@ public sealed class ExportControllerTest
 
 		var filePaths = await export.CreateListToExport(fileIndexResultsList, true);
 
-		Assert.AreEqual(0, filePaths.Count);
+		Assert.IsEmpty(filePaths);
 	}
 
 	[TestMethod]
@@ -340,8 +343,8 @@ public sealed class ExportControllerTest
 
 		var filePaths = await export.CreateListToExport(fileIndexResultsList, false);
 
-		Assert.IsTrue(filePaths[0].Contains("test.dng"));
-		Assert.IsTrue(filePaths[1].Contains("test.xmp"));
+		Assert.Contains("test.dng", filePaths[0]);
+		Assert.Contains("test.xmp", filePaths[1]);
 	}
 
 	[TestMethod]

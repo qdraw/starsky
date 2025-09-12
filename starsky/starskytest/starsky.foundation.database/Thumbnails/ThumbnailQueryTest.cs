@@ -56,7 +56,7 @@ public class ThumbnailQueryTest
 
 		// Assert
 		Assert.IsNotNull(result);
-		Assert.AreEqual(2, result.Count);
+		Assert.HasCount(2, result);
 		Assert.IsTrue(result.Where(p => p.FileHash is "00123" or "00456")
 			.All(x => x.Small == true));
 		Assert.IsTrue(result.Where(p => p.FileHash is "00123" or "00456")
@@ -99,7 +99,7 @@ public class ThumbnailQueryTest
 
 		// Assert
 		Assert.IsNotNull(result);
-		Assert.AreEqual(2, result.Count);
+		Assert.HasCount(2, result);
 		Assert.IsTrue(result.Where(p => p.FileHash is "627445" or "8127445")
 			.All(x => x.Large == true));
 		Assert.IsTrue(result.Where(p => p.FileHash is "627445" or "8127445")

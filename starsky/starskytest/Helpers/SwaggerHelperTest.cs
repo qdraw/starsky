@@ -102,7 +102,7 @@ namespace starskytest.Helpers
 
 			System.Console.WriteLine("swaggerFileContent " + swaggerFileContent);
 
-			Assert.IsTrue(swaggerFileContent.Contains($"\"title\": \"{_appSettings.Name}\""));
+			Assert.Contains($"\"title\": \"{_appSettings.Name}\"", swaggerFileContent);
 		}
 	}
 }

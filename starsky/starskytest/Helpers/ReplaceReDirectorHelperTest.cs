@@ -30,7 +30,7 @@ public class ReplaceReDirectorHelperTest
 		);
 	}
 	
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow("/api/test", "{\"errors\": [{\"status\": \"401\" }]}", 
 		HttpStatusCode.Unauthorized, "application/json")]
 	[DataRow("/test", "", HttpStatusCode.OK, null)]

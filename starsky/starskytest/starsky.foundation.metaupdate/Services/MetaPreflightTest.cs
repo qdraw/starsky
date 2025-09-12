@@ -34,7 +34,7 @@ public sealed class MetaPreflightTest
 			new FileIndexItem("/test.jpg"),
 			TestJpgArray.ToList(), true, true, 0);
 
-		Assert.AreEqual(2, result.fileIndexResultsList.Count);
+		Assert.HasCount(2, result.fileIndexResultsList);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok,
 			result.fileIndexResultsList[0].Status);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok,
@@ -56,7 +56,7 @@ public sealed class MetaPreflightTest
 			new FileIndexItem("/test.jpg"),
 			TestJpgArray.ToList(), true, false, 0);
 
-		Assert.AreEqual(1, result.fileIndexResultsList.Count);
+		Assert.HasCount(1, result.fileIndexResultsList);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok,
 			result.fileIndexResultsList[0].Status);
 	}
@@ -79,7 +79,7 @@ public sealed class MetaPreflightTest
 			new FileIndexItem("/test.jpg"),
 			TestJpgArray.ToList(), true, true, 0);
 
-		Assert.AreEqual(1, result.fileIndexResultsList.Count);
+		Assert.HasCount(1, result.fileIndexResultsList);
 		Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,
 			result.fileIndexResultsList[0].Status);
 	}
@@ -104,7 +104,7 @@ public sealed class MetaPreflightTest
 			new FileIndexItem("/test.jpg"),
 			TestJpgArray.ToList(), true, true, 0);
 
-		Assert.AreEqual(1, result.fileIndexResultsList.Count);
+		Assert.HasCount(1, result.fileIndexResultsList);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok,
 			result.fileIndexResultsList[0].Status);
 	}
@@ -149,7 +149,7 @@ public sealed class MetaPreflightTest
 				statusModel, false, 0);
 
 		// Check how that changedFileIndexItemName works
-		Assert.AreEqual(1, changedFileIndexItemName["/test.jpg"].Count);
+		Assert.HasCount(1, changedFileIndexItemName["/test.jpg"]);
 		Assert.AreEqual("tags", changedFileIndexItemName["/test.jpg"].FirstOrDefault());
 
 		// Check for value
@@ -192,7 +192,7 @@ public sealed class MetaPreflightTest
 				collectionsDetailView.FileIndexItem,
 				statusModel, false, 0);
 
-		Assert.AreEqual(0, changedFileIndexItemName["/test.jpg"].Count);
+		Assert.IsEmpty(changedFileIndexItemName["/test.jpg"]);
 	}
 
 	[TestMethod]

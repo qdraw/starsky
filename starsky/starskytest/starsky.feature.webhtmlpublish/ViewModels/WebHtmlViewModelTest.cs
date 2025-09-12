@@ -23,8 +23,8 @@ public sealed class WebHtmlViewModelTest
 		Assert.AreEqual("test", model.ItemName);
 		Assert.AreEqual("Starsky", model.AppSettings.Name);
 		Assert.AreEqual(TemplateContentType.None, model.CurrentProfile.ContentType);
-		Assert.AreEqual(0, model.Profiles.Count);
+		Assert.IsEmpty(model.Profiles);
 		Assert.AreEqual(0, model.Base64ImageArray.Length);
-		Assert.AreEqual(0, model.FileIndexItems.Count);
+		Assert.IsEmpty(model.FileIndexItems);
 	}
 }

@@ -130,7 +130,7 @@ public sealed class ImportControllerTest
 		var result = await importController.ImportPostBackgroundTask(
 			new List<string> { "/test" }, new ImportSettingsModel());
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual(ImportStatus.NotFound, result[0].Status);
 	}
 
@@ -166,7 +166,7 @@ public sealed class ImportControllerTest
 		await importController.ImportPostBackgroundTask(
 			new List<string> { "/test" }, new ImportSettingsModel(), true);
 
-		Assert.AreEqual(1, logger.TrackedInformation.Count);
+		Assert.HasCount(1, logger.TrackedInformation);
 	}
 
 	[TestMethod]

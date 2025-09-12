@@ -51,7 +51,7 @@ public class SqlXmlRepositoryTest
 
 		var result = _repository.GetAllElements().ToList();
 
-		Assert.AreEqual(0, result.Count);
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]
@@ -108,7 +108,7 @@ public class SqlXmlRepositoryTest
 			new SqlXmlRepository(new GetAllElementsAppDbMySqlException2(options), null!,
 					new FakeIWebLogger())
 				.GetAllElements();
-		Assert.AreEqual(0, readOnlyCollection.Count);
+		Assert.IsEmpty(readOnlyCollection);
 	}
 
 

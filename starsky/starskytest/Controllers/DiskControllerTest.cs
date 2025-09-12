@@ -243,7 +243,7 @@ public sealed class DiskControllerTest
 		await controller.Rename(_createAnImage.DbPath, "/test.jpg");
 
 		Assert.AreEqual(1, socket.FakeSendToAllAsync.Count(p => !p.Contains("[system]")));
-		Assert.IsTrue(socket.FakeSendToAllAsync[0].Contains("/test.jpg"));
+		Assert.Contains("/test.jpg", socket.FakeSendToAllAsync[0]);
 
 		await _query.RemoveItemAsync(( await _query.GetObjectByFilePathAsync("/test.jpg") )!);
 	}
@@ -309,7 +309,7 @@ public sealed class DiskControllerTest
 			!p.StartsWith("[system]"));
 
 		Assert.IsNotNull(value);
-		Assert.IsTrue(value.Contains("/test_dir"));
+		Assert.Contains("/test_dir", value);
 	}
 
 	[TestMethod]

@@ -212,7 +212,7 @@ public sealed class UserManagerTest
 		Assert.AreEqual(ValidateResultError.UserNotFound, result.Error);
 	}
 
-	[DataTestMethod] // [Theory]
+	[TestMethod] // [Theory]
 	[DataRow(true)]
 	[DataRow(false)]
 	public async Task ValidateAsync_Transform_To_Iterate100K(bool cacheEnabled)
@@ -585,7 +585,7 @@ public sealed class UserManagerTest
 			new AppSettings(), logger, new FakeMemoryCache());
 		var users = ( await userManager.AllUsersAsync() ).Users;
 
-		Assert.AreEqual(0, users.Count);
+		Assert.IsEmpty(users);
 		Assert.IsTrue(logger.TrackedExceptions.LastOrDefault().Item2
 			?.Contains("RetryLimitExceededException"));
 	}
@@ -893,7 +893,7 @@ public sealed class UserManagerTest
 			_memoryCache);
 		var result = userManager.GetUserPermissionClaims(new Role { Id = 99 }).ToList();
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual("test", result[0].Value);
 	}
 
