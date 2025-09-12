@@ -43,8 +43,8 @@ public class TimeApplicationRunningTests
 
 		Console.WriteLine(time);
 
-		Assert.IsTrue(time > 0.00000000001);
-		Assert.IsTrue(time < 1000);
+		Assert.IsGreaterThan(0.00000000001, time);
+		Assert.IsLessThan(1000, time);
 	}
 
 	private sealed class FakeHostApplicationLifetime(CancellationToken applicationStopping)

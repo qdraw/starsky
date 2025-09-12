@@ -16,7 +16,7 @@ namespace starskytest.Helpers
 		{
 			var source = new FileIndexItem { Tags = "hi" };
 			var changes = FileIndexCompareHelper.Compare(source);
-			Assert.AreEqual(0, changes.Count);
+			Assert.IsEmpty(changes);
 		}
 
 		[TestMethod]
@@ -157,7 +157,7 @@ namespace starskytest.Helpers
 			var update = new FileIndexItem { LastChanged = new List<string> { "test" } };
 			FileIndexCompareHelper.Compare(source,
 				update); // it element is updated, but the list not
-			Assert.AreEqual(1, source.LastChanged.Count);
+			Assert.HasCount(1, source.LastChanged);
 		}
 
 		[TestMethod]
@@ -166,7 +166,7 @@ namespace starskytest.Helpers
 			var source = new FileIndexItem { LastChanged = new List<string>() };
 			var update = new FileIndexItem { LastChanged = new List<string> { "test" } };
 			var result = FileIndexCompareHelper.Compare(source, update);
-			Assert.AreEqual(0, result.Count);
+			Assert.IsEmpty(result);
 		}
 
 		[TestMethod]

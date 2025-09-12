@@ -138,8 +138,8 @@ public sealed class AppSettingsControllerTest
 		var jsonContent = await StreamToStringHelper.StreamToStringAsync(
 			storage.ReadStream(appSettings.AppSettingsPath));
 
-		Assert.IsTrue(jsonContent.Contains("app\": {"));
-		Assert.IsTrue(jsonContent.Contains("\"StorageFolder\": \""));
+		Assert.Contains("app\": {", jsonContent);
+		Assert.Contains("\"StorageFolder\": \"", jsonContent);
 	}
 
 	[TestMethod]

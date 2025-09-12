@@ -44,7 +44,7 @@ public class WindowsShellTrashBindingHelperTest
 		var result = WindowsShellTrashBindingHelper.Trash("destPath", OSPlatform.Linux);
 
 		Assert.IsNull(result.Item1);
-		Assert.IsTrue(result.Item2.Contains("Not supported"));
+		Assert.Contains("Not supported", result.Item2);
 	}
 
 	[TestMethod]
@@ -54,7 +54,7 @@ public class WindowsShellTrashBindingHelperTest
 			WindowsShellTrashBindingHelper.Trash(new List<string> { "destPath" }, OSPlatform.Linux);
 
 		Assert.IsNull(result.Item1);
-		Assert.IsTrue(result.Item2.Contains("Not supported"));
+		Assert.Contains("Not supported", result.Item2);
 	}
 
 	[TestMethod]
@@ -187,7 +187,7 @@ public class WindowsShellTrashBindingHelperTest
 		info ??= WindowsShellTrashBindingHelper.SHQueryRecycleBinInfo(hResult, "ZZ:\\",
 			pShQueryRbInfo);
 
-		Assert.IsTrue(info.Contains("Fail! Drive ZZ:\\ contains 0 item(s) in 0 bytes"));
+		Assert.Contains("Fail! Drive ZZ:\\ contains 0 item(s) in 0 bytes", info);
 		Assert.AreEqual(0, pShQueryRbInfo.i64NumItems);
 	}
 
@@ -220,12 +220,12 @@ public class WindowsShellTrashBindingHelperTest
 		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
 		{
 			Assert.IsFalse(driveHasBin);
-			Assert.IsTrue(info.Contains("Unable to load shared library"));
+			Assert.Contains("Unable to load shared library", info);
 			return;
 		}
 
 		Assert.IsFalse(driveHasBin);
-		Assert.IsTrue(info.Contains("Fail! Drive ZZ:\\ contains 0 item(s) in 0 bytes"));
+		Assert.Contains("Fail! Drive ZZ:\\ contains 0 item(s) in 0 bytes", info);
 	}
 
 	[TestMethod]
@@ -239,12 +239,12 @@ public class WindowsShellTrashBindingHelperTest
 		{
 			Assert.AreEqual(0, items);
 			Assert.IsFalse(driveHasBin);
-			Assert.IsTrue(info.Contains("Unable to load shared library"));
+			Assert.Contains("Unable to load shared library", info);
 			Assert.Inconclusive("Shell32.dll is not available on Linux or Mac OS");
 			return;
 		}
 
-		Assert.IsTrue(items >= 0);
+		Assert.IsGreaterThanOrEqualTo(0, items);
 		Assert.IsTrue(driveHasBin);
 	}
 }

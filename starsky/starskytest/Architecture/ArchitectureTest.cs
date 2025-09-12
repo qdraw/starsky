@@ -227,12 +227,13 @@ public partial class TheSolutionShould
 	private static void AssertLayerReferences(IReadOnlyCollection<string> invalidReferences,
 		string layer)
 	{
-		Assert.AreEqual(0, invalidReferences.Count,
+		Assert.IsEmpty(invalidReferences,
 			$"There should be no Helix incompatible references in the {layer} layer. " +
 			$"{invalidReferences.Count} invalid reference{( invalidReferences.Count == 1 ? " was" : "s were" )} " +
 			$"found: {string.Join(", ", invalidReferences)}. Expected 0");
 	}
 
-	[GeneratedRegex("Project\\(\"\\{[\\w-]*\\}\"\\) = \"([\\w _]*.*)\", \"(.*\\.(cs|vcx|vb)proj)\"", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
+	[GeneratedRegex("Project\\(\"\\{[\\w-]*\\}\"\\) = \"([\\w _]*.*)\", \"(.*\\.(cs|vcx|vb)proj)\"",
+		RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
 	private static partial Regex ProjectFileNameRegex();
 }

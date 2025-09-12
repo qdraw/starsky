@@ -228,7 +228,7 @@ public sealed class UploadControllerTest
 		var getAllFiles = await _query.GetAllFilesAsync(toPlaceFolder);
 
 		// Should not duplicate
-		Assert.AreEqual(1, getAllFiles.Count);
+		Assert.HasCount(1, getAllFiles);
 
 		var queryResult = _query.SingleItem(toPlaceSubPath);
 		Assert.AreEqual("Sony", queryResult?.FileIndexItem?.Make);
