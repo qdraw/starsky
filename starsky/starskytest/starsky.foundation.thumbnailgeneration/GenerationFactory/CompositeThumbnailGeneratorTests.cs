@@ -49,7 +49,7 @@ public class CompositeThumbnailGeneratorTests
 
 		// Assert
 		Assert.IsNotNull(results);
-		Assert.AreEqual(1, results.Count);
+		Assert.HasCount(1, results);
 		Assert.IsFalse(results[0].Success);
 		Assert.AreEqual("CompositeThumbnailGenerator failed", results[0].ErrorMessage);
 	}

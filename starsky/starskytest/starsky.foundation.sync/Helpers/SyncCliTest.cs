@@ -60,7 +60,7 @@ public sealed class SyncCliTest
 			new FakeSelectorStorage(), new FakeIWebLogger()).Sync(
 			["-i", "false"]);
 
-		Assert.AreEqual(0, fakeSync.Inputs.Count);
+		Assert.IsEmpty(fakeSync.Inputs);
 	}
 
 	[TestMethod]
@@ -71,7 +71,7 @@ public sealed class SyncCliTest
 			new FakeSelectorStorage(), new FakeIWebLogger()).Sync(
 			["-h"]);
 
-		Assert.IsTrue(console.WrittenLines[0].Contains("Help"));
+		Assert.Contains("Help", console.WrittenLines[0]);
 	}
 
 	[TestMethod]
@@ -108,7 +108,7 @@ public sealed class SyncCliTest
 		await syncCli.Sync(
 			["-g", "0"]);
 
-		var subPathRelative = new StructureService(new FakeSelectorStorage(), 
+		var subPathRelative = new StructureService(new FakeSelectorStorage(),
 				appSettings.Structure,
 				new FakeIWebLogger())
 			.ParseSubfolders(0);
@@ -122,8 +122,8 @@ public sealed class SyncCliTest
 		var stopWatch = Stopwatch.StartNew();
 		stopWatch.Stop();
 		var text = SyncCli.GetStopWatchText(stopWatch, 0);
-		Assert.IsTrue(text.Contains("(in sec:"));
-		Assert.IsTrue(text.Contains("min")); // TRUE
+		Assert.Contains("(in sec:", text);
+		Assert.Contains("min", text); // TRUE
 	}
 
 	[TestMethod]
@@ -132,7 +132,7 @@ public sealed class SyncCliTest
 		var stopWatch = Stopwatch.StartNew();
 		stopWatch.Stop();
 		var text = SyncCli.GetStopWatchText(stopWatch, 999);
-		Assert.IsTrue(text.Contains("(in sec:"));
-		Assert.IsFalse(text.Contains("min")); // FALSE
+		Assert.Contains("(in sec:", text);
+		Assert.DoesNotContain("min", text); // FALSE
 	}
 }

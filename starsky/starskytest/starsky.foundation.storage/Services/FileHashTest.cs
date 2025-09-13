@@ -37,7 +37,7 @@ public sealed class FileHashTest
 			new FileHash(iStorageFake, new FakeIWebLogger()).GetHashCode("/test.jpg", 0);
 
 		Assert.IsFalse(fileHashCode.Value);
-		Assert.IsTrue(fileHashCode.Key.Contains("_T"));
+		Assert.Contains("_T", fileHashCode.Key);
 	}
 
 	[TestMethod]

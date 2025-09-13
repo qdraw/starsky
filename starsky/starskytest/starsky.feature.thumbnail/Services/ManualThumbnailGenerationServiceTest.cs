@@ -51,7 +51,7 @@ public class ManualThumbnailGenerationServiceTest
 
 		await controller.WorkThumbnailGeneration("/");
 
-		Assert.AreEqual(1, socket.Results.Count);
+		Assert.HasCount(1, socket.Results);
 	}
 
 	[TestMethod]
@@ -65,7 +65,7 @@ public class ManualThumbnailGenerationServiceTest
 
 		await controller.WorkThumbnailGeneration("/");
 
-		Assert.AreEqual(0, socket.FakeSendToAllAsync.Count);
+		Assert.IsEmpty(socket.FakeSendToAllAsync);
 	}
 
 	[TestMethod]

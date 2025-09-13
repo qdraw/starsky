@@ -355,7 +355,7 @@ public sealed class MetaUpdateServiceTest
 
 		await service.RotationThumbnailExecute(0, new FileIndexItem("/test.jpg"));
 
-		Assert.AreEqual(0, thumbnailService.InputsRotate.Count);
+		Assert.IsEmpty(thumbnailService.InputsRotate);
 	}
 
 	[TestMethod]

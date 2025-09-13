@@ -56,6 +56,6 @@ public sealed class MetaThumbnailCommandLineHelperTest
 		var currentYear = DateTime.Now.Year.ToString();
 
 		Assert.Contains(currentYear, inputDate);
-		Assert.Contains("Done", console.WrittenLines.LastOrDefault());
+		Assert.Contains("Done", console.WrittenLines.Last());
 	}
 }

@@ -30,7 +30,6 @@ public class CoreFoundationMacOsBindingsTests
 	}
 
 	[TestMethod]
-	[DataTestMethod]
 	[DataRow(CoreFoundationMacOsBindings.CFURLPathStyle.HFS)]
 	[DataRow(CoreFoundationMacOsBindings.CFURLPathStyle.POSIX)]
 	[DataRow(CoreFoundationMacOsBindings.CFURLPathStyle.Windows)]

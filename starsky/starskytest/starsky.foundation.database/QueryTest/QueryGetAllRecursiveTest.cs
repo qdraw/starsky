@@ -95,7 +95,7 @@ public sealed class QueryGetAllRecursiveTest
 		return instance;
 	}
 
-	[DataTestMethod] // [Theory]
+	[TestMethod] // [Theory]
 	[DataRow(MySqlErrorCode.QueryTimeout)]
 	[DataRow(MySqlErrorCode.QueryInterrupted)]
 	public async Task Retry_When_HitTimeout(MySqlErrorCode code)

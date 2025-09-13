@@ -18,14 +18,6 @@ public class QueryRemoveItemAsyncTest
 {
 	private readonly Query _query;
 
-	private static IServiceScopeFactory CreateNewScope()
-	{
-		var services = new ServiceCollection();
-		services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase(nameof(QueryTest)));
-		var serviceProvider = services.BuildServiceProvider();
-		return serviceProvider.GetRequiredService<IServiceScopeFactory>();
-	}
-	
 	public QueryRemoveItemAsyncTest()
 	{
 		var provider = new ServiceCollection()
@@ -36,10 +28,19 @@ public class QueryRemoveItemAsyncTest
 		var scope = serviceScope.CreateScope();
 		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 		var logger = new FakeIWebLogger();
-		_query = new Query(dbContext, 
-			new AppSettings{Verbose = true}, serviceScope,logger ,memoryCache);
+		_query = new Query(dbContext,
+			new AppSettings { Verbose = true }, serviceScope, logger, memoryCache);
 	}
-	
+
+	private static IServiceScopeFactory CreateNewScope()
+	{
+		var services = new ServiceCollection();
+		services.AddDbContext<ApplicationDbContext>(options =>
+			options.UseInMemoryDatabase(nameof(QueryTest)));
+		var serviceProvider = services.BuildServiceProvider();
+		return serviceProvider.GetRequiredService<IServiceScopeFactory>();
+	}
+
 	[TestMethod]
 	public async Task QueryRemoveItemAsyncTest_SingleItem_AddOneItem()
 	{
@@ -50,35 +51,39 @@ public class QueryRemoveItemAsyncTest
 		await _query.RemoveItemAsync(result);
 		Assert.IsNull(_query.GetObjectByFilePath(path));
 	}
-		
+
 	[TestMethod]
 	public async Task QueryRemoveItemAsyncTest_List_AddOneItem()
 	{
-		var result1 = await _query.AddItemAsync(new FileIndexItem("/QueryRemoveItemAsyncTest_AddOneItem_List_1"));
-		var result2 = await _query.AddItemAsync(new FileIndexItem("/QueryRemoveItemAsyncTest_AddOneItem_List_2"));
+		var result1 =
+			await _query.AddItemAsync(
+				new FileIndexItem("/QueryRemoveItemAsyncTest_AddOneItem_List_1"));
+		var result2 =
+			await _query.AddItemAsync(
+				new FileIndexItem("/QueryRemoveItemAsyncTest_AddOneItem_List_2"));
 
-		await _query.RemoveItemAsync(new List<FileIndexItem>{result1, result2});
+		await _query.RemoveItemAsync(new List<FileIndexItem> { result1, result2 });
 
 		Assert.IsNull(_query.GetObjectByFilePath("/QueryRemoveItemAsyncTest_AddOneItem_List_1"));
 		Assert.IsNull(_query.GetObjectByFilePath("/QueryRemoveItemAsyncTest_AddOneItem_List_2"));
 	}
-	
+
 	[TestMethod]
 	public async Task Query_RemoveAsync_Disposed()
 	{
 		var addedItems = new List<FileIndexItem>
 		{
-			new FileIndexItem {FileHash = "RemoveAsync_Disposed__1"},
-			new FileIndexItem {FileHash = "RemoveAsync_Disposed__2"}
+			new() { FileHash = "RemoveAsync_Disposed__1" },
+			new() { FileHash = "RemoveAsync_Disposed__2" }
 		};
-			
+
 		var serviceScopeFactory = CreateNewScope();
 		var scope = serviceScopeFactory.CreateScope();
 		var dbContextDisposed = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
 		await dbContextDisposed.FileIndex.AddRangeAsync(addedItems);
 		await dbContextDisposed.SaveChangesAsync();
-		
+
 		// Dispose here
 		await dbContextDisposed.DisposeAsync();
 
@@ -86,12 +91,12 @@ public class QueryRemoveItemAsyncTest
 			new AppSettings { AddMemoryCache = false }, serviceScopeFactory, new FakeIWebLogger(),
 			new FakeMemoryCache());
 		await service.RemoveItemAsync(addedItems);
-			
-		var context = new InjectServiceScope(serviceScopeFactory).Context();
-		var queryFromDb = await context.FileIndex.Where(p => 
-			p.FileHash == addedItems[0].FilePath || p.FileHash == addedItems[1].FilePath
-			).ToListAsync();
 
-		Assert.AreEqual(0, queryFromDb.Count);
+		var context = new InjectServiceScope(serviceScopeFactory).Context();
+		var queryFromDb = await context.FileIndex.Where(p =>
+			p.FileHash == addedItems[0].FilePath || p.FileHash == addedItems[1].FilePath
+		).ToListAsync();
+
+		Assert.IsEmpty(queryFromDb);
 	}
 }

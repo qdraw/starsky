@@ -32,7 +32,7 @@ public class EnumListConverterTests
 		});
 
 		// Additional assertions to verify the exception message, if necessary
-		Assert.IsTrue(ex.Message.Contains("The JSON value could not be converted"));
+		Assert.Contains("The JSON value could not be converted", ex.Message);
 	}
 
 	[TestMethod]
@@ -47,7 +47,7 @@ public class EnumListConverterTests
 
 		// Assert
 		Assert.IsNotNull(container);
-		Assert.AreEqual(3, container.ValueTypes.Count);
+		Assert.HasCount(3, container.ValueTypes);
 		Assert.AreEqual(ValueType.Value1, container.ValueTypes[0]);
 		Assert.AreEqual(ValueType.Value2, container.ValueTypes[1]);
 		Assert.AreEqual(ValueType.Value3, container.ValueTypes[2]);
@@ -84,8 +84,8 @@ public class EnumListConverterTests
 		});
 
 		// Verify the exception message to ensure it contains the expected details
-		Assert.IsTrue(ex.Message.Contains("Unknown enum value: InvalidValue"),
-			"Exception message does not contain expected text.");
+		Assert.Contains("Unknown enum value: InvalidValue",
+			ex.Message, "Exception message does not contain expected text.");
 	}
 
 	[TestMethod]
@@ -102,9 +102,8 @@ public class EnumListConverterTests
 		});
 
 		// Verify the exception message to ensure it contains the expected text
-		Assert.IsTrue(
-			ex.Message.Contains("Expected depth to be zero at the end of the JSON payload."),
-			"Exception message does not contain expected text.");
+		Assert.Contains("Expected depth to be zero at the end of the JSON payload.",
+			ex.Message, "Exception message does not contain expected text.");
 	}
 
 	[TestMethod]

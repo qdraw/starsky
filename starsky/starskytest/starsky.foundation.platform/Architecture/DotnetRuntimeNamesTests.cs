@@ -19,18 +19,15 @@ public class DotnetRuntimeNamesTests
 			.ToList();
 
 		// Assert
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual(CurrentArchitecture.GetCurrentRuntimeIdentifier(), result[0]);
 	}
-	
+
 	[TestMethod]
 	public void GetArchitecturesNoGenericAndFallback_ShouldSkipGenericRuntimeName()
 	{
 		// Arrange
-		var architectures = new List<string>
-		{
-			DotnetRuntimeNames.GenericRuntimeName
-		};
+		var architectures = new List<string> { DotnetRuntimeNames.GenericRuntimeName };
 
 		// Act
 		var result = DotnetRuntimeNames.GetArchitecturesNoGenericAndFallback(architectures);

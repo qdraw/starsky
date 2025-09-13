@@ -242,13 +242,13 @@ public sealed class DeleteItemTest
 		var deleteItem = new DeleteItem(fakeQuery, new AppSettings(), selectorStorage);
 		var result = await deleteItem.DeleteAsync("/test", true);
 
-		Assert.AreEqual(3, result.Count);
+		Assert.HasCount(3, result);
 		Assert.AreEqual("/test", result[0].FilePath);
 		Assert.AreEqual("/test/image.jpg", result[1].FilePath);
 		Assert.AreEqual("/test/image.dng", result[2].FilePath);
 
 		Assert.AreEqual(0, storage.GetAllFilesInDirectoryRecursive("/").Count());
-		Assert.AreEqual(0, fakeQuery.GetAllRecursive("/").Count);
+		Assert.IsEmpty(await fakeQuery.GetAllRecursiveAsync());
 	}
 
 	[TestMethod]
@@ -270,13 +270,13 @@ public sealed class DeleteItemTest
 		var deleteItem = new DeleteItem(fakeQuery, new AppSettings(), selectorStorage);
 		var result = await deleteItem.DeleteAsync("/test", false);
 
-		Assert.AreEqual(3, result.Count);
+		Assert.HasCount(3, result);
 		Assert.AreEqual("/test", result[0].FilePath);
 		Assert.AreEqual("/test/image.jpg", result[1].FilePath);
 		Assert.AreEqual("/test/image.dng", result[2].FilePath);
 
 		Assert.AreEqual(0, storage.GetAllFilesInDirectoryRecursive("/").Count());
-		Assert.AreEqual(0, ( await fakeQuery.GetAllRecursiveAsync() ).Count);
+		Assert.IsEmpty(await fakeQuery.GetAllRecursiveAsync());
 	}
 
 
@@ -300,7 +300,7 @@ public sealed class DeleteItemTest
 		var deleteItem = new DeleteItem(fakeQuery, new AppSettings(), selectorStorage);
 		var result = await deleteItem.DeleteAsync("/test", false);
 
-		Assert.AreEqual(3, result.Count);
+		Assert.HasCount(3, result);
 		Assert.AreEqual("/test", result[0].FilePath);
 		Assert.AreEqual("/test/child", result[1].FilePath);
 		Assert.AreEqual("/test/child/child", result[2].FilePath);

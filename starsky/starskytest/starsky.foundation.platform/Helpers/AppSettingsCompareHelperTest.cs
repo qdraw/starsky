@@ -247,7 +247,7 @@ public sealed class AppSettingsCompareHelperTest
 
 		Assert.AreEqual(source.ReadOnlyFolders.FirstOrDefault(),
 			to.ReadOnlyFolders.FirstOrDefault());
-		Assert.AreEqual(0, compare.Count);
+		Assert.IsEmpty(compare);
 	}
 
 	[TestMethod]
@@ -394,7 +394,7 @@ public sealed class AppSettingsCompareHelperTest
 		var expected = source.AccountRolesByEmailRegisterOverwrite.Keys.FirstOrDefault();
 		var actual = to.AccountRolesByEmailRegisterOverwrite.Keys.FirstOrDefault();
 		Assert.AreEqual(expected, actual);
-		Assert.AreEqual(0, compare.Count);
+		Assert.IsEmpty(compare);
 	}
 
 	[TestMethod]
@@ -455,7 +455,7 @@ public sealed class AppSettingsCompareHelperTest
 			to.DemoData.FirstOrDefault()?.Key);
 		Assert.AreEqual(source.DemoData.FirstOrDefault()?.Value,
 			to.DemoData.FirstOrDefault()?.Value);
-		Assert.AreEqual(0, compare.Count);
+		Assert.IsEmpty(compare);
 	}
 
 	[TestMethod]
@@ -475,9 +475,8 @@ public sealed class AppSettingsCompareHelperTest
 			Assert.Fail("to.DemoData should be null");
 		}
 
-		Assert.AreEqual(0, compare.Count);
+		Assert.IsEmpty(compare);
 	}
-
 
 	[TestMethod]
 	public void AppSettingsKeyValue_Compare()
@@ -763,6 +762,6 @@ public sealed class AppSettingsCompareHelperTest
 
 		AppSettingsCompareHelper.Compare(source, to);
 
-		Assert.AreEqual(0, to.DefaultDesktopEditor.Count);
+		Assert.IsEmpty(to.DefaultDesktopEditor);
 	}
 }

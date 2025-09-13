@@ -11,7 +11,7 @@ public sealed class HashSetHelperTest
 	public void HashSetHelperTest_NoContent()
 	{
 		var result = HashSetHelper.StringToHashSet(string.Empty);
-		Assert.AreEqual(0, result.Count);
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]
@@ -45,7 +45,7 @@ public sealed class HashSetHelperTest
 	public void HashSetHelperTest_DoubleSpaces()
 	{
 		var hashSetResult = HashSetHelper.StringToHashSet("test0,   test1 , test2,  test3");
-		Assert.AreEqual(4, hashSetResult.Count);
+		Assert.HasCount(4, hashSetResult);
 
 		Assert.AreEqual("test0", hashSetResult.ToList()[0]);
 		Assert.AreEqual("test1", hashSetResult.ToList()[1]);

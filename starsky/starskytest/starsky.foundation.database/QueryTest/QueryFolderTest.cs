@@ -73,7 +73,7 @@ public sealed class QueryFolderTest
 
 		// Assert
 		Assert.IsTrue(result.Item1);
-		Assert.AreEqual(2, result.Item2.Count);
+		Assert.HasCount(2, result.Item2);
 		Assert.AreEqual("/test_folder/file1.jpg", result.Item2[0].FilePath);
 		Assert.AreEqual("/test_folder/file2.jpg", result.Item2[1].FilePath);
 	}

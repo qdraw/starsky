@@ -42,7 +42,7 @@ public class ReadMetaSubPathStorageTest
 		var result =
 			await readMetaSubPathStorage.ReadExifAndXmpFromFileAddFilePathHashAsync(
 				new List<string>(), new List<string>());
-		Assert.AreEqual(0, result.Count);
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]

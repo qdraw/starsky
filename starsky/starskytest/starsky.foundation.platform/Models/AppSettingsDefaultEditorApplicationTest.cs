@@ -41,7 +41,7 @@ public class AppSettingsDefaultEditorApplicationTest
 
 		Assert.IsNotNull(json);
 		Assert.AreEqual(@"C:\Program Files\MyApp\MyApp.exe", json.ApplicationPath);
-		Assert.AreEqual(1, json.ImageFormats.Count);
+		Assert.HasCount(1, json.ImageFormats);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.bmp, json.ImageFormats[0]);
 	}
 }

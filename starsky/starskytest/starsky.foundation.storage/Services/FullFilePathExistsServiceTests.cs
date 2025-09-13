@@ -26,7 +26,7 @@ public class FullFilePathExistsServiceTests
 		_appSettings = new AppSettings { TempFolder = "/", StorageFolder = "/" };
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow(true, "/test-file.jpg", true, false, "",
 		DisplayName = "File exists in host storage")]
 	[DataRow(true, "/file-remote.jpg", false, true, "filehash.jpg",

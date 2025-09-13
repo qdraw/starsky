@@ -100,7 +100,7 @@ public class ShellThumbnailExtractionWindowsTest
 	/// </summary>
 	/// <param name="height">expected height</param>
 	/// <param name="doubleSlashInPath">doubleSlashInPath</param>
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow(67, true)]
 	[DataRow(67, false)]
 	public async Task GenerateThumbnail_ValidInput_CreatesThumbnail__OnlyOnWindowsX64(int height,
@@ -130,7 +130,7 @@ public class ShellThumbnailExtractionWindowsTest
 			Assert.IsNotNull(image, "Image should not be null.");
 			Assert.AreEqual(100, image.Width, "Image width is not as expected.");
 			Assert.AreEqual(67, image.Height, "Image height is not as expected.");
-			Assert.IsTrue(new FileInfo(output).Length > 0, "Output file is empty.");
+			Assert.IsGreaterThan(0, new FileInfo(output).Length, "Output file is empty.");
 		}
 		finally
 		{
@@ -197,7 +197,7 @@ public class ShellThumbnailExtractionWindowsTest
 			output);
 
 		Assert.IsTrue(File.Exists(output), "Output file was not created.");
-		Assert.IsTrue(new FileInfo(output).Length > 0, "Output file is empty.");
+		Assert.IsGreaterThan(0, new FileInfo(output).Length, "Output file is empty.");
 
 		File.Delete(output);
 	}

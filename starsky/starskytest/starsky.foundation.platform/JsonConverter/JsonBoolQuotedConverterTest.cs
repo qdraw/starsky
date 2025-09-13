@@ -67,8 +67,8 @@ public sealed class JsonBoolQuotedConverterTest
 		});
 
 		// Optionally verify the exception message if needed
-		Assert.IsTrue(ex.Message.Contains("JSON value could not be converted"),
-			"Exception message does not contain expected text.");
+		Assert.Contains("JSON value could not be converted",
+			ex.Message, "Exception message does not contain expected text.");
 	}
 
 

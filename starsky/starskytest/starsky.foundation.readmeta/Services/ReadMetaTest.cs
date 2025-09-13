@@ -273,7 +273,7 @@ public sealed class ReadMetaTest
 			await readMetaSubPathStorage.ReadExifAndXmpFromFileAddFilePathHashAsync(
 				new List<string> { "/test.jpg" }, list);
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual(expectedHash, result[0].FileHash);
 	}
 
@@ -292,7 +292,7 @@ public sealed class ReadMetaTest
 				new List<string> { "/test.jpg" }, ["test_hash"]);
 
 		// should get the hash from the list
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual("test_hash", result[0].FileHash);
 	}
 }

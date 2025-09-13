@@ -219,7 +219,7 @@ public sealed class SyncMultiFileTest
 		Assert.IsTrue(isCalled);
 
 		var items = result.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList();
-		Assert.AreEqual(1, items.Count);
+		Assert.HasCount(1, items);
 		Assert.AreEqual("/", items[0].FilePath);
 	}
 
@@ -421,7 +421,7 @@ public sealed class SyncMultiFileTest
 			await sync.MultiFile(
 				null as List<FileIndexItem>); // % % % % Null value here % % % % % 
 
-		Assert.AreEqual(0, result.Count);
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]

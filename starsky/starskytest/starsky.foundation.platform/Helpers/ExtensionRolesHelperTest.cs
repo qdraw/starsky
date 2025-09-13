@@ -24,7 +24,7 @@ public sealed class ExtensionRolesHelperTest
 		Assert.IsFalse(ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported("file.xmp"));
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow("file.mp4")]
 	[DataRow("file.mov")]
 	[DataRow("file.mts")]
@@ -34,8 +34,8 @@ public sealed class ExtensionRolesHelperTest
 		Assert.IsTrue(ExtensionRolesHelper.IsExtensionVideoSupported(filePath));
 		Assert.IsFalse(ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(filePath));
 	}
-	
-	[DataTestMethod]
+
+	[TestMethod]
 	[DataRow(null)]
 	[DataRow("file.txt")]
 	public void Files_IsExtensionVideoSupported_NeverFound(string filePath)
@@ -69,8 +69,8 @@ public sealed class ExtensionRolesHelperTest
 	public void Files_ExtensionSyncSupportedList_TiffCheck()
 	{
 		var extensionSyncSupportedList = ExtensionRolesHelper.ExtensionSyncSupportedList;
-		Assert.IsTrue(extensionSyncSupportedList.Contains("tiff"));
-		Assert.IsTrue(extensionSyncSupportedList.Contains("jpg"));
+		Assert.Contains("tiff", extensionSyncSupportedList);
+		Assert.Contains("jpg", extensionSyncSupportedList);
 	}
 
 	[TestMethod]
