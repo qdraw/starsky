@@ -92,6 +92,9 @@ dotnet_diagnostic.MSTEST0040.severity = warning
 # Use 'ConditionBaseAttribute' on test classes
 dotnet_diagnostic.MSTEST0041.severity = warning
 
+# Use 'Assert.HasCount' instead of 'Assert.AreEqual'
+dotnet_diagnostic.MSTEST0037.severity = warning
+
 # Use 'CooperativeCancellation = true' with '[Timeout]' to enable cooperative cancellation behavior
 dotnet_diagnostic.MSTEST0045.severity = warning
 
