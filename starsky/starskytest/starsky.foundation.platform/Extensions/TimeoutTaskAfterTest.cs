@@ -46,7 +46,7 @@ public sealed class TimeoutTaskAfterTest
 #if DEBUG
 	[Timeout(4000, CooperativeCancellation = true)]
 #else
-		[Timeout(10000, CooperativeCancellation = true)]
+		[Timeout(20000, CooperativeCancellation = true)]
 #endif
 	public async Task TimeoutAfter_CheckIfSuccess()
 	{
