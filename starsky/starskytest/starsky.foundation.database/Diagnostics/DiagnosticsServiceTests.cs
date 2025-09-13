@@ -41,7 +41,7 @@ public class DiagnosticsServiceTests
 			Key = Enum.GetName(DiagnosticsType.ApplicationStoppingLifetimeInMinutes)!,
 			Value = value
 		});
-		await dbContext.SaveChangesAsync();
+		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		var item = await new DiagnosticsService(dbContext, null!).GetItem(DiagnosticsType
 			.ApplicationStoppingLifetimeInMinutes);
@@ -100,7 +100,7 @@ public class DiagnosticsServiceTests
 		Assert.AreEqual("test", item.Value);
 
 		var dbResult = await dbContext.Diagnostics.FirstOrDefaultAsync(p =>
-			p.Key == Enum.GetName(DiagnosticsType.ApplicationStoppingLifetimeInMinutes));
+			p.Key == Enum.GetName(DiagnosticsType.ApplicationStoppingLifetimeInMinutes), TestContext.CancellationTokenSource.Token);
 		Assert.AreEqual("test", dbResult?.Value);
 		await RemoveAsync(dbContext, DiagnosticsType
 			.ApplicationStoppingLifetimeInMinutes);
@@ -140,7 +140,7 @@ public class DiagnosticsServiceTests
 			.GetRequiredService<ApplicationDbContext>();
 
 		var dbResult = await dbContext.Diagnostics.FirstOrDefaultAsync(p =>
-			p.Key == Enum.GetName(DiagnosticsType.ApplicationStoppingLifetimeInMinutes));
+			p.Key == Enum.GetName(DiagnosticsType.ApplicationStoppingLifetimeInMinutes), TestContext.CancellationTokenSource.Token);
 		Assert.AreEqual("test", dbResult?.Value);
 
 		await RemoveAsync(dbContext, DiagnosticsType
@@ -159,7 +159,7 @@ public class DiagnosticsServiceTests
 		Assert.AreEqual("test", item.Value);
 
 		var dbResult = await dbContext.Diagnostics.FirstOrDefaultAsync(p =>
-			p.Key == Enum.GetName(DiagnosticsType.ApplicationStoppingLifetimeInMinutes));
+			p.Key == Enum.GetName(DiagnosticsType.ApplicationStoppingLifetimeInMinutes), TestContext.CancellationTokenSource.Token);
 
 		Assert.AreEqual("test", dbResult?.Value);
 		await RemoveAsync(dbContext, DiagnosticsType
@@ -198,7 +198,7 @@ public class DiagnosticsServiceTests
 			.GetRequiredService<ApplicationDbContext>();
 
 		var dbResult = await dbContext.Diagnostics.FirstOrDefaultAsync(p =>
-			p.Key == Enum.GetName(DiagnosticsType.ApplicationStoppingLifetimeInMinutes));
+			p.Key == Enum.GetName(DiagnosticsType.ApplicationStoppingLifetimeInMinutes), TestContext.CancellationTokenSource.Token);
 		Assert.AreEqual("test", dbResult?.Value);
 
 		await RemoveAsync(dbContext, DiagnosticsType
@@ -227,11 +227,13 @@ public class DiagnosticsServiceTests
 		Assert.AreEqual("test", item.Value);
 
 		var dbResult = await dbContext.Diagnostics.FirstOrDefaultAsync(p =>
-			p.Key == Enum.GetName(DiagnosticsType.ApplicationStoppingLifetimeInMinutes));
+			p.Key == Enum.GetName(DiagnosticsType.ApplicationStoppingLifetimeInMinutes), TestContext.CancellationTokenSource.Token);
 		Assert.AreEqual("test", dbResult?.Value);
 		await RemoveAsync(dbContext, DiagnosticsType
 			.ApplicationStoppingLifetimeInMinutes);
 	}
+
+	public TestContext TestContext { get; set; }
 }
 
 public class TestOverWriteEnumModel

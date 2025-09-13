@@ -92,6 +92,9 @@ dotnet_diagnostic.MSTEST0040.severity = warning
 # Use 'ConditionBaseAttribute' on test classes
 dotnet_diagnostic.MSTEST0041.severity = warning
 
+# Consider using the overload that accepts a CancellationToken and pass 'TestContext.CancellationTokenSource.Token'
+dotnet_diagnostic.MSTEST0049.severity = warning
+
 # Seal internal types
 dotnet_diagnostic.CA1852.severity = warning
 

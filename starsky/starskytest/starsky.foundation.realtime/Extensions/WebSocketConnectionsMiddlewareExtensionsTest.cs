@@ -37,13 +37,13 @@ public sealed class WebSocketConnectionsMiddlewareExtensionsTest
 			})
 			.Build();
 
-		await host.StartAsync();
+		await host.StartAsync(TestContext.CancellationTokenSource.Token);
 
 		// it should not fail
 		var fakeService = host.Services.GetService<IWebSocketConnectionsService>();
 		Assert.IsNotNull(fakeService);
 
-		await host.StopAsync();
+		await host.StopAsync(TestContext.CancellationTokenSource.Token);
 	}
 
 	[TestMethod]
@@ -61,4 +61,6 @@ public sealed class WebSocketConnectionsMiddlewareExtensionsTest
 		// Optionally, verify the exception message or other properties
 		Assert.AreEqual("app", exception.ParamName); // Assuming the exception's ParamName is "app"
 	}
+
+	public TestContext TestContext { get; set; }
 }

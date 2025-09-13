@@ -27,6 +27,8 @@ public sealed class QueryGetAllFolderAsyncTest
 		_memoryCache = provider.GetRequiredService<IMemoryCache>();
 	}
 
+	public TestContext TestContext { get; set; }
+
 	private IServiceScopeFactory CreateNewScope()
 	{
 		var services = new ServiceCollection();
@@ -49,12 +51,16 @@ public sealed class QueryGetAllFolderAsyncTest
 			new FakeIWebLogger(), new FakeMemoryCache());
 
 		await dbContext.FileIndex.AddAsync(
-			new FileIndexItem("/GetFoldersAsync") { IsDirectory = true });
+			new FileIndexItem("/GetFoldersAsync") { IsDirectory = true },
+			TestContext.CancellationTokenSource.Token);
 		await dbContext.FileIndex.AddAsync(
-			new FileIndexItem("/GetFoldersAsync/test") { IsDirectory = true });
-		await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetFoldersAsync/test.jpg"));
-		await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetFoldersAsync/test/test.jpg"));
-		await dbContext.SaveChangesAsync();
+			new FileIndexItem("/GetFoldersAsync/test") { IsDirectory = true },
+			TestContext.CancellationTokenSource.Token);
+		await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetFoldersAsync/test.jpg"),
+			TestContext.CancellationTokenSource.Token);
+		await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetFoldersAsync/test/test.jpg"),
+			TestContext.CancellationTokenSource.Token);
+		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		var items = ( await query.GetFoldersAsync("/GetFoldersAsync") )
 			.OrderBy(p => p.FileName).ToList();
@@ -76,15 +82,20 @@ public sealed class QueryGetAllFolderAsyncTest
 			null, new FakeIWebLogger(), new FakeMemoryCache());
 
 		await dbContext.FileIndex.AddAsync(
-			new FileIndexItem("/GetFolders_multi_01") { IsDirectory = true });
+			new FileIndexItem("/GetFolders_multi_01") { IsDirectory = true },
+			TestContext.CancellationTokenSource.Token);
 		await dbContext.FileIndex.AddAsync(
-			new FileIndexItem("/GetFolders_multi_01/test") { IsDirectory = true });
+			new FileIndexItem("/GetFolders_multi_01/test") { IsDirectory = true },
+			TestContext.CancellationTokenSource.Token);
 		await dbContext.FileIndex.AddAsync(
-			new FileIndexItem("/GetFolders_multi_02") { IsDirectory = true });
+			new FileIndexItem("/GetFolders_multi_02") { IsDirectory = true },
+			TestContext.CancellationTokenSource.Token);
 		await dbContext.FileIndex.AddAsync(
-			new FileIndexItem("/GetFolders_multi_02/test") { IsDirectory = true });
-		await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetFolders_multi_02/test.jpg"));
-		await dbContext.SaveChangesAsync();
+			new FileIndexItem("/GetFolders_multi_02/test") { IsDirectory = true },
+			TestContext.CancellationTokenSource.Token);
+		await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetFolders_multi_02/test.jpg"),
+			TestContext.CancellationTokenSource.Token);
+		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		var items = ( await query.GetFoldersAsync(
 				new List<string> { "/GetFolders_multi_01", "/GetFolders_multi_02" }) )
@@ -109,8 +120,8 @@ public sealed class QueryGetAllFolderAsyncTest
 
 		// item sub folder
 		var item = new FileIndexItem("/test_324323423/test_3423434") { IsDirectory = true };
-		await dbContext.FileIndex.AddAsync(item);
-		await dbContext.SaveChangesAsync();
+		await dbContext.FileIndex.AddAsync(item, TestContext.CancellationTokenSource.Token);
+		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		// Important to dispose!
 		await dbContext.DisposeAsync();

@@ -39,10 +39,12 @@ public class ProgramTest
 			Environment.GetEnvironmentVariable("app__EnablePackageTelemetry");
 		_ffmpegSkipDownloadOnStartup =
 			Environment.GetEnvironmentVariable("app__ffmpegSkipDownloadOnStartup");
-		
+
 		// see also:
 		// starsky/starskytest/starskyGeoCli/starskyGeoCliTest.cs
 	}
+
+	public TestContext TestContext { get; set; }
 
 	[TestMethod]
 	[Timeout(9000)]
@@ -68,7 +70,9 @@ public class ProgramTest
 
 		using HttpClient client = new();
 		await Assert.ThrowsExactlyAsync<HttpRequestException>(async () =>
-			await client.GetAsync("http://localhost:7514").TimeoutAfter(3000));
+			await client
+				.GetAsync("http://localhost:7514", TestContext.CancellationTokenSource.Token)
+				.TimeoutAfter(3000));
 		// and this address does not exist
 	}
 
@@ -90,7 +94,7 @@ public class ProgramTest
 
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS", url);
 
-		var builder = WebApplication.CreateBuilder(Array.Empty<string>());
+		var builder = WebApplication.CreateBuilder([]);
 		var app = builder.Build();
 
 		await Assert.ThrowsExactlyAsync<TimeoutException>(async () =>
@@ -107,7 +111,8 @@ public class ProgramTest
 		var app = builder.Build();
 
 		await Assert.ThrowsExactlyAsync<FormatException>(async () =>
-			await Program.RunAsync(app).WaitAsync(TimeSpan.FromMilliseconds(1000)));
+			await Program.RunAsync(app).WaitAsync(TimeSpan.FromMilliseconds(1000),
+				TestContext.CancellationTokenSource.Token));
 	}
 
 	[ClassCleanup(ClassCleanupBehavior.EndOfClass)]

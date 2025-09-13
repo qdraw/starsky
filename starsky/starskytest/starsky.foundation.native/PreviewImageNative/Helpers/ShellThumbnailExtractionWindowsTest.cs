@@ -126,7 +126,7 @@ public class ShellThumbnailExtractionWindowsTest
 			Assert.IsTrue(File.Exists(output), "Output file was not created.");
 
 			// test with imageSharp if the image is valid
-			using var image = await Image.LoadAsync(output);
+			using var image = await Image.LoadAsync(output, TestContext.CancellationTokenSource.Token);
 			Assert.IsNotNull(image, "Image should not be null.");
 			Assert.AreEqual(100, image.Width, "Image width is not as expected.");
 			Assert.AreEqual(67, image.Height, "Image height is not as expected.");
@@ -267,4 +267,6 @@ public class ShellThumbnailExtractionWindowsTest
 		Assert.AreEqual("SIIGBF_INCACHEONLY",
 			$"{ShellThumbnailExtractionWindows.SIIGBF.SIIGBF_INCACHEONLY}");
 	}
+
+	public TestContext TestContext { get; set; }
 }

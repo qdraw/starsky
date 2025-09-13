@@ -169,10 +169,10 @@ namespace starskytest.Controllers
 			controller.Logout();
 
 			// And clean afterward
-			var itemWithId = await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == newAccount.Name);
+			var itemWithId = await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == newAccount.Name, TestContext.CancellationTokenSource.Token);
 			Assert.IsNotNull(itemWithId);
 			_dbContext.Users.Remove(itemWithId);
-			await _dbContext.SaveChangesAsync();
+			await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 		}
 
 		[TestMethod]
@@ -467,10 +467,10 @@ namespace starskytest.Controllers
 			Assert.IsNotNull(actionResult);
 			Assert.AreEqual("Account Created", actionResult.Value);
 
-			var getUser = await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == user.Name);
+			var getUser = await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == user.Name, TestContext.CancellationTokenSource.Token);
 			Assert.IsNotNull(getUser);
 			_dbContext.Users.Remove(getUser);
-			await _dbContext.SaveChangesAsync();
+			await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 		}
 
 		[TestMethod]
@@ -498,7 +498,7 @@ namespace starskytest.Controllers
 			var user = new User() { Name = "JohnDoe1" };
 
 			_dbContext.Users.Add(user);
-			await _dbContext.SaveChangesAsync();
+			await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 			var controller =
 				new AccountController(_userManager, _appSettings, _antiForgery, _selectorStorage)
@@ -516,10 +516,10 @@ namespace starskytest.Controllers
 			Assert.AreEqual(200, controller.Response.StatusCode);
 
 			// And clean afterward
-			var getUser = await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == user.Name);
+			var getUser = await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == user.Name, TestContext.CancellationTokenSource.Token);
 			Assert.IsNotNull(getUser);
 			_dbContext.Users.Remove(getUser);
-			await _dbContext.SaveChangesAsync();
+			await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 		}
 
 		[TestMethod]
@@ -649,10 +649,10 @@ namespace starskytest.Controllers
 			controller.LogoutJson();
 
 			// Clean afterwards            
-			var user = await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == userId);
+			var user = await _dbContext.Users.FirstOrDefaultAsync(p => p.Name == userId, TestContext.CancellationTokenSource.Token);
 			Assert.IsNotNull(user);
 			_dbContext.Users.Remove(user);
-			await _dbContext.SaveChangesAsync();
+			await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 		}
 
 		[TestMethod]
@@ -910,5 +910,7 @@ namespace starskytest.Controllers
 			// Assert
 			Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 		}
+
+		public TestContext TestContext { get; set; }
 	}
 }

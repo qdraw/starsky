@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -68,6 +69,7 @@ public sealed class FileHashTest
 	}
 
 	[TestMethod]
+	[SuppressMessage("Usage", "MSTEST0049:Flow TestContext.CancellationToken to async operations")]
 	public async Task CalculateHashAsync_Dispose()
 	{
 		var stream = new MemoryStream();
@@ -78,4 +80,6 @@ public sealed class FileHashTest
 		Assert.IsFalse(stream.CanRead);
 		Assert.IsFalse(stream.CanWrite);
 	}
+
+	public TestContext TestContext { get; set; }
 }

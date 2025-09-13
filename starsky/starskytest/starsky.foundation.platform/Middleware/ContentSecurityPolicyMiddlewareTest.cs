@@ -26,8 +26,8 @@ public sealed class ContentSecurityPolicyMiddlewareTest
 				app.UseCheckIfAccountExist();
 			}).Build();
 
-		await host.StartAsync();
-		await host.StopAsync();
+		await host.StartAsync(TestContext.CancellationTokenSource.Token);
+		await host.StopAsync(TestContext.CancellationTokenSource.Token);
 		Assert.IsNotNull(host);
 	}
 
@@ -154,4 +154,6 @@ public sealed class ContentSecurityPolicyMiddlewareTest
 
 		Assert.Contains("require-trusted-types-for", csp);
 	}
+
+	public TestContext TestContext { get; set; }
 }

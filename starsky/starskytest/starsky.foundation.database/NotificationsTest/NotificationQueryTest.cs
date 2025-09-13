@@ -54,12 +54,12 @@ public sealed class NotificationQueryTest
 
 		var testNotification =
 			await _dbContext.Notifications.FirstOrDefaultAsync(p =>
-				p.Content!.Contains("test"));
+				p.Content!.Contains("test"), TestContext.CancellationTokenSource.Token);
 
 		Assert.IsNotNull(testNotification);
 
 		_dbContext.Notifications.Remove(testNotification);
-		await _dbContext.SaveChangesAsync();
+		await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 	}
 
 	[TestMethod]
@@ -83,15 +83,15 @@ public sealed class NotificationQueryTest
 
 		var testNotification =
 			await context.Notifications.FirstOrDefaultAsync(p =>
-				p.Content!.Contains("test_disposed_notification"));
+				p.Content!.Contains("test_disposed_notification"), TestContext.CancellationTokenSource.Token);
 
 		// and remove it afterward
-		foreach ( var notificationsItem in await context.Notifications.ToListAsync() )
+		foreach ( var notificationsItem in await context.Notifications.ToListAsync(TestContext.CancellationTokenSource.Token) )
 		{
 			context.Notifications.Remove(notificationsItem);
 		}
 
-		await context.SaveChangesAsync();
+		await context.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		Assert.IsNotNull(testNotification?.Content);
 		Assert.IsGreaterThanOrEqualTo(1746613149, testNotification.DateTimeEpoch);
@@ -115,7 +115,7 @@ public sealed class NotificationQueryTest
 		Assert.HasCount(1, recent);
 
 		_dbContext.Notifications.RemoveRange(recent);
-		await _dbContext.SaveChangesAsync();
+		await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 	}
 
 	[TestMethod]
@@ -124,13 +124,13 @@ public sealed class NotificationQueryTest
 		var currentTime = DateTime.UtcNow;
 		_dbContext.Notifications.Add(
 			new NotificationItem { DateTime = DateTime.UnixEpoch });
-		await _dbContext.SaveChangesAsync();
+		await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		var recent = await _notificationQuery.GetNewerThan(currentTime);
 		Assert.IsEmpty(recent);
 
 		_dbContext.Notifications.RemoveRange(_dbContext.Notifications);
-		await _dbContext.SaveChangesAsync();
+		await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 	}
 
 	[TestMethod]
@@ -139,13 +139,13 @@ public sealed class NotificationQueryTest
 		var currentTime = DateTime.UtcNow;
 		_dbContext.Notifications.Add(
 			new NotificationItem { DateTime = DateTime.UtcNow.AddMinutes(-10) });
-		await _dbContext.SaveChangesAsync();
+		await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		var recent = await _notificationQuery.GetOlderThan(currentTime);
 		Assert.HasCount(1, recent);
 
 		_dbContext.Notifications.RemoveRange(_dbContext.Notifications);
-		await _dbContext.SaveChangesAsync();
+		await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 	}
 
 	[TestMethod]
@@ -154,14 +154,16 @@ public sealed class NotificationQueryTest
 		var currentTime = DateTime.UtcNow;
 		_dbContext.Notifications.Add(
 			new NotificationItem { DateTime = DateTime.UtcNow.AddMinutes(-10) });
-		await _dbContext.SaveChangesAsync();
+		await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		var recent = await _notificationQuery.GetOlderThan(currentTime);
 		Assert.HasCount(1, recent);
 
 		await _notificationQuery.RemoveAsync(recent);
 
-		var countAsync = await _dbContext.Notifications.CountAsync();
+		var countAsync = await _dbContext.Notifications.CountAsync(TestContext.CancellationTokenSource.Token);
 		Assert.AreEqual(0, countAsync);
 	}
+
+	public TestContext TestContext { get; set; }
 }

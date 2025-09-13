@@ -50,12 +50,12 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			}
 			
 			await _query.AddParentItemsAsync("/");
-			var result = await _dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/");
+			var result = await _dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/", TestContext.CancellationTokenSource.Token);
 			Assert.AreEqual("/", result?.FilePath);
 			Assert.IsNotNull(result);
 			
 			_dbContext.FileIndex.Remove(result);
-			await _dbContext.SaveChangesAsync();
+			await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 		}
 		
 		[TestMethod]
@@ -68,12 +68,12 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			}
 			
 			await _query.AddParentItemsAsync("/test");
-			var result = await _dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/");
+			var result = await _dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/", TestContext.CancellationTokenSource.Token);
 			Assert.AreEqual("/", result?.FilePath);
 			Assert.IsNotNull(result);
 			
 			_dbContext.FileIndex.Remove(result);
-			await _dbContext.SaveChangesAsync();
+			await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 		}
 		
 		[TestMethod]
@@ -86,12 +86,12 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			}
 			
 			await _query.AddParentItemsAsync("/test/file");
-			var result = await _dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test");
+			var result = await _dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test", TestContext.CancellationTokenSource.Token);
 			Assert.AreEqual("/test", result?.FilePath);
 			Assert.IsNotNull(result);
 			
 			_dbContext.FileIndex.Remove(result);
-			await _dbContext.SaveChangesAsync();
+			await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 		}
 
 		[TestMethod]
@@ -105,15 +105,15 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			
 			await _query.AddParentItemsAsync("/test/test/test");
 			
-			var folderInMiddle = await _dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test/test");
+			var folderInMiddle = await _dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test/test", TestContext.CancellationTokenSource.Token);
 			
 			Assert.IsNotNull(folderInMiddle);
 			
 			_dbContext.FileIndex.Remove(folderInMiddle);
-			await _dbContext.SaveChangesAsync();
+			await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 			await _query.AddParentItemsAsync("/test/test/test");
-			var result = await _dbContext.FileIndex.ToListAsync();
+			var result = await _dbContext.FileIndex.ToListAsync(TestContext.CancellationTokenSource.Token);
 
 			Assert.AreEqual("/", result.Find(p => p.FilePath == "/")?.FilePath);
 			Assert.AreEqual("/test", result.Find(p => p.FilePath == "/test")?.FilePath);
@@ -140,5 +140,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			Assert.AreEqual("/test", test2?.ParentDirectory);
 			Assert.AreEqual("test", test2?.FileName);
 		}
+
+		public TestContext TestContext { get; set; }
 	}
 }

@@ -38,6 +38,8 @@ public sealed class QueryGetAllFilesTest
 			serviceScope, new FakeIWebLogger(), _memoryCache);
 	}
 
+	public TestContext TestContext { get; set; }
+
 	private IServiceScopeFactory CreateNewScope()
 	{
 		var services = new ServiceCollection();
@@ -111,7 +113,7 @@ public sealed class QueryGetAllFilesTest
 		// item sub folder
 		var item = new FileIndexItem("/test_821827/test_0191919.jpg");
 		dbContext.FileIndex.Add(item);
-		await dbContext.SaveChangesAsync();
+		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		// Important to dispose!
 		await dbContext.DisposeAsync();
@@ -157,12 +159,16 @@ public sealed class QueryGetAllFilesTest
 			new FakeMemoryCache());
 
 		await dbContext.FileIndex.AddAsync(
-			new FileIndexItem("/GetAllFilesAsync") { IsDirectory = true });
+			new FileIndexItem("/GetAllFilesAsync") { IsDirectory = true },
+			TestContext.CancellationTokenSource.Token);
 		await dbContext.FileIndex.AddAsync(
-			new FileIndexItem("/GetAllFilesAsync/test") { IsDirectory = true });
-		await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllFilesAsync/test.jpg"));
-		await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllFilesAsync/test/test.jpg"));
-		await dbContext.SaveChangesAsync();
+			new FileIndexItem("/GetAllFilesAsync/test") { IsDirectory = true },
+			TestContext.CancellationTokenSource.Token);
+		await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllFilesAsync/test.jpg"),
+			TestContext.CancellationTokenSource.Token);
+		await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllFilesAsync/test/test.jpg"),
+			TestContext.CancellationTokenSource.Token);
+		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		var items = await query.GetAllFilesAsync("/GetAllFilesAsync");
 

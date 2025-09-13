@@ -498,7 +498,7 @@ public sealed class SearchServiceTest
 
 		// expect 5
 		var expectedCount = await _dbContext.FileIndex.CountAsync(p =>
-			p.ParentDirectory!.StartsWith("/stations"));
+			p.ParentDirectory!.StartsWith("/stations"), TestContext.CancellationTokenSource.Token);
 
 		var stationsQueryResult =
 			await _search.Search("-inurl:/stations");
@@ -516,7 +516,7 @@ public sealed class SearchServiceTest
 
 		var expectedCount = await _dbContext.FileIndex.CountAsync(p => p.Tags!.Contains("lelystad")
 			&& p.ParentDirectory!.Contains(
-				"stations2"));
+				"stations2"), TestContext.CancellationTokenSource.Token);
 
 		var item =
 			await _search.Search("lelystad -ParentDirectory:/stations2");
@@ -1085,4 +1085,6 @@ public sealed class SearchServiceTest
 		await Assert.ThrowsExactlyAsync<ArgumentException>(() => _search.Search(longTestText));
 		// Expect ArgumentException
 	}
+
+	public TestContext TestContext { get; set; }
 }

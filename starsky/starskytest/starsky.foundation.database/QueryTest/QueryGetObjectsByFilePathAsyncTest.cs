@@ -227,7 +227,7 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 		if ( result.Count != 4 )
 		{
 			Console.WriteLine("Retrying");
-			await Task.Delay(100);
+			await Task.Delay(100, TestContext.CancellationTokenSource.Token);
 			await AddItems();
 			result = await GetResult();
 		}
@@ -318,4 +318,6 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 		var result = await fakeQuery.GetObjectsByFilePathQuery(new List<string>().ToArray(), true);
 		Assert.IsEmpty(result);
 	}
+
+	public TestContext TestContext { get; set; }
 }

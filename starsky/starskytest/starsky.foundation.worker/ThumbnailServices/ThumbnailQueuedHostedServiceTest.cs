@@ -161,15 +161,15 @@ public sealed class ThumbnailQueuedHostedServiceTest
 			},
 			string.Empty);
 
-		await Task.Delay(100);
+		await Task.Delay(100, TestContext.CancellationTokenSource.Token);
 		if ( !isExecuted )
 		{
-			await Task.Delay(400);
+			await Task.Delay(400, TestContext.CancellationTokenSource.Token);
 		}
 
 		if ( !isExecuted )
 		{
-			await Task.Delay(500);
+			await Task.Delay(500, TestContext.CancellationTokenSource.Token);
 		}
 
 		Assert.IsTrue(isExecuted);
@@ -268,15 +268,15 @@ public sealed class ThumbnailQueuedHostedServiceTest
 			// EXCEPTION IS IGNORED
 		}, string.Empty);
 
-		await Task.Delay(100);
+		await Task.Delay(100, TestContext.CancellationTokenSource.Token);
 		if ( !isExecuted )
 		{
-			await Task.Delay(400);
+			await Task.Delay(400, TestContext.CancellationTokenSource.Token);
 		}
 
 		if ( !isExecuted )
 		{
-			await Task.Delay(500);
+			await Task.Delay(500, TestContext.CancellationTokenSource.Token);
 		}
 
 		Assert.IsTrue(isExecuted);
@@ -316,4 +316,6 @@ public sealed class ThumbnailQueuedHostedServiceTest
 
 		Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2?.Contains("is stopping"));
 	}
+
+	public TestContext TestContext { get; set; }
 }

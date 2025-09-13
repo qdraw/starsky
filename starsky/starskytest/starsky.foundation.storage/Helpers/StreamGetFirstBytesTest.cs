@@ -18,7 +18,7 @@ public class StreamGetFirstBytesTest
 		var originalStream = new MemoryStream(testData);
 
 		// Act
-		var resultStream = await StreamGetFirstBytes.GetFirstBytesAsync(originalStream, 5);
+		var resultStream = await StreamGetFirstBytes.GetFirstBytesAsync(originalStream, 5, TestContext.CancellationTokenSource.Token);
 
 		// Assert
 		Assert.AreEqual(5, resultStream.Length);
@@ -32,7 +32,7 @@ public class StreamGetFirstBytesTest
 		var originalStream = new MemoryStream(testData);
 
 		// Act
-		var resultStream = await StreamGetFirstBytes.GetFirstBytesAsync(originalStream, 5);
+		var resultStream = await StreamGetFirstBytes.GetFirstBytesAsync(originalStream, 5, TestContext.CancellationTokenSource.Token);
 
 		// Assert
 		var resultData = resultStream.ToArray();
@@ -46,7 +46,7 @@ public class StreamGetFirstBytesTest
 		var originalStream = new MemoryStream();
 
 		// Act
-		var resultStream = await StreamGetFirstBytes.GetFirstBytesAsync(originalStream, 5);
+		var resultStream = await StreamGetFirstBytes.GetFirstBytesAsync(originalStream, 5, TestContext.CancellationTokenSource.Token);
 
 		// Assert
 		Assert.AreEqual(0, resultStream.Length);
@@ -60,7 +60,7 @@ public class StreamGetFirstBytesTest
 		var originalStream = new MemoryStream(testData);
 
 		// Act
-		var resultStream = await StreamGetFirstBytes.GetFirstBytesAsync(originalStream, 0);
+		var resultStream = await StreamGetFirstBytes.GetFirstBytesAsync(originalStream, 0, TestContext.CancellationTokenSource.Token);
 
 		// Assert
 		Assert.AreEqual(0, resultStream.Length);
@@ -83,7 +83,7 @@ public class StreamGetFirstBytesTest
 			CancellationToken.None);
 
 		// Act
-		var resultStream = await StreamGetFirstBytes.GetFirstBytesAsync(originalStream, 5);
+		var resultStream = await StreamGetFirstBytes.GetFirstBytesAsync(originalStream, 5, TestContext.CancellationTokenSource.Token);
 
 		// Create a copy of the result stream content
 		var resultContent = new byte[resultStream.Length];
@@ -185,4 +185,6 @@ public class StreamGetFirstBytesTest
 		// Assert
 		CollectionAssert.AreEqual(originalContent, resultContent);
 	}
+
+	public TestContext TestContext { get; set; }
 }

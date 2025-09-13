@@ -158,7 +158,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 			new FakeIWebLogger(),
 			scopeFactory);
 
-		var result = await periodicThumbnailScanHostedService.RunJob();
+		var result = await periodicThumbnailScanHostedService.RunJob(TestContext.CancellationTokenSource.Token);
 		Assert.IsTrue(result);
 	}
 
@@ -179,7 +179,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 			scopeFactory);
 		periodicThumbnailScanHostedService.IsEnabled = false;
 
-		var result = await periodicThumbnailScanHostedService.RunJob();
+		var result = await periodicThumbnailScanHostedService.RunJob(TestContext.CancellationTokenSource.Token);
 		Assert.IsFalse(result);
 	}
 
@@ -197,7 +197,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 			new FakeIWebLogger(),
 			scopeFactory);
 
-		var result = await periodicThumbnailScanHostedService.RunJob();
+		var result = await periodicThumbnailScanHostedService.RunJob(TestContext.CancellationTokenSource.Token);
 		Assert.IsNull(result);
 	}
 
@@ -261,4 +261,6 @@ public class PeriodicThumbnailScanHostedServiceTest
 		Assert.IsEmpty(logger.TrackedInformation);
 		Assert.IsEmpty(logger.TrackedExceptions);
 	}
+
+	public TestContext TestContext { get; set; }
 }

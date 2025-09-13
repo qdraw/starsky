@@ -85,7 +85,7 @@ public class GetObjectsByFileHashAsyncTest
 				new FakeIWebLogger()); // <-- no service scope
 
 		dbContext.FileIndex.Add(new FileIndexItem { FileHash = "test123" });
-		await dbContext.SaveChangesAsync();
+		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		// And dispose
 		await dbContext.DisposeAsync();
@@ -97,4 +97,6 @@ public class GetObjectsByFileHashAsyncTest
 		Assert.HasCount(1, result);
 		Assert.AreEqual("test123", result[0].FileHash);
 	}
+
+	public TestContext TestContext { get; set; }
 }

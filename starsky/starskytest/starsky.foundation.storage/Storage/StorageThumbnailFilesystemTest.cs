@@ -212,7 +212,7 @@ public sealed class StorageThumbnailFilesystemTest
 
 		if ( new AppSettings().IsWindows )
 		{
-			await Task.Delay(500);
+			await Task.Delay(500, TestContext.CancellationTokenSource.Token);
 		}
 
 		var result2 = _thumbnailStorage.IsFileReady(thumbnailId);
@@ -292,4 +292,6 @@ public sealed class StorageThumbnailFilesystemTest
 	{
 		Assert.AreEqual(CreateAnImage.Size, _thumbnailStorage.Info(_fileName).Size);
 	}
+
+	public TestContext TestContext { get; set; }
 }
