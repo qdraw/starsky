@@ -73,7 +73,7 @@ public sealed class QueryFolderTest
 
 		// Assert
 		Assert.IsTrue(result.Item1);
-		Assert.AreEqual(2, result.Item2.Count);
+		Assert.HasCount(2, result.Item2);
 		Assert.AreEqual("/test_folder/file1.jpg", result.Item2[0].FilePath);
 		Assert.AreEqual("/test_folder/file2.jpg", result.Item2[1].FilePath);
 	}
@@ -86,12 +86,12 @@ public sealed class QueryFolderTest
 		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
 		// remove all items
-		foreach ( var allSingleItem in await dbContext.FileIndex.ToListAsync() )
+		foreach ( var allSingleItem in await dbContext.FileIndex.ToListAsync(TestContext.CancellationTokenSource.Token) )
 		{
 			dbContext.FileIndex.Remove(allSingleItem);
 		}
 
-		await dbContext.SaveChangesAsync();
+		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 		// and remove all folders
 
 		// item sub folder
@@ -101,7 +101,7 @@ public sealed class QueryFolderTest
 		var item1 = new FileIndexItem("/test_1234567832/test_0191922.jpg");
 		dbContext.FileIndex.Add(item1);
 
-		await dbContext.SaveChangesAsync();
+		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		// Important to dispose!
 		await dbContext.DisposeAsync();
@@ -116,4 +116,6 @@ public sealed class QueryFolderTest
 		await query.RemoveItemAsync(item);
 		await query.RemoveItemAsync(item1);
 	}
+
+	public TestContext TestContext { get; set; }
 }

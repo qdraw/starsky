@@ -45,7 +45,7 @@ public sealed class PackageTelemetryBackgroundServiceTest
 
 
 	[TestMethod]
-	[Timeout(7000)]
+	[Timeout(7000, CooperativeCancellation = true)]
 	[SuppressMessage("Usage", "S3878:Dispose")]
 	[SuppressMessage("ReSharper", "DisposeOnUsingVariable")]
 	public async Task ExecuteAsyncTest_WebController()
@@ -82,7 +82,7 @@ public sealed class PackageTelemetryBackgroundServiceTest
 	}
 
 	[TestMethod]
-	[Timeout(2000)]
+	[Timeout(2000, CooperativeCancellation = true)]
 	[SuppressMessage("Usage", "S2930:Dispose")]
 	public void ExecuteAsyncTest_NotWhenDisabled()
 	{

@@ -54,8 +54,7 @@ public class QueryExistsTests
 		Assert.IsTrue(getItem);
 	}
 
-
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow("/", true, true)]
 	[DataRow("/test.jpg", false, true)]
 	[DataRow("/test/", true, true)]

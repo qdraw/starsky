@@ -26,7 +26,7 @@ namespace starskytest.starsky.foundation.http.Services
 		}
 	
 		[TestMethod]
-		[Timeout(3000)]
+		[Timeout(3000, CooperativeCancellation = true)]
 		public void PostAsync_Ok_Form_xWwwHeader()
 		{
 			var fakeHttpMessageHandler = new FakeHttpMessageHandler();
@@ -43,7 +43,7 @@ namespace starskytest.starsky.foundation.http.Services
 		}
 	
 		[TestMethod]
-		[Timeout(3000)]
+		[Timeout(3000, CooperativeCancellation = true)]
 		public async Task PostAsync_Null()
 		{
 			var fakeHttpMessageHandler = new FakeHttpMessageHandler();

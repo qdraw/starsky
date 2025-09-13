@@ -31,7 +31,7 @@ public sealed class PackageTelemetryTest
 		{
 			OSPlatform.Linux, OSPlatform.Windows, OSPlatform.OSX, OSPlatform.FreeBSD
 		};
-		Assert.IsTrue(allOsPlatforms.Contains(content.Value));
+		Assert.Contains(content.Value, allOsPlatforms);
 	}
 
 	[TestMethod]

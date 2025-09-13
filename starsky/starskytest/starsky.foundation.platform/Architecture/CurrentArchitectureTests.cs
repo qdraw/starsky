@@ -8,7 +8,7 @@ namespace starskytest.starsky.foundation.platform.Architecture;
 [TestClass]
 public class CurrentArchitectureTests
 {
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow("Windows", "X86", "win-x86")]
 	[DataRow("Windows", "X64", "win-x64")]
 	[DataRow("Windows", "Arm", "win-arm")]
@@ -55,26 +55,25 @@ public class CurrentArchitectureTests
 
 		Assert.IsNotNull(result);
 
-		Assert.IsTrue(
-			result.EndsWith(RuntimeInformation.OSArchitecture.ToString().ToLowerInvariant()));
+		Assert.EndsWith(RuntimeInformation.OSArchitecture.ToString().ToLowerInvariant(), result);
 
 		var platform = OperatingSystemHelper.GetPlatform();
 
 		if ( platform == OSPlatform.Windows )
 		{
-			Assert.IsTrue(result.StartsWith("win"));
+			Assert.StartsWith("win", result);
 		}
 		else if ( platform == OSPlatform.Linux || platform == OSPlatform.FreeBSD )
 		{
-			Assert.IsTrue(result.StartsWith("linux"));
+			Assert.StartsWith("linux", result);
 		}
 		else if ( platform == OSPlatform.OSX )
 		{
-			Assert.IsTrue(result.StartsWith("osx"));
+			Assert.StartsWith("osx", result);
 		}
 		else
 		{
-			Assert.IsTrue(result.StartsWith("unknown"));
+			Assert.StartsWith("unknown", result);
 		}
 	}
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -255,6 +256,7 @@ public sealed class ReadMetaTest
 	[TestMethod]
 	[DataRow(true)]
 	[DataRow(false)]
+	[SuppressMessage("Usage", "MSTEST0049:Flow TestContext.CancellationToken to async operations")]
 	public async Task ReadExifAndXmpFromFileAddFilePathHashAsync_ShouldGenerateHash(
 		bool isNullOrEmptyList)
 	{
@@ -273,7 +275,7 @@ public sealed class ReadMetaTest
 			await readMetaSubPathStorage.ReadExifAndXmpFromFileAddFilePathHashAsync(
 				new List<string> { "/test.jpg" }, list);
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual(expectedHash, result[0].FileHash);
 	}
 
@@ -292,7 +294,9 @@ public sealed class ReadMetaTest
 				new List<string> { "/test.jpg" }, ["test_hash"]);
 
 		// should get the hash from the list
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual("test_hash", result[0].FileHash);
 	}
+
+	public TestContext TestContext { get; set; }
 }

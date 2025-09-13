@@ -54,7 +54,7 @@ public sealed class DiskWatcherTest
 
 	[TestMethod]
 #if DEBUG
-	[Timeout(1000)]
+	[Timeout(1000, CooperativeCancellation = true)]
 #else
 		[Timeout(10000)]
 #endif
@@ -97,7 +97,7 @@ public sealed class DiskWatcherTest
 		watcher.Dispose();
 
 		Assert.IsTrue(wasSignaled);
-		Assert.IsTrue(message.Contains("test"));
+		Assert.Contains("test", message);
 	}
 
 	[TestMethod]
@@ -115,7 +115,7 @@ public sealed class DiskWatcherTest
 
 	[TestMethod]
 #if DEBUG
-	[Timeout(1000)]
+	[Timeout(1000, CooperativeCancellation = true)]
 #else
 		[Timeout(10000)]
 #endif
@@ -150,7 +150,7 @@ public sealed class DiskWatcherTest
 
 	[TestMethod]
 #if DEBUG
-	[Timeout(1000)]
+	[Timeout(1000, CooperativeCancellation = true)]
 #else
 		[Timeout(10000)]
 #endif
@@ -176,8 +176,9 @@ public sealed class DiskWatcherTest
 			_createAnImage.BasePath, _createAnImage.FileName, "test"));
 
 		watcher.Dispose();
-		var lastItem = logger!.TrackedInformation.LastOrDefault(
-			p => p.Item2?.Contains("SyncWatcherConnector") == false);
+		var lastItem =
+			logger!.TrackedInformation.LastOrDefault(p =>
+				p.Item2?.Contains("SyncWatcherConnector") == false);
 
 		Assert.IsTrue(lastItem.Item2?.Contains(_createAnImage.FileName));
 		Assert.IsTrue(lastItem.Item2?.Contains("OnRenamed to"));
@@ -185,7 +186,7 @@ public sealed class DiskWatcherTest
 
 	[TestMethod]
 #if DEBUG
-	[Timeout(1000)]
+	[Timeout(1000, CooperativeCancellation = true)]
 #else
 		[Timeout(10000)]
 #endif
@@ -206,7 +207,7 @@ public sealed class DiskWatcherTest
 
 	[TestMethod]
 #if DEBUG
-	[Timeout(1000)]
+	[Timeout(1000, CooperativeCancellation = true)]
 #else
 		[Timeout(10000)]
 #endif
@@ -300,7 +301,7 @@ public sealed class DiskWatcherTest
 		var event1 = new RenamedEventArgs(WatcherChangeTypes.Renamed, "t", "test.jpg", "test2.jpg");
 
 		// Act & Assert
-		 Assert.ThrowsExactly<NullReferenceException>(() =>
+		Assert.ThrowsExactly<NullReferenceException>(() =>
 		{
 			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), null!)
 				.OnRenamed(null!, event1);
@@ -324,7 +325,7 @@ public sealed class DiskWatcherTest
 		new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor).OnRenamed(null!,
 			event1);
 
-		Assert.AreEqual(1, processor.Data.Count);
+		Assert.HasCount(1, processor.Data);
 		Assert.AreEqual($"t{Path.DirectorySeparatorChar}test2.jpg", processor.Data[0].Item1);
 		Assert.IsNull(processor.Data[0].Item2);
 	}
@@ -347,7 +348,7 @@ public sealed class DiskWatcherTest
 		new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor).OnRenamed(null!,
 			event1);
 
-		Assert.AreEqual(1, processor.Data.Count);
+		Assert.HasCount(1, processor.Data);
 		Assert.AreEqual(_createAnImage.FullFilePath, processor.Data[0].Item1);
 		Assert.IsNull(processor.Data[0].Item2);
 	}
@@ -370,7 +371,7 @@ public sealed class DiskWatcherTest
 		new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor).OnRenamed(null!,
 			event1);
 
-		Assert.AreEqual(0, processor.Data.Count);
+		Assert.IsEmpty(processor.Data);
 	}
 
 	[TestMethod]
@@ -391,7 +392,7 @@ public sealed class DiskWatcherTest
 		new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor).OnRenamed(null!,
 			event1);
 
-		Assert.AreEqual(0, processor.Data.Count);
+		Assert.IsEmpty(processor.Data);
 	}
 
 	[TestMethod]

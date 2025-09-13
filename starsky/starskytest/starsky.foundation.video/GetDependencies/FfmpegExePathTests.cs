@@ -17,7 +17,7 @@ public class FfmpegExePathTests
 		_ffmpegExePath = new FfmpegExePath(_appSettings);
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow(null, "ffmpeg")]
 	[DataRow("", "ffmpeg")]
 	[DataRow("win-x64", "ffmpeg-win-x64")]
@@ -31,7 +31,7 @@ public class FfmpegExePathTests
 		Assert.AreEqual(expectedPath, result);
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow("win-x64", "ffmpeg.exe")]
 	[DataRow("win-arm64", "ffmpeg.exe")]
 	[DataRow("linux-x64", "ffmpeg")]

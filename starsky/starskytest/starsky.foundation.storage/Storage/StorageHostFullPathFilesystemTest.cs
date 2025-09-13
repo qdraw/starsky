@@ -39,7 +39,7 @@ public sealed class StorageHostFullPathFilesystemTest
 		var service = new StorageHostFullPathFilesystem(new FakeIWebLogger());
 		var content = service.GetAllFilesInDirectory("not-found-directory-24785895348934598543")
 			.ToList();
-		Assert.AreEqual(0, content.Count);
+		Assert.IsEmpty(content);
 	}
 
 	[TestMethod]

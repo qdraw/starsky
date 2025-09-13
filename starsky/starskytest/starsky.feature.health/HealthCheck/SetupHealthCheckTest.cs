@@ -59,7 +59,7 @@ public sealed class SetupHealthCheckTest
 		var serviceProvider = services.BuildServiceProvider();
 		var service = serviceProvider.GetRequiredService<HealthCheckService>();
 
-		var result = await service.CheckHealthAsync();
+		var result = await service.CheckHealthAsync(TestContext.CancellationTokenSource.Token);
 
 		Assert.AreEqual(1, result.Entries.Count(p => p.Key == "mysql"));
 		Assert.AreEqual(HealthStatus.Unhealthy,
@@ -89,7 +89,7 @@ public sealed class SetupHealthCheckTest
 		var serviceProvider = services.BuildServiceProvider();
 		var service = serviceProvider.GetRequiredService<HealthCheckService>();
 
-		var result = await service.CheckHealthAsync();
+		var result = await service.CheckHealthAsync(TestContext.CancellationTokenSource.Token);
 
 		Assert.AreEqual(0, result.Entries.Count(p => p.Key == "mysql"));
 		Assert.AreEqual(0, result.Entries.Count(p => p.Key == "sqlite"));
@@ -121,7 +121,7 @@ public sealed class SetupHealthCheckTest
 		var serviceProvider = services.BuildServiceProvider();
 		var service = serviceProvider.GetRequiredService<HealthCheckService>();
 
-		var result = await service.CheckHealthAsync();
+		var result = await service.CheckHealthAsync(TestContext.CancellationTokenSource.Token);
 
 		Assert.AreEqual(1, result.Entries.Count(p => p.Key == "sqlite"));
 		Assert.AreEqual(HealthStatus.Unhealthy,
@@ -141,4 +141,6 @@ public sealed class SetupHealthCheckTest
 		Assert.ThrowsExactly<AggregateException>(() =>
 			new SetupHealthCheck(appSettings, services).BuilderHealth());
 	}
+
+	public TestContext TestContext { get; set; }
 }

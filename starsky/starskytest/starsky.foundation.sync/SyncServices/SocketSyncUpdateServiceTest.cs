@@ -21,7 +21,7 @@ public class SocketSyncUpdateServiceTest
 
 		await service.PushToSockets(new List<FileIndexItem> { new("/test.jpg") });
 
-		Assert.IsTrue(socket.FakeSendToAllAsync[0].Contains("/test.jpg"));
+		Assert.Contains("/test.jpg", socket.FakeSendToAllAsync[0]);
 	}
 
 	[TestMethod]
@@ -34,7 +34,7 @@ public class SocketSyncUpdateServiceTest
 
 		await service.PushToSockets(new List<FileIndexItem> { new("/test.jpg") });
 
-		Assert.AreEqual(0, socket.FakeSendToAllAsync.Count);
+		Assert.IsEmpty(socket.FakeSendToAllAsync);
 	}
 
 	[TestMethod]
@@ -43,7 +43,7 @@ public class SocketSyncUpdateServiceTest
 		var result = SocketSyncUpdateService.FilterBefore(
 			new List<FileIndexItem> { new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok } });
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual("/test.jpg", result[0].FilePath);
 	}
 
@@ -56,7 +56,7 @@ public class SocketSyncUpdateServiceTest
 				new("/test.jpg") { Status = FileIndexItem.ExifStatus.NotFoundSourceMissing }
 			});
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual("/test.jpg", result[0].FilePath);
 	}
 
@@ -66,6 +66,6 @@ public class SocketSyncUpdateServiceTest
 		var result = SocketSyncUpdateService.FilterBefore(
 			new List<FileIndexItem> { new("/") { Status = FileIndexItem.ExifStatus.Ok } });
 
-		Assert.AreEqual(0, result.Count);
+		Assert.IsEmpty(result);
 	}
 }

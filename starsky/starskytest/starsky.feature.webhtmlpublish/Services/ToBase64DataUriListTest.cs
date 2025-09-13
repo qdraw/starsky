@@ -31,7 +31,7 @@ public sealed class ToBase64DataUriListTest
 		var result = await new ToBase64DataUriList(thumbnailService)
 			.Create(
 				new List<FileIndexItem> { new("/test.jpg") });
-		Assert.IsTrue(result[0].Contains("data:image/png;base64,"));
+		Assert.Contains("data:image/png;base64,", result[0]);
 	}
 
 	[TestMethod]

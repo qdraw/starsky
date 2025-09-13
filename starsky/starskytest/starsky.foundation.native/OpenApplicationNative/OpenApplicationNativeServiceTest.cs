@@ -99,7 +99,7 @@ public class OpenApplicationNativeServiceTest
 		for ( var i = 0; i < 2 && result != true; i++ )
 		{
 			Console.WriteLine($"Retry due to multi-threading {i + 1}");
-			await Task.Delay(1000);
+			await Task.Delay(1000, TestContext.CancellationTokenSource.Token);
 			SetupEnsureAssociationsSet();
 			result = WindowsOpenDesktopApp.OpenDefault([mock.StarskyDotStarskyPath]);
 		}
@@ -192,7 +192,7 @@ public class OpenApplicationNativeServiceTest
 				.SortToOpenFilesByApplicationPath(fullPathAndApplicationUrl);
 
 		// Assert
-		Assert.AreEqual(0, result.Count);
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]
@@ -210,8 +210,8 @@ public class OpenApplicationNativeServiceTest
 				.SortToOpenFilesByApplicationPath(fullPathAndApplicationUrl);
 
 		// Assert
-		Assert.AreEqual(1, result.Count);
-		Assert.AreEqual(3, result[0].Item1.Count);
+		Assert.HasCount(1, result);
+		Assert.HasCount(3, result[0].Item1);
 		Assert.AreEqual("app1", result[0].Item2);
 	}
 
@@ -234,7 +234,7 @@ public class OpenApplicationNativeServiceTest
 				.SortToOpenFilesByApplicationPath(fullPathAndApplicationUrl);
 
 		// Assert
-		Assert.AreEqual(3, result.Count);
+		Assert.HasCount(3, result);
 		Assert.IsTrue(result.Exists(x => x.Item2 == "app1"));
 		Assert.IsTrue(result.Exists(x => x.Item2 == "app2"));
 		Assert.IsTrue(result.Exists(x => x.Item2 == "app3"));
@@ -300,4 +300,6 @@ public class OpenApplicationNativeServiceTest
 				true);
 		Assert.IsFalse(result);
 	}
+
+	public TestContext TestContext { get; set; }
 }

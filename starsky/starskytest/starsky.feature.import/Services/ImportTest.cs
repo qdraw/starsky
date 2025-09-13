@@ -94,7 +94,7 @@ public sealed class ImportTest : VerifyBase
 		await Verify(result);
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow("/a6660.arw")]
 	[DataRow("/test.mp4")]
 	[DataRow("/a330.arw")]
@@ -394,7 +394,7 @@ public sealed class ImportTest : VerifyBase
 			Console.WriteLine("import ~ " + item.FilePath);
 		}
 
-		Assert.AreEqual(3, importIndexItems.Count);
+		Assert.HasCount(3, importIndexItems);
 
 		Assert.AreEqual(ImportStatus.Ok, importIndexItems[0].Status);
 		Assert.AreEqual(ImportStatus.Ok, importIndexItems[1].Status);
@@ -422,7 +422,7 @@ public sealed class ImportTest : VerifyBase
 			new ImportSettingsModel { RecursiveDirectory = false });
 
 		Assert.IsNotNull(result.FirstOrDefault());
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 
 		Assert.AreEqual(ImportStatus.Ok, result[0].Status);
 
@@ -611,7 +611,7 @@ public sealed class ImportTest : VerifyBase
 			new ImportSettingsModel());
 
 		Assert.IsNotNull(result);
-		Assert.AreEqual(0, result.Count);
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]
@@ -662,7 +662,7 @@ public sealed class ImportTest : VerifyBase
 		var result = await importService.Importer(new List<string> { "/test.dng" },
 			new ImportSettingsModel());
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual(1, result[0].FileIndexItem?.SidecarExtensionsList.Count);
 
 		var sidecarExtList = result[0].FileIndexItem?.SidecarExtensionsList.ToList();
@@ -690,7 +690,7 @@ public sealed class ImportTest : VerifyBase
 		var result = await importService.Importer(new List<string> { "/test.dng" },
 			new ImportSettingsModel { ReverseGeoCode = true });
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		var xmpExpectedFilePath = ( await GetExpectedFilePathAsync(storage, appSettings,
 			"/test.dng") ).Replace(".dng", ".xmp");
 
@@ -700,7 +700,7 @@ public sealed class ImportTest : VerifyBase
 		var toStringAsync = await StreamToStringHelper.StreamToStringAsync(xmpReadStream);
 
 		Assert.AreEqual(CreateAnXmp.Bytes.Length, xmpStreamLength);
-		Assert.IsTrue(toStringAsync.Contains("<tiff:Make>Apple</tiff:Make>"));
+		Assert.Contains("<tiff:Make>Apple</tiff:Make>", toStringAsync);
 	}
 
 	[TestMethod]
@@ -1054,7 +1054,7 @@ public sealed class ImportTest : VerifyBase
 			importService.CheckForDuplicateNaming(duplicatesExampleList, directoriesContent);
 
 		var fileIndexItemFilePathList = result.Select(x => x.FileIndexItem?.FilePath).ToList();
-		Assert.AreEqual(4, fileIndexItemFilePathList.Count);
+		Assert.HasCount(4, fileIndexItemFilePathList);
 		Assert.AreEqual("/0001/00010101_000000_d_1.png", fileIndexItemFilePathList[0]);
 		Assert.AreEqual("/0001/00010101_000000_d_3.png", fileIndexItemFilePathList[1]);
 		Assert.AreEqual("/2020/20200501_120000_d.png", fileIndexItemFilePathList[2]);
@@ -1106,7 +1106,7 @@ public sealed class ImportTest : VerifyBase
 
 		var fileIndexItemFilePathList =
 			importService.CheckForDuplicateNaming(duplicatesExampleList, null!);
-		Assert.AreEqual(4, fileIndexItemFilePathList.Count);
+		Assert.HasCount(4, fileIndexItemFilePathList);
 	}
 
 	[TestMethod]
@@ -1205,7 +1205,7 @@ public sealed class ImportTest : VerifyBase
 			},
 			new ImportSettingsModel());
 
-		Assert.AreEqual(0, fakeExifThumbnailService.Input.Count);
+		Assert.IsEmpty(fakeExifThumbnailService.Input);
 	}
 
 	[TestMethod]
@@ -1392,7 +1392,7 @@ public sealed class ImportTest : VerifyBase
 		var readOnlyFileSystems = importService.CheckForReadOnlyFileSystems(
 			new List<ImportIndexItem> { new() { SourceFullFilePath = "/test.jpg" } });
 
-		Assert.AreEqual(1, readOnlyFileSystems.Count);
+		Assert.HasCount(1, readOnlyFileSystems);
 		Assert.AreEqual(DefaultPath(), readOnlyFileSystems[0].Item1);
 	}
 
@@ -1418,7 +1418,7 @@ public sealed class ImportTest : VerifyBase
 			new List<ImportIndexItem> { new() { SourceFullFilePath = "/" } });
 
 		// Directory.GetParent returns null
-		Assert.AreEqual(1, readOnlyFileSystems.Count);
+		Assert.HasCount(1, readOnlyFileSystems);
 		Assert.IsNull(readOnlyFileSystems[0].Item1);
 	}
 
@@ -1443,7 +1443,7 @@ public sealed class ImportTest : VerifyBase
 		};
 		var readOnlyFileSystems = importService.CheckForReadOnlyFileSystems(importIndexItems);
 
-		Assert.AreEqual(2, readOnlyFileSystems.Count);
+		Assert.HasCount(2, readOnlyFileSystems);
 
 		Assert.AreEqual(DefaultPath(), readOnlyFileSystems[0].Item1);
 		var testItem = importIndexItems.Find(p =>
@@ -1472,7 +1472,7 @@ public sealed class ImportTest : VerifyBase
 		};
 		var readOnlyFileSystems = importService.CheckForReadOnlyFileSystems(importIndexItems);
 
-		Assert.AreEqual(1, readOnlyFileSystems.Count);
+		Assert.HasCount(1, readOnlyFileSystems);
 		Assert.AreEqual(DefaultPath() + Path.Combine("test", "test"),
 			readOnlyFileSystems[0].Item1);
 		var testItem = importIndexItems.Find(p =>
@@ -1504,7 +1504,7 @@ public sealed class ImportTest : VerifyBase
 		};
 		var readOnlyFileSystems = importService.CheckForReadOnlyFileSystems(importIndexItems);
 
-		Assert.AreEqual(1, readOnlyFileSystems.Count);
+		Assert.HasCount(1, readOnlyFileSystems);
 
 		Assert.AreEqual(DefaultPath(), readOnlyFileSystems[0].Item1);
 		var testItem = importIndexItems.Find(p =>

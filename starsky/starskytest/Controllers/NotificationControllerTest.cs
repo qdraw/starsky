@@ -21,24 +21,25 @@ public sealed class NotificationControllerTest
 		Assert.IsNotNull(result);
 		Assert.AreEqual(400, result.StatusCode);
 	}
-		
+
 	[TestMethod]
 	public async Task NotificationController_Get_Test_LongerThan1Day()
 	{
 		var notificationController = new NotificationController(new FakeINotificationQuery());
-		var result = await notificationController.GetNotifications("2020-04-11T17:55:35.922319Z") as BadRequestObjectResult;
+		var result =
+			await notificationController.GetNotifications("2020-04-11T17:55:35.922319Z") as
+				BadRequestObjectResult;
 		Assert.IsNotNull(result);
 		Assert.AreEqual(400, result.StatusCode);
 	}
-		
-				
+
+
 	[TestMethod]
 	public async Task NotificationController_Get_Test_Now_HappyFlow()
 	{
-		var controller = new NotificationController(new FakeINotificationQuery(new List<NotificationItem>{new NotificationItem()
-		{
-			DateTime = DateTime.UtcNow
-		}}));
+		var controller = new NotificationController(
+			new FakeINotificationQuery(
+				new List<NotificationItem> { new() { DateTime = DateTime.UtcNow } }));
 
 		var dateTime = DateTime.UtcNow.AddMinutes(-1)
 			.ToString(CultureInfo.InvariantCulture);
@@ -46,43 +47,46 @@ public sealed class NotificationControllerTest
 		Assert.IsNotNull(result);
 		var parsedResult = result.Value as List<NotificationItem>;
 		Assert.IsNotNull(parsedResult);
-		Assert.AreEqual(1, parsedResult.Count);
+		Assert.HasCount(1, parsedResult);
 	}
-		
+
 	[TestMethod]
 	public async Task UpdateAsync_BadRequest_InValidModel()
 	{
 		var controller = new NotificationController(new FakeINotificationQuery());
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 
-		var result = await controller.GetNotifications(DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)) as BadRequestObjectResult;
-		
+		var result =
+			await controller.GetNotifications(
+				DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)) as BadRequestObjectResult;
+
 		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
 	}
-		
+
 	[TestMethod]
 	public void ParseDate1()
 	{
-		var (parsed, parsedDateTime) = NotificationController.ParseDate("2020-04-11T17:55:35.922319Z");
+		var (parsed, parsedDateTime) =
+			NotificationController.ParseDate("2020-04-11T17:55:35.922319Z");
 		Assert.IsTrue(parsed);
-		var expected = new DateTime(2020, 4, 11, 17, 
-			55, 35, 922, kind: DateTimeKind.Local).ToString(CultureInfo.InvariantCulture);
-		Assert.AreEqual(expected,parsedDateTime.ToString(CultureInfo.InvariantCulture));
+		var expected = new DateTime(2020, 4, 11, 17,
+			55, 35, 922, DateTimeKind.Local).ToString(CultureInfo.InvariantCulture);
+		Assert.AreEqual(expected, parsedDateTime.ToString(CultureInfo.InvariantCulture));
 	}
-		
+
 	[TestMethod]
 	public void ParseDateNonValid()
 	{
-		var (parsed,_) = NotificationController.ParseDate("non-valid");
+		var (parsed, _) = NotificationController.ParseDate("non-valid");
 		Assert.IsFalse(parsed);
 	}
-		
+
 	[TestMethod]
 	public void ParseDateInt()
 	{
 		var (parsed, parsedDateTime) = NotificationController.ParseDate("2");
 		Assert.IsTrue(parsed);
 		var expected = DateTime.UtcNow.AddHours(-2).ToString(CultureInfo.InvariantCulture);
-		Assert.AreEqual(expected,parsedDateTime.ToString(CultureInfo.InvariantCulture));
+		Assert.AreEqual(expected, parsedDateTime.ToString(CultureInfo.InvariantCulture));
 	}
 }

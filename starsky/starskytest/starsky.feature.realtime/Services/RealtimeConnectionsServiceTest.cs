@@ -21,8 +21,8 @@ namespace starskytest.starsky.feature.realtime.Services
 			await service.NotificationToAllAsync(
 				new ApiNotificationResponseModel<string>(), CancellationToken.None);
 
-			Assert.AreEqual(1, fakeIWebSocketConnectionsService.FakeSendToAllAsync.Count);
-			Assert.AreEqual(1, fakeINotificationQuery.FakeContent.Count);
+			Assert.HasCount(1, fakeIWebSocketConnectionsService.FakeSendToAllAsync);
+			Assert.HasCount(1, fakeINotificationQuery.FakeContent);
 		}
 
 		[TestMethod]
@@ -38,7 +38,7 @@ namespace starskytest.starsky.feature.realtime.Services
 
 			await service.CleanOldMessagesAsync();
 			// service has thrown an exception so the remove is ignored
-			Assert.AreEqual(1, fakeINotificationQuery.FakeContent.Count);
+			Assert.HasCount(1, fakeINotificationQuery.FakeContent);
 		}
 	}
 }

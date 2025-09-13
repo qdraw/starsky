@@ -77,7 +77,7 @@ public partial class WindowsSetFileAssociationsTests
 		if ( valueKey == null )
 		{
 			Console.WriteLine("Registry key not found, waiting for registry to update");
-			await Task.Delay(1000); // Wait for the registry to update
+			await Task.Delay(1000, TestContext.CancellationTokenSource.Token); // Wait for the registry to update
 			valueKey = GetRegistryValue();
 		}
 
@@ -102,4 +102,6 @@ public partial class WindowsSetFileAssociationsTests
 
 	[GeneratedRegex("\"([^\"]*)\"")]
 	private static partial Regex GetFilePathFromRegistryRegex();
+
+	public TestContext TestContext { get; set; }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -124,6 +125,7 @@ public sealed class SwaggerExportHelperTest
 
 
 	[TestMethod]
+	[SuppressMessage("Usage", "MSTEST0049:Flow TestContext.CancellationToken to async operations")]
 	public void ExecuteAsync_ShouldWrite()
 	{
 		new SwaggerExportHelper(_serviceScopeFactory).ExecuteAsync();
@@ -132,4 +134,6 @@ public sealed class SwaggerExportHelperTest
 
 		Assert.IsTrue(storage.ExistFile(Path.DirectorySeparatorChar + "starsky_test_name.json"));
 	}
+
+	public TestContext TestContext { get; set; } = null!;
 }

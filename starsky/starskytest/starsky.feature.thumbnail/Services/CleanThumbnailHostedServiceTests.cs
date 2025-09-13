@@ -51,7 +51,7 @@ public class CleanThumbnailHostedServiceTest
 	}
 
 	[TestMethod]
-	[Timeout(10000)]
+	[Timeout(10000, CooperativeCancellation = true)]
 	public async Task ExecuteAsync_ShouldInvokeCleanAllUnusedFilesAsync()
 	{
 		// Arrange
@@ -74,7 +74,7 @@ public class CleanThumbnailHostedServiceTest
 	}
 
 	[TestMethod]
-	[Timeout(5000)]
+	[Timeout(5000, CooperativeCancellation = true)]
 	[DataRow(-1, 0)] // one day ago skips
 	[DataRow(-7, 1)] // 7 days ago runs
 	public async Task StartBackgroundAsync_RelativeDays(int relativeDays, int expectCount)
@@ -93,7 +93,7 @@ public class CleanThumbnailHostedServiceTest
 	}
 
 	[TestMethod]
-	[Timeout(5000)]
+	[Timeout(5000, CooperativeCancellation = true)]
 	[DataRow(true, 0)]
 	[DataRow(false, 1)]
 	public async Task StartBackgroundAsync_TrueAndFalse(bool thumbnailCleanupSkipOnStartup,

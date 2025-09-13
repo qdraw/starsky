@@ -25,7 +25,7 @@ public sealed class SetupAppSettingsTest
 	}
 
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow("app__appsettingspath")]
 	[DataRow("app__appsettingslocalpath")]
 	public async Task SetLocalAppData_ShouldRead(string envName)

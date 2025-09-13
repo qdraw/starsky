@@ -36,7 +36,7 @@ public class FfMpegPrepareBeforeRunningTests
 		}
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow("win-x64", true, true, true, true)]
 	[DataRow("win-x64", true, false, false, true)] // no chmod on win-x64
 	[DataRow("win-arm64", true, true, true, true)]

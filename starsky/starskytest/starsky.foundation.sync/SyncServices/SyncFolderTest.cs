@@ -187,7 +187,7 @@ public sealed class SyncFolderTest
 			new FileIndexItem("/Folder_Duplicate/test.jpg")); // yes this is duplicate!
 
 		var queryResultBefore = await _query.GetAllFilesAsync("/Folder_Duplicate");
-		Assert.AreEqual(2, queryResultBefore.Count);
+		Assert.HasCount(2, queryResultBefore);
 
 		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
 			new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
@@ -195,9 +195,9 @@ public sealed class SyncFolderTest
 		var result = ( await syncFolder.Folder(
 			"/Folder_Duplicate") ).Where(p => p.FilePath != "/").ToList();
 
-		Assert.AreEqual(2, result.Count);
+		Assert.HasCount(2, result);
 		var queryResult = await _query.GetAllFilesAsync("/Folder_Duplicate");
-		Assert.AreEqual(1, queryResult.Count);
+		Assert.HasCount(1, queryResult);
 
 		await _query.RemoveItemAsync(queryResult[0]);
 	}
@@ -218,7 +218,7 @@ public sealed class SyncFolderTest
 		});
 
 		var queryResultBefore = await _query.GetAllFilesAsync("/same_test");
-		Assert.AreEqual(1, queryResultBefore.Count);
+		Assert.HasCount(1, queryResultBefore);
 
 		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
 			new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
@@ -226,14 +226,14 @@ public sealed class SyncFolderTest
 		var result = ( await syncFolder.Folder(
 			"/same_test") ).Where(p => p.FilePath != "/").ToList();
 
-		Assert.AreEqual(2, result.Count); // folder and item in folder
+		Assert.HasCount(2, result); // folder and item in folder
 		Assert.AreEqual(1, result.Count(p => p.FileName == "test.jpg"));
 		Assert.AreEqual(1, result.Count(p => p.FileName == "same_test"));
 		Assert.AreEqual(FileIndexItem.ExifStatus.OkAndSame, result[0].Status);
 
 
 		var queryResult = await _query.GetAllFilesAsync("/same_test");
-		Assert.AreEqual(1, queryResult.Count);
+		Assert.HasCount(1, queryResult);
 		Assert.AreEqual(1, queryResult.Count(p => p.FileName == "test.jpg"));
 
 		Assert.AreEqual(FileIndexItem.ExifStatus.OkAndSame,
@@ -262,7 +262,7 @@ public sealed class SyncFolderTest
 		});
 
 		var queryResultBefore = await _query.GetAllFilesAsync("/same_test");
-		Assert.AreEqual(1, queryResultBefore.Count);
+		Assert.HasCount(1, queryResultBefore);
 
 		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
 			new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
@@ -270,14 +270,14 @@ public sealed class SyncFolderTest
 		var result = ( await syncFolder.Folder(
 			"/same_test") ).Where(p => p.FilePath != "/").ToList();
 
-		Assert.AreEqual(2, result.Count); // folder and item in folder
+		Assert.HasCount(2, result); // folder and item in folder
 		Assert.AreEqual(1, result.Count(p => p.FileName == "test.jpg"));
 		Assert.AreEqual(1, result.Count(p => p.FileName == "same_test"));
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result[0].Status);
 
 
 		var queryResult = await _query.GetAllFilesAsync("/same_test");
-		Assert.AreEqual(1, queryResult.Count);
+		Assert.HasCount(1, queryResult);
 		Assert.AreEqual(1, queryResult.Count(p => p.FileName == "test.jpg"));
 
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok,
@@ -301,7 +301,7 @@ public sealed class SyncFolderTest
 
 		Assert.IsNotNull(query.GetObjectByFilePathAsync("/"));
 		Assert.IsNotNull(query.GetObjectByFilePathAsync(folderPath));
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual(folderPath, result[0].FilePath);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result[0].Status);
 	}
@@ -353,7 +353,7 @@ public sealed class SyncFolderTest
 		// should not add duplicate content
 		var allItems = await query.GetAllRecursiveAsync();
 
-		Assert.AreEqual(1, allItems.Count);
+		Assert.HasCount(1, allItems);
 		Assert.AreEqual(folderPath, allItems[0].FilePath);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, allItems[0].Status);
 	}
@@ -379,7 +379,7 @@ public sealed class SyncFolderTest
 
 		// should not add content
 		var allItems = await query.GetAllRecursiveAsync();
-		Assert.AreEqual(0, allItems.Count);
+		Assert.IsEmpty(allItems);
 	}
 
 	[TestMethod]
@@ -400,7 +400,7 @@ public sealed class SyncFolderTest
 		var results = SyncFolder.PathsToUpdateInDatabase(
 			new List<FileIndexItem>(), new List<string> { "/test.jpg" });
 
-		Assert.AreEqual(1, results.Count);
+		Assert.HasCount(1, results);
 		Assert.AreEqual("/test.jpg", results[0].FilePath);
 	}
 
@@ -410,7 +410,7 @@ public sealed class SyncFolderTest
 		var results = SyncFolder.PathsToUpdateInDatabase(
 			new List<FileIndexItem> { new("/test.jpg") }, Array.Empty<string>());
 
-		Assert.AreEqual(1, results.Count);
+		Assert.HasCount(1, results);
 		Assert.AreEqual("/test.jpg", results[0].FilePath);
 	}
 
@@ -420,7 +420,7 @@ public sealed class SyncFolderTest
 		var results = SyncFolder.PathsToUpdateInDatabase(
 			new List<FileIndexItem> { new("/test.jpg") }, new List<string> { "/test.jpg" });
 
-		Assert.AreEqual(1, results.Count);
+		Assert.HasCount(1, results);
 		Assert.AreEqual("/test.jpg", results[0].FilePath);
 	}
 
@@ -430,7 +430,7 @@ public sealed class SyncFolderTest
 		var results = SyncFolder.PathsToUpdateInDatabase(
 			new List<FileIndexItem>(), new List<string> { "/test.jpg", "/test.jpg" });
 
-		Assert.AreEqual(1, results.Count);
+		Assert.HasCount(1, results);
 		Assert.AreEqual("/test.jpg", results[0].FilePath);
 	}
 
@@ -511,9 +511,8 @@ public sealed class SyncFolderTest
 
 		var files = await _query.GetAllFilesAsync("/test_ignore");
 
-		Assert.AreEqual(0, files.Count);
+		Assert.IsEmpty(files);
 	}
-
 
 	[TestMethod]
 	public async Task RemoveChildItems_Floating_items()
@@ -538,7 +537,7 @@ public sealed class SyncFolderTest
 		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, result.Status);
 
 		var data = await _query.GetAllRecursiveAsync("/Folder_InDbButNotOnDisk3");
-		Assert.AreEqual(0, data.Count);
+		Assert.IsEmpty(data);
 	}
 
 	[TestMethod]

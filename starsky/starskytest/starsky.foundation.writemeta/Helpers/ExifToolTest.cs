@@ -103,7 +103,7 @@ public sealed class ExifToolTest
 
 		var result =
 			await new ExifTool(fakeStorage, fakeStorage, appSettings, new FakeIWebLogger())
-				.RenameThumbnailByStream("OLDHASH", new MemoryStream(), true, "test");
+				.RenameThumbnailByStream("OLDHASH", new MemoryStream(), true, "test", TestContext.CancellationTokenSource.Token);
 
 		Assert.AreEqual(26, result.newHashCode.Length);
 	}
@@ -119,7 +119,7 @@ public sealed class ExifToolTest
 
 		var result =
 			await new ExifTool(fakeStorage, fakeStorage, appSettings, new FakeIWebLogger())
-				.RenameThumbnailByStream("OLDHASH", new MemoryStream(), false, "test");
+				.RenameThumbnailByStream("OLDHASH", new MemoryStream(), false, "test", TestContext.CancellationTokenSource.Token);
 
 		Assert.AreEqual(0, result.newHashCode.Length);
 	}
@@ -135,7 +135,7 @@ public sealed class ExifToolTest
 
 		var stream = new MemoryStream();
 		await new ExifTool(fakeStorage, fakeStorage, appSettings, new FakeIWebLogger())
-			.RenameThumbnailByStream("OLDHASH", stream, true, "test");
+			.RenameThumbnailByStream("OLDHASH", stream, true, "test", TestContext.CancellationTokenSource.Token);
 
 		Assert.IsTrue(stream.CanWrite);
 	}
@@ -153,7 +153,7 @@ public sealed class ExifToolTest
 		var exceptionMessage = string.Empty;
 		try
 		{
-			await exifTool.WriteTagsAndRenameThumbnailAsync("test.jpg", null, "");
+			await exifTool.WriteTagsAndRenameThumbnailAsync("test.jpg", null, "", TestContext.CancellationTokenSource.Token);
 		}
 		catch ( ObjectDisposedException e )
 		{
@@ -161,8 +161,8 @@ public sealed class ExifToolTest
 			exceptionMessage = e.Message;
 		}
 
-		Assert.IsTrue(exceptionMessage.StartsWith("Cannot access a disposed object."));
-		Assert.IsTrue(exceptionMessage.EndsWith("Object name: 'disposed'."));
+		Assert.StartsWith("Cannot access a disposed object.", exceptionMessage);
+		Assert.EndsWith("Object name: 'disposed'.", exceptionMessage);
 
 		Assert.AreEqual(1, storage.ExceptionCount);
 	}
@@ -232,4 +232,6 @@ public sealed class ExifToolTest
 		// Does change after update
 		Assert.AreNotEqual(beforeHash, afterHash);
 	}
+
+	public TestContext TestContext { get; set; }
 }

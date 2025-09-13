@@ -111,7 +111,7 @@ public sealed class GeoBackgroundTaskTest
 
 		var results = await controller.GeoBackgroundTaskAsync();
 
-		Assert.AreEqual(0, results.Count);
+		Assert.IsEmpty(results);
 	}
 
 	[TestMethod]
@@ -135,7 +135,7 @@ public sealed class GeoBackgroundTaskTest
 
 		var results = await controller.GeoBackgroundTaskAsync();
 
-		Assert.AreEqual(1, results.Count);
+		Assert.HasCount(1, results);
 	}
 
 	[TestMethod]

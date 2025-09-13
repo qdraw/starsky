@@ -120,7 +120,7 @@ public class QuicklookMacOsTests
 			// Assert
 			Assert.IsTrue(result);
 			Assert.IsTrue(File.Exists(tempOutput));
-			Assert.IsTrue(new FileInfo(tempOutput).Length > 0);
+			Assert.IsGreaterThan(0, new FileInfo(tempOutput).Length);
 			// detect with imageSharp if the image is a valid image
 			using var image = Image.Load(tempOutput);
 			Assert.IsNotNull(image);

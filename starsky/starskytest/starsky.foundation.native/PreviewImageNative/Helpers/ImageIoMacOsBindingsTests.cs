@@ -9,7 +9,7 @@ namespace starskytest.starsky.foundation.native.PreviewImageNative.Helpers;
 [TestClass]
 public class ImageIoMacOsBindingsTests
 {
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow(true)]
 	[DataRow(false)]
 	public void GetSourceHeight_ValidImage_ReturnsHeight__MacOnly(bool isValidImage)

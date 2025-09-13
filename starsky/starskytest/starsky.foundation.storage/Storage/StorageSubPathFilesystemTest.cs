@@ -93,9 +93,8 @@ public sealed class StorageSubPathFilesystemTest
 	{
 		var filesInFolder = _storage.GetAllFilesInDirectoryRecursive(
 			"/not_found").ToList();
-		Assert.AreEqual(0, filesInFolder.Count);
+		Assert.IsEmpty(filesInFolder);
 	}
-
 
 	[TestMethod]
 	public void FileCopy()

@@ -68,26 +68,24 @@ public sealed class ExifToolCmdHelperTest
 			new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger());
 		var helperResult = await sut.UpdateAsync(updateModel, comparedNames);
 
-		Assert.IsTrue(helperResult.Command.Contains(updateModel.Tags));
-		Assert.IsTrue(helperResult.Command.Contains(updateModel.Description));
-		Assert.IsTrue(
-			helperResult.Command.Contains(
-				updateModel.Latitude.ToString(CultureInfo.InvariantCulture)));
-		Assert.IsTrue(
-			helperResult.Command.Contains(
-				updateModel.Longitude.ToString(CultureInfo.InvariantCulture)));
-		Assert.IsTrue(
-			helperResult.Command.Contains(
-				updateModel.LocationAltitude.ToString(CultureInfo.InvariantCulture)));
-		Assert.IsTrue(helperResult.Command.Contains(updateModel.LocationCity));
-		Assert.IsTrue(helperResult.Command.Contains(updateModel.LocationState));
-		Assert.IsTrue(helperResult.Command.Contains(updateModel.LocationCountry));
-		Assert.IsTrue(helperResult.Command.Contains(updateModel.LocationCountryCode));
-		Assert.IsTrue(helperResult.Command.Contains(updateModel.Title));
-		Assert.IsTrue(helperResult.Command.Contains(updateModel.MakeCameraSerial));
-		Assert.IsTrue(helperResult.Command.Contains(updateModel.Make));
-		Assert.IsTrue(helperResult.Command.Contains(updateModel.Model));
-		Assert.IsTrue(helperResult.Command.Contains(updateModel.LensModel));
+		Assert.Contains(updateModel.Tags, helperResult.Command);
+		Assert.Contains(updateModel.Description, helperResult.Command);
+		Assert.Contains(
+			updateModel.Latitude.ToString(CultureInfo.InvariantCulture), helperResult.Command);
+		Assert.Contains(
+			updateModel.Longitude.ToString(CultureInfo.InvariantCulture), helperResult.Command);
+		Assert.Contains(
+			updateModel.LocationAltitude.ToString(CultureInfo.InvariantCulture),
+			helperResult.Command);
+		Assert.Contains(updateModel.LocationCity, helperResult.Command);
+		Assert.Contains(updateModel.LocationState, helperResult.Command);
+		Assert.Contains(updateModel.LocationCountry, helperResult.Command);
+		Assert.Contains(updateModel.LocationCountryCode, helperResult.Command);
+		Assert.Contains(updateModel.Title, helperResult.Command);
+		Assert.Contains(updateModel.MakeCameraSerial, helperResult.Command);
+		Assert.Contains(updateModel.Make, helperResult.Command);
+		Assert.Contains(updateModel.Model, helperResult.Command);
+		Assert.Contains(updateModel.LensModel, helperResult.Command);
 	}
 
 	[TestMethod]
@@ -148,8 +146,8 @@ public sealed class ExifToolCmdHelperTest
 				new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
 			.UpdateAsync(updateModel, comparedNames);
 
-		Assert.IsTrue(helperResult.Command.Contains("-GPSAltitude=\"-41"));
-		Assert.IsTrue(helperResult.Command.Contains("gpsaltituderef#=\"1"));
+		Assert.Contains("-GPSAltitude=\"-41", helperResult.Command);
+		Assert.Contains("gpsaltituderef#=\"1", helperResult.Command);
 	}
 
 	[TestMethod]
@@ -208,8 +206,8 @@ public sealed class ExifToolCmdHelperTest
 				new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
 			.UpdateAsync(updateModel, comparedNames);
 
-		Assert.IsTrue(helperResult.Command.Contains("tags"));
-		Assert.IsTrue(helperResult.Command.Contains("Description"));
+		Assert.Contains("tags", helperResult.Command);
+		Assert.Contains("Description", helperResult.Command);
 	}
 
 	[TestMethod]
@@ -235,10 +233,9 @@ public sealed class ExifToolCmdHelperTest
 				new FakeReadMeta(), new FakeIThumbnailQuery(), new FakeIWebLogger())
 			.UpdateAsync(updateModel, comparedNames);
 
-		Assert.IsTrue(helperResult.Command.Contains("tags"));
-		Assert.IsTrue(helperResult.Command.Contains("Description"));
+		Assert.Contains("tags", helperResult.Command);
+		Assert.Contains("Description", helperResult.Command);
 	}
-
 
 	[TestMethod]
 	public void ExifToolCommandLineArgsImageStabilisation()

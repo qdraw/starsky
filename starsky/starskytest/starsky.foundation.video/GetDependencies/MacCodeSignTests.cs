@@ -283,8 +283,8 @@ public class MacCodeSignTests
 
 		// Assert
 		Assert.IsTrue(result);
-		Assert.IsTrue(codeSignBefore.StandardError.Contains("code object is not signed at all"));
-		Assert.IsTrue(codeSignAfter.StandardError.Contains("Identifier=testExecutable"));
+		Assert.Contains("code object is not signed at all", codeSignBefore.StandardError);
+		Assert.Contains("Identifier=testExecutable", codeSignAfter.StandardError);
 	}
 
 	[TestMethod]

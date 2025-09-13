@@ -190,9 +190,9 @@ public sealed class QueryUpdateItemError
 				"test context should not be null");
 		}
 
-		await context.FileIndex.AddAsync(new FileIndexItem("/test.jpg"));
-		await context.SaveChangesAsync();
-		var item = await context.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test.jpg");
+		await context.FileIndex.AddAsync(new FileIndexItem("/test.jpg"), TestContext.CancellationTokenSource.Token);
+		await context.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+		var item = await context.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test.jpg", TestContext.CancellationTokenSource.Token);
 
 		var sqLiteFailContext = new SqliteExceptionDbContext(options);
 		Assert.AreEqual(0, sqLiteFailContext.Count);
@@ -220,9 +220,9 @@ public sealed class QueryUpdateItemError
 				"test context should not be null");
 		}
 
-		await context.FileIndex.AddAsync(new FileIndexItem("/test.jpg"));
-		await context.SaveChangesAsync();
-		var item = await context.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test.jpg");
+		await context.FileIndex.AddAsync(new FileIndexItem("/test.jpg"), TestContext.CancellationTokenSource.Token);
+		await context.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+		var item = await context.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test.jpg", TestContext.CancellationTokenSource.Token);
 
 		var sqLiteFailContext = new SqliteExceptionDbContext(options);
 		Assert.AreEqual(0, sqLiteFailContext.Count);
@@ -312,7 +312,7 @@ public sealed class QueryUpdateItemError
 			.GetRequiredService<ApplicationDbContext>();
 		var testItem = new FileIndexItem("/test.jpg");
 		dbContext.FileIndex.Add(testItem);
-		await dbContext.SaveChangesAsync();
+		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		var fakeQuery = new Query(appDbInvalidOperationException, new AppSettings(), scope,
 			new FakeIWebLogger());
@@ -346,14 +346,14 @@ public sealed class QueryUpdateItemError
 			.GetRequiredService<ApplicationDbContext>();
 		var testItem = new FileIndexItem(path);
 		dbContext.FileIndex.Add(testItem);
-		await dbContext.SaveChangesAsync();
+		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		var query = new Query(appDbInvalidOperationException, new AppSettings(), scope,
 			new FakeIWebLogger());
 
 		await query.RemoveItemAsync(testItem);
 
-		var afterResult = await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == path);
+		var afterResult = await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == path, TestContext.CancellationTokenSource.Token);
 		Assert.IsNull(afterResult);
 	}
 
@@ -381,17 +381,17 @@ public sealed class QueryUpdateItemError
 		dbContext.FileIndex.Add(testItem1);
 		var testItem2 = new FileIndexItem(path2);
 		dbContext.FileIndex.Add(testItem2);
-		await dbContext.SaveChangesAsync();
+		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		var query = new Query(appDbInvalidOperationException, new AppSettings(), scope,
 			new FakeIWebLogger());
 
 		await query.RemoveItemAsync(new List<FileIndexItem> { testItem1, testItem2 });
 
-		var afterResult1 = await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == path1);
+		var afterResult1 = await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == path1, TestContext.CancellationTokenSource.Token);
 		Assert.IsNull(afterResult1);
 
-		var afterResult2 = await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == path2);
+		var afterResult2 = await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == path2, TestContext.CancellationTokenSource.Token);
 		Assert.IsNull(afterResult2);
 	}
 
@@ -814,4 +814,6 @@ public sealed class QueryUpdateItemError
 			throw new InvalidOperationException("test");
 		}
 	}
+
+	public TestContext TestContext { get; set; }
 }

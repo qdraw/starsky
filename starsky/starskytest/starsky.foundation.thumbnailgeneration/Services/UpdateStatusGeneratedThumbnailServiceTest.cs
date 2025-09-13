@@ -101,9 +101,8 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		await service.AddOrUpdateStatusAsync(new List<GenerationResultModel>());
 
 		var getResult = await query.Get();
-		Assert.AreEqual(0, getResult.Count);
+		Assert.IsEmpty(getResult);
 	}
-
 
 	[TestMethod]
 	public async Task UpdateStatusGeneratedThumbnailService_Count6()
@@ -113,7 +112,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		await service.AddOrUpdateStatusAsync(ExampleData);
 
 		var getResult = await query.Get();
-		Assert.AreEqual(6, getResult.Count);
+		Assert.HasCount(6, getResult);
 	}
 
 	[TestMethod]
@@ -124,7 +123,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		await service.AddOrUpdateStatusAsync(ExampleData);
 
 		var getResult = await query.Get(ExampleData[0].FileHash); // see the index
-		Assert.AreEqual(1, getResult.Count);
+		Assert.HasCount(1, getResult);
 		Assert.IsTrue(getResult[0].Large);
 		Assert.IsNull(getResult[0].ExtraLarge);
 		Assert.IsNull(getResult[0].Small);
@@ -138,7 +137,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		await service.AddOrUpdateStatusAsync(ExampleData);
 		// see the index
 		var getResult = await query.Get(ExampleData[1].FileHash);
-		Assert.AreEqual(1, getResult.Count);
+		Assert.HasCount(1, getResult);
 		Assert.IsFalse(getResult[0].Large);
 		Assert.IsNull(getResult[0].ExtraLarge);
 		Assert.IsNull(getResult[0].Small);
@@ -153,7 +152,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		await service.AddOrUpdateStatusAsync(ExampleData);
 
 		var getResult = await query.Get(ExampleData[2].FileHash);
-		Assert.AreEqual(1, getResult.Count);
+		Assert.HasCount(1, getResult);
 		Assert.IsNull(getResult[0].Large);
 		Assert.IsNull(getResult[0].ExtraLarge);
 		Assert.IsTrue(getResult[0].Small);
@@ -167,7 +166,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		await service.AddOrUpdateStatusAsync(ExampleData);
 
 		var getResult = await query.Get(ExampleData[3].FileHash);
-		Assert.AreEqual(1, getResult.Count);
+		Assert.HasCount(1, getResult);
 		Assert.IsNull(getResult[0].Large);
 		Assert.IsNull(getResult[0].ExtraLarge);
 		Assert.IsFalse(getResult[0].Small);
@@ -181,7 +180,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		await service.AddOrUpdateStatusAsync(ExampleData);
 
 		var getResult = await query.Get(ExampleData[4].FileHash);
-		Assert.AreEqual(1, getResult.Count);
+		Assert.HasCount(1, getResult);
 		Assert.IsNull(getResult[0].Large);
 		Assert.IsTrue(getResult[0].ExtraLarge);
 		Assert.IsNull(getResult[0].Small);
@@ -195,7 +194,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		await service.AddOrUpdateStatusAsync(ExampleData);
 
 		var getResult = await query.Get(ExampleData[5].FileHash);
-		Assert.AreEqual(1, getResult.Count);
+		Assert.HasCount(1, getResult);
 		Assert.IsNull(getResult[0].Large);
 		Assert.IsFalse(getResult[0].ExtraLarge);
 		Assert.IsNull(getResult[0].Small);
@@ -209,7 +208,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		await service.AddOrUpdateStatusAsync(ExampleData2.ToList());
 
 		var getResult = await query.Get(ExampleData2[0].FileHash);
-		Assert.AreEqual(1, getResult.Count);
+		Assert.HasCount(1, getResult);
 		Assert.IsTrue(getResult[0].Large);
 		Assert.IsTrue(getResult[0].ExtraLarge);
 		Assert.IsTrue(getResult[0].Small);
@@ -235,7 +234,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		});
 
 		var getResult = await query.Get(ExampleData2[0].FileHash);
-		Assert.AreEqual(1, getResult.Count);
+		Assert.HasCount(1, getResult);
 		Assert.IsFalse(getResult[0].Large);
 		Assert.IsTrue(getResult[0].ExtraLarge);
 		Assert.IsTrue(getResult[0].Small);

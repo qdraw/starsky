@@ -91,8 +91,8 @@ namespace starskytest.Helpers
 					}
 				}).Build();
 
-			await host.StartAsync();
-			await host.StopAsync();
+			await host.StartAsync(TestContext.CancellationTokenSource.Token);
+			await host.StopAsync(TestContext.CancellationTokenSource.Token);
 
 			Assert.IsTrue(storage.ExistFile(swaggerFilePath));
 
@@ -104,5 +104,7 @@ namespace starskytest.Helpers
 
 			Assert.Contains($"\"title\": \"{_appSettings.Name}\"", swaggerFileContent);
 		}
+
+		public TestContext TestContext { get; set; }
 	}
 }

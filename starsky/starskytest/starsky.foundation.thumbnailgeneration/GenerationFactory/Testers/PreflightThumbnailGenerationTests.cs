@@ -87,7 +87,7 @@ public class PreflightThumbnailGenerationTests
 
 		// Assert
 		Assert.IsNotNull(results);
-		Assert.AreEqual(1, results.Count);
+		Assert.HasCount(1, results);
 		Assert.IsTrue(results.All(p => !p.Success));
 		Assert.AreEqual("not supported", results[0].ErrorMessage);
 	}
@@ -102,7 +102,7 @@ public class PreflightThumbnailGenerationTests
 
 		// Assert
 		Assert.IsNotNull(results);
-		Assert.AreEqual(1, results.Count);
+		Assert.HasCount(1, results);
 		Assert.IsTrue(results.All(p => !p.Success));
 		Assert.AreEqual("File is not found", results[0].ErrorMessage);
 	}
@@ -117,7 +117,7 @@ public class PreflightThumbnailGenerationTests
 
 		// Assert
 		Assert.IsNotNull(results);
-		Assert.AreEqual(1, results.Count);
+		Assert.HasCount(1, results);
 		Assert.IsTrue(results.All(p => p.Success));
 	}
 
@@ -138,7 +138,7 @@ public class PreflightThumbnailGenerationTests
 
 		// Assert
 		Assert.IsNotNull(results);
-		Assert.AreEqual(1, results.Count);
+		Assert.HasCount(1, results);
 		Assert.IsTrue(results.All(p => !p.Success));
 		Assert.AreEqual("File already failed before", results[0].ErrorMessage);
 	}

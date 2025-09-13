@@ -239,7 +239,7 @@ public sealed class ExifToolDownloadTest
 		Console.WriteLine(lsLah.StandardOutput);
 
 		RemoveTempFolderWithExifTool();
-		Assert.IsTrue(lsLah.StandardOutput.StartsWith("-rwxr-xr-x"));
+		Assert.StartsWith("-rwxr-xr-x", lsLah.StandardOutput);
 	}
 
 	[TestMethod]
@@ -293,7 +293,7 @@ public sealed class ExifToolDownloadTest
 		var exifToolDownload =
 			new ExifToolDownload(httpClientHelper, appSettings, new FakeIWebLogger());
 		var result = await exifToolDownload.RunChmodOnExifToolUnixExe();
-		
+
 		Assert.IsFalse(result);
 	}
 
@@ -318,7 +318,7 @@ public sealed class ExifToolDownloadTest
 		var result = await new ExifToolDownload(httpClientHelper, _appSettings,
 			new FakeIWebLogger()).DownloadExifTool(["win-x64", "linux-x64"]);
 
-		Assert.AreEqual(2, result.Count);
+		Assert.HasCount(2, result);
 		Assert.IsFalse(result[0]);
 		Assert.IsFalse(result[1]);
 	}
@@ -332,7 +332,7 @@ public sealed class ExifToolDownloadTest
 		var result = await new ExifToolDownload(httpClientHelper, _appSettings,
 			new FakeIWebLogger()).DownloadExifTool([]);
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.IsFalse(result[0]);
 	}
 
@@ -596,14 +596,14 @@ public sealed class ExifToolDownloadTest
 			logger.TrackedExceptions.Count(p =>
 				p.Item2?.Contains("Checksum") == true));
 	}
-	
+
 	[TestMethod]
 	public async Task StartDownloadForUnix_MirrorChecksumFailedNoDownload()
 	{
 		var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 		{
 			{ "https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum) },
-			{ "https://exiftool.org/Image-ExifTool-11.99.tar.gz", new StringContent("FAIL") },
+			{ "https://exiftool.org/Image-ExifTool-11.99.tar.gz", new StringContent("FAIL") }
 		});
 		var logger = new FakeIWebLogger();
 		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory,
@@ -618,18 +618,15 @@ public sealed class ExifToolDownloadTest
 			logger.TrackedExceptions.Count(p =>
 				p.Item2?.Contains("Checksum") == true));
 	}
-	
+
 	[TestMethod]
 	public async Task StartDownloadForUnix_MirrorChecksumFailed_EmthyResult()
 	{
 		var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 		{
 			{ "https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum) },
-			{
-				"https://qdraw.nl/special/mirror/exiftool/checksums.txt",
-				new StringContent("")
-			},
-			{ "https://exiftool.org/Image-ExifTool-11.99.tar.gz", new StringContent("FAIL") },
+			{ "https://qdraw.nl/special/mirror/exiftool/checksums.txt", new StringContent("") },
+			{ "https://exiftool.org/Image-ExifTool-11.99.tar.gz", new StringContent("FAIL") }
 		});
 		var logger = new FakeIWebLogger();
 		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory,
@@ -755,11 +752,8 @@ public sealed class ExifToolDownloadTest
 		var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 		{
 			{ "https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum) },
-			{
-				"https://qdraw.nl/special/mirror/exiftool/checksums.txt",
-				new StringContent("")
-			},
-			{ "https://exiftool.org/exiftool-11.99_64.zip", new StringContent("FAIL") },
+			{ "https://qdraw.nl/special/mirror/exiftool/checksums.txt", new StringContent("") },
+			{ "https://exiftool.org/exiftool-11.99_64.zip", new StringContent("FAIL") }
 		});
 		var logger = new FakeIWebLogger();
 		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory,
@@ -772,7 +766,8 @@ public sealed class ExifToolDownloadTest
 		Assert.IsFalse(result);
 		Assert.AreEqual(1,
 			logger.TrackedExceptions.Count(p =>
-				p.Item2?.Contains("[DownloadForWindows] matchExifToolForWindowsName is empty") == true));
+				p.Item2?.Contains("[DownloadForWindows] matchExifToolForWindowsName is empty") ==
+				true));
 	}
 
 	[TestMethod]
@@ -789,7 +784,7 @@ public sealed class ExifToolDownloadTest
 		Assert.AreEqual(4, result.Length);
 	}
 
-	[DataTestMethod] // [Theory]
+	[TestMethod] // [Theory]
 	[DataRow(true)]
 	[DataRow(false)]
 	public void MoveFileIfExist_WithFolder(bool outputFolderAlreadyExists)

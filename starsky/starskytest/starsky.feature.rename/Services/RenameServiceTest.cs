@@ -88,7 +88,7 @@ public sealed class RenameServiceTest
 			_iStorageSubPath.ReadStream(fileAlreadyExistSubPath));
 
 		// it should not overwrite the target file
-		Assert.IsTrue(result.Contains("test"));
+		Assert.Contains("test", result);
 		Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,
 			renameFs.FirstOrDefault()?.Status);
 
@@ -185,7 +185,7 @@ public sealed class RenameServiceTest
 		var singleItem = _query.SingleItem(_folderExist.FilePath + "/test2.jpg");
 		Assert.AreEqual("test2.jpg", singleItem?.FileIndexItem?.FileName);
 
-		Assert.AreEqual(1, renameFs.Count);
+		Assert.HasCount(1, renameFs);
 
 		await RemoveFoldersAndFilesInDatabase();
 	}
@@ -414,8 +414,8 @@ public sealed class RenameServiceTest
 			iStorage.GetDirectoryRecursive("/exist").Select(p => p.Key).ToList();
 		var existFolder = iStorage.GetAllFilesInDirectory("/exist").ToList();
 
-		Assert.AreEqual(0, existDirContent.Count);
-		Assert.AreEqual(0, existFolder.Count);
+		Assert.IsEmpty(existDirContent);
+		Assert.IsEmpty(existFolder);
 
 		// Now check if FakeDb is changed
 		var all2 = await _query.GetAllRecursiveAsync();
@@ -465,7 +465,7 @@ public sealed class RenameServiceTest
 		var initFileList = new List<string>();
 		var fakeIStorage = new FakeIStorage(initFolderList, initFileList);
 		var renameFs = await new RenameService(_query, fakeIStorage).Rename("/same", "/same");
-		Assert.AreEqual(1, renameFs.Count);
+		Assert.HasCount(1, renameFs);
 		Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,
 			renameFs.FirstOrDefault()?.Status);
 	}
@@ -482,7 +482,7 @@ public sealed class RenameServiceTest
 		};
 		var iStorage = new FakeIStorage(initFolderList,
 			initFileList).GetAllFilesInDirectory("/test").ToList();
-		Assert.AreEqual(1, iStorage.Count);
+		Assert.HasCount(1, iStorage);
 	}
 
 	[TestMethod]
@@ -621,7 +621,7 @@ public sealed class RenameServiceTest
 		Assert.AreEqual("/child_folder2/test_22_edit.jpg", toFileSubPaths[0]);
 		Assert.AreEqual("/child_folder2/test_22_edit.dng", toFileSubPaths[1]);
 
-		Assert.AreEqual(0, fileIndexResultsList.Count);
+		Assert.IsEmpty(fileIndexResultsList);
 
 		// this does only preflight
 
@@ -662,7 +662,7 @@ public sealed class RenameServiceTest
 		Assert.AreEqual("/child_folder2/test_23_edit.jpeg", toFileSubPaths[0]);
 		Assert.AreEqual("/child_folder2/test_23_edit.dng", toFileSubPaths[1]);
 
-		Assert.AreEqual(0, fileIndexResultsList.Count);
+		Assert.IsEmpty(fileIndexResultsList);
 
 		// this does only preflight
 		var item1 = _query.SingleItem(itemInChildFolderPath1)
@@ -702,7 +702,7 @@ public sealed class RenameServiceTest
 		Assert.AreEqual("/child_folder2/test_24.jpeg", toFileSubPaths[0]);
 		Assert.AreEqual("/child_folder2/test_24.dng", toFileSubPaths[1]);
 
-		Assert.AreEqual(0, fileIndexResultsList.Count);
+		Assert.IsEmpty(fileIndexResultsList);
 
 		// this does only preflight
 		var item1 = _query.SingleItem(itemInChildFolderPath1)
@@ -793,7 +793,7 @@ public sealed class RenameServiceTest
 		Assert.AreEqual("/child_folder2", toFileSubPaths[0]);
 		Assert.AreEqual("/child_folder2", toFileSubPaths[1]);
 
-		Assert.AreEqual(0, fileIndexResultsList.Count);
+		Assert.IsEmpty(fileIndexResultsList);
 
 		// CLEAN
 		var item1 = _query.SingleItem(itemInChildFolderPath1)
@@ -850,7 +850,7 @@ public sealed class RenameServiceTest
 		Assert.AreEqual("/other", toFileSubPaths[2]);
 		Assert.AreEqual("/other", toFileSubPaths[3]);
 
-		Assert.AreEqual(0, fileIndexResultsList.Count);
+		Assert.IsEmpty(fileIndexResultsList);
 
 		// CLEAN
 		var item1 = _query.SingleItem(itemInChildFolderPath1)
@@ -916,7 +916,7 @@ public sealed class RenameServiceTest
 		Assert.AreEqual("/child_folder2", toFileSubPaths[0]);
 		Assert.AreEqual("/other", toFileSubPaths[1]);
 
-		Assert.AreEqual(0, fileIndexResultsList.Count);
+		Assert.IsEmpty(fileIndexResultsList);
 
 		// CLEAN
 		var item1 = _query.SingleItem(itemInChildFolderPath1)
@@ -969,7 +969,7 @@ public sealed class RenameServiceTest
 		Assert.AreEqual("/child_folder2", toFileSubPaths[0]);
 		Assert.AreEqual("/child_folder2", toFileSubPaths[1]);
 
-		Assert.AreEqual(1, fileIndexResultsList.Count);
+		Assert.HasCount(1, fileIndexResultsList);
 		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex,
 			fileIndexResultsList[0].Status);
 
@@ -995,7 +995,7 @@ public sealed class RenameServiceTest
 		var countTargetFolder = ( await _query.GetAllRecursiveAsync() )
 			.Where(p => p.FilePath == "/target_folder_3").ToList();
 
-		Assert.AreEqual(1, countTargetFolder.Count);
+		Assert.HasCount(1, countTargetFolder);
 
 		Assert.AreEqual("/source_folder", renameFs[1].FilePath);
 		Assert.AreEqual("/target_folder_3", renameFs[0].FilePath);
@@ -1036,12 +1036,12 @@ public sealed class RenameServiceTest
 		var countTargetChildItem = ( await _query.GetAllRecursiveAsync() )
 			.Where(p => p.FilePath == "/target_folder_4/test.jpg").ToList();
 
-		Assert.AreEqual(1, countTargetChildItem.Count);
+		Assert.HasCount(1, countTargetChildItem);
 
 		var countTargetFolder = ( await _query.GetAllRecursiveAsync() )
 			.Where(p => p.FilePath == "/target_folder_4").ToList();
 
-		Assert.AreEqual(1, countTargetFolder.Count);
+		Assert.HasCount(1, countTargetFolder);
 
 		var sourceFolder = renameFs
 			.Find(p => p.FilePath == "/source_folder_2");

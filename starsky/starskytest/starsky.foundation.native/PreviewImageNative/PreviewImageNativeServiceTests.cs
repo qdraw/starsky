@@ -41,7 +41,7 @@ public class PreviewImageNativeServiceTests
 
 		// Assert
 		Assert.IsFalse(result);
-		Assert.AreEqual(0, logger.TrackedInformation.Count); // No logs expected
+		Assert.IsEmpty(logger.TrackedInformation); // No logs expected
 	}
 
 	[TestMethod]

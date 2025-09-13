@@ -45,6 +45,6 @@ public sealed class DecodingExceptionTest
 #pragma warning restore SYSLIB0050
 
 		// Optionally verify the exception message or other properties
-		Assert.IsTrue(ex.ToString().Contains("System.Exception"));
+		Assert.Contains("System.Exception", ex.ToString());
 	}
 }

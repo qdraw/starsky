@@ -118,7 +118,7 @@ public sealed class ThumbnailQueuedHostedServiceTest
 	/// <exception cref="NotSupportedException">not found</exception>
 	/// <exception cref="NullReferenceException">null ref</exception>
 	[TestMethod]
-	[Timeout(5000)]
+	[Timeout(5000, CooperativeCancellation = true)]
 	[SuppressMessage("Usage", "S2589:Dup isExecuted")]
 	public async Task ThumbnailQueuedHostedServiceTest_Verify_Hosted_Service_Executes_Task()
 	{
@@ -161,15 +161,15 @@ public sealed class ThumbnailQueuedHostedServiceTest
 			},
 			string.Empty);
 
-		await Task.Delay(100);
+		await Task.Delay(100, TestContext.CancellationTokenSource.Token);
 		if ( !isExecuted )
 		{
-			await Task.Delay(400);
+			await Task.Delay(400, TestContext.CancellationTokenSource.Token);
 		}
 
 		if ( !isExecuted )
 		{
-			await Task.Delay(500);
+			await Task.Delay(500, TestContext.CancellationTokenSource.Token);
 		}
 
 		Assert.IsTrue(isExecuted);
@@ -230,7 +230,7 @@ public sealed class ThumbnailQueuedHostedServiceTest
 	}
 
 	[TestMethod]
-	[Timeout(5000)]
+	[Timeout(5000, CooperativeCancellation = true)]
 	[SuppressMessage("Usage", "S2589:Dup isExecuted")]
 	public async Task BackgroundQueuedHostedServiceTestHandleException()
 	{
@@ -268,22 +268,22 @@ public sealed class ThumbnailQueuedHostedServiceTest
 			// EXCEPTION IS IGNORED
 		}, string.Empty);
 
-		await Task.Delay(100);
+		await Task.Delay(100, TestContext.CancellationTokenSource.Token);
 		if ( !isExecuted )
 		{
-			await Task.Delay(400);
+			await Task.Delay(400, TestContext.CancellationTokenSource.Token);
 		}
 
 		if ( !isExecuted )
 		{
-			await Task.Delay(500);
+			await Task.Delay(500, TestContext.CancellationTokenSource.Token);
 		}
 
 		Assert.IsTrue(isExecuted);
 	}
 
 	[TestMethod]
-	[Timeout(5000)]
+	[Timeout(5000, CooperativeCancellation = true)]
 	public async Task StartAsync_CancelBeforeStart()
 	{
 		var fakeLogger = new FakeIWebLogger();
@@ -301,7 +301,7 @@ public sealed class ThumbnailQueuedHostedServiceTest
 	}
 
 	[TestMethod]
-	[Timeout(2000)]
+	[Timeout(2000, CooperativeCancellation = true)]
 	public async Task ThumbnailQueuedHostedService_Update_End_StopAsync_Test()
 	{
 		var logger = new FakeIWebLogger();
@@ -316,4 +316,6 @@ public sealed class ThumbnailQueuedHostedServiceTest
 
 		Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2?.Contains("is stopping"));
 	}
+
+	public TestContext TestContext { get; set; }
 }

@@ -73,7 +73,7 @@ public sealed class ExifToolHostStorageServiceTest
 		await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
 		{
 			await service.WriteTagsAndRenameThumbnailAsync("/test.jpg", null,
-				"-Software=\"Qdraw 2.0\"");
+				"-Software=\"Qdraw 2.0\"", TestContext.CancellationTokenSource.Token);
 		});
 	}
 
@@ -125,7 +125,7 @@ public sealed class ExifToolHostStorageServiceTest
 
 		var renameThumbnailAsync = await service
 			.WriteTagsAndRenameThumbnailAsync("/test.jpg",
-				null, "-Software=\"Qdraw 2.0\"");
+				null, "-Software=\"Qdraw 2.0\"", TestContext.CancellationTokenSource.Token);
 
 		if ( hostFileSystemStorage.ExistFolder(outputPath) )
 		{
@@ -178,7 +178,7 @@ public sealed class ExifToolHostStorageServiceTest
 				new FakeSelectorStorage(fakeStorage),
 				appSettings, fakeLogger)
 			.WriteTagsAndRenameThumbnailAsync("/test.jpg", null,
-				"-Software=\"Qdraw 2.0\"");
+				"-Software=\"Qdraw 2.0\"", TestContext.CancellationTokenSource.Token);
 
 		if ( hostFileSystemStorage.ExistFolder(outputPath) )
 		{
@@ -223,4 +223,6 @@ public sealed class ExifToolHostStorageServiceTest
 			await service.WriteTagsThumbnailAsync("/test.jpg", "-Software=\"Qdraw 2.0\"");
 		});
 	}
+
+	public TestContext TestContext { get; set; }
 }

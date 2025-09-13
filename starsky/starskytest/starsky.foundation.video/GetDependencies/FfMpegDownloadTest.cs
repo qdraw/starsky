@@ -118,7 +118,7 @@ public class FfMpegDownloadTest
 		Assert.AreEqual(FfmpegDownloadStatus.SettingsDisabled, result);
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow("test-1,test-2", 2)]
 	[DataRow("", 1)]
 	public async Task DownloadFfMpeg_MultiArg(string arg, int count)
@@ -209,7 +209,7 @@ public class FfMpegDownloadTest
 			resultBinaryFail);
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow(false, true, DisplayName = "TryRun False & Ok")]
 	[DataRow(false, false, DisplayName = "TryRun False & PrepareBeforeRunningFailed")]
 	[DataRow(true, true, DisplayName = "TryRun True & Ok 1")]

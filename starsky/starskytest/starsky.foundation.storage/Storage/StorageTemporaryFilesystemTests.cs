@@ -106,7 +106,7 @@ public sealed class StorageTemporaryFilesystemTests
 		{
 			Console.WriteLine("StorageThumbnailFilesystemTest_FileCopy" +
 			                  " was not deleted, retrying");
-			await Task.Delay(1000);
+			await Task.Delay(1000, TestContext.CancellationTokenSource.Token);
 			File.Delete(Path.Combine(createNewImage.BasePath,
 				"StorageThumbnailFilesystemTest_FileCopy.jpg"));
 		}
@@ -332,7 +332,7 @@ public sealed class StorageTemporaryFilesystemTests
 	{
 		var filesInFolder = _tempStorage.GetAllFilesInDirectoryRecursive(
 			"/not_found").ToList();
-		Assert.AreEqual(0, filesInFolder.Count);
+		Assert.IsEmpty(filesInFolder);
 	}
 
 	[TestMethod]
@@ -365,4 +365,6 @@ public sealed class StorageTemporaryFilesystemTests
 
 		Assert.AreEqual(CreateAnImage.Size, size);
 	}
+
+	public TestContext TestContext { get; set; }
 }

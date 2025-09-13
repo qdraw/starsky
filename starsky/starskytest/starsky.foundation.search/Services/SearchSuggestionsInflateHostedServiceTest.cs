@@ -64,7 +64,7 @@ public sealed class SearchSuggestionsInflateHostedServiceTest
 			testContent,
 			testContent
 		});
-		await _dbContext.SaveChangesAsync();
+		await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		await new SearchSuggestionsInflateHostedService(_scopeFactory, _memoryCache,
 			new FakeIWebLogger(),
@@ -80,4 +80,6 @@ public sealed class SearchSuggestionsInflateHostedServiceTest
 			Assert.Fail("No test item found");
 		}
 	}
+
+	public TestContext TestContext { get; set; }
 }

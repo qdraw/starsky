@@ -47,7 +47,7 @@ public sealed class ReplaceServiceTest
 				"/test5.xmp",
 				"/test_ok_and_same.jpg",
 				"/test_deleted_and_same.jpg",
-				"/test_default_status.jpg",
+				"/test_default_status.jpg"
 			});
 		_metaReplace = new MetaReplaceService(_query,
 			new AppSettings { ReadOnlyFolders = new List<string> { "/readonly" } },
@@ -140,7 +140,7 @@ public sealed class ReplaceServiceTest
 		Assert.AreEqual("test1, test", output[0].Tags);
 		await _query.RemoveItemAsync(item1);
 	}
-	
+
 	[TestMethod]
 	public async Task ReplaceServiceTest_replaceString_DefaultStatus()
 	{
@@ -423,7 +423,7 @@ public sealed class ReplaceServiceTest
 		await _query.RemoveItemAsync(item1);
 		await _query.RemoveItemAsync(item2);
 
-		Assert.AreEqual(1, output.Count);
+		Assert.HasCount(1, output);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, output[0].Status);
 		Assert.AreEqual("test1, test", output[0].Tags);
 	}
@@ -434,8 +434,8 @@ public sealed class ReplaceServiceTest
 		var output = await _metaReplace.Replace("/test34598.jpg",
 			"Invalid-field-name", TrashKeyword.TrashKeywordString,
 			string.Empty, false);
-		
-		Assert.AreEqual(1, output.Count);
+
+		Assert.HasCount(1, output);
 		Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, output[0].Status);
 	}
 }

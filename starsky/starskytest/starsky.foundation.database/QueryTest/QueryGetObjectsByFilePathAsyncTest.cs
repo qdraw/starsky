@@ -59,7 +59,7 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 		var result =
 			await query.GetObjectsByFilePathAsync(new List<string> { $"{dirName}/test1.jpg" },
 				false);
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 
 		Assert.AreEqual($"{dirName}/test1.jpg", result[0].FilePath);
 	}
@@ -84,7 +84,7 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 		var result =
 			await query.GetObjectsByFilePathAsync(new List<string> { $"{dirName}/test1.jpg" },
 				true);
-		Assert.AreEqual(2, result.Count);
+		Assert.HasCount(2, result);
 		Assert.AreEqual($"{dirName}/test1.jpg", result[0].FilePath);
 		Assert.AreEqual($"{dirName}/test1.dng", result[1].FilePath);
 	}
@@ -102,9 +102,9 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 			await _query.GetObjectsByFilePathAsync(new List<string> { dirName },
 				isCollection);
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual(dirName, result[0].FilePath);
-		
+
 		await _query.RemoveItemAsync(item);
 	}
 
@@ -143,7 +143,7 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 		var result = await _query.GetObjectsByFilePathQueryAsync(
 			new List<string> { "/single_item1a.jpg" });
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual("/single_item1a.jpg", result[0].FilePath);
 
 		await _query.RemoveItemAsync(result[0]);
@@ -163,7 +163,7 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 
 		var result = await _query.GetObjectsByFilePathAsync("/single_item1a.jpg", true);
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual("/single_item1a.jpg", result[0].FilePath);
 
 		await _query.RemoveItemAsync(result[0]);
@@ -185,7 +185,7 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 		var result = await _query.GetObjectsByFilePathQueryAsync(
 			new List<string> { "/single_duplicate_1.jpg" });
 
-		Assert.AreEqual(2, result.Count);
+		Assert.HasCount(2, result);
 		Assert.AreEqual("/single_duplicate_1.jpg", result[0].FilePath);
 		Assert.AreEqual("/single_duplicate_1.jpg", result[1].FilePath);
 
@@ -227,12 +227,12 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 		if ( result.Count != 4 )
 		{
 			Console.WriteLine("Retrying");
-			await Task.Delay(100);
+			await Task.Delay(100, TestContext.CancellationTokenSource.Token);
 			await AddItems();
 			result = await GetResult();
 		}
 
-		Assert.AreEqual(4, result.Count);
+		Assert.HasCount(4, result);
 
 		var orderedResults = result.OrderBy(p => p.FileName).ToList();
 		Assert.AreEqual("/multiple_item_t_0.jpg", orderedResults[0].FilePath);
@@ -259,7 +259,7 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 		var result = await _query.GetObjectsByFilePathQueryAsync(
 			new List<string> { "/two_item_0.jpg", "/two_item_1.jpg" });
 
-		Assert.AreEqual(2, result.Count);
+		Assert.HasCount(2, result);
 
 		var orderedResults = result.OrderBy(p => p.FileName).ToList();
 		Assert.AreEqual("/two_item_0.jpg", orderedResults[0].FilePath);
@@ -293,7 +293,7 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 				"/disposed/single_item_disposed_1_a.jpg"
 			});
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual("/disposed/single_item_disposed_1_a.jpg", result[0].FilePath);
 	}
 
@@ -316,6 +316,8 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 			null!, null!, logger);
 
 		var result = await fakeQuery.GetObjectsByFilePathQuery(new List<string>().ToArray(), true);
-		Assert.AreEqual(0, result.Count);
+		Assert.IsEmpty(result);
 	}
+
+	public TestContext TestContext { get; set; }
 }

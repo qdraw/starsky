@@ -25,7 +25,7 @@ public sealed class ThumbnailCliTest
 
 		await thumbnailService.Thumbnail([]);
 
-		Assert.AreEqual(1, fakeConsole.WrittenLines.Count);
+		Assert.HasCount(1, fakeConsole.WrittenLines);
 	}
 
 	[TestMethod]
@@ -54,7 +54,7 @@ public sealed class ThumbnailCliTest
 
 		await thumbnailService.Thumbnail(["-h"]);
 
-		Assert.IsTrue(fakeConsole.WrittenLines[0].Contains("Help"));
+		Assert.Contains("Help", fakeConsole.WrittenLines[0]);
 	}
 
 	[TestMethod]
@@ -69,7 +69,7 @@ public sealed class ThumbnailCliTest
 
 		await thumbnailService.Thumbnail(["-t", "false"]);
 
-		Assert.AreEqual(0, fakeThumbnail.Inputs.Count);
+		Assert.IsEmpty(fakeThumbnail.Inputs);
 	}
 
 	[TestMethod]

@@ -5,44 +5,38 @@ using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.database.Helpers
+namespace starskytest.starsky.foundation.database.Helpers;
+
+[TestClass]
+public sealed class DuplicateTest
 {
-	[TestClass]
-	public sealed class DuplicateTest
+	[TestMethod]
+	public async Task DuplicateItems()
 	{
-		[TestMethod]
-		public async Task DuplicateItems()
+		var content = new List<FileIndexItem>
 		{
-			var content = new List<FileIndexItem>
-			{
-				new FileIndexItem("/test.jpg"),
-				new FileIndexItem("/test.jpg"),
-				new FileIndexItem("/test.jpg")
-			};
-			
-			var query = new FakeIQuery(content);
+			new("/test.jpg"), new("/test.jpg"), new("/test.jpg")
+		};
 
-			await new Duplicate(query).RemoveDuplicateAsync(content);
+		var query = new FakeIQuery(content);
 
-			var queryResult= await query.GetAllFilesAsync("/");
-			
-			Assert.AreEqual(1,queryResult.Count);
-		}
+		await new Duplicate(query).RemoveDuplicateAsync(content);
 
-		[TestMethod]
-		public async Task NonDuplicateItems()
-		{
-			var content = new List<FileIndexItem>
-			{
-				new FileIndexItem("/test.jpg"),
-			};
-			
-			var query = new FakeIQuery(content);
+		var queryResult = await query.GetAllFilesAsync("/");
 
-			await new Duplicate(query).RemoveDuplicateAsync(content);
-			var queryResult= await query.GetAllFilesAsync("/");
-			
-			Assert.AreEqual(1,queryResult.Count);
-		}
+		Assert.HasCount(1, queryResult);
+	}
+
+	[TestMethod]
+	public async Task NonDuplicateItems()
+	{
+		var content = new List<FileIndexItem> { new("/test.jpg") };
+
+		var query = new FakeIQuery(content);
+
+		await new Duplicate(query).RemoveDuplicateAsync(content);
+		var queryResult = await query.GetAllFilesAsync("/");
+
+		Assert.HasCount(1, queryResult);
 	}
 }

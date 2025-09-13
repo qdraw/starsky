@@ -57,7 +57,7 @@ public sealed class ArgsHelperTest
 		Assert.IsTrue(ArgsHelper.NeedVerbose(args));
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow("-r", "true")]
 	[DataRow("-r", null)]
 	[DataRow("--recursive", "true")]
@@ -107,7 +107,7 @@ public sealed class ArgsHelperTest
 		var args = new List<string> { "-h" }.ToArray();
 		Assert.IsTrue(ArgsHelper.NeedHelp(args));
 
-		// Bool parse cheArgsHelper_GetPath_CurrentDirectory_Testck
+		// Bool parse cheArgsHelper_GetPath_CurrentDirectory_Test
 		args = new List<string> { "-h", "true" }.ToArray();
 		Assert.IsTrue(ArgsHelper.NeedHelp(args));
 	}
@@ -119,7 +119,7 @@ public sealed class ArgsHelperTest
 		Assert.AreEqual("/", new ArgsHelper(_appSettings).GetPathFormArgs(args));
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow("-p", "test", "/test")]
 	[DataRow("--path", "test", "/test")]
 	public void ArgsHelper_GetPathFormArgsDataTest(string arg1, string arg2, string expected)
@@ -178,7 +178,7 @@ public sealed class ArgsHelperTest
 		var args = new List<string> { "-p", "\"/;\"" }.ToArray();
 		var result = new ArgsHelper(_appSettings).GetPathListFormArgs(args);
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual("/", result.FirstOrDefault());
 	}
 
@@ -188,7 +188,7 @@ public sealed class ArgsHelperTest
 		var args = new List<string> { "-p" }.ToArray();
 		var result = new ArgsHelper(_appSettings).GetPathListFormArgs(args);
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual(Directory.GetCurrentDirectory(), result.FirstOrDefault());
 	}
 
@@ -448,7 +448,7 @@ public sealed class ArgsHelperTest
 					ApplicationType = AppSettings.StarskyAppType.Thumbnail, Verbose = true
 				}, console)
 			.NeedHelpShowDialog();
-		Assert.IsTrue(console.WrittenLines[0].Contains("Thumbnail"));
+		Assert.Contains("Thumbnail", console.WrittenLines[0]);
 	}
 
 	[TestMethod]
@@ -462,7 +462,7 @@ public sealed class ArgsHelperTest
 					ApplicationType = AppSettings.StarskyAppType.MetaThumbnail, Verbose = true
 				}, console)
 			.NeedHelpShowDialog();
-		Assert.IsTrue(console.WrittenLines[0].Contains("MetaThumbnail"));
+		Assert.Contains("MetaThumbnail", console.WrittenLines[0]);
 	}
 
 	[TestMethod]
@@ -475,7 +475,7 @@ public sealed class ArgsHelperTest
 					ApplicationType = AppSettings.StarskyAppType.Admin, Verbose = true
 				}, console)
 			.NeedHelpShowDialog();
-		Assert.IsTrue(console.WrittenLines[0].Contains("Admin"));
+		Assert.Contains("Admin", console.WrittenLines[0]);
 	}
 
 	[TestMethod]
@@ -487,7 +487,7 @@ public sealed class ArgsHelperTest
 			.NeedHelpShowDialog();
 
 		Assert.IsNotNull(geoAppSettings);
-		Assert.IsTrue(console.WrittenLines[0].Contains("Geo"));
+		Assert.Contains("Geo", console.WrittenLines[0]);
 	}
 
 	[TestMethod]
@@ -500,7 +500,7 @@ public sealed class ArgsHelperTest
 					ApplicationType = AppSettings.StarskyAppType.WebHtml, Verbose = true
 				}, console)
 			.NeedHelpShowDialog();
-		Assert.IsTrue(console.WrittenLines[0].Contains("WebHtml"));
+		Assert.Contains("WebHtml", console.WrittenLines[0]);
 	}
 
 	[TestMethod]
@@ -511,7 +511,7 @@ public sealed class ArgsHelperTest
 				new AppSettings { ApplicationType = AppSettings.StarskyAppType.Importer },
 				console)
 			.NeedHelpShowDialog();
-		Assert.IsTrue(console.WrittenLines[0].Contains("Importer"));
+		Assert.Contains("Importer", console.WrittenLines[0]);
 	}
 
 	[TestMethod]
@@ -521,7 +521,7 @@ public sealed class ArgsHelperTest
 		new ArgsHelper(new AppSettings { ApplicationType = AppSettings.StarskyAppType.Sync },
 				console)
 			.NeedHelpShowDialog();
-		Assert.IsTrue(console.WrittenLines[0].Contains("Sync"));
+		Assert.Contains("Sync", console.WrittenLines[0]);
 	}
 
 	[TestMethod]
@@ -537,10 +537,12 @@ public sealed class ArgsHelperTest
 				{
 					{
 						"_d",
-						new List<AppSettingsPublishProfiles>
-						{
-							new() { Append = "_append", Copy = true, Folder = "folder" }
-						}
+						[
+							new AppSettingsPublishProfiles
+							{
+								Append = "_append", Copy = true, Folder = "folder"
+							}
+						]
 					}
 				}
 			};
@@ -669,7 +671,7 @@ public sealed class ArgsHelperTest
 		Assert.AreEqual(string.Empty, value);
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow("--runtime osx-arm64,osx-x64", "osx-arm64,osx-x64")]
 	[DataRow("--runtime win-x64", "win-x64")]
 	[DataRow("--runtime win-x64-linux-x64", "win-x64-linux-x64")]

@@ -23,6 +23,6 @@ public class MetaUpdateStatusThumbnailServiceTest
 		});
 
 		var thumbnailItems = await query.Get();
-		Assert.AreEqual(2, thumbnailItems.Count);
+		Assert.HasCount(2, thumbnailItems);
 	}
 }

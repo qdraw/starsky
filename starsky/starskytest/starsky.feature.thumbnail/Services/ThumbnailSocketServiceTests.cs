@@ -46,8 +46,8 @@ public class ThumbnailSocketServiceTests
 		await service.NotificationSocketUpdate("/test.jpg", generateThumbnailResults);
 
 		// Assert
-		Assert.AreEqual(1, fakeConnectionsService.FakeSendToAllAsync.Count);
-		Assert.AreEqual(1, fakeNotificationQuery.FakeContent.Count);
+		Assert.HasCount(1, fakeConnectionsService.FakeSendToAllAsync);
+		Assert.HasCount(1, fakeNotificationQuery.FakeContent);
 	}
 
 	[TestMethod]
@@ -73,8 +73,8 @@ public class ThumbnailSocketServiceTests
 		await service.NotificationSocketUpdate("/", generateThumbnailResults);
 
 		// Assert
-		Assert.AreEqual(1, fakeConnectionsService.FakeSendToAllAsync.Count);
-		Assert.AreEqual(1, fakeNotificationQuery.FakeContent.Count);
+		Assert.HasCount(1, fakeConnectionsService.FakeSendToAllAsync);
+		Assert.HasCount(1, fakeNotificationQuery.FakeContent);
 	}
 
 	[TestMethod]
@@ -87,7 +87,7 @@ public class ThumbnailSocketServiceTests
 		var service = CreateSut(fakeQuery, fakeConnectionsService, fakeNotificationQuery);
 
 		await service.NotificationSocketUpdate(null!, []);
-		Assert.AreEqual(0, fakeConnectionsService.FakeSendToAllAsync.Count);
+		Assert.IsEmpty(fakeConnectionsService.FakeSendToAllAsync);
 	}
 
 	[TestMethod]
@@ -113,8 +113,8 @@ public class ThumbnailSocketServiceTests
 		await service.NotificationSocketUpdate("/test.jpg", generateThumbnailResults);
 
 		// Assert
-		Assert.AreEqual(0, fakeConnectionsService.FakeSendToAllAsync.Count);
-		Assert.AreEqual(0, fakeNotificationQuery.FakeContent.Count);
+		Assert.IsEmpty(fakeConnectionsService.FakeSendToAllAsync);
+		Assert.IsEmpty(fakeNotificationQuery.FakeContent);
 	}
 
 	[TestMethod]
@@ -122,7 +122,7 @@ public class ThumbnailSocketServiceTests
 	{
 		var result = ThumbnailSocketService.WhichFilesNeedToBePushedForUpdates(
 			new List<GenerationResultModel>(), new List<FileIndexItem>());
-		Assert.AreEqual(0, result.Count);
+		Assert.IsEmpty(result);
 	}
 
 
@@ -138,7 +138,7 @@ public class ThumbnailSocketServiceTests
 			],
 			new List<FileIndexItem>());
 
-		Assert.AreEqual(0, result.Count);
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]
@@ -160,9 +160,8 @@ public class ThumbnailSocketServiceTests
 				}
 			});
 
-		Assert.AreEqual(0, result.Count);
+		Assert.IsEmpty(result);
 	}
-
 
 	[TestMethod]
 	public void WhichFilesNeedToBePushedForUpdate_ShouldMap()
@@ -174,7 +173,7 @@ public class ThumbnailSocketServiceTests
 			},
 			new List<FileIndexItem> { new("/test.jpg") });
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 	}
 
 	[TestMethod]

@@ -79,14 +79,15 @@ public sealed class SearchSuggestControllerTest
 		{
 			ControllerContext = { HttpContext = new DefaultHttpContext() }
 		};
-		
+
 		// this will hit ModelState.IsValid
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
-		
+
 		var result = await controller.Suggest(t) as JsonResult;
 		var list = result!.Value as List<string>;
 
-		Assert.AreEqual(0, list!.Count);
+		Assert.IsNotNull(result);
+		Assert.IsEmpty(list!);
 	}
 
 	[TestMethod]

@@ -51,7 +51,7 @@ public sealed class SynchronizeCliTest
 	}
 
 	[TestMethod]
-	[Timeout(5000)]
+	[Timeout(5000, CooperativeCancellation = true)]
 	public async Task SynchronizeCliHelpVerbose()
 	{
 		var args = new List<string> { "-h", "-v" }.ToArray();
@@ -60,7 +60,7 @@ public sealed class SynchronizeCliTest
 	}
 
 	[TestMethod]
-	[Timeout(5000)]
+	[Timeout(5000, CooperativeCancellation = true)]
 	public async Task SynchronizeCliHelpTest()
 	{
 		var newImage = new CreateAnImage();

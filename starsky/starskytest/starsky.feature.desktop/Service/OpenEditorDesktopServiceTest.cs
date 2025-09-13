@@ -24,7 +24,7 @@ public class OpenEditorDesktopServiceTest
 			UseLocalDesktop = true,
 			DefaultDesktopEditor = new List<AppSettingsDefaultEditorApplication>
 			{
-				new AppSettingsDefaultEditorApplication
+				new()
 				{
 					ApplicationPath = "app",
 					ImageFormats = new List<ExtensionRolesHelper.ImageFormat>
@@ -37,7 +37,7 @@ public class OpenEditorDesktopServiceTest
 
 		var preflight = new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>
 		{
-			new PathImageFormatExistsAppPathModel
+			new()
 			{
 				AppPath = "test",
 				Status = FileIndexItem.ExifStatus.Ok,
@@ -55,7 +55,7 @@ public class OpenEditorDesktopServiceTest
 
 		Assert.IsTrue(success);
 		Assert.AreEqual("Opened", status);
-		Assert.AreEqual(1, list.Count);
+		Assert.HasCount(1, list);
 		Assert.AreEqual("/test.jpg", list[0].SubPath);
 		Assert.AreEqual("test", list[0].AppPath);
 	}
@@ -72,7 +72,7 @@ public class OpenEditorDesktopServiceTest
 			UseLocalDesktop = true,
 			DefaultDesktopEditor = new List<AppSettingsDefaultEditorApplication>
 			{
-				new AppSettingsDefaultEditorApplication
+				new()
 				{
 					ApplicationPath = "app",
 					ImageFormats = new List<ExtensionRolesHelper.ImageFormat>
@@ -85,7 +85,7 @@ public class OpenEditorDesktopServiceTest
 
 		var preflight = new FakeIOpenEditorPreflight(new List<PathImageFormatExistsAppPathModel>
 		{
-			new PathImageFormatExistsAppPathModel
+			new()
 			{
 				AppPath = "test",
 				Status = FileIndexItem.ExifStatus.Ok,
@@ -103,7 +103,7 @@ public class OpenEditorDesktopServiceTest
 
 		Assert.IsTrue(success);
 		Assert.AreEqual("Opened", status);
-		Assert.AreEqual(1, list.Count);
+		Assert.HasCount(1, list);
 		Assert.AreEqual("/test.jpg", list[0].SubPath);
 		Assert.AreEqual("test", list[0].AppPath);
 	}
@@ -122,11 +122,11 @@ public class OpenEditorDesktopServiceTest
 			new OpenEditorDesktopService(appSettings, fakeService, preflight);
 
 		var (success, status, list) =
-			( await service.OpenAsync(new List<string> { "/test.jpg" }, true) );
+			await service.OpenAsync(new List<string> { "/test.jpg" }, true);
 
 		Assert.IsFalse(success);
 		Assert.AreEqual("No files selected", status);
-		Assert.AreEqual(0, list.Count);
+		Assert.IsEmpty(list);
 	}
 
 	[TestMethod]
@@ -143,11 +143,11 @@ public class OpenEditorDesktopServiceTest
 			new OpenEditorDesktopService(appSettings, fakeService, preflight);
 
 		var (success, status, list) =
-			( await service.OpenAsync(new List<string> { "/test.jpg" }, true) );
+			await service.OpenAsync(new List<string> { "/test.jpg" }, true);
 
 		Assert.IsNull(success);
 		Assert.AreEqual("UseLocalDesktop feature toggle is disabled", status);
-		Assert.AreEqual(0, list.Count);
+		Assert.IsEmpty(list);
 	}
 
 	[TestMethod]
@@ -163,11 +163,11 @@ public class OpenEditorDesktopServiceTest
 		var service = new OpenEditorDesktopService(appSettings, fakeService, preflight);
 
 		var (success, status, list) =
-			( await service.OpenAsync(new List<string> { "/test.jpg" }, true) );
+			await service.OpenAsync(new List<string> { "/test.jpg" }, true);
 
 		Assert.IsNull(success);
 		Assert.AreEqual("OpenEditor is not supported on this configuration", status);
-		Assert.AreEqual(0, list.Count);
+		Assert.IsEmpty(list);
 	}
 
 	[TestMethod]
@@ -276,25 +276,25 @@ public class OpenEditorDesktopServiceTest
 		// Arrange
 		var inputList = new List<PathImageFormatExistsAppPathModel>
 		{
-			new PathImageFormatExistsAppPathModel
+			new()
 			{
 				FullFilePath = "file1.txt",
 				Status = FileIndexItem.ExifStatus.Ok,
 				AppPath = string.Empty
 			},
-			new PathImageFormatExistsAppPathModel
+			new()
 			{
 				FullFilePath = "file2.txt",
 				Status = FileIndexItem.ExifStatus.Ok,
 				AppPath = "editor.exe"
 			},
-			new PathImageFormatExistsAppPathModel
+			new()
 			{
 				FullFilePath = "file3.txt",
 				Status = FileIndexItem.ExifStatus.OperationNotSupported,
 				AppPath = string.Empty
 			},
-			new PathImageFormatExistsAppPathModel
+			new()
 			{
 				FullFilePath = "file4.txt",
 				Status = FileIndexItem.ExifStatus.Ok,
@@ -307,14 +307,12 @@ public class OpenEditorDesktopServiceTest
 			OpenEditorDesktopService.FilterListOpenDefaultEditorAndSpecificEditor(inputList);
 
 		// Assert
-		Assert.AreEqual(2, result.Item1.Count); // Expected number of files without AppPath
-		Assert.IsTrue(
-			result.Item1
-				.Contains("file1.txt")); // Make sure file1.txt is in the list without AppPath
-		Assert.IsFalse(
-			result.Item1
-				.Contains("file2.txt")); // Make sure file2.txt is not in the list without AppPath
-		Assert.AreEqual(1, result.Item2.Count); // Expected number of files with AppPath
+		Assert.HasCount(2, result.Item1); // Expected number of files without AppPath
+		Assert.Contains("file1.txt",
+			result.Item1); // Make sure file1.txt is in the list without AppPath
+		Assert.DoesNotContain("file2.txt",
+			result.Item1); // Make sure file2.txt is not in the list without AppPath
+		Assert.HasCount(1, result.Item2); // Expected number of files with AppPath
 		Assert.IsTrue(result.Item2.Exists(x =>
 			x.FullFilePath == "file2.txt" &&
 			x.AppPath ==
@@ -327,25 +325,25 @@ public class OpenEditorDesktopServiceTest
 		// Arrange
 		var inputList = new List<PathImageFormatExistsAppPathModel>
 		{
-			new PathImageFormatExistsAppPathModel
+			new()
 			{
 				FullFilePath = "file1.txt",
 				Status = FileIndexItem.ExifStatus.Ok,
 				AppPath = ""
 			},
-			new PathImageFormatExistsAppPathModel
+			new()
 			{
 				FullFilePath = "file2.txt",
 				Status = FileIndexItem.ExifStatus.Ok,
 				AppPath = "editor.exe"
 			},
-			new PathImageFormatExistsAppPathModel
+			new()
 			{
 				FullFilePath = "file3.txt",
 				Status = FileIndexItem.ExifStatus.NotFoundNotInIndex,
 				AppPath = ""
 			},
-			new PathImageFormatExistsAppPathModel
+			new()
 			{
 				FullFilePath = "file4.txt",
 				Status = FileIndexItem.ExifStatus.Ok,
@@ -358,7 +356,7 @@ public class OpenEditorDesktopServiceTest
 			OpenEditorDesktopService.FilterListOpenDefaultEditorAndSpecificEditor(inputList);
 
 		// Assert
-		Assert.AreEqual(1, result.Item2.Count); // Expected number of files with AppPath
+		Assert.HasCount(1, result.Item2); // Expected number of files with AppPath
 		Assert.IsTrue(result.Item2.Exists(x =>
 			x is { FullFilePath: "file2.txt", AppPath: "editor.exe" }));
 		// Make sure file2.txt is in the list with AppPath and has correct editor

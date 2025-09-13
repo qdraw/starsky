@@ -100,7 +100,7 @@ public class NativePreviewThumbnailGeneratorTests
 
 		// Assert
 		Assert.IsNotNull(results);
-		Assert.AreEqual(2, results.Count);
+		Assert.HasCount(2, results);
 		foreach ( var result in results )
 		{
 			Assert.IsFalse(result.Success);
@@ -125,7 +125,7 @@ public class NativePreviewThumbnailGeneratorTests
 				thumbnailSizes) ).ToList();
 
 		// Assert
-		Assert.AreEqual(2, results.Count);
+		Assert.HasCount(2, results);
 		Assert.AreEqual("Native service not supported", results[0].ErrorMessage);
 		Assert.IsFalse(results[0].ErrorLog);
 		Assert.AreEqual("Native service not supported", results[1].ErrorMessage);

@@ -38,7 +38,7 @@ public class GetObjectsByFileHashAsyncTest
 	public async Task GetObjectsByFileHashAsyncTest_NoContent()
 	{
 		var items = await _query.GetObjectsByFileHashAsync(new List<string>());
-		Assert.AreEqual(0, items.Count);
+		Assert.IsEmpty(items);
 	}
 
 	[TestMethod]
@@ -47,7 +47,7 @@ public class GetObjectsByFileHashAsyncTest
 		await _query.AddItemAsync(new FileIndexItem { FileHash = "123456" });
 		var items = await _query.GetObjectsByFileHashAsync(new List<string> { "123456" });
 
-		Assert.AreEqual(1, items.Count);
+		Assert.HasCount(1, items);
 		Assert.AreEqual("123456", items.Find(p => p.FileHash == "123456")?.FileHash);
 	}
 
@@ -85,7 +85,7 @@ public class GetObjectsByFileHashAsyncTest
 				new FakeIWebLogger()); // <-- no service scope
 
 		dbContext.FileIndex.Add(new FileIndexItem { FileHash = "test123" });
-		await dbContext.SaveChangesAsync();
+		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		// And dispose
 		await dbContext.DisposeAsync();
@@ -94,7 +94,9 @@ public class GetObjectsByFileHashAsyncTest
 		var result = await query.GetObjectsByFileHashAsync(new List<string> { "test123" }, 1);
 
 		// Assert
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual("test123", result[0].FileHash);
 	}
+
+	public TestContext TestContext { get; set; }
 }

@@ -64,7 +64,7 @@ public sealed class PredicateBuilderTest
 
 		var result = example.Where(predicate.Compile()).ToList();
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual("Key123", result[0].Key);
 	}
 
@@ -98,10 +98,9 @@ public sealed class PredicateBuilderTest
 
 		var result = example.Where(predicate.Compile()).ToList();
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual("Key1", result[0].Key);
 	}
-
 
 	[TestMethod]
 	public void ShouldMatch_Or_Criteria()
@@ -132,7 +131,7 @@ public sealed class PredicateBuilderTest
 
 		var result = example.Where(predicate.Compile()).ToList();
 
-		Assert.AreEqual(2, result.Count);
+		Assert.HasCount(2, result);
 		Assert.AreEqual("Key", result[0].Key);
 		Assert.AreEqual("Key12", result[1].Key);
 	}

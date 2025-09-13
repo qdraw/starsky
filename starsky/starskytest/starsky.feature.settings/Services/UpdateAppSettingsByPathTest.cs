@@ -86,8 +86,7 @@ public class UpdateAppSettingsByPathTests
 			"{\n  \"app\": {\n    \"Verbose\": \"true\",\n    \"StorageFolder\": " + // rm quotes
 			storageFolderJson + ",\n";
 
-
-		Assert.IsTrue(result.Contains(expectedResult));
+		Assert.Contains(expectedResult, result);
 	}
 
 	[TestMethod]

@@ -123,7 +123,7 @@ public class DatabaseThumbnailGenerationServiceTest
 				}
 			}) ).ToList();
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.IsFalse(result.FirstOrDefault()!.Large);
 	}
 
@@ -156,10 +156,9 @@ public class DatabaseThumbnailGenerationServiceTest
 				}
 			}) ).ToList();
 
-		Assert.AreEqual(1, result.Count);
-		Assert.AreEqual(0, ( await thumbnailQuery.Get("74283rei_ot_fs_kl") ).Count);
+		Assert.HasCount(1, result);
+		Assert.IsEmpty(await thumbnailQuery.Get("74283rei_ot_fs_kl"));
 	}
-
 
 	[TestMethod]
 	public async Task WorkThumbnailGeneration_FoundUpdate()
@@ -192,8 +191,8 @@ public class DatabaseThumbnailGenerationServiceTest
 				}
 			}) ).ToList();
 
-		Assert.AreEqual(1, result.Count);
-		Assert.AreEqual(1, ( await thumbnailQuery.Get("345742938fs_jk_df_kj") ).Count);
+		Assert.HasCount(1, result);
+		Assert.HasCount(1, await thumbnailQuery.Get("345742938fs_jk_df_kj"));
 		Assert.IsNull(result.FirstOrDefault()!.Large);
 	}
 
@@ -224,7 +223,7 @@ public class DatabaseThumbnailGenerationServiceTest
 				}
 			}) ).ToList();
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.IsNull(result.FirstOrDefault()!.Large);
 	}
 }

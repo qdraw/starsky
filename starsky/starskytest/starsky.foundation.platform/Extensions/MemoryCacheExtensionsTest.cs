@@ -41,6 +41,6 @@ public sealed class MemoryCacheExtensionsTest
 	{
 		var cache = new FakeMemoryCache();
 		var keys = cache.GetKeys<string>().ToList();
-		Assert.AreEqual(0, keys.Count);
+		Assert.IsEmpty(keys);
 	}
 }

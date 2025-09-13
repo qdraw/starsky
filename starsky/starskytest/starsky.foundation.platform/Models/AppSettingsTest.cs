@@ -54,8 +54,8 @@ public sealed class AppSettingsTest
 	public void AppSettingsProviderTest_SqLiteFullPathTest()
 	{
 		var dataSource = _appSettings.SqLiteFullPath("Data Source=data.db", string.Empty);
-		Assert.IsTrue(dataSource.Contains("data.db"));
-		Assert.IsTrue(dataSource.Contains("Data Source="));
+		Assert.Contains("data.db", dataSource);
+		Assert.Contains("Data Source=", dataSource);
 	}
 
 	[TestMethod]
@@ -95,8 +95,8 @@ public sealed class AppSettingsTest
 
 		var datasource = _appSettings.SqLiteFullPath(
 			"Data Source=data.db", Path.DirectorySeparatorChar + "starsky");
-		Assert.IsTrue(datasource.Contains("data.db"));
-		Assert.IsTrue(datasource.Contains("Data Source="));
+		Assert.Contains("data.db", datasource);
+		Assert.Contains("Data Source=", datasource);
 	}
 
 	[TestMethod]
@@ -133,7 +133,7 @@ public sealed class AppSettingsTest
 	{
 		var result = new AppSettingsStructureModel("\\d.ext");
 
-		Assert.AreEqual(0, result.Errors.Count);
+		Assert.IsEmpty(result.Errors);
 		Assert.AreEqual("/\\d.ext", result.DefaultPattern);
 	}
 
@@ -369,7 +369,7 @@ public sealed class AppSettingsTest
 	public void AppVersionBuildDateTime()
 	{
 		var appVersionBuildDateTime = new AppSettings().AppVersionBuildDateTime;
-		Assert.IsTrue(appVersionBuildDateTime.Year > 2000);
+		Assert.IsGreaterThan(2000, appVersionBuildDateTime.Year);
 	}
 
 	[TestMethod]
@@ -417,7 +417,7 @@ public sealed class AppSettingsTest
 			AccountRolesByEmailRegisterOverwrite =
 				new Dictionary<string, string> { { "bogusEmail", "bogusRole" } }
 		};
-		Assert.AreEqual(0, appSettings.AccountRolesByEmailRegisterOverwrite.Count);
+		Assert.IsEmpty(appSettings.AccountRolesByEmailRegisterOverwrite);
 	}
 
 	[TestMethod]
@@ -436,7 +436,7 @@ public sealed class AppSettingsTest
 				new Dictionary<string, string> { { "bogusEmail", "Administrator" } }
 		};
 
-		Assert.AreEqual(1, appSettings.AccountRolesByEmailRegisterOverwrite.Count);
+		Assert.HasCount(1, appSettings.AccountRolesByEmailRegisterOverwrite);
 		Assert.AreEqual("Administrator",
 			appSettings.AccountRolesByEmailRegisterOverwrite["bogusEmail"]);
 	}
@@ -449,11 +449,11 @@ public sealed class AppSettingsTest
 			AccountRolesByEmailRegisterOverwrite =
 				new Dictionary<string, string> { { "bogusEmail", "Administrator" } }
 		};
-		Assert.AreEqual(1, appSettings.AccountRolesByEmailRegisterOverwrite.Count);
+		Assert.HasCount(1, appSettings.AccountRolesByEmailRegisterOverwrite);
 
 		appSettings.AccountRolesByEmailRegisterOverwrite.Add("bogusEmail2", "Administrator");
 
-		Assert.AreEqual(2, appSettings.AccountRolesByEmailRegisterOverwrite.Count);
+		Assert.HasCount(2, appSettings.AccountRolesByEmailRegisterOverwrite);
 		Assert.AreEqual("Administrator",
 			appSettings.AccountRolesByEmailRegisterOverwrite["bogusEmail2"]);
 	}

@@ -42,7 +42,7 @@ public sealed class WriteMetaThumbnailServiceTest
 		Assert.IsFalse(result);
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow(ThumbnailImageFormat.jpg)]
 	[DataRow(ThumbnailImageFormat.webp)]
 	public async Task WriteAndCropFile_FileIsWritten(ThumbnailImageFormat imageFormat)

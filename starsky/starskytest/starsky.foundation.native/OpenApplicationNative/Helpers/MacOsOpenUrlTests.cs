@@ -55,7 +55,7 @@ public class MacOsOpenUrlTests
 		var isProcess = Process.GetProcessesByName(ConsoleName).ToList()
 			.Exists(p => p.MainModule?.FileName.Contains(ConsoleApp) == true);
 
-		await Task.Delay(10);
+		await Task.Delay(10, TestContext.CancellationTokenSource.Token);
 
 		for ( var i = 0; i < 60; i++ )
 		{
@@ -69,7 +69,7 @@ public class MacOsOpenUrlTests
 				break;
 			}
 
-			await Task.Delay(5);
+			await Task.Delay(5, TestContext.CancellationTokenSource.Token);
 		}
 
 		Assert.IsTrue(isProcess);
@@ -166,4 +166,6 @@ public class MacOsOpenUrlTests
 		// Act & Assert
 		Assert.ThrowsExactly<DllNotFoundException>(() => MacOsOpenUrl.InvokeOpenUrl(IntPtr.Zero));
 	}
+
+	public TestContext TestContext { get; set; }
 }

@@ -69,7 +69,7 @@ public class PathHelperTests
 		"-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and" +
 		"-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and-and";
 
-	[DataTestMethod] // [Theory]
+	[TestMethod] // [Theory]
 	[DataRow("path/to/file.txt", "file.txt")]
 	[DataRow("file.txt", "file.txt")]
 	[DataRow("/file.txt", "file.txt")]
@@ -85,7 +85,7 @@ public class PathHelperTests
 		Assert.AreEqual(expectedFileName, actualFileName);
 	}
 
-	[DataTestMethod] // [Theory]
+	[TestMethod] // [Theory]
 	[DataRow("path/to/file.txt", "file.txt")]
 	[DataRow("/test/file/", "")]
 	[DataRow("/test/file", "file")] // no backslash

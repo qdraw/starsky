@@ -54,7 +54,7 @@ public class MacOsTrashBindingHelperTest
 
 		var result = MacOsTrashBindingHelper.Trash(destPath, OSPlatform.OSX);
 
-		await Task.Delay(1000);
+		await Task.Delay(1000, TestContext.CancellationTokenSource.Token);
 
 		Assert.IsTrue(result);
 
@@ -66,7 +66,7 @@ public class MacOsTrashBindingHelperTest
 
 		Assert.IsFalse(exists);
 
-		await Task.Delay(500);
+		await Task.Delay(500, TestContext.CancellationTokenSource.Token);
 
 		var trashPath =
 			Path.Combine(Environment.GetFolderPath(
@@ -222,4 +222,6 @@ public class MacOsTrashBindingHelperTest
 			( uint ) MacOsTrashBindingHelper.CfStringEncoding.ASCII
 		];
 	}
+
+	public TestContext TestContext { get; set; }
 }

@@ -11,7 +11,7 @@ namespace starskytest.starsky.feature.thumbnail.Services;
 [TestClass]
 public class SmallThumbnailBackgroundJobServiceTests
 {
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow("/non-existent-file.jpg", DisplayName = "File Not Found")]
 	[DataRow(null, DisplayName = "Null")]
 	public async Task CreateJob_ShouldReturnFalse_WhenFileDoesNotExist(string? filePath)

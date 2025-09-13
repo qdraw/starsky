@@ -45,7 +45,7 @@ public sealed class WebSocketConnectionTest
 
 
 	[TestMethod]
-	[Timeout(2000)]
+	[Timeout(2000, CooperativeCancellation = true)]
 	public async Task ReceiveMessagesUntilCloseAsync_And_Exit()
 	{
 		var fakeSocket = new FakeWebSocket();

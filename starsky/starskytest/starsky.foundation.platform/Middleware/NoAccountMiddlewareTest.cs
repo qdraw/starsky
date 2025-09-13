@@ -101,8 +101,8 @@ public sealed class NoAccountMiddlewareTest
 		var userManager = serviceProvider.GetService<IUserManager>() as FakeUserManagerActiveUsers;
 
 		Assert.IsTrue(userManager?.Users.Exists(p =>
-			p.Credentials!.Any(
-				credential => credential.Identifier == NoAccountMiddleware.Identifier)));
+			p.Credentials!.Any(credential =>
+				credential.Identifier == NoAccountMiddleware.Identifier)));
 
 		Assert.IsTrue(invoked);
 	}
@@ -135,8 +135,8 @@ public sealed class NoAccountMiddlewareTest
 
 		var userManager = serviceProvider.GetService<IUserManager>() as FakeUserManagerActiveUsers;
 		Assert.IsTrue(userManager?.Users.Exists(p =>
-			p.Credentials?.Any(
-				credential => credential.Identifier == NoAccountMiddleware.Identifier) == true));
+			p.Credentials?.Any(credential =>
+				credential.Identifier == NoAccountMiddleware.Identifier) == true));
 
 		Assert.IsTrue(invoked);
 	}
@@ -168,8 +168,8 @@ public sealed class NoAccountMiddlewareTest
 
 		var userManager = serviceProvider.GetService<IUserManager>() as FakeUserManagerActiveUsers;
 		Assert.IsFalse(userManager?.Users.Exists(p =>
-			p.Credentials?.Any(
-				credential => credential.Identifier == NoAccountMiddleware.Identifier) == true));
+			p.Credentials?.Any(credential =>
+				credential.Identifier == NoAccountMiddleware.Identifier) == true));
 
 		Assert.IsTrue(invoked);
 	}
@@ -203,8 +203,8 @@ public sealed class NoAccountMiddlewareTest
 		var userManager = serviceProvider.GetService<IUserManager>() as FakeUserManagerActiveUsers;
 
 		Assert.IsTrue(userManager?.Users.Exists(p =>
-			p.Credentials?.Any(
-				credential => credential.Identifier == NoAccountMiddleware.Identifier) == true));
+			p.Credentials?.Any(credential =>
+				credential.Identifier == NoAccountMiddleware.Identifier) == true));
 
 		Assert.IsTrue(invoked);
 	}
@@ -262,8 +262,8 @@ public sealed class NoAccountMiddlewareTest
 		var userManager = serviceProvider.GetService<IUserManager>() as FakeUserManagerActiveUsers;
 		// false due off network
 		Assert.IsFalse(userManager!.Users.Exists(p =>
-			p.Credentials!.Any(
-				credential => credential.Identifier == NoAccountMiddleware.Identifier)));
+			p.Credentials!.Any(credential =>
+				credential.Identifier == NoAccountMiddleware.Identifier)));
 
 		Assert.IsTrue(invoked);
 	}
@@ -287,7 +287,7 @@ public sealed class NoAccountMiddlewareTest
 			test.Credentials!.First().IterationCount);
 	}
 
-	[DataTestMethod] // [Theory]
+	[TestMethod] // [Theory]
 	[DataRow(IterationCountType.IterateLegacySha1)]
 	[DataRow(IterationCountType.Iterate100KSha256)]
 	public async Task CreateOrUpdateNewUsers_UpgradeUser(IterationCountType iterationCountType)

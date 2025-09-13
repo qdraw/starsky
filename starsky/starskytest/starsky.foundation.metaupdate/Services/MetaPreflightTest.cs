@@ -326,7 +326,7 @@ public sealed class MetaPreflightTest
 			new FileIndexItem("/test.jpg") { Orientation = ImageRotation.Rotation.Horizontal },
 			compareList);
 		Assert.AreEqual(ImageRotation.Rotation.Horizontal, rotationCompare.Orientation);
-		Assert.AreEqual(0, compareList.Count);
+		Assert.IsEmpty(compareList);
 	}
 
 	[TestMethod]
