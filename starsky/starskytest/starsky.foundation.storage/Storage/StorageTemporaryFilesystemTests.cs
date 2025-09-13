@@ -332,7 +332,7 @@ public sealed class StorageTemporaryFilesystemTests
 	{
 		var filesInFolder = _tempStorage.GetAllFilesInDirectoryRecursive(
 			"/not_found").ToList();
-		Assert.AreEqual(0, filesInFolder.Count);
+		Assert.IsEmpty(filesInFolder);
 	}
 
 	[TestMethod]

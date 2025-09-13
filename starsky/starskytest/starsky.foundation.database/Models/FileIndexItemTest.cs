@@ -157,7 +157,7 @@ public sealed class FileIndexItemTest
 	{
 		var input = "string";
 		var output = FileIndexItem.GetColorClassList(input);
-		Assert.AreEqual(0, output.Count); // <= 0
+		Assert.IsEmpty(output); // <= 0
 	}
 
 	[TestMethod]
@@ -401,13 +401,14 @@ public sealed class FileIndexItemTest
 		Assert.AreEqual("Apple", item.Make);
 		Assert.AreEqual("iPhone", item.Model);
 	}
-	
+
 	[TestMethod]
 	[DataRow(null, "", DisplayName = "MakeModel is null")]
 	[DataRow("", "", DisplayName = "MakeModel is empty")]
 	[DataRow("Sony", "", DisplayName = "MakeModel has one element")]
 	[DataRow("Sony|ILCE-6600", "ILCE-6600", DisplayName = "MakeModel has two elements")]
-	[DataRow("Sony|ILCE-6600|Lens", "ILCE-6600", DisplayName = "MakeModel has more than two elements")]
+	[DataRow("Sony|ILCE-6600|Lens", "ILCE-6600",
+		DisplayName = "MakeModel has more than two elements")]
 	[DataRow("|ILCE-6600", "ILCE-6600", DisplayName = "MakeModel starts with pipe")]
 	[DataRow("Sony|", "", DisplayName = "MakeModel ends with pipe")]
 	[DataRow("Sony||ILCE-6600", "", DisplayName = "MakeModel has empty second element")]
@@ -422,7 +423,7 @@ public sealed class FileIndexItemTest
 		// Assert
 		Assert.AreEqual(expected, result);
 	}
-	
+
 	[TestMethod]
 	[DataRow(null, "", DisplayName = "MakeModel is null")]
 	[DataRow("", "", DisplayName = "MakeModel is empty")]
@@ -444,7 +445,7 @@ public sealed class FileIndexItemTest
 		// Assert
 		Assert.AreEqual(expected, result);
 	}
-	
+
 	[TestMethod]
 	[DataRow(null, "", DisplayName = "MakeModel is null")]
 	[DataRow("", "", DisplayName = "MakeModel is empty")]
@@ -500,7 +501,7 @@ public sealed class FileIndexItemTest
 	public void SidecarExtensions_read_null()
 	{
 		var item = new FileIndexItem { SidecarExtensions = null };
-		Assert.AreEqual(0, item.SidecarExtensionsList.Count);
+		Assert.IsEmpty(item.SidecarExtensionsList);
 	}
 
 	[TestMethod]
@@ -511,7 +512,7 @@ public sealed class FileIndexItemTest
 
 		Assert.AreEqual("xmp", item.SidecarExtensionsList.FirstOrDefault());
 		// no duplicates please
-		Assert.AreEqual(1, item.SidecarExtensionsList.Count);
+		Assert.HasCount(1, item.SidecarExtensionsList);
 	}
 
 	[TestMethod]
@@ -520,7 +521,7 @@ public sealed class FileIndexItemTest
 		var item = new FileIndexItem { SidecarExtensions = "xmp" };
 		item.RemoveSidecarExtension("xmp");
 
-		Assert.AreEqual(0, item.SidecarExtensionsList.Count);
+		Assert.IsEmpty(item.SidecarExtensionsList);
 	}
 
 	[TestMethod]

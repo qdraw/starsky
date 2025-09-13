@@ -25,7 +25,7 @@ public sealed class ImportCliTest
 			fakeConsole, new FakeIWebLogger(), fakeExifToolDownload, fakeGeoFileDownload);
 		await sut.Importer([]);
 
-		Assert.AreEqual(1, fakeExifToolDownload.Called.Count);
+		Assert.HasCount(1, fakeExifToolDownload.Called);
 	}
 
 	[TestMethod]

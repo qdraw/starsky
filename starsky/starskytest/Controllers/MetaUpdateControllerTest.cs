@@ -281,7 +281,7 @@ public sealed class MetaUpdateControllerTest
 		}
 
 		Assert.IsNotNull(fakeIMetaUpdateService);
-		Assert.AreEqual(1, fakeIMetaUpdateService.ChangedFileIndexItemNameContent.Count);
+		Assert.HasCount(1, fakeIMetaUpdateService.ChangedFileIndexItemNameContent);
 
 		var actual = JsonSerializer.Serialize(
 			fakeIMetaUpdateService.ChangedFileIndexItemNameContent[0],

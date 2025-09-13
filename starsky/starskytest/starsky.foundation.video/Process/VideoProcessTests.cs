@@ -92,7 +92,7 @@ public class VideoProcessTests
 		Assert.AreEqual("FFMpeg download failed", result.ErrorMessage);
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow("test.mp4", SelectorStorage.StorageServices.Temporary, true)]
 	[DataRow("not-found", SelectorStorage.StorageServices.Temporary, false)]
 	[DataRow("not-found", SelectorStorage.StorageServices.Thumbnail, false)]

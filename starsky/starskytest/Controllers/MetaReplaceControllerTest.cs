@@ -196,7 +196,7 @@ public sealed class MetaReplaceControllerTest
 
 		await controller.Replace("/test09.jpg", "tags", "test", "");
 
-		Assert.AreEqual(1, fakeFakeIWebSocketConnectionsService.FakeSendToAllAsync.Count);
+		Assert.HasCount(1, fakeFakeIWebSocketConnectionsService.FakeSendToAllAsync);
 	}
 
 	[TestMethod]
@@ -213,7 +213,7 @@ public sealed class MetaReplaceControllerTest
 
 		await controller.Replace("/test09.jpg", "tags", "test", "");
 
-		Assert.AreEqual(1, fakeFakeIWebSocketConnectionsService.FakeSendToAllAsync.Count);
+		Assert.HasCount(1, fakeFakeIWebSocketConnectionsService.FakeSendToAllAsync);
 	}
 
 	[TestMethod]
@@ -230,7 +230,7 @@ public sealed class MetaReplaceControllerTest
 
 		await controller.Replace("/test09.jpg", "tags", "test", "");
 
-		Assert.AreEqual(1, fakeFakeIWebSocketConnectionsService.FakeSendToAllAsync.Count);
+		Assert.HasCount(1, fakeFakeIWebSocketConnectionsService.FakeSendToAllAsync);
 	}
 
 	[TestMethod]
@@ -248,7 +248,7 @@ public sealed class MetaReplaceControllerTest
 
 		await controller.Replace("/test09.jpg", "tags", "test", "");
 
-		Assert.AreEqual(0, fakeFakeIWebSocketConnectionsService.FakeSendToAllAsync.Count);
+		Assert.IsEmpty(fakeFakeIWebSocketConnectionsService.FakeSendToAllAsync);
 	}
 
 	[TestMethod]
@@ -282,7 +282,7 @@ public sealed class MetaReplaceControllerTest
 		}
 
 		Assert.IsNotNull(fakeIMetaUpdateService);
-		Assert.AreEqual(1, fakeIMetaUpdateService.ChangedFileIndexItemNameContent.Count);
+		Assert.HasCount(1, fakeIMetaUpdateService.ChangedFileIndexItemNameContent);
 
 		var actual = JsonSerializer.Serialize(
 			fakeIMetaUpdateService.ChangedFileIndexItemNameContent[0],

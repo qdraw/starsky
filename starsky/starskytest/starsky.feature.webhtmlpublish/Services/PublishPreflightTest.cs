@@ -27,7 +27,7 @@ public sealed class PublishPreflightTest
 				new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger())
 			.GetPublishProfileNames();
 
-		Assert.AreEqual(0, list.Count);
+		Assert.IsEmpty(list);
 	}
 
 	[TestMethod]
@@ -37,7 +37,7 @@ public sealed class PublishPreflightTest
 				new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger())
 			.GetPublishProfileNames();
 
-		Assert.AreEqual(1, list.Count);
+		Assert.HasCount(1, list);
 		Assert.AreEqual("test", list[0].Item2);
 		Assert.AreEqual(0, list[0].Item1);
 	}
@@ -122,7 +122,7 @@ public sealed class PublishPreflightTest
 
 		// Assert
 		Assert.IsFalse(result.Item1);
-		Assert.AreEqual(1, result.Item2.Count);
+		Assert.HasCount(1, result.Item2);
 		Assert.AreEqual("Profile not found", result.Item2[0]);
 	}
 
@@ -140,7 +140,7 @@ public sealed class PublishPreflightTest
 
 		// Assert
 		Assert.IsFalse(result.Item1);
-		Assert.AreEqual(1, result.Item2.Count);
+		Assert.HasCount(1, result.Item2);
 		Assert.AreEqual("Profile not found", result.Item2[0]);
 	}
 
@@ -164,7 +164,7 @@ public sealed class PublishPreflightTest
 
 		// Assert
 		Assert.IsFalse(result.Item1);
-		Assert.AreEqual(1, result.Item2.Count);
+		Assert.HasCount(1, result.Item2);
 	}
 
 	[TestMethod]
@@ -189,7 +189,7 @@ public sealed class PublishPreflightTest
 
 		// Assert
 		Assert.IsFalse(result.Item1);
-		Assert.AreEqual(1, result.Item2.Count);
+		Assert.HasCount(1, result.Item2);
 		Assert.AreEqual($"View Path {publishProfile.Template} should exists", result.Item2[0]);
 	}
 
@@ -213,7 +213,7 @@ public sealed class PublishPreflightTest
 
 		// Assert
 		Assert.IsFalse(result.Item1);
-		Assert.AreEqual(1, result.Item2.Count);
+		Assert.HasCount(1, result.Item2);
 		Assert.AreEqual($"Image Path {publishProfile.Path} should exists", result.Item2[0]);
 	}
 
@@ -238,7 +238,7 @@ public sealed class PublishPreflightTest
 
 		// Assert
 		Assert.IsFalse(result.Item1);
-		Assert.AreEqual(1, result.Item2.Count);
+		Assert.HasCount(1, result.Item2);
 		Assert.AreEqual($"Image Path {publishProfile.Path} should exists", result.Item2[0]);
 	}
 }

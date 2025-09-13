@@ -39,7 +39,7 @@ public class MoveToTrashServiceTest
 
 		await moveToTrashService.MoveToTrashAsync(new List<string> { path }, true);
 
-		Assert.AreEqual(1, trashService.InTrash.Count);
+		Assert.HasCount(1, trashService.InTrash);
 		var expected = appSettings.StorageFolder +
 		               path.Replace('/', Path.DirectorySeparatorChar);
 		Assert.AreEqual(expected, trashService.InTrash.FirstOrDefault());
@@ -64,7 +64,7 @@ public class MoveToTrashServiceTest
 
 		await moveToTrashService.MoveToTrashAsync(new List<string> { dirPath }, true);
 
-		Assert.AreEqual(1, trashService.InTrash.Count);
+		Assert.HasCount(1, trashService.InTrash);
 		var expected = appSettings.StorageFolder +
 		               dirPath.Replace('/', Path.DirectorySeparatorChar);
 		Assert.AreEqual(expected, trashService.InTrash.FirstOrDefault());
@@ -132,7 +132,7 @@ public class MoveToTrashServiceTest
 		var result = await moveToTrashService.MoveToTrashAsync(
 			new List<string> { path }, true);
 
-		Assert.AreEqual(0, trashService.InTrash.Count);
+		Assert.IsEmpty(trashService.InTrash);
 
 		Assert.AreEqual(TrashKeyword.TrashKeywordString, result.FirstOrDefault()?.Tags);
 	}
@@ -157,7 +157,7 @@ public class MoveToTrashServiceTest
 		var result = await moveToTrashService.MoveToTrashAsync(
 			new List<string> { path }, true);
 
-		Assert.AreEqual(0, trashService.InTrash.Count);
+		Assert.IsEmpty(trashService.InTrash);
 
 		Assert.AreEqual(TrashKeyword.TrashKeywordString, result.FirstOrDefault()?.Tags);
 	}
@@ -181,7 +181,7 @@ public class MoveToTrashServiceTest
 		var result = await moveToTrashService.MoveToTrashAsync(
 			new List<string> { path }, true);
 
-		Assert.AreEqual(0, trashService.InTrash.Count);
+		Assert.IsEmpty(trashService.InTrash);
 
 		Assert.AreEqual(TrashKeyword.TrashKeywordString, result.FirstOrDefault()?.Tags);
 	}
@@ -237,7 +237,7 @@ public class MoveToTrashServiceTest
 
 		await query.RemoveItemAsync(addedItem);
 
-		Assert.AreEqual(0, trashService.InTrash.Count);
+		Assert.IsEmpty(trashService.InTrash);
 
 		Assert.AreEqual(TrashKeyword.TrashKeywordString, result.FirstOrDefault()?.Tags);
 	}
@@ -299,10 +299,10 @@ public class MoveToTrashServiceTest
 		await query.RemoveItemAsync(addedItem);
 
 		// not in system trash
-		Assert.AreEqual(0, trashService.InTrash.Count);
+		Assert.IsEmpty(trashService.InTrash);
 
 		// result
-		Assert.AreEqual(2, result.Count);
+		Assert.HasCount(2, result);
 
 		Assert.AreEqual(TrashKeyword.TrashKeywordString, result[0].Tags);
 		Assert.AreEqual(TrashKeyword.TrashKeywordString, result[1].Tags);

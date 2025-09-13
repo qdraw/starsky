@@ -257,7 +257,7 @@ public sealed class BufferingFileSystemWatcherTest
 
 		wrapper.NotifyExistingFiles();
 
-		Assert.IsTrue(message.StartsWith(_tempExistingFilesFolder));
+		Assert.StartsWith(_tempExistingFilesFolder, message);
 
 		wrapper.EnableRaisingEvents = false;
 		wrapper.Dispose();
@@ -269,7 +269,7 @@ public sealed class BufferingFileSystemWatcherTest
 	{
 		var path = Path.Join(_tempExistingFilesFolder, "test.txt");
 		new StorageHostFullPathFilesystem(new FakeIWebLogger()).WriteStream(
-			new MemoryStream(Array.Empty<byte>()), path);
+			new MemoryStream([]), path);
 
 		var watcher = new FileSystemWatcher(_tempExistingFilesFolder);
 		var wrapper = new BufferingFileSystemWatcher(watcher);
@@ -280,7 +280,7 @@ public sealed class BufferingFileSystemWatcherTest
 
 		wrapper.NotifyExistingFiles();
 
-		Assert.IsTrue(message.StartsWith(_tempFolder));
+		Assert.StartsWith(_tempFolder, message);
 
 		wrapper.EnableRaisingEvents = false;
 		wrapper.Dispose();
@@ -305,7 +305,7 @@ public sealed class BufferingFileSystemWatcherTest
 
 		wrapper.NotifyExistingFiles();
 
-		Assert.IsTrue(message.StartsWith(_tempFolder));
+		Assert.StartsWith(_tempFolder, message);
 
 		// and remove event
 		wrapper.All -= welcome;
@@ -328,7 +328,7 @@ public sealed class BufferingFileSystemWatcherTest
 
 		wrapper.NotifyExistingFiles();
 
-		Assert.IsFalse(message.StartsWith(_tempFolder));
+		Assert.DoesNotStartWith(_tempFolder, message);
 
 		wrapper.EnableRaisingEvents = false;
 		wrapper.Dispose();
@@ -351,8 +351,7 @@ public sealed class BufferingFileSystemWatcherTest
 
 		wrapper.Created += Welcome;
 
-
-		Assert.IsFalse(message.StartsWith(_tempFolder));
+		Assert.DoesNotStartWith(_tempFolder, message);
 
 		wrapper.EnableRaisingEvents = false;
 		wrapper.Dispose();
@@ -374,13 +373,12 @@ public sealed class BufferingFileSystemWatcherTest
 
 		wrapper.NotifyExistingFiles();
 
-		Assert.IsFalse(message.StartsWith(_tempFolder));
+		Assert.DoesNotStartWith(_tempFolder, message);
 
 		wrapper.EnableRaisingEvents = false;
 		wrapper.Dispose();
 		watcher.Dispose();
 	}
-
 
 	[TestMethod]
 	public void NotifyExistingFiles_Changed_Remove()
@@ -395,13 +393,12 @@ public sealed class BufferingFileSystemWatcherTest
 		wrapper.Changed += welcome;
 		wrapper.Changed -= welcome;
 
-		Assert.IsFalse(message.StartsWith(_tempFolder));
+		Assert.DoesNotStartWith(_tempFolder, message);
 
 		wrapper.EnableRaisingEvents = false;
 		wrapper.Dispose();
 		watcher.Dispose();
 	}
-
 
 	[TestMethod]
 	public void NotifyExistingFiles_Deleted_Remove()
@@ -416,13 +413,12 @@ public sealed class BufferingFileSystemWatcherTest
 		wrapper.Deleted += welcome;
 		wrapper.Deleted -= welcome;
 
-		Assert.IsFalse(message.StartsWith(_tempFolder));
+		Assert.DoesNotStartWith(_tempFolder, message);
 
 		wrapper.EnableRaisingEvents = false;
 		wrapper.Dispose();
 		watcher.Dispose();
 	}
-
 
 	[TestMethod]
 	public void NotifyExistingFiles_Renamed_Remove()
@@ -437,7 +433,7 @@ public sealed class BufferingFileSystemWatcherTest
 		wrapper.Renamed += welcome;
 		wrapper.Renamed -= welcome;
 
-		Assert.IsFalse(message.StartsWith(_tempFolder));
+		Assert.DoesNotStartWith(_tempFolder, message);
 
 		wrapper.EnableRaisingEvents = false;
 		wrapper.Dispose();

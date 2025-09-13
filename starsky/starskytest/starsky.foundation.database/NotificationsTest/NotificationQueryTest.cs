@@ -94,7 +94,7 @@ public sealed class NotificationQueryTest
 		await context.SaveChangesAsync();
 
 		Assert.IsNotNull(testNotification?.Content);
-		Assert.IsTrue(testNotification.DateTimeEpoch >= 1746613149);
+		Assert.IsGreaterThanOrEqualTo(1746613149, testNotification.DateTimeEpoch);
 	}
 
 	[TestMethod]
@@ -109,10 +109,10 @@ public sealed class NotificationQueryTest
 
 		var unixTime = ( ( DateTimeOffset ) currentTime ).ToUnixTimeSeconds() - 1;
 
-		Assert.IsTrue(unixTime <= item.DateTimeEpoch);
+		Assert.IsLessThanOrEqualTo(item.DateTimeEpoch, unixTime);
 
 		var recent = await _notificationQuery.GetNewerThan(currentTime);
-		Assert.AreEqual(1, recent.Count);
+		Assert.HasCount(1, recent);
 
 		_dbContext.Notifications.RemoveRange(recent);
 		await _dbContext.SaveChangesAsync();
@@ -127,7 +127,7 @@ public sealed class NotificationQueryTest
 		await _dbContext.SaveChangesAsync();
 
 		var recent = await _notificationQuery.GetNewerThan(currentTime);
-		Assert.AreEqual(0, recent.Count);
+		Assert.IsEmpty(recent);
 
 		_dbContext.Notifications.RemoveRange(_dbContext.Notifications);
 		await _dbContext.SaveChangesAsync();
@@ -142,7 +142,7 @@ public sealed class NotificationQueryTest
 		await _dbContext.SaveChangesAsync();
 
 		var recent = await _notificationQuery.GetOlderThan(currentTime);
-		Assert.AreEqual(1, recent.Count);
+		Assert.HasCount(1, recent);
 
 		_dbContext.Notifications.RemoveRange(_dbContext.Notifications);
 		await _dbContext.SaveChangesAsync();
@@ -157,7 +157,7 @@ public sealed class NotificationQueryTest
 		await _dbContext.SaveChangesAsync();
 
 		var recent = await _notificationQuery.GetOlderThan(currentTime);
-		Assert.AreEqual(1, recent.Count);
+		Assert.HasCount(1, recent);
 
 		await _notificationQuery.RemoveAsync(recent);
 

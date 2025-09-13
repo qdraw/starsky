@@ -187,7 +187,7 @@ public sealed class SearchWideDateTimeTest
 		});
 	}
 
-	[DataTestMethod] // [Theory]
+	[TestMethod] // [Theory]
 	[DataRow("<")]
 	[DataRow(">")]
 	[DataRow("=")]

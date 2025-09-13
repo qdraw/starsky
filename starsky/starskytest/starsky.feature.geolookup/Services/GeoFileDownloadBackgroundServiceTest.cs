@@ -86,7 +86,7 @@ public sealed class GeoFileDownloadBackgroundServiceTest
 		Assert.AreEqual(0, value?.Count);
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow(AppSettings.StarskyAppType.Geo, DisplayName = "Skip Geo due direct deps")]
 	[DataRow(AppSettings.StarskyAppType.Importer, DisplayName = "Skip Importer due direct deps")]
 	[DataRow(AppSettings.StarskyAppType.DependenciesDownload,

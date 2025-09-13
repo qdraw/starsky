@@ -96,7 +96,7 @@ public class FfMpegChmodTests
 		DeleteFile();
 
 		Assert.IsTrue(result);
-		Assert.IsTrue(lsLah.StandardOutput.StartsWith("-rwxr-xr-x"));
+		Assert.StartsWith("-rwxr-xr-x", lsLah.StandardOutput);
 	}
 
 	[TestMethod]

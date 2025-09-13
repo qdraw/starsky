@@ -300,7 +300,8 @@ public sealed class SyncSingleFileTest
 		Assert.AreEqual(DateTime.UtcNow.Day, fileIndexItem?.LastEdited.Day);
 		Assert.AreEqual(DateTime.UtcNow.Month, fileIndexItem?.LastEdited.Month);
 		Assert.AreEqual(DateTime.UtcNow.Hour, fileIndexItem?.LastEdited.Hour);
-		Assert.IsTrue(( DateTime.UtcNow - fileIndexItem?.LastEdited )?.TotalMinutes <= 5);
+		var totalMinutes = ( DateTime.UtcNow - fileIndexItem?.LastEdited )?.TotalMinutes ?? 0;
+		Assert.IsLessThanOrEqualTo(5, totalMinutes);
 	}
 
 	[TestMethod]

@@ -164,6 +164,6 @@ public class ImportThumbnailControllerTest
 
 		Assert.AreEqual("91234567890123456789123456", list?.FirstOrDefault());
 		Assert.IsFalse(existFileInTempFolder);
-		Assert.IsTrue(storageProvider.Info("91234567890123456789123456").Size >= 2);
+		Assert.IsGreaterThanOrEqualTo(2, storageProvider.Info("91234567890123456789123456").Size);
 	}
 }

@@ -607,8 +607,8 @@ public sealed class SearchServiceTest
 		var model = new SearchViewModel { SearchQuery = "-Tags:dion -Filename:'dion.jpg'" };
 		_search.MatchSearch(model);
 
-		Assert.IsTrue(model.SearchIn.Contains("Tags"));
-		Assert.IsTrue(model.SearchFor.Contains("dion.jpg"));
+		Assert.Contains("Tags", model.SearchIn);
+		Assert.Contains("dion.jpg", model.SearchFor);
 	}
 
 	[TestMethod]
@@ -617,7 +617,7 @@ public sealed class SearchServiceTest
 		var model = new SearchViewModel { SearchQuery = null };
 		_search.MatchSearch(model);
 
-		Assert.AreEqual(0, model.SearchIn.Count);
+		Assert.IsEmpty(model.SearchIn);
 	}
 
 	[TestMethod]
@@ -626,7 +626,7 @@ public sealed class SearchServiceTest
 		// Single keyword
 		var model = new SearchViewModel { SearchQuery = "-Tags:dion" };
 		_search.MatchSearch(model);
-		Assert.IsTrue(model.SearchIn.Contains("Tags"));
+		Assert.Contains("Tags", model.SearchIn);
 	}
 
 	[TestMethod]
@@ -635,7 +635,6 @@ public sealed class SearchServiceTest
 		var model = await _search.Search();
 		Assert.AreEqual("Search", model.PageType);
 	}
-
 
 	[TestMethod]
 	public void SearchService_MatchSearch_StringEmpty()
@@ -650,8 +649,8 @@ public sealed class SearchServiceTest
 		// Single keyword
 		var model = new SearchViewModel { SearchQuery = "-Filename:dion test" };
 		_search.MatchSearch(model);
-		Assert.IsTrue(model.SearchIn.Contains("FileName"));
-		Assert.IsTrue(model.SearchIn.Contains("Tags"));
+		Assert.Contains("FileName", model.SearchIn);
+		Assert.Contains("Tags", model.SearchIn);
 	}
 
 	[TestMethod]
@@ -674,7 +673,7 @@ public sealed class SearchServiceTest
 		// Single keyword
 		var model = new SearchViewModel { SearchQuery = "test" };
 		_search.MatchSearch(model);
-		Assert.IsTrue(model.SearchIn.Contains("Tags"));
+		Assert.Contains("Tags", model.SearchIn);
 	}
 
 	[TestMethod]

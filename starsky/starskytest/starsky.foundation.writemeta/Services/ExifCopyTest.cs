@@ -48,7 +48,7 @@ public sealed class ExifCopyTest
 		var helperResult = await new ExifCopy(storage, storage, fakeExifTool,
 				fakeReadMeta, new FakeIThumbnailQuery(), new FakeIWebLogger())
 			.CopyExifPublish("/test.jpg", "/test2");
-		Assert.IsTrue(helperResult.Contains("HistorySoftwareAgent"));
+		Assert.Contains("HistorySoftwareAgent", helperResult);
 	}
 
 	[TestMethod]
@@ -134,8 +134,8 @@ public sealed class ExifCopyTest
 		var xmpContent = await StreamToStringHelper.StreamToStringAsync(xmpContentReadStream);
 
 		// Those values are injected by fakeExifTool
-		Assert.IsTrue(xmpContent.Contains(
-			"<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Image::ExifTool 11.30'>"));
-		Assert.IsTrue(xmpContent.Contains("<rdf:li>test</rdf:li>"));
+		Assert.Contains("<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Image::ExifTool 11.30'>",
+			xmpContent);
+		Assert.Contains("<rdf:li>test</rdf:li>", xmpContent);
 	}
 }

@@ -258,7 +258,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 
 		dynMethod.Invoke(service, new object[] { token });
 
-		Assert.AreEqual(0, logger.TrackedInformation.Count);
-		Assert.AreEqual(0, logger.TrackedExceptions.Count);
+		Assert.IsEmpty(logger.TrackedInformation);
+		Assert.IsEmpty(logger.TrackedExceptions);
 	}
 }

@@ -74,7 +74,7 @@ public class ThumbnailQueryErrorTest
 		Assert.IsTrue(IsCalledDbUpdateConcurrency);
 	}
 
-	[DataTestMethod] // [Theory]
+	[TestMethod] // [Theory]
 	[DataRow(MySqlErrorCode.DuplicateKey)]
 	[DataRow(MySqlErrorCode.DuplicateKeyEntry)]
 	public async Task AddThumbnailRangeAsync_ShouldCatchPrimaryKeyHit(MySqlErrorCode code)
@@ -187,7 +187,7 @@ public class ThumbnailQueryErrorTest
 			throw new NotImplementedException();
 		}
 #pragma warning disable 8618
-		public DbContext Context { get; }
+		public DbContext Context { get; } = null!;
 
 		// ReSharper disable once UnassignedGetOnlyAutoProperty
 		public IEntityType EntityType { get; }

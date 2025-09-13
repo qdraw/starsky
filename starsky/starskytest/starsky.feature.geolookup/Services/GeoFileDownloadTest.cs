@@ -136,7 +136,7 @@ public class GeoFileDownloadTests
 		await geoFileDownload.DownloadAsync();
 
 		// Assert
-		Assert.AreEqual(0, httpClientHelper.UrlsCalled.Count);
+		Assert.IsEmpty(httpClientHelper.UrlsCalled);
 
 		storage.FolderDelete(_dependenciesFolder3);
 	}

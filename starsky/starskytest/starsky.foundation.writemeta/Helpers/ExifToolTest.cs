@@ -161,8 +161,8 @@ public sealed class ExifToolTest
 			exceptionMessage = e.Message;
 		}
 
-		Assert.IsTrue(exceptionMessage.StartsWith("Cannot access a disposed object."));
-		Assert.IsTrue(exceptionMessage.EndsWith("Object name: 'disposed'."));
+		Assert.StartsWith("Cannot access a disposed object.", exceptionMessage);
+		Assert.EndsWith("Object name: 'disposed'.", exceptionMessage);
 
 		Assert.AreEqual(1, storage.ExceptionCount);
 	}

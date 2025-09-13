@@ -101,17 +101,16 @@ public class FfMpegPreflightRunCheckTests
 		// Assert
 		Assert.IsTrue(result);
 	}
-	
+
 	[TestMethod]
 	public async Task TryRun_FeatureDisabled()
 	{
 		// Arrange
 		await CreateFile(0, "ffmpeg");
 
-		var ffMpegPreflightRunCheck = new FfMpegPreflightRunCheck(new AppSettings
-		{
-			FfmpegSkipPreflightCheck = true,
-		},_logger);
+		var ffMpegPreflightRunCheck =
+			new FfMpegPreflightRunCheck(new AppSettings { FfmpegSkipPreflightCheck = true },
+				_logger);
 
 		// Act
 		var result = await ffMpegPreflightRunCheck.TryRun();
@@ -120,7 +119,7 @@ public class FfMpegPreflightRunCheckTests
 		Assert.IsFalse(result);
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow(0, "ffmpeg", true, true)]
 	[DataRow(1, "ffmpeg", true, false)]
 	[DataRow(0, "other_process", true, false)]

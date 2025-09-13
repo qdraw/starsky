@@ -185,7 +185,7 @@ public sealed class ThumbnailCleanerTest
 		});
 
 		var preGetter = await thumbnailQuery.Get("35874453877");
-		Assert.AreEqual(1, preGetter.Count);
+		Assert.HasCount(1, preGetter);
 
 		var thumbnailCleaner = new ThumbnailCleaner(fakeStorage, fakeQuery,
 			new FakeIWebLogger(), thumbnailQuery, new AppSettings());
@@ -193,10 +193,10 @@ public sealed class ThumbnailCleanerTest
 		await thumbnailCleaner.CleanAllUnusedFilesAsync();
 
 		var getter = await thumbnailQuery.Get("35874453877");
-		Assert.AreEqual(0, getter.Count);
+		Assert.IsEmpty(getter);
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow("filehash@size.jpg", "anotherfile@size.png", "filehash", "anotherfile")]
 	[DataRow("filehash.jpg", "anotherfile.png", "filehash", "anotherfile")]
 	[DataRow("filehash@.jpg", "anotherfile@.png", "filehash", "anotherfile")]
@@ -216,7 +216,7 @@ public sealed class ThumbnailCleanerTest
 		CollectionAssert.AreEqual(expected, result);
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow("filehash@size", "filehash")]
 	[DataRow("filehash", "filehash")]
 	[DataRow("", "")]

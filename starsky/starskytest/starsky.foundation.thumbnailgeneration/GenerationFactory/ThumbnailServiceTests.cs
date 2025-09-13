@@ -22,7 +22,7 @@ using VerifyMSTest;
 namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory;
 
 [TestClass]
-public sealed class ThumbnailServiceTests: VerifyBase
+public sealed class ThumbnailServiceTests : VerifyBase
 {
 	private readonly AppSettings _appSettings;
 	private readonly string _fakeIStorageImageSubPath;
@@ -116,7 +116,7 @@ public sealed class ThumbnailServiceTests: VerifyBase
 
 		Assert.IsFalse(isCreated.FirstOrDefault()!.Success);
 	}
-	
+
 	[TestMethod]
 	public async Task GenerateThumbnail_FileHash_WrongImageType_Verify()
 	{
@@ -124,7 +124,7 @@ public sealed class ThumbnailServiceTests: VerifyBase
 
 		var isCreated = await sut.GenerateThumbnail(
 			"/notfound.dng", _fakeIStorageImageSubPath);
-		
+
 		await Verify(isCreated);
 	}
 
@@ -132,7 +132,7 @@ public sealed class ThumbnailServiceTests: VerifyBase
 	{
 		await Verifier.Verify(result).DontScrubDateTimes();
 	}
-	
+
 	[TestMethod]
 	public async Task GenerateThumbnail_FileHash_Video_HappyFlow()
 	{
@@ -243,9 +243,9 @@ public sealed class ThumbnailServiceTests: VerifyBase
 
 		var isCreated = await sut.GenerateThumbnail("/test/test.jpg");
 
-		Assert.AreEqual(0, isCreated.Count);
+		Assert.IsEmpty(isCreated);
 	}
-	
+
 	[TestMethod]
 	public async Task GenerateThumbnail__Corrupt_Verify()
 	{

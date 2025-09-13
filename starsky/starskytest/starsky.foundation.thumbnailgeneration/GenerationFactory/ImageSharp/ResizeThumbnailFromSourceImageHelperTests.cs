@@ -99,7 +99,7 @@ public class ResizeThumbnailFromSourceImageHelperTests
 		Assert.AreEqual("Image cannot be loaded", result.ErrorMessage);
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow(SelectorStorage.StorageServices.SubPath)]
 	[DataRow(SelectorStorage.StorageServices.Temporary)]
 	[DataRow(SelectorStorage.StorageServices.Thumbnail)]

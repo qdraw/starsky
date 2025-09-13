@@ -140,7 +140,7 @@ public sealed class SearchViewModelTest
 	public void SearchViewModel_ElapsedSeconds_Test()
 	{
 		var searchViewModel = new SearchViewModel { ElapsedSeconds = 0.0006 };
-		Assert.IsTrue(searchViewModel.ElapsedSeconds <= 0.001);
+		Assert.IsLessThanOrEqualTo(0.001, searchViewModel.ElapsedSeconds);
 	}
 
 	[TestMethod]
@@ -317,7 +317,7 @@ public sealed class SearchViewModelTest
 
 		// Assert
 		Assert.IsNotNull(result.FileIndexItems);
-		Assert.AreEqual(0, result.FileIndexItems.Count);
+		Assert.IsEmpty(result.FileIndexItems);
 	}
 
 	[TestMethod]

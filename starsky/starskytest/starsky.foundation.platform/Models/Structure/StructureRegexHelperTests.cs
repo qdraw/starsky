@@ -55,7 +55,7 @@ public class AppSettingsStructureModelTests
 		};
 
 		// Assert
-		Assert.AreEqual(1, fakeRule.Errors.Count);
+		Assert.HasCount(1, fakeRule.Errors);
 		Assert.AreEqual($"Structure '{invalidPattern}' is not valid", fakeRule.Errors[0]);
 	}
 

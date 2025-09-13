@@ -46,7 +46,7 @@ public class SetupLoggingTest
 		var result = SetupLogging.GetTelemetryAttributes(appSettings);
 
 		// Assert
-		Assert.AreEqual(5, result.Count);
+		Assert.HasCount(5, result);
 		Assert.IsTrue(result.Any(kvp =>
 			kvp.Key == SetupLogging.HostNameKey && kvp.Value.Equals(Environment.MachineName)));
 		Assert.IsTrue(result.Any(kvp =>

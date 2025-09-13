@@ -158,7 +158,7 @@ public sealed class SyncWatcherConnectorTest
 				Path.Combine(appSettings.StorageFolder, "test"), null,
 				WatcherChangeTypes.Changed));
 
-		Assert.AreEqual(0, websockets.FakeSendToAllAsync.Count);
+		Assert.IsEmpty(websockets.FakeSendToAllAsync);
 		Assert.AreEqual("/test", sync.Inputs[0].Item1);
 	}
 
@@ -268,7 +268,7 @@ public sealed class SyncWatcherConnectorTest
 		};
 
 		var result = SyncWatcherConnector.FilterBefore(fileIndexItems);
-		Assert.AreEqual(4, result.Count);
+		Assert.HasCount(4, result);
 	}
 
 	[TestMethod]
@@ -280,7 +280,7 @@ public sealed class SyncWatcherConnectorTest
 			new() { FilePath = "/1.jpg", Status = FileIndexItem.ExifStatus.Ok }
 		};
 		var result = SyncWatcherConnector.FilterBefore(fileIndexItems);
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 	}
 
 	[TestMethod]

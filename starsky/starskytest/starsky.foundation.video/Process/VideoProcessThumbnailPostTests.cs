@@ -25,7 +25,7 @@ public class VideoProcessThumbnailPostTests
 			selectorStorage);
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow("/test.mp4", "file-hash-test-post-prep.jpg")]
 	[DataRow("/test/test.mov", "file-hash-test-post-prep.jpg")]
 	public async Task PostPrepThumbnail_Success_ReturnsVideoResult(string subPath,
@@ -53,7 +53,7 @@ public class VideoProcessThumbnailPostTests
 		Assert.AreEqual(2, ReadMetaExif.GetImageWidthHeight(meta, false));
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow("/test.mp4")]
 	[DataRow("/test/test.mov")]
 	public async Task PostPrepThumbnail_Failure_ReturnsOriginalResult(string subPath)

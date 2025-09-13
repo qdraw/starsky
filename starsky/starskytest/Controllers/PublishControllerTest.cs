@@ -141,7 +141,7 @@ public sealed class PublishControllerTest
 		await controller.PublishCreateAsync("/test.jpg",
 			"test", "test", true);
 
-		Assert.AreEqual(1, fakeIWebHtmlPublishService.ItemNamesGenerateZip.Count);
+		Assert.HasCount(1, fakeIWebHtmlPublishService.ItemNamesGenerateZip);
 		Assert.AreEqual("test", fakeIWebHtmlPublishService.ItemNamesGenerateZip[0]);
 	}
 

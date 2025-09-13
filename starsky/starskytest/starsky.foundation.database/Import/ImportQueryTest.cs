@@ -106,8 +106,9 @@ public sealed class ImportQueryTest
 		await new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper(),
 			new FakeIWebLogger()).AddAsync(expectedResult);
 
-		var queryFromDb = await dbContext.ImportIndex.FirstOrDefaultAsync(
-			p => p.FileHash == expectedResult.FileHash);
+		var queryFromDb =
+			await dbContext.ImportIndex.FirstOrDefaultAsync(p =>
+				p.FileHash == expectedResult.FileHash);
 
 		Assert.AreEqual(expectedResult.FileHash, queryFromDb?.FileHash);
 	}
@@ -250,7 +251,7 @@ public sealed class ImportQueryTest
 			p.FileHash == addedItems[0].FilePath || p.FileHash == addedItems[1].FilePath
 		).ToListAsync();
 
-		Assert.AreEqual(0, queryFromDb.Count);
+		Assert.IsEmpty(queryFromDb);
 	}
 
 	[TestMethod]
@@ -294,7 +295,7 @@ public sealed class ImportQueryTest
 
 		await importQuery.RemoveItemAsync(addedItems[0], 1);
 
-		Assert.AreEqual(2, webLogger.TrackedInformation.Count);
+		Assert.HasCount(2, webLogger.TrackedInformation);
 		Assert.IsTrue(webLogger.TrackedInformation[0].Item2?.StartsWith(
 			"Import [RemoveItemAsync] catch-ed " +
 			"DbUpdateConcurrencyException (retry)"));
@@ -324,7 +325,7 @@ public sealed class ImportQueryTest
 
 		await importQuery.RemoveItemAsync(addedItems[0], 1);
 
-		Assert.AreEqual(1, webLogger.TrackedInformation.Count);
+		Assert.HasCount(1, webLogger.TrackedInformation);
 		Assert.IsTrue(webLogger.TrackedInformation[0].Item2?.StartsWith(
 			"Import [RemoveItemAsync] catch-ed " +
 			"AggregateException (ignored after retry)"));
@@ -352,7 +353,7 @@ public sealed class ImportQueryTest
 
 		await importQuery.RemoveItemAsync(addedItems[0], 1);
 
-		Assert.AreEqual(1, webLogger.TrackedInformation.Count);
+		Assert.HasCount(1, webLogger.TrackedInformation);
 		Assert.IsTrue(webLogger.TrackedInformation[0].Item2?.StartsWith(
 			"Import [RemoveItemAsync] catch-ed " +
 			"AggregateException (ignored after retry)"));

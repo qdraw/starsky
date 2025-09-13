@@ -14,7 +14,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.S
 [TestClass]
 public class SharedGenerateTest : VerifyBase
 {
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow(true, 1)]
 	[DataRow(false, 0)]
 	public async Task GenerateThumbnail_LogsConditionalExpectedMessage(

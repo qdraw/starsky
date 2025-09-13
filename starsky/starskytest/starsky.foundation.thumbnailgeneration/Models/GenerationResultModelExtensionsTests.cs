@@ -18,7 +18,7 @@ public class GenerationResultModelExtensionsTests
 		var updatedResults = compositeResults.AddOrUpdateRange(result);
 
 		Assert.IsNotNull(updatedResults);
-		Assert.AreEqual(0, updatedResults.Count);
+		Assert.IsEmpty(updatedResults);
 	}
 
 	[TestMethod]
@@ -42,7 +42,7 @@ public class GenerationResultModelExtensionsTests
 
 		var updatedResults = compositeResults.AddOrUpdateRange(result);
 
-		Assert.AreEqual(1, updatedResults.Count);
+		Assert.HasCount(1, updatedResults);
 		Assert.AreEqual("hash1", updatedResults[0].FileHash);
 	}
 
@@ -57,7 +57,7 @@ public class GenerationResultModelExtensionsTests
 
 		var updatedResults = compositeResults.AddOrUpdateRange(result);
 
-		Assert.AreEqual(1, updatedResults.Count);
+		Assert.HasCount(1, updatedResults);
 		Assert.AreEqual("hash1", updatedResults[0].FileHash);
 	}
 
@@ -75,7 +75,7 @@ public class GenerationResultModelExtensionsTests
 
 		var updatedResults = compositeResults.AddOrUpdateRange(result);
 
-		Assert.AreEqual(1, updatedResults.Count);
+		Assert.HasCount(1, updatedResults);
 		Assert.AreEqual("hash1", updatedResults[0].FileHash);
 		Assert.IsTrue(updatedResults[0].Success);
 	}
@@ -94,7 +94,7 @@ public class GenerationResultModelExtensionsTests
 
 		var updatedResults = compositeResults.AddOrUpdateRange(result);
 
-		Assert.AreEqual(2, updatedResults.Count);
+		Assert.HasCount(2, updatedResults);
 		Assert.IsTrue(updatedResults.Exists(x => x.FileHash == "hash1"));
 		Assert.IsTrue(updatedResults.Exists(x => x.FileHash == "hash2"));
 	}
@@ -110,7 +110,7 @@ public class GenerationResultModelExtensionsTests
 
 		var updatedResults = compositeResults.AddOrUpdateRange(result);
 
-		Assert.AreEqual(1, updatedResults.Count);
+		Assert.HasCount(1, updatedResults);
 		Assert.AreEqual("hash1", updatedResults[0].FileHash);
 	}
 
@@ -125,7 +125,7 @@ public class GenerationResultModelExtensionsTests
 
 		var updatedResults = compositeResults.AddOrUpdateRange(result);
 
-		Assert.AreEqual(1, updatedResults.Count);
+		Assert.HasCount(1, updatedResults);
 		Assert.AreEqual("hash1", updatedResults[0].FileHash);
 	}
 }

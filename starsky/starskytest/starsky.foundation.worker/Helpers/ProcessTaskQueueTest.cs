@@ -18,7 +18,7 @@ public class ProcessTaskQueueTest
 		{
 			UseDiskWatcherIntervalInMilliseconds = 20000
 		});
-		Assert.IsTrue(t.Item1.TotalMilliseconds <= 20000);
+		Assert.IsLessThanOrEqualTo(20000, t.Item1.TotalMilliseconds);
 	}
 
 	[TestMethod]

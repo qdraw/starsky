@@ -29,7 +29,7 @@ public sealed class StorageThumbnailFilesystemTest
 	public void Thumbnail_CombinePathShouldEndWithTestJpg()
 	{
 		var result = _thumbnailStorage.CombinePath("test.jpg");
-		Assert.IsTrue(result.EndsWith("test.jpg"));
+		Assert.EndsWith("test.jpg", result);
 	}
 
 	[TestMethod]

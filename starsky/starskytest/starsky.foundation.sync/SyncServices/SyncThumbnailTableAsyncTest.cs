@@ -25,28 +25,22 @@ public class SyncThumbnailTableAsyncTest
 		const string fileHash = "SyncThumbnailTableAsyncTest_WithRealDbContext";
 
 		dbContext.Thumbnails.Add(new ThumbnailItem(fileHash, true, true, null, null));
-		await dbContext.SaveChangesAsync();
+		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 
 		var sync = new SyncAddAddThumbnailTable(new ThumbnailQuery(dbContext, null,
 			new FakeIWebLogger(), new FakeMemoryCache()));
 
 		var content = await sync.SyncThumbnailTableAsync(
-			new List<FileIndexItem>
-			{
-				new()
-				{
-					FileHash = fileHash,
-					IsDirectory = false,
-					Status = FileIndexItem.ExifStatus.Ok
-				}
-			});
+		[
+			new FileIndexItem { FileHash = fileHash, IsDirectory = false, Status = FileIndexItem.ExifStatus.Ok }
+		]);
 
-		Assert.AreEqual(1, content.Count);
+		Assert.HasCount(1, content);
 
 		// should not overwrite the existing data
 		var item =
 			await dbContext.Thumbnails.FirstOrDefaultAsync(p =>
-				p.FileHash == fileHash);
+				p.FileHash == fileHash, TestContext.CancellationTokenSource.Token);
 
 		Assert.IsNotNull(item);
 		Assert.IsTrue(item.TinyMeta);
@@ -69,49 +63,48 @@ public class SyncThumbnailTableAsyncTest
 			new SyncAddAddThumbnailTable(new ThumbnailQuery(dbContext, null, new FakeIWebLogger(),
 				new FakeMemoryCache()));
 		var content = await sync.SyncThumbnailTableAsync(
-			new List<FileIndexItem>
+		[
+			new FileIndexItem
 			{
-				new()
-				{
-					FileHash = string.Empty, // <- invalid data (this line)
-					IsDirectory = false,
-					Status = FileIndexItem.ExifStatus.Ok
-				},
-				new()
-				{
-					FileHash = "hide",
-					IsDirectory = true, // <- invalid data (this line)
-					Status = FileIndexItem.ExifStatus.Ok
-				},
-				new()
-				{
-					FileHash = "hide",
-					IsDirectory = false,
-					Status = FileIndexItem.ExifStatus
-						.NotFoundNotInIndex // <- invalid data (this line)
-				},
-				new()
-				{
-					FileHash = "duplicate",
-					IsDirectory = false,
-					Status = FileIndexItem.ExifStatus.Ok
-				},
-				new()
-				{
-					FileHash = "duplicate",
-					IsDirectory = false,
-					Status = FileIndexItem.ExifStatus.Ok
-				}
-			});
+				FileHash = string.Empty, // <- invalid data (this line)
+				IsDirectory = false,
+				Status = FileIndexItem.ExifStatus.Ok
+			},
+			new FileIndexItem
+			{
+				FileHash = "hide",
+				IsDirectory = true, // <- invalid data (this line)
+				Status = FileIndexItem.ExifStatus.Ok
+			},
+			new FileIndexItem
+			{
+				FileHash = "hide",
+				IsDirectory = false,
+				Status = FileIndexItem.ExifStatus
+					.NotFoundNotInIndex // <- invalid data (this line)
+			},
+			new FileIndexItem
+			{
+				FileHash = "duplicate",
+				IsDirectory = false,
+				Status = FileIndexItem.ExifStatus.Ok
+			},
+			new FileIndexItem
+			{
+				FileHash = "duplicate",
+				IsDirectory = false,
+				Status = FileIndexItem.ExifStatus.Ok
+			}
+		]);
 
-		Assert.AreEqual(5, content.Count);
+		Assert.HasCount(5, content);
 
 		// should not overwrite the existing data
-		var counter = await dbContext.Thumbnails.CountAsync();
+		var counter = await dbContext.Thumbnails.CountAsync(TestContext.CancellationTokenSource.Token);
 
 		Assert.AreEqual(1, counter);
 
-		var item = await dbContext.Thumbnails.FirstOrDefaultAsync(p => p.FileHash == "duplicate");
+		var item = await dbContext.Thumbnails.FirstOrDefaultAsync(p => p.FileHash == "duplicate", TestContext.CancellationTokenSource.Token);
 
 		Assert.IsNotNull(item);
 		Assert.IsNull(item.TinyMeta);
@@ -122,8 +115,8 @@ public class SyncThumbnailTableAsyncTest
 	public async Task SyncThumbnailTableAsyncTest_WithNull()
 	{
 		var sync = new SyncAddAddThumbnailTable(new FakeIThumbnailQuery());
-		Assert.AreEqual(0, ( await sync.SyncThumbnailTableAsync(
-			new List<FileIndexItem>()) ).Count);
+		Assert.IsEmpty(await sync.SyncThumbnailTableAsync(
+			new List<FileIndexItem>()));
 	}
 
 	[TestMethod]
@@ -132,18 +125,17 @@ public class SyncThumbnailTableAsyncTest
 		var query = new FakeIThumbnailQuery();
 		var sync = new SyncAddAddThumbnailTable(query);
 
-		Assert.AreEqual(1, ( await sync.SyncThumbnailTableAsync(
-			new List<FileIndexItem>
+		Assert.HasCount(1, await sync.SyncThumbnailTableAsync(
+		[
+			new("/test.jpg")
 			{
-				new("/test.jpg")
-				{
-					Status = FileIndexItem.ExifStatus.Ok,
-					ImageFormat = ExtensionRolesHelper.ImageFormat.xmp
-				}
-			}) ).Count);
+				Status = FileIndexItem.ExifStatus.Ok,
+				ImageFormat = ExtensionRolesHelper.ImageFormat.xmp
+			}
+		]));
 
 		var result = await query.GetMissingThumbnailsBatchAsync(0, 100);
-		Assert.AreEqual(0, result.Count);
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]
@@ -152,17 +144,18 @@ public class SyncThumbnailTableAsyncTest
 		var query = new FakeIThumbnailQuery();
 		var sync = new SyncAddAddThumbnailTable(query);
 
-		Assert.AreEqual(1, ( await sync.SyncThumbnailTableAsync(
-			new List<FileIndexItem>
+		Assert.HasCount(1, await sync.SyncThumbnailTableAsync(
+		[
+			new FileIndexItem("/test.jpg")
 			{
-				new("/test.jpg")
-				{
-					Status = FileIndexItem.ExifStatus.Ok,
-					ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
-				}
-			}) ).Count);
+				Status = FileIndexItem.ExifStatus.Ok,
+				ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
+			}
+		]));
 
 		var result = await query.GetMissingThumbnailsBatchAsync(0, 100);
-		Assert.AreEqual(0, result.Count);
+		Assert.IsEmpty(result);
 	}
+
+	public TestContext TestContext { get; set; }
 }

@@ -223,7 +223,7 @@ public sealed class QueryTest
 
 		var items = await query.GetAllRecursiveAsync("/GetAllRecursiveAsync");
 
-		Assert.AreEqual(3, items.Count);
+		Assert.HasCount(3, items);
 		Assert.AreEqual("/GetAllRecursiveAsync/test", items[0].FilePath);
 		Assert.AreEqual("/GetAllRecursiveAsync/test.jpg", items[1].FilePath);
 		Assert.AreEqual("/GetAllRecursiveAsync/test/test.jpg", items[2].FilePath);
@@ -252,7 +252,7 @@ public sealed class QueryTest
 
 		var items = await query.GetAllRecursiveAsync("/gar");
 
-		Assert.AreEqual(1, items.Count);
+		Assert.HasCount(1, items);
 		Assert.AreEqual("/gar/test.jpg", items[0].FilePath);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Default, items[0].Status);
 	}
@@ -513,7 +513,7 @@ public sealed class QueryTest
 
 		var result = _query.QueryDisplayFileFolders("/duplicates_test");
 
-		Assert.AreEqual(3, result.Count);
+		Assert.HasCount(3, result);
 
 		Assert.AreEqual(image0.FilePath, result[0].FilePath);
 		Assert.AreEqual(image1.FilePath, result[1].FilePath);
@@ -543,7 +543,7 @@ public sealed class QueryTest
 
 		var result = _query.QueryDisplayFileFolders("/test_xmp");
 
-		Assert.AreEqual(2, result.Count);
+		Assert.HasCount(2, result);
 
 		Assert.AreEqual(image1Jpg.FilePath, result[0].FilePath);
 
@@ -573,7 +573,7 @@ public sealed class QueryTest
 		var result = _query.DisplayFileFolders(new List<FileIndexItem> { image1, image1Jpg })
 			.ToList();
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 
 		Assert.AreEqual(image1Jpg.FilePath, result[0].FilePath);
 	}
@@ -582,7 +582,7 @@ public sealed class QueryTest
 	public void QueryFolder_DisplayFileFoldersNoResultTest()
 	{
 		var getDisplay = _query.DisplayFileFolders("/12345678987654").ToList();
-		Assert.AreEqual(0, getDisplay.Count);
+		Assert.IsEmpty(getDisplay);
 	}
 
 	[TestMethod]
@@ -1156,7 +1156,7 @@ public sealed class QueryTest
 		// not verbose
 		_queryNoVerbose.CacheUpdateItem(new List<FileIndexItem> { item1 });
 
-		Assert.AreEqual(0, _logger.TrackedInformation.Count);
+		Assert.IsEmpty(_logger.TrackedInformation);
 	}
 
 	[TestMethod]
@@ -1187,7 +1187,7 @@ public sealed class QueryTest
 
 		var result = _query.DisplayFileFolders("/456789").ToList();
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual("hi", result[0].Tags);
 	}
 
@@ -1214,7 +1214,7 @@ public sealed class QueryTest
 
 		var result = _query.DisplayFileFolders("/3479824783").ToList();
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual("hi", result[0].Tags);
 	}
 
@@ -1441,7 +1441,7 @@ public sealed class QueryTest
 		_query.RemoveCacheItem(new List<FileIndexItem> { demoItems[0], demoItems[1] });
 
 		var result = _query.DisplayFileFolders(dirPath).ToList();
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual(dirPath + "/03.jpg", result[0].FilePath);
 	}
 

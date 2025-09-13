@@ -88,7 +88,7 @@ public sealed class StructureServiceTest
 		var result = service.ParseSubfolders(model);
 
 		Assert.AreEqual("/2020/01/2020_01_01", result);
-		Assert.AreEqual(0, structureModel.Errors.Count);
+		Assert.IsEmpty(structureModel.Errors);
 	}
 
 	[TestMethod]
@@ -290,7 +290,7 @@ public sealed class StructureServiceTest
 
 		Assert.IsNotNull(result);
 		Assert.AreEqual("/2020/01/2020_01_01", result);
-		Assert.AreEqual(0, appSettingsStructureModel.Errors.Count);
+		Assert.IsEmpty(appSettingsStructureModel.Errors);
 	}
 
 	[TestMethod]
@@ -346,10 +346,10 @@ public sealed class StructureServiceTest
 		var result =
 			new StructureService(new FakeSelectorStorage(),
 				new AppSettingsStructureModel(structure), new FakeIWebLogger()).ParseSubfolders(0);
-		Assert.IsTrue(result.Contains(DateTime.Now.ToString("yyyy_MM_dd")));
+		Assert.Contains(DateTime.Now.ToString("yyyy_MM_dd"), result);
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow("/{filenamebase}.ext", ExtensionRolesHelper.ImageFormat.png, "source1", "")]
 	[DataRow("/{filenamebase}.ext", ExtensionRolesHelper.ImageFormat.jpg, "source2", "")]
 	[DataRow("/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext",
@@ -389,8 +389,8 @@ public sealed class StructureServiceTest
 		// Assert
 		Assert.AreEqual(expectedPattern, result);
 	}
-	
-	[DataTestMethod]
+
+	[TestMethod]
 	[DataRow("yyyy", "2023")]
 	[DataRow("fffff", "00000")]
 	[DataRow("FFFFF", "")]
@@ -405,38 +405,40 @@ public sealed class StructureServiceTest
 		string pattern, string expected)
 	{
 		// Arrange
-		var fixedDateTime = new DateTime(2023, 
-			01, 01, 01, 01, 
+		var fixedDateTime = new DateTime(2023,
+			01, 01, 01, 01,
 			01, DateTimeKind.Utc);
 		const string fileNameBase = "testFile";
 		const string extensionWithoutDot = "jpg";
 		var fakeLogger = new FakeIWebLogger();
-		var service = new StructureService(new FakeSelectorStorage(), new AppSettings(), fakeLogger);
+		var service =
+			new StructureService(new FakeSelectorStorage(), new AppSettings(), fakeLogger);
 
 		// Act
-		var result = service.OutputStructureRangeItemParser(pattern, fixedDateTime, fileNameBase, extensionWithoutDot);
+		var result = service.OutputStructureRangeItemParser(pattern, fixedDateTime, fileNameBase,
+			extensionWithoutDot);
 
 		// Assert
 		Assert.AreEqual(expected, result);
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow("K")]
 	public void OutputStructureRangeItemParser_ErrorHandling(
 		string pattern)
 	{
-		var fixedDateTime = new DateTime(2023, 
-			01, 01, 01, 01, 
+		var fixedDateTime = new DateTime(2023,
+			01, 01, 01, 01,
 			01, DateTimeKind.Utc);
 		const string fileNameBase = "testFile";
 		const string extensionWithoutDot = "jpg";
 		var fakeLogger = new FakeIWebLogger();
 		var service = new StructureService(new FakeSelectorStorage(),
 			new AppSettings(), fakeLogger);
-		
+
 		// Act
-		Assert.ThrowsExactly<FormatException>(() => 
-			service.OutputStructureRangeItemParser(pattern, fixedDateTime, 
+		Assert.ThrowsExactly<FormatException>(() =>
+			service.OutputStructureRangeItemParser(pattern, fixedDateTime,
 				fileNameBase, extensionWithoutDot));
 	}
 }

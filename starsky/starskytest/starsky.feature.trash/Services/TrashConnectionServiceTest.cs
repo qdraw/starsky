@@ -14,45 +14,49 @@ public class TrashConnectionServiceTest
 	[TestMethod]
 	public async Task ConnectionServiceAsync_NotFound()
 	{
-		var webSocketService =  new FakeIWebSocketConnectionsService();
+		var webSocketService = new FakeIWebSocketConnectionsService();
 		var notificationQuery = new FakeINotificationQuery();
-		var trashConnectionService = new TrashConnectionService(webSocketService, notificationQuery);
-		var moveToTrash = new List<FileIndexItem>{new FileIndexItem("/test.jpg")};
+		var trashConnectionService =
+			new TrashConnectionService(webSocketService, notificationQuery);
+		var moveToTrash = new List<FileIndexItem> { new("/test.jpg") };
 		var result = await trashConnectionService.ConnectionServiceAsync(moveToTrash, true);
-		
+
 		Assert.IsNotNull(result);
-		Assert.AreEqual(1,result.Count);
-		
-		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,result.FirstOrDefault()?.Status);
-		Assert.AreEqual("/test.jpg",result.FirstOrDefault()?.FilePath);
+		Assert.HasCount(1, result);
+
+		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,
+			result.FirstOrDefault()?.Status);
+		Assert.AreEqual("/test.jpg", result.FirstOrDefault()?.FilePath);
 	}
-	
+
 	[TestMethod]
 	public async Task ConnectionServiceAsync_Deleted()
 	{
-		var webSocketService =  new FakeIWebSocketConnectionsService();
+		var webSocketService = new FakeIWebSocketConnectionsService();
 		var notificationQuery = new FakeINotificationQuery();
-		var trashConnectionService = new TrashConnectionService(webSocketService, notificationQuery);
-		var moveToTrash = new List<FileIndexItem>{new FileIndexItem("/test.jpg")};
+		var trashConnectionService =
+			new TrashConnectionService(webSocketService, notificationQuery);
+		var moveToTrash = new List<FileIndexItem> { new("/test.jpg") };
 		var result = await trashConnectionService.ConnectionServiceAsync(moveToTrash, false);
-		
+
 		Assert.IsNotNull(result);
-		Assert.AreEqual(1,result.Count);
-		
-		Assert.AreEqual(FileIndexItem.ExifStatus.Deleted,result.FirstOrDefault()?.Status);
-		Assert.AreEqual("/test.jpg",result.FirstOrDefault()?.FilePath);
+		Assert.HasCount(1, result);
+
+		Assert.AreEqual(FileIndexItem.ExifStatus.Deleted, result.FirstOrDefault()?.Status);
+		Assert.AreEqual("/test.jpg", result.FirstOrDefault()?.FilePath);
 	}
-	
+
 	[TestMethod]
 	public async Task ConnectionServiceAsync_NotFound_Socket()
 	{
-		var webSocketService =  new FakeIWebSocketConnectionsService();
+		var webSocketService = new FakeIWebSocketConnectionsService();
 		var notificationQuery = new FakeINotificationQuery();
-		var trashConnectionService = new TrashConnectionService(webSocketService, notificationQuery);
-		var moveToTrash = new List<FileIndexItem>{new FileIndexItem("/test.jpg")};
-		 await trashConnectionService.ConnectionServiceAsync(moveToTrash, true);
-		 
-		Assert.AreEqual(1,webSocketService.FakeSendToAllAsync.Count);
-		Assert.AreEqual(1,notificationQuery.FakeContent.Count);
+		var trashConnectionService =
+			new TrashConnectionService(webSocketService, notificationQuery);
+		var moveToTrash = new List<FileIndexItem> { new("/test.jpg") };
+		await trashConnectionService.ConnectionServiceAsync(moveToTrash, true);
+
+		Assert.HasCount(1, webSocketService.FakeSendToAllAsync);
+		Assert.HasCount(1, notificationQuery.FakeContent);
 	}
 }
