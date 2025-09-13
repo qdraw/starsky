@@ -41,8 +41,16 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.3 - _(Unreleased)_ - 2025-08-26 {#v0.7.3}
+## version 0.7.4 - _(Unreleased)_ - 2025-?-? {#v0.7.4}
+
+- nothing yet
+
+## version 0.7.3 - 2025-09-13 {#v0.7.3}
+
 - [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.414 (Runtime: 8.0.20) (PR #2335)
+- [x] (Changed) _Back-end_ Tests code smells, CooperativeCancellation, TestContext and more
+  expressive and specific assertion methods (PR #2340 #2339 #2338)
+- [x] (Changed) _Back-end_ Time zone issues in tests (PR #2336)
 
 ## version 0.7.2 - 2025-08-25 {#v0.7.2}
 
@@ -53,7 +61,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Front-end_ Fixed how Get Text Length is handled (PR #2292)
 - [x] (Changed) _Back-end_ Database concurrency handling improvements (PR #2292)
 - [x] (Changed) _Back-end_ Create a directory handle when a file already exists (PR #2292)
-- [x] (Changed) _Front-end_ Allow distance to far map update (PR #2318) 
+- [x] (Changed) _Front-end_ Allow distance to far map update (PR #2318)
 
 ## version 0.7.1 - 2025-07-09 {#v0.7.1}
 
