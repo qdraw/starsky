@@ -28,7 +28,9 @@ public sealed class TimeoutTaskAfterTest
 	}
 
 	[TestMethod]
-	[Timeout(5000, CooperativeCancellation = true)] // This ensures that the test itself has a timeout of 5 seconds
+	[Timeout(5000,
+		CooperativeCancellation =
+			true)] // This ensures that the test itself has a timeout of 5 seconds
 	public async Task TimeoutAfter_CheckIfTimeouts_WhenIsZero()
 	{
 		// Act & Assert
@@ -44,7 +46,7 @@ public sealed class TimeoutTaskAfterTest
 #if DEBUG
 	[Timeout(4000, CooperativeCancellation = true)]
 #else
-		[Timeout(20000)]
+		[Timeout(20000, CooperativeCancellation = true)]
 #endif
 	public async Task TimeoutAfter_CheckIfSuccess()
 	{
