@@ -83,7 +83,7 @@ public sealed class UpdateBackgroundTaskQueueTest
 
 	// https://stackoverflow.com/a/51224556
 	[TestMethod]
-	[Timeout(5000)]
+	[Timeout(5000, CooperativeCancellation = true)]
 	[SuppressMessage("Usage", "S2589:Dup isExecuted")]
 	public async Task BackgroundTaskQueueTest_Verify_Hosted_Service_Executes_Task()
 	{
@@ -158,7 +158,7 @@ public sealed class UpdateBackgroundTaskQueueTest
 	}
 
 	[TestMethod]
-	[Timeout(5000)]
+	[Timeout(5000, CooperativeCancellation = true)]
 	[SuppressMessage("Usage", "S2589:Dup isExecuted")]
 	public async Task BackgroundQueuedHostedServiceTestHandleException()
 	{
@@ -206,7 +206,7 @@ public sealed class UpdateBackgroundTaskQueueTest
 	}
 
 	[TestMethod]
-	[Timeout(5000)]
+	[Timeout(5000, CooperativeCancellation = true)]
 	public async Task StartAsync_CancelBeforeStart()
 	{
 		var fakeLogger = new FakeIWebLogger();
@@ -225,7 +225,7 @@ public sealed class UpdateBackgroundTaskQueueTest
 	}
 
 	[TestMethod]
-	[Timeout(5000)]
+	[Timeout(5000, CooperativeCancellation = true)]
 	public async Task UpdateBackgroundTaskQueue_Update_End_StopAsync_Test()
 	{
 		var logger = new FakeIWebLogger();

@@ -15,7 +15,7 @@ namespace starskytest.starsky.feature.thumbnail.Services;
 public class PeriodicThumbnailScanHostedServiceTest
 {
 	[TestMethod]
-	[Timeout(5000)]
+	[Timeout(5000, CooperativeCancellation = true)]
 	public async Task StartBackgroundAsync_Cancel()
 	{
 		var services = new ServiceCollection();
@@ -45,7 +45,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 	}
 
 	[TestMethod]
-	[Timeout(5000)]
+	[Timeout(5000, CooperativeCancellation = true)]
 	public void StartBackgroundAsync_SetEnabled_DefaultShouldBeTrue()
 	{
 		var services = new ServiceCollection();
@@ -67,7 +67,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 	}
 
 	[TestMethod]
-	[Timeout(5000)]
+	[Timeout(5000, CooperativeCancellation = true)]
 	public async Task StartBackgroundAsync_StartDirect()
 	{
 		var services = new ServiceCollection();
@@ -91,7 +91,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 	}
 
 	[TestMethod]
-	[Timeout(5000)]
+	[Timeout(5000, CooperativeCancellation = true)]
 	public void StartBackgroundAsync_SetEnabled_ValueBelow2Minutes()
 	{
 		var services = new ServiceCollection();
@@ -114,7 +114,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 	}
 
 	[TestMethod]
-	[Timeout(5000)]
+	[Timeout(5000, CooperativeCancellation = true)]
 	public async Task StartBackgroundAsync_ShouldRun_SlowTest()
 	{
 		var services = new ServiceCollection();
@@ -203,7 +203,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 
 
 	[TestMethod]
-	[Timeout(5000)]
+	[Timeout(5000, CooperativeCancellation = true)]
 	public async Task RunJob_Canceled()
 	{
 		var services = new ServiceCollection();
@@ -231,7 +231,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 	}
 
 	[TestMethod]
-	[Timeout(2000)]
+	[Timeout(2000, CooperativeCancellation = true)]
 	public void PeriodicThumbnailScanHostedService_ExecuteAsync_StartAsync_Test()
 	{
 		var services = new ServiceCollection();

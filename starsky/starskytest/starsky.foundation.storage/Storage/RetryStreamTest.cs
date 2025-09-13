@@ -29,7 +29,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 		}
 		
 		[TestMethod]
-		[Timeout(4000)]
+		[Timeout(4000, CooperativeCancellation = true)]
 		public void EndlessFail()
 		{
 			Stream LocalGet()

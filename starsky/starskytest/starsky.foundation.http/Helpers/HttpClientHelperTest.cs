@@ -126,7 +126,7 @@ public sealed class HttpClientHelperTest
 	}
 
 	[TestMethod]
-	[Timeout(5000)]
+	[Timeout(5000, CooperativeCancellation = true)]
 	public async Task Download_HttpClientHelper_Download_HttpRequestException()
 	{
 		// > next HttpRequestException

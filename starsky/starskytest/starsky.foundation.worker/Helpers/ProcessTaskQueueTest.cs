@@ -32,7 +32,7 @@ public class ProcessTaskQueueTest
 	}
 
 	[TestMethod]
-	[Timeout(10000)]
+	[Timeout(10000, CooperativeCancellation = true)]
 	public async Task ProcessBatchedLoopAsyncTest_NothingIn()
 	{
 		using var source = new CancellationTokenSource();
@@ -51,7 +51,7 @@ public class ProcessTaskQueueTest
 	}
 
 	[TestMethod]
-	[Timeout(10000)]
+	[Timeout(10000, CooperativeCancellation = true)]
 	public async Task ProcessBatchedLoopAsyncTest_NothingIn_CanceledDuringWait()
 	{
 		using var source = new CancellationTokenSource();
@@ -71,7 +71,7 @@ public class ProcessTaskQueueTest
 	}
 
 	[TestMethod]
-	[Timeout(10000)]
+	[Timeout(10000, CooperativeCancellation = true)]
 	public async Task ProcessBatchedLoopAsyncTest_ItemsIn()
 	{
 		using var source = new CancellationTokenSource();

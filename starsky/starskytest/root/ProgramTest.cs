@@ -47,7 +47,7 @@ public class ProgramTest
 	public TestContext TestContext { get; set; }
 
 	[TestMethod]
-	[Timeout(9000)]
+	[Timeout(9000, CooperativeCancellation = true)]
 	public async Task Program_Main_NoAddress_UnixOnly_HttpRequestException()
 	{
 		if ( new AppSettings().IsWindows )
@@ -77,7 +77,7 @@ public class ProgramTest
 	}
 
 	[TestMethod]
-	[Timeout(9000)]
+	[Timeout(9000, CooperativeCancellation = true)]
 	public async Task Program_RunAsync_Null_False()
 	{
 		var result = await Program.RunAsync(null!, false);
@@ -85,7 +85,7 @@ public class ProgramTest
 	}
 
 	[TestMethod]
-	[Timeout(20000)]
+	[Timeout(20000, CooperativeCancellation = true)]
 	public async Task Program_RunAsync_WebApplication_CreateBuilder_TimeoutException()
 	{
 		var number = new Random().Next(7500, 7900);
@@ -102,7 +102,7 @@ public class ProgramTest
 	}
 
 	[TestMethod]
-	[Timeout(9000)]
+	[Timeout(9000, CooperativeCancellation = true)]
 	public async Task Program_RunAsync_WebApplication_CreateBuilder_InvalidUrl()
 	{
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS", "test");

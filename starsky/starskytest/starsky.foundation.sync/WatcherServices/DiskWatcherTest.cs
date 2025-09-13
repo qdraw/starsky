@@ -54,7 +54,7 @@ public sealed class DiskWatcherTest
 
 	[TestMethod]
 #if DEBUG
-	[Timeout(1000)]
+	[Timeout(1000, CooperativeCancellation = true)]
 #else
 		[Timeout(10000)]
 #endif
@@ -115,7 +115,7 @@ public sealed class DiskWatcherTest
 
 	[TestMethod]
 #if DEBUG
-	[Timeout(1000)]
+	[Timeout(1000, CooperativeCancellation = true)]
 #else
 		[Timeout(10000)]
 #endif
@@ -150,7 +150,7 @@ public sealed class DiskWatcherTest
 
 	[TestMethod]
 #if DEBUG
-	[Timeout(1000)]
+	[Timeout(1000, CooperativeCancellation = true)]
 #else
 		[Timeout(10000)]
 #endif
@@ -186,7 +186,7 @@ public sealed class DiskWatcherTest
 
 	[TestMethod]
 #if DEBUG
-	[Timeout(1000)]
+	[Timeout(1000, CooperativeCancellation = true)]
 #else
 		[Timeout(10000)]
 #endif
@@ -207,7 +207,7 @@ public sealed class DiskWatcherTest
 
 	[TestMethod]
 #if DEBUG
-	[Timeout(1000)]
+	[Timeout(1000, CooperativeCancellation = true)]
 #else
 		[Timeout(10000)]
 #endif

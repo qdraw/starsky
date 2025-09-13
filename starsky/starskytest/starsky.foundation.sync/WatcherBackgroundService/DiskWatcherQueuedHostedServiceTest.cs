@@ -15,7 +15,7 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 	{
 		[TestMethod]
 #if DEBUG
-		[Timeout(4000)]
+		[Timeout(4000, CooperativeCancellation = true)]
 #else
 		[Timeout(10000)]
 #endif
@@ -49,7 +49,7 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 		
 		[TestMethod]
 #if DEBUG
-		[Timeout(2000)]
+		[Timeout(2000, CooperativeCancellation = true)]
 #else
 		[Timeout(10000)]
 #endif
