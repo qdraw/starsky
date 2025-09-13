@@ -47,7 +47,7 @@ public class CheckHealthTests
 		return healthReport;
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow("HealthyCheck", null, null, null)]
 	[DataRow("HealthyCheck", "Healthy", null, null)]
 	[DataRow("UnhealthyCheck", "Unhealthy", "Some error occurred", "Stack trace")]
@@ -82,7 +82,7 @@ public class CheckHealthTests
 		}
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow("HealthyCheck", null, null, null)]
 	[DataRow("HealthyCheck", "Healthy", null, null)]
 	[DataRow("UnhealthyCheck", "Unhealthy", "Some error occurred", "Stack trace")]
@@ -157,7 +157,7 @@ public class CheckHealthTests
 		Assert.AreEqual(HealthStatus.Healthy, result.Status);
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow(true, HealthStatus.Healthy, true)]
 	[DataRow(false, HealthStatus.Unhealthy, false)]
 	public async Task CheckHealthAsyncWithTimeout_ShouldSetCache(bool isHealthy,

@@ -49,7 +49,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 				.LoopFolderAsync(metaFilesInDirectory, true);
 			Assert.IsNotNull(metaFilesInDirectory);
 
-			Assert.AreEqual(1, console.WrittenLines.Count);
+			Assert.HasCount(1, console.WrittenLines);
 			Assert.AreEqual("🚀", console.WrittenLines[0]);
 		}
 
@@ -77,8 +77,8 @@ namespace starskytest.starsky.feature.geolookup.Services
 				.LoopFolderAsync(metaFilesInDirectory,
 					true);
 
-			Assert.AreEqual(2, console.WrittenLines.Count);
-			Assert.IsTrue(console.WrittenLines.LastOrDefault()!.Contains("GeoLocationWrite"));
+			Assert.HasCount(2, console.WrittenLines);
+			Assert.Contains("GeoLocationWrite", console.WrittenLines.Last());
 		}
 	}
 }

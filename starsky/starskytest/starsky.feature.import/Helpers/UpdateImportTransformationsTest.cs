@@ -144,7 +144,7 @@ public sealed class UpdateImportTransformationsTest
 	public void DateTimeParsedComparedNamesList_Contain()
 	{
 		var list = UpdateImportTransformations.AddDateTimeParsedComparedNamesList();
-		Assert.AreEqual(2, list.Count);
+		Assert.HasCount(2, list);
 		Assert.AreEqual(nameof(FileIndexItem.Description).ToLowerInvariant(), list[0]);
 		Assert.AreEqual(nameof(FileIndexItem.DateTime).ToLowerInvariant(), list[1]);
 	}
@@ -154,7 +154,7 @@ public sealed class UpdateImportTransformationsTest
 	public void ColorClassComparedNamesList_Contain()
 	{
 		var list = UpdateImportTransformations.AddColorClassToComparedNamesList(new List<string>());
-		Assert.AreEqual(1, list.Count);
+		Assert.HasCount(1, list);
 		Assert.AreEqual(nameof(FileIndexItem.ColorClass).ToLowerInvariant(), list[0]);
 	}
 }

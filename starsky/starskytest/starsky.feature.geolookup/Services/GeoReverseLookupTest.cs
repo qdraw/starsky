@@ -138,7 +138,7 @@ public sealed class GeoFolderReverseLookupTest
 		var result = await sut
 			.LoopFolderLookup(new List<FileIndexItem> { item }, false);
 
-		Assert.AreEqual(0, result.Count);
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]
@@ -165,7 +165,7 @@ public sealed class GeoFolderReverseLookupTest
 	{
 		var list = new List<FileIndexItem> { new(), new() { Latitude = 50, Longitude = 50 } };
 		var result = GeoFolderReverseLookup.RemoveNoUpdateItems(list, true);
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 	}
 
 	[TestMethod]
@@ -175,6 +175,6 @@ public sealed class GeoFolderReverseLookupTest
 
 		// ignore city
 		var result = GeoFolderReverseLookup.RemoveNoUpdateItems(list, false);
-		Assert.AreEqual(0, result.Count);
+		Assert.IsEmpty(result);
 	}
 }

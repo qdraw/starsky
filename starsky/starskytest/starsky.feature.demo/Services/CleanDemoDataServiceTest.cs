@@ -219,11 +219,9 @@ public class CleanDemoDataServiceTest
 
 		Assert.IsTrue(result);
 
-		Assert.AreEqual(1, _fakeIWebSocketConnectionsService.FakeSendToAllAsync.Count);
-		Assert.IsTrue(_fakeIWebSocketConnectionsService.FakeSendToAllAsync.FirstOrDefault()!
-			.Contains("/test.jpg"));
+		Assert.HasCount(1, _fakeIWebSocketConnectionsService.FakeSendToAllAsync);
+		Assert.Contains("/test.jpg", _fakeIWebSocketConnectionsService.FakeSendToAllAsync.First());
 	}
-
 
 	[TestMethod]
 	public async Task DownloadAsync_AppSettingsMissing()

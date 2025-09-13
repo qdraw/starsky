@@ -20,7 +20,7 @@ public sealed class AddParentCacheIfNotExistTest
 
 		var result = await element.AddParentCacheIfNotExistAsync(
 			new List<string>());
-		Assert.AreEqual(0, result.Count);
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]
@@ -37,7 +37,7 @@ public sealed class AddParentCacheIfNotExistTest
 
 		var (_, cacheGetParentFolder) = fakeQuery.CacheGetParentFolder("/");
 
-		Assert.AreEqual(1, cacheGetParentFolder.Count);
+		Assert.HasCount(1, cacheGetParentFolder);
 	}
 
 	[TestMethod]
@@ -56,7 +56,7 @@ public sealed class AddParentCacheIfNotExistTest
 
 		var (_, cacheGetParentFolder) = fakeQuery.CacheGetParentFolder("/");
 
-		Assert.AreEqual(1, cacheGetParentFolder.Count);
+		Assert.HasCount(1, cacheGetParentFolder);
 		Assert.AreEqual("__old_key__", cacheGetParentFolder[0].FileHash);
 	}
 }

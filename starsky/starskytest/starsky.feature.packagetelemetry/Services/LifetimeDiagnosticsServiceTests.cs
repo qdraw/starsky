@@ -30,7 +30,7 @@ public class LifetimeDiagnosticsServiceTests
 		Assert.AreEqual("30", result.Value[..2]);
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow("45", 45)]
 	[DataRow("1.01", 1.01)]
 	[DataRow("invalid", -1)]
