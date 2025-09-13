@@ -56,7 +56,7 @@ public sealed class DiskWatcherTest
 #if DEBUG
 	[Timeout(1000, CooperativeCancellation = true)]
 #else
-		[Timeout(10000)]
+		[Timeout(10000, CooperativeCancellation = true)]
 #endif
 	public void DiskWatcherTest_Watcher_Error()
 	{
@@ -117,7 +117,7 @@ public sealed class DiskWatcherTest
 #if DEBUG
 	[Timeout(1000, CooperativeCancellation = true)]
 #else
-		[Timeout(10000)]
+		[Timeout(10000, CooperativeCancellation = true)]
 #endif
 	public void Watcher_Changed()
 	{
@@ -152,7 +152,7 @@ public sealed class DiskWatcherTest
 #if DEBUG
 	[Timeout(1000, CooperativeCancellation = true)]
 #else
-		[Timeout(10000)]
+		[Timeout(10000, CooperativeCancellation = true)]
 #endif
 	public void Watcher_Renamed()
 	{
@@ -188,7 +188,7 @@ public sealed class DiskWatcherTest
 #if DEBUG
 	[Timeout(1000, CooperativeCancellation = true)]
 #else
-		[Timeout(10000)]
+		[Timeout(10000, CooperativeCancellation = true)]
 #endif
 	public void Watcher_Retry_Ok()
 	{
@@ -204,12 +204,11 @@ public sealed class DiskWatcherTest
 		Assert.IsTrue(result);
 	}
 
-
 	[TestMethod]
 #if DEBUG
 	[Timeout(1000, CooperativeCancellation = true)]
 #else
-		[Timeout(10000)]
+		[Timeout(10000, CooperativeCancellation = true)]
 #endif
 	public void Watcher_CrashAnd_Retry()
 	{
