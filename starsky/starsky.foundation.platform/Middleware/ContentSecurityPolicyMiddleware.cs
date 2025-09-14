@@ -35,9 +35,9 @@ namespace starsky.foundation.platform.Middleware
 
 				// When change also update in Electron
 				var cspHeader =
-					"default-src 'none'; img-src 'self' https://a.tile.openstreetmap.org/ " +
-					"https://b.tile.openstreetmap.org/ " +
-					"https://c.tile.openstreetmap.org/; script-src 'self'; " +
+					"default-src 'none'; img-src 'self' https://a.tile.openstreetmap.fr/ " +
+					"https://b.tile.openstreetmap.fr/ " +
+					"https://c.tile.openstreetmap.fr/; script-src 'self'; " +
 					$"connect-src 'self' {socketUrl} {socketUrlWithPort};" +
 					"style-src 'self'; " +
 					"font-src 'self'; " +
