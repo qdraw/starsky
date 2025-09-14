@@ -43,7 +43,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.4 - _(Unreleased)_ - 2025-?-? {#v0.7.4}
 
-- nothing yet
+- [x] (Changed) _Front-end_ OpenStreetMap tile server endpoints change due block (PR #2343)
 
 ## version 0.7.3 - 2025-09-13 {#v0.7.3}
 
