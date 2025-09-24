@@ -55,7 +55,7 @@
   "Microsoft.NET.Test.Sdk 17.14.1",
   "MSTest.TestAdapter 3.10.4",
   "MSTest.TestFramework 3.10.4",
-  "Verify.MSTest 30.12.0",
+  "Verify.MSTest 30.18.0",
   "coverlet.collector 6.0.4",
   "Microsoft.AspNetCore.Mvc.Formatters.Json 2.3.0",
   "Microsoft.AspNetCore.Identity 2.3.1"
