@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import * as useFetch from "../../../hooks/use-fetch";
 import * as useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
-import * as useLocation from "../../../hooks/use-location/use-location";
+import * as useLocation from "../../../hooks/use-location/use-location-legacy";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { PageType, newIRelativeObjects } from "../../../interfaces/IDetailView";

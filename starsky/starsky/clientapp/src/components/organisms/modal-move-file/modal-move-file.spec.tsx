@@ -3,7 +3,7 @@ import { act } from "react";
 import * as useFileList from "../../../hooks/use-filelist";
 import { IFileList } from "../../../hooks/use-filelist";
 import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
-import * as useLocation from "../../../hooks/use-location/use-location";
+import * as useLocation from "../../../hooks/use-location/use-location-legacy";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { PageType } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";

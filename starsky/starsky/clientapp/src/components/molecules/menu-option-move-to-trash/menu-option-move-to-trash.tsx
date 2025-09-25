@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import { ArchiveAction } from "../../../contexts/archive-context";
 import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
-import useLocation from "../../../hooks/use-location/use-location";
+import useLocation from "../../../hooks/use-location/use-location-legacy.ts";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import localization from "../../../localization/localization.json";
 import FetchPost from "../../../shared/fetch/fetch-post";

@@ -4,23 +4,26 @@ import { IUseLocation } from "./interfaces/IUseLocation";
 import { NavigateFn } from "./internal/navigate-fn";
 
 const useLocation = () => {
-  // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   const initialState: IUseLocation = {
     location: window.location,
     navigate: NavigateFn
   };
 
   const [state, setState] = useState(initialState);
+
   useEffect(() => {
     const removeListener = Router.subscribe((params) => {
       const { location } = params;
-      const newState = { ...initialState, ...location };
-      setState(newState);
+
+      setState((prev) => ({
+        ...prev,
+        ...location
+      }));
     });
     return () => {
       removeListener();
     };
-  }, [initialState]);
+  }, []);
 
   return state;
 };
