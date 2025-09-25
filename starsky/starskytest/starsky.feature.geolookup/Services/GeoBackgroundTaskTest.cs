@@ -96,7 +96,7 @@ public sealed class GeoBackgroundTaskTest
 	{
 		var storage = new FakeIStorage(new List<string> { "/" },
 			new List<string> { "/2QOYZWMPACZAJ2MABGMOZ6CCPY.jpg" },
-			new List<byte[]> { CreateAnImage.Bytes.ToArray() }
+			new List<byte[]> { CreateAnImageA6600.Bytes.ToArray() }
 		);
 		var storageSelector = new FakeSelectorStorage(storage);
 

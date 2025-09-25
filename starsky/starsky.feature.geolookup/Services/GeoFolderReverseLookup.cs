@@ -98,10 +98,11 @@ public sealed class GeoFolderReverseLookup(
 			                                        && ( string.IsNullOrEmpty(metaFileItem
 				                                             .LocationCity)
 			                                             || string.IsNullOrEmpty(metaFileItem
-				                                             .LocationState)
+				                                             .LocationCountryCode)
+			                                             // LocationState can be empty
 			                                             || string.IsNullOrEmpty(metaFileItem
 				                                             .LocationCountry)
-			                                        ) // for now NO check on: metaFileItem.LocationCountryCode
+			                                        )
 			                                        && ExtensionRolesHelper
 				                                        .IsExtensionExifToolSupported(
 					                                        metaFileItem.FileName)
