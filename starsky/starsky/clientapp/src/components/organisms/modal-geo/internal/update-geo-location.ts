@@ -15,7 +15,7 @@ export async function UpdateGeoLocation(
   collections?: boolean
 ): Promise<IGeoLocationModel | null> {
   if (!location?.latitude || !location?.longitude) {
-    return Promise.resolve(null);
+    return null;
   }
 
   setIsLoading(true);
@@ -50,14 +50,14 @@ export async function UpdateGeoLocation(
     if (updateResult.statusCode !== 200) {
       setError(true);
       setIsLoading(false);
-      return Promise.resolve(null);
+      return null;
     }
   } catch {
     setError(true);
     setIsLoading(false);
-    return Promise.resolve(null);
+    return null;
   }
 
   setIsLoading(false);
-  return Promise.resolve(model);
+  return model;
 }
