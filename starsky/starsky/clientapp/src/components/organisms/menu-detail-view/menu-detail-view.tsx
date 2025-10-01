@@ -325,7 +325,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({ state, d
             />
 
             <MenuOption isReadOnly={isReadOnly} onClickKeydown={TrashFile} testName="trash">
-              {!isMarkedAsDeleted ? MessageMoveToTrash : MessageRestoreFromTrash}
+              {isMarkedAsDeleted ? MessageRestoreFromTrash : MessageMoveToTrash}
 
               {state.collections &&
               state.fileIndexItem.collectionPaths &&
