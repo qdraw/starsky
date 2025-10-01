@@ -90,7 +90,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
 
   function handleFetchPostResponse(anyData: IConnectionDefault) {
     const result = new CastToInterface().InfoFileIndexArray(anyData.data as IFileIndexItem[]);
-    result.forEach((element) => {
+    for (const element of result) {
       if (element.status === IExifStatus.ReadOnly) setIsError(MessageWriteErrorReadOnly);
       if (element.status === IExifStatus.NotFoundSourceMissing)
         setIsError(MessageErrorNotFoundSourceMissingRunSync);
@@ -101,7 +101,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
           select: [element.fileName]
         });
       }
-    });
+    }
 
     // loading + update button
     setIsLoading(false);
@@ -158,11 +158,11 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
 
   return (
     <>
-      {isError !== "" ? (
+      {isError === "" ? null : (
         <Notification callback={() => setIsError("")} type={NotificationType.danger}>
           {isError}
         </Notification>
-      ) : null}
+      )}
 
       {isLoading ? <Preloader isWhite={false} isOverlay={false} /> : ""}
 

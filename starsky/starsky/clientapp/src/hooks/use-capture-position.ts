@@ -6,7 +6,7 @@ export interface ICaptionPosition {
 }
 
 const capturePosition = () => {
-  const topCachedPosition = window.scrollY;
+  const topCachedPosition = globalThis.scrollY;
   return {
     freeze: () => {
       document.body.style.position = "fixed";
@@ -17,7 +17,7 @@ const capturePosition = () => {
       document.body.style.position = "initial";
       document.body.style.top = "initial";
       document.body.style.width = "initial";
-      window.scrollTo(0, topCachedPosition);
+      globalThis.scrollTo(0, topCachedPosition);
     }
   } as ICaptionPosition;
 };

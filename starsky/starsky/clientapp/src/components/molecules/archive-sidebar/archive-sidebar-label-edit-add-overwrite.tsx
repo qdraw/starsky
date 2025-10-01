@@ -3,7 +3,6 @@ import { ArchiveContext } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
 import useLocation from "../../../hooks/use-location/use-location";
-import { PageType } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { ISidebarUpdate } from "../../../interfaces/ISidebarUpdate";
 import localization from "../../../localization/localization.json";
@@ -83,10 +82,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
     setInputEnabled(false);
 
     update.append = append;
-    update.collections =
-      state.pageType !== PageType.Search
-        ? new URLPath().StringToIUrl(history.location.search).collections !== false
-        : false;
+    update.collections = new URLPath().IsCollections(state.pageType, history.location.search);
 
     const bodyParams = new URLPath().ObjectToSearchParams(update);
     if (bodyParams.toString().length === 0) return;
@@ -101,7 +97,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
     FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams.toString())
       .then((anyData) => {
         const result = new CastToInterface().InfoFileIndexArray(anyData.data);
-        result.forEach((element) => {
+        for (const element of result) {
           if (element.status === IExifStatus.ReadOnly) setIsError(MessageWriteErrorReadOnly);
           if (element.status === IExifStatus.NotFoundSourceMissing)
             setIsError(MessageErrorNotFoundSourceMissingRunSync);
@@ -112,7 +108,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
               select: [element.fileName]
             });
           }
-        });
+        }
 
         // loading + update button
         setIsLoading(false);
@@ -147,11 +143,11 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
   // noinspection HtmlUnknownAttribute
   return (
     <>
-      {isError !== "" ? (
+      {isError === "" ? null : (
         <Notification callback={() => setIsError("")} type={NotificationType.danger}>
           {isError}
         </Notification>
-      ) : null}
+      )}
 
       {isLoading ? <Preloader isWhite={false} isOverlay={false} /> : ""}
 

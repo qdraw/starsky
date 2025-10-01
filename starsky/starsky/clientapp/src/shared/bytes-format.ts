@@ -13,5 +13,5 @@ export default function BytesFormat(bytes: number, decimals = 2): null | string 
 
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)).toLocaleString() + " " + sizes[i];
+  return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(dm)).toLocaleString() + " " + sizes[i];
 }

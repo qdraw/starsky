@@ -15,7 +15,7 @@ export default function modalInsertPortalDiv(
 
   return () => {
     if (modal.current) {
-      document.body.removeChild(modal.current);
+      modal.current.remove();
     }
   };
 }

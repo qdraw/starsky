@@ -84,7 +84,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (pr
     setIsLoading(true);
 
     // subPath style including parent folder
-    const filePathAfterChange = props.subPath.replace(
+    const filePathAfterChange = props.subPath.replaceAll(
       new FileExtensions().GetFileName(props.subPath),
       folderName
     );

@@ -91,9 +91,9 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
     function updateCollections(infoFileIndexItem: IFileIndexItem[]) {
       const collectionsList: string[] = [];
-      infoFileIndexItem.forEach((element) => {
+      for (const element of infoFileIndexItem) {
         collectionsList.push(element.filePath);
-      });
+      }
       setCollections(collectionsList);
     }
 

@@ -65,7 +65,7 @@ describe("ModalDisplayOptions", () => {
           await toFalseButton?.click();
         });
 
-        expect(window.location.search).toBe("?collections=false");
+        expect(globalThis.location.search).toBe("?collections=false");
 
         const toTrueButton = toggleCollections?.querySelectorAll("input")[0];
 
@@ -73,7 +73,7 @@ describe("ModalDisplayOptions", () => {
           await toTrueButton?.click();
         });
 
-        expect(window.location.search).toBe("?collections=true");
+        expect(globalThis.location.search).toBe("?collections=true");
       });
 
       it("toggle-slow-files should set localStorage", async () => {
@@ -123,7 +123,7 @@ describe("ModalDisplayOptions", () => {
 
         fireEvent.change(select, { target: { value: "imageFormat" } });
 
-        expect(window.location.search).toBe("?sort=imageFormat");
+        expect(globalThis.location.search).toBe("?sort=imageFormat");
       });
 
       it("sort - change to fileName", () => {
@@ -133,7 +133,7 @@ describe("ModalDisplayOptions", () => {
         expect(select).not.toBeNull();
         fireEvent.change(select, { target: { value: "fileName" } });
 
-        expect(window.location.search).toBe("?sort=fileName");
+        expect(globalThis.location.search).toBe("?sort=fileName");
       });
     });
 

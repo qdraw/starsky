@@ -52,7 +52,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
     if (props.selectedSubPath.includes(";")) {
       const selectedPaths = props.selectedSubPath.split(";").filter(Boolean);
       // Create a string like "folder;folder;folder" with the same count as selectedPaths
-      const toValue = Array(selectedPaths.length).fill(currentFolderPath).join(";");
+      const toValue = new Array(selectedPaths.length).fill(currentFolderPath).join(";");
       bodyParams.append("to", toValue);
     } else {
       bodyParams.append("to", currentFolderPath);

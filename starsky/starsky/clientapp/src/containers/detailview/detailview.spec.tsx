@@ -322,7 +322,7 @@ describe("DetailView", () => {
       });
 
       act(() => {
-        window.dispatchEvent(event);
+        globalThis.dispatchEvent(event);
       });
 
       expect(locationSpy).toHaveBeenCalled();
@@ -343,7 +343,7 @@ describe("DetailView", () => {
 
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
       const locationObject = {
-        location: { ...window.location, search: "" },
+        location: { ...globalThis.location, search: "" },
         navigate: navigateSpy
       };
       const locationSpy = jest
@@ -371,7 +371,7 @@ describe("DetailView", () => {
       });
 
       act(() => {
-        window.dispatchEvent(event);
+        globalThis.dispatchEvent(event);
       });
 
       expect(locationSpy).toHaveBeenCalled();
@@ -395,7 +395,7 @@ describe("DetailView", () => {
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
       const locationFaker = () => {
         return {
-          location: window.location,
+          location: globalThis.location,
           navigate: navigateSpy
         };
       };
@@ -450,7 +450,7 @@ describe("DetailView", () => {
     it("Escape key Keyboard", () => {
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
       const locationObject = {
-        location: { ...window.location, search: "" },
+        location: { ...globalThis.location, search: "" },
         navigate: navigateSpy
       };
 
@@ -472,7 +472,7 @@ describe("DetailView", () => {
         key: "Escape",
         shiftKey: true
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
       expect(locationSpy).toHaveBeenCalled();
 
@@ -489,7 +489,7 @@ describe("DetailView", () => {
 
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
       const locationObject = {
-        location: { ...window.location, search: "" },
+        location: { ...globalThis.location, search: "" },
         navigate: navigateSpy
       };
 
@@ -550,7 +550,7 @@ describe("DetailView", () => {
 
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
       const locationObject = {
-        location: { ...window.location, search: "" },
+        location: { ...globalThis.location, search: "" },
         navigate: navigateSpy
       };
 

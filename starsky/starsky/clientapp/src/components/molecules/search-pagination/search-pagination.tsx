@@ -44,7 +44,7 @@ const SearchPagination: React.FunctionComponent<IRelativeLink> = memo((props) =>
     if (!urlObject.p || urlObject.p < 0 || lastPageNumber < urlObject.p) return <></>;
     return (
       <Link
-        onClick={() => window.scrollTo(0, 0)}
+        onClick={() => globalThis.scrollTo(0, 0)}
         className="prev"
         data-test="search-pagination-prev"
         to={new URLPath().IUrlToString(prevObject)}
@@ -64,7 +64,7 @@ const SearchPagination: React.FunctionComponent<IRelativeLink> = memo((props) =>
     if (urlObject.p === undefined || urlObject.p < 0 || lastPageNumber <= urlObject.p) return <></>; // undefined=0
     return (
       <Link
-        onClick={() => window.scrollTo(0, 0)}
+        onClick={() => globalThis.scrollTo(0, 0)}
         className="next"
         data-test="search-pagination-next"
         to={new URLPath().IUrlToString(nextObject)}

@@ -45,7 +45,7 @@ export async function UpdateGeoLocation(
   }
 
   try {
-    const bodyParamsString = bodyParams.toString().replace(/%00/gi, AsciiNull());
+    const bodyParamsString = bodyParams.toString().replaceAll("%00", AsciiNull());
     const updateResult = await FetchPost(new UrlQuery().UrlUpdateApi(), bodyParamsString);
     if (updateResult.statusCode !== 200) {
       setError(true);

@@ -40,12 +40,12 @@ const DetailViewGpx: React.FC = () => {
       "trkpt"
     );
 
-    Array.from(tracksNodeList).forEach((element) => {
+    for (const element of Array.from(tracksNodeList)) {
       tracks.push([
-        parseFloat(element.getAttribute("lat") as string),
-        parseFloat(element.getAttribute("lon") as string)
+        Number.parseFloat(element.getAttribute("lat") as string),
+        Number.parseFloat(element.getAttribute("lon") as string)
       ]);
-    });
+    }
 
     // to avoid short inputs
     if (!tracks || tracks.length <= 2) return;

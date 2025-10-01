@@ -381,7 +381,7 @@ describe("ModalDesktopEditorOpenConfirmation", () => {
 
       const useLocationFunction = () => {
         return {
-          location: window.location,
+          location: globalThis.location,
           navigate: jest.fn()
         };
       };

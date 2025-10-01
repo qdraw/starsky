@@ -18,7 +18,7 @@ describe("useGlobalSettings", () => {
     });
 
     it("get dutch language nl", () => {
-      const languageGetter = jest.spyOn(window.navigator, "language", "get");
+      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
       languageGetter.mockReturnValue("nl");
 
       runHook();
@@ -27,7 +27,7 @@ describe("useGlobalSettings", () => {
     });
 
     it("get dutch language nl-NL", () => {
-      const languageGetter = jest.spyOn(window.navigator, "language", "get");
+      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
       languageGetter.mockReturnValue("nl-NL");
 
       runHook();
@@ -36,7 +36,7 @@ describe("useGlobalSettings", () => {
     });
 
     it("get dutch language nl-BE", () => {
-      const languageGetter = jest.spyOn(window.navigator, "language", "get");
+      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
       languageGetter.mockReturnValue("nl-BE");
 
       runHook();
@@ -45,7 +45,7 @@ describe("useGlobalSettings", () => {
     });
 
     it("get german language de", () => {
-      const languageGetter = jest.spyOn(window.navigator, "language", "get");
+      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
       languageGetter.mockReturnValue("de");
 
       runHook();
@@ -54,7 +54,7 @@ describe("useGlobalSettings", () => {
     });
 
     it("get german language de-de", () => {
-      const languageGetter = jest.spyOn(window.navigator, "language", "get");
+      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
       languageGetter.mockReturnValue("de-DE");
 
       runHook();
@@ -63,7 +63,7 @@ describe("useGlobalSettings", () => {
     });
 
     it("get german language de-AT", () => {
-      const languageGetter = jest.spyOn(window.navigator, "language", "get");
+      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
       languageGetter.mockReturnValue("de-AT");
 
       runHook();
@@ -72,7 +72,7 @@ describe("useGlobalSettings", () => {
     });
 
     it("get german language de-BE", () => {
-      const languageGetter = jest.spyOn(window.navigator, "language", "get");
+      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
       languageGetter.mockReturnValue("de-BE");
 
       runHook();
@@ -81,7 +81,7 @@ describe("useGlobalSettings", () => {
     });
 
     it("get german language de-CH", () => {
-      const languageGetter = jest.spyOn(window.navigator, "language", "get");
+      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
       languageGetter.mockReturnValue("de-CH");
 
       runHook();
@@ -90,7 +90,7 @@ describe("useGlobalSettings", () => {
     });
 
     it("get german language de-IT", () => {
-      const languageGetter = jest.spyOn(window.navigator, "language", "get");
+      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
       languageGetter.mockReturnValue("de-IT");
 
       runHook();
@@ -99,7 +99,7 @@ describe("useGlobalSettings", () => {
     });
 
     it("get german language de-LI", () => {
-      const languageGetter = jest.spyOn(window.navigator, "language", "get");
+      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
       languageGetter.mockReturnValue("de-LI");
 
       runHook();
@@ -108,7 +108,7 @@ describe("useGlobalSettings", () => {
     });
 
     it("get german language de-LU", () => {
-      const languageGetter = jest.spyOn(window.navigator, "language", "get");
+      const languageGetter = jest.spyOn(globalThis.navigator, "language", "get");
       languageGetter.mockReturnValue("de-LU");
 
       runHook();

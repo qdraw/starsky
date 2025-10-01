@@ -295,7 +295,7 @@ describe("MenuOptionMoveToTrash", () => {
         statusCode: 200
       });
       const locationObject = {
-        location: window.location,
+        location: globalThis.location,
         navigate: jest.fn()
       };
 
@@ -322,7 +322,7 @@ describe("MenuOptionMoveToTrash", () => {
           cancelable: true,
           key: "Delete"
         });
-        window.dispatchEvent(event);
+        globalThis.dispatchEvent(event);
       });
 
       expect(fetchPostSpy).toHaveBeenCalled();

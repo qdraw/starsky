@@ -9,7 +9,7 @@ describe("ShiftSelectionHelper", () => {
     const result = ShiftSelectionHelper(
       {
         navigate: jest.fn(),
-        location: window.location
+        location: globalThis.location
       },
       [],
       "test",
@@ -22,7 +22,7 @@ describe("ShiftSelectionHelper", () => {
     const result = ShiftSelectionHelper(
       {
         navigate: jest.fn(),
-        location: window.location
+        location: globalThis.location
       },
       undefined as unknown as string[],
       "test",
@@ -35,7 +35,7 @@ describe("ShiftSelectionHelper", () => {
     const result = ShiftSelectionHelper(
       {
         navigate: jest.fn(),
-        location: window.location
+        location: globalThis.location
       },
       [],
       "test",
@@ -57,7 +57,7 @@ describe("ShiftSelectionHelper", () => {
     const result = ShiftSelectionHelper(
       {
         navigate: navigateFn,
-        location: window.location
+        location: globalThis.location
       },
       [],
       "/test3",
@@ -75,7 +75,7 @@ describe("ShiftSelectionHelper", () => {
     const result = ShiftSelectionHelper(
       {
         navigate: navigateFn,
-        location: window.location
+        location: globalThis.location
       },
       ["test4"],
       "/test2",
@@ -93,7 +93,7 @@ describe("ShiftSelectionHelper", () => {
     const result = ShiftSelectionHelper(
       {
         navigate: navigateFn,
-        location: window.location
+        location: globalThis.location
       },
       ["test4"],
       "/test4",

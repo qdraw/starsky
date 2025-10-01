@@ -7,7 +7,7 @@ import { GlobalShortcuts } from "./global-shortcuts";
 describe("GlobalShortcuts", () => {
   it("command + shift + k", () => {
     const locationObject = {
-      location: window.location,
+      location: globalThis.location,
       navigate: jest.fn()
     };
 

@@ -26,7 +26,7 @@ const MenuOptionModal: React.FunctionComponent<IMenuOptionModalProps> = memo(
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
 
-    const Message = !localization ? "" : language.key(localization);
+    const message = localization ? language.key(localization) : "";
 
     function onClickHandler() {
       if (isReadOnly) {
@@ -42,7 +42,7 @@ const MenuOptionModal: React.FunctionComponent<IMenuOptionModalProps> = memo(
     return (
       <>
         {
-          <li className={!isReadOnly ? "menu-option" : "menu-option disabled"}>
+          <li className={isReadOnly ? "menu-option disabled" : "menu-option"}>
             <button
               data-test={testName}
               onClick={onClickHandler}
@@ -52,7 +52,7 @@ const MenuOptionModal: React.FunctionComponent<IMenuOptionModalProps> = memo(
                 }
               }}
             >
-              {Message}
+              {message}
               {children}
             </button>
           </li>

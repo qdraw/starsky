@@ -389,7 +389,7 @@ describe("MenuDetailView", () => {
         labels?.click();
       });
 
-      const urlObject = new URLPath().StringToIUrl(window.location.search);
+      const urlObject = new URLPath().StringToIUrl(globalThis.location.search);
 
       expect(urlObject.details).toBeTruthy();
 
@@ -415,7 +415,7 @@ describe("MenuDetailView", () => {
         fireEvent.keyDown(labels, { key: "Tab" });
       });
 
-      const urlObject = new URLPath().StringToIUrl(window.location.search);
+      const urlObject = new URLPath().StringToIUrl(globalThis.location.search);
 
       expect(urlObject.details).toBeFalsy();
 
@@ -441,7 +441,7 @@ describe("MenuDetailView", () => {
         fireEvent.keyDown(labels, { key: "Enter" });
       });
 
-      const urlObject = new URLPath().StringToIUrl(window.location.search);
+      const urlObject = new URLPath().StringToIUrl(globalThis.location.search);
 
       expect(urlObject.details).toBeTruthy();
 
@@ -1121,7 +1121,7 @@ describe("MenuDetailView", () => {
       });
 
       act(() => {
-        window.dispatchEvent(event);
+        globalThis.dispatchEvent(event);
       });
 
       expect(spyFetchPost).toHaveBeenCalled();

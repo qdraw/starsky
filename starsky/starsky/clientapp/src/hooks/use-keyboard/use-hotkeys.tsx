@@ -29,17 +29,19 @@ export interface IHotkeysKeyboardEvent {
  * @param _dependencies - deps array
  */
 function useHotKeys(
-  predefined: IHotkeysKeyboardEvent = { key: "" },
+  predefined?: IHotkeysKeyboardEvent,
   callback: (event: KeyboardEvent) => void = () => {
     /* should do nothing, you should overwrite this */
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _dependencies: React.DependencyList = []
 ) {
+  const hotkey = predefined ?? { key: "" };
+
   useEffect(() => {
     const handler = function (event: KeyboardEvent) {
       if (new Keyboard().isInForm(event)) return;
-      if (!predefined?.key) {
+      if (!hotkey?.key) {
         return;
       }
 
@@ -58,7 +60,7 @@ function useHotKeys(
         metaKey: preDefinedMetaKey = false,
         shiftKey: preDefinedShiftKey = false,
         ctrlKeyOrMetaKey: preDefinedCtrlKeyOrMetaKey = false
-      } = predefined;
+      } = hotkey;
 
       if (
         eventKey === preDefinedKey &&
@@ -86,9 +88,9 @@ function useHotKeys(
         callback(event);
       }
     };
-    window.addEventListener("keydown", handler);
+    globalThis.addEventListener("keydown", handler);
     return () => {
-      window.removeEventListener("keydown", handler);
+      globalThis.removeEventListener("keydown", handler);
     };
   });
 }

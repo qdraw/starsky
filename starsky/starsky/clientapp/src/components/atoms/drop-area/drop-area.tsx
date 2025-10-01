@@ -126,17 +126,17 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
     if (!props.enableDragAndDrop) return;
 
     // Bind the event listener
-    window.addEventListener("dragenter", onDragEnter);
-    window.addEventListener("dragleave", onDragLeave);
-    window.addEventListener("dragover", onDragOver);
-    window.addEventListener("drop", onDrop);
+    globalThis.addEventListener("dragenter", onDragEnter);
+    globalThis.addEventListener("dragleave", onDragLeave);
+    globalThis.addEventListener("dragover", onDragOver);
+    globalThis.addEventListener("drop", onDrop);
 
     return () => {
       // Unbind the event listener on clean up
-      window.removeEventListener("dragenter", onDragEnter);
-      window.removeEventListener("dragleave", onDragLeave);
-      window.removeEventListener("dragover", onDragOver);
-      window.removeEventListener("drop", onDrop);
+      globalThis.removeEventListener("dragenter", onDragEnter);
+      globalThis.removeEventListener("dragleave", onDragLeave);
+      globalThis.removeEventListener("dragover", onDragOver);
+      globalThis.removeEventListener("drop", onDrop);
     };
   });
 

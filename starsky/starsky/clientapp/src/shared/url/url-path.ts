@@ -1,4 +1,5 @@
 import { SortType } from "../../interfaces/IArchive";
+import { PageType } from "../../interfaces/IDetailView";
 import { IFileIndexItem } from "../../interfaces/IFileIndexItem";
 import { IUrl } from "../../interfaces/IUrl";
 
@@ -10,7 +11,7 @@ export class URLPath {
 
   private parsePagination(key: [string, string], urlObject: IUrl) {
     const pagination = Number(key[1]);
-    if (isNaN(pagination)) return;
+    if (Number.isNaN(pagination)) return;
     urlObject.p = pagination;
   }
 
@@ -72,9 +73,9 @@ export class URLPath {
     if (colorClassText && colorClassText.indexOf(",") === -1) {
       colorClassArray = [colorClassText];
     } else if (colorClassText.indexOf(",") >= 1) {
-      colorClassText.split(",").forEach((element) => {
+      for (const element of colorClassText.split(",")) {
         colorClassArray.push(element);
-      });
+      }
     }
     return colorClassArray;
   }
@@ -85,14 +86,14 @@ export class URLPath {
    */
   private stringToNumberArray(colorClassText: string): number[] {
     let colorClassArray: Array<number> = [];
-    if (colorClassText && !isNaN(Number(colorClassText))) {
+    if (colorClassText && !Number.isNaN(Number(colorClassText))) {
       colorClassArray = [Number(colorClassText)];
     } else if (colorClassText.indexOf(",") >= 1) {
-      colorClassText.split(",").forEach((element) => {
-        if (!isNaN(Number(element))) {
+      for (const element of colorClassText.split(",")) {
+        if (!Number.isNaN(Number(element))) {
           colorClassArray.push(Number(element));
         }
-      });
+      }
     }
     return colorClassArray;
   }
@@ -107,13 +108,13 @@ export class URLPath {
       params.set(key[0], key[1]);
     }
     let url = this.AddPrefixUrl(params.toString());
-    url = url.replace(/\+/gi, " ").replace(/%2F/gi, "/").replace(/%2C/gi, ",");
+    url = url.replaceAll("+", " ").replaceAll("%2F", "/").replaceAll("%2C", ",");
     return url;
   }
 
   public encodeURI(url: string): string {
     url = encodeURI(url);
-    url = url.replace(/\+/gi, "%2B");
+    url = url.replaceAll("+", "%2B");
     return url;
   }
 
@@ -136,8 +137,8 @@ export class URLPath {
 
   public RemovePrefixUrl(input: string): string {
     if (!input) return "";
-    const output = input.replace(/^#?(\/)?/gi, "");
-    return output.replace(/\+/gi, "%2B");
+    const output = input.replaceAll(/^#?(\/)?/gi, "");
+    return output.replaceAll(/\+/gi, "%2B");
   }
 
   /**
@@ -198,7 +199,7 @@ export class URLPath {
     const search = new URLSearchParams(hash);
     const getFilePath = search.get("f");
     if (!getFilePath) return "/";
-    return getFilePath.replace(/\/$/, "");
+    return getFilePath.replaceAll(/\/$/g, "");
   }
 
   /**
@@ -240,13 +241,13 @@ export class URLPath {
     const subPaths: string[] = [];
     if (select === undefined || parent === undefined) return subPaths;
 
-    select.forEach((item) => {
+    for (const item of select) {
       if (parent === "/") {
         subPaths.push("/" + item);
       } else {
         subPaths.push(parent + "/" + item);
       }
-    });
+    }
     return subPaths;
   }
 
@@ -257,12 +258,12 @@ export class URLPath {
    * @param fileIndexItems the current folder
    */
   public GetAllSelection(select: string[], fileIndexItems: IFileIndexItem[]): string[] {
-    fileIndexItems.forEach((fileIndexItem) => {
+    for (const fileIndexItem of fileIndexItems) {
       const include = select.includes(fileIndexItem.fileName);
       if (!include) {
         select.push(fileIndexItem.fileName);
       }
-    });
+    }
     return select;
   }
 
@@ -274,12 +275,12 @@ export class URLPath {
   public MergeSelectFileIndexItem(select: string[], fileIndexItems: IFileIndexItem[]): string[] {
     const subPaths: string[] = [];
 
-    fileIndexItems.forEach((item) => {
+    for (const item of fileIndexItems) {
       if (item.fileName && select.indexOf(item.fileName) >= 0) {
         if (item.parentDirectory === "/") item.parentDirectory = ""; // no double slash in front of path
         subPaths.push(item.parentDirectory + new URLPath().StartOnSlash(item.fileName));
       }
-    });
+    }
     return subPaths;
   }
 
@@ -314,5 +315,15 @@ export class URLPath {
       }
     }
     return selectParams;
+  }
+
+  public IsCollections(pageType: PageType, locationSearch: string): boolean {
+    if (pageType === PageType.Search) {
+      return false;
+    }
+    if (new URLPath().StringToIUrl(locationSearch).collections === false) {
+      return false;
+    }
+    return true;
   }
 }

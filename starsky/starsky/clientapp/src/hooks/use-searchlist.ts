@@ -89,8 +89,9 @@ export const fetchContentUseSearchList = async (
     if (
       archiveMedia.data.pageType !== PageType.Search &&
       archiveMedia.data.pageType !== PageType.Trash
-    )
+    ) {
       return;
+    }
 
     // We don't know those values in the search context
     archiveMedia.data.colorClassUsage = [];

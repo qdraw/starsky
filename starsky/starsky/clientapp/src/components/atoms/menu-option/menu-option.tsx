@@ -15,12 +15,12 @@ const MenuOption: React.FunctionComponent<IMenuOptionProps> = memo(
   ({ localization, onClickKeydown, testName, isReadOnly = true, children = undefined }) => {
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
-    const Message = !localization ? "" : language.key(localization);
+    const message = localization ? language.key(localization) : "";
 
     return (
       <>
         {
-          <li className={!isReadOnly ? "menu-option" : "menu-option disabled"}>
+          <li className={isReadOnly ? "menu-option disabled" : "menu-option"}>
             <button
               data-test={testName}
               onClick={onClickKeydown}
@@ -30,7 +30,7 @@ const MenuOption: React.FunctionComponent<IMenuOptionProps> = memo(
                 }
               }}
             >
-              {Message}
+              {message}
               {children}
             </button>
           </li>

@@ -14,12 +14,12 @@ export class SelectCheckIfActive {
       .map((ele) => ele.fileName);
 
     // you can't select an item that's not shown
-    select.forEach((selectedPath) => {
+    for (let i = select.length - 1; i >= 0; i--) {
+      const selectedPath = select[i];
       if (fileNameList.indexOf(selectedPath) === -1) {
-        const selectIndex = select.indexOf(selectedPath);
-        select.splice(selectIndex, 1);
+        select.splice(i, 1);
       }
-    });
+    }
     // remove empty items from the list
     return select.filter((res) => res);
   }

@@ -31,7 +31,7 @@ describe("useKeyboardEvent", () => {
       key: "q",
       shiftKey: true
     });
-    window.dispatchEvent(event);
+    globalThis.dispatchEvent(event);
 
     expect(callback).toHaveBeenCalled();
     expect(callback).toHaveBeenCalledTimes(1);
@@ -53,7 +53,7 @@ describe("useKeyboardEvent", () => {
       key: "z",
       shiftKey: true
     });
-    window.dispatchEvent(event);
+    globalThis.dispatchEvent(event);
     expect(callback).toHaveBeenCalledTimes(0);
   });
 });

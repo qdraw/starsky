@@ -44,17 +44,17 @@ const ArchivePagination: React.FunctionComponent<IRelativeLink> = memo((props) =
   );
 
   const prev =
-    relativeObjects.prevFilePath !== null ? (
+    relativeObjects.prevFilePath === null ? null : (
       <Link className="prev" data-test="archive-pagination-prev" to={prevUrl}>
         {MessagePrevious}
       </Link>
-    ) : null;
+    );
   const next =
-    relativeObjects.nextFilePath !== null ? (
+    relativeObjects.nextFilePath === null ? null : (
       <Link className="next" data-test="archive-pagination-next" to={nextUrl}>
         {MessageNext}
       </Link>
-    ) : null;
+    );
 
   return (
     <div className="relativelink">

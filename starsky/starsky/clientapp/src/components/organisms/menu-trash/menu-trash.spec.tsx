@@ -266,7 +266,7 @@ describe("MenuTrash", () => {
 
       expect(modalSpy).toHaveBeenCalled();
 
-      expect(window.location.search).toBe("?select=test1.jpg");
+      expect(globalThis.location.search).toBe("?select=test1.jpg");
 
       // cleanup
       act(() => {
@@ -306,7 +306,7 @@ describe("MenuTrash", () => {
 
       expect(modalSpy).toHaveBeenCalledTimes(0);
 
-      expect(window.location.search).toBe("?select=test1.jpg");
+      expect(globalThis.location.search).toBe("?select=test1.jpg");
 
       // cleanup
       act(() => {
@@ -346,7 +346,7 @@ describe("MenuTrash", () => {
 
       expect(modalSpy).toHaveBeenCalledTimes(1);
 
-      expect(window.location.search).toBe("?select=test1.jpg");
+      expect(globalThis.location.search).toBe("?select=test1.jpg");
 
       // cleanup
       act(() => {

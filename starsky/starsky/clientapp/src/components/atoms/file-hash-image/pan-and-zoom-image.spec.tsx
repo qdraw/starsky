@@ -262,7 +262,7 @@ describe("PanAndZoomImage", () => {
         key: "0",
         metaKey: true
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
       expect(onResetCallbackSpy).toHaveBeenCalled();
       component.unmount();

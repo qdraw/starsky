@@ -11,7 +11,7 @@ export const Default = () => {
       <button
         onClick={() => {
           localStorage.removeItem(CheckForUpdatesLocalStorageName);
-          window.location.reload();
+          globalThis.location.reload();
         }}
       >
         Clean sessie
@@ -33,7 +33,7 @@ export const Electron = () => {
           className={"b"}
           onClick={() => {
             localStorage.removeItem(CheckForUpdatesLocalStorageName);
-            window.location.reload();
+            globalThis.location.reload();
           }}
         >
           Clean sessie

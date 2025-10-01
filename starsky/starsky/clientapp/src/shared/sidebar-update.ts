@@ -18,7 +18,7 @@ export class SidebarUpdate {
       return updateSidebar;
     }
 
-    fieldValue = fieldValue.replace(/\n/g, "");
+    fieldValue = fieldValue.replaceAll("\n", "");
     switch (fieldName.toLowerCase()) {
       case "tags":
         updateSidebar.tags = fieldValue;

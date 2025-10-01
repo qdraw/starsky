@@ -51,7 +51,7 @@ describe("ColorClassSelectKeyboard", () => {
 
     // need to await this
     await act(async () => {
-      await window.dispatchEvent(event);
+      await globalThis.dispatchEvent(event);
     });
 
     // expect
@@ -95,7 +95,7 @@ describe("ColorClassSelectKeyboard", () => {
 
     // need to await this
     await act(async () => {
-      await window.dispatchEvent(event);
+      await globalThis.dispatchEvent(event);
     });
 
     expect(colorClassUpdateSingleSpy).toHaveBeenCalledTimes(0);
@@ -134,7 +134,7 @@ describe("ColorClassSelectKeyboard", () => {
 
     // need to await this
     await act(async () => {
-      await window.dispatchEvent(event);
+      await globalThis.dispatchEvent(event);
     });
 
     expect(colorClassUpdateSingleSpy).toHaveBeenCalled();
@@ -174,7 +174,7 @@ describe("ColorClassSelectKeyboard", () => {
 
     // need to await this
     await act(async () => {
-      await window.dispatchEvent(event);
+      await globalThis.dispatchEvent(event);
     });
 
     expect(colorClassUpdateSingleSpy).toHaveBeenCalled();

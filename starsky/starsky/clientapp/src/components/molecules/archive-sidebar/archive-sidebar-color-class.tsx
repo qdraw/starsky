@@ -38,11 +38,7 @@ const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClas
 
     return (
       <ColorClassSelect
-        collections={
-          props.pageType !== PageType.Search
-            ? new URLPath().StringToIUrl(history.location.search).collections !== false
-            : false
-        }
+        collections={new URLPath().IsCollections(props.pageType, history.location.search)}
         onToggle={(colorclass) => {
           dispatch({ type: "update", colorclass, select });
           // Entire cache because the relativeObjects in detailview can reference that order

@@ -161,7 +161,7 @@ describe("ModalArchiveRename", () => {
       jest.spyOn(FetchPost, "default").mockImplementationOnce(() => mockIConnectionDefault);
 
       const locationObject = {
-        location: window.location,
+        location: globalThis.location,
         navigate: jest.fn()
       };
 

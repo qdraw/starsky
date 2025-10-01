@@ -38,8 +38,8 @@ export class DocumentTitle {
   public GetDocumentTitle = (prefix: string): string => {
     if (!prefix) return "Starsky App";
     prefix += " - Starsky App";
-    if (new BrowserDetect().IsElectronApp() && window.location.hostname !== "localhost") {
-      prefix += ` - ${window.location.hostname}`;
+    if (new BrowserDetect().IsElectronApp() && globalThis.location.hostname !== "localhost") {
+      prefix += ` - ${globalThis.location.hostname}`;
     }
     return prefix;
   };

@@ -111,7 +111,7 @@ describe("ListImageTest", () => {
         })
       );
 
-      expect(window.location.search).toBe("?select=test");
+      expect(globalThis.location.search).toBe("?select=test");
       expect(onSelectionCallback).toHaveBeenCalledTimes(0);
       component.unmount();
     });
@@ -148,7 +148,7 @@ describe("ListImageTest", () => {
       expect(onSelectionCallback).toHaveBeenCalled();
       expect(onSelectionCallback).toHaveBeenCalledWith("/test.jpg");
       // the update is done in the callback, not here
-      expect(window.location.search).toBe("?select=");
+      expect(globalThis.location.search).toBe("?select=");
     });
 
     it("shift click it should not submit callback when input is undefined", () => {
@@ -180,7 +180,7 @@ describe("ListImageTest", () => {
       );
 
       // should normal toggle instead of shift action
-      expect(window.location.search).toBe("?select=");
+      expect(globalThis.location.search).toBe("?select=");
     });
   });
 });

@@ -110,14 +110,13 @@ class ProcessResponse {
     }
 
     // Success
-    (
-      response.data as {
-        fileIndexItem?: IFileIndexItem;
-        filePath?: string;
-        fileHash?: string;
-        status: IExifStatus;
-      }[]
-    ).forEach((dataItem) => {
+    const dataArr = response.data as {
+      fileIndexItem?: IFileIndexItem;
+      filePath?: string;
+      fileHash?: string;
+      status: IExifStatus;
+    }[];
+    for (const dataItem of dataArr) {
       if (!dataItem) {
         outputUploadFilesList.push({
           filePath: inputFilesList[index].name,
@@ -139,7 +138,7 @@ class ProcessResponse {
         dataItem.fileIndexItem.lastEdited = new Date().toISOString();
         outputUploadFilesList.push(dataItem.fileIndexItem);
       }
-    });
+    }
 
     next(
       this.endpoint,

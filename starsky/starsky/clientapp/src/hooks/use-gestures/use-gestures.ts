@@ -157,12 +157,12 @@ const executeTouchEnd = (
 export function useGestures(
   ref: RefObject<HTMLElement>,
   handlers: IHandlers,
-  options: {
+  options?: {
     minDelta: number;
-  } = {
-    minDelta: 30
   }
 ) {
+  const opts = options ?? { minDelta: 30 };
+
   const [touches, setTouches] = useState({} as ICurrentTouches);
   const [gesture, setGesture] = useState("");
 
@@ -181,7 +181,7 @@ export function useGestures(
     const handleTouchMove = (event: globalThis.TouchEvent) => {
       const currentTouches = getCurrentTouches(event, event.touches, touches, initialTouches);
       setTouches(currentTouches);
-      executeTouchMove(event, currentTouches, handlers, options, touches, setGesture);
+      executeTouchMove(event, currentTouches, handlers, opts, touches, setGesture);
     };
 
     const handleTouchEnd = (event: globalThis.TouchEvent) => {

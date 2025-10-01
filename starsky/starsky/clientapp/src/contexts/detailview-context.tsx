@@ -152,7 +152,7 @@ export function detailviewReducer(state: IDetailView, action: DetailViewAction):
   switch (action.type) {
     case "remove":
       if (action.tags && state.fileIndexItem.tags !== undefined)
-        state.fileIndexItem.tags = state.fileIndexItem.tags.replace(action.tags, "");
+        state.fileIndexItem.tags = state.fileIndexItem.tags.replaceAll(action.tags, "");
       // Need to update otherwise other events are not triggered
       return updateCache({ ...state, lastUpdated: new Date() });
     case "append":
