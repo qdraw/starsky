@@ -43,6 +43,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.4 - _(Unreleased)_ - 2025-?-? {#v0.7.4}
 
+- [x] (Changed) _Back-end_ Handle special characters for slugs e.g. ç -> c etc. (PR #2365)
+- [x] (Changed) _Back-end_ Location State is not required anymore (PR #2358)
 - [x] (Changed) _Front-end_ OpenStreetMap tile server endpoints change due block (PR #2343)
 
 ## version 0.7.3 - 2025-09-13 {#v0.7.3}

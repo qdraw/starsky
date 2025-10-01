@@ -7,6 +7,7 @@ using SixLabors.ImageSharp.Processing;
 using starsky.feature.webhtmlpublish.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Helpers.Slug;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;

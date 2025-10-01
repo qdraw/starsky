@@ -1,7 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Helpers.Slug;
 
-namespace starskytest.starsky.foundation.platform.Helpers;
+namespace starskytest.starsky.foundation.platform.Helpers.Slug;
 
 [TestClass]
 public class GenerateSlugHelperTest
@@ -12,10 +12,9 @@ public class GenerateSlugHelperTest
 		var slug = GenerateSlugHelper.GenerateSlug("1234567890123456789012345678901234567890123" +
 		                                           "456789012345678901234567890123456789012345678901234567890" +
 		                                           "456789012345678901234567890123456789012345678901234567890");
-		// Length == 65
-		Assert.AreEqual(65, slug.Length);
+		Assert.AreEqual(GenerateSlugHelper.MaxLength, slug.Length);
 	}
-	
+
 	[TestMethod]
 	public void TestSpecialCharacters()
 	{
@@ -24,16 +23,16 @@ public class GenerateSlugHelperTest
 		var actualOutput = GenerateSlugHelper.GenerateSlug(input);
 		Assert.AreEqual(expectedOutput, actualOutput);
 	}
-	
+
 	[TestMethod]
 	public void TestLeadingTrailingSpaces()
 	{
-		const string input =  "   Trim Spaces   ";
+		const string input = "   Trim Spaces   ";
 		const string expectedOutput = "trim-spaces";
 		var actualOutput = GenerateSlugHelper.GenerateSlug(input);
 		Assert.AreEqual(expectedOutput, actualOutput);
 	}
-	
+
 	[TestMethod]
 	public void TestMixedCaseAndSpaces()
 	{
@@ -42,7 +41,7 @@ public class GenerateSlugHelperTest
 		var actualOutput = GenerateSlugHelper.GenerateSlug(input);
 		Assert.AreEqual(expectedOutput, actualOutput);
 	}
-	
+
 	[TestMethod]
 	public void TestTrailingHyphens()
 	{
@@ -51,7 +50,7 @@ public class GenerateSlugHelperTest
 		var actualOutput = GenerateSlugHelper.GenerateSlug(input);
 		Assert.AreEqual(expectedOutput, actualOutput);
 	}
-	
+
 	[TestMethod]
 	public void TestBeginHyphens()
 	{
@@ -116,5 +115,32 @@ public class GenerateSlugHelperTest
 	{
 		var slug = GenerateSlugHelper.GenerateSlug("a_b_c ");
 		Assert.AreEqual("abc", slug);
+	}
+
+	[TestMethod]
+	[DataRow("Café del Mar", "cafe-del-mar")]
+	[DataRow("test - test en test - test", "test-test-en-test-test")]
+	[DataRow("   abc   ", "abc")]
+	[DataRow("a_b_c ", "abc")]
+	[DataRow("test@123", "test123")]
+	[DataRow("café", "cafe")]
+	[DataRow("façade naïve", "facade-naive")]
+	[DataRow("über-cool résumé", "uber-cool-resume")]
+	[DataRow("simple", "simple")]
+	[DataRow("", "")]
+	[DataRow(null, null)]
+	[DataRow("Łódź", "lodz")]
+	[DataRow("Dvořák", "dvorak")]
+	[DataRow("smörgåsbord", "smorgasbord")]
+	[DataRow("coöperate", "cooperate")]
+	[DataRow("123 élève", "123-eleve")]
+	[DataRow("mañana", "manana")]
+	[DataRow("Ærøskøbing", "aeroskobing")]
+	[DataRow("piñata", "pinata")]
+	[DataRow("Curaçao", "curacao")]
+	public void GenerateSlug_ReturnsExpected(string input, string expected)
+	{
+		var result = GenerateSlugHelper.GenerateSlug(input);
+		Assert.AreEqual(expected, result);
 	}
 }
