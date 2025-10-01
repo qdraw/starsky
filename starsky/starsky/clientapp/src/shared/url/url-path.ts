@@ -1,4 +1,5 @@
 import { SortType } from "../../interfaces/IArchive";
+import { PageType } from "../../interfaces/IDetailView";
 import { IFileIndexItem } from "../../interfaces/IFileIndexItem";
 import { IUrl } from "../../interfaces/IUrl";
 
@@ -314,5 +315,15 @@ export class URLPath {
       }
     }
     return selectParams;
+  }
+
+  public IsCollections(pageType: PageType, locationSearch: string): boolean {
+    if (pageType === PageType.Search) {
+      return false;
+    }
+    if (new URLPath().StringToIUrl(locationSearch).collections === false) {
+      return false;
+    }
+    return true;
   }
 }

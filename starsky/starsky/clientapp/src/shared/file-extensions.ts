@@ -74,7 +74,7 @@ export class FileExtensions {
    */
   public GetFileNameWithoutExtension(filePath: string) {
     const fileName = this.GetFileName(filePath);
-    return fileName.replaceAll(/\.[a-zA-Z0-9]{1,4}$/gi, "");
+    return fileName.replaceAll(/\.[a-z0-9]{1,4}$/gi, "");
   }
 
   /**
