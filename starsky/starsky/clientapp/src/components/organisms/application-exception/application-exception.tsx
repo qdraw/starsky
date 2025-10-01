@@ -20,7 +20,7 @@ const ApplicationException: FunctionComponent = () => {
         <button
           data-test="reload"
           className="btn btn--default"
-          onClick={() => window.location.reload()}
+          onClick={() => globalThis.location.reload()}
         >
           {MessageRefreshPageTryAgain}
         </button>

@@ -20,8 +20,8 @@ export function SkipDisplayOfUpdate(): boolean {
   const localStorageItem = localStorage.getItem(CheckForUpdatesLocalStorageName);
   if (!localStorageItem) return false;
 
-  const getItem = parseInt(localStorageItem);
-  if (isNaN(getItem)) return false;
+  const getItem = Number.parseInt(localStorageItem);
+  if (Number.isNaN(getItem)) return false;
   return DifferenceInDate(getItem) < 5760; // 4 days
 }
 

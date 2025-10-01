@@ -297,7 +297,7 @@ describe("DetailViewSidebar", () => {
       expectedBodyParams.append("f", "/test.jpg");
       expectedBodyParams.append("tags", "\0");
 
-      const expectedBodyString = expectedBodyParams.toString().replace(/%00/gi, nullChar);
+      const expectedBodyString = expectedBodyParams.toString().replaceAll("%00", nullChar);
 
       expect(fetchPostSpy).toHaveBeenCalledWith(new UrlQuery().UrlUpdateApi(), expectedBodyString);
 
@@ -660,7 +660,7 @@ describe("DetailViewSidebar", () => {
       // });
 
       // await act(async () => {
-      //   await window.dispatchEvent(event);
+      //   await globalThis.dispatchEvent(event);
       // });
 
       // await waitFor(() => expect(keyboardSpy).toHaveBeenCalled());

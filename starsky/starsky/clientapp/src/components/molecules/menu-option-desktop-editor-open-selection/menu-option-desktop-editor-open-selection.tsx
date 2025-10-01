@@ -92,9 +92,11 @@ const MenuOptionDesktopEditorOpenSelection: React.FunctionComponent<IMenuOptionD
     const [modalConfirmationOpenFiles, setModalConfirmationOpenFiles] = useState(false);
 
     const isCollections =
-      state.pageType !== PageType.Search
-        ? new URLPath().StringToIUrl(history.location.search).collections !== false
-        : false;
+      state.pageType === PageType.Search
+        ? false
+        : new URLPath().StringToIUrl(history.location.search).collections === false
+          ? false
+          : true;
 
     /**
      * Open editor with keys -  command + e

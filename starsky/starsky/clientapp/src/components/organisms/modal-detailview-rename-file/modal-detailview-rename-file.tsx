@@ -107,7 +107,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
     setIsFormEnabled(false);
     setIsLoading(true);
 
-    const filePathAfterChange = state.fileIndexItem.filePath.replace(
+    const filePathAfterChange = state.fileIndexItem.filePath.replaceAll(
       state.fileIndexItem.fileName,
       fileName
     );

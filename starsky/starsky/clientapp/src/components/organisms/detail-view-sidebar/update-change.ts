@@ -43,7 +43,7 @@ export class UpdateChange {
     for (const [name, value] of items) {
       if (!name) continue;
 
-      let replacedValue = value.replace(AsciiNull(), "");
+      let replacedValue = value.replaceAll(AsciiNull(), "");
       // allow empty requests
       if (!replacedValue) replacedValue = AsciiNull();
 
@@ -67,7 +67,7 @@ export class UpdateChange {
     const bodyParams = new URLPath()
       .ObjectToSearchParams(updateObject)
       .toString()
-      .replace(/%00/gi, AsciiNull());
+      .replaceAll("%00", AsciiNull());
 
     if (bodyParams === "") {
       return Promise.resolve("no body param");

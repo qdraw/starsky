@@ -19,7 +19,7 @@ const HamburgerMenuToggle: React.FunctionComponent<HamburgerMenuPropTypes> = ({
   const className = hamburgerMenu ? "hamburger open" : "hamburger";
   return (
     <>
-      {!select ? (
+      {select ? null : (
         <button
           data-test="hamburger"
           className="hamburger-menu-toggle hamburger__container"
@@ -32,7 +32,7 @@ const HamburgerMenuToggle: React.FunctionComponent<HamburgerMenuPropTypes> = ({
           </div>
           <div className="text">Menu</div>
         </button>
-      ) : null}
+      )}
     </>
   );
 };

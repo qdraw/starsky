@@ -19,7 +19,7 @@ function useInterval(callback: () => void, delay: number) {
     if (delay !== null) {
       const id = setInterval(tick, delay);
       return () => {
-        window.clearInterval(id);
+        globalThis.clearInterval(id);
       };
     }
   }, [delay]);

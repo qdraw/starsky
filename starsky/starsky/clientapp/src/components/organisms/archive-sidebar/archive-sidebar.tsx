@@ -38,11 +38,11 @@ const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo((arch
       document.body.classList.add("lock-screen");
     } else {
       document.body.classList.remove("lock-screen");
-      window.scrollTo(0, parseInt(document.body.style.top || "0") * -1);
+      globalThis.scrollTo(0, Number.parseInt(document.body.style.top || "0") * -1);
     }
     return () => {
       document.body.classList.remove("lock-screen");
-      window.scrollTo(0, parseInt(document.body.style.top || "0") * -1);
+      globalThis.scrollTo(0, Number.parseInt(document.body.style.top || "0") * -1);
     };
   }, [isSidebar]);
 
@@ -50,14 +50,14 @@ const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo((arch
    * to avoid changes in location when scrolling while the sidebar is open
    */
   const listener = () => {
-    if (!window.scrollY) return;
-    document.body.style.top = `-${window.scrollY}px`;
+    if (!globalThis.scrollY) return;
+    document.body.style.top = `-${globalThis.scrollY}px`;
   };
 
   useLayoutEffect(() => {
-    window.addEventListener("scroll", listener);
+    globalThis.addEventListener("scroll", listener);
     return () => {
-      window.removeEventListener("scroll", listener);
+      globalThis.removeEventListener("scroll", listener);
     };
   });
 

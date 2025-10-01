@@ -14,7 +14,7 @@ describe("useHotKeys", () => {
         key: "q",
         altKey: true
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
       expect(callback).toHaveBeenCalledTimes(0);
       test.componentMount.unmount();
@@ -33,7 +33,7 @@ describe("useHotKeys", () => {
         key: "q",
         altKey: true
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
       expect(callback).toHaveBeenCalledTimes(0);
       test.componentMount.unmount();
@@ -58,7 +58,7 @@ describe("useHotKeys", () => {
         key: "q",
         altKey: true
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
       expect(callback).toHaveBeenCalledTimes(0);
       test.componentMount.unmount();
@@ -82,7 +82,7 @@ describe("useHotKeys", () => {
         key: "q",
         altKey: true
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
       expect(callback).toHaveBeenCalled();
       test.componentMount.unmount();
@@ -104,7 +104,7 @@ describe("useHotKeys", () => {
         key: "q",
         ctrlKey: true
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
       expect(callback).toHaveBeenCalled();
       test.componentMount.unmount();
@@ -126,7 +126,7 @@ describe("useHotKeys", () => {
         key: "q",
         metaKey: true
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
       expect(callback).toHaveBeenCalled();
       test.componentMount.unmount();
@@ -148,7 +148,7 @@ describe("useHotKeys", () => {
         key: "q",
         shiftKey: true
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
       expect(callback).toHaveBeenCalled();
       test.componentMount.unmount();
@@ -169,7 +169,7 @@ describe("useHotKeys", () => {
         cancelable: true,
         key: "q"
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
       expect(callback).toHaveBeenCalledTimes(0);
       test.componentMount.unmount();
@@ -190,7 +190,7 @@ describe("useHotKeys", () => {
         cancelable: true,
         key: "q"
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
       expect(callback).toHaveBeenCalledTimes(0);
       test.componentMount.unmount();
@@ -212,7 +212,7 @@ describe("useHotKeys", () => {
         key: "q",
         metaKey: true
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
       expect(callback).toHaveBeenCalled();
       test.componentMount.unmount();
@@ -234,7 +234,7 @@ describe("useHotKeys", () => {
         key: "q",
         ctrlKey: true
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
       expect(callback).toHaveBeenCalled();
       test.componentMount.unmount();
@@ -258,7 +258,7 @@ describe("useHotKeys", () => {
         shiftKey: true,
         metaKey: true
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
       expect(callback).toHaveBeenCalled();
       test.componentMount.unmount();
@@ -280,7 +280,7 @@ describe("useHotKeys", () => {
         key: "q",
         shiftKey: true
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
       expect(callback).toHaveBeenCalledTimes(0);
       test.componentMount.unmount();
@@ -303,7 +303,7 @@ describe("useHotKeys", () => {
         metaKey: false,
         ctrlKey: false
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
       expect(callback).toHaveBeenCalledTimes(0);
       test.componentMount.unmount();
@@ -326,7 +326,7 @@ describe("useHotKeys", () => {
         metaKey: false,
         ctrlKey: false
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
       expect(callback).toHaveBeenCalledTimes(0);
       test.componentMount.unmount();

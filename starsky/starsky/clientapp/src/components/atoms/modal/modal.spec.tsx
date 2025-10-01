@@ -3,7 +3,7 @@ import Modal from "./modal";
 
 describe("Modal", () => {
   it("renders", () => {
-    window.scrollTo = jest.fn();
+    globalThis.scrollTo = jest.fn();
     render(
       <Modal id="test2-modal" isOpen={true} handleExit={() => {}}>
         &nbsp;
@@ -16,7 +16,7 @@ describe("Modal", () => {
       handleExit: jest.Mock;
       element: RenderResult;
     } {
-      window.scrollTo = jest.fn();
+      globalThis.scrollTo = jest.fn();
       const handleExit = jest.fn();
       const element = render(
         <Modal id="test-modal" isOpen={true} handleExit={handleExit}>
@@ -71,7 +71,7 @@ describe("Modal", () => {
   describe("Open Modal", () => {
     function renderModal2(): [jest.Mock, RenderResult] {
       const spyScrollTo = jest.fn();
-      window.scrollTo = spyScrollTo;
+      globalThis.scrollTo = spyScrollTo;
 
       const handleExit = jest.fn();
       const component = render(

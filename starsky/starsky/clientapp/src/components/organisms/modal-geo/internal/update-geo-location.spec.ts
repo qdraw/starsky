@@ -172,7 +172,7 @@ describe("updateGeoLocation", () => {
     bodyParams.append("locationCountry", AsciiNull());
     bodyParams.append("locationCountryCode", AsciiNull());
     bodyParams.append("locationState", AsciiNull());
-    const bodyParamsString = bodyParams.toString().replace(/%00/gi, AsciiNull());
+    const bodyParamsString = bodyParams.toString().replaceAll("%00", AsciiNull());
     expect(fetchPostSpy).toHaveBeenCalledWith("/starsky/api/update", bodyParamsString);
 
     expect(setErrorSpy).toHaveBeenCalledTimes(0);

@@ -54,7 +54,7 @@ describe("MenuSearch", () => {
         selected1.click();
       });
 
-      expect(window.location.search).toBe("");
+      expect(globalThis.location.search).toBe("");
 
       component.unmount();
       Router.navigate("/");

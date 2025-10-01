@@ -23,10 +23,10 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
     const formControl = screen.queryAllByTestId("form-control");
 
     // there are 3 classes [title,info,description]
-    formControl.forEach((element) => {
+    for (const element of formControl) {
       const disabled = element.classList;
       expect(disabled).toContain("disabled");
-    });
+    }
     mainElement.unmount();
   });
 
@@ -82,10 +82,10 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
       expect(formControls.length).toBeGreaterThanOrEqual(3);
 
       // there are 3 classes [title,info,description]
-      formControls.forEach((element) => {
+      for (const element of formControls) {
         const contentEditable = element.getAttribute("contentEditable");
         expect(contentEditable).toBeTruthy();
-      });
+      }
 
       act(() => {
         component.unmount();
@@ -411,7 +411,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         key: "t",
         shiftKey: true
       });
-      window.dispatchEvent(event);
+      globalThis.dispatchEvent(event);
 
       expect(keyboardSpy).toHaveBeenCalled();
 

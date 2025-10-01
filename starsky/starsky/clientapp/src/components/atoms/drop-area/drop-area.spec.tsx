@@ -32,7 +32,7 @@ describe("DropArea", () => {
     const scrollToSpy = jest.fn();
 
     beforeEach(() => {
-      window.scrollTo = scrollToSpy;
+      globalThis.scrollTo = scrollToSpy;
     });
 
     afterEach(() => {

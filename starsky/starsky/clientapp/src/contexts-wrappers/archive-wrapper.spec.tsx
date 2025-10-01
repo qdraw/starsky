@@ -154,16 +154,16 @@ describe("ArchiveContextWrapper", () => {
     beforeAll(() => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      delete window.location;
+      delete globalThis.location;
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      window.location = {
+      globalThis.location = {
         search: "/?f=/"
       };
     });
 
     afterAll((): void => {
-      window.location = location;
+      globalThis.location = location;
     });
 
     it("Check if event is received", () => {

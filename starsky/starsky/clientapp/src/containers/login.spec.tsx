@@ -177,7 +177,9 @@ describe("Login", () => {
 
     const login = render(<Login />);
 
-    expect(window.location.pathname.indexOf(new UrlQuery().UrlAccountRegisterApi())).toBeTruthy();
+    expect(
+      globalThis.location.pathname.indexOf(new UrlQuery().UrlAccountRegisterApi())
+    ).toBeTruthy();
     expect(useFetchSpy).toHaveBeenCalled();
 
     act(() => {

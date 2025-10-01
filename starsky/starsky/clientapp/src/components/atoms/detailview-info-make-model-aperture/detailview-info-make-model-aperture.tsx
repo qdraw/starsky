@@ -6,7 +6,7 @@ interface IDetailViewInfoMakeModelApertureProps {
 }
 
 function ShowISOIfExistComponent(fileIndexItemInside: Readonly<IFileIndexItem>) {
-  return <>{fileIndexItemInside.isoSpeed !== 0 ? <>ISO {fileIndexItemInside.isoSpeed}</> : null}</>;
+  return <>{fileIndexItemInside.isoSpeed === 0 ? null : <>ISO {fileIndexItemInside.isoSpeed}</>}</>;
 }
 
 const DetailViewInfoMakeModelAperture: React.FunctionComponent<IDetailViewInfoMakeModelApertureProps> =

@@ -75,14 +75,14 @@ const PanAndZoomImage = ({ src, id, alt, ...props }: IPanAndZoomImage) => {
       new OnMoveMouseTouchAction(panning, setPosition, position).touchMove(event);
     };
 
-    window.addEventListener("mouseup", mouseup);
-    window.addEventListener("mousemove", mouseMove);
-    window.addEventListener("touchmove", touchMove);
+    globalThis.addEventListener("mouseup", mouseup);
+    globalThis.addEventListener("mousemove", mouseMove);
+    globalThis.addEventListener("touchmove", touchMove);
 
     return () => {
-      window.removeEventListener("mouseup", mouseup);
-      window.removeEventListener("mousemove", mouseMove);
-      window.removeEventListener("touchmove", touchMove);
+      globalThis.removeEventListener("mouseup", mouseup);
+      globalThis.removeEventListener("mousemove", mouseMove);
+      globalThis.removeEventListener("touchmove", touchMove);
     };
   });
 
@@ -112,7 +112,7 @@ const PanAndZoomImage = ({ src, id, alt, ...props }: IPanAndZoomImage) => {
 
   let className = "pan-zoom-image-container";
   if (position.z !== 1) {
-    className = !panning ? "pan-zoom-image-container grab" : "pan-zoom-image-container is-panning";
+    className = panning ? "pan-zoom-image-container is-panning" : "pan-zoom-image-container grab";
   }
 
   return (

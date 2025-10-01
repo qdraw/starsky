@@ -47,7 +47,7 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
     new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
       props.fileHash,
       props.id,
-      window.innerWidth > 1000
+      globalThis.innerWidth > 1000
     )
   );
 
@@ -56,7 +56,7 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
       new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
         props.fileHash,
         props.id,
-        window.innerWidth > 1000
+        globalThis.innerWidth > 1000
       )
     );
   }, [props.fileHash, props.id]);
@@ -80,7 +80,7 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
           new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
             props.fileHash,
             props.id,
-            window.innerWidth > 1000
+            globalThis.innerWidth > 1000
           )
         );
         if (props.onResetCallback) props.onResetCallback();

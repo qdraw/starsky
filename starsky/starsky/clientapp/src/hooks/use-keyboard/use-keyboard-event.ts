@@ -27,9 +27,9 @@ function useKeyboardEvent(
         callback(event);
       }
     };
-    window.addEventListener("keydown", handler);
+    globalThis.addEventListener("keydown", handler);
     return () => {
-      window.removeEventListener("keydown", handler);
+      globalThis.removeEventListener("keydown", handler);
     };
     // es_lint-disable-next-line react-hooks/exhaustive-deps // https://github.com/facebook/react/pull/30774
   }, [...dependencies, regex, callback]);

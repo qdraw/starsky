@@ -9,7 +9,7 @@ describe("sidebar", () => {
     navigateSpy = jest.fn();
     setSidebarSpy = jest.fn();
     sidebar = new Sidebar(setSidebarSpy, {
-      location: window.location,
+      location: globalThis.location,
       navigate: navigateSpy
     });
   });

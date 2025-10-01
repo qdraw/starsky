@@ -11,10 +11,10 @@ describe("Controls component", () => {
 
   beforeEach(() => {
     // supress Error: Not implemented: HTMLMediaElement.prototype.pause
-    jest.spyOn(window.HTMLMediaElement.prototype, "pause").mockImplementationOnce(() => {});
+    jest.spyOn(globalThis.HTMLMediaElement.prototype, "pause").mockImplementationOnce(() => {});
 
     jest
-      .spyOn(window.HTMLMediaElement.prototype, "play")
+      .spyOn(globalThis.HTMLMediaElement.prototype, "play")
       .mockImplementationOnce(() => Promise.resolve());
 
     scrubberRef = {

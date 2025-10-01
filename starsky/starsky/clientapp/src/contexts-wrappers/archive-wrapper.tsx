@@ -91,7 +91,7 @@ function updateArchiveFromEvent(event: Event, dispatch: React.Dispatch<ArchiveAc
   const pushMessagesEvent = (event as CustomEvent<IApiNotificationResponseModel<IFileIndexItem[]>>)
     .detail;
   // useLocation, state or archive is here always the default value
-  const parentLocationPath = new URLPath().StringToIUrl(window.location.search).f;
+  const parentLocationPath = new URLPath().StringToIUrl(globalThis.location.search).f;
 
   dispatchEmptyFolder(pushMessagesEvent.data, parentLocationPath, dispatch);
 

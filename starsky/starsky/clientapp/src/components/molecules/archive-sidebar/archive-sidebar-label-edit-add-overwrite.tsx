@@ -84,9 +84,11 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
 
     update.append = append;
     update.collections =
-      state.pageType !== PageType.Search
-        ? new URLPath().StringToIUrl(history.location.search).collections !== false
-        : false;
+      state.pageType === PageType.Search
+        ? false
+        : new URLPath().StringToIUrl(history.location.search).collections === false
+          ? false
+          : true;
 
     const bodyParams = new URLPath().ObjectToSearchParams(update);
     if (bodyParams.toString().length === 0) return;

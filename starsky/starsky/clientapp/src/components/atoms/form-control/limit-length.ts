@@ -60,7 +60,7 @@ export class LimitLength {
 
     if (
       elementLength < this.maxlength ||
-      window.getSelection()?.type === "Range" ||
+      globalThis.getSelection()?.type === "Range" ||
       (element.key === "x" && element.ctrlKey) ||
       (element.key === "x" && element.metaKey) ||
       !anyKeyRegex.exec(element.key)

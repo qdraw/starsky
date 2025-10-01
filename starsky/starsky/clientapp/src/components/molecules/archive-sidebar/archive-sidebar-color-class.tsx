@@ -39,9 +39,11 @@ const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClas
     return (
       <ColorClassSelect
         collections={
-          props.pageType !== PageType.Search
-            ? new URLPath().StringToIUrl(history.location.search).collections !== false
-            : false
+          props.pageType === PageType.Search
+            ? false
+            : new URLPath().StringToIUrl(history.location.search).collections === false
+              ? false
+              : true
         }
         onToggle={(colorclass) => {
           dispatch({ type: "update", colorclass, select });

@@ -263,29 +263,29 @@ describe("url-query", () => {
     beforeAll(() => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      delete window.location;
+      delete globalThis.location;
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      window.location = {
+      globalThis.location = {
         href: ""
       };
     });
 
     afterAll((): void => {
-      window.location = location;
+      globalThis.location = location;
     });
 
     it("default secure context", () => {
-      window.location.protocol = "https:";
-      window.location.host = "google.com";
+      globalThis.location.protocol = "https:";
+      globalThis.location.host = "google.com";
       const url = urlQuery.UrlRealtime();
       expect(url).toBe("wss://google.com/starsky/realtime");
       expect(url).toContain("realtime");
     });
 
     it("default non-secure context", () => {
-      window.location.protocol = "http:";
-      window.location.host = "localhost:7382";
+      globalThis.location.protocol = "http:";
+      globalThis.location.host = "localhost:7382";
       const url = new UrlQuery().UrlRealtime();
       expect(url).toBe("ws://localhost:7382/starsky/realtime");
       expect(url).toContain("realtime");

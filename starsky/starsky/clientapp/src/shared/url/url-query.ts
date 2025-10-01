@@ -444,8 +444,8 @@ export class UrlQuery {
   }
 
   public UrlRealtime(): string {
-    let url = window.location.protocol === "https:" ? "wss:" : "ws:";
-    url += "//" + window.location.host + this.prefix + "/realtime";
+    let url = globalThis.location.protocol === "https:" ? "wss:" : "ws:";
+    url += "//" + globalThis.location.host + this.prefix + "/realtime";
     return url;
   }
 
@@ -454,7 +454,7 @@ export class UrlQuery {
   }
 
   private urlReplacePath(input: string): string {
-    const output = input.replace("#", "");
-    return output.replace(/\+/gi, "%2B");
+    const output = input.replaceAll("#", "");
+    return output.replaceAll("+", "%2B");
   }
 }

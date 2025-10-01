@@ -34,12 +34,12 @@ describe("ApplicationException", () => {
     const { location } = window;
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    delete window.location;
+    delete globalThis.location;
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    window.location = { reload: jest.fn() };
+    globalThis.location = { reload: jest.fn() };
 
-    const reloadSpy = jest.spyOn(window.location, "reload").mockReturnValue();
+    const reloadSpy = jest.spyOn(globalThis.location, "reload").mockReturnValue();
 
     jest.spyOn(MenuDefault, "default").mockImplementationOnce(() => {
       return <></>;
@@ -47,7 +47,7 @@ describe("ApplicationException", () => {
 
     const component = render(<ApplicationException />);
 
-    expect(window.location.reload).not.toHaveBeenCalled();
+    expect(globalThis.location.reload).not.toHaveBeenCalled();
 
     const reload = screen.queryByTestId("reload") as HTMLButtonElement;
 
@@ -56,7 +56,7 @@ describe("ApplicationException", () => {
     expect(reloadSpy).toHaveBeenCalledTimes(1);
 
     // restore window object
-    window.location = location;
+    globalThis.location = location;
 
     component.unmount();
   });

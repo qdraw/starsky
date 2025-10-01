@@ -1154,7 +1154,7 @@ describe("MenuArchive", () => {
       });
 
       // you did press to de-select all
-      expect(window.location.search).toBe("?select=");
+      expect(globalThis.location.search).toBe("?select=");
 
       // cleanup
       act(() => {
@@ -1213,7 +1213,7 @@ describe("MenuArchive", () => {
         undoSelection?.click();
       });
 
-      expect(window.location.search).toBe("?select=");
+      expect(globalThis.location.search).toBe("?select=");
 
       // cleanup
       act(() => {

@@ -10,7 +10,7 @@ export class URLPath {
 
   private parsePagination(key: [string, string], urlObject: IUrl) {
     const pagination = Number(key[1]);
-    if (isNaN(pagination)) return;
+    if (Number.isNaN(pagination)) return;
     urlObject.p = pagination;
   }
 
@@ -85,11 +85,11 @@ export class URLPath {
    */
   private stringToNumberArray(colorClassText: string): number[] {
     let colorClassArray: Array<number> = [];
-    if (colorClassText && !isNaN(Number(colorClassText))) {
+    if (colorClassText && !Number.isNaN(Number(colorClassText))) {
       colorClassArray = [Number(colorClassText)];
     } else if (colorClassText.indexOf(",") >= 1) {
       colorClassText.split(",").forEach((element) => {
-        if (!isNaN(Number(element))) {
+        if (!Number.isNaN(Number(element))) {
           colorClassArray.push(Number(element));
         }
       });
@@ -107,13 +107,13 @@ export class URLPath {
       params.set(key[0], key[1]);
     }
     let url = this.AddPrefixUrl(params.toString());
-    url = url.replace(/\+/gi, " ").replace(/%2F/gi, "/").replace(/%2C/gi, ",");
+    url = url.replaceAll("+", " ").replaceAll("%2F", "/").replaceAll("%2C", ",");
     return url;
   }
 
   public encodeURI(url: string): string {
     url = encodeURI(url);
-    url = url.replace(/\+/gi, "%2B");
+    url = url.replaceAll("+", "%2B");
     return url;
   }
 
@@ -136,8 +136,8 @@ export class URLPath {
 
   public RemovePrefixUrl(input: string): string {
     if (!input) return "";
-    const output = input.replace(/^#?(\/)?/gi, "");
-    return output.replace(/\+/gi, "%2B");
+    const output = input.replaceAll(/^#?(\/)?/gi, "");
+    return output.replaceAll(/\+/gi, "%2B");
   }
 
   /**
@@ -198,7 +198,7 @@ export class URLPath {
     const search = new URLSearchParams(hash);
     const getFilePath = search.get("f");
     if (!getFilePath) return "/";
-    return getFilePath.replace(/\/$/, "");
+    return getFilePath.replaceAll(/\/$/g, "");
   }
 
   /**

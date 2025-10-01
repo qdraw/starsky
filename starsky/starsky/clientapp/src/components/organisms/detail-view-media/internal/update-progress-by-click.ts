@@ -8,7 +8,7 @@ export function UpdateProgressByClick(
 
   const mousePosition = GetMousePosition(event);
 
-  const result = !isNaN(mousePosition) ? mousePosition * videoRef.current.duration : 0;
+  const result = !Number.isNaN(mousePosition) ? mousePosition * videoRef.current.duration : 0;
 
   videoRef.current.currentTime = result;
 }

@@ -136,7 +136,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
           }}
         >
           <video playsInline={true} ref={videoRef} controls={false} preload="metadata">
-            <track kind="captions" src={downloadPhotoApi.replace("mp4", "srt")} />
+            <track kind="captions" src={downloadPhotoApi.replaceAll("mp4", "srt")} />
             <source src={downloadPhotoApi} type="video/mp4" />
           </video>
           <Controls

@@ -98,7 +98,7 @@ describe("ArchiveSidebar", () => {
       );
 
       Object.defineProperty(window, "scrollY", { value: 1 });
-      window.dispatchEvent(new Event("scroll"));
+      globalThis.dispatchEvent(new Event("scroll"));
 
       expect(document.body.style.top).toBe("-1px");
 
@@ -118,7 +118,7 @@ describe("ArchiveSidebar", () => {
         />
       );
 
-      window.dispatchEvent(new Event("scroll"));
+      globalThis.dispatchEvent(new Event("scroll"));
       expect(document.body.style.top).toBe("");
     });
   });

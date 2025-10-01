@@ -36,7 +36,7 @@ function ifModalOpenHandleExit(
   handleExit: () => void
 ) {
   const target = event.target as HTMLElement;
-  if (target.className.indexOf(ModalOpenClassName) === -1) return;
+  if (!target.className.includes(ModalOpenClassName)) return;
   handleExit();
 }
 

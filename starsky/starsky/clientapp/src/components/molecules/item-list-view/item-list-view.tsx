@@ -39,7 +39,7 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
       const elementList = document.querySelectorAll(dataTagQuery);
       if (elementList.length !== 1) return;
 
-      window.scrollTo({
+      globalThis.scrollTo({
         top: elementList[0] ? (elementList[0] as HTMLDivElement).offsetTop : 0
       });
 

@@ -89,7 +89,7 @@ describe("HealthCheckForUpdates", () => {
 
       if (!item) throw new Error("item should not be null in test");
 
-      expect(parseInt(item) > 1604424674178).toBeTruthy(); // 3 nov '20
+      expect(Number.parseInt(item) > 1604424674178).toBeTruthy(); // 3 nov '20
 
       localStorage.removeItem(CheckForUpdatesLocalStorageName);
     });

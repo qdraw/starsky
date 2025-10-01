@@ -74,7 +74,7 @@ function updateDetailViewFromEvent(event: Event, dispatch: React.Dispatch<Detail
   const pushMessages = (event as CustomEvent<IApiNotificationResponseModel<IFileIndexItem[]>>)
     .detail;
   // useLocation, state or detailView is here always the default value
-  const locationPath = new URLPath().StringToIUrl(window.location.search).f;
+  const locationPath = new URLPath().StringToIUrl(globalThis.location.search).f;
 
   for (const pushMessage of pushMessages.data) {
     // only update the state of the current view
