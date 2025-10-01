@@ -78,11 +78,11 @@ const MenuOptionDesktopEditorOpenSingle: React.FunctionComponent<IMenuOptionDesk
 
     return (
       <>
-        {isError !== "" ? (
+        {isError === "" ? null : (
           <Notification callback={() => setIsError("")} type={NotificationType.danger}>
             {isError}
           </Notification>
-        ) : null}
+        )}
 
         {dataFeatures?.openEditorEnabled === true ? (
           <MenuOption

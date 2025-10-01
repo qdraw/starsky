@@ -103,7 +103,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
     FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams.toString())
       .then((anyData) => {
         const result = new CastToInterface().InfoFileIndexArray(anyData.data);
-        result.forEach((element) => {
+        for (const element of result) {
           if (element.status === IExifStatus.ReadOnly) setIsError(MessageWriteErrorReadOnly);
           if (element.status === IExifStatus.NotFoundSourceMissing)
             setIsError(MessageErrorNotFoundSourceMissingRunSync);
@@ -114,7 +114,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
               select: [element.fileName]
             });
           }
-        });
+        }
 
         // loading + update button
         setIsLoading(false);
@@ -149,11 +149,11 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
   // noinspection HtmlUnknownAttribute
   return (
     <>
-      {isError !== "" ? (
+      {isError === "" ? null : (
         <Notification callback={() => setIsError("")} type={NotificationType.danger}>
           {isError}
         </Notification>
-      ) : null}
+      )}
 
       {isLoading ? <Preloader isWhite={false} isOverlay={false} /> : ""}
 

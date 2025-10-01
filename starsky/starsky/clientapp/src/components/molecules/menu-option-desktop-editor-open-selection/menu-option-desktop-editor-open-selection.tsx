@@ -134,11 +134,11 @@ const MenuOptionDesktopEditorOpenSelection: React.FunctionComponent<IMenuOptionD
           />
         ) : null}
 
-        {isError !== "" ? (
+        {isError === "" ? null : (
           <Notification callback={() => setIsError("")} type={NotificationType.danger}>
             {isError}
           </Notification>
-        ) : null}
+        )}
 
         {select.length >= 1 && dataFeatures?.openEditorEnabled === true ? (
           <MenuOption

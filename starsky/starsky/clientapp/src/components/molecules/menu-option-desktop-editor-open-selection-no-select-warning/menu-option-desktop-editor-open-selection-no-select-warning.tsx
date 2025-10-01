@@ -41,11 +41,11 @@ const MenuOptionDesktopEditorOpenSelectionNoSelectWarning: FunctionComponent<IMe
 
     return (
       <>
-        {isError !== "" ? (
-          <Notification callback={() => setIsError("")} type={NotificationType.default}>
+        {isError === "" ? null : (
+          <Notification callback={() => setIsError("")} type={NotificationType.danger}>
             {isError}
           </Notification>
-        ) : null}
+        )}
       </>
     );
   });
