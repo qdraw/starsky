@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using starsky.foundation.platform.Attributes;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Helpers.Slug;
 using starsky.foundation.platform.JsonConverter;
 using TimeZoneConverter;
 

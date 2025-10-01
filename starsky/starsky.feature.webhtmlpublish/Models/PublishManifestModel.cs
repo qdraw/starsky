@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
-using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Helpers.Slug;
 
 namespace starsky.feature.webhtmlpublish.Models;
 

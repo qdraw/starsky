@@ -9,6 +9,7 @@ using starsky.feature.metaupdate.Interfaces;
 using starsky.feature.webhtmlpublish.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Helpers.Slug;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
@@ -139,7 +140,7 @@ public sealed class PublishController : Controller
 		{
 			return BadRequest("Model invalid");
 		}
-		
+
 		return Json(CheckIfNameExist(GenerateSlugHelper.GenerateSlug(itemName)));
 	}
 
