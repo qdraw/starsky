@@ -12,6 +12,17 @@ interface IRelativeLink {
 }
 
 /**
+ * when in select mode and navigate next to the select mode is still on but there are no items selected
+ */
+function resetSelect(urlObjectLocal: IUrl): IUrl {
+  if (!urlObjectLocal.select || urlObjectLocal.select?.length === 0) {
+    return urlObjectLocal;
+  }
+  urlObjectLocal.select = [];
+  return urlObjectLocal;
+}
+
+/**
  * Next prev for search pages
  */
 const SearchPagination: React.FunctionComponent<IRelativeLink> = memo((props) => {
@@ -73,17 +84,6 @@ const SearchPagination: React.FunctionComponent<IRelativeLink> = memo((props) =>
         {MessageNext}
       </Link>
     );
-  }
-
-  /**
-   * when in select mode and navigate next to the select mode is still on but there are no items selected
-   */
-  function resetSelect(urlObjectLocal: IUrl): IUrl {
-    if (!urlObjectLocal.select || urlObjectLocal.select?.length === 0) {
-      return urlObjectLocal;
-    }
-    urlObjectLocal.select = [];
-    return urlObjectLocal;
   }
 
   return (

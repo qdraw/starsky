@@ -328,10 +328,10 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
                 item
               )}
               key={item}
-              className={index !== 1 ? "box" : "box box--child"}
+              className={index === 1 ? "box box--child" : "box"}
               data-test="collections"
             >
-              {index !== 1 ? <div className="icon icon--photo" /> : null}
+              {index === 1 ? null : <div className="icon icon--photo" />}
               <b>{new URLPath().getChild(item)}</b>
               <p>
                 {index === 1 ? <>In een collectie:</> : null} {index + 1} van {collections.length}.

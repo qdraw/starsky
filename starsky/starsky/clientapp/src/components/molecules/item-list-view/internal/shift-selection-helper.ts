@@ -11,7 +11,7 @@ import { URLPath } from "../../../../shared/url/url-path";
 function closest(_array: number[], _number: number): number {
   const diffArr = _array.map((x) => Math.abs(_number - x));
   const minNumber = Math.min(...diffArr);
-  return diffArr.findIndex((x) => x === minNumber);
+  return diffArr.indexOf(minNumber);
 }
 
 /**

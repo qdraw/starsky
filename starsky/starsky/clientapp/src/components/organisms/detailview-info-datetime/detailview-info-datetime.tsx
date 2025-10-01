@@ -66,13 +66,12 @@ const DetailViewInfoDateTime: React.FunctionComponent<IDetailViewInfoDateTimePro
               <b>{parseDate(fileIndexItem.dateTime, settings.language)}</b>
               <p>{parseTime(fileIndexItem.dateTime)}</p>
             </>
-          ) : null}
-          {!isValidDate(fileIndexItem.dateTime) ? (
+          ) : (
             <>
               <b>{MessageCreationDate}</b>
               <p>{MessageCreationDateIsAtUnknownTime}</p>
             </>
-          ) : null}
+          )}
         </button>
       </>
     );

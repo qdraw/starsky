@@ -11,7 +11,7 @@ export function GetFilterUrlColorClass(
 
   urlObject.colorClass ??= [];
 
-  if (!urlObject.colorClass || urlObject.colorClass.indexOf(item) === -1) {
+  if (!urlObject.colorClass || !urlObject.colorClass.includes(item)) {
     urlObject.colorClass.push(item);
   } else {
     const index = urlObject.colorClass.indexOf(item);

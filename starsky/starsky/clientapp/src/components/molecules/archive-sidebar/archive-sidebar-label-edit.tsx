@@ -32,8 +32,11 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent = () => {
         rightLabel={MessageSearchAndReplaceName}
         onToggle={(value) => setReplaceMode(value)}
       />
-      {!replaceMode ? <ArchiveSidebarLabelEditAddOverwrite /> : null}
-      {replaceMode ? <ArchiveSidebarLabelEditSearchReplace /> : null}
+      {replaceMode ? (
+        <ArchiveSidebarLabelEditSearchReplace />
+      ) : (
+        <ArchiveSidebarLabelEditAddOverwrite />
+      )}
     </div>
   );
 };

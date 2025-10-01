@@ -15,14 +15,14 @@ export const MenuOptionSelectionAll: React.FunctionComponent<IMenuOptionUndoSele
 }) => {
   return (
     <>
-      {select.length !== state?.fileIndexItems?.length ? (
+      {select.length === state?.fileIndexItems?.length ? null : (
         <MenuOption
           isReadOnly={false}
           testName="select-all"
           localization={localization.MessageSelectAll}
           onClickKeydown={() => allSelection()}
         />
-      ) : null}
+      )}
     </>
   );
 };

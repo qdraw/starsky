@@ -104,7 +104,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
         </Notification>
       ) : null}
 
-      {!isError ? (
+      {isError ? null : (
         <figure
           data-test="video"
           className={GetVideoClassName(paused, started)}
@@ -151,7 +151,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
             timeRef={timeRef}
           />
         </figure>
-      ) : null}
+      )}
     </>
   );
 });

@@ -117,13 +117,13 @@ const MenuArchive: React.FunctionComponent = memo(() => {
       ) : null}
 
       {/* Upload drop Area */}
-      {dropAreaUploadFilesList.length !== 0 ? (
+      {dropAreaUploadFilesList.length > 0 && (
         <ModalDropAreaFilesAdded
           handleExit={() => setDropAreaUploadFilesList(newIFileIndexItemArray())}
           uploadFilesList={dropAreaUploadFilesList}
-          isOpen={dropAreaUploadFilesList.length !== 0}
+          isOpen={dropAreaUploadFilesList.length > 0}
         />
-      ) : null}
+      )}
 
       <ModalPublishToggleWrapper
         select={select}
