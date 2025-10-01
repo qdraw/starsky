@@ -72,9 +72,9 @@ export class URLPath {
     if (colorClassText && colorClassText.indexOf(",") === -1) {
       colorClassArray = [colorClassText];
     } else if (colorClassText.indexOf(",") >= 1) {
-      colorClassText.split(",").forEach((element) => {
+      for (const element of colorClassText.split(",")) {
         colorClassArray.push(element);
-      });
+      }
     }
     return colorClassArray;
   }
@@ -88,11 +88,11 @@ export class URLPath {
     if (colorClassText && !Number.isNaN(Number(colorClassText))) {
       colorClassArray = [Number(colorClassText)];
     } else if (colorClassText.indexOf(",") >= 1) {
-      colorClassText.split(",").forEach((element) => {
+      for (const element of colorClassText.split(",")) {
         if (!Number.isNaN(Number(element))) {
           colorClassArray.push(Number(element));
         }
-      });
+      }
     }
     return colorClassArray;
   }
@@ -240,13 +240,13 @@ export class URLPath {
     const subPaths: string[] = [];
     if (select === undefined || parent === undefined) return subPaths;
 
-    select.forEach((item) => {
+    for (const item of select) {
       if (parent === "/") {
         subPaths.push("/" + item);
       } else {
         subPaths.push(parent + "/" + item);
       }
-    });
+    }
     return subPaths;
   }
 
@@ -257,12 +257,12 @@ export class URLPath {
    * @param fileIndexItems the current folder
    */
   public GetAllSelection(select: string[], fileIndexItems: IFileIndexItem[]): string[] {
-    fileIndexItems.forEach((fileIndexItem) => {
+    for (const fileIndexItem of fileIndexItems) {
       const include = select.includes(fileIndexItem.fileName);
       if (!include) {
         select.push(fileIndexItem.fileName);
       }
-    });
+    }
     return select;
   }
 
@@ -274,12 +274,12 @@ export class URLPath {
   public MergeSelectFileIndexItem(select: string[], fileIndexItems: IFileIndexItem[]): string[] {
     const subPaths: string[] = [];
 
-    fileIndexItems.forEach((item) => {
+    for (const item of fileIndexItems) {
       if (item.fileName && select.indexOf(item.fileName) >= 0) {
         if (item.parentDirectory === "/") item.parentDirectory = ""; // no double slash in front of path
         subPaths.push(item.parentDirectory + new URLPath().StartOnSlash(item.fileName));
       }
-    });
+    }
     return subPaths;
   }
 

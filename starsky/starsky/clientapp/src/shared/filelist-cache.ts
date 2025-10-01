@@ -21,11 +21,11 @@ export class FileListCache {
    * @param path path
    */
   public CacheCleanByPath(path: string) {
-    this.GetAll().forEach((item) => {
+    for (const item of this.GetAll()) {
       if (item.name.includes(`f:${path}`)) {
         sessionStorage.removeItem(item.name);
       }
-    });
+    }
   }
 
   /**
@@ -87,7 +87,8 @@ export class FileListCache {
       return;
     }
 
-    parentItem.fileIndexItems.forEach((item, index) => {
+    for (let index = 0; index < parentItem.fileIndexItems.length; index++) {
+      const item = parentItem.fileIndexItems[index];
       if (!urlObject.collections) {
         if (item?.fileName === detailview.fileIndexItem.fileName) {
           parentItem.fileIndexItems[index] = detailview.fileIndexItem;
@@ -98,7 +99,7 @@ export class FileListCache {
           parentItem.fileIndexItems[index] = detailview.fileIndexItem;
         }
       }
-    });
+    }
     this.CacheSetObjectWithoutParent(
       { ...urlObject, f: detailview.fileIndexItem.parentDirectory },
       parentItem
@@ -167,20 +168,20 @@ export class FileListCache {
    * And clean the old ones
    */
   public CacheCleanOld(): void {
-    this.GetAll().forEach((item) => {
+    for (const item of this.GetAll()) {
       if (DifferenceInDate(item.item.dateCache) > this.timeoutInMinutes) {
         sessionStorage.removeItem(item.name);
       }
-    });
+    }
   }
 
   /**
    * And clean All Items
    */
   public CacheCleanEverything(): void {
-    this.GetAll().forEach((item) => {
+    for (const item of this.GetAll()) {
       sessionStorage.removeItem(item.name);
-    });
+    }
   }
 
   /**

@@ -32,10 +32,10 @@ const HealthStatusError: React.FunctionComponent = () => {
       <li key="backend-services">BackendServices HTTP StatusCode: {healthCheck.statusCode}</li>
     );
   } else {
-    healthCheckData.entries.forEach((entry: IHealthEntry) => {
-      if (entry.isHealthy) return;
+    for (const entry of healthCheckData.entries) {
+      if (entry.isHealthy) continue;
       content.push(<li key={entry.name}> {entry.name}</li>);
-    });
+    }
   }
 
   return <Notification type={NotificationType.danger}>{content}</Notification>;

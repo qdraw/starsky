@@ -129,7 +129,8 @@ function updateArchiveReducerHelper(
 }
 
 function updateArchiveReducer(state: IArchiveProps, update: IUpdateArchiveReducer) {
-  state.fileIndexItems.forEach((item, index) => {
+  for (let index = 0; index < state.fileIndexItems.length; index++) {
+    const item = state.fileIndexItems[index];
     if (update.select.indexOf(item.fileName) !== -1) {
       if (update.append) {
         updateArchiveReducerTagsDescriptionTitleAppend(index, state, update);
@@ -144,7 +145,7 @@ function updateArchiveReducer(state: IArchiveProps, update: IUpdateArchiveReduce
       }
       state.fileIndexItems[index].lastEdited = new Date().toISOString();
     }
-  });
+  }
 
   // Need to update otherwise other events are not triggered
   return updateCache({ ...state, lastUpdated: new Date() });
@@ -268,13 +269,13 @@ function removeReducer(
   let deletedFilesCount = 0;
   const afterFileIndexItems: IFileIndexItem[] = [];
 
-  state.fileIndexItems.forEach((item) => {
+  for (const item of state.fileIndexItems) {
     if (toRemoveFileList.indexOf(item.filePath) === -1) {
       afterFileIndexItems.push(item);
     } else {
       deletedFilesCount++;
     }
-  });
+  }
 
   // to update the total results
   const collectionsCount = state.collectionsCount - deletedFilesCount;
@@ -370,7 +371,7 @@ function CollectionsSortOnImageFormat(
 ): IFileIndexItem[] {
   if (!collections) return concatenatedFileIndexItems;
 
-  concatenatedFileIndexItems.forEach((item) => {
+  for (const item of concatenatedFileIndexItems) {
     const collectionsItems = concatenatedFileIndexItems.filter(
       (x) =>
         x.fileCollectionName === item.fileCollectionName &&
@@ -380,10 +381,10 @@ function CollectionsSortOnImageFormat(
     concatenatedFileIndexItems = concatenatedFileIndexItems.filter(
       (p) => !sortedCollectionsItems.includes(p)
     );
-    sortedCollectionsItems.forEach((element) => {
+    for (const element of sortedCollectionsItems) {
       concatenatedFileIndexItems.push(element);
-    });
-  });
+    }
+  }
   return concatenatedFileIndexItems;
 }
 
@@ -408,14 +409,14 @@ function UpdateColorClassUsageActiveList(state: IArchiveProps, colorclass: numbe
   // checks the list of multiple colorclass items that can be selected and removes the ones without
   // only useful when there are no colorclass items selected
 
-  state.colorClassUsage.forEach((usage) => {
+  for (const usage of state.colorClassUsage) {
     const existLambda = (element: IFileIndexItem) => element.colorClass === usage;
     // some is not working in context of jest
     if (!state.fileIndexItems.some(existLambda).valueOf()) {
       const indexer = state.colorClassUsage.indexOf(usage);
       state.colorClassUsage.splice(indexer, 1);
     }
-  });
+  }
 
   // to trigger useEffects
   state.colorClassUsage = [...state.colorClassUsage];

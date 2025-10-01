@@ -45,15 +45,15 @@ export async function UpdateDefaultEditorPhotos(
     defaultDesktopEditor[index] = defaultEditorApplication;
   }
 
-  defaultDesktopEditor.forEach((editorApp, index) => {
-    defaultEditorApplication.imageFormats.forEach((imageFormat, idx) => {
+  for (const [index, editorApp] of defaultDesktopEditor.entries()) {
+    for (const [idx, imageFormat] of defaultEditorApplication.imageFormats.entries()) {
       bodyParams.append(
         `DefaultDesktopEditor[${index}].ImageFormats[${idx}]`,
         imageFormat.toString()
       );
-    });
+    }
     bodyParams.append(`DefaultDesktopEditor[${index}].ApplicationPath`, editorApp.applicationPath);
-  });
+  }
 
   const result = await FetchPost(new UrlQuery().UrlApiAppSettings(), bodyParams.toString());
   if (result.statusCode != 200) {

@@ -23,19 +23,19 @@ describe("ArchiveSidebarLabelEdit", () => {
     const item = screen.queryByTestId("switch-button-right") as HTMLElement;
 
     let formControls = screen.queryAllByRole("form-control");
-    formControls.forEach((element) => {
+    for (const element of formControls) {
       // Not Contain
       expect(element).not.toContain("replace-");
-    });
+    }
 
     act(() => {
       item.click();
     });
 
     formControls = screen.queryAllByRole("form-control");
-    formControls.forEach((element) => {
+    for (const element of formControls) {
       expect(element).toContain("replace-");
-    });
+    }
 
     component.unmount();
   });
