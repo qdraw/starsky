@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import L, { LatLng } from "leaflet";
+import { act } from "react";
 import * as Modal from "../../atoms/modal/modal";
 import { AddDefaultClickSetMarker } from "./internal/add-default-click-set-marker";
 import * as AddDefaultMarker from "./internal/add-default-marker";
@@ -9,7 +10,6 @@ import { RealtimeMapUpdate } from "./internal/realtime-map-update";
 import * as UpdateButtonWrapper from "./internal/update-button-wrapper";
 import * as updateGeoLocation from "./internal/update-geo-location";
 import ModalGeo, { ILatLong } from "./modal-geo";
-import { act } from "react";
 
 describe("ModalGeo", () => {
   beforeEach(() => {
@@ -169,7 +169,7 @@ describe("ModalGeo", () => {
       const updateSpy = jest
         .spyOn(updateGeoLocation, "UpdateGeoLocation")
         .mockImplementationOnce(() => {
-          return Promise.resolve(null);
+          return null!;
         });
       const handleExitSpy = jest.fn();
       const modal = render(
