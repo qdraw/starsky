@@ -111,7 +111,7 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo((props) 
   return (
     <div className={classNameContainer}>
       {isLoading ? <Preloader isWhite={false} isOverlay={true} /> : null}
-      {props.colorClassActiveList.length !== 0 ? resetButton : resetButtonDisabled}
+      {props.colorClassActiveList.length === 0 ? resetButtonDisabled : resetButton}
       {colorClassUsage.map((item) =>
         item >= 0 && item <= 8 ? (
           <Link
@@ -120,7 +120,7 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo((props) 
             to={GetFilterUrlColorClass(item, history.location.search, state)}
             data-test={"color-class-filter-" + item}
             className={
-              props.colorClassActiveList.indexOf(item) >= 0
+              props.colorClassActiveList.includes(item)
                 ? "btn btn--default colorclass colorclass--" + item + " active"
                 : "btn colorclass colorclass--" + item
             }

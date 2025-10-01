@@ -10,7 +10,7 @@ export function TimeUpdate(
   if (!videoRef.current || !progressRef.current || !scrubberRef.current || !timeRef.current) return;
 
   // For mobile browsers, ensure that the progress element's max attribute is set
-  if (!progressRef.current.getAttribute("max") && !isNaN(videoRef.current.duration)) {
+  if (!progressRef.current.getAttribute("max") && !Number.isNaN(videoRef.current.duration)) {
     progressRef.current.setAttribute("max", videoRef.current.duration.toString());
   }
 

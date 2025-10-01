@@ -50,7 +50,7 @@ const ItemTextListView: FunctionComponent<ItemListProps> = (props) => {
                 {item.fileName}
               </button>
             ) : null}
-            {!item.isDirectory ? item.fileName : null}
+            {item.isDirectory ? null : item.fileName}
             {item.status !== IExifStatus.Ok &&
             item.status !== IExifStatus.Default &&
             item.status !== IExifStatus.OkAndSame &&

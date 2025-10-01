@@ -80,11 +80,11 @@ const DetailViewGpx: React.FC = () => {
     });
 
     const firstTrack = tracks[0];
-    const lastTrack = tracks[tracks.length - 1];
+    const lastTrack = tracks.at(-1);
 
     L.marker(tracks[0], { title: "gpx", icon: blueIcon }).addTo(map);
 
-    if (new Geo().Distance(firstTrack, lastTrack) >= 500) {
+    if (lastTrack && new Geo().Distance(firstTrack, lastTrack) >= 500) {
       L.marker(lastTrack, { icon: blueIcon }).addTo(map);
     }
 

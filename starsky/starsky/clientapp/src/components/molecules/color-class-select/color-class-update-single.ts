@@ -57,12 +57,7 @@ export class ColorClassUpdateSingle {
     FetchPost(updateApiUrl, bodyParams.toString()).then((anyData) => {
       const result = new CastToInterface().InfoFileIndexArray(anyData.data);
       this.setIsLoading(false);
-      if (
-        !result ||
-        result.find((item) => {
-          return item.status === IExifStatus.ReadOnly;
-        })
-      ) {
+      if (!result || result.some((item) => item.status === IExifStatus.ReadOnly)) {
         this.setIsError(this.getMessageWriteErrorReadOnly());
         return;
       }

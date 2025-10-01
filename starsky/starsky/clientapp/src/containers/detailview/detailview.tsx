@@ -228,7 +228,7 @@ const DetailView: FC<IDetailView> = () => {
               : "main main--" + state.fileIndexItem.imageFormat
           }
         >
-          {!isError && state.fileIndexItem.fileHash ? (
+          {isError && !state.fileIndexItem.fileHash ? null : (
             <FileHashImage
               setError={setIsError}
               alt={state.fileIndexItem.title + " " + state.fileIndexItem.tags}
@@ -243,7 +243,7 @@ const DetailView: FC<IDetailView> = () => {
                 setIsUseGestures(true);
               }}
             />
-          ) : null}
+          )}
 
           {relativeObjects.nextFilePath ? (
             <button

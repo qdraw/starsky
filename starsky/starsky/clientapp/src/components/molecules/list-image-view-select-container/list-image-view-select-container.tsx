@@ -74,12 +74,12 @@ const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> = mem
               }
             }}
             className={
-              select.indexOf(item.fileName) === -1
-                ? "box-content colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory
-                : "box-content box-content--selected colorclass--" +
+              select.includes(item.fileName)
+                ? "box-content box-content--selected colorclass--" +
                   item.colorClass +
                   " isDirectory-" +
                   item.isDirectory
+                : "box-content colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory
             }
           >
             {children}

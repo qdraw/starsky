@@ -3,7 +3,6 @@ import { ArchiveContext } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location/use-location";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
-import { PageType } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { ISidebarGenericUpdate, ISidebarUpdate } from "../../../interfaces/ISidebarUpdate";
@@ -81,9 +80,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
     bodyParams.append("f", selectPaths);
     bodyParams.append(
       "collections",
-      state.pageType !== PageType.Search
-        ? (new URLPath().StringToIUrl(history.location.search).collections !== false).toString()
-        : "false"
+      new URLPath().IsCollections(state.pageType, history.location.search) ? "true" : "false"
     );
     return bodyParams;
   }

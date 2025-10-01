@@ -11,11 +11,11 @@ export function GetFilterUrlColorClass(
 
   urlObject.colorClass ??= [];
 
-  if (!urlObject.colorClass || urlObject.colorClass.indexOf(item) === -1) {
-    urlObject.colorClass.push(item);
-  } else {
+  if (urlObject.colorClass?.includes(item)) {
     const index = urlObject.colorClass.indexOf(item);
     if (index !== -1) urlObject.colorClass.splice(index, 1);
+  } else {
+    urlObject.colorClass.push(item);
   }
 
   if (urlObject.select)

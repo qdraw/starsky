@@ -27,15 +27,15 @@ const HealthStatusError: React.FunctionComponent = () => {
 
   const healthCheckData = healthCheck.data as { entries: IHealthEntry[] };
 
-  if (!healthCheckData?.entries) {
-    content.push(
-      <li key="backend-services">BackendServices HTTP StatusCode: {healthCheck.statusCode}</li>
-    );
-  } else {
+  if (healthCheckData?.entries) {
     for (const entry of healthCheckData.entries) {
       if (entry.isHealthy) continue;
       content.push(<li key={entry.name}> {entry.name}</li>);
     }
+  } else {
+    content.push(
+      <li key="backend-services">BackendServices HTTP StatusCode: {healthCheck.statusCode}</li>
+    );
   }
 
   return <Notification type={NotificationType.danger}>{content}</Notification>;

@@ -63,11 +63,11 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
 
     const isValidFileName = new FileExtensions().IsValidDirectoryName(fieldValue);
 
-    if (!isValidFileName) {
+    if (isValidFileName) {
+      setError(null);
+    } else {
       setError(MessageNonValidDirectoryName);
       setButtonState(false);
-    } else {
-      setError(null);
     }
   }
 
@@ -86,7 +86,7 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
 
     if (result.statusCode !== 200) {
       setError(
-        result.statusCode !== 409 ? MessageGeneralMkdirCreateError : MessageDirectoryExistError
+        result.statusCode === 409 ? MessageDirectoryExistError : MessageGeneralMkdirCreateError
       );
       // and renewable
       setIsLoading(false);

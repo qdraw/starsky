@@ -1,6 +1,5 @@
 import "core-js/features/array/filter"; // array filter
 import "core-js/features/array/some"; // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some
-import "core-js/features/dom-collections/for-each"; // queryselector.forEach
 import "core-js/features/object"; // Object.entries is not a function
 import "core-js/features/promise"; // Yes I promise
 import "core-js/features/string/match"; // event.key.match

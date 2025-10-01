@@ -73,9 +73,9 @@ const MenuInlineSearch: FunctionComponent<IMenuSearchBarProps> = (props) => {
   function handleClickOutside(event: MouseEvent) {
     const target = event.target as HTMLElement;
     if (
-      target.className.indexOf("menu-item") === -1 &&
-      target.className.indexOf("icon-addon") === -1 &&
-      target.className.indexOf("search-icon") === -1
+      !target.className.includes("menu-item") &&
+      !target.className.includes("icon-addon") &&
+      !target.className.includes("search-icon")
     ) {
       setFormFocus(false);
     }
@@ -85,7 +85,7 @@ const MenuInlineSearch: FunctionComponent<IMenuSearchBarProps> = (props) => {
 
   return (
     <div className="menu-inline-search">
-      <button className={!formFocus ? "blur" : ""} onFocus={() => setFormFocus(true)}>
+      <button className={formFocus ? "" : "blur"} onFocus={() => setFormFocus(true)}>
         <ul>
           <li className="menu-item menu-item--half-extra">
             <form className="form-inline form-nav icon-addon" onSubmit={onFormSubmit}>
