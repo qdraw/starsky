@@ -4,7 +4,6 @@ import useGlobalSettings from "../../../hooks/use-global-settings";
 import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import useLocation from "../../../hooks/use-location/use-location";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
-import { PageType } from "../../../interfaces/IDetailView";
 import { IEnvFeatures } from "../../../interfaces/IEnvFeatures";
 import localization from "../../../localization/localization.json";
 import FetchPost from "../../../shared/fetch/fetch-post";
@@ -90,13 +89,7 @@ const MenuOptionDesktopEditorOpenSelection: React.FunctionComponent<IMenuOptionD
     const [isError, setIsError] = useState("");
 
     const [modalConfirmationOpenFiles, setModalConfirmationOpenFiles] = useState(false);
-
-    const isCollections =
-      state.pageType === PageType.Search
-        ? false
-        : new URLPath().StringToIUrl(history.location.search).collections === false
-          ? false
-          : true;
+    const isCollections = new URLPath().IsCollections(state.pageType, history.location.search);
 
     /**
      * Open editor with keys -  command + e
