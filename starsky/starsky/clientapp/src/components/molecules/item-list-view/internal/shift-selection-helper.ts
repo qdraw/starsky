@@ -46,7 +46,7 @@ function getNearbyStartIndex(
 
   for (let index = 0; index < items.length; index++) {
     const element = items[index];
-    if (select.indexOf(element.fileName) !== -1) {
+    if (select.includes(element.fileName)) {
       alreadySelectIndexes.push(index);
     }
   }

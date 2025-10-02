@@ -151,8 +151,26 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({ state, d
     }
     const subPath = state.subPath;
 
-    // Add remove tag
-    if (!isMarkedAsDeleted) {
+    if (isMarkedAsDeleted) {
+      // Undo trash
+      bodyParams.set("fieldName", "tags");
+      bodyParams.set("search", "!delete!");
+      const resultUndo = await FetchPost(new UrlQuery().UrlReplaceApi(), bodyParams.toString());
+      if (resultUndo.statusCode !== 200) {
+        console.error(resultUndo);
+        setIsLoading(false);
+        return;
+      }
+      dispatch({ type: "remove", tags: "!delete!" });
+      dispatch({
+        type: "update",
+        filePath: subPath,
+        status: IExifStatus.Ok,
+        lastEdited: new Date().toISOString()
+      });
+      setIsLoading(false);
+    } else {
+      // Add remove tag
       const resultDo = await FetchPost(new UrlQuery().UrlMoveToTrashApi(), bodyParams.toString());
       if (
         resultDo.statusCode &&
@@ -174,25 +192,6 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({ state, d
         type: "update",
         filePath: subPath,
         status: newStatus,
-        lastEdited: new Date().toISOString()
-      });
-      setIsLoading(false);
-    }
-    // Undo trash
-    else {
-      bodyParams.set("fieldName", "tags");
-      bodyParams.set("search", "!delete!");
-      const resultUndo = await FetchPost(new UrlQuery().UrlReplaceApi(), bodyParams.toString());
-      if (resultUndo.statusCode !== 200) {
-        console.error(resultUndo);
-        setIsLoading(false);
-        return;
-      }
-      dispatch({ type: "remove", tags: "!delete!" });
-      dispatch({
-        type: "update",
-        filePath: subPath,
-        status: IExifStatus.Ok,
         lastEdited: new Date().toISOString()
       });
       setIsLoading(false);

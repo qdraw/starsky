@@ -228,7 +228,7 @@ const DetailView: FC<IDetailView> = () => {
               : "main main--" + state.fileIndexItem.imageFormat
           }
         >
-          {isError && !state.fileIndexItem.fileHash ? null : (
+          {isError && state.fileIndexItem.fileHash ? null : (
             <FileHashImage
               setError={setIsError}
               alt={state.fileIndexItem.title + " " + state.fileIndexItem.tags}
