@@ -230,7 +230,7 @@ public static class SonarQube
 			        "*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx," +
 			        "**/*stories.tsx,**/*spec.ts,**/src/main.tsx,**/src/index.tsx,**/src/style/css/vendor/*,**/node_modules/*," +
 			        "**/prestorybook.js,**/vite.config.ts,**/.storybook/**,**/jest.setup.ts," +
-			        "**/_bigimages-helper.js ")
+			        "**/_bigimages-helper.js,**/*.sql ")
 			.Append("/d:sonar.coverage.exclusions=**/build/*,**/build/helpers/*," +
 			        "**/build/Constants/*," +
 			        "**/documentation/*," +
@@ -239,18 +239,7 @@ public static class SonarQube
 			        "*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*," +
 			        "**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/main.tsx,**/src/index.tsx,**/node_modules/*," +
 			        "**/prestorybook.js,**/vite.config.ts,**/.storybook/**,**/jest.setup.ts," +
-			        "**/_bigimages-helper.js ")
-			.Append(
-				"/d:sonar.issue.ignore.multicriteria=ignore-plsql-S3641,ignore-plsql-S3921,ignore-plsql-S3618,ignore-plsql-S3651 ")
-			.Append("/d:sonar.issue.ignore.multicriteria.ignore-plsql-S3641.ruleKey=plsql:S3641 ")
-			.Append("/d:sonar.issue.ignore.multicriteria.ignore-plsql-S3641.resourceKey=** ")
-			.Append("/d:sonar.issue.ignore.multicriteria.ignore-plsql-S3921.ruleKey=plsql:S3921 ")
-			.Append("/d:sonar.issue.ignore.multicriteria.ignore-plsql-S3921.resourceKey=** ")
-			.Append("/d:sonar.issue.ignore.multicriteria.ignore-plsql-S3618.ruleKey=plsql:S3618 ")
-			.Append("/d:sonar.issue.ignore.multicriteria.ignore-plsql-S3618.resourceKey=** ")
-			.Append("/d:sonar.issue.ignore.multicriteria.ignore-plsql-S3651.ruleKey=plsql:S3651 ")
-			.Append("/d:sonar.issue.ignore.multicriteria.ignore-plsql-S3651.resourceKey=** ");
-
+			        "**/_bigimages-helper.js,**/*.sql ");
 
 		// Normal build
 		if ( !isPrBuild )
