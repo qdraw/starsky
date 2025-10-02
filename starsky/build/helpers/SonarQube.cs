@@ -211,11 +211,6 @@ public static class SonarQube
 		Information(">> SonarQubeCoverageFile: " + sonarQubeCoverageFile);
 		Information(">> GetSolutionParentFolder: " + WorkingDirectory.GetSolutionParentFolder());
 
-		var sonarAnalysisFile =
-			Path.Combine(WorkingDirectory.GetSolutionParentFolder(), "SonarQube.Analysis.xml");
-		Information(">> SonarQube.Analysis.xml: " + sonarAnalysisFile);
-		Information($">> SonarQube.Analysis.xml exists: {File.Exists(sonarAnalysisFile)}");
-
 		var sonarArguments = new StringBuilder()
 			.Append("sonarscanner ")
 			.Append("begin ")
@@ -244,7 +239,18 @@ public static class SonarQube
 			        "*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*," +
 			        "**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/main.tsx,**/src/index.tsx,**/node_modules/*," +
 			        "**/prestorybook.js,**/vite.config.ts,**/.storybook/**,**/jest.setup.ts," +
-			        "**/_bigimages-helper.js ");
+			        "**/_bigimages-helper.js ")
+			.Append(
+				"/d:sonar.issue.ignore.multicriteria=ignore-plsql-S3641,ignore-plsql-S3921,ignore-plsql-S3618,ignore-plsql-S3651 ")
+			.Append("/d:sonar.issue.ignore.multicriteria.ignore-plsql-S3641.ruleKey=plsql:S3641 ")
+			.Append("/d:sonar.issue.ignore.multicriteria.ignore-plsql-S3641.resourceKey=** ")
+			.Append("/d:sonar.issue.ignore.multicriteria.ignore-plsql-S3921.ruleKey=plsql:S3921 ")
+			.Append("/d:sonar.issue.ignore.multicriteria.ignore-plsql-S3921.resourceKey=** ")
+			.Append("/d:sonar.issue.ignore.multicriteria.ignore-plsql-S3618.ruleKey=plsql:S3618 ")
+			.Append("/d:sonar.issue.ignore.multicriteria.ignore-plsql-S3618.resourceKey=** ")
+			.Append("/d:sonar.issue.ignore.multicriteria.ignore-plsql-S3651.ruleKey=plsql:S3651 ")
+			.Append("/d:sonar.issue.ignore.multicriteria.ignore-plsql-S3651.resourceKey=** ");
+
 
 		// Normal build
 		if ( !isPrBuild )
