@@ -219,7 +219,9 @@ public static class SonarQube
 			.Append($"/k:{GetSonarKey()} ")
 			.Append("/n:Starsky ")
 			.Append($"/d:sonar.projectBaseDir={WorkingDirectory.GetSolutionParentFolder()} ")
-			.Append("/d:sonar.project.settings=sonar-project.properties ")
+			.Append(
+				$"/d:sonar.project.settings={Path.Join(WorkingDirectory.GetSolutionParentFolder(),
+					"sonar-project.properties")} ")
 			.Append($"/d:sonar.token={sonarToken} ")
 			.Append("/o:" + organisation + " ")
 			.Append($"/d:sonar.typescript.tsconfigPath={tsconfig} ")
