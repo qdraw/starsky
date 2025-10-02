@@ -210,10 +210,11 @@ public static class SonarQube
 			Path.Combine(WorkingDirectory.GetSolutionParentFolder(), coverageFile);
 		Information(">> SonarQubeCoverageFile: " + sonarQubeCoverageFile);
 		Information(">> GetSolutionParentFolder: " + WorkingDirectory.GetSolutionParentFolder());
-		var sonarPropertiesFile =
-			Path.Combine(WorkingDirectory.GetSolutionParentFolder(), "sonar-project.properties");
-		Information(">> SonarPropertiesFile: " + sonarPropertiesFile);
-		Information($">> sonar-project.properties {File.Exists(sonarPropertiesFile)}");
+
+		var sonarAnalysisFile =
+			Path.Combine(WorkingDirectory.GetSolutionParentFolder(), "SonarQube.Analysis.xml");
+		Information(">> SonarQube.Analysis.xml: " + sonarAnalysisFile);
+		Information($">> SonarQube.Analysis.xml exists: {File.Exists(sonarAnalysisFile)}");
 
 		var sonarArguments = new StringBuilder()
 			.Append("sonarscanner ")
@@ -223,7 +224,6 @@ public static class SonarQube
 			.Append($"/k:{GetSonarKey()} ")
 			.Append("/n:Starsky ")
 			.Append($"/d:sonar.projectBaseDir={WorkingDirectory.GetSolutionParentFolder()} ")
-			.Append($"/d:sonar.project.settings={sonarPropertiesFile} ")
 			.Append($"/d:sonar.token={sonarToken} ")
 			.Append("/o:" + organisation + " ")
 			.Append($"/d:sonar.typescript.tsconfigPath={tsconfig} ")
