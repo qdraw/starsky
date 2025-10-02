@@ -9,14 +9,16 @@ export class SelectCheckIfActive {
     if (!select) return [];
 
     // it should contain on the colorClasses
-    const fileNameList = fileIndexItems
-      .filter((el) => el.colorClass !== undefined && colorClasses.indexOf(el.colorClass) !== -1)
-      .map((ele) => ele.fileName);
+    const fileNameList = new Set(
+      fileIndexItems
+        .filter((el) => el.colorClass !== undefined && colorClasses.includes(el.colorClass))
+        .map((ele) => ele.fileName)
+    );
 
     // you can't select an item that's not shown
     for (let i = select.length - 1; i >= 0; i--) {
       const selectedPath = select[i];
-      if (!fileNameList.includes(selectedPath)) {
+      if (!fileNameList.has(selectedPath)) {
         select.splice(i, 1);
       }
     }

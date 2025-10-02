@@ -72,7 +72,7 @@ export class URLPath {
     let colorClassArray: Array<string> = [];
     if (colorClassText && !colorClassText.includes(",")) {
       colorClassArray = [colorClassText];
-    } else if (colorClassText && colorClassText.includes(",")) {
+    } else if (colorClassText?.includes(",")) {
       for (const element of colorClassText.split(",")) {
         colorClassArray.push(element);
       }
@@ -88,7 +88,7 @@ export class URLPath {
     let colorClassArray: Array<number> = [];
     if (colorClassText && !Number.isNaN(Number(colorClassText))) {
       colorClassArray = [Number(colorClassText)];
-    } else if (colorClassText && colorClassText.includes(",")) {
+    } else if (colorClassText?.includes(",")) {
       for (const element of colorClassText.split(",")) {
         if (!Number.isNaN(Number(element))) {
           colorClassArray.push(Number(element));
