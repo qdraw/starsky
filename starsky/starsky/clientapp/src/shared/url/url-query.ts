@@ -8,16 +8,16 @@ export class UrlQuery {
   public prefix: string = "/starsky";
 
   public UrlHomePage(): string {
-    return document.location.pathname.indexOf(this.prefix) === -1 ? "/" : `${this.prefix}/`;
+    return document.location.pathname.includes(this.prefix) ? `${this.prefix}/` : "/";
   }
 
   public UrlHomeIndexPage(locationHash: string): string {
     if (!IsRelativeUrl(locationHash)) {
       locationHash = "/";
     }
-    return document.location.pathname.indexOf(this.prefix) === -1
-      ? `${new URLPath().StartOnSlash(locationHash)}`
-      : `${this.prefix}${new URLPath().StartOnSlash(locationHash)}`;
+    return document.location.pathname.includes(this.prefix)
+      ? `${this.prefix}${new URLPath().StartOnSlash(locationHash)}`
+      : `${new URLPath().StartOnSlash(locationHash)}`;
   }
 
   /**
@@ -41,9 +41,9 @@ export class UrlQuery {
    * @param t query
    */
   public UrlSearchPage(t: string): string {
-    return document.location.pathname.indexOf(this.prefix) === -1
-      ? `/search?t=${t}`
-      : `${this.prefix}/search?t=${t}`;
+    return document.location.pathname.includes(this.prefix)
+      ? `${this.prefix}/search?t=${t}`
+      : `/search?t=${t}`;
   }
 
   /**
@@ -51,42 +51,40 @@ export class UrlQuery {
    */
   public HashSearchPage(historyLocationHash: string): string {
     const url = new URLPath().StringToIUrl(historyLocationHash);
-    return document.location.pathname.indexOf(this.prefix) === -1
-      ? `/search${new URLPath().IUrlToString(url)}`
-      : `${this.prefix}/search${new URLPath().IUrlToString(url)}`;
+    return document.location.pathname.includes(this.prefix)
+      ? `${this.prefix}/search${new URLPath().IUrlToString(url)}`
+      : `/search${new URLPath().IUrlToString(url)}`;
   }
 
   public UrlTrashPage(): string {
-    return document.location.pathname.indexOf(this.prefix) === -1
-      ? `/trash?t=!delete!`
-      : `${this.prefix}/trash?t=!delete!`;
+    return document.location.pathname.includes(this.prefix)
+      ? `${this.prefix}/trash?t=!delete!`
+      : `/trash?t=!delete!`;
   }
 
   public UrlImportPage(): string {
-    return document.location.pathname.indexOf(this.prefix) === -1
-      ? `/import`
-      : `${this.prefix}/import`;
+    return document.location.pathname.includes(this.prefix) ? `${this.prefix}/import` : `/import`;
   }
 
   public UrlPreferencesPage(): string {
-    return document.location.pathname.indexOf(this.prefix) === -1
-      ? `/preferences`
-      : `${this.prefix}/preferences`;
+    return document.location.pathname.includes(this.prefix)
+      ? `${this.prefix}/preferences`
+      : `/preferences`;
   }
 
   public UrlLoginPage(): string {
-    return document.location.pathname.indexOf(this.prefix) === -1
-      ? `/account/login`
-      : `${this.prefix}/account/login`;
+    return document.location.pathname.includes(this.prefix)
+      ? `${this.prefix}/account/login`
+      : `/account/login`;
   }
 
   public UrlLogoutPage(returnUrl: string): string {
     if (!IsRelativeUrl(returnUrl)) {
       returnUrl = "/?f=/";
     }
-    return document.location.pathname.indexOf(this.prefix) === -1
-      ? `/account/logout?ReturnUrl=${returnUrl}`
-      : `${this.prefix}/account/logout?ReturnUrl=${returnUrl}`;
+    return document.location.pathname.includes(this.prefix)
+      ? `${this.prefix}/account/logout?ReturnUrl=${returnUrl}`
+      : `/account/logout?ReturnUrl=${returnUrl}`;
   }
 
   public UrlLoginApi(): string {
@@ -172,9 +170,9 @@ export class UrlQuery {
     if (emptySelectQuery && url.select && url.select?.length >= 1) {
       url.select = [];
     }
-    return document.location.pathname.indexOf(this.prefix) === -1
-      ? `/${new URLPath().IUrlToString(url)}`
-      : `${this.prefix}/${new URLPath().IUrlToString(url)}`;
+    return document.location.pathname.includes(this.prefix)
+      ? `${this.prefix}/${new URLPath().IUrlToString(url)}`
+      : `/${new URLPath().IUrlToString(url)}`;
   }
 
   /**

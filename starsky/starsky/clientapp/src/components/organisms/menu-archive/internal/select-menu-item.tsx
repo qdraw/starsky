@@ -23,7 +23,20 @@ export const SelectMenuItem: React.FunctionComponent<ISelectMenuItemProps> = ({
 
   return (
     <>
-      {!select ? (
+      {select ? (
+        <button
+          className="item item--labels"
+          data-test="menu-archive-labels"
+          onClick={() => toggleLabels()}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              toggleLabels();
+            }
+          }}
+        >
+          {MessageLabels}
+        </button>
+      ) : (
         <button
           className="item item--select"
           data-test="menu-item-select"
@@ -38,22 +51,7 @@ export const SelectMenuItem: React.FunctionComponent<ISelectMenuItemProps> = ({
         >
           {MessageSelectAction}
         </button>
-      ) : null}
-
-      {select ? (
-        <button
-          className="item item--labels"
-          data-test="menu-archive-labels"
-          onClick={() => toggleLabels()}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              toggleLabels();
-            }
-          }}
-        >
-          {MessageLabels}
-        </button>
-      ) : null}
+      )}
     </>
   );
 };

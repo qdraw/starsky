@@ -8,9 +8,7 @@ export class Keyboard {
 
     const target = event.target as HTMLElement;
     if (!target?.className) return null;
-    return (
-      target.className.indexOf("form-control") !== -1 || target.className.indexOf("modal") !== -1
-    );
+    return target.className.includes("form-control") || target.className.includes("modal");
   }
 
   public SetFocusOnEndField(current: HTMLDivElement): void {

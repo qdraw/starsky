@@ -82,7 +82,7 @@ export class FileExtensions {
    * @param fileNameWithDot the filepath
    */
   public GetFileExtensionWithoutDot(fileNameWithDot: string) {
-    if (fileNameWithDot.indexOf(".") === -1) return "";
+    if (!fileNameWithDot.includes(".")) return "";
 
     const extensionRegex = /[^.][a-zA-Z0-9]{1,4}$/;
     const fileNameMatchArray = extensionRegex.exec(fileNameWithDot);

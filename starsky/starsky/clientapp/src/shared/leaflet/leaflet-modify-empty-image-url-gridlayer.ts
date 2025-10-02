@@ -82,7 +82,7 @@ export class LeafletEmptyImageUrlGridLayer extends GridLayer {
     if (!tile) {
       return;
     }
-    tile.loaded = +new Date();
+    tile.loaded = +Date.now();
 
     if ((this._map as unknown as { _fadeAnimated: boolean })._fadeAnimated) {
       L.DomUtil.setOpacity(tile.el, 0);
