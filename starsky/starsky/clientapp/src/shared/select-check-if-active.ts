@@ -16,11 +16,11 @@ export class SelectCheckIfActive {
     // you can't select an item that's not shown
     for (let i = select.length - 1; i >= 0; i--) {
       const selectedPath = select[i];
-      if (fileNameList.indexOf(selectedPath) === -1) {
+      if (!fileNameList.includes(selectedPath)) {
         select.splice(i, 1);
       }
     }
     // remove empty items from the list
-    return select.filter((res) => res);
+    return select.filter(Boolean);
   }
 }

@@ -61,11 +61,11 @@ export class Select {
   public removeSidebarSelection() {
     const urlObject = new URLPath().StringToIUrl(this.history.location.search);
     const selectVar: string[] = urlObject.select ?? [];
-    if (!urlObject.select) {
-      urlObject.select = [];
-    } else {
+    if (urlObject.select) {
       delete urlObject.sidebar;
       delete urlObject.select;
+    } else {
+      urlObject.select = [];
     }
     if (selectVar) {
       this.setSelect(selectVar);
