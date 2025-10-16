@@ -26,7 +26,7 @@ const commonConfig = {
     }),
   ],
   resolve: {
-    extensions: ['.js', '.json', '.ts', '.tsx'],
+    extensions: ['.js', '.json', '.ts', '.tsx', '.mjs'],
     plugins: [new TsconfigPathsPlugin({
       configFile: './tsconfig.json',
       extensions: ['.js', '.json', '.ts', '.tsx'],
@@ -34,6 +34,12 @@ const commonConfig = {
   },
   module: {
     rules: [
+      {
+        test: /\.m?js$/,
+        resolve: {
+          fullySpecified: false, // <-- critical for @hapi/hoek and others
+        },
+      },
       {
         test: /\.(ts|tsx)$/,
         exclude: /node_modules/,
