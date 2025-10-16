@@ -31,7 +31,7 @@
       ImageFormat: jpg,
       SidecarExtensions: ,
       Aperture: 9.0,
-      ShutterSpeed: 1/999,
+      ShutterSpeed: 1/1000,
       IsoSpeed: 400,
       Software: Starsky,
       MakeModel: Sony|ILCE-6600|E 18-200mm F3.5-6.3 OSS LE|,

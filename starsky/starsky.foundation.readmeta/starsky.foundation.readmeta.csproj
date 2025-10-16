@@ -16,7 +16,7 @@
         <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
         <PackageReference Include="XmpCore" Version="6.1.10.1"/>
-        <PackageReference Include="MetadataExtractor" Version="2.8.1"/>
+        <PackageReference Include="MetadataExtractor" Version="2.9.0"/>
     </ItemGroup>
 
     <ItemGroup>
