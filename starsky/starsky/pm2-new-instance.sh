@@ -14,7 +14,7 @@ case $(uname -m) in
     ;;
 
   "arm64")
-    if [ $(uname) = "Darwin" ]; then
+    if [[ $(uname) = "Darwin" ]]; then
         RUNTIME="osx-arm64"
     fi
     ;;
@@ -24,10 +24,10 @@ case $(uname -m) in
     ;;
 
   "x86_64")
-    if [ $(uname) = "Darwin" ]; then
+    if [[ $(uname) = "Darwin" ]]; then
         RUNTIME="osx-x64"
     fi
-    if [ $(uname) = "Linux" ]; then
+    if [[ $(uname) = "Linux" ]]; then
         RUNTIME="linux-x64"
     fi
     ;;
@@ -100,12 +100,12 @@ done
 LAST_CHAR_OUTPUT_DIR=${OUTPUT_DIR:length-1:1}
 [[ $LAST_CHAR_OUTPUT_DIR != "/" ]] && OUTPUT_DIR="$OUTPUT_DIR/"; :
 
-if [ ! -d $OUTPUT_DIR ]; then
+if [[ ! -d $OUTPUT_DIR ]]; then
     echo "FAIL "$OUTPUT_DIR" does not exist "
     exit 1
 fi
 
-if [ -f $OUTPUT_DIR"Startup.cs" ]; then # output dir should have slash at end
+if [[ -f $OUTPUT_DIR"Startup.cs" ]]; then # output dir should have slash at end
     echo "FAIL: You should not run this folder from the source folder"
     echo "copy this file to the location to run it from"
     echo "end script due failure"
@@ -116,11 +116,11 @@ fi
 # settings
 echo "Run with the following parameters: "
 
-if [ "$NO_PM2" = true ] ; then
+if [[ "$NO_PM2" = true ]] ; then
     NO_PM2_STATUSTEXT="--no-pm2 $NO_PM2"
 fi
 
-if [ "$ANYWHERE" = true ] ; then
+if [[ "$ANYWHERE" = true ]] ; then
     ANYWHERESTATUSTEXT="--anywhere $ANYWHERE"
 fi
 
@@ -152,7 +152,7 @@ if [ -d "WebHtmlPublish/UserViews" ]; then
 fi
 
 # delete files in www-root
-if [ -f starsky.dll ]; then
+if [[ -f starsky.dll ]]; then
     echo "delete dlls so, and everything except pm2 helpers, and"
     echo "    configs, temp, thumbnailTempFolder, deploy zip, sqlite database"
 
@@ -167,7 +167,7 @@ if [ -f starsky.dll ]; then
         && $ENTRY != "temp"
         && $ENTRY != "UserViews"* # Keep UserViews
         && $ENTRY != "starsky-"*
-        && $ENTRY != *".db" ]];
+        && $ENTRY != *."db" ]];
         then
             rm -rf "$ENTRY"
         else
@@ -181,13 +181,13 @@ fi
 # new settings:
 
 HOSTNAME="localhost"
-if [ "$ANYWHERE" = true ] ; then
+if [[ "$ANYWHERE" = true ]] ; then
     HOSTNAME="*"
 fi
 export ASPNETCORE_URLS="http://"$HOSTNAME":"$PORT"/"
 export ASPNETCORE_ENVIRONMENT="Production"
 
-if [ -f starsky-$RUNTIME.zip ]; then
+if [[ -f starsky-$RUNTIME.zip ]]; then
    echo "upgrade existing zip file"
    echo "going to unzip starsky-$RUNTIME.zip"
 
@@ -204,7 +204,7 @@ else
    | tr -d \" \
    | wget -qi -
 
-   if [ -f starsky-$RUNTIME.zip ]; then
+    if [[ -f starsky-$RUNTIME.zip ]]; then
       echo "use latest stable,"
       echo "going to unzip starsky-$RUNTIME.zip"
       unzip -q -o starsky-$RUNTIME.zip -x "pm2-new-instance.sh"
@@ -219,87 +219,87 @@ echo "reset rights if those are wrong"
 /usr/bin/find . -type f -exec chmod 644 {} \;
 
 # to restore the content UserViews
-if [ -d "UserViews" ]; then
+if [[ -d "UserViews" ]]; then
   cp -fr "UserViews" "WebHtmlPublish"
   rm -rf "UserViews"
 fi
 
 # execute rights for specific files
-if [ -f starskygeocli ]; then
+if [[ -f starskygeocli ]]; then
     chmod +rwx ./starskygeocli
 fi
 
-if [ -f starskyimportercli ]; then
+if [[ -f starskyimportercli ]]; then
     chmod +rwx ./starskyimportercli
 fi
 
-if [ -f starskysynchronizecli ]; then
+if [[ -f starskysynchronizecli ]]; then
     chmod +rwx ./starskysynchronizecli
 fi
 
-if [ -f starskythumbnailcli ]; then
+if [[ -f starskythumbnailcli ]]; then
     chmod +rwx ./starskythumbnailcli
 fi
 
-if [ -f starskythumbnailmetacli ]; then
+if [[ -f starskythumbnailmetacli ]]; then
     chmod +rwx ./starskythumbnailmetacli
 fi
 
-if [ -f starskywebftpcli ]; then
+if [[ -f starskywebftpcli ]]; then
     chmod +rwx ./starskywebftpcli
 fi
 
-if [ -f starskywebhtmlcli ]; then
+if [[ -f starskywebhtmlcli ]]; then
     chmod +rwx ./starskywebhtmlcli
 fi
 
-if [ -f starskyadmincli ]; then
+if [[ -f starskyadmincli ]]; then
     chmod +rwx ./starskyadmincli
 fi
 
-if [ -f pm2-deploy-on-env.sh ]; then
+if [[ -f pm2-deploy-on-env.sh ]]; then
     chmod +rwx ./pm2-deploy-on-env.sh
 fi
 
-if [ -f pm2-install-latest-release.sh ]; then
+if [[ -f pm2-install-latest-release.sh ]]; then
     chmod +rwx ./pm2-install-latest-release.sh
 fi
 
-if [ -f pm2-restore-x-rights.sh ]; then
+if [[ -f pm2-restore-x-rights.sh ]]; then
     chmod +rwx ./pm2-restore-x-rights.sh
 fi
 
-if [ -f pm2-warmup.sh ]; then
+if [[ -f pm2-warmup.sh ]]; then
     chmod +rwx ./pm2-warmup.sh
 fi
 
-if [ -f pm2-new-instance.sh ]; then
+if [[ -f pm2-new-instance.sh ]]; then
     chmod +rwx ./pm2-new-instance.sh
 fi
 
-if [ -f pm2-download-azure-devops.sh ]; then
+if [[ -f pm2-download-azure-devops.sh ]]; then
     chmod +rwx ./pm2-download-azure-devops.sh
 fi
 
-if [ -f github-artifacts-download.sh ]; then
+if [[ -f github-artifacts-download.sh ]]; then
     chmod +rwx ./github-artifacts-download.sh
 fi
 
-if [ -f starsky ]; then
+if [[ -f starsky ]]; then
     chmod +rwx ./starsky
 fi
 
-if [ -f starskygeocli ]; then
+if [[ -f starskygeocli ]]; then
     echo "run starskygeocli to auto download dependencies"
     ./starskygeocli -h > /dev/null 2>&1
 fi
 
-if [ -f dependencies/exiftool-unix/exiftool ]; then
+if [[ -f dependencies/exiftool-unix/exiftool ]]; then
     chmod +rwx dependencies/exiftool-unix/exiftool
 fi
 
 ISIMPORTEROK=999
-if [ -f starskyimportercli ]; then
+if [[ -f starskyimportercli ]]; then
     echo "run starskyimportercli to check if runtime matches the system"
     ./starskyimportercli -h > /dev/null 2>&1
     ISIMPORTEROK=$?
@@ -323,7 +323,7 @@ else
   echo "> SKIP symlink creation due wrong architecture"
 fi
 
-if [ "$NO_PM2" = true ] ; then
+if [[ "$NO_PM2" = true ]] ; then
     echo "Skipping pm2"
     exit 0
 fi
@@ -339,7 +339,7 @@ then
     exit 1
 fi
 
-if [ -f starsky ] && [[ $ISIMPORTEROK -eq 0 ]]; then
+if [[ -f starsky ]] && [[ $ISIMPORTEROK -eq 0 ]]; then
 
     pm2 describe $PM2NAME > /dev/null
     HASDESCRIBE=$?
@@ -372,7 +372,7 @@ if [ -f starsky ] && [[ $ISIMPORTEROK -eq 0 ]]; then
         echo "skip removal of pm2 service because the path is the same"
     fi
 
-    if [ "${HASDESCRIBE}" -ne 0 ]; then
+    if [[ "${HASDESCRIBE}" -ne 0 ]]; then
       echo "add new service"
       pm2 start --name $PM2NAME ./starsky
     else
