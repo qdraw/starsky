@@ -100,7 +100,7 @@ fi
 
 
 # If dotnet CLI is installed globally and it matches requested version, use for execution
-if [ -x "$(command -v dotnet)" ] && dotnet --version &>/dev/null; then
+if [[ -x "$(command -v dotnet)" ]] && dotnet --version &>/dev/null; then
     export DOTNET_EXE="$(command -v dotnet)"
 else
     SET_DOTNET_VERSION_TO_VAR
@@ -126,10 +126,10 @@ fi
 # check if nodejs is installed
 # depends on NVM_RC_FILE, SCRIPT_DIR variables
 if [[ "$(uname)" == "Darwin" && $CI != true && $TF_BUILD != true ]] || [[ "$(uname)" == "Darwin" && "$FORCE_INSTALL_CHECK" == true ]]; then
-    if [ -x "$(command -v npm)" ] && npm --version &>/dev/null && [ -d "${HOME}/.nvm/" ]; then
+    if [[ -x "$(command -v npm)" ]] && npm --version &>/dev/null && [[ -d "${HOME}/.nvm/" ]]; then
         echo "   npm installed"
-        if [ -x "$(command -v brew)" ] && brew --version &>/dev/null; then
-            if [ -f $(brew --prefix nvm)/nvm.sh ]; then
+        if [[ -x "$(command -v brew)" ]] && brew --version &>/dev/null; then
+            if [[ -f $(brew --prefix nvm)/nvm.sh ]]; then
               echo 'sourcing nvm from $(brew --prefix nvm)/nvm.sh'
               chmod +x $(brew --prefix nvm)/nvm.sh
               set +ue +o pipefail
@@ -138,12 +138,12 @@ if [[ "$(uname)" == "Darwin" && $CI != true && $TF_BUILD != true ]] || [[ "$(una
             fi
         fi
                     
-        if [ -f $NVM_RC_FILE ]; then
+        if [[ -f $NVM_RC_FILE ]]; then
             ACTIVE_VERSION=$(node --version || true)
             GLOBAL_NPM=$(which npm || echo "not found on PATH")
             NVM_RC_FILE_CONTENT="$(cat $NVM_RC_FILE)"
                         
-            if [ "${ACTIVE_VERSION%%$NVM_RC_FILE_CONTENT*}" ] || [ ! -e "$GLOBAL_NPM" ]; then
+            if [[ "${ACTIVE_VERSION%%$NVM_RC_FILE_CONTENT*}" ]] || [[ ! -e "$GLOBAL_NPM" ]]; then
               echo "expected node '$NVM_RC_FILE_CONTENT' and npm on path"
               echo "but was '$ACTIVE_VERSION' and npm:'$GLOBAL_NPM'"
               nvm install $NVM_RC_FILE_CONTENT
@@ -152,10 +152,10 @@ if [[ "$(uname)" == "Darwin" && $CI != true && $TF_BUILD != true ]] || [[ "$(una
             fi
         fi
     else
-        if [ -x "$(command -v brew)" ] && brew --version &>/dev/null; then
+        if [[ -x "$(command -v brew)" ]] && brew --version &>/dev/null; then
             echo "homebrew installed"
 
-            if [ ! -d "${HOME}/.nvm/" ]; then
+            if [[ ! -d "${HOME}/.nvm/" ]]; then
                 echo "next: install nvm"
 
                 brew install nvm
@@ -176,7 +176,7 @@ if [[ "$(uname)" == "Darwin" && $CI != true && $TF_BUILD != true ]] || [[ "$(una
             
             chmod +x $(brew --prefix nvm)/nvm.sh
 
-            if [ -f $(brew --prefix nvm)/nvm.sh ]; then
+            if [[ -f $(brew --prefix nvm)/nvm.sh ]]; then
               echo 'sourcing nvm from $(brew --prefix nvm)/nvm.sh'
               set +ue +o pipefail
               source $(brew --prefix nvm)/nvm.sh &>/dev/null
@@ -184,7 +184,7 @@ if [[ "$(uname)" == "Darwin" && $CI != true && $TF_BUILD != true ]] || [[ "$(una
             fi
 
             # https://github.com/nvm-sh/nvm/issues/1290#issuecomment-737964030
-            if [ -f $NVM_RC_FILE ]; then
+            if [[ -f $NVM_RC_FILE ]]; then
                 NVM_RC_FILE_CONTENT="$(cat $NVM_RC_FILE)"
                 nvm install $NVM_RC_FILE_CONTENT
                 nvm use node
@@ -215,7 +215,7 @@ DOTNET_EXE_EXIT_CODE=$?
 
 cd $CURRENT_PWD
 
-if [ $DOTNET_EXE_EXIT_CODE -eq 0 ] 
+if [[ $DOTNET_EXE_EXIT_CODE -eq 0 ]] 
 then 
   echo "OK" 
 else 
