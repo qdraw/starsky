@@ -22,16 +22,16 @@ case $(uname -m) in
     ;;
 
   "arm64")
-    if [ $(uname) = "Darwin" ]; then
+  if [[ $(uname) = "Darwin" ]]; then
         RUNTIME="osx-arm64"
     fi
     ;;
 
   "x86_64")
-    if [ $(uname) = "Darwin" ]; then
+  if [[ $(uname) = "Darwin" ]]; then
         RUNTIME="osx-x64"
     fi
-    if [ $(uname) = "Linux" ]; then
+  if [[ $(uname) = "Linux" ]]; then
         RUNTIME="linux-x64"
     fi
     ;;
@@ -69,7 +69,7 @@ for ((i = 1; i <= $#; i++ )); do
       exit 0
   fi
   
-  if [ $i -gt 1 ]; then
+  if [[ $i -gt 1 ]]; then
     PREV=$(($i-2))
 
     if [[ ${ARGUMENTS[PREV]} == "--branch" ]];
@@ -183,7 +183,7 @@ GET_DATA () {
   if [ -f "starsky-"$RUNTIME".zip" ]; then
     echo "starsky-"$RUNTIME".zip is downloaded"
     return 0
-  fi
+  }
 
   echo "FAIL output file: starsky-"$RUNTIME".zip not found"
   exit 1
@@ -204,7 +204,7 @@ fi
 if [ -f $OUTPUT_DIR"/Startup.cs" ]; then
     echo "FAIL: You should not run this folder from the source folder"
     echo "copy this file to the location to run it from"
-    echo "end script due failure"
+  echo "end script due failure"
     exit 1
 fi
 
@@ -221,7 +221,7 @@ done
 if UNIQUE_VALUES "${RESULTS_GET_DATA[@]}"; then
     if [[ "${RESULTS_GET_DATA[*]}" =~ "1" ]]; then
         # whatever you want to do when array doesn't contain value
-        echo "> Download FAILED, there is no artifact for any definitionId"
+    echo "> Download FAILED, there is no artifact for any definitionId"
         exit 1    
     else 
         echo "WARNING: there are duplicate runtime values over multiple pipelines"
@@ -234,7 +234,7 @@ if [ -f "starsky-"$RUNTIME".zip" ]; then
     unzip -p "starsky-"$RUNTIME".zip" "pm2-new-instance.sh" > ./__pm2-new-instance.sh
     
     if [ -s ./__pm2-new-instance.sh ]; then
-       mv __pm2-new-instance.sh pm2-new-instance.sh
+     mv __pm2-new-instance.sh pm2-new-instance.sh
     else 
         rm ./__pm2-new-instance.sh
     fi
