@@ -6,7 +6,7 @@
 SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 NET_MONIKER="net8.0"
 
-if [ -d $HOME"/.sonar" ] 
+if [[ -d $HOME"/.sonar" ]] 
 then
     echo "Remove sonar cache -> "$HOME"/.sonar"
     rm -rf $HOME"/.sonar"
@@ -20,14 +20,14 @@ PARENT_DIR="$(dirname "$SCRIPT_DIR")"
 ## docs
 GIT_ROOT_DIR="$(dirname "$PARENT_DIR")"
 
-if [ -d "$GIT_ROOT_DIR""/documentation/bin" ] 
+if [[ -d "$GIT_ROOT_DIR""/documentation/bin" ]] 
 then
     rm -rf "$GIT_ROOT_DIR""/documentation/bin"
 else
     echo "Skip: remove documentation bin. -> ""$GIT_ROOT_DIR""/documentation/bin"
 fi
 
-if [ -d "$GIT_ROOT_DIR""/documentation/obj" ] 
+if [[ -d "$GIT_ROOT_DIR""/documentation/obj" ]] 
 then
     rm -rf "$GIT_ROOT_DIR""/documentation/obj"
 else
@@ -36,7 +36,7 @@ fi
 ## end docs
 
 
-if [ -d "$PARENT_DIR""/TestResults" ] 
+if [[ -d "$PARENT_DIR""/TestResults" ]] 
 then
     rm -rf "$PARENT_DIR""/TestResults"
 else
@@ -92,14 +92,14 @@ echo "next: delete dependency files"
 
 
 # dependency files
-if [ -d "$PARENT_DIR""/starsky/bin/Release/"$NET_MONIKER"/dependencies" ] 
+if [[ -d "$PARENT_DIR""/starsky/bin/Release/"$NET_MONIKER"/dependencies" ]] 
 then
     rm -rf "$PARENT_DIR""/starsky/bin/Release/"$NET_MONIKER"/dependencies"
 else
     echo "Skip: remove dependencies cache (Release). -> ""$PARENT_DIR""/starsky/bin/Release/"$NET_MONIKER"/dependencies"
 fi
 
-if [ -d "$PARENT_DIR""/starsky/bin/Debug/"$NET_MONIKER"/dependencies" ] 
+if [[ -d "$PARENT_DIR""/starsky/bin/Debug/"$NET_MONIKER"/dependencies" ]] 
 then
     rm -rf "$PARENT_DIR""/starsky/bin/Debug/"$NET_MONIKER"/dependencies"
 else
@@ -107,21 +107,21 @@ else
 fi
 
 # temp folder of the project
-if [ -d "$PARENT_DIR""/starsky/bin/Release/"$NET_MONIKER"/temp" ] 
+if [[ -d "$PARENT_DIR""/starsky/bin/Release/"$NET_MONIKER"/temp" ]] 
 then
     rm -rf "$PARENT_DIR""/starsky/bin/Release/"$NET_MONIKER"/temp"
 else
     echo "Skip: remove temp cache (Release). -> ""$PARENT_DIR""/starsky/bin/Release/"$NET_MONIKER"/temp"
 fi
 
-if [ -d "$PARENT_DIR""/starsky/bin/Debug/"$NET_MONIKER"/temp" ] 
+if [[ -d "$PARENT_DIR""/starsky/bin/Debug/"$NET_MONIKER"/temp" ]] 
 then
     rm -rf "$PARENT_DIR""/starsky/bin/Debug/"$NET_MONIKER"/temp"
 else
     echo "Skip: remove temp cache (Debug) -> ""$PARENT_DIR""/starsky/bin/Debug/"$NET_MONIKER"/temp"
 fi
 
-if [ -d $PARENT_DIR"/.sonarqube" ] 
+if [[ -d $PARENT_DIR"/.sonarqube" ]] 
 then
     echo "Remove sonar cache -> "$PARENT_DIR"/.sonarqube"
     rm -rf $PARENT_DIR"/.sonarqube"
@@ -159,10 +159,10 @@ fi
 
 
 # cypress cache on mac os
-if [ -d "$HOME""/Library/Caches/Cypress" ] 
+if [[ -d "$HOME""/Library/Caches/Cypress" ]] 
 then
     COUNT_CYPRESS=$(ls "$HOME""/Library/Caches/Cypress" | wc -l | sed 's/ *$//g')
-    if [ $COUNT_CYPRESS -ne "1" ]; then
+    if [[ $COUNT_CYPRESS -ne "1" ]]; then
         echo "Remove cypress cache -> "$HOME"/Library/Caches/Cypress"
         rm -rf "$HOME""/Library/Caches/Cypress"
         
@@ -183,7 +183,7 @@ fi
 echo "Next clean electron builder cache"
 
 # https://github.com/electron/get#cache-location
-if [ -d $HOME"/.cache/electron" ] 
+if [[ -d $HOME"/.cache/electron" ]] 
 then
     echo "Remove electron cache [linux] -> "$HOME"/.cache/electron"
     rm -rf $HOME"/.cache/electron"
@@ -194,7 +194,7 @@ fi
 
 echo "Next clean electron builder cache [macOS]"
 
-if [ -d $HOME"/Library/Caches/electron" ] 
+if [[ -d $HOME"/Library/Caches/electron" ]] 
 then
     echo "Remove electron cache [macOS] -> "$HOME"/Library/Caches/electron"
     rm -rf $HOME"/Library/Caches/electron"
