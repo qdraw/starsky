@@ -86,7 +86,7 @@ echo "     os: " "$(uname)" "ci: " $CI "tfbuild: "  $TF_BUILD  " install check: 
 # install dotnet via website   
 if [[ "$(uname)" == "Darwin" && $CI != true && $TF_BUILD != true ]] || [[ "$(uname)" == "Darwin" && "$FORCE_INSTALL_CHECK" == true ]]; then
     SET_DOTNET_VERSION_TO_VAR
-    if [ -x "$(command -v dotnet)" ]; then
+    if [[ -x "$(command -v dotnet)" ]]; then
         if [[ $(dotnet --info) != *$DOTNET_VERSION* ]]; then
              echo "dotnet version mismatch, installing $DOTNET_VERSION" $(uname -m)
              INSTALL_DOTNET_VIA_WEBSITE_PKG

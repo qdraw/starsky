@@ -1,7 +1,7 @@
 #!/bin/bash
 CURRENTDIR=$(dirname "$0")
 
-if [ ! -f $CURRENTDIR/.starskyenv ]; then
+if [[ ! -f $CURRENTDIR/.starskyenv ]]; then
 	echo ">> Please add this file: \`$CURRENTDIR/.starskyenv\`<<"
 	exit
 fi
@@ -29,9 +29,9 @@ fi
 
 COUNTER=0
 MAXCOUNTER=30
-while [ $COUNTER -lt $MAXCOUNTER ]; do
+while [[ $COUNTER -lt $MAXCOUNTER ]]; do
 	CURLOUTPUT=`curl -X GET --header "Authorization: Basic $BEARER" -IL "$URL"/account?json=true -o /dev/null -w '%{http_code}\n' -s`
-	if [ $CURLOUTPUT != "200" ]; then
+	if [[ $CURLOUTPUT != "200" ]]; then
 		if ! (($COUNTER % 2)); then
 			echo "$COUNTER - $CURLOUTPUT - retry"
 		fi

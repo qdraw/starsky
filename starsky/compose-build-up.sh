@@ -74,34 +74,34 @@ echo ""
 # end docker startup
 
 
-if [ ${#SERVICES_TO_BUILD[@]} -eq 0 ]; 
+if [[ ${#SERVICES_TO_BUILD[@]} -eq 0 ]]; 
 then
-    echo "build all services "$NO_CACHE_ARG" "$UNIT_TEST_RUN_ARG
-    docker compose build $PROGRESS_LOGGER_ARG $NO_CACHE_ARG $UNIT_TEST_RUN_ARG
+  echo "build all services "$NO_CACHE_ARG" "$UNIT_TEST_RUN_ARG
+  docker compose build $PROGRESS_LOGGER_ARG $NO_CACHE_ARG $UNIT_TEST_RUN_ARG
 
-    echo "up everything"
-    docker compose --env-file .env -f docker-compose.yml up --timeout 1000 --detach --remove-orphans
+  echo "up everything"
+  docker compose --env-file .env -f docker-compose.yml up --timeout 1000 --detach --remove-orphans
     
 else
-    for SERVICE_NAME in "${SERVICES_TO_BUILD[@]}"
-    do
-        if [[ ${SERVICE_NAME} != "." ]];
-        then
-            SERVICE_NAME_LOWER_CASE=$(echo "$SERVICE_NAME" | tr '[:upper:]' '[:lower:]')
+  for SERVICE_NAME in "${SERVICES_TO_BUILD[@]}"
+  do
+    if [[ ${SERVICE_NAME} != "." ]];
+    then
+      SERVICE_NAME_LOWER_CASE=$(echo "$SERVICE_NAME" | tr '[:upper:]' '[:lower:]')
             
-            echo "build "$SERVICE_NAME_LOWER_CASE" service "$NO_CACHE_ARG" "$UNIT_TEST_RUN_ARG
-            docker compose build $PROGRESS_LOGGER_ARG $SERVICE_NAME_LOWER_CASE $NO_CACHE_ARG $UNIT_TEST_RUN_ARG
-            if [ $? != 0 ] 
-            then 
-              printf '%s%s%s\n' $COLOR_RED 'Build failed' $COLOR_REST
-              printf '%s%s%s\n' $COLOR_RED '        NOT going to run up all service' $COLOR_REST
-              exit 1
-            fi
-        fi    
-    done
+      echo "build "$SERVICE_NAME_LOWER_CASE" service "$NO_CACHE_ARG" "$UNIT_TEST_RUN_ARG
+      docker compose build $PROGRESS_LOGGER_ARG $SERVICE_NAME_LOWER_CASE $NO_CACHE_ARG $UNIT_TEST_RUN_ARG
+      if [[ $? != 0 ]] 
+      then 
+        printf '%s%s%s\n' $COLOR_RED 'Build failed' $COLOR_REST
+        printf '%s%s%s\n' $COLOR_RED '        NOT going to run up all service' $COLOR_REST
+        exit 1
+      fi
+    fi    
+  done
     
-    echo "up all services"
-    docker compose --env-file .env -f docker-compose.yml up --timeout 1000 --detach --no-build --remove-orphans
+  echo "up all services"
+  docker compose --env-file .env -f docker-compose.yml up --timeout 1000 --detach --no-build --remove-orphans
 fi
 
 # To display duration
