@@ -180,10 +180,10 @@ GET_DATA () {
   unzip -q -o -j "temp_"$RUNTIME".zip"
   rm "temp_"$RUNTIME".zip"
 
-  if [ -f "starsky-"$RUNTIME".zip" ]; then
+  if [[ -f "starsky-"$RUNTIME".zip" ]]; then
     echo "starsky-"$RUNTIME".zip is downloaded"
     return 0
-  }
+  fi
 
   echo "FAIL output file: starsky-"$RUNTIME".zip not found"
   exit 1
