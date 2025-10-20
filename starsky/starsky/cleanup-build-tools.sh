@@ -52,7 +52,7 @@ done < <(find . -name "${SEARCH_INPUT}" -print0)
 
 for i in "${SEARCH_OUTPUT[@]}"
 do
-    if [[ "$i" == *"feature"* ]] || [[ "$i" == *"foundation"* ]]; 
+    if [[ "$i" == *"feature"* || "$i" == *"foundation"* ]]; 
     then
        echo "next remove feature/found.: " $i
        rm -rf $i
@@ -67,22 +67,22 @@ done
 echo "next: delete coverage files"
 
 # coverage files
-if [ -f "$PARENT_DIR""/starskytest/coverage-merge-cobertura.xml" ] 
+if [[ -f "$PARENT_DIR""/starskytest/coverage-merge-cobertura.xml" ]] 
 then
     rm  "$PARENT_DIR""/starskytest/coverage-merge-cobertura.xml"
 fi
 
-if [ -f "$PARENT_DIR""/starskytest/coverage-merge-sonarqube.xml" ] 
+if [[ -f "$PARENT_DIR""/starskytest/coverage-merge-sonarqube.xml" ]] 
 then
     rm  "$PARENT_DIR""/starskytest/coverage-merge-sonarqube.xml"
 fi
 
-if [ -f "$PARENT_DIR""/starskytest/jest-coverage.cobertura.xml" ] 
+if [[ -f "$PARENT_DIR""/starskytest/jest-coverage.cobertura.xml" ]] 
 then
     rm  "$PARENT_DIR""/starskytest/jest-coverage.cobertura.xml"
 fi
 
-if [ -f "$PARENT_DIR""/starskytest/netcore-coverage.opencover.xml" ] 
+if [[ -f "$PARENT_DIR""/starskytest/netcore-coverage.opencover.xml" ]] 
 then
     rm  "$PARENT_DIR""/starskytest/netcore-coverage.opencover.xml"
 fi

@@ -14,7 +14,7 @@ NODE="/usr/local/bin/node"
 ARGUMENTS=("$@")
 
 for ((i = 1; i <= $#; i++ )); do
-  if [ $i -gt 1 ]; then
+  if [[ $i -gt 1 ]]; then
     PREV=$(($i-2))
     CURRENT=$(($i-1))
 

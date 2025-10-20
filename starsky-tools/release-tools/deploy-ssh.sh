@@ -16,7 +16,7 @@ case $(uname -m) in
     ;;
 
   "x86_64")
-    if [ $(uname) = "Darwin" ]; then
+  if [[ $(uname) = "Darwin" ]]; then
         RUNTIME="osx-x64"
     fi
     ;;
@@ -26,7 +26,7 @@ esac
 ARGUMENTS=("$@")
 
 for ((i = 1; i <= $#; i++ )); do
-  if [ $i -gt 1 ]; then
+  if [[ $i -gt 1 ]]; then
     PREV=$(($i-2))
     CURRENT=$(($i-1))
 

@@ -70,7 +70,7 @@ for ((i = 1; i <= $#; i++ )); do
         NO_PM2=true
     fi
 
-    if [ $i -gt 1 ]; then
+    if [[ $i -gt 1 ]]; then
         PREV=$(($i-2))
         CURRENT=$(($i-1))
         

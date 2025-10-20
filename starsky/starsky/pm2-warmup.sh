@@ -8,7 +8,7 @@ PORT=5000
 # Port 4823 an example port number
 
 for ((i = 1; i <= $#; i++ )); do
-  if [ $i -gt 1 ]; then
+  if [[ $i -gt 1 ]]; then
     PREV=$(($i-2))
     CURRENT=$(($i-1))
 
