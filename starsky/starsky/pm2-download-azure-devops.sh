@@ -104,7 +104,7 @@ done
 LAST_CHAR_OUTPUT_DIR=${OUTPUT_DIR:length-1:1}
 [[ $LAST_CHAR_OUTPUT_DIR != "/" ]] && OUTPUT_DIR="$OUTPUT_DIR/"; :
 
-if [ -f $OUTPUT_DIR"Startup.cs" ]; then # output dir should have slash at end
+if [[ -f $OUTPUT_DIR"Startup.cs" ]]; then # output dir should have slash at end
     echo "FAIL: You should not run this folder from the source folder"
     echo "copy this file to the location to run it from"
     echo "end script due failure"
@@ -197,11 +197,11 @@ UNIQUE_VALUES() {
   return 0
 }
 
-if [ ! -d $OUTPUT_DIR ]; then
+if [[ ! -d $OUTPUT_DIR ]]; then
     echo "FAIL "$OUTPUT_DIR" does not exist "
     exit 1
 fi
-if [ -f $OUTPUT_DIR"/Startup.cs" ]; then
+if [[ -f $OUTPUT_DIR"/Startup.cs" ]]; then
     echo "FAIL: You should not run this folder from the source folder"
     echo "copy this file to the location to run it from"
   echo "end script due failure"
@@ -228,12 +228,12 @@ if UNIQUE_VALUES "${RESULTS_GET_DATA[@]}"; then
     fi
 fi
 
-if [ -f "starsky-"$RUNTIME".zip" ]; then
+if [[ -f "starsky-"$RUNTIME".zip" ]]; then
     echo "YEAH > download for "$RUNTIME" looks ok"
     echo "get pm2-new-instance.sh installer file"
     unzip -p "starsky-"$RUNTIME".zip" "pm2-new-instance.sh" > ./__pm2-new-instance.sh
     
-    if [ -s ./__pm2-new-instance.sh ]; then
+  if [[ -s ./__pm2-new-instance.sh ]]; then
      mv __pm2-new-instance.sh pm2-new-instance.sh
     else 
         rm ./__pm2-new-instance.sh
@@ -241,7 +241,7 @@ if [ -f "starsky-"$RUNTIME".zip" ]; then
     
 fi
 
-if [ -f pm2-new-instance.sh ]; then
+if [[ -f pm2-new-instance.sh ]]; then
     chmod +rwx ./pm2-new-instance.sh
     echo "run for the setup:"
     # output dir should have slash at end

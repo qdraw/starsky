@@ -20,16 +20,16 @@ case $(uname -m) in
     ;;
 
   "arm64")
-    if [ $(uname) = "Darwin" ]; then
+    if [[ $(uname) = "Darwin" ]]; then
         RUNTIME="osx-arm64"
     fi
     ;;
 
   "x86_64")
-    if [ $(uname) = "Darwin" ]; then
+    if [[ $(uname) = "Darwin" ]]; then
         RUNTIME="osx-x64"
     fi
-    if [ $(uname) = "Linux" ]; then
+    if [[ $(uname) = "Linux" ]]; then
         RUNTIME="linux-x64"
     fi
     ;;
@@ -52,7 +52,7 @@ for ((i = 1; i <= $#; i++ )); do
       exit 0
   fi
       
-  if [ $i -gt 1 ]; then
+  if [[ $i -gt 1 ]]; then
     PREV=$(($i-2))
     CURRENT=$(($i-1))
 
@@ -77,12 +77,12 @@ done
 LAST_CHAR_OUTPUT_DIR=${OUTPUT_DIR:length-1:1}
 [[ $LAST_CHAR_OUTPUT_DIR != "/" ]] && OUTPUT_DIR="$OUTPUT_DIR/"; :
 
-if [ ! -d $OUTPUT_DIR ]; then
+if [[ ! -d $OUTPUT_DIR ]]; then
     echo "FAIL "$OUTPUT_DIR" does not exist "
     exit 1
 fi
 
-if [ -f $OUTPUT_DIR"Startup.cs" ]; then # output dir should have slash at end
+if [[ -f $OUTPUT_DIR"Startup.cs" ]]; then # output dir should have slash at end
     echo "FAIL: You should not run this folder from the source folder"
     echo "copy this file to the location to run it from"
     echo "end script due failure"
@@ -93,12 +93,12 @@ cd $OUTPUT_DIR
 echo "runtime: "$RUNTIME
 
 # to upgrade delete this file
-if [ -f "starsky-$RUNTIME.zip" ]; then
+if [[ -f "starsky-$RUNTIME.zip" ]]; then
     echo "remove exiting zip file"
     rm "starsky-$RUNTIME.zip"
 fi
 
-if [ ! -f pm2-new-instance.sh ]; then
+if [[ ! -f pm2-new-instance.sh ]]; then
     echo "install script is downloaded from github"
     
     if command -v wget &> /dev/null
@@ -110,7 +110,7 @@ if [ ! -f pm2-new-instance.sh ]; then
     
 fi
 
-if [ -f pm2-new-instance.sh ]; then
+if [[ -f pm2-new-instance.sh ]]; then
     chmod +rwx ./pm2-new-instance.sh
     echo "NEXT run ./pm2-new-instance.sh ""${ARGUMENTS[*]}"
     bash pm2-new-instance.sh $ARGUMENTS

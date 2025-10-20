@@ -27,7 +27,7 @@ for ((i = 1; i <= $#; i++ )); do
         ANYWHERE=true
     fi
 
-  if [ $i -gt 1 ]; then
+  if [[ $i -gt 1 ]]; then
     PREV=$(($i-2))
     CURRENT=$(($i-1))
 

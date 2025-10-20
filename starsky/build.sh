@@ -32,21 +32,25 @@ DOTNET_MAC_OS_PKG_ARM64="https://dotnet.microsoft.com/en-us/download/dotnet/than
 # EXECUTION
 ###########################################################################
 
-function FirstJsonValue {
+DARWIN_OS="Darwin"
+
+function first_json_value {
     perl -nle 'print $1 if m{"'"$1"'": "([^"]+)",?}' <<< "${@:2}"
+    return 0
 }
 
-function SET_DOTNET_VERSION_TO_VAR {
+function set_dotnet_version_to_var {
     # If global.json exists, load expected version
     if [[ -f "$DOTNET_GLOBAL_FILE" ]]; then
-        DOTNET_VERSION=$(FirstJsonValue "version" "$(cat "$DOTNET_GLOBAL_FILE")")
+        DOTNET_VERSION=$(first_json_value "version" "$(cat "$DOTNET_GLOBAL_FILE")")
         if [[ "$DOTNET_VERSION" == ""  ]]; then
             unset DOTNET_VERSION
         fi
     fi
+    return 0
 }
 
-function INSTALL_DOTNET_VIA_WEBSITE_PKG {
+function install_dotnet_via_website_pkg {
      if [[ "$(uname -m)" == "x86_64" ]]; then
          DOTNET_MAC_OS_PKG_X64_VERSION=$(sed "s/\SDK_VERSION/$DOTNET_VERSION/g" <<< $DOTNET_MAC_OS_PKG_X64)
          RESULT=$(curl -s $DOTNET_MAC_OS_PKG_X64_VERSION -X GET | grep 'window.location = "')
@@ -59,18 +63,19 @@ function INSTALL_DOTNET_VIA_WEBSITE_PKG {
      RESULT2=$(sed "s/\", \"_self\");//g" <<< $RESULT1)
      RESULT3=$(sed "s/\window.location = \"//g" <<< $RESULT2)
      RESULT4=$(sed 's/";//g' <<< $RESULT3)
-     RESULT5=`echo $RESULT4 | sed 's/ *$//g'`
+     RESULT5=$(echo $RESULT4 | sed 's/ *$//g')
      URL=${RESULT4%$'\r'}
       
-     if [[ "$URL" == https* && "$URL" == *.pkg* ]]; then 
-        echo "next download from: "$URL
-        echo "   afterwards you will be asked for a password to install dotnet"
-        mkdir -p $SCRIPT_DIR"/.nuke/temp/installer/"
-        curl -s -o $SCRIPT_DIR"/.nuke/temp/installer/"$DOTNET_VERSION".pkg" $URL
-        echo "package is downloaded, next install dotnet"
-        echo "sudo installer -pkg "$SCRIPT_DIR"/.nuke/temp/installer/"$DOTNET_VERSION".pkg -target /"
-        sudo installer -pkg $SCRIPT_DIR"/.nuke/temp/installer/"$DOTNET_VERSION".pkg" -target /
-        rm -rf $SCRIPT_DIR"/.nuke/temp/installer/"
+      INSTALLER_DIR="$SCRIPT_DIR/.nuke/temp/installer/"
+      if [[ "$URL" == https* && "$URL" == *.pkg* ]]; then 
+          echo "next download from: "$URL
+          echo "   afterwards you will be asked for a password to install dotnet"
+          mkdir -p "$INSTALLER_DIR"
+          curl -s -o "$INSTALLER_DIR$DOTNET_VERSION.pkg" "$URL"
+          echo "package is downloaded, next install dotnet"
+          echo "sudo installer -pkg $INSTALLER_DIR$DOTNET_VERSION.pkg -target /"
+          sudo installer -pkg "$INSTALLER_DIR$DOTNET_VERSION.pkg" -target /
+          rm -rf "$INSTALLER_DIR"
      else 
         echo "SKIP: mis match in url"             
      fi
@@ -80,20 +85,21 @@ function INSTALL_DOTNET_VIA_WEBSITE_PKG {
      if [[ -f $HOME"/.zshrc" ]]; then
         source ~/.zshrc
      fi 
+     return 0
 }
 
 echo "     os: " "$(uname)" "ci: " $CI "tfbuild: "  $TF_BUILD  " install check: " $FORCE_INSTALL_CHECK
-# install dotnet via website   
-if [[ "$(uname)" == "Darwin" && $CI != true && $TF_BUILD != true ]] || [[ "$(uname)" == "Darwin" && "$FORCE_INSTALL_CHECK" == true ]]; then
-    SET_DOTNET_VERSION_TO_VAR
+ # install dotnet via website   
+if [[ "$(uname)" == "$DARWIN_OS" && $CI != true && $TF_BUILD != true ]] || [[ "$(uname)" == "$DARWIN_OS" && "$FORCE_INSTALL_CHECK" == true ]]; then
+    set_dotnet_version_to_var
     if [[ -x "$(command -v dotnet)" ]]; then
         if [[ $(dotnet --info) != *$DOTNET_VERSION* ]]; then
              echo "dotnet version mismatch, installing $DOTNET_VERSION" $(uname -m)
-             INSTALL_DOTNET_VIA_WEBSITE_PKG
+             install_dotnet_via_website_pkg
         fi
     else
         echo "dotnet not installed, installing $DOTNET_VERSION"
-        INSTALL_DOTNET_VIA_WEBSITE_PKG
+        install_dotnet_via_website_pkg
         echo path $PATH
     fi
 fi
@@ -103,7 +109,7 @@ fi
 if [[ -x "$(command -v dotnet)" ]] && dotnet --version &>/dev/null; then
     export DOTNET_EXE="$(command -v dotnet)"
 else
-    SET_DOTNET_VERSION_TO_VAR
+    set_dotnet_version_to_var
 
     echo "next: install dotnet $DOTNET_VERSION via dotnet-install.sh"
 
@@ -123,19 +129,18 @@ else
     export DOTNET_EXE="$DOTNET_DIRECTORY/dotnet"
 fi
 
-# check if nodejs is installed
-# depends on NVM_RC_FILE, SCRIPT_DIR variables
-if [[ "$(uname)" == "Darwin" && $CI != true && $TF_BUILD != true ]] || [[ "$(uname)" == "Darwin" && "$FORCE_INSTALL_CHECK" == true ]]; then
+ # check if nodejs is installed
+ # depends on NVM_RC_FILE, SCRIPT_DIR variables
+if [[ "$(uname)" == "$DARWIN_OS" && $CI != true && $TF_BUILD != true ]] || [[ "$(uname)" == "$DARWIN_OS" && "$FORCE_INSTALL_CHECK" == true ]]; then
     if [[ -x "$(command -v npm)" ]] && npm --version &>/dev/null && [[ -d "${HOME}/.nvm/" ]]; then
         echo "   npm installed"
-        if [[ -x "$(command -v brew)" ]] && brew --version &>/dev/null; then
-            if [[ -f $(brew --prefix nvm)/nvm.sh ]]; then
-              echo 'sourcing nvm from $(brew --prefix nvm)/nvm.sh'
-              chmod +x $(brew --prefix nvm)/nvm.sh
-              set +ue +o pipefail
-              source $(brew --prefix nvm)/nvm.sh &>/dev/null
-              set -eo pipefail
-            fi
+        if [[ -x "$(command -v brew)" ]] && brew --version &>/dev/null && [[ -f $(brew --prefix nvm)/nvm.sh ]]; 
+        then
+            echo 'sourcing nvm from $(brew --prefix nvm)/nvm.sh'
+            chmod +x $(brew --prefix nvm)/nvm.sh
+            set +ue +o pipefail
+            source $(brew --prefix nvm)/nvm.sh &>/dev/null
+            set -eo pipefail
         fi
                     
         if [[ -f $NVM_RC_FILE ]]; then

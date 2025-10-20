@@ -48,7 +48,7 @@ for ((i = 1; i <= $#; i++ )); do
     NO_TELEMETRY=true
   fi  
   
-  if [ $i -gt 1 ]; then
+  if [[ $i -gt 1 ]]; then
     PREV=$(($i-2))
 
     if [[ ${ARGUMENTS[PREV]} == "--port" ]];
@@ -68,14 +68,14 @@ done
 LAST_CHAR_OUTPUT_DIR=${OUTPUT_DIR:length-1:1}
 [[ $LAST_CHAR_OUTPUT_DIR != "/" ]] && OUTPUT_DIR="$OUTPUT_DIR/"; :
 
-if [ ! -d $OUTPUT_DIR ]; then
+if [[ ! -d $OUTPUT_DIR ]]; then
     echo "FAIL "$OUTPUT_DIR" does not exist "
     exit 1
 fi
 
 cd $OUTPUT_DIR
 
-if [ -f $EXE_NAME ]; then
+if [[ -f $EXE_NAME ]]; then
     chmod +rwx $EXE_NAME
 else 
     echo "FAIL: " $EXE_NAME" is missing"
@@ -87,19 +87,19 @@ fi
 # settings
 echo "run with the following parameters "
 
-if [ "$ANYWHERE" = true ] ; then
+if [[ "$ANYWHERE" = true ]] ; then
     ANYWHERESTATUSTEXT="--anywhere $ANYWHERE"
 fi
 echo "--port" $PORT $ANYWHERESTATUSTEXT
 
-if [ "$NO_TELEMETRY" = true ] ; then
+if [[ "$NO_TELEMETRY" = true ]] ; then
     echo "--no-telemetry"
 fi
 
 mkdir -p $HOME"/.config/systemd/user/"
 
 SYSTEMD_SERVICE_PATH=$HOME"/.config/systemd/user/"$SERVICE_NAME".service"
-if [ ! -f $SYSTEMD_SERVICE_PATH ]
+if [[ ! -f $SYSTEMD_SERVICE_PATH ]]
 then
     echo "next: create "$SYSTEMD_SERVICE_PATH
     touch $SYSTEMD_SERVICE_PATH
@@ -115,7 +115,7 @@ fi
 
 # anywhere port
 HOSTNAME="localhost"
-if [ "$ANYWHERE" = true ] ; then
+if [[ "$ANYWHERE" = true ]] ; then
     HOSTNAME="*"
 fi
 

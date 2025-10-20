@@ -40,7 +40,7 @@ for ((i = 1; i <= $#; i++ )); do
     CLEAN_OUTPUT=true
   fi
 
-  if [ $i -gt 1 ]; then
+  if [[ $i -gt 1 ]]; then
     PREV=$(($i-2))
 
     if [[ ${ARGUMENTS[PREV]} == "--branch" ]];
@@ -72,7 +72,7 @@ echo "CLEAN_OUTPUT"$CLEAN_OUTPUT
 LAST_CHAR_OUTPUT_DIR=${OUTPUT_DIR:length-1:1}
 [[ $LAST_CHAR_OUTPUT_DIR != "/" ]] && OUTPUT_DIR="$OUTPUT_DIR/"; :
 
-if [ -f $OUTPUT_DIR"readme.md" ]; then # output dir should have slash at end
+if [[ -f $OUTPUT_DIR"readme.md" ]]; then # output dir should have slash at end
     echo "FAIL: You should not run this folder from the source folder"
     echo "copy this file to the location to run it from"
     echo "end script due failure"
@@ -155,7 +155,7 @@ GET_DATA () {
 
   unzip -q -o "documentation.zip"
 
-  if [ -f "documentation.zip" ]; then
+  if [[ -f "documentation.zip" ]]; then
     echo "> OK documentation.zip downloaded and extracted"
     rm "documentation.zip"
     return 0
@@ -173,11 +173,11 @@ UNIQUE_VALUES() {
   return 0
 }
 
-if [ ! -d $OUTPUT_DIR ]; then
+if [[ ! -d $OUTPUT_DIR ]]; then
     echo "FAIL "$OUTPUT_DIR" does not exist "
     exit 1
 fi
-if [ -f $OUTPUT_DIR"/readme.md" ]; then
+if [[ -f $OUTPUT_DIR"/readme.md" ]]; then
     echo "FAIL: You should not run this folder from the source folder"
     echo "copy this file to the location to run it from"
     echo "end script due failure"

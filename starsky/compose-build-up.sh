@@ -13,6 +13,9 @@ else
     COLOR_BLUE=""
 fi
 
+PRINTF_COLOR_FORMAT_NEWLINE='%s%s%s\n'
+PRINTF_COLOR_FORMAT='%s%s%s'
+
 START_TIME=$(date +%s)
 
 NO_CACHE_ARG=""
@@ -57,15 +60,15 @@ if (! docker stats --no-stream &> /dev/null); then
     # On Mac OS this would be the terminal command to launch Docker
     open /Applications/Docker.app
   elif [[ "$(uname -s)" == *"MINGW64_NT"* ]]; then
-    printf '%s%s%s\n' $COLOR_RED "Make sure Docker Desktop is running and restart this script" $COLOR_REST
+  printf "$PRINTF_COLOR_FORMAT_NEWLINE" $COLOR_RED "Make sure Docker Desktop is running and restart this script" $COLOR_REST
     echo "C:\Program Files\Docker\Docker\Docker Desktop.exe"
     exit 1
   fi
   
-  printf '%s%s%s\n' $COLOR_BLUE "Waiting for Docker to launch..." $COLOR_REST
+  printf "$PRINTF_COLOR_FORMAT_NEWLINE" $COLOR_BLUE "Waiting for Docker to launch..." $COLOR_REST
   # Wait until Docker daemon is running and has completed initialisation
   while (! docker stats --no-stream &> /dev/null); do
-    printf '%s%s%s' $COLOR_GREEN '..' $COLOR_REST
+    printf $PRINTF_COLOR_FORMAT $COLOR_GREEN '..' $COLOR_REST
     # Docker takes a few seconds to initialize
     sleep 2
   done
@@ -93,8 +96,8 @@ else
       docker compose build $PROGRESS_LOGGER_ARG $SERVICE_NAME_LOWER_CASE $NO_CACHE_ARG $UNIT_TEST_RUN_ARG
       if [[ $? != 0 ]] 
       then 
-        printf '%s%s%s\n' $COLOR_RED 'Build failed' $COLOR_REST
-        printf '%s%s%s\n' $COLOR_RED '        NOT going to run up all service' $COLOR_REST
+      printf "$PRINTF_COLOR_FORMAT_NEWLINE" $COLOR_RED 'Build failed' $COLOR_REST
+      printf "$PRINTF_COLOR_FORMAT_NEWLINE" $COLOR_RED '        NOT going to run up all service' $COLOR_REST
         exit 1
       fi
     fi    
