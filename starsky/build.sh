@@ -35,7 +35,8 @@ DOTNET_MAC_OS_PKG_ARM64="https://dotnet.microsoft.com/en-us/download/dotnet/than
 DARWIN_OS="Darwin"
 
 function first_json_value {
-    perl -nle 'print $1 if m{"'"$1"'": "([^"]+)",?}' <<< "${@:2}"
+    local key="$1"
+    perl -nle 'print $1 if m{"'"$key"'": "([^"]+)",?}' <<< "${@:2}"
     return 0
 }
 

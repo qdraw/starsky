@@ -40,12 +40,12 @@ done
 
 # net core hostname
 HOSTNAME="localhost"
-if [ "$ANYWHERE" = true ] ; then
+if [[ "$ANYWHERE" = true ]] ; then
     HOSTNAME="*"
 fi
 echo "HOSTNAME "$HOSTNAME
     
-ps_out=`ps -ef | grep $PROCESS_NAME | grep -v 'grep' | grep -v $0`
+ps_out=$(ps -ef | grep $PROCESS_NAME | grep -v 'grep' | grep -v $0)
 result=$(echo $ps_out | grep "$PROCESS_NAME")
 if [[ "$result" != "" ]];then
     echo "Running, do nothing"

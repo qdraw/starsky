@@ -11,7 +11,9 @@ then
 fi
 
 realpath() {
-    [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+    local path="$1"
+    [[ $path = /* ]] && echo "$path" || echo "$PWD/${path#./}"
+    return 0
 }
 OUTPUT_DIR="$(dirname "$(realpath "$0")")"
 

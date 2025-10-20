@@ -35,9 +35,9 @@ echo "Running on: "$URL
 
 COUNTER=0
 MAX_COUNTER=40
-while [ $COUNTER -lt $MAX_COUNTER ]; do
-	CURL_OUTPUT=`curl -X GET -IL "$URL"/api/account/status -o /dev/null -w '%{http_code}\n' -s`
-	if [ $CURL_OUTPUT != "401" ] && [ $CURL_OUTPUT != "406" ]; then
+while [[ $COUNTER -lt $MAX_COUNTER ]]; do
+	CURL_OUTPUT=$(curl -X GET -IL "$URL"/api/account/status -o /dev/null -w '%{http_code}\n' -s)
+  if [[ $CURL_OUTPUT != "401" && $CURL_OUTPUT != "406" ]]; then
 		if ! (($COUNTER % 2)); then
 			echo "$COUNTER - $CURL_OUTPUT - retry"
 		fi
@@ -54,6 +54,6 @@ if [[ $COUNTER == $MAX_COUNTER  ]]; then
  exit 1
 fi
 
-# To make Search Suggestions at start faster
-CURL_SUGGEST_OUTPUT=`curl -X GET -LI "$URL"/api/suggest/inflate -o /dev/null -w '%{http_code}\n' -s`
+ # To make Search Suggestions at start faster
+CURL_SUGGEST_OUTPUT=$(curl -X GET -LI "$URL"/api/suggest/inflate -o /dev/null -w '%{http_code}\n' -s)
 echo "!> done ~ -sug:$CURL_SUGGEST_OUTPUT"
