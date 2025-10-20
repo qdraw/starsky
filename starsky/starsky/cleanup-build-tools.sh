@@ -6,12 +6,13 @@
 SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 NET_MONIKER="net8.0"
 
-if [[ -d $HOME"/.sonar" ]] 
+SONAR_CACHE_DIR=".sonar"
+if [[ -d "$HOME/$SONAR_CACHE_DIR" ]] 
 then
-    echo "Remove sonar cache -> "$HOME"/.sonar"
-    rm -rf $HOME"/.sonar"
+    echo "Remove sonar cache -> $HOME/$SONAR_CACHE_DIR"
+    rm -rf "$HOME/$SONAR_CACHE_DIR"
 else
-    echo "Skip: remove sonar cache. -> "$HOME"/.sonar"
+    echo "Skip: remove sonar cache. -> $HOME/$SONAR_CACHE_DIR"
 fi
 
 PARENT_DIR="$(dirname "$SCRIPT_DIR")"
@@ -92,41 +93,46 @@ echo "next: delete dependency files"
 
 
 # dependency files
-if [[ -d "$PARENT_DIR""/starsky/bin/Release/"$NET_MONIKER"/dependencies" ]] 
+DEPENDENCIES_DIR="/dependencies"
+STARSKY_BIN_DEBUG_DIR="/starsky/bin/Debug/"
+STARSKY_BIN_RELEASE_DIR="/starsky/bin/Release/"
+
+if [[ -d "$PARENT_DIR$STARSKY_BIN_RELEASE_DIR$NET_MONIKER$DEPENDENCIES_DIR" ]] 
 then
-    rm -rf "$PARENT_DIR""/starsky/bin/Release/"$NET_MONIKER"/dependencies"
+    rm -rf "$PARENT_DIR$STARSKY_BIN_RELEASE_DIR$NET_MONIKER$DEPENDENCIES_DIR"
 else
-    echo "Skip: remove dependencies cache (Release). -> ""$PARENT_DIR""/starsky/bin/Release/"$NET_MONIKER"/dependencies"
+    echo "Skip: remove dependencies cache (Release). -> $PARENT_DIR$STARSKY_BIN_RELEASE_DIR$NET_MONIKER$DEPENDENCIES_DIR"
 fi
 
-if [[ -d "$PARENT_DIR""/starsky/bin/Debug/"$NET_MONIKER"/dependencies" ]] 
+if [[ -d "$PARENT_DIR$STARSKY_BIN_DEBUG_DIR$NET_MONIKER$DEPENDENCIES_DIR" ]] 
 then
-    rm -rf "$PARENT_DIR""/starsky/bin/Debug/"$NET_MONIKER"/dependencies"
+    rm -rf "$PARENT_DIR$STARSKY_BIN_DEBUG_DIR$NET_MONIKER$DEPENDENCIES_DIR"
 else
-    echo "Skip: remove dependencies cache (Debug) -> ""$PARENT_DIR""/starsky/bin/Debug/"$NET_MONIKER"/dependencies"
+    echo "Skip: remove dependencies cache (Debug) -> $PARENT_DIR$STARSKY_BIN_DEBUG_DIR$NET_MONIKER$DEPENDENCIES_DIR"
 fi
 
 # temp folder of the project
-if [[ -d "$PARENT_DIR""/starsky/bin/Release/"$NET_MONIKER"/temp" ]] 
+if [[ -d "$PARENT_DIR$STARSKY_BIN_RELEASE_DIR$NET_MONIKER/temp" ]] 
 then
-    rm -rf "$PARENT_DIR""/starsky/bin/Release/"$NET_MONIKER"/temp"
+    rm -rf "$PARENT_DIR$STARSKY_BIN_RELEASE_DIR$NET_MONIKER/temp"
 else
-    echo "Skip: remove temp cache (Release). -> ""$PARENT_DIR""/starsky/bin/Release/"$NET_MONIKER"/temp"
+    echo "Skip: remove temp cache (Release). -> $PARENT_DIR$STARSKY_BIN_RELEASE_DIR$NET_MONIKER/temp"
 fi
 
-if [[ -d "$PARENT_DIR""/starsky/bin/Debug/"$NET_MONIKER"/temp" ]] 
+if [[ -d "$PARENT_DIR$STARSKY_BIN_DEBUG_DIR$NET_MONIKER/temp" ]] 
 then
-    rm -rf "$PARENT_DIR""/starsky/bin/Debug/"$NET_MONIKER"/temp"
+    rm -rf "$PARENT_DIR$STARSKY_BIN_DEBUG_DIR$NET_MONIKER/temp"
 else
-    echo "Skip: remove temp cache (Debug) -> ""$PARENT_DIR""/starsky/bin/Debug/"$NET_MONIKER"/temp"
+    echo "Skip: remove temp cache (Debug) -> $PARENT_DIR$STARSKY_BIN_DEBUG_DIR$NET_MONIKER/temp"
 fi
 
-if [[ -d $PARENT_DIR"/.sonarqube" ]] 
+SONARQUBE_CACHE_DIR="/.sonarqube"
+if [[ -d "$PARENT_DIR$SONARQUBE_CACHE_DIR" ]] 
 then
-    echo "Remove sonar cache -> "$PARENT_DIR"/.sonarqube"
-    rm -rf $PARENT_DIR"/.sonarqube"
+    echo "Remove sonar cache -> $PARENT_DIR$SONARQUBE_CACHE_DIR"
+    rm -rf "$PARENT_DIR$SONARQUBE_CACHE_DIR"
 else
-    echo "Skip: remove sonar cache. -> "$PARENT_DIR"/.sonarqube"
+    echo "Skip: remove sonar cache. -> $PARENT_DIR$SONARQUBE_CACHE_DIR"
 fi
 
 echo "next clean npm"
@@ -159,12 +165,13 @@ fi
 
 
 # cypress cache on mac os
-if [[ -d "$HOME""/Library/Caches/Cypress" ]] 
+CYPRESS_CACHE_DIR_MACOS="/Library/Caches/Cypress"
+if [[ -d "$HOME$CYPRESS_CACHE_DIR_MACOS" ]] 
 then
-    COUNT_CYPRESS=$(ls "$HOME""/Library/Caches/Cypress" | wc -l | sed 's/ *$//g')
+    COUNT_CYPRESS=$(ls "$HOME$CYPRESS_CACHE_DIR_MACOS" | wc -l | sed 's/ *$//g')
     if [[ $COUNT_CYPRESS -ne "1" ]]; then
-        echo "Remove cypress cache -> "$HOME"/Library/Caches/Cypress"
-        rm -rf "$HOME""/Library/Caches/Cypress"
+        echo "Remove cypress cache -> $HOME$CYPRESS_CACHE_DIR_MACOS"
+        rm -rf "$HOME$CYPRESS_CACHE_DIR_MACOS"
         
         # and install it again
         ROOT_REPO_DIR="$(dirname "$PARENT_DIR")"
@@ -177,32 +184,32 @@ then
     fi
 
 else
-    echo "Skip: remove cypress cache. -> "$HOME"/Library/Caches/Cypress"
+    echo "Skip: remove cypress cache. -> $HOME$CYPRESS_CACHE_DIR_MACOS"
 fi
 
 echo "Next clean electron builder cache"
 
 # https://github.com/electron/get#cache-location
-if [[ -d $HOME"/.cache/electron" ]] 
+ELECTRON_CACHE_DIR_LINUX="/.cache/electron"
+if [[ -d "$HOME$ELECTRON_CACHE_DIR_LINUX" ]] 
 then
-    echo "Remove electron cache [linux] -> "$HOME"/.cache/electron"
-    rm -rf $HOME"/.cache/electron"
-    mkdir -p $HOME"/.cache/electron"
+    echo "Remove electron cache [linux] -> $HOME$ELECTRON_CACHE_DIR_LINUX"
+    rm -rf "$HOME$ELECTRON_CACHE_DIR_LINUX"
+    mkdir -p "$HOME$ELECTRON_CACHE_DIR_LINUX"
 else
-    echo "Skip: remove electron cache [linux] -> "$HOME"/.cache/electron"
+    echo "Skip: remove electron cache [linux] -> $HOME$ELECTRON_CACHE_DIR_LINUX"
 fi
 
 echo "Next clean electron builder cache [macOS]"
-
-if [[ -d $HOME"/Library/Caches/electron" ]] 
+ELECTRON_CACHE_DIR_MACOS="/Library/Caches/electron"
+if [[ -d $HOME$ELECTRON_CACHE_DIR_MACOS ]] 
 then
-    echo "Remove electron cache [macOS] -> "$HOME"/Library/Caches/electron"
-    rm -rf $HOME"/Library/Caches/electron"
-    mkdir -p $HOME"/Library/Caches/electron"
+    echo "Remove electron cache [macOS] -> $HOME$ELECTRON_CACHE_DIR_MACOS"
+    rm -rf $HOME$ELECTRON_CACHE_DIR_MACOS   
+    mkdir -p $HOME$ELECTRON_CACHE_DIR_MACOS
 else
-    echo "Skip: remove electron cache [macOS]. -> "$HOME"/Library/Caches/electron"
+    echo "Skip: remove electron cache [macOS]. -> $HOME$ELECTRON_CACHE_DIR_MACOS"
 fi
-
 
 # not used in the project
 if command -v yarn &> /dev/null
@@ -219,7 +226,6 @@ then
 fi
 
 # Docker cache clean
-
 if ! command -v docker &> /dev/null
 then
     echo "FAIL; docker could not be found"
@@ -232,22 +238,23 @@ COLOR_REST="$(tput sgr0)"
 COLOR_RED="$(tput setaf 1)"
 COLOR_GREEN="$(tput setaf 2)"
 COLOR_BLUE="$(tput setaf 4)"
-
+PRINTF_COLOR_FORMAT_NEWLINE='%s%s%s\n'
+PRINTF_COLOR_FORMAT='%s%s%s'
 
 if (! docker stats --no-stream &> /dev/null); then
   if [[ "$(uname)" == "Darwin" ]]; then
     # On Mac OS this would be the terminal command to launch Docker
     open /Applications/Docker.app
   elif [[ "$(uname -s)" == *"MINGW64_NT"* ]]; then
-    printf '%s%s%s\n' $COLOR_RED "Make sure Docker Desktop is running and restart this script" $COLOR_REST
+    printf $PRINTF_COLOR_FORMAT_NEWLINE $COLOR_RED "Make sure Docker Desktop is running and restart this script" $COLOR_REST
     echo "C:\Program Files\Docker\Docker\Docker Desktop.exe"
     exit 1
   fi
   
-  printf '%s%s%s\n' $COLOR_BLUE "Waiting for Docker to launch..." $COLOR_REST
+  printf $PRINTF_COLOR_FORMAT_NEWLINE $COLOR_BLUE "Waiting for Docker to launch..." $COLOR_REST
   # Wait until Docker daemon is running and has completed initialisation
   while (! docker stats --no-stream &> /dev/null); do
-    printf '%s%s%s' $COLOR_GREEN '..' $COLOR_REST
+    printf $PRINTF_COLOR_FORMAT $COLOR_GREEN '..' $COLOR_REST
     # Docker takes a few seconds to initialize
     sleep 2
   done
