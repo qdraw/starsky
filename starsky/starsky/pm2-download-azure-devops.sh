@@ -196,9 +196,10 @@ get_data () {
 }
 
 unique_values() {
+  local value="$1"
   typeset i
   for i do
-    [[ "$1" = "$i" ]] || return 1
+    [[ "$value" = "$i" ]] || return 1
   done
   return 0
 }
