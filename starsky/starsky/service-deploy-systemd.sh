@@ -98,7 +98,8 @@ fi
 
 mkdir -p $HOME"/.config/systemd/user/"
 
-SYSTEMD_SERVICE_PATH=$HOME"/.config/systemd/user/"$SERVICE_NAME".service"
+SYSTEMD_SERVICE_SUFFIX=".service"
+SYSTEMD_SERVICE_PATH=$HOME"/.config/systemd/user/"$SERVICE_NAME$SYSTEMD_SERVICE_SUFFIX
 if [[ ! -f $SYSTEMD_SERVICE_PATH ]]
 then
     echo "next: create "$SYSTEMD_SERVICE_PATH
@@ -109,8 +110,8 @@ fi
 
 if systemctl --user --type service | grep -q "$SERVICE_NAME";then
     echo "next: stop and disable $SERVICE_NAME "    
-    systemctl --user stop $SERVICE_NAME".service"
-    systemctl --user disable $SERVICE_NAME".service"
+    systemctl --user stop $SERVICE_NAME$SYSTEMD_SERVICE_SUFFIX
+    systemctl --user disable $SERVICE_NAME$SYSTEMD_SERVICE_SUFFIX
 fi
 
 # anywhere port
@@ -135,7 +136,7 @@ echo -e "SyslogIdentifier=${OUTPUT_DIR}" >> $SYSTEMD_SERVICE_PATH
 # We can even set environment variables
 echo -e "Environment=ASPNETCORE_ENVIRONMENT=Production" >> $SYSTEMD_SERVICE_PATH
 echo -e "Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false" >> $SYSTEMD_SERVICE_PATH
-if [ "$NO_TELEMETRY" = true ] ; then
+if [[ "$NO_TELEMETRY" = true ]] ; then
     echo -e "Environment=APP__ENABLEPACKAGETELEMETRY=false" >> $SYSTEMD_SERVICE_PATH
 fi
 echo -e "\n[Install]" >> $SYSTEMD_SERVICE_PATH
@@ -146,21 +147,21 @@ echo "next: create $SERVICE_NAME "
 systemctl --user daemon-reload
 
 echo "next: enable"
-systemctl --user enable $SERVICE_NAME".service"
+systemctl --user enable $SERVICE_NAME$SYSTEMD_SERVICE_SUFFIX
 
 echo "next: start"
-systemctl --user start $SERVICE_NAME".service"
+systemctl --user start $SERVICE_NAME$SYSTEMD_SERVICE_SUFFIX
 
 echo "next: is failed"
-systemctl --user is-failed $SERVICE_NAME".service"
+systemctl --user is-failed $SERVICE_NAME$SYSTEMD_SERVICE_SUFFIX
 
 echo "next: cat"
-systemctl --user cat $SERVICE_NAME".service"
+systemctl --user cat $SERVICE_NAME$SYSTEMD_SERVICE_SUFFIX
 
 echo "end"
 echo "to restart: "
 
-echo "rm "$OUTPUT_DIR"app__data.db* && ""systemctl --user restart "$SERVICE_NAME".service"
+echo "rm "$OUTPUT_DIR"app__data.db* && ""systemctl --user restart "$SERVICE_NAME$SYSTEMD_SERVICE_SUFFIX""
 # for example: 
 #           rm /opt/starsky/app__data.db*
 #           systemctl --user restart starsky.service

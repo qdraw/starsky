@@ -133,22 +133,23 @@ fi
 echo ""
 
 
-GET_WORKFLOW_URL_FN() {
-    local WORKFLOW_ID=$1
-    local STATUS=$2
-    local BRANCH=$3
+get_workflow_url_fn() {
+	local workflow_id=$1
+    local status=$2
+    local branch=$3
 
-    local ACTIONS_WORKFLOW_URL_LOCAL="https://api.github.com/repos/qdraw/starsky/actions/workflows/${WORKFLOW_ID}/runs?status=${STATUS}&per_page=1&exclude_pull_requests=true"
+    local actions_workflow_url_local="https://api.github.com/repos/qdraw/starsky/actions/workflows/${workflow_id}/runs?status=${status}&per_page=1&exclude_pull_requests=true"
 
-    if [[ -n $BRANCH ]]; then
-        ACTIONS_WORKFLOW_URL_LOCAL="${ACTIONS_WORKFLOW_URL_LOCAL}&branch=${BRANCH}"
+    if [[ -n $branch ]]; then
+        actions_workflow_url_local="${actions_workflow_url_local}&branch=${branch}"
     fi
 
-    echo $ACTIONS_WORKFLOW_URL_LOCAL
+    echo $actions_workflow_url_local
+    return 0
 }
 
-ACTIONS_WORKFLOW_URL_COMPLETED=$(GET_WORKFLOW_URL_FN $WORKFLOW_ID "completed" $BRANCH)
-ACTIONS_WORKFLOW_URL_IN_PROGRESS=$(GET_WORKFLOW_URL_FN $WORKFLOW_ID "in_progress" $BRANCH)
+ACTIONS_WORKFLOW_URL_COMPLETED=$(get_workflow_url_fn $WORKFLOW_ID "completed" $BRANCH)
+ACTIONS_WORKFLOW_URL_IN_PROGRESS=$(get_workflow_url_fn $WORKFLOW_ID "in_progress" $BRANCH)
 
 # First check if output is not an 401 or 404
 API_GATEWAY_STATUS_CODE=$(curl --write-out %{http_code} \
@@ -163,34 +164,36 @@ elif [[ "$API_GATEWAY_STATUS_CODE" -eq 404 ]] ; then
 fi
 
 
-WAIT_FOR_WORKFLOW_COMPLETION_FN() {
-    local STARSKY_GITHUB_PAT_LOCAL="$1"
-    local ACTIONS_WORKFLOW_URL_INPROGRESS_LOCAL="$2"
-    local MAX_RETRIES_LOCAL=5
-    local RETRY_COUNT_LOCAL=0
+
+wait_for_workflow_completion_fn() {
+    local starsky_github_pat_local="$1"
+    local actions_workflow_url_inprogress_local="$2"
+    local max_retries_local=5
+    local retry_count_local=0
 
     while true; do
-        RESULT_ACTIONS_INPROGRESS_WORKFLOW=$(curl --user :$STARSKY_GITHUB_PAT_LOCAL -sS $ACTIONS_WORKFLOW_URL_INPROGRESS_LOCAL)
+        result_actions_inprogress_workflow=$(curl --user :$starsky_github_pat_local -sS $actions_workflow_url_inprogress_local)
 
-        total_count=$(echo "$RESULT_ACTIONS_INPROGRESS_WORKFLOW" | grep -o '"total_count": [0-9]*' | cut -d' ' -f2)
+        total_count=$(echo "$result_actions_inprogress_workflow" | grep -o '"total_count": [0-9]*' | cut -d' ' -f2)
 
         if [[ "$total_count" -ne 0 ]]; then
-            RETRY_COUNT_LOCAL_DISPLAY=$((RETRY_COUNT_LOCAL + 1))
-            echo "Workflow runs in progress. Retrying $RETRY_COUNT_LOCAL_DISPLAY/$MAX_RETRIES_LOCAL in 10 seconds..."
+            retry_count_local_display=$((retry_count_local + 1))
+            echo "Workflow runs in progress. Retrying $retry_count_local_display/$max_retries_local in 10 seconds..."
             sleep 10
         else
             break
         fi
 
-        RETRY_COUNT_LOCAL=$((RETRY_COUNT_LOCAL + 1))
-        if [[ "$RETRY_COUNT_LOCAL" -eq "$MAX_RETRIES_LOCAL" ]]; then
+        retry_count_local=$((retry_count_local + 1))
+        if [[ "$retry_count_local" -eq "$max_retries_local" ]]; then
             echo "Skip retry to get the in progress function, continue with latest finished build"
             break
         fi
     done
+    return 0
 }
 
-WAIT_FOR_WORKFLOW_COMPLETION_FN "$STARSKY_GITHUB_PAT" "$ACTIONS_WORKFLOW_URL_IN_PROGRESS"
+wait_for_workflow_completion_fn "$STARSKY_GITHUB_PAT" "$ACTIONS_WORKFLOW_URL_IN_PROGRESS"
 
 echo "VERSION: "$VERSION
 echo "OUT" $OUTPUT_DIR
@@ -249,7 +252,7 @@ if [[ "$FORCE" = false ]] ; then
     LAST_GITHUB_HEAD_SHA=0
     if [[ -f "$GITHUB_HEAD_SHA_CACHE_FILE" ]]; then
         LAST_GITHUB_HEAD_SHA="$(cat $GITHUB_HEAD_SHA_CACHE_FILE)"
-        LAST_GITHUB_HEAD_SHA=`echo $LAST_GITHUB_HEAD_SHA | sed -e 's/^[[:space:]]*//'`
+        LAST_GITHUB_HEAD_SHA=$(echo $LAST_GITHUB_HEAD_SHA | sed -e 's/^[[:space:]]*//')
     fi 
 
     if [[ $LAST_GITHUB_HEAD_SHA == $GITHUB_HEAD_SHA ]]; then
@@ -280,7 +283,7 @@ fi
 # remove already downloaded outputs
 for VERSION_ZIP in "${VERSION_ZIP_ARRAY[@]}";
 do
-    if [ -f "${OUTPUT_DIR}/${VERSION_ZIP}" ]; then
+    if [[ -f "${OUTPUT_DIR}/${VERSION_ZIP}" ]]; then
         rm ${OUTPUT_ZIP_PATH} || true
     fi
 done    

@@ -31,6 +31,10 @@ case $(uname -m) in
         RUNTIME="linux-x64"
     fi
     ;;
+  *)
+    echo "Fatal error: Unknown architecture $(uname -m);" >&2
+    exit 1
+    ;;    
 esac
 
 CURRENT_DIR=$(dirname "$0")
@@ -39,6 +43,7 @@ NO_PM2=false
 
 # command line args
 ARGUMENTS=("$@")
+
 
 for ((i = 1; i <= $#; i++ )); do
 
@@ -137,18 +142,19 @@ else
   pm2 describe $PM2NAME > /dev/null
   HASDESCRIBE=$?
 
-  if [ "${HASDESCRIBE}" -eq 0 ]; then
+ if [[ "${HASDESCRIBE}" -eq 0 ]]; then
     echo "stop service"
     pm2 stop $PM2NAME
-  fi;
+ fi;
 fi
 
 
 # remove current installation
+USER_VIEWS_DIR="UserViews"
 
 # Keep UserViews over a release
-if [ -d "WebHtmlPublish/UserViews" ]; then
-  cp -r "WebHtmlPublish/UserViews" "UserViews/"
+if [[ -d "WebHtmlPublish/$USER_VIEWS_DIR" ]]; then
+    cp -r "WebHtmlPublish/$USER_VIEWS_DIR" "$USER_VIEWS_DIR/"
 fi
 
 # delete files in www-root
@@ -165,7 +171,7 @@ if [[ -f starsky.dll ]]; then
         && $ENTRY != "service-"*
         && $ENTRY != "thumbnailTempFolder"
         && $ENTRY != "temp"
-        && $ENTRY != "UserViews"* # Keep UserViews
+        && $ENTRY != "$USER_VIEWS_DIR"* # Keep UserViews
         && $ENTRY != "starsky-"*
         && $ENTRY != *."db" ]];
         then
@@ -219,9 +225,9 @@ echo "reset rights if those are wrong"
 /usr/bin/find . -type f -exec chmod 644 {} \;
 
 # to restore the content UserViews
-if [[ -d "UserViews" ]]; then
-  cp -fr "UserViews" "WebHtmlPublish"
-  rm -rf "UserViews"
+if [[ -d "$USER_VIEWS_DIR" ]]; then
+    cp -fr "$USER_VIEWS_DIR" "WebHtmlPublish"
+    rm -rf "$USER_VIEWS_DIR"
 fi
 
 # execute rights for specific files

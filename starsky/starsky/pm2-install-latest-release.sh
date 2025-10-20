@@ -33,6 +33,10 @@ case $(uname -m) in
         RUNTIME="linux-x64"
     fi
     ;;
+  *)
+    echo "Fatal error: Unknown architecture $(uname -m);" >&2
+    exit 1
+    ;;    
 esac
 
 

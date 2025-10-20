@@ -35,10 +35,15 @@ case $(uname -m) in
         RUNTIME="linux-x64"
     fi
     ;;
+  *)
+    echo "Fatal error: Unknown architecture $(uname -m);" >&2
+    exit 1
+    ;;    
 esac
 
 
 BRANCH="master"
+
 # azure devops
 ORGANIZATION="qdraw"
 DEVOPSPROJECT="starsky"
@@ -46,6 +51,8 @@ DEVOPSDEFIDS=( 17 20 )
 BUILD_ID_DEF=""
 # STARSKY_DEVOPS_PAT <= use this one
 # export STARSKY_DEVOPS_PAT=""
+
+STARSKY_ZIP_PREFIX="starsky-"
 
 CURRENT_DIR=$(dirname "$0")
 OUTPUT_DIR=$CURRENT_DIR
@@ -119,9 +126,7 @@ fi
 BRANCH="${BRANCH/refs\/heads\//}"
 echo $BRANCH
 
-
-
-GET_DATA () {
+get_data () {
   LOCALDEVOPSDEFID=$1
 
   if [[ "$LOCALDEVOPSDEFID" != -1 ]]; then
@@ -133,6 +138,7 @@ GET_DATA () {
   URLBUILDS="https://dev.azure.com/"$ORGANIZATION"/"$DEVOPSPROJECT"/_apis/build/builds?api-version=5.1&\$top=1&statusFilter=completed&definitions="$LOCALDEVOPSDEFID"&branchName=refs%2Fheads%2F"$BRANCH
   RESULTBUILDS=$(curl -sS --user :$STARSKY_DEVOPS_PAT $URLBUILDS)
   
+  # NOSONAR(S1764) ignore Correct one of the identical expressions on both sides of operator '||'.
   if [[ "$RESULTBUILDS" == *"Object moved to"* || "$RESULTBUILDS" == *"Access Denied"* ]]; then
     echo "FAIL: You don't have access!"
     exit 1
@@ -180,19 +186,20 @@ GET_DATA () {
   unzip -q -o -j "temp_"$RUNTIME".zip"
   rm "temp_"$RUNTIME".zip"
 
-  if [[ -f "starsky-"$RUNTIME".zip" ]]; then
-    echo "starsky-"$RUNTIME".zip is downloaded"
+  if [[ -f "$STARSKY_ZIP_PREFIX$RUNTIME.zip" ]]; then
+    echo "$STARSKY_ZIP_PREFIX$RUNTIME.zip is downloaded"
     return 0
   fi
 
-  echo "FAIL output file: starsky-"$RUNTIME".zip not found"
+  echo "FAIL output file: $STARSKY_ZIP_PREFIX$RUNTIME.zip not found"
   exit 1
 }
 
-UNIQUE_VALUES() {
+unique_values() {
+  local value="$1"
   typeset i
   for i do
-    [ "$1" = "$i" ] || return 1
+    [[ "$value" = "$i" ]] || return 1
   done
   return 0
 }
@@ -213,12 +220,12 @@ cd $OUTPUT_DIR
 RESULTS_GET_DATA=()
 for i in "${DEVOPSDEFIDS[@]}"
 do
-     echo "_______________________ "
-     GET_DATA $i
-     RESULTS_GET_DATA+=($?) 
+  echo "_______________________ "
+  get_data $i
+  RESULTS_GET_DATA+=($?) 
 done
 
-if UNIQUE_VALUES "${RESULTS_GET_DATA[@]}"; then
+if unique_values "${RESULTS_GET_DATA[@]}"; then
     if [[ "${RESULTS_GET_DATA[*]}" =~ "1" ]]; then
         # whatever you want to do when array doesn't contain value
     echo "> Download FAILED, there is no artifact for any definitionId"
@@ -228,16 +235,16 @@ if UNIQUE_VALUES "${RESULTS_GET_DATA[@]}"; then
     fi
 fi
 
-if [[ -f "starsky-"$RUNTIME".zip" ]]; then
-    echo "YEAH > download for "$RUNTIME" looks ok"
-    echo "get pm2-new-instance.sh installer file"
-    unzip -p "starsky-"$RUNTIME".zip" "pm2-new-instance.sh" > ./__pm2-new-instance.sh
+if [[ -f "$STARSKY_ZIP_PREFIX$RUNTIME.zip" ]]; then
+  echo "YEAH > download for "$RUNTIME" looks ok"
+  echo "get pm2-new-instance.sh installer file"
+  unzip -p "$STARSKY_ZIP_PREFIX$RUNTIME.zip" "pm2-new-instance.sh" > ./__pm2-new-instance.sh
     
   if [[ -s ./__pm2-new-instance.sh ]]; then
-     mv __pm2-new-instance.sh pm2-new-instance.sh
-    else 
-        rm ./__pm2-new-instance.sh
-    fi
+   mv __pm2-new-instance.sh pm2-new-instance.sh
+  else 
+    rm ./__pm2-new-instance.sh
+  fi
     
 fi
 

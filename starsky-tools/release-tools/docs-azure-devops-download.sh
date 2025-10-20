@@ -101,6 +101,7 @@ GET_DATA () {
   URLBUILDS="https://dev.azure.com/"$ORGANIZATION"/"$DEVOPSPROJECT"/_apis/build/builds?api-version=5.1&\$top=1&statusFilter=completed&definitions="$LOCALDEVOPSDEFID"&branchName=refs%2Fheads%2F"$BRANCH
   RESULTBUILDS=$(curl -sS --user :$STARSKY_DEVOPS_PAT $URLBUILDS)
   
+  # NOSONAR(S1764) ignore Correct one of the identical expressions on both sides of operator '||'.
   if [[ "$RESULTBUILDS" == *"Object moved to"* || "$RESULTBUILDS" == *"Access Denied"* ]]; then
     echo "FAIL: You don't have access!"
     exit 1
@@ -163,14 +164,6 @@ GET_DATA () {
 
   echo "FAIL output file: documentation.zip and docs not found"
   exit 1
-}
-
-UNIQUE_VALUES() {
-  typeset i
-  for i do
-    [ "$1" = "$i" ] || return 1
-  done
-  return 0
 }
 
 if [[ ! -d $OUTPUT_DIR ]]; then
