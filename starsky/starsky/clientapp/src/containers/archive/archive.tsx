@@ -28,7 +28,7 @@ function Archive(archive: Readonly<IArchiveProps>) {
   return (
     <>
       <MenuArchive />
-      <div className={!sidebar ? "archive" : "archive collapsed"}>
+      <div className={sidebar ? "archive collapsed" : "archive"}>
         <ArchiveSidebar {...archive} />
 
         <div className="content">
