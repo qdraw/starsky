@@ -42,14 +42,14 @@ function Search(archive: Readonly<IArchiveProps>) {
   return (
     <>
       <MenuMenuSearchContainer />
-      <div className={!sidebar ? "archive" : "archive collapsed"}>
+      <div className={sidebar ? "archive collapsed" : "archive"}>
         <ArchiveSidebar {...archive} />
         <div className="content">
           <div className="search-header">
             <MenuSearchBar defaultText={query} />
           </div>
           <div className="content--header" data-test="search-content-header">
-            {!archive.collectionsCount ? MessageNoResult : null}
+            {archive.collectionsCount ? null : MessageNoResult}
             {archive.collectionsCount && archive.pageNumber === 0 ? (
               <>
                 {archive.collectionsCount} {MessageNumberOfResults}
@@ -75,7 +75,7 @@ function Search(archive: Readonly<IArchiveProps>) {
               <div className="warning-box">{MessageTryOtherQuery}</div>
             </div>
           ) : null}
-          {archive.lastPageNumber !== 0 ? <SearchPagination {...archive} /> : null}
+          {archive.lastPageNumber === 0 ? null : <SearchPagination {...archive} />}
         </div>
       </div>
     </>

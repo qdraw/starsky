@@ -22,13 +22,13 @@ export const Import: FunctionComponent = () => {
   return (
     <div>
       {/* DropArea output modal */}
-      {dropAreaUploadFilesList.length !== 0 ? (
+      {dropAreaUploadFilesList.length === 0 ? null : (
         <ModalDropAreaFilesAdded
           handleExit={() => setDropAreaUploadFilesList(newIFileIndexItemArray())}
           uploadFilesList={dropAreaUploadFilesList}
           isOpen={dropAreaUploadFilesList.length !== 0}
         />
-      ) : null}
+      )}
 
       <MenuDefault isEnabled={true}></MenuDefault>
       <div className="content">

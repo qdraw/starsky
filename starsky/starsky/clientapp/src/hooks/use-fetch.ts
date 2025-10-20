@@ -41,15 +41,15 @@ export const fetchContent = async (
     });
     data = await res.json();
     statusCode = res.status;
-  } catch (event: unknown) {
+  } catch (error_: unknown) {
     if (
-      (event as Error)?.message?.indexOf("aborted") >= 0 ||
-      (event as Error)?.message?.indexOf("Only absolute URLs are supported") >= 0
+      (error_ as Error)?.message?.indexOf("aborted") >= 0 ||
+      (error_ as Error)?.message?.indexOf("Only absolute URLs are supported") >= 0
     ) {
       return;
     }
     // DOMException: "The operation was aborted"
-    console.error("use-fetch", url, event);
+    console.error("use-fetch", url, error_);
   }
 
   const response = {

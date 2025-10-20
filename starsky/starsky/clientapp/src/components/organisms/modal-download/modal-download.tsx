@@ -105,9 +105,9 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
       }}
     >
       <div className="modal content--subheader">
-        {isProcessing !== ProcessingState.server
-          ? MessageDownloadSelection
-          : MessageOneMomentPlease}
+        {isProcessing === ProcessingState.server
+          ? MessageOneMomentPlease
+          : MessageDownloadSelection}
       </div>
       <div className="modal content--text">
         {/* when selecting one file */}

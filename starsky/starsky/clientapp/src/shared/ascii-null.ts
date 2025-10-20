@@ -3,7 +3,7 @@ export function AsciiNull() {
 }
 
 export function AsciiNullRegexEscaped() {
-  return "\\0";
+  return String.raw`\0`;
 }
 
 export function AsciiNullUrlEncoded() {

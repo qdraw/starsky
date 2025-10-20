@@ -131,7 +131,7 @@ function updateArchiveReducerHelper(
 function updateArchiveReducer(state: IArchiveProps, update: IUpdateArchiveReducer) {
   for (let index = 0; index < state.fileIndexItems.length; index++) {
     const item = state.fileIndexItems[index];
-    if (update.select.indexOf(item.fileName) !== -1) {
+    if (update.select.includes(item.fileName)) {
       if (update.append) {
         updateArchiveReducerTagsDescriptionTitleAppend(index, state, update);
       } else {
@@ -270,10 +270,10 @@ function removeReducer(
   const afterFileIndexItems: IFileIndexItem[] = [];
 
   for (const item of state.fileIndexItems) {
-    if (toRemoveFileList.indexOf(item.filePath) === -1) {
-      afterFileIndexItems.push(item);
-    } else {
+    if (toRemoveFileList.includes(item.filePath)) {
       deletedFilesCount++;
+    } else {
+      afterFileIndexItems.push(item);
     }
   }
 
@@ -399,7 +399,7 @@ function UpdateColorClassUsageActiveList(state: IArchiveProps, colorclass: numbe
   state.colorClassActiveList ??= [];
 
   // add to list of multiple colorclass items that can be selected
-  if (state.colorClassUsage.indexOf(colorclass) === -1) {
+  if (!state.colorClassUsage.includes(colorclass)) {
     state.colorClassUsage.push(colorclass);
   }
 

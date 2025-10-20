@@ -180,11 +180,12 @@ const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (props) 
             </FormControl>
           </div>
 
-          {!isValidDate(getDates()) ? (
+          {/* invalid date */}
+          {isValidDate(getDates()) ? null : (
             <div data-test="modal-edit-datetime-non-valid" className="warning-box">
               {MessageErrorDatetime}
             </div>
-          ) : null}
+          )}
 
           <button
             disabled={!isValidDate(getDates())}

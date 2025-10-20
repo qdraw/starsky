@@ -95,10 +95,10 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
     if (!isValidFileName) {
       setError(MessageNonValidExtension);
       setButtonState(false);
-    } else if (!extensionsState) {
-      setError(MessageChangeToDifferentExtension);
-    } else {
+    } else if (extensionsState) {
       setError(null);
+    } else {
+      setError(MessageChangeToDifferentExtension);
     }
   }
 
@@ -116,10 +116,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
     const bodyParams = new URLSearchParams();
     bodyParams.append("f", state.fileIndexItem.filePath);
     bodyParams.append("to", filePathAfterChange);
-    bodyParams.append(
-      "collections",
-      state.collections !== undefined ? state.collections.toString() : "true"
-    );
+    bodyParams.append("collections", state.collections ? state.collections.toString() : "true");
 
     const result = await FetchPost(new UrlQuery().UrlDiskRename(), bodyParams.toString());
 

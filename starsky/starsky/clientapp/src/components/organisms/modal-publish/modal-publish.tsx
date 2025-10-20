@@ -123,7 +123,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
       }}
     >
       <div data-test="modal-publish-subheader" className="modal content--subheader">
-        {isProcessing !== ProcessingState.server ? MessagePublishSelection : MessageOneMomentPlease}
+        {isProcessing === ProcessingState.server ? MessageOneMomentPlease : MessagePublishSelection}
       </div>
       <div data-test="modal-publish-content-text" className="modal content--text publish">
         {/* when selecting one file */}

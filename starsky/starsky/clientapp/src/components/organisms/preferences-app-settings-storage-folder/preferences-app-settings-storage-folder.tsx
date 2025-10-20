@@ -99,11 +99,11 @@ const PreferencesAppSettingsStorageFolder: React.FunctionComponent = () => {
         </div>
       ) : null}
 
-      {appSettings?.storageFolderAllowEdit !== true ? (
+      {appSettings?.storageFolderAllowEdit === true ? null : (
         <div className="warning-box" data-test="storage-env">
           {MessageAppSettingStorageFolderEnvUsedFail}
         </div>
-      ) : null}
+      )}
     </>
   );
 };
