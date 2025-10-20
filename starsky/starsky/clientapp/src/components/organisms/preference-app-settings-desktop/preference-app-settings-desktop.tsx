@@ -130,7 +130,7 @@ const PreferencesAppSettingsDesktop: React.FunctionComponent = () => {
           {MessageSwitchButtonDesktopApplicationDescription}
         </div>
 
-        {isMessage !== "" ? (
+        {isMessage ? (
           <div
             data-test="preference-app-settings-desktop-warning-box"
             className="warning-box warning-box--optional"

@@ -61,7 +61,7 @@ export const Login: React.FC<ILoginProps> = () => {
     // to help new users find the register screen
     if (
       accountStatus.statusCode === 406 &&
-      history.location.search.indexOf(new UrlQuery().UrlAccountRegisterPage()) === -1
+      !history.location.search.includes(new UrlQuery().UrlAccountRegisterPage())
     ) {
       history.navigate(new UrlQuery().UrlAccountRegisterPage(), {
         replace: true

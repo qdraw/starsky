@@ -35,7 +35,7 @@ export const newIntersectionObserver = (
     },
     {
       ...optsRef.current,
-      root: optsRef.current.root != null ? optsRef.current.root.current : null
+      root: optsRef.current.root ? optsRef.current.root.current : null
     }
   );
   return observer;

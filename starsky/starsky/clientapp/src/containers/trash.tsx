@@ -47,17 +47,17 @@ function Trash(archive: Readonly<IArchiveProps>) {
   return (
     <>
       <MenuTrash state={state} dispatch={dispatch} />
-      <div className={!sidebar ? "archive" : "archive collapsed"}>
+      <div className={sidebar ? "archive collapsed" : "archive"}>
         {sidebar ? <ArchiveSidebar {...archive} /> : ""}
 
         <div className="content">
           <div className="content--header">
-            {collectionsCount !== 0 ? (
+            {collectionsCount === 0 ? (
+              MessageNoResult
+            ) : (
               <>
                 {collectionsCount} {MessageNumberOfResults}
               </>
-            ) : (
-              MessageNoResult
             )}
           </div>
           <SearchPagination {...archive} />

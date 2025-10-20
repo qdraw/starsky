@@ -136,7 +136,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
               : "modal modal-move content--text"
           }
         >
-          {currentFolderPath !== "/" ? (
+          {currentFolderPath === "/" ? null : (
             <ul>
               <li className={"box parent"}>
                 <button
@@ -149,19 +149,21 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
                 </button>
               </li>
             </ul>
-          ) : null}
+          )}
 
           {usesFileList.pageType === PageType.Loading ? (
             <div data-test="preloader-inside" className="preloader preloader--inside"></div>
           ) : null}
-          {usesFileList.pageType !== PageType.Loading ? (
+
+          {/* when done loading display items */}
+          {usesFileList.pageType === PageType.Loading ? null : (
             <ItemTextListView
               fileIndexItems={usesFileListArchive}
               callback={(path) => {
                 setCurrentFolderPath(path);
               }}
             />
-          ) : null}
+          )}
         </div>
         <div className="modal modal-move-button">
           {error && (

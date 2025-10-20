@@ -25,7 +25,7 @@ const leftPad = (n: number) => {
  * @param date a Javascript Datetime stamp (unix*1000)
  * @param now Javascript now
  */
-const DifferenceInDate = (date: number, now: number = new Date().valueOf()): number => {
+const DifferenceInDate = (date: number, now: number = Date.now()): number => {
   return (now - date) / 60000;
 };
 
@@ -121,7 +121,7 @@ const parseDateDate = (dateTime: string | undefined): number => {
   );
   // toLocaleDateString assumes that the input is UTC, which is usually not the case
   const numberValue = dateTimeObject.toLocaleDateString([], {
-    timeZone: !dateTime.endsWith("Z") ? "UTC" : undefined,
+    timeZone: dateTime.endsWith("Z") ? undefined : "UTC",
     day: "numeric"
   });
   return Number(numberValue);
@@ -140,7 +140,7 @@ const parseDateYear = (dateTime: string | undefined): number => {
   );
   // toLocaleDateString assumes that the input is UTC, which is usually not the case
   const numberValue = dateTimeObject.toLocaleDateString([], {
-    timeZone: !dateTime.endsWith("Z") ? "UTC" : undefined,
+    timeZone: dateTime.endsWith("Z") ? undefined : "UTC",
     year: "numeric"
   });
   return Number(numberValue);
@@ -159,7 +159,7 @@ const parseDateMonth = (dateTime: string | undefined): number => {
   );
   // toLocaleDateString assumes that the input is UTC, which is usually not the case
   const numberValue = dateTimeObject.toLocaleDateString([], {
-    timeZone: !dateTime.endsWith("Z") ? "UTC" : undefined,
+    timeZone: dateTime.endsWith("Z") ? undefined : "UTC",
     month: "numeric"
   });
   return Number(numberValue);
@@ -179,7 +179,7 @@ const parseTime = (dateTime: string | undefined): string => {
 
   // toLocaleDateString assumes that the input is UTC, which is usually not the case
   return dateTimeObject.toLocaleTimeString([], {
-    timeZone: !dateTime.endsWith("Z") ? "UTC" : undefined,
+    timeZone: dateTime.endsWith("Z") ? undefined : "UTC",
     hour12: false,
     hour: "2-digit",
     minute: "2-digit",
@@ -200,7 +200,7 @@ const parseTimeHour = (dateTime: string | undefined): number => {
   );
   // toLocaleDateString assumes that the input is UTC, which is usually not the case
   const numberValue = dateTimeObject.toLocaleTimeString([], {
-    timeZone: !dateTime.endsWith("Z") ? "UTC" : undefined,
+    timeZone: dateTime.endsWith("Z") ? undefined : "UTC",
     hour12: false,
     hour: "2-digit"
   });

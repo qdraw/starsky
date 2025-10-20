@@ -27,13 +27,13 @@ export const Default = () => {
       />
 
       {/* Upload drop Area */}
-      {dropAreaUploadFilesList.length !== 0 ? (
+      {dropAreaUploadFilesList.length === 0 ? null : (
         <ModalDropAreaFilesAdded
           handleExit={() => setDropAreaUploadFilesList(newIFileIndexItemArray())}
           uploadFilesList={dropAreaUploadFilesList}
           isOpen={dropAreaUploadFilesList.length !== 0}
         />
-      ) : null}
+      )}
     </>
   );
 };

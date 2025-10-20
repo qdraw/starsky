@@ -11,7 +11,7 @@ export function triggerIntersection(entries: Partial<IntersectionObserverEntry>[
   }
 }
 
-global.IntersectionObserver = jest.fn((_cb, _options) => {
+globalThis.IntersectionObserver = jest.fn((_cb, _options) => {
   callback = _cb;
   return {
     observe: mockObserve,
