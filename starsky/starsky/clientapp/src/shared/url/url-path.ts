@@ -215,7 +215,7 @@ export class URLPath {
     const urlObject = new URLPath().StringToIUrl(locationHash);
     urlObject.select ??= [];
 
-    if (!urlObject.select || urlObject.select.indexOf(fileName) === -1) {
+    if (!urlObject.select || !urlObject.select.includes(fileName)) {
       urlObject.select.push(fileName);
     } else {
       const index = urlObject.select.indexOf(fileName);
@@ -276,7 +276,7 @@ export class URLPath {
     const subPaths: string[] = [];
 
     for (const item of fileIndexItems) {
-      if (item.fileName && select.indexOf(item.fileName) >= 0) {
+      if (item.fileName && select.includes(item.fileName)) {
         if (item.parentDirectory === "/") item.parentDirectory = ""; // no double slash in front of path
         subPaths.push(item.parentDirectory + new URLPath().StartOnSlash(item.fileName));
       }
