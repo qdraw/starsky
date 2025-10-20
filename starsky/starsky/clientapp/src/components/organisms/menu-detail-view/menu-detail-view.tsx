@@ -245,7 +245,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({ state, d
       <header className={GetHeaderClass(details, isMarkedAsDeleted)}>
         <div className="wrapper">
           {/* in directory state aka no search */}
-          {!isSearchQuery ? (
+          {isSearchQuery ? null : (
             <Link
               className="item item--first item--close"
               data-test="menu-detail-view-close"
@@ -263,7 +263,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({ state, d
             >
               {MessageCloseDialogBackToFolder}
             </Link>
-          ) : null}
+          )}
 
           {/* in search state aka search query */}
           <IsSearchQueryMenuSearchItem
@@ -299,14 +299,14 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({ state, d
               localization={localization.MessageDownload}
               testName="download"
             />
-            {!details ? (
+            {details ? null : (
               <MenuOption
                 isReadOnly={false}
                 onClickKeydown={toggleLabels}
                 testName="labels"
                 localization={localization.MessageLabels}
               />
-            ) : null}
+            )}
 
             <MenuOptionMoveFile
               isReadOnly={isReadOnly}

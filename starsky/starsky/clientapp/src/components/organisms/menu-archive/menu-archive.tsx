@@ -165,7 +165,7 @@ const MenuArchive: React.FunctionComponent = memo(() => {
           />
 
           {/* default more menu */}
-          {!select ? (
+          {select ? null : (
             <MoreMenu setEnableMoreMenu={setEnableMoreMenu} enableMoreMenu={enableMoreMenu}>
               <MenuOptionMkdir dispatch={dispatch} readOnly={readOnly} state={state} />
 
@@ -208,7 +208,7 @@ const MenuArchive: React.FunctionComponent = memo(() => {
                 collections={state.collections === true}
               />
             </MoreMenu>
-          ) : null}
+          )}
 
           {/* In the select context there are more options */}
           {select ? (

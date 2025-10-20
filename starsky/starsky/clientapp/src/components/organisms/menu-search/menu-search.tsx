@@ -105,7 +105,7 @@ const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({ state, dispatch
           <MenuSelectCount select={select} removeSidebarSelection={removeSidebarSelection} />
 
           {/* the select button with checkbox*/}
-          {!select ? (
+          {select ? null : (
             <button
               className={
                 state.fileIndexItems.length >= 1
@@ -123,7 +123,7 @@ const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({ state, dispatch
             >
               {MessageSelectAction}
             </button>
-          ) : null}
+          )}
 
           {/* when selected */}
           {select ? (
@@ -141,9 +141,9 @@ const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({ state, dispatch
           ) : null}
 
           {/* More menu - When in normal state */}
-          {!select ? (
+          {select ? null : (
             <MoreMenu setEnableMoreMenu={setEnableMoreMenu} enableMoreMenu={enableMoreMenu} />
-          ) : null}
+          )}
 
           {/* More menu - In the select context there are more options */}
           {select && select.length === 0 ? (

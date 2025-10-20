@@ -59,10 +59,10 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (pr
     setFolderName(fieldValue);
 
     const isValidDirectoryName = new FileExtensions().IsValidDirectoryName(fieldValue);
-    if (!isValidDirectoryName) {
-      setError(MessageNonValidDirectoryName);
-    } else {
+    if (isValidDirectoryName) {
       setError(null);
+    } else {
+      setError(MessageNonValidDirectoryName);
     }
   }
 

@@ -136,9 +136,9 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({ state, dispatch }
           ) : null}
 
           {/* More menu - When in normal state */}
-          {!select ? (
+          {select ? null : (
             <MoreMenu setEnableMoreMenu={setEnableMoreMenu} enableMoreMenu={enableMoreMenu} />
-          ) : null}
+          )}
 
           {/* More menu - In the select context there are more options */}
           {select && select.length === 0 ? (
