@@ -215,11 +215,11 @@ export class URLPath {
     const urlObject = new URLPath().StringToIUrl(locationHash);
     urlObject.select ??= [];
 
-    if (!urlObject.select || !urlObject.select.includes(fileName)) {
-      urlObject.select.push(fileName);
-    } else {
+    if (urlObject.select?.includes(fileName)) {
       const index = urlObject.select.indexOf(fileName);
       if (index !== -1) urlObject.select.splice(index, 1);
+    } else {
+      urlObject.select.push(fileName);
     }
     return urlObject;
   }

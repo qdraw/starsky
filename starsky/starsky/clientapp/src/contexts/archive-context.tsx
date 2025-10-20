@@ -270,10 +270,10 @@ function removeReducer(
   const afterFileIndexItems: IFileIndexItem[] = [];
 
   for (const item of state.fileIndexItems) {
-    if (!toRemoveFileList.includes(item.filePath)) {
-      afterFileIndexItems.push(item);
-    } else {
+    if (toRemoveFileList.includes(item.filePath)) {
       deletedFilesCount++;
+    } else {
+      afterFileIndexItems.push(item);
     }
   }
 
