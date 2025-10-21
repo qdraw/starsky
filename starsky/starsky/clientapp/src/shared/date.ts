@@ -112,9 +112,9 @@ const parseDate = (dateTime: string | undefined, locate: SupportedLanguages): st
  * Get Day of the month (int)
  * @param dateTime 2018-09-11T11:23:19 or 2018-09-11T11:23:19Z
  */
-const parseDateDate = (dateTime: string | undefined): number => {
+const parseDateDate = (dateTime: string | undefined): number | undefined => {
   if (!isValidDate(dateTime) || !dateTime) {
-    return 1;
+    return undefined;
   }
   const dateTimeObject = new Date(
     !dateTime.endsWith("Z") && !IsIncludeTimezone(dateTime) ? `${dateTime}Z` : dateTime
@@ -131,9 +131,9 @@ const parseDateDate = (dateTime: string | undefined): number => {
  * Get Year (int)
  * @param dateTime 2018-09-11T11:23:19 or 2018-09-11T11:23:19Z
  */
-const parseDateYear = (dateTime: string | undefined): number => {
+const parseDateYear = (dateTime: string | undefined): number | undefined => {
   if (!isValidDate(dateTime) || !dateTime) {
-    return 1;
+    return undefined;
   }
   const dateTimeObject = new Date(
     !dateTime.endsWith("Z") && !IsIncludeTimezone(dateTime) ? `${dateTime}Z` : dateTime
@@ -150,9 +150,9 @@ const parseDateYear = (dateTime: string | undefined): number => {
  * Get Month 1-12 (int)
  * @param dateTime 2018-09-11T11:23:19 or 2018-09-11T11:23:19Z
  */
-const parseDateMonth = (dateTime: string | undefined): number => {
+const parseDateMonth = (dateTime: string | undefined): number | undefined => {
   if (!isValidDate(dateTime) || !dateTime) {
-    return 1;
+    return undefined;
   }
   const dateTimeObject = new Date(
     !dateTime.endsWith("Z") && !IsIncludeTimezone(dateTime) ? `${dateTime}Z` : dateTime
@@ -191,9 +191,9 @@ const parseTime = (dateTime: string | undefined): string => {
  * Get Hour (for example 23) (int)
  * @param dateTime 2018-09-11T11:23:19 or 2018-09-11T11:23:19Z
  */
-const parseTimeHour = (dateTime: string | undefined): number => {
+const parseTimeHour = (dateTime: string | undefined): number | undefined => {
   if (!isValidDate(dateTime) || !dateTime) {
-    return 1;
+    return undefined;
   }
   const dateTimeObject = new Date(
     !dateTime.endsWith("Z") && !IsIncludeTimezone(dateTime) ? `${dateTime}Z` : dateTime
@@ -205,6 +205,28 @@ const parseTimeHour = (dateTime: string | undefined): number => {
     hour: "2-digit"
   });
   return Number(numberValue);
+};
+
+/**
+ * Get Minute (for example 59) (int)
+ * @param dateTime 2018-09-11T11:23:19 or 2018-09-11T11:23:19Z
+ */
+const parseTimeMinute = (dateTime: string | undefined): number | undefined => {
+  if (!isValidDate(dateTime) || !dateTime) {
+    return undefined;
+  }
+  return new Date(dateTime).getMinutes();
+};
+
+/**
+ * Get Seconds (for example 59) (int)
+ * @param dateTime 2018-09-11T11:23:19 or 2018-09-11T11:23:19Z
+ */
+const parseTimeSeconds = (dateTime: string | undefined): number | undefined => {
+  if (!isValidDate(dateTime) || !dateTime) {
+    return undefined;
+  }
+  return new Date(dateTime).getSeconds();
 };
 
 /**
@@ -231,5 +253,7 @@ export {
   parseRelativeDate,
   parseTime,
   parseTimeHour,
+  parseTimeMinute,
+  parseTimeSeconds,
   SecondsToHours
 };
