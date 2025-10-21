@@ -216,12 +216,12 @@ describe("url-query", () => {
 
   describe("UrlThumbnailImage", () => {
     it("should contain hash_test (issingleitem false)", () => {
-      const test = urlQuery.UrlThumbnailImage("hash_test", false);
+      const test = urlQuery.UrlThumbnailImage("hash_test", "", false);
       expect(test).toContain("hash_test");
     });
 
     it("should contain hash_test (issingleitem true)", () => {
-      const test = urlQuery.UrlThumbnailImage("hash_test", true);
+      const test = urlQuery.UrlThumbnailImage("hash_test", "", true);
       expect(test).toContain("hash_test");
     });
   });

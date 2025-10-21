@@ -10,6 +10,7 @@ export const Default = () => {
     <MoreMenu enableMoreMenu={true} setEnableMoreMenu={() => {}}>
       <MenuOptionDesktopEditorOpenSingle
         subPath="/test.jpg"
+        isDirectory={false}
         collections={true}
         isReadOnly={false}
       />
@@ -22,7 +23,12 @@ Default.storyName = "default (no dialog)";
 export const ReadOnly = () => {
   return (
     <MoreMenu enableMoreMenu={true} setEnableMoreMenu={() => {}}>
-      <MenuOptionDesktopEditorOpenSingle subPath="/test.jpg" collections={true} isReadOnly={true} />
+      <MenuOptionDesktopEditorOpenSingle
+        isDirectory={false}
+        subPath="/test.jpg"
+        collections={true}
+        isReadOnly={true}
+      />
     </MoreMenu>
   );
 };

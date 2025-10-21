@@ -7,13 +7,7 @@ import MenuOptionMoveFolderToTrash from "./menu-option-move-folder-to-trash";
 
 describe("MenuOptionMoveFolderToTrash", () => {
   it("renders the menu option correctly", () => {
-    render(
-      <MenuOptionMoveFolderToTrash
-        subPath="path/to/folder"
-        isReadOnly={false}
-        dispatch={jest.fn()}
-      />
-    );
+    render(<MenuOptionMoveFolderToTrash subPath="path/to/folder" isReadOnly={false} />);
 
     expect(screen.getByText(localization.MessageMoveCurrentFolderToTrash.en)).toBeTruthy();
   });
@@ -23,13 +17,7 @@ describe("MenuOptionMoveFolderToTrash", () => {
       .spyOn(ModalMoveFolderToTrash, "default")
       .mockImplementationOnce(() => <div data-test="modal-move-folder-to-trash"></div>);
 
-    render(
-      <MenuOptionMoveFolderToTrash
-        subPath="path/to/folder"
-        isReadOnly={false}
-        dispatch={jest.fn()}
-      />
-    );
+    render(<MenuOptionMoveFolderToTrash subPath="path/to/folder" isReadOnly={false} />);
 
     const menuOption = screen.getByTestId("move-folder-to-trash");
     fireEvent.click(menuOption);
@@ -42,13 +30,7 @@ describe("MenuOptionMoveFolderToTrash", () => {
       .spyOn(ModalMoveFolderToTrash, "default")
       .mockImplementationOnce(() => <div data-test="modal-move-folder-to-trash"></div>);
 
-    render(
-      <MenuOptionMoveFolderToTrash
-        subPath="path/to/folder"
-        isReadOnly={false}
-        dispatch={jest.fn()}
-      />
-    );
+    render(<MenuOptionMoveFolderToTrash subPath="path/to/folder" isReadOnly={false} />);
 
     const menuOption = screen.getByTestId("move-folder-to-trash");
     fireEvent.keyDown(menuOption, { key: "Enter" });
@@ -61,13 +43,7 @@ describe("MenuOptionMoveFolderToTrash", () => {
       .spyOn(ModalMoveFolderToTrash, "default")
       .mockImplementationOnce(() => <div data-test="modal-move-folder-to-trash"></div>);
 
-    render(
-      <MenuOptionMoveFolderToTrash
-        subPath="path/to/folder"
-        isReadOnly={false}
-        dispatch={jest.fn()}
-      />
-    );
+    render(<MenuOptionMoveFolderToTrash subPath="path/to/folder" isReadOnly={false} />);
 
     const menuOption = screen.getByTestId("move-folder-to-trash");
     fireEvent.keyDown(menuOption, { key: "Tab" });
@@ -97,7 +73,6 @@ describe("MenuOptionMoveFolderToTrash", () => {
       <MenuOptionMoveFolderToTrash
         subPath="path/to/folder"
         isReadOnly={false}
-        dispatch={jest.fn()}
         setEnableMoreMenu={setEnableMoreMenuSpy}
       />
     );
@@ -135,7 +110,6 @@ describe("MenuOptionMoveFolderToTrash", () => {
       <MenuOptionMoveFolderToTrash
         subPath="path/to/folder"
         isReadOnly={false}
-        dispatch={jest.fn()}
         setEnableMoreMenu={setEnableMoreMenuSpy}
       />
     );
@@ -172,7 +146,6 @@ describe("MenuOptionMoveFolderToTrash", () => {
       <MenuOptionMoveFolderToTrash
         subPath="path/to/folder"
         isReadOnly={false}
-        dispatch={jest.fn()}
         setEnableMoreMenu={setEnableMoreMenuSpy}
       />
     );

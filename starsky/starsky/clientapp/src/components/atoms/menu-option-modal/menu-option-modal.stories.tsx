@@ -9,7 +9,7 @@ export const Default = () => {
     <div className="menu-context">
       <ul className="menu-options">
         <MenuOptionModal
-          localization={{ nl: "Nederlands", en: "English" }}
+          localization={{ nl: "Nederlands", en: "English", de: "Deutsch" }}
           isSet={false}
           set={() => {}}
           testName="test"
