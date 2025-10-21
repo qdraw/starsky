@@ -471,7 +471,7 @@ describe("ModalMoveFile", () => {
 
     const handleExit = jest.fn();
 
-    const component = render(
+    render(
       <ModalMoveFile
         isOpen={true}
         handleExit={handleExit}

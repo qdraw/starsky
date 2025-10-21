@@ -1,10 +1,10 @@
 import { render } from "@testing-library/react";
 import React, { MutableRefObject, useRef } from "react";
+import { mockUnobserve, triggerIntersection } from "./___tests___/intersection-observer-mock";
 import useIntersection, {
   IntersectionOptions,
   newIntersectionObserver
 } from "./use-intersection-observer";
-import { mockUnobserve, triggerIntersection } from "./___tests___/intersection-observer-mock";
 
 describe("useIntersection", () => {
   const IntersectionComponentTest = () => {
@@ -57,7 +57,7 @@ describe("useIntersection", () => {
           rootMargin: "0px",
           threshold: 0.1
         }
-      } as React.MutableRefObject<IntersectionOptions>;
+      } as unknown as React.MutableRefObject<IntersectionOptions>;
 
       const observer = newIntersectionObserver(ref, setIntersecting, true, optsRef, callback);
       observer.observe(ref.current!);

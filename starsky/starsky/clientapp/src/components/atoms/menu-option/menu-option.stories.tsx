@@ -9,7 +9,7 @@ export const Default = () => {
     <div className="menu-context">
       <ul className="menu-options">
         <MenuOption
-          localization={{ nl: "Nederlands", en: "English" }}
+          localization={{ nl: "Nederlands", en: "English", de: "Deutsch" }}
           testName="test"
           isReadOnly={false}
           onClickKeydown={() => {
