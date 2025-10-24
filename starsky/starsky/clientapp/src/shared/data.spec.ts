@@ -8,6 +8,8 @@ import {
   parseRelativeDate,
   parseTime,
   parseTimeHour,
+  parseTimeMinute,
+  parseTimeSeconds,
   SecondsToHours
 } from "./date";
 import { SupportedLanguages } from "./language";
@@ -71,12 +73,12 @@ describe("date", () => {
   describe("parseTimeHour", () => {
     it("undefined", () => {
       const result = parseTimeHour("");
-      expect(result).toBe(1);
+      expect(result).toBeUndefined();
     });
 
     it("wrong format", () => {
       const result = parseTimeHour("2020-30");
-      expect(result).toBe(1);
+      expect(result).toBeUndefined();
     });
 
     it("right formatted (nl)", () => {
@@ -95,15 +97,69 @@ describe("date", () => {
     });
   });
 
+  describe("parseTimeMinute", () => {
+    it("undefined", () => {
+      const result = parseTimeMinute("");
+      expect(result).toBeUndefined();
+    });
+
+    it("wrong format", () => {
+      const result = parseTimeMinute("2020-30");
+      expect(result).toBeUndefined();
+    });
+
+    it("right formatted (nl)", () => {
+      const result = parseTimeMinute("2020-01-01T01:01:01");
+      expect(result).toBe(1);
+    });
+
+    it("Timezone time (parseTimeSeconds)", () => {
+      const result = parseTimeMinute("2020-04-28T10:44:43.123456+01:00");
+      expect(result).toBe(44);
+    });
+
+    it("right formatted summer time (nl)", () => {
+      const result = parseTimeMinute("2020-04-10T23:40:33");
+      expect(result).toBe(40);
+    });
+  });
+
+  describe("parseTimeSeconds", () => {
+    it("undefined", () => {
+      const result = parseTimeSeconds("");
+      expect(result).toBeUndefined();
+    });
+
+    it("wrong format", () => {
+      const result = parseTimeSeconds("2020-30");
+      expect(result).toBeUndefined();
+    });
+
+    it("right formatted (nl)", () => {
+      const result = parseTimeSeconds("2020-01-01T01:01:01");
+      expect(result).toBe(1);
+    });
+
+    it("Timezone time (parseTimeSeconds)", () => {
+      const result = parseTimeSeconds("2020-04-28T10:44:43.123456+01:00");
+      expect(result).toBe(43);
+    });
+
+    it("right formatted summer time (nl)", () => {
+      const result = parseTimeSeconds("2020-04-10T23:40:33");
+      expect(result).toBe(33);
+    });
+  });
+
   describe("parseDateDate", () => {
     it("undefined", () => {
       const result = parseDateDate("");
-      expect(result).toBe(1);
+      expect(result).toBeUndefined();
     });
 
     it("wrong format", () => {
       const result = parseDateDate("2020-30");
-      expect(result).toBe(1);
+      expect(result).toBeUndefined();
     });
 
     it("right formatted (nl)", () => {
@@ -125,12 +181,12 @@ describe("date", () => {
   describe("parseDateMonth", () => {
     it("undefined", () => {
       const result = parseDateMonth("");
-      expect(result).toBe(1);
+      expect(result).toBeUndefined();
     });
 
     it("wrong format", () => {
       const result = parseDateMonth("2020-30");
-      expect(result).toBe(1);
+      expect(result).toBeUndefined();
     });
 
     it("right formatted (nl)", () => {
@@ -152,12 +208,12 @@ describe("date", () => {
   describe("parseDateYear", () => {
     it("undefined", () => {
       const result = parseDateYear("");
-      expect(result).toBe(1);
+      expect(result).toBeUndefined();
     });
 
     it("wrong format", () => {
       const result = parseDateYear("2020-30");
-      expect(result).toBe(1);
+      expect(result).toBeUndefined();
     });
 
     it("right formatted (nl)", () => {
