@@ -41,7 +41,11 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.4 - _(Unreleased)_ - 2025-?-? {#v0.7.4}
+## version 0.7.5 - _(Unreleased)_ - 2025-?-? {#v0.7.4}
+
+- nothing yet
+
+## version 0.7.4 - 2025-10-24 {#v0.7.4}
 
 - [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.415 (Runtime: 8.0.21) (PR #2382)
 - [x] (Changed) _Back-end_ Handle special characters for slugs e.g. ç -> c etc. (PR #2365)
