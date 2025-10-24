@@ -27,12 +27,12 @@ interface IModalDatetimeProps {
   dateTime?: string;
 }
 
-export function UpdateDateTime(
+export async function UpdateDateTime(
   isFormEnabled: boolean,
   propsSubPath: string,
   datetime: string,
-  propsHandleExit: (result: IFileIndexItem[] | null) => Promise<IFileIndexItem[] | null>
-) {
+  propsHandleExit: (result: IFileIndexItem[] | null) => void
+): Promise<IFileIndexItem[] | null> {
   if (!isFormEnabled) return null;
 
   const updateApiUrl = new UrlQuery().UrlUpdateApi();
@@ -41,11 +41,10 @@ export function UpdateDateTime(
   bodyParams.append("f", propsSubPath);
   bodyParams.append("datetime", datetime);
 
-  FetchPost(updateApiUrl, bodyParams.toString()).then((result) => {
-    if (result.statusCode !== 200) return;
-    propsHandleExit(result.data as IFileIndexItem[]);
-    return result.data as IFileIndexItem[];
-  });
+  const result = await FetchPost(updateApiUrl, bodyParams.toString());
+  if (result.statusCode !== 200) return null;
+  propsHandleExit(result.data as IFileIndexItem[]);
+  return result.data as IFileIndexItem[];
 }
 
 export function GetDates(
