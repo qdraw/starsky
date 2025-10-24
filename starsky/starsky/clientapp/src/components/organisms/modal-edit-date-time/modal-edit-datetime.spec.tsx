@@ -235,18 +235,15 @@ describe("ModalArchiveMkdir", () => {
         {
           status: IExifStatus.Ok,
           fileName: "rootfilename.jpg",
-          fileIndexItem: {
-            description: "",
-            fileHash: undefined,
-            fileName: "test.jpg",
-            filePath: "/test.jpg",
-            isDirectory: false,
-            status: "Ok",
-            tags: "",
-            title: ""
-          }
+          dateTime: "2025-10-24T12:00:00"
         }
-      ]
+      ],
+      statusCode: 200
+    });
+
+    const mockIConnectionFailed: Promise<IConnectionDefault> = Promise.resolve({
+      ...newIConnectionDefault(),
+      statusCode: 400
     });
 
     it("should not call FetchPost if form is not enabled", () => {
@@ -260,27 +257,35 @@ describe("ModalArchiveMkdir", () => {
     });
 
     it("should call FetchPost with correct params and call handleExit on success", async () => {
-      const handleExit = jest.fn();
-      const mockResult = { statusCode: 200, data: [{ test: "ok" }] };
-      fetchPostSpy.mockResolvedValueOnce(mockResult);
+      const handleExitSpy = jest.fn();
 
-      await UpdateDateTime(true, "subpath", "2025-10-24T12:00:00", handleExit);
+      const fetchPostSpy = jest
+        .spyOn(FetchPost, "default")
+        .mockReset()
+        .mockImplementationOnce(() => mockIConnectionDefault);
+
+      const result = await UpdateDateTime(true, "subpath", "2025-10-24T12:00:00", handleExitSpy);
 
       expect(fetchPostSpy).toHaveBeenCalledTimes(1);
       const [url, body] = fetchPostSpy.mock.calls[0];
-      expect(url).toBe("mocked-url");
+      expect(url).toBe(new UrlQuery().UrlUpdateApi());
       expect(body).toContain("f=subpath");
       expect(body).toContain("datetime=2025-10-24T12%3A00%3A00");
-      // Wait for promise to resolve
-      await waitImmediate();
-      expect(handleExit).toHaveBeenCalledWith([{ test: "ok" }]);
+      expect(handleExitSpy).toHaveBeenCalledTimes(1);
+      console.log("result", result);
+
+      expect(result![0].dateTime).toEqual("2025-10-24T12:00:00");
     });
 
     it("should not call handleExit if statusCode is not 200", async () => {
       const handleExit = jest.fn();
+      const fetchPostSpy = jest
+        .spyOn(FetchPost, "default")
+        .mockReset()
+        .mockImplementationOnce(() => mockIConnectionFailed);
+
       fetchPostSpy.mockResolvedValueOnce({ statusCode: 400, data: [] });
       await UpdateDateTime(true, "subpath", "2025-10-24T12:00:00", handleExit);
-      await waitImmediate();
       expect(handleExit).not.toHaveBeenCalled();
     });
   });
