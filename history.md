@@ -47,13 +47,13 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.4 - 2025-10-24 {#v0.7.4}
 
+- [x] (Changed) _Front-end_ Do not set 1 als default text in input field (PR #2398)
 - [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.415 (Runtime: 8.0.21) (PR #2382)
 - [x] (Changed) _Back-end_ Handle special characters for slugs e.g. ç -> c etc. (PR #2365)
 - [x] (Changed) _Back-end_ Location State is not required anymore (PR #2358)
 - [x] (Changed) _Front-end_ OpenStreetMap tile server endpoints change due block (PR #2343)
 - [x] (Changed) _Front-end_ Code style improvements (PR #2385 #2386 #2387 #2390 #2391 #2392)
 - [x] (Changed) _Front-end_ Code style improvements (#2393 #2394)
-- [x] (Changed) _Front-end_ Do not set 1 als default text in input field (PR #2398)
 
 ## version 0.7.3 - 2025-09-13 {#v0.7.3}
 
