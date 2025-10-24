@@ -27,6 +27,50 @@ interface IModalDatetimeProps {
   dateTime?: string;
 }
 
+export function UpdateDateTime(
+  isFormEnabled: boolean,
+  propsSubPath: string,
+  datetime: string,
+  propsHandleExit: (result: IFileIndexItem[] | null) => void
+) {
+  if (!isFormEnabled) return;
+
+  const updateApiUrl = new UrlQuery().UrlUpdateApi();
+
+  const bodyParams = new URLSearchParams();
+  bodyParams.append("f", propsSubPath);
+  bodyParams.append("datetime", datetime);
+
+  FetchPost(updateApiUrl, bodyParams.toString()).then((result) => {
+    if (result.statusCode !== 200) return;
+    propsHandleExit(result.data as IFileIndexItem[]);
+  });
+}
+
+export function GetDates(
+  month: number | undefined,
+  date: number | undefined,
+  fullYear: number | undefined,
+  hour: number | undefined,
+  minute: number | undefined,
+  seconds: number | undefined
+): string {
+  if (
+    !fullYear ||
+    !month ||
+    !date ||
+    hour === undefined ||
+    minute === undefined ||
+    seconds === undefined
+  ) {
+    return "";
+  }
+  return (
+    `${fullYear}-${leftPad(month)}-${leftPad(date)}` +
+    `T${leftPad(hour)}:${leftPad(minute)}:${leftPad(seconds)}`
+  );
+}
+
 const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (props) => {
   // content
   const settings = useGlobalSettings();
@@ -48,28 +92,12 @@ const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (props) 
   const [seconds, setSeconds] = useState(parseTimeSeconds(props.dateTime));
 
   function getDates() {
-    if (!month || !date || hour === undefined || minute === undefined || seconds === undefined) {
-      return "";
-    }
-    return (
-      `${fullYear}-${leftPad(month)}-${leftPad(date)}` +
-      `T${leftPad(hour)}:${leftPad(minute)}:${leftPad(seconds)}`
-    );
+    return GetDates(month, date, fullYear, hour, minute, seconds);
   }
 
   function updateDateTime() {
-    if (!isFormEnabled) return;
-
-    const updateApiUrl = new UrlQuery().UrlUpdateApi();
-
-    const bodyParams = new URLSearchParams();
-    bodyParams.append("f", props.subPath);
-    bodyParams.append("datetime", getDates());
-
-    FetchPost(updateApiUrl, bodyParams.toString()).then((result) => {
-      if (result.statusCode !== 200) return;
-      props.handleExit(result.data as IFileIndexItem[]);
-    });
+    const datetime = getDates();
+    UpdateDateTime(isFormEnabled, props.subPath, datetime, props.handleExit);
   }
 
   return (

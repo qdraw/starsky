@@ -1,11 +1,12 @@
 import { createEvent, fireEvent, render, RenderResult, screen } from "@testing-library/react";
 import { act } from "react";
-import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
+import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
+import { IExifStatus } from "../../../interfaces/IExifStatus";
 import localization from "../../../localization/localization.json";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
 import { UrlQuery } from "../../../shared/url/url-query";
 import * as Modal from "../../atoms/modal/modal";
-import ModalDatetime from "./modal-edit-datetime";
+import ModalDatetime, { GetDates, UpdateDateTime } from "./modal-edit-datetime";
 
 describe("ModalArchiveMkdir", () => {
   beforeEach(() => {
@@ -174,6 +175,113 @@ describe("ModalArchiveMkdir", () => {
 
       // and clean afterwards
       component.unmount();
+    });
+  });
+
+  describe("GetDates (theory)", () => {
+    // [month, date, fullYear, hour, minute, seconds, expected]
+    const cases: [
+      number | undefined,
+      number | undefined,
+      number | undefined,
+      number | undefined,
+      number | undefined,
+      number | undefined,
+      string
+    ][] = [
+      [10, 23, 2025, 14, 5, 9, "2025-10-23T14:05:09"],
+      [1, 1, 2020, 0, 0, 0, "2020-01-01T00:00:00"],
+      [12, 31, 1999, 23, 59, 59, "1999-12-31T23:59:59"],
+      [undefined, 23, 2025, 14, 5, 9, ""],
+      [10, undefined, 2025, 14, 5, 9, ""],
+      [10, 23, undefined, 14, 5, 9, ""],
+      [10, 23, 2025, undefined, 5, 9, ""],
+      [10, 23, 2025, 14, undefined, 9, ""],
+      [10, 23, 2025, 14, 5, undefined, ""],
+      [10, 23, 2025, 0, 0, 0, "2025-10-23T00:00:00"],
+      [0, 23, 2025, 14, 5, 9, ""],
+      [10, 0, 2025, 14, 5, 9, ""]
+    ];
+
+    it.each(cases)(
+      "GetDates(%p, %p, %p, %p, %p, %p) should return '%s'",
+      (
+        month: number | undefined,
+        date: number | undefined,
+        fullYear: number | undefined,
+        hour: number | undefined,
+        minute: number | undefined,
+        seconds: number | undefined,
+        expected: string
+      ) => {
+        expect(
+          GetDates(
+            month as number | undefined,
+            date as number | undefined,
+            fullYear as number | undefined,
+            hour as number | undefined,
+            minute as number | undefined,
+            seconds as number | undefined
+          )
+        ).toBe(expected);
+      }
+    );
+  });
+
+  describe("UpdateDateTime", () => {
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+      ...newIConnectionDefault(),
+      data: [
+        {
+          status: IExifStatus.Ok,
+          fileName: "rootfilename.jpg",
+          fileIndexItem: {
+            description: "",
+            fileHash: undefined,
+            fileName: "test.jpg",
+            filePath: "/test.jpg",
+            isDirectory: false,
+            status: "Ok",
+            tags: "",
+            title: ""
+          }
+        }
+      ]
+    });
+
+    it("should not call FetchPost if form is not enabled", () => {
+      const handleExit = jest.fn();
+      UpdateDateTime(false, "subpath", "2025-10-24T12:00:00", handleExit);
+      const fetchPostSpy = jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockIConnectionDefault);
+      expect(fetchPostSpy).not.toHaveBeenCalled();
+      expect(handleExit).not.toHaveBeenCalled();
+    });
+
+    it("should call FetchPost with correct params and call handleExit on success", async () => {
+      const handleExit = jest.fn();
+      const mockResult = { statusCode: 200, data: [{ test: "ok" }] };
+      fetchPostSpy.mockResolvedValueOnce(mockResult);
+
+      await UpdateDateTime(true, "subpath", "2025-10-24T12:00:00", handleExit);
+
+      expect(fetchPostSpy).toHaveBeenCalledTimes(1);
+      const [url, body] = fetchPostSpy.mock.calls[0];
+      expect(url).toBe("mocked-url");
+      expect(body).toContain("f=subpath");
+      expect(body).toContain("datetime=2025-10-24T12%3A00%3A00");
+      // Wait for promise to resolve
+      await waitImmediate();
+      expect(handleExit).toHaveBeenCalledWith([{ test: "ok" }]);
+    });
+
+    it("should not call handleExit if statusCode is not 200", async () => {
+      const handleExit = jest.fn();
+      fetchPostSpy.mockResolvedValueOnce({ statusCode: 400, data: [] });
+      await UpdateDateTime(true, "subpath", "2025-10-24T12:00:00", handleExit);
+      await waitImmediate();
+      expect(handleExit).not.toHaveBeenCalled();
     });
   });
 });
