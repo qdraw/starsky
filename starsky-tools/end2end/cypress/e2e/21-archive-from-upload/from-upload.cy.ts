@@ -2,6 +2,7 @@ import { envName, envFolder } from '../../support/commands'
 import configFile from './config.json'
 import flow from './flow.json'
 const config = configFile[envFolder][envName]
+import { checkIfExistAndCreate, waitOnUploadIsDone } from "../helpers/create-directory-helper.cy";
 
 describe('Archive (from upload) (21)', () => {
   beforeEach('Check some config settings and do them before each test (21)', () => {
@@ -25,6 +26,32 @@ describe('Archive (from upload) (21)', () => {
       }
     })
   })
+
+    const fileName2 = "20200822_111408.jpg";
+    const fileName1 = "20200822_112430.jpg";
+    const fileName3 = "20200822_134151.jpg";
+    const fileName4 = "20200822_134151.mp4";
+  
+    it("clear cache & upload all files that are needed in background (21)", () => {
+      // clean trash
+      cy.request({
+        failOnStatusCode: false,
+        method: "DELETE",
+        url: "/starsky/api/delete",
+        qs: {
+          f: `/starsky-end2end-test/${fileName1};/starsky-end2end-test/${fileName2};/starsky-end2end-test/${fileName3};/starsky-end2end-test/${fileName4}`,
+        },
+      });
+      cy.wait(500);
+  
+      checkIfExistAndCreate(config);
+  
+      cy.fileRequest(fileName4, "/starsky-end2end-test", "image/jpeg");
+      cy.fileRequest(fileName1, "/starsky-end2end-test", "image/jpeg");
+      cy.fileRequest(fileName2, "/starsky-end2end-test", "image/jpeg");
+      cy.fileRequest(fileName3, "/starsky-end2end-test", "image/jpeg");
+      waitOnUploadIsDone(config.urlApiCollectionsFalse, 0);
+    });
 
   it('Check if folder is there (21)', () => {
     if (!config.isEnabled) return
