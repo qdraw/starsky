@@ -1,7 +1,10 @@
-import config from '../../fixtures/urls.json'
+import { envName, envFolder } from '../../support/commands'
+import configFile from './config.json'
+const config = configFile[envFolder][envName]
 
 describe('Warmup', () => {
   it('Warmup before starting', () => {
+    if (!config.isEnabled) return false
     retry()
   })
 
@@ -9,7 +12,7 @@ describe('Warmup', () => {
     cy.request({
       failOnStatusCode: false,
       retryOnNetworkFailure: true,
-      url: config.apiHealth,
+      url: config.url,
       timeout: 60000
     }).then((response) => {
       if (response.status === 200 || response.status === 401) {
@@ -26,17 +29,18 @@ describe('Warmup', () => {
   }
 
   it('ignore loca.lt warning', () => {
+    if (!config.isEnabled) return false
 
     cy.request({
       failOnStatusCode: false,
-      url: "/api/health"
+      url: config.url
     }).then((status) => {
       if (status.status !== 401) {
         return
       }
       cy.visit({
         failOnStatusCode: false,
-        url: config.apiHealth
+        url: config.url
       })
       cy.get('.btn-primary').click()
     })
