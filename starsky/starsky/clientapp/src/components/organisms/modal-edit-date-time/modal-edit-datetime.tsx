@@ -31,9 +31,9 @@ export function UpdateDateTime(
   isFormEnabled: boolean,
   propsSubPath: string,
   datetime: string,
-  propsHandleExit: (result: IFileIndexItem[] | null) => void
+  propsHandleExit: (result: IFileIndexItem[] | null) => Promise<IFileIndexItem[] | null>
 ) {
-  if (!isFormEnabled) return;
+  if (!isFormEnabled) return null;
 
   const updateApiUrl = new UrlQuery().UrlUpdateApi();
 
@@ -44,6 +44,7 @@ export function UpdateDateTime(
   FetchPost(updateApiUrl, bodyParams.toString()).then((result) => {
     if (result.statusCode !== 200) return;
     propsHandleExit(result.data as IFileIndexItem[]);
+    return result.data as IFileIndexItem[];
   });
 }
 
