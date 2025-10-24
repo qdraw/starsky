@@ -39,7 +39,7 @@ declare global {
   }
 }
 
-function resetStorage() {
+export function resetStorage() {
   localStorage.clear();
   sessionStorage.clear();
   cy.clearLocalStorage();

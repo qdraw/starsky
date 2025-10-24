@@ -1,3 +1,4 @@
+import { waitOnUploadIsDone } from 'e2e/helpers/create-directory-helper.cy'
 import { envName, envFolder } from '../../support/commands'
 import configFile from './config.json'
 import flow from './flow.json'
@@ -32,6 +33,12 @@ describe('DetailView (from upload) (40)', () => {
 
   it('Check if folder is there and if files are in folder (40)', () => {
     if (!config.isEnabled) return
+
+    cy.fileRequest(fileName1, "/starsky-end2end-test", "image/jpeg");
+    cy.fileRequest(fileName2, "/starsky-end2end-test", "image/jpeg");
+    cy.fileRequest(fileName3, "/starsky-end2end-test", "image/jpeg");
+    waitOnUploadIsDone(config.urlApiCollectionsFalse, 0);
+
     cy.visit(config.url)
     cy.get(flow.content)
     cy.get('.folder > div').should(($lis) => {

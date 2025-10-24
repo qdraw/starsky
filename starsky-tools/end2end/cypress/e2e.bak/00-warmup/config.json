@@ -4,10 +4,6 @@
         "isEnabled": true,
         "url": "/api/health"
       },
-      "heroku-demo": {
-        "isEnabled": true,
-        "url": "/api/health"
-      },
       "no-create-account": {
         "isEnabled": true,
         "url": "/api/health"

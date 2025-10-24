@@ -6,12 +6,6 @@
         "successUrl" : "/account/login",
         "statusApi": "/starsky/api/account/status"
       },
-      "heroku-demo" : {
-        "isEnabled": true,
-        "url": "/account/login?ReturnUrl=/",
-        "successUrl" : "/account/login",
-        "statusApi": "/starsky/api/account/status"
-      },
       "no-create-account": {
         "isEnabled": true,
         "url": "/account/login?ReturnUrl=/",

@@ -33,7 +33,7 @@ npm run open:docker
 ## With Env variables
 
 `CYPRESS_BASE_URL` - main domain its running
-`cypress_name` 'local', heroku-demo or no-create-account
+`cypress_name` 'local', no-create-account
 `cypress_AUTH_USER` account to login, default "demo@qdraw.nl"
 `cypress_AUTH_PASS` password to login default "demo@qdraw.nl"
 
@@ -86,11 +86,6 @@ This is the base `package.json`
         "start": "cypress open --env configFolder=starsky,configEnv=local,CYPRESS_RETRIES=2",
         "start:env": "cypress open",
         "open:env": "npm run start:env",
-        "start:heroku": "npm run start:heroku-demo",
-        "open:heroku": "npm run start:heroku-demo",
-        "open:heroku-demo": "npm run start:heroku-demo",
-        "start:heroku-demo": "cypress open --env configFolder=starsky,configEnv=heroku-demo,CYPRESS_RETRIES=2",
-        "e2e:heroku-demo": "cypress run --env configFolder=starsky,configEnv=heroku-demo,CYPRESS_RETRIES=2",
         "open:docker": "cypress open --env configFolder=starsky,configEnv=docker,CYPRESS_RETRIES=2",
         "start:docker": "npm run open:docker",
         "e2e:docker": "cypress run --env configFolder=starsky,configEnv=docker,CYPRESS_RETRIES=2",
