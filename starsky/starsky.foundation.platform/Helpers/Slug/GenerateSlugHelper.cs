@@ -2,7 +2,7 @@ namespace starsky.foundation.platform.Helpers.Slug;
 
 public static class GenerateSlugHelper
 {
-	public const int MaxLength = 65;
+	public const int MaxLength = 66;
 
 	/// <summary>
 	///     Generates a permalink slug for passed string
