@@ -146,7 +146,7 @@ const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({ state, dispatch
           )}
 
           {/* More menu - In the select context there are more options */}
-          {select && select.length === 0 ? (
+          {select?.length === 0 ? (
             <MoreMenu setEnableMoreMenu={setEnableMoreMenu} enableMoreMenu={enableMoreMenu}>
               <MenuOptionSelectionAll select={select} state={state} allSelection={allSelection} />
             </MoreMenu>

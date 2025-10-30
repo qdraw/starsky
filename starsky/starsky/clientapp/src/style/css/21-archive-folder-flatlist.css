@@ -39,8 +39,9 @@
 }
 
 .list-flat-box--select .box-content--selected > div {
+  /* refactor */
   background-color: #1e88e5;
-  color: white;
+  color: black;
 }
 
 .list-flat-box--select:nth-child(odd) .box-content--selected > div {

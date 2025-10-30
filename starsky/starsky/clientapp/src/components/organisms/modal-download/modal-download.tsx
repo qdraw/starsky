@@ -84,7 +84,7 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
   const [singleFileThumbnailStatus, setSingleFileThumbnailStatus] = React.useState(true);
 
   function getFirstSelectResult(): string {
-    if (!props.select || props.select.length !== 1) return "";
+    if (props.select?.length !== 1) return "";
     return props.select[0];
   }
 
@@ -111,7 +111,7 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
       </div>
       <div className="modal content--text">
         {/* when selecting one file */}
-        {isProcessing === ProcessingState.default && props.select && props.select.length === 1 ? (
+        {isProcessing === ProcessingState.default && props.select?.length === 1 ? (
           <>
             <a
               href={new UrlQuery().UrlDownloadPhotoApi(

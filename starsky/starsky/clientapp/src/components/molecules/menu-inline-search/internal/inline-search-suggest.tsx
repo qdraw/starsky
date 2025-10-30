@@ -74,7 +74,7 @@ const InlineSearchSuggest: React.FunctionComponent<IInlineSearchSuggestProps> = 
 
   return (
     <>
-      {props.suggest && props.suggest.length === 0
+      {props.suggest?.length === 0
         ? defaultMenu.map((value) => {
             return (
               <li

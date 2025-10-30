@@ -19,7 +19,7 @@ export const MenuSelectCount: React.FunctionComponent<IMenuSelectCountProps> = (
 
   return (
     <>
-      {select && select.length === 0 ? (
+      {select?.length === 0 ? (
         <button
           data-test="selected-0"
           onClick={() => {

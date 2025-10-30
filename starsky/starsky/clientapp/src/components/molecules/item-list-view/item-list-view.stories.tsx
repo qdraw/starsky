@@ -54,3 +54,14 @@ export const _8ItemsSelectionEnabled = () => {
 };
 
 _8ItemsSelectionEnabled.storyName = "8 items (selection enabled)";
+
+export const _8ItemsIconListFalseSelectionEnabled = () => {
+  Router.navigate("/?select=");
+  return (
+    <MemoryRouter>
+      <ItemListView iconList={false} fileIndexItems={exampleData8Selected} colorClassUsage={[]} />
+    </MemoryRouter>
+  );
+};
+
+_8ItemsIconListFalseSelectionEnabled.storyName = "8 items iconlist false (selection enabled)";
