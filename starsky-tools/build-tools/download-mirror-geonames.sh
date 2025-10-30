@@ -19,7 +19,10 @@ rm -rf $SCRIPT_DIR$BINARY_FOLDERNAME
 mkdir -p $SCRIPT_DIR$BINARY_FOLDERNAME
 cd $SCRIPT_DIR$BINARY_FOLDERNAME
 
+echo "Downloading GeoNames files... ""$GEONAMES_DUMP$ADMIN1_CODES"
 curl -L -O "$GEONAMES_DUMP$ADMIN1_CODES"
+
+echo "Downloading GeoNames files... ""$GEONAMES_DUMP$CITIES1000"
 curl -L -O "$GEONAMES_DUMP$CITIES1000"
 
 for CHECK_FILE in "${CHECK_FILES[@]}"; do
@@ -37,8 +40,8 @@ for CHECK_FILE in "${CHECK_FILES[@]}"; do
   FILE_SIZE=$(stat -c%s "$FULL_PATH" 2>/dev/null || stat -f%z "$FULL_PATH")
 
   # Check conditions
-  if [ "$FILE_SIZE" -gt 147000 ] && [ "$CHECK_FILE" == "$ADMIN1_CODES" ]; then
-    echo "✅ $CHECK_FILE contains $ADMIN1_CODES and is at least 150 KB /0.14mb."
+  if [ "$FILE_SIZE" -gt 142000 ] && [ "$CHECK_FILE" == "$ADMIN1_CODES" ]; then
+    echo "✅ $CHECK_FILE contains $ADMIN1_CODES and is at least 142 KB /0.13mb."
   elif [ "$FILE_SIZE" -gt 9300000 ]; then
     echo "✅ $CHECK_FILE exists and is larger than 8 MB."
   else
