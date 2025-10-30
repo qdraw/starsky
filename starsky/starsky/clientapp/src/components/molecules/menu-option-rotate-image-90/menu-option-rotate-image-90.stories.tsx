@@ -1,5 +1,5 @@
-import { Meta } from "@storybook/react";
-import { action } from "@storybook/addon-actions";
+import { Meta } from "@storybook/react-vite";
+import { action } from "storybook/actions";
 import MenuOptionRotateImage90 from "./menu-option-rotate-image-90.tsx";
 import { IDetailView } from "../../../interfaces/IDetailView.ts";
 
