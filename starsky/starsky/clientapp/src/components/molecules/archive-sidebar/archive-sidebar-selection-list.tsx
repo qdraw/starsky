@@ -57,7 +57,7 @@ const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSel
           )}
         </div>
         <ul data-test="sidebar-selection-list">
-          {select?.length === 0 ? (
+          {!select || select.length === 0 ? (
             <li className="warning-box" data-test="sidebar-selection-none">
               {MessageNoneSelected}
             </li>
