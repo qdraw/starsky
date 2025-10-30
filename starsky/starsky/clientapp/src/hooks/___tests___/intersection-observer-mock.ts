@@ -17,7 +17,7 @@ globalThis.IntersectionObserver = jest.fn((_cb, _options) => {
     observe: mockObserve,
     unobserve: mockUnobserve,
     disconnect: mockDisconnect,
-    root: null,
+    root: _options?.root || null,
     rootMargin: "",
     thresholds: [],
     takeRecords: jest.fn()
