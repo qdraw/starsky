@@ -89,7 +89,6 @@
   border: none;
   overflow: hidden;
   border-radius: 2px;
-  color: #fff; /* Internet Explorer uses this value as the progress bar's value colour */
   background-color: #fff; /* firefox */
   margin-bottom: 14px;
 }

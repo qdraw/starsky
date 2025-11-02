@@ -48,12 +48,10 @@ const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSel
               {MessageAllName}
             </button>
           )}
-          {select?.length !== 0 ? (
+          {select?.length === 0 ? null : (
             <button className="btn btn--default" onClick={() => undoSelection()}>
               Undo
             </button>
-          ) : (
-            ""
           )}
         </div>
         <ul data-test="sidebar-selection-list">
