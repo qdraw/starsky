@@ -48,11 +48,13 @@ public sealed class Zipper : IZipper
 
 		// Ensures that the last character on the extraction path
 		// is the directory separator char. 
-		// Without this, a malicious zip file could try to traverse outside of the expected
+		// Without this, a malicious zip file could try to traverse outside the expected
 		// extraction path.
 		storeZipFolderFullPath = PathHelper.AddBackslash(storeZipFolderFullPath);
-		using ( var archive = ZipFile.OpenRead(zipInputFullPath) )
+
+		try
 		{
+			using var archive = ZipFile.OpenRead(zipInputFullPath);
 			foreach ( var entry in archive.Entries )
 			{
 				// Gets the full path to ensure that relative segments are removed.
@@ -93,6 +95,12 @@ public sealed class Zipper : IZipper
 					return false;
 				}
 			}
+		}
+		catch ( InvalidDataException exception )
+		{
+			_logger.LogError($"[Zipper] Failed to extract {exception} - {zipInputFullPath}",
+				exception);
+			return false;
 		}
 
 		return true;

@@ -280,14 +280,32 @@ public sealed class ZipperTest
 		yield return [TooShortZip, false];
 		yield return [EmptyZip, false];
 	}
-	
+
 	[TestMethod]
 	[DynamicData(nameof(ExtractZipTestData), DynamicDataSourceType.Method)]
-	public void ExtractZip_Theory(byte[] fileContent, bool expected)
+	public void ExtractZip_Bytes_Theory(byte[] fileContent, bool expected)
 	{
 		var result = new Zipper(new FakeIWebLogger()).ExtractZip(fileContent);
 
 		var isValid = result.Count > 0;
 		Assert.AreEqual(expected, isValid);
+	}
+
+	[TestMethod]
+	[DynamicData(nameof(ExtractZipTestData), DynamicDataSourceType.Method)]
+	public void ExtractZip_FullFilePath_Theory(byte[] fileContent, bool expected)
+	{
+		var inputFileFullPath = Path.GetTempFileName();
+		File.WriteAllBytes(inputFileFullPath, fileContent);
+
+		var outputFileFullPath = Path.GetTempFileName();
+
+		var result =
+			new Zipper(new FakeIWebLogger()).ExtractZip(inputFileFullPath, outputFileFullPath);
+
+		File.Delete(inputFileFullPath);
+		File.Delete(outputFileFullPath);
+
+		Assert.AreEqual(expected, result);
 	}
 }
