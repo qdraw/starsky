@@ -19,6 +19,11 @@ public class FakeIZipper : IZipper
 		_zipContent = zipContent;
 	}
 
+	public Dictionary<string, byte[]> ExtractZip(byte[] zipped)
+	{
+		throw new NotImplementedException();
+	}
+
 	public bool ExtractZip(string zipInputFullPath, string storeZipFolderFullPath)
 	{
 		var bytes = _zipContent.FirstOrDefault(p => p.Item1 == zipInputFullPath)?.Item2;
