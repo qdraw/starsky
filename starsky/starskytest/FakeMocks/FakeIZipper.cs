@@ -28,7 +28,7 @@ public class FakeIZipper : IZipper
 			return false;
 		}
 
-		foreach ( var values in Zipper.ExtractZip(bytes) )
+		foreach ( var values in new Zipper(new FakeIWebLogger()).ExtractZip(bytes) )
 		{
 			var outputPath = Path.Combine(storeZipFolderFullPath, values.Key);
 			Console.WriteLine("ExtractZip: " + zipInputFullPath + " to " + outputPath);

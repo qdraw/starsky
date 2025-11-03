@@ -42,7 +42,7 @@ public class FakeIFfMpegDownload : IFfMpegDownload
 
 		if ( new AppSettings().IsWindows )
 		{
-			var zipper = Zipper.ExtractZip([
+			var zipper = new Zipper(new FakeIWebLogger()).ExtractZip([
 				..
 				new CreateAnZipfileFakeFfMpeg().Bytes
 			]);
