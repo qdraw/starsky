@@ -11,19 +11,10 @@ using starsky.foundation.storage.Storage;
 
 namespace starsky.foundation.storage.ArchiveFormats;
 
-[SuppressMessage("Performance", "CA1822:Mark members as static")]
-[SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
 [Service(typeof(IZipper), InjectionLifetime = InjectionLifetime.Scoped)]
-public sealed class Zipper : IZipper
+public sealed class Zipper(IWebLogger logger) : IZipper
 {
-	private readonly StorageHostFullPathFilesystem _hostStorage;
-	private readonly IWebLogger _logger;
-
-	public Zipper(IWebLogger logger)
-	{
-		_logger = logger;
-		_hostStorage = new StorageHostFullPathFilesystem(logger);
-	}
+	private readonly StorageHostFullPathFilesystem _hostStorage = new(logger);
 
 	/// <summary>
 	///     Extract zip file to a folder
@@ -36,13 +27,13 @@ public sealed class Zipper : IZipper
 	{
 		if ( !File.Exists(zipInputFullPath) )
 		{
-			_logger.LogError("[Zipper] Zip file not found: " + zipInputFullPath);
+			logger.LogError("[Zipper] Zip file not found: " + zipInputFullPath);
 			return false;
 		}
 
 		if ( !IsValidZipFile(zipInputFullPath) )
 		{
-			_logger.LogError("[Zipper] Invalid zip" + zipInputFullPath);
+			logger.LogError("[Zipper] Invalid zip" + zipInputFullPath);
 			return false;
 		}
 
@@ -91,14 +82,14 @@ public sealed class Zipper : IZipper
 				}
 				catch ( IOException exception )
 				{
-					_logger.LogError($"[Zipper] IOException: {zipInputFullPath}", exception);
+					logger.LogError($"[Zipper] IOException: {zipInputFullPath}", exception);
 					return false;
 				}
 			}
 		}
 		catch ( InvalidDataException exception )
 		{
-			_logger.LogError($"[Zipper] Failed to extract {exception} - {zipInputFullPath}",
+			logger.LogError($"[Zipper] Failed to extract {exception} - {zipInputFullPath}",
 				exception);
 			return false;
 		}
@@ -112,7 +103,7 @@ public sealed class Zipper : IZipper
 
 		if ( !IsValidZipFile(zipped) )
 		{
-			_logger.LogError("[Zipper] Invalid zip in byte array");
+			logger.LogError("[Zipper] Invalid zip in byte array");
 			return result;
 		}
 
@@ -132,7 +123,7 @@ public sealed class Zipper : IZipper
 		}
 		catch ( InvalidDataException exception )
 		{
-			_logger.LogError($"[Zipper] Failed to extract {exception}", exception);
+			logger.LogError($"[Zipper] Failed to extract {exception}", exception);
 			return result;
 		}
 	}
