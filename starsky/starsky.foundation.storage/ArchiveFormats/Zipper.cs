@@ -40,13 +40,21 @@ public sealed class Zipper : IZipper
 			return false;
 		}
 
+		if ( !IsValidZipFile(zipInputFullPath) )
+		{
+			_logger.LogError("[Zipper] Invalid zip: " + zipInputFullPath);
+			return false;
+		}
+
 		// Ensures that the last character on the extraction path
 		// is the directory separator char. 
-		// Without this, a malicious zip file could try to traverse outside of the expected
+		// Without this, a malicious zip file could try to traverse outside the expected
 		// extraction path.
 		storeZipFolderFullPath = PathHelper.AddBackslash(storeZipFolderFullPath);
-		using ( var archive = ZipFile.OpenRead(zipInputFullPath) )
+
+		try
 		{
+			using var archive = ZipFile.OpenRead(zipInputFullPath);
 			foreach ( var entry in archive.Entries )
 			{
 				// Gets the full path to ensure that relative segments are removed.
@@ -88,24 +96,82 @@ public sealed class Zipper : IZipper
 				}
 			}
 		}
+		catch ( InvalidDataException exception )
+		{
+			_logger.LogError($"[Zipper] Failed to extract {exception} - {zipInputFullPath}",
+				exception);
+			return false;
+		}
 
 		return true;
 	}
 
-	public static Dictionary<string, byte[]> ExtractZip(byte[] zipped)
+	public Dictionary<string, byte[]> ExtractZip(byte[] zipped)
 	{
-		using var memoryStream = new MemoryStream(zipped);
-		using var archive = new ZipArchive(memoryStream);
 		var result = new Dictionary<string, byte[]>();
-		foreach ( var entry in archive.Entries )
+
+		if ( !IsValidZipFile(zipped) )
 		{
-			// only the first item
-			using var entryStream = entry.Open();
-			using var reader = new BinaryReader(entryStream);
-			result.Add(entry.FullName, reader.ReadBytes(( int ) entry.Length));
+			_logger.LogError("[Zipper] Invalid zip in byte array");
+			return result;
 		}
 
-		return result;
+		try
+		{
+			using var memoryStream = new MemoryStream(zipped);
+			using var archive = new ZipArchive(memoryStream);
+			foreach ( var entry in archive.Entries )
+			{
+				using var entryStream = entry.Open();
+				using var reader = new BinaryReader(entryStream);
+				result.Add(entry.FullName, reader.ReadBytes(( int ) entry.Length));
+			}
+
+			return result;
+		}
+		catch ( InvalidDataException exception )
+		{
+			_logger.LogError($"[Zipper] Failed to extract {exception}", exception);
+			return result;
+		}
+	}
+
+	public static bool IsValidZipFile(string fullFilePath)
+	{
+		if ( !File.Exists(fullFilePath) )
+		{
+			return false;
+		}
+
+		var buffer = new byte[4];
+		using ( var fs = new FileStream(fullFilePath, FileMode.Open, FileAccess.Read) )
+		{
+			if ( fs.Read(buffer, 0, 4) != 4 )
+			{
+				return false;
+			}
+		}
+
+		return IsValidZipFile(buffer);
+	}
+
+	/// <summary>
+	///     ZIP files start with 'PK\x03\x04'
+	/// </summary>
+	/// <param name="fileBytes"></param>
+	/// <returns></returns>
+	public static bool IsValidZipFile(byte[] fileBytes)
+	{
+		if ( fileBytes.Length < 4 )
+		{
+			return false;
+		}
+
+		// ZIP files start with 'PK\x03\x04'
+		return fileBytes[0] == 0x50 &&
+		       fileBytes[1] == 0x4B &&
+		       fileBytes[2] == 0x03 &&
+		       fileBytes[3] == 0x04;
 	}
 
 

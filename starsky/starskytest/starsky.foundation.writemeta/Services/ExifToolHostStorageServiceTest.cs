@@ -25,6 +25,8 @@ public sealed class ExifToolHostStorageServiceTest
 		_createAnImage = new CreateAnImage();
 	}
 
+	public TestContext TestContext { get; set; }
+
 	[TestMethod]
 	public async Task ExifToolHostStorageService_NotFound_Exception()
 	{
@@ -158,7 +160,8 @@ public sealed class ExifToolHostStorageServiceTest
 
 		hostFileSystemStorage.CreateDirectory(outputPath);
 
-		var result = Zipper.ExtractZip(CreateAnExifToolWindows.Bytes.ToArray());
+		var result =
+			new Zipper(new FakeIWebLogger()).ExtractZip(CreateAnExifToolWindows.Bytes.ToArray());
 		var (_, item) = result.FirstOrDefault(p => p.Key.Contains("exiftool"));
 
 		await hostFileSystemStorage.WriteStreamAsync(new MemoryStream(item),
@@ -223,6 +226,4 @@ public sealed class ExifToolHostStorageServiceTest
 			await service.WriteTagsThumbnailAsync("/test.jpg", "-Software=\"Qdraw 2.0\"");
 		});
 	}
-
-	public TestContext TestContext { get; set; }
 }

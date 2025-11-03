@@ -19,6 +19,11 @@ namespace starskytest.starsky.foundation.storage.ArchiveFormats;
 [TestClass]
 public sealed class ZipperTest
 {
+	private static readonly byte[] ValidZipSignatureButInvalidFile = [0x50, 0x4B, 0x03, 0x04, 0x00];
+	private static readonly byte[] InvalidZip = [0x00, 0x01, 0x02, 0x03];
+	private static readonly byte[] TooShortZip = "PK"u8.ToArray();
+	private static readonly byte[] EmptyZip = [];
+
 	[TestMethod]
 	public void NotFound()
 	{
@@ -33,7 +38,7 @@ public sealed class ZipperTest
 		var zipped = CreateAnZipFile12.Bytes;
 
 		// Act
-		var result = Zipper.ExtractZip([.. zipped]);
+		var result = new Zipper(new FakeIWebLogger()).ExtractZip([.. zipped]);
 
 		// Assert
 		Assert.IsNotNull(result);
@@ -232,5 +237,75 @@ public sealed class ZipperTest
 		// Cleanup
 		File.Delete(zipFilePath);
 		Directory.Delete(extractPath, true);
+	}
+
+	public static IEnumerable<object[]> IsValidZipFileTestData()
+	{
+		yield return [ValidZipSignatureButInvalidFile, true];
+		yield return [InvalidZip, false];
+		yield return [TooShortZip, false];
+		yield return [EmptyZip, false];
+	}
+
+	[TestMethod]
+	[DynamicData(nameof(IsValidZipFileTestData), DynamicDataSourceType.Method)]
+	public void IsValidZipFile_filePath_Theory(byte[] fileContent, bool expected)
+	{
+		var tempFile = Path.GetTempFileName();
+		File.WriteAllBytes(tempFile, fileContent);
+		var result = Zipper.IsValidZipFile(tempFile);
+		File.Delete(tempFile);
+		Assert.AreEqual(expected, result);
+	}
+
+	[TestMethod]
+	[DynamicData(nameof(IsValidZipFileTestData), DynamicDataSourceType.Method)]
+	public void IsValidZipFile_byte_Theory(byte[] fileContent, bool expected)
+	{
+		var result = Zipper.IsValidZipFile(fileContent);
+		Assert.AreEqual(expected, result);
+	}
+
+	[TestMethod]
+	public void IsValidZipFile_FileDoesNotExist_ReturnsFalse()
+	{
+		var result = Zipper.IsValidZipFile("nonexistent.zip");
+		Assert.IsFalse(result);
+	}
+
+	public static IEnumerable<object[]> ExtractZipTestData()
+	{
+		yield return [ValidZipSignatureButInvalidFile, false];
+		yield return [InvalidZip, false];
+		yield return [TooShortZip, false];
+		yield return [EmptyZip, false];
+	}
+
+	[TestMethod]
+	[DynamicData(nameof(ExtractZipTestData), DynamicDataSourceType.Method)]
+	public void ExtractZip_Bytes_Theory(byte[] fileContent, bool expected)
+	{
+		var result = new Zipper(new FakeIWebLogger()).ExtractZip(fileContent);
+
+		var isValid = result.Count > 0;
+		Assert.AreEqual(expected, isValid);
+	}
+
+	[TestMethod]
+	[DynamicData(nameof(ExtractZipTestData), DynamicDataSourceType.Method)]
+	public void ExtractZip_FullFilePath_Theory(byte[] fileContent, bool expected)
+	{
+		var inputFileFullPath = Path.GetTempFileName();
+		File.WriteAllBytes(inputFileFullPath, fileContent);
+
+		var outputFileFullPath = Path.GetTempFileName();
+
+		var result =
+			new Zipper(new FakeIWebLogger()).ExtractZip(inputFileFullPath, outputFileFullPath);
+
+		File.Delete(inputFileFullPath);
+		File.Delete(outputFileFullPath);
+
+		Assert.AreEqual(expected, result);
 	}
 }

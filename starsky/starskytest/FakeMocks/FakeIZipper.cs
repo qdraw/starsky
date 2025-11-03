@@ -19,6 +19,11 @@ public class FakeIZipper : IZipper
 		_zipContent = zipContent;
 	}
 
+	public Dictionary<string, byte[]> ExtractZip(byte[] zipped)
+	{
+		throw new NotImplementedException();
+	}
+
 	public bool ExtractZip(string zipInputFullPath, string storeZipFolderFullPath)
 	{
 		var bytes = _zipContent.FirstOrDefault(p => p.Item1 == zipInputFullPath)?.Item2;
@@ -28,7 +33,7 @@ public class FakeIZipper : IZipper
 			return false;
 		}
 
-		foreach ( var values in Zipper.ExtractZip(bytes) )
+		foreach ( var values in new Zipper(new FakeIWebLogger()).ExtractZip(bytes) )
 		{
 			var outputPath = Path.Combine(storeZipFolderFullPath, values.Key);
 			Console.WriteLine("ExtractZip: " + zipInputFullPath + " to " + outputPath);

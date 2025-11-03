@@ -80,7 +80,8 @@ public class FfMpegPreflightRunCheckTests
 			await _ffMpegChmod.Chmod(_ffmpegExePath.GetExePath());
 		}
 
-		var result = Zipper.ExtractZip([.. new CreateAnZipfileFakeFfMpeg().Bytes]);
+		var result =
+			new Zipper(new FakeIWebLogger()).ExtractZip([.. new CreateAnZipfileFakeFfMpeg().Bytes]);
 		var (_, item) = result.FirstOrDefault(p => p.Key.Contains("ffmpeg.exe"));
 
 		await _hostFileSystemStorage.WriteStreamAsync(new MemoryStream(item),

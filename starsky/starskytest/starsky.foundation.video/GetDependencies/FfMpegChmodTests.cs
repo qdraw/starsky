@@ -45,7 +45,8 @@ public class FfMpegChmodTests
 			_ffmpegExePath.GetExePath("linux-x64"));
 		stream.Dispose();
 
-		var result = Zipper.ExtractZip([.. CreateAnExifToolWindows.Bytes]);
+		var result =
+			new Zipper(new FakeIWebLogger()).ExtractZip([.. CreateAnExifToolWindows.Bytes]);
 		var (_, item) = result.FirstOrDefault(p => p.Key.Contains("exiftool"));
 
 		_hostFileSystemStorage.CreateDirectory(_ffmpegExePath.GetExeParentFolder("win-x64"));
@@ -128,7 +129,7 @@ public class FfMpegChmodTests
 		CreateFile();
 
 		var path = Path.Combine(_ffmpegExePath.GetExeParentFolder("win-x64"), "chmod.exe");
-		
+
 		Console.WriteLine("test> " + path);
 
 		var sut = new FfMpegChmod(new FakeSelectorStorage(new FakeIStorage([],
