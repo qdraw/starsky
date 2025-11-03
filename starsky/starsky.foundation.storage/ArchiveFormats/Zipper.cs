@@ -122,7 +122,6 @@ public sealed class Zipper : IZipper
 			using var archive = new ZipArchive(memoryStream);
 			foreach ( var entry in archive.Entries )
 			{
-				// only the first item
 				using var entryStream = entry.Open();
 				using var reader = new BinaryReader(entryStream);
 				result.Add(entry.FullName, reader.ReadBytes(( int ) entry.Length));
