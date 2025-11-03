@@ -42,7 +42,7 @@ public sealed class Zipper : IZipper
 
 		if ( !IsValidZipFile(zipInputFullPath) )
 		{
-			_logger.LogError("[Zipper] Invalid zip" + zipInputFullPath);
+			_logger.LogError("[Zipper] Invalid zip: " + zipInputFullPath);
 			return false;
 		}
 
