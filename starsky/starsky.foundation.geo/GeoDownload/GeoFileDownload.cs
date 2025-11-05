@@ -99,12 +99,13 @@ public sealed class GeoFileDownload : IGeoFileDownload
 		}
 
 		// When trying to download a file
-		var zipLength = _hostStorage
-			.ReadStream(Path.Combine(_appSettings.DependenciesFolder, CountryName + ".zip"))
-			.Length;
-		if ( zipLength > MinimumSizeInBytes )
+		var zipFullPath = Path.Combine(_appSettings.DependenciesFolder, CountryName + ".zip");
+		using (var stream = _hostStorage.ReadStream(zipFullPath))
 		{
-			return;
+			if (stream.Length > MinimumSizeInBytes)
+			{
+				return;
+			}
 		}
 
 		_hostStorage.FileDelete(Path.Combine(_appSettings.DependenciesFolder,
