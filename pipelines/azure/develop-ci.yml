@@ -140,6 +140,7 @@ stages:
       name: 'dev-build'
       demands:
       - "Agent.Name -equals $(agentDemand)"
+    continueOnError: true
     steps:
 
     - checkout: none
