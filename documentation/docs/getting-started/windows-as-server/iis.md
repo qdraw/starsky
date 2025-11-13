@@ -33,14 +33,27 @@ To run ASP.NET Core applications on IIS, you need the AspNetCoreModule (ANCM) in
    ![Download Hosting Bundle](../../assets/getting-started-windows-as-server-download-hosting-bundle.jpg)
    _Note the version in the image is not updated_
 
-2. **Verify ANCM Installation**
+2. **Add ANCM Installation**
    - After installation, you can verify the module is present by running the following commands in an elevated command prompt:
 
    ```powershell
    cd  C:\Windows\System32\inetsrv
-   .\appcmd.exe  install module /name:AspNetCoreModule /image:%windir%\system32\inetsrv\aspnetcore.dll
+   .\appcmd.exe install module /name:AspNetCoreModuleV2 /image:%windir%\system32\inetsrv\aspnetcorev2.dll
    ```
 
 
 If you encounter issues, such as the module not appearing in IIS, refer to the [Stack Overflow discussion](https://stackoverflow.com/questions/57878610/aspnetcoremodulev2-missing-from-iis-modules-after-running-the-runtime-bundle) for troubleshooting tips.
+
+
+```powershell
+Get-WebGlobalModule | where {$_.Name -eq "AspNetCoreModuleV2"}
+```
+
+The command `Get-WebGlobalModule` should return something like this:
+
+```
+Name                     Image
+----                     -----
+AspNetCoreModuleV2       %windir%\system32\inetsrv\aspnetcorev2.dll
+```
 
