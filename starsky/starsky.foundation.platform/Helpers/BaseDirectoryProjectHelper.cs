@@ -24,5 +24,6 @@ public static class BaseDirectoryProjectHelper
 		.Replace("starskytest", Starsky)
 		.Replace("starskydiskwatcherworkerservice", Starsky)
 		.Replace("starskydemoseedcli", Starsky)
-		.Replace("starskydependenciesdownloadcli", Starsky);
+		.Replace("starskydependenciesdownloadcli", Starsky)
+		.Replace("starskyiocli", Starsky);
 }
