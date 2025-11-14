@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -58,15 +57,17 @@ public static class Program
 		var settings = new WebApplicationOptions
 		{
 			Args = args,
-			//set ContentRootPath so that builder.Host.UseWindowsService() doesn't crash when running as a service
-			ContentRootPath = AppContext.BaseDirectory
+			// set ContentRootPath so that builder.Host.UseWindowsService() doesn't crash when running as a service
+#if !DEBUG
+			ContentRootPath = new AppSettings().BaseDirectoryProject
+#endif
 		};
 		var builder = WebApplication.CreateBuilder(settings);
 
 		builder.WebHost.ConfigureKestrel(k =>
 		{
 			k.Limits.MaxRequestLineSize = 65536; //64Kb
-			// AddServerHeader removes the header: Server: Kestrel
+			// AddServerHeader false: removes the header: Server: Kestrel
 			k.AddServerHeader = false;
 		});
 
