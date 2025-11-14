@@ -53,7 +53,7 @@ public class FfmpegStreamToStreamRunnerTests
 		var readFile = Path.Combine(new CreateAnImage().BasePath,
 			"FfmpegStreamToStreamRunnerTests", "read_file.");
 
-		var zipper = Zipper.ExtractZip([
+		var zipper = new Zipper(new FakeIWebLogger()).ExtractZip([
 			..
 			new CreateAnZipfileFakeFfMpeg().Bytes
 		]);

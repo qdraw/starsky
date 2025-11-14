@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <!-- SonarQube needs this -->
         <ProjectGuid>{c5f59cd2-13dc-45e5-9cd0-a756feaffd86}</ProjectGuid>
-        <RuntimeFrameworkVersion>8.0.21</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion>8.0.22</RuntimeFrameworkVersion>
         <DebugType>Full</DebugType>
         <Version>0.7.4</Version>
         <Nullable>enable</Nullable>

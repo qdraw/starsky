@@ -12,5 +12,7 @@ public static class AddDataProtectionKeys
 			.AddKeyManagementOptions(options => options.XmlRepository =
 				services.BuildServiceProvider().GetService<IXmlRepository>())
 			.SetApplicationName("Starsky");
+		// Application Name is using by default the path where it runs from
+		// and SetApplicationName does overwrite it
 	}
 }
