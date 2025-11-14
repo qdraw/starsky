@@ -81,7 +81,7 @@ public sealed class GeoBackgroundTaskTest
 			Path.Combine(_appSettings.DependenciesFolder, "admin1CodesASCII.txt"));
 	}
 
-	[ClassCleanup(ClassCleanupBehavior.EndOfClass)]
+	[ClassCleanup]
 	public static void ClassCleanUp()
 	{
 		var path = Path.Combine(new CreateAnImage().BasePath, "tmp-dependencies");

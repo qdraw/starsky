@@ -74,7 +74,7 @@ public class FfmpegStreamToStreamRunnerTests
 		return readFile + i;
 	}
 
-	[ClassCleanup(ClassCleanupBehavior.EndOfClass)]
+	[ClassCleanup]
 	public static void Ffmpeg_CleanUp()
 	{
 		File.Delete(Path.Combine(new CreateAnImage().BasePath, "FfmpegStreamToStreamRunnerTests",

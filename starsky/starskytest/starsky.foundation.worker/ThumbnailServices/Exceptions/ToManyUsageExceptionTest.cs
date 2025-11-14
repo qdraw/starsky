@@ -11,7 +11,7 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices.Exceptions;
 public sealed class ToManyUsageExceptionTest
 {
 	[TestMethod]
-	public void ToManyUsageExceptionException()
+	public void ToManyUsageException_DefaultConstructor()
 	{
 		var exception = new ToManyUsageException();
 		Assert.AreEqual($"Exception of type '{typeof(ToManyUsageException)}' was thrown.",
@@ -40,10 +40,11 @@ public sealed class ToManyUsageExceptionTest
 		info.AddValue("Source", "");
 
 		var ctor =
-			typeof(ToManyUsageException).GetConstructors(BindingFlags.Instance |
-			                                             BindingFlags.NonPublic |
-			                                             BindingFlags.InvokeMethod)
-				.FirstOrDefault();
+			typeof(ToManyUsageException).GetConstructor(
+				BindingFlags.Instance | BindingFlags.NonPublic,
+				null,
+				new[] { typeof(SerializationInfo), typeof(StreamingContext) },
+				null);
 		if ( ctor == null )
 		{
 			throw new NullReferenceException();
@@ -56,7 +57,14 @@ public sealed class ToManyUsageExceptionTest
 			});
 
 #pragma warning disable MSTEST0039
-		Assert.ThrowsException<ToManyUsageException>(() => throw instance);
+		try
+		{
+			throw instance;
+		}
+		catch (ToManyUsageException ex)
+		{
+			Assert.IsInstanceOfType(ex, typeof(ToManyUsageException));
+		}
 #pragma warning restore MSTEST0039
 #pragma warning restore SYSLIB0050
 	}

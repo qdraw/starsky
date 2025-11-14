@@ -69,7 +69,8 @@ dotnet_diagnostic.MSTEST0017.severity = warning
 dotnet_diagnostic.MSTEST0032.severity = warning
 
 # Use ClassCleanupBehavior.EndOfClass with the [ClassCleanup]
-dotnet_diagnostic.MSTEST0034.severity = warning
+# This analyzer is no longer relevant for MSTest 4 as ClassCleanupBehavior was removed.
+dotnet_diagnostic.MSTEST0034.severity = none
 
 # [DeploymentItem] can be specified only on test class or test method
 dotnet_diagnostic.MSTEST0035.severity = warning
