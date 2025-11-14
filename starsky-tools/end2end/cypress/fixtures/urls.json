@@ -1,0 +1,7 @@
+{
+    "urlAccountRegister": "/account/register",
+    "urlAccountRegisterStatusApi": "/starsky/api/account/register/status",
+    "urlAccountLogin": "/account/login",
+    "apiHealth": "/api/health",
+    "apiEnv": "/api/env"
+}

@@ -35,3 +35,26 @@ export function checkIfExistAndCreate (config): void {
     }
   })
 }
+
+export function waitOnUploadIsDone(urlApiCollectionsFalse: string, index: number, max: number = 10) {
+    cy.request({
+      url: urlApiCollectionsFalse,
+      method: "GET",
+      headers: {
+        "Content-Type": "text/plain",
+      },
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      cy.log(JSON.stringify(response.body.fileIndexItems));
+
+      if (response.body.fileIndexItems.length === 4) {
+        cy.log("4 items, done");
+        return;
+      }
+      cy.wait(1500);
+      index++;
+      if (index < max) {
+        waitOnUploadIsDone(urlApiCollectionsFalse,index, max);
+      }
+    });
+  }

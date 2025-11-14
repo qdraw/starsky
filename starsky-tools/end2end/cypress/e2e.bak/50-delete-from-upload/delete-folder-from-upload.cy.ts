@@ -5,6 +5,37 @@ import { RequestOptions } from 'http'
 const config = configFile[envFolder][envName]
 
 describe('Delete folder from upload (50)', () => {
+
+  let useSystemTrashBeforeStatus = null;
+  beforeEach("Check some config settings and do them before each test (50)", () => {
+    // Check if test is enabled for current environment
+    if (!config.isEnabled) {
+      return false;
+    }
+
+    // Reset storage before every new test
+    cy.resetStorage();
+
+    cy.sendAuthenticationHeader();
+
+    // disable system trash
+    cy.request({
+      url: config.apiEnvEndpoint,
+      method: "GET",
+    }).then((response) => {
+      useSystemTrashBeforeStatus = response.body.useSystemTrash
+      cy.request({
+        url: config.apiEnvEndpoint,
+        method: "POST",
+        form: true, // indicates the body should be form urlencoded and sets Content-Type
+        body: {
+          useSystemTrash: false,
+        }
+      })
+    });
+
+  });
+
   beforeEach('Check some config settings and do them before each test (50)', () => {
     // Check if test is enabled for current environment
     if (!config.isEnabled) {
@@ -81,4 +112,18 @@ describe('Delete folder from upload (50)', () => {
       expect(response.body.fileIndexItems).to.have.length(0)
     })
   })
+
+  it("z cleanup trash settings (50)", () => {
+    cy.log("cleanup trash settings");
+    cy.log(useSystemTrashBeforeStatus);
+    
+    cy.request({
+      url: config.apiEnvEndpoint,
+      method: "POST",
+      form: true, // indicates the body should be form urlencoded and sets Content-Type
+      body: {
+        useSystemTrash: useSystemTrashBeforeStatus,
+      }
+    })
+  });
 })
