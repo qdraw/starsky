@@ -84,7 +84,7 @@ public sealed class SynchronizeCliTest
 	}
 
 
-	[ClassCleanup(ClassCleanupBehavior.EndOfClass)]
+	[ClassCleanup]
 	public static void CleanEnvsAfterwards()
 	{
 		Environment.SetEnvironmentVariable("PORT", _prePort);

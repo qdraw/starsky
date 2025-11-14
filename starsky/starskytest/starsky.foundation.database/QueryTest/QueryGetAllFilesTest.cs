@@ -113,7 +113,7 @@ public sealed class QueryGetAllFilesTest
 		// item sub folder
 		var item = new FileIndexItem("/test_821827/test_0191919.jpg");
 		dbContext.FileIndex.Add(item);
-		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+		await dbContext.SaveChangesAsync(TestContext.CancellationToken);
 
 		// Important to dispose!
 		await dbContext.DisposeAsync();
@@ -160,15 +160,15 @@ public sealed class QueryGetAllFilesTest
 
 		await dbContext.FileIndex.AddAsync(
 			new FileIndexItem("/GetAllFilesAsync") { IsDirectory = true },
-			TestContext.CancellationTokenSource.Token);
+			TestContext.CancellationToken);
 		await dbContext.FileIndex.AddAsync(
 			new FileIndexItem("/GetAllFilesAsync/test") { IsDirectory = true },
-			TestContext.CancellationTokenSource.Token);
+			TestContext.CancellationToken);
 		await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllFilesAsync/test.jpg"),
-			TestContext.CancellationTokenSource.Token);
+			TestContext.CancellationToken);
 		await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllFilesAsync/test/test.jpg"),
-			TestContext.CancellationTokenSource.Token);
-		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+			TestContext.CancellationToken);
+		await dbContext.SaveChangesAsync(TestContext.CancellationToken);
 
 		var items = await query.GetAllFilesAsync("/GetAllFilesAsync");
 

@@ -161,15 +161,15 @@ public sealed class ThumbnailQueuedHostedServiceTest
 			},
 			string.Empty);
 
-		await Task.Delay(100, TestContext.CancellationTokenSource.Token);
+		await Task.Delay(100, TestContext.CancellationToken);
 		if ( !isExecuted )
 		{
-			await Task.Delay(400, TestContext.CancellationTokenSource.Token);
+			await Task.Delay(400, TestContext.CancellationToken);
 		}
 
 		if ( !isExecuted )
 		{
-			await Task.Delay(500, TestContext.CancellationTokenSource.Token);
+			await Task.Delay(500, TestContext.CancellationToken);
 		}
 
 		Assert.IsTrue(isExecuted);
@@ -268,15 +268,15 @@ public sealed class ThumbnailQueuedHostedServiceTest
 			// EXCEPTION IS IGNORED
 		}, string.Empty);
 
-		await Task.Delay(100, TestContext.CancellationTokenSource.Token);
+		await Task.Delay(100, TestContext.CancellationToken);
 		if ( !isExecuted )
 		{
-			await Task.Delay(400, TestContext.CancellationTokenSource.Token);
+			await Task.Delay(400, TestContext.CancellationToken);
 		}
 
 		if ( !isExecuted )
 		{
-			await Task.Delay(500, TestContext.CancellationTokenSource.Token);
+			await Task.Delay(500, TestContext.CancellationToken);
 		}
 
 		Assert.IsTrue(isExecuted);

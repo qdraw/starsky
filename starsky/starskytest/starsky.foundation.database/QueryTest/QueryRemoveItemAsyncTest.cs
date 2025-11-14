@@ -81,8 +81,8 @@ public class QueryRemoveItemAsyncTest
 		var scope = serviceScopeFactory.CreateScope();
 		var dbContextDisposed = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-		await dbContextDisposed.FileIndex.AddRangeAsync(addedItems, TestContext.CancellationTokenSource.Token);
-		await dbContextDisposed.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+		await dbContextDisposed.FileIndex.AddRangeAsync(addedItems, TestContext.CancellationToken);
+		await dbContextDisposed.SaveChangesAsync(TestContext.CancellationToken);
 
 		// Dispose here
 		await dbContextDisposed.DisposeAsync();
@@ -95,7 +95,7 @@ public class QueryRemoveItemAsyncTest
 		var context = new InjectServiceScope(serviceScopeFactory).Context();
 		var queryFromDb = await context.FileIndex.Where(p =>
 			p.FileHash == addedItems[0].FilePath || p.FileHash == addedItems[1].FilePath
-		).ToListAsync(TestContext.CancellationTokenSource.Token);
+		).ToListAsync(TestContext.CancellationToken);
 
 		Assert.IsEmpty(queryFromDb);
 	}

@@ -37,13 +37,13 @@ public sealed class WebSocketConnectionsMiddlewareExtensionsTest
 			})
 			.Build();
 
-		await host.StartAsync(TestContext.CancellationTokenSource.Token);
+		await host.StartAsync(TestContext.CancellationToken);
 
 		// it should not fail
 		var fakeService = host.Services.GetService<IWebSocketConnectionsService>();
 		Assert.IsNotNull(fakeService);
 
-		await host.StopAsync(TestContext.CancellationTokenSource.Token);
+		await host.StopAsync(TestContext.CancellationToken);
 	}
 
 	[TestMethod]

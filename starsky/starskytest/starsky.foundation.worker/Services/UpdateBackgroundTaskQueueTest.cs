@@ -117,7 +117,7 @@ public sealed class UpdateBackgroundTaskQueueTest
 			},
 			string.Empty);
 
-		await Task.Delay(100, TestContext.CancellationTokenSource.Token);
+		await Task.Delay(100, TestContext.CancellationToken);
 		await backgroundQueue.QueueBackgroundWorkItemAsync(async _ =>
 		{
 			await Task.Yield();
@@ -128,12 +128,12 @@ public sealed class UpdateBackgroundTaskQueueTest
 
 		if ( !isExecuted )
 		{
-			await Task.Delay(500, TestContext.CancellationTokenSource.Token);
+			await Task.Delay(500, TestContext.CancellationToken);
 		}
 
 		if ( !isExecuted )
 		{
-			await Task.Delay(500, TestContext.CancellationTokenSource.Token);
+			await Task.Delay(500, TestContext.CancellationToken);
 		}
 
 		Assert.IsTrue(isExecuted);
@@ -188,7 +188,7 @@ public sealed class UpdateBackgroundTaskQueueTest
 			// EXCEPTION IS IGNORED
 		}, string.Empty);
 
-		await Task.Delay(100, TestContext.CancellationTokenSource.Token);
+		await Task.Delay(100, TestContext.CancellationToken);
 		await backgroundQueue.QueueBackgroundWorkItemAsync(async _ =>
 		{
 			await Task.Yield();
@@ -199,7 +199,7 @@ public sealed class UpdateBackgroundTaskQueueTest
 
 		if ( !isExecuted )
 		{
-			await Task.Delay(1000, TestContext.CancellationTokenSource.Token);
+			await Task.Delay(1000, TestContext.CancellationToken);
 		}
 
 		Assert.IsTrue(isExecuted);

@@ -45,7 +45,7 @@ public class ExifToolServiceTest
 		}
 	}
 
-	[ClassCleanup(ClassCleanupBehavior.EndOfClass)]
+	[ClassCleanup]
 	public static void CleanExifToolServiceTest()
 	{
 		if ( File.Exists(ExifToolPath) )
