@@ -64,7 +64,7 @@ public sealed class SearchSuggestionsInflateHostedServiceTest
 			testContent,
 			testContent
 		});
-		await _dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+		await _dbContext.SaveChangesAsync(TestContext.CancellationToken);
 
 		await new SearchSuggestionsInflateHostedService(_scopeFactory, _memoryCache,
 			new FakeIWebLogger(),

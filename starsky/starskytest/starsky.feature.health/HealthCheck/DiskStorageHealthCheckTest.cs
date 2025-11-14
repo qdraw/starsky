@@ -49,7 +49,7 @@ public sealed class DiskStorageHealthCheckTest
 
 		var healthCheck = new HealthCheckContext();
 		var sut = new DiskStorageHealthCheck(diskOptions, new FakeIWebLogger());
-		var result = await sut.CheckHealthAsync(healthCheck, TestContext.CancellationTokenSource.Token);
+		var result = await sut.CheckHealthAsync(healthCheck, TestContext.CancellationToken);
 		Assert.AreEqual(HealthStatus.Healthy, result.Status);
 	}
 
@@ -68,7 +68,7 @@ public sealed class DiskStorageHealthCheckTest
 			Registration = new HealthCheckRegistration("te",
 				sut, null, null)
 		};
-		var result = await sut.CheckHealthAsync(healthCheck, TestContext.CancellationTokenSource.Token);
+		var result = await sut.CheckHealthAsync(healthCheck, TestContext.CancellationToken);
 		Assert.AreEqual(HealthStatus.Unhealthy, result.Status);
 		Assert.IsTrue(result.Description?.Contains("Minimum configured megabytes for disk"));
 	}
@@ -86,7 +86,7 @@ public sealed class DiskStorageHealthCheckTest
 			Registration = new HealthCheckRegistration("te",
 				sut, null, null)
 		};
-		var result = await sut.CheckHealthAsync(healthCheck, TestContext.CancellationTokenSource.Token);
+		var result = await sut.CheckHealthAsync(healthCheck, TestContext.CancellationToken);
 		Assert.AreEqual(HealthStatus.Unhealthy, result.Status);
 		Assert.IsTrue(result.Description?.Contains("is not present on system"));
 	}
@@ -102,7 +102,7 @@ public sealed class DiskStorageHealthCheckTest
 		var sut = new DiskStorageHealthCheck(diskOptions, new FakeIWebLogger());
 
 		await Assert.ThrowsExactlyAsync<NullReferenceException>(async () =>
-			await sut.CheckHealthAsync(healthCheck, TestContext.CancellationTokenSource.Token));
+			await sut.CheckHealthAsync(healthCheck, TestContext.CancellationToken));
 	}
 
 	public TestContext TestContext { get; set; }

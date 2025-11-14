@@ -25,7 +25,7 @@ public class SyncThumbnailTableAsyncTest
 		const string fileHash = "SyncThumbnailTableAsyncTest_WithRealDbContext";
 
 		dbContext.Thumbnails.Add(new ThumbnailItem(fileHash, true, true, null, null));
-		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+		await dbContext.SaveChangesAsync(TestContext.CancellationToken);
 
 		var sync = new SyncAddAddThumbnailTable(new ThumbnailQuery(dbContext, null,
 			new FakeIWebLogger(), new FakeMemoryCache()));
@@ -40,7 +40,7 @@ public class SyncThumbnailTableAsyncTest
 		// should not overwrite the existing data
 		var item =
 			await dbContext.Thumbnails.FirstOrDefaultAsync(p =>
-				p.FileHash == fileHash, TestContext.CancellationTokenSource.Token);
+				p.FileHash == fileHash, TestContext.CancellationToken);
 
 		Assert.IsNotNull(item);
 		Assert.IsTrue(item.TinyMeta);
@@ -100,11 +100,11 @@ public class SyncThumbnailTableAsyncTest
 		Assert.HasCount(5, content);
 
 		// should not overwrite the existing data
-		var counter = await dbContext.Thumbnails.CountAsync(TestContext.CancellationTokenSource.Token);
+		var counter = await dbContext.Thumbnails.CountAsync(TestContext.CancellationToken);
 
 		Assert.AreEqual(1, counter);
 
-		var item = await dbContext.Thumbnails.FirstOrDefaultAsync(p => p.FileHash == "duplicate", TestContext.CancellationTokenSource.Token);
+		var item = await dbContext.Thumbnails.FirstOrDefaultAsync(p => p.FileHash == "duplicate", TestContext.CancellationToken);
 
 		Assert.IsNotNull(item);
 		Assert.IsNull(item.TinyMeta);

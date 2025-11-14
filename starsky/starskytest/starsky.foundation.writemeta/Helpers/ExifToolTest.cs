@@ -103,7 +103,7 @@ public sealed class ExifToolTest
 
 		var result =
 			await new ExifTool(fakeStorage, fakeStorage, appSettings, new FakeIWebLogger())
-				.RenameThumbnailByStream("OLDHASH", new MemoryStream(), true, "test", TestContext.CancellationTokenSource.Token);
+				.RenameThumbnailByStream("OLDHASH", new MemoryStream(), true, "test", TestContext.CancellationToken);
 
 		Assert.AreEqual(26, result.newHashCode.Length);
 	}
@@ -119,7 +119,7 @@ public sealed class ExifToolTest
 
 		var result =
 			await new ExifTool(fakeStorage, fakeStorage, appSettings, new FakeIWebLogger())
-				.RenameThumbnailByStream("OLDHASH", new MemoryStream(), false, "test", TestContext.CancellationTokenSource.Token);
+				.RenameThumbnailByStream("OLDHASH", new MemoryStream(), false, "test", TestContext.CancellationToken);
 
 		Assert.AreEqual(0, result.newHashCode.Length);
 	}
@@ -135,7 +135,7 @@ public sealed class ExifToolTest
 
 		var stream = new MemoryStream();
 		await new ExifTool(fakeStorage, fakeStorage, appSettings, new FakeIWebLogger())
-			.RenameThumbnailByStream("OLDHASH", stream, true, "test", TestContext.CancellationTokenSource.Token);
+			.RenameThumbnailByStream("OLDHASH", stream, true, "test", TestContext.CancellationToken);
 
 		Assert.IsTrue(stream.CanWrite);
 	}
@@ -153,7 +153,7 @@ public sealed class ExifToolTest
 		var exceptionMessage = string.Empty;
 		try
 		{
-			await exifTool.WriteTagsAndRenameThumbnailAsync("test.jpg", null, "", TestContext.CancellationTokenSource.Token);
+			await exifTool.WriteTagsAndRenameThumbnailAsync("test.jpg", null, "", TestContext.CancellationToken);
 		}
 		catch ( ObjectDisposedException e )
 		{

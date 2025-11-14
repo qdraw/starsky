@@ -212,7 +212,7 @@ public sealed class StorageThumbnailFilesystemTest
 
 		if ( new AppSettings().IsWindows )
 		{
-			await Task.Delay(500, TestContext.CancellationTokenSource.Token);
+			await Task.Delay(500, TestContext.CancellationToken);
 		}
 
 		var result2 = _thumbnailStorage.IsFileReady(thumbnailId);

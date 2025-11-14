@@ -193,7 +193,7 @@ public sealed class QueryGetObjectsByFilePathCollectionAsyncTest
 		var result = await ExampleQuery();
 		if ( result.Count == 0 )
 		{
-			await Task.Delay(100, TestContext.CancellationTokenSource.Token);
+			await Task.Delay(100, TestContext.CancellationToken);
 			await AddExampleRange();
 			result = await ExampleQuery();
 		}

@@ -109,7 +109,7 @@ public class QueryGetNextPrevInFolderTest
 		};
 
 		_context.FileIndex.AddRange(items);
-		await _context.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+		await _context.SaveChangesAsync(TestContext.CancellationToken);
 
 		// Act
 		var result = _query.QueryGetNextPrevInFolder(parentFolderPath, currentFolder);
@@ -166,7 +166,7 @@ public class QueryGetNextPrevInFolderTest
 		};
 
 		_context.FileIndex.AddRange(items);
-		await _context.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+		await _context.SaveChangesAsync(TestContext.CancellationToken);
 
 		// Act
 		var result = _query.QueryGetNextPrevInFolder(parentFolderPath, currentFolder);
@@ -207,7 +207,7 @@ public class QueryGetNextPrevInFolderTest
 		};
 
 		_context.FileIndex.AddRange(items);
-		await _context.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+		await _context.SaveChangesAsync(TestContext.CancellationToken);
 
 		// Act
 		var result = _query.QueryGetNextPrevInFolder(parentFolderPath, currentFolder);

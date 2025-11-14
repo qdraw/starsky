@@ -91,8 +91,8 @@ namespace starskytest.Helpers
 					}
 				}).Build();
 
-			await host.StartAsync(TestContext.CancellationTokenSource.Token);
-			await host.StopAsync(TestContext.CancellationTokenSource.Token);
+			await host.StartAsync(TestContext.CancellationToken);
+			await host.StopAsync(TestContext.CancellationToken);
 
 			Assert.IsTrue(storage.ExistFile(swaggerFilePath));
 

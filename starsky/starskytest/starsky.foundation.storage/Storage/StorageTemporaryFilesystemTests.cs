@@ -106,7 +106,7 @@ public sealed class StorageTemporaryFilesystemTests
 		{
 			Console.WriteLine("StorageThumbnailFilesystemTest_FileCopy" +
 			                  " was not deleted, retrying");
-			await Task.Delay(1000, TestContext.CancellationTokenSource.Token);
+			await Task.Delay(1000, TestContext.CancellationToken);
 			File.Delete(Path.Combine(createNewImage.BasePath,
 				"StorageThumbnailFilesystemTest_FileCopy.jpg"));
 		}

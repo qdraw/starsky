@@ -54,7 +54,7 @@ public class MacOsTrashBindingHelperTest
 
 		var result = MacOsTrashBindingHelper.Trash(destPath, OSPlatform.OSX);
 
-		await Task.Delay(1000, TestContext.CancellationTokenSource.Token);
+		await Task.Delay(1000, TestContext.CancellationToken);
 
 		Assert.IsTrue(result);
 
@@ -66,7 +66,7 @@ public class MacOsTrashBindingHelperTest
 
 		Assert.IsFalse(exists);
 
-		await Task.Delay(500, TestContext.CancellationTokenSource.Token);
+		await Task.Delay(500, TestContext.CancellationToken);
 
 		var trashPath =
 			Path.Combine(Environment.GetFolderPath(

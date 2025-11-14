@@ -13,7 +13,7 @@ public sealed class DateAssemblyHealthCheckTest
 	public async Task RunCheckHealthAsync()
 	{
 		var healthCheck = new HealthCheckContext();
-		var result = await new DateAssemblyHealthCheck().CheckHealthAsync(healthCheck, TestContext.CancellationTokenSource.Token);
+		var result = await new DateAssemblyHealthCheck().CheckHealthAsync(healthCheck, TestContext.CancellationToken);
 
 		if ( result.Status == HealthStatus.Unhealthy )
 		{

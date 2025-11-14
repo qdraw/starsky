@@ -212,7 +212,7 @@ public sealed class ExportControllerTest
 		Assert.IsNotNull(zipHash);
 		Assert.Contains("SR", zipHash);
 
-		await Task.Delay(150, TestContext.CancellationTokenSource.Token);
+		await Task.Delay(150, TestContext.CancellationToken);
 
 		// Get from real fs in to fake memory
 		var sourceFullPath = Path.Join(appSettings.TempFolder, zipHash) + ".zip";

@@ -158,7 +158,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 			new FakeIWebLogger(),
 			scopeFactory);
 
-		var result = await periodicThumbnailScanHostedService.RunJob(TestContext.CancellationTokenSource.Token);
+		var result = await periodicThumbnailScanHostedService.RunJob(TestContext.CancellationToken);
 		Assert.IsTrue(result);
 	}
 
@@ -179,7 +179,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 			scopeFactory);
 		periodicThumbnailScanHostedService.IsEnabled = false;
 
-		var result = await periodicThumbnailScanHostedService.RunJob(TestContext.CancellationTokenSource.Token);
+		var result = await periodicThumbnailScanHostedService.RunJob(TestContext.CancellationToken);
 		Assert.IsFalse(result);
 	}
 
@@ -197,7 +197,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 			new FakeIWebLogger(),
 			scopeFactory);
 
-		var result = await periodicThumbnailScanHostedService.RunJob(TestContext.CancellationTokenSource.Token);
+		var result = await periodicThumbnailScanHostedService.RunJob(TestContext.CancellationToken);
 		Assert.IsNull(result);
 	}
 

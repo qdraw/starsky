@@ -26,6 +26,7 @@
         "cSpell.words": ["Exif", "Starsky", "colorclass", "unmount"],
         "typescript.tsdk": "clientapp/node_modules/typescript/lib",
         "editor.formatOnSave": true,
-        "testing.openTesting": "neverOpen"
+        "testing.openTesting": "neverOpen",
+        "testing.automaticallyOpenTestResults": "neverOpen"
     }
 }
