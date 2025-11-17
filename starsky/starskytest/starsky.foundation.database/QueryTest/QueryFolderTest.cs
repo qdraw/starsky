@@ -86,12 +86,12 @@ public sealed class QueryFolderTest
 		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
 		// remove all items
-		foreach ( var allSingleItem in await dbContext.FileIndex.ToListAsync(TestContext.CancellationTokenSource.Token) )
+		foreach ( var allSingleItem in await dbContext.FileIndex.ToListAsync(TestContext.CancellationToken) )
 		{
 			dbContext.FileIndex.Remove(allSingleItem);
 		}
 
-		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+		await dbContext.SaveChangesAsync(TestContext.CancellationToken);
 		// and remove all folders
 
 		// item sub folder
@@ -101,7 +101,7 @@ public sealed class QueryFolderTest
 		var item1 = new FileIndexItem("/test_1234567832/test_0191922.jpg");
 		dbContext.FileIndex.Add(item1);
 
-		await dbContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+		await dbContext.SaveChangesAsync(TestContext.CancellationToken);
 
 		// Important to dispose!
 		await dbContext.DisposeAsync();

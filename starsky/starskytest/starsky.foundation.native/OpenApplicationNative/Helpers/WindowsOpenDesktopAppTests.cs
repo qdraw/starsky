@@ -135,7 +135,7 @@ public class WindowsOpenDesktopAppTests
 		for ( var i = 0; i < 2 && result != true; i++ )
 		{
 			Console.WriteLine($"Retry due to multi-threading {i + 1}");
-			await Task.Delay(1000, TestContext.CancellationTokenSource.Token);
+			await Task.Delay(1000, TestContext.CancellationToken);
 			SetupEnsureAssociationsSet();
 			result = WindowsOpenDesktopApp.OpenDefault([mock.StarskyDotStarskyPath]);
 		}

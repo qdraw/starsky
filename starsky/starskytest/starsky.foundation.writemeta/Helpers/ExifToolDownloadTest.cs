@@ -75,7 +75,7 @@ public sealed class ExifToolDownloadTest
 		_hostFileSystem.CreateDirectory(_appSettings.DependenciesFolder);
 	}
 
-	[ClassCleanup(ClassCleanupBehavior.EndOfClass)]
+	[ClassCleanup]
 	public static void CleanExifToolDownloadTest()
 	{
 		var host = new StorageHostFullPathFilesystem(new FakeIWebLogger());

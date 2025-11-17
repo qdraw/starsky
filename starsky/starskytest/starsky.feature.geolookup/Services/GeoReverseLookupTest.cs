@@ -36,7 +36,7 @@ public sealed class GeoFolderReverseLookupTest
 		return reverseGeoCodeService;
 	}
 
-	[ClassCleanup(ClassCleanupBehavior.EndOfClass)]
+	[ClassCleanup]
 	public static void ClassCleanUp()
 	{
 		var path = Path.Combine(new CreateAnImage().BasePath, "tmp-dependencies");

@@ -25,7 +25,7 @@ public sealed class PathExistHealthCheckTest
 		};
 		var result =
 			await new PathExistHealthCheck(pathExistOptions, new FakeIWebLogger())
-				.CheckHealthAsync(healthCheck, TestContext.CancellationTokenSource.Token);
+				.CheckHealthAsync(healthCheck, TestContext.CancellationToken);
 		Assert.AreEqual(HealthStatus.Healthy, result.Status);
 	}
 
@@ -42,7 +42,7 @@ public sealed class PathExistHealthCheckTest
 		};
 		var result =
 			await new PathExistHealthCheck(pathExistOptions, new FakeIWebLogger())
-				.CheckHealthAsync(healthCheck, TestContext.CancellationTokenSource.Token);
+				.CheckHealthAsync(healthCheck, TestContext.CancellationToken);
 		Assert.AreEqual(HealthStatus.Unhealthy, result.Status);
 	}
 
@@ -57,7 +57,7 @@ public sealed class PathExistHealthCheckTest
 		};
 		var result =
 			await new PathExistHealthCheck(pathExistOptions, new FakeIWebLogger())
-				.CheckHealthAsync(healthCheck, TestContext.CancellationTokenSource.Token);
+				.CheckHealthAsync(healthCheck, TestContext.CancellationToken);
 		Assert.AreEqual(HealthStatus.Unhealthy, result.Status);
 	}
 

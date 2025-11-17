@@ -16,7 +16,7 @@ public class CacheControlOverwriteTests
 		CacheControlOverwrite.SetNoCacheResponseHeaders(request);
 
 		Assert.AreEqual("no-store, no-cache, must-revalidate",
-			request.HttpContext.Response.Headers.CacheControl);
+			request.HttpContext.Response.Headers.CacheControl.ToString());
 	}
 
 	[TestMethod]
@@ -29,8 +29,8 @@ public class CacheControlOverwriteTests
 		CacheControlOverwrite.SetExpiresResponseHeaders(request, time);
 
 		Assert.AreEqual($"private,max-age={time}",
-			request.HttpContext.Response.Headers.CacheControl);
-		Assert.AreEqual(time.ToString(), request.HttpContext.Response.Headers.Expires);
+			request.HttpContext.Response.Headers.CacheControl.ToString());
+		Assert.AreEqual(time.ToString(), request.HttpContext.Response.Headers.Expires.ToString());
 	}
 
 	[TestMethod]
@@ -42,8 +42,8 @@ public class CacheControlOverwriteTests
 		CacheControlOverwrite.SetExpiresResponseHeaders(request);
 
 		Assert.AreEqual("private,max-age=29030400",
-			request.HttpContext.Response.Headers.CacheControl);
-		Assert.AreEqual("29030400", request.HttpContext.Response.Headers.Expires);
+			request.HttpContext.Response.Headers.CacheControl.ToString());
+		Assert.AreEqual("29030400", request.HttpContext.Response.Headers.Expires.ToString());
 	}
 
 	[TestMethod]
@@ -56,7 +56,7 @@ public class CacheControlOverwriteTests
 		CacheControlOverwrite.SetNoCacheResponseHeaders(request);
 
 		Assert.AreEqual("no-store, no-cache, must-revalidate",
-			request.HttpContext.Response.Headers.CacheControl);
+			request.HttpContext.Response.Headers.CacheControl.ToString());
 	}
 
 	[TestMethod]
@@ -70,7 +70,7 @@ public class CacheControlOverwriteTests
 		CacheControlOverwrite.SetExpiresResponseHeaders(request);
 
 		Assert.AreEqual("private,max-age=29030400",
-			request.HttpContext.Response.Headers.CacheControl);
-		Assert.AreEqual("29030400", request.HttpContext.Response.Headers.Expires);
+			request.HttpContext.Response.Headers.CacheControl.ToString());
+		Assert.AreEqual("29030400", request.HttpContext.Response.Headers.Expires.ToString());
 	}
 }

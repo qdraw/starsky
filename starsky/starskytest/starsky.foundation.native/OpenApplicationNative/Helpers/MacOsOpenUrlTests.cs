@@ -55,7 +55,7 @@ public class MacOsOpenUrlTests
 		var isProcess = Process.GetProcessesByName(ConsoleName).ToList()
 			.Exists(p => p.MainModule?.FileName.Contains(ConsoleApp) == true);
 
-		await Task.Delay(10, TestContext.CancellationTokenSource.Token);
+		await Task.Delay(10, TestContext.CancellationToken);
 
 		for ( var i = 0; i < 60; i++ )
 		{
@@ -69,7 +69,7 @@ public class MacOsOpenUrlTests
 				break;
 			}
 
-			await Task.Delay(5, TestContext.CancellationTokenSource.Token);
+			await Task.Delay(5, TestContext.CancellationToken);
 		}
 
 		Assert.IsTrue(isProcess);

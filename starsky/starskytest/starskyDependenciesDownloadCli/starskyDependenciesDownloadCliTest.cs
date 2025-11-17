@@ -62,7 +62,7 @@ public sealed class StarskyDependenciesDownloadCliTest
 		Assert.IsNotNull(args);
 	}
 
-	[ClassCleanup(ClassCleanupBehavior.EndOfClass)]
+	[ClassCleanup]
 	public static void CleanEnvsAfterwards()
 	{
 		Environment.SetEnvironmentVariable("PORT", _prePort);

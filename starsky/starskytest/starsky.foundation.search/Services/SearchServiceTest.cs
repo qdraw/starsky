@@ -498,7 +498,7 @@ public sealed class SearchServiceTest
 
 		// expect 5
 		var expectedCount = await _dbContext.FileIndex.CountAsync(p =>
-			p.ParentDirectory!.StartsWith("/stations"), TestContext.CancellationTokenSource.Token);
+			p.ParentDirectory!.StartsWith("/stations"), TestContext.CancellationToken);
 
 		var stationsQueryResult =
 			await _search.Search("-inurl:/stations");
@@ -516,7 +516,7 @@ public sealed class SearchServiceTest
 
 		var expectedCount = await _dbContext.FileIndex.CountAsync(p => p.Tags!.Contains("lelystad")
 			&& p.ParentDirectory!.Contains(
-				"stations2"), TestContext.CancellationTokenSource.Token);
+				"stations2"), TestContext.CancellationToken);
 
 		var item =
 			await _search.Search("lelystad -ParentDirectory:/stations2");

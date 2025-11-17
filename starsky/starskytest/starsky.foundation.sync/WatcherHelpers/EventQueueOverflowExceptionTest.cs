@@ -52,7 +52,16 @@ public sealed class EventQueueOverflowExceptionTest
 			});
 
 #pragma warning disable MSTEST0039
-		Assert.ThrowsException<EventQueueOverflowException>(() => throw instance);
+		// MSTest v4: Assert.ThrowsException is now private, so use try-catch instead
+		try
+		{
+			throw instance;
+			Assert.Fail("Expected EventQueueOverflowException was not thrown.");
+		}
+		catch (EventQueueOverflowException)
+		{
+			// Test passes
+		}
 #pragma warning restore MSTEST0039
 
 #pragma warning restore SYSLIB0050
