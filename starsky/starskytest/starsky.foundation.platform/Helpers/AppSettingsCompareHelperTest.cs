@@ -732,7 +732,7 @@ public sealed class AppSettingsCompareHelperTest
 
 		AppSettingsCompareHelper.Compare(source, to);
 
-		Assert.AreEqual(source.DefaultDesktopEditor.Count, to.DefaultDesktopEditor.Count);
+		Assert.HasCount(source.DefaultDesktopEditor.Count, to.DefaultDesktopEditor);
 		Assert.AreEqual(source.DefaultDesktopEditor[0].ApplicationPath,
 			to.DefaultDesktopEditor[0].ApplicationPath);
 		Assert.AreEqual(source.DefaultDesktopEditor[0].ImageFormats,

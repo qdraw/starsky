@@ -42,7 +42,7 @@ public sealed class ZipperTest
 
 		// Assert
 		Assert.IsNotNull(result);
-		Assert.AreEqual(CreateAnZipFile12.Content.Count, result.Count);
+		Assert.HasCount(CreateAnZipFile12.Content.Count, result);
 
 		foreach ( var entry in CreateAnZipFile12.Content )
 		{
@@ -180,7 +180,7 @@ public sealed class ZipperTest
 		}
 
 		var archive = ZipFile.OpenRead(result);
-		Assert.AreEqual(filePaths.Count, archive.Entries.Count);
+		Assert.HasCount(filePaths.Count, archive.Entries);
 
 		for ( var i = 0; i < filePaths.Count; i++ )
 		{
@@ -248,7 +248,7 @@ public sealed class ZipperTest
 	}
 
 	[TestMethod]
-	[DynamicData(nameof(IsValidZipFileTestData), DynamicDataSourceType.Method)]
+	[DynamicData(nameof(IsValidZipFileTestData))]
 	public void IsValidZipFile_filePath_Theory(byte[] fileContent, bool expected)
 	{
 		var tempFile = Path.GetTempFileName();
@@ -259,7 +259,7 @@ public sealed class ZipperTest
 	}
 
 	[TestMethod]
-	[DynamicData(nameof(IsValidZipFileTestData), DynamicDataSourceType.Method)]
+	[DynamicData(nameof(IsValidZipFileTestData))]
 	public void IsValidZipFile_byte_Theory(byte[] fileContent, bool expected)
 	{
 		var result = Zipper.IsValidZipFile(fileContent);
@@ -282,7 +282,7 @@ public sealed class ZipperTest
 	}
 
 	[TestMethod]
-	[DynamicData(nameof(ExtractZipTestData), DynamicDataSourceType.Method)]
+	[DynamicData(nameof(ExtractZipTestData))]
 	public void ExtractZip_Bytes_Theory(byte[] fileContent, bool expected)
 	{
 		var result = new Zipper(new FakeIWebLogger()).ExtractZip(fileContent);
@@ -292,7 +292,7 @@ public sealed class ZipperTest
 	}
 
 	[TestMethod]
-	[DynamicData(nameof(ExtractZipTestData), DynamicDataSourceType.Method)]
+	[DynamicData(nameof(ExtractZipTestData))]
 	public void ExtractZip_FullFilePath_Theory(byte[] fileContent, bool expected)
 	{
 		var inputFileFullPath = Path.GetTempFileName();
