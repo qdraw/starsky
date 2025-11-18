@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Interfaces;
@@ -240,13 +241,17 @@ public sealed class DiskWatcherTest
 		var watcher = new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), null!);
 
 		// Act & Assert
-		Assert.ThrowsExactly<NullReferenceException>(() =>
+		Assert.ThrowsExactly<NullReferenceException>(Test);
+		
+		return;
+
+		void Test()
 		{
 			watcher.OnChanged(null!, event1);
 
 			// Cleanup
 			watcher.Dispose();
-		});
+		}
 	}
 
 	[TestMethod]
