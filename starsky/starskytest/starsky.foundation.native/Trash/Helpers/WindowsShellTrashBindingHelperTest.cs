@@ -58,7 +58,7 @@ public class WindowsShellTrashBindingHelperTest
 	}
 
 	[TestMethod]
-	[DynamicData(nameof(GetFileOperationTestData), DynamicDataSourceType.Method)]
+	[DynamicData(nameof(GetFileOperationTestData))]
 	public void FileOperationTests(uint expected, object actual, string name)
 	{
 		Assert.AreEqual(expected, actual, name);

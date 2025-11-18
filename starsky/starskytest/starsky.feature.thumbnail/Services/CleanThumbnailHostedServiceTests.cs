@@ -89,7 +89,7 @@ public class CleanThumbnailHostedServiceTest
 		var result = await hostedService.StartBackgroundAsync(new TimeSpan(0), stoppingToken);
 
 		// mock always return one item, except when disabled
-		Assert.AreEqual(expectCount, result.Count);
+		Assert.HasCount(expectCount, result);
 	}
 
 	[TestMethod]
@@ -108,7 +108,7 @@ public class CleanThumbnailHostedServiceTest
 		var result = await hostedService.StartBackgroundAsync(new TimeSpan(0), stoppingToken);
 
 		// mock always return one item, except when disabled
-		Assert.AreEqual(expectCount, result.Count);
+		Assert.HasCount(expectCount, result);
 	}
 
 	[TestMethod]
