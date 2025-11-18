@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -30,7 +29,7 @@ public sealed class SetupAppSettingsTest
 	[DataRow("app__appsettingslocalpath")]
 	public async Task SetLocalAppData_ShouldRead(string envName)
 	{
-		var appDataFolderFullPath = Path.Combine(AppContext.BaseDirectory, 
+		var appDataFolderFullPath = Path.Combine(AppContext.BaseDirectory,
 			$"setup_app_settings_test_{envName}");
 
 		_hostStorage.CreateDirectory(appDataFolderFullPath);
