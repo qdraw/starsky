@@ -33,15 +33,12 @@ public sealed class DecodingExceptionTest
 			Assert.Fail("No suitable constructor found for DecodingException.");
 		}
 
-		// Act & Assert
+		// Act & Assert (single expression in lambda per MSTEST0051)
 		var ex = Assert.ThrowsExactly<DecodingException>(() =>
-		{
-			var instance = ( DecodingException ) ctor.Invoke(new object[]
+			throw ( DecodingException ) ctor.Invoke(new object[]
 			{
 				info, new StreamingContext(StreamingContextStates.All)
-			});
-			throw instance;
-		});
+			}));
 #pragma warning restore SYSLIB0050
 
 		// Optionally verify the exception message or other properties

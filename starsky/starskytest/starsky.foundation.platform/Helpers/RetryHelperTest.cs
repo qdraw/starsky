@@ -44,6 +44,7 @@ public sealed class RetryHelperTest
 		var innerExceptions = ex.InnerExceptions ;
 		Assert.IsTrue(innerExceptions.Any(e => e is FormatException));
 		Assert.IsTrue(innerExceptions.Any(e => e is ApplicationException));
+		return;
 
 		bool Test()
 		{
@@ -61,16 +62,15 @@ public sealed class RetryHelperTest
 	public void RetryFail_expect_ArgumentOutOfRangeException()
 	{
 		// Act & Assert
-		Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
-		{
-			bool Test()
-			{
-				return true;
-			}
+		Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => RetryHelper.Do(Test,
+			TimeSpan.Zero, 0));
+		return;
 
-			// should not be negative
-			RetryHelper.Do(Test, TimeSpan.Zero, 0);
-		});
+		// Arrange
+		static bool Test()
+		{
+			return true;
+		}
 	}
 
 	[TestMethod]
@@ -82,12 +82,7 @@ public sealed class RetryHelperTest
 #pragma warning restore 1998
 		{
 			count++;
-			if ( count == 2 )
-			{
-				return true;
-			}
-
-			throw new ApplicationException();
+			return count == 2 ? true : throw new ApplicationException();
 		}
 
 		var result = await RetryHelper.DoAsync(Test, TimeSpan.Zero);
@@ -100,15 +95,18 @@ public sealed class RetryHelperTest
 		var count = 0;
 
 		// Act & Assert
-		var ex = await Assert.ThrowsExactlyAsync<AggregateException>(async () =>
-		{
-			var result = await RetryHelper.DoAsync(Test, TimeSpan.Zero);
-			Assert.IsTrue(result); // This will not be reached if exception is thrown
-		});
+		var ex = await Assert.ThrowsExactlyAsync<AggregateException>(async () => await AssertTest());
 
 		// Verify the AggregateException contains the expected inner exceptions
 		Assert.IsTrue(ex.InnerExceptions.Any(e => e is FormatException));
 		Assert.IsTrue(ex.InnerExceptions.Any(e => e is ApplicationException));
+		return;
+
+		async Task AssertTest()
+		{
+			var result = await RetryHelper.DoAsync(Test, TimeSpan.Zero);
+			Assert.IsTrue(result); // This will not be reached if exception is thrown
+		}
 
 		Task<bool> Test()
 		{
