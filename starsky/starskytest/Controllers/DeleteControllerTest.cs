@@ -90,26 +90,28 @@ public sealed class DeleteControllerTest
 
 	private async Task<FileIndexItem?> InsertSearchData(bool delete = false)
 	{
-		var fileHashCode = new FileHash(_iStorage, new FakeIWebLogger())
-			.GetHashCode(_createAnImage.DbPath).Key;
+		var fileHashCode = (await new FileHash(_iStorage, new FakeIWebLogger())
+			.GetHashCodeAsync(_createAnImage.DbPath)).Key;
 
-		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync(fileHashCode)) )
+		if ( !string.IsNullOrEmpty(await _query.GetSubPathByHashAsync(fileHashCode)) )
 		{
-			var isDelete = string.Empty;
-			if ( delete )
-			{
-				isDelete = TrashKeyword.TrashKeywordString;
-			}
-
-			await _query.AddItemAsync(new FileIndexItem
-			{
-				FileName = _createAnImage.FileName,
-				ParentDirectory = "/",
-				FileHash = fileHashCode,
-				ColorClass = ColorClassParser.Color.Winner, // 1
-				Tags = isDelete
-			});
+			return _query.GetObjectByFilePath(_createAnImage.DbPath);
 		}
+
+		var isDelete = string.Empty;
+		if ( delete )
+		{
+			isDelete = TrashKeyword.TrashKeywordString;
+		}
+
+		await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = _createAnImage.FileName,
+			ParentDirectory = "/",
+			FileHash = fileHashCode,
+			ColorClass = ColorClassParser.Color.Winner, // 1
+			Tags = isDelete
+		});
 
 		return _query.GetObjectByFilePath(_createAnImage.DbPath);
 	}

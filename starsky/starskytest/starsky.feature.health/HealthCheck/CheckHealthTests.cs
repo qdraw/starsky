@@ -104,7 +104,7 @@ public class CheckHealthTests
 		// Assert
 		Assert.AreEqual(healthReport.Status == HealthStatus.Healthy, result.IsHealthy);
 		Assert.AreEqual(healthReport.TotalDuration, result.TotalDuration);
-		Assert.AreEqual(healthReport.Entries.Count, result.Entries.Count);
+		Assert.HasCount(healthReport.Entries.Count, result.Entries);
 		Assert.AreEqual(healthReport.Entries.First().Key, result.Entries.FirstOrDefault()?.Name);
 		Assert.AreEqual(healthReport.Entries.First().Value.Duration,
 			result.Entries.FirstOrDefault()?.Duration);

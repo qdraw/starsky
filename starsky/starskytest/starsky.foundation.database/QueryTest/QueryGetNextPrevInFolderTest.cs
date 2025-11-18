@@ -116,7 +116,7 @@ public class QueryGetNextPrevInFolderTest
 
 		// Assert
 		Assert.IsNotNull(result);
-		Assert.AreEqual(expectedCount, result.Count);
+		Assert.HasCount(expectedCount, result);
 		Assert.AreEqual(expectedFilePath1, result[0].FilePath);
 		Assert.AreEqual(expectedFilePath2, result[1].FilePath);
 		Assert.AreEqual(expectedFilePath3, result[2].FilePath);
@@ -172,7 +172,7 @@ public class QueryGetNextPrevInFolderTest
 		var result = _query.QueryGetNextPrevInFolder(parentFolderPath, currentFolder);
 
 		Assert.IsNotNull(result);
-		Assert.AreEqual(items.Count - 1, result.Count);
+		Assert.HasCount(items.Count - 1, result);
 
 		// clean
 		await _query.RemoveItemAsync(items);
@@ -254,7 +254,7 @@ public class QueryGetNextPrevInFolderTest
 
 		// Assert
 		Assert.IsNotNull(result);
-		Assert.AreEqual(items.Count, result.Count);
+		Assert.HasCount(items.Count, result);
 		Assert.AreEqual(items[0].FilePath, result[0].FilePath);
 
 		// Cleanup

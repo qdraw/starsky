@@ -743,7 +743,7 @@ public sealed class ExifToolDownloadTest
 		var exifToolDownload = new ExifToolDownload(httpClientHelper, new AppSettings(),
 			new FakeIWebLogger(), new FakeIStorage());
 		var result = exifToolDownload.GetChecksumsFromTextFile(example, 2);
-		Assert.AreEqual(0, result.Length);
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]
@@ -781,7 +781,7 @@ public sealed class ExifToolDownloadTest
 		var exifToolDownload = new ExifToolDownload(httpClientHelper, new AppSettings(),
 			new FakeIWebLogger(), new FakeIStorage());
 		var result = exifToolDownload.GetChecksumsFromTextFile(ExampleCheckSum);
-		Assert.AreEqual(4, result.Length);
+		Assert.HasCount(4, result);
 	}
 
 	[TestMethod] // [Theory]

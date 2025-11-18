@@ -157,8 +157,8 @@ public sealed class StorageHostFullPathFilesystemTest
 				?.Contains("Could not find a part of the path"));
 		}
 
-		Assert.AreEqual(0, directories.Item1.Length);
-		Assert.AreEqual(0, directories.Item2.Length);
+		Assert.IsEmpty(directories.Item1);
+		Assert.IsEmpty(directories.Item2);
 	}
 
 	[TestMethod]

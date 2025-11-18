@@ -26,7 +26,7 @@ public sealed class Base32Test
 	public void Base32DecodeNull()
 	{
 		var encodeBytes = Base32.Decode(string.Empty);
-		Assert.AreEqual(0, encodeBytes.Length);
+		Assert.IsEmpty(encodeBytes);
 	}
 
 	[TestMethod]

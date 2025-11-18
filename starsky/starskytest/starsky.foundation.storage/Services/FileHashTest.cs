@@ -21,7 +21,7 @@ public sealed class FileHashTest
 		var input1 = FileHash.GenerateRandomBytes(10);
 		var input2 = FileHash.GenerateRandomBytes(10);
 		var test2 = FileHash.GenerateRandomBytes(0);
-		Assert.AreEqual(1, test2.Length);
+		Assert.HasCount(1, test2);
 		Assert.AreNotEqual(input1, input2);
 	}
 

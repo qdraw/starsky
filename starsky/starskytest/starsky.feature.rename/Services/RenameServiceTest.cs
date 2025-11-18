@@ -70,7 +70,7 @@ public sealed class RenameServiceTest
 	[TestMethod]
 	public async Task RenameFsTest_DuplicateFile()
 	{
-		var fileAlreadyExistSubPath = "/already_8758.txt";
+		const string fileAlreadyExistSubPath = "/already_8758.txt";
 		_iStorageSubPath.ExistFile(fileAlreadyExistSubPath);
 
 		if ( !_iStorageSubPath.ExistFile(fileAlreadyExistSubPath) )
@@ -98,7 +98,7 @@ public sealed class RenameServiceTest
 			.Count(p => p.StartsWith(fileAlreadyExistSubPath));
 		Assert.AreEqual(1, count);
 
-		// and remove the file afterwards
+		// and remove the file afterward
 		_iStorageSubPath.FileDelete(fileAlreadyExistSubPath);
 	}
 

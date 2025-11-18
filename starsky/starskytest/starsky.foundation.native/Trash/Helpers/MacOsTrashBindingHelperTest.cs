@@ -193,7 +193,7 @@ public class MacOsTrashBindingHelperTest
 	}
 
 	[TestMethod]
-	[DynamicData(nameof(GetCfStringEncodingTestData), DynamicDataSourceType.Method)]
+	[DynamicData(nameof(GetCfStringEncodingTestData))]
 	public void CfStringEncoding_Tests(uint expected, uint actual)
 	{
 		Assert.AreEqual(expected, actual);

@@ -101,6 +101,10 @@ dotnet_diagnostic.MSTEST0045.severity = warning
 # Consider using the overload that accepts a CancellationToken and pass 'TestContext.CancellationTokenSource.Token'
 dotnet_diagnostic.MSTEST0049.severity = warning
 
+# When using MSTest v4 or later this rule is relevant
+# TestContext.CancellationTokenSource.Token => TestContext.CancellationToken
+dotnet_diagnostic.MSTEST0054.severity = none
+
 # Seal internal types
 dotnet_diagnostic.CA1852.severity = warning
 

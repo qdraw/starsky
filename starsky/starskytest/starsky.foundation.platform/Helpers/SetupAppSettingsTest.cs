@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -30,9 +29,8 @@ public sealed class SetupAppSettingsTest
 	[DataRow("app__appsettingslocalpath")]
 	public async Task SetLocalAppData_ShouldRead(string envName)
 	{
-		var appDataFolderFullPath =
-			Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location)!,
-				$"setup_app_settings_test_{envName}");
+		var appDataFolderFullPath = Path.Combine(AppContext.BaseDirectory,
+			$"setup_app_settings_test_{envName}");
 
 		_hostStorage.CreateDirectory(appDataFolderFullPath);
 		var path = Path.Combine(appDataFolderFullPath, "appsettings.json");
