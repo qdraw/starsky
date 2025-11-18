@@ -30,9 +30,8 @@ public sealed class SetupAppSettingsTest
 	[DataRow("app__appsettingslocalpath")]
 	public async Task SetLocalAppData_ShouldRead(string envName)
 	{
-		var appDataFolderFullPath =
-			Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location)!,
-				$"setup_app_settings_test_{envName}");
+		var appDataFolderFullPath = Path.Combine(AppContext.BaseDirectory, 
+			$"setup_app_settings_test_{envName}");
 
 		_hostStorage.CreateDirectory(appDataFolderFullPath);
 		var path = Path.Combine(appDataFolderFullPath, "appsettings.json");

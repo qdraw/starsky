@@ -229,25 +229,24 @@ public class CreateAnImage
 
 	public static readonly ImmutableArray<byte> Bytes =
 		[..Base64Helper.TryParse(Base64JpgString)];
+	
+	private const string TempUnitTestFolderName = "temp-unit-test";
 
 	/// <summary>
 	///     The FullFile Path of the Directory of the Assemblies
 	/// </summary>
-	public readonly string BasePath =
-		( Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) +
-		  Path.DirectorySeparatorChar ).Replace("./", string.Empty);
-
-	/// <summary>
-	///     Database Path/subpath of the iamge
-	/// </summary>
-	public readonly string DbPath = "/" + FileNamePrivate;
+	public readonly string BasePath =  Path.Combine(AppContext.BaseDirectory, TempUnitTestFolderName);
 
 	/// <summary>
 	///     Full path of the image
 	/// </summary>
 	public readonly string FullFilePath =
-		( Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) +
-		  Path.DirectorySeparatorChar ).Replace("./", string.Empty) + FileNamePrivate;
+		Path.Combine(AppContext.BaseDirectory, TempUnitTestFolderName, FileNamePrivate);
+	
+	/// <summary>
+	///     Database Path/subpath of the iamge
+	/// </summary>
+	public readonly string DbPath = "/" + FileNamePrivate;
 
 	/// <summary>
 	/// Size in bytes of the image

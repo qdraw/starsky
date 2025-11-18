@@ -81,7 +81,7 @@ public sealed class StorageThumbnailFilesystemTest
 		// first copy for parallel test
 		const string alreadyExistsFileName = "already_exists_file_thumbnail.jpg";
 		const string beforeTestFileName = "before_test_thumbnail.jpg";
-
+		
 		_thumbnailStorage.FileCopy(_fileName, alreadyExistsFileName);
 		await _thumbnailStorage.WriteStreamAsync(StringToStreamHelper.StringToStream("1"),
 			beforeTestFileName);
