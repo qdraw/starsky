@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using starsky.feature.search.Interfaces;
 using starsky.feature.search.ViewModels;
 using starsky.foundation.database.Data;
@@ -15,7 +16,6 @@ using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
-using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
 namespace starsky.feature.search.Services;
@@ -32,7 +32,7 @@ public class SearchService : ISearch
 	private readonly AppSettings? _appSettings;
 	private readonly IMemoryCache? _cache;
 	private readonly ApplicationDbContext _context;
-	private readonly IWebLogger _logger;
+	private readonly ILogger<SearchService> _logger;
 
 	/// <summary>
 	///     Store the query during search
@@ -46,7 +46,7 @@ public class SearchService : ISearch
 
 	public SearchService(
 		ApplicationDbContext context,
-		IWebLogger logger,
+		ILogger<SearchService> logger,
 		IMemoryCache? memoryCache = null,
 		AppSettings? appSettings = null)
 	{
@@ -71,6 +71,13 @@ public class SearchService : ISearch
 			throw new ArgumentException("Search Input Query is longer then 500 chars");
 		}
 
+		using var _ = _logger.BeginScope(new Dictionary<string, object>
+		{
+			["query"] = query, 
+			["PageNumber"] = pageNumber, 
+			["EnableCache"] = enableCache
+		});
+		
 		if ( query == TrashKeyword.TrashKeywordString )
 		{
 			_logger.LogInformation("Skip cache for trash");
@@ -86,7 +93,7 @@ public class SearchService : ISearch
 		// Return values from IMemoryCache
 		var querySearchCacheName = "search-" + query;
 
-		// Return Cached object if it exist
+		// Return Cached object if exist
 		if ( _cache.TryGetValue(querySearchCacheName,
 			    out var objectSearchModel) )
 		{

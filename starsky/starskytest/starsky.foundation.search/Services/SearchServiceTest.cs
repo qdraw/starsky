@@ -40,7 +40,7 @@ public sealed class SearchServiceTest
 		builder.UseInMemoryDatabase("searchService");
 		var options = builder.Options;
 		_dbContext = new ApplicationDbContext(options);
-		_search = new SearchService(_dbContext, new FakeIWebLogger());
+		_search = new SearchService(_dbContext, new FakeILogger<SearchService>());
 		_query = new Query(_dbContext,
 			new AppSettings(), null!, new FakeIWebLogger(), _memoryCache);
 	}
@@ -161,7 +161,7 @@ public sealed class SearchServiceTest
 	[TestMethod]
 	public async Task SearchService_CacheInjection_CacheTest()
 	{
-		var search = new SearchService(_dbContext, new FakeIWebLogger(), _memoryCache);
+		var search = new SearchService(_dbContext, new FakeILogger<SearchService>(), _memoryCache);
 
 		// fill cache with data real data
 		var result = await search.Search("test");
@@ -182,7 +182,7 @@ public sealed class SearchServiceTest
 	{
 		_memoryCache.Set("search-test", new SearchViewModel { SearchQuery = "cache" },
 			new TimeSpan(0, 10, 0));
-		var search = new SearchService(_dbContext, new FakeIWebLogger(), _memoryCache);
+		var search = new SearchService(_dbContext, new FakeILogger<SearchService>(), _memoryCache);
 
 		// Test if the pre-condition is good
 		var cachedResult = ( await search.Search("test") ).SearchQuery;
@@ -199,14 +199,14 @@ public sealed class SearchServiceTest
 	[TestMethod]
 	public void SearchService_RemoveCache_Disabled_Test()
 	{
-		var search = new SearchService(_dbContext, new FakeIWebLogger()); // cache is null!
+		var search = new SearchService(_dbContext, new FakeILogger<SearchService>()); // cache is null!
 		Assert.IsNull(search.RemoveCache("test"));
 	}
 
 	[TestMethod]
 	public void SearchService_RemoveCache_Disabled_AppSettings_Test()
 	{
-		var search = new SearchService(_dbContext, new FakeIWebLogger(), _memoryCache,
+		var search = new SearchService(_dbContext, new FakeILogger<SearchService>(), _memoryCache,
 			new AppSettings { AddMemoryCache = false });
 		Assert.IsNull(search.RemoveCache("test"));
 	}
@@ -214,7 +214,7 @@ public sealed class SearchServiceTest
 	[TestMethod]
 	public void SearchService_RemoveCache_NoCachedItem_Test()
 	{
-		var search = new SearchService(_dbContext, new FakeIWebLogger(), _memoryCache);
+		var search = new SearchService(_dbContext, new FakeILogger<SearchService>(), _memoryCache);
 		Assert.IsFalse(search.RemoveCache("test"));
 	}
 
@@ -713,7 +713,7 @@ public sealed class SearchServiceTest
 					}
 				}
 			});
-		var searchService = new SearchService(_dbContext, new FakeIWebLogger(), fakeCache);
+		var searchService = new SearchService(_dbContext, new FakeILogger<SearchService>(), fakeCache);
 		var result = await searchService.Search("t"); // <= t is only to detect in fakeCache
 		Assert.AreEqual(1, result.FileIndexItems?.Count);
 	}
