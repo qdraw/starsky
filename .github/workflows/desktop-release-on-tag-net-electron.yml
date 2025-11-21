@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v5
@@ -77,7 +77,7 @@ jobs:
     needs: [build_net]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Download osx-x64 as build artifact
         uses: actions/download-artifact@v6
@@ -130,7 +130,7 @@ jobs:
     needs: [build_net]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Download osx-arm64 as build artifact
         uses: actions/download-artifact@v6
@@ -178,7 +178,7 @@ jobs:
     needs: [build_net]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Download starsky-win-x64 as build artifact
         uses: actions/download-artifact@v6
