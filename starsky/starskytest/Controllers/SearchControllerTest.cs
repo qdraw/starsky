@@ -34,7 +34,7 @@ public sealed class SearchControllerTest
 		var options = builder.Options;
 		var context = new ApplicationDbContext(options);
 		_query = new Query(context, new AppSettings(), null!, new FakeIWebLogger(), memoryCache);
-		_search = new SearchService(context, new FakeIWebLogger(), memoryCache);
+		_search = new SearchService(context, new FakeILogger<SearchService>(), memoryCache);
 	}
 
 
@@ -48,7 +48,7 @@ public sealed class SearchControllerTest
 		Assert.AreEqual(0, searchViewResult?.FileIndexItems?.Count);
 		Assert.AreEqual("Search", searchViewResult?.PageType);
 	}
-	
+
 	[TestMethod]
 	public async Task Index_InvalidModel()
 	{
@@ -89,7 +89,7 @@ public sealed class SearchControllerTest
 		var searchViewResult = jsonResult!.Value as SearchViewModel;
 		Assert.AreEqual(0, searchViewResult!.FileIndexItems?.Count);
 	}
-	
+
 	[TestMethod]
 	public async Task Trash_InvalidModel()
 	{
@@ -122,7 +122,7 @@ public sealed class SearchControllerTest
 		await _query.RemoveItemAsync(item0);
 		await _query.RemoveItemAsync(item1);
 	}
-	
+
 	[TestMethod]
 	public async Task SearchRelative_InvalidModel()
 	{
@@ -229,7 +229,7 @@ public sealed class SearchControllerTest
 		var resultValue = jsonResult!.Value as string;
 		Assert.AreEqual("cache cleared", resultValue);
 	}
-	
+
 	[TestMethod]
 	public void RemoveCache_InvalidModel()
 	{

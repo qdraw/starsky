@@ -9,15 +9,9 @@ using starsky.foundation.database.Models;
 namespace starsky.Controllers;
 
 [Authorize]
-public sealed class SearchController : Controller
+public sealed class SearchController(ISearch search) : Controller
 {
 	private const string ModelError = "Model is invalid";
-	private readonly ISearch _search;
-
-	public SearchController(ISearch search)
-	{
-		_search = search;
-	}
 
 	/// <summary>
 	///     Gets the list of search results (cached)
@@ -36,7 +30,7 @@ public sealed class SearchController : Controller
 			return BadRequest(ModelError);
 		}
 
-		var model = await _search.Search(t, p);
+		var model = await search.Search(t, p);
 		return Json(model);
 	}
 
@@ -60,7 +54,7 @@ public sealed class SearchController : Controller
 		}
 
 		// Json api && View()            
-		var searchViewModel = await _search.Search(t, p);
+		var searchViewModel = await search.Search(t, p);
 
 		var photoIndexOfQuery = GetIndexFilePathFromSearch(searchViewModel, f);
 		if ( photoIndexOfQuery == -1 )
@@ -68,9 +62,9 @@ public sealed class SearchController : Controller
 			return NotFound("image not found in search result");
 		}
 
-		var args = new Dictionary<string, string> { { "p", p.ToString() }, { "t", t } };
-
-		var relativeObject = new RelativeObjects { Args = args };
+		var relativeObjectArgs =
+			new Dictionary<string, string> { { "p", p.ToString() }, { "t", t } };
+		var relativeObject = new RelativeObjects { Args = relativeObjectArgs };
 
 		if ( photoIndexOfQuery != searchViewModel.FileIndexItems?.Count - 1 )
 		{
@@ -80,13 +74,15 @@ public sealed class SearchController : Controller
 				searchViewModel.FileIndexItems?[photoIndexOfQuery + 1].FileHash!;
 		}
 
-		if ( photoIndexOfQuery >= 1 )
+		if ( photoIndexOfQuery < 1 )
 		{
-			relativeObject.PrevFilePath =
-				searchViewModel.FileIndexItems?[photoIndexOfQuery - 1].FilePath!;
-			relativeObject.PrevHash =
-				searchViewModel.FileIndexItems?[photoIndexOfQuery - 1].FileHash!;
+			return Json(relativeObject);
 		}
+
+		relativeObject.PrevFilePath =
+			searchViewModel.FileIndexItems?[photoIndexOfQuery - 1].FilePath!;
+		relativeObject.PrevHash =
+			searchViewModel.FileIndexItems?[photoIndexOfQuery - 1].FileHash!;
 
 		return Json(relativeObject);
 	}
@@ -126,7 +122,7 @@ public sealed class SearchController : Controller
 			return BadRequest(ModelError);
 		}
 
-		var model = await _search.Search(TrashKeyword.TrashKeywordString, p, false);
+		var model = await search.Search(TrashKeyword.TrashKeywordString, p, false);
 		return Json(model);
 	}
 
@@ -150,7 +146,7 @@ public sealed class SearchController : Controller
 			return BadRequest(ModelError);
 		}
 
-		var cache = _search.RemoveCache(t);
+		var cache = search.RemoveCache(t);
 
 		if ( cache != null )
 		{
