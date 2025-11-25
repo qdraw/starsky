@@ -16,7 +16,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
       with:
         # We must fetch at least the immediate parents so that if this is
         # a pull request then we can checkout the head.
@@ -29,7 +29,7 @@ jobs:
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v4
+      uses: github/codeql-action/init@c00e4aee0547167576bc6663920491135a3dee27
        #Override language selection by uncommenting this and choosing your languages
       with:
          languages: csharp, javascript
@@ -37,7 +37,7 @@ jobs:
     # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
     # If this step fails, then you should remove it and run the build manually (see below)
     #- name: Autobuild
-    #  uses: github/codeql-action/autobuild@v2
+    #  uses: github/codeql-action/autobuild@8dca8a82e2fa1a2c8908956f711300f9c4a4f4f6
 
     # ℹ️ Command-line programs to run using the OS shell.
     # 📚 https://git.io/JvXDl
@@ -47,7 +47,7 @@ jobs:
     #    uses a compiled language
 
     - name: Cache nuget packages (*nix)
-      uses: actions/cache@v4
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
       with:
         # nuget cache files are stored in `~/.nuget/packages` on Linux/macOS
         path: ~/.nuget/packages
@@ -61,4 +61,4 @@ jobs:
       run: bash build.sh --Target=BuildNetCore --no-sonar --no-dependencies --no-publish
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v4
+      uses: github/codeql-action/analyze@c00e4aee0547167576bc6663920491135a3dee27

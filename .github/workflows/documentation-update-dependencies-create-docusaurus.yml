@@ -11,12 +11,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
       with:
         ref: master
 
     - name: Setup Node.js environment
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903
       with:
         node-version: 18
         check-latest: true
@@ -43,7 +43,7 @@ jobs:
       
     - name: Create Pull Request ${{ steps.files_changed.outputs.CHANGED }}
       id: cpr
-      uses: peter-evans/create-pull-request@v7
+      uses: peter-evans/create-pull-request@84ae59a2cdc2258d6fa0732dd66352dddae2a412
       with:
         token: ${{ secrets.WORKFLOW_GITHUB }}
         commit-message: 'Update Documentation and Docusaurus'
@@ -63,7 +63,7 @@ jobs:
         draft: false
         
     - name: Merge current branch into -> auto_documentation_create_docusaurus_update
-      uses: everlytic/branch-merge@1.1.5
+      uses: everlytic/branch-merge@c4a244dc23143f824ae6c022a10732566cb8e973
       if: github.event_name == 'workflow_dispatch' && steps.files_changed.outputs.CHANGED == 'true'
       with:
         github_token: ${{ secrets.WORKFLOW_GITHUB }}

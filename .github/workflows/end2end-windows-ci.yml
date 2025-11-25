@@ -22,7 +22,7 @@ jobs:
       WEBSITE_SITE_NAME: "ci"
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
 
       - name: Create temp folder
         shell: powershell
@@ -66,7 +66,7 @@ jobs:
         run: .\pm2-warmup.ps1 -port 4000
 
       - name: Run Cypress in Electron 
-        uses: cypress-io/github-action@v6
+        uses: cypress-io/github-action@7ef72e250a9e564efb4ed4c2433971ada4cc38b4
         env:
           CYPRESS_BASE_URL: http://localhost:4000
           cypress_name: local
@@ -80,14 +80,14 @@ jobs:
           working-directory: starsky-tools/end2end  
 
       - name: Upload screenshots (always)
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
         if: ${{ always() }}
         with:
           name: cypress-screenshots
           path: starsky-tools/end2end/cypress/screenshots
 
       - name: Upload videos (always)
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
         if: ${{ always() }}
         with:
           name: cypress-videos
