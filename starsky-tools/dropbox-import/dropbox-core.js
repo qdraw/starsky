@@ -3,7 +3,7 @@ var fs = require("fs");
 const axios = require("axios");
 
 const util = require("util");
-const exec = util.promisify(require("child_process").exec);
+const execFile = util.promisify(require("child_process").execFile);
 
 module.exports = class Dropbox {
 	constructor(access_token, starskyCli) {
@@ -229,37 +229,41 @@ module.exports = class Dropbox {
 				return;
 			}
 
-			var multipleFilePathsCsv = "";
+			// Collect file paths up to length limit
+			const filePaths = [];
+			let totalLength = 0;
 			entries.forEach((entry) => {
-				var filePath = path.join(this.getTempFolder(), entry.name);
-				if (multipleFilePathsCsv.length <= 8000) {
-					multipleFilePathsCsv += filePath + ";";
+				const filePath = path.join(this.getTempFolder(), entry.name);
+				if (totalLength <= 8000) {
+					filePaths.push(filePath);
+					totalLength += filePath.length + 1; // +1 for delimiter
 				} else {
 					console.log(`.. ${filePath} is skipped`);
 				}
 			});
 
-			var exe =
-				this.starskyCli +
-				' -v -p "' +
-				multipleFilePathsCsv +
-				'"' +
-				" --colorclass " +
-				colorClassString;
-			if (structure) exe += " --structure " + structure;
+			const args = ['-v', '-p', ...filePaths, '--colorclass', colorClassString];
+			if (structure) {
+				args.push('--structure', structure);
+			}
 
-			console.log(exe);
+			console.log(this.starskyCli, args.join(' '));
 
 			(async () => {
-				const { stdout, stderr } = await exec(exe);
-				if (stderr) {
-					console.log("cli stderr:");
-					console.log(stderr);
-					reject();
-					return;
+				try {
+					const { stdout, stderr } = await execFile(this.starskyCli, args);
+					if (stderr) {
+						console.log("cli stderr:");
+						console.log(stderr);
+						reject();
+						return;
+					}
+					console.log(stdout);
+					resolve(entries);
+				} catch (err) {
+					console.log("cli error:", err);
+					reject(err);
 				}
-				console.log(stdout);
-				resolve(entries);
 			})();
 		});
 	}
