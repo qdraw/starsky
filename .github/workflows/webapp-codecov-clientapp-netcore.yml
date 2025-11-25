@@ -19,17 +19,17 @@ jobs:
 
     steps:
       - name: 'Checkout repository on branch: ${{ github.REF }}'
-        uses: actions/checkout@v6
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
         with:
           ref: ${{ github.HEAD_REF }}
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@2016bd2012dba4e32de620c46fe006a3ac9f0602
         with:
           dotnet-version: 8.0.416
  
       - name: Cache node modules clientapp (*nix)
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
@@ -38,7 +38,7 @@ jobs:
             ${{ runner.os }}-build-clientapp-
 
       - name: Cache nuget packages (*nix)
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
           # nuget cache files are stored in `~/.nuget/packages` on Linux/macOS
           path: ~/.nuget/packages
@@ -51,7 +51,7 @@ jobs:
         working-directory: ./starsky
         run: bash build.sh --no-publish --no-dependencies --no-sonar
         
-      - uses: codecov/codecov-action@v5
+      - uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}  
           file: ./starsky/starskytest/coverage-merge-cobertura.xml
