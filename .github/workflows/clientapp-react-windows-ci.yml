@@ -1,5 +1,7 @@
 name: ClientApp React Windows CI
 # see also Linux CI
+permissions:
+  contents: read
 
 concurrency: 
   group: ${{ github.workflow }}-${{ github.ref }}
