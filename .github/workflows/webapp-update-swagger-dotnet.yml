@@ -12,7 +12,7 @@ on:
     - '**.sln'
     - '**.cake'
     - '**.json'
-    - '.github/workflows/auto-update-swagger-dotnet.yml'
+    - '.github/workflows/webapp-update-swagger-dotnet.yml'
     - 'starsky-tools/build-tools/app-version-update.js'    
   pull_request:
     branches: [ master ]
