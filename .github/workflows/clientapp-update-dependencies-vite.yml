@@ -4,9 +4,16 @@ on:
   workflow_dispatch:
   schedule:
     - cron:  '30 4 15 * *'
+  push:
+    branches: [master]
+    paths:
+    - '.github/workflows/clientapp-update-dependencies-vite.yml'
     
 jobs:
   run:
+    permissions:
+      contents: write
+      pull-requests: write
 
     runs-on: ubuntu-latest
 
