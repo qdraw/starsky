@@ -19,6 +19,9 @@ on:
   schedule:
     - cron:  '36 0 * * 0,2,4,6'
 
+permissions:
+  contents: read
+
 env:
   PR_NUMBER_GITHUB: ${{ github.event.pull_request.number }}
   
