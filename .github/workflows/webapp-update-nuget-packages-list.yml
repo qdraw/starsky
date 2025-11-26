@@ -7,6 +7,7 @@ on:
       - release/*
     paths: 
       - '**.csproj'
+      - '.github/workflows/webapp-update-nuget-packages-list.yml'
   workflow_dispatch:
 
 jobs: 
