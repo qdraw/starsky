@@ -74,6 +74,8 @@ jobs:
   build_mac_x64:
     name: Build Mac Desktop app (x64)
     runs-on: macos-latest
+    permissions:
+      contents: read
     needs: [build_net]
     steps:
       - name: Checkout code
