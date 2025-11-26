@@ -1,4 +1,6 @@
 name: ClientApp React Linux CI
+permissions:
+  contents: read
 # see also Windows CI
 
 concurrency: 
