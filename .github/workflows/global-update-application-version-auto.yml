@@ -1,4 +1,6 @@
 name: Update Application version auto
+permissions:
+  contents: write
 on:
   push:
     branches:
