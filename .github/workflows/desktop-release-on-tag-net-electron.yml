@@ -2,7 +2,9 @@ name: Desktop Release on tag (.NET & Electron)
 
 on:
   push:
-    # Sequence of patterns matched against refs/tags
+    branches: [master]
+    paths:
+    - '.github/workflows/desktop-release-on-tag-net-electron.yml'
     tags:
       - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
   schedule:
@@ -74,6 +76,8 @@ jobs:
   build_mac_x64:
     name: Build Mac Desktop app (x64)
     runs-on: macos-latest
+    permissions:
+      contents: read
     needs: [build_net]
     steps:
       - name: Checkout code
