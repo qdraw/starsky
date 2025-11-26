@@ -1,4 +1,6 @@
 name: Starsky Codecov ClientApp NetCore
+permissions:
+  contents: read
 
 concurrency: 
   group: ${{ github.workflow }}-${{ github.ref }}
