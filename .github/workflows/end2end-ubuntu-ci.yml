@@ -13,6 +13,8 @@ name: end2end on ubuntu-ci
 jobs:
   test:
     name: Test
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     env:
       WEBSITE_SITE_NAME: "ci"
