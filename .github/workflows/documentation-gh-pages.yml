@@ -33,7 +33,7 @@ jobs:
     
     steps:
       - name: Checkout
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+        uses: actions/checkout@c2d88d3ecc89a9ef08eebf45d9637801dcee7eb5
 
       - name: Cache node modules clientapp
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
