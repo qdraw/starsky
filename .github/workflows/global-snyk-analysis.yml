@@ -1,4 +1,6 @@
 name: Snyk analysis
+permissions:
+  contents: read
 
 concurrency: 
   group: ${{ github.workflow }}-${{ github.ref }}
