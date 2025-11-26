@@ -1,5 +1,8 @@
 name: Clean untagged and nightly ghcr images
 
+permissions:
+  packages: write
+
 on:
   workflow_dispatch:
   schedule:
