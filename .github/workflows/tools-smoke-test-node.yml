@@ -1,4 +1,6 @@
 name: Tools smoke test node
+permissions:
+  contents: read
 
 concurrency: 
   group: ${{ github.workflow }}-${{ github.ref }}
