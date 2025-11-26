@@ -8,6 +8,7 @@ on:
       - release/*
     paths: 
       - 'starsky-tools/build-tools/app-version-update.js'
+      - '.github/workflows/global-update-application-version-auto.yml'      
   workflow_dispatch:
 
 jobs: 
