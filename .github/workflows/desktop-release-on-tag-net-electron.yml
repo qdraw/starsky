@@ -1,4 +1,6 @@
 name: Desktop Release on tag (.NET & Electron)
+permissions:
+  contents: read
 
 on:
   push:
