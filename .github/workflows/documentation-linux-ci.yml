@@ -19,6 +19,9 @@ on:
   workflow_dispatch:
     
 
+permissions:
+  contents: read
+
 jobs:
   build:
     if: ${{ github.event_name == 'pull_request' }}
