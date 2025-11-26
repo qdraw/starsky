@@ -10,14 +10,14 @@ jobs:
   delete_versions:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/delete-package-versions@25ad4af5be03aef10e0b3376b248688b7a44c40b
+      - uses: actions/delete-package-versions@e5bc658cc4c965c472efe991f8beea3981499c55
         with: 
           package-name: 'starsky'
           token: ${{ secrets.WORKFLOW_GITHUB }}
           package-type: 'container'
           delete-only-untagged-versions: 'true'
 
-      - uses: actions/delete-package-versions@25ad4af5be03aef10e0b3376b248688b7a44c40b
+      - uses: actions/delete-package-versions@e5bc658cc4c965c472efe991f8beea3981499c55
         with: 
           package-name: 'starsky-unstable-nightly'
           token: ${{ secrets.WORKFLOW_GITHUB }}
