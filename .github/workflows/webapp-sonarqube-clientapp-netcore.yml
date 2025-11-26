@@ -1,4 +1,6 @@
 name: SonarQube ClientApp .NET Analyze
+permissions:
+  contents: read
 
 on:
   workflow_dispatch:
