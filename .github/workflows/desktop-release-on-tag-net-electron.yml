@@ -182,6 +182,8 @@ jobs:
     name: Build Windows Desktop app
     runs-on: windows-latest
     needs: [build_net]
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@c2d88d3ecc89a9ef08eebf45d9637801dcee7eb5
