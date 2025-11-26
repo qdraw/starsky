@@ -1,4 +1,6 @@
 name: Ubuntu .NET build
+permissions:
+  contents: read
 
 concurrency: 
   group: ${{ github.workflow }}-${{ github.ref }}
