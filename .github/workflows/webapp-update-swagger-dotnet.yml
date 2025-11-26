@@ -1,4 +1,6 @@
 name: 'WebApp Update Swagger definitions'
+permissions:
+  contents: write
 
 on:
   workflow_dispatch:
