@@ -7,11 +7,14 @@ on:
       - release/*
     paths: 
       - '**.csproj'
+      - '.github/workflows/webapp-update-nuget-packages-list.yml'
   workflow_dispatch:
 
 jobs: 
   run:
     name: Update Nuget packages list
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps: 
     - name: Checkout repo
