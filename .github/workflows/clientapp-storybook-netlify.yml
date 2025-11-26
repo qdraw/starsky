@@ -14,6 +14,8 @@ on:
   workflow_dispatch:
     
 name: storybook clientapp netlify
+permissions:
+  contents: read
 
 jobs:
   test:
