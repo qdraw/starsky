@@ -1,4 +1,6 @@
 name: Ubuntu .NET build
+permissions:
+  contents: read
 
 concurrency: 
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -74,7 +76,10 @@ jobs:
           bash build.sh --Target TestNetCore --no-dependencies --no-publish --no-logo
 
   trigger_pipe_release_desktop:
-  
+    permissions:
+      contents: read
+      actions: write
+    
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
     
