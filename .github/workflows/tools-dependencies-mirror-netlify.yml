@@ -19,6 +19,8 @@ on:
     
 name: Tools dependencies mirror netlify
 # for: starsky-dependencies
+permissions:
+  contents: read
 
 jobs:
   test:
