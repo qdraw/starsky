@@ -41,10 +41,28 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.5 - _(Unreleased)_ - 2025-?-? {#v0.7.5}
+## version 0.7.6 - _(Unreleased)_ - 2025-?-? {#v0.7.6}
+
+- nothing yet
+
+## version 0.7.5 - 2025-11-17 {#v0.7.5}
 
 - [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.416 (Runtime: 8.0.22) (PR #2432)
-
+- [x] (Changed) _Front-end_ Updated ClientApp dependencies and build tooling (PRs: #2412, #2409,
+  #2421, #2426, #2437, #2434, #2435, #2438, #2442)
+- [x] (Changed) _Desktop_ Updated Electron / StarskyDesktop dependencies (PRs: #2406, #2410, #2418,
+  #2422, #2427, #2438, #2443, #2447)
+- [x] (Fixed) _Back-end_ Added improved exception handling for invalid ZIP files, fixed disposal
+  issues and resolved misleading comments and interface alignment (PRs #2419, #2424)
+- [x] (Fixed) _Back-end_ Temp files are now written inside the source folder instead of IDE-specific
+  temp folders (PR #2439)
+- [x] (Changed) _Back-end_ Updated IIS configuration and applied several fixes to improve hosting
+  stability (PR #2434)
+- [x] (Changed) _Documentation_ Updated various docs including V2 additions, SDK references and
+  formatting fixes   (PRs #2420, #2432, #2433, #2436)
+- [x] (Security) _DevOps_ Added CodeQL configuration, fixed workflow permission issues, added
+  action pinning and addressed multiple code scanning alerts (PRs #2453, #2450, #2491, and related
+  alerts 1100+)
 
 ## version 0.7.4 - 2025-10-24 {#v0.7.4}
 
