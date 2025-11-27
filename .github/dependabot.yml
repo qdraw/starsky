@@ -30,10 +30,10 @@ updates:
     commit-message:
       prefix: "[nuget] "
 
-# docker
+  # Maintain dependencies for Dockerfiles
   - package-ecosystem: "docker"
     directory: "/"
-     cooldown:
+    cooldown:
       default-days: 3   
     schedule:
       interval: "weekly"
