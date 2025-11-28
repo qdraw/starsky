@@ -17,7 +17,14 @@ Here below there is a list of key features:
 - [Account Management, only useful for server version](accountmanagement.md) 
 - [Meta Data and super compatible photo management](metadata.md)  
 - [Import options](import.md)  
+- [Geo Features - GPS, GPX sync, and location data](geo.md)
 - [Realtime](realtime.md)
 - [Search](search.md)
+- [Rename files and folders](rename.md)
+- [Stacks - Group related photos together](stacks.md)
+- [Trash - Delete and restore photos](trash.md)
 - [Publish media with watermarks](webhtmlpublish.md)  
 - [Bulk editing](bulk-editing.md)
+- Export and Download - Create zip archives and download photos
+- Video Support - Play videos and generate thumbnails
+- Synchronization - File system monitoring and automatic sync
