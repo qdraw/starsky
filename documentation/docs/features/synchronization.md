@@ -99,25 +99,6 @@ Check the status of synchronization:
 
 ---
 
-## ⚙️ Configuration
-
-### DiskWatcher Settings
-
-Configure the file system monitoring:
-
-- **Enable/Disable** - Turn DiskWatcher on or off
-- **Watch Paths** - Specify which directories to monitor
-- **Event Delay** - Configure duplicate event filtering timeout
-- **Buffer Size** - Adjust buffer for better performance (v0.7.2+)
-
-### Sync Intervals
-
-- **Real-time** - Immediate sync via DiskWatcher
-- **Periodic** - Schedule regular sync jobs
-- **On-Demand** - Manual sync when needed
-
----
-
 ## 🚀 Use Cases
 
 ### External Edits
