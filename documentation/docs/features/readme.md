@@ -25,6 +25,6 @@ Here below there is a list of key features:
 - [Trash - Delete and restore photos](trash.md)
 - [Publish media with watermarks](webhtmlpublish.md)  
 - [Bulk editing](bulk-editing.md)
-- Export and Download - Create zip archives and download photos
-- Video Support - Play videos and generate thumbnails
-- Synchronization - File system monitoring and automatic sync
+- [Export and Download - Create zip archives and download photos](export.md)
+- [Video Support - Play videos and generate thumbnails](video.md)
+- [Synchronization - File system monitoring and automatic sync](synchronization.md)
