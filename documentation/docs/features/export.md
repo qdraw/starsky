@@ -41,37 +41,6 @@ Export photos directly from search results:
 
 ---
 
-## 🔧 API Endpoints
-
-### `/api/export/create-zip` (POST)
-Create a zip archive from selected files.
-
-**Parameters:**
-- `f` - Sub-path to files (can be multiple)
-- `collections` - Enable files with the same name (before extension)
-- `thumbnail` - Export thumbnails instead of originals
-
-### `/api/export/zip/{f}.zip` (GET)
-Download the previously created zip archive. Must call `create-zip` first.
-
-**Example URL:** `/api/export/zip/my-photos.zip`
-
-### `/api/download-photo` (GET)
-Download a single photo.
-
-**Parameters:**
-- `f` - Sub-path to the file
-- `isThumbnail` - `true` for 1000px thumbnail (if supported)
-- `cache` - `true` to send client cache headers
-
-### `/api/download-sidecar` (GET)
-Download a sidecar file (e.g., XMP metadata file).
-
-**Parameters:**
-- `f` - Sub-path to find the file
-
----
-
 ## 💡 Use Cases
 
 ### Sharing Photos
