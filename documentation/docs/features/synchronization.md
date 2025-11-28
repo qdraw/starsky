@@ -70,7 +70,7 @@ The DiskWatcher service provides automatic synchronization:
 
 ### Command-Line Synchronization
 
-The `starskySynchronizeCli` tool checks if disk changes are updated in the database:
+The `starskySynchronizeCli` tool synchronizes file system changes with the database:
 
 - **Manual Sync** - Run synchronization on demand
 - **Scheduled Jobs** - Integrate with cron or task scheduler
