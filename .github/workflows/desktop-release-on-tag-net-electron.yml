@@ -25,9 +25,6 @@ jobs:
 
       - name: Remove Android
         run: sudo rm -rf /usr/local/lib/android
-        
-      - name: Remove Docker
-        run: sudo docker image prune --all --force
 
       - name: Setup .NET Core
         uses: actions/setup-dotnet@2016bd2012dba4e32de620c46fe006a3ac9f0602
