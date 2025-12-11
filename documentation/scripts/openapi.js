@@ -39,7 +39,7 @@ function parseSwagger() {
 			let pathContent = `__${path}__`
 			// for mdx markdown 
 			pathContent = pathContent
-				.replace(/\\/g, "\\\\") // Escape existing backslashes first
+				.replace(/\\/g, "\\\\") // Escape backslashes for MDX markdown
 				.replace(/{/ig, "\\{")
 				.replace(/}/ig, "\\}");
 
