@@ -31,7 +31,7 @@ class Logger {
       winstonLogger.info(message as any, meta);
     } catch (error) {
       // keep console log here
-      console.log(message, meta);
+      console.log("%s", message, meta);
     }
   }
 
@@ -41,7 +41,7 @@ class Logger {
       winstonLogger.warn(message, meta);
     } catch (error) {
       // keep console log here
-      console.log(message, meta);
+      console.log("%s", message, meta);
     }
   }
 }
