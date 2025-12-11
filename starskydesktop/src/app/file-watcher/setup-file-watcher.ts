@@ -1,4 +1,4 @@
-import { watch } from "chokidar";
+import * as chokidar from "chokidar";
 import { createParentFolders } from "../edit-file/create-parent-folders";
 import { GetParentDiskPath } from "../edit-file/get-parent-disk-path";
 import logger from "../logger/logger";
@@ -15,17 +15,18 @@ export async function SetupFileWatcher() {
   await createParentFolders();
   const tempPathIncludingBaseUrl = await GetParentDiskPath();
 
-  const watcher = watch(tempPathIncludingBaseUrl, {
-    persistent: true,
-    interval: 600,
-    binaryInterval: 1200,
-    alwaysStat: true,
-  })
+  const watch = chokidar
+    .watch(tempPathIncludingBaseUrl, {
+      persistent: true,
+      interval: 600,
+      binaryInterval: 1200,
+      alwaysStat: true,
+    })
     .on("change", (path, stats) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       ActionWhenFileIsChanged(path, stats);
     });
 
-  FileWatcherObjects.add([watcher as any, tempPathIncludingBaseUrl]);
+  FileWatcherObjects.add([watch as any, tempPathIncludingBaseUrl]);
   logger.info(`[SetupFileWatcher] add: ${tempPathIncludingBaseUrl}`);
 }
