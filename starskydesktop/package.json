@@ -85,7 +85,7 @@
     }
   },
   "dependencies": {
-    "chokidar": "^5.0.0",
+    "chokidar": "3.6.0",
     "electron-settings": "^4.0.4",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
