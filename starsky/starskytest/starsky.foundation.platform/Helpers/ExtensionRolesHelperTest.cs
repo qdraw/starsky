@@ -374,11 +374,29 @@ public sealed class ExtensionRolesHelperTest
 	public void Files_GetImageFormat_gpx_Test_60()
 	{
 		// the offset is 60 before the gpx tag
-		var bmBytes = Encoding.ASCII.GetBytes(
-			"   <?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\r\n<gpx creator");
+		var bmBytes =
+			"   <?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\r\n<gpx creator"u8
+				.ToArray();
 		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
 	}
+
+	[TestMethod]
+	public void Files_GetImageFormat_gpx_Test_58()
+	{
+		// the offset is 58
+		var bmBytes = Encoding.ASCII.GetBytes(
+			"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>\r\n" +
+			"<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" " +
+			"xmlns:geotracker=\"http://ilyabogdanovich.com/gpx/extensions/geotracker\" " +
+			"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
+			"xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 " +
+			"http://www.topografix.com/GPX/1/1/gpx.xsd\" version=\"1.1\" " +
+			"creator=\"Opgenomen in met Geo Tracker voor iOS van Ilya Bogdanovich\">\n");
+		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
+	}
+
 
 	[TestMethod]
 	public void Files_GetImageFormat_gpx_Test_1()

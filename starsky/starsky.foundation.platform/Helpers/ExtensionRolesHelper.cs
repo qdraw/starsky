@@ -786,6 +786,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		     gpx.SequenceEqual(bytes.Skip(56).Take(gpx.Length)) ||
 		     gpx.SequenceEqual(bytes.Skip(57).Take(gpx.Length)) ||
 		     gpx.SequenceEqual(bytes.Skip(60).Take(gpx.Length)) ||
+		     gpx.SequenceEqual(bytes.Skip(58).Take(gpx.Length)) ||
 		     gpx.SequenceEqual(bytes.Skip(55).Take(gpx.Length)) )
 		{
 			return ImageFormat.gpx;
