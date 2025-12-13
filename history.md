@@ -43,7 +43,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.6 - _(Unreleased)_ - 2025-?-? {#v0.7.6}
 
-- nothing yet
+- [x] (Fixed) _Back-end_ GPX file formats by expanding the range of byte offsets (PR #2512)
 
 ## version 0.7.5 - 2025-11-17 {#v0.7.5}
 
