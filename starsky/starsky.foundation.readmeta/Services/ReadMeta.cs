@@ -66,7 +66,7 @@ public sealed class ReadMeta : IReadMeta
 			var subPath = subPathList[i];
 
 			var returnItem = await ReadExifAndXmpFromFileAsync(subPath);
-			var stream = _iStorage.ReadStream(subPath, 50);
+			var stream = _iStorage.ReadStream(subPath, 65);
 			var imageFormat = new ExtensionRolesHelper(_logger).GetImageFormat(stream);
 			await stream.DisposeAsync();
 
