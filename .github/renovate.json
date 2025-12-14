@@ -4,7 +4,7 @@
   "dependencyDashboard": false,
   "schedule": ["* 0-5 * * 1,3"],
   "timezone": "Europe/Brussels",
-  "minimumReleaseAge": 3,
+  "minimumReleaseAge": "3 days",
   "packageRules": [
     {
       "matchPackageNames": ["/^Microsoft\\.Extensions/", "/^Microsoft\\.VisualStudio/", "/^System\\./", "AspNetCore", "/^Microsoft\\.EntityFrameworkCore/", "AspNetCore.HealthChecks.MySql", "AspNetCore.HealthChecks.Sqlite"],
