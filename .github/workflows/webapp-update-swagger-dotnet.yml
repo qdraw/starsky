@@ -67,7 +67,7 @@ jobs:
       run: node scripts/openapi.js
       
     - name: Commit changes openapi.json (if push to branch)
-      uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5
+      uses: EndBug/add-and-commit@22c9062c9c5b6201f08d4ca4ffc001d380046644
       if: github.event_name != 'pull_request'
       with:
         author_name: SwaggerUpdateBot
@@ -77,7 +77,7 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Commit changes docs/api/readme.md (if push to branch)
-      uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5
+      uses: EndBug/add-and-commit@22c9062c9c5b6201f08d4ca4ffc001d380046644
       if: github.event_name != 'pull_request'   
       with:
         author_name: SwaggerUpdateBot
