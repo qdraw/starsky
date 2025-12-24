@@ -36,7 +36,7 @@ jobs:
     - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@2016bd2012dba4e32de620c46fe006a3ac9f0602
+      uses: actions/setup-dotnet@937b8dd3814c642a65e599b368dfac491d9c83da
       with:
         dotnet-version: 8.0.416
         
