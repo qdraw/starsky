@@ -230,7 +230,7 @@ public static class SonarQube
 			        "*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx," +
 			        "**/*stories.tsx,**/*spec.ts,**/src/main.tsx,**/src/index.tsx,**/src/style/css/vendor/*,**/node_modules/*," +
 			        "**/prestorybook.js,**/vite.config.ts,**/.storybook/**,**/jest.setup.ts," +
-			        "**/_bigimages-helper.js ")
+			        "**/_bigimages-helper.js,**/*.sql ")
 			.Append("/d:sonar.coverage.exclusions=**/build/*,**/build/helpers/*," +
 			        "**/build/Constants/*," +
 			        "**/documentation/*," +
@@ -239,7 +239,7 @@ public static class SonarQube
 			        "*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*," +
 			        "**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/main.tsx,**/src/index.tsx,**/node_modules/*," +
 			        "**/prestorybook.js,**/vite.config.ts,**/.storybook/**,**/jest.setup.ts," +
-			        "**/_bigimages-helper.js ");
+			        "**/_bigimages-helper.js,**/*.sql ");
 
 		// Normal build
 		if ( !isPrBuild )
