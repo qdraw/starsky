@@ -42,7 +42,7 @@ WORKDIR /app
 COPY . ./
 
 RUN /bin/bash -c "\
-        echo "TARGETPLATFORM=$TARGETPLATFORM" ; \
+        echo "TARGETPLATFORM=\"$TARGETPLATFORM\"" ; \
         rm /app/global.json ; \
         chmod +x ./build.sh ; \
         mkdir -p /documentation ; \
