@@ -56,7 +56,7 @@ jobs:
 
       - name: Build and push master
         id: docker_build_push
-        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83
+        uses: docker/build-push-action@9e436ba9f2d7bcd1d038c8e55d039d37896ddc5d
         if: github.event_name != 'pull_request'
         with:
           context: .
@@ -70,7 +70,7 @@ jobs:
 
       - name: Build and don't push
         id: docker_build_pull_request
-        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83
+        uses: docker/build-push-action@9e436ba9f2d7bcd1d038c8e55d039d37896ddc5d
         if: github.event_name == 'pull_request'
         with:
           context: .
