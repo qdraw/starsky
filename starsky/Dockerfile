@@ -42,14 +42,21 @@ WORKDIR /app
 COPY . ./
 
 RUN /bin/bash -c "\
-    echo \"TARGETPLATFORM=$TARGETPLATFORM\" ; \
-    rm /app/global.json ; \
-    chmod +x ./build.sh ; \
-    mkdir -p /documentation ; \
-    echo '<Project Sdk=\"Microsoft.NET.Sdk\"><PropertyGroup><OutputType>Exe</OutputType><ImplicitUsings>enable</ImplicitUsings><TargetFramework>net8.0</TargetFramework></PropertyGroup></Project>' > /documentation/documentation.csproj ; \
-    echo '<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"15.0\" Sdk=\"Microsoft.Docker.Sdk\"></Project>' > /app/docker-compose.dcproj ; \
-    echo 'Console.WriteLine(\"test\");' > /documentation/Program.cs ; \
-    ./build.sh --no-client --no-sonar --no-test "
+        echo "TARGETPLATFORM=$TARGETPLATFORM" ; \
+        rm /app/global.json ; \
+        chmod +x ./build.sh ; \
+        mkdir -p /documentation ; \
+        echo '<Project Sdk=\"Microsoft.NET.Sdk\">' \
+            '<PropertyGroup>' \
+            '<OutputType>Exe</OutputType>' \
+            '<ImplicitUsings>enable</ImplicitUsings>' \
+            '<TargetFramework>net8.0</TargetFramework>' \
+            '</PropertyGroup>' \
+            '</Project>' > /documentation/documentation.csproj ; \
+        echo '<?xml version=\"1.0\" encoding=\"utf-8\"?>' \
+            '<Project ToolsVersion=\"15.0\" Sdk=\"Microsoft.Docker.Sdk\"></Project>' > /app/docker-compose.dcproj ; \
+        echo 'Console.WriteLine(\"test\");' > /documentation/Program.cs ; \
+        ./build.sh --no-client --no-sonar --no-test "
 
 WORKDIR /app
 
