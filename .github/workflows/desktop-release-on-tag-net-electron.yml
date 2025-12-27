@@ -27,7 +27,7 @@ jobs:
         run: sudo rm -rf /usr/local/lib/android
 
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@2016bd2012dba4e32de620c46fe006a3ac9f0602
+        uses: actions/setup-dotnet@937b8dd3814c642a65e599b368dfac491d9c83da
         with:
           dotnet-version: 8.0.416
 
