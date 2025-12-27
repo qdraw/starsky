@@ -29,7 +29,7 @@ jobs:
       run: npm run app-version-update
 
     - name: Commit changes
-      uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5
+      uses: EndBug/add-and-commit@22c9062c9c5b6201f08d4ca4ffc001d380046644
       with:
         author_name: Application Version Update Bot
         author_email: qdraw@users.noreply.github.com
