@@ -45,7 +45,7 @@ jobs:
           git fetch --prune --unshallow
 
       - name: Setup .NET SDK
-        uses: actions/setup-dotnet@937b8dd3814c642a65e599b368dfac491d9c83da
+        uses: actions/setup-dotnet@25328d894dc34d01d191df4849cb7f5402e3f142
         with:
           dotnet-version: 8.0.416
         
