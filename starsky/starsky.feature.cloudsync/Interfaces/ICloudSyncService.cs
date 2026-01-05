@@ -3,11 +3,19 @@ namespace starsky.foundation.cloudsync.Interfaces;
 public interface ICloudSyncService
 {
 	/// <summary>
-	/// Execute a cloud sync operation
+	/// Execute a cloud sync operation for all enabled providers
 	/// </summary>
 	/// <param name="triggerType">Whether this sync was manually triggered or scheduled</param>
+	/// <returns>List of results for each provider</returns>
+	Task<List<CloudSyncResult>> SyncAllAsync(CloudSyncTriggerType triggerType);
+
+	/// <summary>
+	/// Execute a cloud sync operation for a specific provider
+	/// </summary>
+	/// <param name="providerId">The ID of the provider to sync</param>
+	/// <param name="triggerType">Whether this sync was manually triggered or scheduled</param>
 	/// <returns>Result of the sync operation</returns>
-	Task<CloudSyncResult> SyncAsync(CloudSyncTriggerType triggerType);
+	Task<CloudSyncResult> SyncAsync(string providerId, CloudSyncTriggerType triggerType);
 
 	/// <summary>
 	/// Check if a sync is currently in progress
@@ -15,8 +23,8 @@ public interface ICloudSyncService
 	bool IsSyncInProgress { get; }
 
 	/// <summary>
-	/// Get the last sync result
+	/// Get the last sync results for all providers
 	/// </summary>
-	CloudSyncResult? LastSyncResult { get; }
+	Dictionary<string, CloudSyncResult> LastSyncResults { get; }
 }
 

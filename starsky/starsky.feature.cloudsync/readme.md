@@ -5,11 +5,12 @@ OneDrive, etc.)
 
 ## Features
 
+- **Multiple Providers**: Support for multiple cloud storage providers simultaneously
 - **Scheduled Sync**: Automatically download files from cloud storage at configurable intervals
-- **Manual Trigger**: API endpoint to manually trigger sync operations
+- **Manual Trigger**: API endpoint to manually trigger sync operations for all or specific providers
 - **Import Integration**: Reuses existing import pipeline for consistent processing
 - **Idempotency**: Prevents re-importing already processed files
-- **Concurrent Protection**: Prevents overlapping sync executions
+- **Concurrent Protection**: Prevents overlapping sync executions per provider
 - **Post-Import Cleanup**: Optional deletion of files from cloud storage after successful import
 - **Comprehensive Logging**: Detailed logs of sync operations, successes, and failures
 - **Provider Abstraction**: Interface-based design supports multiple cloud storage providers
@@ -21,26 +22,50 @@ Add the following to your `appsettings.json`:
 ```json
 {
   "CloudSync": {
-    "Enabled": true,
-    "Provider": "Dropbox",
-    "RemoteFolder": "/Camera Uploads",
-    "SyncFrequencyMinutes": 0,
-    "SyncFrequencyHours": 1,
-    "DeleteAfterImport": false,
-    "Credentials": {
-      "AccessToken": "YOUR_ACCESS_TOKEN",
-      "RefreshToken": "",
-      "AppKey": "",
-      "AppSecret": "",
-      "ExpiresAt": null
-    }
+    "Providers": [
+      {
+        "Id": "dropbox-camera",
+        "Enabled": true,
+        "Provider": "Dropbox",
+        "RemoteFolder": "/Camera Uploads",
+        "SyncFrequencyMinutes": 0,
+        "SyncFrequencyHours": 1,
+        "DeleteAfterImport": false,
+        "Credentials": {
+          "AccessToken": "YOUR_DROPBOX_ACCESS_TOKEN",
+          "RefreshToken": "",
+          "AppKey": "",
+          "AppSecret": "",
+          "ExpiresAt": null
+        }
+      },
+      {
+        "Id": "dropbox-screenshots",
+        "Enabled": true,
+        "Provider": "Dropbox",
+        "RemoteFolder": "/Screenshots",
+        "SyncFrequencyMinutes": 30,
+        "SyncFrequencyHours": 0,
+        "DeleteAfterImport": true,
+        "Credentials": {
+          "AccessToken": "YOUR_DROPBOX_ACCESS_TOKEN",
+          "RefreshToken": "",
+          "AppKey": "",
+          "AppSecret": "",
+          "ExpiresAt": null
+        }
+      }
+    ]
   }
 }
 ```
 
 ### Configuration Options
 
-- **Enabled**: Enable or disable cloud sync (default: `false`)
+Each provider in the `Providers` array supports:
+
+- **Id**: Unique identifier for this provider configuration (required)
+- **Enabled**: Enable or disable this cloud sync provider (default: `false`)
 - **Provider**: Cloud storage provider name (e.g., "Dropbox", "GoogleDrive", "OneDrive")
 - **RemoteFolder**: Remote folder path to sync from (default: "/")
 - **SyncFrequencyMinutes**: Sync frequency in minutes (takes priority if > 0)
@@ -87,10 +112,51 @@ Get the result of the last sync operation.
 ```json
 {
   "CloudSync": {
-    "Provider": "Dropbox",
-    "Credentials": {
-      "AccessToken": "YOUR_DROPBOX_ACCESS_TOKEN"
-    }
+    "Providers": [
+      {
+        "Id": "my-dropbox-sync",
+        "Enabled": true,
+        "Provider": "Dropbox",
+        "RemoteFolder": "/Camera Uploads",
+        "SyncFrequencyHours": 1,
+        "Credentials": {
+          "AccessToken": "YOUR_DROPBOX_ACCESS_TOKEN"
+        }
+      }
+    ]
+  }
+}
+```
+
+#### Multiple Dropbox Folders
+
+You can sync multiple Dropbox folders by adding multiple provider configurations:
+
+```json
+{
+  "CloudSync": {
+    "Providers": [
+      {
+        "Id": "dropbox-camera",
+        "Enabled": true,
+        "Provider": "Dropbox",
+        "RemoteFolder": "/Camera Uploads",
+        "SyncFrequencyHours": 1,
+        "Credentials": {
+          "AccessToken": "YOUR_DROPBOX_ACCESS_TOKEN"
+        }
+      },
+      {
+        "Id": "dropbox-documents",
+        "Enabled": true,
+        "Provider": "Dropbox",
+        "RemoteFolder": "/Documents/Photos",
+        "SyncFrequencyHours": 6,
+        "Credentials": {
+          "AccessToken": "YOUR_DROPBOX_ACCESS_TOKEN"
+        }
+      }
+    ]
   }
 }
 ```

@@ -10,12 +10,26 @@ public class DropboxCloudSyncClient(IWebLogger logger, CloudSyncSettings setting
 	: ICloudSyncClient
 {
 	private DropboxClient? _client;
+	private string? _currentAccessToken;
 
 	public string Name => "Dropbox";
 
 	public bool Enabled =>
-		settings.Provider.Equals("Dropbox", StringComparison.OrdinalIgnoreCase) &&
-		!string.IsNullOrWhiteSpace(settings.Credentials.AccessToken);
+		settings.Providers.Any(p =>
+			p.Provider.Equals("Dropbox", StringComparison.OrdinalIgnoreCase) &&
+			!string.IsNullOrWhiteSpace(p.Credentials.AccessToken));
+
+	public void InitializeClient(string accessToken)
+	{
+		if ( _currentAccessToken == accessToken && _client != null )
+		{
+			return;
+		}
+
+		_client?.Dispose();
+		_client = new DropboxClient(accessToken);
+		_currentAccessToken = accessToken;
+	}
 
 	public async Task<List<CloudFile>> ListFilesAsync(string remoteFolder)
 	{
@@ -128,11 +142,7 @@ public class DropboxCloudSyncClient(IWebLogger logger, CloudSyncSettings setting
 			return;
 		}
 
-		if ( string.IsNullOrWhiteSpace(settings.Credentials.AccessToken) )
-		{
-			throw new InvalidOperationException("Dropbox access token is not configured");
-		}
-
-		_client = new DropboxClient(settings.Credentials.AccessToken);
+		throw new InvalidOperationException(
+			"Dropbox client not initialized. Call InitializeClient with access token first.");
 	}
 }

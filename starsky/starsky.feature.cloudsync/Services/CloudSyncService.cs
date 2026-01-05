@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using Microsoft.Extensions.DependencyInjection;
+using starsky.foundation.cloudsync.Clients;
 using starsky.foundation.cloudsync.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.import.Interfaces;
@@ -18,36 +19,110 @@ public class CloudSyncService(
 	: ICloudSyncService
 {
 	private readonly ConcurrentDictionary<string, DateTime> _processedFiles = new();
-	private readonly SemaphoreSlim _syncLock = new(1, 1);
+	private readonly ConcurrentDictionary<string, SemaphoreSlim> _providerLocks = new();
+	private readonly Dictionary<string, CloudSyncResult> _lastSyncResults = new();
+	private readonly object _resultsLock = new();
 
 	public bool IsSyncInProgress { get; private set; }
 
-	public CloudSyncResult? LastSyncResult { get; private set; }
-
-	public async Task<CloudSyncResult> SyncAsync(CloudSyncTriggerType triggerType)
+	public Dictionary<string, CloudSyncResult> LastSyncResults
 	{
-		if ( !settings.Enabled )
+		get
 		{
-			logger.LogInformation("Cloud sync is disabled");
+			lock ( _resultsLock )
+			{
+				return new Dictionary<string, CloudSyncResult>(_lastSyncResults);
+			}
+		}
+	}
+
+	public async Task<List<CloudSyncResult>> SyncAllAsync(CloudSyncTriggerType triggerType)
+	{
+		var results = new List<CloudSyncResult>();
+		var enabledProviders = settings.Providers.Where(p => p.Enabled).ToList();
+
+		if ( !enabledProviders.Any() )
+		{
+			logger.LogInformation("No enabled cloud sync providers found");
+			return results;
+		}
+
+		logger.LogInformation(
+			$"Starting sync for {enabledProviders.Count} enabled provider(s)");
+
+		foreach ( var providerSettings in enabledProviders )
+		{
+			try
+			{
+				var result = await SyncAsync(providerSettings.Id, triggerType);
+				results.Add(result);
+			}
+			catch ( Exception ex )
+			{
+				logger.LogError(ex,
+					$"Error syncing provider {providerSettings.Id}: {ex.Message}");
+				results.Add(new CloudSyncResult
+				{
+					ProviderId = providerSettings.Id,
+					ProviderName = providerSettings.Provider,
+					StartTime = DateTime.UtcNow,
+					EndTime = DateTime.UtcNow,
+					TriggerType = triggerType,
+					Errors = new List<string> { $"Sync failed: {ex.Message}" }
+				});
+			}
+		}
+
+		return results;
+	}
+
+	public async Task<CloudSyncResult> SyncAsync(string providerId,
+		CloudSyncTriggerType triggerType)
+	{
+		var providerSettings = settings.Providers.FirstOrDefault(p => p.Id == providerId);
+		if ( providerSettings == null )
+		{
+			logger.LogError($"Provider with ID '{providerId}' not found in configuration");
 			return new CloudSyncResult
 			{
+				ProviderId = providerId,
 				StartTime = DateTime.UtcNow,
 				EndTime = DateTime.UtcNow,
 				TriggerType = triggerType,
-				Errors = new List<string> { "Cloud sync is disabled" }
+				Errors = new List<string> { $"Provider '{providerId}' not found" }
 			};
 		}
 
-		// Prevent overlapping sync executions
-		if ( !await _syncLock.WaitAsync(0) )
+		if ( !providerSettings.Enabled )
 		{
-			logger.LogError("Cloud sync already in progress, skipping this execution");
+			logger.LogInformation($"Cloud sync provider '{providerId}' is disabled");
 			return new CloudSyncResult
 			{
+				ProviderId = providerId,
+				ProviderName = providerSettings.Provider,
 				StartTime = DateTime.UtcNow,
 				EndTime = DateTime.UtcNow,
 				TriggerType = triggerType,
-				Errors = new List<string> { "Sync already in progress" }
+				Errors = new List<string> { "Provider is disabled" }
+			};
+		}
+
+		// Get or create a lock for this provider
+		var providerLock = _providerLocks.GetOrAdd(providerId, _ => new SemaphoreSlim(1, 1));
+
+		// Prevent overlapping sync executions for this provider
+		if ( !await providerLock.WaitAsync(0) )
+		{
+			logger.LogError(
+				$"Cloud sync already in progress for provider '{providerId}', skipping this execution");
+			return new CloudSyncResult
+			{
+				ProviderId = providerId,
+				ProviderName = providerSettings.Provider,
+				StartTime = DateTime.UtcNow,
+				EndTime = DateTime.UtcNow,
+				TriggerType = triggerType,
+				Errors = new List<string> { "Sync already in progress for this provider" }
 			};
 		}
 
@@ -56,25 +131,44 @@ public class CloudSyncService(
 			IsSyncInProgress = true;
 			var result = new CloudSyncResult
 			{
-				StartTime = DateTime.UtcNow, TriggerType = triggerType
+				ProviderId = providerId,
+				ProviderName = providerSettings.Provider,
+				StartTime = DateTime.UtcNow,
+				TriggerType = triggerType
 			};
 
 			logger.LogInformation(
-				$"Starting cloud sync (Trigger: {triggerType}, Provider: {settings.Provider}, Folder: {settings.RemoteFolder})");
+				$"Starting cloud sync (Provider ID: {providerId}, Trigger: {triggerType}, Provider: {providerSettings.Provider}, Folder: {providerSettings.RemoteFolder})");
 
 			// Get the cloud sync client
 			using var scope = serviceScopeFactory.CreateScope();
-			var cloudClient = GetCloudClient(scope);
+			var cloudClient = GetCloudClient(scope, providerSettings.Provider);
 
 			if ( cloudClient is not { Enabled: true } )
 			{
 				var error =
-					$"Cloud provider '{settings.Provider}' is not available or not enabled";
+					$"Cloud provider '{providerSettings.Provider}' is not available or not enabled";
 				logger.LogError(error);
 				result.Errors.Add(error);
 				result.EndTime = DateTime.UtcNow;
-				LastSyncResult = result;
+				UpdateLastSyncResult(providerId, result);
 				return result;
+			}
+
+			// Initialize client with provider-specific credentials
+			if ( cloudClient is DropboxCloudSyncClient dropboxClient )
+			{
+				if ( string.IsNullOrWhiteSpace(providerSettings.Credentials.AccessToken) )
+				{
+					const string error = "Dropbox access token is not configured for this provider";
+					logger.LogError(error);
+					result.Errors.Add(error);
+					result.EndTime = DateTime.UtcNow;
+					UpdateLastSyncResult(providerId, result);
+					return result;
+				}
+
+				dropboxClient.InitializeClient(providerSettings.Credentials.AccessToken);
 			}
 
 			// Test connection
@@ -84,7 +178,7 @@ public class CloudSyncService(
 				logger.LogError(error);
 				result.Errors.Add(error);
 				result.EndTime = DateTime.UtcNow;
-				LastSyncResult = result;
+				UpdateLastSyncResult(providerId, result);
 				return result;
 			}
 
@@ -92,9 +186,10 @@ public class CloudSyncService(
 			IEnumerable<CloudFile> cloudFiles;
 			try
 			{
-				cloudFiles = await cloudClient.ListFilesAsync(settings.RemoteFolder);
+				cloudFiles = await cloudClient.ListFilesAsync(providerSettings.RemoteFolder);
 				result.FilesFound = cloudFiles.Count();
-				logger.LogInformation($"Found {result.FilesFound} files in cloud storage");
+				logger.LogInformation(
+					$"Found {result.FilesFound} files in cloud storage for provider '{providerId}'");
 			}
 			catch ( Exception ex )
 			{
@@ -102,13 +197,13 @@ public class CloudSyncService(
 				logger.LogError(ex, error);
 				result.Errors.Add(error);
 				result.EndTime = DateTime.UtcNow;
-				LastSyncResult = result;
+				UpdateLastSyncResult(providerId, result);
 				return result;
 			}
 
 			// Process each file
 			var import = scope.ServiceProvider.GetRequiredService<IImport>();
-			var tempFolder = Path.Combine(Path.GetTempPath(), "starsky-cloudsync",
+			var tempFolder = Path.Combine(Path.GetTempPath(), "starsky-cloudsync", providerId,
 				Guid.NewGuid().ToString());
 			Directory.CreateDirectory(tempFolder);
 
@@ -118,7 +213,8 @@ public class CloudSyncService(
 				{
 					try
 					{
-						await ProcessFileAsync(cloudClient, import, file, tempFolder, result);
+						await ProcessFileAsync(cloudClient, import, file, tempFolder, result,
+							providerSettings);
 					}
 					catch ( Exception ex )
 					{
@@ -145,17 +241,25 @@ public class CloudSyncService(
 			}
 
 			result.EndTime = DateTime.UtcNow;
-			LastSyncResult = result;
+			UpdateLastSyncResult(providerId, result);
 
 			logger.LogInformation(
-				$"Cloud sync completed: {result.FilesImportedSuccessfully} imported, {result.FilesSkipped} skipped, {result.FilesFailed} failed");
+				$"Cloud sync completed for provider '{providerId}': {result.FilesImportedSuccessfully} imported, {result.FilesSkipped} skipped, {result.FilesFailed} failed");
 
 			return result;
 		}
 		finally
 		{
-			IsSyncInProgress = false;
-			_syncLock.Release();
+			IsSyncInProgress = _providerLocks.Values.Any(l => l.CurrentCount == 0);
+			providerLock.Release();
+		}
+	}
+
+	private void UpdateLastSyncResult(string providerId, CloudSyncResult result)
+	{
+		lock ( _resultsLock )
+		{
+			_lastSyncResults[providerId] = result;
 		}
 	}
 
@@ -164,7 +268,8 @@ public class CloudSyncService(
 		IImport import,
 		CloudFile file,
 		string tempFolder,
-		CloudSyncResult result)
+		CloudSyncResult result,
+		CloudSyncProviderSettings providerSettings)
 	{
 		// Check if already processed (idempotency)
 		var fileKey = $"{file.Path}_{file.Hash}_{file.Size}";
@@ -237,7 +342,7 @@ public class CloudSyncService(
 		}
 
 		// Delete from cloud storage if import was successful and setting is enabled
-		if ( importSuccess && settings.DeleteAfterImport )
+		if ( importSuccess && providerSettings.DeleteAfterImport )
 		{
 			try
 			{
@@ -260,10 +365,11 @@ public class CloudSyncService(
 		}
 	}
 
-	private ICloudSyncClient? GetCloudClient(IServiceScope scope)
+	private ICloudSyncClient? GetCloudClient(IServiceScope scope, string providerName)
 	{
 		var clients = scope.ServiceProvider.GetServices<ICloudSyncClient>();
 		return clients.FirstOrDefault(c =>
-			c.Name.Equals(settings.Provider, StringComparison.OrdinalIgnoreCase));
+			c.Name.Equals(providerName, StringComparison.OrdinalIgnoreCase));
 	}
 }
+

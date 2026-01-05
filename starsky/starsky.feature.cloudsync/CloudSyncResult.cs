@@ -2,6 +2,8 @@ namespace starsky.foundation.cloudsync;
 
 public class CloudSyncResult
 {
+	public string ProviderId { get; set; } = string.Empty;
+	public string ProviderName { get; set; } = string.Empty;
 	public DateTime StartTime { get; set; }
 	public DateTime EndTime { get; set; }
 	public CloudSyncTriggerType TriggerType { get; set; }

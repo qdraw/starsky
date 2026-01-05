@@ -1,11 +1,31 @@
 using System;
+using System.Collections.Generic;
 
 namespace starsky.foundation.platform.Models;
 
+/// <summary>
+///     Configuration for cloud sync providers
+/// </summary>
 public class CloudSyncSettings
 {
 	/// <summary>
-	///     Enable or disable cloud sync
+	///     List of cloud sync provider configurations
+	/// </summary>
+	public List<CloudSyncProviderSettings> Providers { get; set; } = new();
+}
+
+/// <summary>
+///     Configuration for a single cloud sync provider
+/// </summary>
+public class CloudSyncProviderSettings
+{
+	/// <summary>
+	///     Unique identifier for this provider configuration
+	/// </summary>
+	public string Id { get; set; } = string.Empty;
+
+	/// <summary>
+	///     Enable or disable this cloud sync provider
 	/// </summary>
 	public bool Enabled { get; set; }
 
@@ -48,3 +68,4 @@ public class CloudProviderCredentials
 	public string AppSecret { get; set; } = string.Empty;
 	public DateTime? ExpiresAt { get; set; }
 }
+
