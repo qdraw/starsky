@@ -20,7 +20,7 @@ jobs:
       WEBSITE_SITE_NAME: "ci"
     steps:
       - name: Checkout code
-        uses: actions/checkout@c2d88d3ecc89a9ef08eebf45d9637801dcee7eb5
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
 
       - name: Create temp folder
         shell: bash
@@ -66,7 +66,7 @@ jobs:
           systemctl --user -l status starsky
 
       - name: Run Cypress in Electron 
-        uses: cypress-io/github-action@7ef72e250a9e564efb4ed4c2433971ada4cc38b4
+        uses: cypress-io/github-action@1a99543c0ca6ff4d15264ed5704103a903bec6df
         env:
           CYPRESS_BASE_URL: http://localhost:4000
           cypress_name: local
@@ -80,14 +80,14 @@ jobs:
           working-directory: starsky-tools/end2end  
 
       - name: Upload screenshots (always)
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         if: ${{ always() }}
         with:
           name: cypress-screenshots
           path: starsky-tools/end2end/cypress/screenshots
 
       - name: Upload videos (always)
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         if: ${{ always() }}
         with:
           name: cypress-videos

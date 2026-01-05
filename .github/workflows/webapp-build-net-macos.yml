@@ -33,10 +33,10 @@ jobs:
 
     steps:
     
-    - uses: actions/checkout@c2d88d3ecc89a9ef08eebf45d9637801dcee7eb5
+    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@2016bd2012dba4e32de620c46fe006a3ac9f0602
+      uses: actions/setup-dotnet@25328d894dc34d01d191df4849cb7f5402e3f142
       with:
         dotnet-version: 8.0.416
         

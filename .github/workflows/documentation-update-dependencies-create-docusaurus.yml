@@ -14,12 +14,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@c2d88d3ecc89a9ef08eebf45d9637801dcee7eb5
+    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
       with:
         ref: master
 
     - name: Setup Node.js environment
-      uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903
+      uses: actions/setup-node@65d868f8d4d85d7d4abb7de0875cde3fcc8798f5
       with:
         node-version: 24
         check-latest: true
@@ -46,7 +46,7 @@ jobs:
       
     - name: Create Pull Request ${{ steps.files_changed.outputs.CHANGED }}
       id: cpr
-      uses: peter-evans/create-pull-request@84ae59a2cdc2258d6fa0732dd66352dddae2a412
+      uses: peter-evans/create-pull-request@2271f1ddcf09437ed8f019733eb5cfba58ac76f0
       with:
         token: ${{ secrets.WORKFLOW_GITHUB }}
         commit-message: 'Update Documentation and Docusaurus'

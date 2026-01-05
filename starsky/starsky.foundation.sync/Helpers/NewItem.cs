@@ -60,7 +60,7 @@ public sealed class NewItem
 		string parentDirectory, string fileName)
 	{
 		var updatedDatabaseItem = await _readMeta.ReadExifAndXmpFromFileAsync(filePath);
-		var stream = _subPathStorage.ReadStream(filePath, 50);
+		var stream = _subPathStorage.ReadStream(filePath, 68);
 		updatedDatabaseItem!.ImageFormat = new ExtensionRolesHelper(_logger).GetImageFormat(stream);
 		await stream.DisposeAsync();
 
