@@ -160,17 +160,19 @@ public class CloudSyncService(
 			// Initialize client with provider-specific credentials
 			if ( cloudClient is DropboxCloudSyncClient dropboxClient )
 			{
-				if ( string.IsNullOrWhiteSpace(providerSettings.Credentials.AccessToken) )
-				{
-					const string error = "Dropbox access token is not configured for this provider";
-					logger.LogError(error);
-					result.Errors.Add(error);
-					result.EndTime = DateTime.UtcNow;
-					UpdateLastSyncResult(providerId, result);
-					return result;
-				}
+				// if ( string.IsNullOrWhiteSpace(providerSettings.Credentials.AccessToken) )
+				// {
+				// 	const string error = "Dropbox access token is not configured for this provider";
+				// 	logger.LogError(error);
+				// 	result.Errors.Add(error);
+				// 	result.EndTime = DateTime.UtcNow;
+				// 	UpdateLastSyncResult(providerId, result);
+				// 	return result;
+				// }
 
-				dropboxClient.InitializeClient(providerSettings.Credentials.AccessToken);
+				var credentials = providerSettings.Credentials;
+				await dropboxClient.InitializeClient(credentials.RefreshToken, credentials.AppKey,
+					credentials.AppSecret);
 			}
 
 			// Test connection
@@ -312,7 +314,8 @@ public class CloudSyncService(
 			{
 				DeleteAfter = true, // Delete from temp folder after import
 				IndexMode = true, // Check if exists in db
-				RecursiveDirectory = false
+				RecursiveDirectory = false,
+				Origin = providerSettings.Id
 			};
 
 			var importResult = await import.Importer(new[] { localPath }, importSettings);

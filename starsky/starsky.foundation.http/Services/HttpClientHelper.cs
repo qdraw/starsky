@@ -33,7 +33,8 @@ public sealed class HttpClientHelper : IHttpClientHelper
 		"download.geonames.org",
 		"exiftool.org",
 		"api.github.com",
-		"starsky-dependencies.netlify.app"
+		"starsky-dependencies.netlify.app",
+		"api.dropbox.com"
 	];
 
 	/// <summary>

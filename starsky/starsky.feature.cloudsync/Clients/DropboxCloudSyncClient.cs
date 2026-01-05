@@ -1,4 +1,5 @@
 using Dropbox.Api;
+using starsky.foundation.cloudsync.Clients.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -6,18 +7,21 @@ using starsky.foundation.platform.Models;
 namespace starsky.foundation.cloudsync.Clients;
 
 [Service(typeof(ICloudSyncClient), InjectionLifetime = InjectionLifetime.Scoped)]
-public class DropboxCloudSyncClient(IWebLogger logger, AppSettings appSettings)
+public class DropboxCloudSyncClient(
+	IWebLogger logger,
+	AppSettings appSettings,
+	IDropboxCloudSyncRefreshToken tokenClient)
 	: ICloudSyncClient
 {
+	private DateTimeOffset? _accessTokenExpiry;
 	private DropboxClient? _client;
-	private string? _currentAccessToken;
 
 	public string Name => "Dropbox";
 
 	public bool Enabled =>
-		appSettings.CloudSync.Providers.Any(p =>
+		appSettings.CloudSync?.Providers.Any(p =>
 			p.Provider.Equals("Dropbox", StringComparison.OrdinalIgnoreCase) &&
-			!string.IsNullOrWhiteSpace(p.Credentials.AccessToken));
+			!string.IsNullOrWhiteSpace(p.Credentials.RefreshToken)) == true;
 
 	public async Task<List<CloudFile>> ListFilesAsync(string remoteFolder)
 	{
@@ -112,8 +116,9 @@ public class DropboxCloudSyncClient(IWebLogger logger, AppSettings appSettings)
 		try
 		{
 			EnsureClient();
-			var account = await _client!.Users.GetCurrentAccountAsync();
-			logger.LogInformation($"Successfully connected to Dropbox as {account.Email}");
+			var result = await _client!.Files.ListFolderAsync(string.Empty);
+			logger.LogInformation(
+				$"Successfully connected to Dropbox that has {result.Entries.Count} files");
 			return true;
 		}
 		catch ( Exception ex )
@@ -123,16 +128,25 @@ public class DropboxCloudSyncClient(IWebLogger logger, AppSettings appSettings)
 		}
 	}
 
-	public void InitializeClient(string accessToken)
+
+	/// <summary>
+	///     Initializes the Dropbox client using a refresh token (preferred)
+	/// </summary>
+	public async Task InitializeClient(string refreshToken, string appKey, string appSecret)
 	{
-		if ( _currentAccessToken == accessToken && _client != null )
+		// Only refresh if no token or expired
+		if ( _client != null && _accessTokenExpiry.HasValue &&
+		     _accessTokenExpiry > DateTimeOffset.UtcNow.AddMinutes(1) )
 		{
 			return;
 		}
 
+		var (accessToken, expiresIn) = await tokenClient.ExchangeRefreshTokenAsync(refreshToken,
+			appKey,
+			appSecret);
 		_client?.Dispose();
 		_client = new DropboxClient(accessToken);
-		_currentAccessToken = accessToken;
+		_accessTokenExpiry = DateTimeOffset.UtcNow.AddSeconds(expiresIn - 60); // buffer
 	}
 
 	private void EnsureClient()
@@ -143,6 +157,6 @@ public class DropboxCloudSyncClient(IWebLogger logger, AppSettings appSettings)
 		}
 
 		throw new InvalidOperationException(
-			"Dropbox client not initialized. Call InitializeClient with access token first.");
+			"Dropbox client not initialized. Call InitializeClient first.");
 	}
 }
