@@ -59,9 +59,9 @@
         <WarningLevel>0</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.22" />
-        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.22"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6"/>
     </ItemGroup>
     <!-- generate xml file for swagger -->
     <PropertyGroup>
@@ -148,7 +148,7 @@
         <ProjectReference Include="..\starsky.feature.export\starsky.feature.export.csproj"/>
         <ProjectReference Include="..\starsky.feature.geolookup\starsky.feature.geolookup.csproj"/>
         <ProjectReference Include="..\starsky.feature.health\starsky.feature.health.csproj"/>
-        <ProjectReference Include="..\starsky.feature.import\starsky.feature.import.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.import\starsky.foundation.import.csproj"/>
         <ProjectReference Include="..\starsky.feature.metaupdate\starsky.feature.metaupdate.csproj"/>
         <ProjectReference Include="..\starsky.feature.packagetelemetry\starsky.feature.packagetelemetry.csproj"/>
         <ProjectReference Include="..\starsky.feature.realtime\starsky.feature.realtime.csproj"/>

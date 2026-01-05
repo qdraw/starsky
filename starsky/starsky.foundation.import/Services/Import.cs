@@ -8,9 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using starsky.feature.import.Helpers;
-using starsky.feature.import.Interfaces;
-using starsky.feature.import.Models;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Import;
 using starsky.foundation.database.Interfaces;
@@ -18,6 +15,9 @@ using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.database.Thumbnails;
 using starsky.foundation.geo.ReverseGeoCode.Interface;
+using starsky.foundation.import.Helpers;
+using starsky.foundation.import.Interfaces;
+using starsky.foundation.import.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
@@ -36,7 +36,7 @@ using starsky.foundation.writemeta.Services;
 
 [assembly: InternalsVisibleTo("starskytest")]
 
-namespace starsky.feature.import.Services;
+namespace starsky.foundation.import.Services;
 
 /// <summary>
 ///     Also known as ImportService - Import.cs

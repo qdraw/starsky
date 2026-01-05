@@ -2,7 +2,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 
-namespace starsky.feature.import.Helpers;
+namespace starsky.foundation.import.Helpers;
 
 public class UpdateImportSettingsHelper(AppSettings appSettings)
 {

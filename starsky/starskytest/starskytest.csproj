@@ -1,4 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿﻿
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         <RuntimeFrameworkVersion>8.0.22</RuntimeFrameworkVersion>
@@ -21,14 +22,14 @@
     <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'"/>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'"/>
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.22" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.22" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
-        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.22"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.22"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1"/>
         <PackageReference Include="MSTest.TestAdapter" Version="3.11.1"/>
         <PackageReference Include="MSTest.TestFramework" Version="3.11.1"/>
-        <PackageReference Include="Verify.MSTest" Version="30.19.1" />
+        <PackageReference Include="Verify.MSTest" Version="30.19.1"/>
         <PackageReference Include="coverlet.collector" Version="6.0.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -50,6 +51,7 @@
         <ProjectReference Include="..\starsky.feature.settings\starsky.feature.settings.csproj"/>
         <ProjectReference Include="..\starsky.feature.thumbnail\starsky.feature.thumbnail.csproj"/>
         <ProjectReference Include="..\starsky.feature.webhtmlpublish\starsky.feature.webhtmlpublish.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.cloudsync\starsky.foundation.cloudsync.csproj"/>
         <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj"/>
         <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj"/>
         <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>

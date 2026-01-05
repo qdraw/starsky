@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using starsky.foundation.database.Models;
 
-namespace starsky.feature.import.Interfaces;
+namespace starsky.foundation.import.Interfaces;
 
 public interface IImportThumbnailService
 {

@@ -1,0 +1,183 @@
+# starsky.foundation.cloudsync
+
+Cloud sync functionality for automatic import from cloud storage providers (Dropbox, Google Drive,
+OneDrive, etc.)
+
+## Features
+
+- **Scheduled Sync**: Automatically download files from cloud storage at configurable intervals
+- **Manual Trigger**: API endpoint to manually trigger sync operations
+- **Import Integration**: Reuses existing import pipeline for consistent processing
+- **Idempotency**: Prevents re-importing already processed files
+- **Concurrent Protection**: Prevents overlapping sync executions
+- **Post-Import Cleanup**: Optional deletion of files from cloud storage after successful import
+- **Comprehensive Logging**: Detailed logs of sync operations, successes, and failures
+- **Provider Abstraction**: Interface-based design supports multiple cloud storage providers
+
+## Configuration
+
+Add the following to your `appsettings.json`:
+
+```json
+{
+  "CloudSync": {
+    "Enabled": true,
+    "Provider": "Dropbox",
+    "RemoteFolder": "/Camera Uploads",
+    "SyncFrequencyMinutes": 0,
+    "SyncFrequencyHours": 1,
+    "DeleteAfterImport": false,
+    "Credentials": {
+      "AccessToken": "YOUR_ACCESS_TOKEN",
+      "RefreshToken": "",
+      "AppKey": "",
+      "AppSecret": "",
+      "ExpiresAt": null
+    }
+  }
+}
+```
+
+### Configuration Options
+
+- **Enabled**: Enable or disable cloud sync (default: `false`)
+- **Provider**: Cloud storage provider name (e.g., "Dropbox", "GoogleDrive", "OneDrive")
+- **RemoteFolder**: Remote folder path to sync from (default: "/")
+- **SyncFrequencyMinutes**: Sync frequency in minutes (takes priority if > 0)
+- **SyncFrequencyHours**: Sync frequency in hours (used if SyncFrequencyMinutes is 0, default: 24)
+- **DeleteAfterImport**: Delete files from cloud storage after successful import (default: `false`)
+- **Credentials**: Provider-specific credentials (stored securely)
+
+## API Endpoints
+
+### Get Status
+
+```
+GET /api/cloudsync/status
+```
+
+Returns current cloud sync configuration and status.
+
+### Trigger Manual Sync
+
+```
+POST /api/cloudsync/sync
+```
+
+Manually trigger a sync operation.
+
+### Get Last Result
+
+```
+GET /api/cloudsync/last-result
+```
+
+Get the result of the last sync operation.
+
+## Supported Providers
+
+### Dropbox
+
+#### Setup
+
+1. Create a Dropbox App at https://www.dropbox.com/developers/apps
+2. Generate an access token
+3. Add the access token to configuration
+
+```json
+{
+  "CloudSync": {
+    "Provider": "Dropbox",
+    "Credentials": {
+      "AccessToken": "YOUR_DROPBOX_ACCESS_TOKEN"
+    }
+  }
+}
+```
+
+### Adding New Providers
+
+Implement the `ICloudSyncClient` interface:
+
+```csharp
+[Service(typeof(ICloudSyncClient), InjectionLifetime = InjectionLifetime.Scoped)]
+public class MyCloudSyncClient : ICloudSyncClient
+{
+    public string Name => "MyProvider";
+    public bool Enabled { get; }
+    
+    public Task<IEnumerable<CloudFile>> ListFilesAsync(string remoteFolder) { }
+    public Task<string> DownloadFileAsync(CloudFile file, string localFolder) { }
+    public Task<bool> DeleteFileAsync(CloudFile file) { }
+    public Task<bool> TestConnectionAsync() { }
+}
+```
+
+## Architecture
+
+### Components
+
+- **CloudSyncService**: Main service orchestrating sync operations
+- **CloudSyncScheduledService**: Background service for scheduled syncs
+- **ICloudSyncClient**: Interface for cloud provider implementations
+- **CloudSyncController**: API controller for manual operations
+
+### Flow
+
+1. **Scheduled Service** triggers sync at configured intervals
+2. **CloudSyncService** acquires lock to prevent concurrent execution
+3. **List Files** from cloud storage using provider client
+4. **Download** each file to temporary folder
+5. **Import** using existing import pipeline
+6. **Cleanup** delete from cloud if DeleteAfterImport is enabled
+7. **Log Results** and update LastSyncResult
+
+## Testing
+
+Comprehensive unit tests are available in:
+
+- `starskytest/starsky.foundation.cloudsync/Services/CloudSyncServiceTest.cs`
+- `starskytest/starsky.foundation.cloudsync/Controllers/CloudSyncControllerTest.cs`
+- `starskytest/starsky.foundation.cloudsync/Services/CloudSyncScheduledServiceTest.cs`
+
+Run tests:
+
+```bash
+dotnet test starskytest/starskytest.csproj --filter FullyQualifiedName~cloudsync
+```
+
+## Security
+
+- Credentials are stored in configuration and should be protected
+- Use environment variables for production: `app__CloudSync__Credentials__AccessToken`
+- Access tokens should be kept secure and rotated regularly
+- API endpoints require authentication via `[Authorize]` attribute
+
+## Error Handling
+
+The service handles various error scenarios:
+
+- Connection failures
+- Authentication errors
+- Download failures
+- Import failures
+- Delete failures
+
+All errors are logged and included in sync results without blocking other files.
+
+## Performance Considerations
+
+- Downloads happen sequentially to avoid overwhelming the network
+- Temporary files are cleaned up after processing
+- Idempotency check prevents re-processing files within 24 hours
+- Concurrent execution is prevented via semaphore
+
+## Future Enhancements
+
+- Support for Google Drive
+- Support for OneDrive
+- Refresh token handling
+- Selective sync based on file patterns
+- Progress reporting
+- Webhook support for real-time sync
+

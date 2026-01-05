@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using starsky.feature.import.Models;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.geo.ReverseGeoCode;
+using starsky.foundation.import.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -14,7 +14,7 @@ using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Helpers;
 using starsky.foundation.writemeta.Interfaces;
 
-namespace starsky.feature.import.Helpers;
+namespace starsky.foundation.import.Helpers;
 
 public class UpdateImportTransformations
 {

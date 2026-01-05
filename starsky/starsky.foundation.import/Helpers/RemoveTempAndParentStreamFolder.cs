@@ -3,14 +3,15 @@ using System.IO;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 
-namespace starsky.feature.import.Helpers;
+namespace starsky.foundation.import.Helpers;
 
 public class RemoveTempAndParentStreamFolderHelper
 {
-	private readonly IStorage _hostFileSystemStorage;
 	private readonly AppSettings _appSettings;
+	private readonly IStorage _hostFileSystemStorage;
 
-	public RemoveTempAndParentStreamFolderHelper(IStorage hostFileSystemStorage, AppSettings appSettings)
+	public RemoveTempAndParentStreamFolderHelper(IStorage hostFileSystemStorage,
+		AppSettings appSettings)
 	{
 		_hostFileSystemStorage = hostFileSystemStorage;
 		_appSettings = appSettings;

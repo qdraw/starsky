@@ -1,17 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using starsky.feature.import.Helpers;
-using starsky.feature.import.Models;
 using starsky.foundation.database.Models;
 using starsky.foundation.geo.ReverseGeoCode.Interface;
+using starsky.foundation.import.Helpers;
+using starsky.foundation.import.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Structure;
 using starsky.foundation.storage.Structure.Helpers;
 
-namespace starsky.feature.import.Services;
+namespace starsky.foundation.import.Services;
 
 public class ObjectCreateIndexItemService(
 	AppSettings appSettings,

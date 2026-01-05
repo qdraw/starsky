@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using starsky.feature.import.Helpers;
-using starsky.feature.import.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.import.Helpers;
+using starsky.foundation.import.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -11,7 +11,7 @@ using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 
-namespace starsky.feature.import.Services;
+namespace starsky.foundation.import.Services;
 
 [Service(typeof(IImportThumbnailService), InjectionLifetime = InjectionLifetime.Scoped)]
 public class ImportThumbnailService : IImportThumbnailService

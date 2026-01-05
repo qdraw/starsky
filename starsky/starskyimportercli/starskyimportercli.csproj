@@ -12,7 +12,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\starsky.feature.import\starsky.feature.import.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.import\starsky.foundation.import.csproj"/>
         <ProjectReference Include="..\starsky.foundation.webtelemetry\starsky.foundation.webtelemetry.csproj"/>
     </ItemGroup>
 

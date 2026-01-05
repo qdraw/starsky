@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Models.Structure;
 
-namespace starsky.feature.import.Models;
+namespace starsky.foundation.import.Models;
 
 public class ImportSettingsModel
 {
