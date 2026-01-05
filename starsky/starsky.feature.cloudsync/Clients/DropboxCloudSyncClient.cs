@@ -6,7 +6,7 @@ using starsky.foundation.platform.Models;
 namespace starsky.foundation.cloudsync.Clients;
 
 [Service(typeof(ICloudSyncClient), InjectionLifetime = InjectionLifetime.Scoped)]
-public class DropboxCloudSyncClient(IWebLogger logger, CloudSyncSettings settings)
+public class DropboxCloudSyncClient(IWebLogger logger, AppSettings appSettings)
 	: ICloudSyncClient
 {
 	private DropboxClient? _client;
@@ -15,21 +15,9 @@ public class DropboxCloudSyncClient(IWebLogger logger, CloudSyncSettings setting
 	public string Name => "Dropbox";
 
 	public bool Enabled =>
-		settings.Providers.Any(p =>
+		appSettings.CloudSync.Providers.Any(p =>
 			p.Provider.Equals("Dropbox", StringComparison.OrdinalIgnoreCase) &&
 			!string.IsNullOrWhiteSpace(p.Credentials.AccessToken));
-
-	public void InitializeClient(string accessToken)
-	{
-		if ( _currentAccessToken == accessToken && _client != null )
-		{
-			return;
-		}
-
-		_client?.Dispose();
-		_client = new DropboxClient(accessToken);
-		_currentAccessToken = accessToken;
-	}
 
 	public async Task<List<CloudFile>> ListFilesAsync(string remoteFolder)
 	{
@@ -133,6 +121,18 @@ public class DropboxCloudSyncClient(IWebLogger logger, CloudSyncSettings setting
 			logger.LogError(ex, $"Failed to connect to Dropbox: {ex.Message}");
 			return false;
 		}
+	}
+
+	public void InitializeClient(string accessToken)
+	{
+		if ( _currentAccessToken == accessToken && _client != null )
+		{
+			return;
+		}
+
+		_client?.Dispose();
+		_client = new DropboxClient(accessToken);
+		_currentAccessToken = accessToken;
 	}
 
 	private void EnsureClient()

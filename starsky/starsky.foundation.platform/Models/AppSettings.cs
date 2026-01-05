@@ -803,7 +803,7 @@ public sealed class AppSettings
 	/// <summary>
 	///     Cloud sync settings for automatic import from cloud storage
 	/// </summary>
-	public CloudSyncSettings? CloudSync { get; set; }
+	public CloudSyncSettings? CloudSync { get; set; } = new();
 
 	public OpenTelemetrySettings? OpenTelemetry { get; set; } = new();
 

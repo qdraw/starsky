@@ -143,6 +143,7 @@
         <PreserveCompilationReferences>true</PreserveCompilationReferences>
     </PropertyGroup>
     <ItemGroup>
+        <ProjectReference Include="..\starsky.feature.cloudsync\starsky.feature.cloudsync.csproj"/>
         <ProjectReference Include="..\starsky.feature.demo\starsky.feature.demo.csproj"/>
         <ProjectReference Include="..\starsky.feature.desktop\starsky.feature.desktop.csproj"/>
         <ProjectReference Include="..\starsky.feature.export\starsky.feature.export.csproj"/>

@@ -15,12 +15,12 @@ namespace starsky.foundation.cloudsync.Services;
 public class CloudSyncService(
 	IServiceScopeFactory serviceScopeFactory,
 	IWebLogger logger,
-	CloudSyncSettings settings)
+	AppSettings appSettings)
 	: ICloudSyncService
 {
+	private readonly Dictionary<string, CloudSyncResult> _lastSyncResults = new();
 	private readonly ConcurrentDictionary<string, DateTime> _processedFiles = new();
 	private readonly ConcurrentDictionary<string, SemaphoreSlim> _providerLocks = new();
-	private readonly Dictionary<string, CloudSyncResult> _lastSyncResults = new();
 	private readonly object _resultsLock = new();
 
 	public bool IsSyncInProgress { get; private set; }
@@ -39,9 +39,10 @@ public class CloudSyncService(
 	public async Task<List<CloudSyncResult>> SyncAllAsync(CloudSyncTriggerType triggerType)
 	{
 		var results = new List<CloudSyncResult>();
-		var enabledProviders = settings.Providers.Where(p => p.Enabled).ToList();
+		var enabledProviders =
+			appSettings.CloudSync?.Providers.Where(p => p.Enabled).ToList() ?? [];
 
-		if ( !enabledProviders.Any() )
+		if ( enabledProviders.Count == 0 )
 		{
 			logger.LogInformation("No enabled cloud sync providers found");
 			return results;
@@ -79,7 +80,8 @@ public class CloudSyncService(
 	public async Task<CloudSyncResult> SyncAsync(string providerId,
 		CloudSyncTriggerType triggerType)
 	{
-		var providerSettings = settings.Providers.FirstOrDefault(p => p.Id == providerId);
+		var providerSettings =
+			appSettings.CloudSync?.Providers.FirstOrDefault(p => p.Id == providerId);
 		if ( providerSettings == null )
 		{
 			logger.LogError($"Provider with ID '{providerId}' not found in configuration");
@@ -89,7 +91,7 @@ public class CloudSyncService(
 				StartTime = DateTime.UtcNow,
 				EndTime = DateTime.UtcNow,
 				TriggerType = triggerType,
-				Errors = new List<string> { $"Provider '{providerId}' not found" }
+				Errors = [$"Provider '{providerId}' not found"]
 			};
 		}
 
@@ -103,7 +105,7 @@ public class CloudSyncService(
 				StartTime = DateTime.UtcNow,
 				EndTime = DateTime.UtcNow,
 				TriggerType = triggerType,
-				Errors = new List<string> { "Provider is disabled" }
+				Errors = ["Provider is disabled"]
 			};
 		}
 
@@ -122,7 +124,7 @@ public class CloudSyncService(
 				StartTime = DateTime.UtcNow,
 				EndTime = DateTime.UtcNow,
 				TriggerType = triggerType,
-				Errors = new List<string> { "Sync already in progress for this provider" }
+				Errors = ["Sync already in progress for this provider"]
 			};
 		}
 
@@ -372,4 +374,3 @@ public class CloudSyncService(
 			c.Name.Equals(providerName, StringComparison.OrdinalIgnoreCase));
 	}
 }
-

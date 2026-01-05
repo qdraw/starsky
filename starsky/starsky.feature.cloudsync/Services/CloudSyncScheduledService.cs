@@ -10,7 +10,7 @@ namespace starsky.foundation.cloudsync.Services;
 public class CloudSyncScheduledService(
 	ICloudSyncService cloudSyncService,
 	IWebLogger logger,
-	CloudSyncSettings settings)
+	AppSettings appSettings)
 	: BackgroundService
 {
 	private readonly Dictionary<string, Task> _providerTasks = new();
@@ -19,9 +19,10 @@ public class CloudSyncScheduledService(
 	{
 		logger.LogInformation("Cloud Sync Scheduled Service started");
 
-		var enabledProviders = settings.Providers.Where(p => p.Enabled).ToList();
+		var enabledProviders =
+			appSettings.CloudSync?.Providers.Where(p => p.Enabled).ToList() ?? [];
 
-		if ( !enabledProviders.Any() )
+		if ( enabledProviders.Count == 0 )
 		{
 			logger.LogInformation(
 				"No enabled cloud sync providers found, scheduled service will not run");
@@ -59,12 +60,14 @@ public class CloudSyncScheduledService(
 
 				await Task.Delay(delay, stoppingToken);
 
-				if ( !stoppingToken.IsCancellationRequested )
+				if ( stoppingToken.IsCancellationRequested )
 				{
-					logger.LogInformation(
-						$"Starting scheduled cloud sync for provider '{provider.Id}'");
-					await cloudSyncService.SyncAsync(provider.Id, CloudSyncTriggerType.Scheduled);
+					continue;
 				}
+
+				logger.LogInformation(
+					$"Starting scheduled cloud sync for provider '{provider.Id}'");
+				await cloudSyncService.SyncAsync(provider.Id, CloudSyncTriggerType.Scheduled);
 			}
 			catch ( TaskCanceledException )
 			{

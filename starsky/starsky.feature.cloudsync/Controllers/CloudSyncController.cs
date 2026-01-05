@@ -13,14 +13,14 @@ public class CloudSyncController : ControllerBase
 	private readonly ICloudSyncService _cloudSyncService;
 	private readonly CloudSyncSettings _settings;
 
-	public CloudSyncController(ICloudSyncService cloudSyncService, CloudSyncSettings settings)
+	public CloudSyncController(ICloudSyncService cloudSyncService, AppSettings appSettings)
 	{
 		_cloudSyncService = cloudSyncService;
-		_settings = settings;
+		_settings = appSettings.CloudSync ?? new CloudSyncSettings();
 	}
 
 	/// <summary>
-	/// Get current cloud sync status for all providers
+	///     Get current cloud sync status for all providers
 	/// </summary>
 	[HttpGet("status")]
 	public IActionResult GetStatus()
@@ -43,19 +43,19 @@ public class CloudSyncController : ControllerBase
 	}
 
 	/// <summary>
-	/// Get status for a specific provider
+	///     Get status for a specific provider
 	/// </summary>
 	[HttpGet("status/{providerId}")]
 	public IActionResult GetProviderStatus(string providerId)
 	{
 		var provider = _settings.Providers.FirstOrDefault(p => p.Id == providerId);
-		if (provider == null)
+		if ( provider == null )
 		{
 			return NotFound(new { message = $"Provider '{providerId}' not found" });
 		}
 
-		var lastResult = _cloudSyncService.LastSyncResults.TryGetValue(providerId, out var result) 
-			? result 
+		var lastResult = _cloudSyncService.LastSyncResults.TryGetValue(providerId, out var result)
+			? result
 			: null;
 
 		return Ok(new
@@ -72,17 +72,17 @@ public class CloudSyncController : ControllerBase
 	}
 
 	/// <summary>
-	/// Trigger a manual sync for all enabled providers
+	///     Trigger a manual sync for all enabled providers
 	/// </summary>
 	[HttpPost("sync")]
 	public async Task<IActionResult> TriggerSyncAll()
 	{
-		if (!_settings.Providers.Any(p => p.Enabled))
+		if ( !_settings.Providers.Any(p => p.Enabled) )
 		{
 			return BadRequest(new { message = "No cloud sync providers are enabled" });
 		}
 
-		if (_cloudSyncService.IsSyncInProgress)
+		if ( _cloudSyncService.IsSyncInProgress )
 		{
 			return Conflict(new { message = "A sync operation is already in progress" });
 		}
@@ -92,18 +92,18 @@ public class CloudSyncController : ControllerBase
 	}
 
 	/// <summary>
-	/// Trigger a manual sync for a specific provider
+	///     Trigger a manual sync for a specific provider
 	/// </summary>
 	[HttpPost("sync/{providerId}")]
 	public async Task<IActionResult> TriggerSync(string providerId)
 	{
 		var provider = _settings.Providers.FirstOrDefault(p => p.Id == providerId);
-		if (provider == null)
+		if ( provider == null )
 		{
 			return NotFound(new { message = $"Provider '{providerId}' not found" });
 		}
 
-		if (!provider.Enabled)
+		if ( !provider.Enabled )
 		{
 			return BadRequest(new { message = $"Provider '{providerId}' is disabled" });
 		}
@@ -113,13 +113,13 @@ public class CloudSyncController : ControllerBase
 	}
 
 	/// <summary>
-	/// Get the last sync results for all providers
+	///     Get the last sync results for all providers
 	/// </summary>
 	[HttpGet("last-results")]
 	public IActionResult GetLastResults()
 	{
 		var lastResults = _cloudSyncService.LastSyncResults;
-		if (!lastResults.Any())
+		if ( !lastResults.Any() )
 		{
 			return NotFound(new { message = "No sync has been performed yet" });
 		}
@@ -128,12 +128,12 @@ public class CloudSyncController : ControllerBase
 	}
 
 	/// <summary>
-	/// Get the last sync result for a specific provider
+	///     Get the last sync result for a specific provider
 	/// </summary>
 	[HttpGet("last-result/{providerId}")]
 	public IActionResult GetLastResult(string providerId)
 	{
-		if (_cloudSyncService.LastSyncResults.TryGetValue(providerId, out var result))
+		if ( _cloudSyncService.LastSyncResults.TryGetValue(providerId, out var result) )
 		{
 			return Ok(result);
 		}
@@ -141,4 +141,3 @@ public class CloudSyncController : ControllerBase
 		return NotFound(new { message = $"No sync result found for provider '{providerId}'" });
 	}
 }
-
