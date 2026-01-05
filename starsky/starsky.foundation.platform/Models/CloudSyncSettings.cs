@@ -55,7 +55,7 @@ public class CloudSyncProviderSettings
 	public bool DeleteAfterImport { get; set; }
 
 	/// <summary>
-	///     Credentials for the cloud provider (stored securely)
+	///     Credentials for the cloud provider
 	/// </summary>
 	public CloudProviderCredentials Credentials { get; set; } = new();
 }
