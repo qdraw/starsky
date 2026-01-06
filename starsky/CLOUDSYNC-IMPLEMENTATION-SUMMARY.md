@@ -6,7 +6,7 @@ Implemented a comprehensive cloud sync import feature that allows automatic impo
 ## Files Created
 
 ### Core Models
-1. **starsky.foundation.platform/Models/CloudSyncSettings.cs**
+1. **starsky.foundation.platform/Models/CloudImportSettings.cs**
    - Configuration model for cloud sync settings
    - Includes provider, folder, frequency, and credential settings
 
