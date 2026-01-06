@@ -35,22 +35,23 @@ public class DropboxCloudImportClient(
 
 			do
 			{
-				foreach ( var entry in list.Entries.Where(i => i.IsFile) )
-				{
-					var fileMetadata = entry.AsFile;
-					files.Add(new CloudFile
+				files.AddRange(list.Entries
+					.Where(i => i.IsFile)
+					.Select(entry =>
 					{
-						Id = fileMetadata.Id,
-						Name = fileMetadata.Name,
-						Path =
-							fileMetadata.PathDisplay ?? fileMetadata.PathLower ?? string.Empty,
-						Size = ( long ) fileMetadata.Size,
-						ModifiedDate = fileMetadata.ServerModified,
-						Hash = fileMetadata.ContentHash ?? string.Empty
-					});
-				}
+						var fileMetadata = entry.AsFile;
+						return new CloudFile
+						{
+							Id = fileMetadata.Id,
+							Name = fileMetadata.Name,
+							Path = fileMetadata.PathDisplay ?? fileMetadata.PathLower ?? string.Empty,
+							Size = (long)fileMetadata.Size,
+							ModifiedDate = fileMetadata.ServerModified,
+							Hash = fileMetadata.ContentHash ?? string.Empty
+						};
+					}));
 
-				if ( list.HasMore )
+				if (list.HasMore)
 				{
 					list = await _client.Files.ListFolderContinueAsync(list.Cursor);
 				}
@@ -58,7 +59,7 @@ public class DropboxCloudImportClient(
 				{
 					break;
 				}
-			} while ( true );
+			} while (true);
 
 			logger.LogInformation(
 				$"Listed {files.Count} files from Dropbox folder: {remoteFolder}");
