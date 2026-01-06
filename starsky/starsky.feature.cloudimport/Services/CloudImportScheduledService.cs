@@ -99,7 +99,7 @@ public class CloudImportScheduledService(
 			$"Scheduled sync task for provider '{provider.Id}' has stopped");
 	}
 
-	private TimeSpan GetNextDelay(CloudImportProviderSettings provider)
+	private static TimeSpan GetNextDelay(CloudImportProviderSettings provider)
 	{
 		if ( provider.SyncFrequencyMinutes > 0 )
 		{
@@ -114,9 +114,9 @@ public class CloudImportScheduledService(
 		return TimeSpan.FromHours(24);
 	}
 
-	public override Task StopAsync(CancellationToken stoppingToken)
+	public override Task StopAsync(CancellationToken cancellationToken)
 	{
 		logger.LogInformation("Cloud Sync Scheduled Service is stopping");
-		return base.StopAsync(stoppingToken);
+		return base.StopAsync(cancellationToken);
 	}
 }

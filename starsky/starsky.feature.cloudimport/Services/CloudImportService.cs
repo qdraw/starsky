@@ -200,30 +200,17 @@ public class CloudImportService(
 				}
 
 				// List files
-				IEnumerable<CloudFile> cloudFiles;
-				try
+				var (cloudFiles, cloudImportResult) =
+					await GetCloudFiles(cloudClient, result,
+						providerSettings, providerId);
+				if ( cloudImportResult != null )
 				{
-					cloudFiles = await cloudClient.ListFilesAsync(providerSettings.RemoteFolder);
-					result.FilesFound = cloudFiles.Count();
-					logger.LogInformation(
-						$"Found {result.FilesFound} files in cloud storage for provider '{providerId}'");
-				}
-				catch ( Exception ex )
-				{
-					var error = $"Failed to list files from cloud storage: {ex.Message}";
-					logger.LogError(ex, error);
-					result.Errors.Add(error);
-					result.EndTime = DateTime.UtcNow;
-					UpdateLastSyncResult(providerId, result);
-					return result;
+					return cloudImportResult;
 				}
 
 				// Process each file
 				var import = scope.ServiceProvider.GetRequiredService<IImport>();
-				var tempFolder = Path.Combine(Path.GetTempPath(), "starsky-cloud-import",
-					providerId,
-					Guid.NewGuid().ToString());
-				Directory.CreateDirectory(tempFolder);
+				var tempFolder = GetTempFolder(providerId);
 
 				try
 				{
@@ -284,6 +271,41 @@ public class CloudImportService(
 
 			throw;
 		}
+	}
+
+	private async Task<(IEnumerable<CloudFile>, CloudImportResult?)> GetCloudFiles(
+		ICloudImportClient cloudClient,
+		CloudImportResult result, CloudImportProviderSettings providerSettings, string providerId)
+	{
+		IEnumerable<CloudFile> cloudFiles;
+		try
+		{
+			cloudFiles = await cloudClient.ListFilesAsync(providerSettings.RemoteFolder);
+			result.FilesFound = cloudFiles.Count();
+			logger.LogInformation(
+				$"Found {result.FilesFound} files in cloud storage for provider '{providerId}'");
+		}
+		catch ( Exception ex )
+		{
+			var error = $"Failed to list files from cloud storage: {ex.Message}";
+			logger.LogError(ex, error);
+			result.Errors.Add(error);
+			result.EndTime = DateTime.UtcNow;
+			UpdateLastSyncResult(providerId, result);
+			return ( [], result );
+		}
+
+		return ( cloudFiles, null );
+	}
+
+	private static string GetTempFolder(string providerId)
+	{
+		var tempFolder = Path.Combine(Path.GetTempPath(),
+			"starsky-cloud-import",
+			providerId,
+			Guid.NewGuid().ToString());
+		Directory.CreateDirectory(tempFolder);
+		return tempFolder;
 	}
 
 	private void UpdateLastSyncResult(string providerId, CloudImportResult result)

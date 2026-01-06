@@ -114,7 +114,7 @@ public class CloudImportController(ICloudImportService cloudImportService, AppSe
 	public IActionResult GetLastResults()
 	{
 		var lastResults = cloudImportService.LastSyncResults;
-		if ( !lastResults.Any() )
+		if ( lastResults.Count == 0 )
 		{
 			return NotFound(new { message = "No sync has been performed yet" });
 		}
