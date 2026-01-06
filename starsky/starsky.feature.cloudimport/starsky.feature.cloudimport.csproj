@@ -1,12 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+    
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
+        <!-- SonarQube needs this -->
+        <ProjectGuid>{34d46dc0-f965-46bf-9178-b83a9a6627e7}</ProjectGuid>
+        <Version>0.7.5</Version>
         <Nullable>enable</Nullable>
-        <RootNamespace>starsky.foundation.cloudimport</RootNamespace>
+        <RootNamespace>starsky.feature.cloudimport</RootNamespace>
+        <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
-
+    
     <ItemGroup>
         <ProjectReference Include="..\starsky.foundation.import\starsky.foundation.import.csproj"/>
         <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>
