@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using starsky.foundation.cloudsync.Interfaces;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.geo.GeoDownload.Interfaces;
@@ -44,12 +45,14 @@ public static class Program
 		var exifToolDownload = serviceProvider.GetRequiredService<IExifToolDownload>();
 		var webLogger = serviceProvider.GetRequiredService<IWebLogger>();
 		var geoFileDownload = serviceProvider.GetRequiredService<IGeoFileDownload>();
+		var cloudSync = serviceProvider.GetRequiredService<ICloudSyncService>();
 
 		// Migrations before importing
 		await RunMigrations.Run(serviceProvider.GetRequiredService<ApplicationDbContext>(),
 			webLogger,
 			appSettings);
 
+		await cloudSync.SyncAsync(args);
 
 		// Help and other Command Line Tools args are included in the ImporterCli 
 		var service = new ImportCli(import, appSettings, console, webLogger, exifToolDownload,

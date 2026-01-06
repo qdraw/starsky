@@ -20,5 +20,6 @@ public class CloudSyncResult
 public enum CloudSyncTriggerType
 {
 	Scheduled,
-	Manual
+	Manual,
+	CommandLineInterface
 }

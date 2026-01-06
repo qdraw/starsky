@@ -6,6 +6,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.import.Interfaces;
 using starsky.foundation.import.Models;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
@@ -75,6 +76,24 @@ public class CloudSyncService(
 		}
 
 		return results;
+	}
+
+	public async Task<CloudSyncResult> SyncAsync(string[] args)
+	{
+		var cloudSyncProvider = ArgsHelper.GetCloudSyncProvider(args);
+		if ( string.IsNullOrEmpty(cloudSyncProvider) )
+		{
+			return new CloudSyncResult
+			{
+				ProviderId = string.Empty,
+				StartTime = DateTime.UtcNow,
+				EndTime = DateTime.UtcNow,
+				TriggerType = CloudSyncTriggerType.CommandLineInterface,
+				Errors = ["No cloud sync provider specified in arguments"]
+			};
+		}
+		
+		return await SyncAsync(cloudSyncProvider, CloudSyncTriggerType.CommandLineInterface);
 	}
 
 	public async Task<CloudSyncResult> SyncAsync(string providerId,
