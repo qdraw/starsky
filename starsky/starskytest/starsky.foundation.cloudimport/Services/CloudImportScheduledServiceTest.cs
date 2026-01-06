@@ -33,8 +33,7 @@ public class CloudImportScheduledServiceTest
 		cts.CancelAfter(TimeSpan.FromSeconds(1));
 
 		// Act
-		await service.StartAsync(cts.Token);
-		await Task.Delay(500); // Give it some time
+		await service.RunAsync(cts.Token);
 		await service.StopAsync(cts.Token);
 
 		// Assert
