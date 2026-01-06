@@ -1,8 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.cloudsync;
-using starsky.foundation.cloudsync.Interfaces;
 using starsky.foundation.cloudsync.Services;
-using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using System;
 using System.Collections.Generic;
@@ -40,7 +37,7 @@ public class CloudSyncScheduledServiceTest
 		await service.StopAsync(cts.Token);
 
 		// Assert
-		Assert.AreEqual(0, cloudSyncService.SyncCalls.Count);
+		Assert.IsEmpty(cloudSyncService.SyncCalls);
 		Assert.IsTrue(
 			logger.TrackedInformation.Any(m =>
 				m.Item2!.Contains("disabled") || m.Item2!.Contains("not run")));

@@ -1,13 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.import.Interfaces;
 using starsky.foundation.import.Models;
 using starsky.foundation.cloudsync;
-using starsky.foundation.cloudsync.Interfaces;
 using starsky.foundation.cloudsync.Services;
 using starsky.foundation.database.Models;
-using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using System;
 using System.Collections.Generic;
@@ -21,7 +18,7 @@ namespace starskytest.starsky.foundation.cloudsync.Services;
 [TestClass]
 public class CloudSyncServiceTest
 {
-	private class FakeCloudSyncClient : ICloudSyncClient
+	private sealed class FakeCloudSyncClient : ICloudSyncClient
 	{
 		public string Name => "FakeProvider";
 		public bool Enabled { get; set; } = true;
@@ -57,7 +54,7 @@ public class CloudSyncServiceTest
 		}
 	}
 
-	private class FakeImport : IImport
+	private sealed class FakeImport : IImport
 	{
 		public Func<List<string>, ImportStatus>? ImportStatusFunc { get; set; }
 
@@ -208,7 +205,7 @@ public class CloudSyncServiceTest
 		Assert.AreEqual(2, result.FilesFound);
 		Assert.AreEqual(2, result.FilesImportedSuccessfully);
 		Assert.AreEqual(0, result.FilesFailed);
-		Assert.AreEqual(0, fakeClient.DeletedFiles.Count); // DeleteAfterImport is false
+		Assert.IsEmpty(fakeClient.DeletedFiles); // DeleteAfterImport is false
 	}
 
 	[TestMethod]
@@ -261,7 +258,7 @@ public class CloudSyncServiceTest
 		// Assert
 		Assert.IsTrue(result.Success);
 		Assert.AreEqual(1, result.FilesImportedSuccessfully);
-		Assert.AreEqual(1, fakeClient.DeletedFiles.Count);
+		Assert.HasCount(1, fakeClient.DeletedFiles);
 		Assert.AreEqual("photo1.jpg", fakeClient.DeletedFiles[0].Name);
 	}
 
@@ -316,7 +313,7 @@ public class CloudSyncServiceTest
 		// Assert
 		Assert.IsFalse(result.Success);
 		Assert.AreEqual(1, result.FilesFailed);
-		Assert.AreEqual(0, fakeClient.DeletedFiles.Count); // Should not delete failed import
+		Assert.IsEmpty(fakeClient.DeletedFiles); // Should not delete failed import
 	}
 
 	[TestMethod]
