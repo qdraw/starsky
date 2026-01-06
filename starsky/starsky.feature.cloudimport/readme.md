@@ -215,7 +215,7 @@ dotnet test starskytest/starskytest.csproj --filter FullyQualifiedName~cloudsync
 ## Security
 
 - Credentials are stored in configuration and should be protected
-- Use environment variables for production: `app__CloudSync__Credentials__AccessToken`
+- Use environment variables for production: `app__CloudImport__Credentials__AccessToken`
 - Access tokens should be kept secure and rotated regularly
 - API endpoints require authentication via `[Authorize]` attribute
 
