@@ -2,54 +2,41 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.cloudsync;
 using starsky.foundation.cloudsync.Controllers;
-using starsky.foundation.cloudsync.Interfaces;
 using starsky.foundation.platform.Models;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.cloudsync.Controllers;
 
 [TestClass]
 public class CloudSyncControllerTest
 {
-	private class FakeCloudSyncService : ICloudSyncService
-	{
-		public bool IsSyncInProgress { get; set; }
-		public CloudSyncResult? LastSyncResult { get; set; }
-		public Func<CloudSyncTriggerType, Task<CloudSyncResult>>? SyncAsyncFunc { get; set; }
-
-		public Task<CloudSyncResult> SyncAsync(CloudSyncTriggerType triggerType)
-		{
-			if (SyncAsyncFunc != null)
-			{
-				return SyncAsyncFunc(triggerType);
-			}
-
-			return Task.FromResult(new CloudSyncResult
-			{
-				StartTime = DateTime.UtcNow,
-				EndTime = DateTime.UtcNow,
-				TriggerType = triggerType,
-				FilesFound = 5,
-				FilesImportedSuccessfully = 5
-			});
-		}
-	}
-
 	[TestMethod]
 	public void GetStatus_ShouldReturnCurrentStatus()
 	{
 		// Arrange
-		var settings = new CloudSyncSettings
+		var appSettings = new AppSettings
 		{
-			Enabled = true,
-			Provider = "Dropbox",
-			RemoteFolder = "/photos",
-			SyncFrequencyMinutes = 30,
-			DeleteAfterImport = true
+			CloudSync = new CloudSyncSettings
+			{
+				Providers = new List<CloudSyncProviderSettings>
+				{
+					new CloudSyncProviderSettings
+					{
+						Id = "test",
+						Enabled = true,
+						Provider = "Dropbox",
+						RemoteFolder = "/photos",
+						SyncFrequencyMinutes = 30,
+						DeleteAfterImport = true
+					}
+				}
+			}
 		};
 		var service = new FakeCloudSyncService();
-		var controller = new CloudSyncController(service, settings);
+		var controller = new CloudSyncController(service, appSettings);
 
 		// Act
 		var result = controller.GetStatus() as OkObjectResult;
@@ -63,12 +50,21 @@ public class CloudSyncControllerTest
 	public async Task TriggerSync_WhenDisabled_ShouldReturnBadRequest()
 	{
 		// Arrange
-		var settings = new CloudSyncSettings { Enabled = false };
+		var appSettings = new AppSettings
+		{
+			CloudSync = new CloudSyncSettings
+			{
+				Providers = new List<CloudSyncProviderSettings>
+				{
+					new CloudSyncProviderSettings { Id = "test", Enabled = false }
+				}
+			}
+		};
 		var service = new FakeCloudSyncService();
-		var controller = new CloudSyncController(service, settings);
+		var controller = new CloudSyncController(service, appSettings);
 
 		// Act
-		var result = await controller.TriggerSync() as BadRequestObjectResult;
+		var result = await controller.TriggerSync("test") as BadRequestObjectResult;
 
 		// Assert
 		Assert.IsNotNull(result);
@@ -79,12 +75,24 @@ public class CloudSyncControllerTest
 	public async Task TriggerSync_WhenAlreadyInProgress_ShouldReturnConflict()
 	{
 		// Arrange
-		var settings = new CloudSyncSettings { Enabled = true };
+		var appSettings = new AppSettings
+		{
+			CloudSync = new CloudSyncSettings
+			{
+				Providers =
+				[
+					new CloudSyncProviderSettings
+					{
+						Id = "test", Enabled = true
+					}
+				]
+			}
+		};
 		var service = new FakeCloudSyncService { IsSyncInProgress = true };
-		var controller = new CloudSyncController(service, settings);
+		var controller = new CloudSyncController(service, appSettings);
 
 		// Act
-		var result = await controller.TriggerSync() as ConflictObjectResult;
+		var result = await controller.TriggerSync("test") as ConflictObjectResult;
 
 		// Assert
 		Assert.IsNotNull(result);
@@ -95,12 +103,21 @@ public class CloudSyncControllerTest
 	public async Task TriggerSync_WhenEnabled_ShouldStartSyncAndReturnResult()
 	{
 		// Arrange
-		var settings = new CloudSyncSettings { Enabled = true };
+		var appSettings = new AppSettings
+		{
+			CloudSync = new CloudSyncSettings
+			{
+				Providers = new List<CloudSyncProviderSettings>
+				{
+					new CloudSyncProviderSettings { Id = "test", Enabled = true }
+				}
+			}
+		};
 		var service = new FakeCloudSyncService();
-		var controller = new CloudSyncController(service, settings);
+		var controller = new CloudSyncController(service, appSettings);
 
 		// Act
-		var result = await controller.TriggerSync() as OkObjectResult;
+		var result = await controller.TriggerSync("test") as OkObjectResult;
 
 		// Assert
 		Assert.IsNotNull(result);
@@ -114,12 +131,21 @@ public class CloudSyncControllerTest
 	public void GetLastResult_WhenNoSyncPerformed_ShouldReturnNotFound()
 	{
 		// Arrange
-		var settings = new CloudSyncSettings { Enabled = true };
+		var appSettings = new AppSettings
+		{
+			CloudSync = new CloudSyncSettings
+			{
+				Providers = new List<CloudSyncProviderSettings>
+				{
+					new CloudSyncProviderSettings { Id = "test", Enabled = true }
+				}
+			}
+		};
 		var service = new FakeCloudSyncService { LastSyncResult = null };
-		var controller = new CloudSyncController(service, settings);
+		var controller = new CloudSyncController(service, appSettings);
 
 		// Act
-		var result = controller.GetLastResult() as NotFoundObjectResult;
+		var result = controller.GetLastResult("test") as NotFoundObjectResult;
 
 		// Assert
 		Assert.IsNotNull(result);
@@ -130,7 +156,16 @@ public class CloudSyncControllerTest
 	public void GetLastResult_WhenSyncPerformed_ShouldReturnResult()
 	{
 		// Arrange
-		var settings = new CloudSyncSettings { Enabled = true };
+		var appSettings = new AppSettings
+		{
+			CloudSync = new CloudSyncSettings
+			{
+				Providers = new List<CloudSyncProviderSettings>
+				{
+					new CloudSyncProviderSettings { Id = "test", Enabled = true }
+				}
+			}
+		};
 		var lastResult = new CloudSyncResult
 		{
 			StartTime = DateTime.UtcNow.AddMinutes(-5),
@@ -141,10 +176,11 @@ public class CloudSyncControllerTest
 			FilesFailed = 2
 		};
 		var service = new FakeCloudSyncService { LastSyncResult = lastResult };
-		var controller = new CloudSyncController(service, settings);
+		service.LastSyncResults["test"] = lastResult;
+		var controller = new CloudSyncController(service, appSettings);
 
 		// Act
-		var result = controller.GetLastResult() as OkObjectResult;
+		var result = controller.GetLastResult("test") as OkObjectResult;
 
 		// Assert
 		Assert.IsNotNull(result);
@@ -156,4 +192,3 @@ public class CloudSyncControllerTest
 		Assert.AreEqual(2, syncResult.FilesFailed);
 	}
 }
-

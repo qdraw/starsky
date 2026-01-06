@@ -112,150 +112,154 @@ public class CloudSyncService(
 		// Get or create a lock for this provider
 		var providerLock = _providerLocks.GetOrAdd(providerId, _ => new SemaphoreSlim(1, 1));
 
-		// Prevent overlapping sync executions for this provider
-		if ( !await providerLock.WaitAsync(0) )
-		{
-			logger.LogError(
-				$"Cloud sync already in progress for provider '{providerId}', skipping this execution");
-			return new CloudSyncResult
-			{
-				ProviderId = providerId,
-				ProviderName = providerSettings.Provider,
-				StartTime = DateTime.UtcNow,
-				EndTime = DateTime.UtcNow,
-				TriggerType = triggerType,
-				Errors = ["Sync already in progress for this provider"]
-			};
-		}
-
+		var lockAcquired = false;
 		try
 		{
-			IsSyncInProgress = true;
-			var result = new CloudSyncResult
+			// Prevent overlapping sync executions for this provider
+			if ( !await providerLock.WaitAsync(0) )
 			{
-				ProviderId = providerId,
-				ProviderName = providerSettings.Provider,
-				StartTime = DateTime.UtcNow,
-				TriggerType = triggerType
-			};
-
-			logger.LogInformation(
-				$"Starting cloud sync (Provider ID: {providerId}, Trigger: {triggerType}, Provider: {providerSettings.Provider}, Folder: {providerSettings.RemoteFolder})");
-
-			// Get the cloud sync client
-			using var scope = serviceScopeFactory.CreateScope();
-			var cloudClient = GetCloudClient(scope, providerSettings.Provider);
-
-			if ( cloudClient is not { Enabled: true } )
-			{
-				var error =
-					$"Cloud provider '{providerSettings.Provider}' is not available or not enabled";
-				logger.LogError(error);
-				result.Errors.Add(error);
-				result.EndTime = DateTime.UtcNow;
-				UpdateLastSyncResult(providerId, result);
-				return result;
-			}
-
-			// Initialize client with provider-specific credentials
-			if ( cloudClient is DropboxCloudSyncClient dropboxClient )
-			{
-				// if ( string.IsNullOrWhiteSpace(providerSettings.Credentials.AccessToken) )
-				// {
-				// 	const string error = "Dropbox access token is not configured for this provider";
-				// 	logger.LogError(error);
-				// 	result.Errors.Add(error);
-				// 	result.EndTime = DateTime.UtcNow;
-				// 	UpdateLastSyncResult(providerId, result);
-				// 	return result;
-				// }
-
-				var credentials = providerSettings.Credentials;
-				await dropboxClient.InitializeClient(credentials.RefreshToken, credentials.AppKey,
-					credentials.AppSecret);
-			}
-
-			// Test connection
-			if ( !await cloudClient.TestConnectionAsync() )
-			{
-				const string error = "Failed to connect to cloud storage provider";
-				logger.LogError(error);
-				result.Errors.Add(error);
-				result.EndTime = DateTime.UtcNow;
-				UpdateLastSyncResult(providerId, result);
-				return result;
-			}
-
-			// List files
-			IEnumerable<CloudFile> cloudFiles;
-			try
-			{
-				cloudFiles = await cloudClient.ListFilesAsync(providerSettings.RemoteFolder);
-				result.FilesFound = cloudFiles.Count();
-				logger.LogInformation(
-					$"Found {result.FilesFound} files in cloud storage for provider '{providerId}'");
-			}
-			catch ( Exception ex )
-			{
-				var error = $"Failed to list files from cloud storage: {ex.Message}";
-				logger.LogError(ex, error);
-				result.Errors.Add(error);
-				result.EndTime = DateTime.UtcNow;
-				UpdateLastSyncResult(providerId, result);
-				return result;
-			}
-
-			// Process each file
-			var import = scope.ServiceProvider.GetRequiredService<IImport>();
-			var tempFolder = Path.Combine(Path.GetTempPath(), "starsky-cloudsync", providerId,
-				Guid.NewGuid().ToString());
-			Directory.CreateDirectory(tempFolder);
-
-			try
-			{
-				foreach ( var file in cloudFiles )
+				logger.LogError(
+					$"Cloud sync already in progress for provider '{providerId}', skipping this execution");
+				return new CloudSyncResult
 				{
-					try
-					{
-						await ProcessFileAsync(cloudClient, import, file, tempFolder, result,
-							providerSettings);
-					}
-					catch ( Exception ex )
-					{
-						logger.LogError(ex, $"Error processing file {file.Name}: {ex.Message}");
-						result.FilesFailed++;
-						result.FailedFiles.Add(file.Name);
-						result.Errors.Add($"{file.Name}: {ex.Message}");
-					}
-				}
+					ProviderId = providerId,
+					ProviderName = providerSettings.Provider,
+					StartTime = DateTime.UtcNow,
+					EndTime = DateTime.UtcNow,
+					TriggerType = triggerType,
+					Errors = ["Sync already in progress for this provider"]
+				};
 			}
-			finally
+
+			lockAcquired = true;
+
+			try
 			{
+				IsSyncInProgress = true;
+				var result = new CloudSyncResult
+				{
+					ProviderId = providerId,
+					ProviderName = providerSettings.Provider,
+					StartTime = DateTime.UtcNow,
+					TriggerType = triggerType
+				};
+
+				logger.LogInformation(
+					$"Starting cloud sync (Provider ID: {providerId}, Trigger: {triggerType}, Provider: {providerSettings.Provider}, Folder: {providerSettings.RemoteFolder})");
+
+				// Get the cloud sync client
+				using var scope = serviceScopeFactory.CreateScope();
+				var cloudClient = GetCloudClient(scope, providerSettings.Provider);
+
+				if ( cloudClient is not { Enabled: true } )
+				{
+					var error =
+						$"Cloud provider '{providerSettings.Provider}' is not available or not enabled";
+					logger.LogError(error);
+					result.Errors.Add(error);
+					result.EndTime = DateTime.UtcNow;
+					UpdateLastSyncResult(providerId, result);
+					return result;
+				}
+
+				if ( cloudClient is DropboxCloudSyncClient dropboxClient )
+				{
+					var credentials = providerSettings.Credentials;
+					await dropboxClient.InitializeClient(credentials.RefreshToken,
+						credentials.AppKey,
+						credentials.AppSecret);
+				}
+
+				if ( !await cloudClient.TestConnectionAsync() )
+				{
+					const string error = "Failed to connect to cloud storage provider";
+					logger.LogError(error);
+					result.Errors.Add(error);
+					result.EndTime = DateTime.UtcNow;
+					UpdateLastSyncResult(providerId, result);
+					return result;
+				}
+
+				// List files
+				IEnumerable<CloudFile> cloudFiles;
 				try
 				{
-					if ( Directory.Exists(tempFolder) )
-					{
-						Directory.Delete(tempFolder, true);
-					}
+					cloudFiles = await cloudClient.ListFilesAsync(providerSettings.RemoteFolder);
+					result.FilesFound = cloudFiles.Count();
+					logger.LogInformation(
+						$"Found {result.FilesFound} files in cloud storage for provider '{providerId}'");
 				}
 				catch ( Exception ex )
 				{
-					logger.LogError(ex, $"Failed to cleanup temp folder: {ex.Message}");
+					var error = $"Failed to list files from cloud storage: {ex.Message}";
+					logger.LogError(ex, error);
+					result.Errors.Add(error);
+					result.EndTime = DateTime.UtcNow;
+					UpdateLastSyncResult(providerId, result);
+					return result;
 				}
+
+				// Process each file
+				var import = scope.ServiceProvider.GetRequiredService<IImport>();
+				var tempFolder = Path.Combine(Path.GetTempPath(), "starsky-cloudsync", providerId,
+					Guid.NewGuid().ToString());
+				Directory.CreateDirectory(tempFolder);
+
+				try
+				{
+					foreach ( var file in cloudFiles )
+					{
+						try
+						{
+							await ProcessFileAsync(cloudClient, import, file, tempFolder, result,
+								providerSettings);
+						}
+						catch ( Exception ex )
+						{
+							logger.LogError(ex, $"Error processing file {file.Name}: {ex.Message}");
+							result.FilesFailed++;
+							result.FailedFiles.Add(file.Name);
+							result.Errors.Add($"{file.Name}: {ex.Message}");
+						}
+					}
+				}
+				finally
+				{
+					try
+					{
+						if ( Directory.Exists(tempFolder) )
+						{
+							Directory.Delete(tempFolder, true);
+						}
+					}
+					catch ( Exception ex )
+					{
+						logger.LogError(ex, $"Failed to cleanup temp folder: {ex.Message}");
+					}
+				}
+
+				result.EndTime = DateTime.UtcNow;
+				UpdateLastSyncResult(providerId, result);
+
+				logger.LogInformation(
+					$"Cloud sync completed for provider '{providerId}': {result.FilesImportedSuccessfully} imported, {result.FilesSkipped} skipped, {result.FilesFailed} failed");
+
+				return result;
+			}
+			finally
+			{
+				IsSyncInProgress = _providerLocks.Values.Any(l => l.CurrentCount == 0);
+				providerLock.Release();
+			}
+		}
+		catch
+		{
+			if ( lockAcquired )
+			{
+				providerLock.Release();
 			}
 
-			result.EndTime = DateTime.UtcNow;
-			UpdateLastSyncResult(providerId, result);
-
-			logger.LogInformation(
-				$"Cloud sync completed for provider '{providerId}': {result.FilesImportedSuccessfully} imported, {result.FilesSkipped} skipped, {result.FilesFailed} failed");
-
-			return result;
-		}
-		finally
-		{
-			IsSyncInProgress = _providerLocks.Values.Any(l => l.CurrentCount == 0);
-			providerLock.Release();
+			throw;
 		}
 	}
 
@@ -277,15 +281,12 @@ public class CloudSyncService(
 	{
 		// Check if already processed (idempotency)
 		var fileKey = $"{file.Path}_{file.Hash}_{file.Size}";
-		if ( _processedFiles.TryGetValue(fileKey, out var processedDate) )
+		if ( _processedFiles.TryGetValue(fileKey, out var processedDate) &&
+		     DateTime.UtcNow - processedDate < TimeSpan.FromHours(24) )
 		{
-			// Skip if processed within last 24 hours
-			if ( DateTime.UtcNow - processedDate < TimeSpan.FromHours(24) )
-			{
-				logger.LogInformation($"Skipping already processed file: {file.Name}");
-				result.FilesSkipped++;
-				return;
-			}
+			logger.LogInformation($"Skipping already processed file: {file.Name}");
+			result.FilesSkipped++;
+			return;
 		}
 
 		logger.LogInformation($"Processing file: {file.Name} (Size: {file.Size} bytes)");
@@ -321,7 +322,7 @@ public class CloudSyncService(
 			var importResult = await import.Importer(new[] { localPath }, importSettings);
 
 			// Check if import was successful
-			if ( importResult.Any() && importResult.All(i => i.Status == ImportStatus.Ok) )
+			if ( importResult.Count != 0 && importResult.All(i => i.Status == ImportStatus.Ok) )
 			{
 				importSuccess = true;
 				result.FilesImportedSuccessfully++;
@@ -370,7 +371,7 @@ public class CloudSyncService(
 		}
 	}
 
-	private ICloudSyncClient? GetCloudClient(IServiceScope scope, string providerName)
+	private static ICloudSyncClient? GetCloudClient(IServiceScope scope, string providerName)
 	{
 		var clients = scope.ServiceProvider.GetServices<ICloudSyncClient>();
 		return clients.FirstOrDefault(c =>

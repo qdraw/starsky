@@ -9,83 +9,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.cloudsync.Services;
 
 [TestClass]
 public class CloudSyncScheduledServiceTest
 {
-	private class FakeCloudSyncService : ICloudSyncService
-	{
-		public bool IsSyncInProgress { get; set; }
-		public CloudSyncResult? LastSyncResult { get; set; }
-		public List<CloudSyncTriggerType> SyncCalls { get; } = new();
-
-		public Task<CloudSyncResult> SyncAsync(CloudSyncTriggerType triggerType)
-		{
-			SyncCalls.Add(triggerType);
-			return Task.FromResult(new CloudSyncResult
-			{
-				StartTime = DateTime.UtcNow,
-				EndTime = DateTime.UtcNow,
-				TriggerType = triggerType
-			});
-		}
-	}
-
-	private class FakeLogger : IWebLogger
-	{
-		public List<string> LoggedMessages { get; } = new();
-
-		public void LogInformation(string message)
-		{
-			LoggedMessages.Add($"INFO: {message}");
-		}
-
-		public void LogError(string message)
-		{
-			LoggedMessages.Add($"ERROR: {message}");
-		}
-
-		public void LogError(Exception exception, string message)
-		{
-			LoggedMessages.Add($"ERROR: {message} - {exception.Message}");
-		}
-
-		public void LogWarning(string message)
-		{
-			LoggedMessages.Add($"WARNING: {message}");
-		}
-
-		public void LogDebug(string message)
-		{
-			LoggedMessages.Add($"DEBUG: {message}");
-		}
-
-		public void LogTrace(string message)
-		{
-			LoggedMessages.Add($"TRACE: {message}");
-		}
-
-		public void LogCritical(string message)
-		{
-			LoggedMessages.Add($"CRITICAL: {message}");
-		}
-
-		public void LogCritical(Exception exception, string message)
-		{
-			LoggedMessages.Add($"CRITICAL: {message} - {exception.Message}");
-		}
-	}
-
 	[TestMethod]
 	public async Task ExecuteAsync_WhenDisabled_ShouldNotRunSync()
 	{
 		// Arrange
-		var settings = new CloudSyncSettings { Enabled = false };
+		var appSettings = new AppSettings
+		{
+			CloudSync = new CloudSyncSettings
+			{
+				Providers = [new CloudSyncProviderSettings { Id = "test", Enabled = false }]
+			}
+		};
 		var cloudSyncService = new FakeCloudSyncService();
-		var logger = new FakeLogger();
-		var service = new CloudSyncScheduledService(cloudSyncService, logger, settings);
+		var logger = new FakeIWebLogger();
+		var service = new CloudSyncScheduledService(cloudSyncService, logger, appSettings);
 
 		using var cts = new CancellationTokenSource();
 		cts.CancelAfter(TimeSpan.FromSeconds(1));
@@ -97,55 +41,74 @@ public class CloudSyncScheduledServiceTest
 
 		// Assert
 		Assert.AreEqual(0, cloudSyncService.SyncCalls.Count);
-		Assert.IsTrue(logger.LoggedMessages.Any(m => m.Contains("disabled")));
+		Assert.IsTrue(
+			logger.TrackedInformation.Any(m =>
+				m.Item2!.Contains("disabled") || m.Item2!.Contains("not run")));
 	}
 
 	[TestMethod]
 	public async Task ExecuteAsync_WhenEnabled_ShouldScheduleSync()
 	{
 		// Arrange
-		var settings = new CloudSyncSettings
+		var appSettings = new AppSettings
 		{
-			Enabled = true,
-			SyncFrequencyMinutes = 0,
-			SyncFrequencyHours = 1 // Will be very short for test
+			CloudSync = new CloudSyncSettings
+			{
+				Providers = new List<CloudSyncProviderSettings>
+				{
+					new CloudSyncProviderSettings
+					{
+						Id = "test",
+						Enabled = true,
+						SyncFrequencyMinutes = 0,
+						SyncFrequencyHours = 1
+					}
+				}
+			}
 		};
 		var cloudSyncService = new FakeCloudSyncService();
-		var logger = new FakeLogger();
-		
-		// We can't actually test the full scheduled execution without waiting hours
-		// So we'll just verify the service starts correctly
-		var service = new CloudSyncScheduledService(cloudSyncService, logger, settings);
+		var logger = new FakeIWebLogger();
+		var service = new CloudSyncScheduledService(cloudSyncService, logger, appSettings);
 
 		using var cts = new CancellationTokenSource();
 		cts.CancelAfter(TimeSpan.FromSeconds(1));
 
 		// Act
-		await service.StartAsync(cts.Token);
-		await Task.Delay(100);
+		await service.RunAsync(cts.Token);
 		await service.StopAsync(cts.Token);
 
 		// Assert - Service should log that it's starting
-		Assert.IsTrue(logger.LoggedMessages.Any(m => m.Contains("started")));
+		Assert.IsTrue(logger.TrackedInformation.Any(m => m.Item2!.Contains("started")));
 	}
 
 	[TestMethod]
 	public async Task StopAsync_ShouldLogStopping()
 	{
 		// Arrange
-		var settings = new CloudSyncSettings { Enabled = true, SyncFrequencyMinutes = 60 };
+		var appSettings = new AppSettings
+		{
+			CloudSync = new CloudSyncSettings
+			{
+				Providers =
+				[
+					new CloudSyncProviderSettings
+					{
+						Id = "test", Enabled = true, SyncFrequencyMinutes = 60
+					}
+				]
+			}
+		};
 		var cloudSyncService = new FakeCloudSyncService();
-		var logger = new FakeLogger();
-		var service = new CloudSyncScheduledService(cloudSyncService, logger, settings);
+		var logger = new FakeIWebLogger();
+		var service = new CloudSyncScheduledService(cloudSyncService, logger, appSettings);
 
 		using var cts = new CancellationTokenSource();
 
 		// Act
-		await service.StartAsync(cts.Token);
+		await service.RunAsync(cts.Token);
 		await service.StopAsync(cts.Token);
 
 		// Assert
-		Assert.IsTrue(logger.LoggedMessages.Any(m => m.Contains("stopping")));
+		Assert.IsTrue(logger.TrackedInformation.Any(m => m.Item2!.Contains("stopping")));
 	}
 }
-
