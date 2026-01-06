@@ -17,6 +17,11 @@ public class CloudSyncScheduledService(
 
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
+		await RunAsync(stoppingToken);
+	}
+
+	public async Task<bool?> RunAsync(CancellationToken stoppingToken)
+	{
 		logger.LogInformation("Cloud Sync Scheduled Service started");
 
 		var enabledProviders =
@@ -26,7 +31,7 @@ public class CloudSyncScheduledService(
 		{
 			logger.LogInformation(
 				"No enabled cloud sync providers found, scheduled service will not run");
-			return;
+			return false;
 		}
 
 		logger.LogInformation($"Starting scheduled sync for {enabledProviders.Count} provider(s)");
@@ -42,6 +47,7 @@ public class CloudSyncScheduledService(
 		await Task.WhenAll(_providerTasks.Values);
 
 		logger.LogInformation("Cloud Sync Scheduled Service stopped");
+		return true;
 	}
 
 	private async Task RunProviderSyncAsync(CloudSyncProviderSettings provider,

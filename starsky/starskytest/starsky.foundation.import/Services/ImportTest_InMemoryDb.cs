@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.feature.import.Models;
-using starsky.feature.import.Services;
+using starsky.foundation.import.Models;
+using starsky.foundation.import.Services;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Import;
 using starsky.foundation.database.Interfaces;
@@ -20,7 +20,7 @@ using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 using VerifyMSTest;
 
-namespace starskytest.starsky.feature.import.Services;
+namespace starskytest.starsky.foundation.import.Services;
 
 /// <summary>
 ///     Also known as ImportServiceTest (Also check the FakeDb version)

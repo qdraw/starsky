@@ -1,25 +1,24 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.feature.import.Interfaces;
-using starsky.feature.import.Models;
+using starsky.foundation.import.Interfaces;
+using starsky.foundation.import.Models;
 using starsky.foundation.cloudsync;
-using starsky.foundation.cloudsync.Interfaces;
 using starsky.foundation.cloudsync.Services;
 using starsky.foundation.database.Models;
-using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.cloudsync.Services;
 
 [TestClass]
 public class CloudSyncServiceTest
 {
-	private class FakeCloudSyncClient : ICloudSyncClient
+	private sealed class FakeCloudSyncClient : ICloudSyncClient
 	{
 		public string Name => "FakeProvider";
 		public bool Enabled { get; set; } = true;
@@ -28,9 +27,9 @@ public class CloudSyncServiceTest
 		public List<CloudFile> DeletedFiles { get; set; } = new();
 		public Dictionary<string, string> DownloadedFiles { get; set; } = new();
 
-		public Task<IEnumerable<CloudFile>> ListFilesAsync(string remoteFolder)
+		public Task<List<CloudFile>> ListFilesAsync(string remoteFolder)
 		{
-			return Task.FromResult<IEnumerable<CloudFile>>(FilesToReturn);
+			return Task.FromResult(FilesToReturn);
 		}
 
 		public Task<string> DownloadFileAsync(CloudFile file, string localFolder)
@@ -55,7 +54,7 @@ public class CloudSyncServiceTest
 		}
 	}
 
-	private class FakeImport : IImport
+	private sealed class FakeImport : IImport
 	{
 		public Func<List<string>, ImportStatus>? ImportStatusFunc { get; set; }
 
@@ -71,54 +70,8 @@ public class CloudSyncServiceTest
 			var status = ImportStatusFunc?.Invoke(inputFullPathList.ToList()) ?? ImportStatus.Ok;
 			return Task.FromResult(inputFullPathList.Select(path => new ImportIndexItem
 			{
-				Status = status,
-				FilePath = path
+				Status = status, FilePath = path
 			}).ToList());
-		}
-	}
-
-	private class FakeLogger : IWebLogger
-	{
-		public List<string> LoggedMessages { get; } = new();
-
-		public void LogInformation(string message)
-		{
-			LoggedMessages.Add($"INFO: {message}");
-		}
-
-		public void LogError(string message)
-		{
-			LoggedMessages.Add($"ERROR: {message}");
-		}
-
-		public void LogError(Exception exception, string message)
-		{
-			LoggedMessages.Add($"ERROR: {message} - {exception.Message}");
-		}
-
-		public void LogWarning(string message)
-		{
-			LoggedMessages.Add($"WARNING: {message}");
-		}
-
-		public void LogDebug(string message)
-		{
-			LoggedMessages.Add($"DEBUG: {message}");
-		}
-
-		public void LogTrace(string message)
-		{
-			LoggedMessages.Add($"TRACE: {message}");
-		}
-
-		public void LogCritical(string message)
-		{
-			LoggedMessages.Add($"CRITICAL: {message}");
-		}
-
-		public void LogCritical(Exception exception, string message)
-		{
-			LoggedMessages.Add($"CRITICAL: {message} - {exception.Message}");
 		}
 	}
 
@@ -126,8 +79,17 @@ public class CloudSyncServiceTest
 	public async Task SyncAsync_WhenDisabled_ShouldReturnErrorResult()
 	{
 		// Arrange
-		var settings = new CloudSyncSettings { Enabled = false };
-		var logger = new FakeLogger();
+		var appSettings = new AppSettings
+		{
+			CloudSync = new CloudSyncSettings
+			{
+				Providers = new List<CloudSyncProviderSettings>
+				{
+					new CloudSyncProviderSettings { Id = "test", Enabled = false }
+				}
+			}
+		};
+		var logger = new FakeIWebLogger();
 		var serviceCollection = new ServiceCollection();
 		var fakeClient = new FakeCloudSyncClient();
 		serviceCollection.AddScoped<ICloudSyncClient>(_ => fakeClient);
@@ -135,10 +97,10 @@ public class CloudSyncServiceTest
 		var serviceProvider = serviceCollection.BuildServiceProvider();
 		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
-		var service = new CloudSyncService(scopeFactory, logger, settings);
+		var service = new CloudSyncService(scopeFactory, logger, appSettings);
 
 		// Act
-		var result = await service.SyncAsync(CloudSyncTriggerType.Manual);
+		var result = await service.SyncAsync("test", CloudSyncTriggerType.Manual);
 
 		// Assert
 		Assert.IsFalse(result.Success);
@@ -149,27 +111,34 @@ public class CloudSyncServiceTest
 	public async Task SyncAsync_WhenConnectionFails_ShouldReturnErrorResult()
 	{
 		// Arrange
-		var settings = new CloudSyncSettings
+		var appSettings = new AppSettings
 		{
-			Enabled = true,
-			Provider = "FakeProvider",
-			RemoteFolder = "/test"
+			CloudSync = new CloudSyncSettings
+			{
+				Providers = new List<CloudSyncProviderSettings>
+				{
+					new CloudSyncProviderSettings
+					{
+						Id = "test",
+						Enabled = true,
+						Provider = "FakeProvider",
+						RemoteFolder = "/test"
+					}
+				}
+			}
 		};
-		var logger = new FakeLogger();
+		var logger = new FakeIWebLogger();
 		var serviceCollection = new ServiceCollection();
-		var fakeClient = new FakeCloudSyncClient
-		{
-			ShouldTestConnectionSucceed = false
-		};
+		var fakeClient = new FakeCloudSyncClient { ShouldTestConnectionSucceed = false };
 		serviceCollection.AddScoped<ICloudSyncClient>(_ => fakeClient);
 		serviceCollection.AddScoped<IImport>(_ => new FakeImport());
 		var serviceProvider = serviceCollection.BuildServiceProvider();
 		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
-		var service = new CloudSyncService(scopeFactory, logger, settings);
+		var service = new CloudSyncService(scopeFactory, logger, appSettings);
 
 		// Act
-		var result = await service.SyncAsync(CloudSyncTriggerType.Scheduled);
+		var result = await service.SyncAsync("test", CloudSyncTriggerType.Scheduled);
 
 		// Assert
 		Assert.IsFalse(result.Success);
@@ -180,21 +149,45 @@ public class CloudSyncServiceTest
 	public async Task SyncAsync_WithValidFiles_ShouldImportSuccessfully()
 	{
 		// Arrange
-		var settings = new CloudSyncSettings
+		var appSettings = new AppSettings
 		{
-			Enabled = true,
-			Provider = "FakeProvider",
-			RemoteFolder = "/photos",
-			DeleteAfterImport = false
+			CloudSync = new CloudSyncSettings
+			{
+				Providers = new List<CloudSyncProviderSettings>
+				{
+					new CloudSyncProviderSettings
+					{
+						Id = "test",
+						Enabled = true,
+						Provider = "FakeProvider",
+						RemoteFolder = "/photos",
+						DeleteAfterImport = false
+					}
+				}
+			}
 		};
-		var logger = new FakeLogger();
+		var logger = new FakeIWebLogger();
 		var serviceCollection = new ServiceCollection();
 		var fakeClient = new FakeCloudSyncClient
 		{
 			FilesToReturn = new List<CloudFile>
 			{
-				new() { Id = "1", Name = "photo1.jpg", Path = "/photos/photo1.jpg", Size = 1024, Hash = "abc123" },
-				new() { Id = "2", Name = "photo2.jpg", Path = "/photos/photo2.jpg", Size = 2048, Hash = "def456" }
+				new()
+				{
+					Id = "1",
+					Name = "photo1.jpg",
+					Path = "/photos/photo1.jpg",
+					Size = 1024,
+					Hash = "abc123"
+				},
+				new()
+				{
+					Id = "2",
+					Name = "photo2.jpg",
+					Path = "/photos/photo2.jpg",
+					Size = 2048,
+					Hash = "def456"
+				}
 			}
 		};
 		serviceCollection.AddScoped<ICloudSyncClient>(_ => fakeClient);
@@ -202,37 +195,54 @@ public class CloudSyncServiceTest
 		var serviceProvider = serviceCollection.BuildServiceProvider();
 		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
-		var service = new CloudSyncService(scopeFactory, logger, settings);
+		var service = new CloudSyncService(scopeFactory, logger, appSettings);
 
 		// Act
-		var result = await service.SyncAsync(CloudSyncTriggerType.Manual);
+		var result = await service.SyncAsync("test", CloudSyncTriggerType.Manual);
 
 		// Assert
 		Assert.IsTrue(result.Success);
 		Assert.AreEqual(2, result.FilesFound);
 		Assert.AreEqual(2, result.FilesImportedSuccessfully);
 		Assert.AreEqual(0, result.FilesFailed);
-		Assert.AreEqual(0, fakeClient.DeletedFiles.Count); // DeleteAfterImport is false
+		Assert.IsEmpty(fakeClient.DeletedFiles); // DeleteAfterImport is false
 	}
 
 	[TestMethod]
 	public async Task SyncAsync_WithDeleteAfterImport_ShouldDeleteSuccessfulFiles()
 	{
 		// Arrange
-		var settings = new CloudSyncSettings
+		var appSettings = new AppSettings
 		{
-			Enabled = true,
-			Provider = "FakeProvider",
-			RemoteFolder = "/photos",
-			DeleteAfterImport = true
+			CloudSync = new CloudSyncSettings
+			{
+				Providers = new List<CloudSyncProviderSettings>
+				{
+					new CloudSyncProviderSettings
+					{
+						Id = "test",
+						Enabled = true,
+						Provider = "FakeProvider",
+						RemoteFolder = "/photos",
+						DeleteAfterImport = true
+					}
+				}
+			}
 		};
-		var logger = new FakeLogger();
+		var logger = new FakeIWebLogger();
 		var serviceCollection = new ServiceCollection();
 		var fakeClient = new FakeCloudSyncClient
 		{
 			FilesToReturn = new List<CloudFile>
 			{
-				new() { Id = "1", Name = "photo1.jpg", Path = "/photos/photo1.jpg", Size = 1024, Hash = "abc123" }
+				new()
+				{
+					Id = "1",
+					Name = "photo1.jpg",
+					Path = "/photos/photo1.jpg",
+					Size = 1024,
+					Hash = "abc123"
+				}
 			}
 		};
 		serviceCollection.AddScoped<ICloudSyncClient>(_ => fakeClient);
@@ -240,15 +250,15 @@ public class CloudSyncServiceTest
 		var serviceProvider = serviceCollection.BuildServiceProvider();
 		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
-		var service = new CloudSyncService(scopeFactory, logger, settings);
+		var service = new CloudSyncService(scopeFactory, logger, appSettings);
 
 		// Act
-		var result = await service.SyncAsync(CloudSyncTriggerType.Scheduled);
+		var result = await service.SyncAsync("test", CloudSyncTriggerType.Scheduled);
 
 		// Assert
 		Assert.IsTrue(result.Success);
 		Assert.AreEqual(1, result.FilesImportedSuccessfully);
-		Assert.AreEqual(1, fakeClient.DeletedFiles.Count);
+		Assert.HasCount(1, fakeClient.DeletedFiles);
 		Assert.AreEqual("photo1.jpg", fakeClient.DeletedFiles[0].Name);
 	}
 
@@ -256,58 +266,90 @@ public class CloudSyncServiceTest
 	public async Task SyncAsync_WhenImportFails_ShouldNotDeleteFile()
 	{
 		// Arrange
-		var settings = new CloudSyncSettings
+		var appSettings = new AppSettings
 		{
-			Enabled = true,
-			Provider = "FakeProvider",
-			RemoteFolder = "/photos",
-			DeleteAfterImport = true
+			CloudSync = new CloudSyncSettings
+			{
+				Providers = new List<CloudSyncProviderSettings>
+				{
+					new CloudSyncProviderSettings
+					{
+						Id = "test",
+						Enabled = true,
+						Provider = "FakeProvider",
+						RemoteFolder = "/photos",
+						DeleteAfterImport = true
+					}
+				}
+			}
 		};
-		var logger = new FakeLogger();
+		var logger = new FakeIWebLogger();
 		var serviceCollection = new ServiceCollection();
 		var fakeClient = new FakeCloudSyncClient
 		{
 			FilesToReturn = new List<CloudFile>
 			{
-				new() { Id = "1", Name = "corrupted.jpg", Path = "/photos/corrupted.jpg", Size = 1024, Hash = "abc123" }
+				new()
+				{
+					Id = "1",
+					Name = "corrupted.jpg",
+					Path = "/photos/corrupted.jpg",
+					Size = 1024,
+					Hash = "abc123"
+				}
 			}
 		};
 		serviceCollection.AddScoped<ICloudSyncClient>(_ => fakeClient);
-		serviceCollection.AddScoped<IImport>(_ => new FakeImport
-		{
-			ImportStatusFunc = _ => ImportStatus.FileError
-		});
+		serviceCollection.AddScoped<IImport>(_ =>
+			new FakeImport { ImportStatusFunc = _ => ImportStatus.FileError });
 		var serviceProvider = serviceCollection.BuildServiceProvider();
 		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
-		var service = new CloudSyncService(scopeFactory, logger, settings);
+		var service = new CloudSyncService(scopeFactory, logger, appSettings);
 
 		// Act
-		var result = await service.SyncAsync(CloudSyncTriggerType.Manual);
+		var result = await service.SyncAsync("test", CloudSyncTriggerType.Manual);
 
 		// Assert
 		Assert.IsFalse(result.Success);
 		Assert.AreEqual(1, result.FilesFailed);
-		Assert.AreEqual(0, fakeClient.DeletedFiles.Count); // Should not delete failed import
+		Assert.IsEmpty(fakeClient.DeletedFiles); // Should not delete failed import
 	}
 
 	[TestMethod]
 	public async Task SyncAsync_PreventsConcurrentExecution()
 	{
 		// Arrange
-		var settings = new CloudSyncSettings
+		var appSettings = new AppSettings
 		{
-			Enabled = true,
-			Provider = "FakeProvider",
-			RemoteFolder = "/photos"
+			CloudSync = new CloudSyncSettings
+			{
+				Providers = new List<CloudSyncProviderSettings>
+				{
+					new CloudSyncProviderSettings
+					{
+						Id = "test",
+						Enabled = true,
+						Provider = "FakeProvider",
+						RemoteFolder = "/photos"
+					}
+				}
+			}
 		};
-		var logger = new FakeLogger();
+		var logger = new FakeIWebLogger();
 		var serviceCollection = new ServiceCollection();
 		var fakeClient = new FakeCloudSyncClient
 		{
 			FilesToReturn = new List<CloudFile>
 			{
-				new() { Id = "1", Name = "photo1.jpg", Path = "/photos/photo1.jpg", Size = 1024, Hash = "abc123" }
+				new()
+				{
+					Id = "1",
+					Name = "photo1.jpg",
+					Path = "/photos/photo1.jpg",
+					Size = 1024,
+					Hash = "abc123"
+				}
 			}
 		};
 		serviceCollection.AddScoped<ICloudSyncClient>(_ => fakeClient);
@@ -315,14 +357,15 @@ public class CloudSyncServiceTest
 		var serviceProvider = serviceCollection.BuildServiceProvider();
 		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
-		var service = new CloudSyncService(scopeFactory, logger, settings);
+		var service = new CloudSyncService(scopeFactory, logger, appSettings);
 
 		// Act - Start first sync
-		var task1 = Task.Run(async () => await service.SyncAsync(CloudSyncTriggerType.Manual));
+		var task1 = Task.Run(async () =>
+			await service.SyncAsync("test", CloudSyncTriggerType.Manual));
 		await Task.Delay(50); // Give first task time to start
-		
+
 		// Act - Try to start second sync while first is running
-		var result2 = await service.SyncAsync(CloudSyncTriggerType.Manual);
+		var result2 = await service.SyncAsync("test", CloudSyncTriggerType.Manual);
 		await task1; // Wait for first task to complete
 
 		// Assert
@@ -334,53 +377,26 @@ public class CloudSyncServiceTest
 	public void IsSyncInProgress_WhenNotRunning_ShouldReturnFalse()
 	{
 		// Arrange
-		var settings = new CloudSyncSettings { Enabled = true };
-		var logger = new FakeLogger();
+		var appSettings = new AppSettings
+		{
+			CloudSync = new CloudSyncSettings
+			{
+				Providers = new List<CloudSyncProviderSettings>
+				{
+					new CloudSyncProviderSettings { Id = "test", Enabled = true }
+				}
+			}
+		};
+		var logger = new FakeIWebLogger();
 		var serviceCollection = new ServiceCollection();
 		serviceCollection.AddScoped<ICloudSyncClient>(_ => new FakeCloudSyncClient());
 		serviceCollection.AddScoped<IImport>(_ => new FakeImport());
 		var serviceProvider = serviceCollection.BuildServiceProvider();
 		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
-		var service = new CloudSyncService(scopeFactory, logger, settings);
+		var service = new CloudSyncService(scopeFactory, logger, appSettings);
 
 		// Assert
 		Assert.IsFalse(service.IsSyncInProgress);
 	}
-
-	[TestMethod]
-	public async Task LastSyncResult_ShouldBeSetAfterSync()
-	{
-		// Arrange
-		var settings = new CloudSyncSettings
-		{
-			Enabled = true,
-			Provider = "FakeProvider",
-			RemoteFolder = "/photos"
-		};
-		var logger = new FakeLogger();
-		var serviceCollection = new ServiceCollection();
-		var fakeClient = new FakeCloudSyncClient
-		{
-			FilesToReturn = new List<CloudFile>
-			{
-				new() { Id = "1", Name = "photo1.jpg", Path = "/photos/photo1.jpg", Size = 1024, Hash = "abc123" }
-			}
-		};
-		serviceCollection.AddScoped<ICloudSyncClient>(_ => fakeClient);
-		serviceCollection.AddScoped<IImport>(_ => new FakeImport());
-		var serviceProvider = serviceCollection.BuildServiceProvider();
-		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-
-		var service = new CloudSyncService(scopeFactory, logger, settings);
-
-		// Act
-		await service.SyncAsync(CloudSyncTriggerType.Scheduled);
-
-		// Assert
-		Assert.IsNotNull(service.LastSyncResult);
-		Assert.AreEqual(CloudSyncTriggerType.Scheduled, service.LastSyncResult.TriggerType);
-		Assert.AreEqual(1, service.LastSyncResult.FilesFound);
-	}
 }
-

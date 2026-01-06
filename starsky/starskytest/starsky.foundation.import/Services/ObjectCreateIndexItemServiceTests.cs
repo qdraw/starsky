@@ -1,13 +1,13 @@
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.feature.import.Models;
-using starsky.feature.import.Services;
+using starsky.foundation.import.Models;
+using starsky.foundation.import.Services;
 using starsky.foundation.database.Models;
 using starsky.foundation.geo.ReverseGeoCode.Model;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.feature.import.Services;
+namespace starskytest.starsky.foundation.import.Services;
 
 [TestClass]
 public class ObjectCreateIndexItemServiceTests
