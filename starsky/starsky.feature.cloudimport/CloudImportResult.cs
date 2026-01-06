@@ -1,4 +1,4 @@
-namespace starsky.foundation.cloudimport;
+namespace starsky.feature.cloudimport;
 
 public class CloudImportResult
 {

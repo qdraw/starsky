@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using starsky.foundation.cloudimport;
-using starsky.foundation.cloudimport.Interfaces;
+using starsky.feature.cloudimport;
+using starsky.feature.cloudimport.Interfaces;
 
 namespace starskytest.FakeMocks;
 

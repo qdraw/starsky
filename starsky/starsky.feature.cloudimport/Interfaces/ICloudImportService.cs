@@ -1,4 +1,4 @@
-namespace starsky.foundation.cloudimport.Interfaces;
+namespace starsky.feature.cloudimport.Interfaces;
 
 public interface ICloudImportService
 {

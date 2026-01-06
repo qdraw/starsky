@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using Microsoft.Extensions.DependencyInjection;
-using starsky.foundation.cloudimport.Clients;
-using starsky.foundation.cloudimport.Interfaces;
+using starsky.feature.cloudimport.Clients;
+using starsky.feature.cloudimport.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.import.Interfaces;
 using starsky.foundation.import.Models;
@@ -10,7 +10,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
-namespace starsky.foundation.cloudimport.Services;
+namespace starsky.feature.cloudimport.Services;
 
 [Service(typeof(ICloudImportService), InjectionLifetime = InjectionLifetime.Singleton)]
 public class CloudImportService(

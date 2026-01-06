@@ -1,9 +1,9 @@
 using System.Text.Json;
-using starsky.foundation.cloudimport.Clients.Interfaces;
+using starsky.feature.cloudimport.Clients.Interfaces;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
 
-namespace starsky.foundation.cloudimport.Clients;
+namespace starsky.feature.cloudimport.Clients;
 
 [Service(typeof(IDropboxCloudImportRefreshToken), InjectionLifetime = InjectionLifetime.Scoped)]
 public class DropboxCloudImportRefreshToken(IHttpClientHelper httpClientHelper)

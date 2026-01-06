@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using starsky.foundation.cloudimport.Interfaces;
+using starsky.feature.cloudimport.Interfaces;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.geo.GeoDownload.Interfaces;

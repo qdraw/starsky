@@ -1,4 +1,4 @@
-namespace starsky.foundation.cloudimport.Clients.Interfaces;
+namespace starsky.feature.cloudimport.Clients.Interfaces;
 
 public interface IDropboxCloudImportRefreshToken
 {

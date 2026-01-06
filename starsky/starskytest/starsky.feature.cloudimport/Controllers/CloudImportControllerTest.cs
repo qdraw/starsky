@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.cloudimport;
-using starsky.foundation.cloudimport.Controllers;
+using starsky.feature.cloudimport;
+using starsky.feature.cloudimport.Controllers;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.cloudimport.Controllers;
+namespace starskytest.starsky.feature.cloudimport.Controllers;
 
 [TestClass]
 public class CloudImportControllerTest

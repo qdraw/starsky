@@ -4,11 +4,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.cloudimport.Services;
+using starsky.feature.cloudimport.Services;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.cloudimport.Services;
+namespace starskytest.starsky.feature.cloudimport.Services;
 
 [TestClass]
 public class CloudImportScheduledServiceTest

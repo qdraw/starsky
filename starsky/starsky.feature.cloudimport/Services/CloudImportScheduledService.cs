@@ -1,10 +1,10 @@
 using Microsoft.Extensions.Hosting;
-using starsky.foundation.cloudimport.Interfaces;
+using starsky.feature.cloudimport.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
-namespace starsky.foundation.cloudimport.Services;
+namespace starsky.feature.cloudimport.Services;
 
 [Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
 public class CloudImportScheduledService(

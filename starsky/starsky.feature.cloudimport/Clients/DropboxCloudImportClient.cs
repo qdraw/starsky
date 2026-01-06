@@ -1,10 +1,10 @@
 using Dropbox.Api;
-using starsky.foundation.cloudimport.Clients.Interfaces;
+using starsky.feature.cloudimport.Clients.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
-namespace starsky.foundation.cloudimport.Clients;
+namespace starsky.feature.cloudimport.Clients;
 
 [Service(typeof(ICloudImportClient), InjectionLifetime = InjectionLifetime.Scoped)]
 public class DropboxCloudImportClient(

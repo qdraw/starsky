@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using starsky.foundation.cloudimport.Interfaces;
+using starsky.feature.cloudimport.Interfaces;
 using starsky.foundation.platform.Models;
 
-namespace starsky.foundation.cloudimport.Controllers;
+namespace starsky.feature.cloudimport.Controllers;
 
 [Authorize]
 [ApiController]
@@ -100,10 +100,10 @@ public class CloudImportController(ICloudImportService cloudImportService, AppSe
 
 		if ( !provider.Enabled )
 		{
-			return BadRequest(new { message = $"Provider '{providerId}' is disabled" });
+			return BadRequest(new { message = $"Provider '{provider.Id}' is disabled" });
 		}
 
-		var result = await cloudImportService.SyncAsync(providerId, CloudImportTriggerType.Manual);
+		var result = await cloudImportService.SyncAsync(provider.Id, CloudImportTriggerType.Manual);
 		return Ok(result);
 	}
 
