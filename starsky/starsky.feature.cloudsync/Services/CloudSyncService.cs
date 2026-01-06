@@ -85,14 +85,12 @@ public class CloudSyncService(
 		{
 			return new CloudSyncResult
 			{
-				ProviderId = string.Empty,
-				StartTime = DateTime.UtcNow,
-				EndTime = DateTime.UtcNow,
 				TriggerType = CloudSyncTriggerType.CommandLineInterface,
-				Errors = ["No cloud sync provider specified in arguments"]
+				Errors = ["No cloud sync provider specified in arguments"],
+				SkippedNoInput = true
 			};
 		}
-		
+
 		return await SyncAsync(cloudSyncProvider, CloudSyncTriggerType.CommandLineInterface);
 	}
 
@@ -110,7 +108,8 @@ public class CloudSyncService(
 				StartTime = DateTime.UtcNow,
 				EndTime = DateTime.UtcNow,
 				TriggerType = triggerType,
-				Errors = [$"Provider '{providerId}' not found"]
+				Errors = [$"Provider '{providerId}' not found"],
+				SkippedNoInput = true
 			};
 		}
 
@@ -124,7 +123,8 @@ public class CloudSyncService(
 				StartTime = DateTime.UtcNow,
 				EndTime = DateTime.UtcNow,
 				TriggerType = triggerType,
-				Errors = ["Provider is disabled"]
+				Errors = ["Provider is disabled"],
+				SkippedNoInput = true
 			};
 		}
 

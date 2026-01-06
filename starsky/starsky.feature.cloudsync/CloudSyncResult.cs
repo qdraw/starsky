@@ -11,10 +11,12 @@ public class CloudSyncResult
 	public int FilesImportedSuccessfully { get; set; }
 	public int FilesSkipped { get; set; }
 	public int FilesFailed { get; set; }
-	public List<string> Errors { get; set; } = new();
-	public List<string> SuccessfulFiles { get; set; } = new();
-	public List<string> FailedFiles { get; set; } = new();
+	public List<string> Errors { get; set; } = [];
+	public List<string> SuccessfulFiles { get; set; } = [];
+	public List<string> FailedFiles { get; set; } = [];
 	public bool Success => FilesFailed == 0 && Errors.Count == 0;
+
+	public bool? SkippedNoInput { get; set; } = false;
 }
 
 public enum CloudSyncTriggerType

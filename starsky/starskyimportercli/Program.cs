@@ -52,7 +52,10 @@ public static class Program
 			webLogger,
 			appSettings);
 
-		await cloudSync.SyncAsync(args);
+		if ( ( await cloudSync.SyncAsync(args) ).SkippedNoInput != true )
+		{
+			return;
+		}
 
 		// Help and other Command Line Tools args are included in the ImporterCli 
 		var service = new ImportCli(import, appSettings, console, webLogger, exifToolDownload,
