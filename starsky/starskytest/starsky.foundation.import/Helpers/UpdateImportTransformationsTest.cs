@@ -2,14 +2,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.feature.import.Helpers;
+using starsky.foundation.import.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.feature.import.Helpers;
+namespace starskytest.starsky.foundation.import.Helpers;
 
 [TestClass]
 public sealed class UpdateImportTransformationsTest

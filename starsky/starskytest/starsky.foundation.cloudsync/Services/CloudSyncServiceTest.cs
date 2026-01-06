@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.feature.import.Interfaces;
-using starsky.feature.import.Models;
+using starsky.foundation.import.Interfaces;
+using starsky.foundation.import.Models;
 using starsky.foundation.cloudsync;
 using starsky.foundation.cloudsync.Interfaces;
 using starsky.foundation.cloudsync.Services;

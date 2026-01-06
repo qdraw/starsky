@@ -1,10 +1,10 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.feature.import.Helpers;
+using starsky.foundation.import.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 
-namespace starskytest.starsky.feature.import.Helpers;
+namespace starskytest.starsky.foundation.import.Helpers;
 
 [TestClass]
 public class UpdateImportSettingsHelperTests

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.feature.import.Services;
+using starsky.foundation.import.Services;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.feature.import.Services;
+namespace starskytest.starsky.foundation.import.Services;
 
 [TestClass]
 public sealed class ImportCliTest

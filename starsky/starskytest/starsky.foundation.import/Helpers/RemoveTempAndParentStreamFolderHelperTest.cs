@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.feature.import.Helpers;
+using starsky.foundation.import.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Models;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.feature.import.Helpers;
+namespace starskytest.starsky.foundation.import.Helpers;
 
 [TestClass]
 public class RemoveTempAndParentStreamFolderHelperTest
