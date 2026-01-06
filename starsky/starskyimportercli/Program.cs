@@ -52,7 +52,7 @@ public static class Program
 			webLogger,
 			appSettings);
 
-		if ( ( await cloudImport.SyncAsync(args) ).SkippedNoInput != true )
+		if ( !( await cloudImport.SyncAsync(args) ).SkippedNoInput )
 		{
 			return;
 		}

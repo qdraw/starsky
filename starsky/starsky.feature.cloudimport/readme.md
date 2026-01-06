@@ -1,4 +1,4 @@
-# starsky.foundation.cloudimport
+# starsky.feature.cloudimport
 
 Cloud sync functionality for automatic import from cloud storage providers (Dropbox, Google Drive,
 OneDrive, etc.)
@@ -202,9 +202,9 @@ public class MyCloudImportClient : ICloudImportClient
 
 Comprehensive unit tests are available in:
 
-- `starskytest/starsky.foundation.CloudImport/Services/CloudImportServiceTest.cs`
-- `starskytest/starsky.foundation.CloudImport/Controllers/CloudImportControllerTest.cs`
-- `starskytest/starsky.foundation.CloudImport/Services/CloudImportScheduledServiceTest.cs`
+- `starskytest/starsky.feature.cloudimport/Services/CloudImportServiceTest.cs`
+- `starskytest/starsky.feature.cloudimport/Controllers/CloudImportControllerTest.cs`
+- `starskytest/starsky.feature.cloudimport/Services/CloudImportScheduledServiceTest.cs`
 
 Run tests:
 

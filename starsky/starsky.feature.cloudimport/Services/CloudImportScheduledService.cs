@@ -68,7 +68,7 @@ public class CloudImportScheduledService(
 
 				if ( stoppingToken.IsCancellationRequested )
 				{
-					continue;
+					break;
 				}
 
 				logger.LogInformation(

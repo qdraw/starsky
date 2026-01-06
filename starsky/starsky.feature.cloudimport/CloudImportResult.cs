@@ -16,7 +16,7 @@ public class CloudImportResult
 	public List<string> FailedFiles { get; set; } = [];
 	public bool Success => FilesFailed == 0 && Errors.Count == 0;
 
-	public bool? SkippedNoInput { get; set; } = false;
+	public bool SkippedNoInput { get; set; } = false;
 }
 
 public enum CloudImportTriggerType
