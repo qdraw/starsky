@@ -267,8 +267,11 @@ public class CloudSyncService(
 			}
 			finally
 			{
-				IsSyncInProgress = _providerLocks.Values.Any(l => l.CurrentCount == 0);
 				providerLock.Release();
+				if ( _providerLocks.Values.All(l => l.CurrentCount != 0) )
+				{
+					IsSyncInProgress = false;
+				}
 			}
 		}
 		catch
