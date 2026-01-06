@@ -13,13 +13,7 @@ public sealed class FakeILogger<T> : ILogger<T>
 		Exception? exception, Func<TState, Exception?, string> formatter)
 	{
 		LogLevels.Add(logLevel);
-		if ( exception != null )
-		{
-			Messages.Add(exception.Message);
-			return;
-		}
-
-		Messages.Add(state?.ToString() ?? string.Empty);
+		Messages.Add(formatter(state, exception));
 	}
 
 	public bool IsEnabled(LogLevel logLevel)
