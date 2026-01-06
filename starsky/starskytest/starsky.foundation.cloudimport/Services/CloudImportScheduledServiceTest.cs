@@ -79,6 +79,7 @@ public class CloudImportScheduledServiceTest
 	}
 
 	[TestMethod]
+	[Timeout(5000, CooperativeCancellation = true)]
 	public async Task StopAsync_ShouldLogStopping()
 	{
 		// Arrange
@@ -102,7 +103,7 @@ public class CloudImportScheduledServiceTest
 		using var cts = new CancellationTokenSource();
 
 		// Act
-		await service.RunAsync(cts.Token);
+		await service.StartAsync(cts.Token);
 		await service.StopAsync(cts.Token);
 
 		// Assert
