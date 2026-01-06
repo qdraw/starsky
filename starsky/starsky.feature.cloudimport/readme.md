@@ -78,7 +78,7 @@ Each provider in the `Providers` array supports:
 ### Get Status
 
 ```
-GET /api/cloudsync/status
+GET /api/CloudImport/status
 ```
 
 Returns current cloud sync configuration and status.
@@ -86,7 +86,7 @@ Returns current cloud sync configuration and status.
 ### Trigger Manual Sync
 
 ```
-POST /api/cloudsync/sync
+POST /api/CloudImport/sync
 ```
 
 Manually trigger a sync operation.
@@ -94,7 +94,7 @@ Manually trigger a sync operation.
 ### Get Last Result
 
 ```
-GET /api/cloudsync/last-result
+GET /api/CloudImport/last-result
 ```
 
 Get the result of the last sync operation.
@@ -111,7 +111,7 @@ Get the result of the last sync operation.
 
 ```json
 {
-  "CloudSync": {
+  "CloudImport": {
     "Providers": [
       {
         "Id": "my-dropbox-sync",
@@ -134,7 +134,7 @@ You can sync multiple Dropbox folders by adding multiple provider configurations
 
 ```json
 {
-  "CloudSync": {
+  "CloudImport": {
     "Providers": [
       {
         "Id": "dropbox-camera",
@@ -163,11 +163,11 @@ You can sync multiple Dropbox folders by adding multiple provider configurations
 
 ### Adding New Providers
 
-Implement the `ICloudSyncClient` interface:
+Implement the `ICloudImportClient` interface:
 
 ```csharp
-[Service(typeof(ICloudSyncClient), InjectionLifetime = InjectionLifetime.Scoped)]
-public class MyCloudSyncClient : ICloudSyncClient
+[Service(typeof(ICloudImportClient), InjectionLifetime = InjectionLifetime.Scoped)]
+public class MyCloudImportClient : ICloudImportClient
 {
     public string Name => "MyProvider";
     public bool Enabled { get; }
@@ -183,15 +183,15 @@ public class MyCloudSyncClient : ICloudSyncClient
 
 ### Components
 
-- **CloudSyncService**: Main service orchestrating sync operations
-- **CloudSyncScheduledService**: Background service for scheduled syncs
-- **ICloudSyncClient**: Interface for cloud provider implementations
-- **CloudSyncController**: API controller for manual operations
+- **CloudImportService**: Main service orchestrating sync operations
+- **CloudImportScheduledService**: Background service for scheduled syncs
+- **ICloudImportClient**: Interface for cloud provider implementations
+- **CloudImportController**: API controller for manual operations
 
 ### Flow
 
 1. **Scheduled Service** triggers sync at configured intervals
-2. **CloudSyncService** acquires lock to prevent concurrent execution
+2. **CloudImportService** acquires lock to prevent concurrent execution
 3. **List Files** from cloud storage using provider client
 4. **Download** each file to temporary folder
 5. **Import** using existing import pipeline
@@ -202,14 +202,14 @@ public class MyCloudSyncClient : ICloudSyncClient
 
 Comprehensive unit tests are available in:
 
-- `starskytest/starsky.foundation.cloudsync/Services/CloudSyncServiceTest.cs`
-- `starskytest/starsky.foundation.cloudsync/Controllers/CloudSyncControllerTest.cs`
-- `starskytest/starsky.foundation.cloudsync/Services/CloudSyncScheduledServiceTest.cs`
+- `starskytest/starsky.foundation.CloudImport/Services/CloudImportServiceTest.cs`
+- `starskytest/starsky.foundation.CloudImport/Controllers/CloudImportControllerTest.cs`
+- `starskytest/starsky.foundation.CloudImport/Services/CloudImportScheduledServiceTest.cs`
 
 Run tests:
 
 ```bash
-dotnet test starskytest/starskytest.csproj --filter FullyQualifiedName~cloudsync
+dotnet test starskytest/starskytest.csproj --filter FullyQualifiedName~CloudImport
 ```
 
 ## Security
