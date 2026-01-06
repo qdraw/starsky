@@ -390,8 +390,9 @@ public class CloudImportServiceTest
 		public Task<List<ImportIndexItem>> Importer(IEnumerable<string> inputFullPathList,
 			ImportSettingsModel importSettings)
 		{
-			var status = ImportStatusFunc?.Invoke(inputFullPathList.ToList()) ?? ImportStatus.Ok;
-			return Task.FromResult(inputFullPathList.Select(path => new ImportIndexItem
+			var list = inputFullPathList.ToList();
+			var status = ImportStatusFunc?.Invoke(list) ?? ImportStatus.Ok;
+			return Task.FromResult(list.Select(path => new ImportIndexItem
 			{
 				Status = status, FilePath = path
 			}).ToList());
