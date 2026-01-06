@@ -998,13 +998,13 @@ public sealed class ArgsHelper
 
 		return origin;
 	}
-	
+
 	/// <summary>
 	///     Get provider value from args
 	/// </summary>
 	/// <param name="args">input args</param>
 	/// <returns>provider value</returns>
-	public static string GetCloudSyncProvider(IReadOnlyList<string> args)
+	public static string GetCloudImportProvider(IReadOnlyList<string> args)
 	{
 		// --provider
 		var provider = string.Empty;

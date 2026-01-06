@@ -1,17 +1,17 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.cloudsync.Services;
-using starsky.foundation.platform.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.cloudimport.Services;
+using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.cloudsync.Services;
+namespace starskytest.starsky.foundation.cloudimport.Services;
 
 [TestClass]
-public class CloudSyncScheduledServiceTest
+public class CloudImportScheduledServiceTest
 {
 	[TestMethod]
 	public async Task ExecuteAsync_WhenDisabled_ShouldNotRunSync()
@@ -19,14 +19,15 @@ public class CloudSyncScheduledServiceTest
 		// Arrange
 		var appSettings = new AppSettings
 		{
-			CloudSync = new CloudSyncSettings
+			CloudImport = new CloudImportSettings
 			{
-				Providers = [new CloudSyncProviderSettings { Id = "test", Enabled = false }]
+				Providers =
+					[new CloudImportProviderSettings { Id = "test", Enabled = false }]
 			}
 		};
-		var cloudSyncService = new FakeCloudSyncService();
+		var cloudImportService = new FakeCloudImportService();
 		var logger = new FakeIWebLogger();
-		var service = new CloudSyncScheduledService(cloudSyncService, logger, appSettings);
+		var service = new CloudImportScheduledService(cloudImportService, logger, appSettings);
 
 		using var cts = new CancellationTokenSource();
 		cts.CancelAfter(TimeSpan.FromSeconds(1));
@@ -37,7 +38,7 @@ public class CloudSyncScheduledServiceTest
 		await service.StopAsync(cts.Token);
 
 		// Assert
-		Assert.IsEmpty(cloudSyncService.SyncCalls);
+		Assert.IsEmpty(cloudImportService.SyncCalls);
 		Assert.IsTrue(
 			logger.TrackedInformation.Any(m =>
 				m.Item2!.Contains("disabled") || m.Item2!.Contains("not run")));
@@ -49,11 +50,11 @@ public class CloudSyncScheduledServiceTest
 		// Arrange
 		var appSettings = new AppSettings
 		{
-			CloudSync = new CloudSyncSettings
+			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudSyncProviderSettings>
+				Providers = new List<CloudImportProviderSettings>
 				{
-					new CloudSyncProviderSettings
+					new()
 					{
 						Id = "test",
 						Enabled = true,
@@ -63,9 +64,9 @@ public class CloudSyncScheduledServiceTest
 				}
 			}
 		};
-		var cloudSyncService = new FakeCloudSyncService();
+		var cloudImportService = new FakeCloudImportService();
 		var logger = new FakeIWebLogger();
-		var service = new CloudSyncScheduledService(cloudSyncService, logger, appSettings);
+		var service = new CloudImportScheduledService(cloudImportService, logger, appSettings);
 
 		using var cts = new CancellationTokenSource();
 		cts.CancelAfter(TimeSpan.FromSeconds(1));
@@ -84,20 +85,20 @@ public class CloudSyncScheduledServiceTest
 		// Arrange
 		var appSettings = new AppSettings
 		{
-			CloudSync = new CloudSyncSettings
+			CloudImport = new CloudImportSettings
 			{
 				Providers =
 				[
-					new CloudSyncProviderSettings
+					new CloudImportProviderSettings
 					{
 						Id = "test", Enabled = true, SyncFrequencyMinutes = 60
 					}
 				]
 			}
 		};
-		var cloudSyncService = new FakeCloudSyncService();
+		var cloudImportService = new FakeCloudImportService();
 		var logger = new FakeIWebLogger();
-		var service = new CloudSyncScheduledService(cloudSyncService, logger, appSettings);
+		var service = new CloudImportScheduledService(cloudImportService, logger, appSettings);
 
 		using var cts = new CancellationTokenSource();
 

@@ -1,23 +1,18 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using starsky.foundation.cloudsync.Interfaces;
+using starsky.foundation.cloudimport.Interfaces;
 using starsky.foundation.platform.Models;
 
-namespace starsky.foundation.cloudsync.Controllers;
+namespace starsky.foundation.cloudimport.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("api/cloudsync")]
-public class CloudSyncController : ControllerBase
+[Route("api/cloud-import")]
+public class CloudImportController(ICloudImportService cloudImportService, AppSettings appSettings)
+	: ControllerBase
 {
-	private readonly ICloudSyncService _cloudSyncService;
-	private readonly CloudSyncSettings _settings;
-
-	public CloudSyncController(ICloudSyncService cloudSyncService, AppSettings appSettings)
-	{
-		_cloudSyncService = cloudSyncService;
-		_settings = appSettings.CloudSync ?? new CloudSyncSettings();
-	}
+	private readonly CloudImportSettings _settings =
+		appSettings.CloudImport ?? new CloudImportSettings();
 
 	/// <summary>
 	///     Get current cloud sync status for all providers
@@ -37,8 +32,8 @@ public class CloudSyncController : ControllerBase
 				syncFrequencyHours = p.SyncFrequencyHours,
 				deleteAfterImport = p.DeleteAfterImport
 			}),
-			isSyncInProgress = _cloudSyncService.IsSyncInProgress,
-			lastSyncResults = _cloudSyncService.LastSyncResults
+			isSyncInProgress = cloudImportService.IsSyncInProgress,
+			lastSyncResults = cloudImportService.LastSyncResults
 		});
 	}
 
@@ -54,7 +49,7 @@ public class CloudSyncController : ControllerBase
 			return NotFound(new { message = $"Provider '{providerId}' not found" });
 		}
 
-		var lastResult = _cloudSyncService.LastSyncResults.TryGetValue(providerId, out var result)
+		var lastResult = cloudImportService.LastSyncResults.TryGetValue(providerId, out var result)
 			? result
 			: null;
 
@@ -82,12 +77,12 @@ public class CloudSyncController : ControllerBase
 			return BadRequest(new { message = "No cloud sync providers are enabled" });
 		}
 
-		if ( _cloudSyncService.IsSyncInProgress )
+		if ( cloudImportService.IsSyncInProgress )
 		{
 			return Conflict(new { message = "A sync operation is already in progress" });
 		}
 
-		var results = await _cloudSyncService.SyncAllAsync(CloudSyncTriggerType.Manual);
+		var results = await cloudImportService.SyncAllAsync(CloudImportTriggerType.Manual);
 		return Ok(new { results });
 	}
 
@@ -108,7 +103,7 @@ public class CloudSyncController : ControllerBase
 			return BadRequest(new { message = $"Provider '{providerId}' is disabled" });
 		}
 
-		var result = await _cloudSyncService.SyncAsync(providerId, CloudSyncTriggerType.Manual);
+		var result = await cloudImportService.SyncAsync(providerId, CloudImportTriggerType.Manual);
 		return Ok(result);
 	}
 
@@ -118,7 +113,7 @@ public class CloudSyncController : ControllerBase
 	[HttpGet("last-results")]
 	public IActionResult GetLastResults()
 	{
-		var lastResults = _cloudSyncService.LastSyncResults;
+		var lastResults = cloudImportService.LastSyncResults;
 		if ( !lastResults.Any() )
 		{
 			return NotFound(new { message = "No sync has been performed yet" });
@@ -133,7 +128,7 @@ public class CloudSyncController : ControllerBase
 	[HttpGet("last-result/{providerId}")]
 	public IActionResult GetLastResult(string providerId)
 	{
-		if ( _cloudSyncService.LastSyncResults.TryGetValue(providerId, out var result) )
+		if ( cloudImportService.LastSyncResults.TryGetValue(providerId, out var result) )
 		{
 			return Ok(result);
 		}

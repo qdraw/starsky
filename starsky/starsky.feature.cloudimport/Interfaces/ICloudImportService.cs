@@ -1,6 +1,6 @@
-namespace starsky.foundation.cloudsync.Interfaces;
+namespace starsky.foundation.cloudimport.Interfaces;
 
-public interface ICloudSyncService
+public interface ICloudImportService
 {
 	/// <summary>
 	///     Check if a sync is currently in progress
@@ -10,16 +10,16 @@ public interface ICloudSyncService
 	/// <summary>
 	///     Get the last sync results for all providers
 	/// </summary>
-	Dictionary<string, CloudSyncResult> LastSyncResults { get; }
+	Dictionary<string, CloudImportResult> LastSyncResults { get; }
 
 	/// <summary>
 	///     Execute a cloud sync operation for all enabled providers
 	/// </summary>
 	/// <param name="triggerType">Whether this sync was manually triggered or scheduled</param>
 	/// <returns>List of results for each provider</returns>
-	Task<List<CloudSyncResult>> SyncAllAsync(CloudSyncTriggerType triggerType);
+	Task<List<CloudImportResult>> SyncAllAsync(CloudImportTriggerType triggerType);
 
-	Task<CloudSyncResult> SyncAsync(string[] args);
+	Task<CloudImportResult> SyncAsync(string[] args);
 
 	/// <summary>
 	///     Execute a cloud sync operation for a specific provider
@@ -27,6 +27,6 @@ public interface ICloudSyncService
 	/// <param name="providerId">The ID of the provider to sync</param>
 	/// <param name="triggerType">Whether this sync was manually triggered or scheduled</param>
 	/// <returns>Result of the sync operation</returns>
-	Task<CloudSyncResult> SyncAsync(string providerId,
-		CloudSyncTriggerType triggerType);
+	Task<CloudImportResult> SyncAsync(string providerId,
+		CloudImportTriggerType triggerType);
 }

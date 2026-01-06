@@ -1,4 +1,4 @@
-namespace starsky.foundation.cloudsync;
+namespace starsky.foundation.cloudimport;
 
 public class CloudFile
 {
@@ -9,4 +9,3 @@ public class CloudFile
 	public DateTime? ModifiedDate { get; set; }
 	public string Hash { get; set; } = string.Empty;
 }
-

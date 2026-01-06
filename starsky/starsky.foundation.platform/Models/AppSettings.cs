@@ -801,9 +801,9 @@ public sealed class AppSettings
 	public string? FfmpegPath { get; set; }
 
 	/// <summary>
-	///     Cloud sync settings for automatic import from cloud storage
+	///     Cloud import settings for automatic import from cloud storage
 	/// </summary>
-	public CloudSyncSettings? CloudSync { get; set; } = new();
+	public CloudImportSettings? CloudImport { get; set; } = new();
 
 	public OpenTelemetrySettings? OpenTelemetry { get; set; } = new();
 

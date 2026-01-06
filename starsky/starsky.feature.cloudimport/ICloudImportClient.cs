@@ -1,6 +1,6 @@
-﻿namespace starsky.foundation.cloudsync;
+﻿namespace starsky.foundation.cloudimport;
 
-public interface ICloudSyncClient
+public interface ICloudImportClient
 {
 	string Name { get; }
 	bool Enabled { get; }
@@ -8,4 +8,4 @@ public interface ICloudSyncClient
 	Task<string> DownloadFileAsync(CloudFile file, string localFolder);
 	Task<bool> DeleteFileAsync(CloudFile file);
 	Task<bool> TestConnectionAsync();
-}	
+}

@@ -1,12 +1,12 @@
-namespace starsky.foundation.cloudsync;
+namespace starsky.foundation.cloudimport;
 
-public class CloudSyncResult
+public class CloudImportResult
 {
 	public string ProviderId { get; set; } = string.Empty;
 	public string ProviderName { get; set; } = string.Empty;
 	public DateTime StartTime { get; set; }
 	public DateTime EndTime { get; set; }
-	public CloudSyncTriggerType TriggerType { get; set; }
+	public CloudImportTriggerType TriggerType { get; set; }
 	public int FilesFound { get; set; }
 	public int FilesImportedSuccessfully { get; set; }
 	public int FilesSkipped { get; set; }
@@ -19,7 +19,7 @@ public class CloudSyncResult
 	public bool? SkippedNoInput { get; set; } = false;
 }
 
-public enum CloudSyncTriggerType
+public enum CloudImportTriggerType
 {
 	Scheduled,
 	Manual,

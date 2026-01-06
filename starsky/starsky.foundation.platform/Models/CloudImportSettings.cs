@@ -6,18 +6,18 @@ namespace starsky.foundation.platform.Models;
 /// <summary>
 ///     Configuration for cloud sync providers
 /// </summary>
-public class CloudSyncSettings
+public class CloudImportSettings
 {
 	/// <summary>
 	///     List of cloud sync provider configurations
 	/// </summary>
-	public List<CloudSyncProviderSettings> Providers { get; set; } = new();
+	public List<CloudImportProviderSettings> Providers { get; set; } = new();
 }
 
 /// <summary>
 ///     Configuration for a single cloud sync provider
 /// </summary>
-public class CloudSyncProviderSettings
+public class CloudImportProviderSettings
 {
 	/// <summary>
 	///     Unique identifier for this provider configuration
@@ -68,4 +68,3 @@ public class CloudProviderCredentials
 	public string AppSecret { get; set; } = string.Empty;
 	public DateTime? ExpiresAt { get; set; }
 }
-

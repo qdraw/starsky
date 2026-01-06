@@ -1,4 +1,4 @@
-# starsky.foundation.cloudsync
+# starsky.foundation.cloudimport
 
 Cloud sync functionality for automatic import from cloud storage providers (Dropbox, Google Drive,
 OneDrive, etc.)
@@ -21,7 +21,7 @@ Add the following to your `appsettings.json`:
 
 ```json
 {
-  "CloudSync": {
+  "CloudImport": {
     "Providers": [
       {
         "Id": "dropbox-camera",

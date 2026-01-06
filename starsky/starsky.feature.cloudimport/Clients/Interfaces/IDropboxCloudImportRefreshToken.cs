@@ -1,6 +1,6 @@
-namespace starsky.foundation.cloudsync.Clients.Interfaces;
+namespace starsky.foundation.cloudimport.Clients.Interfaces;
 
-public interface IDropboxCloudSyncRefreshToken
+public interface IDropboxCloudImportRefreshToken
 {
 	Task<(string accessToken, int expiresIn)> ExchangeRefreshTokenAsync(
 		string refreshToken, string appKey, string appSecret);

@@ -1,12 +1,13 @@
 using System.Text.Json;
-using starsky.foundation.cloudsync.Clients.Interfaces;
+using starsky.foundation.cloudimport.Clients.Interfaces;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
 
-namespace starsky.foundation.cloudsync.Clients;
+namespace starsky.foundation.cloudimport.Clients;
 
-[Service(typeof(IDropboxCloudSyncRefreshToken), InjectionLifetime = InjectionLifetime.Scoped)]
-public class DropboxCloudSyncRefreshToken(IHttpClientHelper httpClientHelper) : IDropboxCloudSyncRefreshToken
+[Service(typeof(IDropboxCloudImportRefreshToken), InjectionLifetime = InjectionLifetime.Scoped)]
+public class DropboxCloudImportRefreshToken(IHttpClientHelper httpClientHelper)
+	: IDropboxCloudImportRefreshToken
 {
 	private const string DropboxTokenDomain = "https://api.dropbox.com/";
 	private const string DropboxTokenPath = "oauth2/token";
@@ -32,7 +33,7 @@ public class DropboxCloudSyncRefreshToken(IHttpClientHelper httpClientHelper) : 
 		{
 			throw new HttpRequestException("Dropbox token exchange failed");
 		}
-		
+
 		using var doc = JsonDocument.Parse(response.Value);
 		var accessToken = doc.RootElement.GetProperty("access_token").GetString();
 		var expiresIn = doc.RootElement.TryGetProperty("expires_in", out var expires)

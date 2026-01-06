@@ -1,17 +1,17 @@
 using Dropbox.Api;
-using starsky.foundation.cloudsync.Clients.Interfaces;
+using starsky.foundation.cloudimport.Clients.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
-namespace starsky.foundation.cloudsync.Clients;
+namespace starsky.foundation.cloudimport.Clients;
 
-[Service(typeof(ICloudSyncClient), InjectionLifetime = InjectionLifetime.Scoped)]
-public class DropboxCloudSyncClient(
+[Service(typeof(ICloudImportClient), InjectionLifetime = InjectionLifetime.Scoped)]
+public class DropboxCloudImportClient(
 	IWebLogger logger,
 	AppSettings appSettings,
-	IDropboxCloudSyncRefreshToken tokenClient)
-	: ICloudSyncClient
+	IDropboxCloudImportRefreshToken tokenClient)
+	: ICloudImportClient
 {
 	private DateTimeOffset? _accessTokenExpiry;
 	private DropboxClient? _client;
@@ -19,7 +19,7 @@ public class DropboxCloudSyncClient(
 	public string Name => "Dropbox";
 
 	public bool Enabled =>
-		appSettings.CloudSync?.Providers.Any(p =>
+		appSettings.CloudImport?.Providers.Any(p =>
 			p.Provider.Equals("Dropbox", StringComparison.OrdinalIgnoreCase) &&
 			!string.IsNullOrWhiteSpace(p.Credentials.RefreshToken)) == true;
 

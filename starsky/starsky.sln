@@ -178,7 +178,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.geo", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.metaupdate", "starsky.foundation.metaupdate\starsky.foundation.metaupdate.csproj", "{9B6E6A97-9F50-47A2-995B-B54895880573}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.cloudsync", "starsky.feature.cloudsync\starsky.feature.cloudsync.csproj", "{7342F88C-25D5-4EC4-84C8-C458E24BEC2B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.cloudimport", "starsky.feature.cloudimport\starsky.feature.cloudimport.csproj", "{7342F88C-25D5-4EC4-84C8-C458E24BEC2B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

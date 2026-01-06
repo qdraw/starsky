@@ -1,14 +1,14 @@
 using Microsoft.Extensions.Hosting;
-using starsky.foundation.cloudsync.Interfaces;
+using starsky.foundation.cloudimport.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
-namespace starsky.foundation.cloudsync.Services;
+namespace starsky.foundation.cloudimport.Services;
 
 [Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
-public class CloudSyncScheduledService(
-	ICloudSyncService cloudSyncService,
+public class CloudImportScheduledService(
+	ICloudImportService cloudImportService,
 	IWebLogger logger,
 	AppSettings appSettings)
 	: BackgroundService
@@ -25,7 +25,7 @@ public class CloudSyncScheduledService(
 		logger.LogInformation("Cloud Sync Scheduled Service started");
 
 		var enabledProviders =
-			appSettings.CloudSync?.Providers.Where(p => p.Enabled).ToList() ?? [];
+			appSettings.CloudImport?.Providers.Where(p => p.Enabled).ToList() ?? [];
 
 		if ( enabledProviders.Count == 0 )
 		{
@@ -50,7 +50,7 @@ public class CloudSyncScheduledService(
 		return true;
 	}
 
-	private async Task RunProviderSyncAsync(CloudSyncProviderSettings provider,
+	private async Task RunProviderSyncAsync(CloudImportProviderSettings provider,
 		CancellationToken stoppingToken)
 	{
 		logger.LogInformation(
@@ -73,7 +73,7 @@ public class CloudSyncScheduledService(
 
 				logger.LogInformation(
 					$"Starting scheduled cloud sync for provider '{provider.Id}'");
-				await cloudSyncService.SyncAsync(provider.Id, CloudSyncTriggerType.Scheduled);
+				await cloudImportService.SyncAsync(provider.Id, CloudImportTriggerType.Scheduled);
 			}
 			catch ( TaskCanceledException )
 			{
@@ -99,7 +99,7 @@ public class CloudSyncScheduledService(
 			$"Scheduled sync task for provider '{provider.Id}' has stopped");
 	}
 
-	private TimeSpan GetNextDelay(CloudSyncProviderSettings provider)
+	private TimeSpan GetNextDelay(CloudImportProviderSettings provider)
 	{
 		if ( provider.SyncFrequencyMinutes > 0 )
 		{

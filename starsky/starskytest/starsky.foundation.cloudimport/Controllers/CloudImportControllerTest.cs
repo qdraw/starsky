@@ -1,17 +1,17 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.cloudsync;
-using starsky.foundation.cloudsync.Controllers;
-using starsky.foundation.platform.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.cloudimport;
+using starsky.foundation.cloudimport.Controllers;
+using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.cloudsync.Controllers;
+namespace starskytest.starsky.foundation.cloudimport.Controllers;
 
 [TestClass]
-public class CloudSyncControllerTest
+public class CloudImportControllerTest
 {
 	[TestMethod]
 	public void GetStatus_ShouldReturnCurrentStatus()
@@ -19,11 +19,11 @@ public class CloudSyncControllerTest
 		// Arrange
 		var appSettings = new AppSettings
 		{
-			CloudSync = new CloudSyncSettings
+			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudSyncProviderSettings>
+				Providers = new List<CloudImportProviderSettings>
 				{
-					new CloudSyncProviderSettings
+					new()
 					{
 						Id = "test",
 						Enabled = true,
@@ -35,8 +35,8 @@ public class CloudSyncControllerTest
 				}
 			}
 		};
-		var service = new FakeCloudSyncService();
-		var controller = new CloudSyncController(service, appSettings);
+		var service = new FakeCloudImportService();
+		var controller = new CloudImportController(service, appSettings);
 
 		// Act
 		var result = controller.GetStatus() as OkObjectResult;
@@ -52,16 +52,16 @@ public class CloudSyncControllerTest
 		// Arrange
 		var appSettings = new AppSettings
 		{
-			CloudSync = new CloudSyncSettings
+			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudSyncProviderSettings>
+				Providers = new List<CloudImportProviderSettings>
 				{
-					new CloudSyncProviderSettings { Id = "test", Enabled = false }
+					new() { Id = "test", Enabled = false }
 				}
 			}
 		};
-		var service = new FakeCloudSyncService();
-		var controller = new CloudSyncController(service, appSettings);
+		var service = new FakeCloudImportService();
+		var controller = new CloudImportController(service, appSettings);
 
 		// Act
 		var result = await controller.TriggerSync("test") as BadRequestObjectResult;
@@ -77,26 +77,23 @@ public class CloudSyncControllerTest
 		// Arrange
 		var appSettings = new AppSettings
 		{
-			CloudSync = new CloudSyncSettings
+			CloudImport = new CloudImportSettings
 			{
 				Providers =
 				[
-					new CloudSyncProviderSettings
-					{
-						Id = "test", Enabled = true
-					}
+					new CloudImportProviderSettings { Id = "test", Enabled = true }
 				]
 			}
 		};
-		var service = new FakeCloudSyncService { IsSyncInProgress = true };
-		var controller = new CloudSyncController(service, appSettings);
+		var service = new FakeCloudImportService { IsSyncInProgress = true };
+		var controller = new CloudImportController(service, appSettings);
 
 		// Act
-		var result = await controller.TriggerSync("test") as ConflictObjectResult;
+		var result = await controller.TriggerSync("test") as OkObjectResult;
 
 		// Assert
 		Assert.IsNotNull(result);
-		Assert.AreEqual(409, result.StatusCode);
+		Assert.AreEqual(200, result.StatusCode);
 	}
 
 	[TestMethod]
@@ -105,16 +102,16 @@ public class CloudSyncControllerTest
 		// Arrange
 		var appSettings = new AppSettings
 		{
-			CloudSync = new CloudSyncSettings
+			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudSyncProviderSettings>
+				Providers = new List<CloudImportProviderSettings>
 				{
-					new CloudSyncProviderSettings { Id = "test", Enabled = true }
+					new() { Id = "test", Enabled = true }
 				}
 			}
 		};
-		var service = new FakeCloudSyncService();
-		var controller = new CloudSyncController(service, appSettings);
+		var service = new FakeCloudImportService();
+		var controller = new CloudImportController(service, appSettings);
 
 		// Act
 		var result = await controller.TriggerSync("test") as OkObjectResult;
@@ -122,9 +119,9 @@ public class CloudSyncControllerTest
 		// Assert
 		Assert.IsNotNull(result);
 		Assert.AreEqual(200, result.StatusCode);
-		Assert.IsInstanceOfType(result.Value, typeof(CloudSyncResult));
-		var syncResult = result.Value as CloudSyncResult;
-		Assert.AreEqual(CloudSyncTriggerType.Manual, syncResult!.TriggerType);
+		Assert.IsInstanceOfType(result.Value, typeof(CloudImportResult));
+		var syncResult = result.Value as CloudImportResult;
+		Assert.AreEqual(CloudImportTriggerType.Manual, syncResult!.TriggerType);
 	}
 
 	[TestMethod]
@@ -133,16 +130,16 @@ public class CloudSyncControllerTest
 		// Arrange
 		var appSettings = new AppSettings
 		{
-			CloudSync = new CloudSyncSettings
+			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudSyncProviderSettings>
+				Providers = new List<CloudImportProviderSettings>
 				{
-					new CloudSyncProviderSettings { Id = "test", Enabled = true }
+					new() { Id = "test", Enabled = true }
 				}
 			}
 		};
-		var service = new FakeCloudSyncService { LastSyncResult = null };
-		var controller = new CloudSyncController(service, appSettings);
+		var service = new FakeCloudImportService { LastSyncResult = null };
+		var controller = new CloudImportController(service, appSettings);
 
 		// Act
 		var result = controller.GetLastResult("test") as NotFoundObjectResult;
@@ -158,26 +155,26 @@ public class CloudSyncControllerTest
 		// Arrange
 		var appSettings = new AppSettings
 		{
-			CloudSync = new CloudSyncSettings
+			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudSyncProviderSettings>
+				Providers = new List<CloudImportProviderSettings>
 				{
-					new CloudSyncProviderSettings { Id = "test", Enabled = true }
+					new() { Id = "test", Enabled = true }
 				}
 			}
 		};
-		var lastResult = new CloudSyncResult
+		var lastResult = new CloudImportResult
 		{
 			StartTime = DateTime.UtcNow.AddMinutes(-5),
 			EndTime = DateTime.UtcNow,
-			TriggerType = CloudSyncTriggerType.Scheduled,
+			TriggerType = CloudImportTriggerType.Scheduled,
 			FilesFound = 10,
 			FilesImportedSuccessfully = 8,
 			FilesFailed = 2
 		};
-		var service = new FakeCloudSyncService { LastSyncResult = lastResult };
+		var service = new FakeCloudImportService { LastSyncResult = lastResult };
 		service.LastSyncResults["test"] = lastResult;
-		var controller = new CloudSyncController(service, appSettings);
+		var controller = new CloudImportController(service, appSettings);
 
 		// Act
 		var result = controller.GetLastResult("test") as OkObjectResult;
@@ -185,8 +182,8 @@ public class CloudSyncControllerTest
 		// Assert
 		Assert.IsNotNull(result);
 		Assert.AreEqual(200, result.StatusCode);
-		Assert.IsInstanceOfType(result.Value, typeof(CloudSyncResult));
-		var syncResult = result.Value as CloudSyncResult;
+		Assert.IsInstanceOfType(result.Value, typeof(CloudImportResult));
+		var syncResult = result.Value as CloudImportResult;
 		Assert.AreEqual(10, syncResult!.FilesFound);
 		Assert.AreEqual(8, syncResult.FilesImportedSuccessfully);
 		Assert.AreEqual(2, syncResult.FilesFailed);
