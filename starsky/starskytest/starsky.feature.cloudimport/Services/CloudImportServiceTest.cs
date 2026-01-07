@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -132,7 +133,9 @@ public class CloudImportServiceTest
 			}
 		};
 		serviceCollection.AddScoped<ICloudImportClient>(_ => fakeClient);
-		serviceCollection.AddScoped<IImport>(_ => new FakeIImport(new FakeSelectorStorage(new StorageHostFullPathFilesystem(new FakeIWebLogger()))));
+		serviceCollection.AddScoped<IImport>(_ =>
+			new FakeIImport(
+				new FakeSelectorStorage(new StorageHostFullPathFilesystem(new FakeIWebLogger()))));
 		var serviceProvider = serviceCollection.BuildServiceProvider();
 		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
@@ -187,7 +190,10 @@ public class CloudImportServiceTest
 			}
 		};
 		serviceCollection.AddScoped<ICloudImportClient>(_ => fakeClient);
-		serviceCollection.AddScoped<IImport>(_ => new FakeIImport(new FakeSelectorStorage(new StorageHostFullPathFilesystem(new FakeIWebLogger()))));
+		serviceCollection.AddScoped<IImport>(_ =>
+			new FakeIImport(
+				new FakeSelectorStorage(
+					new StorageHostFullPathFilesystem(new FakeIWebLogger()))));
 		var serviceProvider = serviceCollection.BuildServiceProvider();
 		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
@@ -279,7 +285,7 @@ public class CloudImportServiceTest
 		};
 		var logger = new FakeIWebLogger();
 		var serviceCollection = new ServiceCollection();
-		var syncBlocker = new System.Threading.ManualResetEventSlim(false);
+		var syncBlocker = new ManualResetEventSlim(false);
 		var fakeClient = new FakeCloudImportClient
 		{
 			FilesToReturn =
@@ -303,7 +309,8 @@ public class CloudImportServiceTest
 		var service = new CloudImportService(scopeFactory, logger, appSettings);
 
 		// Act - Start first sync (will block)
-		var task1 = Task.Run(async () => await service.SyncAsync("test", CloudImportTriggerType.Manual));
+		var task1 = Task.Run(async () =>
+			await service.SyncAsync("test", CloudImportTriggerType.Manual));
 
 		// Ensure the first sync is running and blocked
 		await Task.Delay(50); // Give time for the first sync to start and block
@@ -317,7 +324,8 @@ public class CloudImportServiceTest
 
 
 		// Assert
-		Assert.IsTrue(logger.TrackedExceptions.Any(e => e.Item2!.Contains("already in progress")));
+		Assert.IsTrue(logger.TrackedExceptions.Any(e =>
+			e.Item2!.Contains("already in progress")));
 	}
 
 	[TestMethod]
@@ -425,5 +433,55 @@ public class CloudImportServiceTest
 
 		// Assert
 		Assert.IsEmpty(results);
+	}
+
+	[TestMethod]
+	public async Task SyncAllAsync_WhenProviderThrowsException_ShouldReturnErrorResult()
+	{
+		// Arrange
+		var appSettings = new AppSettings
+		{
+			CloudImport = new CloudImportSettings
+			{
+				Providers = new List<CloudImportProviderSettings>
+				{
+					new()
+					{
+						Id = "provider1",
+						Enabled = true,
+						Provider = "FakeProvider",
+						RemoteFolder = "/folder1"
+					},
+					new()
+					{
+						Id = "provider2",
+						Enabled = true,
+						Provider = "FakeProvider",
+						RemoteFolder = "/folder2"
+					}
+				}
+			}
+		};
+		var logger = new FakeIWebLogger();
+		var serviceCollection = new ServiceCollection();
+		// provider1: throws, provider2: works
+		serviceCollection.AddScoped<ICloudImportClient>(sp =>
+			sp.GetService<AppSettings>()?.CloudImport?.Providers[0].Id == "provider1"
+				? throw new Exception("Test exception")
+				: new FakeCloudImportClient());
+		serviceCollection.AddScoped<IImport>(_ => new FakeIImport(new FakeSelectorStorage()));
+		serviceCollection.AddSingleton(appSettings);
+		var serviceProvider = serviceCollection.BuildServiceProvider();
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+		var service = new CloudImportService(scopeFactory, logger, appSettings);
+
+		// Act
+		var results = await service.SyncAllAsync(CloudImportTriggerType.Manual);
+
+		// Assert
+		Assert.HasCount(2, results);
+		Assert.IsTrue(results.Any(r =>
+			r.ProviderId == "provider1" && r.Errors.Any(e => e.Contains("Sync failed"))));
+		Assert.IsTrue(results.Any(r => r.ProviderId == "provider2"));
 	}
 }
