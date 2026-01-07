@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,10 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.cloudimport;
 using starsky.feature.cloudimport.Services;
-using starsky.foundation.database.Models;
 using starsky.foundation.import.Interfaces;
-using starsky.foundation.import.Models;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Storage;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.feature.cloudimport.Services;
@@ -37,7 +34,7 @@ public class CloudImportServiceTest
 		var serviceCollection = new ServiceCollection();
 		var fakeClient = new FakeCloudImportClient();
 		serviceCollection.AddScoped<ICloudImportClient>(_ => fakeClient);
-		serviceCollection.AddScoped<IImport>(_ => new FakeImport());
+		serviceCollection.AddScoped<IImport>(_ => new FakeIImport(new FakeSelectorStorage()));
 		var serviceProvider = serviceCollection.BuildServiceProvider();
 		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
@@ -75,7 +72,7 @@ public class CloudImportServiceTest
 		var serviceCollection = new ServiceCollection();
 		var fakeClient = new FakeCloudImportClient { ShouldTestConnectionSucceed = false };
 		serviceCollection.AddScoped<ICloudImportClient>(_ => fakeClient);
-		serviceCollection.AddScoped<IImport>(_ => new FakeImport());
+		serviceCollection.AddScoped<IImport>(_ => new FakeIImport(new FakeSelectorStorage()));
 		var serviceProvider = serviceCollection.BuildServiceProvider();
 		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
@@ -135,7 +132,7 @@ public class CloudImportServiceTest
 			}
 		};
 		serviceCollection.AddScoped<ICloudImportClient>(_ => fakeClient);
-		serviceCollection.AddScoped<IImport>(_ => new FakeImport());
+		serviceCollection.AddScoped<IImport>(_ => new FakeIImport(new FakeSelectorStorage(new StorageHostFullPathFilesystem(new FakeIWebLogger()))));
 		var serviceProvider = serviceCollection.BuildServiceProvider();
 		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
@@ -190,7 +187,7 @@ public class CloudImportServiceTest
 			}
 		};
 		serviceCollection.AddScoped<ICloudImportClient>(_ => fakeClient);
-		serviceCollection.AddScoped<IImport>(_ => new FakeImport());
+		serviceCollection.AddScoped<IImport>(_ => new FakeIImport(new FakeSelectorStorage(new StorageHostFullPathFilesystem(new FakeIWebLogger()))));
 		var serviceProvider = serviceCollection.BuildServiceProvider();
 		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
@@ -245,7 +242,7 @@ public class CloudImportServiceTest
 		};
 		serviceCollection.AddScoped<ICloudImportClient>(_ => fakeClient);
 		serviceCollection.AddScoped<IImport>(_ =>
-			new FakeImport { ImportStatusFunc = _ => ImportStatus.FileError });
+			new FakeIImport(new FakeSelectorStorage()));
 		var serviceProvider = serviceCollection.BuildServiceProvider();
 		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
@@ -297,7 +294,7 @@ public class CloudImportServiceTest
 			]
 		};
 		serviceCollection.AddScoped<ICloudImportClient>(_ => fakeClient);
-		serviceCollection.AddScoped<IImport>(_ => new FakeImport());
+		serviceCollection.AddScoped<IImport>(_ => new FakeIImport(new FakeSelectorStorage()));
 		var serviceProvider = serviceCollection.BuildServiceProvider();
 		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
@@ -334,7 +331,7 @@ public class CloudImportServiceTest
 		var logger = new FakeIWebLogger();
 		var serviceCollection = new ServiceCollection();
 		serviceCollection.AddScoped<ICloudImportClient>(_ => new FakeCloudImportClient());
-		serviceCollection.AddScoped<IImport>(_ => new FakeImport());
+		serviceCollection.AddScoped<IImport>(_ => new FakeIImport(new FakeSelectorStorage()));
 		var serviceProvider = serviceCollection.BuildServiceProvider();
 		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
@@ -342,64 +339,6 @@ public class CloudImportServiceTest
 
 		// Assert
 		Assert.IsFalse(service.IsSyncInProgress);
-	}
-
-	private sealed class FakeCloudImportClient : ICloudImportClient
-	{
-		public List<CloudFile> FilesToReturn { get; set; } = new();
-		public bool ShouldTestConnectionSucceed { get; set; } = true;
-		public List<CloudFile> DeletedFiles { get; } = new();
-		public Dictionary<string, string> DownloadedFiles { get; } = new();
-		public string Name => "FakeProvider";
-		public bool Enabled { get; } = true;
-
-		public Task<List<CloudFile>> ListFilesAsync(string remoteFolder)
-		{
-			return Task.FromResult(FilesToReturn);
-		}
-
-		public Task<string> DownloadFileAsync(CloudFile file, string localFolder)
-		{
-			var localPath = Path.Combine(localFolder, file.Name);
-			DownloadedFiles[file.Name] = localPath;
-			// Create a dummy file
-			Directory.CreateDirectory(localFolder);
-			File.WriteAllText(localPath, "fake content");
-			return Task.FromResult(localPath);
-		}
-
-		public Task<bool> DeleteFileAsync(CloudFile file)
-		{
-			DeletedFiles.Add(file);
-			return Task.FromResult(true);
-		}
-
-		public Task<bool> TestConnectionAsync()
-		{
-			return Task.FromResult(ShouldTestConnectionSucceed);
-		}
-	}
-
-	private sealed class FakeImport : IImport
-	{
-		public Func<List<string>, ImportStatus>? ImportStatusFunc { get; set; }
-
-		public Task<List<ImportIndexItem>> Preflight(List<string> fullFilePathsList,
-			ImportSettingsModel importSettings)
-		{
-			return Task.FromResult(new List<ImportIndexItem>());
-		}
-
-		public Task<List<ImportIndexItem>> Importer(IEnumerable<string> inputFullPathList,
-			ImportSettingsModel importSettings)
-		{
-			var list = inputFullPathList.ToList();
-			var status = ImportStatusFunc?.Invoke(list) ?? ImportStatus.Ok;
-			return Task.FromResult(list.Select(path => new ImportIndexItem
-			{
-				Status = status, FilePath = path
-			}).ToList());
-		}
 	}
 
 	[TestMethod]
@@ -412,17 +351,29 @@ public class CloudImportServiceTest
 			{
 				Providers = new List<CloudImportProviderSettings>
 				{
-					new() { Id = "provider1", Enabled = true, Provider = "FakeProvider", RemoteFolder = "/folder1" },
-					new() { Id = "provider2", Enabled = true, Provider = "FakeProvider", RemoteFolder = "/folder2" }
+					new()
+					{
+						Id = "provider1",
+						Enabled = true,
+						Provider = "FakeProvider",
+						RemoteFolder = "/folder1"
+					},
+					new()
+					{
+						Id = "provider2",
+						Enabled = true,
+						Provider = "FakeProvider",
+						RemoteFolder = "/folder2"
+					}
 				}
 			}
 		};
 		var logger = new FakeIWebLogger();
-		var serviceCollection = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+		var serviceCollection = new ServiceCollection();
 		serviceCollection.AddScoped<ICloudImportClient>(_ => new FakeCloudImportClient());
-		serviceCollection.AddScoped<IImport>(_ => new FakeImport());
+		serviceCollection.AddScoped<IImport>(_ => new FakeIImport(new FakeSelectorStorage()));
 		var serviceProvider = serviceCollection.BuildServiceProvider();
-		var scopeFactory = serviceProvider.GetRequiredService<Microsoft.Extensions.DependencyInjection.IServiceScopeFactory>();
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		var service = new CloudImportService(scopeFactory, logger, appSettings);
 
 		// Act
@@ -445,16 +396,22 @@ public class CloudImportServiceTest
 			{
 				Providers = new List<CloudImportProviderSettings>
 				{
-					new() { Id = "provider1", Enabled = false, Provider = "FakeProvider", RemoteFolder = "/folder1" }
+					new()
+					{
+						Id = "provider1",
+						Enabled = false,
+						Provider = "FakeProvider",
+						RemoteFolder = "/folder1"
+					}
 				}
 			}
 		};
 		var logger = new FakeIWebLogger();
-		var serviceCollection = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+		var serviceCollection = new ServiceCollection();
 		serviceCollection.AddScoped<ICloudImportClient>(_ => new FakeCloudImportClient());
-		serviceCollection.AddScoped<IImport>(_ => new FakeImport());
+		serviceCollection.AddScoped<IImport>(_ => new FakeIImport(new FakeSelectorStorage()));
 		var serviceProvider = serviceCollection.BuildServiceProvider();
-		var scopeFactory = serviceProvider.GetRequiredService<Microsoft.Extensions.DependencyInjection.IServiceScopeFactory>();
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		var service = new CloudImportService(scopeFactory, logger, appSettings);
 
 		// Act
