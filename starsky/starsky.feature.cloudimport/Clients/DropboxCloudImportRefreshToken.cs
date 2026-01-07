@@ -35,7 +35,9 @@ public class DropboxCloudImportRefreshToken(IHttpClientHelper httpClientHelper)
 		}
 
 		using var doc = JsonDocument.Parse(response.Value);
-		var accessToken = doc.RootElement.GetProperty("access_token").GetString();
+		var accessToken = doc.RootElement.TryGetProperty("access_token", out var accessTokenElement)
+			? accessTokenElement.GetString()
+			: null;
 		var expiresIn = doc.RootElement.TryGetProperty("expires_in", out var expires)
 			? expires.GetInt32()
 			: 14400;
