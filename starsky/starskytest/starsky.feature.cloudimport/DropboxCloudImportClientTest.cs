@@ -12,7 +12,7 @@ namespace starskytest.starsky.feature.cloudimport;
 public class FakeCloudFileEntry
 {
 	public bool IsFile { get; set; }
-	public FakeCloudFileMetadata AsFile { get; set; }
+	public FakeCloudFileMetadata AsFile { get; set; } = new();
 }
 
 public class FakeCloudFileMetadata
@@ -87,7 +87,7 @@ public class DropboxCloudImportClientTest
 
 		await client.ListFilesAsync("/test");
 
-		Assert.IsTrue(fakeFiles.ListFolderCalledWith.Contains("/test"));
+		Assert.Contains("/test", fakeFiles.ListFolderCalledWith);
 	}
 
 	[TestMethod]
