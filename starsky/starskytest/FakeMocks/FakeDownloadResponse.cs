@@ -9,6 +9,7 @@ namespace starskytest.FakeMocks;
 public class FakeDownloadResponse : IDownloadResponse<FileMetadata>
 {
 	private readonly byte[] _content;
+	private bool _disposed;
 
 	public FakeDownloadResponse(byte[] content)
 	{
@@ -47,6 +48,13 @@ public class FakeDownloadResponse : IDownloadResponse<FileMetadata>
 
 	public void Dispose()
 	{
+		GC.SuppressFinalize(this);
+		Dispose(true);
+	}
+
+	protected virtual void Dispose(bool _)
+	{
+		_disposed = true;
 	}
 
 	public Stream GetContentAsStream()
