@@ -260,7 +260,7 @@ public class CloudImportService(
 		}
 	}
 
-	private async Task<(IEnumerable<CloudFile>, CloudImportResult?)> GetCloudFiles(
+	internal async Task<(IEnumerable<CloudFile>, CloudImportResult?)> GetCloudFiles(
 		ICloudImportClient cloudClient,
 		CloudImportResult result, CloudImportProviderSettings providerSettings, string providerId)
 	{
