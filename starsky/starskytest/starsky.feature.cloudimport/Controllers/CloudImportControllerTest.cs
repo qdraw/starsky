@@ -121,10 +121,7 @@ public class CloudImportControllerTest
 		{
 			CloudImport = new CloudImportSettings { Providers = [provider] }
 		};
-		var fakeService = new FakeCloudImportService
-		{
-			IsSyncInProgress = false
-		};
+		var fakeService = new FakeCloudImportService { IsSyncInProgress = false };
 		var controller = new CloudImportController(fakeService, appSettings);
 
 		var result = await controller.TriggerSyncAll() as OkObjectResult;
@@ -143,7 +140,10 @@ public class CloudImportControllerTest
 	{
 		var appSettings = new AppSettings
 		{
-			CloudImport = new CloudImportSettings { Providers = new List<CloudImportProviderSettings>() }
+			CloudImport = new CloudImportSettings
+			{
+				Providers = new List<CloudImportProviderSettings>()
+			}
 		};
 		var fakeService = new FakeCloudImportService { IsSyncInProgress = false };
 		var controller = new CloudImportController(fakeService, appSettings);
@@ -201,11 +201,14 @@ public class CloudImportControllerTest
 		};
 		var appSettings = new AppSettings
 		{
-			CloudImport = new CloudImportSettings { Providers = new List<CloudImportProviderSettings> { provider } }
+			CloudImport = new CloudImportSettings
+			{
+				Providers = new List<CloudImportProviderSettings> { provider }
+			}
 		};
 		var fakeService = new FakeCloudImportService();
 		var expectedResult = new CloudImportResult { ProviderId = "dropbox-1" };
-		fakeService.SyncAsyncFunc = (_) => Task.FromResult(expectedResult);
+		fakeService.SyncAsyncFunc = _ => Task.FromResult(expectedResult);
 		var controller = new CloudImportController(fakeService, appSettings);
 
 		var result = await controller.TriggerSync("dropbox-1") as OkObjectResult;
@@ -221,7 +224,10 @@ public class CloudImportControllerTest
 	{
 		var appSettings = new AppSettings
 		{
-			CloudImport = new CloudImportSettings { Providers = new List<CloudImportProviderSettings>() }
+			CloudImport = new CloudImportSettings
+			{
+				Providers = new List<CloudImportProviderSettings>()
+			}
 		};
 		var fakeService = new FakeCloudImportService();
 		var controller = new CloudImportController(fakeService, appSettings);
@@ -250,7 +256,10 @@ public class CloudImportControllerTest
 		};
 		var appSettings = new AppSettings
 		{
-			CloudImport = new CloudImportSettings { Providers = new List<CloudImportProviderSettings> { provider } }
+			CloudImport = new CloudImportSettings
+			{
+				Providers = new List<CloudImportProviderSettings> { provider }
+			}
 		};
 		var fakeService = new FakeCloudImportService();
 		var controller = new CloudImportController(fakeService, appSettings);
@@ -276,7 +285,10 @@ public class CloudImportControllerTest
 		};
 		var appSettings = new AppSettings
 		{
-			CloudImport = new CloudImportSettings { Providers = new List<CloudImportProviderSettings>() }
+			CloudImport = new CloudImportSettings
+			{
+				Providers = new List<CloudImportProviderSettings>()
+			}
 		};
 		var controller = new CloudImportController(fakeService, appSettings);
 
@@ -291,10 +303,16 @@ public class CloudImportControllerTest
 	[TestMethod]
 	public void GetLastResults_ReturnsNotFound_WhenNoResults()
 	{
-		var fakeService = new FakeCloudImportService { LastSyncResults = new Dictionary<string, CloudImportResult>() };
+		var fakeService = new FakeCloudImportService
+		{
+			LastSyncResults = new Dictionary<string, CloudImportResult>()
+		};
 		var appSettings = new AppSettings
 		{
-			CloudImport = new CloudImportSettings { Providers = new List<CloudImportProviderSettings>() }
+			CloudImport = new CloudImportSettings
+			{
+				Providers = new List<CloudImportProviderSettings>()
+			}
 		};
 		var controller = new CloudImportController(fakeService, appSettings);
 
@@ -305,5 +323,58 @@ public class CloudImportControllerTest
 		var messageProp = value.GetType().GetProperty("message");
 		Assert.IsNotNull(messageProp);
 		Assert.AreEqual("No sync has been performed yet", messageProp.GetValue(value));
+	}
+
+	[TestMethod]
+	public void GetLastResult_ReturnsOk_WhenResultExists()
+	{
+		var fakeService = new FakeCloudImportService
+		{
+			LastSyncResults = new Dictionary<string, CloudImportResult>
+			{
+				{ "dropbox-1", new CloudImportResult { ProviderId = "dropbox-1" } }
+			}
+		};
+		var appSettings = new AppSettings
+		{
+			CloudImport = new CloudImportSettings
+			{
+				Providers = new List<CloudImportProviderSettings>()
+			}
+		};
+		var controller = new CloudImportController(fakeService, appSettings);
+
+		var result = controller.GetLastResult("dropbox-1") as OkObjectResult;
+		Assert.IsNotNull(result);
+		var value = result.Value as CloudImportResult;
+		Assert.IsNotNull(value);
+		Assert.AreEqual("dropbox-1", value.ProviderId);
+		Assert.IsTrue(value.Success);
+	}
+
+	[TestMethod]
+	public void GetLastResult_ReturnsNotFound_WhenResultDoesNotExist()
+	{
+		var fakeService = new FakeCloudImportService
+		{
+			LastSyncResults = new Dictionary<string, CloudImportResult>()
+		};
+		var appSettings = new AppSettings
+		{
+			CloudImport = new CloudImportSettings
+			{
+				Providers = new List<CloudImportProviderSettings>()
+			}
+		};
+		var controller = new CloudImportController(fakeService, appSettings);
+
+		var result = controller.GetLastResult("not-exist") as NotFoundObjectResult;
+		Assert.IsNotNull(result);
+		var value = result.Value;
+		Assert.IsNotNull(value);
+		var messageProp = value.GetType().GetProperty("message");
+		Assert.IsNotNull(messageProp);
+		Assert.AreEqual("No sync result found for provider 'not-exist'",
+			messageProp.GetValue(value));
 	}
 }

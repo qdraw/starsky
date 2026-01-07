@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -308,7 +309,9 @@ public class CloudImportServiceTest
 
 		// Act - Try to start second sync while first is running
 		await service.SyncAsync("test", CloudImportTriggerType.Manual);
-		await task1; // Wait for first task to complete
+		await task1;
+
+		await Task.Delay(10, CancellationToken.None);
 
 		// Assert
 		Assert.IsTrue(logger.TrackedExceptions.Any(e => e.Item2!.Contains("already in progress")));
