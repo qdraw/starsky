@@ -13,7 +13,7 @@ public class FakeCloudImportService : ICloudImportService
 
 	public List<CloudImportTriggerType> SyncCalls { get; } = new();
 	public bool IsSyncInProgress { get; set; }
-	public Dictionary<string, CloudImportResult> LastSyncResults { get; } = new();
+	public Dictionary<string, CloudImportResult> LastSyncResults { get; set; } = new();
 
 	public Task<CloudImportResult> SyncAsync(string[] args)
 	{

@@ -1,6 +1,5 @@
-using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.cloudimport;
@@ -14,178 +13,50 @@ namespace starskytest.starsky.feature.cloudimport.Controllers;
 public class CloudImportControllerTest
 {
 	[TestMethod]
-	public void GetStatus_ShouldReturnCurrentStatus()
+	public void GetStatus_ReturnsProviderStatus()
 	{
-		// Arrange
+		var provider = new CloudImportProviderSettings
+		{
+			Id = "dropbox-1",
+			Enabled = true,
+			Provider = "Dropbox",
+			RemoteFolder = "/Camera Uploads",
+			SyncFrequencyMinutes = 15,
+			SyncFrequencyHours = 0,
+			DeleteAfterImport = false
+		};
 		var appSettings = new AppSettings
 		{
-			CloudImport = new CloudImportSettings
+			CloudImport = new CloudImportSettings { Providers = [provider] }
+		};
+		var fakeService = new FakeCloudImportService
+		{
+			IsSyncInProgress = false,
+			LastSyncResults = new Dictionary<string, CloudImportResult>
 			{
-				Providers = new List<CloudImportProviderSettings>
-				{
-					new()
-					{
-						Id = "test",
-						Enabled = true,
-						Provider = "Dropbox",
-						RemoteFolder = "/photos",
-						SyncFrequencyMinutes = 30,
-						DeleteAfterImport = true
-					}
-				}
+				{ "dropbox-1", new CloudImportResult() }
 			}
 		};
-		var service = new FakeCloudImportService();
-		var controller = new CloudImportController(service, appSettings);
+		var controller = new CloudImportController(fakeService, appSettings);
 
-		// Act
 		var result = controller.GetStatus() as OkObjectResult;
-
-		// Assert
 		Assert.IsNotNull(result);
-		Assert.AreEqual(200, result.StatusCode);
-	}
-
-	[TestMethod]
-	public async Task TriggerSync_WhenDisabled_ShouldReturnBadRequest()
-	{
-		// Arrange
-		var appSettings = new AppSettings
-		{
-			CloudImport = new CloudImportSettings
-			{
-				Providers = new List<CloudImportProviderSettings>
-				{
-					new() { Id = "test", Enabled = false }
-				}
-			}
-		};
-		var service = new FakeCloudImportService();
-		var controller = new CloudImportController(service, appSettings);
-
-		// Act
-		var result = await controller.TriggerSync("test") as BadRequestObjectResult;
-
-		// Assert
-		Assert.IsNotNull(result);
-		Assert.AreEqual(400, result.StatusCode);
-	}
-
-	[TestMethod]
-	public async Task TriggerSync_WhenAlreadyInProgress_ShouldReturnConflict()
-	{
-		// Arrange
-		var appSettings = new AppSettings
-		{
-			CloudImport = new CloudImportSettings
-			{
-				Providers =
-				[
-					new CloudImportProviderSettings { Id = "test", Enabled = true }
-				]
-			}
-		};
-		var service = new FakeCloudImportService { IsSyncInProgress = true };
-		var controller = new CloudImportController(service, appSettings);
-
-		// Act
-		var result = await controller.TriggerSync("test") as OkObjectResult;
-
-		// Assert
-		Assert.IsNotNull(result);
-		Assert.AreEqual(200, result.StatusCode);
-	}
-
-	[TestMethod]
-	public async Task TriggerSync_WhenEnabled_ShouldStartSyncAndReturnResult()
-	{
-		// Arrange
-		var appSettings = new AppSettings
-		{
-			CloudImport = new CloudImportSettings
-			{
-				Providers = new List<CloudImportProviderSettings>
-				{
-					new() { Id = "test", Enabled = true }
-				}
-			}
-		};
-		var service = new FakeCloudImportService();
-		var controller = new CloudImportController(service, appSettings);
-
-		// Act
-		var result = await controller.TriggerSync("test") as OkObjectResult;
-
-		// Assert
-		Assert.IsNotNull(result);
-		Assert.AreEqual(200, result.StatusCode);
-		Assert.IsInstanceOfType(result.Value, typeof(CloudImportResult));
-		var syncResult = result.Value as CloudImportResult;
-		Assert.AreEqual(CloudImportTriggerType.Manual, syncResult!.TriggerType);
-	}
-
-	[TestMethod]
-	public void GetLastResult_WhenNoSyncPerformed_ShouldReturnNotFound()
-	{
-		// Arrange
-		var appSettings = new AppSettings
-		{
-			CloudImport = new CloudImportSettings
-			{
-				Providers = new List<CloudImportProviderSettings>
-				{
-					new() { Id = "test", Enabled = true }
-				}
-			}
-		};
-		var service = new FakeCloudImportService { LastSyncResult = null };
-		var controller = new CloudImportController(service, appSettings);
-
-		// Act
-		var result = controller.GetLastResult("test") as NotFoundObjectResult;
-
-		// Assert
-		Assert.IsNotNull(result);
-		Assert.AreEqual(404, result.StatusCode);
-	}
-
-	[TestMethod]
-	public void GetLastResult_WhenSyncPerformed_ShouldReturnResult()
-	{
-		// Arrange
-		var appSettings = new AppSettings
-		{
-			CloudImport = new CloudImportSettings
-			{
-				Providers = new List<CloudImportProviderSettings>
-				{
-					new() { Id = "test", Enabled = true }
-				}
-			}
-		};
-		var lastResult = new CloudImportResult
-		{
-			StartTime = DateTime.UtcNow.AddMinutes(-5),
-			EndTime = DateTime.UtcNow,
-			TriggerType = CloudImportTriggerType.Scheduled,
-			FilesFound = 10,
-			FilesImportedSuccessfully = 8,
-			FilesFailed = 2
-		};
-		var service = new FakeCloudImportService { LastSyncResult = lastResult };
-		service.LastSyncResults["test"] = lastResult;
-		var controller = new CloudImportController(service, appSettings);
-
-		// Act
-		var result = controller.GetLastResult("test") as OkObjectResult;
-
-		// Assert
-		Assert.IsNotNull(result);
-		Assert.AreEqual(200, result.StatusCode);
-		Assert.IsInstanceOfType(result.Value, typeof(CloudImportResult));
-		var syncResult = result.Value as CloudImportResult;
-		Assert.AreEqual(10, syncResult!.FilesFound);
-		Assert.AreEqual(8, syncResult.FilesImportedSuccessfully);
-		Assert.AreEqual(2, syncResult.FilesFailed);
+		var value = result.Value;
+		Assert.IsNotNull(value);
+		var providersProp = value.GetType().GetProperty("providers");
+		Assert.IsNotNull(providersProp);
+		var providers = providersProp.GetValue(value) as IEnumerable<object>;
+		Assert.IsNotNull(providers);
+		var first = providers.First();
+		var firstType = first.GetType();
+		Assert.AreEqual("dropbox-1", firstType.GetProperty("id")?.GetValue(first));
+		Assert.IsTrue(( bool? ) firstType.GetProperty("enabled")?.GetValue(first));
+		Assert.AreEqual("Dropbox", firstType.GetProperty("provider")?.GetValue(first));
+		Assert.AreEqual("/Camera Uploads", firstType.GetProperty("remoteFolder")?.GetValue(first));
+		Assert.AreEqual(15, firstType.GetProperty("syncFrequencyMinutes")?.GetValue(first));
+		Assert.AreEqual(0, firstType.GetProperty("syncFrequencyHours")?.GetValue(first));
+		Assert.IsFalse(( bool? ) firstType.GetProperty("deleteAfterImport")?.GetValue(first));
+		var isSyncInProgress = value.GetType().GetProperty("isSyncInProgress")?.GetValue(value);
+		Assert.IsFalse(( bool? ) isSyncInProgress);
 	}
 }

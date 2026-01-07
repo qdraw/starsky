@@ -28,7 +28,7 @@ Add to your `appsettings.json`:
 
 ```json
 {
-  "CloudSync": {
+  "CloudImport": {
     "Enabled": true,
     "Provider": "Dropbox",
     "RemoteFolder": "/Camera Uploads",
@@ -45,12 +45,12 @@ Add to your `appsettings.json`:
 **Or** use environment variables (recommended for production):
 
 ```bash
-export app__CloudSync__Enabled=true
-export app__CloudSync__Provider=Dropbox
-export app__CloudSync__RemoteFolder="/Camera Uploads"
-export app__CloudSync__SyncFrequencyHours=1
-export app__CloudSync__DeleteAfterImport=false
-export app__CloudSync__Credentials__AccessToken="YOUR_ACCESS_TOKEN_HERE"
+export app__CloudImport__Enabled=true
+export app__CloudImport__Provider=Dropbox
+export app__CloudImport__RemoteFolder="/Camera Uploads"
+export app__CloudImport__SyncFrequencyHours=1
+export app__CloudImport__DeleteAfterImport=false
+export app__CloudImport__Credentials__AccessToken="YOUR_ACCESS_TOKEN_HERE"
 ```
 
 ### 4. Start Starsky
@@ -68,21 +68,21 @@ Once configured, the sync will run automatically based on your `SyncFrequencyMin
 You can trigger a manual sync using the API:
 
 ```bash
-curl -X POST https://your-starsky-instance/api/cloudsync/sync \
+curl -X POST https://your-starsky-instance/api/CloudImport/sync \
   -H "Authorization: Bearer YOUR_AUTH_TOKEN"
 ```
 
 ### Check Status
 
 ```bash
-curl https://your-starsky-instance/api/cloudsync/status \
+curl https://your-starsky-instance/api/CloudImport/status \
   -H "Authorization: Bearer YOUR_AUTH_TOKEN"
 ```
 
 ### View Last Result
 
 ```bash
-curl https://your-starsky-instance/api/cloudsync/last-result \
+curl https://your-starsky-instance/api/CloudImport/last-result \
   -H "Authorization: Bearer YOUR_AUTH_TOKEN"
 ```
 
@@ -152,7 +152,7 @@ Cloud sync operations are logged with detailed information:
 - Connection issues
 - Errors with stack traces
 
-Check your application logs for entries containing "Cloud sync" or "CloudSync".
+Check your application logs for entries containing "Cloud sync" or "CloudImport".
 
 ### Status Endpoint
 
@@ -233,15 +233,7 @@ The status endpoint provides real-time information:
 
 For issues or questions:
 1. Check application logs
-2. Review the implementation documentation: `starsky.foundation.cloudsync/README-IMPLEMENTATION.md`
-3. Verify configuration matches examples above
-4. Test Dropbox connectivity separately
+2. Verify configuration matches examples above
+3. Test Dropbox connectivity separately
 
-## Next Steps
-
-Once cloud sync is working:
-- Consider adding additional providers (Google Drive, OneDrive)
-- Set up monitoring and alerts for sync failures
-- Automate token refresh (for long-term operation)
-- Configure selective sync based on file patterns
 
