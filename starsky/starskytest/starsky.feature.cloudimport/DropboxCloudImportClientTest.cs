@@ -107,4 +107,35 @@ public class DropboxCloudImportClientTest
 			await client.ListFilesAsync("/test");
 		});
 	}
+
+	[TestMethod]
+	[DataRow("Dropbox", "token", true)]
+	[DataRow("Other", "token", false)]
+	[DataRow("Dropbox", null, false)]
+	public void Enabled_Theory(string provider, string refreshToken, bool expected)
+	{
+		var appSettings = new AppSettings
+		{
+			CloudImport = new CloudImportSettings
+			{
+				Providers =
+				[
+					new CloudImportProviderSettings
+					{
+						Provider = provider,
+						Credentials = new CloudProviderCredentials
+						{
+							RefreshToken = refreshToken
+						}
+					}
+				]
+			}
+		};
+		var client = new DropboxCloudImportClient(
+			new FakeIWebLogger(),
+			appSettings,
+			new FakeDropboxCloudImportRefreshToken()
+		);
+		Assert.AreEqual(expected, client.Enabled);
+	}
 }
