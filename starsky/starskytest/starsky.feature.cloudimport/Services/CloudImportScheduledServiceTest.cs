@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -51,16 +50,16 @@ public class CloudImportScheduledServiceTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings>
-				{
-					new()
+				Providers =
+				[
+					new CloudImportProviderSettings
 					{
 						Id = "test",
 						Enabled = true,
 						SyncFrequencyMinutes = 0,
 						SyncFrequencyHours = 1
 					}
-				}
+				]
 			}
 		};
 		var cloudImportService = new FakeCloudImportService();

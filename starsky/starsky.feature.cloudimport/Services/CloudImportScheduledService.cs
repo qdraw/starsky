@@ -25,7 +25,10 @@ public class CloudImportScheduledService(
 		logger.LogInformation("Cloud Import Scheduled Service started");
 
 		var enabledProviders =
-			appSettings.CloudImport?.Providers.Where(p => p.Enabled).ToList() ?? [];
+			appSettings.CloudImport?.Providers.Where(p => p.Enabled &&
+			                                              ( p.SyncFrequencyHours > 0 ||
+			                                                p.SyncFrequencyMinutes > 0 ))
+				.ToList() ?? [];
 
 		if ( enabledProviders.Count == 0 )
 		{
@@ -86,7 +89,7 @@ public class CloudImportScheduledService(
 				// Wait a bit before retrying after error
 				try
 				{
-					await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
+					await Task.Delay(TimeSpan.FromMinutes(2), stoppingToken);
 				}
 				catch ( TaskCanceledException )
 				{
@@ -111,7 +114,7 @@ public class CloudImportScheduledService(
 			return TimeSpan.FromHours(provider.SyncFrequencyHours);
 		}
 
-		return TimeSpan.FromHours(24);
+		return TimeSpan.MaxValue;
 	}
 
 	public override Task StopAsync(CancellationToken cancellationToken)
