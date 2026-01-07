@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,6 +19,8 @@ namespace starskytest.starsky.feature.cloudimport.Services;
 [TestClass]
 public class CloudImportServiceTest
 {
+	public TestContext TestContext { get; set; }
+
 	[TestMethod]
 	public async Task SyncAsync_WhenDisabled_ShouldReturnErrorResult()
 	{
@@ -314,7 +317,8 @@ public class CloudImportServiceTest
 			await service.SyncAsync("test", CloudImportTriggerType.Manual));
 
 		// Ensure the first sync is running and blocked
-		await Task.Delay(50, TestContext.CancellationToken); // Give time for the first sync to start and block
+		await Task.Delay(50,
+			TestContext.CancellationToken); // Give time for the first sync to start and block
 
 		// Act - Try to start second sync while first is running
 		await service.SyncAsync("test", CloudImportTriggerType.Manual);
@@ -496,12 +500,7 @@ public class CloudImportServiceTest
 			{
 				Providers = new List<CloudImportProviderSettings>
 				{
-					new()
-					{
-						Id = "test",
-						Enabled = true,
-						Provider = "FakeProvider"
-					}
+					new() { Id = "test", Enabled = true, Provider = "FakeProvider" }
 				}
 			}
 		};
@@ -520,7 +519,8 @@ public class CloudImportServiceTest
 
 		// Assert
 		Assert.IsFalse(result.Success);
-		Assert.IsTrue(result.Errors.Any(e => e.Contains("not available") || e.Contains("not enabled")));
+		Assert.IsTrue(result.Errors.Any(e =>
+			e.Contains("not available") || e.Contains("not enabled")));
 	}
 
 	[TestMethod]
@@ -533,7 +533,7 @@ public class CloudImportServiceTest
 			{
 				Providers =
 				[
-					new()
+					new CloudImportProviderSettings
 					{
 						Id = "dropbox-test",
 						Enabled = true,
@@ -551,7 +551,8 @@ public class CloudImportServiceTest
 		};
 		var logger = new FakeIWebLogger();
 		var serviceCollection = new ServiceCollection();
-		var fakeDropboxClient = new DropboxCloudImportClient(new FakeIWebLogger(), new AppSettings(), new FakeDropboxCloudImportRefreshToken());
+		var fakeDropboxClient = new DropboxCloudImportClient(new FakeIWebLogger(),
+			new AppSettings(), new FakeDropboxCloudImportRefreshToken());
 		serviceCollection.AddScoped<ICloudImportClient>(_ => fakeDropboxClient);
 		serviceCollection.AddScoped<IImport>(_ => new FakeIImport(new FakeSelectorStorage()));
 		var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -563,7 +564,8 @@ public class CloudImportServiceTest
 
 		// Assert
 		Assert.IsFalse(result.Success);
-		Assert.IsTrue(result.Errors.Any(e => e.Contains("not available") || e.Contains("not enabled")));
+		Assert.IsTrue(result.Errors.Any(e =>
+			e.Contains("not available") || e.Contains("not enabled")));
 	}
 
 	[TestMethod]
@@ -574,15 +576,13 @@ public class CloudImportServiceTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings>
-				{
-					new()
+				Providers =
+				[
+					new CloudImportProviderSettings
 					{
-						Id = "test",
-						Enabled = true,
-						Provider = "FakeProvider"
+						Id = "test", Enabled = true, Provider = "FakeProvider"
 					}
-				}
+				]
 			}
 		};
 		var logger = new FakeIWebLogger();
@@ -593,18 +593,44 @@ public class CloudImportServiceTest
 		var serviceProvider = serviceCollection.BuildServiceProvider();
 		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		var service = new CloudImportService(scopeFactory, logger, appSettings);
-
-		// Use reflection to call the private GetCloudFiles method
-		var method = typeof(CloudImportService).GetMethod("GetCloudFiles", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 		var providerSettings = appSettings.CloudImport.Providers[0];
 		var result = new CloudImportResult();
-		var task = (Task<(IEnumerable<CloudFile>, CloudImportResult?)>)method!.Invoke(service, new object[] { fakeClient, result, providerSettings, providerSettings.Id })!;
-		var (_, errorResult) = await task;
+		var (_, errorResult) = await service.GetCloudFiles(fakeClient, result,
+			providerSettings, providerSettings.Id);
 
 		// Assert
 		Assert.IsNotNull(errorResult);
-		Assert.IsTrue(errorResult.Errors.Any(e => e.Contains("Failed to list files from cloud storage")));
+		Assert.IsTrue(errorResult.Errors.Any(e =>
+			e.Contains("Failed to list files from cloud storage")));
 	}
 
-	public TestContext TestContext { get; set; }
+	[TestMethod]
+	public async Task ProcessFileLoopAsync_WhenProcessFileThrowsException_ShouldAddError()
+	{
+		// Arrange
+		var appSettings = new AppSettings();
+		var logger = new FakeIWebLogger();
+		var fakeClient = new FakeCloudImportClientThrowsOnProcess();
+		var fakeImport = new FakeIImport(new FakeSelectorStorage());
+		var files = new List<CloudFile>
+		{
+			new() { Id = "1", Name = "file1.jpg", Path = "/file1.jpg", Size = 100 }
+		};
+		var tempFolder = Path.GetTempPath();
+		var result = new CloudImportResult();
+		var providerSettings = new CloudImportProviderSettings();
+		var serviceCollection = new ServiceCollection();
+		serviceCollection.AddScoped<ICloudImportClient>(_ => fakeClient);
+		serviceCollection.AddScoped<IImport>(_ => fakeImport);
+		var serviceProvider = serviceCollection.BuildServiceProvider();
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+		var service = new CloudImportService(scopeFactory, logger, appSettings);
+
+		await service.ProcessFileLoopAsync(fakeClient, fakeImport, files, tempFolder, result,
+			providerSettings);
+
+		// Assert
+		Assert.AreEqual(1, result.FilesFailed);
+		Assert.IsTrue(result.Errors.Any(e => e.Contains("Download failed")));
+	}
 }
