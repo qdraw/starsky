@@ -9,7 +9,7 @@ namespace starskytest.FakeMocks;
 
 public class FakeIImportForImportTest : IImport
 {
-	public Func<IEnumerable<string>, ImportSettingsModel, List<ImportIndexItem>> ImporterFunc
+	public Func<IEnumerable<string>, ImportSettingsModel, List<ImportIndexItem>>? ImporterFunc
 	{
 		get;
 		set;
