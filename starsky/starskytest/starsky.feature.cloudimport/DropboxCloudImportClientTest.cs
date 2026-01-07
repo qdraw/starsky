@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Dropbox.Api.Files;
+using Dropbox.Api.Stone;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.feature.cloudimport;
 using starsky.feature.cloudimport.Clients;
 using starsky.feature.cloudimport.Clients.Interfaces;
 using starsky.foundation.platform.Models;
@@ -48,6 +51,8 @@ public class FakeDropboxCloudImportRefreshToken : IDropboxCloudImportRefreshToke
 [TestClass]
 public class DropboxCloudImportClientTest
 {
+	public TestContext TestContext { get; set; }
+
 	[TestMethod]
 	public async Task InitializeClient_UsesFactoryAndSetsClient()
 	{
@@ -208,5 +213,73 @@ public class DropboxCloudImportClientTest
 		Assert.IsTrue(files.Any(f => f.Id == "1" && f.Name == "file1.txt"));
 		Assert.IsTrue(files.Any(f => f.Id == "2" && f.Name == "file2.txt"));
 		Assert.AreEqual(1, callCount); // ListFolderContinueAsync should be called once
+	}
+
+	[TestMethod]
+	public async Task DownloadFileAsync_WritesFileAndReturnsPath()
+	{
+		var logger = new FakeIWebLogger();
+		var appSettings = new AppSettings();
+		var tokenClient = new FakeDropboxCloudImportRefreshToken();
+		var fakeFiles = new FakeFilesUserRoutes();
+		var fakeClient = new FakeIDropboxClient(fakeFiles);
+
+		// Setup DownloadAsync to return a fake response with known content
+		var fileContent = new byte[] { 1, 2, 3, 4, 5 };
+		fakeClient.DownloadAsyncFunc = _ =>
+			Task.FromResult<IDownloadResponse<FileMetadata>>(
+				new FakeDownloadResponse(fileContent)
+			);
+
+		var client = new DropboxCloudImportClient(
+			logger,
+			appSettings,
+			tokenClient,
+			_ => fakeClient
+		);
+		await client.InitializeClient("refresh", "key", "secret");
+
+		var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+		Directory.CreateDirectory(tempDir);
+		try
+		{
+			var file = new CloudFile { Name = "testfile.bin", Path = "/testfile.bin" };
+			var resultPath = await client.DownloadFileAsync(file, tempDir);
+			Assert.IsTrue(File.Exists(resultPath));
+			var writtenContent =
+				await File.ReadAllBytesAsync(resultPath, TestContext.CancellationToken);
+			CollectionAssert.AreEqual(fileContent, writtenContent);
+		}
+		finally
+		{
+			Directory.Delete(tempDir, true);
+		}
+	}
+
+	[TestMethod]
+	public async Task DownloadFileAsync_Exception()
+	{
+		var logger = new FakeIWebLogger();
+		var appSettings = new AppSettings();
+		var tokenClient = new FakeDropboxCloudImportRefreshToken();
+		var fakeFiles = new FakeFilesUserRoutes();
+		var fakeClient = new FakeIDropboxClient(fakeFiles)
+		{
+			DownloadAsyncFunc = _ => throw new NotSupportedException()
+		};
+		var client = new DropboxCloudImportClient(
+			logger,
+			appSettings,
+			tokenClient,
+			_ => fakeClient
+		);
+		await client.InitializeClient("refresh", "key", "secret");
+		var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+
+		var file = new CloudFile { Name = "testfile.bin", Path = "/testfile.bin" };
+		await Assert.ThrowsExactlyAsync<NotSupportedException>(async () =>
+		{
+			await client.DownloadFileAsync(file, tempDir);
+		});
 	}
 }
