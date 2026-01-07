@@ -214,21 +214,8 @@ public class CloudImportService(
 
 				try
 				{
-					foreach ( var file in cloudFiles )
-					{
-						try
-						{
-							await ProcessFileAsync(cloudClient, import, file, tempFolder, result,
-								providerSettings);
-						}
-						catch ( Exception ex )
-						{
-							logger.LogError(ex, $"Error processing file {file.Name}: {ex.Message}");
-							result.FilesFailed++;
-							result.FailedFiles.Add(file.Name);
-							result.Errors.Add($"{file.Name}: {ex.Message}");
-						}
-					}
+					await ProcessFileLoopAsync(cloudClient, import, cloudFiles, tempFolder, result,
+						providerSettings);
 				}
 				finally
 				{
@@ -313,6 +300,30 @@ public class CloudImportService(
 		lock ( _resultsLock )
 		{
 			_lastSyncResults[providerId] = result;
+		}
+	}
+
+	private async Task ProcessFileLoopAsync(ICloudImportClient cloudClient,
+		IImport import,
+		IEnumerable<CloudFile> cloudFiles,
+		string tempFolder,
+		CloudImportResult result,
+		CloudImportProviderSettings providerSettings)
+	{
+		foreach ( var file in cloudFiles )
+		{
+			try
+			{
+				await ProcessFileAsync(cloudClient, import, file, tempFolder, result,
+					providerSettings);
+			}
+			catch ( Exception ex )
+			{
+				logger.LogError(ex, $"Error processing file {file.Name}: {ex.Message}");
+				result.FilesFailed++;
+				result.FailedFiles.Add(file.Name);
+				result.Errors.Add($"{file.Name}: {ex.Message}");
+			}
 		}
 	}
 
