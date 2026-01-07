@@ -330,7 +330,7 @@ public class CloudImportService(
 		}
 	}
 
-	private async Task ProcessFileAsync(
+	internal async Task ProcessFileAsync(
 		ICloudImportClient cloudClient,
 		IImport import,
 		CloudFile file,
@@ -366,7 +366,36 @@ public class CloudImportService(
 			return;
 		}
 
-		// Import file
+		var importSuccess = await Import(providerSettings, import,
+			result, localPath, file, fileKey);
+
+		// Delete from cloud storage if import was successful and setting is enabled
+		if ( importSuccess && providerSettings.DeleteAfterImport )
+		{
+			try
+			{
+				var deleted = await cloudClient.DeleteFileAsync(file);
+				if ( deleted )
+				{
+					logger.LogInformation($"Deleted file from cloud storage: {file.Name}");
+				}
+				else
+				{
+					logger.LogError($"Failed to delete file from cloud storage: {file.Name}");
+				}
+			}
+			catch ( Exception ex )
+			{
+				logger.LogError(ex,
+					$"Error deleting file from cloud storage {file.Name}: {ex.Message}");
+				// Don't fail the whole operation if delete fails
+			}
+		}
+	}
+
+	internal async Task<bool> Import(CloudImportProviderSettings providerSettings,
+		IImport import, CloudImportResult result, string localPath, CloudFile file, string fileKey)
+	{
 		var importSuccess = false;
 		try
 		{
@@ -378,7 +407,7 @@ public class CloudImportService(
 				Origin = providerSettings.Id
 			};
 
-			var importResult = await import.Importer(new[] { localPath }, importSettings);
+			var importResult = await import.Importer([localPath], importSettings);
 
 			// Check if import was successful
 			if ( importResult.Count != 0 && importResult.All(i => i.Status == ImportStatus.Ok) )
@@ -406,28 +435,7 @@ public class CloudImportService(
 			result.Errors.Add($"Import failed: {file.Name} - {ex.Message}");
 		}
 
-		// Delete from cloud storage if import was successful and setting is enabled
-		if ( importSuccess && providerSettings.DeleteAfterImport )
-		{
-			try
-			{
-				var deleted = await cloudClient.DeleteFileAsync(file);
-				if ( deleted )
-				{
-					logger.LogInformation($"Deleted file from cloud storage: {file.Name}");
-				}
-				else
-				{
-					logger.LogError($"Failed to delete file from cloud storage: {file.Name}");
-				}
-			}
-			catch ( Exception ex )
-			{
-				logger.LogError(ex,
-					$"Error deleting file from cloud storage {file.Name}: {ex.Message}");
-				// Don't fail the whole operation if delete fails
-			}
-		}
+		return importSuccess;
 	}
 
 	private static ICloudImportClient? GetCloudClient(IServiceScope scope, string providerName)
