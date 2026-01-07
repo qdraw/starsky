@@ -43,8 +43,8 @@ public class CloudImportService(
 	public async Task<List<CloudImportResult>> SyncAllAsync(CloudImportTriggerType triggerType)
 	{
 		var results = new List<CloudImportResult>();
-		var enabledProviders =
-			appSettings.CloudImport?.Providers.Where(p => p.Enabled).ToList() ?? [];
+		var enabledProviders = appSettings.CloudImport?
+			.GetEnabledProviders() ?? [];
 
 		if ( enabledProviders.Count == 0 )
 		{

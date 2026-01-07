@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace starsky.foundation.platform.Models;
 
@@ -11,6 +12,14 @@ public class CloudImportSettings
 	///     List of Cloud Import provider configurations
 	/// </summary>
 	public List<CloudImportProviderSettings> Providers { get; set; } = new();
+
+	public List<CloudImportProviderSettings> GetEnabledProviders()
+	{
+		return Providers.Where(p => p.Enabled &&
+		                            ( p.SyncFrequencyHours > 0 ||
+		                              p.SyncFrequencyMinutes > 0 ))
+			.ToList();
+	}
 }
 
 /// <summary>
