@@ -279,6 +279,7 @@ public class CloudImportServiceTest
 		};
 		var logger = new FakeIWebLogger();
 		var serviceCollection = new ServiceCollection();
+		var syncBlocker = new System.Threading.ManualResetEventSlim(false);
 		var fakeClient = new FakeCloudImportClient
 		{
 			FilesToReturn =
@@ -291,7 +292,8 @@ public class CloudImportServiceTest
 					Size = 1024,
 					Hash = "abc123"
 				}
-			]
+			],
+			SyncBlocker = syncBlocker
 		};
 		serviceCollection.AddScoped<ICloudImportClient>(_ => fakeClient);
 		serviceCollection.AddScoped<IImport>(_ => new FakeIImport(new FakeSelectorStorage()));
@@ -300,15 +302,19 @@ public class CloudImportServiceTest
 
 		var service = new CloudImportService(scopeFactory, logger, appSettings);
 
-		// Act - Start first sync
-		var task1 = Task.Run(async () =>
-			await service.SyncAsync("test", CloudImportTriggerType.Manual));
+		// Act - Start first sync (will block)
+		var task1 = Task.Run(async () => await service.SyncAsync("test", CloudImportTriggerType.Manual));
+
+		// Ensure the first sync is running and blocked
+		await Task.Delay(50); // Give time for the first sync to start and block
 
 		// Act - Try to start second sync while first is running
 		await service.SyncAsync("test", CloudImportTriggerType.Manual);
+
+		// Unblock the first sync
+		syncBlocker.Set();
 		await task1;
 
-		await Task.Delay(10, CancellationToken.None);
 
 		// Assert
 		Assert.IsTrue(logger.TrackedExceptions.Any(e => e.Item2!.Contains("already in progress")));

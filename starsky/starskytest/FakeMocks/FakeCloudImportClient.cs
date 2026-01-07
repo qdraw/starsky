@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using starsky.feature.cloudimport;
 using starskytest.FakeCreateAn;
@@ -14,9 +15,11 @@ public sealed class FakeCloudImportClient : ICloudImportClient
 	public Dictionary<string, string> DownloadedFiles { get; } = new();
 	public string Name => "FakeProvider";
 	public bool Enabled { get; } = true;
+	public ManualResetEventSlim? SyncBlocker { get; set; }
 
 	public Task<List<CloudFile>> ListFilesAsync(string remoteFolder)
 	{
+		SyncBlocker?.Wait();
 		return Task.FromResult(FilesToReturn);
 	}
 
