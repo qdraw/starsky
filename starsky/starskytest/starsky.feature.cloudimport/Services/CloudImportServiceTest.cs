@@ -401,4 +401,66 @@ public class CloudImportServiceTest
 			}).ToList());
 		}
 	}
+
+	[TestMethod]
+	public async Task SyncAllAsync_WithMultipleProviders_ShouldReturnResultsForEach()
+	{
+		// Arrange
+		var appSettings = new AppSettings
+		{
+			CloudImport = new CloudImportSettings
+			{
+				Providers = new List<CloudImportProviderSettings>
+				{
+					new() { Id = "provider1", Enabled = true, Provider = "FakeProvider", RemoteFolder = "/folder1" },
+					new() { Id = "provider2", Enabled = true, Provider = "FakeProvider", RemoteFolder = "/folder2" }
+				}
+			}
+		};
+		var logger = new FakeIWebLogger();
+		var serviceCollection = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+		serviceCollection.AddScoped<ICloudImportClient>(_ => new FakeCloudImportClient());
+		serviceCollection.AddScoped<IImport>(_ => new FakeImport());
+		var serviceProvider = serviceCollection.BuildServiceProvider();
+		var scopeFactory = serviceProvider.GetRequiredService<Microsoft.Extensions.DependencyInjection.IServiceScopeFactory>();
+		var service = new CloudImportService(scopeFactory, logger, appSettings);
+
+		// Act
+		var results = await service.SyncAllAsync(CloudImportTriggerType.Manual);
+
+		// Assert
+		Assert.HasCount(2, results);
+		Assert.IsTrue(results.Any(r => r.ProviderId == "provider1"));
+		Assert.IsTrue(results.Any(r => r.ProviderId == "provider2"));
+		Assert.IsTrue(results.All(r => r.Success));
+	}
+
+	[TestMethod]
+	public async Task SyncAllAsync_NoEnabledProviders_ShouldReturnEmptyList()
+	{
+		// Arrange
+		var appSettings = new AppSettings
+		{
+			CloudImport = new CloudImportSettings
+			{
+				Providers = new List<CloudImportProviderSettings>
+				{
+					new() { Id = "provider1", Enabled = false, Provider = "FakeProvider", RemoteFolder = "/folder1" }
+				}
+			}
+		};
+		var logger = new FakeIWebLogger();
+		var serviceCollection = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+		serviceCollection.AddScoped<ICloudImportClient>(_ => new FakeCloudImportClient());
+		serviceCollection.AddScoped<IImport>(_ => new FakeImport());
+		var serviceProvider = serviceCollection.BuildServiceProvider();
+		var scopeFactory = serviceProvider.GetRequiredService<Microsoft.Extensions.DependencyInjection.IServiceScopeFactory>();
+		var service = new CloudImportService(scopeFactory, logger, appSettings);
+
+		// Act
+		var results = await service.SyncAllAsync(CloudImportTriggerType.Manual);
+
+		// Assert
+		Assert.IsEmpty(results);
+	}
 }
