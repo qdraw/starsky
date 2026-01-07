@@ -340,4 +340,46 @@ public class DropboxCloudImportClientTest
 		var result = await client.DeleteFileAsync(file);
 		Assert.IsFalse(result);
 	}
+
+	[TestMethod]
+	public async Task TestConnectionAsync_ReturnsTrue_WhenListFolderAsyncSucceeds()
+	{
+		var logger = new FakeIWebLogger();
+		var appSettings = new AppSettings();
+		var tokenClient = new FakeDropboxCloudImportRefreshToken();
+		var fakeFiles = new FakeFilesUserRoutes();
+		fakeFiles.Entries.Add(new FakeCloudFileEntry { IsFile = true, AsFile = new FakeCloudFileMetadata() });
+		var fakeClient = new FakeIDropboxClient(fakeFiles);
+		var client = new DropboxCloudImportClient(
+			logger,
+			appSettings,
+			tokenClient,
+			_ => fakeClient
+		);
+		await client.InitializeClient("refresh", "key", "secret");
+		var result = await client.TestConnectionAsync();
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public async Task TestConnectionAsync_ReturnsFalse_WhenListFolderAsyncThrows()
+	{
+		var logger = new FakeIWebLogger();
+		var appSettings = new AppSettings();
+		var tokenClient = new FakeDropboxCloudImportRefreshToken();
+		var fakeFiles = new FakeFilesUserRoutes();
+		var fakeClient = new FakeIDropboxClient(fakeFiles)
+		{
+			ListFolderAsyncFunc = _ => throw new InvalidOperationException("fail connect")
+		};
+		var client = new DropboxCloudImportClient(
+			logger,
+			appSettings,
+			tokenClient,
+			_ => fakeClient
+		);
+		await client.InitializeClient("refresh", "key", "secret");
+		var result = await client.TestConnectionAsync();
+		Assert.IsFalse(result);
+	}
 }

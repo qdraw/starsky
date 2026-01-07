@@ -23,6 +23,8 @@ public class FakeIDropboxClient : IDropboxClient
 
 	public Func<string, Task<DeleteResult>>? DeleteV2AsyncFunc { get; set; }
 
+	public Func<string, Task<ListFolderResult>>? ListFolderAsyncFunc { get; set; }
+
 	public void Dispose()
 	{
 		Dispose(true);
@@ -31,6 +33,10 @@ public class FakeIDropboxClient : IDropboxClient
 
 	public Task<ListFolderResult> ListFolderAsync(string path)
 	{
+		if (ListFolderAsyncFunc != null)
+		{
+			return ListFolderAsyncFunc(path);
+		}
 		return Files.ListFolderAsync(path);
 	}
 
