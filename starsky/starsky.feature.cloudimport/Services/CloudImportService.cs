@@ -134,132 +134,117 @@ public class CloudImportService(
 		// Get or create a lock for this provider
 		var providerLock = _providerLocks.GetOrAdd(providerId, _ => new SemaphoreSlim(1, 1));
 
-		var lockAcquired = false;
+		// Prevent overlapping sync executions for this provider
+		if ( !await providerLock.WaitAsync(0) )
+		{
+			logger.LogError(
+				$"Cloud Import already in progress for provider '{providerId}', skipping this execution");
+			return new CloudImportResult
+			{
+				ProviderId = providerId,
+				ProviderName = providerSettings.Provider,
+				StartTime = DateTime.UtcNow,
+				EndTime = DateTime.UtcNow,
+				TriggerType = triggerType,
+				Errors = ["Sync already in progress for this provider"]
+			};
+		}
+
 		try
 		{
-			// Prevent overlapping sync executions for this provider
-			if ( !await providerLock.WaitAsync(0) )
+			IsSyncInProgress = true;
+			var result = new CloudImportResult
 			{
-				logger.LogError(
-					$"Cloud Import already in progress for provider '{providerId}', skipping this execution");
-				return new CloudImportResult
-				{
-					ProviderId = providerId,
-					ProviderName = providerSettings.Provider,
-					StartTime = DateTime.UtcNow,
-					EndTime = DateTime.UtcNow,
-					TriggerType = triggerType,
-					Errors = ["Sync already in progress for this provider"]
-				};
+				ProviderId = providerId,
+				ProviderName = providerSettings.Provider,
+				StartTime = DateTime.UtcNow,
+				TriggerType = triggerType
+			};
+
+			logger.LogInformation(
+				$"Starting Cloud Import (Provider ID: {providerId}, Trigger: {triggerType}, Provider: {providerSettings.Provider}, Folder: {providerSettings.RemoteFolder})");
+
+			// Get the Cloud Import client
+			using var scope = serviceScopeFactory.CreateScope();
+			var cloudClient = GetCloudClient(scope, providerSettings.Provider);
+
+			if ( cloudClient is not { Enabled: true } )
+			{
+				var error =
+					$"Cloud provider '{providerSettings.Provider}' is not available or not enabled";
+				logger.LogError(error);
+				result.Errors.Add(error);
+				result.EndTime = DateTime.UtcNow;
+				UpdateLastSyncResult(providerId, result);
+				return result;
 			}
 
-			lockAcquired = true;
+			if ( cloudClient is DropboxCloudImportClient dropboxClient )
+			{
+				var credentials = providerSettings.Credentials;
+				await dropboxClient.InitializeClient(credentials.RefreshToken,
+					credentials.AppKey,
+					credentials.AppSecret);
+			}
+
+			if ( !await cloudClient.TestConnectionAsync() )
+			{
+				const string error = "Failed to connect to cloud storage provider";
+				logger.LogError(error);
+				result.Errors.Add(error);
+				result.EndTime = DateTime.UtcNow;
+				UpdateLastSyncResult(providerId, result);
+				return result;
+			}
+
+			// List files
+			var (cloudFiles, cloudImportResult) =
+				await GetCloudFiles(cloudClient, result,
+					providerSettings, providerId);
+			if ( cloudImportResult != null )
+			{
+				return cloudImportResult;
+			}
+
+			// Process each file
+			var import = scope.ServiceProvider.GetRequiredService<IImport>();
+			var tempFolder = GetTempFolder(providerId);
 
 			try
 			{
-				IsSyncInProgress = true;
-				var result = new CloudImportResult
-				{
-					ProviderId = providerId,
-					ProviderName = providerSettings.Provider,
-					StartTime = DateTime.UtcNow,
-					TriggerType = triggerType
-				};
-
-				logger.LogInformation(
-					$"Starting Cloud Import (Provider ID: {providerId}, Trigger: {triggerType}, Provider: {providerSettings.Provider}, Folder: {providerSettings.RemoteFolder})");
-
-				// Get the Cloud Import client
-				using var scope = serviceScopeFactory.CreateScope();
-				var cloudClient = GetCloudClient(scope, providerSettings.Provider);
-
-				if ( cloudClient is not { Enabled: true } )
-				{
-					var error =
-						$"Cloud provider '{providerSettings.Provider}' is not available or not enabled";
-					logger.LogError(error);
-					result.Errors.Add(error);
-					result.EndTime = DateTime.UtcNow;
-					UpdateLastSyncResult(providerId, result);
-					return result;
-				}
-
-				if ( cloudClient is DropboxCloudImportClient dropboxClient )
-				{
-					var credentials = providerSettings.Credentials;
-					await dropboxClient.InitializeClient(credentials.RefreshToken,
-						credentials.AppKey,
-						credentials.AppSecret);
-				}
-
-				if ( !await cloudClient.TestConnectionAsync() )
-				{
-					const string error = "Failed to connect to cloud storage provider";
-					logger.LogError(error);
-					result.Errors.Add(error);
-					result.EndTime = DateTime.UtcNow;
-					UpdateLastSyncResult(providerId, result);
-					return result;
-				}
-
-				// List files
-				var (cloudFiles, cloudImportResult) =
-					await GetCloudFiles(cloudClient, result,
-						providerSettings, providerId);
-				if ( cloudImportResult != null )
-				{
-					return cloudImportResult;
-				}
-
-				// Process each file
-				var import = scope.ServiceProvider.GetRequiredService<IImport>();
-				var tempFolder = GetTempFolder(providerId);
-
-				try
-				{
-					await ProcessFileLoopAsync(cloudClient, import, cloudFiles, tempFolder, result,
-						providerSettings);
-				}
-				finally
-				{
-					try
-					{
-						if ( Directory.Exists(tempFolder) )
-						{
-							Directory.Delete(tempFolder, true);
-						}
-					}
-					catch ( Exception ex )
-					{
-						logger.LogError(ex, $"Failed to cleanup temp folder: {ex.Message}");
-					}
-				}
-
-				result.EndTime = DateTime.UtcNow;
-				UpdateLastSyncResult(providerId, result);
-
-				logger.LogInformation(
-					$"Cloud Import completed for provider '{providerId}': {result.FilesImportedSuccessfully} imported, {result.FilesSkipped} skipped, {result.FilesFailed} failed");
-
-				return result;
+				await ProcessFileLoopAsync(cloudClient, import, cloudFiles, tempFolder, result,
+					providerSettings);
 			}
 			finally
 			{
-				providerLock.Release();
-				if ( _providerLocks.Values.All(l => l.CurrentCount != 0) )
+				try
 				{
-					IsSyncInProgress = false;
+					if ( Directory.Exists(tempFolder) )
+					{
+						Directory.Delete(tempFolder, true);
+					}
+				}
+				catch ( Exception ex )
+				{
+					logger.LogError(ex, $"Failed to cleanup temp folder: {ex.Message}");
 				}
 			}
-		}
-		catch
-		{
-			if ( lockAcquired )
-			{
-				providerLock.Release();
-			}
 
-			throw;
+			result.EndTime = DateTime.UtcNow;
+			UpdateLastSyncResult(providerId, result);
+
+			logger.LogInformation(
+				$"Cloud Import completed for provider '{providerId}': {result.FilesImportedSuccessfully} imported, {result.FilesSkipped} skipped, {result.FilesFailed} failed");
+
+			return result;
+		}
+		finally
+		{
+			providerLock.Release();
+			if ( _providerLocks.Values.All(l => l.CurrentCount != 0) )
+			{
+				IsSyncInProgress = false;
+			}
 		}
 	}
 
