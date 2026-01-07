@@ -59,6 +59,15 @@ public sealed class StarskyImporterCliProgramTest
 		// should not crash
 		Assert.IsNotNull(args);
 	}
+	
+	[TestMethod]
+	public async Task StarskyProviderTest()
+	{
+		var args = new List<string> { "--provider", "test" }.ToArray();
+		await Program.Main(args);
+		// should not crash
+		Assert.IsNotNull(args);
+	}
 
 	[ClassCleanup(ClassCleanupBehavior.EndOfClass)]
 	public static void CleanEnvsAfterwards()
