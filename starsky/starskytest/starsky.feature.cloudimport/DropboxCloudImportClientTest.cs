@@ -176,7 +176,7 @@ public class DropboxCloudImportClientTest
 		var callCount = 0;
 		var fakeClient = new FakeIDropboxClient(fakeFiles)
 		{
-			ListFolderContinueAsyncFunc = cursor =>
+			ListFolderContinueAsyncFunc = _ =>
 			{
 				callCount++;
 				// Return a Dropbox.Api.Files.ListFolderResult with the second page's entries
