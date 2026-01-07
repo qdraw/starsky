@@ -282,4 +282,62 @@ public class DropboxCloudImportClientTest
 			await client.DownloadFileAsync(file, tempDir);
 		});
 	}
+
+	[TestMethod]
+	public async Task DeleteFileAsync_ReturnsTrue_WhenDeleteSucceeds()
+	{
+		var logger = new FakeIWebLogger();
+		var appSettings = new AppSettings();
+		var tokenClient = new FakeDropboxCloudImportRefreshToken();
+		var fakeFiles = new FakeFilesUserRoutes();
+		var fakeClient = new FakeIDropboxClient(fakeFiles)
+		{
+			DeleteV2AsyncFunc = _ => Task.FromResult(new DeleteResult(new FileMetadata(
+				id: "id",
+				name: "file.txt",
+				clientModified: DateTime.UtcNow,
+				serverModified: DateTime.UtcNow,
+				rev: "123456789",
+				size: 1,
+				pathLower: "/file.txt",
+				pathDisplay: "/file.txt",
+				sharingInfo: null,
+				isDownloadable: true,
+				contentHash: new string('a', 64)
+			)))
+		};
+		var client = new DropboxCloudImportClient(
+			logger,
+			appSettings,
+			tokenClient,
+			_ => fakeClient
+		);
+		await client.InitializeClient("refresh", "key", "secret");
+		var file = new CloudFile { Name = "file.txt", Path = "/file.txt" };
+		var result = await client.DeleteFileAsync(file);
+		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public async Task DeleteFileAsync_ReturnsFalse_WhenDeleteThrows()
+	{
+		var logger = new FakeIWebLogger();
+		var appSettings = new AppSettings();
+		var tokenClient = new FakeDropboxCloudImportRefreshToken();
+		var fakeFiles = new FakeFilesUserRoutes();
+		var fakeClient = new FakeIDropboxClient(fakeFiles)
+		{
+			DeleteV2AsyncFunc = _ => throw new InvalidOperationException("fail")
+		};
+		var client = new DropboxCloudImportClient(
+			logger,
+			appSettings,
+			tokenClient,
+			_ => fakeClient
+		);
+		await client.InitializeClient("refresh", "key", "secret");
+		var file = new CloudFile { Name = "file.txt", Path = "/file.txt" };
+		var result = await client.DeleteFileAsync(file);
+		Assert.IsFalse(result);
+	}
 }

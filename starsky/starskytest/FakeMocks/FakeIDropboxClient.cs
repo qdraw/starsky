@@ -21,6 +21,8 @@ public class FakeIDropboxClient : IDropboxClient
 
 	public Func<string, Task<IDownloadResponse<FileMetadata>>>? DownloadAsyncFunc { get; set; }
 
+	public Func<string, Task<DeleteResult>>? DeleteV2AsyncFunc { get; set; }
+
 	public void Dispose()
 	{
 		Dispose(true);
@@ -51,6 +53,10 @@ public class FakeIDropboxClient : IDropboxClient
 
 	public Task<DeleteResult> DeleteV2Async(string path, string? parentRev = null)
 	{
+		if (DeleteV2AsyncFunc != null)
+		{
+			return DeleteV2AsyncFunc(path);
+		}
 		throw new NotImplementedException();
 	}
 
