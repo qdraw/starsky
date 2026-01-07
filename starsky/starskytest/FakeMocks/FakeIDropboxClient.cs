@@ -17,6 +17,8 @@ public class FakeIDropboxClient : IDropboxClient
 
 	public FakeFilesUserRoutes Files { get; set; }
 
+	public Func<string, Task<ListFolderResult>>? ListFolderContinueAsyncFunc { get; set; }
+
 	public void Dispose()
 	{
 		Dispose(true);
@@ -30,7 +32,9 @@ public class FakeIDropboxClient : IDropboxClient
 
 	public Task<ListFolderResult> ListFolderContinueAsync(string arg)
 	{
-		throw new NotImplementedException();
+		return ListFolderContinueAsyncFunc != null
+			? ListFolderContinueAsyncFunc(arg)
+			: throw new NotImplementedException();
 	}
 
 	public Task<IDownloadResponse<FileMetadata>> DownloadAsync(string path, string? rev = null)

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using starsky.feature.cloudimport;
+using starskytest.FakeCreateAn;
 
 namespace starskytest.FakeMocks;
 
@@ -26,7 +26,7 @@ public sealed class FakeCloudImportClient : ICloudImportClient
 		DownloadedFiles[file.Name] = localPath;
 		// Create a dummy file
 		Directory.CreateDirectory(localFolder);
-		File.WriteAllBytes(localPath, [.. FakeCreateAn.CreateAnImage.Bytes]);
+		File.WriteAllBytes(localPath, [.. CreateAnImage.Bytes]);
 		return Task.FromResult(localPath);
 	}
 

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Dropbox.Api;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -54,6 +55,19 @@ public class DropboxClientWrapperTest
 	public void Dispose_ShouldNotThrow()
 	{
 		var client = new DropboxClientWrapper(InvalidAccessToken);
+		client.Dispose();
+		Assert.IsNotNull(client);
+	}
+
+	[TestMethod]
+	[SuppressMessage("ReSharper",
+		"S3966: Resource 'client' has already been disposed explicitly " +
+		"or through a using statement implicitly. " +
+		"Remove the redundant disposal.")]
+	public void Dispose_TwoTimes_ShouldNotThrow()
+	{
+		var client = new DropboxClientWrapper(InvalidAccessToken);
+		client.Dispose(); // two times
 		client.Dispose();
 		Assert.IsNotNull(client);
 	}
