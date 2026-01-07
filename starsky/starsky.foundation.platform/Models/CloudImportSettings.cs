@@ -4,18 +4,18 @@ using System.Collections.Generic;
 namespace starsky.foundation.platform.Models;
 
 /// <summary>
-///     Configuration for cloud sync providers
+///     Configuration for Cloud Import providers
 /// </summary>
 public class CloudImportSettings
 {
 	/// <summary>
-	///     List of cloud sync provider configurations
+	///     List of Cloud Import provider configurations
 	/// </summary>
 	public List<CloudImportProviderSettings> Providers { get; set; } = new();
 }
 
 /// <summary>
-///     Configuration for a single cloud sync provider
+///     Configuration for a single Cloud Import provider
 /// </summary>
 public class CloudImportProviderSettings
 {
@@ -25,7 +25,7 @@ public class CloudImportProviderSettings
 	public string Id { get; set; } = string.Empty;
 
 	/// <summary>
-	///     Enable or disable this cloud sync provider
+	///     Enable or disable this Cloud Import provider
 	/// </summary>
 	public bool Enabled { get; set; }
 

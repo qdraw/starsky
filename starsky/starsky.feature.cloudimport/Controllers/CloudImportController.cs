@@ -15,7 +15,7 @@ public class CloudImportController(ICloudImportService cloudImportService, AppSe
 		appSettings.CloudImport ?? new CloudImportSettings();
 
 	/// <summary>
-	///     Get current cloud sync status for all providers
+	///     Get current Cloud Import status for all providers
 	/// </summary>
 	[HttpGet("status")]
 	public IActionResult GetStatus()
@@ -74,7 +74,7 @@ public class CloudImportController(ICloudImportService cloudImportService, AppSe
 	{
 		if ( !_settings.Providers.Any(p => p.Enabled) )
 		{
-			return BadRequest(new { message = "No cloud sync providers are enabled" });
+			return BadRequest(new { message = "No Cloud Import providers are enabled" });
 		}
 
 		if ( cloudImportService.IsSyncInProgress )

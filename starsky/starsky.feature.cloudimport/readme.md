@@ -1,6 +1,6 @@
 # starsky.feature.cloudimport
 
-Cloud sync functionality for automatic import from cloud storage providers (Dropbox, Google Drive,
+Cloud Import functionality for automatic import from cloud storage providers (Dropbox, Google Drive,
 OneDrive, etc.)
 
 ## Features
@@ -65,7 +65,7 @@ Add the following to your `appsettings.json`:
 Each provider in the `Providers` array supports:
 
 - **Id**: Unique identifier for this provider configuration (required)
-- **Enabled**: Enable or disable this cloud sync provider (default: `false`)
+- **Enabled**: Enable or disable this Cloud Import provider (default: `false`)
 - **Provider**: Cloud storage provider name (e.g., "Dropbox", "GoogleDrive", "OneDrive")
 - **RemoteFolder**: Remote folder path to sync from (default: "/")
 - **SyncFrequencyMinutes**: Sync frequency in minutes (takes priority if > 0)
@@ -81,7 +81,7 @@ Each provider in the `Providers` array supports:
 GET /api/CloudImport/status
 ```
 
-Returns current cloud sync configuration and status.
+Returns current Cloud Import configuration and status.
 
 ### Trigger Manual Sync
 

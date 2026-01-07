@@ -22,7 +22,7 @@ public class CloudImportScheduledService(
 
 	public async Task<bool?> RunAsync(CancellationToken stoppingToken)
 	{
-		logger.LogInformation("Cloud Sync Scheduled Service started");
+		logger.LogInformation("Cloud Import Scheduled Service started");
 
 		var enabledProviders =
 			appSettings.CloudImport?.Providers.Where(p => p.Enabled).ToList() ?? [];
@@ -30,7 +30,7 @@ public class CloudImportScheduledService(
 		if ( enabledProviders.Count == 0 )
 		{
 			logger.LogInformation(
-				"No enabled cloud sync providers found, scheduled service will not run");
+				"No enabled Cloud Import providers found, scheduled service will not run");
 			return false;
 		}
 
@@ -46,7 +46,7 @@ public class CloudImportScheduledService(
 		// Wait for all provider tasks to complete
 		await Task.WhenAll(_providerTasks.Values);
 
-		logger.LogInformation("Cloud Sync Scheduled Service stopped");
+		logger.LogInformation("Cloud Import Scheduled Service stopped");
 		return true;
 	}
 
@@ -62,7 +62,7 @@ public class CloudImportScheduledService(
 			{
 				var delay = GetNextDelay(provider);
 				logger.LogInformation(
-					$"Next cloud sync for provider '{provider.Id}' will run in {delay.TotalMinutes:F1} minutes");
+					$"Next Cloud Import for provider '{provider.Id}' will run in {delay.TotalMinutes:F1} minutes");
 
 				await Task.Delay(delay, stoppingToken);
 
@@ -72,7 +72,7 @@ public class CloudImportScheduledService(
 				}
 
 				logger.LogInformation(
-					$"Starting scheduled cloud sync for provider '{provider.Id}'");
+					$"Starting scheduled Cloud Import for provider '{provider.Id}'");
 				await cloudImportService.SyncAsync(provider.Id, CloudImportTriggerType.Scheduled);
 			}
 			catch ( TaskCanceledException )
@@ -82,7 +82,7 @@ public class CloudImportScheduledService(
 			catch ( Exception ex )
 			{
 				logger.LogError(ex,
-					$"Error during scheduled cloud sync for provider '{provider.Id}'");
+					$"Error during scheduled Cloud Import for provider '{provider.Id}'");
 				// Wait a bit before retrying after error
 				try
 				{
@@ -116,7 +116,7 @@ public class CloudImportScheduledService(
 
 	public override Task StopAsync(CancellationToken cancellationToken)
 	{
-		logger.LogInformation("Cloud Sync Scheduled Service is stopping");
+		logger.LogInformation("Cloud Import Scheduled Service is stopping");
 		return base.StopAsync(cancellationToken);
 	}
 }

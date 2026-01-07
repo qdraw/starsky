@@ -21,7 +21,7 @@ reliable and repeatable without duplication.
 
 Each cloud import provider can be configured independently:
 
-* Enable or disable cloud sync per provider
+* Enable or disable Cloud Import per provider
 * Select a cloud storage provider (e.g. Dropbox)
 * Configure a remote folder path
 * Set sync frequency (minutes or hours)

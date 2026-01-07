@@ -12,7 +12,7 @@
 1. Go to https://www.dropbox.com/developers/apps
 2. Click "Create App"
 3. Choose "Scoped access"
-4. Choose "Full Dropbox" or "App folder" access
+4. Choose "Full Dropbox" access
 5. Name your app (e.g., "Starsky Photo Sync")
 6. Click "Create App"
 
@@ -67,7 +67,7 @@ export app__CloudImport__Providers__0__Credentials__AppSecret=""
 
 ### 4. Start Starsky
 
-The cloud sync service will automatically start and begin syncing on the configured schedule.
+The Cloud Import service will automatically start and begin syncing on the configured schedule.
 
 ## Usage
 
@@ -156,7 +156,7 @@ Or the root folder:
 
 ### Logs
 
-Cloud sync operations are logged with detailed information:
+Cloud Import operations are logged with detailed information:
 
 - Sync start/end times
 - Files found and processed
@@ -164,7 +164,7 @@ Cloud sync operations are logged with detailed information:
 - Connection issues
 - Errors with stack traces
 
-Check your application logs for entries containing "Cloud sync" or "CloudImport".
+Check your application logs for entries containing "Cloud Import" or "CloudImport".
 
 ### Status Endpoint
 

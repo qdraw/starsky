@@ -45,7 +45,7 @@ public class CloudImportService(
 
 		if ( enabledProviders.Count == 0 )
 		{
-			logger.LogInformation("No enabled cloud sync providers found");
+			logger.LogInformation("No enabled Cloud Import providers found");
 			return results;
 		}
 
@@ -86,7 +86,7 @@ public class CloudImportService(
 			return new CloudImportResult
 			{
 				TriggerType = CloudImportTriggerType.CommandLineInterface,
-				Errors = ["No cloud sync provider specified in arguments"],
+				Errors = ["No Cloud Import provider specified in arguments"],
 				SkippedNoInput = true
 			};
 		}
@@ -115,7 +115,7 @@ public class CloudImportService(
 
 		if ( !providerSettings.Enabled )
 		{
-			logger.LogInformation($"Cloud sync provider '{providerId}' is disabled");
+			logger.LogInformation($"Cloud Import provider '{providerId}' is disabled");
 			return new CloudImportResult
 			{
 				ProviderId = providerId,
@@ -138,7 +138,7 @@ public class CloudImportService(
 			if ( !await providerLock.WaitAsync(0) )
 			{
 				logger.LogError(
-					$"Cloud sync already in progress for provider '{providerId}', skipping this execution");
+					$"Cloud Import already in progress for provider '{providerId}', skipping this execution");
 				return new CloudImportResult
 				{
 					ProviderId = providerId,
@@ -164,9 +164,9 @@ public class CloudImportService(
 				};
 
 				logger.LogInformation(
-					$"Starting cloud sync (Provider ID: {providerId}, Trigger: {triggerType}, Provider: {providerSettings.Provider}, Folder: {providerSettings.RemoteFolder})");
+					$"Starting Cloud Import (Provider ID: {providerId}, Trigger: {triggerType}, Provider: {providerSettings.Provider}, Folder: {providerSettings.RemoteFolder})");
 
-				// Get the cloud sync client
+				// Get the Cloud Import client
 				using var scope = serviceScopeFactory.CreateScope();
 				var cloudClient = GetCloudClient(scope, providerSettings.Provider);
 
@@ -236,7 +236,7 @@ public class CloudImportService(
 				UpdateLastSyncResult(providerId, result);
 
 				logger.LogInformation(
-					$"Cloud sync completed for provider '{providerId}': {result.FilesImportedSuccessfully} imported, {result.FilesSkipped} skipped, {result.FilesFailed} failed");
+					$"Cloud Import completed for provider '{providerId}': {result.FilesImportedSuccessfully} imported, {result.FilesSkipped} skipped, {result.FilesFailed} failed");
 
 				return result;
 			}

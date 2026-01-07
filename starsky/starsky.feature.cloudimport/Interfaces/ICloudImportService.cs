@@ -13,7 +13,7 @@ public interface ICloudImportService
 	Dictionary<string, CloudImportResult> LastSyncResults { get; }
 
 	/// <summary>
-	///     Execute a cloud sync operation for all enabled providers
+	///     Execute a Cloud Import operation for all enabled providers
 	/// </summary>
 	/// <param name="triggerType">Whether this sync was manually triggered or scheduled</param>
 	/// <returns>List of results for each provider</returns>
@@ -22,7 +22,7 @@ public interface ICloudImportService
 	Task<CloudImportResult> SyncAsync(string[] args);
 
 	/// <summary>
-	///     Execute a cloud sync operation for a specific provider
+	///     Execute a Cloud Import operation for a specific provider
 	/// </summary>
 	/// <param name="providerId">The ID of the provider to sync</param>
 	/// <param name="triggerType">Whether this sync was manually triggered or scheduled</param>
