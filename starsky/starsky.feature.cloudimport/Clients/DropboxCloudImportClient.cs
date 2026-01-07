@@ -1,4 +1,3 @@
-using Dropbox.Api;
 using starsky.feature.cloudimport.Clients.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
@@ -10,11 +9,12 @@ namespace starsky.feature.cloudimport.Clients;
 public class DropboxCloudImportClient(
 	IWebLogger logger,
 	AppSettings appSettings,
-	IDropboxCloudImportRefreshToken tokenClient)
+	IDropboxCloudImportRefreshToken tokenClient,
+	Func<string, IDropboxClient>? clientFactory = null)
 	: ICloudImportClient
 {
 	private DateTimeOffset? _accessTokenExpiry;
-	private DropboxClient? _client;
+	private IDropboxClient? _client;
 
 	public string Name => "Dropbox";
 
@@ -44,14 +44,16 @@ public class DropboxCloudImportClient(
 						{
 							Id = fileMetadata.Id,
 							Name = fileMetadata.Name,
-							Path = fileMetadata.PathDisplay ?? fileMetadata.PathLower ?? string.Empty,
-							Size = (long)fileMetadata.Size,
+							Path =
+								fileMetadata.PathDisplay ??
+								fileMetadata.PathLower ?? string.Empty,
+							Size = ( long ) fileMetadata.Size,
 							ModifiedDate = fileMetadata.ServerModified,
 							Hash = fileMetadata.ContentHash ?? string.Empty
 						};
 					}));
 
-				if (list.HasMore)
+				if ( list.HasMore )
 				{
 					list = await _client.Files.ListFolderContinueAsync(list.Cursor);
 				}
@@ -59,7 +61,7 @@ public class DropboxCloudImportClient(
 				{
 					break;
 				}
-			} while (true);
+			} while ( true );
 
 			logger.LogInformation(
 				$"Listed {files.Count} files from Dropbox folder: {remoteFolder}");
@@ -119,7 +121,7 @@ public class DropboxCloudImportClient(
 			EnsureClient();
 			var result = await _client!.Files.ListFolderAsync(string.Empty);
 			logger.LogInformation(
-				$"Successfully connected to Dropbox that has {result.Entries.Count} files");
+				"Successfully connected to Dropbox that has {0} files", result.Entries.Count);
 			return true;
 		}
 		catch ( Exception ex )
@@ -146,8 +148,8 @@ public class DropboxCloudImportClient(
 			appKey,
 			appSecret);
 		_client?.Dispose();
-		_client = new DropboxClient(accessToken);
-		_accessTokenExpiry = DateTimeOffset.UtcNow.AddSeconds(expiresIn - 60); // buffer
+		_client = clientFactory != null ? clientFactory(accessToken) : new DropboxClientWrapper(accessToken);
+		_accessTokenExpiry = DateTimeOffset.UtcNow.AddSeconds(expiresIn - 60);
 	}
 
 	private void EnsureClient()
