@@ -14,7 +14,7 @@ public sealed class FakeCloudImportClient : ICloudImportClient
 	public List<CloudFile> DeletedFiles { get; } = new();
 	public Dictionary<string, string> DownloadedFiles { get; } = new();
 	public string Name => "FakeProvider";
-	public bool Enabled { get; } = true;
+	public bool Enabled { get; set; } = true;
 	public ManualResetEventSlim? SyncBlocker { get; set; }
 
 	public Task<List<CloudFile>> ListFilesAsync(string remoteFolder)

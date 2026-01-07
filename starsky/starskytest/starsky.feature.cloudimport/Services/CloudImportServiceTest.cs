@@ -484,4 +484,41 @@ public class CloudImportServiceTest
 			r.ProviderId == "provider1" && r.Errors.Any(e => e.Contains("Sync failed"))));
 		Assert.IsTrue(results.Any(r => r.ProviderId == "provider2"));
 	}
+
+	[TestMethod]
+	public async Task SyncAsync_WhenCloudClientNotEnabled_ShouldReturnErrorResult()
+	{
+		// Arrange
+		var appSettings = new AppSettings
+		{
+			CloudImport = new CloudImportSettings
+			{
+				Providers = new List<CloudImportProviderSettings>
+				{
+					new()
+					{
+						Id = "test",
+						Enabled = true,
+						Provider = "FakeProvider"
+					}
+				}
+			}
+		};
+		var logger = new FakeIWebLogger();
+		var serviceCollection = new ServiceCollection();
+		// Fake client with Enabled = false
+		var fakeClient = new FakeCloudImportClient { Enabled = false };
+		serviceCollection.AddScoped<ICloudImportClient>(_ => fakeClient);
+		serviceCollection.AddScoped<IImport>(_ => new FakeIImport(new FakeSelectorStorage()));
+		var serviceProvider = serviceCollection.BuildServiceProvider();
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+		var service = new CloudImportService(scopeFactory, logger, appSettings);
+
+		// Act
+		var result = await service.SyncAsync("test", CloudImportTriggerType.Manual);
+
+		// Assert
+		Assert.IsFalse(result.Success);
+		Assert.IsTrue(result.Errors.Any(e => e.Contains("not available") || e.Contains("not enabled")));
+	}
 }
