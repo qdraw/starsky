@@ -1,8 +1,11 @@
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Hosting;
 using starsky.feature.cloudimport.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+
+[assembly: InternalsVisibleTo("starskytest")]
 
 namespace starsky.feature.cloudimport.Services;
 
@@ -53,7 +56,7 @@ public class CloudImportScheduledService(
 		return true;
 	}
 
-	private async Task RunProviderSyncAsync(CloudImportProviderSettings provider,
+	internal async Task RunProviderSyncAsync(CloudImportProviderSettings provider,
 		CancellationToken stoppingToken)
 	{
 		logger.LogInformation(
@@ -63,20 +66,10 @@ public class CloudImportScheduledService(
 		{
 			try
 			{
-				var delay = GetNextDelay(provider);
-				logger.LogInformation(
-					$"Next Cloud Import for provider '{provider.Id}' will run in {delay.TotalMinutes:F1} minutes");
-
-				await Task.Delay(delay, stoppingToken);
-
-				if ( stoppingToken.IsCancellationRequested )
+				if ( await RunProviderSyncSingleAsync(provider, stoppingToken) )
 				{
 					break;
 				}
-
-				logger.LogInformation(
-					$"Starting scheduled Cloud Import for provider '{provider.Id}'");
-				await cloudImportService.SyncAsync(provider.Id, CloudImportTriggerType.Scheduled);
 			}
 			catch ( TaskCanceledException )
 			{
@@ -86,7 +79,6 @@ public class CloudImportScheduledService(
 			{
 				logger.LogError(ex,
 					$"Error during scheduled Cloud Import for provider '{provider.Id}'");
-				// Wait a bit before retrying after error
 				try
 				{
 					await Task.Delay(TimeSpan.FromMinutes(2), stoppingToken);
@@ -102,6 +94,38 @@ public class CloudImportScheduledService(
 			$"Scheduled sync task for provider '{provider.Id}' has stopped");
 	}
 
+	internal async Task<bool> RunProviderSyncSingleAsync(CloudImportProviderSettings provider,
+		CancellationToken stoppingToken)
+	{
+		var delay = GetNextDelay(provider);
+		if ( delay >= TimeSpan.FromHours(150) )
+		{
+			return true;
+		}
+
+		logger.LogInformation(
+			$"Next Cloud Import for provider '{provider.Id}' will run in {delay.TotalMinutes:F1} minutes");
+
+		try
+		{
+			await Task.Delay(delay, stoppingToken);
+		}
+		catch (OperationCanceledException)
+		{
+			return true;
+		}
+
+		if ( stoppingToken.IsCancellationRequested )
+		{
+			return true;
+		}
+
+		logger.LogInformation(
+			$"Starting scheduled Cloud Import for provider '{provider.Id}'");
+		await cloudImportService.SyncAsync(provider.Id, CloudImportTriggerType.Scheduled);
+		return false;
+	}
+
 	private static TimeSpan GetNextDelay(CloudImportProviderSettings provider)
 	{
 		if ( provider.SyncFrequencyMinutes > 0 )
@@ -114,7 +138,7 @@ public class CloudImportScheduledService(
 			return TimeSpan.FromHours(provider.SyncFrequencyHours);
 		}
 
-		return TimeSpan.MaxValue;
+		return TimeSpan.FromHours(150);
 	}
 
 	public override Task StopAsync(CancellationToken cancellationToken)

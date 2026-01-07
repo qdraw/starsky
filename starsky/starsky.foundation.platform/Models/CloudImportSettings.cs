@@ -41,7 +41,7 @@ public class CloudImportProviderSettings
 	/// <summary>
 	///     Sync frequency in minutes (if > 0, this takes priority)
 	/// </summary>
-	public int SyncFrequencyMinutes { get; set; }
+	public double SyncFrequencyMinutes { get; set; }
 
 	/// <summary>
 	///     Sync frequency in hours (used if SyncFrequencyMinutes is 0)

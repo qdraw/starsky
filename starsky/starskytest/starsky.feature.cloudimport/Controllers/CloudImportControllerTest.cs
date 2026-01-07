@@ -54,7 +54,7 @@ public class CloudImportControllerTest
 		Assert.IsTrue(( bool? ) firstType.GetProperty("enabled")?.GetValue(first));
 		Assert.AreEqual("Dropbox", firstType.GetProperty("provider")?.GetValue(first));
 		Assert.AreEqual("/Camera Uploads", firstType.GetProperty("remoteFolder")?.GetValue(first));
-		Assert.AreEqual(15, firstType.GetProperty("syncFrequencyMinutes")?.GetValue(first));
+		Assert.AreEqual(15d, firstType.GetProperty("syncFrequencyMinutes")?.GetValue(first));
 		Assert.AreEqual(0, firstType.GetProperty("syncFrequencyHours")?.GetValue(first));
 		Assert.IsFalse(( bool? ) firstType.GetProperty("deleteAfterImport")?.GetValue(first));
 		var isSyncInProgress = value.GetType().GetProperty("isSyncInProgress")?.GetValue(value);
@@ -97,7 +97,7 @@ public class CloudImportControllerTest
 		Assert.IsTrue(( bool? ) type.GetProperty("enabled")?.GetValue(value));
 		Assert.AreEqual("Dropbox", type.GetProperty("provider")?.GetValue(value));
 		Assert.AreEqual("/Camera Uploads", type.GetProperty("remoteFolder")?.GetValue(value));
-		Assert.AreEqual(15, type.GetProperty("syncFrequencyMinutes")?.GetValue(value));
+		Assert.AreEqual(15d, type.GetProperty("syncFrequencyMinutes")?.GetValue(value));
 		Assert.AreEqual(0, type.GetProperty("syncFrequencyHours")?.GetValue(value));
 		Assert.IsFalse(( bool? ) type.GetProperty("deleteAfterImport")?.GetValue(value));
 		var lastSyncResult = type.GetProperty("lastSyncResult")?.GetValue(value);

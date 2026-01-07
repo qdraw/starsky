@@ -14,6 +14,7 @@ public class FakeCloudImportService : ICloudImportService
 	public List<CloudImportTriggerType> SyncCalls { get; } = new();
 	public bool IsSyncInProgress { get; set; }
 	public Dictionary<string, CloudImportResult> LastSyncResults { get; set; } = new();
+	public bool ThrowOnSync { get; set; }
 
 	public Task<CloudImportResult> SyncAsync(string[] args)
 	{
@@ -48,6 +49,11 @@ public class FakeCloudImportService : ICloudImportService
 		}
 
 		SyncCalls.Add(triggerType);
+
+		if ( ThrowOnSync )
+		{
+			throw new InvalidOperationException("Sync failed");
+		}
 
 		if ( SyncAsyncFunc != null )
 		{
