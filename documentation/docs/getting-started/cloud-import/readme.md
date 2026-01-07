@@ -1,4 +1,4 @@
-# Cloud Sync Import - Quick Start Guide
+# Cloud Import - Quick Start Guide
 
 ## Prerequisites
 
@@ -28,29 +28,41 @@ Add to your `appsettings.json`:
 
 ```json
 {
-  "CloudImport": {
-    "Enabled": true,
-    "Provider": "Dropbox",
-    "RemoteFolder": "/Camera Uploads",
-    "SyncFrequencyHours": 1,
-    "SyncFrequencyMinutes": 0,
-    "DeleteAfterImport": false,
-    "Credentials": {
-      "AccessToken": "YOUR_ACCESS_TOKEN_HERE"
+  "app": {
+    "CloudImport": {
+      "Providers": [
+        {
+          "Id": "dropbox-camera-uploads",
+          "Enabled": true,
+          "Provider": "Dropbox",
+          "RemoteFolder": "/Camera Uploads",
+          "SyncFrequencyMinutes": 0,
+          "SyncFrequencyHours": 1,
+          "DeleteAfterImport": false,
+          "Credentials": {
+            "RefreshToken": "",
+            "AppKey": "",
+            "AppSecret": ""
+          }
+        }
+      ]
     }
   }
 }
 ```
 
-**Or** use environment variables (recommended for production):
+
+### Environment Variable Configuration Example
 
 ```bash
-export app__CloudImport__Enabled=true
-export app__CloudImport__Provider=Dropbox
-export app__CloudImport__RemoteFolder="/Camera Uploads"
-export app__CloudImport__SyncFrequencyHours=1
-export app__CloudImport__DeleteAfterImport=false
-export app__CloudImport__Credentials__AccessToken="YOUR_ACCESS_TOKEN_HERE"
+export app__CloudImport__Providers__0__Id="dropbox-camera-uploads"
+export app__CloudImport__Providers__0__Enabled="true"
+export app__CloudImport__Providers__0__Provider="Dropbox"
+export app__CloudImport__Providers__0__RemoteFolder="/Camera Uploads"
+export app__CloudImport__Providers__0__DeleteAfterImport="false"
+export app__CloudImport__Providers__0__Credentials__RefreshToken=""
+export app__CloudImport__Providers__0__Credentials__AppKey=""
+export app__CloudImport__Providers__0__Credentials__AppSecret=""
 ```
 
 ### 4. Start Starsky

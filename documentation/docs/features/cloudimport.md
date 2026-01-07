@@ -1,68 +1,118 @@
-## Key Features Implemented
+# Cloud Import
 
-### ✅ Configuration
+The **Cloud Import** feature enables automated ingestion of files from cloud storage providers into
+the existing import pipeline. It supports scheduled synchronization, manual triggering, and robust
+error handling while reusing existing infrastructure and validation logic.
 
-- Enable/disable cloud sync
-- Select cloud storage provider
-- Configure remote folder path
-- Set sync frequency (minutes or hours)
-- Configure post-import deletion
-- Secure credential storage
+---
 
-### ✅ Scheduling
+## Overview
 
-- Automatic sync at configured intervals
-- Prevention of overlapping executions
-- Manual trigger via API endpoint
+Cloud Import periodically connects to one or more configured cloud storage providers, detects new
+files in a remote folder, and imports them using the existing import pipeline. The system is
+designed to be **secure**, **idempotent**, and **fault-tolerant**, ensuring that imports are
+reliable and repeatable without duplication.
 
-### ✅ Sync & Import
+---
 
-- Connect to cloud provider
-- List available files
-- Download only new files (idempotency)
-- Reuse existing import pipeline
-- Identical validation and error handling
+## Key Features
 
-### ✅ Post-Import Cleanup
+### Configuration
 
-- Optional deletion of files after successful import
-- Failures leave files in cloud storage
-- Comprehensive logging
+Each cloud import provider can be configured independently:
 
-### ✅ Error Handling & Logging
+* Enable or disable cloud sync per provider
+* Select a cloud storage provider (e.g. Dropbox)
+* Configure a remote folder path
+* Set sync frequency (minutes or hours)
+* Optional deletion of files after successful import
+* Secure handling of provider credentials
+* Support for configuration via JSON or environment variables
 
-- Connection/authentication failure handling
-- Import failures don't block other files
-- Detailed logging of all operations
-- Sync results include:
-    - Start and end time
-    - Trigger type
-    - Files found/imported/skipped/failed
+---
+
+### Scheduling
+
+* Automatic synchronization at configured intervals
+* Background execution using a hosted service
+* Protection against overlapping executions
+* Manual synchronization trigger via authenticated API endpoint
+
+---
+
+### Sync & Import
+
+* Establishes a connection to the configured cloud provider
+* Lists available files in the remote folder
+* Downloads **only new files** (idempotent behavior)
+* Reuses the existing import pipeline
+* Applies identical validation and error handling as manual imports
+
+---
+
+### Post-Import Cleanup
+
+* Optional deletion of files after a successful import
+* Files that fail to import are **not deleted**
+* Cleanup actions are fully logged
+
+---
+
+### Error Handling & Logging
+
+* Graceful handling of connection and authentication failures
+* Import failures for individual files do not block other files
+* Detailed logging of all sync and import operations
+* Sync results include:
+
+    * Start and end time
+    * Trigger type (scheduled or manual)
+    * Number of files found
+    * Files imported, skipped, and failed
+
+---
 
 ## Technical Highlights
 
 ### Architecture
 
-- **Provider abstraction**: Interface-based design supports multiple providers
-- **Dependency injection**: Uses existing DI infrastructure
-- **Background service**: Reliable scheduling with IHostedService
-- **Idempotency**: Prevents re-processing within 24 hours
-- **Concurrent protection**: Semaphore prevents overlapping syncs
+* **Provider abstraction**
+  Interface-based design enables support for multiple cloud providers.
+
+* **Dependency Injection**
+  Fully integrated with the existing DI infrastructure.
+
+* **Background Service**
+  Scheduling is handled via `IHostedService` for reliability.
+
+* **Idempotency**
+  Prevents re-processing of the same file within a 24-hour window.
+
+* **Concurrent Protection**
+  A semaphore ensures that sync operations cannot overlap.
+
+---
 
 ### Security
 
-- Credentials in configuration (support for environment variables)
-- API endpoints require authentication via [Authorize]
-- Sensitive data not exposed in logs
+* Credentials are supplied via configuration or environment variables
+* API endpoints are protected using `[Authorize]`
+* Sensitive data (tokens, secrets) is never written to logs
+
+---
 
 ### Integration
 
-- Reuses existing import pipeline (IImport)
-- Uses existing storage abstractions
-- Integrates with existing logging infrastructure
-- Compatible with existing DI registration system
+* Reuses the existing import pipeline (`IImport`)
+* Uses existing storage abstractions
+* Integrates with the current logging infrastructure
+* Compatible with the existing DI registration system
 
-## Configuration Example
+---
+
+## Configuration
+
+### JSON Configuration Example
 
 ```json
 {
@@ -90,7 +140,9 @@
 }
 ```
 
-Or using environment variables:
+---
+
+### Environment Variable Configuration Example
 
 ```bash
 export app__CloudImport__Providers__0__Id="dropbox-camera-uploads"
@@ -102,5 +154,3 @@ export app__CloudImport__Providers__0__Credentials__RefreshToken=""
 export app__CloudImport__Providers__0__Credentials__AppKey=""
 export app__CloudImport__Providers__0__Credentials__AppSecret=""
 ```
-
-
