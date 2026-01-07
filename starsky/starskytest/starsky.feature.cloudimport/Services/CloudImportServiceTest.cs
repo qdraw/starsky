@@ -22,6 +22,14 @@ public class CloudImportServiceTest
 {
 	public TestContext TestContext { get; set; }
 
+
+	[TestMethod]
+	public void LastSyncResults()
+	{
+		var service = new CloudImportService(null!, null!, null!);
+		Assert.IsEmpty(service.LastSyncResults);
+	}
+
 	[TestMethod]
 	public async Task SyncAsync_WhenDisabled_ShouldReturnErrorResult()
 	{
