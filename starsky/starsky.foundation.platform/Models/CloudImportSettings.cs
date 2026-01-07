@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace starsky.foundation.platform.Models;
@@ -62,9 +61,7 @@ public class CloudImportProviderSettings
 
 public class CloudProviderCredentials
 {
-	public string AccessToken { get; set; } = string.Empty;
 	public string RefreshToken { get; set; } = string.Empty;
 	public string AppKey { get; set; } = string.Empty;
 	public string AppSecret { get; set; } = string.Empty;
-	public DateTime? ExpiresAt { get; set; }
 }

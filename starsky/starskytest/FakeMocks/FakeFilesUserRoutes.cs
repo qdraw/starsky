@@ -31,7 +31,7 @@ public class FakeFilesUserRoutes
 				contentHash: new string('a', 64)
 			)
 		).Cast<Metadata>().ToList();
-		var result = new ListFolderResult(entries, Cursor, HasMore);
+		var result = new ListFolderResult(entries, "1", HasMore);
 		return Task.FromResult(result);
 	}
 }
