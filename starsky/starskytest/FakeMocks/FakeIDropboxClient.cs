@@ -8,17 +8,19 @@ namespace starskytest.FakeMocks;
 
 public class FakeIDropboxClient : IDropboxClient
 {
+	private bool _disposed;
+
 	public FakeIDropboxClient(FakeFilesUserRoutes files)
 	{
 		Files = files;
 	}
 
 	public FakeFilesUserRoutes Files { get; set; }
-	public bool Disposed { get; private set; }
 
 	public void Dispose()
 	{
-		Disposed = true;
+		Dispose(true);
+		GC.SuppressFinalize(this);
 	}
 
 	public Task<ListFolderResult> ListFolderAsync(string path)
@@ -39,5 +41,15 @@ public class FakeIDropboxClient : IDropboxClient
 	public Task<DeleteResult> DeleteV2Async(string path, string? parentRev = null)
 	{
 		throw new NotImplementedException();
+	}
+
+	protected virtual void Dispose(bool _)
+	{
+		if ( _disposed )
+		{
+			return;
+		}
+
+		_disposed = true;
 	}
 }

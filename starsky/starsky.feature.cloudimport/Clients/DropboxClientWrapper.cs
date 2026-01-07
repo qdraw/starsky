@@ -8,6 +8,7 @@ namespace starsky.feature.cloudimport.Clients;
 public class DropboxClientWrapper(string accessToken) : IDropboxClient
 {
 	private readonly DropboxClient _client = new(accessToken);
+	private bool _disposed;
 
 	public async Task<ListFolderResult> ListFolderAsync(string path)
 	{
@@ -32,7 +33,18 @@ public class DropboxClientWrapper(string accessToken) : IDropboxClient
 
 	public void Dispose()
 	{
-		_client.Dispose();
 		GC.SuppressFinalize(this);
+		Dispose(true);
+	}
+
+	protected virtual void Dispose(bool _)
+	{
+		if ( _disposed )
+		{
+			return;
+		}
+
+		_client.Dispose();
+		_disposed = true;
 	}
 }
