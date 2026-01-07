@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.cloudimport.Clients;
 using starsky.feature.cloudimport.Interfaces;
@@ -9,6 +10,8 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+
+[assembly: InternalsVisibleTo("starskytest")]
 
 namespace starsky.feature.cloudimport.Services;
 
@@ -303,7 +306,7 @@ public class CloudImportService(
 		}
 	}
 
-	private async Task ProcessFileLoopAsync(ICloudImportClient cloudClient,
+	internal async Task ProcessFileLoopAsync(ICloudImportClient cloudClient,
 		IImport import,
 		IEnumerable<CloudFile> cloudFiles,
 		string tempFolder,
