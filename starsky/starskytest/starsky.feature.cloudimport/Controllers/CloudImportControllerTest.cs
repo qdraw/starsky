@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.cloudimport;
@@ -58,5 +59,130 @@ public class CloudImportControllerTest
 		Assert.IsFalse(( bool? ) firstType.GetProperty("deleteAfterImport")?.GetValue(first));
 		var isSyncInProgress = value.GetType().GetProperty("isSyncInProgress")?.GetValue(value);
 		Assert.IsFalse(( bool? ) isSyncInProgress);
+	}
+
+	[TestMethod]
+	public void GetProviderStatus_ReturnsProviderStatus()
+	{
+		var provider = new CloudImportProviderSettings
+		{
+			Id = "dropbox-1",
+			Enabled = true,
+			Provider = "Dropbox",
+			RemoteFolder = "/Camera Uploads",
+			SyncFrequencyMinutes = 15,
+			SyncFrequencyHours = 0,
+			DeleteAfterImport = false
+		};
+		var appSettings = new AppSettings
+		{
+			CloudImport = new CloudImportSettings { Providers = [provider] }
+		};
+		var fakeService = new FakeCloudImportService
+		{
+			IsSyncInProgress = false,
+			LastSyncResults = new Dictionary<string, CloudImportResult>
+			{
+				{ "dropbox-1", new CloudImportResult() }
+			}
+		};
+		var controller = new CloudImportController(fakeService, appSettings);
+
+		var result = controller.GetProviderStatus("dropbox-1") as OkObjectResult;
+		Assert.IsNotNull(result);
+		var value = result.Value;
+		Assert.IsNotNull(value);
+		var type = value.GetType();
+		Assert.AreEqual("dropbox-1", type.GetProperty("id")?.GetValue(value));
+		Assert.IsTrue(( bool? ) type.GetProperty("enabled")?.GetValue(value));
+		Assert.AreEqual("Dropbox", type.GetProperty("provider")?.GetValue(value));
+		Assert.AreEqual("/Camera Uploads", type.GetProperty("remoteFolder")?.GetValue(value));
+		Assert.AreEqual(15, type.GetProperty("syncFrequencyMinutes")?.GetValue(value));
+		Assert.AreEqual(0, type.GetProperty("syncFrequencyHours")?.GetValue(value));
+		Assert.IsFalse(( bool? ) type.GetProperty("deleteAfterImport")?.GetValue(value));
+		var lastSyncResult = type.GetProperty("lastSyncResult")?.GetValue(value);
+		Assert.IsNotNull(lastSyncResult);
+	}
+
+	[TestMethod]
+	public async Task TriggerSyncAll_ReturnsOkWithResults_WhenProvidersEnabledAndNoSyncInProgress()
+	{
+		var provider = new CloudImportProviderSettings
+		{
+			Id = "dropbox-1",
+			Enabled = true,
+			Provider = "Dropbox",
+			RemoteFolder = "/Camera Uploads",
+			SyncFrequencyMinutes = 15,
+			SyncFrequencyHours = 0,
+			DeleteAfterImport = false
+		};
+		var appSettings = new AppSettings
+		{
+			CloudImport = new CloudImportSettings { Providers = [provider] }
+		};
+		var fakeService = new FakeCloudImportService
+		{
+			IsSyncInProgress = false
+		};
+		var controller = new CloudImportController(fakeService, appSettings);
+
+		var result = await controller.TriggerSyncAll() as OkObjectResult;
+		Assert.IsNotNull(result);
+		var value = result.Value;
+		Assert.IsNotNull(value);
+		var resultsProp = value.GetType().GetProperty("results");
+		Assert.IsNotNull(resultsProp);
+		var results = resultsProp.GetValue(value) as List<CloudImportResult>;
+		Assert.IsNotNull(results);
+		Assert.IsTrue(results[0].Success);
+	}
+
+	[TestMethod]
+	public async Task TriggerSyncAll_ReturnsBadRequest_WhenNoProvidersEnabled()
+	{
+		var appSettings = new AppSettings
+		{
+			CloudImport = new CloudImportSettings { Providers = new List<CloudImportProviderSettings>() }
+		};
+		var fakeService = new FakeCloudImportService { IsSyncInProgress = false };
+		var controller = new CloudImportController(fakeService, appSettings);
+
+		var result = await controller.TriggerSyncAll() as BadRequestObjectResult;
+		Assert.IsNotNull(result);
+		var value = result.Value;
+		Assert.IsNotNull(value);
+		var messageProp = value.GetType().GetProperty("message");
+		Assert.IsNotNull(messageProp);
+		Assert.AreEqual("No Cloud Import providers are enabled", messageProp.GetValue(value));
+	}
+
+	[TestMethod]
+	public async Task TriggerSyncAll_ReturnsConflict_WhenSyncInProgress()
+	{
+		var provider = new CloudImportProviderSettings
+		{
+			Id = "dropbox-1",
+			Enabled = true,
+			Provider = "Dropbox",
+			RemoteFolder = "/Camera Uploads",
+			SyncFrequencyMinutes = 15,
+			SyncFrequencyHours = 0,
+			DeleteAfterImport = false
+		};
+		var appSettings = new AppSettings
+		{
+			CloudImport = new CloudImportSettings { Providers = [provider] }
+		};
+		var fakeService = new FakeCloudImportService { IsSyncInProgress = true };
+		var controller = new CloudImportController(fakeService, appSettings);
+
+		var result = await controller.TriggerSyncAll() as ConflictObjectResult;
+		Assert.IsNotNull(result);
+		var value = result.Value;
+		Assert.IsNotNull(value);
+		var messageProp = value.GetType().GetProperty("message");
+		Assert.IsNotNull(messageProp);
+		Assert.AreEqual("A sync operation is already in progress", messageProp.GetValue(value));
 	}
 }
