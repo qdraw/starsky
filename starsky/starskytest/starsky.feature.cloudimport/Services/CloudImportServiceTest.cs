@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.cloudimport;
 using starsky.feature.cloudimport.Clients;
 using starsky.feature.cloudimport.Services;
+using starsky.foundation.database.Models;
 using starsky.foundation.import.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Storage;
@@ -632,5 +633,98 @@ public class CloudImportServiceTest
 		// Assert
 		Assert.AreEqual(1, result.FilesFailed);
 		Assert.IsTrue(result.Errors.Any(e => e.Contains("Download failed")));
+	}
+
+	[TestMethod]
+	public async Task Import_SuccessfulImport_ShouldUpdateResultAndReturnTrue()
+	{
+		// Arrange
+		var providerSettings = new CloudImportProviderSettings { Id = "provider1" };
+		var result = new CloudImportResult();
+		var file = new CloudFile { Name = "file1.jpg" };
+		const string fileKey = "file1.jpg";
+		const string localPath = "/tmp/file1.jpg";
+		var importIndexItem = new ImportIndexItem { Status = ImportStatus.Ok };
+		var fakeImport = new FakeIImportForImportTest
+		{
+			ImporterFunc = (_, _) => new List<ImportIndexItem> { importIndexItem }
+		};
+		var appSettings = new AppSettings();
+		var logger = new FakeIWebLogger();
+		var serviceCollection = new ServiceCollection();
+		serviceCollection.AddScoped<IImport>(_ => fakeImport);
+		var serviceProvider = serviceCollection.BuildServiceProvider();
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+		var service = new CloudImportService(scopeFactory, logger, appSettings);
+
+		// Act
+		var success = await service.Import(providerSettings, fakeImport, result, localPath, file, fileKey);
+
+		// Assert
+		Assert.IsTrue(success);
+		Assert.AreEqual(1, result.FilesImportedSuccessfully);
+		Assert.Contains(file.Name, result.SuccessfulFiles);
+	}
+
+	[TestMethod]
+	public async Task Import_ImportFails_ShouldUpdateResultAndReturnFalse()
+	{
+		// Arrange
+		var providerSettings = new CloudImportProviderSettings { Id = "provider1" };
+		var result = new CloudImportResult();
+		var file = new CloudFile { Name = "file2.jpg" };
+		var fileKey = "file2.jpg";
+		var localPath = "/tmp/file2.jpg";
+		var importIndexItem = new ImportIndexItem { Status = ImportStatus.FileError }; // Not Ok
+		var fakeImport = new FakeIImportForImportTest
+		{
+			ImporterFunc = (_, _) => [importIndexItem]
+		};
+		var appSettings = new AppSettings();
+		var logger = new FakeIWebLogger();
+		var serviceCollection = new ServiceCollection();
+		serviceCollection.AddScoped<IImport>(_ => fakeImport);
+		var serviceProvider = serviceCollection.BuildServiceProvider();
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+		var service = new CloudImportService(scopeFactory, logger, appSettings);
+
+		// Act
+		var success = await service.Import(providerSettings, fakeImport, 
+			result, localPath, file, fileKey);
+
+		// Assert
+		Assert.IsFalse(success);
+		Assert.AreEqual(1, result.FilesFailed);
+		Assert.Contains(file.Name, result.FailedFiles);
+		Assert.IsTrue(result.Errors.Any(e => e.Contains("Import failed")));
+	}
+
+	[TestMethod]
+	public async Task Import_WhenImporterThrowsException_ShouldUpdateResultAndReturnFalse()
+	{
+		// Arrange
+		var providerSettings = new CloudImportProviderSettings { Id = "provider1" };
+		var result = new CloudImportResult();
+		var file = new CloudFile { Name = "file3.jpg" };
+		const string fileKey = "file3.jpg";
+		const string localPath = "/tmp/file3.jpg";
+		var fakeImport = new FakeIImportForImportTest { ThrowOnImport = true };
+		var appSettings = new AppSettings();
+		var logger = new FakeIWebLogger();
+		var serviceCollection = new ServiceCollection();
+		serviceCollection.AddScoped<IImport>(_ => fakeImport);
+		var serviceProvider = serviceCollection.BuildServiceProvider();
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+		var service = new CloudImportService(scopeFactory, logger, appSettings);
+
+		// Act
+		var success = await service.Import(providerSettings, fakeImport, 
+			result, localPath, file, fileKey);
+
+		// Assert
+		Assert.IsFalse(success);
+		Assert.AreEqual(1, result.FilesFailed);
+		Assert.Contains(file.Name, result.FailedFiles);
+		Assert.IsTrue(result.Errors.Any(e => e.Contains("Import failed")));
 	}
 }
