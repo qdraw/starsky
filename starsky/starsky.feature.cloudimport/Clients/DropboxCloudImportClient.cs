@@ -31,7 +31,7 @@ public class DropboxCloudImportClient(
 
 		try
 		{
-			var list = await _client!.Files.ListFolderAsync(remoteFolder);
+			var list = await _client!.ListFolderAsync(remoteFolder);
 
 			do
 			{
@@ -55,7 +55,7 @@ public class DropboxCloudImportClient(
 
 				if ( list.HasMore )
 				{
-					list = await _client.Files.ListFolderContinueAsync(list.Cursor);
+					list = await _client.ListFolderContinueAsync(list.Cursor);
 				}
 				else
 				{
@@ -82,7 +82,7 @@ public class DropboxCloudImportClient(
 		{
 			var localPath = Path.Combine(localFolder, file.Name);
 
-			using var response = await _client!.Files.DownloadAsync(file.Path);
+			using var response = await _client!.DownloadAsync(file.Path);
 			var content = await response.GetContentAsByteArrayAsync();
 
 			await File.WriteAllBytesAsync(localPath, content);
@@ -103,7 +103,7 @@ public class DropboxCloudImportClient(
 
 		try
 		{
-			await _client!.Files.DeleteV2Async(file.Path);
+			await _client!.DeleteV2Async(file.Path);
 			logger.LogInformation($"Deleted file from Dropbox: {file.Name}");
 			return true;
 		}
@@ -119,7 +119,7 @@ public class DropboxCloudImportClient(
 		try
 		{
 			EnsureClient();
-			var result = await _client!.Files.ListFolderAsync(string.Empty);
+			var result = await _client!.ListFolderAsync(string.Empty);
 			logger.LogInformation(
 				"Successfully connected to Dropbox that has {0} files", result.Entries.Count);
 			return true;
@@ -135,21 +135,24 @@ public class DropboxCloudImportClient(
 	/// <summary>
 	///     Initializes the Dropbox client using a refresh token (preferred)
 	/// </summary>
-	public async Task InitializeClient(string refreshToken, string appKey, string appSecret)
+	public async Task<bool> InitializeClient(string refreshToken, string appKey, string appSecret)
 	{
 		// Only refresh if no token or expired
 		if ( _client != null && _accessTokenExpiry.HasValue &&
 		     _accessTokenExpiry > DateTimeOffset.UtcNow.AddMinutes(1) )
 		{
-			return;
+			return false;
 		}
 
 		var (accessToken, expiresIn) = await tokenClient.ExchangeRefreshTokenAsync(refreshToken,
 			appKey,
 			appSecret);
 		_client?.Dispose();
-		_client = clientFactory != null ? clientFactory(accessToken) : new DropboxClientWrapper(accessToken);
+		_client = clientFactory != null
+			? clientFactory(accessToken)
+			: new DropboxClientWrapper(accessToken);
 		_accessTokenExpiry = DateTimeOffset.UtcNow.AddSeconds(expiresIn - 60);
+		return true;
 	}
 
 	private void EnsureClient()
