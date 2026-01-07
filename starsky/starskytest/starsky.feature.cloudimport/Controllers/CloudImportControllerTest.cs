@@ -185,4 +185,125 @@ public class CloudImportControllerTest
 		Assert.IsNotNull(messageProp);
 		Assert.AreEqual("A sync operation is already in progress", messageProp.GetValue(value));
 	}
+
+	[TestMethod]
+	public async Task TriggerSync_ReturnsOk_WhenProviderExistsAndEnabled()
+	{
+		var provider = new CloudImportProviderSettings
+		{
+			Id = "dropbox-1",
+			Enabled = true,
+			Provider = "Dropbox",
+			RemoteFolder = "/Camera Uploads",
+			SyncFrequencyMinutes = 15,
+			SyncFrequencyHours = 0,
+			DeleteAfterImport = false
+		};
+		var appSettings = new AppSettings
+		{
+			CloudImport = new CloudImportSettings { Providers = new List<CloudImportProviderSettings> { provider } }
+		};
+		var fakeService = new FakeCloudImportService();
+		var expectedResult = new CloudImportResult { ProviderId = "dropbox-1" };
+		fakeService.SyncAsyncFunc = (_) => Task.FromResult(expectedResult);
+		var controller = new CloudImportController(fakeService, appSettings);
+
+		var result = await controller.TriggerSync("dropbox-1") as OkObjectResult;
+		Assert.IsNotNull(result);
+		var value = result.Value as CloudImportResult;
+		Assert.IsNotNull(value);
+		Assert.AreEqual("dropbox-1", value.ProviderId);
+		Assert.IsTrue(value.Success);
+	}
+
+	[TestMethod]
+	public async Task TriggerSync_ReturnsNotFound_WhenProviderDoesNotExist()
+	{
+		var appSettings = new AppSettings
+		{
+			CloudImport = new CloudImportSettings { Providers = new List<CloudImportProviderSettings>() }
+		};
+		var fakeService = new FakeCloudImportService();
+		var controller = new CloudImportController(fakeService, appSettings);
+
+		var result = await controller.TriggerSync("not-exist") as NotFoundObjectResult;
+		Assert.IsNotNull(result);
+		var value = result.Value;
+		Assert.IsNotNull(value);
+		var messageProp = value.GetType().GetProperty("message");
+		Assert.IsNotNull(messageProp);
+		Assert.AreEqual("Provider 'not-exist' not found", messageProp.GetValue(value));
+	}
+
+	[TestMethod]
+	public async Task TriggerSync_ReturnsBadRequest_WhenProviderDisabled()
+	{
+		var provider = new CloudImportProviderSettings
+		{
+			Id = "dropbox-1",
+			Enabled = false,
+			Provider = "Dropbox",
+			RemoteFolder = "/Camera Uploads",
+			SyncFrequencyMinutes = 15,
+			SyncFrequencyHours = 0,
+			DeleteAfterImport = false
+		};
+		var appSettings = new AppSettings
+		{
+			CloudImport = new CloudImportSettings { Providers = new List<CloudImportProviderSettings> { provider } }
+		};
+		var fakeService = new FakeCloudImportService();
+		var controller = new CloudImportController(fakeService, appSettings);
+
+		var result = await controller.TriggerSync("dropbox-1") as BadRequestObjectResult;
+		Assert.IsNotNull(result);
+		var value = result.Value;
+		Assert.IsNotNull(value);
+		var messageProp = value.GetType().GetProperty("message");
+		Assert.IsNotNull(messageProp);
+		Assert.AreEqual("Provider 'dropbox-1' is disabled", messageProp.GetValue(value));
+	}
+
+	[TestMethod]
+	public void GetLastResults_ReturnsOk_WhenResultsExist()
+	{
+		var fakeService = new FakeCloudImportService
+		{
+			LastSyncResults = new Dictionary<string, CloudImportResult>
+			{
+				{ "dropbox-1", new CloudImportResult { ProviderId = "dropbox-1" } }
+			}
+		};
+		var appSettings = new AppSettings
+		{
+			CloudImport = new CloudImportSettings { Providers = new List<CloudImportProviderSettings>() }
+		};
+		var controller = new CloudImportController(fakeService, appSettings);
+
+		var result = controller.GetLastResults() as OkObjectResult;
+		Assert.IsNotNull(result);
+		var value = result.Value as IDictionary<string, CloudImportResult>;
+		Assert.IsNotNull(value);
+		Assert.IsTrue(value.ContainsKey("dropbox-1"));
+		Assert.IsTrue(value["dropbox-1"].Success);
+	}
+
+	[TestMethod]
+	public void GetLastResults_ReturnsNotFound_WhenNoResults()
+	{
+		var fakeService = new FakeCloudImportService { LastSyncResults = new Dictionary<string, CloudImportResult>() };
+		var appSettings = new AppSettings
+		{
+			CloudImport = new CloudImportSettings { Providers = new List<CloudImportProviderSettings>() }
+		};
+		var controller = new CloudImportController(fakeService, appSettings);
+
+		var result = controller.GetLastResults() as NotFoundObjectResult;
+		Assert.IsNotNull(result);
+		var value = result.Value;
+		Assert.IsNotNull(value);
+		var messageProp = value.GetType().GetProperty("message");
+		Assert.IsNotNull(messageProp);
+		Assert.AreEqual("No sync has been performed yet", messageProp.GetValue(value));
+	}
 }
