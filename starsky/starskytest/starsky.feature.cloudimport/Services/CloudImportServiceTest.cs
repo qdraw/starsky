@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.cloudimport;
+using starsky.feature.cloudimport.Clients;
 using starsky.feature.cloudimport.Services;
 using starsky.foundation.import.Interfaces;
 using starsky.foundation.platform.Models;
@@ -516,6 +517,49 @@ public class CloudImportServiceTest
 
 		// Act
 		var result = await service.SyncAsync("test", CloudImportTriggerType.Manual);
+
+		// Assert
+		Assert.IsFalse(result.Success);
+		Assert.IsTrue(result.Errors.Any(e => e.Contains("not available") || e.Contains("not enabled")));
+	}
+
+	[TestMethod]
+	public async Task SyncAsync_WhenCloudClientIsDropboxCloudImportClient_ShouldInitializeClient()
+	{
+		// Arrange
+		var appSettings = new AppSettings
+		{
+			CloudImport = new CloudImportSettings
+			{
+				Providers =
+				[
+					new()
+					{
+						Id = "dropbox-test",
+						Enabled = true,
+						Provider = "Dropbox",
+						RemoteFolder = "/dropbox-folder",
+						Credentials = new CloudProviderCredentials
+						{
+							RefreshToken = "refresh-token",
+							AppKey = "app-key",
+							AppSecret = "app-secret"
+						}
+					}
+				]
+			}
+		};
+		var logger = new FakeIWebLogger();
+		var serviceCollection = new ServiceCollection();
+		var fakeDropboxClient = new DropboxCloudImportClient(new FakeIWebLogger(), new AppSettings(), new FakeDropboxCloudImportRefreshToken());
+		serviceCollection.AddScoped<ICloudImportClient>(_ => fakeDropboxClient);
+		serviceCollection.AddScoped<IImport>(_ => new FakeIImport(new FakeSelectorStorage()));
+		var serviceProvider = serviceCollection.BuildServiceProvider();
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+		var service = new CloudImportService(scopeFactory, logger, appSettings);
+
+		// Act
+		var result = await service.SyncAsync("dropbox-test", CloudImportTriggerType.Manual);
 
 		// Assert
 		Assert.IsFalse(result.Success);
