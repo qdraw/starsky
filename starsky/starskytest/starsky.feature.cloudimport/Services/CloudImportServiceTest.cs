@@ -314,7 +314,7 @@ public class CloudImportServiceTest
 			await service.SyncAsync("test", CloudImportTriggerType.Manual));
 
 		// Ensure the first sync is running and blocked
-		await Task.Delay(50); // Give time for the first sync to start and block
+		await Task.Delay(50, TestContext.CancellationToken); // Give time for the first sync to start and block
 
 		// Act - Try to start second sync while first is running
 		await service.SyncAsync("test", CloudImportTriggerType.Manual);
@@ -565,4 +565,46 @@ public class CloudImportServiceTest
 		Assert.IsFalse(result.Success);
 		Assert.IsTrue(result.Errors.Any(e => e.Contains("not available") || e.Contains("not enabled")));
 	}
+
+	[TestMethod]
+	public async Task GetCloudFiles_WhenListFilesAsyncThrowsException_ShouldReturnErrorResult()
+	{
+		// Arrange
+		var appSettings = new AppSettings
+		{
+			CloudImport = new CloudImportSettings
+			{
+				Providers = new List<CloudImportProviderSettings>
+				{
+					new()
+					{
+						Id = "test",
+						Enabled = true,
+						Provider = "FakeProvider"
+					}
+				}
+			}
+		};
+		var logger = new FakeIWebLogger();
+		var serviceCollection = new ServiceCollection();
+		var fakeClient = new FakeCloudImportClientWithException();
+		serviceCollection.AddScoped<ICloudImportClient>(_ => fakeClient);
+		serviceCollection.AddScoped<IImport>(_ => new FakeIImport(new FakeSelectorStorage()));
+		var serviceProvider = serviceCollection.BuildServiceProvider();
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+		var service = new CloudImportService(scopeFactory, logger, appSettings);
+
+		// Use reflection to call the private GetCloudFiles method
+		var method = typeof(CloudImportService).GetMethod("GetCloudFiles", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+		var providerSettings = appSettings.CloudImport.Providers[0];
+		var result = new CloudImportResult();
+		var task = (Task<(IEnumerable<CloudFile>, CloudImportResult?)>)method!.Invoke(service, new object[] { fakeClient, result, providerSettings, providerSettings.Id })!;
+		var (_, errorResult) = await task;
+
+		// Assert
+		Assert.IsNotNull(errorResult);
+		Assert.IsTrue(errorResult.Errors.Any(e => e.Contains("Failed to list files from cloud storage")));
+	}
+
+	public TestContext TestContext { get; set; }
 }
