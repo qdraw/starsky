@@ -105,6 +105,25 @@ public class CloudImportControllerTest
 	}
 
 	[TestMethod]
+	public void GetProviderStatus_ReturnsProviderStatus_NotFound()
+	{
+		
+		var fakeService = new FakeCloudImportService
+		{
+			IsSyncInProgress = false,
+			LastSyncResults = new Dictionary<string, CloudImportResult>
+			{
+				{ "dropbox-1", new CloudImportResult() }
+			}
+		};
+		var controller = new CloudImportController(fakeService, new AppSettings());
+		
+		var result = controller.GetProviderStatus("not-found") as NotFoundObjectResult;
+		Assert.IsNotNull(result);
+		Assert.AreEqual(404, result.StatusCode);
+	}
+
+	[TestMethod]
 	public async Task TriggerSyncAll_ReturnsOkWithResults_WhenProvidersEnabledAndNoSyncInProgress()
 	{
 		var provider = new CloudImportProviderSettings
