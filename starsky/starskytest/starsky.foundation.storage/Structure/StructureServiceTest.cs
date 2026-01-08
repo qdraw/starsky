@@ -482,7 +482,7 @@ public sealed class StructureServiceTest
 		};
 
 		var fakeInput = new StructureInputModel(DateTime.MinValue, string.Empty,
-			string.Empty, imageFormat, string.Empty);
+			string.Empty, imageFormat, "differentOrigin");
 
 		// Act
 		var result = StructureService.GetStructureSetting(fakeConfig, fakeInput);
@@ -490,7 +490,7 @@ public sealed class StructureServiceTest
 		// Assert
 		Assert.AreEqual(expectedPattern, result);
 	}
-	
+
 	[TestMethod]
 	[DataRow("test", @"/yyyy/MM/yyyy_MM_dd_\d/_CLIP/yyyyMMdd_HHmmss_\d.ext")]
 	[DataRow("test2", @"/yyyy/MM/yyyy_MM_dd_\d/_\SCREEN/yyyyMMdd_HHmmss_\d.ext")]
