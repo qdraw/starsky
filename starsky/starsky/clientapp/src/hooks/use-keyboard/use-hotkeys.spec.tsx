@@ -63,6 +63,32 @@ describe("useHotKeys", () => {
       expect(callback).toHaveBeenCalledTimes(0);
       test.componentMount.unmount();
     });
+
+    it("should not ignore when keyboard is in form with flag", () => {
+      const callback = jest.fn();
+
+      jest.spyOn(Keyboard.prototype, "isInForm").mockImplementationOnce(() => true);
+
+      const test = mountReactHook(useHotKeys as (...args: unknown[]) => unknown, [
+        {
+          key: "w",
+          altKey: true,
+          skipIsInForm: true
+        } as IHotkeysKeyboardEvent,
+        callback
+      ]);
+
+      const event = new KeyboardEvent("keydown", {
+        bubbles: true,
+        cancelable: true,
+        key: "w",
+        altKey: true
+      });
+      globalThis.dispatchEvent(event);
+
+      expect(callback).toHaveBeenCalledTimes(1);
+      test.componentMount.unmount();
+    });
   });
 
   describe("pressing key with q", () => {
