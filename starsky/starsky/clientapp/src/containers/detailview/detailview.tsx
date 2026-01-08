@@ -153,7 +153,6 @@ const DetailView: FC<IDetailView> = () => {
   useHotKeys(
     { key: "]", ctrlKeyOrMetaKey: true, skipIsInForm: false },
     () => {
-      console.log("next");
       new PrevNext(
         relativeObjects,
         state,
