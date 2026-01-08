@@ -108,7 +108,15 @@ public sealed class GeoFileDownload : IGeoFileDownload
 			}
 		}
 
-		_hostStorage.FileDelete(Path.Combine(_appSettings.DependenciesFolder,
-			CountryName + ".zip"));
+		try
+		{
+			_hostStorage.FileDelete(Path.Combine(_appSettings.DependenciesFolder,
+				CountryName + ".zip"));
+		}
+		catch ( IOException e )
+		{
+			_logger.LogError(e, "Could not delete failed downloaded geo file");
+		}
+
 	}
 }

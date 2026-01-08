@@ -800,6 +800,11 @@ public sealed class AppSettings
 	[PackageTelemetry]
 	public string? FfmpegPath { get; set; }
 
+	/// <summary>
+	///     Cloud import settings for automatic import from cloud storage
+	/// </summary>
+	public CloudImportSettings? CloudImport { get; set; } = new();
+
 	public OpenTelemetrySettings? OpenTelemetry { get; set; } = new();
 
 	/// <summary>

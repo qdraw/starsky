@@ -1000,6 +1000,31 @@ public sealed class ArgsHelper
 	}
 
 	/// <summary>
+	///     Get provider value from args
+	/// </summary>
+	/// <param name="args">input args</param>
+	/// <returns>provider value</returns>
+	public static string GetCloudImportProvider(IReadOnlyList<string> args)
+	{
+		// --provider
+		var provider = string.Empty;
+
+		for ( var arg = 0; arg < args.Count; arg++ )
+		{
+			if ( !args[arg].Equals("--provider",
+				     StringComparison.CurrentCultureIgnoreCase) ||
+			     arg + 1 == args.Count )
+			{
+				continue;
+			}
+
+			provider = args[arg + 1];
+		}
+
+		return provider;
+	}
+
+	/// <summary>
 	///     Get profile value from args
 	/// </summary>
 	/// <param name="args">input args</param>
