@@ -124,10 +124,12 @@ public class StructureService : IStructureService
 			}
 		}
 
-		// Next, try to match only ImageFormat
+		// Next, try to match only ImageFormat, but only if there is a rule for this format
 		var imageFormatRule = config.Rules.FirstOrDefault(rule =>
 			rule.Conditions.ImageFormats.Contains(input.ImageFormat)
-			&& !string.IsNullOrEmpty(rule.Pattern));
+			&& !string.IsNullOrEmpty(rule.Pattern)
+			&& string.IsNullOrEmpty(rule.Conditions.Origin)
+		);
 		if ( imageFormatRule != null )
 		{
 			return imageFormatRule.Pattern;
@@ -137,7 +139,9 @@ public class StructureService : IStructureService
 		var originRule = config.Rules.FirstOrDefault(rule =>
 			!string.IsNullOrEmpty(rule.Conditions.Origin)
 			&& rule.Conditions.Origin == input.Origin
-			&& !string.IsNullOrEmpty(rule.Pattern));
+			&& !string.IsNullOrEmpty(rule.Pattern)
+			&& rule.Conditions.ImageFormats.Count == 0
+		);
 
 		if ( originRule != null )
 		{
