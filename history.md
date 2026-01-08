@@ -44,12 +44,12 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## version 0.7.6 - _(Unreleased)_ - 2025-?-? {#v0.7.6}
 
 - [x] (Fixed) _Back-end_ GPX file formats by expanding the range of byte offsets (PR #2512)
-- [x] (Added) _Back-end_ Cloud Import feature to import files from cloud storage providers (PR
-  #2498)
+- [x] (Added) _Back-end_ Cloud Import feature to import files from cloud providers (PR #2498)
 - [x] (Added) _Back-end_ Dropbox support for Cloud Import (PR #2498)
 - [x] (Added) _Back-end_ Scheduling (e.g. every hour / every 10 minutes) for Cloud Import (PR #2498)
 - [x] (Fixed) _Back-end_ Prioritize import rules that match both ImageFormat and Origin (PR #2567)
 - [x] (Added) _Back-end_ Hide in api/env for cloud-import keys (PR #2569)
+- [x] (Fixed) _Back-end_ Selecting structure patterns based on image format and origin (PR #2571)
 
 ## version 0.7.5 - 2025-11-17 {#v0.7.5}
 

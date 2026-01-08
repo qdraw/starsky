@@ -395,6 +395,8 @@ public sealed class StructureServiceTest
 		@"/yyyy/MM/yyyy_MM_dd_\d/_\SCREEN/yyyyMMdd_HHmmss_\d.ext")]
 	[DataRow(ExtensionRolesHelper.ImageFormat.mp4,
 		@"/yyyy/MM/yyyy_MM_dd_\d/_CLIP/yyyyMMdd_HHmmss_\d.ext")]
+	[DataRow(ExtensionRolesHelper.ImageFormat.jpg,
+		"/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext")]
 	public void GetStructureSetting_ShouldReturnExpectedPattern(
 		ExtensionRolesHelper.ImageFormat imageFormat, string expectedPattern)
 	{
@@ -446,6 +448,8 @@ public sealed class StructureServiceTest
 		@"/yyyy/MM/yyyy_MM_dd_\d/_\SCREEN/yyyyMMdd_HHmmss_\d.ext")]
 	[DataRow(ExtensionRolesHelper.ImageFormat.mp4,
 		@"/yyyy/MM/yyyy_MM_dd_\d/_CLIP/yyyyMMdd_HHmmss_\d.ext")]
+	[DataRow(ExtensionRolesHelper.ImageFormat.jpg,
+		"/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext")]
 	public void GetStructureSetting_ShouldReturnExpectedPattern_OnImageFormat(
 		ExtensionRolesHelper.ImageFormat imageFormat, string expectedPattern)
 	{
@@ -463,7 +467,7 @@ public sealed class StructureServiceTest
 					{
 						// no origin here
 						ImageFormats =
-							[ExtensionRolesHelper.ImageFormat.mp4],
+							[ExtensionRolesHelper.ImageFormat.mp4]
 					},
 					Pattern = mp4Pattern
 				},
@@ -473,7 +477,7 @@ public sealed class StructureServiceTest
 					{
 						// no origin here
 						ImageFormats =
-							[ExtensionRolesHelper.ImageFormat.png],
+							[ExtensionRolesHelper.ImageFormat.png]
 					},
 					Pattern = pngPattern
 				}
