@@ -50,6 +50,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Fixed) _Back-end_ Prioritize import rules that match both ImageFormat and Origin (PR #2567)
 - [x] (Added) _Back-end_ Hide in api/env for cloud-import keys (PR #2569)
 - [x] (Fixed) _Back-end_ Selecting structure patterns based on image format and origin (PR #2571)
+- [x] (Fixed) _Front-end Previous with Ctrl/Cmd + \[ and to the next with Ctrl/Cmd + ] (PR #2572)
 
 ## version 0.7.5 - 2025-11-17 {#v0.7.5}
 
