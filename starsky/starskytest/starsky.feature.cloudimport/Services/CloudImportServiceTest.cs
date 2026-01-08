@@ -738,7 +738,7 @@ public class CloudImportServiceTest
 		Assert.IsTrue(result.Errors.Any(e => e.Contains("Import failed")));
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow("jpg", "file1.jpg;file2.JPG", "file1.jpg;file2.JPG")]
 	[DataRow("png", "file1.jpg;file2.png", "file2.png")]
 	[DataRow("jpg,png", "file1.jpg;file2.png;file3.JPG;file4.txt", "file1.jpg;file2.png;file3.JPG")]
@@ -749,13 +749,13 @@ public class CloudImportServiceTest
 	public void FilterExtensions_Theory(string extensionsCsv, string fileNamesCsv, string expectedCsv)
 	{
 		var extensions = string.IsNullOrEmpty(extensionsCsv)
-			? new List<string>()
+			? []
 			: extensionsCsv.Split(',').ToList();
 		var files = string.IsNullOrEmpty(fileNamesCsv)
-			? new List<CloudFile>()
+			? []
 			: fileNamesCsv.Split(';').Select(f => new CloudFile { Name = f }).ToList();
 		var expected = string.IsNullOrEmpty(expectedCsv)
-			? new List<string>()
+			? []
 			: expectedCsv.Split(';').ToList();
 
 		var providerSettings = new CloudImportProviderSettings { Extensions = extensions };
