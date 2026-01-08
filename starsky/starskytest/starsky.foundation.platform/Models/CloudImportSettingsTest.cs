@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
 
@@ -105,5 +106,17 @@ public class CloudImportSettingsTest
 			Assert.IsEmpty(result,
 				$"Expected provider to be excluded for enabled={enabled}, hours={hours}, minutes={minutes}");
 		}
+	}
+
+	[TestMethod]
+	public void Extensions_ShouldTrimPrefixDot()
+	{
+		var provider = new CloudImportProviderSettings
+		{
+			Extensions = [".jpg", ".png", "gif", ".JPG"]
+		};
+		CollectionAssert.AreEquivalent(
+			new List<string> { "jpg", "png", "gif", "JPG" },
+			provider.Extensions);
 	}
 }

@@ -154,3 +154,22 @@ export app__CloudImport__Providers__0__Credentials__RefreshToken=""
 export app__CloudImport__Providers__0__Credentials__AppKey=""
 export app__CloudImport__Providers__0__Credentials__AppSecret=""
 ```
+
+### Filter on extensions
+
+You can also configure which file extensions to include or exclude during the import process.
+
+```json
+{
+  "app": {
+    "CloudImport": {
+      "Providers": [
+        {
+          "other fields are omitted for brevity": "...",
+          "Extensions": ["jpg", "png", "mp4"]
+        }
+      ]
+    }
+  }
+}
+```

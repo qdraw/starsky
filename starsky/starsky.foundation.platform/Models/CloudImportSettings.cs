@@ -41,6 +41,8 @@ public class CloudImportSettings
 /// </summary>
 public class CloudImportProviderSettings
 {
+	private List<string> _extensions = [];
+
 	/// <summary>
 	///     Unique identifier for this provider configuration
 	/// </summary>
@@ -81,7 +83,11 @@ public class CloudImportProviderSettings
 	///     (Does NOT check actual imageFormat)
 	///     If empty or null, all files are imported
 	/// </summary>
-	public List<string> Extensions { get; set; } = [];
+	public List<string> Extensions
+	{
+		get => _extensions;
+		set => _extensions = value.Select(e => e.TrimStart('.')).ToList();
+	}
 
 	/// <summary>
 	///     Credentials for the cloud provider

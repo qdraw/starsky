@@ -745,8 +745,10 @@ public class CloudImportServiceTest
 	[DataRow("", "file1.jpg;file2.png", "file1.jpg;file2.png")]
 	[DataRow("gif", "file1.jpg;file2.png", "")]
 	[DataRow("JPG", "file1.jpg;file2.JPG", "file1.jpg;file2.JPG")]
+	[DataRow(".JPG", "file1.jpg;file2.JPG", "file1.jpg;file2.JPG")]
 	[DataRow("jpg", "", "")]
-	public void FilterExtensions_Theory(string extensionsCsv, string fileNamesCsv, string expectedCsv)
+	public void FilterExtensions_Theory(string extensionsCsv, string fileNamesCsv,
+		string expectedCsv)
 	{
 		var extensions = string.IsNullOrEmpty(extensionsCsv)
 			? []
