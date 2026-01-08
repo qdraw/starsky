@@ -13,6 +13,8 @@ The past year has been an important one for **Starsky**. What started as a power
 
 Looking back over the releases from **0.6.7 through 0.7.6**, several clear themes emerge: modernization, resilience, better tooling, and preparing Starsky for the future.
 
+{/* truncate */}
+
 ## A Major Milestone: The 0.7 Line
 
 The release of **Starsky 0.7.0** marked the most significant shift this year. It wasn’t just another version bump—it represented a conscious decision to evolve core assumptions and clean up long-standing technical debt.
