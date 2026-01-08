@@ -391,6 +391,57 @@ public sealed class StructureServiceTest
 	}
 
 	[TestMethod]
+	[DataRow(ExtensionRolesHelper.ImageFormat.png,
+		@"/yyyy/MM/yyyy_MM_dd_\d/_\SCREEN/yyyyMMdd_HHmmss_\d.ext")]
+	[DataRow(ExtensionRolesHelper.ImageFormat.mp4,
+		@"/yyyy/MM/yyyy_MM_dd_\d/_CLIP/yyyyMMdd_HHmmss_\d.ext")]
+	public void GetStructureSetting_ShouldReturnExpectedPattern(
+		ExtensionRolesHelper.ImageFormat imageFormat, string expectedPattern)
+	{
+		const string origin = "test";
+		const string mp4Pattern = @"/yyyy/MM/yyyy_MM_dd_\d/_CLIP/yyyyMMdd_HHmmss_\d.ext";
+		const string pngPattern = @"/yyyy/MM/yyyy_MM_dd_\d/_\SCREEN/yyyyMMdd_HHmmss_\d.ext";
+		const string defaultPattern = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
+
+		var fakeConfig = new AppSettingsStructureModel
+		{
+			Rules =
+			[
+				new StructureRule
+				{
+					Conditions = new StructureRuleConditions
+					{
+						ImageFormats =
+							[ExtensionRolesHelper.ImageFormat.mp4],
+						Origin = origin
+					},
+					Pattern = mp4Pattern
+				},
+				new StructureRule
+				{
+					Conditions = new StructureRuleConditions
+					{
+						ImageFormats =
+							[ExtensionRolesHelper.ImageFormat.png],
+						Origin = origin
+					},
+					Pattern = pngPattern
+				}
+			],
+			DefaultPattern = defaultPattern
+		};
+
+		var fakeInput = new StructureInputModel(DateTime.MinValue, string.Empty,
+			string.Empty, imageFormat, origin);
+
+		// Act
+		var result = StructureService.GetStructureSetting(fakeConfig, fakeInput);
+
+		// Assert
+		Assert.AreEqual(expectedPattern, result);
+	}
+
+	[TestMethod]
 	[DataRow("yyyy", "2023")]
 	[DataRow("fffff", "00000")]
 	[DataRow("FFFFF", "")]
