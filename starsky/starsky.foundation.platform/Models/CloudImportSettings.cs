@@ -38,7 +38,7 @@ public class CloudImportProviderSettings
 	public bool Enabled { get; set; }
 
 	/// <summary>
-	///     Cloud storage provider (e.g., "Dropbox", "GoogleDrive", "OneDrive")
+	///     Cloud storage provider (e.g., "Dropbox")
 	/// </summary>
 	public string Provider { get; set; } = "Dropbox";
 
@@ -55,12 +55,19 @@ public class CloudImportProviderSettings
 	/// <summary>
 	///     Sync frequency in hours (used if SyncFrequencyMinutes is 0)
 	/// </summary>
-	public int SyncFrequencyHours { get; set; } = 24;
+	public int SyncFrequencyHours { get; set; }
 
 	/// <summary>
 	///     Whether to delete files from cloud storage after successful import
 	/// </summary>
 	public bool DeleteAfterImport { get; set; }
+
+	/// <summary>
+	///     If used, only files with these extensions will be imported
+	///     (Does NOT check actual imageFormat)
+	///     If empty or null, all files are imported
+	/// </summary>
+	public List<string> Extensions { get; set; } = [];
 
 	/// <summary>
 	///     Credentials for the cloud provider

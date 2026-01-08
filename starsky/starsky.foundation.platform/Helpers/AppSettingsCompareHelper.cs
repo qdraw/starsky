@@ -10,6 +10,9 @@ using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.platform.Helpers;
 
+/// <summary>
+///     AppSettings Merge Helper
+/// </summary>
 public static class AppSettingsCompareHelper
 {
 	/// <summary>
@@ -103,6 +106,28 @@ public static class AppSettingsCompareHelper
 				oldObjectValue,
 				newObjectValue, differenceList);
 		}
+
+		if ( propertyInfoFromA.PropertyType ==
+		     typeof(CloudImportSettings) &&
+		     propertyB.PropertyType == typeof(CloudImportSettings) )
+		{
+			var oldCloudImportSettingsValue =
+				( CloudImportSettings? ) propertyInfoFromA.GetValue(
+					sourceIndexItem, null);
+			var newCloudImportSettingsValue =
+				( CloudImportSettings? ) propertyB.GetValue(updateObject,
+					null);
+			CompareAppSettingsCloudSettings(propertyB.Name, sourceIndexItem,
+				oldCloudImportSettingsValue,
+				newCloudImportSettingsValue, differenceList);
+		}
+	}
+
+	private static void CompareAppSettingsCloudSettings(string propertyBName,
+		AppSettings sourceIndexItem, CloudImportSettings? oldCloudImportSettingsValue,
+		CloudImportSettings? newCloudImportSettingsValue, List<string> differenceList)
+	{
+		throw new NotImplementedException();
 	}
 
 	[SuppressMessage("Performance",
