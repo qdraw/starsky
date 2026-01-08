@@ -110,7 +110,7 @@ public sealed class GeoFileDownload : IGeoFileDownload
 		}
 		catch ( IOException e )
 		{
-			_logger.LogError(e, "Could read downloaded geo file");
+			_logger.LogError(e, "Could not read downloaded geo file");
 		}
 
 		try
