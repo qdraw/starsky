@@ -352,6 +352,35 @@ public sealed class AppSettingsTest
 	}
 
 	[TestMethod]
+	public void AppSettings_CloneToDisplay_CloudImport()
+	{
+		var appSettings = new AppSettings
+		{
+			CloudImport = new CloudImportSettings
+			{
+				Providers =
+				[
+					new CloudImportProviderSettings
+					{
+						Credentials = new CloudProviderCredentials { RefreshToken = "test" }
+					},
+					new CloudImportProviderSettings
+					{
+						Credentials = new CloudProviderCredentials { RefreshToken = "test1" }
+					}
+				],
+			}
+		};
+
+		var display = appSettings.CloneToDisplay();
+
+		Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning,
+			display.CloudImport?.Providers[0].Credentials.RefreshToken);
+		Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning,
+			display.CloudImport?.Providers[1].Credentials.RefreshToken);
+	}
+
+	[TestMethod]
 	public void AppSettings_IsReadOnly_NullNoItemTest()
 	{
 		var appSettings = new AppSettings();
