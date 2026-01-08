@@ -457,23 +457,24 @@ public class CloudImportServiceTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings>
-				{
-					new()
+				Providers =
+				[
+					new CloudImportProviderSettings
 					{
 						Id = "provider1",
 						Enabled = true,
 						Provider = "FakeProvider",
 						RemoteFolder = "/folder1"
 					},
-					new()
+
+					new CloudImportProviderSettings
 					{
 						Id = "provider2",
 						Enabled = true,
 						Provider = "FakeProvider",
 						RemoteFolder = "/folder2"
 					}
-				}
+				]
 			}
 		};
 		var logger = new FakeIWebLogger();
@@ -666,7 +667,8 @@ public class CloudImportServiceTest
 		var service = new CloudImportService(scopeFactory, logger, appSettings);
 
 		// Act
-		var success = await service.Import(providerSettings, fakeImport, result, localPath, file, fileKey);
+		var success = await service.Import(providerSettings, fakeImport, result, localPath, file,
+			fileKey);
 
 		// Assert
 		Assert.IsTrue(success);
@@ -697,7 +699,7 @@ public class CloudImportServiceTest
 		var service = new CloudImportService(scopeFactory, logger, appSettings);
 
 		// Act
-		var success = await service.Import(providerSettings, fakeImport, 
+		var success = await service.Import(providerSettings, fakeImport,
 			result, localPath, file, fileKey);
 
 		// Assert
@@ -726,7 +728,7 @@ public class CloudImportServiceTest
 		var service = new CloudImportService(scopeFactory, logger, appSettings);
 
 		// Act
-		var success = await service.Import(providerSettings, fakeImport, 
+		var success = await service.Import(providerSettings, fakeImport,
 			result, localPath, file, fileKey);
 
 		// Assert
@@ -734,5 +736,31 @@ public class CloudImportServiceTest
 		Assert.AreEqual(1, result.FilesFailed);
 		Assert.Contains(file.Name, result.FailedFiles);
 		Assert.IsTrue(result.Errors.Any(e => e.Contains("Import failed")));
+	}
+
+	[DataTestMethod]
+	[DataRow("jpg", "file1.jpg;file2.JPG", "file1.jpg;file2.JPG")]
+	[DataRow("png", "file1.jpg;file2.png", "file2.png")]
+	[DataRow("jpg,png", "file1.jpg;file2.png;file3.JPG;file4.txt", "file1.jpg;file2.png;file3.JPG")]
+	[DataRow("", "file1.jpg;file2.png", "file1.jpg;file2.png")]
+	[DataRow("gif", "file1.jpg;file2.png", "")]
+	[DataRow("JPG", "file1.jpg;file2.JPG", "file1.jpg;file2.JPG")]
+	[DataRow("jpg", "", "")]
+	public void FilterExtensions_Theory(string extensionsCsv, string fileNamesCsv, string expectedCsv)
+	{
+		var extensions = string.IsNullOrEmpty(extensionsCsv)
+			? new List<string>()
+			: extensionsCsv.Split(',').ToList();
+		var files = string.IsNullOrEmpty(fileNamesCsv)
+			? new List<CloudFile>()
+			: fileNamesCsv.Split(';').Select(f => new CloudFile { Name = f }).ToList();
+		var expected = string.IsNullOrEmpty(expectedCsv)
+			? new List<string>()
+			: expectedCsv.Split(';').ToList();
+
+		var providerSettings = new CloudImportProviderSettings { Extensions = extensions };
+		var result = CloudImportService.FilterExtensions(files, providerSettings);
+		var resultNames = result.Select(f => f.Name).ToList();
+		CollectionAssert.AreEquivalent(expected, resultNames);
 	}
 }

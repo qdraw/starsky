@@ -127,7 +127,33 @@ public static class AppSettingsCompareHelper
 		AppSettings sourceIndexItem, CloudImportSettings? oldCloudImportSettingsValue,
 		CloudImportSettings? newCloudImportSettingsValue, List<string> differenceList)
 	{
-		throw new NotImplementedException();
+		// If both are null, nothing to compare
+		if ( oldCloudImportSettingsValue == null && newCloudImportSettingsValue == null )
+		{
+			return;
+		}
+
+		var newCloudImportSettingsJson = JsonSerializer.Serialize(newCloudImportSettingsValue);
+		var oldCloudImportSettingsJson = JsonSerializer.Serialize(oldCloudImportSettingsValue);
+
+		// If both are non-null and equal (deep compare via JSON), nothing to do
+		if ( oldCloudImportSettingsValue != null && newCloudImportSettingsValue != null &&
+		     oldCloudImportSettingsJson == newCloudImportSettingsJson )
+		{
+			return;
+		}
+
+		// If new is default (empty), do nothing
+		if ( newCloudImportSettingsValue != null &&
+		     newCloudImportSettingsJson == JsonSerializer.Serialize(new CloudImportSettings()) )
+		{
+			return;
+		}
+
+		// Otherwise, update and record the change
+		sourceIndexItem.GetType().GetProperty(propertyBName)!.SetValue(sourceIndexItem,
+			newCloudImportSettingsValue, null);
+		differenceList.Add(propertyBName.ToLowerInvariant());
 	}
 
 	[SuppressMessage("Performance",

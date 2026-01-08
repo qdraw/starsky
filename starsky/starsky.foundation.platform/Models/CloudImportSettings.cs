@@ -11,9 +11,23 @@ public class CloudImportSettings
 	/// <summary>
 	///     List of Cloud Import provider configurations
 	/// </summary>
-	public List<CloudImportProviderSettings> Providers { get; set; } = new();
+	public List<CloudImportProviderSettings> Providers { get; set; } = [];
 
+	/// <summary>
+	///     All enabled providers also the ones without a sync frequency
+	/// </summary>
+	/// <returns>list</returns>
 	public List<CloudImportProviderSettings> GetEnabledProviders()
+	{
+		return Providers.Where(p => p.Enabled)
+			.ToList();
+	}
+
+	/// <summary>
+	///     For Scheduled sync: Get only enabled providers with a sync frequency set
+	/// </summary>
+	/// <returns>list</returns>
+	public List<CloudImportProviderSettings> GetEnabledSyncFrequencyProviders()
 	{
 		return Providers.Where(p => p.Enabled &&
 		                            ( p.SyncFrequencyHours > 0 ||

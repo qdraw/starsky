@@ -73,7 +73,7 @@ public class CloudImportService(
 					StartTime = DateTime.UtcNow,
 					EndTime = DateTime.UtcNow,
 					TriggerType = triggerType,
-					Errors = new List<string> { $"Sync failed: {ex.Message}" }
+					Errors = [$"Sync failed: {ex.Message}"]
 				});
 			}
 		}
@@ -252,11 +252,12 @@ public class CloudImportService(
 		ICloudImportClient cloudClient,
 		CloudImportResult result, CloudImportProviderSettings providerSettings, string providerId)
 	{
-		IEnumerable<CloudFile> cloudFiles;
+		List<CloudFile> cloudFiles;
 		try
 		{
 			cloudFiles = await cloudClient.ListFilesAsync(providerSettings.RemoteFolder);
-			result.FilesFound = cloudFiles.Count();
+			cloudFiles = FilterExtensions(cloudFiles, providerSettings);
+			result.FilesFound = cloudFiles.Count;
 			logger.LogInformation(
 				$"Found {result.FilesFound} files in cloud storage for provider '{providerId}'");
 		}
@@ -271,6 +272,20 @@ public class CloudImportService(
 		}
 
 		return ( cloudFiles, null );
+	}
+
+	internal static List<CloudFile> FilterExtensions(List<CloudFile> cloudFiles, 
+		CloudImportProviderSettings providerSettings)
+	{
+		if (providerSettings.Extensions.Count > 0 )
+		{
+			cloudFiles = cloudFiles.Where(f =>
+				providerSettings.Extensions.Contains(
+					Path.GetExtension(f.Name).TrimStart('.'),
+					StringComparer.OrdinalIgnoreCase)).ToList();
+		}
+
+		return cloudFiles;
 	}
 
 	private static string GetTempFolder(string providerId)

@@ -28,7 +28,7 @@ public class CloudImportScheduledService(
 		logger.LogInformation("Cloud Import Scheduled Service started");
 
 		var enabledProviders = appSettings.CloudImport?
-			.GetEnabledProviders() ?? [];
+			.GetEnabledSyncFrequencyProviders() ?? [];
 
 		if ( enabledProviders.Count == 0 )
 		{
