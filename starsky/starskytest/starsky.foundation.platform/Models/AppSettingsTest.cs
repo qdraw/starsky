@@ -381,6 +381,27 @@ public sealed class AppSettingsTest
 	}
 
 	[TestMethod]
+	public void AppSettings_CloneToDisplay_CloudImport_Null()
+	{
+		var appSettings = new AppSettings { CloudImport = null };
+
+		var display = appSettings.CloneToDisplay();
+
+		Assert.IsNull(display.CloudImport);
+	}
+
+	[TestMethod]
+	public void AppSettings_CloneToDisplay_CloudImport_Null2()
+	{
+		var appSettings =
+			new AppSettings { CloudImport = new CloudImportSettings { Providers = null! } };
+
+		var display = appSettings.CloneToDisplay();
+
+		Assert.IsNull(display.CloudImport?.Providers);
+	}
+
+	[TestMethod]
 	public void AppSettings_IsReadOnly_NullNoItemTest()
 	{
 		var appSettings = new AppSettings();
