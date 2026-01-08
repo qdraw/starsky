@@ -9,7 +9,7 @@ image: https://media.qdraw.nl/log/de-7-dingen-die-ik-miste-bij-het-beheren-van-m
 
 # New feature: Using Cloud Import with Dropbox Camera Uploads
 
-Cloud Import is a new feature in v0.7.5 or later that adds automated ingestion of files from cloud storage providers to the existing import pipeline. Instead of relying on manual uploads or custom scripts, Cloud Import periodically synchronizes a configured remote folder—such as Dropbox Camera Uploads—detects new files, and imports them using the same validation, error handling, and logging already in place. This makes cloud-based file ingestion a first-class, reliable part of the system rather than an external or ad-hoc process.
+Cloud Import is a new feature in v0.7.6 or later that adds automated ingestion of files from cloud storage providers to the existing import pipeline. Instead of relying on manual uploads or custom scripts, Cloud Import periodically synchronizes a configured remote folder—such as Dropbox Camera Uploads—detects new files, and imports them using the same validation, error handling, and logging already in place. This makes cloud-based file ingestion a first-class, reliable part of the system rather than an external or ad-hoc process.
 
 {/* truncate */}
 
