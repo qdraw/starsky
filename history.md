@@ -48,6 +48,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
   #2498)
 - [x] (Added) _Back-end_ Dropbox support for Cloud Import (PR #2498)
 - [x] (Added) _Back-end_ Scheduling (e.g. every hour / every 10 minutes) for Cloud Import (PR #2498)
+- [x] (Fixed) _Back-end_ Prioritize import rules that match both ImageFormat and Origin (PR #2567)
 
 ## version 0.7.5 - 2025-11-17 {#v0.7.5}
 
