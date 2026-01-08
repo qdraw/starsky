@@ -114,18 +114,37 @@ public class StructureService : IStructureService
 	internal static string GetStructureSetting(AppSettingsStructureModel config,
 		StructureInputModel input)
 	{
+		// First, try to match both ImageFormat and Origin if both are provided
 		foreach ( var rule in config.Rules )
 		{
-			if ( ( rule.Conditions.ImageFormats.Contains(input.ImageFormat) &&
-			       !string.IsNullOrEmpty(rule.Pattern) ) ||
-			     ( !string.IsNullOrEmpty(rule.Conditions.Origin)
-			       && rule.Conditions.Origin == input.Origin &&
-			       !string.IsNullOrEmpty(rule.Pattern) ) )
+			if ( rule.Conditions.ImageFormats.Contains(input.ImageFormat) &&
+			     !string.IsNullOrEmpty(rule.Pattern) && rule.Conditions.Origin == input.Origin )
 			{
 				return rule.Pattern;
 			}
 		}
 
+		// Next, try to match only ImageFormat
+		var imageFormatRule = config.Rules.FirstOrDefault(rule =>
+			rule.Conditions.ImageFormats.Contains(input.ImageFormat)
+			&& !string.IsNullOrEmpty(rule.Pattern));
+		if ( imageFormatRule != null )
+		{
+			return imageFormatRule.Pattern;
+		}
+
+		// Next, try to match only Origin
+		var originRule = config.Rules.FirstOrDefault(rule =>
+			!string.IsNullOrEmpty(rule.Conditions.Origin)
+			&& rule.Conditions.Origin == input.Origin
+			&& !string.IsNullOrEmpty(rule.Pattern));
+
+		if ( originRule != null )
+		{
+			return originRule.Pattern;
+		}
+
+		// Otherwise, return default
 		return config.DefaultPattern;
 	}
 
