@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.platform.Helpers;
@@ -66,6 +67,7 @@ public class FakeIHttpClientHelper : IHttpClientHelper
 
 	public Task<KeyValuePair<bool, string>> PostString(string sourceHttpUrl,
 		HttpContent? httpContent,
+		AuthenticationHeaderValue authenticationHeaderValue,
 		bool verbose = true)
 	{
 		UrlsCalled.Add(sourceHttpUrl);

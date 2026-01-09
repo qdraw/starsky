@@ -228,6 +228,6 @@ public class PackageTelemetry : IPackageTelemetry
 	{
 		return ( await _httpClientHelper.PostString("https://" + PackageTelemetryUrl,
 			formUrlEncodedContent,
-			_appSettings.EnablePackageTelemetryDebug == true) ).Key;
+			verbose: _appSettings.EnablePackageTelemetryDebug == true) ).Key;
 	}
 }

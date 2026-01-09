@@ -56,9 +56,12 @@ public sealed class HttpProvider : IHttpProvider
 		}
 
 		_httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
+		
 		var request = new HttpRequestMessage
 		{
-			Method = HttpMethod.Post, Content = content, RequestUri = new Uri(requestUri)
+			Method = HttpMethod.Post, 
+			Content = content, 
+			RequestUri = new Uri(requestUri)
 		};
 
 		if ( typeof(FormUrlEncodedContent) == content.GetType() )

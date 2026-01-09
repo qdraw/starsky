@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -114,7 +115,8 @@ public sealed class HttpClientHelper : IHttpClientHelper
 	}
 
 	public async Task<KeyValuePair<bool, string>> PostString(string sourceHttpUrl,
-		HttpContent? httpContent, bool verbose = true)
+		HttpContent? httpContent, AuthenticationHeaderValue authenticationHeaderValue,
+		bool verbose = true)
 	{
 		var sourceUri = new Uri(sourceHttpUrl);
 
