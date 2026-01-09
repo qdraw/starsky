@@ -19,7 +19,7 @@ public class DropboxSetup(IConsole console, IHttpClientHelper httpClientHelper)
 	private const string DropboxDomain = "https://www.dropbox.com";
 	private const string DropboxApiDomain = "https://api.dropbox.com";
 
-	public async Task Setup()
+	public async Task<bool> Setup()
 	{
 		console.WriteLine("Dropbox Setup:");
 		console.WriteLine("Go to: https://www.dropbox.com/developers/apps/create" +
@@ -37,10 +37,10 @@ public class DropboxSetup(IConsole console, IHttpClientHelper httpClientHelper)
 		                  "files.metadata.read\n");
 		console.WriteLine("\nPress submit to save!:\n");
 
-		Console.WriteLine("Dropbox App Key: ");
+		console.WriteLine("Dropbox App Key: ");
 		var clientId = console.ReadLine();
 
-		Console.WriteLine("Dropbox App Secret: ");
+		console.WriteLine("Dropbox App Secret: ");
 		var clientSecret = console.ReadLine();
 
 		var authUrl =
@@ -55,13 +55,13 @@ public class DropboxSetup(IConsole console, IHttpClientHelper httpClientHelper)
 				"files.content.read"
 			);
 
-		Console.WriteLine();
-		Console.WriteLine("Open this URL in your browser:");
-		Console.WriteLine(authUrl);
-		Console.WriteLine();
-		Console.Write("Paste the access code here: ");
+		console.WriteLine("");
+		console.WriteLine("Open this URL in your browser:");
+		console.WriteLine(authUrl);
+		console.WriteLine("");
+		console.Write("Paste the access code here: ");
 
-		var code = Console.ReadLine();
+		var code = console.ReadLine();
 		var authHeader = Convert.ToBase64String(
 			Encoding.UTF8.GetBytes($"{clientId}:{clientSecret}")
 		);
@@ -75,11 +75,12 @@ public class DropboxSetup(IConsole console, IHttpClientHelper httpClientHelper)
 
 		var token = JsonSerializer.Deserialize<DropboxTokenResponse>(response.Value)!;
 
-		Console.WriteLine();
-		Console.WriteLine("Merge this with an existing appsettings.json: ");
-		Console.WriteLine(GetConfigSnippet(clientId!, clientSecret!, token));
-		Console.WriteLine("Did you save the config? Press enter to exit.");
+		console.WriteLine("");
+		console.WriteLine("Merge this with an existing appsettings.json: ");
+		console.WriteLine(GetConfigSnippet(clientId!, clientSecret!, token));
+		console.WriteLine("Did you save the config? Press enter to exit.");
 		console.ReadLine();
+		return true;
 	}
 
 	internal static string GetConfigSnippet(string clientId, string clientSecret,

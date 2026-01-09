@@ -1,12 +1,52 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Extensions;
 using starskyAdminCli.Models;
 using starskyAdminCli.Services;
+using starskytest.FakeMocks;
 
 namespace starskytest.starskyAdminCli.Services;
 
 [TestClass]
 public class DropboxSetupTest
 {
+	[TestMethod]
+	[Timeout(5000, CooperativeCancellation = true)]
+	public async Task Setup_ShouldRunWithoutErrors()
+	{
+		var console = new FakeConsoleWrapper([
+			"test-app-key", // Dropbox App Key
+			"test-app-secret", // Dropbox App Secret
+			"test-access-code", // Access code
+			"",
+			""
+		]);
+
+		var httpClientHelper = new FakeIHttpClientHelper(
+			new FakeIStorage(),
+			new Dictionary<string, KeyValuePair<bool, string>>
+			{
+				{
+					"https://api.dropbox.com/oauth2/token",
+					new KeyValuePair<bool, string>(true, "{\"refresh_token\":\"refresh-token\"}")
+				}
+			}
+		);
+
+		var dropboxSetup = new DropboxSetup(console, httpClientHelper);
+		var result = await dropboxSetup.Setup().TimeoutAfter(5000);
+
+		// Assert that the console output contains expected prompts and config
+		Assert.IsTrue(result);
+		Assert.IsTrue(console.WrittenLines.Exists(x => x.Contains("Dropbox Setup:")));
+		Assert.IsTrue(console.WrittenLines.Exists(x =>
+			x.Contains("Go to: https://www.dropbox.com/developers/apps/create")));
+		Assert.IsTrue(console.WrittenLines.Exists(x =>
+			x.Contains("Merge this with an existing appsettings.json:")));
+		Assert.IsTrue(console.WrittenLines.Exists(x => x.Contains("refresh-token")));
+	}
+
 	[TestMethod]
 	public void GetConfigSnippetTest()
 	{
