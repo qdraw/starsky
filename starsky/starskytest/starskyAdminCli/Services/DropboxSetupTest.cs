@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Extensions;
-using starsky.foundation.platform.Models;
 using starskyAdminCli.Models;
 using starskyAdminCli.Services;
 using starskytest.FakeMocks;
