@@ -6,9 +6,6 @@ cd $SCRIPT_DIR
 pushd build-tools
     npm run update:install
 popd
-pushd dropbox-import
-    npm run update:install
-popd
 pushd end2end
     npm run update:install
 popd

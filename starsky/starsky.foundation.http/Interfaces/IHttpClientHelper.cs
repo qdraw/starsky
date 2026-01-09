@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace starsky.foundation.http.Interfaces;
@@ -13,5 +14,6 @@ public interface IHttpClientHelper
 	Task<KeyValuePair<bool, string>> ReadString(Uri sourceHttpUrl);
 
 	Task<KeyValuePair<bool, string>> PostString(string sourceHttpUrl,
-		HttpContent? httpContent, bool verbose = true);
+		HttpContent? httpContent, AuthenticationHeaderValue? authenticationHeaderValue = null,
+		bool verbose = true);
 }

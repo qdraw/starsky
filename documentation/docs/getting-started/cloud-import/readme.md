@@ -1,48 +1,50 @@
 # Cloud Import - Quick Start Guide
 
-## Prerequisites
+## Setup with starskyadmincli
 
-1. A Dropbox account with API access
-2. Starsky application running
+You can use `starskyadmincli` to set up Dropbox Cloud Import and obtain a refresh token for secure authentication.
 
-## Setup Steps
+### Steps with starskyadmincli
 
-### 1. Create a Dropbox App
+1. Run the CLI:
+   ```bash
+   starskyadmincli
+   ```
+2. Enter your username/email when prompted (e.g., `your-email@gmail.com`). This should be user in starsky
+3. Select option `4` for Dropbox Setup.
+4. Follow the instructions:
+   - Go to [Dropbox App Console](https://www.dropbox.com/developers/apps/create)
+   - Choose **Scoped access** and **Full Dropbox**
+   - Note your **App key** and **App secret**
+   - In the Permissions tab, select:
+     - `files.metadata.write`
+     - `files.content.write`
+     - `files.content.read`
+     - `files.metadata.read`
+   - Save the app settings.
+5. Enter your App Key and App Secret in the CLI when prompted.
+6. Open the provided OAuth URL in your browser, authorize, and paste the access code back into the CLI.
+7. The CLI will exchange the code for a **refresh token** and display a config snippet to merge into your `appsettings.json`.
 
-1. Go to https://www.dropbox.com/developers/apps
-2. Click "Create App"
-3. Choose "Scoped access"
-4. Choose "Full Dropbox" access
-5. Name your app (e.g., "Starsky Photo Sync")
-6. Click "Create App"
-
-### 2. Generate Access Token
-
-1. In your app's settings page, scroll to "OAuth 2"
-2. Under "Generated access token", click "Generate"
-3. Copy the access token (keep it secure!)
-
-### 3. Configure Starsky
-
-Add to your `appsettings.json`:
-
+Example config to merge:
 ```json
 {
   "app": {
     "CloudImport": {
-      "Providers": [
+      "providers": [
         {
-          "Id": "dropbox-camera-uploads",
-          "Enabled": true,
-          "Provider": "Dropbox",
-          "RemoteFolder": "/Camera Uploads",
-          "SyncFrequencyMinutes": 0,
-          "SyncFrequencyHours": 1,
-          "DeleteAfterImport": false,
-          "Credentials": {
-            "RefreshToken": "",
-            "AppKey": "",
-            "AppSecret": ""
+          "id": "dropbox-import-example-id",
+          "enabled": true,
+          "provider": "Dropbox",
+          "remoteFolder": "/Camera Uploads",
+          "syncFrequencyMinutes": 0,
+          "syncFrequencyHours": 0,
+          "deleteAfterImport": false,
+          "extensions": [],
+          "credentials": {
+            "refreshToken": "<your-refresh-token>",
+            "appKey": "<your-app-key>",
+            "appSecret": "<your-app-secret>"
           }
         }
       ]
@@ -51,25 +53,48 @@ Add to your `appsettings.json`:
 }
 ```
 
+> **Tip:** Store credentials using environment variables in production for security.
+
+## Prerequisites
+
+1. A Dropbox account with API access
+2. Starsky application running
+
+## Setup Steps
+
+### 1. Create a Dropbox App (Manual)
+
+If not using the CLI, you can manually create a Dropbox app as described above.
+
+### 2. Generate Access Token / Refresh Token
+
+For automated sync, use the OAuth flow to obtain a **refresh token** (recommended). The CLI guides you through this process. If you use the manual method, you may only get a short-lived access token.
+
+### 3. Configure Starsky
+
+Merge the config snippet from the CLI (or above) into your `appsettings.json` under the `app` section. Ensure your credentials and refresh token are correct.
+
 
 ### Environment Variable Configuration Example
 
 ```bash
-export app__CloudImport__Providers__0__Id="dropbox-camera-uploads"
+export app__CloudImport__Providers__0__Id="dropbox-import-example-id"
 export app__CloudImport__Providers__0__Enabled="true"
 export app__CloudImport__Providers__0__Provider="Dropbox"
 export app__CloudImport__Providers__0__RemoteFolder="/Camera Uploads"
 export app__CloudImport__Providers__0__DeleteAfterImport="false"
-export app__CloudImport__Providers__0__Credentials__RefreshToken=""
-export app__CloudImport__Providers__0__Credentials__AppKey=""
-export app__CloudImport__Providers__0__Credentials__AppSecret=""
+export app__CloudImport__Providers__0__Credentials__RefreshToken="<your-refresh-token>"
+export app__CloudImport__Providers__0__Credentials__AppKey="<your-app-key>"
+export app__CloudImport__Providers__0__Credentials__AppSecret="<your-app-secret>"
 ```
 
 ### 4. Start Starsky
 
-The Cloud Import service will automatically start and begin syncing on the configured schedule.
+Start the Starsky application. The Cloud Import service will automatically begin syncing on the configured schedule.
 
 ## Usage
+
+You can trigger manual syncs and check status using the API endpoints. See below for examples.
 
 ### Automatic Sync
 
@@ -231,6 +256,7 @@ The status endpoint provides real-time information:
 4. **Set appropriate sync intervals** - Balance between timeliness and API rate limits
 5. **Backup your Dropbox** - Before enabling delete after import
 6. **Test with a subfolder first** - Use a specific folder to verify behavior
+7. **Use starskyadmincli for secure setup** - It simplifies OAuth and config generation.
 
 ## Security
 
