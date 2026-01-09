@@ -67,7 +67,7 @@ public class FakeIHttpClientHelper : IHttpClientHelper
 
 	public Task<KeyValuePair<bool, string>> PostString(string sourceHttpUrl,
 		HttpContent? httpContent,
-		AuthenticationHeaderValue authenticationHeaderValue,
+		AuthenticationHeaderValue? authenticationHeaderValue = null,
 		bool verbose = true)
 	{
 		UrlsCalled.Add(sourceHttpUrl);
