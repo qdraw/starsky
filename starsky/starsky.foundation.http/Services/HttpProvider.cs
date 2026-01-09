@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
@@ -43,8 +44,10 @@ public sealed class HttpProvider : IHttpProvider
 	/// </summary>
 	/// <param name="requestUri">https:// url</param>
 	/// <param name="content">http content</param>
+	/// <param name="authenticationHeaderValue"></param>
 	/// <returns>Task with Response</returns>
-	public Task<HttpResponseMessage> PostAsync(string requestUri, HttpContent? content)
+	public Task<HttpResponseMessage> PostAsync(string requestUri, HttpContent? content,
+		AuthenticationHeaderValue? authenticationHeaderValue = null)
 	{
 		if ( content == null )
 		{
@@ -56,10 +59,16 @@ public sealed class HttpProvider : IHttpProvider
 		}
 
 		_httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
+
 		var request = new HttpRequestMessage
 		{
 			Method = HttpMethod.Post, Content = content, RequestUri = new Uri(requestUri)
 		};
+
+		if ( authenticationHeaderValue != null )
+		{
+			request.Headers.Authorization = authenticationHeaderValue;
+		}
 
 		if ( typeof(FormUrlEncodedContent) == content.GetType() )
 		{
