@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -15,12 +16,16 @@ public class FakeHttpMessageHandler : HttpMessageHandler
 		_exception = exception;
 	}
 
+	public List<HttpRequestMessage> LastRequestMessage { get; set; } = [];
+
 	public virtual HttpResponseMessage Send(HttpRequestMessage request)
 	{
 		if ( _exception != null )
 		{
 			throw _exception;
 		}
+		
+		LastRequestMessage.Add(request);
 
 		if ( request.RequestUri?.Host == "download.geonames.org" )
 		{

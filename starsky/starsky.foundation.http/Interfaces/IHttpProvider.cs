@@ -9,5 +9,5 @@ public interface IHttpProvider
 	Task<HttpResponseMessage> GetAsync(string requestUri);
 
 	Task<HttpResponseMessage> PostAsync(string requestUri,
-		HttpContent? content, AuthenticationHeaderValue? authenticationHeaderValue);
+		HttpContent? content, AuthenticationHeaderValue? authenticationHeaderValue = null);
 }
