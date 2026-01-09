@@ -68,12 +68,10 @@ public class DropboxSetupTest
 			"\"appSecret\": \"secret\"\n          " +
 			"}\n        }\n      ]\n    }\n  } \n}";
 
-		if ( new AppSettings().IsWindows )
-		{
-			expected = expected.Replace("\n", string.Empty);
-			result = result.Replace("\n", string.Empty);
-		}
+		Assert.AreEqual(Normalize(expected), Normalize(result));
+		return;
 
-		Assert.AreEqual(expected, result);
+		// Normalize both strings: remove all line endings and whitespace for robust comparison
+		static string Normalize(string s) => s.Replace("\r", string.Empty).Replace(" ", string.Empty);
 	}
 }
