@@ -45,7 +45,7 @@
 			path = starskyUITests;
 			sourceTree = "<group>";
 		};
-		BCFECF502F1158AB005DFE64 /* resources */ = {
+		BCFE39B62F115DDA005DFE64 /* resources */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = resources;
 			sourceTree = "<group>";
@@ -80,11 +80,11 @@
 		BC5AA6282F1157FF00D38C3B = {
 			isa = PBXGroup;
 			children = (
-				BCFECF502F1158AB005DFE64 /* resources */,
 				BC5AA6332F1157FF00D38C3B /* starsky */,
 				BC5AA6412F11580000D38C3B /* starskyTests */,
 				BC5AA64B2F11580000D38C3B /* starskyUITests */,
 				BC5AA6322F1157FF00D38C3B /* Products */,
+				BCFE39B62F115DDA005DFE64 /* resources */,
 			);
 			sourceTree = "<group>";
 		};
@@ -115,6 +115,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				BC5AA6332F1157FF00D38C3B /* starsky */,
+				BCFE39B62F115DDA005DFE64 /* resources */,
 			);
 			name = starsky;
 			packageProductDependencies = (
@@ -424,6 +425,27 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64/dependencies/exiftool-unix/t/images",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64/dependencies/exiftool-unix/t/images",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources/osx-arm64/dependencies/exiftool-unix/t/images",
+					"$(PROJECT_DIR)/resources/osx-arm64",
+				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starsky;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -465,6 +487,27 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64/dependencies/exiftool-unix/t/images",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64/dependencies/exiftool-unix/t/images",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources/osx-arm64/dependencies/exiftool-unix/t/images",
+					"$(PROJECT_DIR)/resources/osx-arm64",
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starsky;
