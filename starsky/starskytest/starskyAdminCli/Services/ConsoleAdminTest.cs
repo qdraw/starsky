@@ -154,4 +154,49 @@ public sealed class ConsoleAdminTest
 			new Dictionary<string, KeyValuePair<bool, string>>())).Tool(string.Empty, string.Empty);
 		Assert.AreEqual("No input selected ends now", console.WrittenLines.LastOrDefault());
 	}
+
+	[TestMethod]
+	public async Task DropboxSetup()
+	{
+		var console = new FakeConsoleWrapper(new List<string>
+		{
+			"test",
+			"4",
+			"test-app-key", // Dropbox App Key
+			"test-app-secret", // Dropbox App Secret
+			"test-access-code", // Access code
+			""
+		});
+		var httpClientHelper = new FakeIHttpClientHelper(
+			new FakeIStorage(),
+			new Dictionary<string, KeyValuePair<bool, string>>
+			{
+				{
+					"https://api.dropbox.com/oauth2/token",
+					new KeyValuePair<bool, string>(true, "{\"refresh_token\":\"refresh-token\"}")
+				}
+			}
+		);
+
+		var service = new ConsoleAdmin(
+			new FakeUserManagerActiveUsers("test",
+				new User
+				{
+					Name = "t1",
+					Id = 99,
+					Credentials = new List<Credential> { new() { Identifier = "test" } }
+				}),
+			console,
+			httpClientHelper
+		);
+
+		await service.Tool(string.Empty, string.Empty);
+
+		Assert.IsTrue(console.WrittenLines.Exists(x => x.Contains("Dropbox Setup:")));
+		Assert.IsTrue(console.WrittenLines.Exists(x =>
+			x.Contains("Go to: https://www.dropbox.com/developers/apps/create")));
+		Assert.IsTrue(console.WrittenLines.Exists(x =>
+			x.Contains("Merge this with an existing appsettings.json:")));
+		Assert.IsTrue(console.WrittenLines.Exists(x => x.Contains("refresh-token")));
+	}
 }

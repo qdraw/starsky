@@ -19,7 +19,6 @@ public class DropboxSetupTest
 			"test-app-key", // Dropbox App Key
 			"test-app-secret", // Dropbox App Secret
 			"test-access-code", // Access code
-			"",
 			""
 		]);
 
