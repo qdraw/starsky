@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Extensions;
+using starsky.foundation.platform.Models;
 using starskyAdminCli.Models;
 using starskyAdminCli.Services;
 using starskytest.FakeMocks;
@@ -52,7 +53,7 @@ public class DropboxSetupTest
 		var result = DropboxSetup.GetConfigSnippet("test", "secret",
 			new DropboxTokenResponse { RefreshToken = "refresh-token" });
 
-		Assert.AreEqual(
+		var expected =
 			"{\n  \"app\": {  \n    \"CloudImport\" :{\n      \"providers\": [\n        " +
 			"{\n          \"id\": \"dropbox-import-example-id\",\n          " +
 			"\"enabled\": true,\n          \"provider\": \"Dropbox\",\n          " +
@@ -65,7 +66,14 @@ public class DropboxSetupTest
 			"\"refreshToken\": \"refresh-token\",\n            " +
 			"\"appKey\": \"test\",\n            " +
 			"\"appSecret\": \"secret\"\n          " +
-			"}\n        }\n      ]\n    }\n  } \n}",
-			result);
+			"}\n        }\n      ]\n    }\n  } \n}";
+
+		if ( new AppSettings().IsWindows )
+		{
+			expected = expected.Replace("\n", "\r\n");
+			result = result.Replace("\n", "\r\n");
+		}
+
+		Assert.AreEqual(expected, result);
 	}
 }
