@@ -41,7 +41,11 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.6 - _(Unreleased)_ - 2025-?-? {#v0.7.6}
+## version 0.7.7 - _(Unreleased)_ - 2026-?-? {#v0.7.7}
+
+- nothing yet
+
+## version 0.7.6 - 2026-01-08 {#v0.7.6}
 
 - [x] (Fixed) _Back-end_ GPX file formats by expanding the range of byte offsets (PR #2512)
 - [x] (Added) _Back-end_ Cloud Import feature to import files from cloud providers (PR #2498)
