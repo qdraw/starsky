@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using starsky.foundation.accountmanagement.Interfaces;
+using starsky.foundation.http.Interfaces;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starskyAdminCli.Models;
@@ -10,12 +11,15 @@ namespace starskyAdminCli.Services;
 public class ConsoleAdmin
 {
 	private readonly IConsole _console;
+	private readonly IHttpClientHelper _httpClientHelper;
 	private readonly IUserManager _userManager;
 
-	public ConsoleAdmin(IUserManager userManager, IConsole console)
+	public ConsoleAdmin(IUserManager userManager, IConsole console,
+		IHttpClientHelper httpClientHelper)
 	{
 		_userManager = userManager;
 		_console = console;
+		_httpClientHelper = httpClientHelper;
 	}
 
 	public async Task Tool(string userName, string password)
@@ -85,7 +89,7 @@ public class ConsoleAdmin
 				ToggleUserAdminRole(userName);
 				return;
 			case ManageAdminOptions.SetupDropbox:
-				await new DropboxSetup(_console).Setup();
+				await new DropboxSetup(_console, _httpClientHelper).Setup();
 				return;
 		}
 	}

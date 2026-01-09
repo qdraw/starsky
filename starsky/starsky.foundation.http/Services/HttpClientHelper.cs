@@ -115,7 +115,7 @@ public sealed class HttpClientHelper : IHttpClientHelper
 	}
 
 	public async Task<KeyValuePair<bool, string>> PostString(string sourceHttpUrl,
-		HttpContent? httpContent, AuthenticationHeaderValue authenticationHeaderValue,
+		HttpContent? httpContent, AuthenticationHeaderValue? authenticationHeaderValue = null,
 		bool verbose = true)
 	{
 		var sourceUri = new Uri(sourceHttpUrl);
@@ -135,7 +135,9 @@ public sealed class HttpClientHelper : IHttpClientHelper
 
 		try
 		{
-			using ( var response = await _httpProvider.PostAsync(sourceHttpUrl, httpContent) )
+			using ( var response = await _httpProvider.PostAsync(sourceHttpUrl,
+				       httpContent,
+				       authenticationHeaderValue) )
 			using ( var streamToReadFrom = await response.Content.ReadAsStreamAsync() )
 			{
 				var reader = new StreamReader(streamToReadFrom, Encoding.UTF8);

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -76,39 +77,42 @@ public class DropboxSetup(IConsole console, IHttpClientHelper httpClientHelper)
 
 		Console.WriteLine();
 		Console.WriteLine("Merge this with an existing appsettings.json: ");
-
-		var appSettingsContainer = new AppContainerAppSettings
-		{
-			App = new AppSettings
-			{
-				CloudImport = new CloudImportSettings
-				{
-					Providers =
-					[
-						new CloudImportProviderSettings
-						{
-							Id = "dropbox-import-example-id",
-							Provider = "Dropbox",
-							RemoteFolder = "/Camera Uploads",
-							Enabled = true,
-							Credentials = new CloudProviderCredentials
-							{
-								AppKey = clientId!,
-								AppSecret = clientSecret!,
-								RefreshToken = token.RefreshToken!
-							}
-						}
-					]
-				}
-			}
-		};
-
-
-		Console.WriteLine(JsonSerializer.Serialize(appSettingsContainer,
-			DefaultJsonSerializer.CamelCase
-		));
-
+		Console.WriteLine(GetConfigSnippet(clientId!, clientSecret!, token));
 		Console.WriteLine("Did you save the config? Press enter to exit.");
 		console.ReadLine();
+	}
+
+	internal static string GetConfigSnippet(string clientId, string clientSecret,
+		DropboxTokenResponse token)
+	{
+		const string prefix = "{\n  \"app\": {  \n    \"CloudImport\" :";
+		const string suffix = "\n  } \n}";
+
+		var configSnippet = new AppSettings().CloudImport = new CloudImportSettings
+		{
+			Providers =
+			[
+				new CloudImportProviderSettings
+				{
+					Id = "dropbox-import-example-id",
+					Provider = "Dropbox",
+					RemoteFolder = "/Camera Uploads",
+					Enabled = true,
+					Credentials = new CloudProviderCredentials
+					{
+						AppKey = clientId,
+						AppSecret = clientSecret,
+						RefreshToken = token.RefreshToken!
+					}
+				}
+			]
+		};
+
+		var json = JsonSerializer.Serialize(configSnippet,
+			DefaultJsonSerializer.CamelCase
+		);
+		var indentedJson = string.Join("\n", json.Split('\n').Select(line => "    " + line))
+			.TrimStart();
+		return prefix + indentedJson + suffix;
 	}
 }
