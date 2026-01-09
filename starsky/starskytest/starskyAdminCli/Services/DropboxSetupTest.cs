@@ -70,8 +70,8 @@ public class DropboxSetupTest
 
 		if ( new AppSettings().IsWindows )
 		{
-			expected = expected.Replace("\n", "\r\n");
-			result = result.Replace("\n", "\r\n");
+			expected = expected.Replace("\n", string.Empty);
+			result = result.Replace("\n", string.Empty);
 		}
 
 		Assert.AreEqual(expected, result);
