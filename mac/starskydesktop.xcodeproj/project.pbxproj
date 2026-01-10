@@ -7,67 +7,65 @@
 	objects = {
 
 /* Begin PBXContainerItemProxy section */
-		BC5AA63F2F11580000D38C3B /* PBXContainerItemProxy */ = {
+		BCFE6C462F11ADF7005DFE64 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = BC5AA6292F1157FF00D38C3B /* Project object */;
+			containerPortal = BCFE6C302F11ADF6005DFE64 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = BC5AA6302F1157FF00D38C3B;
-			remoteInfo = starsky;
+			remoteGlobalIDString = BCFE6C372F11ADF6005DFE64;
+			remoteInfo = starskydesktop;
 		};
-		BC5AA6492F11580000D38C3B /* PBXContainerItemProxy */ = {
+		BCFE6C502F11ADF7005DFE64 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = BC5AA6292F1157FF00D38C3B /* Project object */;
+			containerPortal = BCFE6C302F11ADF6005DFE64 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = BC5AA6302F1157FF00D38C3B;
-			remoteInfo = starsky;
+			remoteGlobalIDString = BCFE6C372F11ADF6005DFE64;
+			remoteInfo = starskydesktop;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		BC5AA6312F1157FF00D38C3B /* starsky.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = starsky.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		BC5AA63E2F11580000D38C3B /* starskyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = starskyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		BC5AA6482F11580000D38C3B /* starskyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = starskyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BCFE6C382F11ADF6005DFE64 /* starskydesktop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = starskydesktop.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BCFE6C452F11ADF7005DFE64 /* starskydesktopTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = starskydesktopTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BCFE6C4F2F11ADF7005DFE64 /* starskydesktopUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = starskydesktopUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BCFE76D82F11AE81005DFE64 /* resources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = resources; sourceTree = "<group>"; };
+		BCFE76DA2F11AE9F005DFE64 /* starsky */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = starsky; path = "resources/osx-arm64/starsky"; sourceTree = "<group>"; };
+		BCFE76DC2F11AF0E005DFE64 /* starsky.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = starsky.xml; path = "resources/osx-arm64/starsky.xml"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		BC5AA6332F1157FF00D38C3B /* starsky */ = {
+		BCFE6C3A2F11ADF6005DFE64 /* starskydesktop */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = starsky;
+			path = starskydesktop;
 			sourceTree = "<group>";
 		};
-		BC5AA6412F11580000D38C3B /* starskyTests */ = {
+		BCFE6C482F11ADF7005DFE64 /* starskydesktopTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = starskyTests;
+			path = starskydesktopTests;
 			sourceTree = "<group>";
 		};
-		BC5AA64B2F11580000D38C3B /* starskyUITests */ = {
+		BCFE6C522F11ADF7005DFE64 /* starskydesktopUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = starskyUITests;
-			sourceTree = "<group>";
-		};
-		BCFE39B62F115DDA005DFE64 /* resources */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = resources;
+			path = starskydesktopUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		BC5AA62E2F1157FF00D38C3B /* Frameworks */ = {
+		BCFE6C352F11ADF6005DFE64 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BC5AA63B2F11580000D38C3B /* Frameworks */ = {
+		BCFE6C422F11ADF7005DFE64 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BC5AA6452F11580000D38C3B /* Frameworks */ = {
+		BCFE6C4C2F11ADF7005DFE64 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -77,23 +75,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		BC5AA6282F1157FF00D38C3B = {
+		BCFE6C2F2F11ADF6005DFE64 = {
 			isa = PBXGroup;
 			children = (
-				BC5AA6332F1157FF00D38C3B /* starsky */,
-				BC5AA6412F11580000D38C3B /* starskyTests */,
-				BC5AA64B2F11580000D38C3B /* starskyUITests */,
-				BC5AA6322F1157FF00D38C3B /* Products */,
-				BCFE39B62F115DDA005DFE64 /* resources */,
+				BCFE76DC2F11AF0E005DFE64 /* starsky.xml */,
+				BCFE76DA2F11AE9F005DFE64 /* starsky */,
+				BCFE76D82F11AE81005DFE64 /* resources */,
+				BCFE6C3A2F11ADF6005DFE64 /* starskydesktop */,
+				BCFE6C482F11ADF7005DFE64 /* starskydesktopTests */,
+				BCFE6C522F11ADF7005DFE64 /* starskydesktopUITests */,
+				BCFE6C392F11ADF6005DFE64 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		BC5AA6322F1157FF00D38C3B /* Products */ = {
+		BCFE6C392F11ADF6005DFE64 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				BC5AA6312F1157FF00D38C3B /* starsky.app */,
-				BC5AA63E2F11580000D38C3B /* starskyTests.xctest */,
-				BC5AA6482F11580000D38C3B /* starskyUITests.xctest */,
+				BCFE6C382F11ADF6005DFE64 /* starskydesktop.app */,
+				BCFE6C452F11ADF7005DFE64 /* starskydesktopTests.xctest */,
+				BCFE6C4F2F11ADF7005DFE64 /* starskydesktopUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -101,135 +101,135 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		BC5AA6302F1157FF00D38C3B /* starsky */ = {
+		BCFE6C372F11ADF6005DFE64 /* starskydesktop */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BC5AA6522F11580000D38C3B /* Build configuration list for PBXNativeTarget "starsky" */;
+			buildConfigurationList = BCFE6C592F11ADF7005DFE64 /* Build configuration list for PBXNativeTarget "starskydesktop" */;
 			buildPhases = (
-				BC5AA62D2F1157FF00D38C3B /* Sources */,
-				BC5AA62E2F1157FF00D38C3B /* Frameworks */,
-				BC5AA62F2F1157FF00D38C3B /* Resources */,
+				BCFE6C342F11ADF6005DFE64 /* Sources */,
+				BCFE6C352F11ADF6005DFE64 /* Frameworks */,
+				BCFE6C362F11ADF6005DFE64 /* Resources */,
+				BCFE76DE2F11AF48005DFE64 /* ShellScript */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				BC5AA6332F1157FF00D38C3B /* starsky */,
-				BCFE39B62F115DDA005DFE64 /* resources */,
+				BCFE6C3A2F11ADF6005DFE64 /* starskydesktop */,
 			);
-			name = starsky;
+			name = starskydesktop;
 			packageProductDependencies = (
 			);
-			productName = starsky;
-			productReference = BC5AA6312F1157FF00D38C3B /* starsky.app */;
+			productName = starskydesktop;
+			productReference = BCFE6C382F11ADF6005DFE64 /* starskydesktop.app */;
 			productType = "com.apple.product-type.application";
 		};
-		BC5AA63D2F11580000D38C3B /* starskyTests */ = {
+		BCFE6C442F11ADF7005DFE64 /* starskydesktopTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BC5AA6552F11580000D38C3B /* Build configuration list for PBXNativeTarget "starskyTests" */;
+			buildConfigurationList = BCFE6C5C2F11ADF7005DFE64 /* Build configuration list for PBXNativeTarget "starskydesktopTests" */;
 			buildPhases = (
-				BC5AA63A2F11580000D38C3B /* Sources */,
-				BC5AA63B2F11580000D38C3B /* Frameworks */,
-				BC5AA63C2F11580000D38C3B /* Resources */,
+				BCFE6C412F11ADF7005DFE64 /* Sources */,
+				BCFE6C422F11ADF7005DFE64 /* Frameworks */,
+				BCFE6C432F11ADF7005DFE64 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				BC5AA6402F11580000D38C3B /* PBXTargetDependency */,
+				BCFE6C472F11ADF7005DFE64 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				BC5AA6412F11580000D38C3B /* starskyTests */,
+				BCFE6C482F11ADF7005DFE64 /* starskydesktopTests */,
 			);
-			name = starskyTests;
+			name = starskydesktopTests;
 			packageProductDependencies = (
 			);
-			productName = starskyTests;
-			productReference = BC5AA63E2F11580000D38C3B /* starskyTests.xctest */;
+			productName = starskydesktopTests;
+			productReference = BCFE6C452F11ADF7005DFE64 /* starskydesktopTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		BC5AA6472F11580000D38C3B /* starskyUITests */ = {
+		BCFE6C4E2F11ADF7005DFE64 /* starskydesktopUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BC5AA6582F11580000D38C3B /* Build configuration list for PBXNativeTarget "starskyUITests" */;
+			buildConfigurationList = BCFE6C5F2F11ADF7005DFE64 /* Build configuration list for PBXNativeTarget "starskydesktopUITests" */;
 			buildPhases = (
-				BC5AA6442F11580000D38C3B /* Sources */,
-				BC5AA6452F11580000D38C3B /* Frameworks */,
-				BC5AA6462F11580000D38C3B /* Resources */,
+				BCFE6C4B2F11ADF7005DFE64 /* Sources */,
+				BCFE6C4C2F11ADF7005DFE64 /* Frameworks */,
+				BCFE6C4D2F11ADF7005DFE64 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				BC5AA64A2F11580000D38C3B /* PBXTargetDependency */,
+				BCFE6C512F11ADF7005DFE64 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				BC5AA64B2F11580000D38C3B /* starskyUITests */,
+				BCFE6C522F11ADF7005DFE64 /* starskydesktopUITests */,
 			);
-			name = starskyUITests;
+			name = starskydesktopUITests;
 			packageProductDependencies = (
 			);
-			productName = starskyUITests;
-			productReference = BC5AA6482F11580000D38C3B /* starskyUITests.xctest */;
+			productName = starskydesktopUITests;
+			productReference = BCFE6C4F2F11ADF7005DFE64 /* starskydesktopUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		BC5AA6292F1157FF00D38C3B /* Project object */ = {
+		BCFE6C302F11ADF6005DFE64 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 2620;
 				TargetAttributes = {
-					BC5AA6302F1157FF00D38C3B = {
+					BCFE6C372F11ADF6005DFE64 = {
 						CreatedOnToolsVersion = 26.2;
 					};
-					BC5AA63D2F11580000D38C3B = {
+					BCFE6C442F11ADF7005DFE64 = {
 						CreatedOnToolsVersion = 26.2;
-						TestTargetID = BC5AA6302F1157FF00D38C3B;
+						TestTargetID = BCFE6C372F11ADF6005DFE64;
 					};
-					BC5AA6472F11580000D38C3B = {
+					BCFE6C4E2F11ADF7005DFE64 = {
 						CreatedOnToolsVersion = 26.2;
-						TestTargetID = BC5AA6302F1157FF00D38C3B;
+						TestTargetID = BCFE6C372F11ADF6005DFE64;
 					};
 				};
 			};
-			buildConfigurationList = BC5AA62C2F1157FF00D38C3B /* Build configuration list for PBXProject "starsky" */;
+			buildConfigurationList = BCFE6C332F11ADF6005DFE64 /* Build configuration list for PBXProject "starskydesktop" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = BC5AA6282F1157FF00D38C3B;
+			mainGroup = BCFE6C2F2F11ADF6005DFE64;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = BC5AA6322F1157FF00D38C3B /* Products */;
+			productRefGroup = BCFE6C392F11ADF6005DFE64 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				BC5AA6302F1157FF00D38C3B /* starsky */,
-				BC5AA63D2F11580000D38C3B /* starskyTests */,
-				BC5AA6472F11580000D38C3B /* starskyUITests */,
+				BCFE6C372F11ADF6005DFE64 /* starskydesktop */,
+				BCFE6C442F11ADF7005DFE64 /* starskydesktopTests */,
+				BCFE6C4E2F11ADF7005DFE64 /* starskydesktopUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		BC5AA62F2F1157FF00D38C3B /* Resources */ = {
+		BCFE6C362F11ADF6005DFE64 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BC5AA63C2F11580000D38C3B /* Resources */ = {
+		BCFE6C432F11ADF7005DFE64 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BC5AA6462F11580000D38C3B /* Resources */ = {
+		BCFE6C4D2F11ADF7005DFE64 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -238,22 +238,42 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		BCFE76DE2F11AF48005DFE64 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\n\necho $PROJECT_DIR\n\nls $PROJECT_DIR\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
-		BC5AA62D2F1157FF00D38C3B /* Sources */ = {
+		BCFE6C342F11ADF6005DFE64 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BC5AA63A2F11580000D38C3B /* Sources */ = {
+		BCFE6C412F11ADF7005DFE64 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BC5AA6442F11580000D38C3B /* Sources */ = {
+		BCFE6C4B2F11ADF7005DFE64 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -263,20 +283,20 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		BC5AA6402F11580000D38C3B /* PBXTargetDependency */ = {
+		BCFE6C472F11ADF7005DFE64 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = BC5AA6302F1157FF00D38C3B /* starsky */;
-			targetProxy = BC5AA63F2F11580000D38C3B /* PBXContainerItemProxy */;
+			target = BCFE6C372F11ADF6005DFE64 /* starskydesktop */;
+			targetProxy = BCFE6C462F11ADF7005DFE64 /* PBXContainerItemProxy */;
 		};
-		BC5AA64A2F11580000D38C3B /* PBXTargetDependency */ = {
+		BCFE6C512F11ADF7005DFE64 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = BC5AA6302F1157FF00D38C3B /* starsky */;
-			targetProxy = BC5AA6492F11580000D38C3B /* PBXContainerItemProxy */;
+			target = BCFE6C372F11ADF6005DFE64 /* starskydesktop */;
+			targetProxy = BCFE6C502F11ADF7005DFE64 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		BC5AA6502F11580000D38C3B /* Debug */ = {
+		BCFE6C572F11ADF7005DFE64 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -340,7 +360,7 @@
 			};
 			name = Debug;
 		};
-		BC5AA6512F11580000D38C3B /* Release */ = {
+		BCFE6C582F11ADF7005DFE64 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -396,7 +416,7 @@
 			};
 			name = Release;
 		};
-		BC5AA6532F11580000D38C3B /* Debug */ = {
+		BCFE6C5A2F11ADF7005DFE64 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -407,17 +427,7 @@
 				DEVELOPMENT_TEAM = LHZ4426ABB;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_INCOMING_NETWORK_CONNECTIONS = YES;
-				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
-				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
-				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
-				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
-				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
-				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
-				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
-				ENABLE_RESOURCE_ACCESS_USB = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -427,27 +437,10 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64/dependencies/exiftool-unix/t/images",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64/dependencies/exiftool-unix/t/images",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
 					"$(PROJECT_DIR)/resources/osx-arm64/dependencies/exiftool-unix/t/images",
-					"$(PROJECT_DIR)/resources/osx-arm64",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starsky;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskydesktop;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -459,7 +452,7 @@
 			};
 			name = Debug;
 		};
-		BC5AA6542F11580000D38C3B /* Release */ = {
+		BCFE6C5B2F11ADF7005DFE64 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -470,17 +463,7 @@
 				DEVELOPMENT_TEAM = LHZ4426ABB;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_INCOMING_NETWORK_CONNECTIONS = YES;
-				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
-				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
-				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
-				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
-				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
-				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
-				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
-				ENABLE_RESOURCE_ACCESS_USB = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -490,27 +473,10 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64/dependencies/exiftool-unix/t/images",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64/dependencies/exiftool-unix/t/images",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
-					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
 					"$(PROJECT_DIR)/resources/osx-arm64/dependencies/exiftool-unix/t/images",
-					"$(PROJECT_DIR)/resources/osx-arm64",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starsky;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskydesktop;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -522,7 +488,7 @@
 			};
 			name = Release;
 		};
-		BC5AA6562F11580000D38C3B /* Debug */ = {
+		BCFE6C5D2F11ADF7005DFE64 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -532,18 +498,18 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 26.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskyTests;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskydesktopTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/starsky.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/starsky";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/starskydesktop.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/starskydesktop";
 			};
 			name = Debug;
 		};
-		BC5AA6572F11580000D38C3B /* Release */ = {
+		BCFE6C5E2F11ADF7005DFE64 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -553,18 +519,18 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 26.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskyTests;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskydesktopTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/starsky.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/starsky";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/starskydesktop.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/starskydesktop";
 			};
 			name = Release;
 		};
-		BC5AA6592F11580000D38C3B /* Debug */ = {
+		BCFE6C602F11ADF7005DFE64 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -572,18 +538,18 @@
 				DEVELOPMENT_TEAM = LHZ4426ABB;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskyUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskydesktopUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = starsky;
+				TEST_TARGET_NAME = starskydesktop;
 			};
 			name = Debug;
 		};
-		BC5AA65A2F11580000D38C3B /* Release */ = {
+		BCFE6C612F11ADF7005DFE64 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -591,57 +557,57 @@
 				DEVELOPMENT_TEAM = LHZ4426ABB;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskyUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskydesktopUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = starsky;
+				TEST_TARGET_NAME = starskydesktop;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		BC5AA62C2F1157FF00D38C3B /* Build configuration list for PBXProject "starsky" */ = {
+		BCFE6C332F11ADF6005DFE64 /* Build configuration list for PBXProject "starskydesktop" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BC5AA6502F11580000D38C3B /* Debug */,
-				BC5AA6512F11580000D38C3B /* Release */,
+				BCFE6C572F11ADF7005DFE64 /* Debug */,
+				BCFE6C582F11ADF7005DFE64 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BC5AA6522F11580000D38C3B /* Build configuration list for PBXNativeTarget "starsky" */ = {
+		BCFE6C592F11ADF7005DFE64 /* Build configuration list for PBXNativeTarget "starskydesktop" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BC5AA6532F11580000D38C3B /* Debug */,
-				BC5AA6542F11580000D38C3B /* Release */,
+				BCFE6C5A2F11ADF7005DFE64 /* Debug */,
+				BCFE6C5B2F11ADF7005DFE64 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BC5AA6552F11580000D38C3B /* Build configuration list for PBXNativeTarget "starskyTests" */ = {
+		BCFE6C5C2F11ADF7005DFE64 /* Build configuration list for PBXNativeTarget "starskydesktopTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BC5AA6562F11580000D38C3B /* Debug */,
-				BC5AA6572F11580000D38C3B /* Release */,
+				BCFE6C5D2F11ADF7005DFE64 /* Debug */,
+				BCFE6C5E2F11ADF7005DFE64 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BC5AA6582F11580000D38C3B /* Build configuration list for PBXNativeTarget "starskyUITests" */ = {
+		BCFE6C5F2F11ADF7005DFE64 /* Build configuration list for PBXNativeTarget "starskydesktopUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BC5AA6592F11580000D38C3B /* Debug */,
-				BC5AA65A2F11580000D38C3B /* Release */,
+				BCFE6C602F11ADF7005DFE64 /* Debug */,
+				BCFE6C612F11ADF7005DFE64 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = BC5AA6292F1157FF00D38C3B /* Project object */;
+	rootObject = BCFE6C302F11ADF6005DFE64 /* Project object */;
 }

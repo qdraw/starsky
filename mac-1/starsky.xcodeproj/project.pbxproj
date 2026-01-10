@@ -1,0 +1,1974 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		BC5AA63F2F11580000D38C3B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BC5AA6292F1157FF00D38C3B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BC5AA6302F1157FF00D38C3B;
+			remoteInfo = starsky;
+		};
+		BC5AA6492F11580000D38C3B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BC5AA6292F1157FF00D38C3B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BC5AA6302F1157FF00D38C3B;
+			remoteInfo = starsky;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		BC5AA6312F1157FF00D38C3B /* starsky.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = starsky.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BC5AA63E2F11580000D38C3B /* starskyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = starskyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BC5AA6482F11580000D38C3B /* starskyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = starskyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		BCFE6C2D2F11AC76005DFE64 /* Exceptions for "resources" folder in "starsky" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"osx-arm64/clientapp/build/assets/baseline-add_circle_outline-24px-CKqeADub.svg",
+				"osx-arm64/clientapp/build/assets/baseline-arrow_upward-24px-DRdL9uGQ.svg",
+				"osx-arm64/clientapp/build/assets/baseline-broken_image-24px-BfF6arIk.svg",
+				"osx-arm64/clientapp/build/assets/baseline-check_circle_outline-24px-CTOHO-UV.svg",
+				"osx-arm64/clientapp/build/assets/baseline-check_circle-cover-sized-1565c0-24px-B_kSSq2y.svg",
+				"osx-arm64/clientapp/build/assets/baseline-date_range-24px-CcvyJeOq.svg",
+				"osx-arm64/clientapp/build/assets/baseline-done-24px-DaRpge_w.svg",
+				"osx-arm64/clientapp/build/assets/baseline-error-24px-BqUgLJtt.svg",
+				"osx-arm64/clientapp/build/assets/baseline-file-24px-D4egdtfz.svg",
+				"osx-arm64/clientapp/build/assets/baseline-file-bmp-24px-Dm_q6FsG.svg",
+				"osx-arm64/clientapp/build/assets/baseline-file-gpx-24px-C0I3_8sI.svg",
+				"osx-arm64/clientapp/build/assets/baseline-file-jpg-24px-Ddyy92a6.svg",
+				"osx-arm64/clientapp/build/assets/baseline-file-mp4-24px-B4Ox34U6.svg",
+				"osx-arm64/clientapp/build/assets/baseline-file-outline-D7ZHLdRv.svg",
+				"osx-arm64/clientapp/build/assets/baseline-file-png-24px-BZhaIxJD.svg",
+				"osx-arm64/clientapp/build/assets/baseline-file-raw-24px-CGMKa6Ok.svg",
+				"osx-arm64/clientapp/build/assets/baseline-file-xmp-24px-CxdAHl2f.svg",
+				"osx-arm64/clientapp/build/assets/baseline-fingerprint-24px-BMtS-CwO.svg",
+				"osx-arm64/clientapp/build/assets/baseline-folder-24px-CorBecFj.svg",
+				"osx-arm64/clientapp/build/assets/baseline-lens-24px-O0z6_qTh.svg",
+				"osx-arm64/clientapp/build/assets/baseline-location_on-24px-BgCFRYQ0.svg",
+				"osx-arm64/clientapp/build/assets/baseline-location_on-24px-small-13px-tqWL9P4p.svg",
+				"osx-arm64/clientapp/build/assets/baseline-lock_open-24px-small-13px-Du6-iwfE.svg",
+				"osx-arm64/clientapp/build/assets/baseline-lock-24px-small-13px-Dhr88OSd.svg",
+				"osx-arm64/clientapp/build/assets/baseline-more90-24px-Dc0aDJr2.svg",
+				"osx-arm64/clientapp/build/assets/baseline-pencil-off-24px-Bejfw_YV.svg",
+				"osx-arm64/clientapp/build/assets/baseline-photo-24px-7MW04nUL.svg",
+				"osx-arm64/clientapp/build/assets/baseline-play_arrow-24px-RDhOx-iz.svg",
+				"osx-arm64/clientapp/build/assets/baseline-refresh-24px-AoC4KIuB.svg",
+				"osx-arm64/clientapp/build/assets/baseline-search-24px-CRZUTthR.svg",
+				"osx-arm64/clientapp/build/assets/baseline-searcher-detective-B2yjzwbH.svg",
+				"osx-arm64/clientapp/build/assets/baseline-shutter_speed-24px-BOc6-EZC.svg",
+				"osx-arm64/clientapp/build/assets/baseline-sort-24px-Dm6M-0eF.svg",
+				"osx-arm64/clientapp/build/assets/baseline-wrong_location-24px-small-13px-DYTUUQ-g.svg",
+				"osx-arm64/clientapp/build/assets/baseline-zoom_in-24px-small-13px-DL6TLGPF.svg",
+				"osx-arm64/clientapp/build/assets/baseline-zoom_out-24px-small-13px-DI8um-am.svg",
+				"osx-arm64/clientapp/build/assets/baseline-zoom_reset-24px-small-13px-D-WgXpkq.svg",
+				"osx-arm64/clientapp/build/assets/detect-automatic-rotation-Cl4-xavH.jpg",
+				"osx-arm64/clientapp/build/assets/fa-map-marker-blue-DVEo3vEL.svg",
+				"osx-arm64/clientapp/build/assets/folder-no-child-styled-DUyfm9iB.svg",
+				"osx-arm64/clientapp/build/assets/folder-no-child-styled-hover-Db3NDHHn.svg",
+				"osx-arm64/clientapp/build/assets/GloriolaStd-Bold-CbG_1ImD.woff",
+				"osx-arm64/clientapp/build/assets/GloriolaStd-Bold-CsNcoCRC.woff2",
+				"osx-arm64/clientapp/build/assets/GloriolaStd-Light-D7aBmW7u.woff2",
+				"osx-arm64/clientapp/build/assets/GloriolaStd-Light-DfuqNdyB.woff",
+				"osx-arm64/clientapp/build/assets/GloriolaStd-Medium-CG_4OrfX.woff",
+				"osx-arm64/clientapp/build/assets/GloriolaStd-Medium-xY2wbz_z.woff2",
+				"osx-arm64/clientapp/build/assets/index-Be9ykPGR.js",
+				"osx-arm64/clientapp/build/assets/index-da2s9iOM.css",
+				"osx-arm64/clientapp/build/assets/layers-2x-Bpkbi35X.png",
+				"osx-arm64/clientapp/build/assets/layers-BWBAp2CZ.png",
+				"osx-arm64/clientapp/build/assets/m-next-arrow-CeKf6Nrp.svg",
+				"osx-arm64/clientapp/build/assets/m-prev-arrow-DgpMLNS5.svg",
+				"osx-arm64/clientapp/build/assets/marker-icon-hN30_KVU.png",
+				"osx-arm64/clientapp/build/assets/marker-shadow-f7SaPCxT.png",
+				"osx-arm64/clientapp/build/assets/preloader-fancy-CLeVY95s.svg",
+				"osx-arm64/clientapp/build/assets/s-cross-CTE8WcZo.svg",
+				"osx-arm64/clientapp/build/assets/s-edit-BoL6ENNZ.svg",
+				"osx-arm64/clientapp/build/assets/s-info-QN4KZzMA.svg",
+				"osx-arm64/clientapp/build/assets/s-next-CE0Qxa3p.svg",
+				"osx-arm64/clientapp/build/assets/select-arrow-down-Dz-RdTmi.svg",
+				"osx-arm64/clientapp/build/baseline-searcher-detective-263238__192px.png",
+				"osx-arm64/clientapp/build/baseline-searcher-detective-263238__512px.png",
+				"osx-arm64/clientapp/build/empty-image.gif",
+				"osx-arm64/clientapp/build/favicon.ico",
+				"osx-arm64/clientapp/build/index.html",
+				"osx-arm64/clientapp/build/manifest.json",
+				"osx-arm64/clientapp/build/robots.txt",
+				"osx-arm64/clientapp/cspell.json",
+				"osx-arm64/clientapp/default-package.json",
+				"osx-arm64/clientapp/package-lock.json",
+				"osx-arm64/clientapp/package.json",
+				"osx-arm64/clientapp/public/manifest.json",
+				"osx-arm64/clientapp/src/localization/localization.json",
+				"osx-arm64/clientapp/tsconfig.json",
+				"osx-arm64/clientapp/tsconfig.node.json",
+				"osx-arm64/clientapp/tsconfig.prod.json",
+				"osx-arm64/data.db",
+				"osx-arm64/dependencies/admin1CodesASCII.txt",
+				"osx-arm64/dependencies/cities1000.txt",
+				"osx-arm64/dependencies/cities1000.zip",
+				"osx-arm64/dependencies/exiftool-unix/arg_files/exif2iptc.args",
+				"osx-arm64/dependencies/exiftool-unix/arg_files/exif2xmp.args",
+				"osx-arm64/dependencies/exiftool-unix/arg_files/gps2xmp.args",
+				"osx-arm64/dependencies/exiftool-unix/arg_files/iptc2exif.args",
+				"osx-arm64/dependencies/exiftool-unix/arg_files/iptc2xmp.args",
+				"osx-arm64/dependencies/exiftool-unix/arg_files/iptcCore.args",
+				"osx-arm64/dependencies/exiftool-unix/arg_files/pdf2xmp.args",
+				"osx-arm64/dependencies/exiftool-unix/arg_files/xmp2exif.args",
+				"osx-arm64/dependencies/exiftool-unix/arg_files/xmp2gps.args",
+				"osx-arm64/dependencies/exiftool-unix/arg_files/xmp2iptc.args",
+				"osx-arm64/dependencies/exiftool-unix/arg_files/xmp2pdf.args",
+				"osx-arm64/dependencies/exiftool-unix/build_geolocation",
+				"osx-arm64/dependencies/exiftool-unix/Changes",
+				"osx-arm64/dependencies/exiftool-unix/config_files/acdsee.config",
+				"osx-arm64/dependencies/exiftool-unix/config_files/age.config",
+				"osx-arm64/dependencies/exiftool-unix/config_files/bibble.config",
+				"osx-arm64/dependencies/exiftool-unix/config_files/convert_regions.config",
+				"osx-arm64/dependencies/exiftool-unix/config_files/cuepointlist.config",
+				"osx-arm64/dependencies/exiftool-unix/config_files/depthmap.config",
+				"osx-arm64/dependencies/exiftool-unix/config_files/example.config",
+				"osx-arm64/dependencies/exiftool-unix/config_files/fotoware.config",
+				"osx-arm64/dependencies/exiftool-unix/config_files/frameCount.config",
+				"osx-arm64/dependencies/exiftool-unix/config_files/gps2utm.config",
+				"osx-arm64/dependencies/exiftool-unix/config_files/guano.config",
+				"osx-arm64/dependencies/exiftool-unix/config_files/local_time.config",
+				"osx-arm64/dependencies/exiftool-unix/config_files/nksc.config",
+				"osx-arm64/dependencies/exiftool-unix/config_files/onone.config",
+				"osx-arm64/dependencies/exiftool-unix/config_files/photoshop_paths.config",
+				"osx-arm64/dependencies/exiftool-unix/config_files/picasa_faces.config",
+				"osx-arm64/dependencies/exiftool-unix/config_files/pix4d.config",
+				"osx-arm64/dependencies/exiftool-unix/config_files/rotate_regions.config",
+				"osx-arm64/dependencies/exiftool-unix/config_files/tiff_version.config",
+				"osx-arm64/dependencies/exiftool-unix/config_files/time_zone.config",
+				"osx-arm64/dependencies/exiftool-unix/exiftool",
+				"osx-arm64/dependencies/exiftool-unix/fmt_files/gpx_wpt.fmt",
+				"osx-arm64/dependencies/exiftool-unix/fmt_files/gpx.fmt",
+				"osx-arm64/dependencies/exiftool-unix/fmt_files/kml_track.fmt",
+				"osx-arm64/dependencies/exiftool-unix/fmt_files/kml.fmt",
+				"osx-arm64/dependencies/exiftool-unix/html/ancient_history.html",
+				"osx-arm64/dependencies/exiftool-unix/html/build_geolocation.txt",
+				"osx-arm64/dependencies/exiftool-unix/html/canon_raw.html",
+				"osx-arm64/dependencies/exiftool-unix/html/commentary.html",
+				"osx-arm64/dependencies/exiftool-unix/html/config.html",
+				"osx-arm64/dependencies/exiftool-unix/html/data_members.html",
+				"osx-arm64/dependencies/exiftool-unix/html/ET-256.png",
+				"osx-arm64/dependencies/exiftool-unix/html/exiftool_pod.html",
+				"osx-arm64/dependencies/exiftool-unix/html/ExifTool.html",
+				"osx-arm64/dependencies/exiftool-unix/html/faq.html",
+				"osx-arm64/dependencies/exiftool-unix/html/filename.html",
+				"osx-arm64/dependencies/exiftool-unix/html/geolocation.html",
+				"osx-arm64/dependencies/exiftool-unix/html/geotag.html",
+				"osx-arm64/dependencies/exiftool-unix/html/history.html",
+				"osx-arm64/dependencies/exiftool-unix/html/htmldump.html",
+				"osx-arm64/dependencies/exiftool-unix/html/idiosyncracies.html",
+				"osx-arm64/dependencies/exiftool-unix/html/index.html",
+				"osx-arm64/dependencies/exiftool-unix/html/install.html",
+				"osx-arm64/dependencies/exiftool-unix/html/markers.svg",
+				"osx-arm64/dependencies/exiftool-unix/html/metafiles.html",
+				"osx-arm64/dependencies/exiftool-unix/html/MIE1.1-20070121.pdf",
+				"osx-arm64/dependencies/exiftool-unix/html/mistakes.html",
+				"osx-arm64/dependencies/exiftool-unix/html/overview.png",
+				"osx-arm64/dependencies/exiftool-unix/html/plot.html",
+				"osx-arm64/dependencies/exiftool-unix/html/plot1.svg",
+				"osx-arm64/dependencies/exiftool-unix/html/plot2.svg",
+				"osx-arm64/dependencies/exiftool-unix/html/plot3.svg",
+				"osx-arm64/dependencies/exiftool-unix/html/plot4.svg",
+				"osx-arm64/dependencies/exiftool-unix/html/plot5.svg",
+				"osx-arm64/dependencies/exiftool-unix/html/Shift.html",
+				"osx-arm64/dependencies/exiftool-unix/html/standards.html",
+				"osx-arm64/dependencies/exiftool-unix/html/struct.html",
+				"osx-arm64/dependencies/exiftool-unix/html/style.css",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/AAC.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/AFCP.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/AIFF.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/APE.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/APP12.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Apple.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/ASF.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Audible.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/BMP.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/BPG.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Canon.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/CanonCustom.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/CanonRaw.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/CanonVRD.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Casio.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/CBOR.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Composite.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/DarwinCore.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/DICOM.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/DJI.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/DjVu.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/DNG.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/DPX.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/DSF.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/DV.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/EXE.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/EXIF.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Extra.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/FITS.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/FLAC.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Flash.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/FlashPix.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/FLIF.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/FLIR.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Font.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/FotoStation.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/FujiFilm.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/GE.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/GeoTiff.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/GIF.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/GIMP.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/GM.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Google.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/GoPro.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/GPS.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/H264.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/HP.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/HTML.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/ICC_Profile.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/ICO.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/ID3.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/index.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/InfiRay.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/IPTC.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/ISO.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/ITC.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/iWork.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/JFIF.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/JPEG.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Jpeg2000.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/JSON.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/JVC.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Kandao.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Kodak.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/KyoceraRaw.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Leaf.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/LIF.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/LNK.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Lytro.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/M2TS.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/MacOS.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Matroska.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Microsoft.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/MIE.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/MIFF.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Minolta.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/MinoltaRaw.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/MISB.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/MNG.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/MOI.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Motorola.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/MPC.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/MPEG.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/MPF.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/MRC.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/MWG.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/MXF.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Nikon.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/NikonCapture.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/NikonCustom.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/NikonSettings.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Nintendo.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Ogg.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Olympus.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/OOXML.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/OpenEXR.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Opus.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Other.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Palm.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Panasonic.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/PanasonicRaw.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Parrot.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/PCAP.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/PCX.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/PDF.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Pentax.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/PGF.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/PhaseOne.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/PhotoCD.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/PhotoMechanic.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Photoshop.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/PICT.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/PLIST.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/PLUS.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/PNG.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/PostScript.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/PrintIM.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/PSP.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Qualcomm.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/QuickTime.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Radiance.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Rawzor.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Real.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Reconyx.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Red.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Ricoh.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/RIFF.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/RSRC.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/RTF.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Samsung.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Sanyo.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Scalado.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Shortcuts.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Sigma.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/SigmaRaw.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Sony.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/SonyIDC.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Stim.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/style.css",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Text.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Theora.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/TNEF.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Torrent.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Trailer.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Unknown.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/VCard.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/Vorbis.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/WavPack.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/WPG.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/WTV.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/XISF.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/XMP.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/ZIP.html",
+				"osx-arm64/dependencies/exiftool-unix/html/TagNames/ZISRAW.html",
+				"osx-arm64/dependencies/exiftool-unix/html/under.html",
+				"osx-arm64/dependencies/exiftool-unix/html/verbose.html",
+				"osx-arm64/dependencies/exiftool-unix/html/writing.html",
+				"osx-arm64/dependencies/exiftool-unix/lib/File/RandomAccess.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/File/RandomAccess.pod",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool.pod",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/7Z.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/AAC.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/AES.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/AFCP.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/AIFF.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/APE.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/APP12.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Apple.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/ASF.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Audible.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/BigTIFF.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/BMP.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/BPG.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/BuildTagLookup.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/BZZ.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Canon.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/CanonCustom.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/CanonRaw.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/CanonVRD.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/CaptureOne.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Casio.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/CBOR.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/Arabic.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/Baltic.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/Cyrillic.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/DOSCyrillic.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/DOSLatin1.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/DOSLatinUS.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/Greek.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/Hebrew.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/JIS.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/Latin.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/Latin2.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/MacArabic.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/MacChineseCN.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/MacChineseTW.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/MacCroatian.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/MacCyrillic.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/MacGreek.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/MacHebrew.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/MacIceland.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/MacJapanese.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/MacKorean.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/MacLatin2.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/MacRoman.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/MacRomanian.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/MacRSymbol.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/MacThai.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/MacTurkish.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/PDFDoc.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/ShiftJIS.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/Symbol.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/Thai.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/Turkish.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Charset/Vietnam.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/DarwinCore.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/DICOM.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/DJI.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/DjVu.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/DNG.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/DPX.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/DSF.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/DV.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/EXE.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Exif.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/FITS.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Fixup.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/FLAC.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Flash.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/FlashPix.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/FLIF.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/FLIR.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Font.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/FotoStation.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/FujiFilm.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/GE.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Geolocation.dat",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Geolocation.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Geotag.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/GeoTiff.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/GIF.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/GIMP.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/GM.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Google.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/GoPro.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/GPS.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/H264.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/HP.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/HTML.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/HtmlDump.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/ICC_Profile.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/ICO.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/ID3.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Import.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/InDesign.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/InfiRay.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/IPTC.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/ISO.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/ITC.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/iWork.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/JPEG.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Jpeg2000.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/JPEGDigest.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/JSON.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/JVC.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Kandao.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Kodak.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/KyoceraRaw.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Lang/cs.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Lang/de.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Lang/en_ca.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Lang/en_gb.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Lang/es.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Lang/fi.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Lang/fr.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Lang/it.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Lang/ja.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Lang/ko.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Lang/nl.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Lang/pl.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Lang/ru.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Lang/sk.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Lang/sv.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Lang/tr.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Lang/zh_cn.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Lang/zh_tw.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Leaf.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/LIF.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/LigoGPS.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/LNK.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Lytro.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/M2TS.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/MacOS.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/MakerNotes.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Matroska.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Microsoft.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/MIE.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/MIEUnits.pod",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/MIFF.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Minolta.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/MinoltaRaw.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/MISB.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/MNG.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/MOI.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Motorola.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/MPC.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/MPEG.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/MPF.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/MRC.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/MWG.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/MXF.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Nikon.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/NikonCapture.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/NikonCustom.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/NikonSettings.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Nintendo.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Ogg.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Olympus.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/OOXML.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/OpenEXR.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Opus.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Other.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Palm.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Panasonic.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/PanasonicRaw.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Parrot.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/PCAP.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/PCX.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/PDF.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Pentax.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/PGF.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/PhaseOne.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/PhotoCD.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/PhotoMechanic.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Photoshop.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/PICT.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/PLIST.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Plot.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/PLUS.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/PNG.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/PostScript.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/PPM.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/PrintIM.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Protobuf.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/PSP.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Qualcomm.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/QuickTime.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/QuickTimeStream.pl",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Radiance.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Rawzor.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/README",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Real.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Reconyx.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Red.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Ricoh.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/RIFF.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/RSRC.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/RTF.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Samsung.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Sanyo.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Scalado.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Shift.pl",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Shortcuts.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Sigma.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/SigmaRaw.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Sony.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/SonyIDC.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Stim.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/TagInfoXML.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/TagLookup.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/TagNames.pod",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Text.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Theora.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/TNEF.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Torrent.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Trailer.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Unknown.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Validate.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/VCard.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Vorbis.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/WavPack.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/WPG.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/WriteCanonRaw.pl",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/WriteExif.pl",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/WriteIPTC.pl",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/WritePDF.pl",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/WritePhotoshop.pl",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/WritePNG.pl",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/WritePostScript.pl",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/WriteQuickTime.pl",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/Writer.pl",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/WriteRIFF.pl",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/WriteXMP.pl",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/WTV.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/XISF.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/XMP.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/XMP2.pl",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/XMPStruct.pl",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/ZIP.pm",
+				"osx-arm64/dependencies/exiftool-unix/lib/Image/ExifTool/ZISRAW.pm",
+				"osx-arm64/dependencies/exiftool-unix/Makefile.PL",
+				"osx-arm64/dependencies/exiftool-unix/MANIFEST",
+				"osx-arm64/dependencies/exiftool-unix/META.json",
+				"osx-arm64/dependencies/exiftool-unix/META.yml",
+				"osx-arm64/dependencies/exiftool-unix/perl-Image-ExifTool.spec",
+				"osx-arm64/dependencies/exiftool-unix/README",
+				"osx-arm64/dependencies/exiftool-unix/t/AAC_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/AAC.t",
+				"osx-arm64/dependencies/exiftool-unix/t/AFCP_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/AFCP_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/AFCP.t",
+				"osx-arm64/dependencies/exiftool-unix/t/AIFF_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/AIFF.t",
+				"osx-arm64/dependencies/exiftool-unix/t/APE_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/APE_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/APE.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Apple_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Apple.t",
+				"osx-arm64/dependencies/exiftool-unix/t/ASF_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ASF.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Audible_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Audible.t",
+				"osx-arm64/dependencies/exiftool-unix/t/BigTIFF_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/BigTIFF.t",
+				"osx-arm64/dependencies/exiftool-unix/t/BMP_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/BMP.t",
+				"osx-arm64/dependencies/exiftool-unix/t/BPG_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/BPG.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Canon_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Canon_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Canon.t",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonRaw_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonRaw_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonRaw_5.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonRaw_6.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonRaw_7.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonRaw_8.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonRaw_9.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonRaw.t",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonVRD_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonVRD_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonVRD_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonVRD_5.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonVRD_6.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonVRD_7.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonVRD_8.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonVRD_9.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonVRD_11.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonVRD_12.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonVRD_13.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonVRD_14.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonVRD_15.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonVRD_16.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonVRD_17.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonVRD_18.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonVRD_19.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonVRD_20.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonVRD_21.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonVRD_22.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonVRD_24.out",
+				"osx-arm64/dependencies/exiftool-unix/t/CanonVRD.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Casio_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Casio_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Casio_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Casio_5.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Casio_6.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Casio.t",
+				"osx-arm64/dependencies/exiftool-unix/t/DICOM_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/DICOM.t",
+				"osx-arm64/dependencies/exiftool-unix/t/DjVu_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/DjVu.t",
+				"osx-arm64/dependencies/exiftool-unix/t/DNG_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/DNG_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/DNG.t",
+				"osx-arm64/dependencies/exiftool-unix/t/DPX_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/DPX.t",
+				"osx-arm64/dependencies/exiftool-unix/t/DV_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/DV.t",
+				"osx-arm64/dependencies/exiftool-unix/t/EXE_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/EXE_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/EXE_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/EXE_5.out",
+				"osx-arm64/dependencies/exiftool-unix/t/EXE_6.out",
+				"osx-arm64/dependencies/exiftool-unix/t/EXE_7.out",
+				"osx-arm64/dependencies/exiftool-unix/t/EXE.t",
+				"osx-arm64/dependencies/exiftool-unix/t/ExifTool_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ExifTool_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ExifTool_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ExifTool_5.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ExifTool_6.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ExifTool_7.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ExifTool_8.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ExifTool_9.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ExifTool_16.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ExifTool_17.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ExifTool_20.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ExifTool_21.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ExifTool_22.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ExifTool_23.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ExifTool_24.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ExifTool_25.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ExifTool_26.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ExifTool_27.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ExifTool_28.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ExifTool_29.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ExifTool_30.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ExifTool_31.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ExifTool_32.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ExifTool_33.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ExifTool_34.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ExifTool_35.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ExifTool.t",
+				"osx-arm64/dependencies/exiftool-unix/t/FITS_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/FITS.t",
+				"osx-arm64/dependencies/exiftool-unix/t/FLAC_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/FLAC_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/FLAC.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Flash_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Flash_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Flash.t",
+				"osx-arm64/dependencies/exiftool-unix/t/FlashPix_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/FlashPix.t",
+				"osx-arm64/dependencies/exiftool-unix/t/FLIF_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/FLIF_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/FLIF_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/FLIF_5.out",
+				"osx-arm64/dependencies/exiftool-unix/t/FLIF_6.out",
+				"osx-arm64/dependencies/exiftool-unix/t/FLIF.t",
+				"osx-arm64/dependencies/exiftool-unix/t/FLIR_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/FLIR_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/FLIR.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Font_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Font_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Font_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Font_5.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Font_6.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Font_7.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Font.t",
+				"osx-arm64/dependencies/exiftool-unix/t/FotoStation_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/FotoStation_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/FotoStation.t",
+				"osx-arm64/dependencies/exiftool-unix/t/FujiFilm_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/FujiFilm_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/FujiFilm_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/FujiFilm_5.out",
+				"osx-arm64/dependencies/exiftool-unix/t/FujiFilm.t",
+				"osx-arm64/dependencies/exiftool-unix/t/GE_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/GE_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/GE.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Geolocation_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Geolocation_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Geolocation_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Geolocation_5.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Geolocation_6.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Geolocation_7.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Geolocation_8.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Geolocation.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Geotag_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Geotag_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Geotag_5.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Geotag_6.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Geotag_7.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Geotag_8.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Geotag_9.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Geotag_10.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Geotag_11.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Geotag_12.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Geotag.t",
+				"osx-arm64/dependencies/exiftool-unix/t/GeoTiff_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/GeoTiff_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/GeoTiff_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/GeoTiff.t",
+				"osx-arm64/dependencies/exiftool-unix/t/GIF_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/GIF_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/GIF_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/GIF.t",
+				"osx-arm64/dependencies/exiftool-unix/t/GIMP_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/GIMP.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Google_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Google.t",
+				"osx-arm64/dependencies/exiftool-unix/t/GoPro_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/GoPro.t",
+				"osx-arm64/dependencies/exiftool-unix/t/GPS_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/GPS_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/GPS.t",
+				"osx-arm64/dependencies/exiftool-unix/t/HTML_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/HTML.t",
+				"osx-arm64/dependencies/exiftool-unix/t/ICO_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ICO.t",
+				"osx-arm64/dependencies/exiftool-unix/t/images/AAC.aac",
+				"osx-arm64/dependencies/exiftool-unix/t/images/AFCP.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/AIFF.aif",
+				"osx-arm64/dependencies/exiftool-unix/t/images/APE.ape",
+				"osx-arm64/dependencies/exiftool-unix/t/images/APE.mpc",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Apple.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/ASF.wmv",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Audible.aa",
+				"osx-arm64/dependencies/exiftool-unix/t/images/BigTIFF.btf",
+				"osx-arm64/dependencies/exiftool-unix/t/images/BMP.bmp",
+				"osx-arm64/dependencies/exiftool-unix/t/images/BPG.bpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Canon.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Canon1DmkIII.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/CanonRaw.cr2",
+				"osx-arm64/dependencies/exiftool-unix/t/images/CanonRaw.cr3",
+				"osx-arm64/dependencies/exiftool-unix/t/images/CanonRaw.crw",
+				"osx-arm64/dependencies/exiftool-unix/t/images/CanonVRD.dr4",
+				"osx-arm64/dependencies/exiftool-unix/t/images/CanonVRD.vrd",
+				"osx-arm64/dependencies/exiftool-unix/t/images/CaptureOne.eip",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Casio.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Casio2.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/CasioQVCI.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/DICOM.dcm",
+				"osx-arm64/dependencies/exiftool-unix/t/images/DjVu.djvu",
+				"osx-arm64/dependencies/exiftool-unix/t/images/DNG.dng",
+				"osx-arm64/dependencies/exiftool-unix/t/images/DPX.dpx",
+				"osx-arm64/dependencies/exiftool-unix/t/images/DV.dv",
+				"osx-arm64/dependencies/exiftool-unix/t/images/EXE.elf",
+				"osx-arm64/dependencies/exiftool-unix/t/images/EXE.exe",
+				"osx-arm64/dependencies/exiftool-unix/t/images/EXE.macho",
+				"osx-arm64/dependencies/exiftool-unix/t/images/EXE.so",
+				"osx-arm64/dependencies/exiftool-unix/t/images/ExifTool.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/ExifTool.jps",
+				"osx-arm64/dependencies/exiftool-unix/t/images/ExifTool.tif",
+				"osx-arm64/dependencies/exiftool-unix/t/images/ExtendedXMP.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/FITS.fits",
+				"osx-arm64/dependencies/exiftool-unix/t/images/FLAC.flac",
+				"osx-arm64/dependencies/exiftool-unix/t/images/FLAC.ogg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Flash.flv",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Flash.swf",
+				"osx-arm64/dependencies/exiftool-unix/t/images/FlashPix.ppt",
+				"osx-arm64/dependencies/exiftool-unix/t/images/FLIF.flif",
+				"osx-arm64/dependencies/exiftool-unix/t/images/FLIR.fpf",
+				"osx-arm64/dependencies/exiftool-unix/t/images/FLIR.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Font.afm",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Font.dfont",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Font.pfa",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Font.pfb",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Font.pfm",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Font.ttf",
+				"osx-arm64/dependencies/exiftool-unix/t/images/FotoStation.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/FujiFilm.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/FujiFilm.raf",
+				"osx-arm64/dependencies/exiftool-unix/t/images/GE.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Geotag_DJI_2020-12-02_[07-50-31].csv",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Geotag.gpx",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Geotag.igc",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Geotag.kml",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Geotag.log",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Geotag.xml",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Geotag2.log",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Geotag3.log",
+				"osx-arm64/dependencies/exiftool-unix/t/images/GeoTiff.tif",
+				"osx-arm64/dependencies/exiftool-unix/t/images/GIF.gif",
+				"osx-arm64/dependencies/exiftool-unix/t/images/GIMP.xcf",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Google.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/GoPro.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/GPS.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/HTML.html",
+				"osx-arm64/dependencies/exiftool-unix/t/images/ICC_Profile.icc",
+				"osx-arm64/dependencies/exiftool-unix/t/images/ICO.ico",
+				"osx-arm64/dependencies/exiftool-unix/t/images/InDesign.indd",
+				"osx-arm64/dependencies/exiftool-unix/t/images/InfiRay.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/IPTC.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/ISO.iso",
+				"osx-arm64/dependencies/exiftool-unix/t/images/ITC.itc",
+				"osx-arm64/dependencies/exiftool-unix/t/images/iWork.numbers",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Jpeg2000.j2c",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Jpeg2000.jp2",
+				"osx-arm64/dependencies/exiftool-unix/t/images/JSON.json",
+				"osx-arm64/dependencies/exiftool-unix/t/images/JVC.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/JVC2.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/JXL.jxl",
+				"osx-arm64/dependencies/exiftool-unix/t/images/JXL2.jxl",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Kodak.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/KyoceraRaw.raw",
+				"osx-arm64/dependencies/exiftool-unix/t/images/LNK.lnk",
+				"osx-arm64/dependencies/exiftool-unix/t/images/LNK.url",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Lytro.lfp",
+				"osx-arm64/dependencies/exiftool-unix/t/images/M2TS.mts",
+				"osx-arm64/dependencies/exiftool-unix/t/images/MacOS.macos",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Matroska.mkv",
+				"osx-arm64/dependencies/exiftool-unix/t/images/MIE.mie",
+				"osx-arm64/dependencies/exiftool-unix/t/images/MIFF.miff",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Minolta.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Minolta.mrw",
+				"osx-arm64/dependencies/exiftool-unix/t/images/MOI.moi",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Motorola.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/MP3.mp3",
+				"osx-arm64/dependencies/exiftool-unix/t/images/MRC.mrc",
+				"osx-arm64/dependencies/exiftool-unix/t/images/MWG.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/MXF.mxf",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Nikon.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Nikon.nef",
+				"osx-arm64/dependencies/exiftool-unix/t/images/NikonD2Hs.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/NikonD70.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Olympus.dss",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Olympus.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Olympus2.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/OlympusE1.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/OOXML.docx",
+				"osx-arm64/dependencies/exiftool-unix/t/images/OpenDoc.ods",
+				"osx-arm64/dependencies/exiftool-unix/t/images/OpenEXR.exr",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Opus.opus",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Palm.mobi",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Panasonic.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Panasonic.rw2",
+				"osx-arm64/dependencies/exiftool-unix/t/images/PCAP.pcapng",
+				"osx-arm64/dependencies/exiftool-unix/t/images/PCX.pcx",
+				"osx-arm64/dependencies/exiftool-unix/t/images/PDF.pdf",
+				"osx-arm64/dependencies/exiftool-unix/t/images/PDF2.pdf",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Pentax.avi",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Pentax.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/PFM.pfm",
+				"osx-arm64/dependencies/exiftool-unix/t/images/PGF.pgf",
+				"osx-arm64/dependencies/exiftool-unix/t/images/PhaseOne.iiq",
+				"osx-arm64/dependencies/exiftool-unix/t/images/PhotoCD.pcd",
+				"osx-arm64/dependencies/exiftool-unix/t/images/PhotoMechanic.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Photoshop.psd",
+				"osx-arm64/dependencies/exiftool-unix/t/images/PICT.pict",
+				"osx-arm64/dependencies/exiftool-unix/t/images/PLIST-bin.plist",
+				"osx-arm64/dependencies/exiftool-unix/t/images/PLIST-xml.plist",
+				"osx-arm64/dependencies/exiftool-unix/t/images/PLIST.aae",
+				"osx-arm64/dependencies/exiftool-unix/t/images/PLUS.xmp",
+				"osx-arm64/dependencies/exiftool-unix/t/images/PNG.png",
+				"osx-arm64/dependencies/exiftool-unix/t/images/PostScript.eps",
+				"osx-arm64/dependencies/exiftool-unix/t/images/PPM.ppm",
+				"osx-arm64/dependencies/exiftool-unix/t/images/PSP.psp",
+				"osx-arm64/dependencies/exiftool-unix/t/images/QuickTime.heic",
+				"osx-arm64/dependencies/exiftool-unix/t/images/QuickTime.m4a",
+				"osx-arm64/dependencies/exiftool-unix/t/images/QuickTime.mov",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Radiance.hdr",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Real.ra",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Real.ram",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Real.rm",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Red.r3d",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Ricoh.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Ricoh2.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/RIFF.avi",
+				"osx-arm64/dependencies/exiftool-unix/t/images/RIFF.wav",
+				"osx-arm64/dependencies/exiftool-unix/t/images/RIFF.webp",
+				"osx-arm64/dependencies/exiftool-unix/t/images/RTF.rtf",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Sanyo.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Sigma.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Sigma.x3f",
+				"osx-arm64/dependencies/exiftool-unix/t/images/SigmaDP2.x3f",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Sony.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Sony.pmp",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Text.csv",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Text1.txt",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Text2.txt",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Text3.txt",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Text4.txt",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Text5.txt",
+				"osx-arm64/dependencies/exiftool-unix/t/images/TNEF.tnef",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Torrent.torrent",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Unknown.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/VCard.ics",
+				"osx-arm64/dependencies/exiftool-unix/t/images/VCard.vcf",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Vorbis.ogg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/WPG.wpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/Writer.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/WTV.wtv",
+				"osx-arm64/dependencies/exiftool-unix/t/images/XISF.xisf",
+				"osx-arm64/dependencies/exiftool-unix/t/images/XMP.inx",
+				"osx-arm64/dependencies/exiftool-unix/t/images/XMP.jpg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/XMP.svg",
+				"osx-arm64/dependencies/exiftool-unix/t/images/XMP.xml",
+				"osx-arm64/dependencies/exiftool-unix/t/images/XMP.xmp",
+				"osx-arm64/dependencies/exiftool-unix/t/images/XMP2.xmp",
+				"osx-arm64/dependencies/exiftool-unix/t/images/XMP3.xmp",
+				"osx-arm64/dependencies/exiftool-unix/t/images/XMP4.xmp",
+				"osx-arm64/dependencies/exiftool-unix/t/images/XMP5.xmp",
+				"osx-arm64/dependencies/exiftool-unix/t/images/XMP6.xmp",
+				"osx-arm64/dependencies/exiftool-unix/t/images/XMP7.xmp",
+				"osx-arm64/dependencies/exiftool-unix/t/images/XMP8.xmp",
+				"osx-arm64/dependencies/exiftool-unix/t/images/XMP9.xmp",
+				"osx-arm64/dependencies/exiftool-unix/t/images/ZIP.gz",
+				"osx-arm64/dependencies/exiftool-unix/t/images/ZIP.rar",
+				"osx-arm64/dependencies/exiftool-unix/t/images/ZIP.zip",
+				"osx-arm64/dependencies/exiftool-unix/t/images/ZISRAW.czi",
+				"osx-arm64/dependencies/exiftool-unix/t/InDesign_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/InDesign_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/InDesign_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/InDesign.t",
+				"osx-arm64/dependencies/exiftool-unix/t/InfiRay_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/InfiRay.t",
+				"osx-arm64/dependencies/exiftool-unix/t/IPTC_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/IPTC_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/IPTC_5.out",
+				"osx-arm64/dependencies/exiftool-unix/t/IPTC_6.out",
+				"osx-arm64/dependencies/exiftool-unix/t/IPTC_7.out",
+				"osx-arm64/dependencies/exiftool-unix/t/IPTC_8.out",
+				"osx-arm64/dependencies/exiftool-unix/t/IPTC.t",
+				"osx-arm64/dependencies/exiftool-unix/t/ISO_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ISO.t",
+				"osx-arm64/dependencies/exiftool-unix/t/ITC_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ITC.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Jpeg2000_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Jpeg2000_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Jpeg2000_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Jpeg2000_5.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Jpeg2000.t",
+				"osx-arm64/dependencies/exiftool-unix/t/JSON_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/JSON.t",
+				"osx-arm64/dependencies/exiftool-unix/t/JVC_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/JVC_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/JVC.t",
+				"osx-arm64/dependencies/exiftool-unix/t/JXL_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/JXL_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/JXL_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/JXL.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Kodak_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Kodak_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Kodak.t",
+				"osx-arm64/dependencies/exiftool-unix/t/KyoceraRaw_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/KyoceraRaw.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Lang_1.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Lang_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Lang_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Lang_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Lang_5.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Lang_6.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Lang_7.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Lang_8.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Lang_9.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Lang_10.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Lang_11.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Lang_12.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Lang_13.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Lang_14.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Lang_15.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Lang_16.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Lang_17.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Lang_18.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Lang_19.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Lang.t",
+				"osx-arm64/dependencies/exiftool-unix/t/LNK_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/LNK_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/LNK.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Lytro_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Lytro.t",
+				"osx-arm64/dependencies/exiftool-unix/t/M2TS_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/M2TS.t",
+				"osx-arm64/dependencies/exiftool-unix/t/MacOS_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/MacOS.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Matroska_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Matroska.t",
+				"osx-arm64/dependencies/exiftool-unix/t/MIE_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/MIE_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/MIE_5.out",
+				"osx-arm64/dependencies/exiftool-unix/t/MIE_6.out",
+				"osx-arm64/dependencies/exiftool-unix/t/MIE.t",
+				"osx-arm64/dependencies/exiftool-unix/t/MIFF_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/MIFF.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Minolta_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Minolta_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Minolta_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Minolta.t",
+				"osx-arm64/dependencies/exiftool-unix/t/MOI_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/MOI.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Motorola_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Motorola.t",
+				"osx-arm64/dependencies/exiftool-unix/t/MP3_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/MP3.t",
+				"osx-arm64/dependencies/exiftool-unix/t/MRC_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/MRC.t",
+				"osx-arm64/dependencies/exiftool-unix/t/MWG_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/MWG_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/MWG_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/MWG_5.out",
+				"osx-arm64/dependencies/exiftool-unix/t/MWG_6.out",
+				"osx-arm64/dependencies/exiftool-unix/t/MWG_7.out",
+				"osx-arm64/dependencies/exiftool-unix/t/MWG.t",
+				"osx-arm64/dependencies/exiftool-unix/t/MXF_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/MXF.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Nikon_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Nikon_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Nikon_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Nikon_5.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Nikon_7.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Nikon_8.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Nikon.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Olympus_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Olympus_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Olympus_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Olympus_5.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Olympus_6.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Olympus_7.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Olympus_8.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Olympus.t",
+				"osx-arm64/dependencies/exiftool-unix/t/OpenEXR_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/OpenEXR.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Opus_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Opus.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Palm_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Palm.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Panasonic_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Panasonic_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Panasonic_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Panasonic_5.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Panasonic.t",
+				"osx-arm64/dependencies/exiftool-unix/t/PCAP_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PCAP.t",
+				"osx-arm64/dependencies/exiftool-unix/t/PCX_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PCX.t",
+				"osx-arm64/dependencies/exiftool-unix/t/PDF_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PDF_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PDF_5.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PDF_6.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PDF_7.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PDF_8.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PDF_9.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PDF_10.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PDF_11.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PDF_12.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PDF_14.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PDF_15.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PDF_16.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PDF_17.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PDF_18.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PDF_19.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PDF_20.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PDF_22.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PDF.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Pentax_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Pentax_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Pentax_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Pentax.t",
+				"osx-arm64/dependencies/exiftool-unix/t/PFM_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PFM.t",
+				"osx-arm64/dependencies/exiftool-unix/t/PGF_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PGF.t",
+				"osx-arm64/dependencies/exiftool-unix/t/PhaseOne_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PhaseOne_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PhaseOne.t",
+				"osx-arm64/dependencies/exiftool-unix/t/PhotoCD_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PhotoCD.t",
+				"osx-arm64/dependencies/exiftool-unix/t/PhotoMechanic_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PhotoMechanic_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PhotoMechanic.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Photoshop_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Photoshop_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Photoshop.t",
+				"osx-arm64/dependencies/exiftool-unix/t/PICT_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PICT.t",
+				"osx-arm64/dependencies/exiftool-unix/t/PLIST_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PLIST_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PLIST_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PLIST.t",
+				"osx-arm64/dependencies/exiftool-unix/t/PLUS_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PLUS.t",
+				"osx-arm64/dependencies/exiftool-unix/t/PNG_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PNG_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PNG_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PNG_5.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PNG_6.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PNG_7.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PNG.t",
+				"osx-arm64/dependencies/exiftool-unix/t/PostScript_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PostScript_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PostScript.t",
+				"osx-arm64/dependencies/exiftool-unix/t/PPM_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PPM_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PPM.t",
+				"osx-arm64/dependencies/exiftool-unix/t/PSP_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/PSP.t",
+				"osx-arm64/dependencies/exiftool-unix/t/QuickTime_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/QuickTime_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/QuickTime_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/QuickTime_5.out",
+				"osx-arm64/dependencies/exiftool-unix/t/QuickTime_6.out",
+				"osx-arm64/dependencies/exiftool-unix/t/QuickTime_7.out",
+				"osx-arm64/dependencies/exiftool-unix/t/QuickTime_8.out",
+				"osx-arm64/dependencies/exiftool-unix/t/QuickTime_9.out",
+				"osx-arm64/dependencies/exiftool-unix/t/QuickTime_10.out",
+				"osx-arm64/dependencies/exiftool-unix/t/QuickTime_11.out",
+				"osx-arm64/dependencies/exiftool-unix/t/QuickTime_12.out",
+				"osx-arm64/dependencies/exiftool-unix/t/QuickTime_13.out",
+				"osx-arm64/dependencies/exiftool-unix/t/QuickTime_14.out",
+				"osx-arm64/dependencies/exiftool-unix/t/QuickTime_15.out",
+				"osx-arm64/dependencies/exiftool-unix/t/QuickTime_16.out",
+				"osx-arm64/dependencies/exiftool-unix/t/QuickTime_17.out",
+				"osx-arm64/dependencies/exiftool-unix/t/QuickTime_18.out",
+				"osx-arm64/dependencies/exiftool-unix/t/QuickTime_19.out",
+				"osx-arm64/dependencies/exiftool-unix/t/QuickTime_20.out",
+				"osx-arm64/dependencies/exiftool-unix/t/QuickTime_21.out",
+				"osx-arm64/dependencies/exiftool-unix/t/QuickTime_22.out",
+				"osx-arm64/dependencies/exiftool-unix/t/QuickTime.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Radiance_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Radiance.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Real_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Real_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Real_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Real.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Red_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Red.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Ricoh_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Ricoh_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Ricoh_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Ricoh.t",
+				"osx-arm64/dependencies/exiftool-unix/t/RIFF_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/RIFF_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/RIFF_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/RIFF_5.out",
+				"osx-arm64/dependencies/exiftool-unix/t/RIFF_6.out",
+				"osx-arm64/dependencies/exiftool-unix/t/RIFF_7.out",
+				"osx-arm64/dependencies/exiftool-unix/t/RIFF.t",
+				"osx-arm64/dependencies/exiftool-unix/t/RTF_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/RTF.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Sanyo_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Sanyo_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Sanyo.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Sigma_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Sigma_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Sigma_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Sigma_5.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Sigma.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Sony_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Sony_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Sony_5.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Sony.t",
+				"osx-arm64/dependencies/exiftool-unix/t/TestLib.pm",
+				"osx-arm64/dependencies/exiftool-unix/t/Text_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Text_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Text_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Text_5.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Text_6.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Text_7.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Text.t",
+				"osx-arm64/dependencies/exiftool-unix/t/TNEF_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/TNEF.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Torrent_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Torrent.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Unknown_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Unknown_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Unknown.t",
+				"osx-arm64/dependencies/exiftool-unix/t/VCard_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/VCard_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/VCard.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Vorbis_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Vorbis.t",
+				"osx-arm64/dependencies/exiftool-unix/t/WPG_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/WPG.t",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_6.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_7.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_9.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_10.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_11.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_13.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_14.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_15.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_16.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_17.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_18.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_19.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_22.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_24.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_25.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_26.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_27.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_28.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_29.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_30.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_31.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_32.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_33.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_34.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_35.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_36.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_37.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_38.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_39.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_40.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_41.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_42.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_43.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_44.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_45.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_46.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_47.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_48.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_50.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_51.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_52.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_53.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_54.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_55.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_56.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_58.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_59.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_60.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer_61.out",
+				"osx-arm64/dependencies/exiftool-unix/t/Writer.t",
+				"osx-arm64/dependencies/exiftool-unix/t/WTV_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/WTV.t",
+				"osx-arm64/dependencies/exiftool-unix/t/XISF_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XISF.t",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_5.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_6.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_7.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_8.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_9.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_10.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_11.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_12.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_13.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_14.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_15.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_16.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_17.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_18.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_19.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_20.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_21.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_22.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_23.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_24.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_25.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_26.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_27.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_28.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_29.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_30.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_31.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_32.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_34.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_36.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_37.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_39.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_40.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_41.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_42.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_43.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_44.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_45.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_46.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_47.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_48.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_49.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_50.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_52.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_53.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP_54.out",
+				"osx-arm64/dependencies/exiftool-unix/t/XMP.t",
+				"osx-arm64/dependencies/exiftool-unix/t/ZIP_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ZIP_3.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ZIP_4.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ZIP_5.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ZIP_6.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ZIP_7.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ZIP_8.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ZIP.t",
+				"osx-arm64/dependencies/exiftool-unix/t/ZISRAW_2.out",
+				"osx-arm64/dependencies/exiftool-unix/t/ZISRAW.t",
+				"osx-arm64/dependencies/ffmpeg-osx-arm64/ffmpeg",
+				"osx-arm64/starsky",
+				"osx-arm64/starsky.xml",
+			);
+			target = BC5AA6302F1157FF00D38C3B /* starsky */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		BC5AA6332F1157FF00D38C3B /* starsky */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = starsky;
+			sourceTree = "<group>";
+		};
+		BC5AA6412F11580000D38C3B /* starskyTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = starskyTests;
+			sourceTree = "<group>";
+		};
+		BC5AA64B2F11580000D38C3B /* starskyUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = starskyUITests;
+			sourceTree = "<group>";
+		};
+		BCFE67072F11AC44005DFE64 /* resources */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				BCFE6C2D2F11AC76005DFE64 /* Exceptions for "resources" folder in "starsky" target */,
+			);
+			path = resources;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		BC5AA62E2F1157FF00D38C3B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BC5AA63B2F11580000D38C3B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BC5AA6452F11580000D38C3B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		BC5AA6282F1157FF00D38C3B = {
+			isa = PBXGroup;
+			children = (
+				BC5AA6332F1157FF00D38C3B /* starsky */,
+				BC5AA6412F11580000D38C3B /* starskyTests */,
+				BC5AA64B2F11580000D38C3B /* starskyUITests */,
+				BC5AA6322F1157FF00D38C3B /* Products */,
+				BCFE67072F11AC44005DFE64 /* resources */,
+			);
+			sourceTree = "<group>";
+		};
+		BC5AA6322F1157FF00D38C3B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BC5AA6312F1157FF00D38C3B /* starsky.app */,
+				BC5AA63E2F11580000D38C3B /* starskyTests.xctest */,
+				BC5AA6482F11580000D38C3B /* starskyUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		BC5AA6302F1157FF00D38C3B /* starsky */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BC5AA6522F11580000D38C3B /* Build configuration list for PBXNativeTarget "starsky" */;
+			buildPhases = (
+				BC5AA62D2F1157FF00D38C3B /* Sources */,
+				BC5AA62E2F1157FF00D38C3B /* Frameworks */,
+				BC5AA62F2F1157FF00D38C3B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				BC5AA6332F1157FF00D38C3B /* starsky */,
+				BCFE67072F11AC44005DFE64 /* resources */,
+			);
+			name = starsky;
+			packageProductDependencies = (
+			);
+			productName = starsky;
+			productReference = BC5AA6312F1157FF00D38C3B /* starsky.app */;
+			productType = "com.apple.product-type.application";
+		};
+		BC5AA63D2F11580000D38C3B /* starskyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BC5AA6552F11580000D38C3B /* Build configuration list for PBXNativeTarget "starskyTests" */;
+			buildPhases = (
+				BC5AA63A2F11580000D38C3B /* Sources */,
+				BC5AA63B2F11580000D38C3B /* Frameworks */,
+				BC5AA63C2F11580000D38C3B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BC5AA6402F11580000D38C3B /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				BC5AA6412F11580000D38C3B /* starskyTests */,
+			);
+			name = starskyTests;
+			packageProductDependencies = (
+			);
+			productName = starskyTests;
+			productReference = BC5AA63E2F11580000D38C3B /* starskyTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		BC5AA6472F11580000D38C3B /* starskyUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BC5AA6582F11580000D38C3B /* Build configuration list for PBXNativeTarget "starskyUITests" */;
+			buildPhases = (
+				BC5AA6442F11580000D38C3B /* Sources */,
+				BC5AA6452F11580000D38C3B /* Frameworks */,
+				BC5AA6462F11580000D38C3B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BC5AA64A2F11580000D38C3B /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				BC5AA64B2F11580000D38C3B /* starskyUITests */,
+			);
+			name = starskyUITests;
+			packageProductDependencies = (
+			);
+			productName = starskyUITests;
+			productReference = BC5AA6482F11580000D38C3B /* starskyUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BC5AA6292F1157FF00D38C3B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2620;
+				LastUpgradeCheck = 2620;
+				TargetAttributes = {
+					BC5AA6302F1157FF00D38C3B = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					BC5AA63D2F11580000D38C3B = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = BC5AA6302F1157FF00D38C3B;
+					};
+					BC5AA6472F11580000D38C3B = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = BC5AA6302F1157FF00D38C3B;
+					};
+				};
+			};
+			buildConfigurationList = BC5AA62C2F1157FF00D38C3B /* Build configuration list for PBXProject "starsky" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = BC5AA6282F1157FF00D38C3B;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = BC5AA6322F1157FF00D38C3B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				BC5AA6302F1157FF00D38C3B /* starsky */,
+				BC5AA63D2F11580000D38C3B /* starskyTests */,
+				BC5AA6472F11580000D38C3B /* starskyUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		BC5AA62F2F1157FF00D38C3B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BC5AA63C2F11580000D38C3B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BC5AA6462F11580000D38C3B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		BC5AA62D2F1157FF00D38C3B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BC5AA63A2F11580000D38C3B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BC5AA6442F11580000D38C3B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		BC5AA6402F11580000D38C3B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BC5AA6302F1157FF00D38C3B /* starsky */;
+			targetProxy = BC5AA63F2F11580000D38C3B /* PBXContainerItemProxy */;
+		};
+		BC5AA64A2F11580000D38C3B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BC5AA6302F1157FF00D38C3B /* starsky */;
+			targetProxy = BC5AA6492F11580000D38C3B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		BC5AA6502F11580000D38C3B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = LHZ4426ABB;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		BC5AA6512F11580000D38C3B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = LHZ4426ABB;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		BC5AA6532F11580000D38C3B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LHZ4426ABB;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64/dependencies/exiftool-unix/t/images",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64/dependencies/exiftool-unix/t/images",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources/osx-arm64/dependencies/exiftool-unix/t/images",
+					"$(PROJECT_DIR)/resources/osx-arm64",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starsky;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		BC5AA6542F11580000D38C3B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LHZ4426ABB;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64/dependencies/exiftool-unix/t/images",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64/dependencies/exiftool-unix/t/images",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources\\ 2/osx-arm64",
+					"$(PROJECT_DIR)/resources/osx-arm64/dependencies/exiftool-unix/t/images",
+					"$(PROJECT_DIR)/resources/osx-arm64",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starsky;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		BC5AA6562F11580000D38C3B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LHZ4426ABB;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/starsky.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/starsky";
+			};
+			name = Debug;
+		};
+		BC5AA6572F11580000D38C3B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LHZ4426ABB;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/starsky.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/starsky";
+			};
+			name = Release;
+		};
+		BC5AA6592F11580000D38C3B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LHZ4426ABB;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskyUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = starsky;
+			};
+			name = Debug;
+		};
+		BC5AA65A2F11580000D38C3B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LHZ4426ABB;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.qdraw.starskyUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = starsky;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		BC5AA62C2F1157FF00D38C3B /* Build configuration list for PBXProject "starsky" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BC5AA6502F11580000D38C3B /* Debug */,
+				BC5AA6512F11580000D38C3B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BC5AA6522F11580000D38C3B /* Build configuration list for PBXNativeTarget "starsky" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BC5AA6532F11580000D38C3B /* Debug */,
+				BC5AA6542F11580000D38C3B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BC5AA6552F11580000D38C3B /* Build configuration list for PBXNativeTarget "starskyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BC5AA6562F11580000D38C3B /* Debug */,
+				BC5AA6572F11580000D38C3B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BC5AA6582F11580000D38C3B /* Build configuration list for PBXNativeTarget "starskyUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BC5AA6592F11580000D38C3B /* Debug */,
+				BC5AA65A2F11580000D38C3B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = BC5AA6292F1157FF00D38C3B /* Project object */;
+}
