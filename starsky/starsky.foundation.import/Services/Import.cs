@@ -811,6 +811,7 @@ public class Import : IImport
 
 	/// <summary>
 	///     Append test_1.jpg to filepath (subPath style)
+	///     Sequencer starts at 1
 	/// </summary>
 	/// <param name="fileName">the fileName</param>
 	/// <param name="index">number</param>
