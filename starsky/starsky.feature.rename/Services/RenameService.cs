@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using starsky.feature.rename.Models;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -551,5 +552,254 @@ public class RenameService(IQuery query, IStorage iStorage)
 		// First update database and then update for disk watcher
 		iStorage.FileMove(inputFileSubPath, toFileSubPath);
 		MoveSidecarFile(inputFileSubPath, toFileSubPath);
+	}
+
+	/// <summary>
+	///     Preview batch rename operation without modifying files
+	/// </summary>
+	/// <param name="filePaths">List of source file paths to rename</param>
+	/// <param name="tokenPattern">Rename pattern with tokens (e.g., {yyyy}{MM}{dd}_{filenamebase}{seqn}.ext)</param>
+	/// <param name="collections">Include related sidecar files</param>
+	/// <returns>List of batch rename mappings with preview of new names</returns>
+	public async Task<List<BatchRenameMapping>> PreviewBatchRenameAsync(
+		List<string> filePaths, string tokenPattern, bool collections = true)
+	{
+		if (filePaths == null || filePaths.Count == 0)
+		{
+			return new List<BatchRenameMapping>();
+		}
+
+		var pattern = new RenameTokenPattern(tokenPattern);
+		if (!pattern.IsValid)
+		{
+			return filePaths.Select(fp => new BatchRenameMapping
+			{
+				SourceFilePath = fp,
+				HasError = true,
+				ErrorMessage = $"Invalid pattern: {string.Join(", ", pattern.Errors)}"
+			}).ToList();
+		}
+
+		// Get all file items from database
+		var mappings = new List<BatchRenameMapping>();
+		var fileItems = new Dictionary<string, FileIndexItem>();
+
+		foreach (var filePath in filePaths)
+		{
+			var detailView = query.SingleItem(filePath, null, collections, false);
+			if (detailView?.FileIndexItem == null)
+			{
+				mappings.Add(new BatchRenameMapping
+				{
+					SourceFilePath = filePath,
+					HasError = true,
+					ErrorMessage = "File not found in database"
+				});
+				continue;
+			}
+
+			fileItems[filePath] = detailView.FileIndexItem;
+		}
+
+		// Generate mappings for valid files
+		var validMappings = new List<BatchRenameMapping>();
+		foreach (var kvp in fileItems)
+		{
+			try
+			{
+				var fileItem = kvp.Value;
+				var parentPath = fileItem.ParentDirectory ?? "/";
+
+				// Generate new filename without sequence number yet
+				var newFileName = pattern.GenerateFileName(fileItem, 0);
+				var newFilePath = parentPath == "/" 
+					? $"/{newFileName}" 
+					: $"{parentPath}/{newFileName}";
+
+				var mapping = new BatchRenameMapping
+				{
+					SourceFilePath = kvp.Key,
+					TargetFilePath = newFilePath,
+					SequenceNumber = 0
+				};
+
+				// Add related files (sidecars)
+				if (collections)
+				{
+					mapping.RelatedFilePaths = GetRelatedFilePaths(kvp.Key, newFilePath);
+				}
+
+				validMappings.Add(mapping);
+			}
+			catch (Exception ex)
+			{
+				mappings.Add(new BatchRenameMapping
+				{
+					SourceFilePath = kvp.Key,
+					HasError = true,
+					ErrorMessage = $"Failed to generate filename: {ex.Message}"
+				});
+			}
+		}
+
+		// Assign sequence numbers for duplicate target names
+		AssignSequenceNumbers(validMappings, pattern, fileItems);
+
+		mappings.AddRange(validMappings);
+		return mappings;
+	}
+
+	/// <summary>
+	///     Execute batch rename operation
+	/// </summary>
+	/// <param name="mappings">List of rename mappings from preview</param>
+	/// <param name="filePaths">Original list of source file paths</param>
+	/// <param name="collections">Include related sidecar files</param>
+	/// <returns>List of updated file index items with status</returns>
+	public async Task<List<FileIndexItem>> ExecuteBatchRenameAsync(
+		List<BatchRenameMapping> mappings, List<string> filePaths, bool collections = true)
+	{
+		if (mappings == null || mappings.Count == 0)
+		{
+			return new List<FileIndexItem>();
+		}
+
+		var results = new List<FileIndexItem>();
+
+		// Filter out error mappings
+		var validMappings = mappings.Where(m => !m.HasError).ToList();
+
+		foreach (var mapping in validMappings)
+		{
+			try
+			{
+				var detailView = query.SingleItem(mapping.SourceFilePath, null, collections, false);
+				if (detailView?.FileIndexItem == null)
+				{
+					results.Add(new FileIndexItem(mapping.SourceFilePath)
+					{
+						Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
+					});
+					continue;
+				}
+
+				// Use existing FromFileToDeleted logic to perform rename
+				var fileIndexItems = new List<FileIndexItem>();
+				await FromFileToDeleted(mapping.SourceFilePath, mapping.TargetFilePath,
+					results, fileIndexItems, detailView);
+
+				// Handle related files (sidecars)
+				if (collections && mapping.RelatedFilePaths.Count > 0)
+				{
+					foreach (var (sourcePath, targetPath) in mapping.RelatedFilePaths)
+					{
+						if (iStorage.ExistFile(sourcePath))
+						{
+							iStorage.FileMove(sourcePath, targetPath);
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				results.Add(new FileIndexItem(mapping.SourceFilePath)
+				{
+					Status = FileIndexItem.ExifStatus.OperationNotSupported,
+					Tags = ex.Message
+				});
+			}
+		}
+
+		return results;
+	}
+
+	/// <summary>
+	///     Get all related file paths (sidecars) for a given file
+	/// </summary>
+	private List<(string source, string target)> GetRelatedFilePaths(string sourceFilePath, string targetFilePath)
+	{
+		var related = new List<(string, string)>();
+
+		// Check for JSON sidecar
+		var sourceJson = JsonSidecarLocation.JsonLocation(sourceFilePath);
+		if (iStorage.ExistFile(sourceJson))
+		{
+			var targetJson = JsonSidecarLocation.JsonLocation(targetFilePath);
+			related.Add((sourceJson, targetJson));
+		}
+
+		// Check for XMP sidecar
+		if (ExtensionRolesHelper.IsExtensionForceXmp(sourceFilePath))
+		{
+			var sourceXmp = ExtensionRolesHelper.ReplaceExtensionWithXmp(sourceFilePath);
+			if (iStorage.ExistFile(sourceXmp))
+			{
+				var targetXmp = ExtensionRolesHelper.ReplaceExtensionWithXmp(targetFilePath);
+				related.Add((sourceXmp, targetXmp));
+			}
+		}
+
+		return related;
+	}
+
+	private static string CollisionKey(string targetFilePath)
+	{
+		var directory = FilenamesHelper.GetParentPath(targetFilePath);
+		var baseName = FilenamesHelper.GetFileNameWithoutExtension(targetFilePath);
+		return $"{directory}/{baseName}".Replace("//", "/");
+	}
+
+	/// <summary>
+	///     Assign sequence numbers to files with identical target names
+	/// </summary>
+	private void AssignSequenceNumbers(
+		List<BatchRenameMapping> mappings,
+		RenameTokenPattern pattern,
+		Dictionary<string, FileIndexItem> fileItems)
+	{
+		// Group by target path without extension so sidecars stay in sync
+		var groupedByTarget = mappings
+			.GroupBy(m => CollisionKey(m.TargetFilePath))
+			.Where(g => g.Count() > 1)
+			.ToList();
+
+		foreach (var group in groupedByTarget)
+		{
+			var seqNumber = 0;
+			foreach (var mapping in group.OrderBy(m => m.SourceFilePath))
+			{
+				try
+				{
+					var fileItem = fileItems[mapping.SourceFilePath];
+					var parentPath = fileItem.ParentDirectory ?? "/";
+
+					if (seqNumber == 0)
+					{
+						mapping.SequenceNumber = 0;
+						seqNumber++;
+						continue;
+					}
+
+					var newFileName = pattern.GenerateFileName(fileItem, seqNumber);
+					var newFilePath = parentPath == "/"
+						? $"/{newFileName}"
+						: $"{parentPath}/{newFileName}";
+
+					mapping.TargetFilePath = newFilePath;
+					mapping.SequenceNumber = seqNumber;
+
+					if (mapping.RelatedFilePaths.Count > 0)
+					{
+						mapping.RelatedFilePaths = GetRelatedFilePaths(mapping.SourceFilePath, newFilePath);
+					}
+
+					seqNumber++;
+				}
+				catch (Exception)
+				{
+					// Skip sequence numbering for this mapping if generation fails
+				}
+			}
+		}
 	}
 }
