@@ -160,7 +160,7 @@ public class StructureService : IStructureService
 	/// <param name="fileNameBase">source name, can be used in the options</param>
 	/// <param name="extensionWithoutDot">fileExtension without dot</param>
 	/// <returns>Object with Structure Range output</returns>
-	private List<List<StructureRange>> ParseStructure(string structure,
+	public List<List<StructureRange>> ParseStructure(string structure,
 		DateTime dateTime,
 		string fileNameBase = "", string extensionWithoutDot = "")
 	{
