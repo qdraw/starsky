@@ -19,8 +19,8 @@ public class BatchRenameController : ControllerBase
 {
 	private readonly RenameService _renameService;
 
-	public BatchRenameController(IQuery query, 
-		ISelectorStorage selectorStorage, 
+	public BatchRenameController(IQuery query,
+		ISelectorStorage selectorStorage,
 		IWebLogger logger)
 	{
 		var storage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
@@ -30,9 +30,10 @@ public class BatchRenameController : ControllerBase
 	/// <summary>
 	///     Preview batch rename mappings for a list of file paths and a rename pattern.
 	/// </summary>
-	/// <param name="filePaths">List of file paths to preview rename for.</param>
-	/// <param name="pattern">Rename pattern string
-	/// (e.g. {yyyy}{MM}{dd}_{filenamebase}{seqn}.{ext}).</param>
+	/// <param name="request">
+	///     List of file paths to preview rename for, Rename pattern string
+	///     (e.g. {yyyy}{MM}{dd}_{filenamebase}{seqn}.{ext}).
+	/// </param>
 	/// <returns>List of BatchRenameMapping preview results.</returns>
 	[HttpPost("preview")]
 	public ActionResult<List<BatchRenameMapping>> PreviewBatchRename(
