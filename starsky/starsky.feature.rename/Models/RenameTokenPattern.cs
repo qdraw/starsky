@@ -117,7 +117,7 @@ public partial class RenameTokenPattern
 		var pattern = $@"(?<!\\){Regex.Escape(token)}";
 		return Regex.Replace(input, pattern, value,
 			RegexOptions.None,
-			TimeSpan.FromMicroseconds(500));
+			TimeSpan.FromMilliseconds(100));
 	}
 
 	private static string InsertSequenceBeforeExtension(string input, int sequenceNumber)
