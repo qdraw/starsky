@@ -27,6 +27,18 @@ public partial class RenameTokenPattern
 	private readonly string _pattern;
 	private readonly HashSet<string> _errors = [];
 
+	private readonly HashSet<string> _validBracedTokens = new(StringComparer.Ordinal)
+	{
+		"{filenamebase}",
+		"{seqn}",
+		"{yyyy}",
+		"{MM}",
+		"{dd}",
+		"{HH}",
+		"{mm}",
+		"{ss}"
+	};
+
 	public RenameTokenPattern(string pattern)
 	{
 		_pattern = pattern ?? throw new ArgumentNullException(nameof(pattern));
@@ -90,9 +102,6 @@ public partial class RenameTokenPattern
 			result = ReplaceUnescapedToken(result, SequenceToken, string.Empty);
 		}
 
-		// Handle escaped tokens - unescape double backslashes
-		result = UnescapeTokens(result);
-
 		// Remove any remaining curly braces from the filename (after token replacement)
 		result = RemoveAllBraces(result);
 
@@ -106,10 +115,16 @@ public partial class RenameTokenPattern
 		return fileName;
 	}
 
-	private static string RemoveAllBraces(string input)
+	private string RemoveAllBraces(string input)
 	{
-		// Remove all curly braces, even if nested or consecutive
-		return System.Text.RegularExpressions.Regex.Replace(input, "[{}]", string.Empty);
+		// Only remove braces around valid tokens, not all braces
+		foreach ( var token in _validBracedTokens )
+		{
+			var tokenWithoutBraces = token.Trim('{', '}');
+			input = Regex.Replace(input, $"\\{{{tokenWithoutBraces}\\}}", string.Empty);
+		}
+
+		return input;
 	}
 
 	private static string ReplaceUnescapedToken(string input, string token, string value)
@@ -131,15 +146,6 @@ public partial class RenameTokenPattern
 	}
 
 	/// <summary>
-	///     Unescape double backslash sequences (e.g., \\d\\d becomes dd)
-	/// </summary>
-	private static string UnescapeTokens(string input)
-	{
-		// Replace escaped sequences: \\X becomes X (where X is any character)
-		return UnescapeTokensRegex().Replace(input, "$1");
-	}
-
-	/// <summary>
 	///     Validate the pattern for syntax errors
 	/// </summary>
 	private void ValidatePattern()
@@ -151,22 +157,12 @@ public partial class RenameTokenPattern
 		}
 
 		// Define all valid braced tokens
-		var validBracedTokens = new HashSet<string>(StringComparer.Ordinal)
-		{
-			"{filenamebase}",
-			"{seqn}",
-			"{yyyy}",
-			"{MM}",
-			"{dd}",
-			"{HH}",
-			"{mm}",
-			"{ss}"
-		};
+
 
 		// Check for unescaped braces that don't match known tokens
 		var bracedTokens = BracesTokenRegex().Matches(_pattern);
 		foreach ( var token in bracedTokens.Select(match => match.Value)
-			         .Where(token => !validBracedTokens.Contains(token)) )
+			         .Where(token => !_validBracedTokens.Contains(token)) )
 		{
 			_errors.Add($"Unknown token: {token}");
 		}
@@ -184,7 +180,4 @@ public partial class RenameTokenPattern
 
 	[GeneratedRegex(@"(?<!\\)\\(?!\\)")]
 	private static partial Regex BalancedEscapeRegex();
-
-	[GeneratedRegex(@"\\(.)")]
-	private static partial Regex UnescapeTokensRegex();
 }
