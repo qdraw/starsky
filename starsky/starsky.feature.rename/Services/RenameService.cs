@@ -79,7 +79,7 @@ public class RenameService(IQuery query, IStorage iStorage)
 				case FolderOrFileModel.FolderOrFileTypeList.File when toFileFolderStatus ==
 					FolderOrFileModel.FolderOrFileTypeList.Deleted:
 					// toFileSubPath should contain the full subPath
-					await FromFileToDeleted(inputFileSubPath, toFileSubPath,
+					await RenameFromFileToDeleted(inputFileSubPath, toFileSubPath,
 						fileIndexResultsList, fileIndexItems, detailView!);
 					break;
 				case FolderOrFileModel.FolderOrFileTypeList.File when toFileFolderStatus ==
@@ -460,7 +460,7 @@ public class RenameService(IQuery query, IStorage iStorage)
 		});
 	}
 
-	private async Task FromFileToDeleted(string inputFileSubPath, string toFileSubPath,
+	private async Task RenameFromFileToDeleted(string inputFileSubPath, string toFileSubPath,
 		List<FileIndexItem> fileIndexResultsList, List<FileIndexItem> fileIndexItems,
 		DetailView detailView)
 	{
@@ -562,7 +562,7 @@ public class RenameService(IQuery query, IStorage iStorage)
 	/// (e.g., {yyyy}{MM}{dd}_{filenamebase}{seqn}.ext)</param>
 	/// <param name="collections">Include related sidecar files</param>
 	/// <returns>List of batch rename mappings with preview of new names</returns>
-	public async Task<List<BatchRenameMapping>> PreviewBatchRenameAsync(
+	public List<BatchRenameMapping> PreviewBatchRenameAsync(
 		List<string> filePaths, string tokenPattern, bool collections = true)
 	{
 		if ( filePaths.Count == 0 )
@@ -652,11 +652,10 @@ public class RenameService(IQuery query, IStorage iStorage)
 	///     Execute batch rename operation
 	/// </summary>
 	/// <param name="mappings">List of rename mappings from preview</param>
-	/// <param name="filePaths">Original list of source file paths</param>
 	/// <param name="collections">Include related sidecar files</param>
 	/// <returns>List of updated file index items with status</returns>
 	public async Task<List<FileIndexItem>> ExecuteBatchRenameAsync(
-		List<BatchRenameMapping> mappings, List<string> filePaths, bool collections = true)
+		List<BatchRenameMapping> mappings, bool collections = true)
 	{
 		if ( mappings.Count == 0 )
 		{
@@ -684,7 +683,7 @@ public class RenameService(IQuery query, IStorage iStorage)
 
 				// Use existing FromFileToDeleted logic to perform rename
 				var fileIndexItems = new List<FileIndexItem>();
-				await FromFileToDeleted(mapping.SourceFilePath, mapping.TargetFilePath,
+				await RenameFromFileToDeleted(mapping.SourceFilePath, mapping.TargetFilePath,
 					results, fileIndexItems, detailView);
 
 				// Handle related files (sidecars)
@@ -705,7 +704,8 @@ public class RenameService(IQuery query, IStorage iStorage)
 			{
 				results.Add(new FileIndexItem(mapping.SourceFilePath)
 				{
-					Status = FileIndexItem.ExifStatus.OperationNotSupported, Tags = ex.Message
+					Status = FileIndexItem.ExifStatus.OperationNotSupported, 
+					Tags = ex.Message
 				});
 			}
 		}

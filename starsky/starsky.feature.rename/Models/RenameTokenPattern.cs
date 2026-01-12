@@ -93,6 +93,9 @@ public partial class RenameTokenPattern
 		// Handle escaped tokens - unescape double backslashes
 		result = UnescapeTokens(result);
 
+		// Remove any remaining curly braces from the filename (after token replacement)
+		result = RemoveAllBraces(result);
+
 		// Ensure filename is valid
 		var fileName = Path.GetFileName(result);
 		if ( !FilenamesHelper.IsValidFileName(fileName) )
@@ -101,6 +104,12 @@ public partial class RenameTokenPattern
 		}
 
 		return fileName;
+	}
+
+	private static string RemoveAllBraces(string input)
+	{
+		// Remove all curly braces, even if nested or consecutive
+		return System.Text.RegularExpressions.Regex.Replace(input, "[{}]", string.Empty);
 	}
 
 	private static string ReplaceUnescapedToken(string input, string token, string value)
