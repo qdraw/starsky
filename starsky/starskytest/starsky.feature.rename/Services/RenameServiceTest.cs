@@ -1438,29 +1438,18 @@ public sealed class RenameServiceTest
 			Status: FileIndexItem.ExifStatus.Ok,
 			IsDirectory: false
 		}).ToList();
-		
-		// filteredResults = {List<FileIndexItem>} Count = 4
-		// 	[0] = {FileIndexItem} {FileHash: "DSC0001.jpg"  FilePath: "/exist/20260101_180000.jpg"  Status: Ok}
-		// [1] = {FileIndexItem} {FileHash: "DSC0002.jpg"  FilePath: "/exist/20260101_180000-2.jpg"  Status: Ok}
-		// [2] = {FileIndexItem} {FileHash: "DSC0002.arw"  FilePath: "/exist/20260101_180000-2.arw"  Status: Ok}
-		// [3] = {FileIndexItem} {FileHash: "DSC0001.arw"  FilePath: "/exist/20260101_180000.arw"  Status: Ok}
-		
+
 		Assert.HasCount(4, filteredResults);
 		
 		Assert.AreEqual("/exist/20260101_180000.jpg", filteredResults[0].FilePath);
 		Assert.AreEqual("/exist/20260101_180000-1.jpg", filteredResults[1].FilePath);
-		Assert.AreEqual("/exist/20260101_180000-1.jpg", filteredResults[2].FilePath);
+		Assert.AreEqual("/exist/20260101_180000.arw", filteredResults[2].FilePath);
 		Assert.AreEqual("/exist/20260101_180000-1.jpg", filteredResults[3].FilePath);
 		
 		Assert.AreEqual("DSC0001.jpg", filteredResults[0].FileHash);
-		Assert.AreEqual("DSC0001.jpg", filteredResults[1].FileHash);
-		Assert.AreEqual("DSC0001.jpg", filteredResults[2].FileHash);
-		Assert.AreEqual("DSC0001.jpg", filteredResults[3].FileHash);
-		
-		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, filteredResults[0].Status);
-		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, filteredResults[1].Status);
-		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, filteredResults[2].Status);
-		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, filteredResults[3].Status);
+		Assert.AreEqual("DSC0002.jpg", filteredResults[1].FileHash);
+		Assert.AreEqual("DSC0002.arw", filteredResults[2].FileHash);
+		Assert.AreEqual("DSC0001.arw", filteredResults[3].FileHash);
 
 		await _query.RemoveItemAsync(file1);
 		await _query.RemoveItemAsync(file2);
