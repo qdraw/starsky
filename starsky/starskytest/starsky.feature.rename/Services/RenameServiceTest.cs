@@ -1576,7 +1576,7 @@ public sealed class RenameServiceTest
 
 		Assert.AreEqual("/exist/20260101_180000-1.xmp", filteredResults[2].FilePath);
 		Assert.AreEqual("DSC0002.xmp", filteredResults[2].FileHash);
-		
+
 		Assert.AreEqual("/exist/20260101_180000.arw", filteredResults[3].FilePath);
 		Assert.AreEqual("DSC0001.arw", filteredResults[3].FileHash);
 
@@ -1585,7 +1585,7 @@ public sealed class RenameServiceTest
 
 		Assert.AreEqual("/exist/20260101_180000.xmp", filteredResults[5].FilePath);
 		Assert.AreEqual("DSC0001.xmp", filteredResults[5].FileHash);
-		
+
 		await _query.RemoveItemAsync(file1);
 		await _query.RemoveItemAsync(file2);
 		await _query.RemoveItemAsync(file1Raw);
@@ -1594,5 +1594,46 @@ public sealed class RenameServiceTest
 		await _query.RemoveItemAsync(file2Xmp);
 
 		await RemoveFoldersAndFilesInDatabase();
+	}
+
+	[TestMethod]
+	public void PreviewBatchRename_WithJsonSidecarFile_IncludesSidecarInMapping()
+	{
+		// Arrange
+		const string sourceFilePath = "/folder/testfile.jpg";
+		var sidecarFilePath = JsonSidecarLocation.JsonLocation(sourceFilePath);
+		var filePaths = new List<string> { sourceFilePath, sidecarFilePath };
+		var iStorage = new FakeIStorage(["/folder"], [sourceFilePath, sidecarFilePath]);
+		var fakeQuery = new FakeIQuery([
+			new FileIndexItem(sourceFilePath)
+			{
+				FileName = "testfile.jpg",
+				ParentDirectory = "/folder",
+				DateTime = new DateTime(2022, 1, 1, 12, 0, 0, DateTimeKind.Utc)
+			},
+			new FileIndexItem(sidecarFilePath)
+			{
+				FileName = ".starsky.testfile.jpg.json",
+				ParentDirectory = "/folder",
+				DateTime = new DateTime(2022, 1, 1, 12, 0, 0, DateTimeKind.Utc)
+			}
+		]);
+		var service = new RenameService(fakeQuery, iStorage);
+		const string tokenPattern = "{yyyy}{MM}{dd}_{filenamebase}{seqn}.{ext}";
+
+		// Act
+		var result = service.PreviewBatchRename(filePaths, tokenPattern);
+
+		// Assert
+		Assert.HasCount(2, result);
+		Assert.IsTrue(result.Any(x => x.SourceFilePath == sourceFilePath));
+		Assert.IsTrue(result.Any(x => x.SourceFilePath == sidecarFilePath));
+		var mainFile = result.First(x => x.SourceFilePath == sourceFilePath);
+		var sidecar = result.First(x => x.SourceFilePath == sidecarFilePath);
+		Assert.IsFalse(mainFile.HasError);
+		Assert.IsFalse(sidecar.HasError);
+		Assert.EndsWith(".jpg", mainFile.TargetFilePath);
+		Assert.EndsWith(".json", sidecar.TargetFilePath);
+		Assert.Contains(".starsky.", sidecar.TargetFilePath);
 	}
 }
