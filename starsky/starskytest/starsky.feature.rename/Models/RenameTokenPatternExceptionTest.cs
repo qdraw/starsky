@@ -23,4 +23,21 @@ public class RenameTokenPatternExceptionTest
 		Assert.ThrowsExactly<InvalidOperationException>(() =>
 			tokenPattern.GenerateFileName(fileIndexItem));
 	}
+	
+	[TestMethod]
+	public void GenerateFileName_ArgumentNullException()
+	{
+		// Arrange: pattern that will leave braces after replacement, and is not a valid filename
+		const string pattern = "{invalidtoken}.jpg";
+		var tokenPattern = new RenameTokenPattern(pattern);
+		var fileIndexItem = new FileIndexItem
+		{
+			FileName = "", 
+			DateTime = new DateTime(2022, 1, 1)
+		};
+
+		// Act & Assert
+		Assert.ThrowsExactly<ArgumentNullException>(() =>
+			tokenPattern.GenerateFileName(fileIndexItem));
+	}
 }

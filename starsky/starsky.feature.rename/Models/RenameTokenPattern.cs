@@ -65,7 +65,7 @@ public partial class RenameTokenPattern
 	/// <returns>New filename with extension</returns>
 	public string GenerateFileName(FileIndexItem fileIndexItem, int sequenceNumber = 0)
 	{
-		if ( fileIndexItem.FileName == null )
+		if ( string.IsNullOrEmpty(fileIndexItem.FileName) )
 		{
 			throw new ArgumentNullException(nameof(fileIndexItem));
 		}
