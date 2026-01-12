@@ -609,7 +609,7 @@ public class RenameService(IQuery query, IStorage iStorage, IWebLogger logger)
 			}
 			catch ( Exception )
 			{
-				logger?.LogError($"PreviewBatchRename: Failed to get item for {filePath}");
+				logger.LogError($"PreviewBatchRename: Failed to get item for {filePath}");
 			}
 		}
 
