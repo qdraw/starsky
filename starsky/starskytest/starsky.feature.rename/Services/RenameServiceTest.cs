@@ -1208,7 +1208,7 @@ public sealed class RenameServiceTest
 		var result = service.PreviewBatchRename(filePaths, tokenPattern);
 		CollectionAssert.AllItemsAreNotNull(result);
 		Assert.IsTrue(result.Any(x => x.HasError));
-		StringAssert.Contains(result[0].ErrorMessage!, "Invalid pattern");
+		Assert.Contains("Invalid pattern", result[0].ErrorMessage!);
 		await RemoveFoldersAndFilesInDatabase();
 	}
 

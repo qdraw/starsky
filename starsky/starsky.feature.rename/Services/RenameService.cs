@@ -615,8 +615,11 @@ public class RenameService(IQuery query, IStorage iStorage)
 
 				var mapping = new BatchRenameMapping
 				{
+					SourceFilePath = key,
+					// where to
+					TargetFilePath = newFilePath,
 					// SequenceNumber follows in a later step
-					SourceFilePath = key, TargetFilePath = newFilePath, SequenceNumber = 0
+					SequenceNumber = 0
 				};
 
 				// Add related files (sidecars)
