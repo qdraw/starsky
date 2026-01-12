@@ -1470,7 +1470,7 @@ public sealed class RenameServiceTest
 	}
 
 	[TestMethod]
-	public async Task ExecuteBatchRenameAsync_Sequence_RawXmp_AppendsSequenceSuffix()
+	public async Task ExecuteBatchRenameAsync_Sequence_RawXmp_Explicit_AppendsSequenceSuffix()
 	{
 		await CreateFoldersAndFilesInDatabase();
 
