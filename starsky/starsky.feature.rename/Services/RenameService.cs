@@ -133,7 +133,7 @@ public class RenameService(IQuery query, IStorage iStorage)
 		);
 
 		// when there is already a database item in the output folder, but not on disk
-		// in the final step we going to update the database item to the new name
+		// in the final step we're going to update the database item to the new name
 		var toCheckList = fileIndexItems.Select(p => p.FilePath).Cast<string>().ToList();
 		toCheckList.Add(toFileSubPath);
 		var checkOutput = await query.GetObjectsByFilePathQueryAsync(toCheckList);
@@ -558,19 +558,20 @@ public class RenameService(IQuery query, IStorage iStorage)
 	///     Preview batch rename operation without modifying files
 	/// </summary>
 	/// <param name="filePaths">List of source file paths to rename</param>
-	/// <param name="tokenPattern">Rename pattern with tokens (e.g., {yyyy}{MM}{dd}_{filenamebase}{seqn}.ext)</param>
+	/// <param name="tokenPattern">Rename pattern with tokens
+	/// (e.g., {yyyy}{MM}{dd}_{filenamebase}{seqn}.ext)</param>
 	/// <param name="collections">Include related sidecar files</param>
 	/// <returns>List of batch rename mappings with preview of new names</returns>
 	public async Task<List<BatchRenameMapping>> PreviewBatchRenameAsync(
 		List<string> filePaths, string tokenPattern, bool collections = true)
 	{
-		if (filePaths == null || filePaths.Count == 0)
+		if ( filePaths.Count == 0 )
 		{
-			return new List<BatchRenameMapping>();
+			return [];
 		}
 
 		var pattern = new RenameTokenPattern(tokenPattern);
-		if (!pattern.IsValid)
+		if ( !pattern.IsValid )
 		{
 			return filePaths.Select(fp => new BatchRenameMapping
 			{
@@ -584,10 +585,11 @@ public class RenameService(IQuery query, IStorage iStorage)
 		var mappings = new List<BatchRenameMapping>();
 		var fileItems = new Dictionary<string, FileIndexItem>();
 
-		foreach (var filePath in filePaths)
+		foreach ( var filePath in filePaths )
 		{
-			var detailView = query.SingleItem(filePath, null, collections, false);
-			if (detailView?.FileIndexItem == null)
+			var detailView = query.SingleItem(filePath,
+				null, collections, false);
+			if ( detailView?.FileIndexItem == null )
 			{
 				mappings.Add(new BatchRenameMapping
 				{
@@ -603,39 +605,36 @@ public class RenameService(IQuery query, IStorage iStorage)
 
 		// Generate mappings for valid files
 		var validMappings = new List<BatchRenameMapping>();
-		foreach (var kvp in fileItems)
+		foreach ( var (key, fileItem) in fileItems )
 		{
 			try
 			{
-				var fileItem = kvp.Value;
 				var parentPath = fileItem.ParentDirectory ?? "/";
 
 				// Generate new filename without sequence number yet
-				var newFileName = pattern.GenerateFileName(fileItem, 0);
-				var newFilePath = parentPath == "/" 
-					? $"/{newFileName}" 
+				var newFileName = pattern.GenerateFileName(fileItem);
+				var newFilePath = parentPath == "/"
+					? $"/{newFileName}"
 					: $"{parentPath}/{newFileName}";
 
 				var mapping = new BatchRenameMapping
 				{
-					SourceFilePath = kvp.Key,
-					TargetFilePath = newFilePath,
-					SequenceNumber = 0
+					SourceFilePath = key, TargetFilePath = newFilePath, SequenceNumber = 0
 				};
 
 				// Add related files (sidecars)
-				if (collections)
+				if ( collections )
 				{
-					mapping.RelatedFilePaths = GetRelatedFilePaths(kvp.Key, newFilePath);
+					mapping.RelatedFilePaths = GetRelatedFilePaths(key, newFilePath);
 				}
 
 				validMappings.Add(mapping);
 			}
-			catch (Exception ex)
+			catch ( Exception ex )
 			{
 				mappings.Add(new BatchRenameMapping
 				{
-					SourceFilePath = kvp.Key,
+					SourceFilePath = key,
 					HasError = true,
 					ErrorMessage = $"Failed to generate filename: {ex.Message}"
 				});
@@ -659,9 +658,9 @@ public class RenameService(IQuery query, IStorage iStorage)
 	public async Task<List<FileIndexItem>> ExecuteBatchRenameAsync(
 		List<BatchRenameMapping> mappings, List<string> filePaths, bool collections = true)
 	{
-		if (mappings == null || mappings.Count == 0)
+		if ( mappings.Count == 0 )
 		{
-			return new List<FileIndexItem>();
+			return [];
 		}
 
 		var results = new List<FileIndexItem>();
@@ -669,12 +668,12 @@ public class RenameService(IQuery query, IStorage iStorage)
 		// Filter out error mappings
 		var validMappings = mappings.Where(m => !m.HasError).ToList();
 
-		foreach (var mapping in validMappings)
+		foreach ( var mapping in validMappings )
 		{
 			try
 			{
 				var detailView = query.SingleItem(mapping.SourceFilePath, null, collections, false);
-				if (detailView?.FileIndexItem == null)
+				if ( detailView?.FileIndexItem == null )
 				{
 					results.Add(new FileIndexItem(mapping.SourceFilePath)
 					{
@@ -689,23 +688,24 @@ public class RenameService(IQuery query, IStorage iStorage)
 					results, fileIndexItems, detailView);
 
 				// Handle related files (sidecars)
-				if (collections && mapping.RelatedFilePaths.Count > 0)
+				if ( !collections || mapping.RelatedFilePaths.Count <= 0 )
 				{
-					foreach (var (sourcePath, targetPath) in mapping.RelatedFilePaths)
+					continue;
+				}
+
+				foreach ( var (sourcePath, targetPath) in mapping.RelatedFilePaths )
+				{
+					if ( iStorage.ExistFile(sourcePath) )
 					{
-						if (iStorage.ExistFile(sourcePath))
-						{
-							iStorage.FileMove(sourcePath, targetPath);
-						}
+						iStorage.FileMove(sourcePath, targetPath);
 					}
 				}
 			}
-			catch (Exception ex)
+			catch ( Exception ex )
 			{
 				results.Add(new FileIndexItem(mapping.SourceFilePath)
 				{
-					Status = FileIndexItem.ExifStatus.OperationNotSupported,
-					Tags = ex.Message
+					Status = FileIndexItem.ExifStatus.OperationNotSupported, Tags = ex.Message
 				});
 			}
 		}
@@ -716,28 +716,33 @@ public class RenameService(IQuery query, IStorage iStorage)
 	/// <summary>
 	///     Get all related file paths (sidecars) for a given file
 	/// </summary>
-	private List<(string source, string target)> GetRelatedFilePaths(string sourceFilePath, string targetFilePath)
+	private List<(string source, string target)> GetRelatedFilePaths(string sourceFilePath,
+		string targetFilePath)
 	{
 		var related = new List<(string, string)>();
 
 		// Check for JSON sidecar
 		var sourceJson = JsonSidecarLocation.JsonLocation(sourceFilePath);
-		if (iStorage.ExistFile(sourceJson))
+		if ( iStorage.ExistFile(sourceJson) )
 		{
 			var targetJson = JsonSidecarLocation.JsonLocation(targetFilePath);
-			related.Add((sourceJson, targetJson));
+			related.Add(( sourceJson, targetJson ));
 		}
 
 		// Check for XMP sidecar
-		if (ExtensionRolesHelper.IsExtensionForceXmp(sourceFilePath))
+		if ( !ExtensionRolesHelper.IsExtensionForceXmp(sourceFilePath) )
 		{
-			var sourceXmp = ExtensionRolesHelper.ReplaceExtensionWithXmp(sourceFilePath);
-			if (iStorage.ExistFile(sourceXmp))
-			{
-				var targetXmp = ExtensionRolesHelper.ReplaceExtensionWithXmp(targetFilePath);
-				related.Add((sourceXmp, targetXmp));
-			}
+			return related;
 		}
+
+		var sourceXmp = ExtensionRolesHelper.ReplaceExtensionWithXmp(sourceFilePath);
+		if ( !iStorage.ExistFile(sourceXmp) )
+		{
+			return related;
+		}
+
+		var targetXmp = ExtensionRolesHelper.ReplaceExtensionWithXmp(targetFilePath);
+		related.Add(( sourceXmp, targetXmp ));
 
 		return related;
 	}
@@ -763,17 +768,17 @@ public class RenameService(IQuery query, IStorage iStorage)
 			.Where(g => g.Count() > 1)
 			.ToList();
 
-		foreach (var group in groupedByTarget)
+		foreach ( var group in groupedByTarget )
 		{
 			var seqNumber = 0;
-			foreach (var mapping in group.OrderBy(m => m.SourceFilePath))
+			foreach ( var mapping in group.OrderBy(m => m.SourceFilePath) )
 			{
 				try
 				{
 					var fileItem = fileItems[mapping.SourceFilePath];
 					var parentPath = fileItem.ParentDirectory ?? "/";
 
-					if (seqNumber == 0)
+					if ( seqNumber == 0 )
 					{
 						mapping.SequenceNumber = 0;
 						seqNumber++;
@@ -788,14 +793,15 @@ public class RenameService(IQuery query, IStorage iStorage)
 					mapping.TargetFilePath = newFilePath;
 					mapping.SequenceNumber = seqNumber;
 
-					if (mapping.RelatedFilePaths.Count > 0)
+					if ( mapping.RelatedFilePaths.Count > 0 )
 					{
-						mapping.RelatedFilePaths = GetRelatedFilePaths(mapping.SourceFilePath, newFilePath);
+						mapping.RelatedFilePaths =
+							GetRelatedFilePaths(mapping.SourceFilePath, newFilePath);
 					}
 
 					seqNumber++;
 				}
-				catch (Exception)
+				catch ( Exception )
 				{
 					// Skip sequence numbering for this mapping if generation fails
 				}

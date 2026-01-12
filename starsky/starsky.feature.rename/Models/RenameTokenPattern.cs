@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -24,10 +22,10 @@ namespace starsky.feature.rename.Models;
 ///     - .ext: File extension
 ///     - \\: Double backslash to escape tokens (e.g., \\d\\d for literal "dd")
 /// </summary>
-public class RenameTokenPattern
+public partial class RenameTokenPattern
 {
 	private readonly string _pattern;
-	private readonly HashSet<string> _errors = new();
+	private readonly HashSet<string> _errors = [];
 
 	public RenameTokenPattern(string pattern)
 	{
@@ -45,6 +43,8 @@ public class RenameTokenPattern
 	/// </summary>
 	public bool IsValid => _errors.Count == 0;
 
+	private const string SequenceToken = "{seqn}";
+
 	/// <summary>
 	///     Generate a new filename from the pattern, applying token substitution
 	/// </summary>
@@ -53,7 +53,7 @@ public class RenameTokenPattern
 	/// <returns>New filename with extension</returns>
 	public string GenerateFileName(FileIndexItem fileIndexItem, int sequenceNumber = 0)
 	{
-		if ( fileIndexItem?.FileName == null )
+		if ( fileIndexItem.FileName == null )
 		{
 			throw new ArgumentNullException(nameof(fileIndexItem));
 		}
@@ -63,7 +63,7 @@ public class RenameTokenPattern
 		var originalExtension = Path.GetExtension(fileIndexItem.FileName);
 
 		var result = _pattern;
-		var hasSeqToken = _pattern.Contains("{seqn}", StringComparison.Ordinal);
+		var hasSeqToken = _pattern.Contains(SequenceToken, StringComparison.Ordinal);
 
 		// Apply datetime tokens (only when not escaped)
 		result = ReplaceUnescapedToken(result, "yyyy", dateTime.Year.ToString("D4"));
@@ -80,18 +80,14 @@ public class RenameTokenPattern
 		// Apply sequence number
 		if ( sequenceNumber > 0 )
 		{
-			if ( hasSeqToken )
-			{
-				result = ReplaceUnescapedToken(result, "{seqn}", $"-{sequenceNumber}");
-			}
-			else
-			{
-				result = InsertSequenceBeforeExtension(result, sequenceNumber);
-			}
+			result = hasSeqToken
+				? ReplaceUnescapedToken(result, SequenceToken,
+					$"-{sequenceNumber}")
+				: InsertSequenceBeforeExtension(result, sequenceNumber);
 		}
 		else if ( hasSeqToken )
 		{
-			result = ReplaceUnescapedToken(result, "{seqn}", string.Empty);
+			result = ReplaceUnescapedToken(result, SequenceToken, string.Empty);
 		}
 
 		// Handle escaped tokens - unescape double backslashes
@@ -131,7 +127,7 @@ public class RenameTokenPattern
 	private static string UnescapeTokens(string input)
 	{
 		// Replace escaped sequences: \\X becomes X (where X is any character)
-		return Regex.Replace(input, @"\\(.)", "$1");
+		return UnescapeTokensRegex().Replace(input, "$1");
 	}
 
 	/// <summary>
@@ -145,22 +141,41 @@ public class RenameTokenPattern
 			return;
 		}
 
-		// Check for unescaped braces that don't match known tokens
-		var bracedTokens = Regex.Matches(_pattern, @"\{[^}]*\}");
-		foreach ( Match match in bracedTokens )
+		// Define all valid braced tokens
+		var validBracedTokens = new HashSet<string>(StringComparer.Ordinal)
 		{
-			var token = match.Value;
-			if ( token != "{filenamebase}" && token != "{seqn}" )
-			{
-				_errors.Add($"Unknown token: {token}");
-			}
+			"{filenamebase}",
+			"{seqn}",
+			"{yyyy}",
+			"{MM}",
+			"{dd}",
+			"{HH}",
+			"{mm}",
+			"{ss}"
+		};
+
+		// Check for unescaped braces that don't match known tokens
+		var bracedTokens = BracesTokenRegex().Matches(_pattern);
+		foreach ( var token in bracedTokens.Select(match => match.Value)
+			         .Where(token => !validBracedTokens.Contains(token)) )
+		{
+			_errors.Add($"Unknown token: {token}");
 		}
 
 		// Basic check for balanced escaping
-		var unescapedBackslashes = Regex.Matches(_pattern, @"(?<!\\)\\(?!\\)");
+		var unescapedBackslashes = BalancedEscapeRegex().Matches(_pattern);
 		if ( unescapedBackslashes.Count > 0 )
 		{
-			_errors.Add("Invalid escape sequence: use \\\\ (double backslash) to escape");
+			_errors.Add(@"Invalid escape sequence: use \\ (double backslash) to escape");
 		}
 	}
+
+	[GeneratedRegex(@"\{[^}]*\}")]
+	private static partial Regex BracesTokenRegex();
+
+	[GeneratedRegex(@"(?<!\\)\\(?!\\)")]
+	private static partial Regex BalancedEscapeRegex();
+
+	[GeneratedRegex(@"\\(.)")]
+	private static partial Regex UnescapeTokensRegex();
 }

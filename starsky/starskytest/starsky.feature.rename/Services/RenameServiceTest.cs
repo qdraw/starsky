@@ -1122,4 +1122,64 @@ public sealed class RenameServiceTest
 		Assert.AreEqual("/new-test.jpg", cacheResult,
 			"Cache should be reset after rename");
 	}
+
+	[TestMethod]
+	public async Task PreviewBatchRenameAsync_ReturnsExpectedMappings_ForValidFiles()
+	{
+		await CreateFoldersAndFilesInDatabase();
+		var iStorage = new FakeIStorage([_folderExist.FilePath!],
+			[_fileInExist.FilePath!]);
+		var service = new RenameService(_query, iStorage);
+		var filePaths = new List<string> { _fileInExist.FilePath! };
+		const string tokenPattern = "{yyyy}{MM}{dd}_{filenamebase}{seqn}.jpg";
+		var result = await service.PreviewBatchRenameAsync(filePaths,
+			tokenPattern);
+		CollectionAssert.AreEqual(new List<string> { _fileInExist.FilePath! },
+			result.Select(x => x.SourceFilePath).ToList());
+		Assert.IsFalse(result[0].HasError);
+		Assert.EndsWith(".jpg", result[0].TargetFilePath);
+		await RemoveFoldersAndFilesInDatabase();
+	}
+
+	[TestMethod]
+	public async Task PreviewBatchRenameAsync_ReturnsError_ForInvalidPattern()
+	{
+		await CreateFoldersAndFilesInDatabase();
+		var iStorage = new FakeIStorage(new List<string> { _folderExist.FilePath! },
+			new List<string> { _fileInExist.FilePath! });
+		var service = new RenameService(_query, iStorage);
+		var filePaths = new List<string> { _fileInExist.FilePath! };
+		var tokenPattern = "{invalidtoken}";
+		var result = await service.PreviewBatchRenameAsync(filePaths, tokenPattern);
+		CollectionAssert.AllItemsAreNotNull(result);
+		Assert.IsTrue(result.Any(x => x.HasError));
+		StringAssert.Contains(result[0].ErrorMessage!, "Invalid pattern");
+		await RemoveFoldersAndFilesInDatabase();
+	}
+
+	[TestMethod]
+	public async Task PreviewBatchRenameAsync_ReturnsError_WhenFileNotFound()
+	{
+		var iStorage =
+			new FakeIStorage(new List<string> { _folderExist.FilePath! }, new List<string>());
+		var service = new RenameService(_query, iStorage);
+		var filePaths = new List<string> { "/notfound.jpg" };
+		var tokenPattern = "{yyyy}{MM}{dd}_{filenamebase}{seqn}.jpg";
+		var result = await service.PreviewBatchRenameAsync(filePaths, tokenPattern);
+		CollectionAssert.AllItemsAreNotNull(result);
+		Assert.IsTrue(result.Any(x => x.HasError));
+		Assert.AreEqual("File not found in database", result[0].ErrorMessage);
+	}
+
+	[TestMethod]
+	public async Task PreviewBatchRenameAsync_ReturnsEmptyList_WhenNoFiles()
+	{
+		var iStorage = new FakeIStorage(new List<string>(), new List<string>());
+		var service = new RenameService(_query, iStorage);
+		var filePaths = new List<string>();
+		var tokenPattern = "{yyyy}{MM}{dd}_{filenamebase}{seqn}.jpg";
+		var result = await service.PreviewBatchRenameAsync(filePaths, tokenPattern);
+		CollectionAssert.AllItemsAreNotNull(result);
+		Assert.AreEqual(0, result.Count);
+	}
 }
