@@ -59,4 +59,12 @@ public class RenameTokenPatternExceptionTest
 		
 		Assert.AreEqual("Pattern cannot be empty", tokenPattern.Errors.First());
 	}
+	
+	[TestMethod]
+	public void GenerateFileName_NonValidItemInBrackets()
+	{
+		var tokenPattern = new RenameTokenPattern("{test}");
+		
+		Assert.AreEqual("Unknown token: {test}", tokenPattern.Errors.First());
+	}
 }
