@@ -747,7 +747,7 @@ public class RenameService(IQuery query, IStorage iStorage)
 			.GroupBy(m =>
 			{
 				var fileItem = fileItems[m.SourceFilePath];
-				var fileName = fileItem?.FileName ?? string.Empty;
+				var fileName = fileItem.FileName ?? string.Empty;
 				return new
 				{
 					OriginalBase =
