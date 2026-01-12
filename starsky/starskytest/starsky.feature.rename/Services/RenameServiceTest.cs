@@ -27,11 +27,11 @@ public sealed class RenameServiceTest
 	private readonly CreateAnImage _newImage;
 	private readonly Query _query;
 	private FileIndexItem _fileInExist = new();
+	private FileIndexItem _fileInRoot = new();
 	private FileIndexItem _folder1Exist = new();
 
 	private FileIndexItem _folderExist = new();
 	private FileIndexItem _parentFolder = new();
-	private FileIndexItem _fileInRoot = new();
 
 	public RenameServiceTest()
 	{
@@ -153,9 +153,7 @@ public sealed class RenameServiceTest
 
 		_parentFolder = await _query.AddItemAsync(new FileIndexItem
 		{
-			FileName = "/", 
-			ParentDirectory = "/", 
-			IsDirectory = true
+			FileName = "/", ParentDirectory = "/", IsDirectory = true
 		});
 	}
 
@@ -1267,14 +1265,14 @@ public sealed class RenameServiceTest
 			}
 		};
 
-		var result = await service.ExecuteBatchRenameAsync(mappings, collections: false);
+		var result = await service.ExecuteBatchRenameAsync(mappings, false);
 
 		var filteredResults = result.Where(p => p is
 		{
 			Status: FileIndexItem.ExifStatus.Ok,
 			IsDirectory: false
 		}).ToList();
-		
+
 		Assert.HasCount(2, filteredResults);
 		Assert.AreEqual("/exist/20220506_000000.jpg", filteredResults[0].FilePath);
 		Assert.AreEqual("/20220506_000000.jpg", filteredResults[1].FilePath);
@@ -1283,7 +1281,7 @@ public sealed class RenameServiceTest
 
 		await RemoveFoldersAndFilesInDatabase();
 	}
-	
+
 	[TestMethod]
 	public async Task ExecuteBatchRenameAsync_WithPreview_SimpleFiles()
 	{
@@ -1297,20 +1295,175 @@ public sealed class RenameServiceTest
 			[_fileInExist.FilePath!, _fileInRoot.FilePath!],
 			tokenPattern);
 
-		var result = await service.ExecuteBatchRenameAsync(mappings, collections: false);
+		var result = await service.ExecuteBatchRenameAsync(mappings, false);
 
 		var filteredResults = result.Where(p => p is
 		{
 			Status: FileIndexItem.ExifStatus.Ok,
 			IsDirectory: false
 		}).ToList();
-		
+
 		Assert.HasCount(2, filteredResults);
 		Assert.AreEqual("/exist/2022-05-06_00-00-00.jpg", filteredResults[0].FilePath);
 		Assert.AreEqual("/2022-05-06_00-00-00.jpg", filteredResults[1].FilePath);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, filteredResults[0].Status);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, filteredResults[1].Status);
 
+		await RemoveFoldersAndFilesInDatabase();
+	}
+
+	[TestMethod]
+	public async Task ExecuteBatchRenameAsync_SequenceHandling_AppendsSequenceSuffix()
+	{
+		await CreateFoldersAndFilesInDatabase();
+		// Simulate two files with the same datetime, requiring sequence handling
+		var file1 = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "DSC0001.jpg",
+			ParentDirectory = "/exist",
+			IsDirectory = false,
+			AddToDatabase = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc),
+			DateTime = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc)
+		});
+		var file2 = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "DSC0002.jpg",
+			ParentDirectory = "/exist",
+			IsDirectory = false,
+			AddToDatabase = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc),
+			DateTime = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc)
+		});
+		var iStorage = new FakeIStorage([_folderExist.FilePath!],
+		[
+			new FileIndexItem(file1.FilePath!).FilePath!,
+			new FileIndexItem(file2.FilePath!).FilePath!
+		]);
+		var service = new RenameService(_query, iStorage);
+
+		var mappings = new List<BatchRenameMapping>
+		{
+			new()
+			{
+				SourceFilePath = file1.FilePath!,
+				TargetFilePath = "/exist/20260101_180000.jpg",
+				HasError = false,
+				RelatedFilePaths = new List<(string, string)>()
+			},
+			new()
+			{
+				SourceFilePath = file2.FilePath!,
+				TargetFilePath = "/exist/20260101_180000-1.jpg",
+				HasError = false,
+				RelatedFilePaths = new List<(string, string)>()
+			}
+		};
+
+		var result = await service.ExecuteBatchRenameAsync(mappings, false);
+		var filteredResults = result.Where(p => p is
+		{
+			Status: FileIndexItem.ExifStatus.Ok,
+			IsDirectory: false
+		}).ToList();
+
+		Assert.HasCount(2, filteredResults);
+		Assert.AreEqual("/exist/20260101_180000.jpg", filteredResults[0].FilePath);
+		Assert.AreEqual("/exist/20260101_180000-1.jpg", filteredResults[1].FilePath);
+		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, filteredResults[0].Status);
+		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, filteredResults[1].Status);
+
+		await _query.RemoveItemAsync(file1);
+		await _query.RemoveItemAsync(file2);
+		await RemoveFoldersAndFilesInDatabase();
+	}
+
+	[TestMethod]
+	public async Task ExecuteBatchRenameAsync_SequenceHandlingRaw_AppendsSequenceSuffix()
+	{
+		await CreateFoldersAndFilesInDatabase();
+		// Simulate two files with the same datetime, requiring sequence handling
+		var file1 = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "DSC0001.jpg",
+			ParentDirectory = "/exist",
+			FileHash = "DSC0001.jpg",
+			IsDirectory = false,
+			AddToDatabase = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc),
+			DateTime = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc)
+		});
+		var file1Raw = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "DSC0001.arw",
+			ParentDirectory = "/exist",
+			IsDirectory = false,
+			FileHash = "DSC0001.arw",
+			AddToDatabase = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc),
+			DateTime = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc)
+		});
+		var file2 = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "DSC0002.jpg",
+			ParentDirectory = "/exist",
+			IsDirectory = false,
+			FileHash = "DSC0002.jpg",
+			AddToDatabase = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc),
+			DateTime = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc)
+		});
+		var file2Raw = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "DSC0002.arw",
+			ParentDirectory = "/exist",
+			IsDirectory = false,
+			FileHash = "DSC0002.arw",
+			AddToDatabase = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc),
+			DateTime = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc)
+		});
+		var iStorage = new FakeIStorage([_folderExist.FilePath!],
+		[
+			new FileIndexItem(file1.FilePath!).FilePath!,
+			new FileIndexItem(file2.FilePath!).FilePath!,
+			new FileIndexItem(file1Raw.FilePath!).FilePath!,
+			new FileIndexItem(file2Raw.FilePath!).FilePath!
+		]);
+		var service = new RenameService(_query, iStorage);
+
+		const string tokenPattern = "{yyyy}{MM}{dd}_{HH}{mm}{ss}.{ext}";
+
+		var mappings = service.PreviewBatchRename(
+			[file1.FilePath!, file2.FilePath!, file2Raw.FilePath!, file1Raw.FilePath!],
+			tokenPattern);
+
+		var result = await service.ExecuteBatchRenameAsync(mappings, false);
+		var filteredResults = result.Where(p => p is
+		{
+			Status: FileIndexItem.ExifStatus.Ok,
+			IsDirectory: false
+		}).ToList();
+		
+		// filteredResults = {List<FileIndexItem>} Count = 4
+		// 	[0] = {FileIndexItem} {FileHash: "DSC0001.jpg"  FilePath: "/exist/20260101_180000.jpg"  Status: Ok}
+		// [1] = {FileIndexItem} {FileHash: "DSC0002.jpg"  FilePath: "/exist/20260101_180000-2.jpg"  Status: Ok}
+		// [2] = {FileIndexItem} {FileHash: "DSC0002.arw"  FilePath: "/exist/20260101_180000-2.arw"  Status: Ok}
+		// [3] = {FileIndexItem} {FileHash: "DSC0001.arw"  FilePath: "/exist/20260101_180000.arw"  Status: Ok}
+		
+		Assert.HasCount(4, filteredResults);
+		
+		Assert.AreEqual("/exist/20260101_180000.jpg", filteredResults[0].FilePath);
+		Assert.AreEqual("/exist/20260101_180000-1.jpg", filteredResults[1].FilePath);
+		Assert.AreEqual("/exist/20260101_180000-1.jpg", filteredResults[2].FilePath);
+		Assert.AreEqual("/exist/20260101_180000-1.jpg", filteredResults[3].FilePath);
+		
+		Assert.AreEqual("DSC0001.jpg", filteredResults[0].FileHash);
+		Assert.AreEqual("DSC0001.jpg", filteredResults[1].FileHash);
+		Assert.AreEqual("DSC0001.jpg", filteredResults[2].FileHash);
+		Assert.AreEqual("DSC0001.jpg", filteredResults[3].FileHash);
+		
+		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, filteredResults[0].Status);
+		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, filteredResults[1].Status);
+		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, filteredResults[2].Status);
+		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, filteredResults[3].Status);
+
+		await _query.RemoveItemAsync(file1);
+		await _query.RemoveItemAsync(file2);
 		await RemoveFoldersAndFilesInDatabase();
 	}
 }

@@ -558,8 +558,10 @@ public class RenameService(IQuery query, IStorage iStorage)
 	///     Preview batch rename operation without modifying files
 	/// </summary>
 	/// <param name="filePaths">List of source file paths to rename</param>
-	/// <param name="tokenPattern">Rename pattern with tokens
-	/// (e.g., {yyyy}{MM}{dd}_{filenamebase}{seqn}.ext)</param>
+	/// <param name="tokenPattern">
+	///     Rename pattern with tokens
+	///     (e.g., {yyyy}{MM}{dd}_{filenamebase}{seqn}.ext)
+	/// </param>
 	/// <param name="collections">Include related sidecar files</param>
 	/// <returns>List of batch rename mappings with preview of new names</returns>
 	public List<BatchRenameMapping> PreviewBatchRename(
@@ -761,50 +763,34 @@ public class RenameService(IQuery query, IStorage iStorage)
 		RenameTokenPattern pattern,
 		Dictionary<string, FileIndexItem> fileItems)
 	{
-		// Group by target path without extension so sidecars stay in sync
-		var groupedByTarget = mappings
-			.GroupBy(m => CollisionKey(m.TargetFilePath))
-			.Where(g => g.Count() > 1)
+		// Group by base name and datetime
+		var grouped = mappings
+			.GroupBy(m => new {
+				BaseName = FilenamesHelper.GetFileNameWithoutExtension(m.TargetFilePath),
+				DateTime = fileItems[m.SourceFilePath].DateTime
+			})
 			.ToList();
 
-		foreach ( var group in groupedByTarget )
+		int sequence = 0;
+		foreach (var group in grouped.OrderBy(g => g.Key.BaseName).ThenBy(g => g.Key.DateTime))
 		{
-			var seqNumber = 0;
-			foreach ( var mapping in group.OrderBy(m => m.SourceFilePath) )
+			int seq = sequence == 0 ? 0 : sequence + 1; // first group: 0, second: 2, third: 3, etc.
+			foreach (var mapping in group)
 			{
-				try
+				var fileItem = fileItems[mapping.SourceFilePath];
+				var parentPath = fileItem.ParentDirectory ?? "/";
+				var newFileName = seq == 0
+					? pattern.GenerateFileName(fileItem, 0)
+					: pattern.GenerateFileName(fileItem, seq);
+				var newFilePath = $"{parentPath}/{newFileName}";
+				mapping.TargetFilePath = newFilePath;
+				mapping.SequenceNumber = seq;
+				if (mapping.RelatedFilePaths.Count > 0)
 				{
-					var fileItem = fileItems[mapping.SourceFilePath];
-					var parentPath = fileItem.ParentDirectory ?? "/";
-
-					if ( seqNumber == 0 )
-					{
-						mapping.SequenceNumber = 0;
-						seqNumber++;
-						continue;
-					}
-
-					var newFileName = pattern.GenerateFileName(fileItem, seqNumber);
-					var newFilePath = parentPath == "/"
-						? $"/{newFileName}"
-						: $"{parentPath}/{newFileName}";
-
-					mapping.TargetFilePath = newFilePath;
-					mapping.SequenceNumber = seqNumber;
-
-					if ( mapping.RelatedFilePaths.Count > 0 )
-					{
-						mapping.RelatedFilePaths =
-							GetRelatedFilePaths(mapping.SourceFilePath, newFilePath);
-					}
-
-					seqNumber++;
-				}
-				catch ( Exception )
-				{
-					// Skip sequence numbering for this mapping if generation fails
+					mapping.RelatedFilePaths = GetRelatedFilePaths(mapping.SourceFilePath, newFilePath);
 				}
 			}
+			sequence = seq;
 		}
 	}
 }

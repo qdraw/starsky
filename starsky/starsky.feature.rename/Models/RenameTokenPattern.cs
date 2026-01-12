@@ -37,7 +37,8 @@ public partial class RenameTokenPattern
 		"{dd}",
 		"{HH}",
 		"{mm}",
-		"{ss}"
+		"{ss}",
+		"{ext}"
 	};
 
 	public RenameTokenPattern(string pattern)
@@ -71,7 +72,7 @@ public partial class RenameTokenPattern
 
 		var dateTime = fileIndexItem.DateTime;
 		var originalFileName = FilenamesHelper.GetFileNameWithoutExtension(fileIndexItem.FileName);
-		var originalExtension = Path.GetExtension(fileIndexItem.FileName);
+		var originalExtension = FilenamesHelper.GetFileExtensionWithoutDot(fileIndexItem.FileName);
 
 		var result = _pattern;
 		var hasSeqToken = _pattern.Contains(SequenceToken, StringComparison.Ordinal);
@@ -86,7 +87,7 @@ public partial class RenameTokenPattern
 
 		// Apply filename and extension tokens
 		result = ReplaceUnescapedToken(result, "{filenamebase}", originalFileName);
-		result = ReplaceUnescapedToken(result, ".{ext}", originalExtension);
+		result = ReplaceUnescapedToken(result, "{ext}", originalExtension);
 
 		// Apply sequence number
 		if ( sequenceNumber > 0 )
@@ -102,7 +103,7 @@ public partial class RenameTokenPattern
 		}
 
 		// Ensure filename is valid
-		var fileName = Path.GetFileName(result);
+		var fileName = FilenamesHelper.GetFileName(result);
 		if ( !FilenamesHelper.IsValidFileName(fileName) )
 		{
 			throw new InvalidOperationException($"Generated filename is invalid: {fileName}");
@@ -115,7 +116,7 @@ public partial class RenameTokenPattern
 	{
 		var pattern = $@"(?<!\\){Regex.Escape(token)}";
 		return Regex.Replace(input, pattern, value,
-			RegexOptions.None, 
+			RegexOptions.None,
 			TimeSpan.FromMicroseconds(500));
 	}
 
