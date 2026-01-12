@@ -747,13 +747,12 @@ public class RenameService(IQuery query, IStorage iStorage)
 			.GroupBy(m =>
 			{
 				var fileItem = fileItems[m.SourceFilePath];
-				var fileName = fileItem.FileName ?? string.Empty;
 				return new
 				{
 					OriginalBase =
-						string.IsNullOrEmpty(fileName)
+						string.IsNullOrEmpty(fileItem.FileName)
 							? string.Empty
-							: FilenamesHelper.GetFileNameWithoutExtension(fileName),
+							: FilenamesHelper.GetFileNameWithoutExtension(fileItem.FileName),
 					fileItem.DateTime
 				};
 			})
@@ -766,9 +765,8 @@ public class RenameService(IQuery query, IStorage iStorage)
 			foreach ( var mapping in group )
 			{
 				var fileItem = fileItems[mapping.SourceFilePath];
-				var parentPath = fileItem.ParentDirectory ?? "/";
 				var newFileName = pattern.GenerateFileName(fileItem, sequence);
-				var newFilePath = $"{parentPath}/{newFileName}";
+				var newFilePath = $"{fileItem.ParentDirectory}/{newFileName}";
 				mapping.TargetFilePath = newFilePath;
 				mapping.SequenceNumber = sequence;
 				if ( mapping.RelatedFilePaths.Count > 0 )
