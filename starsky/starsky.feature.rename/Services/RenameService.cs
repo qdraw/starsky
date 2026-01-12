@@ -695,6 +695,9 @@ public class RenameService(IQuery query, IStorage iStorage, IWebLogger logger)
 				var fileIndexItems = new List<FileIndexItem>();
 				await RenameFromFileToDeleted(mapping.SourceFilePath, mapping.TargetFilePath,
 					results, fileIndexItems, detailView);
+				
+				// Reset Cache for the item that is renamed
+				query.ResetItemByHash(detailView.FileIndexItem!.FileHash!);
 			}
 			catch ( Exception )
 			{
