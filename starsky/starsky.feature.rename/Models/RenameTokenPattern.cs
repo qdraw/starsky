@@ -143,9 +143,6 @@ public partial class RenameTokenPattern
 			return;
 		}
 
-		// Define all valid braced tokens
-
-
 		// Check for unescaped braces that don't match known tokens
 		var bracedTokens = BracesTokenRegex().Matches(_pattern);
 		foreach ( var token in bracedTokens.Select(match => match.Value)
@@ -153,18 +150,8 @@ public partial class RenameTokenPattern
 		{
 			_errors.Add($"Unknown token: {token}");
 		}
-
-		// Basic check for balanced escaping
-		var unescapedBackslashes = BalancedEscapeRegex().Matches(_pattern);
-		if ( unescapedBackslashes.Count > 0 )
-		{
-			_errors.Add(@"Invalid escape sequence: use \\ (double backslash) to escape");
-		}
 	}
 
 	[GeneratedRegex(@"\{[^}]*\}")]
 	private static partial Regex BracesTokenRegex();
-
-	[GeneratedRegex(@"(?<!\\)\\(?!\\)")]
-	private static partial Regex BalancedEscapeRegex();
 }

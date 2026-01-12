@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.rename.Models;
 using starsky.foundation.database.Models;
@@ -39,5 +40,23 @@ public class RenameTokenPatternExceptionTest
 		// Act & Assert
 		Assert.ThrowsExactly<ArgumentNullException>(() =>
 			tokenPattern.GenerateFileName(fileIndexItem));
+	}
+	
+	[TestMethod]
+	public void GenerateFileName_ValidatePattern_Null()
+	{
+		// Act & Assert
+		Assert.ThrowsExactly<ArgumentNullException>(() =>
+		{
+			_ = new RenameTokenPattern(null!);
+		});
+	}
+	
+	[TestMethod]
+	public void GenerateFileName_Empty()
+	{
+		var tokenPattern = new RenameTokenPattern(string.Empty);
+		
+		Assert.AreEqual("Pattern cannot be empty", tokenPattern.Errors.First());
 	}
 }
