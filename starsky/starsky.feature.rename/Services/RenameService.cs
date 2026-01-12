@@ -737,7 +737,7 @@ public class RenameService(IQuery query, IStorage iStorage)
 	/// <summary>
 	///     Assign sequence numbers to files with identical target names
 	/// </summary>
-	private void AssignSequenceNumbers(
+	internal void AssignSequenceNumbers(
 		List<BatchRenameMapping> mappings,
 		RenameTokenPattern pattern,
 		Dictionary<string, FileIndexItem> fileItems)
