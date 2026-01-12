@@ -687,20 +687,6 @@ public class RenameService(IQuery query, IStorage iStorage)
 				var fileIndexItems = new List<FileIndexItem>();
 				await RenameFromFileToDeleted(mapping.SourceFilePath, mapping.TargetFilePath,
 					results, fileIndexItems, detailView);
-
-				// Handle related files (sidecars)
-				if ( !collections || mapping.RelatedFilePaths.Count <= 0 )
-				{
-					continue;
-				}
-
-				foreach ( var (sourcePath, targetPath) in mapping.RelatedFilePaths )
-				{
-					if ( iStorage.ExistFile(sourcePath) )
-					{
-						iStorage.FileMove(sourcePath, targetPath);
-					}
-				}
 			}
 			catch ( Exception ex )
 			{
@@ -748,13 +734,6 @@ public class RenameService(IQuery query, IStorage iStorage)
 		return related;
 	}
 
-	private static string CollisionKey(string targetFilePath)
-	{
-		var directory = FilenamesHelper.GetParentPath(targetFilePath);
-		var baseName = FilenamesHelper.GetFileNameWithoutExtension(targetFilePath);
-		return $"{directory}/{baseName}".Replace("//", "/");
-	}
-
 	/// <summary>
 	///     Assign sequence numbers to files with identical target names
 	/// </summary>
@@ -763,34 +742,43 @@ public class RenameService(IQuery query, IStorage iStorage)
 		RenameTokenPattern pattern,
 		Dictionary<string, FileIndexItem> fileItems)
 	{
-		// Group by base name and datetime
+		// Group by original filename base and datetime
 		var grouped = mappings
-			.GroupBy(m => new {
-				BaseName = FilenamesHelper.GetFileNameWithoutExtension(m.TargetFilePath),
-				DateTime = fileItems[m.SourceFilePath].DateTime
+			.GroupBy(m =>
+			{
+				var fileItem = fileItems[m.SourceFilePath];
+				var fileName = fileItem?.FileName ?? string.Empty;
+				return new
+				{
+					OriginalBase =
+						string.IsNullOrEmpty(fileName)
+							? string.Empty
+							: FilenamesHelper.GetFileNameWithoutExtension(fileName),
+					fileItem.DateTime
+				};
 			})
 			.ToList();
 
-		int sequence = 0;
-		foreach (var group in grouped.OrderBy(g => g.Key.BaseName).ThenBy(g => g.Key.DateTime))
+		var sequence = 0;
+		foreach ( var group in grouped.OrderBy(g => g.Key.OriginalBase)
+			         .ThenBy(g => g.Key.DateTime) )
 		{
-			int seq = sequence == 0 ? 0 : sequence + 1; // first group: 0, second: 2, third: 3, etc.
-			foreach (var mapping in group)
+			foreach ( var mapping in group )
 			{
 				var fileItem = fileItems[mapping.SourceFilePath];
 				var parentPath = fileItem.ParentDirectory ?? "/";
-				var newFileName = seq == 0
-					? pattern.GenerateFileName(fileItem, 0)
-					: pattern.GenerateFileName(fileItem, seq);
+				var newFileName = pattern.GenerateFileName(fileItem, sequence);
 				var newFilePath = $"{parentPath}/{newFileName}";
 				mapping.TargetFilePath = newFilePath;
-				mapping.SequenceNumber = seq;
-				if (mapping.RelatedFilePaths.Count > 0)
+				mapping.SequenceNumber = sequence;
+				if ( mapping.RelatedFilePaths.Count > 0 )
 				{
-					mapping.RelatedFilePaths = GetRelatedFilePaths(mapping.SourceFilePath, newFilePath);
+					mapping.RelatedFilePaths =
+						GetRelatedFilePaths(mapping.SourceFilePath, newFilePath);
 				}
 			}
-			sequence = seq;
+
+			sequence++;
 		}
 	}
 }

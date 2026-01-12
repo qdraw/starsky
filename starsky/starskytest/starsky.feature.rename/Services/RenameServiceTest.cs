@@ -1148,7 +1148,7 @@ public sealed class RenameServiceTest
 			[_fileInExist.FilePath!]);
 		var service = new RenameService(_query, iStorage);
 		var filePaths = new List<string> { _fileInExist.FilePath! };
-		const string tokenPattern = "{yyyy}{MM}{dd}_{filenamebase}{seqn}.jpg";
+		const string tokenPattern = "{yyyy}{MM}{dd}_{filenamebase}{seqn}.{ext}";
 		var result = service.PreviewBatchRename(filePaths,
 			tokenPattern);
 		CollectionAssert.AreEqual(new List<string> { _fileInExist.FilePath! },
@@ -1166,7 +1166,7 @@ public sealed class RenameServiceTest
 			[_fileInRoot.FilePath!]);
 		var service = new RenameService(_query, iStorage);
 		var filePaths = new List<string> { _fileInRoot.FilePath! };
-		const string tokenPattern = "{yyyy}{MM}{dd}_{HH}{mm}{ss}_{filenamebase}.jpg";
+		const string tokenPattern = "{yyyy}{MM}{dd}_{HH}{mm}{ss}_{filenamebase}.{ext}";
 		var result = service.PreviewBatchRename(filePaths,
 			tokenPattern);
 		CollectionAssert.AreEqual(new List<string> { _fileInRoot.FilePath! },
@@ -1187,7 +1187,7 @@ public sealed class RenameServiceTest
 			[_fileInRoot.FilePath!]);
 		var service = new RenameService(_query, iStorage);
 		var filePaths = new List<string> { _fileInRoot.FilePath! };
-		const string tokenPattern = "{yyyy}{MM}{dd}_{HH}{mm}{ss}_{filenamebase}.jpg";
+		const string tokenPattern = "{yyyy}{MM}{dd}_{HH}{mm}{ss}_{filenamebase}.{ext}";
 		var result = service.PreviewBatchRename(filePaths,
 			tokenPattern);
 		CollectionAssert.AreEqual(new List<string> { _fileInRoot.FilePath! },
@@ -1220,7 +1220,7 @@ public sealed class RenameServiceTest
 			new FakeIStorage([_folderExist.FilePath!], new List<string>());
 		var service = new RenameService(_query, iStorage);
 		var filePaths = new List<string> { "/notfound.jpg" };
-		const string tokenPattern = "{yyyy}{MM}{dd}_{filenamebase}{seqn}.jpg";
+		const string tokenPattern = "{yyyy}{MM}{dd}_{filenamebase}{seqn}.{ext}";
 		var result = service.PreviewBatchRename(filePaths, tokenPattern);
 		CollectionAssert.AllItemsAreNotNull(result);
 		Assert.IsTrue(result.Any(x => x.HasError));
@@ -1233,7 +1233,7 @@ public sealed class RenameServiceTest
 		var iStorage = new FakeIStorage([], []);
 		var service = new RenameService(_query, iStorage);
 		var filePaths = new List<string>();
-		const string tokenPattern = "{yyyy}{MM}{dd}_{filenamebase}{seqn}.jpg";
+		const string tokenPattern = "{yyyy}{MM}{dd}_{filenamebase}{seqn}.{ext}";
 		var result = service.PreviewBatchRename(filePaths, tokenPattern);
 		CollectionAssert.AllItemsAreNotNull(result);
 		Assert.IsEmpty(result);
@@ -1290,7 +1290,7 @@ public sealed class RenameServiceTest
 			[_fileInExist.FilePath!, _fileInRoot.FilePath!]);
 		var service = new RenameService(_query, iStorage);
 
-		const string tokenPattern = "{yyyy}-{MM}-{dd}_{HH}-{mm}-{ss}.jpg";
+		const string tokenPattern = "{yyyy}-{MM}-{dd}_{HH}-{mm}-{ss}.{ext}";
 		var mappings = service.PreviewBatchRename(
 			[_fileInExist.FilePath!, _fileInRoot.FilePath!],
 			tokenPattern);
@@ -1347,14 +1347,14 @@ public sealed class RenameServiceTest
 				SourceFilePath = file1.FilePath!,
 				TargetFilePath = "/exist/20260101_180000.jpg",
 				HasError = false,
-				RelatedFilePaths = new List<(string, string)>()
+				RelatedFilePaths = []
 			},
 			new()
 			{
 				SourceFilePath = file2.FilePath!,
 				TargetFilePath = "/exist/20260101_180000-1.jpg",
 				HasError = false,
-				RelatedFilePaths = new List<(string, string)>()
+				RelatedFilePaths = []
 			}
 		};
 
@@ -1380,7 +1380,7 @@ public sealed class RenameServiceTest
 	public async Task ExecuteBatchRenameAsync_SequenceHandlingRaw_AppendsSequenceSuffix()
 	{
 		await CreateFoldersAndFilesInDatabase();
-		// Simulate two files with the same datetime, requiring sequence handling
+		
 		var file1 = await _query.AddItemAsync(new FileIndexItem
 		{
 			FileName = "DSC0001.jpg",
@@ -1390,6 +1390,7 @@ public sealed class RenameServiceTest
 			AddToDatabase = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc),
 			DateTime = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc)
 		});
+		
 		var file1Raw = await _query.AddItemAsync(new FileIndexItem
 		{
 			FileName = "DSC0001.arw",
@@ -1399,6 +1400,7 @@ public sealed class RenameServiceTest
 			AddToDatabase = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc),
 			DateTime = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc)
 		});
+		
 		var file2 = await _query.AddItemAsync(new FileIndexItem
 		{
 			FileName = "DSC0002.jpg",
@@ -1408,6 +1410,7 @@ public sealed class RenameServiceTest
 			AddToDatabase = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc),
 			DateTime = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc)
 		});
+		
 		var file2Raw = await _query.AddItemAsync(new FileIndexItem
 		{
 			FileName = "DSC0002.arw",
@@ -1417,6 +1420,7 @@ public sealed class RenameServiceTest
 			AddToDatabase = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc),
 			DateTime = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc)
 		});
+		
 		var iStorage = new FakeIStorage([_folderExist.FilePath!],
 		[
 			new FileIndexItem(file1.FilePath!).FilePath!,
@@ -1424,6 +1428,7 @@ public sealed class RenameServiceTest
 			new FileIndexItem(file1Raw.FilePath!).FilePath!,
 			new FileIndexItem(file2Raw.FilePath!).FilePath!
 		]);
+		
 		var service = new RenameService(_query, iStorage);
 
 		const string tokenPattern = "{yyyy}{MM}{dd}_{HH}{mm}{ss}.{ext}";
@@ -1432,27 +1437,32 @@ public sealed class RenameServiceTest
 			[file1.FilePath!, file2.FilePath!, file2Raw.FilePath!, file1Raw.FilePath!],
 			tokenPattern);
 
-		var result = await service.ExecuteBatchRenameAsync(mappings, false);
+		var result = await service.ExecuteBatchRenameAsync(mappings);
+		
 		var filteredResults = result.Where(p => p is
 		{
 			Status: FileIndexItem.ExifStatus.Ok,
 			IsDirectory: false
-		}).ToList();
+		}).OrderBy(p => p.FileName).ToList();
 
 		Assert.HasCount(4, filteredResults);
+
+		Assert.AreEqual("/exist/20260101_180000-1.arw", filteredResults[0].FilePath);
+		Assert.AreEqual("DSC0002.arw", filteredResults[0].FileHash);
 		
-		Assert.AreEqual("/exist/20260101_180000.jpg", filteredResults[0].FilePath);
 		Assert.AreEqual("/exist/20260101_180000-1.jpg", filteredResults[1].FilePath);
-		Assert.AreEqual("/exist/20260101_180000.arw", filteredResults[2].FilePath);
-		Assert.AreEqual("/exist/20260101_180000-1.jpg", filteredResults[3].FilePath);
-		
-		Assert.AreEqual("DSC0001.jpg", filteredResults[0].FileHash);
 		Assert.AreEqual("DSC0002.jpg", filteredResults[1].FileHash);
-		Assert.AreEqual("DSC0002.arw", filteredResults[2].FileHash);
-		Assert.AreEqual("DSC0001.arw", filteredResults[3].FileHash);
+
+		Assert.AreEqual("/exist/20260101_180000.arw", filteredResults[2].FilePath);
+		Assert.AreEqual("DSC0001.arw", filteredResults[2].FileHash);
+
+		Assert.AreEqual("/exist/20260101_180000.jpg", filteredResults[3].FilePath);
+		Assert.AreEqual("DSC0001.jpg", filteredResults[3].FileHash);
 
 		await _query.RemoveItemAsync(file1);
 		await _query.RemoveItemAsync(file2);
+		await _query.RemoveItemAsync(file1Raw);
+		await _query.RemoveItemAsync(file2Raw);
 		await RemoveFoldersAndFilesInDatabase();
 	}
 }
