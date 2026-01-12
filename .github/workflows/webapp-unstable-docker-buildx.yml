@@ -28,7 +28,7 @@ jobs:
     steps:
     
       - name: Check Out Repo 
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
         
       - name: Log in to Github Container registry
         uses: docker/login-action@916386b00027d425839f8da46d302dab33f5875b
