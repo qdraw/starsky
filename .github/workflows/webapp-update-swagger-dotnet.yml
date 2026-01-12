@@ -83,6 +83,7 @@ jobs:
       
     - name: Create Pull Request ${{ steps.files_changed.outputs.CHANGED }}
       id: cpr
+      if: files_changed
       uses: peter-evans/create-pull-request@2271f1ddcf09437ed8f019733eb5cfba58ac76f0
       with:
         token: ${{ secrets.WORKFLOW_GITHUB }}
