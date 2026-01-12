@@ -1248,6 +1248,39 @@ public sealed class RenameServiceTest
 	}
 
 	[TestMethod]
+	public async Task ExecuteBatchRenameAsync_IsEmpty()
+	{
+		var iStorage = new FakeIStorage([], []);
+		var service =
+			new RenameService(new FakeIQuery([new FileIndexItem("/test.jpg")]),
+				iStorage, new FakeIWebLogger());
+		var result = await service.ExecuteBatchRenameAsync([]);
+
+		Assert.IsEmpty(result);
+	}
+
+	[TestMethod]
+	public async Task ExecuteBatchRenameAsync_NotFound()
+	{
+		var iStorage = new FakeIStorage([], []);
+		var service =
+			new RenameService(new FakeIQuery([new FileIndexItem("/test.jpg")]),
+				iStorage, new FakeIWebLogger());
+		var result = await service.ExecuteBatchRenameAsync([
+			new BatchRenameMapping
+			{
+				SourceFilePath = "/notfound.jpg",
+				TargetFilePath = "/newname.jpg",
+				HasError = false,
+				RelatedFilePaths = []
+			}
+		]);
+
+		Assert.HasCount(1, result);
+		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, result[0].Status);
+	}
+
+	[TestMethod]
 	public async Task ExecuteBatchRenameAsync_Null()
 	{
 		var iStorage = new FakeIStorage([], []);
@@ -1267,7 +1300,6 @@ public sealed class RenameServiceTest
 		Assert.HasCount(1, result);
 		Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result[0].Status);
 	}
-
 
 	[TestMethod]
 	public void PreviewBatchRename_Null()
@@ -1294,7 +1326,8 @@ public sealed class RenameServiceTest
 
 		Assert.HasCount(1, result);
 		Assert.IsTrue(result[0].HasError);
-		Assert.AreEqual("Failed to generate filename: Generated filename is invalid: 00010101_test__jpg",
+		Assert.AreEqual(
+			"Failed to generate filename: Generated filename is invalid: 00010101_test__jpg",
 			result[0].ErrorMessage);
 	}
 
