@@ -1,7 +1,7 @@
 {
   "info": {
     "title": "Starsky",
-    "version": "0.7.5.0",
+    "version": "0.7.6.0",
     "extensions": {}
   },
   "servers": [
@@ -2590,6 +2590,297 @@
             },
             "401": {
               "description": "User unauthorized",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/cloud-import/status": {
+      "operations": {
+        "Get": {
+          "tags": [
+            {
+              "name": "CloudImport",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/cloud-import/status/{providerId}": {
+      "operations": {
+        "Get": {
+          "tags": [
+            {
+              "name": "CloudImport",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "parameters": [
+            {
+              "unresolvedReference": false,
+              "name": "providerId",
+              "in": 2,
+              "required": true,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 3,
+              "explode": false,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/cloud-import/sync": {
+      "operations": {
+        "Post": {
+          "tags": [
+            {
+              "name": "CloudImport",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/cloud-import/sync/{providerId}": {
+      "operations": {
+        "Post": {
+          "tags": [
+            {
+              "name": "CloudImport",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "parameters": [
+            {
+              "unresolvedReference": false,
+              "name": "providerId",
+              "in": 2,
+              "required": true,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 3,
+              "explode": false,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/cloud-import/last-results": {
+      "operations": {
+        "Get": {
+          "tags": [
+            {
+              "name": "CloudImport",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/cloud-import/last-result/{providerId}": {
+      "operations": {
+        "Get": {
+          "tags": [
+            {
+              "name": "CloudImport",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "parameters": [
+            {
+              "unresolvedReference": false,
+              "name": "providerId",
+              "in": 2,
+              "required": true,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 3,
+              "explode": false,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
               "headers": {},
               "content": {},
               "links": {},
@@ -13187,6 +13478,30 @@
             "extensions": {},
             "unresolvedReference": false
           },
+          "cloudImport": {
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false,
+            "reference": {
+              "isFragrament": false,
+              "type": 0,
+              "id": "CloudImportSettings",
+              "isExternal": false,
+              "isLocal": true,
+              "referenceV3": "#/components/schemas/CloudImportSettings",
+              "referenceV2": "#/definitions/CloudImportSettings"
+            }
+          },
           "openTelemetry": {
             "readOnly": false,
             "writeOnly": false,
@@ -14007,6 +14322,315 @@
             "unresolvedReference": false
           },
           "model": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          }
+        },
+        "additionalPropertiesAllowed": false,
+        "enum": [],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
+      "CloudImportProviderSettings": {
+        "type": "object",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {
+          "id": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "enabled": {
+            "type": "boolean",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "provider": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "remoteFolder": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "syncFrequencyMinutes": {
+            "type": "number",
+            "format": "double",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "syncFrequencyHours": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "deleteAfterImport": {
+            "type": "boolean",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "extensions": {
+            "type": "array",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "items": {
+              "type": "string",
+              "readOnly": false,
+              "writeOnly": false,
+              "allOf": [],
+              "oneOf": [],
+              "anyOf": [],
+              "required": [],
+              "properties": {},
+              "additionalPropertiesAllowed": true,
+              "enum": [],
+              "nullable": false,
+              "deprecated": false,
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "credentials": {
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false,
+            "reference": {
+              "isFragrament": false,
+              "type": 0,
+              "id": "CloudProviderCredentials",
+              "isExternal": false,
+              "isLocal": true,
+              "referenceV3": "#/components/schemas/CloudProviderCredentials",
+              "referenceV2": "#/definitions/CloudProviderCredentials"
+            }
+          }
+        },
+        "additionalPropertiesAllowed": false,
+        "enum": [],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
+      "CloudImportSettings": {
+        "type": "object",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {
+          "providers": {
+            "type": "array",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "items": {
+              "readOnly": false,
+              "writeOnly": false,
+              "allOf": [],
+              "oneOf": [],
+              "anyOf": [],
+              "required": [],
+              "properties": {},
+              "additionalPropertiesAllowed": true,
+              "enum": [],
+              "nullable": false,
+              "deprecated": false,
+              "extensions": {},
+              "unresolvedReference": false,
+              "reference": {
+                "isFragrament": false,
+                "type": 0,
+                "id": "CloudImportProviderSettings",
+                "isExternal": false,
+                "isLocal": true,
+                "referenceV3": "#/components/schemas/CloudImportProviderSettings",
+                "referenceV2": "#/definitions/CloudImportProviderSettings"
+              }
+            },
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          }
+        },
+        "additionalPropertiesAllowed": false,
+        "enum": [],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
+      "CloudProviderCredentials": {
+        "type": "object",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "appKey": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "appSecret": {
             "type": "string",
             "readOnly": false,
             "writeOnly": false,
@@ -17232,5 +17856,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "F2EBA6F7A4AAC3EE9365D5CD8EB685430F3B215EE039946E447FB401769DB8909E8D57D11BEA0076E4450BCCD15D3775CACE3E01166B365D0143243AC0D40CF4"
+  "hashCode": "9ACD2106DFB16BC4A71969B06A570088326A7644B1BBC525D3C5A9861461185AA404712A4D6AB0AC4D46C740230659E2B97D7CBE6A08707FBA5117980DD37522"
 }
