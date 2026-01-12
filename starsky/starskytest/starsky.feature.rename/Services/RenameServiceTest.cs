@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.feature.rename.Models;
 using starsky.feature.rename.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
@@ -152,7 +153,9 @@ public sealed class RenameServiceTest
 
 		_parentFolder = await _query.AddItemAsync(new FileIndexItem
 		{
-			FileName = "/", ParentDirectory = "/", IsDirectory = true
+			FileName = "/", 
+			ParentDirectory = "/", 
+			IsDirectory = true
 		});
 	}
 
@@ -1236,5 +1239,78 @@ public sealed class RenameServiceTest
 		var result = service.PreviewBatchRename(filePaths, tokenPattern);
 		CollectionAssert.AllItemsAreNotNull(result);
 		Assert.IsEmpty(result);
+	}
+
+	[TestMethod]
+	public async Task ExecuteBatchRenameAsync_BatchRename_SimpleFiles()
+	{
+		await CreateFoldersAndFilesInDatabase();
+		var iStorage = new FakeIStorage([_parentFolder.FilePath!, _folderExist.FilePath!],
+			[_fileInExist.FilePath!, _fileInRoot.FilePath!]);
+		var service = new RenameService(_query, iStorage);
+
+		var mappings = new List<BatchRenameMapping>
+		{
+			new()
+			{
+				SourceFilePath = _fileInExist.FilePath!,
+				TargetFilePath = "/exist/20220506_000000.jpg",
+				HasError = false,
+				RelatedFilePaths = []
+			},
+			new()
+			{
+				SourceFilePath = _fileInRoot.FilePath!,
+				TargetFilePath = "/20220506_000000.jpg",
+				HasError = false,
+				RelatedFilePaths = []
+			}
+		};
+
+		var result = await service.ExecuteBatchRenameAsync(mappings, collections: false);
+
+		var filteredResults = result.Where(p => p is
+		{
+			Status: FileIndexItem.ExifStatus.Ok,
+			IsDirectory: false
+		}).ToList();
+		
+		Assert.HasCount(2, filteredResults);
+		Assert.AreEqual("/exist/20220506_000000.jpg", filteredResults[0].FilePath);
+		Assert.AreEqual("/20220506_000000.jpg", filteredResults[1].FilePath);
+		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, filteredResults[0].Status);
+		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, filteredResults[1].Status);
+
+		await RemoveFoldersAndFilesInDatabase();
+	}
+	
+	[TestMethod]
+	public async Task ExecuteBatchRenameAsync_WithPreview_SimpleFiles()
+	{
+		await CreateFoldersAndFilesInDatabase();
+		var iStorage = new FakeIStorage([_parentFolder.FilePath!, _folderExist.FilePath!],
+			[_fileInExist.FilePath!, _fileInRoot.FilePath!]);
+		var service = new RenameService(_query, iStorage);
+
+		const string tokenPattern = "{yyyy}-{MM}-{dd}_{HH}-{mm}-{ss}.jpg";
+		var mappings = service.PreviewBatchRename(
+			[_fileInExist.FilePath!, _fileInRoot.FilePath!],
+			tokenPattern);
+
+		var result = await service.ExecuteBatchRenameAsync(mappings, collections: false);
+
+		var filteredResults = result.Where(p => p is
+		{
+			Status: FileIndexItem.ExifStatus.Ok,
+			IsDirectory: false
+		}).ToList();
+		
+		Assert.HasCount(2, filteredResults);
+		Assert.AreEqual("/exist/2022-05-06_00-00-00.jpg", filteredResults[0].FilePath);
+		Assert.AreEqual("/2022-05-06_00-00-00.jpg", filteredResults[1].FilePath);
+		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, filteredResults[0].Status);
+		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, filteredResults[1].Status);
+
+		await RemoveFoldersAndFilesInDatabase();
 	}
 }
