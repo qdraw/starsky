@@ -114,7 +114,9 @@ public partial class RenameTokenPattern
 	private static string ReplaceUnescapedToken(string input, string token, string value)
 	{
 		var pattern = $@"(?<!\\){Regex.Escape(token)}";
-		return Regex.Replace(input, pattern, value);
+		return Regex.Replace(input, pattern, value,
+			RegexOptions.None, 
+			TimeSpan.FromMicroseconds(500));
 	}
 
 	private static string InsertSequenceBeforeExtension(string input, int sequenceNumber)
