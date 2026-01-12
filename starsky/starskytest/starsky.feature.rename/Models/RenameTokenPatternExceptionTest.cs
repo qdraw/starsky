@@ -24,7 +24,7 @@ public class RenameTokenPatternExceptionTest
 		Assert.ThrowsExactly<InvalidOperationException>(() =>
 			tokenPattern.GenerateFileName(fileIndexItem));
 	}
-	
+
 	[TestMethod]
 	public void GenerateFileName_ArgumentNullException()
 	{
@@ -33,38 +33,49 @@ public class RenameTokenPatternExceptionTest
 		var tokenPattern = new RenameTokenPattern(pattern);
 		var fileIndexItem = new FileIndexItem
 		{
-			FileName = "", 
-			DateTime = new DateTime(2022, 1, 1)
+			FileName = "", DateTime = new DateTime(2022, 1, 1)
 		};
 
 		// Act & Assert
 		Assert.ThrowsExactly<ArgumentNullException>(() =>
 			tokenPattern.GenerateFileName(fileIndexItem));
 	}
-	
+
+	[TestMethod]
+	public void GenerateFileName_Seqn_WithoutExtension()
+	{
+		const string pattern = "{filenamebase}{seqn}";
+		var tokenPattern = new RenameTokenPattern(pattern);
+		var fileIndexItem = new FileIndexItem
+		{
+			FileName = "test", DateTime = new DateTime(2022, 1, 1, 0, 0, 0, DateTimeKind.Local)
+		};
+
+		// Act & Assert
+		Assert.ThrowsExactly<InvalidOperationException>(() =>
+			tokenPattern.GenerateFileName(fileIndexItem, 2));
+	}
+
 	[TestMethod]
 	public void GenerateFileName_ValidatePattern_Null()
 	{
 		// Act & Assert
-		Assert.ThrowsExactly<ArgumentNullException>(() =>
-		{
-			_ = new RenameTokenPattern(null!);
-		});
+		Assert.ThrowsExactly<ArgumentNullException>(() => { _ = new RenameTokenPattern(null!); });
 	}
-	
+
 	[TestMethod]
 	public void GenerateFileName_Empty()
 	{
 		var tokenPattern = new RenameTokenPattern(string.Empty);
-		
+
 		Assert.AreEqual("Pattern cannot be empty", tokenPattern.Errors.First());
 	}
-	
+
 	[TestMethod]
 	public void GenerateFileName_NonValidItemInBrackets()
 	{
 		var tokenPattern = new RenameTokenPattern("{test}");
-		
+
 		Assert.AreEqual("Unknown token: {test}", tokenPattern.Errors.First());
 	}
 }
