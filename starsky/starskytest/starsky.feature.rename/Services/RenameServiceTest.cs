@@ -55,7 +55,8 @@ public sealed class RenameServiceTest
 		_query = new Query(context, appSettings, null,
 			new FakeIWebLogger(), memoryCache);
 
-		if ( _query.GetAllFilesAsync("/").Result.TrueForAll(p => p.FileName != _newImage.FileName) )
+		if ( _query.GetAllFilesAsync("/").Result.TrueForAll(
+			    p => p.FileName != _newImage.FileName) )
 		{
 			context.FileIndex.Add(new FileIndexItem
 			{
@@ -262,7 +263,8 @@ public sealed class RenameServiceTest
 		var iStorage = new FakeIStorage(initFolderList, initFileList);
 		var renameFs1 = await new RenameService(_query, iStorage)
 			.Rename(initFileList.FirstOrDefault()!, "/nonExist/test5.jpg");
-		var renameFs = renameFs1.Where(p => p.Status != FileIndexItem.ExifStatus.Deleted)
+		var renameFs = renameFs1.Where(p => 
+				p.Status != FileIndexItem.ExifStatus.Deleted)
 			.ToList();
 
 		var all2 = await _query.GetAllRecursiveAsync();
@@ -1417,8 +1419,10 @@ public sealed class RenameServiceTest
 			ParentDirectory = "/exist",
 			IsDirectory = false,
 			FileHash = "DSC0002.arw",
-			AddToDatabase = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc),
-			DateTime = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc)
+			AddToDatabase = new DateTime(2026, 1, 1, 
+				18, 0, 0, DateTimeKind.Utc),
+			DateTime = new DateTime(2026, 1, 1, 
+				18, 0, 0, DateTimeKind.Utc)
 		});
 		
 		var iStorage = new FakeIStorage([_folderExist.FilePath!],
