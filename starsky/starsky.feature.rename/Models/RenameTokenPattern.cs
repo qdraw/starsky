@@ -24,8 +24,9 @@ namespace starsky.feature.rename.Models;
 /// </summary>
 public partial class RenameTokenPattern
 {
-	private readonly string _pattern;
+	private const string SequenceToken = "{seqn}";
 	private readonly HashSet<string> _errors = [];
+	private readonly string _pattern;
 
 	private readonly HashSet<string> _validBracedTokens = new(StringComparer.Ordinal)
 	{
@@ -55,8 +56,6 @@ public partial class RenameTokenPattern
 	/// </summary>
 	public bool IsValid => _errors.Count == 0;
 
-	private const string SequenceToken = "{seqn}";
-
 	/// <summary>
 	///     Generate a new filename from the pattern, applying token substitution
 	/// </summary>
@@ -78,16 +77,16 @@ public partial class RenameTokenPattern
 		var hasSeqToken = _pattern.Contains(SequenceToken, StringComparison.Ordinal);
 
 		// Apply datetime tokens (only when not escaped)
-		result = ReplaceUnescapedToken(result, "yyyy", dateTime.Year.ToString("D4"));
-		result = ReplaceUnescapedToken(result, "MM", dateTime.Month.ToString("D2"));
-		result = ReplaceUnescapedToken(result, "dd", dateTime.Day.ToString("D2"));
-		result = ReplaceUnescapedToken(result, "HH", dateTime.Hour.ToString("D2"));
-		result = ReplaceUnescapedToken(result, "mm", dateTime.Minute.ToString("D2"));
-		result = ReplaceUnescapedToken(result, "ss", dateTime.Second.ToString("D2"));
+		result = ReplaceUnescapedToken(result, "{yyyy}", dateTime.Year.ToString("D4"));
+		result = ReplaceUnescapedToken(result, "{MM}", dateTime.Month.ToString("D2"));
+		result = ReplaceUnescapedToken(result, "{dd}", dateTime.Day.ToString("D2"));
+		result = ReplaceUnescapedToken(result, "{HH}", dateTime.Hour.ToString("D2"));
+		result = ReplaceUnescapedToken(result, "{mm}", dateTime.Minute.ToString("D2"));
+		result = ReplaceUnescapedToken(result, "{ss}", dateTime.Second.ToString("D2"));
 
 		// Apply filename and extension tokens
 		result = ReplaceUnescapedToken(result, "{filenamebase}", originalFileName);
-		result = ReplaceUnescapedToken(result, ".ext", originalExtension);
+		result = ReplaceUnescapedToken(result, ".{ext}", originalExtension);
 
 		// Apply sequence number
 		if ( sequenceNumber > 0 )
@@ -102,9 +101,6 @@ public partial class RenameTokenPattern
 			result = ReplaceUnescapedToken(result, SequenceToken, string.Empty);
 		}
 
-		// Remove any remaining curly braces from the filename (after token replacement)
-		result = RemoveAllBraces(result);
-
 		// Ensure filename is valid
 		var fileName = Path.GetFileName(result);
 		if ( !FilenamesHelper.IsValidFileName(fileName) )
@@ -113,18 +109,6 @@ public partial class RenameTokenPattern
 		}
 
 		return fileName;
-	}
-
-	private string RemoveAllBraces(string input)
-	{
-		// Only remove braces around valid tokens, not all braces
-		foreach ( var token in _validBracedTokens )
-		{
-			var tokenWithoutBraces = token.Trim('{', '}');
-			input = Regex.Replace(input, $"\\{{{tokenWithoutBraces}\\}}", string.Empty);
-		}
-
-		return input;
 	}
 
 	private static string ReplaceUnescapedToken(string input, string token, string value)
