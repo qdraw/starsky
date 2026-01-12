@@ -42,7 +42,7 @@ public class BatchRenameControllerTest
 		var controller = new BatchRenameController(query, selectorStorage, logger);
 		var request = new BatchRenameRequest
 		{
-			FilePaths = new List<string> { "/test.jpg" }, Pattern = null
+			FilePaths = ["/test.jpg"], Pattern = null!
 		};
 
 		// Act
