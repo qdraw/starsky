@@ -8,6 +8,7 @@ using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 
@@ -15,7 +16,7 @@ using starsky.foundation.storage.Models;
 
 namespace starsky.feature.rename.Services;
 
-public class RenameService(IQuery query, IStorage iStorage)
+public class RenameService(IQuery query, IStorage iStorage, IWebLogger logger)
 {
 	/// <summary>
 	///     Move or rename files and update the database.
@@ -589,20 +590,27 @@ public class RenameService(IQuery query, IStorage iStorage)
 
 		foreach ( var filePath in filePaths )
 		{
-			var detailView = query.SingleItem(filePath,
-				null, collections, false);
-			if ( detailView?.FileIndexItem == null )
+			try
 			{
-				mappings.Add(new BatchRenameMapping
+				var detailView = query.SingleItem(filePath,
+					null, collections, false);
+				if ( detailView?.FileIndexItem == null )
 				{
-					SourceFilePath = filePath,
-					HasError = true,
-					ErrorMessage = "File not found in database"
-				});
-				continue;
-			}
+					mappings.Add(new BatchRenameMapping
+					{
+						SourceFilePath = filePath,
+						HasError = true,
+						ErrorMessage = "File not found in database"
+					});
+					continue;
+				}
 
-			fileItems[filePath] = detailView.FileIndexItem;
+				fileItems[filePath] = detailView.FileIndexItem;
+			}
+			catch ( Exception )
+			{
+				logger?.LogError($"PreviewBatchRename: Failed to get item for {filePath}");
+			}
 		}
 
 		// Generate mappings for valid files
@@ -688,11 +696,11 @@ public class RenameService(IQuery query, IStorage iStorage)
 				await RenameFromFileToDeleted(mapping.SourceFilePath, mapping.TargetFilePath,
 					results, fileIndexItems, detailView);
 			}
-			catch ( Exception ex )
+			catch ( Exception )
 			{
 				results.Add(new FileIndexItem(mapping.SourceFilePath)
 				{
-					Status = FileIndexItem.ExifStatus.OperationNotSupported, Tags = ex.Message
+					Status = FileIndexItem.ExifStatus.OperationNotSupported
 				});
 			}
 		}
@@ -750,9 +758,7 @@ public class RenameService(IQuery query, IStorage iStorage)
 				return new
 				{
 					OriginalBase =
-						string.IsNullOrEmpty(fileItem.FileName)
-							? string.Empty
-							: FilenamesHelper.GetFileNameWithoutExtension(fileItem.FileName),
+						FilenamesHelper.GetFileNameWithoutExtension(fileItem.FileName!),
 					fileItem.DateTime
 				};
 			})
