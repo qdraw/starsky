@@ -562,7 +562,7 @@ public class RenameService(IQuery query, IStorage iStorage)
 	/// (e.g., {yyyy}{MM}{dd}_{filenamebase}{seqn}.ext)</param>
 	/// <param name="collections">Include related sidecar files</param>
 	/// <returns>List of batch rename mappings with preview of new names</returns>
-	public List<BatchRenameMapping> PreviewBatchRenameAsync(
+	public List<BatchRenameMapping> PreviewBatchRename(
 		List<string> filePaths, string tokenPattern, bool collections = true)
 	{
 		if ( filePaths.Count == 0 )
@@ -609,16 +609,13 @@ public class RenameService(IQuery query, IStorage iStorage)
 		{
 			try
 			{
-				var parentPath = fileItem.ParentDirectory ?? "/";
-
-				// Generate new filename without sequence number yet
+				var parentPath = fileItem.ParentDirectory;
 				var newFileName = pattern.GenerateFileName(fileItem);
-				var newFilePath = parentPath == "/"
-					? $"/{newFileName}"
-					: $"{parentPath}/{newFileName}";
+				var newFilePath = $"{parentPath}/{newFileName}";
 
 				var mapping = new BatchRenameMapping
 				{
+					// SequenceNumber follows in a later step
 					SourceFilePath = key, TargetFilePath = newFilePath, SequenceNumber = 0
 				};
 
@@ -704,8 +701,7 @@ public class RenameService(IQuery query, IStorage iStorage)
 			{
 				results.Add(new FileIndexItem(mapping.SourceFilePath)
 				{
-					Status = FileIndexItem.ExifStatus.OperationNotSupported, 
-					Tags = ex.Message
+					Status = FileIndexItem.ExifStatus.OperationNotSupported, Tags = ex.Message
 				});
 			}
 		}

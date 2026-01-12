@@ -34,6 +34,7 @@ public class DropboxClientWrapperTest
 	}
 
 	[TestMethod]
+	[Timeout(5000, CooperativeCancellation = true)]
 	public async Task DownloadAsync_ShouldThrowException_WhenInvalidToken()
 	{
 		var client = new DropboxClientWrapper(InvalidAccessToken);
@@ -44,6 +45,7 @@ public class DropboxClientWrapperTest
 	}
 
 	[TestMethod]
+	[Timeout(5000, CooperativeCancellation = true)]
 	public async Task DeleteV2Async_ShouldThrowException_WhenInvalidToken()
 	{
 		var client = new DropboxClientWrapper(InvalidAccessToken);
