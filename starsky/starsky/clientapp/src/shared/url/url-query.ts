@@ -451,14 +451,14 @@ export class UrlQuery {
    * Batch rename photos preview
    */
   public UrlBatchRenamePreview(): string {
-    return this.prefix + "/api/BatchRename/preview";
+    return this.prefix + "/api/batch-rename/preview";
   }
 
   /**
    * Batch rename photos execute
    */
   public UrlBatchRenameExecute(): string {
-    return this.prefix + "/api/BatchRename/execute";
+    return this.prefix + "/api/batch-rename/execute";
   }
 
   public DocsGettingStartedFirstSteps(): string {

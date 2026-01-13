@@ -31,7 +31,6 @@ describe("executeBatchRenameHelper", () => {
 
   it("should set error if preview not generated", async () => {
     await executeBatchRenameHelper(
-      false,
       mockSetError,
       [],
       mockSetIsLoading,
@@ -46,7 +45,6 @@ describe("executeBatchRenameHelper", () => {
   it("should set error if preview has errors", async () => {
     const preview: IBatchRenameItem[] = [{ hasError: true } as unknown as IBatchRenameItem];
     await executeBatchRenameHelper(
-      true,
       mockSetError,
       preview,
       mockSetIsLoading,
@@ -61,7 +59,6 @@ describe("executeBatchRenameHelper", () => {
   it("should set error if response status is not 200", async () => {
     const preview: IBatchRenameItem[] = [{ hasError: false } as unknown as IBatchRenameItem];
     await executeBatchRenameHelper(
-      true,
       mockSetError,
       preview,
       mockSetIsLoading,
@@ -97,7 +94,6 @@ describe("executeBatchRenameHelper", () => {
     const pattern = "pattern1";
     const recentPatterns = ["pattern2", "pattern1", "pattern3"];
     await executeBatchRenameHelper(
-      true,
       mockSetError,
       preview,
       mockSetIsLoading,
@@ -116,7 +112,6 @@ describe("executeBatchRenameHelper", () => {
   it("should handle fetch error", async () => {
     const preview: IBatchRenameItem[] = [{ hasError: false } as unknown as IBatchRenameItem];
     await executeBatchRenameHelper(
-      true,
       mockSetError,
       preview,
       mockSetIsLoading,
@@ -146,7 +141,6 @@ describe("executeBatchRenameHelper", () => {
 
     const preview: IBatchRenameItem[] = [{ hasError: false } as unknown as IBatchRenameItem];
     await executeBatchRenameHelper(
-      true,
       mockSetError,
       preview,
       mockSetIsLoading,

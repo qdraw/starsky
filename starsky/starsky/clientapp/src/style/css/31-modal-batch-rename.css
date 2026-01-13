@@ -67,11 +67,6 @@
   }
 }
 
-.btn-preview {
-  margin: 10px 0;
-  width: 100%;
-}
-
 .batch-rename-preview-list {
   background-color: #f9f9f9;
   border: 1px solid #e0e0e0;
@@ -121,7 +116,6 @@
 
 .preview-source {
   font-weight: 500;
-  flex-shrink: 0;
 }
 
 .preview-arrow {
@@ -137,23 +131,14 @@
 }
 
 .preview-target {
-  color: #2196f3;
   flex-grow: 1;
 }
 
 .preview-error-message {
   display: block;
   width: 100%;
-  color: #d32f2f;
-  font-size: 0.85em;
   margin-top: 4px;
-  font-weight: 500;
-}
-
-@media (prefers-color-scheme: dark) {
-  .preview-error-message {
-    color: #ff6b6b;
-  }
+  font-weight: 200;
 }
 
 .batch-rename-errors {
@@ -176,20 +161,4 @@
   margin: 5px 0;
   padding: 5px;
   font-size: 0.9em;
-}
-
-.batch-rename-button-group {
-  display: flex;
-  gap: 10px;
-  margin: 15px 0;
-  justify-content: flex-end;
-}
-
-.batch-rename-button-group .btn {
-  flex: 1;
-}
-
-.btn--cancel {
-  margin-top: 10px;
-  width: 100%;
 }

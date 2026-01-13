@@ -33,11 +33,9 @@ const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props
   );
   const MessageBatchRenamePhotosCount = language.key(localization.MessageBatchRenamePhotosCount);
   const MessageBatchRenamePreview = language.key(localization.MessageBatchRenamePreview);
-  const MessageBatchRenameLoadingPreview = language.key(
-    localization.MessageBatchRenameLoadingPreview
-  );
-  const MessageBatchRenameError = language.key(localization.MessageBatchRenameError);
-  const MessageCancel = language.key(localization.MessageCancel);
+  const MessageLoading = language.key(localization.MessageLoading);
+  const MessageBatchRenameErrors = language.key(localization.MessageBatchRenameErrors);
+  const MessageSelectAPattern = language.key(localization.MessageSelectAPattern);
 
   // State management
   const [pattern, setPattern] = useState(DEFAULT_PATTERN);
@@ -88,8 +86,16 @@ const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props
       displayItems.push(preview[1]);
     }
 
+    let hasMiddleErrors = false;
+    for (let i = 2; i < preview.length - 1; i++) {
+      if (preview[i].hasError) {
+        displayItems.push(preview[i]);
+        hasMiddleErrors = true;
+      }
+    }
+
     // Add ellipsis if there are more than 3 items
-    if (preview.length > 3) {
+    if (preview.length > 3 && !hasMiddleErrors) {
       displayItems.push({
         sourceFilePath: "...",
         targetFilePath: "...",
@@ -167,7 +173,7 @@ const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props
         props.handleExit();
       }}
     >
-      <div className="content" data-test="modal-batch-rename">
+      <div className="modal content scroll" data-test="modal-batch-rename">
         <div className="modal content--subheader">{MessageBatchRenamePhotos}</div>
         <div className="modal content--text">
           {/* Pattern input */}
@@ -197,7 +203,7 @@ const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props
                 className="select-batch-rename-patterns"
                 disabled={isLoading || isPreviewLoading}
               >
-                <option value="">-- Select a pattern --</option>
+                <option value="">-- {MessageSelectAPattern} --</option>
                 {recentPatterns.map((p, index) => (
                   <option key={`pattern-${index}`} value={p}>
                     {p}
@@ -220,9 +226,9 @@ const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props
               onClick={generatePreview}
               disabled={isPreviewLoading || !pattern.trim()}
               data-test="button-batch-rename-generate-preview"
-              className="btn btn--default btn-preview"
+              className="btn btn--default"
             >
-              {isPreviewLoading ? MessageBatchRenameLoadingPreview : MessageBatchRenamePreview}
+              {isPreviewLoading ? MessageLoading : MessageBatchRenamePreview}
             </button>
           ) : (
             <>
@@ -232,35 +238,20 @@ const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props
               {/* Error messages from preview */}
               {preview.some((item) => item.hasError) && (
                 <div className="warning-box batch-rename-errors">
-                  <strong>Errors found:</strong>
-                  {preview
-                    .filter((item) => item.hasError)
-                    .map((item, index) => (
-                      <div key={`error-${index}`} className="error-item">
-                        {new FileExtensions().GetFileName(item.sourceFilePath)}: {item.errorMessage}
-                      </div>
-                    ))}
+                  <strong>
+                    {preview.filter((item) => item.hasError).length} {MessageBatchRenameErrors}
+                  </strong>
                 </div>
               )}
 
               {/* Action buttons */}
               <div className="batch-rename-button-group">
                 <button
-                  onClick={() => {
-                    setPreviewGenerated(false);
-                    setPreview([]);
-                  }}
-                  className="btn btn--secondary"
-                  disabled={isLoading}
-                >
-                  {MessageBatchRenamePreview}
-                </button>
-                <button
                   onClick={executeBatchRename}
                   disabled={isLoading || preview.some((item) => item.hasError)}
                   className="btn btn--default"
                 >
-                  {isLoading ? "Loading..." : MessageBatchRenameError}
+                  {isLoading ? MessageLoading : MessageBatchRenamePhotos}
                 </button>
               </div>
             </>
@@ -275,15 +266,6 @@ const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props
               {error}
             </div>
           )}
-
-          {/* Cancel button */}
-          <button
-            onClick={() => props.handleExit()}
-            className="btn btn--cancel"
-            disabled={isLoading || isPreviewLoading}
-          >
-            {MessageCancel}
-          </button>
         </div>
       </div>
     </Modal>

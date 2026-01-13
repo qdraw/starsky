@@ -1,0 +1,10 @@
+[
+  {
+    "sourceFilePath": "string",
+    "targetFilePath": "",
+    "relatedFilePaths": [],
+    "sequenceNumber": 0,
+    "hasError": true,
+    "errorMessage": "File not found in database"
+  }
+]

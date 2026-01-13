@@ -1040,9 +1040,9 @@
     "de": "Lesen Sie hier mehr"
   },
   "MessageBatchRenamePhotos": {
-    "en": "Rename Photos",
-    "nl": "Foto's hernoemen",
-    "de": "Fotos umbenennen"
+    "en": "Rename by date and time",
+    "nl": "Hernoemen op datum en tijd",
+    "de": "Nach Datum und Uhrzeit umbenennen"
   },
   "MessageBatchRenameEnterPattern": {
     "en": "Please enter the photo renaming string:",
@@ -1069,25 +1069,20 @@
     "nl": "Voorbeeld",
     "de": "Vorschau"
   },
-  "MessageBatchRenameLoadingPreview": {
-    "en": "Loading preview...",
-    "nl": "Voorbeeld laden...",
-    "de": "Vorschau wird geladen..."
-  },
-  "MessageBatchRenameError": {
-    "en": "Rename",
-    "nl": "Hernoemen",
-    "de": "Umbenennen"
+  "MessageLoading": {
+    "en": "Loading...",
+    "nl": "Laden...",
+    "de": "Laden..."
   },
   "MessageBatchRenameErrors": {
-    "en": "Errors",
-    "nl": "Fouten",
-    "de": "Fehler"
+    "en": "errors",
+    "nl": "fouten",
+    "de": "fehler"
   },
-  "MessageBatchRenameNoErrors": {
-    "en": "No errors found",
-    "nl": "Geen fouten gevonden",
-    "de": "Keine Fehler gefunden"
+  "MessageSelectAPattern": {
+    "en": "Select a pattern to see a preview",
+    "nl": "Selecteer een patroon om een voorbeeld te zien",
+    "de": "Wählen Sie ein Muster, um eine Vorschau zu sehen"
   },
   "temp1": {
     "en": ".",

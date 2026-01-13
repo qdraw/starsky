@@ -75,6 +75,17 @@ public class BatchRenameService(IQuery query, IStorage iStorage, IWebLogger logg
 		var validMappings = new List<BatchRenameMapping>();
 		foreach ( var (key, fileItem) in fileItems )
 		{
+			if ( fileItem.IsDirectory == true )
+			{
+				mappings.Add(new BatchRenameMapping
+				{
+					SourceFilePath = key,
+					HasError = true,
+					ErrorMessage = "Is a directory"
+				});
+				continue;
+			}
+
 			try
 			{
 				var parentPath = fileItem.ParentDirectory;
@@ -243,6 +254,7 @@ public class BatchRenameService(IQuery query, IStorage iStorage, IWebLogger logg
 				{
 					newFilePath = $"/{newFileName}";
 				}
+
 				mapping.TargetFilePath = newFilePath;
 				mapping.SequenceNumber = sequence;
 				if ( mapping.RelatedFilePaths.Count > 0 )

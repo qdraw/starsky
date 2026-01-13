@@ -34,6 +34,9 @@
   z-index: 550;
   background-color: white;
   border-radius: 5px;
+  max-height: calc(100% - 20px);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* when in detailview, the menu is placed on the right side of the screen */

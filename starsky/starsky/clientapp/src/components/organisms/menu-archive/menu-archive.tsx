@@ -240,13 +240,6 @@ const MenuArchive: React.FunctionComponent = memo(() => {
                     set={setIsModalPublishOpen}
                     localization={localization.MessagePublish}
                   />
-                  <MenuOptionBatchRename
-                    readOnly={readOnly}
-                    state={state}
-                    select={select}
-                    setSelect={setSelect}
-                    dispatch={dispatch}
-                  />
                   <MenuOptionMoveToTrash
                     state={state}
                     dispatch={dispatch}
@@ -268,6 +261,13 @@ const MenuArchive: React.FunctionComponent = memo(() => {
                     )}
                     parentDirectory={state.subPath}
                     setEnableMoreMenu={setEnableMoreMenu}
+                  />
+                  <MenuOptionBatchRename
+                    readOnly={readOnly}
+                    state={state}
+                    select={select}
+                    setSelect={setSelect}
+                    dispatch={dispatch}
                   />
                 </>
               ) : null}
