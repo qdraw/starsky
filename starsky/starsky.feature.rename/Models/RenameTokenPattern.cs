@@ -120,7 +120,7 @@ public partial class RenameTokenPattern
 			TimeSpan.FromMilliseconds(100));
 	}
 
-	private static string InsertSequenceBeforeExtension(string input, int sequenceNumber)
+	internal static string InsertSequenceBeforeExtension(string input, int sequenceNumber)
 	{
 		var extension = Path.GetExtension(input);
 		if ( string.IsNullOrEmpty(extension) )

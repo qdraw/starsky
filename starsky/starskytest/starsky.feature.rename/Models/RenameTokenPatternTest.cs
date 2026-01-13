@@ -7,7 +7,7 @@ using starsky.foundation.database.Models;
 namespace starskytest.starsky.feature.rename.Models;
 
 [TestClass]
-public class RenameTokenPatternExceptionTest
+public class RenameTokenPatternTest
 {
 	[TestMethod]
 	public void GenerateFileName_InvalidPattern_ThrowsInvalidOperationException()
@@ -17,7 +17,9 @@ public class RenameTokenPatternExceptionTest
 		var tokenPattern = new RenameTokenPattern(pattern);
 		var fileIndexItem = new FileIndexItem
 		{
-			FileName = "file.jpg", DateTime = new DateTime(2022, 1, 1)
+			FileName = "file.jpg",
+			DateTime = new DateTime(2022, 1, 1,
+				0, 0, 0, DateTimeKind.Local)
 		};
 
 		// Act & Assert
@@ -33,7 +35,9 @@ public class RenameTokenPatternExceptionTest
 		var tokenPattern = new RenameTokenPattern(pattern);
 		var fileIndexItem = new FileIndexItem
 		{
-			FileName = "", DateTime = new DateTime(2022, 1, 1)
+			FileName = "",
+			DateTime = new DateTime(2022, 1, 1,
+				0, 0, 0, DateTimeKind.Local)
 		};
 
 		// Act & Assert
@@ -77,5 +81,16 @@ public class RenameTokenPatternExceptionTest
 		var tokenPattern = new RenameTokenPattern("{test}");
 
 		Assert.AreEqual("Unknown token: {test}", tokenPattern.Errors.First());
+	}
+
+	[TestMethod]
+	[DataRow("example", 5, "example-5")]
+	[DataRow("example", 0, "example-0")]
+	[DataRow("example.jpg", 0, "example-0.jpg")]
+	[DataRow("example.jpg", 5, "example-5.jpg")]
+	public void InsertSequenceBeforeExtension(string input, int sequenceNumber, string expected)
+	{
+		var result = RenameTokenPattern.InsertSequenceBeforeExtension(input, sequenceNumber);
+		Assert.AreEqual(expected, result);
 	}
 }
