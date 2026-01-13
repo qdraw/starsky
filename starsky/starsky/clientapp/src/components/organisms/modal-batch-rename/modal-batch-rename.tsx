@@ -278,6 +278,7 @@ const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props
               setError(null);
             }}
             placeholder={DEFAULT_PATTERN}
+            data-test="input-batch-rename-pattern"
             className="input-batch-rename-pattern"
             disabled={isLoading || isPreviewLoading}
           />
