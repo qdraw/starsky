@@ -3,17 +3,13 @@ import { ArchiveAction } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { IBatchRenameItem } from "../../../interfaces/IBatchRenameItem";
-import { IBatchRenameRequest } from "../../../interfaces/IBatchRenameRequest";
-import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import localization from "../../../localization/localization.json";
-import FetchPost from "../../../shared/fetch/fetch-post";
 import { FileExtensions } from "../../../shared/file-extensions";
-import { FileListCache } from "../../../shared/filelist-cache";
 import { Language } from "../../../shared/language";
-import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
-import { URLPath } from "../../../shared/url/url-path";
-import { UrlQuery } from "../../../shared/url/url-query";
 import Modal from "../../atoms/modal/modal";
+import { BATCH_RENAME_PATTERNS_KEY } from "./batch-rename-patterns-key";
+import { executeBatchRenameHelper } from "./execute-batch-rename-helper";
+import { generatePreviewHelper } from "./generate-preview-helper";
 
 export interface IModalBatchRenameProps {
   isOpen: boolean;
@@ -25,7 +21,6 @@ export interface IModalBatchRenameProps {
   undoSelection: () => void;
 }
 
-const BATCH_RENAME_PATTERNS_KEY = "batch-rename-patterns";
 const DEFAULT_PATTERN = "{yyyy}{MM}{dd}{HH}{mm}{ss}_{filenamebase}.{ext}";
 
 const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props) => {
@@ -74,119 +69,6 @@ const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props
     setPreviewGenerated(false);
     setPreview([]);
     setError(null);
-  }
-
-  /**
-   * Generate preview of batch rename
-   */
-  async function generatePreview() {
-    if (!pattern.trim()) {
-      setError("Pattern cannot be empty");
-      return;
-    }
-
-    setIsPreviewLoading(true);
-    setError(null);
-
-    try {
-      const filePathList = new URLPath().MergeSelectFileIndexItem(
-        props.select,
-        props.state.fileIndexItems
-      );
-      const request: IBatchRenameRequest = {
-        filePaths: filePathList,
-        pattern: pattern,
-        collections: true
-      };
-
-      const response = await FetchPost(
-        new UrlQuery().UrlBatchRenamePreview(),
-        JSON.stringify(request),
-        "post",
-        { "Content-Type": "application/json" }
-      );
-
-      if (response.statusCode !== 200) {
-        setError("Failed to generate preview");
-        setIsPreviewLoading(false);
-        return;
-      }
-
-      const previewItems = (response.data as IBatchRenameItem[]) || [];
-      setPreview(previewItems);
-      setPreviewGenerated(true);
-    } catch (err) {
-      console.error("Error generating preview:", err);
-      setError("Error generating preview");
-    } finally {
-      setIsPreviewLoading(false);
-    }
-  }
-
-  /**
-   * Execute batch rename
-   */
-  async function executeBatchRename() {
-    if (!previewGenerated || preview.length === 0) {
-      setError("Please generate a preview first");
-      return;
-    }
-
-    // Check for errors in preview
-    const hasErrors = preview.some((item) => item.hasError);
-    if (hasErrors) {
-      setError("Cannot rename: there are errors in the preview");
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const filePathList = new URLPath().MergeSelectFileIndexItem(
-        props.select,
-        props.state.fileIndexItems
-      );
-      const request: IBatchRenameRequest = {
-        filePaths: filePathList,
-        pattern: pattern,
-        collections: true
-      };
-
-      const response = await FetchPost(
-        new UrlQuery().UrlBatchRenameExecute(),
-        JSON.stringify(request),
-        "post",
-        { "Content-Type": "application/json" }
-      );
-
-      if (response.statusCode !== 200) {
-        setError("Failed to execute batch rename");
-        setIsLoading(false);
-        return;
-      }
-
-      // Save pattern to recent patterns
-      const currentPatterns = recentPatterns.filter((p) => p !== pattern);
-      currentPatterns.unshift(pattern);
-      const newPatterns = currentPatterns.slice(0, 10); // Keep only 10 most recent
-      setRecentPatterns(newPatterns);
-      localStorage.setItem(BATCH_RENAME_PATTERNS_KEY, JSON.stringify(newPatterns));
-
-      const updatedFileIndexItems = response.data as IFileIndexItem[];
-
-      // Clean cache and close modal
-      new FileListCache().CacheCleanEverything();
-      props.handleExit();
-      props.undoSelection();
-      props.dispatch({ type: "add", add: updatedFileIndexItems });
-      ClearSearchCache(props.historyLocationSearch);
-    } catch (err) {
-      console.error("Error executing batch rename:", err);
-      setError("Error executing batch rename");
-    } finally {
-      setIsLoading(false);
-    }
   }
 
   /**
@@ -252,6 +134,30 @@ const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props
           );
         })}
       </div>
+    );
+  }
+
+  async function generatePreview() {
+    generatePreviewHelper(
+      pattern,
+      setIsPreviewLoading,
+      setError,
+      setPreview,
+      setPreviewGenerated,
+      props
+    );
+  }
+
+  async function executeBatchRename() {
+    executeBatchRenameHelper(
+      previewGenerated,
+      setError,
+      preview,
+      setIsLoading,
+      props,
+      pattern,
+      recentPatterns,
+      setRecentPatterns
     );
   }
 
