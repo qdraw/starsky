@@ -17,14 +17,14 @@ namespace starsky.Controllers;
 [Route("api/[controller]")]
 public class BatchRenameController : ControllerBase
 {
-	private readonly RenameService _renameService;
+	private readonly BatchRenameService _batchRenameService;
 
 	public BatchRenameController(IQuery query,
 		ISelectorStorage selectorStorage,
 		IWebLogger logger)
 	{
 		var storage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-		_renameService = new RenameService(query, storage, logger);
+		_batchRenameService = new BatchRenameService(query, storage, logger);
 	}
 
 	/// <summary>
@@ -44,7 +44,7 @@ public class BatchRenameController : ControllerBase
 			return BadRequest("Invalid request");
 		}
 
-		var result = _renameService
+		var result = _batchRenameService
 			.PreviewBatchRename(request.FilePaths, request.Pattern);
 		return Ok(result);
 	}
@@ -58,9 +58,9 @@ public class BatchRenameController : ControllerBase
 	public async Task<ActionResult<List<FileIndexItem>>> ExecuteBatchRenameAsync(
 		[FromBody] BatchRenameRequest request)
 	{
-		var mappings = _renameService
+		var mappings = _batchRenameService
 			.PreviewBatchRename(request.FilePaths, request.Pattern);
-		var result = await _renameService
+		var result = await _batchRenameService
 			.ExecuteBatchRenameAsync(mappings, request.Collections);
 		return Ok(result);
 	}
