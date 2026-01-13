@@ -23,7 +23,9 @@ describe("MenuOptionBatchRename", () => {
       <MenuOptionBatchRename
         readOnly={false}
         state={mockState}
-        selectedFilePaths={["/test1.jpg", "/test2.jpg"]}
+        select={["/test1.jpg", "/test2.jpg"]}
+        dispatch={jest.fn()}
+        setSelect={jest.fn()}
       />
     );
 
@@ -36,12 +38,15 @@ describe("MenuOptionBatchRename", () => {
       <MenuOptionBatchRename
         readOnly={false}
         state={mockState}
-        selectedFilePaths={[]}
+        select={[]}
+        dispatch={jest.fn()}
+        setSelect={jest.fn()}
       />
     );
 
     const menuItem = container.querySelector("[data-test='batch-rename']") as HTMLElement;
     const button = menuItem?.querySelector("button");
+    console.log(container.innerHTML);
     expect(button?.disabled).toBe(true);
   });
 
@@ -50,7 +55,9 @@ describe("MenuOptionBatchRename", () => {
       <MenuOptionBatchRename
         readOnly={true}
         state={mockState}
-        selectedFilePaths={["/test1.jpg"]}
+        select={["/test1.jpg"]}
+        dispatch={jest.fn()}
+        setSelect={jest.fn()}
       />
     );
 
