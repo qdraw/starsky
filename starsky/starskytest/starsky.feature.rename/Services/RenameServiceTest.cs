@@ -197,19 +197,32 @@ public sealed class RenameServiceTest
 	{
 		await CreateFoldersAndFilesInDatabase();
 
-		var iStorage = new FakeIStorage(new List<string> { _folderExist.FilePath! },
-			new List<string>
-			{
-				_fileInExist.FilePath!, JsonSidecarLocation.JsonLocation(_fileInExist.FilePath!)
-			});
+		var iStorage = new FakeIStorage([_folderExist.FilePath!],
+			[_fileInExist.FilePath!, 
+				JsonSidecarLocation.JsonLocation(_fileInExist.FilePath!)]);
 
-		var renameFs = await new RenameService(_query, iStorage, new FakeIWebLogger())
+		var sut = new RenameService(_query, iStorage, new FakeIWebLogger());
+		var renameFs = await sut
 			.Rename(_fileInExist.FilePath!, _folderExist.FilePath + "/test2.jpg");
 
-		// check if sidecar json are moved (on fake Filesystem)
+		// check if sidecar Json are moved (on fake Filesystem)
 		var values = iStorage.GetAllFilesInDirectoryRecursive("/").ToList();
+
+		Console.WriteLine("Values in fake IStorage:");
+		foreach ( var p in values )
+		{
+			Console.WriteLine(p);
+		}
+
+		Console.WriteLine("RenameFs results:");
+		foreach ( var p in renameFs )
+		{
+			Console.WriteLine($"{p.FilePath} - {p.Status}");
+		}
+		
 		Assert.AreEqual("/exist/.starsky.test2.jpg.json",
 			values.Find(p => p == "/exist/.starsky.test2.jpg.json"));
+		
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok,
 			renameFs.Find(p => p.FilePath == "/exist/test2.jpg")?.Status);
 		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,
