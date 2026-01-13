@@ -315,6 +315,7 @@ const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props
             <button
               onClick={generatePreview}
               disabled={isPreviewLoading || !pattern.trim()}
+              data-test="button-batch-rename-generate-preview"
               className="btn btn--default btn-preview"
             >
               {isPreviewLoading ? MessageBatchRenameLoadingPreview : MessageBatchRenamePreview}
