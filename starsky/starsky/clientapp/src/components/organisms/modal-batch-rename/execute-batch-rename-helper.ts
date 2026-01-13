@@ -13,7 +13,6 @@ import { IModalBatchRenameProps } from "./modal-batch-rename";
  * Execute batch rename
  */
 export async function executeBatchRenameHelper(
-  previewGenerated: boolean,
   setError: React.Dispatch<React.SetStateAction<string | null>>,
   preview: IBatchRenameItem[],
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
@@ -22,7 +21,7 @@ export async function executeBatchRenameHelper(
   recentPatterns: string[],
   setRecentPatterns: React.Dispatch<React.SetStateAction<string[]>>
 ) {
-  if (!previewGenerated || preview.length === 0) {
+  if (preview.length === 0) {
     setError("Please generate a preview first");
     return;
   }

@@ -149,7 +149,6 @@ const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props
 
   async function executeBatchRename() {
     executeBatchRenameHelper(
-      previewGenerated,
       setError,
       preview,
       setIsLoading,

@@ -1,9 +1,9 @@
 import { render } from "@testing-library/react";
 import { act } from "react";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
-import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
-import * as FetchPost from "../../../shared/fetch/fetch-post";
+import { IBatchRenameItem } from "../../../interfaces/IBatchRenameItem";
 import * as Modal from "../../atoms/modal/modal";
+import * as generatePreviewHelper from "./generate-preview-helper";
 import ModalBatchRename from "./modal-batch-rename";
 
 describe("ModalBatchRename", () => {
@@ -232,34 +232,31 @@ describe("ModalBatchRename", () => {
     expect(modalSpy).toHaveBeenCalledTimes(2);
   });
 
-  it("should load and display recent patterns from localStorage", async () => {
+  it("renderPreviewList with 0 items", async () => {
     const handleExit = jest.fn();
     const selectedFilePaths = ["/test1.jpg"];
 
-    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
-      ...newIConnectionDefault(),
-      data: [
-        {
-          sourceFilePath: "/test1.jpg",
-          targetFilePath: "/renamed_test1.jpg",
-          relatedFilePaths: [],
-          sequenceNumber: 1,
-          hasError: false,
-          errorMessage: undefined
+    jest
+      .spyOn(generatePreviewHelper, "generatePreviewHelper")
+      .mockImplementationOnce(
+        async (
+          _: string,
+          setIsPreviewLoading: React.Dispatch<React.SetStateAction<boolean>>,
+          setError: React.Dispatch<React.SetStateAction<string | null>>,
+          setPreview: React.Dispatch<React.SetStateAction<IBatchRenameItem[]>>,
+          setPreviewGenerated: React.Dispatch<React.SetStateAction<boolean>>
+        ) => {
+          setIsPreviewLoading(false);
+          setError(null);
+          setPreview([]);
+          setPreviewGenerated(true);
+          return;
         }
-      ],
-      statusCode: 200
-    });
-
-    const fetchPostSpy = jest
-      .spyOn(FetchPost, "default")
-      .mockImplementationOnce(() => mockIConnectionDefault);
+      );
 
     const modalSpy = jest
       .spyOn(Modal, "default")
       .mockReset()
-      .mockImplementationOnce(({ children }) => <>{children}</>)
-      .mockImplementationOnce(({ children }) => <>{children}</>)
       .mockImplementationOnce(({ children }) => <>{children}</>)
       .mockImplementationOnce(({ children }) => <>{children}</>);
 
@@ -284,7 +281,7 @@ describe("ModalBatchRename", () => {
         undoSelection={jest.fn()}
       />
     );
-    const { container, rerender } = render(modalBatchRename);
+    const { container } = render(modalBatchRename);
 
     const input = container.querySelector(
       "[data-test='input-batch-rename-pattern']"
@@ -304,16 +301,629 @@ describe("ModalBatchRename", () => {
       button.click();
     });
 
-    expect(fetchPostSpy).toHaveBeenCalledTimes(1);
+    console.log(container.innerHTML);
 
-    await rerender(modalBatchRename);
+    const previewItem = container.querySelectorAll(".batch-rename-preview-list");
+    expect(previewItem).toBeTruthy();
+    //
+    const previewTarget = container.querySelectorAll(".preview-target");
+    expect(previewTarget.length).toBe(0);
+
+    expect(modalSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it("renderPreviewList with 1 item", async () => {
+    const handleExit = jest.fn();
+    const selectedFilePaths = ["/test1.jpg"];
+
+    jest
+      .spyOn(generatePreviewHelper, "generatePreviewHelper")
+      .mockImplementationOnce(
+        async (
+          _: string,
+          setIsPreviewLoading: React.Dispatch<React.SetStateAction<boolean>>,
+          setError: React.Dispatch<React.SetStateAction<string | null>>,
+          setPreview: React.Dispatch<React.SetStateAction<IBatchRenameItem[]>>,
+          setPreviewGenerated: React.Dispatch<React.SetStateAction<boolean>>
+        ) => {
+          setIsPreviewLoading(false);
+          setError(null);
+          setPreview([
+            {
+              sourceFilePath: "/test1.jpg",
+              targetFilePath: "/renamed_test1.jpg",
+              relatedFilePaths: [],
+              sequenceNumber: 1,
+              hasError: false,
+              errorMessage: undefined
+            }
+          ]);
+          setPreviewGenerated(true);
+          return;
+        }
+      );
+
+    const modalSpy = jest
+      .spyOn(Modal, "default")
+      .mockReset()
+      .mockImplementationOnce(({ children }) => <>{children}</>)
+      .mockImplementationOnce(({ children }) => <>{children}</>);
+
+    // Query the select element by class within the rendered container
+
+    const modalBatchRename = (
+      <ModalBatchRename
+        isOpen={true}
+        handleExit={handleExit}
+        select={selectedFilePaths}
+        dispatch={jest.fn()}
+        historyLocationSearch=""
+        state={
+          {
+            fileIndexItems: [
+              {
+                filePath: "/test1.jpg"
+              }
+            ]
+          } as unknown as IArchiveProps
+        }
+        undoSelection={jest.fn()}
+      />
+    );
+    const { container } = render(modalBatchRename);
+
+    const input = container.querySelector(
+      "[data-test='input-batch-rename-pattern']"
+    ) as HTMLInputElement;
+
+    expect(input).toBeTruthy();
+    input.value = "{yyyy}{MM}{dd}_{filenamebase}.{ext}";
+
+    const button = container.querySelector(
+      "[data-test='button-batch-rename-generate-preview']"
+    ) as HTMLButtonElement;
+
+    expect(button).toBeTruthy();
+    expect(button.disabled).toBe(false);
+
+    act(() => {
+      button.click();
+    });
 
     console.log(container.innerHTML);
 
-    // preview-item
-    // const previewItem = container.querySelectorAll(".preview-item");
-    // expect(previewItem).toBeFalsy();
+    const previewItem = container.querySelectorAll(".batch-rename-preview-list");
+    expect(previewItem).toBeTruthy();
+    //
+    const previewTarget = container.querySelectorAll(".preview-target");
+    expect(previewTarget.length).toBe(1);
+    expect(previewTarget[0].textContent).toBe("renamed_test1.jpg");
 
-    modalSpy.mockRestore();
+    expect(modalSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it("renderPreviewList with 2 items", async () => {
+    const handleExit = jest.fn();
+    const selectedFilePaths = ["/test1.jpg"];
+
+    jest
+      .spyOn(generatePreviewHelper, "generatePreviewHelper")
+      .mockImplementationOnce(
+        async (
+          _: string,
+          setIsPreviewLoading: React.Dispatch<React.SetStateAction<boolean>>,
+          setError: React.Dispatch<React.SetStateAction<string | null>>,
+          setPreview: React.Dispatch<React.SetStateAction<IBatchRenameItem[]>>,
+          setPreviewGenerated: React.Dispatch<React.SetStateAction<boolean>>
+        ) => {
+          setIsPreviewLoading(false);
+          setError(null);
+          setPreview([
+            {
+              sourceFilePath: "/test1.jpg",
+              targetFilePath: "/renamed_test1.jpg",
+              relatedFilePaths: [],
+              sequenceNumber: 1,
+              hasError: false,
+              errorMessage: undefined
+            },
+            {
+              sourceFilePath: "/test2.jpg",
+              targetFilePath: "/renamed_test2.jpg",
+              relatedFilePaths: [],
+              sequenceNumber: 2,
+              hasError: false,
+              errorMessage: undefined
+            }
+          ]);
+          setPreviewGenerated(true);
+          return;
+        }
+      );
+
+    const modalSpy = jest
+      .spyOn(Modal, "default")
+      .mockReset()
+      .mockImplementationOnce(({ children }) => <>{children}</>)
+      .mockImplementationOnce(({ children }) => <>{children}</>);
+
+    // Query the select element by class within the rendered container
+
+    const modalBatchRename = (
+      <ModalBatchRename
+        isOpen={true}
+        handleExit={handleExit}
+        select={selectedFilePaths}
+        dispatch={jest.fn()}
+        historyLocationSearch=""
+        state={
+          {
+            fileIndexItems: [
+              {
+                filePath: "/test1.jpg"
+              }
+            ]
+          } as unknown as IArchiveProps
+        }
+        undoSelection={jest.fn()}
+      />
+    );
+    const { container } = render(modalBatchRename);
+
+    const input = container.querySelector(
+      "[data-test='input-batch-rename-pattern']"
+    ) as HTMLInputElement;
+
+    expect(input).toBeTruthy();
+    input.value = "{yyyy}{MM}{dd}_{filenamebase}.{ext}";
+
+    const button = container.querySelector(
+      "[data-test='button-batch-rename-generate-preview']"
+    ) as HTMLButtonElement;
+
+    expect(button).toBeTruthy();
+    expect(button.disabled).toBe(false);
+
+    act(() => {
+      button.click();
+    });
+
+    console.log(container.innerHTML);
+
+    const previewItem = container.querySelectorAll(".batch-rename-preview-list");
+    expect(previewItem).toBeTruthy();
+    //
+    const previewTarget = container.querySelectorAll(".preview-target");
+    expect(previewTarget.length).toBe(2);
+    expect(previewTarget[0].textContent).toBe("renamed_test1.jpg");
+    expect(previewTarget[1].textContent).toBe("renamed_test2.jpg");
+
+    expect(modalSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it("renderPreviewList with 3 items", async () => {
+    const handleExit = jest.fn();
+    const selectedFilePaths = ["/test1.jpg"];
+
+    jest
+      .spyOn(generatePreviewHelper, "generatePreviewHelper")
+      .mockImplementationOnce(
+        async (
+          _: string,
+          setIsPreviewLoading: React.Dispatch<React.SetStateAction<boolean>>,
+          setError: React.Dispatch<React.SetStateAction<string | null>>,
+          setPreview: React.Dispatch<React.SetStateAction<IBatchRenameItem[]>>,
+          setPreviewGenerated: React.Dispatch<React.SetStateAction<boolean>>
+        ) => {
+          setIsPreviewLoading(false);
+          setError(null);
+          setPreview([
+            {
+              sourceFilePath: "/test1.jpg",
+              targetFilePath: "/renamed_test1.jpg",
+              relatedFilePaths: [],
+              sequenceNumber: 1,
+              hasError: false,
+              errorMessage: undefined
+            },
+            {
+              sourceFilePath: "/test2.jpg",
+              targetFilePath: "/renamed_test2.jpg",
+              relatedFilePaths: [],
+              sequenceNumber: 2,
+              hasError: false,
+              errorMessage: undefined
+            },
+            {
+              sourceFilePath: "/test3.jpg",
+              targetFilePath: "/renamed_test3.jpg",
+              relatedFilePaths: [],
+              sequenceNumber: 3,
+              hasError: false,
+              errorMessage: undefined
+            }
+          ]);
+          setPreviewGenerated(true);
+          return;
+        }
+      );
+
+    const modalSpy = jest
+      .spyOn(Modal, "default")
+      .mockReset()
+      .mockImplementationOnce(({ children }) => <>{children}</>)
+      .mockImplementationOnce(({ children }) => <>{children}</>);
+
+    // Query the select element by class within the rendered container
+
+    const modalBatchRename = (
+      <ModalBatchRename
+        isOpen={true}
+        handleExit={handleExit}
+        select={selectedFilePaths}
+        dispatch={jest.fn()}
+        historyLocationSearch=""
+        state={
+          {
+            fileIndexItems: [
+              {
+                filePath: "/test1.jpg"
+              }
+            ]
+          } as unknown as IArchiveProps
+        }
+        undoSelection={jest.fn()}
+      />
+    );
+    const { container } = render(modalBatchRename);
+
+    const input = container.querySelector(
+      "[data-test='input-batch-rename-pattern']"
+    ) as HTMLInputElement;
+
+    expect(input).toBeTruthy();
+    input.value = "{yyyy}{MM}{dd}_{filenamebase}.{ext}";
+
+    const button = container.querySelector(
+      "[data-test='button-batch-rename-generate-preview']"
+    ) as HTMLButtonElement;
+
+    expect(button).toBeTruthy();
+    expect(button.disabled).toBe(false);
+
+    act(() => {
+      button.click();
+    });
+
+    console.log(container.innerHTML);
+
+    const previewItem = container.querySelectorAll(".batch-rename-preview-list");
+    expect(previewItem).toBeTruthy();
+    //
+    const previewTarget = container.querySelectorAll(".preview-target");
+    expect(previewTarget.length).toBe(3);
+    expect(previewTarget[0].textContent).toBe("renamed_test1.jpg");
+    expect(previewTarget[1].textContent).toBe("renamed_test2.jpg");
+    expect(previewTarget[2].textContent).toBe("renamed_test3.jpg");
+
+    expect(modalSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it("renderPreviewList with 5 items", async () => {
+    const handleExit = jest.fn();
+    const selectedFilePaths = ["/test1.jpg"];
+
+    jest
+      .spyOn(generatePreviewHelper, "generatePreviewHelper")
+      .mockImplementationOnce(
+        async (
+          _: string,
+          setIsPreviewLoading: React.Dispatch<React.SetStateAction<boolean>>,
+          setError: React.Dispatch<React.SetStateAction<string | null>>,
+          setPreview: React.Dispatch<React.SetStateAction<IBatchRenameItem[]>>,
+          setPreviewGenerated: React.Dispatch<React.SetStateAction<boolean>>
+        ) => {
+          setIsPreviewLoading(false);
+          setError(null);
+          setPreview([
+            {
+              sourceFilePath: "/test1.jpg",
+              targetFilePath: "/renamed_test1.jpg",
+              relatedFilePaths: [],
+              sequenceNumber: 1,
+              hasError: false,
+              errorMessage: undefined
+            },
+            {
+              sourceFilePath: "/test2.jpg",
+              targetFilePath: "/renamed_test2.jpg",
+              relatedFilePaths: [],
+              sequenceNumber: 2,
+              hasError: false,
+              errorMessage: undefined
+            },
+            {
+              sourceFilePath: "/test3.jpg",
+              targetFilePath: "/renamed_test3.jpg",
+              relatedFilePaths: [],
+              sequenceNumber: 3,
+              hasError: false,
+              errorMessage: undefined
+            },
+            {
+              sourceFilePath: "/test4.jpg",
+              targetFilePath: "/renamed_test4.jpg",
+              relatedFilePaths: [],
+              sequenceNumber: 4,
+              hasError: false,
+              errorMessage: undefined
+            },
+            {
+              sourceFilePath: "/test5.jpg",
+              targetFilePath: "/renamed_test5.jpg",
+              relatedFilePaths: [],
+              sequenceNumber: 5,
+              hasError: false,
+              errorMessage: undefined
+            }
+          ]);
+          setPreviewGenerated(true);
+          return;
+        }
+      );
+
+    const modalSpy = jest
+      .spyOn(Modal, "default")
+      .mockReset()
+      .mockImplementationOnce(({ children }) => <>{children}</>)
+      .mockImplementationOnce(({ children }) => <>{children}</>);
+
+    // Query the select element by class within the rendered container
+
+    const modalBatchRename = (
+      <ModalBatchRename
+        isOpen={true}
+        handleExit={handleExit}
+        select={selectedFilePaths}
+        dispatch={jest.fn()}
+        historyLocationSearch=""
+        state={
+          {
+            fileIndexItems: [
+              {
+                filePath: "/test1.jpg"
+              }
+            ]
+          } as unknown as IArchiveProps
+        }
+        undoSelection={jest.fn()}
+      />
+    );
+    const { container } = render(modalBatchRename);
+
+    const input = container.querySelector(
+      "[data-test='input-batch-rename-pattern']"
+    ) as HTMLInputElement;
+
+    expect(input).toBeTruthy();
+    input.value = "{yyyy}{MM}{dd}_{filenamebase}.{ext}";
+
+    const button = container.querySelector(
+      "[data-test='button-batch-rename-generate-preview']"
+    ) as HTMLButtonElement;
+
+    expect(button).toBeTruthy();
+    expect(button.disabled).toBe(false);
+
+    act(() => {
+      button.click();
+    });
+
+    console.log(container.innerHTML);
+
+    const previewItem = container.querySelectorAll(".batch-rename-preview-list");
+    expect(previewItem).toBeTruthy();
+    //
+    const previewTarget = container.querySelectorAll(".preview-target");
+    expect(previewTarget.length).toBe(3);
+    expect(previewTarget[0].textContent).toBe("renamed_test1.jpg");
+    expect(previewTarget[1].textContent).toBe("renamed_test2.jpg");
+    expect(previewTarget[2].textContent).toBe("renamed_test5.jpg");
+
+    expect(modalSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it("renderPreviewList with 1 defined error item", async () => {
+    const handleExit = jest.fn();
+    const selectedFilePaths = ["/test1.jpg"];
+
+    jest
+      .spyOn(generatePreviewHelper, "generatePreviewHelper")
+      .mockImplementationOnce(
+        async (
+          _: string,
+          setIsPreviewLoading: React.Dispatch<React.SetStateAction<boolean>>,
+          setError: React.Dispatch<React.SetStateAction<string | null>>,
+          setPreview: React.Dispatch<React.SetStateAction<IBatchRenameItem[]>>,
+          setPreviewGenerated: React.Dispatch<React.SetStateAction<boolean>>
+        ) => {
+          setIsPreviewLoading(false);
+          setError(null);
+          setPreview([
+            {
+              sourceFilePath: "/test1.jpg",
+              targetFilePath: "/renamed_test1.jpg",
+              relatedFilePaths: [],
+              sequenceNumber: 1,
+              hasError: true,
+              errorMessage: "Message from backend"
+            }
+          ]);
+          setPreviewGenerated(true);
+          return;
+        }
+      );
+
+    const modalSpy = jest
+      .spyOn(Modal, "default")
+      .mockReset()
+      .mockImplementationOnce(({ children }) => <>{children}</>)
+      .mockImplementationOnce(({ children }) => <>{children}</>);
+
+    // Query the select element by class within the rendered container
+
+    const modalBatchRename = (
+      <ModalBatchRename
+        isOpen={true}
+        handleExit={handleExit}
+        select={selectedFilePaths}
+        dispatch={jest.fn()}
+        historyLocationSearch=""
+        state={
+          {
+            fileIndexItems: [
+              {
+                filePath: "/test1.jpg"
+              }
+            ]
+          } as unknown as IArchiveProps
+        }
+        undoSelection={jest.fn()}
+      />
+    );
+    const { container } = render(modalBatchRename);
+
+    const input = container.querySelector(
+      "[data-test='input-batch-rename-pattern']"
+    ) as HTMLInputElement;
+
+    expect(input).toBeTruthy();
+    input.value = "{yyyy}{MM}{dd}_{filenamebase}.{ext}";
+
+    const button = container.querySelector(
+      "[data-test='button-batch-rename-generate-preview']"
+    ) as HTMLButtonElement;
+
+    expect(button).toBeTruthy();
+    expect(button.disabled).toBe(false);
+
+    act(() => {
+      button.click();
+    });
+
+    console.log(container.innerHTML);
+
+    const previewItem = container.querySelectorAll(".batch-rename-preview-list");
+    expect(previewItem).toBeTruthy();
+    //
+    const previewTarget = container.querySelectorAll(".preview-target");
+    expect(previewTarget.length).toBe(1);
+    expect(previewTarget[0].textContent).toBe("renamed_test1.jpg");
+
+    // modal-batch-rename-error-box
+    const errorBox = container.querySelectorAll(".preview-item--error");
+    expect(errorBox.length).toBe(1);
+
+    expect(errorBox[0].querySelector(".preview-error-message")?.textContent).toBe(
+      "Message from backend"
+    );
+
+    expect(modalSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it("renderPreviewList with 1 undefined error item", async () => {
+    const handleExit = jest.fn();
+    const selectedFilePaths = ["/test1.jpg"];
+
+    jest
+      .spyOn(generatePreviewHelper, "generatePreviewHelper")
+      .mockImplementationOnce(
+        async (
+          _: string,
+          setIsPreviewLoading: React.Dispatch<React.SetStateAction<boolean>>,
+          setError: React.Dispatch<React.SetStateAction<string | null>>,
+          setPreview: React.Dispatch<React.SetStateAction<IBatchRenameItem[]>>,
+          setPreviewGenerated: React.Dispatch<React.SetStateAction<boolean>>
+        ) => {
+          setIsPreviewLoading(false);
+          setError(null);
+          setPreview([
+            {
+              sourceFilePath: "/test1.jpg",
+              targetFilePath: "/renamed_test1.jpg",
+              relatedFilePaths: [],
+              sequenceNumber: 1,
+              hasError: true,
+              errorMessage: undefined
+            }
+          ]);
+          setPreviewGenerated(true);
+          return;
+        }
+      );
+
+    const modalSpy = jest
+      .spyOn(Modal, "default")
+      .mockReset()
+      .mockImplementationOnce(({ children }) => <>{children}</>)
+      .mockImplementationOnce(({ children }) => <>{children}</>);
+
+    // Query the select element by class within the rendered container
+
+    const modalBatchRename = (
+      <ModalBatchRename
+        isOpen={true}
+        handleExit={handleExit}
+        select={selectedFilePaths}
+        dispatch={jest.fn()}
+        historyLocationSearch=""
+        state={
+          {
+            fileIndexItems: [
+              {
+                filePath: "/test1.jpg"
+              }
+            ]
+          } as unknown as IArchiveProps
+        }
+        undoSelection={jest.fn()}
+      />
+    );
+    const { container } = render(modalBatchRename);
+
+    const input = container.querySelector(
+      "[data-test='input-batch-rename-pattern']"
+    ) as HTMLInputElement;
+
+    expect(input).toBeTruthy();
+    input.value = "{yyyy}{MM}{dd}_{filenamebase}.{ext}";
+
+    const button = container.querySelector(
+      "[data-test='button-batch-rename-generate-preview']"
+    ) as HTMLButtonElement;
+
+    expect(button).toBeTruthy();
+    expect(button.disabled).toBe(false);
+
+    act(() => {
+      button.click();
+    });
+
+    console.log(container.innerHTML);
+
+    const previewItem = container.querySelectorAll(".batch-rename-preview-list");
+    expect(previewItem).toBeTruthy();
+    //
+    const previewTarget = container.querySelectorAll(".preview-target");
+    expect(previewTarget.length).toBe(1);
+    expect(previewTarget[0].textContent).toBe("renamed_test1.jpg");
+
+    // modal-batch-rename-error-box
+    const errorBox = container.querySelectorAll(".preview-item--error");
+    expect(errorBox.length).toBe(1);
+
+    expect(errorBox[0].querySelector(".preview-error-message")?.textContent).toBe("Error");
+
+    expect(modalSpy).toHaveBeenCalledTimes(2);
   });
 });
