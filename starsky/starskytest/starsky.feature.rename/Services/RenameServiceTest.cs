@@ -26,7 +26,6 @@ public sealed class RenameServiceTest
 	private readonly CreateAnImage _newImage;
 	private readonly Query _query;
 	private FileIndexItem _fileInExist = new();
-	private FileIndexItem _fileInRoot = new();
 	private FileIndexItem _folder1Exist = new();
 
 	private FileIndexItem _folderExist = new();
@@ -128,20 +127,7 @@ public sealed class RenameServiceTest
 
 		_fileInExist = await _query.AddItemAsync(new FileIndexItem
 		{
-			FileName = "file.jpg",
-			ParentDirectory = "/exist",
-			IsDirectory = false,
-			AddToDatabase = new DateTime(2022, 5, 6, 0, 0, 0, DateTimeKind.Utc),
-			DateTime = new DateTime(2022, 5, 6, 0, 0, 0, DateTimeKind.Utc)
-		});
-
-		_fileInRoot = await _query.AddItemAsync(new FileIndexItem
-		{
-			FileName = "root-file.jpg",
-			ParentDirectory = "/",
-			IsDirectory = false,
-			AddToDatabase = new DateTime(2022, 5, 6, 0, 0, 0, DateTimeKind.Utc),
-			DateTime = new DateTime(2022, 5, 6, 0, 0, 0, DateTimeKind.Utc)
+			FileName = "file.jpg", ParentDirectory = "/exist", IsDirectory = false
 		});
 
 		_folder1Exist = await _query.AddItemAsync(new FileIndexItem
@@ -164,13 +150,11 @@ public sealed class RenameServiceTest
 		Assert.IsNotNull(_folder1Exist.FilePath);
 		Assert.IsNotNull(_fileInExist.FilePath);
 		Assert.IsNotNull(_parentFolder.FilePath);
-		Assert.IsNotNull(_fileInRoot.FilePath);
 
 		await _query.RemoveItemAsync(_folderExist);
 		await _query.RemoveItemAsync(_folder1Exist);
 		await _query.RemoveItemAsync(_fileInExist);
 		await _query.RemoveItemAsync(_parentFolder);
-		await _query.RemoveItemAsync(_fileInRoot);
 	}
 
 	[TestMethod]
