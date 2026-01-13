@@ -45,9 +45,8 @@ describe("MenuOptionBatchRename", () => {
     );
 
     const menuItem = container.querySelector("[data-test='batch-rename']") as HTMLElement;
-    const button = menuItem?.querySelector("button");
-    console.log(container.innerHTML);
-    expect(button?.disabled).toBe(true);
+
+    expect(menuItem.parentElement?.className).toContain("disabled");
   });
 
   it("should be disabled in read-only mode", () => {
@@ -62,7 +61,6 @@ describe("MenuOptionBatchRename", () => {
     );
 
     const menuItem = container.querySelector("[data-test='batch-rename']") as HTMLElement;
-    const button = menuItem?.querySelector("button");
-    expect(button?.disabled).toBe(true);
+    expect(menuItem.parentElement?.className).toContain("disabled");
   });
 });
