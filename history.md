@@ -43,7 +43,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.7 - _(Unreleased)_ - 2026-?-? {#v0.7.7}
 
-- nothing yet
+- [x] (Added) _Back-end_ Batch rename feature (PR #2577)
 
 ## version 0.7.6 - 2026-01-08 {#v0.7.6}
 
