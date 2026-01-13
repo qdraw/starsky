@@ -14,6 +14,7 @@ import MoreMenu from "../../atoms/more-menu/more-menu";
 import ForceSyncWaitButton from "../../molecules/force-sync-wait-button/force-sync-wait-button.tsx";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
 import { MenuOptionArchiveRename } from "../../molecules/menu-option-archive-rename/menu-option-archive-rename.tsx";
+import { MenuOptionBatchRename } from "../../molecules/menu-option-batch-rename/menu-option-batch-rename.tsx";
 import MenuOptionDesktopEditorOpenSelectionNoSelectWarning from "../../molecules/menu-option-desktop-editor-open-selection-no-select-warning/menu-option-desktop-editor-open-selection-no-select-warning";
 import MenuOptionDesktopEditorOpenSelection from "../../molecules/menu-option-desktop-editor-open-selection/menu-option-desktop-editor-open-selection";
 import MenuOptionDesktopEditorOpenSingle from "../../molecules/menu-option-desktop-editor-open-single/menu-option-desktop-editor-open-single.tsx";
@@ -237,6 +238,11 @@ const MenuArchive: React.FunctionComponent = memo(() => {
                     isSet={isModalPublishOpen}
                     set={setIsModalPublishOpen}
                     localization={localization.MessagePublish}
+                  />
+                  <MenuOptionBatchRename
+                    readOnly={readOnly}
+                    state={state}
+                    selectedFilePaths={select}
                   />
                   <MenuOptionMoveToTrash
                     state={state}

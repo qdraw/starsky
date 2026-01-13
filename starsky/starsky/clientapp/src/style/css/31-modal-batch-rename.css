@@ -1,0 +1,195 @@
+/* Batch Rename Modal Styles */
+
+.batch-rename-recent-patterns {
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.batch-rename-recent-patterns label {
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+.select-batch-rename-patterns {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.95em;
+}
+
+@media (prefers-color-scheme: dark) {
+  .select-batch-rename-patterns {
+    background-color: #424242;
+    color: #fff;
+    border-color: #555;
+  }
+}
+
+.input-batch-rename-pattern {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.95em;
+  font-family: monospace;
+  margin: 8px 0;
+  box-sizing: border-box;
+}
+
+@media (prefers-color-scheme: dark) {
+  .input-batch-rename-pattern {
+    background-color: #424242;
+    color: #fff;
+    border-color: #555;
+  }
+}
+
+.label-batch-rename {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  font-size: 0.95em;
+}
+
+.batch-rename-count {
+  margin: 12px 0;
+  padding: 8px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  font-size: 0.95em;
+}
+
+@media (prefers-color-scheme: dark) {
+  .batch-rename-count {
+    background-color: #424242;
+  }
+}
+
+.btn-preview {
+  margin: 10px 0;
+  width: 100%;
+}
+
+.batch-rename-preview-list {
+  background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 10px;
+  margin: 10px 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+@media (prefers-color-scheme: dark) {
+  .batch-rename-preview-list {
+    background-color: #303030;
+    border-color: #555;
+  }
+}
+
+.preview-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  font-size: 0.9em;
+  margin: 4px 0;
+  word-break: break-all;
+}
+
+.preview-item--error {
+  background-color: #ffe0e0;
+  border-left: 3px solid #ff6b6b;
+  padding-left: 5px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .preview-item--error {
+    background-color: #6b4242;
+    border-left-color: #ff6b6b;
+  }
+}
+
+.preview-ellipsis {
+  text-align: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #999;
+}
+
+.preview-source {
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.preview-arrow {
+  font-weight: bold;
+  color: #666;
+  flex-shrink: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .preview-arrow {
+    color: #aaa;
+  }
+}
+
+.preview-target {
+  color: #2196f3;
+  flex-grow: 1;
+}
+
+.preview-error-message {
+  display: block;
+  width: 100%;
+  color: #d32f2f;
+  font-size: 0.85em;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+@media (prefers-color-scheme: dark) {
+  .preview-error-message {
+    color: #ff6b6b;
+  }
+}
+
+.batch-rename-errors {
+  background-color: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 4px;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .batch-rename-errors {
+    background-color: #6b5c3c;
+    border-color: #ffc107;
+    color: #fff;
+  }
+}
+
+.error-item {
+  margin: 5px 0;
+  padding: 5px;
+  font-size: 0.9em;
+}
+
+.batch-rename-button-group {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+  justify-content: flex-end;
+}
+
+.batch-rename-button-group .btn {
+  flex: 1;
+}
+
+.btn--cancel {
+  margin-top: 10px;
+  width: 100%;
+}
