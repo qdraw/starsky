@@ -77,6 +77,107 @@ describe("ModalBatchRename", () => {
     expect(modal).not.toBeInTheDocument();
   });
 
+  it("should select a pattern that is recent", () => {
+    const handleExit = jest.fn();
+    const selectedFilePaths = ["/test1.jpg"];
+    const patterns = [
+      "{yyyy}{MM}{dd}_{filenamebase}.{ext}",
+      "{filenamebase}_backup.{ext}",
+      "custom_{ext}"
+    ];
+    // Mock localStorage
+    const getItemSpy = jest
+      .spyOn(window.localStorage.__proto__, "getItem")
+      .mockImplementation((key) => {
+        if (key === "batch-rename-patterns") {
+          return JSON.stringify(patterns);
+        }
+        return null;
+      });
+
+    const modalSpy = jest
+      .spyOn(Modal, "default")
+      .mockReset()
+      .mockImplementationOnce(({ children }) => <>{children}</>)
+      .mockImplementationOnce(({ children }) => <>{children}</>)
+      .mockImplementationOnce(({ children }) => <>{children}</>);
+
+    // Query the select element by class within the rendered container
+    const { container } = render(
+      <ModalBatchRename
+        isOpen={true}
+        handleExit={handleExit}
+        select={selectedFilePaths}
+        dispatch={jest.fn()}
+        historyLocationSearch=""
+        state={{} as unknown as IArchiveProps}
+        undoSelection={jest.fn()}
+      />
+    );
+
+    const select = container.querySelector(
+      "select.select-batch-rename-patterns"
+    ) as HTMLSelectElement;
+
+    expect(select).toBeTruthy();
+
+    // Simulate selecting the second pattern
+    select.value = patterns[2];
+    select.dispatchEvent(new Event("change", { bubbles: true }));
+
+    // The input should update to the selected pattern
+    const input = container.querySelector("input.input-batch-rename-pattern") as HTMLInputElement;
+    expect(input).toBeTruthy();
+    if (!input) throw new Error("Pattern input not found");
+    expect(input.value).toBe(patterns[2]);
+
+    console.log(container.innerHTML);
+
+    getItemSpy.mockRestore();
+    expect(modalSpy).toHaveBeenCalledTimes(3);
+  });
+
+  it("invalid recent patterns from localStorage", () => {
+    const handleExit = jest.fn();
+    const selectedFilePaths = ["/test1.jpg"];
+    // Mock localStorage
+    const getItemSpy = jest
+      .spyOn(window.localStorage.__proto__, "getItem")
+      .mockImplementation((key) => {
+        if (key === "batch-rename-patterns") {
+          return "invalid json";
+        }
+        return null;
+      });
+
+    const modalSpy = jest
+      .spyOn(Modal, "default")
+      .mockReset()
+      .mockImplementationOnce(({ children }) => <>{children}</>);
+
+    // Query the select element by class within the rendered container
+    const { container } = render(
+      <ModalBatchRename
+        isOpen={true}
+        handleExit={handleExit}
+        select={selectedFilePaths}
+        dispatch={jest.fn()}
+        historyLocationSearch=""
+        state={{} as unknown as IArchiveProps}
+        undoSelection={jest.fn()}
+      />
+    );
+
+    const select = container.querySelector(
+      "select.select-batch-rename-patterns"
+    ) as HTMLSelectElement;
+
+    expect(select).toBeFalsy();
+
+    getItemSpy.mockRestore();
+    expect(modalSpy).toHaveBeenCalledTimes(1);
+  });
+
   it("should load and display recent patterns from localStorage", () => {
     const handleExit = jest.fn();
     const selectedFilePaths = ["/test1.jpg"];
