@@ -291,4 +291,16 @@ describe("url-query", () => {
       expect(url).toContain("realtime");
     });
   });
+
+  describe("UrlBatchRenamePreview & Execute", () => {
+    it("should contain /api/BatchRename/preview", () => {
+      const test = urlQuery.UrlBatchRenamePreview();
+      expect(test).toContain("/api/BatchRename/preview");
+    });
+
+    it("should contain /api/BatchRename/execute", () => {
+      const test = urlQuery.UrlBatchRenameExecute();
+      expect(test).toContain("/api/BatchRename/execute");
+    });
+  });
 });
