@@ -18,7 +18,7 @@ const FetchPost = async (
     }
   };
 
-  if (typeof body === "string") {
+  if (typeof body === "string" && !headers["Content-Type"]) {
     (settings.headers as Record<string, string>)["Content-Type"] =
       "application/x-www-form-urlencoded";
   }

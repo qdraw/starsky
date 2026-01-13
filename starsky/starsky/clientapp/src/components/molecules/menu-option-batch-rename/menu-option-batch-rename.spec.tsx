@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react";
-import { MenuOptionBatchRename } from "./menu-option-batch-rename";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { PageType } from "../../../interfaces/IDetailView";
+import { MenuOptionBatchRename } from "./menu-option-batch-rename";
 
 describe("MenuOptionBatchRename", () => {
   const mockState: IArchiveProps = {

@@ -1,19 +1,28 @@
 import { useEffect, useState } from "react";
+import { ArchiveAction } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
+import { IArchiveProps } from "../../../interfaces/IArchiveProps";
+import { IBatchRenameItem } from "../../../interfaces/IBatchRenameItem";
+import { IBatchRenameRequest } from "../../../interfaces/IBatchRenameRequest";
+import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import localization from "../../../localization/localization.json";
 import FetchPost from "../../../shared/fetch/fetch-post";
 import { FileExtensions } from "../../../shared/file-extensions";
 import { FileListCache } from "../../../shared/filelist-cache";
 import { Language } from "../../../shared/language";
+import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
+import { URLPath } from "../../../shared/url/url-path";
 import { UrlQuery } from "../../../shared/url/url-query";
-import { IBatchRenameItem } from "../../../interfaces/IBatchRenameItem";
-import { IBatchRenameRequest } from "../../../interfaces/IBatchRenameRequest";
 import Modal from "../../atoms/modal/modal";
 
 export interface IModalBatchRenameProps {
   isOpen: boolean;
   handleExit: () => void;
-  selectedFilePaths: string[];
+  select: string[];
+  historyLocationSearch: string;
+  state: IArchiveProps;
+  dispatch: React.Dispatch<ArchiveAction>;
+  undoSelection: () => void;
 }
 
 const BATCH_RENAME_PATTERNS_KEY = "batch-rename-patterns";
@@ -76,8 +85,9 @@ const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props
     setError(null);
 
     try {
+      const filePathList = new URLPath().MergeSelectFileIndexItem(props.select, props.state.fileIndexItems);            
       const request: IBatchRenameRequest = {
-        filePaths: props.selectedFilePaths,
+        filePaths: filePathList,
         pattern: pattern,
         collections: true
       };
@@ -126,8 +136,9 @@ const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props
     setError(null);
 
     try {
+      const filePathList = new URLPath().MergeSelectFileIndexItem(props.select, props.state.fileIndexItems);
       const request: IBatchRenameRequest = {
-        filePaths: props.selectedFilePaths,
+        filePaths: filePathList,
         pattern: pattern,
         collections: true
       };
@@ -152,15 +163,24 @@ const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props
       setRecentPatterns(newPatterns);
       localStorage.setItem(BATCH_RENAME_PATTERNS_KEY, JSON.stringify(newPatterns));
 
+      const updatedFileIndexItems = response.data as IFileIndexItem[];
+
+
       // Clean cache and close modal
       new FileListCache().CacheCleanEverything();
       props.handleExit();
+      props.undoSelection();
+      props.dispatch({ type: "add", add:updatedFileIndexItems });
+      ClearSearchCache(props.historyLocationSearch);
+
     } catch (err) {
       console.error("Error executing batch rename:", err);
       setError("Error executing batch rename");
     } finally {
       setIsLoading(false);
     }
+
+
   }
 
   /**
@@ -279,7 +299,7 @@ const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props
           {/* Count of photos */}
           <div className="batch-rename-count">
             <strong>
-              {props.selectedFilePaths.length} {MessageBatchRenamePhotosCount}
+              {props.select.length} {MessageBatchRenamePhotosCount}
             </strong>
           </div>
 

@@ -242,7 +242,9 @@ const MenuArchive: React.FunctionComponent = memo(() => {
                   <MenuOptionBatchRename
                     readOnly={readOnly}
                     state={state}
-                    selectedFilePaths={select}
+                    select={select}
+                    setSelect={setSelect}
+                    dispatch={dispatch}
                   />
                   <MenuOptionMoveToTrash
                     state={state}
