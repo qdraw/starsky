@@ -8,6 +8,7 @@ import { FileExtensions } from "../../../shared/file-extensions";
 import { Language } from "../../../shared/language";
 import Modal from "../../atoms/modal/modal";
 import { BATCH_RENAME_PATTERNS_KEY } from "./batch-rename-patterns-key";
+import { DEFAULT_PATTERN } from "./default-pattern";
 import { executeBatchRenameHelper } from "./execute-batch-rename-helper";
 import { generatePreviewHelper } from "./generate-preview-helper";
 
@@ -20,8 +21,6 @@ export interface IModalBatchRenameProps {
   dispatch: React.Dispatch<ArchiveAction>;
   undoSelection: () => void;
 }
-
-const DEFAULT_PATTERN = "{yyyy}{MM}{dd}{HH}{mm}{ss}_{filenamebase}.{ext}";
 
 const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props) => {
   const settings = useGlobalSettings();
