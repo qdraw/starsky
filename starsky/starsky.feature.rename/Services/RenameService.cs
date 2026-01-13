@@ -7,6 +7,7 @@ using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 
@@ -14,7 +15,7 @@ using starsky.foundation.storage.Models;
 
 namespace starsky.feature.rename.Services;
 
-public class RenameService(IQuery query, IStorage iStorage)
+public class RenameService(IQuery query, IStorage iStorage, IWebLogger logger)
 {
 	/// <summary>
 	///     Move or rename files and update the database.
@@ -78,7 +79,7 @@ public class RenameService(IQuery query, IStorage iStorage)
 				case FolderOrFileModel.FolderOrFileTypeList.File when toFileFolderStatus ==
 					FolderOrFileModel.FolderOrFileTypeList.Deleted:
 					// toFileSubPath should contain the full subPath
-					await FromFileToDeleted(inputFileSubPath, toFileSubPath,
+					await RenameFromFileToDeleted(inputFileSubPath, toFileSubPath,
 						fileIndexResultsList, fileIndexItems, detailView!);
 					break;
 				case FolderOrFileModel.FolderOrFileTypeList.File when toFileFolderStatus ==
@@ -132,7 +133,7 @@ public class RenameService(IQuery query, IStorage iStorage)
 		);
 
 		// when there is already a database item in the output folder, but not on disk
-		// in the final step we going to update the database item to the new name
+		// in the final step we're going to update the database item to the new name
 		var toCheckList = fileIndexItems.Select(p => p.FilePath).Cast<string>().ToList();
 		toCheckList.Add(toFileSubPath);
 		var checkOutput = await query.GetObjectsByFilePathQueryAsync(toCheckList);
@@ -258,7 +259,7 @@ public class RenameService(IQuery query, IStorage iStorage)
 				Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
 			});
 			return new Tuple<Tuple<string[], string[]>, List<FileIndexItem>>(
-				new Tuple<string[], string[]>(Array.Empty<string>(), Array.Empty<string>()),
+				new Tuple<string[], string[]>([], []),
 				fileIndexResultsList
 			);
 		}
@@ -381,10 +382,12 @@ public class RenameService(IQuery query, IStorage iStorage)
 
 
 	internal Task FromFolderToFolder(string inputFileSubPath,
-		string toFileSubPath, List<FileIndexItem> fileIndexResultsList, DetailView detailView)
+		string toFileSubPath, List<FileIndexItem>? fileIndexResultsList, DetailView detailView)
 	{
 		if ( fileIndexResultsList == null )
 		{
+			logger.LogError("RenameService.FromFolderToFolderAsync " +
+				"fileIndexResultsList is null");
 			throw new ArgumentNullException(nameof(fileIndexResultsList),
 				"Should contain value");
 		}
@@ -459,7 +462,7 @@ public class RenameService(IQuery query, IStorage iStorage)
 		});
 	}
 
-	private async Task FromFileToDeleted(string inputFileSubPath, string toFileSubPath,
+	internal async Task RenameFromFileToDeleted(string inputFileSubPath, string toFileSubPath,
 		List<FileIndexItem> fileIndexResultsList, List<FileIndexItem> fileIndexItems,
 		DetailView detailView)
 	{

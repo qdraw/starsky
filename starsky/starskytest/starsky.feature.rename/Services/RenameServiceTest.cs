@@ -80,9 +80,10 @@ public sealed class RenameServiceTest
 				fileAlreadyExistSubPath);
 		}
 
-		var renameFs = await new RenameService(_query, _iStorageSubPath).Rename(
-			_newImage.DbPath,
-			fileAlreadyExistSubPath);
+		var renameFs =
+			await new RenameService(_query, _iStorageSubPath, new FakeIWebLogger()).Rename(
+				_newImage.DbPath,
+				fileAlreadyExistSubPath);
 
 		var result = await StreamToStringHelper.StreamToStringAsync(
 			_iStorageSubPath.ReadStream(fileAlreadyExistSubPath));
@@ -106,7 +107,8 @@ public sealed class RenameServiceTest
 	public async Task RenameFsTest_MoveFileWithoutAnyItems()
 	{
 		var renameFs =
-			await new RenameService(_query, _iStorageSubPath).Rename("/non-exist.jpg",
+			await new RenameService(_query, _iStorageSubPath, new FakeIWebLogger()).Rename(
+				"/non-exist.jpg",
 				"/non-exist2.jpg");
 		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex,
 			renameFs.FirstOrDefault()?.Status);
@@ -169,7 +171,7 @@ public sealed class RenameServiceTest
 		var iStorage = new FakeIStorage(new List<string> { _folderExist.FilePath! },
 			new List<string> { _fileInExist.FilePath! });
 
-		var renameFs1 = await new RenameService(_query, iStorage)
+		var renameFs1 = await new RenameService(_query, iStorage, new FakeIWebLogger())
 			.Rename(_fileInExist.FilePath!, _folderExist.FilePath + "/test2.jpg");
 		var renameFs = renameFs1
 			.Where(p => p.Status != FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList();
@@ -195,19 +197,32 @@ public sealed class RenameServiceTest
 	{
 		await CreateFoldersAndFilesInDatabase();
 
-		var iStorage = new FakeIStorage(new List<string> { _folderExist.FilePath! },
-			new List<string>
-			{
-				_fileInExist.FilePath!, JsonSidecarLocation.JsonLocation(_fileInExist.FilePath!)
-			});
+		var iStorage = new FakeIStorage([_folderExist.FilePath!],
+			[_fileInExist.FilePath!, 
+				JsonSidecarLocation.JsonLocation(_fileInExist.FilePath!)]);
 
-		var renameFs = await new RenameService(_query, iStorage)
+		var sut = new RenameService(_query, iStorage, new FakeIWebLogger());
+		var renameFs = await sut
 			.Rename(_fileInExist.FilePath!, _folderExist.FilePath + "/test2.jpg");
 
-		// check if sidecar json are moved (on fake Filesystem)
+		// check if sidecar Json are moved (on fake Filesystem)
 		var values = iStorage.GetAllFilesInDirectoryRecursive("/").ToList();
+
+		Console.WriteLine("Values in fake IStorage:");
+		foreach ( var p in values )
+		{
+			Console.WriteLine(p);
+		}
+
+		Console.WriteLine("RenameFs results:");
+		foreach ( var p in renameFs )
+		{
+			Console.WriteLine($"{p.FilePath} - {p.Status}");
+		}
+		
 		Assert.AreEqual("/exist/.starsky.test2.jpg.json",
 			values.Find(p => p == "/exist/.starsky.test2.jpg.json"));
+		
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok,
 			renameFs.Find(p => p.FilePath == "/exist/test2.jpg")?.Status);
 		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,
@@ -224,7 +239,7 @@ public sealed class RenameServiceTest
 		var iStorage = new FakeIStorage(new List<string> { _folderExist.FilePath! },
 			new List<string> { _fileInExist.FilePath! });
 
-		var renameFs = await new RenameService(_query, iStorage)
+		var renameFs = await new RenameService(_query, iStorage, new FakeIWebLogger())
 			.Rename(_fileInExist.FilePath!, _folderExist.FilePath + "/test2___");
 
 		// so this operation is not supported
@@ -243,9 +258,10 @@ public sealed class RenameServiceTest
 		var initFolderList = new List<string> { "/" };
 		var initFileList = new List<string> { _fileInExist.FilePath! };
 		var iStorage = new FakeIStorage(initFolderList, initFileList);
-		var renameFs1 = await new RenameService(_query, iStorage)
+		var renameFs1 = await new RenameService(_query, iStorage, new FakeIWebLogger())
 			.Rename(initFileList.FirstOrDefault()!, "/nonExist/test5.jpg");
-		var renameFs = renameFs1.Where(p => p.Status != FileIndexItem.ExifStatus.Deleted)
+		var renameFs = renameFs1.Where(p =>
+				p.Status != FileIndexItem.ExifStatus.Deleted)
 			.ToList();
 
 		var all2 = await _query.GetAllRecursiveAsync();
@@ -284,7 +300,7 @@ public sealed class RenameServiceTest
 		var initFolderList = new List<string> { "/", "/exist" };
 		var initFileList = new List<string> { _fileInExist.FilePath! };
 		var iStorage = new FakeIStorage(initFolderList, initFileList);
-		var renameFs = await new RenameService(_query, iStorage)
+		var renameFs = await new RenameService(_query, iStorage, new FakeIWebLogger())
 			.Rename(initFileList.FirstOrDefault()!, "/exist/");
 		Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,
 			renameFs.FirstOrDefault()?.Status);
@@ -303,7 +319,8 @@ public sealed class RenameServiceTest
 		var fakeIStorage = new FakeIStorage(initFolderList, initFileList);
 
 		var renameFsResult =
-			await new RenameService(_query, fakeIStorage).Rename(initFileList.FirstOrDefault()!,
+			await new RenameService(_query, fakeIStorage, new FakeIWebLogger()).Rename(
+				initFileList.FirstOrDefault()!,
 				"/test/");
 
 		var oldItem = await _query.GetObjectByFilePathAsync("/exist/file.jpg");
@@ -341,7 +358,7 @@ public sealed class RenameServiceTest
 		var iStorage = new FakeIStorage(initFolderList, initFileList);
 
 		// the input is still  FileName = "file.jpg", ParentDirectory = "/exist",
-		var renameFs = await new RenameService(_query, iStorage)
+		var renameFs = await new RenameService(_query, iStorage, new FakeIWebLogger())
 			.Rename(initFileList.FirstOrDefault()!, "/test/");
 
 		// to file: (in database)
@@ -350,7 +367,7 @@ public sealed class RenameServiceTest
 		Assert.AreEqual("file.jpg", selectFile3?.FileName);
 		Assert.AreEqual("/test", selectFile3?.ParentDirectory);
 
-		// check if sidecar json are moved (on fake Filesystem)
+		// check if sidecar Json are moved (on fake Filesystem)
 		var values = iStorage.GetAllFilesInDirectoryRecursive("/test").ToList();
 
 		Assert.AreEqual("/test/.starsky.file.jpg.json",
@@ -400,7 +417,7 @@ public sealed class RenameServiceTest
 		var iStorage = new FakeIStorage(initFolderList, initFileList);
 
 		// the call
-		var renameFs = await new RenameService(_query, iStorage)
+		var renameFs = await new RenameService(_query, iStorage, new FakeIWebLogger())
 			.Rename("/exist", "/folder1");
 
 		// First check if fakeDisk is changed
@@ -464,7 +481,9 @@ public sealed class RenameServiceTest
 		var initFolderList = new List<string>();
 		var initFileList = new List<string>();
 		var fakeIStorage = new FakeIStorage(initFolderList, initFileList);
-		var renameFs = await new RenameService(_query, fakeIStorage).Rename("/same", "/same");
+		var renameFs =
+			await new RenameService(_query, fakeIStorage, new FakeIWebLogger()).Rename("/same",
+				"/same");
 		Assert.HasCount(1, renameFs);
 		Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,
 			renameFs.FirstOrDefault()?.Status);
@@ -491,7 +510,8 @@ public sealed class RenameServiceTest
 		await CreateFoldersAndFilesInDatabase();
 		var iStorage = new FakeIStorage();
 		var renameFs =
-			await new RenameService(_query, iStorage).Rename(_folderExist.FilePath!,
+			await new RenameService(_query, iStorage, new FakeIWebLogger()).Rename(
+				_folderExist.FilePath!,
 				_fileInExist.FilePath!);
 		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, renameFs[0].Status);
 	}
@@ -506,7 +526,8 @@ public sealed class RenameServiceTest
 			new List<string> { "/child_folder/test_01.jpg" });
 
 		var renameFs =
-			await new RenameService(_query, iStorage).Rename(itemInChildFolderPath, "/");
+			await new RenameService(_query, iStorage, new FakeIWebLogger()).Rename(
+				itemInChildFolderPath, "/");
 
 		// where its from
 		Assert.AreEqual("/child_folder", renameFs.FirstOrDefault()?.ParentDirectory);
@@ -532,7 +553,7 @@ public sealed class RenameServiceTest
 			new List<string> { "/", "/child_folder", "/child_folder2" },
 			new List<string> { "/child_folder/test_10.jpg", "/child_folder/test_10.png" });
 
-		var renameFs = await new RenameService(_query, iStorage)
+		var renameFs = await new RenameService(_query, iStorage, new FakeIWebLogger())
 			.Rename(itemInChildFolderPath, "/child_folder2");
 
 		// the first one is the deleted item
@@ -565,7 +586,7 @@ public sealed class RenameServiceTest
 			new List<string> { fromItemJpg, fromItemDng });
 
 		// only say: fromItemJpg > toItemJpg
-		var renameFs1 = await new RenameService(_query, iStorage)
+		var renameFs1 = await new RenameService(_query, iStorage, new FakeIWebLogger())
 			.Rename(fromItemJpg, toItemJpg);
 		var renameFs = renameFs1
 			.Where(p => p.Status != FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList();
@@ -611,7 +632,7 @@ public sealed class RenameServiceTest
 			new List<string> { itemInChildFolderPath1, collectionItemPath1 });
 
 		var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) =
-			new RenameService(_query, iStorage)
+			new RenameService(_query, iStorage, new FakeIWebLogger())
 				.InputOutputSubPathsPreflight($"{itemInChildFolderPath1}",
 					"/child_folder2/test_22_edit.jpg", true);
 
@@ -651,7 +672,7 @@ public sealed class RenameServiceTest
 			new List<string> { itemInChildFolderPath1, collectionItemPath1 });
 
 		var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) =
-			new RenameService(_query, iStorage)
+			new RenameService(_query, iStorage, new FakeIWebLogger())
 				.InputOutputSubPathsPreflight($"{itemInChildFolderPath1}",
 					// Change to .jpeg
 					"/child_folder2/test_23_edit.jpeg", true);
@@ -691,7 +712,7 @@ public sealed class RenameServiceTest
 			new List<string> { itemInChildFolderPath1, collectionItemPath1 });
 
 		var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) =
-			new RenameService(_query, iStorage)
+			new RenameService(_query, iStorage, new FakeIWebLogger())
 				.InputOutputSubPathsPreflight($"{itemInChildFolderPath1}",
 					// Change to .jpeg
 					"/child_folder2/test_24.jpeg", true);
@@ -729,7 +750,7 @@ public sealed class RenameServiceTest
 			new List<string> { item1dng, item1SideCar }); // item1
 
 		// Move DNG to different folder
-		var renameFs = await new RenameService(_query, iStorage)
+		var renameFs = await new RenameService(_query, iStorage, new FakeIWebLogger())
 			.Rename(item1dng, "/child_folder2");
 
 		Assert.AreEqual(item1dng, renameFs[0].FilePath);
@@ -755,7 +776,7 @@ public sealed class RenameServiceTest
 			new List<string> { item1, item1SideCar });
 
 		// Move Jpg to different folder but the xmp should be ignored
-		var renameFs = await new RenameService(_query, iStorage)
+		var renameFs = await new RenameService(_query, iStorage, new FakeIWebLogger())
 			.Rename(item1, "/child_folder2");
 
 		Assert.AreEqual(item1, renameFs.FirstOrDefault()?.FilePath);
@@ -783,7 +804,7 @@ public sealed class RenameServiceTest
 			new List<string> { itemInChildFolderPath1, collectionItemPath1 });
 
 		var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) =
-			new RenameService(_query, iStorage)
+			new RenameService(_query, iStorage, new FakeIWebLogger())
 				.InputOutputSubPathsPreflight($"{itemInChildFolderPath1}",
 					"/child_folder2", true);
 
@@ -835,7 +856,7 @@ public sealed class RenameServiceTest
 			});
 
 		var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) =
-			new RenameService(_query, iStorage)
+			new RenameService(_query, iStorage, new FakeIWebLogger())
 				.InputOutputSubPathsPreflight(
 					$"{itemInChildFolderPath1};{itemInChildFolderPath2}",
 					"/child_folder2;/other", true);
@@ -905,7 +926,7 @@ public sealed class RenameServiceTest
 
 		// Collections disabled!
 		var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) =
-			new RenameService(_query, iStorage)
+			new RenameService(_query, iStorage, new FakeIWebLogger())
 				.InputOutputSubPathsPreflight(
 					$"{itemInChildFolderPath1};{itemInChildFolderPath2}",
 					"/child_folder2;/other", false);
@@ -958,7 +979,7 @@ public sealed class RenameServiceTest
 
 		// nr 2 is does not exist in the database
 		var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) =
-			new RenameService(_query, iStorage)
+			new RenameService(_query, iStorage, new FakeIWebLogger())
 				.InputOutputSubPathsPreflight(
 					$"{itemInChildFolderPath1};{itemInChildFolderPath2}",
 					"/child_folder2;/other", true);
@@ -988,7 +1009,7 @@ public sealed class RenameServiceTest
 			new FileIndexItem("/target_folder_3") { IsDirectory = true });
 
 		// Move Jpg to different folder but the xmp should be ignored
-		var renameFs = await new RenameService(_query, iStorage)
+		var renameFs = await new RenameService(_query, iStorage, new FakeIWebLogger())
 			.Rename("/source_folder", "/target_folder_3");
 
 
@@ -1030,7 +1051,7 @@ public sealed class RenameServiceTest
 			new FileIndexItem("/target_folder_4/test.jpg"));
 
 
-		var renameFs = await new RenameService(_query, iStorage)
+		var renameFs = await new RenameService(_query, iStorage, new FakeIWebLogger())
 			.Rename("/source_folder_2", "/target_folder_4");
 
 		var countTargetChildItem = ( await _query.GetAllRecursiveAsync() )
@@ -1063,7 +1084,7 @@ public sealed class RenameServiceTest
 	public async Task FromFolderToFolder_Null_exception()
 	{
 		await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
-			await new RenameService(null!, null!).FromFolderToFolder(null!,
+			await new RenameService(null!, null!, new FakeIWebLogger()).FromFolderToFolder(null!,
 				null!, null!, null!));
 		// expect exception
 	}
@@ -1081,7 +1102,7 @@ public sealed class RenameServiceTest
 			new FakeIQuery(
 				new List<FileIndexItem> { new(beforePath) });
 
-		var renameService = new RenameService(query, storage);
+		var renameService = new RenameService(query, storage, new FakeIWebLogger());
 
 		await renameService.Rename(beforePath, afterPath);
 
@@ -1112,7 +1133,7 @@ public sealed class RenameServiceTest
 			"Cache should contain the item before rename.");
 
 		var fakeStorage = new FakeIStorage(["/"], ["/test.jpg"]);
-		var renameService = new RenameService(query, fakeStorage);
+		var renameService = new RenameService(query, fakeStorage, new FakeIWebLogger());
 
 		// Act
 		await renameService.Rename("/test.jpg", "/new-test.jpg");

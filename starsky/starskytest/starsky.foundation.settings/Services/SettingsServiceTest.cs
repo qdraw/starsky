@@ -141,7 +141,8 @@ public class SettingsServiceTest
 		Assert.AreEqual("test", item.Value);
 
 		var dbResult = await dbContext.Settings.FirstOrDefaultAsync(p =>
-			p.Key == Enum.GetName(SettingsType.LastSyncBackgroundDateTime), TestContext.CancellationTokenSource.Token);
+				p.Key == Enum.GetName(SettingsType.LastSyncBackgroundDateTime),
+			TestContext.CancellationTokenSource.Token);
 		Assert.AreEqual("test", dbResult?.Value);
 		await RemoveAsync(dbContext, SettingsType
 			.LastSyncBackgroundDateTime);
@@ -180,7 +181,8 @@ public class SettingsServiceTest
 			.GetRequiredService<ApplicationDbContext>();
 
 		var dbResult = await dbContext.Settings.FirstOrDefaultAsync(p =>
-			p.Key == Enum.GetName(SettingsType.LastSyncBackgroundDateTime), TestContext.CancellationTokenSource.Token);
+				p.Key == Enum.GetName(SettingsType.LastSyncBackgroundDateTime),
+			TestContext.CancellationTokenSource.Token);
 		Assert.AreEqual("test", dbResult?.Value);
 
 		await RemoveAsync(dbContext, SettingsType
@@ -199,7 +201,8 @@ public class SettingsServiceTest
 		Assert.AreEqual("test", item.Value);
 
 		var dbResult = await dbContext.Settings.FirstOrDefaultAsync(p =>
-			p.Key == Enum.GetName(SettingsType.LastSyncBackgroundDateTime), TestContext.CancellationTokenSource.Token);
+				p.Key == Enum.GetName(SettingsType.LastSyncBackgroundDateTime),
+			TestContext.CancellationTokenSource.Token);
 
 		Assert.AreEqual("test", dbResult?.Value);
 		await RemoveAsync(dbContext, SettingsType
@@ -236,7 +239,8 @@ public class SettingsServiceTest
 			.GetRequiredService<ApplicationDbContext>();
 
 		var dbResult = await dbContext.Settings.FirstOrDefaultAsync(p =>
-			p.Key == Enum.GetName(SettingsType.LastSyncBackgroundDateTime), TestContext.CancellationTokenSource.Token);
+				p.Key == Enum.GetName(SettingsType.LastSyncBackgroundDateTime),
+			TestContext.CancellationTokenSource.Token);
 		Assert.AreEqual("test", dbResult?.Value);
 
 		await RemoveAsync(dbContext, SettingsType
@@ -263,7 +267,8 @@ public class SettingsServiceTest
 		Assert.AreEqual("test", item.Value);
 
 		var dbResult = await dbContext.Settings.FirstOrDefaultAsync(p =>
-			p.Key == Enum.GetName(SettingsType.LastSyncBackgroundDateTime), TestContext.CancellationTokenSource.Token);
+				p.Key == Enum.GetName(SettingsType.LastSyncBackgroundDateTime),
+			TestContext.CancellationTokenSource.Token);
 		Assert.AreEqual("test", dbResult?.Value);
 		await RemoveAsync(dbContext, SettingsType
 			.LastSyncBackgroundDateTime);
@@ -275,6 +280,7 @@ public class SettingsServiceTest
 	[DataRow("invalid-date", default, typeof(DateTime))]
 	[DataRow("test-value", "test-value", typeof(string))]
 	[DataRow("test-value", default(int), typeof(int))]
+	[Timeout(5000, CooperativeCancellation = true)]
 	public void CastSettingTheory(string? inputValue, object expectedValue, Type targetType)
 	{
 		// Arrange
