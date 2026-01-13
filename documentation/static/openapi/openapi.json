@@ -2316,6 +2316,536 @@
       "extensions": {},
       "unresolvedReference": false
     },
+    "/api/BatchRename/preview": {
+      "operations": {
+        "Post": {
+          "tags": [
+            {
+              "name": "BatchRename",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Preview batch rename mappings for a list of file paths and a rename pattern.",
+          "parameters": [],
+          "requestBody": {
+            "unresolvedReference": false,
+            "description": "List of file paths to preview rename for, Rename pattern string\n(e.g. {yyyy}{MM}{dd}_{filenamebase}{seqn}.{ext}).",
+            "required": false,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "BatchRenameRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/BatchRenameRequest",
+                    "referenceV2": "#/definitions/BatchRenameRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "text/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "BatchRenameRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/BatchRenameRequest",
+                    "referenceV2": "#/definitions/BatchRenameRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "application/*+json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "BatchRenameRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/BatchRenameRequest",
+                    "referenceV2": "#/definitions/BatchRenameRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              }
+            },
+            "extensions": {}
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "headers": {},
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "isFragrament": false,
+                        "type": 0,
+                        "id": "BatchRenameMapping",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/BatchRenameMapping",
+                        "referenceV2": "#/definitions/BatchRenameMapping"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                },
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "isFragrament": false,
+                        "type": 0,
+                        "id": "BatchRenameMapping",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/BatchRenameMapping",
+                        "referenceV2": "#/definitions/BatchRenameMapping"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                },
+                "text/json": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "isFragrament": false,
+                        "type": 0,
+                        "id": "BatchRenameMapping",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/BatchRenameMapping",
+                        "referenceV2": "#/definitions/BatchRenameMapping"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/BatchRename/execute": {
+      "operations": {
+        "Post": {
+          "tags": [
+            {
+              "name": "BatchRename",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Execute batch rename for a list of mappings.",
+          "parameters": [],
+          "requestBody": {
+            "unresolvedReference": false,
+            "description": "Request containing mappings and collections flag.",
+            "required": false,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "BatchRenameRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/BatchRenameRequest",
+                    "referenceV2": "#/definitions/BatchRenameRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "text/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "BatchRenameRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/BatchRenameRequest",
+                    "referenceV2": "#/definitions/BatchRenameRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "application/*+json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "BatchRenameRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/BatchRenameRequest",
+                    "referenceV2": "#/definitions/BatchRenameRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              }
+            },
+            "extensions": {}
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "headers": {},
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "isFragrament": false,
+                        "type": 0,
+                        "id": "FileIndexItem",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/FileIndexItem",
+                        "referenceV2": "#/definitions/FileIndexItem"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                },
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "isFragrament": false,
+                        "type": 0,
+                        "id": "FileIndexItem",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/FileIndexItem",
+                        "referenceV2": "#/definitions/FileIndexItem"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                },
+                "text/json": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "isFragrament": false,
+                        "type": 0,
+                        "id": "FileIndexItem",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/FileIndexItem",
+                        "referenceV2": "#/definitions/FileIndexItem"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
     "/api/cache/list": {
       "operations": {
         "Get": {
@@ -14296,6 +14826,225 @@
         "extensions": {},
         "unresolvedReference": false
       },
+      "BatchRenameMapping": {
+        "type": "object",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {
+          "sourceFilePath": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "targetFilePath": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "relatedFilePaths": {
+            "type": "array",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "items": {
+              "readOnly": false,
+              "writeOnly": false,
+              "allOf": [],
+              "oneOf": [],
+              "anyOf": [],
+              "required": [],
+              "properties": {},
+              "additionalPropertiesAllowed": true,
+              "enum": [],
+              "nullable": false,
+              "deprecated": false,
+              "extensions": {},
+              "unresolvedReference": false,
+              "reference": {
+                "isFragrament": false,
+                "type": 0,
+                "id": "StringStringValueTuple",
+                "isExternal": false,
+                "isLocal": true,
+                "referenceV3": "#/components/schemas/StringStringValueTuple",
+                "referenceV2": "#/definitions/StringStringValueTuple"
+              }
+            },
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "sequenceNumber": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "hasError": {
+            "type": "boolean",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "errorMessage": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          }
+        },
+        "additionalPropertiesAllowed": false,
+        "enum": [],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
+      "BatchRenameRequest": {
+        "type": "object",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {
+          "filePaths": {
+            "type": "array",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "items": {
+              "type": "string",
+              "readOnly": false,
+              "writeOnly": false,
+              "allOf": [],
+              "oneOf": [],
+              "anyOf": [],
+              "required": [],
+              "properties": {},
+              "additionalPropertiesAllowed": true,
+              "enum": [],
+              "nullable": false,
+              "deprecated": false,
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "pattern": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "collections": {
+            "type": "boolean",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          }
+        },
+        "additionalPropertiesAllowed": false,
+        "enum": [],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
       "CameraMakeModel": {
         "type": "object",
         "readOnly": false,
@@ -17234,6 +17983,22 @@
         "extensions": {},
         "unresolvedReference": false
       },
+      "StringStringValueTuple": {
+        "type": "object",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {},
+        "additionalPropertiesAllowed": false,
+        "enum": [],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
       "StructureRule": {
         "type": "object",
         "readOnly": false,
@@ -17856,5 +18621,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "9ACD2106DFB16BC4A71969B06A570088326A7644B1BBC525D3C5A9861461185AA404712A4D6AB0AC4D46C740230659E2B97D7CBE6A08707FBA5117980DD37522"
+  "hashCode": "E7628FC16E4F67659829D6C7E083F4EA94C7A21F4D8BCE1801D464C675E6ACAF8337DB3EEF1CD0B46A65C0DBDD300403D3AA81974A3CA58350B5C38606D64582"
 }
