@@ -72,11 +72,12 @@ const MenuArchive: React.FunctionComponent = memo(() => {
   const [isModalExportOpen, setIsModalExportOpen] = useState(false);
   const [isModalPublishOpen, setIsModalPublishOpen] = useState(false);
 
-  // Selection
+  // Selection; this only the filenames that are selected; in the child components the filepath is computed
   const [select, setSelect] = React.useState(
     new URLPath().StringToIUrl(history.location.search).select
   );
   useEffect(() => {
+    // when url is updated; the list of selected filenames should be updated too
     setSelect(new URLPath().StringToIUrl(history.location.search).select);
   }, [history.location.search]);
 

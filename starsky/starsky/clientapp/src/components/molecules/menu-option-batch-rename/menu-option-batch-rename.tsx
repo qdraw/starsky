@@ -13,7 +13,6 @@ interface IMenuOptionBatchRenameProps {
   select: string[];
   dispatch: React.Dispatch<ArchiveAction>;
   setSelect: React.Dispatch<React.SetStateAction<string[] | undefined>>;
-
 }
 
 export const MenuOptionBatchRename: React.FunctionComponent<IMenuOptionBatchRenameProps> = ({
