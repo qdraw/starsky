@@ -60,6 +60,35 @@ describe("ModalBatchRename", () => {
     expect(modalSpy).toHaveBeenCalled();
   });
 
+  it("should call handleExit when modal is closed", () => {
+    const handleExit = jest.fn();
+    const selectedFilePaths = ["/test1.jpg", "/test2.jpg", "/test3.jpg"];
+    const modalSpy = jest
+      .spyOn(Modal, "default")
+      .mockReset()
+      .mockImplementationOnce((props) => {
+        props.handleExit();
+        return <>{props.children}</>;
+      });
+
+    const container = render(
+      <ModalBatchRename
+        isOpen={true}
+        handleExit={handleExit}
+        select={selectedFilePaths}
+        dispatch={jest.fn()}
+        historyLocationSearch=""
+        state={{} as unknown as IArchiveProps}
+        undoSelection={jest.fn()}
+      />
+    );
+
+    expect(handleExit).toHaveBeenCalledTimes(1);
+    expect(modalSpy).toHaveBeenCalledTimes(1);
+
+    container.unmount();
+  });
+
   it("should not render when isOpen is false", () => {
     const handleExit = jest.fn();
     const selectedFilePaths = ["/test1.jpg"];
