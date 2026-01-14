@@ -23,41 +23,52 @@ The issue was in `SyncFolder.cs` in the `CheckIfFolderExistOnDisk()` method:
 
 **File**: `starsky.foundation.sync/SyncServices/SyncFolder.cs`
 
-Added multiple safety checks before folder deletion:
+Added safety checks before folder deletion to prevent race conditions:
 
 ```csharp
-// Double-check: verify folder doesn't exist AND has no recent children
+// Double-check: verify folder doesn't exist
 if ( !_subPathStorage.ExistFolder(item.FilePath!) )
 {
-    // Check if there are any child items that were recently added
-    var childItems = await query!.GetAllRecursiveAsync(item.FilePath!);
+    var queryFactory = new QueryFactory(_setupDatabaseTypes,
+        _query, _memoryCache, _appSettings,
+        _serviceScopeFactory, _logger);
+    var query = queryFactory.Query();
     
-    // Also check if any subdirectories exist
+    if ( query == null )
+    {
+        return null;
+    }
+    
+    // Check if any subdirectories exist on disk
     var subDirectories = _subPathStorage.GetDirectoryRecursive(item.FilePath!);
     
-    // Skip deletion if folder has children in DB OR subdirectories on disk
-    if ( childItems.Count > 0 || subDirectories.Any() )
+    // Skip deletion only if subdirectories exist on disk
+    // This indicates the folder structure is being actively written
+    if ( subDirectories.Any() )
     {
         _logger.LogInformation(
-            $"[SyncFolder] Skipping deletion of {item.FilePath} - has {childItems.Count} children or subdirectories exist");
+            $"[SyncFolder] Skipping deletion of {item.FilePath} - subdirectories exist on disk");
         await query.DisposeAsync();
         return null;
     }
+    
+    // Folder doesn't exist and no subdirectories - safe to delete
+    return await RemoveChildItems(query, item);
 }
 else
 {
     // Folder exists now, don't remove
-    await query!.DisposeAsync();
     return null;
 }
 ```
 
 **Key improvements**:
 - Double-check folder existence before proceeding with deletion
-- Query database for any child items (catches items added by parallel threads)
-- Check for subdirectories on disk
+- Check for subdirectories on disk (catches folders being actively written by parallel threads)
+- Skip deletion if subdirectories exist, indicating active folder structure creation
 - Log when skipping deletion for debugging
-- Only proceed with deletion if folder is truly empty
+- Proceed with deletion if folder truly doesn't exist and no subdirectories are present
+- Child items in database are deleted when folder doesn't exist (cleaning up stale DB entries)
 
 ### 2. Added Final Safety Check in `RemoveChildItems()` Method
 
@@ -119,9 +130,9 @@ The `MaxDegreesOfParallelism` setting in `AppSettings` controls how many folders
 ## Monitoring
 
 Watch for these log messages:
-- `[SyncFolder] Skipping deletion of {path} - has {count} children or subdirectories exist` - Normal, indicates the fix is working
-- `[SyncFolder] Aborting RemoveChildItems - folder exists: {path}` - Rare, indicates a folder was created between checks
-- `[SyncFolder] Removing {count} child items from {path}` - Normal deletion of truly empty folders
+- `[SyncFolder] Skipping deletion of {path} - subdirectories exist on disk` - Normal, indicates the fix is working (folder structure is being actively created)
+- `[SyncFolder] Aborting RemoveChildItems - folder exists: {path}` - Rare, indicates a folder was created between checks (second line of defense)
+- `[SyncFolder] Removing {count} child items from {path}` - Normal deletion of folders that don't exist and their stale database entries
 
 ## Related Issues
 
