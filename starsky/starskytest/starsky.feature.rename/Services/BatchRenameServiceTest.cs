@@ -37,7 +37,7 @@ public class BatchRenameServiceTest
 		var memoryCache = provider.GetService<IMemoryCache>();
 
 		var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-		builder.UseInMemoryDatabase(nameof(RenameServiceTest));
+		builder.UseInMemoryDatabase(nameof(BatchRenameServiceTest));
 		var options = builder.Options;
 		var context = new ApplicationDbContext(options);
 
@@ -139,6 +139,23 @@ public class BatchRenameServiceTest
 			result.Select(x => x.SourceFilePath).ToList());
 		Assert.IsFalse(result[0].HasError);
 		Assert.EndsWith(".jpg", result[0].TargetFilePath);
+		await RemoveFoldersAndFilesInDatabase();
+	}
+
+	[TestMethod]
+	public async Task PreviewBatchRename_FolderInRoot_ReturnsError()
+	{
+		await CreateFoldersAndFilesInDatabase();
+		var iStorage = new FakeIStorage([_folderExist.FilePath!],
+			[]);
+		var service = new BatchRenameService(_query, iStorage, new FakeIWebLogger());
+		const string tokenPattern = "{yyyy}{MM}{dd}_{HH}{mm}{ss}_{filenamebase}.{ext}";
+		var result = service.PreviewBatchRename([_folderExist.FilePath!],
+			tokenPattern);
+		CollectionAssert.AreEqual(new List<string> { _folderExist.FilePath! },
+			result.Select(x => x.SourceFilePath).ToList());
+		Assert.IsTrue(result[0].HasError);
+		Assert.AreEqual("Is a directory", result[0].ErrorMessage);
 		await RemoveFoldersAndFilesInDatabase();
 	}
 
@@ -635,6 +652,247 @@ public class BatchRenameServiceTest
 
 		Assert.AreEqual("/exist/20260101_180000.xmp", filteredResults[5].FilePath);
 		Assert.AreEqual("DSC0001.xmp", filteredResults[5].FileHash);
+
+		await _query.RemoveItemAsync(file1);
+		await _query.RemoveItemAsync(file2);
+		await _query.RemoveItemAsync(file1Raw);
+		await _query.RemoveItemAsync(file2Raw);
+		await _query.RemoveItemAsync(file1Xmp);
+		await _query.RemoveItemAsync(file2Xmp);
+
+		await RemoveFoldersAndFilesInDatabase();
+	}
+
+	[TestMethod]
+	public async Task ExecuteBatchRenameAsync_Sequence_RawXmp_Implicit_AppendsSequenceSuffix()
+	{
+		await CreateFoldersAndFilesInDatabase();
+
+		var file1 = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "DSC0001.jpg",
+			ParentDirectory = "/exist",
+			FileHash = "DSC0001.jpg",
+			IsDirectory = false,
+			AddToDatabase = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc),
+			DateTime = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc)
+		});
+
+		var file1Raw = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "DSC0001.arw",
+			ParentDirectory = "/exist",
+			IsDirectory = false,
+			FileHash = "DSC0001.arw",
+			AddToDatabase = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc),
+			DateTime = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc)
+		});
+
+		var file1Xmp = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "DSC0001.xmp",
+			ParentDirectory = "/exist",
+			IsDirectory = false,
+			FileHash = "DSC0001.xmp",
+			AddToDatabase = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc),
+			DateTime = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc)
+		});
+
+		var file2 = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "DSC0002.jpg",
+			ParentDirectory = "/exist",
+			IsDirectory = false,
+			FileHash = "DSC0002.jpg",
+			AddToDatabase = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc),
+			DateTime = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc)
+		});
+
+		var file2Raw = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "DSC0002.arw",
+			ParentDirectory = "/exist",
+			IsDirectory = false,
+			FileHash = "DSC0002.arw",
+			AddToDatabase = new DateTime(2026, 1, 1,
+				18, 0, 0, DateTimeKind.Utc),
+			DateTime = new DateTime(2026, 1, 1,
+				18, 0, 0, DateTimeKind.Utc)
+		});
+
+		var file2Xmp = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "DSC0002.xmp",
+			ParentDirectory = "/exist",
+			IsDirectory = false,
+			FileHash = "DSC0002.xmp",
+			AddToDatabase = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc),
+			DateTime = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc)
+		});
+
+		var iStorage = new FakeIStorage([_folderExist.FilePath!],
+		[
+			new FileIndexItem(file1.FilePath!).FilePath!,
+			new FileIndexItem(file2.FilePath!).FilePath!,
+			new FileIndexItem(file1Raw.FilePath!).FilePath!,
+			new FileIndexItem(file2Raw.FilePath!).FilePath!,
+			new FileIndexItem(file1Xmp.FilePath!).FilePath!,
+			new FileIndexItem(file2Xmp.FilePath!).FilePath!
+		]);
+
+		var service = new BatchRenameService(_query, iStorage, new FakeIWebLogger());
+
+		const string tokenPattern = "{yyyy}{MM}{dd}_{HH}{mm}{ss}.{ext}";
+
+		var mappings = service.PreviewBatchRename(
+			[
+				file1.FilePath!, file2.FilePath!
+				// so related files are found implicitly
+			],
+			tokenPattern);
+
+		var result = await service.ExecuteBatchRenameAsync(mappings);
+
+		var filteredResults = result.Where(p => p is
+		{
+			Status: FileIndexItem.ExifStatus.Ok,
+			IsDirectory: false
+		}).OrderBy(p => p.FileName).ToList();
+
+		Assert.HasCount(6, filteredResults);
+
+		Assert.AreEqual("/exist/20260101_180000-1.arw", filteredResults[0].FilePath);
+		Assert.AreEqual("DSC0002.arw", filteredResults[0].FileHash);
+
+		Assert.AreEqual("/exist/20260101_180000-1.jpg", filteredResults[1].FilePath);
+		Assert.AreEqual("DSC0002.jpg", filteredResults[1].FileHash);
+
+		Assert.AreEqual("/exist/20260101_180000-1.xmp", filteredResults[2].FilePath);
+		Assert.AreEqual("DSC0002.xmp", filteredResults[2].FileHash);
+
+		Assert.AreEqual("/exist/20260101_180000.arw", filteredResults[3].FilePath);
+		Assert.AreEqual("DSC0001.arw", filteredResults[3].FileHash);
+
+		Assert.AreEqual("/exist/20260101_180000.jpg", filteredResults[4].FilePath);
+		Assert.AreEqual("DSC0001.jpg", filteredResults[4].FileHash);
+
+		Assert.AreEqual("/exist/20260101_180000.xmp", filteredResults[5].FilePath);
+		Assert.AreEqual("DSC0001.xmp", filteredResults[5].FileHash);
+
+		await _query.RemoveItemAsync(file1);
+		await _query.RemoveItemAsync(file2);
+		await _query.RemoveItemAsync(file1Raw);
+		await _query.RemoveItemAsync(file2Raw);
+		await _query.RemoveItemAsync(file1Xmp);
+		await _query.RemoveItemAsync(file2Xmp);
+
+		await RemoveFoldersAndFilesInDatabase();
+	}
+
+	[TestMethod]
+	public async Task
+		ExecuteBatchRenameAsync_Sequence_RawXmp_Implicit_CollectionsFalse_AppendsSequenceSuffix()
+	{
+		await CreateFoldersAndFilesInDatabase();
+
+		var file1 = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "DSC0001.jpg",
+			ParentDirectory = "/exist",
+			FileHash = "DSC0001.jpg",
+			IsDirectory = false,
+			AddToDatabase = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc),
+			DateTime = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc)
+		});
+
+		var file1Raw = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "DSC0001.arw",
+			ParentDirectory = "/exist",
+			IsDirectory = false,
+			FileHash = "DSC0001.arw",
+			AddToDatabase = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc),
+			DateTime = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc)
+		});
+
+		var file1Xmp = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "DSC0001.xmp",
+			ParentDirectory = "/exist",
+			IsDirectory = false,
+			FileHash = "DSC0001.xmp",
+			AddToDatabase = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc),
+			DateTime = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc)
+		});
+
+		var file2 = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "DSC0002.jpg",
+			ParentDirectory = "/exist",
+			IsDirectory = false,
+			FileHash = "DSC0002.jpg",
+			AddToDatabase = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc),
+			DateTime = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc)
+		});
+
+		var file2Raw = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "DSC0002.arw",
+			ParentDirectory = "/exist",
+			IsDirectory = false,
+			FileHash = "DSC0002.arw",
+			AddToDatabase = new DateTime(2026, 1, 1,
+				18, 0, 0, DateTimeKind.Utc),
+			DateTime = new DateTime(2026, 1, 1,
+				18, 0, 0, DateTimeKind.Utc)
+		});
+
+		var file2Xmp = await _query.AddItemAsync(new FileIndexItem
+		{
+			FileName = "DSC0002.xmp",
+			ParentDirectory = "/exist",
+			IsDirectory = false,
+			FileHash = "DSC0002.xmp",
+			AddToDatabase = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc),
+			DateTime = new DateTime(2026, 1, 1, 18, 0, 0, DateTimeKind.Utc)
+		});
+
+		var iStorage = new FakeIStorage([_folderExist.FilePath!],
+		[
+			new FileIndexItem(file1.FilePath!).FilePath!,
+			new FileIndexItem(file2.FilePath!).FilePath!,
+			new FileIndexItem(file1Raw.FilePath!).FilePath!,
+			new FileIndexItem(file2Raw.FilePath!).FilePath!,
+			new FileIndexItem(file1Xmp.FilePath!).FilePath!,
+			new FileIndexItem(file2Xmp.FilePath!).FilePath!
+		]);
+
+		var service = new BatchRenameService(_query, iStorage, new FakeIWebLogger());
+
+		const string tokenPattern = "{yyyy}{MM}{dd}_{HH}{mm}{ss}.{ext}";
+
+		var mappings = service.PreviewBatchRename(
+			[
+				file1.FilePath!, file2.FilePath!
+				// so related files are found implicitly
+			],
+			tokenPattern, false); // disable collections
+
+		var result = await service.ExecuteBatchRenameAsync(mappings);
+
+		var filteredResults = result.Where(p => p is
+		{
+			Status: FileIndexItem.ExifStatus.Ok,
+			IsDirectory: false
+		}).OrderBy(p => p.FileName).ToList();
+
+		Assert.HasCount(2, filteredResults);
+		
+		Assert.AreEqual("/exist/20260101_180000-1.jpg", filteredResults[0].FilePath);
+		Assert.AreEqual("DSC0002.jpg", filteredResults[0].FileHash);
+
+		Assert.AreEqual("/exist/20260101_180000.jpg", filteredResults[1].FilePath);
+		Assert.AreEqual("DSC0001.jpg", filteredResults[1].FileHash);
 
 		await _query.RemoveItemAsync(file1);
 		await _query.RemoveItemAsync(file2);

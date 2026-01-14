@@ -14,6 +14,7 @@ import MoreMenu from "../../atoms/more-menu/more-menu";
 import ForceSyncWaitButton from "../../molecules/force-sync-wait-button/force-sync-wait-button.tsx";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
 import { MenuOptionArchiveRename } from "../../molecules/menu-option-archive-rename/menu-option-archive-rename.tsx";
+import { MenuOptionBatchRename } from "../../molecules/menu-option-batch-rename/menu-option-batch-rename.tsx";
 import MenuOptionDesktopEditorOpenSelectionNoSelectWarning from "../../molecules/menu-option-desktop-editor-open-selection-no-select-warning/menu-option-desktop-editor-open-selection-no-select-warning";
 import MenuOptionDesktopEditorOpenSelection from "../../molecules/menu-option-desktop-editor-open-selection/menu-option-desktop-editor-open-selection";
 import MenuOptionDesktopEditorOpenSingle from "../../molecules/menu-option-desktop-editor-open-single/menu-option-desktop-editor-open-single.tsx";
@@ -71,11 +72,12 @@ const MenuArchive: React.FunctionComponent = memo(() => {
   const [isModalExportOpen, setIsModalExportOpen] = useState(false);
   const [isModalPublishOpen, setIsModalPublishOpen] = useState(false);
 
-  // Selection
+  // Selection; this only the filenames that are selected; in the child components the filepath is computed
   const [select, setSelect] = React.useState(
     new URLPath().StringToIUrl(history.location.search).select
   );
   useEffect(() => {
+    // when url is updated; the list of selected filenames should be updated too
     setSelect(new URLPath().StringToIUrl(history.location.search).select);
   }, [history.location.search]);
 
@@ -259,6 +261,13 @@ const MenuArchive: React.FunctionComponent = memo(() => {
                     )}
                     parentDirectory={state.subPath}
                     setEnableMoreMenu={setEnableMoreMenu}
+                  />
+                  <MenuOptionBatchRename
+                    readOnly={readOnly}
+                    state={state}
+                    select={select}
+                    setSelect={setSelect}
+                    dispatch={dispatch}
                   />
                 </>
               ) : null}

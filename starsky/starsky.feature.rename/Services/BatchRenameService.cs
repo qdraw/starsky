@@ -44,6 +44,22 @@ public class BatchRenameService(IQuery query, IStorage iStorage, IWebLogger logg
 
 		// Get all file items from database
 		var mappings = new List<BatchRenameMapping>();
+		var fileItems = FileItemsQuery(filePaths, collections, mappings);
+
+		// Generate mappings for valid files
+		var validMappings = GenerateValidMappings(
+			fileItems, collections, pattern, mappings);
+
+		// Assign sequence numbers for duplicate target names
+		AssignSequenceNumbers(validMappings, pattern, fileItems);
+
+		mappings.AddRange(validMappings);
+		return mappings;
+	}
+
+	private Dictionary<string, FileIndexItem> FileItemsQuery(List<string> filePaths,
+		bool collections, List<BatchRenameMapping> mappings)
+	{
 		var fileItems = new Dictionary<string, FileIndexItem>();
 
 		foreach ( var filePath in filePaths )
@@ -64,6 +80,28 @@ public class BatchRenameService(IQuery query, IStorage iStorage, IWebLogger logg
 				}
 
 				fileItems[filePath] = detailView.FileIndexItem;
+				if ( !collections )
+				{
+					continue;
+				}
+
+				foreach ( var collectionPath in detailView.FileIndexItem!.CollectionPaths.Where(p =>
+					         p != filePath) )
+				{
+					if ( fileItems.ContainsKey(collectionPath) )
+					{
+						// when explicit adding files skip
+						continue;
+					}
+
+					// implicit flow
+					var collectionFileIndexItem = query.SingleItem(collectionPath,
+						null, false, false)!.FileIndexItem;
+					if ( collectionFileIndexItem != null )
+					{
+						fileItems[collectionPath] = collectionFileIndexItem;
+					}
+				}
 			}
 			catch ( Exception )
 			{
@@ -71,10 +109,27 @@ public class BatchRenameService(IQuery query, IStorage iStorage, IWebLogger logg
 			}
 		}
 
-		// Generate mappings for valid files
+		return fileItems;
+	}
+
+	private List<BatchRenameMapping> GenerateValidMappings(
+		Dictionary<string, FileIndexItem> fileItems,
+		bool collections,
+		RenameTokenPattern pattern,
+		List<BatchRenameMapping> mappings)
+	{
 		var validMappings = new List<BatchRenameMapping>();
 		foreach ( var (key, fileItem) in fileItems )
 		{
+			if ( fileItem.IsDirectory == true )
+			{
+				mappings.Add(new BatchRenameMapping
+				{
+					SourceFilePath = key, HasError = true, ErrorMessage = "Is a directory"
+				});
+				continue;
+			}
+
 			try
 			{
 				var parentPath = fileItem.ParentDirectory;
@@ -113,11 +168,7 @@ public class BatchRenameService(IQuery query, IStorage iStorage, IWebLogger logg
 			}
 		}
 
-		// Assign sequence numbers for duplicate target names
-		AssignSequenceNumbers(validMappings, pattern, fileItems);
-
-		mappings.AddRange(validMappings);
-		return mappings;
+		return validMappings;
 	}
 
 	/// <summary>
@@ -243,6 +294,7 @@ public class BatchRenameService(IQuery query, IStorage iStorage, IWebLogger logg
 				{
 					newFilePath = $"/{newFileName}";
 				}
+
 				mapping.TargetFilePath = newFilePath;
 				mapping.SequenceNumber = sequence;
 				if ( mapping.RelatedFilePaths.Count > 0 )

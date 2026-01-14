@@ -14,7 +14,7 @@ namespace starsky.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("api/[controller]")]
+[Route("api/batch-rename")]
 public class BatchRenameController : ControllerBase
 {
 	private readonly BatchRenameService _batchRenameService;

@@ -447,6 +447,20 @@ export class UrlQuery {
     return url;
   }
 
+  /**
+   * Batch rename photos preview
+   */
+  public UrlBatchRenamePreview(): string {
+    return this.prefix + "/api/batch-rename/preview";
+  }
+
+  /**
+   * Batch rename photos execute
+   */
+  public UrlBatchRenameExecute(): string {
+    return this.prefix + "/api/batch-rename/execute";
+  }
+
   public DocsGettingStartedFirstSteps(): string {
     return "https://docs.qdraw.nl/docs/getting-started/first-steps";
   }
