@@ -3,10 +3,98 @@ import { act } from "react";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { IBatchRenameItem } from "../../../interfaces/IBatchRenameItem";
 import * as Modal from "../../atoms/modal/modal";
+import * as executeBatchRenameHelper from "./execute-batch-rename-helper";
 import * as generatePreviewHelper from "./generate-preview-helper";
 import ModalBatchRename from "./modal-batch-rename";
 
 describe("ModalBatchRename", () => {
+  it("should call executeBatchRename when action button is clicked after preview", async () => {
+    const handleExit = jest.fn();
+
+    const modalSpy = jest
+      .spyOn(Modal, "default")
+      .mockReset()
+      .mockImplementationOnce(({ children }) => {
+        return <>{children}</>;
+      })
+      .mockImplementationOnce(({ children }) => {
+        return <>{children}</>;
+      });
+    const selectedFilePaths = ["/test1.jpg"];
+    // Mock preview generation to simulate previewGenerated = true
+    jest
+      .spyOn(generatePreviewHelper, "generatePreviewHelper")
+      .mockImplementationOnce(
+        async (
+          _: string,
+          setIsPreviewLoading: React.Dispatch<React.SetStateAction<boolean>>,
+          setError: React.Dispatch<React.SetStateAction<string | null>>,
+          setPreview: React.Dispatch<React.SetStateAction<IBatchRenameItem[]>>,
+          setPreviewGenerated: React.Dispatch<React.SetStateAction<boolean>>
+        ) => {
+          setIsPreviewLoading(false);
+          setError(null);
+          setPreview([
+            {
+              sourceFilePath: "/test1.jpg",
+              targetFilePath: "/renamed_test1.jpg",
+              relatedFilePaths: [],
+              sequenceNumber: 1,
+              hasError: false,
+              errorMessage: undefined
+            }
+          ]);
+          setPreviewGenerated(true);
+          return;
+        }
+      );
+
+    // Spy on executeBatchRenameHelper
+    const executeSpy = jest
+      .spyOn(executeBatchRenameHelper, "executeBatchRenameHelper")
+      .mockImplementation(() => {
+        return Promise.resolve();
+      });
+
+    const { container } = render(
+      <ModalBatchRename
+        isOpen={true}
+        handleExit={handleExit}
+        select={selectedFilePaths}
+        dispatch={jest.fn()}
+        historyLocationSearch=""
+        state={{ fileIndexItems: [{ filePath: "/test1.jpg" }] } as unknown as IArchiveProps}
+        undoSelection={jest.fn()}
+      />
+    );
+
+    // Simulate preview generation
+    const input = container.querySelector(".input-batch-rename-pattern") as HTMLInputElement;
+    expect(input).toBeTruthy();
+    input.value = "{yyyy}{MM}{dd}_{filenamebase}.{ext}";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+
+    const previewButton = container.querySelector(
+      "[data-test='button-batch-rename-generate-preview']"
+    ) as HTMLButtonElement;
+    expect(previewButton).toBeTruthy();
+    act(() => {
+      previewButton.click();
+    });
+
+    // Now the action button should be visible
+    const actionButton = container.querySelector(
+      ".batch-rename-button-group .btn--default"
+    ) as HTMLButtonElement;
+    expect(actionButton).toBeTruthy();
+    act(() => {
+      actionButton.click();
+    });
+
+    expect(executeSpy).toHaveBeenCalled();
+    expect(modalSpy).toHaveBeenCalledTimes(2);
+    executeSpy.mockRestore();
+  });
   it("should reset preview, error, and previewGenerated when pattern input changes", () => {
     const handleExit = jest.fn();
     const modalSpy = jest
@@ -43,8 +131,6 @@ describe("ModalBatchRename", () => {
     // We can only check DOM for preview and error, previewGenerated is reflected by the preview button being visible
     const previewList = container.querySelector(".batch-rename-preview-list");
     expect(previewList).toBeNull();
-
-    console.log(container.innerHTML);
 
     const errorBox = container.querySelector("[data-test='modal-batch-rename-error-box']");
     expect(errorBox).toBeNull();
