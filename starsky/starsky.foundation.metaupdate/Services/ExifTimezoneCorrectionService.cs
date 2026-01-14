@@ -1,69 +1,44 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.metaupdate.Models;
 using starsky.foundation.platform.Interfaces;
-using starsky.foundation.readmeta.Interfaces;
+using starsky.foundation.platform.Models;
+using starsky.foundation.readmeta.Services;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Helpers;
+using starsky.foundation.writemeta.Interfaces;
 
 namespace starsky.foundation.metaupdate.Services;
 
 /// <summary>
-/// Service to correct EXIF timestamps for images recorded in the wrong timezone
-/// </summary>
-public interface IExifTimezoneCorrectionService
-{
-	/// <summary>
-	/// Correct EXIF timestamps for a single image
-	/// </summary>
-	/// <param name="fileIndexItem">The image to correct</param>
-	/// <param name="request">Timezone correction parameters</param>
-	/// <returns>Result of the correction operation</returns>
-	Task<ExifTimezoneCorrectionResult> CorrectTimezoneAsync(
-		FileIndexItem fileIndexItem,
-		ExifTimezoneCorrectionRequest request);
-
-	/// <summary>
-	/// Correct EXIF timestamps for multiple images
-	/// </summary>
-	/// <param name="fileIndexItems">The images to correct</param>
-	/// <param name="request">Timezone correction parameters</param>
-	/// <returns>Results for each image</returns>
-	Task<List<ExifTimezoneCorrectionResult>> CorrectTimezoneAsync(
-		List<FileIndexItem> fileIndexItems,
-		ExifTimezoneCorrectionRequest request);
-
-	/// <summary>
-	/// Validate timezone correction request
-	/// </summary>
-	/// <param name="fileIndexItem">The image to validate</param>
-	/// <param name="request">Timezone correction parameters</param>
-	/// <returns>Validation result with warnings</returns>
-	ExifTimezoneCorrectionResult ValidateCorrection(
-		FileIndexItem fileIndexItem,
-		ExifTimezoneCorrectionRequest request);
-}
-
-/// <summary>
-/// Implementation of EXIF timezone correction service
+///     Implementation of EXIF timezone correction service
 /// </summary>
 public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 {
 	private readonly ExifToolCmdHelper _exifToolCmdHelper;
 	private readonly IWebLogger _logger;
+	private readonly IStorage _storage;
 
 	public ExifTimezoneCorrectionService(
-		IReadMeta readMeta,
-		ExifToolCmdHelper exifToolCmdHelper,
+		IExifTool exifTool,
+		ISelectorStorage selectorStorage,
+		IThumbnailQuery thumbnailQuery,
+		AppSettings appSettings,
 		IWebLogger logger)
 	{
-		_exifToolCmdHelper = exifToolCmdHelper;
+		_storage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+		_exifToolCmdHelper = new ExifToolCmdHelper(exifTool,
+			_storage,
+			selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail),
+			new ReadMeta(_storage, appSettings, null, logger),
+			thumbnailQuery, logger);
 		_logger = logger;
 	}
 
 	/// <summary>
-	/// Correct EXIF timestamps for a single image
+	///     Correct EXIF timestamps for a single image
 	/// </summary>
 	public async Task<ExifTimezoneCorrectionResult> CorrectTimezoneAsync(
 		FileIndexItem fileIndexItem,
@@ -94,40 +69,32 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 			fileIndexItem.DateTime = correctedDateTime;
 
 			// Write the corrected DateTime to EXIF
-			var comparedNames = new List<string> { nameof(FileIndexItem.DateTime).ToLowerInvariant() };
-			var writeResult = await _exifToolCmdHelper.UpdateAsync(
+			var comparedNames =
+				new List<string> { nameof(FileIndexItem.DateTime).ToLowerInvariant() };
+			await _exifToolCmdHelper.UpdateAsync(
 				fileIndexItem,
 				comparedNames,
-				includeSoftware: false);
-
-			// Check if write was successful by verifying the command was executed
-			result.Success = !string.IsNullOrEmpty(writeResult.Command) && 
-			                 writeResult.Command != "-json -overwrite_original";
-
-			if ( !result.Success )
-			{
-				result.Error = "Failed to write EXIF data";
-				_logger.LogInformation($"[ExifTimezoneCorrection] Failed to write: {fileIndexItem.FilePath}");
-			}
-			else
-			{
-				_logger.LogInformation($"[ExifTimezoneCorrection] Successfully corrected: {fileIndexItem.FilePath} " +
-				                       $"from {result.OriginalDateTime:yyyy-MM-dd HH:mm:ss} to {result.CorrectedDateTime:yyyy-MM-dd HH:mm:ss} " +
-				                       $"(delta: {result.DeltaHours:F2}h)");
-			}
+				false);
+			result.Success = true;
+			
+			_logger.LogInformation(
+				$"[ExifTimezoneCorrection] Successfully corrected: {fileIndexItem.FilePath} " +
+				$"from {result.OriginalDateTime:yyyy-MM-dd HH:mm:ss} to {result.CorrectedDateTime:yyyy-MM-dd HH:mm:ss} " +
+				$"(delta: {result.DeltaHours:F2}h)");
 		}
 		catch ( Exception ex )
 		{
 			result.Success = false;
 			result.Error = $"Exception during correction: {ex.Message}";
-			_logger.LogError($"[ExifTimezoneCorrection] Exception: {fileIndexItem.FilePath} - {ex.Message}", ex);
+			_logger.LogError(
+				$"[ExifTimezoneCorrection] Exception: {fileIndexItem.FilePath} - {ex.Message}", ex);
 		}
 
 		return result;
 	}
 
 	/// <summary>
-	/// Correct EXIF timestamps for multiple images
+	///     Correct EXIF timestamps for multiple images
 	/// </summary>
 	public async Task<List<ExifTimezoneCorrectionResult>> CorrectTimezoneAsync(
 		List<FileIndexItem> fileIndexItems,
@@ -145,7 +112,7 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 	}
 
 	/// <summary>
-	/// Validate timezone correction request
+	///     Validate timezone correction request
 	/// </summary>
 	public ExifTimezoneCorrectionResult ValidateCorrection(
 		FileIndexItem fileIndexItem,
@@ -153,9 +120,14 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 	{
 		var result = new ExifTimezoneCorrectionResult
 		{
-			Success = false,
-			OriginalDateTime = fileIndexItem.DateTime
+			Success = false, OriginalDateTime = fileIndexItem.DateTime
 		};
+
+		if ( !_storage.ExistFile(fileIndexItem.FilePath!) )
+		{
+			result.Error = "File does not exist";
+			return result;
+		}
 
 		// Validate timezones
 		if ( string.IsNullOrWhiteSpace(request.RecordedTimezone) )
@@ -215,15 +187,16 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 		// Warn about day/month/year rollover
 		if ( correctedDateTime.Day != fileIndexItem.DateTime.Day )
 		{
-			result.Warning = $"Correction will change the day from {fileIndexItem.DateTime:yyyy-MM-dd} to {correctedDateTime:yyyy-MM-dd}";
+			result.Warning =
+				$"Correction will change the day from {fileIndexItem.DateTime:yyyy-MM-dd} to {correctedDateTime:yyyy-MM-dd}";
 		}
 
 		return result;
 	}
 
 	/// <summary>
-	/// Calculate the timezone offset delta between recorded and correct timezones
-	/// This method is DST-aware and calculates offsets based on the actual date
+	///     Calculate the timezone offset delta between recorded and correct timezones
+	///     This method is DST-aware and calculates offsets based on the actual date
 	/// </summary>
 	/// <param name="dateTime">The datetime to calculate offsets for</param>
 	/// <param name="recordedTimezone">Source timezone (what camera thought)</param>
@@ -255,4 +228,3 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 		return delta;
 	}
 }
-

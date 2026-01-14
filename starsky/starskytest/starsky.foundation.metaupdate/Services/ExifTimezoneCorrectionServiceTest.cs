@@ -6,9 +6,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Models;
 using starsky.foundation.metaupdate.Services;
 using starsky.foundation.platform.Models;
-using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.writemeta.Helpers;
 using starsky.foundation.writemeta.Interfaces;
 using starskytest.FakeMocks;
 
@@ -18,25 +16,20 @@ namespace starskytest.starsky.foundation.metaupdate.Services;
 public sealed class ExifTimezoneCorrectionServiceTest
 {
 	private static ExifTimezoneCorrectionService CreateService(
-		IReadMeta? readMeta = null,
 		IExifTool? exifTool = null,
 		IStorage? storage = null)
 	{
-		readMeta ??= new FakeReadMeta();
-		storage ??= new FakeIStorage();
+		storage ??= new FakeIStorage(["/"],
+			["/test.jpg"]);
 		exifTool ??= new FakeExifTool(storage, new AppSettings());
 		var logger = new FakeIWebLogger();
 		var thumbnailStorage = new FakeIStorage();
+		var thumbnailQuery = new FakeIThumbnailQuery();
+		var appSettings = new AppSettings();
 
-		var exifToolCmdHelper = new ExifToolCmdHelper(
-			exifTool,
-			storage,
-			thumbnailStorage,
-			readMeta,
-			new FakeIThumbnailQuery(),
-			logger);
-
-		return new ExifTimezoneCorrectionService(readMeta, exifToolCmdHelper, logger);
+		return new ExifTimezoneCorrectionService(exifTool,
+			new FakeSelectorStorageByType(storage, thumbnailStorage,
+				null!, null!), thumbnailQuery, appSettings, logger);
 	}
 
 	[TestMethod]
@@ -51,8 +44,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		};
 		var request = new ExifTimezoneCorrectionRequest
 		{
-			RecordedTimezone = "",
-			CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezone = "", CorrectTimezone = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -75,8 +67,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		};
 		var request = new ExifTimezoneCorrectionRequest
 		{
-			RecordedTimezone = "UTC",
-			CorrectTimezone = ""
+			RecordedTimezone = "UTC", CorrectTimezone = ""
 		};
 
 		// Act
@@ -99,8 +90,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		};
 		var request = new ExifTimezoneCorrectionRequest
 		{
-			RecordedTimezone = "Invalid/Timezone",
-			CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezone = "Invalid/Timezone", CorrectTimezone = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -108,7 +98,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 
 		// Assert
 		Assert.IsFalse(result.Success);
-		Assert.IsTrue(result.Error!.Contains("Invalid recorded timezone"));
+		Assert.Contains("Invalid recorded timezone", result.Error);
 	}
 
 	[TestMethod]
@@ -123,8 +113,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		};
 		var request = new ExifTimezoneCorrectionRequest
 		{
-			RecordedTimezone = "UTC",
-			CorrectTimezone = "Invalid/Timezone"
+			RecordedTimezone = "UTC", CorrectTimezone = "Invalid/Timezone"
 		};
 
 		// Act
@@ -132,7 +121,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 
 		// Assert
 		Assert.IsFalse(result.Success);
-		Assert.IsTrue(result.Error!.Contains("Invalid correct timezone"));
+		Assert.Contains("Invalid correct timezone", result.Error);
 	}
 
 	[TestMethod]
@@ -147,8 +136,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		};
 		var request = new ExifTimezoneCorrectionRequest
 		{
-			RecordedTimezone = "UTC",
-			CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -171,15 +159,15 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		};
 		var request = new ExifTimezoneCorrectionRequest
 		{
-			RecordedTimezone = "Europe/Amsterdam",
-			CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezone = "Europe/Amsterdam", CorrectTimezone = "Europe/Amsterdam"
 		};
 
 		// Act
 		var result = service.ValidateCorrection(fileIndexItem, request);
 
 		// Assert
-		Assert.AreEqual("Recorded and correct timezones are the same - no correction needed", result.Warning);
+		Assert.AreEqual("Recorded and correct timezones are the same - no correction needed",
+			result.Warning);
 	}
 
 	[TestMethod]
@@ -202,17 +190,17 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		var result = service.ValidateCorrection(fileIndexItem, request);
 
 		// Assert
-		Assert.IsTrue(result.Warning!.Contains("Correction will change the day"));
-		Assert.IsTrue(result.Warning.Contains("2024-06-15"));
-		Assert.IsTrue(result.Warning.Contains("2024-06-16"));
+		Assert.Contains("Correction will change the day", result.Warning);
+		Assert.Contains("2024-06-15", result.Warning);
+		Assert.Contains("2024-06-16", result.Warning);
 	}
 
 	[TestMethod]
 	public async Task CorrectTimezoneAsync_ValidCorrection_ShouldSucceed()
 	{
 		// Arrange
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" });
+		var storage = new FakeIStorage(["/"],
+			["/test.jpg"]);
 		var service = CreateService(storage: storage);
 
 		var fileIndexItem = new FileIndexItem
@@ -231,8 +219,10 @@ public sealed class ExifTimezoneCorrectionServiceTest
 
 		// Assert
 		Assert.IsTrue(result.Success, $"Failed: {result.Error}");
-		Assert.AreEqual(new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local), result.OriginalDateTime);
-		Assert.AreEqual(new DateTime(2024, 6, 15, 16, 30, 0, DateTimeKind.Local), result.CorrectedDateTime); // +2 hours
+		Assert.AreEqual(new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local),
+			result.OriginalDateTime);
+		Assert.AreEqual(new DateTime(2024, 6, 15, 16, 30, 0, DateTimeKind.Local),
+			result.CorrectedDateTime); // +2 hours
 		Assert.AreEqual(2.0, result.DeltaHours); // +2 hours difference
 	}
 
@@ -240,19 +230,19 @@ public sealed class ExifTimezoneCorrectionServiceTest
 	public async Task CorrectTimezoneAsync_WinterTime_ShouldHandleDST()
 	{
 		// Arrange
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" });
+		var storage = new FakeIStorage(["/"],
+			["/test.jpg"]);
 		var service = CreateService(storage: storage);
 
 		var fileIndexItem = new FileIndexItem
 		{
 			FilePath = "/test.jpg",
-			DateTime = new DateTime(2024, 1, 15, 14, 30, 0, DateTimeKind.Local) // January (winter)
+			DateTime = new DateTime(2024, 1, 15,
+				14, 30, 0, DateTimeKind.Local) // January (winter)
 		};
 		var request = new ExifTimezoneCorrectionRequest
 		{
-			RecordedTimezone = "UTC",
-			CorrectTimezone = "Europe/Amsterdam" // GMT+01 in winter
+			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam" // GMT+01 in winter
 		};
 
 		// Act
@@ -260,7 +250,8 @@ public sealed class ExifTimezoneCorrectionServiceTest
 
 		// Assert
 		Assert.IsTrue(result.Success);
-		Assert.AreEqual(new DateTime(2024, 1, 15, 15, 30, 0, DateTimeKind.Local), result.CorrectedDateTime); // +1 hour in winter
+		Assert.AreEqual(new DateTime(2024, 1, 15, 15, 30, 0, DateTimeKind.Local),
+			result.CorrectedDateTime); // +1 hour in winter
 		Assert.AreEqual(1.0, result.DeltaHours); // +1 hour difference in winter
 	}
 
@@ -288,7 +279,8 @@ public sealed class ExifTimezoneCorrectionServiceTest
 
 		// Assert
 		Assert.IsTrue(result.Success);
-		Assert.AreEqual(new DateTime(2024, 6, 15, 12, 30, 0, DateTimeKind.Local), result.CorrectedDateTime); // -2 hours
+		Assert.AreEqual(new DateTime(2024, 6, 15, 12, 30, 0, DateTimeKind.Local),
+			result.CorrectedDateTime); // -2 hours
 		Assert.AreEqual(-2.0, result.DeltaHours); // -2 hours difference
 	}
 
@@ -303,12 +295,12 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		var fileIndexItem = new FileIndexItem
 		{
 			FilePath = "/test.jpg",
-			DateTime = new DateTime(2024, 6, 15, 23, 30, 0, DateTimeKind.Local) // 23:30
+			DateTime = new DateTime(2024, 6, 15,
+				23, 30, 0, DateTimeKind.Local) // 23:30
 		};
 		var request = new ExifTimezoneCorrectionRequest
 		{
-			RecordedTimezone = "UTC",
-			CorrectTimezone = "Pacific/Auckland" // UTC+12
+			RecordedTimezone = "UTC", CorrectTimezone = "Pacific/Auckland" // UTC+12
 		};
 
 		// Act
@@ -316,17 +308,17 @@ public sealed class ExifTimezoneCorrectionServiceTest
 
 		// Assert
 		Assert.IsTrue(result.Success);
-		Assert.AreEqual(16, result.CorrectedDateTime?.Day); // Rolled to next day
-		Assert.AreEqual(11, result.CorrectedDateTime?.Hour); // 23:30 + 12:00 = 11:30 next day
-		Assert.AreEqual(30, result.CorrectedDateTime?.Minute);
+		Assert.AreEqual(16, result.CorrectedDateTime.Day); // Rolled to next day
+		Assert.AreEqual(11, result.CorrectedDateTime.Hour); // 23:30 + 12:00 = 11:30 next day
+		Assert.AreEqual(30, result.CorrectedDateTime.Minute);
 	}
 
 	[TestMethod]
 	public async Task CorrectTimezoneAsync_MultipleImages_ShouldCorrectAll()
 	{
 		// Arrange
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test1.jpg", "/test2.jpg" });
+		var storage = new FakeIStorage(["/"],
+			["/test1.jpg", "/test2.jpg"]);
 		var service = CreateService(storage: storage);
 
 		var fileIndexItems = new List<FileIndexItem>
@@ -345,19 +337,20 @@ public sealed class ExifTimezoneCorrectionServiceTest
 
 		var request = new ExifTimezoneCorrectionRequest
 		{
-			RecordedTimezone = "UTC",
-			CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
 
 		// Act
 		var results = await service.CorrectTimezoneAsync(fileIndexItems, request);
 
 		// Assert
-		Assert.AreEqual(2, results.Count);
+		Assert.HasCount(2, results);
 		Assert.IsTrue(results[0].Success);
 		Assert.IsTrue(results[1].Success);
-		Assert.AreEqual(new DateTime(2024, 6, 15, 16, 30, 0, DateTimeKind.Local), results[0].CorrectedDateTime);
-		Assert.AreEqual(new DateTime(2024, 6, 16, 12, 0, 0, DateTimeKind.Local), results[1].CorrectedDateTime);
+		Assert.AreEqual(new DateTime(2024, 6, 15, 16, 30, 0, DateTimeKind.Local),
+			results[0].CorrectedDateTime);
+		Assert.AreEqual(new DateTime(2024, 6, 16, 12, 0, 0, DateTimeKind.Local),
+			results[1].CorrectedDateTime);
 	}
 
 	[TestMethod]
@@ -398,8 +391,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		};
 		var request = new ExifTimezoneCorrectionRequest
 		{
-			RecordedTimezone = "UTC",
-			CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -410,4 +402,3 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		Assert.IsNotNull(result.Error);
 	}
 }
-
