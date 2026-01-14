@@ -197,11 +197,6 @@ const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props
             disabled={isLoading || isPreviewLoading}
           />
 
-          {/* remove */}
-          <div
-            className={`loading ${isLoading || isPreviewLoading ? "loading--visible" : ""}`}
-          ></div>
-
           {/* Recent patterns dropdown */}
           {recentPatterns.length > 0 && (
             <div className="batch-rename-recent-patterns">
