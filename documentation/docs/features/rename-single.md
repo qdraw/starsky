@@ -1,4 +1,4 @@
-# Rename photos
+# Rename single photos
 
 You can rename and sort your photos in simple steps, which is easier than ever before.
 
