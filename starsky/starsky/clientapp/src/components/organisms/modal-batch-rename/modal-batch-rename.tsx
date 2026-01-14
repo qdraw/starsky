@@ -220,7 +220,9 @@ const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props
           {/* Count of photos */}
           <div className="batch-rename-count">
             <strong>
-              {props.select.length} {MessageBatchRenamePhotosCount}
+              {/* this number increases by pressing a button when collections is enabled */}
+              {preview.length ? preview.length : props.select.length}{" "}
+              {MessageBatchRenamePhotosCount}
             </strong>
           </div>
 

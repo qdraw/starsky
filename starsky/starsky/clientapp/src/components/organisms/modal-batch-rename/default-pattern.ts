@@ -1,1 +1,1 @@
-export const DEFAULT_PATTERN = "{yyyy}{MM}{dd}{HH}{mm}{ss}_{filenamebase}.{ext}";
+export const DEFAULT_PATTERN = "{yyyy}{MM}{dd}_{HH}{mm}{ss}_{filenamebase}.{ext}";
