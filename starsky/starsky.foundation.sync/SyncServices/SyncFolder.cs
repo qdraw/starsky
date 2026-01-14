@@ -353,34 +353,7 @@ namespace starsky.foundation.sync.SyncServices
 						_query, _memoryCache, _appSettings,
 						_serviceScopeFactory, _logger);
 					var query = queryFactory.Query();
-
-					// Double-check: verify folder doesn't exist AND has no recent children
-					// This prevents race condition where folder is being populated by another sync
-					if ( !_subPathStorage.ExistFolder(item.FilePath!) )
-					{
-						// Check if there are any child items that were recently added
-						var childItems = await query!.GetAllRecursiveAsync(item.FilePath!);
-						
-						// Also check if any subdirectories exist
-						var subDirectories = _subPathStorage.GetDirectoryRecursive(item.FilePath!);
-						
-						// Skip deletion if folder has children in DB OR subdirectories on disk
-						if ( childItems.Count > 0 || subDirectories.Any() )
-						{
-							_logger.LogInformation(
-								$"[SyncFolder] Skipping deletion of {item.FilePath} - has {childItems.Count} children or subdirectories exist");
-							await query.DisposeAsync();
-							return null;
-						}
-					}
-					else
-					{
-						// Folder exists now, don't remove
-						await query!.DisposeAsync();
-						return null;
-					}
-
-					return await RemoveChildItems(query, item);
+					return await RemoveChildItems(query!, item);
 				}, _appSettings.MaxDegreesOfParallelism) )!.ToList();
 		}
 
@@ -395,7 +368,8 @@ namespace starsky.foundation.sync.SyncServices
 			// Final safety check before deletion - verify folder truly doesn't exist
 			if ( _subPathStorage.ExistFolder(item.FilePath!) )
 			{
-				_logger.LogInformation($"[SyncFolder] Aborting RemoveChildItems - folder exists: {item.FilePath}");
+				_logger.LogInformation($"[SyncFolder] Aborting RemoveChildItems - " +
+				                       $"folder exists: {item.FilePath}");
 				item.Status = FileIndexItem.ExifStatus.Ok;
 				await query.DisposeAsync();
 				return item;
@@ -412,7 +386,7 @@ namespace starsky.foundation.sync.SyncServices
 				await query.RemoveItemAsync(remove);
 			}
 
-			// Item it self
+			// Item itself
 			await query.RemoveItemAsync(item);
 			_console.Write("✕");
 			item.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;

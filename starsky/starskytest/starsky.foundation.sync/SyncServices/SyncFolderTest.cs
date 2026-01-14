@@ -713,67 +713,6 @@ public sealed class SyncFolderTest
 	}
 
 	[TestMethod]
-	public async Task CheckIfFolderExistOnDisk_ShouldSkipDeletion_WhenChildrenExist()
-	{
-		// Setup: Folder doesn't exist on disk, but has children in DB (race condition)
-		await _query.AddItemAsync(
-			new FileIndexItem("/folder_with_children") { IsDirectory = true });
-		await _query.AddItemAsync(new FileIndexItem("/folder_with_children/child1.jpg"));
-		await _query.AddItemAsync(new FileIndexItem("/folder_with_children/child2.jpg"));
-
-		// Storage does NOT have the folder (simulating timing issue)
-		var storage = new FakeIStorage(new List<string> { "/" }, new List<string>(),
-			new List<byte[]>());
-
-		var logger = new FakeIWebLogger();
-		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-			new ConsoleWrapper(), logger,
-			new FakeMemoryCache(new Dictionary<string, object>()), null);
-
-		// Act: Sync the folder
-		var result = await syncFolder.Folder("/");
-
-		// Assert: Children should NOT be deleted
-		var childrenStillExist = await _query.GetAllRecursiveAsync("/folder_with_children");
-		Assert.HasCount(2, childrenStillExist);
-
-		// Verify log message about skipping deletion
-		Assert.IsTrue(logger.TrackedInformation.Any(log =>
-			log.Item2?.Contains("[SyncFolder] Skipping deletion") &&
-			log.Item2?.Contains("/folder_with_children")));
-	}
-
-	[TestMethod]
-	public async Task CheckIfFolderExistOnDisk_ShouldSkipDeletion_WhenSubdirectoriesExist()
-	{
-		// Setup: Folder doesn't exist, but has subdirectories on disk
-		await _query.AddItemAsync(
-			new FileIndexItem("/parent_folder") { IsDirectory = true });
-
-		// Storage has subdirectories (simulating folder structure being scanned)
-		var storage = new FakeIStorage(
-			new List<string> { "/", "/parent_folder/subfolder1", "/parent_folder/subfolder2" },
-			new List<string>(), new List<byte[]>());
-
-		var logger = new FakeIWebLogger();
-		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-			new ConsoleWrapper(), logger,
-			new FakeMemoryCache(new Dictionary<string, object>()), null);
-
-		// Act: Sync should skip deletion because subdirectories exist
-		var result = await syncFolder.Folder("/");
-
-		// Assert: Parent folder should still exist in DB
-		var parentStillExists = await _query.GetObjectByFilePathAsync("/parent_folder");
-		Assert.IsNotNull(parentStillExists);
-
-		// Verify log message about skipping deletion
-		Assert.IsTrue(logger.TrackedInformation.Any(log =>
-			log.Contains("[SyncFolder] Skipping deletion") &&
-			log.Contains("subdirectories exist")));
-	}
-
-	[TestMethod]
 	public async Task Folder_RaceCondition_ParallelSync_ShouldNotDeleteContent()
 	{
 		// Setup: Complex folder structure to test parallel processing
@@ -800,7 +739,7 @@ public sealed class SyncFolderTest
 			new FakeMemoryCache(new Dictionary<string, object>()), null);
 
 		// Act: Sync with parallel processing
-		var result = await syncFolder.Folder("/photos");
+		await syncFolder.Folder("/photos");
 
 		// Assert: All items should still exist
 		var allItems = await _query.GetAllRecursiveAsync("/photos");
@@ -837,11 +776,11 @@ public sealed class SyncFolderTest
 		Assert.IsNotNull(rootItem);
 
 		// Act: Remove child items
-		var result = await syncFolder.RemoveChildItems(_query, rootItem);
+		 await syncFolder.RemoveChildItems(_query, rootItem);
 
 		// Assert: Should log the count of items being removed
 		Assert.IsTrue(logger.TrackedInformation.Any(log =>
-			log.Item2.Contains("[SyncFolder] Removing 10 child items")));
+			log.Item2!.Contains("[SyncFolder] Removing 10 child items")));
 	}
 
 	[TestMethod]
@@ -888,7 +827,7 @@ public sealed class SyncFolderTest
 		await _query.AddItemAsync(new FileIndexItem("/active_sync_folder/new_photo.jpg"));
 
 		// Act: Sync should detect the child and not delete folder
-		var result = await syncFolder.Folder("/");
+		await syncFolder.Folder("/");
 
 		// Assert: Folder and child should still exist
 		var folder = await _query.GetObjectByFilePathAsync("/active_sync_folder");
