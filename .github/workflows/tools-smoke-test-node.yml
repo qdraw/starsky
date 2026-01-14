@@ -10,7 +10,6 @@ on:
   push:
     branches: [ master ]
     paths:
-    - 'starsky-tools/dropbox-import/**'
     - 'starsky-tools/localtunnel/**'
     - 'starsky-tools/mail/**'
     - 'starsky-tools/mock/**'
@@ -18,7 +17,6 @@ on:
   pull_request:
     branches: [ master ]
     paths:
-    - 'starsky-tools/dropbox-import/**'
     - 'starsky-tools/localtunnel/**'
     - 'starsky-tools/mail/**'
     - 'starsky-tools/mock/**'
@@ -38,7 +36,7 @@ jobs:
     steps:
     - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
     - name: Build ${{ matrix.node-version }}
-      uses: actions/setup-node@65d868f8d4d85d7d4abb7de0875cde3fcc8798f5
+      uses: actions/setup-node@2951748f4c016b747952f8ca7e75fc64f2f62b53
       with:
         node-version: ${{ matrix.node-version }}
 
@@ -49,10 +47,6 @@ jobs:
     - name: Node Run Mock SetRouter
       working-directory: ./starsky-tools/mock
       run: node set-router.js
-
-    - name: NpmCi dropbox-import
-      working-directory: ./starsky-tools/dropbox-import
-      run: npm ci
       
     - name: NpmCi localtunnel
       working-directory: ./starsky-tools/localtunnel

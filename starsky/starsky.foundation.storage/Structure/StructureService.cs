@@ -94,6 +94,7 @@ public class StructureService : IStructureService
 	/// </summary>
 	/// <param name="inputModel">
 	///     DateTime to parse, include fileName if requested in structure, fileExtension without dot
+	///     For sequence use import:AppendIndexerToFilePath
 	/// </param>
 	/// <returns>filename without starting slash</returns>
 	public string ParseFileName(StructureInputModel inputModel)
@@ -106,6 +107,7 @@ public class StructureService : IStructureService
 			inputModel.FileNameBase,
 			inputModel.ExtensionWithoutDot);
 
+		// no sequence handling here, not scope here
 		return PathHelper.RemovePrefixDbSlash(
 			ApplyStructureRangeToStorage(parsedStructuredList));
 	}
@@ -114,18 +116,41 @@ public class StructureService : IStructureService
 	internal static string GetStructureSetting(AppSettingsStructureModel config,
 		StructureInputModel input)
 	{
+		// First, try to match both ImageFormat and Origin if both are provided
 		foreach ( var rule in config.Rules )
 		{
-			if ( ( rule.Conditions.ImageFormats.Contains(input.ImageFormat) &&
-			       !string.IsNullOrEmpty(rule.Pattern) ) ||
-			     ( !string.IsNullOrEmpty(rule.Conditions.Origin)
-			       && rule.Conditions.Origin == input.Origin &&
-			       !string.IsNullOrEmpty(rule.Pattern) ) )
+			if ( rule.Conditions.ImageFormats.Contains(input.ImageFormat) &&
+			     !string.IsNullOrEmpty(rule.Pattern) && rule.Conditions.Origin == input.Origin )
 			{
 				return rule.Pattern;
 			}
 		}
 
+		// Next, try to match only ImageFormat, but only if there is a rule for this format
+		var imageFormatRule = config.Rules.FirstOrDefault(rule =>
+			rule.Conditions.ImageFormats.Contains(input.ImageFormat)
+			&& !string.IsNullOrEmpty(rule.Pattern)
+			&& string.IsNullOrEmpty(rule.Conditions.Origin)
+		);
+		if ( imageFormatRule != null )
+		{
+			return imageFormatRule.Pattern;
+		}
+
+		// Next, try to match only Origin
+		var originRule = config.Rules.FirstOrDefault(rule =>
+			!string.IsNullOrEmpty(rule.Conditions.Origin)
+			&& rule.Conditions.Origin == input.Origin
+			&& !string.IsNullOrEmpty(rule.Pattern)
+			&& rule.Conditions.ImageFormats.Count == 0
+		);
+
+		if ( originRule != null )
+		{
+			return originRule.Pattern;
+		}
+
+		// Otherwise, return default
 		return config.DefaultPattern;
 	}
 

@@ -100,15 +100,27 @@ public sealed class GeoFileDownload : IGeoFileDownload
 
 		// When trying to download a file
 		var zipFullPath = Path.Combine(_appSettings.DependenciesFolder, CountryName + ".zip");
-		using (var stream = _hostStorage.ReadStream(zipFullPath))
+		try
 		{
-			if (stream.Length > MinimumSizeInBytes)
+			using var stream = _hostStorage.ReadStream(zipFullPath);
+			if ( stream.Length > MinimumSizeInBytes )
 			{
 				return;
 			}
 		}
+		catch ( IOException e )
+		{
+			_logger.LogError(e, "Could not read downloaded geo file");
+		}
 
-		_hostStorage.FileDelete(Path.Combine(_appSettings.DependenciesFolder,
-			CountryName + ".zip"));
+		try
+		{
+			_hostStorage.FileDelete(Path.Combine(_appSettings.DependenciesFolder,
+				CountryName + ".zip"));
+		}
+		catch ( IOException e )
+		{
+			_logger.LogError(e, "Could not delete failed downloaded geo file");
+		}
 	}
 }

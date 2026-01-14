@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.feature.import.Models;
+using starsky.foundation.import.Models;
 
 namespace starskytest.starsky.foundation.database.Models;
 

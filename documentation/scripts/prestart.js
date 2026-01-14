@@ -147,11 +147,6 @@ copyFileSync(
 );
 
 copyFileSync(
-	"starsky-tools/dropbox-import/readme.md",
-	"advanced-options/starsky-tools/dropbox-import/readme.md"
-);
-
-copyFileSync(
 	"starsky-tools/end2end/readme.md",
 	"advanced-options/starsky-tools/end2end/readme.md"
 );

@@ -29,9 +29,9 @@ jobs:
     steps:
     - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
     - name: Setup .NET SDK
-      uses: actions/setup-dotnet@25328d894dc34d01d191df4849cb7f5402e3f142
+      uses: actions/setup-dotnet@baa11fbfe1d6520db94683bd5c7a3818018e4309
       with:
-        dotnet-version: 8.0.416
+        dotnet-version: 8.0.417
 
     - name: Cache nuget packages (*nix)
       uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb
@@ -65,23 +65,40 @@ jobs:
       shell: bash
       working-directory: ./documentation
       run: node scripts/openapi.js
-      
-    - name: Commit changes openapi.json (if push to branch)
-      uses: EndBug/add-and-commit@22c9062c9c5b6201f08d4ca4ffc001d380046644
-      if: github.event_name != 'pull_request'
-      with:
-        author_name: SwaggerUpdateBot
-        author_email: qdraw@users.noreply.github.com
-        message: "[Swagger] Auto commited swagger/openapi list"
-        add: "documentation/static/openapi/openapi.json"
-        github_token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Commit changes docs/api/readme.md (if push to branch)
-      uses: EndBug/add-and-commit@22c9062c9c5b6201f08d4ca4ffc001d380046644
-      if: github.event_name != 'pull_request'   
+    - shell: bash
+      working-directory: ./documentation
+      id: files_changed
+      run: |
+        git status
+        git status --porcelain
+      
+        if [[ `git status --porcelain` ]]; then
+          echo "There are files not committed yet"
+          echo "CHANGED=true" >> $GITHUB_OUTPUT
+        else 
+          echo "not changed"
+          echo "CHANGED=false" >> $GITHUB_OUTPUT
+        fi
+      
+    - name: Create Pull Request ${{ steps.files_changed.outputs.CHANGED }}
+      id: cpr
+      if: steps.files_changed.outputs.CHANGED == 'true'
+      uses: peter-evans/create-pull-request@2271f1ddcf09437ed8f019733eb5cfba58ac76f0
       with:
-        author_name: SwaggerUpdateBot
-        author_email: qdraw@users.noreply.github.com
-        message: "[Swagger] Auto commited swagger/openapi list"
-        add: "docs/api/readme.md"
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.WORKFLOW_GITHUB }}
+        commit-message: 'WebApp Update Swagger .NET'
+        committer: GitHub <noreply@github.com>
+        author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+        signoff: false
+        add-paths: |
+          *
+        branch: feature/webapp_update_swagger_dotnet
+        delete-branch: true
+        title: 'WebApp Update Swagger .NET'
+        body: |
+          ## WebApp Update Swagger .NET
+          - todo: test!         
+        labels: |
+          documentation
+        draft: false

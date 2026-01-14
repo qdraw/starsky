@@ -36,6 +36,9 @@ const apiPublishCreateIndex = require("./api/publish/create/index.json");
 
 const apiDeskopEditorOpen = require("./api/desktop-editor/open.json");
 
+// batch-rename mock
+const apiBatchRenamePreview = require("./api/batch-rename/preview/index.json");
+
 const githubComReposQdrawStarskyReleaseIndex = require("./github.com/repos/qdraw/starsky/releases/index.json");
 
 function setRouter(app, isStoryBook = false) {
@@ -330,6 +333,13 @@ function setRouter(app, isStoryBook = false) {
 	 */
 	app.get("/github.com/repos/qdraw/starsky/releases", (req, res) => {
 		return res.send(githubComReposQdrawStarskyReleaseIndex);
+	});
+
+	app.post(prefix + "/api/batch-rename/preview", (req, res) => {
+		console.log("test");
+		console.log(Object.getOwnPropertyNames(res.__proto__));
+		
+		return res.json(apiBatchRenamePreview);
 	});
 }
 

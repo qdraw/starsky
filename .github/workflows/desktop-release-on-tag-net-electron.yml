@@ -27,9 +27,9 @@ jobs:
         run: sudo rm -rf /usr/local/lib/android
 
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@25328d894dc34d01d191df4849cb7f5402e3f142
+        uses: actions/setup-dotnet@baa11fbfe1d6520db94683bd5c7a3818018e4309
         with:
-          dotnet-version: 8.0.416
+          dotnet-version: 8.0.417
 
       - name: Build --no-unit-test linux-arm,linux-arm64,win-x64,osx-x64,linux-x64,osx-arm64 --ready-to-run
         shell: bash
@@ -213,7 +213,7 @@ jobs:
         run: npm run release-version-check
 
       - name: Use node version
-        uses: actions/setup-node@65d868f8d4d85d7d4abb7de0875cde3fcc8798f5
+        uses: actions/setup-node@2951748f4c016b747952f8ca7e75fc64f2f62b53
         with:
           node-version: '22.x'
 
@@ -308,7 +308,7 @@ jobs:
 
       - name: Create Release
         id: create_release
-        uses: softprops/action-gh-release@5122b4edc95f85501a71628a57dc180a03ec7588
+        uses: softprops/action-gh-release@78237c54eb15310cb292a15480c4be010be47aeb
         if: startsWith(github.ref, 'refs/tags/v')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

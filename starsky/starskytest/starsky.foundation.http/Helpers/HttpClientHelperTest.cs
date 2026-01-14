@@ -280,7 +280,7 @@ public sealed class HttpClientHelperTest
 		var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, fakeLogger);
 
 		await httpClientHelper
-			.PostString("https://qdraw.nl/test", new StringContent(string.Empty), false);
+			.PostString("https://qdraw.nl/test", new StringContent(string.Empty), verbose: false);
 
 		Assert.IsFalse(
 			fakeLogger.TrackedInformation.Exists(p => p.Item2?.Contains("PostString") == true));

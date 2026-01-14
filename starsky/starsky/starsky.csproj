@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
-        <RuntimeFrameworkVersion>8.0.22</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion>8.0.23</RuntimeFrameworkVersion>
         <Description>An attempt to create a database driven photo library</Description>
         <!-- use node script to update version -->
-        <Version>0.7.5</Version>
+        <Version>0.7.6</Version>
         <!-- SonarQube needs this -->
         <ProjectGuid>{894dce96-b51a-4ea2-80bf-e330bf1e8198}</ProjectGuid>
         <DefineConstants>SYSTEM_TEXT_ENABLED</DefineConstants>
@@ -59,9 +59,9 @@
         <WarningLevel>0</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.22" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.23" />
         <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6"/>
     </ItemGroup>
     <!-- generate xml file for swagger -->
     <PropertyGroup>
@@ -143,12 +143,13 @@
         <PreserveCompilationReferences>true</PreserveCompilationReferences>
     </PropertyGroup>
     <ItemGroup>
+        <ProjectReference Include="..\starsky.feature.cloudimport\starsky.feature.cloudimport.csproj"/>
         <ProjectReference Include="..\starsky.feature.demo\starsky.feature.demo.csproj"/>
         <ProjectReference Include="..\starsky.feature.desktop\starsky.feature.desktop.csproj"/>
         <ProjectReference Include="..\starsky.feature.export\starsky.feature.export.csproj"/>
         <ProjectReference Include="..\starsky.feature.geolookup\starsky.feature.geolookup.csproj"/>
         <ProjectReference Include="..\starsky.feature.health\starsky.feature.health.csproj"/>
-        <ProjectReference Include="..\starsky.feature.import\starsky.feature.import.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.import\starsky.foundation.import.csproj"/>
         <ProjectReference Include="..\starsky.feature.metaupdate\starsky.feature.metaupdate.csproj"/>
         <ProjectReference Include="..\starsky.feature.packagetelemetry\starsky.feature.packagetelemetry.csproj"/>
         <ProjectReference Include="..\starsky.feature.realtime\starsky.feature.realtime.csproj"/>

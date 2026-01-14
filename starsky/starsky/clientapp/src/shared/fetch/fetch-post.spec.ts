@@ -1,5 +1,6 @@
 import FetchPost from "./fetch-post";
 
+// FetchPost tests
 describe("fetch-post", () => {
   it("default string response", async () => {
     const response = new Response(JSON.stringify("response"));
@@ -32,6 +33,27 @@ describe("fetch-post", () => {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/x-www-form-urlencoded",
+        "X-XSRF-TOKEN": ""
+      },
+      method: "post"
+    });
+    expect(result.data).toStrictEqual({
+      test: true
+    });
+  });
+
+  it("should give application/json header for string", async () => {
+    const response = new Response(JSON.stringify({ test: true }));
+    const mockFetchAsXml: Promise<Response> = Promise.resolve(response);
+    const spy = jest.spyOn(window, "fetch").mockImplementationOnce(() => mockFetchAsXml);
+    const result = await FetchPost("/test", "{}", "post", { "Content-Type": "application/json" });
+
+    expect(spy).toHaveBeenCalledWith("/test", {
+      body: "{}",
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
         "X-XSRF-TOKEN": ""
       },
       method: "post"

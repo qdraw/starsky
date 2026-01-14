@@ -7,6 +7,7 @@ import DetailViewMp4 from "../../components/organisms/detail-view-media/detail-v
 import DetailViewSidebar from "../../components/organisms/detail-view-sidebar/detail-view-sidebar";
 import { DetailViewContext } from "../../contexts/detailview-context";
 import { useGestures } from "../../hooks/use-gestures/use-gestures";
+import useHotKeys from "../../hooks/use-keyboard/use-hotkeys";
 import useKeyboardEvent from "../../hooks/use-keyboard/use-keyboard-event";
 import useLocation from "../../hooks/use-location/use-location";
 import { IDetailView, newDetailView } from "../../interfaces/IDetailView";
@@ -114,6 +115,54 @@ const DetailView: FC<IDetailView> = () => {
       moveFolderUp(event, history, isSearchQuery, state);
     },
     [state.fileIndexItem]
+  );
+
+  // previous item
+  useHotKeys(
+    { key: "[", ctrlKeyOrMetaKey: true, skipIsInForm: false },
+    () => {
+      new PrevNext(
+        relativeObjects,
+        state,
+        isSearchQuery,
+        history,
+        setRelativeObjects,
+        setIsLoading
+      ).prev();
+    },
+    [relativeObjects]
+  );
+
+  // next item
+  useKeyboardEvent(
+    /ArrowRight/,
+    (event: KeyboardEvent) => {
+      if (new Keyboard().isInForm(event)) return;
+      new PrevNext(
+        relativeObjects,
+        state,
+        isSearchQuery,
+        history,
+        setRelativeObjects,
+        setIsLoading
+      ).next();
+    },
+    [relativeObjects]
+  );
+
+  useHotKeys(
+    { key: "]", ctrlKeyOrMetaKey: true, skipIsInForm: false },
+    () => {
+      new PrevNext(
+        relativeObjects,
+        state,
+        isSearchQuery,
+        history,
+        setRelativeObjects,
+        setIsLoading
+      ).next();
+    },
+    [relativeObjects]
   );
 
   // toggle details side menu

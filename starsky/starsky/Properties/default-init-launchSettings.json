@@ -40,7 +40,15 @@
         "___app__OpenTelemetry__MetricsEndpoint": "http://localhost:4318/v1/metrics",
         "___app__OpenTelemetry__LogsEndpoint": "http://localhost:4318/v1/logs",
         "___app__OpenTelemetry__Header": "api-key=test",
-        "___app__OpenTelemetry__ServiceName": "starsky-dev"
+        "___app__OpenTelemetry__ServiceName": "starsky-dev",
+        "app__CloudImport__Providers__0__Id": "dropbox-camera-uploads",
+        "app__CloudImport__Providers__0__Enabled": "false",
+        "app__CloudImport__Providers__0__Provider": "Dropbox",
+        "app__CloudImport__Providers__0__RemoteFolder": "/Camera Uploads",
+        "app__CloudImport__Providers__0__DeleteAfterImport": "false",
+        "app__CloudImport__Providers__0__Credentials__RefreshToken": "",
+        "app__CloudImport__Providers__0__Credentials__AppKey": "",
+        "app__CloudImport__Providers__0__Credentials__AppSecret": ""
       }
     },
     "IIS": {
