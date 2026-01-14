@@ -45,8 +45,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 - [x] (Fixed) _Back-end_ Sync Race Condition Fix (PR #2550)
 - [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.417 (Runtime: 8.0.23) (PR #2588)
-- [x] (Added) _Front-end_ Batch rename feature (PR #2585)
-- [x] (Added) _Back-end_ Batch rename feature (PR #2577)
+- [x] (Added) _Front-end_ Batch rename feature (PR #2585) (Issue #72)
+- [x] (Added) _Back-end_ Batch rename feature (PR #2577) (Issue #72)
 
 ## version 0.7.6 - 2026-01-08 {#v0.7.6}
 
