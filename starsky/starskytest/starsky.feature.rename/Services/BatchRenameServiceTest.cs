@@ -37,7 +37,7 @@ public class BatchRenameServiceTest
 		var memoryCache = provider.GetService<IMemoryCache>();
 
 		var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-		builder.UseInMemoryDatabase(nameof(RenameServiceTest));
+		builder.UseInMemoryDatabase(nameof(BatchRenameServiceTest));
 		var options = builder.Options;
 		var context = new ApplicationDbContext(options);
 
