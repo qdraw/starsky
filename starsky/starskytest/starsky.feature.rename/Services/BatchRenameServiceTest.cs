@@ -143,6 +143,23 @@ public class BatchRenameServiceTest
 	}
 
 	[TestMethod]
+	public async Task PreviewBatchRename_FolderInRoot_ReturnsError()
+	{
+		await CreateFoldersAndFilesInDatabase();
+		var iStorage = new FakeIStorage([_folderExist.FilePath!],
+			[]);
+		var service = new BatchRenameService(_query, iStorage, new FakeIWebLogger());
+		const string tokenPattern = "{yyyy}{MM}{dd}_{HH}{mm}{ss}_{filenamebase}.{ext}";
+		var result = service.PreviewBatchRename([_folderExist.FilePath!],
+			tokenPattern);
+		CollectionAssert.AreEqual(new List<string> { _folderExist.FilePath! },
+			result.Select(x => x.SourceFilePath).ToList());
+		Assert.IsTrue(result[0].HasError);
+		Assert.AreEqual("Is a directory", result[0].ErrorMessage);
+		await RemoveFoldersAndFilesInDatabase();
+	}
+
+	[TestMethod]
 	public async Task
 		PreviewBatchRename_FileInRoot_ParentNull_ReturnsExpectedMappings_ForValidFiles()
 	{
