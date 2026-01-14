@@ -25,8 +25,8 @@ This document is auto generated
 | __/api/env__                                      | POST  | Show the runtime settings (dont allow AllowAnonymous)                           |
 | _Parameters: Verbose, StorageFolder, UseSystemTrash, UseLocalDesktop, DefaultDesktopEditor, DesktopCollectionsOpen                        _ |
 | __/api/env/features__                             | GET   | Show features that used in the frontend app / menu                              |
-| __/api/BatchRename/preview__                      | POST  | Preview batch rename mappings for a list of file paths and a rename pattern.    |
-| __/api/BatchRename/execute__                      | POST  | Execute batch rename for a list of mappings.                                    |
+| __/api/batch-rename/preview__                     | POST  | Preview batch rename mappings for a list of file paths and a rename pattern.    |
+| __/api/batch-rename/execute__                     | POST  | Execute batch rename for a list of mappings.                                    |
 | __/api/cache/list__                               | GET   | Get Database Cache (only the cache)                                             |
 | __/api/remove-cache__                             | GET   | Delete Database Cache (only the cache)                                          |
 | __/api/remove-cache__                             | POST  | Delete Database Cache (only the cache)                                          |

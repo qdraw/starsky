@@ -2316,7 +2316,7 @@
       "extensions": {},
       "unresolvedReference": false
     },
-    "/api/BatchRename/preview": {
+    "/api/batch-rename/preview": {
       "operations": {
         "Post": {
           "tags": [
@@ -2581,7 +2581,7 @@
       "extensions": {},
       "unresolvedReference": false
     },
-    "/api/BatchRename/execute": {
+    "/api/batch-rename/execute": {
       "operations": {
         "Post": {
           "tags": [
@@ -18621,5 +18621,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "E7628FC16E4F67659829D6C7E083F4EA94C7A21F4D8BCE1801D464C675E6ACAF8337DB3EEF1CD0B46A65C0DBDD300403D3AA81974A3CA58350B5C38606D64582"
+  "hashCode": "E5BE04EBF01C35E8173BF910E83E1A9C064CE41DCE95D07D5384682606D25FDD169970A5832BE462D8FEDE26B46264A4729639AC91233DC414947C4DDF05F3F0"
 }
