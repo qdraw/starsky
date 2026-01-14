@@ -30,7 +30,7 @@ jobs:
       run: npm run nuget-package-list
 
     - name: Commit changes
-      uses: EndBug/add-and-commit@22c9062c9c5b6201f08d4ca4ffc001d380046644
+      uses: EndBug/add-and-commit@db8fba131f71cedfd60e319abf8ea449bb246873
       with:
         author_name: DocsUpdateBot
         author_email: qdraw@users.noreply.github.com
