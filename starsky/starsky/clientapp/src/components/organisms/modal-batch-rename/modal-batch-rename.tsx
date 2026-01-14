@@ -106,8 +106,9 @@ const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props
     }
 
     // Add last item if not already added
-    if (preview.length > 2 && preview[preview.length - 1]) {
-      displayItems.push(preview[preview.length - 1]);
+    const lastItem = preview.at(-1);
+    if (preview.length > 2 && lastItem) {
+      displayItems.push(lastItem);
     }
 
     return (
@@ -115,7 +116,10 @@ const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props
         {displayItems.map((item, index) => {
           if (item.sourceFilePath === "...") {
             return (
-              <div key={`ellipsis-${index}`} className="preview-item preview-ellipsis">
+              <div
+                key={`ellipsis-${item.sourceFilePath}`}
+                className="preview-item preview-ellipsis"
+              >
                 ...
               </div>
             );
@@ -204,8 +208,8 @@ const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props
                 disabled={isLoading || isPreviewLoading}
               >
                 <option value="">-- {MessageSelectAPattern} --</option>
-                {recentPatterns.map((p, index) => (
-                  <option key={`pattern-${index}`} value={p}>
+                {recentPatterns.map((p) => (
+                  <option key={`pattern-${p}`} value={p}>
                     {p}
                   </option>
                 ))}
@@ -221,16 +225,7 @@ const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props
           </div>
 
           {/* Preview section */}
-          {!previewGenerated ? (
-            <button
-              onClick={generatePreview}
-              disabled={isPreviewLoading || !pattern.trim()}
-              data-test="button-batch-rename-generate-preview"
-              className="btn btn--default"
-            >
-              {isPreviewLoading ? MessageLoading : MessageBatchRenamePreview}
-            </button>
-          ) : (
+          {previewGenerated ? (
             <>
               {/* Render preview list */}
               {renderPreviewList()}
@@ -255,6 +250,15 @@ const ModalBatchRename: React.FunctionComponent<IModalBatchRenameProps> = (props
                 </button>
               </div>
             </>
+          ) : (
+            <button
+              onClick={generatePreview}
+              disabled={isPreviewLoading || !pattern.trim()}
+              data-test="button-batch-rename-generate-preview"
+              className="btn btn--default"
+            >
+              {isPreviewLoading ? MessageLoading : MessageBatchRenamePreview}
+            </button>
           )}
 
           {/* Error display */}
