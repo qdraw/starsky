@@ -198,8 +198,10 @@ public sealed class RenameServiceTest
 		await CreateFoldersAndFilesInDatabase();
 
 		var iStorage = new FakeIStorage([_folderExist.FilePath!],
-			[_fileInExist.FilePath!, 
-				JsonSidecarLocation.JsonLocation(_fileInExist.FilePath!)]);
+		[
+			_fileInExist.FilePath!,
+			JsonSidecarLocation.JsonLocation(_fileInExist.FilePath!)
+		]);
 
 		var sut = new RenameService(_query, iStorage, new FakeIWebLogger());
 		var renameFs = await sut
@@ -219,10 +221,10 @@ public sealed class RenameServiceTest
 		{
 			Console.WriteLine($"{p.FilePath} - {p.Status}");
 		}
-		
+
 		Assert.AreEqual("/exist/.starsky.test2.jpg.json",
 			values.Find(p => p == "/exist/.starsky.test2.jpg.json"));
-		
+
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok,
 			renameFs.Find(p => p.FilePath == "/exist/test2.jpg")?.Status);
 		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,
@@ -317,17 +319,17 @@ public sealed class RenameServiceTest
 		var initFolderList = new List<string> { "/", "/test" };
 		var initFileList = new List<string> { _fileInExist.FilePath! };
 		var fakeIStorage = new FakeIStorage(initFolderList, initFileList);
-
+		var query = new FakeIQuery([_fileInExist]);
 		var renameFsResult =
-			await new RenameService(_query, fakeIStorage, new FakeIWebLogger()).Rename(
+			await new RenameService(query, fakeIStorage, new FakeIWebLogger()).Rename(
 				initFileList.FirstOrDefault()!,
 				"/test/");
 
-		var oldItem = await _query.GetObjectByFilePathAsync("/exist/file.jpg");
+		var oldItem = await query.GetObjectByFilePathAsync("/exist/file.jpg");
 		Assert.IsNull(oldItem);
 
 		// to file: (in database)
-		var all2 = ( await _query.GetAllRecursiveAsync() )
+		var all2 = ( await query.GetAllRecursiveAsync() )
 			.Where(p => p.ParentDirectory?.Contains("/test") == true);
 		var selectFile3 = all2.FirstOrDefault(p => p.FilePath == "/test/file.jpg");
 		Assert.AreEqual("file.jpg", selectFile3?.FileName);
