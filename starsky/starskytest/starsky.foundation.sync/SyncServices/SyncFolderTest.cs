@@ -646,7 +646,7 @@ public sealed class SyncFolderTest
 			});
 		Assert.AreEqual("֍", consoleWrapper.WrittenLines.LastOrDefault());
 	}
-	
+
 	[TestMethod]
 	public async Task RemoveChildItems_ShouldAbort_WhenFolderExists()
 	{
@@ -776,7 +776,7 @@ public sealed class SyncFolderTest
 		Assert.IsNotNull(rootItem);
 
 		// Act: Remove child items
-		 await syncFolder.RemoveChildItems(_query, rootItem);
+		await syncFolder.RemoveChildItems(_query, rootItem);
 
 		// Assert: Should log the count of items being removed
 		Assert.IsTrue(logger.TrackedInformation.Any(log =>
@@ -811,8 +811,7 @@ public sealed class SyncFolderTest
 	public async Task Folder_WithRecentlyAddedChildren_ShouldNotBeDeleted()
 	{
 		// Setup: Folder being actively synced (simulating DiskWatcher adding items)
-		await _query.AddItemAsync(new FileIndexItem("/active_sync_folder")
-			{ IsDirectory = true });
+		await _query.AddItemAsync(new FileIndexItem("/active_sync_folder") { IsDirectory = true });
 
 		var storage = new FakeIStorage(
 			new List<string> { "/", "/active_sync_folder" },
@@ -835,5 +834,38 @@ public sealed class SyncFolderTest
 
 		Assert.IsNotNull(folder, "Folder should not be deleted");
 		Assert.IsNotNull(child, "Child item should not be deleted");
+	}
+
+	[TestMethod]
+	public async Task CheckIfFolderExistOnDisk_WithSubdirectoriesOnDisk_ShouldSkipDeletion()
+	{
+		// Setup: Folder in DB but not on disk, BUT has subdirectories/files on disk
+		// This simulates a race condition where folder structure is being created
+		await _query.AddItemAsync(
+			new FileIndexItem("/folder_with_subdirs") { IsDirectory = true });
+
+		// Storage: Parent folder exists with subdirectories (simulating active folder creation)
+		var storage = new FakeIStorage(
+			new List<string> { "/", "/folder_with_subdirs/subfolder" },
+			new List<string> { "/folder_with_subdirs/subfolder/file.jpg" },
+			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
+
+		var logger = new FakeIWebLogger();
+		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
+			new ConsoleWrapper(), logger,
+			new FakeMemoryCache(new Dictionary<string, object>()), null);
+
+		// Act: Run folder sync
+		await syncFolder.Folder("/");
+
+		// Assert: Should log the skip message
+		Assert.IsTrue(logger.TrackedInformation.Any(log =>
+				log.Item2!.Contains(
+					"[SyncFolder] Skipping deletion of /folder_with_subdirs - subdirectories exist on disk")),
+			"Expected log message about skipping deletion due to subdirectories");
+
+		// Assert: Folder should still exist in database (not deleted)
+		var folder = await _query.GetObjectByFilePathAsync("/folder_with_subdirs");
+		Assert.IsNotNull(folder, "Folder should not be deleted when subdirectories exist on disk");
 	}
 }

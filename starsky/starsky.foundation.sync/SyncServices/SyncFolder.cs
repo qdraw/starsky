@@ -367,15 +367,10 @@ public sealed class SyncFolder
 				var queryFactory = new QueryFactory(_setupDatabaseTypes,
 					_query, _memoryCache, _appSettings,
 					_serviceScopeFactory, _logger);
-				var query = queryFactory.Query();
+				var query = queryFactory.Query()!;
 
-				if ( query == null )
-				{
-					return null;
-				}
-
-				var subDirectories = 
-					_subPathStorage.GetAllFilesInDirectoryRecursive(item.FilePath!);
+				var subDirectories =
+					_subPathStorage.GetDirectoryRecursive(item.FilePath!);
 				if ( !subDirectories.Any() )
 				{
 					return await RemoveChildItems(query, item);
