@@ -93,10 +93,10 @@ public class BatchRenameService(IQuery query, IStorage iStorage, IWebLogger logg
 						// when explicit adding files skip
 						continue;
 					}
-					
+
 					// implicit flow
 					var collectionFileIndexItem = query.SingleItem(collectionPath,
-						null, false, false)?.FileIndexItem;
+						null, false, false)!.FileIndexItem;
 					if ( collectionFileIndexItem != null )
 					{
 						fileItems[collectionPath] = collectionFileIndexItem;
