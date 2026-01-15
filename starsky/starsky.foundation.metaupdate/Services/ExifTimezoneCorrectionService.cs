@@ -4,10 +4,10 @@ using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.metaupdate.Models;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Helpers;
 using starsky.foundation.writemeta.Interfaces;
@@ -19,11 +19,11 @@ namespace starsky.foundation.metaupdate.Services;
 /// </summary>
 public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 {
+	private readonly AppSettings _appSettings;
 	private readonly ExifToolCmdHelper _exifToolCmdHelper;
 	private readonly IWebLogger _logger;
 	private readonly IQuery _query;
 	private readonly IStorage _storage;
-	private readonly AppSettings _appSettings;
 
 	public ExifTimezoneCorrectionService(
 		IExifTool exifTool,
@@ -62,52 +62,18 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 		return results;
 	}
 
-	public async Task<List<ExifTimezoneCorrectionResult>> Validate(string[] subPaths, bool collections, ExifTimezoneCorrectionRequest request)
+	public async Task<List<ExifTimezoneCorrectionResult>> Validate(string[] subPaths,
+		bool collections, ExifTimezoneCorrectionRequest request)
 	{
-		var results = new List<ExifTimezoneCorrectionResult>();
-
 		var fileIndexItems = await _query.GetObjectsByFilePathAsync(
 			[..subPaths], collections);
 
-		foreach ( var fileIndexItem in fileIndexItems )
-		{
-			// Files that are not on disk
-			if ( _storage.IsFolderOrFile(fileIndexItem.FilePath!) ==
-			     FolderOrFileModel.FolderOrFileTypeList.Deleted )
-			{
-				StatusCodesHelper.ReturnExifStatusError(fileIndexItem,
-					FileIndexItem.ExifStatus.NotFoundSourceMissing,
-					fileIndexUpdateList);
-				continue;
-			}
-
-			// Dir is readonly / don't edit
-			if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(fileIndexItem)
-			     == FileIndexItem.ExifStatus.ReadOnly )
-			{
-				StatusCodesHelper.ReturnExifStatusError(fileIndexItem,
-					FileIndexItem.ExifStatus.ReadOnly,
-					fileIndexUpdateList);
-				continue;
-			}
-
-			var result = ValidateCorrection(fileIndexItem, request);
-			results.Add(result);
-		}
-
-		// public List<ExifTimezoneCorrectionResult> ValidateCorrection(List<FileIndexItem> fileIndexItems,
-		// 	ExifTimezoneCorrectionRequest request)
-		// {
-		// 	var results = new List<ExifTimezoneCorrectionResult>();
-		//
-		// 	foreach ( var item in fileIndexItems )
-		// 	{
-		// 		var result = ValidateCorrection(item, request);
-		// 		results.Add(result);
-		// 	}
-		//
-		// 	return results;
-		// }
+		var results =
+			fileIndexItems.Select(fileIndexItem =>
+					ValidateCorrection(fileIndexItem.CloneViaJson()!,
+						request))
+				.ToList();
+		return results;
 	}
 
 	/// <summary>
@@ -175,24 +141,38 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 	{
 		var result = new ExifTimezoneCorrectionResult
 		{
-			Success = false, OriginalDateTime = fileIndexItem.DateTime
+			Success = false,
+			OriginalDateTime = fileIndexItem.DateTime,
+			FileIndexItem = fileIndexItem
 		};
 
 		if ( !_storage.ExistFile(fileIndexItem.FilePath!) )
 		{
 			result.Error = "File does not exist";
+			fileIndexItem.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;
+			return result;
+		}
+
+		// Dir is readonly / don't edit
+		if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(fileIndexItem)
+		     == FileIndexItem.ExifStatus.ReadOnly )
+		{
+			fileIndexItem.Status = FileIndexItem.ExifStatus.ReadOnly;
+			result.Error = "Directory is read only";
 			return result;
 		}
 
 		// Validate timezones
 		if ( string.IsNullOrWhiteSpace(request.RecordedTimezone) )
 		{
+			fileIndexItem.Status = FileIndexItem.ExifStatus.OperationNotSupported;
 			result.Error = "Recorded timezone is required";
 			return result;
 		}
 
 		if ( string.IsNullOrWhiteSpace(request.CorrectTimezone) )
 		{
+			fileIndexItem.Status = FileIndexItem.ExifStatus.OperationNotSupported;
 			result.Error = "Correct timezone is required";
 			return result;
 		}
@@ -204,6 +184,7 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 		}
 		catch ( Exception )
 		{
+			fileIndexItem.Status = FileIndexItem.ExifStatus.OperationNotSupported;
 			result.Error = $"Invalid recorded timezone: {request.RecordedTimezone}";
 			return result;
 		}
@@ -214,6 +195,7 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 		}
 		catch ( Exception )
 		{
+			fileIndexItem.Status = FileIndexItem.ExifStatus.OperationNotSupported;
 			result.Error = $"Invalid correct timezone: {request.CorrectTimezone}";
 			return result;
 		}
@@ -221,15 +203,11 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 		// Validate DateTime
 		if ( fileIndexItem.DateTime.Year < 2 )
 		{
+			fileIndexItem.Status = FileIndexItem.ExifStatus.OperationNotSupported;
 			result.Error = "Image does not have a valid DateTime in EXIF";
 			return result;
 		}
 
-		// Warn if timezones are the same
-		if ( request.RecordedTimezone == request.CorrectTimezone )
-		{
-			result.Warning = "Recorded and correct timezones are the same - no correction needed";
-		}
 
 		// Calculate delta to check for day rollover
 		var delta = CalculateTimezoneDelta(
@@ -243,9 +221,19 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 		if ( correctedDateTime.Day != fileIndexItem.DateTime.Day )
 		{
 			result.Warning =
-				$"Correction will change the day from {fileIndexItem.DateTime:yyyy-MM-dd} to {correctedDateTime:yyyy-MM-dd}";
+				$"Correction will change the day from " +
+				$"{fileIndexItem.DateTime:yyyy-MM-dd} to {correctedDateTime:yyyy-MM-dd}";
 		}
 
+		// Warn if timezones are the same
+		if ( request.RecordedTimezone == request.CorrectTimezone )
+		{
+			fileIndexItem.Status = FileIndexItem.ExifStatus.OkAndSame;
+			result.Warning = "Recorded and correct timezones are the same - no correction needed";
+			return result;
+		}
+
+		fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 		return result;
 	}
 

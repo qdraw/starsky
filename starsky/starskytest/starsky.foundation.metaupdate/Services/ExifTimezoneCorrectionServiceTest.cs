@@ -26,10 +26,12 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		var thumbnailStorage = new FakeIStorage();
 		var thumbnailQuery = new FakeIThumbnailQuery();
 		var appSettings = new AppSettings();
+		var fakeQuery = new FakeIQuery();
 
 		return new ExifTimezoneCorrectionService(exifTool,
 			new FakeSelectorStorageByType(storage, thumbnailStorage,
-				null!, null!), thumbnailQuery, appSettings, logger);
+				null!, null!),
+			fakeQuery, thumbnailQuery, appSettings, logger);
 	}
 
 	[TestMethod]
