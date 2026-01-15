@@ -8,6 +8,15 @@ namespace starsky.foundation.metaupdate.Interfaces;
 /// </summary>
 public interface IExifTimezoneCorrectionService
 {
+	/// <summary>
+	///     Validate timezone correction request
+	/// </summary>
+	/// <param name="request">Timezone correction parameters</param>
+	/// <returns>Results for each image</returns>
+	Task<List<ExifTimezoneCorrectionResult>> Validate(
+		string[] subPaths,
+		bool collections,
+		ExifTimezoneCorrectionRequest request);
 
 	/// <summary>
 	///     Correct EXIF timestamps for multiple images
@@ -17,15 +26,5 @@ public interface IExifTimezoneCorrectionService
 	/// <returns>Results for each image</returns>
 	Task<List<ExifTimezoneCorrectionResult>> CorrectTimezoneAsync(
 		List<FileIndexItem> fileIndexItems,
-		ExifTimezoneCorrectionRequest request);
-
-	/// <summary>
-	///     Validate timezone correction request
-	/// </summary>
-	/// <param name="fileIndexItem">The image to validate</param>
-	/// <param name="request">Timezone correction parameters</param>
-	/// <returns>Validation result with warnings</returns>
-	ExifTimezoneCorrectionResult ValidateCorrection(
-		FileIndexItem fileIndexItem,
 		ExifTimezoneCorrectionRequest request);
 }

@@ -1,3 +1,4 @@
+using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Interfaces;
@@ -6,6 +7,7 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Helpers;
 using starsky.foundation.writemeta.Interfaces;
@@ -19,11 +21,14 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 {
 	private readonly ExifToolCmdHelper _exifToolCmdHelper;
 	private readonly IWebLogger _logger;
+	private readonly IQuery _query;
 	private readonly IStorage _storage;
+	private readonly AppSettings _appSettings;
 
 	public ExifTimezoneCorrectionService(
 		IExifTool exifTool,
 		ISelectorStorage selectorStorage,
+		IQuery query,
 		IThumbnailQuery thumbnailQuery,
 		AppSettings appSettings,
 		IWebLogger logger)
@@ -35,6 +40,74 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 			new ReadMeta(_storage, appSettings, null, logger),
 			thumbnailQuery, logger);
 		_logger = logger;
+		_query = query;
+		_appSettings = appSettings;
+	}
+
+	/// <summary>
+	///     Correct EXIF timestamps for multiple images
+	/// </summary>
+	public async Task<List<ExifTimezoneCorrectionResult>> CorrectTimezoneAsync(
+		List<FileIndexItem> fileIndexItems,
+		ExifTimezoneCorrectionRequest request)
+	{
+		var results = new List<ExifTimezoneCorrectionResult>();
+
+		foreach ( var item in fileIndexItems )
+		{
+			var result = await CorrectTimezoneAsync(item, request);
+			results.Add(result);
+		}
+
+		return results;
+	}
+
+	public async Task<List<ExifTimezoneCorrectionResult>> Validate(string[] subPaths, bool collections, ExifTimezoneCorrectionRequest request)
+	{
+		var results = new List<ExifTimezoneCorrectionResult>();
+
+		var fileIndexItems = await _query.GetObjectsByFilePathAsync(
+			[..subPaths], collections);
+
+		foreach ( var fileIndexItem in fileIndexItems )
+		{
+			// Files that are not on disk
+			if ( _storage.IsFolderOrFile(fileIndexItem.FilePath!) ==
+			     FolderOrFileModel.FolderOrFileTypeList.Deleted )
+			{
+				StatusCodesHelper.ReturnExifStatusError(fileIndexItem,
+					FileIndexItem.ExifStatus.NotFoundSourceMissing,
+					fileIndexUpdateList);
+				continue;
+			}
+
+			// Dir is readonly / don't edit
+			if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(fileIndexItem)
+			     == FileIndexItem.ExifStatus.ReadOnly )
+			{
+				StatusCodesHelper.ReturnExifStatusError(fileIndexItem,
+					FileIndexItem.ExifStatus.ReadOnly,
+					fileIndexUpdateList);
+				continue;
+			}
+
+			var result = ValidateCorrection(fileIndexItem, request);
+			results.Add(result);
+		}
+
+		// public List<ExifTimezoneCorrectionResult> ValidateCorrection(List<FileIndexItem> fileIndexItems,
+		// 	ExifTimezoneCorrectionRequest request)
+		// {
+		// 	var results = new List<ExifTimezoneCorrectionResult>();
+		//
+		// 	foreach ( var item in fileIndexItems )
+		// 	{
+		// 		var result = ValidateCorrection(item, request);
+		// 		results.Add(result);
+		// 	}
+		//
+		// 	return results;
+		// }
 	}
 
 	/// <summary>
@@ -76,7 +149,7 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 				comparedNames,
 				false);
 			result.Success = true;
-			
+
 			_logger.LogInformation(
 				$"[ExifTimezoneCorrection] Successfully corrected: {fileIndexItem.FilePath} " +
 				$"from {result.OriginalDateTime:yyyy-MM-dd HH:mm:ss} to {result.CorrectedDateTime:yyyy-MM-dd HH:mm:ss} " +
@@ -94,27 +167,9 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 	}
 
 	/// <summary>
-	///     Correct EXIF timestamps for multiple images
-	/// </summary>
-	public async Task<List<ExifTimezoneCorrectionResult>> CorrectTimezoneAsync(
-		List<FileIndexItem> fileIndexItems,
-		ExifTimezoneCorrectionRequest request)
-	{
-		var results = new List<ExifTimezoneCorrectionResult>();
-
-		foreach ( var item in fileIndexItems )
-		{
-			var result = await CorrectTimezoneAsync(item, request);
-			results.Add(result);
-		}
-
-		return results;
-	}
-
-	/// <summary>
 	///     Validate timezone correction request
 	/// </summary>
-	public ExifTimezoneCorrectionResult ValidateCorrection(
+	internal ExifTimezoneCorrectionResult ValidateCorrection(
 		FileIndexItem fileIndexItem,
 		ExifTimezoneCorrectionRequest request)
 	{

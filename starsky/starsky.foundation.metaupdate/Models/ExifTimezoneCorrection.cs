@@ -1,22 +1,6 @@
+using starsky.foundation.database.Models;
+
 namespace starsky.foundation.metaupdate.Models;
-
-/// <summary>
-///     Request model for EXIF timezone correction
-/// </summary>
-public class ExifTimezoneCorrectionRequest
-{
-	/// <summary>
-	///     The timezone the camera thought it was in (source offset)
-	///     IANA timezone ID (e.g., "Europe/Amsterdam", "America/New_York")
-	/// </summary>
-	public string RecordedTimezone { get; set; } = string.Empty;
-
-	/// <summary>
-	///     The actual timezone where the photo was taken (target offset)
-	///     IANA timezone ID (e.g., "Europe/Amsterdam", "America/New_York")
-	/// </summary>
-	public string CorrectTimezone { get; set; } = string.Empty;
-}
 
 /// <summary>
 ///     Result model for EXIF timezone correction
@@ -52,4 +36,6 @@ public class ExifTimezoneCorrectionResult
 	///     Error message if correction failed
 	/// </summary>
 	public string Error { get; set; } = string.Empty;
+
+	public FileIndexItem? FileIndexItem { get; set; }
 }
