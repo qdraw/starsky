@@ -40,7 +40,7 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 	/// <summary>
 	///     Correct EXIF timestamps for a single image
 	/// </summary>
-	public async Task<ExifTimezoneCorrectionResult> CorrectTimezoneAsync(
+	internal async Task<ExifTimezoneCorrectionResult> CorrectTimezoneAsync(
 		FileIndexItem fileIndexItem,
 		ExifTimezoneCorrectionRequest request)
 	{
