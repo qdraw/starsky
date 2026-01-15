@@ -72,7 +72,6 @@ public class MetaCorrectTimezoneController(
 	/// <response code="200">Correction results with success/error status per file</response>
 	/// <response code="400">Invalid parameters or file paths</response>
 	/// <response code="401">User unauthorized</response>
-	[IgnoreAntiforgeryToken]
 	[ProducesResponseType(200)]
 	[ProducesResponseType(typeof(string), 400)]
 	[HttpPost("/api/meta-correct-timezone/execute")]
