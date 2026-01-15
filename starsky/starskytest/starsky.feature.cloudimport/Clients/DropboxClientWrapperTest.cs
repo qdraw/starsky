@@ -1,4 +1,6 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Dropbox.Api;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -16,10 +18,11 @@ public class DropboxClientWrapperTest
 	public async Task ListFolderAsync_ShouldThrowException_WhenInvalidToken()
 	{
 		var client = new DropboxClientWrapper(InvalidAccessToken);
-		await Assert.ThrowsExactlyAsync<BadInputException>(async () =>
-		{
-			await client.ListFolderAsync("/test");
-		});
+		await AssertThrowsAnyAsync<HttpRequestException, BadInputException>(
+			async () => await client.ListFolderAsync("/test"),
+			"Expected either HttpRequestException " +
+			"or BadInputException to be thrown " +
+			"(HttpRequestException is thrown when offline)");
 	}
 
 	[TestMethod]
@@ -27,10 +30,11 @@ public class DropboxClientWrapperTest
 	public async Task ListFolderContinueAsync_ShouldThrowException_WhenInvalidToken()
 	{
 		var client = new DropboxClientWrapper(InvalidAccessToken);
-		await Assert.ThrowsExactlyAsync<BadInputException>(async () =>
-		{
-			await client.ListFolderContinueAsync("cursor");
-		});
+		await AssertThrowsAnyAsync<HttpRequestException, BadInputException>(
+			async () => await client.ListFolderContinueAsync("cursor"),
+			"Expected either HttpRequestException " +
+			"or BadInputException to be thrown "+
+			"(HttpRequestException is thrown when offline)");
 	}
 
 	[TestMethod]
@@ -38,10 +42,12 @@ public class DropboxClientWrapperTest
 	public async Task DownloadAsync_ShouldThrowException_WhenInvalidToken()
 	{
 		var client = new DropboxClientWrapper(InvalidAccessToken);
-		await Assert.ThrowsExactlyAsync<BadInputException>(async () =>
-		{
-			await client.DownloadAsync("/test.txt");
-		});
+		
+		await AssertThrowsAnyAsync<HttpRequestException, BadInputException>(
+			async () => await client.DownloadAsync("/test.txt"),
+			"Expected either HttpRequestException " +
+			"or BadInputException to be thrown " +
+			"(HttpRequestException is thrown when offline)");
 	}
 
 	[TestMethod]
@@ -49,10 +55,12 @@ public class DropboxClientWrapperTest
 	public async Task DeleteV2Async_ShouldThrowException_WhenInvalidToken()
 	{
 		var client = new DropboxClientWrapper(InvalidAccessToken);
-		await Assert.ThrowsExactlyAsync<BadInputException>(async () =>
-		{
-			await client.DeleteV2Async("/test.txt");
-		});
+		
+		await AssertThrowsAnyAsync<HttpRequestException, BadInputException>(
+			async () => await client.DeleteV2Async("/test.txt"),
+			"Expected either HttpRequestException " +
+			"or BadInputException to be thrown "+
+			"(HttpRequestException is thrown when offline)");
 	}
 
 	[TestMethod]
@@ -75,5 +83,31 @@ public class DropboxClientWrapperTest
 		client.Dispose(); // two times
 		client.Dispose();
 		Assert.IsNotNull(client);
+	}
+
+	/// <summary>
+	/// Helper method to assert that an async action throws one of multiple exception types
+	/// </summary>
+	private static async Task AssertThrowsAnyAsync<TException1, TException2>(
+		Func<Task> action,
+		string message = "Expected one of the specified exceptions to be thrown")
+		where TException1 : Exception
+		where TException2 : Exception
+	{
+		var exceptionThrown = false;
+		try
+		{
+			await action();
+		}
+		catch (TException1)
+		{
+			exceptionThrown = true;
+		}
+		catch (TException2)
+		{
+			exceptionThrown = true;
+		}
+
+		Assert.IsTrue(exceptionThrown, message);
 	}
 }
