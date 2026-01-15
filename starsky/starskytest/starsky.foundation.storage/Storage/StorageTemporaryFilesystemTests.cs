@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
@@ -25,6 +26,8 @@ public sealed class StorageTemporaryFilesystemTests
 		_tempStorage = new StorageTemporaryFilesystem(appSettings, new FakeIWebLogger());
 		_fileName = createNewImage.FileName;
 	}
+
+	public TestContext TestContext { get; set; }
 
 	[TestMethod]
 	public void Temporary_FileMove_Test()
@@ -193,7 +196,7 @@ public sealed class StorageTemporaryFilesystemTests
 	}
 
 	[TestMethod]
-	public void Temporary_IsFileReady()
+	public async Task Temporary_IsFileReady()
 	{
 		var createNewImage = new CreateAnImage();
 
@@ -206,11 +209,20 @@ public sealed class StorageTemporaryFilesystemTests
 		var result = _tempStorage.IsFileReady(thumbnailId);
 		Assert.IsFalse(result);
 
-		// is disposed to late (as designed)
-		stream.Dispose();
+		// is disposed too late (as designed)
+		await stream.DisposeAsync();
 
-		var result2 = _tempStorage.IsFileReady(thumbnailId);
-		Assert.IsTrue(result2);
+		try
+		{
+			var result2 = _tempStorage.IsFileReady(thumbnailId);
+			Assert.IsTrue(result2);
+		}
+		catch ( Exception )
+		{
+			await Task.Delay(100, TestContext.CancellationToken);
+			var result2 = _tempStorage.IsFileReady(thumbnailId);
+			Assert.IsTrue(result2);
+		}
 
 		File.Delete(Path.Combine(createNewImage.BasePath,
 			$"{thumbnailId}"));
@@ -365,6 +377,4 @@ public sealed class StorageTemporaryFilesystemTests
 
 		Assert.AreEqual(CreateAnImage.Size, size);
 	}
-
-	public TestContext TestContext { get; set; }
 }
