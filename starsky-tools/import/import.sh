@@ -34,7 +34,20 @@ fi
 echo "script started"
 # end lock file
 
+# for /Volumes/sdcard/DCIM/101MSDCF
 find /Volumes -type d -maxdepth 2 -name "DCIM" -print0 |
+  while IFS= read -r -d '' line;
+  do
+        echo "$line"
+        # just copy
+        /opt/starsky/starsky/starskyimportercli --recursive true -v true -i false --path $line --structure "/yyyyMMdd_HHmmss_{filenamebase}.ext" --basepath $BACKUP_DIR -x false
+
+        # import
+        /opt/starsky/starsky/starskyimportercli --recursive true -v true --move true -i true --path $line
+  done
+
+# for /Volumes/sdcard/PRIVATE/M4ROOT/CLIP
+find /Volumes -type d -maxdepth 4 -name "CLIP" -print0 |
   while IFS= read -r -d '' line;
   do
         echo "$line"
