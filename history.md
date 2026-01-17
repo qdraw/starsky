@@ -41,7 +41,11 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.7 - _(Unreleased)_ - 2026-?-? {#v0.7.7}
+## version 0.7.8 - _(Unreleased)_ - 2026-?-? {#v0.7.8}
+
+- nothing yet
+
+## version 0.7.7 - 2026-01-17 {#v0.7.7}
 
 - [x] (Fixed) _Back-end_ Dropbox client wrapper test when running offline (PR #2603)
 - [x] (Fixed) _Back-end_ Add support for macOS and external drive in tests (PR #2602)
