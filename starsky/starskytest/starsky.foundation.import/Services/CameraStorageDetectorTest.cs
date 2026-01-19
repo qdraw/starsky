@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.import.Models;
 using starsky.foundation.import.Services;
@@ -287,7 +286,11 @@ public class CameraStorageDetectorTest
 		cameraDrive = new CameraDriveInfo
 		{
 			IsReady = true,
-			RootDirectory = new CameraDirectoryInfo { Exists = true, FullName = "/" },
+			RootDirectory = new CameraDirectoryInfo
+			{
+				Exists = true, 
+				FullName = "/"
+			},
 			DriveFormat = "NTFS"
 		};
 		Assert.IsFalse(detector.IsCameraStorage(cameraDrive));
@@ -318,7 +321,8 @@ public class CameraStorageDetectorTest
 	[TestMethod]
 	public void HasCameraDirectoryStructure_NumericDirectories_NoMatch()
 	{
-		// Should not match 10, A, 12A (less than 3 digits or not all digits at start)
+		// Should not match 10, A, 12A
+		// (less than 3 digits or not all digits at start)
 		var fakeStorage = new FakeIStorage(
 			["/", "/10", "/A", "/12A"]);
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
@@ -334,56 +338,47 @@ public class CameraStorageDetectorTest
 		var fakeStorage = new FakeIStorage(new List<string> { "/", "/123", "/456", "/789" });
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 		var detector = new CameraStorageDetector(fakeStorageSelector);
-		var method = typeof(CameraStorageDetector).GetMethod("HasCameraDirectoryStructure",
-			BindingFlags.NonPublic | BindingFlags.Instance);
-		Assert.IsNotNull(method);
-		var result = ( bool ) method.Invoke(detector, new object[] { "/" });
+		var result = detector.HasCameraDirectoryStructure("/");
+
 		Assert.IsTrue(result);
 	}
 
 	[TestMethod]
 	public void HasCameraDirectoryStructure_NumericDirectories_AlphaNumeric()
 	{
-		var fakeStorage = new FakeIStorage(new List<string>
-		{
+		var fakeStorage = new FakeIStorage([
 			"/",
 			"/123A",
 			"/A123",
 			"/12A",
 			"/A12"
-		});
+		]);
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 		var detector = new CameraStorageDetector(fakeStorageSelector);
-		var method = typeof(CameraStorageDetector).GetMethod("HasCameraDirectoryStructure",
-			BindingFlags.NonPublic | BindingFlags.Instance);
-		Assert.IsNotNull(method);
-		var result = ( bool ) method.Invoke(detector, new object[] { "/" });
+		var result = detector.HasCameraDirectoryStructure("/");
+
 		Assert.IsTrue(result); // 123A should match, 12A should not, A123 should not, A12 should not
 	}
 
 	[TestMethod]
 	public void HasCameraDirectoryStructure_NumericDirectories_TooShort()
 	{
-		var fakeStorage = new FakeIStorage(new List<string> { "/", "/12", "/1", "/A" });
+		var fakeStorage = new FakeIStorage(["/", "/12", "/1", "/A"]);
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 		var detector = new CameraStorageDetector(fakeStorageSelector);
-		var method = typeof(CameraStorageDetector).GetMethod("HasCameraDirectoryStructure",
-			BindingFlags.NonPublic | BindingFlags.Instance);
-		Assert.IsNotNull(method);
-		var result = ( bool ) method.Invoke(detector, new object[] { "/" });
+		var result = detector.HasCameraDirectoryStructure("/");
+
 		Assert.IsFalse(result);
 	}
 
 	[TestMethod]
 	public void HasCameraDirectoryStructure_NumericDirectories_EmptyList()
 	{
-		var fakeStorage = new FakeIStorage(new List<string> { "/" });
+		var fakeStorage = new FakeIStorage(["/"]);
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 		var detector = new CameraStorageDetector(fakeStorageSelector);
-		var method = typeof(CameraStorageDetector).GetMethod("HasCameraDirectoryStructure",
-			BindingFlags.NonPublic | BindingFlags.Instance);
-		Assert.IsNotNull(method);
-		var result = ( bool ) method.Invoke(detector, new object[] { "/" });
+		var result = detector.HasCameraDirectoryStructure("/");
+
 		Assert.IsFalse(result);
 	}
 }
