@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -81,7 +82,7 @@ public sealed class StorageThumbnailFilesystemTest
 		// first copy for parallel test
 		const string alreadyExistsFileName = "already_exists_file_thumbnail.jpg";
 		const string beforeTestFileName = "before_test_thumbnail.jpg";
-		
+
 		_thumbnailStorage.FileCopy(_fileName, alreadyExistsFileName);
 		await _thumbnailStorage.WriteStreamAsync(StringToStreamHelper.StringToStream("1"),
 			beforeTestFileName);
@@ -197,8 +198,7 @@ public sealed class StorageThumbnailFilesystemTest
 	public async Task Thumbnail_IsFileReady_thumbnailStorage()
 	{
 		var createNewImage = new CreateAnImage();
-
-		const string thumbnailId = "IsFileReady_thumbnailStorage";
+		var thumbnailId = $"IsFileReady_thumbnailStorage_{Guid.NewGuid():N}";
 		// first copy for parallel test
 		_thumbnailStorage.FileCopy(_fileName, thumbnailId);
 
@@ -218,8 +218,7 @@ public sealed class StorageThumbnailFilesystemTest
 		var result2 = _thumbnailStorage.IsFileReady(thumbnailId);
 		Assert.IsTrue(result2);
 
-		File.Delete(Path.Combine(createNewImage.BasePath,
-			$"{thumbnailId}"));
+		File.Delete(Path.Combine(createNewImage.BasePath, thumbnailId));
 
 		Assert.IsFalse(_thumbnailStorage.ExistFile(thumbnailId));
 	}
@@ -293,5 +292,6 @@ public sealed class StorageThumbnailFilesystemTest
 		Assert.AreEqual(CreateAnImage.Size, _thumbnailStorage.Info(_fileName).Size);
 	}
 
+	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 	public TestContext TestContext { get; set; }
 }

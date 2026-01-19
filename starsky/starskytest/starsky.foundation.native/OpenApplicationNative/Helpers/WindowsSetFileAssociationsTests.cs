@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Win32;
@@ -32,7 +33,7 @@ public partial class WindowsSetFileAssociationsTests
 		CleanSetup();
 	}
 
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability",
+	[SuppressMessage("Interoperability",
 		"CA1416:Validate platform compatibility", Justification = "Check does exists")]
 	private static void CleanSetup()
 	{
@@ -95,7 +96,7 @@ public partial class WindowsSetFileAssociationsTests
 		Assert.AreEqual(filePath, value);
 	}
 
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability",
+	[SuppressMessage("Interoperability",
 		"CA1416:Validate platform compatibility",
 		Justification = "Check if test for windows only")]
 	private static string? GetRegistryValue()
@@ -110,5 +111,6 @@ public partial class WindowsSetFileAssociationsTests
 	[GeneratedRegex("\"([^\"]*)\"")]
 	private static partial Regex GetFilePathFromRegistryRegex();
 
+	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 	public TestContext TestContext { get; set; }
 }
