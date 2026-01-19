@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using starsky.foundation.import.Interfaces;
+using starsky.foundation.import.Models;
 using starsky.foundation.injection;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
@@ -24,12 +25,17 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage) : ICameraSt
 		return drives.Select(drive => drive.RootDirectory.FullName);
 	}
 
+	public bool IsCameraStorage(DriveInfo? drive)
+	{
+		return IsCameraStorage(drive.ToCameraDriveInfo());
+	}
+
 	/// <summary>
 	///     Is this drive a camera storage?
 	/// </summary>
 	/// <param name="drive">Which drive</param>
 	/// <returns>true when is a camera storage e.g. sd card</returns>
-	public bool IsCameraStorage(DriveInfo? drive)
+	public bool IsCameraStorage(CameraDriveInfo? drive)
 	{
 		// 1. Enumerate mounted volumes (caller responsibility)
 		if ( drive == null )
@@ -49,7 +55,7 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage) : ICameraSt
 		}
 
 		// 3. File system heuristic (portable, but soft)
-		if ( !IsCameraFriendlyFileSystem(drive) )
+		if ( !IsCameraFriendlyFileSystem(drive.DriveFormat) )
 		{
 			return false;
 		}
@@ -61,9 +67,9 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage) : ICameraSt
 		       HasCameraDirectoryStructure(drive.RootDirectory.FullName);
 	}
 
-	private static bool IsCameraFriendlyFileSystem(DriveInfo drive)
+	private static bool IsCameraFriendlyFileSystem(string driveFormat)
 	{
-		var fs = drive.DriveFormat.ToLowerInvariant();
+		var fs = driveFormat.ToLowerInvariant();
 
 		// Windows: FAT32, exFAT
 		// Linux: vfat, exfat

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.import.Services;
+using starsky.foundation.import.Models;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.import.Services;
@@ -17,7 +18,9 @@ public class CameraStorageDetectorTest
 		var fakeStorageSelector = new FakeSelectorStorage(new FakeIStorage());
 		var detector = new CameraStorageDetector(fakeStorageSelector);
 
-		var result = detector.IsCameraStorage(null);
+		// Explicitly call the DriveInfo? overload to avoid ambiguity
+		DriveInfo? nullDrive = null;
+		var result = detector.IsCameraStorage(nullDrive);
 		Assert.IsFalse(result);
 	}
 
@@ -254,5 +257,86 @@ public class CameraStorageDetectorTest
 
 		var result = detector.IsCameraStorage(drive);
 		Assert.IsTrue(result);
+	}
+
+	[TestMethod]
+	public void IsCameraStorage_WithCameraDriveInfo_TrueCases()
+	{
+		var fakeStorageSelector = new FakeSelectorStorage(new FakeIStorage(new List<string>{"/", "/DCIM"}));
+		var detector = new CameraStorageDetector(fakeStorageSelector);
+
+		// DCIM present, FAT format
+		var cameraDrive = new CameraDriveInfo
+		{
+			IsReady = true,
+			RootDirectory = new CameraDirectoryInfo
+			{
+				Exists = true,
+				FullName = "/"
+			},
+			DriveFormat = "FAT32"
+		};
+		Assert.IsTrue(detector.IsCameraStorage(cameraDrive));
+
+		// PRIVATE present, exFAT format
+		fakeStorageSelector = new FakeSelectorStorage(new FakeIStorage(new List<string>{"/", "/PRIVATE"}));
+		detector = new CameraStorageDetector(fakeStorageSelector);
+		cameraDrive = new CameraDriveInfo
+		{
+			IsReady = true,
+			RootDirectory = new CameraDirectoryInfo
+			{
+				Exists = true,
+				FullName = "/"
+			},
+			DriveFormat = "exFAT"
+		};
+		Assert.IsTrue(detector.IsCameraStorage(cameraDrive));
+	}
+
+	[TestMethod]
+	public void IsCameraStorage_WithCameraDriveInfo_FalseCases()
+	{
+		var fakeStorageSelector = new FakeSelectorStorage(new FakeIStorage(new List<string>{"/"}));
+		var detector = new CameraStorageDetector(fakeStorageSelector);
+
+		// Not ready
+		var cameraDrive = new CameraDriveInfo
+		{
+			IsReady = false,
+			RootDirectory = new CameraDirectoryInfo
+			{
+				Exists = true,
+				FullName = "/"
+			},
+			DriveFormat = "FAT32"
+		};
+		Assert.IsFalse(detector.IsCameraStorage(cameraDrive));
+
+		// Not FAT/exFAT
+		cameraDrive = new CameraDriveInfo
+		{
+			IsReady = true,
+			RootDirectory = new CameraDirectoryInfo
+			{
+				Exists = true,
+				FullName = "/"
+			},
+			DriveFormat = "NTFS"
+		};
+		Assert.IsFalse(detector.IsCameraStorage(cameraDrive));
+
+		// No DCIM/PRIVATE or numeric dirs
+		cameraDrive = new CameraDriveInfo
+		{
+			IsReady = true,
+			RootDirectory = new CameraDirectoryInfo
+			{
+				Exists = true,
+				FullName = "/"
+			},
+			DriveFormat = "FAT32"
+		};
+		Assert.IsFalse(detector.IsCameraStorage(cameraDrive));
 	}
 }
