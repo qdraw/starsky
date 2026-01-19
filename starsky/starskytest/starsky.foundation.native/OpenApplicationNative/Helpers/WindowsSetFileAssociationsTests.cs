@@ -74,11 +74,18 @@ public partial class WindowsSetFileAssociationsTests
 
 		var valueKey = GetRegistryValue();
 
-		if ( valueKey == null )
+		// Retry a few times because registry propagation can be slow on CI
+		for ( var attempt = 0; attempt < 7 && valueKey == null; attempt++ )
 		{
-			Console.WriteLine("Registry key not found, waiting for registry to update");
-			await Task.Delay(1000, TestContext.CancellationTokenSource.Token); // Wait for the registry to update
+			Console.WriteLine($"Registry key not found " +
+			                  $"(attempt {attempt + 1})," +
+			                  $" waiting for registry to update");
+			await Task.Delay(250, TestContext.CancellationTokenSource.Token);
 			valueKey = GetRegistryValue();
+			if ( valueKey != null )
+			{
+				break;
+			}
 		}
 
 		Assert.IsNotNull(valueKey);
