@@ -5,7 +5,7 @@
         <!-- SonarQube needs this -->
         <ProjectGuid>{d6d53732-2cec-489d-be54-e15aee30b6d5}</ProjectGuid>
         <DebugType>Full</DebugType>
-        <Version>0.7.6</Version>
+        <Version>0.7.7</Version>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>starsky.foundation.geo</RootNamespace>
