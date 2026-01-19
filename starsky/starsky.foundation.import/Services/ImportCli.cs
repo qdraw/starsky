@@ -56,8 +56,12 @@ public class ImportCli
 		var inputPathListFormArgs = new ArgsHelper(_appSettings).GetPathListFormArgs(args).ToList();
 		if ( inputPathListFormArgs.Count == 0 && ArgsHelper.NeedCamera(args) )
 		{
-			var cameraPaths = _cameraStorageDetector.FindCameraStorages();
+			var cameraPaths = _cameraStorageDetector.FindCameraStorages().ToList();
 			inputPathListFormArgs.AddRange(cameraPaths);
+			if ( cameraPaths.Count == 0 )
+			{
+				_logger.LogInformation("No camera storage detected.");
+			}
 		}
 
 		if ( ArgsHelper.NeedHelp(args) || inputPathListFormArgs.Count == 0 )

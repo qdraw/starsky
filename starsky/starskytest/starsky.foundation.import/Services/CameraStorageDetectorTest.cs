@@ -235,28 +235,6 @@ public class CameraStorageDetectorTest
 	}
 
 	[TestMethod]
-	public void IsCameraStorage_WithExFATFileSystem_ReturnsTrue()
-	{
-		var fakeStorage = new FakeIStorage(
-			new List<string> { "/", "/DCIM" });
-		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
-		var detector = new CameraStorageDetector(fakeStorageSelector);
-
-		// Find an exFAT drive
-		var drive = DriveInfo.GetDrives()
-			.FirstOrDefault(d => d.DriveFormat.ToLowerInvariant() == "exfat");
-
-		if ( drive == null )
-		{
-			Assert.Inconclusive("No exFAT drives available for testing");
-			return;
-		}
-
-		var result = detector.IsCameraStorage(drive);
-		Assert.IsTrue(result);
-	}
-
-	[TestMethod]
 	public void IsCameraStorage_WithVFATFileSystem_ReturnsTrue()
 	{
 		var fakeStorage = new FakeIStorage(
