@@ -53,7 +53,7 @@ jobs:
     #    uses a compiled language
 
     - name: Cache nuget packages (*nix)
-      uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb
+      uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7
       with:
         # nuget cache files are stored in `~/.nuget/packages` on Linux/macOS
         path: ~/.nuget/packages
