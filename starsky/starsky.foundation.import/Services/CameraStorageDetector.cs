@@ -36,14 +36,8 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage) : ICameraSt
 	/// </summary>
 	/// <param name="drive">Which drive</param>
 	/// <returns>true when is a camera storage e.g. sd card</returns>
-	public bool IsCameraStorage(CameraDriveInfo? drive)
+	public bool IsCameraStorage(CameraDriveInfo drive)
 	{
-		// 1. Enumerate mounted volumes (caller responsibility)
-		if ( drive == null )
-		{
-			return false;
-		}
-
 		// 2. Filter writable, ready volumes
 		if ( !drive.IsReady )
 		{
