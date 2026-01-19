@@ -4,5 +4,5 @@ namespace starsky.foundation.import.Interfaces;
 
 public interface ICameraStorageDetector
 {
-	List<string> FindCameraStorages();
+	IEnumerable<string> FindCameraStorages();
 }

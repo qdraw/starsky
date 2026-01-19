@@ -1,31 +1,34 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using starsky.foundation.import.Interfaces;
+using starsky.foundation.injection;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 
 namespace starsky.foundation.import.Services;
 
-public class CameraStorageDetector(ISelectorStorage selectorStorage)
+[Service(typeof(ICameraStorageDetector), InjectionLifetime = InjectionLifetime.Scoped)]
+public class CameraStorageDetector(ISelectorStorage selectorStorage) : ICameraStorageDetector
 {
 	private readonly IStorage _hostStorage =
 		selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
-	
-	public List<string> FindCameraStorages()
-	{
-		var cameraDrives = new List<string>();
-		var drives = DriveInfo.GetDrives();
-		foreach ( var drive in drives )
-		{
-			if ( IsCameraStorage(drive) )
-			{
-				cameraDrives.Add(drive.RootDirectory.FullName);
-			}
-		}
 
-		return cameraDrives;
+	/// <summary>
+	///     Get all camera storage root paths
+	/// </summary>
+	/// <returns>Full FilePaths</returns>
+	public IEnumerable<string> FindCameraStorages()
+	{
+		var drives = DriveInfo.GetDrives().Where(IsCameraStorage);
+		return drives.Select(drive => drive.RootDirectory.FullName);
 	}
 
+	/// <summary>
+	///     Is this drive a camera storage?
+	/// </summary>
+	/// <param name="drive">Which drive</param>
+	/// <returns>true when is a camera storage e.g. sd card</returns>
 	public bool IsCameraStorage(DriveInfo? drive)
 	{
 		// 1. Enumerate mounted volumes (caller responsibility)

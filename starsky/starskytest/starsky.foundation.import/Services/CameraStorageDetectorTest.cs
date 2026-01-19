@@ -33,14 +33,14 @@ public class CameraStorageDetectorTest
 		{
 			// Create fake storage with DCIM folder
 			var fakeStorage = new FakeIStorage(
-				outputSubPathFolders: new List<string> { "/", "/DCIM" });
+				["/", "/DCIM"]);
 			var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 			var detector = new CameraStorageDetector(fakeStorageSelector);
 
 			// Use real DriveInfo from temp location
 			var rootPath = Path.GetPathRoot(tempDir);
 			var drive = new DriveInfo(rootPath ?? "C:\\");
-			
+
 			var result = detector.IsCameraStorage(drive);
 			if ( drive.DriveFormat.Contains("fat", StringComparison.InvariantCultureIgnoreCase) )
 			{
@@ -54,7 +54,7 @@ public class CameraStorageDetectorTest
 		}
 		finally
 		{
-			Directory.Delete(tempDir, recursive: true);
+			Directory.Delete(tempDir, true);
 		}
 	}
 
@@ -70,14 +70,14 @@ public class CameraStorageDetectorTest
 		{
 			// Create fake storage with PRIVATE folder (Sony/Panasonic style)
 			var fakeStorage = new FakeIStorage(
-				outputSubPathFolders: new List<string> { "/", "/PRIVATE" });
+				new List<string> { "/", "/PRIVATE" });
 			var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 			var detector = new CameraStorageDetector(fakeStorageSelector);
 
 			var rootPath = Path.GetPathRoot(tempDir);
 			var drive = new DriveInfo(rootPath ?? "C:\\");
 			var result = detector.IsCameraStorage(drive);
-			
+
 			if ( drive.DriveFormat.Contains("fat", StringComparison.InvariantCultureIgnoreCase) )
 			{
 				Assert.IsTrue(result);
@@ -89,7 +89,7 @@ public class CameraStorageDetectorTest
 		}
 		finally
 		{
-			Directory.Delete(tempDir, recursive: true);
+			Directory.Delete(tempDir, true);
 		}
 	}
 
@@ -105,14 +105,14 @@ public class CameraStorageDetectorTest
 		try
 		{
 			var fakeStorage = new FakeIStorage(
-				outputSubPathFolders: new List<string> { "/", "/100CANON", "/101DCIM" });
+				new List<string> { "/", "/100CANON", "/101DCIM" });
 			var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 			var detector = new CameraStorageDetector(fakeStorageSelector);
 
 			var rootPath = Path.GetPathRoot(tempDir);
 			var drive = new DriveInfo(rootPath ?? "C:\\");
 			var result = detector.IsCameraStorage(drive);
-			
+
 			if ( drive.DriveFormat.Contains("fat", StringComparison.InvariantCultureIgnoreCase) )
 			{
 				Assert.IsTrue(result);
@@ -124,7 +124,7 @@ public class CameraStorageDetectorTest
 		}
 		finally
 		{
-			Directory.Delete(tempDir, recursive: true);
+			Directory.Delete(tempDir, true);
 		}
 	}
 
@@ -132,7 +132,7 @@ public class CameraStorageDetectorTest
 	public void IsCameraStorage_WithMultipleNumericDirectories_ReturnsTrue()
 	{
 		var fakeStorage = new FakeIStorage(
-			outputSubPathFolders: new List<string> { "/", "/100", "/101", "/102ABC" });
+			new List<string> { "/", "/100", "/101", "/102ABC" });
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 		var detector = new CameraStorageDetector(fakeStorageSelector);
 
@@ -156,7 +156,7 @@ public class CameraStorageDetectorTest
 	{
 		// Directories with only 2 digits don't match the 3+ digit pattern
 		var fakeStorage = new FakeIStorage(
-			outputSubPathFolders: new List<string> { "/", "/10", "/A" });
+			new List<string> { "/", "/10", "/A" });
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 		var detector = new CameraStorageDetector(fakeStorageSelector);
 
@@ -176,7 +176,7 @@ public class CameraStorageDetectorTest
 	{
 		// Empty directory with no camera markers
 		var fakeStorage = new FakeIStorage(
-			outputSubPathFolders: new List<string> { "/" });
+			new List<string> { "/" });
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 		var detector = new CameraStorageDetector(fakeStorageSelector);
 
@@ -196,7 +196,7 @@ public class CameraStorageDetectorTest
 	{
 		// Non-camera related folder
 		var fakeStorage = new FakeIStorage(
-			outputSubPathFolders: new List<string> { "/", "/SomeFolder" });
+			new List<string> { "/", "/SomeFolder" });
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 		var detector = new CameraStorageDetector(fakeStorageSelector);
 
@@ -215,14 +215,15 @@ public class CameraStorageDetectorTest
 	public void IsCameraStorage_WithNonFATFileSystem_ReturnsFalse()
 	{
 		var fakeStorage = new FakeIStorage(
-			outputSubPathFolders: new List<string> { "/", "/DCIM" });
+			new List<string> { "/", "/DCIM" });
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 		var detector = new CameraStorageDetector(fakeStorageSelector);
 
 		// Find a non-FAT drive
 		var drive = DriveInfo.GetDrives()
-			.FirstOrDefault(d => !d.DriveFormat.Contains("fat", StringComparison.InvariantCultureIgnoreCase));
-		
+			.FirstOrDefault(d =>
+				!d.DriveFormat.Contains("fat", StringComparison.InvariantCultureIgnoreCase));
+
 		if ( drive == null )
 		{
 			Assert.Inconclusive("No non-FAT drives available for testing");
@@ -237,14 +238,14 @@ public class CameraStorageDetectorTest
 	public void IsCameraStorage_WithExFATFileSystem_ReturnsTrue()
 	{
 		var fakeStorage = new FakeIStorage(
-			outputSubPathFolders: new List<string> { "/", "/DCIM" });
+			new List<string> { "/", "/DCIM" });
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 		var detector = new CameraStorageDetector(fakeStorageSelector);
 
 		// Find an exFAT drive
 		var drive = DriveInfo.GetDrives()
 			.FirstOrDefault(d => d.DriveFormat.ToLowerInvariant() == "exfat");
-		
+
 		if ( drive == null )
 		{
 			Assert.Inconclusive("No exFAT drives available for testing");
@@ -259,14 +260,14 @@ public class CameraStorageDetectorTest
 	public void IsCameraStorage_WithVFATFileSystem_ReturnsTrue()
 	{
 		var fakeStorage = new FakeIStorage(
-			outputSubPathFolders: new List<string> { "/", "/DCIM" });
+			new List<string> { "/", "/DCIM" });
 		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
 		var detector = new CameraStorageDetector(fakeStorageSelector);
 
 		// Find a vfat drive (Linux FAT equivalent)
 		var drive = DriveInfo.GetDrives()
 			.FirstOrDefault(d => d.DriveFormat.ToLowerInvariant() == "vfat");
-		
+
 		if ( drive == null )
 		{
 			Assert.Inconclusive("No vfat drives available for testing");
@@ -276,6 +277,4 @@ public class CameraStorageDetectorTest
 		var result = detector.IsCameraStorage(drive);
 		Assert.IsTrue(result);
 	}
-
 }
-
