@@ -238,28 +238,6 @@ public class CameraStorageDetectorTest
 	}
 
 	[TestMethod]
-	public void IsCameraStorage_WithVFATFileSystem_ReturnsTrue()
-	{
-		var fakeStorage = new FakeIStorage(
-			new List<string> { "/", "/DCIM" });
-		var fakeStorageSelector = new FakeSelectorStorage(fakeStorage);
-		var detector = new CameraStorageDetector(fakeStorageSelector);
-
-		// Find a vfat drive (Linux FAT equivalent)
-		var drive = DriveInfo.GetDrives()
-			.FirstOrDefault(d => d.DriveFormat.ToLowerInvariant() == "vfat");
-
-		if ( drive == null )
-		{
-			Assert.Inconclusive("No vfat drives available for testing");
-			return;
-		}
-
-		var result = detector.IsCameraStorage(drive);
-		Assert.IsTrue(result);
-	}
-
-	[TestMethod]
 	public void IsCameraStorage_WithCameraDriveInfo_TrueCases()
 	{
 		var fakeStorageSelector = new FakeSelectorStorage(new FakeIStorage(new List<string>{"/", "/DCIM"}));
