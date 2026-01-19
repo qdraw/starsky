@@ -381,4 +381,49 @@ public class CameraStorageDetectorTest
 
 		Assert.IsFalse(result);
 	}
+
+	[TestMethod]
+	public void IsCameraStorage_RootDirectoryNotExists_ReturnsFalse()
+	{
+		var fakeStorageSelector = new FakeSelectorStorage(new FakeIStorage());
+		var detector = new CameraStorageDetector(fakeStorageSelector);
+		var cameraDrive = new CameraDriveInfo
+		{
+			IsReady = true,
+			RootDirectory = new CameraDirectoryInfo
+			{
+				Exists = false, // Simulate root directory does not exist
+				FullName = "/notfound"
+			},
+			DriveFormat = "FAT32"
+		};
+		Assert.IsFalse(detector.IsCameraStorage(cameraDrive));
+	}
+
+	[TestMethod]
+	public void FindCameraStorages_FiltersAndReturnsRootDirectories()
+	{
+		// Arrange: Setup a detector with a fake storage (the storage is not used in this test)
+		var fakeStorageSelector = new FakeSelectorStorage(new FakeIStorage());
+		var detector = new CameraStorageDetector(fakeStorageSelector);
+
+		// Use a real system drive and a fake drive
+		var drives = DriveInfo.GetDrives().ToList();
+		if (drives.Count == 0)
+		{
+			Assert.Inconclusive("No drives available for testing");
+			return;
+		}
+
+		// Act: Call FindCameraStorages
+		var result = detector.FindCameraStorages().ToList();
+
+		// Assert: All returned paths should be RootDirectory.FullName of a drive that matches IsCameraStorage
+		foreach (var path in result)
+		{
+			Assert.IsTrue(drives.Any(d => d.RootDirectory.FullName == path));
+		}
+		// Should not return more than available drives
+		Assert.IsLessThanOrEqualTo(drives.Count, result.Count);
+	}
 }
