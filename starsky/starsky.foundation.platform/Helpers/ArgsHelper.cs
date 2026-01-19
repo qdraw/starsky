@@ -315,7 +315,7 @@ public sealed class ArgsHelper
 					"--origin == overwrite origin, Don't use with --structure. " +
 					"Used to reference structure settings and select a setting from this");
 				_console.WriteLine(
-					"--provider place-here-id-in-config ; use cloud import and select a provider within " +
+					"--provider place-here-id-from-config ; use cloud import and select a provider within " +
 					"CloudImport Providers, used for example with Dropbox, " +
 					"skips local import");
 				break;
