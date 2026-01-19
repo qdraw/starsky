@@ -4,6 +4,7 @@ using System.Linq;
 using starsky.foundation.import.Interfaces;
 using starsky.foundation.import.Models;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 
@@ -77,32 +78,25 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage) : ICameraSt
 		return fs.Contains("fat");
 	}
 
-	private bool HasCameraDirectoryStructure(string rootPath)
+	internal bool HasCameraDirectoryStructure(string rootPath)
 	{
-		try
+		// Sony / Panasonic / some drones
+		if ( _hostStorage.ExistFolder(Path.Combine(rootPath, "PRIVATE")) )
 		{
-			// Sony / Panasonic / some drones
-			if ( _hostStorage.ExistFolder(Path.Combine(rootPath, "PRIVATE")) )
-			{
-				return true;
-			}
-
-			// Some cameras place DCIM one level down
-			var dcimCandidate = Directory
-				.EnumerateDirectories(rootPath)
-				.Select(Path.GetFileName)
-				.Any(name =>
-					!string.IsNullOrEmpty(name) &&
-					name.Length >= 3 &&
-					char.IsDigit(name[0]) &&
-					char.IsDigit(name[1]) &&
-					char.IsDigit(name[2]));
-
-			return dcimCandidate;
+			return true;
 		}
-		catch
-		{
-			return false;
-		}
+
+		// Some cameras place DCIM one level down
+		var dcimCandidate = _hostStorage
+			.GetDirectoryRecursive(rootPath)
+			.Select(value => PathHelper.GetFileName(value.Key))
+			.Any(name =>
+				!string.IsNullOrEmpty(name) &&
+				name.Length >= 3 &&
+				char.IsDigit(name[0]) &&
+				char.IsDigit(name[1]) &&
+				char.IsDigit(name[2]));
+
+		return dcimCandidate;
 	}
 }
