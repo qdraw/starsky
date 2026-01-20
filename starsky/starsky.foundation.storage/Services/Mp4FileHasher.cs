@@ -14,7 +14,7 @@ namespace starsky.foundation.storage.Services;
 ///     Specialized hasher for MP4 video files
 ///     Optimizes performance by hashing only the mdat atom (media data) instead of the entire file
 /// </summary>
-public sealed class Mp4FileHasher
+public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 {
 	/// <summary>
 	///     Represents an MP4 atom header
@@ -26,8 +26,7 @@ public sealed class Mp4FileHasher
 		public long DataOffset;
 	}
 
-	private readonly IStorage _iStorage;
-	private readonly IWebLogger _logger;
+	private readonly IWebLogger _logger = logger;
 
 	/// <summary>
 	///     Maximum bytes of video content to hash (256 KB)
@@ -41,17 +40,6 @@ public sealed class Mp4FileHasher
 	private const int BufferSize = 8192;
 
 	/// <summary>
-	///     Maximum file size to attempt MP4 hashing on (114 KB - same as FileHash.MaxReadSize)
-	/// </summary>
-	private const int MaxReadSize = 114688;
-
-	public Mp4FileHasher(IStorage iStorage, IWebLogger logger)
-	{
-		_iStorage = iStorage;
-		_logger = logger;
-	}
-
-	/// <summary>
 	///     Hash MP4 video content by reading only the mdat atom
 	///     This is significantly faster than hashing the entire file for large video files
 	/// </summary>
@@ -59,94 +47,89 @@ public sealed class Mp4FileHasher
 	/// <returns>Base32 encoded MD5 hash of video content, or empty string if no mdat atom found</returns>
 	public async Task<string> HashMp4VideoContentAsync(string fullFilePath)
 	{
-		using ( var stream = _iStorage.ReadStream(fullFilePath, MaxReadSize) )
+		await using var stream = iStorage.ReadStream(fullFilePath, FileHash.MaxReadSize);
+		if ( stream == Stream.Null )
 		{
-			if ( stream == Stream.Null )
-			{
-				return string.Empty;
-			}
+			return string.Empty;
+		}
 
-			using ( var md5 = System.Security.Cryptography.MD5.Create() )
+		using var md5 = System.Security.Cryptography.MD5.Create();
+		var buffer = ArrayPool<byte>.Shared.Rent(BufferSize);
+		try
+		{
+			while ( true )
 			{
-				var buffer = ArrayPool<byte>.Shared.Rent(BufferSize);
-				try
+				var atom = await ReadAtomAsync(stream);
+				if ( atom == null )
 				{
-					while ( true )
+					break;
+				}
+
+				var payloadSize = atom.Value.Size - 8;
+
+				if ( atom.Value.Type == "mdat" )
+				{
+					// Hash up to MaxBytesToHash of video content
+					var remaining = Math.Min(payloadSize, MaxBytesToHash);
+
+					while ( remaining > 0 )
 					{
-						var atom = await ReadAtomAsync(stream);
-						if ( atom == null )
+						var toRead = ( int ) Math.Min(buffer.Length, remaining);
+						var bytesRead = await stream.ReadAsync(
+							buffer.AsMemory(0, toRead));
+
+						if ( bytesRead <= 0 )
 						{
 							break;
 						}
 
-						long payloadSize = atom.Value.Size - 8;
+						md5.TransformBlock(buffer, 0, bytesRead, null, 0);
+						remaining -= bytesRead;
+					}
 
-						if ( atom.Value.Type == "mdat" )
+					// Found and hashed the mdat atom, we're done
+					md5.TransformFinalBlock(Array.Empty<byte>(), 0, 0);
+					var hash = md5.Hash;
+					return Base32.Encode(hash!);
+				}
+
+				// Skip non-mdat atoms
+				// Note: payloadSize could be very large, so we skip carefully
+				try
+				{
+					if ( payloadSize > 0 && stream.CanSeek )
+					{
+						stream.Seek(payloadSize, SeekOrigin.Current);
+					}
+					else
+					{
+						// If we can't seek, read and discard
+						var toSkip = payloadSize;
+						while ( toSkip > 0 )
 						{
-							// Hash up to MaxBytesToHash of video content
-							long remaining = Math.Min(payloadSize, MaxBytesToHash);
+							var toRead = ( int ) Math.Min(buffer.Length, toSkip);
+							var bytesRead = await stream.ReadAsync(buffer.AsMemory(0, toRead))
+								.ConfigureAwait(false);
 
-							while ( remaining > 0 )
+							if ( bytesRead <= 0 )
 							{
-								int toRead = ( int ) Math.Min(buffer.Length, remaining);
-								int bytesRead = await stream.ReadAsync(
-									buffer.AsMemory(0, toRead));
-
-								if ( bytesRead <= 0 )
-								{
-									break;
-								}
-
-								md5.TransformBlock(buffer, 0, bytesRead, null, 0);
-								remaining -= bytesRead;
+								break;
 							}
 
-							// Found and hashed the mdat atom, we're done
-							md5.TransformFinalBlock(Array.Empty<byte>(), 0, 0);
-							var hash = md5.Hash;
-							return Base32.Encode(hash!);
-						}
-
-						// Skip non-mdat atoms
-						// Note: payloadSize could be very large, so we skip carefully
-						try
-						{
-							if ( payloadSize > 0 && stream.CanSeek )
-							{
-								stream.Seek(payloadSize, SeekOrigin.Current);
-							}
-							else
-							{
-								// If we can't seek, read and discard
-								long toSkip = payloadSize;
-								while ( toSkip > 0 )
-								{
-									int toRead = ( int ) Math.Min(buffer.Length, toSkip);
-									int bytesRead = await stream.ReadAsync(
-											buffer, 0, toRead)
-										.ConfigureAwait(false);
-
-									if ( bytesRead <= 0 )
-									{
-										break;
-									}
-
-									toSkip -= bytesRead;
-								}
-							}
-						}
-						catch ( IOException )
-						{
-							// If seek/read fails, return empty to fall back to standard hashing
-							return string.Empty;
+							toSkip -= bytesRead;
 						}
 					}
 				}
-				finally
+				catch ( IOException )
 				{
-					ArrayPool<byte>.Shared.Return(buffer);
+					// If seek/read fails, return empty to fall back to standard hashing
+					return string.Empty;
 				}
 			}
+		}
+		finally
+		{
+			ArrayPool<byte>.Shared.Return(buffer);
 		}
 
 		// No mdat atom found, return empty to fall back to standard hashing
@@ -165,24 +148,24 @@ public sealed class Mp4FileHasher
 		Stream stream,
 		CancellationToken ct = default)
 	{
-		byte[] header = new byte[8];
+		var header = new byte[8];
 
-		int read = await stream.ReadAsync(header, 0, 8, ct).ConfigureAwait(false);
+		var read = await stream.ReadAsync(header.AsMemory(0, 8), ct);
 		if ( read < 8 )
 		{
 			return null;
 		}
 
-		uint size = BinaryPrimitives.ReadUInt32BigEndian(header.AsSpan(0, 4));
-		string type = Encoding.ASCII.GetString(header, 4, 4);
+		var size = BinaryPrimitives.ReadUInt32BigEndian(header.AsSpan(0, 4));
+		var type = Encoding.ASCII.GetString(header, 4, 4);
 
 		long atomSize = size;
 
 		// Large-size atom: size field = 1, actual size follows in next 8 bytes
 		if ( size == 1 )
 		{
-			byte[] largeSize = new byte[8];
-			read = await stream.ReadAsync(largeSize, 0, 8, ct).ConfigureAwait(false);
+			var largeSize = new byte[8];
+			read = await stream.ReadAsync(largeSize.AsMemory(0, 8), ct).ConfigureAwait(false);
 			if ( read < 8 )
 			{
 				return null;

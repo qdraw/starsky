@@ -95,7 +95,7 @@ public sealed class DeleteControllerTest
 
 		if ( !string.IsNullOrEmpty(await _query.GetSubPathByHashAsync(fileHashCode)) )
 		{
-			return _query.GetObjectByFilePath(_createAnImage.DbPath);
+			return await _query.GetObjectByFilePathAsync(_createAnImage.DbPath);
 		}
 
 		var isDelete = string.Empty;
@@ -113,7 +113,7 @@ public sealed class DeleteControllerTest
 			Tags = isDelete
 		});
 
-		return _query.GetObjectByFilePath(_createAnImage.DbPath);
+		return await _query.GetObjectByFilePathAsync(_createAnImage.DbPath);
 	}
 
 
@@ -140,7 +140,7 @@ public sealed class DeleteControllerTest
 
 		var actionResult = await controller.Delete(createAnImage?.FilePath!) as JsonResult;
 		Assert.IsNotNull(actionResult);
-		var jsonCollection = actionResult?.Value as List<FileIndexItem>;
+		var jsonCollection = actionResult.Value as List<FileIndexItem>;
 		Assert.AreEqual(createAnImage?.FilePath, jsonCollection?.FirstOrDefault()?.FilePath);
 
 		var createAnImage2 = new CreateAnImage(); //restore afterwards
