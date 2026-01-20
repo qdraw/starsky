@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -23,7 +22,7 @@ public class BatchRenameControllerTest
 			new BatchRenameController(query, selectorStorage, logger, new AppSettings());
 		var request = new BatchRenameRequest
 		{
-			FilePaths = new List<string> { "/test.jpg" },
+			FilePaths = ["/test.jpg"],
 			Pattern = "{yyyy}{MM}{dd}_{filenamebase}.{ext}"
 		};
 
@@ -63,7 +62,7 @@ public class BatchRenameControllerTest
 			new BatchRenameController(query, selectorStorage, logger, new AppSettings());
 		var request = new BatchRenameRequest
 		{
-			FilePaths = new List<string> { "/test.jpg" },
+			FilePaths = ["/test.jpg"],
 			Pattern = "{yyyy}{MM}{dd}_{filenamebase}.{ext}",
 			Collections = false
 		};
