@@ -43,7 +43,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.8 - _(Unreleased)_ - 2026-?-? {#v0.7.8}
 
-- nothing yet
+- [x] (Added)  In Import cli find camera storage flag (PR #2614)
 
 ## version 0.7.7 - 2026-01-17 {#v0.7.7}
 
@@ -64,7 +64,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Added) _Back-end_ Hide in api/env for cloud-import keys (PR #2569)
 - [x] (Fixed) _Back-end_ Selecting structure patterns based on image format and origin (PR #2571)
 - [x] (Fixed) _Front-end Previous with Ctrl/Cmd + \[ and to the next with Ctrl/Cmd + ] (PR #2572)
-- [x] (Removed) _Back-end_ Legacy starsky-tools/dropbox-import (PR  #2576)
+- [x] (Removed) _Back-end_ Legacy starsky-tools/dropbox-import (PR #2576)
 - [x] (Added) _Back-end_ Setup for Dropbox in starskyAdminCli (PR #2576)
 - [x] (Removed) _Back-end_ Removed Tools Dropbox Import Docker Buildx pipeline (PR #2576)
 
