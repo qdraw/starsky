@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Buffers.Binary;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -14,6 +15,9 @@ namespace starsky.foundation.storage.Services;
 ///     Specialized hasher for MP4 video files
 ///     Optimizes performance by hashing only the mdat atom (media data) instead of the entire file
 /// </summary>
+[SuppressMessage("Usage",
+	"S4790:Make sure this weak hash algorithm is not used in a sensitive context here.",
+	Justification = "Not used for passwords")]
 public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 {
 	/// <summary>
