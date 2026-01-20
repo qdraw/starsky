@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Models;
 using starsky.foundation.metaupdate.Services;
@@ -17,7 +18,8 @@ public sealed class ExifTimezoneCorrectionServiceTest
 {
 	private static ExifTimezoneCorrectionService CreateService(
 		IExifTool? exifTool = null,
-		IStorage? storage = null)
+		IStorage? storage = null,
+		IQuery? query = null)
 	{
 		storage ??= new FakeIStorage(["/"],
 			["/test.jpg"]);
@@ -26,12 +28,12 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		var thumbnailStorage = new FakeIStorage();
 		var thumbnailQuery = new FakeIThumbnailQuery();
 		var appSettings = new AppSettings();
-		var fakeQuery = new FakeIQuery();
+		query ??= new FakeIQuery();
 
 		return new ExifTimezoneCorrectionService(exifTool,
 			new FakeSelectorStorageByType(storage, thumbnailStorage,
 				null!, null!),
-			fakeQuery, thumbnailQuery, appSettings, logger);
+			query, thumbnailQuery, appSettings, logger);
 	}
 
 	[TestMethod]
@@ -254,7 +256,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		Assert.IsTrue(result.Success);
 		Assert.AreEqual(new DateTime(2024, 1, 15, 15, 30, 0, DateTimeKind.Local),
 			result.CorrectedDateTime); // +1 hour in winter
-		Assert.AreEqual(1.0, result.DeltaHours); // +1 hour difference in winter
+		Assert.AreEqual(1.0, result.DeltaHours); // +1-hour difference in winter
 	}
 
 	[TestMethod]
@@ -958,7 +960,52 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			result.CorrectedDateTime);
 	}
 
-	// ==================== Validation Warning Tests ====================
+	// ==================== Validation Tests ====================
+
+	[TestMethod]
+	public async Task Validate_WithFakeIQueryIStorage_ValidFile_ReturnsSuccess()
+	{
+		var fileIndexItem = new FileIndexItem
+		{
+			FilePath = "/test.jpg",
+			DateTime = new DateTime(2024, 6, 30, 23, 0, 0, DateTimeKind.Local)
+		};
+		var fakeQuery = new FakeIQuery([fileIndexItem]);
+		var fakeStorage = new FakeIStorage([], 
+			[fileIndexItem.FilePath]);
+		var service = CreateService(storage: fakeStorage, query: fakeQuery);
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			CorrectTimezone = "Europe/Amsterdam",
+			RecordedTimezone = "UTC",
+		};
+		var results = await service.
+			Validate([fileIndexItem.FilePath], false, request);
+		Assert.HasCount(1, results);
+		Assert.HasCount(0, results[0].Error);
+		Assert.AreEqual(fileIndexItem.DateTime, results[0].OriginalDateTime);
+	}
+
+	[TestMethod]
+	public async Task Validate_WithFakeIQueryIStorage_FileDoesNotExist_ReturnsError()
+	{
+		var fileIndexItem = new FileIndexItem
+		{
+			FilePath = "/notfound.jpg",
+			DateTime = new DateTime(2024, 6, 30, 23, 0, 0, DateTimeKind.Local)
+		};
+		var fakeQuery = new FakeIQuery(new List<FileIndexItem> { fileIndexItem });
+		var fakeStorage = new FakeIStorage(new List<string>()); // No files exist
+		var service = CreateService(storage: fakeStorage, query: fakeQuery);
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			RecordedTimezone = "Central European Standard Time",
+			CorrectTimezone = "Central European Summer Time"
+		};
+		var results = await service.Validate(new[] { fileIndexItem.FilePath }, false, request);
+		Assert.AreEqual(1, results.Count);
+		Assert.AreEqual("File does not exist", results[0].Error);
+	}
 
 	[TestMethod]
 	public void ValidateCorrection_MultipleWarnings_DayRolloverAndSameTimezone()
