@@ -40,6 +40,8 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 	///     Buffer size for reading atom data
 	/// </summary>
 	private const int BufferSize = 8192;
+	
+	private const int MaxReadVideoSize = 229376;
 
 	/// <summary>
 	///     Hash MP4 video content by reading only the mdat atom
@@ -54,7 +56,7 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 		
 		try
 		{
-			await using var stream = iStorage.ReadStream(fullFilePath, FileHash.MaxReadSize);
+			await using var stream = iStorage.ReadStream(fullFilePath, MaxReadVideoSize);
 			return await ProcessMp4AtomsAsync(stream, md5, buffer);
 		}
 		catch ( Exception e )
@@ -138,7 +140,7 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 	///     Skips a non-mdat atom by seeking or reading past its content
 	/// </summary>
 	/// <returns>True if skip was successful, false if an error occurred</returns>
-	private static async Task<bool> SkipAtomAsync(Stream stream, byte[] buffer, long payloadSize)
+	internal static async Task<bool> SkipAtomAsync(Stream stream, byte[] buffer, long payloadSize)
 	{
 		try
 		{

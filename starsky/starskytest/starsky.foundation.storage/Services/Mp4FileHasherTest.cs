@@ -557,6 +557,166 @@ public sealed class Mp4FileHasherTest
 		Assert.AreEqual(string.Empty, hash);
 	}
 
+	[TestMethod]
+	public async Task HashMp4VideoContentAsync_SimilarHeadersDifferentEnd_ReturnsDifferentHash()
+	{
+		// Arrange - Create two files with same start (first 128KB) but different end content
+		// This tests the sampling strategy of hashing both start and end
+		var commonStart = new byte[128 * 1024];
+		for ( var i = 0; i < commonStart.Length; i++ )
+		{
+			commonStart[i] = ( byte ) ( i % 256 );
+		}
 
+		var uniqueEnd1 = new byte[100 * 1024];
+		for ( var i = 0; i < uniqueEnd1.Length; i++ )
+		{
+			uniqueEnd1[i] = 0xAA;
+		}
+
+		var uniqueEnd2 = new byte[100 * 1024];
+		for ( var i = 0; i < uniqueEnd2.Length; i++ )
+		{
+			uniqueEnd2[i] = 0xBB;
+		}
+
+		// Create mdat content by concatenating common start + unique ends
+		var mdatContent1 = new byte[commonStart.Length + uniqueEnd1.Length];
+		Array.Copy(commonStart, 0, mdatContent1, 0, commonStart.Length);
+		Array.Copy(uniqueEnd1, 0, mdatContent1, commonStart.Length, uniqueEnd1.Length);
+
+		var mdatContent2 = new byte[commonStart.Length + uniqueEnd2.Length];
+		Array.Copy(commonStart, 0, mdatContent2, 0, commonStart.Length);
+		Array.Copy(uniqueEnd2, 0, mdatContent2, commonStart.Length, uniqueEnd2.Length);
+
+		var mp4Data1 = CreateMinimalMp4WithMdat(mdatContent1);
+		var mp4Data2 = CreateMinimalMp4WithMdat(mdatContent2);
+
+		var storage1 = CreateStorageWithMp4("/file1.mp4", mp4Data1);
+		var storage2 = CreateStorageWithMp4("/file2.mp4", mp4Data2);
+
+		var logger = new FakeIWebLogger();
+		var hasher1 = new Mp4FileHasher(storage1, logger);
+		var hasher2 = new Mp4FileHasher(storage2, logger);
+
+		// Act
+		var hash1 = await hasher1.HashMp4VideoContentAsync("/file1.mp4");
+		var hash2 = await hasher2.HashMp4VideoContentAsync("/file2.mp4");
+
+		// Assert - Hashes should be DIFFERENT because end content is different
+		Assert.AreNotEqual(hash1, hash2, 
+			"Hashes should differ for files with same start but different end content");
+	}
+
+	[TestMethod]
+	public async Task HashMp4VideoContentAsync_SimilarStartDifferentMiddle_ReturnsDifferentHash()
+	{
+		// Arrange - Files with different middle content (tests that we catch differences)
+		var part1 = new byte[100 * 1024];
+		for ( var i = 0; i < part1.Length; i++ )
+		{
+			part1[i] = 0x11;
+		}
+
+		var middleSame1 = new byte[50 * 1024];
+		for ( var i = 0; i < middleSame1.Length; i++ )
+		{
+			middleSame1[i] = 0x22;
+		}
+
+		var middleDiff1 = new byte[50 * 1024];
+		for ( var i = 0; i < middleDiff1.Length; i++ )
+		{
+			middleDiff1[i] = 0xAA;
+		}
+
+		var middleDiff2 = new byte[50 * 1024];
+		for ( var i = 0; i < middleDiff2.Length; i++ )
+		{
+			middleDiff2[i] = 0xBB;
+		}
+
+		var part3 = new byte[50 * 1024];
+		for ( var i = 0; i < part3.Length; i++ )
+		{
+			part3[i] = 0x33;
+		}
+
+		var mdatContent1 = new byte[100 * 1024 + 50 * 1024 + 50 * 1024 + 50 * 1024];
+		Array.Copy(part1, 0, mdatContent1, 0, part1.Length);
+		Array.Copy(middleSame1, 0, mdatContent1, part1.Length, middleSame1.Length);
+		Array.Copy(middleDiff1, 0, mdatContent1, part1.Length + middleSame1.Length, middleDiff1.Length);
+		Array.Copy(part3, 0, mdatContent1, part1.Length + middleSame1.Length + middleDiff1.Length, part3.Length);
+
+		var mdatContent2 = new byte[100 * 1024 + 50 * 1024 + 50 * 1024 + 50 * 1024];
+		Array.Copy(part1, 0, mdatContent2, 0, part1.Length);
+		Array.Copy(middleSame1, 0, mdatContent2, part1.Length, middleSame1.Length);
+		Array.Copy(middleDiff2, 0, mdatContent2, part1.Length + middleSame1.Length, middleDiff2.Length);
+		Array.Copy(part3, 0, mdatContent2, part1.Length + middleSame1.Length + middleDiff2.Length, part3.Length);
+
+		var mp4Data1 = CreateMinimalMp4WithMdat(mdatContent1);
+		var mp4Data2 = CreateMinimalMp4WithMdat(mdatContent2);
+
+		var storage1 = CreateStorageWithMp4("/file1.mp4", mp4Data1);
+		var storage2 = CreateStorageWithMp4("/file2.mp4", mp4Data2);
+
+		var logger = new FakeIWebLogger();
+		var hasher1 = new Mp4FileHasher(storage1, logger);
+		var hasher2 = new Mp4FileHasher(storage2, logger);
+
+		// Act
+		var hash1 = await hasher1.HashMp4VideoContentAsync("/file1.mp4");
+		var hash2 = await hasher2.HashMp4VideoContentAsync("/file2.mp4");
+
+		// Assert
+		Assert.AreNotEqual(hash1, hash2);
+	}
+
+	[TestMethod]
+	public async Task SkipAtomAsync_SeekableStream_SkipsBySeeking()
+	{
+		var data = new byte[100];
+		using var stream = new MemoryStream(data);
+		stream.Position = 10;
+		var buffer = new byte[16];
+		var result = await Mp4FileHasher.SkipAtomAsync(stream, buffer, 50);
+		Assert.IsTrue(result);
+		Assert.AreEqual(60, stream.Position);
+	}
+
+	private class NonSeekableStream : MemoryStream
+	{
+		public NonSeekableStream(byte[] buffer) : base(buffer) { }
+		public override bool CanSeek => false;
+	}
+
+	[TestMethod]
+	public async Task SkipAtomAsync_NonSeekableStream_SkipsByReading()
+	{
+		var data = new byte[100];
+		await using var stream = new NonSeekableStream(data);
+		stream.Position = 10;
+		var buffer = new byte[16];
+		var result = await Mp4FileHasher.SkipAtomAsync(stream, buffer, 50);
+		Assert.IsTrue(result);
+		Assert.AreEqual(60, stream.Position);
+	}
+
+	private class ThrowingSeekStream(byte[] buffer) : MemoryStream(buffer)
+	{
+		public override long Seek(long offset, SeekOrigin loc) => throw new IOException("Seek failed");
+	}
+
+	[TestMethod]
+	public async Task SkipAtomAsync_SeekThrows_ReturnsFalse()
+	{
+		var data = new byte[100];
+		await using var stream = new ThrowingSeekStream(data);
+		stream.Position = 10;
+		var buffer = new byte[16];
+		var result = await Mp4FileHasher.SkipAtomAsync(stream, buffer, 50);
+		Assert.IsFalse(result);
+	}
+	
 	public TestContext TestContext { get; set; } = null!;
 }
