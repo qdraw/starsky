@@ -28,7 +28,7 @@ public sealed class Mp4FileHasherTest
 	private static byte[] CreateMinimalMp4WithMdat(byte[] mdatContent)
 	{
 		using var ms = new MemoryStream();
-		
+
 		// Write ftyp atom (file type box)
 		var ftypSize = BitConverter.GetBytes(( uint ) 20);
 		if ( BitConverter.IsLittleEndian )
@@ -63,7 +63,7 @@ public sealed class Mp4FileHasherTest
 	private static byte[] CreateMp4WithExtendedSize(byte[] mdatContent)
 	{
 		using var ms = new MemoryStream();
-		
+
 		// Write ftyp atom
 		var ftypSize = BitConverter.GetBytes(( uint ) 20);
 		if ( BitConverter.IsLittleEndian )
@@ -86,7 +86,7 @@ public sealed class Mp4FileHasherTest
 
 		ms.Write(extendedSizeMarker, 0, 4);
 		ms.Write(Encoding.ASCII.GetBytes("mdat"), 0, 4);
-		
+
 		// Write actual size as 64-bit value
 		var actualSize = ( ulong ) ( 16 + mdatContent.Length ); // 4 + 4 + 8 + content
 		var actualSizeBytes = BitConverter.GetBytes(actualSize);
@@ -96,7 +96,7 @@ public sealed class Mp4FileHasherTest
 		}
 
 		ms.Write(actualSizeBytes, 0, 8);
-		
+
 		ms.Write(mdatContent, 0, mdatContent.Length);
 
 		return ms.ToArray();
@@ -108,7 +108,7 @@ public sealed class Mp4FileHasherTest
 	private static byte[] CreateMp4WithMultipleAtoms(byte[] mdatContent)
 	{
 		using var ms = new MemoryStream();
-		
+
 		// Write ftyp atom
 		var ftypSize = BitConverter.GetBytes(( uint ) 20);
 		if ( BitConverter.IsLittleEndian )
@@ -176,7 +176,7 @@ public sealed class Mp4FileHasherTest
 		{
 			largeContent[i] = ( byte ) ( i % 256 );
 		}
-		
+
 		var mp4Data = CreateMinimalMp4WithMdat(largeContent);
 		var storage = CreateStorageWithMp4("/large.mp4", mp4Data);
 		var logger = new FakeIWebLogger();
@@ -354,10 +354,10 @@ public sealed class Mp4FileHasherTest
 		var content = Encoding.UTF8.GetBytes("Identical content for hash comparison");
 		var mp4Data1 = CreateMinimalMp4WithMdat(content);
 		var mp4Data2 = CreateMinimalMp4WithMdat(content);
-		
+
 		var storage1 = CreateStorageWithMp4("/file1.mp4", mp4Data1);
 		var storage2 = CreateStorageWithMp4("/file2.mp4", mp4Data2);
-		
+
 		var logger = new FakeIWebLogger();
 		var hasher1 = new Mp4FileHasher(storage1, logger);
 		var hasher2 = new Mp4FileHasher(storage2, logger);
@@ -378,10 +378,10 @@ public sealed class Mp4FileHasherTest
 		var content2 = Encoding.UTF8.GetBytes("Content two");
 		var mp4Data1 = CreateMinimalMp4WithMdat(content1);
 		var mp4Data2 = CreateMinimalMp4WithMdat(content2);
-		
+
 		var storage1 = CreateStorageWithMp4("/file1.mp4", mp4Data1);
 		var storage2 = CreateStorageWithMp4("/file2.mp4", mp4Data2);
-		
+
 		var logger = new FakeIWebLogger();
 		var hasher1 = new Mp4FileHasher(storage1, logger);
 		var hasher2 = new Mp4FileHasher(storage2, logger);
@@ -436,7 +436,7 @@ public sealed class Mp4FileHasherTest
 		var binaryContent = new byte[1000];
 		var random = new Random(42); // Fixed seed for reproducibility
 		random.NextBytes(binaryContent);
-		
+
 		var mp4Data = CreateMinimalMp4WithMdat(binaryContent);
 		var storage = CreateStorageWithMp4("/binary.mp4", mp4Data);
 		var logger = new FakeIWebLogger();
@@ -460,7 +460,7 @@ public sealed class Mp4FileHasherTest
 		{
 			exactContent[i] = ( byte ) ( i % 256 );
 		}
-		
+
 		var mp4Data = CreateMinimalMp4WithMdat(exactContent);
 		var storage = CreateStorageWithMp4("/exact-256kb.mp4", mp4Data);
 		var logger = new FakeIWebLogger();
@@ -479,7 +479,7 @@ public sealed class Mp4FileHasherTest
 	{
 		// Arrange - MP4 with custom/unknown atom before mdat
 		using var ms = new MemoryStream();
-		
+
 		// Write ftyp
 		var ftypSize = BitConverter.GetBytes(( uint ) 20);
 		if ( BitConverter.IsLittleEndian )
@@ -532,6 +532,3 @@ public sealed class Mp4FileHasherTest
 
 	public TestContext TestContext { get; set; } = null!;
 }
-
-
-
