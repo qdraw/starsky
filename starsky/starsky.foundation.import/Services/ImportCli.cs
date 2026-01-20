@@ -17,6 +17,7 @@ namespace starsky.foundation.import.Services;
 public class ImportCli
 {
 	private readonly AppSettings _appSettings;
+	private readonly ICameraStorageDetector _cameraStorageDetector;
 	private readonly IConsole _console;
 	private readonly IExifToolDownload _exifToolDownload;
 	private readonly IGeoFileDownload _geoFileDownload;
@@ -24,7 +25,8 @@ public class ImportCli
 	private readonly IWebLogger _logger;
 
 	public ImportCli(IImport importService, AppSettings appSettings, IConsole console,
-		IWebLogger logger, IExifToolDownload exifToolDownload, IGeoFileDownload geoFileDownload)
+		IWebLogger logger, IExifToolDownload exifToolDownload,
+		IGeoFileDownload geoFileDownload, ICameraStorageDetector cameraStorageDetector)
 	{
 		_importService = importService;
 		_appSettings = appSettings;
@@ -32,6 +34,7 @@ public class ImportCli
 		_logger = logger;
 		_exifToolDownload = exifToolDownload;
 		_geoFileDownload = geoFileDownload;
+		_cameraStorageDetector = cameraStorageDetector;
 	}
 
 	/// <summary>
@@ -50,14 +53,29 @@ public class ImportCli
 
 		_appSettings.ApplicationType = AppSettings.StarskyAppType.Importer;
 
-		if ( ArgsHelper.NeedHelp(args) || new ArgsHelper(_appSettings)
-			    .GetPathFormArgs(args, false).Length <= 1 )
+		var inputPathListFormArgs = new ArgsHelper(_appSettings).GetPathListFormArgs(args).ToList();
+		if ( inputPathListFormArgs.Count == 0 && ArgsHelper.NeedCamera(args) )
+		{
+			if ( !ArgsHelper.NeedRecursive(args) )
+			{
+				_logger.LogInformation("Camera storage detection " +
+				                       "recommends -r or --recursive to be enabled. " +
+				                       "If not you only importing from the root " +
+				                       "of the camera storage.");
+			}
+			var cameraPaths = _cameraStorageDetector.FindCameraStorages().ToList();
+			inputPathListFormArgs.AddRange(cameraPaths);
+			if ( cameraPaths.Count == 0 )
+			{
+				_logger.LogInformation("No camera storage detected.");
+			}
+		}
+
+		if ( ArgsHelper.NeedHelp(args) || inputPathListFormArgs.Count == 0 )
 		{
 			new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
 			return true;
 		}
-
-		var inputPathListFormArgs = new ArgsHelper(_appSettings).GetPathListFormArgs(args);
 
 		if ( _appSettings.IsVerbose() )
 		{
