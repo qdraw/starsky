@@ -1,13 +1,14 @@
+using System.Diagnostics.CodeAnalysis;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.metaupdate.Models;
 using starsky.foundation.platform.Interfaces;
-using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Helpers;
 using starsky.foundation.writemeta.Interfaces;
@@ -47,15 +48,17 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 	/// <summary>
 	///     Correct EXIF timestamps for multiple images
 	/// </summary>
+	[SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
 	public async Task<List<ExifTimezoneCorrectionResult>> CorrectTimezoneAsync(
 		List<FileIndexItem> fileIndexItems,
 		ExifTimezoneCorrectionRequest request)
 	{
 		var results = new List<ExifTimezoneCorrectionResult>();
 
-		foreach ( var item in fileIndexItems )
+		// keep for because of editing the list in the loop
+		for ( var i = 0; i < fileIndexItems.Count; i++ )
 		{
-			var result = await CorrectTimezoneAsync(item, request);
+			var result = await CorrectTimezoneAsync(fileIndexItems[i], request);
 			results.Add(result);
 		}
 
@@ -70,7 +73,7 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 
 		var results =
 			fileIndexItems.Select(fileIndexItem =>
-					ValidateCorrection(fileIndexItem.CloneViaJson()!,
+					ValidateCorrection(fileIndexItem,
 						request))
 				.ToList();
 		return results;
@@ -106,7 +109,12 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 
 			// Update the FileIndexItem with corrected DateTime
 			fileIndexItem.DateTime = correctedDateTime;
-
+			fileIndexItem.LastEdited = _storage.Info(fileIndexItem.FilePath!).LastWriteTime;
+			
+			// to avoid diskWatcher catch up
+			_query.SetGetObjectByFilePathCache(fileIndexItem.FilePath!, fileIndexItem,
+				TimeSpan.FromSeconds(5));
+			
 			// Write the corrected DateTime to EXIF
 			var comparedNames =
 				new List<string> { nameof(FileIndexItem.DateTime).ToLowerInvariant() };
@@ -114,11 +122,20 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 				fileIndexItem,
 				comparedNames,
 				false);
-			result.Success = true;
+			
+			var fileHashService = new FileHash(_storage, _logger);
+			var newFileHash = ( await fileHashService.GetHashCodeAsync(
+				fileIndexItem.FilePath!,
+				fileIndexItem.ImageFormat) ).Key;
+			fileIndexItem.FileHash = newFileHash;
 
+			await _query.UpdateItemAsync(fileIndexItem);
+
+			result.Success = true;
 			_logger.LogInformation(
 				$"[ExifTimezoneCorrection] Successfully corrected: {fileIndexItem.FilePath} " +
-				$"from {result.OriginalDateTime:yyyy-MM-dd HH:mm:ss} to {result.CorrectedDateTime:yyyy-MM-dd HH:mm:ss} " +
+				$"from {result.OriginalDateTime:yyyy-MM-dd HH:mm:ss} " +
+				$"to {result.CorrectedDateTime:yyyy-MM-dd HH:mm:ss} " +
 				$"(delta: {result.DeltaHours:F2}h)");
 		}
 		catch ( Exception ex )

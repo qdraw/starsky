@@ -855,7 +855,8 @@ public sealed class ExifTimezoneCorrectionServiceTest
 
 		var request = new ExifTimezoneCorrectionRequest
 		{
-			RecordedTimezone = "Etc/GMT-1", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezone = "Etc/GMT-1", 
+			CorrectTimezone = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -878,12 +879,10 @@ public sealed class ExifTimezoneCorrectionServiceTest
 	}
 
 	[TestMethod]
-	public async Task CorrectTimezoneAsync_BatchWithMixedSuccess()
+	public async Task CorrectTimezoneAsync_BatchWithMixedSuccess_QueryUpdate()
 	{
 		// Arrange - Batch where some files exist, some don't
 		var storage = new FakeIStorage(["/"], ["/test1.jpg"]);
-		var service = CreateService(storage: storage);
-
 		var fileIndexItems = new List<FileIndexItem>
 		{
 			new()
@@ -897,6 +896,8 @@ public sealed class ExifTimezoneCorrectionServiceTest
 				DateTime = new DateTime(2024, 6, 15, 14, 0, 0, DateTimeKind.Local)
 			}
 		};
+		var fakeQuery = new FakeIQuery(fileIndexItems);
+		var service = CreateService(storage: storage, query: fakeQuery);
 
 		var request = new ExifTimezoneCorrectionRequest
 		{
@@ -910,6 +911,15 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		Assert.HasCount(2, results);
 		Assert.IsTrue(results[0].Success);
 		Assert.IsFalse(results[1].Success);
+		
+		// Query
+		var queryResult = await fakeQuery.GetObjectByFilePathAsync("/test1.jpg");
+		Assert.IsNotNull(queryResult);
+		Assert.AreEqual("/test1.jpg", queryResult.FilePath);
+		Assert.AreEqual("2024-06-15 16:00:00", queryResult.DateTime.ToString("yyyy-MM-dd HH:mm:ss"));
+		var queryResultMissing = await fakeQuery.GetObjectByFilePathAsync("/nonexistent.jpg");
+		Assert.IsNotNull(queryResultMissing);
+		Assert.AreEqual("2024-06-15 14:00:00", queryResultMissing.DateTime.ToString("yyyy-MM-dd HH:mm:ss"));
 	}
 
 	[TestMethod]
