@@ -85,16 +85,12 @@ public sealed class MetaExifThumbnailService : IMetaExifThumbnailService
 			}
 			default:
 			{
-				var result = await new FileHash(_iStorage, _logger).GetHashCodeAsync(subPath);
+				var fileHashService = new FileHash(_iStorage, _logger);
+				var result = await fileHashService.GetHashCodeAsync(subPath,
+					null);
 				return !result.Value
-					? new List<(bool, bool, string, string?)>
-					{
-						( false, false, subPath, "hash not found" )
-					}
-					: new List<(bool, bool, string, string?)>
-					{
-						await AddMetaThumbnail(subPath, result.Key)
-					};
+					? [( false, false, subPath, "hash not found" )]
+					: [await AddMetaThumbnail(subPath, result.Key)];
 			}
 		}
 	}
@@ -125,7 +121,9 @@ public sealed class MetaExifThumbnailService : IMetaExifThumbnailService
 
 		if ( string.IsNullOrEmpty(fileHash) )
 		{
-			var result = await new FileHash(_iStorage, _logger).GetHashCodeAsync(subPath);
+			var fileHashService = new FileHash(_iStorage, _logger);
+
+			var result = await fileHashService.GetHashCodeAsync(subPath, imageFormat);
 			if ( !result.Value )
 			{
 				_logger.LogError("[MetaExifThumbnail] hash failed");
