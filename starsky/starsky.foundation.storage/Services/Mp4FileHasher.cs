@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Buffers.Binary;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -51,13 +52,13 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 	/// <returns>Base32 encoded MD5 hash of video content, or empty string if no mdat atom found</returns>
 	public async Task<string> HashMp4VideoContentAsync(string fullFilePath)
 	{
-		using var md5 = System.Security.Cryptography.MD5.Create();
+		using var md5 = MD5.Create();
 		var buffer = ArrayPool<byte>.Shared.Rent(BufferSize);
 		
 		try
 		{
 			await using var stream = iStorage.ReadStream(fullFilePath, MaxReadVideoSize);
-			return await ProcessMp4AtomsAsync(stream, md5, buffer);
+			return await ProcessMp4AtomsAsync(stream, md5, buffer, CancellationToken.None);
 		}
 		catch ( Exception e )
 		{
@@ -73,8 +74,8 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 	/// <summary>
 	///     Processes MP4 atoms and finds/hashes the mdat atom
 	/// </summary>
-	private async Task<string> ProcessMp4AtomsAsync(Stream stream,
-		System.Security.Cryptography.MD5 md5, byte[] buffer)
+	internal async Task<string> ProcessMp4AtomsAsync(Stream stream,
+		MD5 md5, byte[] buffer, CancellationToken cancellationToken)
 	{
 		if ( stream == Stream.Null )
 		{
@@ -83,7 +84,7 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 		
 		while ( true )
 		{
-			var atom = await ReadAtomAsync(stream);
+			var atom = await ReadAtomAsync(stream, cancellationToken);
 			if ( atom == null )
 			{
 				break;
@@ -100,10 +101,14 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 				return await HashMdatAtomAsync(stream, md5, buffer, payloadSize);
 			}
 
-			if ( !await SkipAtomAsync(stream, buffer, payloadSize) )
+			if ( await SkipAtomAsync(stream, buffer, payloadSize) )
 			{
-				return string.Empty;
+				continue;
 			}
+
+			logger.LogInformation("Mp4FileHasher.ProcessMp4AtomsAsync "+
+			                      "Failed to skip non-mdat atom");
+			return string.Empty;
 		}
 
 		// No mdat atom found, return empty to fall back to standard hashing

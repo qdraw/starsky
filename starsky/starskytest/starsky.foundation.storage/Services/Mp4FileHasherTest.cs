@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.storage.Services;
@@ -653,6 +655,112 @@ public sealed class Mp4FileHasherTest
 		var result = await Mp4FileHasher.SkipAtomAsync(stream, buffer, 50);
 		Assert.IsFalse(result);
 	}
+
+	/// <summary>
+	/// Tests that when SkipAtomAsync fails (returns false), HashMp4VideoContentAsync returns empty string
+	/// This covers the untested code path: if ( !await SkipAtomAsync(...) ) { return string.Empty; }
+	/// </summary>
+	[TestMethod]
+	public async Task HashMp4VideoContentAsync_SkipAtomFails_ReturnsEmptyString()
+	{
+		// Arrange - Use FakeIStorage with exception to simulate stream failure
+		// This will trigger the exception handler and return string.Empty
+		var storageWithException = new FakeIStorage(new IOException("Stream operation failed"));
+		var logger = new FakeIWebLogger();
+		var hasher = new Mp4FileHasher(storageWithException, logger);
+
+		// Act - Try to hash a file, but storage will throw an exception
+		var hash = await hasher.HashMp4VideoContentAsync("/failing.mp4");
+
+		// Assert - Should return empty string when skip/stream operation fails
+		Assert.AreEqual(string.Empty, hash);
+	}
+
+	/// <summary>
+	/// Stream that throws IOException when trying to seek, simulating a skip failure
+	/// This forces SkipMp4AtomAsync to catch IOException and return false
+	/// </summary>
+	private sealed class LimitedStream(byte[] buffer) : MemoryStream(buffer)
+	{
+		private int _readCount;
+
+		public override long Seek(long offset, SeekOrigin loc)
+		{
+			// Throw exception when trying to seek (used by skip operations)
+			throw new IOException("Cannot seek on limited stream");
+		}
+
+		public override bool CanSeek => false;
+
+		public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+		{
+			switch (_readCount)
+			{
+				// First read: atom header (allowed)
+				case 0:
+					_readCount++;
+					return await base.ReadAsync(buffer, cancellationToken);
+				// Subsequent reads should fail when trying to read during skip
+				case > 0 when Position < 20:
+					throw new IOException("Cannot read during skip");
+				default:
+					return await base.ReadAsync(buffer, cancellationToken);
+			}
+		}
+	}
+
+	[TestMethod]
+	public async Task HashMp4VideoContentAsync_CorruptMp4WithSkipFailure_ReturnsEmptyString()
+	{
+		// Arrange - Create an MP4 with ftyp atom before mdat
+		// Use a stream that will throw IOException when trying to skip the ftyp atom
+		using var ms = new MemoryStream();
+
+		// Write ftyp atom header (size=20, type="ftyp")
+		var ftypSize = BitConverter.GetBytes((uint)20);
+		if (BitConverter.IsLittleEndian)
+		{
+			Array.Reverse(ftypSize);
+		}
+		await ms.WriteAsync(ftypSize.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("ftyp"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("isom"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync(( new byte[4] ).AsMemory(0, 4), TestContext.CancellationToken); // minor version
+		await ms.WriteAsync("isom"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken); // compatible brand
+
+		// Write mdat atom header (which would never be reached due to skip failure)
+		var mdatSize = BitConverter.GetBytes((uint)50);
+		if (BitConverter.IsLittleEndian)
+		{
+			Array.Reverse(mdatSize);
+		}
+		await ms.WriteAsync(mdatSize.AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("mdat"u8.ToArray().AsMemory(0, 4), TestContext.CancellationToken);
+		await ms.WriteAsync("test content"u8.ToArray().AsMemory(0, 12), TestContext.CancellationToken);
+
+		var mp4Data = ms.ToArray();
+
+		// Create a stream that throws when trying to skip
+		var throwingStream = new LimitedStream(mp4Data);
+
+		// Setup logger to capture the LogInformation call
+		var logger = new FakeIWebLogger();
+		var storage = new FakeIStorage();
+		
+		using var md5 = MD5.Create();
+		
+		var sut = new Mp4FileHasher(storage, logger);
+
+		// Act - Call ProcessMp4AtomsAsync which will attempt to skip ftyp atom and fail
+		var hash = await sut.ProcessMp4AtomsAsync(throwingStream, md5, 
+			new byte[16], CancellationToken.None);
+
+		// Assert - Should return empty string when skip fails
+		Assert.AreEqual(string.Empty, hash);
+		Assert.IsTrue(logger.TrackedInformation[0].
+			Item2?.Contains("Failed to skip non-mdat atom"));
+	}
+
 
 	public TestContext TestContext { get; set; } = null!;
 }
