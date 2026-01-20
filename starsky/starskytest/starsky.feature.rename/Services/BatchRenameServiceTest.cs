@@ -261,6 +261,22 @@ public class BatchRenameServiceTest
 		Assert.HasCount(1, result);
 		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, result[0].Status);
 	}
+	
+	[TestMethod]
+	public void PreviewBatchRename_ReadOnly()
+	{
+		var iStorage = new FakeIStorage([], 
+			["/test.jpg"]);
+		var service =
+			new BatchRenameService(new FakeIQuery([new FileIndexItem("/test.jpg")]),
+				iStorage, new FakeIWebLogger(), new AppSettings{ReadOnlyFolders = ["/"]});
+		var result =  service.PreviewBatchRename(["/test.jpg"],
+			"{yyyy}{MM}{dd}_{filenamebase}{seqn}.{ext}");
+
+		Assert.HasCount(1, result);
+		Assert.IsTrue(result[0].HasError);
+		Assert.AreEqual("Read-only location", result[0].ErrorMessage);
+	}
 
 	[TestMethod]
 	public async Task ExecuteBatchRenameAsync_Null()
