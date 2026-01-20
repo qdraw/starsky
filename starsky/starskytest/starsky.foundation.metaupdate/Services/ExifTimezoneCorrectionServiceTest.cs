@@ -1013,8 +1013,34 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			CorrectTimezone = "Central European Summer Time"
 		};
 		var results = await service.Validate(new[] { fileIndexItem.FilePath }, false, request);
-		Assert.AreEqual(1, results.Count);
+		Assert.HasCount(1, results);
 		Assert.AreEqual("File does not exist", results[0].Error);
+	}
+
+	[TestMethod]
+	public async Task CorrectTimezoneAsync_WithFakeIQueryException_ReturnsError()
+	{
+		// Arrange
+		var fileIndexItem = new FileIndexItem
+		{
+			FilePath = "/test.jpg",
+			DateTime = new DateTime(2024, 6, 30, 23, 0, 0, DateTimeKind.Local)
+		};
+		var fakeQuery = new FakeIQueryException(new Exception()); // Simulates exception on query
+		var fakeStorage = new FakeIStorage([],[fileIndexItem.FilePath]);
+		var service = CreateService(storage: fakeStorage, query: fakeQuery);
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			RecordedTimezone = "UTC", // Camera thought it was UTC (GMT+00)
+			CorrectTimezone = "Europe/Amsterdam" // Actually in Amsterdam (GMT+02 in summer)
+		};
+
+		// Act
+		var result = await service.CorrectTimezoneAsync(fileIndexItem, request); 
+		
+		// Assert
+		Assert.IsNotNull(result.Error);
+		Assert.Contains("[ExifTimezoneCorrection] Exception", result.Error.ToLowerInvariant());
 	}
 
 	[TestMethod]
