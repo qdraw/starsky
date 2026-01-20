@@ -26,8 +26,6 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 		public long DataOffset;
 	}
 
-	private readonly IWebLogger _logger = logger;
-
 	/// <summary>
 	///     Maximum bytes of video content to hash (256 KB)
 	///     Balances between collision resistance and performance
@@ -57,83 +55,118 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 		var buffer = ArrayPool<byte>.Shared.Rent(BufferSize);
 		try
 		{
-			while ( true )
-			{
-				var atom = await ReadAtomAsync(stream);
-				if ( atom == null )
-				{
-					break;
-				}
-
-				_logger.LogDebug(
-					$"Found atom: Type={atom?.Type}, Size={atom?.Size}, DataOffset={atom?.DataOffset}");
-
-				var payloadSize = atom.Value.Size - 8;
-
-				if ( atom.Value.Type == "mdat" )
-				{
-					// Hash up to MaxBytesToHash of video content
-					var remaining = Math.Min(payloadSize, MaxBytesToHash);
-					while ( remaining > 0 )
-					{
-						var toRead = ( int ) Math.Min(buffer.Length, remaining);
-						var bytesRead = await stream.ReadAsync(
-							buffer.AsMemory(0, toRead));
-
-						if ( bytesRead <= 0 )
-						{
-							break;
-						}
-
-						md5.TransformBlock(buffer, 0, bytesRead, null, 0);
-						remaining -= bytesRead;
-					}
-
-					md5.TransformFinalBlock([], 0, 0);
-					var hash = md5.Hash;
-					return Base32.Encode(hash!);
-				}
-
-				// Skip non-mdat atoms
-				// Note: payloadSize could be very large, so we skip carefully
-				try
-				{
-					if ( payloadSize > 0 && stream.CanSeek )
-					{
-						stream.Seek(payloadSize, SeekOrigin.Current);
-					}
-					else
-					{
-						// If we can't seek, read and discard
-						var toSkip = payloadSize;
-						while ( toSkip > 0 )
-						{
-							var toRead = ( int ) Math.Min(buffer.Length, toSkip);
-							var bytesRead = await stream.ReadAsync(buffer.AsMemory(0, toRead));
-
-							if ( bytesRead <= 0 )
-							{
-								break;
-							}
-
-							toSkip -= bytesRead;
-						}
-					}
-				}
-				catch ( IOException )
-				{
-					// If seek/read fails, return empty to fall back to standard hashing
-					return string.Empty;
-				}
-			}
+			return await ProcessMp4AtomsAsync(stream, md5, buffer);
 		}
 		finally
 		{
 			ArrayPool<byte>.Shared.Return(buffer);
 		}
+	}
+
+	/// <summary>
+	///     Processes MP4 atoms and finds/hashes the mdat atom
+	/// </summary>
+	private async Task<string> ProcessMp4AtomsAsync(Stream stream,
+		System.Security.Cryptography.MD5 md5, byte[] buffer)
+	{
+		while ( true )
+		{
+			var atom = await ReadAtomAsync(stream);
+			if ( atom == null )
+			{
+				break;
+			}
+
+			logger.LogDebug(
+				$"Found atom: Type={atom.Value.Type}, " +
+				$"Size={atom.Value.Size}, DataOffset={atom.Value.DataOffset}");
+
+			var payloadSize = atom.Value.Size - 8;
+
+			if ( atom.Value.Type == "mdat" )
+			{
+				return await HashMdatAtomAsync(stream, md5, buffer, payloadSize);
+			}
+
+			if ( !await SkipAtomAsync(stream, buffer, payloadSize) )
+			{
+				return string.Empty;
+			}
+		}
 
 		// No mdat atom found, return empty to fall back to standard hashing
 		return string.Empty;
+	}
+
+	/// <summary>
+	///     Hashes the mdat atom content
+	/// </summary>
+	private static async Task<string> HashMdatAtomAsync(Stream stream,
+		System.Security.Cryptography.MD5 md5, byte[] buffer, long payloadSize)
+	{
+		var remaining = Math.Min(payloadSize, MaxBytesToHash);
+		while ( remaining > 0 )
+		{
+			var toRead = ( int ) Math.Min(buffer.Length, remaining);
+			var bytesRead = await stream.ReadAsync(buffer.AsMemory(0, toRead));
+
+			if ( bytesRead <= 0 )
+			{
+				break;
+			}
+
+			md5.TransformBlock(buffer, 0, bytesRead, null, 0);
+			remaining -= bytesRead;
+		}
+
+		md5.TransformFinalBlock([], 0, 0);
+		var hash = md5.Hash;
+		return Base32.Encode(hash!);
+	}
+
+	/// <summary>
+	///     Skips a non-mdat atom by seeking or reading past its content
+	/// </summary>
+	/// <returns>True if skip was successful, false if an error occurred</returns>
+	private static async Task<bool> SkipAtomAsync(Stream stream, byte[] buffer, long payloadSize)
+	{
+		try
+		{
+			if ( payloadSize > 0 && stream.CanSeek )
+			{
+				stream.Seek(payloadSize, SeekOrigin.Current);
+			}
+			else
+			{
+				await SkipByReadingAsync(stream, buffer, payloadSize);
+			}
+
+			return true;
+		}
+		catch ( IOException )
+		{
+			// If seek/read fails, return empty to fall back to standard hashing
+			return false;
+		}
+	}
+
+	/// <summary>
+	///     Skips data by reading and discarding bytes
+	/// </summary>
+	private static async Task SkipByReadingAsync(Stream stream, byte[] buffer, long toSkip)
+	{
+		while ( toSkip > 0 )
+		{
+			var toRead = ( int ) Math.Min(buffer.Length, toSkip);
+			var bytesRead = await stream.ReadAsync(buffer.AsMemory(0, toRead));
+
+			if ( bytesRead <= 0 )
+			{
+				break;
+			}
+
+			toSkip -= bytesRead;
+		}
 	}
 
 	/// <summary>
@@ -162,17 +195,19 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 		long atomSize = size;
 
 		// Large-size atom: size field = 1, actual size follows in next 8 bytes
-		if ( size == 1 )
+		if ( size != 1 )
 		{
-			var largeSize = new byte[8];
-			read = await stream.ReadAsync(largeSize.AsMemory(0, 8), ct);
-			if ( read < 8 )
-			{
-				return null;
-			}
-
-			atomSize = ( long ) BinaryPrimitives.ReadUInt64BigEndian(largeSize);
+			return new Mp4Atom { Size = atomSize, Type = type, DataOffset = stream.Position };
 		}
+
+		var largeSize = new byte[8];
+		read = await stream.ReadAsync(largeSize.AsMemory(0, 8), ct);
+		if ( read < 8 )
+		{
+			return null;
+		}
+
+		atomSize = ( long ) BinaryPrimitives.ReadUInt64BigEndian(largeSize);
 
 		return new Mp4Atom { Size = atomSize, Type = type, DataOffset = stream.Position };
 	}
