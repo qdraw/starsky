@@ -49,17 +49,18 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 	/// <returns>Base32 encoded MD5 hash of video content, or empty string if no mdat atom found</returns>
 	public async Task<string> HashMp4VideoContentAsync(string fullFilePath)
 	{
-		await using var stream = iStorage.ReadStream(fullFilePath, FileHash.MaxReadSize);
-		if ( stream == Stream.Null )
-		{
-			return string.Empty;
-		}
-
 		using var md5 = System.Security.Cryptography.MD5.Create();
 		var buffer = ArrayPool<byte>.Shared.Rent(BufferSize);
+		
 		try
 		{
+			await using var stream = iStorage.ReadStream(fullFilePath, FileHash.MaxReadSize);
 			return await ProcessMp4AtomsAsync(stream, md5, buffer);
+		}
+		catch ( Exception e )
+		{
+			logger.LogError($"Mp4FileHasher.HashMp4VideoContentAsync Error: {e.Message}");
+			return string.Empty;
 		}
 		finally
 		{
@@ -73,6 +74,11 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 	private async Task<string> ProcessMp4AtomsAsync(Stream stream,
 		System.Security.Cryptography.MD5 md5, byte[] buffer)
 	{
+		if ( stream == Stream.Null )
+		{
+			return string.Empty;
+		}
+		
 		while ( true )
 		{
 			var atom = await ReadAtomAsync(stream);

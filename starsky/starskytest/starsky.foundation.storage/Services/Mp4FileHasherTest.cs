@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starskytest.FakeMocks;
 
@@ -118,8 +120,8 @@ public sealed class Mp4FileHasherTest
 		ms.Write(ftypSize, 0, 4);
 		ms.Write("ftyp"u8.ToArray(), 0, 4);
 		ms.Write("isom"u8.ToArray(), 0, 4);
-		ms.Write(new byte[4], 0, 4);
-		ms.Write("isom"u8.ToArray(), 0, 4);
+		ms.Write(new byte[4], 0, 4); // minor version
+		ms.Write("isom"u8.ToArray(), 0, 4); // compatible brand
 
 		// Write a moov atom (movie metadata) - empty for test
 		var moovContent = new byte[100];
@@ -488,8 +490,8 @@ public sealed class Mp4FileHasherTest
 		ms.Write(ftypSize, 0, 4);
 		ms.Write("ftyp"u8.ToArray(), 0, 4);
 		ms.Write("isom"u8.ToArray(), 0, 4);
-		ms.Write(new byte[4], 0, 4);
-		ms.Write("isom"u8.ToArray(), 0, 4);
+		ms.Write(new byte[4], 0, 4); // minor version
+		ms.Write("isom"u8.ToArray(), 0, 4); // compatible brand
 
 		// Write unknown atom "xyzw"
 		var unknownContent = new byte[50];
@@ -527,6 +529,34 @@ public sealed class Mp4FileHasherTest
 		Assert.IsNotNull(hash);
 		Assert.AreEqual(26, hash.Length);
 	}
+
+	/// <summary>
+	/// Tests that if SkipAtomAsync throws (seek/read fails), the hasher returns string.Empty
+	/// </summary>
+	[TestMethod]
+	public async Task HashMp4VideoContentAsync_SkipAtomThrows_ReturnsEmptyString()
+	{
+		// Arrange: Create a minimal MP4 with a non-mdat atom (e.g., ftyp only)
+		var mp4Data = new byte[20];
+		// Write ftyp atom header (size=20, type="ftyp")
+		var sizeBytes = BitConverter.GetBytes((uint)20);
+		if (BitConverter.IsLittleEndian) { Array.Reverse(sizeBytes); }
+		Array.Copy(sizeBytes, 0, mp4Data, 0, 4);
+		Array.Copy("ftyp"u8.ToArray(), 0, mp4Data, 4, 4);
+		// The rest is dummy
+
+		// Use FakeIStorage that throws IOException on ReadStream
+		var storage = new FakeIStorage(new IOException("Read/Seek failed"));
+		var logger = new FakeIWebLogger();
+		var hasher = new Mp4FileHasher(storage, logger);
+
+		// Act
+		var hash = await hasher.HashMp4VideoContentAsync("/throw.mp4");
+
+		// Assert
+		Assert.AreEqual(string.Empty, hash);
+	}
+
 
 	public TestContext TestContext { get; set; } = null!;
 }
