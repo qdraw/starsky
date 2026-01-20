@@ -65,6 +65,8 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 					break;
 				}
 
+				_logger.LogDebug($"Found atom: Type={atom?.Type}, Size={atom?.Size}, DataOffset={atom?.DataOffset}");
+
 				var payloadSize = atom.Value.Size - 8;
 
 				if ( atom.Value.Type == "mdat" )
@@ -108,8 +110,7 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 						while ( toSkip > 0 )
 						{
 							var toRead = ( int ) Math.Min(buffer.Length, toSkip);
-							var bytesRead = await stream.ReadAsync(buffer.AsMemory(0, toRead))
-								.ConfigureAwait(false);
+							var bytesRead = await stream.ReadAsync(buffer.AsMemory(0, toRead));
 
 							if ( bytesRead <= 0 )
 							{
@@ -165,7 +166,7 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 		if ( size == 1 )
 		{
 			var largeSize = new byte[8];
-			read = await stream.ReadAsync(largeSize.AsMemory(0, 8), ct).ConfigureAwait(false);
+			read = await stream.ReadAsync(largeSize.AsMemory(0, 8), ct);
 			if ( read < 8 )
 			{
 				return null;

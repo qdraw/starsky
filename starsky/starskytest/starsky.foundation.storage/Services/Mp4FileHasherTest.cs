@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.storage.Services;
 using starskytest.FakeMocks;
 
@@ -153,7 +152,7 @@ public sealed class Mp4FileHasherTest
 	public async Task HashMp4VideoContentAsync_ValidMp4WithMdat_ReturnsHash()
 	{
 		// Arrange
-		var mdatContent = Encoding.UTF8.GetBytes("This is test video content that should be hashed");
+		var mdatContent = "This is test video content that should be hashed"u8.ToArray();
 		var mp4Data = CreateMinimalMp4WithMdat(mdatContent);
 		var storage = CreateStorageWithMp4("/test.mp4", mp4Data);
 		var logger = new FakeIWebLogger();
@@ -173,7 +172,7 @@ public sealed class Mp4FileHasherTest
 	{
 		// Arrange
 		var largeContent = new byte[512 * 1024]; // 512 KB
-		for ( int i = 0; i < largeContent.Length; i++ )
+		for ( var i = 0; i < largeContent.Length; i++ )
 		{
 			largeContent[i] = ( byte ) ( i % 256 );
 		}
@@ -275,7 +274,7 @@ public sealed class Mp4FileHasherTest
 	public async Task HashMp4VideoContentAsync_EmptyFile_ReturnsEmptyString()
 	{
 		// Arrange
-		var storage = CreateStorageWithMp4("/empty.mp4", Array.Empty<byte>());
+		var storage = CreateStorageWithMp4("/empty.mp4", []);
 		var logger = new FakeIWebLogger();
 		var hasher = new Mp4FileHasher(storage, logger);
 
@@ -290,13 +289,14 @@ public sealed class Mp4FileHasherTest
 	public async Task HashMp4VideoContentAsync_CorruptedAtomHeader_ReturnsEmptyString()
 	{
 		// Arrange - File with incomplete atom header (less than 8 bytes)
-		var corruptData = new byte[5] { 0x00, 0x00, 0x00, 0x08, 0x66 };
+		var corruptData = new byte[] { 0x00, 0x00, 0x00, 0x08, 0x66 };
 		var storage = CreateStorageWithMp4("/corrupt.mp4", corruptData);
 		var logger = new FakeIWebLogger();
 		var hasher = new Mp4FileHasher(storage, logger);
 
 		// Act
-		var hash = await hasher.HashMp4VideoContentAsync("/corrupt.mp4");
+		var hash = await hasher.HashMp4VideoContentAsync(
+			"/corrupt.mp4");
 
 		// Assert
 		Assert.AreEqual(string.Empty, hash);
@@ -456,7 +456,7 @@ public sealed class Mp4FileHasherTest
 	{
 		// Arrange - Exactly at the boundary
 		var exactContent = new byte[256 * 1024];
-		for ( int i = 0; i < exactContent.Length; i++ )
+		for ( var i = 0; i < exactContent.Length; i++ )
 		{
 			exactContent[i] = ( byte ) ( i % 256 );
 		}
@@ -532,4 +532,6 @@ public sealed class Mp4FileHasherTest
 
 	public TestContext TestContext { get; set; } = null!;
 }
+
+
 
