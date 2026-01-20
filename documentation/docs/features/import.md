@@ -22,8 +22,8 @@ When the metadata isn't available it will try to read the date from the filename
 
 The `Import` system in Starsky has been enhanced to support **conditional rules** for both:
 
-* Setting the **folder structure** dynamically based on image metadata
-* Assigning a **ColorClass** at import time based on conditions
+- Setting the **folder structure** dynamically based on image metadata
+- Assigning a **ColorClass** at import time based on conditions
 
 This is a **breaking change** from the previous version, where the folder structure was a single
 flat string. You must now use the new rule-based configuration format.
@@ -44,9 +44,7 @@ metadata, such as image format or origin. This is configured using the `Structur
         "Rules": [
             {
                 "Conditions": {
-                    "ImageFormats": [
-                        "png"
-                    ]
+                    "ImageFormats": ["png"]
                 },
                 "Pattern": "/yyyy/MM/yyyy_MM_dd*/\\screen\\sho\\t/yyyyMMdd_HHmmss_{filenamebase}.ext"
             },
@@ -63,19 +61,19 @@ metadata, such as image format or origin. This is configured using the `Structur
 
 ### 📘 Explanation
 
-* `DefaultPattern`: The fallback pattern used when no rules match.
-* `Rules`: An array of conditional structure overrides.
-* `Conditions`: Metadata that must match to apply the `Pattern`.
+- `DefaultPattern`: The fallback pattern used when no rules match.
+- `Rules`: An array of conditional structure overrides.
+- `Conditions`: Metadata that must match to apply the `Pattern`.
 
 #### Supported `Conditions`
 
-* `"ImageFormats"`: List of formats (e.g. `"png"`, `"jpg"`)
-* `"Origin"`: A string passed through by the importer or calling service
+- `"ImageFormats"`: List of formats (e.g. `"png"`, `"jpg"`)
+- `"Origin"`: A string passed through by the importer or calling service
 
 #### Pattern Placeholders
 
 | Placeholder             | Description                            |
-|-------------------------|----------------------------------------|
+| ----------------------- | -------------------------------------- |
 | `{filenamebase}`        | Original filename without extension    |
 | `.ext`                  | File extension, including the dot      |
 | `yyyy`, `MM`, `dd`, etc | Date parts based on file creation date |
@@ -92,22 +90,20 @@ same metadata.
 ```json
 {
     "ImportTransformation": {
-      "Rules": [
-        {
-          "Conditions": {
-            "Origin": "test"
-          },
-          "ColorClass": 2
-        },
-        {
-          "Conditions": {
-            "ImageFormats": [
-              "png"
-            ]
-          },
-          "ColorClass": 2
-        }
-      ]
+        "Rules": [
+            {
+                "Conditions": {
+                    "Origin": "test"
+                },
+                "ColorClass": 2
+            },
+            {
+                "Conditions": {
+                    "ImageFormats": ["png"]
+                },
+                "ColorClass": 2
+            }
+        ]
     }
 }
 ```
@@ -134,18 +130,18 @@ updated to the new format.
 
 ## ✅ Benefits
 
-* More intelligent imports based on image metadata
-* Easier categorization (e.g. screenshots vs DSLR)
-* Automate tagging with `ColorClass`
-* Test imports can be tracked and stored separately
+- More intelligent imports based on image metadata
+- Easier categorization (e.g. screenshots vs DSLR)
+- Automate tagging with `ColorClass`
+- Test imports can be tracked and stored separately
 
 ---
 
 ## 📎 Notes
 
-* Rules are evaluated in order; the first matching rule wins.
-* If no rules match, the `DefaultPattern` (or no `ColorClass`) is used.
-* `Origin` is passed via the API or CLI when importing files.
+- Rules are evaluated in order; the first matching rule wins.
+- If no rules match, the `DefaultPattern` (or no `ColorClass`) is used.
+- `Origin` is passed via the API or CLI when importing files.
 
 ---
 
@@ -154,6 +150,38 @@ updated to the new format.
 ```bash
 starskyimportercli --path "/photos/test" --origin "test"
 ```
+
+## 📷 CLI Example: Scan for Camera Storages
+
+You can use the `--camera` option with `starskyimportercli` to automatically scan for camera storage devices, such as SD cards, connected to your computer. This is useful for quickly finding and importing from external camera media without manually specifying the path.
+
+**Usage:**
+
+```bash
+starskyimportercli --camera --recursive
+```
+
+**How it works:**
+
+- When `--camera` is specified, the tool scans for connected camera storage devices (like SD cards).
+- The `--path` option must **not** be specified when using `--camera`.
+- It is recommended to also use `--recursive` to ensure all subfolders on the camera storage are included in the import.
+
+**Note:**
+
+- This feature is especially useful for quickly importing all photos and videos from a camera card.
+- If both `--camera` and `--path` are provided, the command will not work as expected.
+
+**How camera storage is detected:**
+
+The following checks are performed to identify camera storage devices:
+
+1. Filter writable, ready volumes
+2. File system heuristic — FAT or exFAT
+3. DCIM folder (standard for cameras)
+4. Camera-like directory structure (to search for alternatives)
+
+These 4 checks help ensure that only valid camera storage devices are scanned and imported.
 
 ## Troubleshooting: Access to Path is denied on macOS
 
@@ -171,7 +199,6 @@ When you see the error: **Access to Path is denied** on an external memory card,
 6. Restart Starsky (or your terminal) for the changes to take effect.
 
 ![Image of How to grant Full Disk Access, written out in text](../assets/import-access-to-path-is-denied-v070-2.jpg)
-
 
 This permission is required by macOS to allow applications to access files on external drives and memory cards.
 
