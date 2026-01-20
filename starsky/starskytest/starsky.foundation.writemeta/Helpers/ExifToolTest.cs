@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Services;
@@ -183,7 +185,9 @@ public sealed class ExifToolTest
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var (beforeHash, _) =
-			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg");
+			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.jpg", 
+				ExtensionRolesHelper.ImageFormat.jpg);
 
 		var sut = new ExifTool(storage, new FakeIStorage(),
 			_appSettingsWithExifTool, new FakeIWebLogger());
@@ -193,7 +197,8 @@ public sealed class ExifToolTest
 
 		// Assert
 		var (afterHash, _) =
-			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg");
+			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync(
+				"/test.jpg", ExtensionRolesHelper.ImageFormat.jpg);
 
 		Assert.IsTrue(result);
 		// Does change after update
@@ -216,7 +221,8 @@ public sealed class ExifToolTest
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var (beforeHash, _) =
-			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync("/hash.jpg");
+			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync(
+				"/hash.jpg", ExtensionRolesHelper.ImageFormat.jpg);
 
 		var sut = new ExifTool(new FakeIStorage(), storage,
 			_appSettingsWithExifTool, new FakeIWebLogger());
@@ -226,12 +232,14 @@ public sealed class ExifToolTest
 
 		// Assert
 		var (afterHash, _) =
-			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync("/hash.jpg");
+			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync(
+				"/hash.jpg", ExtensionRolesHelper.ImageFormat.jpg);
 
 		Assert.IsTrue(result);
 		// Does change after update
 		Assert.AreNotEqual(beforeHash, afterHash);
 	}
 
+	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")] 
 	public TestContext TestContext { get; set; }
 }

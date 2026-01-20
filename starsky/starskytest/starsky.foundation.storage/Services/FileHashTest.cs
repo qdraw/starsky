@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
@@ -30,12 +31,13 @@ public sealed class FileHashTest
 	{
 		// Give the hasher 0 seconds to calc a hash; so timeout is activated
 		var iStorageFake = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.jpg" },
+			["/"],
+			["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() }
 		);
 		var fileHashCode =
-			new FileHash(iStorageFake, new FakeIWebLogger()).GetHashCode("/test.jpg", 0);
+			new FileHash(iStorageFake, new FakeIWebLogger()).GetHashCode(
+				"/test.jpg", ExtensionRolesHelper.ImageFormat.jpg,0);
 
 		Assert.IsFalse(fileHashCode.Value);
 		Assert.Contains("_T", fileHashCode.Key);
@@ -48,7 +50,8 @@ public sealed class FileHashTest
 		var iStorage = new StorageSubPathFilesystem(
 			new AppSettings { StorageFolder = createAnImage.BasePath }, new FakeIWebLogger());
 		var fileHashCode =
-			new FileHash(iStorage, new FakeIWebLogger()).GetHashCode(createAnImage.DbPath);
+			new FileHash(iStorage, new FakeIWebLogger()).GetHashCode(createAnImage.DbPath,
+				ExtensionRolesHelper.ImageFormat.jpg);
 		Assert.IsTrue(fileHashCode.Value);
 		Assert.AreEqual(26, fileHashCode.Key.Length);
 	}

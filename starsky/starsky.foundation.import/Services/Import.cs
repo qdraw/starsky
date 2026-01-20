@@ -415,8 +415,9 @@ public class Import : IImport
 			};
 		}
 
-		var hashList = await
-			new FileHash(_filesystemStorage, _logger).GetHashCodeAsync(inputFileFullPath.Key);
+		var fileHashService = new FileHash(_filesystemStorage, _logger);
+		var hashList = await fileHashService
+			.GetHashCodeAsync(inputFileFullPath.Key, imageFormat);
 		if ( !hashList.Value )
 		{
 			ConsoleIfVerbose($"❌ FileHash error {inputFileFullPath.Key}");

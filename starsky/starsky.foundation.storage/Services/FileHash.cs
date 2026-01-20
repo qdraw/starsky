@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Extensions;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 
@@ -27,6 +28,7 @@ public sealed class FileHash
 
 	private readonly IStorage _iStorage;
 	private readonly IWebLogger _logger;
+	private readonly Mp4FileHasher _mp4Hasher;
 
 	/// <summary>
 	///     Two public interfaces
@@ -39,6 +41,7 @@ public sealed class FileHash
 	{
 		_iStorage = iStorage;
 		_logger = logger;
+		_mp4Hasher = new Mp4FileHasher(iStorage, logger);
 	}
 
 
@@ -52,7 +55,8 @@ public sealed class FileHash
 		string[] filesInDirectorySubPath)
 	{
 		return filesInDirectorySubPath
-			.Select(subPath => _calcHashCode(subPath)).ToList();
+			.Select(subPath => _calcHashCode(subPath,
+				null)).ToList();
 	}
 
 	/// <summary>
@@ -62,18 +66,21 @@ public sealed class FileHash
 	/// <param name="timeoutInMilliseconds">Timeout in ms seconds, before a random string will be returned</param>
 	/// <returns>base32 hash</returns>
 	public KeyValuePair<string, bool> GetHashCode(string subPath,
+		ExtensionRolesHelper.ImageFormat? imageFormat,
 		int timeoutInMilliseconds = 30000)
 	{
-		return _calcHashCode(subPath, timeoutInMilliseconds);
+		return _calcHashCode(subPath, imageFormat, timeoutInMilliseconds);
 	}
 
 	// Here are some tricks used to avoid that CalculateMd5Async keeps waiting forever.
 	// In some cases hashing a file keeps waiting forever (at least on linux-arm)
 
-	private KeyValuePair<string, bool> _calcHashCode(string subPath,
+	private KeyValuePair<string, bool> _calcHashCode(string subPath
+		, ExtensionRolesHelper.ImageFormat? imageFormat,
 		int timeoutInMilliseconds = 30000)
 	{
-		var q = Md5TimeoutAsyncWrapper(subPath, timeoutInMilliseconds)
+		var q = Md5TimeoutAsyncWrapper(subPath,
+				imageFormat, timeoutInMilliseconds)
 			.Result;
 		return q;
 	}
@@ -85,11 +92,12 @@ public sealed class FileHash
 	/// <param name="timeoutInMilliseconds"></param>
 	/// <returns></returns>
 	private async Task<KeyValuePair<string, bool>> Md5TimeoutAsyncWrapper(
-		string fullFileName, int timeoutInMilliseconds)
+		string fullFileName, ExtensionRolesHelper.ImageFormat? imageFormat,
+		int timeoutInMilliseconds)
 	{
 		// adding .ConfigureAwait(false) may NOT be what you want, but google it.
 		return await Task.Run(() =>
-				GetHashCodeAsync(fullFileName, timeoutInMilliseconds))
+				GetHashCodeAsync(fullFileName, imageFormat, timeoutInMilliseconds))
 			.ConfigureAwait(false);
 	}
 
@@ -100,11 +108,13 @@ public sealed class FileHash
 	/// <param name="timeoutInMilliseconds">number of milliseconds to be hashed</param>
 	/// <returns></returns>
 	public async Task<KeyValuePair<string, bool>> GetHashCodeAsync(
-		string fullFileName, int timeoutInMilliseconds = 30000)
+		string fullFileName,
+		ExtensionRolesHelper.ImageFormat? imageFormat,
+		int timeoutInMilliseconds = 30000)
 	{
 		try
 		{
-			var code = await CalculateMd5Async(fullFileName)
+			var code = await CalculateMd5Async(fullFileName, imageFormat)
 				.TimeoutAfter(timeoutInMilliseconds);
 
 			if ( string.IsNullOrEmpty(code) )
@@ -160,17 +170,34 @@ public sealed class FileHash
 
 	/// <summary>
 	///     Calculate the hash based on the first 16 Kilobytes of the file
+	///     For MP4 files, attempts to hash only the mdat atom (video content) for performance
 	///     @see https://stackoverflow.com/a/45573180
 	/// </summary>
 	/// <param name="fullFilePath">full File Path on disk</param>
 	/// <returns>Task with a md5 hash</returns>
-	private async Task<string> CalculateMd5Async(string fullFilePath)
+	private async Task<string> CalculateMd5Async(string fullFilePath,
+		ExtensionRolesHelper.ImageFormat? imageFormat)
 	{
 		if ( !_iStorage.ExistFile(fullFilePath) )
 		{
 			return string.Empty;
 		}
 
+		imageFormat ??= new ExtensionRolesHelper(_logger).GetImageFormat(
+			_iStorage.ReadStream(fullFilePath,
+				160));
+
+		// Check if this is an MP4 file
+		if ( imageFormat == ExtensionRolesHelper.ImageFormat.mp4 )
+		{
+			var mp4Hash = await _mp4Hasher.HashMp4VideoContentAsync(fullFilePath);
+			if ( !string.IsNullOrEmpty(mp4Hash) )
+			{
+				return mp4Hash;
+			}
+		}
+
+		// Standard file hashing for non-MP4 files or if MP4 hashing fails
 		using ( var stream = _iStorage.ReadStream(fullFilePath, MaxReadSize) )
 		{
 			if ( stream == Stream.Null )
@@ -181,6 +208,7 @@ public sealed class FileHash
 			return await CalculateHashAsync(stream);
 		}
 	}
+
 
 	/// <summary>
 	///     Does NOT seek at 0

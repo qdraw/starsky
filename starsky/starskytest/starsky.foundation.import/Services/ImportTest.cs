@@ -53,7 +53,9 @@ public sealed class ImportTest : VerifyBase
 				CreateAnImage.Bytes.ToArray(), CreateAnImageColorClass.Bytes.ToArray()
 			}
 		);
-		_exampleHash = new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCode("/test.jpg")
+		_exampleHash = new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCode(
+				"/test.jpg",
+				ExtensionRolesHelper.ImageFormat.jpg)
 			.Key;
 
 		_iStorageDirectoryRecursive = new FakeIStorage(

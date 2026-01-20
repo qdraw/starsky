@@ -90,8 +90,8 @@ public sealed class DeleteControllerTest
 
 	private async Task<FileIndexItem?> InsertSearchData(bool delete = false)
 	{
-		var fileHashCode = (await new FileHash(_iStorage, new FakeIWebLogger())
-			.GetHashCodeAsync(_createAnImage.DbPath)).Key;
+		var fileHashCode = ( await new FileHash(_iStorage, new FakeIWebLogger())
+			.GetHashCodeAsync(_createAnImage.DbPath, ExtensionRolesHelper.ImageFormat.jpg) ).Key;
 
 		if ( !string.IsNullOrEmpty(await _query.GetSubPathByHashAsync(fileHashCode)) )
 		{

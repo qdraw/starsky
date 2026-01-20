@@ -68,7 +68,9 @@ public sealed class ImportTestInMemoryDb : VerifyBase
 			}
 		);
 
-		_exampleHash = new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCode("/test.jpg")
+		_exampleHash = new FileHash(_iStorageFake, new FakeIWebLogger()).GetHashCode(
+				"/test.jpg",
+				ExtensionRolesHelper.ImageFormat.jpg)
 			.Key;
 	}
 
@@ -188,7 +190,7 @@ public sealed class ImportTestInMemoryDb : VerifyBase
 		_iStorageFake.FileDelete(expectedFilePath);
 		await _query.RemoveItemAsync(queryResult);
 	}
-	
+
 	[TestMethod]
 	public async Task Importer_UseCustomRules()
 	{

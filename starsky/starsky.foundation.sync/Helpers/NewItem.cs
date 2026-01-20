@@ -112,8 +112,10 @@ public sealed class NewItem
 		updatedDatabaseItem.Status = FileIndexItem.ExifStatus.Ok;
 		if ( string.IsNullOrEmpty(fileHash) )
 		{
+			var fileHashService = new FileHash(_subPathStorage, _logger);
 			var (localHash, success) =
-				await new FileHash(_subPathStorage, _logger).GetHashCodeAsync(filePath);
+				await fileHashService.GetHashCodeAsync(filePath,
+					updatedDatabaseItem.ImageFormat);
 			updatedDatabaseItem.FileHash = localHash;
 			updatedDatabaseItem.Status = success
 				? FileIndexItem.ExifStatus.Ok
