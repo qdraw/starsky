@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.feature.rename.Models;
+using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.Controllers;
@@ -18,7 +19,8 @@ public class BatchRenameControllerTest
 		var query = new FakeIQuery();
 		var selectorStorage = new FakeSelectorStorage();
 		var logger = new FakeIWebLogger();
-		var controller = new BatchRenameController(query, selectorStorage, logger);
+		var controller =
+			new BatchRenameController(query, selectorStorage, logger, new AppSettings());
 		var request = new BatchRenameRequest
 		{
 			FilePaths = new List<string> { "/test.jpg" },
@@ -39,11 +41,9 @@ public class BatchRenameControllerTest
 		var query = new FakeIQuery();
 		var selectorStorage = new FakeSelectorStorage();
 		var logger = new FakeIWebLogger();
-		var controller = new BatchRenameController(query, selectorStorage, logger);
-		var request = new BatchRenameRequest
-		{
-			FilePaths = ["/test.jpg"], Pattern = null!
-		};
+		var controller =
+			new BatchRenameController(query, selectorStorage, logger, new AppSettings());
+		var request = new BatchRenameRequest { FilePaths = ["/test.jpg"], Pattern = null! };
 
 		// Act
 		var result = controller.PreviewBatchRename(request);
@@ -59,7 +59,8 @@ public class BatchRenameControllerTest
 		var query = new FakeIQuery();
 		var selectorStorage = new FakeSelectorStorage();
 		var logger = new FakeIWebLogger();
-		var controller = new BatchRenameController(query, selectorStorage, logger);
+		var controller =
+			new BatchRenameController(query, selectorStorage, logger, new AppSettings());
 		var request = new BatchRenameRequest
 		{
 			FilePaths = new List<string> { "/test.jpg" },

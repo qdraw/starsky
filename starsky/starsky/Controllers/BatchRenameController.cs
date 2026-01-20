@@ -7,6 +7,7 @@ using starsky.feature.rename.Services;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 
@@ -21,10 +22,11 @@ public class BatchRenameController : ControllerBase
 
 	public BatchRenameController(IQuery query,
 		ISelectorStorage selectorStorage,
-		IWebLogger logger)
+		IWebLogger logger,
+		AppSettings appSettings)
 	{
 		var storage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-		_batchRenameService = new BatchRenameService(query, storage, logger);
+		_batchRenameService = new BatchRenameService(query, storage, logger, appSettings);
 	}
 
 	/// <summary>
