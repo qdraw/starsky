@@ -189,9 +189,10 @@ public class MetaUpdateService : IMetaUpdateService
 
 		// when newFileHashes is null or string.empty
 		// when not is empty: rename is done in the exiftool helper
-		var newFileHash =
-			( await new FileHash(_iStorage, _logger).GetHashCodeAsync(fileIndexItem.FilePath!) )
-			.Key;
+		var fileHashService = new FileHash(_iStorage, _logger);
+		var newFileHash = ( await fileHashService.GetHashCodeAsync(
+			fileIndexItem.FilePath!,
+			fileIndexItem.ImageFormat) ).Key;
 		_thumbnailStorage.FileMove(fileIndexItem.FileHash!, newFileHash);
 		fileIndexItem.FileHash = newFileHash;
 	}

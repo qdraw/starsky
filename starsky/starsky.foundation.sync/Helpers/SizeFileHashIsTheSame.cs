@@ -76,8 +76,10 @@ public class SizeFileHashIsTheSameHelper
 	/// <returns>tuple that has value: is the same; and the fileHash</returns>
 	private async Task<Tuple<bool, string>> CompareFileHashIsTheSame(FileIndexItem dbItem)
 	{
-		var (localHash, _) = await new
-			FileHash(_subPathStorage, _logger).GetHashCodeAsync(dbItem.FilePath!);
+		var fileHashService = new FileHash(_subPathStorage, _logger);
+		var (localHash, _) = await fileHashService.GetHashCodeAsync(
+			dbItem.FilePath!,
+			dbItem.ImageFormat);
 		var isTheSame = dbItem.FileHash == localHash;
 		dbItem.FileHash = localHash;
 		return new Tuple<bool, string>(isTheSame, localHash);

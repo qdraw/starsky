@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Enums;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Helpers;
@@ -194,12 +195,13 @@ public sealed class ThumbnailServiceTests : VerifyBase
 	public async Task GenerateThumbnail_1arg_ThumbnailAlreadyExist()
 	{
 		var storage = new FakeIStorage(["/"],
-			new List<string> { _fakeIStorageImageSubPath },
+			[_fakeIStorageImageSubPath],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var hash =
 			( await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync(
-				_fakeIStorageImageSubPath) )
+				_fakeIStorageImageSubPath, 
+				ExtensionRolesHelper.ImageFormat.jpg) )
 			.Key;
 		await storage.WriteStreamAsync(
 			StringToStreamHelper.StringToStream("not 0 bytes"),

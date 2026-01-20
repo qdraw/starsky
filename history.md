@@ -44,6 +44,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## version 0.7.8 - _(Unreleased)_ - 2026-?-? {#v0.7.8}
 
 - [x] (Added)  In Import cli find camera storage flag (PR #2614)
+- [x] (Breaking change) Hashes for mp4 are changed to avoid video duplicates (PR #2617, Issue #2604)
 
 ## version 0.7.7 - 2026-01-17 {#v0.7.7}
 

@@ -79,7 +79,7 @@ public sealed class ReadMeta : IReadMeta
 			if ( fileHashes == null || fileHashes.Count <= i )
 			{
 				returnItem.FileHash =
-					( await _fileHashHelper.GetHashCodeAsync(subPath) ).Key;
+					( await _fileHashHelper.GetHashCodeAsync(subPath, imageFormat) ).Key;
 			}
 			else
 			{
