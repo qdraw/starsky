@@ -65,7 +65,8 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 					break;
 				}
 
-				_logger.LogDebug($"Found atom: Type={atom?.Type}, Size={atom?.Size}, DataOffset={atom?.DataOffset}");
+				_logger.LogDebug(
+					$"Found atom: Type={atom?.Type}, Size={atom?.Size}, DataOffset={atom?.DataOffset}");
 
 				var payloadSize = atom.Value.Size - 8;
 
@@ -73,7 +74,6 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 				{
 					// Hash up to MaxBytesToHash of video content
 					var remaining = Math.Min(payloadSize, MaxBytesToHash);
-
 					while ( remaining > 0 )
 					{
 						var toRead = ( int ) Math.Min(buffer.Length, remaining);
@@ -89,8 +89,7 @@ public sealed class Mp4FileHasher(IStorage iStorage, IWebLogger logger)
 						remaining -= bytesRead;
 					}
 
-					// Found and hashed the mdat atom, we're done
-					md5.TransformFinalBlock(Array.Empty<byte>(), 0, 0);
+					md5.TransformFinalBlock([], 0, 0);
 					var hash = md5.Hash;
 					return Base32.Encode(hash!);
 				}

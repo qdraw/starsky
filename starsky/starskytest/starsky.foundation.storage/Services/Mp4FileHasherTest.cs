@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.storage.Services;
@@ -16,8 +15,8 @@ public sealed class Mp4FileHasherTest
 	private static FakeIStorage CreateStorageWithMp4(string path, byte[] mp4Data)
 	{
 		return new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { path },
+			["/"],
+			[path],
 			new List<byte[]> { mp4Data }
 		);
 	}
@@ -37,10 +36,10 @@ public sealed class Mp4FileHasherTest
 		}
 
 		ms.Write(ftypSize, 0, 4);
-		ms.Write(Encoding.ASCII.GetBytes("ftyp"), 0, 4);
-		ms.Write(Encoding.ASCII.GetBytes("isom"), 0, 4); // major brand
+		ms.Write("ftyp"u8.ToArray(), 0, 4);
+		ms.Write("isom"u8.ToArray(), 0, 4); // major brand
 		ms.Write(new byte[4], 0, 4); // minor version
-		ms.Write(Encoding.ASCII.GetBytes("isom"), 0, 4); // compatible brand
+		ms.Write("isom"u8.ToArray(), 0, 4); // compatible brand
 
 		// Write mdat atom (media data)
 		var mdatSize = ( uint ) ( 8 + mdatContent.Length );
@@ -51,7 +50,7 @@ public sealed class Mp4FileHasherTest
 		}
 
 		ms.Write(mdatSizeBytes, 0, 4);
-		ms.Write(Encoding.ASCII.GetBytes("mdat"), 0, 4);
+		ms.Write("mdat"u8.ToArray(), 0, 4);
 		ms.Write(mdatContent, 0, mdatContent.Length);
 
 		return ms.ToArray();
@@ -72,10 +71,10 @@ public sealed class Mp4FileHasherTest
 		}
 
 		ms.Write(ftypSize, 0, 4);
-		ms.Write(Encoding.ASCII.GetBytes("ftyp"), 0, 4);
-		ms.Write(Encoding.ASCII.GetBytes("isom"), 0, 4);
+		ms.Write("ftyp"u8.ToArray(), 0, 4);
+		ms.Write("isom"u8.ToArray(), 0, 4);
 		ms.Write(new byte[4], 0, 4);
-		ms.Write(Encoding.ASCII.GetBytes("isom"), 0, 4);
+		ms.Write("isom"u8.ToArray(), 0, 4);
 
 		// Write mdat atom with extended size
 		var extendedSizeMarker = BitConverter.GetBytes(( uint ) 1);
@@ -85,7 +84,7 @@ public sealed class Mp4FileHasherTest
 		}
 
 		ms.Write(extendedSizeMarker, 0, 4);
-		ms.Write(Encoding.ASCII.GetBytes("mdat"), 0, 4);
+		ms.Write("mdat"u8.ToArray(), 0, 4);
 
 		// Write actual size as 64-bit value
 		var actualSize = ( ulong ) ( 16 + mdatContent.Length ); // 4 + 4 + 8 + content
@@ -117,10 +116,10 @@ public sealed class Mp4FileHasherTest
 		}
 
 		ms.Write(ftypSize, 0, 4);
-		ms.Write(Encoding.ASCII.GetBytes("ftyp"), 0, 4);
-		ms.Write(Encoding.ASCII.GetBytes("isom"), 0, 4);
+		ms.Write("ftyp"u8.ToArray(), 0, 4);
+		ms.Write("isom"u8.ToArray(), 0, 4);
 		ms.Write(new byte[4], 0, 4);
-		ms.Write(Encoding.ASCII.GetBytes("isom"), 0, 4);
+		ms.Write("isom"u8.ToArray(), 0, 4);
 
 		// Write a moov atom (movie metadata) - empty for test
 		var moovContent = new byte[100];
@@ -131,7 +130,7 @@ public sealed class Mp4FileHasherTest
 		}
 
 		ms.Write(moovSize, 0, 4);
-		ms.Write(Encoding.ASCII.GetBytes("moov"), 0, 4);
+		ms.Write("moov"u8.ToArray(), 0, 4);
 		ms.Write(moovContent, 0, moovContent.Length);
 
 		// Write mdat atom
@@ -142,7 +141,7 @@ public sealed class Mp4FileHasherTest
 		}
 
 		ms.Write(mdatSize, 0, 4);
-		ms.Write(Encoding.ASCII.GetBytes("mdat"), 0, 4);
+		ms.Write("mdat"u8.ToArray(), 0, 4);
 		ms.Write(mdatContent, 0, mdatContent.Length);
 
 		return ms.ToArray();
@@ -163,8 +162,7 @@ public sealed class Mp4FileHasherTest
 
 		// Assert
 		Assert.IsNotNull(hash);
-		Assert.IsGreaterThan(hash.Length, 0);
-		Assert.AreEqual(26, hash.Length); // Base32 encoded MD5 is 26 characters
+		Assert.AreEqual("OW3QBLZ7FNNCSVG4SDBHPYS5LM", hash);
 	}
 
 	[TestMethod]
@@ -194,7 +192,7 @@ public sealed class Mp4FileHasherTest
 	public async Task HashMp4VideoContentAsync_ExtendedSizeAtom_ReturnsHash()
 	{
 		// Arrange
-		var mdatContent = Encoding.UTF8.GetBytes("Test content with extended size atom");
+		var mdatContent = "Test content with extended size atom"u8.ToArray();
 		var mp4Data = CreateMp4WithExtendedSize(mdatContent);
 		var storage = CreateStorageWithMp4("/extended.mp4", mp4Data);
 		var logger = new FakeIWebLogger();
@@ -212,7 +210,7 @@ public sealed class Mp4FileHasherTest
 	public async Task HashMp4VideoContentAsync_MultipleAtomsBeforeMdat_SkipsToMdat()
 	{
 		// Arrange
-		var mdatContent = Encoding.UTF8.GetBytes("Content after multiple atoms");
+		var mdatContent = "Content after multiple atoms"u8.ToArray();
 		var mp4Data = CreateMp4WithMultipleAtoms(mdatContent);
 		var storage = CreateStorageWithMp4("/multi.mp4", mp4Data);
 		var logger = new FakeIWebLogger();
@@ -238,10 +236,10 @@ public sealed class Mp4FileHasherTest
 		}
 
 		ms.Write(ftypSize, 0, 4);
-		ms.Write(Encoding.ASCII.GetBytes("ftyp"), 0, 4);
-		ms.Write(Encoding.ASCII.GetBytes("isom"), 0, 4);
+		ms.Write("ftyp"u8.ToArray(), 0, 4);
+		ms.Write("isom"u8.ToArray(), 0, 4);
 		ms.Write(new byte[4], 0, 4);
-		ms.Write(Encoding.ASCII.GetBytes("isom"), 0, 4);
+		ms.Write("isom"u8.ToArray(), 0, 4);
 
 		var mp4Data = ms.ToArray();
 		var storage = CreateStorageWithMp4("/no-mdat.mp4", mp4Data);
@@ -314,7 +312,7 @@ public sealed class Mp4FileHasherTest
 		}
 
 		ms.Write(sizeOne, 0, 4);
-		ms.Write(Encoding.ASCII.GetBytes("mdat"), 0, 4);
+		ms.Write("mdat"u8.ToArray(), 0, 4);
 		ms.Write(new byte[4], 0, 4); // Only 4 bytes instead of 8
 
 		var corruptData = ms.ToArray();
@@ -333,7 +331,7 @@ public sealed class Mp4FileHasherTest
 	public async Task HashMp4VideoContentAsync_SmallMdatContent_HashesAllContent()
 	{
 		// Arrange
-		var smallContent = Encoding.UTF8.GetBytes("Small");
+		var smallContent = "Small"u8.ToArray();
 		var mp4Data = CreateMinimalMp4WithMdat(smallContent);
 		var storage = CreateStorageWithMp4("/small.mp4", mp4Data);
 		var logger = new FakeIWebLogger();
@@ -351,7 +349,7 @@ public sealed class Mp4FileHasherTest
 	public async Task HashMp4VideoContentAsync_SameContent_ReturnsSameHash()
 	{
 		// Arrange
-		var content = Encoding.UTF8.GetBytes("Identical content for hash comparison");
+		var content = "Identical content for hash comparison"u8.ToArray();
 		var mp4Data1 = CreateMinimalMp4WithMdat(content);
 		var mp4Data2 = CreateMinimalMp4WithMdat(content);
 
@@ -374,8 +372,8 @@ public sealed class Mp4FileHasherTest
 	public async Task HashMp4VideoContentAsync_DifferentContent_ReturnsDifferentHash()
 	{
 		// Arrange
-		var content1 = Encoding.UTF8.GetBytes("Content one");
-		var content2 = Encoding.UTF8.GetBytes("Content two");
+		var content1 = "Content one"u8.ToArray();
+		var content2 = "Content two"u8.ToArray();
 		var mp4Data1 = CreateMinimalMp4WithMdat(content1);
 		var mp4Data2 = CreateMinimalMp4WithMdat(content2);
 
@@ -398,7 +396,7 @@ public sealed class Mp4FileHasherTest
 	public async Task HashMp4VideoContentAsync_ZeroSizedMdatAtom_ReturnsHash()
 	{
 		// Arrange - mdat with zero content
-		var mp4Data = CreateMinimalMp4WithMdat(Array.Empty<byte>());
+		var mp4Data = CreateMinimalMp4WithMdat([]);
 		var storage = CreateStorageWithMp4("/zero-mdat.mp4", mp4Data);
 		var logger = new FakeIWebLogger();
 		var hasher = new Mp4FileHasher(storage, logger);
@@ -415,7 +413,7 @@ public sealed class Mp4FileHasherTest
 	public async Task HashMp4VideoContentAsync_MdatAtEndOfFile_ReturnsHash()
 	{
 		// Arrange - Create MP4 where mdat is the last atom
-		var mdatContent = Encoding.UTF8.GetBytes("Content at end");
+		var mdatContent = "Content at end"u8.ToArray();
 		var mp4Data = CreateMp4WithMultipleAtoms(mdatContent);
 		var storage = CreateStorageWithMp4("/mdat-at-end.mp4", mp4Data);
 		var logger = new FakeIWebLogger();
@@ -488,10 +486,10 @@ public sealed class Mp4FileHasherTest
 		}
 
 		ms.Write(ftypSize, 0, 4);
-		ms.Write(Encoding.ASCII.GetBytes("ftyp"), 0, 4);
-		ms.Write(Encoding.ASCII.GetBytes("isom"), 0, 4);
+		ms.Write("ftyp"u8.ToArray(), 0, 4);
+		ms.Write("isom"u8.ToArray(), 0, 4);
 		ms.Write(new byte[4], 0, 4);
-		ms.Write(Encoding.ASCII.GetBytes("isom"), 0, 4);
+		ms.Write("isom"u8.ToArray(), 0, 4);
 
 		// Write unknown atom "xyzw"
 		var unknownContent = new byte[50];
@@ -502,11 +500,11 @@ public sealed class Mp4FileHasherTest
 		}
 
 		ms.Write(unknownSize, 0, 4);
-		ms.Write(Encoding.ASCII.GetBytes("xyzw"), 0, 4);
+		ms.Write("xyzw"u8.ToArray(), 0, 4);
 		ms.Write(unknownContent, 0, unknownContent.Length);
 
 		// Write mdat
-		var mdatContent = Encoding.UTF8.GetBytes("Content after unknown atom");
+		var mdatContent = "Content after unknown atom"u8.ToArray();
 		var mdatSize = BitConverter.GetBytes(( uint ) ( 8 + mdatContent.Length ));
 		if ( BitConverter.IsLittleEndian )
 		{
@@ -514,7 +512,7 @@ public sealed class Mp4FileHasherTest
 		}
 
 		ms.Write(mdatSize, 0, 4);
-		ms.Write(Encoding.ASCII.GetBytes("mdat"), 0, 4);
+		ms.Write("mdat"u8.ToArray(), 0, 4);
 		ms.Write(mdatContent, 0, mdatContent.Length);
 
 		var mp4Data = ms.ToArray();
