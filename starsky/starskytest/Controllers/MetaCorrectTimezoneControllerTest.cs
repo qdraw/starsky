@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
-using starsky.feature.realtime.Interface;
 using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.metaupdate.Models;
@@ -48,9 +47,11 @@ public sealed class MetaCorrectTimezoneControllerTest
 			new()
 			{
 				Success = true,
-				OriginalDateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local),
+				OriginalDateTime = new DateTime(2024, 6, 15, 
+					14, 30, 0, DateTimeKind.Local),
 				CorrectedDateTime =
-					new DateTime(2024, 6, 15, 16, 30, 0, DateTimeKind.Local),
+					new DateTime(2024, 6, 15, 
+						16, 30, 0, DateTimeKind.Local),
 				DeltaHours = 2.0,
 				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
 			}
@@ -92,17 +93,21 @@ public sealed class MetaCorrectTimezoneControllerTest
 			new()
 			{
 				Success = true,
-				OriginalDateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local),
+				OriginalDateTime = new DateTime(2024, 6, 15, 
+					14, 30, 0, DateTimeKind.Local),
 				CorrectedDateTime =
-					new DateTime(2024, 6, 15, 16, 30, 0, DateTimeKind.Local),
+					new DateTime(2024, 6, 15, 
+						16, 30, 0, DateTimeKind.Local),
 				DeltaHours = 2.0,
 				FileIndexItem = new FileIndexItem { FilePath = "/test1.jpg" }
 			},
 			new()
 			{
 				Success = true,
-				OriginalDateTime = new DateTime(2024, 6, 16, 10, 0, 0, DateTimeKind.Local),
-				CorrectedDateTime = new DateTime(2024, 6, 16, 12, 0, 0, DateTimeKind.Local),
+				OriginalDateTime = new DateTime(2024, 6, 16, 
+					10, 0, 0, DateTimeKind.Local),
+				CorrectedDateTime = new DateTime(2024, 6, 16, 
+					12, 0, 0, DateTimeKind.Local),
 				DeltaHours = 2.0,
 				FileIndexItem = new FileIndexItem { FilePath = "/test2.jpg" }
 			}
@@ -222,8 +227,10 @@ public sealed class MetaCorrectTimezoneControllerTest
 			new()
 			{
 				Success = true,
-				OriginalDateTime = new DateTime(2024, 6, 30, 23, 0, 0, DateTimeKind.Local),
-				CorrectedDateTime = new DateTime(2024, 7, 1, 11, 0, 0, DateTimeKind.Local),
+				OriginalDateTime = new DateTime(2024, 6, 30, 
+					23, 0, 0, DateTimeKind.Local),
+				CorrectedDateTime = new DateTime(2024, 7, 1, 
+					11, 0, 0, DateTimeKind.Local),
 				DeltaHours = 12.0,
 				Warning = "Day rollover: correction will change the date",
 				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
@@ -263,9 +270,11 @@ public sealed class MetaCorrectTimezoneControllerTest
 			new()
 			{
 				Success = true,
-				OriginalDateTime = new DateTime(2024, 10, 26, 14, 0, 0, DateTimeKind.Local),
+				OriginalDateTime = new DateTime(2024, 10, 26, 
+					14, 0, 0, DateTimeKind.Local),
 				CorrectedDateTime =
-					new DateTime(2024, 10, 26, 15, 0, 0, DateTimeKind.Local),
+					new DateTime(2024, 10, 26, 
+						15, 0, 0, DateTimeKind.Local),
 				DeltaHours = 1.0,
 				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
 			}
@@ -289,7 +298,8 @@ public sealed class MetaCorrectTimezoneControllerTest
 		// Assert
 		var jsonResult = result as OkObjectResult;
 		Assert.IsNotNull(jsonResult);
-		var returnedResults = jsonResult.Value as List<ExifTimezoneCorrectionResult>;
+		var returnedResults = jsonResult.Value as 
+			List<ExifTimezoneCorrectionResult>;
 		Assert.IsNotNull(returnedResults);
 		Assert.AreEqual(1.0, returnedResults[0].DeltaHours);
 	}
@@ -303,9 +313,11 @@ public sealed class MetaCorrectTimezoneControllerTest
 			new()
 			{
 				Success = true,
-				OriginalDateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local),
+				OriginalDateTime = new DateTime(2024, 6, 15, 
+					14, 30, 0, DateTimeKind.Local),
 				CorrectedDateTime =
-					new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local),
+					new DateTime(2024, 6, 15, 
+						14, 30, 0, DateTimeKind.Local),
 				DeltaHours = 0.0,
 				Warning =
 					"No correction needed: recorded timezone matches correct timezone",
@@ -344,9 +356,11 @@ public sealed class MetaCorrectTimezoneControllerTest
 			new()
 			{
 				Success = true,
-				OriginalDateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local),
+				OriginalDateTime = new DateTime(2024, 6, 15, 14, 
+					30, 0, DateTimeKind.Local),
 				CorrectedDateTime =
-					new DateTime(2024, 6, 15, 16, 30, 0, DateTimeKind.Local),
+					new DateTime(2024, 6, 15, 
+						16, 30, 0, DateTimeKind.Local),
 				DeltaHours = 2.0,
 				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
 			}
@@ -418,9 +432,11 @@ public sealed class MetaCorrectTimezoneControllerTest
 			new()
 			{
 				Success = true,
-				OriginalDateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local),
+				OriginalDateTime = new DateTime(2024, 6, 15, 
+					14, 30, 0, DateTimeKind.Local),
 				CorrectedDateTime =
-					new DateTime(2024, 6, 15, 12, 30, 0, DateTimeKind.Local),
+					new DateTime(2024, 6, 15, 
+						12, 30, 0, DateTimeKind.Local),
 				DeltaHours = -2.0,
 				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
 			}
@@ -472,46 +488,3 @@ public sealed class MetaCorrectTimezoneControllerTest
 	}
 }
 
-/// <summary>
-///     Fake implementation of IExifTimezoneCorrectionService for testing
-/// </summary>
-internal class FakeIExifTimezoneCorrectionService : IExifTimezoneCorrectionService
-{
-	private readonly List<ExifTimezoneCorrectionResult> _validationResults;
-
-	public FakeIExifTimezoneCorrectionService(
-		List<ExifTimezoneCorrectionResult>? validationResults = null)
-	{
-		_validationResults = validationResults ?? new List<ExifTimezoneCorrectionResult>();
-	}
-
-	public Task<List<ExifTimezoneCorrectionResult>> Validate(
-		string[] subPaths,
-		bool collections,
-		ExifTimezoneCorrectionRequest request)
-	{
-		return Task.FromResult(_validationResults);
-	}
-
-	public Task<List<ExifTimezoneCorrectionResult>> CorrectTimezoneAsync(
-		List<FileIndexItem> fileIndexItems,
-		ExifTimezoneCorrectionRequest request)
-	{
-		return Task.FromResult(_validationResults);
-	}
-}
-
-/// <summary>
-///     Fake implementation of IServiceScopeFactory for testing
-/// </summary>
-internal class FakeServiceScopeFactory : IServiceScopeFactory
-{
-	private readonly ServiceCollection _services = new();
-
-	public IServiceScope CreateScope()
-	{
-		var services = _services.AddSingleton<IRealtimeConnectionsService>(
-			new FakeIRealtimeConnectionsService());
-		return services.BuildServiceProvider().CreateScope();
-	}
-}
