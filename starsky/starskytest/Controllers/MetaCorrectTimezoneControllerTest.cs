@@ -123,7 +123,7 @@ public sealed class MetaCorrectTimezoneControllerTest
 			request);
 
 		// Assert
-		var jsonResult = result as JsonResult;
+		var jsonResult = result as OkObjectResult;
 		Assert.IsNotNull(jsonResult);
 		var returnedResults = jsonResult.Value as List<ExifTimezoneCorrectionResult>;
 		Assert.IsNotNull(returnedResults);
@@ -205,7 +205,7 @@ public sealed class MetaCorrectTimezoneControllerTest
 			request);
 
 		// Assert
-		var jsonResult = result as JsonResult;
+		var jsonResult = result as OkObjectResult;
 		Assert.IsNotNull(jsonResult);
 		var returnedResults = jsonResult.Value as List<ExifTimezoneCorrectionResult>;
 		Assert.IsNotNull(returnedResults);
@@ -245,7 +245,7 @@ public sealed class MetaCorrectTimezoneControllerTest
 			request);
 
 		// Assert
-		var jsonResult = result as JsonResult;
+		var jsonResult = result as OkObjectResult;
 		Assert.IsNotNull(jsonResult);
 		var returnedResults = jsonResult.Value as List<ExifTimezoneCorrectionResult>;
 		Assert.IsNotNull(returnedResults);
@@ -287,7 +287,7 @@ public sealed class MetaCorrectTimezoneControllerTest
 			request);
 
 		// Assert
-		var jsonResult = result as JsonResult;
+		var jsonResult = result as OkObjectResult;
 		Assert.IsNotNull(jsonResult);
 		var returnedResults = jsonResult.Value as List<ExifTimezoneCorrectionResult>;
 		Assert.IsNotNull(returnedResults);
@@ -328,7 +328,7 @@ public sealed class MetaCorrectTimezoneControllerTest
 			request);
 
 		// Assert
-		var jsonResult = result as JsonResult;
+		var jsonResult = result as OkObjectResult;
 		Assert.IsNotNull(jsonResult);
 		var returnedResults = jsonResult.Value as List<ExifTimezoneCorrectionResult>;
 		Assert.IsNotNull(returnedResults);
@@ -402,7 +402,7 @@ public sealed class MetaCorrectTimezoneControllerTest
 			request);
 
 		// Assert
-		var jsonResult = result as JsonResult;
+		var jsonResult = result as OkObjectResult;
 		Assert.IsNotNull(jsonResult);
 		var returnedResults = jsonResult.Value as List<ExifTimezoneCorrectionResult>;
 		Assert.IsNotNull(returnedResults);
@@ -441,7 +441,7 @@ public sealed class MetaCorrectTimezoneControllerTest
 			request);
 
 		// Assert
-		var jsonResult = result as JsonResult;
+		var jsonResult = result as OkObjectResult;
 		Assert.IsNotNull(jsonResult);
 		var returnedResults = jsonResult.Value as List<ExifTimezoneCorrectionResult>;
 		Assert.IsNotNull(returnedResults);
