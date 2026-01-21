@@ -24,7 +24,8 @@ public class MetaCorrectTimezoneController(
 	IExifTimezoneCorrectionService exifTimezoneCorrectionService,
 	IUpdateBackgroundTaskQueue queue,
 	IWebLogger logger,
-	IServiceScopeFactory scopeFactory)
+	IServiceScopeFactory scopeFactory,
+	IExifTimezoneDisplayListService exifTimezoneDisplayListService)
 	: Controller
 {
 	/// <summary>
@@ -142,37 +143,65 @@ public class MetaCorrectTimezoneController(
 	/// <response code="200">List of timezone identifiers</response>
 	/// <response code="401">User unauthorized</response>
 	[ProducesResponseType(200)]
-	[HttpGet("/api/meta-correct-timezone/timezones")]
+	[HttpGet("/api/meta-correct-timezone/incorrect-camera-timezones")]
+	[Produces("application/json")]
+	public IActionResult GetIncorrectCameraTimezones()
+	{
+		return Ok(exifTimezoneDisplayListService.GetIncorrectCameraTimezonesList());
+	}
+	
+	/// <summary>
+	///     Get all available system timezones
+	/// </summary>
+	/// <returns>List of available timezone identifiers</returns>
+	/// <response code="200">List of timezone identifiers</response>
+	/// <response code="401">User unauthorized</response>
+	[ProducesResponseType(200)]
+	[HttpGet("/api/meta-correct-timezone/moved-to-different-place-timezones")]
+	[Produces("application/json")]
+	public IActionResult GetMovedToDifferentPlaceTimezones()
+	{
+		return Ok(exifTimezoneDisplayListService.GetMovedToDifferentPlaceTimezonesList());
+	}
+	
+	/// <summary>
+	///     Get all available system timezones
+	/// </summary>
+	/// <returns>List of available timezone identifiers</returns>
+	/// <response code="200">List of timezone identifiers</response>
+	/// <response code="401">User unauthorized</response>
+	[ProducesResponseType(200)]
+	[HttpGet("/api/meta-correct-timezone/available-timezones")]
 	[Produces("application/json")]
 	public IActionResult GetAvailableTimezones()
 	{
 		var timezones = new List<dynamic>();
 
 		// Add standard system timezones
-		// foreach (var tz in TimeZoneInfo.GetSystemTimeZones())
-		// {
-		// 	timezones.Add(new
-		// 	{
-		// 		id = tz.Id,
-		// 		displayName = tz.DisplayName,
-		// 		standardName = tz.StandardName,
-		// 		daylightName = tz.DaylightName
-		// 	});
-		// }
+		foreach (var tz in TimeZoneInfo.GetSystemTimeZones())
+		{
+			timezones.Add(new
+			{
+				id = tz.Id,
+				displayName = tz.DisplayName,
+				standardName = tz.StandardName,
+				daylightName = tz.DaylightName
+			});
+		}
 
 		// Add Etc/GMT timezones (fixed offset, no DST)
-		// GMT offset format: Etc/GMT+X where X is hours behind UTC (opposite sign)
-		for (var i = -12; i <= 14; i++)
+		// IANA inverted sign: Etc/GMT+X => UTC-X, Etc/GMT-X => UTC+X
+		for (int i = -14; i <= 14; i++)
 		{
-			if (i == 0)
+			if ( i == 0 )
 			{
-				continue; // Skip GMT, already in system timezones
+				continue; // Skip GMT, already present
 			}
 
 			var gmtId = i > 0 ? $"Etc/GMT+{i}" : $"Etc/GMT{i}";
-			var offset = i > 0 ? -i : Math.Abs(i);
-			var offsetStr = offset >= 0 ? $"+{offset:D2}:00" : $"-{Math.Abs(offset):D2}:00";
-			var displayName = $"(UTC{offsetStr}) {gmtId}";
+			var hours = Math.Abs(i);
+			var sign = i > 0 ? "-" : "+"; // invert sign for display
+			var displayName = $"(UTC{sign}{hours:D2}:00) {gmtId}";
 
 			timezones.Add(new
 			{
