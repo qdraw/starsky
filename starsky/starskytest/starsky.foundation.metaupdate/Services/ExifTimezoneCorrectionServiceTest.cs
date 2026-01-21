@@ -228,7 +228,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			result.OriginalDateTime);
 		Assert.AreEqual(new DateTime(2024, 6, 15, 16, 30, 0, DateTimeKind.Local),
 			result.CorrectedDateTime); // +2 hours
-		Assert.AreEqual(2.0, result.DeltaHours); // +2 hours difference
+		Assert.AreEqual(2, result.Delta.Hours); // +2 hours difference
 	}
 
 	[TestMethod]
@@ -257,7 +257,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		Assert.IsTrue(result.Success);
 		Assert.AreEqual(new DateTime(2024, 1, 15, 15, 30, 0, DateTimeKind.Local),
 			result.CorrectedDateTime); // +1 hour in winter
-		Assert.AreEqual(1.0, result.DeltaHours); // +1-hour difference in winter
+		Assert.AreEqual(1, result.Delta.Hours); // +1-hour difference in winter
 	}
 
 	[TestMethod]
@@ -286,7 +286,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		Assert.IsTrue(result.Success);
 		Assert.AreEqual(new DateTime(2024, 6, 15, 12, 30, 0, DateTimeKind.Local),
 			result.CorrectedDateTime); // -2 hours
-		Assert.AreEqual(-2.0, result.DeltaHours); // -2 hours difference
+		Assert.AreEqual(-2, result.Delta.Hours); // -2 hours difference
 	}
 
 	[TestMethod]
@@ -478,7 +478,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 
 		// Assert
 		Assert.IsTrue(result.Success);
-		Assert.AreEqual(0.0, result.DeltaHours); // No delta, both UTC+1
+		Assert.AreEqual(0, result.Delta.Hours); // No delta, both UTC+1
 		Assert.AreEqual(new DateTime(2024, 3, 30, 14, 0, 0, DateTimeKind.Local),
 			result.CorrectedDateTime);
 	}
@@ -506,7 +506,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 
 		// Assert
 		Assert.IsTrue(result.Success);
-		Assert.AreEqual(1.0, result.DeltaHours); // +1 hour delta due to DST
+		Assert.AreEqual(1, result.Delta.Hours); // +1 hour delta due to DST
 		Assert.AreEqual(new DateTime(2024, 3, 31, 15, 0, 0, DateTimeKind.Local),
 			result.CorrectedDateTime);
 	}
@@ -536,7 +536,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 
 		// Assert
 		Assert.IsTrue(result.Success);
-		Assert.AreEqual(0.0, result.DeltaHours); // No delta, both UTC+2
+		Assert.AreEqual(0, result.Delta.Hours); // No delta, both UTC+2
 		Assert.AreEqual(new DateTime(2024, 10, 26, 14, 0, 0, DateTimeKind.Local),
 			result.CorrectedDateTime);
 	}
@@ -566,7 +566,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 
 		// Assert
 		Assert.IsTrue(result.Success);
-		Assert.AreEqual(-1.0, result.DeltaHours); // -1 hour delta after fall-back
+		Assert.AreEqual(-1, result.Delta.Hours); // -1 hour delta after fall-back
 		Assert.AreEqual(new DateTime(2024, 10, 27, 13, 0, 0, DateTimeKind.Local),
 			result.CorrectedDateTime);
 	}
@@ -596,7 +596,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 
 		// Assert
 		Assert.IsTrue(result.Success);
-		Assert.AreEqual(-3.0, result.DeltaHours); // 3 hours behind
+		Assert.AreEqual(-3, result.Delta.Hours); // 3 hours behind
 		Assert.AreEqual(new DateTime(2024, 6, 15, 11, 0, 0, DateTimeKind.Local),
 			result.CorrectedDateTime);
 	}
@@ -624,7 +624,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 
 		// Assert
 		Assert.IsTrue(result.Success);
-		Assert.AreEqual(9.0, result.DeltaHours);
+		Assert.AreEqual(9, result.Delta.Hours);
 		Assert.AreEqual(new DateTime(2024, 6, 15, 23, 0, 0, DateTimeKind.Local),
 			result.CorrectedDateTime);
 	}
@@ -652,7 +652,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 
 		// Assert
 		Assert.IsTrue(result.Success);
-		Assert.AreEqual(11.0, result.DeltaHours);
+		Assert.AreEqual(11, result.Delta.Hours);
 		Assert.AreEqual(new DateTime(2024, 1, 16, 1, 0, 0, DateTimeKind.Local),
 			result.CorrectedDateTime);
 	}
@@ -682,7 +682,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 
 		// Assert
 		Assert.IsTrue(result.Success);
-		Assert.AreEqual(0.0, result.DeltaHours);
+		Assert.AreEqual(0.0, result.Delta.Hours);
 	}
 
 	[TestMethod]
@@ -708,7 +708,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 
 		// Assert
 		Assert.IsTrue(result.Success);
-		Assert.AreEqual(5.0, result.DeltaHours);
+		Assert.AreEqual(5, result.Delta.Hours);
 		Assert.AreEqual(new DateTime(2024, 6, 15, 19, 0, 0, DateTimeKind.Local),
 			result.CorrectedDateTime);
 	}
@@ -818,7 +818,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 
 		// Assert
 		Assert.IsTrue(result.Success);
-		Assert.AreEqual(5.5, result.DeltaHours); // 5.5 hours
+		Assert.AreEqual(5, result.Delta.Hours); // 5.5 hours
 		Assert.AreEqual(new DateTime(2024, 6, 15, 19, 30, 0, DateTimeKind.Local),
 			result.CorrectedDateTime);
 	}
@@ -869,13 +869,13 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		Assert.IsTrue(results[2].Success);
 
 		// Before DST: +0
-		Assert.AreEqual(0.0, results[0].DeltaHours);
+		Assert.AreEqual(0, results[0].Delta.Hours);
 
 		// On DST: +1
-		Assert.AreEqual(1.0, results[1].DeltaHours);
+		Assert.AreEqual(1, results[1].Delta.Hours);
 
 		// After DST: +1
-		Assert.AreEqual(1.0, results[2].DeltaHours);
+		Assert.AreEqual(1, results[2].Delta.Hours);
 	}
 
 	[TestMethod]
@@ -967,7 +967,8 @@ public sealed class ExifTimezoneCorrectionServiceTest
 
 		// Assert
 		Assert.IsTrue(result.Success);
-		Assert.AreEqual(5.75, result.DeltaHours); // 5 hours 45 minutes
+		Assert.AreEqual(5, result.Delta.Hours); // 5 hours 45 minutes
+		Assert.AreEqual(45, result.Delta.Minutes); // 5 hours 45 minutes
 		Assert.AreEqual(new DateTime(2024, 6, 15, 19, 45, 0, DateTimeKind.Local),
 			result.CorrectedDateTime);
 	}

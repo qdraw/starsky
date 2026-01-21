@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.injection;
 using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.metaupdate.Models;
 using starsky.foundation.platform.Interfaces;
@@ -18,6 +19,8 @@ namespace starsky.foundation.metaupdate.Services;
 /// <summary>
 ///     Implementation of EXIF timezone correction service
 /// </summary>
+[Service(typeof(IExifTimezoneCorrectionService),
+	InjectionLifetime = InjectionLifetime.Scoped)]
 public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 {
 	private readonly AppSettings _appSettings;
@@ -101,7 +104,7 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 				request.CorrectTimezone);
 
 			result.OriginalDateTime = fileIndexItem.DateTime;
-			result.DeltaHours = delta.TotalHours;
+			result.Delta = delta;
 
 			// Apply the correction
 			var correctedDateTime = fileIndexItem.DateTime.Add(delta);
@@ -110,11 +113,11 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 			// Update the FileIndexItem with corrected DateTime
 			fileIndexItem.DateTime = correctedDateTime;
 			fileIndexItem.LastEdited = _storage.Info(fileIndexItem.FilePath!).LastWriteTime;
-			
+
 			// to avoid diskWatcher catch up
 			_query.SetGetObjectByFilePathCache(fileIndexItem.FilePath!, fileIndexItem,
 				TimeSpan.FromSeconds(5));
-			
+
 			// Write the corrected DateTime to EXIF
 			var comparedNames =
 				new List<string> { nameof(FileIndexItem.DateTime).ToLowerInvariant() };
@@ -122,7 +125,7 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 				fileIndexItem,
 				comparedNames,
 				false);
-			
+
 			var fileHashService = new FileHash(_storage, _logger);
 			var newFileHash = ( await fileHashService.GetHashCodeAsync(
 				fileIndexItem.FilePath!,
@@ -136,7 +139,7 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 				$"[ExifTimezoneCorrection] Successfully corrected: {fileIndexItem.FilePath} " +
 				$"from {result.OriginalDateTime:yyyy-MM-dd HH:mm:ss} " +
 				$"to {result.CorrectedDateTime:yyyy-MM-dd HH:mm:ss} " +
-				$"(delta: {result.DeltaHours:F2}h)");
+				$"(delta: {result.Delta.Hours:F2}h)");
 		}
 		catch ( Exception ex )
 		{
@@ -225,28 +228,30 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 			return result;
 		}
 
-
 		// Calculate delta to check for day rollover
-		var delta = CalculateTimezoneDelta(
+		result.Delta = CalculateTimezoneDelta(
 			fileIndexItem.DateTime,
 			request.RecordedTimezone,
 			request.CorrectTimezone);
 
-		var correctedDateTime = fileIndexItem.DateTime.Add(delta);
-
+		result.CorrectedDateTime = fileIndexItem.DateTime.Add(result.Delta);
+		result.Success = true;
+		
 		// Warn about day/month/year rollover
-		if ( correctedDateTime.Day != fileIndexItem.DateTime.Day )
+		if ( result.CorrectedDateTime.Day != fileIndexItem.DateTime.Day )
 		{
 			result.Warning =
 				$"Correction will change the day from " +
-				$"{fileIndexItem.DateTime:yyyy-MM-dd} to {correctedDateTime:yyyy-MM-dd}";
+				$"{fileIndexItem.DateTime:yyyy-MM-dd} to " +
+				$"{result.CorrectedDateTime:yyyy-MM-dd}";
 		}
 
 		// Warn if timezones are the same
 		if ( request.RecordedTimezone == request.CorrectTimezone )
 		{
 			fileIndexItem.Status = FileIndexItem.ExifStatus.OkAndSame;
-			result.Warning = "Recorded and correct timezones are the same - no correction needed";
+			result.Warning = "Recorded and correct timezones " +
+			                 "are the same - no correction needed";
 			return result;
 		}
 

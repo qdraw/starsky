@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -132,5 +133,56 @@ public class MetaCorrectTimezoneController(
 			.ServiceProvider.GetRequiredService<IRealtimeConnectionsService>();
 		await realtimeConnectionsService.NotificationToAllAsync(webSocketResponse,
 			CancellationToken.None);
+	}
+
+	/// <summary>
+	///     Get all available system timezones
+	/// </summary>
+	/// <returns>List of available timezone identifiers</returns>
+	/// <response code="200">List of timezone identifiers</response>
+	/// <response code="401">User unauthorized</response>
+	[ProducesResponseType(200)]
+	[HttpGet("/api/meta-correct-timezone/timezones")]
+	[Produces("application/json")]
+	public IActionResult GetAvailableTimezones()
+	{
+		var timezones = new List<dynamic>();
+
+		// Add standard system timezones
+		// foreach (var tz in TimeZoneInfo.GetSystemTimeZones())
+		// {
+		// 	timezones.Add(new
+		// 	{
+		// 		id = tz.Id,
+		// 		displayName = tz.DisplayName,
+		// 		standardName = tz.StandardName,
+		// 		daylightName = tz.DaylightName
+		// 	});
+		// }
+
+		// Add Etc/GMT timezones (fixed offset, no DST)
+		// GMT offset format: Etc/GMT+X where X is hours behind UTC (opposite sign)
+		for (var i = -12; i <= 14; i++)
+		{
+			if (i == 0)
+			{
+				continue; // Skip GMT, already in system timezones
+			}
+
+			var gmtId = i > 0 ? $"Etc/GMT+{i}" : $"Etc/GMT{i}";
+			var offset = i > 0 ? -i : Math.Abs(i);
+			var offsetStr = offset >= 0 ? $"+{offset:D2}:00" : $"-{Math.Abs(offset):D2}:00";
+			var displayName = $"(UTC{offsetStr}) {gmtId}";
+
+			timezones.Add(new
+			{
+				id = gmtId,
+				displayName,
+				standardName = gmtId,
+				daylightName = gmtId
+			});
+		}
+
+		return Ok(timezones.OrderBy(tz => tz.displayName).ToList());
 	}
 }

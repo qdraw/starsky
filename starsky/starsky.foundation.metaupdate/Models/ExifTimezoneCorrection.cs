@@ -23,9 +23,9 @@ public class ExifTimezoneCorrectionResult
 	public DateTime CorrectedDateTime { get; set; }
 
 	/// <summary>
-	///     Time delta applied (in hours)
+	///     Time delta applied
 	/// </summary>
-	public double DeltaHours { get; set; }
+	public TimeSpan Delta { get; set; }
 
 	/// <summary>
 	///     Warning message if any

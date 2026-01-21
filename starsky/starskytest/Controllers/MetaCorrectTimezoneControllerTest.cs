@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
+using starsky.feature.realtime.Interface;
 using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.metaupdate.Models;
@@ -27,7 +28,17 @@ public sealed class MetaCorrectTimezoneControllerTest
 		timezoneService ??= new FakeIExifTimezoneCorrectionService();
 		queue ??= new FakeIUpdateBackgroundTaskQueue();
 		logger ??= new FakeIWebLogger();
-		scopeFactory ??= new FakeServiceScopeFactory();
+
+		// Configure scope factory with the timezone service
+		scopeFactory ??= new FakeIServiceScopeFactory(
+			nameof(MetaCorrectTimezoneControllerTest),
+			services =>
+			{
+				services.AddSingleton(timezoneService);
+				services.AddSingleton<IRealtimeConnectionsService,
+					FakeIRealtimeConnectionsService>();
+				services.AddSingleton(logger);
+			});
 
 		var controller = new MetaCorrectTimezoneController(
 			timezoneService,
@@ -47,12 +58,12 @@ public sealed class MetaCorrectTimezoneControllerTest
 			new()
 			{
 				Success = true,
-				OriginalDateTime = new DateTime(2024, 6, 15, 
+				OriginalDateTime = new DateTime(2024, 6, 15,
 					14, 30, 0, DateTimeKind.Local),
 				CorrectedDateTime =
-					new DateTime(2024, 6, 15, 
+					new DateTime(2024, 6, 15,
 						16, 30, 0, DateTimeKind.Local),
-				DeltaHours = 2.0,
+				Delta = TimeSpan.FromHours(2),
 				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
 			}
 		};
@@ -81,7 +92,7 @@ public sealed class MetaCorrectTimezoneControllerTest
 		Assert.IsNotNull(returnedResults);
 		Assert.HasCount(1, returnedResults);
 		Assert.IsTrue(returnedResults[0].Success);
-		Assert.AreEqual(2.0, returnedResults[0].DeltaHours);
+		Assert.AreEqual(TimeSpan.FromHours(2), returnedResults[0].Delta);
 	}
 
 	[TestMethod]
@@ -93,22 +104,22 @@ public sealed class MetaCorrectTimezoneControllerTest
 			new()
 			{
 				Success = true,
-				OriginalDateTime = new DateTime(2024, 6, 15, 
+				OriginalDateTime = new DateTime(2024, 6, 15,
 					14, 30, 0, DateTimeKind.Local),
 				CorrectedDateTime =
-					new DateTime(2024, 6, 15, 
+					new DateTime(2024, 6, 15,
 						16, 30, 0, DateTimeKind.Local),
-				DeltaHours = 2.0,
+				Delta = TimeSpan.FromHours(2.0),
 				FileIndexItem = new FileIndexItem { FilePath = "/test1.jpg" }
 			},
 			new()
 			{
 				Success = true,
-				OriginalDateTime = new DateTime(2024, 6, 16, 
+				OriginalDateTime = new DateTime(2024, 6, 16,
 					10, 0, 0, DateTimeKind.Local),
-				CorrectedDateTime = new DateTime(2024, 6, 16, 
+				CorrectedDateTime = new DateTime(2024, 6, 16,
 					12, 0, 0, DateTimeKind.Local),
-				DeltaHours = 2.0,
+				Delta = TimeSpan.FromHours(2.0),
 				FileIndexItem = new FileIndexItem { FilePath = "/test2.jpg" }
 			}
 		};
@@ -227,11 +238,11 @@ public sealed class MetaCorrectTimezoneControllerTest
 			new()
 			{
 				Success = true,
-				OriginalDateTime = new DateTime(2024, 6, 30, 
+				OriginalDateTime = new DateTime(2024, 6, 30,
 					23, 0, 0, DateTimeKind.Local),
-				CorrectedDateTime = new DateTime(2024, 7, 1, 
+				CorrectedDateTime = new DateTime(2024, 7, 1,
 					11, 0, 0, DateTimeKind.Local),
-				DeltaHours = 12.0,
+				Delta = TimeSpan.FromHours(12.0),
 				Warning = "Day rollover: correction will change the date",
 				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
 			}
@@ -270,12 +281,12 @@ public sealed class MetaCorrectTimezoneControllerTest
 			new()
 			{
 				Success = true,
-				OriginalDateTime = new DateTime(2024, 10, 26, 
+				OriginalDateTime = new DateTime(2024, 10, 26,
 					14, 0, 0, DateTimeKind.Local),
 				CorrectedDateTime =
-					new DateTime(2024, 10, 26, 
+					new DateTime(2024, 10, 26,
 						15, 0, 0, DateTimeKind.Local),
-				DeltaHours = 1.0,
+				Delta = TimeSpan.FromHours(1.0),
 				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
 			}
 		};
@@ -298,10 +309,10 @@ public sealed class MetaCorrectTimezoneControllerTest
 		// Assert
 		var jsonResult = result as OkObjectResult;
 		Assert.IsNotNull(jsonResult);
-		var returnedResults = jsonResult.Value as 
+		var returnedResults = jsonResult.Value as
 			List<ExifTimezoneCorrectionResult>;
 		Assert.IsNotNull(returnedResults);
-		Assert.AreEqual(1.0, returnedResults[0].DeltaHours);
+		Assert.AreEqual(TimeSpan.FromHours(1.0), returnedResults[0].Delta);
 	}
 
 	[TestMethod]
@@ -313,12 +324,12 @@ public sealed class MetaCorrectTimezoneControllerTest
 			new()
 			{
 				Success = true,
-				OriginalDateTime = new DateTime(2024, 6, 15, 
+				OriginalDateTime = new DateTime(2024, 6, 15,
 					14, 30, 0, DateTimeKind.Local),
 				CorrectedDateTime =
-					new DateTime(2024, 6, 15, 
+					new DateTime(2024, 6, 15,
 						14, 30, 0, DateTimeKind.Local),
-				DeltaHours = 0.0,
+				Delta = TimeSpan.FromHours(0.0),
 				Warning =
 					"No correction needed: recorded timezone matches correct timezone",
 				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
@@ -344,7 +355,7 @@ public sealed class MetaCorrectTimezoneControllerTest
 		Assert.IsNotNull(jsonResult);
 		var returnedResults = jsonResult.Value as List<ExifTimezoneCorrectionResult>;
 		Assert.IsNotNull(returnedResults);
-		Assert.AreEqual(0.0, returnedResults[0].DeltaHours);
+		Assert.AreEqual(TimeSpan.FromHours(0.0), returnedResults[0].Delta);
 	}
 
 	[TestMethod]
@@ -356,12 +367,12 @@ public sealed class MetaCorrectTimezoneControllerTest
 			new()
 			{
 				Success = true,
-				OriginalDateTime = new DateTime(2024, 6, 15, 14, 
+				OriginalDateTime = new DateTime(2024, 6, 15, 14,
 					30, 0, DateTimeKind.Local),
 				CorrectedDateTime =
-					new DateTime(2024, 6, 15, 
+					new DateTime(2024, 6, 15,
 						16, 30, 0, DateTimeKind.Local),
-				DeltaHours = 2.0,
+				Delta = TimeSpan.FromHours(2.0),
 				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
 			}
 		};
@@ -432,12 +443,12 @@ public sealed class MetaCorrectTimezoneControllerTest
 			new()
 			{
 				Success = true,
-				OriginalDateTime = new DateTime(2024, 6, 15, 
+				OriginalDateTime = new DateTime(2024, 6, 15,
 					14, 30, 0, DateTimeKind.Local),
 				CorrectedDateTime =
-					new DateTime(2024, 6, 15, 
+					new DateTime(2024, 6, 15,
 						12, 30, 0, DateTimeKind.Local),
-				DeltaHours = -2.0,
+				Delta = TimeSpan.FromHours(-2.0),
 				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
 			}
 		};
@@ -461,7 +472,7 @@ public sealed class MetaCorrectTimezoneControllerTest
 		Assert.IsNotNull(jsonResult);
 		var returnedResults = jsonResult.Value as List<ExifTimezoneCorrectionResult>;
 		Assert.IsNotNull(returnedResults);
-		Assert.AreEqual(-2.0, returnedResults[0].DeltaHours);
+		Assert.AreEqual(TimeSpan.FromHours(-2.0), returnedResults[0].Delta);
 	}
 
 	[TestMethod]
@@ -486,5 +497,578 @@ public sealed class MetaCorrectTimezoneControllerTest
 		Assert.IsNotNull(badRequestResult);
 		Assert.AreEqual(400, badRequestResult.StatusCode);
 	}
-}
+	
+	[TestMethod]
+	public async Task ExecuteTimezoneCorrectionAsync_ValidInput_ReturnsOkAndQueuesTask()
+	{
+		// Arrange
+		var mockResults = new List<ExifTimezoneCorrectionResult>
+		{
+			new()
+			{
+				Success = true,
+				OriginalDateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local),
+				CorrectedDateTime =
+					new DateTime(2024, 6, 15, 16, 30, 0, DateTimeKind.Local),
+				Delta = TimeSpan.FromHours(2.0),
+				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
+			}
+		};
 
+		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
+		var queue = new FakeIUpdateBackgroundTaskQueue();
+		var controller = CreateController(timezoneService, queue);
+
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+		};
+
+		// Act
+		var result = await controller.ExecuteTimezoneCorrectionAsync(
+			"/test.jpg",
+			true,
+			request);
+
+		// Assert
+		Assert.IsNotNull(result);
+		var jsonResult = result as JsonResult;
+		Assert.IsNotNull(jsonResult);
+		var returnedResults = jsonResult.Value as List<ExifTimezoneCorrectionResult>;
+		Assert.IsNotNull(returnedResults);
+		Assert.HasCount(1, returnedResults);
+		Assert.IsTrue(queue.QueueBackgroundWorkItemCalled);
+	}
+
+	[TestMethod]
+	public async Task ExecuteTimezoneCorrectionAsync_MultipleFiles_QueuesAndReturnsAllResults()
+	{
+		// Arrange
+		var mockResults = new List<ExifTimezoneCorrectionResult>
+		{
+			new()
+			{
+				Success = true,
+				OriginalDateTime = new DateTime(2024, 6, 15,
+					14, 30, 0, DateTimeKind.Local),
+				CorrectedDateTime = new DateTime(2024, 6, 15,
+					16, 30, 0, DateTimeKind.Local),
+				Delta = TimeSpan.FromHours(2.0),
+				FileIndexItem = new FileIndexItem { FilePath = "/test1.jpg" }
+			},
+			new()
+			{
+				Success = true,
+				OriginalDateTime = new DateTime(2024, 6, 16,
+					10, 0, 0, DateTimeKind.Local),
+				CorrectedDateTime = new DateTime(2024, 6, 16,
+					12, 0, 0, DateTimeKind.Local),
+				Delta= TimeSpan.FromHours(2.0),
+				FileIndexItem = new FileIndexItem { FilePath = "/test2.jpg" }
+			}
+		};
+
+		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
+		var queue = new FakeIUpdateBackgroundTaskQueue();
+		var controller = CreateController(timezoneService, queue);
+
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+		};
+
+		// Act
+		var result = await controller.ExecuteTimezoneCorrectionAsync(
+			"/test1.jpg;/test2.jpg",
+			true,
+			request);
+
+		// Assert
+		var jsonResult = result as JsonResult;
+		Assert.IsNotNull(jsonResult);
+		var returnedResults = jsonResult.Value as List<ExifTimezoneCorrectionResult>;
+		Assert.IsNotNull(returnedResults);
+		Assert.HasCount(2, returnedResults);
+		Assert.IsTrue(queue.QueueBackgroundWorkItemCalled);
+	}
+
+	[TestMethod]
+	public async Task ExecuteTimezoneCorrectionAsync_EmptyFilePath_ReturnsBadRequest()
+	{
+		// Arrange
+		var controller = CreateController();
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+		};
+
+		// Act
+		var result = await controller.ExecuteTimezoneCorrectionAsync(
+			string.Empty,
+			true,
+			request);
+
+		// Assert
+		Assert.IsNotNull(result);
+		var badRequestResult = result as BadRequestObjectResult;
+		Assert.IsNotNull(badRequestResult);
+		Assert.AreEqual(400, badRequestResult.StatusCode);
+	}
+
+	[TestMethod]
+	public async Task ExecuteTimezoneCorrectionAsync_NullCollections_ReturnsBadRequest()
+	{
+		// Arrange
+		var controller = CreateController();
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+		};
+
+		// Act
+		var result = await controller.ExecuteTimezoneCorrectionAsync(
+			"/test.jpg",
+			null,
+			request);
+
+		// Assert
+		Assert.IsNotNull(result);
+		var badRequestResult = result as BadRequestObjectResult;
+		Assert.IsNotNull(badRequestResult);
+		Assert.AreEqual(400, badRequestResult.StatusCode);
+	}
+
+	[TestMethod]
+	public async Task ExecuteTimezoneCorrectionAsync_NoFilesProvided_ReturnsBadRequest()
+	{
+		// Arrange
+		var controller = CreateController();
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+		};
+
+		// Act
+		var result = await controller.ExecuteTimezoneCorrectionAsync(
+			";;;",
+			true,
+			request);
+
+		// Assert
+		Assert.IsNotNull(result);
+		var badRequestResult = result as BadRequestObjectResult;
+		Assert.IsNotNull(badRequestResult);
+		Assert.AreEqual(400, badRequestResult.StatusCode);
+	}
+
+	[TestMethod]
+	public async Task ExecuteTimezoneCorrectionAsync_InvalidModelState_ReturnsBadRequest()
+	{
+		// Arrange
+		var controller = CreateController();
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+		};
+
+		// Act
+		var result = await controller.ExecuteTimezoneCorrectionAsync(
+			"/test.jpg",
+			true,
+			request);
+
+		// Assert
+		Assert.IsNotNull(result);
+		var badRequestResult = result as BadRequestObjectResult;
+		Assert.IsNotNull(badRequestResult);
+		Assert.AreEqual(400, badRequestResult.StatusCode);
+	}
+
+	[TestMethod]
+	public async Task ExecuteTimezoneCorrectionAsync_ValidationErrors_ReturnsErrorsAndQueuesTask()
+	{
+		// Arrange
+		var mockResults = new List<ExifTimezoneCorrectionResult>
+		{
+			new()
+			{
+				Success = false,
+				Error = "File does not exist",
+				FileIndexItem = new FileIndexItem { FilePath = "/nonexistent.jpg" }
+			}
+		};
+
+		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
+		var queue = new FakeIUpdateBackgroundTaskQueue();
+		var controller = CreateController(timezoneService, queue);
+
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+		};
+
+		// Act
+		var result = await controller.ExecuteTimezoneCorrectionAsync(
+			"/nonexistent.jpg",
+			true,
+			request);
+
+		// Assert
+		var jsonResult = result as JsonResult;
+		Assert.IsNotNull(jsonResult);
+		var returnedResults = jsonResult.Value as List<ExifTimezoneCorrectionResult>;
+		Assert.IsNotNull(returnedResults);
+		Assert.IsFalse(returnedResults[0].Success);
+		Assert.AreEqual("File does not exist", returnedResults[0].Error);
+		// Background task should still be queued
+		Assert.IsTrue(queue.QueueBackgroundWorkItemCalled);
+	}
+
+	[TestMethod]
+	public async Task ExecuteTimezoneCorrectionAsync_WithWarnings_QueuesTaskAndReturnsWarnings()
+	{
+		// Arrange
+		var mockResults = new List<ExifTimezoneCorrectionResult>
+		{
+			new()
+			{
+				Success = true,
+				OriginalDateTime = new DateTime(2024, 6, 30,
+					23, 0, 0, DateTimeKind.Local),
+				CorrectedDateTime = new DateTime(2024, 7,
+					1, 11, 0, 0, DateTimeKind.Local),
+				Delta = TimeSpan.FromHours(12.0),
+				Warning = "Day rollover: correction will change the date",
+				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
+			}
+		};
+
+		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
+		var queue = new FakeIUpdateBackgroundTaskQueue();
+		var controller = CreateController(timezoneService, queue);
+
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+		};
+
+		// Act
+		var result = await controller.ExecuteTimezoneCorrectionAsync(
+			"/test.jpg",
+			true,
+			request);
+
+		// Assert
+		var jsonResult = result as JsonResult;
+		Assert.IsNotNull(jsonResult);
+		var returnedResults = jsonResult.Value as List<ExifTimezoneCorrectionResult>;
+		Assert.IsNotNull(returnedResults);
+		Assert.IsTrue(returnedResults[0].Success);
+		Assert.AreEqual("Day rollover: correction will change the date",
+			returnedResults[0].Warning);
+		Assert.IsTrue(queue.QueueBackgroundWorkItemCalled);
+	}
+
+	[TestMethod]
+	public async Task ExecuteTimezoneCorrectionAsync_DSTScenario_QueuesAndReturnsCorrectDelta()
+	{
+		// Arrange - DST fallback scenario
+		var mockResults = new List<ExifTimezoneCorrectionResult>
+		{
+			new()
+			{
+				Success = true,
+				OriginalDateTime = new DateTime(2024, 10, 26,
+					14, 0, 0, DateTimeKind.Local),
+				CorrectedDateTime = new DateTime(2024, 10, 26,
+					15, 0, 0, DateTimeKind.Local),
+				Delta = TimeSpan.FromHours(1.0),
+				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
+			}
+		};
+
+		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
+		var queue = new FakeIUpdateBackgroundTaskQueue();
+		var controller = CreateController(timezoneService, queue);
+
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			RecordedTimezone = "Europe/Amsterdam", CorrectTimezone = "Europe/Amsterdam"
+		};
+
+		// Act
+		var result = await controller.ExecuteTimezoneCorrectionAsync(
+			"/test.jpg",
+			true,
+			request);
+
+		// Assert
+		var jsonResult = result as JsonResult;
+		Assert.IsNotNull(jsonResult);
+		var returnedResults = jsonResult.Value as List<ExifTimezoneCorrectionResult>;
+		Assert.IsNotNull(returnedResults);
+		Assert.AreEqual(TimeSpan.FromHours(1.0), returnedResults[0].Delta);
+		Assert.IsTrue(queue.QueueBackgroundWorkItemCalled);
+	}
+
+	[TestMethod]
+	public async Task ExecuteTimezoneCorrectionAsync_SameTimezone_QueuesTaskWithZeroDelta()
+	{
+		// Arrange
+		var mockResults = new List<ExifTimezoneCorrectionResult>
+		{
+			new()
+			{
+				Success = true,
+				OriginalDateTime = new DateTime(2024, 6, 15,
+					14, 30, 0, DateTimeKind.Local),
+				CorrectedDateTime = new DateTime(2024, 6, 15,
+					14, 30, 0, DateTimeKind.Local),
+				Delta = TimeSpan.FromHours(0.0),
+				Warning = "No correction needed: recorded timezone matches correct timezone",
+				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
+			}
+		};
+
+		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
+		var queue = new FakeIUpdateBackgroundTaskQueue();
+		var controller = CreateController(timezoneService, queue);
+
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			RecordedTimezone = "Europe/Amsterdam", CorrectTimezone = "Europe/Amsterdam"
+		};
+
+		// Act
+		var result = await controller.ExecuteTimezoneCorrectionAsync(
+			"/test.jpg",
+			true,
+			request);
+
+		// Assert
+		var jsonResult = result as JsonResult;
+		Assert.IsNotNull(jsonResult);
+		var returnedResults = jsonResult.Value as List<ExifTimezoneCorrectionResult>;
+		Assert.IsNotNull(returnedResults);
+		Assert.AreEqual(TimeSpan.FromHours(0.0), returnedResults[0].Delta);
+		Assert.IsTrue(queue.QueueBackgroundWorkItemCalled);
+	}
+
+	[TestMethod]
+	public async Task ExecuteTimezoneCorrectionAsync_WithCollectionsFalse_QueuesTaskCorrectly()
+	{
+		// Arrange
+		var mockResults = new List<ExifTimezoneCorrectionResult>
+		{
+			new()
+			{
+				Success = true,
+				OriginalDateTime = new DateTime(2024, 6, 15,
+					14, 30, 0, DateTimeKind.Local),
+				CorrectedDateTime = new DateTime(2024, 6, 15,
+					16, 30, 0, DateTimeKind.Local),
+				Delta = TimeSpan.FromHours(2.0),
+				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
+			}
+		};
+
+		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
+		var queue = new FakeIUpdateBackgroundTaskQueue();
+		var controller = CreateController(timezoneService, queue);
+
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+		};
+
+		// Act
+		var result = await controller.ExecuteTimezoneCorrectionAsync(
+			"/test.jpg",
+			false,
+			request);
+
+		// Assert
+		Assert.IsNotNull(result);
+		var jsonResult = result as JsonResult;
+		Assert.IsNotNull(jsonResult);
+		Assert.IsTrue(queue.QueueBackgroundWorkItemCalled);
+	}
+
+	[TestMethod]
+	public async Task ExecuteTimezoneCorrectionAsync_InvalidTimezone_QueuesButReturnsError()
+	{
+		// Arrange
+		var mockResults = new List<ExifTimezoneCorrectionResult>
+		{
+			new()
+			{
+				Success = false,
+				Error = "Invalid recorded timezone: InvalidTZ",
+				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
+			}
+		};
+
+		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
+		var queue = new FakeIUpdateBackgroundTaskQueue();
+		var controller = CreateController(timezoneService, queue);
+
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			RecordedTimezone = "InvalidTZ", CorrectTimezone = "Europe/Amsterdam"
+		};
+
+		// Act
+		var result = await controller.ExecuteTimezoneCorrectionAsync(
+			"/test.jpg",
+			true,
+			request);
+
+		// Assert
+		var jsonResult = result as JsonResult;
+		Assert.IsNotNull(jsonResult);
+		var returnedResults = jsonResult.Value as List<ExifTimezoneCorrectionResult>;
+		Assert.IsNotNull(returnedResults);
+		Assert.IsFalse(returnedResults[0].Success);
+		Assert.IsTrue(queue.QueueBackgroundWorkItemCalled);
+	}
+
+	[TestMethod]
+	public async Task ExecuteTimezoneCorrectionAsync_NegativeDelta_CorrectlyCalculatedAndQueued()
+	{
+		// Arrange - Photo taken in a timezone earlier than recorded
+		var mockResults = new List<ExifTimezoneCorrectionResult>
+		{
+			new()
+			{
+				Success = true,
+				OriginalDateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local),
+				CorrectedDateTime =
+					new DateTime(2024, 6, 15, 12, 30, 0, DateTimeKind.Local),
+				Delta = TimeSpan.FromHours(-2.0),
+				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
+			}
+		};
+
+		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
+		var queue = new FakeIUpdateBackgroundTaskQueue();
+		var controller = CreateController(timezoneService, queue);
+
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			RecordedTimezone = "Europe/Amsterdam", CorrectTimezone = "UTC"
+		};
+
+		// Act
+		var result = await controller.ExecuteTimezoneCorrectionAsync(
+			"/test.jpg",
+			true,
+			request);
+
+		// Assert
+		var jsonResult = result as JsonResult;
+		Assert.IsNotNull(jsonResult);
+		var returnedResults = jsonResult.Value as List<ExifTimezoneCorrectionResult>;
+		Assert.IsNotNull(returnedResults);
+		Assert.AreEqual(TimeSpan.FromHours(-2.0), returnedResults[0].Delta);
+		Assert.IsTrue(queue.QueueBackgroundWorkItemCalled);
+	}
+
+	[TestMethod]
+	public async Task ExecuteTimezoneCorrectionAsync_BackgroundTaskQueuedWithCorrectMetadata()
+	{
+		// Arrange
+		var mockResults = new List<ExifTimezoneCorrectionResult>
+		{
+			new()
+			{
+				Success = true,
+				OriginalDateTime = new DateTime(2024, 6, 15,
+					14, 30, 0, DateTimeKind.Local),
+				CorrectedDateTime = new DateTime(2024, 6, 15,
+					16, 30, 0, DateTimeKind.Local),
+				Delta= TimeSpan.FromHours(2.0),
+				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
+			}
+		};
+
+		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
+		var queue = new FakeIUpdateBackgroundTaskQueue();
+		var controller = CreateController(timezoneService, queue);
+
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+		};
+
+		// Act
+		await controller.ExecuteTimezoneCorrectionAsync("/test.jpg", true, request);
+
+		// Assert
+		Assert.IsTrue(queue.QueueBackgroundWorkItemCalled);
+		Assert.AreEqual(1, queue.QueueBackgroundWorkItemCalledCounter);
+	}
+
+	[TestMethod]
+	public async Task
+		ExecuteTimezoneCorrectionAsync_MixedResultsWithSuccessAndErrors_QueuesAndReturnsAll()
+	{
+		// Arrange
+		var mockResults = new List<ExifTimezoneCorrectionResult>
+		{
+			new()
+			{
+				Success = true,
+				OriginalDateTime = new DateTime(2024, 6, 15,
+					14, 30, 0, DateTimeKind.Local),
+				CorrectedDateTime = new DateTime(2024, 6,
+					15, 16, 30, 0, DateTimeKind.Local),
+				Delta = TimeSpan.FromHours(2.0),
+				FileIndexItem = new FileIndexItem { FilePath = "/test1.jpg" }
+			},
+			new()
+			{
+				Success = false,
+				Error = "File does not exist",
+				FileIndexItem = new FileIndexItem { FilePath = "/test2.jpg" }
+			},
+			new()
+			{
+				Success = true,
+				OriginalDateTime = new DateTime(2024, 6, 16,
+					10, 0, 0, DateTimeKind.Local),
+				CorrectedDateTime = new DateTime(2024, 6, 16,
+					12, 0, 0, DateTimeKind.Local),
+				Delta = TimeSpan.FromHours(2.0),
+				FileIndexItem = new FileIndexItem { FilePath = "/test3.jpg" }
+			}
+		};
+
+		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
+		var queue = new FakeIUpdateBackgroundTaskQueue();
+		var controller = CreateController(timezoneService, queue);
+
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+		};
+
+		// Act
+		var result = await controller.ExecuteTimezoneCorrectionAsync(
+			"/test1.jpg;/test2.jpg;/test3.jpg",
+			true,
+			request);
+
+		// Assert
+		var jsonResult = result as JsonResult;
+		Assert.IsNotNull(jsonResult);
+		var returnedResults = jsonResult.Value as List<ExifTimezoneCorrectionResult>;
+		Assert.IsNotNull(returnedResults);
+		Assert.HasCount(3, returnedResults);
+		Assert.IsTrue(returnedResults[0].Success);
+		Assert.IsFalse(returnedResults[1].Success);
+		Assert.IsTrue(returnedResults[2].Success);
+		Assert.IsTrue(queue.QueueBackgroundWorkItemCalled);
+	}
+}

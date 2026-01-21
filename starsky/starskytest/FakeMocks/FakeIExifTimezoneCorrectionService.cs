@@ -9,7 +9,7 @@ namespace starskytest.FakeMocks;
 /// <summary>
 ///     Fake implementation of IExifTimezoneCorrectionService for testing
 /// </summary>
-internal class FakeIExifTimezoneCorrectionService(
+internal sealed class FakeIExifTimezoneCorrectionService(
 	List<ExifTimezoneCorrectionResult>? validationResults = null)
 	: IExifTimezoneCorrectionService
 {
