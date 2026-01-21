@@ -60,7 +60,7 @@ public class MetaCorrectTimezoneController(
 				collections.Value,
 				request);
 
-		return Json(results);
+		return Ok(results);
 	}
 
 	/// <summary>
@@ -79,7 +79,7 @@ public class MetaCorrectTimezoneController(
 	public async Task<IActionResult> ExecuteTimezoneCorrectionAsync(
 		string f,
 		bool? collections,
-		[FromBody] ExifTimezoneCorrectionRequest? request)
+		[FromBody] ExifTimezoneCorrectionRequest request)
 	{
 		if ( !ModelState.IsValid || string.IsNullOrWhiteSpace(f) || collections == null )
 		{
@@ -99,7 +99,6 @@ public class MetaCorrectTimezoneController(
 				collections.Value,
 				request);
 
-
 		// Queue background task for batch correction
 		await queue.QueueBackgroundWorkItemAsync(async _ =>
 		{
@@ -108,7 +107,8 @@ public class MetaCorrectTimezoneController(
 				.GetRequiredService<IExifTimezoneCorrectionService>();
 
 			var fileIndexItems = validateResults
-				.Select(p => p.FileIndexItem).ToList();
+				.Where(x => x.FileIndexItem != null)
+				.Select(p => p.FileIndexItem).Cast<FileIndexItem>().ToList();
 			await service.CorrectTimezoneAsync(fileIndexItems, request);
 			await UpdateWebSocketTaskRun(fileIndexItems);
 		}, "TimezoneCorrectionExecute", Activity.Current?.Id);
