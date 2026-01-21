@@ -969,7 +969,8 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		Assert.IsTrue(result.Success);
 		Assert.AreEqual(5, result.Delta.Hours); // 5 hours 45 minutes
 		Assert.AreEqual(45, result.Delta.Minutes); // 5 hours 45 minutes
-		Assert.AreEqual(new DateTime(2024, 6, 15, 19, 45, 0, DateTimeKind.Local),
+		Assert.AreEqual(new DateTime(2024, 6, 15, 
+				19, 45, 0, DateTimeKind.Local),
 			result.CorrectedDateTime);
 	}
 
