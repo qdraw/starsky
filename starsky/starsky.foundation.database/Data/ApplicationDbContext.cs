@@ -253,6 +253,10 @@ public class ApplicationDbContext : DbContext
 
 				etb.ToTable("Thumbnails");
 				etb.HasAnnotation("MySql:CharSet", "utf8mb4");
+
+				// Add composite index for performance on GetMissingThumbnailsBatchInternalAsync
+				etb.HasIndex(e => new { e.ExtraLarge, e.Large, e.Small, e.FileHash })
+					.HasDatabaseName("IX_Thumbnails_Missing_And_FileHash");
 			}
 		);
 	}

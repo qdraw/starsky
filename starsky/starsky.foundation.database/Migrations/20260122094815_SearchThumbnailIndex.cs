@@ -5,7 +5,7 @@
 namespace starsky.foundation.database.Migrations
 {
     /// <inheritdoc />
-    public partial class SearchIndexes : Migration
+    public partial class SearchThumbnailIndex : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -13,6 +13,11 @@ namespace starsky.foundation.database.Migrations
             migrationBuilder.DropIndex(
                 name: "IX_FileIndex_ParentDirectory_FileName",
                 table: "FileIndex");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Thumbnails_Missing_And_FileHash",
+                table: "Thumbnails",
+                columns: new[] { "ExtraLarge", "Large", "Small", "FileHash" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_FileIndex_DateTime",
@@ -33,6 +38,10 @@ namespace starsky.foundation.database.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropIndex(
+                name: "IX_Thumbnails_Missing_And_FileHash",
+                table: "Thumbnails");
+
             migrationBuilder.DropIndex(
                 name: "IX_FileIndex_DateTime",
                 table: "FileIndex");

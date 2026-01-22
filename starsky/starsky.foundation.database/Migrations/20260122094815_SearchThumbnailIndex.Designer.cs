@@ -12,8 +12,8 @@ using starsky.foundation.database.Data;
 namespace starsky.foundation.database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260122081014_SearchIndexes")]
-    partial class SearchIndexes
+    [Migration("20260122094815_SearchThumbnailIndex")]
+    partial class SearchThumbnailIndex
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -512,6 +512,9 @@ namespace starsky.foundation.database.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("FileHash");
+
+                    b.HasIndex("ExtraLarge", "Large", "Small", "FileHash")
+                        .HasDatabaseName("IX_Thumbnails_Missing_And_FileHash");
 
                     b.ToTable("Thumbnails", (string)null);
 
