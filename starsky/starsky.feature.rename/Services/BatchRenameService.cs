@@ -3,15 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.feature.rename.Models;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 
 namespace starsky.feature.rename.Services;
 
-public class BatchRenameService(IQuery query, IStorage iStorage, IWebLogger logger)
+public class BatchRenameService(
+	IQuery query,
+	IStorage iStorage,
+	IWebLogger logger,
+	AppSettings appSettings)
 {
 	/// <summary>
 	///     Preview batch rename operation without modifying files
@@ -126,6 +132,16 @@ public class BatchRenameService(IQuery query, IStorage iStorage, IWebLogger logg
 				mappings.Add(new BatchRenameMapping
 				{
 					SourceFilePath = key, HasError = true, ErrorMessage = "Is a directory"
+				});
+				continue;
+			}
+
+			if ( new StatusCodesHelper(appSettings).IsReadOnlyStatus(fileItem) !=
+			     FileIndexItem.ExifStatus.Default )
+			{
+				mappings.Add(new BatchRenameMapping
+				{
+					SourceFilePath = key, HasError = true, ErrorMessage = "Read-only location"
 				});
 				continue;
 			}

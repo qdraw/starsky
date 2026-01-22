@@ -112,7 +112,8 @@ public class BatchRenameServiceTest
 		await CreateFoldersAndFilesInDatabase();
 		var iStorage = new FakeIStorage([_folderExist.FilePath!],
 			[_fileInExist.FilePath!]);
-		var service = new BatchRenameService(_query, iStorage, new FakeIWebLogger());
+		var service =
+			new BatchRenameService(_query, iStorage, new FakeIWebLogger(), new AppSettings());
 		var filePaths = new List<string> { _fileInExist.FilePath! };
 		const string tokenPattern = "{yyyy}{MM}{dd}_{filenamebase}{seqn}.{ext}";
 		var result = service.PreviewBatchRename(filePaths,
@@ -130,7 +131,8 @@ public class BatchRenameServiceTest
 		await CreateFoldersAndFilesInDatabase();
 		var iStorage = new FakeIStorage([],
 			[_fileInRoot.FilePath!]);
-		var service = new BatchRenameService(_query, iStorage, new FakeIWebLogger());
+		var service =
+			new BatchRenameService(_query, iStorage, new FakeIWebLogger(), new AppSettings());
 		var filePaths = new List<string> { _fileInRoot.FilePath! };
 		const string tokenPattern = "{yyyy}{MM}{dd}_{HH}{mm}{ss}_{filenamebase}.{ext}";
 		var result = service.PreviewBatchRename(filePaths,
@@ -148,7 +150,8 @@ public class BatchRenameServiceTest
 		await CreateFoldersAndFilesInDatabase();
 		var iStorage = new FakeIStorage([_folderExist.FilePath!],
 			[]);
-		var service = new BatchRenameService(_query, iStorage, new FakeIWebLogger());
+		var service =
+			new BatchRenameService(_query, iStorage, new FakeIWebLogger(), new AppSettings());
 		const string tokenPattern = "{yyyy}{MM}{dd}_{HH}{mm}{ss}_{filenamebase}.{ext}";
 		var result = service.PreviewBatchRename([_folderExist.FilePath!],
 			tokenPattern);
@@ -168,7 +171,8 @@ public class BatchRenameServiceTest
 
 		var iStorage = new FakeIStorage([],
 			[_fileInRoot.FilePath!]);
-		var service = new BatchRenameService(_query, iStorage, new FakeIWebLogger());
+		var service =
+			new BatchRenameService(_query, iStorage, new FakeIWebLogger(), new AppSettings());
 		var filePaths = new List<string> { _fileInRoot.FilePath! };
 		const string tokenPattern = "{yyyy}{MM}{dd}_{HH}{mm}{ss}_{filenamebase}.{ext}";
 		var result = service.PreviewBatchRename(filePaths,
@@ -186,7 +190,8 @@ public class BatchRenameServiceTest
 		await CreateFoldersAndFilesInDatabase();
 		var iStorage = new FakeIStorage([_folderExist.FilePath!],
 			[_fileInExist.FilePath!]);
-		var service = new BatchRenameService(_query, iStorage, new FakeIWebLogger());
+		var service =
+			new BatchRenameService(_query, iStorage, new FakeIWebLogger(), new AppSettings());
 		var filePaths = new List<string> { _fileInExist.FilePath! };
 		const string tokenPattern = "{invalidtoken}";
 		var result = service.PreviewBatchRename(filePaths, tokenPattern);
@@ -200,8 +205,9 @@ public class BatchRenameServiceTest
 	public void PreviewBatchRenameAsync_ReturnsError_WhenFileNotFound()
 	{
 		var iStorage =
-			new FakeIStorage([_folderExist.FilePath!], new List<string>());
-		var service = new BatchRenameService(_query, iStorage, new FakeIWebLogger());
+			new FakeIStorage([_folderExist.FilePath!], []);
+		var service =
+			new BatchRenameService(_query, iStorage, new FakeIWebLogger(), new AppSettings());
 		var filePaths = new List<string> { "/notfound.jpg" };
 		const string tokenPattern = "{yyyy}{MM}{dd}_{filenamebase}{seqn}.{ext}";
 		var result = service.PreviewBatchRename(filePaths, tokenPattern);
@@ -214,7 +220,8 @@ public class BatchRenameServiceTest
 	public void PreviewBatchRenameAsync_ReturnsEmptyList_WhenNoFiles()
 	{
 		var iStorage = new FakeIStorage([], []);
-		var service = new BatchRenameService(_query, iStorage, new FakeIWebLogger());
+		var service =
+			new BatchRenameService(_query, iStorage, new FakeIWebLogger(), new AppSettings());
 		var filePaths = new List<string>();
 		const string tokenPattern = "{yyyy}{MM}{dd}_{filenamebase}{seqn}.{ext}";
 		var result = service.PreviewBatchRename(filePaths, tokenPattern);
@@ -228,7 +235,7 @@ public class BatchRenameServiceTest
 		var iStorage = new FakeIStorage([], []);
 		var service =
 			new BatchRenameService(new FakeIQuery([new FileIndexItem("/test.jpg")]),
-				iStorage, new FakeIWebLogger());
+				iStorage, new FakeIWebLogger(), new AppSettings());
 		var result = await service.ExecuteBatchRenameAsync([]);
 
 		Assert.IsEmpty(result);
@@ -240,7 +247,7 @@ public class BatchRenameServiceTest
 		var iStorage = new FakeIStorage([], []);
 		var service =
 			new BatchRenameService(new FakeIQuery([new FileIndexItem("/test.jpg")]),
-				iStorage, new FakeIWebLogger());
+				iStorage, new FakeIWebLogger(), new AppSettings());
 		var result = await service.ExecuteBatchRenameAsync([
 			new BatchRenameMapping
 			{
@@ -254,6 +261,22 @@ public class BatchRenameServiceTest
 		Assert.HasCount(1, result);
 		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, result[0].Status);
 	}
+	
+	[TestMethod]
+	public void PreviewBatchRename_ReadOnly()
+	{
+		var iStorage = new FakeIStorage([], 
+			["/test.jpg"]);
+		var service =
+			new BatchRenameService(new FakeIQuery([new FileIndexItem("/test.jpg")]),
+				iStorage, new FakeIWebLogger(), new AppSettings{ReadOnlyFolders = ["/"]});
+		var result =  service.PreviewBatchRename(["/test.jpg"],
+			"{yyyy}{MM}{dd}_{filenamebase}{seqn}.{ext}");
+
+		Assert.HasCount(1, result);
+		Assert.IsTrue(result[0].HasError);
+		Assert.AreEqual("Read-only location", result[0].ErrorMessage);
+	}
 
 	[TestMethod]
 	public async Task ExecuteBatchRenameAsync_Null()
@@ -261,7 +284,7 @@ public class BatchRenameServiceTest
 		var iStorage = new FakeIStorage([], []);
 		var service =
 			new BatchRenameService(new FakeIQueryException(new AccessViolationException("test")),
-				iStorage, new FakeIWebLogger());
+				iStorage, new FakeIWebLogger(), new AppSettings());
 		var result = await service.ExecuteBatchRenameAsync([
 			new BatchRenameMapping
 			{
@@ -282,7 +305,7 @@ public class BatchRenameServiceTest
 		var iStorage = new FakeIStorage([], []);
 		var service =
 			new BatchRenameService(new FakeIQueryException(new AccessViolationException("test")),
-				iStorage, new FakeIWebLogger());
+				iStorage, new FakeIWebLogger(), new AppSettings());
 		var result = service.PreviewBatchRename(
 			[null!], "{yyyy}{MM}{dd}_{filenamebase}{seqn}.{ext}");
 
@@ -295,7 +318,7 @@ public class BatchRenameServiceTest
 		var iStorage = new FakeIStorage([], ["/test.jpg"]);
 		var service =
 			new BatchRenameService(new FakeIQuery([new FileIndexItem("/test.jpg")]),
-				iStorage, new FakeIWebLogger());
+				iStorage, new FakeIWebLogger(), new AppSettings());
 		var result = service.PreviewBatchRename(
 			["/test.jpg"], "{yyyy}{MM}{dd}_{filenamebase}{seqn}__{ext}");
 
@@ -313,7 +336,8 @@ public class BatchRenameServiceTest
 		await CreateFoldersAndFilesInDatabase();
 		var iStorage = new FakeIStorage([_parentFolder.FilePath!, _folderExist.FilePath!],
 			[_fileInExist.FilePath!, _fileInRoot.FilePath!]);
-		var service = new BatchRenameService(_query, iStorage, new FakeIWebLogger());
+		var service =
+			new BatchRenameService(_query, iStorage, new FakeIWebLogger(), new AppSettings());
 
 		var mappings = new List<BatchRenameMapping>
 		{
@@ -356,7 +380,8 @@ public class BatchRenameServiceTest
 		await CreateFoldersAndFilesInDatabase();
 		var iStorage = new FakeIStorage([_parentFolder.FilePath!, _folderExist.FilePath!],
 			[_fileInExist.FilePath!, _fileInRoot.FilePath!]);
-		var service = new BatchRenameService(_query, iStorage, new FakeIWebLogger());
+		var service =
+			new BatchRenameService(_query, iStorage, new FakeIWebLogger(), new AppSettings());
 
 		const string tokenPattern = "{yyyy}-{MM}-{dd}_{HH}-{mm}-{ss}_a.{ext}";
 		var mappings = service.PreviewBatchRename(
@@ -406,7 +431,8 @@ public class BatchRenameServiceTest
 			new FileIndexItem(file1.FilePath!).FilePath!,
 			new FileIndexItem(file2.FilePath!).FilePath!
 		]);
-		var service = new BatchRenameService(_query, iStorage, new FakeIWebLogger());
+		var service =
+			new BatchRenameService(_query, iStorage, new FakeIWebLogger(), new AppSettings());
 
 		var mappings = new List<BatchRenameMapping>
 		{
@@ -499,7 +525,8 @@ public class BatchRenameServiceTest
 			new FileIndexItem(file2Raw.FilePath!).FilePath!
 		]);
 
-		var service = new BatchRenameService(_query, iStorage, new FakeIWebLogger());
+		var service =
+			new BatchRenameService(_query, iStorage, new FakeIWebLogger(), new AppSettings());
 
 		const string tokenPattern = "{yyyy}{MM}{dd}_{HH}{mm}{ss}.{ext}";
 
@@ -613,7 +640,8 @@ public class BatchRenameServiceTest
 			new FileIndexItem(file2Xmp.FilePath!).FilePath!
 		]);
 
-		var service = new BatchRenameService(_query, iStorage, new FakeIWebLogger());
+		var service =
+			new BatchRenameService(_query, iStorage, new FakeIWebLogger(), new AppSettings());
 
 		const string tokenPattern = "{yyyy}{MM}{dd}_{HH}{mm}{ss}.{ext}";
 
@@ -740,7 +768,8 @@ public class BatchRenameServiceTest
 			new FileIndexItem(file2Xmp.FilePath!).FilePath!
 		]);
 
-		var service = new BatchRenameService(_query, iStorage, new FakeIWebLogger());
+		var service =
+			new BatchRenameService(_query, iStorage, new FakeIWebLogger(), new AppSettings());
 
 		const string tokenPattern = "{yyyy}{MM}{dd}_{HH}{mm}{ss}.{ext}";
 
@@ -867,7 +896,8 @@ public class BatchRenameServiceTest
 			new FileIndexItem(file2Xmp.FilePath!).FilePath!
 		]);
 
-		var service = new BatchRenameService(_query, iStorage, new FakeIWebLogger());
+		var service =
+			new BatchRenameService(_query, iStorage, new FakeIWebLogger(), new AppSettings());
 
 		const string tokenPattern = "{yyyy}{MM}{dd}_{HH}{mm}{ss}.{ext}";
 
@@ -887,7 +917,7 @@ public class BatchRenameServiceTest
 		}).OrderBy(p => p.FileName).ToList();
 
 		Assert.HasCount(2, filteredResults);
-		
+
 		Assert.AreEqual("/exist/20260101_180000-1.jpg", filteredResults[0].FilePath);
 		Assert.AreEqual("DSC0002.jpg", filteredResults[0].FileHash);
 
@@ -926,7 +956,8 @@ public class BatchRenameServiceTest
 				DateTime = new DateTime(2022, 1, 1, 12, 0, 0, DateTimeKind.Utc)
 			}
 		]);
-		var service = new BatchRenameService(fakeQuery, iStorage, new FakeIWebLogger());
+		var service =
+			new BatchRenameService(fakeQuery, iStorage, new FakeIWebLogger(), new AppSettings());
 		const string tokenPattern = "{yyyy}{MM}{dd}_{filenamebase}{seqn}.{ext}";
 
 		// Act
