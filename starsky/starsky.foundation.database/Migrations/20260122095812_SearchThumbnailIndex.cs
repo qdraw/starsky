@@ -10,10 +10,6 @@ namespace starsky.foundation.database.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "IX_FileIndex_ParentDirectory_FileName",
-                table: "FileIndex");
-
             migrationBuilder.CreateIndex(
                 name: "IX_Thumbnails_Missing_And_FileHash",
                 table: "Thumbnails",
@@ -53,11 +49,6 @@ namespace starsky.foundation.database.Migrations
             migrationBuilder.DropIndex(
                 name: "IX_FileIndex_ParentDirectory_Tags",
                 table: "FileIndex");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FileIndex_ParentDirectory_FileName",
-                table: "FileIndex",
-                columns: new[] { "ParentDirectory", "FileName" });
         }
     }
 }

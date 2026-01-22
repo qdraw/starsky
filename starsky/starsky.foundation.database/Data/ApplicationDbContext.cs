@@ -67,7 +67,10 @@ public class ApplicationDbContext : DbContext
 		modelBuilder.Entity<FileIndexItem>(etb =>
 		{
 			etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
-			etb.HasIndex(x => new { x.FileName, x.ParentDirectory });
+
+			// This filters on ParentDirectory and sort on fileName
+			etb.HasIndex(x => new { x.FileName, x.ParentDirectory });			
+			etb.HasIndex(x => new { x.ParentDirectory, x.FileName });
 			etb.HasIndex(x => new { x.FilePath });
 			etb.HasIndex(x => new { x.Tags });
 			etb.HasIndex(x => new { x.ImageFormat });

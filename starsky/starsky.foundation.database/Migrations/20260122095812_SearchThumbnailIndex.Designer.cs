@@ -12,7 +12,7 @@ using starsky.foundation.database.Data;
 namespace starsky.foundation.database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260122094815_SearchThumbnailIndex")]
+    [Migration("20260122095812_SearchThumbnailIndex")]
     partial class SearchThumbnailIndex
     {
         /// <inheritdoc />
@@ -384,6 +384,8 @@ namespace starsky.foundation.database.Migrations
                     b.HasIndex("Tags");
 
                     b.HasIndex("FileName", "ParentDirectory");
+
+                    b.HasIndex("ParentDirectory", "FileName");
 
                     b.HasIndex("ParentDirectory", "Tags");
 

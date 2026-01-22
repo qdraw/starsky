@@ -382,6 +382,8 @@ namespace starsky.foundation.database.Migrations
 
                     b.HasIndex("FileName", "ParentDirectory");
 
+                    b.HasIndex("ParentDirectory", "FileName");
+
                     b.HasIndex("ParentDirectory", "Tags");
 
                     b.ToTable("FileIndex");
