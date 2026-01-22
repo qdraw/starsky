@@ -110,29 +110,26 @@ public sealed class StorageTemporaryFilesystemTests
 	public async Task Temporary_FileCopy_success()
 	{
 		var createNewImage = new CreateAnImage();
+		const string fileCopyName = "StorageTemporaryFilesystemTestSuccess_FileCopy.jpg";
 
-		_tempStorage.FileCopy(_fileName,
-			"StorageThumbnailFilesystemTest_FileCopy.jpg");
+		_tempStorage.FileCopy(_fileName, fileCopyName);
 
 		var path = Path.Combine(createNewImage.BasePath, _fileName);
 		Assert.IsTrue(File.Exists(path));
-		var path2 = Path.Combine(createNewImage.BasePath,
-			"StorageThumbnailFilesystemTest_FileCopy.jpg");
+		var path2 = Path.Combine(createNewImage.BasePath, fileCopyName);
 		Assert.IsTrue(File.Exists(path2));
 
 		File.Delete(_fileName);
 		try
 		{
-			File.Delete(Path.Combine(createNewImage.BasePath,
-				"StorageThumbnailFilesystemTest_FileCopy.jpg"));
+			File.Delete(Path.Combine(createNewImage.BasePath, fileCopyName));
 		}
 		catch ( IOException )
 		{
-			Console.WriteLine("StorageThumbnailFilesystemTest_FileCopy" +
+			Console.WriteLine(fileCopyName +
 			                  " was not deleted, retrying");
 			await Task.Delay(1000, TestContext.CancellationTokenSource.Token);
-			File.Delete(Path.Combine(createNewImage.BasePath,
-				"StorageThumbnailFilesystemTest_FileCopy.jpg"));
+			File.Delete(Path.Combine(createNewImage.BasePath, fileCopyName));
 		}
 
 		var createAnImage = new CreateAnImage();
