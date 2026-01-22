@@ -30,7 +30,8 @@ public sealed class ExifTimezoneDisplayListServiceTest
 	[DataRow("Etc/GMT-10", "UTC+10")]
 	[DataRow("Etc/GMT+14", "UTC-14")]
 	[DataRow("Etc/GMT-14", "UTC+14")]
-	public void GetIncorrectCameraTimezonesList_InvertedSign_Theory(string tzId, string expectedDisplay)
+	public void GetIncorrectCameraTimezonesList_InvertedSign_Theory(string tzId,
+		string expectedDisplay)
 	{
 		var service = new ExifTimezoneDisplayListService();
 		var list = service.GetIncorrectCameraTimezonesList();
@@ -47,7 +48,7 @@ public sealed class ExifTimezoneDisplayListServiceTest
 		var list = service.GetMovedToDifferentPlaceTimezonesList();
 
 		Assert.IsNotNull(list);
-		Assert.IsTrue(list.Any());
+		Assert.IsNotEmpty(list);
 		// Basic presence check: common IDs like "UTC" or display names containing UTC
 		var hasUtc = list.Any(x => x.Id == "UTC" || x.DisplayName.Contains("UTC"));
 		Assert.IsTrue(hasUtc);
