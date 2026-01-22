@@ -11,13 +11,13 @@ public class ExifTimezoneDisplayListService : IExifTimezoneDisplayListService
 	public List<ExifTimezoneDisplay> GetIncorrectCameraTimezonesList()
 	{
 		var timezones = new List<ExifTimezoneDisplay>();
-		// IANA Etc/GMT uses inverted sign: Etc/GMT+X => UTC-X, Etc/GMT-X => UTC+X
-		// Include full range -14..+14, skipping 0 (covered by standard GMT)
-		for (var i = -14; i <= 14; i++)
+
+		for ( var i = 12; i >= -14; i-- )
 		{
 			if ( i == 0 )
 			{
-				continue; // Skip GMT, already in system timezones
+				timezones.Add(new ExifTimezoneDisplay { Id = "Etc/GMT", DisplayName = "UTC" });
+				continue;
 			}
 
 			// Construct identifier per IANA naming
@@ -28,12 +28,9 @@ public class ExifTimezoneDisplayListService : IExifTimezoneDisplayListService
 			var sign = i > 0 ? "-" : "+";
 			var displayName = $"UTC{sign}{hours:D2}";
 
-			timezones.Add(new ExifTimezoneDisplay
-			{
-				Id = gmtId,
-				DisplayName = displayName
-			});
+			timezones.Add(new ExifTimezoneDisplay { Id = gmtId, DisplayName = displayName });
 		}
+
 		return timezones;
 	}
 
@@ -43,13 +40,10 @@ public class ExifTimezoneDisplayListService : IExifTimezoneDisplayListService
 		// Add Etc/GMT timezones (fixed offset, no DST)
 		// GMT offset format: Etc/GMT+X where X is hours behind UTC (opposite sign)
 
-		var timezones = 
+		var timezones =
 			TimeZoneInfo.GetSystemTimeZones()
-			.Select(tz => new ExifTimezoneDisplay
-			{
-				Id = tz.Id, 
-				DisplayName = tz.DisplayName
-			}).ToList();
+				.Select(tz => new ExifTimezoneDisplay { Id = tz.Id, DisplayName = tz.DisplayName })
+				.ToList();
 
 		return timezones;
 	}
