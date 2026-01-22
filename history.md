@@ -43,6 +43,10 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.8 - _(Unreleased)_ - 2026-?-? {#v0.7.8}
 
+- [x] (Added) _Back-end_ Add API for List of timezones for moved to different place (PR #2596)
+- [x] (Added) _Back-end_ Add API for List of timezones for incorrect camera timezones (PR #2596)
+- [x] (Added) _Back-end_ Add API endpoint for Exif Timezone Correction Preview (PR #2596)
+- [x] (Added) _Back-end_ Add API endpoint for Exif Timezone Correction Execute (PR #2596)
 - [x] (Fixed) _Back-end_ Added new database indexes to the FileIndex and Thumbnails (PR #2627)
 - [x] (Fixed) _Back-end_ Increase timeout for regex used in tags (PR #2627)
 - [x] (Fixed) _Back-end_ Add database indexes for faster search (PR #2627)
