@@ -29,25 +29,47 @@ public sealed class StorageTemporaryFilesystemTests
 	public TestContext TestContext { get; set; }
 
 	[TestMethod]
-	public void Temporary_FileMove_Test()
+	public async Task Temporary_FileMove_Test()
 	{
 		var createNewImage = new CreateAnImage();
+		const string toMoveFileName = "StorageTemporaryFilesystemTest_FileMove.jpg";
+		const string startMoveFile = "start_move_file.jpg";
 
 		// first copy for parallel test
-		_tempStorage.FileCopy(_fileName, "start_move_file");
+		_tempStorage.FileCopy(_fileName, startMoveFile);
 
-		_tempStorage.FileMove("start_move_file",
-			"StorageThumbnailFilesystemTest_FileMove.jpg");
+		// Retry logic for flaky UnauthorizedAccessException
+		const int maxRetries = 3;
+		var attempt = 0;
+		var moved = false;
+		Exception? lastException = null;
+		while ( attempt < maxRetries && !moved )
+		{
+			try
+			{
+				_tempStorage.FileMove(startMoveFile, toMoveFileName);
+				moved = true;
+			}
+			catch ( Exception ex )
+			{
+				lastException = ex;
+				await Task.Delay(100, TestContext.CancellationTokenSource.Token);
+				attempt++;
+			}
+		}
 
-		var path = Path.Combine(createNewImage.BasePath, "start_move_file" + ".jpg");
+		if ( !moved && lastException != null )
+		{
+			Assert.Fail($"FileMove failed after {maxRetries} attempts: {lastException.Message}");
+		}
+
+		var path = Path.Combine(createNewImage.BasePath, startMoveFile);
 		Assert.IsFalse(File.Exists(path));
-		var path2 = Path.Combine(createNewImage.BasePath,
-			"StorageThumbnailFilesystemTest_FileMove.jpg");
+		var path2 = Path.Combine(createNewImage.BasePath, toMoveFileName);
 		Assert.IsTrue(File.Exists(path2));
 
-		File.Delete(Path.Combine(createNewImage.BasePath, "start_move_file.jpg"));
-		File.Delete(Path.Combine(createNewImage.BasePath,
-			"StorageThumbnailFilesystemTest_FileMove.jpg"));
+		File.Delete(Path.Combine(createNewImage.BasePath, startMoveFile));
+		File.Delete(Path.Combine(createNewImage.BasePath, toMoveFileName));
 
 		var createAnImage = new CreateAnImage();
 		Assert.IsNotNull(createAnImage);

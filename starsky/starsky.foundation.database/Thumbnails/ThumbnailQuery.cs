@@ -208,6 +208,7 @@ public class ThumbnailQuery : IThumbnailQuery
 		ApplicationDbContext context, int pageNumber,
 		int pageSize)
 	{
+		// uses index IX_Thumbnails_Missing_And_FileHash
 		return await context.Thumbnails
 			.Where(p => ( p.ExtraLarge == null
 			              || p.Large == null || p.Small == null )
