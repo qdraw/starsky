@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -149,7 +148,7 @@ public class MetaCorrectTimezoneController(
 	{
 		return Ok(exifTimezoneDisplayListService.GetIncorrectCameraTimezonesList());
 	}
-	
+
 	/// <summary>
 	///     Get all available system timezones
 	/// </summary>
@@ -162,56 +161,5 @@ public class MetaCorrectTimezoneController(
 	public IActionResult GetMovedToDifferentPlaceTimezones()
 	{
 		return Ok(exifTimezoneDisplayListService.GetMovedToDifferentPlaceTimezonesList());
-	}
-	
-	/// <summary>
-	///     Get all available system timezones
-	/// </summary>
-	/// <returns>List of available timezone identifiers</returns>
-	/// <response code="200">List of timezone identifiers</response>
-	/// <response code="401">User unauthorized</response>
-	[ProducesResponseType(200)]
-	[HttpGet("/api/meta-correct-timezone/available-timezones")]
-	[Produces("application/json")]
-	public IActionResult GetAvailableTimezones()
-	{
-		var timezones = new List<dynamic>();
-
-		// Add standard system timezones
-		foreach (var tz in TimeZoneInfo.GetSystemTimeZones())
-		{
-			timezones.Add(new
-			{
-				id = tz.Id,
-				displayName = tz.DisplayName,
-				standardName = tz.StandardName,
-				daylightName = tz.DaylightName
-			});
-		}
-
-		// Add Etc/GMT timezones (fixed offset, no DST)
-		// IANA inverted sign: Etc/GMT+X => UTC-X, Etc/GMT-X => UTC+X
-		for (int i = -14; i <= 14; i++)
-		{
-			if ( i == 0 )
-			{
-				continue; // Skip GMT, already present
-			}
-
-			var gmtId = i > 0 ? $"Etc/GMT+{i}" : $"Etc/GMT{i}";
-			var hours = Math.Abs(i);
-			var sign = i > 0 ? "-" : "+"; // invert sign for display
-			var displayName = $"(UTC{sign}{hours:D2}:00) {gmtId}";
-
-			timezones.Add(new
-			{
-				id = gmtId,
-				displayName,
-				standardName = gmtId,
-				daylightName = gmtId
-			});
-		}
-
-		return Ok(timezones.OrderBy(tz => tz.displayName).ToList());
 	}
 }
