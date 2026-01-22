@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +13,7 @@ using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.metaupdate.Models;
 using starsky.foundation.metaupdate.Services;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.worker.Interfaces;
 using starskytest.FakeMocks;
 
@@ -45,8 +47,11 @@ public sealed class MetaCorrectTimezoneControllerTest
 			timezoneService,
 			queue,
 			logger,
-			scopeFactory, 
-			new ExifTimezoneDisplayListService()) { ControllerContext = { HttpContext = new DefaultHttpContext() } };
+			scopeFactory,
+			new ExifTimezoneDisplayListService())
+		{
+			ControllerContext = { HttpContext = new DefaultHttpContext() }
+		};
 
 		return controller;
 	}
@@ -499,7 +504,7 @@ public sealed class MetaCorrectTimezoneControllerTest
 		Assert.IsNotNull(badRequestResult);
 		Assert.AreEqual(400, badRequestResult.StatusCode);
 	}
-	
+
 	[TestMethod]
 	public async Task ExecuteTimezoneCorrectionAsync_ValidInput_ReturnsOkAndQueuesTask()
 	{
@@ -565,7 +570,7 @@ public sealed class MetaCorrectTimezoneControllerTest
 					10, 0, 0, DateTimeKind.Local),
 				CorrectedDateTime = new DateTime(2024, 6, 16,
 					12, 0, 0, DateTimeKind.Local),
-				Delta= TimeSpan.FromHours(2.0),
+				Delta = TimeSpan.FromHours(2.0),
 				FileIndexItem = new FileIndexItem { FilePath = "/test2.jpg" }
 			}
 		};
@@ -990,7 +995,7 @@ public sealed class MetaCorrectTimezoneControllerTest
 					14, 30, 0, DateTimeKind.Local),
 				CorrectedDateTime = new DateTime(2024, 6, 15,
 					16, 30, 0, DateTimeKind.Local),
-				Delta= TimeSpan.FromHours(2.0),
+				Delta = TimeSpan.FromHours(2.0),
 				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
 			}
 		};
@@ -1072,5 +1077,52 @@ public sealed class MetaCorrectTimezoneControllerTest
 		Assert.IsFalse(returnedResults[1].Success);
 		Assert.IsTrue(returnedResults[2].Success);
 		Assert.IsTrue(queue.QueueBackgroundWorkItemCalled);
+	}
+
+	[TestMethod]
+	public void GetIncorrectCameraTimezones()
+	{
+		var timezoneService = new FakeIExifTimezoneCorrectionService([]);
+		var queue = new FakeIUpdateBackgroundTaskQueue();
+
+		var controller = CreateController(timezoneService, queue);
+
+		var expectedResult = JsonSerializer.Serialize(
+			new ExifTimezoneDisplayListService().GetIncorrectCameraTimezonesList(),
+			DefaultJsonSerializer.CamelCase);
+
+		// Act
+		var result = controller.GetIncorrectCameraTimezones() as OkObjectResult;
+		var returnedJson = JsonSerializer.Serialize(
+			result?.Value,
+			DefaultJsonSerializer.CamelCase);
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.AreEqual(expectedResult, returnedJson);
+	}
+
+
+	[TestMethod]
+	public void GetMovedToDifferentPlaceTimezonesList()
+	{
+		var timezoneService = new FakeIExifTimezoneCorrectionService([]);
+		var queue = new FakeIUpdateBackgroundTaskQueue();
+
+		var controller = CreateController(timezoneService, queue);
+
+		var expectedResult = JsonSerializer.Serialize(
+			new ExifTimezoneDisplayListService().GetMovedToDifferentPlaceTimezonesList(),
+			DefaultJsonSerializer.CamelCase);
+
+		// Act
+		var result = controller.GetMovedToDifferentPlaceTimezones() as OkObjectResult;
+		var returnedJson = JsonSerializer.Serialize(
+			result?.Value,
+			DefaultJsonSerializer.CamelCase);
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.AreEqual(expectedResult, returnedJson);
 	}
 }
