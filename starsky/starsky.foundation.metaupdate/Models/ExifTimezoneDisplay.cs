@@ -2,6 +2,6 @@ namespace starsky.foundation.metaupdate.Models;
 
 public class ExifTimezoneDisplay
 {
-	public string Id { get; set; }
-	public string DisplayName { get; set; }
+	public required string Id { get; set; }
+	public required string DisplayName { get; set; }
 }

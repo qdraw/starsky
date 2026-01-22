@@ -23,7 +23,7 @@ public sealed class ExifTimezoneDisplayListServiceTest
 		Assert.IsTrue(list.Any(x => x.Id == "Etc/GMT+14"));
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow("Etc/GMT+13", "UTC-13")]
 	[DataRow("Etc/GMT-2", "UTC+02")]
 	[DataRow("Etc/GMT+1", "UTC-01")]

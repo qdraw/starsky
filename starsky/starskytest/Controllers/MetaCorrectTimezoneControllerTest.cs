@@ -10,6 +10,7 @@ using starsky.feature.realtime.Interface;
 using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.metaupdate.Models;
+using starsky.foundation.metaupdate.Services;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.worker.Interfaces;
 using starskytest.FakeMocks;
@@ -44,7 +45,8 @@ public sealed class MetaCorrectTimezoneControllerTest
 			timezoneService,
 			queue,
 			logger,
-			scopeFactory) { ControllerContext = { HttpContext = new DefaultHttpContext() } };
+			scopeFactory, 
+			new ExifTimezoneDisplayListService()) { ControllerContext = { HttpContext = new DefaultHttpContext() } };
 
 		return controller;
 	}
