@@ -49,26 +49,9 @@ find /Volumes -type d -maxdepth 2 -name "DCIM" -print0 |
         fi
 
         # import
-        /opt/starsky/starsky/starskyimportercli --recursive true -v true --move true -i true --path $line
+        /opt/starsky/starsky/starskyimportercli --recursive true --camera --move true -i true
   done
 
-# for /Volumes/sdcard/PRIVATE/M4ROOT/CLIP
-find /Volumes -type d -maxdepth 4 -name "CLIP" -print0 |
-  while IFS= read -r -d '' line;
-  do
-        echo "$line"
-        if [ -d $BACKUP_DIR ]
-        then
-          # just copy
-          echo "start $BACKUP_DIR"
-          /opt/starsky/starsky/starskyimportercli --recursive true -v true -i false --path $line --structure "/yyyyMMdd_HHmmss_{filenamebase}.ext" --basepath $BACKUP_DIR -x false
-        else
-          echo "Skip: Directory $BACKUP_DIR does not exists."
-        fi
-
-        # import
-        /opt/starsky/starsky/starskyimportercli --recursive true -v true --move true -i true --path $line
-  done
 
 # lock file
 echo "script ended"
