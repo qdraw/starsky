@@ -137,12 +137,13 @@ public class MetaCorrectTimezoneController(
 
 	/// <summary>
 	///     Get all available system timezones
+	///		Based on location so they follow DST rules
 	/// </summary>
 	/// <returns>List of available timezone identifiers</returns>
 	/// <response code="200">List of timezone identifiers</response>
 	/// <response code="401">User unauthorized</response>
 	[ProducesResponseType(200)]
-	[HttpGet("/api/meta-correct-timezone/incorrect-camera-timezones")]
+	[HttpGet("/api/meta-correct-timezone/offset-timezones")]
 	[Produces("application/json")]
 	public IActionResult GetIncorrectCameraTimezones()
 	{
@@ -150,13 +151,15 @@ public class MetaCorrectTimezoneController(
 	}
 
 	/// <summary>
-	///     Get all available system timezones
+	///     Get moved to a different place timezones
+	///		Etc/GMT-1 Etc/GMT Etc/GMT+1 timezones with offset timezones
+	///		These timezones do not follow DST rules
 	/// </summary>
 	/// <returns>List of available timezone identifiers</returns>
 	/// <response code="200">List of timezone identifiers</response>
 	/// <response code="401">User unauthorized</response>
 	[ProducesResponseType(200)]
-	[HttpGet("/api/meta-correct-timezone/moved-to-different-place-timezones")]
+	[HttpGet("/api/meta-correct-timezone/standard-timezones")]
 	[Produces("application/json")]
 	public IActionResult GetMovedToDifferentPlaceTimezones()
 	{
