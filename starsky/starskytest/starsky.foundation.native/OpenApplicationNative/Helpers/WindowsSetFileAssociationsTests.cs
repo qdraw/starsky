@@ -64,24 +64,24 @@ public partial class WindowsSetFileAssociationsTests
 		}
 
 		var filePath = new CreateFakeStarskyWindowsExe().FullFilePath;
-		WindowsSetFileAssociations.EnsureAssociationsSet(
-			new FileAssociation
-			{
-				Extension = Extension,
-				ProgId = ProgId,
-				FileTypeDescription = FileTypeDescription,
-				ExecutableFilePath = filePath
-			});
+		Set();
 
 		var valueKey = GetRegistryValue();
 
 		// Retry a few times because registry propagation can be slow on CI
 		for ( var attempt = 0; attempt < 7 && valueKey == null; attempt++ )
 		{
+			if ( attempt % 3 == 3 )
+			{
+				Set();
+			}
+			
 			Console.WriteLine($"Registry key not found " +
 			                  $"(attempt {attempt + 1})," +
 			                  $" waiting for registry to update");
+			
 			await Task.Delay(250, TestContext.CancellationTokenSource.Token);
+			
 			valueKey = GetRegistryValue();
 			if ( valueKey != null )
 			{
@@ -94,6 +94,19 @@ public partial class WindowsSetFileAssociationsTests
 		var value = match.Groups[1].Value;
 
 		Assert.AreEqual(filePath, value);
+		return;
+
+		void Set()
+		{
+			WindowsSetFileAssociations.EnsureAssociationsSet(
+				new FileAssociation
+				{
+					Extension = Extension,
+					ProgId = ProgId,
+					FileTypeDescription = FileTypeDescription,
+					ExecutableFilePath = filePath
+				});
+		}
 	}
 
 	[SuppressMessage("Interoperability",

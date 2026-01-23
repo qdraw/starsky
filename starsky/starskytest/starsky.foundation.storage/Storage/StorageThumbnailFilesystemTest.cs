@@ -37,7 +37,7 @@ public sealed class StorageThumbnailFilesystemTest
 	public void Thumbnail_FileMove_Test()
 	{
 		var createNewImage = new CreateAnImage();
-		
+
 		const string startMoveFile = "start_move_file2";
 		const string movedFileName = "StorageThumbnailFilesystemTest_FileMove2.jpg";
 
