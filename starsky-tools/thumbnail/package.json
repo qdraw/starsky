@@ -1,6 +1,6 @@
 {
   "name": "thumbnail",
-  "version": "0.7.7",
+  "version": "0.7.8",
   "description": "Client side thumbnail generation interacting with a Starsky WebApi ",
   "main": "thumbnail.js",
   "scripts": {
@@ -27,7 +27,7 @@
     "p-iteration": "^1.1.8"
   },
   "devDependencies": {
-    "@types/node": "^25.0.0",
+    "@types/node": "^25.0.10",
     "concurrently": "^9.2.1",
     "typescript": "^5.9.3"
   }
