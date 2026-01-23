@@ -126,10 +126,10 @@ public class UpdateImportTransformations
 		}
 
 		// Hash is changed after transformation
-		fileIndexItem.FileHash =
-			( await new FileHash(_subPathStorage, _logger)
-				.GetHashCodeAsync(fileIndexItem.FilePath!) )
-			.Key;
+		var fileHashService = new FileHash(_subPathStorage, _logger);
+		fileIndexItem.FileHash = ( await fileHashService
+			.GetHashCodeAsync(fileIndexItem.FilePath!,
+				fileIndexItem.ImageFormat) ).Key;
 
 		await queryUpdateDelegate(fileIndexItem);
 

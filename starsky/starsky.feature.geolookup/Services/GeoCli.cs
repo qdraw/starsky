@@ -171,8 +171,10 @@ public sealed class GeoCli
 		foreach ( var item in fileIndexList.GroupBy(i => i.FilePath).Select(g => g.First())
 			         .ToList() )
 		{
+			var fileHashService = new FileHash(_storage, _logger);
 			var newThumb =
-				( await new FileHash(_storage, _logger).GetHashCodeAsync(item.FilePath!) ).Key;
+				( await fileHashService.GetHashCodeAsync(item.FilePath!,
+					item.ImageFormat) ).Key;
 			if ( item.FileHash == newThumb )
 			{
 				continue;

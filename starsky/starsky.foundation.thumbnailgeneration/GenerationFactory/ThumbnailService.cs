@@ -155,7 +155,7 @@ public class ThumbnailService(
 		}
 
 		var (fileHashLocal, success) =
-			await fileHashSubPathStorage.GetHashCodeAsync(singleSubPath);
+			await fileHashSubPathStorage.GetHashCodeAsync(singleSubPath, null);
 		if ( !success )
 		{
 			return [];
@@ -166,27 +166,28 @@ public class ThumbnailService(
 	}
 
 	private async Task<(Stream?, GenerationResultModel)> GenerateSingleThumbnailAsync(
-		string singleSubPath, ThumbnailImageFormat imageFormat, ThumbnailSize size)
+		string singleSubPath, ThumbnailImageFormat thumbnailImageFormat, ThumbnailSize size)
 	{
 		var factory = new ThumbnailGeneratorFactory(selectorStorage, logger, videoProcess,
 			nativePreviewThumbnailGenerator);
 		var generator = factory.GetGenerator(singleSubPath);
 
 		var (fileHash, success) =
-			await fileHashSubPathStorage.GetHashCodeAsync(singleSubPath);
+			await fileHashSubPathStorage.GetHashCodeAsync(singleSubPath, null);
 		if ( !success )
 		{
 			return ( null, ErrorGenerationResultModel
 				.FailedResult(size, singleSubPath, fileHash,
-					true, imageFormat, true, "Invalid fileHash") );
+					true, thumbnailImageFormat, true, "Invalid fileHash") );
 		}
 
 		var generationResult =
 			( await generator.GenerateThumbnail(singleSubPath, fileHash,
-				imageFormat, [size]) ).First();
+				thumbnailImageFormat, [size]) ).First();
 
 		var stream =
-			new GetThumbnailStream(selectorStorage).GetThumbnail(fileHash, size, imageFormat);
+			new GetThumbnailStream(selectorStorage).GetThumbnail(fileHash, size,
+				thumbnailImageFormat);
 		return ( stream, generationResult );
 	}
 }

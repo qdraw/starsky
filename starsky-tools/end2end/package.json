@@ -1,6 +1,6 @@
 {
   "name": "end2end",
-  "version": "0.7.6",
+  "version": "0.7.8",
   "description": "End2End testing of the application",
   "scripts": {
     "start": "cypress open --env configFolder=starsky,configEnv=local,CYPRESS_RETRIES=2 --e2e --browser=electron",
@@ -23,12 +23,12 @@
     "update:yes": "npm run update:install"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.1",
-    "@types/node": "^25.0.0",
-    "cypress": "^15.7.1",
-    "eslint": "^9.39.1",
-    "globals": "^16.5.0",
+    "@eslint/js": "^9.39.2",
+    "@types/node": "^25.0.10",
+    "cypress": "^15.9.0",
+    "eslint": "^9.39.2",
+    "globals": "^17.1.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.49.0"
+    "typescript-eslint": "^8.53.1"
   }
 }

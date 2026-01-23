@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
@@ -14,10 +15,13 @@ public class FileHashSubPathStorage(ISelectorStorage selectorStorage, IWebLogger
 	private readonly IStorage _storage =
 		selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 
-	public async Task<KeyValuePair<string, bool>> GetHashCodeAsync(string fullFileName,
+	public async Task<KeyValuePair<string, bool>> GetHashCodeAsync(
+		string fullFileName,
+		ExtensionRolesHelper.ImageFormat? imageFormat,
 		int timeoutInMilliseconds = 30000)
 	{
 		return await new FileHash(_storage, logger).GetHashCodeAsync(fullFileName,
+			imageFormat,
 			timeoutInMilliseconds);
 	}
 }

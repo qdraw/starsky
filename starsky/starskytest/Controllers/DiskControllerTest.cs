@@ -94,7 +94,7 @@ public sealed class DiskControllerTest
 			new List<string> { _createAnImage.DbPath });
 		var fileHashCode =
 			( await new FileHash(_iStorage, new FakeIWebLogger()).GetHashCodeAsync(_createAnImage
-				.DbPath) ).Key;
+				.DbPath, ExtensionRolesHelper.ImageFormat.jpg) ).Key;
 
 		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync(fileHashCode)) )
 		{

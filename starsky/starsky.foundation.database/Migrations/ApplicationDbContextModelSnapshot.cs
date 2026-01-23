@@ -19,7 +19,7 @@ namespace starsky.foundation.database.Migrations
             modelBuilder
                 .HasAnnotation("MySql:CharSet", "utf8mb4")
                 .HasAnnotation("MySql:CharSetDelegation", DelegationModes.ApplyToAll)
-                .HasAnnotation("ProductVersion", "8.0.17");
+                .HasAnnotation("ProductVersion", "8.0.23");
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.Credential", b =>
                 {
@@ -369,6 +369,11 @@ namespace starsky.foundation.database.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DateTime");
+
+                    b.HasIndex("FileHash")
+                        .HasAnnotation("MySql:CharSet", "utf8mb4");
+
                     b.HasIndex("FilePath");
 
                     b.HasIndex("ImageFormat");
@@ -378,6 +383,8 @@ namespace starsky.foundation.database.Migrations
                     b.HasIndex("FileName", "ParentDirectory");
 
                     b.HasIndex("ParentDirectory", "FileName");
+
+                    b.HasIndex("ParentDirectory", "Tags");
 
                     b.ToTable("FileIndex");
 
@@ -504,6 +511,9 @@ namespace starsky.foundation.database.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("FileHash");
+
+                    b.HasIndex("ExtraLarge", "Large", "Small", "FileHash")
+                        .HasDatabaseName("IX_Thumbnails_Missing_And_FileHash");
 
                     b.ToTable("Thumbnails", (string)null);
 

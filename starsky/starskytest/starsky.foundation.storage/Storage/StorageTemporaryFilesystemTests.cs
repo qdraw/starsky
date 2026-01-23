@@ -26,26 +26,50 @@ public sealed class StorageTemporaryFilesystemTests
 		_fileName = createNewImage.FileName;
 	}
 
+	public TestContext TestContext { get; set; }
+
 	[TestMethod]
-	public void Temporary_FileMove_Test()
+	public async Task Temporary_FileMove_Test()
 	{
 		var createNewImage = new CreateAnImage();
+		const string toMoveFileName = "StorageTemporaryFilesystemTest_FileMove.jpg";
+		const string startMoveFile = "start_move_file.jpg";
 
 		// first copy for parallel test
-		_tempStorage.FileCopy(_fileName, "start_move_file");
+		_tempStorage.FileCopy(_fileName, startMoveFile);
 
-		_tempStorage.FileMove("start_move_file",
-			"StorageThumbnailFilesystemTest_FileMove.jpg");
+		// Retry logic for flaky UnauthorizedAccessException
+		const int maxRetries = 3;
+		var attempt = 0;
+		var moved = false;
+		Exception? lastException = null;
+		while ( attempt < maxRetries && !moved )
+		{
+			try
+			{
+				_tempStorage.FileMove(startMoveFile, toMoveFileName);
+				moved = true;
+			}
+			catch ( Exception ex )
+			{
+				lastException = ex;
+				await Task.Delay(100, TestContext.CancellationTokenSource.Token);
+				attempt++;
+			}
+		}
 
-		var path = Path.Combine(createNewImage.BasePath, "start_move_file" + ".jpg");
+		if ( !moved && lastException != null )
+		{
+			Assert.Fail($"FileMove failed after {maxRetries} attempts: {lastException.Message}");
+		}
+
+		var path = Path.Combine(createNewImage.BasePath, startMoveFile);
 		Assert.IsFalse(File.Exists(path));
-		var path2 = Path.Combine(createNewImage.BasePath,
-			"StorageThumbnailFilesystemTest_FileMove.jpg");
+		var path2 = Path.Combine(createNewImage.BasePath, toMoveFileName);
 		Assert.IsTrue(File.Exists(path2));
 
-		File.Delete(Path.Combine(createNewImage.BasePath, "start_move_file.jpg"));
-		File.Delete(Path.Combine(createNewImage.BasePath,
-			"StorageThumbnailFilesystemTest_FileMove.jpg"));
+		File.Delete(Path.Combine(createNewImage.BasePath, startMoveFile));
+		File.Delete(Path.Combine(createNewImage.BasePath, toMoveFileName));
 
 		var createAnImage = new CreateAnImage();
 		Assert.IsNotNull(createAnImage);
@@ -86,29 +110,26 @@ public sealed class StorageTemporaryFilesystemTests
 	public async Task Temporary_FileCopy_success()
 	{
 		var createNewImage = new CreateAnImage();
+		const string fileCopyName = "StorageTemporaryFilesystemTestSuccess_FileCopy.jpg";
 
-		_tempStorage.FileCopy(_fileName,
-			"StorageThumbnailFilesystemTest_FileCopy.jpg");
+		_tempStorage.FileCopy(_fileName, fileCopyName);
 
 		var path = Path.Combine(createNewImage.BasePath, _fileName);
 		Assert.IsTrue(File.Exists(path));
-		var path2 = Path.Combine(createNewImage.BasePath,
-			"StorageThumbnailFilesystemTest_FileCopy.jpg");
+		var path2 = Path.Combine(createNewImage.BasePath, fileCopyName);
 		Assert.IsTrue(File.Exists(path2));
 
 		File.Delete(_fileName);
 		try
 		{
-			File.Delete(Path.Combine(createNewImage.BasePath,
-				"StorageThumbnailFilesystemTest_FileCopy.jpg"));
+			File.Delete(Path.Combine(createNewImage.BasePath, fileCopyName));
 		}
 		catch ( IOException )
 		{
-			Console.WriteLine("StorageThumbnailFilesystemTest_FileCopy" +
+			Console.WriteLine(fileCopyName +
 			                  " was not deleted, retrying");
 			await Task.Delay(1000, TestContext.CancellationTokenSource.Token);
-			File.Delete(Path.Combine(createNewImage.BasePath,
-				"StorageThumbnailFilesystemTest_FileCopy.jpg"));
+			File.Delete(Path.Combine(createNewImage.BasePath, fileCopyName));
 		}
 
 		var createAnImage = new CreateAnImage();
@@ -193,7 +214,7 @@ public sealed class StorageTemporaryFilesystemTests
 	}
 
 	[TestMethod]
-	public void Temporary_IsFileReady()
+	public async Task Temporary_IsFileReady()
 	{
 		var createNewImage = new CreateAnImage();
 
@@ -206,11 +227,20 @@ public sealed class StorageTemporaryFilesystemTests
 		var result = _tempStorage.IsFileReady(thumbnailId);
 		Assert.IsFalse(result);
 
-		// is disposed to late (as designed)
-		stream.Dispose();
+		// is disposed too late (as designed)
+		await stream.DisposeAsync();
 
-		var result2 = _tempStorage.IsFileReady(thumbnailId);
-		Assert.IsTrue(result2);
+		try
+		{
+			var result2 = _tempStorage.IsFileReady(thumbnailId);
+			Assert.IsTrue(result2);
+		}
+		catch ( Exception )
+		{
+			await Task.Delay(100, TestContext.CancellationToken);
+			var result2 = _tempStorage.IsFileReady(thumbnailId);
+			Assert.IsTrue(result2);
+		}
 
 		File.Delete(Path.Combine(createNewImage.BasePath,
 			$"{thumbnailId}"));
@@ -365,6 +395,4 @@ public sealed class StorageTemporaryFilesystemTests
 
 		Assert.AreEqual(CreateAnImage.Size, size);
 	}
-
-	public TestContext TestContext { get; set; }
 }

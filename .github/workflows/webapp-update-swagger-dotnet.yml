@@ -34,7 +34,7 @@ jobs:
         dotnet-version: 8.0.417
 
     - name: Cache nuget packages (*nix)
-      uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb
+      uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7
       with:
         # nuget cache files are stored in `~/.nuget/packages` on Linux/macOS
         path: ~/.nuget/packages
@@ -83,8 +83,8 @@ jobs:
       
     - name: Create Pull Request ${{ steps.files_changed.outputs.CHANGED }}
       id: cpr
-      if: steps.files_changed.outputs.CHANGED == 'true'
-      uses: peter-evans/create-pull-request@34aa40e9cf0bb8b5be745a552003fdeb25e4dd3a
+      if: steps.files_changed.outputs.CHANGED == 'true' && github.event_name != 'pull_request'
+      uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0
       with:
         token: ${{ secrets.WORKFLOW_GITHUB }}
         commit-message: 'WebApp Update Swagger .NET'

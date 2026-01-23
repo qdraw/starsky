@@ -125,7 +125,8 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 		foreach ( var item in fileIndexItemsList.Where(item =>
 			         string.IsNullOrEmpty(item.FileHash)) )
 		{
-			item.FileHash = new FileHash(_subPathStorage, _logger).GetHashCode(item.FilePath!).Key;
+			var fileHashService = new FileHash(_subPathStorage, _logger);
+			item.FileHash = fileHashService.GetHashCode(item.FilePath!, item.ImageFormat).Key;
 		}
 
 		return fileIndexItemsList;

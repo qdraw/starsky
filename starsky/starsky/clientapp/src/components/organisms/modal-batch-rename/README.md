@@ -7,11 +7,13 @@ The batch rename feature allows users to rename multiple photos at once using a 
 ## Components
 
 ### 1. ModalBatchRename
+
 **Location:** `src/components/organisms/modal-batch-rename/`
 
 Main modal component that handles the batch rename workflow.
 
 **Features:**
+
 - Pattern input field with support for recent patterns
 - Live preview generation before executing the rename
 - Error display and validation
@@ -19,20 +21,23 @@ Main modal component that handles the batch rename workflow.
 - Support for emoji and special characters in patterns
 
 **Props:**
+
 ```typescript
 interface IModalBatchRenameProps {
-  isOpen: boolean;                    // Control modal visibility
-  handleExit: () => void;              // Callback when modal closes
-  selectedFilePaths: string[];         // Array of file paths to rename
+  isOpen: boolean; // Control modal visibility
+  handleExit: () => void; // Callback when modal closes
+  selectedFilePaths: string[]; // Array of file paths to rename
 }
 ```
 
 **Pattern Format Examples:**
+
 - `{yyyy}{MM}{dd}_{filenamebase}{seqn}.{ext}` - Date + filename + sequence
 - `{yyyy}-{MM}-{dd} {HH}{mm}{ss}_{filenamebase}.{ext}` - Full timestamp
 - `IMG_{seqn:3}.{ext}` - Sequence with padding
 
 **Available Placeholders:**
+
 - `{yyyy}` - Year (4 digits)
 - `{MM}` - Month (2 digits)
 - `{dd}` - Day (2 digits)
@@ -45,11 +50,13 @@ interface IModalBatchRenameProps {
 - `{seqn:N}` - Sequence number with N-digit padding
 
 ### 2. MenuOptionBatchRename
+
 **Location:** `src/components/molecules/menu-option-batch-rename/`
 
 Menu option component that appears in the archive menu when files are selected.
 
 **Props:**
+
 ```typescript
 interface IMenuOptionBatchRenameProps {
   readOnly: boolean;
@@ -59,6 +66,7 @@ interface IMenuOptionBatchRenameProps {
 ```
 
 **Behavior:**
+
 - Only visible when files are selected
 - Disabled in read-only mode
 - Opens the batch rename modal on click
@@ -66,15 +74,17 @@ interface IMenuOptionBatchRenameProps {
 ## Interfaces
 
 ### IBatchRenameRequest
+
 ```typescript
 interface IBatchRenameRequest {
-  filePaths: string[];    // Array of file paths to process
-  pattern: string;        // Rename pattern string
-  collections: boolean;   // Include sidecar files (XMP, etc.)
+  filePaths: string[]; // Array of file paths to process
+  pattern: string; // Rename pattern string
+  collections: boolean; // Include sidecar files (XMP, etc.)
 }
 ```
 
 ### IBatchRenameItem
+
 ```typescript
 interface IBatchRenameItem {
   sourceFilePath: string;
@@ -89,9 +99,11 @@ interface IBatchRenameItem {
 ## API Endpoints
 
 ### POST /api/BatchRename/preview
+
 Generate a preview of how files will be renamed without making changes.
 
 **Request Body:**
+
 ```json
 {
   "filePaths": ["string"],
@@ -101,6 +113,7 @@ Generate a preview of how files will be renamed without making changes.
 ```
 
 **Response:**
+
 ```json
 [
   {
@@ -115,6 +128,7 @@ Generate a preview of how files will be renamed without making changes.
 ```
 
 ### POST /api/BatchRename/execute
+
 Execute the batch rename operation.
 
 **Request Body:**
@@ -140,6 +154,7 @@ Recent successful rename patterns are stored in localStorage under the key `batc
 ## Styling
 
 Batch rename styles are defined in `src/style/css/31-modal-batch-rename.css` and include:
+
 - Input and dropdown styling
 - Preview list display
 - Error highlighting
@@ -149,6 +164,7 @@ Batch rename styles are defined in `src/style/css/31-modal-batch-rename.css` and
 ## Error Handling
 
 The feature provides detailed error feedback:
+
 - Invalid patterns are caught during preview
 - File not found errors are displayed per-file
 - Permission errors are reported
@@ -157,12 +173,14 @@ The feature provides detailed error feedback:
 ## Testing
 
 Unit tests are available in:
+
 - `modal-batch-rename.spec.tsx` - Modal component tests
 - `menu-option-batch-rename.spec.tsx` - Menu option tests
 
 ## Localization
 
 All user-facing strings are localized in `src/localization/localization.json`:
+
 - `MessageBatchRenamePhotos` - Modal title
 - `MessageBatchRenameEnterPattern` - Pattern input label
 - `MessageBatchRenamePattern` - Pattern field label
@@ -177,6 +195,7 @@ All user-facing strings are localized in `src/localization/localization.json`:
 ## Browser Compatibility
 
 The batch rename feature uses:
+
 - Fetch API for HTTP requests
 - LocalStorage for pattern persistence
 - Standard DOM APIs for UI interaction

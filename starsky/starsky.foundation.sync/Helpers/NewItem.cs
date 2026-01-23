@@ -11,7 +11,7 @@ using starsky.foundation.storage.Services;
 namespace starsky.foundation.sync.Helpers;
 
 /// <summary>
-///     Scope is only a object
+///     Scope is only an object
 /// </summary>
 public sealed class NewItem
 {
@@ -64,7 +64,7 @@ public sealed class NewItem
 		updatedDatabaseItem!.ImageFormat = new ExtensionRolesHelper(_logger).GetImageFormat(stream);
 		await stream.DisposeAsync();
 
-		// future: read json sidecar
+		// future: read Json sidecar
 		await SetFileHashStatus(filePath, fileHash, updatedDatabaseItem);
 		updatedDatabaseItem.SetAddToDatabase();
 		var info = _subPathStorage.Info(filePath);
@@ -112,8 +112,10 @@ public sealed class NewItem
 		updatedDatabaseItem.Status = FileIndexItem.ExifStatus.Ok;
 		if ( string.IsNullOrEmpty(fileHash) )
 		{
+			var fileHashService = new FileHash(_subPathStorage, _logger);
 			var (localHash, success) =
-				await new FileHash(_subPathStorage, _logger).GetHashCodeAsync(filePath);
+				await fileHashService.GetHashCodeAsync(filePath,
+					updatedDatabaseItem.ImageFormat);
 			updatedDatabaseItem.FileHash = localHash;
 			updatedDatabaseItem.Status = success
 				? FileIndexItem.ExifStatus.Ok

@@ -41,7 +41,24 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.7 - _(Unreleased)_ - 2026-?-? {#v0.7.7}
+## version 0.7.9 - _(Unreleased)_ - 2026-?-? {#v0.7.9}
+
+- nothing yet
+
+## version 0.7.8 - 2026-01-23 {#v0.7.8}
+
+- [x] (Changed) _Back-end_ Update Meta Correct Timezone names to be shorter (PR #2632)
+- [x] (Added) _Back-end_ Add API for List of timezones for moved to different place (PR #2596)
+- [x] (Added) _Back-end_ Add API for List of timezones for incorrect camera timezones (PR #2596)
+- [x] (Added) _Back-end_ Add API endpoint for Exif Timezone Correction Preview (PR #2596)
+- [x] (Added) _Back-end_ Add API endpoint for Exif Timezone Correction Execute (PR #2596)
+- [x] (Fixed) _Back-end_ Added new database indexes to the FileIndex and Thumbnails (PR #2627)
+- [x] (Fixed) _Back-end_ Increase timeout for regex used in tags (PR #2627)
+- [x] (Fixed) _Back-end_ Add database indexes for faster search (PR #2627)
+- [x] (Added) _Back-end_ In Import cli find camera storage flag (PR #2614)
+- [x] (Breaking change) _Back-end_ Hashes for mp4 changed to avoid video duplicates (PR #2617 #2604)
+
+## version 0.7.7 - 2026-01-17 {#v0.7.7}
 
 - [x] (Fixed) _Back-end_ Dropbox client wrapper test when running offline (PR #2603)
 - [x] (Fixed) _Back-end_ Add support for macOS and external drive in tests (PR #2602)
@@ -60,7 +77,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Added) _Back-end_ Hide in api/env for cloud-import keys (PR #2569)
 - [x] (Fixed) _Back-end_ Selecting structure patterns based on image format and origin (PR #2571)
 - [x] (Fixed) _Front-end Previous with Ctrl/Cmd + \[ and to the next with Ctrl/Cmd + ] (PR #2572)
-- [x] (Removed) _Back-end_ Legacy starsky-tools/dropbox-import (PR  #2576)
+- [x] (Removed) _Back-end_ Legacy starsky-tools/dropbox-import (PR #2576)
 - [x] (Added) _Back-end_ Setup for Dropbox in starskyAdminCli (PR #2576)
 - [x] (Removed) _Back-end_ Removed Tools Dropbox Import Docker Buildx pipeline (PR #2576)
 

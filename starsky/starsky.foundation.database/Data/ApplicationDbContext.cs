@@ -63,18 +63,30 @@ public class ApplicationDbContext : DbContext
 			DelegationModes.ApplyToAll);
 
 		// Add Index to speed performance (on MySQL max key length is 3072 bytes)
-		// MySql:CharSet might be working a future release but now it does nothing
+		// MySql:CharSet might be working a future release, but now it does nothing
 		modelBuilder.Entity<FileIndexItem>(etb =>
 		{
 			etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
-			etb.HasIndex(x => new { x.FileName, x.ParentDirectory });
-			// This filters on ParentDirectory and sort on fileName
-			etb.HasIndex(x => new { x.ParentDirectory, x.FileName });
 
+			// This filters on ParentDirectory and sort on fileName
+			etb.HasIndex(x => new { x.FileName, x.ParentDirectory });			
+			etb.HasIndex(x => new { x.ParentDirectory, x.FileName });
 			etb.HasIndex(x => new { x.FilePath });
 			etb.HasIndex(x => new { x.Tags });
 			etb.HasIndex(x => new { x.ImageFormat });
 
+			// Search indexes - for WideSearch (SearchService.cs) performance
+			// Date range search indexes
+			etb.HasIndex(x => new { x.DateTime });
+
+			// Composite indexes for common search patterns
+			etb.HasIndex(x => new { x.ParentDirectory, x.Tags });
+
+			// FileHash index improvement - ensure it supports null values
+			etb.HasIndex(x => new { x.FileHash })
+				.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
+
+			// set type for file size in bites
 			etb.Property(p => p.Size).HasColumnType("bigint");
 		});
 
@@ -244,6 +256,10 @@ public class ApplicationDbContext : DbContext
 
 				etb.ToTable("Thumbnails");
 				etb.HasAnnotation("MySql:CharSet", "utf8mb4");
+
+				// Add composite index for performance on GetMissingThumbnailsBatchInternalAsync
+				etb.HasIndex(e => new { e.ExtraLarge, e.Large, e.Small, e.FileHash })
+					.HasDatabaseName("IX_Thumbnails_Missing_And_FileHash");
 			}
 		);
 	}

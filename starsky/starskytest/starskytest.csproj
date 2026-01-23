@@ -121,6 +121,27 @@
         <None Update="starsky.foundation.sync\SyncServices\SyncFolderTest_summary.md">
             <DependentUpon>SyncFolderTest.cs</DependentUpon>
         </None>
+        <None Update="starsky.foundation.import\Services\ImportTest.Preflight_SingleImage_ForceOverWrite_ColorClassOverwrite.verified.txt">
+          <DependentUpon>ImportTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.import\Services\ImportTest.Preflight_SingleImage_HappyFlow.verified.txt">
+          <DependentUpon>ImportTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.import\Services\ImportTest.Preflight_SingleImage_Verify_filePath=-a330.arw.verified.txt">
+          <DependentUpon>ImportTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.import\Services\ImportTest.Preflight_SingleImage_Verify_filePath=-a6660.arw.verified.txt">
+          <DependentUpon>ImportTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.import\Services\ImportTest.Preflight_SingleImage_Verify_filePath=-a6700.arw.verified.txt">
+          <DependentUpon>ImportTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.import\Services\ImportTest.Preflight_SingleImage_Verify_filePath=-test.mp4.verified.txt">
+          <DependentUpon>ImportTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.import\Services\ImportTestInMemoryDb.Importer_Gpx.verified.txt">
+          <DependentUpon>ImportTest_InMemoryDb.cs</DependentUpon>
+        </None>
     </ItemGroup>
     <ItemGroup>
         <None Remove="FakeCreateAn\CreateFakeExifToolWindows\exiftool.zip"/>

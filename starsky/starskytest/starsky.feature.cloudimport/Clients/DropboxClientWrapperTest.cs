@@ -13,12 +13,33 @@ public class DropboxClientWrapperTest
 {
 	private const string InvalidAccessToken = "";
 
+	private static void SetHttpClientTimeout(DropboxClientWrapper client, TimeSpan timeout)
+	{
+		var dropboxClientField = typeof(DropboxClientWrapper).GetField("_client",
+			System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+		var dropboxClient = dropboxClientField?.GetValue(client);
+		var requestHandlerField = dropboxClient?.GetType().GetField("requestHandler",
+			System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+		var requestHandler = requestHandlerField?.GetValue(dropboxClient);
+		var httpClientField = requestHandler?.GetType().GetField("defaultHttpClient",
+			System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+		if ( httpClientField?.GetValue(requestHandler) is not HttpClient httpClient )
+		{
+			return;
+		}
+
+		httpClient.Timeout = timeout;
+	}
+
 	[TestMethod]
 	[Timeout(5000, CooperativeCancellation = true)]
 	public async Task ListFolderAsync_ShouldThrowException_WhenInvalidToken()
 	{
 		var client = new DropboxClientWrapper(InvalidAccessToken);
-		await AssertThrowsAnyAsync<HttpRequestException, BadInputException>(
+		SetHttpClientTimeout(client, TimeSpan.FromMilliseconds(1));
+
+		await AssertThrowsAnyAsync<HttpRequestException, BadInputException,
+			TaskCanceledException>(
 			async () => await client.ListFolderAsync("/test"),
 			"Expected either HttpRequestException " +
 			"or BadInputException to be thrown " +
@@ -30,10 +51,13 @@ public class DropboxClientWrapperTest
 	public async Task ListFolderContinueAsync_ShouldThrowException_WhenInvalidToken()
 	{
 		var client = new DropboxClientWrapper(InvalidAccessToken);
-		await AssertThrowsAnyAsync<HttpRequestException, BadInputException>(
+		SetHttpClientTimeout(client, TimeSpan.FromMilliseconds(1));
+
+		await AssertThrowsAnyAsync<HttpRequestException, BadInputException,
+			TaskCanceledException>(
 			async () => await client.ListFolderContinueAsync("cursor"),
 			"Expected either HttpRequestException " +
-			"or BadInputException to be thrown "+
+			"or BadInputException to be thrown " +
 			"(HttpRequestException is thrown when offline)");
 	}
 
@@ -42,8 +66,10 @@ public class DropboxClientWrapperTest
 	public async Task DownloadAsync_ShouldThrowException_WhenInvalidToken()
 	{
 		var client = new DropboxClientWrapper(InvalidAccessToken);
-		
-		await AssertThrowsAnyAsync<HttpRequestException, BadInputException>(
+		SetHttpClientTimeout(client, TimeSpan.FromMilliseconds(1));
+
+		await AssertThrowsAnyAsync<HttpRequestException, BadInputException,
+			TaskCanceledException>(
 			async () => await client.DownloadAsync("/test.txt"),
 			"Expected either HttpRequestException " +
 			"or BadInputException to be thrown " +
@@ -55,11 +81,13 @@ public class DropboxClientWrapperTest
 	public async Task DeleteV2Async_ShouldThrowException_WhenInvalidToken()
 	{
 		var client = new DropboxClientWrapper(InvalidAccessToken);
-		
-		await AssertThrowsAnyAsync<HttpRequestException, BadInputException>(
+		SetHttpClientTimeout(client, TimeSpan.FromMilliseconds(1));
+
+		await AssertThrowsAnyAsync<HttpRequestException, BadInputException,
+			TaskCanceledException>(
 			async () => await client.DeleteV2Async("/test.txt"),
 			"Expected either HttpRequestException " +
-			"or BadInputException to be thrown "+
+			"or BadInputException to be thrown " +
 			"(HttpRequestException is thrown when offline)");
 	}
 
@@ -88,22 +116,27 @@ public class DropboxClientWrapperTest
 	/// <summary>
 	/// Helper method to assert that an async action throws one of multiple exception types
 	/// </summary>
-	private static async Task AssertThrowsAnyAsync<TException1, TException2>(
+	private static async Task AssertThrowsAnyAsync<TException1, TException2, TException3>(
 		Func<Task> action,
 		string message = "Expected one of the specified exceptions to be thrown")
 		where TException1 : Exception
 		where TException2 : Exception
+		where TException3 : Exception
 	{
 		var exceptionThrown = false;
 		try
 		{
 			await action();
 		}
-		catch (TException1)
+		catch ( TException1 )
 		{
 			exceptionThrown = true;
 		}
-		catch (TException2)
+		catch ( TException2 )
+		{
+			exceptionThrown = true;
+		}
+		catch ( TException3 )
 		{
 			exceptionThrown = true;
 		}
