@@ -29,11 +29,38 @@ jobs:
       working-directory: ./starsky-tools/build-tools
       run: npm run nuget-package-list
 
-    - name: Commit changes
-      uses: EndBug/add-and-commit@2df77c10fb02f084460f06c7d7a576a43bd00b86
+    - shell: bash
+      working-directory: ./starsky
+      id: files_changed
+      run: |
+        git status
+        git status --porcelain
+      
+        if [[ `git status --porcelain` ]]; then
+          echo "There are files not committed yet"
+          echo "CHANGED=true" >> $GITHUB_OUTPUT
+        else 
+          echo "not changed"
+          echo "CHANGED=false" >> $GITHUB_OUTPUT
+        fi
+      
+    - name: Create Pull Request ${{ steps.files_changed.outputs.CHANGED }}
+      id: cpr
+      if: steps.files_changed.outputs.CHANGED == 'true' && github.event_name != 'pull_request'
+      uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0
       with:
-        author_name: DocsUpdateBot
-        author_email: qdraw@users.noreply.github.com
-        message: "[NugetPackagesListUpdate] Auto commited nugetPackages list"
-        add: "starsky/nuget-packages-list.json"
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.WORKFLOW_GITHUB }}
+        commit-message: '[NugetPackagesListUpdate] Auto commited nugetPackages list'
+        committer: GitHub <noreply@github.com>
+        author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+        signoff: false
+        add-paths: |
+          *
+        branch: feature/nuget_packages_list
+        delete-branch: true
+        title: '[NugetPackagesListUpdate] Auto commited nugetPackages list'
+        body: |
+          ## [NugetPackagesListUpdate] Auto commited nugetPackages list
+        labels: |
+          documentation
+        draft: false
