@@ -295,6 +295,14 @@ if [[ -f starsky ]]; then
     chmod +rwx ./starsky
 fi
 
+MAC_CODESIGN_SCRIPT="$CURRENT_DIR/mac-self-codesign.sh"
+if [[ $(uname) = "Darwin" ]] && [[ -f "$MAC_CODESIGN_SCRIPT" ]]; then
+    echo "Running mac-self-codesign.sh for macOS..."
+    chmod +rwx "$MAC_CODESIGN_SCRIPT"
+    bash "$MAC_CODESIGN_SCRIPT"
+fi
+
+
 if [[ -f starskygeocli ]]; then
     echo "run starskygeocli to auto download dependencies"
     ./starskygeocli -h > /dev/null 2>&1

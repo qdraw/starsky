@@ -43,7 +43,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.9 - _(Unreleased)_ - 2026-?-? {#v0.7.9}
 
-- nothing yet
+- [x] (Added) _Back-end_ Added auto code sign for macOS in `pm2-new-instance.sh` (PR #2640)
 
 ## version 0.7.8 - 2026-01-23 {#v0.7.8}
 
