@@ -1119,4 +1119,403 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		Assert.IsFalse(result.Success);
 		Assert.AreEqual("Directory is read only", result.Error);
 	}
+
+	#region Custom Offset Tests
+
+	[TestMethod]
+	public async Task CorrectTimezoneAsync_CustomOffset_HoursOnly()
+	{
+		// Arrange
+		var storage = new FakeIStorage(["/"], ["/test.jpg"]);
+		var service = CreateService(storage: storage);
+
+		var fileIndexItem = new FileIndexItem
+		{
+			FilePath = "/test.jpg",
+			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
+		};
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			CustomOffsetHours = 2 // Add 2 hours
+		};
+
+		// Act
+		var result = await service.CorrectTimezoneAsync(fileIndexItem, request);
+
+		// Assert
+		Assert.IsTrue(result.Success);
+		Assert.AreEqual(new DateTime(2024, 6, 15, 16, 30, 0, DateTimeKind.Local),
+			result.CorrectedDateTime);
+		Assert.AreEqual(TimeSpan.FromHours(2), result.Delta);
+	}
+
+	[TestMethod]
+	public async Task CorrectTimezoneAsync_CustomOffset_NegativeHours()
+	{
+		// Arrange
+		var storage = new FakeIStorage(["/"], ["/test.jpg"]);
+		var service = CreateService(storage: storage);
+
+		var fileIndexItem = new FileIndexItem
+		{
+			FilePath = "/test.jpg",
+			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
+		};
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			CustomOffsetHours = -3 // Subtract 3 hours
+		};
+
+		// Act
+		var result = await service.CorrectTimezoneAsync(fileIndexItem, request);
+
+		// Assert
+		Assert.IsTrue(result.Success);
+		Assert.AreEqual(new DateTime(2024, 6, 15, 11, 30, 0, DateTimeKind.Local),
+			result.CorrectedDateTime);
+		Assert.AreEqual(TimeSpan.FromHours(-3), result.Delta);
+	}
+
+	[TestMethod]
+	public async Task CorrectTimezoneAsync_CustomOffset_MinutesAndSeconds()
+	{
+		// Arrange
+		var storage = new FakeIStorage(["/"], ["/test.jpg"]);
+		var service = CreateService(storage: storage);
+
+		var fileIndexItem = new FileIndexItem
+		{
+			FilePath = "/test.jpg",
+			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
+		};
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			CustomOffsetMinutes = 2, // Add 2 minutes
+			CustomOffsetSeconds = 30 // Add 30 seconds
+		};
+
+		// Act
+		var result = await service.CorrectTimezoneAsync(fileIndexItem, request);
+
+		// Assert
+		Assert.IsTrue(result.Success);
+		Assert.AreEqual(new DateTime(2024, 6, 15, 14, 32, 30, DateTimeKind.Local),
+			result.CorrectedDateTime);
+		Assert.AreEqual(TimeSpan.FromMinutes(2).Add(TimeSpan.FromSeconds(30)), result.Delta);
+	}
+
+	[TestMethod]
+	public async Task CorrectTimezoneAsync_CustomOffset_ComplexTimeOffset()
+	{
+		// Arrange
+		var storage = new FakeIStorage(["/"], ["/test.jpg"]);
+		var service = CreateService(storage: storage);
+
+		var fileIndexItem = new FileIndexItem
+		{
+			FilePath = "/test.jpg",
+			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
+		};
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			CustomOffsetHours = 1, // Add 1 hour
+			CustomOffsetMinutes = 2, // Add 2 minutes
+			CustomOffsetSeconds = 30 // Add 30 seconds
+		};
+
+		// Act
+		var result = await service.CorrectTimezoneAsync(fileIndexItem, request);
+
+		// Assert
+		Assert.IsTrue(result.Success);
+		Assert.AreEqual(new DateTime(2024, 6, 15, 15, 32, 30, DateTimeKind.Local),
+			result.CorrectedDateTime);
+		Assert.AreEqual(
+			TimeSpan.FromHours(1).Add(TimeSpan.FromMinutes(2)).Add(TimeSpan.FromSeconds(30)),
+			result.Delta);
+	}
+
+	[TestMethod]
+	public async Task CorrectTimezoneAsync_CustomOffset_DaysOnly()
+	{
+		// Arrange
+		var storage = new FakeIStorage(["/"], ["/test.jpg"]);
+		var service = CreateService(storage: storage);
+
+		var fileIndexItem = new FileIndexItem
+		{
+			FilePath = "/test.jpg",
+			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
+		};
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			CustomOffsetDays = 5 // Add 5 days
+		};
+
+		// Act
+		var result = await service.CorrectTimezoneAsync(fileIndexItem, request);
+
+		// Assert
+		Assert.IsTrue(result.Success);
+		Assert.AreEqual(new DateTime(2024, 6, 20, 14, 30, 0, DateTimeKind.Local),
+			result.CorrectedDateTime);
+		Assert.AreEqual(TimeSpan.FromDays(5), result.Delta);
+	}
+
+	[TestMethod]
+	public async Task CorrectTimezoneAsync_CustomOffset_MonthsOnly()
+	{
+		// Arrange
+		var storage = new FakeIStorage(["/"], ["/test.jpg"]);
+		var service = CreateService(storage: storage);
+
+		var fileIndexItem = new FileIndexItem
+		{
+			FilePath = "/test.jpg",
+			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
+		};
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			CustomOffsetMonths = 2 // Add 2 months
+		};
+
+		// Act
+		var result = await service.CorrectTimezoneAsync(fileIndexItem, request);
+
+		// Assert
+		Assert.IsTrue(result.Success);
+		Assert.AreEqual(new DateTime(2024, 8, 15, 14, 30, 0, DateTimeKind.Local),
+			result.CorrectedDateTime);
+		// Delta for months is calculated as the difference in days/time
+		Assert.AreEqual(new DateTime(2024, 8, 15, 14, 30, 0) - new DateTime(2024, 6, 15, 14, 30, 0),
+			result.Delta);
+	}
+
+	[TestMethod]
+	public async Task CorrectTimezoneAsync_CustomOffset_YearsOnly()
+	{
+		// Arrange
+		var storage = new FakeIStorage(["/"], ["/test.jpg"]);
+		var service = CreateService(storage: storage);
+
+		var fileIndexItem = new FileIndexItem
+		{
+			FilePath = "/test.jpg",
+			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
+		};
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			CustomOffsetYears = 1 // Add 1 year
+		};
+
+		// Act
+		var result = await service.CorrectTimezoneAsync(fileIndexItem, request);
+
+		// Assert
+		Assert.IsTrue(result.Success);
+		Assert.AreEqual(new DateTime(2025, 6, 15, 14, 30, 0, DateTimeKind.Local),
+			result.CorrectedDateTime);
+		// Delta for years is calculated as the difference
+		Assert.AreEqual(new DateTime(2025, 6, 15, 14, 30, 0) - new DateTime(2024, 6, 15, 14, 30, 0),
+			result.Delta);
+	}
+
+	[TestMethod]
+	public async Task CorrectTimezoneAsync_CustomOffset_FullCombination()
+	{
+		// Arrange - Test: 1 year, 2 months, 3 days, 1 hour, 2 minutes, 30 seconds
+		var storage = new FakeIStorage(["/"], ["/test.jpg"]);
+		var service = CreateService(storage: storage);
+
+		var fileIndexItem = new FileIndexItem
+		{
+			FilePath = "/test.jpg",
+			DateTime = new DateTime(2024, 1, 15, 10, 30, 0, DateTimeKind.Local)
+		};
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			CustomOffsetYears = 1,
+			CustomOffsetMonths = 2,
+			CustomOffsetDays = 3,
+			CustomOffsetHours = 1,
+			CustomOffsetMinutes = 2,
+			CustomOffsetSeconds = 30
+		};
+
+		// Act
+		var result = await service.CorrectTimezoneAsync(fileIndexItem, request);
+
+		// Assert
+		Assert.IsTrue(result.Success);
+		// Expected: 2024-01-15 10:30:00 + 1 year + 2 months + 3 days + 1:02:30
+		// = 2025-03-15 10:30:00 + 3 days + 1:02:30 = 2025-03-18 11:32:30
+		Assert.AreEqual(new DateTime(2025, 3, 18, 11, 32, 30, DateTimeKind.Local),
+			result.CorrectedDateTime);
+	}
+
+	[TestMethod]
+	public async Task CorrectTimezoneAsync_CustomOffset_NegativeYearAndMonth()
+	{
+		// Arrange
+		var storage = new FakeIStorage(["/"], ["/test.jpg"]);
+		var service = CreateService(storage: storage);
+
+		var fileIndexItem = new FileIndexItem
+		{
+			FilePath = "/test.jpg",
+			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
+		};
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			CustomOffsetYears = -1, // Subtract 1 year
+			CustomOffsetMonths = -3 // Subtract 3 months
+		};
+
+		// Act
+		var result = await service.CorrectTimezoneAsync(fileIndexItem, request);
+
+		// Assert
+		Assert.IsTrue(result.Success);
+		Assert.AreEqual(new DateTime(2023, 3, 15, 14, 30, 0, DateTimeKind.Local),
+			result.CorrectedDateTime);
+	}
+
+	[TestMethod]
+	public async Task CorrectTimezoneAsync_CustomOffset_MonthRollover()
+	{
+		// Arrange - Test rolling over from end of month
+		var storage = new FakeIStorage(["/"], ["/test.jpg"]);
+		var service = CreateService(storage: storage);
+
+		var fileIndexItem = new FileIndexItem
+		{
+			FilePath = "/test.jpg",
+			DateTime = new DateTime(2024, 1, 31, 14, 30, 0, DateTimeKind.Local)
+		};
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			CustomOffsetMonths = 1 // Add 1 month (Jan 31 -> Feb 29 in 2024 leap year)
+		};
+
+		// Act
+		var result = await service.CorrectTimezoneAsync(fileIndexItem, request);
+
+		// Assert
+		Assert.IsTrue(result.Success);
+		Assert.AreEqual(new DateTime(2024, 2, 29, 14, 30, 0, DateTimeKind.Local),
+			result.CorrectedDateTime);
+	}
+
+	[TestMethod]
+	public async Task CorrectTimezoneAsync_CustomOffset_DayRollover()
+	{
+		// Arrange - Test day rollover with time
+		var storage = new FakeIStorage(["/"], ["/test.jpg"]);
+		var service = CreateService(storage: storage);
+
+		var fileIndexItem = new FileIndexItem
+		{
+			FilePath = "/test.jpg",
+			DateTime = new DateTime(2024, 6, 30, 23, 30, 0, DateTimeKind.Local)
+		};
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			CustomOffsetHours = 1 // Add 1 hour (rolls to next day)
+		};
+
+		// Act
+		var result = await service.CorrectTimezoneAsync(fileIndexItem, request);
+
+		// Assert
+		Assert.IsTrue(result.Success);
+		Assert.AreEqual(new DateTime(2024, 7, 1, 0, 30, 0, DateTimeKind.Local),
+			result.CorrectedDateTime);
+		Assert.IsTrue(result.Warning!.Contains("change the day"));
+	}
+
+	[TestMethod]
+	public void ValidateCorrection_CustomOffset_MissingAllOffsets_ShouldReturnError()
+	{
+		// Arrange
+		var service = CreateService();
+		var fileIndexItem = new FileIndexItem
+		{
+			FilePath = "/test.jpg",
+			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
+		};
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			// No offsets provided at all
+		};
+
+		// Act
+		var result = service.ValidateCorrection(fileIndexItem, request);
+
+		// Assert
+		Assert.IsFalse(result.Success);
+		Assert.AreEqual("Recorded timezone is required", result.Error);
+	}
+
+	[TestMethod]
+	public void ValidateCorrection_CustomOffset_ZeroOffset_ShouldWarn()
+	{
+		// Arrange
+		var service = CreateService();
+		var fileIndexItem = new FileIndexItem
+		{
+			FilePath = "/test.jpg",
+			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
+		};
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			CustomOffsetHours = 0 // Explicitly zero
+		};
+
+		// Act
+		var result = service.ValidateCorrection(fileIndexItem, request);
+
+		// Assert
+		Assert.IsTrue(result.Success);
+		Assert.AreEqual(TimeSpan.Zero, result.Delta);
+	}
+
+	[TestMethod]
+	public async Task Validate_CustomOffset_WithCollection()
+	{
+		// Arrange
+		var storage = new FakeIStorage(["/"], ["/test1.jpg", "/test2.jpg"]);
+		var query = new FakeIQuery(
+		[
+			new FileIndexItem
+			{
+				FilePath = "/test1.jpg",
+				DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
+			},
+			new FileIndexItem
+			{
+				FilePath = "/test2.jpg",
+				DateTime = new DateTime(2024, 6, 15, 15, 30, 0, DateTimeKind.Local)
+			}
+		]);
+		var service = CreateService(storage: storage, query: query);
+
+		var request = new ExifTimezoneCorrectionRequest
+		{
+			CustomOffsetHours = 2
+		};
+
+		// Act
+		var results = await service.Validate(["/test1.jpg", "/test2.jpg"], false, request);
+
+		// Assert
+		Assert.AreEqual(2, results.Count);
+		Assert.IsTrue(results[0].Success);
+		Assert.IsTrue(results[1].Success);
+		Assert.AreEqual(TimeSpan.FromHours(2), results[0].Delta);
+		Assert.AreEqual(TimeSpan.FromHours(2), results[1].Delta);
+	}
+
+	#endregion
 }
+
+
