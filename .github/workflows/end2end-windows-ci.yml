@@ -15,6 +15,7 @@ on:
 name: end2end on windows-ci
 permissions:
   contents: read
+  actions: read
 
 jobs:
   test:
