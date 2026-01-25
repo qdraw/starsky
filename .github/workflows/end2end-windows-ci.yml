@@ -13,13 +13,13 @@ on:
     - '.github/workflows/end2end-windows-ci.yml'
 
 name: end2end on windows-ci
-permissions:
-  contents: read
-  actions: read
 
 jobs:
   test:
     name: Test
+    permissions:
+      contents: read    
+      actions: read
     runs-on: windows-latest
     env:
       WEBSITE_SITE_NAME: "ci"
