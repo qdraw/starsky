@@ -20,9 +20,9 @@ using starskytest.FakeMocks;
 namespace starskytest.Controllers;
 
 [TestClass]
-public sealed class MetaCorrectTimezoneControllerTest
+public sealed class MetaTimeCorrectControllerTest
 {
-	private static MetaCorrectTimezoneController CreateController(
+	private static MetaTimeCorrectController CreateController(
 		IExifTimezoneCorrectionService? timezoneService = null,
 		IUpdateBackgroundTaskQueue? queue = null,
 		IWebLogger? logger = null,
@@ -34,7 +34,7 @@ public sealed class MetaCorrectTimezoneControllerTest
 
 		// Configure scope factory with the timezone service
 		scopeFactory ??= new FakeIServiceScopeFactory(
-			nameof(MetaCorrectTimezoneControllerTest),
+			nameof(MetaTimeCorrectControllerTest),
 			services =>
 			{
 				services.AddSingleton(timezoneService);
@@ -43,7 +43,7 @@ public sealed class MetaCorrectTimezoneControllerTest
 				services.AddSingleton(logger);
 			});
 
-		var controller = new MetaCorrectTimezoneController(
+		var controller = new MetaTimeCorrectController(
 			timezoneService,
 			queue,
 			logger,

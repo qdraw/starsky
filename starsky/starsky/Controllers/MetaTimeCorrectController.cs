@@ -19,7 +19,7 @@ using starsky.foundation.worker.Interfaces;
 namespace starsky.Controllers;
 
 [Authorize]
-public class MetaCorrectTimezoneController(
+public class MetaTimeCorrectController(
 	IExifTimezoneCorrectionService exifTimezoneCorrectionService,
 	IUpdateBackgroundTaskQueue queue,
 	IWebLogger logger,
@@ -38,7 +38,7 @@ public class MetaCorrectTimezoneController(
 	/// <response code="401">User unauthorized</response>
 	[ProducesResponseType(200)]
 	[ProducesResponseType(typeof(string), 400)]
-	[HttpPost("/api/exif/correct-timezone/preview")]
+	[HttpPost("/api/meta-time-correct/preview")]
 	[Produces("application/json")]
 	public async Task<IActionResult> PreviewTimezoneCorrectionAsync(
 		string f,
@@ -75,7 +75,7 @@ public class MetaCorrectTimezoneController(
 	/// <response code="401">User unauthorized</response>
 	[ProducesResponseType(200)]
 	[ProducesResponseType(typeof(string), 400)]
-	[HttpPost("/api/meta-correct-timezone/execute")]
+	[HttpPost("/api/meta-time-correct/execute")]
 	[Produces("application/json")]
 	public async Task<IActionResult> ExecuteTimezoneCorrectionAsync(
 		string f,
@@ -143,7 +143,7 @@ public class MetaCorrectTimezoneController(
 	/// <response code="200">List of timezone identifiers</response>
 	/// <response code="401">User unauthorized</response>
 	[ProducesResponseType(200)]
-	[HttpGet("/api/meta-correct-timezone/offset-timezones")]
+	[HttpGet("/api/meta-time-correct/offset-timezones")]
 	[Produces("application/json")]
 	public IActionResult GetIncorrectCameraTimezones()
 	{
@@ -159,7 +159,7 @@ public class MetaCorrectTimezoneController(
 	/// <response code="200">List of timezone identifiers</response>
 	/// <response code="401">User unauthorized</response>
 	[ProducesResponseType(200)]
-	[HttpGet("/api/meta-correct-timezone/standard-timezones")]
+	[HttpGet("/api/meta-time-correct/standard-timezones")]
 	[Produces("application/json")]
 	public IActionResult GetMovedToDifferentPlaceTimezones()
 	{
