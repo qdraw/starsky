@@ -41,7 +41,11 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.9 - _(Unreleased)_ - 2026-?-? {#v0.7.9}
+## version 0.7.10 - _(Unreleased)_ - 2026-?-? {#v0.7.10}
+
+- nothing yet
+
+## version 0.7.9 - 2026-01-26 {#v0.7.9}
 
 - [x] (Added) _Back-end_ Added auto code sign for macOS in `pm2-new-instance.sh` (PR #2640)
 - [x] (Fixed) _Back-end_ Fix for issues with database index sizes in MariaDB (PR #2653)
