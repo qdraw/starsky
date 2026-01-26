@@ -282,6 +282,16 @@ public class SearchService : ISearch
 					var modelMake = model.SearchFor[i];
 					predicates.Add(x => x.MakeModel!.ToLower().Contains(modelMake));
 					break;
+				case SearchViewModel.SearchInTypes.makecameraserial:
+					// is in the database one field => will be filtered in narrowSearch
+					var makeCameraSerial = model.SearchFor[i];
+					predicates.Add(x => x.MakeModel!.ToLower().Contains(makeCameraSerial));
+					break;		
+				case SearchViewModel.SearchInTypes.lensmodel:
+					// is in the database one field => will be filtered in narrowSearch
+					var lensmodel = model.SearchFor[i];
+					predicates.Add(x => x.MakeModel!.ToLower().Contains(lensmodel));
+					break;		
 				case SearchViewModel.SearchInTypes.filehash:
 					var fileHash = model.SearchFor[i];
 					predicates.Add(x =>
