@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -75,8 +76,13 @@ public static class RunMigrations
 		}
 		catch ( AggregateException exception )
 		{
-			var innerExceptionMessage = exception.InnerExceptions
-				.Select(e => e.Message).Aggregate((current, next) => current + "; " + next);
+			var innerExceptionMessage = new StringBuilder();
+			foreach ( var innerException in exception.InnerExceptions.ToList() )
+			{
+				innerExceptionMessage.Append(innerException.Message);
+				innerExceptionMessage.Append(innerException.InnerException?.Message);
+				innerExceptionMessage.Append(innerException.InnerException?.Data);
+			}
 
 			var messageAsString = "[RunMigrations] start migration failed\n " +
 			                      $"Message: {exception.Message} \n" +

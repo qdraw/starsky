@@ -12,8 +12,8 @@ using starsky.foundation.database.Data;
 namespace starsky.foundation.database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260126104937_IndexFixThumbnail")]
-    partial class IndexFixThumbnail
+    [Migration("20260126112553_IndexFixSizeToBig")]
+    partial class IndexFixSizeToBig
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -381,13 +381,14 @@ namespace starsky.foundation.database.Migrations
 
                     b.HasIndex("ImageFormat");
 
+                    b.HasIndex("ParentDirectory")
+                        .HasDatabaseName("IX_FileIndex_ParentDirectory");
+
                     b.HasIndex("Tags");
 
                     b.HasIndex("FileName", "ParentDirectory");
 
                     b.HasIndex("ParentDirectory", "FileName");
-
-                    b.HasIndex("ParentDirectory", "Tags");
 
                     b.ToTable("FileIndex");
 

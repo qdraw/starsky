@@ -13,20 +13,12 @@ namespace starsky.foundation.database.Migrations
         {
 	        // IX_Thumbnails_Missing_And_FileHash is removed here
 
-            migrationBuilder.CreateIndex(
-                name: "IX_FileIndex_DateTime",
-                table: "FileIndex",
-                column: "DateTime");
+			// Removed: Duplicate key name 'IX_FileIndex_DateTime'
 
-            migrationBuilder.CreateIndex(
-                name: "IX_FileIndex_FileHash",
-                table: "FileIndex",
-                column: "FileHash");
+			// Removed: Duplicate key name 'IX_FileIndex_FileHash'
 
-            migrationBuilder.CreateIndex(
-                name: "IX_FileIndex_ParentDirectory_Tags",
-                table: "FileIndex",
-                columns: new[] { "ParentDirectory", "Tags" });
+			// removed: IX_FileIndex_ParentDirectory_Tags due to
+			// "Specified key was too long; max key length is 3072 bytes"
         }
 
         /// <inheritdoc />
@@ -37,23 +29,25 @@ namespace starsky.foundation.database.Migrations
 		        migrationBuilder.DropIndex(
 			        name: "IX_Thumbnails_Missing_And_FileHash",
 			        table: "Thumbnails");
+		        migrationBuilder.DropIndex(
+			        name: "IX_FileIndex_DateTime",
+			        table: "FileIndex");
+
+		        migrationBuilder.DropIndex(
+			        name: "IX_FileIndex_FileHash",
+			        table: "FileIndex");
+
+		        migrationBuilder.DropIndex(
+			        name: "IX_FileIndex_ParentDirectory_Tags",
+			        table: "FileIndex");
 	        }
 	        catch ( Exception )
 	        {
 		        // nothing here
 	        }
 
-            migrationBuilder.DropIndex(
-                name: "IX_FileIndex_DateTime",
-                table: "FileIndex");
 
-            migrationBuilder.DropIndex(
-                name: "IX_FileIndex_FileHash",
-                table: "FileIndex");
-
-            migrationBuilder.DropIndex(
-                name: "IX_FileIndex_ParentDirectory_Tags",
-                table: "FileIndex");
         }
     }
 }
+

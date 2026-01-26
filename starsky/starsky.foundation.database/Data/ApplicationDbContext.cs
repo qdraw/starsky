@@ -80,7 +80,9 @@ public class ApplicationDbContext : DbContext
 			etb.HasIndex(x => new { x.DateTime });
 
 			// Composite indexes for common search patterns
-			etb.HasIndex(x => new { x.ParentDirectory, x.Tags });
+			// ParentDirectory index only (Tags is varchar(1024) = 4096 bytes, exceeds 3072 limit)
+			etb.HasIndex(x => new { x.ParentDirectory })
+				.HasDatabaseName("IX_FileIndex_ParentDirectory");
 
 			// FileHash index improvement - ensure it supports null values
 			etb.HasIndex(x => new { x.FileHash })
