@@ -45,6 +45,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 - [x] (Added) _Back-end_ Added auto code sign for macOS in `pm2-new-instance.sh` (PR #2640)
 - [x] (Fixed) _Back-end_ Fix for issues with database index sizes in MariaDB (PR #2653)
+- [x] (Fixed) _Back-end _ IX_Thumbnails_Missing_And_FileHash, IX_FileIndex_ParentDirectory_Tags
+  should be removed when running SqLite, when running MariaDB this not needed (PR #2653)
 
 ## version 0.7.8 - 2026-01-23 {#v0.7.8}
 
