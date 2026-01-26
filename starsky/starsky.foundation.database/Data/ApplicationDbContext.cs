@@ -72,7 +72,7 @@ public class ApplicationDbContext : DbContext
 			etb.HasIndex(x => new { x.FileName, x.ParentDirectory });
 			etb.HasIndex(x => new { x.ParentDirectory, x.FileName });
 			etb.HasIndex(x => new { x.FilePath });
-			etb.HasIndex(x => new { x.Tags });
+			// Note: Tags index removed - varchar(1024) = 4096 bytes exceeds 3072 byte limit
 			etb.HasIndex(x => new { x.ImageFormat });
 
 			// Search indexes - for WideSearch (SearchService.cs) performance
