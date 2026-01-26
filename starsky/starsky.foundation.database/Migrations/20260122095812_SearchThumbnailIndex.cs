@@ -18,12 +18,6 @@ namespace starsky.foundation.database.Migrations
 	        // 2. ParentDirectory + Tags composite: 760 + 4096 = 4856 bytes
 	        // removed: IX_FileIndex_ParentDirectory_Tags
 
-	        // Create optimized indexes under 3072 byte limit
-	        migrationBuilder.CreateIndex(
-	            name: "IX_Thumbnails_Missing",
-	            table: "Thumbnails",
-	            columns: new[] { "ExtraLarge", "Large", "Small" });
-
 	        migrationBuilder.CreateIndex(
 	            name: "IX_FileIndex_ParentDirectory",
 	            table: "FileIndex",
@@ -33,10 +27,6 @@ namespace starsky.foundation.database.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-	        migrationBuilder.DropIndex(
-		        name: "IX_Thumbnails_Missing",
-		        table: "Thumbnails");
-
 	        migrationBuilder.DropIndex(
 		        name: "IX_FileIndex_ParentDirectory",
 		        table: "FileIndex");
