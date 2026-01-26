@@ -55,6 +55,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.8 - 2026-01-23 {#v0.7.8}
 
+**Skip v0.7.8 due index size issues see #2653**
+
 - [x] (Changed) _Back-end_ Update Meta Correct Timezone names to be shorter (PR #2632)
 - [x] (Added) _Back-end_ Add API for List of timezones for moved to different place (PR #2596)
 - [x] (Added) _Back-end_ Add API for List of timezones for incorrect camera timezones (PR #2596)
