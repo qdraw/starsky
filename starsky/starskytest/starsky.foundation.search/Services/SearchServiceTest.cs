@@ -45,6 +45,8 @@ public sealed class SearchServiceTest
 			new AppSettings(), null!, new FakeIWebLogger(), _memoryCache);
 	}
 
+	public TestContext TestContext { get; set; }
+
 	public async Task InsertSearchData()
 	{
 		if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("schipholairplane")) )
@@ -60,7 +62,7 @@ public sealed class SearchServiceTest
 				ImageFormat = ExtensionRolesHelper.ImageFormat.jpg,
 				DateTime = new DateTime(2014, 1, 1, 1, 1, 1,
 					DateTimeKind.Local),
-				MakeModel = "Apple|iPhone SE||",
+				MakeModel = "Apple|iPhone SE|Lens01|Serial01",
 				Software = "PhotoTool x",
 				IsDirectory = false,
 				ColorClass = ColorClassParser.Color.WinnerAlt,
@@ -739,6 +741,24 @@ public sealed class SearchServiceTest
 	}
 
 	[TestMethod]
+	public async Task SearchService_makeCameraSerial()
+	{
+		await InsertSearchData();
+		var result = await _search.Search("-makecameraserial=Serial01", 0,
+			false);
+		Assert.AreEqual(1, result.FileIndexItems?.Count);
+	}
+
+	[TestMethod]
+	public async Task SearchService_LensModel()
+	{
+		await InsertSearchData();
+		var result = await _search.Search("-lensmodel=Lens01", 0,
+			false);
+		Assert.AreEqual(1, result.FileIndexItems?.Count);
+	}
+
+	[TestMethod]
 	public async Task SearchService_DescriptionMultipleImageFormats()
 	{
 		await InsertSearchData();
@@ -1085,6 +1105,4 @@ public sealed class SearchServiceTest
 		await Assert.ThrowsExactlyAsync<ArgumentException>(() => _search.Search(longTestText));
 		// Expect ArgumentException
 	}
-
-	public TestContext TestContext { get; set; }
 }
