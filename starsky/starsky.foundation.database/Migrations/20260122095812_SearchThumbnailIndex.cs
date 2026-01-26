@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -10,10 +11,7 @@ namespace starsky.foundation.database.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateIndex(
-                name: "IX_Thumbnails_Missing_And_FileHash",
-                table: "Thumbnails",
-                columns: new[] { "ExtraLarge", "Large", "Small", "FileHash" });
+	        // IX_Thumbnails_Missing_And_FileHash is removed here
 
             migrationBuilder.CreateIndex(
                 name: "IX_FileIndex_DateTime",
@@ -34,9 +32,16 @@ namespace starsky.foundation.database.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "IX_Thumbnails_Missing_And_FileHash",
-                table: "Thumbnails");
+	        try
+	        {
+		        migrationBuilder.DropIndex(
+			        name: "IX_Thumbnails_Missing_And_FileHash",
+			        table: "Thumbnails");
+	        }
+	        catch ( Exception )
+	        {
+		        // nothing here
+	        }
 
             migrationBuilder.DropIndex(
                 name: "IX_FileIndex_DateTime",

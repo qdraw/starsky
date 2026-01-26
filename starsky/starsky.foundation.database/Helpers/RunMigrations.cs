@@ -75,10 +75,14 @@ public static class RunMigrations
 		}
 		catch ( AggregateException exception )
 		{
-			logger.LogInformation("[RunMigrations] start migration failed");
-			logger.LogError(exception.Message);
-			logger.LogError(exception.InnerException?.Message);
-			logger.LogError("[RunMigrations] end catch-ed");
+			var innerExceptionMessage = exception.InnerExceptions
+				.Select(e => e.Message).Aggregate((current, next) => current + "; " + next);
+
+			var messageAsString = "[RunMigrations] start migration failed\n " +
+			                      $"Message: {exception.Message} \n" +
+			                      $"Inner: {innerExceptionMessage} \n" +
+			                      "[RunMigrations] end catch-ed";
+			logger.LogError(messageAsString);
 		}
 	}
 }

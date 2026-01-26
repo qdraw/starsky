@@ -69,7 +69,7 @@ public class ApplicationDbContext : DbContext
 			etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
 
 			// This filters on ParentDirectory and sort on fileName
-			etb.HasIndex(x => new { x.FileName, x.ParentDirectory });			
+			etb.HasIndex(x => new { x.FileName, x.ParentDirectory });
 			etb.HasIndex(x => new { x.ParentDirectory, x.FileName });
 			etb.HasIndex(x => new { x.FilePath });
 			etb.HasIndex(x => new { x.Tags });
@@ -258,8 +258,10 @@ public class ApplicationDbContext : DbContext
 				etb.HasAnnotation("MySql:CharSet", "utf8mb4");
 
 				// Add composite index for performance on GetMissingThumbnailsBatchInternalAsync
-				etb.HasIndex(e => new { e.ExtraLarge, e.Large, e.Small, e.FileHash })
-					.HasDatabaseName("IX_Thumbnails_Missing_And_FileHash");
+				// FileHash is excluded as it's already the primary key
+				// This keeps the index size under MariaDB's 3072 byte limit
+				etb.HasIndex(e => new { e.ExtraLarge, e.Large, e.Small })
+					.HasDatabaseName("IX_Thumbnails_Missing");
 			}
 		);
 	}
