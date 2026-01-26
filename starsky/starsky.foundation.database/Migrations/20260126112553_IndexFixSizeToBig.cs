@@ -34,10 +34,7 @@ namespace starsky.foundation.database.Migrations
                 name: "IX_FileIndex_ParentDirectory",
                 table: "FileIndex");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_FileIndex_ParentDirectory_Tags",
-                table: "FileIndex",
-                columns: new[] { "ParentDirectory", "Tags" });
+            // Can't create IX_FileIndex_ParentDirectory_Tags
         }
     }
 }
