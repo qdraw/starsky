@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -11,13 +10,8 @@ using starsky.foundation.database.Models.Account;
 
 namespace starsky.foundation.database.Data;
 
-[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 {
-	public ApplicationDbContext(DbContextOptions options) : base(options)
-	{
-	}
-
 	public virtual DbSet<FileIndexItem> FileIndex { get; set; }
 	public DbSet<ImportIndexItem> ImportIndex { get; set; }
 
@@ -80,7 +74,6 @@ public class ApplicationDbContext : DbContext
 			// Date range search indexes
 			etb.HasIndex(x => new { x.DateTime });
 
-			// Composite indexes for common search patterns
 			// ParentDirectory index only (Tags is varchar(1024) = 4096 bytes, exceeds 3072 limit)
 			etb.HasIndex(x => new { x.ParentDirectory })
 				.HasDatabaseName("IX_FileIndex_ParentDirectory");
