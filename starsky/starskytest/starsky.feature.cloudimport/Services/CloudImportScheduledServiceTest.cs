@@ -75,7 +75,7 @@ public class CloudImportScheduledServiceTest
 		await service.StopAsync(cts.Token);
 
 		// Assert - Service should log that it's starting
-		Assert.IsTrue(logger.TrackedInformation.Any(m => m.Item2!.Contains("started")));
+		Assert.IsTrue(logger.TrackedInformation.Any(m => m.Item2!.Contains("Starting scheduled sync")));
 	}
 
 	[TestMethod]

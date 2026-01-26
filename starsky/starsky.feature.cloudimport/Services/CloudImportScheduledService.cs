@@ -25,19 +25,19 @@ public class CloudImportScheduledService(
 
 	public async Task<bool?> RunAsync(CancellationToken stoppingToken)
 	{
-		logger.LogInformation("Cloud Import Scheduled Service started");
-
 		var enabledProviders = appSettings.CloudImport?
 			.GetEnabledSyncFrequencyProviders() ?? [];
 
 		if ( enabledProviders.Count == 0 )
 		{
 			logger.LogInformation(
-				"No enabled Cloud Import providers found, scheduled service will not run");
+				"[CloudImportScheduledService] No enabled Cloud Import providers " +
+				"found, scheduled service will not run");
 			return false;
 		}
 
-		logger.LogInformation($"Starting scheduled sync for {enabledProviders.Count} provider(s)");
+		logger.LogInformation($"[CloudImportScheduledService] Starting scheduled sync for " +
+		                      $"{enabledProviders.Count} provider(s)");
 
 		// Start a task for each enabled provider
 		foreach ( var provider in enabledProviders )
@@ -49,7 +49,7 @@ public class CloudImportScheduledService(
 		// Wait for all provider tasks to complete
 		await Task.WhenAll(_providerTasks.Values);
 
-		logger.LogInformation("Cloud Import Scheduled Service stopped");
+		logger.LogInformation("[CloudImportScheduledService] Scheduled Service stopped");
 		return true;
 	}
 
