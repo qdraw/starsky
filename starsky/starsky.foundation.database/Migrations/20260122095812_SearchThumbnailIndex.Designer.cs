@@ -515,9 +515,6 @@ namespace starsky.foundation.database.Migrations
 
                     b.HasKey("FileHash");
 
-                    b.HasIndex("ExtraLarge", "Large", "Small", "FileHash")
-                        .HasDatabaseName("IX_Thumbnails_Missing_And_FileHash");
-
                     b.ToTable("Thumbnails", (string)null);
 
                     b.HasAnnotation("MySql:CharSet", "utf8mb4");
