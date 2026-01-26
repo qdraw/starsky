@@ -159,54 +159,7 @@ indexSize, $"IX_Thumbnails_Missing is {indexSize} bytes, exceeds limit of {MaxIn
 
 		foreach ( var property in index.Properties )
 		{
-			var propertyType = property.ClrType;
-			var maxLength = property.GetMaxLength();
-
-			// Calculate size based on property type
-			if ( propertyType == typeof(string) )
-			{
-				// String: use MaxLength if available, otherwise use a default
-				var stringLength = maxLength ?? 255;
-				// utf8mb4 uses up to 4 bytes per character
-				totalSize += stringLength * Utf8Mb4BytesPerChar;
-			}
-			else if ( propertyType == typeof(bool) || propertyType == typeof(bool?) )
-			{
-				// Boolean: 1 byte + 1 byte for null flag if nullable
-				totalSize += propertyType == typeof(bool?) ? 2 : 1;
-			}
-			else if ( propertyType == typeof(int) || propertyType == typeof(int?) )
-			{
-				// Integer: 4 bytes + 1 byte for null flag if nullable
-				totalSize += propertyType == typeof(int?) ? 5 : 4;
-			}
-			else if ( propertyType == typeof(long) || propertyType == typeof(long?) )
-			{
-				// Long: 8 bytes + 1 byte for null flag if nullable
-				totalSize += propertyType == typeof(long?) ? 9 : 8;
-			}
-			else if ( propertyType == typeof(double) || propertyType == typeof(double?) )
-			{
-				// Double: 8 bytes + 1 byte for null flag if nullable
-				totalSize += propertyType == typeof(double?) ? 9 : 8;
-			}
-			else if ( propertyType == typeof(DateTime) || propertyType == typeof(DateTime?) )
-			{
-				// DateTime: typically 8 bytes + 1 byte for null flag if nullable
-				totalSize += propertyType == typeof(DateTime?) ? 9 : 8;
-			}
-			else if ( propertyType.IsEnum )
-			{
-				// Enum: typically stored as int (4 bytes)
-				totalSize += 4;
-			}
-			else
-			{
-				// Unknown type: estimate 8 bytes
-				Console.WriteLine(
-					$"Warning: Unknown property type {propertyType.Name} in index, estimating 8 bytes");
-				totalSize += 8;
-			}
+			totalSize += CalculatePropertySize(property);
 		}
 
 		// Add some overhead for index metadata (approximately 10-20 bytes)
@@ -215,21 +168,71 @@ indexSize, $"IX_Thumbnails_Missing is {indexSize} bytes, exceeds limit of {MaxIn
 		return totalSize;
 	}
 
-	[TestMethod]
-	public void DocumentIndexSizeCalculations()
+	/// <summary>
+	///     Calculate the size of a single property in an index
+	/// </summary>
+	private static int CalculatePropertySize(IProperty property)
 	{
-		// This test documents the size calculations for common column types
-		Console.WriteLine("Index size calculations for utf8mb4 charset:");
-		Console.WriteLine($"  varchar(190): {190 * Utf8Mb4BytesPerChar} bytes");
-		Console.WriteLine($"  varchar(1024): {1024 * Utf8Mb4BytesPerChar} bytes");
-		Console.WriteLine($"  bool?: 2 bytes (1 byte + 1 null flag)");
-		Console.WriteLine($"  int: 4 bytes");
-		Console.WriteLine($"  long: 8 bytes");
-		Console.WriteLine($"  DateTime: 8 bytes");
-		Console.WriteLine($"  Index overhead: ~16 bytes");
-		Console.WriteLine($"\nMariaDB/MySQL limit: {MaxIndexSizeBytes} bytes");
+		var propertyType = property.ClrType;
+		var maxLength = property.GetMaxLength();
 
-		// Assert for test validity
-		Assert.AreEqual(3072, MaxIndexSizeBytes);
+		// String types
+		if ( propertyType == typeof(string) )
+		{
+			var stringLength = maxLength ?? 255;
+			return stringLength * Utf8Mb4BytesPerChar;
+		}
+
+		// Get base size for the type
+		var baseSize = GetBaseTypeSize(propertyType);
+		if ( baseSize > 0 )
+		{
+			// Add null flag byte for nullable types
+			return IsNullableType(propertyType) ? baseSize + 1 : baseSize;
+		}
+
+		// Unknown types
+		Console.WriteLine(
+			$"Warning: Unknown property type {propertyType.Name} in index, estimating 8 bytes");
+		return 8;
+	}
+
+	/// <summary>
+	///     Get the base size for a type (without null flag)
+	/// </summary>
+	private static int GetBaseTypeSize(Type type)
+	{
+		var underlyingType = Nullable.GetUnderlyingType(type) ?? type;
+
+		if ( underlyingType == typeof(bool) )
+		{
+			return 1;
+		}
+
+		if ( underlyingType == typeof(int) )
+		{
+			return 4;
+		}
+
+		if ( underlyingType == typeof(long) || underlyingType == typeof(double) ||
+		     underlyingType == typeof(DateTime) )
+		{
+			return 8;
+		}
+
+		if ( underlyingType.IsEnum )
+		{
+			return 4;
+		}
+
+		return 0; // Unknown type
+	}
+
+	/// <summary>
+	///     Check if a type is nullable
+	/// </summary>
+	private static bool IsNullableType(Type type)
+	{
+		return Nullable.GetUnderlyingType(type) != null;
 	}
 }
