@@ -115,9 +115,21 @@ $ActionsWorkflowUrlCompleted = Get-Workflow-Url -WorkflowId $WorkflowId -Status 
 $ActionsWorkflowUrlInProgress = Get-Workflow-Url -WorkflowId $WorkflowId -Status "in_progress" -Branch ""
 
 # Define the API status code variable
-$ApiGatewayStatusCode = (Invoke-WebRequest -Method GET -Uri $ActionsWorkflowUrlCompleted -Headers @{Authorization = "Token " + $token}).StatusCode
+try {
+    $response = Invoke-WebRequest -Method GET -Uri $ActionsWorkflowUrlCompleted -Headers @{Authorization = "Token " + $token}
+    if ($null -ne $response) {
+        $ApiGatewayStatusCode = $response.StatusCode
+    } else {
+        $ApiGatewayStatusCode = $null
+    }
+} catch {
+    $ApiGatewayStatusCode = $_.Exception.Response.StatusCode
+    if ($null -eq $ApiGatewayStatusCode) {
+        Write-Output "Request failed and no status code was returned."
+        exit 1
+    }
+}
 
-# Check if the API status code is 401 or 404
 if ($ApiGatewayStatusCode -eq 401 -or $ApiGatewayStatusCode -eq 404) {
   Write-Output "Unauthorized or not found."
   exit 1
