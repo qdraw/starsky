@@ -9,19 +9,13 @@ namespace starsky.feature.health.HealthCheck;
 
 /// <summary>
 ///     To Check if the disk exist on the system
-///     So when you enter F:\ on a windows system, it checks if the actual F:\ drive is mounted
+///     So when you enter F:\ on a Windows system, it checks if the actual F:\ drive is mounted
 ///     This also works on a *nix system
 /// </summary>
-public class DiskStorageHealthCheck : IHealthCheck
+public class DiskStorageHealthCheck(DiskStorageOptions? options, IWebLogger logger) : IHealthCheck
 {
-	private readonly IWebLogger _logger;
-	private readonly DiskStorageOptions _options;
-
-	public DiskStorageHealthCheck(DiskStorageOptions? options, IWebLogger logger)
-	{
-		_options = options ?? throw new ArgumentNullException(nameof(options));
-		_logger = logger;
-	}
+	private readonly DiskStorageOptions _options =
+		options ?? throw new ArgumentNullException(nameof(options));
 
 	public Task<HealthCheckResult> CheckHealthAsync(
 		HealthCheckContext context,
@@ -66,8 +60,10 @@ public class DiskStorageHealthCheck : IHealthCheck
 		}
 		catch ( Exception exception )
 		{
-			_logger.LogError(exception,
-				$"Error when trying to get drive info {exception.StackTrace}");
+			logger.LogError(exception,
+				$"[DiskStorageHealthCheck] Error when trying to get drive info " +
+				$"Message: {exception.Message} StackTrace: {exception.StackTrace}");
+
 			return ( false, 0L );
 		}
 
