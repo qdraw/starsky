@@ -1027,6 +1027,28 @@ public sealed class ExifTimezoneCorrectionServiceTest
 	}
 
 	[TestMethod]
+	public void Validate_InvalidType_ArgumentException()
+	{
+		// Arrange - Before DST in Europe (UTC+1)
+		var storage = new FakeIStorage(["/"], ["/test.jpg"]);
+		var service = CreateService(storage: storage);
+
+		var fileIndexItem = new FileIndexItem
+		{
+			FilePath = "/test.jpg",
+			DateTime = new DateTime(2024, 3, 30, 14, 0, 0, DateTimeKind.Local)
+		};
+
+		var myClass = new SetExifTimezoneBasedCorrectionRequestOverrideObject();
+
+		// Act
+		Assert.ThrowsExactly<ArgumentException>(() =>
+		{
+			service.ValidateCorrection(fileIndexItem, myClass);
+		});
+	}
+
+	[TestMethod]
 	public async Task Validate_WithFakeIQueryIStorage_FileDoesNotExist_ReturnsError()
 	{
 		var fileIndexItem = new FileIndexItem
@@ -1555,8 +1577,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		var service = new FakeIExifTimezoneCorrectionService(expectedResults);
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC",
-			CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
 
 		// Act
