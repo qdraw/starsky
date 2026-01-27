@@ -208,77 +208,38 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 		switch ( request )
 		{
 			case ExifCustomOffsetCorrectionRequest customOffsetRequest:
-				// Custom offset mode - validate that at least one offset is provided
-				if ( !customOffsetRequest.HasAnyOffset )
+				var customOffsetValidation =
+					ValidateCustomOffsetRequest(fileIndexItem, customOffsetRequest, result);
+				if ( !customOffsetValidation.Success )
 				{
-					fileIndexItem.Status = FileIndexItem.ExifStatus.OperationNotSupported;
-					result.Error = "At least one custom offset value is required";
-					return result;
+					return customOffsetValidation;
 				}
 
-				// Calculate delta for custom offset
-				result.Delta = CalculateCustomOffsetDelta(fileIndexItem.DateTime,
-					customOffsetRequest);
+				result.Delta =
+					CalculateCustomOffsetDelta(fileIndexItem.DateTime, customOffsetRequest);
 				break;
-
 			case ExifTimezoneBasedCorrectionRequest timezoneRequest:
-				// Timezone mode - validate timezones
-				if ( string.IsNullOrWhiteSpace(timezoneRequest.RecordedTimezone) )
+				var timezoneValidation =
+					ValidateTimezoneRequest(fileIndexItem, timezoneRequest, result);
+				if ( !timezoneValidation.Success )
 				{
-					fileIndexItem.Status = FileIndexItem.ExifStatus.OperationNotSupported;
-					result.Error = "Recorded timezone is required";
-					return result;
+					return timezoneValidation;
 				}
 
-				if ( string.IsNullOrWhiteSpace(timezoneRequest.CorrectTimezone) )
-				{
-					fileIndexItem.Status = FileIndexItem.ExifStatus.OperationNotSupported;
-					result.Error = "Correct timezone is required";
-					return result;
-				}
-
-				// Validate timezone IDs
-				try
-				{
-					_ = TimeZoneInfo.FindSystemTimeZoneById(timezoneRequest.RecordedTimezone);
-				}
-				catch ( Exception )
-				{
-					fileIndexItem.Status = FileIndexItem.ExifStatus.OperationNotSupported;
-					result.Error = $"Invalid recorded timezone: {timezoneRequest.RecordedTimezone}";
-					return result;
-				}
-
-				try
-				{
-					_ = TimeZoneInfo.FindSystemTimeZoneById(timezoneRequest.CorrectTimezone);
-				}
-				catch ( Exception )
-				{
-					fileIndexItem.Status = FileIndexItem.ExifStatus.OperationNotSupported;
-					result.Error = $"Invalid correct timezone: {timezoneRequest.CorrectTimezone}";
-					return result;
-				}
-
-				// Warn if timezones are the same
 				if ( timezoneRequest.RecordedTimezone == timezoneRequest.CorrectTimezone )
 				{
 					fileIndexItem.Status = FileIndexItem.ExifStatus.OkAndSame;
-					result.Warning = "Recorded and correct timezones " +
-					                 "are the same - no correction needed";
+					result.Warning =
+						"Recorded and correct timezones are the same - no correction needed";
 					result.Delta = TimeSpan.Zero;
 					result.CorrectedDateTime = fileIndexItem.DateTime;
 					result.Success = true;
 					return result;
 				}
 
-				// Calculate delta for timezone mode
-				result.Delta = CalculateTimezoneDelta(
-					fileIndexItem.DateTime,
-					timezoneRequest.RecordedTimezone,
-					timezoneRequest.CorrectTimezone);
+				result.Delta = CalculateTimezoneDelta(fileIndexItem.DateTime,
+					timezoneRequest.RecordedTimezone, timezoneRequest.CorrectTimezone);
 				break;
-
 			default:
 				throw new ArgumentException("Invalid request type", nameof(request));
 		}
@@ -302,6 +263,66 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 		}
 
 		fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
+		return result;
+	}
+
+	private ExifTimezoneCorrectionResult SetError(ExifTimezoneCorrectionResult result,
+		FileIndexItem fileIndexItem, FileIndexItem.ExifStatus status, string error)
+	{
+		fileIndexItem.Status = status;
+		result.Error = error;
+		return result;
+	}
+
+	private ExifTimezoneCorrectionResult ValidateCustomOffsetRequest(FileIndexItem fileIndexItem,
+		ExifCustomOffsetCorrectionRequest request, ExifTimezoneCorrectionResult result)
+	{
+		if ( !request.HasAnyOffset )
+		{
+			return SetError(result, fileIndexItem, FileIndexItem.ExifStatus.OperationNotSupported,
+				"At least one custom offset value is required");
+		}
+
+		result.Success = true;
+		return result;
+	}
+
+	private ExifTimezoneCorrectionResult ValidateTimezoneRequest(FileIndexItem fileIndexItem,
+		ExifTimezoneBasedCorrectionRequest request, ExifTimezoneCorrectionResult result)
+	{
+		if ( string.IsNullOrWhiteSpace(request.RecordedTimezone) )
+		{
+			return SetError(result, fileIndexItem, FileIndexItem.ExifStatus.OperationNotSupported,
+				"Recorded timezone is required");
+		}
+
+		if ( string.IsNullOrWhiteSpace(request.CorrectTimezone) )
+		{
+			return SetError(result, fileIndexItem, FileIndexItem.ExifStatus.OperationNotSupported,
+				"Correct timezone is required");
+		}
+
+		try
+		{
+			_ = TimeZoneInfo.FindSystemTimeZoneById(request.RecordedTimezone);
+		}
+		catch ( Exception )
+		{
+			return SetError(result, fileIndexItem, FileIndexItem.ExifStatus.OperationNotSupported,
+				$"Invalid recorded timezone: {request.RecordedTimezone}");
+		}
+
+		try
+		{
+			_ = TimeZoneInfo.FindSystemTimeZoneById(request.CorrectTimezone);
+		}
+		catch ( Exception )
+		{
+			return SetError(result, fileIndexItem, FileIndexItem.ExifStatus.OperationNotSupported,
+				$"Invalid correct timezone: {request.CorrectTimezone}");
+		}
+
+		result.Success = true;
 		return result;
 	}
 
