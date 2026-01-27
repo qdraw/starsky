@@ -571,18 +571,15 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			result.CorrectedDateTime);
 	}
 
-	private sealed class SetExifTimezoneBasedCorrectionRequestOverrideObject : IExifTimeCorrectionRequest
+	private sealed class
+		SetExifTimezoneBasedCorrectionRequestOverrideObject : IExifTimeCorrectionRequest
 	{
 		// nothing here
 	}
 
 	[TestMethod]
-	public async Task CorrectTimezoneAsync_InvalidType_ArgumentException()
+	public void SwitchCalculateTimezone_InvalidType_ArgumentException()
 	{
-		// Arrange - Before DST in Europe (UTC+1)
-		var storage = new FakeIStorage(["/"], ["/test.jpg"]);
-		var service = CreateService(storage: storage);
-
 		var fileIndexItem = new FileIndexItem
 		{
 			FilePath = "/test.jpg",
@@ -592,12 +589,11 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		var myClass = new SetExifTimezoneBasedCorrectionRequestOverrideObject();
 
 		// Act
-		await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
+		Assert.ThrowsExactly<ArgumentException>(() =>
 		{
-			await service.CorrectTimezoneAsync(fileIndexItem, myClass);
+			ExifTimezoneCorrectionService.SwitchCalculateTimezone(fileIndexItem, myClass);
 		});
 	}
-
 
 	// ==================== International Timezone Tests ====================
 
@@ -1563,18 +1559,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 	public async Task Validate_SingleFile_ReturnsExpectedResults()
 	{
 		// Arrange
-		var expectedResults = new List<ExifTimezoneCorrectionResult>
-		{
-			new()
-			{
-				Success = true,
-				OriginalDateTime = new DateTime(2024, 1, 1, 12, 0, 0),
-				CorrectedDateTime = new DateTime(2024, 1, 1, 13, 0, 0),
-				Delta = TimeSpan.FromHours(1),
-				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
-			}
-		};
-		var service = new FakeIExifTimezoneCorrectionService(expectedResults);
+		var service = CreateService(storage: null);
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
@@ -1585,10 +1570,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 
 		// Assert
 		Assert.IsNotNull(result);
-		Assert.HasCount(1, result);
-		Assert.IsTrue(result[0].Success);
-		Assert.AreEqual("/test.jpg", result[0].FileIndexItem?.FilePath);
-		Assert.AreEqual(TimeSpan.FromHours(1), result[0].Delta);
+		Assert.HasCount(0, result);
 	}
 
 	#endregion

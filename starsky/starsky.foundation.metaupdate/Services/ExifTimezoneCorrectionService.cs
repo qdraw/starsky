@@ -106,18 +106,8 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 		try
 		{
 			// Calculate the timezone or custom offset delta
-
-			var delta = request switch
-			{
-				ExifTimezoneBasedCorrectionRequest timezoneRequest => CalculateTimezoneDelta(
-					fileIndexItem.DateTime, timezoneRequest.RecordedTimezone,
-					timezoneRequest.CorrectTimezone),
-				ExifCustomOffsetCorrectionRequest customOffsetRequest => CalculateCustomOffsetDelta(
-					fileIndexItem.DateTime, customOffsetRequest),
-				_ => throw new ArgumentException("Invalid request type", nameof(request))
-			};
-
 			result.OriginalDateTime = fileIndexItem.DateTime;
+			var delta = SwitchCalculateTimezone(fileIndexItem, request);
 			result.Delta = delta;
 
 			// Apply the correction
@@ -164,6 +154,20 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 		}
 
 		return result;
+	}
+
+	internal static TimeSpan SwitchCalculateTimezone(FileIndexItem fileIndexItem,
+		IExifTimeCorrectionRequest request)
+	{
+		return request switch
+		{
+			ExifTimezoneBasedCorrectionRequest timezoneRequest => CalculateTimezoneDelta(
+				fileIndexItem.DateTime, timezoneRequest.RecordedTimezone,
+				timezoneRequest.CorrectTimezone),
+			ExifCustomOffsetCorrectionRequest customOffsetRequest => CalculateCustomOffsetDelta(
+				fileIndexItem.DateTime, customOffsetRequest),
+			_ => throw new ArgumentException("Invalid request type", nameof(request))
+		};
 	}
 
 	/// <summary>
@@ -274,7 +278,8 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 		return result;
 	}
 
-	private static ExifTimezoneCorrectionResult ValidateCustomOffsetRequest(FileIndexItem fileIndexItem,
+	private static ExifTimezoneCorrectionResult ValidateCustomOffsetRequest(
+		FileIndexItem fileIndexItem,
 		ExifCustomOffsetCorrectionRequest request, ExifTimezoneCorrectionResult result)
 	{
 		if ( !request.HasAnyOffset )
