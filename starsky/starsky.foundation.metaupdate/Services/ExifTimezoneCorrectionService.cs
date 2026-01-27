@@ -266,7 +266,7 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 		return result;
 	}
 
-	private ExifTimezoneCorrectionResult SetError(ExifTimezoneCorrectionResult result,
+	private static ExifTimezoneCorrectionResult SetError(ExifTimezoneCorrectionResult result,
 		FileIndexItem fileIndexItem, FileIndexItem.ExifStatus status, string error)
 	{
 		fileIndexItem.Status = status;
@@ -274,7 +274,7 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 		return result;
 	}
 
-	private ExifTimezoneCorrectionResult ValidateCustomOffsetRequest(FileIndexItem fileIndexItem,
+	private static ExifTimezoneCorrectionResult ValidateCustomOffsetRequest(FileIndexItem fileIndexItem,
 		ExifCustomOffsetCorrectionRequest request, ExifTimezoneCorrectionResult result)
 	{
 		if ( !request.HasAnyOffset )
@@ -287,7 +287,7 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 		return result;
 	}
 
-	private ExifTimezoneCorrectionResult ValidateTimezoneRequest(FileIndexItem fileIndexItem,
+	private static ExifTimezoneCorrectionResult ValidateTimezoneRequest(FileIndexItem fileIndexItem,
 		ExifTimezoneBasedCorrectionRequest request, ExifTimezoneCorrectionResult result)
 	{
 		if ( string.IsNullOrWhiteSpace(request.RecordedTimezone) )
