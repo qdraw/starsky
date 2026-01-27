@@ -78,7 +78,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
 		var controller = CreateController(timezoneService);
 
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -134,7 +134,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
 		var controller = CreateController(timezoneService);
 
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -158,7 +158,7 @@ public sealed class MetaTimeCorrectControllerTest
 	{
 		// Arrange
 		var controller = CreateController();
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -181,7 +181,7 @@ public sealed class MetaTimeCorrectControllerTest
 	{
 		// Arrange
 		var controller = CreateController();
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -216,7 +216,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
 		var controller = CreateController(timezoneService);
 
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -258,7 +258,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
 		var controller = CreateController(timezoneService);
 
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -301,7 +301,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
 		var controller = CreateController(timezoneService);
 
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "Europe/Amsterdam", // UTC+1 (after DST)
 			CorrectTimezone = "Europe/Amsterdam" // UTC+2 (during DST)
@@ -346,7 +346,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
 		var controller = CreateController(timezoneService);
 
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "Europe/Amsterdam", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -387,7 +387,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
 		var controller = CreateController(timezoneService);
 
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -422,7 +422,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
 		var controller = CreateController(timezoneService);
 
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "InvalidTZ", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -463,7 +463,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
 		var controller = CreateController(timezoneService);
 
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "Europe/Amsterdam", CorrectTimezone = "UTC"
 		};
@@ -487,7 +487,7 @@ public sealed class MetaTimeCorrectControllerTest
 	{
 		// Arrange
 		var controller = CreateController();
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -526,7 +526,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var queue = new FakeIUpdateBackgroundTaskQueue();
 		var controller = CreateController(timezoneService, queue);
 
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -579,7 +579,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var queue = new FakeIUpdateBackgroundTaskQueue();
 		var controller = CreateController(timezoneService, queue);
 
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -604,7 +604,7 @@ public sealed class MetaTimeCorrectControllerTest
 	{
 		// Arrange
 		var controller = CreateController();
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -627,7 +627,7 @@ public sealed class MetaTimeCorrectControllerTest
 	{
 		// Arrange
 		var controller = CreateController();
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -650,7 +650,7 @@ public sealed class MetaTimeCorrectControllerTest
 	{
 		// Arrange
 		var controller = CreateController();
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -675,7 +675,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var controller = CreateController();
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -711,7 +711,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var queue = new FakeIUpdateBackgroundTaskQueue();
 		var controller = CreateController(timezoneService, queue);
 
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -756,7 +756,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var queue = new FakeIUpdateBackgroundTaskQueue();
 		var controller = CreateController(timezoneService, queue);
 
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -800,7 +800,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var queue = new FakeIUpdateBackgroundTaskQueue();
 		var controller = CreateController(timezoneService, queue);
 
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "Europe/Amsterdam", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -843,7 +843,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var queue = new FakeIUpdateBackgroundTaskQueue();
 		var controller = CreateController(timezoneService, queue);
 
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "Europe/Amsterdam", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -885,7 +885,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var queue = new FakeIUpdateBackgroundTaskQueue();
 		var controller = CreateController(timezoneService, queue);
 
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -921,7 +921,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var queue = new FakeIUpdateBackgroundTaskQueue();
 		var controller = CreateController(timezoneService, queue);
 
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "InvalidTZ", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -962,7 +962,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var queue = new FakeIUpdateBackgroundTaskQueue();
 		var controller = CreateController(timezoneService, queue);
 
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "Europe/Amsterdam", CorrectTimezone = "UTC"
 		};
@@ -1004,7 +1004,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var queue = new FakeIUpdateBackgroundTaskQueue();
 		var controller = CreateController(timezoneService, queue);
 
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -1056,7 +1056,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var queue = new FakeIUpdateBackgroundTaskQueue();
 		var controller = CreateController(timezoneService, queue);
 
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};

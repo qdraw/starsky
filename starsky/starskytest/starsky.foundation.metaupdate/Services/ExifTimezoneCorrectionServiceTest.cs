@@ -47,7 +47,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -70,7 +70,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = ""
 		};
@@ -93,7 +93,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "Invalid/Timezone", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -116,7 +116,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Invalid/Timezone"
 		};
@@ -139,7 +139,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Local) // Invalid year
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -162,7 +162,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "Europe/Amsterdam", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -185,7 +185,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 23, 30, 0, DateTimeKind.Local) // Late evening
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC",
 			CorrectTimezone = "Pacific/Auckland" // UTC+12, will roll to next day
@@ -213,7 +213,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local) // 14:30 in UTC
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", // Camera thought it was UTC (GMT+00)
 			CorrectTimezone = "Europe/Amsterdam" // Actually in Amsterdam (GMT+02 in summer)
@@ -245,7 +245,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			DateTime = new DateTime(2024, 1, 15,
 				14, 30, 0, DateTimeKind.Local) // January (winter)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam" // GMT+01 in winter
 		};
@@ -273,7 +273,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "Europe/Amsterdam", // Camera thought GMT+02
 			CorrectTimezone = "UTC" // Actually in UTC (GMT+00)
@@ -303,7 +303,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			DateTime = new DateTime(2024, 6, 15,
 				23, 30, 0, DateTimeKind.Local) // 23:30
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Pacific/Auckland" // UTC+12
 		};
@@ -340,7 +340,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			}
 		};
 
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -368,7 +368,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "", // Invalid
 			CorrectTimezone = "Europe/Amsterdam"
@@ -394,7 +394,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/nonexistent.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -418,7 +418,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/nonexistent.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -441,7 +441,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -467,7 +467,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 3, 30, 14, 0, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "Etc/GMT-1", // Fixed UTC+1
 			CorrectTimezone = "Europe/Amsterdam" // UTC+1 before DST
@@ -495,7 +495,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 3, 31, 14, 0, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "Etc/GMT-1", // Fixed UTC+1 (camera didn't update)
 			CorrectTimezone = "Europe/Amsterdam" // UTC+2 after DST
@@ -525,7 +525,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 10, 26, 14, 0, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "Etc/GMT-2", // Fixed UTC+2
 			CorrectTimezone = "Europe/Amsterdam" // UTC+2 on October 26 (before fall-back)
@@ -555,7 +555,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 10, 27, 14, 0, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "Etc/GMT-2", // Fixed UTC+2 (camera didn't update for fall-back)
 			CorrectTimezone = "Europe/Amsterdam" // UTC+1 after fall-back
@@ -585,7 +585,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 0, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "America/New_York", // Camera set to NY (UTC-4 EDT)
 			CorrectTimezone = "America/Los_Angeles" // Actually in LA (UTC-7 PDT)
@@ -613,7 +613,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 0, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", // Camera set to UTC
 			CorrectTimezone = "Asia/Tokyo" // Actually in Tokyo (UTC+9)
@@ -641,7 +641,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 1, 15, 14, 0, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", // Camera set to UTC
 			CorrectTimezone = "Australia/Sydney" // UTC+11 in January
@@ -671,7 +671,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 0, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "Etc/GMT-1", // Fixed UTC+1
 			CorrectTimezone = "Europe/London" // UTC+1 in summer
@@ -697,7 +697,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 0, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "Etc/GMT+5", // Fixed UTC-5
 			CorrectTimezone = "UTC" // UTC+0
@@ -727,7 +727,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 22, 0, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Pacific/Auckland" // UTC+12
 		};
@@ -754,7 +754,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 30, 23, 0, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Pacific/Auckland" // UTC+12
 		};
@@ -781,7 +781,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 12, 31, 22, 0, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Pacific/Auckland" // UTC+12
 		};
@@ -808,7 +808,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 0, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Asia/Kolkata" // UTC+5:30
 		};
@@ -854,7 +854,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			}
 		};
 
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "Etc/GMT-1", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -899,7 +899,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		var fakeQuery = new FakeIQuery(fileIndexItems);
 		var service = CreateService(storage: storage, query: fakeQuery);
 
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -931,7 +931,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		var service = CreateService();
 		var fileIndexItems = new List<FileIndexItem>();
 
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -957,7 +957,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 0, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", CorrectTimezone = "Asia/Kathmandu" // UTC+5:45
 		};
@@ -969,7 +969,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		Assert.IsTrue(result.Success);
 		Assert.AreEqual(5, result.Delta.Hours); // 5 hours 45 minutes
 		Assert.AreEqual(45, result.Delta.Minutes); // 5 hours 45 minutes
-		Assert.AreEqual(new DateTime(2024, 6, 15, 
+		Assert.AreEqual(new DateTime(2024, 6, 15,
 				19, 45, 0, DateTimeKind.Local),
 			result.CorrectedDateTime);
 	}
@@ -988,7 +988,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		var fakeStorage = new FakeIStorage([],
 			[fileIndexItem.FilePath]);
 		var service = CreateService(storage: fakeStorage, query: fakeQuery);
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			CorrectTimezone = "Europe/Amsterdam", RecordedTimezone = "UTC"
 		};
@@ -1009,7 +1009,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		var fakeQuery = new FakeIQuery([fileIndexItem]);
 		var fakeStorage = new FakeIStorage([]); // No files exist
 		var service = CreateService(storage: fakeStorage, query: fakeQuery);
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "Central European Standard Time",
 			CorrectTimezone = "Central European Summer Time"
@@ -1031,7 +1031,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		var fakeQuery = new FakeIQueryException(new Exception()); // Simulates exception on query
 		var fakeStorage = new FakeIStorage([], [fileIndexItem.FilePath]);
 		var service = CreateService(storage: fakeStorage, query: fakeQuery);
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "UTC", // Camera thought it was UTC (GMT+00)
 			CorrectTimezone = "Europe/Amsterdam" // Actually in Amsterdam (GMT+02 in summer)
@@ -1056,7 +1056,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 23, 30, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "Europe/Amsterdam", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -1080,7 +1080,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "   ", // Whitespace only
 			CorrectTimezone = "Europe/Amsterdam"
@@ -1098,17 +1098,14 @@ public sealed class ExifTimezoneCorrectionServiceTest
 	public void ValidateCorrection_ReadOnlyStatus_ReturnsReadOnlyError()
 	{
 		// Arrange
-		var service = CreateService(appSettings: new AppSettings
-		{
-			ReadOnlyFolders = ["/"]
-		});
+		var service = CreateService(appSettings: new AppSettings { ReadOnlyFolders = ["/"] });
 		var fileIndexItem = new FileIndexItem
 		{
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local),
 			Status = FileIndexItem.ExifStatus.ReadOnly
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifTimezoneBasedCorrectionRequest
 		{
 			RecordedTimezone = "Europe/Amsterdam", CorrectTimezone = "Europe/Amsterdam"
 		};
@@ -1134,9 +1131,9 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifCustomOffsetCorrectionRequest
 		{
-			CustomOffsetHours = 2 // Add 2 hours
+			Hour = 1 // Add 1 hour
 		};
 
 		// Act
@@ -1144,9 +1141,9 @@ public sealed class ExifTimezoneCorrectionServiceTest
 
 		// Assert
 		Assert.IsTrue(result.Success);
-		Assert.AreEqual(new DateTime(2024, 6, 15, 16, 30, 0, DateTimeKind.Local),
+		Assert.AreEqual(new DateTime(2024, 6, 15, 15, 30, 0, DateTimeKind.Local),
 			result.CorrectedDateTime);
-		Assert.AreEqual(TimeSpan.FromHours(2), result.Delta);
+		Assert.AreEqual(TimeSpan.FromHours(1), result.Delta);
 	}
 
 	[TestMethod]
@@ -1161,9 +1158,9 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifCustomOffsetCorrectionRequest
 		{
-			CustomOffsetHours = -3 // Subtract 3 hours
+			Hour = -1 // Subtract 1 hour
 		};
 
 		// Act
@@ -1171,9 +1168,9 @@ public sealed class ExifTimezoneCorrectionServiceTest
 
 		// Assert
 		Assert.IsTrue(result.Success);
-		Assert.AreEqual(new DateTime(2024, 6, 15, 11, 30, 0, DateTimeKind.Local),
+		Assert.AreEqual(new DateTime(2024, 6, 15, 13, 30, 0, DateTimeKind.Local),
 			result.CorrectedDateTime);
-		Assert.AreEqual(TimeSpan.FromHours(-3), result.Delta);
+		Assert.AreEqual(TimeSpan.FromHours(-1), result.Delta);
 	}
 
 	[TestMethod]
@@ -1188,10 +1185,10 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifCustomOffsetCorrectionRequest
 		{
-			CustomOffsetMinutes = 2, // Add 2 minutes
-			CustomOffsetSeconds = 30 // Add 30 seconds
+			Minute = 2, // Add 2 minutes
+			Second = 30 // Add 30 seconds
 		};
 
 		// Act
@@ -1216,11 +1213,11 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifCustomOffsetCorrectionRequest
 		{
-			CustomOffsetHours = 1, // Add 1 hour
-			CustomOffsetMinutes = 2, // Add 2 minutes
-			CustomOffsetSeconds = 30 // Add 30 seconds
+			Hour = 1, // Add 1 hour
+			Minute = 2, // Add 2 minutes
+			Second = 30 // Add 30 seconds
 		};
 
 		// Act
@@ -1247,9 +1244,9 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifCustomOffsetCorrectionRequest
 		{
-			CustomOffsetDays = 5 // Add 5 days
+			Day = 5 // Add 5 days
 		};
 
 		// Act
@@ -1274,9 +1271,9 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifCustomOffsetCorrectionRequest
 		{
-			CustomOffsetMonths = 2 // Add 2 months
+			Month = 2 // Add 2 months
 		};
 
 		// Act
@@ -1303,9 +1300,9 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifCustomOffsetCorrectionRequest
 		{
-			CustomOffsetYears = 1 // Add 1 year
+			Year = 1 // Add 1 year
 		};
 
 		// Act
@@ -1332,14 +1329,14 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 1, 15, 10, 30, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifCustomOffsetCorrectionRequest
 		{
-			CustomOffsetYears = 1,
-			CustomOffsetMonths = 2,
-			CustomOffsetDays = 3,
-			CustomOffsetHours = 1,
-			CustomOffsetMinutes = 2,
-			CustomOffsetSeconds = 30
+			Year = 1,
+			Month = 2,
+			Day = 3,
+			Hour = 1,
+			Minute = 2,
+			Second = 30
 		};
 
 		// Act
@@ -1365,10 +1362,10 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifCustomOffsetCorrectionRequest
 		{
-			CustomOffsetYears = -1, // Subtract 1 year
-			CustomOffsetMonths = -3 // Subtract 3 months
+			Year = -1, // Subtract 1 year
+			Month = -3 // Subtract 3 months
 		};
 
 		// Act
@@ -1392,9 +1389,9 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 1, 31, 14, 30, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifCustomOffsetCorrectionRequest
 		{
-			CustomOffsetMonths = 1 // Add 1 month (Jan 31 -> Feb 29 in 2024 leap year)
+			Month = 1 // Add 1 month (Jan 31 -> Feb 29 in 2024 leap year)
 		};
 
 		// Act
@@ -1418,9 +1415,9 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 30, 23, 30, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifCustomOffsetCorrectionRequest
 		{
-			CustomOffsetHours = 1 // Add 1 hour (rolls to next day)
+			Hour = 1 // Add 1 hour (rolls to next day)
 		};
 
 		// Act
@@ -1430,7 +1427,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		Assert.IsTrue(result.Success);
 		Assert.AreEqual(new DateTime(2024, 7, 1, 0, 30, 0, DateTimeKind.Local),
 			result.CorrectedDateTime);
-		Assert.IsTrue(result.Warning!.Contains("change the day"));
+		Assert.Contains("change the day", result.Warning);
 	}
 
 	[TestMethod]
@@ -1443,7 +1440,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifCustomOffsetCorrectionRequest
 		{
 			// No offsets provided at all
 		};
@@ -1453,7 +1450,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 
 		// Assert
 		Assert.IsFalse(result.Success);
-		Assert.AreEqual("Recorded timezone is required", result.Error);
+		Assert.AreEqual("At least one custom offset value is required", result.Error);
 	}
 
 	[TestMethod]
@@ -1466,9 +1463,9 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			FilePath = "/test.jpg",
 			DateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local)
 		};
-		var request = new ExifTimezoneCorrectionRequest
+		var request = new ExifCustomOffsetCorrectionRequest
 		{
-			CustomOffsetHours = 0 // Explicitly zero
+			Year = 0 // Explicitly zero
 		};
 
 		// Act
@@ -1499,16 +1496,13 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		]);
 		var service = CreateService(storage: storage, query: query);
 
-		var request = new ExifTimezoneCorrectionRequest
-		{
-			CustomOffsetHours = 2
-		};
+		var request = new ExifCustomOffsetCorrectionRequest { Hour = 2 };
 
 		// Act
 		var results = await service.Validate(["/test1.jpg", "/test2.jpg"], false, request);
 
 		// Assert
-		Assert.AreEqual(2, results.Count);
+		Assert.HasCount(2, results);
 		Assert.IsTrue(results[0].Success);
 		Assert.IsTrue(results[1].Success);
 		Assert.AreEqual(TimeSpan.FromHours(2), results[0].Delta);
@@ -1517,5 +1511,3 @@ public sealed class ExifTimezoneCorrectionServiceTest
 
 	#endregion
 }
-
-
