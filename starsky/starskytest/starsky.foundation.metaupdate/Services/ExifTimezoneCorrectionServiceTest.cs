@@ -571,7 +571,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			result.CorrectedDateTime);
 	}
 
-	private class SetExifTimezoneBasedCorrectionRequestOverrideObject : IExifTimeCorrectionRequest
+	private sealed class SetExifTimezoneBasedCorrectionRequestOverrideObject : IExifTimeCorrectionRequest
 	{
 		// nothing here
 	}
