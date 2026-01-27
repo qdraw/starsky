@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.realtime.Interface;
 using starsky.foundation.database.Models;
@@ -54,7 +53,7 @@ public class MetaTimeCorrectController(
 		bool? collections,
 		[FromBody] ExifTimezoneBasedCorrectionRequest request)
 	{
-		var validationResult = ValidateRequest(ModelState, f, collections);
+		var validationResult = ValidateRequest(ModelState.IsValid, f, collections);
 		if ( validationResult != null )
 		{
 			return validationResult;
@@ -88,7 +87,7 @@ public class MetaTimeCorrectController(
 		bool? collections,
 		[FromBody] ExifTimezoneBasedCorrectionRequest request)
 	{
-		var validationResult = ValidateRequest(ModelState, f, collections);
+		var validationResult = ValidateRequest(ModelState.IsValid, f, collections);
 		if ( validationResult != null )
 		{
 			return validationResult;
@@ -124,7 +123,7 @@ public class MetaTimeCorrectController(
 		bool? collections,
 		[FromBody] ExifCustomOffsetCorrectionRequest request)
 	{
-		var validationResult = ValidateRequest(ModelState, f, collections);
+		var validationResult = ValidateRequest(ModelState.IsValid, f, collections);
 		if ( validationResult != null )
 		{
 			return validationResult;
@@ -158,7 +157,7 @@ public class MetaTimeCorrectController(
 		bool? collections,
 		[FromBody] ExifCustomOffsetCorrectionRequest request)
 	{
-		var validationResult = ValidateRequest(ModelState, f, collections);
+		var validationResult = ValidateRequest(ModelState.IsValid, f, collections);
 		if ( validationResult != null )
 		{
 			return validationResult;
@@ -178,10 +177,10 @@ public class MetaTimeCorrectController(
 	/// <summary>
 	///     Validate common request parameters
 	/// </summary>
-	private BadRequestObjectResult? ValidateRequest(ModelStateDictionary modelState,
+	private BadRequestObjectResult? ValidateRequest(bool modelStateIsValid,
 		string f, bool? collections)
 	{
-		if ( !modelState.IsValid || string.IsNullOrWhiteSpace(f) || collections == null )
+		if ( !modelStateIsValid || string.IsNullOrWhiteSpace(f) || collections == null )
 		{
 			return BadRequest(ModelNotValidError);
 		}
