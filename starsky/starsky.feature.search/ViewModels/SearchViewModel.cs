@@ -100,9 +100,12 @@ namespace starsky.feature.search.ViewModels
 			lastedited = 11,
 			make = 12,
 			model = 13,
+			lensmodel = 14,
+			makecameraserial = 15,
+
 			// ReSharper disable once IdentifierTypo
-			colorclass = 14,
-			software = 15
+			colorclass = 16,
+			software = 17,
 		}
 
 

@@ -10,45 +10,35 @@ namespace starsky.foundation.database.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateIndex(
-                name: "IX_Thumbnails_Missing_And_FileHash",
-                table: "Thumbnails",
-                columns: new[] { "ExtraLarge", "Large", "Small", "FileHash" });
+	        // Drop oversized indexes that exceed MariaDB's 3072 byte limit
+	        // removed: IX_Thumbnails_Missing_And_FileHash
+	        // 1. Thumbnails index with FileHash
 
-            migrationBuilder.CreateIndex(
-                name: "IX_FileIndex_DateTime",
-                table: "FileIndex",
-                column: "DateTime");
+	        // 2. ParentDirectory + Tags composite: 760 + 4096 = 4856 bytes
+	        // removed: IX_FileIndex_ParentDirectory_Tags
+	        
+	        migrationBuilder.CreateIndex(
+		        name: "IX_FileIndex_DateTime",
+		        table: "FileIndex",
+		        column: "DateTime");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_FileIndex_FileHash",
-                table: "FileIndex",
-                column: "FileHash");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FileIndex_ParentDirectory_Tags",
-                table: "FileIndex",
-                columns: new[] { "ParentDirectory", "Tags" });
+	        migrationBuilder.CreateIndex(
+		        name: "IX_FileIndex_FileHash",
+		        table: "FileIndex",
+		        column: "FileHash");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "IX_Thumbnails_Missing_And_FileHash",
-                table: "Thumbnails");
+	        migrationBuilder.DropIndex(
+		        name: "IX_FileIndex_DateTime",
+		        table: "FileIndex");
 
-            migrationBuilder.DropIndex(
-                name: "IX_FileIndex_DateTime",
-                table: "FileIndex");
-
-            migrationBuilder.DropIndex(
-                name: "IX_FileIndex_FileHash",
-                table: "FileIndex");
-
-            migrationBuilder.DropIndex(
-                name: "IX_FileIndex_ParentDirectory_Tags",
-                table: "FileIndex");
+	        migrationBuilder.DropIndex(
+		        name: "IX_FileIndex_FileHash",
+		        table: "FileIndex");
         }
     }
 }
+

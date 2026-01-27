@@ -98,8 +98,10 @@ internal class ResizeThumbnailFromSourceImageHelper(
 				message = imageCannotBeLoadedErrorMessage;
 			}
 
-			logger.LogError($"[ResizeThumbnailFromSourceImage] Exception {subPath} {message}", ex);
-			logger.LogError(ex.StackTrace);
+			logger.LogError($"[ResizeThumbnailFromSourceImage] Exception " +
+			                $"Subpath: {subPath} Message: {message} " +
+			                $"StackTrace: {ex.StackTrace} " +
+			                $"Inner: {ex.InnerException}", ex);
 
 			result.Success = false;
 			result.ErrorMessage = message;

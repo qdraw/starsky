@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -11,13 +10,8 @@ using starsky.foundation.database.Models.Account;
 
 namespace starsky.foundation.database.Data;
 
-[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 {
-	public ApplicationDbContext(DbContextOptions options) : base(options)
-	{
-	}
-
 	public virtual DbSet<FileIndexItem> FileIndex { get; set; }
 	public DbSet<ImportIndexItem> ImportIndex { get; set; }
 
@@ -69,9 +63,10 @@ public class ApplicationDbContext : DbContext
 			etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
 
 			// This filters on ParentDirectory and sort on fileName
-			etb.HasIndex(x => new { x.FileName, x.ParentDirectory });			
+			etb.HasIndex(x => new { x.FileName, x.ParentDirectory });
 			etb.HasIndex(x => new { x.ParentDirectory, x.FileName });
 			etb.HasIndex(x => new { x.FilePath });
+			// The Tags Index is truncated to fit within the index size limit
 			etb.HasIndex(x => new { x.Tags });
 			etb.HasIndex(x => new { x.ImageFormat });
 
@@ -79,8 +74,9 @@ public class ApplicationDbContext : DbContext
 			// Date range search indexes
 			etb.HasIndex(x => new { x.DateTime });
 
-			// Composite indexes for common search patterns
-			etb.HasIndex(x => new { x.ParentDirectory, x.Tags });
+			// ParentDirectory index only (Tags is varchar(1024) = 4096 bytes, exceeds 3072 limit)
+			etb.HasIndex(x => new { x.ParentDirectory })
+				.HasDatabaseName("IX_FileIndex_ParentDirectory");
 
 			// FileHash index improvement - ensure it supports null values
 			etb.HasIndex(x => new { x.FileHash })
@@ -258,8 +254,10 @@ public class ApplicationDbContext : DbContext
 				etb.HasAnnotation("MySql:CharSet", "utf8mb4");
 
 				// Add composite index for performance on GetMissingThumbnailsBatchInternalAsync
-				etb.HasIndex(e => new { e.ExtraLarge, e.Large, e.Small, e.FileHash })
-					.HasDatabaseName("IX_Thumbnails_Missing_And_FileHash");
+				// FileHash is excluded as it's already the primary key
+				// This keeps the index size under MariaDB's 3072 byte limit
+				etb.HasIndex(e => new { e.ExtraLarge, e.Large, e.Small })
+					.HasDatabaseName("IX_Thumbnails_Missing");
 			}
 		);
 	}
