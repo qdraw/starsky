@@ -16,17 +16,21 @@ internal sealed class FakeIExifTimezoneCorrectionService(
 	private readonly List<ExifTimezoneCorrectionResult>
 		_validationResults = validationResults ?? [];
 
-	public Task<List<ExifTimezoneCorrectionResult>> Validate(
-		string[] subPaths,
-		bool collections,
-		ExifTimezoneCorrectionRequest request)
+
+	public Task<List<ExifTimezoneCorrectionResult>> Validate(string f, bool collections,
+		IExifTimeCorrectionRequest request)
+	{
+		return Task.FromResult(_validationResults);
+	}
+
+	public Task<List<ExifTimezoneCorrectionResult>> Validate(string[] subPaths, bool collections,
+		IExifTimeCorrectionRequest request)
 	{
 		return Task.FromResult(_validationResults);
 	}
 
 	public Task<List<ExifTimezoneCorrectionResult>> CorrectTimezoneAsync(
-		List<FileIndexItem> fileIndexItems,
-		ExifTimezoneCorrectionRequest request)
+		List<FileIndexItem> fileIndexItems, IExifTimeCorrectionRequest request)
 	{
 		return Task.FromResult(_validationResults);
 	}

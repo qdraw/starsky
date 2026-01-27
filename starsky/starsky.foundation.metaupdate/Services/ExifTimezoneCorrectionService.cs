@@ -5,6 +5,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.metaupdate.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
@@ -54,7 +55,7 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 	[SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
 	public async Task<List<ExifTimezoneCorrectionResult>> CorrectTimezoneAsync(
 		List<FileIndexItem> fileIndexItems,
-		ExifTimezoneCorrectionRequest request)
+		IExifTimeCorrectionRequest request)
 	{
 		var results = new List<ExifTimezoneCorrectionResult>();
 
@@ -68,8 +69,15 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 		return results;
 	}
 
+	public async Task<List<ExifTimezoneCorrectionResult>> Validate(string f, bool collections,
+		IExifTimeCorrectionRequest request)
+	{
+		var subPaths = PathHelper.SplitInputFilePaths(f);
+		return await Validate(subPaths, collections, request);
+	}
+
 	public async Task<List<ExifTimezoneCorrectionResult>> Validate(string[] subPaths,
-		bool collections, ExifTimezoneCorrectionRequest request)
+		bool collections, IExifTimeCorrectionRequest request)
 	{
 		var fileIndexItems = await _query.GetObjectsByFilePathAsync(
 			[..subPaths], collections);
@@ -87,7 +95,7 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 	/// </summary>
 	internal async Task<ExifTimezoneCorrectionResult> CorrectTimezoneAsync(
 		FileIndexItem fileIndexItem,
-		ExifTimezoneCorrectionRequest request)
+		IExifTimeCorrectionRequest request)
 	{
 		var result = ValidateCorrection(fileIndexItem, request);
 		if ( !string.IsNullOrEmpty(result.Error) )
@@ -97,13 +105,9 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 
 		try
 		{
-			// Calculate the timezone delta
-			var delta = CalculateTimezoneDelta(
-				fileIndexItem.DateTime,
-				request.RecordedTimezone,
-				request.CorrectTimezone);
-
+			// Calculate the timezone or custom offset delta
 			result.OriginalDateTime = fileIndexItem.DateTime;
+			var delta = SwitchCalculateTimezone(fileIndexItem, request);
 			result.Delta = delta;
 
 			// Apply the correction
@@ -152,12 +156,26 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 		return result;
 	}
 
+	internal static TimeSpan SwitchCalculateTimezone(FileIndexItem fileIndexItem,
+		IExifTimeCorrectionRequest request)
+	{
+		return request switch
+		{
+			ExifTimezoneBasedCorrectionRequest timezoneRequest => CalculateTimezoneDelta(
+				fileIndexItem.DateTime, timezoneRequest.RecordedTimezone,
+				timezoneRequest.CorrectTimezone),
+			ExifCustomOffsetCorrectionRequest customOffsetRequest => CalculateCustomOffsetDelta(
+				fileIndexItem.DateTime, customOffsetRequest),
+			_ => throw new ArgumentException("Invalid request type", nameof(request))
+		};
+	}
+
 	/// <summary>
 	///     Validate timezone correction request
 	/// </summary>
 	internal ExifTimezoneCorrectionResult ValidateCorrection(
 		FileIndexItem fileIndexItem,
-		ExifTimezoneCorrectionRequest request)
+		IExifTimeCorrectionRequest request)
 	{
 		var result = new ExifTimezoneCorrectionResult
 		{
@@ -182,44 +200,6 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 			return result;
 		}
 
-		// Validate timezones
-		if ( string.IsNullOrWhiteSpace(request.RecordedTimezone) )
-		{
-			fileIndexItem.Status = FileIndexItem.ExifStatus.OperationNotSupported;
-			result.Error = "Recorded timezone is required";
-			return result;
-		}
-
-		if ( string.IsNullOrWhiteSpace(request.CorrectTimezone) )
-		{
-			fileIndexItem.Status = FileIndexItem.ExifStatus.OperationNotSupported;
-			result.Error = "Correct timezone is required";
-			return result;
-		}
-
-		// Validate timezone IDs
-		try
-		{
-			_ = TimeZoneInfo.FindSystemTimeZoneById(request.RecordedTimezone);
-		}
-		catch ( Exception )
-		{
-			fileIndexItem.Status = FileIndexItem.ExifStatus.OperationNotSupported;
-			result.Error = $"Invalid recorded timezone: {request.RecordedTimezone}";
-			return result;
-		}
-
-		try
-		{
-			_ = TimeZoneInfo.FindSystemTimeZoneById(request.CorrectTimezone);
-		}
-		catch ( Exception )
-		{
-			fileIndexItem.Status = FileIndexItem.ExifStatus.OperationNotSupported;
-			result.Error = $"Invalid correct timezone: {request.CorrectTimezone}";
-			return result;
-		}
-
 		// Validate DateTime
 		if ( fileIndexItem.DateTime.Year < 2 )
 		{
@@ -228,15 +208,49 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 			return result;
 		}
 
-		// Calculate delta to check for day rollover
-		result.Delta = CalculateTimezoneDelta(
-			fileIndexItem.DateTime,
-			request.RecordedTimezone,
-			request.CorrectTimezone);
+		// Determine mode and validate accordingly
+		switch ( request )
+		{
+			case ExifCustomOffsetCorrectionRequest customOffsetRequest:
+				var customOffsetValidation =
+					ValidateCustomOffsetRequest(fileIndexItem, customOffsetRequest, result);
+				if ( !customOffsetValidation.Success )
+				{
+					return customOffsetValidation;
+				}
+
+				result.Delta =
+					CalculateCustomOffsetDelta(fileIndexItem.DateTime, customOffsetRequest);
+				break;
+			case ExifTimezoneBasedCorrectionRequest timezoneRequest:
+				var timezoneValidation =
+					ValidateTimezoneRequest(fileIndexItem, timezoneRequest, result);
+				if ( !timezoneValidation.Success )
+				{
+					return timezoneValidation;
+				}
+
+				if ( timezoneRequest.RecordedTimezone == timezoneRequest.CorrectTimezone )
+				{
+					fileIndexItem.Status = FileIndexItem.ExifStatus.OkAndSame;
+					result.Warning =
+						"Recorded and correct timezones are the same - no correction needed";
+					result.Delta = TimeSpan.Zero;
+					result.CorrectedDateTime = fileIndexItem.DateTime;
+					result.Success = true;
+					return result;
+				}
+
+				result.Delta = CalculateTimezoneDelta(fileIndexItem.DateTime,
+					timezoneRequest.RecordedTimezone, timezoneRequest.CorrectTimezone);
+				break;
+			default:
+				throw new ArgumentException("Invalid request type", nameof(request));
+		}
 
 		result.CorrectedDateTime = fileIndexItem.DateTime.Add(result.Delta);
 		result.Success = true;
-		
+
 		// Warn about day/month/year rollover
 		if ( result.CorrectedDateTime.Day != fileIndexItem.DateTime.Day )
 		{
@@ -246,17 +260,128 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 				$"{result.CorrectedDateTime:yyyy-MM-dd}";
 		}
 
-		// Warn if timezones are the same
-		if ( request.RecordedTimezone == request.CorrectTimezone )
+		// Warn if no actual change (delta is zero)
+		if ( result.Delta == TimeSpan.Zero )
 		{
-			fileIndexItem.Status = FileIndexItem.ExifStatus.OkAndSame;
-			result.Warning = "Recorded and correct timezones " +
-			                 "are the same - no correction needed";
-			return result;
+			result.Warning = "No time correction will be applied (delta is zero)";
 		}
 
 		fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 		return result;
+	}
+
+	private static ExifTimezoneCorrectionResult SetError(ExifTimezoneCorrectionResult result,
+		FileIndexItem fileIndexItem, FileIndexItem.ExifStatus status, string error)
+	{
+		fileIndexItem.Status = status;
+		result.Error = error;
+		return result;
+	}
+
+	private static ExifTimezoneCorrectionResult ValidateCustomOffsetRequest(
+		FileIndexItem fileIndexItem,
+		ExifCustomOffsetCorrectionRequest request, ExifTimezoneCorrectionResult result)
+	{
+		if ( !request.HasAnyOffset )
+		{
+			return SetError(result, fileIndexItem, FileIndexItem.ExifStatus.OperationNotSupported,
+				"At least one custom offset value is required");
+		}
+
+		result.Success = true;
+		return result;
+	}
+
+	private static ExifTimezoneCorrectionResult ValidateTimezoneRequest(FileIndexItem fileIndexItem,
+		ExifTimezoneBasedCorrectionRequest request, ExifTimezoneCorrectionResult result)
+	{
+		if ( string.IsNullOrWhiteSpace(request.RecordedTimezone) )
+		{
+			return SetError(result, fileIndexItem, FileIndexItem.ExifStatus.OperationNotSupported,
+				"Recorded timezone is required");
+		}
+
+		if ( string.IsNullOrWhiteSpace(request.CorrectTimezone) )
+		{
+			return SetError(result, fileIndexItem, FileIndexItem.ExifStatus.OperationNotSupported,
+				"Correct timezone is required");
+		}
+
+		try
+		{
+			_ = TimeZoneInfo.FindSystemTimeZoneById(request.RecordedTimezone);
+		}
+		catch ( Exception )
+		{
+			return SetError(result, fileIndexItem, FileIndexItem.ExifStatus.OperationNotSupported,
+				$"Invalid recorded timezone: {request.RecordedTimezone}");
+		}
+
+		try
+		{
+			_ = TimeZoneInfo.FindSystemTimeZoneById(request.CorrectTimezone);
+		}
+		catch ( Exception )
+		{
+			return SetError(result, fileIndexItem, FileIndexItem.ExifStatus.OperationNotSupported,
+				$"Invalid correct timezone: {request.CorrectTimezone}");
+		}
+
+		result.Success = true;
+		return result;
+	}
+
+	/// <summary>
+	///     Calculate custom offset delta from request parameters
+	///     Supports years, months, days, hours, minutes, and seconds
+	/// </summary>
+	/// <param name="dateTime">The base datetime to apply offsets to</param>
+	/// <param name="request">The request containing custom offset values</param>
+	/// <returns>TimeSpan delta to apply (for time components) or modified DateTime (for date components)</returns>
+	private static TimeSpan CalculateCustomOffsetDelta(
+		DateTime dateTime,
+		ExifCustomOffsetCorrectionRequest request)
+	{
+		// For date components (years, months, days), we need to calculate the difference
+		// by applying them to the datetime first, then getting the TimeSpan difference
+		var targetDateTime = dateTime;
+
+		// Apply year and month offsets using AddYears/AddMonths
+		if ( request.Year.HasValue )
+		{
+			targetDateTime = targetDateTime.AddYears(request.Year.Value);
+		}
+
+		if ( request.Month.HasValue )
+		{
+			targetDateTime = targetDateTime.AddMonths(request.Month.Value);
+		}
+
+		// Calculate the difference after date adjustments
+		var delta = targetDateTime - dateTime;
+
+		// Add time-based offsets
+		if ( request.Day.HasValue )
+		{
+			delta = delta.Add(TimeSpan.FromDays(request.Day.Value));
+		}
+
+		if ( request.Hour.HasValue )
+		{
+			delta = delta.Add(TimeSpan.FromHours(request.Hour.Value));
+		}
+
+		if ( request.Minute.HasValue )
+		{
+			delta = delta.Add(TimeSpan.FromMinutes(request.Minute.Value));
+		}
+
+		if ( request.Second.HasValue )
+		{
+			delta = delta.Add(TimeSpan.FromSeconds(request.Second.Value));
+		}
+
+		return delta;
 	}
 
 	/// <summary>

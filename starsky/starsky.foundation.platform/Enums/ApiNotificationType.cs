@@ -76,5 +76,5 @@ public enum ApiNotificationType
 	/// <summary>
 	///     Correct EXIF timezone
 	/// </summary>
-	MetaCorrectTimezone
+	MetaTimeCorrect
 }
