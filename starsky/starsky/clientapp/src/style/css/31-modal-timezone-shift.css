@@ -1,0 +1,158 @@
+/* Converted from SCSS to CSS */
+.modal-timezone-shift {
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.modal-timezone-shift h2 {
+  margin: 0 0 16px 0;
+  font-size: 24px;
+}
+.modal-timezone-shift h3 {
+  margin: 16px 0 8px 0;
+  font-size: 18px;
+}
+.modal-timezone-shift p {
+  margin: 8px 0;
+}
+.modal-timezone-shift hr {
+  margin: 20px 0;
+  border: none;
+  border-top: 1px solid #ddd;
+}
+.modal-timezone-shift .mode-selection {
+  margin: 24px 0;
+}
+.modal-timezone-shift .mode-selection .radio-option {
+  display: flex;
+  align-items: flex-start;
+  padding: 16px;
+  margin: 12px 0;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.modal-timezone-shift .mode-selection .radio-option:hover {
+  border-color: #0078d4;
+  background-color: #f5f5f5;
+}
+.modal-timezone-shift .mode-selection .radio-option input[type="radio"] {
+  margin-top: 4px;
+  margin-right: 12px;
+  cursor: pointer;
+}
+.modal-timezone-shift .mode-selection .radio-option div {
+  flex: 1;
+}
+.modal-timezone-shift .mode-selection .radio-option div strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 16px;
+}
+.modal-timezone-shift .mode-selection .radio-option div p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+.modal-timezone-shift .offset-inputs,
+.modal-timezone-shift .timezone-inputs {
+  margin: 20px 0;
+}
+.modal-timezone-shift .offset-inputs .form-row,
+.modal-timezone-shift .timezone-inputs .form-row {
+  margin: 12px 0;
+}
+.modal-timezone-shift .offset-inputs .form-row label,
+.modal-timezone-shift .timezone-inputs .form-row label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.modal-timezone-shift .offset-inputs .form-row label input,
+.modal-timezone-shift .offset-inputs .form-row label select,
+.modal-timezone-shift .timezone-inputs .form-row label input,
+.modal-timezone-shift .timezone-inputs .form-row label select {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  margin-top: 4px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+.modal-timezone-shift .offset-inputs .form-row label input:focus,
+.modal-timezone-shift .offset-inputs .form-row label select:focus,
+.modal-timezone-shift .timezone-inputs .form-row label input:focus,
+.modal-timezone-shift .timezone-inputs .form-row label select:focus {
+  outline: none;
+  border-color: #0078d4;
+}
+.modal-timezone-shift .offset-inputs .form-row label input[type="number"] {
+  width: 150px;
+}
+.modal-timezone-shift .preview-section {
+  margin: 20px 0;
+}
+.modal-timezone-shift .preview-section .preview-result {
+  padding: 16px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  margin-top: 12px;
+}
+.modal-timezone-shift .preview-section .preview-result p {
+  margin: 8px 0;
+}
+.modal-timezone-shift .preview-section .preview-result p strong {
+  display: inline-block;
+  min-width: 120px;
+}
+.modal-timezone-shift .preview-section .preview-result .warning {
+  color: #ff8c00;
+  margin-top: 12px;
+}
+.modal-timezone-shift .preview-section .preview-result .error {
+  color: #d32f2f;
+  margin-top: 12px;
+}
+.modal-timezone-shift .error {
+  color: #d32f2f;
+  padding: 12px;
+  background-color: #ffebee;
+  border-radius: 4px;
+  margin: 12px 0;
+}
+.modal-timezone-shift .modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #ddd;
+}
+.modal-timezone-shift .modal-buttons button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.modal-timezone-shift .modal-buttons button.btn--default {
+  background-color: #f5f5f5;
+  color: #333;
+}
+.modal-timezone-shift .modal-buttons button.btn--default:hover:not(:disabled) {
+  background-color: #e0e0e0;
+}
+.modal-timezone-shift .modal-buttons button.btn--primary {
+  background-color: #0078d4;
+  color: white;
+}
+.modal-timezone-shift .modal-buttons button.btn--primary:hover:not(:disabled) {
+  background-color: #005a9e;
+}
+.modal-timezone-shift .modal-buttons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

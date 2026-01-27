@@ -465,6 +465,41 @@ export class UrlQuery {
     return "https://docs.qdraw.nl/docs/getting-started/first-steps";
   }
 
+  /**
+   * Get all standard timezones
+   */
+  public UrlTimezones(): string {
+    return this.prefix + "/api/meta-correct-timezone/standard-timezones";
+  }
+
+  /**
+   * Preview timezone shift
+   */
+  public UrlTimezonePreview(): string {
+    return this.prefix + "/api/meta-time-correct/timezone-preview";
+  }
+
+  /**
+   * Execute timezone shift
+   */
+  public UrlTimezoneExecute(): string {
+    return this.prefix + "/api/meta-time-correct/timezone-execute";
+  }
+
+  /**
+   * Preview offset shift
+   */
+  public UrlOffsetPreview(): string {
+    return this.prefix + "/api/meta-time-correct/offset-preview";
+  }
+
+  /**
+   * Execute offset shift
+   */
+  public UrlOffsetExecute(): string {
+    return this.prefix + "/api/meta-time-correct/offset-execute";
+  }
+
   private urlReplacePath(input: string): string {
     const output = input.replaceAll("#", "");
     return output.replaceAll("+", "%2B");

@@ -24,6 +24,7 @@ import MenuOptionMoveFolderToTrash from "../../molecules/menu-option-move-folder
 import MenuOptionMoveToTrash from "../../molecules/menu-option-move-to-trash/menu-option-move-to-trash";
 import { MenuOptionSelectionAll } from "../../molecules/menu-option-selection-all/menu-option-selection-all";
 import { MenuOptionSelectionUndo } from "../../molecules/menu-option-selection-undo/menu-option-selection-undo";
+import { MenuOptionTimezoneShift } from "../../molecules/menu-option-timezone-shift/menu-option-timezone-shift.tsx";
 import { MenuSelectCount } from "../../molecules/menu-select-count/menu-select-count";
 import { MenuSelectFurther } from "../../molecules/menu-select-further/menu-select-further";
 import ModalDropAreaFilesAdded from "../../molecules/modal-drop-area-files-added/modal-drop-area-files-added";
@@ -268,6 +269,11 @@ const MenuArchive: React.FunctionComponent = memo(() => {
                     select={select}
                     setSelect={setSelect}
                     dispatch={dispatch}
+                  />
+                  <MenuOptionTimezoneShift
+                    readOnly={readOnly}
+                    select={select}
+                    collections={state.collections !== false}
                   />
                 </>
               ) : null}
