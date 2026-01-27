@@ -571,6 +571,34 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			result.CorrectedDateTime);
 	}
 
+	private class SetExifTimezoneBasedCorrectionRequestOverrideObject : IExifTimeCorrectionRequest
+	{
+		// nothing here
+	}
+
+	[TestMethod]
+	public async Task CorrectTimezoneAsync_InvalidType_ArgumentException()
+	{
+		// Arrange - Before DST in Europe (UTC+1)
+		var storage = new FakeIStorage(["/"], ["/test.jpg"]);
+		var service = CreateService(storage: storage);
+
+		var fileIndexItem = new FileIndexItem
+		{
+			FilePath = "/test.jpg",
+			DateTime = new DateTime(2024, 3, 30, 14, 0, 0, DateTimeKind.Local)
+		};
+
+		var myClass = new SetExifTimezoneBasedCorrectionRequestOverrideObject();
+
+		// Act
+		await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
+		{
+			await service.CorrectTimezoneAsync(fileIndexItem, myClass);
+		});
+	}
+
+
 	// ==================== International Timezone Tests ====================
 
 	[TestMethod]
@@ -1507,6 +1535,39 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		Assert.IsTrue(results[1].Success);
 		Assert.AreEqual(TimeSpan.FromHours(2), results[0].Delta);
 		Assert.AreEqual(TimeSpan.FromHours(2), results[1].Delta);
+	}
+
+	[TestMethod]
+	public async Task Validate_SingleFile_ReturnsExpectedResults()
+	{
+		// Arrange
+		var expectedResults = new List<ExifTimezoneCorrectionResult>
+		{
+			new()
+			{
+				Success = true,
+				OriginalDateTime = new DateTime(2024, 1, 1, 12, 0, 0),
+				CorrectedDateTime = new DateTime(2024, 1, 1, 13, 0, 0),
+				Delta = TimeSpan.FromHours(1),
+				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
+			}
+		};
+		var service = new FakeIExifTimezoneCorrectionService(expectedResults);
+		var request = new ExifTimezoneBasedCorrectionRequest
+		{
+			RecordedTimezone = "UTC",
+			CorrectTimezone = "Europe/Amsterdam"
+		};
+
+		// Act
+		var result = await service.Validate("/test.jpg", true, request);
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.HasCount(1, result);
+		Assert.IsTrue(result[0].Success);
+		Assert.AreEqual("/test.jpg", result[0].FileIndexItem?.FilePath);
+		Assert.AreEqual(TimeSpan.FromHours(1), result[0].Delta);
 	}
 
 	#endregion
