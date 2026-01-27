@@ -1211,4 +1211,46 @@ public sealed class MetaTimeCorrectControllerTest
 		Assert.AreEqual(TimeSpan.FromHours(1), returnedResults[0].Delta);
 		Assert.IsTrue(queue.QueueBackgroundWorkItemCalled);
 	}
+
+	[TestMethod]
+	public async Task PreviewCustomOffsetCorrectionAsync_InvalidModelState_ReturnsBadRequest()
+	{
+		// Arrange
+		var controller = CreateController();
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+		var request = new ExifCustomOffsetCorrectionRequest { Hour = 1 };
+
+		// Act
+		var result = await controller.PreviewCustomOffsetCorrectionAsync(
+			"/test.jpg",
+			true,
+			request);
+
+		// Assert
+		Assert.IsNotNull(result);
+		var badRequestResult = result as BadRequestObjectResult;
+		Assert.IsNotNull(badRequestResult);
+		Assert.AreEqual(400, badRequestResult.StatusCode);
+	}
+
+	[TestMethod]
+	public async Task ExecuteCustomOffsetCorrectionAsync_InvalidModelState_ReturnsBadRequest()
+	{
+		// Arrange
+		var controller = CreateController();
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+		var request = new ExifCustomOffsetCorrectionRequest { Hour = 1 };
+
+		// Act
+		var result = await controller.ExecuteCustomOffsetCorrectionAsync(
+			"/test.jpg",
+			true,
+			request);
+
+		// Assert
+		Assert.IsNotNull(result);
+		var badRequestResult = result as BadRequestObjectResult;
+		Assert.IsNotNull(badRequestResult);
+		Assert.AreEqual(400, badRequestResult.StatusCode);
+	}
 }
