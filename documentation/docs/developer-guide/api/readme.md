@@ -79,16 +79,18 @@ This document is auto generated
 | _Parameters: f (subPath), colorClass (filter on colorClass (use int)), collections (to combine files with the same                        _ |
 | _ name before the extension), hideDelete (ignore deleted files), sort (how to orderBy, defaults to fileName)                              _ |
 | __/api/memory-cache-debug__                       | GET   | View data from the memory cache - use to debug                                  |
-| __/api/exif/correct-timezone/preview__            | POST  | Preview timezone correction for batch of images (dry-run)                       |
-| __/api/meta-correct-timezone/execute__            | POST  | Execute timezone correction for batch of images                                 |
-| __/api/meta-correct-timezone/offset-timezones__   | GET   | Get all available system timezones	Based on location so they follow DST rules   |
-| __/api/meta-correct-timezone/standard-timezones__ | GET   | Get moved to a different place timezones	Etc/GMT-1 Etc/GMT Etc/GMT+1 timezone...|
 | __/api/info__                                     | GET   | Get realtime (cached a few minutes) about the file                              |
 | _Parameters: f (subPaths split by dot comma), collections (true is to update files with the same name before the                          _ |
 | _ extenstion)                                                                                                                             _ |
 | __/api/replace__                                  | POST  | Search and Replace text in meta information                                     |
 | _Parameters: f (subPath filepath to file, split by dot comma (;)), fieldName (name of fileIndexItem field e.g. Tags),                     _ |
 | _ search (text to search for), replace (replace [search] with this text), collections (enable collections)                                _ |
+| __/api/meta-time-correct/timezone-preview__       | POST  | Preview timezone correction for batch of images (dry-run)Uses timezone IDs to...|
+| __/api/meta-time-correct/timezone-execute__       | POST  | Execute timezone correction for batch of imagesUses timezone IDs to calculate...|
+| __/api/meta-time-correct/offset-preview__         | POST  | Preview custom offset correction for batch of images (dry-run)Uses custom tim...|
+| __/api/meta-time-correct/offset-execute__         | POST  | Execute custom offset correction for batch of imagesUses custom time/date off...|
+| __/api/exif/timezones/camera-incorrect__          | GET   | Get list of fixed offset timezones (camera set incorrectly)                     |
+| __/api/exif/timezones/system__                    | GET   | Get list of all system timezones (moved to different place)                     |
 | __/api/update__                                   | POST  | Update Exif and Rotation API                                                    |
 | _Parameters: Id, FilePath, FileName, FileHash, FileCollectionName, ParentDirectory, IsDirectory, Tags, Status, Description,               _ |
 | _Title, DateTime, AddToDatabase, LastEdited, Latitude, Longitude, LocationAltitude, LocationCity, LocationState,                          _ |
