@@ -35,42 +35,41 @@ public class ExifCustomOffsetCorrectionRequest : IExifTimeCorrectionRequest
 	/// <summary>
 	///     Custom offset: Years to add/subtract (can be negative)
 	/// </summary>
-	public int? CustomOffsetYears { get; set; }
+	public int? Year { get; set; }
 
 	/// <summary>
 	///     Custom offset: Months to add/subtract (can be negative)
 	/// </summary>
-	public int? CustomOffsetMonths { get; set; }
+	public int? Month { get; set; }
 
 	/// <summary>
 	///     Custom offset: Days to add/subtract (can be negative)
 	/// </summary>
-	public int? CustomOffsetDays { get; set; }
+	public int? Day { get; set; }
 
 	/// <summary>
 	///     Custom offset: Hours to add/subtract (can be negative)
 	/// </summary>
-	public int? CustomOffsetHours { get; set; }
+	public int? Hour { get; set; }
 
 	/// <summary>
 	///     Custom offset: Minutes to add/subtract (can be negative)
 	/// </summary>
-	public int? CustomOffsetMinutes { get; set; }
+	public int? Minute { get; set; }
 
 	/// <summary>
 	///     Custom offset: Seconds to add/subtract (can be negative)
 	/// </summary>
-	public int? CustomOffsetSeconds { get; set; }
+	public int? Second { get; set; }
 
 	/// <summary>
 	///     Check if at least one offset value is provided
 	/// </summary>
 	public bool HasAnyOffset =>
-		CustomOffsetYears.HasValue ||
-		CustomOffsetMonths.HasValue ||
-		CustomOffsetDays.HasValue ||
-		CustomOffsetHours.HasValue ||
-		CustomOffsetMinutes.HasValue ||
-		CustomOffsetSeconds.HasValue;
+		Year.HasValue ||
+		Month.HasValue ||
+		Day.HasValue ||
+		Hour.HasValue ||
+		Minute.HasValue ||
+		Second.HasValue;
 }
-

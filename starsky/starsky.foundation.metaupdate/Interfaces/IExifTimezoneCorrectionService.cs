@@ -11,6 +11,18 @@ public interface IExifTimezoneCorrectionService
 	/// <summary>
 	///     Validate timezone or custom offset correction request
 	/// </summary>
+	/// <param name="f">File paths to validate</param>
+	/// <param name="collections">Include collections</param>
+	/// <param name="request">Timezone or custom offset correction parameters</param>
+	/// <returns>Results for each image</returns>
+	Task<List<ExifTimezoneCorrectionResult>> Validate(
+		string f,
+		bool collections,
+		IExifTimeCorrectionRequest request);
+
+	/// <summary>
+	///     Validate timezone or custom offset correction request
+	/// </summary>
 	/// <param name="subPaths">File paths to validate</param>
 	/// <param name="collections">Include collections</param>
 	/// <param name="request">Timezone or custom offset correction parameters</param>

@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.realtime.Interface;
 using starsky.foundation.database.Models;
@@ -22,7 +23,7 @@ namespace starsky.Controllers;
 ///     Supports both timezone-based and custom offset corrections
 /// </summary>
 [Authorize]
-public class MetaCorrectTimezoneController(
+public class MetaTimeCorrectController(
 	IExifTimezoneCorrectionService exifTimezoneCorrectionService,
 	IUpdateBackgroundTaskQueue queue,
 	IWebLogger logger,
@@ -32,8 +33,6 @@ public class MetaCorrectTimezoneController(
 {
 	private const string ModelNotValidError = "Model is not valid";
 	private const string NoInputFilesError = "No input files";
-
-	#region Timezone-based Correction
 
 	/// <summary>
 	///     Preview timezone correction for batch of images (dry-run)
@@ -48,22 +47,21 @@ public class MetaCorrectTimezoneController(
 	/// <response code="401">User unauthorized</response>
 	[ProducesResponseType(200)]
 	[ProducesResponseType(typeof(string), 400)]
-	[HttpPost("/api/exif/correct-timezone/preview")]
+	[HttpPost("/api/meta-time-correct/timezone-preview")]
 	[Produces("application/json")]
 	public async Task<IActionResult> PreviewTimezoneCorrectionAsync(
 		string f,
 		bool? collections,
 		[FromBody] ExifTimezoneBasedCorrectionRequest request)
 	{
-		var validationResult = ValidateRequest(f, collections);
+		var validationResult = ValidateRequest(ModelState, f, collections);
 		if ( validationResult != null )
 		{
 			return validationResult;
 		}
 
-		var subPaths = PathHelper.SplitInputFilePaths(f);
 		var results = await
-			exifTimezoneCorrectionService.Validate(subPaths,
+			exifTimezoneCorrectionService.Validate(f,
 				collections!.Value,
 				request);
 
@@ -83,22 +81,21 @@ public class MetaCorrectTimezoneController(
 	/// <response code="401">User unauthorized</response>
 	[ProducesResponseType(200)]
 	[ProducesResponseType(typeof(string), 400)]
-	[HttpPost("/api/exif/correct-timezone/execute")]
+	[HttpPost("/api/meta-time-correct/timezone-execute")]
 	[Produces("application/json")]
 	public async Task<IActionResult> ExecuteTimezoneCorrectionAsync(
 		string f,
 		bool? collections,
 		[FromBody] ExifTimezoneBasedCorrectionRequest request)
 	{
-		var validationResult = ValidateRequest(f, collections);
+		var validationResult = ValidateRequest(ModelState, f, collections);
 		if ( validationResult != null )
 		{
 			return validationResult;
 		}
 
-		var subPaths = PathHelper.SplitInputFilePaths(f);
 		var validateResults = await
-			exifTimezoneCorrectionService.Validate(subPaths,
+			exifTimezoneCorrectionService.Validate(f,
 				collections!.Value,
 				request);
 
@@ -106,10 +103,6 @@ public class MetaCorrectTimezoneController(
 
 		return new JsonResult(validateResults);
 	}
-
-	#endregion
-
-	#region Custom Offset Correction
 
 	/// <summary>
 	///     Preview custom offset correction for batch of images (dry-run)
@@ -124,22 +117,21 @@ public class MetaCorrectTimezoneController(
 	/// <response code="401">User unauthorized</response>
 	[ProducesResponseType(200)]
 	[ProducesResponseType(typeof(string), 400)]
-	[HttpPost("/api/exif/correct-offset/preview")]
+	[HttpPost("/api/meta-time-correct/offset-preview")]
 	[Produces("application/json")]
 	public async Task<IActionResult> PreviewCustomOffsetCorrectionAsync(
 		string f,
 		bool? collections,
 		[FromBody] ExifCustomOffsetCorrectionRequest request)
 	{
-		var validationResult = ValidateRequest(f, collections);
+		var validationResult = ValidateRequest(ModelState, f, collections);
 		if ( validationResult != null )
 		{
 			return validationResult;
 		}
 
-		var subPaths = PathHelper.SplitInputFilePaths(f);
 		var results = await
-			exifTimezoneCorrectionService.Validate(subPaths,
+			exifTimezoneCorrectionService.Validate(f,
 				collections!.Value,
 				request);
 
@@ -159,14 +151,14 @@ public class MetaCorrectTimezoneController(
 	/// <response code="401">User unauthorized</response>
 	[ProducesResponseType(200)]
 	[ProducesResponseType(typeof(string), 400)]
-	[HttpPost("/api/exif/correct-offset/execute")]
+	[HttpPost("/api/meta-time-correct/offset-execute")]
 	[Produces("application/json")]
 	public async Task<IActionResult> ExecuteCustomOffsetCorrectionAsync(
 		string f,
 		bool? collections,
 		[FromBody] ExifCustomOffsetCorrectionRequest request)
 	{
-		var validationResult = ValidateRequest(f, collections);
+		var validationResult = ValidateRequest(ModelState, f, collections);
 		if ( validationResult != null )
 		{
 			return validationResult;
@@ -183,27 +175,19 @@ public class MetaCorrectTimezoneController(
 		return new JsonResult(validateResults);
 	}
 
-	#endregion
-
-	#region Shared Helpers
-
 	/// <summary>
 	///     Validate common request parameters
 	/// </summary>
-	private IActionResult? ValidateRequest(string f, bool? collections)
+	private BadRequestObjectResult? ValidateRequest(ModelStateDictionary modelState,
+		string f, bool? collections)
 	{
-		if ( !ModelState.IsValid || string.IsNullOrWhiteSpace(f) || collections == null )
+		if ( !modelState.IsValid || string.IsNullOrWhiteSpace(f) || collections == null )
 		{
 			return BadRequest(ModelNotValidError);
 		}
 
 		var subPaths = PathHelper.SplitInputFilePaths(f);
-		if ( subPaths.Length == 0 )
-		{
-			return BadRequest(NoInputFilesError);
-		}
-
-		return null;
+		return subPaths.Length == 0 ? BadRequest(NoInputFilesError) : null;
 	}
 
 	/// <summary>
@@ -226,14 +210,14 @@ public class MetaCorrectTimezoneController(
 				.ToList();
 
 			logger.LogInformation(
-				$"[MetaCorrectTimezoneController] Starting {correctionType} correction for {fileIndexResultsList.Count} files");
+				$"[MetaTimeCorrectController] Starting {correctionType} correction for {fileIndexResultsList.Count} files");
 
 			var results = await scopedService.CorrectTimezoneAsync(
 				fileIndexResultsList,
 				request);
 
 			logger.LogInformation(
-				$"[MetaCorrectTimezoneController] Completed {correctionType} correction: " +
+				$"[MetaTimeCorrectController] Completed {correctionType} correction: " +
 				$"{results.Count(r => r.Success)} succeeded, {results.Count(r => !r.Success)} failed");
 
 			await UpdateWebSocketTaskRun(fileIndexResultsList);
@@ -245,7 +229,7 @@ public class MetaCorrectTimezoneController(
 		// Update via websocket
 		var webSocketResponse =
 			new ApiNotificationResponseModel<List<FileIndexItem>>(fileIndexResultsList,
-				ApiNotificationType.MetaCorrectTimezone);
+				ApiNotificationType.MetaTimeCorrect);
 
 		var realtimeConnectionsService = scopeFactory.CreateScope()
 			.ServiceProvider.GetRequiredService<IRealtimeConnectionsService>();
@@ -283,6 +267,4 @@ public class MetaCorrectTimezoneController(
 		var timezones = exifTimezoneDisplayListService.GetMovedToDifferentPlaceTimezonesList();
 		return Ok(timezones);
 	}
-
-	#endregion
 }

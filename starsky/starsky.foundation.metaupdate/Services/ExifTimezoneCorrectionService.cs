@@ -5,6 +5,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.metaupdate.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
@@ -68,6 +69,13 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 		return results;
 	}
 
+	public async Task<List<ExifTimezoneCorrectionResult>> Validate(string f, bool collections,
+		IExifTimeCorrectionRequest request)
+	{
+		var subPaths = PathHelper.SplitInputFilePaths(f);
+		return await Validate(subPaths, collections, request);
+	}
+
 	public async Task<List<ExifTimezoneCorrectionResult>> Validate(string[] subPaths,
 		bool collections, IExifTimeCorrectionRequest request)
 	{
@@ -98,22 +106,16 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 		try
 		{
 			// Calculate the timezone or custom offset delta
-			TimeSpan delta;
-			
-			switch ( request )
+
+			var delta = request switch
 			{
-				case ExifTimezoneBasedCorrectionRequest timezoneRequest:
-					delta = CalculateTimezoneDelta(
-						fileIndexItem.DateTime,
-						timezoneRequest.RecordedTimezone,
-						timezoneRequest.CorrectTimezone);
-					break;
-				case ExifCustomOffsetCorrectionRequest customOffsetRequest:
-					delta = CalculateCustomOffsetDelta(fileIndexItem.DateTime, customOffsetRequest);
-					break;
-				default:
-					throw new ArgumentException("Invalid request type", nameof(request));
-			}
+				ExifTimezoneBasedCorrectionRequest timezoneRequest => CalculateTimezoneDelta(
+					fileIndexItem.DateTime, timezoneRequest.RecordedTimezone,
+					timezoneRequest.CorrectTimezone),
+				ExifCustomOffsetCorrectionRequest customOffsetRequest => CalculateCustomOffsetDelta(
+					fileIndexItem.DateTime, customOffsetRequest),
+				_ => throw new ArgumentException("Invalid request type", nameof(request))
+			};
 
 			result.OriginalDateTime = fileIndexItem.DateTime;
 			result.Delta = delta;
@@ -283,7 +285,7 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 
 		result.CorrectedDateTime = fileIndexItem.DateTime.Add(result.Delta);
 		result.Success = true;
-		
+
 		// Warn about day/month/year rollover
 		if ( result.CorrectedDateTime.Day != fileIndexItem.DateTime.Day )
 		{
@@ -319,38 +321,38 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 		var targetDateTime = dateTime;
 
 		// Apply year and month offsets using AddYears/AddMonths
-		if ( request.CustomOffsetYears.HasValue )
+		if ( request.Year.HasValue )
 		{
-			targetDateTime = targetDateTime.AddYears(request.CustomOffsetYears.Value);
+			targetDateTime = targetDateTime.AddYears(request.Year.Value);
 		}
 
-		if ( request.CustomOffsetMonths.HasValue )
+		if ( request.Month.HasValue )
 		{
-			targetDateTime = targetDateTime.AddMonths(request.CustomOffsetMonths.Value);
+			targetDateTime = targetDateTime.AddMonths(request.Month.Value);
 		}
 
 		// Calculate the difference after date adjustments
 		var delta = targetDateTime - dateTime;
 
 		// Add time-based offsets
-		if ( request.CustomOffsetDays.HasValue )
+		if ( request.Day.HasValue )
 		{
-			delta = delta.Add(TimeSpan.FromDays(request.CustomOffsetDays.Value));
+			delta = delta.Add(TimeSpan.FromDays(request.Day.Value));
 		}
 
-		if ( request.CustomOffsetHours.HasValue )
+		if ( request.Hour.HasValue )
 		{
-			delta = delta.Add(TimeSpan.FromHours(request.CustomOffsetHours.Value));
+			delta = delta.Add(TimeSpan.FromHours(request.Hour.Value));
 		}
 
-		if ( request.CustomOffsetMinutes.HasValue )
+		if ( request.Minute.HasValue )
 		{
-			delta = delta.Add(TimeSpan.FromMinutes(request.CustomOffsetMinutes.Value));
+			delta = delta.Add(TimeSpan.FromMinutes(request.Minute.Value));
 		}
 
-		if ( request.CustomOffsetSeconds.HasValue )
+		if ( request.Second.HasValue )
 		{
-			delta = delta.Add(TimeSpan.FromSeconds(request.CustomOffsetSeconds.Value));
+			delta = delta.Add(TimeSpan.FromSeconds(request.Second.Value));
 		}
 
 		return delta;
