@@ -1,17 +1,24 @@
 import { useEffect, useState } from "react";
+import { ArchiveAction } from "../../../contexts/archive-context";
+import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { ITimezone, ITimezoneShiftResult } from "../../../interfaces/ITimezone";
+import { parseDate, parseTime } from "../../../shared/date";
 import FetchGet from "../../../shared/fetch/fetch-get";
 import FetchPost from "../../../shared/fetch/fetch-post";
+import { SupportedLanguages } from "../../../shared/language";
 import { URLPath } from "../../../shared/url/url-path";
 import { UrlQuery } from "../../../shared/url/url-query";
 import Modal from "../../atoms/modal/modal";
-import "./modal-timezone-shift.scss";
+import { generateOffsetPreview } from "./generate-offset-preview";
 
 export interface IModalTimezoneShiftProps {
   isOpen: boolean;
   handleExit: () => void;
   select: string[];
-  collections?: boolean;
+  historyLocationSearch: string;
+  state: IArchiveProps;
+  dispatch: React.Dispatch<ArchiveAction>;
+  undoSelection: () => void;
 }
 
 type ShiftMode = "mode-selection" | "offset" | "timezone";
@@ -20,7 +27,7 @@ const ModalTimezoneShift: React.FunctionComponent<IModalTimezoneShiftProps> = ({
   isOpen,
   handleExit,
   select,
-  collections = true
+  state
 }) => {
   const urlQuery = new UrlQuery();
 
@@ -74,48 +81,10 @@ const ModalTimezoneShift: React.FunctionComponent<IModalTimezoneShiftProps> = ({
     }
   }
 
-  async function generateOffsetPreview() {
-    if (select.length === 0) return;
-
-    setIsLoadingPreview(true);
-    setError(null);
-
-    try {
-      // Use first file as representative sample
-      const sampleFile = select[0];
-      const collectionsParam = collections ? "true" : "false";
-
-      const body = JSON.stringify({
-        year: offsetYears,
-        month: offsetMonths,
-        day: offsetDays,
-        hour: offsetHours,
-        minute: offsetMinutes,
-        second: offsetSeconds
-      });
-
-      const response = await FetchPost(
-        `${urlQuery.UrlOffsetPreview()}?f=${new URLPath().encodeURI(sampleFile)}&collections=${collectionsParam}`,
-        body,
-        "post",
-        { "Content-Type": "application/json" }
-      );
-
-      if (response.statusCode === 200 && Array.isArray(response.data)) {
-        setPreview(response.data);
-      } else {
-        setError("Failed to generate preview");
-      }
-    } catch (err) {
-      console.error("Failed to generate preview", err);
-      setError("Failed to generate preview");
-    } finally {
-      setIsLoadingPreview(false);
-    }
-  }
-
   async function generateTimezonePreview() {
     if (select.length === 0) return;
+
+    const collections = true;
 
     setIsLoadingPreview(true);
     setError(null);
@@ -157,6 +126,7 @@ const ModalTimezoneShift: React.FunctionComponent<IModalTimezoneShiftProps> = ({
     setError(null);
 
     try {
+      const collections = true;
       const collectionsParam = collections ? "true" : "false";
       const isOffset = currentStep === "offset";
 
@@ -192,8 +162,6 @@ const ModalTimezoneShift: React.FunctionComponent<IModalTimezoneShiftProps> = ({
       if (allSucceeded) {
         // Success - close modal and refresh
         handleExit();
-        // Optionally trigger a refresh of the parent component
-        window.location.reload();
       } else {
         setError("Some files failed to update");
       }
@@ -221,48 +189,50 @@ const ModalTimezoneShift: React.FunctionComponent<IModalTimezoneShiftProps> = ({
 
   function renderModeSelection() {
     return (
-      <div className="modal-timezone-shift">
-        <h2>Shift Photo Timestamps</h2>
-        <p>
-          You have selected {select.length} image{select.length !== 1 ? "s" : ""}
-        </p>
+      <>
+        <div className="modal content--subheader">Shift Photo Timestamps</div>
+        <div className="modal content--text">
+          <p>
+            You have selected {select.length} image{select.length !== 1 ? "s" : ""}
+          </p>
 
-        <div className="mode-selection">
-          <p>What do you want to do?</p>
+          <div className="mode-selection">
+            <p>What do you want to do?</p>
 
-          <label className="radio-option">
-            <input
-              type="radio"
-              name="shift-mode"
-              value="offset"
-              onChange={() => handleModeSelect("offset")}
-            />
-            <div>
-              <strong>Correct incorrect camera timezone</strong>
-              <p>The camera clock was set to the wrong timezone.</p>
-            </div>
-          </label>
+            <label className="radio-option">
+              <input
+                type="radio"
+                name="shift-mode"
+                value="offset"
+                onChange={() => handleModeSelect("offset")}
+              />
+              <div>
+                <strong>Correct incorrect camera timezone</strong>
+                <p>The camera clock was set to the wrong timezone.</p>
+              </div>
+            </label>
 
-          <label className="radio-option">
-            <input
-              type="radio"
-              name="shift-mode"
-              value="timezone"
-              onChange={() => handleModeSelect("timezone")}
-            />
-            <div>
-              <strong>I moved to a different place</strong>
-              <p>I traveled and took photos in another location.</p>
-            </div>
-          </label>
+            <label className="radio-option">
+              <input
+                type="radio"
+                name="shift-mode"
+                value="timezone"
+                onChange={() => handleModeSelect("timezone")}
+              />
+              <div>
+                <strong>I moved to a different place</strong>
+                <p>I traveled and took photos in another location.</p>
+              </div>
+            </label>
+          </div>
+
+          <div className="modal-buttons">
+            <button className="btn btn--default" onClick={handleExit}>
+              Cancel
+            </button>
+          </div>
         </div>
-
-        <div className="modal-buttons">
-          <button className="btn btn--default" onClick={handleExit}>
-            Cancel
-          </button>
-        </div>
-      </div>
+      </>
     );
   }
 
@@ -281,126 +251,231 @@ const ModalTimezoneShift: React.FunctionComponent<IModalTimezoneShiftProps> = ({
 
   function renderOffsetMode() {
     return (
-      <div className="modal-timezone-shift">
-        <h2>Correct Camera Time</h2>
+      <>
+        <div className="modal content--subheader">Correct Camera Time</div>
+        <div className="modal content--text">
+          <div className="offset-inputs">
+            <p>Time offsets (relative to original timestamp)</p>
 
-        <div className="offset-inputs">
-          <p>Time offsets (relative to original timestamp)</p>
+            <div className="form-row">
+              <label>
+                Years
+                <input
+                  className="form-control"
+                  type="number"
+                  value={offsetYears}
+                  onChange={(e) => {
+                    setOffsetYears(parseInt(e.target.value) || 0);
+                    generateOffsetPreview(
+                      select,
+                      state,
+                      {
+                        year: parseInt(e.target.value) || 0,
+                        month: offsetMonths,
+                        day: offsetDays,
+                        hour: offsetHours,
+                        minute: offsetMinutes,
+                        second: offsetSeconds
+                      },
+                      setIsLoadingPreview,
+                      setError,
+                      setPreview
+                    );
+                  }}
+                />
+              </label>
+            </div>
 
-          <div className="form-row">
-            <label>
-              Years
-              <input
-                type="number"
-                value={offsetYears}
-                onChange={(e) => setOffsetYears(parseInt(e.target.value) || 0)}
-              />
-            </label>
+            <div className="form-row">
+              <label>
+                Months
+                <input
+                  className="form-control"
+                  type="number"
+                  value={offsetMonths}
+                  onChange={(e) => {
+                    setOffsetMonths(parseInt(e.target.value) || 0);
+                    generateOffsetPreview(
+                      select,
+                      state,
+                      {
+                        year: offsetYears,
+                        month: parseInt(e.target.value) || 0,
+                        day: offsetDays,
+                        hour: offsetHours,
+                        minute: offsetMinutes,
+                        second: offsetSeconds
+                      },
+                      setIsLoadingPreview,
+                      setError,
+                      setPreview
+                    );
+                  }}
+                />
+              </label>
+            </div>
+
+            <div className="form-row">
+              <label>
+                Days
+                <input
+                  className="form-control"
+                  type="number"
+                  value={offsetDays}
+                  onChange={(e) => {
+                    setOffsetDays(parseInt(e.target.value) || 0);
+                    generateOffsetPreview(
+                      select,
+                      state,
+                      {
+                        year: offsetYears,
+                        month: offsetMonths,
+                        day: parseInt(e.target.value) || 0,
+                        hour: offsetHours,
+                        minute: offsetMinutes,
+                        second: offsetSeconds
+                      },
+                      setIsLoadingPreview,
+                      setError,
+                      setPreview
+                    );
+                  }}
+                />
+              </label>
+            </div>
+
+            <div className="form-row">
+              <label>
+                Hours
+                <input
+                  type="number"
+                  className="form-control"
+                  value={offsetHours}
+                  onChange={(e) => {
+                    setOffsetHours(parseInt(e.target.value) || 0);
+                    generateOffsetPreview(
+                      select,
+                      state,
+                      {
+                        year: offsetYears,
+                        month: offsetMonths,
+                        day: offsetDays,
+                        hour: parseInt(e.target.value) || 0,
+                        minute: offsetMinutes,
+                        second: offsetSeconds
+                      },
+                      setIsLoadingPreview,
+                      setError,
+                      setPreview
+                    );
+                  }}
+                />
+              </label>
+            </div>
+
+            <div className="form-row">
+              <label>
+                Minutes
+                <input
+                  type="number"
+                  className="form-control"
+                  value={offsetMinutes}
+                  onChange={(e) => {
+                    setOffsetMinutes(parseInt(e.target.value) || 0);
+                    generateOffsetPreview(
+                      select,
+                      state,
+                      {
+                        year: offsetYears,
+                        month: offsetMonths,
+                        day: offsetDays,
+                        hour: offsetHours,
+                        minute: parseInt(e.target.value) || 0,
+                        second: offsetSeconds
+                      },
+                      setIsLoadingPreview,
+                      setError,
+                      setPreview
+                    );
+                  }}
+                />
+              </label>
+            </div>
+
+            <div className="form-row">
+              <label>
+                Seconds
+                <input
+                  type="number"
+                  value={offsetSeconds}
+                  className="form-control"
+                  onChange={(e) => {
+                    setOffsetSeconds(parseInt(e.target.value) || 0);
+                    generateOffsetPreview(
+                      select,
+                      state,
+                      {
+                        year: offsetYears,
+                        month: offsetMonths,
+                        day: offsetDays,
+                        hour: offsetHours,
+                        minute: offsetMinutes,
+                        second: parseInt(e.target.value) || 0
+                      },
+                      setIsLoadingPreview,
+                      setError,
+                      setPreview
+                    );
+                  }}
+                />
+              </label>
+            </div>
           </div>
 
-          <div className="form-row">
-            <label>
-              Months
-              <input
-                type="number"
-                value={offsetMonths}
-                onChange={(e) => setOffsetMonths(parseInt(e.target.value) || 0)}
-              />
-            </label>
+          <hr />
+
+          <div className="preview-section">
+            <h3>Preview</h3>
+
+            {isLoadingPreview ? "Loading..." : ""}
+
+            {preview.length > 0 && (
+              <div className="preview-result">
+                <p>
+                  <strong>Original:</strong>{" "}
+                  {parseDate(preview[0]?.originalDateTime, SupportedLanguages.nl, false)}{" "}
+                  {parseTime(preview[0]?.originalDateTime)}
+                </p>
+                <p>
+                  <strong>Result:</strong>{" "}
+                  {parseDate(preview[0]?.correctedDateTime, SupportedLanguages.nl, false)}{" "}
+                  {parseTime(preview[0]?.correctedDateTime)}
+                </p>
+                <p>
+                  <strong>Applied shift:</strong> {formatOffsetLabel()}
+                </p>
+                {preview[0]?.warning && <p className="warning">⚠️ {preview[0].warning}</p>}
+                {preview[0]?.error && <p className="error">❌ {preview[0].error}</p>}
+              </div>
+            )}
+
+            {error && <p className="error">{error}</p>}
           </div>
 
-          <div className="form-row">
-            <label>
-              Days
-              <input
-                type="number"
-                value={offsetDays}
-                onChange={(e) => setOffsetDays(parseInt(e.target.value) || 0)}
-              />
-            </label>
-          </div>
-
-          <div className="form-row">
-            <label>
-              Hours
-              <input
-                type="number"
-                value={offsetHours}
-                onChange={(e) => setOffsetHours(parseInt(e.target.value) || 0)}
-              />
-            </label>
-          </div>
-
-          <div className="form-row">
-            <label>
-              Minutes
-              <input
-                type="number"
-                value={offsetMinutes}
-                onChange={(e) => setOffsetMinutes(parseInt(e.target.value) || 0)}
-              />
-            </label>
-          </div>
-
-          <div className="form-row">
-            <label>
-              Seconds
-              <input
-                type="number"
-                value={offsetSeconds}
-                onChange={(e) => setOffsetSeconds(parseInt(e.target.value) || 0)}
-              />
-            </label>
-          </div>
-        </div>
-
-        <hr />
-
-        <div className="preview-section">
-          <h3>Preview</h3>
-
-          {!preview.length && (
+          <div className="modal-buttons">
+            <button className="btn btn--info" onClick={handleBack}>
+              Back
+            </button>
             <button
               className="btn btn--default"
-              onClick={generateOffsetPreview}
-              disabled={isLoadingPreview}
+              onClick={executeShift}
+              disabled={isExecuting || preview.length === 0}
             >
-              {isLoadingPreview ? "Loading..." : "Generate Preview"}
+              {isExecuting ? "Applying..." : "Apply Shift"}
             </button>
-          )}
-
-          {preview.length > 0 && (
-            <div className="preview-result">
-              <p>
-                <strong>Original:</strong> {preview[0]?.originalDateTime || "N/A"}
-              </p>
-              <p>
-                <strong>Result:</strong> {preview[0]?.correctedDateTime || "N/A"}
-              </p>
-              <p>
-                <strong>Applied shift:</strong> {formatOffsetLabel()}
-              </p>
-              {preview[0]?.warning && <p className="warning">⚠️ {preview[0].warning}</p>}
-              {preview[0]?.error && <p className="error">❌ {preview[0].error}</p>}
-            </div>
-          )}
-
-          {error && <p className="error">{error}</p>}
+          </div>
         </div>
-
-        <div className="modal-buttons">
-          <button className="btn btn--default" onClick={handleBack}>
-            Back
-          </button>
-          <button
-            className="btn btn--primary"
-            onClick={executeShift}
-            disabled={isExecuting || preview.length === 0}
-          >
-            {isExecuting ? "Applying..." : "Apply Shift"}
-          </button>
-        </div>
-      </div>
+      </>
     );
   }
 
@@ -440,8 +515,6 @@ const ModalTimezoneShift: React.FunctionComponent<IModalTimezoneShiftProps> = ({
           </div>
         </div>
 
-        <hr />
-
         <div className="preview-section">
           <h3>Preview</h3>
 
@@ -477,11 +550,11 @@ const ModalTimezoneShift: React.FunctionComponent<IModalTimezoneShiftProps> = ({
         </div>
 
         <div className="modal-buttons">
-          <button className="btn btn--default" onClick={handleBack}>
+          <button className="btn btn--info" onClick={handleBack}>
             Back
           </button>
           <button
-            className="btn btn--primary"
+            className="btn btn--default"
             onClick={executeShift}
             disabled={isExecuting || preview.length === 0}
           >
@@ -509,9 +582,11 @@ const ModalTimezoneShift: React.FunctionComponent<IModalTimezoneShiftProps> = ({
 
   return (
     <Modal isOpen={isOpen} handleExit={handleExit} dataTest="modal-timezone-shift">
-      {currentStep === "mode-selection" && renderModeSelection()}
-      {currentStep === "offset" && renderOffsetMode()}
-      {currentStep === "timezone" && renderTimezoneMode()}
+      <div className="modal content scroll modal-timezone-shift">
+        {currentStep === "mode-selection" && renderModeSelection()}
+        {currentStep === "offset" && renderOffsetMode()}
+        {currentStep === "timezone" && renderTimezoneMode()}
+      </div>
     </Modal>
   );
 };

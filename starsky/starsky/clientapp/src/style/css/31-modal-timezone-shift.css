@@ -1,4 +1,4 @@
-/* Converted from SCSS to CSS */
+/* Converted from SCSS to CSS
 .modal-timezone-shift {
   padding: 20px;
   max-width: 600px;
@@ -19,7 +19,8 @@
   margin: 20px 0;
   border: none;
   border-top: 1px solid #ddd;
-}
+} */
+
 .modal-timezone-shift .mode-selection {
   margin: 24px 0;
 }
@@ -55,22 +56,22 @@
   color: #666;
   font-size: 14px;
 }
-.modal-timezone-shift .offset-inputs,
+/* .modal-timezone-shift .offset-inputs, */
 .modal-timezone-shift .timezone-inputs {
   margin: 20px 0;
 }
-.modal-timezone-shift .offset-inputs .form-row,
+/* .modal-timezone-shift .offset-inputs .form-row, */
 .modal-timezone-shift .timezone-inputs .form-row {
   margin: 12px 0;
 }
-.modal-timezone-shift .offset-inputs .form-row label,
+/* .modal-timezone-shift .offset-inputs .form-row label, */
 .modal-timezone-shift .timezone-inputs .form-row label {
   display: block;
   font-weight: 500;
   margin-bottom: 4px;
 }
-.modal-timezone-shift .offset-inputs .form-row label input,
-.modal-timezone-shift .offset-inputs .form-row label select,
+/* .modal-timezone-shift .offset-inputs .form-row label input,
+.modal-timezone-shift .offset-inputs .form-row label select, */
 .modal-timezone-shift .timezone-inputs .form-row label input,
 .modal-timezone-shift .timezone-inputs .form-row label select {
   display: block;
@@ -81,15 +82,21 @@
   border-radius: 4px;
   font-size: 14px;
 }
-.modal-timezone-shift .offset-inputs .form-row label input:focus,
-.modal-timezone-shift .offset-inputs .form-row label select:focus,
+/* .modal-timezone-shift .offset-inputs .form-row label input:focus,
+.modal-timezone-shift .offset-inputs .form-row label select:focus, */
 .modal-timezone-shift .timezone-inputs .form-row label input:focus,
 .modal-timezone-shift .timezone-inputs .form-row label select:focus {
   outline: none;
   border-color: #0078d4;
 }
+
+.offset-inputs .form-row {
+  display: inline-block;
+}
+
 .modal-timezone-shift .offset-inputs .form-row label input[type="number"] {
-  width: 150px;
+  width: 100px;
+  margin-right: 10px;
 }
 .modal-timezone-shift .preview-section {
   margin: 20px 0;
@@ -122,7 +129,8 @@
   border-radius: 4px;
   margin: 12px 0;
 }
-.modal-timezone-shift .modal-buttons {
+
+/* .modal-timezone-shift .modal-buttons {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
@@ -155,4 +163,4 @@
 .modal-timezone-shift .modal-buttons button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
+} */

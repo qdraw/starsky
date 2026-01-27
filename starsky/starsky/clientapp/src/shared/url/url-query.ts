@@ -469,7 +469,7 @@ export class UrlQuery {
    * Get all standard timezones
    */
   public UrlTimezones(): string {
-    return this.prefix + "/api/meta-correct-timezone/standard-timezones";
+    return this.prefix + "/api/meta-time-correct/system-timezones";
   }
 
   /**

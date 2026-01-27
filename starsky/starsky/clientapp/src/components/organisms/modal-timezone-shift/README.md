@@ -66,7 +66,7 @@ interface IMenuOptionTimezoneShiftProps {
 ### Get Timezones
 
 ```
-GET /api/meta-correct-timezone/standard-timezones
+GET /api/meta-time-correct/system-timezones
 ```
 
 Returns a list of all available timezones:

@@ -273,7 +273,8 @@ const MenuArchive: React.FunctionComponent = memo(() => {
                   <MenuOptionTimezoneShift
                     readOnly={readOnly}
                     select={select}
-                    collections={state.collections !== false}
+                    state={state}
+                    dispatch={dispatch}
                   />
                 </>
               ) : null}

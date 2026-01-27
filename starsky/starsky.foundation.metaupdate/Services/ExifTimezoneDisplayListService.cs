@@ -34,16 +34,29 @@ public class ExifTimezoneDisplayListService : IExifTimezoneDisplayListService
 		return timezones;
 	}
 
-	public List<ExifTimezoneDisplay> GetMovedToDifferentPlaceTimezonesList()
+	public List<ExifTimezoneDisplay> GetMovedToDifferentPlaceTimezonesList(DateTime? dateTime)
 	{
-		// Add standard system timezones
-		// Add Etc/GMT timezones (fixed offset, no DST)
-		// GMT offset format: Etc/GMT+X where X is hours behind UTC (opposite sign)
+		dateTime ??= DateTime.UtcNow;
 
-		var timezones =
-			TimeZoneInfo.GetSystemTimeZones()
-				.Select(tz => new ExifTimezoneDisplay { Id = tz.Id, DisplayName = tz.DisplayName })
-				.ToList();
+		// Get all system timezones with their offset calculated for the specific date
+		// This ensures DST is shown correctly: summer = DST offset, winter = standard offset
+		var timezones = TimeZoneInfo.GetSystemTimeZones()
+			.Select(tz =>
+			{
+				// Get the UTC offset for this specific datetime (DST-aware)
+				var offset = tz.GetUtcOffset(dateTime.Value);
+
+				// Format offset as +/-HH:mm
+				var sign = offset < TimeSpan.Zero ? "-" : "+";
+				var absOffset = offset.Duration();
+				var offsetString = $"{sign}{absOffset.Hours:D2}:{absOffset.Minutes:D2}";
+
+				// Create display name with actual offset for this date
+				var displayName = $"(UTC{offsetString}) {tz.StandardName}";
+
+				return new ExifTimezoneDisplay { Id = tz.Id, DisplayName = displayName };
+			})
+			.DistinctBy(tz => tz.DisplayName).ToList();
 
 		return timezones;
 	}

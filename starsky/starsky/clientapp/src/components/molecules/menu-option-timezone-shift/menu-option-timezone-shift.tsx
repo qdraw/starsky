@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { ArchiveAction } from "../../../contexts/archive-context";
+import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import localization from "../../../localization/localization.json";
 import MenuOptionModal from "../../atoms/menu-option-modal/menu-option-modal";
 import ModalTimezoneShift from "../../organisms/modal-timezone-shift/modal-timezone-shift";
@@ -6,13 +8,15 @@ import ModalTimezoneShift from "../../organisms/modal-timezone-shift/modal-timez
 interface IMenuOptionTimezoneShiftProps {
   readOnly: boolean;
   select: string[];
-  collections?: boolean;
+  state: IArchiveProps;
+  dispatch: React.Dispatch<ArchiveAction>;
 }
 
 export const MenuOptionTimezoneShift: React.FunctionComponent<IMenuOptionTimezoneShiftProps> = ({
   readOnly,
   select,
-  collections = true
+  state,
+  dispatch
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -28,7 +32,10 @@ export const MenuOptionTimezoneShift: React.FunctionComponent<IMenuOptionTimezon
             setIsModalOpen(false);
           }}
           isOpen={isModalOpen}
-          collections={collections}
+          dispatch={dispatch}
+          state={state}
+          historyLocationSearch={""}
+          undoSelection={() => {}}
         />
       ) : null}
 
