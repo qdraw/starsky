@@ -7536,548 +7536,6 @@
       "extensions": {},
       "unresolvedReference": false
     },
-    "/api/exif/correct-timezone/preview": {
-      "operations": {
-        "Post": {
-          "tags": [
-            {
-              "name": "MetaCorrectTimezone",
-              "extensions": {},
-              "unresolvedReference": false
-            }
-          ],
-          "summary": "Preview timezone correction for batch of images (dry-run)",
-          "parameters": [
-            {
-              "unresolvedReference": false,
-              "name": "f",
-              "in": 0,
-              "description": "subPath filepath to file, split by dot comma (;)",
-              "required": false,
-              "deprecated": false,
-              "allowEmptyValue": false,
-              "style": 2,
-              "explode": true,
-              "allowReserved": false,
-              "schema": {
-                "type": "string",
-                "readOnly": false,
-                "writeOnly": false,
-                "allOf": [],
-                "oneOf": [],
-                "anyOf": [],
-                "required": [],
-                "properties": {},
-                "additionalPropertiesAllowed": true,
-                "enum": [],
-                "nullable": false,
-                "deprecated": false,
-                "extensions": {},
-                "unresolvedReference": false
-              },
-              "examples": {},
-              "content": {},
-              "extensions": {}
-            },
-            {
-              "unresolvedReference": false,
-              "name": "collections",
-              "in": 0,
-              "required": false,
-              "deprecated": false,
-              "allowEmptyValue": false,
-              "style": 2,
-              "explode": true,
-              "allowReserved": false,
-              "schema": {
-                "type": "boolean",
-                "readOnly": false,
-                "writeOnly": false,
-                "allOf": [],
-                "oneOf": [],
-                "anyOf": [],
-                "required": [],
-                "properties": {},
-                "additionalPropertiesAllowed": true,
-                "enum": [],
-                "nullable": false,
-                "deprecated": false,
-                "extensions": {},
-                "unresolvedReference": false
-              },
-              "examples": {},
-              "content": {},
-              "extensions": {}
-            }
-          ],
-          "requestBody": {
-            "unresolvedReference": false,
-            "description": "Timezone correction request with RecordedTimezone and CorrectTimezone",
-            "required": false,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "readOnly": false,
-                  "writeOnly": false,
-                  "allOf": [],
-                  "oneOf": [],
-                  "anyOf": [],
-                  "required": [],
-                  "properties": {},
-                  "additionalPropertiesAllowed": true,
-                  "enum": [],
-                  "nullable": false,
-                  "deprecated": false,
-                  "extensions": {},
-                  "unresolvedReference": false,
-                  "reference": {
-                    "isFragrament": false,
-                    "type": 0,
-                    "id": "ExifTimezoneCorrectionRequest",
-                    "isExternal": false,
-                    "isLocal": true,
-                    "referenceV3": "#/components/schemas/ExifTimezoneCorrectionRequest",
-                    "referenceV2": "#/definitions/ExifTimezoneCorrectionRequest"
-                  }
-                },
-                "examples": {},
-                "encoding": {},
-                "extensions": {}
-              },
-              "text/json": {
-                "schema": {
-                  "readOnly": false,
-                  "writeOnly": false,
-                  "allOf": [],
-                  "oneOf": [],
-                  "anyOf": [],
-                  "required": [],
-                  "properties": {},
-                  "additionalPropertiesAllowed": true,
-                  "enum": [],
-                  "nullable": false,
-                  "deprecated": false,
-                  "extensions": {},
-                  "unresolvedReference": false,
-                  "reference": {
-                    "isFragrament": false,
-                    "type": 0,
-                    "id": "ExifTimezoneCorrectionRequest",
-                    "isExternal": false,
-                    "isLocal": true,
-                    "referenceV3": "#/components/schemas/ExifTimezoneCorrectionRequest",
-                    "referenceV2": "#/definitions/ExifTimezoneCorrectionRequest"
-                  }
-                },
-                "examples": {},
-                "encoding": {},
-                "extensions": {}
-              },
-              "application/*+json": {
-                "schema": {
-                  "readOnly": false,
-                  "writeOnly": false,
-                  "allOf": [],
-                  "oneOf": [],
-                  "anyOf": [],
-                  "required": [],
-                  "properties": {},
-                  "additionalPropertiesAllowed": true,
-                  "enum": [],
-                  "nullable": false,
-                  "deprecated": false,
-                  "extensions": {},
-                  "unresolvedReference": false,
-                  "reference": {
-                    "isFragrament": false,
-                    "type": 0,
-                    "id": "ExifTimezoneCorrectionRequest",
-                    "isExternal": false,
-                    "isLocal": true,
-                    "referenceV3": "#/components/schemas/ExifTimezoneCorrectionRequest",
-                    "referenceV2": "#/definitions/ExifTimezoneCorrectionRequest"
-                  }
-                },
-                "examples": {},
-                "encoding": {},
-                "extensions": {}
-              }
-            },
-            "extensions": {}
-          },
-          "responses": {
-            "200": {
-              "description": "Preview results with corrections that would be applied",
-              "headers": {},
-              "content": {},
-              "links": {},
-              "extensions": {},
-              "unresolvedReference": false
-            },
-            "400": {
-              "description": "Invalid parameters or file paths",
-              "headers": {},
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "string",
-                    "readOnly": false,
-                    "writeOnly": false,
-                    "allOf": [],
-                    "oneOf": [],
-                    "anyOf": [],
-                    "required": [],
-                    "properties": {},
-                    "additionalPropertiesAllowed": true,
-                    "enum": [],
-                    "nullable": false,
-                    "deprecated": false,
-                    "extensions": {},
-                    "unresolvedReference": false
-                  },
-                  "examples": {},
-                  "encoding": {},
-                  "extensions": {}
-                }
-              },
-              "links": {},
-              "extensions": {},
-              "unresolvedReference": false
-            },
-            "401": {
-              "description": "User unauthorized",
-              "headers": {},
-              "content": {},
-              "links": {},
-              "extensions": {},
-              "unresolvedReference": false
-            }
-          },
-          "callbacks": {},
-          "deprecated": false,
-          "security": [],
-          "servers": [],
-          "extensions": {}
-        }
-      },
-      "servers": [],
-      "parameters": [],
-      "extensions": {},
-      "unresolvedReference": false
-    },
-    "/api/meta-correct-timezone/execute": {
-      "operations": {
-        "Post": {
-          "tags": [
-            {
-              "name": "MetaCorrectTimezone",
-              "extensions": {},
-              "unresolvedReference": false
-            }
-          ],
-          "summary": "Execute timezone correction for batch of images",
-          "parameters": [
-            {
-              "unresolvedReference": false,
-              "name": "f",
-              "in": 0,
-              "description": "subPath filepath to file, split by dot comma (;)",
-              "required": false,
-              "deprecated": false,
-              "allowEmptyValue": false,
-              "style": 2,
-              "explode": true,
-              "allowReserved": false,
-              "schema": {
-                "type": "string",
-                "readOnly": false,
-                "writeOnly": false,
-                "allOf": [],
-                "oneOf": [],
-                "anyOf": [],
-                "required": [],
-                "properties": {},
-                "additionalPropertiesAllowed": true,
-                "enum": [],
-                "nullable": false,
-                "deprecated": false,
-                "extensions": {},
-                "unresolvedReference": false
-              },
-              "examples": {},
-              "content": {},
-              "extensions": {}
-            },
-            {
-              "unresolvedReference": false,
-              "name": "collections",
-              "in": 0,
-              "required": false,
-              "deprecated": false,
-              "allowEmptyValue": false,
-              "style": 2,
-              "explode": true,
-              "allowReserved": false,
-              "schema": {
-                "type": "boolean",
-                "readOnly": false,
-                "writeOnly": false,
-                "allOf": [],
-                "oneOf": [],
-                "anyOf": [],
-                "required": [],
-                "properties": {},
-                "additionalPropertiesAllowed": true,
-                "enum": [],
-                "nullable": false,
-                "deprecated": false,
-                "extensions": {},
-                "unresolvedReference": false
-              },
-              "examples": {},
-              "content": {},
-              "extensions": {}
-            }
-          ],
-          "requestBody": {
-            "unresolvedReference": false,
-            "description": "Timezone correction request with RecordedTimezone and CorrectTimezone",
-            "required": false,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "readOnly": false,
-                  "writeOnly": false,
-                  "allOf": [],
-                  "oneOf": [],
-                  "anyOf": [],
-                  "required": [],
-                  "properties": {},
-                  "additionalPropertiesAllowed": true,
-                  "enum": [],
-                  "nullable": false,
-                  "deprecated": false,
-                  "extensions": {},
-                  "unresolvedReference": false,
-                  "reference": {
-                    "isFragrament": false,
-                    "type": 0,
-                    "id": "ExifTimezoneCorrectionRequest",
-                    "isExternal": false,
-                    "isLocal": true,
-                    "referenceV3": "#/components/schemas/ExifTimezoneCorrectionRequest",
-                    "referenceV2": "#/definitions/ExifTimezoneCorrectionRequest"
-                  }
-                },
-                "examples": {},
-                "encoding": {},
-                "extensions": {}
-              },
-              "text/json": {
-                "schema": {
-                  "readOnly": false,
-                  "writeOnly": false,
-                  "allOf": [],
-                  "oneOf": [],
-                  "anyOf": [],
-                  "required": [],
-                  "properties": {},
-                  "additionalPropertiesAllowed": true,
-                  "enum": [],
-                  "nullable": false,
-                  "deprecated": false,
-                  "extensions": {},
-                  "unresolvedReference": false,
-                  "reference": {
-                    "isFragrament": false,
-                    "type": 0,
-                    "id": "ExifTimezoneCorrectionRequest",
-                    "isExternal": false,
-                    "isLocal": true,
-                    "referenceV3": "#/components/schemas/ExifTimezoneCorrectionRequest",
-                    "referenceV2": "#/definitions/ExifTimezoneCorrectionRequest"
-                  }
-                },
-                "examples": {},
-                "encoding": {},
-                "extensions": {}
-              },
-              "application/*+json": {
-                "schema": {
-                  "readOnly": false,
-                  "writeOnly": false,
-                  "allOf": [],
-                  "oneOf": [],
-                  "anyOf": [],
-                  "required": [],
-                  "properties": {},
-                  "additionalPropertiesAllowed": true,
-                  "enum": [],
-                  "nullable": false,
-                  "deprecated": false,
-                  "extensions": {},
-                  "unresolvedReference": false,
-                  "reference": {
-                    "isFragrament": false,
-                    "type": 0,
-                    "id": "ExifTimezoneCorrectionRequest",
-                    "isExternal": false,
-                    "isLocal": true,
-                    "referenceV3": "#/components/schemas/ExifTimezoneCorrectionRequest",
-                    "referenceV2": "#/definitions/ExifTimezoneCorrectionRequest"
-                  }
-                },
-                "examples": {},
-                "encoding": {},
-                "extensions": {}
-              }
-            },
-            "extensions": {}
-          },
-          "responses": {
-            "200": {
-              "description": "Correction results with success/error status per file",
-              "headers": {},
-              "content": {},
-              "links": {},
-              "extensions": {},
-              "unresolvedReference": false
-            },
-            "400": {
-              "description": "Invalid parameters or file paths",
-              "headers": {},
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "string",
-                    "readOnly": false,
-                    "writeOnly": false,
-                    "allOf": [],
-                    "oneOf": [],
-                    "anyOf": [],
-                    "required": [],
-                    "properties": {},
-                    "additionalPropertiesAllowed": true,
-                    "enum": [],
-                    "nullable": false,
-                    "deprecated": false,
-                    "extensions": {},
-                    "unresolvedReference": false
-                  },
-                  "examples": {},
-                  "encoding": {},
-                  "extensions": {}
-                }
-              },
-              "links": {},
-              "extensions": {},
-              "unresolvedReference": false
-            },
-            "401": {
-              "description": "User unauthorized",
-              "headers": {},
-              "content": {},
-              "links": {},
-              "extensions": {},
-              "unresolvedReference": false
-            }
-          },
-          "callbacks": {},
-          "deprecated": false,
-          "security": [],
-          "servers": [],
-          "extensions": {}
-        }
-      },
-      "servers": [],
-      "parameters": [],
-      "extensions": {},
-      "unresolvedReference": false
-    },
-    "/api/meta-correct-timezone/offset-timezones": {
-      "operations": {
-        "Get": {
-          "tags": [
-            {
-              "name": "MetaCorrectTimezone",
-              "extensions": {},
-              "unresolvedReference": false
-            }
-          ],
-          "summary": "    Get all available system timezones\n\tBased on location so they follow DST rules",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": "List of timezone identifiers",
-              "headers": {},
-              "content": {},
-              "links": {},
-              "extensions": {},
-              "unresolvedReference": false
-            },
-            "401": {
-              "description": "User unauthorized",
-              "headers": {},
-              "content": {},
-              "links": {},
-              "extensions": {},
-              "unresolvedReference": false
-            }
-          },
-          "callbacks": {},
-          "deprecated": false,
-          "security": [],
-          "servers": [],
-          "extensions": {}
-        }
-      },
-      "servers": [],
-      "parameters": [],
-      "extensions": {},
-      "unresolvedReference": false
-    },
-    "/api/meta-correct-timezone/standard-timezones": {
-      "operations": {
-        "Get": {
-          "tags": [
-            {
-              "name": "MetaCorrectTimezone",
-              "extensions": {},
-              "unresolvedReference": false
-            }
-          ],
-          "summary": "    Get moved to a different place timezones\n\tEtc/GMT-1 Etc/GMT Etc/GMT+1 timezones with offset timezones\n\tThese timezones do not follow DST rules",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": "List of timezone identifiers",
-              "headers": {},
-              "content": {},
-              "links": {},
-              "extensions": {},
-              "unresolvedReference": false
-            },
-            "401": {
-              "description": "User unauthorized",
-              "headers": {},
-              "content": {},
-              "links": {},
-              "extensions": {},
-              "unresolvedReference": false
-            }
-          },
-          "callbacks": {},
-          "deprecated": false,
-          "security": [],
-          "servers": [],
-          "extensions": {}
-        }
-      },
-      "servers": [],
-      "parameters": [],
-      "extensions": {},
-      "unresolvedReference": false
-    },
     "/api/info": {
       "operations": {
         "Get": {
@@ -8620,6 +8078,1010 @@
                   "extensions": {}
                 }
               },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "401": {
+              "description": "User unauthorized",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/meta-time-correct/timezone-preview": {
+      "operations": {
+        "Post": {
+          "tags": [
+            {
+              "name": "MetaTimeCorrect",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Preview timezone correction for batch of images (dry-run)\nUses timezone IDs to calculate offset differences (DST-aware)",
+          "parameters": [
+            {
+              "unresolvedReference": false,
+              "name": "f",
+              "in": 0,
+              "description": "subPath filepath to file, split by dot comma (;)",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
+              "name": "collections",
+              "in": 0,
+              "description": "Include collections or not",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "boolean",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            }
+          ],
+          "requestBody": {
+            "unresolvedReference": false,
+            "description": "Timezone correction request with RecordedTimezone and CorrectTimezone",
+            "required": false,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifTimezoneBasedCorrectionRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifTimezoneBasedCorrectionRequest",
+                    "referenceV2": "#/definitions/ExifTimezoneBasedCorrectionRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "text/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifTimezoneBasedCorrectionRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifTimezoneBasedCorrectionRequest",
+                    "referenceV2": "#/definitions/ExifTimezoneBasedCorrectionRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "application/*+json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifTimezoneBasedCorrectionRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifTimezoneBasedCorrectionRequest",
+                    "referenceV2": "#/definitions/ExifTimezoneBasedCorrectionRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              }
+            },
+            "extensions": {}
+          },
+          "responses": {
+            "200": {
+              "description": "Preview results with corrections that would be applied",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "400": {
+              "description": "Invalid parameters or file paths",
+              "headers": {},
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "string",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "401": {
+              "description": "User unauthorized",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/meta-time-correct/timezone-execute": {
+      "operations": {
+        "Post": {
+          "tags": [
+            {
+              "name": "MetaTimeCorrect",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Execute timezone correction for batch of images\nUses timezone IDs to calculate offset differences (DST-aware)",
+          "parameters": [
+            {
+              "unresolvedReference": false,
+              "name": "f",
+              "in": 0,
+              "description": "subPath filepath to file, split by dot comma (;)",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
+              "name": "collections",
+              "in": 0,
+              "description": "Include collections or not",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "boolean",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            }
+          ],
+          "requestBody": {
+            "unresolvedReference": false,
+            "description": "Timezone correction request with RecordedTimezone and CorrectTimezone",
+            "required": false,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifTimezoneBasedCorrectionRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifTimezoneBasedCorrectionRequest",
+                    "referenceV2": "#/definitions/ExifTimezoneBasedCorrectionRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "text/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifTimezoneBasedCorrectionRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifTimezoneBasedCorrectionRequest",
+                    "referenceV2": "#/definitions/ExifTimezoneBasedCorrectionRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "application/*+json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifTimezoneBasedCorrectionRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifTimezoneBasedCorrectionRequest",
+                    "referenceV2": "#/definitions/ExifTimezoneBasedCorrectionRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              }
+            },
+            "extensions": {}
+          },
+          "responses": {
+            "200": {
+              "description": "Correction results with success/error status per file",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "400": {
+              "description": "Invalid parameters or file paths",
+              "headers": {},
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "string",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "401": {
+              "description": "User unauthorized",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/meta-time-correct/offset-preview": {
+      "operations": {
+        "Post": {
+          "tags": [
+            {
+              "name": "MetaTimeCorrect",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Preview custom offset correction for batch of images (dry-run)\nUses custom time/date offsets (years, months, days, hours, minutes, seconds)",
+          "parameters": [
+            {
+              "unresolvedReference": false,
+              "name": "f",
+              "in": 0,
+              "description": "subPath filepath to file, split by dot comma (;)",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
+              "name": "collections",
+              "in": 0,
+              "description": "Include collections or not",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "boolean",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            }
+          ],
+          "requestBody": {
+            "unresolvedReference": false,
+            "description": "Custom offset correction request with offset values",
+            "required": false,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifCustomOffsetCorrectionRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifCustomOffsetCorrectionRequest",
+                    "referenceV2": "#/definitions/ExifCustomOffsetCorrectionRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "text/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifCustomOffsetCorrectionRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifCustomOffsetCorrectionRequest",
+                    "referenceV2": "#/definitions/ExifCustomOffsetCorrectionRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "application/*+json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifCustomOffsetCorrectionRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifCustomOffsetCorrectionRequest",
+                    "referenceV2": "#/definitions/ExifCustomOffsetCorrectionRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              }
+            },
+            "extensions": {}
+          },
+          "responses": {
+            "200": {
+              "description": "Preview results with corrections that would be applied",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "400": {
+              "description": "Invalid parameters or file paths",
+              "headers": {},
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "string",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "401": {
+              "description": "User unauthorized",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/meta-time-correct/offset-execute": {
+      "operations": {
+        "Post": {
+          "tags": [
+            {
+              "name": "MetaTimeCorrect",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Execute custom offset correction for batch of images\nUses custom time/date offsets (years, months, days, hours, minutes, seconds)",
+          "parameters": [
+            {
+              "unresolvedReference": false,
+              "name": "f",
+              "in": 0,
+              "description": "subPath filepath to file, split by dot comma (;)",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
+              "name": "collections",
+              "in": 0,
+              "description": "Include collections or not",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "boolean",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            }
+          ],
+          "requestBody": {
+            "unresolvedReference": false,
+            "description": "Custom offset correction request with offset values",
+            "required": false,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifCustomOffsetCorrectionRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifCustomOffsetCorrectionRequest",
+                    "referenceV2": "#/definitions/ExifCustomOffsetCorrectionRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "text/json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifCustomOffsetCorrectionRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifCustomOffsetCorrectionRequest",
+                    "referenceV2": "#/definitions/ExifCustomOffsetCorrectionRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              },
+              "application/*+json": {
+                "schema": {
+                  "readOnly": false,
+                  "writeOnly": false,
+                  "allOf": [],
+                  "oneOf": [],
+                  "anyOf": [],
+                  "required": [],
+                  "properties": {},
+                  "additionalPropertiesAllowed": true,
+                  "enum": [],
+                  "nullable": false,
+                  "deprecated": false,
+                  "extensions": {},
+                  "unresolvedReference": false,
+                  "reference": {
+                    "isFragrament": false,
+                    "type": 0,
+                    "id": "ExifCustomOffsetCorrectionRequest",
+                    "isExternal": false,
+                    "isLocal": true,
+                    "referenceV3": "#/components/schemas/ExifCustomOffsetCorrectionRequest",
+                    "referenceV2": "#/definitions/ExifCustomOffsetCorrectionRequest"
+                  }
+                },
+                "examples": {},
+                "encoding": {},
+                "extensions": {}
+              }
+            },
+            "extensions": {}
+          },
+          "responses": {
+            "200": {
+              "description": "Correction results with success/error status per file",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "400": {
+              "description": "Invalid parameters or file paths",
+              "headers": {},
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "string",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "401": {
+              "description": "User unauthorized",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/exif/timezones/camera-incorrect": {
+      "operations": {
+        "Get": {
+          "tags": [
+            {
+              "name": "MetaTimeCorrect",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Get list of fixed offset timezones (camera set incorrectly)",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "List of timezones for incorrect camera settings",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "401": {
+              "description": "User unauthorized",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/exif/timezones/system": {
+      "operations": {
+        "Get": {
+          "tags": [
+            {
+              "name": "MetaTimeCorrect",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Get list of all system timezones (moved to different place)",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "List of system timezones",
+              "headers": {},
+              "content": {},
               "links": {},
               "extensions": {},
               "unresolvedReference": false
@@ -16046,6 +16508,141 @@
         "extensions": {},
         "unresolvedReference": false
       },
+      "ExifCustomOffsetCorrectionRequest": {
+        "type": "object",
+        "readOnly": false,
+        "writeOnly": false,
+        "allOf": [],
+        "oneOf": [],
+        "anyOf": [],
+        "required": [],
+        "properties": {
+          "year": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "month": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "day": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "hour": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "minute": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "second": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "hasAnyOffset": {
+            "type": "boolean",
+            "readOnly": true,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          }
+        },
+        "additionalPropertiesAllowed": false,
+        "enum": [],
+        "nullable": false,
+        "deprecated": false,
+        "extensions": {},
+        "unresolvedReference": false
+      },
       "ExifStatus": {
         "type": "integer",
         "format": "int32",
@@ -16124,7 +16721,7 @@
         "extensions": {},
         "unresolvedReference": false
       },
-      "ExifTimezoneCorrectionRequest": {
+      "ExifTimezoneBasedCorrectionRequest": {
         "type": "object",
         "readOnly": false,
         "writeOnly": false,
@@ -19215,5 +19812,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "0A4DCA9B1A9706B3406568118C00F43809DF2DB931C6526895B409FBD5C8D8898DF567C145D453B79805C2FAD30CE3DF4327BA7394C78B202567154F567BC136"
+  "hashCode": "C62AB6683C242274AA0245711368FCD810478E8B465FA1215AE0F3E6B98486AE9FCBB68F6E6175C73A617ED330457CC765C8D382C66606B22C1AD2308824EFAD"
 }
