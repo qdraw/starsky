@@ -1125,4 +1125,90 @@ public sealed class MetaTimeCorrectControllerTest
 		Assert.IsNotNull(result);
 		Assert.AreEqual(expectedResult, returnedJson);
 	}
+
+	[TestMethod]
+	public async Task PreviewCustomOffsetCorrectionAsync_ValidInput_ReturnsOkResult()
+	{
+		// Arrange
+		var mockResults = new List<ExifTimezoneCorrectionResult>
+		{
+			new()
+			{
+				Success = true,
+				OriginalDateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local),
+				CorrectedDateTime = new DateTime(2024, 6, 15, 15, 30, 0, DateTimeKind.Local),
+				Delta = TimeSpan.FromHours(1),
+				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
+			}
+		};
+
+		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
+		var controller = CreateController(timezoneService);
+
+		var request = new ExifCustomOffsetCorrectionRequest
+		{
+			Hour = 1
+		};
+
+		// Act
+		var result = await controller.PreviewCustomOffsetCorrectionAsync(
+			"/test.jpg",
+			true,
+			request);
+
+		// Assert
+		Assert.IsNotNull(result);
+		var jsonResult = result as OkObjectResult;
+		Assert.IsNotNull(jsonResult);
+		Assert.AreEqual(200, jsonResult.StatusCode);
+
+		var returnedResults = jsonResult.Value as List<ExifTimezoneCorrectionResult>;
+		Assert.IsNotNull(returnedResults);
+		Assert.HasCount(1, returnedResults);
+		Assert.IsTrue(returnedResults[0].Success);
+		Assert.AreEqual(TimeSpan.FromHours(1), returnedResults[0].Delta);
+	}
+
+	[TestMethod]
+	public async Task ExecuteCustomOffsetCorrectionAsync_ValidInput_ReturnsOkAndQueuesTask()
+	{
+		// Arrange
+		var mockResults = new List<ExifTimezoneCorrectionResult>
+		{
+			new()
+			{
+				Success = true,
+				OriginalDateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local),
+				CorrectedDateTime = new DateTime(2024, 6, 15, 15, 30, 0, DateTimeKind.Local),
+				Delta = TimeSpan.FromHours(1),
+				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
+			}
+		};
+
+		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
+		var queue = new FakeIUpdateBackgroundTaskQueue();
+		var controller = CreateController(timezoneService, queue);
+
+		var request = new ExifCustomOffsetCorrectionRequest
+		{
+			Hour = 1
+		};
+
+		// Act
+		var result = await controller.ExecuteCustomOffsetCorrectionAsync(
+			"/test.jpg",
+			true,
+			request);
+
+		// Assert
+		Assert.IsNotNull(result);
+		var jsonResult = result as JsonResult;
+		Assert.IsNotNull(jsonResult);
+		var returnedResults = jsonResult.Value as List<ExifTimezoneCorrectionResult>;
+		Assert.IsNotNull(returnedResults);
+		Assert.HasCount(1, returnedResults);
+		Assert.IsTrue(returnedResults[0].Success);
+		Assert.AreEqual(TimeSpan.FromHours(1), returnedResults[0].Delta);
+		Assert.IsTrue(queue.QueueBackgroundWorkItemCalled);
+	}
 }
