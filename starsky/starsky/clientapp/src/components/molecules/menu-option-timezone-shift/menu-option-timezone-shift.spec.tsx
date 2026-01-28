@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
+import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import * as ModalTimezoneShift from "../../organisms/modal-timezone-shift/modal-timezone-shift";
 import { MenuOptionTimezoneShift } from "./menu-option-timezone-shift";
 
@@ -17,7 +18,12 @@ describe("MenuOptionTimezoneShift", () => {
 
   const renderComponent = (readOnly = false, select = ["/test.jpg"]) => {
     return render(
-      <MenuOptionTimezoneShift readOnly={readOnly} select={select} collections={true} />
+      <MenuOptionTimezoneShift
+        readOnly={readOnly}
+        select={select}
+        state={{} as unknown as IArchiveProps}
+        dispatch={jest.fn()}
+      />
     );
   };
 
