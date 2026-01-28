@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -244,7 +245,7 @@ public class MetaTimeCorrectController(
 	/// <response code="200">List of timezones for incorrect camera settings</response>
 	/// <response code="401">User unauthorized</response>
 	[ProducesResponseType(200)]
-	[HttpGet("/api/exif/timezones/camera-incorrect")]
+	[HttpGet("/api/meta-time-correct/camera-incorrect-timezones")]
 	[Produces("application/json")]
 	public IActionResult GetIncorrectCameraTimezones()
 	{
@@ -259,11 +260,17 @@ public class MetaTimeCorrectController(
 	/// <response code="200">List of system timezones</response>
 	/// <response code="401">User unauthorized</response>
 	[ProducesResponseType(200)]
-	[HttpGet("/api/exif/timezones/system")]
+	[HttpGet("/api/meta-time-correct/system-timezones")]
 	[Produces("application/json")]
-	public IActionResult GetMovedToDifferentPlaceTimezones()
+	public IActionResult GetMovedToDifferentPlaceTimezones(DateTime dateTime)
 	{
-		var timezones = exifTimezoneDisplayListService.GetMovedToDifferentPlaceTimezonesList();
+		if ( !ModelState.IsValid )
+		{
+			return BadRequest(ModelNotValidError);
+		}
+
+		var timezones =
+			exifTimezoneDisplayListService.GetMovedToDifferentPlaceTimezonesList(dateTime);
 		return Ok(timezones);
 	}
 }
