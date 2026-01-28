@@ -1102,7 +1102,6 @@ public sealed class MetaTimeCorrectControllerTest
 		Assert.AreEqual(expectedResult, returnedJson);
 	}
 
-
 	[TestMethod]
 	public void GetMovedToDifferentPlaceTimezonesList()
 	{
@@ -1111,12 +1110,14 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var controller = CreateController(timezoneService, queue);
 
+		var testDate = new DateTime(2024, 6, 15, 0,
+			0, 0, DateTimeKind.Local); // Summer date
 		var expectedResult = JsonSerializer.Serialize(
-			new ExifTimezoneDisplayListService().GetMovedToDifferentPlaceTimezonesList(),
+			new ExifTimezoneDisplayListService().GetMovedToDifferentPlaceTimezonesList(testDate),
 			DefaultJsonSerializer.CamelCase);
 
 		// Act
-		var result = controller.GetMovedToDifferentPlaceTimezones() as OkObjectResult;
+		var result = controller.GetMovedToDifferentPlaceTimezones(testDate) as OkObjectResult;
 		var returnedJson = JsonSerializer.Serialize(
 			result?.Value,
 			DefaultJsonSerializer.CamelCase);
@@ -1124,6 +1125,23 @@ public sealed class MetaTimeCorrectControllerTest
 		// Assert
 		Assert.IsNotNull(result);
 		Assert.AreEqual(expectedResult, returnedJson);
+	}
+
+	[TestMethod]
+	public void GetMovedToDifferentPlaceTimezonesList_InvalidModelState_ReturnsBadRequest()
+	{
+		// Arrange
+		var controller = CreateController();
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+
+		// act
+		var result =
+			controller.GetMovedToDifferentPlaceTimezones(DateTime.MinValue) as
+				BadRequestObjectResult;
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.AreEqual(400, result.StatusCode);
 	}
 
 	[TestMethod]
@@ -1136,7 +1154,8 @@ public sealed class MetaTimeCorrectControllerTest
 			{
 				Success = true,
 				OriginalDateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local),
-				CorrectedDateTime = new DateTime(2024, 6, 15, 15, 30, 0, DateTimeKind.Local),
+				CorrectedDateTime =
+					new DateTime(2024, 6, 15, 15, 30, 0, DateTimeKind.Local),
 				Delta = TimeSpan.FromHours(1),
 				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
 			}
@@ -1145,10 +1164,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var timezoneService = new FakeIExifTimezoneCorrectionService(mockResults);
 		var controller = CreateController(timezoneService);
 
-		var request = new ExifCustomOffsetCorrectionRequest
-		{
-			Hour = 1
-		};
+		var request = new ExifCustomOffsetCorrectionRequest { Hour = 1 };
 
 		// Act
 		var result = await controller.PreviewCustomOffsetCorrectionAsync(
@@ -1179,7 +1195,8 @@ public sealed class MetaTimeCorrectControllerTest
 			{
 				Success = true,
 				OriginalDateTime = new DateTime(2024, 6, 15, 14, 30, 0, DateTimeKind.Local),
-				CorrectedDateTime = new DateTime(2024, 6, 15, 15, 30, 0, DateTimeKind.Local),
+				CorrectedDateTime =
+					new DateTime(2024, 6, 15, 15, 30, 0, DateTimeKind.Local),
 				Delta = TimeSpan.FromHours(1),
 				FileIndexItem = new FileIndexItem { FilePath = "/test.jpg" }
 			}
@@ -1189,10 +1206,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var queue = new FakeIUpdateBackgroundTaskQueue();
 		var controller = CreateController(timezoneService, queue);
 
-		var request = new ExifCustomOffsetCorrectionRequest
-		{
-			Hour = 1
-		};
+		var request = new ExifCustomOffsetCorrectionRequest { Hour = 1 };
 
 		// Act
 		var result = await controller.ExecuteCustomOffsetCorrectionAsync(
