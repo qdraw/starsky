@@ -468,8 +468,8 @@ export class UrlQuery {
   /**
    * Get all standard timezones
    */
-  public UrlTimezones(): string {
-    return this.prefix + "/api/meta-time-correct/system-timezones";
+  public UrlTimezones(datetime: string): string {
+    return `${this.prefix}/api/meta-time-correct/system-timezones?datetime=${datetime}`;
   }
 
   /**

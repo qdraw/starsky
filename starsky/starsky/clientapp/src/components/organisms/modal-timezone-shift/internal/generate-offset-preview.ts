@@ -1,5 +1,5 @@
 import { IArchiveProps } from "../../../../interfaces/IArchiveProps";
-import { ITimezoneShiftResult } from "../../../../interfaces/ITimezone";
+import { IExifTimezoneCorrectionResultContainer } from "../../../../interfaces/ITimezone";
 import FetchPost from "../../../../shared/fetch/fetch-post";
 import { URLPath } from "../../../../shared/url/url-path";
 import { UrlQuery } from "../../../../shared/url/url-query";
@@ -19,7 +19,8 @@ export async function generateOffsetPreview(
   offset: IOffset,
   setIsLoadingPreview: React.Dispatch<React.SetStateAction<boolean>>,
   setError: React.Dispatch<React.SetStateAction<string | null>>,
-  setPreview: React.Dispatch<React.SetStateAction<ITimezoneShiftResult[]>>
+  preview: IExifTimezoneCorrectionResultContainer,
+  setPreview: React.Dispatch<React.SetStateAction<IExifTimezoneCorrectionResultContainer>>
 ) {
   if (select.length === 0) return;
 
@@ -50,10 +51,13 @@ export async function generateOffsetPreview(
     );
 
     if (response.statusCode === 200 && Array.isArray(response.data)) {
-      setPreview(response.data);
+      setPreview({
+        ...preview,
+        offsetData: response.data
+      });
       setError(null);
     } else {
-      setPreview([]);
+      setPreview({ ...preview, offsetData: [] });
 
       setError("Failed to generate preview");
     }

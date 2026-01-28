@@ -19,7 +19,12 @@ export interface IOffsetShiftRequest {
   second: number;
 }
 
-export interface ITimezoneShiftResult {
+export interface IExifTimezoneCorrectionResultContainer {
+  timezoneData: IExifTimezoneCorrectionResult[];
+  offsetData: IExifTimezoneCorrectionResult[];
+}
+
+export interface IExifTimezoneCorrectionResult {
   success: boolean;
   originalDateTime: string;
   correctedDateTime: string;

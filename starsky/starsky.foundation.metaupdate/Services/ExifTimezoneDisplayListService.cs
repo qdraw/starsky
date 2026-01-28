@@ -16,7 +16,12 @@ public class ExifTimezoneDisplayListService : IExifTimezoneDisplayListService
 		{
 			if ( i == 0 )
 			{
-				timezones.Add(new ExifTimezoneDisplay { Id = "Etc/GMT", DisplayName = "UTC" });
+				timezones.Add(new ExifTimezoneDisplay
+				{
+					Id = "Etc/GMT",
+					DisplayName = "UTC",
+					Aliases = new List<string> { "Etc/GMT" }
+				});
 				continue;
 			}
 
@@ -28,7 +33,10 @@ public class ExifTimezoneDisplayListService : IExifTimezoneDisplayListService
 			var sign = i > 0 ? "-" : "+";
 			var displayName = $"UTC{sign}{hours:D2}";
 
-			timezones.Add(new ExifTimezoneDisplay { Id = gmtId, DisplayName = displayName });
+			timezones.Add(new ExifTimezoneDisplay
+			{
+				Id = gmtId, DisplayName = displayName, Aliases = [gmtId]
+			});
 		}
 
 		return timezones;
@@ -40,7 +48,7 @@ public class ExifTimezoneDisplayListService : IExifTimezoneDisplayListService
 
 		// Get all system timezones with their offset calculated for the specific date
 		// This ensures DST is shown correctly: summer = DST offset, winter = standard offset
-		var timezones = TimeZoneInfo.GetSystemTimeZones()
+		var grouped = TimeZoneInfo.GetSystemTimeZones()
 			.Select(tz =>
 			{
 				// Get the UTC offset for this specific datetime (DST-aware)
@@ -54,9 +62,17 @@ public class ExifTimezoneDisplayListService : IExifTimezoneDisplayListService
 				// Create display name with actual offset for this date
 				var displayName = $"(UTC{offsetString}) {tz.StandardName}";
 
-				return new ExifTimezoneDisplay { Id = tz.Id, DisplayName = displayName };
+				return new { tz.Id, DisplayName = displayName };
 			})
-			.DistinctBy(tz => tz.DisplayName).ToList();
+			.GroupBy(x => x.DisplayName)
+			.ToList();
+
+		var timezones = grouped.Select(g => new ExifTimezoneDisplay
+		{
+			Id = g.First().Id,
+			DisplayName = g.Key,
+			Aliases = g.Select(x => x.Id).OrderBy(x => x).ToList()
+		}).ToList();
 
 		return timezones;
 	}

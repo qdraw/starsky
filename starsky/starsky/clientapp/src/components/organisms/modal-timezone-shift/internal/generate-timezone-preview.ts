@@ -1,14 +1,18 @@
+import { IArchiveProps } from "../../../../interfaces/IArchiveProps";
+import { IExifTimezoneCorrectionResultContainer } from "../../../../interfaces/ITimezone";
 import FetchPost from "../../../../shared/fetch/fetch-post";
 import { URLPath } from "../../../../shared/url/url-path";
 import { UrlQuery } from "../../../../shared/url/url-query";
 
 export async function generateTimezonePreview(
   select: string[],
-  setIsLoadingPreview: any,
+  state: IArchiveProps,
   recordedTimezone: string,
-  setPreview: any,
-  setIsLoadingPreview: any,
-  setError: any
+  correctTimezone: string,
+  setIsLoadingPreview: (value: boolean) => void,
+  preview: IExifTimezoneCorrectionResultContainer,
+  setPreview: (value: IExifTimezoneCorrectionResultContainer) => void,
+  setError: (value: string | null) => void
 ) {
   if (select.length === 0) return;
 
@@ -19,7 +23,6 @@ export async function generateTimezonePreview(
 
   try {
     // Use first file as representative sample
-    const sampleFile = select[0];
     const collectionsParam = collections ? "true" : "false";
 
     const body = JSON.stringify({
@@ -31,14 +34,17 @@ export async function generateTimezonePreview(
     const filePathList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
 
     const response = await FetchPost(
-      `${new UrlQuery().UrlTimezonePreview()}?f=${new URLPath().encodeURI(sampleFile)}&collections=${collectionsParam}`,
+      `${new UrlQuery().UrlTimezonePreview()}?f=${new URLPath().encodeURI(filePathList[0])}&collections=${collectionsParam}`,
       body,
       "post",
       { "Content-Type": "application/json" }
     );
 
     if (response.statusCode === 200 && Array.isArray(response.data)) {
-      setPreview(response.data);
+      setPreview({
+        ...preview,
+        timezoneData: response.data
+      });
     } else {
       setError("Failed to generate preview");
     }

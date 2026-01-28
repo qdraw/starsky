@@ -29,42 +29,32 @@ const ModalTimezoneShift: React.FunctionComponent<IModalTimezoneShiftProps> = ({
   isOpen,
   handleExit,
   select,
-  state
+  state,
+  dispatch
 }) => {
   // Mode and step tracking
   const shiftMode = useShiftMode();
-  const { currentStep, setCurrentStep, handleBack: handleBackMode, handleModeSelect } = shiftMode;
+  const { currentStep, handleBack, handleModeSelect } = shiftMode;
 
   // Offset mode state
   const offsetState = useOffsetState();
 
   // Timezone mode state
   const timezoneState = useTimezoneState();
-  const { timezones } = timezoneState;
 
   // Preview and execution state
   const previewState = usePreviewState();
-  const { setPreview, setError } = previewState;
 
   // Load timezones when entering timezone mode
   const handleLoadTimezones = useCallback(() => {
-    loadTimezones();
+    loadTimezones(timezoneState, previewState.setError, state.fileIndexItems[0].dateTime ?? "");
   }, []);
 
-  useLoadTimezones(currentStep, timezones.length === 0, handleLoadTimezones);
-
-  // Handle back with state reset
-  const handleBack = () => {
-    handleBackMode();
-    setPreview([]);
-    setError(null);
-  };
+  useLoadTimezones(currentStep, timezoneState.timezones.length === 0, handleLoadTimezones);
 
   // Handle mode selection with state reset
   const handleModeSelectWrapped = (mode: "offset" | "timezone") => {
     handleModeSelect(mode);
-    setPreview([]);
-    setError(null);
   };
 
   // Reset all state when modal is closed
@@ -72,7 +62,7 @@ const ModalTimezoneShift: React.FunctionComponent<IModalTimezoneShiftProps> = ({
     shiftMode.reset();
     offsetState.reset();
     timezoneState.reset();
-    previewState.reset();
+    previewState.previewReset();
   }, []);
 
   useResetOnClose(isOpen, handleResetAll);
@@ -83,9 +73,25 @@ const ModalTimezoneShift: React.FunctionComponent<IModalTimezoneShiftProps> = ({
         {currentStep === "mode-selection" &&
           renderModeSelection(select, handleModeSelectWrapped, handleExit)}
         {currentStep === "offset" &&
-          renderOffsetMode(offsetState, previewState, select, state, handleBack)}
+          renderOffsetMode(
+            offsetState,
+            previewState,
+            select,
+            state,
+            handleBack,
+            handleExit,
+            dispatch
+          )}
         {currentStep === "timezone" &&
-          renderTimezoneMode(select, timezoneState, previewState, handleBack)}
+          renderTimezoneMode(
+            select,
+            state,
+            timezoneState,
+            previewState,
+            handleBack,
+            handleExit,
+            dispatch
+          )}
       </div>
     </Modal>
   );
