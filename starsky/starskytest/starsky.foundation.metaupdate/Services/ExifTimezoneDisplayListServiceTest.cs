@@ -45,7 +45,8 @@ public sealed class ExifTimezoneDisplayListServiceTest
 	public void GetMovedToDifferentPlaceTimezonesList_ContainsSystemZones()
 	{
 		var service = new ExifTimezoneDisplayListService();
-		var testDate = new DateTime(2024, 6, 15); // Summer date
+		var testDate = new DateTime(2024, 6, 15,
+			0, 0, 0, DateTimeKind.Local); // Summer date
 		var list = service.GetMovedToDifferentPlaceTimezonesList(testDate);
 
 		Assert.IsNotNull(list);
@@ -60,7 +61,8 @@ public sealed class ExifTimezoneDisplayListServiceTest
 	{
 		// Arrange
 		var service = new ExifTimezoneDisplayListService();
-		var summerDate = new DateTime(2024, 7, 15); // Middle of summer
+		var summerDate = new DateTime(2024, 7, 15,
+			0, 0, 0, DateTimeKind.Local); // Middle of summer
 
 		// Act
 		var list = service.GetMovedToDifferentPlaceTimezonesList(summerDate);
@@ -86,7 +88,8 @@ public sealed class ExifTimezoneDisplayListServiceTest
 	{
 		// Arrange
 		var service = new ExifTimezoneDisplayListService();
-		var winterDate = new DateTime(2024, 1, 15); // Middle of winter
+		var winterDate = new DateTime(2024, 1, 15,
+			0, 0, 0, DateTimeKind.Local); // Middle of winter
 
 		// Act
 		var list = service.GetMovedToDifferentPlaceTimezonesList(winterDate);
@@ -112,7 +115,8 @@ public sealed class ExifTimezoneDisplayListServiceTest
 	{
 		// Arrange
 		var service = new ExifTimezoneDisplayListService();
-		var testDate = new DateTime(2024, 6, 15);
+		var testDate = new DateTime(2024, 6,
+			15, 0, 0, 0, DateTimeKind.Local);
 
 		// Act
 		var list = service.GetMovedToDifferentPlaceTimezonesList(testDate);
@@ -127,5 +131,20 @@ public sealed class ExifTimezoneDisplayListServiceTest
 
 		Assert.IsTrue(hasPositiveOffset || hasNegativeOffset,
 			"Should have timezones with positive or negative offsets");
+	}
+
+	[TestMethod]
+	public void GetMovedToDifferentPlaceTimezonesList_MinDateTime_HandlesYearOne()
+	{
+		var service = new ExifTimezoneDisplayListService();
+		var minDate = DateTime.MinValue; // 0001-01-01
+		var list = service.GetMovedToDifferentPlaceTimezonesList(minDate);
+
+		Assert.IsNotNull(list);
+		Assert.IsNotEmpty(list);
+		// All display names should contain UTC offset
+		Assert.IsTrue(list.All(x => x.DisplayName.Contains("UTC")),
+			"All display names should contain UTC offset");
+		// Should not throw or return empty for year 0001
 	}
 }
