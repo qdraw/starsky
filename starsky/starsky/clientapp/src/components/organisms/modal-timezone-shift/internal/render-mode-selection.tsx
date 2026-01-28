@@ -10,6 +10,7 @@ export function renderModeSelection(
         <p>
           You have selected {select.length} image{select.length !== 1 ? "s" : ""}
         </p>
+        <p>&nbsp;</p>
 
         <div className="mode-selection">
           <p>What do you want to do?</p>

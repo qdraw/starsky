@@ -1,6 +1,3 @@
-.modal-timezone-shift .mode-selection {
-  margin: 24px 0;
-}
 .modal-timezone-shift .mode-selection .radio-option {
   display: flex;
   align-items: flex-start;
@@ -33,22 +30,8 @@
   color: #666;
   font-size: 14px;
 }
-/* .modal-timezone-shift .offset-inputs, */
-.modal-timezone-shift .timezone-inputs {
-  margin: 20px 0;
-}
-/* .modal-timezone-shift .offset-inputs .form-row, */
-.modal-timezone-shift .timezone-inputs .form-row {
-  margin: 12px 0;
-}
-/* .modal-timezone-shift .offset-inputs .form-row label, */
-.modal-timezone-shift .timezone-inputs .form-row label {
-  display: block;
-  font-weight: 500;
-  margin-bottom: 4px;
-}
-/* .modal-timezone-shift .offset-inputs .form-row label input,
-.modal-timezone-shift .offset-inputs .form-row label select, */
+
+/* timezone shift */
 .modal-timezone-shift .timezone-inputs .form-row label input,
 .modal-timezone-shift .timezone-inputs .form-row label select {
   display: block;
@@ -59,15 +42,15 @@
   border-radius: 4px;
   font-size: 14px;
 }
-/* .modal-timezone-shift .offset-inputs .form-row label input:focus,
-.modal-timezone-shift .offset-inputs .form-row label select:focus, */
+
 .modal-timezone-shift .timezone-inputs .form-row label input:focus,
 .modal-timezone-shift .timezone-inputs .form-row label select:focus {
   outline: none;
   border-color: #0078d4;
 }
 
-.offset-inputs .form-row {
+/* Offset Inputs */
+.modal-timezone-shift .offset-inputs .form-row {
   display: inline-block;
 }
 
