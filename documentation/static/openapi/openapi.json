@@ -9023,7 +9023,7 @@
       "extensions": {},
       "unresolvedReference": false
     },
-    "/api/exif/timezones/camera-incorrect": {
+    "/api/meta-time-correct/camera-incorrect-timezones": {
       "operations": {
         "Get": {
           "tags": [
@@ -9065,7 +9065,7 @@
       "extensions": {},
       "unresolvedReference": false
     },
-    "/api/exif/timezones/system": {
+    "/api/meta-time-correct/system-timezones": {
       "operations": {
         "Get": {
           "tags": [
@@ -9076,7 +9076,39 @@
             }
           ],
           "summary": "Get list of all system timezones (moved to different place)",
-          "parameters": [],
+          "parameters": [
+            {
+              "unresolvedReference": false,
+              "name": "dateTime",
+              "in": 0,
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "format": "date-time",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            }
+          ],
           "responses": {
             "200": {
               "description": "List of system timezones",
@@ -19812,5 +19844,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "C62AB6683C242274AA0245711368FCD810478E8B465FA1215AE0F3E6B98486AE9FCBB68F6E6175C73A617ED330457CC765C8D382C66606B22C1AD2308824EFAD"
+  "hashCode": "C96070D80168BA8389557FE740F92487141ABEADC1FEFD732CA0274D1C982287F0948C472746B1DBF68AAF29400EF4A4EF8B7176CB2A1CEBD0FBBD268C9F2799"
 }
