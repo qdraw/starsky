@@ -1,12 +1,43 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { act } from "react";
+import { IArchiveProps } from "../../../interfaces/IArchiveProps";
+import { IExifStatus } from "../../../interfaces/IExifStatus";
 import * as FetchGet from "../../../shared/fetch/fetch-get";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
 import ModalTimezoneShift from "./modal-timezone-shift";
 
 describe("ModalTimezoneShift", () => {
+  const mockState = {
+    fileIndexItems: [
+      {
+        fileName: "test.jpg",
+        filePath: "/test.jpg",
+        dateTime: "2024-08-12T14:32:00",
+        colorClass: 0,
+        fileCollectionName: "test",
+        fileHash: "abc123",
+        parentDirectory: "/",
+        status: IExifStatus.Default
+      }
+    ],
+    relativeObjects: {},
+    subPath: "",
+    breadcrumb: [],
+    colorClassActiveList: [],
+    colorClassUsage: [],
+    collectionsCount: 0,
+    pageType: "Archive",
+    isReadOnly: false,
+    dateCache: 0
+  } as unknown as IArchiveProps;
+  const mockDispatch = jest.fn();
+  const mockUndoSelection = jest.fn();
+  const mockHistoryLocationSearch = "";
+
   beforeEach(() => {
-    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+    jest.spyOn(window, "scrollTo").mockImplementation(() => {});
+    mockDispatch.mockClear();
+    mockUndoSelection.mockClear();
   });
 
   it("renders when open", () => {
@@ -15,13 +46,25 @@ describe("ModalTimezoneShift", () => {
         isOpen={true}
         handleExit={() => {}}
         select={["/test.jpg"]}
-      ></ModalTimezoneShift>
+        historyLocationSearch={mockHistoryLocationSearch}
+        state={mockState}
+        dispatch={mockDispatch}
+        undoSelection={mockUndoSelection}
+      />
     );
   });
 
   it("shows mode selection initially", () => {
     const component = render(
-      <ModalTimezoneShift isOpen={true} handleExit={() => {}} select={["/test.jpg"]} />
+      <ModalTimezoneShift
+        isOpen={true}
+        handleExit={() => {}}
+        select={["/test.jpg"]}
+        historyLocationSearch={mockHistoryLocationSearch}
+        state={mockState}
+        dispatch={mockDispatch}
+        undoSelection={mockUndoSelection}
+      />
     );
 
     expect(screen.getByText(/Shift Photo Timestamps/i)).toBeTruthy();
@@ -35,6 +78,10 @@ describe("ModalTimezoneShift", () => {
         isOpen={true}
         handleExit={() => {}}
         select={["/test1.jpg", "/test2.jpg", "/test3.jpg"]}
+        historyLocationSearch={mockHistoryLocationSearch}
+        state={mockState}
+        dispatch={mockDispatch}
+        undoSelection={mockUndoSelection}
       />
     );
 
@@ -44,7 +91,15 @@ describe("ModalTimezoneShift", () => {
 
   it("switches to offset mode when radio is selected", () => {
     const component = render(
-      <ModalTimezoneShift isOpen={true} handleExit={() => {}} select={["/test.jpg"]} />
+      <ModalTimezoneShift
+        isOpen={true}
+        handleExit={() => {}}
+        select={["/test.jpg"]}
+        historyLocationSearch={mockHistoryLocationSearch}
+        state={mockState}
+        dispatch={mockDispatch}
+        undoSelection={mockUndoSelection}
+      />
     );
 
     const offsetRadio = screen.getByRole("radio", { name: /Correct incorrect camera timezone/i });
@@ -67,7 +122,15 @@ describe("ModalTimezoneShift", () => {
     });
 
     const component = render(
-      <ModalTimezoneShift isOpen={true} handleExit={() => {}} select={["/test.jpg"]} />
+      <ModalTimezoneShift
+        isOpen={true}
+        handleExit={() => {}}
+        select={["/test.jpg"]}
+        historyLocationSearch={mockHistoryLocationSearch}
+        state={mockState}
+        dispatch={mockDispatch}
+        undoSelection={mockUndoSelection}
+      />
     );
 
     const timezoneRadio = screen.getByRole("radio", { name: /I moved to a different place/i });
@@ -98,7 +161,15 @@ describe("ModalTimezoneShift", () => {
     });
 
     const component = render(
-      <ModalTimezoneShift isOpen={true} handleExit={() => {}} select={["/test.jpg"]} />
+      <ModalTimezoneShift
+        isOpen={true}
+        handleExit={() => {}}
+        select={["/test.jpg"]}
+        historyLocationSearch={mockHistoryLocationSearch}
+        state={mockState}
+        dispatch={mockDispatch}
+        undoSelection={mockUndoSelection}
+      />
     );
 
     const offsetRadio = screen.getByRole("radio", { name: /Correct incorrect camera timezone/i });
@@ -107,12 +178,8 @@ describe("ModalTimezoneShift", () => {
     const hoursInput = screen.getByLabelText(/Hours/i);
     fireEvent.change(hoursInput, { target: { value: "3" } });
 
-    const previewButton = screen.getByText(/Generate Preview/i);
-
-    await act(async () => {
-      fireEvent.click(previewButton);
-    });
-
+    // Wait for the preview to appear (since preview is generated automatically)
+    await screen.findByText(/Result:/i);
     expect(FetchPost.default).toHaveBeenCalled();
     component.unmount();
   });
@@ -120,7 +187,15 @@ describe("ModalTimezoneShift", () => {
   it("calls handleExit when Cancel is clicked", () => {
     const mockHandleExit = jest.fn();
     const component = render(
-      <ModalTimezoneShift isOpen={true} handleExit={mockHandleExit} select={["/test.jpg"]} />
+      <ModalTimezoneShift
+        isOpen={true}
+        handleExit={mockHandleExit}
+        select={["/test.jpg"]}
+        historyLocationSearch={mockHistoryLocationSearch}
+        state={mockState}
+        dispatch={mockDispatch}
+        undoSelection={mockUndoSelection}
+      />
     );
 
     const cancelButton = screen.getByText(/Cancel/i);
@@ -132,7 +207,15 @@ describe("ModalTimezoneShift", () => {
 
   it("navigates back to mode selection", () => {
     const component = render(
-      <ModalTimezoneShift isOpen={true} handleExit={() => {}} select={["/test.jpg"]} />
+      <ModalTimezoneShift
+        isOpen={true}
+        handleExit={() => {}}
+        select={["/test.jpg"]}
+        historyLocationSearch={mockHistoryLocationSearch}
+        state={mockState}
+        dispatch={mockDispatch}
+        undoSelection={mockUndoSelection}
+      />
     );
 
     const offsetRadio = screen.getByRole("radio", { name: /Correct incorrect camera timezone/i });
