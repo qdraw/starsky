@@ -5,5 +5,5 @@ namespace starsky.foundation.metaupdate.Interfaces;
 public interface IExifTimezoneDisplayListService
 {
 	List<ExifTimezoneDisplay> GetIncorrectCameraTimezonesList();
-	List<ExifTimezoneDisplay> GetMovedToDifferentPlaceTimezonesList(DateTime? dateTime);
+	List<ExifTimezoneDisplay> GetMovedToDifferentPlaceTimezonesList(DateTime dateTime);
 }

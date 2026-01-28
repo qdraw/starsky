@@ -42,17 +42,15 @@ public class ExifTimezoneDisplayListService : IExifTimezoneDisplayListService
 		return timezones;
 	}
 
-	public List<ExifTimezoneDisplay> GetMovedToDifferentPlaceTimezonesList(DateTime? dateTime)
+	public List<ExifTimezoneDisplay> GetMovedToDifferentPlaceTimezonesList(DateTime dateTime)
 	{
-		dateTime ??= DateTime.UtcNow;
-
 		// Get all system timezones with their offset calculated for the specific date
 		// This ensures DST is shown correctly: summer = DST offset, winter = standard offset
 		var grouped = TimeZoneInfo.GetSystemTimeZones()
 			.Select(tz =>
 			{
 				// Get the UTC offset for this specific datetime (DST-aware)
-				var offset = tz.GetUtcOffset(dateTime.Value);
+				var offset = tz.GetUtcOffset(dateTime);
 
 				// Format offset as +/-HH:mm
 				var sign = offset < TimeSpan.Zero ? "-" : "+";

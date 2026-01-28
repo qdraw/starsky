@@ -1128,6 +1128,23 @@ public sealed class MetaTimeCorrectControllerTest
 	}
 
 	[TestMethod]
+	public void GetMovedToDifferentPlaceTimezonesList_InvalidModelState_ReturnsBadRequest()
+	{
+		// Arrange
+		var controller = CreateController();
+		controller.ModelState.AddModelError("Key", "ErrorMessage");
+
+		// act
+		var result =
+			controller.GetMovedToDifferentPlaceTimezones(DateTime.MinValue) as
+				BadRequestObjectResult;
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.AreEqual(400, result.StatusCode);
+	}
+
+	[TestMethod]
 	public async Task PreviewCustomOffsetCorrectionAsync_ValidInput_ReturnsOkResult()
 	{
 		// Arrange
