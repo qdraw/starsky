@@ -262,8 +262,13 @@ public class MetaTimeCorrectController(
 	[ProducesResponseType(200)]
 	[HttpGet("/api/meta-time-correct/system-timezones")]
 	[Produces("application/json")]
-	public IActionResult GetMovedToDifferentPlaceTimezones(DateTime? dateTime = null)
+	public IActionResult GetMovedToDifferentPlaceTimezones(DateTime dateTime)
 	{
+		if ( !ModelState.IsValid )
+		{
+			return BadRequest(ModelNotValidError);
+		}
+
 		var timezones =
 			exifTimezoneDisplayListService.GetMovedToDifferentPlaceTimezonesList(dateTime);
 		return Ok(timezones);

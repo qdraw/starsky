@@ -1,8 +1,8 @@
-import { IArchiveProps } from "../../../interfaces/IArchiveProps";
-import { ITimezoneShiftResult } from "../../../interfaces/ITimezone";
-import FetchPost from "../../../shared/fetch/fetch-post";
-import { URLPath } from "../../../shared/url/url-path";
-import { UrlQuery } from "../../../shared/url/url-query";
+import { IArchiveProps } from "../../../../interfaces/IArchiveProps";
+import { ITimezoneShiftResult } from "../../../../interfaces/ITimezone";
+import FetchPost from "../../../../shared/fetch/fetch-post";
+import { URLPath } from "../../../../shared/url/url-path";
+import { UrlQuery } from "../../../../shared/url/url-query";
 
 export interface IOffset {
   year: number;

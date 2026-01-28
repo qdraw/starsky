@@ -1,3 +1,5 @@
+import { IFileIndexItem } from "./IFileIndexItem";
+
 export interface ITimezone {
   id: string;
   displayName: string;
@@ -24,5 +26,5 @@ export interface ITimezoneShiftResult {
   delta: string;
   warning: string;
   error: string;
-  fileIndexItem: any; // IFileIndexItem but to avoid circular dependency
+  fileIndexItem: IFileIndexItem;
 }
