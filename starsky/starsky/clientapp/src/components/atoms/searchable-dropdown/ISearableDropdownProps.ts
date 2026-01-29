@@ -39,7 +39,7 @@ export interface ISearchableDropdownProps {
    * Callback when item is selected
    * Returns the id (for objects) or the value (for strings)
    */
-  onSelect?: (value: string) => void;
+  onSelect?: (id: string, displayName: string) => void;
 
   /**
    * Class name for custom styling

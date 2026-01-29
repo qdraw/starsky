@@ -4,30 +4,42 @@ import { ITimezone } from "../../../../interfaces/ITimezone";
 export interface ITimezoneState {
   timezones: ITimezone[];
   setTimezones: React.Dispatch<React.SetStateAction<ITimezone[]>>;
-  recordedTimezone: string;
-  setRecordedTimezone: React.Dispatch<React.SetStateAction<string>>;
-  correctTimezone: string;
-  setCorrectTimezone: React.Dispatch<React.SetStateAction<string>>;
+  recordedTimezoneId: string;
+  setRecordedTimezoneId: React.Dispatch<React.SetStateAction<string>>;
+  correctTimezoneId: string;
+  setCorrectTimezoneId: React.Dispatch<React.SetStateAction<string>>;
+  recordedTimezoneDisplayName: string;
+  setRecordedTimezoneDisplayName: React.Dispatch<React.SetStateAction<string>>;
+  correctTimezoneDisplayName: string;
+  setCorrectTimezoneDisplayName: React.Dispatch<React.SetStateAction<string>>;
   reset: () => void;
 }
 
 export function useTimezoneState(): ITimezoneState {
   const [timezones, setTimezones] = useState<ITimezone[]>([]);
-  const [recordedTimezone, setRecordedTimezone] = useState("");
-  const [correctTimezone, setCorrectTimezone] = useState("");
+  const [recordedTimezoneId, setRecordedTimezoneId] = useState("");
+  const [correctTimezoneId, setCorrectTimezoneId] = useState("");
+  const [recordedTimezoneDisplayName, setRecordedTimezoneDisplayName] = useState("");
+  const [correctTimezoneDisplayName, setCorrectTimezoneDisplayName] = useState("");
 
   const reset = () => {
-    setRecordedTimezone("");
-    setCorrectTimezone("");
+    setRecordedTimezoneId("");
+    setCorrectTimezoneId("");
+    setRecordedTimezoneDisplayName("");
+    setCorrectTimezoneDisplayName("");
   };
 
   return {
     timezones,
     setTimezones,
-    recordedTimezone,
-    setRecordedTimezone,
-    correctTimezone,
-    setCorrectTimezone,
+    recordedTimezoneId,
+    setRecordedTimezoneId,
+    correctTimezoneId,
+    setCorrectTimezoneId,
+    recordedTimezoneDisplayName,
+    setRecordedTimezoneDisplayName,
+    correctTimezoneDisplayName,
+    setCorrectTimezoneDisplayName,
     reset
   };
 }

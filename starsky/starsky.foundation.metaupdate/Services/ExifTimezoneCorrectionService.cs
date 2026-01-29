@@ -162,8 +162,8 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 		return request switch
 		{
 			ExifTimezoneBasedCorrectionRequest timezoneRequest => CalculateTimezoneDelta(
-				fileIndexItem.DateTime, timezoneRequest.RecordedTimezone,
-				timezoneRequest.CorrectTimezone),
+				fileIndexItem.DateTime, timezoneRequest.RecordedTimezoneId,
+				timezoneRequest.CorrectTimezoneId),
 			ExifCustomOffsetCorrectionRequest customOffsetRequest => CalculateCustomOffsetDelta(
 				fileIndexItem.DateTime, customOffsetRequest),
 			_ => throw new ArgumentException("Invalid request type", nameof(request))
@@ -230,7 +230,7 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 					return timezoneValidation;
 				}
 
-				if ( timezoneRequest.RecordedTimezone == timezoneRequest.CorrectTimezone )
+				if ( timezoneRequest.RecordedTimezoneId == timezoneRequest.CorrectTimezoneId )
 				{
 					fileIndexItem.Status = FileIndexItem.ExifStatus.OkAndSame;
 					result.Warning =
@@ -242,7 +242,7 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 				}
 
 				result.Delta = CalculateTimezoneDelta(fileIndexItem.DateTime,
-					timezoneRequest.RecordedTimezone, timezoneRequest.CorrectTimezone);
+					timezoneRequest.RecordedTimezoneId, timezoneRequest.CorrectTimezoneId);
 				break;
 			default:
 				throw new ArgumentException("Invalid request type", nameof(request));
@@ -295,13 +295,13 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 	private static ExifTimezoneCorrectionResult ValidateTimezoneRequest(FileIndexItem fileIndexItem,
 		ExifTimezoneBasedCorrectionRequest request, ExifTimezoneCorrectionResult result)
 	{
-		if ( string.IsNullOrWhiteSpace(request.RecordedTimezone) )
+		if ( string.IsNullOrWhiteSpace(request.RecordedTimezoneId) )
 		{
 			return SetError(result, fileIndexItem, FileIndexItem.ExifStatus.OperationNotSupported,
 				"Recorded timezone is required");
 		}
 
-		if ( string.IsNullOrWhiteSpace(request.CorrectTimezone) )
+		if ( string.IsNullOrWhiteSpace(request.CorrectTimezoneId) )
 		{
 			return SetError(result, fileIndexItem, FileIndexItem.ExifStatus.OperationNotSupported,
 				"Correct timezone is required");
@@ -309,22 +309,22 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 
 		try
 		{
-			_ = TimeZoneInfo.FindSystemTimeZoneById(request.RecordedTimezone);
+			_ = TimeZoneInfo.FindSystemTimeZoneById(request.RecordedTimezoneId);
 		}
 		catch ( Exception )
 		{
 			return SetError(result, fileIndexItem, FileIndexItem.ExifStatus.OperationNotSupported,
-				$"Invalid recorded timezone: {request.RecordedTimezone}");
+				$"Invalid recorded timezone: {request.RecordedTimezoneId}");
 		}
 
 		try
 		{
-			_ = TimeZoneInfo.FindSystemTimeZoneById(request.CorrectTimezone);
+			_ = TimeZoneInfo.FindSystemTimeZoneById(request.CorrectTimezoneId);
 		}
 		catch ( Exception )
 		{
 			return SetError(result, fileIndexItem, FileIndexItem.ExifStatus.OperationNotSupported,
-				$"Invalid correct timezone: {request.CorrectTimezone}");
+				$"Invalid correct timezone: {request.CorrectTimezoneId}");
 		}
 
 		result.Success = true;

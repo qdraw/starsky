@@ -18,8 +18,8 @@ interface ExecuteShiftParams {
     second: number;
   };
   timezoneData?: {
-    recordedTimezone: string;
-    correctTimezone: string;
+    recordedTimezoneId: string;
+    correctTimezoneId: string;
   };
 }
 
@@ -51,8 +51,8 @@ export async function executeShift(
           second: offsetData?.second || 0
         })
       : JSON.stringify({
-          recordedTimezone: timezoneData?.recordedTimezone || "",
-          correctTimezone: timezoneData?.correctTimezone || ""
+          recordedTimezoneId: timezoneData?.recordedTimezoneId || "",
+          correctTimezoneId: timezoneData?.correctTimezoneId || ""
         });
 
     const url = isOffset ? new UrlQuery().UrlOffsetExecute() : new UrlQuery().UrlTimezoneExecute();

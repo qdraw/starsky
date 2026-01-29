@@ -7,8 +7,8 @@ import { UrlQuery } from "../../../../shared/url/url-query";
 export async function generateTimezonePreview(
   select: string[],
   state: IArchiveProps,
-  recordedTimezone: string,
-  correctTimezone: string,
+  recordedTimezoneId: string,
+  correctTimezoneId: string,
   setIsLoadingPreview: (value: boolean) => void,
   preview: IExifTimezoneCorrectionResultContainer,
   setPreview: (value: IExifTimezoneCorrectionResultContainer) => void,
@@ -26,8 +26,8 @@ export async function generateTimezonePreview(
     const collectionsParam = collections ? "true" : "false";
 
     const body = JSON.stringify({
-      recordedTimezone,
-      correctTimezone
+      recordedTimezoneId,
+      correctTimezoneId
     });
 
     // get MergeSelectFileIndexItem to get the full file path

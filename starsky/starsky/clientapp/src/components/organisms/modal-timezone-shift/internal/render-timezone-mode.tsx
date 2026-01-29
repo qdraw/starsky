@@ -18,7 +18,6 @@ export function renderTimezoneMode(
   handleExit: () => void,
   dispatch: React.Dispatch<ArchiveAction>
 ) {
-
   const {
     preview,
     setPreview,
@@ -30,17 +29,20 @@ export function renderTimezoneMode(
     isExecuting
   } = previewState;
 
-    const {
-    recordedTimezone, // t
-    setRecordedTimezone,
-    correctTimezone,
-    setCorrectTimezone
+  const {
+    recordedTimezoneId, // t
+    setRecordedTimezoneId,
+    correctTimezoneId,
+    setCorrectTimezoneId,
+    recordedTimezoneDisplayName,
+    setRecordedTimezoneDisplayName,
+    correctTimezoneDisplayName,
+    setCorrectTimezoneDisplayName
   } = timezoneState;
 
-      const filePathList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
-      const firstItem = state.fileIndexItems.find(x => x.filePath === filePathList[0]);
-      const firstItemDateTime = firstItem?.dateTime ?? new Date().toISOString()
-  
+  const filePathList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
+  const firstItem = state.fileIndexItems.find((x) => x.filePath === filePathList[0]);
+  const firstItemDateTime = firstItem?.dateTime ?? new Date().toISOString();
 
   return (
     <>
@@ -48,50 +50,52 @@ export function renderTimezoneMode(
       <div className="modal content--text">
         <div className="timezone-inputs">
           <div className="form-row">
-                        <label>
+            <label>
               Original city:
-            <SearchableDropdown
-              fetchResults={(city) => 
-                fetchCityTimezones(firstItemDateTime, city)}
-              placeholder="Search or select..."
-              onSelect={(value) => {
-                                  setCorrectTimezone(value);
+              <SearchableDropdown
+                fetchResults={(city) => fetchCityTimezones(firstItemDateTime, city)}
+                placeholder="Search or select..."
+                defaultValue={recordedTimezoneDisplayName}
+                onSelect={(id, displayName) => {
+                  setRecordedTimezoneId(id);
+                  setRecordedTimezoneDisplayName(displayName);
                   generateTimezonePreview(
                     select,
                     state,
-                    correctTimezone,
-                    value,
+                    id,
+                    correctTimezoneId,
                     setIsLoadingPreview,
                     preview,
                     setPreview,
                     setError
                   );
-              }}
-            />
+                }}
+              />
             </label>
           </div>
 
           <div className="form-row">
-                        <label>
+            <label>
               New city:
-            <SearchableDropdown
-  fetchResults={(city) => fetchCityTimezones(firstItemDateTime, city)}
-  placeholder="Search or select..."
-  onSelect={(value) => {
-                                  setRecordedTimezone(value);
+              <SearchableDropdown
+                fetchResults={(city) => fetchCityTimezones(firstItemDateTime, city)}
+                defaultValue={correctTimezoneDisplayName}
+                placeholder="Search or select..."
+                onSelect={(id, displayName) => {
+                  setCorrectTimezoneId(id);
+                  setCorrectTimezoneDisplayName(displayName);
                   generateTimezonePreview(
                     select,
                     state,
-                    value,
-                    correctTimezone,
+                    id,
+                    recordedTimezoneId,
                     setIsLoadingPreview,
                     preview,
                     setPreview,
                     setError
                   );
-              }}
-/>
-
+                }}
+              />
             </label>
           </div>
         </div>
@@ -106,11 +110,11 @@ export function renderTimezoneMode(
               <div className="preview-result">
                 <p>
                   <strong>Original:</strong> {preview.timezoneData[0]?.originalDateTime || "N/A"} (
-                  {recordedTimezone})
+                  {recordedTimezoneDisplayName})
                 </p>
                 <p>
                   <strong>New time:</strong> {preview.timezoneData[0]?.correctedDateTime || "N/A"} (
-                  {correctTimezone})
+                  {correctTimezoneDisplayName})
                 </p>
                 <p>
                   <strong>Time shift:</strong> {preview.timezoneData[0]?.delta || "N/A"} (DST-aware)
@@ -141,8 +145,8 @@ export function renderTimezoneMode(
                   state,
                   isOffset: false,
                   timezoneData: {
-                    recordedTimezone,
-                    correctTimezone
+                    recordedTimezoneId,
+                    correctTimezoneId
                   }
                 },
                 setIsExecuting,

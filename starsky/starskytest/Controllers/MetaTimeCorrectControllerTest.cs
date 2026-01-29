@@ -80,7 +80,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -136,7 +136,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -160,7 +160,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var controller = CreateController();
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -183,7 +183,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var controller = CreateController();
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -218,7 +218,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -260,7 +260,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -303,8 +303,8 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "Europe/Amsterdam", // UTC+1 (after DST)
-			CorrectTimezone = "Europe/Amsterdam" // UTC+2 (during DST)
+			RecordedTimezoneId = "Europe/Amsterdam", // UTC+1 (after DST)
+			CorrectTimezoneId = "Europe/Amsterdam" // UTC+2 (during DST)
 		};
 
 		// Act
@@ -348,7 +348,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "Europe/Amsterdam", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "Europe/Amsterdam", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -389,7 +389,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -424,7 +424,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "InvalidTZ", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "InvalidTZ", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -465,7 +465,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "Europe/Amsterdam", CorrectTimezone = "UTC"
+			RecordedTimezoneId = "Europe/Amsterdam", CorrectTimezoneId = "UTC"
 		};
 
 		// Act
@@ -489,7 +489,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var controller = CreateController();
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -528,7 +528,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -581,7 +581,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -606,7 +606,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var controller = CreateController();
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -629,7 +629,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var controller = CreateController();
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -652,7 +652,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var controller = CreateController();
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -677,7 +677,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -713,7 +713,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -758,7 +758,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -802,7 +802,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "Europe/Amsterdam", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "Europe/Amsterdam", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -845,7 +845,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "Europe/Amsterdam", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "Europe/Amsterdam", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -887,7 +887,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -923,7 +923,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "InvalidTZ", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "InvalidTZ", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -964,7 +964,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "Europe/Amsterdam", CorrectTimezone = "UTC"
+			RecordedTimezoneId = "Europe/Amsterdam", CorrectTimezoneId = "UTC"
 		};
 
 		// Act
@@ -1006,7 +1006,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -1058,7 +1058,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act

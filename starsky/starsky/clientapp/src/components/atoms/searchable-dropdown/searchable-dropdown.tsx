@@ -77,7 +77,10 @@ const SearchableDropdown: FunctionComponent<ISearchableDropdownProps> = ({
           if (results.length > 0) {
             handleSelectItem(results[selectedIndex]);
           } else {
-            handleSelectItem({ id: defaultItems[selectedIndex].value, displayName: defaultItems[selectedIndex].label });
+            handleSelectItem({
+              id: defaultItems[selectedIndex].value,
+              displayName: defaultItems[selectedIndex].label
+            });
           }
         }
         break;
@@ -95,7 +98,7 @@ const SearchableDropdown: FunctionComponent<ISearchableDropdownProps> = ({
   };
 
   const getAltText = (item: DropdownResult): string => {
-    return typeof item === "string" ? "" : item.altText ?? "" ;
+    return typeof item === "string" ? "" : (item.altText ?? "");
   };
 
   const getSelectValue = (item: DropdownResult): string => {
@@ -108,7 +111,7 @@ const SearchableDropdown: FunctionComponent<ISearchableDropdownProps> = ({
     setQuery(displayText);
     setIsOpen(false);
     setSelectedIndex(-1);
-    onSelect?.(selectValue);
+    onSelect?.(selectValue, displayText);
   };
 
   const handleFormSubmit = (e: FormEvent) => {
@@ -117,15 +120,21 @@ const SearchableDropdown: FunctionComponent<ISearchableDropdownProps> = ({
       if (results.length > 0) {
         handleSelectItem(results[selectedIndex]);
       } else {
-        handleSelectItem({ id: defaultItems[selectedIndex].value, displayName: defaultItems[selectedIndex].label });
+        handleSelectItem({
+          id: defaultItems[selectedIndex].value,
+          displayName: defaultItems[selectedIndex].label
+        });
       }
     } else if (query.trim()) {
-      onSelect?.(query);
+      onSelect?.(query, "");
       setIsOpen(false);
     }
   };
 
-  const displayItems = results.length > 0 ? results : defaultItems.map((item) => ({ id: item.value, displayName: item.label }));
+  const displayItems =
+    results.length > 0
+      ? results
+      : defaultItems.map((item) => ({ id: item.value, displayName: item.label }));
 
   return (
     <div
@@ -167,15 +176,13 @@ const SearchableDropdown: FunctionComponent<ISearchableDropdownProps> = ({
                 data-test={`searchable-dropdown-item-${itemId}`}
               >
                 <button
-                  type="button" 
+                  type="button"
                   className="searchable-dropdown__button"
                   onClick={() => handleSelectItem(item)}
                   onMouseEnter={() => setSelectedIndex(index)}
                 >
                   <span>{displayText}</span>
-                  {altText && (
-                    <span className="searchable-dropdown__alt-text" style={{ display: "block", fontSize: "12px", color: "#888", marginTop: "2px" }}>{altText}</span>
-                  )}
+                  {altText && <span className="searchable-dropdown__alt-text">{altText}</span>}
                 </button>
               </li>
             );
