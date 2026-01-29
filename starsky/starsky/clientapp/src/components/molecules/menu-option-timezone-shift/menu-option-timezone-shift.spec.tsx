@@ -30,7 +30,8 @@ describe("MenuOptionTimezoneShift", () => {
   function mockModal() {
     modalSpy = jest
       .spyOn(ModalTimezoneShift, "default")
-      .mockImplementationOnce(() => <div data-testid="modal-timezone-shift">Modal</div>);
+      .mockReset()
+      .mockImplementationOnce(() => <div data-test="modal-timezone-shift">Modal</div>);
   }
 
   it("should not show the modal initially", () => {
@@ -41,18 +42,20 @@ describe("MenuOptionTimezoneShift", () => {
     component.unmount();
   });
 
-  xit("should open the modal when the button is clicked", () => {
+  it("should open the modal when the button is clicked", () => {
     mockModal();
     const component = renderComponent();
 
     fireEvent.click(screen.getByTestId("timezone-shift"));
     expect(modalSpy).toHaveBeenCalledTimes(1);
 
-    // Wait for modal to appear
-    return screen.findByTestId("modal-timezone-shift").then((el) => {
-      expect(el).toBeTruthy();
-      component.unmount();
-    });
+    // Modal should appear synchronously
+    const el = screen
+      .getByTestId("timezone-shift")
+      .closest("div")!
+      .querySelector('[data-test="modal-timezone-shift"]');
+    expect(el).toBeTruthy();
+    component.unmount();
   });
 
   it("should close the modal when the handleExit function is called", () => {

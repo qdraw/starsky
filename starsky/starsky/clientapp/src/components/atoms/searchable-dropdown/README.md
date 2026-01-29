@@ -1,4 +1,3 @@
-
 # SearchableDropdown Component
 
 A generic, reusable searchable dropdown atom component that fetches results from a backend API. Supports both simple string arrays and object arrays with id/displayName from the backend.
@@ -63,16 +62,16 @@ A generic, reusable searchable dropdown atom component that fetches results from
 
 ### `ISearchableDropdownProps`
 
-| Prop | Type | Required | Default | Description |
-|------|------|----------|---------|-------------|
-| `fetchResults` | `(query: string) => Promise<string[] \| {id: string, displayName: string}[]>` | Yes | - | Function to fetch results from backend. Can return array of strings or array of objects. |
-| `defaultItems` | `Array<{ label: string; value: string }>` | No | `[]` | Default items shown when no search query is entered. |
-| `placeholder` | `string` | No | `"Search..."` | Placeholder text for the input field. |
-| `defaultValue` | `string` | No | `""` | Default selected value. |
-| `maxResults` | `number` | No | `10` | Maximum number of results to display. |
-| `onSelect` | `(value: string) => void` | No | - | Callback function when an item is selected. Returns the id (for objects) or the value (for strings). |
-| `className` | `string` | No | `""` | Additional CSS class name for custom styling. |
-| `isLoading` | `boolean` | No | `false` | Loading state (can be controlled from parent if needed). |
+| Prop           | Type                                                                          | Required | Default       | Description                                                                                          |
+| -------------- | ----------------------------------------------------------------------------- | -------- | ------------- | ---------------------------------------------------------------------------------------------------- |
+| `fetchResults` | `(query: string) => Promise<string[] \| {id: string, displayName: string}[]>` | Yes      | -             | Function to fetch results from backend. Can return array of strings or array of objects.             |
+| `defaultItems` | `Array<{ label: string; value: string }>`                                     | No       | `[]`          | Default items shown when no search query is entered.                                                 |
+| `placeholder`  | `string`                                                                      | No       | `"Search..."` | Placeholder text for the input field.                                                                |
+| `defaultValue` | `string`                                                                      | No       | `""`          | Default selected value.                                                                              |
+| `maxResults`   | `number`                                                                      | No       | `10`          | Maximum number of results to display.                                                                |
+| `onSelect`     | `(value: string) => void`                                                     | No       | -             | Callback function when an item is selected. Returns the id (for objects) or the value (for strings). |
+| `className`    | `string`                                                                      | No       | `""`          | Additional CSS class name for custom styling.                                                        |
+| `isLoading`    | `boolean`                                                                     | No       | `false`       | Loading state (can be controlled from parent if needed).                                             |
 
 ## Keyboard Navigation
 
@@ -84,18 +83,23 @@ A generic, reusable searchable dropdown atom component that fetches results from
 ## Features Explained
 
 ### Debounced Search
+
 The component automatically debounces search requests by 300ms to avoid excessive API calls while typing.
 
 ### Click Outside Detection
+
 When the user clicks outside the dropdown, it automatically closes.
 
 ### Loading State
+
 Shows a loading indicator (`...`) while fetching results from the backend.
 
 ### No Results Message
+
 Displays a "No results found" message when search returns no items.
 
 ### Mouse & Keyboard Integration
+
 Users can navigate items using both mouse (hover/click) and keyboard (arrow keys/enter).
 
 ## Styling
@@ -118,7 +122,6 @@ The component comes with default styles in `searchable-dropdown.css`. You can cu
 .searchable-dropdown__button /* Item button */
 .searchable-dropdown__no-results /* No results message */
 ```
-
 
 ## Backend API Integration
 
@@ -149,6 +152,7 @@ npm test -- searchable-dropdown.spec.tsx
 ```
 
 Tests cover:
+
 - Rendering
 - User interactions (typing, clicking, keyboard navigation)
 - API integration

@@ -1,3 +1,4 @@
+import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { IBatchRenameItem } from "../../../interfaces/IBatchRenameItem";
 import { IConnectionDefault, newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
@@ -18,7 +19,7 @@ const baseProps: IModalBatchRenameProps = {
   handleExit: mockHandleExit,
   select: ["/file1.jpg"],
   historyLocationSearch: "",
-  state: { fileIndexItems: [] } as any,
+  state: { fileIndexItems: [] } as unknown as IArchiveProps,
   dispatch: mockDispatch,
   undoSelection: mockUndoSelection
 };

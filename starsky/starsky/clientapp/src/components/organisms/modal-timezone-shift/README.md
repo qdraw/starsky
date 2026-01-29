@@ -226,6 +226,7 @@ export interface ITimezoneShiftResult {
 ## Preview Strategy
 
 The preview feature uses a **representative sample** approach:
+
 - Only the first selected file is used for preview generation
 - This prevents unnecessary server load when processing many files
 - The preview shows what will happen to all files with similar characteristics
@@ -233,6 +234,7 @@ The preview feature uses a **representative sample** approach:
 ## Navigation
 
 Users can navigate back and forth between modes without losing input:
+
 - "Back" button returns to mode selection
 - State is preserved when switching modes
 - Preview is cleared when changing modes
@@ -240,6 +242,7 @@ Users can navigate back and forth between modes without losing input:
 ## Styling
 
 The modal uses a clean, step-by-step interface:
+
 - Clear headers for each mode
 - Radio buttons for mode selection
 - Number inputs for offset values

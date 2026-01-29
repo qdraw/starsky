@@ -100,7 +100,7 @@ export function renderOffsetMode(
                 type="number"
                 value={offsetYears}
                 onChange={(e) => {
-                  const value = parseInt(e.target.value) || 0;
+                  const value = Number.parseInt(e.target.value) || 0;
                   setOffsetYears(value);
                   handleOffsetChange("year", value);
                 }}
@@ -116,7 +116,7 @@ export function renderOffsetMode(
                 type="number"
                 value={offsetMonths}
                 onChange={(e) => {
-                  const value = parseInt(e.target.value) || 0;
+                  const value = Number.parseInt(e.target.value) || 0;
                   setOffsetMonths(value);
                   handleOffsetChange("month", value);
                 }}
@@ -132,7 +132,7 @@ export function renderOffsetMode(
                 type="number"
                 value={offsetDays}
                 onChange={(e) => {
-                  const value = parseInt(e.target.value) || 0;
+                  const value = Number.parseInt(e.target.value) || 0;
                   setOffsetDays(value);
                   handleOffsetChange("day", value);
                 }}
@@ -148,7 +148,7 @@ export function renderOffsetMode(
                 className="form-control"
                 value={offsetHours}
                 onChange={(e) => {
-                  const value = parseInt(e.target.value) || 0;
+                  const value = Number.parseInt(e.target.value) || 0;
                   setOffsetHours(value);
                   handleOffsetChange("hour", value);
                 }}
@@ -164,7 +164,7 @@ export function renderOffsetMode(
                 className="form-control"
                 value={offsetMinutes}
                 onChange={(e) => {
-                  const value = parseInt(e.target.value) || 0;
+                  const value = Number.parseInt(e.target.value) || 0;
                   setOffsetMinutes(value);
                   handleOffsetChange("minute", value);
                 }}
@@ -180,7 +180,7 @@ export function renderOffsetMode(
                 value={offsetSeconds}
                 className="form-control"
                 onChange={(e) => {
-                  const value = parseInt(e.target.value) || 0;
+                  const value = Number.parseInt(e.target.value) || 0;
                   setOffsetSeconds(value);
                   handleOffsetChange("second", value);
                 }}
