@@ -1084,6 +1084,11 @@
     "nl": "Selecteer een patroon om een voorbeeld te zien",
     "de": "Wählen Sie ein Muster, um eine Vorschau zu sehen"
   },
+  "MessageShiftPhotoTimestamps": {
+    "en": "Shift photo timestamps",
+    "nl": "Verschuif fototijdstempels",
+    "de": "Foto-Zeitstempel verschieben"
+  },
   "temp1": {
     "en": ".",
     "nl": ".",
