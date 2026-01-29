@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
@@ -81,6 +82,11 @@ public class FakeIStorage : IStorage
 	public bool IsFileReady(string path)
 	{
 		return true;
+	}
+
+	public IAsyncEnumerable<string> ReadLinesAsync(string path, CancellationToken cancellationToken)
+	{
+		throw new NotSupportedException();
 	}
 
 	public bool ExistFile(string path)

@@ -27,8 +27,7 @@ public class MetaTimeCorrectController(
 	IExifTimezoneCorrectionService exifTimezoneCorrectionService,
 	IUpdateBackgroundTaskQueue queue,
 	IWebLogger logger,
-	IServiceScopeFactory scopeFactory,
-	IExifTimezoneDisplayListService exifTimezoneDisplayListService)
+	IServiceScopeFactory scopeFactory)
 	: Controller
 {
 	private const string ModelNotValidError = "Model is not valid";
@@ -236,26 +235,5 @@ public class MetaTimeCorrectController(
 
 		await realtimeConnectionsService.NotificationToAllAsync(webSocketResponse,
 			CancellationToken.None);
-	}
-
-	/// <summary>
-	///     Get list of all system timezones (moved to different place)
-	/// </summary>
-	/// <returns>List of all system timezones including DST-aware zones</returns>
-	/// <response code="200">List of system timezones</response>
-	/// <response code="401">User unauthorized</response>
-	[ProducesResponseType(200)]
-	[HttpGet("/api/meta-time-correct/system-timezones")]
-	[Produces("application/json")]
-	public IActionResult GetMovedToDifferentPlaceTimezones(DateTime dateTime, string query)
-	{
-		if ( !ModelState.IsValid )
-		{
-			return BadRequest(ModelNotValidError);
-		}
-
-		var timezones =
-			exifTimezoneDisplayListService.GetMovedToDifferentPlaceTimezonesList(dateTime, query);
-		return Ok(timezones);
 	}
 }

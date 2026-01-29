@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,9 +10,7 @@ using starsky.feature.realtime.Interface;
 using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.metaupdate.Models;
-using starsky.foundation.metaupdate.Services;
 using starsky.foundation.platform.Interfaces;
-using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.worker.Interfaces;
 using starskytest.FakeMocks;
 
@@ -47,11 +44,7 @@ public sealed class MetaTimeCorrectControllerTest
 			timezoneService,
 			queue,
 			logger,
-			scopeFactory,
-			new ExifTimezoneDisplayListService())
-		{
-			ControllerContext = { HttpContext = new DefaultHttpContext() }
-		};
+			scopeFactory) { ControllerContext = { HttpContext = new DefaultHttpContext() } };
 
 		return controller;
 	}
