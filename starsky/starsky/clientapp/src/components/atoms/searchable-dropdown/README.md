@@ -1,6 +1,7 @@
+
 # SearchableDropdown Component
 
-A generic, reusable searchable dropdown atom component that fetches results from a backend API.
+A generic, reusable searchable dropdown atom component that fetches results from a backend API. Supports both simple string arrays and object arrays with id/displayName from the backend.
 
 ## Features
 
@@ -11,29 +12,36 @@ A generic, reusable searchable dropdown atom component that fetches results from
 - 📋 Default items when no search query
 - ⏳ Loading indicator
 - 🎨 Fully styled and customizable
+- 🆗 Accepts both `["Banana"]` and `[{ id: "banana", displayName: "Banana" }]` as backend results
 
 ## Usage
 
-### Basic Example
+### Example 1: Simple String Results
 
 ```tsx
-import SearchableDropdown from "@/components/atoms/searchable-dropdown/searchable-dropdown";
+<SearchableDropdown
+  fetchResults={async (query) => {
+    // Returns ["Banana", "Apple"]
+    const response = await fetch(`/api/fruits?q=${query}`);
+    return response.json();
+  }}
+  onSelect={(value) => console.log(value)} // value is "Banana"
+  placeholder="Search fruits..."
+/>
+```
 
-const MyComponent = () => {
-  const fetchResults = async (query: string) => {
-    const response = await fetch(`/api/search?q=${query}`);
-    const data = await response.json();
-    return data.results; // Must return string[]
-  };
+### Example 2: Object Results
 
-  return (
-    <SearchableDropdown
-      fetchResults={fetchResults}
-      placeholder="Search items..."
-      onSelect={(value) => console.log("Selected:", value)}
-    />
-  );
-};
+```tsx
+<SearchableDropdown
+  fetchResults={async (query) => {
+    // Returns [{ id: "banana", displayName: "Banana" }]
+    const response = await fetch(`/api/fruits?q=${query}`);
+    return response.json();
+  }}
+  onSelect={(id) => console.log(id)} // id is "banana"
+  placeholder="Search fruits..."
+/>
 ```
 
 ### With Default Items
@@ -51,32 +59,18 @@ const MyComponent = () => {
 />
 ```
 
-### With Custom Configuration
-
-```tsx
-<SearchableDropdown
-  fetchResults={fetchResults}
-  placeholder="Search products..."
-  defaultValue="Apple"
-  maxResults={8}
-  isLoading={false}
-  className="custom-dropdown-class"
-  onSelect={(value) => handleSelection(value)}
-/>
-```
-
 ## Props
 
 ### `ISearchableDropdownProps`
 
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
-| `fetchResults` | `(query: string) => Promise<string[]>` | Yes | - | Function to fetch results from backend. Takes search query and returns array of options. |
+| `fetchResults` | `(query: string) => Promise<string[] \| {id: string, displayName: string}[]>` | Yes | - | Function to fetch results from backend. Can return array of strings or array of objects. |
 | `defaultItems` | `Array<{ label: string; value: string }>` | No | `[]` | Default items shown when no search query is entered. |
 | `placeholder` | `string` | No | `"Search..."` | Placeholder text for the input field. |
 | `defaultValue` | `string` | No | `""` | Default selected value. |
 | `maxResults` | `number` | No | `10` | Maximum number of results to display. |
-| `onSelect` | `(value: string) => void` | No | - | Callback function when an item is selected. |
+| `onSelect` | `(value: string) => void` | No | - | Callback function when an item is selected. Returns the id (for objects) or the value (for strings). |
 | `className` | `string` | No | `""` | Additional CSS class name for custom styling. |
 | `isLoading` | `boolean` | No | `false` | Loading state (can be controlled from parent if needed). |
 
@@ -125,25 +119,24 @@ The component comes with default styles in `searchable-dropdown.css`. You can cu
 .searchable-dropdown__no-results /* No results message */
 ```
 
+
 ## Backend API Integration
 
-The `fetchResults` function should return a Promise that resolves to an array of strings:
+The `fetchResults` function can return either a string array or an array of objects with `id` and `displayName`:
 
 ```tsx
-// Example with fetch
+// Example 1: Return array of strings
 const fetchResults = async (query: string) => {
   const response = await fetch(`/api/items?search=${encodeURIComponent(query)}`);
   if (!response.ok) throw new Error("Failed to fetch");
-  const data = await response.json();
-  return data.items; // Array of strings
+  return await response.json(); // ["Banana", "Apple"]
 };
 
-// Example with axios
-import axios from "axios";
-
+// Example 2: Return array of objects
 const fetchResults = async (query: string) => {
-  const { data } = await axios.get("/api/items", { params: { search: query } });
-  return data.items;
+  const response = await fetch(`/api/items?search=${encodeURIComponent(query)}`);
+  if (!response.ok) throw new Error("Failed to fetch");
+  return await response.json(); // [{ id: "banana", displayName: "Banana" }]
 };
 ```
 

@@ -473,6 +473,11 @@ namespace starsky.foundation.database.Migrations
                     b.Property<long>("Population")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Province")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("TimeZoneId")
                         .IsRequired()
                         .HasMaxLength(40)

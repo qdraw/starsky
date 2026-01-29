@@ -33,7 +33,8 @@ namespace starsky.foundation.database.Migrations
                     Elevation = table.Column<int>(type: "INTEGER", nullable: true),
                     Dem = table.Column<int>(type: "INTEGER", nullable: false),
                     TimeZoneId = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
-                    ModificationDate = table.Column<DateOnly>(type: "TEXT", nullable: false)
+                    ModificationDate = table.Column<DateOnly>(type: "TEXT", nullable: false),
+                    Province = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false)
                 },
                 constraints: table =>
                 {

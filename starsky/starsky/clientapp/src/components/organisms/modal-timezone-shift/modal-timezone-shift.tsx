@@ -3,14 +3,12 @@ import { ArchiveAction } from "../../../contexts/archive-context";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import Modal from "../../atoms/modal/modal";
 import {
-  useLoadTimezones,
   useOffsetState,
   usePreviewState,
   useResetOnClose,
   useShiftMode,
   useTimezoneState
 } from "./hooks";
-import { loadTimezones } from "./internal/load-timezones";
 import { renderModeSelection } from "./internal/render-mode-selection";
 import { renderOffsetMode } from "./internal/render-offset-mode";
 import { renderTimezoneMode } from "./internal/render-timezone-mode";
@@ -45,12 +43,12 @@ const ModalTimezoneShift: React.FunctionComponent<IModalTimezoneShiftProps> = ({
   // Preview and execution state
   const previewState = usePreviewState();
 
-  // Load timezones when entering timezone mode
-  const handleLoadTimezones = useCallback(() => {
-    loadTimezones(timezoneState, previewState.setError, state.fileIndexItems[0].dateTime ?? "");
-  }, []);
+  // // Load timezones when entering timezone mode
+  // const handleLoadTimezones = useCallback(() => {
+  //   loadTimezones(timezoneState, previewState.setError, state.fileIndexItems[0].dateTime ?? "");
+  // }, []);
 
-  useLoadTimezones(currentStep, timezoneState.timezones.length === 0, handleLoadTimezones);
+  // useLoadTimezones(currentStep, timezoneState.timezones.length === 0, handleLoadTimezones);
 
   // Handle mode selection with state reset
   const handleModeSelectWrapped = (mode: "offset" | "timezone") => {

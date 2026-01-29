@@ -500,6 +500,10 @@ export class UrlQuery {
     return this.prefix + "/api/meta-time-correct/offset-execute";
   }
 
+  public UrlGeoLocationNameCityTimezone(dateTime: string, city: string): string {
+    return `${this.prefix}/api/geo-location-name/city-timezone?dateTime=${encodeURIComponent(dateTime)}&city=${encodeURIComponent(city)}`;
+  }
+
   private urlReplacePath(input: string): string {
     const output = input.replaceAll("#", "");
     return output.replaceAll("+", "%2B");

@@ -29,7 +29,8 @@ public class GeoNamesCitiesQuery(
 		{
 			return await GetItemLocal(dbContext);
 		}
-		catch ( ObjectDisposedException )
+		// InvalidOperationException can also be disposed (ObjectDisposedException)
+		catch ( InvalidOperationException )
 		{
 			var context = new InjectServiceScope(scopeFactory).Context();
 			return await GetItemLocal(context);
@@ -71,7 +72,23 @@ public class GeoNamesCitiesQuery(
 			return [];
 		}
 
-		var query = dbContext.GeoNameCities.AsNoTracking();
+		try
+		{
+			return await SearchGetPredicate(dbContext, search, fields);
+		}
+		// InvalidOperationException can also be disposed (ObjectDisposedException)
+		catch ( InvalidOperationException )
+		{
+			var context = new InjectServiceScope(scopeFactory).Context();
+			return await SearchGetPredicate(context, search, fields);
+		}
+	}
+
+	private static async Task<List<GeoNameCity>> SearchGetPredicate(ApplicationDbContext context,
+		string search,
+		string[] fields)
+	{
+		var query = context.GeoNameCities.AsNoTracking();
 
 		var parameter = System.Linq.Expressions.Expression.Parameter(typeof(GeoNameCity), "x");
 		System.Linq.Expressions.Expression? predicate = null;
@@ -105,6 +122,7 @@ public class GeoNamesCitiesQuery(
 		{
 			return [];
 		}
+
 
 		var lambda =
 			System.Linq.Expressions.Expression

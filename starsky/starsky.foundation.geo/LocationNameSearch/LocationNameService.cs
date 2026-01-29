@@ -31,8 +31,12 @@ public class LocationNameService : ILocationNameService
 			return [];
 		}
 
-		return await _query.Search(cityName, nameof(GeoNameCity.Name),
-			nameof(GeoNameCity.AsciiName));
+		return
+		[
+			..( await _query.Search(cityName, nameof(GeoNameCity.Name),
+				nameof(GeoNameCity.AsciiName)) )
+			.OrderByDescending(x => x.Population)
+		];
 	}
 
 	public async Task<List<CityTimezoneResult>> SearchCityTimezone(string dateTime,
@@ -43,8 +47,11 @@ public class LocationNameService : ILocationNameService
 			return [];
 		}
 
-		var results = await _query.Search(cityName, nameof(GeoNameCity.Name),
-			nameof(GeoNameCity.AsciiName));
+		var results = ( await _query.Search(cityName, nameof(GeoNameCity.Name),
+				nameof(GeoNameCity.AsciiName)) )
+			.OrderByDescending(x => x.Population)
+			.ToList();
+
 		var finalResults = new List<CityTimezoneResult>();
 		foreach ( var result in results )
 		{
@@ -59,7 +66,7 @@ public class LocationNameService : ILocationNameService
 				Id = result.TimeZoneId,
 				DisplayName =
 					$"UTC({offset.Hours:D2}:{offset.Minutes:D2}) " +
-					$"{result.Name}, {locationCountry}, {dstText}"
+					$"{result.Name}, {locationCountry} {result.Province}, {dstText}"
 			});
 		}
 

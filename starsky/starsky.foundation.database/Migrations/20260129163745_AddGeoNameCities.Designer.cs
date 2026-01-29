@@ -12,7 +12,7 @@ using starsky.foundation.database.Data;
 namespace starsky.foundation.database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260129131419_AddGeoNameCities")]
+    [Migration("20260129163745_AddGeoNameCities")]
     partial class AddGeoNameCities
     {
         /// <inheritdoc />
@@ -475,6 +475,11 @@ namespace starsky.foundation.database.Migrations
 
                     b.Property<long>("Population")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Province")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("TimeZoneId")
                         .IsRequired()

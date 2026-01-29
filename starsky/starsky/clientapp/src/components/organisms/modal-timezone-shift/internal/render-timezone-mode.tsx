@@ -1,9 +1,12 @@
 import { ArchiveAction } from "../../../../contexts/archive-context";
 import { IArchiveProps } from "../../../../interfaces/IArchiveProps";
+import { URLPath } from "../../../../shared/url/url-path";
 import Preloader from "../../../atoms/preloader/preloader";
+import SearchableDropdown from "../../../atoms/searchable-dropdown";
 import { IPreviewState } from "../hooks/use-preview-state";
 import { ITimezoneState } from "../hooks/use-timezone-state";
 import { executeShift } from "./execute-shift";
+import { fetchCityTimezones } from "./fetch-city-timezones";
 import { generateTimezonePreview } from "./generate-timezone-preview";
 
 export function renderTimezoneMode(
@@ -15,13 +18,6 @@ export function renderTimezoneMode(
   handleExit: () => void,
   dispatch: React.Dispatch<ArchiveAction>
 ) {
-  const {
-    timezones,
-    recordedTimezone, // t
-    setRecordedTimezone,
-    correctTimezone,
-    setCorrectTimezone
-  } = timezoneState;
 
   const {
     preview,
@@ -34,64 +30,68 @@ export function renderTimezoneMode(
     isExecuting
   } = previewState;
 
+    const {
+    recordedTimezone, // t
+    setRecordedTimezone,
+    correctTimezone,
+    setCorrectTimezone
+  } = timezoneState;
+
+      const filePathList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
+      const firstItem = state.fileIndexItems.find(x => x.filePath === filePathList[0]);
+      const firstItemDateTime = firstItem?.dateTime ?? new Date().toISOString()
+  
+
   return (
     <>
       <div className="modal content--subheader">Change Location</div>
       <div className="modal content--text">
         <div className="timezone-inputs">
           <div className="form-row">
-            <label>
-              Original location:
-              <select
-                value={recordedTimezone}
-                onChange={(e) => {
-                  setRecordedTimezone(e.target.value);
+                        <label>
+              Original city:
+            <SearchableDropdown
+              fetchResults={(city) => 
+                fetchCityTimezones(firstItemDateTime, city)}
+              placeholder="Search or select..."
+              onSelect={(value) => {
+                                  setCorrectTimezone(value);
                   generateTimezonePreview(
                     select,
                     state,
-                    e.target.value,
+                    correctTimezone,
+                    value,
+                    setIsLoadingPreview,
+                    preview,
+                    setPreview,
+                    setError
+                  );
+              }}
+            />
+            </label>
+          </div>
+
+          <div className="form-row">
+                        <label>
+              New city:
+            <SearchableDropdown
+  fetchResults={(city) => fetchCityTimezones(firstItemDateTime, city)}
+  placeholder="Search or select..."
+  onSelect={(value) => {
+                                  setRecordedTimezone(value);
+                  generateTimezonePreview(
+                    select,
+                    state,
+                    value,
                     correctTimezone,
                     setIsLoadingPreview,
                     preview,
                     setPreview,
                     setError
                   );
-                }}
-              >
-                {timezones.map((tz) => (
-                  <option key={tz.id} value={tz.id}>
-                    {tz.displayName}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
+              }}
+/>
 
-          <div className="form-row">
-            <label>
-              New location:
-              <select
-                value={correctTimezone}
-                onChange={(e) => {
-                  setCorrectTimezone(e.target.value);
-                  generateTimezonePreview(
-                    select,
-                    state,
-                    recordedTimezone,
-                    e.target.value,
-                    setIsLoadingPreview,
-                    preview,
-                    setPreview,
-                    setError
-                  );
-                }}
-              >
-                {timezones.map((tz) => (
-                  <option key={tz.id} value={tz.id}>
-                    {tz.displayName}
-                  </option>
-                ))}
-              </select>
             </label>
           </div>
         </div>

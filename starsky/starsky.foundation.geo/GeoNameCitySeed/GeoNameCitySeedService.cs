@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.GeoNamesCities.Interfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -12,40 +13,54 @@ using starsky.foundation.storage.Storage;
 namespace starsky.foundation.geo.GeoNameCitySeed;
 
 [Service(typeof(IGeoNameCitySeedService), InjectionLifetime = InjectionLifetime.Scoped)]
-public class GeoNameCitySeedService : IGeoNameCitySeedService
+public class GeoNameCitySeedService(
+	ISelectorStorage selectorStorage,
+	AppSettings appSettings,
+	IGeoFileDownload geoFileDownload,
+	IGeoNamesCitiesQuery query,
+	IMemoryCache? memoryCache)
+	: IGeoNameCitySeedService
 {
-	private readonly IStorage _hostStorage;
-	private readonly AppSettings _appSettings;
-	private readonly IGeoFileDownload _geoFileDownload;
-	private readonly IGeoNamesCitiesQuery _query;
+	private readonly IStorage _hostStorage =
+		selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 
-	private string GeoNamesPath()
+	private string GeoCountryNamesPath()
 	{
-		return Path.Combine(_appSettings.DependenciesFolder, $"{GeoFileDownload.CountryName}.txt");
+		return Path.Combine(appSettings.DependenciesFolder, $"{GeoFileDownload.CountryName}.txt");
 	}
 
-	public GeoNameCitySeedService(ISelectorStorage selectorStorage,
-		AppSettings appSettings, IGeoFileDownload geoFileDownload, IGeoNamesCitiesQuery query)
+	private string GeoAdmin1CodesAsciiNamesPath()
 	{
-		_hostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
-		_appSettings = appSettings;
-		_geoFileDownload = geoFileDownload;
-		_query = query;
+		return Path.Combine(appSettings.DependenciesFolder,
+			$"{GeoFileDownload.Admin1CodesAscii}.txt");
 	}
 
 	private async Task<bool> Setup()
 	{
-		if ( _appSettings.GeoFilesSkipDownloadOnStartup != true )
+		const string cacheKey = "GeoNameCitySeedService.Setup";
+		if ( memoryCache != null &&
+		     memoryCache.TryGetValue(cacheKey, out bool cached) && cached )
 		{
-			await _geoFileDownload.DownloadAsync();
+			return true;
 		}
 
-		if ( _hostStorage.ExistFile(GeoNamesPath()) )
+		if ( appSettings.GeoFilesSkipDownloadOnStartup != true )
 		{
-			return await CheckIfFirstLineExists();
+			await geoFileDownload.DownloadAsync();
 		}
 
-		return false;
+		if ( !_hostStorage.ExistFile(GeoCountryNamesPath()) )
+		{
+			return false;
+		}
+
+		var result = await CheckIfFirstLineExists();
+		if ( result )
+		{
+			memoryCache?.Set(cacheKey, true);
+		}
+
+		return result;
 	}
 
 	public async Task<bool> Seed()
@@ -56,11 +71,11 @@ public class GeoNameCitySeedService : IGeoNameCitySeedService
 		}
 
 
-		await foreach ( var line in _hostStorage.ReadLinesAsync(GeoNamesPath(),
+		await foreach ( var line in _hostStorage.ReadLinesAsync(GeoCountryNamesPath(),
 			               CancellationToken.None) )
 		{
-			var city = ParseCity(line);
-			await _query.AddItem(city);
+			var city = await ParseCityAsync(line);
+			await query.AddItem(city);
 		}
 
 		return true;
@@ -69,7 +84,7 @@ public class GeoNameCitySeedService : IGeoNameCitySeedService
 	private async Task<bool> CheckIfFirstLineExists()
 	{
 		var firstLine = string.Empty;
-		await foreach ( var line in _hostStorage.ReadLinesAsync(GeoNamesPath(),
+		await foreach ( var line in _hostStorage.ReadLinesAsync(GeoCountryNamesPath(),
 			               CancellationToken.None) )
 		{
 			if ( string.IsNullOrEmpty(line) )
@@ -81,14 +96,59 @@ public class GeoNameCitySeedService : IGeoNameCitySeedService
 			break;
 		}
 
-		var geoNameCity = ParseCity(firstLine);
-		return await _query.GetItem(geoNameCity.GeonameId) == null;
+		var geoNameCity = await ParseCityAsync(firstLine);
+		return await query.GetItem(geoNameCity.GeonameId) == null;
 	}
 
-	internal static GeoNameCity ParseCity(string line)
+	private async Task<string> GetProvince(string p8, string p10)
+	{
+		var admin1TextAsciiMap = await GetAdmin1TextAsciiMapAsync();
+		var admin1Code = p8 + "." + p10;
+
+		return admin1TextAsciiMap.TryGetValue(admin1Code, out var provinceName)
+			? provinceName
+			: string.Empty;
+	}
+
+	private Dictionary<string, string>? _admin1TextAsciiMap;
+
+	private async Task<Dictionary<string, string>> GetAdmin1TextAsciiMapAsync()
+	{
+		if ( _admin1TextAsciiMap != null )
+		{
+			return _admin1TextAsciiMap;
+		}
+
+		var map = new Dictionary<string, string>();
+		if ( !_hostStorage.ExistFile(GeoAdmin1CodesAsciiNamesPath()) )
+		{
+			return map;
+		}
+
+		await foreach ( var line in _hostStorage.ReadLinesAsync(GeoAdmin1CodesAsciiNamesPath(),
+			               CancellationToken.None) )
+		{
+			if ( string.IsNullOrWhiteSpace(line) )
+			{
+				continue;
+			}
+
+			var parts = line.Split('\t');
+			if ( parts.Length < 2 )
+			{
+				continue;
+			}
+
+			map[parts[0]] = parts[1];
+		}
+
+		_admin1TextAsciiMap = map;
+		return map;
+	}
+
+	internal async Task<GeoNameCity> ParseCityAsync(string line)
 	{
 		var p = line.Split('\t');
-
 		if ( p.Length < 19 )
 		{
 			throw new FormatException("Invalid GeoNames line");
@@ -114,10 +174,9 @@ public class GeoNameCitySeedService : IGeoNameCitySeedService
 			Elevation = string.IsNullOrEmpty(p[15]) ? null : int.Parse(p[15]),
 			Dem = int.Parse(p[16]),
 			TimeZoneId = p[17],
-			ModificationDate = DateOnly.ParseExact(
-				p[18],
-				"yyyy-MM-dd",
-				CultureInfo.InvariantCulture)
+			ModificationDate =
+				DateOnly.ParseExact(p[18], "yyyy-MM-dd", CultureInfo.InvariantCulture),
+			Province = await GetProvince(p[8], p[10])
 		};
 	}
 }
