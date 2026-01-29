@@ -97,7 +97,6 @@
   font-size: 16px;
   color: #555;
   transition: background-color 0.15s ease;
-  font: inherit;
   height: 50px;
   display: flex;
   align-items: center;
@@ -117,7 +116,7 @@
 .searchable-dropdown__no-results {
   padding: 20px 25px;
   text-align: left;
-  color: #999;
+  color: #000;
   font-size: 16px;
   background: #fff;
   border: 0px solid #000;

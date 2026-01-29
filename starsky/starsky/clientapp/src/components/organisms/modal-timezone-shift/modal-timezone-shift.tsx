@@ -43,13 +43,6 @@ const ModalTimezoneShift: React.FunctionComponent<IModalTimezoneShiftProps> = ({
   // Preview and execution state
   const previewState = usePreviewState();
 
-  // // Load timezones when entering timezone mode
-  // const handleLoadTimezones = useCallback(() => {
-  //   loadTimezones(timezoneState, previewState.setError, state.fileIndexItems[0].dateTime ?? "");
-  // }, []);
-
-  // useLoadTimezones(currentStep, timezoneState.timezones.length === 0, handleLoadTimezones);
-
   // Handle mode selection with state reset
   const handleModeSelectWrapped = (mode: "offset" | "timezone") => {
     handleModeSelect(mode);
