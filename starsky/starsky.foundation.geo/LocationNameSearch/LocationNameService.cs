@@ -1,4 +1,5 @@
-﻿using starsky.foundation.database.GeoNamesCities.Interfaces;
+﻿using System.Globalization;
+using starsky.foundation.database.GeoNamesCities.Interfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.geo.GeoRegionInfo;
@@ -9,12 +10,12 @@ using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.geo.LocationNameSearch;
 
-[Service(typeof(ILocationNameService), InjectionLifetime = InjectionLifetime.Singleton)]
+[Service(typeof(ILocationNameService), InjectionLifetime = InjectionLifetime.Scoped)]
 public class LocationNameService : ILocationNameService
 {
+	private readonly IWebLogger _logger;
 	private readonly IGeoNamesCitiesQuery _query;
 	private readonly IGeoNameCitySeedService _seedService;
-	private readonly IWebLogger _logger;
 
 	public LocationNameService(IGeoNamesCitiesQuery query,
 		IGeoNameCitySeedService seedService, IWebLogger logger)
@@ -33,7 +34,7 @@ public class LocationNameService : ILocationNameService
 
 		return
 		[
-			..( await _query.Search(cityName, nameof(GeoNameCity.Name),
+			..( await _query.Search(cityName, 10, nameof(GeoNameCity.Name),
 				nameof(GeoNameCity.AsciiName)) )
 			.OrderByDescending(x => x.Population)
 		];
@@ -42,12 +43,18 @@ public class LocationNameService : ILocationNameService
 	public async Task<List<CityTimezoneResult>> SearchCityTimezone(string dateTime,
 		string cityName)
 	{
-		if ( !await _seedService.Seed() || !DateTime.TryParse(dateTime, out var dateTimeParsed) )
+		var provider = CultureInfo.InvariantCulture;
+		var isDateTimeParsed = DateTime.TryParseExact(dateTime,
+			"yyyy-MM-ddTHH:mm:ss", provider,
+			DateTimeStyles.AssumeLocal, out var dateTimeParsed);
+
+		if ( !await _seedService.Seed() || !isDateTimeParsed ||
+		     cityName.Length <= 2 )
 		{
 			return [];
 		}
 
-		var results = ( await _query.Search(cityName, nameof(GeoNameCity.Name),
+		var results = ( await _query.Search(cityName, 10, nameof(GeoNameCity.Name),
 				nameof(GeoNameCity.AsciiName)) )
 			.OrderByDescending(x => x.Population)
 			.ToList();

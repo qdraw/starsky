@@ -2,7 +2,7 @@
 
 public class CityTimezoneResult
 {
-	public string Id { get; set; }
-	public string DisplayName { get; set; }
-	public string AltText { get; set; }
+	public required string Id { get; set; }
+	public required string DisplayName { get; set; }
+	public required string AltText { get; set; }
 }

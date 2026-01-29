@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -55,16 +56,8 @@ public class GeoNamesCitiesQuery(
 		}
 	}
 
-	private static async Task<GeoNameCity> AddItem(ApplicationDbContext context,
-		GeoNameCity item)
-	{
-		context.GeoNameCities.Add(item);
-		await context.SaveChangesAsync();
-		context.Attach(item).State = EntityState.Detached;
-		return item;
-	}
 
-	public async Task<List<GeoNameCity>> Search(string search,
+	public async Task<List<GeoNameCity>> Search(string search, int maxResults,
 		params string[] fields)
 	{
 		if ( string.IsNullOrWhiteSpace(search) || fields.Length == 0 )
@@ -74,26 +67,37 @@ public class GeoNamesCitiesQuery(
 
 		try
 		{
-			return await SearchGetPredicate(dbContext, search, fields);
+			return await SearchGetPredicate(dbContext, search, maxResults, fields);
 		}
 		// InvalidOperationException can also be disposed (ObjectDisposedException)
 		catch ( InvalidOperationException )
 		{
 			var context = new InjectServiceScope(scopeFactory).Context();
-			return await SearchGetPredicate(context, search, fields);
+			return await SearchGetPredicate(context, search, maxResults, fields);
 		}
+	}
+
+
+	private static async Task<GeoNameCity> AddItem(ApplicationDbContext context,
+		GeoNameCity item)
+	{
+		context.GeoNameCities.Add(item);
+		await context.SaveChangesAsync();
+		context.Attach(item).State = EntityState.Detached;
+		return item;
 	}
 
 	private static async Task<List<GeoNameCity>> SearchGetPredicate(ApplicationDbContext context,
 		string search,
+		int maxResults,
 		string[] fields)
 	{
 		var query = context.GeoNameCities.AsNoTracking();
 
-		var parameter = System.Linq.Expressions.Expression.Parameter(typeof(GeoNameCity), "x");
-		System.Linq.Expressions.Expression? predicate = null;
+		var parameter = Expression.Parameter(typeof(GeoNameCity), "x");
+		Expression? predicate = null;
 		var searchToLower = search.ToLower();
-		var searchExpr = System.Linq.Expressions.Expression.Constant(searchToLower, typeof(string));
+		var searchExpr = Expression.Constant(searchToLower, typeof(string));
 
 		foreach ( var field in fields )
 		{
@@ -103,19 +107,19 @@ public class GeoNamesCitiesQuery(
 				continue;
 			}
 
-			var propertyExpr = System.Linq.Expressions.Expression.Property(parameter, property);
-			var notNullExpr = System.Linq.Expressions.Expression.NotEqual(propertyExpr,
-				System.Linq.Expressions.Expression.Constant(null, typeof(string)));
+			var propertyExpr = Expression.Property(parameter, property);
+			var notNullExpr = Expression.NotEqual(propertyExpr,
+				Expression.Constant(null, typeof(string)));
 			var toLowerMethod = typeof(string).GetMethod("ToLower", Type.EmptyTypes);
 			var propertyToLower =
-				System.Linq.Expressions.Expression.Call(propertyExpr, toLowerMethod!);
+				Expression.Call(propertyExpr, toLowerMethod!);
 			var containsMethod = typeof(string).GetMethod("Contains", [typeof(string)]);
-			var containsExpr = System.Linq.Expressions.Expression.Call(propertyToLower,
+			var containsExpr = Expression.Call(propertyToLower,
 				containsMethod!, searchExpr);
-			var andExpr = System.Linq.Expressions.Expression.AndAlso(notNullExpr, containsExpr);
+			var andExpr = Expression.AndAlso(notNullExpr, containsExpr);
 			predicate = predicate == null
 				? andExpr
-				: System.Linq.Expressions.Expression.OrElse(predicate, andExpr);
+				: Expression.OrElse(predicate, andExpr);
 		}
 
 		if ( predicate == null )
@@ -123,10 +127,10 @@ public class GeoNamesCitiesQuery(
 			return [];
 		}
 
-
 		var lambda =
-			System.Linq.Expressions.Expression
+			Expression
 				.Lambda<Func<GeoNameCity, bool>>(predicate, parameter);
-		return await query.Where(lambda).ToListAsync();
+		return await query.Where(lambda).OrderByDescending(p => p.Population).Take(maxResults)
+			.ToListAsync();
 	}
 }
