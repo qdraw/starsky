@@ -1,5 +1,7 @@
 import { ArchiveAction } from "../../../../contexts/archive-context";
 import { IArchiveProps } from "../../../../interfaces/IArchiveProps";
+import { parseDate, parseTime } from "../../../../shared/date";
+import { SupportedLanguages } from "../../../../shared/language";
 import { URLPath } from "../../../../shared/url/url-path";
 import Preloader from "../../../atoms/preloader/preloader";
 import SearchableDropdown from "../../../atoms/searchable-dropdown";
@@ -103,18 +105,28 @@ export function renderTimezoneMode(
         {isLoadingPreview ? <Preloader isWhite={false} isOverlay={false} /> : ""}
 
         <div className="preview-section">
-          {preview.timezoneData.length > 0 && (
+          {recordedTimezoneId && correctTimezoneId && preview.timezoneData.length > 0 && (
             <>
               <h3>Preview</h3>
 
               <div className="preview-result">
                 <p>
-                  <strong>Original:</strong> {preview.timezoneData[0]?.originalDateTime || "N/A"} (
-                  {recordedTimezoneDisplayName})
+                  <strong>Original:</strong>
+                  {parseDate(
+                    preview.timezoneData[0]?.originalDateTime,
+                    SupportedLanguages.nl,
+                    false
+                  )}{" "}
+                  {parseTime(preview.timezoneData[0]?.originalDateTime)}
                 </p>
                 <p>
-                  <strong>New time:</strong> {preview.timezoneData[0]?.correctedDateTime || "N/A"} (
-                  {correctTimezoneDisplayName})
+                  <strong>New time:</strong>
+                  {parseDate(
+                    preview.timezoneData[0]?.correctedDateTime,
+                    SupportedLanguages.nl,
+                    false
+                  )}{" "}
+                  {parseTime(preview.timezoneData[0]?.correctedDateTime)}
                 </p>
                 <p>
                   <strong>Time shift:</strong> {preview.timezoneData[0]?.delta || "N/A"} (DST-aware)
