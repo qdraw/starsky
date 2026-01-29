@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
@@ -32,6 +33,11 @@ public sealed class StorageTemporaryFilesystem : IStorage
 	{
 		var fullPath = _appSettings.DatabasePathToTempFolderFilePath(path);
 		return new StorageHostFullPathFilesystem(_logger).IsFileReady(fullPath);
+	}
+
+	public IAsyncEnumerable<string> ReadLinesAsync(string path, CancellationToken cancellationToken)
+	{
+		throw new NotSupportedException();
 	}
 
 	/// <summary>

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
@@ -229,6 +230,12 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 		{
 			return false;
 		}
+	}
+
+	public IAsyncEnumerable<string> ReadLinesAsync(string path,
+		CancellationToken cancellationToken)
+	{
+		return File.ReadLinesAsync(path, cancellationToken);
 	}
 
 	/// <summary>

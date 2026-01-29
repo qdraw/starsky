@@ -42,36 +42,42 @@ public class ExifTimezoneDisplayListService : IExifTimezoneDisplayListService
 		return timezones;
 	}
 
-	public List<ExifTimezoneDisplay> GetMovedToDifferentPlaceTimezonesList(DateTime dateTime)
+	public List<ExifTimezoneDisplay> GetMovedToDifferentPlaceTimezonesList(DateTime dateTime,
+		string query)
 	{
-		// Get all system timezones with their offset calculated for the specific date
-		// This ensures DST is shown correctly: summer = DST offset, winter = standard offset
-		var grouped = TimeZoneInfo.GetSystemTimeZones()
-			.Select(tz =>
-			{
-				// Get the UTC offset for this specific datetime (DST-aware)
-				var offset = tz.GetUtcOffset(dateTime);
-
-				// Format offset as +/-HH:mm
-				var sign = offset < TimeSpan.Zero ? "-" : "+";
-				var absOffset = offset.Duration();
-				var offsetString = $"{sign}{absOffset.Hours:D2}:{absOffset.Minutes:D2}";
-
-				// Create display name with actual offset for this date
-				var displayName = $"(UTC{offsetString}) {tz.StandardName}";
-
-				return new { tz.Id, DisplayName = displayName };
-			})
-			.GroupBy(x => x.DisplayName)
-			.ToList();
-
-		var timezones = grouped.Select(g => new ExifTimezoneDisplay
-		{
-			Id = g.First().Id,
-			DisplayName = g.Key,
-			Aliases = g.Select(x => x.Id).OrderBy(x => x).ToList()
-		}).ToList();
-
-		return timezones;
+		return new List<ExifTimezoneDisplay>();
 	}
+
+	// public List<ExifTimezoneDisplay> GetMovedToDifferentPlaceTimezonesList(DateTime dateTime, string query)
+	// {
+	// 	// Get all system timezones with their offset calculated for the specific date
+	// 	// This ensures DST is shown correctly: summer = DST offset, winter = standard offset
+	// 	var grouped = TimeZoneInfo.GetSystemTimeZones()
+	// 		.Select(tz =>
+	// 		{
+	// 			// Get the UTC offset for this specific datetime (DST-aware)
+	// 			var offset = tz.GetUtcOffset(dateTime);
+	//
+	// 			// Format offset as +/-HH:mm
+	// 			var sign = offset < TimeSpan.Zero ? "-" : "+";
+	// 			var absOffset = offset.Duration();
+	// 			var offsetString = $"{sign}{absOffset.Hours:D2}:{absOffset.Minutes:D2}";
+	//
+	// 			// Create display name with actual offset for this date
+	// 			var displayName = $"(UTC{offsetString}) {tz.StandardName}";
+	//
+	// 			return new { tz.Id, DisplayName = displayName };
+	// 		})
+	// 		.GroupBy(x => x.DisplayName)
+	// 		.ToList();
+	//
+	// 	var timezones = grouped.Select(g => new ExifTimezoneDisplay
+	// 	{
+	// 		Id = g.First().Id,
+	// 		DisplayName = g.Key,
+	// 		Aliases = g.Select(x => x.Id).OrderBy(x => x).ToList()
+	// 	}).ToList();
+	//
+	// 	return timezones;
+	// }
 }

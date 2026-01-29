@@ -239,21 +239,6 @@ public class MetaTimeCorrectController(
 	}
 
 	/// <summary>
-	///     Get list of fixed offset timezones (camera set incorrectly)
-	/// </summary>
-	/// <returns>List of Etc/GMT timezones with fixed offsets</returns>
-	/// <response code="200">List of timezones for incorrect camera settings</response>
-	/// <response code="401">User unauthorized</response>
-	[ProducesResponseType(200)]
-	[HttpGet("/api/meta-time-correct/camera-incorrect-timezones")]
-	[Produces("application/json")]
-	public IActionResult GetIncorrectCameraTimezones()
-	{
-		var timezones = exifTimezoneDisplayListService.GetIncorrectCameraTimezonesList();
-		return Ok(timezones);
-	}
-
-	/// <summary>
 	///     Get list of all system timezones (moved to different place)
 	/// </summary>
 	/// <returns>List of all system timezones including DST-aware zones</returns>
@@ -262,7 +247,7 @@ public class MetaTimeCorrectController(
 	[ProducesResponseType(200)]
 	[HttpGet("/api/meta-time-correct/system-timezones")]
 	[Produces("application/json")]
-	public IActionResult GetMovedToDifferentPlaceTimezones(DateTime dateTime)
+	public IActionResult GetMovedToDifferentPlaceTimezones(DateTime dateTime, string query)
 	{
 		if ( !ModelState.IsValid )
 		{
@@ -270,7 +255,7 @@ public class MetaTimeCorrectController(
 		}
 
 		var timezones =
-			exifTimezoneDisplayListService.GetMovedToDifferentPlaceTimezonesList(dateTime);
+			exifTimezoneDisplayListService.GetMovedToDifferentPlaceTimezonesList(dateTime, query);
 		return Ok(timezones);
 	}
 }

@@ -36,6 +36,8 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 	/// </summary>
 	public virtual DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
 
+	public DbSet<GeoNameCity> GeoNameCities { get; set; }
+
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{
 		// Do nothing because of that in debug mode this only triggered
@@ -251,13 +253,27 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 				etb.HasKey(e => e.FileHash);
 
 				etb.ToTable("Thumbnails");
-				etb.HasAnnotation("MySql:CharSet", "utf8mb4");
+				etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
 
 				// Add composite index for performance on GetMissingThumbnailsBatchInternalAsync
 				// FileHash is excluded as it's already the primary key
 				// This keeps the index size under MariaDB's 3072 byte limit
 				etb.HasIndex(e => new { e.ExtraLarge, e.Large, e.Small })
 					.HasDatabaseName("IX_Thumbnails_Missing");
+			}
+		);
+
+		modelBuilder.Entity<GeoNameCity>(etb =>
+			{
+				etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
+				etb.ToTable("GeoNameCities");
+
+				etb.Property(e => e.GeonameId)
+					.ValueGeneratedNever()
+					.HasAnnotation("MySql:ValueGeneratedOnAdd", false)
+					.HasAnnotation("Sqlite:Autoincrement", false)
+					.HasAnnotation("MySql:ValueGenerationStrategy",
+						MySqlValueGenerationStrategy.IdentityColumn);
 			}
 		);
 	}
