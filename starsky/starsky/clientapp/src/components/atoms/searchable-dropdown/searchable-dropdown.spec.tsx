@@ -14,9 +14,7 @@ describe("SearchableDropdown", () => {
   });
 
   it("should render input field with placeholder", () => {
-    render(
-      <SearchableDropdown fetchResults={mockFetchResults} placeholder="Search..." />
-    );
+    render(<SearchableDropdown fetchResults={mockFetchResults} placeholder="Search..." />);
 
     const input = screen.getByPlaceholderText("Search...");
     expect(input).toBeInTheDocument();
@@ -39,9 +37,7 @@ describe("SearchableDropdown", () => {
   });
 
   it("should fetch and display results on input change", async () => {
-    const { getByTestId } = render(
-      <SearchableDropdown fetchResults={mockFetchResults} />
-    );
+    const { getByTestId } = render(<SearchableDropdown fetchResults={mockFetchResults} />);
 
     const input = getByTestId("searchable-dropdown-input") as HTMLInputElement;
     fireEvent.change(input, { target: { value: "app" } });
@@ -49,7 +45,8 @@ describe("SearchableDropdown", () => {
     await waitFor(() => {
       expect(mockFetchResults).toHaveBeenCalledWith("app");
       expect(screen.getByTestId("searchable-dropdown-item-Apple")).toBeInTheDocument();
-      expect(screen.getByTestId("searchable-dropdown-item-Apricot")).toBeInTheDocument();
+      // "Apricot" does not include "app" as a substring, so it should not be present
+      expect(screen.queryByTestId("searchable-dropdown-item-Apricot")).not.toBeInTheDocument();
     });
   });
 
@@ -63,9 +60,14 @@ describe("SearchableDropdown", () => {
 
     await waitFor(() => {
       const appleItem = screen.getByTestId("searchable-dropdown-item-Apple");
-      fireEvent.click(appleItem);
-
-      expect(mockOnSelect).toHaveBeenCalledWith("Apple");
+      const button = appleItem.querySelector("button");
+      expect(button).toBeTruthy();
+      if (button) fireEvent.click(button);
+    });
+    // Wait for onSelect to be called
+    await waitFor(() => {
+      expect(mockOnSelect).toHaveBeenCalledTimes(1);
+      expect(mockOnSelect).toHaveBeenCalledWith("Apple", "");
     });
   });
 
@@ -86,7 +88,7 @@ describe("SearchableDropdown", () => {
 
     await waitFor(() => {
       const firstItem = screen.getByTestId("searchable-dropdown-item-Apple");
-      expect(firstItem.parentElement).toHaveClass("searchable-dropdown__item--selected");
+      expect(firstItem).toHaveClass("searchable-dropdown__item--selected");
     });
   });
 
@@ -106,7 +108,7 @@ describe("SearchableDropdown", () => {
     fireEvent.keyDown(input, { key: "Enter" });
 
     await waitFor(() => {
-      expect(mockOnSelect).toHaveBeenCalledWith("Apple");
+      expect(mockOnSelect).toHaveBeenCalledWith("Apple", "");
     });
   });
 

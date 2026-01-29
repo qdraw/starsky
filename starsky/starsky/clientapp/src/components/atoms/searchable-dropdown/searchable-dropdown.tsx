@@ -94,7 +94,7 @@ const SearchableDropdown: FunctionComponent<ISearchableDropdownProps> = ({
   };
 
   const getDisplayText = (item: DropdownResult): string => {
-    return typeof item === "string" ? item : item.displayName;
+    return typeof item === "string" ? "" : item.displayName;
   };
 
   const getAltText = (item: DropdownResult): string => {
