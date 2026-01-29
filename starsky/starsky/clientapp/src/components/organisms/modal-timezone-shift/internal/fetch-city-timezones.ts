@@ -13,5 +13,5 @@ export const fetchCityTimezones = async (
     return [];
   }
 
-  return response.data as unknown as DropdownResult[];
+  return response.data as DropdownResult[];
 };

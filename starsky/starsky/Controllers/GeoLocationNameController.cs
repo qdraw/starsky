@@ -10,15 +10,14 @@ namespace starsky.Controllers;
 public class GeoLocationNameController(ILocationNameService locationNameService) : Controller
 {
 	/// <summary>
-	///     Reverse geo lookup
+	///     Search for a city by name
 	/// </summary>
-	/// <param name="latitude">Latitude coordinate in Decimal Degree (DD)</param>
-	/// <param name="longitude">Longitude coordinate in DD</param>
-	/// <returns>reverse geo code data</returns>
+	/// <param name="city">City name to search for</param>
+	/// <returns>City search results</returns>
 	/// <response code="200">Data with object</response>
 	[HttpGet("/api/geo-location-name/city")]
 	[Produces("application/json")]
-	public async Task<IActionResult> GeoReverseLookup(DateOnly date, string city)
+	public async Task<IActionResult> GeoReverseLookup(string city)
 	{
 		if ( !ModelState.IsValid )
 		{
@@ -30,11 +29,11 @@ public class GeoLocationNameController(ILocationNameService locationNameService)
 	}
 
 	/// <summary>
-	///     Reverse geo lookup
+	///     Search for a city's timezone for a given date/time
 	/// </summary>
-	/// <param name="latitude">Latitude coordinate in Decimal Degree (DD)</param>
-	/// <param name="longitude">Longitude coordinate in DD</param>
-	/// <returns>reverse geo code data</returns>
+	/// <param name="dateTime">Date/time string (ISO 8601 or similar)</param>
+	/// <param name="city">City name to search for</param>
+	/// <returns>Timezone information for the city at the given date/time</returns>
 	/// <response code="200">Data with object</response>
 	[HttpGet("/api/geo-location-name/city-timezone")]
 	[Produces("application/json")]

@@ -62,8 +62,7 @@ export function renderTimezoneMode(
                   setRecordedTimezoneId(id);
                   setRecordedTimezoneDisplayName(displayName);
                   generateTimezonePreview(
-                    select,
-                    state,
+                    filePathList,
                     id,
                     correctTimezoneId,
                     setIsLoadingPreview,
@@ -87,8 +86,7 @@ export function renderTimezoneMode(
                   setCorrectTimezoneId(id);
                   setCorrectTimezoneDisplayName(displayName);
                   generateTimezonePreview(
-                    select,
-                    state,
+                    filePathList,
                     id,
                     recordedTimezoneId,
                     setIsLoadingPreview,

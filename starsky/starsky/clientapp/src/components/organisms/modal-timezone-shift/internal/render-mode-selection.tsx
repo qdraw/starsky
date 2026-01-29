@@ -8,7 +8,7 @@ export function renderModeSelection(
       <div className="modal content--subheader">Shift Photo Timestamps</div>
       <div className="modal content--text">
         <p>
-          You have selected {select.length} image{select.length !== 1 ? "s" : ""}
+          You have selected {select.length} image{select.length === 1 ? "" : "s"}
         </p>
         <p>&nbsp;</p>
 
@@ -21,6 +21,7 @@ export function renderModeSelection(
               name="shift-mode"
               value="offset"
               onChange={() => handleModeSelect("offset")}
+              aria-label="Correct incorrect camera timezone"
             />
             <div>
               <strong>Correct incorrect camera timezone</strong>
@@ -34,6 +35,7 @@ export function renderModeSelection(
               name="shift-mode"
               value="timezone"
               onChange={() => handleModeSelect("timezone")}
+              aria-label="I moved to a different place"
             />
             <div>
               <strong>I moved to a different place</strong>
