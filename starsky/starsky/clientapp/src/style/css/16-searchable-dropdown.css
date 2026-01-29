@@ -144,3 +144,11 @@
 .searchable-dropdown__list::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+.searchable-dropdown__alt-text {
+  margin-left: 5px;
+  display: block;
+  font-size: 12px;
+  color: #888;
+  margin-top: 2px;
+}

@@ -94,6 +94,10 @@ const SearchableDropdown: FunctionComponent<ISearchableDropdownProps> = ({
     return typeof item === "string" ? item : item.displayName;
   };
 
+  const getAltText = (item: DropdownResult): string => {
+    return typeof item === "string" ? "" : item.altText ?? "" ;
+  };
+
   const getSelectValue = (item: DropdownResult): string => {
     return typeof item === "string" ? item : item.id;
   };
@@ -152,6 +156,7 @@ const SearchableDropdown: FunctionComponent<ISearchableDropdownProps> = ({
         <ul className="searchable-dropdown__list" data-test="searchable-dropdown-list">
           {displayItems.map((item, index) => {
             const displayText = getDisplayText(item);
+            const altText = getAltText(item);
             const itemId = typeof item === "string" ? item : item.id;
             return (
               <li
@@ -162,12 +167,15 @@ const SearchableDropdown: FunctionComponent<ISearchableDropdownProps> = ({
                 data-test={`searchable-dropdown-item-${itemId}`}
               >
                 <button
-                  type="button"
+                  type="button" 
                   className="searchable-dropdown__button"
                   onClick={() => handleSelectItem(item)}
                   onMouseEnter={() => setSelectedIndex(index)}
                 >
-                  {displayText}
+                  <span>{displayText}</span>
+                  {altText && (
+                    <span className="searchable-dropdown__alt-text" style={{ display: "block", fontSize: "12px", color: "#888", marginTop: "2px" }}>{altText}</span>
+                  )}
                 </button>
               </li>
             );

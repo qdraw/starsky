@@ -1,6 +1,7 @@
 export interface IDropdownItem {
   id: string;
   displayName: string;
+  altText?: string;
 }
 
 export type DropdownResult = string | IDropdownItem;
@@ -17,7 +18,7 @@ export interface ISearchableDropdownProps {
   /**
    * Default items shown when no search query
    */
-  defaultItems?: Array<{ label: string; value: string }>;
+  defaultItems?: Array<{ label: string; value: string; altText?: string }>;
 
   /**
    * Placeholder text for input

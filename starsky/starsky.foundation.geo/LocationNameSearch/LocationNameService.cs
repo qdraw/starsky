@@ -56,17 +56,24 @@ public class LocationNameService : ILocationNameService
 		foreach ( var result in results )
 		{
 			var offset = result.TimeZone.GetUtcOffset(dateTimeParsed);
+
+
 			var isDaylightSavingTime = result.TimeZone.IsDaylightSavingTime(dateTimeParsed);
 			var dstText = isDaylightSavingTime ? "Summer time" : "Winter time";
+			if ( !result.TimeZone.SupportsDaylightSavingTime )
+			{
+				dstText = "No seasonal time change";
+			}
+
 			var (locationCountry, _) =
 				new RegionInfoHelper(_logger).GetLocationCountryAndCode(result.CountryCode);
 
 			finalResults.Add(new CityTimezoneResult
 			{
 				Id = result.TimeZoneId,
-				DisplayName =
-					$"UTC({offset.Hours:D2}:{offset.Minutes:D2}) " +
-					$"{result.Name}, {locationCountry} {result.Province}, {dstText}"
+				AltText = $"UTC({offset.Hours:D2}:{offset.Minutes:D2}) " +
+				          $"{locationCountry} {result.Province}, {dstText}",
+				DisplayName = result.Name
 			});
 		}
 

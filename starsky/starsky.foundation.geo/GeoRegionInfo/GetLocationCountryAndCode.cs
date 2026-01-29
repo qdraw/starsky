@@ -18,7 +18,7 @@ public class RegionInfoHelper(IWebLogger logger)
 		}
 		catch ( ArgumentException e )
 		{
-			logger.LogInformation("[GeoReverseLookup] " + e.Message);
+			logger.LogInformation("[GetLocationCountryAndCode] " + e.Message);
 		}
 
 		return new Tuple<string, string>(locationCountry, locationCountryCode);
