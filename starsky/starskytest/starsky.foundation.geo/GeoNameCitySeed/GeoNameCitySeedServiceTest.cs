@@ -76,13 +76,16 @@ public sealed class GeoNameCitySeedServiceTest : VerifyBase
 		"6691091	Al Karama	Al Karama		25.24004	55.30106	P	PPLX	AE		03				75560		4	Asia/Dubai	2024-10-28"
 	];
 
-	[TestMethod]
-	public async Task Seed_InsertsUniqueCities_Verify()
+	private static ApplicationDbContext CreateDbContext(string connectionString)
 	{
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-			.UseInMemoryDatabase("GeoNameCitySeedServiceTestDb")
+			.UseInMemoryDatabase("GeoNameCitySeedServiceTestDb" + connectionString)
 			.Options;
-		using var dbContext = new ApplicationDbContext(options);
+		return new ApplicationDbContext(options);
+	}
+
+	private static GeoNameCitySeedService CreateSut(ApplicationDbContext dbContext)
+	{
 		var appSettings = new AppSettings { DependenciesFolder = "." };
 		var fakeSelectorStorage = new FakeSelectorStorage(new SampleFakeIStorage());
 		var fakeGeoFileDownload = new FakeIGeoFileDownload();
@@ -90,7 +93,7 @@ public sealed class GeoNameCitySeedServiceTest : VerifyBase
 		var fakeMemoryCache = new MemoryCache(new MemoryCacheOptions());
 		var fakeScopeFactory = new FakeIServiceScopeFactory();
 		var geoNamesCitiesQuery = new GeoNamesCitiesQuery(dbContext, fakeScopeFactory);
-		var service = new GeoNameCitySeedService(
+		return new GeoNameCitySeedService(
 			fakeSelectorStorage,
 			appSettings,
 			fakeGeoFileDownload,
@@ -98,9 +101,39 @@ public sealed class GeoNameCitySeedServiceTest : VerifyBase
 			fakeLogger,
 			fakeMemoryCache
 		);
+	}
 
-		var result = await service.Seed();
+	[TestMethod]
+	public async Task Seed_InsertsUniqueCities_Verify()
+	{
+		await using var dbContext = CreateDbContext("1");
+		var sut = CreateSut(dbContext);
+
+		var result = await sut.Seed();
 		Assert.IsTrue(result);
+
+		var all = await dbContext.GeoNameCities.ToListAsync(TestContext.CancellationToken);
+		Assert.HasCount(55, all);
+
+		await Verify(all);
+
+		Assert.IsTrue(all.Any(x => x.GeonameId == 38832 && x.Name == "Vila"));
+		Assert.IsTrue(all.Any(x => x.GeonameId == 3039154 && x.Name == "El Tarter"));
+		Assert.IsTrue(all.Any(x => x.GeonameId == 3039163 && x.Name.StartsWith("Sant Juli")));
+		Assert.IsTrue(all.Any(x => x.GeonameId == 6691091 && x.Name.StartsWith("Al Karama")));
+	}
+
+	[TestMethod]
+	public async Task Seed_InsertsUniqueCities_RunTwoTimes_Verify()
+	{
+		await using var dbContext = CreateDbContext("2");
+		var sut = CreateSut(dbContext);
+
+		var result1 = await sut.Seed();
+		Assert.IsTrue(result1);
+		// yes run a second time
+		var result2 = await sut.Seed();
+		Assert.IsTrue(result2);
 
 		var all = await dbContext.GeoNameCities.ToListAsync(TestContext.CancellationToken);
 		Assert.HasCount(55, all);

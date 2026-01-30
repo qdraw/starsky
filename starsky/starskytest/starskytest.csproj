@@ -166,6 +166,9 @@
         <None Update="Controllers\GeoLocationNameControllerTest.SearchCity_ReturnsOk_Verify.verified.txt">
             <DependentUpon>GeoLocationNameControllerTest.cs</DependentUpon>
         </None>
+        <None Update="starsky.foundation.geo\GeoNameCitySeed\GeoNameCitySeedServiceTest.Seed_InsertsUniqueCities_Verify.verified.txt">
+            <DependentUpon>GeoNameCitySeedServiceTest.cs</DependentUpon>
+        </None>
     </ItemGroup>
     <ItemGroup>
         <None Remove="FakeCreateAn\CreateFakeExifToolWindows\exiftool.zip"/>

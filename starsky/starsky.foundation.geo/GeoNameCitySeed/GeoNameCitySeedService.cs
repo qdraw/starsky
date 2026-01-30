@@ -31,7 +31,7 @@ public class GeoNameCitySeedService(
 
 	public async Task<bool> Seed()
 	{
-		if ( !await Setup() )
+		if ( await Setup() )
 		{
 			return true;
 		}
@@ -44,11 +44,11 @@ public class GeoNameCitySeedService(
 			               CancellationToken.None) )
 		{
 			var city = await ParseCityAsync(line);
-			if (!seenIds.Add(city.GeonameId))
+			if ( !seenIds.Add(city.GeonameId) )
 			{
 				continue;
 			}
-			
+
 			batch.Add(city);
 			if ( batch.Count < 50 )
 			{
@@ -84,9 +84,10 @@ public class GeoNameCitySeedService(
 
 	private async Task<bool> Setup()
 	{
+		// true is skip import
 		const string cacheKey = "GeoNameCitySeedService.Setup";
-		if ( memoryCache != null &&
-		     memoryCache.TryGetValue(cacheKey, out bool cached) && cached )
+		if ( memoryCache?.TryGetValue(cacheKey, out bool cached)
+		    != null && cached )
 		{
 			return true;
 		}
@@ -98,16 +99,16 @@ public class GeoNameCitySeedService(
 
 		if ( !_hostStorage.ExistFile(GeoCountryNamesPath()) )
 		{
-			return false;
+			return true;
 		}
 
-		var result = await CheckIfFirstLineExists();
-		if ( result )
+		var shouldSkipImport = !await CheckIfFirstLineExists();
+		if ( shouldSkipImport )
 		{
 			memoryCache?.Set(cacheKey, true);
 		}
 
-		return result;
+		return shouldSkipImport;
 	}
 
 	private async Task<bool> CheckIfFirstLineExists()
