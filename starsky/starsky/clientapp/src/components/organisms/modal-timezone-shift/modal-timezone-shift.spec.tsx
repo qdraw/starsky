@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { act } from "react";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
@@ -258,13 +258,13 @@ describe("ModalTimezoneShift", () => {
     };
 
     // Mock fetch for city timezones search
-    jest.spyOn(FetchGet, "default").mockResolvedValue({
+    const getSpy = jest.spyOn(FetchGet, "default").mockReset().mockResolvedValue({
       statusCode: 200,
       data: mockCityTimezones
     });
 
     // Mock fetch for timezone preview
-    const postSpy = jest.spyOn(FetchPost, "default").mockResolvedValue({
+    const postSpy = jest.spyOn(FetchPost, "default").mockReset().mockResolvedValue({
       statusCode: 200,
       data: mockTimezonePreview
     });
@@ -337,7 +337,8 @@ describe("ModalTimezoneShift", () => {
     expect(inputs[1]).toHaveValue("(UTC+01:00) Amsterdam");
 
     // Give a moment for preview generation to complete if it happens
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    // it'll wait until the mock function has been called once.
+    await waitFor(() => expect(getSpy).toHaveBeenCalledTimes(5));
 
     // Step 5: Mock execute-shift response
     postSpy.mockResolvedValueOnce({
@@ -355,7 +356,7 @@ describe("ModalTimezoneShift", () => {
 
       // Step 7: Verify execution was called and modal exits
       await act(async () => {
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        await waitFor(() => expect(mockDispatch).toHaveBeenCalled());
       });
 
       expect(mockDispatch).toHaveBeenCalled();
