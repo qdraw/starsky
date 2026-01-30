@@ -284,15 +284,18 @@ describe("ModalTimezoneShift", () => {
     );
 
     // Step 1: Select timezone mode
-    const timezoneRadio = screen.getByRole("radio", { name: /I moved to a different place/i });
+    const timezoneRadio = await screen.findByRole("radio", {
+      name: /I moved to a different place/i
+    });
     await act(async () => {
       fireEvent.click(timezoneRadio);
     });
 
-    expect(screen.getByText(/Change Location/i)).toBeTruthy();
+    // Wait for the "Change Location" text to appear
+    await screen.findByText(/Change Location/i);
 
     // Step 2: Select original city (recorded timezone)
-    const originalCityInputs = screen.getAllByPlaceholderText(/Search or select/i);
+    const originalCityInputs = await screen.findAllByPlaceholderText(/Search or select/i);
     const originalCityInput = originalCityInputs[0];
 
     await act(async () => {
@@ -310,7 +313,7 @@ describe("ModalTimezoneShift", () => {
     });
 
     // Step 3: Select new city (correct timezone)
-    const newCityInputs = screen.getAllByPlaceholderText(/Search or select/i);
+    const newCityInputs = await screen.findAllByPlaceholderText(/Search or select/i);
     const newCityInput = newCityInputs[1];
 
     await act(async () => {
@@ -340,7 +343,7 @@ describe("ModalTimezoneShift", () => {
     });
 
     // Step 6: Click "Apply Shift" button
-    const applyButton = screen.getByText(/Apply Shift/i);
+    const applyButton = await screen.findByText(/Apply Shift/i);
     expect(applyButton).not.toBeDisabled();
 
     await act(async () => {
