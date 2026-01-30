@@ -84,12 +84,13 @@ public class FakeIStorage : IStorage
 		return true;
 	}
 
-	public IAsyncEnumerable<string> ReadLinesAsync(string path, CancellationToken cancellationToken)
+	public virtual IAsyncEnumerable<string> ReadLinesAsync(string path,
+		CancellationToken cancellationToken)
 	{
 		throw new NotSupportedException();
 	}
 
-	public bool ExistFile(string path)
+	public virtual bool ExistFile(string path)
 	{
 		return _outputSubPathFiles.Contains(path);
 	}
