@@ -1,0 +1,7 @@
+﻿[
+  {
+    Id: America/Curacao,
+    DisplayName: Willemstad,
+    AltText: UTC(-04:00) Curaçao , Winter time
+  }
+]

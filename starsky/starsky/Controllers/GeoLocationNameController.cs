@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.geo.LocationNameSearch.Interfaces;
@@ -17,7 +16,7 @@ public class GeoLocationNameController(ILocationNameService locationNameService)
 	/// <response code="200">Data with object</response>
 	[HttpGet("/api/geo-location-name/city")]
 	[Produces("application/json")]
-	public async Task<IActionResult> GeoReverseLookup(string city)
+	public async Task<IActionResult> SearchCity(string city)
 	{
 		if ( !ModelState.IsValid )
 		{
