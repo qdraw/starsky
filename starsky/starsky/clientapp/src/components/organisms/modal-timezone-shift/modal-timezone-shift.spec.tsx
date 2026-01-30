@@ -687,4 +687,71 @@ describe("ModalTimezoneShift", () => {
 
     component.unmount();
   });
+
+  it("offset mode: combination of all fields invalid input", async () => {
+    const mockOffsetPreview = [
+      {
+        success: true,
+        originalDateTime: "2024-08-12T14:32:00",
+        correctedDateTime: "2024-08-12T17:32:00",
+        delta: "+03:00:00",
+        warning: "",
+        error: ""
+      }
+    ];
+
+    // Mock fetch for offset preview
+    const postSpy = jest.spyOn(FetchPost, "default").mockReset().mockResolvedValue({
+      statusCode: 200,
+      data: mockOffsetPreview
+    });
+
+    const mockHandleExit = jest.fn();
+
+    const component = render(
+      <ModalTimezoneShift
+        isOpen={true}
+        handleExit={mockHandleExit}
+        select={["test.jpg"]}
+        historyLocationSearch={mockHistoryLocationSearch}
+        state={mockState}
+        dispatch={mockDispatch}
+        undoSelection={mockUndoSelection}
+      />
+    );
+
+    // Step 1: Select offset mode
+    const offsetRadio = screen.getByRole("radio", {
+      name: /Correct incorrect camera timezone/i
+    });
+    await act(async () => {
+      fireEvent.click(offsetRadio);
+    });
+
+    expect(screen.getByText(/Correct Camera Time/i)).toBeTruthy();
+    expect(screen.getByText(/Time offsets/i)).toBeTruthy();
+
+    // Step 2: Set all offset fields
+    const values = { year: "t0", month: "t0", day: "t0", hour: "t0", minute: "t0", second: "t0" };
+    for (const [key, value] of Object.entries(values)) {
+      const input = screen.getByLabelText(new RegExp(key, "i"));
+      await act(async () => {
+        fireEvent.change(input, { target: { value: String(value) } });
+      });
+    }
+
+    expect(postSpy).toHaveBeenCalledTimes(6);
+
+    for (let index = 1; index < 6; index++) {
+      expect(postSpy).toHaveBeenNthCalledWith(
+        index,
+        "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=false",
+        '{"year":0,"month":0,"day":0,"hour":0,"minute":0,"second":0}',
+        "post",
+        { "Content-Type": "application/json" }
+      );
+    }
+
+    component.unmount();
+  });
 });
