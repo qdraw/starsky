@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,7 @@ namespace starskytest.starsky.foundation.database.GeoNamesCities;
 [TestClass]
 public class GeoNamesCitiesQueryTest
 {
-	public TestContext TestContext { get; set; }
+	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")] public TestContext TestContext { get; set; }
 
 	private static (ApplicationDbContext, IServiceScopeFactory) CreateDbContextAndScopeFactory(
 		string dbName)
