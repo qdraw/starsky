@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
@@ -17,6 +19,8 @@ namespace starskytest.starsky.foundation.storage.Storage;
 [TestClass]
 public sealed class StorageHostFullPathFilesystemTest
 {
+	public TestContext TestContext { get; set; }
+
 	[TestMethod]
 	public void Files_GetFilesRecursiveTest()
 	{
@@ -354,6 +358,59 @@ public sealed class StorageHostFullPathFilesystemTest
 		Assert.IsFalse(hostStorage.CreateDirectory(expectedPath));
 
 		hostStorage.FileDelete(expectedPath);
+	}
+
+	[TestMethod]
+	public async Task ReadLinesAsync_ReadsAllLines()
+	{
+		// Arrange: create a temp file with sample lines
+		var tempFile = Path.GetTempFileName();
+		var lines = new[] { "line1", "line2", "line3" };
+		await File.WriteAllLinesAsync(tempFile, lines, TestContext.CancellationToken);
+		var storage = new StorageHostFullPathFilesystem(null!);
+
+		// Act
+		var result = new List<string>();
+		await foreach ( var line in storage.ReadLinesAsync(tempFile, CancellationToken.None) )
+		{
+			result.Add(line);
+		}
+
+		// Assert
+		CollectionAssert.AreEqual(lines, result);
+
+		// Cleanup
+		File.Delete(tempFile);
+	}
+
+	[TestMethod]
+	public async Task ReadLinesAsync_EmptyFile_ReturnsNoLines()
+	{
+		var tempFile = Path.GetTempFileName();
+		var storage = new StorageHostFullPathFilesystem(null!);
+
+		var result = new List<string>();
+		await foreach ( var line in storage.ReadLinesAsync(tempFile, CancellationToken.None) )
+		{
+			result.Add(line);
+		}
+
+		Assert.IsEmpty(result);
+		File.Delete(tempFile);
+	}
+
+	[TestMethod]
+	public async Task ReadLinesAsync_FileDoesNotExist_Throws()
+	{
+		var storage = new StorageHostFullPathFilesystem(null!);
+		await Assert.ThrowsExactlyAsync<FileNotFoundException>(async () =>
+		{
+			await foreach ( var _ in storage.ReadLinesAsync("/path/does/not/exist.txt",
+				               CancellationToken.None) )
+			{
+				// should not reach here
+			}
+		});
 	}
 }
 

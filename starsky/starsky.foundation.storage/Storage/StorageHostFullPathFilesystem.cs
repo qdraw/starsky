@@ -235,6 +235,11 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 	public IAsyncEnumerable<string> ReadLinesAsync(string path,
 		CancellationToken cancellationToken)
 	{
+		if ( !ExistFile(path) )
+		{
+			throw new FileNotFoundException(path);
+		}
+
 		return File.ReadLinesAsync(path, cancellationToken);
 	}
 
