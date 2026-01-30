@@ -390,113 +390,145 @@ describe("ModalTimezoneShift", () => {
     component.unmount();
   }, 10000);
 
-  it("walks through offset mode and completes execute-shift successfully", async () => {
-    const mockOffsetPreview = [
-      {
-        success: true,
-        originalDateTime: "2024-08-12T14:32:00",
-        correctedDateTime: "2024-08-12T17:32:00",
-        delta: "+03:00:00",
-        warning: "",
-        error: ""
-      }
-    ];
-
-    const mockExecuteResponse = {
-      statusCode: 200,
-      data: [
+  describe.each([
+    {
+      label: "Years",
+      payload: { year: 2, month: 0, day: 0, hour: 0, minute: 0, second: 0 }
+    },
+    {
+      label: "Months",
+      payload: { year: 0, month: 2, day: 0, hour: 0, minute: 0, second: 0 }
+    },
+    {
+      label: "Days",
+      payload: { year: 0, month: 0, day: 2, hour: 0, minute: 0, second: 0 }
+    },
+    {
+      label: "Hours",
+      payload: { year: 0, month: 0, day: 0, hour: 2, minute: 0, second: 0 }
+    },
+    {
+      label: "Minutes",
+      payload: { year: 0, month: 0, day: 0, hour: 0, minute: 2, second: 0 }
+    },
+    {
+      label: "Seconds",
+      payload: { year: 0, month: 0, day: 0, hour: 0, minute: 0, second: 2 }
+    }
+  ])("offset mode: $label", ({ label, payload }) => {
+    it(`completes execute-shift successfully for ${label}`, async () => {
+      const mockOffsetPreview = [
         {
-          filePath: "/test.jpg",
-          fileName: "test.jpg",
-          parentDirectory: "/",
-          status: IExifStatus.Ok
+          success: true,
+          originalDateTime: "2024-08-12T14:32:00",
+          correctedDateTime: "2024-08-12T17:32:00",
+          delta: "+03:00:00",
+          warning: "",
+          error: ""
         }
-      ]
-    };
+      ];
 
-    // Mock fetch for offset preview
-    const postSpy = jest.spyOn(FetchPost, "default").mockReset().mockResolvedValue({
-      statusCode: 200,
-      data: mockOffsetPreview
+      const mockExecuteResponse = {
+        statusCode: 200,
+        data: [
+          {
+            filePath: "/test.jpg",
+            fileName: "test.jpg",
+            parentDirectory: "/",
+            status: IExifStatus.Ok
+          }
+        ]
+      };
+
+      // Mock fetch for offset preview
+      const postSpy = jest.spyOn(FetchPost, "default").mockReset().mockResolvedValue({
+        statusCode: 200,
+        data: mockOffsetPreview
+      });
+
+      const mockHandleExit = jest.fn();
+
+      const component = render(
+        <ModalTimezoneShift
+          isOpen={true}
+          handleExit={mockHandleExit}
+          select={["test.jpg"]}
+          historyLocationSearch={mockHistoryLocationSearch}
+          state={mockState}
+          dispatch={mockDispatch}
+          undoSelection={mockUndoSelection}
+        />
+      );
+
+      // Step 1: Select offset mode
+      const offsetRadio = screen.getByRole("radio", { name: /Correct incorrect camera timezone/i });
+      await act(async () => {
+        fireEvent.click(offsetRadio);
+      });
+
+      expect(screen.getByText(/Correct Camera Time/i)).toBeTruthy();
+      expect(screen.getByText(/Time offsets/i)).toBeTruthy();
+
+      // Step 2: Set offset field(s)
+      for (const [key, value] of Object.entries(payload)) {
+        if (value !== 0) {
+          const input = screen.getByLabelText(new RegExp(key, "i"));
+          await act(async () => {
+            fireEvent.change(input, { target: { value: String(value) } });
+          });
+        }
+      }
+
+      // Step 3: Wait for preview to load
+      await screen.findByText(/Preview/i);
+      expect(screen.getByText(/Original:/i)).toBeTruthy();
+      expect(screen.getByText(/Result:/i)).toBeTruthy();
+      expect(screen.getByText(/Applied shift:/i)).toBeTruthy();
+
+      // Verify the preview API was called
+      expect(postSpy).toHaveBeenCalled();
+
+      // Step 4: Mock execute-shift response
+      postSpy.mockResolvedValueOnce({
+        statusCode: 200,
+        data: mockExecuteResponse.data
+      });
+
+      // Step 5: Click "Apply Shift" button
+      const applyButton = screen.getByText(/Apply Shift/i);
+      expect(applyButton).not.toBeDisabled();
+
+      await act(async () => {
+        fireEvent.click(applyButton);
+      });
+
+      // Step 6: Verify execution was called and modal exits
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      });
+
+      expect(postSpy).toHaveBeenCalledTimes(2);
+      const expectedPreviewPayload = JSON.stringify(payload);
+      expect(postSpy).toHaveBeenNthCalledWith(
+        1,
+        "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=false",
+        expectedPreviewPayload,
+        "post",
+        { "Content-Type": "application/json" }
+      );
+
+      expect(postSpy).toHaveBeenNthCalledWith(
+        2,
+        "/starsky/api/meta-time-correct/offset-execute?f=/test.jpg&collections=true",
+        expectedPreviewPayload,
+        "post",
+        { "Content-Type": "application/json" }
+      );
+
+      expect(mockDispatch).toHaveBeenCalled();
+      expect(mockHandleExit).toHaveBeenCalled();
+
+      component.unmount();
     });
-
-    const mockHandleExit = jest.fn();
-
-    const component = render(
-      <ModalTimezoneShift
-        isOpen={true}
-        handleExit={mockHandleExit}
-        select={["test.jpg"]}
-        historyLocationSearch={mockHistoryLocationSearch}
-        state={mockState}
-        dispatch={mockDispatch}
-        undoSelection={mockUndoSelection}
-      />
-    );
-
-    // Step 1: Select offset mode
-    const offsetRadio = screen.getByRole("radio", { name: /Correct incorrect camera timezone/i });
-    await act(async () => {
-      fireEvent.click(offsetRadio);
-    });
-
-    expect(screen.getByText(/Correct Camera Time/i)).toBeTruthy();
-    expect(screen.getByText(/Time offsets/i)).toBeTruthy();
-
-    // Step 2: Set offset hours
-    const hoursInput = screen.getByLabelText(/Hours/i);
-    await act(async () => {
-      fireEvent.change(hoursInput, { target: { value: "3" } });
-    });
-
-    // Step 3: Wait for preview to load
-    await screen.findByText(/Preview/i);
-    expect(screen.getByText(/Original:/i)).toBeTruthy();
-    expect(screen.getByText(/Result:/i)).toBeTruthy();
-    expect(screen.getByText(/Applied shift:/i)).toBeTruthy();
-
-    // Verify the preview API was called
-    expect(postSpy).toHaveBeenCalled();
-
-    // Step 4: Mock execute-shift response
-    postSpy.mockResolvedValueOnce({
-      statusCode: 200,
-      data: mockExecuteResponse.data
-    });
-
-    // Step 5: Click "Apply Shift" button
-    const applyButton = screen.getByText(/Apply Shift/i);
-    expect(applyButton).not.toBeDisabled();
-
-    await act(async () => {
-      fireEvent.click(applyButton);
-    });
-
-    // Step 6: Verify execution was called and modal exits
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    });
-
-    expect(postSpy).toHaveBeenCalledTimes(2);
-    expect(postSpy).toHaveBeenNthCalledWith(
-      1,
-      "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=false",
-      '{"year":0,"month":0,"day":0,"hour":3,"minute":0,"second":0}',
-      "post",
-      { "Content-Type": "application/json" }
-    );
-
-    expect(postSpy).toHaveBeenNthCalledWith(
-      2,
-      "/starsky/api/meta-time-correct/offset-execute?f=/test.jpg&collections=true",
-      '{"year":0,"month":0,"day":0,"hour":3,"minute":0,"second":0}',
-      "post",
-      { "Content-Type": "application/json" }
-    );
-
-    expect(mockDispatch).toHaveBeenCalled();
-    expect(mockHandleExit).toHaveBeenCalled();
-
-    component.unmount();
   });
 });
