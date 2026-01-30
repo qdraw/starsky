@@ -87,7 +87,7 @@ public sealed class GeoNameCitySeedServiceTest : VerifyBase
 	private static GeoNameCitySeedService CreateSut(ApplicationDbContext dbContext)
 	{
 		var appSettings = new AppSettings { DependenciesFolder = "." };
-		var fakeSelectorStorage = new FakeSelectorStorage(new SampleFakeIStorage());
+		var fakeSelectorStorage = new FakeSelectorStorage(new ReadLinesFakeIStorage());
 		var fakeGeoFileDownload = new FakeIGeoFileDownload();
 		var fakeLogger = new FakeIWebLogger();
 		var fakeMemoryCache = new MemoryCache(new MemoryCacheOptions());
@@ -146,17 +146,18 @@ public sealed class GeoNameCitySeedServiceTest : VerifyBase
 		Assert.IsTrue(all.Any(x => x.GeonameId == 6691091 && x.Name.StartsWith("Al Karama")));
 	}
 
-	private class SampleFakeIStorage : FakeIStorage
+	private sealed class ReadLinesFakeIStorage : FakeIStorage
 	{
 		public override IAsyncEnumerable<string> ReadLinesAsync(string path,
 			CancellationToken cancellationToken)
 		{
 			return GetLines();
 
-			async IAsyncEnumerable<string> GetLines()
+			static async IAsyncEnumerable<string> GetLines()
 			{
 				foreach ( var line in SampleLines )
 				{
+					await Task.Yield(); 
 					yield return line;
 				}
 			}

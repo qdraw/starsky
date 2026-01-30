@@ -95,6 +95,7 @@ export function renderOffsetMode(
           <div className="form-row">
             <label>
               Years
+              <br />
               <input
                 className="form-control"
                 type="number"
@@ -111,6 +112,7 @@ export function renderOffsetMode(
           <div className="form-row">
             <label>
               Months
+              <br />
               <input
                 className="form-control"
                 type="number"
@@ -127,6 +129,7 @@ export function renderOffsetMode(
           <div className="form-row">
             <label>
               Days
+              <br />
               <input
                 className="form-control"
                 type="number"
@@ -143,6 +146,7 @@ export function renderOffsetMode(
           <div className="form-row">
             <label>
               Hours
+              <br />
               <input
                 type="number"
                 className="form-control"
@@ -159,6 +163,7 @@ export function renderOffsetMode(
           <div className="form-row">
             <label>
               Minutes
+              <br />
               <input
                 type="number"
                 className="form-control"
@@ -175,6 +180,7 @@ export function renderOffsetMode(
           <div className="form-row">
             <label>
               Seconds
+              <br />
               <input
                 type="number"
                 value={offsetSeconds}
