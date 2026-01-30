@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -77,6 +78,31 @@ public class GeoNamesCitiesQuery(
 		}
 	}
 
+	public async Task<List<GeoNameCity>> AddRange(List<GeoNameCity> items)
+	{
+		try
+		{
+			return await AddRange(dbContext, items);
+		}
+		catch ( ObjectDisposedException )
+		{
+			var context = new InjectServiceScope(scopeFactory).Context();
+			return await AddRange(context, items);
+		}
+	}
+
+	private static async Task<List<GeoNameCity>> AddRange(ApplicationDbContext context,
+		List<GeoNameCity> items)
+	{
+		context.GeoNameCities.AddRange(items);
+		await context.SaveChangesAsync();
+		foreach ( var item in items )
+		{
+			context.Attach(item).State = EntityState.Detached;
+		}
+
+		return items;
+	}
 
 	private static async Task<GeoNameCity> AddItem(ApplicationDbContext context,
 		GeoNameCity item)
@@ -87,6 +113,7 @@ public class GeoNamesCitiesQuery(
 		return item;
 	}
 
+	[SuppressMessage("ReSharper", "LoopCanBeConvertedToQuery")]
 	private static async Task<List<GeoNameCity>> SearchGetPredicate(ApplicationDbContext context,
 		string search,
 		int maxResults,

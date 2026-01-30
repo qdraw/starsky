@@ -6,6 +6,8 @@ using starsky.foundation.database.Models;
 using starsky.foundation.geo.GeoDownload;
 using starsky.foundation.geo.GeoDownload.Interfaces;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
@@ -18,11 +20,56 @@ public class GeoNameCitySeedService(
 	AppSettings appSettings,
 	IGeoFileDownload geoFileDownload,
 	IGeoNamesCitiesQuery query,
+	IWebLogger logger,
 	IMemoryCache? memoryCache)
 	: IGeoNameCitySeedService
 {
 	private readonly IStorage _hostStorage =
 		selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+
+	private Dictionary<string, string>? _admin1TextAsciiMap;
+
+	public async Task<bool> Seed()
+	{
+		if ( !await Setup() )
+		{
+			return true;
+		}
+
+		var stopWatch = StopWatchLogger.StartUpdateReplaceStopWatch();
+
+		var batch = new List<GeoNameCity>(50);
+		var seenIds = new HashSet<int>();
+		await foreach ( var line in _hostStorage.ReadLinesAsync(GeoCountryNamesPath(),
+			               CancellationToken.None) )
+		{
+			var city = await ParseCityAsync(line);
+			if (!seenIds.Add(city.GeonameId))
+			{
+				continue;
+			}
+			
+			batch.Add(city);
+			if ( batch.Count < 50 )
+			{
+				continue;
+			}
+
+			await query.AddRange(batch);
+			batch.Clear();
+		}
+
+		logger.LogInformation("Seeded GeoNameCity batch finalizing...");
+		if ( batch.Count > 0 )
+		{
+			await query.AddRange(batch);
+		}
+
+		new StopWatchLogger(logger).StopUpdateReplaceStopWatch(
+			nameof(GeoNameCitySeedService), "Seed", true, stopWatch);
+
+		return true;
+	}
 
 	private string GeoCountryNamesPath()
 	{
@@ -63,24 +110,6 @@ public class GeoNameCitySeedService(
 		return result;
 	}
 
-	public async Task<bool> Seed()
-	{
-		if ( !await Setup() )
-		{
-			return true;
-		}
-
-
-		await foreach ( var line in _hostStorage.ReadLinesAsync(GeoCountryNamesPath(),
-			               CancellationToken.None) )
-		{
-			var city = await ParseCityAsync(line);
-			await query.AddItem(city);
-		}
-
-		return true;
-	}
-
 	private async Task<bool> CheckIfFirstLineExists()
 	{
 		var firstLine = string.Empty;
@@ -109,8 +138,6 @@ public class GeoNameCitySeedService(
 			? provinceName
 			: string.Empty;
 	}
-
-	private Dictionary<string, string>? _admin1TextAsciiMap;
 
 	private async Task<Dictionary<string, string>> GetAdmin1TextAsciiMapAsync()
 	{

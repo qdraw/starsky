@@ -161,7 +161,7 @@ public sealed class GeoCli
 		fileIndexList.AddRange(toMetaFilesUpdate);
 
 		await RenameFileHash(fileIndexList);
-		// dont updated in the database
+		// don't update in the database
 		// that's not the scope of this command
 	}
 

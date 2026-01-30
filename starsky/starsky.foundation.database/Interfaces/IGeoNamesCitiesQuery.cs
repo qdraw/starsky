@@ -11,4 +11,6 @@ public interface IGeoNamesCitiesQuery
 
 	Task<List<GeoNameCity>> Search(string search, int maxResults,
 		params string[] fields);
+
+	Task<List<GeoNameCity>> AddRange(List<GeoNameCity> items);
 }
