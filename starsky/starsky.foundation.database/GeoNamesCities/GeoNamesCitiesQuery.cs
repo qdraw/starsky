@@ -38,26 +38,7 @@ public class GeoNamesCitiesQuery(
 			return await GetItemLocal(context);
 		}
 	}
-
-	public async Task<GeoNameCity> AddItem(GeoNameCity item)
-	{
-		if ( await GetItem(item.GeonameId) != null )
-		{
-			return item;
-		}
-
-		try
-		{
-			return await AddItem(dbContext, item);
-		}
-		catch ( ObjectDisposedException )
-		{
-			var context = new InjectServiceScope(scopeFactory).Context();
-			return await AddItem(context, item);
-		}
-	}
-
-
+	
 	public async Task<List<GeoNameCity>> Search(string search, int maxResults,
 		params string[] fields)
 	{
@@ -102,15 +83,6 @@ public class GeoNamesCitiesQuery(
 		}
 
 		return items;
-	}
-
-	private static async Task<GeoNameCity> AddItem(ApplicationDbContext context,
-		GeoNameCity item)
-	{
-		context.GeoNameCities.Add(item);
-		await context.SaveChangesAsync();
-		context.Attach(item).State = EntityState.Detached;
-		return item;
 	}
 
 	[SuppressMessage("ReSharper", "LoopCanBeConvertedToQuery")]
