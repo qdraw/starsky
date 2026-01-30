@@ -252,6 +252,8 @@ describe("ModalTimezoneShift", () => {
       data: [
         {
           filePath: "/test.jpg",
+          fileName: "test.jpg",
+          parentDirectory: "/",
           status: IExifStatus.Ok
         }
       ]
@@ -275,7 +277,7 @@ describe("ModalTimezoneShift", () => {
       <ModalTimezoneShift
         isOpen={true}
         handleExit={mockHandleExit}
-        select={["/test.jpg"]}
+        select={["test.jpg"]}
         historyLocationSearch={mockHistoryLocationSearch}
         state={mockState}
         dispatch={mockDispatch}
@@ -348,19 +350,42 @@ describe("ModalTimezoneShift", () => {
 
     // Step 6: Click "Apply Shift" button
     const applyButton = screen.getByText(/Apply Shift/i);
-    // Button might be disabled if preview wasn't generated, which is OK for this test
-    if (!applyButton.hasAttribute("disabled")) {
-      await act(async () => {
-        fireEvent.click(applyButton);
-      });
 
-      // Step 7: Verify execution was called and modal exits
-      await act(async () => {
-        await waitFor(() => expect(mockDispatch).toHaveBeenCalled());
-      });
+    await act(async () => {
+      fireEvent.click(applyButton);
+    });
 
-      expect(mockDispatch).toHaveBeenCalled();
-    }
+    // Step 7: Verify execution was called and modal exits
+    await act(async () => {
+      await waitFor(() => expect(mockDispatch).toHaveBeenCalled());
+    });
+
+    expect(mockDispatch).toHaveBeenCalled();
+
+    expect(postSpy).toHaveBeenCalledTimes(3);
+    expect(postSpy).toHaveBeenNthCalledWith(
+      1,
+      "/starsky/api/meta-time-correct/timezone-preview?f=/test.jpg&collections=true",
+      '{"recordedTimezoneId":"America/New_York","correctTimezoneId":""}',
+      "post",
+      { "Content-Type": "application/json" }
+    );
+
+    expect(postSpy).toHaveBeenNthCalledWith(
+      2,
+      "/starsky/api/meta-time-correct/timezone-preview?f=/test.jpg&collections=true",
+      '{"recordedTimezoneId":"Europe/Amsterdam","correctTimezoneId":"America/New_York"}',
+      "post",
+      { "Content-Type": "application/json" }
+    );
+
+    expect(postSpy).toHaveBeenNthCalledWith(
+      3,
+      "/starsky/api/meta-time-correct/timezone-execute?f=/test.jpg&collections=true",
+      '{"recordedTimezoneId":"America/New_York","correctTimezoneId":"Europe/Amsterdam"}',
+      "post",
+      { "Content-Type": "application/json" }
+    );
 
     component.unmount();
   }, 10000);
@@ -382,13 +407,15 @@ describe("ModalTimezoneShift", () => {
       data: [
         {
           filePath: "/test.jpg",
+          fileName: "test.jpg",
+          parentDirectory: "/",
           status: IExifStatus.Ok
         }
       ]
     };
 
     // Mock fetch for offset preview
-    const postSpy = jest.spyOn(FetchPost, "default").mockResolvedValue({
+    const postSpy = jest.spyOn(FetchPost, "default").mockReset().mockResolvedValue({
       statusCode: 200,
       data: mockOffsetPreview
     });
@@ -399,7 +426,7 @@ describe("ModalTimezoneShift", () => {
       <ModalTimezoneShift
         isOpen={true}
         handleExit={mockHandleExit}
-        select={["/test.jpg"]}
+        select={["test.jpg"]}
         historyLocationSearch={mockHistoryLocationSearch}
         state={mockState}
         dispatch={mockDispatch}
@@ -450,7 +477,23 @@ describe("ModalTimezoneShift", () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
-    expect(postSpy).toHaveBeenCalled();
+    expect(postSpy).toHaveBeenCalledTimes(2);
+    expect(postSpy).toHaveBeenNthCalledWith(
+      1,
+      "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=false",
+      '{"year":0,"month":0,"day":0,"hour":3,"minute":0,"second":0}',
+      "post",
+      { "Content-Type": "application/json" }
+    );
+
+    expect(postSpy).toHaveBeenNthCalledWith(
+      2,
+      "/starsky/api/meta-time-correct/offset-execute?f=/test.jpg&collections=true",
+      '{"year":0,"month":0,"day":0,"hour":3,"minute":0,"second":0}',
+      "post",
+      { "Content-Type": "application/json" }
+    );
+
     expect(mockDispatch).toHaveBeenCalled();
     expect(mockHandleExit).toHaveBeenCalled();
 
