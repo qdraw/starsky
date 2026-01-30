@@ -531,4 +531,160 @@ describe("ModalTimezoneShift", () => {
       component.unmount();
     });
   });
+
+  it("offset mode: combination of all fields", async () => {
+    const mockOffsetPreview = [
+      {
+        success: true,
+        originalDateTime: "2024-08-12T14:32:00",
+        correctedDateTime: "2024-08-12T17:32:00",
+        delta: "+03:00:00",
+        warning: "",
+        error: ""
+      }
+    ];
+
+    const mockExecuteResponse = {
+      statusCode: 200,
+      data: [
+        {
+          filePath: "/test.jpg",
+          fileName: "test.jpg",
+          parentDirectory: "/",
+          status: IExifStatus.Ok
+        }
+      ]
+    };
+
+    // Mock fetch for offset preview
+    const postSpy = jest.spyOn(FetchPost, "default").mockReset().mockResolvedValue({
+      statusCode: 200,
+      data: mockOffsetPreview
+    });
+
+    const mockHandleExit = jest.fn();
+
+    const component = render(
+      <ModalTimezoneShift
+        isOpen={true}
+        handleExit={mockHandleExit}
+        select={["test.jpg"]}
+        historyLocationSearch={mockHistoryLocationSearch}
+        state={mockState}
+        dispatch={mockDispatch}
+        undoSelection={mockUndoSelection}
+      />
+    );
+
+    // Step 1: Select offset mode
+    const offsetRadio = screen.getByRole("radio", {
+      name: /Correct incorrect camera timezone/i
+    });
+    await act(async () => {
+      fireEvent.click(offsetRadio);
+    });
+
+    expect(screen.getByText(/Correct Camera Time/i)).toBeTruthy();
+    expect(screen.getByText(/Time offsets/i)).toBeTruthy();
+
+    // Step 2: Set all offset fields
+    const values = { year: 1, month: 2, day: 3, hour: 4, minute: 5, second: 6 };
+    for (const [key, value] of Object.entries(values)) {
+      const input = screen.getByLabelText(new RegExp(key, "i"));
+      await act(async () => {
+        fireEvent.change(input, { target: { value: String(value) } });
+      });
+    }
+
+    // Step 3: Wait for preview to load
+    await screen.findByText(/Preview/i);
+    expect(screen.getByText(/Original:/i)).toBeTruthy();
+    expect(screen.getByText(/Result:/i)).toBeTruthy();
+    expect(screen.getByText(/Applied shift:/i)).toBeTruthy();
+
+    // Verify the preview API was called
+    expect(postSpy).toHaveBeenCalled();
+
+    // Step 4: Mock execute-shift response
+    postSpy.mockResolvedValueOnce({
+      statusCode: 200,
+      data: mockExecuteResponse.data
+    });
+
+    // Step 5: Click "Apply Shift" button
+    const applyButton = screen.getByText(/Apply Shift/i);
+    expect(applyButton).not.toBeDisabled();
+
+    await act(async () => {
+      fireEvent.click(applyButton);
+    });
+
+    // Step 6: Verify execution was called and modal exits
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    });
+
+    expect(postSpy).toHaveBeenCalledTimes(7);
+    expect(postSpy).toHaveBeenNthCalledWith(
+      1,
+      "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=false",
+      '{"year":1,"month":0,"day":0,"hour":0,"minute":0,"second":0}',
+      "post",
+      { "Content-Type": "application/json" }
+    );
+
+    expect(postSpy).toHaveBeenNthCalledWith(
+      2,
+      "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=false",
+      '{"year":1,"month":2,"day":0,"hour":0,"minute":0,"second":0}',
+      "post",
+      { "Content-Type": "application/json" }
+    );
+
+    expect(postSpy).toHaveBeenNthCalledWith(
+      3,
+      "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=false",
+      '{"year":1,"month":2,"day":3,"hour":0,"minute":0,"second":0}',
+      "post",
+      { "Content-Type": "application/json" }
+    );
+
+    expect(postSpy).toHaveBeenNthCalledWith(
+      4,
+      "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=false",
+      '{"year":1,"month":2,"day":3,"hour":4,"minute":0,"second":0}',
+      "post",
+      { "Content-Type": "application/json" }
+    );
+
+    expect(postSpy).toHaveBeenNthCalledWith(
+      5,
+      "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=false",
+      '{"year":1,"month":2,"day":3,"hour":4,"minute":5,"second":0}',
+      "post",
+      { "Content-Type": "application/json" }
+    );
+
+    expect(postSpy).toHaveBeenNthCalledWith(
+      6,
+      "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=false",
+      '{"year":1,"month":2,"day":3,"hour":4,"minute":5,"second":6}',
+      "post",
+      { "Content-Type": "application/json" }
+    );
+
+    // Execute call!!
+    expect(postSpy).toHaveBeenNthCalledWith(
+      7,
+      "/starsky/api/meta-time-correct/offset-execute?f=/test.jpg&collections=true",
+      '{"year":1,"month":2,"day":3,"hour":4,"minute":5,"second":6}',
+      "post",
+      { "Content-Type": "application/json" }
+    );
+
+    expect(mockDispatch).toHaveBeenCalled();
+    expect(mockHandleExit).toHaveBeenCalled();
+
+    component.unmount();
+  });
 });
