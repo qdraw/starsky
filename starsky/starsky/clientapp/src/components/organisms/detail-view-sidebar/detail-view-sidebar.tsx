@@ -134,6 +134,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     const [copyPasteAction, setCopyPasteAction] = React.useState("");
 
     // To fast go the tags field
+    // Press T or I to focus on the end of the field
     const tagsReference = useRef<HTMLDivElement>(null);
     useKeyboardEvent(
       /^([ti])$/,

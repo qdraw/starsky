@@ -62,7 +62,7 @@ export class LeafletEmptyImageUrlGridLayer extends GridLayer {
       getAttribute?: (name: string) => string | null;
     }
   ) {
-    if (!this._map || (tile.getAttribute && tile.getAttribute("src") === "empty-image.gif")) {
+    if (!this._map || (tile?.getAttribute && tile.getAttribute("src") === "empty-image.gif")) {
       return;
     } // Replace emptyImageUrl
 
