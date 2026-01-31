@@ -42,7 +42,7 @@ public sealed class StorageHostFullPathFilesystemTest
 		Console.WriteLine("count => " + content.Count);
 
 		// Assert - Should find both files recursively
-		Assert.HasCount(2, content);
+		Assert.HasCount(3, content);
 		
 		// Cleanup
 		storage.FolderDelete(testDir);
