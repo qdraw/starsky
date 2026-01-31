@@ -789,4 +789,55 @@ describe("ModalTimezoneShift", () => {
       modal.unmount();
     });
   });
+
+  it("calls handleResetAll with all reset methods when modal closes", () => {
+    const { rerender } = render(
+      <ModalTimezoneShift
+        isOpen={true}
+        handleExit={() => {}}
+        select={["/test.jpg"]}
+        historyLocationSearch={mockHistoryLocationSearch}
+        state={mockState}
+        dispatch={mockDispatch}
+        undoSelection={mockUndoSelection}
+      />
+    );
+
+    // Set some state to verify reset clears it
+    const offsetRadio = screen.getByRole("radio", { name: /Correct incorrect camera timezone/i });
+    fireEvent.click(offsetRadio);
+
+    // Verify we're in offset mode
+    expect(screen.getByText(/Correct Camera Time/i)).toBeTruthy();
+
+    // Close the modal by setting isOpen to false
+    rerender(
+      <ModalTimezoneShift
+        isOpen={false}
+        handleExit={() => {}}
+        select={["/test.jpg"]}
+        historyLocationSearch={mockHistoryLocationSearch}
+        state={mockState}
+        dispatch={mockDispatch}
+        undoSelection={mockUndoSelection}
+      />
+    );
+
+    // Reopen the modal - if handleResetAll was called, it should be back to mode-selection
+    rerender(
+      <ModalTimezoneShift
+        isOpen={true}
+        handleExit={() => {}}
+        select={["/test.jpg"]}
+        historyLocationSearch={mockHistoryLocationSearch}
+        state={mockState}
+        dispatch={mockDispatch}
+        undoSelection={mockUndoSelection}
+      />
+    );
+
+    // Should be back at mode selection
+    expect(screen.getByText(/Shift Photo Time/i)).toBeTruthy();
+    expect(screen.getByText(/What do you want to do/i)).toBeTruthy();
+  });
 });

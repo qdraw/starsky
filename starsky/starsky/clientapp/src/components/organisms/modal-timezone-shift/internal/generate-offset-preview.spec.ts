@@ -221,7 +221,6 @@ describe("generateOffsetPreview", () => {
       mockPreview,
       mockSetPreview
     );
-    const urlPathInstance = (URLPath as unknown as jest.Mock).mock.results[0].value;
-    expect(urlPathInstance.encodeURI).toHaveBeenCalledWith("/path/first.jpg");
+    expect(encodeURISpy).toHaveBeenCalledWith("/path/file1.jpg");
   });
 });
