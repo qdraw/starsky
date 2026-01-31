@@ -1,7 +1,9 @@
 import { ArchiveAction } from "../../../../contexts/archive-context";
+import useGlobalSettings from "../../../../hooks/use-global-settings";
 import { IArchiveProps } from "../../../../interfaces/IArchiveProps";
+import localization from "../../../../localization/localization.json";
 import { parseDate, parseTime } from "../../../../shared/date";
-import { SupportedLanguages } from "../../../../shared/language";
+import { Language, SupportedLanguages } from "../../../../shared/language";
 import Preloader from "../../../atoms/preloader/preloader";
 import { useOffsetState } from "../hooks/use-offset-state";
 import { IPreviewState } from "../hooks/use-preview-state";
@@ -66,16 +68,22 @@ export function renderOffsetMode(
       setPreview
     );
   };
+
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+
   return (
     <>
-      <div className="modal content--subheader">Correct Camera Time</div>
+      <div className="modal content--subheader">
+        {language.key(localization.MessageCorrectCameraTime)}
+      </div>
       <div className="modal content--text">
         <div className="offset-inputs">
-          <p>Time offsets (relative to original timestamp)</p>
+          <p>{language.key(localization.MessageTimeOffsetsRelativeToOriginalTimestamp)}</p>
 
           <div className="form-row">
             <label>
-              Years
+              {language.key(localization.MessageYear)}
               <br />
               <input
                 className="form-control"
@@ -92,7 +100,7 @@ export function renderOffsetMode(
 
           <div className="form-row">
             <label>
-              Months
+              {language.key(localization.MessageMonth)}
               <br />
               <input
                 className="form-control"
@@ -109,7 +117,7 @@ export function renderOffsetMode(
 
           <div className="form-row">
             <label>
-              Days
+              {language.key(localization.MessageDay)}
               <br />
               <input
                 className="form-control"
@@ -126,7 +134,7 @@ export function renderOffsetMode(
 
           <div className="form-row">
             <label>
-              Hours
+              {language.key(localization.MessageHour)}
               <br />
               <input
                 type="number"
@@ -143,7 +151,7 @@ export function renderOffsetMode(
 
           <div className="form-row">
             <label>
-              Minutes
+              {language.key(localization.MessageMinute)}
               <br />
               <input
                 type="number"
@@ -160,7 +168,7 @@ export function renderOffsetMode(
 
           <div className="form-row">
             <label>
-              Seconds
+              {language.key(localization.MessageSecond)}
               <br />
               <input
                 type="number"

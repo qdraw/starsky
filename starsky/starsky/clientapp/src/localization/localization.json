@@ -969,6 +969,26 @@
     "nl": "Maand",
     "de": "Monat"
   },
+  "MessageDay": {
+    "en": "Day",
+    "nl": "Dag",
+    "de": "Tag"
+  },
+  "MessageHour": {
+    "en": "Hour",
+    "nl": "Uur",
+    "de": "Stunde"
+  },
+  "MessageMinute": {
+    "en": "Minute",
+    "nl": "Minuut",
+    "de": "Minute"
+  },
+  "MessageSecond": {
+    "en": "Second",
+    "nl": "Seconde",
+    "de": "Sekunde"
+  },
   "MessageDate": {
     "en": "Day",
     "nl": "Dag",
@@ -1129,15 +1149,15 @@
     "nl": "Ik reisde en maakte foto's op een andere locatie.",
     "de": "Ich reiste und machte Fotos an einem anderen Ort."
   },
-  "temp1": {
-    "en": ".",
-    "nl": ".",
-    "de": "."
+  "MessageCorrectCameraTime": {
+    "en": "Correct Camera Time",
+    "nl": "Corrigeer cameraklok",
+    "de": "Korrigieren Sie die Kamerauhr"
   },
-  "temp1": {
-    "en": ".",
-    "nl": ".",
-    "de": "."
+  "MessageTimeOffsetsRelativeToOriginalTimestamp": {
+    "en": "Time offsets (relative to original timestamp)",
+    "nl": "Tijdverschuivingen (relatief ten opzichte van de oorspronkelijke tijdstempel)",
+    "de": "Zeitverschiebungen (relativ zum ursprünglichen Zeitstempel)"
   },
   "temp1": {
     "en": ".",

@@ -177,7 +177,7 @@ describe("ModalTimezoneShift", () => {
     const offsetRadio = screen.getByRole("radio", { name: /Correct incorrect camera timezone/i });
     fireEvent.click(offsetRadio);
 
-    const hoursInput = screen.getByLabelText(/Hours/i);
+    const hoursInput = screen.getByLabelText(/Hour/i);
     fireEvent.change(hoursInput, { target: { value: "3" } });
 
     // Wait for the preview to appear (since preview is generated automatically)
