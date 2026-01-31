@@ -29,6 +29,11 @@ export class Keyboard {
     return target.className.includes("form-control") || target.className.includes("modal");
   }
 
+  /**
+   * When press an key like I and it should focus on the end of the div contenteditable
+   * @param current html element
+   * @returns void
+   */
   public SetFocusOnEndField(current: HTMLDivElement): void {
     // no content in field
     if (current.childNodes.length === 0) {
