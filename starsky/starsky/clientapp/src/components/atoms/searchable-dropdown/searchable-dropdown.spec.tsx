@@ -233,4 +233,19 @@ describe("SearchableDropdown", () => {
       expect(mockOnSelect).toHaveBeenCalledWith("Apple", "");
     });
   });
+
+  it("should not call onSelect when Enter is pressed and no results", async () => {
+    const { getByTestId } = render(
+      <SearchableDropdown fetchResults={mockFetchResults} onSelect={mockOnSelect} />
+    );
+    const input = getByTestId("searchable-dropdown-input") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "xyz" } }); // No results for 'xyz'
+    await waitFor(() => {
+      expect(screen.queryByTestId("searchable-dropdown-no-results")).toBeInTheDocument();
+    });
+    fireEvent.keyDown(input, { key: "Enter" });
+    await waitFor(() => {
+      expect(mockOnSelect).not.toHaveBeenCalled();
+    });
+  });
 });
