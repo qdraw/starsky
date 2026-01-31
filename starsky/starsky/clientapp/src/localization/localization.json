@@ -1084,10 +1084,70 @@
     "nl": "Selecteer een patroon om een voorbeeld te zien",
     "de": "Wählen Sie ein Muster, um eine Vorschau zu sehen"
   },
-  "MessageShiftPhotoTimestamps": {
-    "en": "Shift photo timestamps",
-    "nl": "Verschuif fototijdstempels",
-    "de": "Foto-Zeitstempel verschieben"
+  "MessageShiftPhotoTime": {
+    "en": "Shift Photo Time",
+    "nl": "Tijdstip van foto’s corrigeren",
+    "de": "Foto-Zeitstempel anpassen"
+  },
+  "MessageYouHaveSelected": {
+    "en": "You have selected:",
+    "nl": "Je hebt geselecteerd:",
+    "de": "Sie haben ausgewählt:"
+  },
+  "MessageWhatDoYouWantToDo": {
+    "en": "What do you want to do?",
+    "nl": "Wat wil je doen?",
+    "de": "Was möchten Sie tun?"
+  },
+  "MessageImage": {
+    "en": "image",
+    "nl": "afbeelding",
+    "de": "Bild"
+  },
+  "MessageImages": {
+    "en": "images",
+    "nl": "afbeeldingen",
+    "de": "Bilder"
+  },
+  "MessageCorrectIncorrectCameraTimezone": {
+    "en": "Correct incorrect camera timezone",
+    "nl": "Corrigeer onjuiste cameratiijdzone",
+    "de": "Korrigieren Sie die falsche Kamerazeitzone"
+  },
+  "MessageCameraClockWrongTimezone": {
+    "en": "The camera clock was set to the wrong timezone",
+    "nl": "De cameraklok stond op de verkeerde tijdzone",
+    "de": "Die Kamerauhr war auf die falsche Zeitzone eingestellt"
+  },
+  "MessageIMovedToDifferentPlace": {
+    "en": "I stayed in a different place",
+    "nl": "Ik verbleef op een andere plek",
+    "de": "Ich habe an einem anderen Ort gewohnt"
+  },
+  "MessageITraveledAndTookPhotosInAnotherLocation": {
+    "en": "I traveled and took photos in another location.",
+    "nl": "Ik reisde en maakte foto's op een andere locatie.",
+    "de": "Ich reiste und machte Fotos an einem anderen Ort."
+  },
+  "temp1": {
+    "en": ".",
+    "nl": ".",
+    "de": "."
+  },
+  "temp1": {
+    "en": ".",
+    "nl": ".",
+    "de": "."
+  },
+  "temp1": {
+    "en": ".",
+    "nl": ".",
+    "de": "."
+  },
+  "temp1": {
+    "en": ".",
+    "nl": ".",
+    "de": "."
   },
   "temp1": {
     "en": ".",

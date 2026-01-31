@@ -133,7 +133,7 @@ describe("ModalTimezoneShift", () => {
       />
     );
 
-    const timezoneRadio = screen.getByRole("radio", { name: /I moved to a different place/i });
+    const timezoneRadio = screen.getByRole("radio", { name: /I stayed in a different place/i });
 
     await act(async () => {
       fireEvent.click(timezoneRadio);

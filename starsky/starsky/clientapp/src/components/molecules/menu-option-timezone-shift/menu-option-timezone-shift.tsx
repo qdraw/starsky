@@ -43,7 +43,7 @@ export const MenuOptionTimezoneShift: React.FunctionComponent<IMenuOptionTimezon
         isReadOnly={readOnly || !isVisible}
         isSet={isModalOpen}
         set={() => setIsModalOpen(!isModalOpen)}
-        localization={localization.MessageShiftPhotoTimestamps}
+        localization={localization.MessageShiftPhotoTime}
         testName="timezone-shift"
       />
     </>
