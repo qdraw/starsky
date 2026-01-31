@@ -130,4 +130,82 @@ describe("keyboard", () => {
       expect(addRange).toHaveBeenCalled();
     });
   });
+
+  describe("unBlur", () => {
+    let keyboard: Keyboard;
+    beforeEach(() => {
+      keyboard = new Keyboard();
+    });
+
+    it("returns null if no event", () => {
+      expect(keyboard.unBlur(undefined)).toBeNull();
+    });
+
+    it("returns null if not in form", () => {
+      const event = new KeyboardEvent("keydown");
+      jest.spyOn(keyboard, "isInForm").mockReturnValueOnce(false);
+      expect(keyboard.unBlur(event)).toBeNull();
+    });
+
+    it("returns null if target has no blur", () => {
+      const event = new KeyboardEvent("keydown");
+      Object.defineProperty(event, "target", {
+        writable: false,
+        value: { className: "form-control" }
+      });
+      jest.spyOn(keyboard, "isInForm").mockReturnValueOnce(true);
+      expect(keyboard.unBlur(event)).toBeNull();
+    });
+
+    it("calls blur and returns true", () => {
+      const blurSpy = jest.fn();
+      const event = new KeyboardEvent("keydown");
+      Object.defineProperty(event, "target", {
+        writable: false,
+        value: { className: "form-control", blur: blurSpy }
+      });
+      jest.spyOn(keyboard, "isInForm").mockReturnValueOnce(true);
+      expect(keyboard.unBlur(event)).toBe(true);
+      expect(blurSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe("focus", () => {
+    let keyboard: Keyboard;
+    beforeEach(() => {
+      keyboard = new Keyboard();
+    });
+
+    it("returns null if no event", () => {
+      expect(keyboard.focus(undefined)).toBeNull();
+    });
+
+    it("returns null if not in form", () => {
+      const event = new KeyboardEvent("keydown");
+      jest.spyOn(keyboard, "isInForm").mockReturnValueOnce(false);
+      expect(keyboard.focus(event)).toBeNull();
+    });
+
+    it("returns null if target has no focus", () => {
+      const event = new KeyboardEvent("keydown");
+      Object.defineProperty(event, "target", {
+        writable: false,
+        value: { className: "form-control" }
+      });
+      jest.spyOn(keyboard, "isInForm").mockReturnValueOnce(true);
+      expect(keyboard.focus(event)).toBeNull();
+    });
+
+    it("calls focus and returns true", () => {
+      const focusSpy = jest.fn();
+      const event = new KeyboardEvent("keydown");
+      Object.defineProperty(event, "target", {
+        writable: false,
+        value: { className: "form-control", focus: focusSpy }
+      });
+      jest.spyOn(keyboard, "isInForm").mockReturnValueOnce(true);
+      expect(keyboard.focus(event)).toBe(true);
+      expect(focusSpy).toHaveBeenCalled();
+    });
+  });
 });

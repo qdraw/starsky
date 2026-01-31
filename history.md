@@ -43,6 +43,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.10 - _(Unreleased)_ - 2026-?-? {#v0.7.10}
 
+- [x] (Fixed) _Front-end_ Pressing `[` or `]` when focussed on an input it should save (PR #2678)
+- [x] (Fixed) _Front-end_ prevent rendering errors when an image source is missing (PR #2677)
 - [x] (Changed) _Back-end_ Timezone display functionality in the meta update module (PR #2671)
 
 ## version 0.7.9 - 2026-01-26 {#v0.7.9}

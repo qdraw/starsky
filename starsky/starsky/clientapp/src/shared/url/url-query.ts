@@ -279,6 +279,9 @@ export class UrlQuery {
     filePath?: string,
     extraLarge = true
   ): string => {
+    if (!fileHash) {
+      return "";
+    }
     if (!extraLarge) {
       return (
         this.prefix +

@@ -139,20 +139,22 @@ const PanAndZoomImage = ({ src, id, alt, ...props }: IPanAndZoomImage) => {
           }}
         >
           {/* NOSONAR(S6847) */}
-          <img
-            className={`pan-zoom-image--image image--default ${props.translateRotation}`}
-            alt={alt}
-            src={src}
-            onLoad={new OnLoadMouseAction(setImage, props.setError, props.setIsLoading).onLoad}
-            onError={() => {
-              if (!props.setError || !props.setIsLoading) {
-                return;
-              }
-              props.setError(true);
-              props.setIsLoading(false);
-              if (props.onErrorCallback) props.onErrorCallback();
-            }}
-          />
+          {src ? (
+            <img
+              className={`pan-zoom-image--image image--default ${props.translateRotation}`}
+              alt={alt}
+              src={src}
+              onLoad={new OnLoadMouseAction(setImage, props.setError, props.setIsLoading).onLoad}
+              onError={() => {
+                if (!props.setError || !props.setIsLoading) {
+                  return;
+                }
+                props.setError(true);
+                props.setIsLoading(false);
+                if (props.onErrorCallback) props.onErrorCallback();
+              }}
+            />
+          ) : null}
         </div>
       </button>
       <div className="gpx-controls">
