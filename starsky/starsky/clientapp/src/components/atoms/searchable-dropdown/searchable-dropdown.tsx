@@ -89,8 +89,6 @@ const SearchableDropdown: FunctionComponent<ISearchableDropdownProps> = ({
         setIsOpen(false);
         setSelectedIndex(-1);
         break;
-      default:
-        break;
     }
   };
 

@@ -200,6 +200,28 @@ describe("SearchableDropdown", () => {
     });
   });
 
+  it("should call console.error when fetchResults throws an error", async () => {
+    const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+    const errorFetchResults = jest.fn(async () => {
+      throw new Error("Network error");
+    });
+
+    render(<SearchableDropdown fetchResults={errorFetchResults} />);
+    const input = screen.getByTestId("searchable-dropdown-input") as HTMLInputElement;
+
+    fireEvent.change(input, { target: { value: "fail" } });
+
+    await waitFor(() => {
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "Error fetching dropdown results:",
+        expect.any(Error)
+      );
+      expect(screen.queryByTestId("searchable-dropdown-no-results")).toBeInTheDocument();
+    });
+
+    consoleErrorSpy.mockRestore();
+  });
+
   it("should navigate with ArrowDown, ArrowUp, and select with Enter", async () => {
     const { getByTestId } = render(
       <SearchableDropdown fetchResults={mockFetchResults} onSelect={mockOnSelect} />
@@ -246,6 +268,183 @@ describe("SearchableDropdown", () => {
     fireEvent.keyDown(input, { key: "Enter" });
     await waitFor(() => {
       expect(mockOnSelect).not.toHaveBeenCalled();
+    });
+  });
+
+  it("should select default item on Enter when no search results", async () => {
+    const defaultItems = [
+      { label: "Default 1", value: "default1" },
+      { label: "Default 2", value: "default2" },
+      { label: "Default 3", value: "default3" }
+    ];
+
+    const { getByTestId } = render(
+      <SearchableDropdown
+        fetchResults={mockFetchResults}
+        defaultItems={defaultItems}
+        onSelect={mockOnSelect}
+      />
+    );
+
+    const input = getByTestId("searchable-dropdown-input") as HTMLInputElement;
+
+    // Focus to show default items
+    fireEvent.focus(input);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("searchable-dropdown-item-default1")).toBeInTheDocument();
+      expect(screen.getByTestId("searchable-dropdown-item-default2")).toBeInTheDocument();
+      expect(screen.getByTestId("searchable-dropdown-item-default3")).toBeInTheDocument();
+    });
+
+    // Navigate to second default item
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+
+    await waitFor(() => {
+      const secondItem = screen.getByTestId("searchable-dropdown-item-default2");
+      expect(secondItem).toHaveClass("searchable-dropdown__item--selected");
+    });
+
+    // Press Enter to select the default item
+    fireEvent.keyDown(input, { key: "Enter" });
+
+    await waitFor(() => {
+      expect(mockOnSelect).toHaveBeenCalledWith("default2", "Default 2");
+    });
+  });
+
+  describe("handleFormSubmit", () => {
+    it("should submit search result item when form is submitted with selectedIndex >= 0", async () => {
+      const { getByTestId } = render(
+        <SearchableDropdown fetchResults={mockFetchResults} onSelect={mockOnSelect} />
+      );
+
+      const input = getByTestId("searchable-dropdown-input") as HTMLInputElement;
+      fireEvent.change(input, { target: { value: "app" } });
+
+      await waitFor(() => {
+        expect(screen.getByTestId("searchable-dropdown-item-Apple")).toBeInTheDocument();
+      });
+
+      // Navigate to first item
+      fireEvent.keyDown(input, { key: "ArrowDown" });
+
+      await waitFor(() => {
+        const firstItem = screen.getByTestId("searchable-dropdown-item-Apple");
+        expect(firstItem).toHaveClass("searchable-dropdown__item--selected");
+      });
+
+      // Submit form
+      const form = input.closest("form");
+      if (form) {
+        fireEvent.submit(form);
+      }
+
+      await waitFor(() => {
+        expect(mockOnSelect).toHaveBeenCalledWith("Apple", "");
+      });
+    });
+
+    it("should submit default item when form is submitted with defaultItems and selectedIndex >= 0", async () => {
+      const defaultItems = [
+        { label: "Default 1", value: "default1" },
+        { label: "Default 2", value: "default2" }
+      ];
+
+      const { getByTestId } = render(
+        <SearchableDropdown
+          fetchResults={mockFetchResults}
+          defaultItems={defaultItems}
+          onSelect={mockOnSelect}
+        />
+      );
+
+      const input = getByTestId("searchable-dropdown-input") as HTMLInputElement;
+      fireEvent.focus(input);
+
+      await waitFor(() => {
+        expect(screen.getByTestId("searchable-dropdown-item-default1")).toBeInTheDocument();
+      });
+
+      // Navigate to second default item
+      fireEvent.keyDown(input, { key: "ArrowDown" });
+      fireEvent.keyDown(input, { key: "ArrowDown" });
+
+      await waitFor(() => {
+        const secondItem = screen.getByTestId("searchable-dropdown-item-default2");
+        expect(secondItem).toHaveClass("searchable-dropdown__item--selected");
+      });
+
+      // Submit form
+      const form = input.closest("form");
+      if (form) {
+        fireEvent.submit(form);
+      }
+
+      await waitFor(() => {
+        expect(mockOnSelect).toHaveBeenCalledWith("default2", "Default 2");
+      });
+    });
+
+    it("should call onSelect with query when form is submitted with query but no selectedIndex", async () => {
+      const { getByTestId } = render(
+        <SearchableDropdown fetchResults={mockFetchResults} onSelect={mockOnSelect} />
+      );
+
+      const input = getByTestId("searchable-dropdown-input") as HTMLInputElement;
+      fireEvent.change(input, { target: { value: "custom query" } });
+
+      // Don't select any item, just submit form
+      const form = input.closest("form");
+      if (form) {
+        fireEvent.submit(form);
+      }
+
+      await waitFor(() => {
+        expect(mockOnSelect).toHaveBeenCalledWith("custom query", "");
+      });
+    });
+
+    it("should close dropdown when form is submitted with query but no selectedIndex", async () => {
+      const { getByTestId, queryByTestId } = render(
+        <SearchableDropdown fetchResults={mockFetchResults} onSelect={mockOnSelect} />
+      );
+
+      const input = getByTestId("searchable-dropdown-input") as HTMLInputElement;
+      fireEvent.change(input, { target: { value: "app" } });
+
+      await waitFor(() => {
+        expect(screen.getByTestId("searchable-dropdown-item-Apple")).toBeInTheDocument();
+      });
+
+      // Submit form without selecting any item
+      const form = input.closest("form");
+      if (form) {
+        fireEvent.submit(form);
+      }
+
+      await waitFor(() => {
+        expect(queryByTestId("searchable-dropdown-list")).not.toBeInTheDocument();
+      });
+    });
+
+    it("should not call onSelect when form is submitted with no query and no selectedIndex", async () => {
+      const { getByTestId } = render(
+        <SearchableDropdown fetchResults={mockFetchResults} onSelect={mockOnSelect} />
+      );
+
+      const input = getByTestId("searchable-dropdown-input") as HTMLInputElement;
+
+      // Submit form without entering query or selecting item
+      const form = input.closest("form");
+      if (form) {
+        fireEvent.submit(form);
+      }
+
+      await waitFor(() => {
+        expect(mockOnSelect).not.toHaveBeenCalled();
+      });
     });
   });
 });

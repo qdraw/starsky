@@ -87,12 +87,42 @@ describe("useOffsetState", () => {
     });
 
     describe.each([
-      { field: "years", setter: "setOffsetYears", value: 1, expected: { years: 1, months: 0, days: 0, hours: 0, minutes: 0, seconds: 0 } },
-      { field: "months", setter: "setOffsetMonths", value: 5, expected: { years: 0, months: 5, days: 0, hours: 0, minutes: 0, seconds: 0 } },
-      { field: "days", setter: "setOffsetDays", value: 15, expected: { years: 0, months: 0, days: 15, hours: 0, minutes: 0, seconds: 0 } },
-      { field: "hours", setter: "setOffsetHours", value: 12, expected: { years: 0, months: 0, days: 0, hours: 12, minutes: 0, seconds: 0 } },
-      { field: "minutes", setter: "setOffsetMinutes", value: 30, expected: { years: 0, months: 0, days: 0, hours: 0, minutes: 30, seconds: 0 } },
-      { field: "seconds", setter: "setOffsetSeconds", value: 45, expected: { years: 0, months: 0, days: 0, hours: 0, minutes: 0, seconds: 45 } }
+      {
+        field: "years",
+        setter: "setOffsetYears",
+        value: 1,
+        expected: { years: 1, months: 0, days: 0, hours: 0, minutes: 0, seconds: 0 }
+      },
+      {
+        field: "months",
+        setter: "setOffsetMonths",
+        value: 5,
+        expected: { years: 0, months: 5, days: 0, hours: 0, minutes: 0, seconds: 0 }
+      },
+      {
+        field: "days",
+        setter: "setOffsetDays",
+        value: 15,
+        expected: { years: 0, months: 0, days: 15, hours: 0, minutes: 0, seconds: 0 }
+      },
+      {
+        field: "hours",
+        setter: "setOffsetHours",
+        value: 12,
+        expected: { years: 0, months: 0, days: 0, hours: 12, minutes: 0, seconds: 0 }
+      },
+      {
+        field: "minutes",
+        setter: "setOffsetMinutes",
+        value: 30,
+        expected: { years: 0, months: 0, days: 0, hours: 0, minutes: 30, seconds: 0 }
+      },
+      {
+        field: "seconds",
+        setter: "setOffsetSeconds",
+        value: 45,
+        expected: { years: 0, months: 0, days: 0, hours: 0, minutes: 0, seconds: 45 }
+      }
     ])("returns correct offset when only $field is set", ({ setter, value, expected }) => {
       const { result } = renderHook(() => useOffsetState());
 
