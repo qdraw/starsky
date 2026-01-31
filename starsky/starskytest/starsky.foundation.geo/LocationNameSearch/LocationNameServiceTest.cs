@@ -1,3 +1,5 @@
+using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
@@ -50,5 +52,20 @@ public class LocationNameServiceTest
 		var service = new LocationNameService(query, seed, logger);
 		var result = await service.SearchCity("Utrecht");
 		Assert.IsEmpty(result);
+	}
+
+	[TestMethod]
+	public async Task SearchCityTimezone_ToShort()
+	{
+		var query = new FakeGeoNamesCitiesQuery();
+		query.Cities.AddRange([
+			new GeoNameCity { Name = "Amsterdam", Population = 1000000 }
+		]);
+		var seed = new FakeGeoNameCitySeedService();
+		var logger = new FakeIWebLogger();
+		var service = new LocationNameService(query, seed, logger);
+		var result = await service.SearchCityTimezone(
+			DateTime.Now.ToString(CultureInfo.InvariantCulture), "Am");
+		Assert.HasCount(0, result);
 	}
 }
