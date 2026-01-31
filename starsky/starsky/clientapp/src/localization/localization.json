@@ -989,6 +989,36 @@
     "nl": "Seconde",
     "de": "Sekunde"
   },
+  "MessageYears": {
+    "en": "Years",
+    "nl": "Jaren",
+    "de": "Jahre"
+  },
+  "MessageMonths": {
+    "en": "Months",
+    "nl": "Maanden",
+    "de": "Monate"
+  },
+  "MessageDays": {
+    "en": "Days",
+    "nl": "Dagen",
+    "de": "Tage"
+  },
+  "MessageHours": {
+    "en": "Hours",
+    "nl": "Uren",
+    "de": "Stunden"
+  },
+  "MessageMinutes": {
+    "en": "Minutes",
+    "nl": "Minuten",
+    "de": "Minuten"
+  },
+  "MessageSeconds": {
+    "en": "Seconds",
+    "nl": "Seconden",
+    "de": "Sekunden"
+  },
   "MessageDate": {
     "en": "Day",
     "nl": "Dag",

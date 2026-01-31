@@ -1,18 +1,24 @@
 export function formatOffsetLabel(
+  yearLabel: string,
   years: number,
+  monthLabel: string,
   months: number,
+  dayLabel: string,
   days: number,
+  hourLabel: string,
   hours: number,
+  minuteLabel: string,
   minutes: number,
+  secondLabel: string,
   seconds: number
 ) {
   const values = [
-    { value: years, label: "years" },
-    { value: months, label: "months" },
-    { value: days, label: "days" },
-    { value: hours, label: "hours" },
-    { value: minutes, label: "minutes" },
-    { value: seconds, label: "seconds" }
+    { value: years, label: yearLabel },
+    { value: months, label: monthLabel },
+    { value: days, label: dayLabel },
+    { value: hours, label: hourLabel },
+    { value: minutes, label: minuteLabel },
+    { value: seconds, label: secondLabel }
   ];
 
   const parts = values
