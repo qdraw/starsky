@@ -338,7 +338,7 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 	/// <param name="dateTime">The base datetime to apply offsets to</param>
 	/// <param name="request">The request containing custom offset values</param>
 	/// <returns>TimeSpan delta to apply (for time components) or modified DateTime (for date components)</returns>
-	private static TimeSpan CalculateCustomOffsetDelta(
+	internal static TimeSpan CalculateCustomOffsetDelta(
 		DateTime dateTime,
 		ExifCustomOffsetCorrectionRequest request)
 	{
@@ -392,7 +392,7 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 	/// <param name="recordedTimezone">Source timezone (what camera thought)</param>
 	/// <param name="correctTimezone">Target timezone (actual location)</param>
 	/// <returns>TimeSpan delta to apply</returns>
-	private static TimeSpan CalculateTimezoneDelta(
+	internal static TimeSpan CalculateTimezoneDelta(
 		DateTime dateTime,
 		string recordedTimezone,
 		string correctTimezone)
