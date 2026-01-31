@@ -247,6 +247,11 @@ describe("url-query", () => {
       const test = urlQuery.UrlThumbnailImageLargeOrExtraLarge("hash_test", "filePath", true);
       expect(test).toContain("hash_test");
     });
+
+    it("when filehash is empty return empty string", () => {
+      const test = urlQuery.UrlThumbnailImageLargeOrExtraLarge("", "filePath", true);
+      expect(test).toBe("");
+    });
   });
 
   it("DocsGettingStartedFirstSteps", () => {
