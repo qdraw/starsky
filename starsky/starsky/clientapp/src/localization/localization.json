@@ -1159,6 +1159,36 @@
     "nl": "Tijdverschuivingen (relatief ten opzichte van de oorspronkelijke tijdstempel)",
     "de": "Zeitverschiebungen (relativ zum ursprünglichen Zeitstempel)"
   },
+  "MessagePreview": {
+    "en": "Preview",
+    "nl": "Voorbeeld",
+    "de": "Vorschau"
+  },
+  "MessageOriginal": {
+    "en": "Original",
+    "nl": "Oorspronkelijk",
+    "de": "Original"
+  },
+  "MessageResult": {
+    "en": "Result",
+    "nl": "Resultaat",
+    "de": "Ergebnis"
+  },
+  "MessageAppliedShift": {
+    "en": "Applied Shift",
+    "nl": "Toegepaste verschuiving",
+    "de": "Angewandte Verschiebung"
+  },
+  "MessageBack": {
+    "en": "Back",
+    "nl": "Terug",
+    "de": "Zurück"
+  },
+  "MessageApplyShift": {
+    "en": "Apply Shift",
+    "nl": "Pas verschuiving toe",
+    "de": "Verschiebung anwenden"
+  },
   "temp1": {
     "en": ".",
     "nl": ".",

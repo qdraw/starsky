@@ -3,7 +3,7 @@ import useGlobalSettings from "../../../../hooks/use-global-settings";
 import { IArchiveProps } from "../../../../interfaces/IArchiveProps";
 import localization from "../../../../localization/localization.json";
 import { parseDate, parseTime } from "../../../../shared/date";
-import { Language, SupportedLanguages } from "../../../../shared/language";
+import { Language } from "../../../../shared/language";
 import Preloader from "../../../atoms/preloader/preloader";
 import { useOffsetState } from "../hooks/use-offset-state";
 import { IPreviewState } from "../hooks/use-preview-state";
@@ -189,24 +189,20 @@ export function renderOffsetMode(
         <div className="preview-section">
           {preview.offsetData.length > 0 && (
             <>
-              <h3>Preview</h3>
+              <h3>{language.key(localization.MessagePreview)}</h3>
               <div className="preview-result">
                 <p>
-                  <strong>Original:</strong>{" "}
-                  {parseDate(preview.offsetData[0]?.originalDateTime, SupportedLanguages.nl, false)}{" "}
+                  <strong>{language.key(localization.MessageOriginal)}:</strong>{" "}
+                  {parseDate(preview.offsetData[0]?.originalDateTime, settings.language, false)}{" "}
                   {parseTime(preview.offsetData[0]?.originalDateTime)}
                 </p>
                 <p>
-                  <strong>Result:</strong>{" "}
-                  {parseDate(
-                    preview.offsetData[0]?.correctedDateTime,
-                    SupportedLanguages.nl,
-                    false
-                  )}{" "}
+                  <strong>{language.key(localization.MessageResult)}:</strong>{" "}
+                  {parseDate(preview.offsetData[0]?.correctedDateTime, settings.language, false)}{" "}
                   {parseTime(preview.offsetData[0]?.correctedDateTime)}
                 </p>
                 <p>
-                  <strong>Applied shift:</strong>{" "}
+                  <strong>{language.key(localization.MessageAppliedShift)}:</strong>{" "}
                   {formatOffsetLabel(
                     offsetYears,
                     offsetMonths,
@@ -231,7 +227,7 @@ export function renderOffsetMode(
 
         <div className="modal-buttons">
           <button className="btn btn--info" onClick={handleBack}>
-            Back
+            {language.key(localization.MessageBack)}
           </button>
           <button
             className="btn btn--default"
@@ -258,7 +254,9 @@ export function renderOffsetMode(
             }
             disabled={isExecuting || preview.offsetData.length === 0}
           >
-            {isExecuting ? "Applying..." : "Apply Shift"}
+            {isExecuting
+              ? language.key(localization.MessageLoading)
+              : language.key(localization.MessageApplyShift)}
           </button>
         </div>
       </div>
