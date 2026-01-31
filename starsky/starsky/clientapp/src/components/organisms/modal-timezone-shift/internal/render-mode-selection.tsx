@@ -10,18 +10,21 @@ export function renderModeSelection(
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
 
+  const MessageYouHaveSelected = language.key(localization.MessageYouHaveSelected);
+
+  const MessageYouHaveSelectedCountImages = language.token(
+    `${MessageYouHaveSelected} {count} ${select.length === 1 ? language.key(localization.MessageImage) : language.key(localization.MessageImages)}`,
+    ["{count}"],
+    [select.length.toString()]
+  );
+
   return (
     <>
       <div className="modal content--subheader" data-test="modal-timezone-shift-header">
         {language.key(localization.MessageShiftPhotoTime)}
       </div>
       <div className="modal content--text">
-        <p>
-          {language.key(localization.MessageYouHaveSelected)} {select.length}{" "}
-          {language.key(
-            select.length === 1 ? localization.MessageImage : localization.MessageImages
-          )}
-        </p>
+        <p>{MessageYouHaveSelectedCountImages}</p>
         <p>&nbsp;</p>
 
         <div className="mode-selection" data-test="modal-timezone-mode-selection">

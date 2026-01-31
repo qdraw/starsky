@@ -1090,9 +1090,9 @@
     "de": "Foto-Zeitstempel anpassen"
   },
   "MessageYouHaveSelected": {
-    "en": "You have selected:",
-    "nl": "Je hebt geselecteerd:",
-    "de": "Sie haben ausgewählt:"
+    "en": "You have selected",
+    "nl": "Je hebt geselecteerd",
+    "de": "Sie haben ausgewählt"
   },
   "MessageWhatDoYouWantToDo": {
     "en": "What do you want to do?",

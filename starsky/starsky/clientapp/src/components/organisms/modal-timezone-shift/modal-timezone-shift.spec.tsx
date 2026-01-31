@@ -67,7 +67,7 @@ describe("ModalTimezoneShift", () => {
       />
     );
 
-    expect(screen.getByText(/Shift Photo Timestamps/i)).toBeTruthy();
+    expect(screen.getByText(/Shift Photo Time/i)).toBeTruthy();
     expect(screen.getByText(/What do you want to do/i)).toBeTruthy();
     component.unmount();
   });
@@ -84,6 +84,8 @@ describe("ModalTimezoneShift", () => {
         undoSelection={mockUndoSelection}
       />
     );
+
+    console.log(component.container.innerHTML);
 
     expect(screen.getByText(/You have selected 3 images/i)).toBeTruthy();
     component.unmount();
@@ -226,7 +228,7 @@ describe("ModalTimezoneShift", () => {
     const backButton = screen.getByText(/Back/i);
     fireEvent.click(backButton);
 
-    expect(screen.getByText(/Shift Photo Timestamps/i)).toBeTruthy();
+    expect(screen.getByText(/Shift Photo Time/i)).toBeTruthy();
     component.unmount();
   });
 
@@ -287,7 +289,7 @@ describe("ModalTimezoneShift", () => {
 
     // Step 1: Select timezone mode
     const timezoneRadio = await screen.findByRole("radio", {
-      name: /I moved to a different place/i
+      name: /I stayed in a different place/i
     });
     await act(async () => {
       fireEvent.click(timezoneRadio);
