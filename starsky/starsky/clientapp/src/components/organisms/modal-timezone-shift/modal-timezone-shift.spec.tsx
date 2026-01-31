@@ -4,6 +4,7 @@ import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import * as FetchGet from "../../../shared/fetch/fetch-get";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
+import * as Modal from "../../atoms/modal/modal";
 import ModalTimezoneShift from "./modal-timezone-shift";
 
 describe("ModalTimezoneShift", () => {
@@ -755,5 +756,37 @@ describe("ModalTimezoneShift", () => {
     }
 
     component.unmount();
+  });
+
+  it("test if handleExit is called", () => {
+    // callback
+    // simulate if a user press on close
+    // use as ==> import * as Modal from './modal';
+    jest.spyOn(Modal, "default").mockImplementationOnce((props) => {
+      props.handleExit();
+      return <>{props.children}</>;
+    });
+
+    const handleExitSpy = jest.fn();
+
+    const modal = render(
+      <ModalTimezoneShift
+        isOpen={true}
+        handleExit={handleExitSpy}
+        select={["test.jpg"]}
+        historyLocationSearch={mockHistoryLocationSearch}
+        state={mockState}
+        dispatch={mockDispatch}
+        undoSelection={mockUndoSelection}
+      />
+    );
+
+    expect(handleExitSpy).toHaveBeenCalled();
+
+    // and clean afterwards
+    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+    act(() => {
+      modal.unmount();
+    });
   });
 });
