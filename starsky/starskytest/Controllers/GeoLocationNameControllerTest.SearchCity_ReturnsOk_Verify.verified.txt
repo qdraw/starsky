@@ -17,7 +17,6 @@
     Population: 741636,
     Dem: 13,
     TimeZoneId: Europe/Amsterdam,
-    TimeZone: Europe/Amsterdam,
     ModificationDate: Date_1,
     Province: Noord-Holland
   }

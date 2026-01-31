@@ -17,7 +17,6 @@
     Population: 1418,
     Dem: 1318,
     TimeZoneId: Europe/Andorra,
-    TimeZone: Europe/Andorra,
     ModificationDate: Date_1,
     Province: 
   },
@@ -39,7 +38,6 @@
     Population: 1052,
     Dem: 1721,
     TimeZoneId: Europe/Andorra,
-    TimeZone: Europe/Andorra,
     ModificationDate: Date_2,
     Province: 
   },
@@ -61,7 +59,6 @@
     Population: 8022,
     Dem: 921,
     TimeZoneId: Europe/Andorra,
-    TimeZone: Europe/Andorra,
     ModificationDate: Date_3,
     Province: 
   },
@@ -84,7 +81,6 @@
     Elevation: 2050,
     Dem: 2106,
     TimeZoneId: Europe/Andorra,
-    TimeZone: Europe/Andorra,
     ModificationDate: Date_4,
     Province: 
   },
@@ -106,7 +102,6 @@
     Population: 3066,
     Dem: 1296,
     TimeZoneId: Europe/Andorra,
-    TimeZone: Europe/Andorra,
     ModificationDate: Date_5,
     Province: 
   },
@@ -128,7 +123,6 @@
     Population: 15853,
     Dem: 1033,
     TimeZoneId: Europe/Andorra,
-    TimeZone: Europe/Andorra,
     ModificationDate: Date_6,
     Province: 
   },
@@ -150,7 +144,6 @@
     Population: 7211,
     Dem: 1245,
     TimeZoneId: Europe/Andorra,
-    TimeZone: Europe/Andorra,
     ModificationDate: Date_7,
     Province: 
   },
@@ -172,7 +165,6 @@
     Population: 11223,
     Dem: 1257,
     TimeZoneId: Europe/Andorra,
-    TimeZone: Europe/Andorra,
     ModificationDate: Date_5,
     Province: 
   },
@@ -194,7 +186,6 @@
     Population: 3292,
     Dem: 1561,
     TimeZoneId: Europe/Andorra,
-    TimeZone: Europe/Andorra,
     ModificationDate: Date_5,
     Province: 
   },
@@ -216,7 +207,6 @@
     Population: 1419,
     Dem: 1465,
     TimeZoneId: Europe/Andorra,
-    TimeZone: Europe/Andorra,
     ModificationDate: Date_8,
     Province: 
   },
@@ -238,7 +228,6 @@
     Population: 1006,
     Dem: 1299,
     TimeZoneId: Europe/Andorra,
-    TimeZone: Europe/Andorra,
     ModificationDate: Date_1,
     Province: 
   },
@@ -260,7 +249,6 @@
     Population: 20430,
     Dem: 1037,
     TimeZoneId: Europe/Andorra,
-    TimeZone: Europe/Andorra,
     ModificationDate: Date_9,
     Province: 
   },
@@ -282,7 +270,6 @@
     Population: 1041,
     Dem: 1169,
     TimeZoneId: Europe/Andorra,
-    TimeZone: Europe/Andorra,
     ModificationDate: Date_1,
     Province: 
   },
@@ -304,7 +291,6 @@
     Population: 108759,
     Dem: 12,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_10,
     Province: 
   },
@@ -326,7 +312,6 @@
     Population: 16459,
     Dem: 1,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_11,
     Province: 
   },
@@ -348,7 +333,6 @@
     Population: 59098,
     Dem: 2,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_12,
     Province: 
   },
@@ -370,7 +354,6 @@
     Population: 51000,
     Dem: 10,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_12,
     Province: 
   },
@@ -392,7 +375,6 @@
     Population: 38425,
     Dem: 10,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_11,
     Province: 
   },
@@ -414,7 +396,6 @@
     Population: 351943,
     Dem: 2,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_13,
     Province: 
   },
@@ -436,7 +417,6 @@
     Population: 10000,
     Dem: 123,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_14,
     Province: 
   },
@@ -458,7 +438,6 @@
     Population: 2000,
     Dem: 15,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_15,
     Province: 
   },
@@ -481,7 +460,6 @@
     Elevation: 460,
     Dem: 334,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_16,
     Province: 
   },
@@ -503,7 +481,6 @@
     Population: 63482,
     Dem: 118,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_14,
     Province: 
   },
@@ -525,7 +502,6 @@
     Population: 40677,
     Dem: 20,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_17,
     Province: 
   },
@@ -547,7 +523,6 @@
     Population: 37545,
     Dem: 15,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_18,
     Province: 
   },
@@ -569,7 +544,6 @@
     Population: 39080,
     Dem: 5,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_19,
     Province: 
   },
@@ -591,7 +565,6 @@
     Population: 10190,
     Dem: 3,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_11,
     Province: 
   },
@@ -613,7 +586,6 @@
     Population: 3790000,
     Dem: 24,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_12,
     Province: 
   },
@@ -635,7 +607,6 @@
     Population: 30000,
     Dem: 16,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_20,
     Province: 
   },
@@ -657,7 +628,6 @@
     Population: 26395,
     Dem: 4,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_21,
     Province: 
   },
@@ -679,7 +649,6 @@
     Population: 400000,
     Dem: 10,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_11,
     Province: 
   },
@@ -701,7 +670,6 @@
     Population: 1800000,
     Dem: 15,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_22,
     Province: 
   },
@@ -723,7 +691,6 @@
     Population: 1550,
     Dem: 5,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_11,
     Province: 
   },
@@ -745,7 +712,6 @@
     Population: 25000,
     Dem: 16,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_14,
     Province: 
   },
@@ -767,7 +733,6 @@
     Population: 5823,
     Dem: 213,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_23,
     Province: 
   },
@@ -789,7 +754,6 @@
     Population: 3297,
     Dem: 8,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_19,
     Province: 
   },
@@ -812,7 +776,6 @@
     Elevation: 335,
     Dem: 331,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_24,
     Province: 
   },
@@ -834,7 +797,6 @@
     Population: 118933,
     Dem: 15,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_25,
     Province: 
   },
@@ -856,7 +818,6 @@
     Population: 846747,
     Dem: 275,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_26,
     Province: 
   },
@@ -878,7 +839,6 @@
     Population: 490035,
     Dem: 2,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_27,
     Province: 
   },
@@ -900,7 +860,6 @@
     Population: 20165,
     Dem: 114,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_28,
     Province: 
   },
@@ -922,7 +881,6 @@
     Population: 1807000,
     Dem: 6,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_29,
     Province: 
   },
@@ -944,7 +902,6 @@
     Population: 18043,
     Dem: 3,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_11,
     Province: 
   },
@@ -966,7 +923,6 @@
     Population: 40997,
     Dem: 9,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_11,
     Province: 
   },
@@ -988,7 +944,6 @@
     Population: 1280,
     Dem: 192,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_30,
     Province: 
   },
@@ -1010,7 +965,6 @@
     Population: 4213,
     Dem: 7,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_31,
     Province: 
   },
@@ -1032,7 +986,6 @@
     Population: 13589,
     Dem: 10,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_11,
     Province: 
   },
@@ -1054,7 +1007,6 @@
     Population: 2514,
     Dem: 116,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_11,
     Province: 
   },
@@ -1076,7 +1028,6 @@
     Population: 5403,
     Dem: 147,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_11,
     Province: 
   },
@@ -1098,7 +1049,6 @@
     Population: 27000,
     Dem: 15,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_19,
     Province: 
   },
@@ -1120,7 +1070,6 @@
     Population: 75560,
     Dem: 4,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_11,
     Province: 
   },
@@ -1142,7 +1091,6 @@
     Population: 12851,
     Dem: 8,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_11,
     Province: 
   },
@@ -1164,7 +1112,6 @@
     Population: 5068,
     Dem: 4,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_11,
     Province: 
   },
@@ -1186,7 +1133,6 @@
     Population: 12114,
     Dem: 2,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_11,
     Province: 
   },
@@ -1208,7 +1154,6 @@
     Population: 21608,
     Dem: -1,
     TimeZoneId: Asia/Dubai,
-    TimeZone: Asia/Dubai,
     ModificationDate: Date_11,
     Province: 
   }

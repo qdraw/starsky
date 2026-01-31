@@ -63,10 +63,10 @@ public class LocationNameService : ILocationNameService
 		var finalResults = new List<CityTimezoneResult>();
 		foreach ( var result in results )
 		{
-			var offset = result.TimeZone.GetUtcOffset(dateTimeParsed);
-			var isDaylightSavingTime = result.TimeZone.IsDaylightSavingTime(dateTimeParsed);
+			var offset = result.GetTimeZone().GetUtcOffset(dateTimeParsed);
+			var isDaylightSavingTime = result.GetTimeZone().IsDaylightSavingTime(dateTimeParsed);
 			var dstText = isDaylightSavingTime ? "Summer time" : "Winter time";
-			if ( !result.TimeZone.HasFutureDst(dateTimeParsed) )
+			if ( !result.GetTimeZone().HasFutureDst(dateTimeParsed) )
 			{
 				dstText = "No seasonal time change";
 			}

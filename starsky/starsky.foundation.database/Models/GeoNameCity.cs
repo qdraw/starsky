@@ -122,34 +122,6 @@ public sealed class GeoNameCity
 	/// </summary>
 	[MaxLength(40)]
 	public string TimeZoneId { get; set; } = "";
-	
-	public TimeZoneInfo GetTimeZoneInfo()
-	{
-		try
-		{
-			return TZConvert.GetTimeZoneInfo(TimeZoneId);
-		}
-		catch ( Exception )
-		{
-			return TimeZoneInfo.Utc;
-		}
-	}
-
-	[NotMapped]
-	public TimeZoneInfo TimeZone
-	{
-		get
-		{
-			try
-			{
-				return TZConvert.GetTimeZoneInfo(TimeZoneId);
-			}
-			catch ( Exception )
-			{
-				return TimeZoneInfo.Utc;
-			}
-		}
-	}
 
 	/// <summary>
 	///     date of last modification in yyyy-MM-dd format
@@ -162,4 +134,16 @@ public sealed class GeoNameCity
 
 	[MaxLength(200)]
 	public string Province { get; set; } = string.Empty;
+
+	public TimeZoneInfo GetTimeZone()
+	{
+		try
+		{
+			return TZConvert.GetTimeZoneInfo(TimeZoneId);
+		}
+		catch ( Exception )
+		{
+			return TimeZoneInfo.Utc;
+		}
+	}
 }
