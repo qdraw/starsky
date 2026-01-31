@@ -1,4 +1,22 @@
 export class Keyboard {
+  public unBlur(event?: KeyboardEvent): boolean | null {
+    if (!event || !this.isInForm(event)) return null;
+
+    const target = event.target as HTMLElement;
+    if (!target?.blur) return null;
+    target.blur();
+    return true;
+  }
+
+  public focus(event?: KeyboardEvent): boolean | null {
+    if (!event || !this.isInForm(event)) return null;
+
+    const target = event.target as HTMLElement;
+    if (!target?.focus) return null;
+    target.focus();
+    return true;
+  }
+
   /**
    * to prevent keystrokes in a form element
    * @param event Keyboard Event

@@ -120,7 +120,8 @@ const DetailView: FC<IDetailView> = () => {
   // previous item
   useHotKeys(
     { key: "[", ctrlKeyOrMetaKey: true, skipIsInForm: false },
-    () => {
+    (event: KeyboardEvent) => {
+      new Keyboard().unBlur(event);
       new PrevNext(
         relativeObjects,
         state,
@@ -129,6 +130,7 @@ const DetailView: FC<IDetailView> = () => {
         setRelativeObjects,
         setIsLoading
       ).prev();
+      new Keyboard().focus(event);
     },
     [relativeObjects]
   );
@@ -152,7 +154,8 @@ const DetailView: FC<IDetailView> = () => {
 
   useHotKeys(
     { key: "]", ctrlKeyOrMetaKey: true, skipIsInForm: false },
-    () => {
+    (event: KeyboardEvent) => {
+      new Keyboard().unBlur(event);
       new PrevNext(
         relativeObjects,
         state,
@@ -161,6 +164,7 @@ const DetailView: FC<IDetailView> = () => {
         setRelativeObjects,
         setIsLoading
       ).next();
+      new Keyboard().focus(event);
     },
     [relativeObjects]
   );
