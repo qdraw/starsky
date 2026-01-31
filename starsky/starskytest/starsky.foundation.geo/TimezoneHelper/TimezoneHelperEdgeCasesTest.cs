@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.geo.TimezoneHelper;
 using TimeZoneConverter;
 
-namespace starskytest.starsky.foundation.geo;
+namespace starskytest.starsky.foundation.geo.TimezoneHelper;
 
 [TestClass]
 public class TimezoneHelperEdgeCasesTest

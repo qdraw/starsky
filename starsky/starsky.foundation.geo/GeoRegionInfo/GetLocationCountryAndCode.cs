@@ -7,7 +7,7 @@ public class RegionInfoHelper(IWebLogger logger)
 {
 	public Tuple<string, string> GetLocationCountryAndCode(string countryCode)
 	{
-		// Catch is used for example the region VA (Vatican City)
+		// Catch is used for example the region TA
 		var locationCountry = string.Empty;
 		var locationCountryCode = string.Empty;
 		try

@@ -12,30 +12,22 @@ using starsky.foundation.platform.Interfaces;
 namespace starsky.foundation.geo.LocationNameSearch;
 
 [Service(typeof(ILocationNameService), InjectionLifetime = InjectionLifetime.Scoped)]
-public class LocationNameService : ILocationNameService
+public class LocationNameService(
+	IGeoNamesCitiesQuery query,
+	IGeoNameCitySeedService seedService,
+	IWebLogger logger)
+	: ILocationNameService
 {
-	private readonly IWebLogger _logger;
-	private readonly IGeoNamesCitiesQuery _query;
-	private readonly IGeoNameCitySeedService _seedService;
-
-	public LocationNameService(IGeoNamesCitiesQuery query,
-		IGeoNameCitySeedService seedService, IWebLogger logger)
-	{
-		_query = query;
-		_seedService = seedService;
-		_logger = logger;
-	}
-
 	public async Task<List<GeoNameCity>> SearchCity(string cityName)
 	{
-		if ( !await _seedService.Seed() )
+		if ( !await seedService.Seed() )
 		{
 			return [];
 		}
 
 		return
 		[
-			..( await _query.Search(cityName, 10, nameof(GeoNameCity.Name),
+			..( await query.Search(cityName, 10, nameof(GeoNameCity.Name),
 				nameof(GeoNameCity.AsciiName)) )
 			.OrderByDescending(x => x.Population)
 		];
@@ -49,13 +41,13 @@ public class LocationNameService : ILocationNameService
 			"yyyy-MM-ddTHH:mm:ss", provider,
 			DateTimeStyles.AssumeLocal, out var dateTimeParsed);
 
-		if ( !await _seedService.Seed() || !isDateTimeParsed ||
+		if ( !await seedService.Seed() || !isDateTimeParsed ||
 		     cityName.Length <= 2 )
 		{
 			return [];
 		}
 
-		var results = ( await _query.Search(cityName, 10, nameof(GeoNameCity.Name),
+		var results = ( await query.Search(cityName, 10, nameof(GeoNameCity.Name),
 				nameof(GeoNameCity.AsciiName)) )
 			.OrderByDescending(x => x.Population)
 			.ToList();
@@ -72,7 +64,7 @@ public class LocationNameService : ILocationNameService
 			}
 
 			var (locationCountry, _) =
-				new RegionInfoHelper(_logger).GetLocationCountryAndCode(result.CountryCode);
+				new RegionInfoHelper(logger).GetLocationCountryAndCode(result.CountryCode);
 
 			finalResults.Add(new CityTimezoneResult
 			{
