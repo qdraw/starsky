@@ -9,7 +9,8 @@ const SearchableDropdown: FunctionComponent<ISearchableDropdownProps> = ({
   maxResults = 10,
   onSelect,
   className = "",
-  isLoading = false
+  isLoading = false,
+  noResultsText = "No results found"
 }) => {
   const [query, setQuery] = useState(defaultValue);
   const [results, setResults] = useState<DropdownResult[]>([]);
@@ -190,11 +191,18 @@ const SearchableDropdown: FunctionComponent<ISearchableDropdownProps> = ({
         </ul>
       )}
 
-      {isOpen && displayItems.length === 0 && query.trim() && !loading && (
-        <div className="searchable-dropdown__no-results" data-test="searchable-dropdown-no-results">
-          No results found
-        </div>
-      )}
+      {isOpen &&
+        displayItems.length === 0 &&
+        query.trim() &&
+        !loading &&
+        query.trim().length >= 3 && (
+          <div
+            className="searchable-dropdown__no-results"
+            data-test="searchable-dropdown-no-results"
+          >
+            {noResultsText}
+          </div>
+        )}
     </div>
   );
 };

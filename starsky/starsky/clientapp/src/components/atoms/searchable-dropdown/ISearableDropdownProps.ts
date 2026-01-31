@@ -50,4 +50,9 @@ export interface ISearchableDropdownProps {
    * Loading state (controlled from parent if needed)
    */
   isLoading?: boolean;
+
+  /**
+   * Text to show when no results are found
+   */
+  noResultsText?: string;
 }

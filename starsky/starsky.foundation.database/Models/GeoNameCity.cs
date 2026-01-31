@@ -122,6 +122,18 @@ public sealed class GeoNameCity
 	/// </summary>
 	[MaxLength(40)]
 	public string TimeZoneId { get; set; } = "";
+	
+	public TimeZoneInfo GetTimeZoneInfo()
+	{
+		try
+		{
+			return TZConvert.GetTimeZoneInfo(TimeZoneId);
+		}
+		catch ( Exception )
+		{
+			return TimeZoneInfo.Utc;
+		}
+	}
 
 	[NotMapped]
 	public TimeZoneInfo TimeZone

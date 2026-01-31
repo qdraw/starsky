@@ -1219,6 +1219,31 @@
     "nl": "Pas verschuiving toe",
     "de": "Verschiebung anwenden"
   },
+  "MessageChangeLocation": {
+    "en": "Change Location",
+    "nl": "Locatie wijzigen",
+    "de": "Standort ändern"
+  },
+  "MessageSearchOrSelect": {
+    "en": "Search or select...",
+    "nl": "Zoek of selecteer...",
+    "de": "Suchen oder auswählen..."
+  },
+  "MessageNoResultsFound": {
+    "en": "No results found",
+    "nl": "Geen resultaten gevonden",
+    "de": "Keine Ergebnisse gefunden"
+  },
+  "temp1": {
+    "en": ".",
+    "nl": ".",
+    "de": "."
+  },
+  "temp1": {
+    "en": ".",
+    "nl": ".",
+    "de": "."
+  },
   "temp1": {
     "en": ".",
     "nl": ".",

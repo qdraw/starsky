@@ -52,7 +52,9 @@ export function renderTimezoneMode(
 
   return (
     <>
-      <div className="modal content--subheader">Change Location</div>
+      <div className="modal content--subheader">
+        {language.key(localization.MessageChangeLocation)}
+      </div>
       <div className="modal content--text">
         <div className="timezone-inputs">
           <div className="form-row">
@@ -60,8 +62,9 @@ export function renderTimezoneMode(
               Original city:
               <SearchableDropdown
                 fetchResults={(city) => fetchCityTimezones(firstItemDateTime, city)}
-                placeholder="Search or select..."
+                placeholder={language.key(localization.MessageSearchOrSelect)}
                 defaultValue={recordedTimezoneDisplayName}
+                noResultsText={language.key(localization.MessageNoResultsFound)}
                 onSelect={(id, displayName) => {
                   setRecordedTimezoneId(id);
                   setRecordedTimezoneDisplayName(displayName);
