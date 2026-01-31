@@ -235,4 +235,15 @@ public class GeoLocationNameControllerTest : VerifyBase
 		var result = await controller.SearchCityTimezone("2026-01-30T12:00:00Z", "Amsterdam");
 		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
 	}
+
+	[TestMethod]
+	public async Task SearchCity_InvalidModel_ReturnsBadRequest()
+	{
+		var fakeService = new FakeLocationNameService();
+		var controller = new GeoLocationNameController(fakeService);
+		controller.ModelState.AddModelError("city", "Required");
+
+		var result = await controller.SearchCity("Amsterdam");
+		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+	}
 }
