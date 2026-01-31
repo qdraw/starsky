@@ -1,8 +1,10 @@
 .modal-timezone-shift .mode-selection .radio-option {
   display: flex;
   align-items: flex-start;
-  padding: 16px;
-  margin: 12px 0;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  margin-top: 12px;
+  margin-bottom: 12px;
   border: 2px solid #ddd;
   border-radius: 8px;
   cursor: pointer;

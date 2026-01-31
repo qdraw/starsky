@@ -59,12 +59,12 @@ export function renderTimezoneMode(
         <div className="timezone-inputs">
           <div className="form-row">
             <label>
-              Original city:
+              {language.key(localization.MessageOriginalCity)}:
               <SearchableDropdown
                 fetchResults={(city) => fetchCityTimezones(firstItemDateTime, city)}
                 placeholder={language.key(localization.MessageSearchOrSelect)}
-                defaultValue={recordedTimezoneDisplayName}
                 noResultsText={language.key(localization.MessageNoResultsFound)}
+                defaultValue={recordedTimezoneDisplayName}
                 onSelect={(id, displayName) => {
                   setRecordedTimezoneId(id);
                   setRecordedTimezoneDisplayName(displayName);
@@ -84,11 +84,12 @@ export function renderTimezoneMode(
 
           <div className="form-row">
             <label>
-              New city:
+              {language.key(localization.MessageNewCity)}:
               <SearchableDropdown
                 fetchResults={(city) => fetchCityTimezones(firstItemDateTime, city)}
                 defaultValue={correctTimezoneDisplayName}
-                placeholder="Search or select..."
+                placeholder={language.key(localization.MessageSearchOrSelect)}
+                noResultsText={language.key(localization.MessageNoResultsFound)}
                 onSelect={(id, displayName) => {
                   setCorrectTimezoneId(id);
                   setCorrectTimezoneDisplayName(displayName);
@@ -112,7 +113,7 @@ export function renderTimezoneMode(
         <div className="preview-section">
           {recordedTimezoneId && correctTimezoneId && preview.timezoneData.length > 0 && (
             <>
-              <h3>Preview</h3>
+              <h3>{language.key(localization.MessagePreview)}</h3>
 
               <div className="preview-result">
                 <p>
@@ -125,17 +126,14 @@ export function renderTimezoneMode(
                   {parseTime(preview.timezoneData[0]?.originalDateTime)}
                 </p>
                 <p>
-                  <strong>{language.key(localization.MessageNewTimeResult)}:</strong>
-                  {parseDate(
-                    preview.timezoneData[0]?.correctedDateTime,
-                    settings.language,
-                    false
-                  )}{" "}
+                  <strong>{language.key(localization.MessageNewTimeResult)}:</strong>{" "}
+                  {parseDate(preview.timezoneData[0]?.correctedDateTime, settings.language, false)}{" "}
                   {parseTime(preview.timezoneData[0]?.correctedDateTime)}
                 </p>
                 <p>
                   <strong>{language.key(localization.MessageAppliedShift)}:</strong>{" "}
-                  {preview.timezoneData[0]?.delta || "N/A"} (DST-aware)
+                  {preview.timezoneData[0]?.delta || "N/A"} (
+                  {language.key(localization.MessageDstAware)})
                 </p>
                 {preview.timezoneData[0]?.warning && (
                   <p className="warning">⚠️ {preview.timezoneData[0].warning}</p>
@@ -152,7 +150,7 @@ export function renderTimezoneMode(
 
         <div className="modal-buttons">
           <button className="btn btn--info" onClick={handleBack}>
-            Back
+            {language.key(localization.MessageBack)}
           </button>
           <button
             className="btn btn--default"
@@ -175,7 +173,9 @@ export function renderTimezoneMode(
             }
             disabled={isExecuting || preview.timezoneData.length === 0}
           >
-            {isExecuting ? "Applying..." : "Apply Shift"}
+            {isExecuting
+              ? language.key(localization.MessageLoading)
+              : language.key(localization.MessageApplyShift)}{" "}
           </button>
         </div>
       </div>

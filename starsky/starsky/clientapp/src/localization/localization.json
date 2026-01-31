@@ -1234,20 +1234,20 @@
     "nl": "Geen resultaten gevonden",
     "de": "Keine Ergebnisse gefunden"
   },
-  "temp1": {
-    "en": ".",
-    "nl": ".",
-    "de": "."
+  "MessageOriginalCity": {
+    "en": "Original city",
+    "nl": "Oorspronkelijke stad",
+    "de": "Ursprüngliche Stadt"
   },
-  "temp1": {
-    "en": ".",
-    "nl": ".",
-    "de": "."
+  "MessageNewCity": {
+    "en": "New city",
+    "nl": "Nieuwe stad",
+    "de": "Neue Stadt"
   },
-  "temp1": {
-    "en": ".",
-    "nl": ".",
-    "de": "."
+  "MessageDstAware": {
+    "en": "Daylight Saving Time-aware",
+    "nl": "Zomertijd- & wintertijd-bewust",
+    "de": "Sommer & Winterzeit-bewusst"
   },
   "temp1": {
     "en": ".",
