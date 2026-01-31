@@ -5,6 +5,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.geo.GeoRegionInfo;
 using starsky.foundation.geo.LocationNameSearch.Interfaces;
 using starsky.foundation.geo.LocationNameSearch.Models;
+using starsky.foundation.geo.TimezoneHelper;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 
@@ -63,11 +64,9 @@ public class LocationNameService : ILocationNameService
 		foreach ( var result in results )
 		{
 			var offset = result.TimeZone.GetUtcOffset(dateTimeParsed);
-
-
 			var isDaylightSavingTime = result.TimeZone.IsDaylightSavingTime(dateTimeParsed);
 			var dstText = isDaylightSavingTime ? "Summer time" : "Winter time";
-			if ( !result.TimeZone.SupportsDaylightSavingTime )
+			if ( result.TimeZone.HasFutureDst(dateTimeParsed) )
 			{
 				dstText = "No seasonal time change";
 			}
