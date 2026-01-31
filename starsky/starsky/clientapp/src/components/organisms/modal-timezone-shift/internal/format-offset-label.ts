@@ -1,24 +1,23 @@
+export interface IFormatOffsetLabelProps {
+  label: string;
+  value: number;
+}
+
 export function formatOffsetLabel(
-  yearLabel: string,
-  years: number,
-  monthLabel: string,
-  months: number,
-  dayLabel: string,
-  days: number,
-  hourLabel: string,
-  hours: number,
-  minuteLabel: string,
-  minutes: number,
-  secondLabel: string,
-  seconds: number
+  years: IFormatOffsetLabelProps,
+  months: IFormatOffsetLabelProps,
+  days: IFormatOffsetLabelProps,
+  hours: IFormatOffsetLabelProps,
+  minutes: IFormatOffsetLabelProps,
+  seconds: IFormatOffsetLabelProps
 ) {
   const values = [
-    { value: years, label: yearLabel },
-    { value: months, label: monthLabel },
-    { value: days, label: dayLabel },
-    { value: hours, label: hourLabel },
-    { value: minutes, label: minuteLabel },
-    { value: seconds, label: secondLabel }
+    { value: years.value, label: years.label },
+    { value: months.value, label: months.label },
+    { value: days.value, label: days.label },
+    { value: hours.value, label: hours.label },
+    { value: minutes.value, label: minutes.label },
+    { value: seconds.value, label: seconds.label }
   ];
 
   const parts = values

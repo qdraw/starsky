@@ -204,18 +204,30 @@ export function renderOffsetMode(
                 <p>
                   <strong>{language.key(localization.MessageAppliedShift)}:</strong>{" "}
                   {formatOffsetLabel(
-                    language.key(localization.MessageYears).toLowerCase(),
-                    offsetYears,
-                    language.key(localization.MessageMonths).toLowerCase(),
-                    offsetMonths,
-                    language.key(localization.MessageDays).toLowerCase(),
-                    offsetDays,
-                    language.key(localization.MessageHours).toLowerCase(),
-                    offsetHours,
-                    language.key(localization.MessageMinutes).toLowerCase(),
-                    offsetMinutes,
-                    language.key(localization.MessageSeconds).toLowerCase(),
-                    offsetSeconds
+                    {
+                      label: language.key(localization.MessageYears).toLowerCase(),
+                      value: offsetYears
+                    },
+                    {
+                      label: language.key(localization.MessageMonths).toLowerCase(),
+                      value: offsetMonths
+                    },
+                    {
+                      label: language.key(localization.MessageDays).toLowerCase(),
+                      value: offsetDays
+                    },
+                    {
+                      label: language.key(localization.MessageHours).toLowerCase(),
+                      value: offsetHours
+                    },
+                    {
+                      label: language.key(localization.MessageMinutes).toLowerCase(),
+                      value: offsetMinutes
+                    },
+                    {
+                      label: language.key(localization.MessageSeconds).toLowerCase(),
+                      value: offsetSeconds
+                    }
                   )}
                 </p>
                 {preview.offsetData[0]?.warning && (
