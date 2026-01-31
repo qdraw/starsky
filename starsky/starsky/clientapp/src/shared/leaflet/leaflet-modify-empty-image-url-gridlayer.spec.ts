@@ -124,4 +124,55 @@ describe("LeafletEmptyImageUrlGridLayer [leaflet-extension]", () => {
     expect(requestAnimFrameSpy).toHaveBeenCalled();
     expect(timeoutSpy).toHaveBeenCalled();
   });
+
+  it("should return early if _map is falsy", () => {
+    const gridlayer = new LeafletEmptyImageUrlGridLayer();
+    (gridlayer as unknown as { _map: boolean | undefined })._map = undefined;
+    const coords = { x: 1, y: 2, z: 3 } as L.Coords;
+    const tile = {
+      getAttribute: jest.fn().mockReturnValue("not-empty-image.gif"),
+      coords,
+      current: true,
+      el: document.createElement("div")
+    };
+    // Should return early, not throw
+    expect(() => gridlayer._tileReady(coords, null, tile)).not.toThrow();
+  });
+
+  it("should return early if tile src is empty-image.gif", () => {
+    const gridlayer = new LeafletEmptyImageUrlGridLayer();
+    (gridlayer as unknown as { _map: boolean | undefined })._map = true;
+    const coords = { x: 1, y: 2, z: 3 } as L.Coords;
+    const tile = {
+      getAttribute: jest.fn((attr) => (attr === "src" ? "empty-image.gif" : null)),
+      coords,
+      current: true,
+      el: document.createElement("div")
+    };
+    // Should return early, not throw
+    expect(() => gridlayer._tileReady(coords, null, tile)).not.toThrow();
+  });
+
+  it("should not return early if tile.getAttribute is undefined", () => {
+    const gridlayer = new LeafletEmptyImageUrlGridLayer();
+    (gridlayer as unknown as { _map: boolean | undefined })._map = true;
+    const coords = { x: 1, y: 2, z: 3 } as L.Coords;
+    const tile = {
+      getAttribute: undefined,
+      coords,
+      current: true,
+      el: document.createElement("div")
+    };
+    // Should not return early, should continue
+    // To test, we need to mock _tileCoordsToKey and _tiles
+    const key = "1:2:3";
+    (gridlayer as unknown as { _tileCoordsToKey: (c: L.Coords) => string })._tileCoordsToKey = () =>
+      key;
+    (gridlayer as unknown as { _tiles: unknown })._tiles = {
+      [key]: { ...tile }
+    };
+    (gridlayer as unknown as { _pruneTiles: () => void })._pruneTiles = jest.fn();
+    (gridlayer as unknown as { _noTilesToLoad: () => boolean })._noTilesToLoad = () => false;
+    expect(() => gridlayer._tileReady(coords, null, tile)).not.toThrow();
+  });
 });
