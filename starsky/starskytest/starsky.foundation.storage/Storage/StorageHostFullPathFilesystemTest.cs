@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -22,19 +21,31 @@ public sealed class StorageHostFullPathFilesystemTest
 	public TestContext TestContext { get; set; }
 
 	[TestMethod]
+	[Timeout(30000, CooperativeCancellation = true)] // 30 second timeout to prevent hanging
 	public void Files_GetFilesRecursiveTest()
 	{
-		var path = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) +
-		           Path.DirectorySeparatorChar;
+		// Use a controlled test directory instead of scanning entire assembly output
+		var createAnImage = new CreateAnImage();
+		var testDir = Path.Combine(createAnImage.BasePath, "Files_GetFilesRecursiveTest_Dir");
+		var storage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+		
+		// Create a test directory structure
+		storage.CreateDirectory(testDir);
+		var subDir = Path.Combine(testDir, "subdir");
+		storage.CreateDirectory(subDir);
+		storage.WriteStream(new MemoryStream(new byte[1]), Path.Combine(testDir, "file1.txt"));
+		storage.WriteStream(new MemoryStream(new byte[1]), Path.Combine(subDir, "file2.txt"));
 
-		var content = new StorageHostFullPathFilesystem(new FakeIWebLogger())
-			.GetAllFilesInDirectoryRecursive(path)
-			.ToList();
+		// Act
+		var content = storage.GetAllFilesInDirectoryRecursive(testDir).ToList();
 
 		Console.WriteLine("count => " + content.Count);
 
-		// Gives a list of the content in the temp folder.
-		Assert.AreNotEqual(0, content.Count);
+		// Assert - Should find both files recursively
+		Assert.HasCount(2, content);
+		
+		// Cleanup
+		storage.FolderDelete(testDir);
 	}
 
 	[TestMethod]
@@ -365,38 +376,55 @@ public sealed class StorageHostFullPathFilesystemTest
 	{
 		// Arrange: create a temp file with sample lines
 		var tempFile = Path.GetTempFileName();
-		var lines = new[] { "line1", "line2", "line3" };
-		await File.WriteAllLinesAsync(tempFile, lines, TestContext.CancellationToken);
-		var storage = new StorageHostFullPathFilesystem(null!);
-
-		// Act
-		var result = new List<string>();
-		await foreach ( var line in storage.ReadLinesAsync(tempFile, CancellationToken.None) )
+		try
 		{
-			result.Add(line);
+			var lines = new[] { "line1", "line2", "line3" };
+			await File.WriteAllLinesAsync(tempFile, lines, TestContext.CancellationToken);
+			var storage = new StorageHostFullPathFilesystem(null!);
+
+			// Act
+			var result = new List<string>();
+			await foreach ( var line in storage.ReadLinesAsync(tempFile, CancellationToken.None) )
+			{
+				result.Add(line);
+			}
+
+			// Assert
+			CollectionAssert.AreEqual(lines, result);
 		}
-
-		// Assert
-		CollectionAssert.AreEqual(lines, result);
-
-		// Cleanup
-		File.Delete(tempFile);
+		finally
+		{
+			// Cleanup
+			if ( File.Exists(tempFile) )
+			{
+				File.Delete(tempFile);
+			}
+		}
 	}
 
 	[TestMethod]
 	public async Task ReadLinesAsync_EmptyFile_ReturnsNoLines()
 	{
 		var tempFile = Path.GetTempFileName();
-		var storage = new StorageHostFullPathFilesystem(null!);
-
-		var result = new List<string>();
-		await foreach ( var line in storage.ReadLinesAsync(tempFile, CancellationToken.None) )
+		try
 		{
-			result.Add(line);
-		}
+			var storage = new StorageHostFullPathFilesystem(null!);
 
-		Assert.IsEmpty(result);
-		File.Delete(tempFile);
+			var result = new List<string>();
+			await foreach ( var line in storage.ReadLinesAsync(tempFile, CancellationToken.None) )
+			{
+				result.Add(line);
+			}
+
+			Assert.IsEmpty(result);
+		}
+		finally
+		{
+			if ( File.Exists(tempFile) )
+			{
+				File.Delete(tempFile);
+			}
+		}
 	}
 
 	[TestMethod]

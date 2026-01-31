@@ -293,25 +293,33 @@ public sealed class StorageSubPathFilesystemTest
 	{
 		// Arrange: create a temp file with sample lines
 		var tempFile = Path.GetTempFileName();
-		var lines = new[] { "line1", "line2", "line3" };
-		await File.WriteAllLinesAsync(tempFile, lines, TestContext.CancellationToken);
-		var storage = new StorageSubPathFilesystem(
-			new AppSettings { StorageFolder = Path.GetDirectoryName(tempFile) ?? string.Empty },
-			new FakeIWebLogger()
-		);
-
-		// Act
-		var result = new List<string>();
-		await foreach ( var line in storage.ReadLinesAsync(
-			               Path.GetFileName(tempFile), CancellationToken.None) )
+		try
 		{
-			result.Add(line);
+			var lines = new[] { "line1", "line2", "line3" };
+			await File.WriteAllLinesAsync(tempFile, lines, TestContext.CancellationToken);
+			var storage = new StorageSubPathFilesystem(
+				new AppSettings { StorageFolder = Path.GetDirectoryName(tempFile) ?? string.Empty },
+				new FakeIWebLogger()
+			);
+
+			// Act
+			var result = new List<string>();
+			await foreach ( var line in storage.ReadLinesAsync(
+				               Path.GetFileName(tempFile), CancellationToken.None) )
+			{
+				result.Add(line);
+			}
+
+			// Assert
+			CollectionAssert.AreEqual(lines, result);
 		}
-
-		// Assert
-		CollectionAssert.AreEqual(lines, result);
-
-		// Cleanup
-		File.Delete(tempFile);
+		finally
+		{
+			// Cleanup
+			if ( File.Exists(tempFile) )
+			{
+				File.Delete(tempFile);
+			}
+		}
 	}
 }

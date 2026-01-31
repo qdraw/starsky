@@ -1,9 +1,8 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.geo.GeoRegionInfo;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.geo;
+namespace starskytest.starsky.foundation.geo.RegionInfoHelper;
 
 [TestClass]
 public class GeoRegionInfoHelperTest
@@ -18,7 +17,7 @@ public class GeoRegionInfoHelperTest
 		string expectedIso3)
 	{
 		var logger = new FakeIWebLogger();
-		var helper = new RegionInfoHelper(logger);
+		var helper = new global::starsky.foundation.geo.GeoRegionInfo.RegionInfoHelper(logger);
 		var result = helper.GetLocationCountryAndCode(code);
 		Assert.AreEqual(expectedName, result.Item1);
 		Assert.AreEqual(expectedIso3, result.Item2);
@@ -28,7 +27,7 @@ public class GeoRegionInfoHelperTest
 	public void GetLocationCountryAndCode_InvalidCode_ReturnsEmptyAndLogs()
 	{
 		var logger = new FakeIWebLogger();
-		var helper = new RegionInfoHelper(logger);
+		var helper = new global::starsky.foundation.geo.GeoRegionInfo.RegionInfoHelper(logger);
 		var result = helper.GetLocationCountryAndCode("XX");
 		Assert.AreEqual(string.Empty, result.Item1);
 		Assert.AreEqual(string.Empty, result.Item2);
@@ -41,7 +40,7 @@ public class GeoRegionInfoHelperTest
 	public void GetLocationCountryAndCode_VaticanCity_VA()
 	{
 		var logger = new FakeIWebLogger();
-		var helper = new RegionInfoHelper(logger);
+		var helper = new global::starsky.foundation.geo.GeoRegionInfo.RegionInfoHelper(logger);
 		var result = helper.GetLocationCountryAndCode("TA");
 		// .NET may throw for VA, so expect empty
 		Assert.AreEqual(string.Empty, result.Item1);
