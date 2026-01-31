@@ -1178,7 +1178,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 	}
 
 	// Invalid request type for testing
-	private class InvalidRequest : IExifTimeCorrectionRequest
+	private sealed class InvalidRequest : IExifTimeCorrectionRequest
 	{
 	}
 
