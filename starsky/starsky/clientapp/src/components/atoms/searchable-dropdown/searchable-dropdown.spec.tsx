@@ -185,4 +185,52 @@ describe("SearchableDropdown", () => {
       expect(queryByTestId("searchable-dropdown-list")).not.toBeInTheDocument();
     });
   });
+
+  it("should handle fetchResults error gracefully", async () => {
+    const errorFetchResults = jest.fn(async () => {
+      throw new Error("Network error");
+    });
+    render(<SearchableDropdown fetchResults={errorFetchResults} />);
+    const input = screen.getByTestId("searchable-dropdown-input") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "fail" } });
+    await waitFor(() => {
+      // Should show no results or error message, depending on implementation
+      // Here we check for the no-results message as a fallback
+      expect(screen.queryByTestId("searchable-dropdown-no-results")).toBeInTheDocument();
+    });
+  });
+
+  it("should navigate with ArrowDown, ArrowUp, and select with Enter", async () => {
+    const { getByTestId } = render(
+      <SearchableDropdown fetchResults={mockFetchResults} onSelect={mockOnSelect} />
+    );
+    const input = getByTestId("searchable-dropdown-input") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "a" } });
+    await waitFor(() => {
+      expect(screen.getByTestId("searchable-dropdown-list")).toBeInTheDocument();
+    });
+    // ArrowDown to first item
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    await waitFor(() => {
+      const firstItem = screen.getByTestId("searchable-dropdown-item-Apple");
+      expect(firstItem).toHaveClass("searchable-dropdown__item--selected");
+    });
+    // ArrowDown to second item
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    await waitFor(() => {
+      const secondItem = screen.getByTestId("searchable-dropdown-item-Apricot");
+      expect(secondItem).toHaveClass("searchable-dropdown__item--selected");
+    });
+    // ArrowUp back to first item
+    fireEvent.keyDown(input, { key: "ArrowUp" });
+    await waitFor(() => {
+      const firstItem = screen.getByTestId("searchable-dropdown-item-Apple");
+      expect(firstItem).toHaveClass("searchable-dropdown__item--selected");
+    });
+    // Enter to select
+    fireEvent.keyDown(input, { key: "Enter" });
+    await waitFor(() => {
+      expect(mockOnSelect).toHaveBeenCalledWith("Apple", "");
+    });
+  });
 });
