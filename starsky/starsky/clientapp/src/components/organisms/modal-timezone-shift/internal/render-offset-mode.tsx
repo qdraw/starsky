@@ -204,17 +204,17 @@ export function renderOffsetMode(
                 <p>
                   <strong>{language.key(localization.MessageAppliedShift)}:</strong>{" "}
                   {formatOffsetLabel(
-                    language.key(localization.MessageYears),
+                    language.key(localization.MessageYears).toLowerCase(),
                     offsetYears,
-                    language.key(localization.MessageMonths),
+                    language.key(localization.MessageMonths).toLowerCase(),
                     offsetMonths,
-                    language.key(localization.MessageDays),
+                    language.key(localization.MessageDays).toLowerCase(),
                     offsetDays,
-                    language.key(localization.MessageHours),
+                    language.key(localization.MessageHours).toLowerCase(),
                     offsetHours,
-                    language.key(localization.MessageMinutes),
+                    language.key(localization.MessageMinutes).toLowerCase(),
                     offsetMinutes,
-                    language.key(localization.MessageSeconds),
+                    language.key(localization.MessageSeconds).toLowerCase(),
                     offsetSeconds
                   )}
                 </p>
