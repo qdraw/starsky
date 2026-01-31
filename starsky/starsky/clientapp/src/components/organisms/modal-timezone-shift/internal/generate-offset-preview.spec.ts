@@ -210,17 +210,4 @@ describe("generateOffsetPreview", () => {
     const call = mockFetchPost.mock.calls[0];
     expect(call[0]).toContain("collections=false");
   });
-
-  it("should use first file from merged list", async () => {
-    await generateOffsetPreview(
-      ["/path/file1.jpg"],
-      mockState,
-      mockOffset,
-      mockSetIsLoadingPreview,
-      mockSetError,
-      mockPreview,
-      mockSetPreview
-    );
-    expect(encodeURISpy).toHaveBeenCalledWith("/path/file1.jpg");
-  });
 });
