@@ -480,42 +480,76 @@ describe("DetailView", () => {
       component.unmount();
     });
 
-      it("Tags input: blur and focus on ] key press", () => {
-        jest.spyOn(MenuDetailView, "default").mockImplementationOnce(() => <></>);
-        jest.spyOn(FileHashImage, "default").mockImplementationOnce(() => <></>);
+    it.each([
+      { key: "]", description: "] key press" },
+      { key: "[", description: "[ key press" }
+    ])("Tags input: blur and focus on %s", ({ key }) => {
+      jest.spyOn(MenuDetailView, "default").mockImplementationOnce(() => <></>);
+      jest.spyOn(FileHashImage, "default").mockImplementationOnce(() => <></>);
 
-        const component = render(<TestComponent />);
-        // Find the tags input (assuming it has a name="tags")
-        const tagsInput = component.container.querySelector('input[name="tags"]') as HTMLInputElement;
-        expect(tagsInput).toBeTruthy();
+      const navigateSpy = jest.fn().mockResolvedValueOnce("");
+      const locationObject = {
+        location: {
+          ...globalThis.location,
+          search: "?f=/test.jpg&details=true"
+        },
+        navigate: navigateSpy
+      };
 
-        // Simulate blur (unfocus)
-        act(() => {
-          tagsInput.blur();
-        });
-        expect(document.activeElement).not.toBe(tagsInput);
-
-        // Listen for focus event
-        let focused = false;
-        tagsInput.addEventListener('focus', () => {
-          focused = true;
-        });
-
-        // Simulate keydown for ]
-        const event = new KeyboardEvent("keydown", {
-          bubbles: true,
-          cancelable: true,
-          key: "]",
-          metaKey: true
-        });
-        act(() => {
-          globalThis.dispatchEvent(event);
+      jest
+        .spyOn(UpdateRelativeObject.prototype, "Update")
+        .mockReset()
+        .mockImplementationOnce(() => {
+          return Promise.resolve<IRelativeObjects>({} as IRelativeObjects);
         });
 
-        // Check if input was focused
-        expect(focused).toBe(true);
-        component.unmount();
+      jest
+        .spyOn(useLocation, "default")
+        .mockReset()
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject);
+
+      const component = render(<TestComponent />);
+
+      const tagsInput = component.container.querySelector('[data-name="tags"]') as HTMLInputElement;
+
+      expect(tagsInput).toBeTruthy();
+
+      act(() => {
+        tagsInput.focus();
       });
+
+      let blur = false;
+      let focused = false;
+
+      tagsInput.addEventListener("blur", () => {
+        blur = true;
+      });
+
+      tagsInput.addEventListener("focus", () => {
+        focused = true;
+      });
+
+      const event = new KeyboardEvent("keydown", {
+        bubbles: true,
+        cancelable: true,
+        key,
+        metaKey: true
+      });
+
+      act(() => {
+        tagsInput.dispatchEvent(event);
+      });
+
+      expect(focused).toBe(true);
+      expect(blur).toBe(true);
+
+      component.unmount();
+    });
 
     it("[SearchResult] Next", async () => {
       console.log("[SearchResult] Next");
