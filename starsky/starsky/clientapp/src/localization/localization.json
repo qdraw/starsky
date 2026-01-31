@@ -1199,10 +1199,10 @@
     "nl": "Oorspronkelijk",
     "de": "Original"
   },
-  "MessageResult": {
-    "en": "Result",
-    "nl": "Resultaat",
-    "de": "Ergebnis"
+  "MessageNewTimeResult": {
+    "en": "New time result",
+    "nl": "Nieuw tijdresultaat",
+    "de": "Neues Zeitresultat"
   },
   "MessageAppliedShift": {
     "en": "Applied Shift",

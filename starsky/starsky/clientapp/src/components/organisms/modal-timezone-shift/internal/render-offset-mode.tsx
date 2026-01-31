@@ -197,7 +197,7 @@ export function renderOffsetMode(
                   {parseTime(preview.offsetData[0]?.originalDateTime)}
                 </p>
                 <p>
-                  <strong>{language.key(localization.MessageResult)}:</strong>{" "}
+                  <strong>{language.key(localization.MessageNewTimeResult)}:</strong>{" "}
                   {parseDate(preview.offsetData[0]?.correctedDateTime, settings.language, false)}{" "}
                   {parseTime(preview.offsetData[0]?.correctedDateTime)}
                 </p>

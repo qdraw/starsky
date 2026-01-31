@@ -1,7 +1,9 @@
 import { ArchiveAction } from "../../../../contexts/archive-context";
+import useGlobalSettings from "../../../../hooks/use-global-settings";
 import { IArchiveProps } from "../../../../interfaces/IArchiveProps";
+import localization from "../../../../localization/localization.json";
 import { parseDate, parseTime } from "../../../../shared/date";
-import { SupportedLanguages } from "../../../../shared/language";
+import { Language } from "../../../../shared/language";
 import { URLPath } from "../../../../shared/url/url-path";
 import Preloader from "../../../atoms/preloader/preloader";
 import SearchableDropdown from "../../../atoms/searchable-dropdown";
@@ -32,7 +34,7 @@ export function renderTimezoneMode(
   } = previewState;
 
   const {
-    recordedTimezoneId, // t
+    recordedTimezoneId,
     setRecordedTimezoneId,
     correctTimezoneId,
     setCorrectTimezoneId,
@@ -45,6 +47,8 @@ export function renderTimezoneMode(
   const filePathList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
   const firstItem = state.fileIndexItems.find((x) => x.filePath === filePathList[0]);
   const firstItemDateTime = firstItem?.dateTime ?? new Date().toISOString();
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
 
   return (
     <>
@@ -109,25 +113,26 @@ export function renderTimezoneMode(
 
               <div className="preview-result">
                 <p>
-                  <strong>Original:</strong>
+                  <strong>{language.key(localization.MessageOriginal)}:</strong>
                   {parseDate(
                     preview.timezoneData[0]?.originalDateTime,
-                    SupportedLanguages.nl,
+                    settings.language,
                     false
                   )}{" "}
                   {parseTime(preview.timezoneData[0]?.originalDateTime)}
                 </p>
                 <p>
-                  <strong>New time:</strong>
+                  <strong>{language.key(localization.MessageNewTimeResult)}:</strong>
                   {parseDate(
                     preview.timezoneData[0]?.correctedDateTime,
-                    SupportedLanguages.nl,
+                    settings.language,
                     false
                   )}{" "}
                   {parseTime(preview.timezoneData[0]?.correctedDateTime)}
                 </p>
                 <p>
-                  <strong>Time shift:</strong> {preview.timezoneData[0]?.delta || "N/A"} (DST-aware)
+                  <strong>{language.key(localization.MessageAppliedShift)}:</strong>{" "}
+                  {preview.timezoneData[0]?.delta || "N/A"} (DST-aware)
                 </p>
                 {preview.timezoneData[0]?.warning && (
                   <p className="warning">⚠️ {preview.timezoneData[0].warning}</p>
