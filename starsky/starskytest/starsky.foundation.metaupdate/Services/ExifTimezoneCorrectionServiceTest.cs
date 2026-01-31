@@ -129,6 +129,29 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		Assert.Contains("Invalid correct timezone", result.Error);
 	}
 
+	[TestMethod]
+	public void ValidateCorrection_InvalidDateTime_ShouldReturnError2()
+	{
+		// Arrange
+		var service = CreateService();
+		var fileIndexItem = new FileIndexItem
+		{
+			FilePath = "/test.jpg",
+			DateTime = new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Local) // Invalid year
+		};
+		var request = new ExifTimezoneBasedCorrectionRequest
+		{
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
+		};
+
+		// Act
+		var result = service.ValidateCorrection(fileIndexItem, request);
+
+		// Assert
+		Assert.IsFalse(result.Success);
+		Assert.AreEqual("Image does not have a valid DateTime in EXIF", result.Error);
+	}
+
 
 	[TestMethod]
 	public void ValidateCorrection_SameTimezones_ShouldReturnWarning()
@@ -963,10 +986,8 @@ public sealed class ExifTimezoneCorrectionServiceTest
 
 		// Assert
 		Assert.IsTrue(result.Success);
-		Assert.AreEqual(5, result.Delta.Hours); // 5 hours 45 minutes
-		Assert.AreEqual(45, result.Delta.Minutes); // 5 hours 45 minutes
-		Assert.AreEqual(new DateTime(2024, 6, 15,
-				19, 45, 0, DateTimeKind.Local),
+		Assert.AreEqual(5, result.Delta.Hours); // 5.5 hours
+		Assert.AreEqual(new DateTime(2024, 6, 15, 19, 45, 0, DateTimeKind.Local),
 			result.CorrectedDateTime);
 	}
 
@@ -1133,6 +1154,21 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		// Assert
 		Assert.IsFalse(result.Success);
 		Assert.AreEqual("Directory is read only", result.Error);
+	}
+
+	[TestMethod]
+	public void CalculateCustomOffsetDelta_YearMonth_LeapYearCase()
+	{
+		// Arrange
+		var original = new DateTime(2020, 3, 7, 18, 25, 22, DateTimeKind.Local);
+		var request = new ExifCustomOffsetCorrectionRequest { Year = 1, Month = 1 };
+
+		// Act
+		var delta = ExifTimezoneCorrectionService.CalculateCustomOffsetDelta(original, request);
+		var expected = new DateTime(2021, 4, 7, 18, 25, 22, DateTimeKind.Local) - original;
+
+		// Assert
+		Assert.AreEqual(expected, delta);
 	}
 
 	private sealed class
@@ -1313,7 +1349,10 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		Assert.AreEqual(new DateTime(2024, 8, 15, 14, 30, 0, DateTimeKind.Local),
 			result.CorrectedDateTime);
 		// Delta for months is calculated as the difference in days/time
-		Assert.AreEqual(new DateTime(2024, 8, 15, 14, 30, 0) - new DateTime(2024, 6, 15, 14, 30, 0),
+		Assert.AreEqual(new DateTime(2024, 8, 15,
+			                14, 30, 0, DateTimeKind.Local)
+		                - new DateTime(2024, 6, 15,
+			                14, 30, 0, DateTimeKind.Local),
 			result.Delta);
 	}
 
@@ -1342,7 +1381,10 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		Assert.AreEqual(new DateTime(2025, 6, 15, 14, 30, 0, DateTimeKind.Local),
 			result.CorrectedDateTime);
 		// Delta for years is calculated as the difference
-		Assert.AreEqual(new DateTime(2025, 6, 15, 14, 30, 0) - new DateTime(2024, 6, 15, 14, 30, 0),
+		Assert.AreEqual(new DateTime(2025, 6, 15,
+			                14, 30, 0, DateTimeKind.Local)
+		                - new DateTime(2024, 6, 15,
+			                14, 30, 0, kind: DateTimeKind.Local),
 			result.Delta);
 	}
 
@@ -1627,29 +1669,6 @@ public sealed class ExifTimezoneCorrectionServiceTest
 	}
 
 	[TestMethod]
-	public void ValidateCorrection_InvalidDateTime_ShouldReturnError()
-	{
-		// Arrange
-		var service = CreateService();
-		var fileIndexItem = new FileIndexItem
-		{
-			FilePath = "/test.jpg",
-			DateTime = new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Local) // Year < 2
-		};
-		var request = new ExifTimezoneBasedCorrectionRequest
-		{
-			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
-		};
-
-		// Act
-		var result = service.ValidateCorrection(fileIndexItem, request);
-
-		// Assert
-		Assert.IsFalse(result.Success);
-		Assert.AreEqual("Image does not have a valid DateTime in EXIF", result.Error);
-	}
-
-	[TestMethod]
 	public void ValidateCorrection_SameTimezone_ShouldSuccessWithWarning()
 	{
 		// Arrange
@@ -1742,7 +1761,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		var invalidRequest = new InvalidRequest(); // Custom invalid request
 
 		// Act & Assert
-		Assert.ThrowsException<ArgumentException>(() =>
+		Assert.ThrowsExactly<ArgumentException>(() =>
 			ExifTimezoneCorrectionService.SwitchCalculateTimezone(fileIndexItem, invalidRequest));
 	}
 
@@ -1775,6 +1794,33 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		var expected = expectedDateTime - dateTime;
 		Assert.AreEqual(expected, delta);
 	}
+	
+	[TestMethod]
+	public void CalculateCustomOffsetDelta_WithMultipleComponents2()
+	{
+		// Arrange
+		var dateTime = new DateTime(2024, 6, 15, 14, 30, 45, DateTimeKind.Local);
+		var request = new ExifCustomOffsetCorrectionRequest
+		{
+			Year = 1,
+			Month = -2,
+			Day = -3,
+			Hour = 0,
+			Minute = 0,
+			Second = 0
+		};
+
+		// Act
+		var delta = ExifTimezoneCorrectionService.CalculateCustomOffsetDelta(dateTime, request);
+
+		// Assert
+		var expectedDateTime = dateTime
+			.AddYears(1)
+			.AddMonths(-2)
+			.AddDays(-3);
+		var expected = expectedDateTime - dateTime;
+		Assert.AreEqual(expected, delta);
+	}
 
 	[TestMethod]
 	public void CalculateTimezoneDelta_WinterTime_CalculatesCorrectly()
@@ -1793,7 +1839,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 	[TestMethod]
 	public void CalculateTimezoneDelta_SummerTime_CalculatesCorrectly()
 	{
-		// Arrange - Summer time in Europe
+		// Arrange - summer (DST) time in Europe
 		var dateTime = new DateTime(2024, 7, 15, 14, 0, 0, DateTimeKind.Local);
 
 		// Act
