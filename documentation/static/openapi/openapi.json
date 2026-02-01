@@ -5501,6 +5501,169 @@
       "extensions": {},
       "unresolvedReference": false
     },
+    "/api/geo-location-name/city": {
+      "operations": {
+        "Get": {
+          "tags": [
+            {
+              "name": "GeoLocationName",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Search for a city by name",
+          "parameters": [
+            {
+              "unresolvedReference": false,
+              "name": "city",
+              "in": 0,
+              "description": "City name to search for",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Data with object",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
+    "/api/geo-location-name/city-timezone": {
+      "operations": {
+        "Get": {
+          "tags": [
+            {
+              "name": "GeoLocationName",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Search for a city's timezone for a given date/time",
+          "parameters": [
+            {
+              "unresolvedReference": false,
+              "name": "dateTime",
+              "in": 0,
+              "description": "Date/time string (ISO 8601 or similar)",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
+              "name": "city",
+              "in": 0,
+              "description": "City name to search for",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "style": 2,
+              "explode": true,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Data with object",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {},
+      "unresolvedReference": false
+    },
     "/api/geo-reverse-lookup": {
       "operations": {
         "Get": {
@@ -8998,122 +9161,6 @@
                   "extensions": {}
                 }
               },
-              "links": {},
-              "extensions": {},
-              "unresolvedReference": false
-            },
-            "401": {
-              "description": "User unauthorized",
-              "headers": {},
-              "content": {},
-              "links": {},
-              "extensions": {},
-              "unresolvedReference": false
-            }
-          },
-          "callbacks": {},
-          "deprecated": false,
-          "security": [],
-          "servers": [],
-          "extensions": {}
-        }
-      },
-      "servers": [],
-      "parameters": [],
-      "extensions": {},
-      "unresolvedReference": false
-    },
-    "/api/meta-time-correct/camera-incorrect-timezones": {
-      "operations": {
-        "Get": {
-          "tags": [
-            {
-              "name": "MetaTimeCorrect",
-              "extensions": {},
-              "unresolvedReference": false
-            }
-          ],
-          "summary": "Get list of fixed offset timezones (camera set incorrectly)",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": "List of timezones for incorrect camera settings",
-              "headers": {},
-              "content": {},
-              "links": {},
-              "extensions": {},
-              "unresolvedReference": false
-            },
-            "401": {
-              "description": "User unauthorized",
-              "headers": {},
-              "content": {},
-              "links": {},
-              "extensions": {},
-              "unresolvedReference": false
-            }
-          },
-          "callbacks": {},
-          "deprecated": false,
-          "security": [],
-          "servers": [],
-          "extensions": {}
-        }
-      },
-      "servers": [],
-      "parameters": [],
-      "extensions": {},
-      "unresolvedReference": false
-    },
-    "/api/meta-time-correct/system-timezones": {
-      "operations": {
-        "Get": {
-          "tags": [
-            {
-              "name": "MetaTimeCorrect",
-              "extensions": {},
-              "unresolvedReference": false
-            }
-          ],
-          "summary": "Get list of all system timezones (moved to different place)",
-          "parameters": [
-            {
-              "unresolvedReference": false,
-              "name": "dateTime",
-              "in": 0,
-              "required": false,
-              "deprecated": false,
-              "allowEmptyValue": false,
-              "style": 2,
-              "explode": true,
-              "allowReserved": false,
-              "schema": {
-                "type": "string",
-                "format": "date-time",
-                "readOnly": false,
-                "writeOnly": false,
-                "allOf": [],
-                "oneOf": [],
-                "anyOf": [],
-                "required": [],
-                "properties": {},
-                "additionalPropertiesAllowed": true,
-                "enum": [],
-                "nullable": false,
-                "deprecated": false,
-                "extensions": {},
-                "unresolvedReference": false
-              },
-              "examples": {},
-              "content": {},
-              "extensions": {}
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "List of system timezones",
-              "headers": {},
-              "content": {},
               "links": {},
               "extensions": {},
               "unresolvedReference": false
@@ -16761,11 +16808,11 @@
         "oneOf": [],
         "anyOf": [],
         "required": [
-          "correctTimezone",
-          "recordedTimezone"
+          "correctTimezoneId",
+          "recordedTimezoneId"
         ],
         "properties": {
-          "recordedTimezone": {
+          "recordedTimezoneId": {
             "type": "string",
             "readOnly": false,
             "writeOnly": false,
@@ -16781,7 +16828,7 @@
             "extensions": {},
             "unresolvedReference": false
           },
-          "correctTimezone": {
+          "correctTimezoneId": {
             "type": "string",
             "readOnly": false,
             "writeOnly": false,
@@ -19844,5 +19891,5 @@
   ],
   "tags": [],
   "extensions": {},
-  "hashCode": "C96070D80168BA8389557FE740F92487141ABEADC1FEFD732CA0274D1C982287F0948C472746B1DBF68AAF29400EF4A4EF8B7176CB2A1CEBD0FBBD268C9F2799"
+  "hashCode": "033101A7E542EE1470E3B609FB1E97D24596A0B66562C98F5F54A2542B140E18F2CFF8965073E3CA0F753A34832A108EF1A3B8568603178A6EA39566FCD549F0"
 }
