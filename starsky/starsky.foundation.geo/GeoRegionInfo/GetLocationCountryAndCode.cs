@@ -8,19 +8,19 @@ public class RegionInfoHelper(IWebLogger logger)
 	public Tuple<string, string> GetLocationCountryAndCode(string countryCode)
 	{
 		// Catch is used for example the region TA
-		var locationCountry = string.Empty;
-		var locationCountryCode = string.Empty;
+		var englishCountryName = string.Empty;
+		var threeLetterLocationCountry = string.Empty;
 		try
 		{
 			var region = new RegionInfo(countryCode);
-			locationCountry = region.EnglishName;
-			locationCountryCode = region.ThreeLetterISORegionName;
+			englishCountryName = region.EnglishName;
+			threeLetterLocationCountry = region.ThreeLetterISORegionName;
 		}
 		catch ( ArgumentException e )
 		{
 			logger.LogInformation("[GetLocationCountryAndCode] " + e.Message);
 		}
 
-		return new Tuple<string, string>(locationCountry, locationCountryCode);
+		return new Tuple<string, string>(englishCountryName, threeLetterLocationCountry);
 	}
 }

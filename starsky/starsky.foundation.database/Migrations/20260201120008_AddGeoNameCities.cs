@@ -34,7 +34,9 @@ namespace starsky.foundation.database.Migrations
                     Dem = table.Column<int>(type: "INTEGER", nullable: false),
                     TimeZoneId = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
                     ModificationDate = table.Column<DateOnly>(type: "TEXT", nullable: false),
-                    Province = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false)
+                    Province = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    CountryName = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    CountryThreeLetterCode = table.Column<string>(type: "TEXT", maxLength: 3, nullable: false)
                 },
                 constraints: table =>
                 {

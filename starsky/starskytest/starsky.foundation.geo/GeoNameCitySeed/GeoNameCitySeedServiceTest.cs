@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -55,7 +56,7 @@ public sealed class GeoNameCitySeedServiceTest : VerifyBase
 		Assert.IsTrue(result);
 
 		var all = await dbContext.GeoNameCities.ToListAsync(TestContext.CancellationToken);
-		Assert.HasCount(55, all);
+		Assert.HasCount(68, all);
 
 		await Verify(all);
 
@@ -78,7 +79,7 @@ public sealed class GeoNameCitySeedServiceTest : VerifyBase
 		Assert.IsTrue(result2);
 
 		var all = await dbContext.GeoNameCities.ToListAsync(TestContext.CancellationToken);
-		Assert.HasCount(55, all);
+		Assert.HasCount(68, all);
 
 		await Verify(all);
 
@@ -143,16 +144,73 @@ public sealed class GeoNameCitySeedServiceTest : VerifyBase
 			"Setup should return false when cache is not set and file exists");
 	}
 
+	[TestMethod]
+	public async Task ParseCityAsync_ThrowsFormatException_WhenLineIsInvalid()
+	{
+		await using var dbContext = CreateDbContext("invalid");
+		var sut = CreateSut(dbContext);
+		const string invalidLine = "1\tAmsterdam\tAmsterdam"; // Less than 19 fields
+		await Assert.ThrowsExactlyAsync<FormatException>(async () =>
+		{
+			await sut.ParseCityAsync(invalidLine);
+		});
+	}
+
+	[TestMethod]
+	public async Task ParseCityAsync_ParsesValidLine()
+	{
+		await using var dbContext = CreateDbContext("valid");
+		var sut = CreateSut(dbContext);
+		// Add missing fields for population, elevation, dem, timezone, date
+		const string validLineFull =
+			"1\tAmsterdam\tAmsterdam\tAms,Amsterdam\t52.3702\t4.8952\tP\tPPL" +
+			"\tNL\t\t07\t\t\t\t821752\t\t2\tEurope/Amsterdam\t2024-02-01";
+		var city = await sut.ParseCityAsync(validLineFull);
+		Assert.AreEqual(1, city.GeonameId);
+		Assert.AreEqual("Amsterdam", city.Name);
+		Assert.AreEqual("NL", city.CountryCode);
+		Assert.AreEqual("Europe/Amsterdam", city.TimeZoneId);
+		Assert.AreEqual(new DateOnly(2024, 2, 1), city.ModificationDate);
+	}
+
+	[TestMethod]
+	public async Task GetProvince_ReturnsProvinceName_WhenExists()
+	{
+		await using var dbContext = CreateDbContext("province");
+		var sut = CreateSut(dbContext);
+
+		// NL.03 is mapped to "Gelderland"
+		var result = await sut.GetProvince("NL", "03");
+		Assert.AreEqual("Gelderland", result);
+	}
+
+	[TestMethod]
+	public async Task GetProvince_ReturnsEmpty_WhenNotExists()
+	{
+		await using var dbContext = CreateDbContext("province2");
+		var sut = CreateSut(dbContext);
+
+		// Unknown code
+		var result = await sut.GetProvince("NL", "99");
+		Assert.AreEqual(string.Empty, result);
+	}
+
 	private sealed class ReadLinesFakeIStorage : FakeIStorage
 	{
 		public override IAsyncEnumerable<string> ReadLinesAsync(string path,
 			CancellationToken cancellationToken)
 		{
+			var lines = CreateAnGeoNameCitySeedData.SampleLines;
+			if ( path == "./admin1CodesASCII.txt" )
+			{
+				lines = CreateAnGeoNameCitySeedData.Admin1Data;
+			}
+
 			return GetLines();
 
-			static async IAsyncEnumerable<string> GetLines()
+			async IAsyncEnumerable<string> GetLines()
 			{
-				foreach ( var line in CreateAnGeoNameCitySeedData.SampleLines )
+				foreach ( var line in lines )
 				{
 					await Task.Yield();
 					yield return line;

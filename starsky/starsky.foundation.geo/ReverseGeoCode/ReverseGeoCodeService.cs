@@ -139,10 +139,10 @@ public class ReverseGeoCodeService : IReverseGeoCodeService
 
 	private void SetLocationCountryAndCode(ExtendedGeoName nearestPlace, GeoLocationModel status)
 	{
-		var (locationCountry, locationCountryCode) =
+		var (locationCountry, threeLetterLocationCountryCode) =
 			new RegionInfoHelper(_logger).GetLocationCountryAndCode(nearestPlace.CountryCode);
 		status.LocationCountry = locationCountry;
-		status.LocationCountryCode = locationCountryCode;
+		status.LocationCountryCode = threeLetterLocationCountryCode;
 	}
 
 	internal string? GetAdmin1Name(string countryCode, string[] adminCodes)

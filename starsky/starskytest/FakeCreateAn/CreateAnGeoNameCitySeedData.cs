@@ -58,6 +58,35 @@ public static class CreateAnGeoNameCitySeedData
 		"6691083	Al Twar First	Al Twar First	Al Twar 1	25.27148	55.36165	P	PPLX	AE		03				12114		2	Asia/Dubai	2024-10-28",
 		"6691085	AL Twar Second	AL Twar Second	Al Twar 2	25.26309	55.38028	P	PPLX	AE		03				5068		4	Asia/Dubai	2024-10-28",
 		"6691086	Al Qusais Second	Al Qusais Second	Al Qusais 2	25.27148	55.38603	P	PPLX	AE		03				12851		8	Asia/Dubai	2024-10-28",
-		"6691091	Al Karama	Al Karama		25.24004	55.30106	P	PPLX	AE		03				75560		4	Asia/Dubai	2024-10-28"
+		"6691091	Al Karama	Al Karama		25.24004	55.30106	P	PPLX	AE		03				75560		4	Asia/Dubai	2024-10-28",
+		"2749234	Oss	Oss	Os,Oss,Oss i Nederland,ao si,osu,Осс,オス,奥斯	51.765	5.51806	P	PPL	NL		06	0828			76430		8	Europe/Amsterdam	2017-10-17",
+		"2749235	Ospel	Ospel		51.2975	5.78472	P	PPL	NL		05	0946			2505		33	Europe/Amsterdam	2017-10-17",
+		"2749248	Orthen	Orthen		51.70613	5.30468	P	PPLX	NL		06	0796			1515		7	Europe/Amsterdam	2017-03-24",
+		"2749250	Orden	Orden		52.20113	5.93417	P	PPLX	NL		03	0200			6385		25	Europe/Amsterdam	2017-03-24",
+		"2749251	Oranjewoud	Oranjewoud	It Oranjewald,It Oranjewâld,Oran'evaud,Oran'evud,Oranienvald,Oranjewoold,Oranjewoud,ao lan zhi wu de,awranzhwd,Ораниенвалд,Ораньевуд,Ораньєвауд,اورانژود,奧蘭治伍德	52.94579	5.95038	P	PPL	NL		02	0074			1580		0	Europe/Amsterdam	2017-10-17",
+		"2749281	Opperdoes	Opperdoes		52.75915	5.07534	P	PPL	NL		07	0420			1840		1	Europe/Amsterdam	2017-10-17",
+		"2749284	Oppenhuizen	Oppenhuizen	Openkhuizen,Oppengejzen,Oppenhuizen,Toppenhuzen,ao peng he yi ceng,awpn hwyzn,Опенхуизен,Оппенгейзен,اوپن هویزن,奥彭赫伊曾	53.01194	5.69495	P	PPL	NL		02	1900			1060		0	Europe/Amsterdam	2017-10-17",
+		"2749286	Opmeer	Opmeer	Opmar,Opmeer	52.70667	4.94444	P	PPL	NL		07	0432			11183		1	Europe/Amsterdam	2017-10-17",
+		"2759794	Amsterdam	Amsterdam	AMS,Aemstelredamme,Aemsterdam,Amestelledamme,Amesterda,Amesterdam,Amesterdao,Amesterdã,Amesterdão,Amistardam,Amseutereudam,Amstadem,Amstardam,Amstardām,Amstedam,Amstehrdam,Amsteladamum,Amstelodamum,Amstelodhamon,Amstelodhámon,Amsterda,Amsterdam,Amsterdama,Amsterdamas,Amsterdame,Amsterdami,Amsterdamo,Amsterdams,Amsterdamu,Amsterdan,Amsterdã,Amsterntam,Amsterodam,Amstyerdam,Amstèdam,Amstèrdame,Amstérdam,Amstɛrɩdam,Amstʻertam,Amsut'erudam,Amszterdam,Amsŭt'erŭdam,Amusitedan,Amusuterudamu,Damsko,I-Amsterdami,Mokum,Mokum Aleph,a mu si te dan,aimstardaima,amasataradama,amastaradama,amastararyama,amseuteleudam,amstardama,amstartam,amstrdam,amusuterudamu,anstardyam,emstaradyama,xamstexrdam,yەmstەrdam,Àmsterdam,Ámsterdam,Ámsterdan,Âmesterdâm,Āmǔsītèdān,Άμστερνταμ,Амстердам,Амстэрдам,Ամսթերտամ,Ամստերդամ,אמסטערדאם,אמסטרדם,آمستردام,أمستردام,ئامستېردام,ئەمستەردام,امستردام,امسټرډام,ایمسٹرڈیم,ܐܡܣܛܪܕܐܡ,अ‍ॅम्स्टरडॅम,आम्स्टर्डम,एम्स्तरद्याम,ऐम्स्टर्डैम,আমস্টারডাম,ਅਮਸਤਰਦਮ,ଆମଷ୍ଟରଡ଼୍ୟାମ,ஆம்ஸ்டர்டம்,ಆಂಸ್ಟರ್ಡ್ಯಾಮ್,ആംസ്റ്റർഡാം,ඈම්ස්ටර්ඩෑම්,อัมสเตอร์ดัม,ཨེམ་སི་ཊར་ཌམ།,အမ်စတာဒမ်မြို့,ამსტერდამი,አምስተርዳም,アムステルダム,阿姆斯特丹,암스테르담	52.37403	4.88969	P	PPLC	NL		07	0363			741636		13	Europe/Amsterdam	2025-07-22",
+		"2759796	Amstenrade	Amstenrade		50.93917	5.92361	P	PPL	NL		05	1954			1740		88	Europe/Amsterdam	2019-01-20",
+		"2759798	Amstelveen	Amstelveen	Amstelveen,Amstelven,Amstelveyn,Amstelvin,Nieuwer Amstel,a mu si te er fen,amseutelbein,amusuterufen,Амстелвен,Амстелвин,Ամստելվեյն,אמסטלפיין,آمستل‌فین,アムステルフェーン,阿姆斯特尔芬,암스텔베인	52.30083	4.86389	P	PPL	NL		07	0362			79639		0	Europe/Amsterdam	2017-10-17",
+		"2759813	Ammerzoden	Ammerzoden		51.74917	5.22083	P	PPL	NL		03	0263			3040		3	Europe/Amsterdam	2017-10-17",
+		"2759815	Ammerstol	Ammerstol		51.9275	4.80833	P	PPL	NL		11	1931			1580		-1	Europe/Amsterdam	2017-10-17"
+	];
+
+	public static readonly string[] Admin1Data =
+	[
+		"NL.11	South Holland	South Holland	2743698",
+		"NL.10	Zeeland	Zeeland	2744011",
+		"NL.09	Utrecht	Utrecht	2745909",
+		"NL.15	Overijssel	Overijssel	2748838",
+		"NL.07	North Holland	North Holland	2749879",
+		"NL.06	North Brabant	North Brabant	2749990",
+		"NL.05	Limburg	Limburg	2751596",
+		"NL.04	Groningen	Groningen	2755249",
+		"NL.03	Gelderland	Gelderland	2755634",
+		"NL.02	Friesland	Friesland	2755812",
+		"NL.01	Drenthe	Drenthe	2756631",
+		"NL.16	Flevoland	Flevoland	3319179"
 	];
 }

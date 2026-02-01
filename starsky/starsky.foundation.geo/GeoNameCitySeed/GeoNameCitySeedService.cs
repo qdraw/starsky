@@ -5,6 +5,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.geo.GeoDownload;
 using starsky.foundation.geo.GeoDownload.Interfaces;
+using starsky.foundation.geo.GeoRegionInfo;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -130,7 +131,7 @@ public class GeoNameCitySeedService(
 		return await query.GetItem(geoNameCity.GeonameId) == null;
 	}
 
-	private async Task<string> GetProvince(string p8, string p10)
+	public async Task<string> GetProvince(string p8, string p10)
 	{
 		var admin1TextAsciiMap = await GetAdmin1TextAsciiMapAsync();
 		var admin1Code = p8 + "." + p10;
@@ -181,6 +182,8 @@ public class GeoNameCitySeedService(
 		{
 			throw new FormatException("Invalid GeoNames line");
 		}
+		var (countryNameEnglish, threeLetterLocationCountryCode) =
+			new RegionInfoHelper(logger).GetLocationCountryAndCode(p[8]);
 
 		return new GeoNameCity
 		{
@@ -204,7 +207,9 @@ public class GeoNameCitySeedService(
 			TimeZoneId = p[17],
 			ModificationDate =
 				DateOnly.ParseExact(p[18], "yyyy-MM-dd", CultureInfo.InvariantCulture),
-			Province = await GetProvince(p[8], p[10])
+			Province = await GetProvince(p[8], p[10]),
+			CountryName = countryNameEnglish,
+			CountryThreeLetterCode = threeLetterLocationCountryCode
 		};
 	}
 }

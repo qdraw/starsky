@@ -144,7 +144,9 @@ public class GeoLocationNameControllerTest : VerifyBase
 				Elevation = null,
 				Dem = 13,
 				TimeZoneId = "Europe/Amsterdam",
-				ModificationDate = new DateOnly(2025, 7, 22)
+				ModificationDate = new DateOnly(2025, 7, 22),
+				CountryName = "Netherlands",
+				CountryThreeLetterCode = "NLD",
 			});
 			dbContext.GeoNameCities.Add(new GeoNameCity
 			{

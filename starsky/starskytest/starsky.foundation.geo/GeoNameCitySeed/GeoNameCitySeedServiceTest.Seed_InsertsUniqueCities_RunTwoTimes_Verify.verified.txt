@@ -18,7 +18,9 @@
     Dem: 1318,
     TimeZoneId: Europe/Andorra,
     ModificationDate: Date_1,
-    Province: 
+    Province: ,
+    CountryName: Andorra,
+    CountryThreeLetterCode: AND
   },
   {
     GeonameId: 3039154,
@@ -39,7 +41,9 @@
     Dem: 1721,
     TimeZoneId: Europe/Andorra,
     ModificationDate: Date_2,
-    Province: 
+    Province: ,
+    CountryName: Andorra,
+    CountryThreeLetterCode: AND
   },
   {
     GeonameId: 3039163,
@@ -60,7 +64,9 @@
     Dem: 921,
     TimeZoneId: Europe/Andorra,
     ModificationDate: Date_3,
-    Province: 
+    Province: ,
+    CountryName: Andorra,
+    CountryThreeLetterCode: AND
   },
   {
     GeonameId: 3039604,
@@ -82,7 +88,9 @@
     Dem: 2106,
     TimeZoneId: Europe/Andorra,
     ModificationDate: Date_4,
-    Province: 
+    Province: ,
+    CountryName: Andorra,
+    CountryThreeLetterCode: AND
   },
   {
     GeonameId: 3039678,
@@ -103,7 +111,9 @@
     Dem: 1296,
     TimeZoneId: Europe/Andorra,
     ModificationDate: Date_5,
-    Province: 
+    Province: ,
+    CountryName: Andorra,
+    CountryThreeLetterCode: AND
   },
   {
     GeonameId: 3040051,
@@ -124,7 +134,9 @@
     Dem: 1033,
     TimeZoneId: Europe/Andorra,
     ModificationDate: Date_6,
-    Province: 
+    Province: ,
+    CountryName: Andorra,
+    CountryThreeLetterCode: AND
   },
   {
     GeonameId: 3040132,
@@ -145,7 +157,9 @@
     Dem: 1245,
     TimeZoneId: Europe/Andorra,
     ModificationDate: Date_7,
-    Province: 
+    Province: ,
+    CountryName: Andorra,
+    CountryThreeLetterCode: AND
   },
   {
     GeonameId: 3040686,
@@ -166,7 +180,9 @@
     Dem: 1257,
     TimeZoneId: Europe/Andorra,
     ModificationDate: Date_5,
-    Province: 
+    Province: ,
+    CountryName: Andorra,
+    CountryThreeLetterCode: AND
   },
   {
     GeonameId: 3041204,
@@ -187,7 +203,9 @@
     Dem: 1561,
     TimeZoneId: Europe/Andorra,
     ModificationDate: Date_5,
-    Province: 
+    Province: ,
+    CountryName: Andorra,
+    CountryThreeLetterCode: AND
   },
   {
     GeonameId: 3041519,
@@ -208,7 +226,9 @@
     Dem: 1465,
     TimeZoneId: Europe/Andorra,
     ModificationDate: Date_8,
-    Province: 
+    Province: ,
+    CountryName: Andorra,
+    CountryThreeLetterCode: AND
   },
   {
     GeonameId: 3041543,
@@ -229,7 +249,9 @@
     Dem: 1299,
     TimeZoneId: Europe/Andorra,
     ModificationDate: Date_1,
-    Province: 
+    Province: ,
+    CountryName: Andorra,
+    CountryThreeLetterCode: AND
   },
   {
     GeonameId: 3041563,
@@ -250,7 +272,9 @@
     Dem: 1037,
     TimeZoneId: Europe/Andorra,
     ModificationDate: Date_9,
-    Province: 
+    Province: ,
+    CountryName: Andorra,
+    CountryThreeLetterCode: AND
   },
   {
     GeonameId: 3041604,
@@ -271,7 +295,9 @@
     Dem: 1169,
     TimeZoneId: Europe/Andorra,
     ModificationDate: Date_1,
-    Province: 
+    Province: ,
+    CountryName: Andorra,
+    CountryThreeLetterCode: AND
   },
   {
     GeonameId: 290503,
@@ -292,7 +318,9 @@
     Dem: 12,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_10,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 290581,
@@ -313,7 +341,9 @@
     Dem: 1,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_11,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 290594,
@@ -334,7 +364,9 @@
     Dem: 2,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_12,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 290680,
@@ -355,7 +387,9 @@
     Dem: 10,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_12,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 291061,
@@ -376,7 +410,9 @@
     Dem: 10,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_11,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 291074,
@@ -397,7 +433,9 @@
     Dem: 2,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_13,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 291279,
@@ -418,7 +456,9 @@
     Dem: 123,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_14,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 291339,
@@ -439,7 +479,9 @@
     Dem: 15,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_15,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 291489,
@@ -461,7 +503,9 @@
     Dem: 334,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_16,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 291580,
@@ -482,7 +526,9 @@
     Dem: 118,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_14,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 291696,
@@ -503,7 +549,9 @@
     Dem: 20,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_17,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 291763,
@@ -524,7 +572,9 @@
     Dem: 15,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_18,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 291775,
@@ -545,7 +595,9 @@
     Dem: 5,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_19,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 291794,
@@ -566,7 +618,9 @@
     Dem: 3,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_11,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 292223,
@@ -587,7 +641,9 @@
     Dem: 24,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_12,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 292231,
@@ -608,7 +664,9 @@
     Dem: 16,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_20,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 292239,
@@ -629,7 +687,9 @@
     Dem: 4,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_21,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 292261,
@@ -650,7 +710,9 @@
     Dem: 10,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_11,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 292672,
@@ -671,7 +733,9 @@
     Dem: 15,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_22,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 292674,
@@ -692,7 +756,9 @@
     Dem: 5,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_11,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 292688,
@@ -713,7 +779,9 @@
     Dem: 16,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_14,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 292799,
@@ -734,7 +802,9 @@
     Dem: 213,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_23,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 292856,
@@ -755,7 +825,9 @@
     Dem: 8,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_19,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 292862,
@@ -777,7 +849,9 @@
     Dem: 331,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_24,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 292878,
@@ -798,7 +872,9 @@
     Dem: 15,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_25,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 292913,
@@ -819,7 +895,9 @@
     Dem: 275,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_26,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 292932,
@@ -840,7 +918,9 @@
     Dem: 2,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_27,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 292953,
@@ -861,7 +941,9 @@
     Dem: 114,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_28,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 292968,
@@ -882,7 +964,9 @@
     Dem: 6,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_29,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 292991,
@@ -903,7 +987,9 @@
     Dem: 3,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_11,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 385024,
@@ -924,7 +1010,9 @@
     Dem: 9,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_11,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 394142,
@@ -945,7 +1033,9 @@
     Dem: 192,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_30,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 400747,
@@ -966,7 +1056,9 @@
     Dem: 7,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_31,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 412567,
@@ -987,7 +1079,9 @@
     Dem: 10,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_11,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 412981,
@@ -1008,7 +1102,9 @@
     Dem: 116,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_11,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 413256,
@@ -1029,7 +1125,9 @@
     Dem: 147,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_11,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 414901,
@@ -1050,7 +1148,305 @@
     Dem: 15,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_19,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
+  },
+  {
+    GeonameId: 2759815,
+    Name: Ammerstol,
+    AsciiName: Ammerstol,
+    AlternateNames: ,
+    Latitude: 51.9275,
+    Longitude: 4.80833,
+    FeatureClass: P,
+    FeatureCode: PPL,
+    CountryCode: NL,
+    Cc2: ,
+    Admin1Code: 11,
+    Admin2Code: 1931,
+    Admin3Code: ,
+    Admin4Code: ,
+    Population: 1580,
+    Dem: -1,
+    TimeZoneId: Europe/Amsterdam,
+    ModificationDate: Date_32,
+    Province: South Holland,
+    CountryName: Netherlands,
+    CountryThreeLetterCode: NLD
+  },
+  {
+    GeonameId: 2759813,
+    Name: Ammerzoden,
+    AsciiName: Ammerzoden,
+    AlternateNames: ,
+    Latitude: 51.74917,
+    Longitude: 5.22083,
+    FeatureClass: P,
+    FeatureCode: PPL,
+    CountryCode: NL,
+    Cc2: ,
+    Admin1Code: 03,
+    Admin2Code: 0263,
+    Admin3Code: ,
+    Admin4Code: ,
+    Population: 3040,
+    Dem: 3,
+    TimeZoneId: Europe/Amsterdam,
+    ModificationDate: Date_32,
+    Province: Gelderland,
+    CountryName: Netherlands,
+    CountryThreeLetterCode: NLD
+  },
+  {
+    GeonameId: 2759798,
+    Name: Amstelveen,
+    AsciiName: Amstelveen,
+    AlternateNames: Amstelveen,Amstelven,Amstelveyn,Amstelvin,Nieuwer Amstel,a mu si te er fen,amseutelbein,amusuterufen,Амстелвен,Амстелвин,Ամստելվեյն,אמסטלפיין,آمستل‌فین,アムステルフェーン,阿姆斯特尔芬,암스텔베인,
+    Latitude: 52.30083,
+    Longitude: 4.86389,
+    FeatureClass: P,
+    FeatureCode: PPL,
+    CountryCode: NL,
+    Cc2: ,
+    Admin1Code: 07,
+    Admin2Code: 0362,
+    Admin3Code: ,
+    Admin4Code: ,
+    Population: 79639,
+    TimeZoneId: Europe/Amsterdam,
+    ModificationDate: Date_32,
+    Province: North Holland,
+    CountryName: Netherlands,
+    CountryThreeLetterCode: NLD
+  },
+  {
+    GeonameId: 2759796,
+    Name: Amstenrade,
+    AsciiName: Amstenrade,
+    AlternateNames: ,
+    Latitude: 50.93917,
+    Longitude: 5.92361,
+    FeatureClass: P,
+    FeatureCode: PPL,
+    CountryCode: NL,
+    Cc2: ,
+    Admin1Code: 05,
+    Admin2Code: 1954,
+    Admin3Code: ,
+    Admin4Code: ,
+    Population: 1740,
+    Dem: 88,
+    TimeZoneId: Europe/Amsterdam,
+    ModificationDate: Date_33,
+    Province: Limburg,
+    CountryName: Netherlands,
+    CountryThreeLetterCode: NLD
+  },
+  {
+    GeonameId: 2759794,
+    Name: Amsterdam,
+    AsciiName: Amsterdam,
+    AlternateNames: AMS,Aemstelredamme,Aemsterdam,Amestelledamme,Amesterda,Amesterdam,Amesterdao,Amesterdã,Amesterdão,Amistardam,Amseutereudam,Amstadem,Amstardam,Amstardām,Amstedam,Amstehrdam,Amsteladamum,Amstelodamum,Amstelodhamon,Amstelodhámon,Amsterda,Amsterdam,Amsterdama,Amsterdamas,Amsterdame,Amsterdami,Amsterdamo,Amsterdams,Amsterdamu,Amsterdan,Amsterdã,Amsterntam,Amsterodam,Amstyerdam,Amstèdam,Amstèrdame,Amstérdam,Amstɛrɩdam,Amstʻertam,Amsut'erudam,Amszterdam,Amsŭt'erŭdam,Amusitedan,Amusuterudamu,Damsko,I-Amsterdami,Mokum,Mokum Aleph,a mu si te dan,aimstardaima,amasataradama,amastaradama,amastararyama,amseuteleudam,amstardama,amstartam,amstrdam,amusuterudamu,anstardyam,emstaradyama,xamstexrdam,yەmstەrdam,Àmsterdam,Ámsterdam,Ámsterdan,Âmesterdâm,Āmǔsītèdān,Άμστερνταμ,Амстердам,Амстэрдам,Ամսթերտամ,Ամստերդամ,אמסטערדאם,אמסטרדם,آمستردام,أمستردام,ئامستېردام,ئەمستەردام,امستردام,امسټرډام,ایمسٹرڈیم,ܐܡܣܛܪܕܐܡ,अ‍ॅम्स्टरडॅम,आम्स्टर्डम,एम्स्तरद्याम,ऐम्स्टर्डैम,আমস্টারডাম,ਅਮਸਤਰਦਮ,ଆମଷ୍ଟରଡ଼୍ୟାମ,ஆம்ஸ்டர்டம்,ಆಂಸ್ಟರ್ಡ್ಯಾಮ್,ആംസ്റ്റർഡാം,ඈම්ස්ටර්ඩෑම්,อัมสเตอร์ดัม,ཨེམ་སི་ཊར་ཌམ།,အမ်စတာဒမ်မြို့,ამსტერდამი,አምስተርዳም,アムステルダム,阿姆斯特丹,암스테르담,
+    Latitude: 52.37403,
+    Longitude: 4.88969,
+    FeatureClass: P,
+    FeatureCode: PPLC,
+    CountryCode: NL,
+    Cc2: ,
+    Admin1Code: 07,
+    Admin2Code: 0363,
+    Admin3Code: ,
+    Admin4Code: ,
+    Population: 741636,
+    Dem: 13,
+    TimeZoneId: Europe/Amsterdam,
+    ModificationDate: Date_34,
+    Province: North Holland,
+    CountryName: Netherlands,
+    CountryThreeLetterCode: NLD
+  },
+  {
+    GeonameId: 2749286,
+    Name: Opmeer,
+    AsciiName: Opmeer,
+    AlternateNames: Opmar,Opmeer,
+    Latitude: 52.70667,
+    Longitude: 4.94444,
+    FeatureClass: P,
+    FeatureCode: PPL,
+    CountryCode: NL,
+    Cc2: ,
+    Admin1Code: 07,
+    Admin2Code: 0432,
+    Admin3Code: ,
+    Admin4Code: ,
+    Population: 11183,
+    Dem: 1,
+    TimeZoneId: Europe/Amsterdam,
+    ModificationDate: Date_32,
+    Province: North Holland,
+    CountryName: Netherlands,
+    CountryThreeLetterCode: NLD
+  },
+  {
+    GeonameId: 2749284,
+    Name: Oppenhuizen,
+    AsciiName: Oppenhuizen,
+    AlternateNames: Openkhuizen,Oppengejzen,Oppenhuizen,Toppenhuzen,ao peng he yi ceng,awpn hwyzn,Опенхуизен,Оппенгейзен,اوپن هویزن,奥彭赫伊曾,
+    Latitude: 53.01194,
+    Longitude: 5.69495,
+    FeatureClass: P,
+    FeatureCode: PPL,
+    CountryCode: NL,
+    Cc2: ,
+    Admin1Code: 02,
+    Admin2Code: 1900,
+    Admin3Code: ,
+    Admin4Code: ,
+    Population: 1060,
+    TimeZoneId: Europe/Amsterdam,
+    ModificationDate: Date_32,
+    Province: Friesland,
+    CountryName: Netherlands,
+    CountryThreeLetterCode: NLD
+  },
+  {
+    GeonameId: 2749281,
+    Name: Opperdoes,
+    AsciiName: Opperdoes,
+    AlternateNames: ,
+    Latitude: 52.75915,
+    Longitude: 5.07534,
+    FeatureClass: P,
+    FeatureCode: PPL,
+    CountryCode: NL,
+    Cc2: ,
+    Admin1Code: 07,
+    Admin2Code: 0420,
+    Admin3Code: ,
+    Admin4Code: ,
+    Population: 1840,
+    Dem: 1,
+    TimeZoneId: Europe/Amsterdam,
+    ModificationDate: Date_32,
+    Province: North Holland,
+    CountryName: Netherlands,
+    CountryThreeLetterCode: NLD
+  },
+  {
+    GeonameId: 2749251,
+    Name: Oranjewoud,
+    AsciiName: Oranjewoud,
+    AlternateNames: It Oranjewald,It Oranjewâld,Oran'evaud,Oran'evud,Oranienvald,Oranjewoold,Oranjewoud,ao lan zhi wu de,awranzhwd,Ораниенвалд,Ораньевуд,Ораньєвауд,اورانژود,奧蘭治伍德,
+    Latitude: 52.94579,
+    Longitude: 5.95038,
+    FeatureClass: P,
+    FeatureCode: PPL,
+    CountryCode: NL,
+    Cc2: ,
+    Admin1Code: 02,
+    Admin2Code: 0074,
+    Admin3Code: ,
+    Admin4Code: ,
+    Population: 1580,
+    TimeZoneId: Europe/Amsterdam,
+    ModificationDate: Date_32,
+    Province: Friesland,
+    CountryName: Netherlands,
+    CountryThreeLetterCode: NLD
+  },
+  {
+    GeonameId: 2749250,
+    Name: Orden,
+    AsciiName: Orden,
+    AlternateNames: ,
+    Latitude: 52.20113,
+    Longitude: 5.93417,
+    FeatureClass: P,
+    FeatureCode: PPLX,
+    CountryCode: NL,
+    Cc2: ,
+    Admin1Code: 03,
+    Admin2Code: 0200,
+    Admin3Code: ,
+    Admin4Code: ,
+    Population: 6385,
+    Dem: 25,
+    TimeZoneId: Europe/Amsterdam,
+    ModificationDate: Date_35,
+    Province: Gelderland,
+    CountryName: Netherlands,
+    CountryThreeLetterCode: NLD
+  },
+  {
+    GeonameId: 2749248,
+    Name: Orthen,
+    AsciiName: Orthen,
+    AlternateNames: ,
+    Latitude: 51.70613,
+    Longitude: 5.30468,
+    FeatureClass: P,
+    FeatureCode: PPLX,
+    CountryCode: NL,
+    Cc2: ,
+    Admin1Code: 06,
+    Admin2Code: 0796,
+    Admin3Code: ,
+    Admin4Code: ,
+    Population: 1515,
+    Dem: 7,
+    TimeZoneId: Europe/Amsterdam,
+    ModificationDate: Date_35,
+    Province: North Brabant,
+    CountryName: Netherlands,
+    CountryThreeLetterCode: NLD
+  },
+  {
+    GeonameId: 2749235,
+    Name: Ospel,
+    AsciiName: Ospel,
+    AlternateNames: ,
+    Latitude: 51.2975,
+    Longitude: 5.78472,
+    FeatureClass: P,
+    FeatureCode: PPL,
+    CountryCode: NL,
+    Cc2: ,
+    Admin1Code: 05,
+    Admin2Code: 0946,
+    Admin3Code: ,
+    Admin4Code: ,
+    Population: 2505,
+    Dem: 33,
+    TimeZoneId: Europe/Amsterdam,
+    ModificationDate: Date_32,
+    Province: Limburg,
+    CountryName: Netherlands,
+    CountryThreeLetterCode: NLD
+  },
+  {
+    GeonameId: 2749234,
+    Name: Oss,
+    AsciiName: Oss,
+    AlternateNames: Os,Oss,Oss i Nederland,ao si,osu,Осс,オス,奥斯,
+    Latitude: 51.765,
+    Longitude: 5.51806,
+    FeatureClass: P,
+    FeatureCode: PPL,
+    CountryCode: NL,
+    Cc2: ,
+    Admin1Code: 06,
+    Admin2Code: 0828,
+    Admin3Code: ,
+    Admin4Code: ,
+    Population: 76430,
+    Dem: 8,
+    TimeZoneId: Europe/Amsterdam,
+    ModificationDate: Date_32,
+    Province: North Brabant,
+    CountryName: Netherlands,
+    CountryThreeLetterCode: NLD
   },
   {
     GeonameId: 6691091,
@@ -1071,7 +1467,9 @@
     Dem: 4,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_11,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 6691086,
@@ -1092,7 +1490,9 @@
     Dem: 8,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_11,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 6691085,
@@ -1113,7 +1513,9 @@
     Dem: 4,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_11,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 6691083,
@@ -1134,7 +1536,9 @@
     Dem: 2,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_11,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   },
   {
     GeonameId: 6691079,
@@ -1155,6 +1559,8 @@
     Dem: -1,
     TimeZoneId: Asia/Dubai,
     ModificationDate: Date_11,
-    Province: 
+    Province: ,
+    CountryName: United Arab Emirates,
+    CountryThreeLetterCode: ARE
   }
 ]

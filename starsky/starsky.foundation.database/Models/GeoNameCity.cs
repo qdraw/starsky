@@ -135,6 +135,18 @@ public sealed class GeoNameCity
 	[MaxLength(200)]
 	public string Province { get; set; } = string.Empty;
 
+	/// <summary>
+	///     Country name in English
+	/// </summary>
+	[MaxLength(200)]
+	public string CountryName { get; set; } = string.Empty;
+
+	/// <summary>
+	///     Three-letter ISO country name (ie: USA)
+	/// </summary>
+	[MaxLength(3)]
+	public string CountryThreeLetterCode { get; set; } = string.Empty;
+
 	public TimeZoneInfo GetTimeZone()
 	{
 		try
