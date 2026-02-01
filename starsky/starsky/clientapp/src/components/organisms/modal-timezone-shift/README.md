@@ -1,3 +1,73 @@
+
+# Modal Timezone Shift Component
+
+`modal-timezone-shift` is a React component for the Starsky application that enables users to shift the timezone or offset of date/time metadata for one or more selected files (such as images). It provides a modal dialog where users can specify the desired correction, and then applies the changes to all selected files via an API call. This component integrates tightly with Starsky's archive context and file selection system, ensuring a seamless batch operation experience.
+
+## Features
+
+- Shift date/time metadata for multiple files at once
+- Choose between timezone-based or offset-based corrections
+- See warnings and errors for each file after the operation
+- Cleans up caches and updates the UI on success
+
+## How to Use
+
+1. **Import the component:**
+  ```tsx
+  import ModalTimezoneShift from 'components/organisms/modal-timezone-shift/modal-timezone-shift';
+  ```
+
+2. **Provide the required props** (typically from a parent archive or detail view container):
+  - `isOpen: boolean` — Whether the modal is open
+  - `onClose: () => void` — Callback to close the modal
+  - `selectedFiles: string[]` — Array of selected file paths
+  - `archiveState: IArchiveProps` — The current archive state (file list, etc)
+  - `dispatch: React.Dispatch<ArchiveAction>` — Dispatch function for archive context updates
+
+3. **Render the component:**
+  ```tsx
+  <ModalTimezoneShift
+    isOpen={isModalOpen}
+    onClose={handleClose}
+    selectedFiles={selectedFilePaths}
+    archiveState={archiveState}
+    dispatch={archiveDispatch}
+  />
+  ```
+
+4. **User interaction:**
+  - The user opens the modal and selects either a timezone correction or a manual offset.
+  - On submit, the component calls the `executeShift` function, which:
+    - Sends a POST request to the backend API with the selected files and correction data.
+    - Updates the archive state with the new file metadata.
+    - Cleans relevant caches and closes the modal on success.
+    - Displays any errors or warnings per file in the UI.
+
+5. **Error handling:**
+  - If the API returns errors or warnings for specific files, these are displayed in the modal.
+  - If the operation fails, a general error message is shown.
+
+## Related Files
+
+- `modal-timezone-shift.tsx` — Main component implementation
+- `internal/execute-shift.ts` — Handles the API call and state updates
+- `internal/preview-error-files.tsx` — Displays per-file errors/warnings after the operation
+
+## Best Practices
+
+- Always provide the correct `archiveState` and `dispatch` from the archive context
+- Use the modal for batch operations on multiple files to ensure consistency
+- Handle the `onClose` callback to reset any local state in the parent component if needed
+
+## See Also
+
+- Archive context and file selection documentation
+- API documentation for `/meta-time-correct/timezone-execute` and `/meta-time-correct/offset-execute` endpoints
+
+## See Also
+- Archive context and file selection documentation.
+- API documentation for `/meta-time-correct/timezone-execute` and `/meta-time-correct/offset-execute` endpoints.
+
 # Timezone Shift Feature
 
 ## Overview
