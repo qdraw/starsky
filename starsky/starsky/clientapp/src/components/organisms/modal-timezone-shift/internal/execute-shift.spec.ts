@@ -1,5 +1,6 @@
 import { IArchiveProps } from "../../../../interfaces/IArchiveProps";
 import { IExifStatus } from "../../../../interfaces/IExifStatus";
+import { IFileIndexItem } from "../../../../interfaces/IFileIndexItem";
 import { IExifTimezoneCorrectionResult } from "../../../../interfaces/ITimezone";
 import * as FetchPost from "../../../../shared/fetch/fetch-post";
 import * as ClearSearchCache from "../../../../shared/search/clear-search-cache";
@@ -848,5 +849,95 @@ describe("executeShift", () => {
 
       expect(mockDispatch).not.toHaveBeenCalled();
     });
+  });
+
+  it("calls handleExit only on success when collections=true", async () => {
+    const select = ["file1.jpg", "file2.jpg"];
+    const state: IArchiveProps = {
+      fileIndexItems: [
+        { fileName: "file1.jpg", filePath: "/test/file1.jpg", parentDirectory: "/test" },
+        { fileName: "file2.jpg", filePath: "/test/file2.jpg", parentDirectory: "/test" }
+      ] as unknown as IFileIndexItem[]
+    } as unknown as IArchiveProps;
+    const isOffset = false;
+    const historyLocationSearch = "?q=test";
+    const timezoneData = {
+      recordedTimezoneId: "Europe/Amsterdam",
+      correctTimezoneId: "Europe/Berlin"
+    };
+
+    // Mocks
+    const setIsExecuting = jest.fn();
+    const setError = jest.fn();
+    const handleExit = jest.fn();
+    const undoSelection = jest.fn();
+    const dispatch = jest.fn();
+
+    // Mock FetchPost
+    const filePostSpy = jest.spyOn(FetchPost, "default").mockResolvedValue({
+      statusCode: 200,
+      data: [
+        {
+          fileIndexItem: {
+            fileName: "file1.jpg",
+            filePath: "/test/file1.jpg",
+            parentDirectory: "/test"
+          },
+          success: true,
+          error: "",
+          warning: "",
+          originalDateTime: "2020-01-01T00:00:00Z",
+          correctedDateTime: "2020-01-01T01:00:00Z",
+          delta: "3600"
+        },
+        {
+          fileIndexItem: {
+            fileName: "file2.jpg",
+            filePath: "/test/file2.jpg",
+            parentDirectory: "/test"
+          },
+          success: true,
+          error: "",
+          warning: "",
+          originalDateTime: "2020-01-01T00:00:00Z",
+          correctedDateTime: "2020-01-01T01:00:00Z",
+          delta: "3600"
+        }
+      ] as IExifTimezoneCorrectionResult[]
+    });
+
+    // Mock ClearSearchCache
+    jest.spyOn(ClearSearchCache, "ClearSearchCache").mockImplementation(jest.fn());
+
+    await executeShift(
+      { select, state, isOffset, timezoneData, historyLocationSearch },
+      setIsExecuting,
+      setError,
+      handleExit,
+      undoSelection,
+      dispatch
+    );
+
+    expect(filePostSpy).toHaveBeenCalledWith(
+      "/starsky/api/meta-time-correct/timezone-execute?f=/test/file1.jpg;/test/file2.jpg&collections=true",
+      JSON.stringify({
+        recordedTimezoneId: "Europe/Amsterdam",
+        correctTimezoneId: "Europe/Berlin"
+      }),
+      "post",
+      { "Content-Type": "application/json" }
+    );
+
+    expect(setIsExecuting).toHaveBeenCalledWith(true);
+    expect(setError).toHaveBeenCalledWith(null);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: "add",
+      add: [
+        { fileName: "file1.jpg", filePath: "/test/file1.jpg", parentDirectory: "/test" },
+        { fileName: "file2.jpg", filePath: "/test/file2.jpg", parentDirectory: "/test" }
+      ]
+    });
+    expect(handleExit).toHaveBeenCalled();
+    expect(setIsExecuting).toHaveBeenCalledWith(false);
   });
 });
