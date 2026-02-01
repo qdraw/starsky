@@ -43,6 +43,15 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.7.10 - _(Unreleased)_ - 2026-?-? {#v0.7.10}
 
+- [x] (Added) _Front-end_ Use Execute API for offsetData and timezoneData  (Issue #76 PR #2672)
+- [x] (Added) _Front-end_ Use Preview API for offsetData and timezoneData (Issue #76 PR #2672)
+- [x] (Added) _Front-end_ Display preview of timezone correction  (Issue #76 PR #2672)
+- [x] (Added) _Front-end_ Added UI Timezone Shift for Custom offset shift (Issue #76 PR #2672)
+- [x] (Added) _Front-end_ Added UI Timezone Shift for Exif Timezone Correction (Issue #76 PR #2672)
+- [x] (Added) _Back-end_ Added Searchable Dropdown (Issue #76 PR #2672)
+- [x] (Added) _Back-end_ Timezone detection for daylight saving time (Issue #76 PR #2672)
+- [x] (Added) _Back-end_ Add seed service for Geo Names Cities (Issue #76 PR #2672)
+- [x] (Added) _Back-end_ Store Geo Names Cities in the database (Issue #76 PR #2670)
 - [x] (Fixed) _Front-end_ Pressing `[` or `]` when focussed on an input it should save (PR #2678)
 - [x] (Fixed) _Front-end_ prevent rendering errors when an image source is missing (PR #2677)
 - [x] (Changed) _Back-end_ Timezone display functionality in the meta update module (PR #2671)
