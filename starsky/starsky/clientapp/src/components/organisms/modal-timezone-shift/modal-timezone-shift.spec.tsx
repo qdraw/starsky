@@ -369,7 +369,7 @@ describe("ModalTimezoneShift", () => {
     expect(postSpy).toHaveBeenCalledTimes(3);
     expect(postSpy).toHaveBeenNthCalledWith(
       1,
-      "/starsky/api/meta-time-correct/timezone-preview?f=/test.jpg&collections=true",
+      "/starsky/api/meta-time-correct/timezone-preview?f=/test.jpg&collections=false",
       '{"recordedTimezoneId":"America/New_York","correctTimezoneId":""}',
       "post",
       { "Content-Type": "application/json" }
@@ -377,8 +377,8 @@ describe("ModalTimezoneShift", () => {
 
     expect(postSpy).toHaveBeenNthCalledWith(
       2,
-      "/starsky/api/meta-time-correct/timezone-preview?f=/test.jpg&collections=true",
-      '{"recordedTimezoneId":"Europe/Amsterdam","correctTimezoneId":"America/New_York"}',
+      "/starsky/api/meta-time-correct/timezone-preview?f=/test.jpg&collections=false",
+      '{"recordedTimezoneId":"Europe/Amsterdam","correctTimezoneId":""}',
       "post",
       { "Content-Type": "application/json" }
     );

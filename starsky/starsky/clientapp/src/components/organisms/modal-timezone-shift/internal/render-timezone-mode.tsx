@@ -23,6 +23,7 @@ export interface IRenderTimezoneModeProps {
   dispatch: React.Dispatch<ArchiveAction>;
   historyLocationSearch: string;
   undoSelection: () => void;
+  collections: boolean;
 }
 
 export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
@@ -35,7 +36,8 @@ export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
     handleExit,
     dispatch,
     historyLocationSearch,
-    undoSelection
+    undoSelection,
+    collections
   } = props;
   const {
     preview,
@@ -83,15 +85,16 @@ export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
                 onSelect={(id, displayName) => {
                   setRecordedTimezoneId(id);
                   setRecordedTimezoneDisplayName(displayName);
-                  generateTimezonePreview(
+                  generateTimezonePreview({
                     filePathList,
-                    id,
+                    recordedTimezoneId: id,
                     correctTimezoneId,
                     setIsLoadingPreview,
                     preview,
                     setPreview,
-                    setError
-                  );
+                    setError,
+                    collections
+                  });
                 }}
               />
             </label>
@@ -108,15 +111,16 @@ export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
                 onSelect={(id, displayName) => {
                   setCorrectTimezoneId(id);
                   setCorrectTimezoneDisplayName(displayName);
-                  generateTimezonePreview(
+                  generateTimezonePreview({
                     filePathList,
-                    id,
-                    recordedTimezoneId,
+                    recordedTimezoneId: id,
+                    correctTimezoneId,
                     setIsLoadingPreview,
                     preview,
                     setPreview,
-                    setError
-                  );
+                    setError,
+                    collections
+                  });
                 }}
               />
             </label>

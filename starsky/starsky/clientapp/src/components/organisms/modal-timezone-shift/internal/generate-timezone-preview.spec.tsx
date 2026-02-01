@@ -19,15 +19,16 @@ describe("generateTimezonePreview error cases", () => {
   });
 
   it("does nothing if filePathList is empty", async () => {
-    await generateTimezonePreview(
-      [],
+    await generateTimezonePreview({
+      filePathList: [],
       recordedTimezoneId,
       correctTimezoneId,
-      mockSetIsLoadingPreview,
+      setIsLoadingPreview: mockSetIsLoadingPreview,
       preview,
-      mockSetPreview,
-      mockSetError
-    );
+      setPreview: mockSetPreview,
+      setError: mockSetError,
+      collections: true
+    });
     expect(mockSetIsLoadingPreview).not.toHaveBeenCalled();
     expect(mockSetError).not.toHaveBeenCalled();
     expect(mockSetPreview).not.toHaveBeenCalled();
@@ -37,15 +38,16 @@ describe("generateTimezonePreview error cases", () => {
     fetchPostSpy = jest
       .spyOn(FetchPostModule, "default")
       .mockResolvedValue({ statusCode: 500, data: [] });
-    await generateTimezonePreview(
+    await generateTimezonePreview({
       filePathList,
       recordedTimezoneId,
       correctTimezoneId,
-      mockSetIsLoadingPreview,
+      setIsLoadingPreview: mockSetIsLoadingPreview,
       preview,
-      mockSetPreview,
-      mockSetError
-    );
+      setPreview: mockSetPreview,
+      setError: mockSetError,
+      collections: true
+    });
     expect(mockSetError).toHaveBeenCalledWith("Failed to generate preview");
     expect(mockSetPreview).not.toHaveBeenCalled();
   });
@@ -54,15 +56,16 @@ describe("generateTimezonePreview error cases", () => {
     fetchPostSpy = jest
       .spyOn(FetchPostModule, "default")
       .mockResolvedValue({ statusCode: 200, data: null });
-    await generateTimezonePreview(
+    await generateTimezonePreview({
       filePathList,
       recordedTimezoneId,
       correctTimezoneId,
-      mockSetIsLoadingPreview,
+      setIsLoadingPreview: mockSetIsLoadingPreview,
       preview,
-      mockSetPreview,
-      mockSetError
-    );
+      setPreview: mockSetPreview,
+      setError: mockSetError,
+      collections: true
+    });
     expect(mockSetError).toHaveBeenCalledWith("Failed to generate preview");
     expect(mockSetPreview).not.toHaveBeenCalled();
   });
@@ -71,15 +74,16 @@ describe("generateTimezonePreview error cases", () => {
     fetchPostSpy = jest.spyOn(FetchPostModule, "default").mockImplementation(() => {
       throw new Error("fail");
     });
-    await generateTimezonePreview(
+    await generateTimezonePreview({
       filePathList,
       recordedTimezoneId,
       correctTimezoneId,
-      mockSetIsLoadingPreview,
+      setIsLoadingPreview: mockSetIsLoadingPreview,
       preview,
-      mockSetPreview,
-      mockSetError
-    );
+      setPreview: mockSetPreview,
+      setError: mockSetError,
+      collections: true
+    });
     expect(mockSetError).toHaveBeenCalledWith("Failed to generate preview");
     expect(mockSetPreview).not.toHaveBeenCalled();
   });

@@ -3,18 +3,28 @@ import FetchPost from "../../../../shared/fetch/fetch-post";
 import { URLPath } from "../../../../shared/url/url-path";
 import { UrlQuery } from "../../../../shared/url/url-query";
 
-export async function generateTimezonePreview(
-  filePathList: string[],
-  recordedTimezoneId: string,
-  correctTimezoneId: string,
-  setIsLoadingPreview: (value: boolean) => void,
-  preview: IExifTimezoneCorrectionResultContainer,
-  setPreview: (value: IExifTimezoneCorrectionResultContainer) => void,
-  setError: (value: string | null) => void
-) {
-  if (filePathList.length === 0) return;
+interface IGenerateTimezonePreviewParams {
+  filePathList: string[];
+  recordedTimezoneId: string;
+  correctTimezoneId: string;
+  setIsLoadingPreview: (value: boolean) => void;
+  preview: IExifTimezoneCorrectionResultContainer;
+  setPreview: (value: IExifTimezoneCorrectionResultContainer) => void;
+  setError: (value: string | null) => void;
+  collections: boolean;
+}
 
-  const collections = true;
+export async function generateTimezonePreview({
+  filePathList,
+  recordedTimezoneId,
+  correctTimezoneId,
+  setIsLoadingPreview,
+  preview,
+  setPreview,
+  setError,
+  collections
+}: IGenerateTimezonePreviewParams) {
+  if (filePathList.length === 0) return;
 
   setIsLoadingPreview(true);
   setError(null);
