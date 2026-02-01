@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
+import * as Select from "../../../shared/select";
 import * as ModalTimezoneShift from "../../organisms/modal-timezone-shift/modal-timezone-shift";
 import { MenuOptionTimezoneShift } from "./menu-option-timezone-shift";
 
@@ -16,6 +17,15 @@ describe("MenuOptionTimezoneShift", () => {
     });
   }
 
+  function mockModalUndoSelection() {
+    modalSpy = jest.spyOn(ModalTimezoneShift, "default").mockImplementationOnce((props) => {
+      React.useEffect(() => {
+        props.undoSelection();
+      });
+      return <>mocked</>;
+    });
+  }
+
   const renderComponent = (readOnly = false, select = ["/test.jpg"]) => {
     return render(
       <MenuOptionTimezoneShift
@@ -23,6 +33,7 @@ describe("MenuOptionTimezoneShift", () => {
         select={select}
         state={{} as unknown as IArchiveProps}
         dispatch={jest.fn()}
+        setSelect={jest.fn()}
       />
     );
   };
@@ -55,6 +66,23 @@ describe("MenuOptionTimezoneShift", () => {
       .closest("div")!
       .querySelector('[data-test="modal-timezone-shift"]');
     expect(el).toBeTruthy();
+    component.unmount();
+  });
+
+  it("should close the modal when the undoSelection function is called", () => {
+    const undoSelectionSpy = jest
+      .spyOn(Select.Select.prototype, "undoSelection")
+      .mockImplementationOnce(() => jest.fn());
+
+    jest.spyOn(React, "useState").mockReturnValueOnce([true, jest.fn()]);
+    mockModalUndoSelection();
+
+    const component = renderComponent();
+    fireEvent.click(screen.getByTestId("timezone-shift"));
+    expect(screen.getByTestId("timezone-shift")).toBeTruthy();
+
+    expect(undoSelectionSpy).toHaveBeenCalled();
+
     component.unmount();
   });
 

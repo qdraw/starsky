@@ -275,6 +275,7 @@ const MenuArchive: React.FunctionComponent = memo(() => {
                     select={select}
                     state={state}
                     dispatch={dispatch}
+                    setSelect={setSelect}
                   />
                 </>
               ) : null}
