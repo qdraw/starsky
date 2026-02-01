@@ -82,7 +82,7 @@ public class GeoNameCitySeedService(
 			$"{GeoFileDownload.Admin1CodesAscii}.txt");
 	}
 
-	private async Task<bool> Setup()
+	internal async Task<bool> Setup()
 	{
 		// true is skip import
 		const string cacheKey = "GeoNameCitySeedService.Setup";
