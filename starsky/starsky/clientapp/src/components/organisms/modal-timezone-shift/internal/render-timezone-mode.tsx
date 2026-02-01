@@ -187,7 +187,8 @@ export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
                 setError,
                 handleExit,
                 undoSelection,
-                dispatch
+                dispatch,
+                collections
               )
             }
             disabled={

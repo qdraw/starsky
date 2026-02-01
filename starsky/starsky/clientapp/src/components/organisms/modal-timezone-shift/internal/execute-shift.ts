@@ -32,7 +32,8 @@ export async function executeShift(
   setError: (value: string | null) => void,
   handleExit: () => void,
   undoSelection: () => void,
-  dispatch: React.Dispatch<ArchiveAction>
+  dispatch: React.Dispatch<ArchiveAction>,
+  collections: boolean
 ) {
   const { select, state, isOffset, offsetData, timezoneData, historyLocationSearch } = params;
 
@@ -42,9 +43,6 @@ export async function executeShift(
   setError(null);
 
   try {
-    const collections = true;
-    const collectionsParam = collections ? "true" : "false";
-
     const body = isOffset
       ? JSON.stringify({
           year: offsetData?.year || 0,
@@ -67,7 +65,7 @@ export async function executeShift(
     // API supports all files at once
     // f=/test/file;/test/file2;/test/file3...
     const anyData = await FetchPost(
-      `${url}?f=${new URLPath().encodeURI(filePathList.join(";"))}&collections=${collectionsParam}`,
+      `${url}?f=${new URLPath().encodeURI(filePathList.join(";"))}&collections=${collections}`,
       body,
       "post",
       { "Content-Type": "application/json" }

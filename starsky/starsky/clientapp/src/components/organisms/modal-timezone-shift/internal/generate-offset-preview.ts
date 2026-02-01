@@ -20,7 +20,8 @@ export async function generateOffsetPreview(
   setIsLoadingPreview: React.Dispatch<React.SetStateAction<boolean>>,
   setError: React.Dispatch<React.SetStateAction<string | null>>,
   preview: IExifTimezoneCorrectionResultContainer,
-  setPreview: React.Dispatch<React.SetStateAction<IExifTimezoneCorrectionResultContainer>>
+  setPreview: React.Dispatch<React.SetStateAction<IExifTimezoneCorrectionResultContainer>>,
+  collections: boolean
 ) {
   if (select.length === 0) return;
 
@@ -32,8 +33,6 @@ export async function generateOffsetPreview(
     const filePathList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
     const sampleFile = filePathList[0];
 
-    const collectionsParam = state.collections ? "true" : "false";
-
     const body = JSON.stringify({
       year: offset.year,
       month: offset.month,
@@ -44,7 +43,7 @@ export async function generateOffsetPreview(
     });
 
     const response = await FetchPost(
-      `${new UrlQuery().UrlOffsetPreview()}?f=${new URLPath().encodeURI(sampleFile)}&collections=${collectionsParam}`,
+      `${new UrlQuery().UrlOffsetPreview()}?f=${new URLPath().encodeURI(sampleFile)}&collections=${collections}`,
       body,
       "post",
       { "Content-Type": "application/json" }

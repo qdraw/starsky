@@ -22,6 +22,7 @@ export interface IRenderTimezoneModeProps {
   dispatch: React.Dispatch<ArchiveAction>;
   historyLocationSearch: string;
   undoSelection: () => void;
+  collections: boolean;
 }
 
 export function renderOffsetMode(props: IRenderTimezoneModeProps) {
@@ -34,7 +35,8 @@ export function renderOffsetMode(props: IRenderTimezoneModeProps) {
     handleExit,
     dispatch,
     historyLocationSearch,
-    undoSelection
+    undoSelection,
+    collections
   } = props;
   const {
     offsetYears,
@@ -81,7 +83,8 @@ export function renderOffsetMode(props: IRenderTimezoneModeProps) {
       setIsLoadingPreview,
       setError,
       preview,
-      setPreview
+      setPreview,
+      collections
     );
   };
 
@@ -281,7 +284,8 @@ export function renderOffsetMode(props: IRenderTimezoneModeProps) {
                 setError,
                 handleExit,
                 undoSelection,
-                dispatch
+                dispatch,
+                collections
               )
             }
             disabled={

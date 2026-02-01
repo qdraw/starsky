@@ -1,3 +1,4 @@
+import { IArchiveProps } from "../../../../interfaces/IArchiveProps";
 import { IExifTimezoneCorrectionResultContainer } from "../../../../interfaces/ITimezone";
 import * as FetchPost from "../../../../shared/fetch/fetch-post";
 import { URLPath } from "../../../../shared/url/url-path";
@@ -26,7 +27,7 @@ describe("generateOffsetPreview", () => {
   const mockState = {
     fileIndexItems: ["/path/file1.jpg", "/path/file2.jpg"],
     collections: true
-  } as unknown as any;
+  } as unknown as IArchiveProps;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -47,7 +48,8 @@ describe("generateOffsetPreview", () => {
       mockSetIsLoadingPreview,
       mockSetError,
       mockPreview,
-      mockSetPreview
+      mockSetPreview,
+      true
     );
     expect(mockSetIsLoadingPreview).not.toHaveBeenCalled();
   });
@@ -60,7 +62,8 @@ describe("generateOffsetPreview", () => {
       mockSetIsLoadingPreview,
       mockSetError,
       mockPreview,
-      mockSetPreview
+      mockSetPreview,
+      true
     );
     expect(mockSetIsLoadingPreview).toHaveBeenCalledWith(true);
     expect(mockSetError).toHaveBeenCalledWith(null);
@@ -74,7 +77,8 @@ describe("generateOffsetPreview", () => {
       mockSetIsLoadingPreview,
       mockSetError,
       mockPreview,
-      mockSetPreview
+      mockSetPreview,
+      true
     );
     expect(FetchPost.default).toHaveBeenCalled();
     const mockFetchPost = jest.spyOn(FetchPost, "default");
@@ -98,7 +102,8 @@ describe("generateOffsetPreview", () => {
       mockSetIsLoadingPreview,
       mockSetError,
       mockPreview,
-      mockSetPreview
+      mockSetPreview,
+      true
     );
     expect(mockSetPreview).toHaveBeenCalledWith({
       ...mockPreview,
@@ -119,7 +124,8 @@ describe("generateOffsetPreview", () => {
       mockSetIsLoadingPreview,
       mockSetError,
       mockPreview,
-      mockSetPreview
+      mockSetPreview,
+      true
     );
     expect(mockSetPreview).toHaveBeenCalledWith({
       ...mockPreview,
@@ -140,7 +146,8 @@ describe("generateOffsetPreview", () => {
       mockSetIsLoadingPreview,
       mockSetError,
       mockPreview,
-      mockSetPreview
+      mockSetPreview,
+      true
     );
     expect(mockSetPreview).toHaveBeenCalledWith({
       ...mockPreview,
@@ -159,7 +166,8 @@ describe("generateOffsetPreview", () => {
       mockSetIsLoadingPreview,
       mockSetError,
       mockPreview,
-      mockSetPreview
+      mockSetPreview,
+      true
     );
     expect(mockSetError).toHaveBeenCalledWith("Failed to generate preview");
   });
@@ -176,7 +184,8 @@ describe("generateOffsetPreview", () => {
       mockSetIsLoadingPreview,
       mockSetError,
       mockPreview,
-      mockSetPreview
+      mockSetPreview,
+      true
     );
     expect(mockSetIsLoadingPreview).toHaveBeenLastCalledWith(false);
   });
@@ -190,7 +199,8 @@ describe("generateOffsetPreview", () => {
       mockSetIsLoadingPreview,
       mockSetError,
       mockPreview,
-      mockSetPreview
+      mockSetPreview,
+      true
     );
     expect(mockSetIsLoadingPreview).toHaveBeenLastCalledWith(false);
   });
@@ -204,7 +214,8 @@ describe("generateOffsetPreview", () => {
       mockSetIsLoadingPreview,
       mockSetError,
       mockPreview,
-      mockSetPreview
+      mockSetPreview,
+      false
     );
     const mockFetchPost = jest.spyOn(FetchPost, "default");
     const call = mockFetchPost.mock.calls[0];

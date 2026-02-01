@@ -52,6 +52,7 @@ describe("ModalTimezoneShift", () => {
         state={mockState}
         dispatch={mockDispatch}
         undoSelection={mockUndoSelection}
+        collections={true}
       />
     );
   });
@@ -66,6 +67,7 @@ describe("ModalTimezoneShift", () => {
         state={mockState}
         dispatch={mockDispatch}
         undoSelection={mockUndoSelection}
+        collections={true}
       />
     );
 
@@ -84,6 +86,7 @@ describe("ModalTimezoneShift", () => {
         state={mockState}
         dispatch={mockDispatch}
         undoSelection={mockUndoSelection}
+        collections={true}
       />
     );
 
@@ -103,6 +106,7 @@ describe("ModalTimezoneShift", () => {
         state={mockState}
         dispatch={mockDispatch}
         undoSelection={mockUndoSelection}
+        collections={true}
       />
     );
 
@@ -134,6 +138,7 @@ describe("ModalTimezoneShift", () => {
         state={mockState}
         dispatch={mockDispatch}
         undoSelection={mockUndoSelection}
+        collections={true}
       />
     );
 
@@ -173,6 +178,7 @@ describe("ModalTimezoneShift", () => {
         state={mockState}
         dispatch={mockDispatch}
         undoSelection={mockUndoSelection}
+        collections={true}
       />
     );
 
@@ -199,6 +205,7 @@ describe("ModalTimezoneShift", () => {
         state={mockState}
         dispatch={mockDispatch}
         undoSelection={mockUndoSelection}
+        collections={true}
       />
     );
 
@@ -219,6 +226,7 @@ describe("ModalTimezoneShift", () => {
         state={mockState}
         dispatch={mockDispatch}
         undoSelection={mockUndoSelection}
+        collections={true}
       />
     );
 
@@ -286,6 +294,7 @@ describe("ModalTimezoneShift", () => {
         state={mockState}
         dispatch={mockDispatch}
         undoSelection={mockUndoSelection}
+        collections={true}
       />
     );
 
@@ -369,7 +378,7 @@ describe("ModalTimezoneShift", () => {
     expect(postSpy).toHaveBeenCalledTimes(3);
     expect(postSpy).toHaveBeenNthCalledWith(
       1,
-      "/starsky/api/meta-time-correct/timezone-preview?f=/test.jpg&collections=false",
+      "/starsky/api/meta-time-correct/timezone-preview?f=/test.jpg&collections=true",
       '{"recordedTimezoneId":"America/New_York","correctTimezoneId":""}',
       "post",
       { "Content-Type": "application/json" }
@@ -378,7 +387,7 @@ describe("ModalTimezoneShift", () => {
     // 2: Must contain both cities in Record and correct
     expect(postSpy).toHaveBeenNthCalledWith(
       2,
-      "/starsky/api/meta-time-correct/timezone-preview?f=/test.jpg&collections=false",
+      "/starsky/api/meta-time-correct/timezone-preview?f=/test.jpg&collections=true",
       '{"recordedTimezoneId":"America/New_York","correctTimezoneId":"Europe/Amsterdam"}',
       "post",
       { "Content-Type": "application/json" }
@@ -463,6 +472,7 @@ describe("ModalTimezoneShift", () => {
           state={mockState}
           dispatch={mockDispatch}
           undoSelection={mockUndoSelection}
+          collections={true}
         />
       );
 
@@ -517,7 +527,7 @@ describe("ModalTimezoneShift", () => {
       const expectedPreviewPayload = JSON.stringify(payload);
       expect(postSpy).toHaveBeenNthCalledWith(
         1,
-        "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=false",
+        "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=true",
         expectedPreviewPayload,
         "post",
         { "Content-Type": "application/json" }
@@ -582,6 +592,7 @@ describe("ModalTimezoneShift", () => {
         state={mockState}
         dispatch={mockDispatch}
         undoSelection={mockUndoSelection}
+        collections={true}
       />
     );
 
@@ -636,7 +647,7 @@ describe("ModalTimezoneShift", () => {
     expect(postSpy).toHaveBeenCalledTimes(7);
     expect(postSpy).toHaveBeenNthCalledWith(
       1,
-      "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=false",
+      "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=true",
       '{"year":1,"month":0,"day":0,"hour":0,"minute":0,"second":0}',
       "post",
       { "Content-Type": "application/json" }
@@ -644,7 +655,7 @@ describe("ModalTimezoneShift", () => {
 
     expect(postSpy).toHaveBeenNthCalledWith(
       2,
-      "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=false",
+      "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=true",
       '{"year":1,"month":2,"day":0,"hour":0,"minute":0,"second":0}',
       "post",
       { "Content-Type": "application/json" }
@@ -652,7 +663,7 @@ describe("ModalTimezoneShift", () => {
 
     expect(postSpy).toHaveBeenNthCalledWith(
       3,
-      "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=false",
+      "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=true",
       '{"year":1,"month":2,"day":3,"hour":0,"minute":0,"second":0}',
       "post",
       { "Content-Type": "application/json" }
@@ -660,7 +671,7 @@ describe("ModalTimezoneShift", () => {
 
     expect(postSpy).toHaveBeenNthCalledWith(
       4,
-      "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=false",
+      "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=true",
       '{"year":1,"month":2,"day":3,"hour":4,"minute":0,"second":0}',
       "post",
       { "Content-Type": "application/json" }
@@ -668,7 +679,7 @@ describe("ModalTimezoneShift", () => {
 
     expect(postSpy).toHaveBeenNthCalledWith(
       5,
-      "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=false",
+      "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=true",
       '{"year":1,"month":2,"day":3,"hour":4,"minute":5,"second":0}',
       "post",
       { "Content-Type": "application/json" }
@@ -676,7 +687,7 @@ describe("ModalTimezoneShift", () => {
 
     expect(postSpy).toHaveBeenNthCalledWith(
       6,
-      "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=false",
+      "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=true",
       '{"year":1,"month":2,"day":3,"hour":4,"minute":5,"second":6}',
       "post",
       { "Content-Type": "application/json" }
@@ -726,6 +737,7 @@ describe("ModalTimezoneShift", () => {
         state={mockState}
         dispatch={mockDispatch}
         undoSelection={mockUndoSelection}
+        collections={true}
       />
     );
 
@@ -754,7 +766,7 @@ describe("ModalTimezoneShift", () => {
     for (let index = 1; index < 6; index++) {
       expect(postSpy).toHaveBeenNthCalledWith(
         index,
-        "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=false",
+        "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=true",
         '{"year":0,"month":0,"day":0,"hour":0,"minute":0,"second":0}',
         "post",
         { "Content-Type": "application/json" }
@@ -784,6 +796,7 @@ describe("ModalTimezoneShift", () => {
         state={mockState}
         dispatch={mockDispatch}
         undoSelection={mockUndoSelection}
+        collections={true}
       />
     );
 
@@ -806,6 +819,7 @@ describe("ModalTimezoneShift", () => {
         state={mockState}
         dispatch={mockDispatch}
         undoSelection={mockUndoSelection}
+        collections={true}
       />
     );
 
@@ -826,6 +840,7 @@ describe("ModalTimezoneShift", () => {
         state={mockState}
         dispatch={mockDispatch}
         undoSelection={mockUndoSelection}
+        collections={true}
       />
     );
 
@@ -839,6 +854,7 @@ describe("ModalTimezoneShift", () => {
         state={mockState}
         dispatch={mockDispatch}
         undoSelection={mockUndoSelection}
+        collections={true}
       />
     );
 

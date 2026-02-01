@@ -42,6 +42,7 @@ export const MenuOptionTimezoneShift: React.FunctionComponent<IMenuOptionTimezon
           state={state}
           historyLocationSearch={history.location.search}
           undoSelection={undoSelection}
+          collections={!!state.collections}
         />
       ) : null}
 
