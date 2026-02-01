@@ -4,6 +4,7 @@ import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import * as FetchGet from "../../../shared/fetch/fetch-get";
 import * as FetchPost from "../../../shared/fetch/fetch-post";
+import * as ClearSearchCache from "../../../shared/search/clear-search-cache";
 import * as Modal from "../../atoms/modal/modal";
 import ModalTimezoneShift from "./modal-timezone-shift";
 
@@ -448,6 +449,7 @@ describe("ModalTimezoneShift", () => {
         statusCode: 200,
         data: mockOffsetPreview
       });
+      jest.spyOn(ClearSearchCache, "ClearSearchCache").mockImplementationOnce(() => {});
 
       const mockHandleExit = jest.fn();
 
@@ -530,6 +532,7 @@ describe("ModalTimezoneShift", () => {
 
       expect(mockDispatch).toHaveBeenCalled();
       expect(mockHandleExit).toHaveBeenCalled();
+      expect(ClearSearchCache.ClearSearchCache).toHaveBeenCalled();
 
       component.unmount();
     });
@@ -564,6 +567,8 @@ describe("ModalTimezoneShift", () => {
       statusCode: 200,
       data: mockOffsetPreview
     });
+
+    jest.spyOn(ClearSearchCache, "ClearSearchCache").mockImplementationOnce(() => {});
 
     const mockHandleExit = jest.fn();
 

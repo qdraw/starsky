@@ -28,7 +28,9 @@ const ModalTimezoneShift: React.FunctionComponent<IModalTimezoneShiftProps> = ({
   handleExit,
   select,
   state,
-  dispatch
+  dispatch,
+  undoSelection,
+  historyLocationSearch
 }) => {
   // Mode and step tracking
   const shiftMode = useShiftMode();
@@ -74,15 +76,17 @@ const ModalTimezoneShift: React.FunctionComponent<IModalTimezoneShiftProps> = ({
             dispatch
           )}
         {currentStep === "timezone" &&
-          renderTimezoneMode(
+          renderTimezoneMode({
             select,
             state,
             timezoneState,
             previewState,
             handleBack,
             handleExit,
-            dispatch
-          )}
+            dispatch,
+            historyLocationSearch,
+            undoSelection
+          })}
       </div>
     </Modal>
   );

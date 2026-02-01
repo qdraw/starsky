@@ -13,15 +13,30 @@ import { executeShift } from "./execute-shift";
 import { fetchCityTimezones } from "./fetch-city-timezones";
 import { generateTimezonePreview } from "./generate-timezone-preview";
 
-export function renderTimezoneMode(
-  select: string[],
-  state: IArchiveProps,
-  timezoneState: ITimezoneState,
-  previewState: IPreviewState,
-  handleBack: () => void,
-  handleExit: () => void,
-  dispatch: React.Dispatch<ArchiveAction>
-) {
+export interface IRenderTimezoneModeProps {
+  select: string[];
+  state: IArchiveProps;
+  timezoneState: ITimezoneState;
+  previewState: IPreviewState;
+  handleBack: () => void;
+  handleExit: () => void;
+  dispatch: React.Dispatch<ArchiveAction>;
+  historyLocationSearch: string;
+  undoSelection: () => void;
+}
+
+export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
+  const {
+    select,
+    state,
+    timezoneState,
+    previewState,
+    handleBack,
+    handleExit,
+    dispatch,
+    historyLocationSearch,
+    undoSelection
+  } = props;
   const {
     preview,
     setPreview,
@@ -163,11 +178,13 @@ export function renderTimezoneMode(
                   timezoneData: {
                     recordedTimezoneId,
                     correctTimezoneId
-                  }
+                  },
+                  historyLocationSearch
                 },
                 setIsExecuting,
                 setError,
                 handleExit,
+                undoSelection,
                 dispatch
               )
             }

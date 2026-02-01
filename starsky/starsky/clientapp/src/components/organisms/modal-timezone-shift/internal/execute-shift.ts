@@ -2,6 +2,8 @@ import { ArchiveAction } from "../../../../contexts/archive-context";
 import { IArchiveProps } from "../../../../interfaces/IArchiveProps";
 import { IExifTimezoneCorrectionResult } from "../../../../interfaces/ITimezone";
 import FetchPost from "../../../../shared/fetch/fetch-post";
+import { FileListCache } from "../../../../shared/filelist-cache";
+import { ClearSearchCache } from "../../../../shared/search/clear-search-cache";
 import { URLPath } from "../../../../shared/url/url-path";
 import { UrlQuery } from "../../../../shared/url/url-query";
 
@@ -9,6 +11,7 @@ interface ExecuteShiftParams {
   select: string[];
   state: IArchiveProps;
   isOffset: boolean;
+  historyLocationSearch: string;
   offsetData?: {
     year: number;
     month: number;
@@ -28,9 +31,10 @@ export async function executeShift(
   setIsExecuting: (value: boolean) => void,
   setError: (value: string | null) => void,
   handleExit: () => void,
+  undoSelection: () => void,
   dispatch: React.Dispatch<ArchiveAction>
 ) {
-  const { select, state, isOffset, offsetData, timezoneData } = params;
+  const { select, state, isOffset, offsetData, timezoneData, historyLocationSearch } = params;
 
   if (select.length === 0) return;
 
@@ -82,6 +86,10 @@ export async function executeShift(
     }
     dispatch({ type: "add", add: updatedFileIndexItems });
 
+    // Clean cache and close modal
+    new FileListCache().CacheCleanEverything();
+    undoSelection();
+    ClearSearchCache(historyLocationSearch);
     handleExit();
   } catch (err) {
     console.error("Failed to execute shift", err);

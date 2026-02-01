@@ -61,11 +61,13 @@ describe("executeShift", () => {
         {
           select: [],
           state: mockState,
-          isOffset: true
+          isOffset: true,
+          historyLocationSearch: ""
         },
         mockSetIsExecuting,
         mockSetError,
         mockHandleExit,
+        jest.fn(),
         mockDispatch
       );
 
@@ -121,11 +123,13 @@ describe("executeShift", () => {
             hour: 4,
             minute: 5,
             second: 6
-          }
+          },
+          historyLocationSearch: ""
         },
         mockSetIsExecuting,
         mockSetError,
         mockHandleExit,
+        jest.fn(),
         mockDispatch
       );
 
@@ -180,11 +184,13 @@ describe("executeShift", () => {
             hour: 2,
             minute: 0,
             second: 0
-          }
+          },
+          historyLocationSearch: ""
         },
         mockSetIsExecuting,
         mockSetError,
         mockHandleExit,
+        jest.fn(),
         mockDispatch
       );
 
@@ -225,11 +231,13 @@ describe("executeShift", () => {
         {
           select: ["/test.jpg"],
           state: mockState,
-          isOffset: true
+          isOffset: true,
+          historyLocationSearch: ""
         },
         mockSetIsExecuting,
         mockSetError,
         mockHandleExit,
+        jest.fn(),
         mockDispatch
       );
 
@@ -284,11 +292,13 @@ describe("executeShift", () => {
             hour: 0,
             minute: 0,
             second: 0
-          }
+          },
+          historyLocationSearch: ""
         },
         mockSetIsExecuting,
         mockSetError,
         mockHandleExit,
+        jest.fn(),
         mockDispatch
       );
 
@@ -307,7 +317,7 @@ describe("executeShift", () => {
           ({
             MergeSelectFileIndexItem: jest.fn().mockReturnValue(["/test.jpg"]),
             encodeURI: jest.fn().mockReturnValue("/test.jpg")
-          }) as any
+          }) as unknown as URLPath.URLPath
       );
 
       jest.spyOn(UrlQuery, "UrlQuery").mockImplementation(
@@ -315,7 +325,7 @@ describe("executeShift", () => {
           ({
             UrlOffsetExecute: jest.fn().mockReturnValue("/api/offset-execute"),
             UrlTimezoneExecute: jest.fn().mockReturnValue("/api/timezone-execute")
-          }) as any
+          }) as unknown as UrlQuery.UrlQuery
       );
     });
 
@@ -343,11 +353,13 @@ describe("executeShift", () => {
           timezoneData: {
             recordedTimezoneId: "America/New_York",
             correctTimezoneId: "Europe/Amsterdam"
-          }
+          },
+          historyLocationSearch: ""
         },
         mockSetIsExecuting,
         mockSetError,
         mockHandleExit,
+        jest.fn(),
         mockDispatch
       );
 
@@ -384,11 +396,13 @@ describe("executeShift", () => {
         {
           select: ["/test.jpg"],
           state: mockState,
-          isOffset: false
+          isOffset: false,
+          historyLocationSearch: ""
         },
         mockSetIsExecuting,
         mockSetError,
         mockHandleExit,
+        jest.fn(),
         mockDispatch
       );
 
@@ -413,7 +427,7 @@ describe("executeShift", () => {
           ({
             MergeSelectFileIndexItem: jest.fn().mockReturnValue(["/test.jpg"]),
             encodeURI: jest.fn().mockReturnValue("/test.jpg")
-          }) as any
+          }) as unknown as URLPath.URLPath
       );
 
       jest.spyOn(UrlQuery, "UrlQuery").mockImplementation(
@@ -421,7 +435,7 @@ describe("executeShift", () => {
           ({
             UrlOffsetExecute: jest.fn().mockReturnValue("/api/offset-execute"),
             UrlTimezoneExecute: jest.fn().mockReturnValue("/api/timezone-execute")
-          }) as any
+          }) as unknown as UrlQuery.UrlQuery
       );
     });
 
@@ -435,11 +449,13 @@ describe("executeShift", () => {
         {
           select: ["/test.jpg"],
           state: mockState,
-          isOffset: true
+          isOffset: true,
+          historyLocationSearch: ""
         },
         mockSetIsExecuting,
         mockSetError,
         mockHandleExit,
+        jest.fn(),
         mockDispatch
       );
 
@@ -459,11 +475,13 @@ describe("executeShift", () => {
         {
           select: ["/test.jpg"],
           state: mockState,
-          isOffset: true
+          isOffset: true,
+          historyLocationSearch: ""
         },
         mockSetIsExecuting,
         mockSetError,
         mockHandleExit,
+        jest.fn(),
         mockDispatch
       );
 
@@ -483,11 +501,13 @@ describe("executeShift", () => {
         {
           select: ["/test.jpg"],
           state: mockState,
-          isOffset: true
+          isOffset: true,
+          historyLocationSearch: ""
         },
         mockSetIsExecuting,
         mockSetError,
         mockHandleExit,
+        jest.fn(),
         mockDispatch
       );
 
@@ -506,11 +526,13 @@ describe("executeShift", () => {
         {
           select: ["/test.jpg"],
           state: mockState,
-          isOffset: true
+          isOffset: true,
+          historyLocationSearch: ""
         },
         mockSetIsExecuting,
         mockSetError,
         mockHandleExit,
+        jest.fn(),
         mockDispatch
       );
 
@@ -526,11 +548,13 @@ describe("executeShift", () => {
         {
           select: ["/test.jpg"],
           state: mockState,
-          isOffset: true
+          isOffset: true,
+          historyLocationSearch: ""
         },
         mockSetIsExecuting,
         mockSetError,
         mockHandleExit,
+        jest.fn(),
         mockDispatch
       );
 
@@ -547,11 +571,13 @@ describe("executeShift", () => {
         {
           select: ["/test.jpg"],
           state: mockState,
-          isOffset: true
+          isOffset: true,
+          historyLocationSearch: ""
         },
         mockSetIsExecuting,
         mockSetError,
         mockHandleExit,
+        jest.fn(),
         mockDispatch
       );
 
@@ -570,11 +596,13 @@ describe("executeShift", () => {
         {
           select: ["/test.jpg"],
           state: mockState,
-          isOffset: true
+          isOffset: true,
+          historyLocationSearch: ""
         },
         mockSetIsExecuting,
         mockSetError,
         mockHandleExit,
+        jest.fn(),
         mockDispatch
       );
 
@@ -591,11 +619,13 @@ describe("executeShift", () => {
         {
           select: ["/test.jpg"],
           state: mockState,
-          isOffset: true
+          isOffset: true,
+          historyLocationSearch: ""
         },
         mockSetIsExecuting,
         mockSetError,
         mockHandleExit,
+        jest.fn(),
         mockDispatch
       );
 
@@ -610,7 +640,7 @@ describe("executeShift", () => {
           ({
             MergeSelectFileIndexItem: jest.fn().mockReturnValue(["/test.jpg"]),
             encodeURI: jest.fn().mockReturnValue("/test.jpg")
-          }) as any
+          }) as unknown as URLPath.URLPath
       );
 
       jest.spyOn(UrlQuery, "UrlQuery").mockImplementation(
@@ -618,7 +648,7 @@ describe("executeShift", () => {
           ({
             UrlOffsetExecute: jest.fn().mockReturnValue("/api/offset-execute"),
             UrlTimezoneExecute: jest.fn().mockReturnValue("/api/timezone-execute")
-          }) as any
+          }) as unknown as UrlQuery.UrlQuery
       );
     });
 
@@ -642,11 +672,13 @@ describe("executeShift", () => {
         {
           select: ["/test.jpg"],
           state: mockState,
-          isOffset: true
+          isOffset: true,
+          historyLocationSearch: ""
         },
         mockSetIsExecuting,
         mockSetError,
         mockHandleExit,
+        jest.fn(),
         mockDispatch
       );
 
@@ -675,15 +707,17 @@ describe("executeShift", () => {
         {
           select: ["/test.jpg"],
           state: mockState,
-          isOffset: true
+          isOffset: true,
+          historyLocationSearch: ""
         },
         mockSetIsExecuting,
         mockSetError,
         mockHandleExit,
+        jest.fn(),
         mockDispatch
       );
 
-      expect(mockSetError).toHaveBeenCalledTimes(1);
+      expect(mockSetError).toHaveBeenCalledTimes(2);
       expect(mockSetError).toHaveBeenCalledWith(null);
     });
 
@@ -707,11 +741,13 @@ describe("executeShift", () => {
         {
           select: ["/test.jpg"],
           state: mockState,
-          isOffset: true
+          isOffset: true,
+          historyLocationSearch: ""
         },
         mockSetIsExecuting,
         mockSetError,
         mockHandleExit,
+        jest.fn(),
         mockDispatch
       );
 
@@ -725,11 +761,13 @@ describe("executeShift", () => {
         {
           select: ["/test.jpg"],
           state: mockState,
-          isOffset: true
+          isOffset: true,
+          historyLocationSearch: ""
         },
         mockSetIsExecuting,
         mockSetError,
         mockHandleExit,
+        jest.fn(),
         mockDispatch
       );
 
@@ -756,11 +794,13 @@ describe("executeShift", () => {
         {
           select: ["/test.jpg"],
           state: mockState,
-          isOffset: true
+          isOffset: true,
+          historyLocationSearch: ""
         },
         mockSetIsExecuting,
         mockSetError,
         mockHandleExit,
+        jest.fn(),
         mockDispatch
       );
 
@@ -777,11 +817,13 @@ describe("executeShift", () => {
         {
           select: ["/test.jpg"],
           state: mockState,
-          isOffset: true
+          isOffset: true,
+          historyLocationSearch: ""
         },
         mockSetIsExecuting,
         mockSetError,
         mockHandleExit,
+        jest.fn(),
         mockDispatch
       );
 
