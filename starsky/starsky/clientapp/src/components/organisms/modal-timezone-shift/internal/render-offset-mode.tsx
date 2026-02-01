@@ -76,16 +76,16 @@ export function renderOffsetMode(props: IRenderTimezoneModeProps) {
       second: field === "second" ? value : offsetSeconds
     };
 
-    generateOffsetPreview(
+    generateOffsetPreview({
       select,
       state,
-      offsetData,
+      offset: offsetData,
       setIsLoadingPreview,
       setError,
       preview,
       setPreview,
       collections
-    );
+    });
   };
 
   const settings = useGlobalSettings();

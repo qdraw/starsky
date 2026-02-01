@@ -13,16 +13,20 @@ export interface IOffset {
   second: number;
 }
 
-export async function generateOffsetPreview(
-  select: string[],
-  state: IArchiveProps,
-  offset: IOffset,
-  setIsLoadingPreview: React.Dispatch<React.SetStateAction<boolean>>,
-  setError: React.Dispatch<React.SetStateAction<string | null>>,
-  preview: IExifTimezoneCorrectionResultContainer,
-  setPreview: React.Dispatch<React.SetStateAction<IExifTimezoneCorrectionResultContainer>>,
-  collections: boolean
-) {
+export interface IGenerateOffsetPreviewParams {
+  select: string[];
+  state: IArchiveProps;
+  offset: IOffset;
+  setIsLoadingPreview: React.Dispatch<React.SetStateAction<boolean>>;
+  setError: React.Dispatch<React.SetStateAction<string | null>>;
+  preview: IExifTimezoneCorrectionResultContainer;
+  setPreview: React.Dispatch<React.SetStateAction<IExifTimezoneCorrectionResultContainer>>;
+  collections: boolean;
+}
+
+export async function generateOffsetPreview(params: IGenerateOffsetPreviewParams) {
+  const { select, state, offset, setIsLoadingPreview, setError, preview, setPreview, collections } =
+    params;
   if (select.length === 0) return;
 
   setIsLoadingPreview(true);

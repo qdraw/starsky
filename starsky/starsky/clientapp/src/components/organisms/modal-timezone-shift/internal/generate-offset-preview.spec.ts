@@ -41,45 +41,45 @@ describe("generateOffsetPreview", () => {
   });
 
   it("should return early if select is empty", async () => {
-    await generateOffsetPreview(
-      [],
-      mockState,
-      mockOffset,
-      mockSetIsLoadingPreview,
-      mockSetError,
-      mockPreview,
-      mockSetPreview,
-      true
-    );
+    await generateOffsetPreview({
+      select: [],
+      state: mockState,
+      offset: mockOffset,
+      setIsLoadingPreview: mockSetIsLoadingPreview,
+      setError: mockSetError,
+      preview: mockPreview,
+      setPreview: mockSetPreview,
+      collections: true
+    });
     expect(mockSetIsLoadingPreview).not.toHaveBeenCalled();
   });
 
   it("should set loading state and clear error on start", async () => {
-    await generateOffsetPreview(
-      ["/path/file1.jpg"],
-      mockState,
-      mockOffset,
-      mockSetIsLoadingPreview,
-      mockSetError,
-      mockPreview,
-      mockSetPreview,
-      true
-    );
+    await generateOffsetPreview({
+      select: ["/path/file1.jpg"],
+      state: mockState,
+      offset: mockOffset,
+      setIsLoadingPreview: mockSetIsLoadingPreview,
+      setError: mockSetError,
+      preview: mockPreview,
+      setPreview: mockSetPreview,
+      collections: true
+    });
     expect(mockSetIsLoadingPreview).toHaveBeenCalledWith(true);
     expect(mockSetError).toHaveBeenCalledWith(null);
   });
 
   it("should fetch preview with correct parameters", async () => {
-    await generateOffsetPreview(
-      ["/path/file1.jpg"],
-      mockState,
-      mockOffset,
-      mockSetIsLoadingPreview,
-      mockSetError,
-      mockPreview,
-      mockSetPreview,
-      true
-    );
+    await generateOffsetPreview({
+      select: ["/path/file1.jpg"],
+      state: mockState,
+      offset: mockOffset,
+      setIsLoadingPreview: mockSetIsLoadingPreview,
+      setError: mockSetError,
+      preview: mockPreview,
+      setPreview: mockSetPreview,
+      collections: true
+    });
     expect(FetchPost.default).toHaveBeenCalled();
     const mockFetchPost = jest.spyOn(FetchPost, "default");
     const call = mockFetchPost.mock.calls[0];
@@ -95,16 +95,16 @@ describe("generateOffsetPreview", () => {
       statusCode: 200,
       data: offsetData
     });
-    await generateOffsetPreview(
-      ["/path/file1.jpg"],
-      mockState,
-      mockOffset,
-      mockSetIsLoadingPreview,
-      mockSetError,
-      mockPreview,
-      mockSetPreview,
-      true
-    );
+    await generateOffsetPreview({
+      select: ["/path/file1.jpg"],
+      state: mockState,
+      offset: mockOffset,
+      setIsLoadingPreview: mockSetIsLoadingPreview,
+      setError: mockSetError,
+      preview: mockPreview,
+      setPreview: mockSetPreview,
+      collections: true
+    });
     expect(mockSetPreview).toHaveBeenCalledWith({
       ...mockPreview,
       offsetData
@@ -117,16 +117,16 @@ describe("generateOffsetPreview", () => {
       statusCode: 500,
       data: []
     });
-    await generateOffsetPreview(
-      ["/path/file1.jpg"],
-      mockState,
-      mockOffset,
-      mockSetIsLoadingPreview,
-      mockSetError,
-      mockPreview,
-      mockSetPreview,
-      true
-    );
+    await generateOffsetPreview({
+      select: ["/path/file1.jpg"],
+      state: mockState,
+      offset: mockOffset,
+      setIsLoadingPreview: mockSetIsLoadingPreview,
+      setError: mockSetError,
+      preview: mockPreview,
+      setPreview: mockSetPreview,
+      collections: true
+    });
     expect(mockSetPreview).toHaveBeenCalledWith({
       ...mockPreview,
       offsetData: []
@@ -139,16 +139,16 @@ describe("generateOffsetPreview", () => {
       statusCode: 200,
       data: { invalidData: "not an array" }
     });
-    await generateOffsetPreview(
-      ["/path/file1.jpg"],
-      mockState,
-      mockOffset,
-      mockSetIsLoadingPreview,
-      mockSetError,
-      mockPreview,
-      mockSetPreview,
-      true
-    );
+    await generateOffsetPreview({
+      select: ["/path/file1.jpg"],
+      state: mockState,
+      offset: mockOffset,
+      setIsLoadingPreview: mockSetIsLoadingPreview,
+      setError: mockSetError,
+      preview: mockPreview,
+      setPreview: mockSetPreview,
+      collections: true
+    });
     expect(mockSetPreview).toHaveBeenCalledWith({
       ...mockPreview,
       offsetData: []
@@ -159,16 +159,16 @@ describe("generateOffsetPreview", () => {
   it("should handle network error", async () => {
     const error = new Error("Network error");
     jest.spyOn(FetchPost, "default").mockRejectedValue(error);
-    await generateOffsetPreview(
-      ["/path/file1.jpg"],
-      mockState,
-      mockOffset,
-      mockSetIsLoadingPreview,
-      mockSetError,
-      mockPreview,
-      mockSetPreview,
-      true
-    );
+    await generateOffsetPreview({
+      select: ["/path/file1.jpg"],
+      state: mockState,
+      offset: mockOffset,
+      setIsLoadingPreview: mockSetIsLoadingPreview,
+      setError: mockSetError,
+      preview: mockPreview,
+      setPreview: mockSetPreview,
+      collections: true
+    });
     expect(mockSetError).toHaveBeenCalledWith("Failed to generate preview");
   });
 
@@ -177,46 +177,46 @@ describe("generateOffsetPreview", () => {
       statusCode: 200,
       data: []
     });
-    await generateOffsetPreview(
-      ["/path/file1.jpg"],
-      mockState,
-      mockOffset,
-      mockSetIsLoadingPreview,
-      mockSetError,
-      mockPreview,
-      mockSetPreview,
-      true
-    );
+    await generateOffsetPreview({
+      select: ["/path/file1.jpg"],
+      state: mockState,
+      offset: mockOffset,
+      setIsLoadingPreview: mockSetIsLoadingPreview,
+      setError: mockSetError,
+      preview: mockPreview,
+      setPreview: mockSetPreview,
+      collections: true
+    });
     expect(mockSetIsLoadingPreview).toHaveBeenLastCalledWith(false);
   });
 
   it("should set loading to false even on error", async () => {
     jest.spyOn(FetchPost, "default").mockRejectedValue(new Error("Error"));
-    await generateOffsetPreview(
-      ["/path/file1.jpg"],
-      mockState,
-      mockOffset,
-      mockSetIsLoadingPreview,
-      mockSetError,
-      mockPreview,
-      mockSetPreview,
-      true
-    );
+    await generateOffsetPreview({
+      select: ["/path/file1.jpg"],
+      state: mockState,
+      offset: mockOffset,
+      setIsLoadingPreview: mockSetIsLoadingPreview,
+      setError: mockSetError,
+      preview: mockPreview,
+      setPreview: mockSetPreview,
+      collections: true
+    });
     expect(mockSetIsLoadingPreview).toHaveBeenLastCalledWith(false);
   });
 
   it("should handle state without collections", async () => {
     const stateWithoutCollections = { ...mockState, collections: false };
-    await generateOffsetPreview(
-      ["/path/file1.jpg"],
-      stateWithoutCollections,
-      mockOffset,
-      mockSetIsLoadingPreview,
-      mockSetError,
-      mockPreview,
-      mockSetPreview,
-      false
-    );
+    await generateOffsetPreview({
+      select: ["/path/file1.jpg"],
+      state: stateWithoutCollections,
+      offset: mockOffset,
+      setIsLoadingPreview: mockSetIsLoadingPreview,
+      setError: mockSetError,
+      preview: mockPreview,
+      setPreview: mockSetPreview,
+      collections: false
+    });
     const mockFetchPost = jest.spyOn(FetchPost, "default");
     const call = mockFetchPost.mock.calls[0];
     expect(call[0]).toContain("collections=false");
