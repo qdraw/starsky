@@ -11,15 +11,30 @@ import { executeShift } from "./execute-shift";
 import { formatOffsetLabel } from "./format-offset-label";
 import { generateOffsetPreview } from "./generate-offset-preview";
 
-export function renderOffsetMode(
-  offsetState: ReturnType<typeof useOffsetState>,
-  previewState: IPreviewState,
-  select: string[],
-  state: IArchiveProps,
-  handleBack: () => void,
-  handleExit: () => void,
-  dispatch: React.Dispatch<ArchiveAction>
-) {
+export interface IRenderTimezoneModeProps {
+  offsetState: ReturnType<typeof useOffsetState>;
+  previewState: IPreviewState;
+  select: string[];
+  state: IArchiveProps;
+  handleBack: () => void;
+  handleExit: () => void;
+  dispatch: React.Dispatch<ArchiveAction>;
+  historyLocationSearch: string;
+  undoSelection: () => void;
+}
+
+export function renderOffsetMode(props: IRenderTimezoneModeProps) {
+  const {
+    offsetState,
+    previewState,
+    select,
+    state,
+    handleBack,
+    handleExit,
+    dispatch,
+    historyLocationSearch,
+    undoSelection
+  } = props;
   const {
     offsetYears,
     setOffsetYears,
@@ -262,11 +277,13 @@ export function renderOffsetMode(
                     hour: offsetHours,
                     minute: offsetMinutes,
                     second: offsetSeconds
-                  }
+                  },
+                  historyLocationSearch: historyLocationSearch
                 },
                 setIsLoadingPreview,
                 setError,
                 handleExit,
+                undoSelection,
                 dispatch
               )
             }

@@ -66,15 +66,17 @@ const ModalTimezoneShift: React.FunctionComponent<IModalTimezoneShiftProps> = ({
         {currentStep === "mode-selection" &&
           renderModeSelection(select, handleModeSelectWrapped, handleExit)}
         {currentStep === "offset" &&
-          renderOffsetMode(
+          renderOffsetMode({
             offsetState,
             previewState,
             select,
             state,
             handleBack,
             handleExit,
-            dispatch
-          )}
+            dispatch,
+            historyLocationSearch,
+            undoSelection
+          })}
         {currentStep === "timezone" &&
           renderTimezoneMode({
             select,

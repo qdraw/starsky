@@ -2,6 +2,7 @@ import { IArchiveProps } from "../../../../interfaces/IArchiveProps";
 import { IExifStatus } from "../../../../interfaces/IExifStatus";
 import { IExifTimezoneCorrectionResult } from "../../../../interfaces/ITimezone";
 import * as FetchPost from "../../../../shared/fetch/fetch-post";
+import * as ClearSearchCache from "../../../../shared/search/clear-search-cache";
 import * as URLPath from "../../../../shared/url/url-path";
 import * as UrlQuery from "../../../../shared/url/url-query";
 import { executeShift } from "./execute-shift";
@@ -105,7 +106,9 @@ describe("executeShift", () => {
         error: "",
         fileIndexItem: mockFileIndexItem
       };
-
+      const clearSearchCacheSpy = jest
+        .spyOn(ClearSearchCache, "ClearSearchCache")
+        .mockImplementationOnce(() => {});
       jest.spyOn(FetchPost, "default").mockResolvedValue({
         statusCode: 200,
         data: [mockResult]
@@ -154,6 +157,7 @@ describe("executeShift", () => {
       });
       expect(mockHandleExit).toHaveBeenCalled();
       expect(mockSetIsExecuting).toHaveBeenNthCalledWith(2, false);
+      expect(clearSearchCacheSpy).toHaveBeenCalled();
     });
 
     it("successfully executes offset shift with partial offset data", async () => {
@@ -171,7 +175,9 @@ describe("executeShift", () => {
         statusCode: 200,
         data: [mockResult]
       });
-
+      const clearSearchCacheSpy = jest
+        .spyOn(ClearSearchCache, "ClearSearchCache")
+        .mockImplementationOnce(() => {});
       await executeShift(
         {
           select: ["/test.jpg"],
@@ -209,6 +215,7 @@ describe("executeShift", () => {
       );
       expect(mockDispatch).toHaveBeenCalled();
       expect(mockHandleExit).toHaveBeenCalled();
+      expect(clearSearchCacheSpy).toHaveBeenCalled();
     });
 
     it("successfully executes offset shift with no offset data (defaults to 0)", async () => {
@@ -221,7 +228,9 @@ describe("executeShift", () => {
         error: "",
         fileIndexItem: mockFileIndexItem
       };
-
+      const clearSearchCacheSpy = jest
+        .spyOn(ClearSearchCache, "ClearSearchCache")
+        .mockImplementationOnce(() => {});
       jest.spyOn(FetchPost, "default").mockResolvedValue({
         statusCode: 200,
         data: [mockResult]
@@ -256,6 +265,7 @@ describe("executeShift", () => {
       );
       expect(mockDispatch).toHaveBeenCalled();
       expect(mockHandleExit).toHaveBeenCalled();
+      expect(clearSearchCacheSpy).toHaveBeenCalled();
     });
 
     it("successfully executes offset shift with multiple files", async () => {
@@ -279,7 +289,9 @@ describe("executeShift", () => {
         statusCode: 200,
         data: [mockResult1, mockResult2]
       });
-
+      const clearSearchCacheSpy = jest
+        .spyOn(ClearSearchCache, "ClearSearchCache")
+        .mockImplementationOnce(() => {});
       await executeShift(
         {
           select: ["/test.jpg", "/test2.jpg"],
@@ -307,6 +319,7 @@ describe("executeShift", () => {
         add: [mockFileIndexItem, mockFile2]
       });
       expect(mockHandleExit).toHaveBeenCalled();
+      expect(clearSearchCacheSpy).toHaveBeenCalled();
     });
   });
 
@@ -339,7 +352,9 @@ describe("executeShift", () => {
         error: "",
         fileIndexItem: mockFileIndexItem
       };
-
+      const clearSearchCacheSpy = jest
+        .spyOn(ClearSearchCache, "ClearSearchCache")
+        .mockImplementationOnce(() => {});
       jest.spyOn(FetchPost, "default").mockResolvedValue({
         statusCode: 200,
         data: [mockResult]
@@ -374,6 +389,7 @@ describe("executeShift", () => {
       );
       expect(mockDispatch).toHaveBeenCalled();
       expect(mockHandleExit).toHaveBeenCalled();
+      expect(clearSearchCacheSpy).toHaveBeenCalled();
     });
 
     it("successfully executes timezone shift with no timezone data (defaults to empty strings)", async () => {
@@ -386,6 +402,8 @@ describe("executeShift", () => {
         error: "",
         fileIndexItem: mockFileIndexItem
       };
+
+      jest.spyOn(ClearSearchCache, "ClearSearchCache").mockImplementationOnce(() => {});
 
       jest.spyOn(FetchPost, "default").mockResolvedValue({
         statusCode: 200,
@@ -731,6 +749,7 @@ describe("executeShift", () => {
         error: "",
         fileIndexItem: mockFileIndexItem
       };
+      jest.spyOn(ClearSearchCache, "ClearSearchCache").mockImplementationOnce(() => {});
 
       jest.spyOn(FetchPost, "default").mockResolvedValue({
         statusCode: 200,
