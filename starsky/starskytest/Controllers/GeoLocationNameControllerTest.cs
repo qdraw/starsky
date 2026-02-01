@@ -204,6 +204,7 @@ public class GeoLocationNameControllerTest : VerifyBase
 	[DataRow("2026-01-30T12:00:00", "Amsterdam", DisplayName = "Winter time format")]
 	[DataRow("2026-06-30T12:00:00", "Amsterdam", DisplayName = "Summer time format")]
 	[DataRow("2026-06-30T12:00:00", "Willemstad", DisplayName = "No seasonal time change")]
+	[DataRow("2026-02-01T14:15:21.659Z", "Amsterdam", DisplayName = "Winter time format with Z")]
 	public async Task SearchCityTimezone_ReturnsOk_Verify(string dateTime,
 		string cityName)
 	{

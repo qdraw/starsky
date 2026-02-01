@@ -32,14 +32,28 @@ public class LocationNameService(
 			.OrderByDescending(x => x.Population)
 		];
 	}
+	
+	private static bool ParseDateTime(string dateTime, out DateTime dateTimeParsed)
+	{
+		// Accept both: "2026-06-30T12:00:00" and "2026-02-01T14:15:21.659Z"
+		var formats = new[]
+		{
+			"yyyy-MM-ddTHH:mm:ss",
+			"yyyy-MM-ddTHH:mm:ss.fffZ"
+		};
+		var provider = CultureInfo.InvariantCulture;
+		// Always treat as local time, do not convert to UTC
+		return DateTime.TryParseExact(dateTime,
+			formats,
+			provider,
+			DateTimeStyles.None,
+			out dateTimeParsed);
+	}
 
 	public async Task<List<CityTimezoneResult>> SearchCityTimezone(string dateTime,
 		string cityName)
 	{
-		var provider = CultureInfo.InvariantCulture;
-		var isDateTimeParsed = DateTime.TryParseExact(dateTime,
-			"yyyy-MM-ddTHH:mm:ss", provider,
-			DateTimeStyles.AssumeLocal, out var dateTimeParsed);
+		var isDateTimeParsed = ParseDateTime(dateTime, out var dateTimeParsed);
 
 		if ( !await seedService.Seed() || !isDateTimeParsed ||
 		     cityName.Length <= 2 )
