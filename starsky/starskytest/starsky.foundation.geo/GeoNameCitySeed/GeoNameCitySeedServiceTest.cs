@@ -146,6 +146,31 @@ public sealed class GeoNameCitySeedServiceTest : VerifyBase
 		Assert.IsFalse(awaitedResult,
 			"Setup should return false when cache is not set and file exists");
 	}
+	
+	[TestMethod]
+	public async Task Setup_ReturnsFalse_NoMemoryCacheNull()
+	{
+		await using var dbContext = CreateDbContext("nocache");
+		var appSettings = new AppSettings { DependenciesFolder = "." };
+		var fakeSelectorStorage = new FakeSelectorStorage(new ReadLinesFakeIStorage());
+		var fakeGeoFileDownload = new FakeIGeoFileDownload();
+		var fakeLogger = new FakeIWebLogger();
+		var fakeScopeFactory = new FakeIServiceScopeFactory();
+		var geoNamesCitiesQuery = new GeoNamesCitiesQuery(dbContext, fakeScopeFactory);
+		var sut = new GeoNameCitySeedService(
+			fakeSelectorStorage,
+			appSettings,
+			fakeGeoFileDownload,
+			geoNamesCitiesQuery,
+			fakeLogger,
+			null
+		);
+
+		// No cache set
+		var awaitedResult = await sut.Setup();
+		Assert.IsFalse(awaitedResult,
+			"Setup should return false when cache is not set and file exists");
+	}
 
 	[TestMethod]
 	public async Task ParseCityAsync_ThrowsFormatException_WhenLineIsInvalid()
