@@ -586,7 +586,8 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		// Act
 		Assert.ThrowsExactly<ArgumentException>(() =>
 		{
-			ExifTimezoneCorrectionService.SwitchCalculateTimezone(fileIndexItem, myClass);
+			ExifTimezoneCorrectionService.CalculateTimezoneOffsetDelta(fileIndexItem.DateTime,
+				myClass);
 		});
 	}
 
@@ -1384,7 +1385,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		Assert.AreEqual(new DateTime(2025, 6, 15,
 			                14, 30, 0, DateTimeKind.Local)
 		                - new DateTime(2024, 6, 15,
-			                14, 30, 0, kind: DateTimeKind.Local),
+			                14, 30, 0, DateTimeKind.Local),
 			result.Delta);
 	}
 
@@ -1500,7 +1501,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			result.CorrectedDateTime);
 		Assert.Contains("change the day", result.Warning);
 	}
-	
+
 	[TestMethod]
 	public async Task CorrectTimezoneAsync_CustomOffset_ArgumentOutOfRangeException()
 	{
@@ -1754,7 +1755,9 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		};
 
 		// Act
-		var delta = ExifTimezoneCorrectionService.SwitchCalculateTimezone(fileIndexItem, request);
+		var delta =
+			ExifTimezoneCorrectionService.CalculateTimezoneOffsetDelta(fileIndexItem.DateTime,
+				request);
 
 		// Assert
 		Assert.AreEqual(2, delta.Hours); // Amsterdam is UTC+2 in summer
@@ -1771,7 +1774,9 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		var request = new ExifCustomOffsetCorrectionRequest { Hour = 3 };
 
 		// Act
-		var delta = ExifTimezoneCorrectionService.SwitchCalculateTimezone(fileIndexItem, request);
+		var delta =
+			ExifTimezoneCorrectionService.CalculateTimezoneOffsetDelta(fileIndexItem.DateTime,
+				request);
 
 		// Assert
 		Assert.AreEqual(3, delta.Hours);
@@ -1789,7 +1794,8 @@ public sealed class ExifTimezoneCorrectionServiceTest
 
 		// Act & Assert
 		Assert.ThrowsExactly<ArgumentException>(() =>
-			ExifTimezoneCorrectionService.SwitchCalculateTimezone(fileIndexItem, invalidRequest));
+			ExifTimezoneCorrectionService.CalculateTimezoneOffsetDelta(fileIndexItem.DateTime,
+				invalidRequest));
 	}
 
 	[TestMethod]
@@ -1821,7 +1827,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		var expected = expectedDateTime - dateTime;
 		Assert.AreEqual(expected, delta);
 	}
-	
+
 	[TestMethod]
 	public void CalculateCustomOffsetDelta_WithMultipleComponents2()
 	{
