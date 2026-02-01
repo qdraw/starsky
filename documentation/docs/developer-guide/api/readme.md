@@ -57,6 +57,8 @@ This document is auto generated
 | __/api/export/zip/\{f\}.zip__                     | GET   | Get the exported zip, but first call 'createZip'use for example this url: /ex...|
 | __/api/geo/status__                               | GET   | Get Geo sync status                                                             |
 | __/api/geo/sync__                                 | POST  | Reverse lookup for Geo Information and/or add Geo location based on a GPX fil...|
+| __/api/geo-location-name/city__                   | GET   | Search for a city by name                                                       |
+| __/api/geo-location-name/city-timezone__          | GET   | Search for a city's timezone for a given date/time                              |
 | __/api/geo-reverse-lookup__                       | GET   | Reverse geo lookup                                                              |
 | __/api/health__                                   | GET   | Check if the service has any known errors and return only a stringPublic API    |
 | __/api/health/details__                           | GET   | Check if the service has any known errorsFor Authorized Users only              |
@@ -89,8 +91,6 @@ This document is auto generated
 | __/api/meta-time-correct/timezone-execute__       | POST  | Execute timezone correction for batch of imagesUses timezone IDs to calculate...|
 | __/api/meta-time-correct/offset-preview__         | POST  | Preview custom offset correction for batch of images (dry-run)Uses custom tim...|
 | __/api/meta-time-correct/offset-execute__         | POST  | Execute custom offset correction for batch of imagesUses custom time/date off...|
-| __/api/meta-time-correct/camera-incorrect-timezones__| GET   | Get list of fixed offset timezones (camera set incorrectly)                     |
-| __/api/meta-time-correct/system-timezones__       | GET   | Get list of all system timezones (moved to different place)                     |
 | __/api/update__                                   | POST  | Update Exif and Rotation API                                                    |
 | _Parameters: Id, FilePath, FileName, FileHash, FileCollectionName, ParentDirectory, IsDirectory, Tags, Status, Description,               _ |
 | _Title, DateTime, AddToDatabase, LastEdited, Latitude, Longitude, LocationAltitude, LocationCity, LocationState,                          _ |
