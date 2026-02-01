@@ -10,6 +10,7 @@ import { IPreviewState } from "../hooks/use-preview-state";
 import { executeShift } from "./execute-shift";
 import { formatOffsetLabel } from "./format-offset-label";
 import { generateOffsetPreview } from "./generate-offset-preview";
+import { PreviewErrorFiles } from "./preview-error-files";
 
 export interface IRenderTimezoneModeProps {
   offsetState: ReturnType<typeof useOffsetState>;
@@ -245,26 +246,9 @@ export function renderOffsetMode(props: IRenderTimezoneModeProps) {
                     }
                   )}
                 </p>
-                <div className="preview-error-files">
-                  {preview.offsetData
-                    .filter((x) => x.error || x.warning)
-                    .map((item) => {
-                      if (item.warning && !item.error)
-                        return (
-                          <p
-                            key={`warning-file-${item.fileIndexItem.fileName}`}
-                            className="warning"
-                          >
-                            ⚠️ {item.fileIndexItem.fileName}: {item.warning}
-                          </p>
-                        );
-                      return (
-                        <p key={`error-file-${item.fileIndexItem.fileName}`} className="error">
-                          ❌ {item.fileIndexItem.fileName}: {item.error}
-                        </p>
-                      );
-                    })}
-                </div>
+
+                {/* Display errors */}
+                {PreviewErrorFiles(preview.offsetData)}
               </div>
             </>
           )}

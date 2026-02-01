@@ -12,6 +12,7 @@ import { ITimezoneState } from "../hooks/use-timezone-state";
 import { executeShift } from "./execute-shift";
 import { fetchCityTimezones } from "./fetch-city-timezones";
 import { generateTimezonePreview } from "./generate-timezone-preview";
+import { PreviewErrorFiles } from "./preview-error-files";
 
 export interface IRenderTimezoneModeProps {
   select: string[];
@@ -155,23 +156,8 @@ export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
                   {language.key(localization.MessageDstAware)})
                 </p>
 
-                <div className="preview-error-files">
-                  {preview.timezoneData
-                    .filter((x) => x.error || x.warning)
-                    .map((item, index) => {
-                      if (item.warning && !item.error)
-                        return (
-                          <p key={`warning-file-${index}`} className="warning">
-                            ⚠️ {item.fileIndexItem.fileName}: {item.warning}
-                          </p>
-                        );
-                      return (
-                        <p key={`error-file-${index}`} className="error">
-                          ❌ {item.fileIndexItem.fileName}: {item.error}
-                        </p>
-                      );
-                    })}
-                </div>
+                {/* Display errors */}
+                {PreviewErrorFiles(preview.timezoneData)}
               </div>
             </>
           )}
