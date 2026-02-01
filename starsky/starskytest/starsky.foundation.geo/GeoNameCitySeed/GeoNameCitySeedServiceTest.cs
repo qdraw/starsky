@@ -240,7 +240,7 @@ public sealed class GeoNameCitySeedServiceTest : VerifyBase
 			CancellationToken cancellationToken)
 		{
 			var lines = CreateAnGeoNameCitySeedData.SampleLines;
-			if ( path == "./admin1CodesASCII.txt" )
+			if ( path is "./admin1CodesASCII.txt" or ".\\admin1CodesASCII.txt" )
 			{
 				lines = CreateAnGeoNameCitySeedData.Admin1Data;
 			}
