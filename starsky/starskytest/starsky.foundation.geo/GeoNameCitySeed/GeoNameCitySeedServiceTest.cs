@@ -10,6 +10,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.GeoNamesCities;
 using starsky.foundation.geo.GeoNameCitySeed;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Interfaces;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 using VerifyMSTest;
@@ -27,10 +28,12 @@ public sealed class GeoNameCitySeedServiceTest : VerifyBase
 		return new ApplicationDbContext(options);
 	}
 
-	private static GeoNameCitySeedService CreateSut(ApplicationDbContext dbContext)
+	private static GeoNameCitySeedService CreateSut(ApplicationDbContext dbContext,
+		IStorage? storage = null)
 	{
+		storage ??= new ReadLinesFakeIStorage();
 		var appSettings = new AppSettings { DependenciesFolder = "." };
-		var fakeSelectorStorage = new FakeSelectorStorage(new ReadLinesFakeIStorage());
+		var fakeSelectorStorage = new FakeSelectorStorage(storage);
 		var fakeGeoFileDownload = new FakeIGeoFileDownload();
 		var fakeLogger = new FakeIWebLogger();
 		var fakeMemoryCache = new MemoryCache(new MemoryCacheOptions());
@@ -192,6 +195,17 @@ public sealed class GeoNameCitySeedServiceTest : VerifyBase
 
 		// Unknown code
 		var result = await sut.GetProvince("NL", "99");
+		Assert.AreEqual(string.Empty, result);
+	}
+
+	[TestMethod]
+	public async Task GetProvince_ReturnsEmpty_WhenAdminFileNotExistsFile()
+	{
+		await using var dbContext = CreateDbContext("province2");
+		// dont use the ReadLinesFakeIStorage here
+		var sut = CreateSut(dbContext, new FakeIStorage());
+
+		var result = await sut.GetProvince("NL", "03");
 		Assert.AreEqual(string.Empty, result);
 	}
 
