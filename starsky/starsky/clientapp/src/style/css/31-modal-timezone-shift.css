@@ -89,6 +89,6 @@
 
 /* https://m2.material.io/design/color/the-color-system.html#tools-for-picking-colors */
 .modal-timezone-shift .warning {
-  color: #bf360c;
-  background-color: #ffcdd2;
+  color: #263238;
+  background-color: #ffcc80;
 }
