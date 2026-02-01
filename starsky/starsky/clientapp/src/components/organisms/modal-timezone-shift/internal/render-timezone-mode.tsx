@@ -113,8 +113,8 @@ export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
                   setCorrectTimezoneDisplayName(displayName);
                   generateTimezonePreview({
                     filePathList,
-                    recordedTimezoneId: id,
-                    correctTimezoneId,
+                    recordedTimezoneId,
+                    correctTimezoneId: id,
                     setIsLoadingPreview,
                     preview,
                     setPreview,
@@ -154,12 +154,24 @@ export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
                   {preview.timezoneData[0]?.delta || "N/A"} (
                   {language.key(localization.MessageDstAware)})
                 </p>
-                {preview.timezoneData[0]?.warning && (
-                  <p className="warning">⚠️ {preview.timezoneData[0].warning}</p>
-                )}
-                {preview.timezoneData[0]?.error && (
-                  <p className="error">❌ {preview.timezoneData[0].error}</p>
-                )}
+
+                <div className="preview-error-files">
+                  {preview.timezoneData
+                    .filter((x) => x.error || x.warning)
+                    .map((item, index) => {
+                      if (item.warning && !item.error)
+                        return (
+                          <p key={`warning-file-${index}`} className="warning">
+                            ⚠️ {item.fileIndexItem.fileName}: {item.warning}
+                          </p>
+                        );
+                      return (
+                        <p key={`error-file-${index}`} className="error">
+                          ❌ {item.fileIndexItem.fileName}: {item.error}
+                        </p>
+                      );
+                    })}
+                </div>
               </div>
             </>
           )}
@@ -192,7 +204,11 @@ export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
                 dispatch
               )
             }
-            disabled={isExecuting || preview.timezoneData.length === 0}
+            disabled={
+              isExecuting ||
+              preview.timezoneData.length === 0 ||
+              preview.timezoneData.some((x) => x.error)
+            }
           >
             {isExecuting
               ? language.key(localization.MessageLoading)

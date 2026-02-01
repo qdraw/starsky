@@ -375,10 +375,11 @@ describe("ModalTimezoneShift", () => {
       { "Content-Type": "application/json" }
     );
 
+    // 2: Must contain both cities in Record and correct
     expect(postSpy).toHaveBeenNthCalledWith(
       2,
       "/starsky/api/meta-time-correct/timezone-preview?f=/test.jpg&collections=false",
-      '{"recordedTimezoneId":"Europe/Amsterdam","correctTimezoneId":""}',
+      '{"recordedTimezoneId":"America/New_York","correctTimezoneId":"Europe/Amsterdam"}',
       "post",
       { "Content-Type": "application/json" }
     );

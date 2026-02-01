@@ -38,8 +38,12 @@ export async function generateTimezonePreview({
       correctTimezoneId
     });
 
+    const url = new UrlQuery().UrlTimezonePreview();
+
+    // API supports all files at once
+    // f=/test/file;/test/file2;/test/file3...
     const response = await FetchPost(
-      `${new UrlQuery().UrlTimezonePreview()}?f=${new URLPath().encodeURI(filePathList[0])}&collections=${collectionsParam}`,
+      `${url}?f=${new URLPath().encodeURI(filePathList.join(";"))}&collections=${collectionsParam}`,
       body,
       "post",
       { "Content-Type": "application/json" }

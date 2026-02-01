@@ -76,18 +76,19 @@
   display: inline-block;
   min-width: 120px;
 }
-.modal-timezone-shift .preview-section .preview-result .warning {
-  color: #ff9800;
-  margin-top: 12px;
-}
-.modal-timezone-shift .preview-section .preview-result .error {
-  color: #b71c1c;
-  margin-top: 12px;
-}
+
+.modal-timezone-shift .warning,
 .modal-timezone-shift .error {
   color: #b71c1c;
   padding: 12px;
   background-color: #ffcdd2;
   border-radius: 4px;
   margin: 12px 0;
+  line-break: anywhere;
+}
+
+/* https://m2.material.io/design/color/the-color-system.html#tools-for-picking-colors */
+.modal-timezone-shift .warning {
+  color: #e65100;
+  background-color: #fff3e0;
 }

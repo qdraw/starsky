@@ -245,12 +245,23 @@ export function renderOffsetMode(props: IRenderTimezoneModeProps) {
                     }
                   )}
                 </p>
-                {preview.offsetData[0]?.warning && (
-                  <p className="warning">⚠️ {preview.offsetData[0].warning}</p>
-                )}
-                {preview.offsetData[0]?.error && (
-                  <p className="error">❌ {preview.offsetData[0].error}</p>
-                )}
+                <div className="preview-error-files">
+                  {preview.offsetData
+                    .filter((x) => x.error || x.warning)
+                    .map((item, index) => {
+                      if (item.warning && !item.error)
+                        return (
+                          <p key={`warning-file-${index}`} className="warning">
+                            ⚠️ {item.fileIndexItem.fileName}: {item.warning}
+                          </p>
+                        );
+                      return (
+                        <p key={`error-file-${index}`} className="error">
+                          ❌ {item.fileIndexItem.fileName}: {item.error}
+                        </p>
+                      );
+                    })}
+                </div>
               </div>
             </>
           )}
@@ -287,7 +298,11 @@ export function renderOffsetMode(props: IRenderTimezoneModeProps) {
                 dispatch
               )
             }
-            disabled={isExecuting || preview.offsetData.length === 0}
+            disabled={
+              isExecuting ||
+              preview.offsetData.length === 0 ||
+              preview.offsetData.some((x) => x.error)
+            }
           >
             {isExecuting
               ? language.key(localization.MessageLoading)

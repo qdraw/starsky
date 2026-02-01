@@ -87,7 +87,8 @@ const ModalTimezoneShift: React.FunctionComponent<IModalTimezoneShiftProps> = ({
             handleExit,
             dispatch,
             historyLocationSearch,
-            undoSelection
+            undoSelection,
+            collections: state.collections == true
           })}
       </div>
     </Modal>
