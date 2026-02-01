@@ -1500,6 +1500,33 @@ public sealed class ExifTimezoneCorrectionServiceTest
 			result.CorrectedDateTime);
 		Assert.Contains("change the day", result.Warning);
 	}
+	
+	[TestMethod]
+	public async Task CorrectTimezoneAsync_CustomOffset_ArgumentOutOfRangeException()
+	{
+		// Arrange - Test day rollover with time
+		var storage = new FakeIStorage(["/"], ["/test.jpg"]);
+		var service = CreateService(storage: storage);
+
+		var fileIndexItem = new FileIndexItem
+		{
+			FilePath = "/test.jpg",
+			DateTime = new DateTime(2024, 6, 30, 23, 30, 0, DateTimeKind.Local)
+		};
+		var request = new ExifCustomOffsetCorrectionRequest
+		{
+			Year = 99999
+			// System.ArgumentOutOfRangeException: The added or subtracted value results in an un-representable DateTime. (Parameter 'value')
+		};
+
+		// Act
+		var result = await service.CorrectTimezoneAsync(fileIndexItem, request);
+
+		// Assert
+		Assert.IsFalse(result.Success);
+		Assert.AreEqual(DateTime.MinValue, result.CorrectedDateTime);
+		Assert.Contains("Years is out of range", result.Error);
+	}
 
 	[TestMethod]
 	public void ValidateCorrection_CustomOffset_MissingAllOffsets_ShouldReturnError()

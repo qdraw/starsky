@@ -287,6 +287,16 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 			return SetError(result, fileIndexItem, FileIndexItem.ExifStatus.OperationNotSupported,
 				"At least one custom offset value is required");
 		}
+		
+		try
+		{
+			CalculateCustomOffsetDelta(fileIndexItem.DateTime, request);
+		}
+		catch ( ArgumentOutOfRangeException exception )
+		{
+			return SetError(result, fileIndexItem, FileIndexItem.ExifStatus.OperationNotSupported,
+				exception.Message.Split(" ")[0] + " is out of range");
+		}
 
 		result.Success = true;
 		return result;
