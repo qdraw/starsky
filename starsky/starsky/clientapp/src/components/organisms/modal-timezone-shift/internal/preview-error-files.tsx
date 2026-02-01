@@ -1,6 +1,6 @@
 import { IExifTimezoneCorrectionResult } from "../../../../interfaces/ITimezone";
 
-export function PreviewErrorFiles(data: IExifTimezoneCorrectionResult[]) {
+export function PreviewErrorFiles({ data }: { data: IExifTimezoneCorrectionResult[] }) {
   return (
     <div className="preview-error-files">
       {Array.isArray(data)

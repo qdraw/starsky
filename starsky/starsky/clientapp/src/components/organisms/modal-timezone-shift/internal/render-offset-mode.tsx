@@ -246,9 +246,8 @@ export function renderOffsetMode(props: IRenderTimezoneModeProps) {
                     }
                   )}
                 </p>
-
                 {/* Display errors */}
-                {PreviewErrorFiles(preview.offsetData)}
+                <PreviewErrorFiles data={preview.offsetData} />{" "}
               </div>
             </>
           )}

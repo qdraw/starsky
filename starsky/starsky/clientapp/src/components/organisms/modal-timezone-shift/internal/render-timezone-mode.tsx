@@ -157,7 +157,7 @@ export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
                 </p>
 
                 {/* Display errors */}
-                {PreviewErrorFiles(preview.timezoneData)}
+                <PreviewErrorFiles data={preview.timezoneData} />
               </div>
             </>
           )}
