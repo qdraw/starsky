@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
@@ -25,6 +26,9 @@ public sealed class StorageThumbnailFilesystemTest
 		_thumbnailStorage = new StorageThumbnailFilesystem(appSettings, new FakeIWebLogger());
 		_fileName = createNewImage.FileName;
 	}
+
+	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+	public TestContext TestContext { get; set; }
 
 	[TestMethod]
 	public void Thumbnail_CombinePathShouldEndWithTestJpg()
@@ -295,6 +299,11 @@ public sealed class StorageThumbnailFilesystemTest
 		Assert.AreEqual(CreateAnImage.Size, _thumbnailStorage.Info(_fileName).Size);
 	}
 
-	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-	public TestContext TestContext { get; set; }
+
+	[TestMethod]
+	public void Thumb_ReadLinesAsync()
+	{
+		Assert.ThrowsExactly<NotSupportedException>(() =>
+			_thumbnailStorage.ReadLinesAsync("not-found", new CancellationToken(true)));
+	}
 }

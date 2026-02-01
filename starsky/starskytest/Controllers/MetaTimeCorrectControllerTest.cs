@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,9 +10,7 @@ using starsky.feature.realtime.Interface;
 using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.metaupdate.Models;
-using starsky.foundation.metaupdate.Services;
 using starsky.foundation.platform.Interfaces;
-using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.worker.Interfaces;
 using starskytest.FakeMocks;
 
@@ -47,11 +44,7 @@ public sealed class MetaTimeCorrectControllerTest
 			timezoneService,
 			queue,
 			logger,
-			scopeFactory,
-			new ExifTimezoneDisplayListService())
-		{
-			ControllerContext = { HttpContext = new DefaultHttpContext() }
-		};
+			scopeFactory) { ControllerContext = { HttpContext = new DefaultHttpContext() } };
 
 		return controller;
 	}
@@ -80,7 +73,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -136,7 +129,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -160,7 +153,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var controller = CreateController();
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -183,7 +176,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var controller = CreateController();
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -218,7 +211,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -260,7 +253,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -303,8 +296,8 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "Europe/Amsterdam", // UTC+1 (after DST)
-			CorrectTimezone = "Europe/Amsterdam" // UTC+2 (during DST)
+			RecordedTimezoneId = "Europe/Amsterdam", // UTC+1 (after DST)
+			CorrectTimezoneId = "Europe/Amsterdam" // UTC+2 (during DST)
 		};
 
 		// Act
@@ -348,7 +341,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "Europe/Amsterdam", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "Europe/Amsterdam", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -389,7 +382,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -424,7 +417,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "InvalidTZ", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "InvalidTZ", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -465,7 +458,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "Europe/Amsterdam", CorrectTimezone = "UTC"
+			RecordedTimezoneId = "Europe/Amsterdam", CorrectTimezoneId = "UTC"
 		};
 
 		// Act
@@ -489,7 +482,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var controller = CreateController();
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -528,7 +521,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -581,7 +574,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -606,7 +599,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var controller = CreateController();
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -629,7 +622,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var controller = CreateController();
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -652,7 +645,7 @@ public sealed class MetaTimeCorrectControllerTest
 		var controller = CreateController();
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -677,7 +670,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -713,7 +706,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -758,7 +751,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -802,7 +795,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "Europe/Amsterdam", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "Europe/Amsterdam", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -845,7 +838,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "Europe/Amsterdam", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "Europe/Amsterdam", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -887,7 +880,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -923,7 +916,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "InvalidTZ", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "InvalidTZ", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -964,7 +957,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "Europe/Amsterdam", CorrectTimezone = "UTC"
+			RecordedTimezoneId = "Europe/Amsterdam", CorrectTimezoneId = "UTC"
 		};
 
 		// Act
@@ -1006,7 +999,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -1058,7 +1051,7 @@ public sealed class MetaTimeCorrectControllerTest
 
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
-			RecordedTimezone = "UTC", CorrectTimezone = "Europe/Amsterdam"
+			RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 		};
 
 		// Act
@@ -1077,71 +1070,6 @@ public sealed class MetaTimeCorrectControllerTest
 		Assert.IsFalse(returnedResults[1].Success);
 		Assert.IsTrue(returnedResults[2].Success);
 		Assert.IsTrue(queue.QueueBackgroundWorkItemCalled);
-	}
-
-	[TestMethod]
-	public void GetIncorrectCameraTimezones()
-	{
-		var timezoneService = new FakeIExifTimezoneCorrectionService([]);
-		var queue = new FakeIUpdateBackgroundTaskQueue();
-
-		var controller = CreateController(timezoneService, queue);
-
-		var expectedResult = JsonSerializer.Serialize(
-			new ExifTimezoneDisplayListService().GetIncorrectCameraTimezonesList(),
-			DefaultJsonSerializer.CamelCase);
-
-		// Act
-		var result = controller.GetIncorrectCameraTimezones() as OkObjectResult;
-		var returnedJson = JsonSerializer.Serialize(
-			result?.Value,
-			DefaultJsonSerializer.CamelCase);
-
-		// Assert
-		Assert.IsNotNull(result);
-		Assert.AreEqual(expectedResult, returnedJson);
-	}
-
-	[TestMethod]
-	public void GetMovedToDifferentPlaceTimezonesList()
-	{
-		var timezoneService = new FakeIExifTimezoneCorrectionService([]);
-		var queue = new FakeIUpdateBackgroundTaskQueue();
-
-		var controller = CreateController(timezoneService, queue);
-
-		var testDate = new DateTime(2024, 6, 15, 0,
-			0, 0, DateTimeKind.Local); // Summer date
-		var expectedResult = JsonSerializer.Serialize(
-			new ExifTimezoneDisplayListService().GetMovedToDifferentPlaceTimezonesList(testDate),
-			DefaultJsonSerializer.CamelCase);
-
-		// Act
-		var result = controller.GetMovedToDifferentPlaceTimezones(testDate) as OkObjectResult;
-		var returnedJson = JsonSerializer.Serialize(
-			result?.Value,
-			DefaultJsonSerializer.CamelCase);
-
-		// Assert
-		Assert.IsNotNull(result);
-		Assert.AreEqual(expectedResult, returnedJson);
-	}
-
-	[TestMethod]
-	public void GetMovedToDifferentPlaceTimezonesList_InvalidModelState_ReturnsBadRequest()
-	{
-		// Arrange
-		var controller = CreateController();
-		controller.ModelState.AddModelError("Key", "ErrorMessage");
-
-		// act
-		var result =
-			controller.GetMovedToDifferentPlaceTimezones(DateTime.MinValue) as
-				BadRequestObjectResult;
-
-		// Assert
-		Assert.IsNotNull(result);
-		Assert.AreEqual(400, result.StatusCode);
 	}
 
 	[TestMethod]

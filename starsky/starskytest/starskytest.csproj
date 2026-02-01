@@ -28,7 +28,7 @@
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1"/>
         <PackageReference Include="MSTest.TestAdapter" Version="3.11.1"/>
         <PackageReference Include="MSTest.TestFramework" Version="3.11.1"/>
-        <PackageReference Include="Verify.MSTest" Version="30.20.1" />
+        <PackageReference Include="Verify.MSTest" Version="30.20.1"/>
         <PackageReference Include="coverlet.collector" Version="6.0.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -122,25 +122,52 @@
             <DependentUpon>SyncFolderTest.cs</DependentUpon>
         </None>
         <None Update="starsky.foundation.import\Services\ImportTest.Preflight_SingleImage_ForceOverWrite_ColorClassOverwrite.verified.txt">
-          <DependentUpon>ImportTest.cs</DependentUpon>
+            <DependentUpon>ImportTest.cs</DependentUpon>
         </None>
         <None Update="starsky.foundation.import\Services\ImportTest.Preflight_SingleImage_HappyFlow.verified.txt">
-          <DependentUpon>ImportTest.cs</DependentUpon>
+            <DependentUpon>ImportTest.cs</DependentUpon>
         </None>
         <None Update="starsky.foundation.import\Services\ImportTest.Preflight_SingleImage_Verify_filePath=-a330.arw.verified.txt">
-          <DependentUpon>ImportTest.cs</DependentUpon>
+            <DependentUpon>ImportTest.cs</DependentUpon>
         </None>
         <None Update="starsky.foundation.import\Services\ImportTest.Preflight_SingleImage_Verify_filePath=-a6660.arw.verified.txt">
-          <DependentUpon>ImportTest.cs</DependentUpon>
+            <DependentUpon>ImportTest.cs</DependentUpon>
         </None>
         <None Update="starsky.foundation.import\Services\ImportTest.Preflight_SingleImage_Verify_filePath=-a6700.arw.verified.txt">
-          <DependentUpon>ImportTest.cs</DependentUpon>
+            <DependentUpon>ImportTest.cs</DependentUpon>
         </None>
         <None Update="starsky.foundation.import\Services\ImportTest.Preflight_SingleImage_Verify_filePath=-test.mp4.verified.txt">
-          <DependentUpon>ImportTest.cs</DependentUpon>
+            <DependentUpon>ImportTest.cs</DependentUpon>
         </None>
         <None Update="starsky.foundation.import\Services\ImportTestInMemoryDb.Importer_Gpx.verified.txt">
-          <DependentUpon>ImportTest_InMemoryDb.cs</DependentUpon>
+            <DependentUpon>ImportTest_InMemoryDb.cs</DependentUpon>
+        </None>
+        <None Update="Controllers\GeoLocationNameControllerTest.SearchCity_ReturnsOk_Verify.received.txt">
+            <DependentUpon>GeoLocationNameControllerTest.cs</DependentUpon>
+        </None>
+        <None Update="Controllers\GeoLocationNameControllerTest.SearchCityTimezone_ReturnsOk_Verify_dateTime=2026-01-30T12-00-00.received.txt">
+            <DependentUpon>GeoLocationNameControllerTest.cs</DependentUpon>
+        </None>
+        <None Update="Controllers\GeoLocationNameControllerTest.SearchCityTimezone_ReturnsOk_Verify_dateTime=2026-01-30T12-00-00_cityName=Amsterdam.received.txt">
+            <DependentUpon>GeoLocationNameControllerTest.cs</DependentUpon>
+        </None>
+        <None Update="Controllers\GeoLocationNameControllerTest.SearchCityTimezone_ReturnsOk_Verify_dateTime=2026-01-30T12-00-00_cityName=Amsterdam.verified.txt">
+            <DependentUpon>GeoLocationNameControllerTest.cs</DependentUpon>
+        </None>
+        <None Update="Controllers\GeoLocationNameControllerTest.SearchCityTimezone_ReturnsOk_Verify_dateTime=2026-06-30T12-00-00_cityName=Amsterdam.verified.txt">
+            <DependentUpon>GeoLocationNameControllerTest.cs</DependentUpon>
+        </None>
+        <None Update="Controllers\GeoLocationNameControllerTest.SearchCityTimezone_ReturnsOk_Verify_dateTime=2026-06-30T12-00-00_cityName=Willemstad.received.txt">
+            <DependentUpon>GeoLocationNameControllerTest.cs</DependentUpon>
+        </None>
+        <None Update="Controllers\GeoLocationNameControllerTest.SearchCityTimezone_ReturnsOk_Verify_dateTime=2026-06-30T12-00-00_cityName=Willemstad.verified.txt">
+            <DependentUpon>GeoLocationNameControllerTest.cs</DependentUpon>
+        </None>
+        <None Update="Controllers\GeoLocationNameControllerTest.SearchCity_ReturnsOk_Verify.verified.txt">
+            <DependentUpon>GeoLocationNameControllerTest.cs</DependentUpon>
+        </None>
+        <None Update="starsky.foundation.geo\GeoNameCitySeed\GeoNameCitySeedServiceTest.Seed_InsertsUniqueCities_Verify.verified.txt">
+            <DependentUpon>GeoNameCitySeedServiceTest.cs</DependentUpon>
         </None>
     </ItemGroup>
     <ItemGroup>

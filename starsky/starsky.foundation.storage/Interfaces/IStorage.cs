@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.storage.Models;
 
@@ -89,4 +90,7 @@ public interface IStorage
 	StorageInfo Info(string path);
 
 	bool IsFileReady(string path);
+
+	IAsyncEnumerable<string> ReadLinesAsync(string path,
+		CancellationToken cancellationToken);
 }

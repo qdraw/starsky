@@ -969,6 +969,56 @@
     "nl": "Maand",
     "de": "Monat"
   },
+  "MessageDay": {
+    "en": "Day",
+    "nl": "Dag",
+    "de": "Tag"
+  },
+  "MessageHour": {
+    "en": "Hour",
+    "nl": "Uur",
+    "de": "Stunde"
+  },
+  "MessageMinute": {
+    "en": "Minute",
+    "nl": "Minuut",
+    "de": "Minute"
+  },
+  "MessageSecond": {
+    "en": "Second",
+    "nl": "Seconde",
+    "de": "Sekunde"
+  },
+  "MessageYears": {
+    "en": "Years",
+    "nl": "Jaren",
+    "de": "Jahre"
+  },
+  "MessageMonths": {
+    "en": "Months",
+    "nl": "Maanden",
+    "de": "Monate"
+  },
+  "MessageDays": {
+    "en": "Days",
+    "nl": "Dagen",
+    "de": "Tage"
+  },
+  "MessageHours": {
+    "en": "Hours",
+    "nl": "Uren",
+    "de": "Stunden"
+  },
+  "MessageMinutes": {
+    "en": "Minutes",
+    "nl": "Minuten",
+    "de": "Minuten"
+  },
+  "MessageSeconds": {
+    "en": "Seconds",
+    "nl": "Seconden",
+    "de": "Sekunden"
+  },
   "MessageDate": {
     "en": "Day",
     "nl": "Dag",
@@ -1083,6 +1133,126 @@
     "en": "Select a pattern to see a preview",
     "nl": "Selecteer een patroon om een voorbeeld te zien",
     "de": "Wählen Sie ein Muster, um eine Vorschau zu sehen"
+  },
+  "MessageShiftPhotoTime": {
+    "en": "Shift Photo Time",
+    "nl": "Tijdstip van foto’s corrigeren",
+    "de": "Foto-Zeitstempel anpassen"
+  },
+  "MessageYouHaveSelected": {
+    "en": "You have selected",
+    "nl": "Je hebt geselecteerd",
+    "de": "Sie haben ausgewählt"
+  },
+  "MessageWhatDoYouWantToDo": {
+    "en": "What do you want to do?",
+    "nl": "Wat wil je doen?",
+    "de": "Was möchten Sie tun?"
+  },
+  "MessageImage": {
+    "en": "image",
+    "nl": "afbeelding",
+    "de": "Bild"
+  },
+  "MessageImages": {
+    "en": "images",
+    "nl": "afbeeldingen",
+    "de": "Bilder"
+  },
+  "MessageCorrectIncorrectCameraTimezone": {
+    "en": "Correct incorrect camera timezone",
+    "nl": "Corrigeer onjuiste cameratiijdzone",
+    "de": "Korrigieren Sie die falsche Kamerazeitzone"
+  },
+  "MessageCameraClockWrongTimezone": {
+    "en": "The camera clock was set to the wrong timezone",
+    "nl": "De cameraklok stond op de verkeerde tijdzone",
+    "de": "Die Kamerauhr war auf die falsche Zeitzone eingestellt"
+  },
+  "MessageIMovedToDifferentPlace": {
+    "en": "I stayed in a different place",
+    "nl": "Ik verbleef op een andere plek",
+    "de": "Ich habe an einem anderen Ort gewohnt"
+  },
+  "MessageITraveledAndTookPhotosInAnotherLocation": {
+    "en": "I traveled and took photos in another location.",
+    "nl": "Ik reisde en maakte foto's op een andere locatie.",
+    "de": "Ich reiste und machte Fotos an einem anderen Ort."
+  },
+  "MessageCorrectCameraTime": {
+    "en": "Correct Camera Time",
+    "nl": "Corrigeer cameraklok",
+    "de": "Korrigieren Sie die Kamerauhr"
+  },
+  "MessageTimeOffsetsRelativeToOriginalTimestamp": {
+    "en": "Time offsets (relative to original timestamp)",
+    "nl": "Tijdverschuivingen (relatief ten opzichte van de oorspronkelijke tijdstempel)",
+    "de": "Zeitverschiebungen (relativ zum ursprünglichen Zeitstempel)"
+  },
+  "MessagePreview": {
+    "en": "Preview",
+    "nl": "Voorbeeld",
+    "de": "Vorschau"
+  },
+  "MessageOriginal": {
+    "en": "Original",
+    "nl": "Oorspronkelijk",
+    "de": "Original"
+  },
+  "MessageNewTimeResult": {
+    "en": "New time result",
+    "nl": "Nieuw tijdresultaat",
+    "de": "Neues Zeitresultat"
+  },
+  "MessageAppliedShift": {
+    "en": "Applied Shift",
+    "nl": "Toegepaste verschuiving",
+    "de": "Angewandte Verschiebung"
+  },
+  "MessageBack": {
+    "en": "Back",
+    "nl": "Terug",
+    "de": "Zurück"
+  },
+  "MessageApplyShift": {
+    "en": "Apply Shift",
+    "nl": "Pas verschuiving toe",
+    "de": "Verschiebung anwenden"
+  },
+  "MessageChangeLocation": {
+    "en": "Change Location",
+    "nl": "Locatie wijzigen",
+    "de": "Standort ändern"
+  },
+  "MessageSearchOrSelect": {
+    "en": "Search or select...",
+    "nl": "Zoek of selecteer...",
+    "de": "Suchen oder auswählen..."
+  },
+  "MessageNoResultsFound": {
+    "en": "No results found",
+    "nl": "Geen resultaten gevonden",
+    "de": "Keine Ergebnisse gefunden"
+  },
+  "MessageOriginalCity": {
+    "en": "Original city",
+    "nl": "Oorspronkelijke stad",
+    "de": "Ursprüngliche Stadt"
+  },
+  "MessageNewCity": {
+    "en": "New city",
+    "nl": "Nieuwe stad",
+    "de": "Neue Stadt"
+  },
+  "MessageDstAware": {
+    "en": "Daylight Saving Time-aware",
+    "nl": "Zomertijd- & wintertijd-bewust",
+    "de": "Sommer & Winterzeit-bewusst"
+  },
+  "temp1": {
+    "en": ".",
+    "nl": ".",
+    "de": "."
   },
   "temp1": {
     "en": ".",

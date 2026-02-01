@@ -468,6 +468,38 @@ export class UrlQuery {
     return "https://docs.qdraw.nl/docs/getting-started/first-steps";
   }
 
+  /**
+   * Preview timezone shift
+   */
+  public UrlTimezonePreview(): string {
+    return this.prefix + "/api/meta-time-correct/timezone-preview";
+  }
+
+  /**
+   * Execute timezone shift
+   */
+  public UrlTimezoneExecute(): string {
+    return this.prefix + "/api/meta-time-correct/timezone-execute";
+  }
+
+  /**
+   * Preview offset shift
+   */
+  public UrlOffsetPreview(): string {
+    return this.prefix + "/api/meta-time-correct/offset-preview";
+  }
+
+  /**
+   * Execute offset shift
+   */
+  public UrlOffsetExecute(): string {
+    return this.prefix + "/api/meta-time-correct/offset-execute";
+  }
+
+  public UrlGeoLocationNameCityTimezone(dateTime: string, city: string): string {
+    return `${this.prefix}/api/geo-location-name/city-timezone?dateTime=${encodeURIComponent(dateTime)}&city=${encodeURIComponent(city)}`;
+  }
+
   private urlReplacePath(input: string): string {
     const output = input.replaceAll("#", "");
     return output.replaceAll("+", "%2B");

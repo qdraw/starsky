@@ -36,6 +36,8 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 	/// </summary>
 	public virtual DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
 
+	public DbSet<GeoNameCity> GeoNameCities { get; set; }
+
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{
 		// Do nothing because of that in debug mode this only triggered
@@ -51,6 +53,8 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 		const string utf8Mb4 = "utf8mb4";
 		const string mySqlCharSetAnnotation = "MySql:CharSet";
 		const string mySqlValueGeneratedOnAdd = "MySql:ValueGeneratedOnAdd";
+		const string sqliteAutoincrement = "Sqlite:Autoincrement";
+		const string mysqlValuegenerationstrategy = "MySql:ValueGenerationStrategy";
 
 		// does not have direct effect
 		modelBuilder.HasCharSet(utf8Mb4,
@@ -192,9 +196,9 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 				etb.HasKey(e => e.Id);
 				etb.Property(e => e.Id)
 					.ValueGeneratedOnAdd()
-					.HasAnnotation("MySql:ValueGeneratedOnAdd", true)
-					.HasAnnotation("Sqlite:Autoincrement", true)
-					.HasAnnotation("MySql:ValueGenerationStrategy",
+					.HasAnnotation(mySqlValueGeneratedOnAdd, true)
+					.HasAnnotation(sqliteAutoincrement, true)
+					.HasAnnotation(mysqlValuegenerationstrategy,
 						MySqlValueGenerationStrategy.IdentityColumn);
 
 				etb.Property(p => p.Content)
@@ -238,7 +242,7 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 				etb.HasKey(e => e.Id);
 				etb.Property(e => e.Id)
 					.ValueGeneratedOnAdd()
-					.HasAnnotation("MySql:ValueGeneratedOnAdd", true);
+					.HasAnnotation(mySqlValueGeneratedOnAdd, true);
 
 				etb.Property(e => e.Xml).HasMaxLength(1200);
 				etb.Property(e => e.FriendlyName).HasMaxLength(45);
@@ -251,13 +255,27 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 				etb.HasKey(e => e.FileHash);
 
 				etb.ToTable("Thumbnails");
-				etb.HasAnnotation("MySql:CharSet", "utf8mb4");
+				etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
 
 				// Add composite index for performance on GetMissingThumbnailsBatchInternalAsync
 				// FileHash is excluded as it's already the primary key
 				// This keeps the index size under MariaDB's 3072 byte limit
 				etb.HasIndex(e => new { e.ExtraLarge, e.Large, e.Small })
 					.HasDatabaseName("IX_Thumbnails_Missing");
+			}
+		);
+
+		modelBuilder.Entity<GeoNameCity>(etb =>
+			{
+				etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
+				etb.ToTable("GeoNameCities");
+
+				etb.Property(e => e.GeonameId)
+					.ValueGeneratedNever()
+					.HasAnnotation(mySqlValueGeneratedOnAdd, false)
+					.HasAnnotation(sqliteAutoincrement, false)
+					.HasAnnotation(mysqlValuegenerationstrategy,
+						MySqlValueGenerationStrategy.IdentityColumn);
 			}
 		);
 	}
