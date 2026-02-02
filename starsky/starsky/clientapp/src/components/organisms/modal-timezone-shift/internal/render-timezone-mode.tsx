@@ -8,6 +8,7 @@ import { URLPath } from "../../../../shared/url/url-path";
 import Preloader from "../../../atoms/preloader/preloader";
 import SearchableDropdown from "../../../atoms/searchable-dropdown";
 import { IPreviewState } from "../hooks/use-preview-state";
+import { ShiftMode } from "../hooks/use-shift-mode";
 import { ITimezoneState } from "../hooks/use-timezone-state";
 import { executeShift } from "./execute-shift";
 import { fetchCityTimezones } from "./fetch-city-timezones";
@@ -25,6 +26,7 @@ export interface IRenderTimezoneModeProps {
   historyLocationSearch: string;
   undoSelection: () => void;
   collections: boolean;
+  setCurrentStep?: (step: ShiftMode) => void;
 }
 
 export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
@@ -38,7 +40,8 @@ export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
     dispatch,
     historyLocationSearch,
     undoSelection,
-    collections
+    collections,
+    setCurrentStep
   } = props;
   const {
     preview,
@@ -171,26 +174,56 @@ export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
           </button>
           <button
             className="btn btn--default"
-            onClick={() =>
-              executeShift(
-                {
-                  select,
-                  state,
-                  isOffset: false,
-                  timezoneData: {
-                    recordedTimezoneId,
-                    correctTimezoneId
+            onClick={async () => {
+              if (setCurrentStep) {
+                // Execute shift first, then navigate to rename step
+                setIsExecuting(true);
+                const success = await executeShift(
+                  {
+                    select,
+                    state,
+                    isOffset: false,
+                    timezoneData: {
+                      recordedTimezoneId,
+                      correctTimezoneId
+                    },
+                    historyLocationSearch
                   },
-                  historyLocationSearch
-                },
-                setIsExecuting,
-                setError,
-                handleExit,
-                undoSelection,
-                dispatch,
-                collections
-              )
-            }
+                  () => {}, // Don't update executing state from here
+                  () => {}, // Don't update error from here
+                  () => {}, // Don't exit yet
+                  () => {}, // Don't undo selection yet
+                  dispatch,
+                  collections
+                );
+                setIsExecuting(false);
+                if (success !== false) {
+                  // Defer navigation to next tick to avoid hook errors
+                  setTimeout(() => {
+                    setCurrentStep("file-rename-timezone");
+                  }, 0);
+                }
+              } else {
+                executeShift(
+                  {
+                    select,
+                    state,
+                    isOffset: false,
+                    timezoneData: {
+                      recordedTimezoneId,
+                      correctTimezoneId
+                    },
+                    historyLocationSearch
+                  },
+                  setIsExecuting,
+                  setError,
+                  handleExit,
+                  undoSelection,
+                  dispatch,
+                  collections
+                );
+              }
+            }}
             disabled={
               isExecuting ||
               preview.timezoneData.length === 0 ||
@@ -199,7 +232,9 @@ export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
           >
             {isExecuting
               ? language.key(localization.MessageLoading)
-              : language.key(localization.MessageApplyShift)}{" "}
+              : setCurrentStep
+                ? language.key(localization.MessageNext)
+                : language.key(localization.MessageApplyShift)}{" "}
           </button>
         </div>
       </div>

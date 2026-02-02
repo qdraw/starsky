@@ -361,11 +361,11 @@ describe("ModalTimezoneShift", () => {
       data: mockExecuteResponse.data
     });
 
-    // Step 6: Click "Apply Shift" button
-    const applyButton = screen.getByText(/Apply Shift/i);
+    // Step 6: Click "Next" button to go to rename step
+    const nextButton = screen.getByText(/Next/i);
 
     await act(async () => {
-      fireEvent.click(applyButton);
+      fireEvent.click(nextButton);
     });
 
     // Step 7: Verify execution was called and modal exits
@@ -504,21 +504,56 @@ describe("ModalTimezoneShift", () => {
       // Verify the preview API was called
       expect(postSpy).toHaveBeenCalled();
 
-      // Step 4: Mock execute-shift response
+      // Step 4: Mock rename preview response
+      const mockRenamePreview = [
+        {
+          sourceFilePath: "/test.jpg",
+          targetFilePath: "/test_renamed.jpg",
+          hasError: false,
+          errorMessage: "",
+          warning: "",
+          fileIndexItem: mockExecuteResponse.data[0]
+        }
+      ];
+
+      postSpy.mockResolvedValueOnce({
+        statusCode: 200,
+        data: mockRenamePreview
+      });
+
+      // Step 5: Click "Next" button to go to rename step
+      const nextButton = screen.getByText(/Next/i);
+      expect(nextButton).not.toBeDisabled();
+
+      await act(async () => {
+        fireEvent.click(nextButton);
+      });
+
+      // Wait for rename step to load
+      await waitFor(() => {
+        expect(screen.getByText(/Rename Files/i)).toBeTruthy();
+      });
+
+      // Step 6: Mock execute-shift response and uncheck rename
       postSpy.mockResolvedValueOnce({
         statusCode: 200,
         data: mockExecuteResponse.data
       });
 
-      // Step 5: Click "Apply Shift" button
+      // Uncheck the rename checkbox to skip rename
+      const renameCheckbox = screen.getByRole("checkbox");
+      await act(async () => {
+        fireEvent.click(renameCheckbox);
+      });
+
+      // Step 7: Click "Apply Shift" button (shows when rename is unchecked)
       const applyButton = screen.getByText(/Apply Shift/i);
-      expect(applyButton).not.toBeDisabled();
 
       await act(async () => {
         fireEvent.click(applyButton);
       });
 
-      // Step 6: Verify execution was called and modal exits
+      // Step 8: Verify execution was called and modal exits
       await act(async () => {
         await new Promise((resolve) => setTimeout(resolve, 100));
       });
@@ -625,21 +660,56 @@ describe("ModalTimezoneShift", () => {
     // Verify the preview API was called
     expect(postSpy).toHaveBeenCalled();
 
-    // Step 4: Mock execute-shift response
+    // Step 4: Mock rename preview response
+    const mockRenamePreview = [
+      {
+        sourceFilePath: "/test.jpg",
+        targetFilePath: "/test_renamed.jpg",
+        hasError: false,
+        errorMessage: "",
+        warning: "",
+        fileIndexItem: mockExecuteResponse.data[0]
+      }
+    ];
+
+    postSpy.mockResolvedValueOnce({
+      statusCode: 200,
+      data: mockRenamePreview
+    });
+
+    // Step 5: Click "Next" button to go to rename step
+    const nextButton = screen.getByText(/Next/i);
+    expect(nextButton).not.toBeDisabled();
+
+    await act(async () => {
+      fireEvent.click(nextButton);
+    });
+
+    // Wait for rename step to load
+    await waitFor(() => {
+      expect(screen.getByText(/Rename Files/i)).toBeTruthy();
+    });
+
+    // Step 6: Mock execute-shift response and uncheck rename
     postSpy.mockResolvedValueOnce({
       statusCode: 200,
       data: mockExecuteResponse.data
     });
 
-    // Step 5: Click "Apply Shift" button
-    const applyButton = screen.getByText(/Apply Shift/i);
-    expect(applyButton).not.toBeDisabled();
-
+    // Uncheck the rename checkbox to skip rename
+    const renameCheckbox = screen.getByRole("checkbox");
     await act(async () => {
-      fireEvent.click(applyButton);
+      fireEvent.click(renameCheckbox);
     });
 
-    // Step 6: Verify execution was called and modal exits
+    // Step 7: Click "Finish" button
+    const finishButton = screen.getByText(/Finish/i);
+
+    await act(async () => {
+      fireEvent.click(finishButton);
+    });
+
+    // Step 8: Verify execution was called and modal exits
     await act(async () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
     });

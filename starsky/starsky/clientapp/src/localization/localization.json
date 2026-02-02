@@ -1249,6 +1249,51 @@
     "nl": "Zomertijd- & wintertijd-bewust",
     "de": "Sommer & Winterzeit-bewusst"
   },
+  "MessageRenameFiles": {
+    "en": "Rename Files",
+    "nl": "Bestanden hernoemen",
+    "de": "Dateien umbenennen"
+  },
+  "MessageRenameFilesAfterShiftingTimestamps": {
+    "en": "Rename files after shifting timestamps",
+    "nl": "Bestanden hernoemen na tijdstempel verschuiving",
+    "de": "Dateien nach Zeitstempelverschiebung umbenennen"
+  },
+  "MessagePreviewListOfFiles": {
+    "en": "Preview list of files",
+    "nl": "Voorbeeldlijst van bestanden",
+    "de": "Vorschau der Dateiliste"
+  },
+  "MessageOriginalFilename": {
+    "en": "Original filename",
+    "nl": "Originele bestandsnaam",
+    "de": "Ursprünglicher Dateiname"
+  },
+  "MessageNewFilename": {
+    "en": "New filename",
+    "nl": "Nieuwe bestandsnaam",
+    "de": "Neuer Dateiname"
+  },
+  "MessageExistingFilenamesWillBeReplaced": {
+    "en": "Existing filenames will be replaced",
+    "nl": "Bestaande bestandsnamen worden vervangen",
+    "de": "Vorhandene Dateinamen werden ersetzt"
+  },
+  "MessageReplace": {
+    "en": "Replace",
+    "nl": "Vervangen",
+    "de": "Ersetzen"
+  },
+  "MessageSomeFilesHaveErrors": {
+    "en": "Some files have errors",
+    "nl": "Sommige bestanden hebben fouten",
+    "de": "Einige Dateien haben Fehler"
+  },
+  "MessageFinish": {
+    "en": "Finish",
+    "nl": "Voltooien",
+    "de": "Fertig"
+  },
   "temp1": {
     "en": ".",
     "nl": ".",

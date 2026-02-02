@@ -7,6 +7,7 @@ import { Language } from "../../../../shared/language";
 import Preloader from "../../../atoms/preloader/preloader";
 import { useOffsetState } from "../hooks/use-offset-state";
 import { IPreviewState } from "../hooks/use-preview-state";
+import { ShiftMode } from "../hooks/use-shift-mode";
 import { executeShift } from "./execute-shift";
 import { formatOffsetLabel } from "./format-offset-label";
 import { generateOffsetPreview } from "./generate-offset-preview";
@@ -23,6 +24,7 @@ export interface IRenderTimezoneModeProps {
   historyLocationSearch: string;
   undoSelection: () => void;
   collections: boolean;
+  setCurrentStep?: (step: ShiftMode) => void;
 }
 
 export function renderOffsetMode(props: IRenderTimezoneModeProps) {
@@ -36,7 +38,8 @@ export function renderOffsetMode(props: IRenderTimezoneModeProps) {
     dispatch,
     historyLocationSearch,
     undoSelection,
-    collections
+    collections,
+    setCurrentStep
   } = props;
   const {
     offsetYears,
@@ -264,30 +267,64 @@ export function renderOffsetMode(props: IRenderTimezoneModeProps) {
           </button>
           <button
             className="btn btn--default"
-            onClick={() =>
-              executeShift(
-                {
-                  select,
-                  state,
-                  isOffset: true,
-                  offsetData: {
-                    year: offsetYears,
-                    month: offsetMonths,
-                    day: offsetDays,
-                    hour: offsetHours,
-                    minute: offsetMinutes,
-                    second: offsetSeconds
+            onClick={async () => {
+              if (setCurrentStep) {
+                // Execute shift first, then navigate to rename step
+                setIsLoadingPreview(true);
+                const success = await executeShift(
+                  {
+                    select,
+                    state,
+                    isOffset: true,
+                    offsetData: {
+                      year: offsetYears,
+                      month: offsetMonths,
+                      day: offsetDays,
+                      hour: offsetHours,
+                      minute: offsetMinutes,
+                      second: offsetSeconds
+                    },
+                    historyLocationSearch: historyLocationSearch
                   },
-                  historyLocationSearch: historyLocationSearch
-                },
-                setIsLoadingPreview,
-                setError,
-                handleExit,
-                undoSelection,
-                dispatch,
-                collections
-              )
-            }
+                  () => {}, // Don't update loading state from here
+                  () => {}, // Don't update error from here
+                  () => {}, // Don't exit yet
+                  () => {}, // Don't undo selection yet
+                  dispatch,
+                  collections
+                );
+                setIsLoadingPreview(false);
+                if (success !== false) {
+                  // Defer navigation to next tick to avoid hook errors
+                  setTimeout(() => {
+                    setCurrentStep("file-rename-offset");
+                  }, 0);
+                }
+              } else {
+                executeShift(
+                  {
+                    select,
+                    state,
+                    isOffset: true,
+                    offsetData: {
+                      year: offsetYears,
+                      month: offsetMonths,
+                      day: offsetDays,
+                      hour: offsetHours,
+                      minute: offsetMinutes,
+                      second: offsetSeconds
+                    },
+                    historyLocationSearch: historyLocationSearch
+                  },
+                  setIsLoadingPreview,
+                  setError,
+                  handleExit,
+                  undoSelection,
+                  dispatch,
+                  collections
+                );
+              }
+            }}
             disabled={
               isExecuting ||
               preview.offsetData.length === 0 ||
@@ -296,7 +333,9 @@ export function renderOffsetMode(props: IRenderTimezoneModeProps) {
           >
             {isExecuting
               ? language.key(localization.MessageLoading)
-              : language.key(localization.MessageApplyShift)}
+              : setCurrentStep
+                ? language.key(localization.MessageNext)
+                : language.key(localization.MessageApplyShift)}
           </button>
         </div>
       </div>
