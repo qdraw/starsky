@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using starsky.feature.rename.DateTimeRepair.Helpers;
 using starsky.feature.rename.DateTimeRepair.Models;
+using starsky.feature.rename.Helpers;
 using starsky.feature.rename.Models;
 using starsky.feature.rename.RelatedFilePaths;
 using starsky.foundation.database.Helpers;
@@ -28,62 +29,6 @@ public class FilenameDatetimeRepairService(
 	IWebLogger logger,
 	AppSettings appSettings)
 {
-	private Dictionary<string, FileIndexItem> FileItemsQuery(List<string> filePaths,
-		bool collections, List<FilenameDatetimeRepairMapping> mappings)
-	{
-		var fileItems = new Dictionary<string, FileIndexItem>();
-
-		foreach ( var filePath in filePaths )
-		{
-			try
-			{
-				var detailView = query.SingleItem(filePath,
-					null, collections);
-				if ( detailView?.FileIndexItem == null )
-				{
-					mappings.Add(new FilenameDatetimeRepairMapping
-					{
-						SourceFilePath = filePath,
-						HasError = true,
-						ErrorMessage = "File not found in database"
-					});
-					continue;
-				}
-
-				fileItems[filePath] = detailView.FileIndexItem;
-				if ( !collections )
-				{
-					continue;
-				}
-
-				foreach ( var collectionPath in detailView.FileIndexItem!.CollectionPaths.Where(p =>
-					         p != filePath) )
-				{
-					if ( fileItems.ContainsKey(collectionPath) )
-					{
-						// when explicit adding files skip
-						continue;
-					}
-
-					// implicit flow
-					var collectionFileIndexItem = query.SingleItem(collectionPath,
-						null, false, false)!.FileIndexItem;
-					if ( collectionFileIndexItem != null )
-					{
-						fileItems[collectionPath] = collectionFileIndexItem;
-					}
-				}
-			}
-			catch ( Exception )
-			{
-				logger.LogError(
-					$"[FilenameDatetimeRepairMapping]: Failed to get item for {filePath}");
-			}
-		}
-
-		return fileItems;
-	}
-
 	/// <summary>
 	///     Preview filename datetime repair for a list of file paths
 	/// </summary>
@@ -93,9 +38,12 @@ public class FilenameDatetimeRepairService(
 		bool collections = true)
 	{
 		var mappings = new List<FilenameDatetimeRepairMapping>();
+		var fileItemsQuery = new FileItemsQueryHelpers(query, logger);
 
-		var fileItems = FileItemsQuery(filePaths, collections, mappings);
-		var validMappings = GenerateValidMappings(correctionRequest,
+		var fileItems = fileItemsQuery.FileItemsQuery(
+			filePaths, collections, mappings);
+		var validMappings = 
+			GenerateValidMappings(correctionRequest,
 			fileItems, collections, mappings);
 
 		mappings.AddRange(validMappings);

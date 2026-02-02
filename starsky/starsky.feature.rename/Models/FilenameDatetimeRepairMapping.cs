@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using starsky.feature.rename.Helpers;
 using starsky.foundation.database.Models;
 
 namespace starsky.feature.rename.Models;
@@ -7,7 +8,7 @@ namespace starsky.feature.rename.Models;
 /// <summary>
 ///     Result model for filename datetime repair preview
 /// </summary>
-public class FilenameDatetimeRepairMapping
+public class FilenameDatetimeRepairMapping : IFileItemQuery
 {
 	/// <summary>
 	///     Source file path

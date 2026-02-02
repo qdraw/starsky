@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using starsky.feature.rename.Helpers;
 
 namespace starsky.feature.rename.Models;
 
 /// <summary>
 ///     Represents a single file rename mapping in a batch rename operation
 /// </summary>
-public class BatchRenameMapping
+public class BatchRenameMapping : IFileItemQuery
 {
 	/// <summary>
 	///     Original file path (subPath style, e.g., /folder/filename.jpg)

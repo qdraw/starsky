@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using starsky.feature.rename.Helpers;
 using starsky.feature.rename.Models;
 using starsky.feature.rename.RelatedFilePaths;
 using starsky.foundation.database.Helpers;
@@ -51,7 +52,9 @@ public class BatchRenameService(
 
 		// Get all file items from database
 		var mappings = new List<BatchRenameMapping>();
-		var fileItems = FileItemsQuery(filePaths, collections, mappings);
+		var fileItemsQuery = new FileItemsQueryHelpers(query, logger);
+		var fileItems =
+			fileItemsQuery.FileItemsQuery(filePaths, collections, mappings);
 
 		// Generate mappings for valid files
 		var validMappings = GenerateValidMappings(
@@ -62,61 +65,6 @@ public class BatchRenameService(
 
 		mappings.AddRange(validMappings);
 		return mappings;
-	}
-
-	private Dictionary<string, FileIndexItem> FileItemsQuery(List<string> filePaths,
-		bool collections, List<BatchRenameMapping> mappings)
-	{
-		var fileItems = new Dictionary<string, FileIndexItem>();
-
-		foreach ( var filePath in filePaths )
-		{
-			try
-			{
-				var detailView = query.SingleItem(filePath,
-					null, collections, false);
-				if ( detailView?.FileIndexItem == null )
-				{
-					mappings.Add(new BatchRenameMapping
-					{
-						SourceFilePath = filePath,
-						HasError = true,
-						ErrorMessage = "File not found in database"
-					});
-					continue;
-				}
-
-				fileItems[filePath] = detailView.FileIndexItem;
-				if ( !collections )
-				{
-					continue;
-				}
-
-				foreach ( var collectionPath in detailView.FileIndexItem!.CollectionPaths.Where(p =>
-					         p != filePath) )
-				{
-					if ( fileItems.ContainsKey(collectionPath) )
-					{
-						// when explicit adding files skip
-						continue;
-					}
-
-					// implicit flow
-					var collectionFileIndexItem = query.SingleItem(collectionPath,
-						null, false, false)!.FileIndexItem;
-					if ( collectionFileIndexItem != null )
-					{
-						fileItems[collectionPath] = collectionFileIndexItem;
-					}
-				}
-			}
-			catch ( Exception )
-			{
-				logger.LogError($"PreviewBatchRename: Failed to get item for {filePath}");
-			}
-		}
-
-		return fileItems;
 	}
 
 	private List<BatchRenameMapping> GenerateValidMappings(

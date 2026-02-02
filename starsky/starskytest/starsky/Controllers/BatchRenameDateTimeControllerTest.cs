@@ -110,7 +110,7 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 
 		var request = new FilenameDatetimeRepairRequest<ExifTimezoneBasedCorrectionRequest>
 		{
-			FilePaths = ["/test/image.jpg"], Collections = true, CorrectionRequest = null
+			FilePaths = ["/test/image.jpg"], Collections = true, CorrectionRequest = null!
 		};
 
 		// Act
@@ -218,7 +218,7 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 
 		var request = new FilenameDatetimeRepairRequest<ExifCustomOffsetCorrectionRequest>
 		{
-			FilePaths = ["/test/image.jpg"], Collections = true, CorrectionRequest = null
+			FilePaths = ["/test/image.jpg"], Collections = true, CorrectionRequest = null!
 		};
 
 		// Act
