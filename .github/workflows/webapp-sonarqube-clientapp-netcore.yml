@@ -59,7 +59,7 @@ jobs:
           architecture: x64 # (x64 or x86) - defaults to x64
 
       - name: Cache node modules clientapp (*nix)
-        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
@@ -68,7 +68,7 @@ jobs:
             ${{ runner.os }}-build-clientapp-
 
       - name: Cache nuget packages (*nix)
-        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306
         with:
           # nuget cache files are stored in `~/.nuget/packages` on Linux/macOS
           path: ~/.nuget/packages
@@ -77,7 +77,7 @@ jobs:
             ${{ runner.os }}-build-netcore-
 
       - name: Cache sonarqube packages (*nix)
-        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306
         with:
           # nuget cache files are stored in `~/.sonar` on Linux/macOS
           path: ~/.sonar
