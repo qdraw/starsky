@@ -1,10 +1,8 @@
-import { useEffect } from "react";
 import { ArchiveAction } from "../../../../contexts/archive-context";
 import useGlobalSettings from "../../../../hooks/use-global-settings";
 import { IArchiveProps } from "../../../../interfaces/IArchiveProps";
 import {
   IBatchRenameOffsetRequest,
-  IBatchRenameResult,
   IBatchRenameTimezoneRequest
 } from "../../../../interfaces/IBatchRename";
 import { IFileIndexItem } from "../../../../interfaces/IFileIndexItem";
@@ -73,53 +71,6 @@ export function renderFileRenameMode(props: IRenderFileRenameModeProps) {
   const language = new Language(settings.language);
 
   const filePathList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
-
-  // Load preview when component mounts
-  useEffect(() => {
-    const loadPreview = async () => {
-      setIsLoadingRename(true);
-      setRenameError(null);
-
-      try {
-        let url: string;
-        let body: IBatchRenameOffsetRequest | IBatchRenameTimezoneRequest;
-
-        if (mode === "offset" && offsetData) {
-          url = new UrlQuery().UrlBatchRenameOffsetPreview();
-          body = {
-            filePaths: filePathList,
-            collections,
-            correctionRequest: offsetData
-          };
-        } else if (mode === "timezone" && timezoneData) {
-          url = new UrlQuery().UrlBatchRenameTimezonePreview();
-          body = {
-            filePaths: filePathList,
-            collections,
-            correctionRequest: timezoneData
-          };
-        } else {
-          setRenameError("Invalid mode or missing data");
-          setIsLoadingRename(false);
-          return;
-        }
-
-        const result = await FetchPost(url, JSON.stringify(body));
-
-        if (result.statusCode === 200 && result.data) {
-          setRenamePreview(result.data as IBatchRenameResult[]);
-        } else {
-          setRenameError("Failed to load preview");
-        }
-      } catch {
-        setRenameError(language.key(localization.MessageErrorGenericFail));
-      } finally {
-        setIsLoadingRename(false);
-      }
-    };
-
-    loadPreview();
-  }, []);
 
   const handleExecuteRename = async () => {
     if (!shouldRename) {

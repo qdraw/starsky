@@ -10,10 +10,12 @@ import SearchableDropdown from "../../../atoms/searchable-dropdown";
 import { IPreviewState } from "../hooks/use-preview-state";
 import { ShiftMode } from "../hooks/use-shift-mode";
 import { ITimezoneState } from "../hooks/use-timezone-state";
+import { IFileRenameState } from "../hooks/use-file-rename-state";
 import { executeShift } from "./execute-shift";
 import { fetchCityTimezones } from "./fetch-city-timezones";
 import { generateTimezonePreview } from "./generate-timezone-preview";
 import { PreviewErrorFiles } from "./preview-error-files";
+import { loadRenamePreview } from "./load-rename-preview";
 
 export interface IRenderTimezoneModeProps {
   select: string[];
@@ -27,6 +29,7 @@ export interface IRenderTimezoneModeProps {
   undoSelection: () => void;
   collections: boolean;
   setCurrentStep?: (step: ShiftMode) => void;
+  fileRenameState?: IFileRenameState;
 }
 
 export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
@@ -41,7 +44,8 @@ export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
     historyLocationSearch,
     undoSelection,
     collections,
-    setCurrentStep
+    setCurrentStep,
+    fileRenameState
   } = props;
   const {
     preview,
@@ -197,7 +201,21 @@ export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
                   collections
                 );
                 setIsExecuting(false);
-                if (success !== false) {
+                if (success !== false && fileRenameState) {
+                  // Load rename preview, then navigate
+                  await loadRenamePreview({
+                    mode: "timezone",
+                    select,
+                    state,
+                    collections,
+                    timezoneData: {
+                      recordedTimezoneId,
+                      correctTimezoneId
+                    },
+                    setIsLoadingRename: fileRenameState.setIsLoadingRename,
+                    setRenamePreview: fileRenameState.setRenamePreview,
+                    setRenameError: fileRenameState.setRenameError
+                  });
                   // Defer navigation to next tick to avoid hook errors
                   setTimeout(() => {
                     setCurrentStep("file-rename-timezone");

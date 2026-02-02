@@ -85,7 +85,8 @@ const ModalTimezoneShift: React.FunctionComponent<IModalTimezoneShiftProps> = ({
             historyLocationSearch,
             undoSelection,
             collections,
-            setCurrentStep
+            setCurrentStep,
+            fileRenameState
           })}
         {currentStep === "timezone" &&
           renderTimezoneMode({
@@ -99,7 +100,8 @@ const ModalTimezoneShift: React.FunctionComponent<IModalTimezoneShiftProps> = ({
             historyLocationSearch,
             undoSelection,
             collections,
-            setCurrentStep
+            setCurrentStep,
+            fileRenameState
           })}
         {currentStep === "file-rename-offset" &&
           renderFileRenameMode({
