@@ -22,7 +22,6 @@ export interface IRenderFileRenameModeProps {
   state: IArchiveProps;
   fileRenameState: IFileRenameState;
   handleExit: () => void;
-  handleBack: () => void;
   dispatch: React.Dispatch<ArchiveAction>;
   historyLocationSearch: string;
   undoSelection: () => void;
@@ -48,7 +47,6 @@ export const FileRenameMode: React.FC<IRenderFileRenameModeProps> = (props) => {
     state,
     fileRenameState,
     handleExit,
-    handleBack,
     dispatch,
     undoSelection,
     collections,
@@ -200,7 +198,7 @@ export const FileRenameMode: React.FC<IRenderFileRenameModeProps> = (props) => {
 
         <div className="modal-buttons">
           {/* DO NOT Implement handleback because then you re-apply the excute-shift */}
-          <button className="btn btn--info" onClick={handleBack}>
+          <button className="btn btn--info" disabled={true}>
             {language.key(localization.MessageBack)}
           </button>
           <button
