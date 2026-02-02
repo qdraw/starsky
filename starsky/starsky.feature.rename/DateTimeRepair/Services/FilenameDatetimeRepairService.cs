@@ -183,6 +183,11 @@ public class FilenameDatetimeRepairService(
 					continue;
 				}
 
+				// Clone the original FileIndexItem and set status to Deleted
+				var deletedItem = mapping.FileIndexItem.Clone();
+				deletedItem.Status = FileIndexItem.ExifStatus.Deleted;
+				results.Add(deletedItem);
+
 				// Rename file using SubPath storage 
 				storage.FileMove(mapping.SourceFilePath, mapping.TargetFilePath);
 
@@ -190,6 +195,7 @@ public class FilenameDatetimeRepairService(
 				mapping.FileIndexItem.FileName =
 					FilenamesHelper.GetFileName(mapping.TargetFilePath);
 				mapping.FileIndexItem.FilePath = mapping.TargetFilePath;
+				mapping.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 
 				await query.UpdateItemAsync(mapping.FileIndexItem);
 
@@ -204,6 +210,9 @@ public class FilenameDatetimeRepairService(
 						}
 					}
 				}
+				
+				// Reset Cache for the item that is renamed
+				query.ResetItemByHash(mapping.FileIndexItem!.FileHash!);
 
 				logger.LogInformation(
 					$"[FilenameDatetimeRepair] Renamed: " +

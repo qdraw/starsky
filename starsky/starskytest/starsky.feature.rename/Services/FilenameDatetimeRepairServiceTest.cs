@@ -392,9 +392,19 @@ public class FilenameDatetimeRepairServiceTest
 		var result = await sut.ExecuteRepairAsync(mappings);
 
 		// Assert
-		Assert.HasCount(1, result);
-		Assert.AreEqual("20240313_021530_IMG_001.jpg", result[0].FileName);
-		Assert.AreEqual("/test/20240313_021530_IMG_001.jpg", result[0].FilePath);
+		Assert.HasCount(2, result, "Should return both deleted and new item");
+
+		var deleted = result.FirstOrDefault(x => x.Status == FileIndexItem.ExifStatus.Deleted);
+		var ok = result.FirstOrDefault(x => x.Status == FileIndexItem.ExifStatus.Ok);
+
+		Assert.IsNotNull(deleted, "Deleted item should be present");
+		Assert.IsNotNull(ok, "Ok item should be present");
+
+		Assert.AreEqual("20240313_011530_IMG_001.jpg", deleted.FileName);
+		Assert.AreEqual("/test/20240313_011530_IMG_001.jpg", deleted.FilePath);
+
+		Assert.AreEqual("20240313_021530_IMG_001.jpg", ok.FileName);
+		Assert.AreEqual("/test/20240313_021530_IMG_001.jpg", ok.FilePath);
 	}
 
 	[TestMethod]
