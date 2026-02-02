@@ -7,15 +7,14 @@ import { Language } from "../../../../shared/language";
 import { URLPath } from "../../../../shared/url/url-path";
 import Preloader from "../../../atoms/preloader/preloader";
 import SearchableDropdown from "../../../atoms/searchable-dropdown";
+import { IFileRenameState } from "../hooks/use-file-rename-state";
 import { IPreviewState } from "../hooks/use-preview-state";
 import { ShiftMode } from "../hooks/use-shift-mode";
 import { ITimezoneState } from "../hooks/use-timezone-state";
-import { IFileRenameState } from "../hooks/use-file-rename-state";
 import { executeShift } from "./execute-shift";
 import { fetchCityTimezones } from "./fetch-city-timezones";
 import { generateTimezonePreview } from "./generate-timezone-preview";
 import { PreviewErrorFiles } from "./preview-error-files";
-import { loadRenamePreview } from "./load-rename-preview";
 
 export interface IRenderTimezoneModeProps {
   select: string[];
@@ -179,7 +178,7 @@ export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
           <button
             className="btn btn--default"
             onClick={async () => {
-              if (setCurrentStep) {
+              if (setCurrentStep && fileRenameState) {
                 // Execute shift first, then navigate to rename step
                 setIsExecuting(true);
                 const success = await executeShift(
@@ -201,25 +200,9 @@ export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
                   collections
                 );
                 setIsExecuting(false);
-                if (success !== false && fileRenameState) {
-                  // Load rename preview, then navigate
-                  await loadRenamePreview({
-                    mode: "timezone",
-                    select,
-                    state,
-                    collections,
-                    timezoneData: {
-                      recordedTimezoneId,
-                      correctTimezoneId
-                    },
-                    setIsLoadingRename: fileRenameState.setIsLoadingRename,
-                    setRenamePreview: fileRenameState.setRenamePreview,
-                    setRenameError: fileRenameState.setRenameError
-                  });
-                  // Defer navigation to next tick to avoid hook errors
-                  setTimeout(() => {
-                    setCurrentStep("file-rename-timezone");
-                  }, 0);
+                if (success !== false) {
+                  // Navigate to rename step - preview will load there
+                  setCurrentStep("file-rename-timezone");
                 }
               } else {
                 executeShift(

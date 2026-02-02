@@ -72,7 +72,9 @@ export async function loadRenamePreview(params: LoadRenamePreviewParams): Promis
       return;
     }
 
-    const result = await FetchPost(url, JSON.stringify(body));
+    const result = await FetchPost(url, JSON.stringify(body), "post", {
+      "Content-Type": "application/json"
+    });
 
     if (result.statusCode === 200 && result.data) {
       setRenamePreview(result.data as IBatchRenameResult[]);

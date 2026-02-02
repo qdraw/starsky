@@ -361,11 +361,47 @@ describe("ModalTimezoneShift", () => {
       data: mockExecuteResponse.data
     });
 
-    // Step 6: Click "Next" button to go to rename step
+    // Step 5b: Mock batch-rename-preview response
+    const mockRenamePreview = [
+      {
+        sourceFilePath: "/test.jpg",
+        targetFilePath: "/test_renamed.jpg",
+        hasError: false,
+        errorMessage: "",
+        warning: "",
+        fileIndexItem: mockExecuteResponse.data[0]
+      }
+    ];
+
+    postSpy.mockResolvedValueOnce({
+      statusCode: 200,
+      data: mockRenamePreview
+    });
+
+    // Step 6: Click "Next" button to execute shift and navigate to rename step
     const nextButton = screen.getByText(/Next/i);
 
     await act(async () => {
       fireEvent.click(nextButton);
+    });
+
+    // Wait for rename step to load
+    await waitFor(() => {
+      const subheader = document.querySelector(".modal.content--subheader");
+      expect(subheader?.textContent).toBe("Rename Files");
+    });
+
+    // Uncheck the rename checkbox to skip rename
+    const renameCheckbox = screen.getByRole("checkbox");
+    await act(async () => {
+      fireEvent.click(renameCheckbox);
+    });
+
+    // Click "Finish" button
+    const finishButton = screen.getByText(/Finish/i);
+
+    await act(async () => {
+      fireEvent.click(finishButton);
     });
 
     // Step 7: Verify execution was called and modal exits
@@ -375,7 +411,8 @@ describe("ModalTimezoneShift", () => {
 
     expect(mockDispatch).toHaveBeenCalled();
 
-    expect(postSpy).toHaveBeenCalledTimes(3);
+    // Now we expect 4 API calls: timezone-preview (2x), timezone-execute, batch-rename-preview
+    expect(postSpy).toHaveBeenCalledTimes(4);
     expect(postSpy).toHaveBeenNthCalledWith(
       1,
       "/starsky/api/meta-time-correct/timezone-preview?f=/test.jpg&collections=true",
@@ -397,6 +434,21 @@ describe("ModalTimezoneShift", () => {
       3,
       "/starsky/api/meta-time-correct/timezone-execute?f=/test.jpg&collections=true",
       '{"recordedTimezoneId":"America/New_York","correctTimezoneId":"Europe/Amsterdam"}',
+      "post",
+      { "Content-Type": "application/json" }
+    );
+
+    expect(postSpy).toHaveBeenNthCalledWith(
+      4,
+      "/starsky/api/batch-rename-datetime/timezone-preview",
+      JSON.stringify({
+        filePaths: ["/test.jpg"],
+        collections: true,
+        correctionRequest: {
+          recordedTimezoneId: "America/New_York",
+          correctTimezoneId: "Europe/Amsterdam"
+        }
+      }),
       "post",
       { "Content-Type": "application/json" }
     );
@@ -504,7 +556,13 @@ describe("ModalTimezoneShift", () => {
       // Verify the preview API was called
       expect(postSpy).toHaveBeenCalled();
 
-      // Step 4: Mock rename preview response
+      // Step 4: Mock execute-shift response
+      postSpy.mockResolvedValueOnce({
+        statusCode: 200,
+        data: mockExecuteResponse.data
+      });
+
+      // Step 5: Mock rename preview response
       const mockRenamePreview = [
         {
           sourceFilePath: "/test.jpg",
@@ -521,7 +579,7 @@ describe("ModalTimezoneShift", () => {
         data: mockRenamePreview
       });
 
-      // Step 5: Click "Next" button to go to rename step
+      // Step 6: Click "Next" button to go to rename step (executes shift, then navigates)
       const nextButton = screen.getByText(/Next/i);
       expect(nextButton).not.toBeDisabled();
 
@@ -531,10 +589,11 @@ describe("ModalTimezoneShift", () => {
 
       // Wait for rename step to load
       await waitFor(() => {
-        expect(screen.getByText(/Rename Files/i)).toBeTruthy();
+        const subheader = document.querySelector(".modal.content--subheader");
+        expect(subheader?.textContent).toBe("Rename Files");
       });
 
-      // Step 6: Mock execute-shift response and uncheck rename
+      // Step 7: Mock execute rename response (in case rename is executed)
       postSpy.mockResolvedValueOnce({
         statusCode: 200,
         data: mockExecuteResponse.data
@@ -546,19 +605,20 @@ describe("ModalTimezoneShift", () => {
         fireEvent.click(renameCheckbox);
       });
 
-      // Step 7: Click "Apply Shift" button (shows when rename is unchecked)
-      const applyButton = screen.getByText(/Apply Shift/i);
+      // Step 8: Click "Finish" button (shows when rename is unchecked)
+      const finishButton = screen.getByText(/Finish/i);
 
       await act(async () => {
-        fireEvent.click(applyButton);
+        fireEvent.click(finishButton);
       });
 
-      // Step 8: Verify execution was called and modal exits
+      // Step 9: Verify execution was called and modal exits
       await act(async () => {
         await new Promise((resolve) => setTimeout(resolve, 100));
       });
 
-      expect(postSpy).toHaveBeenCalledTimes(2);
+      // Now we expect 3 API calls: offset-preview, offset-execute, batch-rename-preview
+      expect(postSpy).toHaveBeenCalledTimes(3);
       const expectedPreviewPayload = JSON.stringify(payload);
       expect(postSpy).toHaveBeenNthCalledWith(
         1,
@@ -572,6 +632,18 @@ describe("ModalTimezoneShift", () => {
         2,
         "/starsky/api/meta-time-correct/offset-execute?f=/test.jpg&collections=true",
         expectedPreviewPayload,
+        "post",
+        { "Content-Type": "application/json" }
+      );
+
+      expect(postSpy).toHaveBeenNthCalledWith(
+        3,
+        "/starsky/api/batch-rename-datetime/offset-preview",
+        JSON.stringify({
+          filePaths: ["/test.jpg"],
+          collections: true,
+          correctionRequest: payload
+        }),
         "post",
         { "Content-Type": "application/json" }
       );
@@ -687,7 +759,8 @@ describe("ModalTimezoneShift", () => {
 
     // Wait for rename step to load
     await waitFor(() => {
-      expect(screen.getByText(/Rename Files/i)).toBeTruthy();
+      const subheader = document.querySelector(".modal.content--subheader");
+      expect(subheader?.textContent).toBe("Rename Files");
     });
 
     // Step 6: Mock execute-shift response and uncheck rename
@@ -714,7 +787,8 @@ describe("ModalTimezoneShift", () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
-    expect(postSpy).toHaveBeenCalledTimes(7);
+    // Now we expect 8 API calls: 6x offset-preview (as user types), offset-execute, batch-rename-preview
+    expect(postSpy).toHaveBeenCalledTimes(8);
     expect(postSpy).toHaveBeenNthCalledWith(
       1,
       "/starsky/api/meta-time-correct/offset-preview?f=/test.jpg&collections=true",
@@ -763,11 +837,24 @@ describe("ModalTimezoneShift", () => {
       { "Content-Type": "application/json" }
     );
 
-    // Execute call!!
+    // Execute call
     expect(postSpy).toHaveBeenNthCalledWith(
       7,
       "/starsky/api/meta-time-correct/offset-execute?f=/test.jpg&collections=true",
       '{"year":1,"month":2,"day":3,"hour":4,"minute":5,"second":6}',
+      "post",
+      { "Content-Type": "application/json" }
+    );
+
+    // Batch rename preview call
+    expect(postSpy).toHaveBeenNthCalledWith(
+      8,
+      "/starsky/api/batch-rename-datetime/offset-preview",
+      JSON.stringify({
+        filePaths: ["/test.jpg"],
+        collections: true,
+        correctionRequest: { year: 1, month: 2, day: 3, hour: 4, minute: 5, second: 6 }
+      }),
       "post",
       { "Content-Type": "application/json" }
     );

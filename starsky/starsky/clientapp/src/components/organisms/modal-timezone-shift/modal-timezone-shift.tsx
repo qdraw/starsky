@@ -10,7 +10,7 @@ import {
   useShiftMode,
   useTimezoneState
 } from "./hooks";
-import { renderFileRenameMode } from "./internal/render-file-rename-mode";
+import { FileRenameMode } from "./internal/render-file-rename-mode";
 import { renderModeSelection } from "./internal/render-mode-selection";
 import { renderOffsetMode } from "./internal/render-offset-mode";
 import { renderTimezoneMode } from "./internal/render-timezone-mode";
@@ -103,44 +103,46 @@ const ModalTimezoneShift: React.FunctionComponent<IModalTimezoneShiftProps> = ({
             setCurrentStep,
             fileRenameState
           })}
-        {currentStep === "file-rename-offset" &&
-          renderFileRenameMode({
-            select,
-            state,
-            fileRenameState,
-            handleBack,
-            handleExit,
-            dispatch,
-            historyLocationSearch,
-            undoSelection,
-            collections,
-            mode: "offset",
-            offsetData: {
+        {currentStep === "file-rename-offset" && (
+          <FileRenameMode
+            select={select}
+            state={state}
+            fileRenameState={fileRenameState}
+            handleBack={handleBack}
+            handleExit={handleExit}
+            dispatch={dispatch}
+            historyLocationSearch={historyLocationSearch}
+            undoSelection={undoSelection}
+            collections={collections}
+            mode="offset"
+            offsetData={{
               year: offsetState.offsetYears,
               month: offsetState.offsetMonths,
               day: offsetState.offsetDays,
               hour: offsetState.offsetHours,
               minute: offsetState.offsetMinutes,
               second: offsetState.offsetSeconds
-            }
-          })}
-        {currentStep === "file-rename-timezone" &&
-          renderFileRenameMode({
-            select,
-            state,
-            fileRenameState,
-            handleBack,
-            handleExit,
-            dispatch,
-            historyLocationSearch,
-            undoSelection,
-            collections,
-            mode: "timezone",
-            timezoneData: {
+            }}
+          />
+        )}
+        {currentStep === "file-rename-timezone" && (
+          <FileRenameMode
+            select={select}
+            state={state}
+            fileRenameState={fileRenameState}
+            handleBack={handleBack}
+            handleExit={handleExit}
+            dispatch={dispatch}
+            historyLocationSearch={historyLocationSearch}
+            undoSelection={undoSelection}
+            collections={collections}
+            mode="timezone"
+            timezoneData={{
               recordedTimezoneId: timezoneState.recordedTimezoneId,
               correctTimezoneId: timezoneState.correctTimezoneId
-            }
-          })}
+            }}
+          />
+        )}
       </div>
     </Modal>
   );

@@ -12,7 +12,6 @@ import { ShiftMode } from "../hooks/use-shift-mode";
 import { executeShift } from "./execute-shift";
 import { formatOffsetLabel } from "./format-offset-label";
 import { generateOffsetPreview } from "./generate-offset-preview";
-import { loadRenamePreview } from "./load-rename-preview";
 import { PreviewErrorFiles } from "./preview-error-files";
 
 export interface IRenderTimezoneModeProps {
@@ -298,29 +297,9 @@ export function renderOffsetMode(props: IRenderTimezoneModeProps) {
                   collections
                 );
                 setIsLoadingPreview(false);
-                if (success !== false && fileRenameState) {
-                  // Load rename preview, then navigate
-                  await loadRenamePreview({
-                    mode: "offset",
-                    select,
-                    state,
-                    collections,
-                    offsetData: {
-                      year: offsetYears,
-                      month: offsetMonths,
-                      day: offsetDays,
-                      hour: offsetHours,
-                      minute: offsetMinutes,
-                      second: offsetSeconds
-                    },
-                    setIsLoadingRename: fileRenameState.setIsLoadingRename,
-                    setRenamePreview: fileRenameState.setRenamePreview,
-                    setRenameError: fileRenameState.setRenameError
-                  });
-                  // Defer navigation to next tick to avoid hook errors
-                  setTimeout(() => {
-                    setCurrentStep("file-rename-offset");
-                  }, 0);
+                if (success !== false) {
+                  // Navigate to rename step - preview will load there
+                  setCurrentStep("file-rename-offset");
                 }
               } else {
                 executeShift(

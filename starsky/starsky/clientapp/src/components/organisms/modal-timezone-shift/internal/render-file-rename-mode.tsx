@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import { ArchiveAction } from "../../../../contexts/archive-context";
 import useGlobalSettings from "../../../../hooks/use-global-settings";
 import { IArchiveProps } from "../../../../interfaces/IArchiveProps";
@@ -13,6 +14,7 @@ import { URLPath } from "../../../../shared/url/url-path";
 import { UrlQuery } from "../../../../shared/url/url-query";
 import Preloader from "../../../atoms/preloader/preloader";
 import { IFileRenameState } from "../hooks/use-file-rename-state";
+import { loadRenamePreview } from "./load-rename-preview";
 
 export interface IRenderFileRenameModeProps {
   select: string[];
@@ -39,12 +41,11 @@ export interface IRenderFileRenameModeProps {
   };
 }
 
-export function renderFileRenameMode(props: IRenderFileRenameModeProps) {
+export const FileRenameMode: React.FC<IRenderFileRenameModeProps> = (props) => {
   const {
     select,
     state,
     fileRenameState,
-    handleBack,
     handleExit,
     dispatch,
     undoSelection,
@@ -71,6 +72,21 @@ export function renderFileRenameMode(props: IRenderFileRenameModeProps) {
   const language = new Language(settings.language);
 
   const filePathList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
+
+  // Load rename preview when component mounts
+  useEffect(() => {
+    loadRenamePreview({
+      mode,
+      select,
+      state,
+      collections,
+      offsetData,
+      timezoneData,
+      setIsLoadingRename,
+      setRenamePreview,
+      setRenameError
+    });
+  }, []); // Empty dependency array - only load once on mount
 
   const handleExecuteRename = async () => {
     if (!shouldRename) {
@@ -108,7 +124,9 @@ export function renderFileRenameMode(props: IRenderFileRenameModeProps) {
         return;
       }
 
-      const result = await FetchPost(url, JSON.stringify(body));
+      const result = await FetchPost(url, JSON.stringify(body), "post", {
+        "Content-Type": "application/json"
+      });
 
       if (result.statusCode === 200 && result.data) {
         // Update the archive state with the new file items
@@ -161,8 +179,10 @@ export function renderFileRenameMode(props: IRenderFileRenameModeProps) {
                     </div>
                   </div>
                   {renamePreview.map((item, index) => {
+                    if (!item || !item.sourceFilePath) return null;
                     const sourceName = item.sourceFilePath.split("/").pop() || item.sourceFilePath;
-                    const targetName = item.targetFilePath.split("/").pop() || item.targetFilePath;
+                    const targetName =
+                      item.targetFilePath?.split("/").pop() || item.targetFilePath || "";
 
                     return (
                       <div
@@ -199,7 +219,7 @@ export function renderFileRenameMode(props: IRenderFileRenameModeProps) {
         {renameError && <p className="error">{renameError}</p>}
 
         <div className="modal-buttons">
-          <button className="btn btn--info" onClick={handleBack}>
+          <button className="btn btn--info" disabled={true}>
             {language.key(localization.MessageBack)}
           </button>
           <button
@@ -217,4 +237,9 @@ export function renderFileRenameMode(props: IRenderFileRenameModeProps) {
       </div>
     </>
   );
+};
+
+// Legacy function export for backwards compatibility
+export function renderFileRenameMode(props: IRenderFileRenameModeProps) {
+  return <FileRenameMode {...props} />;
 }
