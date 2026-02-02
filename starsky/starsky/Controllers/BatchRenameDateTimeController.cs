@@ -117,7 +117,9 @@ public class BatchRenameDateTimeController : ControllerBase
 		}
 
 		var result = await _filenameDatetimeRepairService
-			.ExecuteRepairAsync(request.FilePaths, request.CorrectionRequest, request.Collections);
+			.ExecuteRepairAsync(request.FilePaths,
+				request.CorrectionRequest,
+				request.Collections);
 
 		return Ok(result);
 	}
