@@ -6,6 +6,7 @@ using starsky.Controllers;
 using starsky.feature.rename.Models;
 using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Models;
+using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.Controllers;
@@ -28,9 +29,9 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		var selectorStorage = new FakeSelectorStorage();
 		var logger = new FakeIWebLogger();
 		var controller =
-			new BatchRenameDateTimeController(query, selectorStorage, logger);
+			new BatchRenameDateTimeController(query, selectorStorage, logger, new AppSettings());
 
-		var request = new FilenameDatetimeRepairRequest
+		var request = new FilenameDatetimeRepairRequest<ExifTimezoneBasedCorrectionRequest>
 		{
 			FilePaths = ["/test/20240313_011530_IMG_001.jpg"],
 			Collections = true,
@@ -41,7 +42,7 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		};
 
 		// Act
-		var result = controller.PreviewDatetimeRepair(request);
+		var result = controller.PreviewTimezoneDatetimeRepair(request);
 
 		// Assert
 		Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
@@ -67,9 +68,9 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		var selectorStorage = new FakeSelectorStorage();
 		var logger = new FakeIWebLogger();
 		var controller =
-			new BatchRenameDateTimeController(query, selectorStorage, logger);
+			new BatchRenameDateTimeController(query, selectorStorage, logger, new AppSettings());
 
-		var request = new FilenameDatetimeRepairRequest
+		var request = new FilenameDatetimeRepairRequest<ExifCustomOffsetCorrectionRequest>
 		{
 			FilePaths = ["/test/20240313_011530_IMG_001.jpg"],
 			Collections = true,
@@ -85,7 +86,7 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		};
 
 		// Act
-		var result = controller.PreviewDatetimeRepair(request);
+		var result = controller.PreviewCustomOffsetDatetimeRepair(request);
 
 		// Assert
 		Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
@@ -105,15 +106,15 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		var selectorStorage = new FakeSelectorStorage();
 		var logger = new FakeIWebLogger();
 		var controller =
-			new BatchRenameDateTimeController(query, selectorStorage, logger);
+			new BatchRenameDateTimeController(query, selectorStorage, logger, new AppSettings());
 
-		var request = new FilenameDatetimeRepairRequest
+		var request = new FilenameDatetimeRepairRequest<ExifTimezoneBasedCorrectionRequest>
 		{
 			FilePaths = ["/test/image.jpg"], Collections = true, CorrectionRequest = null
 		};
 
 		// Act
-		var result = controller.PreviewDatetimeRepair(request);
+		var result = controller.PreviewTimezoneDatetimeRepair(request);
 
 		// Assert
 		Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
@@ -136,9 +137,9 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		]));
 		var logger = new FakeIWebLogger();
 		var controller =
-			new BatchRenameDateTimeController(query, selectorStorage, logger);
+			new BatchRenameDateTimeController(query, selectorStorage, logger, new AppSettings());
 
-		var request = new FilenameDatetimeRepairRequest
+		var request = new FilenameDatetimeRepairRequest<ExifTimezoneBasedCorrectionRequest>
 		{
 			FilePaths = ["/test/20240313_011530_IMG_001.jpg"],
 			Collections = true,
@@ -149,7 +150,7 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		};
 
 		// Act
-		var result = await controller.ExecuteDatetimeRepairAsync(request);
+		var result = await controller.ExecuteTimezoneDatetimeRepairAsync(request);
 
 		// Assert
 		Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
@@ -176,9 +177,9 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		]));
 		var logger = new FakeIWebLogger();
 		var controller =
-			new BatchRenameDateTimeController(query, selectorStorage, logger);
+			new BatchRenameDateTimeController(query, selectorStorage, logger, new AppSettings());
 
-		var request = new FilenameDatetimeRepairRequest
+		var request = new FilenameDatetimeRepairRequest<ExifCustomOffsetCorrectionRequest>
 		{
 			FilePaths = ["/test/20240313_011530_IMG_001.jpg"],
 			Collections = true,
@@ -194,7 +195,7 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		};
 
 		// Act
-		var result = await controller.ExecuteDatetimeRepairAsync(request);
+		var result = await controller.ExecuteCustomOffsetDatetimeRepairAsync(request);
 
 		// Assert
 		Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
@@ -213,15 +214,15 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		var selectorStorage = new FakeSelectorStorage();
 		var logger = new FakeIWebLogger();
 		var controller =
-			new BatchRenameDateTimeController(query, selectorStorage, logger);
+			new BatchRenameDateTimeController(query, selectorStorage, logger, new AppSettings());
 
-		var request = new FilenameDatetimeRepairRequest
+		var request = new FilenameDatetimeRepairRequest<ExifCustomOffsetCorrectionRequest>
 		{
 			FilePaths = ["/test/image.jpg"], Collections = true, CorrectionRequest = null
 		};
 
 		// Act
-		var result = await controller.ExecuteDatetimeRepairAsync(request);
+		var result = await controller.ExecuteCustomOffsetDatetimeRepairAsync(request);
 
 		// Assert
 		Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
@@ -251,9 +252,9 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		]));
 		var logger = new FakeIWebLogger();
 		var controller =
-			new BatchRenameDateTimeController(query, selectorStorage, logger);
+			new BatchRenameDateTimeController(query, selectorStorage, logger, new AppSettings());
 
-		var request = new FilenameDatetimeRepairRequest
+		var request = new FilenameDatetimeRepairRequest<ExifCustomOffsetCorrectionRequest>
 		{
 			FilePaths =
 				["/test/20240313_011530_IMG_001.jpg", "/test/20240313_021530_IMG_002.jpg"],
@@ -262,7 +263,7 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		};
 
 		// Act
-		var result = await controller.ExecuteDatetimeRepairAsync(request);
+		var result = await controller.ExecuteCustomOffsetDatetimeRepairAsync(request);
 
 		// Assert
 		Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));

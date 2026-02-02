@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using starsky.foundation.database.Models;
 
 namespace starsky.feature.rename.Models;
 
@@ -16,7 +17,7 @@ public class FilenameDatetimeRepairMapping
 	/// <summary>
 	///     Detected datetime pattern in filename (e.g., YYYYMMDD_HHMMSS)
 	/// </summary>
-	public string DetectedPattern { get; set; } = string.Empty;
+	public string DetectedPatternDescription { get; set; } = string.Empty;
 
 	/// <summary>
 	///     Original datetime extracted from filename
@@ -36,7 +37,7 @@ public class FilenameDatetimeRepairMapping
 	/// <summary>
 	///     Related file paths (sidecars)
 	/// </summary>
-	public List<string> RelatedFilePaths { get; set; } = [];
+	public List<(string source, string target)> RelatedFilePaths { get; set; } = [];
 
 	/// <summary>
 	///     Time offset applied (in hours)
@@ -57,4 +58,6 @@ public class FilenameDatetimeRepairMapping
 	///     Warning message (e.g., day rollover)
 	/// </summary>
 	public string? Warning { get; set; }
+
+	public FileIndexItem? FileIndexItem { get; set; }
 }

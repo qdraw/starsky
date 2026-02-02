@@ -6,12 +6,15 @@ using System.Threading.Tasks;
 using starsky.feature.rename.DateTimeRepair.Helpers;
 using starsky.feature.rename.DateTimeRepair.Models;
 using starsky.feature.rename.Models;
+using starsky.feature.rename.RelatedFilePaths;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Models;
 using starsky.foundation.metaupdate.Services;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 
 namespace starsky.feature.rename.DateTimeRepair.Services;
@@ -19,8 +22,68 @@ namespace starsky.feature.rename.DateTimeRepair.Services;
 /// <summary>
 ///     Service for detecting and repairing datetime patterns in filenames
 /// </summary>
-public class FilenameDatetimeRepairService(IQuery query, IStorage storage, IWebLogger logger)
+public class FilenameDatetimeRepairService(
+	IQuery query,
+	IStorage storage,
+	IWebLogger logger,
+	AppSettings appSettings)
 {
+	private Dictionary<string, FileIndexItem> FileItemsQuery(List<string> filePaths,
+		bool collections, List<FilenameDatetimeRepairMapping> mappings)
+	{
+		var fileItems = new Dictionary<string, FileIndexItem>();
+
+		foreach ( var filePath in filePaths )
+		{
+			try
+			{
+				var detailView = query.SingleItem(filePath,
+					null, collections);
+				if ( detailView?.FileIndexItem == null )
+				{
+					mappings.Add(new FilenameDatetimeRepairMapping
+					{
+						SourceFilePath = filePath,
+						HasError = true,
+						ErrorMessage = "File not found in database"
+					});
+					continue;
+				}
+
+				fileItems[filePath] = detailView.FileIndexItem;
+				if ( !collections )
+				{
+					continue;
+				}
+
+				foreach ( var collectionPath in detailView.FileIndexItem!.CollectionPaths.Where(p =>
+					         p != filePath) )
+				{
+					if ( fileItems.ContainsKey(collectionPath) )
+					{
+						// when explicit adding files skip
+						continue;
+					}
+
+					// implicit flow
+					var collectionFileIndexItem = query.SingleItem(collectionPath,
+						null, false, false)!.FileIndexItem;
+					if ( collectionFileIndexItem != null )
+					{
+						fileItems[collectionPath] = collectionFileIndexItem;
+					}
+				}
+			}
+			catch ( Exception )
+			{
+				logger.LogError(
+					$"[FilenameDatetimeRepairMapping]: Failed to get item for {filePath}");
+			}
+		}
+
+		return fileItems;
+	}
+
 	/// <summary>
 	///     Preview filename datetime repair for a list of file paths
 	/// </summary>
@@ -29,92 +92,102 @@ public class FilenameDatetimeRepairService(IQuery query, IStorage storage, IWebL
 		IExifTimeCorrectionRequest correctionRequest,
 		bool collections = true)
 	{
-		var results = new List<FilenameDatetimeRepairMapping>();
+		var mappings = new List<FilenameDatetimeRepairMapping>();
 
-		foreach ( var filePath in filePaths )
+		var fileItems = FileItemsQuery(filePaths, collections, mappings);
+		var validMappings = GenerateValidMappings(correctionRequest,
+			fileItems, collections, mappings);
+
+		mappings.AddRange(validMappings);
+		return mappings;
+	}
+
+	private List<FilenameDatetimeRepairMapping> GenerateValidMappings(
+		IExifTimeCorrectionRequest correctionRequest,
+		Dictionary<string, FileIndexItem> fileItems,
+		bool collections, List<FilenameDatetimeRepairMapping> mappings)
+	{
+		var validMappings = new List<FilenameDatetimeRepairMapping>();
+		foreach ( var (key, fileItem) in fileItems )
 		{
-			var mapping = new FilenameDatetimeRepairMapping { SourceFilePath = filePath };
+			var mapping = new FilenameDatetimeRepairMapping { SourceFilePath = key };
 
-			try
+			if ( new StatusCodesHelper(appSettings).IsReadOnlyStatus(fileItem) !=
+			     FileIndexItem.ExifStatus.Default )
 			{
-				// Get file item from database
-				var detailView = query.SingleItem(filePath,
-					null, collections, false);
-				if ( detailView?.FileIndexItem is not { Status: FileIndexItem.ExifStatus.Ok } )
+				mappings.Add(new FilenameDatetimeRepairMapping
 				{
-					mapping.HasError = true;
-					mapping.ErrorMessage = "File not found or has invalid status";
-					results.Add(mapping);
-					continue;
-				}
-
-				var fileItem = detailView.FileIndexItem;
-
-				// Detect datetime pattern in filename
-				var detectedPattern = DetectDateTimePattern(fileItem.FileName!);
-				if ( detectedPattern == null )
-				{
-					mapping.HasError = true;
-					mapping.ErrorMessage = "No datetime pattern detected in filename";
-					results.Add(mapping);
-					continue;
-				}
-
-				mapping.DetectedPattern = detectedPattern.Description;
-
-				// Extract datetime from filename
-				var extractedDateTime = ExtractDateTime(fileItem.FileName!, detectedPattern);
-				if ( extractedDateTime == null )
-				{
-					mapping.HasError = true;
-					mapping.ErrorMessage = "Failed to extract datetime from filename";
-					results.Add(mapping);
-					continue;
-				}
-
-				mapping.OriginalDateTime = extractedDateTime.Value;
-
-				// Calculate time offset using the internal method
-				var delta =
-					ExifTimezoneCorrectionService.CalculateTimezoneOffsetDelta(
-						extractedDateTime.Value, correctionRequest);
-				mapping.OffsetHours = delta.TotalHours;
-
-				// Apply correction
-				var correctedDateTime = extractedDateTime.Value.Add(delta);
-				mapping.CorrectedDateTime = correctedDateTime;
-
-				// Generate new filename with corrected datetime
-				var newFileName = ReplaceDateTime(fileItem.FileName!, detectedPattern,
-					correctedDateTime);
-				mapping.TargetFilePath =
-					PathHelper.AddSlash(fileItem.ParentDirectory!) + newFileName;
-
-				// Check for day rollover
-				if ( correctedDateTime.Day != extractedDateTime.Value.Day )
-				{
-					mapping.Warning =
-						$"Correction will change the day from {extractedDateTime.Value:yyyy-MM-dd} to {correctedDateTime:yyyy-MM-dd}";
-				}
-
-				// Get related files (sidecars)
-				if ( collections && fileItem.CollectionPaths.Count != 0 )
-				{
-					mapping.RelatedFilePaths = fileItem.CollectionPaths;
-				}
+					SourceFilePath = key, HasError = true, ErrorMessage = "Read-only location"
+				});
+				continue;
 			}
-			catch ( Exception ex )
+
+			if ( fileItem.IsDirectory == true )
+			{
+				mappings.Add(new FilenameDatetimeRepairMapping
+				{
+					SourceFilePath = key, HasError = true, ErrorMessage = "Is a directory"
+				});
+				continue;
+			}
+
+			// Detect datetime pattern in filename
+			var detectedPattern = DetectDateTimePattern(fileItem.FileName!);
+			if ( detectedPattern == null )
 			{
 				mapping.HasError = true;
-				mapping.ErrorMessage = $"Exception: {ex.Message}";
-				logger.LogError(ex,
-					$"[FilenameDatetimeRepair] Error processing {filePath}: {ex.Message}");
+				mapping.ErrorMessage = "No datetime pattern detected in filename";
+				mappings.Add(mapping);
+				continue;
 			}
 
-			results.Add(mapping);
+			mapping.DetectedPatternDescription = detectedPattern.Description;
+
+			// Extract datetime from filename
+			var extractedDateTime = ExtractDateTime(fileItem.FileName!, detectedPattern);
+			if ( extractedDateTime == null )
+			{
+				mapping.HasError = true;
+				mapping.ErrorMessage = "Failed to extract datetime from filename";
+				mappings.Add(mapping);
+				continue;
+			}
+
+			mapping.OriginalDateTime = extractedDateTime.Value;
+
+			// Calculate time offset using the internal method
+			var delta =
+				ExifTimezoneCorrectionService.CalculateTimezoneOffsetDelta(
+					extractedDateTime.Value, correctionRequest);
+			mapping.OffsetHours = delta.TotalHours;
+
+			// Apply correction
+			var correctedDateTime = extractedDateTime.Value.Add(delta);
+			mapping.CorrectedDateTime = correctedDateTime;
+
+			// Generate new filename with corrected datetime
+			var newFileName = ReplaceDateTime(fileItem.FileName!, detectedPattern,
+				correctedDateTime);
+			mapping.TargetFilePath =
+				PathHelper.AddSlash(fileItem.ParentDirectory!) + newFileName;
+
+			// Check for day rollover
+			if ( correctedDateTime.Day != extractedDateTime.Value.Day )
+			{
+				mapping.Warning =
+					$"Correction will change the day from {extractedDateTime.Value:yyyy-MM-dd} to {correctedDateTime:yyyy-MM-dd}";
+			}
+
+			if ( collections )
+			{
+				mapping.RelatedFilePaths =
+					new ReleatedFilePaths(storage).GetRelatedFilePaths(key, mapping.TargetFilePath);
+			}
+
+			validMappings.Add(mapping);
 		}
 
-		return results;
+		return validMappings;
 	}
 
 	public async Task<List<FileIndexItem>> ExecuteRepairAsync(
@@ -142,9 +215,9 @@ public class FilenameDatetimeRepairService(IQuery query, IStorage storage, IWebL
 		{
 			try
 			{
-				var detailView =
-					query.SingleItem(mapping.SourceFilePath, null, collections, false);
-				if ( detailView?.FileIndexItem == null )
+				mapping.FileIndexItem ??= query.SingleItem(mapping.SourceFilePath,
+					null, collections)?.FileIndexItem;
+				if ( mapping.FileIndexItem == null )
 				{
 					logger.LogError(
 						$"[FilenameDatetimeRepair] File not found: " +
@@ -158,30 +231,28 @@ public class FilenameDatetimeRepairService(IQuery query, IStorage storage, IWebL
 					logger.LogInformation(
 						$"[FilenameDatetimeRepair] Skipping, " +
 						$"source and target are the same: {mapping.SourceFilePath}");
-					results.Add(detailView.FileIndexItem);
+					results.Add(mapping.FileIndexItem);
 					continue;
 				}
 
-				// Rename file using SubPath storage (no FullPath conversion needed)
+				// Rename file using SubPath storage 
 				storage.FileMove(mapping.SourceFilePath, mapping.TargetFilePath);
 
 				// Update database
-				var fileItem = detailView.FileIndexItem;
-				fileItem.FileName = FilenamesHelper.GetFileName(mapping.TargetFilePath);
-				fileItem.FilePath = mapping.TargetFilePath;
+				mapping.FileIndexItem.FileName =
+					FilenamesHelper.GetFileName(mapping.TargetFilePath);
+				mapping.FileIndexItem.FilePath = mapping.TargetFilePath;
 
-				await query.UpdateItemAsync(fileItem);
+				await query.UpdateItemAsync(mapping.FileIndexItem);
 
 				// Rename related files (sidecars)
 				if ( collections && mapping.RelatedFilePaths.Count != 0 )
 				{
-					foreach ( var relatedPath in mapping.RelatedFilePaths )
+					foreach ( var (source, target) in mapping.RelatedFilePaths )
 					{
-						var relatedTargetPath = GetRelatedTargetPath(relatedPath, mapping);
-
-						if ( storage.ExistFile(relatedPath) )
+						if ( storage.ExistFile(source) )
 						{
-							storage.FileMove(relatedPath, relatedTargetPath);
+							storage.FileMove(source, target);
 						}
 					}
 				}
@@ -189,7 +260,7 @@ public class FilenameDatetimeRepairService(IQuery query, IStorage storage, IWebL
 				logger.LogInformation(
 					$"[FilenameDatetimeRepair] Renamed: " +
 					$"{mapping.SourceFilePath} → {mapping.TargetFilePath}");
-				results.Add(fileItem);
+				results.Add(mapping.FileIndexItem);
 			}
 			catch ( Exception ex )
 			{
@@ -247,25 +318,5 @@ public class FilenameDatetimeRepairService(IQuery query, IStorage storage, IWebL
 		var originalDateTimeString = match.Value;
 		var correctedDateTimeString = correctedDateTime.ToString(pattern.Format);
 		return fileName.Replace(originalDateTimeString, correctedDateTimeString);
-	}
-
-	/// <summary>
-	///     Get target path for related file (sidecar)
-	/// </summary>
-	private static string GetRelatedTargetPath(string relatedPath,
-		FilenameDatetimeRepairMapping mapping)
-	{
-		var relatedFileName = FilenamesHelper.GetFileName(relatedPath);
-		var sourceFileNameWithoutExtension =
-			FilenamesHelper.GetFileNameWithoutExtension(
-				FilenamesHelper.GetFileName(mapping.SourceFilePath));
-		var targetFileNameWithoutExtension =
-			FilenamesHelper.GetFileNameWithoutExtension(
-				FilenamesHelper.GetFileName(mapping.TargetFilePath));
-
-		var newRelatedFileName = relatedFileName.Replace(sourceFileNameWithoutExtension,
-			targetFileNameWithoutExtension);
-		return PathHelper.AddSlash(FilenamesHelper.GetParentPath(relatedPath)) +
-		       newRelatedFileName;
 	}
 }

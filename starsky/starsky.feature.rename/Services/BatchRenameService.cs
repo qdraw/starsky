@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.feature.rename.Models;
+using starsky.feature.rename.RelatedFilePaths;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -168,7 +169,8 @@ public class BatchRenameService(
 				// Add related files (sidecars)
 				if ( collections )
 				{
-					mapping.RelatedFilePaths = GetRelatedFilePaths(key, newFilePath);
+					mapping.RelatedFilePaths =
+						new ReleatedFilePaths(iStorage).GetRelatedFilePaths(key, newFilePath);
 				}
 
 				validMappings.Add(mapping);
@@ -242,40 +244,6 @@ public class BatchRenameService(
 	}
 
 	/// <summary>
-	///     Get all related file paths (sidecars) for a given file
-	/// </summary>
-	private List<(string source, string target)> GetRelatedFilePaths(string sourceFilePath,
-		string targetFilePath)
-	{
-		var related = new List<(string, string)>();
-
-		// Check for JSON sidecar
-		var sourceJson = JsonSidecarLocation.JsonLocation(sourceFilePath);
-		if ( iStorage.ExistFile(sourceJson) )
-		{
-			var targetJson = JsonSidecarLocation.JsonLocation(targetFilePath);
-			related.Add(( sourceJson, targetJson ));
-		}
-
-		// Check for XMP sidecar
-		if ( !ExtensionRolesHelper.IsExtensionForceXmp(sourceFilePath) )
-		{
-			return related;
-		}
-
-		var sourceXmp = ExtensionRolesHelper.ReplaceExtensionWithXmp(sourceFilePath);
-		if ( !iStorage.ExistFile(sourceXmp) )
-		{
-			return related;
-		}
-
-		var targetXmp = ExtensionRolesHelper.ReplaceExtensionWithXmp(targetFilePath);
-		related.Add(( sourceXmp, targetXmp ));
-
-		return related;
-	}
-
-	/// <summary>
 	///     Assign sequence numbers to files with identical target names
 	/// </summary>
 	private void AssignSequenceNumbers(
@@ -316,7 +284,8 @@ public class BatchRenameService(
 				if ( mapping.RelatedFilePaths.Count > 0 )
 				{
 					mapping.RelatedFilePaths =
-						GetRelatedFilePaths(mapping.SourceFilePath, newFilePath);
+						new ReleatedFilePaths(iStorage).GetRelatedFilePaths(mapping.SourceFilePath,
+							newFilePath);
 				}
 			}
 
