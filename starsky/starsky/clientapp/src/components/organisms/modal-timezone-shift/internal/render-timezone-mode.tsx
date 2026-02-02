@@ -40,7 +40,9 @@ export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
     handleBack,
     dispatch,
     historyLocationSearch,
-    collections
+    collections,
+    setCurrentStep,
+    fileRenameState
   } = props;
   const {
     preview,
@@ -176,7 +178,7 @@ export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
             onClick={async () => {
               // Execute shift first, then navigate to rename step
               setIsExecuting(true);
-              await executeShift(
+              const success = await executeShift(
                 {
                   select,
                   state,
@@ -193,6 +195,10 @@ export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
                 collections
               );
               setIsExecuting(false);
+              if (success !== false && setCurrentStep && fileRenameState) {
+                // Navigate to rename step - preview will load there
+                setCurrentStep("file-rename-timezone");
+              }
             }}
             disabled={
               isExecuting ||
