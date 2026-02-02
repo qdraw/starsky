@@ -378,11 +378,11 @@ describe("ModalTimezoneShift", () => {
       data: mockRenamePreview
     });
 
-    // Step 6: Click "Next" button to execute shift and navigate to rename step
-    const nextButton = screen.getByText(/Next/i);
+    // Step 6: Click "Apply Shift" button to execute shift and navigate to rename step
+    const applyShiftButton = screen.getByText(/Apply Shift/i);
 
     await act(async () => {
-      fireEvent.click(nextButton);
+      fireEvent.click(applyShiftButton);
     });
 
     // Wait for rename step to load
@@ -579,12 +579,12 @@ describe("ModalTimezoneShift", () => {
         data: mockRenamePreview
       });
 
-      // Step 6: Click "Next" button to go to rename step (executes shift, then navigates)
-      const nextButton = screen.getByText(/Next/i);
-      expect(nextButton).not.toBeDisabled();
+      // Step 6: Click "Apply Shift" button to go to rename step (executes shift, then navigates)
+      const applyShiftButton = screen.getByText(/Apply Shift/i);
+      expect(applyShiftButton).not.toBeDisabled();
 
       await act(async () => {
-        fireEvent.click(nextButton);
+        fireEvent.click(applyShiftButton);
       });
 
       // Wait for rename step to load
@@ -749,12 +749,12 @@ describe("ModalTimezoneShift", () => {
       data: mockRenamePreview
     });
 
-    // Step 5: Click "Next" button to go to rename step
-    const nextButton = screen.getByText(/Next/i);
-    expect(nextButton).not.toBeDisabled();
+    // Step 5: Click "Apply Shift" button to go to rename step
+    const applyShiftButton = screen.getByText(/Apply Shift/i);
+    expect(applyShiftButton).not.toBeDisabled();
 
     await act(async () => {
-      fireEvent.click(nextButton);
+      fireEvent.click(applyShiftButton);
     });
 
     // Wait for rename step to load
