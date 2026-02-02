@@ -501,10 +501,15 @@ public class FilenameDatetimeRepairServiceTest
 		};
 
 		// Act
-		var result = await sut.ExecuteRepairAsync(mappings);
+		var fileItems = await sut.ExecuteRepairAsync(mappings);
 
 		// Assert
-		Assert.HasCount(1, result);
+		Assert.HasCount(1,
+			fileItems.Where(p
+				=> p.Status == FileIndexItem.ExifStatus.Ok).ToList());
+		Assert.HasCount(1,
+			fileItems.Where(p
+				=> p.Status == FileIndexItem.ExifStatus.Deleted).ToList());
 		// Verify sidecar was renamed
 		Assert.IsTrue(storage.ExistFile("/test/20240313_021530_IMG_001.xmp"));
 	}

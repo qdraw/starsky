@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -157,7 +158,12 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		var okResult = result.Result as OkObjectResult;
 		var fileItems = okResult?.Value as List<FileIndexItem>;
 		Assert.IsNotNull(fileItems);
-		Assert.HasCount(1, fileItems);
+		Assert.HasCount(1,
+			fileItems.Where(p
+				=> p.Status == FileIndexItem.ExifStatus.Ok).ToList());
+		Assert.HasCount(1,
+			fileItems.Where(p
+				=> p.Status == FileIndexItem.ExifStatus.Deleted).ToList());
 	}
 
 	[TestMethod]
@@ -202,8 +208,18 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		var okResult = result.Result as OkObjectResult;
 		var fileItems = okResult?.Value as List<FileIndexItem>;
 		Assert.IsNotNull(fileItems);
-		Assert.HasCount(1, fileItems);
-		Assert.AreEqual("20240313_021530_IMG_001.jpg", fileItems[0].FileName);
+		Assert.HasCount(1,
+			fileItems.Where(p
+				=> p.Status == FileIndexItem.ExifStatus.Ok).ToList());
+		Assert.HasCount(1,
+			fileItems.Where(p
+				=> p.Status == FileIndexItem.ExifStatus.Deleted).ToList());
+		Assert.AreEqual("20240313_021530_IMG_001.jpg",
+			fileItems.FirstOrDefault(p =>
+				p.Status == FileIndexItem.ExifStatus.Ok)?.FileName);
+		Assert.AreEqual("20240313_011530_IMG_001.jpg",
+			fileItems.FirstOrDefault(p =>
+				p.Status == FileIndexItem.ExifStatus.Deleted)?.FileName);
 	}
 
 	[TestMethod]
@@ -270,6 +286,11 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		var okResult = result.Result as OkObjectResult;
 		var fileItems = okResult?.Value as List<FileIndexItem>;
 		Assert.IsNotNull(fileItems);
-		Assert.HasCount(2, fileItems);
+		Assert.HasCount(2,
+			fileItems.Where(p
+				=> p.Status == FileIndexItem.ExifStatus.Ok).ToList());
+		Assert.HasCount(2,
+			fileItems.Where(p
+				=> p.Status == FileIndexItem.ExifStatus.Deleted).ToList());
 	}
 }
