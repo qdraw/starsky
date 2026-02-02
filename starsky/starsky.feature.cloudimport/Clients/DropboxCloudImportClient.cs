@@ -104,7 +104,7 @@ public class DropboxCloudImportClient(
 		try
 		{
 			await _client!.DeleteV2Async(file.Path);
-			logger.LogInformation($"Deleted file from Dropbox: {file.Name}");
+			logger.LogDebug($"Deleted file from Dropbox: {file.Name}");
 			return true;
 		}
 		catch ( Exception ex )
