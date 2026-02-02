@@ -1,4 +1,3 @@
-
 # Modal Timezone Shift Component
 
 `modal-timezone-shift` is a React component for the Starsky application that enables users to shift the timezone or offset of date/time metadata for one or more selected files (such as images). It provides a modal dialog where users can specify the desired correction, and then applies the changes to all selected files via an API call. This component integrates tightly with Starsky's archive context and file selection system, ensuring a seamless batch operation experience.
@@ -334,3 +333,24 @@ npm test modal-timezone-shift
 - **Batch operation progress**: Show progress bar for large selections
 - **Undo functionality**: Allow users to revert changes
 - **History**: Keep track of recently used offset values
+
+## Renaming Filenames After Timestamp Shift
+
+After applying a timezone or offset shift, the modal provides an optional step to rename the affected files based on their new timestamps. This helps keep filenames consistent with the updated metadata.
+
+- **How it works:**
+  - After a successful shift, a checkbox labeled "Rename files after shifting timestamps" appears.
+  - If checked, a preview list shows the original and new filenames for each file.
+  - The user can review and confirm the renaming operation before applying it.
+  - Any errors or filename conflicts are displayed in the preview.
+  - The renaming step is optional; users can skip it by leaving the checkbox unchecked.
+
+- **UI Details:**
+  - The preview uses Material-style checkboxes and a clear mapping from old to new filenames.
+  - Errors are highlighted, and the user is prevented from proceeding if there are unresolved issues.
+
+- **API Integration:**
+  - The component calls the batch rename API endpoint with the selected files and new names.
+  - On success, the archive state is updated and the modal closes.
+
+This feature ensures that filenames remain meaningful and consistent with the new date/time metadata, improving organization and searchability.
