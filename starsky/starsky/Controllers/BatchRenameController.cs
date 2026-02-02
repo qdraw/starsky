@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +6,6 @@ using starsky.feature.rename.Models;
 using starsky.feature.rename.Services;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
-using starsky.foundation.metaupdate.Models;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
@@ -68,5 +66,4 @@ public class BatchRenameController : ControllerBase
 			.ExecuteBatchRenameAsync(mappings, request.Collections);
 		return Ok(result);
 	}
-
 }

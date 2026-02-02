@@ -12,14 +12,14 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.Controllers;
 
 [TestClass]
-public class BatchRenameControllerDatetimeRepairTest
+public class BatchRenameDateTimeControllerDatetimeRepairTest
 {
 	[TestMethod]
 	public void PreviewDatetimeRepair_WithTimezoneRequest_ReturnsOk()
 	{
 		// Arrange
 		var query = new FakeIQuery([
-			new("/test/20240313_011530_IMG_001.jpg")
+			new FileIndexItem("/test/20240313_011530_IMG_001.jpg")
 			{
 				FileName = "20240313_011530_IMG_001.jpg",
 				ParentDirectory = "/test",
@@ -29,7 +29,7 @@ public class BatchRenameControllerDatetimeRepairTest
 		var selectorStorage = new FakeSelectorStorage();
 		var logger = new FakeIWebLogger();
 		var controller =
-			new BatchRenameController(query, selectorStorage, logger, new AppSettings());
+			new BatchRenameDateTimeController(query, selectorStorage, logger);
 
 		var request = new FilenameDatetimeRepairRequest
 		{
@@ -68,7 +68,7 @@ public class BatchRenameControllerDatetimeRepairTest
 		var selectorStorage = new FakeSelectorStorage();
 		var logger = new FakeIWebLogger();
 		var controller =
-			new BatchRenameController(query, selectorStorage, logger, new AppSettings());
+			new BatchRenameDateTimeController(query, selectorStorage, logger);
 
 		var request = new FilenameDatetimeRepairRequest
 		{
@@ -106,37 +106,11 @@ public class BatchRenameControllerDatetimeRepairTest
 		var selectorStorage = new FakeSelectorStorage();
 		var logger = new FakeIWebLogger();
 		var controller =
-			new BatchRenameController(query, selectorStorage, logger, new AppSettings());
+			new BatchRenameDateTimeController(query, selectorStorage, logger);
 
 		var request = new FilenameDatetimeRepairRequest
 		{
-			FilePaths = ["/test/image.jpg"],
-			Collections = true,
-			CorrectionRequest = null
-		};
-
-		// Act
-		var result = controller.PreviewDatetimeRepair(request);
-
-		// Assert
-		Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
-	}
-
-	[TestMethod]
-	public void PreviewDatetimeRepair_InvalidCorrectionRequest_ReturnsBadRequest()
-	{
-		// Arrange
-		var query = new FakeIQuery();
-		var selectorStorage = new FakeSelectorStorage();
-		var logger = new FakeIWebLogger();
-		var controller =
-			new BatchRenameController(query, selectorStorage, logger, new AppSettings());
-
-		var request = new FilenameDatetimeRepairRequest
-		{
-			FilePaths = ["/test/image.jpg"],
-			Collections = true,
-			CorrectionRequest = new {  = "test" }! // Invalid structure
+			FilePaths = ["/test/image.jpg"], Collections = true, CorrectionRequest = null
 		};
 
 		// Act
@@ -151,7 +125,7 @@ public class BatchRenameControllerDatetimeRepairTest
 	{
 		// Arrange
 		var query = new FakeIQuery([
-			new("/test/20240313_011530_IMG_001.jpg")
+			new FileIndexItem("/test/20240313_011530_IMG_001.jpg")
 			{
 				FileName = "20240313_011530_IMG_001.jpg",
 				ParentDirectory = "/test",
@@ -163,7 +137,7 @@ public class BatchRenameControllerDatetimeRepairTest
 		]));
 		var logger = new FakeIWebLogger();
 		var controller =
-			new BatchRenameController(query, selectorStorage, logger, new AppSettings());
+			new BatchRenameDateTimeController(query, selectorStorage, logger);
 
 		var request = new FilenameDatetimeRepairRequest
 		{
@@ -171,8 +145,7 @@ public class BatchRenameControllerDatetimeRepairTest
 			Collections = true,
 			CorrectionRequest = new ExifTimezoneBasedCorrectionRequest
 			{
-				RecordedTimezoneId = "UTC", 
-				CorrectTimezoneId = "Europe/Amsterdam"
+				RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 			}
 		};
 
@@ -192,7 +165,7 @@ public class BatchRenameControllerDatetimeRepairTest
 	{
 		// Arrange
 		var query = new FakeIQuery([
-			new("/test/20240313_011530_IMG_001.jpg")
+			new FileIndexItem("/test/20240313_011530_IMG_001.jpg")
 			{
 				FileName = "20240313_011530_IMG_001.jpg",
 				ParentDirectory = "/test",
@@ -204,7 +177,7 @@ public class BatchRenameControllerDatetimeRepairTest
 		]));
 		var logger = new FakeIWebLogger();
 		var controller =
-			new BatchRenameController(query, selectorStorage, logger, new AppSettings());
+			new BatchRenameDateTimeController(query, selectorStorage, logger);
 
 		var request = new FilenameDatetimeRepairRequest
 		{
@@ -241,13 +214,11 @@ public class BatchRenameControllerDatetimeRepairTest
 		var selectorStorage = new FakeSelectorStorage();
 		var logger = new FakeIWebLogger();
 		var controller =
-			new BatchRenameController(query, selectorStorage, logger, new AppSettings());
+			new BatchRenameDateTimeController(query, selectorStorage, logger);
 
 		var request = new FilenameDatetimeRepairRequest
 		{
-			FilePaths = ["/test/image.jpg"],
-			Collections = true,
-			CorrectionRequest = null
+			FilePaths = ["/test/image.jpg"], Collections = true, CorrectionRequest = null
 		};
 
 		// Act
@@ -262,14 +233,14 @@ public class BatchRenameControllerDatetimeRepairTest
 	{
 		// Arrange
 		var query = new FakeIQuery([
-			new("/test/20240313_011530_IMG_001.jpg")
+			new FileIndexItem("/test/20240313_011530_IMG_001.jpg")
 			{
 				FileName = "20240313_011530_IMG_001.jpg",
 				ParentDirectory = "/test",
 				Status = FileIndexItem.ExifStatus.Ok
 			},
 
-			new("/test/20240313_021530_IMG_002.jpg")
+			new FileIndexItem("/test/20240313_021530_IMG_002.jpg")
 			{
 				FileName = "20240313_021530_IMG_002.jpg",
 				ParentDirectory = "/test",
@@ -281,11 +252,12 @@ public class BatchRenameControllerDatetimeRepairTest
 		]));
 		var logger = new FakeIWebLogger();
 		var controller =
-			new BatchRenameController(query, selectorStorage, logger, new AppSettings());
+			new BatchRenameDateTimeController(query, selectorStorage, logger);
 
 		var request = new FilenameDatetimeRepairRequest
 		{
-			FilePaths = ["/test/20240313_011530_IMG_001.jpg", "/test/20240313_021530_IMG_002.jpg"],
+			FilePaths =
+				["/test/20240313_011530_IMG_001.jpg", "/test/20240313_021530_IMG_002.jpg"],
 			Collections = false,
 			CorrectionRequest = new { hour = 1 }
 		};

@@ -46,15 +46,14 @@ public class FilenameDatetimeRepairServiceTest
 	public void PreviewRepair_WithYYYYMMDD_HHMMSS_Pattern_DetectsCorrectly()
 	{
 		// Arrange
-		var query = new FakeIQuery(new List<FileIndexItem>
-		{
-			new("/test/20240313_011530_IMG_001.jpg")
+		var query = new FakeIQuery([
+			new FileIndexItem("/test/20240313_011530_IMG_001.jpg")
 			{
 				FileName = "20240313_011530_IMG_001.jpg",
 				ParentDirectory = "/test",
 				Status = FileIndexItem.ExifStatus.Ok
 			}
-		});
+		]);
 		var storage = new FakeIStorage();
 		var logger = new FakeIWebLogger();
 		var sut = new FilenameDatetimeRepairService(query, storage, logger);
@@ -82,15 +81,14 @@ public class FilenameDatetimeRepairServiceTest
 	public void PreviewRepair_WithYYYYMMDD_HHMM_Pattern_DetectsCorrectly()
 	{
 		// Arrange
-		var query = new FakeIQuery(new List<FileIndexItem>
-		{
-			new("/test/20240313_0115_photo.jpg")
+		var query = new FakeIQuery([
+			new FileIndexItem("/test/20240313_0115_photo.jpg")
 			{
 				FileName = "20240313_0115_photo.jpg",
 				ParentDirectory = "/test",
 				Status = FileIndexItem.ExifStatus.Ok
 			}
-		});
+		]);
 		var storage = new FakeIStorage();
 		var logger = new FakeIWebLogger();
 		var sut = new FilenameDatetimeRepairService(query, storage, logger);
@@ -116,15 +114,14 @@ public class FilenameDatetimeRepairServiceTest
 	public void PreviewRepair_WithYYYYMMDD_Pattern_DetectsCorrectly()
 	{
 		// Arrange
-		var query = new FakeIQuery(new List<FileIndexItem>
-		{
-			new("/test/20240313_vacation.jpg")
+		var query = new FakeIQuery([
+			new FileIndexItem("/test/20240313_vacation.jpg")
 			{
 				FileName = "20240313_vacation.jpg",
 				ParentDirectory = "/test",
 				Status = FileIndexItem.ExifStatus.Ok
 			}
-		});
+		]);
 		var storage = new FakeIStorage();
 		var logger = new FakeIWebLogger();
 		var sut = new FilenameDatetimeRepairService(query, storage, logger);
@@ -149,15 +146,14 @@ public class FilenameDatetimeRepairServiceTest
 	public void PreviewRepair_WithTimezoneOffset_CalculatesCorrectly()
 	{
 		// Arrange
-		var query = new FakeIQuery(new List<FileIndexItem>
-		{
-			new("/test/20240313_011530_IMG_001.jpg")
+		var query = new FakeIQuery([
+			new FileIndexItem("/test/20240313_011530_IMG_001.jpg")
 			{
 				FileName = "20240313_011530_IMG_001.jpg",
 				ParentDirectory = "/test",
 				Status = FileIndexItem.ExifStatus.Ok
 			}
-		});
+		]);
 		var storage = new FakeIStorage();
 		var logger = new FakeIWebLogger();
 		var sut = new FilenameDatetimeRepairService(query, storage, logger);
@@ -176,7 +172,7 @@ public class FilenameDatetimeRepairServiceTest
 		Assert.HasCount(1, result);
 		Assert.IsFalse(result[0].HasError);
 		Assert.AreEqual(new DateTime(2024, 3, 13, 1, 15, 30), result[0].OriginalDateTime);
-		// March 13, 2024 is after DST change (March 31 in Europe), so UTC+1
+		// 2024-03-13 is after DST change (March 31 in Europe), so UTC+1
 		Assert.AreEqual(new DateTime(2024, 3, 13, 2, 15, 30), result[0].CorrectedDateTime);
 		Assert.AreEqual("/test/20240313_021530_IMG_001.jpg", result[0].TargetFilePath);
 		Assert.AreEqual(1.0, result[0].OffsetHours);
@@ -186,15 +182,14 @@ public class FilenameDatetimeRepairServiceTest
 	public void PreviewRepair_WithCustomOffset_OneHour_CalculatesCorrectly()
 	{
 		// Arrange
-		var query = new FakeIQuery(new List<FileIndexItem>
-		{
-			new("/test/20240313_011530_IMG_001.jpg")
+		var query = new FakeIQuery([
+			new FileIndexItem("/test/20240313_011530_IMG_001.jpg")
 			{
 				FileName = "20240313_011530_IMG_001.jpg",
 				ParentDirectory = "/test",
 				Status = FileIndexItem.ExifStatus.Ok
 			}
-		});
+		]);
 		var storage = new FakeIStorage();
 		var logger = new FakeIWebLogger();
 		var sut = new FilenameDatetimeRepairService(query, storage, logger);
@@ -225,15 +220,14 @@ public class FilenameDatetimeRepairServiceTest
 	public void PreviewRepair_WithCustomOffset_MultipleComponents_CalculatesCorrectly()
 	{
 		// Arrange
-		var query = new FakeIQuery(new List<FileIndexItem>
-		{
-			new("/test/20240313_011530_IMG_001.jpg")
+		var query = new FakeIQuery([
+			new FileIndexItem("/test/20240313_011530_IMG_001.jpg")
 			{
 				FileName = "20240313_011530_IMG_001.jpg",
 				ParentDirectory = "/test",
 				Status = FileIndexItem.ExifStatus.Ok
 			}
-		});
+		]);
 		var storage = new FakeIStorage();
 		var logger = new FakeIWebLogger();
 		var sut = new FilenameDatetimeRepairService(query, storage, logger);
@@ -265,15 +259,14 @@ public class FilenameDatetimeRepairServiceTest
 	public void PreviewRepair_DayRollover_ShowsWarning()
 	{
 		// Arrange
-		var query = new FakeIQuery(new List<FileIndexItem>
-		{
-			new("/test/20240313_233000_IMG_001.jpg")
+		var query = new FakeIQuery([
+			new FileIndexItem("/test/20240313_233000_IMG_001.jpg")
 			{
 				FileName = "20240313_233000_IMG_001.jpg",
 				ParentDirectory = "/test",
 				Status = FileIndexItem.ExifStatus.Ok
 			}
-		});
+		]);
 		var storage = new FakeIStorage();
 		var logger = new FakeIWebLogger();
 		var sut = new FilenameDatetimeRepairService(query, storage, logger);
@@ -299,20 +292,16 @@ public class FilenameDatetimeRepairServiceTest
 	public void PreviewRepair_WithCollections_IncludesRelatedFiles()
 	{
 		// Arrange
-		var query = new FakeIQuery(new List<FileIndexItem>
-		{
-			new("/test/20240313_011530_IMG_001.jpg")
+		var query = new FakeIQuery([
+			new FileIndexItem("/test/20240313_011530_IMG_001.jpg")
 			{
 				FileName = "20240313_011530_IMG_001.jpg",
 				ParentDirectory = "/test",
 				Status = FileIndexItem.ExifStatus.Ok,
-				CollectionPaths = new List<string>
-				{
-					"/test/20240313_011530_IMG_001.jpg",
-					"/test/20240313_011530_IMG_001.xmp"
-				}
+				CollectionPaths =
+					["/test/20240313_011530_IMG_001.jpg", "/test/20240313_011530_IMG_001.xmp"]
 			}
-		});
+		]);
 		var storage = new FakeIStorage();
 		var logger = new FakeIWebLogger();
 		var sut = new FilenameDatetimeRepairService(query, storage, logger);
@@ -354,16 +343,15 @@ public class FilenameDatetimeRepairServiceTest
 	public async Task ExecuteRepairAsync_ValidMapping_RenamesFile()
 	{
 		// Arrange
-		var query = new FakeIQuery(new List<FileIndexItem>
-		{
-			new("/test/20240313_011530_IMG_001.jpg")
+		var query = new FakeIQuery([
+			new FileIndexItem("/test/20240313_011530_IMG_001.jpg")
 			{
 				FileName = "20240313_011530_IMG_001.jpg",
 				ParentDirectory = "/test",
 				Status = FileIndexItem.ExifStatus.Ok
 			}
-		});
-		var storage = new FakeIStorage(new List<string> { "/test/20240313_011530_IMG_001.jpg" });
+		]);
+		var storage = new FakeIStorage(["/test/20240313_011530_IMG_001.jpg"]);
 		var logger = new FakeIWebLogger();
 		var sut = new FilenameDatetimeRepairService(query, storage, logger);
 
@@ -413,15 +401,14 @@ public class FilenameDatetimeRepairServiceTest
 	public async Task ExecuteRepairAsync_SameSourceAndTarget_SkipsFile()
 	{
 		// Arrange
-		var query = new FakeIQuery(new List<FileIndexItem>
-		{
-			new("/test/image.jpg")
+		var query = new FakeIQuery([
+			new FileIndexItem("/test/image.jpg")
 			{
 				FileName = "image.jpg",
 				ParentDirectory = "/test",
 				Status = FileIndexItem.ExifStatus.Ok
 			}
-		});
+		]);
 		var storage = new FakeIStorage();
 		var logger = new FakeIWebLogger();
 		var sut = new FilenameDatetimeRepairService(query, storage, logger);
@@ -448,19 +435,17 @@ public class FilenameDatetimeRepairServiceTest
 	public async Task ExecuteRepairAsync_WithRelatedFiles_RenamesSidecars()
 	{
 		// Arrange
-		var query = new FakeIQuery(new List<FileIndexItem>
-		{
-			new("/test/20240313_011530_IMG_001.jpg")
+		var query = new FakeIQuery([
+			new FileIndexItem("/test/20240313_011530_IMG_001.jpg")
 			{
 				FileName = "20240313_011530_IMG_001.jpg",
 				ParentDirectory = "/test",
 				Status = FileIndexItem.ExifStatus.Ok
 			}
-		});
-		var storage = new FakeIStorage(new List<string>
-		{
+		]);
+		var storage = new FakeIStorage([
 			"/test/20240313_011530_IMG_001.jpg", "/test/20240313_011530_IMG_001.xmp"
-		});
+		]);
 		var logger = new FakeIWebLogger();
 		var sut = new FilenameDatetimeRepairService(query, storage, logger);
 
@@ -470,11 +455,11 @@ public class FilenameDatetimeRepairServiceTest
 			{
 				SourceFilePath = "/test/20240313_011530_IMG_001.jpg",
 				TargetFilePath = "/test/20240313_021530_IMG_001.jpg",
-				RelatedFilePaths = new List<string>
-				{
+				RelatedFilePaths =
+				[
 					"/test/20240313_011530_IMG_001.jpg",
 					"/test/20240313_011530_IMG_001.xmp"
-				},
+				],
 				HasError = false
 			}
 		};
@@ -492,27 +477,28 @@ public class FilenameDatetimeRepairServiceTest
 	public void PreviewRepair_MultipleFFiles_ProcessesAll()
 	{
 		// Arrange
-		var query = new FakeIQuery(new List<FileIndexItem>
-		{
-			new("/test/20240313_011530_IMG_001.jpg")
+		var query = new FakeIQuery([
+			new FileIndexItem("/test/20240313_011530_IMG_001.jpg")
 			{
 				FileName = "20240313_011530_IMG_001.jpg",
 				ParentDirectory = "/test",
 				Status = FileIndexItem.ExifStatus.Ok
 			},
-			new("/test/20240313_021530_IMG_002.jpg")
+
+			new FileIndexItem("/test/20240313_021530_IMG_002.jpg")
 			{
 				FileName = "20240313_021530_IMG_002.jpg",
 				ParentDirectory = "/test",
 				Status = FileIndexItem.ExifStatus.Ok
 			},
-			new("/test/image_no_pattern.jpg")
+
+			new FileIndexItem("/test/image_no_pattern.jpg")
 			{
 				FileName = "image_no_pattern.jpg",
 				ParentDirectory = "/test",
 				Status = FileIndexItem.ExifStatus.Ok
 			}
-		});
+		]);
 		var storage = new FakeIStorage();
 		var logger = new FakeIWebLogger();
 		var sut = new FilenameDatetimeRepairService(query, storage, logger);
@@ -539,15 +525,14 @@ public class FilenameDatetimeRepairServiceTest
 	public void PreviewRepair_NegativeOffset_MovesBackward()
 	{
 		// Arrange
-		var query = new FakeIQuery(new List<FileIndexItem>
-		{
-			new("/test/20240313_051530_IMG_001.jpg")
+		var query = new FakeIQuery([
+			new FileIndexItem("/test/20240313_051530_IMG_001.jpg")
 			{
 				FileName = "20240313_051530_IMG_001.jpg",
 				ParentDirectory = "/test",
 				Status = FileIndexItem.ExifStatus.Ok
 			}
-		});
+		]);
 		var storage = new FakeIStorage();
 		var logger = new FakeIWebLogger();
 		var sut = new FilenameDatetimeRepairService(query, storage, logger);
