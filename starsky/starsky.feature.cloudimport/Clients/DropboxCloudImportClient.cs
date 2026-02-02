@@ -120,8 +120,8 @@ public class DropboxCloudImportClient(
 		{
 			EnsureClient();
 			var result = await _client!.ListFolderAsync(string.Empty);
-			logger.LogInformation(
-				"Successfully connected to Dropbox that has {0} files", result.Entries.Count);
+			logger.LogDebug(
+				$"Successfully connected to Dropbox that has {result.Entries.Count} files");
 			return true;
 		}
 		catch ( Exception ex )
