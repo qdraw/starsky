@@ -174,7 +174,7 @@ export const FileRenameMode: React.FC<IRenderFileRenameModeProps> = (props) => {
 
                 <div className="batch-rename-preview-list">
                   {renamePreview.map((item, index) => {
-                    if (!item || !item.sourceFilePath || !item.targetFilePath) return null;
+                    if (!item || !item.sourceFilePath) return null;
                     const fileName = new FileExtensions().GetFileName(item.sourceFilePath);
                     const targetFileName = new FileExtensions().GetFileName(item.targetFilePath);
 
@@ -184,8 +184,12 @@ export const FileRenameMode: React.FC<IRenderFileRenameModeProps> = (props) => {
                         className={`preview-item ${item.hasError ? "preview-item--error" : ""}`}
                       >
                         <span className="preview-source">{fileName}</span>
-                        <span className="preview-arrow">→</span>
-                        <span className="preview-target">{targetFileName}</span>
+                        {targetFileName && (
+                          <>
+                            <span className="preview-arrow">→</span>
+                            <span className="preview-target">{targetFileName}</span>
+                          </>
+                        )}
                         {item.hasError && (
                           <span className="preview-error-message">
                             {item.errorMessage || "Error"}
