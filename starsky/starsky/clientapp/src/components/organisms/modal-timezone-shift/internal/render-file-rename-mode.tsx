@@ -152,12 +152,13 @@ export const FileRenameMode: React.FC<IRenderFileRenameModeProps> = (props) => {
       </div>
       <div className="modal content--text">
         <div className="form-row">
-          <label>
+          <label className="custom-checkbox">
             <input
               type="checkbox"
               checked={shouldRename}
               onChange={(e) => setShouldRename(e.target.checked)}
-            />{" "}
+            />
+            <span className="custom-checkbox-box" />
             {language.key(localization.MessageRenameFilesAfterShiftingTimestamps)}
           </label>
         </div>
@@ -167,29 +168,44 @@ export const FileRenameMode: React.FC<IRenderFileRenameModeProps> = (props) => {
         ) : (
           <>
             {shouldRename && renamePreview.length > 0 && (
-              <div className="batch-rename-preview-list">
-                {renamePreview.map((item, index) => {
-                  if (!item || !item.sourceFilePath || !item.targetFilePath) return null;
-                  const fileName = new FileExtensions().GetFileName(item.sourceFilePath);
-                  const targetFileName = new FileExtensions().GetFileName(item.targetFilePath);
+              <>
+                <p>&nbsp;</p>
+                <h2>{language.key(localization.MessagePreviewOfFileChanges)}</h2>
 
-                  return (
-                    <div
-                      key={`${item.sourceFilePath}-${index}`}
-                      className={`preview-item ${item.hasError ? "preview-item--error" : ""}`}
-                    >
-                      <span className="preview-source">{fileName}</span>
-                      <span className="preview-arrow">→</span>
-                      <span className="preview-target">{targetFileName}</span>
-                      {item.hasError && (
-                        <span className="preview-error-message">
-                          {item.errorMessage || "Error"}
-                        </span>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+                <div className="batch-rename-preview-list">
+                  {renamePreview.map((item, index) => {
+                    if (!item || !item.sourceFilePath || !item.targetFilePath) return null;
+                    const fileName = new FileExtensions().GetFileName(item.sourceFilePath);
+                    const targetFileName = new FileExtensions().GetFileName(item.targetFilePath);
+
+                    return (
+                      <div
+                        key={`${item.sourceFilePath}-${index}`}
+                        className={`preview-item ${item.hasError ? "preview-item--error" : ""}`}
+                      >
+                        <span className="preview-source">{fileName}</span>
+                        <span className="preview-arrow">→</span>
+                        <span className="preview-target">{targetFileName}</span>
+                        {item.hasError && (
+                          <span className="preview-error-message">
+                            {item.errorMessage || "Error"}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+                {hasErrors && (
+                  <p className="warning">
+                    ⚠ {language.key(localization.MessageSomeFilesHaveErrors)}
+                  </p>
+                )}
+                {!hasErrors && (
+                  <p className="warning">
+                    ⚠ {language.key(localization.MessageExistingFilenamesWillBeReplaced)}
+                  </p>
+                )}
+              </>
             )}
           </>
         )}

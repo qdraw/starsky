@@ -1259,25 +1259,15 @@
     "nl": "Bestanden hernoemen na tijdstempel verschuiving",
     "de": "Dateien nach Zeitstempelverschiebung umbenennen"
   },
-  "MessagePreviewListOfFiles": {
-    "en": "Preview list of files",
-    "nl": "Voorbeeldlijst van bestanden",
-    "de": "Vorschau der Dateiliste"
-  },
-  "MessageOriginalFilename": {
-    "en": "Original filename",
-    "nl": "Originele bestandsnaam",
-    "de": "Ursprünglicher Dateiname"
-  },
-  "MessageNewFilename": {
-    "en": "New filename",
-    "nl": "Nieuwe bestandsnaam",
-    "de": "Neuer Dateiname"
+  "MessagePreviewOfFileChanges": {
+    "en": "Preview of file changes",
+    "nl": "Voorbeeld van bestand wijzigingen",
+    "de": "Vorschau der Dateiauswahl"
   },
   "MessageExistingFilenamesWillBeReplaced": {
     "en": "Existing filenames will be replaced",
     "nl": "Bestaande bestandsnamen worden vervangen",
-    "de": "Vorhandene Dateinamen werden ersetzt"
+    "de": "Vorhandene Dateinamen wurden ersetzt"
   },
   "MessageReplace": {
     "en": "Replace",
