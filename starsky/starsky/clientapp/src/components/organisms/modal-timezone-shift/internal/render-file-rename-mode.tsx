@@ -9,6 +9,7 @@ import {
 import { IFileIndexItem } from "../../../../interfaces/IFileIndexItem";
 import localization from "../../../../localization/localization.json";
 import FetchPost from "../../../../shared/fetch/fetch-post";
+import { FileExtensions } from "../../../../shared/file-extensions";
 import { Language } from "../../../../shared/language";
 import { URLPath } from "../../../../shared/url/url-path";
 import { UrlQuery } from "../../../../shared/url/url-query";
@@ -20,7 +21,6 @@ export interface IRenderFileRenameModeProps {
   select: string[];
   state: IArchiveProps;
   fileRenameState: IFileRenameState;
-  handleBack: () => void;
   handleExit: () => void;
   dispatch: React.Dispatch<ArchiveAction>;
   historyLocationSearch: string;
@@ -167,50 +167,27 @@ export const FileRenameMode: React.FC<IRenderFileRenameModeProps> = (props) => {
         ) : (
           <>
             {shouldRename && renamePreview.length > 0 && (
-              <div className="rename-preview">
-                <h3>{language.key(localization.MessagePreviewListOfFiles)}</h3>
-                <div className="rename-list">
-                  <div className="rename-list-header">
-                    <div className="rename-list-col">
-                      {language.key(localization.MessageOriginalFilename)}
-                    </div>
-                    <div className="rename-list-col">
-                      {language.key(localization.MessageNewFilename)}
-                    </div>
-                  </div>
-                  {renamePreview.map((item, index) => {
-                    if (!item || !item.sourceFilePath) return null;
-                    const sourceName = item.sourceFilePath.split("/").pop() || item.sourceFilePath;
-                    const targetName =
-                      item.targetFilePath?.split("/").pop() || item.targetFilePath || "";
+              <div className="batch-rename-preview-list">
+                {renamePreview.map((item, index) => {
+                  const fileName = new FileExtensions().GetFileName(item.sourceFilePath);
+                  const targetFileName = new FileExtensions().GetFileName(item.targetFilePath);
 
-                    return (
-                      <div
-                        key={index}
-                        className={`rename-list-row ${item.hasError ? "error" : ""}`}
-                      >
-                        <div className="rename-list-col">{sourceName}</div>
-                        <div className="rename-list-col">
-                          {item.hasError ? (
-                            <span className="error">{item.errorMessage}</span>
-                          ) : (
-                            targetName
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-                {hasErrors && (
-                  <p className="warning">
-                    ⚠ {language.key(localization.MessageSomeFilesHaveErrors)}
-                  </p>
-                )}
-                {!hasErrors && (
-                  <p className="warning">
-                    ⚠ {language.key(localization.MessageExistingFilenamesWillBeReplaced)}
-                  </p>
-                )}
+                  return (
+                    <div
+                      key={`${item.sourceFilePath}-${index}`}
+                      className={`preview-item ${item.hasError ? "preview-item--error" : ""}`}
+                    >
+                      <span className="preview-source">{fileName}</span>
+                      <span className="preview-arrow">→</span>
+                      <span className="preview-target">{targetFileName}</span>
+                      {item.hasError && (
+                        <span className="preview-error-message">
+                          {item.errorMessage || "Error"}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             )}
           </>

@@ -38,13 +38,9 @@ export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
     timezoneState,
     previewState,
     handleBack,
-    handleExit,
     dispatch,
     historyLocationSearch,
-    undoSelection,
-    collections,
-    setCurrentStep,
-    fileRenameState
+    collections
   } = props;
   const {
     preview,
@@ -178,52 +174,25 @@ export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
           <button
             className="btn btn--default"
             onClick={async () => {
-              if (setCurrentStep && fileRenameState) {
-                // Execute shift first, then navigate to rename step
-                setIsExecuting(true);
-                const success = await executeShift(
-                  {
-                    select,
-                    state,
-                    isOffset: false,
-                    timezoneData: {
-                      recordedTimezoneId,
-                      correctTimezoneId
-                    },
-                    historyLocationSearch
+              // Execute shift first, then navigate to rename step
+              setIsExecuting(true);
+              await executeShift(
+                {
+                  select,
+                  state,
+                  isOffset: false,
+                  timezoneData: {
+                    recordedTimezoneId,
+                    correctTimezoneId
                   },
-                  () => {}, // Don't update executing state from here
-                  () => {}, // Don't update error from here
-                  () => {}, // Don't exit yet
-                  () => {}, // Don't undo selection yet
-                  dispatch,
-                  collections
-                );
-                setIsExecuting(false);
-                if (success !== false) {
-                  // Navigate to rename step - preview will load there
-                  setCurrentStep("file-rename-timezone");
-                }
-              } else {
-                executeShift(
-                  {
-                    select,
-                    state,
-                    isOffset: false,
-                    timezoneData: {
-                      recordedTimezoneId,
-                      correctTimezoneId
-                    },
-                    historyLocationSearch
-                  },
-                  setIsExecuting,
-                  setError,
-                  handleExit,
-                  undoSelection,
-                  dispatch,
-                  collections
-                );
-              }
+                  historyLocationSearch
+                },
+                setIsLoadingPreview,
+                setError,
+                dispatch,
+                collections
+              );
+              setIsExecuting(false);
             }}
             disabled={
               isExecuting ||
@@ -233,9 +202,7 @@ export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
           >
             {isExecuting
               ? language.key(localization.MessageLoading)
-              : setCurrentStep
-                ? language.key(localization.MessageNext)
-                : language.key(localization.MessageApplyShift)}{" "}
+              : language.key(localization.MessageApplyShift)}
           </button>
         </div>
       </div>

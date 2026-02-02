@@ -14,7 +14,7 @@ import { formatOffsetLabel } from "./format-offset-label";
 import { generateOffsetPreview } from "./generate-offset-preview";
 import { PreviewErrorFiles } from "./preview-error-files";
 
-export interface IRenderTimezoneModeProps {
+export interface IRenderOffsetModeProps {
   offsetState: ReturnType<typeof useOffsetState>;
   previewState: IPreviewState;
   select: string[];
@@ -25,24 +25,21 @@ export interface IRenderTimezoneModeProps {
   historyLocationSearch: string;
   undoSelection: () => void;
   collections: boolean;
-  setCurrentStep?: (step: ShiftMode) => void;
-  fileRenameState?: IFileRenameState;
+  setCurrentStep: (step: ShiftMode) => void;
+  fileRenameState: IFileRenameState;
 }
 
-export function renderOffsetMode(props: IRenderTimezoneModeProps) {
+export function renderOffsetMode(props: IRenderOffsetModeProps) {
   const {
     offsetState,
     previewState,
     select,
     state,
     handleBack,
-    handleExit,
     dispatch,
     historyLocationSearch,
-    undoSelection,
     collections,
-    setCurrentStep,
-    fileRenameState
+    setCurrentStep
   } = props;
   const {
     offsetYears,
@@ -271,59 +268,30 @@ export function renderOffsetMode(props: IRenderTimezoneModeProps) {
           <button
             className="btn btn--default"
             onClick={async () => {
-              if (setCurrentStep && fileRenameState) {
-                // Execute shift first, then navigate to rename step
-                setIsLoadingPreview(true);
-                const success = await executeShift(
-                  {
-                    select,
-                    state,
-                    isOffset: true,
-                    offsetData: {
-                      year: offsetYears,
-                      month: offsetMonths,
-                      day: offsetDays,
-                      hour: offsetHours,
-                      minute: offsetMinutes,
-                      second: offsetSeconds
-                    },
-                    historyLocationSearch: historyLocationSearch
+              setIsLoadingPreview(true);
+              const success = await executeShift(
+                {
+                  select,
+                  state,
+                  isOffset: true,
+                  offsetData: {
+                    year: offsetYears,
+                    month: offsetMonths,
+                    day: offsetDays,
+                    hour: offsetHours,
+                    minute: offsetMinutes,
+                    second: offsetSeconds
                   },
-                  () => {}, // Don't update loading state from here
-                  () => {}, // Don't update error from here
-                  () => {}, // Don't exit yet
-                  () => {}, // Don't undo selection yet
-                  dispatch,
-                  collections
-                );
-                setIsLoadingPreview(false);
-                if (success !== false) {
-                  // Navigate to rename step - preview will load there
-                  setCurrentStep("file-rename-offset");
-                }
-              } else {
-                executeShift(
-                  {
-                    select,
-                    state,
-                    isOffset: true,
-                    offsetData: {
-                      year: offsetYears,
-                      month: offsetMonths,
-                      day: offsetDays,
-                      hour: offsetHours,
-                      minute: offsetMinutes,
-                      second: offsetSeconds
-                    },
-                    historyLocationSearch: historyLocationSearch
-                  },
-                  setIsLoadingPreview,
-                  setError,
-                  handleExit,
-                  undoSelection,
-                  dispatch,
-                  collections
-                );
+                  historyLocationSearch: historyLocationSearch
+                },
+                setIsLoadingPreview,
+                setError,
+                dispatch,
+                collections
+              );
+              if (success !== false) {
+                // Navigate to rename step - preview will load there
+                setCurrentStep("file-rename-offset");
               }
             }}
             disabled={
@@ -334,9 +302,7 @@ export function renderOffsetMode(props: IRenderTimezoneModeProps) {
           >
             {isExecuting
               ? language.key(localization.MessageLoading)
-              : setCurrentStep
-                ? language.key(localization.MessageNext)
-                : language.key(localization.MessageApplyShift)}
+              : language.key(localization.MessageApplyShift)}
           </button>
         </div>
       </div>

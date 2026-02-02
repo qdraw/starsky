@@ -68,8 +68,6 @@ describe("executeShift", () => {
         },
         mockSetIsExecuting,
         mockSetError,
-        mockHandleExit,
-        jest.fn(),
         mockDispatch,
         true
       );
@@ -133,8 +131,6 @@ describe("executeShift", () => {
         },
         mockSetIsExecuting,
         mockSetError,
-        mockHandleExit,
-        jest.fn(),
         mockDispatch,
         true
       );
@@ -158,7 +154,6 @@ describe("executeShift", () => {
         type: "add",
         add: [mockFileIndexItem]
       });
-      expect(mockHandleExit).toHaveBeenCalled();
       expect(mockSetIsExecuting).toHaveBeenNthCalledWith(2, false);
       expect(clearSearchCacheSpy).toHaveBeenCalled();
     });
@@ -198,8 +193,6 @@ describe("executeShift", () => {
         },
         mockSetIsExecuting,
         mockSetError,
-        mockHandleExit,
-        jest.fn(),
         mockDispatch,
         true
       );
@@ -218,7 +211,6 @@ describe("executeShift", () => {
         { "Content-Type": "application/json" }
       );
       expect(mockDispatch).toHaveBeenCalled();
-      expect(mockHandleExit).toHaveBeenCalled();
       expect(clearSearchCacheSpy).toHaveBeenCalled();
     });
 
@@ -249,8 +241,6 @@ describe("executeShift", () => {
         },
         mockSetIsExecuting,
         mockSetError,
-        mockHandleExit,
-        jest.fn(),
         mockDispatch,
         true
       );
@@ -269,7 +259,6 @@ describe("executeShift", () => {
         { "Content-Type": "application/json" }
       );
       expect(mockDispatch).toHaveBeenCalled();
-      expect(mockHandleExit).toHaveBeenCalled();
       expect(clearSearchCacheSpy).toHaveBeenCalled();
     });
 
@@ -314,8 +303,6 @@ describe("executeShift", () => {
         },
         mockSetIsExecuting,
         mockSetError,
-        mockHandleExit,
-        jest.fn(),
         mockDispatch,
         true
       );
@@ -324,7 +311,6 @@ describe("executeShift", () => {
         type: "add",
         add: [mockFileIndexItem, mockFile2]
       });
-      expect(mockHandleExit).toHaveBeenCalled();
       expect(clearSearchCacheSpy).toHaveBeenCalled();
     });
   });
@@ -379,8 +365,6 @@ describe("executeShift", () => {
         },
         mockSetIsExecuting,
         mockSetError,
-        mockHandleExit,
-        jest.fn(),
         mockDispatch,
         true
       );
@@ -395,7 +379,6 @@ describe("executeShift", () => {
         { "Content-Type": "application/json" }
       );
       expect(mockDispatch).toHaveBeenCalled();
-      expect(mockHandleExit).toHaveBeenCalled();
       expect(clearSearchCacheSpy).toHaveBeenCalled();
     });
 
@@ -426,8 +409,6 @@ describe("executeShift", () => {
         },
         mockSetIsExecuting,
         mockSetError,
-        mockHandleExit,
-        jest.fn(),
         mockDispatch,
         true
       );
@@ -442,7 +423,6 @@ describe("executeShift", () => {
         { "Content-Type": "application/json" }
       );
       expect(mockDispatch).toHaveBeenCalled();
-      expect(mockHandleExit).toHaveBeenCalled();
     });
   });
 
@@ -480,8 +460,6 @@ describe("executeShift", () => {
         },
         mockSetIsExecuting,
         mockSetError,
-        mockHandleExit,
-        jest.fn(),
         mockDispatch,
         true
       );
@@ -507,8 +485,6 @@ describe("executeShift", () => {
         },
         mockSetIsExecuting,
         mockSetError,
-        mockHandleExit,
-        jest.fn(),
         mockDispatch,
         true
       );
@@ -534,8 +510,6 @@ describe("executeShift", () => {
         },
         mockSetIsExecuting,
         mockSetError,
-        mockHandleExit,
-        jest.fn(),
         mockDispatch,
         true
       );
@@ -560,8 +534,6 @@ describe("executeShift", () => {
         },
         mockSetIsExecuting,
         mockSetError,
-        mockHandleExit,
-        jest.fn(),
         mockDispatch,
         true
       );
@@ -583,8 +555,6 @@ describe("executeShift", () => {
         },
         mockSetIsExecuting,
         mockSetError,
-        mockHandleExit,
-        jest.fn(),
         mockDispatch,
         true
       );
@@ -607,8 +577,6 @@ describe("executeShift", () => {
         },
         mockSetIsExecuting,
         mockSetError,
-        mockHandleExit,
-        jest.fn(),
         mockDispatch,
         true
       );
@@ -633,8 +601,6 @@ describe("executeShift", () => {
         },
         mockSetIsExecuting,
         mockSetError,
-        mockHandleExit,
-        jest.fn(),
         mockDispatch,
         true
       );
@@ -657,8 +623,6 @@ describe("executeShift", () => {
         },
         mockSetIsExecuting,
         mockSetError,
-        mockHandleExit,
-        jest.fn(),
         mockDispatch,
         true
       );
@@ -711,8 +675,6 @@ describe("executeShift", () => {
         },
         mockSetIsExecuting,
         mockSetError,
-        mockHandleExit,
-        jest.fn(),
         mockDispatch,
         true
       );
@@ -747,8 +709,6 @@ describe("executeShift", () => {
         },
         mockSetIsExecuting,
         mockSetError,
-        mockHandleExit,
-        jest.fn(),
         mockDispatch,
         true
       );
@@ -757,43 +717,10 @@ describe("executeShift", () => {
       expect(mockSetError).toHaveBeenCalledWith(null);
     });
 
-    it("calls handleExit only on success", async () => {
-      const mockResult: IExifTimezoneCorrectionResult = {
-        success: true,
-        originalDateTime: "2024-08-12T14:32:00",
-        correctedDateTime: "2024-08-12T17:32:00",
-        delta: "+03:00:00",
-        warning: "",
-        error: "",
-        fileIndexItem: mockFileIndexItem
-      };
-      jest.spyOn(ClearSearchCache, "ClearSearchCache").mockImplementationOnce(() => {});
-
-      jest.spyOn(FetchPost, "default").mockResolvedValue({
-        statusCode: 200,
-        data: [mockResult]
-      });
-
-      await executeShift(
-        {
-          select: ["/test.jpg"],
-          state: mockState,
-          isOffset: true,
-          historyLocationSearch: ""
-        },
-        mockSetIsExecuting,
-        mockSetError,
-        mockHandleExit,
-        jest.fn(),
-        mockDispatch,
-        true
-      );
-
-      expect(mockHandleExit).toHaveBeenCalledTimes(1);
-    });
-
     it("does not call handleExit on error", async () => {
-      jest.spyOn(FetchPost, "default").mockRejectedValue(new Error("Network error"));
+      const fetchPostSpyOn = jest
+        .spyOn(FetchPost, "default")
+        .mockRejectedValue(new Error("Network error"));
 
       await executeShift(
         {
@@ -804,13 +731,11 @@ describe("executeShift", () => {
         },
         mockSetIsExecuting,
         mockSetError,
-        mockHandleExit,
-        jest.fn(),
         mockDispatch,
         true
       );
 
-      expect(mockHandleExit).not.toHaveBeenCalled();
+      expect(fetchPostSpyOn).toHaveBeenCalled();
     });
 
     it("calls dispatch with correct action on success", async () => {
@@ -838,8 +763,6 @@ describe("executeShift", () => {
         },
         mockSetIsExecuting,
         mockSetError,
-        mockHandleExit,
-        jest.fn(),
         mockDispatch,
         true
       );
@@ -862,8 +785,6 @@ describe("executeShift", () => {
         },
         mockSetIsExecuting,
         mockSetError,
-        mockHandleExit,
-        jest.fn(),
         mockDispatch,
         true
       );
@@ -894,8 +815,6 @@ describe("executeShift", () => {
         // Mocks
         const setIsExecuting = jest.fn();
         const setError = jest.fn();
-        const handleExit = jest.fn();
-        const undoSelection = jest.fn();
         const dispatch = jest.fn();
 
         // Mock FetchPost
@@ -938,8 +857,6 @@ describe("executeShift", () => {
           { select, state, isOffset, timezoneData, historyLocationSearch },
           setIsExecuting,
           setError,
-          handleExit,
-          undoSelection,
           dispatch,
           collections
         );
@@ -965,7 +882,6 @@ describe("executeShift", () => {
             { fileName: "file2.jpg", filePath: "/test/file2.jpg", parentDirectory: "/test" }
           ]
         });
-        expect(handleExit).toHaveBeenCalled();
         expect(setIsExecuting).toHaveBeenCalledWith(false);
       });
     }
