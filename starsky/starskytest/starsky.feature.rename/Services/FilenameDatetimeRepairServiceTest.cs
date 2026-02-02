@@ -14,10 +14,11 @@ namespace starskytest.starsky.feature.rename.Services;
 [TestClass]
 public class FilenameDatetimeRepairServiceTest
 {
-	private static FilenameDatetimeRepairService CreateSut()
+	private static FilenameDatetimeRepairService CreateSut(FakeIStorage? storage = null,
+		FakeIQuery? query = null)
 	{
-		var query = new FakeIQuery();
-		var storage = new FakeIStorage();
+		query ??= new FakeIQuery();
+		storage ??= new FakeIStorage();
 		var logger = new FakeIWebLogger();
 		return new FilenameDatetimeRepairService(query, storage, logger);
 	}
@@ -26,7 +27,10 @@ public class FilenameDatetimeRepairServiceTest
 	public void PreviewRepair_NoDatetimePattern_ReturnsError()
 	{
 		// Arrange
-		var sut = CreateSut();
+		var sut = CreateSut(new FakeIStorage(
+				["/test"],
+				["/test/image.jpg"]),
+			new FakeIQuery([new FileIndexItem("/test/image.jpg")]));
 		var filePaths = new List<string> { "/test/image.jpg" };
 		var request = new ExifTimezoneBasedCorrectionRequest
 		{
@@ -300,9 +304,21 @@ public class FilenameDatetimeRepairServiceTest
 				Status = FileIndexItem.ExifStatus.Ok,
 				CollectionPaths =
 					["/test/20240313_011530_IMG_001.jpg", "/test/20240313_011530_IMG_001.xmp"]
+			},
+			new FileIndexItem("/test/20240313_011530_IMG_001.xmp")
+			{
+				FileName = "20240313_011530_IMG_001.jpg",
+				ParentDirectory = "/test",
+				Status = FileIndexItem.ExifStatus.Ok,
+				CollectionPaths =
+					["/test/20240313_011530_IMG_001.jpg", "/test/20240313_011530_IMG_001.xmp"]
 			}
 		]);
-		var storage = new FakeIStorage();
+		var storage = new FakeIStorage(["/test"],
+		[
+			"/test/20240313_011530_IMG_001.jpg",
+			"/test/20240313_011530_IMG_001.xmp"
+		]);
 		var logger = new FakeIWebLogger();
 		var sut = new FilenameDatetimeRepairService(query, storage, logger);
 
@@ -443,9 +459,10 @@ public class FilenameDatetimeRepairServiceTest
 				Status = FileIndexItem.ExifStatus.Ok
 			}
 		]);
-		var storage = new FakeIStorage([
-			"/test/20240313_011530_IMG_001.jpg", "/test/20240313_011530_IMG_001.xmp"
-		]);
+		var storage = new FakeIStorage(["/", "/test"], [
+				"/test/20240313_011530_IMG_001.jpg", "/test/20240313_011530_IMG_001.xmp"
+			]
+		);
 		var logger = new FakeIWebLogger();
 		var sut = new FilenameDatetimeRepairService(query, storage, logger);
 

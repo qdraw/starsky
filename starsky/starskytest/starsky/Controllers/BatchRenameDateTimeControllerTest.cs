@@ -6,7 +6,6 @@ using starsky.Controllers;
 using starsky.feature.rename.Models;
 using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Models;
-using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.Controllers;
@@ -35,9 +34,9 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		{
 			FilePaths = ["/test/20240313_011530_IMG_001.jpg"],
 			Collections = true,
-			CorrectionRequest = new
+			CorrectionRequest = new ExifTimezoneBasedCorrectionRequest
 			{
-				recordedTimezoneId = "UTC", correctTimezoneId = "Europe/Amsterdam"
+				RecordedTimezoneId = "UTC", CorrectTimezoneId = "Europe/Amsterdam"
 			}
 		};
 
@@ -74,14 +73,14 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		{
 			FilePaths = ["/test/20240313_011530_IMG_001.jpg"],
 			Collections = true,
-			CorrectionRequest = new
+			CorrectionRequest = new ExifCustomOffsetCorrectionRequest
 			{
-				year = 0,
-				month = 0,
-				day = 0,
-				hour = 1,
-				minute = 0,
-				second = 0
+				Year = 0,
+				Month = 0,
+				Day = 0,
+				Hour = 1,
+				Minute = 0,
+				Second = 0
 			}
 		};
 
@@ -259,7 +258,7 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 			FilePaths =
 				["/test/20240313_011530_IMG_001.jpg", "/test/20240313_021530_IMG_002.jpg"],
 			Collections = false,
-			CorrectionRequest = new { hour = 1 }
+			CorrectionRequest = new ExifCustomOffsetCorrectionRequest { Hour = 1 }
 		};
 
 		// Act
