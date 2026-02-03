@@ -1,6 +1,6 @@
 # Modal Timezone Shift Component
 
-`modal-timezone-shift` is a React component for the Starsky application that enables users to shift the timezone or offset of date/time metadata for one or more selected files (such as images). It provides a modal dialog where users can specify the desired correction, and then applies the changes to all selected files via an API call. This component integrates tightly with Starsky's archive context and file selection system, ensuring a seamless batch operation experience.
+The `modal-timezone-shift` is a React component for the Starsky application that enables users to shift the timezone or offset of date/time metadata for one or more selected files (such as images). It provides a modal dialog where users can specify the desired correction, and then applies the changes to all selected files via an API call. This component integrates tightly with Starsky's archive context and file selection system, ensuring a seamless batch operation experience.
 
 ## Features
 
