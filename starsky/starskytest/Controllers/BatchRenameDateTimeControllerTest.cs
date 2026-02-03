@@ -243,7 +243,7 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		// Assert
 		Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
 	}
-	
+
 	private static BatchRenameDateTimeController CreateController()
 	{
 		return new BatchRenameDateTimeController(
@@ -303,7 +303,7 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 			fileItems.Where(p
 				=> p.Status == FileIndexItem.ExifStatus.Deleted).ToList());
 	}
-	
+
 	[TestMethod]
 	public void PreviewCustomOffsetDatetimeRepair_ModelStateInvalid_ReturnsBadRequest()
 	{
@@ -317,6 +317,8 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		};
 		var result = controller.PreviewCustomOffsetDatetimeRepair(request);
 		Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+		var badRequestResult = result.Result as BadRequestObjectResult;
+		Assert.AreEqual("Model is not valid", badRequestResult!.Value);
 	}
 
 	[TestMethod]
@@ -325,16 +327,16 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		var controller = CreateController();
 		var request = new FilenameDatetimeRepairRequest<ExifCustomOffsetCorrectionRequest>
 		{
-			FilePaths = ["/test/file.jpg"],
-			CorrectionRequest = null!,
-			Collections = false
+			FilePaths = ["/test/file.jpg"], CorrectionRequest = null!, Collections = false
 		};
 		var result = controller.PreviewCustomOffsetDatetimeRepair(request);
 		Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+		var badRequestResult = result.Result as BadRequestObjectResult;
+		Assert.AreEqual("Model is not valid", badRequestResult!.Value);
 	}
 
 	[TestMethod]
-	public void PreviewCustomOffsetDatetimeRepair_ModelStateValid_ReturnsOk()
+	public void PreviewCustomOffsetDatetimeRepair_InvalidModel()
 	{
 		var controller = CreateController();
 		var request = new FilenameDatetimeRepairRequest<ExifCustomOffsetCorrectionRequest>
@@ -345,5 +347,23 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		};
 		var result = controller.PreviewCustomOffsetDatetimeRepair(request);
 		Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+		var badRequestResult = result.Result as BadRequestObjectResult;
+		Assert.AreEqual("Model is not valid", badRequestResult!.Value);
+	}
+	
+	[TestMethod]
+	public async Task ExecuteTimezoneDatetimeRepairAsync_InvalidModel()
+	{
+		var controller = CreateController();
+		var request = new FilenameDatetimeRepairRequest<ExifTimezoneBasedCorrectionRequest>
+		{
+			FilePaths = ["/test/file.jpg"],
+			CorrectionRequest = null!,
+			Collections = false
+		};
+		var result = await controller.ExecuteTimezoneDatetimeRepairAsync(request);
+		Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+		var badRequestResult = result.Result as BadRequestObjectResult;
+		Assert.AreEqual("Model is not valid", badRequestResult!.Value);
 	}
 }
