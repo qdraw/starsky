@@ -395,6 +395,34 @@ public class FilenameDatetimeRepairServiceTest
 		Assert.HasCount(0, result, "No items should be returned");
 		Assert.Contains("File not found", logger.TrackedExceptions.LastOrDefault().Item2!);
 	}
+	
+	[TestMethod]
+	public async Task ExecuteRepairAsync_Exception_Catched()
+	{
+		// Arrange
+		var query = new FakeIQueryException(new ApplicationException());
+		var storage = new FakeIStorage();
+		var logger = new FakeIWebLogger();
+		var sut = new FilenameDatetimeRepairService(query, storage, logger, new AppSettings());
+
+		var mappings = new List<FilenameDatetimeRepairMapping>
+		{
+			new()
+			{
+				SourceFilePath = "/test/20240313_011530_IMG_001.jpg",
+				TargetFilePath = "/test/20240313_021530_IMG_001.jpg",
+				HasError = false,
+				FileIndexItem = null
+			}
+		};
+
+		// Act
+		var result = await sut.ExecuteRepairAsync(mappings);
+
+		// Assert
+		Assert.HasCount(0, result, "No items should be returned");
+		Assert.Contains("Failed to rename", logger.TrackedExceptions.LastOrDefault().Item2!);
+	}
 
 	[TestMethod]
 	public async Task ExecuteRepairAsync_ValidMapping_RenamesFile()
