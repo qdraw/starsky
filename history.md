@@ -41,8 +41,14 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.10 - _(Unreleased)_ - 2026-?-? {#v0.7.10}
+## version 0.7.11 - _(Unreleased)_ - 2026-02-03 {#v0.7.11}
 
+- nothing yet
+
+## version 0.7.10 - 2026-02-03 {#v0.7.10}
+
+- [x] (Added) _Front-end_ UI to repair filenames after offset/timezone change (Issue #76 PR #2682)
+- [x] (Added) _Back-end_ Repairing filenames after offset/timezone change (Issue #76 PR #2682)
 - [x] (Added) _Front-end_ Use Execute API for offsetData and timezoneData  (Issue #76 PR #2672)
 - [x] (Added) _Front-end_ Use Preview API for offsetData and timezoneData (Issue #76 PR #2672)
 - [x] (Added) _Front-end_ Display preview of timezone correction  (Issue #76 PR #2672)
