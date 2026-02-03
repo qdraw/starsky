@@ -23,7 +23,6 @@ export interface IRenderFileRenameModeProps {
   fileRenameState: IFileRenameState;
   handleExit: () => void;
   dispatch: React.Dispatch<ArchiveAction>;
-  historyLocationSearch: string;
   undoSelection: () => void;
   collections: boolean;
   mode: "offset" | "timezone";
@@ -174,7 +173,7 @@ export const FileRenameMode: React.FC<IRenderFileRenameModeProps> = (props) => {
 
                 <div className="batch-rename-preview-list">
                   {renamePreview.map((item, index) => {
-                    if (!item || !item.sourceFilePath) return null;
+                    if (!item?.sourceFilePath) return null;
                     const fileName = new FileExtensions().GetFileName(item.sourceFilePath);
                     const targetFileName = new FileExtensions().GetFileName(item.targetFilePath);
 
