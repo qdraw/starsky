@@ -85,8 +85,7 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 		var copyContent = await Render(fileIndexItemsList, base64ImageArray,
 			publishProfileName, itemName, outputParentFullFilePathFolder, moveSourceFiles);
 
-		// Use ExportFtpManifest to include the profile name
-		_publishManifest.ExportFtpManifest(outputParentFullFilePathFolder, itemName, copyContent,
+		_publishManifest.ExportManifest(outputParentFullFilePathFolder, itemName, copyContent,
 			publishProfileName);
 
 		return copyContent;

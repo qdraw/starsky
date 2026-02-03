@@ -24,11 +24,15 @@ public class PublishManifest
 	/// <param name="parentFullFilePath">without ManifestName</param>
 	/// <param name="itemName"></param>
 	/// <param name="copyContent"></param>
+	/// <param name="publishProfileName"></param>
 	public PublishManifestModel ExportManifest(string parentFullFilePath, string itemName,
-		Dictionary<string, bool>? copyContent)
+		Dictionary<string, bool>? copyContent, string publishProfileName)
 	{
 		copyContent ??= new Dictionary<string, bool>();
-		var manifest = new PublishManifestModel { Name = itemName, Copy = copyContent };
+		var manifest = new PublishManifestModel
+		{
+			Name = itemName, Copy = copyContent, PublishProfileName = publishProfileName
+		};
 		var output = JsonSerializer.Serialize(manifest, DefaultJsonSerializer.NoNamingPolicy);
 		var outputLocation = Path.Combine(parentFullFilePath, ManifestName);
 
@@ -37,29 +41,4 @@ public class PublishManifest
 
 		return manifest;
 	}
-
-	// /// <summary>
-	// ///     Export FTP publish settings with profile name to _settings.json
-	// /// </summary>
-	// /// <param name="parentFullFilePath">without ManifestName</param>
-	// /// <param name="itemName">item name</param>
-	// /// <param name="copyContent">files to copy</param>
-	// /// <param name="publishProfileName">the publish profile name being used</param>
-	// public PublishManifestModel ExportFtpManifest(string parentFullFilePath, string itemName,
-	// 	Dictionary<string, bool>? copyContent, string? publishProfileName = null)
-	// {
-	// 	copyContent ??= new Dictionary<string, bool>();
-	// 	var manifest = new PublishManifestModel
-	// 	{
-	// 		Slug = itemName, Copy = copyContent, 
-	// 		= publishProfileName
-	// 	};
-	// 	var output = JsonSerializer.Serialize(manifest, DefaultJsonSerializer.NoNamingPolicy);
-	// 	var outputLocation = Path.Combine(parentFullFilePath, ManifestName);
-	//
-	// 	_storage.FileDelete(outputLocation);
-	// 	_storage.WriteStream(StringToStreamHelper.StringToStream(output), outputLocation);
-	//
-	// 	return manifest;
-	// }
 }

@@ -36,4 +36,10 @@ public class PublishManifestModel
 	///     Starsky Version
 	/// </summary>
 	public string? Version => Assembly.GetExecutingAssembly().GetName().Version?.ToString();
+
+	/// <summary>
+	///     The publishing profile name used for this manifest
+	///     v0.7.11 or newer
+	/// </summary>
+	public string? PublishProfileName { get; set; } = string.Empty;
 }

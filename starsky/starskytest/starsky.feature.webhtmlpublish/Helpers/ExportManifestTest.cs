@@ -20,7 +20,7 @@ public sealed class ExportManifestTest
 		var storage = new FakeIStorage();
 		new PublishManifest(storage)
 			.ExportManifest(appSettings.StorageFolder, "Test",
-				new Dictionary<string, bool>());
+				new Dictionary<string, bool>(), "test");
 
 		var expectedPath = Path.Combine(appSettings.StorageFolder, "_settings.json");
 		Assert.IsTrue(storage.ExistFile(expectedPath));
@@ -33,7 +33,7 @@ public sealed class ExportManifestTest
 		var storage = new FakeIStorage();
 		var result = new PublishManifest(storage)
 			.ExportManifest(appSettings.StorageFolder, "Test",
-				new Dictionary<string, bool>());
+				new Dictionary<string, bool>(), "test");
 
 		Assert.AreEqual("Test", result.Name);
 	}
@@ -45,7 +45,7 @@ public sealed class ExportManifestTest
 		var storage = new FakeIStorage();
 		new PublishManifest(storage)
 			.ExportManifest(appSettings.StorageFolder, "Test",
-				new Dictionary<string, bool>());
+				new Dictionary<string, bool>(), "test");
 
 		var expectedPath = Path.Combine(appSettings.StorageFolder, "_settings.json");
 		var output = ( await
@@ -67,7 +67,7 @@ public sealed class ExportManifestTest
 		var storage = new FakeIStorage();
 		new PublishManifest(storage)
 			.ExportManifest(appSettings.StorageFolder, "Test2",
-				new Dictionary<string, bool> { { "test.html", true } });
+				new Dictionary<string, bool> { { "test.html", true } }, "test");
 
 		var expectedPath = Path.Combine(appSettings.StorageFolder, "_settings.json");
 		var output = ( await
