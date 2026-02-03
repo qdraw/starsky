@@ -144,12 +144,15 @@ export const FileRenameMode: React.FC<IRenderFileRenameModeProps> = (props) => {
 
   const hasErrors = renamePreview.some((item) => item.hasError);
 
-  // Extracted label for the main action button
-  const mainButtonLabel = isExecutingRename
-    ? language.key(localization.MessageLoading)
-    : shouldRename
+  const getMainButtonLabel = () => {
+    if (isExecutingRename) {
+      return language.key(localization.MessageLoading);
+    }
+
+    return shouldRename
       ? language.key(localization.MessageReplace)
       : language.key(localization.MessageFinish);
+  };
 
   return (
     <>
@@ -233,7 +236,7 @@ export const FileRenameMode: React.FC<IRenderFileRenameModeProps> = (props) => {
             onClick={handleExecuteRename}
             disabled={isExecutingRename || (shouldRename && isLoadingRename)}
           >
-            {mainButtonLabel}
+            {getMainButtonLabel()}
           </button>
         </div>
       </div>
