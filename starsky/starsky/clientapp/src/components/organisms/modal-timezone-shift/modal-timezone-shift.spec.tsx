@@ -1216,4 +1216,251 @@ describe("ModalTimezoneShift", () => {
 
     component.unmount();
   }, 10000);
+
+  it("walks through timezone mode and completes execute-shift with batch-rename-datetime execute", async () => {
+    const mockCityTimezones = [
+      { id: "America/New_York", displayName: "(UTC-05:00) New York" },
+      { id: "Europe/Amsterdam", displayName: "(UTC+01:00) Amsterdam" }
+    ];
+
+    const mockTimezonePreview = [
+      {
+        success: true,
+        originalDateTime: "2024-08-12T14:32:00",
+        correctedDateTime: "2024-08-12T20:32:00",
+        delta: "+06:00:00",
+        warning: "",
+        error: ""
+      }
+    ];
+
+    const mockExecuteResponse = {
+      statusCode: 200,
+      data: [
+        {
+          filePath: "/test.jpg",
+          fileName: "test.jpg",
+          parentDirectory: "/",
+          status: IExifStatus.Ok
+        }
+      ]
+    };
+
+    const mockRenamePreview = [
+      {
+        sourceFilePath: "/test.jpg",
+        targetFilePath: "/test_2024-08-12.jpg",
+        hasError: false,
+        errorMessage: "",
+        warning: "",
+        fileIndexItem: mockExecuteResponse.data[0]
+      }
+    ];
+
+    const mockRenameExecuteResponse = {
+      statusCode: 200,
+      data: [
+        {
+          filePath: "/test.jpg",
+          fileName: "test_2024-08-12.jpg",
+          parentDirectory: "/",
+          status: IExifStatus.Ok
+        }
+      ]
+    };
+
+    // Mock fetch for city timezones search
+    const getSpy = jest.spyOn(FetchGet, "default").mockReset().mockResolvedValue({
+      statusCode: 200,
+      data: mockCityTimezones
+    });
+
+    // Mock fetch for timezone preview and subsequent API calls
+    const postSpy = jest.spyOn(FetchPost, "default").mockReset().mockResolvedValue({
+      statusCode: 200,
+      data: mockTimezonePreview
+    });
+
+    const mockHandleExit = jest.fn();
+
+    const component = render(
+      <ModalTimezoneShift
+        isOpen={true}
+        handleExit={mockHandleExit}
+        select={["test.jpg"]}
+        historyLocationSearch={mockHistoryLocationSearch}
+        state={mockState}
+        dispatch={mockDispatch}
+        undoSelection={mockUndoSelection}
+        collections={true}
+      />
+    );
+
+    // Step 1: Select timezone mode
+    const timezoneRadio = await screen.findByRole("radio", {
+      name: /I stayed in a different place/i
+    });
+    await act(async () => {
+      fireEvent.click(timezoneRadio);
+    });
+
+    // Wait for the "Change Location" text to appear
+    await screen.findByText(/Change Location/i);
+
+    // Step 2: Select original city (recorded timezone)
+    const originalCityInputs = await screen.findAllByPlaceholderText(/Search or select/i);
+    const originalCityInput = originalCityInputs[0];
+
+    await act(async () => {
+      fireEvent.change(originalCityInput, { target: { value: "New" } });
+    });
+
+    // Wait for dropdown to appear and select New York
+    await screen.findByTestId("searchable-dropdown-item-America/New_York");
+    const newYorkButton = screen
+      .getByTestId("searchable-dropdown-item-America/New_York")
+      .querySelector("button");
+
+    await act(async () => {
+      if (newYorkButton) fireEvent.click(newYorkButton);
+    });
+
+    // Step 3: Select new city (correct timezone)
+    const newCityInputs = await screen.findAllByPlaceholderText(/Search or select/i);
+    const newCityInput = newCityInputs[1];
+
+    await act(async () => {
+      fireEvent.change(newCityInput, { target: { value: "Amsterdam" } });
+    });
+
+    // Wait for dropdown and select Amsterdam
+    await screen.findByTestId("searchable-dropdown-item-Europe/Amsterdam");
+    const amsterdamButton = screen
+      .getByTestId("searchable-dropdown-item-Europe/Amsterdam")
+      .querySelector("button");
+
+    await act(async () => {
+      if (amsterdamButton) fireEvent.click(amsterdamButton);
+    });
+
+    // Step 4: Both timezones are now selected
+    const inputs = screen.getAllByPlaceholderText(/Search or select/i);
+    expect(inputs[0]).toHaveValue("(UTC-05:00) New York");
+    expect(inputs[1]).toHaveValue("(UTC+01:00) Amsterdam");
+
+    await waitFor(() => expect(getSpy).toHaveBeenCalledTimes(5));
+
+    // Step 5: Mock execute-shift response
+    postSpy.mockResolvedValueOnce({
+      statusCode: 200,
+      data: mockExecuteResponse.data
+    });
+
+    // Step 5b: Mock batch-rename-preview response
+    postSpy.mockResolvedValueOnce({
+      statusCode: 200,
+      data: mockRenamePreview
+    });
+
+    // Step 6: Click "Apply Shift" button to execute shift and navigate to rename step
+    const applyShiftButton = screen.getByText(/Apply Shift/i);
+
+    await act(async () => {
+      fireEvent.click(applyShiftButton);
+    });
+
+    // Wait for rename step to load
+    await waitFor(() => {
+      const subheader = document.querySelector(".modal.content--subheader");
+      expect(subheader?.textContent).toBe("Rename Files");
+    });
+
+    // Step 7: Mock batch-rename-execute response
+    postSpy.mockResolvedValueOnce({
+      statusCode: 200,
+      data: mockRenameExecuteResponse.data
+    });
+
+    // Step 8: Keep the rename checkbox checked (enabled) to execute rename
+    const renameCheckbox = screen.getByRole("checkbox");
+    expect(renameCheckbox).toBeChecked();
+
+    // Step 9: Click "Finish" button to execute rename
+    const finishButton = screen.getByTestId("execute-rename-button");
+
+    await act(async () => {
+      fireEvent.click(finishButton);
+    });
+
+    // Step 10: Verify execution was called and modal exits
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    });
+
+    // Now we expect 5 API calls: timezone-preview (2x), timezone-execute, batch-rename-preview, batch-rename-execute
+    expect(postSpy).toHaveBeenCalledTimes(5);
+
+    // Verify timezone-preview calls
+    expect(postSpy).toHaveBeenNthCalledWith(
+      1,
+      "/starsky/api/meta-time-correct/timezone-preview?f=/test.jpg&collections=true",
+      '{"recordedTimezoneId":"America/New_York","correctTimezoneId":""}',
+      "post",
+      { "Content-Type": "application/json" }
+    );
+
+    expect(postSpy).toHaveBeenNthCalledWith(
+      2,
+      "/starsky/api/meta-time-correct/timezone-preview?f=/test.jpg&collections=true",
+      '{"recordedTimezoneId":"America/New_York","correctTimezoneId":"Europe/Amsterdam"}',
+      "post",
+      { "Content-Type": "application/json" }
+    );
+
+    // Verify timezone-execute call
+    expect(postSpy).toHaveBeenNthCalledWith(
+      3,
+      "/starsky/api/meta-time-correct/timezone-execute?f=/test.jpg&collections=true",
+      '{"recordedTimezoneId":"America/New_York","correctTimezoneId":"Europe/Amsterdam"}',
+      "post",
+      { "Content-Type": "application/json" }
+    );
+
+    // Verify batch-rename-preview call
+    expect(postSpy).toHaveBeenNthCalledWith(
+      4,
+      "/starsky/api/batch-rename-datetime/timezone-preview",
+      JSON.stringify({
+        filePaths: ["/test.jpg"],
+        collections: true,
+        correctionRequest: {
+          recordedTimezoneId: "America/New_York",
+          correctTimezoneId: "Europe/Amsterdam"
+        }
+      }),
+      "post",
+      { "Content-Type": "application/json" }
+    );
+
+    // Verify batch-rename-execute call (UrlBatchRenameTimezoneExecute)
+    expect(postSpy).toHaveBeenNthCalledWith(
+      5,
+      "/starsky/api/batch-rename-datetime/timezone-execute",
+      JSON.stringify({
+        filePaths: ["/test.jpg"],
+        collections: true,
+        correctionRequest: {
+          recordedTimezoneId: "America/New_York",
+          correctTimezoneId: "Europe/Amsterdam"
+        }
+      }),
+      "post",
+      { "Content-Type": "application/json" }
+    );
+
+    expect(mockDispatch).toHaveBeenCalled();
+    expect(mockHandleExit).toHaveBeenCalled();
+
+    component.unmount();
+  }, 10000);
 });
