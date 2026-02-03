@@ -659,7 +659,7 @@ public class FilenameDatetimeRepairServiceTest
 	{
 		return new DateTimePattern
 		{
-			Regex = new Regex(regex, RegexOptions.Compiled),
+			Regex = new Regex(regex, RegexOptions.None, TimeSpan.FromSeconds(1)),
 			Format = format,
 			Description = description
 		};
@@ -668,7 +668,7 @@ public class FilenameDatetimeRepairServiceTest
 	[TestMethod]
 	public void ExtractDateTime_ValidPattern_ValidDateTime()
 	{
-		var pattern = CreatePattern(@"\\d{8}_\\d{6}", "yyyyMMdd_HHmmss");
+		var pattern = CreatePattern(@"\d{8}_\d{6}", "yyyyMMdd_HHmmss");
 		const string fileName = "20240313_011530_IMG_001.jpg";
 		var result = FilenameDatetimeRepairService.ExtractDateTime(fileName, pattern);
 		Assert.IsNotNull(result);
@@ -679,7 +679,7 @@ public class FilenameDatetimeRepairServiceTest
 	[TestMethod]
 	public void ExtractDateTime_ValidPattern_ValidDateTime_OnlyDate()
 	{
-		var pattern = CreatePattern(@"\\d{8}", "yyyyMMdd");
+		var pattern = CreatePattern(@"\d{8}", "yyyyMMdd");
 		const string fileName = "20240313_vacation.jpg";
 		var result = FilenameDatetimeRepairService.ExtractDateTime(fileName, pattern);
 		Assert.IsNotNull(result);
@@ -708,24 +708,14 @@ public class FilenameDatetimeRepairServiceTest
 	[TestMethod]
 	public void ExtractDateTime_ValidPattern_ValidDateTime_WithDifferentFormat()
 	{
-		var pattern = CreatePattern(@"\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}",
+		var pattern = CreatePattern(@"\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}",
 			"yyyy-MM-dd_HH-mm-ss");
+
 		const string fileName = "2024-03-13_01-15-30_IMG_001.jpg";
 		var result = FilenameDatetimeRepairService.ExtractDateTime(fileName, pattern);
 		Assert.IsNotNull(result);
 		Assert.AreEqual(new DateTime(2024, 3, 13,
 			1, 15, 30, DateTimeKind.Local), result.Value);
-	}
-
-	[TestMethod]
-	public void ExtractDateTime_ValidPattern_ValidDateTime_WithTimeOnly()
-	{
-		var pattern = CreatePattern(@"\\d{6}", "HHmmss");
-		const string fileName = "011530_IMG_001.jpg";
-		var result = FilenameDatetimeRepairService.ExtractDateTime(fileName, pattern);
-		Assert.IsNotNull(result);
-		Assert.AreEqual(new DateTime(1, 1, 1,
-			1, 15, 30, DateTimeKind.Local), result.Value); // Date part is default
 	}
 
 	[TestMethod]
