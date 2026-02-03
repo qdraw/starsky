@@ -395,7 +395,7 @@ public class FilenameDatetimeRepairServiceTest
 		Assert.HasCount(0, result, "No items should be returned");
 		Assert.Contains("File not found", logger.TrackedExceptions.LastOrDefault().Item2!);
 	}
-	
+
 	[TestMethod]
 	public async Task ExecuteRepairAsync_Exception_Catched()
 	{
@@ -711,6 +711,28 @@ public class FilenameDatetimeRepairServiceTest
 			logger.TrackedExceptions.LastOrDefault().Item2!);
 	}
 
+	[TestMethod]
+	public void PreviewRepair_FailedToExtractDatetimeFromFilename_ReturnsErrorMapping()
+	{
+		// Arrange
+		const string filePath = "/test/20241313_011530_IMG_001.jpg";
+		var sut = CreateSut(null, new FakeIQuery([
+			new FileIndexItem(filePath)
+		]));
+
+		var filePaths = new List<string> { filePath };
+		var correctionRequest = new ExifCustomOffsetCorrectionRequest { Second = 1 };
+
+		// Act
+		var result = sut.PreviewRepair(filePaths, correctionRequest);
+
+		// Assert
+		Assert.HasCount(1, result);
+		Assert.IsTrue(result[0].HasError);
+		Assert.AreEqual("Failed to extract datetime from filename", result[0].ErrorMessage);
+		Assert.AreEqual(filePath, result[0].SourceFilePath);
+	}
+
 	private static DateTimePattern CreatePattern(string regex, string format,
 		string description = "")
 	{
@@ -752,7 +774,7 @@ public class FilenameDatetimeRepairServiceTest
 		var result = FilenameDatetimeRepairService.ExtractDateTime(fileName, pattern);
 		Assert.IsNull(result);
 	}
-	
+
 	[TestMethod]
 	public void ExtractDateTime_InvalidPattern_NoDateTimeMatch_ReturnsNull()
 	{
