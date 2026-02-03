@@ -144,6 +144,13 @@ export const FileRenameMode: React.FC<IRenderFileRenameModeProps> = (props) => {
 
   const hasErrors = renamePreview.some((item) => item.hasError);
 
+  // Extracted label for the main action button
+  const mainButtonLabel = isExecutingRename
+    ? language.key(localization.MessageLoading)
+    : shouldRename
+      ? language.key(localization.MessageReplace)
+      : language.key(localization.MessageFinish);
+
   return (
     <>
       <div className="modal content--subheader">
@@ -226,11 +233,7 @@ export const FileRenameMode: React.FC<IRenderFileRenameModeProps> = (props) => {
             onClick={handleExecuteRename}
             disabled={isExecutingRename || (shouldRename && isLoadingRename)}
           >
-            {isExecutingRename
-              ? language.key(localization.MessageLoading)
-              : shouldRename
-                ? language.key(localization.MessageReplace)
-                : language.key(localization.MessageFinish)}
+            {mainButtonLabel}
           </button>
         </div>
       </div>
