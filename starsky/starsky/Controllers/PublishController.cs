@@ -58,6 +58,22 @@ public sealed class PublishController : Controller
 	}
 
 	/// <summary>
+	///     Get all publishable profiles (allowed to publish to FTP)
+	/// </summary>
+	/// <returns>list of publishable profiles</returns>
+	/// <response code="200">list of profiles with WebPublish enabled</response>
+	/// <response code="401">User unauthorized</response>
+	[HttpGet("/api/publish/publishable")]
+	[Produces("application/json")]
+	public IActionResult GetPublishableProfiles()
+	{
+		var allProfiles = _publishPreflight.GetAllPublishProfileNames();
+		var publishableProfiles = allProfiles.Where(p =>
+			_publishPreflight.IsProfilePublishable(p.Key));
+		return Json(publishableProfiles);
+	}
+
+	/// <summary>
 	///     Publish
 	/// </summary>
 	/// <param name="f">subPath filepath to file, split by dot comma (;)</param>
@@ -81,6 +97,13 @@ public sealed class PublishController : Controller
 		if ( !isValid || !ModelState.IsValid )
 		{
 			return BadRequest(preflightErrors);
+		}
+
+		// Ensure the profile is publishable
+		if ( !_publishPreflight.IsProfilePublishable(publishProfileName) )
+		{
+			return BadRequest($"Profile '{publishProfileName}' is not allowed to publish. " +
+			                  $"Please enable WebPublish in the profile settings.");
 		}
 
 		var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
@@ -114,7 +137,7 @@ public sealed class PublishController : Controller
 			var renderCopyResult = await _publishService.RenderCopy(info,
 				publishProfileName, itemName, location);
 			await _publishService.GenerateZip(_appSettings.TempFolder, itemName,
-				renderCopyResult);
+				renderCopyResult, publishProfileName);
 			_webLogger.LogInformation($"[/api/publish/create] done: " +
 			                          $"{itemName} {DateTime.UtcNow}");
 		}, publishProfileName + "_" + itemName);

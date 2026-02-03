@@ -1,17 +1,21 @@
 using System.Collections.Generic;
 
-namespace starsky.feature.webftppublish.Models
-{
-	public class FtpPublishManifestModel
-	{
-		/// <summary>
-		/// Short for name, without spaces and non-ascii
-		/// </summary>
-		public string Slug { get; set; } = string.Empty;
+namespace starsky.feature.webftppublish.Models;
 
-		/// <summary>
-		/// List of files to Copy, string is relative path and bool is True for copy
-		/// </summary>
-		public Dictionary<string, bool> Copy { get; set; } = new Dictionary<string, bool>();
-	}
+public class FtpPublishManifestModel
+{
+	/// <summary>
+	///     Short for name, without spaces and non-ascii
+	/// </summary>
+	public string Slug { get; set; } = string.Empty;
+
+	/// <summary>
+	///     List of files to Copy, string is relative path and bool is True for copy
+	/// </summary>
+	public Dictionary<string, bool> Copy { get; set; } = new();
+
+	/// <summary>
+	///     The publishing profile name used for this manifest
+	/// </summary>
+	public string? PublishProfileName { get; set; } = null;
 }

@@ -85,7 +85,9 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 		var copyContent = await Render(fileIndexItemsList, base64ImageArray,
 			publishProfileName, itemName, outputParentFullFilePathFolder, moveSourceFiles);
 
-		_publishManifest.ExportManifest(outputParentFullFilePathFolder, itemName, copyContent);
+		// Use ExportFtpManifest to include the profile name
+		_publishManifest.ExportFtpManifest(outputParentFullFilePathFolder, itemName, copyContent,
+			publishProfileName);
 
 		return copyContent;
 	}
@@ -96,8 +98,9 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 	/// <param name="fullFileParentFolderPath">One folder deeper than where the folder </param>
 	/// <param name="itemName">blog item name</param>
 	/// <param name="renderCopyResult">[[string,bool],[]]</param>
+	/// <param name="publishProfileName">optional publish profile name for manifest</param>
 	public async Task GenerateZip(string fullFileParentFolderPath, string itemName,
-		Dictionary<string, bool>? renderCopyResult)
+		Dictionary<string, bool>? renderCopyResult, string? publishProfileName = null)
 	{
 		ArgumentNullException.ThrowIfNull(renderCopyResult);
 

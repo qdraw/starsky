@@ -90,6 +90,7 @@ public class PublishPreflight : IPublishPreflight
 		return name.Trim();
 	}
 
+
 	public List<Tuple<int, string>> GetPublishProfileNames()
 	{
 		var returnList = new List<Tuple<int, string>>();

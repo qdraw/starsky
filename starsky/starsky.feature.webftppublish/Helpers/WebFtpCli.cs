@@ -3,96 +3,110 @@ using System.Threading.Tasks;
 using starsky.feature.webftppublish.FtpAbstractions.Interfaces;
 using starsky.feature.webftppublish.Models;
 using starsky.feature.webftppublish.Services;
+using starsky.feature.webhtmlpublish.Interfaces;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.publish.WebPublisher.Interfaces;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 
-namespace starsky.feature.webftppublish.Helpers
+namespace starsky.feature.webftppublish.Helpers;
+
+public class WebFtpCli
 {
-	public class WebFtpCli
+	private readonly AppSettings _appSettings;
+	private readonly ArgsHelper _argsHelper;
+	private readonly IConsole _console;
+	private readonly IStorage _hostStorageProvider;
+	private readonly IWebPublisherService _webPublisherService;
+	private readonly IFtpWebRequestFactory _webRequestFactory;
+
+	public WebFtpCli(AppSettings appSettings, ISelectorStorage selectorStorage,
+		IConsole console,
+		IFtpWebRequestFactory webRequestFactory,
+		IWebPublisherService webPublisherService)
 	{
-		private readonly ArgsHelper _argsHelper;
-		private readonly AppSettings _appSettings;
-		private readonly IConsole _console;
-		private readonly IStorage _hostStorageProvider;
-		private readonly IFtpWebRequestFactory _webRequestFactory;
+		_appSettings = appSettings;
+		_console = console;
+		_argsHelper = new ArgsHelper(_appSettings, console);
+		_hostStorageProvider =
+			selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+		_webRequestFactory = webRequestFactory;
+		_webPublisherService = webPublisherService;
+	}
 
-		public WebFtpCli(AppSettings appSettings, ISelectorStorage selectorStorage,
-			IConsole console,
-			IFtpWebRequestFactory webRequestFactory)
+	public async Task RunAsync(string[] args)
+	{
+		_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
+
+		if ( ArgsHelper.NeedHelp(args) )
 		{
-			_appSettings = appSettings;
-			_console = console;
-			_argsHelper = new ArgsHelper(_appSettings, console);
-			_hostStorageProvider =
-				selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
-			_webRequestFactory = webRequestFactory;
+			_appSettings.ApplicationType = AppSettings.StarskyAppType.WebFtp;
+			_argsHelper.NeedHelpShowDialog();
+			return;
 		}
 
-		public async Task RunAsync(string[] args)
+		var inputFullFileDirectory = new ArgsHelper(_appSettings)
+			.GetPathFormArgs(args, false);
+
+		if ( string.IsNullOrWhiteSpace(inputFullFileDirectory) )
 		{
-			_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
-
-			if ( ArgsHelper.NeedHelp(args) )
-			{
-				_appSettings.ApplicationType = AppSettings.StarskyAppType.WebFtp;
-				_argsHelper.NeedHelpShowDialog();
-				return;
-			}
-
-			var inputFullFileDirectory = new ArgsHelper(_appSettings)
-				.GetPathFormArgs(args, false);
-
-			if ( string.IsNullOrWhiteSpace(inputFullFileDirectory) )
-			{
-				_console.WriteLine("Please use the -p to add a path first");
-				return;
-			}
-
-			// used in this session to find the files back
-
-			if ( _hostStorageProvider.IsFolderOrFile(inputFullFileDirectory)
-				 == FolderOrFileModel.FolderOrFileTypeList.Deleted )
-			{
-				_console.WriteLine($"Folder location {inputFullFileDirectory} " +
-								   $"is not found \nPlease try the `-h` command to get help ");
-				return;
-			}
-
-			// check if settings is valid
-			if ( string.IsNullOrEmpty(_appSettings.WebFtp) )
-			{
-				_console.WriteLine($"Please update the WebFtp settings in appsettings.json");
-				return;
-			}
-
-			var settingsFullFilePath = Path.Combine(inputFullFileDirectory, "_settings.json");
-			if ( !_hostStorageProvider.ExistFile(settingsFullFilePath) )
-			{
-				_console.WriteLine($"Please run 'starskywebhtmlcli' " +
-								   $"first to generate a settings file");
-				return;
-			}
-
-			var settings = await
-				new DeserializeJson(_hostStorageProvider).ReadAsync<FtpPublishManifestModel>(
-					settingsFullFilePath);
-
-			var ftpService = new FtpService(_appSettings, _hostStorageProvider,
-					_console, _webRequestFactory)
-				.Run(inputFullFileDirectory, settings!.Slug, settings.Copy);
-
-			if ( !ftpService )
-			{
-				_console.WriteLine("Ftp copy failed");
-				return;
-			}
-
-			_console.WriteLine($"Ftp copy successful done: {settings.Slug}");
+			_console.WriteLine("Please use the -p to add a path first");
+			return;
 		}
+
+		// used in this session to find the files back
+
+		if ( _hostStorageProvider.IsFolderOrFile(inputFullFileDirectory)
+		     == FolderOrFileModel.FolderOrFileTypeList.Deleted )
+		{
+			_console.WriteLine($"Folder location {inputFullFileDirectory} " +
+			                   $"is not found \nPlease try the `-h` command to get help ");
+			return;
+		}
+
+		// check if settings is valid
+		if ( string.IsNullOrEmpty(_appSettings.WebFtp) )
+		{
+			_console.WriteLine("Please update the WebFtp settings in appsettings.json");
+			return;
+		}
+
+		var settingsFullFilePath = Path.Combine(inputFullFileDirectory, "_settings.json");
+		if ( !_hostStorageProvider.ExistFile(settingsFullFilePath) )
+		{
+			_console.WriteLine($"Please run 'starskywebhtmlcli' " +
+			                   $"first to generate a settings file");
+			return;
+		}
+
+		var settings = await
+			new DeserializeJson(_hostStorageProvider).ReadAsync<FtpPublishManifestModel>(
+				settingsFullFilePath);
+
+		// Validate that the profile is publishable
+		if ( !string.IsNullOrEmpty(settings?.PublishProfileName) &&
+		     !_webPublisherService.IsProfilePublishable(settings.PublishProfileName) )
+		{
+			_console.WriteLine(
+				$"Profile '{settings.PublishProfileName}' is not allowed to publish. " +
+				$"Please enable WebPublish in the profile settings.");
+			return;
+		}
+
+		var ftpService = new FtpService(_appSettings, _hostStorageProvider,
+				_console, _webRequestFactory)
+			.Run(inputFullFileDirectory, settings!.Slug, settings.Copy);
+
+		if ( !ftpService )
+		{
+			_console.WriteLine("Ftp copy failed");
+			return;
+		}
+
+		_console.WriteLine($"Ftp copy successful done: {settings.Slug}");
 	}
 }
