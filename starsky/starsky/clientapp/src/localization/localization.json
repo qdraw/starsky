@@ -1090,9 +1090,9 @@
     "de": "Lesen Sie hier mehr"
   },
   "MessageBatchRenamePhotos": {
-    "en": "Rename by date and time",
-    "nl": "Hernoemen op datum en tijd",
-    "de": "Nach Datum und Uhrzeit umbenennen"
+    "en": "Rename filename by date and time",
+    "nl": "Hernoem bestandsnaam op datum en tijd",
+    "de": "Dateiname nach Datum und Uhrzeit umbenennen"
   },
   "MessageBatchRenameEnterPattern": {
     "en": "Please enter the photo renaming string:",
@@ -1248,6 +1248,41 @@
     "en": "Daylight Saving Time-aware",
     "nl": "Zomertijd- & wintertijd-bewust",
     "de": "Sommer & Winterzeit-bewusst"
+  },
+  "MessageRenameFiles": {
+    "en": "Rename Files",
+    "nl": "Bestanden hernoemen",
+    "de": "Dateien umbenennen"
+  },
+  "MessageRenameFilesAfterShiftingTimestamps": {
+    "en": "Rename files after shifting timestamps",
+    "nl": "Bestanden hernoemen na tijdstempel verschuiving",
+    "de": "Dateien nach Zeitstempelverschiebung umbenennen"
+  },
+  "MessagePreviewOfFileChanges": {
+    "en": "Preview of file changes",
+    "nl": "Voorbeeld van bestand wijzigingen",
+    "de": "Vorschau der Dateiauswahl"
+  },
+  "MessageExistingFilenamesWillBeReplaced": {
+    "en": "Existing filenames will be replaced",
+    "nl": "Bestaande bestandsnamen worden vervangen",
+    "de": "Vorhandene Dateinamen wurden ersetzt"
+  },
+  "MessageReplace": {
+    "en": "Replace",
+    "nl": "Vervangen",
+    "de": "Ersetzen"
+  },
+  "MessageSomeFilesHaveErrors": {
+    "en": "Some files have errors. When pressing 'Replace', only the valid files will be renamed.",
+    "nl": "Sommige bestanden hebben fouten. Wanneer je op 'Vervangen' drukt, worden alleen de geldige bestanden hernoemd.",
+    "de": "Einige Dateien haben Fehler. Beim Drücken von 'Ersetzen' werden nur die gültigen Dateien umbenannt."
+  },
+  "MessageFinish": {
+    "en": "Finish",
+    "nl": "Voltooien",
+    "de": "Fertig"
   },
   "temp1": {
     "en": ".",

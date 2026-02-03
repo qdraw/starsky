@@ -30,14 +30,12 @@ export async function executeShift(
   params: ExecuteShiftParams,
   setIsExecuting: (value: boolean) => void,
   setError: (value: string | null) => void,
-  handleExit: () => void,
-  undoSelection: () => void,
   dispatch: React.Dispatch<ArchiveAction>,
   collections: boolean
-) {
+): Promise<boolean> {
   const { select, state, isOffset, offsetData, timezoneData, historyLocationSearch } = params;
 
-  if (select.length === 0) return;
+  if (select.length === 0) return false;
 
   setIsExecuting(true);
   setError(null);
@@ -86,12 +84,12 @@ export async function executeShift(
 
     // Clean cache and close modal
     new FileListCache().CacheCleanEverything();
-    undoSelection();
     ClearSearchCache(historyLocationSearch);
-    handleExit();
+    return true;
   } catch (err) {
     console.error("Failed to execute shift", err);
     setError("Failed to execute shift");
+    return false;
   } finally {
     setIsExecuting(false);
   }

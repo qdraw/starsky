@@ -5,14 +5,16 @@ import localization from "../../../../localization/localization.json";
 import { parseDate, parseTime } from "../../../../shared/date";
 import { Language } from "../../../../shared/language";
 import Preloader from "../../../atoms/preloader/preloader";
+import { IFileRenameState } from "../hooks/use-file-rename-state";
 import { useOffsetState } from "../hooks/use-offset-state";
 import { IPreviewState } from "../hooks/use-preview-state";
+import { ShiftMode } from "../hooks/use-shift-mode";
 import { executeShift } from "./execute-shift";
 import { formatOffsetLabel } from "./format-offset-label";
 import { generateOffsetPreview } from "./generate-offset-preview";
 import { PreviewErrorFiles } from "./preview-error-files";
 
-export interface IRenderTimezoneModeProps {
+export interface IRenderOffsetModeProps {
   offsetState: ReturnType<typeof useOffsetState>;
   previewState: IPreviewState;
   select: string[];
@@ -23,20 +25,21 @@ export interface IRenderTimezoneModeProps {
   historyLocationSearch: string;
   undoSelection: () => void;
   collections: boolean;
+  setCurrentStep: (step: ShiftMode) => void;
+  fileRenameState: IFileRenameState;
 }
 
-export function renderOffsetMode(props: IRenderTimezoneModeProps) {
+export function renderOffsetMode(props: IRenderOffsetModeProps) {
   const {
     offsetState,
     previewState,
     select,
     state,
     handleBack,
-    handleExit,
     dispatch,
     historyLocationSearch,
-    undoSelection,
-    collections
+    collections,
+    setCurrentStep
   } = props;
   const {
     offsetYears,
@@ -264,8 +267,9 @@ export function renderOffsetMode(props: IRenderTimezoneModeProps) {
           </button>
           <button
             className="btn btn--default"
-            onClick={() =>
-              executeShift(
+            onClick={async () => {
+              setIsLoadingPreview(true);
+              const success = await executeShift(
                 {
                   select,
                   state,
@@ -282,12 +286,14 @@ export function renderOffsetMode(props: IRenderTimezoneModeProps) {
                 },
                 setIsLoadingPreview,
                 setError,
-                handleExit,
-                undoSelection,
                 dispatch,
                 collections
-              )
-            }
+              );
+              if (success !== false) {
+                // Navigate to rename step - preview will load there
+                setCurrentStep("file-rename-offset");
+              }
+            }}
             disabled={
               isExecuting ||
               preview.offsetData.length === 0 ||

@@ -104,7 +104,7 @@ public class DropboxCloudImportClient(
 		try
 		{
 			await _client!.DeleteV2Async(file.Path);
-			logger.LogInformation($"Deleted file from Dropbox: {file.Name}");
+			logger.LogDebug($"Deleted file from Dropbox: {file.Name}");
 			return true;
 		}
 		catch ( Exception ex )
@@ -120,8 +120,8 @@ public class DropboxCloudImportClient(
 		{
 			EnsureClient();
 			var result = await _client!.ListFolderAsync(string.Empty);
-			logger.LogInformation(
-				"Successfully connected to Dropbox that has {0} files", result.Entries.Count);
+			logger.LogDebug(
+				$"Successfully connected to Dropbox that has {result.Entries.Count} files");
 			return true;
 		}
 		catch ( Exception ex )

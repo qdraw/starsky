@@ -7,7 +7,9 @@ import { Language } from "../../../../shared/language";
 import { URLPath } from "../../../../shared/url/url-path";
 import Preloader from "../../../atoms/preloader/preloader";
 import SearchableDropdown from "../../../atoms/searchable-dropdown";
+import { IFileRenameState } from "../hooks/use-file-rename-state";
 import { IPreviewState } from "../hooks/use-preview-state";
+import { ShiftMode } from "../hooks/use-shift-mode";
 import { ITimezoneState } from "../hooks/use-timezone-state";
 import { executeShift } from "./execute-shift";
 import { fetchCityTimezones } from "./fetch-city-timezones";
@@ -25,6 +27,8 @@ export interface IRenderTimezoneModeProps {
   historyLocationSearch: string;
   undoSelection: () => void;
   collections: boolean;
+  setCurrentStep?: (step: ShiftMode) => void;
+  fileRenameState?: IFileRenameState;
 }
 
 export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
@@ -34,11 +38,11 @@ export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
     timezoneState,
     previewState,
     handleBack,
-    handleExit,
     dispatch,
     historyLocationSearch,
-    undoSelection,
-    collections
+    collections,
+    setCurrentStep,
+    fileRenameState
   } = props;
   const {
     preview,
@@ -171,8 +175,10 @@ export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
           </button>
           <button
             className="btn btn--default"
-            onClick={() =>
-              executeShift(
+            onClick={async () => {
+              // Execute shift first, then navigate to rename step
+              setIsExecuting(true);
+              const success = await executeShift(
                 {
                   select,
                   state,
@@ -183,14 +189,17 @@ export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
                   },
                   historyLocationSearch
                 },
-                setIsExecuting,
+                setIsLoadingPreview,
                 setError,
-                handleExit,
-                undoSelection,
                 dispatch,
                 collections
-              )
-            }
+              );
+              setIsExecuting(false);
+              if (success !== false && setCurrentStep && fileRenameState) {
+                // Navigate to rename step - preview will load there
+                setCurrentStep("file-rename-timezone");
+              }
+            }}
             disabled={
               isExecuting ||
               preview.timezoneData.length === 0 ||
@@ -199,7 +208,7 @@ export function renderTimezoneMode(props: IRenderTimezoneModeProps) {
           >
             {isExecuting
               ? language.key(localization.MessageLoading)
-              : language.key(localization.MessageApplyShift)}{" "}
+              : language.key(localization.MessageApplyShift)}
           </button>
         </div>
       </div>

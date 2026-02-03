@@ -496,6 +496,34 @@ export class UrlQuery {
     return this.prefix + "/api/meta-time-correct/offset-execute";
   }
 
+  /**
+   * Preview batch rename for offset shift
+   */
+  public UrlBatchRenameOffsetPreview(): string {
+    return this.prefix + "/api/batch-rename-datetime/offset-preview";
+  }
+
+  /**
+   * Execute batch rename for offset shift
+   */
+  public UrlBatchRenameOffsetExecute(): string {
+    return this.prefix + "/api/batch-rename-datetime/offset-execute";
+  }
+
+  /**
+   * Preview batch rename for timezone shift
+   */
+  public UrlBatchRenameTimezonePreview(): string {
+    return this.prefix + "/api/batch-rename-datetime/timezone-preview";
+  }
+
+  /**
+   * Execute batch rename for timezone shift
+   */
+  public UrlBatchRenameTimezoneExecute(): string {
+    return this.prefix + "/api/batch-rename-datetime/timezone-execute";
+  }
+
   public UrlGeoLocationNameCityTimezone(dateTime: string, city: string): string {
     return `${this.prefix}/api/geo-location-name/city-timezone?dateTime=${encodeURIComponent(dateTime)}&city=${encodeURIComponent(city)}`;
   }

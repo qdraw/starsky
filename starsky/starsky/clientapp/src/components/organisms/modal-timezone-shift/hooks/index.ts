@@ -1,3 +1,4 @@
+export { useFileRenameState } from "./use-file-rename-state";
 export { useOffsetState } from "./use-offset-state";
 export { usePreviewState } from "./use-preview-state";
 export { useResetOnClose } from "./use-reset-on-close";

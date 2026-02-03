@@ -3,12 +3,14 @@ import { ArchiveAction } from "../../../contexts/archive-context";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import Modal from "../../atoms/modal/modal";
 import {
+  useFileRenameState,
   useOffsetState,
   usePreviewState,
   useResetOnClose,
   useShiftMode,
   useTimezoneState
 } from "./hooks";
+import { FileRenameMode } from "./internal/render-file-rename-mode";
 import { renderModeSelection } from "./internal/render-mode-selection";
 import { renderOffsetMode } from "./internal/render-offset-mode";
 import { renderTimezoneMode } from "./internal/render-timezone-mode";
@@ -36,7 +38,7 @@ const ModalTimezoneShift: React.FunctionComponent<IModalTimezoneShiftProps> = ({
 }) => {
   // Mode and step tracking
   const shiftMode = useShiftMode();
-  const { currentStep, handleBack, handleModeSelect } = shiftMode;
+  const { currentStep, handleBack, handleModeSelect, setCurrentStep } = shiftMode;
 
   // Offset mode state
   const offsetState = useOffsetState();
@@ -46,6 +48,9 @@ const ModalTimezoneShift: React.FunctionComponent<IModalTimezoneShiftProps> = ({
 
   // Preview and execution state
   const previewState = usePreviewState();
+
+  // File rename state
+  const fileRenameState = useFileRenameState();
 
   // Handle mode selection with state reset
   const handleModeSelectWrapped = (mode: "offset" | "timezone") => {
@@ -58,6 +63,7 @@ const ModalTimezoneShift: React.FunctionComponent<IModalTimezoneShiftProps> = ({
     offsetState.reset();
     timezoneState.reset();
     previewState.previewReset();
+    fileRenameState.reset();
   }, []);
 
   useResetOnClose(isOpen, handleResetAll);
@@ -78,7 +84,9 @@ const ModalTimezoneShift: React.FunctionComponent<IModalTimezoneShiftProps> = ({
             dispatch,
             historyLocationSearch,
             undoSelection,
-            collections
+            collections,
+            setCurrentStep,
+            fileRenameState
           })}
         {currentStep === "timezone" &&
           renderTimezoneMode({
@@ -91,8 +99,46 @@ const ModalTimezoneShift: React.FunctionComponent<IModalTimezoneShiftProps> = ({
             dispatch,
             historyLocationSearch,
             undoSelection,
-            collections
+            collections,
+            setCurrentStep,
+            fileRenameState
           })}
+        {currentStep === "file-rename-offset" && (
+          <FileRenameMode
+            select={select}
+            state={state}
+            fileRenameState={fileRenameState}
+            handleExit={handleExit}
+            dispatch={dispatch}
+            undoSelection={undoSelection}
+            collections={collections}
+            mode="offset"
+            offsetData={{
+              year: offsetState.offsetYears,
+              month: offsetState.offsetMonths,
+              day: offsetState.offsetDays,
+              hour: offsetState.offsetHours,
+              minute: offsetState.offsetMinutes,
+              second: offsetState.offsetSeconds
+            }}
+          />
+        )}
+        {currentStep === "file-rename-timezone" && (
+          <FileRenameMode
+            select={select}
+            state={state}
+            fileRenameState={fileRenameState}
+            handleExit={handleExit}
+            dispatch={dispatch}
+            undoSelection={undoSelection}
+            collections={collections}
+            mode="timezone"
+            timezoneData={{
+              recordedTimezoneId: timezoneState.recordedTimezoneId,
+              correctTimezoneId: timezoneState.correctTimezoneId
+            }}
+          />
+        )}
       </div>
     </Modal>
   );

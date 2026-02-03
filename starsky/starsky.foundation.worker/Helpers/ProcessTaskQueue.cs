@@ -66,7 +66,7 @@ namespace starsky.foundation.worker.Helpers
 					foreach ( var (task, meta, _) in afterDistinct )
 					{
 						var name = taskQueue.GetType().ToString().Split(".").LastOrDefault();
-						logger.LogInformation($"[] {name} next task: {meta}");
+						logger.LogInformation($"[{name}] next task: {meta}");
 
 						await ExecuteTask(task, logger, null, cancellationToken);
 					}
