@@ -221,10 +221,11 @@ export const FileRenameMode: React.FC<IRenderFileRenameModeProps> = (props) => {
           <button className="btn btn--info" disabled={true}>
             {language.key(localization.MessageBack)}
           </button>
+          {/* // you can continue if errors exist but not loading or executing */}
           <button
             className="btn btn--default"
             onClick={handleExecuteRename}
-            disabled={isExecutingRename || (shouldRename && (isLoadingRename || hasErrors))}
+            disabled={isExecutingRename || (shouldRename && isLoadingRename)}
           >
             {isExecutingRename
               ? language.key(localization.MessageLoading)
