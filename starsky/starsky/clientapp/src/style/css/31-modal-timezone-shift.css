@@ -84,6 +84,10 @@
   background-color: #ffcdd2;
   border-radius: 4px;
   margin: 12px 0;
+}
+
+.modal-timezone-shift .warning .filename,
+.modal-timezone-shift .error .filename {
   line-break: anywhere;
 }
 

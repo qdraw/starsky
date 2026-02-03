@@ -14,12 +14,20 @@ export function PreviewErrorFiles({ data }: PreviewErrorFilesProps) {
               if (item.warning && !item.error)
                 return (
                   <p key={`warning-file-${item.fileIndexItem.fileName}`} className="warning">
-                    ⚠️ {item.fileIndexItem.fileName}: {item.warning}
+                    ⚠️{" "}
+                    <span data-test="warning-filename" className="filename">
+                      {item.fileIndexItem.fileName}
+                    </span>
+                    : {item.warning}
                   </p>
                 );
               return (
                 <p key={`error-file-${item.fileIndexItem.fileName}`} className="error">
-                  ❌ {item.fileIndexItem.fileName}: {item.error}
+                  ❌{" "}
+                  <span data-test="error-filename" className="filename">
+                    {item.fileIndexItem.fileName}
+                  </span>
+                  : {item.error}
                 </p>
               );
             })

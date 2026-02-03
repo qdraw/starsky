@@ -1275,9 +1275,9 @@
     "de": "Ersetzen"
   },
   "MessageSomeFilesHaveErrors": {
-    "en": "Some files have errors",
-    "nl": "Sommige bestanden hebben fouten",
-    "de": "Einige Dateien haben Fehler"
+    "en": "Some files have errors. When pressing 'Replace', only the valid files will be renamed.",
+    "nl": "Sommige bestanden hebben fouten. Wanneer je op 'Vervangen' drukt, worden alleen de geldige bestanden hernoemd.",
+    "de": "Einige Dateien haben Fehler. Beim Drücken von 'Ersetzen' werden nur die gültigen Dateien umbenannt."
   },
   "MessageFinish": {
     "en": "Finish",

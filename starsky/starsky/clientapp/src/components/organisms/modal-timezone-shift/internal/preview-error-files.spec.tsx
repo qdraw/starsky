@@ -16,34 +16,41 @@ describe("PreviewErrorFiles", () => {
 
   it("renders nothing when no errors or warnings", () => {
     render(<PreviewErrorFiles data={[baseItem] as IExifTimezoneCorrectionResult[]} />);
-    expect(screen.queryByText(/test.jpg/)).toBeNull();
+    expect(screen.queryByTestId("error-filename")).toBeNull();
+    expect(screen.queryByTestId("warning-filename")).toBeNull();
   });
 
   it("renders warning when present and no error", () => {
     const item = { ...baseItem, warning: "Minor issue" };
     render(<PreviewErrorFiles data={[item]} />);
-    expect(
-      screen.getByText((content) => content.includes("test.jpg") && content.includes("Minor issue"))
-    ).toBeInTheDocument();
-    expect(screen.queryByText((content) => content.includes("Major issue"))).toBeNull();
+    const filenameSpan = screen.getByTestId("warning-filename");
+    expect(filenameSpan).toHaveClass("filename");
+    expect(filenameSpan).toHaveTextContent("test.jpg");
+    // Check the warning message is present in the same <p>
+    expect(filenameSpan.parentElement).toHaveTextContent("Minor issue");
+    expect(screen.queryByText(/Major issue/)).toBeNull();
   });
 
   it("renders error when present", () => {
     const item = { ...baseItem, error: "Major issue" };
     render(<PreviewErrorFiles data={[item]} />);
-    expect(
-      screen.getByText((content) => content.includes("test.jpg") && content.includes("Major issue"))
-    ).toBeInTheDocument();
-    expect(screen.queryByText((content) => content.includes("Minor issue"))).toBeNull();
+    const filenameSpan = screen.getByTestId("error-filename");
+    expect(filenameSpan).toHaveClass("filename");
+    expect(filenameSpan).toHaveTextContent("test.jpg");
+    // Check the error message is present in the same <p>
+    expect(filenameSpan.parentElement).toHaveTextContent("Major issue");
+    expect(screen.queryByText(/Minor issue/)).toBeNull();
   });
 
   it("renders both error and warning, prioritizes error", () => {
     const item = { ...baseItem, error: "Major issue", warning: "Minor issue" };
     render(<PreviewErrorFiles data={[item]} />);
-    expect(
-      screen.getByText((content) => content.includes("test.jpg") && content.includes("Major issue"))
-    ).toBeInTheDocument();
-    expect(screen.queryByText((content) => content.includes("Minor issue"))).toBeNull();
+    const filenameSpan = screen.getByTestId("error-filename");
+    expect(filenameSpan).toHaveClass("filename");
+    expect(filenameSpan).toHaveTextContent("test.jpg");
+    // Check the error message is present in the same <p>
+    expect(filenameSpan.parentElement).toHaveTextContent("Major issue");
+    expect(screen.queryByText(/Minor issue/)).toBeNull();
   });
 
   it("renders multiple items", () => {
@@ -52,11 +59,13 @@ describe("PreviewErrorFiles", () => {
       { ...baseItem, fileIndexItem: { fileName: "b.jpg" }, warning: "W1" }
     ] as IExifTimezoneCorrectionResult[];
     render(<PreviewErrorFiles data={items} />);
-    expect(
-      screen.getByText((content) => content.includes("a.jpg") && content.includes("E1"))
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText((content) => content.includes("b.jpg") && content.includes("W1"))
-    ).toBeInTheDocument();
+    const errorSpan = screen.getByTestId("error-filename");
+    expect(errorSpan).toHaveClass("filename");
+    expect(errorSpan).toHaveTextContent("a.jpg");
+    expect(errorSpan.parentElement).toHaveTextContent("E1");
+    const warningSpan = screen.getByTestId("warning-filename");
+    expect(warningSpan).toHaveClass("filename");
+    expect(warningSpan).toHaveTextContent("b.jpg");
+    expect(warningSpan.parentElement).toHaveTextContent("W1");
   });
 });
