@@ -8,7 +8,7 @@ import FetchPost from "../../../../shared/fetch/fetch-post";
 import { URLPath } from "../../../../shared/url/url-path";
 import { UrlQuery } from "../../../../shared/url/url-query";
 
-interface LoadRenamePreviewParams {
+export interface LoadRenamePreviewParams {
   mode: "offset" | "timezone";
   select: string[];
   state: IArchiveProps;

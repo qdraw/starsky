@@ -150,7 +150,7 @@ public class FilenameDatetimeRepairService(
 	/// <summary>
 	///     Execute filename datetime repair based on mappings
 	/// </summary>
-	public async Task<List<FileIndexItem>> ExecuteRepairAsync(
+	internal async Task<List<FileIndexItem>> ExecuteRepairAsync(
 		List<FilenameDatetimeRepairMapping> mappings,
 		bool collections = true)
 	{
