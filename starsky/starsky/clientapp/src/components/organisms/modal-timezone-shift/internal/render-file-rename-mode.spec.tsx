@@ -136,4 +136,30 @@ describe("FileRenameMode error cases", () => {
       expect(fileRenameState.setIsExecutingRename).toHaveBeenCalledWith(false);
     });
   });
+
+  it("shows generic error if FetchPost throws", async () => {
+    // Mock FetchPost to throw
+    jest.spyOn(FetchPost, "default").mockImplementationOnce(() => {
+      throw new Error("fail");
+    });
+
+    render(
+      <FileRenameMode
+        select={select}
+        state={mockState}
+        fileRenameState={fileRenameState}
+        handleExit={handleExit}
+        dispatch={dispatch}
+        undoSelection={undoSelection}
+        collections={collections}
+        mode={"offset"}
+        offsetData={{ year: 0, month: 0, day: 0, hour: 0, minute: 0, second: 0 }}
+      />
+    );
+    fireEvent.click(screen.getByTestId("execute-rename-button"));
+    await waitFor(() => {
+      expect(fileRenameState.setRenameError).toHaveBeenNthCalledWith(4, "Failed to rename files");
+      expect(fileRenameState.setIsExecutingRename).toHaveBeenCalledWith(false);
+    });
+  });
 });

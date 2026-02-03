@@ -336,7 +336,7 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 	}
 
 	[TestMethod]
-	public void PreviewCustomOffsetDatetimeRepair_InvalidModel()
+	public void PreviewCustomOffsetDatetimeRepair_OkModel()
 	{
 		var controller = CreateController();
 		var request = new FilenameDatetimeRepairRequest<ExifCustomOffsetCorrectionRequest>
@@ -347,8 +347,6 @@ public class BatchRenameDateTimeControllerDatetimeRepairTest
 		};
 		var result = controller.PreviewCustomOffsetDatetimeRepair(request);
 		Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
-		var badRequestResult = result.Result as BadRequestObjectResult;
-		Assert.AreEqual("Model is not valid", badRequestResult!.Value);
 	}
 	
 	[TestMethod]
